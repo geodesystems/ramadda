@@ -1393,122 +1393,130 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 
 	if(request.defined(ARG_TYPE)) {
-	    TypeHandler typeHandler = getRepository().getTypeHandler(request.getString(ARG_TYPE));
-	    if(typeHandler!=null) {
+	    List<Query> typeQueries = new ArrayList<Query>();
+	    for(String type: Utils.split(request.getString(ARG_TYPE),",",true,true)) {
+		TypeHandler typeHandler = getRepository().getTypeHandler(type);
+		if(typeHandler==null) continue;
 		//		queries.add(new TermQuery(new Term(FIELD_TYPE, typeHandler.getType())));
-		queries.add(new TermQuery(new Term(FIELD_SUPERTYPE, request.getString(ARG_TYPE))));
+		typeQueries.add(new TermQuery(new Term(FIELD_SUPERTYPE, type)));
 		List<Column> columns = typeHandler.getColumns();
-		if (columns != null) {
-		    BooleanQuery.Builder builder = new BooleanQuery.Builder();
-		    int cnt = 0;
-		    for (Column column : columns) {
-
-			if (!column.getCanSearch()) {
-			    continue;
+		if (columns == null) continue;
+		BooleanQuery.Builder builder = new BooleanQuery.Builder();
+		int cnt = 0;
+		for (Column column : columns) {
+		    if (!column.getCanSearch()) {
+			continue;
+		    }
+		    String       searchArg = column.getSearchArg();
+		    Query term=null;
+		    String field = getPropertyField(typeHandler,column.getName());
+		    if(column.isEnumeration()) {
+			String v = request.getString(searchArg,null);
+			if(!Utils.stringDefined(v)||v.equals(TypeHandler.ALL)) continue;
+			if(v.equals("--blank--")) v = "";
+			term = new TermQuery(new Term(field, v));
+		    } else if(column.isDouble()) {
+			String expr = request.getEnum(searchArg + "_expr", "", "",
+						      Column.EXPR_EQUALS, Column.EXPR_LE, Column.EXPR_GE,Column.EXPR_LT,Column.EXPR_GT,
+						      Column.EXPR_BETWEEN, "&lt;=", "&gt;=").trim();
+			expr = expr.replace("&lt;", "<").replace("&gt;", ">");
+			double from  = request.get(searchArg + "_from", Double.NaN);
+			double to    = request.get(searchArg + "_to", Double.NaN);
+			double value = request.get(searchArg, Double.NaN);
+			if (column.isType(Column.DATATYPE_PERCENTAGE)) {
+			    from  = from / 100.0;
+			    to    = to / 100.0;
+			    value = value / 100.0;
 			}
-			String       searchArg = column.getSearchArg();
-			Query term=null;
-			String field = getPropertyField(typeHandler,column.getName());
-			if(column.isEnumeration()) {
-			    String v = request.getString(searchArg,null);
-			    if(!Utils.stringDefined(v)||v.equals(TypeHandler.ALL)) continue;
-			    if(v.equals("--blank--")) v = "";
-			    term = new TermQuery(new Term(field, v));
-			} else if(column.isDouble()) {
-			    String expr = request.getEnum(searchArg + "_expr", "", "",
-							  Column.EXPR_EQUALS, Column.EXPR_LE, Column.EXPR_GE,Column.EXPR_LT,Column.EXPR_GT,
-							  Column.EXPR_BETWEEN, "&lt;=", "&gt;=").trim();
-			    expr = expr.replace("&lt;", "<").replace("&gt;", ">");
-			    double from  = request.get(searchArg + "_from", Double.NaN);
-			    double to    = request.get(searchArg + "_to", Double.NaN);
-			    double value = request.get(searchArg, Double.NaN);
-			    if (column.isType(Column.DATATYPE_PERCENTAGE)) {
-				from  = from / 100.0;
-				to    = to / 100.0;
-				value = value / 100.0;
-			    }
-			    if (expr.equals("") && (!Double.isNaN(from) || !Double.isNaN(to))) {
-				term = DoublePoint.newRangeQuery(field,Double.isNaN(from)?Double.MIN_VALUE:from,Double.isNaN(to)?Double.MAX_VALUE:to);
-			    }  else {
-				if (!Double.isNaN(from) && Double.isNaN(to)) {
-				    to = from;
-				} else if (Double.isNaN(from) && !Double.isNaN(to)) {
-				    from = to;
-				} else if (Double.isNaN(from) && Double.isNaN(to)) {
-				    from = value;
-				    to   = value;
-				}
-				if (Double.isNaN(from)) continue;
-				if (expr.equals("")) {
-				    term = DoublePoint.newRangeQuery(field,from,to);
-				    expr = Column.EXPR_EQUALS;
-				}
-				double delta = 0.00000001;
-				if (expr.equals(Column.EXPR_EQUALS)) {
-				    term = DoublePoint.newExactQuery(field,from);
-				} else if (expr.equals(Column.EXPR_LE)) {
-				    term = DoublePoint.newRangeQuery(field,Double.MIN_VALUE,to);
-				} else if (expr.equals(Column.EXPR_LT)) {
-				    term = DoublePoint.newRangeQuery(field,Double.MIN_VALUE,to-delta);
-				} else if (expr.equals(Column.EXPR_GE)) {
-				    term = DoublePoint.newRangeQuery(field,from,Double.MAX_VALUE);
-				} else if (expr.equals(Column.EXPR_GT)) {
-				    term = DoublePoint.newRangeQuery(field,from+delta,Double.MAX_VALUE);				
-				} else if (expr.equals(Column.EXPR_BETWEEN)) {
-				    term = DoublePoint.newRangeQuery(field,from,to);
-				} else if (expr.length() > 0) {
-				    throw new IllegalArgumentException("Unknown expression:"
-								       + expr);
-				}
-			    }
-			} else if(column.isInteger()) {
-			    String expr = request.getEnum(searchArg + "_expr", "", "",
-							  Column.EXPR_EQUALS, Column.EXPR_LE, Column.EXPR_GE,Column.EXPR_LT,Column.EXPR_GT,
-							  Column.EXPR_BETWEEN, "&lt;=", "&gt;=");
-			    expr = expr.replace("&lt;", "<").replace("&gt;", ">");
-			    int undef = -99999999;
-			    int from  = request.get(searchArg + "_from", undef);
-			    int to    = request.get(searchArg + "_to", undef);
-			    int value = request.get(searchArg, undef);
-			    if ((from != undef) && (to == undef)) {
+			if (expr.equals("") && (!Double.isNaN(from) || !Double.isNaN(to))) {
+			    term = DoublePoint.newRangeQuery(field,Double.isNaN(from)?Double.MIN_VALUE:from,Double.isNaN(to)?Double.MAX_VALUE:to);
+			}  else {
+			    if (!Double.isNaN(from) && Double.isNaN(to)) {
 				to = from;
-			    } else if ((from == undef) && (to != undef)) {
+			    } else if (Double.isNaN(from) && !Double.isNaN(to)) {
 				from = to;
-			    } else if ((from == undef) && (to == undef)) {
+			    } else if (Double.isNaN(from) && Double.isNaN(to)) {
 				from = value;
 				to   = value;
 			    }
-			    if (from == undef) continue;
+			    if (Double.isNaN(from)) continue;
 			    if (expr.equals("")) {
+				term = DoublePoint.newRangeQuery(field,from,to);
 				expr = Column.EXPR_EQUALS;
 			    }
+			    double delta = 0.00000001;
 			    if (expr.equals(Column.EXPR_EQUALS)) {
-				term = IntPoint.newExactQuery(field,from);
+				term = DoublePoint.newExactQuery(field,from);
 			    } else if (expr.equals(Column.EXPR_LE)) {
-				term = IntPoint.newRangeQuery(field,Integer.MIN_VALUE,to);
+				term = DoublePoint.newRangeQuery(field,Double.MIN_VALUE,to);
 			    } else if (expr.equals(Column.EXPR_LT)) {
-				term = IntPoint.newRangeQuery(field,Integer.MIN_VALUE,to-1);				
+				term = DoublePoint.newRangeQuery(field,Double.MIN_VALUE,to-delta);
 			    } else if (expr.equals(Column.EXPR_GE)) {
-				term = IntPoint.newRangeQuery(field,from,Integer.MAX_VALUE);
+				term = DoublePoint.newRangeQuery(field,from,Double.MAX_VALUE);
 			    } else if (expr.equals(Column.EXPR_GT)) {
-				term = IntPoint.newRangeQuery(field,from+1,Integer.MAX_VALUE);				
+				term = DoublePoint.newRangeQuery(field,from+delta,Double.MAX_VALUE);				
 			    } else if (expr.equals(Column.EXPR_BETWEEN)) {
-				term = IntPoint.newRangeQuery(field,from,to);
+				term = DoublePoint.newRangeQuery(field,from,to);
 			    } else if (expr.length() > 0) {
 				throw new IllegalArgumentException("Unknown expression:"
 								   + expr);
 			    }
-			} else {
-			    String v = request.getString(searchArg,null);
-			    if(!Utils.stringDefined(v)||v.equals(TypeHandler.ALL)) continue;
-			    term = new WildcardQuery(new Term(field, v));
 			}
-			cnt++;
-			if(term!=null)
-			    builder.add(term, BooleanClause.Occur.MUST);
+		    } else if(column.isInteger()) {
+			String expr = request.getEnum(searchArg + "_expr", "", "",
+						      Column.EXPR_EQUALS, Column.EXPR_LE, Column.EXPR_GE,Column.EXPR_LT,Column.EXPR_GT,
+						      Column.EXPR_BETWEEN, "&lt;=", "&gt;=");
+			expr = expr.replace("&lt;", "<").replace("&gt;", ">");
+			int undef = -99999999;
+			int from  = request.get(searchArg + "_from", undef);
+			int to    = request.get(searchArg + "_to", undef);
+			int value = request.get(searchArg, undef);
+			if ((from != undef) && (to == undef)) {
+			    to = from;
+			} else if ((from == undef) && (to != undef)) {
+			    from = to;
+			} else if ((from == undef) && (to == undef)) {
+			    from = value;
+			    to   = value;
+			}
+			if (from == undef) continue;
+			if (expr.equals("")) {
+			    expr = Column.EXPR_EQUALS;
+			}
+			if (expr.equals(Column.EXPR_EQUALS)) {
+			    term = IntPoint.newExactQuery(field,from);
+			} else if (expr.equals(Column.EXPR_LE)) {
+			    term = IntPoint.newRangeQuery(field,Integer.MIN_VALUE,to);
+			} else if (expr.equals(Column.EXPR_LT)) {
+			    term = IntPoint.newRangeQuery(field,Integer.MIN_VALUE,to-1);				
+			} else if (expr.equals(Column.EXPR_GE)) {
+			    term = IntPoint.newRangeQuery(field,from,Integer.MAX_VALUE);
+			} else if (expr.equals(Column.EXPR_GT)) {
+			    term = IntPoint.newRangeQuery(field,from+1,Integer.MAX_VALUE);				
+			} else if (expr.equals(Column.EXPR_BETWEEN)) {
+			    term = IntPoint.newRangeQuery(field,from,to);
+			} else if (expr.length() > 0) {
+			    throw new IllegalArgumentException("Unknown expression:"
+							       + expr);
+			}
+		    } else {
+			String v = request.getString(searchArg,null);
+			if(!Utils.stringDefined(v)||v.equals(TypeHandler.ALL)) continue;
+			term = new WildcardQuery(new Term(field, v));
 		    }
-		    if(cnt>0) queries.add(builder.build());
+		    cnt++;
+		    if(term!=null)
+			builder.add(term, BooleanClause.Occur.MUST);
 		}
+		if(cnt>0) queries.add(builder.build());
+	    }
+	    if(typeQueries.size()==1) {
+		queries.add(typeQueries.get(0));
+	    } else if(typeQueries.size()>1) {
+		BooleanQuery.Builder builder = new BooleanQuery.Builder();
+		for(Query q: typeQueries)
+		    builder.add(q,BooleanClause.Occur.SHOULD);
+		queries.add(builder.build());
 	    }
 	}
 
@@ -2745,7 +2753,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      */
     public List<Entry> doSearch(Request request, SearchInfo searchInfo)
 	throws Exception {
-
         HashSet<String> providers = new HashSet<String>();
         for (String arg :
 		 (List<String>) request.get(ARG_PROVIDER, new ArrayList())) {
@@ -2813,7 +2820,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                 }
             }
         }
-
 	return allEntries;
     }
 
