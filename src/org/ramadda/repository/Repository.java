@@ -1283,7 +1283,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             } else if (arg.equals("-port")) {
                 //skip
                 i++;
-            } else if (arg.equals("-home")) {
+            } else if (arg.equals("-home") || arg.equals("-ramadda_home")) {
                 String homeDir = args[++i];
                 cmdLineProperties.put(PROP_REPOSITORY_HOME, homeDir);
             } else if (arg.startsWith("-D")) {

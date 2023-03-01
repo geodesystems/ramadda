@@ -362,9 +362,17 @@ public class StorageManager extends RepositoryManager implements PointFile
     protected void init() {
         encryptionPassword =
             getRepository().getProperty(PROP_ENCRYPT_PASSWORD, (String) null);
+	//	Repository.propdebug = true;
         String repositoryDirProperty =
             getRepository().getProperty(PROP_REPOSITORY_HOME, (String) null);
 
+	//Check for upper case
+        if (repositoryDirProperty == null) {
+	    repositoryDirProperty =
+		getRepository().getProperty(PROP_REPOSITORY_HOME_UPPER, (String) null);
+	}
+
+	//	Repository.propdebug = false;
         if (repositoryDirProperty != null) {
 	    repositoryDirProperty = repositoryDirProperty.trim();
 	    if(repositoryDirProperty.equals("default") || repositoryDirProperty.equals("")) {

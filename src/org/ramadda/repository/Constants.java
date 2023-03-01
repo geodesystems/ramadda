@@ -1834,6 +1834,7 @@ public interface Constants {
 
     /** _more_ */
     public static final String PROP_REPOSITORY_HOME = "ramadda_home";
+    public static final String PROP_REPOSITORY_HOME_UPPER = "RAMADDA_HOME";    
 
 
     /** _more_ */
