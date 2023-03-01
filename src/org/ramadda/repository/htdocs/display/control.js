@@ -733,10 +733,11 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	    label = label.replace("${title}",this.getProperty("title",""));
 	    let useIcon = this.getPropertyUseIcon(true);
 	    let iconSize = this.getIconSize();
-	    label = HU.span([ID,this.getDomId("csv")], useIcon?HU.getIconImage("fa-download",['style','line-height:0px;display:block;'],[STYLE,"cursor:pointer;font-size:" + iconSize+";",TITLE,label]):label);
+	    label = HU.div(['style','display:inline-block;',ID,this.getDomId("csv")], useIcon?HU.getIconImage("fa-download",['style','line-height:0px;display:block;'],[STYLE,"cursor:pointer;font-size:" + iconSize+";",TITLE,label]):label);
 	    this.setContents(HU.div([],label));
 	    if(useIcon) {
 		this.jq("csv").click(() => {
+		    console.log('click');
 		    this.doDownload();
 		});
 	    } else {
