@@ -333,12 +333,11 @@ public class ExtEditor extends RepositoryManager {
                         public boolean processEntry(Entry entry,
                                 List<Entry> children)
                                 throws Exception {
-                            if ( !oldType.equals(TypeHandler.TYPE_ANY)
-                                    && !entry.getTypeHandler().isType(
-                                        oldType)) {
+                            if (!oldType.equals("") &&
+				!oldType.equals(TypeHandler.TYPE_ANY) &&
+				!entry.getTypeHandler().isType(oldType)) {
                                 System.err.println("\tdoesn't match type:"
-                                        + oldType);
-
+						   + oldType);
                                 return true;
                             }
                             if ((pattern != null) && (pattern.length() > 0)) {
@@ -353,27 +352,21 @@ public class ExtEditor extends RepositoryManager {
                                 }
 
                                 if ( !matches) {
-                                    System.err.println(
-                                        "\tdoesn't match pattern:" + pattern);
-
+				    //System.err.println("\tdoesn't match pattern:" + pattern);
                                     return true;
                                 }
                             }
                             if (forReal) {
-                                System.err.println("\tchanging type:"
-                                        + entry.getName());
-                                append("Changing type:" + entry.getName()
-                                       + "<br>");
+                                append("Changing type:" + entry.getName() + "<br>");
                                 entry = changeType(request, entry,
                                         newTypeHandler);
                             } else {
-                                System.err.println(
-                                    "\twould be changing type:"
-                                    + entry.getName());
-                                append("We would be changing type:"
-                                       + entry.getName() + "<br>");
+				String label = "Would change: " + entry.getName();
+				if(Utils.stringDefined(entry.getResource().getPath())) {
+				    label+=HU.space(2)+"file: " + getStorageManager().getOriginalFilename(entry.getResource().getPathName());
+				}
+                                append(label + "<br>");
                             }
-
                             return true;
                         }
                     };
@@ -729,7 +722,7 @@ public class ExtEditor extends RepositoryManager {
 				       tfos));
 
 		HU.formEntry(sb, msgLabel("Regexp Pattern"),
-			     HU.input(ARG_EXTEDIT_NEWTYPE_PATTERN, "") + " "
+			     HU.input(ARG_EXTEDIT_NEWTYPE_PATTERN, request.getString(ARG_EXTEDIT_NEWTYPE_PATTERN,"")) + " "
 			     + msg("Only change type for entries that match this pattern"));
 
 		HU.formEntry(sb, msgLabel("New type"),
