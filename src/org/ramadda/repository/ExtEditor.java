@@ -269,7 +269,7 @@ public class ExtEditor extends RepositoryManager {
                                 incrementProcessedCnt(1);
                                 append(getPageHandler().getConfirmBreadCrumbs(
                                     getRequest(), entry));
-                                append(HtmlUtils.br());
+                                append(HU.br());
                                 getEntryManager().updateEntry(getRequest(), entry);
                             }
                             return true;
@@ -577,17 +577,17 @@ public class ExtEditor extends RepositoryManager {
                 }
             };
             walker.walk(entry);
-	    suffix.append(HtmlUtils.openInset(5, 30, 20, 0));
+	    suffix.append(HU.openInset(5, 30, 20, 0));
             suffix.append("<table><tr><td><b>" + msg("File") + "</b></td><td><b>"
                       + msg("Size") + "</td><td></td></tr>");
             suffix.append(walker.getMessageBuffer());
             suffix.append("<tr><td><b>" + msgLabel("Total")
                       + "</td><td align=right>"
-                      + HtmlUtils.b(formatFileLength(size[0]))
+                      + HU.b(formatFileLength(size[0]))
                       + "</td></tr>");
             suffix.append("</table>");
             suffix.append("**** - File managed by RAMADDA");
-	    suffix.append(HtmlUtils.closeInset());
+	    suffix.append(HU.closeInset());
 	    what = new String[]{ARG_EXTEDIT_REPORT};
         }
 
@@ -699,7 +699,7 @@ public class ExtEditor extends RepositoryManager {
 		opener.accept("Change Entry Type");
 		sb.append(msgLabel("New type"));
 		sb.append(HU.space(1));
-		sb.append(HU.select(ARG_EXTEDIT_NEWTYPE, tfos));
+		sb.append(HU.select(ARG_EXTEDIT_NEWTYPE, tfos, request.getString(ARG_EXTEDIT_NEWTYPE,"")));
 		sb.append(HU.p());
 		List<Column> columns = entry.getTypeHandler().getColumns();
 		if ((columns != null) && (columns.size() > 0)) {
@@ -719,7 +719,7 @@ public class ExtEditor extends RepositoryManager {
 		sb.append(HU.formTable());
 		HU.formEntry(sb, msgLabel("Old type"),
 			     HU.select(ARG_EXTEDIT_OLDTYPE,
-				       tfos));
+				       tfos,request.getString(ARG_EXTEDIT_OLDTYPE,"")));
 
 		HU.formEntry(sb, msgLabel("Regexp Pattern"),
 			     HU.input(ARG_EXTEDIT_NEWTYPE_PATTERN, request.getString(ARG_EXTEDIT_NEWTYPE_PATTERN,"")) + " "
@@ -727,7 +727,7 @@ public class ExtEditor extends RepositoryManager {
 
 		HU.formEntry(sb, msgLabel("New type"),
 			     HU.select(ARG_EXTEDIT_NEWTYPE,
-				       tfos));
+				       tfos,request.getString(ARG_EXTEDIT_NEWTYPE,"")));
 		HU.formEntry(sb, "",
 			     HU.labeledCheckbox(ARG_EXTEDIT_CHANGETYPE_RECURSE_CONFIRM, "true",
 						false, "Yes, change them"));
@@ -744,8 +744,8 @@ public class ExtEditor extends RepositoryManager {
 	    } else if(form.equals(ARG_EXTEDIT_JS)){
 		opener.accept("Process with Javascript");
 		sb.append(HU.formTable());
-		HtmlUtils.formEntry(sb, HU.b("Only apply to entries of type: ")+
-				    HtmlUtils.select(ARG_EXTEDIT_TYPE, tfos,request.getString(ARG_EXTEDIT_TYPE,null)));
+		HU.formEntry(sb, HU.b("Only apply to entries of type: ")+
+				    HU.select(ARG_EXTEDIT_TYPE, tfos,request.getString(ARG_EXTEDIT_TYPE,null)));
 
 		HU.formEntry(sb, HU.labeledCheckbox(ARG_EXTEDIT_THISONE, "true",
 					     request.get(ARG_EXTEDIT_THISONE,true), "Apply to this entry"));
@@ -841,7 +841,7 @@ public class ExtEditor extends RepositoryManager {
 
             HtmlUtils.Selector tfo =
                 new HtmlUtils.Selector(
-				       HtmlUtils.space(2) + typeHandler.getLabel(),
+				       HU.space(2) + typeHandler.getLabel(),
 				       typeHandler.getType(), typeHandler.getTypeIconUrl(),20);
             //Add the seen ones first
             if (first.contains(typeHandler.getType())) {
@@ -900,7 +900,7 @@ public class ExtEditor extends RepositoryManager {
                                                 id, new String[]{Tables.ENTRIES.COL_MD5},
                                                 new String[]{md5});
                     sb.append(getPageHandler().getConfirmBreadCrumbs(request, entry));
-                    sb.append(HtmlUtils.br());
+                    sb.append(HU.br());
                 }
                 getActionManager().setActionMessage(actionId,
                                                     "Checked " + totalCnt[0] +" entries<br>Changed " + setCnt[0] +" entries");
@@ -984,8 +984,8 @@ public class ExtEditor extends RepositoryManager {
                 if (icon != null) {
                     icon = newTypeHandler.getIconUrl(icon);
                 }
-                sb.append(HtmlUtils.href(getEntryManager().getEntryURL(request, entry),
-                                         HtmlUtils.img(icon) + " "
+                sb.append(HU.href(getEntryManager().getEntryURL(request, entry),
+                                         HU.img(icon) + " "
                                          + entry.getName()));
                 sb.append("<br>");
             }
@@ -1000,36 +1000,36 @@ public class ExtEditor extends RepositoryManager {
 
         request.formPostWithAuthToken(sb,
                                       getRepository().URL_ENTRY_TYPECHANGE);
-        sb.append(HtmlUtils.hidden(ARG_FROM, fromIds));
+        sb.append(HU.hidden(ARG_FROM, fromIds));
 	if(parent!=null)
-	    sb.append(HtmlUtils.hidden(ARG_ENTRYID, parent.getId()));
-        sb.append(HtmlUtils.p());
+	    sb.append(HU.hidden(ARG_ENTRYID, parent.getId()));
+        sb.append(HU.p());
 	
         StringBuffer inner = new StringBuffer();
         inner.append(msg("Are you sure you want to change the entry types?"));
-        inner.append(HtmlUtils.p());
-        inner.append(HtmlUtils.formTable());
+        inner.append(HU.p());
+        inner.append(HU.formTable());
         inner.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 msgLabel("New type"),
-                HtmlUtils.select(ARG_EXTEDIT_NEWTYPE, tfos)));
+                HU.select(ARG_EXTEDIT_NEWTYPE, tfos,request.getString(ARG_EXTEDIT_NEWTYPE,""))));
 
-        HtmlUtils.formTableClose(inner);
+        HU.formTableClose(inner);
 
         sb.append(
             getPageHandler().showDialogQuestion(
                 inner.toString(),
-                HtmlUtils.buttons(
-                    HtmlUtils.submit(
+                HU.buttons(
+                    HU.submit(
                         msg("Yes, change the entry types"),
-                        ARG_CONFIRM), HtmlUtils.submit(
+                        ARG_CONFIRM), HU.submit(
                             msg("Cancel"), ARG_CANCEL))));
-        sb.append(HtmlUtils.formClose());
+        sb.append(HU.formClose());
         sb.append("<table>");
         sb.append("<tr><td><b>Entry</b></td><td><b>Type</b></td></tr>");
         for (Entry entry : entries) {
             sb.append("<tr><td>");
-            sb.append(HtmlUtils.img(entry.getTypeHandler().getTypeIconUrl()));
+            sb.append(HU.img(entry.getTypeHandler().getTypeIconUrl()));
             sb.append(" ");
             sb.append(entry.getName());
             sb.append("</td><td>");
