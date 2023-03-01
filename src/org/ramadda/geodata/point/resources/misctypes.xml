@@ -204,12 +204,12 @@ record.type.default=double
 <wiki>
 <![CDATA[
 +section title={{name}}                                                            
-:navtop fixed=true
+:navtop  fixed=true
 {{description wikify=true}}
 :heading Skew-T
 {{display_download}}
-<div style="height:600px;position:relative;">
-{{display type=skewt layoutHere=true  skewtWidth="550" skewtHeight="550" hodographWidth=250 showMenu=false showTitle=false}}
+<div style="height:500px;position:relative;">
+{{display_skewt skewtWidth="550" skewtHeight="450" hodographWidth=150}}
 <div style="position:absolute;left:calc(50% + 300px);bottom:100px;transform: translate(-50%, 0%);">
 {{mapentry hideIfNoLocations=true width="200px" height="200px"}} 
 </div>
