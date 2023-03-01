@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Feb 28 19:11:34 MST 2023";
+var build_date="RAMADDA build date: Tue Feb 28 20:21:39 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -23442,10 +23442,11 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	    label = label.replace("${title}",this.getProperty("title",""));
 	    let useIcon = this.getPropertyUseIcon(true);
 	    let iconSize = this.getIconSize();
-	    label = HU.span([ID,this.getDomId("csv")], useIcon?HU.getIconImage("fa-download",['style','line-height:0px;display:block;'],[STYLE,"cursor:pointer;font-size:" + iconSize+";",TITLE,label]):label);
+	    label = HU.div(['style','display:inline-block;',ID,this.getDomId("csv")], useIcon?HU.getIconImage("fa-download",['style','line-height:0px;display:block;'],[STYLE,"cursor:pointer;font-size:" + iconSize+";",TITLE,label]):label);
 	    this.setContents(HU.div([],label));
 	    if(useIcon) {
 		this.jq("csv").click(() => {
+		    console.log('click');
 		    this.doDownload();
 		});
 	    } else {
