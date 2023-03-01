@@ -365,6 +365,13 @@ public class StorageManager extends RepositoryManager implements PointFile
         String repositoryDirProperty =
             getRepository().getProperty(PROP_REPOSITORY_HOME, (String) null);
 
+        if (repositoryDirProperty != null) {
+	    repositoryDirProperty = repositoryDirProperty.trim();
+	    if(repositoryDirProperty.equals("default") || repositoryDirProperty.equals("")) {
+		repositoryDirProperty = null;
+	    }		
+	}
+
         if (repositoryDirProperty == null) {
             //Use the old <home>/.unidata/repository if its there
             repositoryDirProperty =
