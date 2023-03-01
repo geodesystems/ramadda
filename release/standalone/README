@@ -9,9 +9,16 @@ There is documentation here: https://ramadda.org/repository/userguide/installing
 You will need to create this directory. By default RAMADDA looks for:
 <user home directory>/.ramadda
 
-You can override the home directory (see below or in ramadda.bat) with the Java command
-line argument:
--Dramadda_home=/some/other/directory/ramadda 
+You can override the home directory (see below or in ramadda.bat) a number of ways.
+You can set the environment variable:
+RAMADDA_HOME=/some/other/directory/ramadda
+
+You can set the environment variable with the Java command line argument:
+-DRAMADDA_HOME=/some/other/directory/ramadda 
+
+Or pass in a regular  command line argument to RAMADDA:
+-home /some/other/directory/ramadda 
+
 
 When RAMADDA first starts up it writes an install.properties file that contains an
 install password and prints out this password to stdout.
