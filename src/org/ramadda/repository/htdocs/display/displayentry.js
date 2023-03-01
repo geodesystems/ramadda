@@ -3384,7 +3384,7 @@ function RamaddaEntrywikiDisplay(displayManager, id, properties) {
 
     let myProps = [
 	{label:'Entry Wiki'},
-	{p:'wiki',d:'{{import showTitle=false}}',ex:'wiki text'},
+	{p:'wiki',d:'{{import}}',ex:'wiki text'},
 	{p:'wikiStyle',d:'width:100%;max-width:95vw'}
     ];
 
