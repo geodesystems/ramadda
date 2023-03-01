@@ -5,22 +5,14 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
-
 import org.ramadda.util.Utils;
-
 import java.io.File;
-
 import java.net.URL;
 
-
-
-
 /**
- * Class Entry _more_
- *
+ * Holds a file, url, etc and a type
  *
  * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
  */
 public class Resource {
 
@@ -391,6 +383,11 @@ public class Resource {
     public String getPath() {
         return path;
     }
+
+    public String getPathName() {
+	return new File(path).getName();
+    }
+
 
     /**
      * Set the Type property.
