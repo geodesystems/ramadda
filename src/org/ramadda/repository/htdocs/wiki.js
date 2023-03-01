@@ -302,7 +302,11 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
     this.jq("rewrite").click(()=>{
 	HtmlUtils.hidePopupObject();
 	this.doGpt();
-    });	
+    });
+    this.jq("tidy").click(()=>{
+	HtmlUtils.hidePopupObject();
+	this.doTidy();
+    });	    
 }
 
 WikiEditor.prototype = {
@@ -430,6 +434,9 @@ WikiEditor.prototype = {
     getValue:function() {
 	return this.getEditor().getValue();
     },
+    setValue:function(text) {
+	this.getEditor().setValue(text);
+    },    
     
     getBlock:function() {
 	return $("#" + this.getId()+"_block");
@@ -654,6 +661,13 @@ WikiEditor.prototype = {
 	s = s.replace(/<[^>]+>/g," ").replace(/<\/[^>]>/g," ").replace(/&nbsp;/g," ");
 	s = Utils.split(s.replace(/[<>\n={}]/g," ")," ",true,true);
 	alert("Approximately " + s.length +" words");
+    },
+
+    doTidy:function() {
+	if(!confirm('This will remove blank links and trim each line. Continue?')) return;
+	let text = this.getValue();
+	text = Utils.join(Utils.split(text,'\n',true,true),'\n');
+	this.setValue(text);
     },
 
     doGpt:function() {

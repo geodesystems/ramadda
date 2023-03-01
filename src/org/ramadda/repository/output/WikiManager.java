@@ -7107,11 +7107,15 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 			     "ramadda-menubar-button ramadda-menubar-button-last"))
 	    +   HU.div("",HU.attrs("id", textAreaId+"_preview", "class", "wiki-editor-preview"));
 
+
         String colorButton =
 	    HU.href("#", "Color",
 		    HU.attrs("id", textAreaId+"_color", "xstyle", "padding:5px;",
 			     "xclass",
 			     "ramadda-menubar-button ramadda-menubar-button-last"));
+
+        String tidyButton =
+	    HU.href("#", "Tidy",   HU.attrs("id", textAreaId+"_tidy")); 
 
 
         String findButton =
@@ -7127,7 +7131,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
 
 	List<String> etcLinks = new ArrayList<String>();
-	Utils.add(etcLinks, findButton, previewButton);
+	Utils.add(etcLinks, findButton, previewButton,tidyButton);
 	if(getSearchManager().isGptEnabled()) {
 	    etcLinks.add(HU.href("#", "GPT",
 				  HU.attrs("id", textAreaId+"_rewrite")));
