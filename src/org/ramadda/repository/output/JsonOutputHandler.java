@@ -148,7 +148,7 @@ public class JsonOutputHandler extends OutputHandler {
             request.setReturnFilename(IOUtil.stripExtension(group.getName())
                                       + ".json");
         }
-	boolean doSort = true;
+	boolean doSort = !request.defined(ARG_ORDERBY);
         List<Entry> allEntries = new ArrayList<Entry>();
 	String entries = request.getString("entries",null);
 	if(entries!=null) {
