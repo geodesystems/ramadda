@@ -28,6 +28,7 @@
 -section
 +section
 +center
+<div style='margin-bottom:4px;'>{{tags}}</div>
 <iframe src="{{resource url=true inline=true}}" 
     type="application/pdf"
     frameBorder="0"
