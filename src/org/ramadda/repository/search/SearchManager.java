@@ -248,7 +248,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     private static final String[] SEARCH_FIELDS ={FIELD_CORPUS, FIELD_NAME, FIELD_DESCRIPTION, FIELD_CONTENTS,FIELD_ATTACHMENT, FIELD_PATH};
 
-    public static final int LUCENE_MAX_LENGTH = 25000000;
+    public static final int LUCENE_MAX_LENGTH = 25_000_000;
 
     private IndexWriter luceneWriter;
 
@@ -464,7 +464,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	long t1 = System.currentTimeMillis();
 	getRepository().getJobManager().invokeAllAndWait(callables);
 	long t2 = System.currentTimeMillis();
-	System.err.println("time:" + (t2-t1));
+	//	System.err.println("time:" + (t2-t1));
 	if(ok[0]) {
 	    System.err.println("committing");
 	    writer.commit();
@@ -750,7 +750,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		boolean entryChanged = false;
 		if(request.get(ARG_EXTRACT_KEYWORDS,false)) {
 		    List<String> keywords = getKeywords(request, entry, fileCorpus);
-
 		    if(keywords!=null && keywords.size()>0) {
 			for(String word:keywords) {
 			    word = word.trim();
@@ -834,7 +833,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 						"");
 	//	text = callGpt("Rewrite the following text:","",new StringBuilder(text),1000,false);		    
 	text = callGpt(promptPrefix,promptSuffix,new StringBuilder(text),1000,false);		    
-	System.err.println(text);
 	String json = JsonUtil.map(Utils.makeList("result", JsonUtil.quote(text)));
 	return new Result("", new StringBuilder(json), "text/json");
 	
@@ -842,18 +840,26 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
     private String callGpt(String prompt1,String prompt2,StringBuilder corpus,int tokens,boolean tokenize) throws Exception {
-	//	if(debugGpt) System.err.println("corpus:" + corpus);
+	if(debugGpt) System.err.println("callGpt");
 	String text = corpus.toString();
 	String gptKey = getRepository().getProperty("gpt.api.key");
-	if(gptKey==null) return null;
+	if(gptKey==null) {
+	    if(debugGpt) System.err.println("\tno gptKey");
+	    return null;
+	}
 
 	StringBuilder gptCorpus = new StringBuilder(prompt1);
 	gptCorpus.append("\n\n");
 	if(!tokenize) {
 	    gptCorpus.append(text);
 	} else {
+	    if(debugGpt) System.err.println("\ttokenizing");
+	    if(debugGpt) System.err.println("\ttext:" + text);
 	    text = Utils.removeNonAscii(text," ").replaceAll("[,-\\.\n]+"," ").replaceAll("  +"," ");
-	    if(text.trim().length()==0) return null;	    
+	    if(text.trim().length()==0) {
+		if(debugGpt) System.err.println("\tno text");
+		return null;
+	    }
 	    List<String> toks = Utils.split(text," ",true,true);
 	    //limit is  4000 tokens or ~3500 words
 	    int extraCnt = 0;
@@ -866,9 +872,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		gptCorpus.append(" ");
 	    }
 	}
+	if(debugGpt) System.err.println("\tdone tokenizing");
 	gptCorpus.append("\n\n");
 	gptCorpus.append(prompt2);
-	if(debugGpt) System.err.println("tokens:" + tokens +"\n"+"corpus:" + gptCorpus);
+	if(debugGpt) System.err.println("tokens:" + tokens);
 	String gptText =  gptCorpus.toString();
 	//	    System.err.println("gpt corpus:" + text);
 	String body = JsonUtil.map(Utils.makeList("prompt",
@@ -917,14 +924,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 
 	List<String> keywords = new ArrayList<String>();
-	String result = callGpt("Extract keywords from this text:","Keywords:",fileCorpus,60,true);
+	String result = callGpt("Extract keywords from the following text. Limit your response to 10 keywords:","Keywords:",fileCorpus,60,true);
 	if(result!=null) {
 	    for(String tok:Utils.split(result,",",true,true)) {
 		if(!keywords.contains(tok)) {
 		    keywords.add(tok);
 		}
 	    }
-	    System.err.println("gpt keywords:" + keywords);
+	    //	    System.err.println("gpt keywords:" + keywords);
 	}
 							  
 	if(keywords.size()==0) {
@@ -989,7 +996,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     private String readContents(File f,List<org.apache.tika.metadata.Metadata> metadataList) throws Exception {
 	//Don't do really big files 
-	if(f.length()>LUCENE_MAX_LENGTH) return null;
+	if(f.length()>LUCENE_MAX_LENGTH) {
+	    //	    System.err.println("file too big:" + f.length());
+	    //	    return null;
+	}
 	//	if(Utils.isImage(f.toString())) return null;
 	if(f.length()==0) return null;
 	File corpusFile = TikaUtil.getTextCorpusCacheFile(f);
@@ -1069,7 +1079,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    long t1 = System.currentTimeMillis();
 	    String contents = readContents(f,metadata);
 	    long t2= System.currentTimeMillis();
-	    //	    System.err.println("readContents:" + entry +" " + f.getName() +" time:" + (t2-t1));
+	    //	    System.err.println("readContents:" + entry +" " + f.getName() +" time:" + (t2-t1) +" " + contents);
             if ((contents != null) && (contents.length() > 0)) {
                 doc.add(new TextField(field, contents, Field.Store.NO));
 		corpus.append(contents);
