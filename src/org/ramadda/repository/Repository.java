@@ -6034,30 +6034,34 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-
     public Result processTiffToPng(Request request) throws Exception {
 	String file = request.getString("url","");
 	//	String file = "/Users/jeffmc/test.tif";
 	System.err.println("TIFF Proxy:" + file);
-	final BufferedImage tif = ImageIO.read(getStorageManager().getInputStream(file));
-	final PipedInputStream      in   = new PipedInputStream();
-	final PipedOutputStream     out  = new PipedOutputStream(in);
-	Result theResult = new Result(in,"image/png");
-	request.setReturnFilename(IOUtil.stripExtension(IO.getFileTail(file))+".png");
-	Misc.run(new Runnable() {
-		public void run()  {
-		    try {
-			ImageIO.write(tif, "png", out);
-			out.close();
-		    } catch(Exception exc) {
-			IOUtil.close(in);
-			IOUtil.close(out);
-			System.err.println("Error:" + exc);
-			exc.printStackTrace();
+	try {
+	    final BufferedImage tif = ImageIO.read(getStorageManager().getInputStream(file));
+	    final PipedInputStream      in   = new PipedInputStream();
+	    final PipedOutputStream     out  = new PipedOutputStream(in);
+	    Result theResult = new Result(in,"image/png");
+	    request.setReturnFilename(IOUtil.stripExtension(IO.getFileTail(file))+".png");
+	    Misc.run(new Runnable() {
+		    public void run()  {
+			try {
+			    ImageIO.write(tif, "png", out);
+			    out.close();
+			} catch(Exception exc) {
+			    IOUtil.close(in);
+			    IOUtil.close(out);
+			    System.err.println("Error:" + exc);
+			    exc.printStackTrace();
+			}
 		    }
-		}
-	    });
-	return theResult;
+		});
+	    return theResult;
+	} catch(Exception exc) {
+	    System.err.println("Error:" + exc);
+	    throw new RuntimeException(exc);
+	}
     }
 
 
