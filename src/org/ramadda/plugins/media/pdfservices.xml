@@ -11,7 +11,7 @@ Runs PDFBox  <a href="https://pdfbox.apache.org/commandline/#extractText" target
 
 <service id="media_pdfbox_extractimages" label="Extract images from PDF">
   <ignoreerrors><![CDATA[
-  .*PDType1Font.*
+  .*pdmodel\.font.*
   .*Using fallback.*
   .*toUnicode.*
   .*warning.*

@@ -2416,23 +2416,29 @@ public class Service extends RepositoryManager {
         if (stderrFile.exists()) {
             errMsg = IOUtil.readContents(stderrFile);
         }
-	//	errMsg = "Mar 03, 2023 1:08:26 PM org.apache.pdfbox.pdmodel.font.PDType1Font <init>\nWARNING: Using fallback font LiberationSans for base font Symbol";
+	//	errMsg = "Mar 03, 2023 1:08:26 PM org.apache.pdfbox.pdmodel.font.PDType1Font <init>\nWARNING: Using fallback font LiberationSans for base font Symbol\nMar 03, 2023 1:46:41 PM org.apache.pdfbox.pdmodel.font.PDType0Font toUnicode\nWARNING: No Unicode mapping for CID+72 (72) in font SGGFTZ+HelveticaNeue-Light\nMar 03, 2023 1:46:41 PM org.apache.pdfbox.pdmodel.font.PDType0Font toUnicode\nWARNING: No Unicode mapping for CID+74 (74) in font SGGFTZ+HelveticaNeue-Light\nMar 03, 2023 1:46:41 PM org.apache.pdfbox.pdmodel.font.PDType0Font toUnicode\nWARNING: No Unicode mapping for CID+76 (76) in font SGGFTZ+HelveticaNeue-Light";
         if (Utils.stringDefined(errMsg)) {
 	    int okCnt=0;
 	    List<String> lines = Utils.split(errMsg,"\n",true,true);
 	    for(String line:lines) {
+		boolean lineOk = false;
 		if(ignore!=null) {
 		    for(String i: ignore) {
 			if(line.toLowerCase().matches(i) || line.matches(i)) {
-			    okCnt++;
+			    lineOk = true;
 			    break;
 			}
 		    }
 		} else {
 		    if(line.toLowerCase().startsWith("warning")) {
-			okCnt++;
-			break;
+			lineOk = true;
 		    }
+		}
+		if(lineOk) {
+		    okCnt++;
+		    //		    System.err.println("Ok:" + line);
+		} else {
+		    //		    System.err.println("Not ok:" + line);
 		}
 	    }
 	    if(okCnt==lines.size()) errMsg = null;
