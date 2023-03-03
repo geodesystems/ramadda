@@ -13,6 +13,8 @@ Runs PDFBox  <a href="https://pdfbox.apache.org/commandline/#extractText" target
   <ignoreerrors><![CDATA[
   .*PDType1Font.*
   .*Using fallback.*
+  .*toUnicode.*
+  .*warning.*
   ]]>
   </ignoreerrors>
 <process_description><![CDATA[<wiki>
