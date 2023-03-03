@@ -2302,6 +2302,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         if (lastTok.equals("type")) {
             sb.append(HU.sectionOpen(null, false));
             HU.open(sb, "div", HU.cssClass("ramadda-links"));
+	    sb.append("<center>");
+	    HU.script(sb,"HtmlUtils.initPageSearch('.type-list-item','.type-list-container','Find Type')");
+	    sb.append("</center>");
             addSearchByTypeList(request, sb);
             HU.close(sb, "div");
             sb.append(HU.sectionClose());

@@ -3274,7 +3274,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     initPageSearch:function(select,parentSelect,label) {
 	let id = HU.getUniqueId('search_');
-	document.write(HU.input('','',['id',id,'placeholder',label??'Search','size','10']));
+	document.write(HU.input('','',['id',id,'placeholder',label??'Search','size','15']));
 	jqid(id).keyup(function(){
 	    HU.doPageSearch($(this).val(),select,parentSelect);
 	});
