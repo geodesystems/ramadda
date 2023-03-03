@@ -4217,6 +4217,9 @@ public class EntryManager extends RepositoryManager {
         getPageHandler().entrySectionOpen(request, group, sb,
                                           "Choose entry type");
 
+	sb.append("<center>");
+	HU.script(sb,"HtmlUtils.initPageSearch('.type-list-item','.type-list-container','Find Type')");
+	sb.append("</center>");
 	for(EntryManager.SuperType superType:getEntryManager().getCats(false)) {
 	    boolean didSuper = false;
 	    for(EntryManager.Types types: superType.getList()) {
