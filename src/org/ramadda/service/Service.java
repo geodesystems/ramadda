@@ -172,6 +172,8 @@ public class Service extends RepositoryManager {
     /** _more_ */
     private String icon;
 
+    private List<String> ignore;
+
     /** _more_ */
     private String entryType;
 
@@ -370,6 +372,15 @@ public class Service extends RepositoryManager {
         maxFileSize = Double.parseDouble(XmlUtil.getAttributeFromTree(element,
                 ATTR_MAXFILESIZE, "-1.0"));
 
+        String ignoreString  = XmlUtil.getGrandChildText(element, "ignoreerrors",null);
+	if(Utils.stringDefined(ignoreString)) {
+	    ignore = Utils.split(ignoreString,"\n",true,true);
+	}
+        errorPattern = XmlUtil.getAttributeFromTree(element, "errorPattern",
+                (String) null);
+
+
+
         icon = XmlUtil.getAttributeFromTree(element, ATTR_ICON,
                                             (String) null);
         outputToStderr = XmlUtil.getAttributeFromTree(element,
@@ -380,8 +391,7 @@ public class Service extends RepositoryManager {
         ignoreStderr = XmlUtil.getAttributeFromTree(element, "ignoreStderr",
                 ignoreStderr);
 
-        errorPattern = XmlUtil.getAttributeFromTree(element, "errorPattern",
-                (String) null);
+
         target = XmlUtil.getAttributeFromTree(element, ATTR_TARGET,
                 (String) null);
         targetType = XmlUtil.getAttributeFromTree(element, ATTR_TARGET_TYPE,
@@ -952,7 +962,6 @@ public class Service extends RepositoryManager {
                                    List<Entry> allEntries,
                                    Hashtable<String, String> valueMap)
             throws Exception {
-
 
         if (haveLink()) {
             return link.addArgs(request, argPrefix, input, commands,
@@ -2407,16 +2416,26 @@ public class Service extends RepositoryManager {
         if (stderrFile.exists()) {
             errMsg = IOUtil.readContents(stderrFile);
         }
+	//	errMsg = "Mar 03, 2023 1:08:26 PM org.apache.pdfbox.pdmodel.font.PDType1Font <init>\nWARNING: Using fallback font LiberationSans for base font Symbol";
         if (Utils.stringDefined(errMsg)) {
-	    boolean ok = true;
-	    //check for just warnings
-	    for(String line:Utils.split(errMsg,"\n",true,true)) {
-		if(!line.toLowerCase().startsWith("warning")) {
-		    ok = false;
-		    break;
+	    int okCnt=0;
+	    List<String> lines = Utils.split(errMsg,"\n",true,true);
+	    for(String line:lines) {
+		if(ignore!=null) {
+		    for(String i: ignore) {
+			if(line.toLowerCase().matches(i) || line.matches(i)) {
+			    okCnt++;
+			    break;
+			}
+		    }
+		} else {
+		    if(line.toLowerCase().startsWith("warning")) {
+			okCnt++;
+			break;
+		    }
 		}
 	    }
-	    if(ok) errMsg = null;
+	    if(okCnt==lines.size()) errMsg = null;
 	}
 
         if (Utils.stringDefined(errMsg)) {

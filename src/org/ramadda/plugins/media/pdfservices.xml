@@ -10,11 +10,14 @@ Runs PDFBox  <a href="https://pdfbox.apache.org/commandline/#extractText" target
     </service>
 
 <service id="media_pdfbox_extractimages" label="Extract images from PDF">
-
+  <ignoreerrors><![CDATA[
+  .*PDType1Font.*
+  .*Using fallback.*
+  ]]>
+  </ignoreerrors>
 <process_description><![CDATA[<wiki>
 {{description}}
 {{gallery}}
-
 ----
 {{tree}}
 ]]></process_description>
