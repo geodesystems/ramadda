@@ -3361,7 +3361,8 @@ public class TypeHandler extends RepositoryManager {
 	try {
 	    return getStorageManager().getEntryFile(entry);
 	} catch(Exception exc) {
-	    throw new RuntimeException(exc);
+	    getLogManager().logError("TypeHandler.getFileForEntry:" + "entry:" + entry.getId() +" " + entry.getName(),exc);
+	    return null;
 	}
     }
 
