@@ -12,7 +12,7 @@
 </type>
 
 
-  <type name="type_document_pdf"  description="PDF File" pattern=".*\.pdf" includeInSearch="true"  super="type_document_tika">
+<type name="type_document_pdf"  description="PDF File" pattern=".*\.pdf" includeInSearch="true"  super="type_document_tika" isgroup="true">
      <service link="media_gs_thumbnail" target="attachment"/>
      <property name="icon" value="/icons/pdf.png"/>
      <property name="form.description.iswiki" value="true"/>
@@ -36,6 +36,8 @@
     width="90%" height="1000px"
 ></iframe>
 -center
+:p
+{{gallery message=""}}
 -section
 ]]>
 </wiki>

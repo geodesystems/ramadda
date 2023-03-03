@@ -1,4 +1,4 @@
-<services command="${service.pdfbox}" >
+<services command="${service.pdfbox}" icon="/icons/pdf.png">
 <service id="media_pdfbox_extracttext" label="Extract text from PDF" >
 <description><![CDATA[
 Runs PDFBox  <a href="https://pdfbox.apache.org/commandline/#extractText" target="_help">Extract Text</a>
@@ -24,9 +24,9 @@ Runs PDFBox  <a href="https://pdfbox.apache.org/commandline/#pdfToImage" target=
 ]]></description>
           <arg value="ExtractImages"/>
           <arg value="-prefix"/>
-          <arg value="${file}"  file="${entry.file.base}.jpg"/>
+          <arg value="${file}"  file="${entry.file.base}"/>
           <arg value="${entry.file}" type="entry" entryType="type_document_pdf" primary="true" copy="true" label="Input PDF File"></arg>
-          <output type="file" pattern=".*\.jpg"/>
+          <output type="file" pattern=".*(\.jpg|\.png)"/>
     </service>
 
    <service id="media_pdfbox_pdftoimage" label="Make images from PDF" outputToStderr="true">
