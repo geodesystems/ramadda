@@ -356,6 +356,8 @@ public class ServiceOutputHandler extends OutputHandler {
 	if((theEntries==null || theEntries.size()==0) && baseEntry!=null) {
 	    theEntries = new ArrayList<Entry>();
 	    theEntries.add(baseEntry);
+	} else if(theEntries!=null && baseEntry!=null && !theEntries.contains(baseEntry)) {
+	    theEntries.add(baseEntry);
 	}
 
 	final List<Entry> entries = theEntries;
