@@ -2417,16 +2417,20 @@ public class Service extends RepositoryManager {
             errMsg = IOUtil.readContents(stderrFile);
         }
 	//	errMsg = "Mar 03, 2023 1:08:26 PM org.apache.pdfbox.pdmodel.font.PDType1Font <init>\nWARNING: Using fallback font LiberationSans for base font Symbol\nMar 03, 2023 1:46:41 PM org.apache.pdfbox.pdmodel.font.PDType0Font toUnicode\nWARNING: No Unicode mapping for CID+72 (72) in font SGGFTZ+HelveticaNeue-Light\nMar 03, 2023 1:46:41 PM org.apache.pdfbox.pdmodel.font.PDType0Font toUnicode\nWARNING: No Unicode mapping for CID+74 (74) in font SGGFTZ+HelveticaNeue-Light\nMar 03, 2023 1:46:41 PM org.apache.pdfbox.pdmodel.font.PDType0Font toUnicode\nWARNING: No Unicode mapping for CID+76 (76) in font SGGFTZ+HelveticaNeue-Light";
+	//	errMsg="Mar 03, 2023 2:01:55 PM org.apache.pdfbox.pdmodel.font.PDType0Font toUnicode";
         if (Utils.stringDefined(errMsg)) {
 	    int okCnt=0;
 	    List<String> lines = Utils.split(errMsg,"\n",true,true);
 	    for(String line:lines) {
 		boolean lineOk = false;
+		System.err.println("line:" + line);
 		if(ignore!=null) {
 		    for(String i: ignore) {
 			if(line.toLowerCase().matches(i) || line.matches(i)) {
 			    lineOk = true;
 			    break;
+			} else {
+			    System.err.println("\tno match: " + i);
 			}
 		    }
 		} else {
