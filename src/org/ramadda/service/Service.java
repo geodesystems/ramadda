@@ -1639,8 +1639,8 @@ public class Service extends RepositoryManager {
         sb.append(
             HtmlUtils.div(
                 HtmlUtils.leftRight(
-                    HtmlUtils.img(getIconUrl(getIcon())) + " " + label,
-                    rightSide), HtmlUtils.cssClass("service-form-header")));
+				    HtmlUtils.img(getIconUrl(getIcon())) + " " + label,
+				    rightSide), HtmlUtils.cssClass("service-form-header")));
 
 
         if (Utils.stringDefined(getDescription())) {
@@ -2391,12 +2391,14 @@ public class Service extends RepositoryManager {
                               "." + getId() + ".stderr"));
 
 
+	
+	//	System.err.println("commands:" + commands);
         //        System.out.println(getLinkXml(input));
         if (commandObject != null) {
             commandMethod.invoke(commandObject, new Object[] { request, this,
                     input, commands });
         } else {
-	    //	    System.err.println("commands:" + commands);
+
             JobManager.CommandResults results =
                 getRepository().getJobManager().executeCommand(commands,
                     null, input.getProcessDir(), -1,
@@ -2443,19 +2445,16 @@ public class Service extends RepositoryManager {
                 }
             }
 	}
-
         boolean       setResultsFromStdout = true;
-
         HashSet<File> seen                 = new HashSet<File>();
-
 
         for (File f : filesToDelete) {
 	    //            System.err.println("Service: deleting file:" + f);
             f.delete();
         }
 
-
-
+	if(debug)
+	    System.err.println("Service.evaluate");
 
         for (OutputDefinition output : getOutputs()) {
             String depends = output.getDepends();
@@ -2500,6 +2499,7 @@ public class Service extends RepositoryManager {
                                           input.getForDisplay(),
                                           output.getMap());
 
+
             if (files == null) {
                 files = input.getProcessDir().listFiles(new FileFilter() {
                     public boolean accept(File f) {
@@ -2522,6 +2522,8 @@ public class Service extends RepositoryManager {
 
 
             for (File file : files) {
+		if(debug)
+		    System.err.println("\tfile:" + file +" " + file.exists());
                 if (input.haveSeenFile(file)) {
                     continue;
                 }
@@ -2545,9 +2547,14 @@ public class Service extends RepositoryManager {
                 newEntry.setName(file.getName());
                 newEntry.setResource(new Resource(file, Resource.TYPE_FILE));
                 if (input.getPublish()) {
-                    getEntryManager().processEntryPublish(request, files[0],
+		    if(debug)
+			System.err.println("\tpublish:" + newEntry +" current:" + currentEntry);
+                    getEntryManager().processEntryPublish(request, file,
                             newEntry, currentEntry, "derived from");
+
                 } else {
+		    if(debug)
+			System.err.println("\no publish:" + newEntry);
                     newEntry
                         .setId(getEntryManager().getProcessFileTypeHandler()
                             .getSynthId(getEntryManager().getProcessEntry(),
