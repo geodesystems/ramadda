@@ -1,5 +1,13 @@
 <services command="${service.pdfbox}" icon="/icons/pdf.png">
 <service id="media_pdfbox_extracttext" label="Extract text from PDF" >
+  <ignoreerrors><![CDATA[
+  .*pdmodel\.font.*
+  .*Using fallback.*
+  .*toUnicode.*
+  .*warning.*
+  ]]>
+  </ignoreerrors>
+
 <description><![CDATA[
 Runs PDFBox  <a href="https://pdfbox.apache.org/commandline/#extractText" target="_help">Extract Text</a>
 ]]></description>
