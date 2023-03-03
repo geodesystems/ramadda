@@ -763,14 +763,35 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			entryChanged = true;
 		    }
 		}
-		if(isNew && request.get(ARG_EXTRACT_SUMMARY,false)) {
-		    String summary = callGpt("Summarize the following text:","",fileCorpus,120,true);
-		    if(stringDefined(summary)) {
-			summary = summary.trim().replaceAll("^:+","");
-			entryChanged = true;
-			entry.setDescription(summary+"\n"+entry.getDescription());
+		if(isNew) {
+		    if(request.get(ARG_EXTRACT_SUMMARY,false)) {
+			String summary = callGpt("Summarize the following text. Assume the reader has a college education","",fileCorpus,200,true);
+			if(stringDefined(summary)) {
+			    summary = summary.trim().replaceAll("^:+","");
+			    summary = "+toggleopen Summary\n+callout-info\n" + summary+"\n-callout-info\n-toggle\n";
+			    entryChanged = true;
+			    entry.setDescription(summary+"\n"+entry.getDescription());
+			}
+		    }
+
+
+
+		    if(request.get(ARG_EXTRACT_AUTHORS,false)) {
+			String authors = callGpt("Extract the author's names from the following text and separate the names with a comma:","",fileCorpus,200,true);		    
+			if(stringDefined(authors)) {
+			    entryChanged = true;
+			    for(String author:Utils.split(authors,",",true,true)) {
+				    getMetadataManager().addMetadata(request,
+								     entry,
+								     new Metadata(
+										  getRepository().getGUID(), entry.getId(),
+										  "metadata_author", false, author, "", "", "", ""),true);
+				}
+
+			}
 		    }
 		}
+
 		if(entryChanged) {
 		    List<Entry> tmp = new ArrayList<Entry>();
 		    tmp.add(entry);
@@ -878,18 +899,24 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	if(debugGpt) System.err.println("tokens:" + tokens);
 	String gptText =  gptCorpus.toString();
 	//	    System.err.println("gpt corpus:" + text);
-	String body = JsonUtil.map(Utils.makeList("prompt",
-						  JsonUtil.quote(gptText),
-						  "model",JsonUtil.quote("text-davinci-003"),
-						  "temperature", "0",
-						  "max_tokens" ,""+ tokens,
-						  "top_p", "1.0"));
-						  //"frequency_penalty", "0.8",
-						  //"presence_penalty", "0.0",
-						  //"stop","[\"\\n\"]"));
+	List<String> args = Utils.makeList(
+					   "temperature", "0",
+					   "max_tokens" ,""+ tokens,
+					   "top_p", "1.0");
 
-	//	    System.err.println(body);
-	String url = "https://api.openai.com/v1/completions";
+
+	boolean useTurbo = true;
+	if(!useTurbo) {
+	    Utils.add(args,"model",JsonUtil.quote("text-davinci-003"),"prompt",  JsonUtil.quote(gptText));
+	} else {
+	    Utils.add(args,"model",JsonUtil.quote("gpt-3.5-turbo"));
+	    Utils.add(args,"messages",JsonUtil.list(JsonUtil.map(
+						   "role",JsonUtil.quote("user"),
+						   "content",JsonUtil.quote(gptText))));
+	}
+
+	String body = JsonUtil.map(args);
+	String url = useTurbo?"https://api.openai.com/v1/chat/completions":"https://api.openai.com/v1/completions";
 	String result = IO.doHttpRequest("GET", new URL(url), body,
 					 "Content-Type","application/json",
 					 "Authorization","Bearer " +gptKey);
@@ -899,15 +926,17 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    JSONArray choices = json.getJSONArray("choices");
 	    if(choices.length()>0) {
 		JSONObject choice= choices.getJSONObject(0);
-		String r = choice.getString("text");
-		//		if(debug) System.err.println("result:" + r);
-		return r;
+		if(choice.has("text")) {
+		    return choice.getString("text");
+		} else if(choice.has("message")) {
+		    JSONObject message= choice.getJSONObject("message");
+		    return message.optString("content",null);
+		}
+		System.err.println("No results from GPT:" + result);
 	    }
 	}
 	return null;
     }
-	
-
 
     private List<String>  getKeywords(Request request, Entry entry, StringBuilder fileCorpus) throws Exception {
 	String path = entry.getResource().getPath();
@@ -924,9 +953,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 
 	List<String> keywords = new ArrayList<String>();
-	String result = callGpt("Extract keywords from the following text. Limit your response to 10 keywords:","Keywords:",fileCorpus,60,true);
+	String result = callGpt("Extract keywords from the following text. Limit your response to no more than 15 keywords:","Keywords:",fileCorpus,60,true);
 	if(result!=null) {
 	    for(String tok:Utils.split(result,",",true,true)) {
+		if(keywords.size()>15) break;
 		if(!keywords.contains(tok)) {
 		    keywords.add(tok);
 		}
