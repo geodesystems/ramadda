@@ -2139,6 +2139,7 @@ label, .ramadda-clickable, .ramadda-noselect, .entry-toggleblock-label {
 
 .type-list-header {
     font-weight:bold;
+    margin-right:4px;
 }
 
 .type-list {
