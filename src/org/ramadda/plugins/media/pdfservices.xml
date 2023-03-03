@@ -42,11 +42,10 @@ Runs PDFBox  <a href="https://pdfbox.apache.org/commandline/#pdfToImage" target=
           <output type="file" pattern=".*(\.jpg|\.png)"/>
     </service>
 
-   <service id="media_pdfbox_pdftoimage" label="Make images from PDF" outputToStderr="true">
-<process_description><![CDATA[<wiki>
+    <service id="media_pdfbox_pdftoimage" label="Make images from PDF" outputToStderr="true">
+      <process_description><![CDATA[<wiki>
 {{description}}
 {{gallery}}
-
 ----
 {{tree}}
 ]]></process_description>
@@ -59,15 +58,46 @@ Runs PDFBox  <a href="https://pdfbox.apache.org/commandline/#pdfToImage" target=
           <arg value="${file.base}"  file="${entry.file.base}.jpg" filePattern=".*${unique}${entry.file.base}[0-9]+.jpg"/>
           <arg value="${entry.file}" type="entry" entryType="type_document_pdf" primary="true" copy="true" label="Input PDF File"></arg>
           <output type="file" pattern=".*\.jpg"/>
+   </service>
+
+    <service id="media_pdfbox_pdfsplit" label="Split PDF" outputToStderr="true">
+      <description><![CDATA[Runs PDFBox  <a href="https://pdfbox.apache.org/commandline/#pdfSplit" target="_help">PDF Split</a>]]></description>
+      <arg value="PDFSplit"/>
+      <arg value="${entry.file}" type="entry" entryType="type_document_pdf" primary="true" copy="true" label="Input PDF File"></arg>
+      <arg type="int" prefix="-split" label="Split" help="Number of pages per splitted part of the PDF"/>
+      <output type="type_document_pdf" pattern=".*\.pdf"/>
     </service>
 
-   <service id="media_pdfbox_pdfsplit" label="Split PDF" outputToStderr="true">
+   <service id="media_pdfbox_pdfencrypt" label="Encrypt PDF" outputToStderr="true">
+     <description><![CDATA[Runs PDFBox  <a href="https://pdfbox.apache.org/commandline/#encrypt" target="_help">encrypt</a>]]></description>
+     <arg value="Encrypt"/>
+     <arg type="string" prefix="-U" label="Password" />
+     <arg value="${entry.file}" type="entry" entryType="type_document_pdf" primary="true" copy="true" label="Input PDF File"></arg>
+     <arg value="${file}" file="${entry.file.base}.pdf"></arg>
+     <output type="type_document_pdf" pattern=".*\.pdf"/>
+   </service>
+
+
+
+
+   <service id="media_pdfbox_texttopdf" label="Text to PDF" outputToStderr="true">
 <description><![CDATA[
-Runs PDFBox  <a href="https://pdfbox.apache.org/commandline/#pdfSplit" target="_help">PDF Split</a>
+Runs PDFBox  <a href="https://pdfbox.apache.org/commandline/#textToPDF" target="_help">Text to PDF</a>
 ]]></description>
-          <arg value="PDFSplit"/>
-          <arg value="${entry.file}" type="entry" entryType="type_document_pdf" primary="true" copy="true" label="Input PDF File"></arg>
-          <arg type="int" prefix="-split" label="Split" help="Number of pages per splitted part of the PDF"/>
+          <arg value="TextToPDF"/>
+          <arg value="${file}" file="${entry.file.base}.pdf"></arg>
+          <arg value="${entry.file}" type="entry" entryType="file" entryPattern=".*\.txt" primary="true" label="Input PDF File"></arg>
+          <output type="type_document_pdf" pattern=".*\.pdf"/>
+    </service>
+
+   <service id="media_pdfbox_merge" label="Merge PDF Files" outputToStderr="true">
+<description><![CDATA[
+Runs PDFBox  <a href="https://pdfbox.apache.org/commandline/#textToPDF" target="_help">PDFMerger</a>
+]]></description>
+          <arg value="PDFMerger"/>
+          <arg value="${entry.file}" multiple="true" type="entry" entryType="type_document_pdf" entryPattern=".*\.pdf" primary="true" label="Input PDF File"></arg>
+          <arg value="merged.pdf"></arg>
+
           <output type="type_document_pdf" pattern=".*\.pdf"/>
     </service>
 
@@ -91,7 +121,7 @@ Runs PDFBox  <a href="https://pdfbox.apache.org/commandline/#textToPDF" target="
 
           <output type="type_document_pdf" pattern=".*\.pdf"/>
     </service>
-
+    
 
    <service id="media_pdfbox_thumbnail" label="Make one image from PDF" outputToStderr="true">
 <process_description><![CDATA[<wiki>

@@ -4,6 +4,7 @@
   <outputhandler serviceId="media_pdfbox_extractimages"/>
   <outputhandler serviceId="media_pdfbox_pdftoimage"/>
   <outputhandler serviceId="media_pdfbox_pdfsplit"/>
+  <outputhandler serviceId="media_pdfbox_pdfencrypt"/>
   <outputhandler serviceId="media_pdfbox_texttopdf"/>
   <outputhandler serviceId="media_pdfbox_merge"/>
 </outputhandlers>

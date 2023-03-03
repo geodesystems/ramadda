@@ -3,24 +3,13 @@
 <outputhandler serviceId="media_qttools_info"/>
 <outputhandler serviceId="media_qttools_proofsheet"/>
 <outputhandler serviceId="media_qttools_thumbnail"/>
-
 <outputhandler class="org.ramadda.data.docs.ConvertibleOutputHandler"/>
 <outputhandler class="org.ramadda.data.docs.TabularOutputHandler"/>
-
 <outputhandler  serviceId="media_tabular_extractsheet"/>
-
 
 <!--
     gristle services
-
-
-
 <outputhandler  serviceId="gristle_slicer"/>
-
 <outputhandler  serviceId="gristle_determinator" />
 -->
-
-
-
-
 </outputhandlers>
