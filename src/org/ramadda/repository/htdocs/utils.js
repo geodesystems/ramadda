@@ -3272,6 +3272,49 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     getTitleBr:function() {
 	return "&#10;";
     },
+    initPageSearch:function(select,parentSelect,label) {
+	let id = HU.getUniqueId('search_');
+	document.write(HU.input('','',['id',id,'placeholder',label??'Search','size','10']));
+	jqid(id).keyup(function(){
+	    HU.doPageSearch($(this).val(),select,parentSelect);
+	});
+    },		       
+    doPageSearch(value,select,parentSelect) {
+	let s  = $(select);
+	s.each(function() {
+	    let textOk = true;
+	    if(Utils.stringDefined(value)) {
+		textOk = false;
+		let html = Utils.stripTags($(this).html()).toLowerCase();
+		if(html.indexOf(value)>=0) {
+		    textOk=true;
+		} 
+	    }
+	    if(!textOk) {
+		$(this).attr('isvisible','false');
+		$(this).fadeOut();
+	    } else {
+		$(this).attr('isvisible','true');
+		$(this).show();
+	    }
+	});
+	if(parentSelect) {
+	    $(parentSelect).each(function() {
+		let anyVisible = false;
+		$(this).find(select).each(function() {
+		    if($(this).attr('isvisible')==='true') {
+			anyVisible=true;
+		    }
+		});
+		if(!anyVisible) {
+		    $(this).fadeOut();
+		} else {
+		    $(this).show();
+		}
+	    });
+	}
+    },				  
+
 
     insertIntoTextarea:function(myField, value) {
 	if(typeof myField=='string') {
