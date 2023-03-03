@@ -5297,8 +5297,10 @@ public class TypeHandler extends RepositoryManager {
 	String extract = HU.labeledCheckbox(ARG_EXTRACT_KEYWORDS, "true", false,
 						   "Extract keywords");
 	if(getSearchManager().isSummaryExtractionEnabled()) {
-	    extract+=space + HU.labeledCheckbox(ARG_EXTRACT_SUMMARY, "true", false,
-						"Extract summary") + space +
+	    extract+=space + HU.labeledCheckbox(ARG_EXTRACT_AUTHORS, "true", false,
+						"Extract authors") + space +
+		HU.labeledCheckbox(ARG_EXTRACT_SUMMARY, "true", false,
+				   "Extract summary") + space +
 		"Note: this sends the file text to <a href=https://openai.com/api/>https://openai.com/api/</a> for processing";
 	}
 
