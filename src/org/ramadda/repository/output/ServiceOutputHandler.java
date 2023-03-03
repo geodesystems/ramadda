@@ -222,8 +222,7 @@ public class ServiceOutputHandler extends OutputHandler {
                     }
                 }
             }
-
-            return;
+	    //            return;
         }
 
         if (state.getEntry() != null) {
@@ -257,7 +256,6 @@ public class ServiceOutputHandler extends OutputHandler {
 
         List<Entry> entries = new ArrayList<Entry>();
         entries.add(entry);
-
         return handleRequest(request, entry, entries);
     }
 
@@ -351,10 +349,16 @@ public class ServiceOutputHandler extends OutputHandler {
                                   RequestUrl requestUrl,
                                   OutputType outputType,
                                   final Entry baseEntry,
-                                  final List<Entry> entries,
+                                  List<Entry> theEntries,
                                   final Service service, String extraForm)
             throws Exception {
 
+	if((theEntries==null || theEntries.size()==0) && baseEntry!=null) {
+	    theEntries = new ArrayList<Entry>();
+	    theEntries.add(baseEntry);
+	}
+
+	final List<Entry> entries = theEntries;
         String actionName = (outputType != null)
                             ? outputType.getLabel()
                             : "Run service";
@@ -730,7 +734,14 @@ public class ServiceOutputHandler extends OutputHandler {
                     request.get(ARG_ASYNCH, false), msg("Asynchronous")));
         }
 
-        service.addToForm(request, (entries != null)
+	//	System.err.println("base:" + baseEntry + " entries:" + entries);
+	if((entries==null || entries.size()==0) && baseEntry!=null) {
+	    entries = new ArrayList<Entry>();
+	    entries.add(baseEntry);
+	}
+
+
+        service.addToForm(request, (entries != null && entries.size()>0)
                                    ? new ServiceInput(null, entries, true)
                                    : new ServiceInput(), sb, null, null);
 
@@ -742,15 +753,19 @@ public class ServiceOutputHandler extends OutputHandler {
                                         makeButtonSubmitDialog(sb,
                                             "Processing request...")));
         StringBuffer etc = new StringBuffer();
-        etc.append(StringUtil.join("&nbsp; <p> ", extraSubmit));
-        etc.append(HtmlUtils.p());
-        etc.append(HtmlUtils.formTable());
         if (haveAnyOutputs) {
+	    etc.append(HtmlUtils.formTable());
             addPublishWidget(request, baseEntry, etc,
                              msg("Select a folder to publish to"), true,
                              false);
+	    etc.append(HtmlUtils.formTableClose());
         }
-        etc.append(HtmlUtils.formTableClose());
+
+
+
+        etc.append(StringUtil.join("&nbsp; <p> ", extraSubmit));
+        etc.append(HtmlUtils.p());
+
 
         addUrlShowingForm(etc, formId, null);
         buttons.append(HtmlUtils.makeShowHideBlock("Options...",
@@ -820,8 +835,11 @@ public class ServiceOutputHandler extends OutputHandler {
         if (desc == null) {
             desc = "";
         }
+	if(desc.indexOf("{{tree") <0) {
+	    desc = desc+"\n{{tree message=\"\"}}";
+	}
         desc = "<wiki>\n+section title={{name}}\n" + desc
-               + "\n{{tree message=\"\"}}\n-section\n";
+               + "\n-section\n";
         xml.append(
             XmlUtil.tag(
                 "entry",
