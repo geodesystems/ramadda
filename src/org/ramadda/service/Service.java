@@ -2436,9 +2436,9 @@ public class Service extends RepositoryManager {
 		}
 		if(lineOk) {
 		    okCnt++;
-		    //		    System.err.println("Ok:" + line);
+		    System.err.println("Ok:" + line);
 		} else {
-		    //		    System.err.println("Not ok:" + line);
+		    System.err.println("Not ok:" + line);
 		}
 	    }
 	    if(okCnt==lines.size()) errMsg = null;
