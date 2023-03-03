@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Mar  1 13:08:38 MST 2023";
+var build_date="RAMADDA build date: Fri Mar  3 06:02:07 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -41723,7 +41723,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    makeTop();
 
 	    let _this = this;
-	    let showStac=(data,url)=>{
+	    let showStac=(data,baseUrl)=>{
 		//is it the stac_catalogs.json
 		if(Array.isArray(data)) {
 		    data = {
@@ -41734,7 +41734,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		
 		console.dir(data);
 		let html = '';
-		let title = (data.title??url)+HU.space(1) + HU.href(url,HU.getIconImage('fas fa-link',[],['style','font-size:9pt;']),['target','_stac']);
+		let title = (data.title??baseUrl)+HU.space(1) + HU.href(baseUrl,HU.getIconImage('fas fa-link',[],['style','font-size:9pt;']),['target','_stac']);
 		html+=HU.center(HU.b(title));
 		if(data.description) {
 		    let desc = Utils.stripTags(data.description);
@@ -41751,6 +41751,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    data.links.forEach(link=>{
 			let url = link.href??link.url??link.link;
 			if(!Utils.stringDefined(url) ||link.rel=='self') return;
+			url = new URL(url,baseUrl).href;
 			let label = link.title;
 			if(!label)
 			    label  = url.replace(/.*\/([^\/]+$)/,"$1");
@@ -41785,7 +41786,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let images = '';
 		    let other = '';
 		    Object.keys(data.assets).forEach((key,idx)=>{
-			console.log(key)
 			//limit the number
 			if(idx>200) return;
 			let asset = data.assets[key];
@@ -41796,7 +41796,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			}
 
 			let label = asset.name??asset.title??key;
-			let link = HU.href(asset.href,HU.getIconImage('fas fa-link',[],['style','font-size:9pt;'])+' ' +label +' ('+ asset.type+')',['title',asset.href,'target','_stactarget','class','ramadda-clickable']);
+			let assetUrl = new URL(asset.href,baseUrl).href;
+			let link = HU.href(assetUrl,HU.getIconImage('fas fa-link',[],['style','font-size:9pt;'])+' ' +label +' ('+ asset.type+')',['title',assetUrl,'target','_stactarget','class','ramadda-clickable']);
 			let type= asset.type??asset.media_type;
 			let isImage = type&& type.indexOf('image')>=0;
 
@@ -41832,7 +41833,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.jq('stac_output').find('.imdv-stac-asset').button().click(function() {
 		    let bbox=data.bbox;
 		    if(!data.bbox) {
-			console.dir(data);
 			bbox = data?.extent?.spatial?.bbox;
 			if(bbox) {
 			    bbox=bbox[0];
@@ -41843,11 +41843,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			alert('No bbox found');
 			return
 		    }
+//		    console.log(bbox);
 		    let asset =  data.assets[$(this).attr('asset-id')];
-		    let url = asset.href;
+		    let url = new URL(asset.href,baseUrl).href;
 		    if(asset.type&& asset.type.indexOf('image/tiff')>=0) {
 			url =   Ramadda.getUrl('/tifftopng?url=' + encodeURIComponent(url));
 		    }
+		    console.log(url);
 		    let attrs = {
 			type:GLYPH_MAP,
 			entryType:'stacimage',
@@ -41875,7 +41877,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    showStac(data,url);
 		}).fail(err=>{
 		    //		    console.dir(err);
-		    JSON.parse(err.responseText)
+		    //JSON.parse(err.responseText)
+		    console.dir(err);
 		    this.jq('stac_output').html('Load failed. URL: ' + url);
 		});
 	    }
