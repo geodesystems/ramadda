@@ -3275,6 +3275,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     initPageSearch:function(select,parentSelect,label) {
 	let id = HU.getUniqueId('search_');
 	document.write(HU.input('','',['id',id,'placeholder',label??'Search','size','15']));
+	jqid(id).focus();
 	jqid(id).keyup(function(){
 	    HU.doPageSearch($(this).val(),select,parentSelect);
 	});
@@ -4013,13 +4014,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    });
         });
     },
-    buttons:function(args,clazz) {
+    buttons:function(args,clazz,style) {
 	let buttons = Utils.wrap(args,"<div style='display:inline-block;margin-right:6px;'>","</div>");
-	return HU.div(['class',clazz??'ramadda-button-bar'], buttons);
+	return HU.div(['class',clazz??'ramadda-button-bar','style',style??''], buttons);
     },
-    hbox: function(args) {
+    hbox: function(args,style) {
         let row = HtmlUtils.openTag("tr", ["valign", "top"]);
-        row += Utils.wrap(args, "<td align-left>","<td>");
+        row += Utils.wrap(args, '<td align=left>' +HU.open('div',['style', style??'']),'</div></td>');
         row += "</tr>";
         return this.tag("table", ["border", "0", "cellspacing", "0", "cellpadding", "0"],
                         row);
@@ -4312,7 +4313,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         if(opts.header) {
             $("#" + id +"_close").click(function() {
                 popup.hide();
-                if(opts.callback) opts.callback(popup);
+                if(opts.callback) {
+		    opts.callback(popup);
+		}
                 if(opts.remove) {
                     popup.remove();
                 }
@@ -5006,7 +5009,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
         let cbx =  this.tag("input", attrs);
         if(label) {
-            cbx += "&nbsp;" + HU.tag("label",["for", id],label);
+	    let title='';
+	    for(let i=0;i<attrs.length;i+=2) {
+		if(attrs[i]=='title') {
+		    title = attrs[i+1];
+		    break;
+		}
+	    }
+            cbx += "&nbsp;" + HU.tag("label",["for", id,'title',title],label);
         }
         return cbx;
     },
