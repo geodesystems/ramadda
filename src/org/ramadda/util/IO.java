@@ -7,6 +7,10 @@ package org.ramadda.util;
 
 
 import org.apache.commons.net.ftp.*;
+import org.apache.http.HttpEntity;
+import org.apache.http.entity.mime.*;
+import org.apache.http.entity.mime.content.*;
+import org.apache.http.entity.ContentType;
 
 import org.w3c.dom.*;
 
@@ -1054,13 +1058,25 @@ public class IO {
             return new Result(sb.toString());
         } catch (Throwable exc) {
             String error = readError(connection);
-	    //            System.err.println("Error reading URL:" + url + "\ncode:"  + connection.getResponseCode());
-	    //            System.err.println("Error:" + error);
-	    //            System.err.println("Fields:" + connection.getHeaderFields());
             return new Result(error, connection.getResponseCode(), true, exc);
-            //            System.err.println(connection.getContent());
         }
     }
+
+    public static class FileWrapper {
+	File file;
+	String name;
+	String mimeType;
+	public FileWrapper(File file, String name, String mimeType) {
+	    this.file = file;
+	    this.name = name;
+	    this.mimeType = mimeType;
+	}
+
+	public String toString() {
+	    return "file:" + file +" name:" + name +" mime:" + mimeType;
+	}
+    }
+
 
     /**
      * Class description
@@ -1118,6 +1134,10 @@ public class IO {
         Result(InputStream inputStream) {
             this.inputStream = inputStream;
         }
+
+	public String toString() {
+	    return result;
+	}
 
         /**
          *  Set the Result property.
@@ -1565,90 +1585,6 @@ public class IO {
     }
 
 
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
-    public static void main(String[] args) throws Exception {
-        for (String f : args) {
-            System.err.println("f:" + f);
-            getInputStream(f);
-            System.err.println("ok");
-        }
-        if (true) {
-            return;
-        }
-
-        final PipedOutputStream pos       = new PipedOutputStream();
-        final PipedInputStream  pis       = new PipedInputStream(pos);
-        final boolean           running[] = { true };
-
-
-        ucar.unidata.util.Misc.run(new Runnable() {
-            public void run() {
-                try {
-                    PrintWriter pw = new PrintWriter(pos);
-                    for (int i = 0; i < 10; i++) {
-                        pw.println("LINE:" + i);
-                        pw.flush();
-                        ucar.unidata.util.Misc.sleep(500);
-                    }
-                    System.err.println("done writing");
-                    pos.close();
-                } catch (Exception exc) {
-                    System.err.println("write err:" + exc);
-                    exc.printStackTrace();
-                }
-            }
-        });
-
-        ucar.unidata.util.Misc.run(new Runnable() {
-            public void run() {
-                try {
-                    InputStreamReader isr =
-                        new InputStreamReader(pis,
-                            java.nio.charset.StandardCharsets.UTF_8);
-                    BufferedReader reader = new BufferedReader(isr);
-                    String         line;
-                    while ((line = reader.readLine()) != null) {
-                        System.err.println("read:" + line);
-                    }
-                    running[0] = false;
-                    System.err.println("read: done");
-                } catch (Exception exc) {
-                    System.err.println("write err:" + exc);
-                    exc.printStackTrace();
-                }
-            }
-        });
-
-
-        while (running[0]) {
-            ucar.unidata.util.Misc.sleepSeconds(10);
-        }
-        Utils.exitTest(0);
-
-        if (true) {
-            String url =
-                "https://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Global_onedeg/Best?var=Temperature_surface&var=Visibility_surface&var=Water_equivalent_of_accumulated_snow_depth_surface&var=Wind_speed_gust_surface&latitude=%24%7Blatitude%7D&longitude=%24%7Blongitude%7D&time_start=2021-03-30&time_end=2021-04-09&vertCoord=&accept=csv";
-            doMakeInputStream(url, false);
-
-            return;
-        }
-
-
-
-        for (String f : args) {
-            System.err.println("F:" + f + " childless:"
-                               + getFilelessDirectories(new File(f)));
-        }
-    }
-
-
     /** _more_ */
     private static boolean debuggingStderr = false;
 
@@ -1792,8 +1728,7 @@ public class IO {
      * @version        $version$, Sat, Apr 12, '14
      * @author         Enter your name here...
      */
-    private static class FileSizeCompare implements Comparator<IOUtil
-        .FileWrapper> {
+    private static class FileSizeCompare implements Comparator<IOUtil.FileWrapper> {
 
         /** _more_ */
         private boolean ascending;
@@ -1916,6 +1851,148 @@ public class IO {
         return false;
 
     }
+
+    public static Result  doMultipartPost(URL url,String[] requestArgs,List postArgs) throws Exception {
+	HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+	connection.setDoOutput(true);
+	connection.setRequestMethod("POST");
+	if(requestArgs!=null) {
+	    for (int i = 0; i < requestArgs.length; i += 2) {
+		connection.setRequestProperty(requestArgs[i], requestArgs[i + 1]);
+	    }
+	}
+
+	MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+	for(int i=0;i<postArgs.size();i+=2) {
+	    String arg = (String) postArgs.get(i);
+	    Object value = postArgs.get(i+1);
+	    if(value instanceof File) {
+		builder.addPart(arg, new FileBody((File) value));
+	    } else   if(value instanceof FileWrapper) {
+		FileWrapper fw= (FileWrapper) value;
+		builder.addPart(arg, new FileBody(fw.file,
+						  ContentType.create(fw.mimeType),
+						  fw.name));
+	    } else {
+		builder.addTextBody(arg,value.toString());
+	    }
+	}
+	HttpEntity entity = builder.build();
+	connection.setRequestProperty("Content-Type", entity.getContentType().getValue());
+	OutputStream out = connection.getOutputStream();
+	try {
+	    entity.writeTo(out);
+	} finally {
+	    out.close();
+	}
+
+        try {
+	    InputStream is = connection.getInputStream();
+            return new Result(readInputStream(is));
+        } catch (Throwable exc) {
+            String error = readError(connection);
+            return new Result(error, connection.getResponseCode(), true, exc);
+        }
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void main(String[] args) throws Exception {
+	if(true) {
+	    args = new String[]{"Authorization"," Bearer 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"};
+	    List postArgs   =new ArrayList();
+	    //	    Utils.add(postArgs,"audio-file",new File("/Users/jeffmc/test.webm"));
+	    Utils.add(postArgs, "model","whisper-1","file", new File("/Users/jeffmc/test.webm"));
+	    //	    URL url = new URL("http://localhost:8080/repository/gpt/transcribe");
+	    URL url = new URL("http://localhost:8080/repository/gpt/transcribe");
+	    url = new URL("https://api.openai.com/v1/audio/transcriptions");
+	    Result result =  doMultipartPost(url, args,postArgs);
+	    System.err.println("R:" + result);
+	    return;
+	}
+
+
+        for (String f : args) {
+            System.err.println("f:" + f);
+            getInputStream(f);
+            System.err.println("ok");
+        }
+        if (true) {
+            return;
+        }
+
+        final PipedOutputStream pos       = new PipedOutputStream();
+        final PipedInputStream  pis       = new PipedInputStream(pos);
+        final boolean           running[] = { true };
+
+
+        ucar.unidata.util.Misc.run(new Runnable() {
+            public void run() {
+                try {
+                    PrintWriter pw = new PrintWriter(pos);
+                    for (int i = 0; i < 10; i++) {
+                        pw.println("LINE:" + i);
+                        pw.flush();
+                        ucar.unidata.util.Misc.sleep(500);
+                    }
+                    System.err.println("done writing");
+                    pos.close();
+                } catch (Exception exc) {
+                    System.err.println("write err:" + exc);
+                    exc.printStackTrace();
+                }
+            }
+        });
+
+        ucar.unidata.util.Misc.run(new Runnable() {
+            public void run() {
+                try {
+                    InputStreamReader isr =
+                        new InputStreamReader(pis,
+                            java.nio.charset.StandardCharsets.UTF_8);
+                    BufferedReader reader = new BufferedReader(isr);
+                    String         line;
+                    while ((line = reader.readLine()) != null) {
+                        System.err.println("read:" + line);
+                    }
+                    running[0] = false;
+                    System.err.println("read: done");
+                } catch (Exception exc) {
+                    System.err.println("write err:" + exc);
+                    exc.printStackTrace();
+                }
+            }
+        });
+
+
+        while (running[0]) {
+            ucar.unidata.util.Misc.sleepSeconds(10);
+        }
+        Utils.exitTest(0);
+
+        if (true) {
+            String url =
+                "https://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Global_onedeg/Best?var=Temperature_surface&var=Visibility_surface&var=Water_equivalent_of_accumulated_snow_depth_surface&var=Wind_speed_gust_surface&latitude=%24%7Blatitude%7D&longitude=%24%7Blongitude%7D&time_start=2021-03-30&time_end=2021-04-09&vertCoord=&accept=csv";
+            doMakeInputStream(url, false);
+
+            return;
+        }
+
+
+
+        for (String f : args) {
+            System.err.println("F:" + f + " childless:"
+                               + getFilelessDirectories(new File(f)));
+        }
+    }
+
 
 
 
