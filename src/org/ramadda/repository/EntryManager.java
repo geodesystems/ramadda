@@ -1266,15 +1266,35 @@ public class EntryManager extends RepositoryManager {
 
     public Result processEntryAddFile(Request request) throws Exception {
 	StringBuilder sb = new StringBuilder();
+	request.setReturnFilename("result.json");
+	String fileContents = request.getString("file",(String) null);
+	String fileName = request.getString("filename",(String) null);	
+	File tmpFile; 
+	try {
+	    tmpFile = getStorageManager().decodeFileContents(request,fileName, fileContents);
+	} catch(Exception exc) {
+	    exc.printStackTrace();
+	    return new Result("",
+			      new StringBuilder(JsonUtil.mapAndQuote(Utils.makeList("status","error","message",exc.getMessage()))), 
+			      JsonUtil.MIMETYPE);
+	}
+	
+	if(!tmpFile.exists()) {
+	    sb.append(JsonUtil.mapAndQuote(Utils.makeList("status","error","message","Unable to write file:" + fileName)));
+	    return new Result("", sb, JsonUtil.MIMETYPE);
+	}
+	return  processEntryAddFile(request, tmpFile,fileName,request.getString("description",""));
+    }
+
+    public Result processEntryAddFile(Request request, File tmpFile, String fileName, String description) throws Exception {
+	StringBuilder sb = new StringBuilder();
 	try {
 	    Entry group = findGroup(request);
-	    request.setReturnFilename("result.json");
 	    if ( !getAccessManager().canDoNew(request, group)) {
 		sb.append(JsonUtil.mapAndQuote(Utils.makeList("status","error","message","You do not have permission to add a file")));
 		return new Result("", sb, JsonUtil.MIMETYPE);
 	    }
-	    String fileContents = request.getString("file",(String) null);
-	    String fileName = request.getString("filename",(String) null);	
+
 	    String fileType = request.getString("filetype","");
 	    TypeHandler typeHandler = null;
 	    if(fileType.length()>0) {
@@ -1283,26 +1303,12 @@ public class EntryManager extends RepositoryManager {
 	    if(typeHandler==null) {
 		typeHandler = findDefaultTypeHandler(fileName);
 	    }
-	    File tmpFile; 
-	    try {
-		tmpFile = getStorageManager().decodeFileContents(request,fileName, fileContents);
-	    } catch(Exception exc) {
-		exc.printStackTrace();
-		return new Result("",
-				  new StringBuilder(JsonUtil.mapAndQuote(Utils.makeList("status","error","message",exc.getMessage()))), 
-				  JsonUtil.MIMETYPE);
-	    }
-	    if(!tmpFile.exists()) {
-		sb.append(JsonUtil.mapAndQuote(Utils.makeList("status","error","message","Unable to write file:" + fileName)));
-		return new Result("", sb, JsonUtil.MIMETYPE);
-	    }
-	    tmpFile = getStorageManager().copyToStorage(request, tmpFile,tmpFile.getName());
-	    
+	    tmpFile = getStorageManager().copyToStorage(request, tmpFile,fileName);
 	    String name = fileName.replaceAll("_", " ");
 	    name = IOUtil.stripExtension(name);
 	    name = StringUtil.camelCase(name);
 	    Entry newEntry = addFileEntry(request, tmpFile,
-					  group, null, name, request.getString("description",""), request.getUser(),
+					  group, null, name, description, request.getUser(),
 					  typeHandler, null);
 	    String url = getEntryResourceUrl(request, newEntry,ARG_INLINE_DFLT,ARG_FULL_DFLT,ARG_ADDPATH_TRUE);
 
@@ -1316,8 +1322,6 @@ public class EntryManager extends RepositoryManager {
 	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
     }
-
-
 
 
     /**
