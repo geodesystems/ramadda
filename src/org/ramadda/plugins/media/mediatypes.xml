@@ -73,12 +73,12 @@
         description="Audio File" 
         handler="org.ramadda.plugins.media.AudioTypeHandler" 
 	super="type_media"
-        pattern="(.*\.wav|.*\.m4a)">
+        pattern=".*(\.wav|\.m4a|\.webm)">
      <property name="icon" value="/media/audio-new.png"/>
      <wiki><![CDATA[
 +section title="{{name}}" #
-:br
 {{description wikify="true"}}
+:br
 {{media}}
 -section
 ]]>
