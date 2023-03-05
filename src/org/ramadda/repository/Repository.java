@@ -6090,6 +6090,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 	File file = new File(request.getUploadedFile("audio-file"));
 	String[]args = new String[]{"Authorization","Bearer " +gptKey};
+	System.err.println("key:" + args[0]+":");
 	String mime = request.getString("mimetype","audio/webm");
 
 	String fileName = "audio" + mime.replaceAll(".*/",".");
