@@ -7132,9 +7132,11 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
 	List<String> etcLinks = new ArrayList<String>();
 	Utils.add(etcLinks, findButton, previewButton,tidyButton);
-	if(getSearchManager().isGptEnabled()) {
+	if(getRepository().isGptEnabled()) {
 	    etcLinks.add(HU.href("#", "GPT",
 				  HU.attrs("id", textAreaId+"_rewrite")));
+	    etcLinks.add(HU.href("#", "Transcribe",
+				  HU.attrs("id", textAreaId+"_transcribe")));	    
 	}
 	Utils.add(etcLinks,colorButton, wcButton);
 	etc.append(Utils.join(etcLinks,"<br>"));
