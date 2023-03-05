@@ -17,6 +17,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 
+import org.ramadda.util.HttpFormEntry;
+
 import org.json.*;
 
 
@@ -148,6 +150,11 @@ import javax.net.ssl.*;
 @SuppressWarnings("unchecked")
 public class Repository extends RepositoryBase implements RequestHandler,
         PropertyProvider {
+
+
+    private static boolean  debugGpt = false;
+
+
 
     /** dummy field 2 */
     private static final org.ramadda.util.ObjectPool dummyField2ToForceCompile =
@@ -6032,6 +6039,167 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         return new Result("", sb);
     }
+
+
+    public boolean isGptEnabled() {
+	return Utils.stringDefined(getProperty("gpt.api.key"));
+    }
+
+
+    public Result processGpt(Request request)  throws Exception {
+	if(request.isAnonymous()) {
+	    String json = JsonUtil.map(Utils.makeList("error", JsonUtil.quote("You must be logged in to use the rewrite service")));
+	    return new Result("", new StringBuilder(json), "text/json");
+	}
+
+	String text =request.getString("text","");
+	String promptPrefix = request.getString("promptprefix",
+						"Rewrite the following text:");
+	String promptSuffix = request.getString("promptsuffix",
+						"");
+	//	text = callGpt("Rewrite the following text:","",new StringBuilder(text),1000,false);		    
+	text = callGpt(promptPrefix,promptSuffix,new StringBuilder(text),1000,false);		    
+	String json = JsonUtil.map(Utils.makeList("result", JsonUtil.quote(text)));
+	return new Result("", new StringBuilder(json), "text/json");
+	
+    }
+
+    private Result makeJsonErrorResult(String error) {
+	String json = JsonUtil.map(Utils.makeList("error", JsonUtil.quote(error)));
+	return new Result("", new StringBuilder(json), "text/json");
+    }
+
+    public Result processTranscribe(Request request)  throws Exception {
+	try {
+	    return processTranscribeInner(request);
+	} catch(Exception exc) {
+	    getLogManager().logError("Error calling transcribe",exc);
+	    return makeJsonErrorResult("An error has occurred:" + exc);
+	}
+    }
+
+    private Result processTranscribeInner(Request request)  throws Exception {	
+	if(request.isAnonymous()) {
+	    return makeJsonErrorResult("You must be logged in to use the rewrite service");
+	}
+	String gptKey = getRepository().getProperty("gpt.api.key");
+	if(gptKey==null) {
+	    if(debugGpt) System.err.println("\tno gptKey");
+	    return makeJsonErrorResult("GPT is not enabled");
+	}
+
+	File file = new File(request.getUploadedFile("audio-file"));
+	String[]args = new String[]{"Authorization","Bearer " +gptKey};
+	String mime = request.getString("mimetype","audio/webm");
+
+	String fileName = "audio" + mime.replaceAll(".*/",".");
+	//	fileName = "test.mp4";
+	//	file = new File("/Users/jeffmc/test.mp4");
+	//	mime = "audio/mp4";
+
+	List postArgs   =Utils.add(new ArrayList(),
+				   "model","whisper-1","file", new IO.FileWrapper(file,fileName,mime));
+	System.err.println(postArgs);
+	URL url =  new URL("https://api.openai.com/v1/audio/transcriptions");
+	IO.Result result =  IO.doMultipartPost(url, args,postArgs);
+	System.err.println("transcribe:" + result);
+	String results = result.getResult();
+	JSONObject json = new JSONObject(results);
+	if(json.has("text")) {
+	    String text = json.getString("text");
+	    if(request.get("addfile",false)) {
+		getEntryManager().processEntryAddFile(request, file,fileName,text);
+	    }
+
+	    StringBuilder sb = new StringBuilder(JsonUtil.map(Utils.makeList("results", JsonUtil.quote(text))));
+	    return new Result("", sb, "text/json");
+	}
+	if(json.has("error")) {
+	    JSONObject error = json.getJSONObject("error");
+	    return makeJsonErrorResult(error.getString("message"));
+	}
+	return makeJsonErrorResult("An error occurred:" + results);
+    }
+
+
+    public String callGpt(String prompt1,String prompt2,StringBuilder corpus,int tokens,boolean tokenize) throws Exception {
+	if(debugGpt) System.err.println("callGpt");
+	String text = corpus.toString();
+	String gptKey = getRepository().getProperty("gpt.api.key");
+	if(gptKey==null) {
+	    if(debugGpt) System.err.println("\tno gptKey");
+	    return null;
+	}
+
+	StringBuilder gptCorpus = new StringBuilder(prompt1);
+	gptCorpus.append("\n\n");
+	if(!tokenize) {
+	    gptCorpus.append(text);
+	} else {
+	    if(debugGpt) System.err.println("\ttokenizing");
+	    if(debugGpt) System.err.println("\ttext:" + text);
+	    text = Utils.removeNonAscii(text," ").replaceAll("[,-\\.\n]+"," ").replaceAll("  +"," ");
+	    if(text.trim().length()==0) {
+		if(debugGpt) System.err.println("\tno text");
+		return null;
+	    }
+	    List<String> toks = Utils.split(text," ",true,true);
+	    //limit is  4000 tokens or ~3500 words
+	    int extraCnt = 0;
+	    for(int i=0;i<toks.size() && i+extraCnt<3500;i++) {
+		String tok = toks.get(i);
+		if(tok.length()>6) {
+		    extraCnt+=(int)(tok.length()/6);
+		}
+		gptCorpus.append(tok);
+		gptCorpus.append(" ");
+	    }
+	}
+	if(debugGpt) System.err.println("\tdone tokenizing");
+	gptCorpus.append("\n\n");
+	gptCorpus.append(prompt2);
+	if(debugGpt) System.err.println("tokens:" + tokens);
+	String gptText =  gptCorpus.toString();
+	//	    System.err.println("gpt corpus:" + text);
+	List<String> args = Utils.makeList(
+					   "temperature", "0",
+					   "max_tokens" ,""+ tokens,
+					   "top_p", "1.0");
+
+
+	boolean useTurbo = true;
+	if(!useTurbo) {
+	    Utils.add(args,"model",JsonUtil.quote("text-davinci-003"),"prompt",  JsonUtil.quote(gptText));
+	} else {
+	    Utils.add(args,"model",JsonUtil.quote("gpt-3.5-turbo"));
+	    Utils.add(args,"messages",JsonUtil.list(JsonUtil.map(
+						   "role",JsonUtil.quote("user"),
+						   "content",JsonUtil.quote(gptText))));
+	}
+
+	String body = JsonUtil.map(args);
+	String url = useTurbo?"https://api.openai.com/v1/chat/completions":"https://api.openai.com/v1/completions";
+	String result = IO.doHttpRequest("GET", new URL(url), body,
+					 "Content-Type","application/json",
+					 "Authorization","Bearer " +gptKey);
+	JSONObject json = new JSONObject(result);
+	if(debugGpt)	    System.err.println("gpt json:" + json);		
+	if(json.has("choices")) {
+	    JSONArray choices = json.getJSONArray("choices");
+	    if(choices.length()>0) {
+		JSONObject choice= choices.getJSONObject(0);
+		if(choice.has("text")) {
+		    return choice.getString("text");
+		} else if(choice.has("message")) {
+		    JSONObject message= choice.getJSONObject("message");
+		    return message.optString("content",null);
+		}
+		System.err.println("No results from GPT:" + result);
+	    }
+	}
+	return null;
+    }
+
 
 
     public Result processTiffToPng(Request request) throws Exception {
