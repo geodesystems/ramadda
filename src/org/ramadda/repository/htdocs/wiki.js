@@ -373,7 +373,7 @@ WikiEditor.prototype = {
 	    let what=this.lastWhat=menu.val();
 	    let text="";
 	    if(what=="Image") {
-		text = "{{image entry=" + entryId+" caption=\"" + name+"\" bordercolor=\"#ccc\" align=center width=75% }} ";
+		text = "{{image entry=" + entryId+" #caption=\"" + name+"\" bordercolor=\"#ccc\" align=center width=75% }} ";
 	    } else  if(what=="Map") {
 		text = "{{map entry=" + entryId+" details=true}}";
 	    } else  if(what=="Editable map") {
