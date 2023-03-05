@@ -9,6 +9,7 @@ function RamaddaMediaTranscript(attrs) {
     this.init();
 }
 
+
 RamaddaMediaTranscript.prototype = {
     init:function() {
 	let func=null;
@@ -41,7 +42,6 @@ RamaddaMediaTranscript.prototype = {
 	    this.lastPlayTime = 0;
 	    this.checkPlayTime();
 	},2000);
-
 
     },	
     checkPlayTime:function() {
@@ -268,7 +268,7 @@ RamaddaMediaTranscript.prototype = {
 	//getTime is async
 	this.player.getTime(t=>{
 	    this.jq('_timespan').html(this.formatTime(t));
-	});
+	},true);
 
 
 	let _this = this;
@@ -344,7 +344,17 @@ RamaddaMediaTranscript.prototype = {
 		}}
 	}
     },
-    initSoundcloud:function() {
+    initSoundcloud:function(cnt) {
+	if(!Utils.isDefined(cnt)) cnt=0;
+	if(typeof SC == "undefined") {
+	    if(cnt>10) {
+		console.error("Error: Soundcloud api not loaded");
+		return;
+	    }
+	    setTimeout(()=>{this.init(cnt+1);},1000);
+	    return;
+	};
+
 	let iframe = document.querySelector('#' + this.id +' iframe');    
 	let player = SC.Widget(iframe);
 	return {
@@ -367,7 +377,7 @@ RamaddaMediaTranscript.prototype = {
     },
 
     initMedia:function() {
-	let player = document.querySelector('#' + this.attrs.mediaId);
+	let player = this.myPlayer = document.querySelector('#' + this.attrs.mediaId);
 	let gotoTime= (seconds)=>{
 	    if(player.fastSeek)
 		player.fastSeek(seconds);
@@ -378,9 +388,11 @@ RamaddaMediaTranscript.prototype = {
 	    } catch {
 	    }
 	};
-	
+//	console.dir(player);
 	return {gotoTime:gotoTime,
-		getTime:(cb)=> {cb(player.currentTime);},
+		getTime:(cb,debug)=> {
+		    cb(player.currentTime);
+		},
 		pause:()=>{player.pause()}
 };
     },
@@ -411,7 +423,7 @@ RamaddaMediaTranscript.prototype = {
 	    pause:()=>{
 		player.pauseVideo();
 	    },
-	    getTime: (cb)=>{cb(player.getCurrentTime?player.getCurrentTime():null);},
+ 	    getTime: (cb)=>{cb(player.getCurrentTime?player.getCurrentTime():null);},
 	    gotoTime:(seconds)=>{
 		player.seekTo(seconds,true)
 	    }
