@@ -94,7 +94,6 @@
   </group>
 
   <group handler="searchmanager">
-    <api request="/gpt/rewrite"            method="processRewrite" name="Rewrite"/>
       <api request="/search/form"            method="processSearchForm"     name="Search" icon="/icons/magnifier.png"/>
       <api request="/search/do"              method="processEntrySearch"/>
       <api request="/search/browse"          method="processEntryBrowseSearchForm"   name="Browse"/>
@@ -123,6 +122,9 @@
       <api request="/dummy"                  method="processDummy"/>
       <api request="/install"                method="processDummyInstall" needs_ssl="true"/>
       <api request="/tifftopng"                method="processTiffToPng"/>
+      <api request="/gpt/rewrite"            method="processGpt" name="Rewrite"/>
+      <api request="/gpt/transcribe"            method="processTranscribe" name="Rewrite"/>      
+    
  
       <api request="/proxy/*"                method="processProxy"/>
       <api request="/blank"                  method="processBlank"/>
