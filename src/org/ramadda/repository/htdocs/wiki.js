@@ -275,10 +275,6 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
 
     });
 
-
-
-
-
     this.getBlock().find("#" + this.id).append(HU.div([STYLE,HU.css("display","none"), CLASS,"wiki-editor-message",ID,this.domId(this.ID_WIKI_MESSAGE)]));
     this.wikiInitDisplaysButton();
 
@@ -303,6 +299,10 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
 	HtmlUtils.hidePopupObject();
 	this.doGpt();
     });
+    this.jq("transcribe").click(()=>{
+	HtmlUtils.hidePopupObject();
+	this.doTranscribe();
+    });    
     this.jq("tidy").click(()=>{
 	HtmlUtils.hidePopupObject();
 	this.doTidy();
@@ -670,6 +670,178 @@ WikiEditor.prototype = {
 	this.setValue(text);
     },
 
+    transcribeStart:function() {
+	if(!this.audioChunks) 	this.audioChunks = [];
+	this.transcribePlaying = true;
+	this.mediaRecorder.start();
+	this.transcribeStartTime = new Date();
+	this.jq('transcribe_play').html(HU.getIconImage('fa-solid fa-stop fa-gray'));
+	let updateTime = ()=>{
+	    let now = new Date();
+	    let diff = now.getTime()-this.transcribeStartTime.getTime();
+	    
+	    let seconds = parseInt((this.transcribeElapsedTime+diff)/1000);
+	    this.jq('transcribe_label').html(seconds +' seconds');
+	    this.transcribeMonitor = setTimeout(updateTime,500);
+	};
+	this.transcribeMonitor = setTimeout(updateTime,500);
+    },
+    transcribeStop:function() {
+	this.transcribePlaying = false;
+	if(this.transcribeStartTime) {
+	    let now = new Date();
+	    let diff = now.getTime()-this.transcribeStartTime.getTime();
+	    this.transcribeElapsedTime  += diff;
+	}
+	try {
+	    this.mediaRecorder.stop();
+	} catch(err){}
+	if(this.transcribeMonitor) clearTimeout(this.transcribeMonitor);
+	this.jq('transcribe_play').html(HU.getIconImage('fa-solid fa-microphone fa-gray'));
+    },
+    transcribeClear:function() {
+	this.audioChunks = [];
+	if(this.transcribeMonitor) clearTimeout(this.transcribeMonitor);
+	this.transcribeElapsedTime = 0;
+	try {
+	    this.mediaRecorder.stop();
+	} catch(err){}
+    },
+
+    transcribeDoIt:function() {
+	this.callDoIt = false;
+	if(!this.audioChunks || this.audioChunks.length==0) {
+	    alert('No audio has been captured');
+	    return
+	}
+	let file = new Blob(this.audioChunks, {
+	    'type': this.transcribeMime
+	});
+	let formData = new FormData();
+	let url = RamaddaUtils.getUrl("/gpt/transcribe");
+	let data = new FormData();
+	this.jq('transcribe_loading').show();
+	data.append('mimetype', this.transcribeMime);
+	data.append('audio-file', file);
+	data.append('entryid',this.entryId);
+	if(this.jq('transcribe_addfile').is(':checked')) {
+	    data.append('addfile','true');	    
+	}
+	$.ajax({
+	    url: url,
+	    data: data,
+	    cache: false,
+	    contentType: false,
+	    processData: false,
+	    method: 'POST',
+	    type: 'POST',
+	    success: (data)=>{
+		this.jq('transcribe_loading').hide();
+		this.transcribeClear();
+		this.jq('transcribe_label').html('0 seconds');
+		let results = data.results??data.error;
+		if(!Utils.stringDefined(results)) results = "No results"
+		this.jq('transcribe_text').val(results);
+	    },
+	    error: (data) =>{
+		this.jq('transcribe_loading').hide();
+		alert('transcription failed');
+		console.log(data);
+	    }
+	});
+    },
+    doTranscribe:function() {
+	if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+	    alert("media recording not supported");
+	    return;
+	}
+	navigator.mediaDevices.getUserMedia({audio: true,}).then((stream) => {
+	    this.transcribeMime = ['audio/mp3','audio/mp4','audio/wav', 'audio/webm','audio/mpeg']
+		  .filter(MediaRecorder.isTypeSupported)[0];
+	    if(!this.transcribeMime) {
+		alert("No audio formats available");
+		return;
+	    }
+	    this.mediaRecorder = new MediaRecorder(stream, {mimeType: this.transcribeMime});
+	    this.mediaRecorder.addEventListener("dataavailable", event => {
+//		console.log("data event");
+		this.audioChunks.push(event.data);
+	    });
+	    this.mediaRecorder.addEventListener("stop", () => {
+//		console.log("stop event");
+		if(this.callDoIt) this.transcribeDoIt();
+	    });
+	    let html = '';
+	    let controls =HU.hbox([
+		HU.span(['title','Start recording','class','ramadda-clickable','id',this.domId('transcribe_play')],HU.getIconImage('fa-solid fa-microphone fa-gray')),
+		HU.span(['title','Transcribe recording','class','ramadda-clickable','id',this.domId('transcribe_pen')],HU.getIconImage('fa-solid fa-pen fa-gray')),
+		HU.b(' Time: ')+
+		    HU.div(['style',HU.css('display','inline-block','text-align','right','width','150px','xborder','var(--basic-border)'),'id',this.domId('transcribe_label')],'0 seconds'),
+		HU.span(['title','Delete recording','class','ramadda-clickable','id',this.domId('transcribe_delete')],HU.getIconImage('fa-solid fa-delete-left fa-gray')),
+	    ],HU.css('margin-right','5px'));
+
+	    html+=HU.leftRightTable(controls,
+				    HU.checkbox(this.domId('transcribe_addfile'),
+						['id',this.domId('transcribe_addfile'),
+						 'title','Add audio file as entry'],
+						false,'Add file'));
+	    html+=HU.div(['style','position:relative;'],
+			 HU.textarea('','',['placeholder','','id',this.domId('transcribe_text'), 'rows',6,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;'])+
+			 HU.div(['style','display:none;position:absolute;top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);','id',this.domId('transcribe_loading')],
+				HU.image(ramaddaCdn + '/icons/mapprogress.gif',['style','width:100px;'])));
+
+
+	    html+=HU.buttons([HU.span(['class','ramadda-dialog-button','append','true'],"Append"),
+			      HU.span(['class','ramadda-dialog-button',ID,this.domId("cancel")],"Cancel")]);
+	    html = HU.div(['class','ramadda-dialog'],html);
+	    let closeCallback =()=>{
+		this.transcribeClear();
+	    };
+	    let dialog = this.transcribeDialog = HU.makeDialog({content:html,anchor:this.getScroller(),
+								my: "left bottom",     
+								at: "left+200" +" top-50",
+								title:"Transcribe",
+								callback:closeCallback,
+								header:true,sticky:true,draggable:true,modal:false});	
+	    this.transcribeElapsedTime = 0;
+	    this.jq('transcribe_pen').click(()=>{
+		if(this.transcribePlaying) {
+		    this.callDoIt = true;
+		    this.transcribeStop();
+		} else {
+		    this.transcribeDoIt();
+		}
+	    });
+	    this.jq('transcribe_play').click(()=>{
+		if(this.transcribePlaying) {
+		    this.transcribeStop();
+		} else {
+		    this.transcribeStart();
+
+		}
+	    });
+	    this.jq('transcribe_delete').click(()=>{
+		this.jq('transcribe_text').val('');
+		this.transcribeStop();
+		this.transcribeClear();
+		this.jq('transcribe_label').html('0 seconds');
+	    });
+
+
+	    let _this = this;
+	    dialog.find('.ramadda-dialog-button').button().click(function() {
+		let val = _this.jq('transcribe_text').val()??'';
+		if ($(this).attr('append')) {
+		    _this.getEditor().session.insert(_this.getEditor().getCursorPosition(), val.trim());
+		} else {
+		    dialog.remove();
+		    closeCallback();
+		}
+	    });
+	}).catch((err) => {
+	    alert(`Error initializing transcription: ${err}`);
+	});
+    },
     doGpt:function() {
 	if(!this.addedGptListener) {
 	    this.editor.getSession().selection.on('changeSelection', ()=> {
@@ -702,8 +874,8 @@ WikiEditor.prototype = {
 
 
 
-	html += HU.buttons([HU.span(['class','ramadda-dialog-button','replace','true',ID,this.domId("ok")],"Replace"),
-			HU.span(['class','ramadda-dialog-button','append','true',ID,this.domId("ok")],"Append"),
+	html += HU.buttons([HU.span(['class','ramadda-dialog-button','replace','true'],"Replace"),
+			HU.span(['class','ramadda-dialog-button','append','true'],"Append"),
 			HU.span(['class','ramadda-dialog-button',ID,this.domId("cancel")],"Cancel")]);
 	html = HU.div(['class','ramadda-dialog'],html);
 	let dialog = this.gptDialog = HU.makeDialog({content:html,anchor:this.getScroller(),
@@ -711,6 +883,20 @@ WikiEditor.prototype = {
 				    at: "left+200" +" top-50",
 				    title:"GPT",
 				    header:true,sticky:true,draggable:true,modal:false});	
+
+	dialog.find('.ramadda-dialog-button').button().click(function() {
+	    _this.gptReplacing = true;	    
+	    let val = _this.jq('rewrite-results').val();
+	    if($(this).attr('replace')) {
+		_this.getEditor().session.replace(_this.getEditor().selection.getRange(), val);
+	    } else if ($(this).attr('append')) {
+		_this.getEditor().session.insert(_this.getEditor().getCursorPosition(), val.trim());
+	    } else {
+		dialog.remove();
+	    }
+	    _this.gptReplacing = false;	    
+	});
+
 
 	let call = () =>{
 	    gptText = this.jq(this.ID_GPT_INPUT).val()??'';
@@ -940,7 +1126,7 @@ WikiEditor.prototype = {
 	if(!tagInfo) {
 	    return;
 	}
-//	console.dir(tagInfo);
+
 	if(!tagInfo.chunk) return
 
 	if(!result) {
