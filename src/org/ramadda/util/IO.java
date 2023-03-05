@@ -1906,7 +1906,7 @@ public class IO {
      */
     public static void main(String[] args) throws Exception {
 	if(true) {
-	    args = new String[]{"Authorization"," Bearer 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"};
+	    //	    args = new String[]{"Authorization"," Bearer openai key"};
 	    List postArgs   =new ArrayList();
 	    //	    Utils.add(postArgs,"audio-file",new File("/Users/jeffmc/test.webm"));
 	    Utils.add(postArgs, "model","whisper-1","file", new File("/Users/jeffmc/test.webm"));
