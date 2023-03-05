@@ -769,6 +769,15 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			}
 		    }
 
+		    if(request.get(ARG_EXTRACT_TITLE,false)) {
+			String title = getRepository().callGpt("Extract the title from the following document:","",fileCorpus,200,true);
+			if(stringDefined(title)) {
+			    title = title.trim();
+			    entry.setName(title);
+			    entryChanged = true;
+			}
+		    }
+
 
 
 		    if(request.get(ARG_EXTRACT_AUTHORS,false)) {

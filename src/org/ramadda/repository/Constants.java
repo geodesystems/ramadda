@@ -1032,7 +1032,8 @@ public interface Constants {
     /**  */
     public static final String ARG_EXTRACT_KEYWORDS = "extract_keywords";
     public static final String ARG_EXTRACT_SUMMARY = "extract_summary";    
-    public static final String ARG_EXTRACT_AUTHORS = "extract_authors";	    
+    public static final String ARG_EXTRACT_AUTHORS = "extract_authors";
+    public static final String ARG_EXTRACT_TITLE = "extract_title";	        
 
     /** _more_ */
     public static final String ARG_FROMHARVESTER = "fromharvester";
