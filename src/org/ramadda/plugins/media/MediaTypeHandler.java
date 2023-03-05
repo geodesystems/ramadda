@@ -448,13 +448,14 @@ public class MediaTypeHandler extends GenericTypeHandler {
         if (Utils.stringDefined(embed)) {
             player = embed;
         } else if (Utils.stringDefined(mediaUrl)) {
+	    String _mediaUrl = mediaUrl.toLowerCase();
             String width   = getWidth(request, entry, props);
             String height  = getHeight(request, entry, props);
             String mediaId = HtmlUtils.getUniqueId("media_");
             Utils.add(attrs, "mediaId", JU.quote(mediaId));
-            if (mediaUrl.toLowerCase().endsWith(".mp3")
-                    || _path.endsWith(".mp3") || _path.endsWith(".m4a")
-                    || _path.endsWith("ogg") || _path.endsWith("wav")) {
+            if (_mediaUrl.endsWith(".mp3") || _path.endsWith(".mp3") ||
+		_path.endsWith(".m4a") || _mediaUrl.endsWith(".webm") ||
+		_path.endsWith(".webm")	 || _path.endsWith("ogg") || _path.endsWith("wav")) {
                 player = HU.tag("audio", HU.attrs(new String[] {
                     "controls", "", "id", mediaId, "style",
                     HU.css("height", HU.makeDim(AUDIO_HEIGHT, "px"), "width",
@@ -463,7 +464,7 @@ public class MediaTypeHandler extends GenericTypeHandler {
                         "type",
                         "audio/mpeg" }), "Your browser does not support the audio tag."));
                 Utils.add(attrs, "media", JU.quote("media"));
-            } else if (mediaUrl.toLowerCase().endsWith(".m4v")
+            } else if (_mediaUrl.endsWith(".m4v")
                        || _path.endsWith(".m4v")) {
                 player = HU.tag("video", HU.attrs(new String[] {
                     "id", mediaId, "controls", "", "preload", "metadata",
@@ -471,7 +472,7 @@ public class MediaTypeHandler extends GenericTypeHandler {
                 }), HU.tag("source", HU.attrs(new String[] { "src", mediaUrl,
                         "type", "video/mp4" })));
                 Utils.add(attrs, "media", JU.quote("media"));
-            } else if (mediaUrl.toLowerCase().endsWith(".mov")
+            } else if (_mediaUrl.endsWith(".mov")
                        || _path.endsWith(".mov")) {
                 player = HtmlUtils.tag("video", HtmlUtils.attrs(new String[] {
                     "id", mediaId, HtmlUtils.ATTR_SRC, mediaUrl,
