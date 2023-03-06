@@ -1142,8 +1142,8 @@ proc   schedule {day from to args} {
 proc gen::getToc {path isTop} {
     if {![gen::getIncludeInToc $path]} {return [list "" "" ""]}
     set aname "<a name=\"$path\"></a>"
-    set toc "$aname <b>[gen::getLevelLabel $path]</b> <a href=\"$path\">[gen::getTitle $path]</a><br>\n" 
-    set fulltoc "$aname  <b>[gen::getLevelLabel $path]</b> <a href=\"$path\">[gen::getTitle $path]</a>\n<br>[gen::getOverview $path]<br>\n"
+    set toc "$aname <span class=toc-item><b>[gen::getLevelLabel $path]</b> <a href=\"$path\">[gen::getTitle $path]</a><br></span>\n" 
+    set fulltoc "<span class=toc-item>$aname  <b>[gen::getLevelLabel $path]</b> <a href=\"$path\">[gen::getTitle $path]</a>\n<br>[gen::getOverview $path]<br></span>\n"
     set frametoc "<tr><td class=\"framenav\"  nowrap>[gen::getNbsp $path]<a href=\"$path\" target=\"right\" style=\"font-size:9pt;\">[gen::getTitle $path]</a></td></tr>\n"
     set didone 0
     foreach child [gen::getChildren $path] {
