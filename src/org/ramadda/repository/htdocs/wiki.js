@@ -666,8 +666,31 @@ WikiEditor.prototype = {
     doTidy:function() {
 	if(!confirm('This will remove blank links and trim each line. Continue?')) return;
 	let text = this.getValue();
-	text = Utils.join(Utils.split(text,'\n',true,true),'\n');
-	this.setValue(text);
+	let tmp = '';
+	let append=line=>{
+	    tmp+=line.trim()+'\n';
+	};
+	let lineLength=80;
+	Utils.split(text,'\n',true,true).forEach(line=>{
+	    if(line.length<lineLength) {
+		append(line);
+		return;
+	    }
+	    while(line.length>lineLength) {
+		let prefix  = line.substring(0,lineLength);
+		let suffix = line.substring(lineLength);		
+		let idx = suffix.indexOf(' ');
+		if(idx<0) {
+		    append(line);
+		    line='';
+		    break;
+		}
+		append(prefix + suffix.substring(0,idx));
+		line = suffix.substring(idx);
+	    }
+	    if(line!='')  append(line);
+	});
+	this.setValue(tmp);
     },
 
     transcribeStart:function() {
