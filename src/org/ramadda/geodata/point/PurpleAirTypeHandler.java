@@ -448,6 +448,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 	    try {
 		error = new JSONObject(error).getString("description");
 	    } catch(Exception ignore) {}
+	    error = Utils.stripTags(error);
 	    getLogManager().logError("PurpleAir: Error reading PurpleAir for site:" + id+" entry:" + entry.getName() +" id:" + entry.getId() +" error:" +error);
 	    throw new RuntimeException("Error accessing PurpleAir API for site:" + id+" error:" + error);
 	}
@@ -580,6 +581,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 		    } catch(Exception ignore) {
 			System.err.println(ignore);
 		    }
+		    message = Utils.stripTags(message);
 		    messageSB.append(getPageHandler().showDialogError("An error has occurred: " + message));
 		} else {
 		    InputStream bis = result.getInputStream();
