@@ -2926,6 +2926,23 @@ public class WikiUtil {
                 }
 
 
+                if (tline.startsWith(":pagesearch")) {
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
+                    Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
+								    ? toks.get(1)
+								    : "");
+		    String sel1 = Utils.getProperty(props,"selector","div");
+		    String sel2 = Utils.getProperty(props,"parentSelector",null);
+		    String label = Utils.getProperty(props,"label",null);		    
+		    buff.append("<center>");
+		    HU.script(buff,HU.call("HtmlUtils.initPageSearch",
+					 HU.squote(sel1), 
+					 sel2==null?"null":HU.squote(sel2),
+					 label==null?"null":HU.squote(label)));
+		    buff.append("</center>");
+		    continue;
+		}
+
                 if (tline.startsWith(":nav")) {
                     List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     String       what = toks.get(0).trim();
