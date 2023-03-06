@@ -2436,30 +2436,24 @@ var Utils =  {
             let snippet = $(this);
 	    let snippetPopup;
 	    let timeOut;
-            snippet.parent().hover(function() {
-		timeOut = setTimeout(()=>{
-                    var parent = $(this);
-                    var offset = parent.height();
-                    //Check for max-height on element
-                    if (offset > parent.parent().height()) {
-			offset = parent.parent().height();
-                    }
-                    let popup = HtmlUtils.getTooltip();
-		    snippetPopup = $(HU.div(['style','display:none;','class','ramadda-snippet-popup'])).appendTo("body");
-                    snippetPopup.html(HtmlUtils.div(["class", ""], snippet.html()));
-                    snippetPopup.position({
-			of: parent,
-			my: "left top",
-			at: "left top+" + (offset + 1),
-			collision: "fit fit"
-                    });
-                    snippetPopup.fadeIn(250);
-		},750)
-	    }, function() {
-		clearTimeout(timeOut);
-		if(snippetPopup)
-		    snippetPopup.hide();
-            });
+	    let html = snippet.html();
+	    let clazz = 'ramadda-snippet-popup';
+	    if(html.length>100) {
+		clazz += ' ramadda-snippet-popup-large';
+	    }
+            snippet.parent().attr('title','');
+	    snippet.parent().tooltip({
+		content:()=>{return html;},
+		position: { my: "left+15 top", at: "left bottom-50" },
+		classes: {
+		    "ui-tooltip": clazz
+		},
+		show: { 
+                    effect: "slideDown", 
+                    delay: 600,
+		    duration:600
+		},  
+	    });
         });
 
         let pageTitle = $(parent+".ramadda-page-title");
