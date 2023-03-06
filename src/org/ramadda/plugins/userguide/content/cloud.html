@@ -22,7 +22,7 @@ has not been fully tested.
 
 <li> Choose an Instance Type<br>
 The instance type depends on your expected load. For example 
-<a href="https://geodesystems.com">https://geodesystems.com</a> runs on a t2.medium but a 
+<a href="https://ramadda.org">https://ramadda.org</a> runs on a t2.medium but a 
 t2.micro or t2.small works just fine.
 
 <li> Configure Instance Details<br>
@@ -32,7 +32,7 @@ The defaults may be OK but you may want to  create a new network and  subnet.
 The instance comes with a smallish volume where /home is mounted. 
 You should add a new volume. 
 This is where RAMADDA's home directory, uploaded files and database will be stored. The size depends on the expected size of your RAMADDA use.
-For example, for the <a href="https://geodesystems.com">https://geodesystems.com</a> 
+For example, for the <a href="https://ramadda.org">https://ramadda.org</a> 
 repository (which has a ton of content) the database size is ~4GB and the files take up ~20GB.
 
 
@@ -66,7 +66,7 @@ chmod 600 ramadda.pem
 ssh -i <.pem file>  ec2-user@<server IP address>
 
 ##get the installer
-wget -O ramaddainstaller.zip https://geodesystems.com/repository/release/latest/ramaddainstaller.zip
+wget -O ramaddainstaller.zip https://ramadda.org/repository/release/latest/ramaddainstaller.zip
 
 
 #Unpack the installer
