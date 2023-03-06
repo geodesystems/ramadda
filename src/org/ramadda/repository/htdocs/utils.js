@@ -2438,7 +2438,7 @@ var Utils =  {
 	    let timeOut;
 	    let html = snippet.html();
 	    let clazz = 'ramadda-snippet-popup';
-	    if(html.length>100) {
+	    if(html.length>200) {
 		clazz += ' ramadda-snippet-popup-large';
 	    }
             snippet.parent().attr('title','');

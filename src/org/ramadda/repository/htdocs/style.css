@@ -976,8 +976,9 @@ a.ramadda-menubar-button:hover {
 }
 
 .ramadda-snippet-popup {
+    font-size:90%;
     max-width:400px;
-    max-height:200px;
+    max-height:150px;
     overflow-y:hidden;
     position: absolute; 
     z-index:1000;
@@ -990,8 +991,6 @@ a.ramadda-menubar-button:hover {
 .ramadda-snippet-popup-large {
     max-width:600px;
     width:600px;
-    max-height:300px;
-    height:300px;
     overflow-y:hidden;
 }
 
