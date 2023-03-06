@@ -586,6 +586,8 @@ public interface WikiConstants {
     /** _more_ */
     public static final String WIKI_TAG_SIMPLE = "simple";
 
+    
+
     /** wiki import */
     public static final String WIKI_TAG_PROPERTIES = "properties";
 

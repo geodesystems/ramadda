@@ -327,7 +327,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
     public boolean getShowIcon(WikiUtil wikiUtil, Hashtable props, boolean dflt) {
 	// for backwards compatability
 	return  getProperty(wikiUtil, props, ATTR_SHOWICON,
-			    getProperty(wikiUtil, props,"showicon",true));
+			    getProperty(wikiUtil, props,"showicon",dflt));
     }
 
 
@@ -3562,15 +3562,16 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             if (getProperty(wikiUtil, props, ATTR_USEDESCRIPTION) != null) {
                 boolean useDescription = getProperty(wikiUtil, props,
 						     ATTR_USEDESCRIPTION, true);
-
                 if (useDescription) {
                     dfltTag = WIKI_TAG_SIMPLE;
                 } else {
                     dfltTag = WIKI_TAG_HTML;
                 }
-            }
+            } else if(doingGrid) {
+		dfltTag = WIKI_TAG_CARD;
+	    }
 
-	    if(flipCards) dfltTag = "card";
+	    if(flipCards) dfltTag = WIKI_TAG_CARD;
             boolean showDate = getProperty(wikiUtil, props, "showDate",
 					   false);
             String frontStyle = getProperty(wikiUtil, props, "frontStyle","");
@@ -3578,6 +3579,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             SimpleDateFormat sdf =         new SimpleDateFormat(getProperty(wikiUtil,props,"dateFormat","MMM dd, yyyy"));
             SimpleDateFormat sdf2 =         new SimpleDateFormat(getProperty(wikiUtil,props,"dateFormat","yyyy-MM-dd HH:mm"));	    
             boolean showicon = getShowIcon(wikiUtil, props, false);
+
             if (doingGrid) {
 		//                showicon = false;
                 if (props.get("showLink") == null) {
@@ -3771,7 +3773,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
                 int columns = getProperty(wikiUtil, props, "columns", 3);
                 int innerHeight = getProperty(wikiUtil, props,
-					      "inner-height", 150);
+					      "inner-height", 200);
                 int minHeight = getProperty(wikiUtil, props,
                                             "inner-minheight", -1);
                 int maxHeight = getProperty(wikiUtil, props,
@@ -3806,8 +3808,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
                 String boxClass = HU.cssClass("ramadda-gridbox ramadda-gridbox-decorated search-component");
                 String boxStyle = "";
-                width = getProperty(wikiUtil, props, ATTR_WIDTH,
-                                    (String) null);
+                width = getProperty(wikiUtil, props, ATTR_WIDTH,"200");
                 if (width != null) {
                     boxStyle = HU.style(HU.css("width", HU.makeDim(width,"px"), "display","inline-block","margin","6px"));
                 }
@@ -5144,8 +5145,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                     HU.div(card, snippet, HU.cssClass("ramadda-snippet"));
 
                 } else if (showSnippetHover) {
-                    HU.div(card, snippet,
-                           HU.cssClass("ramadda-snippet-hover"));
+		    String clazz = "ramadda-snippet-hover";
+                    HU.div(card, snippet, HU.cssClass(clazz));
 
                 }
             }
