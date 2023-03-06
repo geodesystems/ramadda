@@ -760,10 +760,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		}
 		if(isNew) {
 		    if(request.get(ARG_EXTRACT_SUMMARY,false)) {
-			String summary = getRepository().callGpt("Summarize the following text. Assume the reader has a college education","",fileCorpus,200,true);
+			String summary = getRepository().callGpt("Summarize the following text. Assume the reader has a college education. Limit the summary to no more than 4 sentences.","",fileCorpus,200,true);
 			if(stringDefined(summary)) {
 			    summary = summary.trim().replaceAll("^:+","");
-			    summary = "+toggleopen Summary\n+callout-info\n" + summary+"\n-callout-info\n-toggle\n";
+			    summary = "+toggleopen Summary\n+callout-info\n<snippet>\n" + summary+"\n</snippet>\n-callout-info\n-toggle\n";
 			    entryChanged = true;
 			    entry.setDescription(summary+"\n"+entry.getDescription());
 			}
