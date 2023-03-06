@@ -1439,7 +1439,7 @@ WikiEditor.prototype = {
 	    return this.wikiAttributes[tagInfo.tag];
 	}
 	if(!this.wikiAttributesFromServer) {
-	    let url = ramaddaBaseUrl + "/wikitags";
+	    let url = RamaddaUtils.getUrl('/wikitags');
 	    $.getJSON(url, (data) =>{
 		this.wikiAttributesFromServer= data;
 		callback(this.wikiAttributesFromServer[tagInfo.tag]);
@@ -1802,6 +1802,7 @@ WikiEditor.prototype = {
 	    grid: Utils.mergeLists([
 		{label:'Grid Properties'},
 		{p:'tag',ex:'card'},
+		{p:'width',ex:'300'},
 		{p:'inner-height',ex:'100'},
 		{p:'columns',ex:'3'},
 		{p:'showIcon',ex:'true'},
@@ -1810,7 +1811,9 @@ WikiEditor.prototype = {
 		{p:'showSnippetHover',ex:'true'},
 		{p:'showLink',ex:'false'},
 		{p:'showHeading',ex:'true'},
-		{p:'showLine',ex:'true'},],
+		{p:'showLine',ex:'true'},
+		{p:'showSnippetHover',ex:'true'},		
+		{p:'captionPrefix',ex:'Click to view example: ',tt:'To use for popup images'}],
 				   this.groupAttributes),
 	    frames: Utils.mergeLists([
 		{label:'Frames Properties'},
