@@ -1895,8 +1895,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    console.log(this.type+".notifyEvent no event handler function:" + event.name  +" " + event.handler);
                 return;
             }
-	    if(displayDebug.notifyEvent)
+	    if(displayDebug.notifyEvent) {
 		console.log(this.getLogLabel() +".notifyEvent calling function:" + func.name);
+		console.dir(data);
+	    }		
             func.apply(this, [source, data]);
         },
 	wikify:function(wiki,entryId,wikiCallback,wikiError) {
@@ -2108,7 +2110,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 colorTable = dflt;
             }
 
-	    if(displayDebug.colorTable) console.log("CT:" + names +" " + justColors +" name:" + colorTable);
+	    if(displayDebug.colorTable) this.logMsg("CT:" + names +" " + justColors +" name:" + colorTable);
 	    return this.getColorTableInner(justColors, colorTable);
 	},
 	getColorTableInner: function(justColors, colorTable) {
