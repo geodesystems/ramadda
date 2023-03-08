@@ -3248,7 +3248,6 @@ RepositoryMap.prototype = {
 	    let l= layer.createMapLayer(this);
 
 	    if(layer.opts.alias) {
-		console.log("adding layer:" + layer.opts.alias);
 		this.baseLayers[layer.opts.alias] = l;
 	    }
 	    if(layer.opts.refresh) {
