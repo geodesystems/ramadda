@@ -538,9 +538,10 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 
 		let type = toks[0];
 		if(type=="baselayer") {
+		    console.log("BASE LAYER:" +toks[1]);
 		    let layer = this.map.getBaseLayer(toks[1]);
 		    if(!layer) {
-			console.log("Could not find base layer:" + toks[1]);
+			this.logMsg("Could not find base layer:" + toks[1]);
 		    } else {
 			layer.setVisibility(true);
 		    }
