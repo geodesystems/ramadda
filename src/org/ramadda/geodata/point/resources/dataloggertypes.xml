@@ -65,7 +65,7 @@ headerStyle="text-align:left"
 :rem should actually run first so it gets the point data with the request fields
 {{display_blank targetDiv="datalogger_blank_div" requestFieldsDefault=true showMenu=false requestFieldsShow=true loadingMessage="icon_progress Loading data..." noDataMessage="No data available"}}
 </td>
-<td width=20px>{{display_download  iconSize=14px showMenu=false showDateSelect=true lastRecords="20000"}}</td>
+<td width=20px>{{display_download  dataFilters="" iconSize=14px showMenu=false showDateSelect=true lastRecords="20000"}}</td>
 <td><div id="datalogger_blank_div"></div>
 </td>
 </tr></table>
