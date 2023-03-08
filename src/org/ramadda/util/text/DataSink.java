@@ -305,6 +305,8 @@ public abstract class DataSink extends Processor implements Cloneable,SeesvPlugi
         /** _more_ */
         Row header = null;
 
+	List<String> ids;
+	
         /** _more_ */
         String tag;
 
@@ -361,6 +363,15 @@ public abstract class DataSink extends Processor implements Cloneable,SeesvPlugi
             PrintWriter writer = ctx.getWriter();
             if (header == null) {
                 header = row;
+		ids = new ArrayList<String>();
+		for(int i=0;i<header.size();i++) {
+		    String id = (String) header.get(i);
+		    id = Utils.makeID(id).replace(".","_");
+		    if(id.matches("^[^a-zA-Z]+.*")) {
+			id = "tag_" + id;
+		    }
+		    ids.add(id);
+		}
                 writer.println("<" + tag + ">");
 		for(String comment: ctx.getComments()) {
 		    writer.append("<!--");
@@ -374,17 +385,19 @@ public abstract class DataSink extends Processor implements Cloneable,SeesvPlugi
             List values = row.getValues();
             for (int i = 0; i < values.size(); i++) {
                 Object v = values.get(i);
-                String h = (String) header.get(i);
-                h = h.trim().toLowerCase().replaceAll(" ",
-                        "_").replaceAll("/", "_");
-                if (h.length() == 0) {
+                String id = ids.get(i);
+                if (id.length() == 0) {
                     continue;
                 }
-                writer.print("<" + h + ">");
-                writer.print("<![CDATA[");
-                writer.print(v.toString().trim());
-                writer.print("]]>");
-                writer.println("</" + h + ">");
+                writer.print("<" + id + ">");
+		String sv = v.toString().trim();
+		boolean isNumber = Utils.isNumber(sv);
+		if(!isNumber)
+		    writer.print("<![CDATA[");
+                writer.print(sv);
+		if(!isNumber)
+		    writer.print("]]>");
+                writer.println("</" + id + ">");
             }
             writer.println("</" + tag2 + ">");
 
