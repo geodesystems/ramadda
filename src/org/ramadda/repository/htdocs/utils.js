@@ -3279,6 +3279,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	s.each(function() {
 	    let textOk = true;
 	    if(Utils.stringDefined(value)) {
+		value = value.toLowerCase();
 		textOk = false;
 		let html = Utils.stripTags($(this).html()).toLowerCase();
 		if(html.indexOf(value)>=0) {
