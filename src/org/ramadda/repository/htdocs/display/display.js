@@ -2887,7 +2887,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             }
                             let widget;
                             if (this.canDoMultiFields()) {
-                                widget = HU.checkbox(field.checkboxId, [CLASS, checkboxClass], on,label);
+                                widget = HU.checkbox(field.checkboxId, [CLASS, checkboxClass,'title',field.getId()], on,label);
 				html += HU.tag(TAG_DIV, [ATTR_TITLE, field.getId()],
 					       widget);
                             } else {
