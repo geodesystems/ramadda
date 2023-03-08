@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Mar  7 18:21:28 MST 2023";
+var build_date="RAMADDA build date: Tue Mar  7 19:31:10 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -13337,7 +13337,7 @@ function PointData(name, recordFields, records, url, properties) {
 		console.log("loadPointJson: "+ display.type +" " + display.getId() +" url:" + url);
 	    } 
 	    let cacheId = this.getCacheUrl();
-	    if(!display.getProperty("pointDataCacheOK",true)) {
+	    if(display.getProperty && !display.getProperty("pointDataCacheOK",true)) {
 		cacheId = HtmlUtils.getUniqueId();
 	    }
 
@@ -19321,6 +19321,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             let records = this.getPointData().getRecords();
 	    this.setAxisRanges(this.chartOptions, selectedFields, records);
 //	    console.log(JSON.stringify(this.chartOptions, null,2));
+	    //Clear out any existing charts
+	    this.clearChart();
 	    if(this.getProperty("doMultiCharts",this.getProperty("multipleCharts",false))) {
 		let multiField=this.getFieldById(null,this.getProperty("multiField"));
 		let labelPosition = this.getProperty("multiChartsLabelPosition","bottom");
@@ -19384,7 +19386,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		return;
 	    }
 	    let dataTable = this.makeDataTable(dataList, props, selectedFields, this.chartOptions);
-	    this.clearChart();
             let chart = this.doMakeGoogleChart(dataList, props, chartDiv, selectedFields, this.chartOptions);
             if (chart == null) return null;
             if (!dataTable) {
@@ -39616,6 +39617,7 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 		return false;
 	    }
 	    let allRecords = this.getData().getRecords()
+	    if(!allRecords) return;
 	    let regionField=this.getFieldById(null,this.getPropertyRegionField());
 	    if(regionField==null) {
 		this.displayError("No region field");
