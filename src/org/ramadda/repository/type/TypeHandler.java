@@ -476,6 +476,7 @@ public class TypeHandler extends RepositoryManager {
             priority    = Utils.getAttributeOrTag(node, "priority", priority);
             description = Utils.getAttributeOrTag(node, "description", description);
             filePattern = Utils.getAttributeOrTag(node, ATTR_PATTERN, filePattern);
+	    //	    if(stringDefined(filePattern))System.err.println(filePattern);
             fileNotPattern = Utils.getAttributeOrTag(node, ATTR_NOTPATTERN, null);	    
             editHelp = Utils.getAttributeOrTag(node, "edithelp", editHelp);
             help     = Utils.getAttributeOrTag(node, "help", help);

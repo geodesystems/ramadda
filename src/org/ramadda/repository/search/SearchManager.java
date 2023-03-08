@@ -845,18 +845,32 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
-
+    /**
+       is the file a pdf, doc, ppt, etc
+     */
+    private boolean isDocument(String path) {
+	path = path.toLowerCase();	
+	//Only do documents
+	if(!(path.endsWith("pdf") ||
+	     path.endsWith("ipynb") ||
+	     path.endsWith("py") ||
+	     path.endsWith("java") ||
+	     path.endsWith("js") ||	     	     	     
+	     path.endsWith("doc") ||
+	     path.endsWith("ppt") ||
+	     path.endsWith("html") ||
+	     path.endsWith("pptx") ||	   	   
+	     path.endsWith("docx"))) {
+	    //	    System.err.println("not doc:" + path);
+	    return false;
+	}
+	return true;
+    }
 
     private List<String>  getKeywords(Request request, Entry entry, StringBuilder fileCorpus) throws Exception {
 	String path = entry.getResource().getPath();
 	if(path==null) return null;
-	path = path.toLowerCase();	
-	//Only do documents
-	if(!(path.endsWith("pdf") ||
-	     path.endsWith("doc") ||
-	     path.endsWith("ppt") ||
-	     path.endsWith("pptx") ||	   	   
-	     path.endsWith("docx"))) {
+	if(!isDocument(path)) {
 	    //	    System.err.println("not doc:" + path);
 	    return null;
 	}
@@ -934,11 +948,16 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
     private String readContents(File f,List<org.apache.tika.metadata.Metadata> metadataList) throws Exception {
+	if(!isDocument(f.getName())) {
+	    return null;
+	}
+
 	//Don't do really big files 
 	if(f.length()>LUCENE_MAX_LENGTH) {
 	    //	    System.err.println("file too big:" + f.length());
-	    //	    return null;
+	    return null;
 	}
+	//	System.err.println(f.getName() +" length:" + f.length() +" max:" +LUCENE_MAX_LENGTH);
 	//	if(Utils.isImage(f.toString())) return null;
 	if(f.length()==0) return null;
 	File corpusFile = TikaUtil.getTextCorpusCacheFile(f);
@@ -946,8 +965,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    return  IO.readContents(corpusFile.toString(), SearchManager.class);
 	} 
 	//	System.err.println("no corpus for file:" + f);
-	boolean isImage = Utils.isImage(f.getName());
 
+	//Note: because we check for isDocument above we never have images here
+	boolean isImage = Utils.isImage(f.getName());
 	if(isImage && !indexImages) {
 	    return null;
 	}
