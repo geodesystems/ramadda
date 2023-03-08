@@ -832,10 +832,6 @@ function Entry(props) {
                 let metadata = this.metadata[i];
                 if (metadata.type == "content.thumbnail" && Utils.stringDefined(metadata.value.attr1)) {
 		    if(metadata.value.attr1.startsWith("http")) return metadata.value.attr1;
-		    if(this.getAbsoluteId()=="8aace8e1-df60-4c72-b19a-9da6c676f083") {
-			console.log(this.getAbsoluteId() +"  "+ metadata.value.attr1 +" id:" + metadata.id);
-		    }
-
 		    let url = this.getRamadda().getRoot() + "/metadata/view/" + metadata.value.attr1 + "?element=1&entryid=" + this.getAbsoluteId() + "&metadata_id=" + metadata.id;
 		    return url;
 		}
