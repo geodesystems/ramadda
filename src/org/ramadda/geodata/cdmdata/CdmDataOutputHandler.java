@@ -994,7 +994,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 sb.append(HU.hidden(SPATIALARGS[i] + ".original",
                                            points[i]));
             }
-            String llb = map.makeSelector(ARG_AREA, true, points);
+            String llb = map.makeSelector(ARG_AREA, true, null,points,"","");
             sb.append(HU.formEntryTop(msgLabel("Subset Spatially"),
                                              llb));
         }
@@ -1099,7 +1099,10 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
         GridDataset gds = getCdmManager().getGridDataset(entry, path);
         // initialize the bounds and date range to the defaults
-        LatLonRect        llr                 = gds.getBoundingBox();
+	//Don't set the llr here as it can give a bad spatial domain
+	//only set it if the user has specified a bounds
+	//        LatLonRect        llr                 = gds.getBoundingBox();
+        LatLonRect        llr                 =null;
         CalendarDateRange cdr                 = gds.getCalendarDateRange();
         boolean           anySpatialDifferent = false;
         boolean           haveAllSpatialArgs  = true;
@@ -1131,11 +1134,12 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         }
 
         SelectionRectangle bbox = request.getSelectionBounds();
-
         if (bbox.allDefined()) {
             llr = new LatLonRect(new LatLonPointImpl(bbox.getNorth(),
                     bbox.getWest()), new LatLonPointImpl(bbox.getSouth(),
                         bbox.getEast()));
+            if (debug) 
+		System.err.println("LLR-1:" + llr);
         } else if (haveAllSpatialArgs && anySpatialDifferent) {
             llr = new LatLonRect(
                 new LatLonPointImpl(
@@ -1146,7 +1150,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                                     ARG_AREA_SOUTH, 0.0), request
                                         .getLatOrLonValue(
                                             ARG_AREA_EAST, 180.0)));
-            //                System.err.println("llr:" + llr);
+            if (debug) 
+		System.err.println("LLR-2:" + llr);
         }
         int   hStride = request.get(ARG_HSTRIDE, request.get("stride", 1));
         Range zRange  = null;
@@ -1303,8 +1308,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             // int stride_time,
             // boolean addLatLon,
             // NetcdfFileWriter writer
-
-
 
             CFGridWriter2.writeFile(gds, varNames, llr, null, hStride,
                                     zRange, ((dates[0] == null)
