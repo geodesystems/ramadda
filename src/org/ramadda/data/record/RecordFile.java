@@ -1060,6 +1060,7 @@ public abstract class RecordFile {
 		startDate = visitInfo.getStartDate().getTime();
 	    }
 
+	    //	    System.err.println("startDate:" + haveStartDate +" " +visitInfo.getStartDate());
 	    boolean haveEndDate = visitInfo.getEndDate()!=null;
 	    long endDate =0L;
 	    if(haveEndDate) {
@@ -1067,6 +1068,7 @@ public abstract class RecordFile {
 	    }
 
 
+	    int skipCnt = 0;
             while (true) {
                 if ((visitInfo.getStop() > 0)
                         && (visitInfo.getRecordIndex()
@@ -1099,22 +1101,26 @@ public abstract class RecordFile {
                         }
 			if(haveStartDate) {
 			    if(record.getRecordTime()<startDate) {
+				skipCnt++;
+				//				if((skipCnt%1000) ==0)   System.err.println("Skip:" + skipCnt);
 				continue;
 			    }
 			}
 			if(haveEndDate) {
 			    if(record.getRecordTime()>endDate) {
-				//This assumes that the dates in the data are ordered
+				//Note: This assumes that the dates in the data are ordered
 				break;
 
 			    }
 			}
 
+			//if((cnt%1000)==0) System.err.println("record #:" + cnt);
                         if ((filter == null)
                                 || filter.isRecordOk(record, visitInfo)) {
                             cnt++;
                             if ((visitInfo.getMax() > 0)
                                     && (cnt > visitInfo.getMax())) {
+				//				System.err.println("maxed out:" + cnt +" visitinfo:" + visitInfo);
                                 break;
                             }
                             if ( !visitor.visitRecord(this, visitInfo, record)) {
