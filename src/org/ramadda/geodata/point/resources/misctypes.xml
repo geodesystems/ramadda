@@ -209,10 +209,7 @@ record.type.default=double
 :heading Skew-T
 {{display_download}}
 <div style="height:500px;position:relative;">
-{{display_skewt skewtWidth="550" skewtHeight="450" hodographWidth=150}}
-<div style="position:absolute;left:calc(50% + 300px);bottom:100px;transform: translate(-50%, 0%);">
-{{mapentry hideIfNoLocations=true width="200px" height="200px"}} 
-</div>
+{{display_skewt skewtWidth="550" skewtHeight="450" hodographWidth=300}}
 </div>
 ----
 :heading Table & Chart
@@ -224,9 +221,16 @@ record.type.default=double
 {{display_linechart showMenu=true fields=".*temp.*,.*humidit.*|.*rh.*"}}
 -tab
 -tabs
-----
+:p
 :heading Information
++row
++col-8
 {{information  details="true"  showTitle="false"  }}
+-col
++col-4
+{{mapentry hideIfNoLocations=true width="200px" height="200px"}}
+-col
+-row
 -section
 ]]>
 </wiki>
