@@ -170,10 +170,11 @@ h4 {
 .ramadda-page-heading, .ramadda-heading  {
     padding: 0px;
     margin: 0px;
-    /* for now don't set the color
-    color: #000;
-   */
     text-align: center;
+}
+
+.ramadda-page-heading {
+    font-weight:bold;
 }
 
 .ramadda-lheading  {
