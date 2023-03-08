@@ -5224,6 +5224,7 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 		return false;
 	    }
 	    let allRecords = this.getData().getRecords()
+	    if(!allRecords) return;
 	    let regionField=this.getFieldById(null,this.getPropertyRegionField());
 	    if(regionField==null) {
 		this.displayError("No region field");

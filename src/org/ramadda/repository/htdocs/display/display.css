@@ -343,7 +343,7 @@ a.display-container {
 }
 
 .display-header-span {
-    display:block;
+    display:inline-block;
     line-height:1.25em;
     text-align:center;
 }
