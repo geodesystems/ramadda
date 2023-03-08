@@ -707,6 +707,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
     const ID_DOWNLOAD_CSV = "downloadcsv";
     const ID_DOWNLOAD_JSON = "downloadjson";
     const ID_DOWNLOAD_COPY = "downloadcopy";
+    const ID_DOWNLOAD_FROMSERVER = "fromserver";    
     const ID_FROMDATE = "fromdate";
     const ID_TODATE = "todate";                
     const ID_CANCEL = "cancel";    
