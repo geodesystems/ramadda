@@ -15,7 +15,7 @@
     The record.properties defines the set of csv commands used to clean up the input file
 -->
 <property name="record.properties">
-csvcommands1=-maxrows,30,-bom,-encoding,UTF-16LE
+csvcommands1=-bom,-encoding,UTF-16LE
 csvcommands2=-skiplines,9,-concat,date_mm_dd_yyyy\,time_hh_mm_ss,_csvcommandspace_
 csvcommands3=date,-firstcolumns,date,-notcolumns,date_mm_dd_yyyy\,time_hh_mm_ss\,time_fract_sec
 csvcommands4=-addheader,date.type_csvcommandspace_date_csvcommandspace_date.format_csvcommandspace_{MM/dd/yyyy_csvcommandspace_HH:mm:ss},-print
@@ -35,6 +35,7 @@ csvcommands4=-addheader,date.type_csvcommandspace_date_csvcommandspace_date.form
 <span style='display:inline-block;'>{{resource  message="" title="Download Data"}}</span>
 </div> 
 {{description wikify=true}}
+{{property max=10000}}
 {{group showMenu=true}}
 {{display_profile showMenu=true yAxisReverse=true marginTop=25  profileMode=markers
 indexField=".*depth.*" 
