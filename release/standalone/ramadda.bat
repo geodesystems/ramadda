@@ -1,13 +1,18 @@
 :: Note: We are not windows developers so please pardon our dust
 :: Consult the README for more information
+:: This script uses the environment variables: JAVA_HOME, RAMADDA_HOME and  RAMADDA_PORT
+
+:: JAVA_HOME should point to where you have Java installed where the java executable is at:
+:: %JAVA_HOME%\bin\java
+:: The default is:
+:: JAVA_HOME=C:\Program Files\Java\jre1.8.0_321
+
 
 :: To change the RAMADDA home directory set the environment variable
 :: RAMADDA_HOME=C:\path\to\ramadda\home
 
-:: This script assumes you have the JAVA_HOME environment variable set to
-:: where you have Java installed. If you don't have this set then
-:: then we this defaults to
-:: C:\Program Files\Java\jre1.8.0_321
+:: The RAMADDA_PORT environment variable is the default port for http access
+:: this defaults to 80
 
 
 @set mypath=%~dp0

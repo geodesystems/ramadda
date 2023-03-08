@@ -19,7 +19,6 @@ You can set the environment variable with the Java command line argument:
 Or pass in a regular  command line argument to RAMADDA:
 -home /some/other/directory/ramadda 
 
-
 When RAMADDA first starts up it writes an install.properties file that contains an
 install password and prints out this password to stdout.
 ramadda.install.password=<some password>
@@ -68,7 +67,7 @@ http://ramadda.org/repository/userguide/installing.html
 
 
 ###################################################################
-Running in as a service in the background
+Running as a service in the background
 ###################################################################
 
 The script @RELEASE@/ramaddaService.sh can start, stop and restart a running
@@ -80,6 +79,8 @@ sh ramaddaService.sh start
 sh ramaddaService.sh stop
 sh ramaddaService.sh restart
 sh ramaddaService.sh status
+
+
 
 
 ###################################################################
