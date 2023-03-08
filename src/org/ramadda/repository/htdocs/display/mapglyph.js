@@ -4266,6 +4266,8 @@ MapGlyph.prototype = {
 		     "thisEntryType":this.attrs.entryType,
 		     "entryId":entryId,
 		     "divid":divId,
+		     "acceptRequestChangeEvent":false,
+		     "pointDataCacheOK":false,
 		     "bottomDiv":bottomDivId,			 
 		     "data":pointData,
 		     "fileUrl":Ramadda.getUrl("/entry/get?entryid=" + entryId+"&fileinline=true")};
@@ -4273,6 +4275,7 @@ MapGlyph.prototype = {
 	attrs = $.extend({},attrs);
 	attrs.name=this.getName();
 	let display = this.display.getDisplayManager().createDisplay("map",attrs);
+	//	this.attrs.name = display.getLogLabel();
 	//Not sure why we do this since we can't integrate charts with map record selection
 	//	display.setProperty("showRecordSelection",false);
 

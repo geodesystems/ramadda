@@ -389,6 +389,12 @@ function PointData(name, recordFields, records, url, properties) {
 		console.log("loadPointJson: "+ display.type +" " + display.getId() +" url:" + url);
 	    } 
 	    let cacheId = this.getCacheUrl();
+	    if(!display.getProperty("pointDataCacheOK",true)) {
+		cacheId = HtmlUtils.getUniqueId();
+	    }
+
+
+
             let cacheObject = getPointDataCacheObject(cacheId);
             if (cacheObject == null) {
                 cacheObject = new PointDataCacheObject(url);
@@ -473,6 +479,7 @@ function PointData(name, recordFields, records, url, properties) {
             let success=function(data) {
 		if(typeof data == "string") {
 		    try {
+			if(debug) console.log("parsing point data");
 			data = JSON.parse(data);
 		    } catch(exc) {
 			console.log("Error:" + exc);
@@ -487,7 +494,6 @@ function PointData(name, recordFields, records, url, properties) {
 		    if(debug)
 			console.log("\tloadPointData failed");
 		    console.log("loadPointData failed:" + url);
-		    console.dir(data);
                     display.pointDataLoadFailed(data);
                     return;
                 }
@@ -565,7 +571,7 @@ function PointData(name, recordFields, records, url, properties) {
 		url = root + "/" + url;
 	    }
 	    display.handleLog("data:" + url);
-            Utils.doFetch(url, success,fail,null);	    
+	    $.getJSON(url,success).fail(fail);
 	    //$.getJSON(url, success,{crossDomain:true}).fail(fail);
         }
 
@@ -4107,7 +4113,7 @@ function RequestMacro(display, macro) {
 	    values.push(["","All"]);
 	    includeAll = true;
 	}
-	if(this.getProperty("request." + macro+".includeNone",true)) {
+	if(this.getProperty("request." + macro+".includeNone",this.getProperty("request.includeNone",true))) {
 	    values.push(["","None"]);
 	}
 	Utils.split(enums,",").forEach(tok=>{
