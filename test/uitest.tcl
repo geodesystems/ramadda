@@ -207,6 +207,11 @@ proc capture {_group name url {doDisplays 1} {sleep 3}} {
 		continue;
 	    }
 	    
+	    if {[regexp {.*googleads\.g\.doubleclick\.net.*} $line]} {
+		continue;
+	    }
+	    
+
 	    if {[regexp {\[Warning\].*} $line]} {
 		continue;
 	    }
