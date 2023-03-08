@@ -22,6 +22,9 @@ skiplines=4
 #If you don't have time then no worries
 timestamp.format=yyyy-MM-dd HH:mm:ss
 
+record.type.batt_volt_tmn=date
+record.type.ptemp_tmx=date
+
 #You can define units for the fields with
 temp_c.unit=C
 depth_m.unit=M
@@ -67,9 +70,9 @@ headerStyle="text-align:left"
 </td>
 </tr></table>
 <div id="cr1000charts"></div>
-{{display_linechart showMenu=true fieldsPatterns=".*temp.*" lastRecords="20000"}}
-{{display_linechart showMenu=true fieldsPatterns=".*rh.*" lastRecords="20000"}}
-{{display_linechart showMenu=true fieldsPatterns=".*press.*|baro.*" lastRecords="20000"}}
+{{display_linechart showMenu=true fieldsPatterns=".*temp.*|.*hmo.*|.*flow.*|rpsdata_1|.*cell_1" lastRecords="20000"}}
+{{display_linechart showMenu=true fieldsPatterns=".*ph.*|.*rh.*|batt_volt_min|.*area.*|rpsdata_2" lastRecords="20000"}}
+{{display_linechart showMenu=true fieldsPatterns=".*depth.*|.*pres.*|baro.*|.*dewpt.*|.*vol.*|rpsdata_3" lastRecords="20000"}}
 :br
 ----
 :heading Metadata
