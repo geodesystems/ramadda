@@ -737,7 +737,6 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	    this.setContents(HU.div([],label));
 	    if(useIcon) {
 		this.jq("csv").click(() => {
-		    console.log('click');
 		    this.doDownload();
 		});
 	    } else {
