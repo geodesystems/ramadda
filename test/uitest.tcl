@@ -120,6 +120,7 @@ proc writeError {html} {
 proc capture {_group name url {doDisplays 1} {sleep 3}} {
     initTest
     regsub -all {[/ .'\",]+} $name _ clean
+    regsub -all {\?} $clean _ clean    
     set image image_${clean}.png
     set thumb thumb_${_group}_${clean}.png
     set consoleFile console_${_group}_${clean}.txt
@@ -191,9 +192,25 @@ proc capture {_group name url {doDisplays 1} {sleep 3}} {
 	    set line [string trim $line]
 	    if {$line==""} continue;
 	    if {$debug} {puts stderr "Line: $line"}
-	    if {[regexp {vega-embed\.min\.js\.map} $line]} {
-		continue
+
+
+	    if {[regexp {Cannot load.*.map} $line]} {
+		continue;
 	    }
+
+
+	    if {[regexp {The input spec uses.*} $line]} {
+		continue;
+	    }		
+
+	    if {[regexp {Failed to load resource.*.map} $line]} {
+		continue;
+	    }
+	    
+	    if {[regexp {\[Warning\].*} $line]} {
+		continue;
+	    }
+
 	    if {[regexp {\[Warning\] *THREE.*} $line]} {
 		continue;
 	    }
