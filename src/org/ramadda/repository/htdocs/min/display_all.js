@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Mar  6 06:48:29 MST 2023";
+var build_date="RAMADDA build date: Tue Mar  7 18:21:28 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -1576,6 +1576,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     let colors = defaultColorTable || this.display.getColorTable(true,[this.properties.colorTableProperty,
 								       colorByAttr +".colorTable",
 								       "colorTable"]);
+
     if(!colors && colorByAttr) {
 	let c = this.display.getProperty(colorByAttr +".colors");
 	if(c) colors = c.split(",");
@@ -5428,8 +5429,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    console.log(this.type+".notifyEvent no event handler function:" + event.name  +" " + event.handler);
                 return;
             }
-	    if(displayDebug.notifyEvent)
+	    if(displayDebug.notifyEvent) {
 		console.log(this.getLogLabel() +".notifyEvent calling function:" + func.name);
+		console.dir(data);
+	    }		
             func.apply(this, [source, data]);
         },
 	wikify:function(wiki,entryId,wikiCallback,wikiError) {
@@ -5641,7 +5644,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 colorTable = dflt;
             }
 
-	    if(displayDebug.colorTable) console.log("CT:" + names +" " + justColors +" name:" + colorTable);
+	    if(displayDebug.colorTable) this.logMsg("CT:" + names +" " + justColors +" name:" + colorTable);
 	    return this.getColorTableInner(justColors, colorTable);
 	},
 	getColorTableInner: function(justColors, colorTable) {
@@ -13334,6 +13337,12 @@ function PointData(name, recordFields, records, url, properties) {
 		console.log("loadPointJson: "+ display.type +" " + display.getId() +" url:" + url);
 	    } 
 	    let cacheId = this.getCacheUrl();
+	    if(!display.getProperty("pointDataCacheOK",true)) {
+		cacheId = HtmlUtils.getUniqueId();
+	    }
+
+
+
             let cacheObject = getPointDataCacheObject(cacheId);
             if (cacheObject == null) {
                 cacheObject = new PointDataCacheObject(url);
@@ -13418,6 +13427,7 @@ function PointData(name, recordFields, records, url, properties) {
             let success=function(data) {
 		if(typeof data == "string") {
 		    try {
+			if(debug) console.log("parsing point data");
 			data = JSON.parse(data);
 		    } catch(exc) {
 			console.log("Error:" + exc);
@@ -13432,7 +13442,6 @@ function PointData(name, recordFields, records, url, properties) {
 		    if(debug)
 			console.log("\tloadPointData failed");
 		    console.log("loadPointData failed:" + url);
-		    console.dir(data);
                     display.pointDataLoadFailed(data);
                     return;
                 }
@@ -13510,7 +13519,7 @@ function PointData(name, recordFields, records, url, properties) {
 		url = root + "/" + url;
 	    }
 	    display.handleLog("data:" + url);
-            Utils.doFetch(url, success,fail,null);	    
+	    $.getJSON(url,success).fail(fail);
 	    //$.getJSON(url, success,{crossDomain:true}).fail(fail);
         }
 
@@ -17052,7 +17061,7 @@ function RequestMacro(display, macro) {
 	    values.push(["","All"]);
 	    includeAll = true;
 	}
-	if(this.getProperty("request." + macro+".includeNone",true)) {
+	if(this.getProperty("request." + macro+".includeNone",this.getProperty("request.includeNone",true))) {
 	    values.push(["","None"]);
 	}
 	Utils.split(enums,",").forEach(tok=>{
@@ -49865,6 +49874,8 @@ MapGlyph.prototype = {
 		     "thisEntryType":this.attrs.entryType,
 		     "entryId":entryId,
 		     "divid":divId,
+		     "acceptRequestChangeEvent":false,
+		     "pointDataCacheOK":false,
 		     "bottomDiv":bottomDivId,			 
 		     "data":pointData,
 		     "fileUrl":Ramadda.getUrl("/entry/get?entryid=" + entryId+"&fileinline=true")};
@@ -49872,6 +49883,7 @@ MapGlyph.prototype = {
 	attrs = $.extend({},attrs);
 	attrs.name=this.getName();
 	let display = this.display.getDisplayManager().createDisplay("map",attrs);
+	//	this.attrs.name = display.getLogLabel();
 	//Not sure why we do this since we can't integrate charts with map record selection
 	//	display.setProperty("showRecordSelection",false);
 
