@@ -389,7 +389,7 @@ function PointData(name, recordFields, records, url, properties) {
 		console.log("loadPointJson: "+ display.type +" " + display.getId() +" url:" + url);
 	    } 
 	    let cacheId = this.getCacheUrl();
-	    if(!display.getProperty("pointDataCacheOK",true)) {
+	    if(display.getProperty && !display.getProperty("pointDataCacheOK",true)) {
 		cacheId = HtmlUtils.getUniqueId();
 	    }
 
