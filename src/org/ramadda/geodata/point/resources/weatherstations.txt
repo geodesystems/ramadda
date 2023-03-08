@@ -16,6 +16,7 @@ KAMA:Amarillo International Airport - KAMA
 PAFM:Ambler Airport - PAFM
 PAGN:Angoon - PAGN
 PANI:Aniak Airport - PANI
+KNAK:Annapolis/USNA - KNAK
 PANT:Annette Island Airport - PANT
 KAQQ:Apalachicola - KAQQ
 KAVL:Asheville Regional Airport - KAVL
