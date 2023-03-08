@@ -5482,7 +5482,7 @@ public class TypeHandler extends RepositoryManager {
 
             HU.open(sb, "div",
                            HU.attrs("class", "wiki-editor", "style",
-                                           (visible
+				    (visible
                                             ? "display:block;"
                                             : "display:none;"), "id",
                                             editorId + "_block"));
@@ -5492,9 +5492,15 @@ public class TypeHandler extends RepositoryManager {
             formInfo.addMaxSizeValidation(label, hiddenId, length);
         }
         text = text.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+	String height="500px";
+	if(readOnly) {
+	    int cnt = Utils.split(text,"\n").size();
+	    if(cnt<20)
+		height=(cnt+3)+"em";
+	}
         String textWidget = HU.div(text,
                                           HU.id(editorId)
-                                          + HU.style("height:500px;")
+                                          + HU.style("height:"+height+";")
                                           + HU.attr("class",
                                               "ace_editor"));
         sb.append(HU.hidden(hiddenId, "", HU.id(hiddenId)));
