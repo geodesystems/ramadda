@@ -559,6 +559,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 sb.append("</td>");
 		if(tdim!=null)
 		    sb.append(HU.td("" + tdim.getLength()));
+		else
+		    sb.append(HU.td("--"));
                 sb.append("</tr>");
             }
             sb.append("</tbody></table>");
