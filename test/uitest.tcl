@@ -212,9 +212,13 @@ proc capture {_group name url {doDisplays 1} {sleep 3}} {
 	    }
 	    
 
-	    if {[regexp {\[Warning\].*} $line]} {
-		continue;
+	    set skip 0
+	    foreach pattern { {Version} {\[Warning\]} {\[Log\]} {The input spec uses Vega} } {
+		if {[regexp ".*$pattern.*" $line]} {
+		    set skip 1
+		}
 	    }
+	    if $skip continue;
 
 	    if {[regexp {\[Warning\] *THREE.*} $line]} {
 		continue;
