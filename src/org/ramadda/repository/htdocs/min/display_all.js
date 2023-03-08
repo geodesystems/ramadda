@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Mar  8 06:11:20 MST 2023";
+var build_date="RAMADDA build date: Wed Mar  8 10:15:15 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -7220,12 +7220,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(startDate) {
 		this.startDateObject = Utils.createDate(startDate,+this.getTimeZoneOffset());
 		if(debug)
-		    console.log(this.type +" start date:" + startDate + " dttm:" + this.startDateObject.toUTCString());
+		    this.logMsg(this.type +" start date:" + startDate + " dttm:" + this.startDateObject.toUTCString());
 	    } 
 	    if(endDate) {
 		this.endDateObject = Utils.createDate(endDate,+this.getTimeZoneOffset());
 		if(debug)
-		    console.log(this.type +"end date:" +this.endDateObject.toUTCString());
+		    this.logMsg(this.type +"end date:" +this.endDateObject.toUTCString());
 	    } 
 
 
@@ -7255,6 +7255,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (!records) {
 		return null;
 	    }
+
             if (!fields) {
                 fields = this.getFields();
             }
@@ -7298,7 +7299,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 
 //	    debug=true;
-//	    if(debug)   console.log("checking dates");
+//	    if(debug)   this.logMsg("checking dates");
 	    records = records.filter((record,idx)=>{
                 let date = record.getDate();
 		if(!date) return true;
@@ -7311,7 +7312,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let logic = this.getProperty("filterLogic","and");
 		this.filters.forEach(f=>f.prepareToFilter(debug));
 		if(debug)
-		    console.log("filter:" + this.filters.length);
+		    this.logMsg("filter:" + this.filters.length);
 		records.forEach((record,rowIdx)=>{
 		    let allOk = true;
 		    let anyOk = false;		    
@@ -7327,7 +7328,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(opts.skipFirst && rowIdx==0) {
 			ok = true;
 		    }
-//		    console.log("\trow:" + rowIdx+" ok:" + ok);
+//		    this.logMsg("\trow:" + rowIdx+" ok:" + ok);
 		    if(highlight) {
 			newData.push(record);
 			record.setHighlight(this, ok);
@@ -7343,7 +7344,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 
-	    if(debug)   console.log("filterData-2 #records:" + records.length);
+	    if(debug)   this.logMsg("filterData-2 #records:" + records.length);
 
             let stride = parseInt(this.getProperty("stride", -1));
             if (stride < 0) {
@@ -7363,13 +7364,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     list.push(records[i]);
                 }
                 records = list;
-		//		console.log("stride: " + stride +"  size:" + list.length);
-		if(debug)   console.log("R-3:" + records.length);
+		//		this.logMsg("stride: " + stride +"  size:" + list.length);
+		if(debug)   this.logMsg("R-3:" + records.length);
             }
 
 	    records = this.filterDataPhase2(records);
 
-	    if(debug)   console.log("filterData-3 #records:" + records.length);
+	    if(debug)   this.logMsg("filterData-3 #records:" + records.length);
 	    let filterPaginate = this.getProperty("filterPaginate");
 	    if(filterPaginate) {
 		let skip = this.pageSkip||0;
@@ -7389,7 +7390,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(newSkip!=skip)
 			this.updatePaginateLabel(skip,count,records.length);
 		    skip = newSkip;
-		    console.log("skip:" + skip +" count:" + count +" " + records.length);
+		    this.logMsg("skip:" + skip +" count:" + count +" " + records.length);
 		    for(let i=skip;i<records.length;i++) {
 			tmp.push(records[i]);
 			if(tmp.length>=count) break;
@@ -7480,13 +7481,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		records = binned;
 	    }
 
-	    if(debug)   console.log("filterData-4 #records:" + records.length);
+	    if(debug)   this.logMsg("filterData-4 #records:" + records.length);
 	    if(this.requiresGeoLocation()) {
 		records = records.filter(r=>{return r.hasLocation();});
 	    }
-	    if(debug)   console.log("filterData-5 #records:" + records.length);
+	    if(debug)   this.logMsg("filterData-5 #records:" + records.length);
 	    let dataFilters = this.getTheDataFilters();
 	    if(dataFilters.length) {
+		if(debug)   this.logMsg("have filters:" + dataFilters);
 //		console.time('filters');
 		records = records.filter((r,idx)=> {
 		    if(!this.checkDataFilters(dataFilters, r)) {
@@ -7496,7 +7498,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 //		console.timeEnd('filters');
 	    }
-	    if(debug)   console.log("filterData-6 #records:" + records.length);
+	    if(debug)   this.logMsg("filterData-6 #records:" + records.length);
 	    //	    let t2=  new Date();
 	    //	    Utils.displayTimes("filterData",[t1,t2]);
 	    records = this.sortRecords(records);
@@ -7531,10 +7533,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let newPointData = new  PointData("pointdata", pointData.getRecordFields(), records,null,{parent:pointData});
 		this.pointData =  new CsvUtil().process(this, newPointData, convertPost);
 		records = this.pointData.getRecords();
-//		console.log("post:" + this.pointData.getRecordFields());
+//		this.logMsg("post:" + this.pointData.getRecordFields());
 	    }
 	    if(debug)
-		console.log("filtered:" + records.length);
+		this.logMsg("filtered:" + records.length);
 	    this.jq(ID_FILTER_COUNT).html("Count: " + records.length);
 	    this.filteredRecords = records;
 	    if(this.getSelectFirst()) {
@@ -7699,7 +7701,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 
             args.push("description_encoded");
-	    console.log(wiki);
             args.push(window.btoa(wiki));
             let url = HU.getUrl(ramaddaBaseUrl + "/entry/publish", args);
             window.open(url, '_blank');
@@ -11041,7 +11042,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         dateInRange: function(date, debug) {
 	    if(debug) {
-		console.log("dateInRange: date:" + date +" minDate:" + this.minDateObj +" maxDate:" + this.maxDateObj);
+		this.logMsg("dateInRange: date:" + date +" minDate:" + this.minDateObj +" maxDate:" + this.maxDateObj);
 	    }
 
             if (date != null) {
@@ -14084,6 +14085,7 @@ function makePointData(json, derived, source,url,callback) {
     let hasDate = false;
     let setDateFlags = false;
     let dateIsString = false;
+//    console.log('pointdata #:' +json.data.length);
     json.data.forEach((tuple,rowIndex)=>{
 	//	if(rowIndex>100) return;
 	if(debug && rowIndex>0 && (rowIndex%10000)==0) console.log("\tprocessed:" + i);
@@ -15303,14 +15305,13 @@ function RecordFilter(display,filterFieldId, properties) {
 	}
 	
     });
-
-
-    
-
-
 }
 
-
+RecordFilter.prototype = {
+    toString:function() {
+	return 'RecordFilter:' + this.id;
+    }
+}
 
 
 function MonthFilter(param) {
@@ -16970,6 +16971,9 @@ var DataUtils = {
 		expr:expr,
 		getEnabled:function() {
 		    return this.enabled && this.field!=null;
+		},
+		toString: function() {
+		    return 'filter:' + this.field?.getId() +' '+ this.type +' ' + this.value;
 		},
 		isRecordOk: function(r) {
 		    if(!this.getEnabled()) {
@@ -23456,7 +23460,6 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	    this.setContents(HU.div([],label));
 	    if(useIcon) {
 		this.jq("csv").click(() => {
-		    console.log('click');
 		    this.doDownload();
 		});
 	    } else {
