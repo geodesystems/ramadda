@@ -63,7 +63,7 @@ proc getTop { {title {Test Results}} {inError 0}} {
 	}
 
 	img {
-	    border:1px solid #eee;
+	    border:1px solid #000;
 	}
 	.test-grid {
 	    vertical-align:top;
@@ -207,13 +207,9 @@ proc capture {_group name url {doDisplays 1} {sleep 3}} {
 		continue;
 	    }
 	    
-	    if {[regexp {.*googleads\.g\.doubleclick\.net.*} $line]} {
-		continue;
-	    }
-	    
 
 	    set skip 0
-	    foreach pattern { {Version} {\[Warning\]} {\[Log\]} {The input spec uses Vega} } {
+	    foreach pattern { {googleads\.g\.doubleclick\.net} {Version} {\[Warning\]} {\[Log\]} {The input spec uses Vega} } {
 		if {[regexp ".*$pattern.*" $line]} {
 		    set skip 1
 		}
