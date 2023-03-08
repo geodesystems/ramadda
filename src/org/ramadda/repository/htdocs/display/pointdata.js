@@ -1136,6 +1136,7 @@ function makePointData(json, derived, source,url,callback) {
     let hasDate = false;
     let setDateFlags = false;
     let dateIsString = false;
+//    console.log('pointdata #:' +json.data.length);
     json.data.forEach((tuple,rowIndex)=>{
 	//	if(rowIndex>100) return;
 	if(debug && rowIndex>0 && (rowIndex%10000)==0) console.log("\tprocessed:" + i);
@@ -2355,14 +2356,13 @@ function RecordFilter(display,filterFieldId, properties) {
 	}
 	
     });
-
-
-    
-
-
 }
 
-
+RecordFilter.prototype = {
+    toString:function() {
+	return 'RecordFilter:' + this.id;
+    }
+}
 
 
 function MonthFilter(param) {
@@ -4022,6 +4022,9 @@ var DataUtils = {
 		expr:expr,
 		getEnabled:function() {
 		    return this.enabled && this.field!=null;
+		},
+		toString: function() {
+		    return 'filter:' + this.field?.getId() +' '+ this.type +' ' + this.value;
 		},
 		isRecordOk: function(r) {
 		    if(!this.getEnabled()) {
