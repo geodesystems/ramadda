@@ -1231,17 +1231,24 @@ public class HtmlOutputHandler extends OutputHandler {
         String  desc   = entry.getDescription().trim();
         boolean isWiki = TypeHandler.isWikiText(desc);
         if ((desc.length() > 0) && !isWiki && !desc.equals("<nolinks>")) {
+            suffix.append(HtmlUtils.sectionOpen("Description", false));
+            entry.getTypeHandler().addReadOnlyWikiEditor(request, entry,
+                    suffix, desc);
+            suffix.append(HtmlUtils.sectionClose());
+	    /*
+
             desc = processText(request, entry, desc);
             StringBuffer descSB =
                 new StringBuffer("\n<div class=\"description\">\n");
             descSB.append(desc);
             descSB.append("</div>\n");
+	    */
             //            sb.append(HU.makeShowHideBlock(msg("Description"),
             //                    descSB.toString(), open));
 
             //            sb.append(HU.makeToggleInline("",
             //                                                desc, true));
-            sb.append(desc);
+	    //            sb.append(desc);
         }
         if (isWiki) {
             suffix.append(HtmlUtils.sectionOpen("Wiki Text", false));
