@@ -112,6 +112,8 @@ public class PointOutputHandler extends RecordOutputHandler {
     /** output type */
     public final OutputType OUTPUT_FORM;
 
+    public final OutputType OUTPUT_FORM_CSV;    
+
     /** output type */
     public final OutputType OUTPUT_TIMESERIES_IMAGE;
 
@@ -287,6 +289,12 @@ public class PointOutputHandler extends RecordOutputHandler {
                                       | OutputType.TYPE_IMPORTANT, "",
                                           "fa-chart-line", category);
 
+        OUTPUT_FORM_CSV = new OutputType("Get CSV", base + ".formcsv",
+					 OutputType.TYPE_OTHER
+					 | OutputType.TYPE_IMPORTANT, "",
+                                         ICON_TOOLS, category);
+
+
         OUTPUT_FORM = new OutputType("Subset and Products", base + ".form",
                                      OutputType.TYPE_OTHER
                                      | OutputType.TYPE_IMPORTANT, "",
@@ -329,6 +337,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         addType(OUTPUT_GETPOINTINDEX);
         addType(OUTPUT_ASC);
         addType(OUTPUT_CHART);
+        addType(OUTPUT_FORM_CSV);
         addType(OUTPUT_FORM);
         addType(OUTPUT_WAVEFORM_CSV);
         addType(OUTPUT_IMAGE);
@@ -844,6 +853,9 @@ public class PointOutputHandler extends RecordOutputHandler {
                     outputType, (PointEntry) doMakeEntry(request, entry));
         }
 
+        if (outputType.equals(OUTPUT_FORM_CSV)) {
+            return getPointFormHandler().outputEntryFormCsv(request, entry);
+        }
 
         if (outputType.equals(OUTPUT_FORM)) {
             return getPointFormHandler().outputEntryForm(request, entry);
@@ -2890,7 +2902,6 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         if (entry.getTypeHandler() instanceof PointCollectionTypeHandler) {
             links.add(makeLink(request, state.getEntry(), OUTPUT_FORM));
-
             return;
         }
 
@@ -2900,8 +2911,8 @@ public class PointOutputHandler extends RecordOutputHandler {
         }
 
         if (entry.getTypeHandler() instanceof RecordCollectionTypeHandler) {
+            links.add(makeLink(request, state.getEntry(), OUTPUT_FORM_CSV));
             links.add(makeLink(request, state.getEntry(), OUTPUT_FORM));
-
             return;
         }
 
@@ -2915,6 +2926,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         }
 
         links.add(makeLink(request, state.getEntry(), OUTPUT_CHART));
+        links.add(makeLink(request, state.getEntry(), OUTPUT_FORM_CSV));
         links.add(makeLink(request, state.getEntry(), OUTPUT_FORM));
         links.add(makeLink(request, state.getEntry(), OUTPUT_VIEW));
         links.add(makeLink(request, state.getEntry(), OUTPUT_METADATA));

@@ -443,6 +443,11 @@ public class PointFormHandler extends RecordFormHandler {
         return outputEntryForm(request, entry, new StringBuffer());
     }
 
+    public Result outputEntryFormCsv(Request request, Entry entry)
+            throws Exception {
+        return outputEntryFormCsv(request, entry, new StringBuffer());
+    }    
+
 
 
     /**
@@ -472,7 +477,44 @@ public class PointFormHandler extends RecordFormHandler {
         sb.append(request.formPost(getRepository().URL_ENTRY_SHOW,
                                    HtmlUtils.id(formId)));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
-        addToEntryForm(request, entry, sb, recordEntry);
+        addToEntryForm(request, entry, sb, recordEntry,false);
+        sb.append("<p>");
+        sb.append(HtmlUtils.submit(msg("Get Data"), ARG_GETDATA));
+        sb.append("<p>");
+        OutputHandler.addUrlShowingForm(sb, formId,
+                                        "[\".*OpenLayers_Control.*\"]");
+        sb.append(HtmlUtils.formClose());
+
+        sb.append(HtmlUtils.sectionClose());
+
+        request.getRepository().getPageHandler().entrySectionClose(request,
+                entry, sb);
+
+        return new Result("", sb);
+    }
+
+
+    public Result outputEntryFormCsv(Request request, Entry entry,
+				     Appendable msgSB)
+            throws Exception {
+
+        StringBuilder sb = new StringBuilder();
+        request.getRepository().getPageHandler().entrySectionOpen(request,
+                entry, sb, "CSV Download");
+        sb.append(msgSB);
+
+        RecordEntry recordEntry =
+            getPointOutputHandler().doMakeEntry(request, entry);
+        String formId = HtmlUtils.getUniqueId("form_");
+        sb.append(request.formPost(getRepository().URL_ENTRY_SHOW,
+                                   HtmlUtils.id(formId)));
+        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+        sb.append(
+            HtmlUtils.hidden(
+                ARG_OUTPUT, getPointOutputHandler().OUTPUT_PRODUCT.getId()));
+	sb.append(HtmlUtils.hidden(ARG_PRODUCT,"points.csv"));
+	sb.append(HtmlUtils.hidden(ARG_ASYNCH,"false"));
+        addToEntryForm(request, entry, sb, recordEntry,true);
         sb.append("<p>");
         sb.append(HtmlUtils.submit(msg("Get Data"), ARG_GETDATA));
         sb.append("<p>");
@@ -501,7 +543,7 @@ public class PointFormHandler extends RecordFormHandler {
      * @throws Exception _more_
      */
     public void addToEntryForm(Request request, Entry entry, Appendable sb,
-                               RecordEntry recordEntry)
+                               RecordEntry recordEntry,boolean csvForm)
             throws Exception {
 
         sb.append(HtmlUtils.submit(msg("Get Data"), ARG_GETDATA));
@@ -511,10 +553,13 @@ public class PointFormHandler extends RecordFormHandler {
                 request, entry, sb);
         }
 
-        addSubsetForm(request, entry, sb, false, recordEntry, "");
-        addGriddingForm(request, entry, sb, recordEntry);
-        addSelectForm(request, entry, sb, false, recordEntry);
-        addSettingsForm(request, entry, sb, recordEntry);
+
+	addSubsetForm(request, entry, sb, false, recordEntry, "",csvForm);
+	if(!csvForm) {
+	    addGriddingForm(request, entry, sb, recordEntry);
+	    addSelectForm(request, entry, sb, false, recordEntry);
+	    addSettingsForm(request, entry, sb, recordEntry);
+	}
 
     }
 
@@ -542,7 +587,7 @@ public class PointFormHandler extends RecordFormHandler {
         }
         addSelectForm(request, group, sb, true, recordEntries.get(0));
         addGriddingForm(request, group, sb, recordEntries.get(0));
-        addSubsetForm(request, group, sb, true, recordEntries.get(0), extra);
+        addSubsetForm(request, group, sb, true, recordEntries.get(0), extra,false);
         addSettingsForm(request, group, sb, recordEntries.get(0));
     }
 
@@ -819,13 +864,14 @@ public class PointFormHandler extends RecordFormHandler {
      */
     public void addSubsetForm(Request request, Entry entry, Appendable sb,
                               boolean forGroup, RecordEntry recordEntry,
-                              String extraSubset)
+                              String extraSubset,boolean csvForm)
             throws Exception {
 
         long         numRecords = forGroup
                                   ? 0
                                   : recordEntry.getNumRecords();
 
+	Entry theEntry  = recordEntry!=null?recordEntry.getEntry():null;
 
         StringBuffer subsetSB   = new StringBuffer();
         subsetSB.append(HtmlUtils.formTable());
@@ -846,20 +892,11 @@ public class PointFormHandler extends RecordFormHandler {
             map.centerOn(entry);
         }
         SessionManager sm = getRepository().getSessionManager();
-        String mapSelector =
-            map.makeSelector(ARG_AREA, true,
-                             new String[] {
-                                 request.getStringOrSession(ARG_AREA_NORTH,
-                                     getSessionPrefix(), ""),
-                                 request.getStringOrSession(ARG_AREA_WEST,
-                                     getSessionPrefix(), ""),
-                                 request.getStringOrSession(ARG_AREA_SOUTH,
-                                     getSessionPrefix(), ""),
-                                 request.getStringOrSession(ARG_AREA_EAST,
-                                     getSessionPrefix(), ""), }, "", "");
+	
 
-        subsetSB.append(HtmlUtils.formEntryTop(msgLabel("Region"),
-                mapSelector));
+
+
+
 
         if (recordEntry != null) {
             String help = "Probablity a point will be included 0.-1.0";
@@ -870,8 +907,15 @@ public class PointFormHandler extends RecordFormHandler {
                 + HtmlUtils.input(ARG_PROBABILITY,
                                   request.getString(ARG_PROBABILITY, ""),
                                   4) + probHelpImg;
-            if (recordEntry.isCapable(PointFile.ACTION_TIME)) {
 
+
+
+
+
+            if (recordEntry.isCapable(PointFile.ACTION_TIME) ||
+		theEntry.getTypeHandler().getTypeProperty("subset.date.show",
+							  theEntry.getStartDate()!=theEntry.getEndDate())		
+		) {
                 boolean showTime = true;
                 subsetSB.append(
                     formEntry(
@@ -891,11 +935,15 @@ public class PointFormHandler extends RecordFormHandler {
                                     4)));
 
             if (recordEntry.isCapable(PointFile.ACTION_DECIMATE)) {
+		List<String> skips = Utils.makeList(new TwoFacedObject("None",""),"1","2","3","4","5",
+						    "6","7","8","9","10","15","20","30","40","50","75","100","200","300","400","500","1000");
+						   
+						   
                 subsetSB.append(HtmlUtils.formEntry(msgLabel("Decimate"),
                         msgLabel("Skip every") + " "
-                        + HtmlUtils.input(ARG_RECORD_SKIP,
-                                          request.getString(ARG_RECORD_SKIP,
-                                              ""), 4) + prob));
+						    + HtmlUtils.select(ARG_RECORD_SKIP, skips,
+								       request.getString(ARG_RECORD_SKIP,
+											 "")) + prob));
             }
 
             if (recordEntry.isCapable(PointFile.ACTION_TRACKS)) {
@@ -935,6 +983,7 @@ public class PointFormHandler extends RecordFormHandler {
             StringBuffer paramSB = null;
             List<String> selected = (List<String>) request.get(ARG_FIELD_USE,
                                         new ArrayList<String>());
+	    String toggleAllId = HU.getUniqueId("cbx_");
             for (RecordField attr : allFields) {
 
                 //Skip arrays
@@ -944,6 +993,10 @@ public class PointFormHandler extends RecordFormHandler {
                 if (paramSB == null) {
                     paramSB = new StringBuffer();
                     paramSB.append(HtmlUtils.formTable());
+		    paramSB.append(HU.formEntry("",HU.labeledCheckbox("", HU.VALUE_TRUE,
+								      false,HU.attr("id",toggleAllId),
+								      "Toggle all")));
+
                 }
                 String label = attr.getName();
                 if (attr.getDescription().length() > 0) {
@@ -951,17 +1004,23 @@ public class PointFormHandler extends RecordFormHandler {
                 }
                 paramSB.append(HtmlUtils.formEntry("",
                         HtmlUtils.labeledCheckbox(ARG_FIELD_USE,
-                            attr.getName(),
-                            selected.contains(attr.getName()), label)));
+						  attr.getName(),
+						  selected.contains(attr.getName()), HU.cssClass("ramadda-subset-field"),label)));
             }
             if (paramSB != null) {
                 paramSB.append(HtmlUtils.formTableClose());
-                subsetSB.append(
-                    HtmlUtils.formEntryTop(
-                        msgLabel("Select Fields"),
-                        HtmlUtils.makeShowHideBlock(
-                            msg(""), paramSB.toString(), false)));
+		if(csvForm)
+		    subsetSB.append(
+				    HtmlUtils.formEntryTop(msgLabel("Select Fields"),
+							   paramSB.toString()));
+		else
+		    subsetSB.append(
+				    HtmlUtils.formEntryTop(
+							   msgLabel("Select Fields"),
+							   HtmlUtils.makeShowHideBlock(
+										       msg(""), paramSB.toString(), false)));
 
+		HU.script(subsetSB,"HtmlUtils.initToggleAll('" + toggleAllId+"','.ramadda-subset-field');");
             }
         }
 
@@ -1045,19 +1104,25 @@ public class PointFormHandler extends RecordFormHandler {
             }
             if (paramSB != null) {
                 paramSB.append(HtmlUtils.formTableClose());
-                subsetSB.append(
-                    HtmlUtils.formEntryTop(
-                        msgLabel("Search Fields"),
-                        HtmlUtils.makeShowHideBlock(
-                            msg(""), paramSB.toString(), false)));
+		if(csvForm)
+		    subsetSB.append(paramSB);
+		else
+		    subsetSB.append(
+				    HtmlUtils.formEntryTop(
+							   msgLabel("Search Fields"),
+							   HtmlUtils.makeShowHideBlock(
+										       msg(""), paramSB.toString(), false)));
 
 
             }
         }
         subsetSB.append(extraSubset);
         subsetSB.append(HtmlUtils.formTableClose());
-        sb.append(HtmlUtils.makeShowHideBlock("Subset Data",
-                subsetSB.toString(), false));
+	if(csvForm)
+	    sb.append(subsetSB);
+	else
+	    sb.append(HtmlUtils.makeShowHideBlock("Subset Data",
+						  subsetSB.toString(), false));
 
     }
 
