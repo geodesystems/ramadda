@@ -1640,9 +1640,30 @@ var Utils =  {
                 apply: function(source, debug, handler) {
                     //              if(debug) console.log("macro:" + JSON.stringify(source,null,2));
                     let cnt = 0;
-
                     let tokenFunc = t=>{
                         let value = source[t.tag];
+			//The tag might be a regexp or a '|' delimited list
+			if(!value) {
+			    let keys = Object.keys(source);
+			    keys.every(key=>{
+				if(key.match(t.tag)) {
+				    value = source[key];
+				    return false;
+				}
+				if(t.tag.indexOf('|')) {
+				    t.tag.split('|').every(tok=>{
+					if(tok==key || key.match(tok)) {
+					    value = source[key];
+					    return false;
+					}
+					return true;
+				    });
+				}
+				if(value) return false;
+				return true;
+			    });
+			}
+//			console.log(t.tag +" " + value);
                         let s = "";
                         if(t.tag=="func") {
                             let f = t.attrs.f;
@@ -5164,8 +5185,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             if(Array.isArray(item)) {
                 label=item[1];
                 item = item[0];
-            }
-	    if(Utils.isDefined(item.value)) {
+            } else if(Utils.isDefined(item.value)) {
 		label = item.label??item.value;
 		item = item.value;
 	    }
