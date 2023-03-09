@@ -6137,29 +6137,31 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	if(!tokenize) {
 	    gptCorpus.append(text);
 	} else {
-	    if(debugGpt) System.err.println("\ttokenizing");
-	    if(debugGpt) System.err.println("\ttext:" + text);
+	    //	    debugGpt = true;
+	    if(debugGpt) System.err.println("Repository.callGpt tokenizing " + text.length());
 	    text = Utils.removeNonAscii(text," ").replaceAll("[,-\\.\n]+"," ").replaceAll("  +"," ");
 	    if(text.trim().length()==0) {
-		if(debugGpt) System.err.println("\tno text");
+		if(debugGpt) System.err.println("\tRepository.callGpt no text");
 		return null;
 	    }
 	    List<String> toks = Utils.split(text," ",true,true);
-	    //limit is  4000 tokens or ~3500 words
+	    //limit is  4000 tokens or ~3000 words?
 	    int extraCnt = 0;
-	    for(int i=0;i<toks.size() && i+extraCnt<3500;i++) {
+	    int i =0;
+	    for(i=0;i<toks.size() && i+extraCnt<3000;i++) {
 		String tok = toks.get(i);
-		if(tok.length()>6) {
-		    extraCnt+=(int)(tok.length()/6);
+		if(tok.length()>5) {
+		    extraCnt+=(int)(tok.length()/5);
 		}
 		gptCorpus.append(tok);
 		gptCorpus.append(" ");
 	    }
+	    if(debugGpt) System.err.println("\tRepository.callGpt done tokenizing: i=" + i +" extraCnt=" + extraCnt);
+	    //	    debugGpt = false;
 	}
-	if(debugGpt) System.err.println("\tdone tokenizing");
 	gptCorpus.append("\n\n");
 	gptCorpus.append(prompt2);
-	if(debugGpt) System.err.println("tokens:" + tokens);
+	if(debugGpt) System.err.println("Repository.callGpt return max tokens:" + tokens);
 	String gptText =  gptCorpus.toString();
 	//	    System.err.println("gpt corpus:" + text);
 	List<String> args = Utils.makeList(
