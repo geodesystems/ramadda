@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Mar  9 08:12:53 MST 2023";
+var build_date="RAMADDA build date: Thu Mar  9 12:52:31 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -3274,8 +3274,11 @@ Glyph.prototype = {
 
 	    if(debug) console.log('glyph label: font=' + ctx.font +' fill:' + ctx.fillStyle +' stroke:' + ctx.strokeStyle);
 	    text = text.replace(/\${.*}/g,'');
+	    if(this.prefix) text = this.prefix.replaceAll('_space_',' ')+text
+	    if(this.suffix) text = text+this.suffix.replaceAll('_space_',' ');
 	    text = text.replace(/_nl_/g,'\n').split('\n');
 	    //remove any macros that did not get set
+
 
 	    let h = 0;
 	    let hgap = 3;
@@ -46372,14 +46375,29 @@ MapGlyph.prototype = {
 
 	//This recurses up the glyph tree
 	let glyphField=this.getGlyphProperty('field');
-//	console.log("draw " + glyphField);
+	let glyphFields = this.getGlyphProperty('fields');
+	let attrs = {};
+	if(glyphField && glyphFields) {
+	    Utils.split(glyphFields,'\n',true,true).every(item=>{
+		let toks = Utils.split(item,',',true,true);
+		if(toks[0]!=glyphField) return true;
+		for(let i=1;i<toks.length;i++) {
+		    let toks2 = Utils.split(toks[i],"=",true,true);
+		    attrs[toks2[0]] = toks2[1]??'';
+		}
+		return false;
+	    });
+	}
 	lines.forEach(line=>{
 	    line = line.trim();
 	    if(line.startsWith('#')) return;
 	    if(glyphField) {
 		line = line.replace(/\${field}/g,glyphField);
 	    }
-//	    console.log("\t"+line);
+	    Object.keys(attrs).forEach(key=>{
+		if(key=='label') return;
+		line = line.replaceAll("\${" + key+"}",attrs[key]);
+	    });
 	    glyphs.push(new Glyph(this.display,1.0, data.getRecordFields(),data.getRecords(),{
 		canvasWidth:canvasWidth,
 		canvasHeight: canvasHeight,
