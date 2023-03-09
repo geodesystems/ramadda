@@ -129,7 +129,8 @@ import org.apache.tika.parser.Parser;
 @SuppressWarnings("unchecked")
 public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
-    private static boolean debugGpt = true;
+    private static boolean debugCorpus = false;
+    private static boolean debugGpt = false;
 
     /** _more_ */
     public static final String ARG_SEARCH_SUBMIT = "search.submit";
@@ -742,6 +743,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    StringBuilder fileCorpus = new StringBuilder();
             addContentField(entry, doc, FIELD_CONTENTS, entry.getResource().getTheFile(), true, fileCorpus);
 	    corpus.append(fileCorpus);
+	    if(debugGpt) System.err.println("SearchManager: file corpus:" + fileCorpus.length());
+
+
 	    if(/*isNew && */request!=null) {
 		boolean entryChanged = false;
 		if(request.get(ARG_EXTRACT_KEYWORDS,false)) {
@@ -954,19 +958,28 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     private String readContents(File f,List<org.apache.tika.metadata.Metadata> metadataList) throws Exception {
 	if(!isDocument(f.getName())) {
+	    if(debugCorpus)
+		System.err.println("SearchManager.readContents: Not a document:" + f.getName());
 	    return null;
 	}
 
 	//Don't do really big files 
 	if(f.length()>LUCENE_MAX_LENGTH) {
-	    //	    System.err.println("file too big:" + f.length());
-	    return null;
+	    //Don't do this since the max size should be capped by tika below
+	    //	    if(debugCorpus)System.err.println("SearchManager.readContents file too big: " + f.getName() +" " +f.length());
+	    //	    return null;
 	}
 	//	System.err.println(f.getName() +" length:" + f.length() +" max:" +LUCENE_MAX_LENGTH);
 	//	if(Utils.isImage(f.toString())) return null;
-	if(f.length()==0) return null;
+	if(f.length()==0) {
+	    if(debugCorpus)
+		System.err.println("SearchManager.readContents: empty file: " + f.getName());
+	    return null;
+	}
 	File corpusFile = TikaUtil.getTextCorpusCacheFile(f);
 	if(corpusFile.exists()) {
+	    if(debugCorpus)
+		System.err.println("SearchManager.readContents: corpus file exists:" + f.getName());
 	    return  IO.readContents(corpusFile.toString(), SearchManager.class);
 	} 
 	//	System.err.println("no corpus for file:" + f);
@@ -974,6 +987,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	//Note: because we check for isDocument above we never have images here
 	boolean isImage = Utils.isImage(f.getName());
 	if(isImage && !indexImages) {
+	    if(debugCorpus)
+		System.err.println("SearchManager.readContents: is image:" +f.getName());
 	    return null;
 	}
 
@@ -1009,7 +1024,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             parser.parse(bis, handler, metadata,new org.apache.tika.parser.ParseContext());
 	    long t2= System.currentTimeMillis();
 	    String corpus = handler.toString();
-	    //	    System.err.println("corpus:" + f.getName() +" time:" + (t2-t1)+" l:" + corpus.length());
+	    if(debugCorpus)
+		System.err.println("SearchManager.readContents: corpus:" + f.getName() +" time:" + (t2-t1)+" length:" + corpus.length());
 	    return  corpus;
 	}  catch(Throwable exc) {
 	    System.err.println("Error reading contents:" + f.getName() +" error:" + exc);
@@ -1043,9 +1059,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    long t1 = System.currentTimeMillis();
 	    String contents = readContents(f,metadata);
 	    long t2= System.currentTimeMillis();
-	    //	    System.err.println("readContents:" + entry +" " + f.getName() +" time:" + (t2-t1) +" " + contents);
             if ((contents != null) && (contents.length() > 0)) {
                 doc.add(new TextField(field, contents, Field.Store.NO));
+		if(debugCorpus)
+		    System.err.println("SearchManager.addContentField corpus:" + contents.length());
 		corpus.append(contents);
 		corpus.append(" ");
             }
