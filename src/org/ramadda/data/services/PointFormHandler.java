@@ -899,14 +899,14 @@ public class PointFormHandler extends RecordFormHandler {
 
 
         if (recordEntry != null) {
-            String help = "Probablity a point will be included 0.-1.0";
+            String help = "Probablity a point will be included 0 - 1.0";
             String probHelpImg =HU.space(1) +
                 HU.span(HU.getIconImage("fas fa-question-circle",HU.attr("title",help)),HU.cssClass("ramadda-hoverable"));
             String prob =
                 HtmlUtils.space(3) + msgLabel("Or use probability") + " "
                 + HtmlUtils.input(ARG_PROBABILITY,
                                   request.getString(ARG_PROBABILITY, ""),
-                                  3) + probHelpImg;
+                                  5,HU.attr("placeholder","e.g., 0.5")) + probHelpImg;
 
 
 
