@@ -34,8 +34,7 @@ depth_m.unit=M
 </property>
 <!-- This defines how these entries are shown in the Integrated Map Data Viewer (IMDV) -->
 <property name="mapglyphs">
-fontSize=0px;size=75;width=500;height=100;fill=#efefef;border=#000;font=bold 36px sans-serif
-#fontSize=0px;size=75;width=600;height=250;fill=#efefef;border=#000;font=bold 36px sans-serif
+props:fontSize:0px,size:75,width:500,height:100,fill:#efefef,border:#000,font:bold 36px sans-serif
 type:image,pos:nw,dx:10,dy:10-canvasHeight,width:60,height:60,url:${root}/point/campbell.gif
 type:label,pady:5,pos:nw,dx:80,dy:10-canvasHeight,label:${entryname}  
 type:label,pos:s,dx:canvasWidth2,dy:-10,font:36px sans-serif,label:${match  pattern="(temp|rh)" prefixLabel=true}

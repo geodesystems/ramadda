@@ -128,9 +128,11 @@ height=400px isPath=true radius=6 strokeWidth=0 colorBy=# colorByFields="#" colo
      <column  name="hardware"  label="Hardware" type="string" editable="false"/>     
      <column  name="location_type"  label="Location Type" type="enumeration" values="outside,inside" editable="false"/>     
 <property name="mapglyphs">
-<![CDATA[fontSize=0px;size=25;width=50;height=50;font=bold 12px sans-serif  
-type:circle,width:canvasWidth-10,height:canvasHeight,pos:c,dx:canvasWidth2,dy:-canvasHeight2,colorBy=pm2.5,colorBy:pm2.5,colorTable:airquality,colorByMin:0,colorByMax:300              
-type:label,pos:c,dx:canvasWidth2,dy:-canvasHeight2,label:${pm2.5}]]></property>
+  <![CDATA[
+props:fontSize:0px,size:25,width:50,height:50,font:18px sans-serif  
+type:circle,width:canvasWidth-10,height:canvasHeight,pos:c,dx:canvasWidth2,dy:-canvasHeight2,colorBy:${pm2.5},colorTable:airquality,colorByMin:0,colorByMax:300              
+type:label,pos:c,dx:canvasWidth2,dy:-canvasHeight2,label:${pm2.5}
+]]></property>
 
 <property name="bubble">
 <![CDATA[

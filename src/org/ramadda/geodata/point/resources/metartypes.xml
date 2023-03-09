@@ -67,7 +67,7 @@ fields=timestamp[type=date format="yyyy-MM-dd'T'HH:mm:ss"],latitude[chartable=tr
 
 <property name="mapglyphs">
 <![CDATA[
-fontSize=0px;size=75;width=600;height=250;fill=#efefef;border=#000;font=bold 36px sans-serif
+props:fontSize:0px,size:75,width:600,height:250,fill:#efefef,border:#000,font:bold 36px sans-serif
 type:image,pos:nw,dx:10,dy:10-canvasHeight,width:60,height:60,url:${root}/point/noaa.gif                                
 type:label,pady:5,pos:nw,dx:80,dy:10-canvasHeight,label:${entryname}  
 type:label,pady:10,pos:n,dx:canvasWidth2,dy:60-canvasHeight,font:36px sans-serif,label:${temperature prefixLabel=true}_nl_${windspeed prefixLabel=true}_nl_Pressure: ${barometricpressure scale=0.01 decimals=1} mb
