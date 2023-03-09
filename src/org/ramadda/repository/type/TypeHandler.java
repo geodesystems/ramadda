@@ -5144,7 +5144,7 @@ public class TypeHandler extends RepositoryManager {
 
                     String extras = getFileExtras(request, entry);
                     String extra =
-                        HtmlUtils.makeShowHideBlock(msg("More..."), extras,
+                        HtmlUtils.makeShowHideBlock(msg("Upload Settings"), extras,
                             false);
                     if (forUpload || !showDownload) {
                         extra = "";
