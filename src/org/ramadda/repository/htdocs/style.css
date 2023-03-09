@@ -907,6 +907,10 @@ a.ramadda-menubar-button:hover {
     color:#ccc;
 }
 
+.fa-darkgray {
+    color:#888;
+}
+
 .ramadda-callout-icon {
     display:inline;
     margin-right:30px;
