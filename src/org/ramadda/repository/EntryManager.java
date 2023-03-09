@@ -961,7 +961,9 @@ public class EntryManager extends RepositoryManager {
 
     public Result processEntryData(Request request) throws Exception {
 	request.put("output","points.product");
-	request.put("product","points.json");
+	if(!request.defined("product"))
+	    request.put("product","points.json");
+	//	request.put("product","points.csv");
 	Result result =  processEntryShow(request);
 	return result;
     }
