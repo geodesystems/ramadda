@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Mar  8 13:26:37 MST 2023";
+var build_date="RAMADDA build date: Wed Mar  8 19:03:44 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -23534,7 +23534,10 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	    if(this.getShowCopyButton(true))
 		buttons+=  HU.div([ID,this.getDomId(ID_DOWNLOAD_COPY)],"Copy") +space;
 	    buttons+=  HU.div([ID,this.getDomId(ID_CANCEL)],"Cancel");
-	    let html = HU.center("#" +records.length +" records") +HU.center(buttons);
+	    let html = HU.center("#" +records.length +" records");
+	    html+=HU.center(HU.span(['style','font-size:80%;'], 'Note: this downloads the data currently<br>being shown in the browser'));
+	    HU.center(buttons);
+
 	    if(this.getShowDateSelect()) {
 		html+=HU.formTable();
 		html+=HU.formEntry('From date:',
@@ -23567,13 +23570,30 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 		}
 
 		this.jq(ID_DIALOG).hide();
+		let allFields = this.getData().getRecordFields();
 		let fields = [];
 		this.applyFieldSelection();
-		this.getData().getRecordFields().forEach(f=>{
+		allFields.forEach(f=>{
 		    if(this.fieldOn[f.getId()]) {
 			fields.push(f);
 		    }
 		});
+
+		/*
+		let pointData = this.dataCollection.getList()[0];
+		let url = new URL('https://localhost/' + pointData.getUrl());
+		if(allFields.length!=fields.length) {
+		    fields.forEach(f=>{
+			url = HU.url(url.toString(),['field_use',f.getId()]);
+		    });
+		}
+		if(!json)
+		    url = HU.url(url.toString(),['product','points.csv']);
+		console.log(url);
+		window.open(url,'_download');
+		return
+		*/
+
 		if(json) 
 		    this.getJson(fields, records);
 		else	
