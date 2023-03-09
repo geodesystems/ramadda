@@ -900,13 +900,13 @@ public class PointFormHandler extends RecordFormHandler {
 
         if (recordEntry != null) {
             String help = "Probablity a point will be included 0.-1.0";
-            String probHelpImg =
-                HtmlUtils.img(getRepository().getIconUrl(ICON_HELP), help);
+            String probHelpImg =HU.space(1) +
+                HU.span(HU.getIconImage("fas fa-question-circle",HU.attr("title",help)),HU.cssClass("ramadda-hoverable"));
             String prob =
                 HtmlUtils.space(3) + msgLabel("Or use probability") + " "
                 + HtmlUtils.input(ARG_PROBABILITY,
                                   request.getString(ARG_PROBABILITY, ""),
-                                  4) + probHelpImg;
+                                  3) + probHelpImg;
 
 
 
@@ -992,23 +992,20 @@ public class PointFormHandler extends RecordFormHandler {
                 }
                 if (paramSB == null) {
                     paramSB = new StringBuffer();
-                    paramSB.append(HtmlUtils.formTable());
-		    paramSB.append(HU.formEntry("",HU.labeledCheckbox("", HU.VALUE_TRUE,
-								      false,HU.attr("id",toggleAllId),
-								      "Toggle all")));
+		    //                    paramSB.append(HtmlUtils.formTable());
+		    paramSB.append(HU.labeledCheckbox("", HU.VALUE_TRUE,
+						      false,HU.attr("id",toggleAllId),
+						      "Toggle all"));
 
+		    paramSB.append("<br>");
                 }
-                String label = attr.getName();
-                if (attr.getDescription().length() > 0) {
-                    label = label + " - " + attr.getDescription();
-                }
-                paramSB.append(HtmlUtils.formEntry("",
-                        HtmlUtils.labeledCheckbox(ARG_FIELD_USE,
-						  attr.getName(),
-						  selected.contains(attr.getName()), HU.cssClass("ramadda-subset-field"),label)));
+		String label = attr.getLabel() + " - " +  attr.getName();
+                paramSB.append(HtmlUtils.labeledCheckbox(ARG_FIELD_USE,
+							 attr.getName(),
+							 selected.contains(attr.getName()), HU.cssClass("ramadda-subset-field"),label));
+		paramSB.append("<br>");
             }
             if (paramSB != null) {
-                paramSB.append(HtmlUtils.formTableClose());
 		if(csvForm)
 		    subsetSB.append(
 				    HtmlUtils.formEntryTop(msgLabel("Select Fields"),

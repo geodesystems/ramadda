@@ -6,6 +6,7 @@
      <property name="form.area.show" value="false"/>
      <property name="form.location.show" value="false"/>
      <property name="subset.area.show" value="false"/>
+     <property name="subset.date.show" value="true"/>     
  <property name="record.properties">
 <![CDATA[
 #This is the row that defines the field names, i.e., the second row (like above) has a comma separated list of names

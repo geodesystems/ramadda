@@ -289,10 +289,12 @@ public class PointOutputHandler extends RecordOutputHandler {
                                       | OutputType.TYPE_IMPORTANT, "",
                                           "fa-chart-line", category);
 
-        OUTPUT_FORM_CSV = new OutputType("Get CSV", base + ".formcsv",
-					 OutputType.TYPE_OTHER
+        OUTPUT_FORM_CSV = new OutputType("CSV Download Form", base + ".formcsv",
+					 OutputType.TYPE_FILE
 					 | OutputType.TYPE_IMPORTANT, "",
-                                         ICON_TOOLS, category);
+					 "fa-solid fa-arrow-down-short-wide fa-darkgray",
+					 //                                         ICON_TOOLS, 
+					 category);
 
 
         OUTPUT_FORM = new OutputType("Subset and Products", base + ".form",
