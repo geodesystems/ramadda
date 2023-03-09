@@ -129,6 +129,7 @@ import org.apache.tika.parser.Parser;
 @SuppressWarnings("unchecked")
 public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
+    private static boolean debugGpt = true;
 
     /** _more_ */
     public static final String ARG_SEARCH_SUBMIT = "search.submit";
@@ -760,6 +761,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		}
 		if(isNew) {
 		    if(request.get(ARG_EXTRACT_SUMMARY,false)) {
+			if(debugGpt) System.err.println("SearchManager: callGpt: summary");
 			String summary = getRepository().callGpt("Summarize the following text. Assume the reader has a college education. Limit the summary to no more than 4 sentences.","",fileCorpus,200,true);
 			if(stringDefined(summary)) {
 			    summary = Utils.stripTags(summary).trim().replaceAll("^:+","");
@@ -770,6 +772,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    }
 
 		    if(request.get(ARG_EXTRACT_TITLE,false)) {
+			if(debugGpt) System.err.println("SearchManager: callGpt: title");
 			String title = getRepository().callGpt("Extract the title from the following document:","",fileCorpus,200,true);
 			if(stringDefined(title)) {
 			    title = title.trim().replaceAll("\"","").replaceAll("\"","");
@@ -781,6 +784,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
 		    if(request.get(ARG_EXTRACT_AUTHORS,false)) {
+			if(debugGpt) System.err.println("SearchManager: callGpt: authors");
 			String authors = getRepository().callGpt("Extract the author's names from the following text and separate the names with a comma:","",fileCorpus,200,true);		    
 			if(stringDefined(authors)) {
 			    entryChanged = true;
@@ -876,6 +880,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 
 	List<String> keywords = new ArrayList<String>();
+	if(debugGpt) System.err.println("SearchManager: callGpt: keywords");
 	String result = getRepository().callGpt("Extract keywords from the following text. Limit your response to no more than 15 keywords:","Keywords:",fileCorpus,60,true);
 	if(result!=null) {
 	    for(String tok:Utils.split(result,",",true,true)) {
