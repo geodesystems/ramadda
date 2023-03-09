@@ -2847,8 +2847,11 @@ Glyph.prototype = {
 
 	    if(debug) console.log('glyph label: font=' + ctx.font +' fill:' + ctx.fillStyle +' stroke:' + ctx.strokeStyle);
 	    text = text.replace(/\${.*}/g,'');
+	    if(this.prefix) text = this.prefix.replaceAll('_space_',' ')+text
+	    if(this.suffix) text = text+this.suffix.replaceAll('_space_',' ');
 	    text = text.replace(/_nl_/g,'\n').split('\n');
 	    //remove any macros that did not get set
+
 
 	    let h = 0;
 	    let hgap = 3;

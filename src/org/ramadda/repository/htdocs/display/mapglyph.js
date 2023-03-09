@@ -720,14 +720,29 @@ MapGlyph.prototype = {
 
 	//This recurses up the glyph tree
 	let glyphField=this.getGlyphProperty('field');
-//	console.log("draw " + glyphField);
+	let glyphFields = this.getGlyphProperty('fields');
+	let attrs = {};
+	if(glyphField && glyphFields) {
+	    Utils.split(glyphFields,'\n',true,true).every(item=>{
+		let toks = Utils.split(item,',',true,true);
+		if(toks[0]!=glyphField) return true;
+		for(let i=1;i<toks.length;i++) {
+		    let toks2 = Utils.split(toks[i],"=",true,true);
+		    attrs[toks2[0]] = toks2[1]??'';
+		}
+		return false;
+	    });
+	}
 	lines.forEach(line=>{
 	    line = line.trim();
 	    if(line.startsWith('#')) return;
 	    if(glyphField) {
 		line = line.replace(/\${field}/g,glyphField);
 	    }
-//	    console.log("\t"+line);
+	    Object.keys(attrs).forEach(key=>{
+		if(key=='label') return;
+		line = line.replaceAll("\${" + key+"}",attrs[key]);
+	    });
 	    glyphs.push(new Glyph(this.display,1.0, data.getRecordFields(),data.getRecords(),{
 		canvasWidth:canvasWidth,
 		canvasHeight: canvasHeight,
