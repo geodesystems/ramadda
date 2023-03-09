@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Mar  8 21:33:23 MST 2023";
+var build_date="RAMADDA build date: Thu Mar  9 08:12:53 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -3109,12 +3109,15 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	    value+=toks[i];
 	}
 	value = value.replace(/_nl_/g,"\n").replace(/_colon_/g,":").replace(/_comma_/g,",");
+	//Check for the ${...} macros
+	if(name=='colorBy')
+	    value = value.replace('\${','').replace('}','');
+
 	if(value=="true") value=true;
 	else if(value=="false") value=false;
 	this[name] = value;
 //	console.log(name+"="+value);
     });
-
 
     if(this.labelBy) {
 	this.labelField=display.getFieldById(fields,this.labelBy);
@@ -3144,8 +3147,6 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	    this.pos = "nw";
     }	
     
-
-    
     let cvrt = s=>{
 	if(!isNaN(+s)) return +s;
 	s  = String(s);
@@ -3153,7 +3154,11 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	s = s.replace(/canvasHeight2/g,""+(this.canvasHeight/2)).replace(/canvasHeight/g,this.canvasHeight);	
 	s = s.replace(/width2/g,""+(this.width/2)).replace(/width/g,this.width);	
 	s = s.replace(/height2/g,""+(this.height/2)).replace(/height/g,this.width);	
-	s = eval(s);
+	try {
+	    s = eval(s);
+	} catch(err) {
+	    console.error('error evaling glyph value:' + s,err);
+	}
 	return s;
     };
     this.width = cvrt(this.width);
@@ -3181,12 +3186,15 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	}
     }
 
+
+    this.dontShow =false;
     if(!this.colorByInfo && this.colorBy) {
 	this.colorByField=display.getFieldById(fields,this.colorBy);
 	let ct = this.colorTable?display.getColorTableInner(true, this.colorTable):null;
 	if(!this.colorByField) {
 	    console.log("Could not find colorBy field:" + this.colorBy);
-	    console.log("Fields:" + fields);
+//	    console.log("Fields:" + fields);
+	    this.dontShow =true;
 	} else {
 	    let props = {
 		Min:this.colorByMin,
@@ -3195,11 +3203,19 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	    this.colorByInfo =  new ColorByInfo(display, fields, records, this.colorBy,this.colorBy+".colorByMap", ct, this.colorBy,this.colorByField, props);
 	}
     }
+
+
+    if(this.requiredField) {
+	if(!display.getFieldById(fields,this.requiredField)) {
+	    this.dontShow = true;
+	}
+    }
 }
 
 
 Glyph.prototype = {
     draw: function(opts, canvas, ctx, x,y,args,debug) {
+	if(this.dontShow)return;
 	debug = this.debug??debug;
 	let color =   null;
 	if(this.colorByInfo) {
@@ -3224,23 +3240,29 @@ Glyph.prototype = {
 	}
 	ctx.fillStyle =color || this.fillStyle || this.color || 'blue';
 	ctx.strokeStyle =this.strokeStyle || this.color || '#000';
-	ctx.lineWidth=this.lineWidth||1;
+	ctx.lineWidth=this.lineWidth??this.strokeWidth??1;
 	if(this.type=='label' || this.label) {
 	    let label = this.labelField?args.record.getValue(this.labelField.getIndex()):this.label;
 	    if(label===null) {
 		console.log('No label value');
 		return;
 	    }
-	    if(typeof label=='number') {
-		if(this.valueScale) {
-		    label = label* +this.valueScale;
-		}
+	    let text = String(label);
+	    if(args.record) {
+		text = this.display.applyRecordTemplate(args.record, null,null,text,{
+		    entryname:this.entryname
+		});
+	    }
 
-		if(this.decimals)
-		    label = number_format(label,+this.decimals);
+	    if(!isNaN(parseFloat(text))) {
+		if(this.valueScale) {
+		    text = text* +this.valueScale;
+		}
+		if(Utils.isDefined(this.decimals))
+		    text = number_format(text,+this.decimals);
 	    }
 	    if(this.template) {
-		label = this.template.replace('${value}',label);
+		text = this.template.replace('${value}',text);
 	    }
 	    //Normalize the font
 	    if(this.font && this.font.match(/\d+(px|pt)$/)) {
@@ -3251,14 +3273,9 @@ Glyph.prototype = {
 	    ctx.fillStyle = ctx.strokeStyle =    color || this.color|| this.display.getProperty('glyphColor','#000');
 
 	    if(debug) console.log('glyph label: font=' + ctx.font +' fill:' + ctx.fillStyle +' stroke:' + ctx.strokeStyle);
-	    let text = String(label);
-
-	    if(args.record) {
-		text = this.display.applyRecordTemplate(args.record, null,null,text,{
-		    entryname:this.entryname
-		});
-	    }
+	    text = text.replace(/\${.*}/g,'');
 	    text = text.replace(/_nl_/g,'\n').split('\n');
+	    //remove any macros that did not get set
 
 	    let h = 0;
 	    let hgap = 3;
@@ -41504,6 +41521,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    style = $.extend({},style);
 			    style.externalGraphic =attrs.icon;
 			    mapOptions.useentrylocation = true;
+			    mapOptions.name = attrs.name;
 			    let points = Utils.isDefined(attrs.latitude)?[attrs.latitude,attrs.longitude]:[attrs.north,attrs.west];
 			    let mapGlyph = this.createMapMarker(GLYPH_ENTRY,mapOptions, style,points,true);
 			    mapGlyph.applyEntryGlyphs();
@@ -45729,7 +45747,7 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
 	this.checkRings();
     }
 
-
+    this.checkGlyphFields();
 }
 
 
@@ -45917,8 +45935,10 @@ MapGlyph.prototype = {
 	return this.type == GLYPH_MULTIENTRY;
     },
     getEntryGlyphs:function(checkTransient) {
-	if(Utils.stringDefined(this.attrs.entryglyphs))
-	    return this.attrs.entryglyphs;
+	let glyphs = this.getGlyphProperty('glyphs');
+	if(Utils.stringDefined(glyphs)) {
+	    return glyphs;
+	}
 	if(checkTransient)
 	    return this.transientProperties.mapglyphs;
 	return null;
@@ -46001,15 +46021,6 @@ MapGlyph.prototype = {
 	    nameWidget+=HU.space(3) +HU.checkbox(this.domId('useentrylocation'),[],this.getUseEntryLocation(),'Use location from entry');
 	}
 	html+=HU.b('Name: ') +nameWidget+'<br>';
-	if(this.isEntry()) {
-	    layout('Glyphs:</b> <a target=_help href=https://ramadda.org/repository/userguide/imdv.html#glyphs>Help</a><b>',
-		   HU.textarea('',this.getEntryGlyphs()??'',[ID,this.domId('entryglyphs'),'rows',5,'cols', 90]));
-	    /*
-	      glyph1='type:gauge,color:red,pos:sw,width:50,height:50,dx:20,dy:-30,sizeBy:atmos_temp,sizeByMin:0,sizeByMax:100'
-	      glyph2='type:label,pos:sw,dx:25,dy:0,label:${atmos_temp}'
-	    */
-	}
-
 	let level = this.getVisibleLevelRange()??{};
 	html+= HU.checkbox(this.domId('visible'),[],this.getVisible(),'Visible')+'<br>';
 
@@ -46072,6 +46083,38 @@ MapGlyph.prototype = {
 	html += HU.hbox([HU.textarea('',this.attrs.properties??'',[ID,this.domId('miscproperties'),'rows',6,'cols', 40]),
 			 HU.space(2),ex]);
 	content.push({header:'Flags',contents:html});
+
+	if(this.isEntry() || this.isGroup()) {
+	    let contents ='';
+	    let gi  =this.getGlyphInfo();
+	    contents+= HU.href(RamaddaUtils.getUrl('/userguide/imdv.html#glyphs'),
+			       HU.getIconImage(icon_help) +' Help',
+			       ['target','_help']) +'<br>';
+	    contents+=HU.b('Glyph fields:') +'<br>'+
+		HU.textarea('',gi.fields??'',
+			    ['placeholder','e.g.: field_id,label=Some label','id',this.domId('glyphfields'),'rows',4,'cols', 90]);
+	    contents+= HU.formTable();
+	    contents+=HU.formEntry('Glyph field:',
+				   HU.input('',gi.field??'',['id',this.domId('glyphfield'),'size','40','placeholder','Initial field']));
+	    contents+=HU.formEntry('Label:',
+				   HU.input('',gi.label??'',['id',this.domId('glyphlabel'),'size','40']));	    	    
+	    contents+= HU.formTableClose();
+    
+	    contents+=HU.b('Glyphs:') +'<br>';
+	    contents +=
+		HU.textarea('',gi.glyphs??'',[ID,this.domId('entryglyphs'),'rows',4,'cols', 90]);
+	    content.push({
+		header:'Glyphs',
+		contents: contents});
+
+	}
+
+	
+	
+
+
+
+
     },
     addElevations:async function(update,done) {
 	let pts;
@@ -46096,7 +46139,6 @@ MapGlyph.prototype = {
 
 
     applyPropertiesDialog: function() {
-
 	if(this.isMultiEntry()) {
 	    this.setShowMultiData(this.jq("showmultidata").is(':checked'));
 	}
@@ -46107,12 +46149,18 @@ MapGlyph.prototype = {
 	    this.setUseEntryName(this.jq("useentryname").is(":checked"));
 	    this.setUseEntryLabel(this.jq("useentrylabel").is(":checked"));
 	    this.setUseEntryLocation(this.jq("useentrylocation").is(":checked"));
-	    let glyphs = this.jq("entryglyphs").val();
-	    this.setEntryGlyphs(glyphs);
-	    this.applyEntryGlyphs();
 	}
-	
-
+	if(this.isEntry() || this.isGroup()) {
+	    let gi = this.getGlyphInfo();
+	    gi.glyphs = this.jq("entryglyphs").val();
+	    gi.fields=this.jq('glyphfields').val();
+	    gi.field=this.jq('glyphfield').val();
+	    gi.label=this.jq('glyphlabel').val();	    	    
+	    if(this.isGroup()) 
+		this.applyGlyphField();
+	    else
+		this.applyEntryGlyphs();
+	}
 	this.setVisible(this.jq("visible").is(":checked"),true);
 	this.parsedProperties = null;
 	this.attrs.properties = this.jq('miscproperties').val();
@@ -46133,6 +46181,49 @@ MapGlyph.prototype = {
 	    this.attrs.rangeRingAngle=this.jq('rangeringangle').val();
 	    this.attrs.rangeRingStyle = this.jq('rangeringstyle').val();
 	    if(this.features.length>0) this.features[0].style.strokeColor='transparent';
+	}
+	this.checkGlyphFields();
+    },
+    checkGlyphFields:function() {
+	let _this = this;
+	let gi = this.getGlyphInfo();
+	if(this.glyphFieldsContainer) {
+	    jqid(this.glyphFieldsContainer).remove();
+	}
+	if(Utils.stringDefined(gi.fields)) {
+	    this.glyphFieldsId = HU.getUniqueId('glyphfields_');
+	    this.glyphFieldsContainer = HU.getUniqueId('glyphfields_');
+	    let items = [];
+	    Utils.split(gi.fields,'\n',true,true).forEach(item=>{
+		let toks = Utils.split(item,',',true,true);
+		let map = {};
+		for(let i=1;i<toks.length;i++) {
+		    let toks2 = Utils.split(toks[i],"=",true,true);
+		    if(toks2.length>1) map[toks2[0]] = toks2[1];
+		}
+		items.push({value:toks[0],label:map.label});
+	    });
+	    let menu = HU.select('',['id',this.glyphFieldsId],
+				 items,
+				 gi.field);
+	    let label = Utils.stringDefined(gi.label)?gi.label:'Select field';
+	    this.display.jq(ID_HEADER1).append(HU.div(['style',HU.css('display','inline-block','margin-right','20px'),'id',this.glyphFieldsContainer],
+						      HU.b(label)+':'+HU.space(1)+menu));
+	    jqid(this.glyphFieldsId).change(function(){
+		_this.getGlyphInfo().field = $(this).val();
+		_this.applyGlyphField();
+	    });
+	}
+    },
+
+    applyGlyphField: function() {
+	if(this.isEntry()) {
+	    this.applyEntryGlyphs();
+	}
+	if(this.children) {
+	    this.children.forEach(child=>{
+		child.applyGlyphField();
+	    });
 	}
     },
     featureSelected:function(feature,layer,event) {
@@ -46167,6 +46258,7 @@ MapGlyph.prototype = {
     },
     applyEntryGlyphs:function(args) {
 	if(!Utils.stringDefined(this.getEntryGlyphs(true))) {
+	    console.log("apply nont");
 	    return;
 	}
 
@@ -46179,7 +46271,7 @@ MapGlyph.prototype = {
 	}
 
 	let glyphs = [];
-	this.getEntryGlyphs(true).trim().split("\n").forEach(line=>{
+	Utils.split(this.getEntryGlyphs(true),'\n',true,true).forEach(line=>{
 	    line = line.trim();
 	    if(line.startsWith("#") || line == "") return;
 	    glyphs.push(line);
@@ -46203,7 +46295,6 @@ MapGlyph.prototype = {
 	    },
 	    pointDataLoaded:function(data,url) {
 		callback(data);
-
 	    },
             pointDataLoadFailed:function(err){
 		this.display.pointDataLoadFailed(err);
@@ -46225,13 +46316,13 @@ MapGlyph.prototype = {
 	let lines=[];
 	let canvasWidth=100;
 	let canvasHeight=100;
-	let widthRegexp = /width *= *([0-9]+)/;
-	let heightRegexp = /height *= *([0-9]+)/;
-	let fillRegexp = /fill *= *(.+)/;
-	let borderRegexp = /border *= *(.+)/;
-	let fontRegexp = /font *= *(.+)/;				
-	let sizeRegexp = /size *= *(.+)/;
-	let fontSizeRegexp = /fontSize *= *(.+)/;					
+	let widthRegexp = /width *: *([0-9]+)/;
+	let heightRegexp = /height *: *([0-9]+)/;
+	let fillRegexp = /fill *: *(.+)/;
+	let borderRegexp = /border *: *(.+)/;
+	let fontRegexp = /font *: *(.+)/;				
+	let sizeRegexp = /size *: *(.+)/;
+	let fontSizeRegexp = /fontSize *: *(.+)/;					
 	let fill;
 	let border;	
 	let font;
@@ -46240,15 +46331,18 @@ MapGlyph.prototype = {
 
 	glyphLines.forEach(line=>{
 	    line = line.trim();
-	    let skip = true;
-	    line.split(";").forEach(line2=>{
-		line2 = line2.trim();
+	    if(line.startsWith("#")) return;
+	    if(!line.startsWith("props:")) {
+		lines.push(line);
+		return;
+	    }
+	    line = line.substring("props:".length);
+	    Utils.split(line,',',true,true).forEach(line2=>{
 		let match;
 		if(match  = line2.match(widthRegexp)) {
 		    canvasWidth=parseFloat(match[1]);
 		    return;
 		}
-		
 		if(match  = line2.match(heightRegexp)) {
 		    canvasHeight=parseFloat(match[1]);
 		    return;
@@ -46273,14 +46367,19 @@ MapGlyph.prototype = {
 		    font = match[1];
 		    return;
 		}
-		skip=false;
-	    })
-	    if(!skip)
-		lines.push(line);
+	    });
 	});
 
-
+	//This recurses up the glyph tree
+	let glyphField=this.getGlyphProperty('field');
+//	console.log("draw " + glyphField);
 	lines.forEach(line=>{
+	    line = line.trim();
+	    if(line.startsWith('#')) return;
+	    if(glyphField) {
+		line = line.replace(/\${field}/g,glyphField);
+	    }
+//	    console.log("\t"+line);
 	    glyphs.push(new Glyph(this.display,1.0, data.getRecordFields(),data.getRecords(),{
 		canvasWidth:canvasWidth,
 		canvasHeight: canvasHeight,
@@ -46322,12 +46421,11 @@ MapGlyph.prototype = {
 	    if(fontSize) {
 		this.style.fontSize=fontSize;
 	    }
-	    
 	    if(size) {
 		this.style.pointRadius=size;
 	    }
 	    this.style.externalGraphic=img;
-	    this.applyStyle(this.style);		
+	    this.applyStyle(this.style,true);		
 	    this.display.redraw();
 	};
 
@@ -46353,8 +46451,19 @@ MapGlyph.prototype = {
     setDownloadUrl:function(url) {
 	this.downloadUrl =url;
     },
+    getGlyphInfo:function(v) {
+	if(!this.attrs.glyphInfo)
+	    this.attrs.glyphInfo = {};
+	return this.attrs.glyphInfo;
+    },
+    getGlyphProperty:function(property,dflt) {
+	if(Utils.stringDefined(this.getGlyphInfo()[property]))
+	    return this.getGlyphInfo()[property];
+	if(this.getParentGlyph()) return this.getParentGlyph().getGlyphProperty(property,dflt);
+	return dflt;
+    },
     setEntryGlyphs:function(v) {
-	this.attrs.entryglyphs = v;
+	this.getGlyphInfo().glyphs = v;
 	return this;
     },
     getUseEntryLocation: function() {
@@ -48536,7 +48645,22 @@ MapGlyph.prototype = {
 	return label;
     },
 
-    getProperty:function(key,dflt) {
+    setProperty:function(key,value) {
+	let newLine = key+'='+value;
+	if(this.attrs.properties) {
+	    let tmp = '';
+	    Utils.split(this.attrs.properties,'\n').forEach(line=>{
+		if(line.match('^ *' +key+' *=')) line = newLine;
+		tmp+=line+'\n';
+	    });
+	    this.attrs.properties = tmp;
+	} else {
+	    this.attrs.properties = newLine+'\n';
+	}
+	this.parsedProperties=null;
+	this.display.featureChanged(true);	    
+    },
+    getProperty:function(key,dflt,checkParent) {
 	let debug = false;
 	if(debug)
 	    console.log("KEY:" + key);
@@ -48551,6 +48675,9 @@ MapGlyph.prototype = {
 	    if(v) {
 		return Utils.getProperty(v);
 	    }
+	}
+	if(checkParent && this.getParentGlyph()) {
+	    return this.getParentGlyph().getProperty(key,dflt,true);
 	}
 	return this.display.getMapProperty(key,dflt);
     },
@@ -49363,7 +49490,7 @@ MapGlyph.prototype = {
 	    this.display.addFeatures(this.rings);
 	}		
     },
-    applyStyle:function(style) {
+    applyStyle:function(style,skipChangeNotification) {
 	this.style = style;
 	this.applyMapStyle();
 	if(this.getMapServerLayer()) {
@@ -49388,7 +49515,8 @@ MapGlyph.prototype = {
 	    this.checkRings();
 	}
 
-	this.display.featureChanged(true);
+	if(!skipChangeNotification)
+	    this.display.featureChanged(true);
     },
     
     vertexDragged:function(feature,vertex,pixel) {
@@ -49477,12 +49605,12 @@ MapGlyph.prototype = {
 	    }
 	}
 	if(!this.style.imageUrl) {
-	    console.log('MapGlyph.checkImage: no image url');
+//	    console.log('MapGlyph.checkImage: no image url');
 	    return;
 	}
 	feature = feature??this.features[0];
 	if(!feature) {
-	    console.log('MapGlyph.checkImage: no feature');
+//	    console.log('MapGlyph.checkImage: no feature');
 	    return
 
 	}
