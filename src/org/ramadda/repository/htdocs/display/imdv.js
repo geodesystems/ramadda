@@ -1122,6 +1122,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    style = $.extend({},style);
 			    style.externalGraphic =attrs.icon;
 			    mapOptions.useentrylocation = true;
+			    mapOptions.name = attrs.name;
 			    let points = Utils.isDefined(attrs.latitude)?[attrs.latitude,attrs.longitude]:[attrs.north,attrs.west];
 			    let mapGlyph = this.createMapMarker(GLYPH_ENTRY,mapOptions, style,points,true);
 			    mapGlyph.applyEntryGlyphs();

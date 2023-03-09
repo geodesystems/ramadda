@@ -2682,12 +2682,15 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	    value+=toks[i];
 	}
 	value = value.replace(/_nl_/g,"\n").replace(/_colon_/g,":").replace(/_comma_/g,",");
+	//Check for the ${...} macros
+	if(name=='colorBy')
+	    value = value.replace('\${','').replace('}','');
+
 	if(value=="true") value=true;
 	else if(value=="false") value=false;
 	this[name] = value;
 //	console.log(name+"="+value);
     });
-
 
     if(this.labelBy) {
 	this.labelField=display.getFieldById(fields,this.labelBy);
@@ -2717,8 +2720,6 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	    this.pos = "nw";
     }	
     
-
-    
     let cvrt = s=>{
 	if(!isNaN(+s)) return +s;
 	s  = String(s);
@@ -2726,7 +2727,11 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	s = s.replace(/canvasHeight2/g,""+(this.canvasHeight/2)).replace(/canvasHeight/g,this.canvasHeight);	
 	s = s.replace(/width2/g,""+(this.width/2)).replace(/width/g,this.width);	
 	s = s.replace(/height2/g,""+(this.height/2)).replace(/height/g,this.width);	
-	s = eval(s);
+	try {
+	    s = eval(s);
+	} catch(err) {
+	    console.error('error evaling glyph value:' + s,err);
+	}
 	return s;
     };
     this.width = cvrt(this.width);
@@ -2754,12 +2759,15 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	}
     }
 
+
+    this.dontShow =false;
     if(!this.colorByInfo && this.colorBy) {
 	this.colorByField=display.getFieldById(fields,this.colorBy);
 	let ct = this.colorTable?display.getColorTableInner(true, this.colorTable):null;
 	if(!this.colorByField) {
 	    console.log("Could not find colorBy field:" + this.colorBy);
-	    console.log("Fields:" + fields);
+//	    console.log("Fields:" + fields);
+	    this.dontShow =true;
 	} else {
 	    let props = {
 		Min:this.colorByMin,
@@ -2768,11 +2776,19 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	    this.colorByInfo =  new ColorByInfo(display, fields, records, this.colorBy,this.colorBy+".colorByMap", ct, this.colorBy,this.colorByField, props);
 	}
     }
+
+
+    if(this.requiredField) {
+	if(!display.getFieldById(fields,this.requiredField)) {
+	    this.dontShow = true;
+	}
+    }
 }
 
 
 Glyph.prototype = {
     draw: function(opts, canvas, ctx, x,y,args,debug) {
+	if(this.dontShow)return;
 	debug = this.debug??debug;
 	let color =   null;
 	if(this.colorByInfo) {
@@ -2797,23 +2813,29 @@ Glyph.prototype = {
 	}
 	ctx.fillStyle =color || this.fillStyle || this.color || 'blue';
 	ctx.strokeStyle =this.strokeStyle || this.color || '#000';
-	ctx.lineWidth=this.lineWidth||1;
+	ctx.lineWidth=this.lineWidth??this.strokeWidth??1;
 	if(this.type=='label' || this.label) {
 	    let label = this.labelField?args.record.getValue(this.labelField.getIndex()):this.label;
 	    if(label===null) {
 		console.log('No label value');
 		return;
 	    }
-	    if(typeof label=='number') {
-		if(this.valueScale) {
-		    label = label* +this.valueScale;
-		}
+	    let text = String(label);
+	    if(args.record) {
+		text = this.display.applyRecordTemplate(args.record, null,null,text,{
+		    entryname:this.entryname
+		});
+	    }
 
-		if(this.decimals)
-		    label = number_format(label,+this.decimals);
+	    if(!isNaN(parseFloat(text))) {
+		if(this.valueScale) {
+		    text = text* +this.valueScale;
+		}
+		if(Utils.isDefined(this.decimals))
+		    text = number_format(text,+this.decimals);
 	    }
 	    if(this.template) {
-		label = this.template.replace('${value}',label);
+		text = this.template.replace('${value}',text);
 	    }
 	    //Normalize the font
 	    if(this.font && this.font.match(/\d+(px|pt)$/)) {
@@ -2824,14 +2846,9 @@ Glyph.prototype = {
 	    ctx.fillStyle = ctx.strokeStyle =    color || this.color|| this.display.getProperty('glyphColor','#000');
 
 	    if(debug) console.log('glyph label: font=' + ctx.font +' fill:' + ctx.fillStyle +' stroke:' + ctx.strokeStyle);
-	    let text = String(label);
-
-	    if(args.record) {
-		text = this.display.applyRecordTemplate(args.record, null,null,text,{
-		    entryname:this.entryname
-		});
-	    }
+	    text = text.replace(/\${.*}/g,'');
 	    text = text.replace(/_nl_/g,'\n').split('\n');
+	    //remove any macros that did not get set
 
 	    let h = 0;
 	    let hgap = 3;
