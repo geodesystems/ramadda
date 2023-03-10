@@ -1791,13 +1791,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(includeEdit) {
 		buttons.push(HU.span([CLASS,'ramadda-clickable',TITLE,'Edit','glyphid',mapGlyph.getId(),'buttoncommand','edit'],
 				     icon('fas fa-cog')));
+		buttons.push(
+		    HU.span([CLASS,'ramadda-clickable',TITLE,'Select','glyphid',mapGlyph.getId(),'buttoncommand',ID_SELECT],
+			    icon('fas fa-hand-pointer')));
+		buttons.push(HU.span([CLASS,'ramadda-clickable',TITLE,'Delete','glyphid',mapGlyph.getId(),'buttoncommand',ID_DELETE],icon('fa-solid fa-delete-left')));
 	    }
-	    buttons.push(
-		HU.span([CLASS,'ramadda-clickable',TITLE,'Select','glyphid',mapGlyph.getId(),'buttoncommand',ID_SELECT],
-			icon('fas fa-hand-pointer')),
-		HU.span([CLASS,'ramadda-clickable',TITLE,'Delete','glyphid',mapGlyph.getId(),'buttoncommand',ID_DELETE],
-			icon('fa-solid fa-delete-left'))
-	    );
 	    return Utils.wrap(buttons,HU.open('span',['style',HU.css('margin-right','8px')]),'</span>');
 	},
 	makeListItem:function(mapGlyph,idx) {
@@ -2262,6 +2260,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		labelAlign: {label:'Label',strip:'label'},
 		textBackgroundStrokeColor: {label:'Text Background',strip:'textBackground'},		
 	    };
+
 	    props.forEach(prop=>{
 		let shared = true;
 		let id = "glyphedit_" + prop;
@@ -2409,6 +2408,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    suffix=HU.span(['title','Apply this style to children glyphs',
 				    'class','ramadda-clickable imdv-style-suffix','widget-id',domId,'property',prop],HU.getIconImage('fas fa-folder-tree'));
 		}
+		if(label=='') label='Label';
+
 		html+=HU.formEntry(label+":",widget+suffix+extra);
 		html+='\n';
 	    });
@@ -5025,56 +5026,6 @@ GlyphType.prototype = {
 	return this.drawer;
     },
 };
-
-
-
-function MapGlyph(display,type,attrs,feature,style) {
-    if(!type) {
-	console.log("no type");
-	console.trace();
-	return
-    }
-    if(!style)
-	console.trace();
-    if(style.mapOptions) {
-	delete style.mapOptions;
-    }
-    this.transientProperties = {};
-
-    let glyphType = display.getGlyphType(type);
-    if(attrs.routeProvider)
-	this.name = "Route: " + attrs.routeProvider +" - " + attrs.routeType;
-    else 
-	this.name = attrs.name || glyphType.getName() || type;
-    let mapGlyphs = attrs.mapglyphs;
-    if(attrs.mapglyphs) delete attrs.mapglyphs;
-    if(mapGlyphs){
-	mapGlyphs = mapGlyphs.replace(/\\n/g,"\n");
-	this.putTransientProperty("mapglyphs", mapGlyphs);
-    }
-
-
-    this.display = display;
-    this.type = type;
-    this.features = [];
-    this.attrs = attrs;
-    this.style = style??{};
-    this.id = attrs.id ?? HU.getUniqueId("glyph_");
-    if(feature) this.addFeature(feature);
-
-    if(this.isEntry()) {
-	if(!Utils.isDefined(this.attrs.useentryname))
-	    this.attrs.useentryname = true;
-	if(!Utils.isDefined(this.attrs.useentrylabel))
-	    this.attrs.useentrylabel = true;	
-    }
-
-    if(this.isRings()) {
-	this.checkRings();
-    }
-
-
-}
 
 
 

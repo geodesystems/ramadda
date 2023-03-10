@@ -1,3 +1,7 @@
+/*
+props:fontSize:0px,size:50,width:100,height:50,font:18px sans-serif                                                 type:circle,requiredField:${field},fill:false,strokeWidth:4,width:canvasWidth-10,height:canvasHeight,strokeStyle:green,pos:c,dx:canvasWidth2,dy:-canvasHeight2
+type:label,xrequiredField:${field},pos:c,dx:canvasWidth2,dy:-canvasHeight2,decimals:1,label:${${field}},suffix:_space_${unit}
+*/
 
 
 var LINETYPE_STRAIGHT='straight';
@@ -8,7 +12,6 @@ var ID_ADDDOTS = 'adddots';
 var ID_LINETYPE = 'linetype';
 
 function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
-
     if(!type) {
 	console.log("no type given for MapGlyph");
 	console.trace();
@@ -27,7 +30,7 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
 	this.name = attrs.name || glyphType.getName() || type;
     let mapGlyphs = attrs.mapglyphs;
     if(attrs.mapglyphs) delete attrs.mapglyphs;
-    if(mapGlyphs){
+    if(mapGlyphs) {
 	mapGlyphs = mapGlyphs.replace(/\\n/g,"\n");
 	this.putTransientProperty("mapglyphs", mapGlyphs);
     }
@@ -232,9 +235,9 @@ MapGlyph.prototype = {
 	    obj.style = style;
 	}
 	obj.points = this.getPoints(obj);
-	if(this.children) {
+	if(this.haveChildren()) {
 	    let childrenJson=[];
-	    this.children.forEach(child=>{
+	    this.getChildren().forEach(child=>{
 		if(child.isEphemeral) return;
 		childrenJson.push(child.makeJson());
 	    });
@@ -244,8 +247,7 @@ MapGlyph.prototype = {
     },	
 
     applyStyleToChildren:function(prop,value) {
-	if(!this.children) return;
-	this.children.forEach(child=>{
+	this.applyChildren(child=>{
 	    if(child.style) {
 		child.style[prop] = value;
 		child.applyStyle(child.style);
@@ -287,8 +289,9 @@ MapGlyph.prototype = {
 	if(Utils.stringDefined(glyphs)) {
 	    return glyphs;
 	}
-	if(checkTransient)
+	if(checkTransient) {
 	    return this.transientProperties.mapglyphs;
+	}
 	return null;
     },
     getRadii:function() {
@@ -432,7 +435,7 @@ MapGlyph.prototype = {
 			 HU.space(2),ex]);
 	content.push({header:'Flags',contents:html});
 
-	if(this.isEntry() || this.isGroup()) {
+	if(this.isEntry() || this.isGroup() || this.isMultiEntry()) {
 	    let contents ='';
 	    let gi  =this.getGlyphInfo();
 	    contents+= HU.href(RamaddaUtils.getUrl('/userguide/imdv.html#glyphs'),
@@ -450,7 +453,7 @@ MapGlyph.prototype = {
     
 	    contents+=HU.b('Glyphs:') +'<br>';
 	    contents +=
-		HU.textarea('',gi.glyphs??'',[ID,this.domId('entryglyphs'),'rows',4,'cols', 90]);
+		HU.textarea('',gi.glyphs??'',[ID,this.domId('entryglyphs'),'rows',6,'cols', 90]);
 	    content.push({
 		header:'Glyphs',
 		contents: contents});
@@ -498,7 +501,7 @@ MapGlyph.prototype = {
 	    this.setUseEntryLabel(this.jq("useentrylabel").is(":checked"));
 	    this.setUseEntryLocation(this.jq("useentrylocation").is(":checked"));
 	}
-	if(this.isEntry() || this.isGroup()) {
+	if(this.isEntry() || this.isGroup()  || this.isMultiEntry()) {
 	    let gi = this.getGlyphInfo();
 	    gi.glyphs = this.jq("entryglyphs").val();
 	    gi.fields=this.jq('glyphfields').val();
@@ -506,7 +509,7 @@ MapGlyph.prototype = {
 	    gi.label=this.jq('glyphlabel').val();	    	    
 	    if(this.isGroup()) 
 		this.applyGlyphField();
-	    else
+	    else if(this.isEntry()) 
 		this.applyEntryGlyphs();
 	}
 	this.setVisible(this.jq("visible").is(":checked"),true);
@@ -568,11 +571,9 @@ MapGlyph.prototype = {
 	if(this.isEntry()) {
 	    this.applyEntryGlyphs();
 	}
-	if(this.children) {
-	    this.children.forEach(child=>{
-		child.applyGlyphField();
-	    });
-	}
+	this.applyChildren(child=>{
+	    child.applyGlyphField();
+	});
     },
     featureSelected:function(feature,layer,event) {
 	//	console.log('imdv.featureSelected');
@@ -606,10 +607,8 @@ MapGlyph.prototype = {
     },
     applyEntryGlyphs:function(args) {
 	if(!Utils.stringDefined(this.getEntryGlyphs(true))) {
-	    console.log("apply nont");
 	    return;
 	}
-
 	let opts = {
 	    entryId:this.attrs.entryId
 	};
@@ -619,11 +618,15 @@ MapGlyph.prototype = {
 	}
 
 	let glyphs = [];
-	Utils.split(this.getEntryGlyphs(true),'\n',true,true).forEach(line=>{
+	
+	let lines = Utils.split(this.getEntryGlyphs(true),'\n',true,true);
+	lines.forEach(line=>{
 	    line = line.trim();
 	    if(line.startsWith("#") || line == "") return;
 	    glyphs.push(line);
+//	    console.log('line:'+line);
 	});
+
 	if(glyphs.length==0) {
 	    console.log("\tno glyphs-2");
 	    return;
@@ -733,6 +736,7 @@ MapGlyph.prototype = {
 		return false;
 	    });
 	}
+
 	lines.forEach(line=>{
 	    line = line.trim();
 	    if(line.startsWith('#')) return;
@@ -781,10 +785,10 @@ MapGlyph.prototype = {
 	    if($('#testimg').length) 
 		$("#testimg").html(HU.tag("img",["src",img]));
 	    canvas.remove();
-	    if(fontSize) {
+	    if(Utils.isDefined(fontSize)) {
 		this.style.fontSize=fontSize;
 	    }
-	    if(size) {
+	    if(Utils.isDefined(size)) {
 		this.style.pointRadius=size;
 	    }
 	    this.style.externalGraphic=img;
@@ -820,9 +824,22 @@ MapGlyph.prototype = {
 	return this.attrs.glyphInfo;
     },
     getGlyphProperty:function(property,dflt) {
-	if(Utils.stringDefined(this.getGlyphInfo()[property]))
+	let debug = false;
+//	debug = (property=='field');
+	if(debug) {
+	    console.log("getGlyphProperty:" + property);
+	    console.dir(this.getGlyphInfo());
+	}
+	if(Utils.stringDefined(this.getGlyphInfo()[property])) {
+	    if(debug)
+		console.log("mine:" +this.getGlyphInfo()[property]);
 	    return this.getGlyphInfo()[property];
-	if(this.getParentGlyph()) return this.getParentGlyph().getGlyphProperty(property,dflt);
+	}
+	if(this.getParentGlyph()) {
+	    if(debug)
+		console.log("asking parent");
+	    return this.getParentGlyph().getGlyphProperty(property,dflt);
+	}
 	return dflt;
     },
     setEntryGlyphs:function(v) {
@@ -1160,10 +1177,8 @@ MapGlyph.prototype = {
 	    return null;
 	}
 
-	if(this.children) {
-	    this.children.forEach(child=>{
-		bounds =  MapUtils.extendBounds(bounds,child.getBounds());
-	    });
+	if(this.haveChildren()) {
+	    this.applyChildren(child=>{bounds =  MapUtils.extendBounds(bounds,child.getBounds());});
 	} else 	if(this.features && this.features.length) {
 	    bounds = this.display.getMap().getFeaturesBounds(this.features);
 	    if(this.rings) {
@@ -1207,10 +1222,8 @@ MapGlyph.prototype = {
 
 
     collectFeatures: function(features) {
-	if(this.children) {
-	    this.children.forEach(child=>{
-		child.collectFeatures(features);
-	    });
+	if(this.haveChildren()) {
+	    this.applyChildren(child=>{child.collectFeatures(features);});
 	} else 	if(this.features.length) {
 	    features.push(...this.features);
 	} else if(this.getMapLayer()) {
@@ -1320,9 +1333,6 @@ MapGlyph.prototype = {
 	return label;
     },
 
-    removeChildGlyph: function(child) {
-	if(this.children) this.children = Utils.removeItem(this.children, child);
-    },
 
     loadJson:function(jsonObject) {
 	if(jsonObject.children) {
@@ -1335,15 +1345,40 @@ MapGlyph.prototype = {
 	    });
 	}
     },
-    getChildren: function(child) {
+    removeChildGlyph: function(child) {
+	if(this.children) {
+	    this.children = Utils.removeItem(this.children, child);
+	}
+    },
+    clearChildren:function() {
+	if(this.children) {
+	    let tmp = [...this.children];
+	    tmp.forEach(child=>{
+		child.doRemove();
+	    });
+	    this.children=[];
+	}
+    },
+
+    applyChildren:function(func) {
+	if(!this.haveChildren()) return;
+	this.getChildren().forEach(child=>{
+	    func(child);
+	});
+    },
+    getChildren: function() {
 	if(!this.children) this.children = [];
 	return this.children;
     },
+    haveChildren: function() {
+	return this.children!=null;
+    },
     findGlyph:function(id) {
 	if(id == this.getId()) return this;
-	return ImdvUtils.findGlyph(this.children,id);
+	return ImdvUtils.findGlyph(this.getChildren(),id);
     },
     addChildGlyph: function(child) {
+//	console.log("add child:" + child.getName());
 	this.getChildren().push(child);
 	child.setParentGlyph(this);
     },
@@ -1397,11 +1432,7 @@ MapGlyph.prototype = {
 	    this.image.ramaddaLayerIndex=level++;
 	}
 
-	if(this.isGroup()) {
-	    this.getChildren().forEach(mapGlyph=>{
-		level = mapGlyph.setLayerLevel(level);
-	    });
-	}
+	this.applyChildren(mapGlyph=>{level = mapGlyph.setLayerLevel(level);});
 	return level;
     },
     makeLegend:function(opts) {
@@ -1429,9 +1460,9 @@ MapGlyph.prototype = {
 	    });
 	    body+=HU.div(['class','imdv-legend-offset'],cbx);
 	}
-	if(this.isGroup()) {
+	if(this.haveChildren()) {
 	    let child="";
-	    this.getChildren().forEach(mapGlyph=>{
+	    this.applyChildren(mapGlyph=>{
 		let childHtml = mapGlyph.makeLegend(opts);
 		if(childHtml) child+=childHtml;
 	    });
@@ -1485,11 +1516,14 @@ MapGlyph.prototype = {
 	}
 	return s;
     },
+    canEdit: function() {
+	return !this.isEphemeral;
+    },
     getLegendBody:function() {
 	let showInMapLegend=this.getProperty('showLegendInMap',false) && !this.display.getShowLegendInMap();
 	let inMapLegend='';
 	let body = '';
-	let buttons = this.display.makeGlyphButtons(this,true);
+	let buttons = this.display.makeGlyphButtons(this,this.canEdit());
 	if(this.isMap() && this.getProperty('showFeaturesTable',true))  {
 	    this.showFeatureTableId = HU.getUniqueId('btn');
 	    if(buttons!=null) buttons = HU.space(1)+buttons;
@@ -1512,7 +1546,7 @@ MapGlyph.prototype = {
 	}	
 
 	
-	if(!this.display.canEdit() && !this.getProperty('showButtons',true))
+	if((!this.display.canEdit() && !this.getProperty('showButtons',true))/* || this.isEphemeral*/)
 	    buttons = '';
 
 	if(buttons!='')
@@ -1697,7 +1731,7 @@ MapGlyph.prototype = {
 	let distances = this.display.getDistances(this.getGeometry(),this.getType());
 	item(distances,true,true);
 	if(this.isMultiEntry()) {
-	    item(HU.div(['id',this.domId('multientry')]));
+//	    item(HU.div(['id',this.domId('multientry')]));
 	}
 
 	if(this.isShape()) {
@@ -1813,8 +1847,6 @@ MapGlyph.prototype = {
 
 	    });
 	}
-
-
 	if(this.isMultiEntry() && this.entries) {
 	    this.showMultiEntries();
 	}
@@ -2055,12 +2087,7 @@ MapGlyph.prototype = {
 		addColor(this.attrs.strokeColorBy,'Stroke',this.strokeStrings);
 	    }
 	}	
-
-
-
-	if(this.isGroup()) {
-	    this.getChildren().forEach(mapGlyph=>{mapGlyph.initLegend();});
-	}
+	this.applyChildren(mapGlyph=>{mapGlyph.initLegend();});
     },
 
     convertPopupText:function(text) {
@@ -2070,6 +2097,7 @@ MapGlyph.prototype = {
 	return text;
     },
     
+
     isGroup:function() {
 	return this.getType() ==GLYPH_GROUP;
     },
@@ -2673,15 +2701,14 @@ MapGlyph.prototype = {
 	let provider = this.display.jq('routeprovider').val();
 	let doSequence = this.display.jq('routedosequence').is(':checked');
 	let pts = [];
-	if(this.children) {
-	    this.children.forEach(child=>{
-		if(!child.isVisible()) return;
-		let centroid  = child.getCentroid();
-		if(!centroid) return;
-		var lonlat = this.getMap().transformProjPoint(centroid)
-		pts.push(lonlat);
-	    });
-	}
+	this.applyChildren(child=>{
+	    if(!child.isVisible()) return;
+	    let centroid  = child.getCentroid();
+	    if(!centroid) return;
+	    var lonlat = this.getMap().transformProjPoint(centroid)
+	    pts.push(lonlat);
+	});
+
 	if(pts.length==0) {
 	    alert('No points to make route from');
 	    return;
@@ -4080,15 +4107,8 @@ MapGlyph.prototype = {
 	    }
 	}
 
-
 	this.attrs.visible = visible;
-	if(this.children) {
-	    this.children.forEach(child=>{
-		child.setVisible(visible, callCheck);
-	    });
-	}
-
-
+    	this.applyChildren(child=>{child.setVisible(visible, callCheck);});
 	if(this.rings) {
 	    this.rings.forEach(feature=>{
 		MapUtils.setFeatureVisible(feature,visible);
@@ -4224,9 +4244,7 @@ MapGlyph.prototype = {
 	    }
 	}
 
-	if(this.children) {
-	    this.children.forEach(child=>{child.checkVisible();});
-	}
+	this.applyChildren(child=>{child.checkVisible();});
 	ImdvUtils.scheduleRedraw(this.display.myLayer);
     },    
     setImageLayerVisible:function(obj,visible) {
@@ -4501,30 +4519,20 @@ MapGlyph.prototype = {
         let entry =  new Entry({
             id: entryId,
         });
-	if(this.features)
-	    this.display.removeFeatures(this.features);
-	this.features =[];
         let callback = (entries)=>{
+	    this.clearChildren();
+	    this.children = [];
+
 	    this.entries = entries;
 	    entries.forEach((e,idx)=>{
 		if(!e.hasLocation()) return;
 		let  pt = MapUtils.createPoint(e.getLongitude(),e.getLatitude());
 		pt = this.display.getMap().transformLLPoint(pt);
-		let style = $.extend({},this.style);
+		let style = Utils.clone({},this.style);
 		style.externalGraphic = e.getIconUrl();
 		style.strokeWidth=1;
 		style.strokeColor="transparent";
-		/*
-		  let bgstyle = $.extend({},style);
-		  bgstyle = $.extend(bgstyle,{externalGraphic:Ramadda.getUrl("/images/white.png")});
-		  bgstyle.label = null;
-		  let bgpt = MapUtils.createPoint(pt.x,pt.y);
-		  let bg = MapUtils.createVector(bgpt,null,bgstyle);
-		  bg.noSelect = true;
-		  //		bg.mapGlyph=this;
-		  //		bg.entryId = e.getId();
-		  this.features.push(bg);
-		*/
+//		style.fontSize='12px';
 		if(style.showLabels) {
 		    let label  =e.getName();
 		    let toks = Utils.split(label," ",true,true);
@@ -4540,22 +4548,22 @@ MapGlyph.prototype = {
 		} else {
 		    style.label=null;
 		}
-		let marker = MapUtils.createVector(pt,null,style);
-
-
 		let attrs = {name:e.getName(),
-			     entryglyphs:e.mapglyphs,
-			     entryId:e.getId()
+			     mapglyphs:e.mapglyphs,
+			     entryId:e.getId(),
+			     icon:e.getIconUrl()
 			    };
-		let mapGlyph = new MapGlyph(this.display,GLYPH_MARKER, attrs, marker,style);
-		marker.mapGlyph = this;
-		marker.entryId = e.getId();
+
+		//xxxx
+		let points =[e.getLatitude(),e.getLongitude()];
+		let mapGlyph = this.display.createMapMarker(GLYPH_ENTRY,attrs, style,points,true);
+		mapGlyph.isEphemeral = true;
+		this.addChildGlyph(mapGlyph);
 		if(this.getShowMultiData()) {
 		    mapGlyph.applyEntryGlyphs();
 		}
-		this.features.push(marker);
 	    });
-	    this.display.addFeatures(this.features);
+	    this.display.makeLegend();
 	    this.checkVisible();
 	    if(andZoom)
 		this.panMapTo();
@@ -4570,9 +4578,7 @@ MapGlyph.prototype = {
 	if(this.isSelected()) {
 	    selected.push(this);
 	}
-	if(this.children) {
-	    this.children.forEach(child=>{child.getSelected(selected);});
-	}
+	this.applyChildren(child=>{child.getSelected(selected);});
     },
 
     select:function(maxPoints,dontRedraw) {
@@ -4617,20 +4623,11 @@ MapGlyph.prototype = {
 	    pointCount+=this.display.selectFeatures(this,this.getFeatures(),maxPoints);
 	}
 	this.display.selectionLayer.addFeatures(this.selectDots,{silent:true});
-	if(this.children) {
-	    this.children.forEach(child=>{
-		pointCount+=child.select(maxPoints, dontRedraw);
-	    });
-	}
+	this.applyChildren(child=>{pointCount+=child.select(maxPoints, dontRedraw);});
 	return pointCount;
     },
     unselect:function() {
-	if(this.children) {
-	    this.children.forEach(child=>{
-		child.unselect();
-	    });
-	}	
-
+	this.applyChildren(child=>{child.unselect();});
 	if(!this.isSelected()) {
 	    return;
 	}	    
@@ -4705,13 +4702,7 @@ MapGlyph.prototype = {
 	}
 
 	this.setParentGlyph(null);
-
-	if(this.children) {
-	    let tmp = [...this.children];
-	    tmp.forEach(child=>{
-		child.doRemove();
-	    });
-	}
+	this.clearChildren();
     }
 }
 
