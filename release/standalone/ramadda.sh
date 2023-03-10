@@ -2,7 +2,12 @@
 
 CWD=`pwd`
 
-RAMADDA_DIR=`dirname $0`
+#RAMADDA install directory
+if [ -z "$RAMADDA_DIR" ]; then
+    RAMADDA_DIR=`dirname $0`
+fi
+
+
 RAMADDA_PARENT_DIR=`dirname $RAMADDA_DIR`
 
 #RAMADDA home directory
@@ -23,7 +28,6 @@ fi
 if [ -z "$JAVA_MEMORY" ]; then
     JAVA_MEMORY=2056m
 fi
-
 
 
 ##See if there is one in the release dir
