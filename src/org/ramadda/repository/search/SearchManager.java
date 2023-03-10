@@ -743,13 +743,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    StringBuilder fileCorpus = new StringBuilder();
             addContentField(entry, doc, FIELD_CONTENTS, entry.getResource().getTheFile(), true, fileCorpus);
 	    corpus.append(fileCorpus);
-	    if(debugGpt) System.err.println("SearchManager: file corpus:" + fileCorpus.length());
-
+	    int[]tokenLimit = new int[]{Repository.GPT_TOKEN_LIMIT};
 
 	    if(/*isNew && */request!=null) {
 		boolean entryChanged = false;
 		if(request.get(ARG_EXTRACT_KEYWORDS,false)) {
-		    List<String> keywords = getKeywords(request, entry, fileCorpus);
+		    List<String> keywords = getKeywords(request, entry, fileCorpus,tokenLimit);
 		    if(keywords!=null && keywords.size()>0) {
 			for(String word:keywords) {
 			    word = word.trim();
@@ -766,7 +765,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		if(isNew) {
 		    if(request.get(ARG_EXTRACT_SUMMARY,false)) {
 			if(debugGpt) System.err.println("SearchManager: callGpt: summary");
-			String summary = getRepository().callGpt("Summarize the following text. Assume the reader has a college education. Limit the summary to no more than 4 sentences.","",fileCorpus,200,true);
+			String summary = getRepository().callGpt("Summarize the following text. Assume the reader has a college education. Limit the summary to no more than 4 sentences.","",fileCorpus,200,true,tokenLimit);
 			if(stringDefined(summary)) {
 			    summary = Utils.stripTags(summary).trim().replaceAll("^:+","");
 			    summary = "+toggleopen Summary\n+callout-info\n<snippet>\n" + summary+"\n</snippet>\n-callout-info\n-toggle\n";
@@ -777,7 +776,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 		    if(request.get(ARG_EXTRACT_TITLE,false)) {
 			if(debugGpt) System.err.println("SearchManager: callGpt: title");
-			String title = getRepository().callGpt("Extract the title from the following document:","",fileCorpus,200,true);
+			String title = getRepository().callGpt("Extract the title from the following document:","",fileCorpus,200,true,tokenLimit);
 			if(stringDefined(title)) {
 			    title = title.trim().replaceAll("\"","").replaceAll("\"","");
 			    entry.setName(title);
@@ -789,7 +788,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 		    if(request.get(ARG_EXTRACT_AUTHORS,false)) {
 			if(debugGpt) System.err.println("SearchManager: callGpt: authors");
-			String authors = getRepository().callGpt("Extract the author's names from the following text and separate the names with a comma:","",fileCorpus,200,true);		    
+			String authors = getRepository().callGpt("Extract the author's names from the following text and separate the names with a comma:","",fileCorpus,200,true,tokenLimit);		    
 			if(stringDefined(authors)) {
 			    entryChanged = true;
 			    for(String author:Utils.split(authors,",",true,true)) {
@@ -875,7 +874,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	return true;
     }
 
-    private List<String>  getKeywords(Request request, Entry entry, StringBuilder fileCorpus) throws Exception {
+    private List<String>  getKeywords(Request request, Entry entry, StringBuilder fileCorpus, int[]tokenLimit)
+	throws Exception {
 	String path = entry.getResource().getPath();
 	if(path==null) return null;
 	if(!isDocument(path)) {
@@ -885,7 +885,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	List<String> keywords = new ArrayList<String>();
 	if(debugGpt) System.err.println("SearchManager: callGpt: keywords");
-	String result = getRepository().callGpt("Extract keywords from the following text. Limit your response to no more than 15 keywords:","Keywords:",fileCorpus,60,true);
+	String result = getRepository().callGpt("Extract keywords from the following text. Limit your response to no more than 15 keywords:","Keywords:",fileCorpus,60,true,tokenLimit);
 	if(result!=null) {
 	    for(String tok:Utils.split(result,",",true,true)) {
 		if(keywords.size()>15) break;
@@ -893,7 +893,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    keywords.add(tok);
 		}
 	    }
-	    //	    System.err.println("gpt keywords:" + keywords);
 	}
 							  
 	if(keywords.size()==0) {
@@ -929,7 +928,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    for(int i=0;i<words.size()&& i<3;i++) {
 		WordCount word = words.get(i);
 		if(word.count>2) {
-		    //		    System.err.println(word);
 		    keywords.add(word.word);
 		}
 	    }
