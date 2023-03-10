@@ -50,6 +50,10 @@ import javax.imageio.*;
 @SuppressWarnings("unchecked")
 public class IO {
 
+    public static final String HTTP_METHOD_POST = "POST";
+    public static final String HTTP_METHOD_GET = "GET";    
+
+
     /** the file separator id */
     public static final String FILE_SEPARATOR = "_file_";
 
@@ -885,7 +889,7 @@ public class IO {
      */
     public static String doPost(URL url, String body, String... args)
             throws Exception {
-        return doHttpRequest("POST", url, body, args);
+        return doHttpRequest(HTTP_METHOD_POST, url, body, args);
     }
 
     /**
@@ -1017,7 +1021,7 @@ public class IO {
      */
     public static Result doGetResult(URL url, String... args)
             throws Exception {
-	return getHttpResult("GET",url,null, args);
+	return getHttpResult(HTTP_METHOD_GET,url,null, args);
     }
 
     public static Result getHttpResult(String type, URL url, String body, String... args)
@@ -1026,7 +1030,7 @@ public class IO {
         checkFile(url);
         HttpURLConnection connection =
             (HttpURLConnection) url.openConnection();
-	if(type.equals("POST")) 
+	if(type.equals(HTTP_METHOD_POST)) 
 	    connection.setDoOutput(true);
         //        connection.setDoInput(true);
         //        connection.setInstanceFollowRedirects(false);
@@ -1234,7 +1238,7 @@ public class IO {
             //        connection.setDoOutput(true);
             //        connection.setDoInput(true);
             //        connection.setInstanceFollowRedirects(false);
-            connection.setRequestMethod("GET");
+            connection.setRequestMethod(HTTP_METHOD_GET);
             //        connection.setRequestProperty("charset", "utf-8");
             //      System.err.println("header:");
             for (int i = 0; i < args.length; i += 2) {
@@ -1855,7 +1859,7 @@ public class IO {
     public static Result  doMultipartPost(URL url,String[] requestArgs,List postArgs) throws Exception {
 	HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 	connection.setDoOutput(true);
-	connection.setRequestMethod("POST");
+	connection.setRequestMethod(HTTP_METHOD_POST);
 	if(requestArgs!=null) {
 	    for (int i = 0; i < requestArgs.length; i += 2) {
 		connection.setRequestProperty(requestArgs[i], requestArgs[i + 1]);
