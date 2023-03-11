@@ -2672,15 +2672,26 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	    return this.type;
 	}
     });
+    //type:circle,
+    //circle,
     $.extend(this,args);
+    let cnt=0;
+//    console.log('glyph');
     attrs.split(",").forEach(attr=>{
 	let toks = attr.split(":");
 	let name = toks[0];
 	let value="";
-	for(let i=1;i<toks.length;i++) {
-	    if(i>1) value+=":";
-	    value+=toks[i];
+	if(cnt==0 && toks.length==1) {
+	    value = name;
+	    name='type';
+	} else {
+	    for(let i=1;i<toks.length;i++) {
+		if(i>1) value+=":";
+		value+=toks[i];
+	    }
 	}
+	cnt++;
+//	console.log('\t'+name+'='+ value);
 	value = value.replace(/_nl_/g,"\n").replace(/_colon_/g,":").replace(/_comma_/g,",");
 	//Check for the ${...} macros
 	if(name=='colorBy')
@@ -2689,7 +2700,6 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	if(value=="true") value=true;
 	else if(value=="false") value=false;
 	this[name] = value;
-//	console.log(name+"="+value);
     });
 
     if(this.labelBy) {
@@ -2724,7 +2734,9 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	if(!isNaN(+s)) return +s;
 	s  = String(s);
 	s = s.replace(/canvasWidth2/g,""+(this.canvasWidth/2)).replace(/canvasWidth/g,this.canvasWidth);
-	s = s.replace(/canvasHeight2/g,""+(this.canvasHeight/2)).replace(/canvasHeight/g,this.canvasHeight);	
+	s = s.replace(/cw2/g,""+(this.canvasWidth/2)).replace(/cw/g,this.canvasWidth);
+	s = s.replace(/canvasHeight2/g,""+(this.canvasHeight/2)).replace(/canvasHeight/g,this.canvasHeight);
+	s = s.replace(/ch2/g,""+(this.canvasHeight/2)).replace(/ch/g,this.canvasHeight);		
 	s = s.replace(/width2/g,""+(this.width/2)).replace(/width/g,this.width);	
 	s = s.replace(/height2/g,""+(this.height/2)).replace(/height/g,this.width);	
 	try {
@@ -2776,7 +2788,6 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	    this.colorByInfo =  new ColorByInfo(display, fields, records, this.colorBy,this.colorBy+".colorByMap", ct, this.colorBy,this.colorByField, props);
 	}
     }
-
 
     if(this.requiredField) {
 	if(!display.getFieldById(fields,this.requiredField)) {
