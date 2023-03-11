@@ -1,7 +1,6 @@
-/*
-props:fontSize:0px,size:50,width:100,height:50,font:18px sans-serif                                                 type:circle,requiredField:${field},fill:false,strokeWidth:4,width:canvasWidth-10,height:canvasHeight,strokeStyle:green,pos:c,dx:canvasWidth2,dy:-canvasHeight2
-type:label,xrequiredField:${field},pos:c,dx:canvasWidth2,dy:-canvasHeight2,decimals:1,label:${${field}},suffix:_space_${unit}
-*/
+
+
+var DEFAULT_GLYPHS = "props:fontSize:0px,size:50,width:100,height:50,font:18px sans-serif\ntype:circle,requiredField:${field},fill:false,strokeWidth:4,width:canvasWidth-10,height:canvasHeight,strokeStyle:green,pos:c,dx:canvasWidth2,dy:-canvasHeight2\ntype:label,requiredField:${field},pos:c,dx:canvasWidth2,dy:-canvasHeight2,decimals:1,label:${${field}},suffix:_space_${unit}";
 
 
 var LINETYPE_STRAIGHT='straight';
@@ -88,9 +87,16 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
 		this.applyMapStyle();
 		this.display.redraw(this);
 		this.display.makeLegend();
+		//And call getBounds so the bounds object gets cached for later use on reload
+		this.getBounds();
 	    };
 	    getRamadda().getEntry(this.attrs.entryId, callback);
 	}
+
+	//And call getBounds so the bounds object gets cached for later use on reload
+	this.getBounds();
+
+
     }
 
 
@@ -619,12 +625,13 @@ MapGlyph.prototype = {
 
 	let glyphs = [];
 	
-	let lines = Utils.split(this.getEntryGlyphs(true),'\n',true,true);
+	let g = this.getEntryGlyphs(true);
+	g = g.replace(/\\ *\n/g,'');
+	let lines = Utils.split(g,'\n',true,true);
 	lines.forEach(line=>{
 	    line = line.trim();
 	    if(line.startsWith("#") || line == "") return;
 	    glyphs.push(line);
-//	    console.log('line:'+line);
 	});
 
 	if(glyphs.length==0) {
@@ -673,12 +680,14 @@ MapGlyph.prototype = {
 	let borderRegexp = /border *: *(.+)/;
 	let fontRegexp = /font *: *(.+)/;				
 	let sizeRegexp = /size *: *(.+)/;
-	let fontSizeRegexp = /fontSize *: *(.+)/;					
+	let fontSizeRegexp = /fontSize *: *(.+)/;
+	let requiredFieldRegexp = /requiredField *: *(.+)/;						
 	let fill;
 	let border;	
 	let font;
 	let size;
 	let fontSize;		
+	let requiredField;
 
 	glyphLines.forEach(line=>{
 	    line = line.trim();
@@ -698,6 +707,10 @@ MapGlyph.prototype = {
 		    canvasHeight=parseFloat(match[1]);
 		    return;
 		}
+		if(match  = line2.match(requiredFieldRegexp)) {
+		    requiredField=match[1];
+		    return;
+		}		
 		if(match  = line2.match(fillRegexp)) {
 		    fill=match[1];
 		    return;
@@ -718,6 +731,7 @@ MapGlyph.prototype = {
 		    font = match[1];
 		    return;
 		}
+		console.log('no match:' + line2);
 	    });
 	});
 
@@ -740,6 +754,9 @@ MapGlyph.prototype = {
 	lines.forEach(line=>{
 	    line = line.trim();
 	    if(line.startsWith('#')) return;
+	    if(requiredField) {
+		line+=',requiredField:' + requiredField;
+	    }
 	    if(glyphField) {
 		line = line.replace(/\${field}/g,glyphField);
 	    }
@@ -747,6 +764,8 @@ MapGlyph.prototype = {
 		if(key=='label') return;
 		line = line.replaceAll("\${" + key+"}",attrs[key]);
 	    });
+	    //In case there wasn't a unit
+	    line = line.replaceAll(/\${unit}/g,'');
 	    glyphs.push(new Glyph(this.display,1.0, data.getRecordFields(),data.getRecords(),{
 		canvasWidth:canvasWidth,
 		canvasHeight: canvasHeight,
@@ -835,6 +854,14 @@ MapGlyph.prototype = {
 		console.log("mine:" +this.getGlyphInfo()[property]);
 	    return this.getGlyphInfo()[property];
 	}
+	if(property=='field') {
+	    if(this.glyphFieldsId) {
+		glyphField = jqid(this.glyphFieldsId).val();
+		if(glyphField) return glyphField;
+	    }
+	}
+
+
 	if(this.getParentGlyph()) {
 	    if(debug)
 		console.log("asking parent");
@@ -1158,25 +1185,6 @@ MapGlyph.prototype = {
     },
     getBounds: function() {
 	let bounds = null;
-	if(this.isMultiEntry() && this.entries) {
-	    this.entries.forEach(entry=>{
-		let b = null;
-		if(entry.hasBounds()) {
-		    b =   MapUtils.createBounds(entry.getWest(),entry.getSouth(),entry.getEast(), entry.getNorth());
-		} else if(entry.hasLocation()) {
-		    b =   MapUtils.createBounds(entry.getLongitude(),entry.getLatitude(),
-						entry.getLongitude(),entry.getLatitude());
-		} 
-		if(b) {
-		    bounds = MapUtils.extendBounds(bounds,b);
-		}
-	    });
-	    if(bounds) {
-		return this.display.getMap().transformLLBounds(bounds);
-	    }
-	    return null;
-	}
-
 	if(this.haveChildren()) {
 	    this.applyChildren(child=>{bounds =  MapUtils.extendBounds(bounds,child.getBounds());});
 	} else 	if(this.features && this.features.length) {
@@ -1216,6 +1224,34 @@ MapGlyph.prototype = {
 	    } else  if(this.displayInfo.display.pointBounds) {
 		bounds= this.display.getMap().transformLLBounds(this.displayInfo.display.pointBounds);
 	    }
+	}
+
+	if(!MapUtils.boundsDefined(bounds) && this.isMultiEntry() && this.entries) {
+	    this.entries.forEach(entry=>{
+		let b = null;
+		if(entry.hasBounds()) {
+		    b =   MapUtils.createBounds(entry.getWest(),entry.getSouth(),entry.getEast(), entry.getNorth());
+		} else if(entry.hasLocation()) {
+		    b =   MapUtils.createBounds(entry.getLongitude(),entry.getLatitude(),
+						entry.getLongitude(),entry.getLatitude());
+		} 
+		if(b) {
+		    bounds = MapUtils.extendBounds(bounds,b);
+		}
+	    });
+	    if(bounds) {
+		bounds =  this.display.getMap().transformLLBounds(bounds);
+	    }
+	}
+	//Cache the bounds
+	if(MapUtils.boundsDefined(bounds)) {
+//	    console.log(this.getName() +' getBounds defined:', bounds);
+	    this.attrs.lastBounds = bounds;
+	} else if(this.attrs.lastBounds) {
+//	    console.log(this.getName() +' using last bounds:',this.attrs.lastBounds);
+	    return MapUtils.createBounds(this.attrs.lastBounds);
+	} else {
+//	    console.log(this.getName() +' no bounds');
 	}
 	return bounds;
     },
@@ -1336,7 +1372,6 @@ MapGlyph.prototype = {
 
     loadJson:function(jsonObject) {
 	if(jsonObject.children) {
-	    this.children = [];
 	    jsonObject.children.forEach(childJson=>{
 		let child = this.display.makeGlyphFromJson(childJson);
 		if(child) {
@@ -1345,7 +1380,7 @@ MapGlyph.prototype = {
 	    });
 	}
     },
-    removeChildGlyph: function(child) {
+    removeChild: function(child) {
 	if(this.children) {
 	    this.children = Utils.removeItem(this.children, child);
 	}
@@ -1367,11 +1402,14 @@ MapGlyph.prototype = {
 	});
     },
     getChildren: function() {
-	if(!this.children) this.children = [];
+	if(!this.children) {
+	    this.children = [];
+	}
 	return this.children;
     },
     haveChildren: function() {
-	return this.children!=null;
+	if(this.children && this.children.length>0) return true;
+	return false;
     },
     findGlyph:function(id) {
 	if(id == this.getId()) return this;
@@ -1386,7 +1424,7 @@ MapGlyph.prototype = {
 	return this.parentGlyph;
     },
     setParentGlyph: function(parent) {
-	if(this.parentGlyph) this.parentGlyph.removeChildGlyph(this);
+	if(this.parentGlyph) this.parentGlyph.removeChild(this);
 	this.parentGlyph = parent;
 	if(parent) this.display.removeMapGlyph(this);
     },    
@@ -4097,6 +4135,10 @@ MapGlyph.prototype = {
 	return this.attrs.showMarkerWhenNotVisible;
     },
     getVisibleLevelRange:function() {
+	let r =this.attrs.visibleLevelRange;
+	if((!r || !Utils.isDefined(r.min)) && this.getParentGlyph()) {
+	    return this.getParentGlyph().getVisibleLevelRange();
+	}
 	return this.attrs.visibleLevelRange;
     },
 
@@ -4152,7 +4194,7 @@ MapGlyph.prototype = {
 	let min = Utils.stringDefined(range.min)?+range.min:-1;
 	let max = Utils.stringDefined(range.max)?+range.max:10000;
 	visible =  this.getVisible() && (level>=min && level<=max);
-
+//	console.log(this.getName(),range,level,visible);
 	if(this.getVisible() && showMarker && !visible && !this.showMarkerMarker) {
 	    let featuresToUse = this.features;
 	    if(!featuresToUse || featuresToUse.length==0) {
@@ -4246,6 +4288,12 @@ MapGlyph.prototype = {
 
 	this.applyChildren(child=>{child.checkVisible();});
 	ImdvUtils.scheduleRedraw(this.display.myLayer);
+	if(visible && this.isMultiEntry() && !this.haveAddedEntries) {
+	    setTimeout(()=>{
+		this.addEntries();
+	    },1);
+	}
+	return visible;
     },    
     setImageLayerVisible:function(obj,visible) {
 	this.isImageLayerVisible(obj,true,visible);
@@ -4515,6 +4563,8 @@ MapGlyph.prototype = {
 	return GLYPH_TYPES_LINES_STRAIGHT.includes(this.type);
     },
     addEntries: function(andZoom) {
+	if(!this.checkVisible()) return;
+	this.haveAddedEntries = true;
 	let entryId = this.getEntryId();
         let entry =  new Entry({
             id: entryId,
@@ -4563,6 +4613,8 @@ MapGlyph.prototype = {
 		    mapGlyph.applyEntryGlyphs();
 		}
 	    });
+	    //call getBounds  so they are cached
+	    this.getBounds();
 	    this.display.makeLegend();
 	    this.checkVisible();
 	    if(andZoom)
@@ -4644,6 +4696,11 @@ MapGlyph.prototype = {
     },
     
     doRemove:function() {
+	if(this.glyphFieldsContainer) {
+	    jqid(this.glyphFieldsContainer).remove();
+	    this.glyphFieldsContainer=null;
+	}
+
 	if(this.stepMarker) {
 	    this.display.removeFeatures([this.stepMarker]);
 	}
