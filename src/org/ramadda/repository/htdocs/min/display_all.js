@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Mar  9 12:52:31 MST 2023";
+var build_date="RAMADDA build date: Sat Mar 11 08:08:22 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -3099,15 +3099,26 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	    return this.type;
 	}
     });
+    //type:circle,
+    //circle,
     $.extend(this,args);
+    let cnt=0;
+//    console.log('glyph');
     attrs.split(",").forEach(attr=>{
 	let toks = attr.split(":");
 	let name = toks[0];
 	let value="";
-	for(let i=1;i<toks.length;i++) {
-	    if(i>1) value+=":";
-	    value+=toks[i];
+	if(cnt==0 && toks.length==1) {
+	    value = name;
+	    name='type';
+	} else {
+	    for(let i=1;i<toks.length;i++) {
+		if(i>1) value+=":";
+		value+=toks[i];
+	    }
 	}
+	cnt++;
+//	console.log('\t'+name+'='+ value);
 	value = value.replace(/_nl_/g,"\n").replace(/_colon_/g,":").replace(/_comma_/g,",");
 	//Check for the ${...} macros
 	if(name=='colorBy')
@@ -3116,7 +3127,6 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	if(value=="true") value=true;
 	else if(value=="false") value=false;
 	this[name] = value;
-//	console.log(name+"="+value);
     });
 
     if(this.labelBy) {
@@ -3151,7 +3161,9 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	if(!isNaN(+s)) return +s;
 	s  = String(s);
 	s = s.replace(/canvasWidth2/g,""+(this.canvasWidth/2)).replace(/canvasWidth/g,this.canvasWidth);
-	s = s.replace(/canvasHeight2/g,""+(this.canvasHeight/2)).replace(/canvasHeight/g,this.canvasHeight);	
+	s = s.replace(/cw2/g,""+(this.canvasWidth/2)).replace(/cw/g,this.canvasWidth);
+	s = s.replace(/canvasHeight2/g,""+(this.canvasHeight/2)).replace(/canvasHeight/g,this.canvasHeight);
+	s = s.replace(/ch2/g,""+(this.canvasHeight/2)).replace(/ch/g,this.canvasHeight);		
 	s = s.replace(/width2/g,""+(this.width/2)).replace(/width/g,this.width);	
 	s = s.replace(/height2/g,""+(this.height/2)).replace(/height/g,this.width);	
 	try {
@@ -3203,7 +3215,6 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	    this.colorByInfo =  new ColorByInfo(display, fields, records, this.colorBy,this.colorBy+".colorByMap", ct, this.colorBy,this.colorByField, props);
 	}
     }
-
 
     if(this.requiredField) {
 	if(!display.getFieldById(fields,this.requiredField)) {
@@ -19406,7 +19417,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	makeGoogleChartInner: function(dataList, chartId, props, selectedFields) {
 	    let chartDiv = document.getElementById(chartId);
 	    if(!chartDiv) {
-		console.log(this.type+".makeGoogleChart: no chart div found:" + chartId);
+		this.logMsg("makeGoogleChart: no chart div found:" + chartId);
 		return;
 	    }
 	    let dataTable = this.makeDataTable(dataList, props, selectedFields, this.chartOptions);
@@ -42193,13 +42204,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(includeEdit) {
 		buttons.push(HU.span([CLASS,'ramadda-clickable',TITLE,'Edit','glyphid',mapGlyph.getId(),'buttoncommand','edit'],
 				     icon('fas fa-cog')));
+		buttons.push(
+		    HU.span([CLASS,'ramadda-clickable',TITLE,'Select','glyphid',mapGlyph.getId(),'buttoncommand',ID_SELECT],
+			    icon('fas fa-hand-pointer')));
+		buttons.push(HU.span([CLASS,'ramadda-clickable',TITLE,'Delete','glyphid',mapGlyph.getId(),'buttoncommand',ID_DELETE],icon('fa-solid fa-delete-left')));
 	    }
-	    buttons.push(
-		HU.span([CLASS,'ramadda-clickable',TITLE,'Select','glyphid',mapGlyph.getId(),'buttoncommand',ID_SELECT],
-			icon('fas fa-hand-pointer')),
-		HU.span([CLASS,'ramadda-clickable',TITLE,'Delete','glyphid',mapGlyph.getId(),'buttoncommand',ID_DELETE],
-			icon('fa-solid fa-delete-left'))
-	    );
 	    return Utils.wrap(buttons,HU.open('span',['style',HU.css('margin-right','8px')]),'</span>');
 	},
 	makeListItem:function(mapGlyph,idx) {
@@ -42664,6 +42673,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		labelAlign: {label:'Label',strip:'label'},
 		textBackgroundStrokeColor: {label:'Text Background',strip:'textBackground'},		
 	    };
+
 	    props.forEach(prop=>{
 		let shared = true;
 		let id = "glyphedit_" + prop;
@@ -42811,6 +42821,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    suffix=HU.span(['title','Apply this style to children glyphs',
 				    'class','ramadda-clickable imdv-style-suffix','widget-id',domId,'property',prop],HU.getIconImage('fas fa-folder-tree'));
 		}
+		if(label=='') label='Label';
+
 		html+=HU.formEntry(label+":",widget+suffix+extra);
 		html+='\n';
 	    });
@@ -45430,56 +45442,6 @@ GlyphType.prototype = {
 
 
 
-function MapGlyph(display,type,attrs,feature,style) {
-    if(!type) {
-	console.log("no type");
-	console.trace();
-	return
-    }
-    if(!style)
-	console.trace();
-    if(style.mapOptions) {
-	delete style.mapOptions;
-    }
-    this.transientProperties = {};
-
-    let glyphType = display.getGlyphType(type);
-    if(attrs.routeProvider)
-	this.name = "Route: " + attrs.routeProvider +" - " + attrs.routeType;
-    else 
-	this.name = attrs.name || glyphType.getName() || type;
-    let mapGlyphs = attrs.mapglyphs;
-    if(attrs.mapglyphs) delete attrs.mapglyphs;
-    if(mapGlyphs){
-	mapGlyphs = mapGlyphs.replace(/\\n/g,"\n");
-	this.putTransientProperty("mapglyphs", mapGlyphs);
-    }
-
-
-    this.display = display;
-    this.type = type;
-    this.features = [];
-    this.attrs = attrs;
-    this.style = style??{};
-    this.id = attrs.id ?? HU.getUniqueId("glyph_");
-    if(feature) this.addFeature(feature);
-
-    if(this.isEntry()) {
-	if(!Utils.isDefined(this.attrs.useentryname))
-	    this.attrs.useentryname = true;
-	if(!Utils.isDefined(this.attrs.useentrylabel))
-	    this.attrs.useentrylabel = true;	
-    }
-
-    if(this.isRings()) {
-	this.checkRings();
-    }
-
-
-}
-
-
-
 function RamaddaEditablemapDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaImdvDisplay(displayManager,  id,  properties);
     RamaddaUtil.inherit(this,SUPER);
@@ -45655,6 +45617,9 @@ function olCheckLabelBackground(renderer,   style,label,featureId,bbox) {
 
 
 
+var DEFAULT_GLYPHS = "props:fontSize:0px,size:50,width:100,height:50,font:18px sans-serif\ntype:circle,requiredField:${field},fill:false,strokeWidth:4,width:canvasWidth-10,height:canvasHeight,strokeStyle:green,pos:c,dx:canvasWidth2,dy:-canvasHeight2\ntype:label,requiredField:${field},pos:c,dx:canvasWidth2,dy:-canvasHeight2,decimals:1,label:${${field}},suffix:_space_${unit}";
+
+
 var LINETYPE_STRAIGHT='straight';
 var LINETYPE_GREATCIRCLE='greatcircle';
 var LINETYPE_CURVE='curve';
@@ -45663,7 +45628,6 @@ var ID_ADDDOTS = 'adddots';
 var ID_LINETYPE = 'linetype';
 
 function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
-
     if(!type) {
 	console.log("no type given for MapGlyph");
 	console.trace();
@@ -45682,7 +45646,7 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
 	this.name = attrs.name || glyphType.getName() || type;
     let mapGlyphs = attrs.mapglyphs;
     if(attrs.mapglyphs) delete attrs.mapglyphs;
-    if(mapGlyphs){
+    if(mapGlyphs) {
 	mapGlyphs = mapGlyphs.replace(/\\n/g,"\n");
 	this.putTransientProperty("mapglyphs", mapGlyphs);
     }
@@ -45740,9 +45704,16 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
 		this.applyMapStyle();
 		this.display.redraw(this);
 		this.display.makeLegend();
+		//And call getBounds so the bounds object gets cached for later use on reload
+		this.getBounds();
 	    };
 	    getRamadda().getEntry(this.attrs.entryId, callback);
 	}
+
+	//And call getBounds so the bounds object gets cached for later use on reload
+	this.getBounds();
+
+
     }
 
 
@@ -45887,9 +45858,9 @@ MapGlyph.prototype = {
 	    obj.style = style;
 	}
 	obj.points = this.getPoints(obj);
-	if(this.children) {
+	if(this.haveChildren()) {
 	    let childrenJson=[];
-	    this.children.forEach(child=>{
+	    this.getChildren().forEach(child=>{
 		if(child.isEphemeral) return;
 		childrenJson.push(child.makeJson());
 	    });
@@ -45899,8 +45870,7 @@ MapGlyph.prototype = {
     },	
 
     applyStyleToChildren:function(prop,value) {
-	if(!this.children) return;
-	this.children.forEach(child=>{
+	this.applyChildren(child=>{
 	    if(child.style) {
 		child.style[prop] = value;
 		child.applyStyle(child.style);
@@ -45942,8 +45912,9 @@ MapGlyph.prototype = {
 	if(Utils.stringDefined(glyphs)) {
 	    return glyphs;
 	}
-	if(checkTransient)
+	if(checkTransient) {
 	    return this.transientProperties.mapglyphs;
+	}
 	return null;
     },
     getRadii:function() {
@@ -46087,7 +46058,7 @@ MapGlyph.prototype = {
 			 HU.space(2),ex]);
 	content.push({header:'Flags',contents:html});
 
-	if(this.isEntry() || this.isGroup()) {
+	if(this.isEntry() || this.isGroup() || this.isMultiEntry()) {
 	    let contents ='';
 	    let gi  =this.getGlyphInfo();
 	    contents+= HU.href(RamaddaUtils.getUrl('/userguide/imdv.html#glyphs'),
@@ -46105,7 +46076,7 @@ MapGlyph.prototype = {
     
 	    contents+=HU.b('Glyphs:') +'<br>';
 	    contents +=
-		HU.textarea('',gi.glyphs??'',[ID,this.domId('entryglyphs'),'rows',4,'cols', 90]);
+		HU.textarea('',gi.glyphs??'',[ID,this.domId('entryglyphs'),'rows',6,'cols', 90]);
 	    content.push({
 		header:'Glyphs',
 		contents: contents});
@@ -46153,7 +46124,7 @@ MapGlyph.prototype = {
 	    this.setUseEntryLabel(this.jq("useentrylabel").is(":checked"));
 	    this.setUseEntryLocation(this.jq("useentrylocation").is(":checked"));
 	}
-	if(this.isEntry() || this.isGroup()) {
+	if(this.isEntry() || this.isGroup()  || this.isMultiEntry()) {
 	    let gi = this.getGlyphInfo();
 	    gi.glyphs = this.jq("entryglyphs").val();
 	    gi.fields=this.jq('glyphfields').val();
@@ -46161,7 +46132,7 @@ MapGlyph.prototype = {
 	    gi.label=this.jq('glyphlabel').val();	    	    
 	    if(this.isGroup()) 
 		this.applyGlyphField();
-	    else
+	    else if(this.isEntry()) 
 		this.applyEntryGlyphs();
 	}
 	this.setVisible(this.jq("visible").is(":checked"),true);
@@ -46223,11 +46194,9 @@ MapGlyph.prototype = {
 	if(this.isEntry()) {
 	    this.applyEntryGlyphs();
 	}
-	if(this.children) {
-	    this.children.forEach(child=>{
-		child.applyGlyphField();
-	    });
-	}
+	this.applyChildren(child=>{
+	    child.applyGlyphField();
+	});
     },
     featureSelected:function(feature,layer,event) {
 	//	console.log('imdv.featureSelected');
@@ -46261,10 +46230,8 @@ MapGlyph.prototype = {
     },
     applyEntryGlyphs:function(args) {
 	if(!Utils.stringDefined(this.getEntryGlyphs(true))) {
-	    console.log("apply nont");
 	    return;
 	}
-
 	let opts = {
 	    entryId:this.attrs.entryId
 	};
@@ -46274,11 +46241,16 @@ MapGlyph.prototype = {
 	}
 
 	let glyphs = [];
-	Utils.split(this.getEntryGlyphs(true),'\n',true,true).forEach(line=>{
+	
+	let g = this.getEntryGlyphs(true);
+	g = g.replace(/\\ *\n/g,'');
+	let lines = Utils.split(g,'\n',true,true);
+	lines.forEach(line=>{
 	    line = line.trim();
 	    if(line.startsWith("#") || line == "") return;
 	    glyphs.push(line);
 	});
+
 	if(glyphs.length==0) {
 	    console.log("\tno glyphs-2");
 	    return;
@@ -46325,12 +46297,14 @@ MapGlyph.prototype = {
 	let borderRegexp = /border *: *(.+)/;
 	let fontRegexp = /font *: *(.+)/;				
 	let sizeRegexp = /size *: *(.+)/;
-	let fontSizeRegexp = /fontSize *: *(.+)/;					
+	let fontSizeRegexp = /fontSize *: *(.+)/;
+	let requiredFieldRegexp = /requiredField *: *(.+)/;						
 	let fill;
 	let border;	
 	let font;
 	let size;
 	let fontSize;		
+	let requiredField;
 
 	glyphLines.forEach(line=>{
 	    line = line.trim();
@@ -46350,6 +46324,10 @@ MapGlyph.prototype = {
 		    canvasHeight=parseFloat(match[1]);
 		    return;
 		}
+		if(match  = line2.match(requiredFieldRegexp)) {
+		    requiredField=match[1];
+		    return;
+		}		
 		if(match  = line2.match(fillRegexp)) {
 		    fill=match[1];
 		    return;
@@ -46370,6 +46348,7 @@ MapGlyph.prototype = {
 		    font = match[1];
 		    return;
 		}
+		console.log('no match:' + line2);
 	    });
 	});
 
@@ -46388,9 +46367,13 @@ MapGlyph.prototype = {
 		return false;
 	    });
 	}
+
 	lines.forEach(line=>{
 	    line = line.trim();
 	    if(line.startsWith('#')) return;
+	    if(requiredField) {
+		line+=',requiredField:' + requiredField;
+	    }
 	    if(glyphField) {
 		line = line.replace(/\${field}/g,glyphField);
 	    }
@@ -46398,6 +46381,8 @@ MapGlyph.prototype = {
 		if(key=='label') return;
 		line = line.replaceAll("\${" + key+"}",attrs[key]);
 	    });
+	    //In case there wasn't a unit
+	    line = line.replaceAll(/\${unit}/g,'');
 	    glyphs.push(new Glyph(this.display,1.0, data.getRecordFields(),data.getRecords(),{
 		canvasWidth:canvasWidth,
 		canvasHeight: canvasHeight,
@@ -46436,10 +46421,10 @@ MapGlyph.prototype = {
 	    if($('#testimg').length) 
 		$("#testimg").html(HU.tag("img",["src",img]));
 	    canvas.remove();
-	    if(fontSize) {
+	    if(Utils.isDefined(fontSize)) {
 		this.style.fontSize=fontSize;
 	    }
-	    if(size) {
+	    if(Utils.isDefined(size)) {
 		this.style.pointRadius=size;
 	    }
 	    this.style.externalGraphic=img;
@@ -46475,9 +46460,30 @@ MapGlyph.prototype = {
 	return this.attrs.glyphInfo;
     },
     getGlyphProperty:function(property,dflt) {
-	if(Utils.stringDefined(this.getGlyphInfo()[property]))
+	let debug = false;
+//	debug = (property=='field');
+	if(debug) {
+	    console.log("getGlyphProperty:" + property);
+	    console.dir(this.getGlyphInfo());
+	}
+	if(Utils.stringDefined(this.getGlyphInfo()[property])) {
+	    if(debug)
+		console.log("mine:" +this.getGlyphInfo()[property]);
 	    return this.getGlyphInfo()[property];
-	if(this.getParentGlyph()) return this.getParentGlyph().getGlyphProperty(property,dflt);
+	}
+	if(property=='field') {
+	    if(this.glyphFieldsId) {
+		glyphField = jqid(this.glyphFieldsId).val();
+		if(glyphField) return glyphField;
+	    }
+	}
+
+
+	if(this.getParentGlyph()) {
+	    if(debug)
+		console.log("asking parent");
+	    return this.getParentGlyph().getGlyphProperty(property,dflt);
+	}
 	return dflt;
     },
     setEntryGlyphs:function(v) {
@@ -46796,29 +46802,8 @@ MapGlyph.prototype = {
     },
     getBounds: function() {
 	let bounds = null;
-	if(this.isMultiEntry() && this.entries) {
-	    this.entries.forEach(entry=>{
-		let b = null;
-		if(entry.hasBounds()) {
-		    b =   MapUtils.createBounds(entry.getWest(),entry.getSouth(),entry.getEast(), entry.getNorth());
-		} else if(entry.hasLocation()) {
-		    b =   MapUtils.createBounds(entry.getLongitude(),entry.getLatitude(),
-						entry.getLongitude(),entry.getLatitude());
-		} 
-		if(b) {
-		    bounds = MapUtils.extendBounds(bounds,b);
-		}
-	    });
-	    if(bounds) {
-		return this.display.getMap().transformLLBounds(bounds);
-	    }
-	    return null;
-	}
-
-	if(this.children) {
-	    this.children.forEach(child=>{
-		bounds =  MapUtils.extendBounds(bounds,child.getBounds());
-	    });
+	if(this.haveChildren()) {
+	    this.applyChildren(child=>{bounds =  MapUtils.extendBounds(bounds,child.getBounds());});
 	} else 	if(this.features && this.features.length) {
 	    bounds = this.display.getMap().getFeaturesBounds(this.features);
 	    if(this.rings) {
@@ -46857,15 +46842,41 @@ MapGlyph.prototype = {
 		bounds= this.display.getMap().transformLLBounds(this.displayInfo.display.pointBounds);
 	    }
 	}
+
+	if(!MapUtils.boundsDefined(bounds) && this.isMultiEntry() && this.entries) {
+	    this.entries.forEach(entry=>{
+		let b = null;
+		if(entry.hasBounds()) {
+		    b =   MapUtils.createBounds(entry.getWest(),entry.getSouth(),entry.getEast(), entry.getNorth());
+		} else if(entry.hasLocation()) {
+		    b =   MapUtils.createBounds(entry.getLongitude(),entry.getLatitude(),
+						entry.getLongitude(),entry.getLatitude());
+		} 
+		if(b) {
+		    bounds = MapUtils.extendBounds(bounds,b);
+		}
+	    });
+	    if(bounds) {
+		bounds =  this.display.getMap().transformLLBounds(bounds);
+	    }
+	}
+	//Cache the bounds
+	if(MapUtils.boundsDefined(bounds)) {
+//	    console.log(this.getName() +' getBounds defined:', bounds);
+	    this.attrs.lastBounds = bounds;
+	} else if(this.attrs.lastBounds) {
+//	    console.log(this.getName() +' using last bounds:',this.attrs.lastBounds);
+	    return MapUtils.createBounds(this.attrs.lastBounds);
+	} else {
+//	    console.log(this.getName() +' no bounds');
+	}
 	return bounds;
     },
 
 
     collectFeatures: function(features) {
-	if(this.children) {
-	    this.children.forEach(child=>{
-		child.collectFeatures(features);
-	    });
+	if(this.haveChildren()) {
+	    this.applyChildren(child=>{child.collectFeatures(features);});
 	} else 	if(this.features.length) {
 	    features.push(...this.features);
 	} else if(this.getMapLayer()) {
@@ -46975,13 +46986,9 @@ MapGlyph.prototype = {
 	return label;
     },
 
-    removeChildGlyph: function(child) {
-	if(this.children) this.children = Utils.removeItem(this.children, child);
-    },
 
     loadJson:function(jsonObject) {
 	if(jsonObject.children) {
-	    this.children = [];
 	    jsonObject.children.forEach(childJson=>{
 		let child = this.display.makeGlyphFromJson(childJson);
 		if(child) {
@@ -46990,15 +46997,43 @@ MapGlyph.prototype = {
 	    });
 	}
     },
-    getChildren: function(child) {
-	if(!this.children) this.children = [];
+    removeChild: function(child) {
+	if(this.children) {
+	    this.children = Utils.removeItem(this.children, child);
+	}
+    },
+    clearChildren:function() {
+	if(this.children) {
+	    let tmp = [...this.children];
+	    tmp.forEach(child=>{
+		child.doRemove();
+	    });
+	    this.children=[];
+	}
+    },
+
+    applyChildren:function(func) {
+	if(!this.haveChildren()) return;
+	this.getChildren().forEach(child=>{
+	    func(child);
+	});
+    },
+    getChildren: function() {
+	if(!this.children) {
+	    this.children = [];
+	}
 	return this.children;
+    },
+    haveChildren: function() {
+	if(this.children && this.children.length>0) return true;
+	return false;
     },
     findGlyph:function(id) {
 	if(id == this.getId()) return this;
-	return ImdvUtils.findGlyph(this.children,id);
+	return ImdvUtils.findGlyph(this.getChildren(),id);
     },
     addChildGlyph: function(child) {
+//	console.log("add child:" + child.getName());
 	this.getChildren().push(child);
 	child.setParentGlyph(this);
     },
@@ -47006,7 +47041,7 @@ MapGlyph.prototype = {
 	return this.parentGlyph;
     },
     setParentGlyph: function(parent) {
-	if(this.parentGlyph) this.parentGlyph.removeChildGlyph(this);
+	if(this.parentGlyph) this.parentGlyph.removeChild(this);
 	this.parentGlyph = parent;
 	if(parent) this.display.removeMapGlyph(this);
     },    
@@ -47052,11 +47087,7 @@ MapGlyph.prototype = {
 	    this.image.ramaddaLayerIndex=level++;
 	}
 
-	if(this.isGroup()) {
-	    this.getChildren().forEach(mapGlyph=>{
-		level = mapGlyph.setLayerLevel(level);
-	    });
-	}
+	this.applyChildren(mapGlyph=>{level = mapGlyph.setLayerLevel(level);});
 	return level;
     },
     makeLegend:function(opts) {
@@ -47084,9 +47115,9 @@ MapGlyph.prototype = {
 	    });
 	    body+=HU.div(['class','imdv-legend-offset'],cbx);
 	}
-	if(this.isGroup()) {
+	if(this.haveChildren()) {
 	    let child="";
-	    this.getChildren().forEach(mapGlyph=>{
+	    this.applyChildren(mapGlyph=>{
 		let childHtml = mapGlyph.makeLegend(opts);
 		if(childHtml) child+=childHtml;
 	    });
@@ -47140,11 +47171,14 @@ MapGlyph.prototype = {
 	}
 	return s;
     },
+    canEdit: function() {
+	return !this.isEphemeral;
+    },
     getLegendBody:function() {
 	let showInMapLegend=this.getProperty('showLegendInMap',false) && !this.display.getShowLegendInMap();
 	let inMapLegend='';
 	let body = '';
-	let buttons = this.display.makeGlyphButtons(this,true);
+	let buttons = this.display.makeGlyphButtons(this,this.canEdit());
 	if(this.isMap() && this.getProperty('showFeaturesTable',true))  {
 	    this.showFeatureTableId = HU.getUniqueId('btn');
 	    if(buttons!=null) buttons = HU.space(1)+buttons;
@@ -47167,7 +47201,7 @@ MapGlyph.prototype = {
 	}	
 
 	
-	if(!this.display.canEdit() && !this.getProperty('showButtons',true))
+	if((!this.display.canEdit() && !this.getProperty('showButtons',true))/* || this.isEphemeral*/)
 	    buttons = '';
 
 	if(buttons!='')
@@ -47352,7 +47386,7 @@ MapGlyph.prototype = {
 	let distances = this.display.getDistances(this.getGeometry(),this.getType());
 	item(distances,true,true);
 	if(this.isMultiEntry()) {
-	    item(HU.div(['id',this.domId('multientry')]));
+//	    item(HU.div(['id',this.domId('multientry')]));
 	}
 
 	if(this.isShape()) {
@@ -47468,8 +47502,6 @@ MapGlyph.prototype = {
 
 	    });
 	}
-
-
 	if(this.isMultiEntry() && this.entries) {
 	    this.showMultiEntries();
 	}
@@ -47710,12 +47742,7 @@ MapGlyph.prototype = {
 		addColor(this.attrs.strokeColorBy,'Stroke',this.strokeStrings);
 	    }
 	}	
-
-
-
-	if(this.isGroup()) {
-	    this.getChildren().forEach(mapGlyph=>{mapGlyph.initLegend();});
-	}
+	this.applyChildren(mapGlyph=>{mapGlyph.initLegend();});
     },
 
     convertPopupText:function(text) {
@@ -47725,6 +47752,7 @@ MapGlyph.prototype = {
 	return text;
     },
     
+
     isGroup:function() {
 	return this.getType() ==GLYPH_GROUP;
     },
@@ -48328,15 +48356,14 @@ MapGlyph.prototype = {
 	let provider = this.display.jq('routeprovider').val();
 	let doSequence = this.display.jq('routedosequence').is(':checked');
 	let pts = [];
-	if(this.children) {
-	    this.children.forEach(child=>{
-		if(!child.isVisible()) return;
-		let centroid  = child.getCentroid();
-		if(!centroid) return;
-		var lonlat = this.getMap().transformProjPoint(centroid)
-		pts.push(lonlat);
-	    });
-	}
+	this.applyChildren(child=>{
+	    if(!child.isVisible()) return;
+	    let centroid  = child.getCentroid();
+	    if(!centroid) return;
+	    var lonlat = this.getMap().transformProjPoint(centroid)
+	    pts.push(lonlat);
+	});
+
 	if(pts.length==0) {
 	    alert('No points to make route from');
 	    return;
@@ -49725,6 +49752,10 @@ MapGlyph.prototype = {
 	return this.attrs.showMarkerWhenNotVisible;
     },
     getVisibleLevelRange:function() {
+	let r =this.attrs.visibleLevelRange;
+	if((!r || !Utils.isDefined(r.min)) && this.getParentGlyph()) {
+	    return this.getParentGlyph().getVisibleLevelRange();
+	}
 	return this.attrs.visibleLevelRange;
     },
 
@@ -49735,15 +49766,8 @@ MapGlyph.prototype = {
 	    }
 	}
 
-
 	this.attrs.visible = visible;
-	if(this.children) {
-	    this.children.forEach(child=>{
-		child.setVisible(visible, callCheck);
-	    });
-	}
-
-
+    	this.applyChildren(child=>{child.setVisible(visible, callCheck);});
 	if(this.rings) {
 	    this.rings.forEach(feature=>{
 		MapUtils.setFeatureVisible(feature,visible);
@@ -49787,7 +49811,7 @@ MapGlyph.prototype = {
 	let min = Utils.stringDefined(range.min)?+range.min:-1;
 	let max = Utils.stringDefined(range.max)?+range.max:10000;
 	visible =  this.getVisible() && (level>=min && level<=max);
-
+//	console.log(this.getName(),range,level,visible);
 	if(this.getVisible() && showMarker && !visible && !this.showMarkerMarker) {
 	    let featuresToUse = this.features;
 	    if(!featuresToUse || featuresToUse.length==0) {
@@ -49879,10 +49903,14 @@ MapGlyph.prototype = {
 	    }
 	}
 
-	if(this.children) {
-	    this.children.forEach(child=>{child.checkVisible();});
-	}
+	this.applyChildren(child=>{child.checkVisible();});
 	ImdvUtils.scheduleRedraw(this.display.myLayer);
+	if(visible && this.isMultiEntry() && !this.haveAddedEntries) {
+	    setTimeout(()=>{
+		this.addEntries();
+	    },1);
+	}
+	return visible;
     },    
     setImageLayerVisible:function(obj,visible) {
 	this.isImageLayerVisible(obj,true,visible);
@@ -50152,34 +50180,26 @@ MapGlyph.prototype = {
 	return GLYPH_TYPES_LINES_STRAIGHT.includes(this.type);
     },
     addEntries: function(andZoom) {
+	if(!this.checkVisible()) return;
+	this.haveAddedEntries = true;
 	let entryId = this.getEntryId();
         let entry =  new Entry({
             id: entryId,
         });
-	if(this.features)
-	    this.display.removeFeatures(this.features);
-	this.features =[];
         let callback = (entries)=>{
+	    this.clearChildren();
+	    this.children = [];
+
 	    this.entries = entries;
 	    entries.forEach((e,idx)=>{
 		if(!e.hasLocation()) return;
 		let  pt = MapUtils.createPoint(e.getLongitude(),e.getLatitude());
 		pt = this.display.getMap().transformLLPoint(pt);
-		let style = $.extend({},this.style);
+		let style = Utils.clone({},this.style);
 		style.externalGraphic = e.getIconUrl();
 		style.strokeWidth=1;
 		style.strokeColor="transparent";
-		/*
-		  let bgstyle = $.extend({},style);
-		  bgstyle = $.extend(bgstyle,{externalGraphic:Ramadda.getUrl("/images/white.png")});
-		  bgstyle.label = null;
-		  let bgpt = MapUtils.createPoint(pt.x,pt.y);
-		  let bg = MapUtils.createVector(bgpt,null,bgstyle);
-		  bg.noSelect = true;
-		  //		bg.mapGlyph=this;
-		  //		bg.entryId = e.getId();
-		  this.features.push(bg);
-		*/
+//		style.fontSize='12px';
 		if(style.showLabels) {
 		    let label  =e.getName();
 		    let toks = Utils.split(label," ",true,true);
@@ -50195,22 +50215,24 @@ MapGlyph.prototype = {
 		} else {
 		    style.label=null;
 		}
-		let marker = MapUtils.createVector(pt,null,style);
-
-
 		let attrs = {name:e.getName(),
-			     entryglyphs:e.mapglyphs,
-			     entryId:e.getId()
+			     mapglyphs:e.mapglyphs,
+			     entryId:e.getId(),
+			     icon:e.getIconUrl()
 			    };
-		let mapGlyph = new MapGlyph(this.display,GLYPH_MARKER, attrs, marker,style);
-		marker.mapGlyph = this;
-		marker.entryId = e.getId();
+
+		//xxxx
+		let points =[e.getLatitude(),e.getLongitude()];
+		let mapGlyph = this.display.createMapMarker(GLYPH_ENTRY,attrs, style,points,true);
+		mapGlyph.isEphemeral = true;
+		this.addChildGlyph(mapGlyph);
 		if(this.getShowMultiData()) {
 		    mapGlyph.applyEntryGlyphs();
 		}
-		this.features.push(marker);
 	    });
-	    this.display.addFeatures(this.features);
+	    //call getBounds  so they are cached
+	    this.getBounds();
+	    this.display.makeLegend();
 	    this.checkVisible();
 	    if(andZoom)
 		this.panMapTo();
@@ -50225,9 +50247,7 @@ MapGlyph.prototype = {
 	if(this.isSelected()) {
 	    selected.push(this);
 	}
-	if(this.children) {
-	    this.children.forEach(child=>{child.getSelected(selected);});
-	}
+	this.applyChildren(child=>{child.getSelected(selected);});
     },
 
     select:function(maxPoints,dontRedraw) {
@@ -50272,20 +50292,11 @@ MapGlyph.prototype = {
 	    pointCount+=this.display.selectFeatures(this,this.getFeatures(),maxPoints);
 	}
 	this.display.selectionLayer.addFeatures(this.selectDots,{silent:true});
-	if(this.children) {
-	    this.children.forEach(child=>{
-		pointCount+=child.select(maxPoints, dontRedraw);
-	    });
-	}
+	this.applyChildren(child=>{pointCount+=child.select(maxPoints, dontRedraw);});
 	return pointCount;
     },
     unselect:function() {
-	if(this.children) {
-	    this.children.forEach(child=>{
-		child.unselect();
-	    });
-	}	
-
+	this.applyChildren(child=>{child.unselect();});
 	if(!this.isSelected()) {
 	    return;
 	}	    
@@ -50302,6 +50313,11 @@ MapGlyph.prototype = {
     },
     
     doRemove:function() {
+	if(this.glyphFieldsContainer) {
+	    jqid(this.glyphFieldsContainer).remove();
+	    this.glyphFieldsContainer=null;
+	}
+
 	if(this.stepMarker) {
 	    this.display.removeFeatures([this.stepMarker]);
 	}
@@ -50360,13 +50376,7 @@ MapGlyph.prototype = {
 	}
 
 	this.setParentGlyph(null);
-
-	if(this.children) {
-	    let tmp = [...this.children];
-	    tmp.forEach(child=>{
-		child.doRemove();
-	    });
-	}
+	this.clearChildren();
     }
 }
 
