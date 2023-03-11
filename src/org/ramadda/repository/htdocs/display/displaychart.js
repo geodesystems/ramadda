@@ -1981,7 +1981,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	makeGoogleChartInner: function(dataList, chartId, props, selectedFields) {
 	    let chartDiv = document.getElementById(chartId);
 	    if(!chartDiv) {
-		console.log(this.type+".makeGoogleChart: no chart div found:" + chartId);
+		this.logMsg("makeGoogleChart: no chart div found:" + chartId);
 		return;
 	    }
 	    let dataTable = this.makeDataTable(dataList, props, selectedFields, this.chartOptions);
