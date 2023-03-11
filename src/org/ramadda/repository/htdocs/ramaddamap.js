@@ -140,6 +140,9 @@ var MapUtils =  {
 				    bounds.bottom+(bounds.top-bounds.bottom)/2);
 
     },
+    boundsDefined:function(bounds) {
+	return bounds!=null && bounds.left!=null;
+    },
     createBoundsFromPoints:function (points) {
 	let left=0,right=0,bottom=0,top=0;
 	points.forEach((p,idx)=>{
@@ -150,7 +153,11 @@ var MapUtils =  {
 	})
 	return this.createBounds(left,bottom,right,top);
     },
-    createBounds:function (v1, v2, v3, v4) {
+    createBounds:function (v1, v2, v3, v4,recurse) {
+	//Check for being passed in a bounds object
+	if(!Utils.isNumber(v1) && v1 && v1.left&& !recurse) {
+	    return this.createBounds(v1.left,v1.bottom,v1.right,v1.top,true);
+	}
 	let bounds =  new OpenLayers.Bounds(RamaddaToFloat(v1), RamaddaToFloat(v2), RamaddaToFloat(v3), RamaddaToFloat(v4));
 	
 	return bounds;
