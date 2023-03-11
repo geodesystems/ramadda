@@ -397,10 +397,11 @@ WikiEditor.prototype = {
 	    } else {
 		text = " {{" + what.toLowerCase() +" entry=" + entryId+" }}";				
 	    }
-	    if(pos)
+	    if(pos) {
 		this.getEditor().session.insert(pos,text);
-	    else
+	    }   else {
 		this.insertAtCursor(text);
+	    }
 	});
     },
 
@@ -878,9 +879,37 @@ WikiEditor.prototype = {
 
 
 	let gptText = this.getEditor().getSelectedText()??'';
+	let options = [{value:'',label:'Select prompt'}];
+	//Some of these prompts are from https://github.com/f/awesome-chatgpt-prompts
+	let prompts =
+	    [{label:'Rewrite for college reader',
+	      prompt:'Rewrite the following text for a college educated reader:'},
+	     {label:'Rewrite for 5th grader',
+	      prompt:'Rewrite the following text for a 5th grade reader:'},
+	     'Can you give a short description of the below topic:',
+	     'Write a comprehensive guide for the below topic:', 
+	     'Write a blog post on the below topic:',
+	     {label:'Make a lesson plan for the below topic',prompt:'I need help developing a lesson plan on the below topic for college studentss. The topic is:'},
+
+	     {label:'Check spelling',prompt:'List all of the words in the following text that are misspelled:'},
+	     {label:'Translate to English',
+	      prompt:'I want you to act as an English translator, spelling corrector and improver. I will speak to you in any language and you will detect the language, translate it and answer in the corrected and improved version of my text, in English. I want you to replace my simplified A0-level words and sentences with more beautiful and elegant, upper level English words and sentences. Keep the meaning same, but make them more literary. I want you to only reply the correction, the improvements and nothing else, do not write explanations.'}];
+	prompts.forEach((prompt,idx)=>{
+	    if(prompt.label) {
+		options.push({value:idx,label:prompt.label});
+	    } else {
+		options.push({value:idx,label:prompt});
+	    }		
+	 });
+	let promptMenuContainerId = HU.getUniqueId();
+	/*
+	  todo: maybe add a menu of common prompts?
+	  */
 	let html= 
 	    HU.formTable() +
-	    HU.formEntry('Prompt prefix:',HU.input('',this.lastPromptPrefix??'Rephrase the following text:',
+	    HU.formEntry('Prompt:',HU.div(['id',promptMenuContainerId]))+
+	    HU.formEntry('','Or enter prompt:') +
+	    HU.formEntry('Prompt prefix:',HU.input('',this.lastPromptPrefix??'',
 						   ['class','wiki-gpt-input','style','width:500px;','id',this.domId('gpt-prompt-prefix')])) +
 	    HU.formEntry('Prompt suffix:',
 			 HU.input('',this.lastPromptSuffix??'',['class','wiki-gpt-input','style','width:500px;','id',this.domId('gpt-prompt-suffix')])) +
@@ -900,35 +929,27 @@ WikiEditor.prototype = {
 	html += HU.buttons([HU.span(['class','ramadda-dialog-button','replace','true'],"Replace"),
 			HU.span(['class','ramadda-dialog-button','append','true'],"Append"),
 			HU.span(['class','ramadda-dialog-button',ID,this.domId("cancel")],"Cancel")]);
-	html = HU.div(['class','ramadda-dialog'],html);
-	let dialog = this.gptDialog = HU.makeDialog({content:html,anchor:this.getScroller(),
+			 html = HU.div(['class','ramadda-dialog'],html);
+
+			 let dialog = this.gptDialog = HU.makeDialog({content:html,anchor:this.getScroller(),
 				    my: "left bottom",     
 				    at: "left+200" +" top-50",
 				    title:"GPT",
 				    header:true,sticky:true,draggable:true,modal:false});	
 
-	dialog.find('.ramadda-dialog-button').button().click(function() {
-	    _this.gptReplacing = true;	    
-	    let val = _this.jq('rewrite-results').val();
-	    if($(this).attr('replace')) {
-		_this.getEditor().session.replace(_this.getEditor().selection.getRange(), val);
-	    } else if ($(this).attr('append')) {
-		_this.getEditor().session.insert(_this.getEditor().getCursorPosition(), val.trim());
-	    } else {
-		dialog.remove();
-	    }
-	    _this.gptReplacing = false;	    
-	});
 
-
-	let call = () =>{
+	let call = (prompt) =>{
 	    gptText = this.jq(this.ID_GPT_INPUT).val()??'';
 	    this.jq('gpt-loading').show();
 	    let url = RamaddaUtils.getUrl("/gpt/rewrite");
-	    $.post(url,{text:gptText,
-			promptprefix:this.lastPromptPrefix=this.jq('gpt-prompt-prefix').val(),
-			promptsuffix:this.lastPromptSuffix=this.jq('gpt-prompt-suffix').val(),
-		       },
+	    let args = {text:gptText};
+	    if(prompt) {
+		args.promptprefix = prompt;
+	    } else {
+		args.promptprefix=this.lastPromptPrefix=this.jq('gpt-prompt-prefix').val();
+		args.promptsuffix=this.lastPromptSuffix=this.jq('gpt-prompt-suffix').val();
+	    }
+	    $.post(url,args,
 		   data=>{
 		       _this.jq('gpt-loading').hide();
 		       if(!Utils.stringDefined(data.result)) {
@@ -942,6 +963,27 @@ WikiEditor.prototype = {
 		       alert('Rewrite failed');
 		   });
 	}
+	let makePromptMenu = () =>{
+	    let promptMenu = HU.select("",['id', this.domId('gptprompts')],options);
+	    jqid(promptMenuContainerId).html(promptMenu);
+	    this.jq('gptprompts').change(function() {
+		let idx = $(this).val();
+		let prompt = prompts[idx];
+		if(!prompt) {
+		    return;
+		}
+		let val = prompt.prompt ?? prompt;
+		if(!Utils.stringDefined(val)) {
+		    return;
+		}
+		call(val);
+		$(this).val('');
+	    });
+	}
+
+	makePromptMenu();
+
+
 	dialog.find('.wiki-gpt-input').keypress(function(e){
 	    if(e.keyCode == 13) {
 		call();
@@ -952,19 +994,20 @@ WikiEditor.prototype = {
 	});
 	let _this = this;
 	dialog.find('.ramadda-dialog-button').button().click(function() {
-	    _this.gptReplacing = true;
+	    _this.gptReplacing = true;	    
 	    let val = _this.jq('rewrite-results').val();
+	    if(!val) return;
 	    if($(this).attr('replace')) {
 		_this.getEditor().session.replace(_this.getEditor().selection.getRange(), val);
 	    } else if ($(this).attr('append')) {
-		_this.getEditor().session.replace(_this.getEditor().selection.getRange(), gptText+'\n'+val.trim());
+		_this.getEditor().session.insert(_this.getEditor().getCursorPosition(), val);
 	    } else {
 		dialog.remove();
 	    }
 	    _this.gptReplacing = false;	    
 	});
 
-
+	
 
 
     },    
