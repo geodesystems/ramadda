@@ -8,8 +8,12 @@ source $::mydir/uitest.tcl
 proc runGroup {group id {groupLimit 10000}} {
     write "</div>\n"
     write "<h2>$group</h2><div class=ramadda-grid>"
-    set url "$::root/entry/show?ascending=true&orderby=name&entryid=${id}&output=default.csv&fields=name,id&showheader=false&showheader=false"
-    puts stderr "group: $group"
+    if {[regexp http $group]} {
+	set url $group
+    } else {
+	set url "$::root/entry/show?ascending=true&orderby=name&entryid=${id}&output=default.csv&fields=name,id&showheader=false&showheader=false"
+    }
+    puts stderr "group: $group $url"
     set csv [getUrl $url]
     regsub -all { } $group _ _group
     foreach line2 [split $csv "\n"] {
@@ -22,6 +26,7 @@ proc runGroup {group id {groupLimit 10000}} {
 }
 
 
+set groupUrl ""
 set urls [list]
 set sleep 5
 for {set i 0} {$i <[llength $argv]} {incr i} {
@@ -52,6 +57,12 @@ for {set i 0} {$i <[llength $argv]} {incr i} {
 	set sleep [lindex $argv $i]
 	continue;
     }
+    if {$arg == "-group"} {
+	incr i
+	set groupUrl [lindex $argv $i]
+	continue;
+    }
+
     if {$arg == "-urls"} {
 	incr i
 	set file [lindex $argv $i]
@@ -64,6 +75,13 @@ for {set i 0} {$i <[llength $argv]} {incr i} {
 	continue
     }
     lappend urls "$arg"
+}
+
+
+
+if {$groupUrl!=""} {
+    runGroup "Group" $groupUrl
+    return
 }
 
 if {[llength $urls]} {
