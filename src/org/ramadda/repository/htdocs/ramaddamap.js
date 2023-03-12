@@ -731,6 +731,7 @@ function RepositoryMap(mapId, params) {
 	params.initialLocation = {lon:lon,lat:lat};
     }
 
+
     let showDflt = true;
     if(params.simple)
 	showDflt = false;

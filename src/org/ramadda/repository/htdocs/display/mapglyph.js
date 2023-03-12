@@ -132,7 +132,7 @@ MapGlyph.prototype = {
 	    let info = _this.getFeatureInfo(id);
 	    if(!info) return;
 	    let html = HU.b(info.getLabel());
-	    let items =   ['show=true','label=','filter.first=true','type=enum']
+	    let items =   ['filter.show=true','label=','filter.first=true','type=enum']
 	    if(info.isNumeric()) {
 		items.push('format.decimals=0',
 			   'filter.min=0',
@@ -444,9 +444,7 @@ MapGlyph.prototype = {
 	if(this.isEntry() || this.isGroup() || this.isMultiEntry()) {
 	    let contents ='';
 	    let gi  =this.getGlyphInfo();
-	    contents+= HU.href(RamaddaUtils.getUrl('/userguide/imdv.html#glyphs'),
-			       HU.getIconImage(icon_help) +' Help',
-			       ['target','_help']) +'<br>';
+	    contents+= this.getHelp('entries.html#glyphs') +'<br>';
 	    contents+=HU.b('Glyph fields:') +'<br>'+
 		HU.textarea('',gi.fields??'',
 			    ['placeholder','e.g.: field_id,label=Some label','id',this.domId('glyphfields'),'rows',4,'cols', 90]);
@@ -1766,8 +1764,10 @@ MapGlyph.prototype = {
 	if(this.type==GLYPH_LABEL && this.style.label) {
 	    item(this.style.label.replace(/\"/g,"\\"));
 	}
-	let distances = this.display.getDistances(this.getGeometry(),this.getType());
-	item(distances,true,true);
+	if(this.getProperty('showMeasures',true)) {
+	    let distances = this.display.getDistances(this.getGeometry(),this.getType());
+	    item(distances,true,true);
+	}
 	if(this.isMultiEntry()) {
 //	    item(HU.div(['id',this.domId('multientry')]));
 	}
@@ -1861,6 +1861,7 @@ MapGlyph.prototype = {
 	    //Set the last dropped time so we don't also handle this as a setVisibility click
 	    let notify = ()=>{_this.display.setLastDroppedTime(new Date());};
 	    this.getLegendDiv().draggable({
+		cursor: "crosshair",
 		start: notify,
 		drag: notify,
 		stop: notify,
@@ -2726,7 +2727,7 @@ MapGlyph.prototype = {
 	});
     },
     getHelp:function(url,label) {
-	if(url.startsWith('#')) url = '/userguide/imdv.html' + url;
+	if(url.startsWith('#')) url = '/userguide/imdv/' + url;
 	return HU.href(Ramadda.getUrl(url),HU.getIconImage(icon_help) +' ' +(label??'Help'),['target','_help']);
     },
     getCentroid: function() {
@@ -2773,7 +2774,7 @@ MapGlyph.prototype = {
 	let colorBy = '';
 	colorBy+=HU.leftRightTable(HU.checkbox(this.domId('fillcolors'),['id',this.domId('fillcolors')],
 					       this.attrs.fillColors,'Fill Colors'),
-				   this.getHelp('#mapstylerules'));
+				   this.getHelp('mapfiles.html#mapstylerules'));
 
 	numeric = featureInfo;
 	if(numeric.length) {
@@ -2854,7 +2855,7 @@ MapGlyph.prototype = {
 
 	let mapPointsRange = HU.leftRightTable(HU.b('Visiblity limit: ') + HU.select('',[ID,'mappoints_range'],this.display.levels,this.getMapPointsRange()??'',null,true) + ' '+
 					       HU.span(['class','imdv-currentlevellabel'], '(current level: ' + this.display.getCurrentLevel()+')'),
-					       this.getHelp('#map_labels'));
+					       this.getHelp('mapfiles.html#map_labels'));
 	let mapPoints = HU.textarea('',this.getMapLabelsTemplate()??'',['id','mappoints_template','rows','6','cols','40','title','Map points template, e.g., ${code}']);
 
 	let propsHelp =this.display.makeSideHelp(helpLines,'mappoints_template',{prefix:'${',suffix:'}'});
@@ -2863,7 +2864,7 @@ MapGlyph.prototype = {
 
 	let styleGroups =this.getStyleGroups();
 	let styleGroupsUI = HU.leftRightTable('',
-					      this.getHelp('#adding_a_map'));
+					      this.getHelp('mapfiles.html#adding_a_map'));
 	styleGroupsUI+=HU.openTag('table',['width','100%']);
 	styleGroupsUI+=HU.tr([],HU.tds([],
 				       ['Group','Fill','Opacity','Stroke','Width','Pattern','Features']));
@@ -2949,7 +2950,9 @@ MapGlyph.prototype = {
 		    return  this.getProperty('show',_this.getProperty('feature.show',true));
 		},
 		showFilter: function() {
-		    return   this.getProperty('filter.show',_this.getProperty('filter.show',this.show()));
+		    let dflt = _this.getProperty('filter.show',this.show());
+		    let show =   this.getProperty('filter.show',dflt);
+		    return show;
 		},
 		showTable: function() {
 		    return this.getProperty('table.show',_this.getProperty('table.show',this.show()));

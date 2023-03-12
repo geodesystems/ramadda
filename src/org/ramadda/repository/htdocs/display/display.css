@@ -2935,7 +2935,6 @@ table.dataTable tfoot td {
 .ramadda-dot:hover {
     border:1px solid #000;
 }
-
     
 .imdv-style-suffix {
     margin-left:4px;
@@ -2992,7 +2991,8 @@ table.dataTable tfoot td {
 
 .imdv-legend-item-droppable {
     background:var(--highlight-background);
-    border-top:1px solid #000;
+    border-top:2px solid #000;
+    border-bottom:2px solid #000;    
 }
 
 .imdv-legend-item-last {

@@ -1652,6 +1652,13 @@ mapheader {
     background-color: inherit;
 }
 
+.ramadda-halfsize {
+    -moz-transform:scale(0.5);
+    -webkit-transform:scale(0.5);
+    transform:scale(0.5);
+}
+
+
 .inset {
     margin-left: 20px;
     margin-right: 20px;

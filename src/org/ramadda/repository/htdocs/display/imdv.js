@@ -48,7 +48,7 @@ var CLASS_IMDV_STYLEGROUP= 'imdv-stylegroup';
 var CLASS_IMDV_STYLEGROUP_SELECTED = 'imdv-stylegroup-selected';
 var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'filter.zoomonchange.show=false',
-			  'filter.toggle.show=false','showButtons=false','showLegendInMap=true'];
+			  'filter.toggle.show=false','showButtons=false','showLegendInMap=true','showMeasures=false'];
 
 
 let ImdvUtils = {
@@ -2249,8 +2249,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		props.push("popupText");
 	    }
 	    let notProps = ['mapOptions','labelSelect','cursor','display']
-
-	    
 	    let strip=null;
 	    let headers = {
 		strokeColor: {label:'Stroke',strip:'stroke'},
@@ -3170,7 +3168,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    html+= this.menuItem(this.domId(ID_PROPERTIES),"Set Default Style...");
 	    html+= this.menuItem(this.domId(ID_MAP_PROPERTIES),"Properties...");
 	    html+=div;
-	    html+= HU.href(Ramadda.getUrl('/userguide/imdv.html'),'Help',['target','_help']);
+	    html+= HU.href(Ramadda.getUrl('/userguide/imdv/index.html'),'Help',['target','_help']);
 	    html  = this.makeMenu(html);
 	    //	    console.log('creating file menu');
 	    this.dialog = HU.makeDialog({content:html,anchor:button});
@@ -3991,6 +3989,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	initMap: function(map) {
 	    SUPER.initMap.call(this)
+	},
+	initMapParams:function(params) {
+	    SUPER.initMapParams.call(this,params);
+	    params.zoomLevel=3
+	    params.mapCenter='41.77131,-102.24744'
 	},
 	
 	getOtherProperties: function() {
