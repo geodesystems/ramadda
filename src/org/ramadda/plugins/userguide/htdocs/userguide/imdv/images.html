@@ -1,0 +1,169 @@
+<html>
+<head>
+<title>Integrated Map Data Viewer (IMDV)</title>
+  <link rel="stylesheet" type="text/css" href="../default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellspacing=0 cellpadding=0 >
+<tr><td width=20%>
+<a href="mapfiles.html"><span title="Previous: IMDV Map Files"><i  style='font-size:20pt;'  class="fa fa-caret-left "></i></span></a> <a href="routes.html"><span title="Next: Integrated Map Data Viewer (IMDV)"><i  style='font-size:20pt;'  class="fa fa-caret-right "></i></span></a>  <a href="../toc.html#imdv/images.html"><span title="Table of contents"><i  style='font-size:20pt;'  class="fa fa-list "></i></span></a>
+</td>
+<td width=60% align=center>
+<div class="ramadda-page-heading"><a href="${root}/userguide/index.html">RAMADDA User Guide</a></div>
+<div class="ramadda-page-title"><a href="#">Section 6.6.1: Integrated Map Data Viewer (IMDV)</a></div>
+</td>
+<td width=20%>&nbsp;</td>
+</tr></table>
+
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+<div style="margin-left:20px;">
+
+
+:navtop
+:heading Adding an Image
+You can add a georeferenced image to your IMDV.
+There are 4 ways to initiate adding an image:
+* Drag and drop an image file onto the map. You will be prompted for the new image entry name and the image file will be added as a child entry of the imdv map
+* Paste and image from the clipboard. This will behave like drag-and-drop.
+* Upload an image to RAMADDA beforehand. Select New-&gt;Image from the IMDV menu and select the image entry
+* Select New-&gt;Image from the IMDV menu and enter the URL to the image
+Once an image is selected you drag an area on the map. 
+:p
+Here we're going to add in a aerial photo taken in 1937 of the Boulder Colorado area.
+First upload the image to RAMADDA. Then in the IMDV navigate to the area of interest.
+Then do New-&gt;Image and choose the  image:
+<center><span style='display:inline-block'><center><div><a href="images/newimage.png"><img  src="images/newimage.png"  style='width:80%;padding:4px;margin:8px;'  alt="images/newimage.png" ></a></div></center></span></center>
+
+Click and drag out a region. The IMDV will maintain the aspect ratio of the image.
+Pressing the shift key while dragging will set the image region to the drag rectangle.
+Once added you can change the opacity of the image with the Image Opacity slider or from the
+image edit settings. This allows you to see what is underneath the image. From
+the Edit menu choose Reshape and click on the image. This lets you change the area and shape
+of the image. Note: not all imagery will be in the projection of the underlying map so
+georeferencing  the image can be inexact.
+
+<center><span style='display:inline-block'><center><div><a href="images/image.png"><img  src="images/image.png"  style='width:80%;padding:4px;margin:8px;'  alt="images/image.png" ></a></div></center></span></center>
+
+
+
+:p
+:heading Adding a Route
+If your RAMADDA is <a href=/repository/userguide/keys.html#otherapis>enabled</a>
+then a Route glyph type will be shown in the New menu.
+Select the desired provider (here.com or google) and the route type:
+<center><span style='display:inline-block'><center><div><a href="images/newroute.png"><img  src="images/newroute.png"  style='width:80%;padding:4px;margin:8px;'  alt="images/newroute.png" ></a></div></center></span></center>
+
+Click and draw a multi-segment line. Double clicking to end.
+The route will be shown. The legend shows the calculated distance:
+<center><span style='display:inline-block'><center><div><a href="images/route.png"><img  src="images/route.png"  style='width:80%;padding:4px;margin:8px;'  alt="images/route.png" ></a></div></center></span></center>
+
+
+:br
+:heading Entry Markers 
+The Entry Marker and the Multi Entry allow you to add markers
+for RAMADDA entries. Clicking on the marker will show some content
+from that entry.
+For example, RAMADDA supports 3D Models as an entry type. 
+Choosing New-&gt;Entry Marker and adding it to the map will add a marker. Clicking on that marker
+will show a 3D view of the model:
+<center><span style='display:inline-block'><center><div><a href="images/entrymarker.png"><img  src="images/entrymarker.png"  style='width:80%;padding:4px;margin:8px;'  alt="images/entrymarker.png" ></a></div></center></span></center>
+
+When adding a marker for an entry  that has geolocation you will be prompted if you want to
+use the entry's latitide/longitude as the position for the marker or if you want to position
+the marker manually. If you opt to use the entry's position then, if the position of the entry
+is changed, that change is reflected in the  map. You can manually move the marker and that new
+position will then be used. Likewise, the name and label for the marker is taken from the entry
+name. If the name of the entry changes then that will be reflected in the map. This can be changed
+by bringing up the properties for the entry marker:
+<center><span style='display:inline-block'><center><div><a href="images/entrymarker2.png"><img  src="images/entrymarker2.png"  style='width:80%;padding:4px;margin:8px;'  alt="images/entrymarker2.png" ></a></div></center></span></center>
+
+<a name=glyphs></a>
+An entry marker  for an entry that provides point data can also show a display of
+the most recent record in the data directly within the map. e.g.:
+<center><span style='display:inline-block'><center><div><a href="images/glyphs1.png"><img  src="images/glyphs1.png"  style='width:80%;padding:4px;margin:8px;'  alt="images/glyphs1.png" ></a></div></center></span></center>
+
+This  is done by specifiy one or more "glyphs"  in the properties for the marker:
+<center><span style='display:inline-block'><center><div><a href="images/glyphs2.png"><img  src="images/glyphs2.png"  style='width:80%;padding:4px;margin:8px;'  alt="images/glyphs2.png" ></a></div></center></span></center>
+
+The first line as shown above specifies the width and height and fill for the canvas.
+<pre>
+width=120;height=100;fill=#efefef;border=#000
+</pre>
+Each successive line specifes the glyphs.
+The glyphs take the same form as the 
+<a href=wikidisplay2.html#canvas>Canvas Display</a> provides. One way to configure the
+glyphs used in the map is to first add a canvas display directly for the source entry as shown below.
+Right clicking in the display_canvas tag brings up a context menu that has examples
+for the different types of glyphs.
+<pre>
+{{display_canvas  canvasWidth=100 canvasHeight=100  lastRecords=1
+glyph1="type:3dbar,pos:sw,dx:10,dy:-5,height:100,width:8,baseHeight:5,sizeBy:atmos_temp,sizeByMin:0,sizeByMax:50"
+glyph2="type:label,font:6pt,pos:ne,dx:90,dy:-90,label:Temp: ${atmos_temp}" 
+}}
+</pre>
+
+
+The Multi Entry allows you to select some Folder in RAMADDA. All of the geolocated children entries
+in that folder will be shown in the map. For example, if you had a Folder of a number of map files
+add the folder as a Multi Entry. This adds markers for each map file. Clicking on a marker shows
+the view of the entry (like above). In the legend clicking on the <i class="fas fa-plus"></i> link
+will add that entry as a map into the main map.
+<center><span style='display:inline-block'><center><div><a href="images/multientry.png"><img  src="images/multientry.png"  style='width:80%;padding:4px;margin:8px;'  alt="images/multientry.png" ></a></div></center></span></center>
+
+
+
+
+
+:br
+:heading Adding Data Displays
+RAMADDA provides very rich capabilities to show data in maps, e.g.
+on <a href=https://ramadda.org/repository/a/maps>ramadda.org</a>.
+These displays are accomplished through RAMADDA's <a href=wiki.html>wiki</a>
+facility. You can import one or more map data  displays into an IMDV.
+:p
+First, upload your data to RAMADDA and create a map display for that data
+using RAMADDA's <a href=wiki.html>wiki</a> facility.
+Next, from the IMDV New menu select Data and select the data you uploaded.
+The IMDV will extract from you data's wiki the arguments for a map display.
+These will be shown and can be edited if needed. Here we've selected some aircraft
+track data:
+<center><span style='display:inline-block'><center><div><a href="images/newdata.png"><img  src="images/newdata.png"  style='width:80%;padding:4px;margin:8px;'  alt="images/newdata.png" ></a></div></center></span></center>
+
+With the result map:
+<center><span style='display:inline-block'><center><div><a href="images/data1.png"><img  src="images/data1.png"  style='width:80%;padding:4px;margin:8px;'  alt="images/data1.png" ></a></div></center></span></center>
+
+The map display properties can be edited through the Edit form.
+Other  data displays can be added and overlaid on the IMDV map.
+:p
+You can play around with this by importing the file 
+<a href=Showing_data_in_maps.zip>Showing_data_in_maps.zip</a>
+to your RAMADDA. This is an export of the example showing Colorado aircraft crashes and
+Colorado mines on
+<a href=https://ramadda.org/repository/entry/show?entryid=a4ba9818-b8ed-4512-9cfb-f81d6e44acba>
+ramadda.org</a>.
+
+
+
+
+
+
+
+</div>
+<p>
+<div  class="childlist" ><table  width="100%" ></table></div>
+<p>&nbsp;<p>
+<a href="mapfiles.html"><span title="Previous: IMDV Map Files"><i  style='font-size:20pt;'  class="fa fa-caret-left "></i></span></a> <a href="routes.html"><span title="Next: Integrated Map Data Viewer (IMDV)"><i  style='font-size:20pt;'  class="fa fa-caret-right "></i></span></a>  <a href="../toc.html#imdv/images.html"><span title="Table of contents"><i  style='font-size:20pt;'  class="fa fa-list "></i></span></a>
+<p>
+</div>
+</body>
+</html>
+
