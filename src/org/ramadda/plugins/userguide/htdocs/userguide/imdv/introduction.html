@@ -33,36 +33,97 @@ pre {
 
 From the entry menu choose "Pick a Type...". Under GIS Data select "Integrated Map Data":
 
-<center><a name="image1"></a><div><a href="images/new.png"><img  src="images/new.png" style='border:1px solid #ccc' alt="New Entry" ></a><br><span class="caption">Image 1: New Entry</span></div></center>
+<center><span style='display:inline-block'><center><a name="image1"></a><div><a href="images/new.png"><img  src="images/new.png"  onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="New Entry" ></a><br><span class="caption">Image 1: New Entry</span></div></center></span></center>
 
 Enter a name for your map. You can ignore the file. Enter some description.
 Note: the description is wiki text.
-<center><span style='display:inline-block'><center><a name="image2"></a><div><a href="images/newform.png"><img  src="images/newform.png"  style='width:80%;padding:4px;margin:8px;'  alt="New Map Form" ></a><br><span class="caption">Image 2: New Map Form</span></div></center></span></center>
+<center><span style='display:inline-block'><center><a name="image2"></a><div><a href="images/newform.png"><img  src="images/newform.png"  onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="New Map Form" ></a><br><span class="caption">Image 2: New Map Form</span></div></center></span></center>
 
-Once created you will have the initial display below. The File menu allows you to save
-changes to your map. The Edit menu 
+Once created you will have the initial display below. 
 
-<center><span style='display:inline-block'><center><a name="image3"></a><div><a href="images/imdv1.png"><img  src="images/imdv1.png"  style='width:80%;padding:4px;margin:8px;'  alt="Initial Display" ></a><br><span class="caption">Image 3: Initial Display</span></div></center></span></center>
+<center><span style='display:inline-block'><center><a name="image3"></a><div><a href="images/imdv1.png"><img  src="images/imdv1.png"  onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="Initial Display" ></a><br><span class="caption">Image 3: Initial Display</span></div></center></span></center>
 
 :br
 :heading Basic Editing
 
 Select the New menu to see the different map glyph types that can be added. 
-There are basic shapes - Marker, Label, Lines, Box, etc. 
-<center><span style='display:inline-block'><center><a name="image4"></a><div><a href="images/newmenu.png"><img  src="images/newmenu.png"  style='width:80%;padding:4px;margin:8px;'  alt="New Menu" ></a><br><span class="caption">Image 4: New Menu</span></div></center></span></center>
+You can add Groups, basic shapes - Marker, Label, Lines, Box, etc., Map files,
+remote Map Servers, Images and other RAMADDA entries.
+<center><span style='display:inline-block'><center><a name="image4"></a><div><a href="images/newmenu.png"><img  src="images/newmenu.png"  onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="New Menu" ></a><br><span class="caption">Image 4: New Menu</span></div></center></span></center>
+
 
 Selecting a shape click and/or click-drag in the map to create the shape.
 Once something is created in the map a legend is shown on the left.
-<center><span style='display:inline-block'><center><div><a href="images/imdv2.png"><img  src="images/imdv2.png"  style='width:80%;padding:4px;margin:8px;'  alt="images/imdv2.png" ></a></div></center></span></center>
+Here we have created a Group called "Some Group", a Marker, a Box and a Freehand glyph.
+The glyphs in the legend can be dragged and dropped to reorder. You can also
+drag a glyph onto a Group to add the glyph to the group. 
+<center><span style='display:inline-block'><center><div><a href="images/imdv2.png"><img  src="images/imdv2.png"  onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="images/imdv2.png" ></a></div></center></span></center>
 
+:heading Properties Dialog
 Clicking on the toggle arrow (<i class="fas fa-caret-down" style=""></i>)
 shows more details for the glyph. The <i class="fas fa-cog"></i> link
 takes brings up an edit window for that glyph. This allows you to specify
 the drawing style and other properties. 
-<center><span style='display:inline-block'><center><div><a href="images/edit1.png"><img  src="images/edit1.png"  style='width:80%;padding:4px;margin:8px;'  alt="images/edit1.png" ></a></div></center></span></center>
+:p
+The main Properties tab allows you to change the name of the glyph,
+toggle the visibility and specify what zoom levels this glyph is
+visible in. This allows you to, for example, specify that when the
+map is zoomed out the glyph won't be shown.
+The popup text is the text shown when the user clicks on the glyph.
+The legend text is just extra text shown in the legend.
 
-The Edit Menu allows you to select glyphs, cut/copy/paste, etc.
-<center><span style='display:inline-block'><center><div><a href="images/editmenu.png"><img  src="images/editmenu.png"  style='width:80%;padding:4px;margin:8px;'  alt="images/editmenu.png" ></a></div></center></span></center>
+<center><span style='display:inline-block'><center><div><a href="images/properties_properties.png"><img  src="images/properties_properties.png"  onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="images/properties_properties.png" ></a></div></center></span></center>
+
+The Flags tab allows you to specify a number of extra flags or properties
+for this glyph. For example, below the showButtons and showMeasures are both set to
+false. With showButtons the button links in the legend won't be shown for non-logged in users.
+The showMeasure=false says to not show the distance and dimensions in the legend.
+
+<center><span style='display:inline-block'><center><div><a href="images/properties_flags.png"><img  src="images/properties_flags.png"  onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="images/properties_flags.png" ></a></div></center></span></center>
+
+
+The Style tab provides settings that control the drawing style of the glyph.
+These settings can vary depending on the type of the glyph.
+The Active button, if set, will apply the style to the glyph when it is changed in the form.
+
+<center><span style='display:inline-block'><center><div><a href="images/properties_style.png"><img  src="images/properties_style.png"  onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="images/properties_style.png" ></a></div></center></span></center>
+
+The style tab for the Group will contain all possible styles.
+Clicking on the <i class="fas fa-folder-tree"></i> icon for any one style will apply
+that style to all of the contained glyphs within the group.
+
+<center><span style='display:inline-block'><center><div><a href="images/properties_style_group.png"><img  src="images/properties_style_group.png"  onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="images/properties_style_group.png" ></a></div></center></span></center>
+
+
+
+
+:heading File Menu
+The File menu allows you to Save the map. The map is saved as a JSON file associated with
+the IMDV entry. This file can be downloaded and added to make a new IMDV entry.
+:p
+Other actions include:
+* Import - Select another IMDV entry to import its map from
+* List Features -  Shows an alternative to the legend 
+* Clear Commands - clear out the current command (e.g, New Marker)
+* Set Default Style - Show the Style dialog that is used for any new glyphs
+
+<center><span style='display:inline-block'><center><div><a href="images/filemenu.png"><img  src="images/filemenu.png"  onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="images/filemenu.png" ></a></div></center></span></center>
+
+The Properties link brings up the Properties dialog for the IMDV map.
+You can:
+* Show Opacity Slider - for any images this changes the opacity
+* Show Graticules - show lat/lon lines
+* Show Mouse Position - show lat/lon of mouse
+* Show Address - Show an input that allows for searching for addresses
+* Legend Position - Select where the legend should be shown
+* Show Base Map Select - show a menu in the legend to set the base map
+* Header/Footer - add wiki text to show above and below the map
+<center><span style='display:inline-block'><center><div><a href="images/mainmenu.png"><img  src="images/mainmenu.png"  onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="images/mainmenu.png" ></a></div></center></span></center>
+
+
+:heading Edit Menu
+The Edit Menu allows you to select glyphs, cut/copy/paste, move/reshape/rotate, etc.
+<center><span style='display:inline-block'><center><div><a href="images/editmenu.png"><img  src="images/editmenu.png"  onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="images/editmenu.png" ></a></div></center></span></center>
 
 
 
