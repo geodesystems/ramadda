@@ -2040,13 +2040,13 @@ proc gen::nav::getPrev {from fileIdx} {
     if {$fileIdx<0} {return ""}
     if {$fileIdx ==0} {
 ##Jeffmc        return [gen::getIconImg $from previous.png ""]
-        return [gen::getIconImg $from fa-caret-left "" 20pt]
+        return [gen::getIconImg $from fa-caret-left "" 16pt]
     } 
     set prevFile [lindex [gen::getAllNavFiles] [expr $fileIdx-1]]
     set title [gen::getTitle $prevFile]
 ##    set img [gen::getIconImg $from previous.png "Previous: $title"]
-    set img [gen::getIconImg $from fa-caret-left "Previous: $title" 20pt]
-    return  "<a href=\"[gen::getLink $from $prevFile]\">$img</a>"
+    set img [gen::getIconImg $from fa-caret-left "Previous: $title" 16pt]
+    return  "<a href=\"[gen::getLink $from $prevFile]\"><table><td valign=center><td>$img</td><td>$title</td></tr></table></a>"
 }
 
 
@@ -2055,12 +2055,12 @@ proc gen::nav::getNext {from fileIdx} {
     set files [gen::getAllNavFiles]
 
     if {$fileIdx ==[expr [llength $files]-1]} {
-        return  [gen::getIconImg $from fa-caret-right "" 20pt]
+        return  [gen::getIconImg $from fa-caret-right "" 16pt]
     } 
     set nextFile [lindex $files [expr $fileIdx+1]]
     set title [gen::getTitle $nextFile]
-    set img [gen::getIconImg $from fa-caret-right "Next: $title" 20pt]
-    return  "<a href=\"[gen::getLink $from $nextFile]\">$img</a> "
+    set img [gen::getIconImg $from fa-caret-right "Next: $title" 16pt]
+    return  "<a href=\"[gen::getLink $from $nextFile]\"><table><tr valign=center><td>$title</td><td>$img</td></tr></table></a> "
 }
 
 
@@ -2073,7 +2073,7 @@ proc gen::nav::getTop {from} {
 
 proc gen::nav::getToc {from} {
     set top [gen::getLink $from "images"]
-    set img [gen::getIconImg $from fa-list "Table of contents" 20pt]
+    set img [gen::getIconImg $from fa-list "Table of contents" 16pt]
     return "<a href=\"[gen::getLink $from toc.html]\#$from\">$img</a>"
 }
 
