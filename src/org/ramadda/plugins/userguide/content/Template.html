@@ -6,17 +6,16 @@
 
 <body>
 <div class="ramadda-documentation">
+<div class="ramadda-doc-header">
+<div style='padding-top:12px;margin-bottom:4px;'>%navtoc% &nbsp; %navbreadcrumb%</div>
 <table width=100% cellspacing=0 cellpadding=0 >
-<tr><td width=20%>
-%navprev% %navnext% %navtoc%
-</td>
-<td width=60% align=center>
-<div class="ramadda-page-heading"><a href="${root}/userguide/index.html">RAMADDA User Guide</a></div>
+<tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav>%navprev%</div></div></td>
+<td width=50% align=center>
 <div class="ramadda-page-title"><a href="#">Section %level%: %title%</a></div>
 </td>
-<td width=20%>&nbsp;</td>
+<td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav>%navnext%</div></div> </td>
 </tr></table>
-
+</div>
 
 <style type="text/css">
 pre {
@@ -24,13 +23,19 @@ pre {
 }
 </style>
 
-<div style="margin-left:20px;">
+<div class="ramadda-doc-contents" style="margin-left:20px;">
 %body%
 </div>
 <p>
 %childlist%
 <p>&nbsp;<p>
-%navprev% %navnext% %navtoc%
+
+<div class="ramadda-doc-footer">
+<table width=100% cellspacing=0 cellpadding=0 >
+<tr><td width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav>%navprev%</div></div></td>
+<td align=right width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav>%navnext%</div></div> </td>
+</tr></table>
+</div>
 <p>
 </div>
 </body>
