@@ -1921,6 +1921,39 @@ thin_hr,.ramadda-thin-hr {
     margin:10px;
 }
 
+.ramadda-doc-header {
+    padding-bottom:8px;
+    margin-bottom:8px;
+    border-bottom:var(--basic-border);
+}
+
+.ramadda-doc-nav-container {
+}
+
+.ramadda-doc-contents img {
+    border:1px solid #ccc;
+}
+
+.ramadda-doc-nav {
+    min-width:150px;
+    display:inline-block;
+    border-radius: var(--default-radius);
+    border:var(--basic-border);
+    vertical-align: top !important;
+    padding:2px;
+    padding-left:4px;
+    padding-right:4px;
+}
+
+.ramadda-doc-nav:hover {
+    background:var(--highlight-background);
+}
+
+.ramadda-doc-footer a, .ramadda-doc-header a {
+    text-decoration:none;
+    font-size:80%;
+}
+
 /* jquery resets */
 .ui-widget {
     font-family: inherit;
