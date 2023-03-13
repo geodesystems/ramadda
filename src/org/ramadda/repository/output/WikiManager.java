@@ -1055,6 +1055,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	throws Exception {
 
 
+        boolean       screenshot = getProperty(wikiUtil, props, "screenshot", false);
         boolean       inDiv = getProperty(wikiUtil, props, "inDiv", true);
         String        align = getProperty(wikiUtil, props, ATTR_ALIGN, null);
         String        width = getProperty(wikiUtil, props, ATTR_WIDTH, null);
@@ -1075,7 +1076,9 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         if (width != null) {
             HU.attr(extra, HU.ATTR_WIDTH, width);
         }
-
+	if(screenshot) {
+            HU.attr(extra,"onload","this.width/=2;this.onload=null;");
+	}
 
         if ( !inDiv && (align != null)) {
             //            extra.append(HU.style("align:" + align + ";"));
