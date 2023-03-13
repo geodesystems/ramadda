@@ -333,7 +333,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	{p:'fontStyle',d:'normal'},	
 	{p:'fontFamily',d:"'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"},
 	{p:'imageOpacity',d:1},
-	{p:'userCanEdit',tt:'Set to false to not show menubar, etc for all users'},
+	{p:'userCanChange',tt:'Set to false to not show menubar, etc for all users'},
 	{p:'showLegendShapes',d:true,canCache:true},	
 	{p:'showMapLegend',d:false,canCache:true},
 
@@ -858,7 +858,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.commands.forEach(cmd=>{
 		cmd.deactivate();
 	    });
-	    if(!command) return;
+	    if(!command) {
+		return;
+	    }
 	    this.jq('new_' + command).addClass('imdv-command-active');
 	    this.commands.every(cmd=>{
 		if(cmd.name != command) {
@@ -1783,7 +1785,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	
 	makeGlyphButtons:function(mapGlyph,includeEdit) {
-	    if(!this.canEdit()) return '';
+	    if(!this.canChange()) return '';
 	    let buttons = [];
 	    let icon = i=>{
 		return HU.getIconImage(i,[],BUTTON_IMAGE_ATTRS);
@@ -2903,8 +2905,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(this.getMapProperty('mapLegendPosition')) {
 		this.createMapLegendWrapper();
 	    }
+	    this.editState = null;
 	    this.clearFeatureChanged();
 	    this.checkMapProperties();
+	    this.makeMenuBar();
+	    this.makeControls();
 	    this.makeLegend();
 	    this.showMapLegend();
 	    this.checkVisible();
@@ -2999,8 +3004,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				      HU.div([CLASS,'ramadda-button-ok display-button'], 'OK'),
 				      HU.div([CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
 	    let cbxs = [
-		HU.checkbox(this.domId('usercanedit'),[],
-			    this.getMapProperty('userCanEdit',false),'User Can Edit'),
 		HU.checkbox(this.domId('showopacityslider'),[],
 			    this.getMapProperty('showOpacitySlider',this.getShowOpacitySlider()),'Show Opacity Slider'),
 		HU.checkbox(this.domId('showgraticules'),[],
@@ -3008,7 +3011,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		HU.checkbox(this.domId('showmouseposition'), [],
 			    this.getMapProperty('showMousePosition',false),'Show Mouse Position'),
 		HU.checkbox(this.domId('showaddress'), [],
-			    this.getMapProperty('showAddress',false),'Show Address')			
+			    this.getMapProperty('showAddress',false),'Show Address'),
+		HU.checkbox(this.domId('usercanchange'),['title','Non logged in users can add glyphs and change styles but can\'t save'],
+			    this.getMapProperty('userCanChange',false),'Anon. users can change'),
+		
 	    ];
 	    let basic = '';
 	    basic+=Utils.join(cbxs,'<br>');
@@ -3072,7 +3078,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		dialog.remove();
 	    }
 	    let apply = ()=>{
-		this.setMapProperty('userCanEdit', this.jq('usercanedit').is(':checked'),
+		this.setMapProperty('userCanChange', this.jq('usercanchange').is(':checked'),
 				    'showOpacitySlider', this.jq('showopacityslider').is(':checked'),
 				    'showGraticules',this.jq('showgraticules').is(':checked'),
 				    'showMousePosition', this.jq('showmouseposition').is(':checked'),
@@ -3321,9 +3327,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    return prev + 	this.menuItem(this.domId(tuple[0]),tuple[1],tuple[2]);
 			},'');
 	    
-	    //	    console.log('creating edit menu');
 	    this.dialog = HU.makeDialog({content:this.makeMenu(html),anchor:button});
-
 	    let clear = () =>{
 		HU.hidePopupObject(null,true);
 	    };
@@ -4010,22 +4014,24 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	propertyCache:{
 	},
-	getMapProperty: function(name,dflt) {
-	    let debug=false;
+	getMapProperty: function(name,dflt,debug) {
 	    let value = this.getOtherProperties()[name];
+	    if(debug) console.log('getMapProperty:'+ name);
 	    if(Utils.isDefined(value)) {
-		if(debug) console.log('p1:'+ value);
+		if(debug) console.log('\tgetMapProperty-:'+ value);
 		return Utils.getProperty(value);
 	    }
+	    if(debug) console.dir(this.mapProperties);
+		    
 	    if(Utils.isDefined(value=this.mapProperties[name])) {
-		if(debug) console.log('p2:'+ value);
+		if(debug) console.log('\tgetMapProperty-2:'+ value);
 		return value;
 	    }
 	    if(!Utils.isDefined(this.propertyCache[name])) {
 		this.propertyCache[name] = this.getProperty(name,dflt);
 	    }
 	    value=  this.propertyCache[name];
-	    if(debug) console.log('p3:'+ value);
+	    if(debug) console.log('\tgetMapProperty-3:'+ value);
 	    return value;
 	},
 	makeLegendDroppable:function(droppedOnGlyph,label,notify) {
@@ -4250,12 +4256,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.inMapLegend +=contents;
 	},
 	checkTopWiki:function() {
-	    /*
-	      if(this.canEdit())
-	      this.jq(ID_MAP_MENUBAR).show();
-	      else
-	      this.jq(ID_MAP_MENUBAR).hide();	    
-	    */
 	    let  wiki=(dom,text) =>{
 		if(!Utils.stringDefined(text)) {
 		    this.jq(dom).html('');
@@ -4273,19 +4273,19 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	},
 	editState:null,
-	canEdit: function() {
-	    //Is it set in the wiki tag?
+	canChange: function() {
+	    //Check if the user can edit the IMDV entry 
+	    if(this.canEdit()) return true;
 	    if(!this.editState) {
-		let canEdit = this.getUserCanEdit(null);
-		if(!Utils.isDefined(canEdit))
-		    canEdit = this.getMapProperty('userCanEdit');
-		if(!Utils.isDefined(canEdit))
-		    canEdit = this.getProperty("canEdit");
+		let canchange = this.getUserCanChange(null);
+		if(!Utils.isDefined(canchange)) {
+		    canchange = this.getMapProperty('userCanChange');
+		}
 		this.editState = {
-		    canEdit:canEdit
+		    canchange:canchange
 		}
 	    }
-	    return this.editState.canEdit;
+	    return this.editState.canchange;
 	},
 
         initDisplay: function(embedded) {
@@ -4452,10 +4452,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    this.jq(ID_HEADER0).append(HU.div([ID,this.domId('topwikitext')]));
 	    this.jq(ID_BOTTOM).append(HU.div([ID,this.domId('bottomwikitext')]));	    
-	    let menuBar=  '';
-	    [[ID_MENU_FILE,'File'],[ID_MENU_EDIT,'Edit'],[ID_MENU_NEW,'New']].forEach(t=>{
-		menuBar+=   HU.div([ID,this.domId(t[0]),CLASS,'ramadda-menubar-button'],t[1])});
-	    menuBar = HU.div([CLASS,'ramadda-menubar'], menuBar);
 	    let message2 = HU.div([ID,this.domId(ID_MESSAGE2),CLASS,'ramadda-imdv-message2'],'');
 	    this.jq(ID_MAP_CONTAINER).append(message2);
 	    let message3 = HU.div([ID,this.domId(ID_MESSAGE3),CLASS,'ramadda-imdv-message3'],'');
@@ -4463,60 +4459,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.jq(ID_MAP_CONTAINER).append(message3);
 	    }
 
-	    let address =
-		HU.span(['style',HU.css('position','relative')], 
-			HU.div(['style','display:inline-block;','id',this.domId(ID_ADDRESS_CLEAR),'title','Clear','class','ramadda-clickable'],HU.getIconImage('fa-solid fa-eraser',[],['style','color:#ccc;'])) +
-			' ' +
-			HU.div(['id',this.domId(ID_ADDRESS_WAIT),'style',HU.css('position','absolute','right','0px',
-										'display','inline-block','margin-right','2px','width','20px')])+
-			HU.input('','',['id',this.domId(ID_ADDRESS_INPUT),'placeholder','Search for address','size','20']));
-
-	    if(this.canEdit()) {
-		address = address +' ' +HU.checkbox(this.domId(ID_ADDRESS_ADD),['id',this.domId(ID_ADDRESS_ADD),'title','Add marker to map'],false);
-	    }
-	    address=HU.span(['style','margin-right:5px'], address);
-
-	    address = HU.div(['style',HU.css('white-space','nowrap','display','none','position','relative'),'id',this.domId(ID_ADDRESS)], address);	    
-	    
-	    let message = HU.div([ID,this.domId(ID_MESSAGE),'class','imdv-message']);
-	    let mapHeader = HU.div([STYLE,HU.css('margin-left','10px'), ID,this.domId(ID_MAP)+'_header']);
-	    if(this.canEdit()) {
-		menuBar= HU.table(['id',this.domId(ID_MAP_MENUBAR),'width','100%'],HU.tr(['valign','bottom'],HU.td([],menuBar) +
-											 HU.td(['width','50%'], message) +
-											 HU.td(['align','right','style','padding-right:10px;','width','50%'],mapHeader+address)));
-	    } else {
-		menuBar= HU.table(['id',this.domId(ID_MAP_MENUBAR),'width','100%'],HU.tr(['valign','bottom'],HU.td([],'') +
-											 HU.td(['width','50%'], message) +
-											 HU.td(['align','right','style','padding-right:10px;','width','50%'],mapHeader+address)));
-	    }
-	    
-
-
-	    this.jq(ID_TOP_LEFT).append(menuBar);
-            this.jq(ID_ADDRESS_INPUT).keypress(function(event) {
-                if (event.which == 13) {
-		    let address = $(this).val();
-		    if(!Utils.stringDefined(address)) return;
-		    _this.gotoAddress($(this),address);
-		}
-	    });
-
-	    this.jq(ID_ADDRESS_CLEAR).click(()=>{
-		this.clearAddresses();
-	    });
-
-	    this.jq(ID_MENU_NEW).click(function() {
-		_this.showNewMenu($(this));
-	    });
-	    this.jq(ID_MENU_FILE).click(function() {
-		_this.showFileMenu($(this));
-	    });
-	    this.jq(ID_MENU_EDIT).click(function() {
-		_this.showEditMenu($(this));
-	    });
-
-
-	    this.makeControls();	    
+	    this.makeMenuBar();
+	    this.makeControls();
 
 	    $(window).bind('beforeunload', ()=>{
 		if(this.canEdit() && this.featureHasBeenChanged) {
@@ -4543,6 +4487,64 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 	},
 
+	makeMenuBar:function() {
+	    let _this = this;
+	    let menuBar=  '';
+	    [[ID_MENU_FILE,'File'],[ID_MENU_EDIT,'Edit'],[ID_MENU_NEW,'New']].forEach(t=>{
+		menuBar+=   HU.div([ID,this.domId(t[0]),CLASS,'ramadda-menubar-button'],t[1])});
+	    menuBar = HU.div([CLASS,'ramadda-menubar'], menuBar);
+
+	    let address =
+		HU.span(['style',HU.css('position','relative')], 
+			HU.div(['style','display:inline-block;','id',this.domId(ID_ADDRESS_CLEAR),'title','Clear','class','ramadda-clickable'],HU.getIconImage('fa-solid fa-eraser',[],['style','color:#ccc;'])) +
+			' ' +
+			HU.div(['id',this.domId(ID_ADDRESS_WAIT),'style',HU.css('position','absolute','right','0px',
+										'display','inline-block','margin-right','2px','width','20px')])+
+			HU.input('','',['id',this.domId(ID_ADDRESS_INPUT),'placeholder','Search for address','size','20']));
+
+	    if(this.canChange()) {
+		address = address +' ' +HU.checkbox(this.domId(ID_ADDRESS_ADD),['id',this.domId(ID_ADDRESS_ADD),'title','Add marker to map'],false);
+	    }
+	    address=HU.span(['style','margin-right:5px'], address);
+
+	    address = HU.div(['style',HU.css('white-space','nowrap','display','none','position','relative'),'id',this.domId(ID_ADDRESS)], address);	    
+	    
+	    let message = HU.div([ID,this.domId(ID_MESSAGE),'class','imdv-message']);
+	    let mapHeader = HU.div([STYLE,HU.css('margin-left','10px'), ID,this.domId(ID_MAP)+'_header']);
+	    if(this.canChange()) {
+		menuBar= HU.table(['id',this.domId(ID_MAP_MENUBAR),'width','100%'],HU.tr(['valign','bottom'],HU.td([],menuBar) +
+											 HU.td(['width','50%'], message) +
+											 HU.td(['align','right','style','padding-right:10px;','width','50%'],mapHeader+address)));
+	    } else {
+		menuBar= HU.table(['id',this.domId(ID_MAP_MENUBAR),'width','100%'],HU.tr(['valign','bottom'],HU.td([],'') +
+											 HU.td(['width','50%'], message) +
+											 HU.td(['align','right','style','padding-right:10px;','width','50%'],mapHeader+address)));
+	    }
+	    
+
+	    this.jq(ID_TOP_LEFT).html(menuBar);
+            this.jq(ID_ADDRESS_INPUT).keypress(function(event) {
+                if (event.which == 13) {
+		    let address = $(this).val();
+		    if(!Utils.stringDefined(address)) return;
+		    _this.gotoAddress($(this),address);
+		}
+	    });
+
+	    this.jq(ID_ADDRESS_CLEAR).click(()=>{
+		this.clearAddresses();
+	    });
+
+	    this.jq(ID_MENU_NEW).click(function() {
+		_this.showNewMenu($(this));
+	    });
+	    this.jq(ID_MENU_FILE).click(function() {
+		_this.showFileMenu($(this));
+	    });
+	    this.jq(ID_MENU_EDIT).click(function() {
+		_this.showEditMenu($(this));
+	    });
+	},
 
 	createMapLegendWrapper:function() {
 	    let _this = this;
@@ -4597,7 +4599,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	makeControls:function() {
 	    let _this = this;
-	    if(!this.canEdit()) return;
+	    if(!this.canChange()) return;
+	    if(this.haveMadeControls) return;
+	    this.haveMadeControls = true;
 	    Utils.initDragAndDrop(this.jq(ID_MAP),
 				  event=>{},
 				  event=>{},
