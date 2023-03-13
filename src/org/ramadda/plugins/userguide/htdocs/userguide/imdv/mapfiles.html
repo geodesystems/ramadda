@@ -32,8 +32,9 @@ pre {
 
 +callout-info
 We are going to use an example [https://ramadda.org/repository/a/example_map_file IMDV entry]
-that shows the below map. [https://ramadda.org/repository/entry/export/Boulder%20County%20Outdoors.zip?entryid=4131be9a-c0b5-4106-ae0c-246b835c6d8f Here] is the link to export this entry. You can then import the entry
-into your RAMADDA to explore the example.
+that shows the below map.
+To explore this  example 
+import the  <a href=Boulder_County_Outdoors.zip>Boulder_County_Outdoors.zip</a> file.
 -callout
 
 
@@ -49,13 +50,13 @@ You can also drag-and-drop the map file directly onto the IMDV map.
 Note: by storing the map file as a child entry of the IMDV entry then you
 can export the IMDV entry and the map file will be included in the export.
 
-<center><span style='display:inline-block'><center><div><a href="images/newmap.png"><img  src="images/newmap.png"  onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="images/newmap.png" ></a></div></center></span></center>
+<center><span style='display:inline-block'><center><div><a href="images/newmap.png?version=1"><img  src="images/newmap.png?version=1"  onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="images/newmap.png?version=1" ></a></div></center></span></center>
 
 
 Once added the IMDV will zoom to the map area. 
 If there are properties defined in your map file
 then a Filters area  will shown. These allow you to toggle on/off the map features. 
-<center><span style='display:inline-block'><center><div><a href="images/defaultmap.png"><img  src="images/defaultmap.png"  onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="images/defaultmap.png" ></a></div></center></span></center>
+<center><span style='display:inline-block'><center><div><a href="images/defaultmap.png?version=1"><img  src="images/defaultmap.png?version=1"  onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="images/defaultmap.png?version=1" ></a></div></center></span></center>
 
 
 
@@ -66,16 +67,16 @@ The configuration includes:
 * Changing the label of the "Own Type Name" to "Ownership"
 * Only showing the Acreage and Ownership filters
 * Add a "Closed" Style Group
-* Color coding Ownership type
+* Color coding based on Ownership type
 * Adding a label to the top of the legend
 * Adding a color bar header
 
-<center><span style='display:inline-block'><center><div><a href="images/examplemap.png"><img  src="images/examplemap.png"  onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="images/examplemap.png" ></a></div></center></span></center>
+<center><span style='display:inline-block'><center><div><a href="images/examplemap.png?version=1"><img  src="images/examplemap.png?version=1"  onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="images/examplemap.png?version=1" ></a></div></center></span></center>
 
 
 :heading Popup Text
-Bring up the settings with the
-<i class="fas fa-cog" style="color:#ccc;"></i> link.
+The Properties dialog for the map file can be 
+brought up with the <i class="fas fa-cog" style="color:#ccc;"></i> link.
 :p
 The Popup Text can contain arbitrary HTML as well as macros 
 corresponding to the properties in the map file.
@@ -87,28 +88,18 @@ For example, the below image shows the Popup Text that creates the displayed
 popup. The "prop_name" property is used as a header and the ownership, acquired year
 and acreage properties are shown.
 
-<center><span style='display:inline-block'><center><div><a href="images/mappopup.png"><img  src="images/mappopup.png"  onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="images/mappopup.png" ></a></div></center></span></center>
-
-e.g.:
-<pre>
-&lth2&gt;${prop_name}&lt/h2&gt;
-Ownership type: ${own_type_name}&ltbr&gt;
-Acquired: ${acq_yr}&ltbr&gt;
-Acreage: ${acreage}
-</pre>
-
+<center><span style='display:inline-block'><center><div><a href="images/mappopup.png?version=1"><img  src="images/mappopup.png?version=1"  onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="images/mappopup.png?version=1" ></a></div></center></span></center>
 
 
 :heading Feature Flags
 The Feature Flags section allows you to configure  the labels used for the map properties,
-what search properties are shown, etc.
-In the above example the map contains a number of properties, many of which we don't want to
-show in the list of filters.
-
+what search properties are shown, etc. Clicking on one of the links under "Add Property"
+will add that flag to the list.
+:p
 The below Flags changes the label of the own_type_name to "Ownership". 
 The filter.show=false flag hides all filters but the &lt;property&gt;.filter.show=true
 flags causes those two filters to be shown.
-<center><span style='display:inline-block'><center><div><a href="images/mapfileflags.png"><img  src="images/mapfileflags.png"  onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="images/mapfileflags.png" ></a></div></center></span></center>
+<center><span style='display:inline-block'><center><div><a href="images/mapfileflags.png?version=1"><img  src="images/mapfileflags.png?version=1"  onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="images/mapfileflags.png?version=1" ></a></div></center></span></center>
 
 
 The IMDV guesses as to what type of data is a property and provides an appropriate search widget.
@@ -128,7 +119,7 @@ In our example we've changed the Stroke Color to be gray and the Stroke Width to
 The <b>Style Rules</b> section allows you to specify how to style each individual feature based on
 the feature properties.
 
-<center><span style='display:inline-block'><center><div><a href="images/stylerules.png"><img  src="images/stylerules.png"  onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="images/stylerules.png" ></a></div></center></span></center>
+<center><span style='display:inline-block'><center><div><a href="images/stylerules.png?version=1"><img  src="images/stylerules.png?version=1"  onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="images/stylerules.png?version=1" ></a></div></center></span></center>
 
 With  <b>Fill Colors</b> checked the map polygons will be colored with a set of categorical colors.
 The <b>Map value to fill color</b> and <b>Map value to stroke color</b> allows you to specify
@@ -147,7 +138,7 @@ a polygon in the map will add that polygon to the group.
 :p
 In our example we've defined a style group called "Closed" with fill color red and diagonal striping.
 
-<center><span style='display:inline-block'><center><div><a href="images/stylegroup.png"><img  src="images/stylegroup.png"  onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="images/stylegroup.png" ></a></div></center></span></center>
+<center><span style='display:inline-block'><center><div><a href="images/stylegroup.png?version=1"><img  src="images/stylegroup.png?version=1"  onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="images/stylegroup.png?version=1" ></a></div></center></span></center>
 
 
 The <b>Labels</b> section allows you to specify a template (similar to the popup text) for a label
@@ -159,7 +150,7 @@ The top-level properties for the IMDV entry are available through the File-&gt;P
 The color legend bar at the top of the map is defined with the Header under the Header/Footer tab.
 This can be arbitrary wiki text. In this case we are using the display_legend wiki tag.
 
-<center><span style='display:inline-block'><center><div><a href="images/headerfooter.png"><img  src="images/headerfooter.png"  onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="images/headerfooter.png" ></a></div></center></span></center>
+<center><span style='display:inline-block'><center><div><a href="images/headerfooter.png?version=1"><img  src="images/headerfooter.png?version=1"  onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="images/headerfooter.png?version=1" ></a></div></center></span></center>
 
 The "Explore the trails map with the below filters" top-level legend label and the
 legend width are defined in the Other Properties section.
