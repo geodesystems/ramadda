@@ -4204,6 +4204,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
         if(opts.anchor && opts.anchor.length==0) {
 	    console.log("Utils.makeDialog: Invalid anchor");
+	    console.trace();
 	    opts.anchor=null;
 	}
 
