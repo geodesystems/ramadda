@@ -3,7 +3,7 @@
 exec tclsh "$0" "$@"
 
 
-set ::image_version 1
+set ::image_version 2
 package require http 
 
 namespace eval ug {}
@@ -2949,7 +2949,7 @@ proc gen::copyFiles {dir} {
     foreach prefix {jnlp gif GIF jpg jpeg JPG JPEG png PNG ppt PPT svg SVG svgz SVGZ} {
         set images [concat $images [glob -nocomplain [file join $dir *.$prefix]]]
     }
-    #        puts "images: $images"
+    puts "images: $images"
     foreach f $images {
         set imgDir [file join $targetDir [file dirname $f]]
         if {![file exists $imgDir]} {
