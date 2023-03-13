@@ -3,6 +3,7 @@
 exec tclsh "$0" "$@"
 
 
+set ::image_version 1
 package require http 
 
 namespace eval ug {}
@@ -136,8 +137,6 @@ proc ht::doImage {img centered {caption ""} {extra ""}} {
 	   
 }
 
-
-
 proc ht::screenshot {img {caption ""} {css ""}} {
     set extra  " onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;$css' "
     return "<center><span style='display:inline-block'>[ht::cimg $img $caption $extra]</span></center>"
@@ -145,6 +144,11 @@ proc ht::screenshot {img {caption ""} {css ""}} {
 
 
 proc ht::cimg {img {caption ""} {extra ""}} {
+    #Add a version 
+    if {![regexp {.*\?.*} $img]} {
+	   set img "$img?version=$::image_version"
+    }
+
     if {$::doXml} {
 	   set ex " width=\"\" ";
 	   if {$extra==""} {
