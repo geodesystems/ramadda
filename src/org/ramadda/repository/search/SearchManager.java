@@ -130,7 +130,7 @@ import org.apache.tika.parser.Parser;
 public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     private static boolean debugCorpus = false;
-    private static boolean debugGpt = true;
+    private static boolean debugGpt = false;
 
     /** _more_ */
     public static final String ARG_SEARCH_SUBMIT = "search.submit";
