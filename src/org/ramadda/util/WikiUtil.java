@@ -2934,12 +2934,7 @@ public class WikiUtil {
 		    String sel1 = Utils.getProperty(props,"selector","div");
 		    String sel2 = Utils.getProperty(props,"parentSelector",null);
 		    String label = Utils.getProperty(props,"label",null);		    
-		    buff.append("<center>");
-		    HU.script(buff,HU.call("HtmlUtils.initPageSearch",
-					 HU.squote(sel1), 
-					 sel2==null?"null":HU.squote(sel2),
-					 label==null?"null":HU.squote(label)));
-		    buff.append("</center>");
+		    HtmlUtils.addPageSearch(buff,sel1,sel2,label);
 		    continue;
 		}
 
