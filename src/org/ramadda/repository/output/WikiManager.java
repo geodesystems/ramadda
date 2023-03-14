@@ -3799,6 +3799,9 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                     innerStyle.append("overflow-y: auto;");
                 }
 		String id = Utils.getGuid();
+		if(getProperty(wikiUtil, props, "addPageSearch",false)) {
+		    HU.addPageSearch(sb,"#" + id +" .ramadda-gridbox",null,"Find");
+		}
                 sb.append(HU.open(HU.TAG_DIV, HU.id(id)));
 		sb.append(HU.div("",HU.id(id+"_header")));		
                 sb.append(HU.open(HU.TAG_DIV, HU.cssClass("ramadda-grid")+HU.id(id)));
@@ -3881,6 +3884,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		    getMapManager().addMapImports(request, sb);
 		    HU.script(sb, "Ramadda.Components.init(" + HU.squote(id)+");");
 		}
+		HU.close(sb,"div");
                 return sb.toString();
             } else if (doingSlideshow) {
                 // for slideshow
@@ -4584,6 +4588,11 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 							    children.size(), max,sb);
 
 
+	String divId  = HU.getUniqueId("div_");
+	HU.open(sb,"div",HU.id(divId));
+	if(getProperty(wikiUtil, props, "addPageSearch",false)) {
+	    HU.addPageSearch(sb,"#" + divId +" .entry-list-row-data",null,"Find");
+	}
 	String guid = Utils.getGuid().replaceAll("-","_");
 	StringBuilder js = new StringBuilder();
 	String var = "entries_" + guid;
@@ -4674,6 +4683,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	String propArg = JsonUtil.map(argProps);
 	js.append("\nRamadda.initEntryTable('" + var+"'," + propArg+"," + var+");\n");
 	sb.append(HU.script(js.toString()));
+	HU.close(sb,"div");
 	return sb.toString();
     }
 
