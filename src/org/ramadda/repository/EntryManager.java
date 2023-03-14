@@ -419,6 +419,32 @@ public class EntryManager extends RepositoryManager {
 
 
 
+    public Result processSiteMap(Request request)  throws Exception {
+	StringBuilder xml = new StringBuilder();
+	xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n");
+	List<Entry> entries = getEntriesFromMetadata(request,
+						     "isinsitemap", "true",
+						     1);
+
+	if(entries.size()==0) {
+	    Entry root = request.getRootEntry();
+	    if(root!=null) {
+		entries = getChildren(request, root);
+	    }
+	}
+	for(Entry entry: entries) {
+	    String url = request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW) +"?" + HU.arg(ARG_ENTRYID,entry.getId());
+	    xml.append("<url>\n");
+	    xml.append("<loc>" + url+"</loc>\n");
+	    String date =  DateUtil.getTimeAsISO8601(entry.getChangeDate());
+	    xml.append("<lastmod>" + date +"</lastmod>\n");
+	    xml.append("</url>\n");
+	}
+	xml.append("</urlset>");
+	return new Result(xml.toString(), MIME_XML);
+    }
+
+
     /**
      * _more_
      *

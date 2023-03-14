@@ -273,6 +273,20 @@ Specify a short hand alias for the entry. Will link to /repository/alias/&lt;ali
     </type>
 
     <type
+       searchable="true" browsable="true"
+       name="Is In Site Map"
+       id="isinsitemap"
+       >
+      <help>
+<![CDATA[
+If set to true then this entry is included in the sitemap
+]]>
+</help>
+      <element name="Include in  site map" datatype="boolean" default="true"/>
+    </type>
+
+
+    <type
        name="Tool outputs"
        class="org.ramadda.repository.metadata.ContentMetadataHandler" 
        id="output_tools">

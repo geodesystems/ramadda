@@ -6046,6 +6046,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+
+
     public Result processGpt(Request request)  throws Exception {
 	if(request.isAnonymous()) {
 	    String json = JsonUtil.map(Utils.makeList("error", JsonUtil.quote("You must be logged in to use the rewrite service")));
