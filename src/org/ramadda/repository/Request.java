@@ -2778,17 +2778,18 @@ public class Request implements Constants, Cloneable {
         if (userAgent.indexOf("slack.com") >= 0) {
             return false;
         }
-
-        boolean isBot = (
-        //(userAgent.indexOf("googlebot") >= 0)
-        userAgent.indexOf("yandex.com/bots") >= 0) || (userAgent.indexOf(
-            "mj12bot") >= 0) || (userAgent.indexOf("webmeup-crawler") >= 0)
-                             || (userAgent.indexOf("bot") >= 0)
-                             || (userAgent.indexOf("slurp") >= 0)
-	    || (userAgent.indexOf("spider") >= 0);
-
-
-	System.err.println("UA:" + userAgent +" is bot:" + isBot);
+	//Let google through
+	if(userAgent.indexOf("googlebot") >= 0) {
+	    return false;
+	}
+        boolean isBot =
+	    (userAgent.indexOf("yandex.com/bots") >= 0) ||
+	    (userAgent.indexOf("mj12bot") >= 0) ||
+	    (userAgent.indexOf("webmeup-crawler") >= 0)  ||
+	    (userAgent.indexOf("bot") >= 0)  ||
+	    (userAgent.indexOf("slurp") >= 0)||
+	    (userAgent.indexOf("spider") >= 0);
+	//	System.err.println("UA:" + userAgent +" is bot:" + isBot);
 	return isBot;
 
     }
