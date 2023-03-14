@@ -432,11 +432,12 @@ public class EntryManager extends RepositoryManager {
 		entries = getChildren(request, root);
 	    }
 	}
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	for(Entry entry: entries) {
 	    String url = request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW) +"?" + HU.arg(ARG_ENTRYID,entry.getId());
 	    xml.append("<url>\n");
 	    xml.append("<loc>" + url+"</loc>\n");
-	    String date =  DateUtil.getTimeAsISO8601(entry.getChangeDate());
+	    String date =  sdf.format(new Date(entry.getChangeDate()));
 	    xml.append("<lastmod>" + date +"</lastmod>\n");
 	    xml.append("</url>\n");
 	}
