@@ -1373,6 +1373,7 @@ WikiEditor.prototype = {
 				    sticky:true,draggable:true,modal:model});
 	let commands = jqid(_this.domId('allsearch_corpus')).find('span');
 	let headers = jqid(_this.domId('allsearch_corpus')).find('.wiki-searchheader');	
+	jqid(_this.domId('allsearch')).focus();
 	jqid(_this.domId('allsearch')).keyup(function(event) {
 	    let text = $(this).val().trim().toLowerCase();
 	    let seen = {};
@@ -1599,6 +1600,7 @@ WikiEditor.prototype = {
 	    let headers = popup.find('.wiki-editor-display-category');
 	    let _this = this;
 	    let displayLinks = popup.find('.wiki-editor-popup-link');
+	    this.jq('displaysearch').focus();
 	    this.jq('displaysearch').keyup(function(event) {
 		let text = $(this).val().trim().toLowerCase();
 		let seen = {};
@@ -1663,6 +1665,7 @@ WikiEditor.prototype = {
 	    {p:"showCrumbs",ex:true},
 	    {p:'message',ex:''},
 	    {p:'treePrefix',ex:''},
+	    {p:'addPageSearch',d:true,tt:'Add the page search form'},
 	    {p:'chunkSize',ex:'10',tt:'break up the list of entries into chunkSize lists and display each list'},
 	    {p:'numChunks',ex:'2',tt:'how many entry chunks'},
 	    {p:'chunkColumns',ex:'2',tt:'how many columns use \"numChunks\" to match number of chunks'},
@@ -1879,6 +1882,7 @@ WikiEditor.prototype = {
 		{p:'showHeading',ex:'true'},
 		{p:'showLine',ex:'true'},
 		{p:'showSnippetHover',ex:'true'},		
+		{p:'addPageSearch',d:true,tt:'Add the page search form'},
 		{p:'captionPrefix',ex:'Click to view example: ',tt:'To use for popup images'}],
 				   this.groupAttributes),
 	    frames: Utils.mergeLists([
