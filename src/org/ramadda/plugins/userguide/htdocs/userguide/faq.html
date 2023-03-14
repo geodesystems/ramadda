@@ -33,7 +33,9 @@ pre {
 
 
 
-<div class="faq"><div class="faq-top"><div class="faq-category-title"><a class="faq-category-link" href="#faq1_cat1_">1.0 Administration</a></div><div class="faq-category"><div class="faq-question"> <b>1.1.</b> <a class="faq-question-link" href="#faq1_cat1_0">I forgot my user id. How do I retrieve it?</a></div>
+<div class="faq">
+:pagesearch selector=.faq-item hideAll=.faq-top
+<div class="faq-top"><div class="faq-category-title"><a class="faq-category-link" href="#faq1_cat1_">1.0 Administration</a></div><div class="faq-category"><div class="faq-question"> <b>1.1.</b> <a class="faq-question-link" href="#faq1_cat1_0">I forgot my user id. How do I retrieve it?</a></div>
 <div class="faq-question"> <b>1.2.</b> <a class="faq-question-link" href="#checkbox">How do I select multiple checkboxes at once?</a></div>
 <div class="faq-question"> <b>1.3.</b> <a class="faq-question-link" href="#ssl">How do I configure SSL access to RAMADDA?</a></div>
 <div class="faq-question"> <b>1.4.</b> <a class="faq-question-link" href="#lucene">How do I use Lucene for searching?</a></div>
@@ -54,7 +56,7 @@ pre {
 <div class="faq-question"> <b>1.19.</b> <a class="faq-question-link" href="#missing">I've cleaned up files on my server that I had harvested in RAMADDA. How do I delete those entries in RAMADDA?</a></div>
 <div class="faq-question"> <b>1.20.</b> <a class="faq-question-link" href="#logging">How do I track views or downloads of entries?</a></div>
 </div></div>
-<div class="faq-bottom"><p><hr><p><div class="faq-category-title"><a name="faq1_cat1_"></a>1.0 Administration</div><div class="faq-category"><a name="faq1_cat1_0"></a><div class="faq-question">
+<div class="faq-bottom"><p><hr><p><div class="faq-category-title"><a name="faq1_cat1_"></a>1.0 Administration</div><div class="faq-category"><a name="faq1_cat1_0"></a><div class="faq-item"><div class="faq-question">
 <h3> 1.1.  I forgot my user id. How do I retrieve it?</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
@@ -62,7 +64,7 @@ If your RAMADDA site has been configured to send email (see <a href="#email">her
 then on the Login page you should see &quot;Forget your User ID?&quot; and
 &quot;Forget your Password?&quot; links. 
 </div>
-<p><hr align="center" width="10%"><p><a name="checkbox"></a><div class="faq-question">
+<p><hr align="center" width="10%"></div><p><a name="checkbox"></a><div class="faq-item"><div class="faq-question">
 <h3> 1.2.  How do I select multiple checkboxes at once?</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
@@ -71,14 +73,14 @@ selecting one and then
 selecting another with a Shift-Click toggles the range of checkboxes between the first the second
 checkbox clicked. Doing a Control-Click on a checkbox toggles all of them on or off.
 </div>
-<p><hr align="center" width="10%"><p><a name="ssl"></a><div class="faq-question">
+<p><hr align="center" width="10%"></div><p><a name="ssl"></a><div class="faq-item"><div class="faq-question">
 <h3> 1.3.  How do I configure SSL access to RAMADDA?</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
 To configure SSL access see <a href='installing.html#ssl'>here</a> if you are running under Tomcat.
 See <a href='installing.html#ssljetty'>here</a> if you are running stand-alone.
 </div>
-<p><hr align="center" width="10%"><p><a name="lucene"></a><div class="faq-question">
+<p><hr align="center" width="10%"></div><p><a name="lucene"></a><div class="faq-item"><div class="faq-question">
 <h3> 1.4.  How do I use Lucene for searching?</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
@@ -97,7 +99,7 @@ Admin-&gt;Maintenance-&gt;Reindex Lucene Index and select "Reindex all".
 Depending on the size of your repository this may take a few minutes but once complete your searching should be good to
 go.
 </div>
-<p><hr align="center" width="10%"><p><a name="cdn"></a><div class="faq-question">
+<p><hr align="center" width="10%"></div><p><a name="cdn"></a><div class="faq-item"><div class="faq-question">
 <h3> 1.5.  How do I improve the page loading performance?</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
@@ -117,7 +119,7 @@ ramadda.cdnok=true
 </pre>
 
 </div>
-<p><hr align="center" width="10%"><p><a name="allowedlogin"></a><div class="faq-question">
+<p><hr align="center" width="10%"></div><p><a name="allowedlogin"></a><div class="faq-item"><div class="faq-question">
 <h3> 1.6.  I want to restrict where users can login from</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
@@ -133,7 +135,7 @@ ramadda.login.allowedips=
 ramadda.login.allowedips=127.0.0,201.43.72.5
 </pre>
 </div>
-<p><hr align="center" width="10%"><p><a name="terms"></a><div class="faq-question">
+<p><hr align="center" width="10%"></div><p><a name="terms"></a><div class="faq-item"><div class="faq-question">
 <h3> 1.7.  I want my users to agree to certain terms when they log in</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
@@ -145,7 +147,7 @@ ramadda.user.agree= Some terms
 ramadda.user.agree= I have read and agree to the terms of service
 </pre>
 </div>
-<p><hr align="center" width="10%"><p><a name="fixssl"></a><div class="faq-question">
+<p><hr align="center" width="10%"></div><p><a name="fixssl"></a><div class="faq-item"><div class="faq-question">
 <h3> 1.8.  Oops, I told RAMADDA to use an SSL port and SSL is not working. Now I cannot access the admin page to turn off SSL and I'm stuck. What can I do?</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
@@ -153,7 +155,7 @@ You need to comment out the ramadda.ssl.port property in your .properties file.
 Alternatively, you can run RAMADDA with the command line argument:
 <pre>-Dramadda.ssl.ignore=true</pre>
 </div>
-<p><hr align="center" width="10%"><p><a name="faq1_cat1_8"></a><div class="faq-question">
+<p><hr align="center" width="10%"></div><p><a name="faq1_cat1_8"></a><div class="faq-item"><div class="faq-question">
 <h3> 1.9.  I forgot the administrator password and cannot access RAMADDA. How do I login?</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
@@ -181,7 +183,7 @@ that are processed by RAMADDA.
 </pre>
 
 </div>
-<p><hr align="center" width="10%"><p><a name="hostname"></a><div class="faq-question">
+<p><hr align="center" width="10%"></div><p><a name="hostname"></a><div class="faq-item"><div class="faq-question">
 <h3> 1.10.  I set the hostname to an incorrect hostname. Now I can't login?</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
@@ -196,7 +198,7 @@ the properties file.
 In general, you can override any property that has been set by defining a property with the "override." prefix.
 
 </div>
-<p><hr align="center" width="10%"><p><a name="hostnamemap"></a><div class="faq-question">
+<p><hr align="center" width="10%"></div><p><a name="hostnamemap"></a><div class="faq-item"><div class="faq-question">
 <h3> 1.11.  Map a hostname to some entry</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
@@ -226,7 +228,7 @@ This will use the entry as the root when accessing the repository under the give
 Note: when searching under the alias the whole site will be searched.
 
 </div>
-<p><hr align="center" width="10%"><p><a name="email"></a><div class="faq-question">
+<p><hr align="center" width="10%"></div><p><a name="email"></a><div class="faq-item"><div class="faq-question">
 <h3> 1.12.  How do I configure RAMADDA to send email?</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
@@ -234,7 +236,7 @@ RAMADDA can send email for both the password reset process and for monitoring ne
 On the main Site Administration  page under the &quot;Contact&quot; area you can specify
 a SMTP server that RAMADDA will use to send email.
 </div>
-<p><hr align="center" width="10%"><p><a name="sitemap"></a><div class="faq-question">
+<p><hr align="center" width="10%"></div><p><a name="sitemap"></a><div class="faq-item"><div class="faq-question">
 <h3> 1.13.  How do I create a site map?</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
@@ -245,11 +247,11 @@ built-in site map API:
 </pre>
 By default this lists all of the entries under the top-level entry.
 <p>
-if you want specific entries in your site then than simply
-add a "Is in Site Map" property (Under the Add Property-&gt;
+If you want specific entries in your site map then simply
+add an "Is in Site Map" property (Under the Add Property-&gt;
 Thumbnails, Page Style, Etc.) menu for the entry or entries.
 </div>
-<p><hr align="center" width="10%"><p><a name="not_for_server"></a><div class="faq-question">
+<p><hr align="center" width="10%"></div><p><a name="not_for_server"></a><div class="faq-item"><div class="faq-question">
 <h3> 1.14.  I have a root .ramadda home dir that I don't want to run in</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
@@ -261,7 +263,7 @@ If this occurs then <b>anyone can hit your site and go through the installation 
 
 See the <a href='templates.html'>documentation</a>.
 </div>
-<p><hr align="center" width="10%"><p><a name="github"></a><div class="faq-question">
+<p><hr align="center" width="10%"></div><p><a name="github"></a><div class="faq-item"><div class="faq-question">
 <h3> 1.15.  Enable github embeds</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
@@ -273,13 +275,13 @@ Add the property to your .properties file:
 github.token=&lt;your token&gt;
 </pre>  
 </div>
-<p><hr align="center" width="10%"><p><a name="template"></a><div class="faq-question">
+<p><hr align="center" width="10%"></div><p><a name="template"></a><div class="faq-item"><div class="faq-question">
 <h3> 1.16.  I want to change the html design of RAMADDA</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
 See the <a href='templates.html'>documentation</a>.
 </div>
-<p><hr align="center" width="10%"><p><a name="template"></a><div class="faq-question">
+<p><hr align="center" width="10%"></div><p><a name="template"></a><div class="faq-item"><div class="faq-question">
 <h3> 1.17.  Changing the initial welcome text and entries</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
@@ -315,7 +317,7 @@ This is just the entries xml format. The ID of the top-level entry is simply "ro
 </pre>
 
 </div>
-<p><hr align="center" width="10%"><p><a name="characterset"></a><div class="faq-question">
+<p><hr align="center" width="10%"></div><p><a name="characterset"></a><div class="faq-item"><div class="faq-question">
 <h3> 1.18.  Running with non-ascii characters</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
@@ -333,7 +335,7 @@ If you are running mysql there are some <a href="https://www.google.com/search?h
 Your Java runtime should also have the system property -Dfile.encoding=utf-8  defined.
 
 </div>
-<p><hr align="center" width="10%"><p><a name="missing"></a><div class="faq-question">
+<p><hr align="center" width="10%"></div><p><a name="missing"></a><div class="faq-item"><div class="faq-question">
 <h3> 1.19.  I've cleaned up files on my server that I had harvested in RAMADDA. How do I delete those entries in RAMADDA?</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
@@ -353,7 +355,7 @@ Be careful with this. I (jeffmc) have seen remote file systems go down momentari
 
 
 </div>
-<p><hr align="center" width="10%"><p><a name="logging"></a><div class="faq-question">
+<p><hr align="center" width="10%"></div><p><a name="logging"></a><div class="faq-item"><div class="faq-question">
 <h3> 1.20.  How do I track views or downloads of entries?</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
@@ -365,7 +367,7 @@ When set various entry activities - view, file, data (providing data to a displa
 to a file:<br>
 &lt;ramadda home&gt;/logs/entryactivity.log
 </div>
-<p><hr align="center" width="10%"><p></div></div></div>
+<p><hr align="center" width="10%"></div><p></div></div></div>
 
 
 

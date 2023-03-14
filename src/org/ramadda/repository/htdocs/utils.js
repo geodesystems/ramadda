@@ -3287,16 +3287,24 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     getTitleBr:function() {
 	return "&#10;";
     },
-    initPageSearch:function(select,parentSelect,label) {
+    initPageSearch:function(select,parentSelect,label,hideAll) {
 	let id = HU.getUniqueId('search_');
 	document.write(HU.input('','',['id',id,'placeholder',label??'Search','size','15']));
 	jqid(id).focus();
 	jqid(id).keyup(function(){
-	    HU.doPageSearch($(this).val(),select,parentSelect);
+	    HU.doPageSearch($(this).val(),select,parentSelect,hideAll);
 	});
     },		       
-    doPageSearch(value,select,parentSelect) {
+    doPageSearch(value,select,parentSelect,hideAll) {
 	let s  = $(select);
+	if(hideAll) {
+	    if(Utils.stringDefined(value)) {
+		$(hideAll).hide();
+	    } else {
+		$(hideAll).show();
+	    }
+	}
+
 	s.each(function() {
 	    let textOk = true;
 	    if(Utils.stringDefined(value)) {

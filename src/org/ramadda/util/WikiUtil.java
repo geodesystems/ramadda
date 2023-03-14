@@ -2933,8 +2933,9 @@ public class WikiUtil {
 								    : "");
 		    String sel1 = Utils.getProperty(props,"selector","div");
 		    String sel2 = Utils.getProperty(props,"parentSelector",null);
-		    String label = Utils.getProperty(props,"label",null);		    
-		    HtmlUtils.addPageSearch(buff,sel1,sel2,label);
+		    String label = Utils.getProperty(props,"label",null);
+		    String hideAll = Utils.getProperty(props,"hideAll",null);		    		    
+		    HtmlUtils.addPageSearch(buff,sel1,sel2,label,hideAll);
 		    continue;
 		}
 

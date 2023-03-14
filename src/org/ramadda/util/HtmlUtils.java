@@ -6578,13 +6578,15 @@ public class HtmlUtils implements HtmlUtilsConstants {
                + backAttrs + ">" + back + "</div></div></div>";
     }
     
-    public static void addPageSearch(Appendable buff, String sel1, String sel2, String label)  {
+    public static void addPageSearch(Appendable buff, String sel1, String sel2, String label,
+				     String...args)  {
 	try {
 	    buff.append("<center>");
 	    HtmlUtils.script(buff,HtmlUtils.call("HtmlUtils.initPageSearch",
-				   HtmlUtils.squote(sel1), 
-				   sel2==null?"null":HtmlUtils.squote(sel2),
-				   label==null?"null":HtmlUtils.squote(label)));
+						 HtmlUtils.squote(sel1), 
+						 sel2==null?"null":HtmlUtils.squote(sel2),
+						 label==null?"null":HtmlUtils.squote(label),
+						 args.length>0 && args[0]!=null?HtmlUtils.squote(args[0]):"null"));
 	    buff.append("</center>");
         } catch (java.io.IOException ioe) {
             throw new RuntimeException(ioe);
