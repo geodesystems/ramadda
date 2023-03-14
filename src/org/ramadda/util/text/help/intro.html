@@ -53,7 +53,9 @@
 <h2>RAMADDA SeeSV</h2>
 <center>${header}</center>
 
+:pagesearch selector=.seesv-item hideAll=.seesv-hide
 
+<div class=seesv-item>
 <h2>Introduction</h2>
 The RAMADDA SeeSV can be used both interactively from within RAMADDA as well as via the command line. Help with the interactive version can be viewed
 <a href="https://ramadda.org/repository/userguide/etl.html">here</a>.
@@ -74,8 +76,9 @@ The corresponding commands interactively would be:
 <pre class=example>
 -columns column1,column2
 </pre>
+</div>
 
-
+<div class=seesv-item>
 <h2>Install</h2>
 <ul>
 <li> Download the seesv.zip file from the RAMADDA <a href=https://geodesystems.com/repository/alias/release>download</a> site
@@ -86,6 +89,8 @@ The corresponding commands interactively would be:
 </ul>
 <p>
 
+</div>
+<div class=seesv-item>
 
 <h2>Basic Use</h2>  
 The general use of the SeeSV tools is as follows:
@@ -116,7 +121,8 @@ seesv -record file.csv &gt; output.csv
 seesv -columns column1,column2 -p file.csv > output.csv
 </pre>
 
-
+</div>
+<div class=seesv-item>
 
 <a name="help_columns"></a>
 <h2>Column Identifiers</h2>  
@@ -138,6 +144,8 @@ You can always use the <span class=cmd>-ids</span> command to list the ids
 seesv -ids -printheader test.csv
 </pre>
 
+</div>
+<div class=seesv-item>
 
 <h2>Some Examples</h2>  
 <pre class=examples>
@@ -177,3 +185,4 @@ seesv -columns column1 -unique 0 -sort column1 -p test.csv > newtest.csv
 
 
 </pre>
+</div>

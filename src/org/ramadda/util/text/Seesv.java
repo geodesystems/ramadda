@@ -3069,30 +3069,36 @@ public class Seesv implements SeesvCommands {
 	int cnt = 0;
         for (Cmd c : commands) {
 	    if(c.category) {
-		if(open) sb.append("</ul><br>");
+		if(open) sb.append("</ul><br class=seesv-hide>");
 		open = true;
 		String extra = IO.readContents("/org/ramadda/util/text/help/category_" + Utils.makeID(c.cmd).toLowerCase()+".html",(String) null);
 		if(header.length()>0) header.append(" | ");
 		header.append("<a href='#" + c.cmd +"'>" + c.cmd+"</a>");
-		sb.append("<hr>");
+		sb.append("<div class=seesv-hide><hr>");
 		sb.append("<a name='" + c.cmd+"'></a>");
 		sb.append("<b style='font-size:120%;'>" + c.cmd+"</b><br>\n");
 		sb.append(c.desc);
+		sb.append("</div>");
 		if(extra!=null) {
+		    sb.append("<div class=seesv-hide>");
 		    sb.append(" ");
 		    processHelpContents(sb, extra);
+		    sb.append("</div>");
 		}
 		sb.append("${header" + headers.size()+"}");
-
-		hb = new StringBuilder("Commands:<ul>");
+	
+		if(hb.length()>0) {
+		    hb.append("</ul></div>");
+		}
+		hb = new StringBuilder("<div class=seesv-hide>Commands:<ul>");
 		headers.add(hb);
-		hb.append("</ul>");
 		continue;
 	    }
 	    cnt++;
 	    String path = "/org/ramadda/util/text/help/" + c.cmd.replace("-","")+".html";
 	    String extra = IO.readContents(path,(String)null);
 	    if(c.cmd.startsWith(CMD_HELP)) continue;
+	    sb.append("<div class=seesv-item>\n");
 	    sb.append("<a name='" + c.cmd+"'></a>");
 	    hb.append("<li> <a href='#" + c.cmd +"'><i>" + c.cmd+"</i>: " + c.desc +"</a>");
 	    sb.append("<div class=command> <i><a href='#" + c.cmd +"'>" + c.cmd+"</a></i> ");
@@ -3102,10 +3108,9 @@ public class Seesv implements SeesvCommands {
 	    sb.append("</div><div class=command-block>");
 	    if(Utils.stringDefined(c.desc)) {
 		sb.append(c.desc);
-		sb.append("<br>\n");
+		sb.append("<br class=seesv-hide>\n");
 	    }
 	    if(c.args.size()>0) {
-		//		sb.append("<b>Arguments:</b><br>\n");
 		sb.append("<ul>\n");
 		for(Arg arg: c.args) {
 		    sb.append("<li> <i>" +arg.id+"</i>:\n");
@@ -3125,6 +3130,8 @@ public class Seesv implements SeesvCommands {
 		sb.append("<p>");
 	    }
 	    sb.append("</div>");
+	    sb.append("</div>");	    
+
 	}
 	sb.append("</ul>\n");
 
