@@ -2115,6 +2115,7 @@ public class HtmlOutputHandler extends OutputHandler {
             if (myChildren.size() > 0) {
                 Hashtable props = new Hashtable();
                 props.put(ARG_SHOWCRUMBS, "" + group.isDummy());
+		HU.addPageSearch(sb,".entry-list-row",null,"Find");
                 sb.append(getWikiManager().makeTableTree(request, null,
                         props, myChildren));
             }
