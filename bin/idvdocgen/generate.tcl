@@ -2256,9 +2256,9 @@ proc gen::processFaqInner {faq faqCnt} {
             if {$name!=""} {
                 append catBottom "<a name=\"$name\"></a>\n"
             }
-            append catBottom "<a name=\"$faqid\"></a><div class=\"faq-question\">\n<h3> ${entry}. $qlabel $q</h3>\n</div>\n"
+            append catBottom "<a name=\"$faqid\"></a><div class=\"faq-item\"><div class=\"faq-question\">\n<h3> ${entry}. $qlabel $q</h3>\n</div>\n"
             append catBottom "</a><div class=\"faq-answer\"><b>$alabel</b> $a</div>\n"
-            append catBottom "<p><hr align=\"center\" width=\"10%\"><p>"
+            append catBottom "<p><hr align=\"center\" width=\"10%\"></div><p>"
             incr cnt
         }
         if {$cat !=""} {
@@ -2273,7 +2273,7 @@ proc gen::processFaqInner {faq faqCnt} {
 
     set faqTop [ht::div $faqTop faq-top]
     set faqBottom [ht::div $faqBottom faq-bottom]
-    ht::div "$faqTop\n$faqBottom" faq
+    ht::div "\n:pagesearch selector=.faq-item hideAll=.faq-top\n$faqTop\n$faqBottom" faq
 
 }
 
@@ -2949,7 +2949,6 @@ proc gen::copyFiles {dir} {
     foreach prefix {jnlp gif GIF jpg jpeg JPG JPEG png PNG ppt PPT svg SVG svgz SVGZ} {
         set images [concat $images [glob -nocomplain [file join $dir *.$prefix]]]
     }
-    puts "images: $images"
     foreach f $images {
         set imgDir [file join $targetDir [file dirname $f]]
         if {![file exists $imgDir]} {
