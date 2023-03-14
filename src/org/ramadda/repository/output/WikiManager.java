@@ -3878,7 +3878,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
                 //Close the grid div
                 HU.close(buff, HU.TAG_DIV);
-                HU.close(buff, HU.TAG_DIV);		
 		sb.append(buff);
 		if(addHeader) {
 		    getMapManager().addMapImports(request, sb);
