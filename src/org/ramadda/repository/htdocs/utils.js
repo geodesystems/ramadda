@@ -3288,7 +3288,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	return "&#10;";
     },
     initPageSearch:function(select,parentSelect,label,hideAll) {
-	console.log(hideAll);
 	let id = HU.getUniqueId('search_');
 	document.write(HU.input('','',['id',id,'placeholder',label??'Search','size','15']));
 	jqid(id).focus();
