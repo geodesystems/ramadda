@@ -1189,7 +1189,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    let numRecords = this.getNumRecords();
 	    let includeIdx = this.getIncludeRowIndex();
 	    let includeGeo = this.getIncludeGeo();
-	    let includeDate = this.getIncludeGeo();	    
+	    let includeDate = this.getIncludeDate();	    
 	    let html='';
 	    //Only do the hover when we aren't coloring the rows
 	    if(!colorRowBy) {
@@ -1202,13 +1202,10 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    }
 
 	    html +=HU.openTag('table',[CLASS,"ramadda-table stripe", 'width','100%',ID,this.domId(ID_TABLE)]);
+	    html+='\n';
 	    let headerAttrs = [STYLE,"white-space:nowrap;background:#efefef;padding:5px; font-weight:bold;"];
 	    headerAttrs = [];
 	    html+="<thead>\n";
-
-//	    html+=HU.th(HU.div(headerAttrs,"&nbsp;"));	    
-	    if(includeDate) html+=HU.th(HU.div(headerAttrs,"Date"));
-
 	    if(anyGroups) {
 		let attrs = [STYLE,HU.css("background","#fff","width","100%")];
 		html+="<tr style='background:transparent;' valign=top>\n"
@@ -1232,6 +1229,11 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 
 	    let header1="<tr  valign=top>\n"
 	    let header2="<tr  valign=top>\n"	    
+	    if(includeDate) {
+		header1+=HU.th([],HU.div(headerAttrs,"Date"));
+		header2+=HU.th([],HU.div(headerAttrs,"Date"));
+	    }
+
 	    //Add the place holder for the colored rows
 	    if(colorRowBy && !colorFullRow) {
 		colorRowBy.forEach(c=>{
@@ -1284,8 +1286,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		
 	    });
 
-	    if(includeGeo) header1+=HU.th(HU.div(headerAttrs,"latitude")) + HU.th([],HU.div(headerAttrs,"longitude"));
-	    if(includeGeo) header2+=HU.th(HU.div(headerAttrs,"")) + HU.th([],HU.div(headerAttrs,""));	    
+	    if(includeGeo) header1+=HU.th([],HU.div(headerAttrs,"latitude")) + HU.th([],HU.div(headerAttrs,"longitude"));
+	    if(includeGeo) header2+=HU.th([],HU.div(headerAttrs,"")) + HU.th([],HU.div(headerAttrs,""));	    
 	    header1+="</tr>\n";
 	    header2+="</tr>\n";	    
 	    html+=header1;
@@ -1368,7 +1370,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		    columns.push(HU.td(['width','5px'],HU.div([],"#" +(recordIdx+1))));
 		}
 		if(includeDate) {
-		    columns.push(HU.td([],this.formatDate(r.getDate())));
+		    columns.push(HU.td([],this.formatDate(record.getDate())));
 		}
 		this.recordMap[record.rowIndex] = record;
 		this.recordMap[record.getId()] = record;
@@ -1485,6 +1487,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		html+="</tr>\n";
 		return true;
 	    });
+
+
 	    html+="</tbody>\n";
 	    html+="</table>\n";
 	    if(this.getShowAddRow()) {
