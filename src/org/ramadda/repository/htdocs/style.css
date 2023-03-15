@@ -107,7 +107,8 @@ input:focus, textarea:focus, .ramadda-search-input:focus {
 
 select {
     background:#fff;
-    padding:2px;
+    padding:3px;
+    width:auto;
 }
 
 select:focus {
