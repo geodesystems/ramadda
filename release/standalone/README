@@ -2,14 +2,15 @@
 ###################################################################
 RAMADDA Home Directory
 ###################################################################
-RAMADDA, on both Un*x and Windows, requires a home directory where it creates the DB,
-saves files, etc.
-There is documentation here: https://ramadda.org/repository/userguide/installing.html
+RAMADDA, on both Un*x and Windows, requires a home directory where it creates the database,
+saves files, etc. There is documentation here:
+https://ramadda.org/repository/userguide/installing.html
 
 You will need to create this directory. By default RAMADDA looks for:
 <user home directory>/.ramadda
 
 You can override the home directory (see below or in ramadda.bat) a number of ways.
+
 You can set the environment variable:
 RAMADDA_HOME=/some/other/directory/ramadda
 
@@ -22,6 +23,7 @@ Or pass in a regular  command line argument to RAMADDA:
 When RAMADDA first starts up it writes an install.properties file that contains an
 install password and prints out this password to stdout.
 ramadda.install.password=<some password>
+
 You will need this password when doing the final web-based  RAMADDA configuration
 
 
