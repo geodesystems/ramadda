@@ -273,7 +273,7 @@
         <attribute name="Implementation-Version" value="1.0"/>
         <attribute name="Implementation-Vendor" value="RAMADDA"/>
         <attribute name="Main-class" value="org.ramadda.util.text.Seesv"/>
-        <attribute name="Class-Path" value="unidatautil.jar json.jar xlsx-streamer-2.2.0.jar  rhino-1.7.13.jar log4j-core-2.19.0.jar log4j-api-2.19.0.jar slf4j-api-1.6.4.jar slf4j-nop-1.7.32.jar commons-lang3-3.5.jar commons-text-1.9.jar  commons-io-2.8.0.jar automaton-1.11-8.jar generex-1.0.2.jar javafaker-1.0.2.jar snakeyaml-1.23-android.jar"/>
+        <attribute name="Class-Path" value="unidatautil.jar json.jar xlsx-streamer-2.2.0.jar  rhino-1.7.13.jar log4j-core-2.19.0.jar log4j-api-2.19.0.jar slf4j-api-1.6.4.jar slf4j-nop-1.7.32.jar commons-lang3-3.5.jar commons-text-1.9.jar  commons-io-2.8.0.jar httpmime-4.5.13.jar automaton-1.11-8.jar generex-1.0.2.jar javafaker-1.0.2.jar snakeyaml-1.23-android.jar"/>
       </manifest> 
     </jar>
     <copy overwrite="true" file="${src_dir}/org/ramadda/util/text/seesv.sh"  todir="${seesv_destdir}"/>
@@ -291,6 +291,8 @@
     <copy overwrite="true" file="${lib_dir}/log4j-api-2.19.0.jar"  todir="${seesv_destdir}/lib"/>
     <copy overwrite="true" file="${lib_dir}/slf4j-api-1.6.4.jar"  todir="${seesv_destdir}/lib"/>
     <copy overwrite="true" file="${lib_dir}/slf4j-nop-1.7.32.jar"  todir="${seesv_destdir}/lib"/>			
+
+    <copy overwrite="true" file="${lib_dir}/httpmime-4.5.13.jar"  todir="${seesv_destdir}/lib"/>		
     <copy overwrite="true" file="${lib_dir}/commons-io-2.8.0.jar"  todir="${seesv_destdir}/lib"/>		
     <copy overwrite="true" file="${lib_dir}/commons-lang3-3.5.jar"  todir="${seesv_destdir}/lib"/>
     <copy overwrite="true" file="${lib_dir}/commons-text-1.9.jar"  todir="${seesv_destdir}/lib"/>			
