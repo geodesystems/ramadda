@@ -2676,11 +2676,11 @@ function Glyph(display, scale, fields, records, args, attrs) {
     //circle,
     $.extend(this,args);
     let cnt=0;
-//    console.log('glyph');
     attrs.split(",").forEach(attr=>{
 	let toks = attr.split(":");
 	let name = toks[0];
 	let value="";
+	if(!Utils.stringDefined(name) && !Utils.stringDefined(value)) return;
 	if(cnt==0 && toks.length==1) {
 	    value = name;
 	    name='type';
@@ -2708,6 +2708,8 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	    console.log("Could not find label field: " + this.labelBy);
 	}
     }
+
+
 
     if(this.type=="image") {
 	this.imageField=display.getFieldById(fields,this.imageField);
@@ -2753,6 +2755,7 @@ function Glyph(display, scale, fields, records, args, attrs) {
     this.dy = cvrt(this.dy);    
 
 
+
     this.baseWidth = +this.baseWidth;
     this.width = (+this.width)*scale;
     this.height = (+this.height)*scale;
@@ -2794,7 +2797,10 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	    this.dontShow = true;
 	}
     }
+
+
 }
+
 
 
 Glyph.prototype = {
