@@ -44,13 +44,13 @@ public class ConvertibleOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_CONVERT_FORM =
-        new OutputType("Convert Data", "convert_form", OutputType.TYPE_VIEW,
+        new OutputType("Convert Data", "convert_form", OutputType.TYPE_FILE,
                        "", "fa-file-excel");
 
     /** _more_ */
     public static final OutputType OUTPUT_CONVERT_PROCESS =
         new OutputType("Convert Data", "convert_process",
-                       OutputType.TYPE_VIEW, "", "fa-file-excel");
+                       OutputType.TYPE_FILE, "", "fa-file-excel");
 
 
     /**
