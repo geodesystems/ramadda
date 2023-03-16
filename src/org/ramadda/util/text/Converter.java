@@ -4834,9 +4834,10 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
+	    if(rowCnt++==0) return row;
             List<Integer> indices = getIndices(ctx);
             for (int index : indices) {
-                if ((index < 0) || (index >= row.size())) {
+                if (!row.indexOk(index)) {
                     continue;
                 }
                 try {
@@ -4845,7 +4846,9 @@ public abstract class Converter extends Processor {
                     row.set(index,
                             Double.valueOf((value + delta1) * scale
 					   + delta2).toString());
-                } catch (NumberFormatException nfe) {}
+                } catch (NumberFormatException nfe) {
+		    System.err.println("Error converting:" +row.get(index).toString());
+		}
             }
 
             return row;

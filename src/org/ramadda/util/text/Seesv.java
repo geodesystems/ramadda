@@ -4607,9 +4607,10 @@ public class Seesv implements SeesvCommands {
 
 
 	defineFunction(CMD_SCALE, 3,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.ColumnScaler(getCols(args.get(++i)), Double.parseDouble(args.get(++i)),
-							    Double.parseDouble(args.get(++i)),
-							    Double.parseDouble(args.get(++i))));
+		ctx.addProcessor(new Converter.ColumnScaler(getCols(args.get(++i)),
+							    parseDouble(args.get(++i),0),
+							    parseDouble(args.get(++i),1),
+							    parseDouble(args.get(++i),1)));
 
 		return i;
 	    });
@@ -5672,6 +5673,14 @@ public class Seesv implements SeesvCommands {
 	return props;
     }
 
+
+    public static double parseDouble(String s, double dflt) {
+	try {
+	    return Double.parseDouble(s);
+	} catch(NumberFormatException nfe) {
+	    return dflt;
+	}
+    }
 
     public static List<StringBuilder> tokenizeCommands(String commandString) {
         StringBuilder tmp = new StringBuilder();
