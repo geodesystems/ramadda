@@ -1874,7 +1874,7 @@ public abstract class Processor extends SeesvOperator {
         public void finish(TextReader ctx) throws Exception {
             debug("finish");
             if (suffix != null) {
-                ctx.getWriter().print(suffix);
+                ctx.print(suffix);
 		ctx.flush();
             }
             ctx.flush();
@@ -2309,7 +2309,6 @@ public abstract class Processor extends SeesvOperator {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
-            PrintWriter pw = ctx.getWriter();
             for (int i = 0; i < row.size(); i++) {
                 String s = row.getString(i);
                 if (s.length() < width) {
@@ -2317,11 +2316,9 @@ public abstract class Processor extends SeesvOperator {
                 } else if (s.length() > width) {
                     s = s.substring(0, width);
                 }
-                pw.print(s);
+                ctx.print(s);
             }
-            pw.println("");
-
-
+            ctx.println("");
             return row;
         }
 
@@ -3043,19 +3040,19 @@ public abstract class Processor extends SeesvOperator {
         public void finish(TextReader ctx) throws Exception {
             super.finish(ctx);
             if (contains == null) {
-                ctx.getWriter().print("-0");
+                ctx.print("-0");
             } else {
                 for (int i = 0; i < values.size(); i++) {
                     List uniqueValues = values.get(i);
                     for (int j = 0; j < uniqueValues.size(); j++) {
                         if (j > 0) {
-                            //                            ctx.getWriter().print(",");
+                            //                            ctx.print(",");
                         }
-                        ctx.getWriter().println(uniqueValues.get(j));
+                        ctx.println(uniqueValues.get(j));
                     }
                 }
             }
-            ctx.getWriter().flush();
+            ctx.flush();
         }
 
 
@@ -3191,10 +3188,10 @@ public abstract class Processor extends SeesvOperator {
                 return;
             }
 
-            ctx.getWriter().println("Rows:" + rowCount);
+            ctx.println("Rows:" + rowCount);
             for (Integer cnt : counts) {
                 int value = uniqueCounts.get(cnt);
-                ctx.getWriter().println("\tcolumns:" + cnt + " #:" + value);
+                ctx.println("\tcolumns:" + cnt + " #:" + value);
             }
             ctx.flush();
         }
@@ -3333,22 +3330,19 @@ public abstract class Processor extends SeesvOperator {
         public void printRow(TextReader ctx, Row row) throws Exception {
             if (headerValues == null) {
                 headerValues = row.getValues();
-
                 return;
             }
             List values = row.getValues();
             cnt++;
-            ctx.getWriter().println("#" + cnt);
+            ctx.println("#" + cnt);
             for (int i = 0; i < values.size(); i++) {
                 String label = (i < headerValues.size())
                                ? headerValues.get(i).toString()
                                : "NA";
                 label = StringUtil.padLeft(label, maxWidth);
-                ctx.getWriter().println(label + ": " + values.get(i));
+                ctx.println(label + ": " + values.get(i));
             }
         }
-
-
     }
 
 
@@ -3886,9 +3880,8 @@ public abstract class Processor extends SeesvOperator {
          */
         public Row processRowInner(TextReader ctx, Row row) throws Exception {
 
-            PrintWriter pw = ctx.getWriter();
             if (rowCnt++ == 0) {
-                pw.println("<entries>");
+                ctx.println("<entries>");
 
                 return row;
             }
@@ -3905,56 +3898,56 @@ public abstract class Processor extends SeesvOperator {
                 genre = "Miscellaneous";
             }
             if ( !genres.contains(genre)) {
-                pw.print(XmlUtil.tag("entry",
+                ctx.print(XmlUtil.tag("entry",
                                      XmlUtil.attr("type", "group")
                                      + XmlUtil.attr("id", genre)
                                      + XmlUtil.attr("name", genre), ""));
                 genres.add(genre);
             }
 
-            pw.print("<entry " + XmlUtil.attr("type", "type_netflix_movie")
+            ctx.print("<entry " + XmlUtil.attr("type", "type_netflix_movie")
                      + XmlUtil.attr("parent", genre));
             if (dttm.length() > 0) {
                 Date date = sdf.parse(dttm);
-                pw.print(XmlUtil.attr("fromdate", sdf2.format(date)));
+                ctx.print(XmlUtil.attr("fromdate", sdf2.format(date)));
             }
-            pw.println(">");
-            pw.print(makeTag("name", row.get(0)));
-            pw.print(makeTag("description",
+            ctx.println(">");
+            ctx.print(makeTag("name", row.get(0)));
+            ctx.print(makeTag("description",
                              "<snippet>" + row.get(23) + "</snippet>"));
-            pw.print(makeTag("series_or_movie", row.get(4)));
-            pw.print(makeTag("hidden_gem_score", row.get(5)));
-            pw.print(makeTag("runtime", row.get(7)));
-            pw.print(makeTag("view_rating", row.get(11)));
-            pw.print(makeTag("imdb_score", row.get(12)));
-            pw.print(makeTag("rotten_tomatoes_score", row.get(13)));
-            pw.print(makeTag("metacritic_score", row.get(14)));
-            pw.print(makeTag("awards_received", row.get(15)));
-            pw.print(makeTag("awards_nominated_for", row.get(16)));
-            pw.print(makeTag("boxoffice", row.get(17)));
-            pw.print(makeTag("release_date", row.get(18)));
-            pw.print(makeTag("netflix_release_date", row.get(19)));
-            pw.print(makeTag("netflix_link", row.get(21)));
-            pw.print(makeTag("imdb_link", row.get(22)));
-            pw.print(makeTag("imdb_votes", row.get(24)));
+            ctx.print(makeTag("series_or_movie", row.get(4)));
+            ctx.print(makeTag("hidden_gem_score", row.get(5)));
+            ctx.print(makeTag("runtime", row.get(7)));
+            ctx.print(makeTag("view_rating", row.get(11)));
+            ctx.print(makeTag("imdb_score", row.get(12)));
+            ctx.print(makeTag("rotten_tomatoes_score", row.get(13)));
+            ctx.print(makeTag("metacritic_score", row.get(14)));
+            ctx.print(makeTag("awards_received", row.get(15)));
+            ctx.print(makeTag("awards_nominated_for", row.get(16)));
+            ctx.print(makeTag("boxoffice", row.get(17)));
+            ctx.print(makeTag("release_date", row.get(18)));
+            ctx.print(makeTag("netflix_release_date", row.get(19)));
+            ctx.print(makeTag("netflix_link", row.get(21)));
+            ctx.print(makeTag("imdb_link", row.get(22)));
+            ctx.print(makeTag("imdb_votes", row.get(24)));
             String thumb = row.getString(25);
             if (thumb.trim().length() > 0) {
-                pw.print(
+                ctx.print(
                     "<metadata type=\"content.thumbnail\"><attr index=\"1\" encoded=\"false\">"
                     + thumb + "</attr></metadata>");
             }
-            pw.print(makeTag("poster", row.get(26)));
-            pw.print(makeTag("tmdb_trailer", row.get(27)));
-            pw.print(makeTag("trailer_site", row.get(28)));
-            pw.print(makeTags(row.get(1), "genre"));
-            pw.print(makeTags(row.get(2), "tag"));
-            pw.print(makeTags(row.get(3), "language"));
-            pw.print(makeTags(row.get(6), "country_availability"));
-            pw.print(makeTags(row.get(10), "actor"));
-            pw.print(makeTags(row.get(20), "production_house"));
-            pw.print(makeTags(row.get(8), "director"));
-            pw.print(makeTags(row.get(9), "writer"));
-            pw.println("</entry>");
+            ctx.print(makeTag("poster", row.get(26)));
+            ctx.print(makeTag("tmdb_trailer", row.get(27)));
+            ctx.print(makeTag("trailer_site", row.get(28)));
+            ctx.print(makeTags(row.get(1), "genre"));
+            ctx.print(makeTags(row.get(2), "tag"));
+            ctx.print(makeTags(row.get(3), "language"));
+            ctx.print(makeTags(row.get(6), "country_availability"));
+            ctx.print(makeTags(row.get(10), "actor"));
+            ctx.print(makeTags(row.get(20), "production_house"));
+            ctx.print(makeTags(row.get(8), "director"));
+            ctx.print(makeTags(row.get(9), "writer"));
+            ctx.println("</entry>");
 
             return row;
         }
@@ -3967,7 +3960,7 @@ public abstract class Processor extends SeesvOperator {
          */
         public void finish(TextReader ctx) throws Exception {
             super.finish(ctx);
-            ctx.getWriter().println("</entries>");
+            ctx.println("</entries>");
         }
 
     }

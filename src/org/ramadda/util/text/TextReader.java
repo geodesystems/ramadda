@@ -1294,12 +1294,35 @@ public class TextReader implements Cloneable {
     }
 
 
+    boolean wdebug = true;
+    public void print(Object o) {
+	System.err.println("print:" + o);
+	wdebug=false;
+	getWriter().print(o);
+	wdebug=true;
+    }
+
+    public void println(Object o) {
+	System.err.println("println:" + o);
+	wdebug=false;
+	getWriter().println(o);
+	wdebug=true;
+    }    
+
+    public void append(Object o) {
+	wdebug=false;
+	getWriter().append(o);
+	wdebug=true;
+    }
+
     /**
      * _more_
      *
      * @return _more_
      */
     public PrintWriter getWriter() {
+	if(wdebug)
+	System.err.println("getWriter:" + Utils.getStack(10));
         try {
             if (writer == null) {
                 OutputStream os = this.getOutput();
