@@ -1,3 +1,4 @@
+var Seesv = {};
 
 function  ConvertForm(inputId, entry,params) {
     this.params = params||{};
@@ -277,7 +278,10 @@ function  ConvertForm(inputId, entry,params) {
 			    return;
 			}
 			if(category=="Output") {
-			    if(cmd.args.length==0) {
+			    let skip = ['-fields','-tourl','-args','-pointheader','-tojson'];
+
+			    if(cmd.args.length==0 && !skip.includes(cmd.command)) {
+//				console.log(cmd.command);
 				this.outputCommands.push(cmd);
 //				return;
 			    }
@@ -765,6 +769,7 @@ function  ConvertForm(inputId, entry,params) {
 		args.csvoutput = "-print";
 	    }
 
+	    let isHelp = cmds.indexOf("-help")>=0;
 	    let raw = args.csvoutput=="-raw";
 	    let isDb = args.csvoutput == "-db" || cmds.indexOf("-db")>=0;
 	    let isJson = args.csvoutput=="-tojson";
@@ -776,6 +781,7 @@ function  ConvertForm(inputId, entry,params) {
 	    let table =  args.csvoutput=="-table";					    
 	    let showHtml =false;
 	    let printHeader = args.csvoutput == "-printheader";
+
 
 	    if((!args.process && !doExplode && !isScript && !isArgs) || args.html) {
 		if (this.maxRows != "") {
@@ -882,11 +888,42 @@ function  ConvertForm(inputId, entry,params) {
 			//		    Utils.makeDownloadFile("script.sh",result);
 			//		    return;
 		    }
+
+
 		    if(result.indexOf("<table")>0  || result.indexOf("<div")>0  || result.indexOf("<row")>0)
 			showHtml = true;
 		    if(debug) {
 			result = result.replace(/</g,"&lt;").replace(/>/g,"&gt;");
 			writePre(result);
+		    } else if(isHelp) {
+			let tmp = "";
+			result = result.replace(/</g,"&lt;");
+			result = result.replace(/>/,"&gt;");
+			result.split("\n").map(line=>{
+			    if(line.trim().startsWith("-")) {
+				let idx= line.indexOf("(");
+				let cmd = line;
+				let comment = "";
+				if(idx>0) {
+				    cmd = line.substring(0,idx);
+				    comment = "<i>" + line.substring(idx)+"</i>";
+				}
+				line = "      <a href=# onclick=\"Seesv.insertCommand('" + cmd.trim() +"')\">" + cmd.trim() +"</a> " + comment;
+			    }  else {
+				line = "<b>" + line +"</b>"
+			    }
+			    tmp+=HU.div(['class','seesv-help-line'], line);
+			});
+			Seesv.insertCommand = (line)=>{
+			    this.insertCommand(line);
+			};
+			result = tmp;
+			let preId = HU.getUniqueId();
+			let id2 = HU.getUniqueId();
+			let html = printHeader?result:HU.center(HU.div(['id',id2])) +HU.tag('pre',['id',preId], result);
+			output.html(html);
+			HU.initPageSearch('#' + preId +' .seesv-help-line',null,null,null,{target:'#'+id2});
+			return;
 		    } else if(isDb) {
 			let db = result.replace(/<tables>[ \n]/,"Database:");
 			db = db.replace(/<property[^>]+>/g,"");
@@ -1101,7 +1138,10 @@ function  ConvertForm(inputId, entry,params) {
 			});
 			HtmlUtils.formatTable(".ramadda-table",{xordering:true});
 		    } else {
+
 			result = result.trim();
+
+
 			let isJson = (result.startsWith("{") && result.endsWith("}")) || (result.startsWith("[") && result.endsWith("]"));
 			let isXml = result.startsWith("<") && result.endsWith(">")
 			let out = "";
@@ -1153,31 +1193,11 @@ function  ConvertForm(inputId, entry,params) {
 				tmp+=line;
 			    });
 			    result = "<table><tr><td><b>Index</b></td><td>&nbsp;</td><td><b>ID</b></td><td><b>Attributes</b></td></tr>" + tmp +"</table>"; 
-			} else if(cmds.indexOf("-help")>=0) {
-			    let tmp = "";
-			    result = result.replace(/</g,"&lt;");
-			    result = result.replace(/>/,"&gt;");
-			    result.split("\n").map(line=>{
-				if(line.trim().startsWith("-")) {
-				    let idx= line.indexOf("(");
-				    let cmd = line;
-				    let comment = "";
-				    if(idx>0) {
-					cmd = line.substring(0,idx);
-					comment = "<i>" + line.substring(idx)+"</i>";
-				    }
-				    line = "      <a href=# onclick=\"Csv.insertCommand('" + cmd.trim() +"')\">" + cmd.trim() +"</a> " + comment;
-				}  else {
-				    line = "<b>" + line +"</b>"
-				}
-				tmp+=line +"\n";
-			    });
-			    result = tmp;
 			} else {
 			    result = result.replace(/</g,"&lt;");
 			    result = result.replace(/>/,"&gt;");
 			}
-			let html = printHeader?result:"<pre>" + result +"</pre>";
+			let html = printHeader?result:HU.tag('pre',[], result);
 			if(isDb) {
 			    html+=HU.div([ID,this.domId(ID_POPUP), CLASS,"ramadda-popup"]);
 			} else if(!printHeader) {
