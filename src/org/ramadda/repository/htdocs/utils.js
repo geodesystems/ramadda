@@ -3294,7 +3294,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	if(args.target)
 	    $(args.target).html(input);
 	else
-	    document.write(target);
+	    document.write(input);
 	jqid(id).focus();
 	jqid(id).keyup(function(){
 	    HU.doPageSearch($(this).val(),select,parentSelect,hideAll);
