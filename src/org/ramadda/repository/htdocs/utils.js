@@ -3287,9 +3287,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     getTitleBr:function() {
 	return "&#10;";
     },
-    initPageSearch:function(select,parentSelect,label,hideAll) {
+    initPageSearch:function(select,parentSelect,label,hideAll,args) {
+	args = args??{};
 	let id = HU.getUniqueId('search_');
-	document.write(HU.input('','',['id',id,'placeholder',label??'Search','size','15']));
+	let input = HU.input('','',['id',id,'placeholder',label??'Search','size','15']);
+	if(args.target)
+	    $(args.target).html(input);
+	else
+	    document.write(target);
 	jqid(id).focus();
 	jqid(id).keyup(function(){
 	    HU.doPageSearch($(this).val(),select,parentSelect,hideAll);
