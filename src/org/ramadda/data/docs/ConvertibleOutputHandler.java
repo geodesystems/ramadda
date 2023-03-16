@@ -413,6 +413,8 @@ public class ConvertibleOutputHandler extends OutputHandler {
 		     && !args.contains("-raw")
 		     && !args.contains("-stats")
 		     && !args.contains("-record")
+		     && !args.contains("-torecord")
+		     && !args.contains("-fields")
 		     && !args.contains("-tojson")
 		     && !args.contains("-table")
 		     && !args.contains("-cols")		     
