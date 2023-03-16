@@ -3344,8 +3344,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    });
 	}
     },				  
-
-
+    initScreenshot: function(img) {
+	img.width/=2
+	$(img).css("display","inline-block");
+    },
     insertIntoTextarea:function(myField, value) {
 	if(typeof myField=='string') {
 	    myField =  document.getElementById(myField);

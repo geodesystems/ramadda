@@ -1055,10 +1055,15 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	throws Exception {
 
 
-        boolean       screenshot = getProperty(wikiUtil, props, "screenshot", false);
         boolean       inDiv = getProperty(wikiUtil, props, "inDiv", true);
         String        align = getProperty(wikiUtil, props, ATTR_ALIGN, null);
         String        width = getProperty(wikiUtil, props, ATTR_WIDTH, null);
+
+        boolean       screenshot = getProperty(wikiUtil, props, "screenshot", false);
+	if(width!=null && width.equals("screenshot")) {
+	    screenshot = true;
+	    width=null;
+	}
 
         StringBuilder extra = new StringBuilder();
 
@@ -1076,9 +1081,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         if (width != null) {
             HU.attr(extra, HU.ATTR_WIDTH, width);
         }
-	if(screenshot) {
-            HU.attr(extra,"onload","this.width/=2;this.onload=null;");
-	}
+
 
         if ( !inDiv && (align != null)) {
             //            extra.append(HU.style("align:" + align + ";"));
@@ -1121,8 +1124,14 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             style += " position:absolute;  top: " + top + ";";
         }
 
+	if(screenshot) {
+            HU.attr(extra,"onload","HtmlUtils.initScreenshot(this);this.onload=null;");
+	    style+="display:none;";
+	}
+
+
         if (style.length() > 0) {
-            extra.append(" style=\" " + style + "\" ");
+            HU.attr(extra,"style", style);
         }
 
 
