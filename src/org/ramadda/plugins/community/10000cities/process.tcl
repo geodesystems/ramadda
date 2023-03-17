@@ -68,8 +68,9 @@ proc makeEntry {dir name {attrs {}} {desc {}} {inner {}}} {
 
 proc state {abbr name fips lat lon} {
     if {$::doTest} {
+	if {$abbr !="CO"} return;
         if {[expr rand()<0.90]} {
-            return
+#            return
         }
         if {[incr ::stateCnt]>1} return;
     }
@@ -82,14 +83,17 @@ proc state {abbr name fips lat lon} {
     set ::states($abbr,name) $name
     set ::states($abbr,nameLower) $nameLower
     set stateDir [getStateDir $abbr]
-    set md [xmlTag metadata "" [list type content.alias encoded false attr1 "http://$abbr.10000cities.org"]]
-    append md [xmlTag metadata "" [list type content.alias encoded false attr1 "http://$nameLower.10000cities.org"]]
+#    set md [xmlTag metadata "" [list type content.alias encoded false attr1 "https://$abbr.10000cities.org"]]
+#    append md [xmlTag metadata "" [list type content.alias encoded false attr1 "https://$nameLower.10000cities.org"]]
+    set md [xmlTag metadata "" [list type content.alias encoded false attr1 "$abbr.10000cities.org"]]
+    append md [xmlTag metadata "" [list type content.alias encoded false attr1 "$nameLower.10000cities.org"]]
     set desc "\n:blurb-blue Welcome to the 10000 Cities Data Hub for the state of $name\n<br>Below you will find state-level data and individual data hubs for each county.\n<br>"
     makeGroup $stateDir $name [list type community_datahub latitude $lat longitude $lon] "$desc" $md
 
     set countyDesc "<wiki>\n+section # title=\"{{name}}\"\n:blurb-blue County data hubs for $name\n{{map  sort=\"name\"  width=\"100%\" listentries=\"true\" height=\"500\"}}\n-section\n+section # label=\"The Counties\"\n{{tree message=\"\" sort=\"name\" details=\"false\"}}\n-section\n"
 
-    set md [xmlTag metadata "" [list type content.alias encoded false attr1 "http://counties.$abbr.10000cities.org"]]
+#    set md [xmlTag metadata "" [list type content.alias encoded false attr1 "https://counties.$abbr.10000cities.org"]]
+    set md [xmlTag metadata "" [list type content.alias encoded false attr1 "counties.$abbr.10000cities.org"]]
 
     makeGroup  $stateDir/counties Counties [] $countyDesc "$md $::sortMD"
     makeGroup $stateDir/communities  Communities
@@ -156,7 +160,7 @@ proc addCensus {dir name for_type for_value type1 value1 type2 value2 lat lon} {
 
 
 
-proc city_county {state geoid ansi name pop hu aland awater aland_sqmi awater_sqmi lat lon} {
+#proc city_county {state geoid ansi name pop hu aland awater aland_sqmi awater_sqmi lat lon} {}
 
 
 proc county {state geoid ansi name pop hu aland awater aland_sqmi awater_sqmi lat lon} {
@@ -164,7 +168,7 @@ proc county {state geoid ansi name pop hu aland awater aland_sqmi awater_sqmi la
     if {0} {
         set statsFile [file join $::statsDir/$geoid.json]
         if {![file exists $statsFile]} {
-            set json [Util::fetchUrl http://www.datasciencetoolkit.org/coordinates2statistics/${lat}%2c${lon}]
+            set json [Util::fetchUrl https://www.datasciencetoolkit.org/coordinates2statistics/${lat}%2c${lon}]
             Util::writeFile $statsFile $json
         } else {
             set json [Util::readFile $statsFile]
@@ -173,8 +177,8 @@ proc county {state geoid ansi name pop hu aland awater aland_sqmi awater_sqmi la
     }
 
     if {$::doTest} {
-        if {[expr rand()<0.95]} {
-            return
+        if {[expr rand()<0.90]} {
+#            return
         }
     }
 
@@ -207,11 +211,22 @@ proc county {state geoid ansi name pop hu aland awater aland_sqmi awater_sqmi la
 
     set desc "\n:blurb-blue Welcome to the 10000 Cities Data Hub for $name $::states($state,name)\n"
     append desc "{{10000cities.welcome}}\n"
+
+    regsub -all { } $name {_} _name
+    set stateName $::states($state,name)
+
+
+
+    set wikipediaLink "https://en.wikipedia.org/wiki/$_name,_$stateName"
+    append desc ":br\n"
+    append desc "@($wikipediaLink imageWidth=100)\n"
+    append desc ":br\n"
+
 ##    append desc "Below are folders for data and community resources.\n"
 
 
-
-    set md [xmlTag metadata "" [list type content.alias encoded false attr1 "http://$host"]]
+#    set md [xmlTag metadata "" [list type content.alias encoded false attr1 "https://$host"]]
+    set md [xmlTag metadata "" [list type content.alias encoded false attr1 "$host"]]
 
     #state geoid ansi name pop hu aland awater
 
@@ -229,11 +244,9 @@ proc county {state geoid ansi name pop hu aland awater aland_sqmi awater_sqmi la
     makeEntry  $dir/wiki  "First Wiki Page" [list type wikipage] "==First wiki page=="
 
     makeGroup  $dir/links "Links" [] "<wiki>\n+section title={{name}}\n{{links linkresource=\"true\" message=\"\" }}\n-section\n" 
-    regsub -all { } $name {_} _name
-    set stateName $::states($state,name)
-    makeEntry $dir/links "Wikipedia Page" [list type link url "https://en.wikipedia.org/wiki/$_name,_$stateName" ] "" 
+    makeEntry $dir/links "Wikipedia Page" [list type link url $wikipediaLink ] "" 
 
-    makeEntry $dir/links "Weather Page" [list type link ] ""  [Util::cdataTag url "" "http://forecast.weather.gov/MapClick.php?lat=$lat&lon=$lon"]
+    makeEntry $dir/links "Weather Page" [list type link ] ""  [Util::cdataTag url "" "https://forecast.weather.gov/MapClick.php?lat=$lat&lon=$lon"]
 
     makeEntry  $dir "Community Resources" [] ""
     makeGroup  $dir/data Data 
@@ -272,8 +285,7 @@ proc county {state geoid ansi name pop hu aland awater aland_sqmi awater_sqmi la
     }
 
 
-
-    set md [xmlTag metadata "" [list type content.alias encoded false attr1 "http://census.$host"]]
+    set md [xmlTag metadata "" [list type content.alias encoded false attr1 "https://census.$host"]]
     makeGroup  $dir/census "$name Census Snapshot" [list latitude $lat longitude $lon]  $::censusDesc $md
     addCensus $dir/census $name tract {} state $stateId county $countyId $lat $lon
 }
@@ -315,7 +327,8 @@ makeGroup  [getStateDir] "States"   [list] "<wiki>+section title={{name}}\n{{tre
 
 
 set usdesc "\n:blurb-blue Welcome to the 10000 Cities Data Hub for the United States.\n<br>Below you will find data at the national level as well as data hubs for each state."
-set md [xmlTag metadata "" [list type content.alias encoded false attr1 "http://usa.10000cities.org"]]
+#set md [xmlTag metadata "" [list type content.alias encoded false attr1 "https://usa.10000cities.org"]]
+set md [xmlTag metadata "" [list type content.alias encoded false attr1 "usa.10000cities.org"]]
 makeGroup  $::baseDir "United States"   [list  type community_datahub] $usdesc $md
 set dir [file join $::baseDir data]
 makeGroup  $dir "United States Data"  {US Data}

@@ -1,3 +1,6 @@
+state {CO}  {Colorado}  {08}  {39.500656}  {-105.203628} 
+return
+
 state {AL}  {Alabama}  {01}  {33.001471}  {-86.766233} 
 state {AK}  {Alaska}  {02}  {61.288254}  {-148.716968} 
 state {AZ}  {Arizona}  {04}  {33.373506}  {-111.828711} 

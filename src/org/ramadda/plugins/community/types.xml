@@ -119,22 +119,25 @@
 
   <type name="community_thing"  foruser="false" description="Community Thing" >
      <property name="html.date.show" value="false"/>
+<!--
      <property name="form.date.show" value="false"/>
      <property name="html.type.show" value="false"/>
      <property name="html.owner.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+-->
      <property name="form.file.show" value="false"/>
      <property name="form.url.show" value="true"/>
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="false"/>
      <property name="form.altitude.top.show" value="false"/>
-     <property name="form.area.show" value="false"/>
-     <property name="form.location.show" value="true"/>
      <property name="search.date.show" value="false"/>
   </type>
 
 
   <type name="community_datahub"  super="community_thing" description="Data Hub" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"    metadata="" >
      <property name="icon" value="/community/wheel.png"/>
+     <property name="form.description.iswiki" value="true"/>
 <!--
      <property name="search.metadatatypes" value="community_service,content.contact"/>
 -->
@@ -173,7 +176,7 @@
 {{properties  message="" metadata.types="content.alias" includeTitle="false"}}
 {{image src="::*" message="" width="300"}}
 <p>
-{{mapentry width="300" message=""}}
+{{mapentry width="300" message="" geojson="/repository/resources/counties/${community_snapshot.1}.geojson"}}
 <p>
 {{properties   message="" metadata.types="!content.alias,!content.logo"}}
 -col
@@ -184,7 +187,7 @@
 <div id=maindiv style="min-height:200px;"></div>
 {{group  layoutType="table"  layoutColumns="2"  showMenu="true"  divid="maindiv" }}
 
-{{display  type="entrylist"    divid="listdiv" orientation="vertical"  showType="false" showForm="true"  showSearchSettings="false" formOpen="false"  layoutHere="true"  showMenu="true"  showTitle="false"  provider="fred" textRequired="true" 
+{{display_entrylist    divid="listdiv" orientation="vertical"  showType="false" showForm="true"  showSearchSettings="false" formOpen="false"  layoutHere="true"  showMenu="true"  showTitle="false"  provider="fred" textRequired="true" 
 height="300"
 providers="this,eia,fred,quandl,socrata,category:.*CKAN.*,category:.*Socrata.*,flickr,youtube,duckduckgo"
 }}
