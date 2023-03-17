@@ -1,0 +1,85 @@
+[ht::head {Display Glyphs}]
+
+
+The <a href="wikidisplay2.html#canvas">Canvas display</a> and the <a href="imdv/entries.html">IMDV display</a>
+both make use of a Canvas Glyph mechanism that provides a declarative specification
+for making some drawing in HTML canvas and its subsequent display.
+There can be one or more glyphs and they take the form:
+
+<pre>
+&lt;glyph type&gt;,attr1=value1,attr2=value2,...
+&lt;glyph type&gt;,...  
+...
+&lt;glyph type&gt;,...
+</pre>
+
+
+Where the type can be one of label, circle, rect, image, gauge, 3dbar, axis,tile, vector.
+e.g.:
+<pre>
+3dbar,pos:sw,dx:10,dy:-5,height:100,width:8,baseHeight:5,sizeBy:atmos_temp,sizeByMin:0,sizeByMax:50
+label,font:6pt,pos:ne,dx:90,dy:-90,label:Temp: ${atmos_temp}
+</pre>
+
+:heading Using Glyphs in the Canvas display
+if the glyphs are being used
+in the Canvas Display then each line is specified in the display_canvas tag as:
+<pre>
+glyph1="&lt;glyph type&gt;,..."
+glyph2="&lt;glyph type&gt;,..."  
+...
+glyphN="&lt;glyph type&gt;,..."
+</pre>
+
+:heading Using Glyphs in the IMDV
+If the glyphs are being used in the Integrated Map Data Viewer (IMDV) then...
+
+
+:heading Positioning Glyphs
+The glyphs draw themselves into a canvas with a specified canvas width and canvas height.
+If they are being used in the <a href="wikidisplay2.html#canvas">Canvas display</a>
+then the canvas width and height are specified as attributes of the display, e.g.:
++pre
+{<foo>{display_canvas canvasWidth=100 canvasHeight=100}}
+-pre
+
+  
+:p
+Each of these glyphs is positioned within the canvas based on the attributes for the glyph.
+<ul>
+<li> pos:n or nw or w or sw or s or se or e or ne
+<br>
+This is the position on the bounding rectangle for the glyph.
+
+<li> dx,dy: These are the delta x and delta y values which are applied to the origin of the
+  canvas where the origin is the lower left corner of the canvas. These can be either positive or negative
+  integer values but can also be the following literal values:
+  <ul>
+    <li>canvasWidth,-canvasWidth: the width of the canvas
+    <li>canvasWidth2,-canvasWidth2: half the width of the canvas      
+    <li>canvasHeight,-canvasHeight: the height of the canvas
+    <li>canvasHeight2,-canvasHeight2: half the height of the canvas      
+  </ul>    
+ 
+</ul>
+
+There are shorthand names for the above- <i>cw</i> = canvasWidth, <i>ch</i> = canvasHeight,
+<i>cw2</i> = canvasWidth2, <i>ch2</i> = canvasHeight2
+:p
+
+
+For example, say you want a label positioned in the center. You would specify:
+<pre>
+label,pos:c,dx:cw2,dy:ch2,label:Some label
+</pre>  
+
+Say you want to have a label that is position in the upper right of a canvas
+of width  and height 100. To do this specify the following. The dy=-90 takes into account the
+approximate height of the text block.
+<pre>
+label,pos:ne,dx:100,dy:-90,label:Some label
+</pre>  
+
+
+[ht::foot]
+

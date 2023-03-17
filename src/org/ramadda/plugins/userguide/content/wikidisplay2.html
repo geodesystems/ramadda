@@ -46,42 +46,14 @@ create a customized display for each record.
 } {canvasHeight="100" canvasWidth="100"} {images/charts/canvas.png} {} {
 The glyphs are specified by a set of attributes:
 <pre>
-glyph1="type:&lt;glyph type&gt;,..."
-glyph2="type:&lt;glyph type&gt;,..."  
+glyph1="&lt;glyph type&gt;,..."
+glyph2="&lt;glyph type&gt;,..."  
 ...
-glyphN="type:&lt;glyph type&gt;,..."
+glyphN="&lt;glyph type&gt;,..."
 </pre>
 
-Where the type can be one of label, circle, rect, image, gauge, 3dbar, axis,tile, vector.
-e.g.:
-<pre>
-glyph1="type:3dbar,pos:sw,dx:10,dy:-5,height:100,width:8,baseHeight:5,sizeBy:atmos_temp,sizeByMin:0,sizeByMax:50"
-glyph2="type:label,font:6pt,pos:ne,dx:90,dy:-90,label:Temp: ${atmos_temp}"
-</pre>
+See <a href="canvasglyphs.html">canvasglyphs.html</a> for more information.
 } ]
-
-Each of these glyphs is positioned within the canvas based on the attributes for the glyph.
-<ul>
-<li> pos:n or nw or w or sw or s or se or e or ne
-<br>
-  This is the position on the bounding rectangle for the glyph.
-<li>dx,dy: These are the delta x and delta y values which are applied to the origin of the
-  canvas where the origin is the lower left corner of the canvas. These can be either positive or negative
-  integer values but can also be the following literal values:
-  <ul>
-    <li>canvasWidth,-canvasWidth: the width of the canvas
-    <li>canvasWidth2,-canvasWidth2: half the width of the canvas      
-    <li>canvasHeight,-canvasHeight: the height of the canvas
-    <li>canvasHeight2,-canvasHeight2: half the height of the canvas      
-  </ul>    
-</ul>
-
-For example, say you want to have a label that is position in the upper right of a canvas
-of width  and height 100. To do this specify the following. The dy=-90 takes into account the
-approximate height of the text block.
-<pre>
-glyph1="type:label,pos:ne,dx:100,dy:-90,label:Some label"
-</pre>  
 
 
 [displayType { Summary Stats} stats {

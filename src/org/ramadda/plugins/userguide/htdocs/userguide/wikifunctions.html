@@ -10,9 +10,9 @@
 <div class="ramadda-doc-header">
 <div style='padding-top:12px;margin-bottom:4px;'><a href="toc.html#wikifunctions.html"><span title="Table of contents"><i  style='font-size:16pt;'  class="fa fa-list "></i></span></a> &nbsp; <a href="index.html">RAMADDA User Guide</a>  > <a href="page_ramaddawikifacilities.html">RAMADDA Wiki Facilities</a> </div>
 <table width=100% cellspacing=0 cellpadding=0 >
-<tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikidisplay2.html"><table><td valign=center><td><span title="Previous: More Wiki Display Components"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>More Wiki Display Components</td></tr></table></a></div></div></td>
+<tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="canvasglyphs.html"><table><td valign=center><td><span title="Previous: Display Glyphs"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Display Glyphs</td></tr></table></a></div></div></td>
 <td width=50% align=center>
-<div class="ramadda-page-title"><a href="#">Section 6.5: Wiki Functions</a></div>
+<div class="ramadda-page-title"><a href="#">Section 6.6: Wiki Functions</a></div>
 </td>
 <td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="imdv/index.html"><table><tr valign=center><td>Integrated Map Data Viewer (IMDV)</td><td><span title="Next: Integrated Map Data Viewer (IMDV)"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
 </tr></table>
@@ -29,28 +29,28 @@ pre {
 
 
 <div  class="childlist" ><table  width="100%" ><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-6.5.0&nbsp;
+6.6.0&nbsp;
 </span></td><td><a  class="childlist-link"  href="wikifunctions.html#templates" >
 <a href="#templates">Templates</a>
 </a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-6.5.1&nbsp;
+6.6.1&nbsp;
 </span></td><td><a  class="childlist-link"  href="wikifunctions.html#derived" >
 <a href="#derived">Derived Data</a>
 </a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-6.5.2&nbsp;
+6.6.2&nbsp;
 </span></td><td><a  class="childlist-link"  href="wikifunctions.html#scaleoffset" >
 <a href="#scaleoffset">Scaling and offset of data</a>
 </a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-6.5.3&nbsp;
+6.6.3&nbsp;
 </span></td><td><a  class="childlist-link"  href="wikifunctions.html#displayProperty" >
 <a href="#displayProperty">Setting shared properties</a>
 </a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-6.5.4&nbsp;
+6.6.4&nbsp;
 </span></td><td><a  class="childlist-link"  href="wikifunctions.html#filtering" >
 <a href="#filtering">Filtering data</a>
 </a><br></td></tr></table></div>
 
-<a name="templates"></a><p><div class="ramadda-help-heading">6.5.0 <a href="#templates">Templates</a></div> 
+<a name="templates"></a><p><div class="ramadda-help-heading">6.6.0 <a href="#templates">Templates</a></div> 
 A templating mechanism is a number of places within the displays to display the records. For example, as a
 tooltip="..." or in the display_template. The template consists of arbitrary text and any number of macros
 of the form:
@@ -172,7 +172,7 @@ sortAscending=false
 
 
 
-<a name="derived"></a><p><div class="ramadda-help-heading">6.5.1 <a href="#derived">Derived Data</a></div> 
+<a name="derived"></a><p><div class="ramadda-help-heading">6.6.1 <a href="#derived">Derived Data</a></div> 
 
 Derived data can be calculated by specifying a javascript function with the field ids. For example, in the 
 <a href="https://ramadda.org/repository/entry/show?entryid=e8af924a-2194-4fd0-83be-92d006837c00">election data example</a> 
@@ -191,7 +191,7 @@ Percentage values can be calculated with the <i>showPercent</i> attribute. This 
 percent value.
 
 
-<a name="scaleoffset"></a><p><div class="ramadda-help-heading">6.5.2 <a href="#scaleoffset">Scaling and offset of data</a></div> 
+<a name="scaleoffset"></a><p><div class="ramadda-help-heading">6.6.2 <a href="#scaleoffset">Scaling and offset of data</a></div> 
 The data values and or displayed unit of the point data that is displayed in chart can be modified
 by specifying offset and scale units. For example, one can convert Kelvin to Celsius in a display
 with the following attributes:
@@ -213,7 +213,7 @@ You can specify values specific for a particular field using:
 </pre>
 
 
-<a name="displayProperty"></a><p><div class="ramadda-help-heading">6.5.3 <a href="#displayProperty">Setting shared properties</a></div> 
+<a name="displayProperty"></a><p><div class="ramadda-help-heading">6.6.3 <a href="#displayProperty">Setting shared properties</a></div> 
 Sometimes there are a number of displays on a single page that share the same set of properties.
 For example, this <a href="https://ramadda.org/repository/entry/show?entryid=8fafafa0-0105-4f14-9c86-6a9902f186a9">page</a>
 shows a number of charts of atmospheric time series data. The data itself has temperature in Kelvin and pressure in Pascals. 
@@ -230,7 +230,7 @@ tag global properties can be specified that are applicable to all displays on th
 </pre>
 
 
-<a name="filtering"></a><p><div class="ramadda-help-heading">6.5.4 <a href="#filtering">Filtering data</a></div> 
+<a name="filtering"></a><p><div class="ramadda-help-heading">6.6.4 <a href="#filtering">Filtering data</a></div> 
 You can filter the data that is shown based on string pattern matching or numeric operators.
 You do this with the attributes:
 <pre>
@@ -255,7 +255,7 @@ numericFilterField="#3" numericFilterValue="5000" numericFilterOperator=">"
 
 <div class="ramadda-doc-footer">
 <table width=100% cellspacing=0 cellpadding=0 >
-<tr><td width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikidisplay2.html"><table><td valign=center><td><span title="Previous: More Wiki Display Components"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>More Wiki Display Components</td></tr></table></a></div></div></td>
+<tr><td width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="canvasglyphs.html"><table><td valign=center><td><span title="Previous: Display Glyphs"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Display Glyphs</td></tr></table></a></div></div></td>
 <td align=right width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="imdv/index.html"><table><tr valign=center><td>Integrated Map Data Viewer (IMDV)</td><td><span title="Next: Integrated Map Data Viewer (IMDV)"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
 </tr></table>
 </div>
