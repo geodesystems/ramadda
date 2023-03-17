@@ -820,8 +820,10 @@ public class Utils extends IO {
      *
      * @return _more_
      */
-    public static boolean stringDefined(String s) {
-        if ((s == null) || (s.trim().length() == 0)) {
+    public static boolean stringDefined(Object o) {
+	if(o==null) return false;
+	String s = o.toString();
+        if (s.trim().length() == 0) {
             return false;
         }
 
