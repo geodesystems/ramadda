@@ -138,7 +138,7 @@ proc ht::doImage {img centered {caption ""} {extra ""}} {
 }
 
 proc ht::screenshot {img {caption ""} {css ""}} {
-    set extra  " onload='this.width/=2;this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;$css' "
+    set extra  " onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;$css' "
     return "<center><span style='display:inline-block'>[ht::cimg $img $caption $extra]</span></center>"
 }
 
@@ -355,7 +355,7 @@ proc displayType {name id desc args {img ""} {url ""} {desc2 ""}} {
                set extra [lindex $toks 1]
 	       puts "extra: $extra"
           }
-        append h [ht::cimg $img $name $extra]
+             append h [ht::cimg $img $name $extra]
     }
    append h $desc2
     set h
