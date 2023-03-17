@@ -1565,9 +1565,12 @@ var Utils =  {
 	if(s1===null || s2===null) return false;
 	return new String(s1).valueOf()===new String(s2).valueOf();
     },
-    stringDefined: function(v) {
-        if (!Utils.isDefined(v)) return false;
-        if (v == null || v == "") return false;
+    stringDefined: function() {
+	for(let i=0;i<arguments.length;i++) {
+	    let v = arguments[i];
+            if (!Utils.isDefined(v)) return false;
+            if (v == null || v == "") return false;
+	}
         return true;
     },
     tokenizeMacros:function(s,args,debug) {
