@@ -745,13 +745,15 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	                let settings = this.getSearchSettings();
             settings.text = this.getFieldValue(this.getDomId(ID_TEXT_FIELD), settings.text);
 	    if(settings.text) {
-		HU.addToDocumentUrl(ID_TEXT_FIELD,settings.text);
+		if(Utils.stringDefined(settings.text)) {
+		    HU.addToDocumentUrl(ID_TEXT_FIELD,settings.text);
+		}
 		if(settings.text.trim()!="") {
 		    if(this.getSearchPrefix())
 			settings.text = this.getSearchPrefix()+ settings.text;
 		}
 	    }  else {
-		HU.addToDocumentUrl(ID_TEXT_FIELD,"");
+		//		HU.addToDocumentUrl(ID_TEXT_FIELD,"");
 	    }
 
 	    settings.ancestor = this.getAncestor();
@@ -1684,7 +1686,9 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 	    this.getSearchSettings().skip=0;
             let id = this.jq(ID_PROVIDERS).val();
 	    this.provider = this.providerMap[id];
-	    HU.addToDocumentUrl(ID_PROVIDERS,id);
+	    if(Utils.stringDefined(id) && id!='this') {
+		HU.addToDocumentUrl(ID_PROVIDERS,id);
+	    }
 	    this.jq(ID_SEARCH_BAR).html("");
 	    let blocks = [ID_SEARCH_AREA, ID_SEARCH_TAGS,ID_SEARCH_ANCESTOR,ID_SEARCH_DATE_CREATE,ID_SEARCH_DATE_RANGE];
             if (this.provider && this.provider.type!="ramadda") {
