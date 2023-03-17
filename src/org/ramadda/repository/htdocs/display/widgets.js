@@ -154,9 +154,13 @@ function AreaWidget(display) {
 	    let s = this.display.getFieldValue(this.display.getDomId(ID_SOUTH), null);
 	    let e = this.display.getFieldValue(this.display.getDomId(ID_EAST), null);
             settings.setAreaContains(this.areaContains);
-	    HU.addToDocumentUrl("map_contains",this.areaContains);
+	    if(this.areaContains) {
+		HU.addToDocumentUrl("map_contains",this.areaContains);
+	    }
             settings.setBounds(n,w,s,e);
-	    HU.addToDocumentUrl("map_bounds",[n||"",w||"",s||"",e||""].join(","));
+	    if(Utils.stringDefined(n,w,s,e)) {
+		HU.addToDocumentUrl("map_bounds",[n||"",w||"",s||"",e||""].join(","));
+	    }
         },
     });
 }
@@ -2829,8 +2833,8 @@ Glyph.prototype = {
 	    }
 	}
 	ctx.fillStyle =color || this.fillStyle || this.color || 'blue';
-	ctx.strokeStyle =this.strokeStyle || this.color || '#000';
-	ctx.lineWidth=this.lineWidth??this.strokeWidth??1;
+	ctx.strokeStyle =this.strokeStyle ?? this.color ?? opts.strokeStyle ?? '#000';
+	ctx.lineWidth=this.lineWidth??this.strokeWidth??opts.lineWidth??1;
 	if(this.type=='label' || this.label) {
 	    let label = this.labelField?args.record.getValue(this.labelField.getIndex()):this.label;
 	    if(label===null) {
