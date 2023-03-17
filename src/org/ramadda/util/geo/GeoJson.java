@@ -634,7 +634,27 @@ public class GeoJson extends JsonUtil {
 
 
 
+    public static void split(String f) throws Exception {
+        JSONObject            obj      =
+            new JSONObject(new JSONTokener(new FileInputStream(f)));
+        JSONArray             features = readArray(obj, "features");
+	for (int idx1 = 0; idx1 < features.length(); idx1++) {
+	    JSONObject feature = features.getJSONObject(idx1);
+	    JSONObject properties= feature.getJSONObject("properties");
+	    String id = properties.getString("GEO_ID");
+	    System.err.println(id);
+	    id = id.replace("0500000US","");
+	    StringBuilder sb = new StringBuilder("{\n\"type\": \"FeatureCollection\",\"features\": [");
+	    sb.append(feature.toString());
+	    sb.append("\n");
+	    sb.append("]}\n");	    
+	    FileOutputStream fos = new FileOutputStream(id+".geojson");
+	    fos.write(sb.toString().getBytes());
+	    fos.close();
+	    //	    if(true) return;
+	}
 
+    }
 
     /**
      * _more_
@@ -644,6 +664,9 @@ public class GeoJson extends JsonUtil {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+
+        split(args[0]);
+	if(true) return;
 
         geojsonFileToCsv(args[0], System.out, (args.length > 1)
                 ? args[1]
