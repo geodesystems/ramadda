@@ -761,6 +761,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         }
         mapInfo.setMapHidden(hidden);
 
+
         String imageOpacity = (String) props.get("imageOpacity");
         if (imageOpacity != null) {
             mapInfo.addProperty("imageOpacity", imageOpacity);
@@ -1689,6 +1690,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 					      selectBounds);
 
 
+
+
         if ((viewBounds != null) && viewBounds.equals("<bounds>")) {
             viewBounds = mainEntry.getBoundsString();
         }
@@ -1706,6 +1709,17 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         if (map == null) {
             return null;
         }
+
+	if(props!=null) {
+	    String geojson = (String) props.get("geojson");
+	    if(stringDefined(geojson)) {
+		geojson = mainEntry.getTypeHandler().applyTemplate(mainEntry, geojson, true);
+		//Check for any macros not added
+		if(geojson.indexOf("${")<0)  {
+		    map.addGeoJsonUrl(IO.getFileTail(geojson), geojson, true, "",true);
+		}
+	    }
+	}
 
         if (selectFields != null) {
             map.setSelectFields(selectFields);
@@ -1789,19 +1803,19 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
         boolean haveLocation = false;
         if (request.defined("map_bounds")) {
-            haveLocation = true;
-            List<String> toks = Utils.split(request.getString("map_bounds",
+	    List<String> toks = Utils.split(request.getString("map_bounds",
 							      ""), ",", true, true);
             if (toks.size() == 4) {
+		haveLocation = true;
                 map.addProperty(MapManager.PROP_INITIAL_BOUNDS,
                                 JsonUtil.list(toks.get(0), toks.get(1),
 					      toks.get(2), toks.get(3)));
             }
         } else if (request.defined("map_location")) {
-            haveLocation = true;
             List<String> toks = Utils.split(request.getString("map_location",
 							      ""), ",", true, true);
             if (toks.size() == 2) {
+		haveLocation = true;
                 map.addProperty(MapManager.PROP_INITIAL_LOCATION,
                                 JsonUtil.list(toks.get(0), toks.get(1)));
             }
@@ -1809,8 +1823,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
 
         if ( !haveLocation && (props != null)
-	     && ((props.get("mapCenter") != null)
-		 || (props.get("mapBounds") != null))) {
+	     && ((stringDefined(props.get("mapCenter")))
+		 || (stringDefined(props.get("mapBounds"))))) {
             haveLocation = true;
         }
 
@@ -1991,13 +2005,13 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 						     ShapefileOutputHandler.OUTPUT_GEOJSON
 						     .toString(), "formap", "true");
 				map.addGeoJsonUrl(mapEntry.getName(), url, true,
-					      ShapefileOutputHandler.makeMapStyle(request, mapEntry));
+						  ShapefileOutputHandler.makeMapStyle(request, mapEntry),true);
 
 			    } else if(mapEntry.getTypeHandler().isType("geo_geojson")) {
 				String url =
 				    request.entryUrl(getRepository().URL_ENTRY_GET, mapEntry).toString();
 				map.addGeoJsonUrl(
-						  mapEntry.getName(), url, true,"");
+						  mapEntry.getName(), url, true,"",true);
 				
 			    }
                         }
