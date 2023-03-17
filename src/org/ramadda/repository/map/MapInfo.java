@@ -1381,10 +1381,13 @@ public class MapInfo {
      * @param args _more_
      */
     public void addGeoJsonUrl(String name, String url, boolean canSelect,
-                              String args) {
-        getJS().append(mapVarName + ".addGeoJsonLayer(" + HU.squote(name)
-                       + "," + HU.squote(url) + "," + canSelect
-                       + ",null,null," + args + ");\n");
+                              String args,boolean zoomTo) {
+	if(!Utils.stringDefined(args)) args = "null";
+        getJS().append(HU.call(mapVarName + ".addGeoJsonLayer",
+			       HU.squote(name),
+			       HU.squote(url),
+			       ""+canSelect,
+			       "null","null",args,"null",""+zoomTo));
     }
 
 
