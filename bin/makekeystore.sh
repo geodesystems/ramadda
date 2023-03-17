@@ -159,7 +159,7 @@ fi
 
 ##Hard code the geodesystems extra domains
 if [ "${FIRST_DOMAIN}" = "geodesystems.com" ]; then
-    OTHER_DOMAINS=www.geodesystems.com,boulderdata.org,www.boulderdata.org,communidata.org,www.communidata.org,10000cities.org,www.10000cities.org,ramadda.org,www.ramadda.org,asdi.ramadda.org,wdvp.ramadda.org,ditchproject.org,www.ditchproject.org
+    OTHER_DOMAINS=www.geodesystems.com,boulderdata.org,www.boulderdata.org,communidata.org,www.communidata.org,*.10000cities.org,ramadda.org,www.ramadda.org,asdi.ramadda.org,wdvp.ramadda.org,ditchproject.org,www.ditchproject.org
 fi
 
 
