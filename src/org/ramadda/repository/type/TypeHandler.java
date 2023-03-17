@@ -5584,20 +5584,38 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
-
     
-    public String applyTemplate(Entry entry, String template) {
+    public String applyTemplate(Entry entry, String template) throws Exception {
+	return applyTemplate(entry, template, false);
+    }	
+
+    public String applyTemplate(Entry entry, String template,boolean includeMetadata) throws Exception {		    
 	List<Column> columns =getColumns();
 	if (columns != null) {
             Object[] templateValues = entry.getValues();
 	    for (Column column : columns) {
 		String s = column.getString(templateValues);
+		System.err.println("C:" + column.getName());
 		if (s != null) {
 		    template = template.replace("${"
 						+ column.getName() + "}", s);
 		}
 	    }
 	}
+	if(includeMetadata) {
+	    List<Metadata> existingMetadata = getMetadataManager().getMetadata(null,entry);
+	    for(Metadata mtd: existingMetadata) {
+		for(int i=1;i<10;i++) {
+		    String v = mtd.getAttr(i);
+		    if(v==null) break;
+		    String key = mtd.getType()+"."+i;
+		    template = template.replace("${" + key +"}",v);
+		}
+	    }
+	}	    
+
+
+
 	return template;
     }
 
