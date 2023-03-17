@@ -154,7 +154,7 @@ public class GeoJsonTypeHandler extends GenericTypeHandler implements WikiConsta
         String url = getEntryManager().getEntryResourceUrl(request, entry);
         map.addGeoJsonUrl(entry.getName(), url, true,
                           ShapefileOutputHandler.makeMapStyle(request,
-                              entry));
+							      entry),true);
 
         return false;
     }
