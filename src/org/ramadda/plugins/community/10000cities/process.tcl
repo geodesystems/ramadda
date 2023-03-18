@@ -63,6 +63,7 @@ proc makeEntry {dir name {attrs {}} {desc {}} {inner {}}} {
     append desc $inner
     lappend attrs name
     lappend attrs $name
+    regsub -all {/} $name "_" name
     writeFile $dir/$name.entry.xml [xmlTag entry "$desc" $attrs]
 }
 
@@ -216,7 +217,7 @@ proc county {state geoid ansi name pop hu aland awater aland_sqmi awater_sqmi la
     regsub -all { } $name {_} _name
     set stateName $::states($state,name)
 
-
+    set countyId "${_name}_$stateName"
 
     set wikipediaLink "https://en.wikipedia.org/wiki/$_name,_$stateName"
     append desc ":br\n"
@@ -268,7 +269,10 @@ proc county {state geoid ansi name pop hu aland awater aland_sqmi awater_sqmi la
 
     set inner [Util::cdataTag entry_ids "" "search.type=type_awc_metar\nsearch.bbox=$bounds\nsearch\n"]
     makeEntry  $dir/data "Local Weather Stations"  [list type type_virtual] $desc $inner
-
+    makeEntry  $dir/data "$name Sunrise/Sunset"  [list id "sunrisesunset_$countyId" type sunrisesunset latitude $lat longitude $lon] "" ""
+    makeEntry  $dir/data "$name Historic Weather"  [list id "daymet_$countyId" type type_daymet latitude $lat longitude $lon] "" ""
+    makeEntry  $dir/data "$name Current Weather"  [list id "nwsfeed_$countyId" type nwsfeed latitude $lat longitude $lon] "" ""
+    
 
     if {[regexp {(ak|co|id|mt|or|ut|wa|wy)} $state]} {
     set desc {<wiki>
@@ -286,7 +290,8 @@ proc county {state geoid ansi name pop hu aland awater aland_sqmi awater_sqmi la
     }
 
 
-    set md [xmlTag metadata "" [list type content.alias encoded false attr1 "https://census.$host"]]
+##    set md [xmlTag metadata "" [list type content.alias encoded false attr1 "https://census.$host"]]
+    set md ""
     makeGroup  $dir/census "$name Census Snapshot" [list latitude $lat longitude $lon]  $::censusDesc $md
     addCensus $dir/census $name tract {} state $stateId county $countyId $lat $lon
 }

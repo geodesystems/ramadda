@@ -166,10 +166,8 @@
 :title {{name}}
 +row
 +col-md-8
-<div style="max-height: 400px; overflow-y: auto;margin:5px;">
 {{description wikify="true"}}
-</div>
-:p
+:heading Data
 {{tabletree details="false" message="" sort="name"}}
 -col
 +col-md-4
@@ -178,7 +176,7 @@
 <p>
 {{mapentry width="300" message="" geojson="/repository/resources/counties/${community_snapshot.1}.geojson"}}
 <p>
-{{properties   message="" metadata.types="!content.alias,!content.logo"}}
+{{properties   message="" metadata.types="!content.alias,!content.logo,!content.timezone"}}
 -col
 -row
 -section
