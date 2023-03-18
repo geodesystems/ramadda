@@ -505,6 +505,18 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             } else {
                 html = "";
             }
+        } else if (dataType.equals(DATATYPE_DOUBLE) || dataType.equals(DATATYPE_INT)) {
+	    try {
+		double d =Double.parseDouble(value);
+		if(d == (int)d) {
+		    int i = (int) d;
+		    html = Utils.intFormatComma(i);
+		} else {
+		    html = Utils.formatComma(d);
+		}
+	    } catch(Exception ignore) {
+		html = value;
+	    }
         } else {
             html = value;
         }
