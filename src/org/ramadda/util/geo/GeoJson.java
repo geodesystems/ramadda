@@ -643,7 +643,7 @@ public class GeoJson extends JsonUtil {
 	    JSONObject properties= feature.getJSONObject("properties");
 	    String id = properties.getString("GEO_ID");
 	    System.err.println(id);
-	    id = id.replace("0500000US","");
+	    id = id.replaceAll(".*US","");
 	    StringBuilder sb = new StringBuilder("{\n\"type\": \"FeatureCollection\",\"features\": [");
 	    sb.append(feature.toString());
 	    sb.append("\n");
