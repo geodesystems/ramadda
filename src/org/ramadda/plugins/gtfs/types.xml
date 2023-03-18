@@ -197,7 +197,7 @@ myLocationOffset="0.008"
 {{gtfs.route.trips }}
 -col
 +col-md-6
-{{mapentry width="100%" initialZoom="16" details="true" mapVar="gtfsTripMap" showBounds="false"}}
+{{mapentry width="100%" xinitialZoom="16" details="true" mapVar="gtfsTripMap" showBounds="false"}}
 :heading Route Summary
 {{gtfs.route.info}}
 -col
