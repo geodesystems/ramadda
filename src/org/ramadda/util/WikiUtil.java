@@ -3886,8 +3886,8 @@ public class WikiUtil {
 	    String wurl = JsonUtil.readValue(obj, "content_urls.desktop.page","");
             width = Utils.getProperty(props, "width",null);
             height = Utils.getProperty(props, "height","200px");	    
-	    String extract = obj.optString("extract_html");
-	    if(extract.startsWith("<p>")) extract = extract.substring(3);
+	    String extract = obj.optString("extract_html","").trim();
+	    extract=extract.replaceAll("^(<p>)+","").replaceAll("(</p>)+$","");
 	    if(height!=null) {
 		extract = HU.div(extract,HU.style("max-height:" + HU.makeDim(height,null)+";overflow-y:auto;"));
 	    }
@@ -3903,7 +3903,7 @@ public class WikiUtil {
             String wstyle = Utils.getProperty(props, "style","padding:5px;");
 	    String pstyle =  Utils.getProperty(props, "style","");	    
 	    extract = HU.div(extract,HU.style("display:inline-block;" +  wstyle+pstyle));
-	    extract = HU.div(HU.center(HU.href(wurl,title,"target='_other' style='text-decoration:none;' "))+extract,HU.style("display:inline-block;border:1px solid #ccc;"));
+	    extract = HU.div(HU.div(HU.href(wurl,title,"target='_other' style='text-decoration:none;' "),HU.cssClass("wikipedia-header"))+extract,HU.cssClass("wikipedia-summary") + HU.style(""));
 	    sb.append(extract);
         } else if(Pattern.matches("",url)) {
 	    sb.append("");
