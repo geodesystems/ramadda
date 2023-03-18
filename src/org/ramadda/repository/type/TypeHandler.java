@@ -2080,14 +2080,12 @@ public class TypeHandler extends RepositoryManager {
         if ( !Utils.stringDefined(s)) {
             return s;
         }
-        String pattern = "[^-]+-[^-]+-[^-]+-[^-]+-[^-]+";
         for (String[] tuple : idList) {
             String oldId = tuple[0];
             if ((oldId == null) || (oldId.length() == 0)) {
                 continue;
             }
             String newId = tuple[1];
-            //Make sure we only replace GUIDs
             s = s.replaceAll(oldId, newId);
         }
 
@@ -5595,7 +5593,6 @@ public class TypeHandler extends RepositoryManager {
             Object[] templateValues = entry.getValues();
 	    for (Column column : columns) {
 		String s = column.getString(templateValues);
-		System.err.println("C:" + column.getName());
 		if (s != null) {
 		    template = template.replace("${"
 						+ column.getName() + "}", s);
