@@ -317,21 +317,16 @@ public class SocrataSeriesTypeHandler extends PointTypeHandler {
                         //                        System.err.println("bad index1:" + tok);
                         continue;
                     }
-                    String location = tok.substring(0, index - 1).trim();
-                    newToks.add(location);
-                    int index2 = tok.indexOf(",", index);
-                    if (index < 0) {
+                    newToks.add(tok);
+		    String location = tok.replace("(","").replace(")","");
+		    List<String> locToks = Utils.split(location,",");
+                    if (locToks.size()!=2) {
                         newToks.add("NaN");
                         newToks.add("NaN");
-
-                        //                        System.err.println("bad index2:" + tok);
                         continue;
                     }
-                    int    index3 = tok.indexOf(")", index2);
-                    String lat    = tok.substring(index + 1, index2 - 1);
-                    String lon    = tok.substring(index2 + 1, index3 - 1);
-                    newToks.add(lat);
-                    newToks.add(lon);
+                    newToks.add(locToks.get(0).trim());
+                    newToks.add(locToks.get(1).trim());
                 }
             }
 
