@@ -1881,6 +1881,7 @@ public class Gtfs implements Constants {
             throws Exception {
 
         URLConnection urlConnection = null;
+	if(agencyEntry==null) return new ArrayList<Entry>();
         String agencyId = (String) agencyEntry.getStringValue(
                               GtfsAgencyTypeHandler.IDX_AGENCY_ID, null);
         String      cacheKey = agencyEntry.getId();
