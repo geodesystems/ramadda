@@ -1107,6 +1107,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             return;
         }
 
+
+
         for (String[] tuple : idList) {
             String newId    = tuple[0];
             Entry  newEntry = getEntryManager().getEntry(request, newId);
@@ -1177,7 +1179,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 entriesMap.put(originalId, newEntry);
             }
 
-            idList.add(new String[] { newEntry.getId(), originalId });
+	    if(originalId!=null)
+		idList.add(new String[] {originalId, newEntry.getId()});
             entriesToAdd.add(newEntry);
             cnt++;
             currentStatus = "Initialized " + cnt + " of " + entries.size()
