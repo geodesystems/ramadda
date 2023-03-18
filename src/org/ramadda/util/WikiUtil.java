@@ -3912,7 +3912,7 @@ public class WikiUtil {
 	    String pstyle =  Utils.getProperty(props, "style","");	    
 	    extract = HU.div(extract,HU.style("display:inline-block;" +  wstyle+pstyle));
 	    String header = "";
-	    if(Utils.getProperty(props, "includeHeader",true)) 
+	    if(Utils.getProperty(props, "addHeader",true)) 
 		header  = HU.div(HU.href(wurl,title,"target='_other' style='text-decoration:none;' "),HU.cssClass("wikipedia-header"));
 	    extract = HU.div(header+extract,HU.cssClass("wikipedia-summary") + HU.style(""));
 	    sb.append(extract);
