@@ -5127,7 +5127,7 @@ RepositoryMap.prototype = {
         return this.addPolygon(id, name, points, attrs, info,justCreate);
     },
 
-    addLines:  function(id, name, attrs, values, info) {
+    addLines:  function(id, name, attrs, values, info,andZoom) {
 	attrs = attrs || {};
 	if (!attrs.strokeWidth)
 	    attrs.strokeWidth = this.params.strokeWidth;
@@ -5140,7 +5140,14 @@ RepositoryMap.prototype = {
         for (let i = 0; i < values.length; i += 2) {
             points.push(MapUtils.createPoint(values[i + 1], values[i]));
         }
-        return this.addPolygon(id, name, points, attrs, info,false,true);
+        let lines = this.addPolygon(id, name, points, attrs, info,false,true);
+	if(andZoom && this.getLinesLayer()) {
+            let dataBounds = this.getLinesLayer().getDataExtent();
+            if (dataBounds) {
+                this.zoomToExtent(dataBounds, true);
+            }
+	}
+	return lines;
     },
 
     removePolygon:  function(line) {
