@@ -158,6 +158,9 @@ public class Utils extends IO {
     public static final String WHITESPACE_CHARCLASS = "[" + WHITESPACE_CHARS
 	+ "]";
 
+    private static DecimalFormat INT_COMMA_FORMAT =  new DecimalFormat("#,##0");
+
+
 
     /** _more_ */
     private static DecimalFormat[] COMMA_FORMATS = {
@@ -370,6 +373,10 @@ public class Utils extends IO {
      */
     public static String formatComma(double d) {
         return getFormatComma(d).format(d);
+    }
+
+    public static String intFormatComma(int i) {
+	return INT_COMMA_FORMAT.format(i);
     }
 
     /**
