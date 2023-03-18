@@ -3,7 +3,10 @@ set ::doTest 0
 package require json
 
 if  [llength $argv] {
-    set ::doTest 1
+    if {[lindex $argv 0] !=""} {
+	puts stderr "Processing test mode"
+	set ::doTest 1
+    }
 }
 
 set ::scriptDir [file dirname [info script]]
@@ -146,6 +149,7 @@ proc addCensus {dir name for_type for_value type1 value1 type2 value2 lat lon} {
         {"Race" type_census_race} 
     }
 
+
     foreach pair $types {
         foreach {label type} $pair break
         set c [string trim $::census]
@@ -225,10 +229,10 @@ proc county {state geoid ansi name pop hu aland awater aland_sqmi awater_sqmi la
     regsub -all { } $name {_} _name
     set stateName $::states($state,name)
 
-    set countyId "${_name}_$stateName"
-    set sunriseId "sunrisesunset_$countyId"
-    set daymetId "daymet_$countyId"
-    set nwsId "nwsfeed_$countyId"
+    set countyStateId "${_name}_$stateName"
+    set sunriseId "sunrisesunset_$countyStateId"
+    set daymetId "daymet_$countyStateId"
+    set nwsId "nwsfeed_$countyStateId"
 
     set wikipediaLink "https://en.wikipedia.org/wiki/$_name,_$stateName"
     append desc ":vspace 10px\n"

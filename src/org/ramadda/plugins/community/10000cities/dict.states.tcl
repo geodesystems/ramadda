@@ -1,5 +1,5 @@
-state  {CO} {Colorado} {08} {39.500656} {-105.203628} {5268367}
-return
+#state  {CO} {Colorado} {08} {39.500656} {-105.203628} {5268367}
+#return
 #abbr name fips lat lon pop
 state  {AL} {Alabama} {01} {33.001471} {-86.766233} {4833722}
 state  {AK} {Alaska} {02} {61.288254} {-148.716968} {735132}

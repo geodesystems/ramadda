@@ -188,7 +188,7 @@
 {{display_entrylist  displayTypes="list,images,map"  divid="listdiv" orientation="vertical"  showMenu="false"
 showType="false" showForm="true"  showSearchSettings="false" formOpen="false"  layoutHere="true"  showTitle="false"
 textRequired="true" 
-height="600px"
+height="300px"
 providers="this,eia,fred,quandl,socrata,category:.*CKAN.*,category:.*Socrata.*,flickr,youtube,duckduckgo"
 }}
 :vspace 100px
