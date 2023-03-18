@@ -5614,8 +5614,9 @@ public class TypeHandler extends RepositoryManager {
 	    }
 	}	    
 
-
-
+	template = template.replace("${entryid}",entry.getId());
+	template = template.replace("${entryname}",entry.getName());
+	template = template.replace("${description}",entry.getDescription());		
 	return template;
     }
 
