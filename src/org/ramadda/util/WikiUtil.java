@@ -3873,9 +3873,17 @@ public class WikiUtil {
 
 	} else if((article=StringUtil.findPattern(url,"https://.*.wikipedia.org/wiki/(.*)"))!=null) {
 	    String wikiUrl = "https://en.wikipedia.org/api/rest_v1/page/summary/" +article;
-            JSONObject obj = new JSONObject(
-                                  IO.readContents(
-						  wikiUrl));
+            JSONObject obj = null;
+
+	    try {
+		obj = new JSONObject(
+				     IO.readContents(
+						     wikiUrl));
+	    } catch(Exception exc) {
+		if(!Utils.getProperty(props, "ignoreError",false))
+		    buff.append("Error reading Wikipedia URL: " + url);
+		return;
+	    }
 	    String thumb = JsonUtil.readValue(obj,"thumbnail.source",null);
 	    if(thumb!=null) {
 		String iwidth = Utils.getProperty(props, "imageWidth","200px");
@@ -3891,7 +3899,7 @@ public class WikiUtil {
 	    if(height!=null) {
 		extract = HU.div(extract,HU.style("max-height:" + HU.makeDim(height,null)+";overflow-y:auto;"));
 	    }
-	    String source = "<div style='text-align:center;font-style:italic;font-size:80%;'>Source: Wikipedia</div>";
+	    String source = "<div style='text-align:center;font-style:italic;font-size:80%;'>"+ HU.href(url,"Source: Wikipedia")+"</div>";
 	    if(thumb!=null) {
 		extract = HU.leftRight(extract,HU.div(thumb+source,HU.style("margin-left:5px;")));
 	    } else {
@@ -3903,7 +3911,10 @@ public class WikiUtil {
             String wstyle = Utils.getProperty(props, "style","padding:5px;");
 	    String pstyle =  Utils.getProperty(props, "style","");	    
 	    extract = HU.div(extract,HU.style("display:inline-block;" +  wstyle+pstyle));
-	    extract = HU.div(HU.div(HU.href(wurl,title,"target='_other' style='text-decoration:none;' "),HU.cssClass("wikipedia-header"))+extract,HU.cssClass("wikipedia-summary") + HU.style(""));
+	    String header = "";
+	    if(Utils.getProperty(props, "includeHeader",true)) 
+		header  = HU.div(HU.href(wurl,title,"target='_other' style='text-decoration:none;' "),HU.cssClass("wikipedia-header"));
+	    extract = HU.div(header+extract,HU.cssClass("wikipedia-summary") + HU.style(""));
 	    sb.append(extract);
         } else if(Pattern.matches("",url)) {
 	    sb.append("");
