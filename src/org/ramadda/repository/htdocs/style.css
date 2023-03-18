@@ -5748,6 +5748,17 @@ h3 a:visited {
 }
 
 
+.wikipedia-summary {
+    display:inline-block;
+    border:var(--basic-border);
+    padding:4px;
+}
+
+.wikipedia-header {
+    text-align:center;
+    font-weight:bold;
+}
+
 @media print {
     .pagebreak {
 	clear: both;
