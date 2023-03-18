@@ -102,10 +102,14 @@ public class SunriseSunsetTypeHandler extends GenericTypeHandler {
             if ( !entry.hasLocationDefined()) {
                 return "No location defined";
             }
-            String     key = entry.getLatitude() + "-" + entry.getLongitude();
+	    boolean includeDayLength = Utils.getProperty(props,"includeDayLength",true);
+	    boolean vertical = Utils.getProperty(props,"vertical",false);
+            String     key = entry.getLatitude() + "-" + entry.getLongitude()+"_"+ includeDayLength+"_"+ vertical;
+
             Appendable sb       = cache.get(key);
             TimeZone   timeZone = getTimeZone(request, entry, 0);
             if (sb == null) {
+		List<String> items = new ArrayList<String>();
                 String url =
                     URL.replace("${lat}",
                                 "" + entry.getLatitude()).replace("${lon}",
@@ -133,27 +137,41 @@ public class SunriseSunsetTypeHandler extends GenericTypeHandler {
                                   "NA"));
                 int length  = results.optInt("day_length", 0);
                 int hours   = length / 3600;
-                int minutes = (length - hours * 3600) / 60;
+                int minutes = (length - hours * 3600)/ 60;
                 int seconds = (length - hours * 3600 - minutes * 60);
-                sb.append(HtmlUtils.formTable());
-                sb.append(HtmlUtils.formEntry("Current Time:", "${now}"));
-                sb.append(HtmlUtils.formEntry("Sunrise/Sunset:",
-                        dateFormat.format(sunrise) + " - "
-                        + dateFormat.format(sunset)));
+		Utils.add(items,"Current Time:", "${now}",
+			  "Sunrise/Sunset:",
+			  dateFormat.format(sunrise) + " - "
+			  + dateFormat.format(sunset));
                 String kudos = "(From "
                                + HtmlUtils.href("https://sunrise-sunset.org",
                                    "Sunrise-Sunset.org") + ")";
-                sb.append(HtmlUtils.formEntry("Day Length:",
-                        hours + ":" + minutes + ":" + seconds + "  "
-                        + kudos));
-                sb.append(HtmlUtils.formTableClose());
-
-            }
+		if(includeDayLength) {
+		    Utils.add(items,"Day Length:",
+			      hours + ":" + StringUtil.padLeft(""+minutes,2,"0") + ":" + seconds + "  "
+			      + kudos);
+		}
+		if(!vertical) {
+		    HU.div(sb,items.get(1),HU.style("text-align:center;"));
+		    sb.append(HtmlUtils.formTable());
+		    for(int i=2;i<items.size();i+=2) {
+			HU.formEntry(sb,items.get(i),items.get(i+1));
+		    } 
+		    sb.append(HtmlUtils.formTableClose());
+		} else {
+		    HU.div(sb,items.get(1),HU.style("text-align:center;"));
+		    for(int i=2;i<items.size();i+=2) {
+			sb.append(HU.b(items.get(i)));
+			sb.append("<br>");
+			sb.append(items.get(i+1));
+			sb.append("<br>");
+		    } 
+		}
+	    }
 
             SimpleDateFormat dateFormat2 = new SimpleDateFormat();
             dateFormat2.setTimeZone(timeZone);
             dateFormat2.applyPattern("MMM d, yyyy h:mm a z");
-
             return sb.toString().replace("${now}",
                                          dateFormat2.format(new Date()));
         } else {

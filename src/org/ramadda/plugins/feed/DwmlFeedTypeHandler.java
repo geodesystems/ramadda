@@ -426,8 +426,7 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
         if (showDetails) {
             sb.append(HtmlUtils.formTable());
             if (time.humidity != null) {
-                sb.append(HtmlUtils.formEntry("Humidity:",
-                        time.humidity + "%"));
+                HtmlUtils.formEntry(sb,"Humidity:", time.humidity + "%");
             }
             if (time.sustained != null) {
                 String gust = "";
@@ -435,24 +434,23 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
                         && !time.gust.equals("NA")) {
                     gust = "&nbsp;G&nbsp;" + time.gust;
                 }
-                sb.append(HtmlUtils.formEntry("Wind&nbsp;Speed:",
-                        time.sustained + gust + "&nbsp;MPH"));
+                HtmlUtils.formEntry(sb,"Wind&nbsp;Speed:",  time.sustained + gust + "&nbsp;MPH");
             }
 
             if (time.pressure != null) {
-                sb.append(HtmlUtils.formEntry("Barometer:",
-                        time.pressure + "&nbsp;in"));
+                HtmlUtils.formEntry(sb,"Barometer:", time.pressure + "&nbsp;in");
             }
 
             if (time.dewpoint != null) {
-                sb.append(HtmlUtils.formEntry("Dew&nbsp;Point:",
-                        time.dewpoint));
+                HtmlUtils.formEntry(sb, "Dew&nbsp;Point:", time.dewpoint);
             }
 
+	    /*
             sb.append(
                 HtmlUtils.formEntry(
                     "Last&nbsp;Update:",
                     dateFormat.format(time.date).replaceAll(" ", "&nbsp;")));
+	    */
             sb.append(HtmlUtils.formTableClose());
         }
 
