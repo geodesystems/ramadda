@@ -174,21 +174,24 @@
 {{properties  message="" metadata.types="content.alias" includeTitle="false"}}
 {{image src="::*" message="" width="300"}}
 <p>
-{{mapentry width="300" message="" geojson="/repository/resources/counties/${community_snapshot.1}.geojson"}}
+{{mapentry width="300" message="" geojson="/repository/resources/fips/${community_snapshot.1}.geojson"}}
 <p>
 {{properties   message="" metadata.types="!content.alias,!content.logo,!content.timezone"}}
 -col
 -row
 -section
-+section title="Workbench" # class="ramadda-section-map"
+:p
++section title="Workbench"  class="ramadda-section-map" ----
 <div id=listdiv style="min-height:200px;" ></div>
 <div id=maindiv style="min-height:200px;"></div>
-{{group  layoutType="table"  layoutColumns="2"  showMenu="true"  divid="maindiv" }}
-
-{{display_entrylist    divid="listdiv" orientation="vertical"  showType="false" showForm="true"  showSearchSettings="false" formOpen="false"  layoutHere="true"  showMenu="true"  showTitle="false"  provider="fred" textRequired="true" 
-height="300"
+{{group  layoutType="table"  layoutColumns="2"  showMenu="false"  divid="maindiv" }}
+{{display_entrylist  displayTypes="list,images,map"  divid="listdiv" orientation="vertical"  showMenu="false"
+showType="false" showForm="true"  showSearchSettings="false" formOpen="false"  layoutHere="true"  showTitle="false"
+textRequired="true" 
+height="600px"
 providers="this,eia,fred,quandl,socrata,category:.*CKAN.*,category:.*Socrata.*,flickr,youtube,duckduckgo"
 }}
+:vspace 100px
 -section
 ]]>
 </wiki>

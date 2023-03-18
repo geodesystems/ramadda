@@ -9,6 +9,7 @@ if  [llength $argv] {
 set ::scriptDir [file dirname [info script]]
 source ~/bin/lib.tcl
 source ~/bin/utils.tcl
+source $::scriptDir/timezones.tcl
 
 set ::countyCnt 0
 set ::stateCnt 0
@@ -67,7 +68,7 @@ proc makeEntry {dir name {attrs {}} {desc {}} {inner {}}} {
     writeFile $dir/$name.entry.xml [xmlTag entry "$desc" $attrs]
 }
 
-proc state {abbr name fips lat lon} {
+proc state {abbr name fips lat lon pop} {
     if {$::doTest} {
 	if {$abbr !="CO"} return;
         if {[expr rand()<0.90]} {
@@ -80,6 +81,7 @@ proc state {abbr name fips lat lon} {
     set nameLower [string tolower $name]
     regsub -all { } $nameLower {_} nameLower
 
+    set tz [getTimezone $nameLower]
     set ::states($abbr) $fips
     set ::states($abbr,name) $name
     set ::states($abbr,nameLower) $nameLower
@@ -88,6 +90,12 @@ proc state {abbr name fips lat lon} {
 #    append md [xmlTag metadata "" [list type content.alias encoded false attr1 "https://$nameLower.10000cities.org"]]
     set md [xmlTag metadata "" [list type content.alias encoded false attr1 "$abbr.10000cities.org"]]
     append md [xmlTag metadata "" [list type content.alias encoded false attr1 "$nameLower.10000cities.org"]]
+    append md [xmlTag metadata "" [list type community_snapshot encoded false attr1 $fips attr2 $pop ]]
+    append md [xmlTag metadata "" [list type content.timezone encoded false attr1 $tz inherited true]]
+
+
+
+
     set desc "\n:heading Welcome to the 10000 Cities Data Hub for the state of $name\n<br>Below you will find state-level data and individual data hubs for each county.\n<br>"
     makeGroup $stateDir $name [list type community_datahub latitude $lat longitude $lon] "$desc" $md
 
@@ -218,11 +226,21 @@ proc county {state geoid ansi name pop hu aland awater aland_sqmi awater_sqmi la
     set stateName $::states($state,name)
 
     set countyId "${_name}_$stateName"
+    set sunriseId "sunrisesunset_$countyId"
+    set daymetId "daymet_$countyId"
+    set nwsId "nwsfeed_$countyId"
 
     set wikipediaLink "https://en.wikipedia.org/wiki/$_name,_$stateName"
+    append desc ":vspace 10px\n"
+    append desc "@($wikipediaLink imageWidth=100 addHeader=false ignoreError=true)\n"
+    append desc ":vspace 10px\n"
+    append desc ":heading Current Conditions\n"
+    append desc "{{sunrisesunset entry=\"$sunriseId\"}}\n"
+    append desc "{{nws.hazards entry=\"$nwsId\" addHeader=\"false\"}}\n"
     append desc ":br\n"
-    append desc "@($wikipediaLink imageWidth=100)\n"
-    append desc ":br\n"
+    append desc "{{nws.current entry=\"$nwsId\" addHeader=\"false\" orientation=\"vertical\"}}\n"
+
+
 
 ##    append desc "Below are folders for data and community resources.\n"
 
@@ -238,19 +256,19 @@ proc county {state geoid ansi name pop hu aland awater aland_sqmi awater_sqmi la
 
 
     makeGroup  $dir $label  [list  type community_datahub latitude $lat longitude $lon] $desc $md
-    makeEntry  $dir Documents 
+#    makeEntry  $dir Documents 
 #   makeGroup  $dir/blogs Blogs
     makeGroup  $dir/news "$name Data News" [list type weblog] 
     makeEntry  $dir/news "First Post" [list type blogentry] "First post to the $name Data News blog"
     makeGroup  $dir/wiki "Community Data Wiki"
     makeEntry  $dir/wiki  "First Wiki Page" [list type wikipage] "==First wiki page=="
 
-    makeGroup  $dir/links "Links" [] "<wiki>\n+section title={{name}}\n{{links linkresource=\"true\" message=\"\" }}\n-section\n" 
-    makeEntry $dir/links "Wikipedia Page" [list type link url $wikipediaLink ] "" 
+#    makeGroup  $dir/links "Links" [] "<wiki>\n+section title={{name}}\n{{links linkresource=\"true\" message=\"\" }}\n-section\n" 
+#    makeEntry $dir/links "Wikipedia Page" [list type link url $wikipediaLink ] "" 
 
-    makeEntry $dir/links "Weather Page" [list type link ] ""  [Util::cdataTag url "" "https://forecast.weather.gov/MapClick.php?lat=$lat&lon=$lon"]
+#    makeEntry $dir/links "Weather Page" [list type link ] ""  [Util::cdataTag url "" "https://forecast.weather.gov/MapClick.php?lat=$lat&lon=$lon"]
 
-    makeEntry  $dir "Community Resources" [] ""
+#    makeEntry  $dir "Community Resources" [] ""
     makeGroup  $dir/data Data 
     set off 2
     set bounds "[expr $lat+$off],[expr $lon-$off],[expr $lat-$off],[expr $lon+$off]"
@@ -267,11 +285,13 @@ proc county {state geoid ansi name pop hu aland awater aland_sqmi awater_sqmi la
 -section
     }
 
+
+
     set inner [Util::cdataTag entry_ids "" "search.type=type_awc_metar\nsearch.bbox=$bounds\nsearch\n"]
     makeEntry  $dir/data "Local Weather Stations"  [list type type_virtual] $desc $inner
-    makeEntry  $dir/data "$name Sunrise/Sunset"  [list id "sunrisesunset_$countyId" type sunrisesunset latitude $lat longitude $lon] "" ""
-    makeEntry  $dir/data "$name Historic Weather"  [list id "daymet_$countyId" type type_daymet latitude $lat longitude $lon] "" ""
-    makeEntry  $dir/data "$name Current Weather"  [list id "nwsfeed_$countyId" type nwsfeed latitude $lat longitude $lon] "" ""
+    makeEntry  $dir/data "$name Sunrise/Sunset"  [list id $sunriseId type sunrisesunset latitude $lat longitude $lon] "" ""
+    makeEntry  $dir/data "$name Historic Weather"  [list id $daymetId type type_daymet latitude $lat longitude $lon] "" ""
+    makeEntry  $dir/data "$name Current Weather"  [list id $nwsId type nwsfeed latitude $lat longitude $lon] "" ""
     
 
     if {[regexp {(ak|co|id|mt|or|ut|wa|wy)} $state]} {
@@ -335,11 +355,14 @@ makeGroup  [getStateDir] "States"   [list] "<wiki>+section title={{name}}\n{{tre
 set usdesc "\n:heading Welcome to the 10000 Cities Data Hub for the United States.\n<br>Below you will find data at the national level as well as data hubs for each state."
 #set md [xmlTag metadata "" [list type content.alias encoded false attr1 "https://usa.10000cities.org"]]
 set md [xmlTag metadata "" [list type content.alias encoded false attr1 "usa.10000cities.org"]]
-makeGroup  $::baseDir "United States"   [list  type community_datahub] $usdesc $md
+makeGroup  $::baseDir "United States"   [list  type community_datahub north 68.9594424 west -165.4277301 east -56.0917926 south 10.2745632] $usdesc $md
 set dir [file join $::baseDir data]
 makeGroup  $dir "United States Data"  {US Data}
 makeGroup  $dir/census "United States Census Snapshot"  [list] $::censusDesc
 addCensus $dir/census "US"  state {} {} {} {} {}  40 -95
+
+
+
 
 puts "Processing states"
 source $::scriptDir/dict.states.tcl
