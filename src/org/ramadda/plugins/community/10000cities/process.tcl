@@ -87,7 +87,7 @@ proc state {abbr name fips lat lon} {
 #    append md [xmlTag metadata "" [list type content.alias encoded false attr1 "https://$nameLower.10000cities.org"]]
     set md [xmlTag metadata "" [list type content.alias encoded false attr1 "$abbr.10000cities.org"]]
     append md [xmlTag metadata "" [list type content.alias encoded false attr1 "$nameLower.10000cities.org"]]
-    set desc "\n:blurb-blue Welcome to the 10000 Cities Data Hub for the state of $name\n<br>Below you will find state-level data and individual data hubs for each county.\n<br>"
+    set desc "\n:heading Welcome to the 10000 Cities Data Hub for the state of $name\n<br>Below you will find state-level data and individual data hubs for each county.\n<br>"
     makeGroup $stateDir $name [list type community_datahub latitude $lat longitude $lon] "$desc" $md
 
     set countyDesc "<wiki>\n+section # title=\"{{name}}\"\n:blurb-blue County data hubs for $name\n{{map  sort=\"name\"  width=\"100%\" listentries=\"true\" height=\"500\"}}\n-section\n+section # label=\"The Counties\"\n{{tree message=\"\" sort=\"name\" details=\"false\"}}\n-section\n"
@@ -209,7 +209,8 @@ proc county {state geoid ansi name pop hu aland awater aland_sqmi awater_sqmi la
     set host "$countyLower.$::states($state,nameLower).10000cities.org"
 
 
-    set desc "\n:blurb-blue Welcome to the 10000 Cities Data Hub for $name $::states($state,name)\n"
+#    set desc "\n:heading Welcome to the 10000 Cities Data Hub for $name $::states($state,name)\n"
+    set desc ""
     append desc "{{10000cities.welcome}}\n"
 
     regsub -all { } $name {_} _name
@@ -326,7 +327,7 @@ set ::sortMD [xmlTag metadata "" [list type content.sort encoded false attr1 "na
 makeGroup  [getStateDir] "States"   [list] "<wiki>+section title={{name}}\n{{tree  message=\"\" sort=\"name\"  details=\"false\"}}\n-section" $::sortMD
 
 
-set usdesc "\n:blurb-blue Welcome to the 10000 Cities Data Hub for the United States.\n<br>Below you will find data at the national level as well as data hubs for each state."
+set usdesc "\n:heading Welcome to the 10000 Cities Data Hub for the United States.\n<br>Below you will find data at the national level as well as data hubs for each state."
 #set md [xmlTag metadata "" [list type content.alias encoded false attr1 "https://usa.10000cities.org"]]
 set md [xmlTag metadata "" [list type content.alias encoded false attr1 "usa.10000cities.org"]]
 makeGroup  $::baseDir "United States"   [list  type community_datahub] $usdesc $md

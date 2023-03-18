@@ -136,7 +136,7 @@
 
 
   <type name="community_datahub"  super="community_thing" description="Data Hub" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"    metadata="" >
-     <property name="icon" value="/community/wheel.png"/>
+     <property name="icon" value="/community/hub.png"/>
      <property name="form.description.iswiki" value="true"/>
 <!--
      <property name="search.metadatatypes" value="community_service,content.contact"/>
@@ -169,8 +169,8 @@
 <div style="max-height: 400px; overflow-y: auto;margin:5px;">
 {{description wikify="true"}}
 </div>
-----
-{{tree details="false" message="" sort="name"}}
+:p
+{{tabletree details="false" message="" sort="name"}}
 -col
 +col-md-4
 {{properties  message="" metadata.types="content.alias" includeTitle="false"}}
