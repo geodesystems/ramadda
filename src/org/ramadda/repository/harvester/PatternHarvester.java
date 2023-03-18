@@ -1109,6 +1109,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
 
 
+        currentStatus = "Done processing. Calling convertIdsFromImport on " + idList.size() +" new entries";
         for (String[] tuple : idList) {
             String newId    = tuple[0];
             Entry  newEntry = getEntryManager().getEntry(request, newId);
