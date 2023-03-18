@@ -61,9 +61,9 @@ This allows you to do a subsequent selection, e.g. set this to "county" and the 
 +section title="{{name}}" #
 {{displayProperty name="fieldAliases" value="B06011_001E:B19113_001E"}}
 {{description wikify="true" }}
-{{group  layoutType="columns"  layoutColumns="2" showMenu="true"}}
+{{group  layoutType="columns"  layoutColumns="2" showMenu="true" tooltip="${default}" }}
 {{display  type="bartable"  column="0" layoutHere="false" height="400" showTitle="false" }}
-{{display  type="map" column="1" width="500" height="400"   layoutHere="false" includeData="false"   showTitle="false" }}
+{{display_map tooltip="${default}" column="1" width="500" height="400"   layoutHere="false" includeData="false"   showTitle="false" }}
 {{display  type="text"  column="1" layoutHere="false" showTitle="true" title="Readout"}}
 -section
 +section label="Information" #
@@ -81,9 +81,9 @@ This allows you to do a subsequent selection, e.g. set this to "county" and the 
 +section title={{name}} #
 {{displayProperty name="fieldAliases" value="B06011_001E:B19113_001E"}}
 {{description wikify="true" }}
-{{group showMenu="true" layoutColumns="2"  layoutType="htable" showTitle="false"}}
+{{group showMenu="true" layoutColumns="2"  layoutType="htable" showTitle="false" tooltip="${default}" }}
 {{display type="table" layoutHere="false" skipFields="latitude,longitude" chartHeight="600"}}
-{{display type="map" layoutHere="false"  width="100%" height="600" showTitle="true" 
+{{display_map layoutHere="false"  width="100%" height="600" showTitle="true" 
 titleId="census.age.label"
 title="Colored by median age from blue (younger), to white (middle) to red (older)"
 colorBy="B01002_001E"
@@ -128,17 +128,17 @@ Median income
 +section title={{name}} #
 {{displayProperty name="fieldAliases" value="B06011_001E:B19113_001E"}}
 {{description wikify="true" }}
-{{group showMenu="true" layoutColumns="2"  layoutType="htable" showTitle="false"}}
+{{group showMenu="true" layoutColumns="2"  layoutType="htable" showTitle="false" tooltip="${default}" }}
 {{display type="table" layoutHere="true" skipFields="latitude,longitude" chartHeight="350"}}
 {{label id="census.children.label" wikify="true" text=":note Blue - smaller values. Red - larger values."}}
 +row
 +col-md-6
 :heading Under 6 living with two parents
-{{display type="map"  layoutHere="true"  height="400" sizeBy="B19113_001E" colorBy="B05009_003E" colorBar="blue_white_red"}}
+{{display_map  layoutHere="true"  height="400" #sizeBy="B19113_001E" colorBy="B05009_003E" colorBar="blue_white_red"}}
 -col
 +col-md-6
 :heading Under 6 living with one parent
-{{display type="map"   layoutHere="true"  height="400" sizeBy="B19113_001E" colorBy="B05009_013E" colorBar="blue_white_red"}}
+{{display_map   layoutHere="true"  height="400" #sizeBy="B19113_001E" colorBy="B05009_013E" colorBar="blue_white_red"}}
 -col
 -row
 +row
@@ -195,17 +195,17 @@ Median income
 +section title={{name}} #
 {{displayProperty name="fieldAliases" value="B06011_001E:B19113_001E"}}
 {{description wikify="true" }}
-{{group showMenu="true" layoutColumns="2" layoutType="htable" showTitle="false" }}
+{{group showMenu="true" layoutColumns="2" layoutType="htable" showTitle="false" tooltip="${default}" }}
 {{label id="census.race.label" wikify="true" text=":note Sized by median income. Colored by percentage race from yellow (higher) to blue (lower)." }}
 +row
 +col-md-4
-{{display type="map"  layoutHere="true"   height="400" colorBy="B01001A_001E"  title="% White" showTitle="true"   sizeBy="B19113_001E" colorBar="plotly_viridis" }}
+{{display_map  layoutHere="true"   height="400" colorBy="B01001A_001E"  title="% White" showTitle="true"   #sizeBy="B19113_001E" colorBar="plotly_viridis" }}
 -col
 +col-md-4
-{{display type="map"  layoutHere="true"  height="400" colorBy="B01001B_001E" title="% Black or African American" showTitle="true"  sizeBy="B19113_001E" colorBar="plotly_viridis" }}
+{{display_map  layoutHere="true"  height="400" colorBy="B01001B_001E" title="% Black or African American" showTitle="true"  #sizeBy="B19113_001E" colorBar="plotly_viridis" }}
 -col
 +col-md-4
-{{display type="map" layoutHere="true"  height="400" colorBy="B01001I_001E" title="% Hispanic or Latino" showTitle="true"  sizeBy="B19113_001E" colorBar="plotly_viridis" }}
+{{display_map layoutHere="true"  height="400" colorBy="B01001I_001E" title="% Hispanic or Latino" showTitle="true"  #sizeBy="B19113_001E" colorBar="plotly_viridis" }}
 -col
 -row
 
@@ -255,9 +255,9 @@ Median income
 <wiki><![CDATA[+section title={{name}} #
 {{displayProperty name="fieldAliases" value="B06011_001E:B19113_001E"}}
 {{description wikify="true" }}
-{{group showMenu="true" layoutColumns="2"  layoutType="htable" showTitle="false"}}
+{{group showMenu="true" layoutColumns="2"  layoutType="htable" showTitle="false" tooltip="${default}" }}
 {{display type="table" layoutHere="false" skipFields="latitude,longitude" chartHeight="600" }}
-{{display type="map"  layoutHere="false"  height="600" showTitle="true" title="Colored by poverty levels from blue (lower) to white (middle) to red (higher)"
+{{display_map  layoutHere="false"  height="600" showTitle="true" title="Colored by poverty levels from blue (lower) to white (middle) to red (higher)"
 colorBy="B07012_002E"
 colorBar="blue_white_red"
 strokeColor="black"
@@ -291,7 +291,7 @@ Median income
 +section title={{name}} #
 {{displayProperty name="fieldAliases" value="B06011_001E:B19113_001E"}}
 {{description wikify="true" }}
-{{group showMenu=true layoutColumns=2 layoutType=htable showTitle="false"}}
+{{group showMenu=true layoutColumns=2 layoutType=htable showTitle="false" tooltip="${default}" }}
 {{display type=table layoutHere=false skipFields="latitude,longitude" column=0 }}
 {{display type=map layoutHere=false column=1 
 showTitle="true" 
@@ -300,7 +300,7 @@ titleId="census.nationality.label"
 colorBy="B05001_006E"
 colorBar="plotly_viridis"
 strokeColor="magenta"
-sizeBy="B05001_001E"
+#sizeBy="B05001_001E"
 }}
 {{display type=scatterplot layoutHere=false column=1 fields="B19113_001E,B05001_006E" map-display="false" chartWidth="600"}}
 {{display_stats layoutHere="false"  showTitle="true" title="Summary Statistics"
@@ -335,16 +335,16 @@ Median income
 +section title={{name}} #
 {{displayProperty name="fieldAliases" value="B06011_001E:B19113_001E"}}
 {{description wikify="true" }}
-{{group showMenu=true layoutColumns=2 layoutType=htable showTitle="false"}}
+{{group showMenu=true layoutColumns=2 layoutType=htable showTitle="false" tooltip="${default}" }}
 {{display type=table layoutHere=false skipFields="latitude,longitude" column=0 }}
-{{display type="map"  layoutHere="false" 
+{{display_map  layoutHere="false" 
 showTitle="true" 
 titleId="census.housing.label" 
 title="Sized by number of housing units. Yellow shows more renters."
 colorBy="B25003_003E"
 colorBar="plotly_viridis"
 strokeColor="magenta"
-sizeBy="B25001_001E"}}
+#sizeBy="B25001_001E"}}
 {{display type="scatterplot" layoutHere="false" fields="B19113_001E,B25003_002E" map-display="false" showTitle="true" title="Owner Occupied"}}
 {{display type="scatterplot" layoutHere="false" fields="B19113_001E,B25003_003E" map-display="false" showTitle="true" title="Renter Occupied"}}
 {{display type="scatterplot" layoutHere="false" fields="B19113_001E,B25027_002E" map-display="false" showTitle="true" title="Housing units with a mortgage"}}
@@ -386,7 +386,7 @@ Median income
 +section title={{name}} #
 {{displayProperty name="fieldAliases" value="B06011_001E:B19113_001E"}}
 {{description wikify="true" }}
-{{group showMenu=true layoutColumns=2 layoutType="htable" showTitle="false"}}
+{{group showMenu=true layoutColumns=2 layoutType="htable" showTitle="false" tooltip="${default}" }}
 {{display type=table layoutHere=false skipFields="latitude,longitude" }}
 {{display type=map layoutHere=false showTitle="true" 
 titleId="census.education.label" 
@@ -394,7 +394,7 @@ title="Sized by median income. Colored by percent bachelors degree holders."
 colorBy="B15003_022E"
 colorBar="plotly_viridis"
 strokeColor="magenta"
-sizeBy="B19113_001E"
+#sizeBy="B19113_001E"
 }}
 {{display type=scatterplot layoutHere=false map-display="false" fields="B19113_001E,B15003_017E" title="High School Diploma" showTitle="true"  }}
 {{display type=scatterplot layoutHere=false  map-display="false" fields="B19113_001E,B15003_022E" title="Bachelor's Degree"  showTitle="true" }}
@@ -439,16 +439,16 @@ Median income
 +section title={{name}} #
 {{displayProperty name="fieldAliases" value="B06011_001E:B19113_001E"}}
 {{description wikify="true" }}
-{{group showMenu="true" layoutColumns="2" layoutType="htable" showTitle="false"}}
+{{group showMenu="true" layoutColumns="2" layoutType="htable" showTitle="false" tooltip="${default}" }}
 {{display type="table" layoutHere="false" skipFields="latitude,longitude" }}
-{{display type="map" layoutHere="false" 
+{{display_map layoutHere="false" 
 showTitle="true" 
 titleId="census.commuting.label"
 title="Sized by total number of workers. Yellow shows more workers that drove alone."
 colorBy="B08006_003E"
 colorBar="plotly_viridis"
 strokeColor="black"
-sizeBy="B08006_001E"
+#sizeBy="B08006_001E"
 }}
 {{display type="scatterplot" layoutHere="false" fields="B19113_001E,B08006_003E" map-display="false" chartWidth="600" showTitle="true" title="Drove Alone"}}
 {{display type="scatterplot" layoutHere="false" fields="B19113_001E,B08006_004E" map-display="false" chartWidth="600" showTitle="true" title="Car Pooled"}}
@@ -554,7 +554,7 @@ fields=year[type=string label="Year"],month[type=string label="Month"],metronm[t
 <wiki><![CDATA[
 +section title="{{name}}" #
 {{description}}
-{{group  layoutType="htable"  layoutColumns="2" showMenu="true"}}
+{{group  layoutType="htable"  layoutColumns="2" showMenu="true" tooltip="${default}" }}
 {{display  type="linechart" fields="NumTotNonFarm,NumTotPriv" layoutHere="false" showTitle="false" vAxisMinValue="0"  }}
 -section
 +section label="Information" #
