@@ -3121,7 +3121,7 @@ public class TypeHandler extends RepositoryManager {
 
         }
 
-        if (getAccessManager().canDoDelete(request, entry)) {
+        if (getEntryManager().okToDelete(request, entry)) {
             links.add(
                 new Link(
                     request.entryUrl(

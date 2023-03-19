@@ -3509,6 +3509,28 @@ public class EntryManager extends RepositoryManager {
 
 
 
+    public boolean okToDelete(Request request, Entry entry) throws Exception {
+        if (entry.isTopEntry()) {
+	    return false;
+        }
+	if(!getAccessManager().canDoDelete(request, entry)) {
+	    return false;
+	}
+
+        List<Metadata> metadataList =
+            getMetadataManager().findMetadata(request, entry,
+					      new String[]{AdminMetadataHandler.TYPE_PREVENTDELETION}, true);
+        //Reset the category
+        if (metadataList != null) {
+	    for(Metadata mtd: metadataList) {
+		if(Utils.equals("true",mtd.getAttr1())) {
+		    return false;
+		}
+	    }
+	}
+	return true;
+    }
+
 
     /**
      * _more_
@@ -3521,14 +3543,15 @@ public class EntryManager extends RepositoryManager {
      */
     public Result processEntryDelete(Request request) throws Exception {
         Entry         entry = getEntry(request);
-        if (entry.isTopEntry()) {
+        if (!okToDelete(request, entry)) {
 	    return new Result("Entry Delete", getPageHandler().makeEntryPage(request, entry, "Entry delete",
-									     getPageHandler().showDialogError("Cannot delete top-level folder")));
+									     getPageHandler().showDialogError("Cannot delete this entry")));
         }
 
         if (request.exists(ARG_CANCEL)) {
             return new Result(request.entryUrl(getRepository().URL_ENTRY_FORM, entry));
         }
+
 
         StringBuilder sb    = new StringBuilder();
         if (request.exists(ARG_DELETE_CONFIRM)) {
@@ -3555,13 +3578,14 @@ public class EntryManager extends RepositoryManager {
         if (entry.isGroup()) {
             inner.append(
 			 msg("Are you sure you want to delete the following folder?"));
-            inner.append(
-			 HU.div(
-				breadcrumbs, HU.cssClass("ramadda-confirm")));
+	    inner.append("<br>");
             inner.append(
 			 HU.b(
 			      msg(
 				  "Note: This will also delete everything contained by this folder")));
+            inner.append(
+			 HU.div(
+				breadcrumbs, HU.cssClass("ramadda-confirm")));
         } else {
             inner.append(
 			 msg("Are you sure you want to delete the following entry?"));
@@ -3651,10 +3675,7 @@ public class EntryManager extends RepositoryManager {
 					      ARG_ENTRYID, id));
         }
 
-        if (request.exists(ARG_DELETE_CONFIRM)) {
-            request.ensureAuthToken();
-            return asynchDeleteEntries(request, entries);
-        }
+
 
 
         if (entries.size() == 0) {
@@ -3665,6 +3686,39 @@ public class EntryManager extends RepositoryManager {
 												msg("No entries selected"))));
         }
 
+
+        StringBuilder entryListSB = new StringBuilder();
+	boolean allOkToDelete = true;
+	List<Entry> entriesCantDelete = new ArrayList<Entry>();
+
+	for(Entry entryToDelete: entries) {
+	    if(!okToDelete(request, entryToDelete)) {
+		allOkToDelete=false;
+		entriesCantDelete.add(entryToDelete);
+	    }
+	}
+
+	if(!allOkToDelete) {
+	    for (Entry entryCantDelete: entriesCantDelete) {
+		entryListSB.append(getPageHandler().getConfirmBreadCrumbs(
+									  request, entryCantDelete));
+		entryListSB.append(HU.br());
+	    }
+            return new Result(
+			      "",
+			      getPageHandler().makeEntryPage(request, parent,"Entry Delete",
+							     getPageHandler().showDialogWarning(
+												msg("<b>Entry delete cancelled.</b><br>The following entries can't be deleted:<br>" + entryListSB))));
+
+	}
+
+        if (request.exists(ARG_DELETE_CONFIRM)) {
+            request.ensureAuthToken();
+            return asynchDeleteEntries(request, entries);
+        }
+
+
+
         StringBuilder msgSB    = new StringBuilder();
         StringBuilder idBuffer = new StringBuilder();
         for (Entry entry : entries) {
@@ -3672,10 +3726,8 @@ public class EntryManager extends RepositoryManager {
             idBuffer.append(entry.getId());
         }
         boolean       anyFolders  = false;
-        StringBuilder entryListSB = new StringBuilder();
         for (Entry toBeDeletedEntry : entries) {
-            entryListSB.append(
-			       getPageHandler().getConfirmBreadCrumbs(
+            entryListSB.append(getPageHandler().getConfirmBreadCrumbs(
 								      request, toBeDeletedEntry));
             entryListSB.append(HU.br());
             if (toBeDeletedEntry.isGroup()) {
@@ -3691,19 +3743,21 @@ public class EntryManager extends RepositoryManager {
 			 msg(
 			     "Are you sure you want to delete all of the following entries?"));
         }
-        msgSB.append(HU.div(entryListSB.toString(),
-			    HU.cssClass("ramadda-confirm")));
-
         if (anyFolders) {
             msgSB.append(
 			 HU.div(
 				HU.b(
 				     msg(
-					 "Note: This will also delete everything contained by the above "
+					 "Note: This will also delete everything contained by the below "
 					 + ((entries.size() == 1)
 					    ? "folder"
 					    : "folders")))));
         }
+
+
+        msgSB.append(HU.div(entryListSB.toString(),
+			    HU.cssClass("ramadda-confirm")));
+
         request.formPostWithAuthToken(sb,
                                       getRepository().URL_ENTRY_DELETELIST);
         StringBuilder hidden =
@@ -3822,12 +3876,8 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-
-
     /** _more_ */
     int delCnt = 0;
-
-
 
     /**
      * _more_
@@ -3848,7 +3898,6 @@ public class EntryManager extends RepositoryManager {
         for (Entry entry : entries) {
             //we don't ask the type if its a synth type 
             if (
-
 		/** entry.getTypeHandler().isSynthType()|| */
 		isSynthEntry(entry.getId())) {
                 if (getStorageManager().isProcessFile(entry.getFile())) {
@@ -3860,8 +3909,27 @@ public class EntryManager extends RepositoryManager {
             okEntries.add(entry);
         }
         entries = okEntries;
-        List<Object[]> found = getDescendents(request, entries, connection,
+        List<Descendent> found = getDescendents(request, entries, connection,
 					      null, true, true, actionId);
+
+	boolean anyCantBeDeleted = false;
+	StringBuilder errMsg = new StringBuilder();
+	for (int i = found.size() - 1; i >= 0; i--) {
+	    Descendent descendent = found.get(i);
+	    if(!okToDelete(request, descendent.entry)) {
+		anyCantBeDeleted = true;
+		errMsg.append(getPageHandler().getConfirmBreadCrumbs(request, descendent.entry));
+		errMsg.append(HU.br());
+		break;
+	    }		
+	}
+
+	if(anyCantBeDeleted) {
+            String msg = "<b>Entry delete cancelled.</b><br>The following entry can't be deleted:<br>" + errMsg;
+	    getActionManager().setContinueHtml(actionId, msg);
+	    return;
+	}	    
+
         String query;
 
         query =
@@ -3908,10 +3976,15 @@ public class EntryManager extends RepositoryManager {
             final List<String>   allIds            = new ArrayList<String>();
             List<Resource> resourcesToDelete = new ArrayList<Resource>();
             for (int i = found.size() - 1; i >= 0; i--) {
-                Object[] tuple  = found.get(i);
+		Descendent descendent = found.get(i);
+		/*                Object[] tuple  = found.get(i);
                 String   id     = (String) tuple[0];
                 Object[] values = (Object[]) tuple[4];
                 Entry    parent = (Entry) tuple[5];
+		*/
+                String   id     = descendent.id;
+                Object[] values = descendent.values;
+                Entry    parent = descendent.parent;
                 removeFromCache(id);
                 allIds.add(id);
                 totalDeleteCnt++;
@@ -3927,10 +4000,7 @@ public class EntryManager extends RepositoryManager {
 						    "Deleted:" + totalDeleteCnt + "/" + found.size()
 						    + " entries");
 
-                resourcesToDelete.add(
-				      new Resource(
-						   new File((String) tuple[2]), (String) tuple[3]));
-
+                resourcesToDelete.add(new Resource(new File(descendent.path), descendent.resourceType));
                 batchCnt++;
                 assocStmt.setString(2, id);
                 for (PreparedStatement stmt : statements) {
@@ -3939,7 +4009,7 @@ public class EntryManager extends RepositoryManager {
                 }
 
                 TypeHandler typeHandler =
-                    getRepository().getTypeHandler((String) tuple[1], true);
+                    getRepository().getTypeHandler(descendent.type, true);
                 typeHandler.deleteEntry(request, extraStmt, id, parent,
                                         values);
                 if (batchCnt > 100) {
@@ -3962,10 +4032,10 @@ public class EntryManager extends RepositoryManager {
             }
 	    getRepository().checkDeletedEntries(request,  allIds);
 
-	    for(Object[]tuple: found) {
-                String   id     = (String) tuple[0];
+	    for(Descendent descendent: found) {
+                String   id     = descendent.id;
                 TypeHandler typeHandler =
-                    getRepository().getTypeHandler((String) tuple[1], true);
+                    getRepository().getTypeHandler(descendent.type, true);
 		if(typeHandler!=null)
 		    typeHandler.entryDeleted(id);
 	    }
@@ -5050,7 +5120,7 @@ public class EntryManager extends RepositoryManager {
         try {
             Connection connection = getDatabaseManager().getConnection();
             connection.setAutoCommit(false);
-            List<Object[]> ids = getDescendents(request, entries, connection,
+            List<Descendent> ids = getDescendents(request, entries, connection,
 						excluder,
 						true, !deepCopy, actionId);
             getDatabaseManager().closeConnection(connection);
@@ -5060,8 +5130,8 @@ public class EntryManager extends RepositoryManager {
                 if ( !getActionManager().getActionOk(actionId)) {
                     return null;
                 }
-                Object[]    tuple          = ids.get(i);
-                String      id             = (String) tuple[0];
+                Descendent descendent       = ids.get(i);
+                String      id             = descendent.id;
                 Entry       oldEntry       = getEntry(request, id);
 		if(!excluder.isEntryOk(oldEntry)) {
 		    System.err.println("Is excluded:" + oldEntry);
@@ -10213,17 +10283,17 @@ public class EntryManager extends RepositoryManager {
      * @return _more_
      * @throws Exception _more_
      */
-    protected List<Object[]> getDescendents(Request request,
-                                            List<Entry> entries,
-                                            Connection connection,
-					    EntryUtil.Excluder excluder,
-                                            boolean firstCall,
-                                            boolean ignoreSynth,
-                                            Object actionId)
+    protected List<Descendent> getDescendents(Request request,
+					      List<Entry> entries,
+					      Connection connection,
+					      EntryUtil.Excluder excluder,
+					      boolean firstCall,
+					      boolean ignoreSynth,
+					      Object actionId)
 	throws Exception {
 
         boolean        ok       = true;
-        List<Object[]> children = new ArrayList();
+        List<Descendent> children = new ArrayList();
         for (Entry entry : entries) {
             if ((actionId != null)
 		&& !getActionManager().getActionOk(actionId)) {
@@ -10234,6 +10304,8 @@ public class EntryManager extends RepositoryManager {
             }
 
             if (firstCall) {
+                children.add(new Descendent(entry));
+		/*
                 children.add(new Object[] {
 			entry.getId(), entry.getTypeHandler().getType(),
 			entry.getResource().getPath(),
@@ -10241,6 +10313,7 @@ public class EntryManager extends RepositoryManager {
 			entry.getTypeHandler().getEntryValues(entry),
 			entry.getParentEntry()
 		    });
+		*/
             }
             if ( !entry.isGroup()) {
                 continue;
@@ -10265,6 +10338,8 @@ public class EntryManager extends RepositoryManager {
                     }
 		    if(excluder!=null && !excluder.isEntryOk(childEntry))
 			continue;
+                    children.add(new Descendent(childEntry));
+		    /*
                     children.add(new Object[] {
 			    childId, childEntry.getType(),
 			    childEntry.getResource().getPath(),
@@ -10272,6 +10347,7 @@ public class EntryManager extends RepositoryManager {
 			    entry.getTypeHandler().getEntryValues(entry),
 			    entry.getParentEntry()
 			});
+		    */
                     if (childEntry.isGroup()) {
                         children.addAll(getDescendents(request,
 						       (List<Entry>) Misc.newList(childEntry),
@@ -10319,12 +10395,15 @@ public class EntryManager extends RepositoryManager {
 		    continue;
 		}
 
+                children.add(new Descendent(childEntry));
+		/*
+
                 children.add(new Object[] {
 			childId, childType, resource, resourceType,
 			childEntry.getTypeHandler().getEntryValues(childEntry),
 			childEntry.getParentEntry()
 		    });
-
+		*/
                 children.addAll(getDescendents(request,
 					       (List<Entry>) Misc.newList(childEntry), connection,
 					       excluder, false, ignoreSynth, actionId));
@@ -10828,5 +10907,28 @@ public class EntryManager extends RepositoryManager {
             throw new RuntimeException(exc);
         }
     }
+
+
+    private static class Descendent {
+	Entry entry;
+	String id;
+	String type;
+	String path;
+	String resourceType;
+	Object[]values;
+	Entry parent;
+	Descendent(Entry entry) {
+	    this.entry = entry;
+	    id = entry.getId();
+	    type = entry.getTypeHandler().getType();
+	    path = entry.getResource().getPath();
+	    resourceType = entry.getResource().getType();
+	    values = entry.getTypeHandler().getEntryValues(entry);
+	    parent = entry.getParentEntry();
+	}
+
+    }
+
+
 
 }

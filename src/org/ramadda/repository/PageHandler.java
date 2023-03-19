@@ -2256,14 +2256,14 @@ public class PageHandler extends RepositoryManager {
         //For now just use the message class
         clazz = "ramadda-message";
         String        faClazz = Misc.equals(icon, Constants.ICON_DIALOG_INFO)
-                                ? ""
+                                ? "text-primary"
                                 : Misc.equals(icon,
                                     Constants.ICON_DIALOG_ERROR)
                                   ? "text-danger"
                                   : Misc.equals(icon,
                                       Constants.ICON_DIALOG_WARNING)
                                     ? "text-warning"
-                                    : "";
+                                    : "text-primary";
         StringBuilder sb      = new StringBuilder();
         sb.append(HU.open(HU.TAG_DIV, "class",
                           clazz + " ramadda-message-plain ", "id",

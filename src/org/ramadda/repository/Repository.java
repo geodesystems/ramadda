@@ -3095,7 +3095,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 			return;
 		    }
 
-
 		    for (Entry entry : state.getAllEntries()) {
 			if (getAccessManager().canDoEdit(request, entry)) {
 			    if (getEntryManager().isAnonymousUpload(entry)) {
@@ -3106,36 +3105,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
 			    }
 			}
 		    }
-		    /*
-		      boolean metadataOk = true;
-		      for (Entry entry : state.getAllEntries()) {
-		      if ( !getAccessManager().canDoEdit(request, entry)) {
-		      metadataOk = false;
-
-		      break;
-		      }
-		      }
-		      if (metadataOk) {
-		      //                    links.add(makeLink(request, state.getEntry(),  OUTPUT_TYPECHANGE));
-		      links.add(makeLink(request, state.getEntry(),
-		      OUTPUT_METADATA_SHORT));
-
-		      links.add(makeLink(request, state.getEntry(),
-		      OUTPUT_METADATA_FULL));
-		      }
-		    */
-
-		    boolean deleteOk = true;
+		    boolean deleteOk = false;
 		    for (Entry entry : state.getAllEntries()) {
-			if ( !getAccessManager().canDoDelete(request, entry)) {
-			    deleteOk = false;
-
+			if (getEntryManager().okToDelete(request, entry)) {
+			    deleteOk = true;
 			    break;
 			}
 		    }
 		    if (deleteOk) {
-			links.add(makeLink(request, state.getEntry(),
-					   OUTPUT_DELETER));
+			links.add(makeLink(request, state.getEntry(), OUTPUT_DELETER));
 		    }
 		}
 
