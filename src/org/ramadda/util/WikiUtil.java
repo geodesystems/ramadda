@@ -2817,6 +2817,13 @@ public class WikiUtil {
 		    continue;
 		}
 
+                if (tline.startsWith(":hspace")) {
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
+		    String space = toks.size()==1?"10px":HU.makeDim(toks.get(1),"px");
+		    buff.append(HU.div("",HU.style(HU.css("display","inline-block","width",space))));
+		    continue;
+		}		
+
                 if (tline.equals(":br")) {
                     buff.append("<br>");
 
