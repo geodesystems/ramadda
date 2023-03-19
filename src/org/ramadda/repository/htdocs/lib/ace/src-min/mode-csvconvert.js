@@ -10,7 +10,8 @@ var DocCommentHighlightRules = function() {
         "start" : [ {
             token : "comment.doc.tag",
             regex : "@[\\w\\d_]+" // TODO: fix email addresses
-        }, 
+        },
+	    
         DocCommentHighlightRules.getTagRule(),
         {
             defaultToken : "comment.doc",
@@ -1563,17 +1564,39 @@ var tagMap = lang.createMap({
 	for (var rule in this.$rules) {
             this.$rules[rule].unshift(
 		{token : "keyword",
-                    regex : "\\:(br ?|p ?|note(-[^ ]+)*|blurb(-[^ ]+)*|heading(-[^ ]+)*)"
+                 regex : "\\:(br ?|p ?|note(-[^ ]+)*|blurb(-[^ ]+)*|heading(-[^ ]+)*)"
                 },
+		{token : "csv_comment",
+		 regex: "(^:rem.*$)"		    
+		},
                 {token : "csv_comment",
                  regex : "^#.*"
                 },
-//		{token : "csv_comment",
-//                 regex : "\"[^\"]*\""
-//                },
-                {token : "csv_command",
-                 regex : "-[^ 0-9]+",
+		{token : "csv_quote",
+                 regex : '({|")[^}"]*(}|")'
                 },
+                {token : "csv_command",
+                 regex : "(-[^ 0-9]+)",
+                },
+		{token:["csv_quote"],
+		 regex:/("|{).*/,
+		 caseInsensitive:true,
+		 push:[
+		     {
+			 // middle
+			 token: 'csv_quote',
+			 regex:/^(\s*(}").*)/ 
+                     },
+		     {
+			 //end
+			 token:["csv_quote"],
+			 regex:/[^"}]+"/,
+			 caseInsensitive:true,
+			 next:"pop"
+		     },
+		     {defaultToken:""}
+		 ]
+		},
                 {token : "keyword",
                  regex : "^(-row.*|-col.*)|-frame|-gridboxes|-gridbox|-centerdiv|-center|-div|(-inset|-section|-note|-heading|-tabs|-tab|-accordian|-segment).*|((-section|-blurb|-heading) +)"
                 },
