@@ -2239,9 +2239,12 @@ var Utils =  {
 	return null;
     },
 
-    getDefined: function(v1, v2) {
-        if (Utils.isDefined(v1)) return v1;
-        return v2;
+    getDefined: function() {
+	for(let i=0;i<arguments.length;i++) {
+	    let v = arguments[i];
+            if (Utils.isDefined(v)) return v;
+	}
+        return null;
     },
     cleanId: function(id) {
         id = id.replace(/:/g, "_").replace(/\./g, "_").replace(/=/g, "_").replace(/\//g, "_").replace(/[\(\)]/g,"_");
