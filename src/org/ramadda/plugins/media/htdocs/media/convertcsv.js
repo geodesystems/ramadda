@@ -77,13 +77,13 @@ function  ConvertForm(inputId, entry,params) {
 	    this.allColumns = [];
 
 	    let _this  =this;
-	    let text = $("#" + this.baseId +"_lastinput").html();
+	    let text = $('#' + this.baseId +'_lastinput').html();
 	    if(text!=null) {
-		text = text.replace(/_escnl_/g,"\n").replace(/_escquote_/g,'&quot;').replace(/_escslash_/g,"\\").replace(/\"/g,'&quot;').replace(/_esclt_/g,"&lt;").replace(/_escgt_/g,"&gt;");
+		text = text.replace(/_escnl_/g,'\n').replace(/_escquote_/g,'&quot;').replace(/_escslash_/g,'\\').replace(/\"/g,'&quot;').replace(/_esclt_/g,'&lt;').replace(/_escgt_/g,'&gt;');
 	    }  else {
-		text = this.getInput(true)||"";
+		text = this.getInput(true)||'';
 	    }
-	    let html = "";
+	    let html = '';
 	    html += "<style type='text/css'>";
 	    html += ".convert_button {padding:2px;padding-left:5px;padding-right:5px;}\n.ramadda-csv-table  {font-size:10pt;}\n ";
 	    html += ".convert_add {margin-left:10px; cursor:pointer;}\n";
@@ -93,6 +93,7 @@ function  ConvertForm(inputId, entry,params) {
 	    html += ".ace_editor {margin-bottom:5px;xheight:200px;}\n";
 	    html += ".ace_editor_disabled {background:rgb(250,250,250);}\n";
 	    html += ".ace_csv_comment {color:#B7410E;}\n";
+	    html += ".ace_csv_quote {color:green;}\n";
 	    html += ".ace_csv_command {color:blue;}\n";
 	    html += ".ramadda-seesv .ace_gutter-cell:hover {background:#ccc;}\n";	    
 	    html += "</style>";
@@ -118,11 +119,11 @@ function  ConvertForm(inputId, entry,params) {
 	    let input = HtmlUtil.div([STYLE,"height:100%;top:0px;right:0px;left:0px;bottom:0px;position:absolute;width:100%;", ID,this.domId(ID_INPUT), "rows", "5"], text);	    
 
 
-	    html+=HU.div([ID,this.domId('resize'),STYLE,HU.css('margin-bottom','5px','height', HtmlUtils.getDimension(this.params.height||'200px'),'position','relative')],input);
+	    let height=HU.getUrlArgument('seesv_editor_height') || this.params.height||'200px';
+	    html+=HU.div([ID,this.domId('resize'),STYLE,HU.css('margin-bottom','5px','height', HtmlUtils.getDimension(height),'position','relative')],input);
 
 
-
-	    let left ="";
+	    let left ='';
 	    left += HtmlUtil.span([ID,this.domId(ID_OUTPUTS),CLASS,"convert_button"], "Outputs") +" ";
 	    left += HtmlUtil.span([ID,this.domId(ID_TABLE),CLASS,"convert_button", TITLE,"Display table (ctrl-t)"],"Table")+" ";
 	    left += HtmlUtil.span([ID,this.domId(ID_PROCESS),CLASS,"convert_button", TITLE,"Process entire file"],"Process")+" ";	    
@@ -147,6 +148,8 @@ function  ConvertForm(inputId, entry,params) {
 	    this.jq("resize").resizable({
 		handles: 's',
 		stop: (event, ui) =>{
+		    let height = this.jq("resize").height();
+		    HU.addToDocumentUrl('seesv_editor_height',height);
 		    $(this).css("width", '');
 		    this.editor.resize();
 		},
@@ -395,6 +398,27 @@ function  ConvertForm(inputId, entry,params) {
 	makeEditor:  function() {
 	    let _this = this;
 	    this.editor = ace.edit(this.domId(ID_INPUT));
+	    var session = this.editor.session;
+	    /*
+	    session.setMode('ace/mode/seesv', function() {
+		var rules = session.$mode.$highlightRules.getRules();
+		for (var stateName in rules) {
+		    if (Object.prototype.hasOwnProperty.call(rules, stateName)) {
+			rules[stateName].unshift({
+			    token: 'wiki-editor-comment',
+			    regex: '(-.*)'
+			});
+		    }
+		}
+		// force recreation of tokenizer
+		session.$mode.$tokenizer = null;
+		session.bgTokenizer.setTokenizer(session.$mode.getTokenizer());
+		// force re-highlight whole document
+		session.bgTokenizer.start(0);
+	    });
+	    */
+
+
 	    HU.addWikiEditor(this,this.domId(ID_INPUT));
 	    this.editor.setBehavioursEnabled(true);
 	    this.editor.setDisplayIndentGuides(false);
