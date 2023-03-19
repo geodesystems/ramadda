@@ -5378,6 +5378,11 @@ public class Seesv implements SeesvCommands {
 	for (int i = 0; i < args.size(); i++) {
 	    String arg = args.get(i);
 
+	    if(arg.equals("-ignore")) {
+		int cnt = Integer.parseInt(args.get(++i));
+		i+=cnt;
+		continue;
+	    }
 	    if(arg.equals(CMD_VALUE)) {
 		macros.put(args.get(++i),args.get(++i));
 		continue;
