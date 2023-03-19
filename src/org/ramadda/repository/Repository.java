@@ -6422,7 +6422,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public Result processRobotsTxt(Request request) throws Exception {
         StringBuilder sb = new StringBuilder("User-agent: *\n");
-        if ( !acceptRobots()) {
+        if ( !acceptRobots() && request.getIsRobot()) {
             sb.append("Disallow: /\n");
         } else {
             sb.append("Allow: /\n");
