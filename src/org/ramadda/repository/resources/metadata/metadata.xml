@@ -223,8 +223,11 @@ Override the logo icon and URL used in the default page templates.
 
     <type name="Display Timezone" id="content.timezone">
       <element
-         default="GMT"
-         name="Timezone"/>
+         default="America/New_York"
+         name="Timezone"
+	 datatype="enumerationplus"
+	 values="file:/org/ramadda/repository/resources/timezones.txt"
+	 />
     </type>
 
 
