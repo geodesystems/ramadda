@@ -119,7 +119,12 @@ function  ConvertForm(inputId, entry,params) {
 	    let input = HtmlUtil.div([STYLE,"height:100%;top:0px;right:0px;left:0px;bottom:0px;position:absolute;width:100%;", ID,this.domId(ID_INPUT), "rows", "5"], text);	    
 
 
-	    let height=HU.getUrlArgument('seesv_editor_height') || this.params.height||'200px';
+	    let height=Utils.getDefined(HU.getUrlArgument('seesv_editor_height'),
+					localStorage.getItem('seesv_editor_height-' + this.entry),
+					this.params.height,
+					'200px');
+
+
 	    html+=HU.div([ID,this.domId('resize'),STYLE,HU.css('margin-bottom','5px','height', HtmlUtils.getDimension(height),'position','relative')],input);
 
 
@@ -149,6 +154,7 @@ function  ConvertForm(inputId, entry,params) {
 		handles: 's',
 		stop: (event, ui) =>{
 		    let height = this.jq("resize").height();
+		    localStorage.setItem('seesv_editor_height-' + this.entry,height);
 		    HU.addToDocumentUrl('seesv_editor_height',height);
 		    $(this).css("width", '');
 		    this.editor.resize();
@@ -398,27 +404,6 @@ function  ConvertForm(inputId, entry,params) {
 	makeEditor:  function() {
 	    let _this = this;
 	    this.editor = ace.edit(this.domId(ID_INPUT));
-	    var session = this.editor.session;
-	    /*
-	    session.setMode('ace/mode/seesv', function() {
-		var rules = session.$mode.$highlightRules.getRules();
-		for (var stateName in rules) {
-		    if (Object.prototype.hasOwnProperty.call(rules, stateName)) {
-			rules[stateName].unshift({
-			    token: 'wiki-editor-comment',
-			    regex: '(-.*)'
-			});
-		    }
-		}
-		// force recreation of tokenizer
-		session.$mode.$tokenizer = null;
-		session.bgTokenizer.setTokenizer(session.$mode.getTokenizer());
-		// force re-highlight whole document
-		session.bgTokenizer.start(0);
-	    });
-	    */
-
-
 	    HU.addWikiEditor(this,this.domId(ID_INPUT));
 	    this.editor.setBehavioursEnabled(true);
 	    this.editor.setDisplayIndentGuides(false);
