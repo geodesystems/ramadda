@@ -1681,6 +1681,8 @@ WikiEditor.prototype = {
 		{p:'showDescription',ex:'true'},
 		{p:'showSnippet',ex:'true'},		
 		{p:'linkresource',ex:'true',tt:'Link to the resource'},
+		{p:'linksBefore',ex:'url1;label1,url2;label2'},
+		{p:'linksAfter',ex:'url1;label1,url2;label2'},		
 		{p:'separator',ex:'',tt:'Separator between links'},
 		{p:'horizontal',ex:'true',tt:'Display horizontallly'},
 		{p:'output',ex:'',tt:'Link to output'},
