@@ -276,6 +276,21 @@ Specify a short hand alias for the entry. Will link to /repository/alias/&lt;ali
     </type>
 
     <type
+       searchable="false" browsable="false"
+       name="Prevent deletion"
+       id="preventdeletion"
+       >
+      <help>
+<![CDATA[
+If set to true then this entry cannot be deleted.<br>
+If inherited=true then the children entries cannot be deleted
+]]>
+</help>
+      <element name="Prevent deletion" datatype="boolean" default="true"/>
+    </type>
+
+
+    <type
        searchable="true" browsable="true"
        name="Is In Site Map"
        id="isinsitemap"
