@@ -39,6 +39,9 @@ import java.util.List;
 public class AdminMetadataHandler extends MetadataHandler {
 
 
+    public static final String TYPE_PREVENTDELETION = "preventdeletion";
+
+
     /** _more_ */
     public static final String TYPE_TEMPLATE = "admin.template";
 
