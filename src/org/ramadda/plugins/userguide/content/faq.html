@@ -32,6 +32,30 @@ See [ug::link installing.html#ssljetty here] if you are running stand-alone.
 </faqitem>
 
 
+<faqitem cat="Administration" id="httpheaders" q="How do I add custom HTTP headers?" >
+You can specify one or more properties in a .properties file in your RAMADDA home directory.
+
+<pre>
+ramadda.httpheader1=&lt;header name&gt;:&lt;header value&gt;
+ramadda.httpheader2=&lt;header name&gt;:&lt;header value&gt;  
+...
+</pre>
+
+e.g: For specifying <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security">HSTS</a> Strict-Transport-Security header you would do:
+
+<pre>
+ramadda.httpheader1=Strict-Transport-Security:max-age=86400; includeSubDomains
+</pre>
+
+Once you restart your RAMADDA it is a good idea to check the headers, e.g. with curl:
+<pre>
+curl -v "http://localhost:8080" &gt; foo
+</pre>
+
+</faqitem>
+
+
+
 <faqitem cat="Administration" id="lucene" q="How do I use Lucene for searching?" >
 RAMADDA has had the ability to uses Lucene for search indexing though up until 2021 this
 had been disabled by default.  Lucene provides a much better search experience as it indexes the
