@@ -129,9 +129,9 @@ height=400px isPath=true radius=6 strokeWidth=0 colorBy=# colorByFields="#" colo
      <column  name="location_type"  label="Location Type" type="enumeration" values="outside,inside" editable="false"/>     
 <property name="mapglyphs">
   <![CDATA[
-props:fontSize:0px,size:20,width:100,height:100,font:28px sans-serif  
-circle,width:cw-10,height:ch,pos:c,dx:cw2,dy:-ch2,colorBy:${pm2.5},colorTable:airquality,colorByMin:0,colorByMax:300              
-label,pos:c,dx:cw2,dy:-ch2,label:${pm2.5}
+props:fontSize:0px,iconSize:20,canvasWidth:100,canvasHeight:100,font:28px sans-serif,defaultField:pm2.5,
+circle,width:cw-10,height:ch,pos:c,dx:cw2,dy:-ch2,colorBy:${_field},colorTable:airquality,colorByMin:0,colorByMax:300              
+label,pos:c,dx:cw2,dy:-ch2,label:${${_field}}
 ]]></property>
 
 <property name="bubble">
