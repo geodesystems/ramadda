@@ -2352,7 +2352,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    }
 	    return "null";
         } else if (theTag.equals(WIKI_TAG_NAME)) {
-            String name = getEntryDisplayName(entry);
+            String name = entry==null?"NULL ENTRY":getEntryDisplayName(entry);
             if (getProperty(wikiUtil, props, "link", false)) {
 		//In case we are making a snapshot we use the overrideurl
 		String url = (String)request.getExtraProperty(PROP_OVERRIDE_URL);
