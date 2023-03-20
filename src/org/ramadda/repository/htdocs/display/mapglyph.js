@@ -412,10 +412,6 @@ MapGlyph.prototype = {
 	    HU.textarea('',this.attrs.legendText??'',
 			[ID,this.domId('legendtext'),'rows',4,'cols', 40]);
 	
-	if(this.isMultiEntry()) {
-	    html+='<br>';
-	    html+= HU.checkbox(this.domId('showmultidata'),[],this.getShowMultiData(),'Show entry data');
-	}
 
 	content.push({header:'Properties',contents:html});
 
@@ -443,15 +439,18 @@ MapGlyph.prototype = {
 
 	if(this.isEntry() || this.isGroup() || this.isMultiEntry()) {
 	    let contents ='';
+	    let help = this.getHelp('multientry.html');
+	    contents+= HU.leftRightTable(HU.checkbox(this.domId('showmultidata'),[],this.getShowMultiData(),'Show data as icons'),help);
+	    contents+='<thin_hr></thin_hr><br>';
+
 	    let gi  =this.getGlyphInfo();
-	    let help = this.getHelp('entries.html#glyphs');
-	    let fields1 = HU.leftRightTable(HU.b('Glyph fields:'),help)+
+	    let fields1 = HU.b('Menu Fields:')+'<br>'+
 		HU.textarea('',gi.fields??'',
-			    ['placeholder','e.g.: field_id,label=Some label','id',this.domId('glyphfields'),'rows',4,'cols', 60]);
+			    ['placeholder','e.g.: field_id,label=Some label','id',this.domId('glyphfields'),'rows',3,'cols', 60]);
 	    let  fields2= HU.b('Initial field:')+'<br>'+
-		HU.input('',gi.field??'',['id',this.domId('glyphfield'),'size','40','placeholder','Initial field']) +'<br>' +
+		HU.input('',gi.field??'',['id',this.domId('glyphfield'),'size','25','placeholder','Initial field']) +'<br>' +
 		HU.b('Menu Label:') +'<br>'  +
-		HU.input('',gi.label??'',['id',this.domId('glyphlabel'),'size','40']);
+		HU.input('',gi.label??'',['id',this.domId('glyphlabel'),'size','25']);
 	    contents+=HU.table(HU.tr(['valign','top'],HU.td(fields1) +HU.td(HU.div(['style','margin-left:8px;'],fields2))));
 
 	    contents+=HU.b('Canvas: ') +
@@ -462,13 +461,13 @@ MapGlyph.prototype = {
 
 
 	    contents+=  HU.div(['style','margin-top:4px;margin-bottom:4px;'],HU.b('Properties:') + HU.space(1) +
-			       HU.input('',gi.props??'',['id',this.domId('glyphprops'),'size','100']));	    	    	    
+			       HU.input('',gi.props??'',['id',this.domId('glyphprops'),'size','80']));	    	    	    
 
 	    contents+=HU.b('Glyphs:') +'<br>';
 	    contents +=
-		HU.textarea('',gi.glyphs??'',[ID,this.domId('entryglyphs'),'rows',6,'cols', 110]);
+		HU.textarea('',gi.glyphs??'',[ID,this.domId('entryglyphs'),'rows',3,'cols', 90]);
 	    content.push({
-		header:'Glyphs',
+		header:'Data Icons',
 		contents: contents});
 
 	}
@@ -503,7 +502,7 @@ MapGlyph.prototype = {
 
 
     applyPropertiesDialog: function() {
-	if(this.isMultiEntry()) {
+	if(this.jq("showmultidata").length) {
 	    this.setShowMultiData(this.jq("showmultidata").is(':checked'));
 	}
 	//Make sure we do this after we set the above style properties
@@ -622,20 +621,35 @@ MapGlyph.prototype = {
     glyphCreated:function() {
 	this.applyEntryGlyphs();
     },
-    applyEntryGlyphs:function(args) {
+    clearDataIcon: function() {
+	//Is this a data icon
+	if(this.style && this.style.externalGraphic && this.style.externalGraphic.startsWith('data:')) {
+	    
+	    if(this.attrs.dataIconOriginal) {
+		let o = this.attrs.dataIconOriginal;
+		this.style.externalGraphic=o.externalGraphic;
+		this.style.pointRadius = o.pointRadius;
+		this.style.fontSize = o.fontSize;		
+	    } else {
+		this.style.externalGraphic=null;
+	    }
+
+	}
+    },
+    applyEntryGlyphs:function(force) {
+	if(!force && !this.getShowMultiData()) {
+	    this.clearDataIcon();
+	    return;
+	}
 	if(!Utils.stringDefined(this.getEntryGlyphs(true))) {
 	    return;
 	}
+
 	let opts = {
 	    entryId:this.attrs.entryId
 	};
 
-	if(args) {
-	    $.extend(opts,args);
-	}
-
 	let glyphs = [];
-	
 	let g = this.getEntryGlyphs(true);
 	g = g.replace(/\\ *\n/g,'');
 	let lines = Utils.split(g,'\n',true,true);
@@ -692,7 +706,6 @@ MapGlyph.prototype = {
 		}
 	    });
 	};
-	makeProps(this.getGlyphProperty('props'));
 	glyphLines.forEach(line=>{
 	    line = line.trim();
 	    if(line.startsWith("#")) return;
@@ -702,8 +715,7 @@ MapGlyph.prototype = {
 	    }
 	    lines.push(line);
 	});
-
-
+	makeProps(this.getGlyphProperty('props'));
 
 	let cvrt=(v,dflt)=>{
 	    if(!Utils.stringDefined(v)) return dflt;
@@ -711,9 +723,11 @@ MapGlyph.prototype = {
 	};
 
 	//This recurses up the glyph tree
-	let size=cvrt(this.getGlyphProperty('iconsize'),props.size??100);
-	let canvasWidth=parseFloat(cvrt(this.getGlyphProperty('width'),props.width??100));
-	let canvasHeight=parseFloat(cvrt(this.getGlyphProperty('height'),props.height??100));	
+	let size=cvrt(this.getGlyphProperty('iconsize'),props.iconSize??100);
+	let canvasWidth=parseFloat(cvrt(this.getGlyphProperty('width'),props.canvasWidth??100));
+	let canvasHeight=parseFloat(cvrt(this.getGlyphProperty('height'),props.canvasHeight??100));	
+//	console.log(canvasWidth,canvasHeight,size);
+
 	let glyphField=this.getGlyphProperty('field');
 	let glyphFields = this.getGlyphProperty('fields');
 	let attrs = {};
@@ -732,11 +746,8 @@ MapGlyph.prototype = {
 	lines.forEach(line=>{
 	    line = line.trim();
 	    if(line.startsWith('#')) return;
-	    if(props.requiredField) {
-		line+=',requiredField:' + props.requiredField;
-	    }
 	    if(glyphField) {
-		line = line.replace(/\${field}/g,glyphField);
+		line = line.replace(/\${_field}/g,glyphField);
 	    }
 	    Object.keys(attrs).forEach(key=>{
 		if(key=='label') return;
@@ -744,21 +755,31 @@ MapGlyph.prototype = {
 	    });
 	    //In case there wasn't a unit
 	    line = line.replaceAll(/\${unit}/g,'');
-	    glyphs.push(new Glyph(this.display,1.0, data.getRecordFields(),data.getRecords(),{
+
+	    props = $.extend(props,{
+		glyphField:glyphField,
 		canvasWidth:canvasWidth,
 		canvasHeight: canvasHeight,
 		entryname: this.getName(),
-		font:props.font
-	    },line));
+	    });
+	    glyphs.push(new Glyph(this.display,1.0, data.getRecordFields(),data.getRecords(),props,line));
 	});
 	let cid = HU.getUniqueId("canvas_");
 	let c = HU.tag("canvas",[CLASS,"", STYLE,"xdisplay:none;", 	
 				 WIDTH,canvasWidth,HEIGHT,canvasHeight,ID,cid]);
 
+	let isShown = true;
+	glyphs.forEach(glyph=>{
+	    if(!glyph.okToShow()) {
+		isShown=false;
+	    }
+	});
+
+
 	$(document.body).append(c);
 	let canvas = document.getElementById(cid);
 	let ctx = canvas.getContext("2d");
-	if(props.fill) {
+	if(isShown &&props.fill) {
 	    ctx.fillStyle=props.fill;
 	    ctx.fillRect(0,0,canvasWidth,canvasHeight);
 	}
@@ -773,7 +794,7 @@ MapGlyph.prototype = {
 	    if(isReady) pending.push(isReady);
 	});
 
-	if(props.borderColor) {
+	if(isShown &&props.borderColor) {
 	    ctx.strokeStyle = props.borderColor;
 	    ctx.lineWidth=parseFloat(props.borderWidth??1);
 	    let d = 0.5*ctx.lineWidth;
@@ -787,6 +808,14 @@ MapGlyph.prototype = {
 	    if($('#testimg').length) 
 		$("#testimg").html(HU.tag("img",["src",img]));
 	    canvas.remove();
+	    //Save the original style
+	    if(!this.attrs.dataIconOriginal) {
+		this.attrs.dataIconOriginal = {
+		    externalGraphic:this.style.externalGraphic,
+		    pointRadius:this.style.pointRadius,		    
+		    fontSize:this.style.fontSize,		    
+		}
+	    }
 	    this.style.fontSize='0px';
 	    this.style.pointRadius=size;
 	    this.style.externalGraphic=img;
@@ -4594,7 +4623,7 @@ MapGlyph.prototype = {
 		mapGlyph.isEphemeral = true;
 		this.addChildGlyph(mapGlyph);
 		if(this.getShowMultiData()) {
-		    mapGlyph.applyEntryGlyphs();
+		    mapGlyph.applyEntryGlyphs(true);
 		}
 	    });
 	    //call getBounds  so they are cached

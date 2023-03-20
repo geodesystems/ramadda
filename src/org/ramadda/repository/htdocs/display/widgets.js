@@ -2659,11 +2659,18 @@ let Gfx = {
 
 
 function Glyph(display, scale, fields, records, args, attrs) {
-    args = args||{};
+    var props = this.properties = this.p = {};
     $.extend(this,{
 	display: display,
-	type:"label",
 	records:records,
+	type:"label",
+	toString: function() {
+	    return this.properties.type;
+	}
+    });
+
+
+    $.extend(this.properties,{
 	dx:0,
 	dy:0,
 	label:"",
@@ -2672,13 +2679,9 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	width:8,
 	fill:true,
 	stroke:true,
-	toString: function() {
-	    return this.type;
-	}
     });
-    //type:circle,
-    //circle,
-    $.extend(this,args);
+    $.extend(this.properties,args??{});
+
     let cnt=0;
     attrs.split(",").forEach(attr=>{
 	let toks = attr.split(":");
@@ -2698,53 +2701,60 @@ function Glyph(display, scale, fields, records, args, attrs) {
 //	console.log('\t'+name+'='+ value);
 	value = value.replace(/_nl_/g,"\n").replace(/_colon_/g,":").replace(/_comma_/g,",");
 	//Check for the ${...} macros
-	if(name=='colorBy')
-	    value = value.replace('\${','').replace('}','');
+//	if(name=='colorBy')  value = value.replace('\${','').replace('}','');
 
 	if(value=="true") value=true;
 	else if(value=="false") value=false;
-	this[name] = value;
+	this.properties[name] = value;
     });
 
-    if(this.labelBy) {
-	this.labelField=display.getFieldById(fields,this.labelBy);
-	if(!this.labelField) {
-	    console.log("Could not find label field: " + this.labelBy);
+    if(props.glyphField|| props.defaultField ) {
+	['requiredField','colorBy','label'].forEach(prop=>{
+	    if(props[prop]) {
+		props[prop] = props[prop].replace(/\${_field}/g,props.glyphField??props.defaultField);
+	    }
+	});
+    }
+
+    if(props.labelBy) {
+	props.labelField=display.getFieldById(fields,props.labelBy);
+	if(!props.labelField) {
+	    console.log("Could not find label field: " + props.labelBy);
 	}
     }
 
 
 
-    if(this.type=="image") {
-	this.imageField=display.getFieldById(fields,this.imageField);
-	this.myImage= new Image();
+    if(props.type=="image") {
+	props.imageField=display.getFieldById(fields,props.imageField);
+	props.myImage= new Image();
     }
-    this.scale = scale;
-    if(this.height==null) {
-	if(this.type == "3dbar")
-	    this.height=20;
+    props.scale = scale;
+    if(props.height==null) {
+	if(props.type == "3dbar")
+	    props.height=20;
 	else
-	    this.height=8;
+	    props.height=8;
     }
-    if(this.pos==null) {
-	if(this.type == "3dbar")
-	    this.color = "blue";
-	else if(this.type == "rect") {
-	    this.pos = "c";
+    if(props.pos==null) {
+	if(props.type == "3dbar")
+	    props.color = "blue";
+	else if(props.type == "rect") {
+	    props.pos = "c";
 	}
 	else
-	    this.pos = "nw";
+	    props.pos = "nw";
     }	
     
     let cvrt = s=>{
 	if(!isNaN(+s)) return +s;
 	s  = String(s);
-	s = s.replace(/canvasWidth2/g,""+(this.canvasWidth/2)).replace(/canvasWidth/g,this.canvasWidth);
-	s = s.replace(/cw2/g,""+(this.canvasWidth/2)).replace(/cw/g,this.canvasWidth);
-	s = s.replace(/canvasHeight2/g,""+(this.canvasHeight/2)).replace(/canvasHeight/g,this.canvasHeight);
-	s = s.replace(/ch2/g,""+(this.canvasHeight/2)).replace(/ch/g,this.canvasHeight);		
-	s = s.replace(/width2/g,""+(this.width/2)).replace(/width/g,this.width);	
-	s = s.replace(/height2/g,""+(this.height/2)).replace(/height/g,this.width);	
+	s = s.replace(/canvasWidth2/g,""+(props.canvasWidth/2)).replace(/canvasWidth/g,props.canvasWidth);
+	s = s.replace(/cw2/g,""+(props.canvasWidth/2)).replace(/cw/g,props.canvasWidth);
+	s = s.replace(/canvasHeight2/g,""+(props.canvasHeight/2)).replace(/canvasHeight/g,props.canvasHeight);
+	s = s.replace(/ch2/g,""+(props.canvasHeight/2)).replace(/ch/g,props.canvasHeight);		
+	s = s.replace(/width2/g,""+(props.width/2)).replace(/width/g,props.width);	
+	s = s.replace(/height2/g,""+(props.height/2)).replace(/height/g,props.width);	
 	try {
 	    s = eval(s);
 	} catch(err) {
@@ -2752,53 +2762,52 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	}
 	return s;
     };
-    this.width = cvrt(this.width);
-    this.height = cvrt(this.height);
+    props.width = cvrt(props.width);
+    props.height = cvrt(props.height);
 
-    this.dx = cvrt(this.dx);
-    this.dy = cvrt(this.dy);    
+    props.dx = cvrt(props.dx);
+    props.dy = cvrt(props.dy);    
 
 
 
-    this.baseWidth = +this.baseWidth;
-    this.width = (+this.width)*scale;
-    this.height = (+this.height)*scale;
-    this.dx = (+this.dx)*scale;
-    this.dy = (+this.dy)*scale;
-    if(this.sizeBy) {
-	this.sizeByField=display.getFieldById(fields,this.sizeBy);
-	if(!this.sizeByField) {
-	    console.log("Could not find sizeBy field:" + this.sizeBy);
+    props.baseWidth = +props.baseWidth;
+    props.width = (+props.width)*scale;
+    props.height = (+props.height)*scale;
+    props.dx = (+props.dx)*scale;
+    props.dy = (+props.dy)*scale;
+    if(props.sizeBy) {
+	props.sizeByField=display.getFieldById(fields,props.sizeBy);
+	if(!props.sizeByField) {
+	    console.log("Could not find sizeBy field:" + props.sizeBy);
 	} else  {
 	    let props = {
-		Min:this.sizeByMin,
-		Max:this.sizeByMax,
+		Min:props.sizeByMin,
+		Max:props.sizeByMax,
 	    };
-	    this.sizeByInfo =  new ColorByInfo(display, fields, records, this.sizeBy,this.sizeBy, null, this.sizeBy,this.sizeByField,props);
+	    props.sizeByInfo =  new ColorByInfo(display, fields, records, props.sizeBy,props.sizeBy, null, props.sizeBy,props.sizeByField,props);
 	}
     }
 
-
-    this.dontShow =false;
-    if(!this.colorByInfo && this.colorBy) {
-	this.colorByField=display.getFieldById(fields,this.colorBy);
-	let ct = this.colorTable?display.getColorTableInner(true, this.colorTable):null;
-	if(!this.colorByField) {
-	    console.log("Could not find colorBy field:" + this.colorBy);
+    props.dontShow =false;
+    if(!props.colorByInfo && props.colorBy) {
+	props.colorByField=display.getFieldById(fields,props.colorBy);
+	let ct = props.colorTable?display.getColorTableInner(true, props.colorTable):null;
+	if(!props.colorByField) {
+	    console.log("Could not find colorBy field:" + props.colorBy);
 //	    console.log("Fields:" + fields);
-	    this.dontShow =true;
+	    props.dontShow =true;
 	} else {
-	    let props = {
-		Min:this.colorByMin,
-		Max:this.colorByMax,
+	    let colorByProps = {
+		Min:props.colorByMin,
+		Max:props.colorByMax,
 	    };	    
-	    this.colorByInfo =  new ColorByInfo(display, fields, records, this.colorBy,this.colorBy+".colorByMap", ct, this.colorBy,this.colorByField, props);
+	    props.colorByInfo =  new ColorByInfo(display, fields, records, props.colorBy,props.colorBy+".colorByMap", ct, props.colorBy,props.colorByField, colorByProps);
 	}
     }
 
-    if(this.requiredField) {
-	if(!display.getFieldById(fields,this.requiredField)) {
-	    this.dontShow = true;
+    if(props.requiredField) {
+	if(!display.getFieldById(fields,props.requiredField)) {
+	    props.dontShow = true;
 	}
     }
 
@@ -2808,22 +2817,26 @@ function Glyph(display, scale, fields, records, args, attrs) {
 
 
 Glyph.prototype = {
+    okToShow:function() {
+	return !this.properties.dontShow;
+    },
     draw: function(opts, canvas, ctx, x,y,args,debug) {
-	if(this.dontShow)return;
-	debug = this.debug??debug;
+	let props = this.properties;
+	if(props.dontShow)return;
+	debug = props.debug??debug;
 	let color =   null;
-	if(this.colorByInfo) {
-	    if(this.colorByField) {
-		let v = args.record.getValue(this.colorByField.getIndex());
-		color=  this.colorByInfo.getColor(v);
+	if(props.colorByInfo) {
+	    if(props.colorByField) {
+		let v = args.record.getValue(props.colorByField.getIndex());
+		color=  props.colorByInfo.getColor(v);
 	    } else if(args.colorValue) {
-		color=  this.colorByInfo.getColor(args.colorValue);
+		color=  props.colorByInfo.getColor(args.colorValue);
 	    }
 	}
 	let lengthPercent = 1.0;
-	if(this.sizeByInfo) {
-	    let v = args.record.getValue(this.sizeByField.getIndex());
-	    lengthPercent = this.sizeByInfo.getValuePercent(v);
+	if(props.sizeByInfo) {
+	    let v = args.record.getValue(props.sizeByField.getIndex());
+	    lengthPercent = props.sizeByInfo.getValuePercent(v);
 	}
 
 	if(args.alphaByCount && args.cell && args.grid) {
@@ -2832,11 +2845,11 @@ Glyph.prototype = {
 		color = Utils.addAlphaToColor(c,countPerc);
 	    }
 	}
-	ctx.fillStyle =color || this.fillStyle || this.color || 'blue';
-	ctx.strokeStyle =this.strokeStyle ?? this.color ?? opts.strokeStyle ?? '#000';
-	ctx.lineWidth=this.lineWidth??this.strokeWidth??opts.lineWidth??1;
-	if(this.type=='label' || this.label) {
-	    let label = this.labelField?args.record.getValue(this.labelField.getIndex()):this.label;
+	ctx.fillStyle =color || props.fillStyle || props.color || 'blue';
+	ctx.strokeStyle =props.strokeStyle ?? props.color ?? opts.strokeStyle ?? '#000';
+	ctx.lineWidth=props.lineWidth??props.strokeWidth??opts.lineWidth??1;
+	if(props.type=='label') {
+	    let label = props.labelField?args.record.getValue(props.labelField.getIndex()):props.label;
 	    if(label===null) {
 		console.log('No label value');
 		return;
@@ -2844,171 +2857,173 @@ Glyph.prototype = {
 	    let text = String(label);
 	    if(args.record) {
 		text = this.display.applyRecordTemplate(args.record, null,null,text,{
-		    entryname:this.entryname
+		    entryname:props.entryname
 		});
 	    }
 
 	    if(!isNaN(parseFloat(text))) {
-		if(this.valueScale) {
-		    text = text* +this.valueScale;
+		if(props.valueScale) {
+		    text = text* +props.valueScale;
 		}
-		if(Utils.isDefined(this.decimals))
-		    text = number_format(text,+this.decimals);
+		if(Utils.isDefined(props.decimals))
+		    text = number_format(text,+props.decimals);
 	    }
-	    if(this.template) {
-		text = this.template.replace('${value}',text);
-	    }
-	    //Normalize the font
-	    if(this.font && this.font.match(/\d+(px|pt)$/)) {
-		this.font = this.font +' sans-serif';
+	    if(props.template) {
+		text = props.template.replace('${value}',text);
 	    }
 
-	    ctx.font = this.font ??  this.display.getProperty('glyphFont','12pt sans-serif');
-	    ctx.fillStyle = ctx.strokeStyle =    color || this.color|| this.display.getProperty('glyphColor','#000');
+	    text = text.replace(/\${.*}/g,'');
+	    if(props.prefix) text = props.prefix.replaceAll('_space_',' ')+text
+	    if(props.suffix) text = text+props.suffix.replaceAll('_space_',' ');
+	    text = text.replace(/_nl_/g,'\n').split('\n');
+
+
+	    //Normalize the font
+	    if(props.font && props.font.match(/\d+(px|pt)$/)) {
+		props.font = props.font +' sans-serif';
+	    }
+
+	    ctx.font = props.font ??  this.display.getProperty('glyphFont','12pt sans-serif');
+	    ctx.fillStyle = ctx.strokeStyle =    color || props.color|| this.display.getProperty('glyphColor','#000');
 
 	    if(debug) console.log('glyph label: font=' + ctx.font +' fill:' + ctx.fillStyle +' stroke:' + ctx.strokeStyle);
-	    text = text.replace(/\${.*}/g,'');
-	    if(this.prefix) text = this.prefix.replaceAll('_space_',' ')+text
-	    if(this.suffix) text = text+this.suffix.replaceAll('_space_',' ');
-	    text = text.replace(/_nl_/g,'\n').split('\n');
-	    //remove any macros that did not get set
 
 
 	    let h = 0;
 	    let hgap = 3;
 	    let maxw = 0;
-	    let pady = +(this.pady??2);
+	    let pady = +(props.pady??2);
 	    text.forEach((t,idx)=>{
 		let dim = ctx.measureText(t);
 		if(idx>0) h+=hgap;
 		maxw=Math.max(maxw,dim.width);
 		h +=dim.actualBoundingBoxAscent+dim.actualBoundingBoxDescent;
 	    });
-	    let pt = Utils.translatePoint(x, y, maxw,  h, this.pos,{dx:this.dx,dy:this.dy});
-	    if(debug) console.log('position:',{point:pt,x:x,y:y,text_width:maxw,text_height:h,pos:this.pos,dx:this.dx,dy:this.dy});
-	    let bg = this.bg;
+	    let pt = Utils.translatePoint(x, y, maxw,  h, props.pos,{dx:props.dx,dy:props.dy});
+	    if(debug) console.log('position:',{point:pt,x:x,y:y,text_width:maxw,text_height:h,pos:props.pos,dx:props.dx,dy:props.dy});
+	    let bg = props.bg;
 	    text.forEach(t=>{
 		let dim = ctx.measureText(t);
 		if(bg) {
 		    ctx.fillStyle = bg;
-		    let pad = +(this.bgpad??6);
+		    let pad = +(props.bgpad??6);
 		    if(debug) console.log('drawing background:' + bg +' padding:' + pad);
 		    let rh = dim.actualBoundingBoxAscent+dim.actualBoundingBoxDescent;
 		    let rw = dim.width;
 		    ctx.fillRect(pt.x-pad,pt.y-rh-pad,rw+2*pad,rh+2*pad);
 		}
-		ctx.fillStyle = ctx.strokeStyle =    color || this.color|| this.display.getProperty('glyphColor','#000');
+		ctx.fillStyle = ctx.strokeStyle =    color || props.color|| this.display.getProperty('glyphColor','#000');
 		dim = ctx.measureText(t);
 		let offset =dim.actualBoundingBoxAscent+dim.actualBoundingBoxDescent;
 		if(debug) console.log('draw text:' + t +' x:' + pt.x +' y:'+ (pt.y+offset));
 		ctx.fillText(t,pt.x,pt.y+offset);
 		pt.y += pady+dim.actualBoundingBoxAscent + dim.actualBoundingBoxDescent + hgap;
 	    });
-	} else 	if(this.type == 'circle') {
+	} else 	if(props.type == 'circle') {
 	    ctx.beginPath();
-	    let w = this.width*lengthPercent+ this.baseWidth;
-	    let pt = Utils.translatePoint(x, y, w,  w, this.pos,{dx:this.dx,dy:this.dy});
+	    let w = props.width*lengthPercent+ props.baseWidth;
+	    let pt = Utils.translatePoint(x, y, w,  w, props.pos,{dx:props.dx,dy:props.dy});
 	    let cx = pt.x+w/2;
 	    let cy = pt.y+w/2;
 	    if(debug) console.log('draw circle',{cx:cx,cy:cy,w:w});
 	    ctx.arc(cx,cy, w/2, 0, 2 * Math.PI);
-	    if(this.fill)  {
+	    if(props.fill)  {
 		ctx.fill();
 	    }
-	    if(this.stroke) 
+	    if(props.stroke) 
 		ctx.stroke();
-	} else if(this.type=='rect') {
-	    let pt = Utils.translatePoint(x, y, this.width,  this.height, this.pos,{dx:this.dx,dy:this.dy});
-	    if(this.fill)  
-		ctx.fillRect(pt.x,pt.y, this.width, this.height);
-	    if(this.stroke) 
-		ctx.strokeRect(pt.x,pt.y, this.width, this.height);
-	} else if(this.type=='image') {
-	    let src = this.url;
-	    if(!src && this.imageField) {
-		src =  args.record.getValue(this.imageField.getIndex());
+	} else if(props.type=='rect') {
+	    let pt = Utils.translatePoint(x, y, props.width,  props.height, props.pos,{dx:props.dx,dy:props.dy});
+	    if(props.fill)  
+		ctx.fillRect(pt.x,pt.y, props.width, props.height);
+	    if(props.stroke) 
+		ctx.strokeRect(pt.x,pt.y, props.width, props.height);
+	} else if(props.type=='image') {
+	    let src = props.url;
+	    if(!src && props.imageField) {
+		src =  args.record.getValue(props.imageField.getIndex());
 	    }
 	    if(src) {
 		src= src.replace('\${root}',ramaddaBaseUrl);
-		this.width = +(this.width??50);
-		this.height = +(this.height??50);		
-		let pt = Utils.translatePoint(x, y, this.width,  this.height, this.pos,{dx:this.dx,dy:this.dy});
-		if(this.debug) console.log('image glyph:' + src,{pos:this.pos,pt:pt,x:x,y:y,dx:this.dx,dy:this.dy,width:this.width,height:this.height});
+		props.width = +(props.width??50);
+		props.height = +(props.height??50);		
+		let pt = Utils.translatePoint(x, y, props.width,  props.height, props.pos,{dx:props.dx,dy:props.dy});
+		if(props.debug) console.log('image glyph:' + src,{pos:props.pos,pt:pt,x:x,y:y,dx:props.dx,dy:props.dy,width:props.width,height:props.height});
 		let i = new Image();
 		i.src = src;
 		if(!i.complete) {
 		    let loaded = false;
 		    i.onload=()=>{
-			ctx.drawImage(i,pt.x,pt.y,this.width,this.width);
+			ctx.drawImage(i,pt.x,pt.y,props.width,props.width);
 			loaded=true;
 		    }
 		    return () =>{
 			return loaded;
 		    }
 		} else {
-		    ctx.drawImage(i,pt.x,pt.y,this.width,this.width);
+		    ctx.drawImage(i,pt.x,pt.y,props.width,props.width);
 		}
 	    } else {
 		console.log('No url defined for glyph image');
 	    }
-	} else 	if(this.type == 'gauge') {
-	    let pt = Utils.translatePoint(x, y, this.width,  this.height, this.pos,{dx:this.dx,dy:this.dy});
-	    ctx.fillStyle =  this.fillColor || '#F7F7F7';
+	} else 	if(props.type == 'gauge') {
+	    let pt = Utils.translatePoint(x, y, props.width,  props.height, props.pos,{dx:props.dx,dy:props.dy});
+	    ctx.fillStyle =  props.fillColor || '#F7F7F7';
 	    ctx.beginPath();
-	    let cx= pt.x+this.width/2;
-	    let cy = pt.y+this.height;
-	    ctx.arc(cx,cy, this.width/2,  1 * Math.PI,0);
+	    let cx= pt.x+props.width/2;
+	    let cy = pt.y+props.height;
+	    ctx.arc(cx,cy, props.width/2,  1 * Math.PI,0);
 	    ctx.fill();
 	    ctx.strokeStyle =   '#000';
 	    ctx.stroke();
 	    ctx.beginPath();
 	    ctx.beginPath();
-	    let length = this.width/2*0.75;
+	    let length = props.width/2*0.75;
             let degrees = (180*lengthPercent);
-	    let ex = cx-this.width*0.4;
+	    let ex = cx-props.width*0.4;
 	    let ey = cy;
 	    let ep = Utils.rotate(cx,cy,ex,ey,degrees);
-	    ctx.strokeStyle =  this.color || '#000';
-	    ctx.lineWidth=this.lineWidth||2;
+	    ctx.strokeStyle =  props.color || '#000';
+	    ctx.lineWidth=props.lineWidth||2;
 	    ctx.moveTo(cx,cy);
 	    ctx.lineTo(ep.x,ep.y);
 	    ctx.stroke();
 	    ctx.lineWidth=1;
-	    this.showLabel = true;
-	    if(this.showLabel && this.sizeByInfo) {
+	    props.showLabel = true;
+	    if(props.showLabel && props.sizeByInfo) {
 		ctx.fillStyle='#000';
-		let label = String(this.sizeByInfo.minValue);
-		ctx.font = this.font || '9pt arial'
+		let label = String(props.sizeByInfo.minValue);
+		ctx.font = props.font || '9pt arial'
 		let dim = ctx.measureText(label);
-		ctx.fillText(label,cx-this.width/2-dim.width-2,cy);
-		ctx.fillText(this.sizeByInfo.maxValue,cx+this.width/2+2,cy);
+		ctx.fillText(label,cx-props.width/2-dim.width-2,cy);
+		ctx.fillText(props.sizeByInfo.maxValue,cx+props.width/2+2,cy);
 	    }
-	} else if(this.type=='3dbar') {
-	    let pt = Utils.translatePoint(x, y, this.width,  this.height, this.pos,{dx:this.dx,dy:this.dy});
-	    let height = lengthPercent*(this.height) + parseFloat(this.baseHeight);
-	    ctx.fillStyle =   color || this.color;
-	    ctx.strokeStyle = this.strokeStyle||'#000';
-	    this.draw3DRect(canvas,ctx,pt.x, 
-			    canvas.height-pt.y-this.height,
-			    +this.width,height,+this.width);
+	} else if(props.type=='3dbar') {
+	    let pt = Utils.translatePoint(x, y, props.width,  props.height, props.pos,{dx:props.dx,dy:props.dy});
+	    let height = lengthPercent*(props.height) + parseFloat(props.baseHeight);
+	    ctx.fillStyle =   color || props.color;
+	    ctx.strokeStyle = props.strokeStyle||'#000';
+	    props.draw3DRect(canvas,ctx,pt.x, 
+			    canvas.height-pt.y-props.height,
+			    +props.width,height,+props.width);
 	    
-	} else if(this.type=='axis') {
-	    let pt = Utils.translatePoint(x, y, this.width,  this.height, this.pos,{dx:this.dx,dy:this.dy});
-	    let height = lengthPercent*(this.height) + parseFloat(this.baseHeight);
-	    ctx.strokeStyle = this.strokeStyle||'#000';
+	} else if(props.type=='axis') {
+	    let pt = Utils.translatePoint(x, y, props.width,  props.height, props.pos,{dx:props.dx,dy:props.dy});
+	    let height = lengthPercent*(props.height) + parseFloat(props.baseHeight);
+	    ctx.strokeStyle = props.strokeStyle||'#000';
 	    ctx.beginPath();
 	    ctx.moveTo(pt.x,pt.y);
-	    ctx.lineTo(pt.x,pt.y+this.height);
-	    ctx.lineTo(pt.x+this.width,pt.y+this.height);
+	    ctx.lineTo(pt.x,pt.y+props.height);
+	    ctx.lineTo(pt.x+props.width,pt.y+props.height);
 	    ctx.stroke();
-	} else if(this.type == 'vector') {
-	    if(!this.sizeByInfo) {
+	} else if(props.type == 'vector') {
+	    if(!props.sizeByInfo) {
 		console.log('make Vector: no sizeByInfo');
 		return;
 	    }
-	    ctx.strokeStyle =   color || this.color;
-	    let v = args.record.getValue(this.sizeByField.getIndex());
-	    lengthPercent = this.sizeByInfo.getValuePercent(v);
+	    ctx.strokeStyle =   color || props.color;
+	    let v = args.record.getValue(props.sizeByField.getIndex());
+	    lengthPercent = props.sizeByInfo.getValuePercent(v);
 	    let length = opts.cellSizeH;
 	    if(opts.lengthBy && opts.lengthBy.index>=0) {
 		length = opts.lengthBy.scaleToValue(v);
@@ -3052,10 +3067,10 @@ Glyph.prototype = {
 	    ctx.stroke();
 	    if(arrowLength>0) {
 		ctx.beginPath();
-		this.drawArrow(ctx, x,y,x2,y2,arrowLength);
+		props.drawArrow(ctx, x,y,x2,y2,arrowLength);
 		ctx.stroke();
 	    }
-	} else if(this.type=='tile'){
+	} else if(props.type=='tile'){
 	    let crx = x+opts.cellSizeX/2;
 	    let cry = y+opts.cellSizeY/2;
  	    if((args.row%2)==0)  {
@@ -3074,7 +3089,7 @@ Glyph.prototype = {
 	    //	    ctx.fill();
 	    ctx.stroke();
 	} else {
-	    console.log('Unknown cell shape:' + this.type);
+	    console.log('Unknown cell shape:' + props.type);
 	}
     },
     draw3DRect:function(canvas,ctx,x,y,width, height, depth) {
