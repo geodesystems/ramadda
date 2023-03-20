@@ -376,6 +376,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private Properties coreProperties = new Properties();
 
+
     /** _more_ */
     private Map<String, String> systemEnv;
 
@@ -395,6 +396,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     /** _more_ */
     private List<EntryChecker> entryMonitors = new ArrayList<EntryChecker>();
+
+    private List<String[]>httpHeaders = new ArrayList<String[]>();
 
     /** _more_ */
     private String dumpFile;
@@ -3460,6 +3463,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     public Result handleRequest(Request request) throws Exception {
+	//Add in any default http headers
+	for(String[]pair: httpHeaders) {
+	    request.setHeader(pair[0],pair[1]);
+	}	    
+
+
         if ( !getActive()) {
             Result result =
                 new Result(msg("Error"),
@@ -3472,6 +3481,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
         propcnt = 0;
 	//	propdebug = true;
         Result result = handleRequestInner(request);
+
+
+
+
+
         long   t2     = System.currentTimeMillis();
 	String path       = request.getRequestPath();
 	//	if(path.indexOf("/entry/show")>=0) System.err.println((t2-t1) +" " +path +" " + propcnt);
@@ -4624,6 +4638,21 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	streamOutput          =  getProperty("ramadda.streamoutput",false);
         enableHostnameMapping = getProperty(PROP_ENABLE_HOSTNAME_MAPPING,   false);
         cdnOk                 = getProperty(PROP_CDNOK, true);
+
+	//Create the default http headers
+	List<String[]>tmpHttpHeaders = new ArrayList<String[]>();
+	int i=1;
+	while(true) {
+	    String prop = getProperty("ramadda.httpheader" + (i++),null);
+	    if(prop==null) break;
+	    List<String> toks = Utils.splitUpTo(prop,":",2);
+	    if(toks.size()==2) {
+		tmpHttpHeaders.add(new String[]{toks.get(0).trim(),toks.get(1).trim()});
+	    } else {
+		System.err.println("Bad httpheader property:" + prop);
+	    }
+	}
+	httpHeaders = tmpHttpHeaders;
     }
 
     /**
