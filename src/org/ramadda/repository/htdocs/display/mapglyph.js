@@ -4640,10 +4640,8 @@ MapGlyph.prototype = {
 			     entryId:e.getId(),
 			     icon:e.getIconUrl()
 			    };
-
-		//xxxx
 		let points =[e.getLatitude(),e.getLongitude()];
-		let mapGlyph = this.display.createMapMarker(GLYPH_ENTRY,attrs, style,points,true);
+		let mapGlyph = this.display.createMapMarker(GLYPH_ENTRY,attrs, style,points,false);
 		mapGlyph.isEphemeral = true;
 		this.addChildGlyph(mapGlyph);
 		if(this.getShowMultiData()) {
