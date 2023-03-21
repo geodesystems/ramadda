@@ -116,6 +116,11 @@ public class SelectInfo implements Constants {
         this.syntheticOk =syntheticOk; 
     }
 
+    public SelectInfo(Request request, Entry entry,  boolean syntheticOk ) {	
+        this(request, entry);
+        this.syntheticOk =syntheticOk; 
+    }
+
 
     /**
      */
