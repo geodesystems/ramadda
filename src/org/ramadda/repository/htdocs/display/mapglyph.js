@@ -1,6 +1,7 @@
 
 
-var DEFAULT_GLYPHS = "props:fontSize:0px,size:50,width:100,height:50,font:18px sans-serif\ntype:circle,requiredField:${field},fill:false,strokeWidth:4,width:canvasWidth-10,height:canvasHeight,strokeStyle:green,pos:c,dx:canvasWidth2,dy:-canvasHeight2\ntype:label,requiredField:${field},pos:c,dx:canvasWidth2,dy:-canvasHeight2,decimals:1,label:${${field}},suffix:_space_${unit}";
+var DEFAULT_GLYPH_PROPS = 'font:50px sans-serif,lineWidth:5,requiredField:${_field},borderColor:#000,fill:#eee';
+var DEFAULT_GLYPHS = 'label,pos:nw,dx:80,dy:-ch+20,label:${${_field} decimals=1 suffix=" ${unit}"}\nimage,pos:nw,dx:10,dy:10-ch,width:60,height:60,url:${icon}';
 
 
 var LINETYPE_STRAIGHT='straight';
@@ -453,6 +454,10 @@ MapGlyph.prototype = {
 		HU.input('',gi.label??'',['id',this.domId('glyphlabel'),'size','25']);
 	    contents+=HU.table(HU.tr(['valign','top'],HU.td(fields1) +HU.td(HU.div(['style','margin-left:8px;'],fields2))));
 
+	    contents+=  HU.div(['id',this.domId('glyph_add_default'),
+				'title','Set default properties and glyphs'],'Set Defaults:');
+
+	    contents+='<br>';
 	    contents+=HU.b('Canvas: ') +
 		'W: ' + HU.input('',gi.width??'',['id',this.domId('glyphwidth'),'size','3']) +
 		' H: ' + HU.input('',gi.height??'',['id',this.domId('glyphheight'),'size','3']) +
@@ -460,9 +465,9 @@ MapGlyph.prototype = {
 		HU.input('',gi.iconsize??'',['id',this.domId('iconsize'),'size','3']);
 
 
-	    contents+=  HU.div(['style','margin-top:4px;margin-bottom:4px;'],HU.b('Properties:') + HU.space(1) +
-			       HU.input('',gi.props??'',['id',this.domId('glyphprops'),'size','80']));	    	    	    
-
+	    contents+=  HU.div(['style','padding-top:0.5em;padding-bottom:0.5em;'],
+			       HU.b('Properties:') + HU.space(1) +
+			       HU.input('',gi.props??'',['id',this.domId('glyphprops'),'size','80']));
 	    contents+=HU.b('Glyphs:') +'<br>';
 	    contents +=
 		HU.textarea('',gi.glyphs??'',[ID,this.domId('entryglyphs'),'rows',3,'cols', 90]);
@@ -636,6 +641,7 @@ MapGlyph.prototype = {
 
 	}
     },
+
     applyEntryGlyphs:function(force) {
 	if(!force && !this.getShowMultiData()) {
 	    this.clearDataIcon();
@@ -755,6 +761,7 @@ MapGlyph.prototype = {
 	    });
 	    //In case there wasn't a unit
 	    line = line.replaceAll(/\${unit}/g,'');
+	    line = line.replaceAll(/\${icon}/g,this.getIcon());	    
 
 	    props = $.extend(props,{
 		glyphField:glyphField,
@@ -2172,7 +2179,11 @@ MapGlyph.prototype = {
 	return this.getType()==GLYPH_MULTIENTRY;
     },
     getShowMultiData:function() {
-	return this.attrs.showmultidata;
+	if(this.attrs.showmultidata) return true;
+	if(this.getParentGlyph()) {
+	    return this.getParentGlyph().getShowMultiData();
+	}
+	return false;
     },
     setShowMultiData:function(v) {
 	this.attrs.showmultidata = v;
@@ -2488,6 +2499,19 @@ MapGlyph.prototype = {
 	});
     },
     initPropertiesComponent: function(dialog) {
+	this.jq('glyph_add_default').button().click(() =>{
+	    [['glyphwidth','300'],
+	     ['glyphheight','100'],	     
+	     ['iconsize','40'],
+	     ['glyphprops',DEFAULT_GLYPH_PROPS],
+	     ['entryglyphs',DEFAULT_GLYPHS]].forEach(tuple=>{	     	      
+		 if(!Utils.stringDefined(this.jq(tuple[0]).val()))
+		    this.jq(tuple[0]).val(tuple[1]);
+	     });
+	});
+
+
+
 	this.jq('createroute').button().click(()=>{
 	    this.makeGroupRoute();
 	});
