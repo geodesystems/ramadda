@@ -3474,7 +3474,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             widget = HtmlUtils.select(
                 searchArg,
                 Misc.newList(TypeHandler.ALL_OBJECT, "True", "False"),
-                request.getString(searchArg, ""),
+                request.getSanitizedString(searchArg, ""),
                 HtmlUtils.cssClass("search-select"));
         } else if (isType(DATATYPE_ENUMERATIONPLUS)
                    || isType(DATATYPE_ENUMERATION)) {
@@ -3541,12 +3541,12 @@ public class Column implements DataTypes, Constants, Cloneable {
                                   "search-select ramadda-range-select"));
             widget = expr
                      + HtmlUtils.input(searchArg + "_from",
-                                       request.getString(searchArg + "_from",
+                                       request.getSanitizedString(searchArg + "_from",
                                            ""), ((placeholderMin != null)
                     ? HU.attr("placeholder", placeholderMin)
                     : "") + HU.attr("size", "10")) + " "
                     + HtmlUtils.input(searchArg + "_to",
-                                      request.getString(searchArg + "_to",
+                                      request.getSanitizedString(searchArg + "_to",
                                           ""), ((placeholderMax != null)
                     ? HU.attr("placeholder", placeholderMax)
                     : "") + HU.attr("id", toId) + HU.attr("size", "10"));
@@ -3612,7 +3612,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                 //                widget = HtmlUtils.textArea(searchArg, request.getString(searchArg, ""),
                 //                                           rows, columns);
             } else {
-                String text = request.getString(searchArg, "");
+                String text = request.getSanitizedString(searchArg, "");
                 text = text.replaceAll("\"", "&quot;");
                 //                String text  = Utils.unquote(request.getString(searchArg, ""));
 
@@ -3635,6 +3635,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 		    for(String s:searchValues) {
 			s = s.trim();
 			s = s.replaceAll("\"", "&quot;");
+			s = HtmlUtils.sanitizeString(s);
 			tmpSB.append(HtmlUtils.input(searchArg, s,
 						     HtmlUtils.SIZE_20 + attrs));
 			tmpSB.append("&nbsp;");
