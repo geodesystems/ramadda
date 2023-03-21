@@ -15,6 +15,7 @@ import org.ramadda.repository.util.SelectInfo;
 
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
@@ -254,10 +255,14 @@ public class EiaCategoryTypeHandler extends ExtensibleGroupTypeHandler {
             //            System.err.println("Eia URL:" + url);
             seenUrls.add(url);
         }
-        String xml = IOUtil.readContents(new URL(url));
+	IO.Result result = IO.doGetResult(new URL(url));
+	if(result.getError()) {
+	    throw new RuntimeException("An error has occurred:" + result.getResult());
+	}
+
         long   t2  = System.currentTimeMillis();
         //        System.err.println("\ttime:" + (t2 - t1));
-        Element root = XmlUtil.getRoot(xml);
+        Element root = XmlUtil.getRoot(result.getResult());
 
         return root;
     }
