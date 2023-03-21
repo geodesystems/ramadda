@@ -8,6 +8,7 @@ package org.ramadda.repository.output;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.util.SelectInfo;
 import org.ramadda.repository.auth.*;
 
 
@@ -446,6 +447,7 @@ public class ZipOutputHandler extends OutputHandler {
 
             if (entry.isGroup() && recurse) {
                 Entry group = (Entry) entry;
+		SelectInfo info = new SelectInfo(request, entry,false);
                 List<Entry> children = getEntryManager().getChildren(request,
                                            group);
                 String path = group.getName();
