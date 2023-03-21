@@ -449,7 +449,7 @@ public class ZipOutputHandler extends OutputHandler {
                 Entry group = (Entry) entry;
 		SelectInfo info = new SelectInfo(request, entry,false);
                 List<Entry> children = getEntryManager().getChildren(request,
-                                           group);
+								     group,info);
                 String path = group.getName();
                 if (prefix.length() > 0) {
                     path = prefix + "/" + path;
