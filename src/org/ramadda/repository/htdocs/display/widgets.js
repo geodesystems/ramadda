@@ -2780,11 +2780,11 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	if(!props.sizeByField) {
 	    console.log("Could not find sizeBy field:" + props.sizeBy);
 	} else  {
-	    let props = {
+	    let colorProps = {
 		Min:props.sizeByMin,
 		Max:props.sizeByMax,
 	    };
-	    props.sizeByInfo =  new ColorByInfo(display, fields, records, props.sizeBy,props.sizeBy, null, props.sizeBy,props.sizeByField,props);
+	    props.sizeByInfo =  new ColorByInfo(display, fields, records, props.sizeBy,props.sizeBy, null, props.sizeBy,props.sizeByField,colorProps);
 	}
     }
 
