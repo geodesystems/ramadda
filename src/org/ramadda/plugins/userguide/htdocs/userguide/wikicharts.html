@@ -1,0 +1,215 @@
+<html>
+<head>
+<title>Charts and Plots</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<div class="ramadda-doc-header">
+<div style='padding-top:12px;margin-bottom:4px;'><a href="toc.html#wikicharts.html"><span title="Table of contents"><i  style='font-size:16pt;'  class="fa fa-list "></i></span></a> &nbsp; <a href="index.html">RAMADDA User Guide</a>  > <a href="page_wikifacilities.html">Wiki Facilities</a> </div>
+<table width=100% cellspacing=0 cellpadding=0 >
+<tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikidisplay1.html"><table><td valign=center><td><span title="Previous: Basic Displays"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Basic Displays</td></tr></table></a></div></div></td>
+<td width=50% align=center>
+<div class="ramadda-page-title"><a href="#">Section 6.5: Charts and Plots</a></div>
+</td>
+<td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikidisplay2.html"><table><tr valign=center><td>More Wiki Display Components</td><td><span title="Next: More Wiki Display Components"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+</tr></table>
+</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+<div class="ramadda-doc-contents" style="margin-left:20px;">
+
+
+
+:navtop
+
+<a name='linechart'></a>
+:lheading  Line chart
+
+Displays time series or indexed point data. The vAxisMinValue and vAxisMaxValue are used as the range instead of the min/max from the data.
+<br>
+If <i>padRight</i> is set to true than the chart is padded on the right with the same space as what is used for the second axis legend. This allows
+for two or more charts to be aligned that have one or more fields being displayed.
+<a name="display_linechart"></a><pre>{<noop>{display_linechart width=&quot;800&quot;  height=&quot;400&quot;  
+fields=&quot;&quot;       
+vAxisMinValue="0" vAxisMaxValue="1.0" padRight="true"}}</pre><div style='text-align:center;' class='ramadda-docs-image'><a name="image1"></a><div><a href="images/charts/linechart.png?version=93.0"><img  src="images/charts/linechart.png?version=93.0"  style="max-width:90%; " alt=" Line chart" ></a><br><span class="caption">Image 1:  Line chart</span></div></div>
+
+
+<a name="colors"></a>
+You can set various colors of the chart with the following properties:
+
+<pre>
+chart.fill="color or 'transparent'"
+chart.stroke="stroke color"
+chart.strokeWidth="width"
+
+chartArea.fill="color or 'transparent'"
+chartArea.stroke="stroke color"
+chartArea.strokeWidth="width"
+
+hAxis.gridlines.color="color"
+vAxis.gridlines.color="color"
+
+</pre>
+
+
+<a name="annotations"></a>
+<b>Annotating Charts</b><br>
+Annotations for a chart can be specified in two ways. 
+The first is to specify one or more data fields to create the annotation from:
+<pre>
+  annotationFields="field1,field2,..."
+  annotationLabelField="field" //optional for the label
+</pre>
+
+The second way is to specify the annotations using an <i>annotations</i> attribute:
+<pre>
+annotations="
+&lt,index1&gt,label1,description1;
+&lt,index2&gt,label2,description2;
+...
+"
+</pre>
+Where &lt;index&gt; is either a date or a numeric index, e.g;
+<pre>
+ annotations="
+2,A,annotation 1;
+2016-06-24,B,annotation 2;
+2016-06-24,C,&lt,h1&gt,annotation 3&lt/h1&gt;
+2017-01-02,D,annotation 4
+"
+</pre>
+
+
+<a name='barchart'></a>
+:lheading Bar chart
+
+<a name="display_barchart"></a><pre>{<noop>{display_barchart fields=""  padRight="true"}}</pre><div style='text-align:center;' class='ramadda-docs-image'><a name="image2"></a><div><a href="images/charts/barchart.png?version=93.0"><img  src="images/charts/barchart.png?version=93.0"  style="max-width:90%; " alt="Bar chart" ></a><br><span class="caption">Image 2: Bar chart</span></div></div>
+
+<a name='barstack'></a>
+:lheading Stacked bar chart
+
+<a name="display_barstack"></a><pre>{<noop>{display_barstack fields=""}}</pre>
+
+
+
+
+<a name='areachart'></a>
+:lheading Area chart
+
+<a name="display_areachart"></a><pre>{<noop>{display_areachart width=&quot;800&quot;  height=&quot;400&quot;  
+fields=&quot;&quot;  
+vAxisMinValue="0" vAxisMaxValue="1.0" 
+padRight="true"
+isStacked=&quot;true&quot;}}</pre><div style='text-align:center;' class='ramadda-docs-image'><a name="image3"></a><div><a href="images/charts/areachart.png?version=93.0"><img  src="images/charts/areachart.png?version=93.0"  style="max-width:90%; " alt="Area chart" ></a><br><span class="caption">Image 3: Area chart</span></div></div>
+
+<a name='scatterplot'></a>
+:lheading  Scatter Plot
+
+<a name="display_scatterplot"></a><pre>{<noop>{display_scatterplot width=&quot;800&quot;  height=&quot;400&quot;  fields=&quot;&quot;}}</pre><div style='text-align:center;' class='ramadda-docs-image'><a name="image4"></a><div><a href="images/charts/scatterplot.png?version=93.0"><img  src="images/charts/scatterplot.png?version=93.0"  style="max-width:90%; " alt=" Scatter Plot" ></a><br><span class="caption">Image 4:  Scatter Plot</span></div></div>
+
+<a name='histogram'></a>
+:lheading  Histogram
+
+The   <i>minValue</i> and <i>maxValue</i> attributes are used to specify the  maximum and minimum evertical data value to render.
+More info at <a href="https://developers.google.com/chart/interactive/docs/gallery/histogram">Google charts histogram documentation</a>.
+<a name="display_histogram"></a><pre>{<noop>{display_histogram width=&quot;800&quot;  height=&quot;400&quot;  fields=&quot;&quot;  
+colors=&quot;comma separated color list&quot;  
+legendPosition=&quot;none|top|right|left|bottom&quot;  
+textPosition=&quot;out|in|none&quot;  
+isStacked=&quot;false|true|percent|relative&quot;  
+logScale=&quot;true|false&quot;  scaleType=&quot;log|mirrorLog&quot;  
+vAxisMinValue=&quot;&quot;  vAxisMaxValue=&quot;&quot;  
+minValue=&quot;&quot;  maxValue=&quot;&quot;}}</pre><div style='text-align:center;' class='ramadda-docs-image'><a name="image5"></a><div><a href="images/charts/histogram.png?version=93.0"><img  src="images/charts/histogram.png?version=93.0"  style="max-width:90%; " alt=" Histogram" ></a><br><span class="caption">Image 5:  Histogram</span></div></div>
+
+
+<a name='bubble'></a>
+:lheading Bubble Chart
+
+The <i>fields</i> specify a text field for the label and the numeric value fields used for the x and y axis, the bubble color and bubble  size.
+<a name="display_bubble"></a><pre>{<noop>{display_bubble width=&quot;500&quot;  height=&quot;500&quot;  
+fields=&quot;label|x|y|color|size&quot;  
+colorTable=&quot;&quot;  
+colors=&quot;comma separated color list&quot;  
+legendPosition=&quot;none|top|right|left|bottom&quot;  
+hAxisFormat=&quot;none|decimal|scientific|percent|short|long&quot;  
+vAxisFormat=&quot;none|decimal|scientific|percent|short|long&quot;  
+hAxisTitle=&quot;&quot;  
+vAxisTitle=&quot;&quot;}}</pre><a href='images/charts/bubble.png'>Example</a>
+
+<a name='piechart'></a>
+:lheading  Pie chart
+
+More info at <a href="https://developers.google.com/chart/interactive/docs/gallery/piechart">Google charts pie chart documentation</a>
+<a name="display_piechart"></a><pre>{<noop>{display_piechart fields=&quot;&quot;
+pieHole=&quot;0.5&quot;  
+is3D=&quot;true&quot;    
+bins=&quot;bin count&quot;  
+binMin=&quot;min&quot;  
+binMax=&quot;max&quot;  
+sliceVisibilityThreshold=&quot;0.01&quot;  
+width=&quot;500&quot;  height=&quot;250&quot;}}</pre><div style='text-align:center;' class='ramadda-docs-image'><a name="image6"></a><div><a href="images/charts/piechart.png?version=93.0"><img  src="images/charts/piechart.png?version=93.0"  style="max-width:90%; " alt=" Pie chart" ></a><br><span class="caption">Image 6:  Pie chart</span></div></div>
+
+<a name='radar'></a>
+:lheading Radar Display
+
+<a name="display_radar"></a><pre>{<noop>{display_radar fields=""}}</pre><a href='https://ramadda.org/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb'>Example</a><div style='text-align:center;' class='ramadda-docs-image'><a name="image7"></a><div><a href="images/charts/radar.png?version=93.0"><img  src="images/charts/radar.png?version=93.0"  style="max-width:90%; " alt="Radar Display" ></a><br><span class="caption">Image 7: Radar Display</span></div></div>
+
+<a name='windrose'></a>
+:lheading Wind Rose
+
+<a name="display_windrose"></a><pre>{<noop>{display_windrose fields=""}}</pre><a href='https://ramadda.org/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb'>Example</a><div style='text-align:center;' class='ramadda-docs-image'><a name="image8"></a><div><a href="images/charts/windrose.png?version=93.0"><img  src="images/charts/windrose.png?version=93.0"  style="max-width:90%; " alt="Wind Rose" ></a><br><span class="caption">Image 8: Wind Rose</span></div></div>
+
+
+<a name='density'></a>
+:lheading Density Display
+
+<a name="display_density"></a><pre>{<noop>{display_density fields="tmax,vp"}}</pre><a href='https://ramadda.org/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb'>Example</a><div style='text-align:center;' class='ramadda-docs-image'><a name="image9"></a><div><a href="images/charts/density.png?version=93.0"><img  src="images/charts/density.png?version=93.0"  style="max-width:90%; " alt="Density Display" ></a><br><span class="caption">Image 9: Density Display</span></div></div>
+
+
+
+<a name='3dscatter'></a>
+:lheading 3D Scatter
+
+<a name="display_3dscatter"></a><pre>{<noop>{display_3dscatter fields=""}}</pre><a href='https://ramadda.org/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb'>Example</a><div style='text-align:center;' class='ramadda-docs-image'><a name="image10"></a><div><a href="images/charts/3dscatter.png?version=93.0"><img  src="images/charts/3dscatter.png?version=93.0"  style="max-width:90%; " alt="3D Scatter" ></a><br><span class="caption">Image 10: 3D Scatter</span></div></div>
+
+
+<a name='calendar'></a>
+:lheading  Calendar
+
+Displays point data based on the date of each record. The calendar entry is color coded based on the specified field.
+<br>
+If <i>missingValue</i> is specified than any point value with that value won't be shown.
+<a name="display_calendar"></a><pre>{<noop>{display_calendar fields=&quot;&quot;  cellSize=&quot;15&quot;  missingValue=&quot;0&quot;}}</pre><div style='text-align:center;' class='ramadda-docs-image'><a name="image11"></a><div><a href="images/charts/calendar.png?version=93.0"><img  src="images/charts/calendar.png?version=93.0"  style="max-width:90%; " alt=" Calendar" ></a><br><span class="caption">Image 11:  Calendar</span></div></div>
+
+<a name='gauge'></a>
+:lheading  Gauge
+
+This shows a single value from a series of point data.
+<a name="display_gauge"></a><pre>{<noop>{display_gauge fields=&quot;&quot;  gaugeMin=&quot;&quot;  gaugeMax=&quot;&quot;  gaugeLabel=&quot;&quot;}}</pre><div style='text-align:center;' class='ramadda-docs-image'><a name="image12"></a><div><a href="images/charts/gauge.png?version=93.0"><img  src="images/charts/gauge.png?version=93.0"  style="max-width:90%; " alt=" Gauge" ></a><br><span class="caption">Image 12:  Gauge</span></div></div>
+
+
+
+</div>
+<p>
+
+<p>&nbsp;<p>
+
+<div class="ramadda-doc-footer">
+<table width=100% cellspacing=0 cellpadding=0 >
+<tr><td width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikidisplay1.html"><table><td valign=center><td><span title="Previous: Basic Displays"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Basic Displays</td></tr></table></a></div></div></td>
+<td align=right width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikidisplay2.html"><table><tr valign=center><td>More Wiki Display Components</td><td><span title="Next: More Wiki Display Components"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+</tr></table>
+</div>
+<p>
+</div>
+</body>
+</html>
+

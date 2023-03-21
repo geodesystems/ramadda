@@ -8,13 +8,13 @@
 <body>
 <div class="ramadda-documentation">
 <div class="ramadda-doc-header">
-<div style='padding-top:12px;margin-bottom:4px;'><a href="toc.html#wikientries.html"><span title="Table of contents"><i  style='font-size:16pt;'  class="fa fa-list "></i></span></a> &nbsp; <a href="index.html">RAMADDA User Guide</a>  > <a href="page_ramaddawikifacilities.html">RAMADDA Wiki Facilities</a> </div>
+<div style='padding-top:12px;margin-bottom:4px;'><a href="toc.html#wikientries.html"><span title="Table of contents"><i  style='font-size:16pt;'  class="fa fa-list "></i></span></a> &nbsp; <a href="index.html">RAMADDA User Guide</a>  > <a href="page_wikifacilities.html">Wiki Facilities</a> </div>
 <table width=100% cellspacing=0 cellpadding=0 >
 <tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikitext.html"><table><td valign=center><td><span title="Previous: Wiki Text"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Wiki Text</td></tr></table></a></div></div></td>
 <td width=50% align=center>
 <div class="ramadda-page-title"><a href="#">Section 6.2: Wiki Display of Entries</a></div>
 </td>
-<td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikidisplay.html"><table><tr valign=center><td>Wiki Display Components</td><td><span title="Next: Wiki Display Components"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+<td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikidisplay.html"><table><tr valign=center><td>Displaying Data</td><td><span title="Next: Displaying Data"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
 </tr></table>
 </div>
 
@@ -28,11 +28,16 @@ pre {
 
 
 
+:navtop
+
++callout-info
+RAMADDA's wiki text can display entries in numerous ways.
+-callout
 
 
-<a name="entrylink"></a>
-<div class="ramadda-help-subsubheading"><a href="#entrylink">Linking to other entries</a>
-</div> 
+<a name='entrylink'></a>
+:lheading Linking
+
 Normally in a wiki a link to another page is of the form:
 <pre>
 [[Page name]]
@@ -73,9 +78,9 @@ If the entry with the given name does not exist then the link will take one to t
 create entry form.
 
 
-<a name="properties"></a>
-<div class="ramadda-help-subsubheading"><a href="#properties">Wiki Properties</a>
-</div> 
+<a name='properties'></a>
+:lheading Wiki Properties
+
 You can also import content from the current Wiki Page entry or any other entry with the import  
 syntax:
 <pre>{<noop>{&lt;property&gt;  &lt;name="value" pairs&gt;}}</pre>
@@ -88,12 +93,12 @@ For example, if we want to import the information block with it open:
 <pre>{<noop>{information <i>open="true"</i>}}</pre>
 
 This would give us:
-<center><span style='display:inline-block'><center><div><a href="images/wikiinformation.png?version=65.0"><img  src="images/wikiinformation.png?version=65.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="images/wikiinformation.png?version=65.0" ></a></div></center></span></center>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/wikiinformation.png?version=93.0"><img  src="images/wikiinformation.png?version=93.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/wikiinformation.png?version=93.0" ></a></div></div>
 
 
-<a name="entry"></a>
-<div class="ramadda-help-subsubheading"><a href="#entry">Specify other entries with the <i>entry</i> attribute</a>
-</div> 
+<a name='entry'></a>
+:lheading Specify other entries
+
 Normally, all property tags refer to the current entry. However, another entry can be specified  with the "entry"
 attribute, e.g:
 <pre>{<noop>{information <i>entry="some other entry id or name or 'parent' or 'grandparent'"</i>}}</pre>
@@ -143,9 +148,9 @@ with the "descendent:" prefix:
 </ul>
 
 
-<a name="alias"></a>
-<div class="ramadda-help-subsubheading"><a href="#alias">Alias tag</a>
-</div> 
+a<a name='alias'></a>
+:lheading Alias tag
+
 The alias tag allows you to specify some entry and associate it with an alias. You can then
 refer to that alias in subsequent wiki tags. For example, if you wanted to search for a particular entry type
 then display it as a chart later you could do:
@@ -157,9 +162,9 @@ then display it as a chart later you could do:
 
 
 
-<a name="property"></a>
-<div class="ramadda-help-subsubheading"><a href="#property">Property tag</a>
-</div> 
+<a name='property'></a>
+:lheading Property tag
+
 The <i>property</i> tag supports defining 
 an attribute property that is shared by all tags in the page. 
 
@@ -171,9 +176,9 @@ that refer to another point data entry for their data then you use the property 
 <pre>{<noop>{property <i>entry="9b2f87fc-91f2-485c-8035-7ef588c35fda"</i>}}</pre>
 
 
-<a name="message"></a>
-<div class="ramadda-help-subsubheading"><a href="#message">Message attribute</a>
-</div> 
+<a name='message'></a>
+:lheading Message attribute
+
 Some of the tags can result in an error message (e.g., image not found, entry not found, etc). You can specify a different message (or blank) with message attribute:
 
 <pre>{<noop>{someproperty <i>message="some message"</i>}}</pre>
@@ -195,9 +200,9 @@ If, however, you specify a blank message then nothing will be shown:
 {<noop>{links entry="Links" message=""}}
 </pre>
 
-<a name="prefix"></a>
-<div class="ramadda-help-subsubheading"><a href="#prefix">Prefix and suffix attributes</a>
-</div> 
+<a name='prefix'></a>
+:lheading Prefix/Suffix
+
 
 You can specify  prefix and suffix attributes that are only used if the tag was successful. So for example you could specify a heading for the links: 
 
@@ -207,9 +212,9 @@ You can specify  prefix and suffix attributes that are only used if the tag was 
 
 This would only show when there is a Links sub-folder.
 
-<a name="basic"></a>
-<div class="ramadda-help-subsubheading"><a href="#basic">Basic Wiki Tags</a>
-</div> 
+<a name='basic'></a>
+:lheading Basic Wiki Tags
+
 
 The first set of tags show some information for the entry. Note: the attributes are all optional.
 
@@ -329,9 +334,9 @@ Show the menu actions in a popup:
 </ul>
 
 
-<a name="entries"></a>
-<div class="ramadda-help-subsubheading"><a href="#entries">Collection Wiki Tags</a>
-</div> 
+<a name='entries'></a>
+:lheading Collections
+
 
 The following tags display a collection of entries. By default they
 are the children entries of the wiki entry but you can specify
@@ -465,9 +470,9 @@ You can also:
 </ul>
 
 
-<a name="entriesdaterange"></a>
-<div class="ramadda-help-subsubheading"><a href="#entriesdaterange">Specifying Date Ranges</a>
-</div> 
+<a name='entriesdaterange'></a>
+:lheading Date Ranges
+
 Using the following attributes you can filter entries based on their date.
 You can specify a from date, a to date or both.
 The absolute dates should be of the form "yyyy-MM-dd hh:mm". The relative dates are either relative to the other date (if given)
@@ -492,9 +497,9 @@ entries.toDate="4 years"
 
 
 
-<a name="virtual_groups"></a>
-<div class="ramadda-help-subsubheading"><a href="#virtual_groups">Virtual Groups</a>
-</div> 
+<a name='virtual_groups'></a>
+:lheading Virtual Groups
+
 RAMADDA provides a "Virtual Group" entry type. This acts as a Folder except a set of entry IDs or searches can be specified. There are a number of examples available <a href="https://ramadda.org/repository/entry/show/Home/RAMADDA+Examples/Miscellany/Virtual+Groups?entryid=f5ccdc47-62f7-481a-b67d-bf76e5b34359">here</a>.
 
 The Entry IDs field of the Virtual Group can be a list of specific entries, e.g.:
@@ -523,9 +528,9 @@ search
 
 
 
-<a name="collection_tags"></a>
-<div class="ramadda-help-subsubheading"><a href="#collection_tags">Collection Tags</a>
-</div> 
+<a name='collection_tags'></a>
+:lheading Collection Tags
+
 <ul>
 
 <br>
@@ -543,7 +548,7 @@ If showtoggle="false" then the show/hide toggle link is not shown.
 A common display is showing the children entries in a grid where each entry shows its thumbnail
 image attachment, 
 e.g., <a href=https://ramadda.org/repository/alias/examples>RAMADDA Examples</a>
-<center><span style='display:inline-block'><center><div><a href="images/grid.png?version=65.0"><img  src="images/grid.png?version=65.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;'  alt="images/grid.png?version=65.0" ></a></div></center></span></center>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/grid.png?version=93.0"><img  src="images/grid.png?version=93.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/grid.png?version=93.0" ></a></div></div>
 To do this use:
 <pre>
 {<noop>{grid  
@@ -742,10 +747,8 @@ apply.header="${url}"
 
 
 
+:lheading Importing
 
-
-
-<div class="ramadda-help-subsubheading">Importing any page</div> 
 
 You can also import any of the views of an entry, e.g., the map view, 
 the calendar view, etc., with the  
@@ -761,9 +764,9 @@ want to include and look at the url for the output=... url argument
 and use that.
 
 
-<a name="snippet"></a>
-<div class="ramadda-help-subsubheading"><a href="#snippet">Snippet</a>
-</div> 
+<a name='snippet'></a>
+:lheading Snippet
+
 A number of the layouts below (e.g,, table layout) will include a snippet of descriptive text from the entry that is being displayed. The snippet text is defined in the description of the entry with:
 <pre>
 Some description here.
@@ -782,7 +785,7 @@ More description
 <div class="ramadda-doc-footer">
 <table width=100% cellspacing=0 cellpadding=0 >
 <tr><td width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikitext.html"><table><td valign=center><td><span title="Previous: Wiki Text"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Wiki Text</td></tr></table></a></div></div></td>
-<td align=right width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikidisplay.html"><table><tr valign=center><td>Wiki Display Components</td><td><span title="Next: Wiki Display Components"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+<td align=right width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikidisplay.html"><table><tr valign=center><td>Displaying Data</td><td><span title="Next: Displaying Data"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
 </tr></table>
 </div>
 <p>

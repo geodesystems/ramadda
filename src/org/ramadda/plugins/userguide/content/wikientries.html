@@ -1,8 +1,13 @@
 [ht::head {Wiki Display of Entries} ]
 <%nochildlist%>
+:navtop
+
++callout-info
+RAMADDA's wiki text can display entries in numerous ways.
+-callout
 
 
-[ug::subsubheading {Linking to other entries} entrylink]
+[ug::wikiheading {Linking} entrylink]
 Normally in a wiki a link to another page is of the form:
 [wiki::text {
 [[Page name]]
@@ -43,7 +48,7 @@ If the entry with the given name does not exist then the link will take one to t
 create entry form.
 
 
-[ug::subsubheading {Wiki Properties} properties]
+[ug::wikiheading {Wiki Properties} properties]
 You can also import content from the current Wiki Page entry or any other entry with the import  
 syntax:
 [wiki::text [wiki::tag {&lt;property&gt;  &lt;name="value" pairs&gt;}]]
@@ -59,7 +64,7 @@ This would give us:
 [ht::screenshot images/wikiinformation.png]
 
 
-[ug::subsubheading {Specify other entries with the <i>entry</i> attribute} entry]
+[ug::wikiheading {Specify other entries} entry]
 Normally, all property tags refer to the current entry. However, another entry can be specified  with the "entry"
 attribute, e.g:
 [wiki::text [wiki::tag information {entry="some other entry id or name or 'parent' or 'grandparent'"}]]
@@ -109,7 +114,7 @@ with the "descendent:" prefix:
 </ul>
 
 
-[ug::subsubheading {Alias tag} alias]
+a[ug::wikiheading {Alias tag} alias]
 The alias tag allows you to specify some entry and associate it with an alias. You can then
 refer to that alias in subsequent wiki tags. For example, if you wanted to search for a particular entry type
 then display it as a chart later you could do:
@@ -121,7 +126,7 @@ then display it as a chart later you could do:
 
 
 
-[ug::subsubheading {Property tag} property]
+[ug::wikiheading {Property tag} property]
 The <i>property</i> tag supports defining 
 an attribute property that is shared by all tags in the page. 
 
@@ -133,7 +138,7 @@ that refer to another point data entry for their data then you use the property 
 [wiki::text [wiki::tag property {entry="9b2f87fc-91f2-485c-8035-7ef588c35fda"}]]
 
 
-[ug::subsubheading {Message attribute} message]
+[ug::wikiheading {Message attribute} message]
 Some of the tags can result in an error message (e.g., image not found, entry not found, etc). You can specify a different message (or blank) with message attribute:
 
 [wiki::text [wiki::tag someproperty {message="some message"}]]
@@ -155,7 +160,7 @@ If, however, you specify a blank message then nothing will be shown:
 {<noop>{links entry="Links" message=""}}
 }]
 
-[ug::subsubheading {Prefix and suffix attributes} prefix]
+[ug::wikiheading {Prefix/Suffix} prefix]
 
 You can specify  prefix and suffix attributes that are only used if the tag was successful. So for example you could specify a heading for the links: 
 
@@ -165,7 +170,7 @@ You can specify  prefix and suffix attributes that are only used if the tag was 
 
 This would only show when there is a Links sub-folder.
 
-[ug::subsubheading {Basic Wiki Tags} basic]
+[ug::wikiheading {Basic Wiki Tags} basic]
 
 The first set of tags show some information for the entry. Note: the attributes are all optional.
 
@@ -285,7 +290,7 @@ Show the menu actions in a popup:
 </ul>
 
 
-[ug::subsubheading {Collection Wiki Tags} entries]
+[ug::wikiheading {Collections} entries]
 
 The following tags display a collection of entries. By default they
 are the children entries of the wiki entry but you can specify
@@ -419,7 +424,7 @@ You can also:
 </ul>
 
 
-[ug::subsubheading {Specifying Date Ranges} entriesdaterange]
+[ug::wikiheading {Date Ranges} entriesdaterange]
 Using the following attributes you can filter entries based on their date.
 You can specify a from date, a to date or both.
 The absolute dates should be of the form "yyyy-MM-dd hh:mm". The relative dates are either relative to the other date (if given)
@@ -444,7 +449,7 @@ entries.toDate="4 years"
 
 
 
-[ug::subsubheading {Virtual Groups} virtual_groups]
+[ug::wikiheading {Virtual Groups} virtual_groups]
 RAMADDA provides a "Virtual Group" entry type. This acts as a Folder except a set of entry IDs or searches can be specified. There are a number of examples available <a href="https://ramadda.org/repository/entry/show/Home/RAMADDA+Examples/Miscellany/Virtual+Groups?entryid=f5ccdc47-62f7-481a-b67d-bf76e5b34359">here</a>.
 
 The Entry IDs field of the Virtual Group can be a list of specific entries, e.g.:
@@ -473,7 +478,7 @@ search
 
 
 
-[ug::subsubheading {Collection Tags} collection_tags]
+[ug::wikiheading {Collection Tags} collection_tags]
 <ul>
 
 <br>
@@ -690,11 +695,7 @@ apply.header="${url}"
 </ul>
 
 
-
-
-
-
-[ug::subsubheading {Importing any page}]
+[ug::wikiheading {Importing}]
 
 You can also import any of the views of an entry, e.g., the map view, 
 the calendar view, etc., with the  
@@ -710,7 +711,7 @@ want to include and look at the url for the output=... url argument
 and use that.
 
 
-[ug::subsubheading {Snippet} snippet]
+[ug::wikiheading {Snippet} snippet]
 A number of the layouts below (e.g,, table layout) will include a snippet of descriptive text from the entry that is being displayed. The snippet text is defined in the description of the entry with:
 [wiki::text {
 Some description here.

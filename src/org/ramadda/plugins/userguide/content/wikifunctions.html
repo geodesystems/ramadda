@@ -1,8 +1,10 @@
 [ht::head {Wiki Functions}]
 
-<%childlist%>
+<%nochildlist%>
 
-[ug::subheading {Templates} templates]
+:navtop
+
+:lheading Templates
 A templating mechanism is a number of places within the displays to display the records. For example, as a
 tooltip="..." or in the display_template. The template consists of arbitrary text and any number of macros
 of the form:
@@ -123,8 +125,8 @@ sortAscending=false
 
 
 
-
-[ug::subheading {Derived Data} derived]
+<a name=derived></a>
+:lheading Derived Data
 
 Derived data can be calculated by specifying a javascript function with the field ids. For example, in the 
 <a href="https://ramadda.org/repository/entry/show?entryid=e8af924a-2194-4fd0-83be-92d006837c00">election data example</a> 
@@ -143,7 +145,8 @@ Percentage values can be calculated with the <i>showPercent</i> attribute. This 
 percent value.
 
 
-[ug::subheading {Scaling and offset of data} scaleoffset]
+<a name=scaleoffset></a>
+:lheading Scaling and offset of data
 The data values and or displayed unit of the point data that is displayed in chart can be modified
 by specifying offset and scale units. For example, one can convert Kelvin to Celsius in a display
 with the following attributes:
@@ -165,7 +168,8 @@ You can specify values specific for a particular field using:
 }]
 
 
-[ug::subheading {Setting shared properties} displayProperty]
+<a name=displayProperty></a>
+:lheading Setting shared properties
 Sometimes there are a number of displays on a single page that share the same set of properties.
 For example, this <a href="https://ramadda.org/repository/entry/show?entryid=8fafafa0-0105-4f14-9c86-6a9902f186a9">page</a>
 shows a number of charts of atmospheric time series data. The data itself has temperature in Kelvin and pressure in Pascals. 
@@ -182,7 +186,8 @@ tag global properties can be specified that are applicable to all displays on th
 }]
 
 
-[ug::subheading {Filtering data} filtering]
+<a name=filtering></a>
+:lheading Filtering data
 You can filter the data that is shown based on string pattern matching or numeric operators.
 You do this with the attributes:
 <pre>
@@ -199,5 +204,7 @@ patternFilterField="#1" filterPattern="Texas"
 numericFilterField="#3" numericFilterValue="5000" numericFilterOperator=">" 
 }}
 }]
+
+
 [ht::foot]
 

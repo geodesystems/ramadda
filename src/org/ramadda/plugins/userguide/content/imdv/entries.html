@@ -1,6 +1,10 @@
 [ht::head {IMDV Entries} ]
 :navtop
 
++callout-info
+You can add markers that represent other entries in your RAMADDA. 
+-callout
+
 :heading Entry Markers 
 The Entry Marker and the Multi Entry allow you to add markers
 for RAMADDA entries. Clicking on the marker will show some content
@@ -19,40 +23,6 @@ name. If the name of the entry changes then that will be reflected in the map. T
 by bringing up the properties for the entry marker:
 [ht::screenshot images/entrymarker2.png]
 
-
-The Multi Entry allows you to select some Folder in RAMADDA. All of the geolocated children entries
-in that folder will be shown in the map. For example, if you had a Folder of a number of map files
-add the folder as a Multi Entry. This adds markers for each map file. Clicking on a marker shows
-the view of the entry (like above). In the legend clicking on the <i class="fas fa-plus"></i> link
-will add that entry as a map into the main map.
-
-[ht::screenshot images/multientry.png]
-
-<a name=glyphs></a>
-:heading Data Icons
-An entry marker  for an entry that provides point data can also show a display of
-the most recent record in the data directly within the map. e.g.:
-[ht::screenshot images/glyphs1.png]
-
-This  is done by specifiy one or more "glyphs"  in the properties for the marker:
-[ht::screenshot images/glyphs2.png]
-
-The first line as shown above specifies the width and height and fill for the canvas.
-<pre>
-width=120;height=100;fill=#efefef;border=#000
-</pre>
-Each successive line specifes the glyphs.
-The glyphs take the same form as the 
-<a href=wikidisplay2.html#canvas>Canvas Display</a> provides. One way to configure the
-glyphs used in the map is to first add a canvas display directly for the source entry as shown below.
-Right clicking in the display_canvas tag brings up a context menu that has examples
-for the different types of glyphs.
-<pre>
-{{display_canvas  canvasWidth=100 canvasHeight=100  lastRecords=1
-glyph1="type:3dbar,pos:sw,dx:10,dy:-5,height:100,width:8,baseHeight:5,sizeBy:atmos_temp,sizeByMin:0,sizeByMax:50"
-glyph2="type:label,font:6pt,pos:ne,dx:90,dy:-90,label:Temp: \${atmos_temp}" 
-}}
-</pre>
 
 
 

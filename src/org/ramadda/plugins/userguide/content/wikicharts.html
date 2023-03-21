@@ -1,0 +1,205 @@
+[ht::head {Charts and Plots}]
+<%nochildlist%>
+:navtop
+
+[displayType { Line chart} linechart {
+Displays time series or indexed point data. The vAxisMinValue and vAxisMaxValue are used as the range instead of the min/max from the data.
+<br>
+If <i>padRight</i> is set to true than the chart is padded on the right with the same space as what is used for the second axis legend. This allows
+for two or more charts to be aligned that have one or more fields being displayed.
+} {
+width=&quot;800&quot;  height=&quot;400&quot;  
+fields=&quot;&quot;       
+vAxisMinValue="0" vAxisMaxValue="1.0" padRight="true"
+} {
+images/charts/linechart.png
+}]
+
+
+<a name="colors"></a>
+You can set various colors of the chart with the following properties:
+
+[wiki::text {
+chart.fill="color or 'transparent'"
+chart.stroke="stroke color"
+chart.strokeWidth="width"
+
+chartArea.fill="color or 'transparent'"
+chartArea.stroke="stroke color"
+chartArea.strokeWidth="width"
+
+hAxis.gridlines.color="color"
+vAxis.gridlines.color="color"
+
+}]
+
+
+<a name="annotations"></a>
+<b>Annotating Charts</b><br>
+Annotations for a chart can be specified in two ways. 
+The first is to specify one or more data fields to create the annotation from:
+[wiki::text {
+  annotationFields="field1,field2,..."
+  annotationLabelField="field" //optional for the label
+}]
+
+The second way is to specify the annotations using an <i>annotations</i> attribute:
+[wiki::text {
+annotations="
+&lt,index1&gt,label1,description1;
+&lt,index2&gt,label2,description2;
+...
+"
+}]
+Where &lt;index&gt; is either a date or a numeric index, e.g;
+[wiki::text {
+ annotations="
+2,A,annotation 1;
+2016-06-24,B,annotation 2;
+2016-06-24,C,&lt,h1&gt,annotation 3&lt/h1&gt;
+2017-01-02,D,annotation 4
+"
+}]
+
+
+[displayType {Bar chart} {barchart}  {
+} {
+fields=""  padRight="true" 
+} {
+images/charts/barchart.png
+} ]
+
+[displayType {Stacked bar chart} {barstack}  {
+} {
+fields=""  
+} {}]
+
+
+
+
+[displayType {Area chart} {areachart} {
+} {
+width=&quot;800&quot;  height=&quot;400&quot;  
+fields=&quot;&quot;  
+vAxisMinValue="0" vAxisMaxValue="1.0" 
+padRight="true"
+isStacked=&quot;true&quot;
+} {
+images/charts/areachart.png
+}]
+
+[displayType { Scatter Plot} scatterplot {
+} {
+width=&quot;800&quot;  height=&quot;400&quot;  fields=&quot;&quot;
+} {
+images/charts/scatterplot.png
+}]
+
+[displayType { Histogram} histogram {
+The   <i>minValue</i> and <i>maxValue</i> attributes are used to specify the  maximum and minimum evertical data value to render.
+More info at <a href="https://developers.google.com/chart/interactive/docs/gallery/histogram">Google charts histogram documentation</a>.
+} {
+width=&quot;800&quot;  height=&quot;400&quot;  fields=&quot;&quot;  
+colors=&quot;comma separated color list&quot;  
+legendPosition=&quot;none|top|right|left|bottom&quot;  
+textPosition=&quot;out|in|none&quot;  
+isStacked=&quot;false|true|percent|relative&quot;  
+logScale=&quot;true|false&quot;  scaleType=&quot;log|mirrorLog&quot;  
+vAxisMinValue=&quot;&quot;  vAxisMaxValue=&quot;&quot;  
+minValue=&quot;&quot;  maxValue=&quot;&quot;
+} {
+images/charts/histogram.png
+}]
+
+
+[displayType {Bubble Chart} bubble {
+The <i>fields</i> specify a text field for the label and the numeric value fields used for the x and y axis, the bubble color and bubble  size.
+} {
+width=&quot;500&quot;  height=&quot;500&quot;  
+fields=&quot;label|x|y|color|size&quot;  
+colorTable=&quot;&quot;  
+colors=&quot;comma separated color list&quot;  
+legendPosition=&quot;none|top|right|left|bottom&quot;  
+hAxisFormat=&quot;none|decimal|scientific|percent|short|long&quot;  
+vAxisFormat=&quot;none|decimal|scientific|percent|short|long&quot;  
+hAxisTitle=&quot;&quot;  
+vAxisTitle=&quot;&quot;} {
+} {
+images/charts/bubble.png
+}]
+
+[displayType { Pie chart} piechart {
+More info at <a href="https://developers.google.com/chart/interactive/docs/gallery/piechart">Google charts pie chart documentation</a>
+} {
+fields=&quot;&quot;
+pieHole=&quot;0.5&quot;  
+is3D=&quot;true&quot;    
+bins=&quot;bin count&quot;  
+binMin=&quot;min&quot;  
+binMax=&quot;max&quot;  
+sliceVisibilityThreshold=&quot;0.01&quot;  
+width=&quot;500&quot;  height=&quot;250&quot;
+} {
+images/charts/piechart.png
+}]
+
+[displayType {Radar Display} radar {
+} {
+fields="" 
+} {
+images/charts/radar.png
+} {
+https://ramadda.org/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb
+}]
+
+[displayType {Wind Rose} windrose {
+} {
+fields="" 
+} {
+images/charts/windrose.png
+} {
+https://ramadda.org/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb
+}]
+
+
+[displayType {Density Display} density {
+} {
+fields="tmax,vp" 
+} {
+images/charts/density.png
+} {
+https://ramadda.org/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb
+}]
+
+
+
+[displayType {3D Scatter} 3dscatter {
+} {
+fields="" 
+} {
+images/charts/3dscatter.png
+} {
+https://ramadda.org/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb
+}]
+
+
+[displayType { Calendar} calendar {
+Displays point data based on the date of each record. The calendar entry is color coded based on the specified field.
+<br>
+If <i>missingValue</i> is specified than any point value with that value won't be shown.
+} {
+fields=&quot;&quot;  cellSize=&quot;15&quot;  missingValue=&quot;0&quot;
+} {
+images/charts/calendar.png
+}]
+
+[displayType { Gauge} gauge {
+This shows a single value from a series of point data.
+} {
+fields=&quot;&quot;  gaugeMin=&quot;&quot;  gaugeMax=&quot;&quot;  gaugeLabel=&quot;&quot;
+} {
+images/charts/gauge.png
+}]
+
+
+[ht::foot]

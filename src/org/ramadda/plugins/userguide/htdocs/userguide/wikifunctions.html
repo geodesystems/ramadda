@@ -8,11 +8,11 @@
 <body>
 <div class="ramadda-documentation">
 <div class="ramadda-doc-header">
-<div style='padding-top:12px;margin-bottom:4px;'><a href="toc.html#wikifunctions.html"><span title="Table of contents"><i  style='font-size:16pt;'  class="fa fa-list "></i></span></a> &nbsp; <a href="index.html">RAMADDA User Guide</a>  > <a href="page_ramaddawikifacilities.html">RAMADDA Wiki Facilities</a> </div>
+<div style='padding-top:12px;margin-bottom:4px;'><a href="toc.html#wikifunctions.html"><span title="Table of contents"><i  style='font-size:16pt;'  class="fa fa-list "></i></span></a> &nbsp; <a href="index.html">RAMADDA User Guide</a>  > <a href="page_wikifacilities.html">Wiki Facilities</a> </div>
 <table width=100% cellspacing=0 cellpadding=0 >
 <tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="canvasglyphs.html"><table><td valign=center><td><span title="Previous: Display Glyphs"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Display Glyphs</td></tr></table></a></div></div></td>
 <td width=50% align=center>
-<div class="ramadda-page-title"><a href="#">Section 6.6: Wiki Functions</a></div>
+<div class="ramadda-page-title"><a href="#">Section 6.9: Wiki Functions</a></div>
 </td>
 <td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="imdv/index.html"><table><tr valign=center><td>Integrated Map Data Viewer (IMDV)</td><td><span title="Next: Integrated Map Data Viewer (IMDV)"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
 </tr></table>
@@ -28,29 +28,11 @@ pre {
 
 
 
-<div  class="childlist" ><table  width="100%" ><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-6.6.0&nbsp;
-</span></td><td><a  class="childlist-link"  href="wikifunctions.html#templates" >
-<a href="#templates">Templates</a>
-</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-6.6.1&nbsp;
-</span></td><td><a  class="childlist-link"  href="wikifunctions.html#derived" >
-<a href="#derived">Derived Data</a>
-</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-6.6.2&nbsp;
-</span></td><td><a  class="childlist-link"  href="wikifunctions.html#scaleoffset" >
-<a href="#scaleoffset">Scaling and offset of data</a>
-</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-6.6.3&nbsp;
-</span></td><td><a  class="childlist-link"  href="wikifunctions.html#displayProperty" >
-<a href="#displayProperty">Setting shared properties</a>
-</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-6.6.4&nbsp;
-</span></td><td><a  class="childlist-link"  href="wikifunctions.html#filtering" >
-<a href="#filtering">Filtering data</a>
-</a><br></td></tr></table></div>
 
-<a name="templates"></a><p><div class="ramadda-help-heading">6.6.0 <a href="#templates">Templates</a></div> 
+
+:navtop
+
+:lheading Templates
 A templating mechanism is a number of places within the displays to display the records. For example, as a
 tooltip="..." or in the display_template. The template consists of arbitrary text and any number of macros
 of the form:
@@ -135,7 +117,7 @@ to allow the user to filter the data. The filter_... macros in the templates
 display the values of those filter fields. The prefix/suffix attributes in the macros
 allow one to show a phrase only if a text filter value is selected by the user.
 
-<center><div><a href="images/charts/template.png?version=65.0"><img  src="images/charts/template.png?version=65.0" width="90%" alt="images/charts/template.png?version=65.0" ></a></div></center>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/charts/template.png?version=93.0"><img  src="images/charts/template.png?version=93.0" width="90%" alt="images/charts/template.png?version=93.0" ></a></div></div>
 
 The template display is specified as:
 <pre>
@@ -154,7 +136,7 @@ filterFields="elev,elev_gain,distance,range,class" hideFilterWidget="true"
 The below display (from  <a href="https://ramadda.org/repository/alias/mass_shootings">here</a>) 
 showing mass shooting data uses two different template displays as defined here.
 
-<center><a name="image2"></a><div><a href="images/template2.png?version=65.0"><img  src="images/template2.png?version=65.0" width=600 alt="Template Example" ></a><br><span class="caption">Image 2: Template Example</span></div></center>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image2"></a><div><a href="images/template2.png?version=93.0"><img  src="images/template2.png?version=93.0" width=600 alt="Template Example" ></a><br><span class="caption">Image 2: Template Example</span></div></div>
 
 <pre>
 {<noop>{display_template
@@ -171,8 +153,8 @@ sortAscending=false
 
 
 
-
-<a name="derived"></a><p><div class="ramadda-help-heading">6.6.1 <a href="#derived">Derived Data</a></div> 
+<a name=derived></a>
+:lheading Derived Data
 
 Derived data can be calculated by specifying a javascript function with the field ids. For example, in the 
 <a href="https://ramadda.org/repository/entry/show?entryid=e8af924a-2194-4fd0-83be-92d006837c00">election data example</a> 
@@ -191,7 +173,8 @@ Percentage values can be calculated with the <i>showPercent</i> attribute. This 
 percent value.
 
 
-<a name="scaleoffset"></a><p><div class="ramadda-help-heading">6.6.2 <a href="#scaleoffset">Scaling and offset of data</a></div> 
+<a name=scaleoffset></a>
+:lheading Scaling and offset of data
 The data values and or displayed unit of the point data that is displayed in chart can be modified
 by specifying offset and scale units. For example, one can convert Kelvin to Celsius in a display
 with the following attributes:
@@ -213,7 +196,8 @@ You can specify values specific for a particular field using:
 </pre>
 
 
-<a name="displayProperty"></a><p><div class="ramadda-help-heading">6.6.3 <a href="#displayProperty">Setting shared properties</a></div> 
+<a name=displayProperty></a>
+:lheading Setting shared properties
 Sometimes there are a number of displays on a single page that share the same set of properties.
 For example, this <a href="https://ramadda.org/repository/entry/show?entryid=8fafafa0-0105-4f14-9c86-6a9902f186a9">page</a>
 shows a number of charts of atmospheric time series data. The data itself has temperature in Kelvin and pressure in Pascals. 
@@ -230,7 +214,8 @@ tag global properties can be specified that are applicable to all displays on th
 </pre>
 
 
-<a name="filtering"></a><p><div class="ramadda-help-heading">6.6.4 <a href="#filtering">Filtering data</a></div> 
+<a name=filtering></a>
+:lheading Filtering data
 You can filter the data that is shown based on string pattern matching or numeric operators.
 You do this with the attributes:
 <pre>
@@ -247,6 +232,8 @@ patternFilterField="#1" filterPattern="Texas"
 numericFilterField="#3" numericFilterValue="5000" numericFilterOperator=">" 
 }}
 </pre>
+
+
 
 </div>
 <p>

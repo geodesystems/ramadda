@@ -2,19 +2,22 @@
 
 :navtop
 
-
++callout-info
 The Multi-Entry Glyph allows you to select a folder entry in RAMADDA and display all of the
-geo-referenced children entries.  Here we  describe how to show a collection of Purple Air
+geo-referenced children entries. 
+-callout
+
+
+:heading Showing Purple Air sensor data
+Here we  describe how to show a collection of Purple Air
 sensors in an IMDV  map that is similar to 
 \[/repository/entry/show?entryid=1b46ed12-9581-4a33-be23-0bb913f13328 this one\].
-:p
 If you haven't already first <a href=introduction.html>create an IMDV entry</a>.
 Also, this assumes you have a number of Purple Air sensor entries under a single folder. If not
 create the folder (e.g., Purple Air Sensors) and move your sensor entries to the new folder.
 
 
-
-:br
+:p
 :heading Creating a Multi-Entry glyph
 
 Create a new "Multi Entry" glyph under the New menu
@@ -31,23 +34,25 @@ show the Purple Air time series.
 
 [ht::cimg images/defaultmultientry.png {} {width=600px}]
 
-
-:br
 :heading Showing data icons
 If the children entries of the Multi-Entry are data then you can
 show the most recent data instead of the default icons.
 For example, the Purple Air sensors  can show the PM2.5 measurements and a color coded circle.
+
 [ht::screenshot images/purpleair.png]
 
 
 NWS station data shows temperature, wind speed and pressure:
+
 [ht::screenshot images/nws.png]
 
 CR1000 data logger entries show either temperature or relative humidity:
+
 [ht::screenshot images/cr1000.png]
 
 To enable data icon displays bring up the Properties dialog for the Multi-Entry with
 the <i class="fas fa-cog" style="color:#ccc;"></i> in the legend:
+
 [ht::screenshot images/multientrylegend.png]
 
 Under the Data Icons tab select "Show data as icons" and press OK. 
@@ -56,10 +61,9 @@ Your map should now show the sensor data.
 [ht::screenshot images/multientryprops.png]
 
 You should have a map that looks like below.  From the top-level File menu select Save.
+
 [ht::cimg images/multientrymap1.png {} {width=600px}]
 
-
-:br
 :heading Adding a field select menu
 You can add a pull down menu at the top of the page that allows the user to select which field
 is displayed. To do this you will first need to know what are the field identifiers for
@@ -67,21 +71,20 @@ the data entry. Navigate to one of the data entrys you will be displaying, e.g.,
 fields you want to use. For Purple Air we are going to use pm1.0, pm2.5 and pm10.0.
 
 [ht::screenshot images/metadata.png]
-:p
+
 
 Now, back to the IDMV map, bring up the properties dialog for the multi-entry. Under the Menu Fields
 add the fields you want to use. Optionally you can specify an initial field and a menu label.
 
 [ht::screenshot images/multientryprops2.png]
 
-:p
-
 You should now have a menu shown that allows you to select the field to display:
+
 [ht::cimg images/multientrymap2.png {} {width=600px}]
-:p
 
 You can specify an alternative label to show in the menu as below by specifying a
 label=... property in the Menu Fields:
+
 [ht::screenshot images/multientryprops3.png]
 
 

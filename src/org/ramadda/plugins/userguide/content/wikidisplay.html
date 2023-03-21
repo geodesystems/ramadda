@@ -1,14 +1,16 @@
-[ht::head {Wiki Display Components}]
-<%childlist%>
+[ht::head {Displaying Data}]
+<%nochildlist%>
+:navtop
 
-
++callout-info
 RAMADDA provides a number of information and data display components in the wiki facility. 
 There are a number of  
 <a href="https://ramadda.org/repository/entry/show?entryid=049a8297-58d7-4646-b689-b188ac274640">examples</a> available. An easy way to figure out what is going on is to the the  wiki text of working examples. The wikitext used for any RAMADDA entry can be viewed with the Menu-&gt;View-&gt;Information page  - 
 <a href="https://ramadda.org/repository/entry/show/Home/Content/Miscellany/Example+Charts/World%27s+Oldest+People+Data+is+Beautiful?entryid=d7c23939-dbfe-4bbf-9045-70e2422c3117&output=html.info">example</a>.
+-callout
 
 
-[ug::subheading {The Basics} basics]
+[ug::wikiheading {Basics} basics]
 The charts and information displays follow the RAMADDA wiki tag format:
 
 [wiki::text {{{display_&lt;display type&gt;  &lt;name=value pairs&gt;}}}]
@@ -26,7 +28,7 @@ Otherwise it is displayed in place.
 
 
 
-[ug::subheading {The Data} thedata]
+[ug::wikiheading {Data} thedata]
 The data that is displayed takes the form of a number of records where each record is composed of the same number of fields.
 Optionally, records can also have a latitude/longitude position and a date associated with them.
 You can think of the data as a structured representation of a CSV file. 
@@ -80,8 +82,7 @@ For example:
 
 
 
-
-[ug::subheading {Specifying Fields} fields]
+[ug::wikiheading {Specifying Fields} fields]
 Most of these displays are based on [ug::link pointdata.html {point data}] in RAMADDA. The point data model
 is based on a series of records (or rows) that are made up of a set of fields (or columns). 
 Each field has  a certain type - double, integer, string,  date.
@@ -100,10 +101,10 @@ The field ids for a point data entry can be viewed with the  Metadata view, e.g.
 
 [wiki::text {{<noop>{display_linechart fields="#5,#6,#7,#8,#9,#10" }}}]
 
-[ug::subheading {Filtering Data} filters]
+[ug::wikiheading {Filtering Data} filters]
 A display can present a set of widgets that allow the user to filter the data being shown. For example, in the image below (See <a href="https://ramadda.org/repository/alias/14ers">here<a>) the data has a set of fields - elev, elev_gain, distance, range and class. 
 
-[ht::cimg images/filters.png {Filtering Data} {width=50%}]
+[ht::screenshot images/filters.png {Filtering Data} {}]
 
 Below is the wiki text that creates the above display. The map display defines which fields should be used with the filterFields="..." attribute. The ranking display specifies the same set of filter fields but also has a hideFilterWidget=true which specifies to actually not show the widgets. The filter values the user enters in the map display are then applied to the ranking display.
 [wiki::text {+row
@@ -160,7 +161,7 @@ Specify extra text to wrap the filter value
 
 </ul>
 
-[ug::subheading {Converting Data} converting]
+[ug::wikiheading {Converting Data} converting]
 [wiki::text {
 convertData="command1;command2;...;"
 
@@ -175,7 +176,7 @@ e.g.:
 }]
 
 
-[ug::subheading {Subsetting Data} subsetting]
+[ug::wikiheading {Subsetting Data} subsetting]
 You can specify various filters applied to the data
 [wiki::text {
 By date:
@@ -223,7 +224,7 @@ uniqueField=&lt;field id&gt;
 
 
 
-[ug::subheading {Color} ]
+[ug::wikiheading {Color} ]
 RAMADDA provides a large number of built-in color tables.
 The full set of color tables can be viewed at 
 <a href="${root}/colortables">here</a>.
@@ -250,7 +251,7 @@ colorByFields=&lt;field1,field2,...,fieldN&gt; - specify a number of fields to a
 }]
 
 
-[ug::subheading {Display Groups} groups] 
+[ug::wikiheading {Display Groups} groups] 
 There is a <i>group</i> tag that can manage a number of children displays. The general use is of the form below where displays 1-3 are part of group 1 and displays 4,5 are part of group 2. 
 The group allows for different displays to communicate with each other 
 (e.g., creating a new chart, map click, animation, etc), the inheritance of
@@ -275,11 +276,11 @@ added automatically.
 If [ug::attr  showMenu] is set to true for a group then the below menu is displayed. This supports the interactive creation of new charts and displays. The layout of these displays can be changed interactively, their state can be changed and they
 can be deleted. 
 
-[ht::cimg images/charts/groupmenu.png {Group menu}]
+[ht::screenshot images/charts/groupmenu.png {Group menu}]
 
 If the user is logged in then the set of dynamically created displays can be saved (e.g., as a wiki page) 
 through the group menu as seen below:
-[ht::cimg images/charts/groupmenu2.png {File save menu}]
+[ht::screenshot images/charts/groupmenu2.png {File save menu}]
 
 [ug::subsubheading {Display Layout}]
 Each child display may be located in a fixed location (using [ug::attr layoutHere=false]) in the web page 
@@ -339,7 +340,7 @@ Likewise, the group has a divid=maindiv which corresponds to the div at the bott
 
 
 
-[ug::subheading {Displaying Multiple Entries} changeentries] 
+[ug::wikiheading {Displaying Multiple Entries} changeentries] 
 When you have multiple entries you can create a display (e.g., a time series)
 and allow the user to select which entry to display.
 
@@ -378,439 +379,6 @@ fields="#41,#42,#43,#44,#45,#46,#47,#48,#49,#50"
 
 The above lists the entries in a menu. Alternatively you can display the entries in a map
 or in a timeline. 
-
-
-[ug::subheading {The Displays} displays]
-
-[displayType {Search form} {entrylist} {
-Supports an embedded and configurable search form. 
-New displays (e.g., line chart) based on the result entries can be created.
-} {  
-width="800"  
-height="400"  
-orientation="vertical|horizontal"  
-showForm="true|false - is form shown"
-formOpen="true|false - is form open"
-showSearchSettings="true|false"
-showType="true|false - show the type selector menu" 
-types="comma separated list of entry types to show"
-doSearch="true|false - perform the search when the page is first displayed"
-showToggle="true|false - show the form toggle"
-showText="true|false - show the search text input"
-showArea="true|false - show the map selector"
-showDate="true|false - show the data selector"
-showMetadata="true|false - show the metadata search fields"
-metadataTypes="comma separated list of metadata types to show"
-formWidth="width of the search form"
-entriesWidth="width of the results list"
-provider="google,arxiv,wolfram,..."
-} {
-images/charts/searchform.png
-}]
-
-The entries displayed in the results list can be interactively displayed. 
-
-The [ug::attr provider] attribute allows you to specify alternative search providers.
-The list of available search providers can be viewed <a href="${root}/search/providers">here</a>.
-<p>
-The [ug::attr metadataTypes] attribute allows you to specify what metadata to show.
-The list of available metadata types can be viewed <a href="${root}/search/info#metadatatypes">here</a>.
-
-<p>
-In the search results list new displays can be created through the pull down menu:
-
-[ht::cimg images/entrylist.png]
-
-
-[displayType {Entry Grid} entrygrid {
-The entrygrid display shows a set of entries based on their date.
-} {
-showIcon=&quot;true&quot;  showName=&quot;true&quot;  scaleWidth=&quot;true&quot;  scaleHeight=&quot;false&quot;  
-#xAxisAscending=&quot;true&quot;  
-#xAxisScale=&quot;true&quot;  
-#yAxisAscending=&quot;true&quot;  
-#yAxisScale=&quot;true&quot;  
-#urlTemplate=&quot;{url}|{entryid}|{resource}&quot;  
-#height=&quot;400&quot;  #width=&quot;100%&quot;  
-#entries=&quot;&quot;  
-} {
-images/charts/entrygrid.png
-}]
-
-[displayType {Animation} {} {
-Controls time or index based animation. Other charts will highlight the record of  the current time.
-} {
-} {
-images/charts/animation.png
-} {
-}]
-
-
-
-
-
-[displayType {Map} {map} {
-A map that shows georeferenced point data. This can be integrated with other displays, e.g., clicking on a point will highlight that location in
-a line chart.
-<ul>
-
-<li> If a Geojson or Kml layer is specified then the layer is displayed instead of the points. The location of each point is used to
-find a containing map feature. That map feature is then colored as defined below.
-
-<li> <i>pruneFeatures</i>. If set to true than any map feature that does not have a corresponding point will not be shown.
-
-r<li> The <i>colorBy</i> attribute specifies the field that is used to color the points or the map segments. 
-The <i>colorTable</i> attribute specifies a color table to
-use and the <i>colorByMin</i> and <i>colorByMax</i> attributes are option and are used to define a color range.
-
-<li> The <i>centerOnFilterChange</i> will cause the map to recenter when the data is subset from the selection filters.
-
-<li> The displayDiv, when specified, is the id of a div tag  that the map will display the details of
-a point or map segment as the user mouses over it. The [ug::attr {displayDiv="mapDisplay${entryid}"}] macro
-allows one to specify a unique div id for pages that may have multiple map displays. The div looks like:
-[wiki::text {
-&lt;div id="mapDisplay{<noop>{entryid}}" style="max-height:500px;"&gt;&lt;/div&gt;
-}]
-There is a full example shown below.
-</ul>
-} {
-width=&quot;100%&quot;  height=&quot;400&quot;
-geojsonLayer="entry id of a geojson file" 
-geojsonLayerName="Layer name"
-kmlLayer="entry id of a kml file" 
-kmlLayerName="Layer name"
-pruneFeatures="true" 
-colorBy="total_ballots"
-colorTable="inversegrayscale"
-colorByMin="min value"
-colorByMax="max value"
-displayDiv="mapDisplay${entryid}"
-} {
-images/charts/mappoints.png
-} {
-https://ramadda.org/repository/entry/show?entryid=1c99bcff-94a9-43a8-beb5-45a87adb2cc4
-}]
-
-[ht::cimg images/charts/map.png {Chloropleth Map} {width=50%} ]
-
-
-
-This is the wiki text used in the above example:
-
-[wiki::text { 
-:heading Map
-+row
-+col-md-6
-{<noop>{display_map column="1"  width="-100" height="500"   includeData="false"   showTitle="false" 
-title="Colored by total ballots" 
-geojsonLayer="7c8f5e25-e569-4ca9-b389-5bb03cdb138b" 
-geojsonLayerName="Precincts"
-displayAsMap="true"
-pruneFeatures="true"
-colorBy="total_ballots"
-colorBar="inversegrayscale"
-displayDiv="mapDisplay${entryid}"
-}}
--col
-+col-6
-<br>
-:heading Map Details
-<div id="mapDisplay{<noop>{entryid}}" style="max-height:500px;"></div>
--col
--row
-}]
-
-<b>Map Animation:</b><br>
-The map display can be configured to provide a time-based animation of the points with the following attributes.
-
-[wiki::text {
-doAnimation="true" - enable animation
-animationShowSlider="true" - show the slider
-animationDateFormat="yyyyMMdd" or "yyyy" - default is the fully formatted date
-animationMode="cumulative" or "sliding" - how the time window is moved
-animationSteps="60"   - how many steps
-animationWindow="year" or "month" or "day" or "hour" or "minute" or "second"  - override the animationSteps
-animationSpeed="250" - time in milliseconds between each step
-}]
-
-<b>Map Labels:</b><br>
-You can display text labels at each point with the following attributes:
-[wiki::text {
-labelTemplate="text template with ${field id} macros. Use _nl_ for new lines"
-labelFontColor="#000"
-labelFontSize="12px"
-labelFontFamily="'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"
-labelFontWeight="plain"
-labelAlign="lb"  //See http://dev.openlayers.org/docs/files/OpenLayers/Feature/Vector-js.html
-align is of the form "hv" where h is "l|c|r" (left, center, right)  and v is "t|n|b" (top,middle,bottom)
-labelXOffset="0"
-labelYOffset="0"
-labelOutlineColor="#fff")
-labelOutlineWidth="0"
-}]
-
-
-<b>Map Sizes</b><br>
-[wiki::text {
-//Define the point radius
-radius="4" 
-//define a field to size by
-sizeBy="&lt;field&gt;"
-//use a log scale
-sizeByLog=true
-//Size min/max
-sizeByRadiusMin=1
-sizeByRadiusMax=15
-}]
-
-<b>Map Colors</b><br>
-[wiki::text {
-//Field to color by
-colorBy="&lt;field&gt;cnt"
-//Color table
-colorTable="blue_green_red"
-//Or colors
-colors="color1,color2,...,colorN"
-//Use a log scale
-colorByLog=true
-//Set the stroke color
-strokeColor="#fff0"
-//Map string values to colors
-colorByMap="value:color,...,value:color"
-
-//These are used in conjunction with a vector map layer
-//If true then count the points within each map feature and use that as the color by value
-colorByCount=true
-//Suffix to show on map click
-doCountLabel="clubs"
-
-//If true then prune out the features that don't have any data points in them
-pruneFeatures="true"
-}]
-
-
-<b>Map Shapes</b><br>
-Define different shapes to display in the map.
-
-[wiki::text {
-//Define a different icon to use 
-pointIcon="/repository/dutchbrothers.png" 
-//Define a different shape
-shape="star|cross|x|square|triangle|circle|lightning|rectangle|church"
-//Map values to shape
-shapeBy=&lt;field&gt;
-shapeByMap="value1:shape1,...,valueN:shapeN"
-
-}]
-
-[displayType { Line chart} linechart {
-Displays time series or indexed point data. The vAxisMinValue and vAxisMaxValue are used as the range instead of the min/max from the data.
-<br>
-If <i>padRight</i> is set to true than the chart is padded on the right with the same space as what is used for the second axis legend. This allows
-for two or more charts to be aligned that have one or more fields being displayed.
-} {
-width=&quot;800&quot;  height=&quot;400&quot;  
-fields=&quot;&quot;       
-vAxisMinValue="0" vAxisMaxValue="1.0" padRight="true"
-} {
-images/charts/linechart.png
-}]
-
-
-<a name="colors"></a>
-You can set various colors of the chart with the following properties:
-
-[wiki::text {
-chart.fill="color or 'transparent'"
-chart.stroke="stroke color"
-chart.strokeWidth="width"
-
-chartArea.fill="color or 'transparent'"
-chartArea.stroke="stroke color"
-chartArea.strokeWidth="width"
-
-hAxis.gridlines.color="color"
-vAxis.gridlines.color="color"
-
-}]
-
-
-<a name="annotations"></a>
-<b>Annotating Charts</b><br>
-Annotations for a chart can be specified in two ways. 
-The first is to specify one or more data fields to create the annotation from:
-[wiki::text {
-  annotationFields="field1,field2,..."
-  annotationLabelField="field" //optional for the label
-}]
-
-The second way is to specify the annotations using an <i>annotations</i> attribute:
-[wiki::text {
-annotations="
-&lt,index1&gt,label1,description1;
-&lt,index2&gt,label2,description2;
-...
-"
-}]
-Where &lt;index&gt; is either a date or a numeric index, e.g;
-[wiki::text {
- annotations="
-2,A,annotation 1;
-2016-06-24,B,annotation 2;
-2016-06-24,C,&lt,h1&gt,annotation 3&lt/h1&gt;
-2017-01-02,D,annotation 4
-"
-}]
-
-
-[displayType {Bar chart} {barchart}  {
-} {
-fields=""  padRight="true" 
-} {
-images/charts/barchart.png
-} ]
-
-[displayType {Stacked bar chart} {barstack}  {
-} {
-fields=""  
-} {}]
-
-
-
-
-[displayType {Area chart} {areachart} {
-} {
-width=&quot;800&quot;  height=&quot;400&quot;  
-fields=&quot;&quot;  
-vAxisMinValue="0" vAxisMaxValue="1.0" 
-padRight="true"
-isStacked=&quot;true&quot;
-} {
-images/charts/areachart.png
-}]
-
-[displayType { Scatter Plot} scatterplot {
-} {
-width=&quot;800&quot;  height=&quot;400&quot;  fields=&quot;&quot;
-} {
-images/charts/scatterplot.png
-}]
-
-[displayType { Histogram} histogram {
-The   <i>minValue</i> and <i>maxValue</i> attributes are used to specify the  maximum and minimum evertical data value to render.
-More info at <a href="https://developers.google.com/chart/interactive/docs/gallery/histogram">Google charts histogram documentation</a>.
-} {
-width=&quot;800&quot;  height=&quot;400&quot;  fields=&quot;&quot;  
-colors=&quot;comma separated color list&quot;  
-legendPosition=&quot;none|top|right|left|bottom&quot;  
-textPosition=&quot;out|in|none&quot;  
-isStacked=&quot;false|true|percent|relative&quot;  
-logScale=&quot;true|false&quot;  scaleType=&quot;log|mirrorLog&quot;  
-vAxisMinValue=&quot;&quot;  vAxisMaxValue=&quot;&quot;  
-minValue=&quot;&quot;  maxValue=&quot;&quot;
-} {
-images/charts/histogram.png
-}]
-
-
-[displayType {Bubble Chart} bubble {
-The <i>fields</i> specify a text field for the label and the numeric value fields used for the x and y axis, the bubble color and bubble  size.
-} {
-width=&quot;500&quot;  height=&quot;500&quot;  
-fields=&quot;label|x|y|color|size&quot;  
-colorTable=&quot;&quot;  
-colors=&quot;comma separated color list&quot;  
-legendPosition=&quot;none|top|right|left|bottom&quot;  
-hAxisFormat=&quot;none|decimal|scientific|percent|short|long&quot;  
-vAxisFormat=&quot;none|decimal|scientific|percent|short|long&quot;  
-hAxisTitle=&quot;&quot;  
-vAxisTitle=&quot;&quot;} {
-} {
-images/charts/bubble.png
-}]
-
-[displayType { Pie chart} piechart {
-More info at <a href="https://developers.google.com/chart/interactive/docs/gallery/piechart">Google charts pie chart documentation</a>
-} {
-fields=&quot;&quot;
-pieHole=&quot;0.5&quot;  
-is3D=&quot;true&quot;    
-bins=&quot;bin count&quot;  
-binMin=&quot;min&quot;  
-binMax=&quot;max&quot;  
-sliceVisibilityThreshold=&quot;0.01&quot;  
-width=&quot;500&quot;  height=&quot;250&quot;
-} {
-images/charts/piechart.png
-}]
-
-[displayType {Radar Display} radar {
-} {
-fields="" 
-} {
-images/charts/radar.png
-} {
-https://ramadda.org/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb
-}]
-
-[displayType {Wind Rose} windrose {
-} {
-fields="" 
-} {
-images/charts/windrose.png
-} {
-https://ramadda.org/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb
-}]
-
-
-[displayType {Density Display} density {
-} {
-fields="tmax,vp" 
-} {
-images/charts/density.png
-} {
-https://ramadda.org/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb
-}]
-
-
-
-[displayType {3D Scatter} 3dscatter {
-} {
-fields="" 
-} {
-images/charts/3dscatter.png
-} {
-https://ramadda.org/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb
-}]
-
-
-
-
-
-
-
-
-
-
-[displayType { Calendar} calendar {
-Displays point data based on the date of each record. The calendar entry is color coded based on the specified field.
-<br>
-If <i>missingValue</i> is specified than any point value with that value won't be shown.
-} {
-fields=&quot;&quot;  cellSize=&quot;15&quot;  missingValue=&quot;0&quot;
-} {
-images/charts/calendar.png
-}]
-
-[displayType { Gauge} gauge {
-This shows a single value from a series of point data.
-} {
-fields=&quot;&quot;  gaugeMin=&quot;&quot;  gaugeMax=&quot;&quot;  gaugeLabel=&quot;&quot;
-} {
-images/charts/gauge.png
-}]
-
-
 
 
 [ht::foot]

@@ -1,0 +1,69 @@
+[ht::head {Basic Displays}]
+<%nochildlist%>
+:navtop
+
+[displayType {Search form} {entrylist} {
+Supports an embedded and configurable search form. 
+New displays (e.g., line chart) based on the result entries can be created.
+} {  
+width="800"  
+height="400"  
+orientation="vertical|horizontal"  
+showForm="true|false - is form shown"
+formOpen="true|false - is form open"
+showSearchSettings="true|false"
+showType="true|false - show the type selector menu" 
+types="comma separated list of entry types to show"
+doSearch="true|false - perform the search when the page is first displayed"
+showToggle="true|false - show the form toggle"
+showText="true|false - show the search text input"
+showArea="true|false - show the map selector"
+showDate="true|false - show the data selector"
+showMetadata="true|false - show the metadata search fields"
+metadataTypes="comma separated list of metadata types to show"
+formWidth="width of the search form"
+entriesWidth="width of the results list"
+provider="google,arxiv,wolfram,..."
+} {
+images/charts/searchform.png
+}]
+
+The entries displayed in the results list can be interactively displayed. 
+
+The [ug::attr provider] attribute allows you to specify alternative search providers.
+The list of available search providers can be viewed <a href="${root}/search/providers">here</a>.
+<p>
+The [ug::attr metadataTypes] attribute allows you to specify what metadata to show.
+The list of available metadata types can be viewed <a href="${root}/search/info#metadatatypes">here</a>.
+
+<p>
+In the search results list new displays can be created through the pull down menu:
+
+[ht::screenshot images/entrylist.png]
+
+
+[displayType {Entry Grid} entrygrid {
+The entrygrid display shows a set of entries based on their date.
+} {
+showIcon=&quot;true&quot;  showName=&quot;true&quot;  scaleWidth=&quot;true&quot;  scaleHeight=&quot;false&quot;  
+#xAxisAscending=&quot;true&quot;  
+#xAxisScale=&quot;true&quot;  
+#yAxisAscending=&quot;true&quot;  
+#yAxisScale=&quot;true&quot;  
+#urlTemplate=&quot;{url}|{entryid}|{resource}&quot;  
+#height=&quot;400&quot;  #width=&quot;100%&quot;  
+#entries=&quot;&quot;  
+} {
+images/charts/entrygrid.png
+}]
+
+[displayType {Animation} {} {
+Controls time or index based animation. Other charts will highlight the record of  the current time.
+} {
+} {
+images/charts/animation.png
+} {
+}]
+
+
+[ht::foot]
