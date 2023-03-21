@@ -360,6 +360,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                 this.lastWidth = d.width();
                 this.map.getMap().updateSize();
             }
+	    /* not sure why we have this here but it ends up screwing up the map zooming way out
 	    if(!this.setMapLocationAndZoom && this.mapParams) {
 		this.setMapLocationAndZoom = true;
 		if(this.mapParams.initialZoom>=0) {
@@ -370,7 +371,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		    this.map.setCenter(loc);
 		}
 
-	    }
+	    }**/
         },
 
         initMapParams: function(params) {
