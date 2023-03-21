@@ -1,0 +1,90 @@
+[ht::head {IMDV Entries} ]
+:navtop
+
+:heading Entry Markers 
+The Entry Marker and the Multi Entry allow you to add markers
+for RAMADDA entries. Clicking on the marker will show some content
+from that entry.
+For example, RAMADDA supports 3D Models as an entry type. 
+Choosing New-&gt;Entry Marker and adding it to the map will add a marker. Clicking on that marker
+will show a 3D view of the model:
+[ht::screenshot images/entrymarker.png]
+
+When adding a marker for an entry  that has geolocation you will be prompted if you want to
+use the entry's latitide/longitude as the position for the marker or if you want to position
+the marker manually. If you opt to use the entry's position then, if the position of the entry
+is changed, that change is reflected in the  map. You can manually move the marker and that new
+position will then be used. Likewise, the name and label for the marker is taken from the entry
+name. If the name of the entry changes then that will be reflected in the map. This can be changed
+by bringing up the properties for the entry marker:
+[ht::screenshot images/entrymarker2.png]
+
+
+The Multi Entry allows you to select some Folder in RAMADDA. All of the geolocated children entries
+in that folder will be shown in the map. For example, if you had a Folder of a number of map files
+add the folder as a Multi Entry. This adds markers for each map file. Clicking on a marker shows
+the view of the entry (like above). In the legend clicking on the <i class="fas fa-plus"></i> link
+will add that entry as a map into the main map.
+
+[ht::screenshot images/multientry.png]
+
+<a name=glyphs></a>
+:heading Data Icons
+An entry marker  for an entry that provides point data can also show a display of
+the most recent record in the data directly within the map. e.g.:
+[ht::screenshot images/glyphs1.png]
+
+This  is done by specifiy one or more "glyphs"  in the properties for the marker:
+[ht::screenshot images/glyphs2.png]
+
+The first line as shown above specifies the width and height and fill for the canvas.
+<pre>
+width=120;height=100;fill=#efefef;border=#000
+</pre>
+Each successive line specifes the glyphs.
+The glyphs take the same form as the 
+<a href=wikidisplay2.html#canvas>Canvas Display</a> provides. One way to configure the
+glyphs used in the map is to first add a canvas display directly for the source entry as shown below.
+Right clicking in the display_canvas tag brings up a context menu that has examples
+for the different types of glyphs.
+<pre>
+{{display_canvas  canvasWidth=100 canvasHeight=100  lastRecords=1
+glyph1="type:3dbar,pos:sw,dx:10,dy:-5,height:100,width:8,baseHeight:5,sizeBy:atmos_temp,sizeByMin:0,sizeByMax:50"
+glyph2="type:label,font:6pt,pos:ne,dx:90,dy:-90,label:Temp: \${atmos_temp}" 
+}}
+</pre>
+
+
+
+
+:heading Data Displays
+RAMADDA provides very rich capabilities to show data in maps, e.g.
+on <a href=https://ramadda.org/repository/a/maps>ramadda.org</a>.
+These displays are accomplished through RAMADDA's <a href=../wiki.html>wiki</a>
+facility. You can import one or more map data  displays into an IMDV.
+:p
+First, upload your data to RAMADDA and create a map display for that data
+using RAMADDA's <a href=wiki.html>wiki</a> facility.
+Next, from the IMDV New menu select Data and select the data you uploaded.
+The IMDV will extract from you data's wiki the arguments for a map display.
+These will be shown and can be edited if needed. Here we've selected some aircraft
+track data:
+[ht::screenshot images/newdata.png]
+
+With the result map:
+[ht::screenshot images/data1.png]
+
+The map display properties can be edited through the Edit form.
+Other  data displays can be added and overlaid on the IMDV map.
+:p
+You can play around with this by importing the file 
+<a href=https://ramadda.org/repository/a/userguide_showing_data_in_maps>https://ramadda.org/repository/a/userguide_showing_data_in_maps</a>
+to your RAMADDA. This is an export of the example showing Colorado aircraft crashes and
+Colorado mines on
+<a href=https://ramadda.org/repository/entry/show?entryid=a4ba9818-b8ed-4512-9cfb-f81d6e44acba>
+ramadda.org</a>.
+
+
+
+</body>
+</html>
