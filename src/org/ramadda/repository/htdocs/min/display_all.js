@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Mar 21 15:58:09 MDT 2023";
+var build_date="RAMADDA build date: Tue Mar 21 16:28:18 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -50294,10 +50294,8 @@ MapGlyph.prototype = {
 			     entryId:e.getId(),
 			     icon:e.getIconUrl()
 			    };
-
-		//xxxx
 		let points =[e.getLatitude(),e.getLongitude()];
-		let mapGlyph = this.display.createMapMarker(GLYPH_ENTRY,attrs, style,points,true);
+		let mapGlyph = this.display.createMapMarker(GLYPH_ENTRY,attrs, style,points,false);
 		mapGlyph.isEphemeral = true;
 		this.addChildGlyph(mapGlyph);
 		if(this.getShowMultiData()) {
