@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Mar 21 16:28:18 MDT 2023";
+var build_date="RAMADDA build date: Tue Mar 21 17:46:05 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -3207,11 +3207,11 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	if(!props.sizeByField) {
 	    console.log("Could not find sizeBy field:" + props.sizeBy);
 	} else  {
-	    let props = {
+	    let colorProps = {
 		Min:props.sizeByMin,
 		Max:props.sizeByMax,
 	    };
-	    props.sizeByInfo =  new ColorByInfo(display, fields, records, props.sizeBy,props.sizeBy, null, props.sizeBy,props.sizeByField,props);
+	    props.sizeByInfo =  new ColorByInfo(display, fields, records, props.sizeBy,props.sizeBy, null, props.sizeBy,props.sizeByField,colorProps);
 	}
     }
 
