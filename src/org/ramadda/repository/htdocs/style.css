@@ -1925,6 +1925,11 @@ thin_hr,.ramadda-thin-hr {
 
 
 
+.ramadda-docs-image  {
+    margin-top:1em;
+    margin-bottom:1em;    
+}
+
 .ramadda-documentation  {
     margin:10px;
 }
