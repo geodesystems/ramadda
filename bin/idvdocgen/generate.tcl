@@ -4,7 +4,6 @@ exec tclsh "$0" "$@"
 
 
 set ::image_version [expr ceil(1000*rand())]
-puts $::image_version
 package require http 
 
 namespace eval ug {}
@@ -133,14 +132,16 @@ proc ht::doImage {img centered {caption ""} {extra ""}} {
     } else {
 	   set html  "<div>$href1<img  src=\"$img\" $extra alt=\"$img\" >$href2</div>"
     }
-    if {$centered} {return "<center>$html</center>"}
+    if {$centered} {return "<div style='text-align:center;' class='ramadda-docs-image'>$html</div>"}
     return $html
 	   
 }
 
 proc ht::screenshot {img {caption ""} {css ""}} {
-    set extra  " onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='xwidth:80%;padding:4px;margin:8px;$css' "
-    return "<center><span style='display:inline-block'>[ht::cimg $img $caption $extra]</span></center>"
+    #hide it at first so we don't have the flash
+    set css "${css}display:none;"
+    set extra  " onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='$css' "
+    return "[ht::cimg $img $caption $extra]"
 }
 
 
@@ -172,9 +173,9 @@ proc ht::cimg {img {caption ""} {extra ""}} {
             gen::getNextImageId $img $caption
         }
 	if {$caption !=""} {
-	    return "<p>&nbsp;<center><img src=\"$img\" alt=\"$caption\"><br><i>$caption</i></center>&nbsp;<p>"
+	    return "<div style='text-align:center;' class='ramadda-docs-image'><img src=\"$img\" alt=\"$caption\"><br><i>$caption</i></div>"
 	}
-	return  "<p>&nbsp;<center><img src=\"$img\" alt=\"$img\"></center>&nbsp;<p>"
+	return  "<div style='text-align:center;' class='ramadda-docs-image'><img src=\"$img\" alt=\"$img\"></div>"
     }
 
     ht::doImage $img 1 $caption $extra
@@ -339,7 +340,7 @@ proc displayType {name id desc args {img ""} {url ""} {desc2 ""}} {
    }
 #   gen::addInpageToc "<a href='#$id'>$name</a>"
    set args [string trim $args]
-   set h [ug::subsubheading $name $id]
+   set h [ug::wikiheading $name $id]
    append h $desc
    set wiki [wiki::tagdefBlock display_$id "$args"]
    append h $wiki
@@ -351,14 +352,14 @@ proc displayType {name id desc args {img ""} {url ""} {desc2 ""}} {
    if {$img!=""} {
          set toks [split $img " "]
          set extra { style="max-width:90%; "} 
-          if {[llength $toks]>1} {
+         if {[llength $toks]>1} {
                set img [lindex $toks 0]
                set extra [lindex $toks 1]
 	       puts "extra: $extra"
           }
              append h [ht::cimg $img $name $extra]
     }
-   append h $desc2
+      append h $desc2
     set h
 }
 
@@ -367,6 +368,15 @@ proc displayType {name id desc args {img ""} {url ""} {desc2 ""}} {
 proc ug::link {path label} {
     return "<a href='$path'>$label</a>"
 }
+
+proc ug::wikiheading {label {id ""} } {
+    set r ""
+    if {$id!=""} {
+           set r "<a name='$id'></a>";
+    }
+    return "$r\n:lheading $label\n"
+}
+
 
 proc ug::subheading {label {id ""}  {extra {}}   {intoc false} } {
     if ($::doXml) {
