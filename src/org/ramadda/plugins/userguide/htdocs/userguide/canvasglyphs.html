@@ -56,7 +56,7 @@ e.g.:
 label,font:6pt,pos:ne,dx:90,dy:-90,label:Temp: ${atmos_temp}
 </pre>
 
-:lheading Using Glyphs in the Canvas display
+:lheading Glyphs in the Canvas display
 if the glyphs are being used
 in the Canvas Display then each line is specified in the display_canvas tag as:
 <pre>
@@ -65,7 +65,6 @@ glyph2="&lt;glyph type&gt;,..."
 ...
 glyphN="&lt;glyph type&gt;,..."
 </pre>
-
 
 
 :lheading Positioning Glyphs
@@ -112,6 +111,67 @@ approximate height of the text block.
 <pre>
 label,pos:ne,dx:100,dy:-90,label:Some label
 </pre>  
+
+<a name="positioning"></a>
+:lheading Glyphs in the IMDV map
+
+The following diagram shows how the label and the image are layed out for the
+<a href="imdv/imdvglyphs.html">IMDV map example</a>.
+The canvas dimensions are 300x100. The origin of the canvas is the lower left with
+positive X to the right and negative Y going up.
+The "pos" is the position on the glyph which is positioned
+relative to the origin and can take on the values: nw,w,sw,s,se,e,ne,n,c (center). 
+The dx and dy are the delta from the origin. These can be absolute values as well as
+can be based on the canvas width and height -<i>cw</i> &amp; <i>ch</i> 
+and the half the canvas width and height -<i>cw2</i> &amp; <i>ch2</i>.
+:p
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="imdv/images/canvas1.png?version=653.0"><img  src="imdv/images/canvas1.png?version=653.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="imdv/images/canvas1.png?version=653.0" ></a></div></div>
+
+
+The data entries can have default glyph specifications. For example, the default display
+of the Purple Air sensors in an IMDV map is defined with:
+:p
+Properties:
+<pre>
+fontSize:0px,iconSize:20,canvasWidth:100,canvasHeight:100,font:28px sans-serif,defaultField:pm2.5
+</pre>
+
+And Glyphs:
+<pre>
+label,pos:c,dx:cw2,dy:-ch2,label:${${_field}}
+
+#The circle is colored by the selected field with the given color table and min/max range
+circle,width:cw-10,height:ch,pos:c,dx:cw2,dy:-ch2,colorBy:${_field},colorTable:airquality,colorByMin:0,colorByMax:300
+
+</pre>
+
+The positioning is as follows:
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="imdv/images/canvas2.png?version=653.0"><img  src="imdv/images/canvas2.png?version=653.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="imdv/images/canvas2.png?version=653.0" ></a></div></div>
+
+
+The display of the NWS Weather entries in an IMDV map is defined with:
+:p
+Properties:
+<pre>
+iconSize:75,canvasWidth:600,canvasHeight:250,fill:#efefef,borderWidth:2,borderColor:#000,font:bold 36px sans-serif
+</pre>
+
+With Glyphs defined as:
+<pre>
+image,pos:nw,dx:10,dy:-ch+10,width:60,height:60,url:${root}/point/noaalarge.png
+label,pady:5,pos:nw,dx:80,dy:-ch+10,label:${entryname}  
+label,pady:10,pos:n,dx:cw2,dy:-ch+60,font:36px sans-serif,label:${temperature prefixLabel=true}
+${windspeed prefixLabel=true}
+Pressure: ${barometricpressure scale=0.01 decimals=1} mb
+</pre>
+
+Here there are 2 labels - the name of the entry and a 3 new line separated field values.
+This gives:
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="imdv/images/canvas3.png?version=653.0"><img  src="imdv/images/canvas3.png?version=653.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="imdv/images/canvas3.png?version=653.0" ></a></div></div>
+
+
+
 
 
 

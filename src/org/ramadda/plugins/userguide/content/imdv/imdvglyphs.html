@@ -53,6 +53,7 @@ button will set them with initial default values.
 You can think of the Glyphs as a set of drawing commands that draw into the canvas.
 The canvas has a specified width and height. That canvas is then converted into an image
 and that image is displayed as an icon in the map with the specified Icon Size.
+There is in depth documentation available  <a href="../canvasglyphs.html#positioning">here</a>.
 :p
 The Properties have both default attributes for the Glyphs as well
 as background for the canvas as a whole.
@@ -82,54 +83,6 @@ label,pos:nw,dx:80,dy:-ch+20,label:${${_field} decimals=1 suffix=" ${unit}"}
 image,pos:nw,dx:10,dy:10-ch,width:60,height:60,url:${icon}
 </pre>
 
-The following diagram shows how the label and the image are layed out.
-The canvas dimensions are 300x100. The origin of the canvas is the lower left with
-positive X to the right and negative Y going up.
-The "pos" is the position on the glyph which is positioned
-relative to the origin and can take on the values: nw,w,sw,s,se,e,ne,n,c (center). 
-The dx and dy are the delta from the origin. These can be absolute values as well as
-can be based on the canvas width and height -<i>cw</i> &amp; <i>ch</i> 
-and the half the canvas width and height -<i>cw2</i> &amp; <i>ch2</i>.
-:p
-
-[ht::screenshot images/canvas1.png]
-
-
-The data entries can have default glyph specifications. For example, the default display
-of the Purple Air sensors is defined with:
-:p
-Properties:
-<pre>
-fontSize:0px,iconSize:20,canvasWidth:100,canvasHeight:100,font:28px sans-serif,defaultField:pm2.5
-</pre>
-
-And Glyphs:
-<pre>
-circle,width:cw-10,height:ch,pos:c,dx:cw2,dy:-ch2,colorBy:\${_field},colorTable:airquality,colorByMin:0,colorByMax:300
-label,pos:c,dx:cw2,dy:-ch2,label:\${\${_field}}
-</pre>
-
-The positioning is as follows:
-[ht::screenshot images/canvas2.png]
-
-
-The NWS Weather entry is defined with:
-:p
-Properties:
-<pre>
-iconSize:75,canvasWidth:600,canvasHeight:250,fill:#efefef,borderWidth:2,borderColor:#000,font:bold 36px sans-serif
-</pre>
-
-With Glyphs defined as:
-<pre>
-image,pos:nw,dx:10,dy:-ch+10,width:60,height:60,url:\${root}/point/noaalarge.png
-label,pady:5,pos:nw,dx:80,dy:-ch+10,label:\${entryname}  
-label,pady:10,pos:n,dx:cw2,dy:-ch+60,font:36px sans-serif,label:\${temperature prefixLabel=true}\n\${windspeed prefixLabel=true}\nPressure: \${barometricpressure scale=0.01 decimals=1} mb
-</pre>
-
-Here there are 2 labels - the name of the entry and a 3 new line separated field values.
-This gives:
-[ht::screenshot images/canvas3.png]
 
 
 

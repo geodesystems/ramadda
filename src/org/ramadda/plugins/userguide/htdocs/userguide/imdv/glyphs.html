@@ -31,11 +31,137 @@ pre {
 :navtop
 
 +callout-info
-
+Both the <a href=multientry.html>Multi-Entry Glyph</a>
+and the Group Glyph can be configured so that all of their
+children glyphs are displayed with the same data icon.
 -callout
 
+To follow download the example at
+<a href=https://ramadda.org/repository/a/userguide_dataicons>
+  https://ramadda.org/repository/a/userguide_dataicons
+</a>
+and import it into your RAMADDA.
+:p
+The example is composed of a Group that contains three different entries -
+a CR1000  data logger file, a Purple Air sensor and a real-time NWS weather
+data file. 
 
-TBD
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/dataicons1.png?version=421.0"><img  src="images/dataicons1.png?version=421.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/dataicons1.png?version=421.0" ></a></div></div>
+
+
+:lheading Group Property Dialog
+Under the Data Icons section of the Properties dialog for the group are specifications
+for both the pull-down field menu as well as overwriting how the
+data icons are displayed.
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/dataicons2.png?version=421.0"><img  src="images/dataicons2.png?version=421.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/dataicons2.png?version=421.0" ></a></div></div>
+
+:lheading Menu Fields
+There are 7 lines in the Menu Fields. 
+The data files share some similar fields (e.g., temperature) but
+the field names vary (e.g., "rh" and "humidity") and only the Purple Air
+entry has the pm1.0, pm2.5 and pm10.0 fields.
+The "|" separated field ids, e.g. <i>.*rh|.*humidity</i>, allow one to match
+on any of the patterns.
+<pre>
+temp.*|other_field_pattern,label=Temperature,unit=C
+.*rh|.*humidity.*,label=RH
+.*atm_press|.*pressure,label=Pressure
+windspeed,label=Wind Speed
+pm1.0
+pm2.5
+pm10.0
+</pre>
+
+:lheading Drawing Data Icons
+Under the Set Defaults button are a set of inputs for specifying how the data is displayed.
+If there isn't anything set in the fields (e.g., Canvas, Properties, Glyphs) then the Set Defaults
+button will set them with initial default values.
+:p
+You can think of the Glyphs as a set of drawing commands that draw into the canvas.
+The canvas has a specified width and height. That canvas is then converted into an image
+and that image is displayed as an icon in the map with the specified Icon Size.
+:p
+The Properties have both default attributes for the Glyphs as well
+as background for the canvas as a whole.
+<pre>
+#What font to use for the label Glyph
+font:50px sans-serif
+
+#If the data does not have the specified field then the icon is not shown
+#the ${_field} is a macro that is replaced with the selected field
+#from the Field Menu
+requiredField:${_field}
+
+#This specifies the background and line color for the rectangle
+borderColor:#000
+fill:#eee
+lineWidth:5
+</pre>
+
+
+The Glyphs are the drawing commands, one per line.
+<pre>
+#Draw a label with the given template
+#The ${_field} is a macro that is replaced with the selected field
+label,pos:nw,dx:80,dy:-ch+20,label:${${_field} decimals=1 suffix=" ${unit}"}
+
+#Draw an image with the icon for the Map Glyph
+image,pos:nw,dx:10,dy:10-ch,width:60,height:60,url:${icon}
+</pre>
+
+The following diagram shows how the label and the image are layed out.
+The canvas dimensions are 300x100. The origin of the canvas is the lower left with
+positive X to the right and negative Y going up.
+The "pos" is the position on the glyph which is positioned
+relative to the origin and can take on the values: nw,w,sw,s,se,e,ne,n,c (center). 
+The dx and dy are the delta from the origin. These can be absolute values as well as
+can be based on the canvas width and height -<i>cw</i> &amp; <i>ch</i> 
+and the half the canvas width and height -<i>cw2</i> &amp; <i>ch2</i>.
+:p
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/canvas1.png?version=421.0"><img  src="images/canvas1.png?version=421.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/canvas1.png?version=421.0" ></a></div></div>
+
+
+The data entries can have default glyph specifications. For example, the default display
+of the Purple Air sensors is defined with:
+:p
+Properties:
+<pre>
+fontSize:0px,iconSize:20,canvasWidth:100,canvasHeight:100,font:28px sans-serif,defaultField:pm2.5
+</pre>
+
+And Glyphs:
+<pre>
+circle,width:cw-10,height:ch,pos:c,dx:cw2,dy:-ch2,colorBy:${_field},colorTable:airquality,colorByMin:0,colorByMax:300
+label,pos:c,dx:cw2,dy:-ch2,label:${${_field}}
+</pre>
+
+The positioning is as follows:
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/canvas2.png?version=421.0"><img  src="images/canvas2.png?version=421.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/canvas2.png?version=421.0" ></a></div></div>
+
+
+
+The NWS Weather entry is defined with:
+:p
+Properties:
+<pre>
+iconSize:75,canvasWidth:600,canvasHeight:250,fill:#efefef,borderWidth:2,borderColor:#000,font:bold 36px sans-serif
+</pre>
+
+With Glyphs defined as:
+<pre>
+image,pos:nw,dx:10,dy:-ch+10,width:60,height:60,url:${root}/point/noaalarge.png
+label,pady:5,pos:nw,dx:80,dy:-ch+10,label:${entryname}  
+label,pady:10,pos:n,dx:cw2,dy:-ch+60,font:36px sans-serif,label:${temperature prefixLabel=true}
+${windspeed prefixLabel=true}
+Pressure: ${barometricpressure scale=0.01 decimals=1} mb
+</pre>
+
+Here there are 2 labels - the name of the entry and a 3 new line separated field values.
+This gives:
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/canvas3.png?version=421.0"><img  src="images/canvas3.png?version=421.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/canvas3.png?version=421.0" ></a></div></div>
+
 
 
 
