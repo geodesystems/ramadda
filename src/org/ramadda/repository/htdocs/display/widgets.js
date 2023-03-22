@@ -3003,7 +3003,7 @@ Glyph.prototype = {
 	    let height = lengthPercent*(props.height) + parseFloat(props.baseHeight);
 	    ctx.fillStyle =   color || props.color;
 	    ctx.strokeStyle = props.strokeStyle||'#000';
-	    props.draw3DRect(canvas,ctx,pt.x, 
+	    this.draw3DRect(canvas,ctx,pt.x, 
 			    canvas.height-pt.y-props.height,
 			    +props.width,height,+props.width);
 	    
@@ -3067,7 +3067,7 @@ Glyph.prototype = {
 	    ctx.stroke();
 	    if(arrowLength>0) {
 		ctx.beginPath();
-		props.drawArrow(ctx, x,y,x2,y2,arrowLength);
+		this.drawArrow(ctx, x,y,x2,y2,arrowLength);
 		ctx.stroke();
 	    }
 	} else if(props.type=='tile'){
