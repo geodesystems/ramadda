@@ -34,7 +34,7 @@ pre {
 +callout-info
 The <a href="wikidisplay2.html#canvas">Canvas display</a> and the <a href="imdv/entries.html">IMDV display</a>
 both make use of a Canvas Glyph mechanism that provides a declarative specification
-for making some drawing in HTML canvas and its subsequent display.
+for making some drawing in an HTML canvas and its subsequent display.
 -callout
 
 
@@ -57,13 +57,19 @@ label,font:6pt,pos:ne,dx:90,dy:-90,label:Temp: ${atmos_temp}
 </pre>
 
 :lheading Glyphs in the Canvas display
-if the glyphs are being used
+If the glyphs are being used
 in the Canvas Display then each line is specified in the display_canvas tag as:
 <pre>
 glyph1="&lt;glyph type&gt;,..."
 glyph2="&lt;glyph type&gt;,..."  
 ...
 glyphN="&lt;glyph type&gt;,..."
+</pre>
+
+e.g.:
+<pre>
+glyph1="3dbar,pos:sw,dx:10,dy:-5,height:100,width:8,baseHeight:5,sizeBy:atmos_temp,sizeByMin:0,sizeByMax:50"
+glyph2="label,font:6pt,pos:ne,dx:90,dy:-90,label:Temp: ${atmos_temp}"
 </pre>
 
 
@@ -100,12 +106,12 @@ There are shorthand names for the above- <i>cw</i> = canvasWidth, <i>ch</i> = ca
 :p
 
 
-For example, say you want a label positioned in the center. You would specify:
+For example, if you want a label positioned in the center. You would specify:
 <pre>
 label,pos:c,dx:cw2,dy:ch2,label:Some label
 </pre>  
 
-Say you want to have a label that is position in the upper right of a canvas
+If you want to have a label that is position in the upper right of a canvas
 of width  and height 100. To do this specify the following. The dy=-90 takes into account the
 approximate height of the text block.
 <pre>
@@ -126,7 +132,7 @@ can be based on the canvas width and height -<i>cw</i> &amp; <i>ch</i>
 and the half the canvas width and height -<i>cw2</i> &amp; <i>ch2</i>.
 :p
 
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="imdv/images/canvas1.png?version=653.0"><img  src="imdv/images/canvas1.png?version=653.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="imdv/images/canvas1.png?version=653.0" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="imdv/images/canvas1.png?version=584.0"><img  src="imdv/images/canvas1.png?version=584.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="imdv/images/canvas1.png?version=584.0" ></a></div></div>
 
 
 The data entries can have default glyph specifications. For example, the default display
@@ -147,7 +153,7 @@ circle,width:cw-10,height:ch,pos:c,dx:cw2,dy:-ch2,colorBy:${_field},colorTable:a
 </pre>
 
 The positioning is as follows:
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="imdv/images/canvas2.png?version=653.0"><img  src="imdv/images/canvas2.png?version=653.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="imdv/images/canvas2.png?version=653.0" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="imdv/images/canvas2.png?version=584.0"><img  src="imdv/images/canvas2.png?version=584.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="imdv/images/canvas2.png?version=584.0" ></a></div></div>
 
 
 The display of the NWS Weather entries in an IMDV map is defined with:
@@ -168,7 +174,7 @@ Pressure: ${barometricpressure scale=0.01 decimals=1} mb
 
 Here there are 2 labels - the name of the entry and a 3 new line separated field values.
 This gives:
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="imdv/images/canvas3.png?version=653.0"><img  src="imdv/images/canvas3.png?version=653.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="imdv/images/canvas3.png?version=653.0" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="imdv/images/canvas3.png?version=584.0"><img  src="imdv/images/canvas3.png?version=584.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="imdv/images/canvas3.png?version=584.0" ></a></div></div>
 
 
 
