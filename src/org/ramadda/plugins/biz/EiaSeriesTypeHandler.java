@@ -152,10 +152,9 @@ public class EiaSeriesTypeHandler extends PointTypeHandler {
             (EiaCategoryTypeHandler) getRepository().getTypeHandler(
                 Eia.TYPE_CATEGORY);
         List<String> args = new ArrayList<String>();
-        args.add(Eia.ARG_SERIES_ID);
-        args.add(id);
-        String url = fcth.makeUrl(Eia.URL_SERIES, args);
-
+	String url = Eia.URL_SERIES+"/" + id;
+	if(!forRead) return url;
+	url = fcth.makeUrl(url, args,"json");
         return url;
     }
 

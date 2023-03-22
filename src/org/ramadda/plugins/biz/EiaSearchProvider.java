@@ -102,6 +102,11 @@ public class EiaSearchProvider extends SearchProvider {
     public List<Entry> getEntries(Request request, SearchInfo searchInfo)
             throws Exception {
 
+        EiaCategoryTypeHandler cth =
+            (EiaCategoryTypeHandler) getRepository().getTypeHandler(
+                Eia.TYPE_CATEGORY);
+
+
         String      text    = request.getString(ARG_TEXT, "");
         List<Entry> entries = new ArrayList<Entry>();
         if ( !Utils.stringDefined(text)) {
@@ -111,11 +116,12 @@ public class EiaSearchProvider extends SearchProvider {
 
         int max  = request.get(ARG_MAX, 100);
         int skip = request.get(ARG_SKIP, 0);
-        String url = HtmlUtils.url(BASE_URL, ARG_SEARCH_TERM, "name",
-                                   ARG_SEARCH_VALUE, text, ARG_ROWS_PER_PAGE,
-                                   "" + max, ARG_PAGE_NUM,
-                                   "" + ((int) (skip / max)));
-        System.err.println(getName() + " search url:" + url);
+	String url = cth.makeUrl(BASE_URL,new ArrayList<String>(),"json");
+        url = HtmlUtils.url(url, ARG_SEARCH_TERM, "name",
+			    ARG_SEARCH_VALUE, text, ARG_ROWS_PER_PAGE,
+			    "" + max, ARG_PAGE_NUM,
+			    "" + ((int) (skip / max)));
+	//        System.err.println(getName() + " search url:" + url);
         URLConnection connection = new URL(url).openConnection();
         connection.setRequestProperty("User-Agent", "ramadda");
         InputStream is   = connection.getInputStream();

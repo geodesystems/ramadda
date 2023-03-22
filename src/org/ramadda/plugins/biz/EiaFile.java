@@ -8,6 +8,8 @@ package org.ramadda.plugins.biz;
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
+import org.ramadda.util.IO;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.RepositoryUtil;
@@ -19,6 +21,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+
+import org.json.*;
 
 /**
  */
@@ -54,22 +58,64 @@ public class EiaFile extends CsvFile {
             if (buffer == null) {
                 //                System.err.println("Reading EIA time series");
                 buffer = new StringBuilder();
+                Entry entry = (Entry) getProperty("entry");
+
                 InputStream source = super.doMakeInputStream(buffered);
+		String json = new String(IO.readBytes(source,10_000_000));
+		source.close();
+		JSONObject obj = new JSONObject(json);
+
+		JSONObject response = obj.getJSONObject("response");
+		JSONArray data = response.getJSONArray("data");
+		for(int i=0;i<data.length();i++) {
+		    JSONObject datum = data.getJSONObject(i);
+		    String dttm = ""+datum.getInt("period");
+		    if (dttm.indexOf("q") >= 0) {
+                        dttm = dttm.replace("q1", "01").replace("q2",
+								"04").replace("q3",
+									      "07").replace("q4", "10");
+                    }
+
+		    if(i==0) {
+			String format ="";
+                        if (dttm.length() == 4) {
+                            format = "yyyy";
+                        } else if (dttm.length() == 6) {
+                            format = "yyyyMM";
+                        } else if (dttm.length() == 8) {
+                            format = "yyyyMMdd";
+			}
+			if (entry != null) {
+			    entry.setName(datum.optString("seriesDescription"));
+			    entry.setDescription(response.getString("description"));
+			}
+			String unit = datum.optString("unit","");
+			putFields(new String[] {
+				makeField(FIELD_DATE, attrType("date"),
+					  attrFormat(format)),
+				makeField("value", attrUnit(unit), attrLabel("Value"),
+					  attrChartable(), attrMissing(-999999.99)), });
+		    }
+
+
+                    double value = datum.getDouble("value");
+		    //                    if (value.equals("") || value.equals(".")) {
+		    //                        value = "-999999.99";
+		    //                    }
+                    buffer.append(dttm).append(",").append(value).append(
+									 "\n");
+		}
+		/*
                 Element     root   = XmlUtil.getRoot(source);
                 Element     series = XmlUtil.findChild(root, Eia.TAG_SERIES);
                 series = XmlUtil.findChild(series, Eia.TAG_ROW);
 
                 Element data = XmlUtil.findChild(series, Eia.TAG_DATA);
-                //            System.err.println("Root:" + XmlUtil.toString(root));
-                Entry entry = (Entry) getProperty("entry");
                 String name = XmlUtil.getGrandChildText(series, Eia.TAG_NAME,
                                   "").trim();
                 String desc = XmlUtil.getGrandChildText(series,
                                   Eia.TAG_DESCRIPTION, "").trim();
-                if (entry != null) {
-                    entry.setName(name);
-                    entry.setDescription(desc);
-                }
+
 
                 String format = "yyyyMMdd";
                 String unit = XmlUtil.getGrandChildText(series,
@@ -80,36 +126,10 @@ public class EiaFile extends CsvFile {
                     String dttm = XmlUtil.getGrandChildText(node,
                                       Eia.TAG_DATE, "").trim().toLowerCase();
 
-                    if (dttm.indexOf("q") >= 0) {
-                        dttm = dttm.replace("q1", "01").replace("q2",
-                                            "04").replace("q3",
-                                                "07").replace("q4", "10");
-                    }
+		}
+		*/
 
-                    if (i == 0) {
-                        if (dttm.length() == 4) {
-                            format = "yyyy";
-                        } else if (dttm.length() == 6) {
-                            format = "yyyyMM";
-                        } else if (dttm.length() == 8) {
-                            format = "yyyyMMdd";
-                        }
-                    }
-                    String value = XmlUtil.getGrandChildText(node,
-                                       Eia.TAG_VALUE, "").trim();
-                    if (value.equals("") || value.equals(".")) {
-                        value = "-999999.99";
-                    }
-                    buffer.append(dttm).append(",").append(value).append(
-                        "\n");
-                }
-
-                putFields(new String[] {
-                    makeField(FIELD_DATE, attrType("date"),
-                              attrFormat(format)),
-                    makeField("value", attrUnit(unit), attrLabel("Value"),
-                              attrChartable(), attrMissing(-999999.99)), });
-            }
+	    }
 
             ByteArrayInputStream bais =
                 new ByteArrayInputStream(buffer.toString().getBytes());
@@ -119,6 +139,7 @@ public class EiaFile extends CsvFile {
             throw new RuntimeException(exc);
         }
     }
+
 
     /**
      * Gets called when first reading the file. Parses the header

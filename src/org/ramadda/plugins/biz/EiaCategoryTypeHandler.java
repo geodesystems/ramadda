@@ -247,8 +247,7 @@ public class EiaCategoryTypeHandler extends ExtensibleGroupTypeHandler {
      */
     public Element call(String url, List<String> args) throws Exception {
         long t1 = System.currentTimeMillis();
-        url = makeUrl(url, args);
-        System.err.println("Eia URL:" + url);
+        url = makeUrl(url, args,"xml");
         if (seenUrls.contains(url)) {
             //            System.err.println("**** Eia URL:" + url);
         } else {
@@ -278,12 +277,12 @@ public class EiaCategoryTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    public String makeUrl(String url, List<String> args) throws Exception {
+    public String makeUrl(String url, List<String> args, String out) throws Exception {
         List<String> urlArgs = new ArrayList<String>();
         urlArgs.add(Eia.ARG_API_KEY);
         urlArgs.add(getApiKey());
         urlArgs.add(Eia.ARG_OUT);
-        urlArgs.add("xml");
+        urlArgs.add(out);
         for (String arg : args) {
             urlArgs.add(arg);
         }
