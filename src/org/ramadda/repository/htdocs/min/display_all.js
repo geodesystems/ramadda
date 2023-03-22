@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Mar 21 18:51:49 MDT 2023";
+var build_date="RAMADDA build date: Wed Mar 22 06:23:31 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -3126,7 +3126,7 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	}
 	cnt++;
 //	console.log('\t'+name+'='+ value);
-	value = value.replace(/_nl_/g,"\n").replace(/_colon_/g,":").replace(/_comma_/g,",");
+	value = value.replace(/_nl_/g,"\n").replace(/_colon_/g,":").replace(/_comma_/g,",").replace(/\\n/g,'\n');
 	//Check for the ${...} macros
 //	if(name=='colorBy')  value = value.replace('\${','').replace('}','');
 
@@ -3302,7 +3302,8 @@ Glyph.prototype = {
 	    text = text.replace(/\${.*}/g,'');
 	    if(props.prefix) text = props.prefix.replaceAll('_space_',' ')+text
 	    if(props.suffix) text = text+props.suffix.replaceAll('_space_',' ');
-	    text = text.replace(/_nl_/g,'\n').split('\n');
+	    text = text.replace(/_nl_/g,'\n').replace(/\\n/g,'\n').split('\n');
+	    console.log(text);
 
 
 	    //Normalize the font
