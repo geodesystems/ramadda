@@ -2876,8 +2876,6 @@ Glyph.prototype = {
 	    if(props.prefix) text = props.prefix.replaceAll('_space_',' ')+text
 	    if(props.suffix) text = text+props.suffix.replaceAll('_space_',' ');
 	    text = text.replace(/_nl_/g,'\n').replace(/\\n/g,'\n').split('\n');
-	    console.log(text);
-
 
 	    //Normalize the font
 	    if(props.font && props.font.match(/\d+(px|pt)$/)) {
