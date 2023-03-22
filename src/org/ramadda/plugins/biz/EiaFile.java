@@ -41,6 +41,7 @@ public class EiaFile extends CsvFile {
      */
     public EiaFile(String filename) throws IOException {
         super(filename);
+	//	System.out.println(filename);
     }
 
 
@@ -66,7 +67,11 @@ public class EiaFile extends CsvFile {
 		JSONObject obj = new JSONObject(json);
 
 		JSONObject response = obj.getJSONObject("response");
+		JSONObject request = obj.getJSONObject("request");
+		JSONObject params = request.getJSONObject("params");				
+		String valueField=params.getJSONArray("data").getString(0);
 		JSONArray data = response.getJSONArray("data");
+
 		for(int i=0;i<data.length();i++) {
 		    JSONObject datum = data.getJSONObject(i);
 		    String dttm = ""+datum.getInt("period");
@@ -98,7 +103,7 @@ public class EiaFile extends CsvFile {
 		    }
 
 
-                    double value = datum.getDouble("value");
+                    double value = datum.getDouble(valueField);
 		    //                    if (value.equals("") || value.equals(".")) {
 		    //                        value = "-999999.99";
 		    //                    }
