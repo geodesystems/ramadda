@@ -795,7 +795,7 @@ function RepositoryMap(mapId, params) {
 	popupSliderRight:false,
 	doSelect:true,
         enableDragPan: true,
-	
+	addMarkerOnClick:false,
 	linked:false,
 	linkGroup:null,
 	linkMouse:false
@@ -994,8 +994,8 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
     },
 
     trigger: function(e) {
-        var xy = this.theMap.getMap().getLonLatFromViewPortPx(e.xy);
-        var lonlat = this.theMap.transformProjPoint(xy)
+        let xy = this.theMap.getMap().getLonLatFromViewPortPx(e.xy);
+        let lonlat = this.theMap.transformProjPoint(xy)
         if (this.listeners != null) {
             for (var i = 0; i < this.listeners.length; i++) {
                 this.listeners[i](lonlat);
@@ -1017,9 +1017,9 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             zoomFld.obj.value = this.theMap.getMap().getZoom();
         }
 
-	if(this.theMap.selectorMarker) {
-            this.theMap.removeMarker(this.theMap.selectorMarker);
-	    this.theMap.selectorMarker = this.theMap.addMarker(MapUtils.POSITIONMARKERID, lonlat, "", "", "", 20, 10);
+
+	if(this.theMap.getProperty('addMarkerOnClick') || this.theMap.selectorMarker) {
+	    this.theMap.addSelectionMarker(lonlat);
 	}
 
 
@@ -1473,6 +1473,11 @@ RepositoryMap.prototype = {
 	setTimeout(makeSlider,200);
 	
 	
+	if(this.getProperty('addMarkerOnClick')) {
+	    this.setSelection();
+	}
+
+
 
 	setTimeout(()=>{
 	    let mapDiv = document.querySelector("#"+this.mapDivId+"_themap");
@@ -1501,6 +1506,10 @@ RepositoryMap.prototype = {
 	if(state.center) {
 	    if(!this.params.linked) return;
 	    this.getMap().setCenter(state.center, state.zoom);
+	} else if(state.marker) {
+	    if(this.params.addMarkerOnClick) {
+		this.addSelectionMarker(state.marker,true);
+	    }
 	} else if(state.mouse) {
 	    if(!this.params.linkMouse) return;
 	    if(this.sharedMouse) {
@@ -3868,8 +3877,9 @@ RepositoryMap.prototype = {
         this.lonFldId = lonfld;
         this.latFldId = latfld;
 
-        if (this.clickHandler)
+        if (this.clickHandler) {
             return;
+	}
 	this.clickListener = object;
         if (!this.map) {
             return;
@@ -3885,7 +3895,7 @@ RepositoryMap.prototype = {
 
     setSelection:  function(argBase, doRegion, absolute) {
         this.selectRegion = doRegion;
-        this.argBase = argBase;
+        this.argBase = argBase??'';
         if (!GuiUtils) {
             return;
         }
@@ -3929,9 +3939,10 @@ RepositoryMap.prototype = {
             this.fldLon = GuiUtils.getDomObject(this.mapId + "_longitude");
 
 
-        if (this.fldLon) {
-            this.addClickHandler(this.fldLon.id, this.fldLat.id);
-            this.setSelectionMarker(this.fldLon.obj.value, this.fldLat.obj.value);
+        if (this.fldLon || this.params.addMarkerOnClick) {
+            this.addClickHandler(this?.fldLon?.id, this?.fldLat?.id);
+	    if(this.fldLon)
+		this.setSelectionMarker(this.fldLon.obj.value, this.fldLat.obj.value);
         }
     },
 
@@ -4690,7 +4701,7 @@ RepositoryMap.prototype = {
             this.markers = MapUtils.createLayerVector("Markers");
             this.addVectorLayer(this.markers, canSelect);
         }
-        if (!iconUrl) {
+        if (!Utils.stringDefined(iconUrl)) {
             iconUrl = ramaddaCdn + '/icons/marker.png';
         }
 
@@ -4810,6 +4821,17 @@ RepositoryMap.prototype = {
 	return this.params.doPopup;
     },
     
+    addSelectionMarker:function(lonlat,dontPropagate) {
+	if(this.selectorMarker)
+	    this.removeMarker(this.selectorMarker);
+	this.selectorMarker = this.addMarker(MapUtils.POSITIONMARKERID, lonlat, this.params.markerIcon??"", "", "", 40, 20);
+	if(this.getProperty('addMarkerOnClick')) {
+	    if(!dontPropagate)
+		ramaddaMapShareState(this,{marker:lonlat});
+	}
+    },
+
+
     addMarker:  function(id, location, iconUrl, markerName, text, parentId, size, yoffset, canSelect, attrs,polygon, justCreate) {
         let marker = this.createMarker(id, location, iconUrl, markerName, text, parentId, size, 0, yoffset, canSelect,attrs);
 	marker.lonlat = location;

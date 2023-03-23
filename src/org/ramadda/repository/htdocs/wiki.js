@@ -1834,12 +1834,12 @@ WikiEditor.prototype = {
 		{p:'popupHeight',ex:'200'},				
 		{p:'doPopupSlider',ex:'true'},
 		{p:'popupSliderRight',ex:'true'},
+		{p:'enableDragPan',ex:'false'},
+		{p:'addMarkerOnClick',ex:'true'},
+		{p:'markerIcon',ex:'/repository/icons/map/marker-blue.png'},		
 		{p:'linked',ex:'true'},
 		{p:'linkMouse',ex:'true'},
 		{p:'linkGroup',ex:'some name'},		
-
-
-
 
 
 		{p:'layer',ex:'osm|esri.topo|google.roads|google.hybrid|esri.street|opentopo|usfs|caltopo.mapbuilder|usgs.topo|google.terrain|google.satellite|naip|usgs.imagery|esri.shaded|esri.lightgray|esri.darkgray|esri.terrain|shadedrelief|publiclands|historic|esri.aeronautical|osm.toner|osm.toner.lite|cartolight|watercolor|lightblue|blue|white|black|gray'},
