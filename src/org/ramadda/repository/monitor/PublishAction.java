@@ -211,7 +211,7 @@ public class PublishAction extends MonitorAction {
             List<Entry> entries = new ArrayList<Entry>();
             entries.add(entry);
             monitor.getRepository().getZipOutputHandler().toZip(request, "",
-								entries, true, true);
+								entries, true, true,false);
 
             String id =
                 RepositoryClient.importToRamadda(new URL(destRamadda),
