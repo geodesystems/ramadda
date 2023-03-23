@@ -710,7 +710,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
 
-
             if (selectedFields == null || selectedFields.length == 0) {
                 if (this.getChartType() == DISPLAY_TABLE || this.getChartType() == DISPLAY_TREEMAP) {
                     selectedFields = this.dataCollection.getList()[0].getNonGeoFields();
@@ -803,7 +802,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             let dataHasIndex = props.includeIndex;
 
 	    let t1= new Date();
-            let dataList = this.getStandardData(this.getFieldsToDisplay(fieldsToSelect), props);
+	    fieldsToSelect = this.getFieldsToDisplay(fieldsToSelect);
+            let dataList = this.getStandardData(fieldsToSelect, props);
 	    let t2= new Date();
 	    if(this.debugTimes)
 		Utils.displayTimes("chart.getStandardData",[t1,t2],true);
@@ -1126,14 +1126,16 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let dateType = this.getProperty("dateType","date");
 	    let debug =    false || displayDebug.makeDataTable;
 //	    debug=true
-	    let debugRows = 4;
-	    if(debug) console.log(this.type+" makeDataTable #records" + dataList.length);
+	    let debugRows = 1;
+	    debugRows = 20;
+	    if(debug) this.logMsg(this.type+" makeDataTable #records:" + dataList.length);
 	    if(debug) console.log("\tfields:" + selectedFields);
 	    let maxWidth = this.getProperty("maxFieldLength",this.getProperty("maxFieldWidth",-1));
 	    let tt = this.getProperty("tooltip");
 	    let addTooltip = (tt || this.getProperty("addTooltip",false)) && this.doAddTooltip();
 	    
     	    let addStyle= this.getAddStyle();
+	    addStyle = false
 	    let annotationTemplate = this.getAnnotationTemplate();
 	    let formatNumbers = this.getFormatNumbers();
 
@@ -1151,7 +1153,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		let cnt =0;
 		let dateToValue =  {};
 		let dates = [];
-		if(debug)console.log("record[0]:" + dataList[0]);
+		if(debug)console.log("\trecord[0]:" + dataList[0]);
 
 		dataList.map((record,idx)=>{
 		    if(cnt++==0) return;
@@ -1198,7 +1200,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		});
 
 		let header = Utils.mergeLists(["Date"],groupValues);
-		if(debug)console.log("header:" + header);
+		if(debug)console.log("\theader:" + header);
 		let dataTable = new google.visualization.DataTable();
 		if(data.length>0) {
 		    //TODO: figure out type of columns with null values
@@ -1207,16 +1209,16 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			let name = header[idx];
 			let type = t==null?"number":(typeof t);
 			if(type =="number") {
-			    if(debug)console.log("column:" + name+ " type: number");
+			    if(debug)console.log("\tadd column:" + name+ " type: number");
 			    dataTable.addColumn("number", name);
 			} else if(type =="string") {
-			    if(debug)console.log("column:" + name+ " type: string");
+			    if(debug)console.log("\tadd column:" + name+ " type: string");
 			    dataTable.addColumn("string", name);
 			} else if(t.getTime || (t.v && t.v.getTime)) {
-			    if(debug)console.log("column:" + name+ " type: date");
+			    if(debug)console.log("\tadd column:" + name+ " type: date");
 			    dataTable.addColumn("date", name);
 			} else {
-			    console.log("Unknown type:" + t);
+			    console.log("\tUnknown type:" + t);
 			    console.log(JSON.stringify(t,null,2));
 			}
 		    });
@@ -1273,30 +1275,40 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     if ((typeof value) == "object") {
                         //assume its a date
  			if(typeof value.v == "number") {
-			    if(indexIsString) 
-				dataTable.addColumn('string', headerLabel);
-			    else {
+			    if(indexIsString)  {
+				if(debug)console.log("\tadd column:" + headerLabel+ " type: string");
+				dataTable.addColumn('number', headerLabel);
+//				dataTable.addColumn('string', headerLabel);
+			    }   else {
+				if(debug)console.log("\tadd column:" + headerLabel+ " type: number");
 				dataTable.addColumn('number', headerLabel);
 			    }
 			} else {
+			    if(debug)console.log("\tadd column:" + headerLabel+ " type: " + dateType);
 			    dataTable.addColumn(dateType, headerLabel);
 			}
                     } else {
+			if(debug)console.log("\tadd column:" + headerLabel+ " type: " + (typeof value) +" sample:" + value);
                         dataTable.addColumn((typeof value), headerLabel);
                     }
                 } else {
 		    if(j>0 && fixedValueS) {
+			if(debug)console.log("\tadd column: fixedValue type: number");
 			dataTable.addColumn('number', this.getProperty("fixedValueLabel","Count"));
 		    } else {
 			if(field.isString()) {
+			    if(debug)console.log("\tadd column: " + headerLabel +" type: string");
 			    dataTable.addColumn('string', headerLabel);
 			} else if(field.isFieldDate()) {
+			    if(debug)console.log("\tadd column: " + headerLabel +" type: " + dateType);
 			    dataTable.addColumn(dateType, headerLabel);
 			} else {
+			    if(debug)console.log("\tadd column: " + headerLabel +" type: number");
 			    dataTable.addColumn('number', headerLabel);
 			}
 		    }
 		    if(annotationTemplate) {
+			if(debug)console.log("\tadd column: annotation");
 			dataTable.addColumn({
 			    type: 'string',
 			    role: 'annotation',
@@ -1308,7 +1320,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 		    if(addStyle) {
 			if(debug)
-			    console.log("add style column");
+			    console.log("\tadd style column");
 			dataTable.addColumn({ type: 'string', role: 'style' });
 		    }
 		    if(j>0 && fixedValueS) {
@@ -1319,7 +1331,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 	    if(addTooltip) {
 		if(debug)
-		    console.log("add tooltip column");
+		    console.log("\tadd tooltip column");
 		dataTable.addColumn({
                     type: 'string',
                     role: 'tooltip',
@@ -1331,8 +1343,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 
 	    if(debug) {
+		console.log("columns:");
 		for(let i=0;i<dataTable.getNumberOfColumns();i++)
-		    console.log("col[" + i +"]=" + dataTable.getColumnLabel(i) +" " + dataTable.getColumnType(i));
+		    console.log("\tcol[" + i +"]=" + dataTable.getColumnLabel(i) +" type:" + dataTable.getColumnType(i));
 	    }
 	    if(this.getProperty("annotations") ||  this.getProperty("annotationFields")) {
 		let clonedList = Utils.cloneList(dataList);
@@ -1417,8 +1430,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 for (let colIdx = 0; colIdx < row.length; colIdx++) {
 		    let field = selectedFields[fIdx++];
                     let value = row[colIdx];
+//		    if(rowIdx==1)			console.log("\tcol:" + colIdx +" value:", value,' type:'+(typeof value));
 		    if(indexIsString) {
-			if(value.f) value = (value.f).toString().replace(/\n/g, " ");
+			if(value.f) value.f = (value.f).toString().replace(/\n/g, " ");
 		    }
 		    if(colIdx>0 && fixedValueS) {
 			newRow.push(valueGetter(fixedValueN, colIdx, field, theRecord));
@@ -1427,15 +1441,20 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    } else {
 			let type = (typeof value);
 			if(type == "number") {
-                            if(formatNumbers) {
-				value = {v:value,f:String(this.formatNumber(value))};
-			    }
+			    //check for a NaN faking it is a number
+//			    if(field && field.isFieldNumeric()) {
+				if(formatNumbers) {
+				    value = {v:value,f:String(this.formatNumber(value))};
+				}
+//			    } else {
+//				value = String(value);
+//			    }
 			}  else if(type=="boolean") {
 			    value = String(value);
 			}
 			if(debug && rowIdx<debugRows) {
 			    let v = value.f?("f:" + value.f +" v:" +value.v):value;
-			    console.log("\t value[" + colIdx +"]="+ v +" " + (typeof value));
+			    console.log("\t value[" + colIdx +"]=",v," " + (typeof value));
 			}
 			if(maxWidth>0 && type == "string" && value.length > maxWidth)
 			    value = value.substring(0,maxWidth) +"...";
@@ -1870,11 +1889,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             throw new Error("doMakeGoogleChart undefined");
         },
 	makeGoogleChart: function(dataList, props, selectedFields) {
-	    try {
+//	    try {
 		this.doMakeGoogleChartInner(dataList,props,selectedFields);
-	    } catch(err) {
-		this.handleError("Error creating chart: " + err, err);
-	    }
+//	    } catch(err) {
+//		this.handleError("Error creating chart: " + err, err);
+//	    }
 	},
 	setAxisRanges: function(chartOptions, selectedFields, records) {
 	    if(this.getProperty("hAxisFixedRange")) {
@@ -3223,9 +3242,9 @@ function BubbleDisplay(displayManager, id, properties) {
         makeDataTable: function(dataList, props, selectedFields, chartOptions) {
 	    let debug =displayDebug.makeDataTable;
 	    if(debug) {
-		console.log(this.type+" makeDataTable #records:" + dataList.length);
+		this.logMsg(this.type+" makeDataTable #records:" + dataList.length);
                 let fields = this.getSelectedFields();
-		console.log("\t fields:" + fields);
+		console.log("\tfields:" + fields);
 	    }
 	    let tmp =[];
 	    let a = this.makeDataArray(dataList);
