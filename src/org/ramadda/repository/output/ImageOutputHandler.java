@@ -1067,6 +1067,9 @@ public class ImageOutputHandler extends OutputHandler {
         sb.append(HtmlUtils.formEntry("Matte:",
                                       HtmlUtils.input("matte",
                                           request.getString("matte", "5"))));
+        sb.append(HtmlUtils.formEntry("Crop Height:",
+                                      HtmlUtils.input("cropheight",
+                                          request.getString("cropheight", ""))));	
         sb.append(HtmlUtils.formEntry("Matte Color:",
                                       HtmlUtils.input("mattecolor",
                                           request.getString("mattecolor",
@@ -1077,16 +1080,16 @@ public class ImageOutputHandler extends OutputHandler {
                                           HtmlUtils.attr("placeholder",
                                               "top,left,bottom,right"))));
         sb.append(HtmlUtils.formEntry("",
-                                      HtmlUtils.checkbox("addlabels", "true",
+                                      HtmlUtils.labeledCheckbox("addlabels", "true",
                                           request.get("addlabels",
-                                              true)) + " Add labels"));
+						      true),"Add labels")));
         sb.append(
             HtmlUtils.formEntry(
                 "",
-                HtmlUtils.checkbox(
+                HtmlUtils.labeledCheckbox(
                     "sortimages", "true",
                     request.get(
-                        "sortimages", true)) + " Sort images by height"));
+				"sortimages", true),"Sort images by height")));
         sb.append(HtmlUtils.formTableClose());
         sb.append("</td><td>&nbsp;&nbsp;&nbsp;&nbsp;<td><td>");
         StringBuilder esb        = new StringBuilder();
@@ -1210,6 +1213,7 @@ public class ImageOutputHandler extends OutputHandler {
         int         pady        = request.get("pady", 0);
         String      topLabel    = request.getString("toplabel", "");
         String      bottomLabel = request.getString("bottomlabel", "");
+	int cropHeight=request.get("cropheight",-1);
 
         int         labelPad    = 0;
         boolean     addLabels   = request.get("addlabels", false);
@@ -1237,6 +1241,8 @@ public class ImageOutputHandler extends OutputHandler {
             }
         }
 
+	
+
         final int[]   done       = { 0 };
         final Image[] imageArray = new Image[selected.size()];
         for (int i = 0; i < selected.size(); i++) {
@@ -1251,7 +1257,6 @@ public class ImageOutputHandler extends OutputHandler {
                                     child.getResource().getPath(), true));
                         if (imageBytes == null) {
                             System.err.println("no image:" + child);
-
                             return;
                         }
                         Image image = ImageIO.read(
@@ -1266,6 +1271,16 @@ public class ImageOutputHandler extends OutputHandler {
                                     cropArray[0], cropArray[1], cropArray[2],
                                     cropArray[3]);
                             }
+			    if(cropHeight>0) {
+				int imageHeight = image.getHeight(null);
+				if(imageHeight>cropHeight) {
+				    image = Utils.crop(
+						       ImageUtils.toBufferedImage(image),
+						       0,0,imageHeight-cropHeight,0);
+				} else {
+				}
+
+			    }
                             imageArray[idx] = image;
                         }
                     } catch (Exception exc) {
@@ -1343,7 +1358,6 @@ public class ImageOutputHandler extends OutputHandler {
                 labels.add((String) pair[1]);
             }
         }
-
 
 
         int[] rowMax     = new int[images.size() / columns + 1];
