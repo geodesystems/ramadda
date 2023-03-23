@@ -4390,6 +4390,7 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 		if(closest)
 		    this.propagateEventRecordSelection({record: closest});
 	    });
+
 	}
     });
 }
@@ -4484,6 +4485,21 @@ function RamaddaCanvasDisplay(displayManager, id, properties) {
 	    });
 	    let blocks = this.find(".display-canvas-block");
 	    this.makeTooltips(blocks,records,null,"${default}");
+	    
+	    if(this.getShowColorTable()) {
+		glyphs.every(glyph=>{
+		    let colorBy = glyph.getColorByInfo();
+		    if(colorBy) {
+			colorBy.displayColorTable();
+			//		    return false;
+		    }
+		    return true;
+		});
+	    }
+
+
+
+
 	}
     });
 }

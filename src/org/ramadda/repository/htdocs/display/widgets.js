@@ -2820,6 +2820,9 @@ Glyph.prototype = {
     okToShow:function() {
 	return !this.properties.dontShow;
     },
+    getColorByInfo:function() {
+	return this.properties.colorByInfo;
+    },
     draw: function(opts, canvas, ctx, x,y,args,debug) {
 	let props = this.properties;
 	if(props.dontShow)return;
