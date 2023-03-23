@@ -427,6 +427,7 @@ public class ZipOutputHandler extends OutputHandler {
                             8000);
         }
         for (Entry entry : entries) {
+	    System.err.println("Entry:" + entry);
             //Check for access
             if (forExport) {
                 if ( !getAccessManager().canDoExport(request, entry)) {
@@ -474,6 +475,7 @@ public class ZipOutputHandler extends OutputHandler {
 
 
             if ( !getAccessManager().canDownload(request, entry)) {
+		System.err.println("No download:" + entry);
                 continue;
             }
 
@@ -491,7 +493,12 @@ public class ZipOutputHandler extends OutputHandler {
 		    if(tuple!=null) {
 			name = getStorageManager().getOriginalFilename(tuple[0]);
 			path = tuple[2];
+			System.err.println("File:" + entry +" " + name);
+		    } else {
+			System.err.println("No tuple:" + entry);
 		    }
+		} else {
+		    System.err.println("No thumbnail:" + entry);
 		}
 	    } else {
 		path = getStorageManager().getEntryResourcePath(entry);
