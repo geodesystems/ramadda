@@ -435,6 +435,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 //                params.mapLayers = [mapLayers];
 //            }
 
+	    params.addMarkerOnClick = this.getProperty('addMarkerOnClick');
 	    params.linked = this.getLinked(false);
 	    params.linkGroup = this.getLinkGroup(null);
 
