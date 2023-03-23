@@ -50,6 +50,8 @@ import java.util.zip.*;
 @SuppressWarnings("unchecked")
 public class ZipOutputHandler extends OutputHandler {
 
+    private boolean debug = false;
+
     /** _more_ */
     private static final String ARG_WRITETODISK = "writetodisk";
 
@@ -278,6 +280,7 @@ public class ZipOutputHandler extends OutputHandler {
                         boolean recurse, boolean forExport,boolean thumbnails)
             throws Exception {
 
+
         OutputStream os         = null;
         boolean      doingFile  = false;
         File         tmpFile    = null;
@@ -426,8 +429,11 @@ public class ZipOutputHandler extends OutputHandler {
                             request.PROP_ZIPOUTPUT_REGISTERED_MAXSIZEMB,
                             8000);
         }
+	if(debug)
+	    System.err.println("toZip:");
         for (Entry entry : entries) {
-	    System.err.println("Entry:" + entry);
+	    if(debug)
+		System.err.println("entry:" + entry);
             //Check for access
             if (forExport) {
                 if ( !getAccessManager().canDoExport(request, entry)) {
@@ -474,8 +480,9 @@ public class ZipOutputHandler extends OutputHandler {
             }
 
 
-            if ( !getAccessManager().canDownload(request, entry)) {
-		System.err.println("No download:" + entry);
+            if (!thumbnails &&  !getAccessManager().canDownload(request, entry)) {
+		if(debug)
+		    System.err.println("No download:" + entry);
                 continue;
             }
 
@@ -493,12 +500,15 @@ public class ZipOutputHandler extends OutputHandler {
 		    if(tuple!=null) {
 			name = getStorageManager().getOriginalFilename(tuple[0]);
 			path = tuple[2];
-			System.err.println("File:" + entry +" " + name);
+			if(debug)
+			    System.err.println("File:" + entry +" " + name);
 		    } else {
-			System.err.println("No tuple:" + entry);
+			if(debug)
+			    System.err.println("No tuple:" + entry);
 		    }
 		} else {
-		    System.err.println("No thumbnail:" + entry);
+		    if(debug)
+			System.err.println("No thumbnail:" + entry);
 		}
 	    } else {
 		path = getStorageManager().getEntryResourcePath(entry);
