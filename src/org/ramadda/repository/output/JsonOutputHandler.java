@@ -963,7 +963,11 @@ public class JsonOutputHandler extends OutputHandler {
                 for (Column column : columns) {
                     Object v = extraParameters[column.getOffset()];
                     if (v == null) {
-                        items.add("null");
+			if (column.isNumeric()) {
+			    items.add("null");
+			} else {
+			    items.add(JsonUtil.quote(""));
+			}
                     } else {
                         if (column.isDate()) {
                             items.add(JsonUtil.quote(formatDate((Date) v)));
@@ -976,7 +980,11 @@ public class JsonOutputHandler extends OutputHandler {
                 }
             } else {
                 for (Column column : columns) {
-                    items.add("null");
+		    if (column.isNumeric()) {
+			items.add("null");
+		    } else {
+			items.add(JsonUtil.quote(""));
+		    }
                 }
             }
         }
