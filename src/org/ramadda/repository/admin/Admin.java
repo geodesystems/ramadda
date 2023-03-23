@@ -2286,15 +2286,15 @@ public class Admin extends RepositoryManager {
                 }
                 int colcnt = 0;
                 if (cnt == 1) {
-                    table.append("<table><tr>");
+                    table.append("<table class='ramadda-table stripe' table-ordering='true' table-height='400'><thead><tr>");
                     for (int i = 0; i < rsmd.getColumnCount(); i++) {
                         String col = rsmd.getColumnLabel(i + 1);
                         if (col.equals("QUERY PLAN")) {
                             raw = new StringBuilder();
                         }
-                        table.append(HtmlUtils.col(HtmlUtils.bold(col)));
+                        table.append(HtmlUtils.th(HtmlUtils.bold(HU.div(col,HU.style("margin-left:5px;")))));
                     }
-                    table.append("</tr>");
+                    table.append("</tr></thead><tbody>");
                 }
                 table.append("<tr valign=\"top\">");
                 while (colcnt < rsmd.getColumnCount()) {
@@ -2321,7 +2321,7 @@ public class Admin extends RepositoryManager {
                                 HtmlUtils.col(
                                     HtmlUtils.textArea("dummy", s, 5, 50)));
                         } else {
-                            table.append(HtmlUtils.col(HtmlUtils.pre(s)));
+                            table.append(HtmlUtils.col(HtmlUtils.pre(s,HU.cssClass("ramadda-pre-undecorated"))));
                         }
                     }
                 }
@@ -2331,7 +2331,7 @@ public class Admin extends RepositoryManager {
                 //                    break;
                 //                }
             }
-            table.append("</table>");
+            table.append("</tbody></table>");
             if (raw != null) {
                 sb.append(HtmlUtils.pre(raw.toString()));
             } else {
