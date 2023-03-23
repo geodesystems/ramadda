@@ -727,7 +727,7 @@ public class MetadataTypeBase extends RepositoryManager {
                                    metadata.getId());
 
         //Get the full file name
-        return new String[] { IOUtil.getFileTail(f.toString()), url };
+        return new String[] { IOUtil.getFileTail(f.toString()), url,f.toString() };
     }
 
 
