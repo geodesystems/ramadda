@@ -2736,6 +2736,11 @@ pre {
     margin-top:5px;
 }
 
+.ramadda-pre-undecorated {
+    background:transparent;
+    border:0px;
+}
+
 .wikitext {
     margin-left:20px;
     margin-right:20px;    
