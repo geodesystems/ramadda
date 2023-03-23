@@ -56,22 +56,6 @@ e.g.:
 label,font:6pt,pos:ne,dx:90,dy:-90,label:Temp: ${atmos_temp}
 </pre>
 
-:lheading Glyphs in the Canvas display
-If the glyphs are being used
-in the Canvas Display then each line is specified in the display_canvas tag as:
-<pre>
-glyph1="&lt;glyph type&gt;,..."
-glyph2="&lt;glyph type&gt;,..."  
-...
-glyphN="&lt;glyph type&gt;,..."
-</pre>
-
-e.g.:
-<pre>
-glyph1="3dbar,pos:sw,dx:10,dy:-5,height:100,width:8,baseHeight:5,sizeBy:atmos_temp,sizeByMin:0,sizeByMax:50"
-glyph2="label,font:6pt,pos:ne,dx:90,dy:-90,label:Temp: ${atmos_temp}"
-</pre>
-
 
 :lheading Positioning Glyphs
 The glyphs draw themselves into a canvas with a specified canvas width and canvas height.
@@ -132,7 +116,7 @@ can be based on the canvas width and height -<i>cw</i> &amp; <i>ch</i>
 and the half the canvas width and height -<i>cw2</i> &amp; <i>ch2</i>.
 :p
 
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="imdv/images/canvas1.png?version=394.0"><img  src="imdv/images/canvas1.png?version=394.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="imdv/images/canvas1.png?version=394.0" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="imdv/images/canvas1.png?version=714.0"><img  src="imdv/images/canvas1.png?version=714.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="imdv/images/canvas1.png?version=714.0" ></a></div></div>
 
 
 The data entries can have default glyph specifications. For example, the default display
@@ -153,7 +137,7 @@ circle,width:cw-10,height:ch,pos:c,dx:cw2,dy:-ch2,colorBy:${_field},colorTable:a
 </pre>
 
 The positioning is as follows:
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="imdv/images/canvas2.png?version=394.0"><img  src="imdv/images/canvas2.png?version=394.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="imdv/images/canvas2.png?version=394.0" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="imdv/images/canvas2.png?version=714.0"><img  src="imdv/images/canvas2.png?version=714.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="imdv/images/canvas2.png?version=714.0" ></a></div></div>
 
 
 The display of the NWS Weather entries in an IMDV map is defined with:
@@ -174,9 +158,50 @@ Pressure: ${barometricpressure scale=0.01 decimals=1} mb
 
 Here there are 2 labels - the name of the entry and a 3 new line separated field values.
 This gives:
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="imdv/images/canvas3.png?version=394.0"><img  src="imdv/images/canvas3.png?version=394.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="imdv/images/canvas3.png?version=394.0" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="imdv/images/canvas3.png?version=714.0"><img  src="imdv/images/canvas3.png?version=714.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="imdv/images/canvas3.png?version=714.0" ></a></div></div>
 
 
+:lheading Glyphs in the Canvas display
+If the glyphs are being used
+in the Canvas Display then each line is specified in the display_canvas tag as:
+<pre>
+glyph1="&lt;glyph type&gt;,..."
+glyph2="&lt;glyph type&gt;,..."  
+...
+glyphN="&lt;glyph type&gt;,..."
+</pre>
+
+e.g.:
+<pre>
+glyph1="3dbar,pos:sw,dx:10,dy:-5,height:100,width:8,baseHeight:5,sizeBy:atmos_temp,sizeByMin:0,sizeByMax:50"
+glyph2="label,font:6pt,pos:ne,dx:90,dy:-90,label:Temp: ${atmos_temp}"
+</pre>
+
+For example, below is a canvas display that shows network statistics for a set of instruments.
+
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/canvas.png?version=714.0"><img  src="images/canvas.png?version=714.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/canvas.png?version=714.0" ></a></div></div>
+
+The display is specified with the following. 
+<pre>
+...
+#Ranges for the color table
+colorByMin="0" colorByMax="720"
+#define the canvas dimensions
+canvasWidth=175 canvasHeight=80  
+#The sw corner of the label is origin.x+60, origin.y-10
+#the _colon_ is replace with ":"
+glyph1="label,pos:sw,dy:-10,dx:60,label:network_colon_ ${network_minutes}
+data_colon_ ${data_minutes}
+ldm:${ldm_minutes}"
+#The sw corner of the first bar is origin.x+10 origin.y
+#The 3dbar has a width of 8 and a minimum height of 5
+#The height of the bar is sizeBy percentage*30
+glyph2="3dbar,pos:sw,dx:10,dy:0,height:30,width:8,baseHeight:5,sizeBy:network_minutes,colorBy:network_minutes"
+glyph3="3dbar,pos:sw,dx:25,dy:0,height:30,width:8,baseHeight:5,sizeBy:data_minutes,colorBy:data_minutes"
+glyph4="3dbar,pos:sw,dx:40,dy:0,height:30,width:8,baseHeight:5,sizeBy:ldm_minutes,colorBy:ldm_minutes"
+...
+</pre>
 
 
 
