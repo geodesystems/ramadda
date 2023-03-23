@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Mar 23 07:00:04 MDT 2023";
+var build_date="RAMADDA build date: Thu Mar 23 07:35:08 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -3246,6 +3246,9 @@ function Glyph(display, scale, fields, records, args, attrs) {
 Glyph.prototype = {
     okToShow:function() {
 	return !this.properties.dontShow;
+    },
+    getColorByInfo:function() {
+	return this.properties.colorByInfo;
     },
     draw: function(opts, canvas, ctx, x,y,args,debug) {
 	let props = this.properties;
@@ -54862,6 +54865,7 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 		if(closest)
 		    this.propagateEventRecordSelection({record: closest});
 	    });
+
 	}
     });
 }
@@ -54956,6 +54960,21 @@ function RamaddaCanvasDisplay(displayManager, id, properties) {
 	    });
 	    let blocks = this.find(".display-canvas-block");
 	    this.makeTooltips(blocks,records,null,"${default}");
+	    
+	    if(this.getShowColorTable()) {
+		glyphs.every(glyph=>{
+		    let colorBy = glyph.getColorByInfo();
+		    if(colorBy) {
+			colorBy.displayColorTable();
+			//		    return false;
+		    }
+		    return true;
+		});
+	    }
+
+
+
+
 	}
     });
 }
