@@ -8,6 +8,7 @@ package org.ramadda.repository.output;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.util.SelectInfo;
 import org.ramadda.repository.auth.*;
 
@@ -66,6 +67,12 @@ public class ZipOutputHandler extends OutputHandler {
 
 
     /** _more_ */
+    public static final OutputType OUTPUT_THUMBNAILS =
+        new OutputType("Zip thumbnails", "zip.thumbnails",
+                       OutputType.TYPE_OTHER, "", ICON_ZIP);
+
+
+    /** _more_ */
     public static final OutputType OUTPUT_ZIPTREE =
         new OutputType("Zip and Download Tree", "zip.tree",
                        OutputType.TYPE_ACTION | OutputType.TYPE_OTHER, "",
@@ -97,6 +104,7 @@ public class ZipOutputHandler extends OutputHandler {
         addType(OUTPUT_ZIP);
         addType(OUTPUT_ZIPGROUP);
         addType(OUTPUT_ZIPTREE);
+        addType(OUTPUT_THUMBNAILS);
         addType(OUTPUT_EXPORT);
     }
 
@@ -162,6 +170,7 @@ public class ZipOutputHandler extends OutputHandler {
         if (hasFile) {
             if (state.group != null) {
                 links.add(makeLink(request, state.group, OUTPUT_ZIPGROUP));
+                links.add(makeLink(request, state.group, OUTPUT_THUMBNAILS));
             } else {
                 links.add(makeLink(request, state.group, OUTPUT_ZIP));
             }
@@ -194,7 +203,7 @@ public class ZipOutputHandler extends OutputHandler {
         List<Entry> entries = new ArrayList<Entry>();
         entries.add(entry);
 
-        return toZip(request, entry.getName(), entries, false, false);
+        return toZip(request, entry.getName(), entries, false, false,false);
     }
 
 
@@ -218,13 +227,16 @@ public class ZipOutputHandler extends OutputHandler {
         OutputType output = request.getOutput();
         if (output.equals(OUTPUT_ZIPTREE)) {
             getLogManager().logInfo("Doing zip tree");
-
-            return toZip(request, group.getName(), children, true, false);
+            return toZip(request, group.getName(), children, true, false,false);
         }
+        if (output.equals(OUTPUT_THUMBNAILS)) {
+            getLogManager().logInfo("Doing zip thumbnails");
+            return toZip(request, group.getName(), children, false, false,true);
+        }	
         if (output.equals(OUTPUT_EXPORT)) {
-            return toZip(request, group.getName(), children, true, true);
+            return toZip(request, group.getName(), children, true, true,false);
         } else {
-            return toZip(request, group.getName(), children, false, false);
+            return toZip(request, group.getName(), children, false, false,false);
         }
     }
 
@@ -238,7 +250,7 @@ public class ZipOutputHandler extends OutputHandler {
      * @return _more_
      */
     public String getMimeType(OutputType output) {
-        if (output.equals(OUTPUT_ZIP) || output.equals(OUTPUT_ZIPGROUP)) {
+        if (output.equals(OUTPUT_ZIP) || output.equals(OUTPUT_ZIPGROUP) || output.equals(OUTPUT_THUMBNAILS)) {
             return repository.getMimeTypeFromSuffix(".zip");
         } else {
             return super.getMimeType(output);
@@ -263,7 +275,7 @@ public class ZipOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public Result toZip(Request request, String prefix, List<Entry> entries,
-                        boolean recurse, boolean forExport)
+                        boolean recurse, boolean forExport,boolean thumbnails)
             throws Exception {
 
         OutputStream os         = null;
@@ -275,7 +287,7 @@ public class ZipOutputHandler extends OutputHandler {
         //First recurse down without a zos to check the size
         try {
             processZip(request, entries, recurse, 0, null, prefix, 0,
-                       new int[] { 0 }, forExport, null);
+                       new int[] { 0 }, forExport, thumbnails,null);
         } catch (IllegalArgumentException iae) {
             ok = false;
         }
@@ -345,7 +357,7 @@ public class ZipOutputHandler extends OutputHandler {
 
             }
             processZip(request, entries, recurse, 0, fileWriter, prefix, 0,
-                       new int[] { 0 }, forExport, root);
+                       new int[] { 0 }, forExport, thumbnails,root);
 
             if (root != null) {
                 String xml = XmlUtil.toString(root);
@@ -398,7 +410,7 @@ public class ZipOutputHandler extends OutputHandler {
                               boolean recurse, int level,
                               FileWriter fileWriter, String prefix,
                               long sizeSoFar, int[] counter,
-                              boolean forExport, Element entriesRoot)
+                              boolean forExport, boolean thumbnails,Element entriesRoot)
             throws Exception {
 
         long      sizeProcessed = 0;
@@ -428,7 +440,7 @@ public class ZipOutputHandler extends OutputHandler {
             counter[0]++;
             //Don't get big files
 	    
-            if (request.defined(ARG_MAXFILESIZE) && entry.isFile()) {
+            if (!thumbnails && request.defined(ARG_MAXFILESIZE) && entry.isFile()) {
 		long length = getStorageManager().getEntryFileLength(entry);
                 if (length   >= request.get(ARG_MAXFILESIZE, 0)) {
                     continue;
@@ -457,7 +469,7 @@ public class ZipOutputHandler extends OutputHandler {
                 sizeProcessed += processZip(request, children, recurse,
                                             level + 1, fileWriter, path,
                                             sizeProcessed + sizeSoFar,
-                                            counter, forExport, entriesRoot);
+                                            counter, forExport, thumbnails,entriesRoot);
             }
 
 
@@ -465,15 +477,35 @@ public class ZipOutputHandler extends OutputHandler {
                 continue;
             }
 
-	    String path = getStorageManager().getEntryResourcePath(entry);
-            String name = getStorageManager().getFileTail(entry);
+	    String path=null;
+            String name=null;
+
+	    if(thumbnails) {
+		List<Metadata> metadataList =
+		    getMetadataManager().findMetadata(request, entry,
+                         new String[] { ContentMetadataHandler.TYPE_THUMBNAIL},
+						      false);
+
+		if(metadataList!=null && metadataList.size()>0) {
+		    String[]tuple=  getMetadataManager().getFileUrl(request, entry, metadataList.get(0));
+		    if(tuple!=null) {
+			name = getStorageManager().getOriginalFilename(tuple[0]);
+			path = tuple[2];
+		    }
+		}
+	    } else {
+		path = getStorageManager().getEntryResourcePath(entry);
+		name = getStorageManager().getFileTail(entry);
+	    }
+	    if(path==null) continue;
+
             int    cnt  = 1;
             if ( !forExport) {
                 while (seen.get(name) != null) {
                     name = (cnt++) + "_" + name;
                 }
                 seen.put(name, name);
-                if (prefix.length() > 0) {
+                if (!thumbnails && prefix.length() > 0) {
                     name = prefix + "/" + name;
                 }
             }
