@@ -5683,7 +5683,7 @@ public class EntryManager extends RepositoryManager {
         entries.add(entry);
 
         return getRepository().getZipOutputHandler().toZip(request, entry.getName(),
-							   entries, true, true);
+							   entries, true, true,false);
     }
 
 
