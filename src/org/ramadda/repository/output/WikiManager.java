@@ -8736,6 +8736,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 					    //"/esdlcolortables.js",
 					    "/display/pointdata.js", 
 					    "/display/widgets.js",
+					    "/display/colorby.js",
+					    "/display/glyphs.js",
 					    "/display/display.js",
 					    "/display/displaymanager.js",
 					    "/display/displayentry.js",
