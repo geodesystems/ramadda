@@ -697,7 +697,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
 
         return getZipOutputHandler().toZip(request, entry.getName(),
                                            processSearch(request, entry),
-                                           false, false);
+                                           false, false,false);
     }
 
 
