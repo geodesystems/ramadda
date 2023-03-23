@@ -1,5 +1,5 @@
 org.ramadda.plugins.biz.WebhoseSearchProvider
 org.ramadda.plugins.biz.QuandlSearchProvider
 org.ramadda.plugins.biz.FredSearchProvider
-org.ramadda.plugins.biz.EiaSearchProvider
+#org.ramadda.plugins.biz.EiaSearchProvider
 
