@@ -22,20 +22,9 @@ index.html
 >faq.html
 >tips.html
 
->title:Wiki Facilities
->>wiki.html
->>wikitext.html
->>wikientries.html
->>wikidisplay.html
->>wikidisplay1.html
->>wikicharts.html
->>wikidisplay2.html
->>wikimaps.html
->>canvasglyphs.html
->>wikifunctions.html
->>imdv/main.index
->>notebook.html
->>pagestyle.html
+>wiki/main.index
+>imdv/main.index
+
 -exampletemplate.html.txt
 -exampletemplate.jar
 
