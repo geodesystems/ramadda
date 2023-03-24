@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Mar 23 13:35:06 MDT 2023";
+var build_date="RAMADDA build date: Fri Mar 24 08:53:03 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -19477,8 +19477,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 return null;
             }
 	    if(this.getProperty("vAxisSharedRange")) {
+		let indexIsString = this.getProperty("indexIsString", this.getProperty("forceStrings",false));
 		let max = NaN;
 		for(let i=0;i<dataTable.getNumberOfColumns();i++) {
+		    if(i==0 && indexIsString) continue;
 		    let minmax = dataTable.getColumnRange(i);
 		    if(!isNaN(minmax.max) && minmax.max!=null && (typeof minmax.max) == "number") {
 			max = max==null|| isNaN(max)?minmax.max:Math.max(max, minmax.max);
