@@ -257,30 +257,29 @@ The group allows for different displays to communicate with each other
 (e.g., creating a new chart, map click, animation, etc), the inheritance of
 certain attributes (e.g., showMenu, showTitle) 
 and the layout of the children displays.
-If there is a wiki page that does not have a group but only one or more display tags then a group will be
-added automatically. 
-
-
+If there is a wiki page that does not have a group but only one or more display tags
+then a group will be added automatically. 
 
 [wiki::text {
 {<noop>{group group 1 ...}}
 {<noop>{display display 1}}
 {<noop>{display display 2}}
 {<noop>{display display 3}}
-
 {<noop>{group group 2...}}
 {<noop>{display display 4}}
 {<noop>{display display 5}}
 }]
 
-If [ug::attr  showMenu] is set to true for a group then the below menu is displayed. This supports the interactive creation of new charts and displays. The layout of these displays can be changed interactively, their state can be changed and they
-can be deleted. 
+If [ug::attr  showMenu] is set to true for a group then the below menu is displayed.
+This supports the interactive creation of new charts and displays. The layout of these
+displays can be changed interactively, their state can be changed and they can be deleted. 
 
-[ht::screenshot images/charts/groupmenu.png {Group menu}]
+[ht::screenshot images/groupmenu.png {Group menu}]
 
-If the user is logged in then the set of dynamically created displays can be saved (e.g., as a wiki page) 
+If the user is logged in then the set of dynamically created displays can
+be saved (e.g., as a wiki page) 
 through the group menu as seen below:
-[ht::screenshot images/charts/groupmenu2.png {File save menu}]
+[ht::screenshot images/groupmenu2.png {File save menu}]
 
 [ug::subsubheading {Display Layout}]
 Each child display may be located in a fixed location (using [ug::attr layoutHere=false]) in the web page 
@@ -346,11 +345,13 @@ and allow the user to select which entry to display.
 
 <a href="https://ramadda.org/repository/a/swe">Here</a> is an example
 that shows a time series plot of one of a set of data files:
-<center><img src="changeentries.png" width="80%"></center>
+
+[ht::screenshot images/changeentries.png]
 
 
 Below is the relevant wiki text for the above display. You can also view the
-full wiki text <a href="https://ramadda.org/repository/entry/show/Home/Content/RAMADDA+Examples/Science+Data/Snow+Water+Equivalent?entryid=1dfc94dc-376e-4a5b-9aaa-93db7771faa3&output=html.info">here</a>.
+full wiki text 
+<a href="https://ramadda.org/repository/entry/show/Home/Content/RAMADDA+Examples/Science+Data/Snow+Water+Equivalent?entryid=1dfc94dc-376e-4a5b-9aaa-93db7771faa3&output=html.info">here</a>.
 
 All that is needed is to add a <i>changeEntries=true</i> attribute to the group tag.
 An optional <i>changeEntriesLabel</i> can be specified to provide a context specific label.
@@ -361,19 +362,19 @@ as the first entry. For the actual displays you should specify an entry that is 
 {<noop>{group  changeEntries=true changeEntriesLabel="<b>Select Region</b>" 
 firstEntry="93198426-f87d-40e6-b206-43b25ad1d4fa"  
 }}
-<table width=100%><tr valign=top><td width=1%>
+&lt;table width=100%&gt;&lt;tr valign=top&gt;&lt;td width=1%&gt;
 {<noop>{display_fieldslist width=150px
 entry=93198426-f87d-40e6-b206-43b25ad1d4fa
 fields="#41,#42,#43,#44,#45,#46,#47,#48,#49,#50"
 ...
 }}
-</td><td>
+&lt;/td&gt;&lt;td&gt;
 {<noop>{display_linechart
 entry=93198426-f87d-40e6-b206-43b25ad1d4fa
 fields="#41,#42,#43,#44,#45,#46,#47,#48,#49,#50"
 ...
 }} 
-</tr></table>
+&lt;/tr&gt;&lt;/table&gt;
 }]
 
 
