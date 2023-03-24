@@ -2011,8 +2011,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 return null;
             }
 	    if(this.getProperty("vAxisSharedRange")) {
+		let indexIsString = this.getProperty("indexIsString", this.getProperty("forceStrings",false));
 		let max = NaN;
 		for(let i=0;i<dataTable.getNumberOfColumns();i++) {
+		    if(i==0 && indexIsString) continue;
 		    let minmax = dataTable.getColumnRange(i);
 		    if(!isNaN(minmax.max) && minmax.max!=null && (typeof minmax.max) == "number") {
 			max = max==null|| isNaN(max)?minmax.max:Math.max(max, minmax.max);
