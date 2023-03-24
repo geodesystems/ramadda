@@ -12,7 +12,7 @@
 <table width=100% cellspacing=0 cellpadding=0 >
 <tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="page_installationandsiteadministration.html"><table><td valign=center><td><span title="Previous: Installation and Site Administration"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Installation and Site Administration</td></tr></table></a></div></div></td>
 <td width=50% align=center>
-<div class="ramadda-page-title"><a href="#">Section 9.0: Installing RAMADDA</a></div>
+<div class="ramadda-page-title"><a href="#">Section 10.0: Installing RAMADDA</a></div>
 </td>
 <td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="aws.html"><table><tr valign=center><td>Installing on Amazon AWS</td><td><span title="Next: Installing on Amazon AWS"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
 </tr></table>
@@ -69,14 +69,14 @@ There are other <a href='releasenotes.html#plugins'>plugins</a> available as wel
 
 
 
-<a name="cloud"></a><p><div class="ramadda-help-heading">9.0.0 <a href="#cloud">Running in a Linux Cloud</a></div> 
+<a name="cloud"></a><p><div class="ramadda-help-heading">10.0.0 <a href="#cloud">Running in a Linux Cloud</a></div> 
 We have developed an installer script that does a complete installation of Postgres and RAMADDA.
 Right now this has just been tested for an Amazon AWS Linux AMI.
 
 See <a href='aws.html'>aws.html</a> for further details.
 
 
-<a name="windows"></a><p><div class="ramadda-help-heading">9.0.1 <a href="#windows">Running on Windows</a></div> 
+<a name="windows"></a><p><div class="ramadda-help-heading">10.0.1 <a href="#windows">Running on Windows</a></div> 
 RAMADDA can run on Windows. However the RAMADDA development team does not have
 ready access to a Windows machine to test on so there may be some rough edges.
 There have been problems reported running under Tomcat so we would suggest
@@ -93,7 +93,7 @@ If you want to add the .bat as a service so that RAMADDA is always running you c
 service- [https://nssm.cc/ https://nssm.cc/]
 
 
-<a name="standalone"></a><p><div class="ramadda-help-heading">9.0.2 <a href="#standalone">Running Standalone</a></div> 
+<a name="standalone"></a><p><div class="ramadda-help-heading">10.0.2 <a href="#standalone">Running Standalone</a></div> 
 You can run RAMADDA stand-alone from the command line. This requires  Java 1.7 or greater. 
 
 <ol>
@@ -132,7 +132,7 @@ then go and read the documentation.
 
 
 
-<a name="tomcat"></a><p><div class="ramadda-help-heading">9.0.3 <a href="#tomcat">Running under Tomcat</a></div> 
+<a name="tomcat"></a><p><div class="ramadda-help-heading">10.0.3 <a href="#tomcat">Running under Tomcat</a></div> 
 This assumes you have Tomcat or some other servlet (e.g., Glassfish) container already installed.
 
 <ol>
@@ -166,7 +166,7 @@ more information.
 
 </ol>
 
-<a name="home"></a><p><div class="ramadda-help-heading">9.0.4 <a href="#home">RAMADDA Home Directory</a></div> 
+<a name="home"></a><p><div class="ramadda-help-heading">10.0.4 <a href="#home">RAMADDA Home Directory</a></div> 
 
 
 RAMADDA uses a local home directory on the server.
@@ -223,7 +223,7 @@ if found then RAMADDA looks for the property: <pre>
 
 
 <a name="properties"></a>
-<a name="final"></a><p><div class="ramadda-help-heading">9.0.5 <a href="#final">RAMADDA Property Files</a></div> 
+<a name="final"></a><p><div class="ramadda-help-heading">10.0.5 <a href="#final">RAMADDA Property Files</a></div> 
 
 For other  configuration options RAMADDA looks in its home directory for any .properties files.
 While most of the RAMADDA configuration is accomplished through the web ADMIN interface there
@@ -242,7 +242,7 @@ To configure RAMADDA copy <a href="${root}/userguide/repository.dummy_properties
 
 
 
-<a name="directory"></a><p><div class="ramadda-help-heading">9.0.6 <a href="#directory">Directory Structure</a></div> 
+<a name="directory"></a><p><div class="ramadda-help-heading">10.0.6 <a href="#directory">Directory Structure</a></div> 
 
 Under the home directory RAMADDA will create the following subdirectories:
 
@@ -301,7 +301,7 @@ If you are running with the Derby database this directory holds the database
 
 
 
-<a name="configuration"></a><p><div class="ramadda-help-heading">9.0.7 <a href="#configuration">Configuration</a></div> 
+<a name="configuration"></a><p><div class="ramadda-help-heading">10.0.7 <a href="#configuration">Configuration</a></div> 
 
 RAMADDA for the most part can be configured through the
 <a href='admin.html'>Admin pages</a>. When you are logged in to 
@@ -382,7 +382,7 @@ ramadda.ssl.port=&lt;the ssl port&gt;
 
 
 
-<a name="fromgit"></a><p><div class="ramadda-help-heading">9.0.8 <a href="#fromgit">Building RAMADDA from source</a></div> 
+<a name="fromgit"></a><p><div class="ramadda-help-heading">10.0.8 <a href="#fromgit">Building RAMADDA from source</a></div> 
 It is easy to build and run RAMADDA from Github.
 The RAMADDA Gihub site is at <a href="https://github.com/geodesystems/ramadda">https://github.com/geodesystems/ramadda</a>. 
 
@@ -421,39 +421,39 @@ sh ramadda.sh
 </div>
 <p>
 <div  class="childlist" ><table  width="100%" ><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-9.0.0&nbsp;
+10.0.0&nbsp;
 </span></td><td><a  class="childlist-link"  href="installing.html#cloud" >
 <a href="#cloud">Running in a Linux Cloud</a>
 </a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-9.0.1&nbsp;
+10.0.1&nbsp;
 </span></td><td><a  class="childlist-link"  href="installing.html#windows" >
 <a href="#windows">Running on Windows</a>
 </a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-9.0.2&nbsp;
+10.0.2&nbsp;
 </span></td><td><a  class="childlist-link"  href="installing.html#standalone" >
 <a href="#standalone">Running Standalone</a>
 </a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-9.0.3&nbsp;
+10.0.3&nbsp;
 </span></td><td><a  class="childlist-link"  href="installing.html#tomcat" >
 <a href="#tomcat">Running under Tomcat</a>
 </a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-9.0.4&nbsp;
+10.0.4&nbsp;
 </span></td><td><a  class="childlist-link"  href="installing.html#home" >
 <a href="#home">RAMADDA Home Directory</a>
 </a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-9.0.5&nbsp;
+10.0.5&nbsp;
 </span></td><td><a  class="childlist-link"  href="installing.html#final" >
 <a href="#final">RAMADDA Property Files</a>
 </a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-9.0.6&nbsp;
+10.0.6&nbsp;
 </span></td><td><a  class="childlist-link"  href="installing.html#directory" >
 <a href="#directory">Directory Structure</a>
 </a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-9.0.7&nbsp;
+10.0.7&nbsp;
 </span></td><td><a  class="childlist-link"  href="installing.html#configuration" >
 <a href="#configuration">Configuration</a>
 </a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-9.0.8&nbsp;
+10.0.8&nbsp;
 </span></td><td><a  class="childlist-link"  href="installing.html#fromgit" >
 <a href="#fromgit">Building RAMADDA from source</a>
 </a><br></td></tr></table></div>
