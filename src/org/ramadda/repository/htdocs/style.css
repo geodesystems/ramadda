@@ -897,8 +897,8 @@ a.ramadda-menubar-button:hover {
     border:var(--basic-border);
     border-left: 4px solid;
     padding:8px;
-    padding-top:4px;
-    padding-bottom:4px;        
+    padding-top:0.75em;
+    padding-bottom:0.75em;        
     border-radius:var(--default-radius);
     background:rgb(250,250,250);
 }
