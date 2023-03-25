@@ -4717,7 +4717,12 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         if (request.getExtraProperty("didace") == null) {
             request.putExtraProperty("didace", "true");
             HtmlUtils.importJS(sb, getPageHandler().getCdnPath("/wiki.js"));
-            HtmlUtils.importJS(sb, getPageHandler().getCdnPath("/lib/ace/src-min/ace.js"));
+	    boolean minified = getRepository().getMinifiedOk();
+	    if(minified)
+		HtmlUtils.importJS(sb, getPageHandler().getCdnPath("/lib/ace/src-min/ace.min.js"));	    
+	    else
+		HtmlUtils.importJS(sb, getPageHandler().getCdnPath("/lib/ace/src-min/ace.js"));
+
 	    return true;
 	}
 	return false;
