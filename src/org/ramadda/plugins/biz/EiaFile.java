@@ -74,7 +74,12 @@ public class EiaFile extends CsvFile {
 
 		for(int i=0;i<data.length();i++) {
 		    JSONObject datum = data.getJSONObject(i);
-		    String dttm = ""+datum.getInt("period");
+		    String dttm=null;
+		    try {
+			dttm = ""+datum.getString("period");
+		    } catch(Exception exc) {
+			dttm = ""+datum.getInt("period");
+		    }
 		    if (dttm.indexOf("q") >= 0) {
                         dttm = dttm.replace("q1", "01").replace("q2",
 								"04").replace("q3",
@@ -87,6 +92,8 @@ public class EiaFile extends CsvFile {
                             format = "yyyy";
                         } else if (dttm.length() == 6) {
                             format = "yyyyMM";
+                        } else if (dttm.length() == 7) {
+                            format = "yyyy-MM";			    
                         } else if (dttm.length() == 8) {
                             format = "yyyyMMdd";
 			}
