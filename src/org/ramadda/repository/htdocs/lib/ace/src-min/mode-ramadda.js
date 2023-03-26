@@ -1561,18 +1561,15 @@ var tagMap = lang.createMap({
 	XmlHighlightRules.call(this);
 	for (var rule in this.$rules) {
             this.$rules[rule].unshift(
-		{token : "keyword",
-		 regex : "\\+(div|frame.*|gridboxes.*|gridbox|centerdiv|center|row|col(-md)*(-[0-9]+)*|tabs|tab(-[^ ]+)*|accordian|segment(-[^ ]+)*|accordian|accordianblock(-[^ ]+)*|section(-[^ ]+)*|inset(-[^ ]+)*|blurb(-[^ ]+)*|heading(-[^ ]+)*|note(-[^ ]+)*)"
+		{
+		token : "keyword",
+		    regex : "^(\\+|-)[^ \n]+"
 		}, {
                     token : ["","display_type",""],
  		    regex: "(type *= *\")([^ \"]+)(\")",
 		}, {
-                    token : ["bracket","macro"],
-		    regex: "(x{{ *)(display_[^ }]+)"
-		}, {
-                    token : ["bracket","macro"],
+                    token : ["bracket","keyword"],
 		    regex: "({{ *)([^ }]+)"
-
 		}, {
                     token : ["bracket"],
 		    regex: ".*(xxxx\{\{).*"
