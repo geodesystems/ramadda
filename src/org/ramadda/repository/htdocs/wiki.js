@@ -426,6 +426,7 @@ WikiEditor.prototype = {
 
     clearMessage:function(msg) {
 	this.jq(this.ID_WIKI_MESSAGE).css("display","none");
+	this.showingEntryPopup=false;
     },
 
     getEditor:function() {
@@ -488,14 +489,43 @@ WikiEditor.prototype = {
     },
 
     getTagInfo:function(cursor) {
+	let entryId;
 	cursor = cursor || this.getEditor().getCursorPosition();
 	let index = this.getSession().doc.positionToIndex(cursor);
 	let text =this.getEditor().getValue();
-	let tmp = index;
 	let left = -1;
 	let right = -1;
 	let gotBracket=false;
 	let seenNewLine = false;
+	let overToken='';
+	let tmp = index;
+	let idLeft=-1;
+	let idRegExp = /[0-9a-f\-]/;
+	while(tmp>=0) {
+	    let c = text[tmp];
+	    if(!c.match(idRegExp)) break;
+	    idLeft=tmp--;
+	}
+	let idRight=index;
+	if(idLeft>=0) {
+	    tmp = index+1;
+	    while(tmp<text.length) {
+		let c = text[tmp];
+		if(!c.match(idRegExp)) {
+		    break;
+		}
+		idRight=tmp++;
+	    }
+	}
+
+	if(idLeft>=0) {
+	    let tmp = text.substring(idLeft,idRight+1);
+	    if(tmp.match(/[0-9a-f\-]+-[0-9a-f\-]+-[0-9a-f\-]+-[0-9a-f\-]+-[0-9a-f\-]+/)) {
+		entryId = tmp;
+	    }
+	}
+
+	tmp = index;
 	while(tmp>=0) {
 	    let c = text[tmp];
 	    if (c == '{') {
@@ -601,6 +631,7 @@ WikiEditor.prototype = {
 		
 		return {
 		    range:range,
+		    entryId:entryId,
 		    tag:tag,
 		    type: type,
 		    left:left,
@@ -643,6 +674,13 @@ WikiEditor.prototype = {
 		};
 	    }
 	}
+
+	if(entryId) {
+	    return {
+		    entryId:entryId,
+	    };
+	}
+
 	return null;
     },
 
@@ -1174,12 +1212,14 @@ WikiEditor.prototype = {
     },
 
 
-    handleEntriesPopup:function(ids,id) {
+    handleEntriesPopup:function(ids,id,prefix) {
 	this.getEntryNames(ids,(data)=>{
 	    if(data.length) {
-		let html = "";
+		let html = prefix??'';
 		data.forEach(d=>{
-		    html+=HU.href(ramaddaBaseUrl+"/entry/show?entryid=" + d.id,d.name,['title',d.id,'target','_entries'])+"<br>";
+		    html+=(d.icon?HU.getIconImage(d.icon)+HU.space(1):'')+
+			HU.href(ramaddaBaseUrl+"/entry/show?entryid=" + d.id,
+				d.name,['title',d.id,'target','_entries'])+"<br>";
 		});
 		jqid(id).html(html);
 	    }
@@ -1253,11 +1293,22 @@ WikiEditor.prototype = {
 
     handleMouseUp:function(e,result) {
 	let _this = this;
-	if(!e.metaKey)  return;
 	let position = this.getEditor().renderer.screenToTextCoordinates(e.x, e.y);
 	if(!position) return;
 	let tagInfo = this.getTagInfo(position);
 	if(!tagInfo) return;
+	if(!e.metaKey)  {
+	    if(tagInfo.entryId) {
+		if(e.shiftKey)  {
+		    let url = RamaddaUtils.getEntryUrl(tagInfo.entryId);
+		    window.open(url,'_entry');
+		} else {
+		    this.showEntryPopup(tagInfo.entryId);
+		}
+	    }
+	    return;
+	}
+
 	if(!result) {
 	    this.getAttributeBlocks(tagInfo,false, r=>{
 		this.handleMouseUp(e,r);
@@ -1442,7 +1493,16 @@ WikiEditor.prototype = {
 	    },1000);
     },
     
-    setInContext:function(c,type,chunk) {
+    showEntryPopup:function(entryId) {
+	let entryDiv = HU.getUniqueId('');
+	let message= HU.div(['id',entryDiv,'style',HU.css('display','inline-block')]);
+
+	this.showMessage(message);
+	this.showingEntryPopup=true;
+	this.handleEntriesPopup([entryId],entryDiv,'Shift-click to view:<br>');
+    },
+
+    setInContext:function(c,type,chunk,tagInfo) {
 	this.inContext = c;
 	let scroller = this.getScroller();
 	if(this.tagMarker)
@@ -1451,26 +1511,16 @@ WikiEditor.prototype = {
 	if(this.getNamesTimeout)
 	    clearTimeout(this.getNamesTimeout);
 	this.getNamesTimeout = null;
+	if(tagInfo && tagInfo.entryId) {
+	    this.showEntryPopup(tagInfo.entryId);
+	    return;
+	}
+	if(tagInfo && !tagInfo.chunk) return;
 	if(c) {
 	    scroller.css("cursor","context-menu");
-	    let message = "Right-click to show property menu";
+	    let message= "Right-click to show property menu";
 	    if(type!="plus")
 		message+="<br>Cmd-click to edit";
-	    /*
-	      For now don't do this in the tooltip since the tag popup menu has this
-	      if(chunk && !this.getNamesPending) {
-	      let id = Utils.getUniqueId("tooltip");
-	      message+=HU.div([ID,id,STYLE,HU.css("max-height","200px",'font-style','italic')]);
-	      let ids = this.extractEntryIds(chunk);
-	      if(ids.length) {
-	      this.getEntryNames(ids,(data)=>{
-	      if(data.length) {
-	      let names = Utils.join(data.map(d=>{return d.name;}),"<br>");
-	      jqid(id).html(names);
-	      }
-	      });
-	      }
-	      }*/
 	    this.showMessage(message);
 	} else {
 	    scroller.css("cursor","text");
@@ -1488,8 +1538,10 @@ WikiEditor.prototype = {
 	    if(!position) return;
 	    let tagInfo = this.getTagInfo(position);
 	    if(tagInfo) {
-		this.setInContext(true, tagInfo.type,tagInfo.chunk);
-		//		this.tagMarker = this.editor.session.addMarker(tagInfo.range, "ace_active-line wiki-editor-tag-highlight", "text");
+		if(tagInfo.entryId && this.showingEntryPopup)
+		    return;
+		tagInfo.entryId = null;
+		this.setInContext(true, tagInfo.type,tagInfo.chunk,tagInfo);
   	    } else {
 		this.setInContext(false);
 	    }
