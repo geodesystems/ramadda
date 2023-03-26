@@ -1144,7 +1144,7 @@ public class EntryManager extends RepositoryManager {
 	for(String id: ids) {
 	    Entry entry = getEntry(request, id);
 	    if(entry!=null) {
-		names.add(JsonUtil.map(JsonUtil.quoteList(Utils.makeList("id",id,"name",entry.getName()))));
+		names.add(JsonUtil.map(JsonUtil.quoteList(Utils.makeList("id",id,"name",entry.getName(),"icon",getPageHandler().getIconUrl(request, entry)))));
 	    }
 	}
         StringBuilder sb = new StringBuilder(JsonUtil.list(names));
