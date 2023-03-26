@@ -3996,8 +3996,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	initMapParams:function(params) {
 	    SUPER.initMapParams.call(this,params);
-	    params.zoomLevel=3
-	    params.mapCenter='41.77131,-102.24744'
 	},
 	
 	getOtherProperties: function() {
@@ -4095,6 +4093,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	makeLegend: function() {
 	    let _this = this;
+	    let legendDiv = this.getMapProperty("legendDivId");
 	    let legendPosition = this.getMapProperty('legendPosition','left');
 	    let leftLegend = this.jq(ID_LEGEND_LEFT);
 	    let mapLegend = this.jq(ID_LEGEND_MAP_WRAPPER);	    
@@ -4140,9 +4139,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let height= this.getProperty('height');
 		let legendHeight= this.getProperty('legendHeight',height);		
 		let css  = HU.css('max-width',HU.getDimension(legendWidth),'width',HU.getDimension(legendWidth));
-		if(height && !inMap) css+=HU.css('height',legendHeight);
-		let attrs = ['class','imdv-legend','style',css]
-		html  = HU.div(attrs,html);
+		if(height && !inMap && !legendDiv) css+=HU.css('height',legendHeight);
+		if(!legendDiv) {
+		    let attrs = ['class','imdv-legend','style',css]
+		    html  = HU.div(attrs,html);
+		}
 	    }
 
 	    if(inMap) {
@@ -4168,7 +4169,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 
 	    let legendContainer;
-	    if(legendPosition=='left') {
+	    if(legendDiv) {
+		legendContainer = $('#'+legendDiv);
+	    } else if(legendPosition=='left') {
 		legendContainer=leftLegend;
 	    } else   if(legendPosition=='right') {
 		legendContainer=rightLegend;
