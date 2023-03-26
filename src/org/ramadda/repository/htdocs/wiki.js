@@ -1249,14 +1249,15 @@ WikiEditor.prototype = {
 	if(blocks.length==0) return;
 	let menu =  HU.open('div',[CLASS,'wiki-editor-popup','style','min-width:400px;']);
 	if(!title) {
-	    title = Utils.makeLabel(tagInfo.tag) +" Properties";
+	    title = Utils.makeLabel(tagInfo.tag) +' Properties';
 	}
-	let search =  HU.span(['id',this.domId('searchattributes'),CLASS,"wiki-popup-menu-header ramadda-clickable",'title','Search attributes'],HU.getIconImage('fa-binoculars'));
-	menu += HU.div([CLASS,"wiki-editor-popup-heading"], search+" " + title);
+	let search =  HU.span(['id',this.domId('searchattributes'),CLASS,'wiki-popup-menu-header ramadda-clickable','title','Search attributes'],HU.getIconImage('fa-binoculars'));
+	let edit =  HU.span(['id',this.domId('edittag'),CLASS,'wiki-popup-menu-header ramadda-clickable','title','Edit tag'],HU.getIconImage('fas fa-edit'));
+	menu += HU.div([CLASS,'wiki-editor-popup-heading'], search+'' + edit +' '  +title);
 	let ids = this.extractEntryIds(tagInfo.chunk);
 	if(ids.length) {
-	    let id = Utils.getUniqueId("entrieslist");
-	    menu +=HU.toggleBlock("Entries", HU.div([ID,id,CLASS,'wiki-editor-popup-items'],"Loading..."));
+	    let id = Utils.getUniqueId('entrieslist');
+	    menu +=HU.toggleBlock('Entries', HU.div([ID,id,CLASS,'wiki-editor-popup-items'],'Loading...'));
 	    this.handleEntriesPopup(ids,id);
 	}	
 
@@ -1264,23 +1265,28 @@ WikiEditor.prototype = {
 	Utils.splitList(blocks,5).forEach(blocks=>{
 	    menu += HU.open('div',[CLASS,'wiki-editor-popup-section']);
 	    blocks.forEach(block=>{
-		if(typeof block=="string") {
+		if(typeof block=='string') {
 		    menu+=block;
 		    return;
 		}
 		let title = block.title;
-		title = HU.div([CLASS,"wiki-editor-popup-header"], title)
-		let contents  = block.items.join("");
-		contents = HU.div([CLASS,"wiki-editor-popup-items"],contents);
+		title = HU.div([CLASS,'wiki-editor-popup-header'], title)
+		let contents  = block.items.join('');
+		contents = HU.div([CLASS,'wiki-editor-popup-items'],contents);
 		menu +=HU.toggleBlock(block.title, contents);
 	    });
 	    menu += HU.close('div');
 	});
-	menu += "</div>";
+	menu += '</div>';
 	let dialog = HU.makeDialog({content:menu,anchor:$(window),
-				    my: "left top",     at: "left+" +event.x +" top+" + (event.y),
+				    my: 'left top',     at: 'left+' +event.x +' top+' + (event.y),
 				    title:title,header:true,sticky:true,draggable:true,modal:false});	
 	HtmlUtils.setPopupObject(dialog);
+
+	jqid(this.domId('edittag')).click(()=>{
+	    dialog.remove();
+	    this.showTagEdit(tagInfo,result);
+	});
 
 	jqid(this.domId('searchattributes')).click(()=>{
 	    dialog.remove();
@@ -1315,6 +1321,10 @@ WikiEditor.prototype = {
 	    });
 	    return
 	}
+	this.showTagEdit(tagInfo,result);
+    },
+    showTagEdit:function(tagInfo,result) {
+	//xxxx
 	let blocks = result.blocks;
 	let title = result.title;
 	let display = result.display;
