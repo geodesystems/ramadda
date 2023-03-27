@@ -42,7 +42,6 @@ import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.metadata.MetadataHandler;
 import org.ramadda.repository.metadata.MetadataManager;
 import org.ramadda.repository.metadata.MetadataType;
-import org.ramadda.repository.search.SearchInfo;
 import org.ramadda.repository.search.SearchManager;
 import org.ramadda.repository.search.SearchProvider;
 import org.ramadda.repository.search.SpecialSearch;
@@ -796,6 +795,52 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
 
 
+    private SelectInfo getSelectFromString(Request request, Entry entry, WikiUtil wikiUtil,
+					   Hashtable props,
+					   String string) throws Exception {
+	Request myRequest = request.cloneMe();
+	List<String> toks = Utils.split(string,";");
+	String orderBy = ORDERBY_FROMDATE;
+	boolean ascending = false;
+	int max = -1;
+	for(String tok: toks) {
+	    List<String> pair = Utils.splitUpTo(tok,":",2);
+	    if(pair.size()==2) {
+		String what = pair.get(0).trim();
+		String value = pair.get(1).trim();		    
+		if(what.equals(ARG_TYPE))
+		    myRequest.put(ARG_TYPE, value);
+		else if(what.equals(ARG_ORDERBY))
+		    orderBy=value;
+		else if(what.equals(ARG_MAX)) {
+		    max = Integer.parseInt(value);
+		    myRequest.put(ARG_MAX,""+max);
+		} else if(what.equals(ARG_ASCENDING))
+		    ascending = value.length()==0|| value.equals("true");			
+		else if(what.equals("entry")) {
+		    entry = findEntryFromId(request,  entry, wikiUtil, props, value);
+		} else if(what.equals(ENTRY_PREFIX_DESCENDENT) || what.equals(ENTRY_PREFIX_ANCESTOR)) {
+		    if(value.length()==0) {
+			myRequest.put(ARG_ANCESTOR,entry.getId());
+		    } else {
+			Entry otherEntry = findEntryFromId(request,  entry, wikiUtil, props, value);
+			if(otherEntry!=null) {
+			    myRequest.put(ARG_ANCESTOR,otherEntry.getId());
+			} else {
+			    System.err.println("Could not find descendent entry:" + tok);
+			}
+		    }
+		}   else {
+		    System.err.println("Unknown child specifier:" + what +"=" + value);
+		}
+	    }
+	}		
+	myRequest.put(ARG_ORDERBY,orderBy+(ascending?"_ascending":"_descending"));
+	return new SelectInfo(myRequest, entry,max,orderBy,ascending);
+    }
+
+
+
     /**
      * _more_
      *
@@ -839,26 +884,16 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         }
 
         if (entryId.startsWith(ENTRY_PREFIX_CHILD)) {
-	    //child:type:<some type>
-            String tok = Utils.clip(entryId,ENTRY_PREFIX_CHILD);
-            if (tok.startsWith(ENTRY_PREFIX_TYPE)) {
-                tok     = Utils.clip(tok,ENTRY_PREFIX_TYPE);
-                request = request.cloneMe();
-                request.put(ARG_TYPE, tok);
-		tok="";
-	    }
-	    tok = tok.trim();
-	    if(tok.length()>0) {
-		entry = findEntryFromId(request,  entry, wikiUtil, props, tok);
-	    }
-
-	    List<Entry> children = getEntryManager().getChildren(request, entry);
-	    children= EntryUtil.sortEntriesOnDate(children,false);	    
+	    SelectInfo select = getSelectFromString(request, entry, wikiUtil,
+						    props,Utils.clip(entryId,ENTRY_PREFIX_CHILD));
+	    List<Entry> children =  getEntryManager().getChildren(select.getRequest(),
+								  select.getEntry());
+	    children= EntryUtil.sortEntriesOn(children,select.getOrderBy(),!select.getAscending());	    
             if (children.size() > 0) {
                 return children.get(0);
             }
-            return null;
-        }
+	    return null;
+	}
 
         if (entryId.startsWith(ENTRY_PREFIX_GRANDCHILD)) {
 	    //grandchild:type:<some type>
@@ -867,12 +902,9 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    if (children.size() == 0) {
 		return null;
 	    }
-            String tok = Utils.clip(entryId,ENTRY_PREFIX_GRANDCHILD);
-            if (tok.startsWith(ENTRY_PREFIX_TYPE)) {
-                tok     = Utils.clip(tok,ENTRY_PREFIX_TYPE);
-                request = request.cloneMe();
-                request.put(ARG_TYPE, tok);
-	    }
+	    SelectInfo select = getSelectFromString(request, entry, wikiUtil,
+						    props,Utils.clip(entryId,ENTRY_PREFIX_GRANDCHILD));
+
 	    for(Entry child: children) {
 		List<Entry> gchildren = getEntryManager().getChildren(request, child);
 		if (gchildren.size() != 0) {
@@ -995,43 +1027,12 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	if(!entryId.startsWith(ENTRY_PREFIX_SEARCH)) {
 	    return null;
 	}
-	entryId = Utils.clip(entryId,ENTRY_PREFIX_SEARCH);
-	List<String> toks = Utils.split(entryId,";",true,true);
 	/*
 	  entry=search:ancestor;type:some_type;orderby:
 	*/
-	Request myRequest = new Request(getRepository(), request.getUser());
-	boolean ascending = false;
-	String orderBy = ORDERBY_FROMDATE;
-	for(String tok: toks) {
-	    if(tok.startsWith(ENTRY_PREFIX_TYPE)) {
-		myRequest.put(ARG_TYPE,Utils.clip(tok,ENTRY_PREFIX_TYPE));
-	    } else if(tok.startsWith(ENTRY_PREFIX_ORDERBY)) {
-		orderBy = Utils.clip(tok,ENTRY_PREFIX_ORDERBY);
-	    } else if(tok.startsWith(ENTRY_PREFIX_ASCENDING)) {
-		tok= Utils.clip(tok,ENTRY_PREFIX_ASCENDING);		    
-		ascending = tok.length()==0|| tok.equals("true");
-	    } else if(tok.startsWith(ENTRY_PREFIX_DESCENDENT) || tok.startsWith(ENTRY_PREFIX_ANCESTOR)) {
-		tok = Utils.clip(tok,tok.startsWith(ENTRY_PREFIX_ANCESTOR)?ENTRY_PREFIX_ANCESTOR:ENTRY_PREFIX_DESCENDENT);
-		if(tok.length()==0) {
-		    myRequest.put(ARG_ANCESTOR,entry.getId());
-		} else {
-		    Entry otherEntry = findEntryFromId(request,  entry, wikiUtil, props, tok);
-		    if(otherEntry!=null) {
-			myRequest.put(ARG_ANCESTOR,otherEntry.getId());
-		    } else {
-			System.err.println("Could not find descendent entry:" + tok);
-		    }
-		}
-	    } else {
-		System.err.println("Unknown entry search token:" + tok);
-	    }
-	}
-
-	myRequest.put(ARG_ORDERBY,orderBy+(ascending?"_ascending":"_descending"));
-	if(max>0) 
-	    myRequest.put(ARG_MAX,""+max);
-	return  getSearchManager().doSearch(myRequest,new SearchInfo());
+	SelectInfo select = getSelectFromString(request, entry, wikiUtil,
+						props,Utils.clip(entryId,ENTRY_PREFIX_SEARCH));
+	return  getSearchManager().doSearch(select.getRequest(),select);
     }
 
 
@@ -1170,7 +1171,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             StringBuilder buf = new StringBuilder();
             addImagePopupJS(request, wikiUtil, buf, props);
             HU.href(buf, hrefUrl, img, HU.cssClass("popup_image"));
-
             img = buf.toString();
         }
 
@@ -1199,6 +1199,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
 
         if (caption != null) {
+	    caption=entry.getTypeHandler().processDisplayTemplate(request,  entry,caption);
             sb.append(HU.br());
             HU.span(sb, caption, HU.cssClass("wiki-image-caption"));
         }
@@ -2675,6 +2676,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             }
             String img = HU.img(imageUrl, "", HU.attr("width", width));
             if (caption != null) {
+		caption=entry.getTypeHandler().processDisplayTemplate(request,  entry,caption);
                 img += HU.div(caption, HU.cssClass("image-caption"));
             }
 
@@ -6310,7 +6312,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 }
 
                 entries.addAll(applyFilter(request, wikiUtil,
-					   getSearchManager().doSearch(myRequest, new SearchInfo()),
+					   getSearchManager().doSearch(myRequest, new SelectInfo(request)),
                                            filter, props));
                 continue;
             }
@@ -7191,7 +7193,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         makeHelp.accept("/userguide/wiki/wikidisplay.html", "Displays and Charts");
         makeHelp.accept("/userguide/wiki/wikitext.html#sections", "Sections");
         makeHelp.accept("/userguide/wiki/wikitext.html#gridlayout", "Grid layout");
-        makeHelp.accept("/userguide/wiki/wikitext.html#entry",
+        makeHelp.accept("/userguide/wiki/wikientries.html",
                         "Specifying the entry");
         makeHelp.accept("/userguide/wiki/wikitext.html#entries",
                         "Specifying multiple entries");
