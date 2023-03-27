@@ -5347,14 +5347,15 @@ RepositoryMap.prototype = {
         }
 
 
-	//Only do this if we don't have a clickListener
-	if(!Utils.isDefined(this.clickListener)) {
+	//For now do this but we had the check for the clickListener here for some reason
+	//Sometime I need to clean up all of the click listening that goes no
+//	if(!Utils.isDefined(this.clickListener)) {
 	    //	    console.log("showMarkerPopup:" + this.clickListener);
 	    if(this.featureSelectHandler && this.featureSelectHandler(marker)) {
 		if(debugPopup) console.log("\tfeatureSelectHandler returned true");
 		return;
 	    }
-	}
+//	}
 
         let id = marker.ramaddaId;
         if (!id)
