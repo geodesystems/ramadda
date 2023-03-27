@@ -135,7 +135,7 @@ public class SocrataSearchProvider extends SearchProvider {
      * @throws Exception _more_
      */
     @Override
-    public List<Entry> getEntries(Request request, SearchInfo searchInfo)
+    public List<Entry> getEntries(Request request, org.ramadda.repository.util.SelectInfo searchInfo)
             throws Exception {
 
         //For now  the search all does a hostname search as well
@@ -265,7 +265,7 @@ public class SocrataSearchProvider extends SearchProvider {
      *
      * @throws Exception _more_
      */
-    private List<Entry> doSearchAll(Request request, SearchInfo searchInfo)
+    private List<Entry> doSearchAll(Request request, org.ramadda.repository.util.SelectInfo searchInfo)
             throws Exception {
 
         List<Entry> entries = new ArrayList<Entry>();

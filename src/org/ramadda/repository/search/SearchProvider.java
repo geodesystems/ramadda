@@ -9,6 +9,7 @@ package org.ramadda.repository.search;
 
 import org.ramadda.repository.*;
 
+import org.ramadda.repository.util.SelectInfo;
 import org.ramadda.repository.output.XmlOutputHandler;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.ServerInfo;
@@ -282,7 +283,7 @@ public abstract class SearchProvider extends GenericTypeHandler {
      * @throws Exception _more_
      */
     public abstract List<Entry> getEntries(Request request,
-                                           SearchInfo searchInfo)
+                                           SelectInfo searchInfo)
      throws Exception;
 
     /**
@@ -349,7 +350,7 @@ public abstract class SearchProvider extends GenericTypeHandler {
          *
          * @throws Exception _more_
          */
-        public List<Entry> getEntries(Request request, SearchInfo searchInfo)
+        public List<Entry> getEntries(Request request, SelectInfo searchInfo)
                 throws Exception {
             return getEntryManager().searchEntries(request);
         }
@@ -471,7 +472,7 @@ public abstract class SearchProvider extends GenericTypeHandler {
          *
          * @throws Exception _more_
          */
-	public List<Entry> getEntries(Request request, SearchInfo searchInfo)
+	public List<Entry> getEntries(Request request, SelectInfo searchInfo)
                 throws Exception {
             String serverUrl = serverInfo.getUrl();
             request = request.cloneMe();

@@ -10,7 +10,6 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.harvester.*;
 import org.ramadda.repository.metadata.*;
-import org.ramadda.repository.search.SearchInfo;
 import org.ramadda.repository.search.SearchManager;
 import org.ramadda.repository.search.SearchProvider;
 import org.ramadda.repository.type.*;
@@ -581,7 +580,7 @@ public class PhoneHarvester extends Harvester {
                 //                System.err.println("text:" + text);
                 request.put(ARG_TEXT, text.toString());
                 entries =  getSearchManager().doSearch(request,
-						       new SearchInfo());
+						       new org.ramadda.repository.util.SelectInfo(request));
                 phoneToEntries.put(info.getFromPhone(), entries);
                 String prefix = request.getString("prefix", (String) null);
                 if (prefix != null) {

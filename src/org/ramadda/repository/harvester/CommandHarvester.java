@@ -24,7 +24,7 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.harvester.*;
 import org.ramadda.repository.metadata.*;
 
-import org.ramadda.repository.search.SearchInfo;
+import org.ramadda.repository.util.SelectInfo;
 import org.ramadda.repository.search.SearchManager;
 import org.ramadda.repository.search.SearchProvider;
 import org.ramadda.repository.type.*;
@@ -915,7 +915,7 @@ public class CommandHarvester extends Harvester {
 
         request.put("command.args", args.getArgs());
 
-        List<Entry> entries = getSearchManager().doSearch(request, new SearchInfo());
+        List<Entry> entries = getSearchManager().doSearch(request, new SelectInfo(request));
         List<String> ids     = new ArrayList<String>();
         for (Entry entry : entries) {
             ids.add(entry.getId());

@@ -75,6 +75,8 @@ The entry value can be:
 <p>
 <li> The ID of an entry
 <p>
+<li> The alias of an entry
+<p>    
 <li> Its full path, e.g., /Top/.../entry_name
 <p>
 <li> The parent entry - "parent" 
@@ -90,7 +92,32 @@ For example, if you wanted to display the links of the first ancestor of the "gr
 [ht::pre {
 {{links entry="ancestor:group"}}
 }]
-    
+<p>    
+
+<a name="childprefix"></a>
+<li> A child entry of an entry by prefixing the entry id with "child:". The entry id can then
+    have a number of semi-colon separated specifiers for the form:
+<pre>
+{<noop>{image entry="child:entry:&lt;another parent entry&gt;;type:&lt;entry type id&gt;;orderby:&lt;order&gt;ascending:true"  }}
+e.g.:
+{<noop>{image entry="child:entry:4b46e0c4-e5ac-4620-86e7-17c87c96de34;ascending:true"}}
+</pre>
+
+Where orderby can be any of the following:
+<pre>
+fromdate
+todate
+changedate
+createdate
+size
+type
+entryorder
+name
+number - extract a number from the name
+</pre>
+
+
+<a name="searchprefix"></a>
 <p>
 <li> An entry found through a search by prefixing the entryid with "search:" and specifying a number of
 search parameters.

@@ -139,7 +139,7 @@ public class FlickrSearchProvider extends SearchProvider {
      * @throws Exception _more_
      */
     @Override
-    public List<Entry> getEntries(Request request, SearchInfo searchInfo)
+    public List<Entry> getEntries(Request request, org.ramadda.repository.util.SelectInfo searchInfo)
             throws Exception {
 
         List<Entry> entries = new ArrayList<Entry>();

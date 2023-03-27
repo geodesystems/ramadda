@@ -151,7 +151,7 @@ public class PlosSearchProvider extends SearchProvider {
      * @throws Exception _more_
      */
     @Override
-    public List<Entry> getEntries(Request request, SearchInfo searchInfo)
+    public List<Entry> getEntries(Request request, org.ramadda.repository.util.SelectInfo searchInfo)
             throws Exception {
 
         //    https://api.plos.org/search?q=title:%22Ten%20Simple%20Rules%22&api_key=2ifY1fYfC9xz33odffyX

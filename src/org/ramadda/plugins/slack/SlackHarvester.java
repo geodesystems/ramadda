@@ -24,7 +24,6 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.harvester.*;
 import org.ramadda.repository.metadata.*;
 
-import org.ramadda.repository.search.SearchInfo;
 import org.ramadda.repository.search.SearchManager;
 import org.ramadda.repository.search.SearchProvider;
 import org.ramadda.repository.type.*;

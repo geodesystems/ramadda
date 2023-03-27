@@ -21,6 +21,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.repository.util.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
@@ -129,14 +130,13 @@ public class EntrezSearchProvider extends SearchProvider {
      * _more_
      *
      * @param request _more_
-     * @param searchInfo _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
     @Override
-    public List<Entry> getEntries(Request request, SearchInfo searchInfo)
+    public List<Entry> getEntries(Request request, SelectInfo searchInfo)
             throws Exception {
 
         String      searchText = request.getString(ARG_TEXT, "");

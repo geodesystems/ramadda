@@ -8994,7 +8994,7 @@ public class EntryManager extends RepositoryManager {
                 if (mainEntry == null) {
                     return ids;
                 }
-            }
+	    }
 
             //            System.err.println("****  Get synthids:" + mainEntry.getTypeHandler().getSynthIds(request, mainEntry,
             //                                                                                              group, synthId));

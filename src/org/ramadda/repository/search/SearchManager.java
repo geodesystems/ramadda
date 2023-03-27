@@ -27,6 +27,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.DateArgument;
+import org.ramadda.repository.util.SelectInfo;
 import org.ramadda.repository.util.ServerInfo;
 
 import org.ramadda.util.CategoryBuffer;
@@ -2743,7 +2744,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      *
      * @throws Exception _more_
      */
-    public List<Entry> doSearch(Request request, SearchInfo searchInfo)
+    public List<Entry> doSearch(Request request, SelectInfo searchInfo)
 	throws Exception {
         HashSet<String> providers = new HashSet<String>();
         for (String arg :
@@ -2838,7 +2839,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             return processSearchForm(request);
         }
 
-        SearchInfo       searchInfo = new SearchInfo();
+        SelectInfo       searchInfo = new SelectInfo(request);
         List<ServerInfo> servers    = null;
 
         ServerInfo       thisServer = getRepository().getServerInfo();
@@ -3114,7 +3115,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     public Runnable makeRunnable(final Request theRequest,
                                  final SearchProvider provider,
                                  final List<Entry> entries,
-                                 final SearchInfo searchInfo,
+                                 final SelectInfo searchInfo,
                                  final boolean[] running,
                                  final int[] runnableCnt)
 	throws Exception {
