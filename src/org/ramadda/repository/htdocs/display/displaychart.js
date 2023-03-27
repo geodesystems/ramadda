@@ -1122,12 +1122,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         makeDataTable: function(dataList, props, selectedFields, chartOptions) {
 	    this.getPropertyCount=0;
 	    this.getPropertyCounts={};
-
 	    let dateType = this.getProperty("dateType","date");
 	    let debug =    false || displayDebug.makeDataTable;
 //	    debug=true
 	    let debugRows = 1;
-	    debugRows = 20;
+	    debugRows = 2;
 	    if(debug) this.logMsg(this.type+" makeDataTable #records:" + dataList.length);
 	    if(debug) console.log("\tfields:" + selectedFields);
 	    let maxWidth = this.getProperty("maxFieldLength",this.getProperty("maxFieldWidth",-1));
@@ -1135,7 +1134,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let addTooltip = (tt || this.getProperty("addTooltip",false)) && this.doAddTooltip();
 	    
     	    let addStyle= this.getAddStyle();
-	    addStyle = false
 	    let annotationTemplate = this.getAnnotationTemplate();
 	    let formatNumbers = this.getFormatNumbers();
 
@@ -3730,7 +3728,8 @@ function TimerangechartDisplay(displayManager, id, properties) {
                 let row = this.getDataValues(records[r]);
                 let tuple = [];
 		if(this.dataColors) {
-		    this.dataColors.push(colorBy.getColorFromRecord(record, "blue"));
+		    let c = colorBy.getColorFromRecord(record, "blue");
+		    this.dataColors.push(c);
 		}
                 values.push(tuple);
                 if (stringField && showLabel)
