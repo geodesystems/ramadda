@@ -750,7 +750,7 @@ public class UserManager extends RepositoryManager {
         }
 
 
-
+	sb.append("<center>");
         sb.append(HtmlUtils.formTable());
         sb.append(
             formEntry(
@@ -793,7 +793,7 @@ public class UserManager extends RepositoryManager {
         }
 
         sb.append(HtmlUtils.formTableClose());
-
+	sb.append("</center>");
         return sb.toString();
     }
 
