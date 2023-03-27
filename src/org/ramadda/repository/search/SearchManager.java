@@ -789,17 +789,18 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 		    if(request.get(ARG_EXTRACT_AUTHORS,false)) {
 			if(debugGpt) System.err.println("SearchManager: callGpt: authors");
-			String authors = getRepository().callGpt("Extract the author's names from the following text and separate the names with a comma:","",fileCorpus,200,true,tokenLimit);		    
+			String authors = getRepository().callGpt("Extract the author's names and only the author's names from the first few pages in the following text and separate the names with a comma:","",fileCorpus,200,true,tokenLimit);		    
 			if(stringDefined(authors)) {
 			    entryChanged = true;
 			    for(String author:Utils.split(authors,",",true,true)) {
-				    getMetadataManager().addMetadata(request,
-								     entry,
-								     new Metadata(
-										  getRepository().getGUID(), entry.getId(),
-										  "metadata_author", false, author, "", "", "", ""),true);
-				}
-
+				//This gets rid of some false positives
+				if(author.indexOf(" ")<0) continue;
+				getMetadataManager().addMetadata(request,
+								 entry,
+								 new Metadata(
+									      getRepository().getGUID(), entry.getId(),
+									      "metadata_author", false, author, "", "", "", ""),true);
+			    }
 			}
 		    }
 		}
