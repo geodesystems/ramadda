@@ -7187,13 +7187,13 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             }
         }
 
-        makeHelp.accept("/userguide/wikitext.html", "Wiki text");
-        makeHelp.accept("/userguide/wikidisplay.html", "Displays and Charts");
-        makeHelp.accept("/userguide/wikitext.html#sections", "Sections");
-        makeHelp.accept("/userguide/wikitext.html#gridlayout", "Grid layout");
-        makeHelp.accept("/userguide/wikitext.html#entry",
+        makeHelp.accept("/userguide/wiki/wikitext.html", "Wiki text");
+        makeHelp.accept("/userguide/wiki/wikidisplay.html", "Displays and Charts");
+        makeHelp.accept("/userguide/wiki/wikitext.html#sections", "Sections");
+        makeHelp.accept("/userguide/wiki/wikitext.html#gridlayout", "Grid layout");
+        makeHelp.accept("/userguide/wiki/wikitext.html#entry",
                         "Specifying the entry");
-        makeHelp.accept("/userguide/wikitext.html#entries",
+        makeHelp.accept("/userguide/wiki/wikitext.html#entries",
                         "Specifying multiple entries");
         makeHelp.accept("/search/providers", "Search Providers");
         makeHelp.accept("/search/info#entrytypes", "Entry Types");
