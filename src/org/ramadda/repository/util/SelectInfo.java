@@ -1,11 +1,12 @@
 /**
-Copyright (c) 2008-2021 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2021 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.repository.util;
 
 
+import org.ramadda.repository.search.SearchProvider;
 import org.ramadda.repository.Constants;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Request;
@@ -50,6 +51,14 @@ public class SelectInfo implements Constants {
 
     boolean syntheticOk = true;
 
+    /** _more_ */
+    private StringBuilder msgs = new StringBuilder();
+
+
+    public SelectInfo(Request request) {
+        this.request = request;
+    }
+
 
     /**
      * _more_
@@ -58,7 +67,7 @@ public class SelectInfo implements Constants {
      * @param entry _more_
      */
     public SelectInfo(Request request, Entry entry) {
-        this.request = request;
+        this(request);
         this.entry   = entry;
     }
 
@@ -121,6 +130,63 @@ public class SelectInfo implements Constants {
         this.syntheticOk =syntheticOk; 
     }
 
+    /**
+     * _more_
+     *
+     * @param provider _more_
+     * @param msg _more_
+     *
+     * @throws Exception _more_
+     */
+    public void addMessage(SearchProvider provider, String msg)
+            throws Exception {
+        if (msg.length() > 0) {
+            synchronized (msgs) {
+                msgs.append(msg);
+                msgs.append("<br>");
+            }
+        }
+    }
+
+
+
+    /**
+       Set the Request property.
+
+       @param value The new value for Request
+    **/
+    public void setRequest (Request value) {
+	request = value;
+    }
+
+    /**
+       Get the Request property.
+
+       @return The Request
+    **/
+    public Request getRequest () {
+	return request;
+    }
+
+    /**
+       Set the Entry property.
+
+       @param value The new value for Entry
+    **/
+    public void setEntry (Entry value) {
+	entry = value;
+    }
+
+    /**
+       Get the Entry property.
+
+       @return The Entry
+    **/
+    public Entry getEntry () {
+	return entry;
+    }
+
+
 
     /**
      */
@@ -152,7 +218,7 @@ public class SelectInfo implements Constants {
         if (max < 0) {
             if (entry != null) {
                 max = entry.getTypeHandler().getDefaultQueryLimit(request,
-                        entry);
+								  entry);
             }
         }
         max = request.get(Constants.ARG_MAX, max);
@@ -160,13 +226,14 @@ public class SelectInfo implements Constants {
             max = Constants.DB_MAX_ROWS;
         }
 
-        orderBy = request.getString(Constants.ARG_ORDERBY, orderBy);
+	if(orderBy==null)
+	    orderBy = request.getString(Constants.ARG_ORDERBY, null);
         //Use the metadata if there wasn't an orderby in the request arg
         if ((orderBy == null) && (entry != null)) {
             try {
                 Metadata sortMetadata =
                     request.getRepository().getMetadataManager()
-                        .getSortOrderMetadata(request, entry);
+		    .getSortOrderMetadata(request, entry);
                 if (sortMetadata != null) {
                     if (Misc.equals(sortMetadata.getAttr2(), "true")) {
                         ascending = Boolean.valueOf(true);
@@ -226,7 +293,7 @@ public class SelectInfo implements Constants {
     }
 
     /**
-      * @return _more_
+     * @return _more_
      */
     public int getSkip() {
         init();
@@ -260,11 +327,10 @@ public class SelectInfo implements Constants {
     }
 
     /**
-      * @return _more_
+     * @return _more_
      */
     public boolean hasAscending() {
         init();
-
         return ascending != null;
     }
 
@@ -276,8 +342,7 @@ public class SelectInfo implements Constants {
      */
     public String toString() {
         init();
-
-        return " max:" + max;
+        return "entry:" + entry.getName()+" orderBy:" + orderBy +" ascending:" + ascending +" max:" + max;
     }
 
 
