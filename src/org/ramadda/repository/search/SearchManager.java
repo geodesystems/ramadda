@@ -1612,7 +1612,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    seen.add(id);
             Entry entry = getEntryManager().getEntry(request, id);
             if (entry == null) {
-		System.err.println("No ENTRY:" + id);
+		System.err.println("SearchManager.processLuceneSearch - unable to find id:" + id);
                 continue;
             }
 	    //	    System.err.println("entry:"+ entry +" id:" + entry.getId());
