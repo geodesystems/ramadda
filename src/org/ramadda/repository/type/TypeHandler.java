@@ -655,6 +655,13 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+    public String getTextCorpus(Entry entry) throws Exception {
+	Appendable sb = new StringBuilder();
+	getTextCorpus(entry, sb);
+	return sb.toString();
+    }
+
+
     /**
      * _more_
      *
