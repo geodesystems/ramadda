@@ -752,8 +752,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    List<String> keywords = getKeywords(request, entry, fileCorpus,tokenLimit);
 		    if(keywords!=null && keywords.size()>0) {
 			for(String word:keywords) {
+			    word = word.replace("."," ").replaceAll("  +"," ");
 			    word = word.trim();
 			    if(word.length()<=3) continue;
+
 			    getMetadataManager().addMetadata(request,
 							     entry,
 							     new Metadata(
