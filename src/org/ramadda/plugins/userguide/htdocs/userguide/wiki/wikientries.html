@@ -93,7 +93,7 @@ For example, if we want to import the information block with it open:
 <pre>{<noop>{information <i>open="true"</i>}}</pre>
 
 This would give us:
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/wikiinformation.png?version=100"><img  src="images/wikiinformation.png?version=100"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/wikiinformation.png?version=100" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/wikiinformation.png?version=798.0"><img  src="images/wikiinformation.png?version=798.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/wikiinformation.png?version=798.0" ></a></div></div>
 
 
 <a name='entry'></a>
@@ -109,6 +109,8 @@ The entry value can be:
 <p>
 <li> The ID of an entry
 <p>
+<li> The alias of an entry
+<p>    
 <li> Its full path, e.g., /Top/.../entry_name
 <p>
 <li> The parent entry - "parent" 
@@ -117,14 +119,46 @@ The entry value can be:
 <p>
 <li> The entry itself - "this"
 <p>
-<li> An entry linked to the entry. Either "link" to find the first one or to specify an entry type use "link:entry_type"
+<li> An entry linked to the entry. Either "link" to find the first one or to specify an entry type use "link:type:entry_type"
 <p>
 <li> An ancestor entry of a particular type using "ancestor:".<br>
 For example, if you wanted to display the links of the first ancestor of the "group" type
 <pre>
-{<noop>{links entry=&quot;ancestor:group&quot;}<noop>}
+{<noop>{links entry=&quot;ancestor:type:group&quot;}<noop>}
 </pre>
-    
+<p>    
+
+<a name="childprefix"></a>
+<li> 
+A child entry of an entry by prefixing the entry id with "child:". The entry id can then
+    have a number of semi-colon separated specifiers for the form:
+<pre>
+{<noop>{image entry="child:entry:&lt;another parent entry&gt;;type:&lt;entry type id&gt;;orderby:&lt;order&gt;ascending:true"  }}
+e.g.:
+{<noop>{image entry="child:entry:4b46e0c4-e5ac-4620-86e7-17c87c96de34;ascending:true"}}
+</pre>
+
+Where orderby can be any of the following:
+<pre>
+fromdate
+todate
+changedate
+createdate
+size
+type
+entryorder
+name
+number - extract a number from the name
+</pre>
+
+
+<a name="grandchildprefix"></a>
+<li> 
+You can select a grand child entry from the current entry with the prefix
+"grandchild:". The type and other specifiers are the same as for the child: prefix above.
+
+
+<a name="searchprefix"></a>
 <p>
 <li> An entry found through a search by prefixing the entryid with "search:" and specifying a number of
 search parameters.
@@ -548,7 +582,7 @@ If showtoggle="false" then the show/hide toggle link is not shown.
 A common display is showing the children entries in a grid where each entry shows its thumbnail
 image attachment, 
 e.g., <a href=https://ramadda.org/repository/alias/examples>RAMADDA Examples</a>
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/grid.png?version=100"><img  src="images/grid.png?version=100"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/grid.png?version=100" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/grid.png?version=798.0"><img  src="images/grid.png?version=798.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/grid.png?version=798.0" ></a></div></div>
 To do this use:
 <pre>
 {<noop>{grid  
