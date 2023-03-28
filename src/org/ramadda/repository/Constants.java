@@ -620,6 +620,7 @@ public interface Constants {
 
     /** _more_ */
     public static final String ARG_ANCESTOR = "ancestor";
+    public static final String ARG_DESCENDENT = "descendent";    
 
     /** _more_ */
     public static final String ARG_APPLET = "applet";
