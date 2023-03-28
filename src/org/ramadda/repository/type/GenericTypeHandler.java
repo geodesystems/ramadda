@@ -1008,8 +1008,11 @@ public class GenericTypeHandler extends TypeHandler {
      * @throws Exception on badness
      */
     @Override
-    public void getTextCorpus(Entry entry, Appendable sb) throws Exception {
-        super.getTextCorpus(entry, sb);
+    public void getTextCorpus(Entry entry, Appendable sb, boolean...args) throws Exception {
+        super.getTextCorpus(entry, sb,args);
+	if(args.length>0 && !args[0]) return;
+
+
         Object[] values = entry.getValues();
         if (values == null) {
             return;

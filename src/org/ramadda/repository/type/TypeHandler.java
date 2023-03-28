@@ -505,6 +505,7 @@ public class TypeHandler extends RepositoryManager {
 
 
             wikiTemplate = Utils.trimLinesLeft(Utils.getAttributeOrTag(node, ATTR_WIKI,wikiTemplate));
+	    //	    if(wikiTemplate!=null) System.out.println(wikiTemplate);
 	    List wikis = XmlUtil.findChildrenRecurseUp(node,"wikis");
 	    for (int i = 0; i < wikis.size(); i++) {
 		Element wiki = (Element) wikis.get(i);
@@ -655,9 +656,10 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    public String getTextCorpus(Entry entry) throws Exception {
+    public String getDescriptionCorpus(Entry entry) throws Exception {
 	Appendable sb = new StringBuilder();
-	getTextCorpus(entry, sb);
+	//False->don't include the column values, don't include metadata
+	getTextCorpus(entry, sb,false,false);
 	return sb.toString();
     }
 
@@ -667,15 +669,19 @@ public class TypeHandler extends RepositoryManager {
      *
      * @param entry _more_
      * @param sb _more_
+     * @param args may be empty but args[0]: ok to add the entry columns, args[1]: add the metadata text corpus
      *
      * @throws Exception _more_
      */
-    public void getTextCorpus(Entry entry, Appendable sb) throws Exception {
+    public void getTextCorpus(Entry entry, Appendable sb, boolean...args) throws Exception {
         if (getParent() != null) {
-            getParent().getTextCorpus(entry, sb);
+            getParent().getTextCorpus(entry, sb,args);
         } else {
             sb.append(entry.getDescription());
             sb.append("\n");
+	    if(args.length>=2 && args[1]) {
+		getMetadataManager().getTextCorpus(getRepository().getAdminRequest(),entry,sb);
+	    }
         }
     }
 

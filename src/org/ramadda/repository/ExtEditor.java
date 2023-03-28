@@ -1264,6 +1264,19 @@ public class ExtEditor extends RepositoryManager {
 	    return entry.getDescription();
 	}
 
+
+	public String getCorpus() throws Exception {
+	    String corpus =  entry.getTypeHandler().getDescriptionCorpus(entry);
+	    return corpus;
+	}
+	
+	public String getFullCorpus() throws Exception {
+	    StringBuilder sb = new StringBuilder();
+	    entry.getTypeHandler().getTextCorpus(entry, sb, true,true);
+	    String corpus =  sb.toString();
+	    return corpus;
+	}
+
 	public void setDescription(String description) {
 	    this.description = description;
 	}	

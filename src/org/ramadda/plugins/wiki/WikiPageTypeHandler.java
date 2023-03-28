@@ -92,8 +92,9 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    public void getTextCorpus(Entry entry, Appendable sb) throws Exception {
-        super.getTextCorpus(entry, sb);
+    @Override
+    public void getTextCorpus(Entry entry, Appendable sb, boolean...args) throws Exception {
+        super.getTextCorpus(entry, sb,args);
         sb.append(getEntryText(entry));
         sb.append("\n");
     }

@@ -1,17 +1,6 @@
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *     http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 package org.ramadda.repository.output;
@@ -813,6 +802,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		else if(what.equals(ARG_MAX)) {
 		    max = Integer.parseInt(value);
 		    myRequest.put(ARG_MAX,""+max);
+		    System.err.println("MAX:" +max);
 		} else if(what.equals(ARG_ASCENDING))
 		    ascending = value.length()==0|| value.equals("true");			
 		else if(what.equals("entry")) {
@@ -834,6 +824,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    }
 	}		
 	myRequest.put(ARG_ORDERBY,orderBy+(ascending?"_ascending":"_descending"));
+	System.err.println("Request:"+ myRequest);
 	SelectInfo select =  new SelectInfo(myRequest, entry,max,orderBy,ascending);
 	if(type!=null) select.setType(type);
 	return select;
@@ -2852,10 +2843,10 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 					    ARG_ENTRYID,entry.getId(), ARG_OUTPUT,
 					    JsonOutputHandler.OUTPUT_JSON_POINT.getId(),"remoteRequest","true");
 		} else {
-		    String entries = getProperty(wikiUtil,props,"entries",null);
+		    String entries = getProperty(wikiUtil,props,ATTR_ENTRIES,null);
 		    jsonUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT,
 					       JsonOutputHandler.OUTPUT_JSON_POINT.getId());
-		    if(entries!=null) jsonUrl = HU.url(jsonUrl,"entries",entries);
+		    if(entries!=null) jsonUrl = HU.url(jsonUrl,ATTR_ENTRIES,entries);
 		}
 		//If there is an ancestor specified then we use the /search/do url
 		boolean doSearch = getProperty(wikiUtil, props, "doSearch",false);
@@ -6159,7 +6150,65 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
 
             Entry  theBaseEntry = baseEntry;
-	    //	    System.err.println("the Base ENTRY:" + theBaseEntry);
+            String filter = null;
+
+	    
+	    //search:descendent:ff29d75c-8baf-4b17-b121-6c0e10eb9c60;ascending:false;type:type_document_csv
+            boolean isRemote = entryid.startsWith(ATTR_SEARCH_URL);
+            if ( !isRemote && entryid.startsWith(ID_SEARCH + ".")) {
+                List<String> tokens = Utils.splitUpTo(entryid, "=", 2);
+                if (tokens.size() == 2) {
+                    if (searchProps == null) {
+                        searchProps = new Hashtable();
+                        searchProps.putAll(props);
+                    }
+                    searchProps.put(tokens.get(0), tokens.get(1));
+                    myRequest.put(tokens.get(0), tokens.get(1));
+                }
+                continue;
+            }
+
+            if (isRemote || entryid.equals(ID_SEARCH)) {
+                if (searchProps == null) {
+                    searchProps = props;
+                }
+
+                myRequest.put(ARG_AREA_MODE,
+                              getProperty(wikiUtil, searchProps,
+                                          ARG_AREA_MODE,
+                                          VALUE_AREA_CONTAINS));
+                myRequest.put(ARG_MAX,
+                              getProperty(wikiUtil, searchProps,
+                                          PREFIX_SEARCH + ARG_MAX, "100"));
+                addSearchTerms(myRequest, wikiUtil, searchProps,
+                               theBaseEntry);
+
+                if (isRemote) {
+                    List<String> tokens = (entryid.indexOf("=") >= 0)
+			? Utils.splitUpTo(entryid,
+					  "=", 2)
+			: Utils.splitUpTo(entryid,
+					  ":", 2);
+                    ServerInfo serverInfo =
+                        new ServerInfo(new URL(tokens.get(1)),
+                                       "remote server", "");
+
+                    List<ServerInfo> servers = new ArrayList<ServerInfo>();
+                    servers.add(serverInfo);
+                    getSearchManager().doDistributedSearch(myRequest,
+							   servers, theBaseEntry, entries);
+
+                    continue;
+		}
+
+                entries.addAll(applyFilter(request, wikiUtil,
+					   getSearchManager().doSearch(myRequest, new SelectInfo(request)),
+                                           filter, props));
+                continue;
+            }
+
+
+
             String type         = null;
 	    //children;filter:
             //            entries="children:<other id>
@@ -6186,13 +6235,13 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             }
 
             //            entries="children;type;type
-            String filter = null;
             //            children;type=foo
             toks = Utils.splitUpTo(entryid, ";", 2);
             if (toks.size() > 1) {
                 entryid = toks.get(0);
                 filter  = toks.get(1);
             }
+
 
 
             if (entryid.equals(ID_ANCESTORS)) {
@@ -6256,8 +6305,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 continue;
             }
 
-
-
             if (entryid.startsWith(ATTR_ENTRIES + ".filter")) {
                 List<String> tokens = Utils.splitUpTo(entryid, "=", 2);
                 if (tokens.size() == 2) {
@@ -6267,60 +6314,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 continue;
             }
 
-            boolean isRemote = entryid.startsWith(ATTR_SEARCH_URL);
-            if ( !isRemote && entryid.startsWith(ID_SEARCH + ".")) {
-
-                List<String> tokens = Utils.splitUpTo(entryid, "=", 2);
-                if (tokens.size() == 2) {
-                    if (searchProps == null) {
-                        searchProps = new Hashtable();
-                        searchProps.putAll(props);
-                    }
-                    searchProps.put(tokens.get(0), tokens.get(1));
-                    myRequest.put(tokens.get(0), tokens.get(1));
-                }
-
-                continue;
-            }
-
-            if (isRemote || entryid.equals(ID_SEARCH)) {
-                if (searchProps == null) {
-                    searchProps = props;
-                }
-
-                myRequest.put(ARG_AREA_MODE,
-                              getProperty(wikiUtil, searchProps,
-                                          ARG_AREA_MODE,
-                                          VALUE_AREA_CONTAINS));
-                myRequest.put(ARG_MAX,
-                              getProperty(wikiUtil, searchProps,
-                                          PREFIX_SEARCH + ARG_MAX, "100"));
-                addSearchTerms(myRequest, wikiUtil, searchProps,
-                               theBaseEntry);
-
-                if (isRemote) {
-                    List<String> tokens = (entryid.indexOf("=") >= 0)
-			? Utils.splitUpTo(entryid,
-					  "=", 2)
-			: Utils.splitUpTo(entryid,
-					  ":", 2);
-                    ServerInfo serverInfo =
-                        new ServerInfo(new URL(tokens.get(1)),
-                                       "remote server", "");
-
-                    List<ServerInfo> servers = new ArrayList<ServerInfo>();
-                    servers.add(serverInfo);
-                    getSearchManager().doDistributedSearch(myRequest,
-							   servers, theBaseEntry, entries);
-
-                    continue;
-                }
-
-                entries.addAll(applyFilter(request, wikiUtil,
-					   getSearchManager().doSearch(myRequest, new SelectInfo(request)),
-                                           filter, props));
-                continue;
-            }
 
 
             if (entryid.equals(ID_PARENT)) {
@@ -8548,7 +8541,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 }
                 ids.append(child.getId());
             }
-            props.remove("entries");
+            props.remove(ATTR_ENTRIES);
             Utils.add(propList, "entryIds", JsonUtil.quote(ids.toString()));
         }
         props.remove("type");
