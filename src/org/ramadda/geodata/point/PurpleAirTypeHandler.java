@@ -236,8 +236,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
                 try {
                     fetchData(searchRequest, entry);
                 } catch (Exception exc) {
-                    getLogManager().logError(
-                        "Error fetching purple air data:" + entry, exc);
+                    getLogManager().logError("Error fetching purple air data:" + entry + " id:" +entry.getId()+"\n" + exc.getMessage());
                 }
             }
             //            Misc.sleepSeconds(10);
