@@ -43,6 +43,7 @@ public class SelectInfo implements Constants {
 
     /**  */
     String orderBy;
+    String type;    
 
     /**  */
     Boolean ascending = null;
@@ -167,6 +168,27 @@ public class SelectInfo implements Constants {
     public Request getRequest () {
 	return request;
     }
+
+    /**
+       Set the Type property.
+
+       @param value The new value for Type
+    **/
+    public void setType (String value) {
+	type = value;
+    }
+
+    /**
+       Get the Type property.
+
+       @return The Type
+    **/
+    public String getType () {
+	return type;
+    }
+
+
+
 
     /**
        Set the Entry property.
