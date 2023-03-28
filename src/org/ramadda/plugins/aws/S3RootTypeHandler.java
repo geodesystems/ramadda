@@ -682,7 +682,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
             if (s3File == null) {
                 System.err.println(
                     "S3RootTypeHandler: Unable to create s3file from:" + path
-                    + "\nID:" + id);
+                    + "\nID:" + id +" root entry:" + rootEntry.getName() +" " + rootEntry.getId());
                 continue;
             }
             parent = createBucketEntry(request, rootEntry, parent, s3File);
