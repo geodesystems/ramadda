@@ -5,6 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
+import org.ramadda.repository.util.SelectInfo;
 
 import java.util.List;
 
@@ -40,6 +41,8 @@ public abstract class EntryVisitor implements Constants {
     private StringBuffer sb = new StringBuffer();
 
 
+    private SelectInfo selectInfo;
+
     /**
      * _more_
      *
@@ -54,7 +57,8 @@ public abstract class EntryVisitor implements Constants {
         this.request    = request;
         this.actionId   = actionId;
         this.recurse    = recurse;
-
+	selectInfo = new SelectInfo(request);
+	selectInfo.setSyntheticOk(false);
     }
 
     /**
@@ -108,6 +112,10 @@ public abstract class EntryVisitor implements Constants {
         processedCnt += by;
     }
 
+    public int getProcessedCount() {
+	return processedCnt;
+    }
+
     /**
      * _more_
      *
@@ -129,12 +137,8 @@ public abstract class EntryVisitor implements Constants {
      * @return _more_
      */
     public boolean entryOk(Entry entry) {
-        if ( !entry.isGroup()) {
-            //TODO: do we recurse
-            //            return false;
-        }
-        if (entry.getTypeHandler().isSynthType()
-                || getRepository().getEntryManager().isSynthEntry(
+        if (//entry.getTypeHandler().isSynthType()|| 
+	    getRepository().getEntryManager().isSynthEntry(
                     entry.getId())) {
             return false;
         }
@@ -142,6 +146,7 @@ public abstract class EntryVisitor implements Constants {
         return true;
     }
 
+    
     /**
      * _more_
      */
@@ -185,6 +190,7 @@ public abstract class EntryVisitor implements Constants {
      */
     public void finished() {}
 
+
     /**
      *
      * @param entry _more_
@@ -197,22 +203,20 @@ public abstract class EntryVisitor implements Constants {
 
         //        System.err.println("Walk: " + entry);
         if ( !isRunning()) {
-            System.err.println("\t- not running");
+            System.err.println("EntryVisitor: not running");
 
             return true;
         }
         if ( !entryOk(entry)) {
-            System.err.println("\tEntry not ok");
-
+            System.err.println("EntryVisitor: Entry not ok:" + entry +" " + entry.getId());
             return true;
         }
         totalCnt++;
         updateMessage();
         List<Entry> children =
-            getRepository().getEntryManager().getChildren(request, entry);
+            getRepository().getEntryManager().getChildren(request, entry,selectInfo);
         if (children == null) {
-            System.err.println("\tNo children");
-
+            System.err.println("EntryVisitor:No children");
             return true;
         }
         if (recurse) {
@@ -231,7 +235,6 @@ public abstract class EntryVisitor implements Constants {
         if ( !processEntry(entry, children)) {
             return false;
         }
-
         return true;
     }
 
