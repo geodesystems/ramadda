@@ -74,6 +74,8 @@ public class ExtEditor extends RepositoryManager {
     public static final String ARG_EXTEDIT_REINDEX = "extedit.reindex";
 
 
+    public static final String ARG_EXTEDIT_EXCLUDE = "excludeentries";
+
     public static final String ARG_EXTEDIT_THUMBNAIL= "extedit.thumbnail";    
 
 
@@ -200,8 +202,6 @@ public class ExtEditor extends RepositoryManager {
         final StringBuilder suffix = new StringBuilder();
 	Object actionId=null;
 	boolean canCancel = false;
-
-
 
         Entry              entry        = getEntryManager().getEntry(request);
         final Entry        finalEntry   = entry;
@@ -385,6 +385,11 @@ public class ExtEditor extends RepositoryManager {
             final String type = request.getString(ARG_EXTEDIT_TYPE, (String) null);
 	    final boolean thisOne = request.get(ARG_EXTEDIT_THISONE,false);
 	    final boolean anyFile = Misc.equals(TypeHandler.TYPE_ANY, type);
+	    String exc = request.getString(ARG_EXTEDIT_EXCLUDE,"");
+	    final HashSet<String> not = new HashSet<String>();
+	    for(String id:Utils.split(exc,"\n",true,true)) {
+		not.add(id);
+	    }
 
             ActionManager.Action action = new ActionManager.Action() {
                 public void run(final Object actionId) throws Exception {
@@ -400,9 +405,17 @@ public class ExtEditor extends RepositoryManager {
 		    final Request theRequest =  request;
 		    final JsContext[] holder = new JsContext[1];
 		    final List<EntryWrapper> wrappers = new ArrayList<EntryWrapper>();
+		    final int[]cnt={0};
                     EntryVisitor walker = new EntryVisitor(request,
-                                              getRepository(), actionId,
-                                              true) {
+							   getRepository(), actionId,
+							   true) {
+			    int errorCount = 0;
+			    @Override
+			    public boolean entryOk(Entry entry) {
+				if(!super.entryOk(entry)) return false;
+				if(not.contains(entry.getId())) return false;
+				return true;
+			    }
 			    public boolean processEntry(Entry entry,
 							List<Entry> children)
                                 throws Exception {
@@ -410,6 +423,7 @@ public class ExtEditor extends RepositoryManager {
 				    return true;
 				}
 
+				//				Misc.sleepSeconds(1);				System.err.println("process:" + entry);
 				if(anyFile) {
 				    if(!entry.getResource().isFile()) {
 					return true;
@@ -418,7 +432,12 @@ public class ExtEditor extends RepositoryManager {
 				    return true;
 				}
 
+				if(!getActionManager().getActionOk(actionId)) {
+				    return false;
+				}
+
 				try {
+				    cnt[0]++;
 				    EntryWrapper wrapper = new EntryWrapper(entry);
 				    wrappers.add(wrapper);
 				    scope.put("entry", scope, wrapper);
@@ -428,8 +447,13 @@ public class ExtEditor extends RepositoryManager {
 				    }
 				} catch(Exception exc) {
 				    holder[0].cancel = true;
-				    append("An error occurred processing entry:" + entry+"\n" + exc);
-				    return false;
+				    append("An error occurred processing entry:" + entry+" " + entry.getId()+"\n" + exc);
+				    System.err.println("An error occurred processing entry:" + entry+" " + entry.getId()+"\n" + exc);
+				    if(errorCount++>100) {
+					append("Too many errors");
+					System.err.println("Too many errors");
+					return false;
+				    }
 				}
 				return true;
 			    }
@@ -483,13 +507,14 @@ public class ExtEditor extends RepositoryManager {
 		    holder[0] = jsContext;
 		    scope.put("ctx", scope, jsContext);
                     walker.walk(finalEntry);
+		    jsContext.print("* Done\nProcessed:#" +cnt[0]);
                     getActionManager().setContinueHtml(actionId,
 						       walker.getMessageBuffer().toString());
                 }
-            };
+		};
 	    actionId = getActionManager().runAction(action,"extendededitjs","",finalEntry);
 	    what = new String[]{ARG_EXTEDIT_JS};
-
+	    canCancel = true;
         } else if (request.exists(ARG_EXTEDIT_URL_CHANGE)) {
             final String pattern = request.getString(ARG_EXTEDIT_URL_PATTERN,
                                        (String) null);
@@ -576,7 +601,6 @@ public class ExtEditor extends RepositoryManager {
                     return true;
                 }
             };
-            walker.walk(entry);
 	    suffix.append(HU.openInset(5, 30, 20, 0));
             suffix.append("<table><tr><td><b>" + msg("File") + "</b></td><td><b>"
                       + msg("Size") + "</td><td></td></tr>");
@@ -644,7 +668,6 @@ public class ExtEditor extends RepositoryManager {
 	    }
 	    HU.script(sb,"Utils.handleActionResults('" + actionId +"','" + url+"',"+ canCancel+");\n");
 	}
-
 
 
 
@@ -743,6 +766,7 @@ public class ExtEditor extends RepositoryManager {
 		closer.accept(form,"Change URLs");
 	    } else if(form.equals(ARG_EXTEDIT_JS)){
 		opener.accept("Process with Javascript");
+		closer.accept(form,"Apply Javascript");
 		sb.append(HU.formTable());
 		HU.formEntry(sb, HU.b("Only apply to entries of type: ")+
 				    HU.select(ARG_EXTEDIT_TYPE, tfos,request.getString(ARG_EXTEDIT_TYPE,null)));
@@ -771,10 +795,17 @@ public class ExtEditor extends RepositoryManager {
 			     HU.table(HU.rowTop(HU.cols(HU.textArea(ARG_EXTEDIT_SOURCE, ex,10,60),
 						     HU.pre(eg)))));
 		
-		HU.formEntry(sb, HU.labeledCheckbox(
+		sb.append(HU.formTableClose());
+		sb.append(HU.b("Exclude entries:") +"<br>"+
+			  HU.textArea(ARG_EXTEDIT_EXCLUDE, "",5,40,HU.attr("placeholder","entry ids, one per line")));
+
+
+		sb.append("<br>");
+		sb.append(HU.labeledCheckbox(
 					     ARG_EXTEDIT_JS_CONFIRM, "true",
 					     request.get(ARG_EXTEDIT_JS_CONFIRM,false), "Apply changes to entries"));
-		sb.append(HU.formTableClose());
+
+		sb.append("<br>");
 		closer.accept(form,"Apply Javascript");
 	    }
 	    sb.append(HU.formClose());
@@ -1221,6 +1252,10 @@ public class ExtEditor extends RepositoryManager {
 	    return entry.getName();
 	}
 
+	public String getId() {
+	    return entry.getId();
+	}
+
 	public void setName(String name) {
 	    this.name = name;
 	}	
@@ -1281,6 +1316,7 @@ public class ExtEditor extends RepositoryManager {
 	private boolean confirm;
 	private boolean okToRun = true;
 	private boolean cancel = false;	
+	private int count=0;
 
 	public JsContext(EntryVisitor visitor, boolean confirm) {
 	    this.visitor= visitor;
@@ -1302,6 +1338,16 @@ public class ExtEditor extends RepositoryManager {
 	public void print(Object msg) {
 	    visitor.append(msg+"\n");
 	}
+	
+	public int log(int cnt,Object msg) {
+	    if((count++%cnt)==0) {
+		String s = msg.toString();
+		s = s.replace("${count}",""+count);
+		System.err.println("#"  +count+" " +s);
+		visitor.append(s+"\n");
+	    }
+	    return count;
+	}	
     }
 
 
