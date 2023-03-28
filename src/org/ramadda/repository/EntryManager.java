@@ -8895,6 +8895,11 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+    public List<Entry> getChildren(SelectInfo select) throws Exception {
+	List<Entry> children =  getChildren(select.getRequest(), select.getEntry());
+	return EntryUtil.sortEntriesOn(children,select.getOrderBy(),!select.getAscending());
+    }
+
     /**
      * _more_
      *
