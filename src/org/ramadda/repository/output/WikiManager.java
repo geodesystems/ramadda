@@ -734,10 +734,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         return content;
     }
 
-
-
-
-
     public Result processFindEntryFromId(Request request) throws Exception {
 	StringBuilder sb = new StringBuilder();
 	String entryId = request.getString(ARG_ENTRYID,null);
@@ -803,14 +799,16 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	String orderBy = ORDERBY_FROMDATE;
 	boolean ascending = false;
 	int max = -1;
+	String type=null;
 	for(String tok: toks) {
 	    List<String> pair = Utils.splitUpTo(tok,":",2);
 	    if(pair.size()==2) {
 		String what = pair.get(0).trim();
 		String value = pair.get(1).trim();		    
-		if(what.equals(ARG_TYPE))
+		if(what.equals(ARG_TYPE)) {
+		    type = value;
 		    myRequest.put(ARG_TYPE, value);
-		else if(what.equals(ARG_ORDERBY))
+		} else if(what.equals(ARG_ORDERBY))
 		    orderBy=value;
 		else if(what.equals(ARG_MAX)) {
 		    max = Integer.parseInt(value);
@@ -819,7 +817,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		    ascending = value.length()==0|| value.equals("true");			
 		else if(what.equals("entry")) {
 		    entry = findEntryFromId(request,  entry, wikiUtil, props, value);
-		} else if(what.equals(ENTRY_PREFIX_DESCENDENT) || what.equals(ENTRY_PREFIX_ANCESTOR)) {
+		} else if(what.equals(ARG_DESCENDENT) || what.equals(ARG_ANCESTOR)) {
 		    if(value.length()==0) {
 			myRequest.put(ARG_ANCESTOR,entry.getId());
 		    } else {
@@ -836,7 +834,9 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    }
 	}		
 	myRequest.put(ARG_ORDERBY,orderBy+(ascending?"_ascending":"_descending"));
-	return new SelectInfo(myRequest, entry,max,orderBy,ascending);
+	SelectInfo select =  new SelectInfo(myRequest, entry,max,orderBy,ascending);
+	if(type!=null) select.setType(type);
+	return select;
     }
 
 
@@ -886,9 +886,9 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         if (entryId.startsWith(ENTRY_PREFIX_CHILD)) {
 	    SelectInfo select = getSelectFromString(request, entry, wikiUtil,
 						    props,Utils.clip(entryId,ENTRY_PREFIX_CHILD));
-	    List<Entry> children =  getEntryManager().getChildren(select.getRequest(),
-								  select.getEntry());
-	    children= EntryUtil.sortEntriesOn(children,select.getOrderBy(),!select.getAscending());	    
+	    List<Entry> children =  getEntryManager().getChildren(select);
+	    //	    System.err.println(select);
+	    //	    for(Entry c: children)System.err.println(c.getName() +" " + new Date(c.getStartDate()));
             if (children.size() > 0) {
                 return children.get(0);
             }
@@ -897,18 +897,16 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
         if (entryId.startsWith(ENTRY_PREFIX_GRANDCHILD)) {
 	    //grandchild:type:<some type>
-	    List<Entry> children = getEntryManager().getChildren(request, entry);
-	    children= EntryUtil.sortEntriesOnDate(children,false);	    
+	    SelectInfo select = getSelectFromString(request, entry, wikiUtil,
+						    props,Utils.clip(entryId,ENTRY_PREFIX_GRANDCHILD));
+	    List<Entry> children =  getEntryManager().getChildren(select);
 	    if (children.size() == 0) {
 		return null;
 	    }
-	    SelectInfo select = getSelectFromString(request, entry, wikiUtil,
-						    props,Utils.clip(entryId,ENTRY_PREFIX_GRANDCHILD));
-
 	    for(Entry child: children) {
-		List<Entry> gchildren = getEntryManager().getChildren(request, child);
+		select.setEntry(child);
+		List<Entry> gchildren = getEntryManager().getChildren(select);
 		if (gchildren.size() != 0) {
-		    gchildren= EntryUtil.sortEntriesOnDate(gchildren,false);	    
 		    return gchildren.get(0);
 		}
 	    }
@@ -920,17 +918,23 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	  ancestor:type
 	 */
         if (entryId.startsWith(ENTRY_PREFIX_ANCESTOR)) {
-            String type      = Utils.clip(entryId,ENTRY_PREFIX_ANCESTOR).trim();
+	    SelectInfo select = getSelectFromString(request, entry, wikiUtil,
+						    props,Utils.clip(entryId,ENTRY_PREFIX_ANCESTOR));
             Entry  lastEntry = entry;
             Entry  current   = entry;
+	    String type = select.getType();
             while (true) {
                 Entry parent = current.getParentEntry();
                 if (parent == null) {
                     break;
                 }
-                if (parent.getTypeHandler().isType(type)) {
-                    lastEntry = parent;
-                }
+		if(type!=null) {
+		    if (parent.getTypeHandler().isType(type)) {
+			lastEntry = parent;
+		    }
+		} else {
+		    lastEntry = parent;
+		}
                 current = parent;
             }
 
@@ -939,13 +943,14 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         }
 
 
-        if (entryId.equals("link") || entryId.startsWith(ENTRY_PREFIX_LINK)) {
-            String type = StringUtil.findPattern(entryId, ":(.*)$");
-            //            System.err.println("Link: " + type);
+        if (entryId.startsWith(ENTRY_PREFIX_LINK)) {
+	    SelectInfo select = getSelectFromString(request, entry, wikiUtil,
+						    props,Utils.clip(entryId,ENTRY_PREFIX_LINK));
+
+            String type = select.getType();
             List<Association> associations =
                 getRepository().getAssociationManager().getAssociations(
 									request, entry.getId());
-            //            System.err.println("associations: " + associations);
             for (Association association : associations) {
                 Entry otherEntry =
                     getAssociationManager().getOtherEntry(request,
