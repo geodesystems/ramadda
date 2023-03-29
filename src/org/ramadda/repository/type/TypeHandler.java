@@ -2731,6 +2731,9 @@ public class TypeHandler extends RepositoryManager {
         html = html.replace("${" + ARG_FROMDATE + "}",
                             getDateHandler().formatDate(request, entry,
                                 entry.getStartDate()));
+        html = html.replace("${" + ARG_DATE + "}",
+                            getDateHandler().formatDate(request, entry,
+                                entry.getStartDate()));	
         html = html.replace("${" + ARG_TODATE + "}",
                             getDateHandler().formatDate(request, entry,
                                 entry.getEndDate()));
