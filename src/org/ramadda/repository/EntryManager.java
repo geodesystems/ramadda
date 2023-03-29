@@ -8840,6 +8840,258 @@ public class EntryManager extends RepositoryManager {
     /**
      * _more_
      *
+     * @param entries _more_
+     * @param entry _more_
+     * @param flag _more_
+     * @param orNot _more_
+     */
+    public void orNot(List<Entry> entries, Entry entry, boolean flag,
+                       boolean orNot) {
+        if (orNot) {
+            if ( !flag) {
+                entries.add(entry);
+            }
+        } else {
+            if (flag) {
+                entries.add(entry);
+            }
+        }
+    }
+
+    /**
+     * Get the entries that are images
+     *
+     *
+     * @param request the request
+     * @param entries  the list of entries
+     * @param useAttachment _more_
+     *
+     * @return  the list of entries that are images
+     *
+     * @throws Exception _more_
+     */
+    public List<Entry> getImageEntries(Request request, List<Entry> entries,
+                                       boolean useAttachment)
+	throws Exception {
+        return getImageEntriesOrNot(request, entries, false, useAttachment);
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param request the request
+     * @param wikiUtil _more_
+     * @param entry _more_
+     * @param filter _more_
+     * @param props _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<Entry> applyFilter(Request request, Entry entry, SelectInfo select)
+	throws Exception {
+        List<Entry> entries = new ArrayList<Entry>();
+        entries.add(entry);
+	if(select==null) return entries;
+        return applyFilter(request, entries, select);
+    }
+
+    public List<Entry> applyFilter(Request request, Entry entry, String filter) 
+	throws Exception {
+        List<Entry> entries = new ArrayList<Entry>();
+        entries.add(entry);
+        return applyFilter(request, entries, filter);
+    }    
+
+
+    public List<Entry> applyFilter(Request request, List<Entry> entries, SelectInfo select)
+	throws Exception {
+	if(select==null) return entries;
+	if(select.getFilter()!=null) {
+	    entries =  applyFilter(request, entries, select.getFilter());
+	}
+	if(stringDefined(select.getType())) {
+	    List<Entry> tmp  = new ArrayList<Entry>();
+	    List<String> types = Utils.split(select.getType(),",",true,true);
+	    for(Entry entry: entries) {
+		boolean ok  = false;
+		for(String type: types) {
+		    if(entry.getTypeHandler().isType(type)) {
+			ok = true;
+			break;
+		    }
+		}
+		if(ok)
+		    tmp.add(entry);
+	    }
+	    entries= tmp;
+	}
+
+
+	if(select.getOrderBy()!=null) {
+	    entries= EntryUtil.sortEntriesOn(entries,select.getOrderBy(),!select.getAscending());
+	}
+
+	if(select.getMax()>=0 && entries.size()>select.getMax()) {
+            List<Entry> tmp = new ArrayList<Entry>();
+	    for(int i=0;i<entries.size() && i<select.getMax();i++)
+		tmp.add(entries.get(i));
+	    entries=tmp;
+	}
+
+
+
+	return entries;
+    }
+
+    /**
+     * _more_
+     *
+     * @param request the request
+     * @param entries _more_
+     * @param filter _more_
+     * @param props _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<Entry> applyFilter(Request request, List<Entry> entries, String filter)
+	throws Exception {
+        if (filter == null) {
+            return entries;
+        }
+        boolean doNot = false;
+        if (filter.startsWith("!")) {
+            doNot  = true;
+            filter = filter.substring(1);
+        }
+        if (filter.equals(FILTER_IMAGE)) {
+            entries = getImageEntriesOrNot(request, entries, doNot, false);
+	} else    if (filter.equals(FILTER_IMAGE_OR_ATTACHMENT)) {
+            entries = getImageEntriesOrNot(request, entries, doNot, true);	    
+        } else if (filter.equals(FILTER_FILE)) {
+            List<Entry> tmp = new ArrayList<Entry>();
+            for (Entry child : entries) {
+                orNot(tmp, child, !child.isGroup(), doNot);
+            }
+            entries = tmp;
+        } else if (filter.equals(FILTER_GEO)) {
+            List<Entry> tmp = new ArrayList<Entry>();
+            for (Entry child : entries) {
+                orNot(tmp, child, child.isGeoreferenced(), doNot);
+            }
+            entries = tmp;
+        } else if (filter.equals(FILTER_FOLDER)) {
+            List<Entry> tmp = new ArrayList<Entry>();
+            for (Entry child : entries) {
+                orNot(tmp, child, child.isGroup(), doNot);
+            }
+            entries = tmp;
+        } else if (filter.startsWith(FILTER_TYPE)) {
+            List<String> types =
+                Utils.split(filter.substring(FILTER_TYPE.length()), ",",
+			    true, true);
+            List<Entry> tmp = new ArrayList<Entry>();
+            for (Entry child : entries) {
+                for (String type : types) {
+                    boolean matches = child.getTypeHandler().isType(type);
+                    orNot(tmp, child, matches, doNot);
+                    if (matches && !doNot) {
+                        break;
+                    }
+                    if ( !matches && doNot) {
+                        break;
+                    }
+                }
+            }
+            entries = tmp;
+        } else if (filter.startsWith(FILTER_SUFFIX)) {
+            List<String> suffixes =
+                Utils.split(filter.substring(FILTER_SUFFIX.length()),
+			    ",", true, true);
+            List<Entry> tmp = new ArrayList<Entry>();
+            for (Entry child : entries) {
+                for (String suffix : suffixes) {
+                    boolean matches =
+                        child.getResource().getPath().endsWith(suffix);
+                    orNot(tmp, child, matches, doNot);
+                    if (matches) {
+                        break;
+                    }
+                }
+            }
+            entries = tmp;
+        } else if (filter.startsWith(FILTER_NAME)) {
+            String      name = filter.substring(FILTER_NAME.length());
+            List<Entry> tmp  = new ArrayList<Entry>();
+            for (Entry child : entries) {
+                boolean matches = child.getName().matches(name);
+                orNot(tmp, child, matches, doNot);
+            }
+            entries = tmp;
+        } else if (filter.startsWith(FILTER_ID)) {
+            List<String> ids =
+                Utils.split(filter.substring(FILTER_ID.length()), ",",
+			    true, true);
+            List<Entry> tmp = new ArrayList<Entry>();
+            for (Entry child : entries) {
+                for (String id : ids) {
+                    boolean matches = child.getId().equals(id);
+                    orNot(tmp, child, matches, doNot);
+                    if (matches && !doNot) {
+                        break;
+                    }
+                    if ( !matches && doNot) {
+                        break;
+                    }
+                }
+            }
+            entries = tmp;
+        }
+
+        return entries;
+    }
+
+
+    /**
+     * _more_
+     *
+     *
+     * @param request the request
+     * @param entries _more_
+     * @param orNot _more_
+     * @param useAttachment _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<Entry> getImageEntriesOrNot(Request request,
+                                            List<Entry> entries,
+                                            boolean orNot,
+                                            boolean useAttachment)
+	throws Exception {
+        List<Entry> imageEntries = new ArrayList<Entry>();
+        for (Entry entry : entries) {
+            boolean isImage = entry.isImage();
+            if ( !isImage && useAttachment) {
+                isImage = getMetadataManager().getImageUrls(request,
+							    entry).size() > 0;
+            }
+            orNot(imageEntries, entry, isImage, orNot);
+        }
+
+        return imageEntries;
+    }
+
+
+    /**
+     * _more_
+     *
      * @param request _more_
      * @param parentEntry _more_
      * @param select _more_
@@ -8874,6 +9126,8 @@ public class EntryManager extends RepositoryManager {
             }
         }
         children.addAll(entries);
+	children =applyFilter(request,children,select);
+
 
         return parentEntry.getTypeHandler().postProcessEntries(request,
 							       children);
@@ -8895,9 +9149,9 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    public List<Entry> getChildren(SelectInfo select) throws Exception {
+    public List<Entry> getChildren(Request request, SelectInfo select) throws Exception {
 	List<Entry> children =  getChildren(select.getRequest(), select.getEntry());
-	return EntryUtil.sortEntriesOn(children,select.getOrderBy(),!select.getAscending());
+	return applyFilter(request,children,select);
     }
 
     /**
@@ -8952,6 +9206,7 @@ public class EntryManager extends RepositoryManager {
 	}
 
 
+	children =applyFilter(request,children,select);
         return parentEntry.getTypeHandler().postProcessEntries(request,
 							       children);
     }
@@ -9043,7 +9298,6 @@ public class EntryManager extends RepositoryManager {
         }
         where.add(Clause.eq(Tables.ENTRIES.COL_PARENT_GROUP_ID,
                             group.getId()));
-
 
         String orderBy = getQueryOrderAndLimit(request, true, group, select);
         TypeHandler typeHandler = getRepository().getTypeHandler(request);

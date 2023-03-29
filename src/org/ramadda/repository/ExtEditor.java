@@ -797,7 +797,7 @@ public class ExtEditor extends RepositoryManager {
 		
 		sb.append(HU.formTableClose());
 		sb.append(HU.b("Exclude entries:") +"<br>"+
-			  HU.textArea(ARG_EXTEDIT_EXCLUDE, "",5,40,HU.attr("placeholder","entry ids, one per line")));
+			  HU.textArea(ARG_EXTEDIT_EXCLUDE, request.getString(ARG_EXTEDIT_EXCLUDE,""),5,40,HU.attr("placeholder","entry ids, one per line")));
 
 
 		sb.append("<br>");

@@ -974,7 +974,7 @@ function NotebookState(cell, div) {
             if (entry == null)
                 await this.cell.getCurrentEntry(e => entry = e);
             if ((typeof entry) != "string") entry = entry.getId();
-            await GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + entry + "&text=" + encodeURIComponent(s),
+            await GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + entry + "&wikitext=" + encodeURIComponent(s),
                 callback);
         },
         //These are for the iodiode mimic
@@ -2020,7 +2020,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 chunk.output = h;
             }
             var wiki = "{{group showMenu=false}}\n" + chunk.getContent();
-            await GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + id + "&text=" + encodeURIComponent(chunk.getContent()),
+            await GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + id + "&wikitext=" + encodeURIComponent(chunk.getContent()),
                 wikiCallback);
         },
         processSh: async function(chunk) {

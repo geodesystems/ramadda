@@ -784,48 +784,59 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 					   Hashtable props,
 					   String string) throws Exception {
 	Request myRequest = request.cloneMe();
-	List<String> toks = Utils.split(string,";");
-	String orderBy = ORDERBY_FROMDATE;
+
+	List<String> toks = Utils.split(string,";",true,true);
+	String orderBy = null;//ORDERBY_FROMDATE;
 	boolean ascending = false;
 	int max = -1;
 	String type=null;
+        String filter = getProperty(wikiUtil, props,
+				       ATTR_ENTRIES + ".filter",
+				       (String) null);
 	for(String tok: toks) {
 	    List<String> pair = Utils.splitUpTo(tok,":",2);
-	    if(pair.size()==2) {
-		String what = pair.get(0).trim();
-		String value = pair.get(1).trim();		    
-		if(what.equals(ARG_TYPE)) {
-		    type = value;
-		    myRequest.put(ARG_TYPE, value);
-		} else if(what.equals(ARG_ORDERBY))
-		    orderBy=value;
-		else if(what.equals(ARG_MAX)) {
-		    max = Integer.parseInt(value);
-		    myRequest.put(ARG_MAX,""+max);
-		    System.err.println("MAX:" +max);
-		} else if(what.equals(ARG_ASCENDING))
-		    ascending = value.length()==0|| value.equals("true");			
-		else if(what.equals("entry")) {
-		    entry = findEntryFromId(request,  entry, wikiUtil, props, value);
-		} else if(what.equals(ARG_DESCENDENT) || what.equals(ARG_ANCESTOR)) {
-		    if(value.length()==0) {
-			myRequest.put(ARG_ANCESTOR,entry.getId());
+	    if(pair.size()!=2) {
+		System.err.println("WikiManager.getSelectFromString - bad specifier:" + tok);
+		continue;
+		
+	    }
+	    
+	    String what = pair.get(0).trim();
+	    String value = pair.get(1).trim();		    
+	    //	    System.err.println("\twhat:" + what +"="+value);
+		
+	    if(what.equals(ARG_TYPE)) {
+		type = value;
+		myRequest.put(ARG_TYPE, value);
+	    } else if(what.equals(ARG_ORDERBY)) {
+		orderBy=value;
+	    } else if(what.equals("filter")) {
+		filter = value;
+	    } else if(what.equals(ARG_MAX)) {
+		max = Integer.parseInt(value);
+		myRequest.put(ARG_MAX,""+max);
+	    } else if(what.equals(ARG_ASCENDING)) {
+		ascending = value.length()==0|| value.equals("true");			
+	    } else if(what.equals("entry")) {
+		entry = findEntryFromId(request,  entry, wikiUtil, props, value);
+	    } else if(what.equals(ARG_DESCENDENT) || what.equals(ARG_ANCESTOR)) {
+		if(value.length()==0) {
+		    myRequest.put(ARG_ANCESTOR,entry.getId());
+		} else {
+		    Entry otherEntry = findEntryFromId(request,  entry, wikiUtil, props, value);
+		    if(otherEntry!=null) {
+			myRequest.put(ARG_ANCESTOR,otherEntry.getId());
 		    } else {
-			Entry otherEntry = findEntryFromId(request,  entry, wikiUtil, props, value);
-			if(otherEntry!=null) {
-			    myRequest.put(ARG_ANCESTOR,otherEntry.getId());
-			} else {
-			    System.err.println("Could not find descendent entry:" + tok);
-			}
+			System.err.println("Could not find descendent entry:" + tok);
 		    }
-		}   else {
-		    System.err.println("Unknown child specifier:" + what +"=" + value);
 		}
+	    }   else {
+		System.err.println("Unknown child specifier:" + what +"=" + value);
 	    }
 	}		
 	myRequest.put(ARG_ORDERBY,orderBy+(ascending?"_ascending":"_descending"));
-	System.err.println("Request:"+ myRequest);
 	SelectInfo select =  new SelectInfo(myRequest, entry,max,orderBy,ascending);
+	if(filter!=null) select.setFilter(filter);
 	if(type!=null) select.setType(type);
 	return select;
     }
@@ -877,7 +888,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         if (entryId.startsWith(ENTRY_PREFIX_CHILD)) {
 	    SelectInfo select = getSelectFromString(request, entry, wikiUtil,
 						    props,Utils.clip(entryId,ENTRY_PREFIX_CHILD));
-	    List<Entry> children =  getEntryManager().getChildren(select);
+	    List<Entry> children =  getEntryManager().getChildren(request,select);
 	    //	    System.err.println(select);
 	    //	    for(Entry c: children)System.err.println(c.getName() +" " + new Date(c.getStartDate()));
             if (children.size() > 0) {
@@ -886,17 +897,18 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    return null;
 	}
 
+
         if (entryId.startsWith(ENTRY_PREFIX_GRANDCHILD)) {
 	    //grandchild:type:<some type>
 	    SelectInfo select = getSelectFromString(request, entry, wikiUtil,
 						    props,Utils.clip(entryId,ENTRY_PREFIX_GRANDCHILD));
-	    List<Entry> children =  getEntryManager().getChildren(select);
+	    List<Entry> children =  getEntryManager().getChildren(request,select);
 	    if (children.size() == 0) {
 		return null;
 	    }
 	    for(Entry child: children) {
 		select.setEntry(child);
-		List<Entry> gchildren = getEntryManager().getChildren(select);
+		List<Entry> gchildren = getEntryManager().getChildren(request,select);
 		if (gchildren.size() != 0) {
 		    return gchildren.get(0);
 		}
@@ -1028,7 +1040,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	*/
 	SelectInfo select = getSelectFromString(request, entry, wikiUtil,
 						props,Utils.clip(entryId,ENTRY_PREFIX_SEARCH));
-	return  getSearchManager().doSearch(select.getRequest(),select);
+	List<Entry> entries=  getSearchManager().doSearch(select.getRequest(),select);
+	return getEntryManager().applyFilter(request, entries, select);
     }
 
 
@@ -1674,7 +1687,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
      * @throws Exception _more_
      */
     public Result processWikify(Request request) throws Exception {
-        String wiki = request.getUnsafeString("text", "");
+        String wiki = request.getUnsafeString("wikitext", "");
 	wiki = Request.cleanXSS(wiki);
         if (request.defined(ARG_ENTRYID)) {
             if ( !request.get("doImports", true)) {
@@ -5497,76 +5510,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
     }
 
 
-    /**
-     * Get the entries that are images
-     *
-     *
-     * @param request the request
-     * @param entries  the list of entries
-     * @param useAttachment _more_
-     *
-     * @return  the list of entries that are images
-     *
-     * @throws Exception _more_
-     */
-    public List<Entry> getImageEntries(Request request, List<Entry> entries,
-                                       boolean useAttachment)
-	throws Exception {
-        return getImageEntriesOrNot(request, entries, false, useAttachment);
-    }
-
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     * @param entry _more_
-     * @param flag _more_
-     * @param orNot _more_
-     */
-    private void orNot(List<Entry> entries, Entry entry, boolean flag,
-                       boolean orNot) {
-        if (orNot) {
-            if ( !flag) {
-                entries.add(entry);
-            }
-        } else {
-            if (flag) {
-                entries.add(entry);
-            }
-        }
-    }
-
-
-    /**
-     * _more_
-     *
-     *
-     * @param request the request
-     * @param entries _more_
-     * @param orNot _more_
-     * @param useAttachment _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public List<Entry> getImageEntriesOrNot(Request request,
-                                            List<Entry> entries,
-                                            boolean orNot,
-                                            boolean useAttachment)
-	throws Exception {
-        List<Entry> imageEntries = new ArrayList<Entry>();
-        for (Entry entry : entries) {
-            boolean isImage = entry.isImage();
-            if ( !isImage && useAttachment) {
-                isImage = getMetadataManager().getImageUrls(request,
-							    entry).size() > 0;
-            }
-            orNot(imageEntries, entry, isImage, orNot);
-        }
-
-        return imageEntries;
-    }
 
     /**
      * Get the entries for the request
@@ -5680,142 +5623,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param wikiUtil _more_
-     * @param entry _more_
-     * @param filter _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public List<Entry> applyFilter(Request request, WikiUtil wikiUtil,
-                                   Entry entry, String filter,
-                                   Hashtable props)
-	throws Exception {
-        List<Entry> entries = new ArrayList<Entry>();
-        entries.add(entry);
 
-        return applyFilter(request, wikiUtil, entries, filter, props);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param wikiUtil _more_
-     * @param entries _more_
-     * @param filter _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public List<Entry> applyFilter(Request request, WikiUtil wikiUtil,
-                                   List<Entry> entries, String filter,
-                                   Hashtable props)
-	throws Exception {
-        if (filter == null) {
-            return entries;
-        }
-        boolean doNot = false;
-        if (filter.startsWith("!")) {
-            doNot  = true;
-            filter = filter.substring(1);
-        }
-        if (filter.equals(FILTER_IMAGE)) {
-            boolean useAttachment = getProperty(wikiUtil, props,
-						"useAttachment", false);
-            entries = getImageEntriesOrNot(request, entries, doNot,
-                                           useAttachment);
-        } else if (filter.equals(FILTER_FILE)) {
-            List<Entry> tmp = new ArrayList<Entry>();
-            for (Entry child : entries) {
-                orNot(tmp, child, !child.isGroup(), doNot);
-            }
-            entries = tmp;
-        } else if (filter.equals(FILTER_GEO)) {
-            List<Entry> tmp = new ArrayList<Entry>();
-            for (Entry child : entries) {
-                orNot(tmp, child, child.isGeoreferenced(), doNot);
-            }
-            entries = tmp;
-        } else if (filter.equals(FILTER_FOLDER)) {
-            List<Entry> tmp = new ArrayList<Entry>();
-            for (Entry child : entries) {
-                orNot(tmp, child, child.isGroup(), doNot);
-            }
-            entries = tmp;
-        } else if (filter.startsWith(FILTER_TYPE)) {
-            List<String> types =
-                Utils.split(filter.substring(FILTER_TYPE.length()), ";",
-			    true, true);
-            List<Entry> tmp = new ArrayList<Entry>();
-            for (Entry child : entries) {
-                for (String type : types) {
-                    boolean matches = child.getTypeHandler().isType(type);
-                    orNot(tmp, child, matches, doNot);
-                    if (matches && !doNot) {
-                        break;
-                    }
-                    if ( !matches && doNot) {
-                        break;
-                    }
-                }
-            }
-            entries = tmp;
-        } else if (filter.startsWith(FILTER_SUFFIX)) {
-            List<String> suffixes =
-                Utils.split(filter.substring(FILTER_SUFFIX.length()),
-			    ",", true, true);
-            List<Entry> tmp = new ArrayList<Entry>();
-            for (Entry child : entries) {
-                for (String suffix : suffixes) {
-                    boolean matches =
-                        child.getResource().getPath().endsWith(suffix);
-                    orNot(tmp, child, matches, doNot);
-                    if (matches) {
-                        break;
-                    }
-                }
-            }
-            entries = tmp;
-        } else if (filter.startsWith(FILTER_NAME)) {
-            String      name = filter.substring(FILTER_NAME.length());
-            List<Entry> tmp  = new ArrayList<Entry>();
-            for (Entry child : entries) {
-                boolean matches = child.getName().matches(name);
-                orNot(tmp, child, matches, doNot);
-            }
-            entries = tmp;
-        } else if (filter.startsWith(FILTER_ID)) {
-            List<String> ids =
-                Utils.split(filter.substring(FILTER_ID.length()), ",",
-			    true, true);
-            List<Entry> tmp = new ArrayList<Entry>();
-            for (Entry child : entries) {
-                for (String id : ids) {
-                    boolean matches = child.getId().equals(id);
-                    orNot(tmp, child, matches, doNot);
-                    if (matches && !doNot) {
-                        break;
-                    }
-                    if ( !matches && doNot) {
-                        break;
-                    }
-                }
-            }
-            entries = tmp;
-        }
-
-        return entries;
-    }
 
 
     /**
@@ -5877,7 +5685,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
         //TODO - how do we combine filters? what kind of or/and logic?
         if (filter != null) {
-            entries = applyFilter(request, wikiUtil, entries, filter, props);
+            entries = getEntryManager().applyFilter(request, entries, filter);
         }
 
         String fromDate = getProperty(wikiUtil, props,
@@ -5914,9 +5722,9 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 			   false)) {
             boolean useAttachment = getProperty(wikiUtil, props,
 						"useAttachment", false);
-            entries = applyFilter(request, wikiUtil,
-                                  getImageEntries(request, entries,
-						  useAttachment), filter, props);
+            entries = getEntryManager().applyFilter(request, 
+						    getEntryManager().getImageEntries(request, entries,
+										      useAttachment), filter);
         }
 
 
@@ -6097,13 +5905,13 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
      */
     public List<Entry> getEntries(Request request, WikiUtil wikiUtil,
                                   Entry baseEntry, String ids,
-                                  Hashtable props)
+                                  Hashtable theProps)
 	throws Exception {
 
-        if (props == null) {
-            props = new Hashtable();
+        if (theProps == null) {
+            theProps = new Hashtable();
         }
-
+	final Hashtable props  = theProps;
 
         Hashtable   searchProps = null;
         List<Entry> entries     = new ArrayList<Entry>();
@@ -6122,7 +5930,32 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 					 getProperty(wikiUtil,props,ATTR_SORT_ORDER,"down")).equals("down");
         HashSet     nots        = new HashSet();
 
-        for (String entryid : Utils.split(ids, ",", true, true)) {
+
+	
+	SelectInfo select=null;
+	Utils.TriFunction<SelectInfo,String,String,String> matches = (entryId,baseId,thePrefix)->{
+	    try {
+	    if(baseId!=null && entryId.equals(baseId)) entryId = thePrefix;
+	    if(entryId.startsWith(thePrefix)) {
+		return  getSelectFromString(request, baseEntry, wikiUtil,
+					    props,Utils.clip(entryId,thePrefix));
+	    }
+	    return null;
+	    } catch(Exception exc) {
+		throw new RuntimeException(exc);
+	    }
+	};
+
+	//	select = matches.call("","","");
+
+	/*
+	  entries="<id>,not:<id>,entries.max:<max>,entries.orderby:<order>,entries.ascending:true,
+	  search:xxxx
+	  search.url<url>,
+	*/
+        for (String theId : Utils.split(ids, ",", true, true)) {
+	    String entryid = theId;
+	    
             if (entryid.startsWith("#")) {
                 continue;
             }
@@ -6131,44 +5964,41 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 continue;
             }
 
-            if (entryid.startsWith("entries.max=")) {
-                max = Integer.parseInt(
-				       entryid.substring("entries.max=".length()));
-
+            if (entryid.startsWith("entries.max:")) {
+                max = Integer.parseInt(entryid.substring("entries.max:".length()));
                 continue;
             }
-            if (entryid.startsWith("entries.orderby=")) {
-                orderBy = entryid.substring("entries.orderby=".length());
+            if (entryid.startsWith("entries.orderby:")) {
+                orderBy = entryid.substring("entries.orderby:".length());
                 continue;
             }
-            if (entryid.startsWith("entries.orderdir=")) {
-                descending=  entryid.substring("entries.orderdir=".length()).equals("down");
+            if (entryid.startsWith("entries.ascending:")) {
+                descending=  entryid.substring("entries.ascending:".length()).equals("false");
                 continue;
             }
 
-            entryid = entryid.replace("_COMMA_", ",");
-
-
+            entryid = entryid.replace("_COMMA_", ",").replace("_comma_",",");
             Entry  theBaseEntry = baseEntry;
             String filter = null;
 
+            if (entryid.equals(ID_THIS)) {
+                entries.addAll(getEntryManager().applyFilter(request, theBaseEntry, filter));
+                continue;
+            }
 	    
-	    //search:descendent:ff29d75c-8baf-4b17-b121-6c0e10eb9c60;ascending:false;type:type_document_csv
-            boolean isRemote = entryid.startsWith(ATTR_SEARCH_URL);
-            if ( !isRemote && entryid.startsWith(ID_SEARCH + ".")) {
-                List<String> tokens = Utils.splitUpTo(entryid, "=", 2);
-                if (tokens.size() == 2) {
-                    if (searchProps == null) {
-                        searchProps = new Hashtable();
-                        searchProps.putAll(props);
-                    }
-                    searchProps.put(tokens.get(0), tokens.get(1));
-                    myRequest.put(tokens.get(0), tokens.get(1));
-                }
+            if (entryid.equals(ID_ROOT)) {
+                entries.addAll(getEntryManager().applyFilter(request, request.getRootEntry(), filter));
                 continue;
             }
 
-            if (isRemote || entryid.equals(ID_SEARCH)) {
+	    if(entryid.startsWith(ENTRY_PREFIX_SEARCH)) {
+		List<Entry> foundEntries =
+		    getEntriesFromEmbeddedSearch(request, wikiUtil,  props, baseEntry,  entryid,-1);
+                entries.addAll(getEntryManager().applyFilter(request,  foundEntries,filter));
+		continue;
+	    }
+
+            if (entryid.startsWith(ATTR_SEARCH_URL)) {
                 if (searchProps == null) {
                     searchProps = props;
                 }
@@ -6183,198 +6013,107 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 addSearchTerms(myRequest, wikiUtil, searchProps,
                                theBaseEntry);
 
-                if (isRemote) {
-                    List<String> tokens = (entryid.indexOf("=") >= 0)
-			? Utils.splitUpTo(entryid,
-					  "=", 2)
-			: Utils.splitUpTo(entryid,
-					  ":", 2);
-                    ServerInfo serverInfo =
-                        new ServerInfo(new URL(tokens.get(1)),
-                                       "remote server", "");
+		List<String> tokens = (entryid.indexOf("=") >= 0)
+		    ? Utils.splitUpTo(entryid,
+				      "=", 2)
+		    : Utils.splitUpTo(entryid,
+				      ":", 2);
+		ServerInfo serverInfo =
+		    new ServerInfo(new URL(tokens.get(1)),
+				   "remote server", "");
 
-                    List<ServerInfo> servers = new ArrayList<ServerInfo>();
-                    servers.add(serverInfo);
-                    getSearchManager().doDistributedSearch(myRequest,
-							   servers, theBaseEntry, entries);
+		List<ServerInfo> servers = new ArrayList<ServerInfo>();
+		servers.add(serverInfo);
+		getSearchManager().doDistributedSearch(myRequest,
+						       servers, theBaseEntry, entries);
+		
+		continue;
+            }
 
-                    continue;
-		}
 
-                entries.addAll(applyFilter(request, wikiUtil,
-					   getSearchManager().doSearch(myRequest, new SelectInfo(request)),
-                                           filter, props));
+	    if((select = matches.call(entryid,ID_CHILDREN,ENTRY_PREFIX_CHILDREN))!=null) { 
+                List<Entry> children = getEntryManager().getChildren(select.getRequest(),
+								     select.getEntry(),select);
+		entries.addAll(getEntryManager().applyFilter(select.getRequest(), children,filter));
                 continue;
             }
 
 
-
-            String type         = null;
-	    //children;filter:
-            //            entries="children:<other id>
-            List<String> toks = Utils.splitUpTo(entryid, ":", 2);
-	    //Handle the case like children:
-	    if(toks.size()==1 && entryid.endsWith(":")) entryid = entryid.replace(":","");
-	    else if (toks.size() == 2) {
-                //TODO: handle specifying a type
-                entryid = toks.get(0);
-                String       suffix = toks.get(1);
-                List<String> toks2  = Utils.splitUpTo(suffix, ":", 2);
-                if (toks2.size() == 2) {}
-                else {
-		    if (suffix.equals(ID_THIS)) {
-			theBaseEntry =  baseEntry;
-		    } else {
-			theBaseEntry = getEntryManager().getEntry(request,
-								  suffix);
-			if(theBaseEntry==null) {
-			    throw new IllegalArgumentException("Could not find entry from:"+ suffix);
-			}
-		    }
-                }
-            }
-
-            //            entries="children;type;type
-            //            children;type=foo
-            toks = Utils.splitUpTo(entryid, ";", 2);
-            if (toks.size() > 1) {
-                entryid = toks.get(0);
-                filter  = toks.get(1);
-            }
-
-
-
-            if (entryid.equals(ID_ANCESTORS)) {
-                List<Entry> tmp    = new ArrayList<Entry>();
-                Entry       parent = theBaseEntry.getParentEntry();
-                while (parent != null) {
-                    tmp.add(0, parent);
-                    parent = parent.getParentEntry();
-                }
-                entries.addAll(applyFilter(request, wikiUtil, tmp, filter,
-                                           props));
-
-                continue;
-            }
-
-
-            if (entryid.equals(ID_LINKS)) {
-                List<Association> associations =
-                    getRepository().getAssociationManager().getAssociations(
-									    request, theBaseEntry.getId());
-                for (Association association : associations) {
-                    String id = null;
-                    if ( !association.getFromId().equals(
-							 theBaseEntry.getId())) {
-                        id = association.getFromId();
-                    } else if ( !association.getToId().equals(
-							      theBaseEntry.getId())) {
-                        id = association.getToId();
-                    } else {
-                        continue;
-                    }
-                    entries.addAll(applyFilter(request, wikiUtil,
-					       getEntryManager().getEntry(request, id), filter,
-					       props));
-                }
-
-                continue;
-            }
-
-
-            if (entryid.equals(ID_ROOT)) {
-                entries.addAll(applyFilter(request, wikiUtil,
-                                           request.getRootEntry(), filter,
-                                           props));
-
-                continue;
-            }
-
-            if (entryid.startsWith(ID_REMOTE)) {
-                //TBD
-                //http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c
-                //                List<String> toks = Utils.splitUpTo(entryid, ID_REMOTE,  2);
-                //                String url = toks.get(1);
-                continue;
-            }
-
-            if (entryid.equals(ID_THIS)) {
-                entries.addAll(applyFilter(request, wikiUtil, theBaseEntry,
-                                           filter, props));
-
-                continue;
-            }
-
-            if (entryid.startsWith(ATTR_ENTRIES + ".filter")) {
-                List<String> tokens = Utils.splitUpTo(entryid, "=", 2);
-                if (tokens.size() == 2) {
-                    props.put(ATTR_ENTRIES + ".filter", tokens.get(1));
-                }
-
-                continue;
-            }
-
-
-
-            if (entryid.equals(ID_PARENT)) {
-                entries.addAll(
-			       applyFilter(
-					   request, wikiUtil,
-					   getEntryManager().getEntry(
-								      request,
-								      theBaseEntry.getParentEntryId()), filter, props));
-
-                continue;
-            }
-
-
-            if (entryid.startsWith(ID_SIBLINGS)) {
+	    if((select = matches.call(entryid,ID_GRANDPARENT,ENTRY_PREFIX_GRANDPARENT))!=null) { 
                 Entry parent = getEntryManager().getEntry(request,
-							  theBaseEntry.getParentEntryId());
-                if (parent != null) {
-                    for (Entry sibling :
-			     getEntryManager().getChildren(request, parent)) {
-                        if ( !sibling.getId().equals(theBaseEntry.getId())) {
-                            if (type != null) {
-                                if ( !sibling.getTypeHandler().isType(type)) {
-                                    continue;
-                                }
-                            }
-                            entries.addAll(applyFilter(request, wikiUtil,
-						       sibling, filter, props));
-                        }
-                    }
-                }
-
-                continue;
-            }
-
-
-
-            if (entryid.equals(ID_GRANDPARENT)) {
-                Entry parent = getEntryManager().getEntry(request,
-							  theBaseEntry.getParentEntryId());
+							  select.getEntry().getParentEntryId());
                 if (parent != null) {
                     Entry grandparent = getEntryManager().getEntry(request,
 								   parent.getParentEntryId());
                     if (grandparent != null) {
-                        entries.addAll(applyFilter(request, wikiUtil,
-						   grandparent, filter, props));
+                        entries.addAll(getEntryManager().applyFilter(select.getRequest(), grandparent, select));
                     }
                 }
-
                 continue;
             }
 
 
-            if (entryid.equals(ID_CHILDREN)) {
-		SelectInfo select = new SelectInfo(request, theBaseEntry, max,orderBy,!descending);
-                List<Entry> children = getEntryManager().getChildren(myRequest,
-								     theBaseEntry,select);
-		entries.addAll(applyFilter(request, wikiUtil, children,filter, props));
+	    if((select = matches.call(entryid,ID_ANCESTORS,ENTRY_PREFIX_ANCESTORS))!=null) { 
+                List<Entry> tmp    = new ArrayList<Entry>();
+                Entry       parent = select.getEntry().getParentEntry();
+                while (parent != null) {
+                    tmp.add(0, parent);
+                    parent = parent.getParentEntry();
+                }
+                entries.addAll(getEntryManager().applyFilter(request, tmp, select));
                 continue;
             }
 
+	    if((select = matches.call(entryid,ID_SIBLINGS,ENTRY_PREFIX_SIBLINGS))!=null) { 
+                Entry parent = getEntryManager().getEntry(request,
+							  select.getEntry().getParentEntryId());
+                if (parent != null) {
+                    for (Entry sibling :
+			     getEntryManager().getChildren(request, parent)) {
+                        if ( !sibling.getId().equals(select.getEntry().getId())) {
+                            entries.add(sibling);
+                        }
+                    }
+                }
+		entries = getEntryManager().applyFilter(request, entries, select);
+                continue;
+            }
+
+
+	    if((select = matches.call(entryid,ID_LINKS,ENTRY_PREFIX_LINKS))!=null) { 
+                List<Association> associations =
+                    getRepository().getAssociationManager().getAssociations(
+									    request, select.getEntry().getId());
+                for (Association association : associations) {
+                    String id = null;
+                    if ( !association.getFromId().equals(
+							 select.getEntry().getId())) {
+                        id = association.getFromId();
+                    } else if ( !association.getToId().equals(
+							      select.getEntry().getId())) {
+                        id = association.getToId();
+                    } else {
+                        continue;
+                    }
+		    Entry e = getEntryManager().getEntry(request, id);
+		    if(e!=null)
+			entries.add(e);
+		    
+                }
+		entries = getEntryManager().applyFilter(request, entries, select);
+                continue;
+            }
+
+
+	    if((select = matches.call(entryid,ID_PARENT,ENTRY_PREFIX_PARENT))!=null) { 		
+                entries.addAll(getEntryManager().applyFilter(
+							     request, 
+							     getEntryManager().getEntry(
+											request,
+											select.getEntry().getParentEntryId()), select));
+
+                continue;
+            }
 
             if (entryid.equals(ID_GRANDCHILDREN)
 		|| entryid.equals(ID_GREATGRANDCHILDREN)) {
@@ -6408,10 +6147,9 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 }
 
                 entries.addAll(
-			       applyFilter(
-					   request, wikiUtil,
-					   getEntryUtil().sortEntriesOnDate(
-									    grandChildren, true), filter, props));
+			       getEntryManager().applyFilter(request, 
+							     getEntryUtil().sortEntriesOnDate(
+											      grandChildren, true), filter));
 
 
                 continue;
@@ -6423,18 +6161,15 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 entryid     = entryid.substring(1);
             }
 
-
             Entry entry = getEntryManager().getEntry(request, entryid);
             if (entry != null) {
                 if (addChildren) {
                     List<Entry> children =
                         getEntryManager().getChildrenAll(request, entry,
 							 null);
-                    entries.addAll(applyFilter(request, wikiUtil, children,
-					       filter, props));
+                    entries.addAll(getEntryManager().applyFilter(request, children, filter));
                 } else {
-                    entries.addAll(applyFilter(request, wikiUtil, entry,
-					       filter, props));
+                    entries.addAll(getEntryManager().applyFilter(request, entry, filter));
                 }
             }
         }

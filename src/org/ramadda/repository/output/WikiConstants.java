@@ -13,9 +13,49 @@ import org.ramadda.repository.Constants;
  */
 public interface WikiConstants {
 
+    /** the id for this */
+    public static final String ID_THIS = "this";
+
+    /** _more_ */
+    public static final String ID_REMOTE = "remote:";
+
+    /** _more_ */
+    public static final String ID_ROOT = "root";
+
+
+
+
+    public static final String ID_ANCESTORS = "ancestors";
+    public static final String ENTRY_PREFIX_ANCESTORS= ID_ANCESTORS+":";
+
+    public static final String ID_LINKS = "links";
+    public static final String ENTRY_PREFIX_LINKS= ID_LINKS+":";
+
+    public static final String ID_SIBLINGS = "siblings";
+    public static final String ENTRY_PREFIX_SIBLINGS= ID_SIBLINGS+":";    
+
 
     public static final String ENTRY_PREFIX_CHILD= "child:";
-    public static final String ENTRY_PREFIX_GRANDCHILD= "grandchild:";
+
+    public static final String ID_CHILDREN = "children";    
+    public static final String ENTRY_PREFIX_CHILDREN= ID_CHILDREN+":";    
+
+
+    public static final String ID_PARENT = "parent";
+    public static final String ENTRY_PREFIX_PARENT = ID_PARENT+":";
+
+
+    public static final String ID_GRANDPARENT = "grandparent";
+    public static final String ENTRY_PREFIX_GRANDPARENT= ID_GRANDPARENT+":";
+
+
+    public static final String ID_GRANDCHILDREN = "grandchildren";
+    public static final String ENTRY_PREFIX_GRANDCHILDREN= ID_GRANDCHILDREN+":";    
+
+    public static final String ID_GRANDCHILD = "grandchild";
+    public static final String ENTRY_PREFIX_GRANDCHILD= ID_GRANDCHILD+":";
+
+
     public static final String ENTRY_PREFIX_ALIAS= "alias:";
     public static final String ENTRY_PREFIX_LINK= "link:";
     public static final String ENTRY_PREFIX_SEARCH= "search:";
@@ -647,29 +687,6 @@ public interface WikiConstants {
     public static final String WIKI_TAG_MAPPOPUP = "mappopup";
 
 
-    /** _more_ */
-    public static final String FILTER_IMAGE = "image";
-
-    /** _more_ */
-    public static final String FILTER_FILE = "file";
-
-    /** _more_ */
-    public static final String FILTER_GEO = "geo";
-
-    /** _more_ */
-    public static final String FILTER_FOLDER = "folder";
-
-    /** _more_ */
-    public static final String FILTER_TYPE = "type:";
-
-    /** _more_ */
-    public static final String FILTER_SUFFIX = "suffix:";
-
-    /** _more_ */
-    public static final String FILTER_NAME = "name:";
-
-    /** _more_ */
-    public static final String FILTER_ID = "id:";
 
     /** property delimiter */
     public static final String PROP_DELIM = ":";
@@ -680,20 +697,10 @@ public interface WikiConstants {
     /** _more_ */
     public static final String PROP_GROUP_VAR = "groupvar";
 
-    /** the id for this */
-    public static final String ID_THIS = "this";
-
-    /** _more_ */
-    public static final String ID_REMOTE = "remote:";
-
-    /** _more_ */
-    public static final String ID_ROOT = "root";
-
-    /** _more_ */
-    public static final String ID_CHILDREN = "children";
 
     /** _more_ */
     public static final String PREFIX_SEARCH = "search.";
+
 
     /** _more_ */
     public static final String ATTR_SEARCH_TYPE = PREFIX_SEARCH + "type";
@@ -729,26 +736,17 @@ public interface WikiConstants {
     /** _more_ */
     public static final String ID_SEARCH = "search";
 
-    /** _more_ */
-    public static final String ID_SIBLINGS = "siblings";
 
-    /** the id for my parent */
-    public static final String ID_PARENT = "parent";
 
-    /** _more_ */
-    public static final String ID_ANCESTORS = "ancestors";
 
-    /** the id for my grandparent */
-    public static final String ID_GRANDPARENT = "grandparent";
 
-    /** _more_ */
-    public static final String ID_GRANDCHILDREN = "grandchildren";
+
+
+
 
     /** _more_ */
     public static final String ID_GREATGRANDCHILDREN = "greatgrandchildren";
 
-    /** _more_ */
-    public static final String ID_LINKS = "links";
 
     /** default label */
     public static final String LABEL_LINKS = "Actions";

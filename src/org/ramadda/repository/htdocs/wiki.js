@@ -1170,11 +1170,10 @@ WikiEditor.prototype = {
 	let text = this.getValue();
 	let url = ramaddaBaseUrl + "/wikify";
 
-
 	$.post(url,{
 	    doImports:"false",
 	    entryid:entry,
-	    text:text},
+	    wikitext:text},
 	       wikiCallback).fail(wikiError);
     },
 

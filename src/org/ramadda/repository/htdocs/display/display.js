@@ -1907,7 +1907,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    $.post(url,{
 		doImports:"false",
 		entryid:entryId??this.getProperty("entryId"),
-		text:wiki},
+		wikitext:wiki},
 		   wikiCallback).fail(wikiError);
 	},
 

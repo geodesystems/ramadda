@@ -2318,6 +2318,32 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_IMPORT_TYPE = "import.type";
 
+    /** _more_ */
+    public static final String FILTER_IMAGE = "image";
+    public static final String FILTER_IMAGE_OR_ATTACHMENT = "image_or_attachment";    
+
+    /** _more_ */
+    public static final String FILTER_FILE = "file";
+
+    /** _more_ */
+    public static final String FILTER_GEO = "geo";
+
+    /** _more_ */
+    public static final String FILTER_FOLDER = "folder";
+
+    /** _more_ */
+    public static final String FILTER_TYPE = "type:";
+
+    /** _more_ */
+    public static final String FILTER_SUFFIX = "suffix:";
+
+    /** _more_ */
+    public static final String FILTER_NAME = "name:";
+
+    /** _more_ */
+    public static final String FILTER_ID = "id:";
+
+
 
     /** _more_ */
     public static final String ORDERBY_DATE = "date";

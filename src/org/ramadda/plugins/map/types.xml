@@ -81,7 +81,7 @@ mapVar="gpxMap${entryid}" }}
 
 ----
 {{gallery message=""}}
-{{tabs message="" entries.filter="type:media_video_quicktime;media_audiofile"}}
+{{tabs message="" entries="children:type:media_video_quicktime_comma_media_audiofile"}}
 +row
 +col-6
 {{information showTitle="false" showDetails=false}}

@@ -12,7 +12,7 @@
 {{description}}
 +row
 +col-md-8
-{{timeline  height="150"  entries.filter="type:type_mb"}}
+{{timeline  height="150"  entries="children:type:type_mb"}}
 -col
 +col-md-4
 {{link title="Zip and Download Collection" button="true" output="zip.zipgroup"}}

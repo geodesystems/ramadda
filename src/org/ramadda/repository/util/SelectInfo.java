@@ -52,6 +52,9 @@ public class SelectInfo implements Constants {
 
     boolean syntheticOk = true;
 
+    String filter;
+
+    
     /** _more_ */
     private StringBuilder msgs = new StringBuilder();
 
@@ -186,6 +189,7 @@ public class SelectInfo implements Constants {
     public String getType () {
 	return type;
     }
+
 
 
 
@@ -355,6 +359,25 @@ public class SelectInfo implements Constants {
         init();
         return ascending != null;
     }
+
+    /**
+       Set the Filter property.
+
+       @param value The new value for Filter
+    **/
+    public void setFilter (String value) {
+	filter = value;
+    }
+
+    /**
+       Get the Filter property.
+
+       @return The Filter
+    **/
+    public String getFilter () {
+	return filter;
+    }
+
 
 
     /**

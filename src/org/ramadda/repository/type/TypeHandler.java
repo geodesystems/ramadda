@@ -505,7 +505,6 @@ public class TypeHandler extends RepositoryManager {
 
 
             wikiTemplate = Utils.trimLinesLeft(Utils.getAttributeOrTag(node, ATTR_WIKI,wikiTemplate));
-	    //	    if(wikiTemplate!=null) System.out.println(wikiTemplate);
 	    List wikis = XmlUtil.findChildrenRecurseUp(node,"wikis");
 	    for (int i = 0; i < wikis.size(); i++) {
 		Element wiki = (Element) wikis.get(i);
@@ -610,6 +609,20 @@ public class TypeHandler extends RepositoryManager {
             if (llf != null) {
                 latLonFormat = new DecimalFormat(llf);
             }
+
+	    /*
+	    if(wikiTemplate!=null) {
+		for(String line:Utils.split(wikiTemplate,"\n",true,true)) {
+		    //		    if(line.matches(".*entries *=.*") && line.indexOf("listentries")<0) System.err.println(this+":" + line.trim());
+		    if(line.matches(".*entries\\..*") && line.indexOf("listentries")<0) System.err.println(this+":" + line.trim());
+		}
+
+	    }
+	    */
+	    
+
+
+
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }

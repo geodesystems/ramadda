@@ -2938,9 +2938,8 @@ public class UserManager extends RepositoryManager {
                         getDatabaseManager().closeAndReleaseConnection(
                             statement);
                     }
-                    sb.append(
-                        getPageHandler().showDialogWarning(
-                            msg("Incorrect user name or password")));
+                    sb.append(HU.center(getPageHandler().showDialogWarning(
+									   msg("Incorrect user name or password"))));
                 }
             }
         }

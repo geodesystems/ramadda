@@ -25,12 +25,12 @@
 ----
 <br>
 <center>
-{{slideshow  message="" entries.filter="image" tag="simple"  showlink="true"  textposition="left" imagewidth="500"  width="500"  height="500"   sort="name"}}
+{{slideshow  message="" tag="simple"  showlink="true"  textposition="left" imagewidth="500"  width="500"  height="500"   sort="name"}}
 </center>
 -col
 +col-md-4
 {{image src="::*" message="" width="300"}}
-{{map entries="this,children;type;geo_gpx,children;type;geo_kml" width="-100" details="true"}}
+{{map entries="this,children:type:geo_gpx,children:type:geo_kml" width="-100" details="true"}}
 <table class="formtable">
 {{daterange row.label="Dates:"  message=""}}
 {{field name="who" row.label="Who:"}}
@@ -64,10 +64,8 @@
 +section title="{{name}}"
 {{newheader}}
 {{description}}
-{{calendar entries.filter="type:trip_item"}}
-
+{{calendar entries="children:type:trip_item"}}
 ----
-
 {{tree}}
 
 -section

@@ -901,8 +901,7 @@ public class ImageOutputHandler extends OutputHandler {
 
             getWikiManager().makeGallery(
                 request, null,
-                getWikiManager().getImageEntries(
-                    request, entries, useAttachment), new Hashtable(), sb);
+                getEntryManager().getImageEntries(request, entries, useAttachment), new Hashtable(), sb);
             getPageHandler().entrySectionClose(request, group, sb);
             return new Result(group.getName(), sb, getMimeType(output));
         }
