@@ -967,20 +967,17 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
 
         if (entryId.equals(ID_ROOT)) {
-            theEntry = request.getRootEntry();
-        }
-        if ((theEntry == null) && entryId.equals(ID_PARENT)) {
-            theEntry = getEntryManager().getEntry(request,
-						  entry.getParentEntryId());
+            return  request.getRootEntry();
         }
 
-        if ((theEntry == null) && entryId.equals(ID_GRANDPARENT)) {
-            theEntry = getEntryManager().getEntry(request,
-						  entry.getParentEntryId());
-            if (theEntry != null) {
-                theEntry = getEntryManager().getEntry(request,
-						      theEntry.getParentEntryId());
-            }
+	if((select = matches.call(entryId,ID_PARENT,ENTRY_PREFIX_PARENT))!=null) { 		
+            return  getEntryManager().getEntry(request,
+					       select.getEntry().getParentEntryId());
+        }
+
+	if((select = matches.call(entryId,ID_GRANDPARENT,ENTRY_PREFIX_GRANDPARENT))!=null) { 
+            return  getEntryManager().getEntry(request,
+						  select.getEntry().getParentEntryId());
         }
 
 	
@@ -1138,8 +1135,13 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         }
 
 
+        String captionPosition = getProperty(wikiUtil, props, "captionPosition","bottom");
         String caption = getProperty(wikiUtil, props, "caption",
                                      (String) null);
+        if (caption != null) {
+	    caption=entry.getTypeHandler().processDisplayTemplate(request,  entry,caption);
+	}
+
         if (map != null) {
             map = map.replaceAll("_newline_", "&#013;");
             extra.append(" usemap='#" + mapId + "' ");
@@ -1189,6 +1191,12 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 					      ? "float:" + align + ";"
 					      : "") + " display:inline-block;text-align:center");
         }
+        if (caption != null && captionPosition.equals("top")) {
+            HU.span(sb, caption, HU.cssClass("wiki-image-caption"));
+            sb.append(HU.br());
+	}
+
+
         sb.append(img);
         if (map != null) {
             sb.append("\n<map name='" + mapId + "'>" + map + "</map>\n");
@@ -1200,8 +1208,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         }
 
 
-        if (caption != null) {
-	    caption=entry.getTypeHandler().processDisplayTemplate(request,  entry,caption);
+        if (caption != null && captionPosition.equals("bottom")) {
             sb.append(HU.br());
             HU.span(sb, caption, HU.cssClass("wiki-image-caption"));
         }
