@@ -4516,9 +4516,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	makeMenuBar:function() {
 	    if(!this.getMapProperty('showMenuBar',true)) return;
-	    console.log("MENUBAR")
-
-
 	    let _this = this;
 	    let menuBar=  '';
 	    [[ID_MENU_FILE,'File'],[ID_MENU_EDIT,'Edit'],[ID_MENU_NEW,'New']].forEach(t=>{
