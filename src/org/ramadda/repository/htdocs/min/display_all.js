@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Mar 26 11:43:55 MDT 2023";
+var build_date="RAMADDA build date: Wed Mar 29 11:43:29 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -5502,7 +5502,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    $.post(url,{
 		doImports:"false",
 		entryid:entryId??this.getProperty("entryId"),
-		text:wiki},
+		wikitext:wiki},
 		   wikiCallback).fail(wikiError);
 	},
 
@@ -18588,12 +18588,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         makeDataTable: function(dataList, props, selectedFields, chartOptions) {
 	    this.getPropertyCount=0;
 	    this.getPropertyCounts={};
-
 	    let dateType = this.getProperty("dateType","date");
 	    let debug =    false || displayDebug.makeDataTable;
 //	    debug=true
 	    let debugRows = 1;
-	    debugRows = 20;
+	    debugRows = 2;
 	    if(debug) this.logMsg(this.type+" makeDataTable #records:" + dataList.length);
 	    if(debug) console.log("\tfields:" + selectedFields);
 	    let maxWidth = this.getProperty("maxFieldLength",this.getProperty("maxFieldWidth",-1));
@@ -18601,7 +18600,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let addTooltip = (tt || this.getProperty("addTooltip",false)) && this.doAddTooltip();
 	    
     	    let addStyle= this.getAddStyle();
-	    addStyle = false
 	    let annotationTemplate = this.getAnnotationTemplate();
 	    let formatNumbers = this.getFormatNumbers();
 
@@ -21196,7 +21194,8 @@ function TimerangechartDisplay(displayManager, id, properties) {
                 let row = this.getDataValues(records[r]);
                 let tuple = [];
 		if(this.dataColors) {
-		    this.dataColors.push(colorBy.getColorFromRecord(record, "blue"));
+		    let c = colorBy.getColorFromRecord(record, "blue");
+		    this.dataColors.push(c);
 		}
                 values.push(tuple);
                 if (stringField && showLabel)
@@ -25004,7 +25003,7 @@ function NotebookState(cell, div) {
             if (entry == null)
                 await this.cell.getCurrentEntry(e => entry = e);
             if ((typeof entry) != "string") entry = entry.getId();
-            await GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + entry + "&text=" + encodeURIComponent(s),
+            await GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + entry + "&wikitext=" + encodeURIComponent(s),
                 callback);
         },
         //These are for the iodiode mimic
@@ -26050,7 +26049,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 chunk.output = h;
             }
             var wiki = "{{group showMenu=false}}\n" + chunk.getContent();
-            await GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + id + "&text=" + encodeURIComponent(chunk.getContent()),
+            await GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + id + "&wikitext=" + encodeURIComponent(chunk.getContent()),
                 wikiCallback);
         },
         processSh: async function(chunk) {
@@ -45715,7 +45714,7 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
     let mapGlyphs = attrs.mapglyphs;
     if(attrs.mapglyphs) delete attrs.mapglyphs;
     if(mapGlyphs) {
-	mapGlyphs = mapGlyphs.replace(/\\n/g,"\n");
+//	mapGlyphs = mapGlyphs.replace(/\\n/g,"\n");
 	this.putTransientProperty("mapglyphs", mapGlyphs);
     }
     this.display = display;
@@ -46343,12 +46342,13 @@ MapGlyph.prototype = {
 	let g = this.getEntryGlyphs(true);
 	g = g.replace(/\\ *\n/g,'');
 	let lines = Utils.split(g,'\n',true,true);
+//	console.log(this.getName());
 	lines.forEach(line=>{
 	    line = line.trim();
 	    if(line.startsWith("#") || line == "") return;
+	    //console.log('\tline:'+line);
 	    glyphs.push(line);
 	});
-
 	if(glyphs.length==0) {
 	    console.log("\tno glyphs-2");
 	    return;
