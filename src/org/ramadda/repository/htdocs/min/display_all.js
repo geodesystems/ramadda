@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Mar 29 11:43:29 MDT 2023";
+var build_date="RAMADDA build date: Wed Mar 29 13:11:51 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -4838,6 +4838,7 @@ function DisplayThing(argId, argProperties) {
         },
         setProperty: function(key, value) {
 	    //            this[key] = value;
+	    console.log("SET:" + key);
             this.properties[key] = value;
 	    this.transientProperties[key]  = value;
 	    this.propertiesCache[key] = value;
@@ -43558,6 +43559,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				    'topWikiText', this.jq('topwikitext_input').val(),
 				    'bottomWikiText', this.jq('bottomwikitext_input').val(),
 				    'otherProperties', this.jq('otherproperties_input').val());		
+		this.propertyCache = {}
 		this.parsedMapProperties = null;
 		let min = this.jq("minlevel").val().trim();
 		let max = this.jq("maxlevel").val().trim();
@@ -44475,30 +44477,53 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 
 	setMapProperty:function() {
+//	    console.log("setMapProperty");
 	    for(let i=0;i<arguments.length;i+=2) {
+//		console.log("\t" +arguments[i]+'='+arguments[i+1]);
 		this.mapProperties[arguments[i]]=arguments[i+1];
 	    }
 	},
 	propertyCache:{
 	},
 	getMapProperty: function(name,dflt,debug) {
-	    let value = this.getOtherProperties()[name];
-	    if(debug) console.log('getMapProperty:'+ name);
+//	    debug = name=='showMenuBar';
+//	    if(debug)	console.dir(this.properties);
+	    if(debug)
+		console.log("getProperty:" + name);
+
+	    let value=  this.propertyCache[name];
 	    if(Utils.isDefined(value)) {
-		if(debug) console.log('\tgetMapProperty-:'+ value);
-		return Utils.getProperty(value);
-	    }
-	    if(debug) console.dir(this.mapProperties);
-		    
-	    if(Utils.isDefined(value=this.mapProperties[name])) {
-		if(debug) console.log('\tgetMapProperty-2:'+ value);
+		if(debug)
+		    console.log('\tfrom cache:'+ value);
 		return value;
 	    }
-	    if(!Utils.isDefined(this.propertyCache[name])) {
-		this.propertyCache[name] = this.getProperty(name,dflt);
+	
+
+	    //The wiki tag property overrides the map properties
+	    value = this.propertyCache[name] = this.getProperty(name,null);
+	    if(Utils.isDefined(value)) {
+		if(debug)
+		    console.log('\tfrom display property:'+ value);
+		return Utils.getProperty(value);
 	    }
-	    value=  this.propertyCache[name];
-	    if(debug) console.log('\tgetMapProperty-3:'+ value);
+
+	    value = this.getOtherProperties()[name];
+	    if(debug) console.log('\tfrom other properties:', value);
+	    if(!Utils.isDefined(value)) {
+		value = this.mapProperties[name];
+		if(debug) console.log('\tfrom map properties:', value);
+	    }
+
+	    if(!Utils.isDefined(value)) {
+		value = dflt;
+		if(debug) console.log('\tusing dflt:', value);
+	    }
+
+
+	    if(Utils.isDefined(value)) {
+		return Utils.getProperty(value);
+	    }
+		    
 	    return value;
 	},
 	makeLegendDroppable:function(droppedOnGlyph,label,notify) {
@@ -44960,6 +44985,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 
 	makeMenuBar:function() {
+	    if(!this.getMapProperty('showMenuBar',true)) return;
+	    console.log("MENUBAR")
+
+
 	    let _this = this;
 	    let menuBar=  '';
 	    [[ID_MENU_FILE,'File'],[ID_MENU_EDIT,'Edit'],[ID_MENU_NEW,'New']].forEach(t=>{
