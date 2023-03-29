@@ -28,6 +28,9 @@ public interface WikiConstants {
     public static final String ID_ANCESTORS = "ancestors";
     public static final String ENTRY_PREFIX_ANCESTORS= ID_ANCESTORS+":";
 
+    public static final String ID_ANCESTOR = "ancestor";
+    public static final String ENTRY_PREFIX_ANCESTOR = ID_ANCESTOR+":";
+
     public static final String ID_LINKS = "links";
     public static final String ENTRY_PREFIX_LINKS= ID_LINKS+":";
 
@@ -35,7 +38,8 @@ public interface WikiConstants {
     public static final String ENTRY_PREFIX_SIBLINGS= ID_SIBLINGS+":";    
 
 
-    public static final String ENTRY_PREFIX_CHILD= "child:";
+    public static final String ID_CHILD= "child";
+    public static final String ENTRY_PREFIX_CHILD= ID_CHILD+":";
 
     public static final String ID_CHILDREN = "children";    
     public static final String ENTRY_PREFIX_CHILDREN= ID_CHILDREN+":";    
@@ -61,7 +65,6 @@ public interface WikiConstants {
     public static final String ENTRY_PREFIX_SEARCH= "search:";
     public static final String ENTRY_PREFIX_TYPE = "type:";
     public static final String ENTRY_PREFIX_ORDERBY = "orderby:";
-    public static final String ENTRY_PREFIX_ANCESTOR = "ancestor:";
     public static final String ENTRY_PREFIX_DESCENDENT = "descendent:";
     public static final String ENTRY_PREFIX_ASCENDING = "ascending:";
 

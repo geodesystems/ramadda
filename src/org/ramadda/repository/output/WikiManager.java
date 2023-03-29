@@ -860,12 +860,15 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	throws Exception {
         Entry theEntry = null;
 
+	SelectInfo select = null;
+
 	//Check for an alias:
 	if(wikiUtil!=null) {
 	    theEntry =(Entry) wikiUtil.getWikiProperty("entry:" + entryId);
 	    if(theEntry!=null) return theEntry;
 	}
 
+	Utils.TriFunction<SelectInfo,String,String,String> matches = getIdMatcher(request, entry,wikiUtil,props);
 
         int   barIndex = entryId.indexOf("|");
         if (barIndex >= 0) {
@@ -885,12 +888,9 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             return getEntryManager().getEntryFromAlias(request, alias);
         }
 
-        if (entryId.startsWith(ENTRY_PREFIX_CHILD)) {
-	    SelectInfo select = getSelectFromString(request, entry, wikiUtil,
-						    props,Utils.clip(entryId,ENTRY_PREFIX_CHILD));
-	    List<Entry> children =  getEntryManager().getChildren(request,select);
-	    //	    System.err.println(select);
-	    //	    for(Entry c: children)System.err.println(c.getName() +" " + new Date(c.getStartDate()));
+
+	if((select = matches.call(entryId,ID_CHILD,ENTRY_PREFIX_CHILD))!=null) { 
+	    List<Entry> children =  getEntryManager().getChildren(request,select.getEntry(),select);
             if (children.size() > 0) {
                 return children.get(0);
             }
@@ -898,11 +898,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	}
 
 
-        if (entryId.startsWith(ENTRY_PREFIX_GRANDCHILD)) {
-	    //grandchild:type:<some type>
-	    SelectInfo select = getSelectFromString(request, entry, wikiUtil,
-						    props,Utils.clip(entryId,ENTRY_PREFIX_GRANDCHILD));
-	    List<Entry> children =  getEntryManager().getChildren(request,select);
+	if((select = matches.call(entryId,ID_GRANDCHILD,ENTRY_PREFIX_GRANDCHILD))!=null) { 
+	    List<Entry> children =  getEntryManager().getChildren(request,select.getEntry(),select);
 	    if (children.size() == 0) {
 		return null;
 	    }
@@ -920,11 +917,9 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	/*
 	  ancestor:type
 	 */
-        if (entryId.startsWith(ENTRY_PREFIX_ANCESTOR)) {
-	    SelectInfo select = getSelectFromString(request, entry, wikiUtil,
-						    props,Utils.clip(entryId,ENTRY_PREFIX_ANCESTOR));
-            Entry  lastEntry = entry;
-            Entry  current   = entry;
+	if((select = matches.call(entryId,ID_ANCESTOR,ENTRY_PREFIX_ANCESTOR))!=null) { 
+            Entry  lastEntry = select.getEntry();
+            Entry  current   = select.getEntry();
 	    String type = select.getType();
             while (true) {
                 Entry parent = current.getParentEntry();
@@ -940,15 +935,13 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		}
                 current = parent;
             }
-
-            //      System.err.println("ancestor:" + lastEntry);
             return lastEntry;
         }
 
 
         if (entryId.startsWith(ENTRY_PREFIX_LINK)) {
-	    SelectInfo select = getSelectFromString(request, entry, wikiUtil,
-						    props,Utils.clip(entryId,ENTRY_PREFIX_LINK));
+	    select = getSelectFromString(request, entry, wikiUtil,
+					 props,Utils.clip(entryId,ENTRY_PREFIX_LINK));
 
             String type = select.getType();
             List<Association> associations =
@@ -5889,6 +5882,24 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
     }
 
+    private Utils.TriFunction<SelectInfo,String,String,String> getIdMatcher(final Request request, final Entry entry,
+									    final WikiUtil wikiUtil,
+									    final Hashtable props) {
+	return  (entryId,baseId,thePrefix)->{
+	    try {
+		if(baseId!=null && entryId.equals(baseId)) entryId = thePrefix;
+		if(entryId.startsWith(thePrefix)) {
+		    return  getSelectFromString(request, entry, wikiUtil,
+						props,Utils.clip(entryId,thePrefix));
+		}
+		return null;
+	    } catch(Exception exc) {
+		throw new RuntimeException(exc);
+	    }
+	};
+    }
+ 
+
 
     /**
      * Get the entries corresponding to the ids
@@ -5933,26 +5944,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
 	
 	SelectInfo select=null;
-	Utils.TriFunction<SelectInfo,String,String,String> matches = (entryId,baseId,thePrefix)->{
-	    try {
-	    if(baseId!=null && entryId.equals(baseId)) entryId = thePrefix;
-	    if(entryId.startsWith(thePrefix)) {
-		return  getSelectFromString(request, baseEntry, wikiUtil,
-					    props,Utils.clip(entryId,thePrefix));
-	    }
-	    return null;
-	    } catch(Exception exc) {
-		throw new RuntimeException(exc);
-	    }
-	};
-
-	//	select = matches.call("","","");
-
-	/*
-	  entries="<id>,not:<id>,entries.max:<max>,entries.orderby:<order>,entries.ascending:true,
-	  search:xxxx
-	  search.url<url>,
-	*/
+	Utils.TriFunction<SelectInfo,String,String,String> matches = getIdMatcher(request, baseEntry,wikiUtil,props);
         for (String theId : Utils.split(ids, ",", true, true)) {
 	    String entryid = theId;
 	    
