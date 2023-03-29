@@ -70,7 +70,7 @@ fields=timestamp[type=date format="yyyy-MM-dd'T'HH:mm:ss"],latitude[chartable=tr
 props:iconSize:75,canvasWidth:600,canvasHeight:250,fill:#efefef,borderWidth:2,borderColor:#000,font:bold 36px sans-serif
 image,pos:nw,dx:10,dy:-ch+10,width:60,height:60,url:${root}/point/noaalarge.png
 label,pady:5,pos:nw,dx:80,dy:-ch+10,label:${entryname}  
-label,pady:10,pos:n,dx:cw2,dy:-ch+60,font:36px sans-serif,label:${temperature prefixLabel=true}\n${windspeed prefixLabel=true}\nPressure: ${barometricpressure scale=0.01 decimals=1} mb
+label,pady:10,pos:n,dx:cw2,dy:-ch+60,font:36px sans-serif,label:${temperature prefixLabel=true}_nl_${windspeed prefixLabel=true}_nl_Pressure: ${barometricpressure scale=0.01 decimals=1} mb
 ]]></property>
 
 

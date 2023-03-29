@@ -31,7 +31,7 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
     let mapGlyphs = attrs.mapglyphs;
     if(attrs.mapglyphs) delete attrs.mapglyphs;
     if(mapGlyphs) {
-	mapGlyphs = mapGlyphs.replace(/\\n/g,"\n");
+//	mapGlyphs = mapGlyphs.replace(/\\n/g,"\n");
 	this.putTransientProperty("mapglyphs", mapGlyphs);
     }
     this.display = display;
@@ -659,12 +659,13 @@ MapGlyph.prototype = {
 	let g = this.getEntryGlyphs(true);
 	g = g.replace(/\\ *\n/g,'');
 	let lines = Utils.split(g,'\n',true,true);
+//	console.log(this.getName());
 	lines.forEach(line=>{
 	    line = line.trim();
 	    if(line.startsWith("#") || line == "") return;
+	    //console.log('\tline:'+line);
 	    glyphs.push(line);
 	});
-
 	if(glyphs.length==0) {
 	    console.log("\tno glyphs-2");
 	    return;
