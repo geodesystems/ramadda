@@ -1243,7 +1243,6 @@ function DisplayThing(argId, argProperties) {
         },
         setProperty: function(key, value) {
 	    //            this[key] = value;
-	    console.log("SET:" + key);
             this.properties[key] = value;
 	    this.transientProperties[key]  = value;
 	    this.propertiesCache[key] = value;
