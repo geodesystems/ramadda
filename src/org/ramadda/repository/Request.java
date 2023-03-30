@@ -568,7 +568,7 @@ public class Request implements Constants, Cloneable {
      *
      * @return _more_
      */
-    private String entryUrl(RequestUrl theUrl, Entry entry, String arg,
+    public String entryUrl(RequestUrl theUrl, Entry entry, String arg,
                             boolean fullPath, String... args) {
         if (entry.getIsRemoteEntry()) {
             String id = repository.getEntryManager().getRemoteEntryInfo(
