@@ -67,7 +67,7 @@ This would give us:
 [ug::wikiheading {Specify other entries} entry]
 Normally, all property tags refer to the current entry. However, another entry can be specified  with the "entry"
 attribute, e.g:
-[wiki::text [wiki::tag information {entry="some other entry id or name or 'parent' or 'grandparent'"}]]
+[wiki::text [wiki::tag information {entry="some other entry id or name or 'parent' or 'grandparent', etc"}]]
 
 
 The entry value can be:
@@ -76,6 +76,8 @@ The entry value can be:
 <li> The ID of an entry
 <p>
 <li> The alias of an entry
+<p>
+<li> The entry itself - "this"
 <p>    
 <li> Its full path, e.g., /Top/.../entry_name
 <p>
@@ -83,12 +85,11 @@ The entry value can be:
 <p>
 <li> The parent of the parent entry  -"grandparent"
 <p>
-<li> The entry itself - "this"
-<p>
-<li> An entry linked to the entry. Either "link" to find the first one or to specify an entry type use "link:type:entry_type"
+<li> An entry linked to the entry. Either "link" to find the first one or to specify an entry type
+use "link:type:entry_type"
 <p>
 <li> An ancestor entry of a particular type using "ancestor:".<br>
-For example, if you wanted to display the links of the first ancestor of the "group" type
+For example, if you wanted to display the links of the first ancestor of an entry of type "group":
 [ht::pre {
 {{links entry="ancestor:type:group"}}
 }]
