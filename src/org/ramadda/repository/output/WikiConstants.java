@@ -34,6 +34,9 @@ public interface WikiConstants {
     public static final String ID_LINKS = "links";
     public static final String ENTRY_PREFIX_LINKS= ID_LINKS+":";
 
+    public static final String ID_LINK = "link";
+    public static final String ENTRY_PREFIX_LINK= ID_LINK+":";
+
     public static final String ID_SIBLINGS = "siblings";
     public static final String ENTRY_PREFIX_SIBLINGS= ID_SIBLINGS+":";    
 
@@ -61,7 +64,6 @@ public interface WikiConstants {
 
 
     public static final String ENTRY_PREFIX_ALIAS= "alias:";
-    public static final String ENTRY_PREFIX_LINK= "link:";
     public static final String ENTRY_PREFIX_SEARCH= "search:";
     public static final String ENTRY_PREFIX_TYPE = "type:";
     public static final String ENTRY_PREFIX_ORDERBY = "orderby:";

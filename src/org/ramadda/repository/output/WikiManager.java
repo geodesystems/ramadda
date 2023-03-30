@@ -875,8 +875,14 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             entryId = entryId.substring(0, barIndex);
         }
         if (entryId.equals(ID_THIS)) {
-            theEntry = entry;
+	    return entry;
         }
+
+        if (entryId.equals(ID_ROOT)) {
+            return  request.getRootEntry();
+        }
+
+
 
 	ServerInfo serverInfo = getServer(request, entry, wikiUtil, props);
 	if(serverInfo!=null) {
@@ -939,19 +945,15 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         }
 
 
-        if (entryId.startsWith(ENTRY_PREFIX_LINK)) {
-	    select = getSelectFromString(request, entry, wikiUtil,
-					 props,Utils.clip(entryId,ENTRY_PREFIX_LINK));
-
+	if((select = matches.call(entryId,ID_LINK,ENTRY_PREFIX_LINK))!=null) { 		
             String type = select.getType();
             List<Association> associations =
                 getRepository().getAssociationManager().getAssociations(
-									request, entry.getId());
+									request, select.getEntry().getId());
             for (Association association : associations) {
                 Entry otherEntry =
                     getAssociationManager().getOtherEntry(request,
 							  association, entry);
-                //                System.err.println("other entry: " + otherEntry);
                 if (otherEntry == null) {
                     continue;
                 }
@@ -960,15 +962,11 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                     System.err.println("not type");
                     continue;
                 }
-                theEntry = otherEntry;
-                break;
+                return  otherEntry;
             }
+	    return null;
         }
 
-
-        if (entryId.equals(ID_ROOT)) {
-            return  request.getRootEntry();
-        }
 
 	if((select = matches.call(entryId,ID_PARENT,ENTRY_PREFIX_PARENT))!=null) { 		
             return  getEntryManager().getEntry(request,
