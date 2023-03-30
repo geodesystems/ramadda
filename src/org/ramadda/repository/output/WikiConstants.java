@@ -13,62 +13,66 @@ import org.ramadda.repository.Constants;
  */
 public interface WikiConstants {
 
-    /** the id for this */
-    public static final String ID_THIS = "this";
 
-    /** _more_ */
-    public static final String ID_REMOTE = "remote:";
 
     /** _more_ */
     public static final String ID_ROOT = "root";
 
-
-
+    public static final String ID_THIS = "this";
+    public static final String PREFIX_THIS = ID_THIS+":";
 
     public static final String ID_ANCESTORS = "ancestors";
-    public static final String ENTRY_PREFIX_ANCESTORS= ID_ANCESTORS+":";
+    public static final String PREFIX_ANCESTORS= ID_ANCESTORS+":";
 
     public static final String ID_ANCESTOR = "ancestor";
-    public static final String ENTRY_PREFIX_ANCESTOR = ID_ANCESTOR+":";
+    public static final String PREFIX_ANCESTOR = ID_ANCESTOR+":";
 
     public static final String ID_LINKS = "links";
-    public static final String ENTRY_PREFIX_LINKS= ID_LINKS+":";
+    public static final String PREFIX_LINKS= ID_LINKS+":";
 
     public static final String ID_LINK = "link";
-    public static final String ENTRY_PREFIX_LINK= ID_LINK+":";
+    public static final String PREFIX_LINK= ID_LINK+":";
 
     public static final String ID_SIBLINGS = "siblings";
-    public static final String ENTRY_PREFIX_SIBLINGS= ID_SIBLINGS+":";    
+    public static final String PREFIX_SIBLINGS= ID_SIBLINGS+":";    
 
 
     public static final String ID_CHILD= "child";
-    public static final String ENTRY_PREFIX_CHILD= ID_CHILD+":";
+    public static final String PREFIX_CHILD= ID_CHILD+":";
 
     public static final String ID_CHILDREN = "children";    
-    public static final String ENTRY_PREFIX_CHILDREN= ID_CHILDREN+":";    
+    public static final String PREFIX_CHILDREN= ID_CHILDREN+":";    
 
 
     public static final String ID_PARENT = "parent";
-    public static final String ENTRY_PREFIX_PARENT = ID_PARENT+":";
+    public static final String PREFIX_PARENT = ID_PARENT+":";
 
 
     public static final String ID_GRANDPARENT = "grandparent";
-    public static final String ENTRY_PREFIX_GRANDPARENT= ID_GRANDPARENT+":";
+    public static final String PREFIX_GRANDPARENT= ID_GRANDPARENT+":";
 
 
     public static final String ID_GRANDCHILDREN = "grandchildren";
-    public static final String ENTRY_PREFIX_GRANDCHILDREN= ID_GRANDCHILDREN+":";    
+    public static final String PREFIX_GRANDCHILDREN= ID_GRANDCHILDREN+":";    
 
     public static final String ID_GRANDCHILD = "grandchild";
-    public static final String ENTRY_PREFIX_GRANDCHILD= ID_GRANDCHILD+":";
+    public static final String PREFIX_GRANDCHILD= ID_GRANDCHILD+":";
+
+    /** _more_ */
+    public static final String ID_GREATGRANDCHILDREN = "greatgrandchildren";
+    public static final String PREFIX_GREATGRANDCHILDREN = ID_GREATGRANDCHILDREN+":";    
 
 
-    public static final String ENTRY_PREFIX_ALIAS= "alias:";
-    public static final String ENTRY_PREFIX_SEARCH= "search:";
-    public static final String ENTRY_PREFIX_TYPE = "type:";
-    public static final String ENTRY_PREFIX_ORDERBY = "orderby:";
-    public static final String ENTRY_PREFIX_DESCENDENT = "descendent:";
-    public static final String ENTRY_PREFIX_ASCENDING = "ascending:";
+    /** _more_ */
+    public static final String ID_REMOTE = "remote:";
+
+
+    public static final String PREFIX_ALIAS= "alias:";
+    public static final String PREFIX_SEARCH= "search:";
+    public static final String PREFIX_TYPE = "type:";
+    public static final String PREFIX_ORDERBY = "orderby:";
+    public static final String PREFIX_DESCENDENT = "descendent:";
+    public static final String PREFIX_ASCENDING = "ascending:";
 
 
     /** wiki page type */
@@ -702,11 +706,6 @@ public interface WikiConstants {
     /** _more_ */
     public static final String PROP_GROUP_VAR = "groupvar";
 
-
-    /** _more_ */
-    public static final String PREFIX_SEARCH = "search.";
-
-
     /** _more_ */
     public static final String ATTR_SEARCH_TYPE = PREFIX_SEARCH + "type";
 
@@ -749,8 +748,7 @@ public interface WikiConstants {
 
 
 
-    /** _more_ */
-    public static final String ID_GREATGRANDCHILDREN = "greatgrandchildren";
+
 
 
     /** default label */
