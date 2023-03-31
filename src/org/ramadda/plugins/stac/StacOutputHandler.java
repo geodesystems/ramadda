@@ -129,10 +129,8 @@ public class StacOutputHandler extends OutputHandler {
 	//Get the snippet instead of the description because the
 	//description can contain all sorts of HTML, wiki text, etc
 	String description = entry.getSnippet();
-	if(Utils.stringDefined(description)) {
-	    Utils.add(topProps,"description",quote(description.trim()));
-	};
-
+	if(description==null) description ="";
+	Utils.add(topProps,"description",quote(description.trim()));
 	Utils.add(topProps,"stac_extensions",JsonUtil.list());
 	Utils.add(topProps,"title",quote(entry.getName()));
 
