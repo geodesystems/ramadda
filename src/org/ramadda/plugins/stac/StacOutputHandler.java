@@ -6,20 +6,20 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.plugins.stac;
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
-import ucar.unidata.util.DateUtil;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.json.*;
-import org.w3c.dom.*;
+import org.w3c.dom.Element;
+
 
 /**
  * This class is a singleton and gets instantiated by the Repository at
@@ -30,6 +30,7 @@ import org.w3c.dom.*;
 public class StacOutputHandler extends OutputHandler {
 
     public static final String STAC_VERSION  = "1.0.0";
+
     /** 
 	Stac output type. This class can handle any number of output types
 	The icon is in the htdocs/stac directory. Any other http resources
@@ -45,7 +46,6 @@ public class StacOutputHandler extends OutputHandler {
     /**
      * Create a StacOutputHandler
      *
-     *
      * @param repository  the repository
      * @param element     the XML Element
      * @throws Exception  problem generating handler
@@ -53,10 +53,9 @@ public class StacOutputHandler extends OutputHandler {
     public StacOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
-	//We add the one output type 
+	//add the output type 
         addType(OUTPUT_STAC);
     }
-
 
 
     /**
@@ -72,10 +71,8 @@ public class StacOutputHandler extends OutputHandler {
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
-	links.add(makeLink(request, state.getEntry(),
-			   OUTPUT_STAC));
+	links.add(makeLink(request, state.getEntry(), OUTPUT_STAC));
     }
-
 
     /**
      *
@@ -122,6 +119,8 @@ public class StacOutputHandler extends OutputHandler {
     public Result outputStac(Request request,  Entry entry,List<Entry> children)
 	throws Exception {
 	StringBuilder sb = new StringBuilder();
+	List<Metadata> metadataList;
+	
 	List<String> topProps = new ArrayList<String>();
 	Utils.add(topProps,"stac_version",quote(STAC_VERSION),
 		  "type",quote("Catalog"),
@@ -130,11 +129,41 @@ public class StacOutputHandler extends OutputHandler {
 	//description can contain all sorts of HTML, wiki text, etc
 	String description = entry.getSnippet();
 	if(Utils.stringDefined(description)) {
-	    Utils.add(topProps,"description",quote(description));
+	    Utils.add(topProps,"description",quote(description.trim()));
 	};
 
 	Utils.add(topProps,"stac_extensions",JsonUtil.list());
 	Utils.add(topProps,"title",quote(entry.getName()));
+
+	metadataList =  getMetadataManager().findMetadata(request, entry,
+							  new String[]{ContentMetadataHandler.TYPE_LICENSE}, true);
+	if ((metadataList != null) && (metadataList.size() > 0)) {
+	    Utils.add(topProps,"license",quote(metadataList.get(0).getAttr1()));
+	    
+	}
+	
+	//Look for the different publisher like metadata
+
+	List<String> providers = new ArrayList<String>();
+	for(Metadata mtd: 	getMetadataManager().findMetadata(request, entry, new String[]{"thredds.publisher"}, true)) {
+	    Utils.add(providers,JsonUtil.map("name",quote(mtd.getAttr1()),
+					     "url",quote(mtd.getAttr4()),
+					     "roles",JsonUtil.list(quote("publisher"))));
+	}
+
+	for(Metadata mtd:getMetadataManager().findMetadata(request, entry, new String[]{"metadata_publisher"}, true)) {
+	    Utils.add(providers,JsonUtil.map("name",quote(mtd.getAttr1()),
+					     "url",quote(mtd.getAttr3()),
+					     "roles",JsonUtil.list(quote("publisher"))));
+	}
+    
+
+	if(providers.size()>0) {
+	    Utils.add(topProps,"providers", JsonUtil.list(providers));
+	}
+	
+
+
 	List<String> links = new ArrayList<String>();
 
 	//Add the root and self links
@@ -145,7 +174,8 @@ public class StacOutputHandler extends OutputHandler {
 
 	//Add the child links
 	for(Entry child: children) {
-	    links.add(getLink(request, child,"child"));	
+	    links.add(getLink(request, child,JsonUtil.MIMETYPE,"child",child.getName(),
+			      getCatalogUrl(request,child)));
 	}
 
 
@@ -175,7 +205,39 @@ public class StacOutputHandler extends OutputHandler {
 
 	Utils.add(topProps,"links",links);
 
-	
+	List<String> assets = new ArrayList<String>();
+	List<String> thumbs = new ArrayList<String>();
+	List<String[]> thumbUrls = new ArrayList<String[]>();
+	getMetadataManager().getFullThumbnailUrls(request, entry, thumbUrls);
+	for(String[] tuple: thumbUrls) {
+	    String url = tuple[0];
+	    String _url = url.toLowerCase();
+	    String title = tuple[1];	    
+	    if(title==null) title = "";
+	    String type = "image/png";
+	    if(_url.endsWith(".jpg") || _url.endsWith(".jpeg"))
+		type = "image/jpeg";
+	    else if(_url.endsWith(".gif")) 
+		type = "image/gif";	    
+	    url = request.getAbsoluteUrl(url);
+	    thumbs.add(JsonUtil.map("href",quote(url),"title",quote(title),"media_type",quote(type)));
+	}
+
+	//It looks like you can only have one thumbnail
+	if(thumbs.size()>0) {
+	    Utils.add(assets,"thumbnail",thumbs.get(0));
+	}
+	    
+	if(assets.size()>0) 
+	    Utils.add(topProps,"assets",JsonUtil.map(assets));
+    
+	List<String> keywords = new ArrayList<String>();
+	for(Metadata mtd: getMetadataManager().findMetadata(request, entry,new String[]{ContentMetadataHandler.TYPE_KEYWORD,ContentMetadataHandler.TYPE_TAG,"enum_gcmdkeyword"}, true)) {
+	    keywords.add(quote(mtd.getAttr1()));
+	}
+	if(keywords.size()>0)
+	    Utils.add(topProps,"keywords",JsonUtil.list(keywords));
+
 
 	sb.append(JsonUtil.map(topProps));
  	return new Result("stac.json",sb,JsonUtil.MIMETYPE);
@@ -220,14 +282,11 @@ public class StacOutputHandler extends OutputHandler {
 	return  request.getAbsoluteUrl(url);
     }
 
-
-
     /*
      * Utility method to quote the string for json
      */
     private String quote(String s) {
 	return JsonUtil.quote(s);
     }
-
 
 }
