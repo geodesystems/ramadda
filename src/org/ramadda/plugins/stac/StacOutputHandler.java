@@ -249,6 +249,7 @@ public class StacOutputHandler extends OutputHandler {
 
 
 	sb.append(JsonUtil.map(topProps));
+	request.setReturnFilename("stac.json");
  	return new Result("stac.json",sb,JsonUtil.MIMETYPE);
     }
 
