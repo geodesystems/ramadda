@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Mar 31 10:05:34 MDT 2023";
+var build_date="RAMADDA build date: Fri Mar 31 13:29:05 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -41857,7 +41857,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }
 		}
 		
-		console.dir(data);
 		let html = '';
 		let title = (data.title??baseUrl)+HU.space(1) + HU.href(baseUrl,HU.getIconImage('fas fa-link',[],['style','font-size:9pt;']),['target','_stac']);
 		html+=HU.center(HU.b(title));
@@ -41876,7 +41875,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    data.links.forEach(link=>{
 			let url = link.href??link.url??link.link;
 			if(!Utils.stringDefined(url) ||link.rel=='self') return;
-			url = new URL(url,baseUrl).href;
+			if(baseUrl.startsWith("http:")  || baseUrl.startsWith("https:")) 
+			   url = new URL(url,baseUrl).href;
 			let label = link.title;
 			if(!label)
 			    label  = url.replace(/.*\/([^\/]+$)/,"$1");
