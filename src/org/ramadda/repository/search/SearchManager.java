@@ -670,8 +670,13 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		parent = parent.getParentEntry();
 	    }
 	}
+	//	System.err.println("add size:" + entry +" " +entry.getResource().getFileSize());
+
         doc.add(new SortedNumericDocValuesField(FIELD_SIZE, entry.getResource().getFileSize()));
-        doc.add(new SortedNumericDocValuesField(FIELD_ENTRYORDER, entry.getEntryOrder()));
+	doc.add(new LongPoint(FIELD_SIZE, entry.getResource().getFileSize()));
+
+  
+	doc.add(new SortedNumericDocValuesField(FIELD_ENTRYORDER, entry.getEntryOrder()));
 	if(entry.hasAreaDefined()) {
 	    doc.add(new DoublePoint(FIELD_NORTH, entry.getNorth()));
 	    doc.add(new DoublePoint(FIELD_WEST, entry.getWest()));
@@ -683,6 +688,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    doc.add(new DoublePoint(FIELD_SOUTH, entry.getLatitude()));
 	    doc.add(new DoublePoint(FIELD_EAST, entry.getLongitude()));
 	}
+
 
 
         String path = entry.getResource().getPath();
@@ -1311,6 +1317,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 					       ARG_AREA_MODE, VALUE_AREA_OVERLAPS).equals(
 											  VALUE_AREA_OVERLAPS));
 
+
+
 	List<SelectionRectangle> rectangles = getEntryUtil().getSelectionRectangles(request.getSelectionBounds());
 	List<Query> areaQueries = new ArrayList<Query>();
 	for (SelectionRectangle rectangle : rectangles) {
@@ -1339,6 +1347,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    }
 	    queries.add(areaBuilder.build());
 	}
+
+	int sizeMin =  request.get(ARG_SIZE_MIN,-1);
+	int sizeMax =  request.get(ARG_SIZE_MAX,-1);	
+	if(sizeMin>=0|| sizeMax>=0) {
+	    queries.add(LongPoint.newRangeQuery(FIELD_SIZE,sizeMin>=0?sizeMin:Integer.MIN_VALUE,sizeMax>=0?sizeMax:Integer.MAX_VALUE));
+	}
+
+
 
 
 	String ancestor = request.getString(ARG_ANCESTOR+"_hidden", request.getString(ARG_ANCESTOR,null));
@@ -1577,13 +1593,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    if(field==null) {
 		sort = Sort.RELEVANCE;
 	    }  else {
-		if(sortType == SortField.Type.LONG || sortType == SortField.Type.INT)
+		if(sortType == SortField.Type.LONG || sortType == SortField.Type.INT) {
 		    sort = new Sort(new SortField[] {
 			    new SortedNumericSortField(field, sortType,desc),
 			    new SortField(FIELD_NAME_SORT, SortField.Type.STRING,true)});
-		else
+		} else {
 		    sort = new Sort(new SortField[] {new SortField(field, sortType,desc),
 						     new SortField(FIELD_NAME_SORT, SortField.Type.STRING,desc)});
+		}
 	    }
 	} else {
 	    sort = Sort.RELEVANCE;
