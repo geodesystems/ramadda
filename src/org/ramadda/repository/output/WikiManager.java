@@ -787,11 +787,12 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	List<String> toks = Utils.split(string,";",true,true);
 	String orderBy = null;//ORDERBY_FROMDATE;
 	boolean ascending = false;
-	int max = -1;
-	String type=null;
+	String name=null;
         String filter = getProperty(wikiUtil, props,
 				       ATTR_ENTRIES + ".filter",
 				       (String) null);
+	SelectInfo select =  new SelectInfo(myRequest);
+	select.setEntry(entry);
 	for(String tok: toks) {
 	    List<String> pair = Utils.splitUpTo(tok,":",2);
 	    if(pair.size()!=2) {
@@ -805,19 +806,35 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    //	    System.err.println("\twhat:" + what +"="+value);
 		
 	    if(what.equals(ARG_TYPE)) {
-		type = value;
+		select.setType(value);
 		myRequest.put(ARG_TYPE, value);
 	    } else if(what.equals(ARG_ORDERBY)) {
 		orderBy=value;
+		select.setOrderBy(orderBy);
 	    } else if(what.equals("filter")) {
 		filter = value;
 	    } else if(what.equals(ARG_MAX)) {
-		max = Integer.parseInt(value);
+		int max = Integer.parseInt(value);
 		myRequest.put(ARG_MAX,""+max);
+		select.setMax(max);
+	    } else if(what.equals(ARG_NAME)) {
+		name  =value;
+		myRequest.put(ARG_TEXT,"name:"+value);
+	    } else if(what.equals(ARG_TEXT)) {
+		name  =value;
+		myRequest.put(ARG_TEXT,value);
+	    } else if(what.equals(ARG_SIZE_MIN)) {
+		myRequest.put(ARG_SIZE_MIN,value);
+	    } else if(what.equals(ARG_SIZE_MAX)) {
+		myRequest.put(ARG_SIZE_MAX,value);								
 	    } else if(what.equals(ARG_ASCENDING)) {
 		ascending = value.length()==0|| value.equals("true");			
+		select.setAscending(ascending);
 	    } else if(what.equals("entry")) {
 		entry = findEntryFromId(request,  entry, wikiUtil, props, value);
+		select.setEntry(entry);
+		if(entry==null)
+		    System.err.println("WikiManager.getSelectFromString - null entry with value:" + value);
 	    } else if(what.equals(ARG_DESCENDENT) || what.equals(ARG_ANCESTOR)) {
 		if(value.length()==0) {
 		    myRequest.put(ARG_ANCESTOR,entry.getId());
@@ -834,9 +851,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    }
 	}		
 	myRequest.put(ARG_ORDERBY,orderBy+(ascending?"_ascending":"_descending"));
-	SelectInfo select =  new SelectInfo(myRequest, entry,max,orderBy,ascending);
 	if(filter!=null) select.setFilter(filter);
-	if(type!=null) select.setType(type);
 	return select;
     }
 
@@ -1479,7 +1494,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
         if (result == null) {
             result = getMessage(wikiUtil, props,
-                                "Could not process tag: " + tag);
+                                HU.span("Could not process tag: " + tag,HU.cssClass("ramadda-wiki-error")));
         }
         String destDiv = getProperty(wikiUtil, props, "destDiv", null);
         if (destDiv != null) {
@@ -2169,9 +2184,10 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
 
             if (getProperty(wikiUtil, props, "button", false)) {
+		String buttonClass= getProperty(wikiUtil, props, "buttonClass",""); 
                 return HU.href(
 			       url, title,
-			       HU.cssClass("ramadda-button ramadda-button-blue")
+			       HU.cssClass("ramadda-button " + buttonClass)
 			       + HU.attr("role", "button"));
             } else {
                 return HU.href(url, title);
