@@ -680,6 +680,16 @@ public class MetadataManager extends RepositoryManager {
 
 
 
+    public void getThumbnailUrls(Request request, Entry entry,
+                                 List<String> urls)
+            throws Exception {
+	List<String[]> tmp = new ArrayList<String[]>();
+	getFullThumbnailUrls(request, entry, tmp);
+	for(String[]tuple: tmp) {
+	    urls.add(tuple[0]);
+	}
+    }
+
     /**
      * _more_
      *
@@ -689,8 +699,8 @@ public class MetadataManager extends RepositoryManager {
      *
      * @throws Exception On badness
      */
-    public void getThumbnailUrls(Request request, Entry entry,
-                                 List<String> urls)
+    public void getFullThumbnailUrls(Request request, Entry entry,
+                                 List<String[]> urls)
             throws Exception {
         for (Metadata metadata : getMetadata(request,entry)) {
             MetadataHandler handler = findMetadataHandler(metadata.getType());
@@ -711,10 +721,10 @@ public class MetadataManager extends RepositoryManager {
      */
     public String getThumbnailUrl(Request request, Entry entry)
             throws Exception {
-        List<String> urls = new ArrayList<String>();
-        getThumbnailUrls(request, entry, urls);
+        List<String[]> urls = new ArrayList<String[]>();
+        getFullThumbnailUrls(request, entry, urls);
         if (urls.size() > 0) {
-            return urls.get(0);
+            return urls.get(0)[0];
         }
 
         return null;
@@ -839,10 +849,6 @@ public class MetadataManager extends RepositoryManager {
             throws Exception {
         List<Metadata> result = new ArrayList<Metadata>();
         findMetadata(request, entry, type, result, checkInherited, firstOk);
-        if (result.size() == 0) {
-            return null;
-        }
-
         return result;
     }
 

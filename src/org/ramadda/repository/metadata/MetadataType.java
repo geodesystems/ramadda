@@ -829,19 +829,29 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
      * @throws Exception _more_
      */
     public void getThumbnailUrls(Request request, Entry entry,
-                                 List<String> urls, Metadata metadata)
+                                 List<String[]> urls, Metadata metadata)
             throws Exception {
-        for (MetadataElement element : getChildren()) {
+	List<MetadataElement> elements =getChildren();
+        for (MetadataElement element : elements) {
             if ( !element.getDataType().equals(element.DATATYPE_FILE)) {
                 continue;
             }
-            if ( !element.showAsAttachment()) {
+            if (!element.showAsAttachment()) {
                 continue;
             }
             if (element.getThumbnail()) {
                 String url = getImageUrl(request, entry, metadata, null);
                 if (url != null) {
-                    urls.add(url);
+		    String title = "";
+		    //Look for the string title
+		    for(MetadataElement titleElement: elements) {
+			if ( !titleElement.getDataType().equals(element.DATATYPE_STRING)) {
+			    continue;
+			}
+			title=metadata.getAttr(titleElement.getIndex());
+			break;
+		    }
+                    urls.add(new String[]{url,title});
                 }
             }
         }

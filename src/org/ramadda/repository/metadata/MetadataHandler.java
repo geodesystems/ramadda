@@ -303,7 +303,7 @@ public class MetadataHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public void getThumbnailUrls(Request request, Entry entry,
-                                 List<String> urls, Metadata metadata)
+                                 List<String[]> urls, Metadata metadata)
             throws Exception {
         MetadataType type = getType(metadata.getType());
         if (type == null) {
