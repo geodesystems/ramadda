@@ -124,12 +124,12 @@ public class StacOutputHandler extends OutputHandler {
 	List<String> topProps = new ArrayList<String>();
 	
 	Utils.add(topProps,"stac_version",quote(STAC_VERSION),
-		  "type",quote(isItem(entry)?"Feature":"Catalog"),
+		  "type",quote(isItem(entry)?"Collection":"Catalog"),
 		  "id",quote(entry.getId()));
 	//Get the snippet instead of the description because the
 	//description can contain all sorts of HTML, wiki text, etc
 	String description = entry.getSnippet();
-	if(description==null) description ="";
+	if(!Utils.stringDefined(description)) description = "STAC Item - " + entry.getName();
 	Utils.add(topProps,"description",quote(description.trim()));
 	Utils.add(topProps,"stac_extensions",JsonUtil.list());
 	Utils.add(topProps,"title",quote(entry.getName()));
@@ -147,13 +147,13 @@ public class StacOutputHandler extends OutputHandler {
 	for(Metadata mtd: 	getMetadataManager().findMetadata(request, entry, new String[]{"thredds.publisher"}, true)) {
 	    Utils.add(providers,JsonUtil.map("name",quote(mtd.getAttr1()),
 					     "url",quote(mtd.getAttr4()),
-					     "roles",JsonUtil.list(quote("publisher"))));
+					     "roles",JsonUtil.list(quote("producer"))));
 	}
 
 	for(Metadata mtd:getMetadataManager().findMetadata(request, entry, new String[]{"metadata_publisher"}, true)) {
 	    Utils.add(providers,JsonUtil.map("name",quote(mtd.getAttr1()),
 					     "url",quote(mtd.getAttr3()),
-					     "roles",JsonUtil.list(quote("publisher"))));
+					     "roles",JsonUtil.list(quote("producer"))));
 	}
     
 
@@ -198,13 +198,10 @@ public class StacOutputHandler extends OutputHandler {
 	    Utils.add(extents,"spatial",JsonUtil.map("bbox",JsonUtil.list(bbox)));
 	}
 
-	//check if there is some data dates
-	if(entry.getStartDate()!=entry.getCreateDate()) {
-	    Utils.add(extents,
-		      "temporal",JsonUtil.map("interval",
-					      JsonUtil.list(quote(Utils.formatIso(new Date(entry.getStartDate()))),
-							    quote(Utils.formatIso(new Date(entry.getEndDate()))))));
-	}
+	Utils.add(extents,
+		  "temporal",JsonUtil.map("interval",
+					  JsonUtil.list(quote(Utils.formatIso(new Date(entry.getStartDate()))),
+							quote(Utils.formatIso(new Date(entry.getEndDate()))))));
 
 	if(extents.size()>0) {
 	    Utils.add(topProps, "extent",JsonUtil.map(extents));
