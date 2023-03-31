@@ -199,9 +199,9 @@ h4 {
 
 
 
-.ramadda-error {
+.ramadda-wiki-error, .ramadda-error {
     font-weight: bold; 
-    background: salmon;
+    background: #FF4500;
     padding:4px;
 }
 
