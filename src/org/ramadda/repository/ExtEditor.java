@@ -438,7 +438,7 @@ public class ExtEditor extends RepositoryManager {
 
 				try {
 				    cnt[0]++;
-				    EntryWrapper wrapper = new EntryWrapper(entry);
+				    EntryWrapper wrapper = new EntryWrapper(request,getRepository(),entry);
 				    wrappers.add(wrapper);
 				    scope.put("entry", scope, wrapper);
 				    script.exec(ctx, scope);
@@ -1229,14 +1229,17 @@ public class ExtEditor extends RepositoryManager {
 
     public static class EntryWrapper {
 	private Entry entry;
-
+	private Request request;
+	private Repository repository;
 	String name;
 	String description;
 	Date startDate;
 	Date endDate;
 	String url;
 
-	public EntryWrapper(Entry entry) {
+	public EntryWrapper(Request request, Repository repository, Entry entry) {
+	    this.repository = repository;
+	    this.request= request;
 	    this.entry = entry;
 	}
 
@@ -1247,6 +1250,13 @@ public class ExtEditor extends RepositoryManager {
 	public String getType() {
 	    return entry.getTypeHandler().getType();
 	}
+
+	public void reindex() {
+	    List<Entry> entries = new ArrayList<Entry>();
+	    entries.add(entry);
+	    repository.getSearchManager().entriesModified(request, entries);
+	}
+
 
 	public String getName() {
 	    return entry.getName();
@@ -1352,6 +1362,8 @@ public class ExtEditor extends RepositoryManager {
 	    visitor.append(msg+"\n");
 	}
 	
+
+
 	public int log(int cnt,Object msg) {
 	    if((count++%cnt)==0) {
 		String s = msg.toString();
