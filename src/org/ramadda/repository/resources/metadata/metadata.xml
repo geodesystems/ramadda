@@ -110,7 +110,7 @@
        id="metadata_publisher">
       <element name="Organization"/>
       <element name="Email"/>
-
+      <element datatype="url" name="URL"/>
     </type>
 
     <type
@@ -156,6 +156,7 @@
        name="Thumbnail Image"
        id="content.thumbnail">
       <element name="Thumbnail File" datatype="file" thumbnail="true" istitle="true"/>
+      <element name="Title" datatype="string" />      
     </type>
 
     <type
