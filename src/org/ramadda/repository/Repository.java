@@ -154,7 +154,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     private static boolean  debugGpt = false;
 
-
+    public static final boolean debugInit = true;
 
     /** dummy field 2 */
     private static final org.ramadda.util.ObjectPool dummyField2ToForceCompile =
@@ -1075,6 +1075,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     public void init(Properties properties) throws Exception {
+	if(Repository.debugInit)   System.err.println("Repository.init");
         //        MyTrace.startTrace();
         //This stops jython from processing jars and printing out its annoying message
         System.setProperty("python.cachedir.skip", "true");
@@ -1083,8 +1084,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         CacheManager.setDoCache(false);
 	//	IO.debugStderr();
 
+	if(Repository.debugInit)   System.err.println("Repository calling initProperties");
         initProperties(properties);
-
+	if(Repository.debugInit)   System.err.println("Repository done initProperties");
 
 	//Call this now since further initialize might trigger calls
 	getLogManager().initAttributes();
@@ -1364,7 +1366,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         MyTrace.call1("plugin-init");
         //initialize the plugin manager with the properties
+	if(Repository.debugInit)   System.err.println("Repository calling PluginManager.init");
         getPluginManager().init(pluginProperties);
+	if(Repository.debugInit)   System.err.println("Repository done PluginManager.init");
         MyTrace.call2("plugin-init");
 
         //create the log dir
@@ -1557,6 +1561,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     protected void initServer() throws Exception {
+	if(Repository.debugInit)   System.err.println("Repository.initServer");
         getDatabaseManager().init();
         initDefaultTypeHandlers();
         boolean loadedRdb = false;
@@ -1594,6 +1599,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         getUserManager().initUsers(cmdLineUsers);
 
 
+	if(Repository.debugInit)   System.err.println("Repository:initializing top entry");
         //This finds or creates the top-level group
         getEntryManager().initTopEntry();
 
@@ -1613,11 +1619,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
         getLogManager().logInfo("RAMADDA started");
 
 
+	if(Repository.debugInit)   System.err.println("Repository:calling StorageManager.doFinalInitialization");
         getStorageManager().doFinalInitialization();
+	if(Repository.debugInit)   System.err.println("Repository:done StorageManager.doFinalInitialization");
+
+
         if (getAdmin().getInstallationComplete()) {
             getRegistryManager().doFinalInitialization();
         }
         getAdmin().doFinalInitialization();
+	if(Repository.debugInit)   System.err.println("Repository:done Admin.doFinalInitialization");
         if (loadedRdb) {
             getDatabaseManager().finishRdbLoad();
         }
@@ -1646,6 +1657,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	//Call this so it gets instantiated
 	getMonitorManager();
 	//	testLocal();
+	if(Repository.debugInit)   System.err.println("Repository.initServer:done");
     }
 
 

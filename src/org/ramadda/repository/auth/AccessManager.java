@@ -156,7 +156,7 @@ public class AccessManager extends RepositoryManager {
     /**
      */
     public void updateLocalDataPolicies() {
-        Misc.run(new Runnable() {
+        Misc.runInABit(5000, new Runnable() {
             public void run() {
                 try {
                     doDataPolicyFetch();

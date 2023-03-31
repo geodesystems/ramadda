@@ -200,6 +200,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         if (haveInitialized) {
             return;
         }
+	if(Repository.debugInit)   System.err.println("DatabaseManager.init");
         haveInitialized = true;
         System.setProperty(
             "jdbc.drivers",
@@ -209,12 +210,15 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
         SqlUtil.setConnectionManager(this);
 
+	if(Repository.debugInit)   System.err.println("DatabaseManager: making data source");
         dataSource = doMakeDataSource();
-        Statement statement = getConnection().createStatement();
+	if(Repository.debugInit)   System.err.println("DatabaseManager: done making data source");
         if (db.equals(SqlUtil.DB_MYSQL)) {
+	    Statement statement = getConnection().createStatement();
             statement.execute("set time_zone = '+0:00'");
+	    closeAndReleaseConnection(statement);
         }
-        closeAndReleaseConnection(statement);
+
         //        Misc.run(this, "checkConnections", null);
 
         try {
