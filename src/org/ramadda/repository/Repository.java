@@ -154,7 +154,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     private static boolean  debugGpt = false;
 
-    public static final boolean debugInit = true;
+    public static final boolean debugInit = false;
 
     /** dummy field 2 */
     private static final org.ramadda.util.ObjectPool dummyField2ToForceCompile =
