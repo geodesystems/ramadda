@@ -12,7 +12,7 @@ import org.ramadda.repository.output.OutputType;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
-
+import ucar.unidata.util.IOUtil;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -122,8 +122,9 @@ public class StacOutputHandler extends OutputHandler {
 	List<Metadata> metadataList;
 	
 	List<String> topProps = new ArrayList<String>();
+	
 	Utils.add(topProps,"stac_version",quote(STAC_VERSION),
-		  "type",quote("Catalog"),
+		  "type",quote(isItem(entry)?"Feature":"Catalog"),
 		  "id",quote(entry.getId()));
 	//Get the snippet instead of the description because the
 	//description can contain all sorts of HTML, wiki text, etc
@@ -165,6 +166,7 @@ public class StacOutputHandler extends OutputHandler {
 
 
 	List<String> links = new ArrayList<String>();
+	List<String> assets = new ArrayList<String>();
 
 	//Add the root and self links
 	links.add(getLink(request, request.getRootEntry(),"root"));
@@ -172,13 +174,23 @@ public class StacOutputHandler extends OutputHandler {
 	links.add(getLink(request, entry,"describedby","text/html","Human readable dataset overview and reference",
 			  getHtmlUrl(request,entry)));
 
+	
 	//Add the child links
 	for(Entry child: children) {
-	    links.add(getLink(request, child,JsonUtil.MIMETYPE,"child",child.getName(),
-			      getCatalogUrl(request,child)));
+	    links.add(getLink(request, child,JsonUtil.MIMETYPE,isItem(child)?"item":"child",
+			      child.getName(),  getCatalogUrl(request,child)));
 	}
 
 
+	if(isItem(entry)) {
+	    Utils.add(assets,"data",
+		      JsonUtil.map("title",quote(entry.getName()),
+				   "description",quote(description!=null?description:""),	
+				   "href",
+				   quote(getEntryManager().getEntryResourceUrl(request, entry,false,true,true)),
+				   "type", quote(getRepository().getMimeType(request, entry)),
+				   "size",""+entry.getResource().getFileSize()));
+	}
 
 	//Add the extent
 	List<String> extents = new ArrayList<String>();
@@ -201,11 +213,17 @@ public class StacOutputHandler extends OutputHandler {
 	}
 
 	
+	List<String> keywords = new ArrayList<String>();
+	for(Metadata mtd: getMetadataManager().findMetadata(request, entry,new String[]{ContentMetadataHandler.TYPE_KEYWORD,ContentMetadataHandler.TYPE_TAG,"enum_gcmdkeyword"}, true)) {
+	    keywords.add(quote(mtd.getAttr1()));
+	}
+	if(keywords.size()>0)
+	    Utils.add(topProps,"keywords",JsonUtil.list(keywords));
 
 
 	Utils.add(topProps,"links",links);
 
-	List<String> assets = new ArrayList<String>();
+
 	List<String> thumbs = new ArrayList<String>();
 	List<String[]> thumbUrls = new ArrayList<String[]>();
 	getMetadataManager().getFullThumbnailUrls(request, entry, thumbUrls);
@@ -214,11 +232,7 @@ public class StacOutputHandler extends OutputHandler {
 	    String _url = url.toLowerCase();
 	    String title = tuple[1];	    
 	    if(title==null) title = "";
-	    String type = "image/png";
-	    if(_url.endsWith(".jpg") || _url.endsWith(".jpeg"))
-		type = "image/jpeg";
-	    else if(_url.endsWith(".gif")) 
-		type = "image/gif";	    
+	    String type = getRepository().getMimeTypeFromSuffix(IOUtil.getFileExtension(_url));
 	    url = request.getAbsoluteUrl(url);
 	    thumbs.add(JsonUtil.map("href",quote(url),"title",quote(title),"media_type",quote(type)));
 	}
@@ -231,16 +245,16 @@ public class StacOutputHandler extends OutputHandler {
 	if(assets.size()>0) 
 	    Utils.add(topProps,"assets",JsonUtil.map(assets));
     
-	List<String> keywords = new ArrayList<String>();
-	for(Metadata mtd: getMetadataManager().findMetadata(request, entry,new String[]{ContentMetadataHandler.TYPE_KEYWORD,ContentMetadataHandler.TYPE_TAG,"enum_gcmdkeyword"}, true)) {
-	    keywords.add(quote(mtd.getAttr1()));
-	}
-	if(keywords.size()>0)
-	    Utils.add(topProps,"keywords",JsonUtil.list(keywords));
+
 
 
 	sb.append(JsonUtil.map(topProps));
  	return new Result("stac.json",sb,JsonUtil.MIMETYPE);
+    }
+
+
+    private boolean isItem(Entry entry) {
+	return entry.getResource().isFile();
     }
 
 
