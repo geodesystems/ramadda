@@ -1192,6 +1192,8 @@ public interface Constants {
     public static final String ARG_ALTITUDE_BOTTOM = "altitude.bottom";
 
 
+    public static final String ARG_SIZE_MIN = "sizemin";
+    public static final String ARG_SIZE_MAX = "sizemax";    
 
     /** _more_ */
     public static final String ARG_SETFROMCHILDREN = "setfromchildren";
