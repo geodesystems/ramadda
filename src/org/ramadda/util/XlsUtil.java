@@ -20,8 +20,32 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
+import org.apache.poi.sl.usermodel.PictureData;
+import org.apache.poi.xslf.usermodel.XMLSlideShow;
+import org.apache.poi.xslf.usermodel.XSLFPictureData;
+import org.apache.poi.xslf.usermodel.XSLFPictureShape;
+import org.apache.poi.xslf.usermodel.XSLFSlide;
+import org.apache.poi.xslf.usermodel.XSLFShape;
+
+
 
 import org.apache.poi.xssf.streaming.*;
+
+import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import javax.imageio.ImageIO;
+import org.apache.poi.xslf.usermodel.XMLSlideShow;
+import org.apache.poi.xslf.usermodel.XSLFPictureShape;
+import org.apache.poi.xslf.usermodel.XSLFSlide;
 
 
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -303,6 +327,47 @@ public class XlsUtil {
         return s;
     }
 
+    
+    public static void  makePptScreenshot(String file,File output) throws Exception {
+        XMLSlideShow ppt = new XMLSlideShow(new FileInputStream(file));
+        XSLFSlide slide = ppt.getSlides().get(0);
+	java.awt.Dimension dim = ppt.getPageSize();
+        BufferedImage image = new BufferedImage(dim.width,dim.height, BufferedImage.TYPE_INT_ARGB);
+        slide.draw(image.createGraphics());
+        ImageIO.write(image, "png", output);
+    }
+
+
+    /**
+       via gpt
+     */
+    public static void extractImages(String file) throws IOException {
+        File pptFile = new File(file);
+        XMLSlideShow ppt = new XMLSlideShow(new FileInputStream(pptFile));
+        // get the first slide
+        XSLFSlide slide = ppt.getSlides().get(0);
+
+        // iterate over the shapes on the slide
+        for (XSLFShape shape : slide.getShapes()) {
+            if (shape instanceof XSLFPictureShape) {
+                XSLFPictureShape picture = (XSLFPictureShape) shape;
+                PictureData pictureData = picture.getPictureData();
+                if (pictureData instanceof XSLFPictureData) {
+                    XSLFPictureData xslfPictureData = (XSLFPictureData) pictureData;
+
+                    // create a BufferedImage from the picture data
+                    BufferedImage image = ImageIO.read(xslfPictureData.getPackagePart().getInputStream());
+
+                    // save the image to a file
+                    File outputFile = new File("output.png");
+                    ImageIO.write(image, "png", outputFile);
+                }
+            }
+        }
+        ppt.close();
+    }
+
+
 
     /**
      * _more_
@@ -313,6 +378,14 @@ public class XlsUtil {
      */
     public static void main(String[] args) throws Exception {
         for (String arg : args) {
+	    File out= new File("screenshot.png");
+	    System.err.println("Writing to:" + out);
+	    makePptScreenshot(arg,out);
+	    if(true) return;
+
+
+
+
             String csv = null;
             for (int i = 0; i < 10; i++) {
                 long t1 = System.currentTimeMillis();
