@@ -18,6 +18,7 @@ import org.apache.tika.sax.BodyContentHandler;
 import org.ramadda.repository.*;
 import org.ramadda.service.*;
 import org.ramadda.util.Utils;
+import org.ramadda.util.XlsUtil;
 import org.ramadda.util.TikaUtil;
 
 import org.w3c.dom.*;
@@ -159,6 +160,33 @@ public class TikaService extends Service {
 
         return true;
 
+    }
+
+    public boolean makePptImage(Request request, Service service,
+                               ServiceInput input, List args)
+            throws Exception {
+        Entry entry = null;
+        for (Entry e : input.getEntries()) {
+            if (e.isFile()) {
+                entry = e;
+
+                break;
+            }
+        }
+        if (entry == null) {
+            throw new IllegalArgumentException("No file entry found");
+        }
+	String name = getStorageManager().getFileTail(entry);
+	if ( !Utils.stringDefined(name)) {
+	    name = entry.getName();
+	}
+	name = IOUtil.stripExtension(name);
+	File newFile = new File(IOUtil.joinDir(input.getProcessDir(),
+					       name + ".png"));
+
+	XlsUtil.makePptScreenshot(entry.getResource().getPath(),newFile);
+
+	return true;
     }
 
 
