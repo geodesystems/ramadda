@@ -321,6 +321,7 @@ public class PluginManager extends RepositoryManager {
      * @throws Exception On badness
      */
     public void loadPlugins() throws Exception {
+	if(Repository.debugInit)   System.err.println("PluginManager.loadPlugins-1");
         //The false says not to scour
         TempDir tempDir = getStorageManager().makeTempDir("tmpplugins",
                               false);
@@ -363,8 +364,8 @@ public class PluginManager extends RepositoryManager {
             }
 
             try {
-                processPluginFile(pluginFile, pluginFilesList, classLoader,
-                                  true);
+		if(Repository.debugInit)   System.err.println("\tprocessing:" + pluginFile);
+                processPluginFile(pluginFile, pluginFilesList, classLoader, true);
             } catch (Exception exc) {
                 System.err.println("RAMADDA: Error loading plugin:"
                                    + pluginFile);
@@ -373,8 +374,10 @@ public class PluginManager extends RepositoryManager {
                 throw exc;
             }
         }
+	if(Repository.debugInit)   System.err.println("PluginManager.loadPlugins-2");
         loadPropertyFiles();
 
+	if(Repository.debugInit)   System.err.println("PluginManager.loadPlugins-3");
         //Now check for any special classes that need loading
         for (String classDefFile : classDefFiles) {
             for (String classToLoad :
@@ -404,6 +407,7 @@ public class PluginManager extends RepositoryManager {
             }
 
         }
+	if(Repository.debugInit)   System.err.println("PluginManager.loadPlugins-4");
 
     }
 

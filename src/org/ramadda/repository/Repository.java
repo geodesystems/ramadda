@@ -1601,7 +1601,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
-	if(Repository.debugInit)   System.err.println("Repository.init-6");
+	if(Repository.debugInit)   System.err.println("Repository.init-7");
         getUserManager().initUsers(cmdLineUsers);
 
 
@@ -1689,11 +1689,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     private void loadResources() throws Exception {
+	if(Repository.debugInit)   System.err.println("Repository.loadResources-1");
         getPluginManager().loadPlugins();
+	if(Repository.debugInit)   System.err.println("Repository.loadResources-2");
         getPageHandler().clearCache();
+	if(Repository.debugInit)   System.err.println("Repository.loadResources-3");
         loadPluginResources();
+	if(Repository.debugInit)   System.err.println("Repository.loadResources-4");
         getPluginManager().loadPluginsFinish();
+	if(Repository.debugInit)   System.err.println("Repository.loadResources-5");
         initDefaultOutputHandlers();
+	if(Repository.debugInit)   System.err.println("Repository.loadResources-6");	
     }
 
 
