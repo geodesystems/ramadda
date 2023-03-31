@@ -7232,6 +7232,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
+    public String getMimeType(Request request, Entry entry) {
+	String mimetype = entry.getTypeHandler().getTypeProperty("mimetype",null);
+	if(mimetype!=null) return mimetype;
+	return getMimeTypeFromSuffix(IOUtil.getFileExtension(entry.getResource().getPath()));
+    }
+
     /**
      * _more_
      *
