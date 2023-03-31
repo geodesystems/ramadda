@@ -1563,7 +1563,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
     protected void initServer() throws Exception {
 	if(Repository.debugInit)   System.err.println("Repository.initServer");
         getDatabaseManager().init();
+	if(Repository.debugInit)   System.err.println("Repository.init-1");
         initDefaultTypeHandlers();
+	if(Repository.debugInit)   System.err.println("Repository.init-2");
         boolean loadedRdb = false;
         boolean doDrop    = getProperty("db.load.drop", true);
         sqlLoadFiles.addAll(Utils.split(getProperty("db.load.files", ""),
@@ -1575,14 +1577,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
+	if(Repository.debugInit)   System.err.println("Repository.init-3");
         if ( !loadedRdb) {
             initSchema();
         }
-
+	if(Repository.debugInit)   System.err.println("Repository.init-4");
         readDatabaseProperties();
         checkVersion();
         MyTrace.call1("Repository.loadResources");
+	if(Repository.debugInit)   System.err.println("Repository.init-5");
         loadResources();
+	if(Repository.debugInit)   System.err.println("Repository.init-6");
         MyTrace.call2("Repository.loadResources");
         getRegistryManager().checkApi();
 
@@ -1596,6 +1601,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
+	if(Repository.debugInit)   System.err.println("Repository.init-6");
         getUserManager().initUsers(cmdLineUsers);
 
 
