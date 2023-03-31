@@ -45,6 +45,8 @@ public class SelectInfo implements Constants {
     String orderBy;
     String type;    
 
+    String name;
+    
     /**  */
     Boolean ascending = null;
 
@@ -314,8 +316,11 @@ public class SelectInfo implements Constants {
      */
     public int getMax() {
         init();
-
         return max;
+    }
+
+    public void setMax(int max) {
+	this.max = max;
     }
 
     /**
@@ -337,6 +342,10 @@ public class SelectInfo implements Constants {
         return orderBy;
     }
 
+    public void setOrderBy(String o) {
+        this.orderBy = o;
+    }    
+
 
     /**
      *  Get the Ascending property.
@@ -350,6 +359,10 @@ public class SelectInfo implements Constants {
         }
 
         return false;
+    }
+
+    public void setAscending(boolean a) {
+	this.ascending = a;
     }
 
     /**
@@ -378,6 +391,24 @@ public class SelectInfo implements Constants {
 	return filter;
     }
 
+
+    /**
+       Set the Name property.
+
+       @param value The new value for Name
+    **/
+    public void setName (String value) {
+	name = value;
+    }
+
+    /**
+       Get the Name property.
+
+       @return The Name
+    **/
+    public String getName () {
+	return name;
+    }
 
 
     /**
