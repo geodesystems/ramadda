@@ -2780,7 +2780,7 @@ public class Request implements Constants, Cloneable {
         }
 	//Let google through
 	if(userAgent.indexOf("googlebot") >= 0) {
-	    return false;
+	    //not now	    return false;
 	}
         boolean isBot =
 	    (userAgent.indexOf("yandex.com/bots") >= 0) ||
