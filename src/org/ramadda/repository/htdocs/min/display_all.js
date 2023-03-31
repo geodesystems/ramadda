@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Mar 29 15:33:34 MDT 2023";
+var build_date="RAMADDA build date: Fri Mar 31 03:41:50 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -4838,7 +4838,6 @@ function DisplayThing(argId, argProperties) {
         },
         setProperty: function(key, value) {
 	    //            this[key] = value;
-	    console.log("SET:" + key);
             this.properties[key] = value;
 	    this.transientProperties[key]  = value;
 	    this.propertiesCache[key] = value;
