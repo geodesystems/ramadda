@@ -3,6 +3,7 @@ Copyright (c) 2008-2021 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
+
 package org.ramadda.data.services;
 
 
@@ -22,7 +23,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleAdapter;
 import ucar.nc2.VariableSimpleIF;
 //import ucar.nc2.ft.point.writer.CFPointObWriter;
-//import ucar.nc2.ft.point.writer.PointObVar;
+//import ucar.nc2.dt.point.PointObVar;
 //import ucar.nc2.dt.point.CFPointObWriter;
 import ucar.nc2.ft.point.writer.WriterCFPointCollection;
 import ucar.nc2.units.DateUnit;
@@ -37,10 +38,14 @@ import java.util.List;
 
 /**
  */
-public class NetcdfVisitor extends BridgeRecordVisitor {
+
+@SuppressWarnings("deprecation")
+public class NetcdfVisitor extends RecordVisitor {
+
+    private static final boolean debug = false;
 
     /** _more_ */
-    public static final int MAX_STRING_LENGTH = 100;
+    public static final int MAX_STRING_LENGTH = 200;
 
     /** _more_ */
     private int recordCnt = 0;
@@ -49,7 +54,13 @@ public class NetcdfVisitor extends BridgeRecordVisitor {
     private PointDataRecord cacheRecord;
 
     /** _more_ */
-    private List<VariableSimpleIF> dataVars;
+    //    private List<VariableSimpleIF> dataVars;
+    private List<ucar.nc2.dt.point.PointObVar> dataVars;
+
+    private List<RecordField> subsetFields;
+
+    /** _more_ */
+    private List<RecordField> fields;
 
     /** _more_ */
     private File tmpFile;
@@ -61,13 +72,9 @@ public class NetcdfVisitor extends BridgeRecordVisitor {
     private RecordIO tmpFileIO;
 
     /** _more_ */
-    private WriterCFPointCollection writer;
+    //    private WriterCFPointCollection writer;
 
-    /** _more_ */
-    private CsvVisitor csvVisitor = null;
-
-    /** _more_ */
-    private List<RecordField> fields;
+    private DataOutputStream dos;
 
     /** _more_ */
     private double[] dvals;
@@ -81,9 +88,6 @@ public class NetcdfVisitor extends BridgeRecordVisitor {
     /** _more_ */
     private Date now;
 
-    /** _more_ */
-    int cnt = 0;
-
 
     /**
      * _more_
@@ -93,10 +97,12 @@ public class NetcdfVisitor extends BridgeRecordVisitor {
      * @param processId _more_
      * @param mainEntry _more_
      */
+    /*
     public NetcdfVisitor(RecordOutputHandler handler, Request request,
                          Object processId, Entry mainEntry) {
         super(handler, request, processId, mainEntry, ".nc");
     }
+    */
 
     /**
      * _more_
@@ -104,10 +110,17 @@ public class NetcdfVisitor extends BridgeRecordVisitor {
      * @param tmpFile _more_
      * @param outputNetcdfFile _more_
      */
-    public NetcdfVisitor(File tmpFile, File outputNetcdfFile) {
+    public NetcdfVisitor(File tmpFile, File outputNetcdfFile,List<RecordField> subsetFields) {
         this.tmpFile          = tmpFile;
         this.outputNetcdfFile = outputNetcdfFile;
+	this.subsetFields = subsetFields;
     }
+
+    public NetcdfVisitor(File tmpFile, DataOutputStream dos,List<RecordField> subsetFields) {
+        this.tmpFile          = tmpFile;
+        this.dos= dos;
+	this.subsetFields = subsetFields;
+    }    
 
 
 
@@ -123,11 +136,12 @@ public class NetcdfVisitor extends BridgeRecordVisitor {
         now     = new Date();
         hasTime = record.hasRecordTime();
         fields  = new ArrayList<RecordField>();
-        List<VariableSimpleIF> stringVars = new ArrayList<VariableSimpleIF>();
-        dataVars = new ArrayList<VariableSimpleIF>();
+	//        List<VariableSimpleIF> stringVars = new ArrayList<VariableSimpleIF>();
+        List<ucar.nc2.dt.point.PointObVar> stringVars = new ArrayList<>();	
+	dataVars = new ArrayList<>();
         int              numDouble        = 0;
         int              numString        = 0;
-        StructureMembers structureMembers = new StructureMembers("point obs");
+
         for (RecordField field : file.getFields()) {
             if ( !(field.isTypeNumeric() || field.isTypeString())) {
                 continue;
@@ -135,7 +149,6 @@ public class NetcdfVisitor extends BridgeRecordVisitor {
             //Having a field called time breaks the cfwriter
             if (field.getName().equals("time")) {
                 System.err.println("****SKIPPING TIME FIELD ********");
-
                 continue;
             }
 
@@ -149,9 +162,19 @@ public class NetcdfVisitor extends BridgeRecordVisitor {
             if ( !Utils.stringDefined(desc)) {
                 desc = field.getName();
             }
-            System.err.println("name:" + field.getName());
-            System.err.println("desc:" + desc);
-            System.err.println("unit:" + unit);
+	    ucar.nc2.dt.point.PointObVar pointObVar = new ucar.nc2.dt.point.PointObVar();
+	    String name = field.getName();
+	    //the nc writer chokes if there is a field called record
+	    if(name.equals("record")) name = "datarecord";
+	    pointObVar.setName(name);
+	    pointObVar.setUnits(unit);
+	    if(field.isTypeNumeric())
+		pointObVar.setDataType(DataType.DOUBLE);
+	    else
+		pointObVar.setDataType(DataType.STRING);
+
+/*
+  StructureMembers structureMembers = new StructureMembers("point obs");
             VariableSimpleAdapter pointObVar = new VariableSimpleAdapter(
                                                    structureMembers.addMember(
                                                        field.getName(), desc,
@@ -159,68 +182,36 @@ public class NetcdfVisitor extends BridgeRecordVisitor {
                                                        field.isTypeNumeric()
                     ? DataType.DOUBLE
                     : DataType.STRING, new int[] { 1 }));
+*/
 
             if (field.isTypeNumeric()) {
                 numDouble++;
-                dataVars.add(pointObVar);
+		dataVars.add(pointObVar);
             } else if (field.isTypeString()) {
                 numString++;
-                //                pointObVar.setLen(MAX_STRING_LENGTH);
-                stringVars.add(pointObVar);
+		pointObVar.setLen(MAX_STRING_LENGTH);
+		stringVars.add(pointObVar);
             }
-            if (true) {
-                break;
-            }
-        }
+	}
         dataVars.addAll(stringVars);
         dvals       = new double[numDouble];
         svals       = new String[numString];
         cacheRecord = new PointDataRecord((RecordFile) null);
-        if (tmpFile == null) {
-            tmpFile = getHandler().getStorageManager().getTmpFile(null,
-                    "tmp.nc");
-        }
         tmpFileIO             = new RecordIO(new FileOutputStream(tmpFile));
         cacheRecord.dvalsSize = dvals.length;
         cacheRecord.svalsSize = svals.length;
 
-
-
-        VariableSimpleAdapter var =
-            new VariableSimpleAdapter(structureMembers.addMember("test",
-                "test", "m", DataType.DOUBLE, new int[] { 1 }));
-        List<VariableSimpleIF> vars = new ArrayList<VariableSimpleIF>();
-        vars.add(var);
-
-        /*
-        writer = new WriterCFPointCollection("test.nc", "point data");
-        writer.writeHeader(vars, DateUnit.getUnixDateUnit(), "m");
+	/*
+	//        writer = new WriterCFPointCollection("test.nc", "point data");
+	writer = new ucar.nc2.dt.point.CFPointObWriter(dos, attrs, ((alt != null)
+	? alt.getUnit().toString()
+	: null), dataVars, obs.size());
+	writer.writeHeader(vars, DateUnit.getUnixDateUnit(), "m");
         writer.finish();
-        */
-
-
-        /*
-        writer = new WriterCFPointCollection(outputNetcdfFile.toString(), "point data");
-        writer.writeHeader(dataVars, DateUnit.getUnixDateUnit(), "m");
-        writer.finish();
-        */
-
+	*/
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    private boolean jobOK() {
-        Object jobId = getProcessId();
-        if ((jobId != null) && (getHandler() != null)) {
-            return getHandler().jobOK(jobId);
-        }
-
-        return true;
-    }
 
     /**
      * _more_
@@ -233,15 +224,12 @@ public class NetcdfVisitor extends BridgeRecordVisitor {
      *
      * @throws Exception _more_
      */
-    public boolean doVisitRecord(RecordFile file, VisitInfo visitInfo,
-                                 BaseRecord record)
+    public boolean visitRecord(RecordFile file, VisitInfo visitInfo, BaseRecord record)
             throws Exception {
         if (tmpFileIO == null) {
             init(file, record);
         }
-        if ( !jobOK()) {
-            return false;
-        }
+	//	if(recordCnt>3) return false;
         int         dcnt        = 0;
         int         scnt        = 0;
         PointRecord pointRecord = (PointRecord) record;
@@ -265,10 +253,9 @@ public class NetcdfVisitor extends BridgeRecordVisitor {
         } else {
             cacheRecord.setTime(now.getTime());
         }
-        cacheRecord.setDvals(dvals);
-        cacheRecord.setSvals(svals);
+        cacheRecord.setDoubleValues(dvals);
+        cacheRecord.setStringValues(svals);
         cacheRecord.write(tmpFileIO);
-
         return true;
     }
 
@@ -286,35 +273,42 @@ public class NetcdfVisitor extends BridgeRecordVisitor {
             }
             tmpFileIO.close();
             List<Attribute>  globalAttributes = new ArrayList<Attribute>();
-            DataOutputStream dos;
-            if (outputNetcdfFile != null) {
-                //                dos = new DataOutputStream(new FileOutputStream(outputNetcdfFile));
-            } else {
-                //TODO: 
-                dos = getTheDataOutputStream();
-            }
-            System.err.println("data var:" + dataVars.size());
-            //            writer = new CFPointObWriter(dos, globalAttributes, "m", dataVars, recordCnt);
+	    if(dos==null) {
+		if (outputNetcdfFile != null) {
+		    dos = new DataOutputStream(new FileOutputStream(outputNetcdfFile));
+		} else {
+		    throw new IllegalStateException("NetcdfVisitor:no data output stream provided");
+		}
+	    }
+	    ucar.nc2.dt.point.CFPointObWriter  writer = 
+		new ucar.nc2.dt.point.CFPointObWriter(dos, globalAttributes, "m", dataVars, recordCnt);
             tmpFileIO = new RecordIO(new FileInputStream(tmpFile));
-            System.err.println("Point.NetcdfVisitor:writing # records:"
-                               + recordCnt + "\n\t #dvals:"
-                               + cacheRecord.getDvals().length
-                               + "\n\t #svals:"
-                               + cacheRecord.getSvals().length
-                               + " \n\t dataVars:" + dataVars.size());
+	    if(debug)
+		System.err.println("Point.NetcdfVisitor:writing # records:"
+				   + recordCnt + "\n\t #dvals:"
+				   + cacheRecord.getDoubleValues().length
+				   + "\n\t #svals:"
+				   + cacheRecord.getStringValues().length
+				   + " \n\t dataVars:" + dataVars.size());
 
-            /*
             for (int i = 0; i < recordCnt; i++) {
                 cacheRecord.read(tmpFileIO);
-                writer.addPoint(cacheRecord.getLatitude(),
-                                cacheRecord.getLongitude(),
-                                cacheRecord.getAltitude(),
+		//If we write out lat/lon as NaN then when reading the generated nc file it fails
+		//So we write out -9999 to sign
+		writer.addPoint(Double.isNaN(cacheRecord.getLatitude())?-9999:cacheRecord.getLatitude(),
+				Double.isNaN(cacheRecord.getLongitude())?-9999:cacheRecord.getLongitude(),
+				Double.isNaN(cacheRecord.getAltitude())?-9999:cacheRecord.getAltitude(),
                                 new Date(cacheRecord.getTime()),
-                                cacheRecord.getDvals(),
-                                cacheRecord.getSvals());
+                                cacheRecord.getDoubleValues(),
+                                cacheRecord.getStringValues());
+
             }
             writer.finish();
-            */
+            if (outputNetcdfFile != null) {
+		dos.close();
+	    }
+	    tmpFile.delete();
+		
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
