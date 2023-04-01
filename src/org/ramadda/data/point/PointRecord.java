@@ -5,21 +5,12 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.point;
 
-
 import org.ramadda.data.record.*;
-
 import ucar.unidata.geoloc.*;
 
 import java.io.*;
 
-
-
 /**
- * Class description
- *
- *
- * @version        Enter version here..., Fri, May 21, '10
- * @author         Enter your name here...
  */
 public abstract class PointRecord extends GeoRecord {
 
