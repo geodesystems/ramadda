@@ -8931,6 +8931,24 @@ public class EntryManager extends RepositoryManager {
 	}
 
 
+	//	System.err.println("date:" + fromDate +" " + toDate);
+	if(Utils.stringDefined(select.getFromDate()) || Utils.stringDefined(select.getToDate())) {
+	    Date[] range = Utils.getDateRange(select.getFromDate(), select.getToDate(), new Date());
+	    List<Entry> tmp = new ArrayList<Entry>();
+	    for(Entry e: entries) {
+		if(range[0]!=null&& e.getStartDate()<range[0].getTime()) {
+		    continue;
+		}
+		if(range[1]!=null && e.getEndDate()>range[1].getTime()) {
+		    continue;
+		}
+		tmp.add(e);
+	    }
+	    entries=tmp;
+	}
+
+
+
 	if(select.getOrderBy()!=null) {
 	    entries= EntryUtil.sortEntriesOn(entries,select.getOrderBy(),!select.getAscending());
 	}
