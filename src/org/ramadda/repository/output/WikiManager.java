@@ -5948,6 +5948,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         Hashtable   searchProps = null;
         List<Entry> entries     = new ArrayList<Entry>();
         Request myRequest = request.cloneMe();
+        request = myRequest;
 	String prefix = getProperty(wikiUtil,props,"argPrefix","");
         int         max         =   getProperty(wikiUtil, props, ARG_MAX, -1);
         String      orderBy     = null;
@@ -5998,7 +5999,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                         searchProps.putAll(props);
                     }
                     searchProps.put(tokens.get(0), tokens.get(1));
-                    myRequest.put(tokens.get(0), tokens.get(1));
+                    myRequest.put(Utils.clip(tokens.get(0), ID_SEARCH+"."),tokens.get(1));
                 }
                 continue;
             }
