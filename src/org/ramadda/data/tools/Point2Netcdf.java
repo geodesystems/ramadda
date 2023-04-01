@@ -179,7 +179,7 @@ public class Point2Netcdf extends RecordTool {
                                     + ".nc.tmp");
             File destFile = new File(IOUtil.stripExtension(inFile) + ".nc");
             System.err.println("writing:" + destFile);
-            RecordVisitor visitor = new NetcdfVisitor(tmpFile, destFile);
+            RecordVisitor visitor = new NetcdfVisitor(tmpFile,  destFile, null);
             RecordFilter  filter  = null;
             if (filters.size() == 1) {
                 filter = filters.get(0);
