@@ -91,36 +91,27 @@ public class NetcdfRecord extends DataRecord {
      */
     @Override
     public ReadStatus read(RecordIO recordIO) throws IOException {
-
-
-
         if ( !iterator.hasNext()) {
             return ReadStatus.EOF;
         }
-
-
-
         PointFeature                      po = (PointFeature) iterator.next();
         StructureData                     structure = po.getData();
-        ucar.unidata.geoloc.EarthLocation el        = po.getLocation();
-        if (el == null) {
-            System.err.println("skipping");
-
-            return ReadStatus.SKIP;
-        }
-        setLocation(el.getLongitude(), el.getLatitude(), el.getAltitude());
         int cnt = 0;
-        //        System.err.println("Latitude:" + el.getLatitude());
-        values[cnt++] = el.getLatitude();
-        values[cnt++] = el.getLongitude();
-
-        //        Date dttm = po.getNominalTimeAsDate();
+        ucar.unidata.geoloc.EarthLocation el        = po.getLocation();
+	//check for -9999. This is because if lat/lon is NaN then the iterator does not
+	//read the records. So when we write out the nc with the CFPointObWriter in
+	//org.ramadda.data.services.NetcdfVisitor it writes out -9999
+	double lat = el==null?Double.NaN:el.getLatitude()==-9999?Double.NaN:el.getLatitude();
+	double lon = el==null?Double.NaN:el.getLongitude()==-9999?Double.NaN:el.getLongitude();
+	double alt = el==null?Double.NaN:el.getAltitude()==-9999?Double.NaN:el.getAltitude();
+	setLocation(lon,lat,alt);
+	values[cnt++] = lat;
+	values[cnt++] = lon;
         CalendarDate cdttm = po.getNominalTimeAsCalendarDate();
         Date         dttm  = new Date(cdttm.getMillis());
 
         objectValues[cnt++] = dttm;
         setRecordTime(dttm.getTime());
-
 
         //TODO: Time
         //        System.err.println ("reading:" +el);

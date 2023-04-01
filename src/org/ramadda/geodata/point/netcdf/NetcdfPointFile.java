@@ -192,10 +192,6 @@ public class NetcdfPointFile extends PointFile {
         if (fieldsProperty != null) {
             List<RecordField> fields = doMakeFields(fieldsProperty);
             for (RecordField field : fields) {
-                if (field.getChartable()) {
-                    //don't do this for now
-                    //                    defaultChartable = false;
-                }
                 dfltFields.put(field.getName(), field);
             }
         }
@@ -239,10 +235,10 @@ public class NetcdfPointFile extends PointFile {
                 }
                 fields.add(field);
             }
-            //            System.err.println ("fields: " + fields);
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
+
 
         return fields;
     }
@@ -280,7 +276,6 @@ public class NetcdfPointFile extends PointFile {
 
         return collection.getPointFeatureIterator(16384);
     }
-
 
 
     /**
@@ -324,7 +319,6 @@ public class NetcdfPointFile extends PointFile {
     }
 
 
-
     /**
      * This just passes through to FileType.doMakeRecord
      *
@@ -340,8 +334,9 @@ public class NetcdfPointFile extends PointFile {
                     "Given file is not a recognized point data file");
             }
             PointFeatureIterator dataIterator = getPointIterator(pod);
+	    System.err.println(dataIterator.getClass().getName());
             NetcdfRecord record = new NetcdfRecord(this, getFields(),
-                                      dataIterator);
+						   dataIterator);
 
             return record;
         } catch (Exception exc) {
