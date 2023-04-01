@@ -5,7 +5,8 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.record;
 
-
+import java.util.ArrayList;
+import java.util.List;
 import java.io.*;
 
 
@@ -17,6 +18,8 @@ import java.io.*;
  * @author         Enter your name here...
  */
 public abstract class RecordVisitor {
+    public RecordVisitor() {
+    }
 
     /**
      * _more_
@@ -50,10 +53,6 @@ public abstract class RecordVisitor {
      * @param visitInfo _more_
      */
     public void close(VisitInfo visitInfo) {}
-
-
-
-
 
 
 }

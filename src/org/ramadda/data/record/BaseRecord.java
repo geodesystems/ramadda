@@ -23,7 +23,7 @@ import java.util.List;
  *
  * @author   Jeff McWhirter
  */
-public abstract class BaseRecord implements Cloneable {
+public class BaseRecord implements Cloneable {
 
 
 
@@ -87,6 +87,8 @@ public abstract class BaseRecord implements Cloneable {
      * _more_
      */
     public BaseRecord() {}
+
+
 
     /**
      * Ctor
@@ -310,8 +312,6 @@ public abstract class BaseRecord implements Cloneable {
 
         if (object instanceof Date) {
             Date dttm = (Date) object;
-            System.err.println("getting date:" + dttm);
-
             return Utils.formatIso(dttm);
         }
 
@@ -1550,15 +1550,17 @@ public abstract class BaseRecord implements Cloneable {
      * @param original _more_
      * @param newValue _more_
      */
-    public void copy(double[] original, double[] newValue) {
-        if (original.length < newValue.length) {
+    public void copy(double[] to, double[] from) {
+        if (to.length < from.length) {
             throw new IllegalArgumentException("length mismatch "
-                    + original.length + "<" + newValue.length);
+                    + to.length + "<" + from.length);
         }
-        for (int i = 0; i < original.length; i++) {
-            original[i] = 0;
+        for (int i = 0; i < to.length; i++) {
+            to[i] = 0;
         }
-        System.arraycopy(newValue, 0, original, 0, newValue.length);
+	//	Utils.print("BaseRecord.copy: from:",from); 
+        System.arraycopy(from, 0, to, 0, from.length);
+	//	Utils.print("BaseRecord.copy: to:",to); 
     }
 
 
@@ -1760,5 +1762,24 @@ public abstract class BaseRecord implements Cloneable {
     public String getStringValue(RecordField field, byte value) {
         return "" + value;
     }
+
+    public static void main(String[] args) throws Exception {
+	DataOutputStream dos = new DataOutputStream(new FileOutputStream("test.out"));
+	BaseRecord record = new BaseRecord();
+	double[]out = {77,24};
+	double[]in = {0,0};	
+	for(int i=0;i<5;i++) {
+	    record.write(dos,out);
+	}
+	dos.close();
+	DataInputStream dis = new DataInputStream(new FileInputStream("test.out"));
+	for(int i=0;i<5;i++) {
+	    record.readDoubles(dis,in);
+	    for(double d:in)
+		System.err.print("," + d);
+	    System.err.println("");
+	}
+    }
+
 
 }
