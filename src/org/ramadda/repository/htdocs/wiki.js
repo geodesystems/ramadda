@@ -503,7 +503,7 @@ WikiEditor.prototype = {
 	let idRegExp = /[0-9a-f\-]/;
 	while(tmp>=0) {
 	    let c = text[tmp];
-	    if(!c.match(idRegExp)) break;
+	    if(!c || !c.match(idRegExp)) break;
 	    idLeft=tmp--;
 	}
 	let idRight=index;
@@ -1945,6 +1945,7 @@ WikiEditor.prototype = {
 		{p:'showHeading',ex:'true'},
 		{p:'showLine',ex:'true'},
 		{p:'showSnippetHover',ex:'true'},		
+		{p:'showPlaceholder',ex:'true',tt:'Show placeholder image'},
 		{p:'addPageSearch',d:true,tt:'Add the page search form'},
 		{p:'captionPrefix',ex:'Click to view example: ',tt:'To use for popup images'}],
 				   this.groupAttributes),
