@@ -2456,6 +2456,13 @@ public class Utils extends IO {
 
 
 
+    public static void print(String prefix, double[]values) {
+	System.err.print(prefix);
+	for(double d: values)System.err.print(" " + d);
+	System.err.println("");
+    }
+
+
     /**
      * _more_
      *
