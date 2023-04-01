@@ -500,7 +500,7 @@ public class PointFormHandler extends RecordFormHandler {
 
         StringBuilder sb = new StringBuilder();
         request.getRepository().getPageHandler().entrySectionOpen(request,
-                entry, sb, "CSV Download");
+                entry, sb, "Data Download");
         sb.append(msgSB);
 
         RecordEntry recordEntry =
@@ -509,11 +509,10 @@ public class PointFormHandler extends RecordFormHandler {
         sb.append(request.formPost(getRepository().URL_ENTRY_SHOW,
                                    HtmlUtils.id(formId)));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+	
         sb.append(
             HtmlUtils.hidden(
                 ARG_OUTPUT, getPointOutputHandler().OUTPUT_PRODUCT.getId()));
-	sb.append(HtmlUtils.hidden(ARG_PRODUCT,"points.csv"));
-	sb.append(HtmlUtils.hidden(ARG_ASYNCH,"false"));
         addToEntryForm(request, entry, sb, recordEntry,true);
         sb.append("<p>");
         sb.append(HtmlUtils.submit(msg("Get Data"), ARG_GETDATA));
@@ -552,7 +551,6 @@ public class PointFormHandler extends RecordFormHandler {
             ((RecordTypeHandler) entry.getTypeHandler()).addToProcessingForm(
                 request, entry, sb);
         }
-
 
 	addSubsetForm(request, entry, sb, false, recordEntry, "",csvForm);
 	if(!csvForm) {
@@ -880,6 +878,18 @@ public class PointFormHandler extends RecordFormHandler {
                     formatPointCount(numRecords)));
         }
 
+	if(csvForm) {
+	    List products = new ArrayList();
+	    products.add(new TwoFacedObject("CSV", "points.csv"));
+	    products.add(new TwoFacedObject("NetCDF", "points.nc"));
+	    subsetSB.append(HtmlUtils.formEntry(
+					  msgLabel("Format"),
+					  HtmlUtils.select(
+							   ARG_PRODUCT, products,
+							   request.getString(ARG_PRODUCT,""))));
+	}
+
+
         MapInfo map = getRepository().getMapManager().createMap(request,
                           entry, true, null);
         List<Metadata> metadataList = getMetadataManager().getMetadata(request,entry);
@@ -893,11 +903,6 @@ public class PointFormHandler extends RecordFormHandler {
         }
         SessionManager sm = getRepository().getSessionManager();
 	
-
-
-
-
-
         if (recordEntry != null) {
             String help = "Probablity a point will be included 0 - 1.0";
             String probHelpImg =HU.space(1) +

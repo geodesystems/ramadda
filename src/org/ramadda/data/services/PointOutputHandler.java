@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2021 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2021 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.data.services;
@@ -9,6 +9,7 @@ package org.ramadda.data.services;
 import org.ramadda.data.point.PointRecord;
 import org.ramadda.data.record.BaseRecord;
 import org.ramadda.data.record.CsvVisitor;
+import org.ramadda.data.record.NetcdfVisitor;
 import org.ramadda.data.record.GeoRecord;
 import org.ramadda.data.record.RecordField;
 import org.ramadda.data.record.RecordFile;
@@ -185,7 +186,7 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @throws Exception on badness
      */
     public PointOutputHandler(Repository repository, Element element)
-            throws Exception {
+	throws Exception {
 
         super(repository, element);
         String category = getOutputCategory();
@@ -207,8 +208,8 @@ public class PointOutputHandler extends RecordOutputHandler {
 
 
         OUTPUT_GETPOINTINDEX = new OutputType("Point index query",
-                base + ".getpointindex", OutputType.TYPE_OTHER, "",
-                ICON_DATA, category);
+					      base + ".getpointindex", OutputType.TYPE_OTHER, "",
+					      ICON_DATA, category);
 
         OUTPUT_GETLATLON = new OutputType("Lat/Lon query",
                                           base + ".getlatlon",
@@ -287,7 +288,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         OUTPUT_CHART = new OutputType("Chart ", base + ".chart",
                                       OutputType.TYPE_OTHER
                                       | OutputType.TYPE_IMPORTANT, "",
-                                          "fa-chart-line", category);
+				      "fa-chart-line", category);
 
         OUTPUT_FORM_CSV = new OutputType("CSV Download Form", base + ".formcsv",
 					 OutputType.TYPE_FILE
@@ -300,11 +301,11 @@ public class PointOutputHandler extends RecordOutputHandler {
         OUTPUT_FORM = new OutputType("Subset and Products", base + ".form",
                                      OutputType.TYPE_OTHER
                                      | OutputType.TYPE_IMPORTANT, "",
-                                         ICON_TOOLS, category);
+				     ICON_TOOLS, category);
 
         OUTPUT_TIMESERIES_IMAGE = new OutputType("",
-                base + ".timeseriesimage", OutputType.TYPE_OTHER, "",
-                ICON_IMAGE, category);
+						 base + ".timeseriesimage", OutputType.TYPE_OTHER, "",
+						 ICON_IMAGE, category);
 
 
         OUTPUT_WAVEFORM_CSV = new OutputType("Waveform CSV",
@@ -391,8 +392,8 @@ public class PointOutputHandler extends RecordOutputHandler {
             (RecordTypeHandler) entry.getTypeHandler();
 
         return new PointEntry(
-            (PointOutputHandler) typeHandler.getRecordOutputHandler(),
-            request, entry);
+			      (PointOutputHandler) typeHandler.getRecordOutputHandler(),
+			      request, entry);
     }
 
 
@@ -407,7 +408,7 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @throws Exception On badness
      */
     public Result outputEntryGetPointIndex(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         //TODO: find the closest index to the lat/lon in the request                                                              
         int          index = 1;
         StringBuffer sb    = new StringBuffer("<result>");
@@ -441,8 +442,8 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @throws Exception On badness
      */
     public long getApproximatePointCount(
-            Request request, List<? extends RecordEntry> subsetEntries)
-            throws Exception {
+					 Request request, List<? extends RecordEntry> subsetEntries)
+	throws Exception {
         long pointCount = 0;
         storeSession(request);
         double north = request.get(ARG_AREA_NORTH, 90.0);
@@ -451,7 +452,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         double west  = request.get(ARG_AREA_WEST, -180.0);
 
         Rectangle2D.Double queryRect = new Rectangle2D.Double(west, south,
-                                           east - west, north - south);
+							      east - west, north - south);
         for (RecordEntry entry : subsetEntries) {
             Rectangle2D.Double entryBounds = entry.getEntry().getBounds();
             Rectangle2D intersection =
@@ -478,17 +479,16 @@ public class PointOutputHandler extends RecordOutputHandler {
      */
     @Override
     public List<RecordEntry> doSubsetEntries(
-            Request request, List<? extends RecordEntry> recordEntries)
-            throws Exception {
+					     Request request, List<? extends RecordEntry> recordEntries)
+	throws Exception {
 
         List<RecordEntry> goodEntries = super.doSubsetEntries(request,
-                                            recordEntries);
+							      recordEntries);
 
         Date[] dateRange = request.getDateRange(ARG_FROMDATE, ARG_TODATE, "",
-                               new Date());
+						new Date());
 
         if ((dateRange[0] != null) || (dateRange[1] != null)) {
-            System.err.println("have date range");
             List<RecordEntry> timeEntries = new ArrayList<RecordEntry>();
             for (RecordEntry recordEntry : goodEntries) {
                 Entry entry = recordEntry.getEntry();
@@ -533,21 +533,21 @@ public class PointOutputHandler extends RecordOutputHandler {
             }
             for (SelectionRectangle bbox : bboxes) {
                 Rectangle2D.Double queryRect = new Rectangle2D.Double(
-                                                   bbox.getWest(-180),
-                                                   bbox.getSouth(-90),
-                                                   bbox.getEast(180)
-                                                   - bbox.getWest(
-                                                       -180), bbox.getNorth(
-                                                       90) - bbox.getSouth(
-                                                       -90));
+								      bbox.getWest(-180),
+								      bbox.getSouth(-90),
+								      bbox.getEast(180)
+								      - bbox.getWest(
+										     -180), bbox.getNorth(
+													  90) - bbox.getSouth(
+															      -90));
                 Rectangle2D.Double entryRect =
                     new Rectangle2D.Double(entry.getWest(), entry.getSouth(),
                                            entry.getEast() - entry.getWest(),
                                            entry.getNorth()
                                            - entry.getSouth());
                 if (entryRect.intersects(queryRect)
-                        || entryRect.contains(queryRect)
-                        || queryRect.contains(entryRect)) {
+		    || entryRect.contains(queryRect)
+		    || queryRect.contains(entryRect)) {
                     spaceEntries.add(recordEntry);
 
                     break;
@@ -577,13 +577,13 @@ public class PointOutputHandler extends RecordOutputHandler {
                                  boolean asynch,
                                  List<? extends RecordEntry> recordEntries,
                                  Object jobId)
-            throws Throwable {
+	throws Throwable {
 
         List<PointEntry> pointEntries =
             PointEntry.toPointEntryList(recordEntries);
         if ( !getRecordJobManager().canAcceptJob()) {
             return getRepository().makeErrorResult(request,
-                    "Too many processing requests");
+						   "Too many processing requests");
         }
 
         //Get the product formats
@@ -592,14 +592,14 @@ public class PointOutputHandler extends RecordOutputHandler {
         //If nothing selected then flake out
         if (formats.size() == 0) {
             return getRepository().makeErrorResult(request,
-                    "No product formats were selected");
+						   "No product formats were selected");
         }
 
         //If more than one format is selected and this is a synchronous call then raise an error
         if ((formats.size() > 1) && !asynch) {
             return getRepository().makeErrorResult(
-                request,
-                "Cannot have more than one product format selected when doing an aysnchronous request");
+						   request,
+						   "Cannot have more than one product format selected when doing an aysnchronous request");
         }
 
 
@@ -629,42 +629,43 @@ public class PointOutputHandler extends RecordOutputHandler {
             if (visitors.size() > 0) {
                 RecordVisitorGroup groupVisitor =
                     new RecordVisitorGroup(visitors) {
-                    public boolean visitRecord(RecordFile file,
-                            VisitInfo visitInfo, BaseRecord record)
+			public boolean visitRecord(RecordFile file,
+						   VisitInfo visitInfo, BaseRecord record)
                             throws Exception {
-                        if ( !super.visitRecord(file, visitInfo, record)) {
-                            return false;
-                        }
-                        if (getCount() == 1) {
-                            theJobInfo.setCurrentStatus("Reading points...");
-                        } else if ((getCount() % 100000) == 0) {
-                            theJobInfo.setCurrentStatus("Read "
-                                    + (getCount() / 1000) + "K points");
-                        }
+			    if ( !super.visitRecord(file, visitInfo, record)) {
+				return false;
+			    }
+			    if (getCount() == 1) {
+				theJobInfo.setCurrentStatus("Reading points...");
+			    } else if ((getCount() % 100000) == 0) {
+				theJobInfo.setCurrentStatus("Read "
+							    + (getCount() / 1000) + "K points");
+			    }
 
-                        return true;
-                    }
+			    return true;
+			}
 
-                };
+		    };
                 info.setCurrentStatus("Staging request...");
 
                 memoryCheck("POINT: memory before:");
+
                 VisitInfo visitInfo = new VisitInfo(VisitInfo.QUICKSCAN_NO);
                 if (request.defined("startdate")) {
                     Date dttm = Utils.parseRelativeDate(new Date(),
-                                    request.getString("startdate", ""), 0);
+							request.getString("startdate", ""), 0);
                     visitInfo.setStartDate(dttm);
                 } else if (request.defined("date_fromdate")) {
                     Date dttm = Utils.parseRelativeDate(new Date(),
-                                    request.getString("date_fromdate", ""), 0);
+							request.getString("date_fromdate", ""), 0);
                     visitInfo.setStartDate(dttm);
                 }
                 if (request.defined("enddate")) {
                     visitInfo.setEndDate(Utils.parseRelativeDate(new Date(),
-                            request.getString("enddate", ""), 0));
+								 request.getString("enddate", ""), 0));
                 } else  if (request.defined("date_todate")) {
                     visitInfo.setEndDate(Utils.parseRelativeDate(new Date(),
-                            request.getString("date_todate", ""), 0));
+								 request.getString("date_todate", ""), 0));
                 }
 		if(visitInfo.getStartDate() !=null ||  visitInfo.getEndDate()!=null) {
 		    request.remove(ARG_RECORD_LAST);
@@ -705,7 +706,7 @@ public class PointOutputHandler extends RecordOutputHandler {
 		//		System.err.println("date:" + visitInfo.getStartDate() +" " + visitInfo.getEndDate() +" " + visitInfo);
 
                 getRecordJobManager().visitSequential(request, pointEntries,
-                        groupVisitor, visitInfo);
+						      groupVisitor, visitInfo);
 
                 if ( !jobOK(jobId)) {
                     return result;
@@ -745,11 +746,14 @@ public class PointOutputHandler extends RecordOutputHandler {
             }
             if (request.responseAsXml()) {
                 return new Result(XmlUtil.tag(TAG_RESPONSE,
-                        XmlUtil.attr(ATTR_CODE, CODE_OK), "OK"), MIME_XML);
+					      XmlUtil.attr(ATTR_CODE, CODE_OK), "OK"), MIME_XML);
             }
 
             return getDummyResult();
         } catch (Exception exc) {
+	    if(!asynch) throw exc;
+	    System.err.println("error:" + exc);
+	    exc.printStackTrace();
             Throwable inner = LogUtil.getInnerException(exc);
             try {
                 getRecordJobManager().setError(info, inner.toString());
@@ -757,7 +761,7 @@ public class PointOutputHandler extends RecordOutputHandler {
             //            getLogManager().logError("processing point request", inner);
             //Special handling for json requests
             if ((formats.size() == 1)
-                    && formats.contains(OUTPUT_JSON.getId())) {
+		&& formats.contains(OUTPUT_JSON.getId())) {
                 String message = "Error: " + inner.getMessage();
                 inner.printStackTrace();
                 String       code = "error";
@@ -770,7 +774,7 @@ public class PointOutputHandler extends RecordOutputHandler {
             }
 
             return getRepository().makeErrorResult(request,
-                    inner.getMessage());
+						   inner.getMessage());
         }
     }
 
@@ -789,7 +793,7 @@ public class PointOutputHandler extends RecordOutputHandler {
      */
     public Result outputEntry(Request request, OutputType outputType,
                               final Entry entry)
-            throws Exception {
+	throws Exception {
 
         Result parentResult = super.outputEntry(request, outputType, entry);
         if (parentResult != null) {
@@ -797,8 +801,8 @@ public class PointOutputHandler extends RecordOutputHandler {
         }
 
         boolean doingPointCount = request.get(ARG_POINTCOUNT, false)
-                                  || request.getString(ARG_PRODUCT,
-                                      "").equals(OUTPUT_POINTCOUNT.getId());
+	    || request.getString(ARG_PRODUCT,
+				 "").equals(OUTPUT_POINTCOUNT.getId());
 
 
         if (doingPointCount) {
@@ -822,26 +826,26 @@ public class PointOutputHandler extends RecordOutputHandler {
         if (outputType.equals(OUTPUT_GETLATLON)) {
             return outputEntryGetLatLon(request,
                                         (PointEntry) doMakeEntry(request,
-                                            entry));
+								 entry));
         }
 
         if (outputType.equals(OUTPUT_VIEW)) {
             return getFormHandler().outputEntryView(request, outputType,
-                    doMakeEntry(request, entry));
+						    doMakeEntry(request, entry));
         }
 
         if (outputType.equals(OUTPUT_METADATA)) {
             return getFormHandler().outputEntryMetadata(request, outputType,
-                    doMakeEntry(request, entry));
+							doMakeEntry(request, entry));
         }
 
         if (request.defined(ARG_GETDATA)) {
             if ( !request.defined(ARG_PRODUCT)) {
                 return getPointFormHandler().outputEntryForm(
-                    request, entry,
-                    new StringBuffer(
-                        getPageHandler().showDialogError(
-                            "No products selected")));
+							     request, entry,
+							     new StringBuffer(
+									      getPageHandler().showDialogError(
+													       "No products selected")));
             }
         }
 
@@ -852,7 +856,7 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         if (outputType.equals(OUTPUT_WAVEFORM_CSV)) {
             return getPointFormHandler().outputEntryWaveformCsv(request,
-                    outputType, (PointEntry) doMakeEntry(request, entry));
+								outputType, (PointEntry) doMakeEntry(request, entry));
         }
 
         if (outputType.equals(OUTPUT_FORM_CSV)) {
@@ -873,7 +877,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                 pointEntries.get(0).getPointOutputHandler();
             try {
                 Result result = pointOutputHandler.processEntries(request,
-                                    entry, false, pointEntries, null);
+								  entry, false, pointEntries, null);
                 if (result != null) {
                     return result;
                 }
@@ -888,15 +892,15 @@ public class PointOutputHandler extends RecordOutputHandler {
             StringBuffer sb = new StringBuffer();
             if ( !outputType.equals(OUTPUT_FORM)) {
                 sb.append(
-                    getPageHandler().showDialogError(
-                        "Unknown output type:" + outputType));
+			  getPageHandler().showDialogError(
+							   "Unknown output type:" + outputType));
             }
 
             return getPointFormHandler().outputEntryForm(request, entry);
         }
 
         return getRecordJobManager().handleAsynchRequest(request, entry,
-                outputType, pointEntries);
+							 outputType, pointEntries);
 
         //        return null;
     }
@@ -915,7 +919,7 @@ public class PointOutputHandler extends RecordOutputHandler {
      */
     public Result outputEntryChart(Request request, OutputType outputType,
                                    Entry entry)
-            throws Exception {
+	throws Exception {
         StringBuilder sb = new StringBuilder();
         getPageHandler().entrySectionOpen(request, entry, sb, "Point Chart",
                                           true);
@@ -939,7 +943,7 @@ public class PointOutputHandler extends RecordOutputHandler {
      */
     public String getJsonUrl(Request request, Entry entry, Hashtable props,
                              List<String> displayProps)
-            throws Exception {
+	throws Exception {
 
         PointTypeHandler typeHandler =
             (PointTypeHandler) entry.getTypeHandler();
@@ -1000,11 +1004,11 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         String extra     = "";
         String extraArgs = (props == null)
-                           ? null
-                           : (String) props.get("extraArgs");
+	    ? null
+	    : (String) props.get("extraArgs");
         if (extraArgs != null) {
             for (String tuple :
-                    StringUtil.split(extraArgs, ",", true, true)) {
+		     StringUtil.split(extraArgs, ",", true, true)) {
                 List<String> toks  = StringUtil.splitUpTo(tuple, ":", 2);
                 String       arg   = toks.get(0);
                 String       value = ((toks.size() > 1)
@@ -1025,7 +1029,7 @@ public class PointOutputHandler extends RecordOutputHandler {
 	    int last = Utils.getProperty(props,"lastRecords",-1);
             if (last >=0) {
                 extra += "&"
-                         + HU.arg(RecordFormHandler.ARG_RECORD_LAST, last+"");
+		    + HU.arg(RecordFormHandler.ARG_RECORD_LAST, last+"");
 		//if no max set then use the last value
 		if(props.get(ARG_MAX)==null)
 		    props.put(ARG_MAX,""+(last+100));
@@ -1037,7 +1041,7 @@ public class PointOutputHandler extends RecordOutputHandler {
             String skip = (String) props.get("skip");
             if (skip != null) {
                 extra += "&"
-                         + HU.arg(RecordFormHandler.ARG_RECORD_SKIP, skip);
+		    + HU.arg(RecordFormHandler.ARG_RECORD_SKIP, skip);
             }
 
             String startDate = (String) props.get("request.startdate");
@@ -1054,7 +1058,7 @@ public class PointOutputHandler extends RecordOutputHandler {
 
 
         String url = request.entryUrl(getRepository().URL_ENTRY_DATA, entry)
-                     + extra;
+	    + extra;
 
         return url;
     }
@@ -1073,7 +1077,7 @@ public class PointOutputHandler extends RecordOutputHandler {
     private Result makePointCountResult(Request request, long pointCount) {
         if (request.responseAsXml()) {
             return getRepository().makeOkResult(request,
-                    "<pointcount>" + pointCount + "</pointcount>");
+						"<pointcount>" + pointCount + "</pointcount>");
         }
         if (request.responseAsText()) {
             return getRepository().makeOkResult(request, "" + pointCount);
@@ -1108,7 +1112,7 @@ public class PointOutputHandler extends RecordOutputHandler {
     public Result outputGroup(final Request request,
                               final OutputType outputType, final Entry group,
                               final List<Entry> children)
-            throws Exception {
+	throws Exception {
 
         if (group.getTypeHandler() instanceof PointTypeHandler) {
             return outputEntry(request, outputType, group);
@@ -1139,16 +1143,16 @@ public class PointOutputHandler extends RecordOutputHandler {
 
 
         boolean doingPointCount = request.get(ARG_POINTCOUNT, false)
-                                  || request.getString(ARG_PRODUCT,
-                                      "").equals(OUTPUT_POINTCOUNT.getId());
+	    || request.getString(ARG_PRODUCT,
+				 "").equals(OUTPUT_POINTCOUNT.getId());
         //If its a getdata request then check if a product type (e.g., csv) has been selected
         if ( !doingPointCount && request.defined(ARG_GETDATA)) {
             if ( !request.defined(ARG_PRODUCT)) {
                 return getPointFormHandler().outputGroupForm(
-                    request, group, children,
-                    new StringBuffer(
-                        getPageHandler().showDialogError(
-                            "No products selected")));
+							     request, group, children,
+							     new StringBuffer(
+									      getPageHandler().showDialogError(
+													       "No products selected")));
             }
         }
 
@@ -1162,12 +1166,12 @@ public class PointOutputHandler extends RecordOutputHandler {
         //        System.err.println("record entries:" + makeRecordEntries(request, children, true));
         final List<PointEntry> pointEntries =
             PointEntry.toPointEntryList(doSubsetEntries(request,
-                makeRecordEntries(request, entries, true)));
+							makeRecordEntries(request, entries, true)));
 
         boolean asynchronous = request.get(ARG_ASYNCH, false);
         if ( !doingPointCount && (pointEntries.size() == 0) && asynchronous) {
             return getRepository().makeErrorResult(request,
-                    "No entries found that matched the criteria");
+						   "No entries found that matched the criteria");
         }
 
         long pointCount = getApproximatePointCount(request, pointEntries);
@@ -1193,12 +1197,12 @@ public class PointOutputHandler extends RecordOutputHandler {
         if (tooManyPoints) {
             if (request.responseAsXml()) {
                 return getRepository().makeErrorResult(request,
-                        "Too many points selected:" + pointCount);
+						       "Too many points selected:" + pointCount);
             }
             StringBuffer sb = new StringBuffer(
-                                  getPageHandler().showDialogError(
-                                      "Too many points selected: "
-                                      + pointCount));
+					       getPageHandler().showDialogError(
+										"Too many points selected: "
+										+ pointCount));
 
             return getPointFormHandler().outputGroupForm(request, group,
 							 children, sb);
@@ -1215,7 +1219,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                 pointEntries.get(0).getPointOutputHandler();
             try {
                 Result result = pointOutputHandler.processEntries(request,
-                                    group, false, pointEntries, null);
+								  group, false, pointEntries, null);
                 if (result != null) {
                     return result;
                 }
@@ -1230,8 +1234,8 @@ public class PointOutputHandler extends RecordOutputHandler {
             StringBuffer sb = new StringBuffer();
             if ( !outputType.equals(OUTPUT_FORM)) {
                 sb.append(
-                    getPageHandler().showDialogError(
-                        "Unknown output type:" + outputType));
+			  getPageHandler().showDialogError(
+							   "Unknown output type:" + outputType));
             }
 
             return getPointFormHandler().outputGroupForm(request, group,
@@ -1240,11 +1244,11 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         if ( !request.defined(ARG_PRODUCT)) {
             return getRepository().makeErrorResult(request,
-                    "No product formats were selected");
+						   "No product formats were selected");
         }
 
         return getRecordJobManager().handleAsynchRequest(request, group,
-                outputType, pointEntries);
+							 outputType, pointEntries);
 
 
     }
@@ -1252,7 +1256,7 @@ public class PointOutputHandler extends RecordOutputHandler {
     /**
      *
      * @param id _more_
-      * @return _more_
+     * @return _more_
      */
     private String getIdvField(String id,HashSet<String> seen) {
         id = id.trim();
@@ -1268,7 +1272,7 @@ public class PointOutputHandler extends RecordOutputHandler {
 	}
 	id = tmp;
 	seen.add(id);
-//	System.err.println("ID:" + id);
+	//	System.err.println("ID:" + id);
         return id;
     }
 
@@ -1293,7 +1297,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                                  List<? extends PointEntry> pointEntries,
                                  JobInfo jobInfo, HashSet<String> formats,
                                  List<RecordVisitor> visitors)
-            throws Exception {
+	throws Exception {
 
 
 	String returnFileName = entry.getName();
@@ -1304,85 +1308,93 @@ public class PointOutputHandler extends RecordOutputHandler {
             visitors.add(makeCsvVisitor(request, entry, pointEntries, null,
                                         null, jobInfo.getJobId()));
         }
+        if (formats.contains(OUTPUT_NC.getId())) {
+	    if(!asynch) request.setReturnFilename(returnFileName+".nc");
+            visitors.add(makeNetcdfVisitor(request, entry, pointEntries,
+                                           jobInfo.getJobId()));
+        }
+
+
+
         if (formats.contains(OUTPUT_IDVCSV.getId())) {
 	    if(!asynch) request.setReturnFilename(returnFileName+".csv");
             final boolean[] haveLat = { false };
 
             CsvVisitor.HeaderPrinter headerPrinter =
                 new CsvVisitor.HeaderPrinter() {
-                public void call(CsvVisitor visitor, PrintWriter pw,
-                                 List<RecordField> fields) {
-		    HashSet<String> seen = new HashSet<String>();
-                    StringBuilder sb  = new StringBuilder("(index) -> (");
-                    int           cnt = 0;
-                    for (RecordField field : fields) {
-                        if (field.getName().toLowerCase().equals(
-                                "latitude")) {
-                            haveLat[0] = true;
-                            break;
-                        }
-                    }
+		    public void call(CsvVisitor visitor, PrintWriter pw,
+				     List<RecordField> fields) {
+			HashSet<String> seen = new HashSet<String>();
+			StringBuilder sb  = new StringBuilder("(index) -> (");
+			int           cnt = 0;
+			for (RecordField field : fields) {
+			    if (field.getName().toLowerCase().equals(
+								     "latitude")) {
+				haveLat[0] = true;
+				break;
+			    }
+			}
 
-                    for (RecordField field : fields) {
-                        if (cnt++ > 0) {
-                            sb.append(",");
-                        }
-                        String id = getIdvField(field.getName(),seen);
-                        if (field.isTypeDate()) {
-                            sb.append("Time");
-                        } else if (field.isTypeString()) {
-                            sb.append(id + "(Text)");
-                        } else {
-                            sb.append(id);
-                        }
-                    }
-                    if ( !haveLat[0]) {
-                        sb.append(",latitude,longitude");
-                    }
-                    sb.append(")\n");
-                    cnt = 0;
-		    seen = new HashSet<String>();
-                    for (RecordField field : fields) {
-                        if (cnt++ > 0) {
-                            sb.append(",");
-                        }
-                        String id = getIdvField(field.getName(),seen);
-                        if (field.isTypeDate()) {
-                            sb.append(
-                                "Time[fmt=\"yyyy-MM-dd'T'HH:mm:ssZ\" ]");
-                        } else if (field.isTypeString()) {
-                            sb.append(id + "(Text)");
-                        } else {
-                            sb.append(id + "[");
-                            if (Utils.stringDefined(field.getUnit())) {
-                                sb.append(" unit=\"" + field.getUnit()
-                                          + "\" ");
-                            }
-                            if (field.isTypeDate()) {
-                                sb.append(" fmt=\"yyyy-MM-dd'T'HH:mm:ssZ\" ");
-                            }
-                            sb.append("]");
-                        }
-                    }
+			for (RecordField field : fields) {
+			    if (cnt++ > 0) {
+				sb.append(",");
+			    }
+			    String id = getIdvField(field.getName(),seen);
+			    if (field.isTypeDate()) {
+				sb.append("Time");
+			    } else if (field.isTypeString()) {
+				sb.append(id + "(Text)");
+			    } else {
+				sb.append(id);
+			    }
+			}
+			if ( !haveLat[0]) {
+			    sb.append(",latitude,longitude");
+			}
+			sb.append(")\n");
+			cnt = 0;
+			seen = new HashSet<String>();
+			for (RecordField field : fields) {
+			    if (cnt++ > 0) {
+				sb.append(",");
+			    }
+			    String id = getIdvField(field.getName(),seen);
+			    if (field.isTypeDate()) {
+				sb.append(
+					  "Time[fmt=\"yyyy-MM-dd'T'HH:mm:ssZ\" ]");
+			    } else if (field.isTypeString()) {
+				sb.append(id + "(Text)");
+			    } else {
+				sb.append(id + "[");
+				if (Utils.stringDefined(field.getUnit())) {
+				    sb.append(" unit=\"" + field.getUnit()
+					      + "\" ");
+				}
+				if (field.isTypeDate()) {
+				    sb.append(" fmt=\"yyyy-MM-dd'T'HH:mm:ssZ\" ");
+				}
+				sb.append("]");
+			    }
+			}
 
-                    if ( !haveLat[0]) {
-                        sb.append(",latitude[],longitude[]");
-                    }
-                    //                      Time[fmt="yyyy-MM-dd HH:mm:ss"],Latitude[unit="deg"],Longitude[unit="degrees west"],T[unit="celsius"],skip,DIR[unit="deg"],SPD[unit="m/s"]
-                    sb.append("\n");
-                    pw.print(sb);
-                }
-            };
+			if ( !haveLat[0]) {
+			    sb.append(",latitude[],longitude[]");
+			}
+			//                      Time[fmt="yyyy-MM-dd HH:mm:ss"],Latitude[unit="deg"],Longitude[unit="degrees west"],T[unit="celsius"],skip,DIR[unit="deg"],SPD[unit="m/s"]
+			sb.append("\n");
+			pw.print(sb);
+		    }
+		};
             CsvVisitor.LineEnder lineEnder = new CsvVisitor.LineEnder() {
-                public void call(CsvVisitor visitor, PrintWriter pw,
-                                 List<RecordField> fields, BaseRecord record,
-                                 int cnt) {
-                    if ( !haveLat[0]) {
-                        pw.print(",NaN,NaN");
-                    }
+		    public void call(CsvVisitor visitor, PrintWriter pw,
+				     List<RecordField> fields, BaseRecord record,
+				     int cnt) {
+			if ( !haveLat[0]) {
+			    pw.print(",NaN,NaN");
+			}
 
-                }
-            };
+		    }
+		};
             visitors.add(makeCsvVisitor(request, entry, pointEntries,
                                         headerPrinter, lineEnder,
                                         jobInfo.getJobId()));
@@ -1393,18 +1405,14 @@ public class PointOutputHandler extends RecordOutputHandler {
                 String tail = IOUtil.stripExtension(entry.getName());
                 request.setReturnFilename(tail + ".json");
                 request.getHttpServletResponse().setContentType(
-                    JsonUtil.MIMETYPE);
+								JsonUtil.MIMETYPE);
                 request.setCORSHeaderOnResponse();
             }
             visitors.add(makeJsonVisitor(request, entry, pointEntries,
                                          jobInfo.getJobId()));
         }
 
-        if (formats.contains(OUTPUT_NC.getId())) {
-	    if(!asynch) request.setReturnFilename(returnFileName+".nc");
-            visitors.add(makeNetcdfVisitor(request, entry, pointEntries,
-                                           jobInfo.getJobId()));
-        }
+
         if (request.get(ARG_GRID_BARNES, false)) {
             visitors.add(makeBarnesVisitor(request, pointEntries,
                                            getBounds(request, pointEntries)));
@@ -1412,19 +1420,13 @@ public class PointOutputHandler extends RecordOutputHandler {
         if (formats.contains(OUTPUT_LATLONALTCSV.getId())) {
 	    if(!asynch) request.setReturnFilename(returnFileName+".csv");
             visitors.add(makeLatLonAltCsvVisitor(request, entry,
-                    pointEntries, jobInfo.getJobId()));
+						 pointEntries, jobInfo.getJobId()));
         }
         if (formats.contains(OUTPUT_LATLONALTBIN.getId())) {
             visitors.add(makeLatLonAltBinVisitor(request, entry,
-                    pointEntries, jobInfo.getJobId(), null, true));
+						 pointEntries, jobInfo.getJobId(), null, true));
         }
 
-        if (formats.contains(OUTPUT_NC.getId())) {
-	    if(!asynch) request.setReturnFilename(returnFileName+".nc");
-            visitors.add(makeNcVisitor(request, entry, pointEntries,
-                                       jobInfo.getJobId()));
-
-        }
 
         if (formats.contains(OUTPUT_NC.getId())) {
             //            result = outputEntryNc(request, entry,  pointEntries,
@@ -1453,6 +1455,7 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         //Check if we need to make a grid
         if (anyGriddedFormats(formats)) {
+	    System.err.println("Add grid");
             visitors.add(makeGridVisitor(request, pointEntries,
                                          getBounds(request, pointEntries)));
         }
@@ -1470,9 +1473,9 @@ public class PointOutputHandler extends RecordOutputHandler {
      */
     public boolean anyGriddedFormats(HashSet<String> formats) {
         if (formats.contains(OUTPUT_ASC.getId())
-                || formats.contains(OUTPUT_IMAGE.getId())
-                || formats.contains(OUTPUT_KMZ.getId())
-                || formats.contains(OUTPUT_HILLSHADE.getId())) {
+	    || formats.contains(OUTPUT_IMAGE.getId())
+	    || formats.contains(OUTPUT_KMZ.getId())
+	    || formats.contains(OUTPUT_HILLSHADE.getId())) {
             return true;
 
         }
@@ -1496,63 +1499,59 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @throws Exception on badness
      */
     public RecordVisitor makeCsvVisitor(
-            final Request request, final Entry mainEntry,
-            List<? extends PointEntry> pointEntries,
-            final CsvVisitor.HeaderPrinter headerPrinter,
-            final CsvVisitor.LineEnder lineEnder, final Object jobId)
-            throws Exception {
+					final Request request, final Entry mainEntry,
+					List<? extends PointEntry> pointEntries,
+					final CsvVisitor.HeaderPrinter headerPrinter,
+					final CsvVisitor.LineEnder lineEnder, final Object jobId)
+	throws Exception {
 
         RecordVisitor visitor = new BridgeRecordVisitor(this, request, jobId,
-                                    mainEntry, ".csv") {
-            private CsvVisitor csvVisitor = null;
-            int                cnt        = 0;
-            public boolean doVisitRecord(RecordFile file,
-                                         VisitInfo visitInfo,
-                                         BaseRecord record)
+							mainEntry, ".csv") {
+		private CsvVisitor csvVisitor = null;
+		int                cnt        = 0;
+		public boolean doVisitRecord(RecordFile file,
+					     VisitInfo visitInfo,
+					     BaseRecord record)
                     throws Exception {
-                if (csvVisitor == null) {
-                    //Set the georeference flag
-                    if (request.get(ARG_GEOREFERENCE, false)) {
-                        visitInfo.putProperty("georeference",
-                                Boolean.TRUE);
-                    }
-                    String url = request.getAbsoluteUrl(
-                                     request.makeUrl(
-                                         repository.URL_ENTRY_SHOW,
-                                         ARG_ENTRYID, mainEntry.getId()));
-                    visitInfo.putProperty(CsvVisitor.PROP_SOURCE, url);
-                    csvVisitor = new CsvVisitor(getThePrintWriter(),
-                            getFields(request, record.getFields()),
-                            headerPrinter, lineEnder);
-                    if (request.defined(ARG_HEADER)) {
-                        csvVisitor.setAltHeader(request.getString(ARG_HEADER,
-                                ""));
-                    }
-                    if (request.get("fullheader", false)) {
-                        csvVisitor.setFullHeader(true);
-                    }
-                }
-                if ( !jobOK(jobId)) {
-                    return false;
-                }
-                synchronized (visitInfo) {
-                    if (visitInfo.getCount() == 0) {
-                        visitInfo.putProperty(BaseRecord.PROP_INCLUDEVECTOR,
-					      Boolean.valueOf(request.get(ARG_INCLUDEWAVEFORM,
-                                    false)));
-                    }
-                    try {
-                        csvVisitor.visitRecord(file, visitInfo, record);
-                    } catch (Exception exc) {
-                        System.err.println("ERROR:" + exc);
+		    if (csvVisitor == null) {
+			//Set the georeference flag
+			if (request.get(ARG_GEOREFERENCE, false)) {
+			    visitInfo.putProperty("georeference", Boolean.TRUE);
+			}
+			String url = request.getAbsoluteUrl(
+							    request.makeUrl(
+									    repository.URL_ENTRY_SHOW,
+									    ARG_ENTRYID, mainEntry.getId()));
+			visitInfo.putProperty(CsvVisitor.PROP_SOURCE, url);
+			csvVisitor = new CsvVisitor(getThePrintWriter(),
+						    getFields(request, record.getFields()),
+						    headerPrinter, lineEnder);
+			if (request.defined(ARG_HEADER)) {
+			    csvVisitor.setAltHeader(request.getString(ARG_HEADER, ""));
+			}
+			if (request.get("fullheader", false)) {
+			    csvVisitor.setFullHeader(true);
+			}
+		    }
+		    if ( !jobOK(jobId)) {
+			return false;
+		    }
+		    synchronized (visitInfo) {
+			if (visitInfo.getCount() == 0) {
+			    visitInfo.putProperty(BaseRecord.PROP_INCLUDEVECTOR,
+						  Boolean.valueOf(request.get(ARG_INCLUDEWAVEFORM,
+									      false)));
+			}
+			try {
+			    csvVisitor.visitRecord(file, visitInfo, record);
+			} catch (Exception exc) {
+			    throw exc;
+			}
+		    }
 
-                        throw exc;
-                    }
-                }
-
-                return true;
-            }
-        };
+		    return true;
+		}
+	    };
 
         return visitor;
     }
@@ -1571,9 +1570,9 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @throws Exception _more_
      */
     public RecordVisitor makeJsonVisitor(
-            final Request request, final Entry mainEntry,
-            List<? extends PointEntry> pointEntries, final Object jobId)
-            throws Exception {
+					 final Request request, final Entry mainEntry,
+					 List<? extends PointEntry> pointEntries, final Object jobId)
+	throws Exception {
         return new JsonVisitor(this, request, jobId, mainEntry, ".json");
     }
 
@@ -1591,10 +1590,36 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @throws Exception _more_
      */
     public RecordVisitor makeNetcdfVisitor(
-            final Request request, Entry mainEntry,
-            List<? extends PointEntry> pointEntries, final Object jobId)
-            throws Exception {
-        return new NetcdfVisitor(this, request, jobId, mainEntry);
+					   final Request request, Entry mainEntry,
+					   List<? extends PointEntry> pointEntries, final Object jobId)
+	throws Exception {
+        RecordVisitor visitor = new BridgeRecordVisitor(this, request, jobId, mainEntry, ".nc") {
+		private NetcdfVisitor visitor = null;
+		public boolean doVisitRecord(RecordFile file,
+					     VisitInfo visitInfo,
+					     BaseRecord record)
+		    throws Exception {
+		    if (visitor == null) {
+			File tmpFile = getHandler().getStorageManager().getTmpFile(null, "tmp.nc");
+			visitor = new NetcdfVisitor(tmpFile,getTheDataOutputStream(),getFields(request, record.getFields()));
+		    }
+		    if ( !jobOK(jobId)) {
+			return false;
+		    }
+		    synchronized (visitInfo) {
+			visitor.visitRecord(file, visitInfo, record);
+		    }
+		    return true;
+		}
+		public void close(VisitInfo visitInfo) {
+		    if(visitor!=null) visitor.close(visitInfo);
+		    else {
+			super.close(visitInfo);
+		    }
+		}
+	    };
+        return visitor;
+	//        return new NetcdfVisitor(this, request, jobId, mainEntry);
     }
 
 
@@ -1612,15 +1637,15 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @throws Exception On badness
      */
     public GridVisitor makeGridVisitor(
-            Request request, List<? extends PointEntry> recordEntries,
-            Rectangle2D.Double bounds)
-            throws Exception {
+				       Request request, List<? extends PointEntry> recordEntries,
+				       Rectangle2D.Double bounds)
+	throws Exception {
         int imageWidth  = request.get(ARG_WIDTH, DFLT_WIDTH);
         int imageHeight = request.get(ARG_HEIGHT, DFLT_HEIGHT);
 
         if ((imageWidth > 2500) || (imageHeight > 2500)) {
             throw new IllegalArgumentException("Too large image dimension: "
-                    + imageWidth + " X " + imageHeight);
+					       + imageWidth + " X " + imageHeight);
         }
         //        System.err.println("Grid BOUNDS: " + bounds);
 
@@ -1638,7 +1663,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         //llg.fillValue(Double.NaN);
         //If nothing specified then default to 2 grid cells radius
         if ( !request.defined(ARG_GRID_RADIUS_DEGREES)
-                && !request.defined(ARG_GRID_RADIUS_CELLS)) {
+	     && !request.defined(ARG_GRID_RADIUS_CELLS)) {
             llg.setRadius(0.0);
             llg.setNumCells(2);
         } else {
@@ -1647,11 +1672,11 @@ public class PointOutputHandler extends RecordOutputHandler {
             } else {
                 //If the user did not change the degrees radius then get the default radius from the bounds
                 if (request.getString(ARG_GRID_RADIUS_DEGREES, "").equals(
-                        request.getString(
-                            ARG_GRID_RADIUS_DEGREES_ORIG, ""))) {
+									  request.getString(
+											    ARG_GRID_RADIUS_DEGREES_ORIG, ""))) {
                     llg.setRadius(
-                        getFormHandler().getDefaultRadiusDegrees(
-                            request, bounds));
+				  getFormHandler().getDefaultRadiusDegrees(
+									   request, bounds));
                 } else {
                     llg.setRadius(request.get(ARG_GRID_RADIUS_DEGREES, 0.0));
                 }
@@ -1665,7 +1690,7 @@ public class PointOutputHandler extends RecordOutputHandler {
             System.err.println("POINT: llg: " + llg);
 
             throw new IllegalArgumentException("bad grid neighborhood size: "
-                    + llg.getCellIndexDelta());
+					       + llg.getCellIndexDelta());
         }
 
         GridVisitor visitor = new GridVisitor(this, request, llg);
@@ -1686,15 +1711,15 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @throws Exception _more_
      */
     public BarnesVisitor makeBarnesVisitor(
-            Request request, List<? extends PointEntry> recordEntries,
-            Rectangle2D.Double bounds)
-            throws Exception {
+					   Request request, List<? extends PointEntry> recordEntries,
+					   Rectangle2D.Double bounds)
+	throws Exception {
         int imageWidth  = request.get(ARG_WIDTH, DFLT_WIDTH);
         int imageHeight = request.get(ARG_HEIGHT, DFLT_HEIGHT);
 
         if ((imageWidth > 2500) || (imageHeight > 2500)) {
             throw new IllegalArgumentException("Too large image dimension: "
-                    + imageWidth + " X " + imageHeight);
+					       + imageWidth + " X " + imageHeight);
         }
         //        System.err.println("Grid BOUNDS: " + bounds);
 
@@ -1721,52 +1746,52 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @throws Exception on badness
      */
     public RecordVisitor makeLatLonAltBinVisitor(Request request,
-            Entry mainEntry, List<? extends PointEntry> pointEntries,
-            final Object jobId, final DataOutputStream inputDos,
-            final boolean doDouble)
-            throws Exception {
+						 Entry mainEntry, List<? extends PointEntry> pointEntries,
+						 final Object jobId, final DataOutputStream inputDos,
+						 final boolean doDouble)
+	throws Exception {
 
         final int[]   cnt     = { 0 };
 
         RecordVisitor visitor = new BridgeRecordVisitor(this, jobId) {
-            @Override
-            public boolean doVisitRecord(RecordFile file,
-                                         VisitInfo visitInfo,
-                                         BaseRecord record) {
-                try {
-                    if ( !jobOK(jobId)) {
-                        return false;
-                    }
-                    GeoRecord geoRecord = (GeoRecord) record;
-                    synchronized (MUTEX) {
-                        DataOutputStream dos = inputDos;
-                        if (dos == null) {
-                            dos = getTheDataOutputStream();
-                        }
-                        //                        if(cnt[0]++<100) {
-                        //                            System.err.println("double:" + geoRecord.getLatitude() + " float:" + ((float)geoRecord.getLatitude()));
-                        //                        }
-                        //FIX
-                        if (doDouble) {
-                            dos.writeDouble(geoRecord.getLatitude());
-                            dos.writeDouble(geoRecord.getLongitude());
-                            dos.writeDouble(geoRecord.getAltitude());
-                        } else {
-                            dos.writeFloat((float) geoRecord.getLatitude());
-                            dos.writeFloat((float) geoRecord.getLongitude());
-                            dos.writeFloat((float) geoRecord.getAltitude());
-                        }
-                    }
+		@Override
+		public boolean doVisitRecord(RecordFile file,
+					     VisitInfo visitInfo,
+					     BaseRecord record) {
+		    try {
+			if ( !jobOK(jobId)) {
+			    return false;
+			}
+			GeoRecord geoRecord = (GeoRecord) record;
+			synchronized (MUTEX) {
+			    DataOutputStream dos = inputDos;
+			    if (dos == null) {
+				dos = getTheDataOutputStream();
+			    }
+			    //                        if(cnt[0]++<100) {
+			    //                            System.err.println("double:" + geoRecord.getLatitude() + " float:" + ((float)geoRecord.getLatitude()));
+			    //                        }
+			    //FIX
+			    if (doDouble) {
+				dos.writeDouble(geoRecord.getLatitude());
+				dos.writeDouble(geoRecord.getLongitude());
+				dos.writeDouble(geoRecord.getAltitude());
+			    } else {
+				dos.writeFloat((float) geoRecord.getLatitude());
+				dos.writeFloat((float) geoRecord.getLongitude());
+				dos.writeFloat((float) geoRecord.getAltitude());
+			    }
+			}
 
-                    return true;
-                } catch (Exception exc) {
-                    throw new RuntimeException(exc);
-                }
-            }
-            public String toString() {
-                return "LatLonAltBin visitor";
-            }
-        };
+			return true;
+		    } catch (Exception exc) {
+			throw new RuntimeException(exc);
+		    }
+		}
+		public String toString() {
+		    return "LatLonAltBin visitor";
+		}
+	    };
 
         return visitor;
     }
@@ -1787,50 +1812,50 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @throws Exception _more_
      */
     public RecordVisitor makeLatLonBinVisitor(Request request,
-            Entry mainEntry, List<? extends PointEntry> pointEntries,
-            final Object jobId, final DataOutputStream inputDos,
-            final boolean doDouble)
-            throws Exception {
+					      Entry mainEntry, List<? extends PointEntry> pointEntries,
+					      final Object jobId, final DataOutputStream inputDos,
+					      final boolean doDouble)
+	throws Exception {
 
         final int[]   cnt     = { 0 };
 
         RecordVisitor visitor = new BridgeRecordVisitor(this, jobId) {
-            @Override
-            public boolean doVisitRecord(RecordFile file,
-                                         VisitInfo visitInfo,
-                                         BaseRecord record) {
-                try {
-                    if ( !jobOK(jobId)) {
-                        return false;
-                    }
-                    GeoRecord geoRecord = (GeoRecord) record;
-                    synchronized (MUTEX) {
-                        DataOutputStream dos = inputDos;
-                        if (dos == null) {
-                            dos = getTheDataOutputStream();
-                        }
-                        //                        if(cnt[0]++<100) {
-                        //                            System.err.println("double:" + geoRecord.getLatitude() + " float:" + ((float)geoRecord.getLatitude()));
-                        //                        }
-                        //FIX
-                        if (doDouble) {
-                            dos.writeDouble(geoRecord.getLatitude());
-                            dos.writeDouble(geoRecord.getLongitude());
-                        } else {
-                            dos.writeFloat((float) geoRecord.getLatitude());
-                            dos.writeFloat((float) geoRecord.getLongitude());
-                        }
-                    }
+		@Override
+		public boolean doVisitRecord(RecordFile file,
+					     VisitInfo visitInfo,
+					     BaseRecord record) {
+		    try {
+			if ( !jobOK(jobId)) {
+			    return false;
+			}
+			GeoRecord geoRecord = (GeoRecord) record;
+			synchronized (MUTEX) {
+			    DataOutputStream dos = inputDos;
+			    if (dos == null) {
+				dos = getTheDataOutputStream();
+			    }
+			    //                        if(cnt[0]++<100) {
+			    //                            System.err.println("double:" + geoRecord.getLatitude() + " float:" + ((float)geoRecord.getLatitude()));
+			    //                        }
+			    //FIX
+			    if (doDouble) {
+				dos.writeDouble(geoRecord.getLatitude());
+				dos.writeDouble(geoRecord.getLongitude());
+			    } else {
+				dos.writeFloat((float) geoRecord.getLatitude());
+				dos.writeFloat((float) geoRecord.getLongitude());
+			    }
+			}
 
-                    return true;
-                } catch (Exception exc) {
-                    throw new RuntimeException(exc);
-                }
-            }
-            public String toString() {
-                return "LatLonAltBin visitor";
-            }
-        };
+			return true;
+		    } catch (Exception exc) {
+			throw new RuntimeException(exc);
+		    }
+		}
+		public String toString() {
+		    return "LatLonAltBin visitor";
+		}
+	    };
 
         return visitor;
     }
@@ -1853,58 +1878,58 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @throws Exception on badness
      */
     public RecordVisitor makeLatLonAltCsvVisitor(Request request,
-            Entry mainEntry, List<? extends PointEntry> entries,
-            final Object jobId)
-            throws Exception {
+						 Entry mainEntry, List<? extends PointEntry> entries,
+						 final Object jobId)
+	throws Exception {
         RecordVisitor visitor = new BridgeRecordVisitor(this, request, jobId,
-                                    mainEntry, "latlonalt.csv") {
-            public boolean doVisitRecord(RecordFile file,
-                                         VisitInfo visitInfo,
-                                         BaseRecord record)
+							mainEntry, "latlonalt.csv") {
+		public boolean doVisitRecord(RecordFile file,
+					     VisitInfo visitInfo,
+					     BaseRecord record)
                     throws Exception {
-                if ( !jobOK(jobId)) {
-                    return false;
-                }
-                StringBuffer buffer      = getBuffer(file);
-                PointRecord  pointRecord = (PointRecord) record;
-                float[]      altitudes   = pointRecord.getAltitudes();
-                if (altitudes != null) {
-                    for (int i = 0; i < altitudes.length; i++) {
-                        buffer.append(pointRecord.getLatitude());
-                        buffer.append(',');
-                        buffer.append(pointRecord.getLongitude());
-                        buffer.append(',');
-                        buffer.append(altitudes[i]);
-                        buffer.append("\n");
-                    }
-                } else {
-                    ((PointRecord) record).printLatLonAltCsv(visitInfo,
-                            buffer);
-                }
-                if (buffer.length() > 100000) {
-                    write(buffer);
-                }
+		    if ( !jobOK(jobId)) {
+			return false;
+		    }
+		    StringBuffer buffer      = getBuffer(file);
+		    PointRecord  pointRecord = (PointRecord) record;
+		    float[]      altitudes   = pointRecord.getAltitudes();
+		    if (altitudes != null) {
+			for (int i = 0; i < altitudes.length; i++) {
+			    buffer.append(pointRecord.getLatitude());
+			    buffer.append(',');
+			    buffer.append(pointRecord.getLongitude());
+			    buffer.append(',');
+			    buffer.append(altitudes[i]);
+			    buffer.append("\n");
+			}
+		    } else {
+			((PointRecord) record).printLatLonAltCsv(visitInfo,
+								 buffer);
+		    }
+		    if (buffer.length() > 100000) {
+			write(buffer);
+		    }
 
-                return true;
-            }
-            private void write(StringBuffer buffer) {
-                synchronized (MUTEX) {
-                    try {
-                        byte[] bytes = buffer.toString().getBytes();
-                        getTheOutputStream().write(bytes, 0, bytes.length);
-                        buffer.setLength(0);
-                    } catch (Exception exc) {
-                        throw new RuntimeException(exc);
-                    }
-                }
-            }
+		    return true;
+		}
+		private void write(StringBuffer buffer) {
+		    synchronized (MUTEX) {
+			try {
+			    byte[] bytes = buffer.toString().getBytes();
+			    getTheOutputStream().write(bytes, 0, bytes.length);
+			    buffer.setLength(0);
+			} catch (Exception exc) {
+			    throw new RuntimeException(exc);
+			}
+		    }
+		}
 
-            public void finished(RecordFile file, VisitInfo visitInfo)
+		public void finished(RecordFile file, VisitInfo visitInfo)
                     throws Exception {
-                write(getBuffer(file));
-                super.finished(file, visitInfo);
-            }
-        };
+		    write(getBuffer(file));
+		    super.finished(file, visitInfo);
+		}
+	    };
 
         return visitor;
     }
@@ -1913,64 +1938,6 @@ public class PointOutputHandler extends RecordOutputHandler {
 
 
 
-    /**
-     * make the visitor that creates netcdf point files
-     *
-     * @param request The request
-     * @param mainEntry Either the Point Collection or File Entry
-     * @param pointEntries The entries to process
-     * @param jobId The job ID
-     *
-     * @return the visitor
-     *
-     * @throws Exception On badness
-     */
-    public RecordVisitor makeNcVisitor(
-            Request request, Entry mainEntry,
-            List<? extends PointEntry> pointEntries, final Object jobId)
-            throws Exception {
-
-        final OutputStream outputStream = getOutputStream(request, jobId,
-                                              mainEntry, ".nc");
-
-        //      List<Attribute> globalAtts = new ArrayList<Attribute>();
-        //      List<PointObVar> dataVars = new ArrayList<PointObVar>();
-        //      final CFPointObWriter writer;
-
-        RecordVisitor visitor = new BridgeRecordVisitor(this, jobId) {
-
-            public boolean doVisitRecord(RecordFile file,
-                                         VisitInfo visitInfo,
-                                         BaseRecord record) {
-                try {
-                    if ( !jobOK(jobId)) {
-                        return false;
-                    }
-                    GeoRecord geoRecord = (GeoRecord) record;
-                    synchronized (MUTEX) {}
-
-                    return true;
-                } catch (Exception exc) {
-                    throw new RuntimeException(exc);
-                }
-            }
-            public void finished(RecordFile file, VisitInfo visitInfo)
-                    throws Exception {
-                super.finished(file, visitInfo);
-                try {
-                    //                      if(writer!=null) {
-
-                    //  writer.finish();
-                    //                      }
-                    outputStream.close();
-                } catch (Exception exc) {
-                    throw new RuntimeException(exc);
-                }
-            }
-        };
-
-        return visitor;
-    }
 
 
     /**
@@ -1989,7 +1956,7 @@ public class PointOutputHandler extends RecordOutputHandler {
     public Result outputEntryGrid(Request request, Entry mainEntry,
                                   IdwGrid llg, HashSet<String> formats,
                                   Object jobId)
-            throws Exception {
+	throws Exception {
 
         boolean doKmz          = formats.contains(OUTPUT_KMZ.getId());
         boolean doImage        = formats.contains(OUTPUT_IMAGE.getId());
@@ -2007,7 +1974,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         ZipOutputStream zos    = null;
         if (doKmz) {
             zos = new ZipOutputStream(getOutputStream(request, jobId,
-                    mainEntry, ".kmz"));
+						      mainEntry, ".kmz"));
             root   = KmlUtil.kml(mainEntry.getName());
             folder = KmlUtil.folder(root, mainEntry.getName(), true);
             if (desc.length() > 0) {
@@ -2015,14 +1982,14 @@ public class PointOutputHandler extends RecordOutputHandler {
             }
 
             /*            String trackUrl = request.getAbsoluteUrl(
-                                  request.entryUrl(
-                                      getRepository().URL_ENTRY_SHOW,
-                                      mainEntry, new String[] { ARG_OUTPUT,
-                    OUTPUT_KML_TRACK.toString() }));
-            Element trackNode = KmlUtil.networkLink(folder, "Track",
-                                    trackUrl);
-            KmlUtil.open(trackNode, false);
-            KmlUtil.visible(trackNode, false);
+			  request.entryUrl(
+			  getRepository().URL_ENTRY_SHOW,
+			  mainEntry, new String[] { ARG_OUTPUT,
+			  OUTPUT_KML_TRACK.toString() }));
+			  Element trackNode = KmlUtil.networkLink(folder, "Track",
+			  trackUrl);
+			  KmlUtil.open(trackNode, false);
+			  KmlUtil.visible(trackNode, false);
             */
         }
 
@@ -2088,24 +2055,24 @@ public class PointOutputHandler extends RecordOutputHandler {
             if (doImage) {
                 File imageFile =
                     getRepository().getStorageManager().getTmpFile(request,
-                        "pointimage.png");
+								   "pointimage.png");
                 writeImage(request, imageFile, llg, grid, missingValue,
                            threshold);
                 InputStream imageInputStream =
                     getStorageManager().getFileInputStream(imageFile);
                 OutputStream os = getOutputStream(request, jobId, mainEntry,
-                                      imageSuffix);
+						  imageSuffix);
                 long bytes = IOUtil.writeTo(imageInputStream, os);
                 IOUtil.close(os);
                 IOUtil.close(imageInputStream);
                 if (doKmz) {
                     String imageFileName = imageSuffix;
                     Element groundOverlay = KmlUtil.groundOverlay(folder,
-                                                imageLabel, desc,
-                                                imageFileName,
-                                                llg.getNorth(),
-                                                llg.getSouth(),
-                                                llg.getEast(), llg.getWest());
+								  imageLabel, desc,
+								  imageFileName,
+								  llg.getNorth(),
+								  llg.getSouth(),
+								  llg.getEast(), llg.getWest());
                     if (request.get(ARG_KML_VISIBLE, true)) {
                         KmlUtil.visible(groundOverlay, true);
                     }
@@ -2122,15 +2089,15 @@ public class PointOutputHandler extends RecordOutputHandler {
             if (isAltitudeValue && (doHillshade || forceHillshade)) {
                 File imageFile =
                     getRepository().getStorageManager().getTmpFile(request,
-                        "pointimage.png");
+								   "pointimage.png");
                 LatLonGrid hillshadeGrid =
                     org.ramadda.util.grid.Gridder.doHillShade(llg, grid,
-                        (float) request.get(ARG_HILLSHADE_AZIMUTH, 315.0f),
-                        (float) request.get(ARG_HILLSHADE_ANGLE, 45.0f));
+							      (float) request.get(ARG_HILLSHADE_AZIMUTH, 315.0f),
+							      (float) request.get(ARG_HILLSHADE_ANGLE, 45.0f));
                 String destFileName = "hillshade" + imageSuffix;
                 if (forceHillshade) {
                     request.putExtraProperty(getOutputFilename(mainEntry,
-                            destFileName),  Boolean.FALSE);
+							       destFileName),  Boolean.FALSE);
                 }
                 writeImage(request, imageFile, hillshadeGrid,
                            hillshadeGrid.getValueGrid(), missingValue,
@@ -2138,7 +2105,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                 InputStream imageInputStream =
                     getStorageManager().getFileInputStream(imageFile);
                 OutputStream os = getOutputStream(request, jobId, mainEntry,
-                                      destFileName);
+						  destFileName);
                 long bytes = IOUtil.writeTo(imageInputStream, os);
                 IOUtil.close(os);
                 IOUtil.close(imageInputStream);
@@ -2146,13 +2113,13 @@ public class PointOutputHandler extends RecordOutputHandler {
                 if (doKmz) {
                     String imageFileName = "hillshade" + imageSuffix;
                     Element groundOverlay = KmlUtil.groundOverlay(folder,
-                                                "Hill shaded  image "
-                                                + imageLabel, desc,
-                                                    imageFileName,
-                                                    llg.getNorth(),
-                                                    llg.getSouth(),
-                                                    llg.getEast(),
-                                                    llg.getWest());
+								  "Hill shaded  image "
+								  + imageLabel, desc,
+								  imageFileName,
+								  llg.getNorth(),
+								  llg.getSouth(),
+								  llg.getEast(),
+								  llg.getWest());
                     if (request.get(ARG_KML_VISIBLE, true)) {
                         KmlUtil.visible(groundOverlay, true);
                     }
@@ -2169,7 +2136,7 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         if (doKmz) {
             request.getHttpServletResponse().setContentType(
-                "application/vnd.google-earth.kmz");
+							    "application/vnd.google-earth.kmz");
             zos.putNextEntry(new ZipEntry("points.kml"));
             String xml   = XmlUtil.toString(root);
             byte[] bytes = xml.getBytes();
@@ -2196,7 +2163,7 @@ public class PointOutputHandler extends RecordOutputHandler {
             //Don't include the tracks if it has  polygon metadata
             List<Metadata> metadataList =
                 getMetadataManager().findMetadata(request, entry,
-                    MetadataHandler.TYPE_SPATIAL_POLYGON, true);
+						  MetadataHandler.TYPE_SPATIAL_POLYGON, true);
 
             if ((metadataList == null) || (metadataList.size() > 0)) {
                 return;
@@ -2226,7 +2193,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                                   Entry mainEntry, IdwGrid llg,
                                   double[][] grid, double missingValue,
                                   String fileSuffix)
-            throws Exception {
+	throws Exception {
         boolean     haveMissingValue = !Double.isNaN(missingValue);
         final int   imageWidth       = llg.getWidth();
         final int   imageHeight      = llg.getHeight();
@@ -2245,7 +2212,7 @@ public class PointOutputHandler extends RecordOutputHandler {
             for (int x = 0; x < imageWidth; x++) {
                 double value = grid[y][x];
                 if ((value != value) || (value == LatLonGrid.GRID_MISSING)
-                        || (haveMissingValue && (value == missingValue))) {
+		    || (haveMissingValue && (value == missingValue))) {
                     value = LatLonGrid.GRID_MISSING;
                 }
                 pw.print(value);
@@ -2273,7 +2240,7 @@ public class PointOutputHandler extends RecordOutputHandler {
     public void writeImage(Request request, File imageFile, LatLonGrid llg,
                            double[][] grid, double missingValue,
                            double threshold)
-            throws Exception {
+	throws Exception {
         int     imageWidth       = llg.getWidth();
         int     imageHeight      = llg.getHeight();
 
@@ -2323,9 +2290,9 @@ public class PointOutputHandler extends RecordOutputHandler {
             for (int x = 0; x < imageWidth; x++) {
                 double value = grid[y][x];
                 if (( !Double.isNaN(threshold) && (value < threshold))
-                        || Double.isNaN(value)
-                        || (value == LatLonGrid.GRID_MISSING)
-                        || (haveMissingValue && (value == missingValue))) {
+		    || Double.isNaN(value)
+		    || (value == LatLonGrid.GRID_MISSING)
+		    || (haveMissingValue && (value == missingValue))) {
                     //Set missing to transparent
                     pixels[index] = (0x00 << 24);
                 } else {
@@ -2339,9 +2306,9 @@ public class PointOutputHandler extends RecordOutputHandler {
 
 
         Image newImage = Toolkit.getDefaultToolkit().createImage(
-                             new MemoryImageSource(
-                                 imageWidth, imageHeight, pixels, 0,
-                                 imageWidth));
+								 new MemoryImageSource(
+										       imageWidth, imageHeight, pixels, 0,
+										       imageWidth));
 
         float[] matrix = new float[400];
         for (int i = 0; i < 400; i++) {
@@ -2350,10 +2317,10 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         //        BufferedImageOp op = new ConvolveOp( new Kernel(20, 20, matrix), ConvolveOp.EDGE_NO_OP, null );
         /*
-        com.jhlabs.image.ConvolveFilter filter = new com.jhlabs.image.ConvolveFilter();
-        Image filteredImage = filter.filter(ImageUtils.toBufferedImage(newImage), null);
+	  com.jhlabs.image.ConvolveFilter filter = new com.jhlabs.image.ConvolveFilter();
+	  Image filteredImage = filter.filter(ImageUtils.toBufferedImage(newImage), null);
 
-        ImageUtils.writeImageToFile(filteredImage, imageFile);
+	  ImageUtils.writeImageToFile(filteredImage, imageFile);
         */
         ImageUtils.writeImageToFile(newImage, imageFile);
     }
@@ -2398,7 +2365,7 @@ public class PointOutputHandler extends RecordOutputHandler {
     public Result outputEntryKmlTrack(Request request, Entry mainEntry,
                                       List<? extends PointEntry> entries,
                                       Object jobId)
-            throws Exception {
+	throws Exception {
         Element root = KmlUtil.kml(mainEntry.getName() + " Tracks");
         Element topFolder = KmlUtil.folder(root,
                                            mainEntry.getName() + " Tracks",
@@ -2411,36 +2378,36 @@ public class PointOutputHandler extends RecordOutputHandler {
                 new float[3][1000]
             };
             RecordVisitor     visitor  = new BridgeRecordVisitor(this) {
-                public boolean doVisitRecord(RecordFile file,
-                                             VisitInfo visitInfo,
-                                             BaseRecord record) {
-                    PointRecord pointRecord = (PointRecord) record;
-                    float[][]   kmlCoords   = coords[0];
-                    if (pointCnt[0] >= kmlCoords[0].length) {
-                        kmlCoords = coords[0] = Misc.expand(kmlCoords);
-                    }
-                    kmlCoords[0][pointCnt[0]] =
-                        (float) pointRecord.getLatitude();
-                    kmlCoords[1][pointCnt[0]] =
-                        (float) pointRecord.getLongitude();
-                    kmlCoords[2][pointCnt[0]] =
-                        (float) pointRecord.getAltitude();
-                    pointCnt[0]++;
+		    public boolean doVisitRecord(RecordFile file,
+						 VisitInfo visitInfo,
+						 BaseRecord record) {
+			PointRecord pointRecord = (PointRecord) record;
+			float[][]   kmlCoords   = coords[0];
+			if (pointCnt[0] >= kmlCoords[0].length) {
+			    kmlCoords = coords[0] = Misc.expand(kmlCoords);
+			}
+			kmlCoords[0][pointCnt[0]] =
+			    (float) pointRecord.getLatitude();
+			kmlCoords[1][pointCnt[0]] =
+			    (float) pointRecord.getLongitude();
+			kmlCoords[2][pointCnt[0]] =
+			    (float) pointRecord.getAltitude();
+			pointCnt[0]++;
 
-                    return true;
-                }
-                public void finished(RecordFile file, VisitInfo visitInfo)
+			return true;
+		    }
+		    public void finished(RecordFile file, VisitInfo visitInfo)
                         throws Exception {
-                    super.finished(file, visitInfo);
-                }
-            };
+			super.finished(file, visitInfo);
+		    }
+		};
             long numRecords = pointEntry.getNumRecords();
             int  skip       = (int) (numRecords / 1000);
 
             try {
                 getRecordJobManager().visitSequential(request, pointEntry,
-                        visitor,
-                        new VisitInfo(VisitInfo.QUICKSCAN_YES, skip));
+						      visitor,
+						      new VisitInfo(VisitInfo.QUICKSCAN_YES, skip));
             } catch (Throwable thr) {
                 Throwable inner = LogUtil.getInnerException(thr);
                 if (inner instanceof Exception) {
@@ -2549,7 +2516,7 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @throws Exception on badness
      */
     public Result outputEntryGetLatLon(Request request, PointEntry pointEntry)
-            throws Exception {
+	throws Exception {
         long numRecords = pointEntry.getNumRecords();
         int index = (int) Math.min(numRecords - 1,
                                    request.get(ARG_POINTINDEX, 0));
@@ -2580,7 +2547,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         }
         String url;
         String dfltBbox = entry.getWest() + "," + entry.getSouth() + ","
-                          + entry.getEast() + "," + entry.getNorth();
+	    + entry.getEast() + "," + entry.getNorth();
 
         String lasProduct = null;
         if (OUTPUT_LAS != null) {
@@ -2616,14 +2583,14 @@ public class PointOutputHandler extends RecordOutputHandler {
 
             url = HtmlUtils.url(getRepository().URL_ENTRY_SHOW + "/"
                                 + serviceFilename, new String[] {
-                ARG_ENTRYID, entry.getId(), ARG_OUTPUT,
-                OUTPUT_PRODUCT.getId(), ARG_PRODUCT, product,
-                //ARG_ASYNCH, "false", 
-                //                ARG_Record_SKIP,
-                //                macro(ARG_RECORD_SKIP), 
-                //                ARG_BBOX,  macro(ARG_BBOX), 
-                //                ARG_DEFAULTBBOX, dfltBbox
-            }, false);
+				    ARG_ENTRYID, entry.getId(), ARG_OUTPUT,
+				    OUTPUT_PRODUCT.getId(), ARG_PRODUCT, product,
+				    //ARG_ASYNCH, "false", 
+				    //                ARG_Record_SKIP,
+				    //                macro(ARG_RECORD_SKIP), 
+				    //                ARG_BBOX,  macro(ARG_BBOX), 
+				    //                ARG_DEFAULTBBOX, dfltBbox
+				}, false);
             url += extraArgs;
             services.add(new ServiceInfo(product, name,
                                          request.getAbsoluteUrl(url), icon));
@@ -2752,14 +2719,14 @@ public class PointOutputHandler extends RecordOutputHandler {
     @Override
     public void getFilters(Request request, Entry entry,
                            RecordFile recordFile, List<RecordFilter> filters)
-            throws Exception {
+	throws Exception {
 
         super.getFilters(request, entry, recordFile, filters);
         //      filters.add(new AltitudeFilter(0, Double.NaN));
 
 
         Date[] dateRange = request.getDateRange(ARG_FROMDATE, ARG_TODATE, "",
-                               null);
+						null);
 
         if ((dateRange[0] != null) || (dateRange[1] != null)) {
             filters.add(new TimeFilter(dateRange[0], dateRange[1]));
@@ -2783,23 +2750,23 @@ public class PointOutputHandler extends RecordOutputHandler {
                                            bboxes[1].getSouth(),
                                            bboxes[1].getEast());
                 filters.add(CollectionRecordFilter.or(new RecordFilter[] {
-                    leftFilter,
-                    rightFilter }));
+			    leftFilter,
+			    rightFilter }));
             } else {
                 filters.add(new LatLonBoundsFilter(bbox.getNorth(90),
-                        bbox.getWest(-180.0), bbox.getSouth(-90.0),
-                        bbox.getEast(180.0)));
+						   bbox.getWest(-180.0), bbox.getSouth(-90.0),
+						   bbox.getEast(180.0)));
             }
         }
 
         if (request.defined(ARG_PROBABILITY)) {
             filters.add(new RandomizedFilter(request.get(ARG_PROBABILITY,
-                    0.5)));
+							 0.5)));
         }
 
         List<RecordField> searchableFields = null;
         for (Enumeration keys = request.getArgs().keys();
-                keys.hasMoreElements(); ) {
+	     keys.hasMoreElements(); ) {
             String key = (String) keys.nextElement();
             if (key.startsWith(ARG_SEARCH_PREFIX)) {
                 double v       = request.get(key, 0.0);
@@ -2810,9 +2777,9 @@ public class PointOutputHandler extends RecordOutputHandler {
                 for (RecordField field : searchableFields) {
                     if (field.getName().equals(fieldId)) {
                         filters.add(
-                            new NumericRecordFilter(
-                                NumericRecordFilter.OP_EQUALS,
-                                field.getParamId(), v));
+				    new NumericRecordFilter(
+							    NumericRecordFilter.OP_EQUALS,
+							    field.getParamId(), v));
 
                         break;
                     }
@@ -2825,17 +2792,17 @@ public class PointOutputHandler extends RecordOutputHandler {
                 if (field.isBitField()) {
                     String[] bitFields = field.getBitFields();
                     String urlArgPrefix = ARG_SEARCH_PREFIX + field.getName()
-                                          + "_" + ARG_BITFIELD + "_";
+			+ "_" + ARG_BITFIELD + "_";
                     for (int bitIdx = 0; bitIdx < bitFields.length;
-                            bitIdx++) {
+			 bitIdx++) {
                         String bitField = bitFields[bitIdx].trim();
                         if (bitField.length() == 0) {
                             continue;
                         }
                         if (request.defined(urlArgPrefix + bitIdx)) {
                             filters.add(new BitmaskRecordFilter(bitIdx,
-                                    request.get(urlArgPrefix + bitIdx,
-                                        false), field.getParamId()));
+								request.get(urlArgPrefix + bitIdx,
+									    false), field.getParamId()));
                             System.err.println("bit:" + bitFields[bitIdx]);
                         }
                     }
@@ -2848,18 +2815,18 @@ public class PointOutputHandler extends RecordOutputHandler {
                     double v = request.get(ARG_SEARCH_PREFIX
                                            + field.getName() + "_min", 0.0);
                     filters.add(
-                        new NumericRecordFilter(
-                            NumericRecordFilter.OP_GE, field.getParamId(),
-                            v));
+				new NumericRecordFilter(
+							NumericRecordFilter.OP_GE, field.getParamId(),
+							v));
                 }
                 if (request.defined(ARG_SEARCH_PREFIX + field.getName()
                                     + "_max")) {
                     double v = request.get(ARG_SEARCH_PREFIX
                                            + field.getName() + "_max", 0.0);
                     filters.add(
-                        new NumericRecordFilter(
-                            NumericRecordFilter.OP_LE, field.getParamId(),
-                            v));
+				new NumericRecordFilter(
+							NumericRecordFilter.OP_LE, field.getParamId(),
+							v));
                 }
             }
         }
@@ -2877,7 +2844,7 @@ public class PointOutputHandler extends RecordOutputHandler {
     @Override
     public boolean isEntryOk(Entry entry) {
         return entry.getTypeHandler().isType("type_point")
-               || entry.getTypeHandler().isType("lidar");
+	    || entry.getTypeHandler().isType("lidar");
     }
 
 
@@ -2895,7 +2862,7 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @throws Exception on badness
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
-            throws Exception {
+	throws Exception {
 
         Entry entry = state.getEntry();
         if (entry == null) {
@@ -2923,7 +2890,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         //}
 
         if ( !getRepository().getAccessManager().canAccessFile(request,
-                state.entry)) {
+							       state.entry)) {
             return;
         }
 
@@ -2948,8 +2915,8 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @throws Exception on badness
      */
     public RecordFile createAndInitializeRecordFile(Request request,
-            Entry entry, long numRecords)
-            throws Exception {
+						    Entry entry, long numRecords)
+	throws Exception {
         RecordFile recordFile = (RecordFile) doMakeRecordFile(request, entry);
         if (recordFile == null) {
             return null;
@@ -2992,7 +2959,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         outputs.add(getPointFormHandler().getSelect(OUTPUT_SUBSET));
         outputs.add(getPointFormHandler().getSelect(OUTPUT_CSV));
         outputs.add(getPointFormHandler().getSelect(OUTPUT_JSON));
-        //        outputs.add(getPointFormHandler().getSelect(OUTPUT_NC));
+	outputs.add(getPointFormHandler().getSelect(OUTPUT_NC));
         outputs.add(getPointFormHandler().getSelect(OUTPUT_LATLONALTCSV));
     }
 
@@ -3018,8 +2985,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         IOUtil.close(bos);
         return csv;
     }
-
-
 
 
 }

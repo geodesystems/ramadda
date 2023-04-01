@@ -659,15 +659,9 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         }
         String fileName = getOutputFilename(entry, ext);
         if (jobId == null) {
-            //      System.err.println ("POINT: writing directly " + request.getOutputStream().getClass().getName());
             return request.getOutputStream();
-            //            return new BufferedOutputStream(request.getOutputStream(),
-            //                                            10000);
         }
-        //        System.err.println ("POINT: writing to file");
         File file = new File(IOUtil.joinDir(getProductDir(jobId), fileName));
-
-        //return  getStorageManager().getUncheckedFileOutputStream(file);
         return new BufferedOutputStream(
             getStorageManager().getUncheckedFileOutputStream(file), 100000);
     }
