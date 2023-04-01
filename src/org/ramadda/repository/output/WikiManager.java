@@ -850,7 +850,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		System.err.println("Unknown child specifier:" + what +"=" + value);
 	    }
 	}		
-	myRequest.put(ARG_ORDERBY,orderBy+(ascending?"_ascending":"_descending"));
+	if(orderBy!=null)
+	    myRequest.put(ARG_ORDERBY,orderBy+(ascending?"_ascending":"_descending"));
 	if(filter!=null) select.setFilter(filter);
 	return select;
     }
