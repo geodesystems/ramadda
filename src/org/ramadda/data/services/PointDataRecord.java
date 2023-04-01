@@ -6,8 +6,8 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.data.services;
 
 
+import org.ramadda.util.Utils;
 import org.ramadda.data.record.*;
-import org.ramadda.util.AtomUtil;
 
 import java.io.*;
 
@@ -75,12 +75,12 @@ public class PointDataRecord extends BaseRecord {
         RECORDATTR_LATITUDE.setValueGetter(new ValueGetter() {
             public double getValue(BaseRecord record, RecordField field,
                                    VisitInfo visitInfo) {
-                return (double) ((PointDataRecord) record).Latitude;
+                return (double) ((PointDataRecord) record).latitude;
             }
             public String getStringValue(BaseRecord record,
                                          RecordField field,
                                          VisitInfo visitInfo) {
-                return "" + ((PointDataRecord) record).Latitude;
+                return "" + ((PointDataRecord) record).latitude;
             }
         });
         FIELDS.add(RECORDATTR_LONGITUDE = new RecordField("Longitude",
@@ -89,12 +89,12 @@ public class PointDataRecord extends BaseRecord {
         RECORDATTR_LONGITUDE.setValueGetter(new ValueGetter() {
             public double getValue(BaseRecord record, RecordField field,
                                    VisitInfo visitInfo) {
-                return (double) ((PointDataRecord) record).Longitude;
+                return (double) ((PointDataRecord) record).longitude;
             }
             public String getStringValue(BaseRecord record,
                                          RecordField field,
                                          VisitInfo visitInfo) {
-                return "" + ((PointDataRecord) record).Longitude;
+                return "" + ((PointDataRecord) record).longitude;
             }
         });
         FIELDS.add(RECORDATTR_ALTITUDE = new RecordField("Altitude",
@@ -103,12 +103,12 @@ public class PointDataRecord extends BaseRecord {
         RECORDATTR_ALTITUDE.setValueGetter(new ValueGetter() {
             public double getValue(BaseRecord record, RecordField field,
                                    VisitInfo visitInfo) {
-                return (double) ((PointDataRecord) record).Altitude;
+                return (double) ((PointDataRecord) record).altitude;
             }
             public String getStringValue(BaseRecord record,
                                          RecordField field,
                                          VisitInfo visitInfo) {
-                return "" + ((PointDataRecord) record).Altitude;
+                return "" + ((PointDataRecord) record).altitude;
             }
         });
         FIELDS.add(RECORDATTR_TIME = new RecordField("Time", "Time", "",
@@ -122,7 +122,6 @@ public class PointDataRecord extends BaseRecord {
             public String getStringValue(BaseRecord record,
                                          RecordField field,
                                          VisitInfo visitInfo) {
-                //                return AtomUtil.format(((PointDataRecord) record).Time);
                 return "" + ((PointDataRecord) record).Time;
             }
         });
@@ -135,24 +134,30 @@ public class PointDataRecord extends BaseRecord {
 
     }
 
+    /** _more_ */
+    double latitude;
 
     /** _more_ */
-    double Latitude;
+    double longitude;
 
     /** _more_ */
-    double Longitude;
-
-    /** _more_ */
-    double Altitude;
+    double altitude;
 
     /** _more_ */
     long Time;
 
     /** _more_ */
-    double[] Dvals = null;
+    double[] doubleValues = null;
 
     /** _more_ */
-    String[] Svals = null;
+    String[] stringValues = null;
+
+    /** _more_ */
+    public int dvalsSize;
+
+    /** _more_ */
+    public int svalsSize;
+
 
 
     /**
@@ -162,14 +167,12 @@ public class PointDataRecord extends BaseRecord {
      */
     public PointDataRecord(PointDataRecord that) {
         super(that);
-        this.Latitude  = that.Latitude;
-        this.Longitude = that.Longitude;
-        this.Altitude  = that.Altitude;
+        this.latitude  = that.latitude;
+        this.longitude = that.longitude;
+        this.altitude  = that.altitude;
         this.Time      = that.Time;
-        this.Dvals     = that.Dvals;
-        this.Svals     = that.Svals;
-
-
+        this.doubleValues     = that.doubleValues;
+        this.stringValues     = that.stringValues;
     }
 
 
@@ -225,18 +228,18 @@ public class PointDataRecord extends BaseRecord {
             return false;
         }
         PointDataRecord that = (PointDataRecord) object;
-        if (this.Latitude != that.Latitude) {
-            System.err.println("bad Latitude");
+        if (this.latitude != that.latitude) {
+            System.err.println("bad latitude");
 
             return false;
         }
-        if (this.Longitude != that.Longitude) {
-            System.err.println("bad Longitude");
+        if (this.longitude != that.longitude) {
+            System.err.println("bad longitude");
 
             return false;
         }
-        if (this.Altitude != that.Altitude) {
-            System.err.println("bad Altitude");
+        if (this.altitude != that.altitude) {
+            System.err.println("bad altitude");
 
             return false;
         }
@@ -245,13 +248,13 @@ public class PointDataRecord extends BaseRecord {
 
             return false;
         }
-        if ( !java.util.Arrays.equals(this.Dvals, that.Dvals)) {
-            System.err.println("bad Dvals");
+        if ( !java.util.Arrays.equals(this.doubleValues, that.doubleValues)) {
+            System.err.println("bad doubleValues");
 
             return false;
         }
-        if ( !java.util.Arrays.equals(this.Svals, that.Svals)) {
-            System.err.println("bad Svals");
+        if ( !java.util.Arrays.equals(this.stringValues, that.stringValues)) {
+            System.err.println("bad stringValues");
 
             return false;
         }
@@ -262,18 +265,14 @@ public class PointDataRecord extends BaseRecord {
 
 
 
-    /** _more_ */
-    public int dvalsSize;
 
-    /** _more_ */
-    public int svalsSize;
 
     /**
      * _more_
      *
      * @return _more_
      */
-    public int getDvalsSize() {
+    public int getDoubleValuesSize() {
         return dvalsSize;
     }
 
@@ -282,7 +281,7 @@ public class PointDataRecord extends BaseRecord {
      *
      * @return _more_
      */
-    public int getSvalsSize() {
+    public int getStringValuesSize() {
         return svalsSize;
     }
 
@@ -307,13 +306,13 @@ public class PointDataRecord extends BaseRecord {
      */
     public double getValue(int attrId) {
         if (attrId == ATTR_LATITUDE) {
-            return Latitude;
+            return latitude;
         }
         if (attrId == ATTR_LONGITUDE) {
-            return Longitude;
+            return longitude;
         }
         if (attrId == ATTR_ALTITUDE) {
-            return Altitude;
+            return altitude;
         }
         if (attrId == ATTR_TIME) {
             return Time;
@@ -322,7 +321,6 @@ public class PointDataRecord extends BaseRecord {
         return super.getValue(attrId);
 
     }
-
 
 
     /**
@@ -334,7 +332,7 @@ public class PointDataRecord extends BaseRecord {
         return super.getRecordSize() + 32 + 0 + 0;
     }
 
-
+    private int readCnt = 0;
 
     /**
      * _more_
@@ -346,21 +344,20 @@ public class PointDataRecord extends BaseRecord {
      * @throws IOException _more_
      */
     public ReadStatus read(RecordIO recordIO) throws IOException {
+	readCnt++;
         DataInputStream dis = recordIO.getDataInputStream();
-        Latitude  = readDouble(dis);
-        Longitude = readDouble(dis);
-        Altitude  = readDouble(dis);
+        latitude  = readDouble(dis);
+        longitude = readDouble(dis);
+        altitude  = readDouble(dis);
         Time      = readLong(dis);
-        if ((Dvals == null) || (Dvals.length != getDvalsSize())) {
-            Dvals = new double[getDvalsSize()];
+        if ((doubleValues == null) || (doubleValues.length != getDoubleValuesSize())) {
+            doubleValues = new double[getDoubleValuesSize()];
         }
-        readDoubles(dis, Dvals);
-        if ((Svals == null) || (Svals.length != getSvalsSize())) {
-            Svals = new String[getSvalsSize()];
+        if ((stringValues == null) || (stringValues.length != getStringValuesSize())) {
+            stringValues = new String[getStringValuesSize()];
         }
-        readStrings(dis, Svals);
-
-
+	readDoubles(dis, doubleValues);
+        readStrings(dis, stringValues);
         return ReadStatus.OK;
     }
 
@@ -375,13 +372,12 @@ public class PointDataRecord extends BaseRecord {
      */
     public void write(RecordIO recordIO) throws IOException {
         DataOutputStream dos = recordIO.getDataOutputStream();
-        writeDouble(dos, Latitude);
-        writeDouble(dos, Longitude);
-        writeDouble(dos, Altitude);
+        writeDouble(dos, latitude);
+        writeDouble(dos, longitude);
+        writeDouble(dos, altitude);
         writeLong(dos, Time);
-        write(dos, Dvals);
-        write(dos, Svals);
-
+        write(dos, doubleValues);
+        write(dos, stringValues);
     }
 
 
@@ -402,32 +398,32 @@ public class PointDataRecord extends BaseRecord {
         if (superCnt > 0) {
             pw.print(',');
         }
-        pw.print(Latitude);
+        pw.print(latitude);
         myCnt++;
         pw.print(',');
-        pw.print(Longitude);
+        pw.print(longitude);
         myCnt++;
         pw.print(',');
-        pw.print(Altitude);
+        pw.print(altitude);
         myCnt++;
         pw.print(',');
         pw.print(Time);
         myCnt++;
         if (includeVector) {
-            for (int i = 0; i < this.Dvals.length; i++) {
+            for (int i = 0; i < this.doubleValues.length; i++) {
                 pw.print((i == 0)
                          ? '|'
                          : ',');
-                pw.print(this.Dvals[i]);
+                pw.print(this.doubleValues[i]);
             }
             myCnt++;
         }
         if (includeVector) {
-            for (int i = 0; i < this.Svals.length; i++) {
+            for (int i = 0; i < this.stringValues.length; i++) {
                 pw.print((i == 0)
                          ? '|'
                          : ',');
-                pw.print(this.Svals[i]);
+                pw.print(this.stringValues[i]);
             }
             myCnt++;
         }
@@ -491,9 +487,9 @@ public class PointDataRecord extends BaseRecord {
      */
     public void print(Appendable buff) throws Exception {
         super.print(buff);
-        buff.append(" Latitude: " + Latitude + " \n");
-        buff.append(" Longitude: " + Longitude + " \n");
-        buff.append(" Altitude: " + Altitude + " \n");
+        buff.append(" latitude: " + latitude + " \n");
+        buff.append(" longitude: " + longitude + " \n");
+        buff.append(" altitude: " + altitude + " \n");
         buff.append(" Time: " + Time + " \n");
 
     }
@@ -506,7 +502,7 @@ public class PointDataRecord extends BaseRecord {
      * @return _more_
      */
     public double getLatitude() {
-        return Latitude;
+        return latitude;
     }
 
 
@@ -516,7 +512,7 @@ public class PointDataRecord extends BaseRecord {
      * @param newValue _more_
      */
     public void setLatitude(double newValue) {
-        Latitude = newValue;
+        latitude = newValue;
     }
 
 
@@ -526,7 +522,7 @@ public class PointDataRecord extends BaseRecord {
      * @return _more_
      */
     public double getLongitude() {
-        return Longitude;
+        return longitude;
     }
 
 
@@ -536,7 +532,7 @@ public class PointDataRecord extends BaseRecord {
      * @param newValue _more_
      */
     public void setLongitude(double newValue) {
-        Longitude = newValue;
+        longitude = newValue;
     }
 
 
@@ -546,7 +542,7 @@ public class PointDataRecord extends BaseRecord {
      * @return _more_
      */
     public double getAltitude() {
-        return Altitude;
+        return altitude;
     }
 
 
@@ -556,7 +552,7 @@ public class PointDataRecord extends BaseRecord {
      * @param newValue _more_
      */
     public void setAltitude(double newValue) {
-        Altitude = newValue;
+        altitude = newValue;
     }
 
 
@@ -585,22 +581,23 @@ public class PointDataRecord extends BaseRecord {
      *
      * @return _more_
      */
-    public double[] getDvals() {
-        return Dvals;
+    public double[] getDoubleValues() {
+        return doubleValues;
     }
 
 
     /**
      * _more_
      *
-     * @param newValue _more_
+     * @param newValues _more_
      */
-    public void setDvals(double[] newValue) {
-        if (Dvals == null) {
-            Dvals = newValue;
-        } else {
-            copy(Dvals, newValue);
-        }
+    public void setDoubleValues(double[] newValues) {
+        if (doubleValues == null) {
+            doubleValues = new double[newValues.length];
+        } 
+	//	Utils.print("PointDataRecord.setValues: from:",newValues); 
+	copy(doubleValues, newValues);
+	//	Utils.print("PointDataRecord.setValues: to:",doubleValues); 
     }
 
 
@@ -609,8 +606,8 @@ public class PointDataRecord extends BaseRecord {
      *
      * @return _more_
      */
-    public String[] getSvals() {
-        return Svals;
+    public String[] getStringValues() {
+        return stringValues;
     }
 
 
@@ -619,12 +616,11 @@ public class PointDataRecord extends BaseRecord {
      *
      * @param newValue _more_
      */
-    public void setSvals(String[] newValue) {
-        if (Svals == null) {
-            Svals = newValue;
-        } else {
-            copy(Svals, newValue);
-        }
+    public void setStringValues(String[] newValue) {
+        if (stringValues == null) {
+            stringValues = new String[newValue.length];
+        } 
+	copy(stringValues, newValue);
     }
 
 
