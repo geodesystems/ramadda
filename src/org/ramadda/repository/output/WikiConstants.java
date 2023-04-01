@@ -67,6 +67,10 @@ public interface WikiConstants {
     public static final String ID_REMOTE = "remote:";
 
 
+    /** _more_ */
+    public static final String ID_SEARCH = "search";
+
+
     public static final String PREFIX_ALIAS= "alias:";
     public static final String PREFIX_SEARCH= "search:";
     public static final String PREFIX_TYPE = "type:";
@@ -734,22 +738,7 @@ public interface WikiConstants {
     public static final String ATTR_LAYOUTHERE = "layoutHere";
 
 
-
     //    public static final String ATTR_SEARCH_PARENT = PREFIX_SEARCH +"parent";
-
-    /** _more_ */
-    public static final String ID_SEARCH = "search";
-
-
-
-
-
-
-
-
-
-
-
 
     /** default label */
     public static final String LABEL_LINKS = "Actions";

@@ -1034,14 +1034,15 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
     private List<Entry> getEntriesFromEmbeddedSearch(Request request, WikiUtil wikiUtil, Hashtable props,
 						     Entry entry, String entryId, int max) throws Exception {
-	if(!entryId.startsWith(PREFIX_SEARCH)) {
+	if(!entryId.equals(ID_SEARCH) && !entryId.startsWith(PREFIX_SEARCH)) {
 	    return null;
 	}
 	/*
 	  entry=search:ancestor;type:some_type;orderby:
 	*/
 	SelectInfo select = getSelectFromString(request, entry, wikiUtil,
-						props,Utils.clip(entryId,PREFIX_SEARCH));
+						props,entryId.equals(ID_SEARCH)?"":
+						Utils.clip(entryId,PREFIX_SEARCH));
 	List<Entry> entries=  getSearchManager().doSearch(select.getRequest(),select);
 	return getEntryManager().applyFilter(request, entries, select);
     }
@@ -5988,6 +5989,23 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             }
 
             entryId = entryId.replace("_COMMA_", ",").replace("_comma_",",");
+
+	    if (entryId.startsWith(ID_SEARCH + ".")) {
+                List<String> tokens = Utils.splitUpTo(entryId, "=", 2);
+                if (tokens.size() == 2) {
+                    if (searchProps == null) {
+                        searchProps = new Hashtable();
+                        searchProps.putAll(props);
+                    }
+                    searchProps.put(tokens.get(0), tokens.get(1));
+                    myRequest.put(tokens.get(0), tokens.get(1));
+                }
+                continue;
+            }
+
+
+
+
             Entry  theBaseEntry = baseEntry;
             String filter = null;
 
@@ -6002,10 +6020,12 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 continue;
             }
 
-	    if(entryId.startsWith(PREFIX_SEARCH)) {
+	    if(entryId.equals(ID_SEARCH) || entryId.startsWith(PREFIX_SEARCH)) {
 		List<Entry> foundEntries =
 		    getEntriesFromEmbeddedSearch(request, wikiUtil,  props, baseEntry,  entryId,-1);
-                entries.addAll(getEntryManager().applyFilter(request,  foundEntries,filter));
+		if(foundEntries!=null) {
+		    entries.addAll(getEntryManager().applyFilter(request,  foundEntries,filter));
+		}
 		continue;
 	    }
 
