@@ -3796,7 +3796,10 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		HU.script(sb, "Ramadda.Components.init(" + HU.squote(id)+",{});");
 		return sb.toString();
             } else if (doingGrid) {
+
+
                 boolean addHeader = getProperty(wikiUtil, props, "showDisplayHeader",
+
 						false);
 
                 List<String> weights = null;
@@ -5180,6 +5183,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                    HU.title(entry.getName())
                    + HU.cssClass("ramadda-subheading"));
         }
+	boolean showPlaceholder = getProperty(wikiUtil, props, "showPlaceholder", false);
         boolean useThumbnail = getProperty(wikiUtil, props, "useThumbnail",
                                            true);
         boolean showSnippet = getProperty(wikiUtil, props, "showSnippet",
@@ -5218,7 +5222,11 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             } else if ( !useThumbnail) {
                 imageUrl = getMetadataManager().getThumbnailUrl(request, entry);
             }
+	    if(imageUrl==null && showPlaceholder) {
+		imageUrl = getPageHandler().makeHtdocsUrl("/images/placeholder.png");
+	    }
         }
+
 
 	if(includeChildren) {
 	    List<Entry> children = getEntryManager().getChildren(request,
