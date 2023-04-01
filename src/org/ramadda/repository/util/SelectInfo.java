@@ -56,6 +56,8 @@ public class SelectInfo implements Constants {
 
     String filter;
 
+    String fromDate;
+    String toDate;
     
     /** _more_ */
     private StringBuilder msgs = new StringBuilder();
@@ -408,6 +410,43 @@ public class SelectInfo implements Constants {
     **/
     public String getName () {
 	return name;
+    }
+
+
+    /**
+       Set the FromDate property.
+
+       @param value The new value for FromDate
+    **/
+    public void setFromDate (String value) {
+	fromDate = value;
+    }
+
+    /**
+       Get the FromDate property.
+
+       @return The FromDate
+    **/
+    public String getFromDate () {
+	return fromDate;
+    }
+
+    /**
+       Set the ToDate property.
+
+       @param value The new value for ToDate
+    **/
+    public void setToDate (String value) {
+	toDate = value;
+    }
+
+    /**
+       Get the ToDate property.
+
+       @return The ToDate
+    **/
+    public String getToDate () {
+	return toDate;
     }
 
 
