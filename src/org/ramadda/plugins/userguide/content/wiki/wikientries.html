@@ -67,7 +67,28 @@ This would give us:
 [ug::wikiheading {Specify other entries} entry]
 Normally, all property tags refer to the current entry. However, another entry can be specified  with the "entry"
 attribute, e.g:
-[wiki::text [wiki::tag information {entry="some other entry id or name or 'parent' or 'grandparent', etc"}]]
+[wiki::text [wiki::tag information {entry="some other entry id or an entry selection}]]
+
+See the below 
+
+
+[ug::wikiheading {Entry Selection} entryselection]
+
+
+<ul>
+<li> <i>this</i> - the current entry
+<li> <i>children</i> - the children entry
+<li> <i>grandchildren</i> - the grandchildren entries
+<li> <i>greatgrandchildren</i> - the great-grandchildren entries
+<li> <i>parent</i>  - the parent entry
+<li> <i>grandparent</i> - the grandparent entry
+<li> <i>ancestors</i> - the ancestors up to the top-level entry
+<li> <i>siblings</i> - the sibling entries
+<li> <i>links</i>  - the associated or linked entries
+<li> <i>search</i>  - search the entire repository. The search terms are defined as attributes and described below.
+
+</ul>
+
 
 
 The entry value can be:
@@ -139,17 +160,19 @@ The "ascending:false" says to find the latest. If you wanted to find the earlies
 "ascending:true".
 <p>
 If you wanted to only search under a certain entry (e.g,  a collection of data files) you specify this
-with the "descendent:" prefix:
+with the "ancestor:" prefix:
 
 [ht::pre {
-{{display_linechart entry="search:descendent:some_entry_id;ascending:;type:type_point_netcdf;"}}
+{{display_linechart entry="search:ancestor:some_entry_id;ascending:;type:type_point_netcdf;"}}
 }]
 
 
 </ul>
 
 
-a[ug::wikiheading {Alias tag} alias]
+
+
+[ug::wikiheading {Alias tag} alias]
 The alias tag allows you to specify some entry and associate it with an alias. You can then
 refer to that alias in subsequent wiki tags. For example, if you wanted to search for a particular entry type
 then display it as a chart later you could do:
@@ -158,6 +181,98 @@ then display it as a chart later you could do:
 {{alias name=someentry entry="search:descendent:this;ascending:;type:type_point_netcdf;"}}
 {{display_linechart entry=someentry}}
 }]
+
+
+
+<h3>Search for entries</h3>
+
+When using the term "search" when specifying entries 
+you can specify the following search attributes.
+
+<ul>
+<li> search.text="text to search"
+<li> search.type="entry type"
+<li> search.bbox="north,west,south,east"   spatial bounds
+<li> search.group="parent entry id" or "this" for the current entry
+<li> search.filesuffix="file suffix" 
+<li> search.datadate.from="from date" 
+<li> search.datadate.to="to date" 
+<li> search.datadate.relative="relative date, e.g., -3 days, -12 hours, -1 week" 
+<li> search.createdate.from="from date" 
+<li> search.createdate.to="to date" 
+<li> search.createdate.relative="relative date, e.g., -3 days, -12 hours, -1 week" 
+<li> search.changedate.from="from date" 
+<li> search.changedate.to="to date" 
+<li> search.changedate.relative="relative date, e.g., -3 days, -12 hours, -1 week" 
+</ul>
+
+<p>
+Here are some examples:
+<p>
+Find all entries with text 'climate':
+[wiki::text {
+{<noop>{tree search.text="climate" entries="search"}}
+}]
+
+
+Find all entries with file suffix 'pdf' that have been created in the last 2 days:
+[wiki::text {
+{<noop>{tree search.suffix="pdf" search.createdate.relative="-2 days" entries="search"}}
+}]
+
+
+
+<h3>Filtering Entries</h3>
+
+You can filter what entries to use with <i>entries.filter</i>, e.g.:
+[wiki::text {
+entries.filter=file|folder|image|type:some type|geo|suffix:file suffixes
+}]
+
+If you specify <i>suffix:file suffixes</i> then this will only match entries that have files with the given suffix. This
+ can be a comma separated list of suffixes, e.g.:
+[wiki::text {
+entries.filter="suffix:.ppt,.pptx,.pdf" 
+}]
+
+
+Or negate them with "!":
+
+[wiki::text {
+entries.filter=!file|!folder|!image|!type:some type|!geo
+}]
+So,  you could show all of the georeferenced entries in a map and all of the non-georeferenced entries in a list:
+
+[wiki::text {
+{<noop>{map  message="" prefix="==Map=="}}
+
+{<noop>{tree message="" prefix="==Non georeferenced entries==" entries.filter="!geo"}}
+}]
+
+
+
+[ug::wikiheading {Date Ranges} entriesdaterange]
+Using the following attributes you can filter entries based on their date.
+You can specify a from date, a to date or both.
+The absolute dates should be of the form "yyyy-MM-dd hh:mm". The relative dates are either relative to the other date (if given)
+or the current time. Relative dates are of the form "+|- minute|hour|day|week|month|year"
+<pre>
+entries.fromDate="absolute or relative date"
+entries.toDate="absolute or relative date"
+e.g.:
+entries.fromDate="2021-06-01 12:32"
+or:
+entries.fromDate="-1 week"
+or:
+entries.fromDate="-2 weeks"
+or:
+entries.fromDate="2 weeks"
+or:
+entries.toDate="2 months"
+or:
+entries.toDate="4 years"        
+</pre>
+
 
 
 
@@ -327,32 +442,37 @@ Show the menu actions in a popup:
 
 [ug::wikiheading {Collections} entries]
 
-The following tags display a collection of entries. By default they
-are the children entries of the wiki entry but you can specify
-other groups of entries with any of the following arguments:
+
+<a  href="https://ramadda.org/repository/a/userguide_entryselection">Here</a> is an export
+of a collection of folders and files that demonstrate various entry selections.
+:p
+
+
+The following tags display a collection of entries.
+By default the entries are the children entries of the current entry but you can specify
+other groups of entries with the <i>entries</i> attribute:
 [wiki::text {<noop>{<noop>{<i>tag</i> entry="some other entry" 
                entries="entryid1,entryid2,entryid3.." 
-               entries.filter="file|folder|image|type:some type|geo|name:name aptterh|suffix:file suffixes"
-               entries.fromDate="absolute or relative date"
-               entries.toDate="absolute or relative date"
                exclude="entryid1,entryid2,entryid3.."  
                first="entryid1,entryid2,entryid3.."  
                last="entryid1,entryid2,entryid3.."  
                sort="name|date"  sortorder="up|down"
                max="number of entries to use" }}}]
 
-The entries attribute is a comma separated list of entry identifiers. They can be specific entry ids or they can be one of a set of relative descriptors:
+The entries attribute is a comma separated list of entry identifiers. 
+    They can be specific entry ids or they can be one of a set of relative descriptors as
+    described in the <a href="#entryselection">entry selection</a> section.
+:p
+You can also:
 <ul>
-<li> <i>this</i> - the current entry
-<li> <i>children</i> - the children entry
-<li> <i>grandchildren</i> - the grandchildren entries
-<li> <i>greatgrandchildren</i> - the great-grandchildren entries
-<li> <i>parent</i>  - the parent entry
-<li> <i>grandparent</i> - the grandparent entry
-<li> <i>ancestors</i> - the ancestors up to the top-level entry
-<li> <i>siblings</i> - the sibling entries
-<li> <i>links</i>  - the associated or linked entries
-<li> <i>search</i>  - search the entire repository. The search terms are defined as attributes and described below.
+<li> If <i>first</i> is defined then these entry ids are put at the front of the list.
+
+<li> If <i>last</i> is defined then these entry ids are put at the end of the list.
+
+<li> Exclude any entries in the <i>exclude</i> comma separated list of entry ids.
+
+<li> Sort entries by name or date with <i>sort</i>
+<li> If <i>images</i> is set to true then only entries that are image files are included
 
 </ul>
 
@@ -377,109 +497,6 @@ You can combine different relative descriptors, e.g.:
 
 
 
-
-
-<h3>Search for entries</h3>
-
-When using the term "search" when specifying entries 
-you can specify the following search attributes.
-
-<ul>
-<li> search.text="text to search"
-<li> search.type="entry type"
-<li> search.bbox="north,west,south,east"   spatial bounds
-<li> search.group="parent entry id" or "this" for the current entry
-<li> search.filesuffix="file suffix" 
-<li> search.datadate.from="from date" 
-<li> search.datadate.to="to date" 
-<li> search.datadate.relative="relative date, e.g., -3 days, -12 hours, -1 week" 
-<li> search.createdate.from="from date" 
-<li> search.createdate.to="to date" 
-<li> search.createdate.relative="relative date, e.g., -3 days, -12 hours, -1 week" 
-<li> search.changedate.from="from date" 
-<li> search.changedate.to="to date" 
-<li> search.changedate.relative="relative date, e.g., -3 days, -12 hours, -1 week" 
-</ul>
-
-<p>
-Here are some examples:
-<p>
-Find all entries with text 'climate':
-[wiki::text {
-{<noop>{tree search.text="climate" entries="search"}}
-}]
-
-
-Find all entries with file suffix 'pdf' that have been created in the last 2 days:
-[wiki::text {
-{<noop>{tree search.suffix="pdf" search.createdate.relative="-2 days" entries="search"}}
-}]
-
-
-
-
-<h3>Filtering Entries</h3>
-
-You can filter what entries to use with <i>entries.filter</i>, e.g.:
-[wiki::text {
-entries.filter=file|folder|image|type:some type|geo|suffix:file suffixes
-}]
-
-If you specify <i>suffix:file suffixes</i> then this will only match entries that have files with the given suffix. This
- can be a comma separated list of suffixes, e.g.:
-[wiki::text {
-entries.filter="suffix:.ppt,.pptx,.pdf" 
-}]
-
-
-Or negate them with "!":
-
-[wiki::text {
-entries.filter=!file|!folder|!image|!type:some type|!geo
-}]
-So,  you could show all of the georeferenced entries in a map and all of the non-georeferenced entries in a list:
-
-[wiki::text {
-{<noop>{map  message="" prefix="==Map=="}}
-
-{<noop>{tree message="" prefix="==Non georeferenced entries==" entries.filter="!geo"}}
-}]
-
-You can also:
-<ul>
-<li> If <i>first</i> is defined then these entry ids are put at the front of the list.
-
-<li> If <i>last</i> is defined then these entry ids are put at the end of the list.
-
-<li> Exclude any entries in the <i>exclude</i> comma separated list of entry ids.
-
-<li> Sort entries by name or date with <i>sort</i>
-<li> If <i>images</i> is set to true then only entries that are image files are included
-
-</ul>
-
-
-[ug::wikiheading {Date Ranges} entriesdaterange]
-Using the following attributes you can filter entries based on their date.
-You can specify a from date, a to date or both.
-The absolute dates should be of the form "yyyy-MM-dd hh:mm". The relative dates are either relative to the other date (if given)
-or the current time. Relative dates are of the form "+|- minute|hour|day|week|month|year"
-<pre>
-entries.fromDate="absolute or relative date"
-entries.toDate="absolute or relative date"
-e.g.:
-entries.fromDate="2021-06-01 12:32"
-or:
-entries.fromDate="-1 week"
-or:
-entries.fromDate="-2 weeks"
-or:
-entries.fromDate="2 weeks"
-or:
-entries.toDate="2 months"
-or:
-entries.toDate="4 years"        
-</pre>
 
 
 

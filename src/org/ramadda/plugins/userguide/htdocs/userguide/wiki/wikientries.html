@@ -93,7 +93,7 @@ For example, if we want to import the information block with it open:
 <pre>{<noop>{information <i>open="true"</i>}}</pre>
 
 This would give us:
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/wikiinformation.png?version=798.0"><img  src="images/wikiinformation.png?version=798.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/wikiinformation.png?version=798.0" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/wikiinformation.png?version=836.0"><img  src="images/wikiinformation.png?version=836.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/wikiinformation.png?version=836.0" ></a></div></div>
 
 
 <a name='entry'></a>
@@ -101,7 +101,30 @@ This would give us:
 
 Normally, all property tags refer to the current entry. However, another entry can be specified  with the "entry"
 attribute, e.g:
-<pre>{<noop>{information <i>entry="some other entry id or name or 'parent' or 'grandparent'"</i>}}</pre>
+<pre>{<noop>{information <i>entry="some other entry id or an entry selection</i>}}</pre>
+
+See the below 
+
+
+<a name='entryselection'></a>
+:lheading Entry Selection
+
+
+
+<ul>
+<li> <i>this</i> - the current entry
+<li> <i>children</i> - the children entry
+<li> <i>grandchildren</i> - the grandchildren entries
+<li> <i>greatgrandchildren</i> - the great-grandchildren entries
+<li> <i>parent</i>  - the parent entry
+<li> <i>grandparent</i> - the grandparent entry
+<li> <i>ancestors</i> - the ancestors up to the top-level entry
+<li> <i>siblings</i> - the sibling entries
+<li> <i>links</i>  - the associated or linked entries
+<li> <i>search</i>  - search the entire repository. The search terms are defined as attributes and described below.
+
+</ul>
+
 
 
 The entry value can be:
@@ -110,6 +133,8 @@ The entry value can be:
 <li> The ID of an entry
 <p>
 <li> The alias of an entry
+<p>
+<li> The entry itself - "this"
 <p>    
 <li> Its full path, e.g., /Top/.../entry_name
 <p>
@@ -117,12 +142,11 @@ The entry value can be:
 <p>
 <li> The parent of the parent entry  -"grandparent"
 <p>
-<li> The entry itself - "this"
-<p>
-<li> An entry linked to the entry. Either "link" to find the first one or to specify an entry type use "link:type:entry_type"
+<li> An entry linked to the entry. Either "link" to find the first one or to specify an entry type
+use "link:type:entry_type"
 <p>
 <li> An ancestor entry of a particular type using "ancestor:".<br>
-For example, if you wanted to display the links of the first ancestor of the "group" type
+For example, if you wanted to display the links of the first ancestor of an entry of type "group":
 <pre>
 {<noop>{links entry=&quot;ancestor:type:group&quot;}<noop>}
 </pre>
@@ -172,17 +196,19 @@ The "ascending:false" says to find the latest. If you wanted to find the earlies
 "ascending:true".
 <p>
 If you wanted to only search under a certain entry (e.g,  a collection of data files) you specify this
-with the "descendent:" prefix:
+with the "ancestor:" prefix:
 
 <pre>
-{<noop>{display_linechart entry=&quot;search:descendent:some_entry_id;ascending:;type:type_point_netcdf;&quot;}<noop>}
+{<noop>{display_linechart entry=&quot;search:ancestor:some_entry_id;ascending:;type:type_point_netcdf;&quot;}<noop>}
 </pre>
 
 
 </ul>
 
 
-a<a name='alias'></a>
+
+
+<a name='alias'></a>
 :lheading Alias tag
 
 The alias tag allows you to specify some entry and associate it with an alias. You can then
@@ -193,6 +219,100 @@ then display it as a chart later you could do:
 {<noop>{alias name=someentry entry=&quot;search:descendent:this;ascending:;type:type_point_netcdf;&quot;}<noop>}
 {<noop>{display_linechart entry=someentry}<noop>}
 </pre>
+
+
+
+<h3>Search for entries</h3>
+
+When using the term "search" when specifying entries 
+you can specify the following search attributes.
+
+<ul>
+<li> search.text="text to search"
+<li> search.type="entry type"
+<li> search.bbox="north,west,south,east"   spatial bounds
+<li> search.group="parent entry id" or "this" for the current entry
+<li> search.filesuffix="file suffix" 
+<li> search.datadate.from="from date" 
+<li> search.datadate.to="to date" 
+<li> search.datadate.relative="relative date, e.g., -3 days, -12 hours, -1 week" 
+<li> search.createdate.from="from date" 
+<li> search.createdate.to="to date" 
+<li> search.createdate.relative="relative date, e.g., -3 days, -12 hours, -1 week" 
+<li> search.changedate.from="from date" 
+<li> search.changedate.to="to date" 
+<li> search.changedate.relative="relative date, e.g., -3 days, -12 hours, -1 week" 
+</ul>
+
+<p>
+Here are some examples:
+<p>
+Find all entries with text 'climate':
+<pre>
+{<noop>{tree search.text="climate" entries="search"}}
+</pre>
+
+
+Find all entries with file suffix 'pdf' that have been created in the last 2 days:
+<pre>
+{<noop>{tree search.suffix="pdf" search.createdate.relative="-2 days" entries="search"}}
+</pre>
+
+
+
+<h3>Filtering Entries</h3>
+
+You can filter what entries to use with <i>entries.filter</i>, e.g.:
+<pre>
+entries.filter=file|folder|image|type:some type|geo|suffix:file suffixes
+</pre>
+
+If you specify <i>suffix:file suffixes</i> then this will only match entries that have files with the given suffix. This
+ can be a comma separated list of suffixes, e.g.:
+<pre>
+entries.filter="suffix:.ppt,.pptx,.pdf" 
+</pre>
+
+
+Or negate them with "!":
+
+<pre>
+entries.filter=!file|!folder|!image|!type:some type|!geo
+</pre>
+So,  you could show all of the georeferenced entries in a map and all of the non-georeferenced entries in a list:
+
+<pre>
+{<noop>{map  message="" prefix="==Map=="}}
+
+{<noop>{tree message="" prefix="==Non georeferenced entries==" entries.filter="!geo"}}
+</pre>
+
+
+
+<a name='entriesdaterange'></a>
+:lheading Date Ranges
+
+Using the following attributes you can filter entries based on their date.
+You can specify a from date, a to date or both.
+The absolute dates should be of the form "yyyy-MM-dd hh:mm". The relative dates are either relative to the other date (if given)
+or the current time. Relative dates are of the form "+|- minute|hour|day|week|month|year"
+<pre>
+entries.fromDate="absolute or relative date"
+entries.toDate="absolute or relative date"
+e.g.:
+entries.fromDate="2021-06-01 12:32"
+or:
+entries.fromDate="-1 week"
+or:
+entries.fromDate="-2 weeks"
+or:
+entries.fromDate="2 weeks"
+or:
+entries.toDate="2 months"
+or:
+entries.toDate="4 years"        
+</pre>
+
 
 
 
@@ -372,32 +492,37 @@ Show the menu actions in a popup:
 :lheading Collections
 
 
-The following tags display a collection of entries. By default they
-are the children entries of the wiki entry but you can specify
-other groups of entries with any of the following arguments:
+
+<a  href="https://ramadda.org/repository/a/userguide_entryselection">Here</a> is an export
+of a collection of folders and files that demonstrate various entry selections.
+:p
+
+
+The following tags display a collection of entries.
+By default the entries are the children entries of the current entry but you can specify
+other groups of entries with the <i>entries</i> attribute:
 <pre><noop>{<noop>{<i>tag</i> entry="some other entry" 
                entries="entryid1,entryid2,entryid3.." 
-               entries.filter="file|folder|image|type:some type|geo|name:name aptterh|suffix:file suffixes"
-               entries.fromDate="absolute or relative date"
-               entries.toDate="absolute or relative date"
                exclude="entryid1,entryid2,entryid3.."  
                first="entryid1,entryid2,entryid3.."  
                last="entryid1,entryid2,entryid3.."  
                sort="name|date"  sortorder="up|down"
                max="number of entries to use" }}</pre>
 
-The entries attribute is a comma separated list of entry identifiers. They can be specific entry ids or they can be one of a set of relative descriptors:
+The entries attribute is a comma separated list of entry identifiers. 
+    They can be specific entry ids or they can be one of a set of relative descriptors as
+    described in the <a href="#entryselection">entry selection</a> section.
+:p
+You can also:
 <ul>
-<li> <i>this</i> - the current entry
-<li> <i>children</i> - the children entry
-<li> <i>grandchildren</i> - the grandchildren entries
-<li> <i>greatgrandchildren</i> - the great-grandchildren entries
-<li> <i>parent</i>  - the parent entry
-<li> <i>grandparent</i> - the grandparent entry
-<li> <i>ancestors</i> - the ancestors up to the top-level entry
-<li> <i>siblings</i> - the sibling entries
-<li> <i>links</i>  - the associated or linked entries
-<li> <i>search</i>  - search the entire repository. The search terms are defined as attributes and described below.
+<li> If <i>first</i> is defined then these entry ids are put at the front of the list.
+
+<li> If <i>last</i> is defined then these entry ids are put at the end of the list.
+
+<li> Exclude any entries in the <i>exclude</i> comma separated list of entry ids.
+
+<li> Sort entries by name or date with <i>sort</i>
+<li> If <i>images</i> is set to true then only entries that are image files are included
 
 </ul>
 
@@ -422,111 +547,6 @@ You can combine different relative descriptors, e.g.:
 
 
 
-
-
-<h3>Search for entries</h3>
-
-When using the term "search" when specifying entries 
-you can specify the following search attributes.
-
-<ul>
-<li> search.text="text to search"
-<li> search.type="entry type"
-<li> search.bbox="north,west,south,east"   spatial bounds
-<li> search.group="parent entry id" or "this" for the current entry
-<li> search.filesuffix="file suffix" 
-<li> search.datadate.from="from date" 
-<li> search.datadate.to="to date" 
-<li> search.datadate.relative="relative date, e.g., -3 days, -12 hours, -1 week" 
-<li> search.createdate.from="from date" 
-<li> search.createdate.to="to date" 
-<li> search.createdate.relative="relative date, e.g., -3 days, -12 hours, -1 week" 
-<li> search.changedate.from="from date" 
-<li> search.changedate.to="to date" 
-<li> search.changedate.relative="relative date, e.g., -3 days, -12 hours, -1 week" 
-</ul>
-
-<p>
-Here are some examples:
-<p>
-Find all entries with text 'climate':
-<pre>
-{<noop>{tree search.text="climate" entries="search"}}
-</pre>
-
-
-Find all entries with file suffix 'pdf' that have been created in the last 2 days:
-<pre>
-{<noop>{tree search.suffix="pdf" search.createdate.relative="-2 days" entries="search"}}
-</pre>
-
-
-
-
-<h3>Filtering Entries</h3>
-
-You can filter what entries to use with <i>entries.filter</i>, e.g.:
-<pre>
-entries.filter=file|folder|image|type:some type|geo|suffix:file suffixes
-</pre>
-
-If you specify <i>suffix:file suffixes</i> then this will only match entries that have files with the given suffix. This
- can be a comma separated list of suffixes, e.g.:
-<pre>
-entries.filter="suffix:.ppt,.pptx,.pdf" 
-</pre>
-
-
-Or negate them with "!":
-
-<pre>
-entries.filter=!file|!folder|!image|!type:some type|!geo
-</pre>
-So,  you could show all of the georeferenced entries in a map and all of the non-georeferenced entries in a list:
-
-<pre>
-{<noop>{map  message="" prefix="==Map=="}}
-
-{<noop>{tree message="" prefix="==Non georeferenced entries==" entries.filter="!geo"}}
-</pre>
-
-You can also:
-<ul>
-<li> If <i>first</i> is defined then these entry ids are put at the front of the list.
-
-<li> If <i>last</i> is defined then these entry ids are put at the end of the list.
-
-<li> Exclude any entries in the <i>exclude</i> comma separated list of entry ids.
-
-<li> Sort entries by name or date with <i>sort</i>
-<li> If <i>images</i> is set to true then only entries that are image files are included
-
-</ul>
-
-
-<a name='entriesdaterange'></a>
-:lheading Date Ranges
-
-Using the following attributes you can filter entries based on their date.
-You can specify a from date, a to date or both.
-The absolute dates should be of the form "yyyy-MM-dd hh:mm". The relative dates are either relative to the other date (if given)
-or the current time. Relative dates are of the form "+|- minute|hour|day|week|month|year"
-<pre>
-entries.fromDate="absolute or relative date"
-entries.toDate="absolute or relative date"
-e.g.:
-entries.fromDate="2021-06-01 12:32"
-or:
-entries.fromDate="-1 week"
-or:
-entries.fromDate="-2 weeks"
-or:
-entries.fromDate="2 weeks"
-or:
-entries.toDate="2 months"
-or:
-entries.toDate="4 years"        
-</pre>
 
 
 
@@ -582,7 +602,7 @@ If showtoggle="false" then the show/hide toggle link is not shown.
 A common display is showing the children entries in a grid where each entry shows its thumbnail
 image attachment, 
 e.g., <a href=https://ramadda.org/repository/alias/examples>RAMADDA Examples</a>
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/grid.png?version=798.0"><img  src="images/grid.png?version=798.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/grid.png?version=798.0" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/grid.png?version=836.0"><img  src="images/grid.png?version=836.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/grid.png?version=836.0" ></a></div></div>
 To do this use:
 <pre>
 {<noop>{grid  
