@@ -2945,6 +2945,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
         int                       skip = request.get(ARG_DB_BULK_SKIP, 1);
         final DbInfo              dbInfo     = getDbInfo();
+	final List<Column> columns = dbInfo.getColumnsToUse();
         final int[]               totalCnt       = { 0 };
 	final int[]               cnt        = { 0 };
 	final ArrayList<Object[]> valueList  = new ArrayList<Object[]>();
@@ -2967,24 +2968,29 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 			Object[] values = tableHandler.makeEntryValueArray();
 			cnt[0]++;
 			initializeValueArray(request, null, values);
+			
 
 			List<String> toks = row.getValues();
-			if (toks.size() != dbInfo.getColumnsToUse().size()) {
+			if (toks.size() != columns.size()) {
 			    System.err.println("bad count: " + toks.size() + " "
 					       + toks);
 			    String error =
 				"Wrong number of values. Given line has: "
 				+ toks.size() + " Expected:"
-				+ dbInfo.getColumnsToUse().size() + "\n"
-				+ "Columns:" + dbInfo.getColumnsToUse() + "\n"
+				+ columns.size() + "\n"
+				+ "Columns:" + columns + "\n"
 				+ "Data:" + toks;
-
+			    for(int i=0;i<Math.max(toks.size(),columns.size());i++) {
+				String column = i<columns.size()?columns.get(i).getName():"MISSING";
+				String value= i<toks.size()?toks.get(i):"MISSING";				
+				error+="\n\t" + column+"="+value;
+			    }
 			    throw new IllegalArgumentException(error);
 			}
 			String keyValue = null;
 
 			for (int colIdx = 0; colIdx < toks.size(); colIdx++) {
-			    Column column = dbInfo.getColumnsToUse().get(colIdx);
+			    Column column = columns.get(colIdx);
 			    String value  = (String) toks.get(colIdx).trim();
 			    if (column == dbInfo.getKeyColumn()) {
 				keyValue = value;
