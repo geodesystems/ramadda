@@ -2972,8 +2972,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 			List<String> toks = row.getValues();
 			if (toks.size() != columns.size()) {
-			    System.err.println("bad count: " + toks.size() + " "
-					       + toks);
 			    String error =
 				"Wrong number of values. Given line has: "
 				+ toks.size() + " Expected:"
@@ -2985,6 +2983,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 				String value= i<toks.size()?toks.get(i):"MISSING";				
 				error+="\n\t" + column+"="+value;
 			    }
+			    error+="\n";
+			    System.err.println(error);
 			    throw new IllegalArgumentException(error);
 			}
 			String keyValue = null;
