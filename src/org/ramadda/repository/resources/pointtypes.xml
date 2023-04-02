@@ -22,12 +22,12 @@
 	       noun=File
 	       template="${name}"
 	       }}
-	       {{display_entrytitle setEntry.acceptGroup=file entry=child:type:type_point}}
+	       {{display_entrytitle setEntry.acceptGroup=file entry="child:type:type_point"}}
 	       -center
 	       <table width=100% border=0 cellpadding=10>
 	       <tr valign=top>
 	       <td width=1%>
-	       {{display_fieldslist setEntry.acceptGroup=file entry=child:type:type_point
+	       {{display_fieldslist setEntry.acceptGroup=file entry="child:type:type_point"
 	       width=185px height=65vh
 	       loadingMessage="" 
 	       fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
@@ -35,7 +35,7 @@
 	       showPopup=false decorate=true
 	       }}
 	       </td><td>
-	       {{display_linechart setEntry.acceptGroup=file entry=child:type:type_point
+	       {{display_linechart setEntry.acceptGroup=file entry="child:type:type_point"
 	       fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
 	       height=60vh padRight=true chartLeft="80" chartRight="80"
 	       addTooltip=false useMultipleAxes=true
@@ -74,7 +74,7 @@
 	       }}
 	       {{display_menu 
 	       entryTypes=type_point
-	       entry=child:
+	       entry="child:orderby:date;ascending:true;"
 	       doEntries=true
 	       setEntry.acceptGroup=collection
 	       setEntry.shareGroup=file
@@ -83,12 +83,12 @@
 	       noun=File
 	       template="${name}"
 	       }}
-	       {{display_entrytitle setEntry.acceptGroup=file entry=grandchild:type:type_point}}
+	       {{display_entrytitle setEntry.acceptGroup=file entry="grandchild:orderby:date;ascending:true;type:type_point"}}
 	       -center
 	       <table width=100% border=0 cellpadding=10>
 	       <tr valign=top>
 	       <td width=1%>
-	       {{display_fieldslist setEntry.acceptGroup=file entry=grandchild:type:type_point
+	       {{display_fieldslist setEntry.acceptGroup=file entry="grandchild:orderby:date;ascending:true;type:type_point"
 	       width=185px height=65vh
 	       loadingMessage="" 
 	       fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
@@ -96,7 +96,7 @@
 	       showPopup=false decorate=true
 	       }}
 	       </td><td>
-	       {{display_linechart setEntry.acceptGroup=file entry=grandchild:type:type_point
+	       {{display_linechart setEntry.acceptGroup=file entry="grandchild:orderby:date;ascending:true;type:type_point"
 	       fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
 	       height=75vh padRight=true chartLeft="80" chartRight="80"
 	       addTooltip=false useMultipleAxes=true
