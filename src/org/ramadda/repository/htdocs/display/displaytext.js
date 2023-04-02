@@ -1301,14 +1301,14 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 		//todo: set this
 		this.blockValue = 0;
 		let counts = this.getProperty("counts","100",true).split(";");
-		for(var i=0;i<counts.length;i++) 
+		for(let i=0;i<counts.length;i++) 
 		    this.counts.push(parseFloat(counts[i]));
 		let doSum = this.getPropertyDoSum();
 		if(doSum) {
 		    this.counts2 = this.counts;
 		} else {
 		    this.total = 0;
-		    for(var i=0;i<this.counts.length;i++) {
+		    for(let i=0;i<this.counts.length;i++) {
 			let tmp = this.counts[i];
 			this.counts2.push(this.counts[i]-this.total);
 			this.total+= tmp;
@@ -1354,7 +1354,7 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 		ct.push(ct[ct.length-1]);
 	    }
 
-	    let multiplier = parseFloat(this.getProperty("multiplier","1",true));
+	    let divider = parseFloat(this.getProperty("divider","1",true));
 	    let dim=this.getProperty("blockDimensions","8",true);
 	    let labelStyle = this.getProperty("labelStyle","", true);
 	    let blockCnt = 0;
@@ -1362,7 +1362,7 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 	    let clazz = iconProp?"display-block-icon":"display-block";
 	    let emptyStyle = this.getEmptyBlockStyle();
 	    for(let i=0;i<this.counts2.length;i++) {
-		let num = multiplier*this.counts[i];
+		let num = this.counts[i];
 		if(isNaN(num)) num = 0;
 		let label = this.footers[i].replace("${count}",Utils.formatNumberComma(num));
 		let style =  iconProp?"":"width:" + dim+"px;height:" + dim+"px;";
@@ -1376,22 +1376,25 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 			let footerIcon =  iconProp?HU.getIconImage(iconProp, null, [STYLE, iconStyle]):"";
 			footer += HU.div([CLASS,clazz,STYLE,style],footerIcon) +" " + HU.span([STYLE,labelStyle], label)+"&nbsp;&nbsp;";
 		    } else {
-			style += HU.css("background","transparent","border","1px solid #ccc");
+			if(iconProp)
+			    style += HU.css("background","transparent");
+			else
+			    style += HU.css("background","transparent","border","1px solid #ccc");			    			
 			footer += "&nbsp;&nbsp;";
 		    }
 		} else {
 		    style+=emptyStyle;
 		}
 		let icon = iconProp?HU.getIconImage(iconProp, null, [STYLE, iconStyle]):"";
-		let cnt = this.counts2[i];
-		for(let j=0;j<10000 && j<this.counts2[i];j++) {
+		let cnt = this.counts2[i]/divider;
+		for(let j=0;j<10000 && j<cnt;j++) {
 		    contents += HU.div([CLASS,clazz,STYLE,style,TITLE,label],icon);
 		}
 		blockCnt++;
 	    }
 	    contents += HU.closeDiv();
 	    let header = this.getProperty("header","");
-	    header = header.replace("${total}",Utils.formatNumberComma(this.total)).replace("${blockValue}", Utils.formatNumberComma(Math.round(this.blockValue)));
+	    header = header.replace("${divider}",divider).replace("${total}",Utils.formatNumberComma(this.total)).replace("${blockValue}", Utils.formatNumberComma(Math.round(this.blockValue)));
 
 	    this.jq(ID_BLOCKS_HEADER).html(header);
 	    this.jq(ID_BLOCKS).html(contents);
