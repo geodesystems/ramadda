@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Apr  2 00:20:15 MDT 2023";
+var build_date="RAMADDA build date: Sun Apr  2 01:53:18 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -29968,6 +29968,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    maxPercent = Math.max(maxPercent, perc);
 		}
 
+//		let csv = '';
 		for(let i=0;i<s.values.length;i++) {
 		    let value = s.values[i].value;
 		    let label = value;
@@ -29981,6 +29982,8 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    if(!color) color = dfltColor;
 
 		    if(showPercent) countLabel+=" (" + Math.round(perc*100)+"%)";
+//		    csv+=value+','+perc+'\n';
+
 		    bannerHtml += HU.div([TITLE,"Click to select",CLASS," display-frequency-item","data-field",s.field.getId(),"data-value",value], value +"<br>" + countLabel);
 		    let tdv = HU.td([], value);
 		    let tdc =  (showCount?HU.td(["align", "right"], count):"");
@@ -29991,6 +29994,8 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 					 tdv + tdc + tdp + tdb
 					);
 		}
+//		Utils.makeDownloadFile('percents.csv',csv);
+
 		html += HU.close(TBODY,TABLE,DIV);
 		bannerHtml += HU.close(TD);
 	    }
@@ -50525,6 +50530,7 @@ const DISPLAY_HTMLTABLE = "htmltable";
 const DISPLAY_RECORDS = "records";
 const DISPLAY_TSNE = "tsne";
 const DISPLAY_HEATMAP = "heatmap";
+const DISPLAY_WAFFLE = "waffle";
 const DISPLAY_CROSSTAB = "crosstab";
 const DISPLAY_CORRELATION = "correlation";
 const DISPLAY_RANKING = "ranking";
@@ -50595,6 +50601,14 @@ addGlobalDisplayType({
     forUser: true,
     category: CATEGORY_MISC,
     tooltip: makeDisplayTooltip("Table showing colored fields","heatmap.png"),    
+});
+addGlobalDisplayType({
+    type: DISPLAY_WAFFLE,
+    label: "Waffle",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_MISC,
+    tooltip: makeDisplayTooltip("Table showing colored fields"),    
 });
 addGlobalDisplayType({
     type: DISPLAY_GRAPH,
@@ -52851,6 +52865,8 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
 }
 
 
+
+
 function RamaddaRankingDisplay(displayManager, id, properties) {
     const ID_TABLE = "rankingtable";
     $.extend(this, {
@@ -53012,6 +53028,71 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
                 _this.updateUI();
             });
         },
+    });
+}
+
+
+function RamaddaWaffleDisplay(displayManager, id, properties) {
+    const ID_TABLE = "rankingtable";
+    const SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_WAFFLE, properties);
+    let myProps = [
+	{label:'Waffle'},
+	{p:'labelField',ex:''},
+	{p:'boxSize',d:'15px'},
+	{p:'showFieldLabel',d:true},
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+        needsData: function() {
+            return true;
+        },
+        updateUI: function(pointData) {
+            SUPER.updateUI.call(this, pointData);
+            let records = this.records =  this.filterData();
+            if (records == null) {
+                this.setDisplayMessage(this.getLoadingMessage());
+                return;
+            }
+            let allFields = this.dataCollection.getList()[0].getRecordFields();
+            let fields = this.getSelectedFields([]);
+	    let labelField = this.getFieldById(null, this.getProperty("labelField"));
+	    if(!labelField) {
+		let strings = this.getFieldsByType(null, "string");
+		if(strings.length>0) labelField = strings[0];
+	    }
+	    let html = '';
+	    let showFieldLabel = this.getShowFieldLabel();
+	    let colors =  Utils.split(this.getColors('#F7931F,#4CC1EF,#C13018,#A6C68E,#89A7DE'),',',true,true);
+	    fields.forEach((field,idx)=>{
+		if(idx>0) html+='<p>';
+		if(showFieldLabel)
+		    html+=HU.b(field.getLabel())+'<br>';
+		records.forEach((r,idx)=>{
+		    let label  = labelField?r.getValue(labelField.getIndex()):index;
+		    let percent  = parseInt(field.getValue(r)*100);
+		    let box = "<table cellpadding=0 cellspacing=0 style='border:1px solid #ccc;border-collapse: collapse;'>";
+		    
+		    let percentCnt = 0;
+		    let size= HU.getDimension(this.getBoxSize());
+		    let color = colors[idx%colors.length];
+		    for(let row=0;row<10;row++) {
+			box+='<tr>';
+			for(let col=0;col<10;col++) {
+			    percentCnt++;
+			    let style = 'width:'+ size+';height:'+ size+';border-width:1px;border-left-width:0px;';
+			    let boxPercent = 100-percentCnt;
+			    if(boxPercent<percent) style+=HU.css('background', color);
+			    box+=HU.td(HU.td(['style',style],''));
+			}
+			box+='</tr>';
+		    }
+		    box+='</table>';
+		    html+=HU.div(['style',HU.css('display','inline-block','margin-right','20px')],
+				 HU.b(label+ ' ' +percent+'%') +'<br>' +box);
+		});
+
+	    });
+            this.setContents(html);
+	}
     });
 }
 
