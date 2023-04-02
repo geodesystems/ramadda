@@ -4317,9 +4317,11 @@ public class WikiUtil {
      * @param buff _more_
      * @param msg _more_
      */
-    public static void wikiError(Appendable buff, String msg) {
+    public static String wikiError(Appendable buff, String msg) {
         try {
-            HU.span(buff, msg + "", HU.cssClass("ramadda-wiki-error"));
+	    String m =   HU.span(msg + "", HU.cssClass("ramadda-wiki-error"));
+	    buff.append(m);
+	    return m;
         } catch (Exception exc) {
             throw new IllegalArgumentException(exc);
         }
