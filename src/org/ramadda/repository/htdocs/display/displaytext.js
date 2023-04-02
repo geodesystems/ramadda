@@ -1806,6 +1806,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    maxPercent = Math.max(maxPercent, perc);
 		}
 
+//		let csv = '';
 		for(let i=0;i<s.values.length;i++) {
 		    let value = s.values[i].value;
 		    let label = value;
@@ -1819,6 +1820,8 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    if(!color) color = dfltColor;
 
 		    if(showPercent) countLabel+=" (" + Math.round(perc*100)+"%)";
+//		    csv+=value+','+perc+'\n';
+
 		    bannerHtml += HU.div([TITLE,"Click to select",CLASS," display-frequency-item","data-field",s.field.getId(),"data-value",value], value +"<br>" + countLabel);
 		    let tdv = HU.td([], value);
 		    let tdc =  (showCount?HU.td(["align", "right"], count):"");
@@ -1829,6 +1832,8 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 					 tdv + tdc + tdp + tdb
 					);
 		}
+//		Utils.makeDownloadFile('percents.csv',csv);
+
 		html += HU.close(TBODY,TABLE,DIV);
 		bannerHtml += HU.close(TD);
 	    }
