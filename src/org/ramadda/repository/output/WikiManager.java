@@ -576,7 +576,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 }
             }
         } catch (Exception exc) {
-            throw new RuntimeException(exc);
+	    getLogManager().logError("Processing wiki tag:" +tag,exc);
+	    return wikiUtil.wikiError(new StringBuilder(),"Error processing tag:" + tag +" " + exc.getMessage());
         }
 
     }
@@ -920,17 +921,20 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
 
 	if((select = matches.call(entryId,ID_GRANDCHILD,PREFIX_GRANDCHILD))!=null) { 
-	    List<Entry> children =  getEntryManager().getChildren(request,select.getEntry(),select);
+	    SelectInfo select2 = new SelectInfo(request);
+	    select2.setOrderBy(select.getOrderBy());
+	    select2.setAscending(select.getAscending());	    
+	    List<Entry> children =  getEntryManager().getChildren(request,select.getEntry(),select2);
 	    if (children.size() == 0) {
 		return null;
 	    }
+	    List<Entry> all = new ArrayList<Entry>();
+	    select2.setType(select.getType());
 	    for(Entry child: children) {
-		select.setEntry(child);
-		List<Entry> gchildren = getEntryManager().getChildren(request,select);
-		if (gchildren.size() != 0) {
-		    return gchildren.get(0);
-		}
+		all.addAll(getEntryManager().getChildren(request,child,select2));
 	    }
+	    all = getEntryManager().applyFilter(request, all,select);
+	    if(all.size()>0) return all.get(0);
 	    return null;
         }
 
