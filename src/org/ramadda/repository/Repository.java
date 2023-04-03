@@ -3999,7 +3999,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         } else if (request.responseAsText()) {
             return msg;
         } else {
-            msg = HtmlUtils.sanitizeString(msg);
+	    //true->remove URL args
+            msg = HtmlUtils.sanitizeString(msg,true);
             StringBuilder sb = new StringBuilder();
             sb.append(
 		      getPageHandler().showDialogError(
