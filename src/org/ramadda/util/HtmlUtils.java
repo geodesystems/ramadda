@@ -5405,34 +5405,8 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        System.err.println(labeledCheckbox("name", "value", false, null,
-                                           "label"));
-        System.err.println(labeledCheckbox("name", "value", false, "",
-                                           "label"));
-        System.err.println(labeledCheckbox("name", "value", false, "foo=bar",
-                                           "label"));
-        System.err.println(labeledCheckbox("name", "value", false, "foo=bar",
-                                           "label"));
-        System.err.println(labeledCheckbox("name", "value", false, "id='ID'",
-                                           "label"));
-        System.err.println(labeledCheckbox("name", "value", false,
-                                           "id  ='ID'", "label"));
-        System.err.println(labeledCheckbox("name", "value", false,
-                                           "id  =   'ID'", "label"));
-        System.err.println(labeledCheckbox("name", "value", false,
-                                           "id=   'ID'", "label"));
-        System.err.println(labeledCheckbox("name", "value", false,
-                                           "id=\"ID\"", "label"));
-        System.err.println(labeledCheckbox("name", "value", false,
-                                           "id=\"ID\"", "label"));
-        System.err.println(labeledCheckbox("name", "value", false,
-                                           "id  =\"ID\"", "label"));
-        System.err.println(labeledCheckbox("name", "value", false,
-                                           "id  =   \"ID\"", "label"));
-        System.err.println(labeledCheckbox("name", "value", false,
-                                           "id=   \"ID\"", "label"));
-        System.err.println(labeledCheckbox("name", "value", false,
-                                           "id=\"ID\"", "label"));
+        System.err.println(sanitizeString("https://10000cities.org/repository/entry/show?entryid=abefb1bc-e8f5-468c-abba-2985b38cc877&output=streetview&heading=0 Hello there and another one https://10000cities.org/repository/entry/show?entryid=abefb1bc-e8f5-468c-abba-2985b38cc877&output=streetview&heading=0", true));
+	
 
 
         if (true) {
@@ -6281,11 +6255,20 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @return _more_
      */
     public static String sanitizeString(String s) {
+	return sanitizeString(s,false);
+    }
+
+    public static String sanitizeString(String s, boolean removeUrlArgs) {	
+
+
         if (s == null) {
             return null;
         }
         s = s.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 
+	if(removeUrlArgs) {
+	    s = s.replaceAll("\\?[^ \"]+","---");
+	}
         return s;
     }
 
