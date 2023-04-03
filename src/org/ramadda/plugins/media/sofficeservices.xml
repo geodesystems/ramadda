@@ -6,38 +6,15 @@
 ----
 {{tree}}
 ]]></process_description>
-<description><![CDATA[
-Runs soffice (libreoffice) to make an image from a PPT
-]]></description>
-<arg value="--headless"/>
-<arg value="--invisible"/>
-<arg value="--convert-to"/>
-<arg value="png"/>
-<arg value="--outdir"/>
+<description><![CDATA[Makes an image from a PPT]]></description>
+<arg type="string" prefix="-slidenumber"  default="1"
+     size="6"
+     label="Slide number" help="Which slide to capture. Can use range, e.g., 1-3 or &quot;all&quot; for all slides"/>
 <arg value="${outputdir}"/>
 <arg value="${entry.file}" type="entry" entryType="type_document_ppt" primary="true" copy="true" label="Input PPT File"></arg>
 <output type="file" pattern=".*\.png"/>
 </service>
 
-
-<service command="${service.soffice}" id="foo_media_soffice_thumbnail" label="Make an image from PPT" outputToStderr="true">
-<process_description><![CDATA[<wiki>
-{{description}}
-{{gallery}}
-{{tree}}
-]]></process_description>
-<description><![CDATA[
-Runs soffice (libreoffice) to make an image from a PPT
-]]></description>
-<arg value="--headless"/>
-<arg value="--invisible"/>
-<arg value="--convert-to"/>
-<arg value="png"/>
-<arg value="--outdir"/>
-<arg value="${outputdir}"/>
-<arg value="${entry.file}" type="entry" entryType="type_document_ppt" primary="true" copy="true" label="Input PPT File"></arg>
-<output type="file" pattern=".*\.png"/>
-</service>
 
 
 
