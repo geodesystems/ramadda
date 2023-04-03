@@ -147,9 +147,8 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
             return;
         }
         if ( !entry.isFile()) {
-            System.err.println("Shapefile not a file");
-
-            return;
+	    //            System.err.println("Shapefile not a file");
+	    //            return;
         }
         EsriShapefile shapefile = null;
         try {
@@ -271,7 +270,7 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
     public boolean addToMap(Request request, Entry entry, MapInfo map)
             throws Exception {
         if ( !entry.isFile()) {
-            return true;
+	    //            return true;
         }
         int numPoints = entry.getIntValue(IDX_RECORD_COUNT, -1);
 

@@ -19,6 +19,7 @@ import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.util.ColorTable;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 
 import org.ramadda.util.TTLCache;
@@ -172,8 +173,8 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                         "ShapefileOutputHandler.getShapefile: new EsriShapefile");
                     System.err.println("stack:" + Utils.getStack(5));
                 }
-                String      path        = entry.getFile().toString();
-                InputStream inputStream = new FileInputStream(path);
+                String      path        = entry.getResourcePath();
+                InputStream inputStream = IO.getInputStream(path);
                 shapefile = new EsriShapefile(inputStream, null, 0.0f);
                 cache.put(entry.getId(),
                           new ShapefileWrapper(shapefile, inputStream));
