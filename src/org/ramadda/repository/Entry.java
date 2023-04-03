@@ -400,6 +400,13 @@ public class Entry implements Cloneable {
         return getTypeHandler().getFileForEntry(this);
     }
 
+    public String getResourcePath() {
+	if(resource.isUrl()) {
+	    return resource.getPath();
+	}
+        return getFile().toString();
+    }    
+
 
     /**
      * _more_
