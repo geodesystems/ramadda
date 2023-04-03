@@ -177,6 +177,19 @@ proc addCensus {dir name for_type for_value type1 value1 type2 value2 lat lon} {
 
 
 proc county {state geoid ansi name pop hu aland awater aland_sqmi awater_sqmi lat lon} {
+#https://www2.census.gov/geo/tiger/TIGER2020PL/STATE/08_COLORADO/08001/tl_2020_08001_vtd20.zip
+    set censusFile "tl_2020_${geoid}_vtd20.zip"
+    set censusDir ~/.ramadda/htdocs/10000cities/censusfiles
+    if {![file exists [file join $censusDir $censusFile]]} {
+	set _state [string tolower $state]
+	if {[info exists ::states($_state)]} {
+	    set  stateFips $::states($_state) 
+	    set stateName [string toupper $::states($_state,name)]
+	    set url "https://www2.census.gov/geo/tiger/TIGER2020PL/STATE/${stateFips}_${stateName}/${geoid}/tl_2020_${geoid}_vtd20.zip"
+	    puts $url
+	    set rc [catch {exec wget -O $censusDir/$censusFile $url} msg]
+	}
+    }
 
     if {0} {
         set statsFile [file join $::statsDir/$geoid.json]
@@ -292,6 +305,9 @@ proc county {state geoid ansi name pop hu aland awater aland_sqmi awater_sqmi la
 
 
     set inner [Util::cdataTag entry_ids "" "search.type=type_awc_metar\nsearch.bbox=$bounds\nsearch\n"]
+    set censusDir "\${htdocs}/10000cities/censusfiles"
+
+    makeEntry  $dir/data "Election Precincts"  [list type geo_shapefile localfile "${censusDir}/${censusFile}"] "" ""
     makeEntry  $dir/data "Local Weather Stations"  [list type type_virtual] $desc $inner
     makeEntry  $dir/data "$name Sunrise/Sunset"  [list id $sunriseId type sunrisesunset latitude $lat longitude $lon] "" ""
     makeEntry  $dir/data "$name Historic Weather"  [list id $daymetId type type_daymet latitude $lat longitude $lon] "" ""
