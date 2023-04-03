@@ -170,7 +170,7 @@ public class GtfsStopTypeHandler extends GenericTypeHandler {
                                    entry);
         Gtfs.addToMap(request, vehicles, map);
 
-        return false;
+	return true;
     }
 
 }
