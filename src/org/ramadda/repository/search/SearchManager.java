@@ -775,6 +775,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    if(request.get(ARG_EXTRACT_SUMMARY,false)) {
 			if(debugGpt) System.err.println("SearchManager: callGpt: summary");
 			String summary = getRepository().callGpt("Summarize the following text. Assume the reader has a college education. Limit the summary to no more than 4 sentences.","",fileCorpus,200,true,tokenLimit);
+			if(debugGpt) System.err.println("got summary:" + summary);
 			if(stringDefined(summary)) {
 			    summary = Utils.stripTags(summary).trim().replaceAll("^:+","");
 			    summary = "+toggleopen Summary\n+callout-info\n<snippet>\n" + summary+"\n</snippet>\n-callout-info\n-toggle\n";
@@ -786,6 +787,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    if(request.get(ARG_EXTRACT_TITLE,false)) {
 			if(debugGpt) System.err.println("SearchManager: callGpt: title");
 			String title = getRepository().callGpt("Extract the title from the following document:","",fileCorpus,200,true,tokenLimit);
+			if(debugGpt) System.err.println("got title:" + title);
 			if(stringDefined(title)) {
 			    title = title.trim().replaceAll("\"","").replaceAll("\"","");
 			    entry.setName(title);
@@ -798,11 +800,13 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    if(request.get(ARG_EXTRACT_AUTHORS,false)) {
 			if(debugGpt) System.err.println("SearchManager: callGpt: authors");
 			String authors = getRepository().callGpt("Extract the author's names and only the author's names from the first few pages in the following text and separate the names with a comma:","",fileCorpus,200,true,tokenLimit);		    
+			if(debugGpt) System.err.println("got authors:" + authors);
 			if(stringDefined(authors)) {
 			    entryChanged = true;
 			    for(String author:Utils.split(authors,",",true,true)) {
 				//This gets rid of some false positives
 				if(author.indexOf(" ")<0) continue;
+				if(author.indexOf("No author")>=0) continue;
 				getMetadataManager().addMetadata(request,
 								 entry,
 								 new Metadata(
@@ -895,7 +899,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	List<String> keywords = new ArrayList<String>();
 	if(debugGpt) System.err.println("SearchManager: callGpt: keywords");
-	String result = getRepository().callGpt("Extract keywords from the following text. Limit your response to no more than 15 keywords:","Keywords:",fileCorpus,60,true,tokenLimit);
+	String result = getRepository().callGpt("Extract keywords from the following text. Limit your response to no more than 10 keywords:","Keywords:",fileCorpus,60,true,tokenLimit);
+	if(debugGpt) System.err.println("got:" + result);
 	if(result!=null) {
 	    for(String tok:Utils.split(result,",",true,true)) {
 		if(keywords.size()>15) break;
