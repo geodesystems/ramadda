@@ -3370,7 +3370,7 @@ public class TypeHandler extends RepositoryManager {
             path = getTypeProperty("fixed_url", (String) null);
         }
         if (path != null) {
-            path = Utils.normalizeTemplateUrl(path);
+            path = Utils.normalizeTemplateUrl(path).replace("${htdocs}",getStorageManager().getHtdocsDir());
         }
 
         return path;
