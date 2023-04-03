@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Apr  2 01:53:18 MDT 2023";
+var build_date="RAMADDA build date: Mon Apr  3 04:15:21 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -53237,6 +53237,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
     let myProps = [
 	{label:'Correlation'},
 	{p:'showSelectSlider',ex:'false',d:true},
+	{p:'showDownload',ex:true,d:false},
 	{p:'range.low.min',ex:'-1'},
 	{p:'range.low.max',ex:'0'},
 	{p:'range.high.min',ex:'0'},
@@ -53314,7 +53315,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
             }
 	    let _this  = this;
 	    let html = "";
-	    if(this.getProperty("showDownload",true)) {
+	    if(this.getProperty("showDownload",false)) {
 		html+=HU.div(['id',this.domId('download')],'Download Correlation Table');
 	    }
 	    this.range = {
