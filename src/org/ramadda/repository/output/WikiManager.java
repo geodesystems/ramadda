@@ -3183,7 +3183,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                     style=value;
                 } else if (key.startsWith("_")) {
                     key = key.substring(1);
-                    List<String> toks = Utils.split(value, ",");
+		    //Escape the delimiter with true
+                    List<String> toks = Utils.split(value, ",",false,false,true);
                     max = Math.max(max, toks.size());
                     multiAttrs.put(key, toks);
                 } else {
