@@ -5,6 +5,32 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.docs;
 
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.openxml4j.opc.PackageAccess;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
+import org.apache.poi.sl.usermodel.PictureData;
+import org.apache.poi.xslf.usermodel.XMLSlideShow;
+import org.apache.poi.xslf.usermodel.XSLFPictureData;
+import org.apache.poi.xslf.usermodel.XSLFPictureShape;
+import org.apache.poi.xslf.usermodel.XSLFSlide;
+import org.apache.poi.xslf.usermodel.XSLFShape;
+
 
 
 import org.apache.tika.Tika;
@@ -163,7 +189,7 @@ public class TikaService extends Service {
     }
 
     public boolean makePptImage(Request request, Service service,
-                               ServiceInput input, List args)
+				ServiceInput input, List args)
             throws Exception {
         Entry entry = null;
         for (Entry e : input.getEntries()) {
@@ -176,19 +202,55 @@ public class TikaService extends Service {
         if (entry == null) {
             throw new IllegalArgumentException("No file entry found");
         }
+
+	int slideStart= 1;
+	int slideEnd= 1;	
+        XMLSlideShow ppt = new XMLSlideShow(new FileInputStream(entry.getResource().getPath()));
+	List<XSLFSlide> slides = ppt.getSlides();
+	for(int i=0;i<args.size();i++) {
+	    if(args.get(i).equals("-slidenumber")) {
+		String s = args.get(++i).toString();
+		if(s.indexOf("-")>=0) {
+		    List<String> toks = Utils.splitUpTo(s,"-",2);
+		    slideStart = Integer.parseInt(toks.get(0));
+		    slideEnd = Integer.parseInt(toks.get(1));
+		    continue;
+		} else if(s.trim().equals("all")) {
+		    slideStart=1;
+		    slideEnd = slides.size();
+		    System.err.println(slideStart +" " + slideEnd);
+		} else {
+		    slideStart = slideEnd = Integer.parseInt(s);
+		}
+	    }
+	}
 	String name = getStorageManager().getFileTail(entry);
 	if ( !Utils.stringDefined(name)) {
 	    name = entry.getName();
 	}
 	name = IOUtil.stripExtension(name);
-	File newFile = new File(IOUtil.joinDir(input.getProcessDir(),
-					       name + ".png"));
 
-	XlsUtil.makePptScreenshot(entry.getResource().getPath(),newFile);
 
+	for(int i=slideStart;i<=slideEnd;i++) {
+	    File newFile = new File(IOUtil.joinDir(input.getProcessDir(),
+						   name+"_"+i + ".png"));
+	    makePptScreenshot(ppt,slides,newFile, i-1);
+	}
 	return true;
     }
+    
+    public static void  makePptScreenshot(XMLSlideShow ppt,
+					  List<XSLFSlide> slides,
+					  File output,int slideNumber) throws Exception {
 
+	if(slideNumber>=slides.size())
+	    throw new IllegalArgumentException("Bad slide number:" + (slideNumber+1) +" #slides:" + slides.size());
+	XSLFSlide slide = slides.get(slideNumber);
+	java.awt.Dimension dim = ppt.getPageSize();
+        BufferedImage image = new BufferedImage(dim.width,dim.height, BufferedImage.TYPE_INT_ARGB);
+        slide.draw(image.createGraphics());
+        ImageIO.write(image, "png", output);
+    }
 
 
 }
