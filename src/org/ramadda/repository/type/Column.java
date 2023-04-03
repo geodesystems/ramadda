@@ -2565,10 +2565,8 @@ public class Column implements DataTypes, Constants, Cloneable {
     private List<String> getSearchValues(Request request) throws Exception {
         String       searchArg = getSearchArg();
         List<String> result    = new ArrayList<String>();
-	for (String arg :
-		 (List<String>) request.get(searchArg,
-					    new ArrayList<String>())) {
-	    result.add(arg);
+	for (Object arg : request.get(searchArg,  new ArrayList())) {
+	    result.add(arg.toString());
         }
         return result;
     }
