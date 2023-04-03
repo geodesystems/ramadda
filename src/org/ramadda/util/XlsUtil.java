@@ -36,6 +36,7 @@ import org.apache.poi.xslf.usermodel.XSLFShape;
 
 
 
+
 import org.apache.poi.xssf.streaming.*;
 
 import java.awt.Rectangle;
@@ -328,14 +329,6 @@ public class XlsUtil {
     }
 
     
-    public static void  makePptScreenshot(String file,File output) throws Exception {
-        XMLSlideShow ppt = new XMLSlideShow(new FileInputStream(file));
-        XSLFSlide slide = ppt.getSlides().get(0);
-	java.awt.Dimension dim = ppt.getPageSize();
-        BufferedImage image = new BufferedImage(dim.width,dim.height, BufferedImage.TYPE_INT_ARGB);
-        slide.draw(image.createGraphics());
-        ImageIO.write(image, "png", output);
-    }
 
 
     /**
@@ -378,14 +371,6 @@ public class XlsUtil {
      */
     public static void main(String[] args) throws Exception {
         for (String arg : args) {
-	    File out= new File("screenshot.png");
-	    System.err.println("Writing to:" + out);
-	    makePptScreenshot(arg,out);
-	    if(true) return;
-
-
-
-
             String csv = null;
             for (int i = 0; i < 10; i++) {
                 long t1 = System.currentTimeMillis();
