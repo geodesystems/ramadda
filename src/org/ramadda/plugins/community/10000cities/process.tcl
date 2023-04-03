@@ -99,7 +99,15 @@ proc state {abbr name fips lat lon pop} {
 
 
 
-    set desc "\n:heading Welcome to the 10000 Cities Data Hub for the state of $name\n<br>Below you will find state-level data and individual data hubs for each county.\n<br>"
+
+
+    set desc "\n:heading Welcome to the 10000 Cities Data Hub for the state of $name\n<br>Below you will find state-level data and individual data hubs for each county.\n<br>\n"
+    set wikipediaLink "https://en.wikipedia.org/wiki/$name"
+    append desc ":vspace 10px\n"
+    append desc "@($wikipediaLink imageWidth=100 addHeader=false ignoreError=true)\n:vspace 10px\n"
+    append desc ":heading County Data Hubs\n"
+    append desc "{{map entries=\"children:entry:Counties\"}}\n"
+
     makeGroup $stateDir $name [list type community_datahub latitude $lat longitude $lon] "$desc" $md
 
     set countyDesc "<wiki>\n+section # title=\"{{name}}\"\n:blurb-blue County data hubs for $name\n{{map  sort=\"name\"  width=\"100%\" listentries=\"true\" height=\"500\"}}\n-section\n+section # label=\"The Counties\"\n{{tree message=\"\" sort=\"name\" details=\"false\"}}\n-section\n"
@@ -372,7 +380,9 @@ set ::sortMD [xmlTag metadata "" [list type content.sort encoded false attr1 "na
 makeGroup  [getStateDir] "States"   [list] "<wiki>+section title={{name}}\n{{tree  message=\"\" sort=\"name\"  details=\"false\"}}\n-section" $::sortMD
 
 
-set usdesc "\n:heading Welcome to the 10000 Cities Data Hub for the United States.\n<br>Below you will find data at the national level as well as data hubs for each state."
+set usdesc "\n:heading Welcome to the 10000 Cities Data Hub for the United States.\n<br>Below you will find data at the national level as well as data hubs for each state.\n"
+append usdesc ":heading State Data Hubs\n"
+append usdesc "{{map entries=\"children:entry:States\"}}\n"
 #set md [xmlTag metadata "" [list type content.alias encoded false attr1 "https://usa.10000cities.org"]]
 set md [xmlTag metadata "" [list type content.alias encoded false attr1 "usa.10000cities.org"]]
 makeGroup  $::baseDir "United States"   [list  type community_datahub north 68.9594424 west -165.4277301 east -56.0917926 south 10.2745632] $usdesc $md

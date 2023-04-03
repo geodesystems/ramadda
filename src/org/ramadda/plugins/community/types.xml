@@ -189,7 +189,7 @@
 showType="false" showForm="true"  showSearchSettings="false" formOpen="false"  layoutHere="true"  showTitle="false"
 textRequired="true" 
 height="300px"
-providers="this,eia,fred,quandl,socrata,category:.*CKAN.*,category:.*Socrata.*,flickr,youtube,duckduckgo"
+providers="this,fred,quandl,socrata,category:.*CKAN.*,category:.*Socrata.*,flickr,youtube,duckduckgo"
 }}
 :vspace 100px
 -section
