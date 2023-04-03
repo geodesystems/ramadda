@@ -162,7 +162,7 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
         ShapefileRecordFile recordFile =
             new ShapefileRecordFile(getRepository().getTmpRequest(), entry,
                                     getRecordProperties(entry),
-                                    entry.getResource().getPath(), shapefile);
+                                    entry.getResourcePath(request), shapefile);
         String props = recordFile.getEntryFieldsProperties();
 
         getEntryValues(entry)[IDX_PROPERTIES] = props;
@@ -407,7 +407,7 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
                                        Hashtable requestProperties)
             throws Exception {
         return new ShapefileRecordFile(request, entry, properties,
-                                       entry.getResource().getPath(), null);
+                                       entry.getResourcePath(request), null);
     }
 
 

@@ -173,7 +173,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                         "ShapefileOutputHandler.getShapefile: new EsriShapefile");
                     System.err.println("stack:" + Utils.getStack(5));
                 }
-                String      path        = entry.getResourcePath();
+                String      path        = entry.getResourcePath(getRepository().getTmpRequest());
                 InputStream inputStream = IO.getInputStream(path);
                 shapefile = new EsriShapefile(inputStream, null, 0.0f);
                 cache.put(entry.getId(),
