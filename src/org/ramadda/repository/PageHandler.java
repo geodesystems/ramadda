@@ -2203,6 +2203,8 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public static String getDialogString(String s) {
+	//Remove url args
+	s = s.replaceAll("\\?[^ \"]+","---");
         s = s.replaceAll("<pre>", "PREOPEN");
         s = s.replaceAll("</pre>", "PRECLOSE");
         s = HU.entityEncode(s);
