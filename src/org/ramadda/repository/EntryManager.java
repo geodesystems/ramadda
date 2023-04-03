@@ -2683,8 +2683,22 @@ public class EntryManager extends RepositoryManager {
                     try {
                         new URL(theResource);
                         resourceType = Resource.TYPE_URL;
-                    } catch (Exception exc) {}
+                    } catch (Exception exc) {
+			System.err.println("Error: trying to determine resource type:" + exc +" for:" + theResource);
+		    }
                 }
+		if(resourceType == Resource.TYPE_URL) {
+		    String _resource = theResource.toLowerCase();
+		    //only allow http and https
+		    if(!_resource.startsWith("http:")
+		       && !_resource.startsWith("https:")) {
+			throw new IllegalArgumentException("Malformed URL:" + theResource);
+		    }
+
+		}
+
+
+
 
                 TypeHandler typeHandlerToUse = typeHandler;
                 //See if we can figure out the type 
