@@ -2036,8 +2036,6 @@ public class Gtfs implements Constants {
     public static List<Entry> getTripsForStop(Request request, Entry entry)
             throws Exception {
         Entry agency = entry.getAncestor(GtfsAgencyTypeHandler.TYPE_AGENCY);
-	if(true)
-	return new ArrayList<Entry>();
 
 	if(agency==null) throw new IllegalStateException("Gtfs.getTripsForStop: no agency found");
 
