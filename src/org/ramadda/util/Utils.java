@@ -5050,15 +5050,24 @@ public class Utils extends IO {
      */
     public static List<String> split(Object o, String delim, boolean trim,
                                      boolean skipBlank) {
+	return split(o,delim,trim,skipBlank,false);
+    }
+
+
+    public static List<String> split(Object o, String delim, boolean trim,
+                                     boolean skipBlank,boolean handleEscape) {	
         //      List<String> test=    StringUtil.split(o, delim, trim, skipBlank);
         List<String> toks = new ArrayList<String>();
         if (o == null) {
             return toks;
         }
         String s = o.toString();
-        delim = Pattern.quote(delim);
+	if(handleEscape) {
+	    s = s.replace("\\"+delim,"_ESCAPEDDELIM_");
+	}
+        String _delim = Pattern.quote(delim);
 	//Pass in -1 so it includes trailing blanks
-        String[] a = s.split(delim,-1);
+        String[] a = s.split(_delim,-1);
         for (String tok : a) {
             if (trim) {
                 tok = tok.trim();
@@ -5066,6 +5075,9 @@ public class Utils extends IO {
             if (skipBlank && (tok.length() == 0)) {
                 continue;
             }
+	    if(handleEscape) {
+		tok = tok.replace("_ESCAPEDDELIM_",delim);
+	    }
             toks.add(tok);
         }
 
