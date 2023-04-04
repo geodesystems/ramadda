@@ -1956,7 +1956,7 @@ public abstract class Converter extends Processor {
 				       "\u00B5", "u",
 				       "\u00B3", "^3",
 				       "\n", " ");
-                String id = Utils.replaceAll(col,"°"," ",
+                String id = Utils.replaceAll(col,"_","thedelimiter","°"," ",
 					     "\\([^\\)]+\\)", "",
 					     "\\?", "",
 					     "\\$", "",
@@ -1978,6 +1978,7 @@ public abstract class Converter extends Processor {
 				      "^_+", "",
 				      "\\^", "_");
 
+		id = Utils.replaceAll(id,"thedelimiter","_");
                 id = Seesv.getDbProp(props, id, i, "id", id);
 
 
