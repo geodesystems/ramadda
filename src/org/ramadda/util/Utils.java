@@ -2697,6 +2697,7 @@ public class Utils extends IO {
                                 String delimiter) {
         label = stripTags(label);
         label = label.trim().toLowerCase();
+	label = Utils.replaceAll(label,delimiter,"thedelimiter");
 	label = Utils.replaceAll(label,
 				 ":", delimiter,
 				 "&", delimiter,
@@ -2719,6 +2720,7 @@ public class Utils extends IO {
 				 "[\\{\\}=]+", delimiter,
 				 "_$", "");
 
+	label = Utils.replaceAll(label,"thedelimiter",delimiter);
         if (forCode && Pattern.matches("^[0-9]+.*", label)) {
             label = delimiter + label;
         }
