@@ -2334,7 +2334,8 @@ public class UserManager extends RepositoryManager {
                 msg = msg + HtmlUtils.p()
                       + msg("If you had logged in perhaps you have cookies turned off?");
             }
-            sb.append(getPageHandler().showDialogWarning(msg));
+	    
+            sb.append(HU.center(getPageHandler().showDialogWarning(msg)));
             sb.append(makeLoginForm(request));
             sb.append(HtmlUtils.sectionClose());
 
@@ -3415,7 +3416,7 @@ public class UserManager extends RepositoryManager {
         request.setSessionId(getSessionManager().createSessionId());
 
         StringBuilder sb = new StringBuilder();
-        sb.append(getPageHandler().showDialogNote(msg("You are logged out")));
+        sb.append(HU.center(getPageHandler().showDialogNote(msg("You are logged out"))));
         sb.append(makeLoginForm(request));
 
         return addHeader(request, sb, "Logout");
