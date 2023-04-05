@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Apr  3 05:28:05 MDT 2023";
+var build_date="RAMADDA build date: Tue Apr  4 21:23:08 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -38659,10 +38659,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(colorByEnabled) {
 			let value = record.getData()[colorBy.index];
 			colorByValue = value;
+			
 			theColor =  colorBy.getColorFromRecord(record, theColor,false);
 //			if(idx<5) console.log("%cpt:" + value + " " + theColor,"background:" + theColor);
 		    }
                 }
+//		if(idx<5 || idx>5) return
+		
 
 		if(theColor) {
                     didColorBy = true;
@@ -38688,6 +38691,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(polygonColorTable) {
 			if(cidx>=polygonColorTable.length) cidx=0;
 			polygonProps.strokeColor=polygonColorTable[cidx++];
+		    } else if(colorByColor) {
+			polygonProps.strokeColor=colorByColor;
 		    }
 		    let polys = this.map.createPolygonFromString(s, polygonProps,latlon,null);
 		    polys.forEach(poly=>{
