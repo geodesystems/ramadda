@@ -4854,36 +4854,87 @@ RepositoryMap.prototype = {
     },
 
     createPolygonFromString:function(s,polygonProps,latlon,text,justPoints) {
+//	s = "35.6895;139.6917;37.7749;-122.4194";
 	let delimiter;
 	[";",","].forEach(d=>{
 	    if(s.indexOf(d)>=0) delimiter = d;
 	});
+
+
+
 	let toks  = s.split(delimiter);
+	let points = [];
 	let p = [];
+	let segments = [p];
+	
+	function crossIDL(lon1,  lon2) {
+	    // Determine if the two points are on opposite sides of the IDL
+	    if ((lon1 > 0 && lon2 < 0) || (lon1 < 0 && lon2 > 0)) {
+		// Calculate the longitude difference
+		let lonDiff = Math.abs(lon1 - lon2);
+		// If the longitude difference is greater than 180 degrees, the line segment crosses the IDL
+		if (lonDiff > 180) {
+		    return true;
+		}
+	    }
+	    return false;
+	}
+
+	function intercept(lat1,lon1,lat2,lon2) {
+	    // define the two points
+	    let point1 = { lat: lat1, lng: lon1 }; 
+	    let point2 = { lat: lat2, lng: lon2}; 
+
+	    // calculate the difference in longitude
+	    let lngDiff = Math.abs(point1.lng - point2.lng);
+
+	    // if the difference is greater than 180 degrees, adjust it
+	    if (lngDiff > 180) {
+		lngDiff = 360 - lngDiff;
+	    }
+
+	    // calculate the slope of the line connecting the two points
+	    let latDiff = point2.lat - point1.lat;
+	    let slope = latDiff / lngDiff;
+	    
+	    // calculate the latitude of the intercept point on the date line
+	    return point1.lat + ((180 - point1.lng) * slope);
+	}
+
+
+
 	for(let pIdx=2;pIdx<toks.length;pIdx+=2) {
 	    let lat1 = parseFloat(toks[pIdx-2]);
 	    let lon1 = parseFloat(toks[pIdx-1]);
 	    let lat2 = parseFloat(toks[pIdx]);
 	    let lon2 = parseFloat(toks[pIdx+1]);
 	    if(!latlon) {
-		let tmp =lat1;
-		lat1=lon1;
-		lon1=tmp;
-		tmp =lat2;
-		lat2=lon2;
-		lon2=tmp;
+		let tmp =lat1;lat1=lon1;lon1=tmp;tmp =lat2;lat2=lon2;lon2=tmp;
 	    }
+	    if(isNaN(lat1) || isNaN(lat2) || isNaN(lon1) || isNaN(lon2)) continue;
 	    if(justPoints) {
-		p.push(lon1,lat1,lon2,lat2);
+		points.push(lon1,lat1,lon2,lat2);
+		continue;
+	    } 
+	    if(crossIDL(lon1,lon2)) {
+		let inter = intercept(lat1,lon1,lat2,lon2);
+		p.push(MapUtils.createPoint(lon1,lat1));
+		p.push(MapUtils.createPoint(lon1<0?-180:180,inter));		
+		p=[];
+		segments.push(p);
+		p.push(MapUtils.createPoint(lon2<0?-180:180,inter));		
+		p.push(MapUtils.createPoint(lon2,lat2));
 	    } else {
 		p.push(MapUtils.createPoint(lon1,lat1));
 		p.push(MapUtils.createPoint(lon2,lat2));
 	    }
 	}
-	if(justPoints) return p;
+	if(justPoints) return points;
 	let polys = [];
-	if(p.length>0)
-	    polys.push(this.createPolygon("polygon", "",p,polygonProps,text,true));
+	segments.forEach(p=>{
+	    if(p.length>0)
+		polys.push(this.createPolygon("polygon", "",p,polygonProps,text,true));
+	});
 	return polys;
     },
 
