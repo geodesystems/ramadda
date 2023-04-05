@@ -385,18 +385,6 @@ MapGlyph.prototype = {
 
 	html+=this.display.getLevelRangeWidget(level,this.getShowMarkerWhenNotVisible());
 	
-	/*
-	  let elevButtons = [];
-	  if(this.isOpenLine()|| this.mapLayer) {
-	  elevButtons.push(HU.span(['style','margin-top:4px;','id',this.domId('makeelevations'),'class','ramadda-clickable'],'Add elevations'));
-	  elevButtons.push(HU.span(['style','margin-top:4px;','id',this.domId('clearelevations'),'class','ramadda-clickable'],'Clear elevations'));
-	  elevButtons.push(HU.span(['id',this.domId('elevationslabel')],''));	    
-	  }
-
-	  if(elevButtons.length) {
-	  html+= Utils.wrap(elevButtons,HU.open('span',['style',HU.css('margin-right','8px')]),'</span>');
-	  }
-	*/
 
 	let domId = this.display.domId('glyphedit_popupText');
 	let featureInfo = this.getFeatureInfoList();
@@ -1782,7 +1770,7 @@ MapGlyph.prototype = {
 	if(this.type==GLYPH_LABEL && this.style.label) {
 	    item(this.style.label.replace(/\"/g,"\\"));
 	}
-	if(this.getProperty('showMeasures',true)) {
+	if(this.getProperty('showMeasures',true) && !this.isIsoline()) {
 	    let distances = this.display.getDistances(this.getGeometry(),this.getType());
 	    item(distances,true,true);
 	}
@@ -2155,6 +2143,9 @@ MapGlyph.prototype = {
     },
     
 
+    isMarker:function() {
+	return this.getType() ==GLYPH_MARKER;
+    },
     isGroup:function() {
 	return this.getType() ==GLYPH_GROUP;
     },
@@ -2167,6 +2158,9 @@ MapGlyph.prototype = {
     isMap:function() {
 	return this.getType()==GLYPH_MAP;
     },
+    isIsoline:function() {
+	return this.getType()==GLYPH_ISOLINE;
+    },    
     isRoute:function() {
 	return this.getType()==GLYPH_ROUTE;
     },    

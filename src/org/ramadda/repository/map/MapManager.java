@@ -613,6 +613,38 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         return new Result(JsonUtil.list(results), Result.TYPE_JSON);
     }
 
+    public Result processGetIsoline(Request request) throws Exception {
+	boolean ok  = !request.isAnonymous();
+	if(!ok) {
+	    return new Result("{error:'Isoline routing not available to non logged in users'}", Result.TYPE_JSON);
+	}
+
+	String hereKey = GeoUtils.getHereKey();
+	if(hereKey==null) {
+	    return new Result("{error:'No routing API defined'}", Result.TYPE_JSON);
+	}
+
+
+	request.setReturnFilename("isoline.json");
+	
+	//https://isoline.router.hereapi.com/v8/isolines?transportMode=car&origin=52.51578,13.37749&range[type]=time&range[values]=300'
+	List<String> points = Utils.split(request.getString("points",""),",",true,true);
+	String url = HU.url("https://isoline.router.hereapi.com/v8/isolines",
+			    "transportMode",request.getString("mode","car"),
+			    "range[type]",request.getString("rangetype","time"),
+			    "range[values]",request.getString("rangevalue","300"),
+			    "apikey",  hereKey);
+
+	//Do this here so the comma doesn't get encoded
+	url+="&origin="+request.getString("latitude","") +","+   request.getString("longitude","");
+	IO.Result r = IO.doGetResult(new URL(url));
+	if(r.getError()) {
+	    //		System.err.println(r.getResult());
+	}
+	return new Result("", new StringBuilder(r.getResult()), JsonUtil.MIMETYPE);
+    }
+
+
     public Result processGetRoute(Request request) throws Exception {
 	boolean ok = false;
 	if(request.exists(ARG_ENTRYID)) {
