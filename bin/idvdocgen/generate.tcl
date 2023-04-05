@@ -66,7 +66,7 @@ proc ht::menu {args} {
 	   return "{{path $p}}"
     }
     set sep "-&gt;"
-    return "<code class=\"menu\">[join $args $sep]</code>"
+    return "<span class=\"ramadda-docs-menu\">[join $args $sep]</span>"
 }
 
 global popupCnt
