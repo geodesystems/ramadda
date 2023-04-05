@@ -5038,7 +5038,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         if (snippet == null) {
             return dflt;
         }
-
         return HU.div(snippet, HU.cssClass("ramadda-snippet"));
     }
 
@@ -5073,6 +5072,14 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		    snippet = StringUtil.findPattern(
 						     text, "(?s)\\+snippet(.*?)-snippet");
 		}
+		if (snippet == null) {
+		    snippet = StringUtil.findPattern(
+						     text, "(?s)\\+note\\s*(.*?)-note");
+		}		
+		if (snippet == null) {
+		    snippet = StringUtil.findPattern(
+						     text, "(?s)\\+callout-info\\s*(.*?)-callout");
+		}		
 	    }
 	}
         child.setSnippet(snippet);
