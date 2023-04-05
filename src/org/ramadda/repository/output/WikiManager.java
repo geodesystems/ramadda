@@ -431,8 +431,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
         try {
             Entry   entry    = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
+	    
             Request request  = (Request) wikiUtil.getProperty(ATTR_REQUEST);
-
             Entry   theEntry = entry;
             if (tag.equals(WIKI_TAG_IMPORT)) {
                 //Old style
@@ -478,6 +478,9 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             }
 
             String entryId = getProperty(wikiUtil, props, ATTR_ENTRY, null);
+
+
+
             if (Utils.stringDefined(entryId)) {
                 theEntry = findEntryFromId(request, entry, wikiUtil, props,
                                            entryId.trim());
@@ -659,9 +662,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         Request myRequest = request.cloneMe();
         WikiUtil wikiUtil =
             initWikiUtil(myRequest,
-                         new WikiUtil(Misc.newHashtable(new Object[] {
-				     ATTR_REQUEST,
-				     myRequest, ATTR_ENTRY, entry })), entry);
+                         new WikiUtil(Misc.newHashtable(new Object[] {ATTR_ENTRY, entry })), entry);
 
 	if(isPrimaryRequest) {
 	    wikiUtil.putProperty("primaryEntry", entry);
@@ -5391,7 +5392,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
     private WikiUtil makeWikiUtil(Request request, boolean makeHeadings) {
         WikiUtil wikiUtil = new WikiUtil();
         wikiUtil.setMakeHeadings(makeHeadings);
-
         return initWikiUtil(request, wikiUtil, null);
     }
 
@@ -5427,6 +5427,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
      */
     public WikiUtil initWikiUtil(Request request, WikiUtil wikiUtil,
                                  Entry entry) {
+	wikiUtil.setProperty(ATTR_REQUEST,   request);
         wikiUtil.setMobile(request.isMobile());
         if ( !request.isAnonymous()) {
             wikiUtil.setUser(request.getUser().getId());
