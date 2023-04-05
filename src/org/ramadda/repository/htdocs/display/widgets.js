@@ -846,8 +846,15 @@ function DisplayAnimation(display, enabled,attrs) {
 	    }
 	},
 	applyAnimation: function(skipSlider) {
-	    this.display.animationApply(this);
-	    this.updateUI();
+	    //Buffer the apply calls in case the user is clicking really fast
+	    if(this.applyTimeout) {
+		clearTimeout(this.applyTimeout);
+	    }
+	    this.applyTimeout = setTimeout(()=>{
+		this.applyTimeout = null;
+		this.display.animationApply(this);
+		this.updateUI();
+	    },20);
 	},
 	setRecordListHighlight: function(recordList) {
 	    this.recordListHighlight = recordList;
