@@ -2680,11 +2680,13 @@ public class EntryManager extends RepositoryManager {
                 } else if (isFile) {
                     resourceType = Resource.TYPE_STOREDFILE;
                 } else {
-                    try {
-                        new URL(theResource);
-                        resourceType = Resource.TYPE_URL;
-                    } catch (Exception exc) {
-			System.err.println("Error: trying to determine resource type:" + exc +" for:" + theResource);
+		    if(stringDefined(theResource)) {
+			try {
+			    new URL(theResource);
+			    resourceType = Resource.TYPE_URL;
+			} catch (Exception exc) {
+			    System.err.println("Error: trying to determine resource type:" + exc +" for:" + theResource);
+			}
 		    }
                 }
 		if(resourceType == Resource.TYPE_URL) {
