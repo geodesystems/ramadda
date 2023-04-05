@@ -798,6 +798,16 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	for(String tok: toks) {
 	    List<String> pair = Utils.splitUpTo(tok,":",2);
 	    if(pair.size()!=2) {
+		if(pair.size()>0) {
+		    //check for the case of, e.g. children:entryid
+		    String id = pair.get(0);
+		    Entry newEntry = findEntryFromId(request,  entry, wikiUtil, props, id);
+		    if(newEntry!=null) {
+			entry=newEntry;
+			select.setEntry(entry);
+			continue;
+		    }
+		}
 		System.err.println("WikiManager.getSelectFromString - bad specifier:" + tok);
 		continue;
 		
@@ -5929,9 +5939,11 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
     }
 
-    private Utils.TriFunction<SelectInfo,String,String,String> getIdMatcher(final Request request, final Entry entry,
-									    final WikiUtil wikiUtil,
-									    final Hashtable props) {
+    private Utils.TriFunction<SelectInfo,String,String,String>
+	getIdMatcher(final Request request,
+		     final Entry entry,
+		     final WikiUtil wikiUtil,
+		     final Hashtable props) {
 	return  (entryId,baseId,thePrefix)->{
 	    try {
 		if(baseId!=null && entryId.equals(baseId)) entryId = thePrefix;
@@ -5992,7 +6004,9 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
 	
 	SelectInfo select=null;
-	Utils.TriFunction<SelectInfo,String,String,String> matches = getIdMatcher(request, baseEntry,wikiUtil,props);
+	Utils.TriFunction<SelectInfo,String,String,String> matches =
+	    getIdMatcher(request, baseEntry,wikiUtil,props);
+
         for (String entryId : Utils.split(ids, ",", true, true)) {
             if (entryId.startsWith("#")) {
                 continue;
