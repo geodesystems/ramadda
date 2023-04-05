@@ -115,6 +115,7 @@ proc state {abbr name fips lat lon pop} {
 #    set md [xmlTag metadata "" [list type content.alias encoded false attr1 "https://counties.$abbr.10000cities.org"]]
     set md [xmlTag metadata "" [list type content.alias encoded false attr1 "counties.$abbr.10000cities.org"]]
 
+
     makeGroup  $stateDir/counties Counties [] $countyDesc "$md $::sortMD"
     makeGroup $stateDir/communities  Communities
     makeGroup $stateDir/data  "$name Data"
@@ -377,7 +378,9 @@ proc place {state geoid ansi name lsad func pop hu aland awater aland_sqmi awate
 
 file mkdir [getStateDir]
 set ::sortMD [xmlTag metadata "" [list type content.sort encoded false attr1 "name"]]
-makeGroup  [getStateDir] "States"   [list] "<wiki>+section title={{name}}\n{{tree  message=\"\" sort=\"name\"  details=\"false\"}}\n-section" $::sortMD
+set aliasMD [xmlTag metadata "" [list type content.alias encoded false attr1 "states.10000cities.org"]]
+
+makeGroup  [getStateDir] "States"   [list] "<wiki>+section title={{name}}\n{{tree  message=\"\" sort=\"name\"  details=\"false\"}}\n-section" "$::sortMD $aliasMD"
 
 
 set usdesc "\n:heading Welcome to the 10000 Cities Data Hub for the United States.\n<br>Below you will find data at the national level as well as data hubs for each state.\n"
