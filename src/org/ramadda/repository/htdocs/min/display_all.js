@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Apr  4 22:59:21 MDT 2023";
+var build_date="RAMADDA build date: Wed Apr  5 09:46:49 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -40480,7 +40480,7 @@ function CollisionInfo(display,numRecords, roundPoint) {
 
 
 
-/**
+a/**
    Copyright 2008-2023 Geode Systems LLC
 */
 
@@ -40507,6 +40507,7 @@ var GLYPH_HEXAGON = 'hexagon';
 var GLYPH_LINE = 'line';
 var GLYPH_RINGS = 'rings';
 var GLYPH_ROUTE = 'route';
+var GLYPH_ISOLINE= 'isoline';
 var GLYPH_POLYLINE = 'polyline';
 var GLYPH_FREEHAND = 'freehand';
 var GLYPH_POLYGON = 'polygon';
@@ -40877,7 +40878,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 
 	isRouteEnabled:function() {
-	    return (this.getProperty('hereRoutingEnabled') || this.getProperty('googleRoutingEnabled'));
+	    return this.isHereEnabled() || this.getProperty('googleRoutingEnabled');
+	},
+	isHereEnabled:function() {
+	    return this.getProperty('hereRoutingEnabled');
 	},
 	createRouteForm:function(addSequence) {
 	    let html='';
@@ -41045,6 +41049,125 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		handleRouteData(data);
 	    }).fail(fail);
 	},	    
+	addIsolineForMarker:function(glyph) {
+	    let html = HU.formTable();
+	    html+=HU.formEntry('Mode:' , HU.select('',['id',this.domId('isolinemode')],['car','bicycle','pedestrian'],this.isolineMode));
+	    html+=HU.formEntry('Range:' , HU.input('',this.isolineValue??'10',['id',this.domId('isolinevalue'),'size','5']) +
+			       HU.space(2)+
+			       HU.select('',['id',this.domId('isolinetype')],[{label:'Time (minutes)',value:'time'},{label:'Distance (miles)',value:'distance'}],this.isolineType));	    
+	    html+=HU.formTableClose();
+	    let buttons  =HU.div([CLASS,'ramadda-button-ok display-button'], 'OK') + SPACE2 +
+		HU.div([CLASS,'ramadda-button-cancel display-button'], 'Cancel');	    
+	    html+=HU.div(['style',HU.css('text-align','right','margin-top','5px')], buttons);
+	    html=HU.div(['style',HU.css('margin','5px')],html);
+	    let dialog = HU.makeDialog({content:html,title:'Select Isoline Type',draggable:true,header:true,my:'left top',at:'left bottom',anchor:this.jq(ID_MENU_NEW)});
+	    let ok = ()=>{
+		this.isolineMode=this.jq('isolinemode').val();
+		this.isolineValue=this.jq('isolinevalue').val();		
+		this.isolineType=this.jq('isolinetype').val();		
+		dialog.remove();
+		let center = this.getMap().transformProjPoint(glyph.getCentroid());
+		this.createIsoline(this.isolineMode,this.isolineValue,this.isolineType,center.y,center.x,{});
+	    };
+	    dialog.find('.ramadda-button-ok').button().click(ok);
+	    dialog.find('.ramadda-button-cancel').button().click(()=>{
+		dialog.remove();
+	    });
+	},
+	createIsoline:function(mode,value,type,latitude,longitude,args) {
+	    args = args??{};
+	    let originalValue = value;
+	    let unit;
+	    if(type=='time') {
+		//Convert to seconds
+		value = 60*parseFloat(value);
+		unit = "minutes";
+	    } else {
+		//convert to meters
+		value = parseInt(1609.34*parseFloat(value));
+		unit = "miles";
+	    }
+
+	    let url = Ramadda.getUrl('/map/getisoline?entryid='+this.getProperty('entryId'));
+	    let routeArgs = {
+		mode:mode??'car',
+		latitude:latitude,
+		longitude:longitude,
+		'rangetype':type,
+		'rangevalue':value
+	    };	    
+	    let reset=  ()=>{
+		this.clearMessage2();
+		this.getMap().clearAllProgress();
+		this.setCommandCursor();
+	    };
+
+	    let handleIsolineData = data=>{
+		reset();
+
+		if(data.status==400) {
+		    alert("An error occurred:" + data.cause);
+		    return;
+		}
+
+		if(data.errors && data.errors.length) {
+		    alert("An error occurred:" + data.errors[0]);
+		    return;
+		}
+		if(data.error_description) {
+		    alert("An error occurred:" + data.error_description);
+		    return;
+		}
+		if(data.error) {
+		    this.handleError(data.error);
+		    return;
+		}
+		if(!data.isolines || !data.isolines[0]) {
+		    alert('No isolines found');
+		    return;
+		}
+
+		let latLons = hereDecode(data.isolines[0].polygons[0].outer).polyline;
+		if(!latLons || latLons.length==0) {
+		    alert('No isolines found');
+		    this.clearMessage2();
+		    return;
+		}
+
+		let points=[];
+		latLons.forEach(pair=>{
+		    points.push(MapUtils.createPoint(pair[1],pair[0]));
+		});
+
+		let  isoLine = this.getMap().createPolygon('', '', points, {
+		    strokeWidth:4
+		},null,false);
+		let glyphType = this.getGlyphType(GLYPH_ISOLINE);
+		isoLine.style = Utils.clone(glyphType.getStyle());
+		this.addFeatures([isoLine]);
+		let name = "Isoline: " + mode;
+		let icon ='/icons/' + mode+'.png';
+		this.handleNewFeature(isoLine,null,{name:name,icon:Ramadda.getUrl(icon),type:GLYPH_ISOLINE,legendText:"Mode: " + mode+"\nRange: " + originalValue+" " + unit});
+		this.showDistances(isoLine.geometry,GLYPH_ISOLINE,true);
+	    };
+
+	    let fail = err=>{
+		reset();
+		if(args.line)
+		    this.myLayer.removeFeatures([args.line]);
+		this.clearCommands();
+		this.handleError(err);
+	    }
+
+	    this.finishedWithRoute = true;
+	    this.showProgress('Creating isoline...');
+	    this.makingRoute = true;
+	    $.post(url, routeArgs,data=>{
+		handleIsolineData(data);
+	    }).fail(fail);
+	},	    
+
+
 	handleEvent:function(event,lonlat) {
 	    return;
 	},
@@ -42254,6 +42377,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		else if(command=='tofront') _this.changeOrder(true,mapGlyph);		
 		else if(command=='edit') {
 		    _this.editFeatureProperties(mapGlyph);
+		} else if(command=="addisoline") {
+		    _this.addIsolineForMarker(mapGlyph);
 		} else if(command==ID_SELECT) {
 		    if(mapGlyph.isSelected()) 
 			_this.unselectGlyph(mapGlyph);
@@ -42279,6 +42404,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    HU.span([CLASS,'ramadda-clickable',TITLE,'Select','glyphid',mapGlyph.getId(),'buttoncommand',ID_SELECT],
 			    icon('fas fa-hand-pointer')));
 		buttons.push(HU.span([CLASS,'ramadda-clickable',TITLE,'Delete','glyphid',mapGlyph.getId(),'buttoncommand',ID_DELETE],icon('fa-solid fa-delete-left')));
+
+		if(mapGlyph.isMarker()) {
+		    buttons.push(HU.span([CLASS,'ramadda-clickable',TITLE,'Add Isoline',
+					  'glyphid',mapGlyph.getId(),'buttoncommand',"addisoline"],icon('fa-regular fa-circle-xmark')));
+		}
 	    }
 	    return Utils.wrap(buttons,HU.open('span',['style',HU.css('margin-right','8px')]),'</span>');
 	},
@@ -43159,6 +43289,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    _this.removeMapGlyphs([mapGlyph]);
 		    close();
 		    break;
+		default:
+		    alert('unknown command:' +command);
 		}
 	    });
 	},
@@ -43770,6 +43902,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		html+="<td>&nbsp;</td>";
 		html+="<td>";
 		glyphTypes.forEach(glyphType=>{
+		    if(!glyphType.handler) return;
 		    let icon = glyphType.options.icon||Ramadda.getUrl("/map/marker-blue.png");
 		    let label = HU.image(icon,['width','16']) +SPACE1 + glyphType.getName();
 		    if(glyphType.getTooltip())
@@ -44389,6 +44522,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    new GlyphType(this,GLYPH_ROUTE, "Route",
 			  Utils.clone(lineStyle),						   
 			  MyRoute,{icon:Ramadda.getUrl("/icons/route.png")});
+
+	    new GlyphType(this,GLYPH_ISOLINE, "Isoline",
+			  Utils.clone({},lineStyle,{fillColor:'transparent',fillOpacity:1}),						   
+			  null,{icon:Ramadda.getUrl("/icons/route.png")});
 
 	    new GlyphType(this,GLYPH_IMAGE, "Image",
 			  Utils.clone({},
@@ -46106,18 +46243,6 @@ MapGlyph.prototype = {
 
 	html+=this.display.getLevelRangeWidget(level,this.getShowMarkerWhenNotVisible());
 	
-	/*
-	  let elevButtons = [];
-	  if(this.isOpenLine()|| this.mapLayer) {
-	  elevButtons.push(HU.span(['style','margin-top:4px;','id',this.domId('makeelevations'),'class','ramadda-clickable'],'Add elevations'));
-	  elevButtons.push(HU.span(['style','margin-top:4px;','id',this.domId('clearelevations'),'class','ramadda-clickable'],'Clear elevations'));
-	  elevButtons.push(HU.span(['id',this.domId('elevationslabel')],''));	    
-	  }
-
-	  if(elevButtons.length) {
-	  html+= Utils.wrap(elevButtons,HU.open('span',['style',HU.css('margin-right','8px')]),'</span>');
-	  }
-	*/
 
 	let domId = this.display.domId('glyphedit_popupText');
 	let featureInfo = this.getFeatureInfoList();
@@ -47503,7 +47628,7 @@ MapGlyph.prototype = {
 	if(this.type==GLYPH_LABEL && this.style.label) {
 	    item(this.style.label.replace(/\"/g,"\\"));
 	}
-	if(this.getProperty('showMeasures',true)) {
+	if(this.getProperty('showMeasures',true) && !this.isIsoline()) {
 	    let distances = this.display.getDistances(this.getGeometry(),this.getType());
 	    item(distances,true,true);
 	}
@@ -47876,6 +48001,9 @@ MapGlyph.prototype = {
     },
     
 
+    isMarker:function() {
+	return this.getType() ==GLYPH_MARKER;
+    },
     isGroup:function() {
 	return this.getType() ==GLYPH_GROUP;
     },
@@ -47888,6 +48016,9 @@ MapGlyph.prototype = {
     isMap:function() {
 	return this.getType()==GLYPH_MAP;
     },
+    isIsoline:function() {
+	return this.getType()==GLYPH_ISOLINE;
+    },    
     isRoute:function() {
 	return this.getType()==GLYPH_ROUTE;
     },    
