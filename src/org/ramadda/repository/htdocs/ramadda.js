@@ -896,7 +896,15 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
     showEntryPopupInner:function(id,entryId,label,html) {
 	let anchor = $("#" + id);
-	HU.makeDialog({content:html,my:"left top",at:"left bottom",title:label,anchor:anchor,draggable:true,header:true,inPlace:false});    
+	let headerRight=null;
+	/*
+	if(Utils.isAnonymous()) {
+	headerRight = HU.href('/repository/user/login',
+	HU.getIconImage('fas fa-sign-in-alt')+' Login' + HU.space(2));
+	}
+	*/
+
+	HU.makeDialog({content:html,my:"left top",at:"left bottom",title:label,anchor:anchor,draggable:true,header:true,inPlace:false,headerRight:headerRight});    
     },
 
     initEntryListForm:function(formId) {
