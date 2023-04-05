@@ -368,6 +368,14 @@ public class WikiUtil {
         return properties.get(key);
     }
 
+    public void setProperty(Object key,Object value) {
+        if (properties == null) {
+            properties = new Hashtable();
+        }
+        properties.put(key,value);
+    }
+
+
     public Hashtable getProperties() {
 	return properties;
     }
