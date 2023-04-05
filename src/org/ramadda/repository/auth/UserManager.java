@@ -1345,7 +1345,7 @@ public class UserManager extends RepositoryManager {
                                     user.getName(), HtmlUtils.SIZE_40)));
             sb.append(formEntry(request, msgLabel("Description"),
                                 HtmlUtils.textArea(ARG_USER_DESCRIPTION,
-                                    user.getDescription(), 5, 20)));
+                                    user.getDescription(), 5, 30)));
         }
         if (includeAdmin) {
             if ( !request.getUser().getAdmin()) {
@@ -1395,11 +1395,6 @@ public class UserManager extends RepositoryManager {
 		file+="<p>"+avatar +" " + HU.labeledCheckbox(ARG_USER_AVATAR_DELETE,"true",false,"Delete");
 	    }
 	    sb.append(formEntry(request,msgLabel("Avatar"), file));
-
-            sb.append(formEntry(request, msgLabel("Phone"),
-                                HtmlUtils.input("phone",
-                                    (String) user.getProperty("phone", ""),
-                                    HtmlUtils.SIZE_40)));	    
         }
 
         List<TwoFacedObject> templates =
