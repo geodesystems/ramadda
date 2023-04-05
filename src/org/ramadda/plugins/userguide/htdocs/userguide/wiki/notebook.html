@@ -12,7 +12,7 @@
 <table width=100% cellspacing=0 cellpadding=0 >
 <tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikifunctions.html"><table><td valign=center><td><span title="Previous: Wiki Functions"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Wiki Functions</td></tr></table></a></div></div></td>
 <td width=50% align=center>
-<div class="ramadda-page-title"><a href="#">Section 6.10: RAMADDA Notebooks</a></div>
+<div class="ramadda-page-title"><a href="#">Section 6.11: RAMADDA Notebooks</a></div>
 </td>
 <td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="pagestyle.html"><table><tr valign=center><td>Page Styles</td><td><span title="Next: Page Styles"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
 </tr></table>
@@ -33,7 +33,7 @@ pre {
 
 The Notebook display provides an interactive notebook that can display html, execute javascript and perform other "shell" functions.
 
-<a name="overview"></a><p><div class="ramadda-help-heading">6.10.0 <a href="#overview">Quick Overview</a></div> 
+<a name="overview"></a><p><div class="ramadda-help-heading">6.11.0 <a href="#overview">Quick Overview</a></div> 
 View this in action on <a href="/repository/entry/show?entryid=14bb9793-bc3d-4b3f-8eda-b6c046e39983">RAMADDA</a>.
 <br>
 Notebooks are created with the wiki tag:
@@ -62,7 +62,7 @@ Notebooks are created with the wiki tag:
 
 
 
-<a name="creating"></a><p><div class="ramadda-help-heading">6.10.1 <a href="#creating">Creating a notebook</a></div> 
+<a name="creating"></a><p><div class="ramadda-help-heading">6.11.1 <a href="#creating">Creating a notebook</a></div> 
 
 A notebook can be created for any entry with the following wiki text:
 <pre>
@@ -90,7 +90,7 @@ A notebook is made up of a number of notebook cells. Initially there is just one
 Each cell has an input area, output area and cell menu. The menu can either be accessed through
 the Notebook menu or from the left side link that is shown on mouseover:
 
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image1"></a><div><a href="images/notebook1.png?version=836.0"><img  src="images/notebook1.png?version=836.0"  alt="Notebook Menu" ></a><br><span class="caption">Image 1: Notebook Menu</span></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image1"></a><div><a href="images/notebook1.png?version=589.0"><img  src="images/notebook1.png?version=589.0"  alt="Notebook Menu" ></a><br><span class="caption">Image 1: Notebook Menu</span></div></div>
 
 The icons on the left allow you to popup the cell menu, show the cell input, run the cell and run all cells.
 
@@ -98,7 +98,7 @@ The icons on the left allow you to popup the cell menu, show the cell input, run
 
 
 
-<a name="editing"></a><p><div class="ramadda-help-heading">6.10.2 <a href="#editing">Editing a notebook</a></div> 
+<a name="editing"></a><p><div class="ramadda-help-heading">6.11.2 <a href="#editing">Editing a notebook</a></div> 
 The menubar at the top of the input area is just RAMADADA's wiki text <a href='wiki.html#menubar'>menu bar</a>.
 Use the following tags to denote and separate the contents within a notebook cell:
 <p>
@@ -147,7 +147,7 @@ A command can be on the same line
 </pre>
 
 
-<a name="context"></a><p><div class="ramadda-help-heading">6.10.3 <a href="#context">Cell Context</a></div> 
+<a name="context"></a><p><div class="ramadda-help-heading">6.11.3 <a href="#context">Cell Context</a></div> 
 Within a cell there is an entry context, a number of entries that can be accessed within the javascript
 input and that the wiki is created from. The following entries are available:
 <ul>
@@ -159,7 +159,7 @@ shell commands.
 </ul>
 
 
-<a name="html"></a><p><div class="ramadda-help-heading">6.10.4 <a href="#html">Html Input</a></div> 
+<a name="html"></a><p><div class="ramadda-help-heading">6.11.4 <a href="#html">Html Input</a></div> 
 To specify html text start the input with "%% html".  
 <pre>
 <i>%% html</i>
@@ -167,7 +167,7 @@ html text
 </pre>
 
 
-<a name="wiki"></a><p><div class="ramadda-help-heading">6.10.5 <a href="#wiki">Wiki Input</a></div> 
+<a name="wiki"></a><p><div class="ramadda-help-heading">6.11.5 <a href="#wiki">Wiki Input</a></div> 
 To specify wiki text start the input with "%% wiki" - 
 <pre>
 <i>%% wiki</i>
@@ -177,7 +177,7 @@ RAMADDA wiki text
 The wiki text is just regular RAMADDA wiki text. More information <a href='wikitext.html'>here</a>.
 
 
-<a name="markdown"></a><p><div class="ramadda-help-heading">6.10.6 <a href="#markdown">Markdown Input</a></div> 
+<a name="markdown"></a><p><div class="ramadda-help-heading">6.11.6 <a href="#markdown">Markdown Input</a></div> 
 To specify markdown  text start the input with "%% md" - 
 <pre>
 <i>%% md</i>
@@ -187,7 +187,7 @@ To specify markdown  text start the input with "%% md" -
 
 
 
-<a name="fetch"></a><p><div class="ramadda-help-heading">6.10.7 <a href="#fetch">Fetch Input</a></div> 
+<a name="fetch"></a><p><div class="ramadda-help-heading">6.11.7 <a href="#fetch">Fetch Input</a></div> 
 The fetch command allow you to import javascript, css or html files
 
 <pre>
@@ -211,7 +211,7 @@ text: somevar=files/file.txt
 
 
 
-<a name="sh"></a><p><div class="ramadda-help-heading">6.10.8 <a href="#sh">Shell Input</a></div> 
+<a name="sh"></a><p><div class="ramadda-help-heading">6.11.8 <a href="#sh">Shell Input</a></div> 
 To specify shell text start the input with "%% sh" - 
 <pre>
 <i>%% sh</i>
@@ -270,7 +270,7 @@ cd /;pwd;ls;cd;pwd
 </pre>
 
 
-<a name="js"></a><p><div class="ramadda-help-heading">6.10.9 <a href="#js">Javascript Input</a></div> 
+<a name="js"></a><p><div class="ramadda-help-heading">6.11.9 <a href="#js">Javascript Input</a></div> 
 To specify javascript start the input with "%% js" - 
 <pre>
 <i>%% js</i>
@@ -355,7 +355,7 @@ state.wiki(":title {<noop>{name}}", root);
 
 
 
-<a name="py"></a><p><div class="ramadda-help-heading">6.10.10 <a href="#py">Python Input</a></div> 
+<a name="py"></a><p><div class="ramadda-help-heading">6.11.10 <a href="#py">Python Input</a></div> 
 The notebook Python runs in the browser using the <a href="http://www.skulpt.org/">Skulpt</a> package.
 To specify python start the input with "%% py" - 
 <pre>
@@ -365,7 +365,7 @@ print "hello world"
 
 
 
-<a name="plugin"></a><p><div class="ramadda-help-heading">6.10.11 <a href="#plugin">Defining new languages</a></div> 
+<a name="plugin"></a><p><div class="ramadda-help-heading">6.11.11 <a href="#plugin">Defining new languages</a></div> 
 The <i>plugin</i> chunk type allows you to define new languages.
 This follows the <a href="https://iodide-project.github.io/docs/language_plugins/">Iodide Plugins</a> model.
 <pre>
@@ -381,17 +381,17 @@ This follows the <a href="https://iodide-project.github.io/docs/language_plugins
 </pre>
 
 
-<a name="running"></a><p><div class="ramadda-help-heading">6.10.12 <a href="#running">Running a notebook</a></div> 
+<a name="running"></a><p><div class="ramadda-help-heading">6.11.12 <a href="#running">Running a notebook</a></div> 
 To run a notebook cell either press shift-return in the cell input area or choose "Run This Cell" in the notebook menu.
 All of the cells can be run through the notebook menu with the "Run All" command.
 A notebook can be configured to run all of the cells when the notebook is first loaded through the "Run on load"
 command in the notebook menu.
 
 
-<a name="commands"></a><p><div class="ramadda-help-heading">6.10.13 <a href="#commands">Notebook Menu Commands</a></div> 
+<a name="commands"></a><p><div class="ramadda-help-heading">6.11.13 <a href="#commands">Notebook Menu Commands</a></div> 
 The notebook menu allows one to configure the display and behavior of individual cells or all of the cells.
 
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image2"></a><div><a href="images/notebookmenu.png?version=836.0"><img  src="images/notebookmenu.png?version=836.0"  alt="Notebook Menu" ></a><br><span class="caption">Image 2: Notebook Menu</span></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image2"></a><div><a href="images/notebookmenu.png?version=589.0"><img  src="images/notebookmenu.png?version=589.0"  alt="Notebook Menu" ></a><br><span class="caption">Image 2: Notebook Menu</span></div></div>
 
 <ul>
 <li> Cell name: Name the current cell. The name is shown in the header (see below)
@@ -416,7 +416,7 @@ with just the notebook output saved
 </ul>
 
 
-<a name="macros"></a><p><div class="ramadda-help-heading">6.10.14 <a href="#macros">Macros</a></div> 
+<a name="macros"></a><p><div class="ramadda-help-heading">6.11.14 <a href="#macros">Macros</a></div> 
 Cell values can be used as macros in other cells. There are 2 ways of doing this. 
 First, you can set the name of a cell (through the popup menu) to be some macro name, e.g., the_value.
 The cells that define the macro values need to be run before the cells that reference the macro values. Do this

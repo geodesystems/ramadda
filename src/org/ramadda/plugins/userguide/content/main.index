@@ -29,7 +29,7 @@ index.html
 -exampletemplate.jar
 
 
->title:Data ingest,  harvesters and import/export
+>title:Data ingest, harvesters and import/export
 >>download.html
 >>dataingest.html
 >>entrytypes.html
@@ -40,13 +40,13 @@ index.html
 
 
 >title:Data Facilities
-#>>pointdata.html
 >>etl.html
->>seesv.html
->>dataexample.html
->>gridsubset.html
->>gridatpoint.html
->>gridaggregation.html
+>>>seesv.html
+>>>dataexample.html
+>>title:Gridded Data
+>>>gridsubset.html
+>>>gridatpoint.html
+>>>gridaggregation.html
 #>>gridvisualization.html
 >>idvpublisher.html
 
@@ -55,7 +55,7 @@ index.html
 >>aws.html
 >>build.html
 >>database.html
->keys.html
+>>keys.html
 >>gpt.html
 >>readonly.html
 >>plugins.html

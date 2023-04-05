@@ -1,0 +1,418 @@
+[ht::head {Entry Tags} ]
+<%nochildlist%>
+:navtop
+
+[ug::wikiheading {Basic Wiki Tags} basic]
+
+The first set of tags show some information for the entry. Note: the attributes are all optional.
+
+<ul>
+<li> [wiki::tagdef name] Entry name
+<p>
+<li> [wiki::tagdef entryid]  Entry ID
+<p>
+<li> [wiki::tagdef description {wikify="true|false"}] Entry description. If wikify=true then treat the description as
+wiki text.
+
+<p>
+<li> 
+[wiki::tagdef fromdate {format="date time format"} ]<br> 
+[wiki::tagdef todate {format="date time format"} ]<br> 
+[wiki::tagdef daterange {format="date time format" separator=" -- "} ]<br> 
+[wiki::tagdef createdate {format="date time format"} ]<br>  
+[wiki::tagdef changedate {format="date time format"} ]<br>  
+Show the different dates available for an entry.
+If specified, format the date with the given date time format.
+This follows the
+Java <a href="http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html">date format</a> conventions.
+
+
+<p>
+<li> [wiki::tagdef information] The information tabs.
+<p>
+<li> [wiki::tagdef properties {metadata.types="types to show or not show"}] Show the properties listing.
+The attribute metadata.types is an optional comma separated list of the metata (or property) types that should be shown or not shown.
+
+For example, if you wanted to show all of the properties except for the Project PI property do:
+[wiki::text {
+{{properties metadata.types="!project_pi" message="" }}
+}]
+
+Then if you wanted to just show  the Project PI property then do:
+[wiki::text {
+{{properties metadata.types="project_pi" message="" }}
+}]
+
+
+<p>
+<li> [wiki::tagdef html] Shows the default html view of the entry. Note: this requires an entry="..." to specify a different entry.
+<p>
+<li> [wiki::tagdef link {linkresource=true|false button=true|false output=someoutput}] Makes a link to the entry. Set button=true to buttonize the link. Link to the file with linkresource=true. Link to some other view with output=
+<p>
+<li> [wiki::tagdef map {width="width of map" height="height of map" listentries="true|false" listwidth="width or percent"}] Display a map. If the entry is a folder then display the children entries of the folder.
+
+If you do not specify a width then the map will be sized to fit its page. 
+
+The listwidth is the width devoted to the entry list. This may be a fixed pixel value or a percentage:
+
+[wiki::text {
+{{map listentries="true" listwidth="25%"}}
+}]
+
+
+If you have a Folder (or other group) and want to just show the Folder and nots it children then do:
+[wiki::text {
+{{map entries="this"}}
+}]
+
+
+<li> [wiki::tagdef comments] Show the comments.
+<p>
+<li> [wiki::tagdef breadcrumbs] Show the breadcrumb path.
+<p>
+<p> [wiki::tagdef layout] This shows the "Layout:" toolbar bar for an entry.
+<p>
+<li> [wiki::tagdef toolbar] Show the entry toolbar.
+<p>
+<li> [wiki::tagdef image {src="image source" alt="alt text" width="image width" link="true|false" left="absolute position" top="absolute position" linkresource="true|false" alt="image alt label"}] <br>
+Include an image. If src is not given then this shows the image (if there is one) 
+from the entry.  If src is specified it can take on the form: 
+[wiki::text {
+src="entry name"
+}]
+to show an entry. This is equivalent to using entry="...". You can also specify the name of a file attachment to an entry with:
+
+[wiki::text {
+entry="entryid" src="::attachment name"
+}]
+
+Or any attachment with:
+[wiki::text {
+entry="entryid" src="::*"
+}]
+
+If link is true, the image displayed will be linked to the entry page, if 
+linkresource is true, it will be linked to the full sized image (the entry
+resource).  height and width can be used to scale the image, the alt 
+attribute will be used in place of the entry id as a label on the image
+for accessibility.
+
+<p>
+<li> [wiki::tagdef menu {popup="true|false" title="title to use" menus="file,edit,feeds,view,other"}] 
+Show the menu actions. If menus is not specified
+show all of the menus. If menus is specified only show those menus listed.
+Show all menus in a toggle block:
+[wiki::text {
+{{menu}}
+}]
+
+
+You can specify which menus to show with a comma separated list of menu names. Only show the
+file and view menu:
+[wiki::text {
+{{menu menus="file,view"}}
+}]
+
+
+Show the menu actions in a popup:
+[wiki::text {
+{{menu popup="true" title="Click here"}}
+}]
+
+</ul>
+
+
+[ug::wikiheading {Collections} entries]
+The following tags display a collection of entries.
+By default the entries are the children entries of the current entry but you can specify
+other groups of entries with the <i>entries</i> attribute:
+[wiki::text {{<noop>{<i>tag</i> entry="some other entry" 
+               entries="entryid1,entryid2,entryid3.." 
+               exclude="entryid1,entryid2,entryid3.."  
+               first="entryid1,entryid2,entryid3.."  
+               last="entryid1,entryid2,entryid3.."  
+               sort="name|date"  sortorder="up|down"
+               max="number of entries to use" }}}]
+
+The entries attribute is a comma separated list of entry identifiers. 
+    They can be specific entry ids or they can be one of a set of relative descriptors as
+    described in the <a href="#entryselection">entry selection</a> section.
+:p
+You can also:
+<ul>
+<li> If <i>first</i> is defined then these entry ids are put at the front of the list.
+
+<li> If <i>last</i> is defined then these entry ids are put at the end of the list.
+
+<li> Exclude any entries in the <i>exclude</i> comma separated list of entry ids.
+
+<li> Sort entries by name or date with <i>sort</i>
+<li> If <i>images</i> is set to true then only entries that are image files are included
+
+</ul>
+
+The relative descriptors are applied to the base entry specified with the <i>entry</i> attribute. You can specify an alternative
+base entry for each descriptor with the syntax:
+[wiki::text {
+descriptor:baseEntryId
+}]
+
+
+So, for example, if you had 2 different Folder entries - folder1 and folder2 and you wanted to list all of the children of each folder you could do:
+
+[wiki::text {
+{{tree  entries="children:folder1_id,children:folder2_id"}}
+}]
+
+
+You can combine different relative descriptors, e.g.:
+[wiki::text {
+{{tree  entries="children:folder1_id,grandchildren:folder2_id"}}
+}]
+
+
+
+[ug::wikiheading {Collection Tags} collection_tags]
+<ul>
+<li> [wiki::tagdef tree]
+The tree tag is used to display the children entries of a folder.
+It can take the form:
+[wiki::text {{<noop>{tree title="Links" showtoggle="false" open="true" }}}]
+
+The title attribute is used in place of "Children". 
+If showtoggle="false" then the show/hide toggle link is not shown.
+
+<p>
+<li> [wiki::tagdef grid] Show the children in a grid. 
+
+A common display is showing the children entries in a grid where each entry shows its thumbnail
+image attachment, 
+e.g., <a href=https://ramadda.org/repository/alias/examples>RAMADDA Examples</a>
+[ht::screenshot images/grid.png]
+To do this use:
+[ht::pre {
+{{grid  
+tag="card"  
+sort="name" 
+inner-height="200"   
+width="200" 
+showIcon="false" 
+showLink="false" 
+showSnippetHover="true"
+}}
+}]
+The attributes:
+<ul>
+  <li> tag: what to display in each grid box
+  <li> sort: sort by name
+  <li> inner-height, width: grid box dimensions
+  <li> showIcon: should the entry icon be shown
+  <li> showLink: should a link to the entry be shown
+  <li> showSnippet: should the entry <a href="#snippet">snippet</a> be shown
+</ul>    
+<p>
+<li> [wiki::tagdef recent {days="number of days to show"}]
+Show the most recent N days in a list organized by day.
+<p>
+<li> [wiki::tagdef imageplayer {width="image width" loopdelay="delay in milliseconds" loopstart="true|false" useAttachment="true|false"}]
+Show images in an image player, e.g.
+[wiki::text {{{imageplayer loopdelay="500" loopstart="true"}}}] 
+
+If <i>useAttachment</i> is true then, if the entry's file is not an image but it has
+an attachment that is an image then use the attachment image.
+
+<p>
+<li> [wiki::tagdef gallery {width="image width" columns="number of columns" showdescription="true"}]
+Show a 3 column gallery:
+[wiki::text {{{gallery columns="3"}}}] 
+
+Show a vertical listing of the children entry images:
+[wiki::text {{{gallery columns="1"}}}] 
+
+Set the image width and only show up to 5 images:
+[wiki::text {{{gallery  width="300" max="5"}}}]
+
+<p>
+<li> [wiki::tagdef tabs] Show the children as tabs:
+[wiki::text {{{tabs}}}] 
+
+Show only the 3 specified entries in tabs:
+[wiki::text {{{tabs entries="0af4d166-5723-4775-88fc-b83b72ab47a4,
+                 83539d5c-e9d9-408e-b0af-35f480000ae6,
+                 49684d25-6af1-4188-a0ae-4d5302d22f2a" }}}] 
+
+Show only the children of type wikipage in tabs:
+[wiki::text {{{tabs entries="type:wikipage"}}}]
+
+Additional arguments:
+
+<ul>
+<li>tag="some tag name" - The wiki tag to use to show the children. e.g., tag="simple" tag="html"
+<li>includeicon="true|false" - if true, include the appropriate icon in the tab
+<li>showlink="true|false" - show a link to the entry (default: true)
+<li>linklabel="label" - if showlink is true, use label in place of the entry
+    name
+<li>imagewidth="width" - width of images
+<li>maximageheight="max height" - maximum height of images
+<li>linkresource="true|false" - if true, link to the entry resource
+</ul>
+
+
+
+<p>
+<li> [wiki::tagdef slideshow] Show the children in a slideshow:
+[wiki::text {{{slideshow}}}] 
+<p>
+Uses the same arguments as tabs, plus:
+<ul>
+<li>autoplay="true|false" - if true, start the slideshow (default: false)
+<li>speed="secs" - number of seconds to pause on each entry in slideshow
+<li>border="pixs" - border size in pixels
+<li>bordercolor="color" - border color (name or hexadecimal value)
+<li>width="width" - width of the display 
+<li>height="height" - height of the display
+</ul>
+<p>
+<li> [wiki::tagdef links {separator="separator text to use" 
+                          style="inline css style for the link"
+                          class="css class for the link"
+                          tagopen="html to prepend to the link - default is li" 
+                          tagclose="close html"
+                          linkresource="true|false if true link to the entry's file or URL; If false link to the entry"}] Layout links to the entries.<br>
+This produces a set of links to the entries. 
+
+A bulleted list:
+[wiki::text {
+&lt;ul&gt;
+{{links}}
+&lt;/ul&gt;
+}]
+
+A bulleted list with the links to the entry's file:
+[wiki::text {
+&lt;ul&gt;
+{{links linkresource="true"}}
+&lt;/ul&gt;
+}]
+
+If you wanted to make a vertical list do:
+[wiki::text {
+{{links tagopen="&lt;div&gt;" tagclose="&lt;/div&gt;"}}
+}]
+
+You can create a header with wiki text like:
+[wiki::text {
+&lt;center&gt;
+{{links separator="&amp;nbsp;|&amp;nbsp" tagopen=""}}
+&lt;/center&gt;
+}]
+
+
+<p>
+<li> [wiki::tagdef search {
+                  type="entry type" 
+                  search.showform="true|false"
+                  search.showheader="true|false"}]
+
+The "search" tag performs an entry type specific search and embed it into the wiki. This is the same as the top-level type specific search. You can use any of the "search." attributes defined above, e.g., search.text.
+
+The default is to not show the form.
+
+
+<p>
+<li> [wiki::tagdef apply]
+The apply tag allows you to apply some tag (e.g., links, map) to a set of entries in turn. You can then layout
+the results in a variety of ways (e.g.,  table, tabs);
+The apply tag is of the form:
+
+[wiki::text {
+{{apply
+apply.entry="the entry to find the children of"
+apply.tag="some tag to apply to the entries"
+apply.layout="table, accordion or tabs"
+apply.columns="number of columns in table"
+apply.header="text to go before can contain macros ${name} ${url}"
+apply.footer="text to go after"
+apply.border="border width - defaults to 0"
+apply.bordercolor="border color"
+apply.includeicon="true|false"
+...
+&lt;arguments for the apply tag&gt;
+}}
+}]
+
+All of the arguments, including the entry argument are the same as described above but have the prefix "apply.". This way you can
+mix the arguments that control the apply function with the arguments that you are using for each entry.
+
+
+Say you have the following entries:
+[wiki::text {
+parent
+     entry1
+            sub-entry1
+            sub-entry2
+     entry2
+            sub-entry3
+            sub-entry4
+}]
+
+If you used the apply tag:
+
+[wiki::text {
+{{apply
+apply.entry="parent"
+apply.layout="tabs"
+apply.tag="links"
+linkresource="true"
+}}
+}]
+
+This applies the tag "links" to each main entry. It puts each result in a tab.
+
+This tag would make a 2 column table of maps with links to the entries show in the header.
+
+[wiki::text {
+{{apply
+apply.layout="table"
+apply.columns="2"
+apply.tag="map"
+apply.border="1"
+apply.header="${url}"
+&lt;any map arguments*gt;
+}}
+}]
+
+
+
+</ul>
+
+
+[ug::wikiheading {Importing}]
+
+You can also import any of the views of an entry, e.g., the map view, 
+the calendar view, etc., with the  
+[wiki::tag import] tag:<br>
+[wiki::tagdef import {showTitle="false" output="<any of the output types>"}]
+<p>
+If you wanted to import the default content of an entry but don't show it's title do:
+[wiki::text [wiki::tag import {entry=&lt;some entry id&gt; showTitle=false}]]
+
+So, if you wanted to show the calendar view of an entry you would do:
+[wiki::text [wiki::tag import {output="calendar.calendar"}]]
+
+To find the correct output identifier just navigate to the page you 
+want to include and look at the url for the output=... url argument 
+and use that.
+
+
+[ug::wikiheading {Snippet} snippet]
+A number of the layouts below (e.g,, table layout) will include a snippet of descriptive text from the entry that is being displayed. The snippet text is defined in the description of the entry with:
+[wiki::text {
+Some description here.
+&lt;snippet&gt;This is the snippet&lt;/snippet&gt;
+More description
+}]
+
+
+
+[ht::foot]
