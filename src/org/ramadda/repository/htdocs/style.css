@@ -324,11 +324,12 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
 
 .ramadda-button-blue {
     background:#286090;
+    background:rgb(0, 97, 224);
     border:1px #286090 solid;
 }
 
 a:visited.ramadda-button-blue, a:visited.ramadda-button-green, a:link.ramadda-button-blue, a:link.ramadda-button-green {
-    color: #fff;
+    color: #eee;
 }
 
 a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-button-blue:hover, a:link.ramadda-button-green:hover,a:visited.ramadda-button-green:hover, .ramadda-button-green:hover {
