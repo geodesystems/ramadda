@@ -4554,7 +4554,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
     }
 
 
-    private String makeChunks(Request request, WikiUtil wikiUtil, Hashtable props, List chunks) throws Exception {
+    private String makeChunks(Request request, WikiUtil wikiUtil, Hashtable props, List chunks)
+	throws Exception {
 	int columns = 0;
 	String tmp = getProperty(wikiUtil, props, "chunkColumns",null);
 	if(Utils.stringDefined(tmp)) {
@@ -4567,8 +4568,18 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    tds.add(HU.div(chunk.toString(),HU.attrs("style",chunkStyle)));
 	}
 	StringBuilder buff = new StringBuilder();
-	if(columns>0) 
-	    return HU.table(tds,columns,"").toString();
+	if(columns>0)  {
+	    int cnt = 0;
+	    StringBuilder sb = new StringBuilder();
+	    for(int i=0;i<tds.size();i++) {
+		sb.append(HU.div(tds.get(i).toString(),HU.style("vertical-align:top;display:inline-block;")));
+		if(++cnt>=columns)  {
+		    cnt=0;
+		    sb.append("<br>");
+		}
+	    }
+	    return sb.toString();
+	}
 	for(String s: tds) {
 	    buff.append(s);
 	}
