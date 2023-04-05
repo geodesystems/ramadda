@@ -32,34 +32,37 @@ pre {
 Repository entries that are recognized as grids (i.e, can be read by the
 netCDF-Java Common Data Model (CDM) grid reader (e.g. netCDF, GRIB, GrADS))
 provide an option for creating subsets of the grids that can be downloaded
-or stored in the repository.  From the <code class="menu">Data</code> menu, select the
-<code class="menu">Subset Grid</code> menu:
+or stored in the repository.  From the <span class="ramadda-docs-menu">Entry</span> menu, select the
+<span class="ramadda-docs-menu">Subset Grid</span>:
 
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/datamenu.gif?version=589.0"><img  src="images/datamenu.gif?version=589.0" width=90% alt="images/datamenu.gif?version=589.0" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/datamenu.png?version=207.0"><img  src="images/datamenu.png?version=207.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/datamenu.png?version=207.0" ></a></div></div>
 
 The Grid Subset form allows you to subset the grid by region, time and variable
 and will output the result to a CF compliant netCDF file.
 
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/gridsubset.gif?version=589.0"><img  src="images/gridsubset.gif?version=589.0" width=90% alt="images/gridsubset.gif?version=589.0" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/gridsubset.png?version=207.0"><img  src="images/gridsubset.png?version=207.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/gridsubset.png?version=207.0" ></a></div></div>
+
+At the bottom of the subset form is a URL that is configured with any of the form setttings. You can use this to programattically access the grid, e.g., usin cURL.
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/gridsubsetlink.png?version=207.0"><img  src="images/gridsubsetlink.png?version=207.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/gridsubsetlink.png?version=207.0" ></a></div></div>
 
 :h2 Options
 
 <ul>
+<li><b>Horizontal Stride</b> <br>Sample every Nth grid point where N is the stride value</p>
 
-<li><b>Horizontal Stride</b><p>Sample every Nth grid point where N is the stride value</p>
+<li><b>Subset Spatially</b><br>Enter the spatial bounds for the subset.  Click on the <span class="ramadda-docs-menu">Show Map</span> link to pop up a map where you can select the bounds using Shift-Drag.  The <span class="ramadda-docs-menu">Clear</span> link removes the selection.</p>
 
-<li><b>Subset Spatially</b><p>Enter the spatial bounds for the subset.  Click on the <code class="menu">Show Map</code> link to pop up a map where you can select the bounds using Shift-Drag.  The <code class="menu">Clear</code> link removes the selection.</p>
+<li><b>Time Range</b><br>Set the time range for the subset.  Default is all times.</p>
 
-<li><b>Time Range</b><p>Set the time range for the subset.  Default is all times.</p>
-
-<li><b>Add Lat/Lon Variables</b><p>For the grid to be CF compliant, 
+<li><b>Add Lat/Lon Variables</b><br>For the grid to be CF compliant, 
 the latitude and longitude values at each point must be included 
 in the file.  If the grid is projected, the grid projection definition is
 also stored in the file, which is enough for some software packages.</p>
 
-<li><b>Select a folder to publish the results to</b><p>If you are logged in and have permission to add files to the repository, you can optionally add the file to the repository.  Specify the Folder location and a name for the file.</p>
+<li><b>Select a folder to publish the results to</b><br>If you are logged in and have permission to add files to the repository, you can optionally add the file to the repository.  Specify the Folder location and a name for the file.</p>
 
-<li><b>Select Variables</b><p>Select the variables that you wish to include
+<li><b>Select Variables</b><br>Select the variables that you wish to include
 in the output file.</p>
 
 </ul>
