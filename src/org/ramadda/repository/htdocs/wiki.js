@@ -715,6 +715,10 @@ WikiEditor.prototype = {
 		append(line);
 		return;
 	    }
+	    if(line.startsWith(":")) {
+		append(line);
+		return;
+	    }
 	    while(line.length>lineLength) {
 		let prefix  = line.substring(0,lineLength);
 		let suffix = line.substring(lineLength);		
