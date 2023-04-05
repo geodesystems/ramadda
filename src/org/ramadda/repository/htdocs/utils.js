@@ -3837,9 +3837,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         if(HtmlUtils.isFontAwesome(url)) {
             let clazz = "";
             let a;
-            if(url.startsWith("fa-solid") ||url.startsWith("fas ") || url.startsWith("fab ")|| url.startsWith("far")) {
+            if(url.startsWith("fa-thin") || url.startsWith("fa-light") || url.startsWith("fa-regular") || url.startsWith("fa-solid") ||url.startsWith("fas ") || url.startsWith("fab ")|| url.startsWith("far")) {
                 a = ["class",url];
-
             } else {
                 a = ["class","fas " + url];
             }
