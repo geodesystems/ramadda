@@ -64,6 +64,7 @@
     <api request="/regions.json"    method="processRegions"/>    
     <api request="/map/getaddress"    method="processGetAddress"/>
     <api request="/map/getroute"    method="processGetRoute"/>    
+    <api request="/map/getisoline"    method="processGetIsoline"/>    
     <api request="/geocode"          method="processGeocode"/>
     <api request="/map/extra/*"   method="processExtraJS"/>
   </group>
