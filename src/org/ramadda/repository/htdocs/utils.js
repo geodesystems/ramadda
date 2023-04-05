@@ -4188,6 +4188,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    resizable:false,
             decorate:true,
             header:false,
+	    headerRight:null,
             remove:true,
             my: "left top",
             at: "left bottom",      
@@ -4256,10 +4257,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
 
         if(opts.header) {
-            let closeImage = HU.div([TITLE,"Close",CLASS,"ramadda-popup-close"], HU.jsLink("",HtmlUtils.getIconImage(icon_close), [ID,id+"_close",STYLE,HU.css('cursor','pointer')]));
-            let title = HU.div([CLASS,"ramadda-popup-title"],opts.title);
+            let closeImage = HtmlUtils.div([TITLE,'Close',CLASS,'ramadda-popup-close'],
+					   HU.jsLink('',HtmlUtils.getIconImage(icon_close), [ID,id+'_close',STYLE,HU.css('cursor','pointer')]));
+            let title = HU.div([CLASS,'ramadda-popup-title'],opts.title);
             let hdr = closeImage+title
-            let header = HtmlUtils.div([STYLE,HU.css("text-align","left"),CLASS,"ramadda-popup-header"],hdr);
+	    if(opts.headerRight) {
+		hdr = hdr+HU.div(['style',HU.css('position','absolute','top','0px','right','0px')], opts.headerRight);
+	    }
+            let header = HtmlUtils.div([STYLE,HU.css('position','relative','text-align','left'),'class','ramadda-popup-header'],hdr);
             html = header + html;
         }
 
