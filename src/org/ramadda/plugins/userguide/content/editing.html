@@ -1,98 +1,61 @@
 [ht::head {Editing Entries and their Properties}]
 
 <%nochildlist%>
+:navtop
 
-Once an entry is created you can edit its name, description, time range, lat/lon bounding box  and other fields with the Edit Entry link in the Edit menu:<br>
-[ht::cimg images/editmenu.png {} {border=0}]
-<p>
+:heading Editing an entry
+Once an entry is created you can edit its name, description, time range, lat/lon bounding box  and other fields with the Edit Entry link in the Edit menu:
+
+[ht::screenshot images/entrymenu.png]
 
 Which takes you to the Entry Edit form:
 
-[ht::cimg images/editform.png {Entry Edit Form} {border=0 width=600}]
+[ht::screenshot images/editform.png {Entry Edit Form}]
+
+Normally, the description for an entry is shown within the default display for the entry's
+type. Checking the <span><i class="fa-brands fa-wikipedia-w"></i></span> checkbox overrides
+the default display to use description as wiki text and the editor is changed to
+the wiki text editor. More information available in the <a href="wiki/wiki.html">
+Wiki</a> documentation.
 
 
-<p>
-If the description of an entry begins with &quot;&lt;wiki&gt;&quot;
-then RAMADDA uses the description text as a wiki page
-when displaying the entry in the default HTML view.
-See [ug::link wiki.html here] for  more information
-on wiki text in RAMADDA.
-
-
-
-
-<subhead intoc="false" id="properties">Adding Properties</subhead>
+<a name="properties"></a>
+:heading Adding Properties
 In RAMADDA entries have some basic properties that can be edited in
 the edit form, e.g., name, description, lat/lon bounding box, time range, etc.
 One can also add any number of other properties elements to an entry.
 <p>
 Clicking on the &quot;Edit Menu -&gt; Add Properties&quot; link takes you to the
 Add Properties form where you can select the type of properties to add.
-e.g., Tag:
-
-[ht::cimg images/addmetadata1.png {Add Properties Form} {border=0 width=600}]
-
-
-Select the type of properties to add, e.g.,  &quot;Tag&quot;:
-[ht::cimg images/addmetadata2.png {Add Tag Properties Form} {border=0 width=600}]
+There are lots (and lots) of different properties. Some are basic (e.g., tags) while
+some control how the repository operates (e.g,, alias, default time zone, page style, logo)
 
 
+[ht::screenshot images/addmetadata1.png {Add Properties Form}]
 
-You can upload a file as an attachment to an entry:
-[ht::cimg images/addthumbnail.png {Add Thumbnail} {border=0 width=600}]
 
+Select the type of properties to add, e.g.,  &quot;Tag&quot;.
+The "inherited" flag, if checked, will have that property be applied
+to all descendent entries.
+
+[ht::screenshot images/addmetadata2.png {Add Tag Properties Form}]
+
+You can upload a file as an attachment to an entry.
 If you create a &quot;thumbnail&quot; attachment that is an image it will be displayed 
 when  the entry is listed:
-[ht::cimg images/thumbnails.png {Thumbnail Images} {border=0 width=600}]
+[ht::screenshot images/thumbnails.png {Thumbnail Images}]
 
 
-<subhead intoc="false" id="editproperties">Editing Properties</subhead>
+
+<name="editproperties"></a>
+:heading Editing Properties
+
 Selecting the &quot;Edit -&gt; Edit Properties&quot; menu link allows you to edit and delete the properties elements of an entry:
 
-[ht::cimg images/editmetadata.png {Edit Properties} {border=0 width=600}]
+[ht::screenshot images/editmetadata.png {Edit Properties}]
 
 You can change any of the values of the properties and press &quot;Change&quot; or
 you can select one or more properties elements and delete them.
-
-<p>
-Note: In RAMADDA when there is a collection of checkboxes in a form selecting one and then
-selecting another with a Shift-Click toggles the range of checkboxes between the first the second
-checkbox clicked. Doing a Control-Click on a checkbox toggles all of them on or off.
-<p>
-The &quot;Add selected to parent folder&quot; button allows you to select some properties and copy
-them into the parent folder. For example, you may have a large number of data files one or more of which
-have properties (see <a href="#autoproperties">Automatic Properties Harvesting</a> for more information).
-Instead of laboriously adding properties to the parent folder you can just copy it from one of the 
-children data entries.
-
-
-<subhead intoc="false" id="autometadata">Automatic Properties Harvesting</subhead>
-If there is a data file that RAMADDA can open using the NetCDF/CDM library (e.g., gridded data, point data,
-radar, etc.) then there will be a &quot;CDL&quot; view link in the View menu for that entry. On that page
-there will be a &quot;Add short properties&quot; and &quot;Add full properties&quot; links shown.
-Adding  short properties will just try to determine the geospatial bounds and the time range of
-the data file and set those properties. Adding full properties will also add as properties elements
-the netcdf varbiables and all of the netcdf global attributes found.
-
-
-
-<subhead intoc="false" id="extended">Extended Edit</subhead>
-There are a number of other edit capabilities under the Edit-&gt;Extended Edit menu. 
-<p>
-
-For Folders you can recurse down the entry hierarchy and set the spatial and/or temporal bounds of each entry as the union of its children entry metadata.
-
-<p>
-The Generate File Listing will provide a summary of all of the files in the hierarchy. You can choose to only list entries that have a file that is missing or only list entries that are OK.
-
-<p>
-
-The entry type of the entry you are editing can be changed. Note: for entries that have special attributes (e.g., Project, Point Data) when you change the type to a different type the special attributes will be deleted.
-<p>
-You can also recurse down the folder tree and change the type of all entries that match the specified original entry type and/or a pattern that is matched on the name or the filename of the entry. Note: the pattern is a regular expression.
-<p>
-So, for example, you might have a folder that contains a set of plain File entries that you want to change to be a certain data type (e.g., Landsat Satellite Data). You would select "File" as the Old Type, Landsat Satellite data as the new type. If you had a number of File entries but not all are to be changed you can use the pattern (e.g., ".*\.hdf") to match on the File entries that you want to change.
- 
 
 
 

@@ -14,7 +14,7 @@
 <td width=50% align=center>
 <div class="ramadda-page-title"><a href="#">Section 3.2: Editing Entries and their Properties</a></div>
 </td>
-<td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="access.html"><table><tr valign=center><td>Entry Access Control</td><td><span title="Next: Entry Access Control"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+<td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="extendededit.html"><table><tr valign=center><td>Extended Edit</td><td><span title="Next: Extended Edit"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
 </tr></table>
 </div>
 
@@ -29,98 +29,61 @@ pre {
 
 
 
+:navtop
 
-Once an entry is created you can edit its name, description, time range, lat/lon bounding box  and other fields with the Edit Entry link in the Edit menu:<br>
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/editmenu.png?version=879.0"><img  src="images/editmenu.png?version=879.0" border=0 alt="images/editmenu.png?version=879.0" ></a></div></div>
-<p>
+:heading Editing an entry
+Once an entry is created you can edit its name, description, time range, lat/lon bounding box  and other fields with the Edit Entry link in the Edit menu:
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/entrymenu.png?version=632.0"><img  src="images/entrymenu.png?version=632.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/entrymenu.png?version=632.0" ></a></div></div>
 
 Which takes you to the Entry Edit form:
 
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image2"></a><div><a href="images/editform.png?version=879.0"><img  src="images/editform.png?version=879.0" border=0 width=600 alt="Entry Edit Form" ></a><br><span class="caption">Image 2: Entry Edit Form</span></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image2"></a><div><a href="images/editform.png?version=632.0"><img  src="images/editform.png?version=632.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="Entry Edit Form" ></a><br><span class="caption">Image 2: Entry Edit Form</span></div></div>
+
+Normally, the description for an entry is shown within the default display for the entry's
+type. Checking the <span><i class="fa-brands fa-wikipedia-w"></i></span> checkbox overrides
+the default display to use description as wiki text and the editor is changed to
+the wiki text editor. More information available in the <a href="wiki/wiki.html">
+Wiki</a> documentation.
 
 
-<p>
-If the description of an entry begins with &quot;&lt;wiki&gt;&quot;
-then RAMADDA uses the description text as a wiki page
-when displaying the entry in the default HTML view.
-See <a href='wiki.html'>here</a> for  more information
-on wiki text in RAMADDA.
-
-
-
-
-<a name="properties"></a><p><div class="ramadda-help-heading">3.2.0 <a href="#properties">Adding Properties</a></div> 
+<a name="properties"></a>
+:heading Adding Properties
 In RAMADDA entries have some basic properties that can be edited in
 the edit form, e.g., name, description, lat/lon bounding box, time range, etc.
 One can also add any number of other properties elements to an entry.
 <p>
 Clicking on the &quot;Edit Menu -&gt; Add Properties&quot; link takes you to the
 Add Properties form where you can select the type of properties to add.
-e.g., Tag:
-
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image3"></a><div><a href="images/addmetadata1.png?version=879.0"><img  src="images/addmetadata1.png?version=879.0" border=0 width=600 alt="Add Properties Form" ></a><br><span class="caption">Image 3: Add Properties Form</span></div></div>
-
-
-Select the type of properties to add, e.g.,  &quot;Tag&quot;:
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image4"></a><div><a href="images/addmetadata2.png?version=879.0"><img  src="images/addmetadata2.png?version=879.0" border=0 width=600 alt="Add Tag Properties Form" ></a><br><span class="caption">Image 4: Add Tag Properties Form</span></div></div>
+There are lots (and lots) of different properties. Some are basic (e.g., tags) while
+some control how the repository operates (e.g,, alias, default time zone, page style, logo)
 
 
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image3"></a><div><a href="images/addmetadata1.png?version=632.0"><img  src="images/addmetadata1.png?version=632.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="Add Properties Form" ></a><br><span class="caption">Image 3: Add Properties Form</span></div></div>
 
-You can upload a file as an attachment to an entry:
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image5"></a><div><a href="images/addthumbnail.png?version=879.0"><img  src="images/addthumbnail.png?version=879.0" border=0 width=600 alt="Add Thumbnail" ></a><br><span class="caption">Image 5: Add Thumbnail</span></div></div>
 
+Select the type of properties to add, e.g.,  &quot;Tag&quot;.
+The "inherited" flag, if checked, will have that property be applied
+to all descendent entries.
+
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image4"></a><div><a href="images/addmetadata2.png?version=632.0"><img  src="images/addmetadata2.png?version=632.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="Add Tag Properties Form" ></a><br><span class="caption">Image 4: Add Tag Properties Form</span></div></div>
+
+You can upload a file as an attachment to an entry.
 If you create a &quot;thumbnail&quot; attachment that is an image it will be displayed 
 when  the entry is listed:
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image6"></a><div><a href="images/thumbnails.png?version=879.0"><img  src="images/thumbnails.png?version=879.0" border=0 width=600 alt="Thumbnail Images" ></a><br><span class="caption">Image 6: Thumbnail Images</span></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image5"></a><div><a href="images/thumbnails.png?version=632.0"><img  src="images/thumbnails.png?version=632.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="Thumbnail Images" ></a><br><span class="caption">Image 5: Thumbnail Images</span></div></div>
 
 
-<a name="editproperties"></a><p><div class="ramadda-help-heading">3.2.1 <a href="#editproperties">Editing Properties</a></div> 
+
+<name="editproperties"></a>
+:heading Editing Properties
+
 Selecting the &quot;Edit -&gt; Edit Properties&quot; menu link allows you to edit and delete the properties elements of an entry:
 
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image7"></a><div><a href="images/editmetadata.png?version=879.0"><img  src="images/editmetadata.png?version=879.0" border=0 width=600 alt="Edit Properties" ></a><br><span class="caption">Image 7: Edit Properties</span></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image6"></a><div><a href="images/editmetadata.png?version=632.0"><img  src="images/editmetadata.png?version=632.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="Edit Properties" ></a><br><span class="caption">Image 6: Edit Properties</span></div></div>
 
 You can change any of the values of the properties and press &quot;Change&quot; or
 you can select one or more properties elements and delete them.
-
-<p>
-Note: In RAMADDA when there is a collection of checkboxes in a form selecting one and then
-selecting another with a Shift-Click toggles the range of checkboxes between the first the second
-checkbox clicked. Doing a Control-Click on a checkbox toggles all of them on or off.
-<p>
-The &quot;Add selected to parent folder&quot; button allows you to select some properties and copy
-them into the parent folder. For example, you may have a large number of data files one or more of which
-have properties (see <a href="#autoproperties">Automatic Properties Harvesting</a> for more information).
-Instead of laboriously adding properties to the parent folder you can just copy it from one of the 
-children data entries.
-
-
-<a name="autometadata"></a><p><div class="ramadda-help-heading">3.2.2 <a href="#autometadata">Automatic Properties Harvesting</a></div> 
-If there is a data file that RAMADDA can open using the NetCDF/CDM library (e.g., gridded data, point data,
-radar, etc.) then there will be a &quot;CDL&quot; view link in the View menu for that entry. On that page
-there will be a &quot;Add short properties&quot; and &quot;Add full properties&quot; links shown.
-Adding  short properties will just try to determine the geospatial bounds and the time range of
-the data file and set those properties. Adding full properties will also add as properties elements
-the netcdf varbiables and all of the netcdf global attributes found.
-
-
-
-<a name="extended"></a><p><div class="ramadda-help-heading">3.2.3 <a href="#extended">Extended Edit</a></div> 
-There are a number of other edit capabilities under the Edit-&gt;Extended Edit menu. 
-<p>
-
-For Folders you can recurse down the entry hierarchy and set the spatial and/or temporal bounds of each entry as the union of its children entry metadata.
-
-<p>
-The Generate File Listing will provide a summary of all of the files in the hierarchy. You can choose to only list entries that have a file that is missing or only list entries that are OK.
-
-<p>
-
-The entry type of the entry you are editing can be changed. Note: for entries that have special attributes (e.g., Project, Point Data) when you change the type to a different type the special attributes will be deleted.
-<p>
-You can also recurse down the folder tree and change the type of all entries that match the specified original entry type and/or a pattern that is matched on the name or the filename of the entry. Note: the pattern is a regular expression.
-<p>
-So, for example, you might have a folder that contains a set of plain File entries that you want to change to be a certain data type (e.g., Landsat Satellite Data). You would select "File" as the Old Type, Landsat Satellite data as the new type. If you had a number of File entries but not all are to be changed you can use the pattern (e.g., ".*.hdf") to match on the File entries that you want to change.
- 
 
 
 
@@ -133,7 +96,7 @@ So, for example, you might have a folder that contains a set of plain File entri
 <div class="ramadda-doc-footer">
 <table width=100% cellspacing=0 cellpadding=0 >
 <tr><td width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="newentry.html"><table><td valign=center><td><span title="Previous: Creating Folders and Entries"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Creating Folders and Entries</td></tr></table></a></div></div></td>
-<td align=right width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="access.html"><table><tr valign=center><td>Entry Access Control</td><td><span title="Next: Entry Access Control"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+<td align=right width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="extendededit.html"><table><tr valign=center><td>Extended Edit</td><td><span title="Next: Extended Edit"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
 </tr></table>
 </div>
 <p>
