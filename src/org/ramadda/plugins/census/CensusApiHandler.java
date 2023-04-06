@@ -53,7 +53,7 @@ import java.util.regex.Pattern;
 public class CensusApiHandler extends RepositoryManager implements RequestHandler {
 
     private static final String NAME_TEXT = "text";
-    private static final String NAME_IGNORE = "ignoremargin";    
+    private static final String NAME_IGNORE = "ignore";    
 
     /**
      *     ctor
@@ -83,8 +83,9 @@ public class CensusApiHandler extends RepositoryManager implements RequestHandle
 
         String               text    = request.getString(NAME_TEXT, "");
         List<CensusVariable> matches = new ArrayList<CensusVariable>();
+	String  ignore = request.getString(NAME_IGNORE,"margin of error");
         if (Utils.stringDefined(text)) {
-            matches = processSearch(request, text);
+            matches = processSearch(request, text,ignore);
         }
 
         int cnt = 0;
@@ -116,18 +117,16 @@ public class CensusApiHandler extends RepositoryManager implements RequestHandle
 	sb.append(HU.submit("Search","search"));
 	sb.append(HU.space(2));
         sb.append(HtmlUtils.input(NAME_TEXT, text.replaceAll("\"", "&quot;"),
-                                  HU.attr("size","60")+HU.attr("placeholder","Search term")));
+                                  HU.attr("size","40")+HU.attr("placeholder","Search term")));
         sb.append(HtmlUtils.space(2));
-	boolean ignore = request.get(NAME_IGNORE,false);
-	sb.append(HU.labeledCheckbox(NAME_IGNORE,"true",request.exists(NAME_TEXT)?ignore:true,"Ignore margin of error"));
+        sb.append(HU.b("Ignore: ") + HtmlUtils.input(NAME_IGNORE, ignore,
+						     HU.attr("size","40")));
         sb.append(HtmlUtils.formClose());
         StringBuilder table = new StringBuilder();
         for (CensusVariable var : matches) {
             String label = var.getLabel();
 
-	    if(ignore && label.toLowerCase().indexOf("margin of error")>=0) {
-		continue;
-	    }
+
             if (cnt == 0) {
 		table.append("<table table-height='400px' class='stripe ramadda-table' table-ordering=true><thead>");
 		table.append("<tr><th>ID</th><th>Label</th><th>Concept</th></thead><tbody>");
@@ -231,7 +230,7 @@ public class CensusApiHandler extends RepositoryManager implements RequestHandle
      */
     public static void main(String[] args) throws Exception {
         for (String arg : args) {
-            for (CensusVariable var : processSearch(null, arg)) {
+            for (CensusVariable var : processSearch(null, arg,null)) {
                 System.err.println("Var:" + var.getId() + " :: "
                                    + var.getLabel() + " :: "
                                    + var.getConcept());
@@ -250,13 +249,13 @@ public class CensusApiHandler extends RepositoryManager implements RequestHandle
      * @throws Exception _more_
      */
     private static List<CensusVariable> processSearch(Request request,
-            String text)
+						      String text,String ignore)
             throws Exception {
         text = text.trim();
         List<CensusVariable> vars    = CensusVariable.getVariables();
         List<CensusVariable> matches = new ArrayList<CensusVariable>();
         for (String searchString : StringUtil.split(text, ",", true, true)) {
-            matches = processSearchInner(request, searchString, vars);
+            matches = processSearchInner(request, searchString,ignore, vars);
 	    /*
             System.err.println("Looked at:" + vars.size() + " for:"
                                + searchString + "   found: "
@@ -280,7 +279,7 @@ public class CensusApiHandler extends RepositoryManager implements RequestHandle
      * @throws Exception _more_
      */
     private static List<CensusVariable> processSearchInner(Request request,
-            String searchString, List<CensusVariable> vars)
+							   String searchString, String ignore,List<CensusVariable> vars)
             throws Exception {
 
         searchString = searchString.trim();
@@ -327,10 +326,6 @@ public class CensusApiHandler extends RepositoryManager implements RequestHandle
 
         for (int i = 0; i < toks.size(); i++) {
             String tok = toks.get(i);
-
-
-
-
             if ( !StringUtil.containsRegExp(tok)) {
                 patterns.add(null);
             } else {
@@ -355,7 +350,12 @@ public class CensusApiHandler extends RepositoryManager implements RequestHandle
                 corpus = var.getCorpus().toLowerCase();
             }
 
-
+	    if(Utils.stringDefined(ignore)) {
+		if(corpus.indexOf(ignore)>=0) continue;
+		try {
+		    if(corpus.matches(ignore)) continue;
+		} catch(Exception badRegexp) {}
+	    }
             boolean ok = true;
             for (int i = 0; (i < patterns.size()) && ok; i++) {
                 String  tok   = toks.get(i);
