@@ -36,7 +36,7 @@ import java.util.List;
  *     @version        $version$, Tue, Oct 27, '15
  *     @author         Enter your name here...
  */
-public class Place {
+public class Place implements Comparable<Place> {
 
     /** _more_ */
     private static final Object MUTEX = new Object();
@@ -97,6 +97,9 @@ public class Place {
     }
 
 
+    public int 	compareTo(Place o) {
+	return name.compareTo(o.name);
+    }
 
     /**
      * _more_
