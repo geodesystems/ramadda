@@ -257,9 +257,11 @@ public class CensusApiHandler extends RepositoryManager implements RequestHandle
         List<CensusVariable> matches = new ArrayList<CensusVariable>();
         for (String searchString : StringUtil.split(text, ",", true, true)) {
             matches = processSearchInner(request, searchString, vars);
+	    /*
             System.err.println("Looked at:" + vars.size() + " for:"
                                + searchString + "   found: "
                                + matches.size());
+	    */
             vars = matches;
         }
 
