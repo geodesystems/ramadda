@@ -322,11 +322,8 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
     background:#aaa;
 }
 
-.ramadda-button-blue {
-    background:#286090;
-    background:rgb(0, 97, 224);
-    border:1px #286090 solid;
-}
+
+
 
 a:visited.ramadda-button-blue, a:visited.ramadda-button-green, a:link.ramadda-button-blue, a:link.ramadda-button-green {
     color: #eee;
@@ -335,6 +332,13 @@ a:visited.ramadda-button-blue, a:visited.ramadda-button-green, a:link.ramadda-bu
 a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-button-blue:hover, a:link.ramadda-button-green:hover,a:visited.ramadda-button-green:hover, .ramadda-button-green:hover {
     color: #000;
 }
+
+.ramadda-button-blue {
+    background:#3A8DD6;
+    border:1px #3A8DD6 solid;
+}
+
+
 
 .ramadda-button-green {
     background:#188fa7;
