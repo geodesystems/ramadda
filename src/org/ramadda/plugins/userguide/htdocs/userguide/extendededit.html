@@ -1,0 +1,112 @@
+<html>
+<head>
+<title>Extended Edit</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<div class="ramadda-doc-header">
+<div style='padding-top:12px;margin-bottom:4px;'><a href="toc.html#extendededit.html"><span title="Table of contents"><i  style='font-size:16pt;'  class="fa fa-list "></i></span></a> &nbsp; <a href="index.html">RAMADDA User Guide</a>  > <a href="page_ramaddaentries.html">RAMADDA Entries</a> </div>
+<table width=100% cellspacing=0 cellpadding=0 >
+<tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="editing.html"><table><td valign=center><td><span title="Previous: Editing Entries and their Properties"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Editing Entries and their Properties</td></tr></table></a></div></div></td>
+<td width=50% align=center>
+<div class="ramadda-page-title"><a href="#">Section 3.3: Extended Edit</a></div>
+</td>
+<td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="access.html"><table><tr valign=center><td>Entry Access Control</td><td><span title="Next: Entry Access Control"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+</tr></table>
+</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+<div class="ramadda-doc-contents" style="margin-left:20px;">
+
+
+
+
+:navtop
+
+<a name=extended></a>
+There are a number of other edit capabilities under the Edit-&gt;Extended Edit menu. 
+
+:heading Setting Metadata
+For Folders you can recurse down the entry hierarchy and set the spatial and/or temporal bounds of each entry as the union of its children entry metadata.
+When applied the set of entries that have been changed will be shown:
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/extedit_metadata.png?version=548.0"><img  src="images/extedit_metadata.png?version=548.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/extedit_metadata.png?version=548.0" ></a></div></div>
+
+
+:heading File Listing
+The Generate File Listing will provide a summary of all of the files in the hierarchy. You 
+can choose to only list entries that have a file that is missing or only list entries that are OK.
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/extedit_listing.png?version=548.0"><img  src="images/extedit_listing.png?version=548.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/extedit_listing.png?version=548.0" ></a></div></div>
+
+
+:heading Change Entry Type
+The entry type of the entry you are editing can be changed.
++callout-info
+Note: for entries that have special attributes (e.g., Project, Point Data) when you change the type to a different type the special attributes will be deleted.
+-callout
+
+:heading Change Descendents Entry Type
+You can also recurse down the folder tree and change the type of all entries that match the specified original entry type
+and/or a pattern that is matched on the name or the filename of the entry. Note: the pattern is a regular expression.
+
++callout-info
+It is best to first see what entries would be changed. Then when satisfied
+check on the "Yes, change them" checkbox.
+-callout
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/extedit_changetype.png?version=548.0"><img  src="images/extedit_changetype.png?version=548.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/extedit_changetype.png?version=548.0" ></a></div></div>
+
+So, for example, you might have a folder that contains a set of plain File entries that you want to change to be a certain data
+type (e.g., Landsat Satellite Data). You would select "File" as the Old Type, Landsat Satellite data as the new type.
+If you had a number of File entries but not all are to be changed you can use the pattern (e.g., ".*.hdf")
+to match on the File entries that you want to change.
+ 
+
+
+
+
+:heading Change Descendents URL Path
+You can recurse through the descendents and change the entries that have URLs.
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/extedit_urls.png?version=548.0"><img  src="images/extedit_urls.png?version=548.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/extedit_urls.png?version=548.0" ></a></div></div>
+
+
+
+<a name="extended_js"></a>
+
+:heading Process with Javascript
+This extended edit form allows you to specify some javascript that is called for each entry
+down through the entry hierarchy. This enables you to do complex changes.
+
++callout-info
+You need to check on the "Apply changes to entries" checkbox to have your changes actually applied.
+-callout
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/extedit_js.png?version=548.0"><img  src="images/extedit_js.png?version=548.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/extedit_js.png?version=548.0" ></a></div></div>
+
+
+
+</div>
+<p>
+
+<p>&nbsp;<p>
+
+<div class="ramadda-doc-footer">
+<table width=100% cellspacing=0 cellpadding=0 >
+<tr><td width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="editing.html"><table><td valign=center><td><span title="Previous: Editing Entries and their Properties"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Editing Entries and their Properties</td></tr></table></a></div></div></td>
+<td align=right width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="access.html"><table><tr valign=center><td>Entry Access Control</td><td><span title="Next: Entry Access Control"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+</tr></table>
+</div>
+<p>
+</div>
+</body>
+</html>
+

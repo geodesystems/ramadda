@@ -1,0 +1,68 @@
+[ht::head {Extended Edit}]
+
+<%nochildlist%>
+:navtop
+
+<a name=extended></a>
+There are a number of other edit capabilities under the Edit-&gt;Extended Edit menu. 
+
+:heading Setting Metadata
+For Folders you can recurse down the entry hierarchy and set the spatial and/or temporal bounds of each entry as the union of its children entry metadata.
+When applied the set of entries that have been changed will be shown:
+
+[ht::screenshot images/extedit_metadata.png]
+
+
+:heading File Listing
+The Generate File Listing will provide a summary of all of the files in the hierarchy. You 
+can choose to only list entries that have a file that is missing or only list entries that are OK.
+
+[ht::screenshot images/extedit_listing.png]
+
+
+:heading Change Entry Type
+The entry type of the entry you are editing can be changed.
++callout-info
+Note: for entries that have special attributes (e.g., Project, Point Data) when you change the type to a different type the special attributes will be deleted.
+-callout
+
+:heading Change Descendents Entry Type
+You can also recurse down the folder tree and change the type of all entries that match the specified original entry type
+and/or a pattern that is matched on the name or the filename of the entry. Note: the pattern is a regular expression.
+
++callout-info
+It is best to first see what entries would be changed. Then when satisfied
+check on the "Yes, change them" checkbox.
+-callout
+
+[ht::screenshot images/extedit_changetype.png]
+
+So, for example, you might have a folder that contains a set of plain File entries that you want to change to be a certain data
+type (e.g., Landsat Satellite Data). You would select "File" as the Old Type, Landsat Satellite data as the new type.
+If you had a number of File entries but not all are to be changed you can use the pattern (e.g., ".*\.hdf")
+to match on the File entries that you want to change.
+ 
+
+
+
+
+:heading Change Descendents URL Path
+You can recurse through the descendents and change the entries that have URLs.
+[ht::screenshot images/extedit_urls.png]
+
+
+
+<a name="extended_js"></a>
+
+:heading Process with Javascript
+This extended edit form allows you to specify some javascript that is called for each entry
+down through the entry hierarchy. This enables you to do complex changes.
+
++callout-info
+You need to check on the "Apply changes to entries" checkbox to have your changes actually applied.
+-callout
+
+[ht::screenshot images/extedit_js.png]
+
+
+[ht::foot]
