@@ -5076,12 +5076,12 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		    snippet = StringUtil.findPattern(text, "(?s)\\+note\\s*(.*?)-note");
 		}		
 		//Now check for embedded tags
-		if(snippet.indexOf("{{")>=0) snippet = null;
+		if(snippet!=null && snippet.indexOf("{{")>=0) snippet = null;
 		if (snippet == null) {
 		    snippet = StringUtil.findPattern(text, "(?s)\\+callout-info\\s*(.*?)-callout");
 		}		
 		//Now check for embedded tags
-		if(snippet.indexOf("{{")>=0) snippet = null;
+		if(snippet!=null && snippet.indexOf("{{")>=0) snippet = null;
 	    }
 	}
         child.setSnippet(snippet);
