@@ -52,6 +52,9 @@ import java.util.regex.Pattern;
  */
 public class CensusApiHandler extends RepositoryManager implements RequestHandler {
 
+    private static final String NAME_TEXT = "text";
+    private static final String NAME_IGNORE = "ignoremargin";    
+
     /**
      *     ctor
      *
@@ -77,8 +80,8 @@ public class CensusApiHandler extends RepositoryManager implements RequestHandle
      */
     public Result processVariableApi(Request request) throws Exception {
         boolean asJson = request.getString(ARG_OUTPUT, "").equals("json");
-        String               text    = request.getString("text", "");
 
+        String               text    = request.getString(NAME_TEXT, "");
         List<CensusVariable> matches = new ArrayList<CensusVariable>();
         if (Utils.stringDefined(text)) {
             matches = processSearch(request, text);
@@ -100,24 +103,40 @@ public class CensusApiHandler extends RepositoryManager implements RequestHandle
             return new Result("", new StringBuilder(json), JsonUtil.MIMETYPE);
         }
         StringBuilder sb = new StringBuilder();
-        sb.append(HtmlUtils.sectionOpen("RAMADDA Census Variables"));
-        sb.append(HtmlUtils.form(""));
-        sb.append(HtmlUtils.input("text", text.replaceAll("\"", "&quot;"),
-                                  80));
-        sb.append(HtmlUtils.space(2));
-        sb.append(HtmlUtils.formClose());
-
         sb.append(
             HtmlUtils.importCss(
                 ".ramadda-census-table {margin-left:10px;margin-right:10px;}\n"));
 
+
+
+        getPageHandler().sectionOpen(request, sb, "RAMADDA Census Variables",false);
+	sb.append(HU.center(HU.href(getRepository().getUrlBase() +"/census/states","View States List")));
+	sb.append(HU.br());
+        sb.append(HtmlUtils.form(""));
+	sb.append(HU.submit("Search","search"));
+	sb.append(HU.space(2));
+        sb.append(HtmlUtils.input(NAME_TEXT, text.replaceAll("\"", "&quot;"),
+                                  HU.attr("size","60")+HU.attr("placeholder","Search term")));
+        sb.append(HtmlUtils.space(2));
+	boolean ignore = request.get(NAME_IGNORE,false);
+	sb.append(HU.labeledCheckbox(NAME_IGNORE,"true",request.exists(NAME_TEXT)?ignore:true,"Ignore margin of error"));
+        sb.append(HtmlUtils.formClose());
+        StringBuilder table = new StringBuilder();
         for (CensusVariable var : matches) {
+            String label = var.getLabel();
+
+	    if(ignore && label.toLowerCase().indexOf("margin of error")>=0) {
+		continue;
+	    }
             if (cnt == 0) {
-                sb.append(
-                    "<table border=1><tr><td><div class=ramadda-census-table><b>ID</b></div></td><td><div class=ramadda-census-table><b>Label</b></div></td><td><div class=ramadda-census-table><b>Concept</b></div></td>");
+		table.append("<table table-height='400px' class='stripe ramadda-table' table-ordering=true><thead>");
+		table.append("<tr><th>ID</th><th>Label</th><th>Concept</th></thead><tbody>");
             }
             cnt++;
-            String label = var.getLabel();
+	    
+
+
+
             label = label.replaceAll("!!", "<br>&nbsp;&nbsp;");
             String cellClass = HtmlUtils.cssClass("ramadda-census-table");
             String row = HtmlUtils.cols(
@@ -127,18 +146,20 @@ public class CensusApiHandler extends RepositoryManager implements RequestHandle
                                      label + "&nbsp;&nbsp;",
                                      cellClass), HtmlUtils.div(
                                          var.getConcept(), cellClass));
-            sb.append(HtmlUtils.rowTop(row));
-            if (cnt > 1000) {
+            table.append(HtmlUtils.rowTop(row));
+            if (cnt >= 2000) {
                 break;
             }
         }
         if (cnt > 0) {
-            sb.append("</table>");
+            table.append("</tbody></table>");
+	    sb.append(cnt +" matches<br>");
+	    sb.append(table);
         } else {
-            sb.append("No match");
+	    if (Utils.stringDefined(text)) 
+		sb.append("No match");
         }
-        sb.append(HtmlUtils.sectionClose());
-
+        getPageHandler().sectionClose(request, sb);
         return new Result("", sb);
     }
 
@@ -160,11 +181,10 @@ public class CensusApiHandler extends RepositoryManager implements RequestHandle
         if (stateId != null) {
             Place state = GeoResource.RESOURCE_STATES.getPlace(stateId);
             if (state == null) {
-                sb.append(HtmlUtils.sectionOpen("Census Counties List"));
+		getPageHandler().sectionOpen(request, sb, "Census Counties List",false);
                 sb.append("Unknown state:" + stateId);
             } else {
-                sb.append(HtmlUtils.sectionOpen("Census Counties List for "
-                        + state.getName()));
+		getPageHandler().sectionOpen(request, sb, "Census Counties List for "+ state.getName(),false);
                 places = new ArrayList<Place>();
                 for (Place county :
                         GeoResource.RESOURCE_COUNTIES.getPlaces()) {
@@ -174,10 +194,15 @@ public class CensusApiHandler extends RepositoryManager implements RequestHandle
                 }
             }
         } else {
-            sb.append(HtmlUtils.sectionOpen("Census States List"));
+	    getPageHandler().sectionOpen(request, sb, "Census States List",false);
             places = GeoResource.RESOURCE_STATES.getPlaces();
         }
+	sb.append(HU.center(HU.href(getRepository().getUrlBase() +"/census/variables","View Variables Form")
+));
+	sb.append(HU.br());
         if (places != null) {
+	    Collections.sort(places);
+
             sb.append(HtmlUtils.formTable());
             sb.append(HtmlUtils.row(HtmlUtils.cols("Place", "ID", "FIPS")));
             for (Place place : places) {
@@ -192,8 +217,7 @@ public class CensusApiHandler extends RepositoryManager implements RequestHandle
             }
             sb.append(HtmlUtils.formTableClose());
         }
-        sb.append(HtmlUtils.sectionClose());
-
+	getPageHandler().sectionClose(request, sb);
         return new Result("", sb);
     }
 
