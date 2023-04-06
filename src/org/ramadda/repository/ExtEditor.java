@@ -336,8 +336,6 @@ public class ExtEditor extends RepositoryManager {
                             if (!oldType.equals("") &&
 				!oldType.equals(TypeHandler.TYPE_ANY) &&
 				!entry.getTypeHandler().isType(oldType)) {
-                                System.err.println("\tdoesn't match type:"
-						   + oldType);
                                 return true;
                             }
                             if ((pattern != null) && (pattern.length() > 0)) {
@@ -578,6 +576,10 @@ public class ExtEditor extends RepositoryManager {
                             append("<tr><td>");
                             append(getPageHandler().getBreadCrumbs(request,
                                     child, entry));
+
+			    String resource = IOUtil.getFileTail(child.getResource().getPath());
+			    String name = getStorageManager().getOriginalFilename(resource);
+			    append(HU.td(HU.div(name,HU.style("margin-left:10px;margin-right:10px;"))));
                             append("</td><td align=right>");
                             if (exists) {
                                 File file = child.getFile();
@@ -601,12 +603,13 @@ public class ExtEditor extends RepositoryManager {
                     return true;
                 }
             };
+	    walker.walk(finalEntry);
 	    suffix.append(HU.openInset(5, 30, 20, 0));
             suffix.append("<table><tr><td><b>" + msg("File") + "</b></td><td><b>"
                       + msg("Size") + "</td><td></td></tr>");
             suffix.append(walker.getMessageBuffer());
             suffix.append("<tr><td><b>" + msgLabel("Total")
-                      + "</td><td align=right>"
+                      + "</td><td></td><td align=right>"
                       + HU.b(formatFileLength(size[0]))
                       + "</td></tr>");
             suffix.append("</table>");
@@ -715,8 +718,8 @@ public class ExtEditor extends RepositoryManager {
 	    } else if(form.equals(ARG_EXTEDIT_REPORT)){
 		opener.accept("File Listing");
 		sb.append(HU.labeledCheckbox(ARG_EXTEDIT_REPORT_MISSING, "true",
-					     true,"Show missing files")  + "<br>");
-		sb.append(HU.labeledCheckbox(ARG_EXTEDIT_REPORT_FILES, "true", true,"Show OK files") + "<p>");
+					     request.get(ARG_EXTEDIT_REPORT_MISSING,false),"Show missing files")  + "<br>");
+		sb.append(HU.labeledCheckbox(ARG_EXTEDIT_REPORT_FILES, "true", request.get(ARG_EXTEDIT_REPORT_FILES,false),"Show OK files") + "<p>");
 		closer.accept(form, "Generate File Listing");
 	    }  else if(form.equals(ARG_EXTEDIT_CHANGETYPE)){
 		opener.accept("Change Entry Type");
