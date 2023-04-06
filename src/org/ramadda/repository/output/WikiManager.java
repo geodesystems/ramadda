@@ -5066,20 +5066,22 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	if(text!=null) {
 	    snippet = StringUtil.findPattern(text, "(?s)<snippet>(.*)</snippet>");
 	    if (snippet == null) {
-		snippet = StringUtil.findPattern(
-						 text, "(?s)<snippet-hide>(.*)</snippet-hide>");
+		snippet = StringUtil.findPattern(text, "(?s)<snippet-hide>(.*)</snippet-hide>");
 		if (snippet == null) {
-		    snippet = StringUtil.findPattern(
-						     text, "(?s)\\+snippet(.*?)-snippet");
+		    snippet = StringUtil.findPattern(text, "(?s)\\+snippet(.*?)-snippet");
 		}
 		if (snippet == null) {
-		    snippet = StringUtil.findPattern(
-						     text, "(?s)\\+note\\s*(.*?)-note");
+		    //Only get the first 400 characters so we just get the notes at the start of the text
+		    if(text.length()>400) text=text.substring(0,399);
+		    snippet = StringUtil.findPattern(text, "(?s)\\+note\\s*(.*?)-note");
 		}		
+		//Now check for embedded tags
+		if(snippet.indexOf("{{")>=0) snippet = null;
 		if (snippet == null) {
-		    snippet = StringUtil.findPattern(
-						     text, "(?s)\\+callout-info\\s*(.*?)-callout");
+		    snippet = StringUtil.findPattern(text, "(?s)\\+callout-info\\s*(.*?)-callout");
 		}		
+		//Now check for embedded tags
+		if(snippet.indexOf("{{")>=0) snippet = null;
 	    }
 	}
         child.setSnippet(snippet);
