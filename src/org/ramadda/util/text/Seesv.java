@@ -723,13 +723,13 @@ public class Seesv implements SeesvCommands {
 
             if (arg.equals(CMD_APPEND)) {
                 doAppend = true;
-		appendSkip = Integer.parseInt(args.get(++i));
+		appendSkip = parseInt(args.get(++i));
                 continue;
             }
 
             if (arg.equals(CMD_CHOP)) {
                 doLast = true;
-		lastLines = Integer.parseInt(args.get(++i));
+		lastLines = parseInt(args.get(++i));
                 continue;
             }	    	    
 
@@ -2442,7 +2442,7 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_FAKER, "Fake up data. See the docs at https://ramadda.org/repository/userguide/seesv.html#-faker",
 		ARG_LABEL,"Fake Data",
 		new Arg("what","firstname|lastname|fullname|etc"),
-		new Arg(ARG_COLUMNS,"Columns to change. Of none given then add the fake value",ATTR_TYPE,TYPE_COLUMNS)),		
+		new Arg(ARG_COLUMNS,"Columns to change. If none given then add the fake value",ATTR_TYPE,TYPE_COLUMNS)),		
 
         new Cmd(CMD_EDIT, "Hand edit a column (command line only). ESC-stop, BLANK-skip",
                 new Arg(ARG_COLUMN, "key column", ATTR_TYPE, TYPE_COLUMN)),
@@ -3309,11 +3309,11 @@ public class Seesv implements SeesvCommands {
     private void makeFunctions() {
 
 	defineFunction(CMD_SKIP,1,(ctx,args,i) -> {
-		ctx.setSkip(Integer.parseInt(args.get(++i)));
+		ctx.setSkip(parseInt(args.get(++i)));
 		return i;
 	    });
 	defineFunction(CMD_SKIPLINES,1,(ctx,args,i) -> {
-		ctx.setSkipLines(Integer.parseInt(args.get(++i)));
+		ctx.setSkipLines(parseInt(args.get(++i)));
 		return i;
 	    });	
 
@@ -3337,8 +3337,8 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 	defineFunction(CMD_APPENDROWS,3, (ctx,args,i) -> {
-		ctx.addProcessor(new Converter.RowAppender(Integer.parseInt(args.get(++i)),
-							   Integer.parseInt(args.get(++i)),
+		ctx.addProcessor(new Converter.RowAppender(parseInt(args.get(++i)),
+							   parseInt(args.get(++i)),
 							   args.get(++i)));
 		return i;
 	    });
@@ -3462,18 +3462,18 @@ public class Seesv implements SeesvCommands {
 	    });
 
 	defineFunction(CMD_MIN,1,(ctx,args,i) -> {
-		ctx.addProcessor(new Filter.MinColumns(ctx, Integer.parseInt(args.get(++i))));
+		ctx.addProcessor(new Filter.MinColumns(ctx, parseInt(args.get(++i))));
 		return i;
 	    });
 
 	defineFunction(CMD_MAX,1,(ctx,args,i) -> {
-		ctx.addProcessor(new Filter.MaxColumns(ctx, Integer.parseInt(args.get(++i))));
+		ctx.addProcessor(new Filter.MaxColumns(ctx, parseInt(args.get(++i))));
 		return i;
 	    });
 
 	defineFunction(CMD_DECIMATE,2,(ctx,args,i) -> {
-		int start = Integer.parseInt(args.get(++i));
-		int skip  = Integer.parseInt(args.get(++i));
+		int start = parseInt(args.get(++i));
+		int skip  = parseInt(args.get(++i));
 		if (skip > 0) {
 		    ctx.addProcessor(
 				     new Filter.Decimate(ctx, start, skip));
@@ -3650,7 +3650,7 @@ public class Seesv implements SeesvCommands {
 	    });	
 
 	defineFunction(CMD_FUZZYJOIN,6,(ctx,args,i) -> {
-		int threshold = Integer.parseInt(args.get(++i));
+		int threshold = parseInt(args.get(++i));
 		List<String> keys1   = getCols(args.get(++i));
 		List<String> values1 = getCols(args.get(++i));
 		String       file    = args.get(++i);
@@ -3666,7 +3666,7 @@ public class Seesv implements SeesvCommands {
 	    });
 
 	defineFunction(CMD_RANGES,4,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.Ranges(ctx, args.get(++i),args.get(++i), Double.parseDouble(args.get(++i)), Double.parseDouble(args.get(++i))));
+		ctx.addProcessor(new Converter.Ranges(ctx, args.get(++i),args.get(++i), parseDouble(args.get(++i)), parseDouble(args.get(++i))));
 		return i;
 	    });
 
@@ -3706,7 +3706,7 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 	defineFunction(new String[]{CMD_SAMPLE},1,(ctx,args,i) -> {
-		ctx.addProcessor(new Filter.Sample(ctx, Double.parseDouble(args.get(++i))));
+		ctx.addProcessor(new Filter.Sample(ctx, parseDouble(args.get(++i))));
 		return i;
 	    });	
 
@@ -3777,7 +3777,7 @@ public class Seesv implements SeesvCommands {
 	    });
 
 	defineFunction(CMD_RAWLINES,1,(ctx,args,i) -> {
-		rawLines = Integer.parseInt(args.get(++i));
+		rawLines = parseInt(args.get(++i));
 		return i;
 	    });
 
@@ -3817,7 +3817,7 @@ public class Seesv implements SeesvCommands {
 		List<Integer> widths = new ArrayList<Integer>();
 		for (String tok : Utils.split(args.get(++i), ",", true,
 					      true)) {
-		    widths.add(Integer.parseInt(tok));
+		    widths.add(parseInt(tok));
 		}
 		ctx.setWidths(widths);
 		return i;
@@ -3865,7 +3865,7 @@ public class Seesv implements SeesvCommands {
 
 	defineFunction(CMD_AVERAGE,3,(ctx,args,i) -> {
 		List<String> cols   = getCols(args.get(++i));
-		int          period = Integer.parseInt(args.get(++i));
+		int          period = parseInt(args.get(++i));
 		String       label  = args.get(++i);
 		ctx.addProcessor(
 				 new Converter.ColumnAverage(
@@ -3875,7 +3875,7 @@ public class Seesv implements SeesvCommands {
 	    });
 
 	defineFunction(CMD_INCREASE,2,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.ColumnIncrease(args.get(++i), Integer.parseInt(args.get(++i))));
+		ctx.addProcessor(new Converter.ColumnIncrease(args.get(++i), parseInt(args.get(++i))));
 		return i;
 	    });
 	defineFunction(CMD_COLUMN_AND,2,(ctx,args,i) -> {
@@ -3903,7 +3903,7 @@ public class Seesv implements SeesvCommands {
 	    });
 
 	defineFunction(CMD_PAD,2,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.Padder(Integer.parseInt(args.get(++i)), args.get(++i)));
+		ctx.addProcessor(new Converter.Padder(parseInt(args.get(++i)), args.get(++i)));
 		return i;
 	    });
 
@@ -4001,10 +4001,10 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 	defineFunction(CMD_BOUNDS,4,(ctx,args,i) -> {
-		ctx.setBounds(new Bounds(Double.parseDouble(args.get(++i)),
-					 Double.parseDouble(args.get(++i)),
-					 Double.parseDouble(args.get(++i)),
-					 Double.parseDouble(args.get(++i))));
+		ctx.setBounds(new Bounds(parseDouble(args.get(++i)),
+					 parseDouble(args.get(++i)),
+					 parseDouble(args.get(++i)),
+					 parseDouble(args.get(++i))));
 		return i;
 	    });
 
@@ -4021,9 +4021,9 @@ public class Seesv implements SeesvCommands {
 	    });	
 
 	defineFunction(CMD_GEOCODEJOIN,5,(ctx,args,i) -> {
-		ctx.addProcessor(new Geo.Geocoder(args.get(++i),args.get(++i), Integer.parseInt(args.get(++i)),
-						  Integer.parseInt(args.get(++i)),
-						  Integer.parseInt(args.get(++i)), false));
+		ctx.addProcessor(new Geo.Geocoder(args.get(++i),args.get(++i), parseInt(args.get(++i)),
+						  parseInt(args.get(++i)),
+						  parseInt(args.get(++i)), false));
 		return i;
 	    });
 
@@ -4035,9 +4035,9 @@ public class Seesv implements SeesvCommands {
 	    });
 
 	defineFunction("-geocodedb",5,(ctx,args,i) -> {
-		ctx.addProcessor(new Geo.Geocoder(args.get(++i),args.get(++i), Integer.parseInt(args.get(++i)),
-						  Integer.parseInt(args.get(++i)),
-						  Integer.parseInt(args.get(++i)), true));
+		ctx.addProcessor(new Geo.Geocoder(args.get(++i),args.get(++i), parseInt(args.get(++i)),
+						  parseInt(args.get(++i)),
+						  parseInt(args.get(++i)), true));
 		return i;
 	    });
 
@@ -4261,8 +4261,8 @@ public class Seesv implements SeesvCommands {
 
 
 	defineFunction(CMD_TRUNCATE,3,(ctx,args,i) -> {
-		int    col    = Integer.parseInt(args.get(++i));
-		int    length = Integer.parseInt(args.get(++i));
+		int    col    = parseInt(args.get(++i));
+		int    length = parseInt(args.get(++i));
 		String suffix = args.get(++i);
 		ctx.addProcessor(
 				 new Converter.Truncater(col, length, suffix));
@@ -4335,7 +4335,7 @@ public class Seesv implements SeesvCommands {
 
 	defineFunction(CMD_BEFORE,4,(ctx,args,i) -> {
 		try {
-		    int    col  = Integer.parseInt(args.get(++i));
+		    int    col  = parseInt(args.get(++i));
 		    String sdf1 = args.get(++i);
 		    String date = args.get(++i);
 		    String sdf2 = args.get(++i);
@@ -4360,7 +4360,7 @@ public class Seesv implements SeesvCommands {
 
 	defineFunction(CMD_AFTER,4,(ctx,args,i) -> {
 		try {
-		    int    col  = Integer.parseInt(args.get(++i));
+		    int    col  = parseInt(args.get(++i));
 		    String sdf1 = args.get(++i);
 		    String date = args.get(++i);
 		    String sdf2 = args.get(++i);
@@ -4483,7 +4483,7 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 	defineFunction(CMD_SYNTHETIC,3,(ctx,args,i) -> {
-		ctx.getProviders().add(new DataProvider.Synthetic(args.get(++i),args.get(++i),Integer.parseInt(args.get(++i))));
+		ctx.getProviders().add(new DataProvider.Synthetic(args.get(++i),args.get(++i),parseInt(args.get(++i))));
 		return i;
 	    });
 
@@ -4510,12 +4510,12 @@ public class Seesv implements SeesvCommands {
 	    });
 
 	defineFunction(CMD_MAXROWS,1,(ctx,args,i) -> {
-		ctx.setMaxRows(Integer.parseInt(args.get(++i)));
+		ctx.setMaxRows(parseInt(args.get(++i)));
 		return i;
 	    });
 
 	defineFunction(CMD_PRUNE,1,(ctx,args,i) -> {
-		ctx.setPruneBytes(Integer.parseInt(args.get(++i)));
+		ctx.setPruneBytes(parseInt(args.get(++i)));
 		return i;
 	    });
 
@@ -4571,8 +4571,8 @@ public class Seesv implements SeesvCommands {
 
 	defineFunction(CMD_SHIFT, 3,(ctx,args,i) -> {
 		List<Integer> rows  = Utils.getNumbers(args.get(++i));
-		int           col   = Integer.parseInt(args.get(++i));
-		int           count = Integer.parseInt(args.get(++i));
+		int           col   = parseInt(args.get(++i));
+		int           count = parseInt(args.get(++i));
 		ctx.addProcessor(new Converter.Shifter(rows, col, count));
 		return i;
 	    });
@@ -4587,8 +4587,8 @@ public class Seesv implements SeesvCommands {
 	
 
 	defineFunction(CMD_GENERATE, 3,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.Generator(args.get(++i), Double.parseDouble(args.get(++i)),
-							 Double.parseDouble(args.get(++i))));
+		ctx.addProcessor(new Converter.Generator(args.get(++i), parseDouble(args.get(++i)),
+							 parseDouble(args.get(++i))));
 		return i;
 	    });
 
@@ -4622,21 +4622,21 @@ public class Seesv implements SeesvCommands {
 
 
 	defineFunction(CMD_DECIMALS, 2,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.Decimals(getCols(args.get(++i)), Integer.parseInt(args.get(++i))));
+		ctx.addProcessor(new Converter.Decimals(getCols(args.get(++i)), parseInt(args.get(++i))));
 		return i;
 	    });
 	defineFunction(CMD_FUZZ, 2,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.Fuzzer(getCols(args.get(++i)), Integer.parseInt(args.get(++i)),
-						      Integer.parseInt(args.get(++i))));
+		ctx.addProcessor(new Converter.Fuzzer(getCols(args.get(++i)), parseInt(args.get(++i)),
+						      parseInt(args.get(++i))));
 		return i;
 	    });	
 
 	defineFunction(CMD_CEIL, 2,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.Ceil(getCols(args.get(++i)), Double.parseDouble(args.get(++i))));
+		ctx.addProcessor(new Converter.Ceil(getCols(args.get(++i)), parseDouble(args.get(++i))));
 		return i;
 	    });
 	defineFunction("-floow", 2,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.Floor(getCols(args.get(++i)), Double.parseDouble(args.get(++i))));
+		ctx.addProcessor(new Converter.Floor(getCols(args.get(++i)), parseDouble(args.get(++i))));
 		return i;
 	    });
 
@@ -4652,7 +4652,7 @@ public class Seesv implements SeesvCommands {
 	    });
 
 	defineFunction(CMD_CONCATROWS, 1,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.RowConcat(Integer.parseInt(args.get(++i))));
+		ctx.addProcessor(new Converter.RowConcat(parseInt(args.get(++i))));
 		return i;
 	    });	
 
@@ -4730,7 +4730,7 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 	defineFunction(CMD_RAND, 3,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.ColumnRand(args.get(++i), Double.parseDouble(args.get(++i)),Double.parseDouble(args.get(++i))));
+		ctx.addProcessor(new Converter.ColumnRand(args.get(++i), parseDouble(args.get(++i)),parseDouble(args.get(++i))));
 		return i;
 	    });		
 	defineFunction(CMD_SUBST, 2,(ctx,args,i) -> {
@@ -4773,17 +4773,17 @@ public class Seesv implements SeesvCommands {
 
 
 	defineFunction(CMD_PADLEFT, 3,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.PadLeftRight(true,getCols(args.get(++i)),args.get(++i),Integer.parseInt(args.get(++i))));
+		ctx.addProcessor(new Converter.PadLeftRight(true,getCols(args.get(++i)),args.get(++i),parseInt(args.get(++i))));
 		return i;
 	    });
 	defineFunction(CMD_PADRIGHT, 3,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.PadLeftRight(false,getCols(args.get(++i)),args.get(++i),Integer.parseInt(args.get(++i))));
+		ctx.addProcessor(new Converter.PadLeftRight(false,getCols(args.get(++i)),args.get(++i),parseInt(args.get(++i))));
 		return i;
 	    });	
 
 
 	defineFunction(CMD_NUMCOLUMNS, 1,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.NumColumns(Integer.parseInt(args.get(++i))));
+		ctx.addProcessor(new Converter.NumColumns(parseInt(args.get(++i))));
 		return i;
 	    });	
 
@@ -4799,17 +4799,17 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });	
 	defineFunction(CMD_CLONE, 1,(ctx,args,i) -> {
-		ctx.addProcessor(new RowCollector.Cloner(Integer.parseInt(args.get(++i))));
+		ctx.addProcessor(new RowCollector.Cloner(parseInt(args.get(++i))));
 		return i;
 	    });
 	
 	defineFunction(CMD_ADDCELL, 3,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.ColumnNudger(Integer.parseInt(args.get(++i)),Integer.parseInt(args.get(++i)), args.get(++i)));
+		ctx.addProcessor(new Converter.ColumnNudger(parseInt(args.get(++i)),parseInt(args.get(++i)), args.get(++i)));
 		return i;
 	    });
 
 	defineFunction(CMD_DELETECELL, 2,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.ColumnUnNudger(Integer.parseInt(args.get(++i)), getCols(args.get(++i))));
+		ctx.addProcessor(new Converter.ColumnUnNudger(parseInt(args.get(++i)), getCols(args.get(++i))));
 		return i;
 	    });
 
@@ -4839,7 +4839,7 @@ public class Seesv implements SeesvCommands {
 
 
 	defineFunction(CMD_PRIORPREFIX, 3,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.PriorPrefixer(Integer.parseInt(args.get(++i)), args.get(++i), args.get(++i)));
+		ctx.addProcessor(new Converter.PriorPrefixer(parseInt(args.get(++i)), args.get(++i), args.get(++i)));
 		return i;
 	    });
 
@@ -4870,7 +4870,7 @@ public class Seesv implements SeesvCommands {
 	    });
 
 	defineFunction(CMD_WIDTH, 2,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.ColumnWidth(getCols(args.get(++i)), Integer.parseInt(args.get(++i))));
+		ctx.addProcessor(new Converter.ColumnWidth(getCols(args.get(++i)), parseInt(args.get(++i))));
 		return i;
 	    });
 
@@ -4894,8 +4894,8 @@ public class Seesv implements SeesvCommands {
 
 	defineFunction(CMD_DENORMALIZE, 6,(ctx,args,i) -> {
 		String file = args.get(++i);
-		int    col1 = Integer.parseInt(args.get(++i));
-		int    col2 = Integer.parseInt(args.get(++i));
+		int    col1 = parseInt(args.get(++i));
+		int    col2 = parseInt(args.get(++i));
 		String col3 = args.get(++i);
 		String name = args.get(++i);
 		String mode = args.get(++i);
@@ -4943,23 +4943,23 @@ public class Seesv implements SeesvCommands {
 
 	defineFunction(CMD_FUZZYPATTERN, 3,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(),
-			      new Filter.FuzzyFilter(ctx,Integer.parseInt(args.get(++i)), getCols(args.get(++i)), args.get(++i),false));
+			      new Filter.FuzzyFilter(ctx,parseInt(args.get(++i)), getCols(args.get(++i)), args.get(++i),false));
 		return i;
 	    });
 
 	defineFunction(CMD_LENGTHGREATER, 2,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(), 
-			      new Filter.Length(ctx,true,getCols(args.get(++i)),Integer.parseInt(args.get(++i))));
+			      new Filter.Length(ctx,true,getCols(args.get(++i)),parseInt(args.get(++i))));
 		return i;
 	    });
 
 	defineFunction(CMD_COUNTVALUE, 2,(ctx,args,i) -> {
-		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.CountValue(ctx,args.get(++i), Integer.parseInt(args.get(++i))));
+		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.CountValue(ctx,args.get(++i), parseInt(args.get(++i))));
 		return i;
 	    });
 
 	defineFunction(CMD_GROUPFILTER, 4,(ctx,args,i) -> {
-		ctx.addProcessor(new RowCollector.GroupFilter(ctx, getCols(args.get(++i)), Integer.parseInt(args.get(++i)),
+		ctx.addProcessor(new RowCollector.GroupFilter(ctx, getCols(args.get(++i)), parseInt(args.get(++i)),
 							      SeesvOperator.getOperator(args.get(++i)),
 							      args.get(++i)));
 		return i;
@@ -4970,7 +4970,7 @@ public class Seesv implements SeesvCommands {
 		handlePattern(ctx, ctx.getFilterToAddTo(),
 			      new Filter.ValueFilter(ctx,getCols(args.get(++i)),
 						     Filter.ValueFilter.OP_EQUALS,
-						     Double.parseDouble(args.get(++i))));
+						     parseDouble(args.get(++i))));
 		return i;
 	    });
 
@@ -4978,7 +4978,7 @@ public class Seesv implements SeesvCommands {
 		handlePattern(ctx, ctx.getFilterToAddTo(),
 			      new Filter.ValueFilter(ctx,getCols(args.get(++i)),
 						     Filter.ValueFilter.OP_NOTEQUALS,
-						     Double.parseDouble(args.get(++i))));
+						     parseDouble(args.get(++i))));
 		return i;
 	    });
 
@@ -4987,7 +4987,7 @@ public class Seesv implements SeesvCommands {
 		handlePattern(ctx, ctx.getFilterToAddTo(),
 			      new Filter.ValueFilter(ctx,
 						     getCols(args.get(++i)), Filter.ValueFilter.OP_LT,
-						     Double.parseDouble(args.get(++i))));
+						     parseDouble(args.get(++i))));
 		return i;
 	    });
 
@@ -4995,7 +4995,7 @@ public class Seesv implements SeesvCommands {
 		handlePattern(ctx, ctx.getFilterToAddTo(),
 			      new Filter.ValueFilter(ctx,
 						     getCols(args.get(++i)), Filter.ValueFilter.OP_GT,
-						     Double.parseDouble(args.get(++i))));
+						     parseDouble(args.get(++i))));
 		return i;
 	    });
 
@@ -5029,8 +5029,8 @@ public class Seesv implements SeesvCommands {
 		handlePattern(ctx, ctx.getFilterToAddTo(),
 			      new Filter.RangeFilter(ctx,true,
 						     getCols(args.get(++i)), 
-						     Double.parseDouble(args.get(++i)),
-						     Double.parseDouble(args.get(++i))));						     
+						     parseDouble(args.get(++i)),
+						     parseDouble(args.get(++i))));						     
 		return i;
 	    });
 
@@ -5038,8 +5038,8 @@ public class Seesv implements SeesvCommands {
 		handlePattern(ctx, ctx.getFilterToAddTo(),
 			      new Filter.RangeFilter(ctx,false,
 						     getCols(args.get(++i)), 
-						     Double.parseDouble(args.get(++i)),
-						     Double.parseDouble(args.get(++i))));						     
+						     parseDouble(args.get(++i)),
+						     parseDouble(args.get(++i))));						     
 		return i;
 	    });
 	
@@ -5080,12 +5080,12 @@ public class Seesv implements SeesvCommands {
 	    });
 
 	defineFunction(new String[]{CMD_PROGRESS,"-dots"},1,(ctx,args,i) -> {
-		ctx.addProcessor(new Processor.Progress(Integer.parseInt(args.get(++i))));
+		ctx.addProcessor(new Processor.Progress(parseInt(args.get(++i))));
 		return i;
 	    });
 
 	defineFunction(CMD_DEBUGROWS,1,(ctx,args,i) -> {
-		ctx.addProcessor(new Processor.DebugRows(Integer.parseInt(args.get(++i))));
+		ctx.addProcessor(new Processor.DebugRows(parseInt(args.get(++i))));
 		return i;
 	    });
 	
@@ -5178,7 +5178,7 @@ public class Seesv implements SeesvCommands {
 	    });
 
 	defineFunction(CMD_COLS,1, (ctx,args,i) -> {
-		ctx.addProcessor(new Processor.Cols(Integer.parseInt(args.get((++i)))));
+		ctx.addProcessor(new Processor.Cols(parseInt(args.get((++i)))));
 		return i;
 	    });	
 
@@ -5262,7 +5262,7 @@ public class Seesv implements SeesvCommands {
 
 
 	defineFunction(CMD_CHUNK, 2,(ctx,args,i) -> {
-		ctx.addProcessor(new Processor.Chunker(this, args.get(++i), Integer.parseInt(args.get(++i))));
+		ctx.addProcessor(new Processor.Chunker(this, args.get(++i), parseInt(args.get(++i))));
 		return i;
 	    });
 
@@ -5274,7 +5274,7 @@ public class Seesv implements SeesvCommands {
 
 	defineFunction(CMD_MAPTILES,3,(ctx,args,i) -> {
 		List<String> cols = getCols(Utils.getDefinedString(args.get(++i),"latitude,longitude"));
-		double degrees  = Double.parseDouble(Utils.getDefinedString(args.get(++i),"1.0"));
+		double degrees  = parseDouble(Utils.getDefinedString(args.get(++i),"1.0"));
 		String range = "-90;90;" +(int)(180/degrees)+ ",-180;180;" + (int)(360/degrees);
 		ctx.addProcessor(new Processor.Subd(this,cols,
 						    range,
@@ -5379,7 +5379,7 @@ public class Seesv implements SeesvCommands {
 	    String arg = args.get(i);
 
 	    if(arg.equals("-ignore")) {
-		int cnt = Integer.parseInt(args.get(++i));
+		int cnt = parseInt(args.get(++i));
 		i+=cnt;
 		continue;
 	    }
@@ -5679,11 +5679,17 @@ public class Seesv implements SeesvCommands {
     }
 
 
-    public static double parseDouble(String s, double dflt) {
+    public static int parseInt(String s) {
+	return Integer.parseInt(s.trim());
+    }
+
+    public static double parseDouble(String s, double ...dflt) {
 	try {
-	    return Double.parseDouble(s);
+	    return Double.parseDouble(s.trim());
 	} catch(NumberFormatException nfe) {
-	    return dflt;
+	    if(dflt.length>0)
+		return dflt[0];
+	    throw new RuntimeException("Error parsing:" +s);
 	}
     }
 
