@@ -605,9 +605,6 @@ public class ConvertibleOutputHandler extends OutputHandler {
             if (printStack) {
                 inner.printStackTrace();
             }
-
-            System.err.println("Error:" + s);
-
             return new Result(s, "application/json");
 
         }
