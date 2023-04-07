@@ -1,8 +1,6 @@
 var Seesv = {};
 
-
-
-function  ConvertForm(inputId, entry,params) {
+function  SeesvForm(inputId, entry,params) {
     this.params = params||{};
     const ICON_HELP = 'fas fa-question-circle';
     const ICON_SETTINGS = 'fas fa-gear';    
