@@ -289,10 +289,12 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    form+=HU.open('input',['name','getselected','type','submit','value','Selected','class','submit ui-button ui-corner-all ui-widget','id','getselected1338','role','button']);
 	    form+=SPACE1;
 	    form+=HU.open('input',['name','getall','type','submit','value','All','class','submit ui-button ui-corner-all ui-widget','id','getall1337','role','button']);
+	    /*
 	    if(props.canDelete)
 		form+=SPACE1+HU.span(['target-type','repository.delete','title','Shift-drag-and-drop entries to delete','class','ramadda-entry-target ramadda-clickable ramadda-hoverable'], HU.getIconImage('fas fa-trash'));
 	    if(props.canExport)
-		form+=SPACE1+HU.span(['target-type','zip.export','title','Shift-drag-and-drop entries to export','class','ramadda-entry-target ramadda-clickable ramadda-hoverable',], HU.getIconImage('fas fa-file-export'));	    
+	    form+=SPACE1+HU.span(['target-type','zip.export','title','Shift-drag-and-drop entries to export','class','ramadda-entry-target ramadda-clickable ramadda-hoverable',], HU.getIconImage('fas fa-file-export'));
+	    */
 	    html+=HU.div(['class',classPrefix +'-row','id',id+'_form','style','display:none;width:100%'],form);
 	}
 
