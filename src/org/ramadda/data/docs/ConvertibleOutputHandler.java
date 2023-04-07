@@ -224,7 +224,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
 	String jsparams = JsonUtil.mapAndQuote(params);
         HU.script(sb,
 		  "var convertParams = " + jsparams +";\n" +
-                  "new ConvertForm(" + HU.comma(HU.squote(id),HU.squote(entry.getId()),"convertParams")+");");
+                  "new SeesvForm(" + HU.comma(HU.squote(id),HU.squote(entry.getId()),"convertParams")+");");
 
 
     }
