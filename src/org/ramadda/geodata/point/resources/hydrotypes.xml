@@ -107,7 +107,7 @@ csvcommands8=$1,-sort,datetime,-addheader,default.type double datetime.type date
      <property name="form.location.show" value="true"/>
  <property name="record.properties">
 fields=agency[label="Agency" type=string],station_id[label="Station ID" type=string],date[type=date format="yyyy-MM-dd HH:mm" label="Date"],timezone[label="Timezone" type=string],discharge[unit="cfs" label="Discharge" type=double],skip[type=string],gauge_height[unit="feet" label="Gauge Height" type=double],skip[type=string]
-point.csvcommands=-delimiter,tab,-skip, 2,-print
+point.csvcommands=-delimiter,tab,-skip,2,-print
      </property>
      <column  name="station_id"  label="Station ID" type="string" />
      <column  name="period"  label="Period" type="int"  default="30"/>
@@ -118,7 +118,8 @@ point.csvcommands=-delimiter,tab,-skip, 2,-print
 <![CDATA[
 +section title={{name}}
 {{description wikify=true}}
-{{display type=linechart layoutHere=true showMenu=true showTitle=false}}
+{{display type=linechart layoutHere=true showMenu=true showTitle=false fields=discharge}}
+{{display type=linechart layoutHere=true showMenu=true showTitle=false fields=gauge_height}}
 :br
 +row
 +col-md-9
