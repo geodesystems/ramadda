@@ -971,7 +971,7 @@ public class RowCollector extends Processor {
             }
 
 
-            String style = "white-space:nowrap;overflow-x:auto;padding-right:4px;";
+            String style = "";
             //Check for the width
             int    lineWidth = 0;
             String s         = "";
@@ -988,10 +988,11 @@ public class RowCollector extends Processor {
                 style += "max-width:120px;";
             }
 
+	    String cellOpen = HU.open("div",HU.cssClass("seesv-table-cell")+HU.style(style));
             for (int i = 0; i < values.size(); i++) {
                 if ((i == 0) && addCnt) {
                     ctx.getWriter().print(open);
-                    ctx.getWriter().print("<div style='" + style + "'>");
+                    ctx.getWriter().print(cellOpen);
                     if (cnt == 0) {
                         ctx.getWriter().print("&nbsp;");
                     } else {
@@ -1003,7 +1004,7 @@ public class RowCollector extends Processor {
                 }
                 if (cnt == 0) {
 		    ctx.getWriter().print(open);
-		    ctx.getWriter().print("<div style='" + style + "'>");
+		    ctx.getWriter().print(cellOpen);
                     ctx.getWriter().print("#" + i + "&nbsp;");
                     ctx.getWriter().print("");
                     String label = Utils.makeLabel(""
@@ -1022,7 +1023,7 @@ public class RowCollector extends Processor {
 			ctx.getWriter().print("<td align=right>");
 		    else
 			ctx.getWriter().print(open);		    
-		    ctx.getWriter().print("<div style='" + style + "'>");
+		    ctx.getWriter().print(cellOpen);
                     String label = ((value == null)
                                     ? ""
                                     : value.toString());
