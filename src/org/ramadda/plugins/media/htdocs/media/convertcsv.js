@@ -92,7 +92,8 @@ function  SeesvForm(inputId, entry,params) {
 	    html += ".convert_button {padding:2px;padding-left:5px;padding-right:5px;}\n.ramadda-csv-table  {font-size:10pt;}\n ";
 	    html += ".convert_add {margin-left:10px; cursor:pointer;}\n";
 	    html += ".convert_add:hover {text-decoration:underline;}\n";
-	    html += ".csv-summary {}\n";
+	    html += ".seesv-table-summary {background:#F4F4F4;border-bottom:1px solid #000;}\n";
+	    html += ".seesv-table-summary-cell {border-left:1px solid #ccc;}\n";	    
 	    html += ".ace_gutter-cell {cursor:pointer;}\n";
 	    html += ".ace_editor {margin-bottom:5px;xheight:200px;}\n";
 	    html += ".ace_editor_disabled {background:rgb(250,250,250);}\n";
@@ -1097,9 +1098,9 @@ function  SeesvForm(inputId, entry,params) {
 			    visible = !visible;
 			    $(this).html(visible?"Hide summary":"Show summary");
 			    if(visible)
-				output.find(".csv-summary").show();
+				output.find(".seesv-table-summary").show();
 			    else
-				output.find(".csv-summary").hide();
+				output.find(".seesv-table-summary").hide();
 			});
 
 			this.columnIds =  [];

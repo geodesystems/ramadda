@@ -2830,7 +2830,7 @@ public class Seesv implements SeesvCommands {
 		new Arg("width","Column width")),		
         new Cmd(CMD_STATS, "Print summary stats"),
         new Cmd(CMD_TORECORD, "Print records"),
-	new Cmd(CMD_SCRIPT, "Generate the script to call"),
+	new Cmd(CMD_SCRIPT, "Generate script"),
         new Cmd(CMD_TOXML, "Generate XML",
 		ARG_LABEL,"To XML",
 		new Arg("outer tag"),

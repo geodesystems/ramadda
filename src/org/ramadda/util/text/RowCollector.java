@@ -1418,9 +1418,6 @@ public class RowCollector extends Processor {
                     Row    row = rows.get(rowIdx);
                     String v   = row.getString(i);
                     String key = cleanName(v);
-                    //v.toLowerCase().replace(";"," ").replace("."," ");
-                    //key = key.replaceAll(" ","");
-                    //              System.out.println("key:" + key);
                     values.add(new KeyValue(rowIdx, key, v));
                 }
                 for (int rowIdx1 = 1; rowIdx1 < rows.size(); rowIdx1++) {
@@ -2112,7 +2109,7 @@ public class RowCollector extends Processor {
                 w.println("<table width='100%' class='stripe hover display nowrap ramadda-table ramadda-csv-table' >");
                 w.println("<thead>");
                 w.println("<tr valign=top class=csv-header>");
-                summary.append("<tr valign=top class=csv-summary style='display:none;background:var(--header-background);'>");	                for(int i=0;i<cols.size();i++) {
+                summary.append("<tr valign=top class=seesv-table-summary style='display:none;'>");	                for(int i=0;i<cols.size();i++) {
                     ColStat col =  cols.get(i);
 		    //		    if(col.skip) continue;
                     String typeIcon = "";
@@ -2193,7 +2190,7 @@ public class RowCollector extends Processor {
                     extra = HU.div(extra,"");
                     w.println(HU.th(label," nowrap " +HU.attr("align","center")+HU.style("padding:2px !important;")));
 		    if(!col.skip) 
-			summary.append(HU.td(extra,extraAttrs+" nowrap " +HU.style("padding:2px !important;")));
+			summary.append(HU.td(extra,extraAttrs+" nowrap " +HU.cssClass("seesv-table-summary-cell") + HU.style("padding:2px !important;")));
                 }
                 w.println("</tr>");
 		w.println("</thead>");
