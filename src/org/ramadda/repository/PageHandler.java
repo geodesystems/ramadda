@@ -2239,8 +2239,7 @@ public class PageHandler extends RepositoryManager {
             for (String e : extra) {
                 tmp += e;
             }
-            msg += "<br><hr style='margin-top:4px;margin-bottom:4px;' class=ramadda-thin-hr>"
-                   + tmp;
+            msg += HU.div(tmp,HU.cssClass("ramadda-message-extra"));
         }
 
 

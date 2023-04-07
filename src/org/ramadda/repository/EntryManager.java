@@ -1922,8 +1922,7 @@ public class EntryManager extends RepositoryManager {
 
             String cancelButton = HU.submit(msg("Cancel"), ARG_CANCEL);
             String buttons      = ((entry != null)
-                                   ? HU.buttons(submitButton,
-						deleteButton, cancelButton)
+                                   ? HU.buttons(submitButton, cancelButton)
                                    : HU.buttons(submitButton,
 						cancelButton));
 

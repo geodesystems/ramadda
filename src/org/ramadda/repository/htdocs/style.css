@@ -1485,6 +1485,21 @@ mapheader {
 
 .ramadda-message-inner {
     padding:10px;
+    font-size:110%;
+}
+
+.ramadda-confirm {
+//    margin:10px;
+    margin-left:20px;
+}
+
+
+
+.ramadda-message-extra {
+    border-top:var(--basic-border);
+    margin-top:10px;
+    padding-top:10px;
+    
 }
 
 .ramadda-border {
@@ -2115,10 +2130,6 @@ ul {
 }
 
 
-.ramadda-confirm {
-    margin:15px;
-    margin-left:25px;
-}
 
 .ramadda-form-url {
     font-size: 90%; 

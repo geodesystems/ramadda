@@ -4951,8 +4951,9 @@ public class TypeHandler extends RepositoryManager {
                                  HtmlUtils.input(ARG_NAME, ((entry != null)
                             ? entry.getName()
                             : nameDefault), size
-                                            + HU.attr("placeholder", "Name")
-                                            + HU.id(domId)));
+						 + HU.attr("autofocus","true")
+						 + HU.attr("placeholder", "Name")
+						 + HU.id(domId)));
                 } else {
                     String nameDefault = getFormDefault(entry, ARG_NAME,
                                              null);
@@ -4980,7 +4981,7 @@ public class TypeHandler extends RepositoryManager {
                     }
                     if (isWiki) {
                         addWikiEditor(request, entry, sb, formInfo,
-                                      ARG_DESCRIPTION, desc, "Description",
+                                      ARG_DESCRIPTION, desc, "",
                                       false, Entry.MAX_DESCRIPTION_LENGTH,
                                       true);
                     } else {
@@ -4993,15 +4994,9 @@ public class TypeHandler extends RepositoryManager {
                         String        cbxId  = "iswiki";
                         String        textId = ARG_DESCRIPTION;
                         StringBuilder tmpSB  = new StringBuilder();
-			/*
-                        String img = HtmlUtils.getIconImage(
-                                         getRepository().getIconUrl(
-                                             ICON_WIKI), "title",
-                                                 "Wikify text");
-			*/
                         /*
-                        //For some reason the FA icon inside the label gets shifted over
-                        //So wrap it in a span with margin spacing
+                        For some reason the FA icon inside the label gets shifted over
+                        So wrap it in a span with margin spacing
                         */
 			String img = HU.span(HU.getIconImage("fa-brands fa-wikipedia-w"),HU.style("margin-left:12px;"));
 
@@ -5013,22 +5008,14 @@ public class TypeHandler extends RepositoryManager {
 								  HtmlUtils.id(cbxId), img);
                             cbx = HU.span(cbx,
                                           HU.cssClass("ramadda-clickable")
-                                          + HU.title("Wikify text"));
+                                          + HU.title("Toggle Wiki Editor"));
 
-
-                            /*
-                              HtmlUtils.open(tmpSB, "div",
-                              HtmlUtils.attrs("style", isTextWiki
-                              ? ""
-                              : "display:none;", "id", wikiId + "_block"));
-                            */
                             String wikiId = addWikiEditor(request, entry,
                                                 tmpSB, formInfo,
                                                 ARG_WIKITEXT, desc, null,
                                                 false,
                                                 Entry.MAX_DESCRIPTION_LENGTH,
                                                 isTextWiki);
-                            //                        HtmlUtils.close(tmpSB, "div");
                             HtmlUtils.open(tmpSB, "div",
                                            HtmlUtils.attrs("style",
                                                !isTextWiki
@@ -5036,7 +5023,7 @@ public class TypeHandler extends RepositoryManager {
                                     : "display:none;", "id",
                                     textId + "_block"));
                             tmpSB.append(HtmlUtils.textArea(ARG_DESCRIPTION,
-                                    desc, rows, HtmlUtils.id(textId)));
+							    desc, rows, HU.attr("placeholder","Description")+HtmlUtils.id(textId)));
                             HtmlUtils.script(tmpSB,
                                              "HtmlUtils.initWikiEditor("
                                              + HtmlUtils.squote((entry
@@ -5055,17 +5042,10 @@ public class TypeHandler extends RepositoryManager {
                         }
 
                         String label =
-                            getTypeProperty("form.description.label",
-                                            "Description:");
+                            getTypeProperty("form.description.label", "");
                         String edit = prefix + HU.b(label) + "<br>"
                                       + tmpSB.toString();
                         sb.append(HU.row(HU.td(edit, "colspan=2")));
-                        /*
-                        sb.append(formEntryTop(request,
-                                getFormLabel(entry, ARG_DESCRIPTION,
-                                             ""
-                                             + cbx), tmpSB.toString()));
-                        */
                     }
                 }
 
@@ -5486,9 +5466,6 @@ public class TypeHandler extends RepositoryManager {
                                 String text, String label, boolean readOnly,
                                 int length, boolean visible)
             throws Exception {
-
-
-        //      System.err.println("visible:" + visible  +" readOnly:" + readOnly);
         String editorId = hiddenId + "_editor";
         if (text.startsWith(WIKI_PREFIX)) {
             if ( !isDescriptionWiki(entry)) {
@@ -5501,7 +5478,7 @@ public class TypeHandler extends RepositoryManager {
             String buttons =
                 getRepository().getWikiManager().makeWikiEditBar(request,
                     entry, editorId);
-            if (label != null) {
+            if (stringDefined(label)) {
                 sb.append("<tr><td colspan=2>");
                 sb.append(HU.b(msgLabel(label)));
                 sb.append(HU.br());
@@ -5563,7 +5540,7 @@ public class TypeHandler extends RepositoryManager {
             HU.close(sb, "div");
         }
 
-        if (label != null) {
+	if (stringDefined(label)) {
             sb.append("</td></tr>");
         }
 
