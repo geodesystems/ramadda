@@ -1,7 +1,12 @@
 var Seesv = {};
 
+
+
 function  ConvertForm(inputId, entry,params) {
     this.params = params||{};
+    const ICON_HELP = 'fas fa-question-circle';
+    const ICON_SETTINGS = 'fas fa-gear';    
+    const ICON_SEARCH = 'fas fa-binoculars';			     
     const ID_SETTINGS  = "settings";
     const ID_ALL  = "all";
     const ID_SELECTFILE  = "selectfile";    
@@ -85,6 +90,7 @@ function  ConvertForm(inputId, entry,params) {
 	    }
 	    let html = '';
 	    html += "<style type='text/css'>";
+	    html+='.seesv-table-cell {white-space:nowrap;overflow-x:auto;padding-left:2px;padding-right:2px;border-left:1px solid #ccc;}';
 	    html += ".convert_button {padding:2px;padding-left:5px;padding-right:5px;}\n.ramadda-csv-table  {font-size:10pt;}\n ";
 	    html += ".convert_add {margin-left:10px; cursor:pointer;}\n";
 	    html += ".convert_add:hover {text-decoration:underline;}\n";
@@ -104,16 +110,16 @@ function  ConvertForm(inputId, entry,params) {
 
 	    let topLeft = HU.div([ID,this.domId(ID_MENU),"style","display:inline-block;"],"");
 	    let topRight = [['Select file entry', ID_SELECTFILE,'fas fa-file-arrow-up'],
-			    ['All commands', ID_ALL,'fa-binoculars'],
-			    ['Settings',ID_SETTINGS,'fa-cog'],
-			    ['Help',ID_HELP,'fa-question-circle']].reduce((current,v)=>{
+			    ['All commands', ID_ALL,ICON_SEARCH],
+
+			    ['Settings',ID_SETTINGS,ICON_SETTINGS],
+			    ['Help',ID_HELP,ICON_HELP]].reduce((current,v)=>{
 				let link = HU.span(['title',v[0],ID,this.domId(v[1]),
 						    'style','margin-right:10px;',
 						    'class','ramadda-clickable ramadda-highlightable'],
 						   HU.getIconImage(v[2]));
 				return current +link;
 			    },"");
-	    
 	    html += HU.div(["class","ramadda-menubar","style","width:100%;"],HU.leftRightTable(topLeft,topRight));
 
 	    let input = HtmlUtil.div([STYLE,"height:100%;top:0px;right:0px;left:0px;bottom:0px;position:absolute;width:100%;", ID,this.domId(ID_INPUT), "rows", "5"], text);	    
@@ -1242,7 +1248,6 @@ function  ConvertForm(inputId, entry,params) {
 	    if(args) $.extend(opts, args);
 	    let desc = cmd.description.replace(/^\(/,"").replace(/\)$/,"");
 	    let label = cmd.label || Utils.camelCase(cmd.command.replace(/^-/,""));
-
 	    let inner = HU.div(['class','ramadda-heading'],label) + HU.center(desc);
 	    inner+=HU.formTable();
 	    this.columnInput = null;
@@ -1276,8 +1281,8 @@ function  ConvertForm(inputId, entry,params) {
 		    }
 		    let help = "";
 		    if(arg.type=="columns")
-			help="<br>"+HU.href(ramaddaBaseUrl +'/userguide/seesv.html#help_columns',HtmlUtils.getIconImage("fa-question-circle"),
-					    ['target','_help']);
+			help="<br>"+HU.href(ramaddaBaseUrl +'/userguide/seesv.html#help_columns',HtmlUtils.getIconImage(ICON_HELP),
+					    ['target','_help','title','Columns Help']);
 		    desc+=help;
 		    return   HU.div([STYLE,HU.css('max-width','300px','vertical-align','top')],desc);
 		}
@@ -1333,7 +1338,7 @@ function  ConvertForm(inputId, entry,params) {
 	    });
 	    inner+=HU.formTableClose();
 	    let help = ramaddaBaseUrl +'/userguide/seesv.html#' + cmd.command;
-	    help = HU.div(['style',HU.css('display','inline-block'),'id',this.domId('showhelp')], HU.href(help,"Help",['target','_help']));
+	    help = HU.div(['style',HU.css('display','inline-block'),'id',this.domId('showhelp')], HU.href(help,"Help",['title','Command Help','target','_help']));
 	    let buttons = HU.buttons([HU.div([ID,this.domId(ID_ADDCOMMAND)],opts.add?"Add Command":"Change Command"),
 				      HU.div([ID,this.domId(ID_CANCELCOMMAND)],"Cancel"),help]);
 
