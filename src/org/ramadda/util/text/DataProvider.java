@@ -1890,6 +1890,8 @@ public abstract class DataProvider extends SeesvOperator {
                 if (line == null) {
                     return null;
                 }
+		line =  ctx.convertContents(line);
+
                 if (rawLines > 0) {
                     ctx.getWriter().println(line);
                     rawLines--;
