@@ -990,9 +990,17 @@ public class EntryManager extends RepositoryManager {
 	request.put("output","points.product");
 	if(!request.defined("product"))
 	    request.put("product","points.json");
-	//	request.put("product","points.csv");
-	Result result =  processEntryShow(request);
-	return result;
+	try {
+	    //	request.put("product","points.csv");
+	    return   processEntryShow(request);
+	} catch(Exception exc) {
+	    getLogManager().logError("Error processing data",exc);
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(JsonUtil.map(Utils.makeList("error",JsonUtil.quote("Error:" + exc))));
+	    Result result  = new Result("", sb, JsonUtil.MIMETYPE);
+	    result.setResponseCode(Result.RESPONSE_INTERNALERROR);
+	    return result;
+	}
     }
 
 
