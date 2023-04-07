@@ -1388,7 +1388,7 @@ public class HtmlOutputHandler extends OutputHandler {
             throws Exception {
         StringBuffer sb = new StringBuffer();
         getPageHandler().entrySectionOpen(request, group, sb, "Tree View");
-        makeTreeView(request, children, sb, 750, 500, true);
+        makeTreeView(request, children, sb, 750, 500, true,null);
         getPageHandler().entrySectionClose(request, group, sb);
 
         return makeLinksResult(request, group.getName(), sb,
@@ -1623,9 +1623,11 @@ public class HtmlOutputHandler extends OutputHandler {
      */
     public void makeTreeView(Request request, List<Entry> children,
                              Appendable sb, int width, int height,
-                             boolean noTemplate)
+                             boolean noTemplate,
+			     Hashtable props)
             throws Exception {
         request.put(ARG_TREEVIEW, "true");
+	if(props == null) props = new Hashtable();
         String        wtr    = "9";
         String        wtl    = "3";
         StringBuilder listSB = new StringBuilder();
@@ -1634,10 +1636,11 @@ public class HtmlOutputHandler extends OutputHandler {
         listSB.append("\n");
         String firstLink = null;
         String viewId    = HU.getUniqueId("treeview_");
+	boolean showIcon  = Utils.getProperty(props,"showIcon",true);
         for (Entry child : children) {
             String entryIcon = getPageHandler().getIconUrl(request, child);
             String label = getEntryManager().getEntryListName(request, child);
-            String leftLabel = HU.img(entryIcon) + " " + label;
+            String leftLabel = showIcon?HU.img(entryIcon) + " " + label:label;
             label = label.replace("'", "\\'");
             String url = HU.url(entryShowUrl, ARG_ENTRYID, child.getId());
             if (firstLink == null) {

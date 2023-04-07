@@ -1957,6 +1957,7 @@ WikiEditor.prototype = {
 		{label:'Frames Properties'},
 		{p:'width',ex:'400'},
 		{p:'height',ex:'400'},
+		{p:'showIcon',ex:'false'},
 		{p:'noTemplate',ex:'true',tt:'Don\'t use the page template in the frame'}],
 				     this.groupAttributes),
 	    accordian: Utils.mergeLists([

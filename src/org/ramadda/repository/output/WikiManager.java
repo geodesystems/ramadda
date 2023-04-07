@@ -144,7 +144,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                                         "showLink","false","showHeading","true"), 
                             new WikiTag(WIKI_TAG_MAP,
                                         null, ATTR_WIDTH, "100%", ATTR_HEIGHT, "80vh","listentries","true"), 
-                            new WikiTag(WIKI_TAG_FRAMES, null, ATTR_WIDTH,"100%", ATTR_HEIGHT,"500"), 
+                            new WikiTag(WIKI_TAG_FRAMES, null, ATTR_WIDTH,"100%", ATTR_HEIGHT,"500","showIcon","true"), 
                             new WikiTag(WIKI_TAG_ACCORDION, null, ATTR_TAG, WIKI_TAG_HTML, ATTR_COLLAPSE, "false", "border", "0", ATTR_SHOWLINK, "true", ATTR_SHOWICON, "false",ATTR_TEXTPOSITION, POS_LEFT), 
                             //                            new WikiTag(WIKI_TAG_GRID), 
                             new WikiTag(WIKI_TAG_TABLE), 
@@ -4290,7 +4290,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             boolean noTemplate = getProperty(wikiUtil, props, "noTemplate",
                                              true);
             getHtmlOutputHandler().makeTreeView(request, children, sb, width,
-						height, noTemplate);
+						height, noTemplate,props);
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_LINKS)
