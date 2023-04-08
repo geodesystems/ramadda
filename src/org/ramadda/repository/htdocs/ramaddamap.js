@@ -1366,12 +1366,12 @@ RepositoryMap.prototype = {
         let _this = this;
         if (this.params.showSearch) {
             this.searchDiv = this.mapDivId + "_search";
-            var cbx = HtmlUtils.checkbox(this.searchDiv + "_download", [], false);
-            var input = "<input placeholder=\"Search - ? for help\" id=\"" + this.searchDiv + "_input" + "\" size=40>";
-            var search = "<table width=100%><tr><td>" + input + " <span  id=\"" + this.searchDiv + "_message\"></span></td><td align=right>" + cbx + " Download</td></tr></table>"
+            let cbx = HtmlUtils.checkbox(this.searchDiv + "_download", [], false);
+            let input = "<input placeholder=\"Search - ? for help\" id=\"" + this.searchDiv + "_input" + "\" size=40>";
+            let search = "<table width=100%><tr><td>" + input + " <span  id=\"" + this.searchDiv + "_message\"></span></td><td align=right>" + cbx + " Download</td></tr></table>"
             $("#" + this.searchDiv).html(search);
             this.searchMsg = $("#" + this.searchDiv + "_message");
-            var searchInput = $("#" + this.searchDiv + "_input");
+            let searchInput = $("#" + this.searchDiv + "_input");
             searchInput.keypress(function(event) {
                 if (event.which == 13) {
                     _this.searchFor(searchInput.val());
@@ -2506,6 +2506,10 @@ RepositoryMap.prototype = {
     checkFeatureVisible: function(feature, redraw,debug) {
         let layer = feature.layer;
         let visible = this.getFeatureVisible(feature);
+	if(feature.ramaddaId) {
+            let cbx = this.getVisibilityCheckbox(feature.ramaddaId);
+	    cbx.prop('checked',visible);
+	}
         if (feature.originalStyle) {
             feature.style = feature.originalStyle;
         }
@@ -2544,6 +2548,7 @@ RepositoryMap.prototype = {
         return visible;
     },
     setFeatureVisibility: function(layer) {
+	if(!layer.features) return;
         let _this = this;
         let didSearch = this.searchText || (this.startDate && this.endDate);
         let bounds = null;
@@ -3339,6 +3344,9 @@ RepositoryMap.prototype = {
     },
 
 
+    getVisibilityCheckbox:function(ramaddaId) { 
+	return $('#' + "visible_" + this.mapId + "_" + ramaddaId);
+    },
 
     searchMarkers:  function(text) {
         text = text.trim();
@@ -3353,7 +3361,8 @@ RepositoryMap.prototype = {
             for (let idx = 0; idx < list.length; idx++) {
                 marker = list[idx];
                 let visible = true;
-                let cbx = $('#' + "visible_" + this.mapId + "_" + marker.ramaddaId);
+//xxxxx
+                let cbx = this.getVisibilityCheckbox(marker.ramaddaId);
                 let block = $('#' + "block_" + this.mapId + "_" + marker.ramaddaId);
                 let name = marker.name;
                 if (all) visible = true;
