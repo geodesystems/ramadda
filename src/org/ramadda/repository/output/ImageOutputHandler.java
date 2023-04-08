@@ -916,7 +916,6 @@ public class ImageOutputHandler extends OutputHandler {
             return makeAnimatedGif(request, group, entries);
         }
 
-        String playerPrefix = "";
         String playerVar    = "";
         int    col          = 0;
         String firstImage   = "";
@@ -925,7 +924,7 @@ public class ImageOutputHandler extends OutputHandler {
             sb = new StringBuilder();
             getPageHandler().entrySectionOpen(request, group, sb,
                     "Image Player");
-            makePlayer(request, group, entries, sb, true, true);
+            makePlayer(request, group, entries, null, sb,  true);
             getPageHandler().entrySectionClose(request, group, sb);
         } else if (output.equals(OUTPUT_SLIDESHOW)) {
             for (int i = entries.size() - 1; i >= 0; i--) {
@@ -2039,18 +2038,22 @@ public class ImageOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public void makePlayer(Request request, Entry mainEntry,
-                           List<Entry> entries, Appendable finalSB,
-                           boolean addHeader, boolean checkSort)
+                           List<Entry> entries, Hashtable props,Appendable finalSB,
+                           boolean checkSort)
             throws Exception {
-
-        boolean       useAttachment = request.get("useAttachment", false);
-        String        playerPrefix  = "imageplayer_" + HtmlUtils.blockCnt++;
-        String        playerVar     = playerPrefix + "Var";
+	if(props==null)props = new Hashtable();
+        boolean       useAttachment = request.get("useAttachment",
+						  Utils.getProperty(props,"useAttachment",false));
+	boolean showEntryLabel = Utils.getProperty(props,"showEntryLabel",true);
+	boolean showTime = Utils.getProperty(props,"showTime",true);
+	boolean showLoopControls = Utils.getProperty(props,"showLoopControls",true);
+	boolean showBars = Utils.getProperty(props,"showBars",true);    
+        String        playerId  = HU.getUniqueId("imageplayer_");
+        String        playerVar     = playerId + "Var";
 
         StringBuilder sb            = new StringBuilder();
         if (entries.size() == 0) {
             finalSB.append("<b>Nothing Found</b><p>");
-
             return;
         }
 
@@ -2062,6 +2065,7 @@ public class ImageOutputHandler extends OutputHandler {
         String firstImage = "";
 
         int    cnt        = 0;
+	List<String> images = new ArrayList<String>();
         for (int i = entries.size() - 1; i >= 0; i--) {
             Entry  entry = entries.get(i);
             String url   = getImageUrl(request, entry);
@@ -2084,66 +2088,58 @@ public class ImageOutputHandler extends OutputHandler {
             }
             String entryUrl = getEntryLink(request, entry);
             String dttm     = getEntryUtil().formatDate(request, entry);
-            String title =
-                "<table width=100% cellspacing=0 cellpadding=0>";
-            title +=
-                "<tr><td><div class=imageplayer-title>" + entryUrl
-                + "</div></td><td align=right><div class=imageplayer-title-date>"
-                + dttm + "</div></td></table>";
-            title = title.replace("\"", "\\\"");
-            sb.append(playerVar + ".addImage(" + HtmlUtils.squote(url) + ","
-                      + HtmlUtils.squote(title) + ", " + HtmlUtils.squote(dttm)
-                      + ");\n");
+            entryUrl = entryUrl.replace("\"", "\\\"");
+	    images.add(JsonUtil.map("url",JsonUtil.quote(url),
+				    "label",JsonUtil.quote(entryUrl),
+				    "date",JsonUtil.quote(dttm)));
             cnt++;
-        }
+	}
 
         String playerTemplate =
             repository.getResource(
                 "/org/ramadda/repository/resources/web/imageplayer.html");
-        /*
-        playerTemplate = IOUtil.readContents(
-            "/Users/jeffmc/source/ramadda/src/org/ramadda/repository/resources/web/imageplayer.html",
-            getClass());
-        */
-
-
-        playerTemplate = playerTemplate.replaceAll("\\$\\{imagePlayerVar\\}",
-                playerVar);
-        playerTemplate =
-            playerTemplate.replaceAll("\\$\\{imagePlayerPrefix\\}",
-                                      playerPrefix);
+        playerTemplate = playerTemplate.replace("${imagePlayerVar}", playerVar);
+        playerTemplate = playerTemplate.replace("${imagePlayerId}", playerId);
 
 
         List<String> playerArgs = new ArrayList<String>();
+	Utils.add(playerArgs,"id",JsonUtil.quote(playerId));
 
-        if (request.get("loopstart", false)) {
-            playerArgs.add("autostart");
-            playerArgs.add("true");
+	String autoStart = Utils.getProperty(props,"autoStart",null);
+        if (autoStart!=null) {
+            Utils.add(playerArgs,"autoStart",autoStart);
         } else {
             Object v = mainEntry.getTypeHandler().getEntryValue(mainEntry,
                            "autostart");
             if ((v != null) && v.toString().equals("true")) {
-                playerArgs.add("autostart");
-                playerArgs.add("true");
+                Utils.add(playerArgs,"autoStart","true");
             }
         }
 
 
         if (request.get("loopdelay", 0) > 0) {
-            playerArgs.add("delay");
-            playerArgs.add("" + request.get("loopdelay", 0));
+            Utils.add(playerArgs,"delay", request.getString("loopdelay", "0"));
         } else {
             Object v = mainEntry.getTypeHandler().getEntryValue(mainEntry,
                            "delay");
             if (v != null) {
                 int delay =  Integer.parseInt(v.toString());
                 if (delay > 0) {
-                    playerArgs.add("delay");
-                    playerArgs.add("" + delay);
+		    Utils.add(playerArgs,"delay","" + delay);
                 }
             }
         }
 
+	Utils.add(playerArgs,"showControls",Utils.getProperty(props,"showControls","true"));
+	Utils.add(playerArgs,"showButtons",Utils.getProperty(props,"showButtons","true"));
+	Utils.add(playerArgs,"showBoxes",Utils.getProperty(props,"showBoxes","true"));		
+	Utils.add(playerArgs,"showLabel",Utils.getProperty(props,"showLabel","true"));
+	Utils.add(playerArgs,"showDate",Utils.getProperty(props,"showDate","true"));	
+	String small = Utils.getProperty(props,"smallButtons",null);
+	if(small!=null)
+	    Utils.add(playerArgs,"smallButtons",small);
+	Utils.add(playerArgs,"compact",Utils.getProperty(props,"compact","false"));	
+	Utils.add(playerArgs,"images",JsonUtil.list(images));
         playerTemplate = playerTemplate.replaceAll("\\$\\{imageArgs\\}",
                 JsonUtil.map(playerArgs));
 
@@ -2153,42 +2149,18 @@ public class ImageOutputHandler extends OutputHandler {
             widthAttr = HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, width);
         }
         String imageHtml = "<img class=\"imageplayer-image\" id=\""
-                           + playerPrefix + "animation\" BORDER=\"0\" "
+                           + playerId + "animation\" BORDER=\"0\" "
                            + widthAttr + HtmlUtils.attr("SRC", firstImage)
                            + " ALT=\"Loading image\">";
 
-        String tmp = playerTemplate.replace("${imagelist}", sb.toString());
-        tmp = tmp.replace("${imagehtml}", imageHtml);
+        String tmp = playerTemplate.replace("${imagehtml}", imageHtml);
         tmp = StringUtil.replace(tmp, "${root}", repository.getUrlBase());
         sb  = new StringBuilder();
 	HtmlUtils.cssLink(sb,
 			  getPageHandler().getCdnPath("/imageplayer/imageplayer.css"));
-
-
-
-
+	HU.importJS(sb,getPageHandler().getCdnPath("/imageplayer/imageplayer.js"));
         sb.append(tmp);
-        if (addHeader) {
-            String fullUrl       = "";
-            String originalWidth = request.getString(ARG_WIDTH, null);
-            if (false /*width > 0*/) {
-                request.put(ARG_WIDTH, "0");
-                fullUrl = HtmlUtils.href(request.getUrl(),
-                                         msg("Use image width"));
-            } else {
-                request.put(ARG_WIDTH, "600");
-                fullUrl = HtmlUtils.href(request.getUrl(),
-                                         msg("Use fixed width"));
-            }
-            if (originalWidth != null) {
-                request.put(ARG_WIDTH, originalWidth);
-            } else {
-                request.remove(ARG_WIDTH);
-            }
-        }
-
         finalSB.append(sb);
-
     }
 
     /**

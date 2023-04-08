@@ -181,7 +181,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 					"#showLink","true",
 					"bordercolor","#efefef",
 					"#" + ATTR_TEXTPOSITION,"top|left|right|bottom"), 
-                            new WikiTag(WIKI_TAG_PLAYER, "Image Player", "loopdelay","1000","loopstart","false","imageWidth","90%"),
+                            new WikiTag(WIKI_TAG_PLAYER, "Image Player", "loopDelay","1000","autoStart","false","imageWidth","90%",
+					"showButtons","true","showBoxes","true","showControls","true","smallButtons","true","compact","false"),
                             new WikiTag(WIKI_TAG_FLIPCARDS, null, 
                                         "inner","300", 
 					"width","300",
@@ -2694,9 +2695,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         } else if (theTag.equals(WIKI_TAG_PROPERTIES)) {
             return makeEntryTabs(request, wikiUtil, entry, props);
         } else if (theTag.equals(WIKI_TAG_STREETVIEW)) {
-            ImageOutputHandler ioh =
-                (ImageOutputHandler) getRepository().getOutputHandler(
-								      ImageOutputHandler.OUTPUT_PLAYER);
+            ImageOutputHandler ioh = getImageOutputHandler();
             if ( !ioh.isStreetviewEnabled()) {
                 String message = getProperty(wikiUtil, props, ATTR_MESSAGE,
                                              "Streetview not enabled");
@@ -4148,9 +4147,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             if (children.size() == 0) {
                 return null;
             }
-            ImageOutputHandler imageOutputHandler =
-                (ImageOutputHandler) getRepository().getOutputHandler(
-								      ImageOutputHandler.OUTPUT_PLAYER);
+            ImageOutputHandler ioh = getImageOutputHandler();
             Request imageRequest = request.cloneMe();
 
             int     width        = getProperty(wikiUtil, props, ATTR_WIDTH,
@@ -4164,17 +4161,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 imageRequest.put("loopstart", "true");
             }
 
-            if (useAttachment) {
-                imageRequest.put("useAttachment", "true");
-            }
-
-            int delay = getProperty(wikiUtil, props, "loopdelay", 0);
-            if (delay > 0) {
-                imageRequest.put("loopdelay", "" + delay);
-            }
-
-            String iwidth = getProperty(wikiUtil, props, "imageWidth",
-                                        (String) null);
+	    props.put("useAttachment",""+useAttachment);
+            String iwidth = getProperty(wikiUtil, props, "imageWidth", (String) null);
             if (iwidth != null) {
                 imageRequest.put(ARG_WIDTH, iwidth);
             }
@@ -4193,12 +4181,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		children = EntryUtil.applySample(children,sample);
 	    }	    
 
-
-            imageOutputHandler.makePlayer(imageRequest, entry, children, sb,
-                                          getProperty(wikiUtil, props,
-						      "show_sort_links",
-						      false), false);
-
+            ioh.makePlayer(imageRequest, entry, children, props, sb,  false);
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_GALLERY)) {
             List<Entry> children = getEntries(request, wikiUtil,
@@ -6561,6 +6544,11 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
     public XmlOutputHandler getXmlOutputHandler() throws Exception {
         return getRepository().getXmlOutputHandler();
     }    
+
+    public ImageOutputHandler getImageOutputHandler() throws Exception {
+	return (ImageOutputHandler) getRepository().getOutputHandler(
+								      ImageOutputHandler.OUTPUT_PLAYER);
+    }
 
     
     /**

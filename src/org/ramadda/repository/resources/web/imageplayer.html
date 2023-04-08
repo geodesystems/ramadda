@@ -1,39 +1,7 @@
-<table border="0" cellpadding="0" cellspacing="0" width="100%" class="imageplayer-outer">
-<tr valign="bottom">
-<td> 
-<div class="imageplayer-buttons">
-<span class="ramadda-button ramadda-clickable" title="Go to first frame"  onClick="${imagePlayerVar}.setImage(0,1)"><span><i class='fas fa-backward-step'></i></span></span>
-&nbsp;<span class="ramadda-button"  title="One step back" onClick="${imagePlayerVar}.setImage(${imagePlayerVar}.current_image-1,-1)"><span><i class='fas fa-backward'></i></span></span>&nbsp;<span class="ramadda-button"  title="Start/stop" id="${imagePlayerId}startstopbutton"    onClick="${imagePlayerVar}.startStop()"><span id="${imagePlayerId}startstopbuttonlabel"><span><i class='fas fa-play'></i></span></span></span> <span class="ramadda-button"  title="One step forward" onClick="${imagePlayerVar}.setImage(${imagePlayerVar}.current_image+1,1)"><span><i class='fas fa-forward'></i></span></span>&nbsp;<span class="ramadda-button"  title="Go to last frame" href="JavaScript: noop()" onClick="${imagePlayerVar}.setImage(-1,-1)"><span><i class='fas fa-forward-step'></i></span></span></div>&nbsp;<div class="imageplayer-boxes" id="${imagePlayerId}boxes">&nbsp;<span id="${imagePlayerId}waiting">&nbsp;</span></div>
-</td>
-</tr>
-<tr valign="top" >
-<td style="border-top: 1px #ccc solid;" valign=top>
-<div  id="${imagePlayerId}header" style="margin:4px">&nbsp;</div>
-<div class="imageplayer-block">
-${imagehtml}
-</div>
-</td>
-</tr>
-<tr><td>
-Loop Mode:
-<a href="JavaScript: noop()" onClick="${imagePlayerVar}.toggleMode();">
-<img border=0 id="${imagePlayerId}loopmode" SRC="${root}/imageplayer/button_norm.gif">
-</a>
-&nbsp;
-Adjust Speed:
-<a href="JavaScript: noop()" onClick="${imagePlayerVar}.change_speed(delay_step)"><span title='Decrease animation speed'><i class='fas fa-caret-down'></i></span></a>&nbsp;<a href="JavaScript: noop()" onClick="${imagePlayerVar}.change_speed(-delay_step)"><span title='Increase animation speed'><i class='fas fa-caret-up'></i></span></a>
-&nbsp;
-Start Dwell:
-<a href="JavaScript: noop()" onClick="${imagePlayerVar}.change_start_dwell(-dwell_step)"><span title='Decrease start dwell'><i class='fas fa-caret-down'></i></span></a>&nbsp;<a href="JavaScript: noop()" onClick="${imagePlayerVar}.change_start_dwell(dwell_step)"><span title='Increase start dwell'><i class='fas fa-caret-up'></i></span></a>
-&nbsp;
-End Dwell:
-<a href="JavaScript: noop()" onClick="${imagePlayerVar}.change_end_dwell(-dwell_step)"><span title='Decrease end dwell'><i class='fas fa-caret-down'></i></span></a>&nbsp;<a href="JavaScript: noop()" onClick="${imagePlayerVar}.change_end_dwell(dwell_step)"><span title='Increase start dwell'><i class='fas fa-caret-up'></i></span></A>
-
-</td>
-</tr>
-</table>
-
-
+<div id="${imagePlayerId}header"></div>
+<div  id="${imagePlayerId}imageheader"></div>
+<div class="imageplayer-block">${imagehtml}</div>
+<div id="${imagePlayerId}controls"></div>
 <script language="JavaScript">
-  var ${imagePlayerVar} = new ImagePlayer(${imageArgs});
+var ${imagePlayerVar} = new ImagePlayer(${imageArgs});
 </script>
