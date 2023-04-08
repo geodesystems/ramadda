@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Apr  7 15:32:11 MDT 2023";
+var build_date="RAMADDA build date: Fri Apr  7 21:35:01 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -40487,7 +40487,7 @@ function CollisionInfo(display,numRecords, roundPoint) {
 
 
 
-a/**
+/**
    Copyright 2008-2023 Geode Systems LLC
 */
 
@@ -43710,6 +43710,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				    'topWikiText', this.jq('topwikitext_input').val(),
 				    'bottomWikiText', this.jq('bottomwikitext_input').val(),
 				    'otherProperties', this.jq('otherproperties_input').val());		
+
+
 		this.propertyCache = {}
 		this.parsedMapProperties = null;
 		let min = this.jq("minlevel").val().trim();
@@ -43720,6 +43722,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				    'showMarkerWhenNotVisible', this.jq('showmarkerwhennotvisible').is(':checked'));
 		this.checkMapProperties();
 		this.makeLegend();
+		this.featureChanged(true);
+
 	    };
 
 	    dialog.find('.ramadda-button-apply').button().click(()=>{
@@ -44642,7 +44646,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	propertyCache:{
 	},
 	getMapProperty: function(name,dflt,debug) {
-//	    debug = name=='showMenuBar';
+//	    debug = name=='legendWidth';
 //	    if(debug)	console.dir(this.properties);
 	    if(debug)
 		console.log("getProperty:" + name);
