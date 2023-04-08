@@ -1662,7 +1662,7 @@ public class HtmlOutputHandler extends OutputHandler {
             HU.open(listSB, HU.TAG_DIV, HU.attrs(new String[] { "class",
                     "ramadda-treeview-entry" }));
             HU.href(listSB, url, leftLabel,
-                    HU.attr("title", "Click to view " + label));
+                    HU.style("display:inline-block;width:100%;")+HU.attr("title", "Click to view " + label));
             HU.close(listSB, HU.TAG_DIV);
             listSB.append("\n");
         }
