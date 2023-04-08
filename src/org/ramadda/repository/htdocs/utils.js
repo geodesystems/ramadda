@@ -4845,6 +4845,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
     attrs: function(list) {
         if (!list) return "";
+	if(typeof list=="string") return list;
         let html = "";
         if (list == null) return html;
         if (list.length == 1) return list[0];
