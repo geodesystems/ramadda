@@ -370,7 +370,7 @@ public class MapInfo {
                     Utils.parsePointString(metadata.getAttr4(), points);
                     Utils.parsePointString(metadata.getAttr(5), points);
                     Utils.parsePointString(metadata.getAttr(6), points);
-                    this.addLines(entry, entry.getId() /* + "_polygon"*/,
+                    this.addLines(entry, MapManager.mapEntryId(entry) /* + "_polygon"*/,
                                   points, null);
                     didone = true;
                 }
@@ -939,7 +939,7 @@ public class MapInfo {
      */
     public void addBox(Entry entry, MapBoxProperties properties)
             throws Exception {
-        addBox(entry.getId(), entry.getName(),
+        addBox(MapManager.mapEntryId(entry), entry.getName(),
                repository.getMapManager().makeInfoBubble(request, entry,
                    true), properties, entry.getNorth(), entry.getWest(),
                           entry.getSouth(), entry.getEast());
@@ -1232,7 +1232,7 @@ public class MapInfo {
         }
 
         double[] location = entry.getCenter();
-        String   id       = entry.getId();
+        String   id       = MapManager.mapEntryId(entry);
         String info = repository.getMapManager().makeInfoBubble(request,
                           entry, true);
         String props = "null";
@@ -1306,7 +1306,7 @@ public class MapInfo {
         String strokeColor = getValue(entry, "map.circle.stroke.color",
 					    "orange");
 
-        addCircle(entry.getId(), Math.max(-80, Math.min(80, location[0])),
+        addCircle(MapManager.mapEntryId(entry), Math.max(-80, Math.min(80, location[0])),
                   location[1], radius, strokeWidth, strokeColor, fillColor,
                   repository.getMapManager().makeInfoBubble(request, entry,
                       true));

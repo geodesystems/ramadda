@@ -1237,7 +1237,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                 categories.add(category);
             }
             String call = id + ".entryClicked("
-		+ HtmlUtils.squote(entry.getId()) + ");";
+		+ HtmlUtils.squote(mapEntryId(entry)) + ");";
             catSB.append(
 			 HtmlUtils.open(
 					HtmlUtils.TAG_DIV,
@@ -1896,17 +1896,17 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                 catMap.put(category, catSB = new StringBuilder());
                 categories.add(category);
             }
-            String suffix = map.getMapId() + "_" + entry.getId();
+            String suffix = map.getMapId() + "_" + mapEntryId(entry);
             catSB.append(
 			 HtmlUtils.open(
 					HtmlUtils.TAG_DIV,
 					HtmlUtils.id("block_" + suffix) + "data-mapid=\""
-					+ entry.getId() + "\" "
+					+ mapEntryId(entry) + "\" "
 					+ HtmlUtils.cssClass(CSS_CLASS_EARTH_NAV)));
             String getIconUrl = getPageHandler().getIconUrl(request, entry);
 
             String navUrl = "javascript:" + map.getVariableName()
-		+ ".hiliteMarker(" + sqt(Utils.makeID(entry.getId())) + ");";
+		+ ".hiliteMarker(" + sqt(Utils.makeID(mapEntryId(entry))) + ");";
 
             if (cbx) {
                 String cbxId = "visible_" + suffix;
@@ -1977,6 +1977,11 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         return map;
 
     }
+
+    public static String mapEntryId(Entry entry) {
+	return entry.getId().replace("-","_");
+    }
+
 
     public String getMapResourceUrl(Request request, Entry entry) {
 	return getMapResourceUrl(request, getEntryManager().getEntryResourceUrl(request, entry));
@@ -2089,7 +2094,6 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
         for (Entry entry : entriesToUse) {
             boolean addMarker = true;
-            String  idBase    = entry.getId();
             List<Metadata> metadataList =
                 getMetadataManager().getMetadata(request,entry);
 
@@ -2138,7 +2142,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                                 new LatLonPointImpl(location[0], location[1]);
                             LatLonPointImpl pt = Bearing.findPoint(fromPt,
 								   dir, km, null);
-                            map.addLine(entry, entry.getId(), fromPt, pt,
+                            map.addLine(entry, mapEntryId(entry), fromPt, pt,
                                         null);
 
                             break;
