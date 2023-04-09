@@ -41,18 +41,8 @@ function ImagePlayer(args)  {
     this.delay = 500;
     this.end_dwell_multipler   = dwell_multipler;
     this.start_dwell_multipler = dwell_multipler;
-    this.current_image = 0;
     this.direction =this.DIR_FORWARD;
-
-    this.resetImageWait = function() {
-        this.imageStepIsPending = false;
-        this.waitingForImageToLoad = false;
-        this.waitCnt= 0;
-    }
-
-    this.resetImageWait();
-    this.running = 0;
-    this.timestamp=1;
+    this.running = false;
     this.play_mode = this.MODE_NORMAL;  
     
     if(args.images) {
@@ -63,12 +53,8 @@ function ImagePlayer(args)  {
 	delete args.images;
     }
 
-
-    this.properties = {
-    };
-    if(args) {
-        $.extend(this.properties, args);
-    }
+    this.properties = $.extend({},args??{});
+    this.currentImage = parseInt(this.properties.currentImage??0);
     if(this.properties.delay)
 	this.delay = parseFloat(this.properties.delay);
 
@@ -81,7 +67,7 @@ function ImagePlayer(args)  {
     }
 
     this.getId = function(name) {
-	return this.id+''+ name;
+	return this.id+ name;
     }
 
     this.jq = function(name) {
@@ -89,7 +75,7 @@ function ImagePlayer(args)  {
     }
 
     this.startStop = function() {
-        if(this.running==1) {
+        if(this.running) {
 	    this.stop();
         } else {
 	    this.start();
@@ -97,14 +83,54 @@ function ImagePlayer(args)  {
     }
 
 
+    this.makeAnimation=()=>{
+	let _this = this;
+	let html = '&nbsp;';
+	let lazy = this.getProperty('lazyLoading',this.images.length>20);
+	this.images.forEach((image,idx)=>{
+	    let attrs =    ['id',this.getId('image_' + idx),
+			    'style', HU.css('position','absolute',
+					    'top','0px','left','0px',
+					    'width','100%',
+					    'display',
+					    idx==0?'block':'none')];
+	    if(lazy)    attrs.push('loading','lazy');
+	    html+=HU.image(image.url,attrs);
+	    html+='\n';
+	});
+
+	let height= this.getProperty('imageHeight',null);
+	let wrapperCss = HU.css('position','relative',  'width','100%')
+	if(height) {
+	    wrapperCss+=HU.css('height',HU.getDimension(height));
+	}
+	html = HU.div(['id',this.getId('imagewrapper'),'style',wrapperCss],
+		      html);
+	this.jq("animation").html(html);
+	let imageHeight=100;
+	this.images.forEach((image,idx)=>{
+	    image.domElement = this.jq('image_'+idx);
+	    //Listen for load and set the height of the wrapper
+	    image.domElement.on('load',function(){
+		let height = $(this).height();
+		if(height>imageHeight) {
+		    imageHeight=height;
+		    _this.jq('imagewrapper').css('height',height+'px');
+		}
+	    });
+	});
+    }
+
     this.makeHeader=()=>{
 	let compact = this.getProperty('compact',false);
-	let buttons = HU.span(['id',this.getId('buttons')]);
+	let buttons = HU.span(['id',this.getId('buttons')]) +HU.span(['id',this.getId('buttonsSuffix')]);
 	let header = '';
-	if(compact)
+	if(compact) {
 	    header  = HU.leftRightTable(buttons,HU.div(['id',this.getId('date')]));
-	else
-	    header = buttons  + HU.span(['class','imageplayer-boxes','id',this.getId('boxes')]);
+	} else {
+	    header = buttons;
+	}
+	
 
 	this.jq('header').html(HU.div(['style',HU.css('border-bottom','var(--basic-border)','padding-bottom','0em','margin-bottom','4px')],
 				      header));
@@ -112,6 +138,24 @@ function ImagePlayer(args)  {
 				     compact?'':HU.div(['id',this.getId('date')]));
 
 	this.jq('imageheader').html(html);
+
+	let boxesPosition = this.getProperty('boxesPosition',compact?'bottom':'top');
+	let boxesStyle = '';
+	if(boxesPosition=='top') {
+	    boxesStyle+=HU.css('display','inline');
+	} else 	if(boxesPosition=='bottom') {
+	    boxesStyle+=HU.css('margin-top','2px');
+	}
+	let boxesWrapper = HU.div(['style', boxesStyle,'class','imageplayer-boxes','id',this.getId('boxes')])
+	if(boxesPosition=='bottom') {
+	    this.jq('footer').append(boxesWrapper)
+	} else if(boxesPosition=='top') {
+	    this.jq('buttonsSuffix').append(boxesWrapper)
+	} else if(boxesPosition=='none') {
+	} else {
+	    console.log('unknown box position:' + boxesPosition);
+	}
+	
 
     }
 
@@ -140,12 +184,12 @@ function ImagePlayer(args)  {
 	    if(action=='firstframe')
 		_this.setImage(0,1);
 	    else if(action=='stepback')
-		_this.setImage(_this.current_image-1,-1);
+		_this.setImage(_this.currentImage-1,-1);
 	    else if(action=='startstop')
 		_this.startStop();
-	    else if(action=='stepforward')
-		_this.setImage(_this.current_image+1,1)
-	    else if(action=='lastframe')
+	    else if(action=='stepforward') {
+		_this.setImage(_this.currentImage+1,1)
+	    }   else if(action=='lastframe')
 		_this.setImage(-1,-1);
 	    else
 		console.log('Unknown action:' + action);
@@ -177,9 +221,8 @@ function ImagePlayer(args)  {
 	label('End Dwell:');
 	item('Descrease end dwell','loop_decreaseenddwell','fas fa-caret-down');
 	item('Increase end dwell','loop_increaseenddwell','fas fa-caret-up');
-	html = HU.div(['style','border-top:var(--basic-border);margin-top:0.5em;'], html);
-
-	this.jq('controls').html(html);
+	html = HU.div(['id',this.getId('controls'),'style','border-top:var(--basic-border);margin-top:0.5em;'], html);
+	this.jq('footer').append(html);
 	this.jq('controls').find('.ramadda-clickable').click(function() {
 	    let action = $(this).attr('action');
 	    if(action==ID_LOOP_MODE)
@@ -203,56 +246,45 @@ function ImagePlayer(args)  {
 
 
     this.start = function() {
-        this.resetImageWait();
         this.running=true;
+        HU.addToDocumentUrl("autoPlay", this.running);
 	this.jq(ID_STARTSTOP).html(HU.getIconImage('fas fa-stop',null,['style','color:#000;']));
-        this.timestamp++;
-        setTimeout(()=>{this.play(this.timestamp)}, this.delay);
+	if(this.timeout) 
+	    clearTimeout(this.timeout);
+        this.timeout =  setTimeout(()=>{
+	    this.timeout = null;
+	    this.play()}, this.delay);
     }
 
     this.stop = function() {
-        this.resetImageWait();
-	this.jq(ID_STARTSTOP).html(HU.getIconImage('fas fa-play',null,['style','color:#000;']));
-        this.timestamp++;
         this.running = false;
+        HU.addToDocumentUrl("autoPlay", this.running);
+	if(this.timeout) 
+	    clearTimeout(this.timeout);
+	this.jq(ID_STARTSTOP).html(HU.getIconImage('fas fa-play',null,['style','color:#000;']));
     }
     
 
-    this.play = function(mytimestamp) {
-	if(this.waitingForImageToLoad && this.waitCnt>5) {
-	    console.log("play: waited too many times:" + this.waitCnt);
-	    this.resetImageWait();
-	}
-
-	if(this.waitingForImageToLoad) {
-	    this.waitCnt ++;
-	    this.imageStepIsPending = true;
-	    setTimeout(()=>{this.play(+mytimestamp)}, 1000);
-	    return;
-	}
-	this.imageStepIsPending = false;
-	if(mytimestamp!= this.timestamp) {
-	    return;
-        }
+    this.play = function() {
         if(this.direction == this.DIR_FORWARD) {
-	    this.current_image++;  
+	    this.currentImage++;  
         } else {
-	    this.current_image--;
+	    this.currentImage--;
         }
 
-        if (this.current_image >= this.images.length) {
+        if (this.currentImage >= this.images.length) {
 	    if (this.play_mode == this.MODE_NORMAL) {      
-                this.current_image = 0;
+                this.currentImage = 0;
 	    } else {
                 //rocking
-                this.current_image = this.images.length-1;
+                this.currentImage = this.images.length-1;
                 this.direction=this.DIR_BACKWARD;
 	    }
-        } else if (this.current_image < 0) {
+        } else if (this.currentImage < 0) {
 	    if (this.play_mode == this.MODE_NORMAL) {      
-                this.current_image = 0;
+                this.currentImage = 0;
 	    } else {
-                this.current_image = 0;
+                this.currentImage = 0;
                 this.direction=this.DIR_FORWARD;
 	    }
         }
@@ -270,30 +302,32 @@ function ImagePlayer(args)  {
         }
 
         if(has_selected) {
-	    while (this.images[this.current_image].getOk() == false) {
-                this.current_image++;
-                if (this.current_image >= this.images.length) {
+	    while (this.images[this.currentImage].getOk() == false) {
+                this.currentImage++;
+                if (this.currentImage >= this.images.length) {
 		    if (this.play_mode == this.MODE_NORMAL) {
-                        this.current_image = 0;
+                        this.currentImage = 0;
 		    } else {
-                        this.current_image = this.images.length-1;
+                        this.currentImage = this.images.length-1;
                         this.direction=this.DIR_BACKWARD;
 		    }
                 }
 	    }
         } else {
-	    this.current_image--;
+	    this.currentImage--;
         }
         this.delay_time = this.delay;
-        if (this.current_image == first_selected_image) {
+        if (this.currentImage == first_selected_image) {
 	    this.delay_time = this.start_dwell_multipler*this.delay;
         }
-        if (this.current_image == last_selected_image) {
+        if (this.currentImage == last_selected_image) {
 	    this.delay_time = this.end_dwell_multipler*this.delay;
         }
 
         this.displayImage();
-        setTimeout(()=>{this.play(mytimestamp)}, this.delay_time);
+	if(this.timeout) 
+	    clearTimeout(this.timeout);
+        this.timeout = setTimeout(()=>{this.play()}, this.delay_time);
     }
 
 
@@ -318,7 +352,6 @@ function ImagePlayer(args)  {
         this.stop();
         if (number < 0) number = this.images.length-1;
         if (number >= this.images.length) number = 0;
-
         let hasSelected = false;
 	this.images.forEach(image=>{
 	    if(image.getOk()) {
@@ -329,12 +362,12 @@ function ImagePlayer(args)  {
 	    return
 	};
 
-        while (this.images[number].getOk() == false) {
+        while (this.images[number] && this.images[number].getOk() == false) {
 	    number+=dir;
 	    if (number < 0) number = this.images.length-1;
 	    else if(number>=this.images.length) number = 0;
         }
-        this.current_image = number;
+        this.currentImage = number;
         this.displayImage();
     }
 
@@ -361,7 +394,7 @@ function ImagePlayer(args)  {
     this.setBoxes = function() {
 	if(!this.getProperty('showBoxes',true)) return;
         let boxes="";
-	let small = this.getProperty('smallButtons',false);
+	let boxHeight = this.getProperty('boxHeight','1.5em');
         for (let i = 0; i < this.images.length; i++) {
 	    let title = "Date:  " + this.images[i].date; 
 	    let hidecolor = "blue";
@@ -374,7 +407,7 @@ function ImagePlayer(args)  {
                 hidecolor = "red";
 	    } else {
                 hidealt=HU.attr('title',"Don't use image  " + (i+1) +" in animation"); 
-                if(i == this.current_image) {
+                if(i == this.currentImage) {
 		    color = "green";
 		    isActiveImage = true;
                 }
@@ -390,8 +423,7 @@ function ImagePlayer(args)  {
 	    else  if(this.images.length>200)
 		boxStyle += HU.css('margin-left','1px');
 
-	    if(small)
-		boxStyle+=HU.css('height','1em');
+	    boxStyle+=HU.css('height',boxHeight);
 	    let filler = HtmlUtil.div(["image-index",i,
 				       "title", title, "class", "ramadda-clickable imageplayer-box imageplayer-box-" + (isActiveImage?"on":"off"),"style",boxStyle]);
 	    boxes+= filler;
@@ -417,7 +449,7 @@ function ImagePlayer(args)  {
 
     this.goToImage = function(frame_num) {
         this.stop();
-        this.current_image = frame_num;
+        this.currentImage = frame_num;
         this.displayImage();
     }
 
@@ -425,30 +457,33 @@ function ImagePlayer(args)  {
         if(this.images.length==0) {
 	    return
         }
-        this.waitingForImageToLoad= true;
-	let image = this.images[this.current_image];
-        this.jq("animation").attr("src",  image.url);
+        HU.addToDocumentUrl("currentImage", this.currentImage);
+	let image = this.images[this.currentImage];
+	if(!image) return;
+	image.domElement.show();
+	this.images.forEach((image,idx)=>{
+	    if(idx!=this.currentImage) {
+		if(image.domElement.is(':visible'))
+		    image.domElement.hide();
+	    }
+	});
         this.setBoxes();
 	if(this.getProperty('showLabel',true))
             this.jq("label").html(image.label);
 	if(this.getProperty('showDate',true))
             this.jq("date").html(image.date);	
-        this.jq("framenumber").attr("value",  (this.current_image+1));
+        this.jq("framenumber").attr("value",  (this.currentImage+1));
     }
 
-    this.jq("animation").on("load",() =>{
-	this.waitingForImageToLoad = false;
-	this.waitCnt= 0;
-	if(this.imageStepIsPending) {
-	    this.imageStepIsPending = false;
-	}
-    });
 
     this.makeHeader();
     this.makeButtons();
     this.makeControls();    
-    this.displayImage();
-    if(this.getProperty('autoStart')) {  
+    setTimeout(()=>{
+	this.makeAnimation();
+	this.displayImage();
+    },1);
+    if(this.getProperty('autoPlay')) {  
 	this.start();
     }
 

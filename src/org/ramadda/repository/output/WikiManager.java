@@ -181,8 +181,16 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 					"#showLink","true",
 					"bordercolor","#efefef",
 					"#" + ATTR_TEXTPOSITION,"top|left|right|bottom"), 
-                            new WikiTag(WIKI_TAG_PLAYER, "Image Player", "loopDelay","1000","autoStart","false","imageWidth","90%",
-					"showButtons","true","showBoxes","true","showControls","true","smallButtons","true","compact","false"),
+                            new WikiTag(WIKI_TAG_PLAYER, "Image Player",
+					"#autoStart","false",
+					"#showButtons","false",
+					"#boxesPosition","top|bottom|none",
+					"#boxHeight","0.5em",
+					"#showControls","false",
+					"#smallButtons","true",
+					"#compact","true",
+					"#lazyLoading","false",
+					"#loopDelay","1000"),
                             new WikiTag(WIKI_TAG_FLIPCARDS, null, 
                                         "inner","300", 
 					"width","300",
@@ -4150,10 +4158,9 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             ImageOutputHandler ioh = getImageOutputHandler();
             Request imageRequest = request.cloneMe();
 
-            int     width        = getProperty(wikiUtil, props, ATTR_WIDTH,
-					       0);
-            if (width != 0) {
-                imageRequest.put(ARG_WIDTH, "" + width);
+            String    width     = getProperty(wikiUtil, props, ATTR_WIDTH,  null);
+            if (width != null) {
+                imageRequest.put(ARG_WIDTH, width);
             }
             boolean loopStart = getProperty(wikiUtil, props, "loopstart",
                                             false);

@@ -2105,16 +2105,6 @@ public class ImageOutputHandler extends OutputHandler {
         List<String> playerArgs = new ArrayList<String>();
 	Utils.add(playerArgs,"id",JsonUtil.quote(playerId));
 
-	String autoStart = Utils.getProperty(props,"autoStart",null);
-        if (autoStart!=null) {
-            Utils.add(playerArgs,"autoStart",autoStart);
-        } else {
-            Object v = mainEntry.getTypeHandler().getEntryValue(mainEntry,
-                           "autostart");
-            if ((v != null) && v.toString().equals("true")) {
-                Utils.add(playerArgs,"autoStart","true");
-            }
-        }
 
 
         if (request.get("loopdelay", 0) > 0) {
@@ -2130,31 +2120,48 @@ public class ImageOutputHandler extends OutputHandler {
             }
         }
 
-	Utils.add(playerArgs,"showControls",Utils.getProperty(props,"showControls","true"));
-	Utils.add(playerArgs,"showButtons",Utils.getProperty(props,"showButtons","true"));
-	Utils.add(playerArgs,"showBoxes",Utils.getProperty(props,"showBoxes","true"));		
-	Utils.add(playerArgs,"showLabel",Utils.getProperty(props,"showLabel","true"));
-	Utils.add(playerArgs,"showDate",Utils.getProperty(props,"showDate","true"));	
+	String autoPlay = null;
+	Object entryAutoPlay  = mainEntry.getTypeHandler().getEntryValue(mainEntry,
+							    "autostart");
+	if (entryAutoPlay != null)  autoPlay = entryAutoPlay.toString();
+
 	String small = Utils.getProperty(props,"smallButtons",null);
 	if(small!=null)
 	    Utils.add(playerArgs,"smallButtons",small);
-	Utils.add(playerArgs,"compact",Utils.getProperty(props,"compact","false"));	
+	for(String[] attr:new String[][]{
+		{"autoPlay",autoPlay},
+		{"showControls","true"},
+		{"showButtons","true"},
+		{"boxesPosition",null},
+		{"boxHeight",null},		
+		{"showLabel","true"},
+		{"showDate","true"},
+		{"compact","false"},
+		{"lazyLoading",null},
+		{"currentImage",null},		
+		{"imageHeight",null}
+	    }) {
+	    String key = attr[0];
+	    String v  = request.getString(key,null);
+	    if(v==null)
+		v  = Utils.getProperty(props,key,attr[1]);
+	    if(v!=null)
+		Utils.add(playerArgs,key,JsonUtil.quote(v));
+	}
 	Utils.add(playerArgs,"images",JsonUtil.list(images));
+
         playerTemplate = playerTemplate.replaceAll("\\$\\{imageArgs\\}",
                 JsonUtil.map(playerArgs));
 
-        String widthAttr = "";
-        String width     = request.getString(ARG_WIDTH, "600");
-        if (width != null) {
-            widthAttr = HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, width);
-        }
-        String imageHtml = "<img class=\"imageplayer-image\" id=\""
-                           + playerId + "animation\" BORDER=\"0\" "
-                           + widthAttr + HtmlUtils.attr("SRC", firstImage)
-                           + " ALT=\"Loading image\">";
 
+        String width     = Utils.getProperty(props,"width",request.getString(ARG_WIDTH, ""));
+	String imageHtml = HU.div("",HU.attr("id",playerId+"animation") +
+				  HU.cssClass("imageplayer-image"));
+				  
         String tmp = playerTemplate.replace("${imagehtml}", imageHtml);
         tmp = StringUtil.replace(tmp, "${root}", repository.getUrlBase());
+	if(stringDefined(width))
+	    tmp = HU.div(tmp,HU.style("width:" + HU.makeDim(width,"px")));
         sb  = new StringBuilder();
 	HtmlUtils.cssLink(sb,
 			  getPageHandler().getCdnPath("/imageplayer/imageplayer.css"));
