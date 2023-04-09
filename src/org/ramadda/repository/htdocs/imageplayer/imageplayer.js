@@ -349,6 +349,7 @@ function ImagePlayer(args)  {
     
 
     this.setImage = function(number,dir) {
+	number = parseInt(number);
         this.stop();
         if (number < 0) number = this.images.length-1;
         if (number >= this.images.length) number = 0;
