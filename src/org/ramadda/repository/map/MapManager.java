@@ -1425,7 +1425,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                            String mapHtml, String navTop, String extraNav)
 	throws Exception {
 
-        getRepository().getWikiManager().addDisplayImports(request, sb);
+        getPageHandler().addDisplayImports(request, sb);
         int weight = 12;
         if (includeList || (extraNav.length() > 0)) {
             weight -= 3;

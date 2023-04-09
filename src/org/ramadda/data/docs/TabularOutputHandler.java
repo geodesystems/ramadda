@@ -1027,7 +1027,7 @@ public class TabularOutputHandler extends OutputHandler {
         //        sb.append(HtmUltils.pre(tmp.toString()));
 
 
-        getRepository().getWikiManager().addDisplayImports(request, sb);
+        getPageHandler().addDisplayImports(request, sb);
 
         getPageHandler().entrySectionOpen(request, entry, sb, null, true);
 

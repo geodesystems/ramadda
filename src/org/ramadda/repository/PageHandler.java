@@ -185,6 +185,8 @@ public class PageHandler extends RepositoryManager {
     /** _more_ */
     private String webImports;
 
+    private String displayImports;
+
     /** _more_ */
     private List<HtmlTemplate> htmlTemplates;
 
@@ -329,6 +331,9 @@ public class PageHandler extends RepositoryManager {
     @Override
     public void initAttributes() {
         super.initAttributes();
+
+        displayImports = makeDisplayImports();	
+
         //Clear out any loaded templates
         clearCache();
         showCreateDate =
@@ -430,6 +435,103 @@ public class PageHandler extends RepositoryManager {
     }
 
 
+
+
+
+    /**
+     * _more_
+     *
+     * @param request the request
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
+    public void addDisplayImports(Request request, Appendable sb)
+	throws Exception {
+	addDisplayImports(request, sb, true);
+    }
+
+    public void addDisplayImports(Request request, Appendable sb, boolean includeMap)
+	throws Exception {
+	if(includeMap) {
+	    getMapManager().addMapImports(request, sb);
+	}
+        if (request.getExtraProperty("initchart") == null) {
+            request.putExtraProperty("initchart", "added");
+	    request.appendHead(displayImports);
+        }
+    }
+
+
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String makeDisplayImports() {
+        try {
+            Appendable sb = Utils.makeAppendable();
+	    getPageHandler().addJSImports(sb, "/org/ramadda/repository/resources/web/wikijsimports.txt");
+
+            if (getRepository().getMinifiedOk()) {
+                HU.importJS(sb, getPageHandler().getCdnPath("/min/display_all.min.js"));
+		String css = getPageHandler().getCdnPath("/min/display.min.css");
+		HU.cssPreloadLink(sb, css);
+		//HU.cssLink(sb, css);
+		sb.append("\n");
+            } else {
+		sb.append("\n");
+		String css = getPageHandler().getCdnPath("/display/display.css");
+		HU.cssPreloadLink(sb, css);
+		//                HU.cssLink(sb, css);
+		sb.append("\n");
+		for(String js: new String[]{"/colortables.js",
+					    //"/esdlcolortables.js",
+					    "/display/pointdata.js", 
+					    "/display/widgets.js",
+					    "/display/colorby.js",
+					    "/display/glyph.js",
+					    "/display/display.js",
+					    "/display/displaymanager.js",
+					    "/display/displayentry.js",
+					    "/display/displaymap.js",
+					    "/display/imdv.js",
+					    "/display/mapglyph.js",
+					    "/display/displayimages.js",
+					    "/display/displaymisc.js",
+					    "/display/displaychart.js",
+					    "/display/displaytable.js",
+					    "/display/control.js",
+					    "/display/notebook.js",
+					    "/display/displayplotly.js",
+					    "/display/displayd3.js",
+					    "/display/displaytext.js",
+					    "/display/displayext.js",
+					    "/display/displaythree.js",					    
+					    "/repositories.js"}) {
+		    HU.importJS(sb, getPageHandler().getCdnPath(js));
+		    sb.append("\n");
+		}
+	    }
+
+            String includes =
+                getRepository().getProperty("ramadda.display.includes",
+                                            (String) null);
+            if (includes != null) {
+                for (String include :
+			 Utils.split(includes, ",", true, true)) {
+                    HU.importJS(sb, getFileUrl(include));
+                }
+		sb.append("\n");
+            }
+
+            return sb.toString();
+        } catch (Exception exc) {
+            throw new IllegalArgumentException(exc);
+        }
+    }
 
 
 

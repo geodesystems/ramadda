@@ -998,7 +998,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         sb.append(HtmlUtils.hidden(ARG_MAX,
                                    request.getSanitizedString(ARG_MAX,
                                            "9999")));
-        getWikiManager().addDisplayImports(request, sb);
+        getPageHandler().addDisplayImports(request, sb);
 
         List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
         tfos.add(new TwoFacedObject("Select Model Collection", ""));
