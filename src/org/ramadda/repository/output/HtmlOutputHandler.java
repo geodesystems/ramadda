@@ -1637,8 +1637,10 @@ public class HtmlOutputHandler extends OutputHandler {
         String firstLink = null;
         String viewId    = HU.getUniqueId("treeview_");
 	boolean showIcon  = Utils.getProperty(props,"showIcon",true);
+	String icon  = Utils.getProperty(props,"icon",null);
         for (Entry child : children) {
             String entryIcon = getPageHandler().getIconUrl(request, child);
+	    if(icon!=null) entryIcon = getPageHandler().getIconUrl(icon);
             String label = getEntryManager().getEntryListName(request, child);
             String leftLabel = showIcon?HU.img(entryIcon) + " " + label:label;
             label = label.replace("'", "\\'");
