@@ -43,9 +43,6 @@ import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.repository.auth.User;
 import org.ramadda.repository.auth.DataPolicy;
 import org.ramadda.repository.util.SelectInfo;
-
-
-
 import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.BufferMapList;
@@ -58,6 +55,7 @@ import org.ramadda.util.SystemContext;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 import org.ramadda.util.WikiPageHandler;
+
 import org.json.*;
 
 import ucar.unidata.util.IOUtil;
@@ -90,152 +88,8 @@ import java.util.function.*;
  * Provides wiki text processing services
  */
 @SuppressWarnings("unchecked")
-public class WikiManager extends RepositoryManager implements  OutputConstants,WikiConstants,
-							       WikiPageHandler, SystemContext {
-
-
-
-
-
-
-    /** list of import items for the text editor menu */
-    //J--
-    public static final WikiTagCategory[] WIKITAGS = {
-        new WikiTagCategory("General",
-                            new WikiTag(WIKI_TAG_INFORMATION, null, ATTR_DETAILS, "false",ATTR_SHOWTITLE,"false"),
-                            new WikiTag(WIKI_TAG_NAME,null,"link","true"), 
-                            new WikiTag(WIKI_TAG_DESCRIPTION),
-                            new WikiTag(WIKI_TAG_RESOURCE, null, ATTR_TITLE,"",ATTR_SHOWICON,"true"),
-                            new WikiTag(WIKI_TAG_ENTRYLINK, null, "link","",ATTR_TITLE,"",ATTR_SHOWICON,"true"), 			    
-                            new WikiTag(WIKI_TAG_THIS,null),
-                            new WikiTag(WIKI_TAG_ANCESTOR,null,"type","entry type"), 			    
-                            new WikiTag(WIKI_TAG_LABEL, null, ATTR_TEXT,"",ATTR_ID,"arbitrary id to match with property"),
-                            new WikiTag(WIKI_TAG_LINK, null, ATTR_TITLE,"","button","false"),
-                            new WikiTag(WIKI_TAG_HTML,null,"showTitle","false"),
-                            new WikiTag("multi", null, "_attrs", "attr1,attr2"),
-                            new WikiTag(WIKI_TAG_SIMPLE, null, ATTR_TEXTPOSITION, POS_LEFT),
-                            new WikiTag(WIKI_TAG_IMPORT, null, ATTR_ENTRY,"","showTitle","false"),
-                            new WikiTag(WIKI_TAG_SHOW_AS, null, ATTR_ENTRY,"","type","entry type to display as","#target","target entry"),
-                            new WikiTag(WIKI_TAG_EMBED, null, ATTR_ENTRY,"",ATTR_SKIP_LINES,"0",ATTR_MAX_LINES,"1000","style","",ATTR_FORCE,"false",ATTR_MAXHEIGHT,"300",ATTR_ANNOTATE,"true","raw","true","wikify","true"),
-                            new WikiTag(WIKI_TAG_TAGS),
-                            new WikiTag(WIKI_TAG_FIELD, null, "name", "")),
-        new WikiTagCategory("Layout", 
-                            new WikiTag(WIKI_TAG_TABLETREE, null, "simple","false","#maxHeight","500px"),
-                            new WikiTag(WIKI_TAG_FULLTREE, null,"depth","10","addprefix","false","showroot","true","labelWidth","20", ATTR_SHOWICON,"true","types","group,feile,...."),
-                            new WikiTag(WIKI_TAG_MENUTREE, null,"depth","10","addprefix","false","showroot","true","menuStyle","","labelWidth","20", ATTR_SHOWICON,"true","types","group,file,...."), 			    			    
-                            new WikiTag(WIKI_TAG_LINKS, null),
-                            new WikiTag(WIKI_TAG_LIST), 
-                            new WikiTag(WIKI_TAG_TABS, null), 
-                            new WikiTag(WIKI_TAG_GRID, null, 
-                                        ATTR_TAG, WIKI_TAG_CARD, 
-                                        "inner-height","200", 
-					"width","200px",
-                                        ATTR_COLUMNS, "3",
-					ATTR_SHOWICON, "true",
-					"includeChildren","false",
-					"addTags","false",
-					"showDisplayHeader","false",
-					"captionPrefix","",
-					"captionSuffix","",
-					"#childrenWiki","wiki text to display children, e.g. {{tree details=false}}",
-					"#weights","3,6,3",
-                                        "showSnippet","false",
-                                        "showSnippetHover","true",
-                                        "showLink","false","showHeading","true"), 
-                            new WikiTag(WIKI_TAG_MAP,
-                                        null, ATTR_WIDTH, "100%", ATTR_HEIGHT, "80vh","listentries","true"), 
-                            new WikiTag(WIKI_TAG_FRAMES, null, ATTR_WIDTH,"100%", ATTR_HEIGHT,"500","showIcon","true"), 
-                            new WikiTag(WIKI_TAG_ACCORDION, null, ATTR_TAG, WIKI_TAG_HTML, ATTR_COLLAPSE, "false", "border", "0", ATTR_SHOWLINK, "true", ATTR_SHOWICON, "false",ATTR_TEXTPOSITION, POS_LEFT), 
-                            //                            new WikiTag(WIKI_TAG_GRID), 
-                            new WikiTag(WIKI_TAG_TABLE), 
-                            new WikiTag(WIKI_TAG_ABSOPEN,null,"canEdit","true","imageEntry","","width","100%","#height","height"),
-                            new WikiTag(WIKI_TAG_ABSCLOSE,null), 			    
-                            new WikiTag(WIKI_TAG_RECENT, null, ATTR_DAYS, "3"), 
-                            new WikiTag(WIKI_TAG_MULTI, null,"#_tag","","#_template",""), 
-                            new WikiTag(WIKI_TAG_APPLY, null, APPLY_PREFIX
-					+ "tag", WIKI_TAG_HTML, APPLY_PREFIX
-					+ "layout", "table", APPLY_PREFIX
-					+ "columns", "1", APPLY_PREFIX
-					+ "header", "", APPLY_PREFIX
-					+ "footer", "", APPLY_PREFIX
-					+ "border", "0", APPLY_PREFIX
-                                        + "bordercolor", "#000")),
-        new WikiTagCategory("Images & Dates",
-                            new WikiTag(WIKI_TAG_IMAGE,null,
-                                        "#"+ATTR_SRC, "", ATTR_WIDTH,"100%", "#"+ATTR_ALIGN,"left|center|right"), 
-                            new WikiTag(WIKI_TAG_GALLERY,null,
-                                        ATTR_WIDTH, "-100", ATTR_COLUMNS, "3",
-					ATTR_POPUP, "true", ATTR_THUMBNAIL, "false",
-					"decorate","true","imageStyle","","padding","10px",
-					ATTR_CAPTION, "Figure ${count}: ${name}",
-					"#popupCaption",""), 
-                            new WikiTag(WIKI_TAG_SLIDESHOW,"Slide Show",
-                                        ATTR_TAG, WIKI_TAG_SIMPLE,
-					ATTR_TEXTPOSITION,"top",
-					ATTR_SHOWLINK, "true",
-					ATTR_WIDTH, "400",
-					ATTR_HEIGHT,
-					"270",
-					"#textClass","note",
-					"#textStyle","margin:8px;",
-					"#showLink","true",
-					"bordercolor","#efefef",
-					"#" + ATTR_TEXTPOSITION,"top|left|right|bottom"), 
-                            new WikiTag(WIKI_TAG_PLAYER, "Image Player",
-					"#autoStart","false",
-					"#showButtons","false",
-					"#boxesPosition","top|bottom|none",
-					"#boxHeight","0.5em",
-					"#showControls","false",
-					"#smallButtons","true",
-					"#compact","true",
-					"#lazyLoading","false",
-					"#loopDelay","1000"),
-                            new WikiTag(WIKI_TAG_FLIPCARDS, null, 
-                                        "inner","300", 
-					"width","300",
-					"addTags","false",
-					"frontStyle","",
-					"backStyle",""),					
-
-                            new WikiTag(WIKI_TAG_DATERANGE,"Date Range", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT),
-                            new WikiTag(WIKI_TAG_DATE_FROM, "From Date", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT),
-                            new WikiTag(WIKI_TAG_DATE_TO,"To Date", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT), 
-                            new WikiTag(WIKI_TAG_DATE_CREATE,"Create Date", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT), 
-                            new WikiTag(WIKI_TAG_DATE_CHANGE,"Change Date", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT), 
-			    new WikiTag(WIKI_TAG_CALENDAR, null, ATTR_DAY, "false"),
-                            new WikiTag(WIKI_TAG_DATETABLE, null,"byType","false","showTime","false"),			    			                              new WikiTag(WIKI_TAG_TIMELINE, null, ATTR_HEIGHT, "150")),
-        new WikiTagCategory("Misc",
-                            new WikiTag("counter", null, "key", "key"),
-                            new WikiTag("caption", null, "label", "","prefix","Image #:"),
-                            new WikiTag(WIKI_TAG_ZIPFILE, null,"#height",""),
-                            new WikiTag(WIKI_TAG_USER, null, "users","user1,user2","delimiter"," ","style","","showAvatar","true","showEmail","true"),
-                            new WikiTag(WIKI_TAG_COMMENTS),
-                            new WikiTag(WIKI_TAG_TAGCLOUD, null, "#type", "", "threshold","0"), 
-                            new WikiTag(WIKI_TAG_PROPERTIES, null, "message","","metadata.types","",ATTR_METADATA_INCLUDE_TITLE,"true","separator","","decorate","false"),
-                            new WikiTag(WIKI_TAG_DATAPOLICIES, null, "message","","inherited","true","includePermissions","false"),
-			    new WikiTag(WIKI_TAG_WIKITEXT,null,"showToolbar","false"),
-                            new WikiTag(WIKI_TAG_BREADCRUMBS),
-                            new WikiTag(WIKI_TAG_TOOLS),
-                            new WikiTag(WIKI_TAG_TOOLBAR),
-                            new WikiTag(WIKI_TAG_LAYOUT),
-			    new WikiTag(WIKI_TAG_MENU,null,"title","","popup","true","ifUser","false"),
-                            new WikiTag(WIKI_TAG_ENTRYID),
-                            new WikiTag(WIKI_TAG_ALIAS,null,"name","alias","entry","entry id"),
-                            new WikiTag(WIKI_TAG_SEARCH,null,
-                                        ATTR_TYPE, "", 
-                                        "#"+ATTR_FIELDS,"",
-                                        ATTR_METADATA,"",
-                                        ARG_MAX, "100",
-                                        ARG_SEARCH_SHOWFORM, "false",
-                                        SpecialSearch.ATTR_TABS,
-                                        SpecialSearch.TAB_LIST),
-                            new WikiTag(WIKI_TAG_UPLOAD,null, ATTR_TITLE,"Upload file", ATTR_SHOWICON,"false"), 
-                            new WikiTag(WIKI_TAG_ROOT),
-			    new WikiTag("loremipsum")),
-    };
-    //J++
-
+public class WikiManager extends RepositoryManager
+    implements OutputConstants,WikiConstants, WikiPageHandler, SystemContext {
 
 
     /** output type */
@@ -280,7 +134,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
     @Override
     public void initAttributes() {
         super.initAttributes();
-        displayImports = makeDisplayImports();
         wikiMacros     = new Hashtable<String, String>();
         for (String macro :
 		 Utils.split(
@@ -413,7 +266,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
     }
 
     public double getProperty(WikiUtil wikiUtil, Hashtable props, String prop,
-                           double dflt) {
+			      double dflt) {
         String value = getProperty(wikiUtil, props, prop, null);
         if (value == null) {
             return dflt;
@@ -800,8 +653,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	boolean ascending = false;
 	String name=null;
         String filter = getProperty(wikiUtil, props,
-				       ATTR_ENTRIES + ".filter",
-				       (String) null);
+				    ATTR_ENTRIES + ".filter",
+				    (String) null);
 	SelectInfo select =  new SelectInfo(myRequest);
 	select.setEntry(entry);
 	for(String tok: toks) {
@@ -961,7 +814,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
 	/*
 	  ancestor:type
-	 */
+	*/
 	if((select = matches.call(entryId,ID_ANCESTOR,PREFIX_ANCESTOR))!=null) { 
             Entry  lastEntry = select.getEntry();
             Entry  current   = select.getEntry();
@@ -1014,7 +867,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
 	if((select = matches.call(entryId,ID_GRANDPARENT,PREFIX_GRANDPARENT))!=null) { 
             return  getEntryManager().getEntry(request,
-						  select.getEntry().getParentEntryId());
+					       select.getEntry().getParentEntryId());
         }
 
 	
@@ -1682,10 +1535,10 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
     public Result processWikiTags(Request request) throws Exception {
         StringBuilder sb   = new StringBuilder();
         List<String>  tags = new ArrayList<String>();
-        for (int i = 0; i < WIKITAGS.length; i++) {
-            WikiTagCategory cat = WIKITAGS[i];
+        for (int i = 0; i < WikiTags.WIKITAGS.length; i++) {
+            WikiTags.WikiTagCategory cat = WikiTags.WIKITAGS[i];
             for (int tagIdx = 0; tagIdx < cat.tags.length; tagIdx++) {
-                WikiTag      tag = cat.tags[tagIdx];
+                WikiTags.WikiTag      tag = cat.tags[tagIdx];
                 List<String> tmp = new ArrayList<String>();
 		String label = Utils.makeLabel(tag.tag) + " properties";
                 tmp.add(JsonUtil.map(Utils.makeList("label",JsonUtil.quote(label))));
@@ -2003,12 +1856,12 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		String avatar = getUserManager().getUserAvatar(request,  user, false, getProperty(wikiUtil,props,"avatarWidth",60),null);
 		if(template!=null) {
 		    sb.append(Utils.applyMacros(template,
-						  "avatar",avatar,
-						  "search",
-						  getUserManager().getUserSearchLink(request, user),
-						  "name",user.getLabel(),
-						  "id",user.getId(),						  
-						  "description",user.getDescription()));
+						"avatar",avatar,
+						"search",
+						getUserManager().getUserSearchLink(request, user),
+						"name",user.getLabel(),
+						"id",user.getId(),						  
+						"description",user.getDescription()));
 		    
 		    continue;
 		}
@@ -2864,10 +2717,10 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		return "{{"+ theTag+" " +"No entry" +"}}";
 	    }
             String ancestor = getProperty(wikiUtil, props, ARG_ANCESTOR,
-                                           null);
+					  null);
 	    if(stringDefined(ancestor)) {
                 Entry ancestorEntry = findEntryFromId(request, entry, wikiUtil, props,
-                                             ancestor);
+						      ancestor);
                 if (ancestorEntry != null) {
                     props.put("ancestorName",ancestorEntry.getName());
                 }
@@ -3054,7 +2907,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 						      "Google earth view is no longer available");
         } else if (theTag.equals(WIKI_TAG_DISPLAY_IMPORTS)) {
 	    StringBuilder tmp = new StringBuilder();
-	    addDisplayImports(request, tmp,true);
+	    getPageHandler().addDisplayImports(request, tmp,true);
 	    return tmp.toString();
         } else if (theTag.equals(WIKI_TAG_MAP)
                    || theTag.equals(WIKI_TAG_MAPENTRY)) {
@@ -4639,7 +4492,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             max = getProperty(wikiUtil, props, ATTR_MAX, -1);
         }
 	getRepository().getHtmlOutputHandler().showNext(request,
-							    children.size(), max,sb);
+							children.size(), max,sb);
 
 
 	String divId  = HU.getUniqueId("div_");
@@ -6554,7 +6407,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
     public ImageOutputHandler getImageOutputHandler() throws Exception {
 	return (ImageOutputHandler) getRepository().getOutputHandler(
-								      ImageOutputHandler.OUTPUT_PLAYER);
+								     ImageOutputHandler.OUTPUT_PLAYER);
     }
 
     
@@ -6802,7 +6655,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
         StringBuilder buttons = new StringBuilder();
         if (request.get("doImports", true)) {
-            addDisplayImports(request, buttons,true);
+            getPageHandler().addDisplayImports(request, buttons,true);
         }
         StringBuilder tags1  = new StringBuilder();
         StringBuilder tags2 = new StringBuilder();
@@ -6952,9 +6805,9 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	Utils.add(etcLinks, findButton, previewButton,tidyButton);
 	if(getRepository().isGptEnabled()) {
 	    etcLinks.add(HU.href("#", "GPT",
-				  HU.attrs("id", textAreaId+"_rewrite")));
+				 HU.attrs("id", textAreaId+"_rewrite")));
 	    etcLinks.add(HU.href("#", "Transcribe",
-				  HU.attrs("id", textAreaId+"_transcribe")));	    
+				 HU.attrs("id", textAreaId+"_transcribe")));	    
 	}
 	Utils.add(etcLinks,colorButton, wcButton);
 	etc.append(Utils.join(etcLinks,"<br>"));
@@ -7137,8 +6990,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	}
 
 	sb.append("<td valign=top>\n");
-        for (int i = 0; i < WIKITAGS.length; i++) {
-            WikiTagCategory cat = WIKITAGS[i];
+        for (int i = 0; i < WikiTags.WIKITAGS.length; i++) {
+            WikiTags.WikiTagCategory cat = WikiTags.WIKITAGS[i];
             if (rowCnt + cat.tags.length > 10) {
                 rowCnt = 0;
                 if (i > 0) {
@@ -7151,7 +7004,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             sb.append(HU.br());
             rowCnt += cat.tags.length;
             for (int tagIdx = 0; tagIdx < cat.tags.length; tagIdx++) {
-                WikiTag tag          = cat.tags[tagIdx];
+                WikiTags.WikiTag tag          = cat.tags[tagIdx];
                 String  textToInsert = tag.tag;
                 if (tag.attrs.length() > 0) {
                     textToInsert += " " + tag.attrs;
@@ -7498,43 +7351,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
 
     /**
-     * Class for holding attributes
-     */
-    public static class Attr {
-
-        /** Attribute name */
-        String name;
-
-        /** the default */
-        String dflt;
-
-        /** the label */
-        String label;
-
-        /**
-         * Create an Attribute
-         *
-         * @param name  the name
-         * @param dflt  the default
-         * @param label the label
-         */
-        public Attr(String name, String dflt, String label) {
-            this.name  = name;
-            this.dflt  = dflt;
-            this.label = label;
-        }
-
-        /**
-         * Return a String version of this object
-         *
-         * @return a String version of this object
-         */
-        public String toString() {
-            return name;
-        }
-    }
-
-    /**
      * _more_
      *
      * @param request the request
@@ -7647,7 +7463,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 if (imageWidth.startsWith("-")) {
                     imageWidth = imageWidth.substring(1) + "%";
                 }
-                //                divStyle +="width:" + imageWidth+";";
             }
 
             String alt = request.getString(ATTR_ALT,
@@ -7742,8 +7557,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
     }
 
     public String makeMapPopup(Request request, WikiUtil wikiUtil,
-                                    Hashtable props, Entry originalEntry,
-                                    Entry entry)
+			       Hashtable props, Entry originalEntry,
+			       Entry entry)
 	throws Exception {
 	String template = entry.getTypeHandler().getBubbleTemplate( request,  entry);
 	if(template!=null)
@@ -7876,7 +7691,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    HU.importJS(sb, getPageHandler().getCdnPath("/lib/here.js"));
 	}
 
-        this.addDisplayImports(request, sb, true);
+        getPageHandler().addDisplayImports(request, sb, true);
 
 
 	if(isNotebook) {
@@ -8482,139 +8297,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
-    public void addDisplayImports(Request request, Appendable sb)
-	throws Exception {
-	addDisplayImports(request, sb, true);
-    }
 
-    public void addDisplayImports(Request request, Appendable sb, boolean includeMap)
-	throws Exception {
-	if(includeMap) {
-	    getMapManager().addMapImports(request, sb);
-	}
-        if (request.getExtraProperty("initchart") == null) {
-            request.putExtraProperty("initchart", "added");
-	    request.appendHead(displayImports);
-        }
-    }
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public String makeDisplayImports() {
-        try {
-            Appendable sb = Utils.makeAppendable();
-	    getPageHandler().addJSImports(sb, "/org/ramadda/repository/resources/web/wikijsimports.txt");
-
-            if (getRepository().getMinifiedOk()) {
-                HU.importJS(sb, getPageHandler().getCdnPath("/min/display_all.min.js"));
-		String css = getPageHandler().getCdnPath("/min/display.min.css");
-		HU.cssPreloadLink(sb, css);
-		//HU.cssLink(sb, css);
-		sb.append("\n");
-            } else {
-		sb.append("\n");
-		String css = getPageHandler().getCdnPath("/display/display.css");
-		HU.cssPreloadLink(sb, css);
-		//                HU.cssLink(sb, css);
-		sb.append("\n");
-		for(String js: new String[]{"/colortables.js",
-					    //"/esdlcolortables.js",
-					    "/display/pointdata.js", 
-					    "/display/widgets.js",
-					    "/display/colorby.js",
-					    "/display/glyph.js",
-					    "/display/display.js",
-					    "/display/displaymanager.js",
-					    "/display/displayentry.js",
-					    "/display/displaymap.js",
-					    "/display/imdv.js",
-					    "/display/mapglyph.js",
-					    "/display/displayimages.js",
-					    "/display/displaymisc.js",
-					    "/display/displaychart.js",
-					    "/display/displaytable.js",
-					    "/display/control.js",
-					    "/display/notebook.js",
-					    "/display/displayplotly.js",
-					    "/display/displayd3.js",
-					    "/display/displaytext.js",
-					    "/display/displayext.js",
-					    "/display/displaythree.js",					    
-					    "/repositories.js"}) {
-		    HU.importJS(sb, getPageHandler().getCdnPath(js));
-		    sb.append("\n");
-		}
-	    }
-
-            String includes =
-                getRepository().getProperty("ramadda.display.includes",
-                                            (String) null);
-            if (includes != null) {
-                for (String include :
-			 Utils.split(includes, ",", true, true)) {
-                    HU.importJS(sb, getFileUrl(include));
-                }
-		sb.append("\n");
-            }
-
-            return sb.toString();
-        } catch (Exception exc) {
-            throw new IllegalArgumentException(exc);
-        }
-    }
-
-
-
-    /**
-     * Create an attribute with the name and value
-     *
-     * @param sb _more_
-     * @param name  attribute name
-     * @param value  value
-     *
-     */
-    private static void attr(StringBuilder sb, String name, String value) {
-        Utils.append(sb, " ", name, "=", "&quote;", value, "&quote;", " ");
-    }
-
-    /**
-     * Generate a list of attributes
-     *
-     * @param attrs  set of attrs
-     *
-     * @return  the string version
-     */
-    private static String attrs(String... attrs) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < attrs.length; i += 2) {
-            attr(sb, attrs[i], attrs[i + 1]);
-        }
-
-        return sb.toString();
-    }
-
-    /**
-     * Create a property string
-     *
-     * @param prop  the property
-     * @param args  the property arguments
-     *
-     * @return  the property string
-     */
-    private static String prop(String prop, String args) {
-        return Utils.concatString(prop, PROP_DELIM, args);
-    }
 
 
     private ServerInfo getServer(Request request, Entry entry,
@@ -8625,125 +8308,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	return  !Utils.stringDefined(remoteServer)?null:new ServerInfo(new URL(remoteServer),"","");
 
     }
-
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Mar 5, '14
-     * @author         Enter your name here...
-     */
-    private static class WikiTag {
-
-        /** _more_ */
-        String label;
-
-        /** _more_ */
-        String tag;
-
-        /** _more_ */
-        String attrs;
-
-        /** _more_ */
-        List<String> attrsList = new ArrayList<String>();
-
-        /**
-         * _more_
-         *
-         * @param tag _more_
-         */
-        WikiTag(String tag) {
-            this(tag, null);
-        }
-
-
-
-        /**
-         * _more_
-         *
-         * @param tag _more_
-         * @param label _more_
-         * @param attrs _more_
-         */
-        WikiTag(String tag, String label, String... attrs) {
-            this.tag = tag;
-            if (label == null) {
-                label = StringUtil.camelCase(tag);
-            }
-            this.label = label;
-            for (String attr : attrs) {
-                attrsList.add(attr);
-            }
-            if (attrs.length == 1) {
-                this.attrs = attrs[0];
-            } else {
-                StringBuilder sb  = new StringBuilder();
-                int           cnt = 0;
-                for (int i = 0; i < attrs.length; i += 2) {
-                    if (cnt > 80) {
-                        sb.append("_newline_");
-                        cnt = 0;
-                    }
-                    cnt += attrs[i].length() + attrs[i + 1].length();
-                    attr(sb, attrs[i], attrs[i + 1]);
-                }
-                this.attrs = sb.toString();
-            }
-        }
-
-    }
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Mar 5, '14
-     * @author         Enter your name here...
-     */
-    private static class WikiTagCategory {
-
-        /** _more_ */
-        String category;
-
-        /** _more_ */
-        WikiTag[] tags;
-
-        /**
-         * _more_
-         *
-         * @param c _more_
-         * @param tagArgs _more_
-         */
-        WikiTagCategory(String c, WikiTag... tagArgs) {
-            this.category = c;
-
-            /**
-             * Comparator comp = new Comparator() {
-             *   public int compare(Object o1, Object o2) {
-             *       return ((WikiTag) o1).tag.compareTo(((WikiTag) o2).tag);
-             *   }
-             * };
-             * Arrays.sort(tagArgs, comp);
-             */
-            tags = tagArgs;
-        }
-    }
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     */
-    public static void main(String[] args) {
-        String s = "hello there\n//some comment\nand after the comment";
-        s = s.replaceAll("(?m)^//[^$]*$", "");
-        System.err.println(s);
-    }
-
-
 
 
 }
