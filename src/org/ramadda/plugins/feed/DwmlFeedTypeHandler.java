@@ -202,10 +202,6 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
             throws Exception {
 
         StringBuilder sb = new StringBuilder();
-        sb.append(
-            HtmlUtils.cssBlock(
-                ".nws-contents {padding:5px;}\n.nws-label {white-space:nowrap;max-width:90px;overflow-x:auto;}\n.nws-block {display:inline-block;xmargin-bottom:10px; xborder: 1px #eee solid;  border-radius: 4px;}\n.nws-header {font-weight:bold;background:#eee; padding:5px;}\n.nws-block-hazard {border-color:#EED4D4;}\n.nws-block-hazard .nws-header {background:#EED4D4; color:#A80000}\n"));
-
         if ( !tag.startsWith("nws.")) {
             return super.getWikiInclude(wikiUtil, request, originalEntry,
                                         entry, tag, props);
@@ -243,6 +239,15 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
                                         entry, tag, props);
         }
         String contents = sb.toString();
+	//Don't show anything if nothing is there
+	if(contents.length()==0) return "";
+	sb = new StringBuilder();
+        sb.append(
+            HtmlUtils.cssBlock(
+                ".nws-contents {padding:5px;}\n.nws-label {white-space:nowrap;max-width:90px;overflow-x:auto;}\n.nws-block {display:inline-block;xmargin-bottom:10px; xborder: 1px #eee solid;  border-radius: 4px;}\n.nws-header {font-weight:bold;background:#eee; padding:5px;}\n.nws-block-hazard {border-color:#EED4D4;}\n.nws-block-hazard .nws-header {background:#EED4D4; color:#A80000}\n"));
+	sb.append(contents);
+	contents = sb.toString();
+
         String heading  = (String) props.get("heading");
         if (heading != null) {
             heading = HU.href(getEntryManager().getEntryUrl(request, entry),
@@ -297,7 +302,6 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
         Weather forecast = getForecast(entry);
         if (forecast == null) {
             sb.append("No forecast defined");
-
             return;
         }
         if (forecast.hazards == null) {
