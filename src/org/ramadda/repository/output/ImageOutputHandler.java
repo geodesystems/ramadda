@@ -2044,10 +2044,6 @@ public class ImageOutputHandler extends OutputHandler {
 	if(props==null)props = new Hashtable();
         boolean       useAttachment = request.get("useAttachment",
 						  Utils.getProperty(props,"useAttachment",false));
-	boolean showEntryLabel = Utils.getProperty(props,"showEntryLabel",true);
-	boolean showTime = Utils.getProperty(props,"showTime",true);
-	boolean showLoopControls = Utils.getProperty(props,"showLoopControls",true);
-	boolean showBars = Utils.getProperty(props,"showBars",true);    
         String        playerId  = HU.getUniqueId("imageplayer_");
         String        playerVar     = playerId + "Var";
 

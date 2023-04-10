@@ -390,7 +390,9 @@ public interface WikiConstants {
     public static final String WIKI_TAG_MAKELABEL = "makelabel";
 
     /**  */
-    public static final String WIKI_TAG_TEMPLATE = "template";
+    public static final String WIKI_TAG_PAGETEMPLATE = "pagetemplate";
+
+    public static final String WIKI_TAG_TEMPLATE = "template";    
 
     /** _more_ */
     public static final String WIKI_TAG_WIKITEXT = "wikitext";

@@ -3234,7 +3234,7 @@ public class WikiManager extends RepositoryManager
             }
 
             return buff.toString();
-        } else if (theTag.equals(WIKI_TAG_TEMPLATE)) {
+        } else if (theTag.equals(WIKI_TAG_PAGETEMPLATE)) {
             String template = getProperty(wikiUtil, props,
 					  "template","empty");
 	    request.put("template",template);
@@ -4136,6 +4136,30 @@ public class WikiManager extends RepositoryManager
 						height, noTemplate,props);
 
             return sb.toString();
+        } else if (theTag.equals(WIKI_TAG_TEMPLATE)) {
+            List<Entry> children = getEntries(request, wikiUtil,
+					      originalEntry, entry, props);
+
+	    if(children.size()==0) return null;
+	    
+	    String prefix = getProperty(wikiUtil, props, "prefix","");
+	    String suffix = getProperty(wikiUtil, props, "suffix","");
+	    String delimiter = getProperty(wikiUtil, props, "delimiter","");	    
+	    sb.append(prefix);
+	    String template = getProperty(wikiUtil, props,
+					  "template", "${name link=true}");
+
+	    List<Utils.Macro> macros   =  Utils.splitMacros(template);
+	    for (int i=0;i<children.size();i++) {
+		Entry child = children.get(i);
+		if(i>0) sb.append(delimiter);
+		String url = getEntryManager().getEntryUrl(request, child);
+		String text =  processMacros(request, macros, child);
+		sb.append(text);
+	    }
+	    sb.append(suffix);
+
+	    return sb.toString();
         } else if (theTag.equals(WIKI_TAG_LINKS)
                    || theTag.equals(WIKI_TAG_LIST)) {
             boolean isList = theTag.equals(WIKI_TAG_LIST);
@@ -4164,7 +4188,6 @@ public class WikiManager extends RepositoryManager
 		    post.add(HU.href(toks.get(0),toks.size()>1?toks.get(1):toks.get(0)));
 		}
 	    }
-
 
 
 	    if(!chunkDefined(request, wikiUtil,props)) {
@@ -4225,6 +4248,10 @@ public class WikiManager extends RepositoryManager
     private String  makeLinks(Request request,Entry originalEntry, Entry entry, WikiUtil wikiUtil,Hashtable props,
 			      boolean isList, List<Entry>children,List<String> pre, List<String> post) throws Exception {
 
+	String template = getProperty(wikiUtil, props,
+				      "template", null);
+
+
 	boolean highlightThis = getProperty(wikiUtil, props,
 					    "highlightThis", false);
 	boolean horizontal = getProperty(wikiUtil, props, "horizontal",
@@ -4250,16 +4277,9 @@ public class WikiManager extends RepositoryManager
 				    (String) null);
 	String cssClass = getProperty(wikiUtil, props, ATTR_CLASS, "");
 	String style    = getProperty(wikiUtil, props, ATTR_STYLE, "");
-	String tagOpen  = (isList
-			   ? "<li>"
-			   : getProperty(wikiUtil, props, ATTR_TAGOPEN,
-					 "<li>"));
-
-	String tagClose = (isList
-			   ? ""
-			   : getProperty(wikiUtil, props, ATTR_TAGCLOSE,
-					 ""));
-
+	String tagOpen  = getProperty(wikiUtil, props, ATTR_TAGOPEN,  "<li>");
+	String tagClose =  getProperty(wikiUtil, props, ATTR_TAGCLOSE,"");
+	System.err.println("tag open:" + tagOpen);
 
 	if(decorate) {
 	    tagOpen = "<div class=' ramadda-entry-nav-page  ramadda-entry-nav-page-decorated '><div class='ramadda-nav-page-label'>";
@@ -4277,7 +4297,16 @@ public class WikiManager extends RepositoryManager
 	}
 
 	List<String> links = new ArrayList<String>();
-	if(pre!=null) for(String s: pre)links.add("<li> " + s);
+	if(pre!=null) {
+	    System.err.println("adding pre");
+	    for(String s: pre) links.add("<li> " + s);
+	}
+        List<Utils.Macro> macros   = null;
+	if(template!=null) {
+	    macros = Utils.splitMacros(template);
+	}
+
+
 	for (Entry child : children) {
 	    String url;
 	    if (linkResource
@@ -4297,11 +4326,18 @@ public class WikiManager extends RepositoryManager
 		}
 	    }
 
-	    String linkLabel = getEntryDisplayName(child);
-	    if (showicon) {
-		linkLabel = HU.img(getPageHandler().getIconUrl(request,
-							       child)) + HU.space(1) + linkLabel;
+	    String linkLabel;
+	    if(macros!=null) {
+		linkLabel = processMacros(request, macros, child);
+	    } else {
+		linkLabel = getEntryDisplayName(child);
+		if (showicon) {
+		    linkLabel = HU.img(getPageHandler().getIconUrl(request,
+								   child)) +HU.space(1) + linkLabel;
+		}
 	    }
+
+
 	    String snippet =  includeSnippet?getSnippet(request,  child, true,""):includeDescription?child.getDescription():null;
 
 	    String href = HU.href(url, linkLabel,
@@ -4331,6 +4367,7 @@ public class WikiManager extends RepositoryManager
 		link.append(tagClose);
 	    }
 	    String s = link.toString();
+	    System.err.println("LINK:" + s);
 	    links.add(s);
 	}
 
@@ -4405,6 +4442,62 @@ public class WikiManager extends RepositoryManager
 	}
 	return Utils.splitList(entries,chunkSize,extra);
     }
+
+
+    private String processMacros(Request request, List<Utils.Macro> macros, Entry child) throws Exception {
+	StringBuilder label = new StringBuilder();
+	for(Utils.Macro macro: macros) {
+	    if(macro.isText()) {
+		label.append(macro.getText());
+	    } else {
+		String v=null;
+		if(macro.getId().equals("icon")) {
+		    v =HU.img(getPageHandler().getIconUrl(request, child));
+		} else if(macro.getId().equals("name")) {
+		    v = getEntryDisplayName(child);
+		} else if(macro.getId().equals("snippet")) {
+		    v = getSnippet(request, child,macro.getProperty("wikify",false),
+				   macro.getProperty("default",""));
+		} else if(macro.getId().equals(ARG_CREATEDATE)) {
+		    v= getDateHandler().formatDateWithMacro(request, child,
+							    child.getCreateDate(),macro);
+		} else if(macro.getId().equals(ARG_CHANGEDATE)) {
+		    v = getDateHandler().formatDateWithMacro(request, child,
+							     child.getCreateDate(), macro);
+		} else if(macro.getId().equals(ARG_FROMDATE)) {
+		    v = getDateHandler().formatDateWithMacro(request, child,
+								      child.getStartDate(),macro);
+		} else if(macro.getId().equals(ARG_TODATE)) {
+		    v = getDateHandler().formatDateWithMacro(request, child,
+							     child.getEndDate(),macro);
+		} else if(macro.getId().equals(ARG_DATE)) {
+		    v = getDateHandler().formatDateWithMacro(request, child,
+								      child.getStartDate(),macro);
+		} else if(macro.getId().equals("description")) {
+		    String desc = child.getDescription();		
+		    if(macro.getProperty("wikify",false)) {
+			desc  = wikifyEntry(request, child, desc);
+		    }
+		    v = desc;
+		} else {
+		    v = "unknown macro:" +macro.getId();
+		}
+		if(v!=null) {
+		    if(macro.getProperty("link",false)) {
+			if(macro.getProperty("noline",true)) {
+			    v = HU.href(getEntryManager().getEntryUrl(request, child),v,
+					HU.cssClass("noline"));
+			} else {
+			    v = HU.href(getEntryManager().getEntryUrl(request, child),v);
+			}
+		    }
+		    label.append(v);
+		}
+	    }
+	}
+	return  label.toString();
+    }
+	
 
 
     private String makeChunks(Request request, WikiUtil wikiUtil, Hashtable props, List chunks)
