@@ -442,6 +442,11 @@ public class DateHandler extends RepositoryManager {
         return formatDate(request, entry, new Date(ms));
     }
 
+    public String formatDateWithMacro(Request request, Entry entry, long d,Utils.Macro macro) {
+        return formatDate(request,entry, new Date(d), macro.getProperty("format",null));
+    }
+
+
     /**
      * _more_
      *
