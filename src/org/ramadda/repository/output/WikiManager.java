@@ -6889,6 +6889,7 @@ public class WikiManager extends RepositoryManager
         Utils.appendAll(misc2,
 			l2.call("Internal link", "[[", "]]", "Link title"),
 			l2.call("External link", "[", "]", "http://www.example.com link title"),
+			l.call("Embed YT, etc.","@(youtube, wikipedia, etc, URL)",""),
 			l2.call("Small text", "<small>", "</small>", "Small text"),
 			l.call("Horizontal line", "\\n----\\n", ""),
 			l.call("Button", ":button url label", ""),
