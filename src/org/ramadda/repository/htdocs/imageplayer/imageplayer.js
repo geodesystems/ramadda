@@ -54,7 +54,14 @@ function ImagePlayer(args)  {
     }
 
     this.properties = $.extend({},args??{});
-    this.currentImage = parseInt(this.properties.currentImage??0);
+    this.currentImage = 0;
+    if(Utils.stringDefined(this.properties.currentImage)) {
+	if(this.properties.currentImage=='last') {
+	    this.currentImage = this.images.length-1;
+	} else {
+	    this.currentImage = parseInt(this.properties.currentImage);
+	}
+    }
     if(this.properties.delay)
 	this.delay = parseFloat(this.properties.delay);
 
