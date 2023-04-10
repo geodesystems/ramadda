@@ -4917,13 +4917,14 @@ public class Utils extends IO {
 	private Hashtable properties;
 	public Macro(boolean isText, String macro) {
 	    this.isText= isText;
-	    this.macro  =macro;
+	    this.macro  =macro.trim();
 	    if(!isText) {
 		//${macro name=value ...}
 		List<String> toks = splitUpTo(macro," ",2);
 		if(toks.size()>1) {
 		    this.macro = toks.get(0).trim();
-		    this.properties = Utils.getProperties(toks.get(1));
+		    String s = toks.get(1).replace("_quote_","\"");
+		    this.properties = parseKeyValue(s);
 		}
 		//		System.err.println("MACRO: is macro:" + macro +" props:" + properties );
 	    } else {
@@ -4954,6 +4955,15 @@ public class Utils extends IO {
 	    return v;
 	}
 
+
+	public boolean getProperty(String key, boolean dflt) {
+	    if(properties==null) return dflt;
+	    return Utils.getProperty(properties, key,dflt);
+	}
+	
+	public Hashtable getProperties() {
+	    return properties;
+	}
 
     }
 
@@ -6162,6 +6172,13 @@ public class Utils extends IO {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+	if(true) {
+	    String s = "format=\"yyyy-MM-dd HH:mm\" link=true";
+	    System.err.println(parseKeyValue(s).get("format"));
+	    return;
+	}
+
+
 	if(true) {
 	    String fmt = "yyyy-MM-dd'T'HH:mm:ssZ";
 	    System.err.println(fmt);
