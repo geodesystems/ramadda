@@ -2195,6 +2195,10 @@ label, .ramadda-clickable, .ramadda-noselect, .entry-toggleblock-label {
     vertical-align:bottom;
 }
 
+a.noline {
+    text-decoration:none;
+}
+
 .entry-link  a {
     text-decoration:none;
     max-width: 200px;
