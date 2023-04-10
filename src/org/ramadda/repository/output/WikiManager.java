@@ -4367,7 +4367,6 @@ public class WikiManager extends RepositoryManager
 		link.append(tagClose);
 	    }
 	    String s = link.toString();
-	    System.err.println("LINK:" + s);
 	    links.add(s);
 	}
 
