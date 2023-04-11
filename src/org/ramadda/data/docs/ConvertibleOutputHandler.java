@@ -208,7 +208,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
                                     + HU.id(id + "_lastinput")));
         }
         sb.append(HtmlUtils.div("", HtmlUtils.id(id)));
-	HtmlUtils.importJS(sb, getPageHandler().getCdnPath("/lib/ace/src-min/ace.js"));
+	getRepository().getWikiManager().initWikiEditor(request, sb);
         HtmlUtils.importJS(sb,
                            getRepository().getUrlBase()
                            + "/media/convertcsv.js");
