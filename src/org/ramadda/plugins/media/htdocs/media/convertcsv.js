@@ -331,7 +331,7 @@ function  SeesvForm(inputId, entry,params) {
 	    }).fail(function(jqxhr, textStatus, error) {
 	    });
 	},
-	showMenu: function(items,anchor,title,all) {
+	showMenu: function(items,anchor,title,all,args) {
 	    let _this = this;
 	    let menuId = HU.getUniqueId("menu_");
 	    let menu;
@@ -348,7 +348,8 @@ function  SeesvForm(inputId, entry,params) {
 	    if(_this.menuDialog) {
 		_this.menuDialog.remove();
 	    }
-	    let dialog = _this.menuDialog = HU.makeDialog({my:all?'right top':'left top',at:all?'right bottom':'left bottom',content:menu,anchor:anchor,header:true,draggable:true,title:title});
+	    args = $.extend({my:all?'right top':'left top',at:all?'right bottom':'left bottom',content:menu,anchor:anchor,header:true,draggable:true,title:title},args??{});
+	    let dialog = _this.menuDialog = HU.makeDialog(args);
 	    let commands = dialog.find(".ramadda-clickable");
 	    commands.tooltip({
 		show:{delay:1000},
@@ -409,7 +410,7 @@ function  SeesvForm(inputId, entry,params) {
 	makeEditor:  function() {
 	    let _this = this;
 	    this.editor = ace.edit(this.domId(ID_INPUT));
-	    HU.addWikiEditor(this,this.domId(ID_INPUT));
+	    WikiUtil.addWikiEditor(this,this.domId(ID_INPUT));
 	    this.editor.setBehavioursEnabled(true);
 	    this.editor.setDisplayIndentGuides(false);
 	    this.editor.setKeyboardHandler("emacs");
@@ -440,6 +441,15 @@ function  SeesvForm(inputId, entry,params) {
 		},
 		bindKey: {mac: "ctrl-t", win: "ctrl-t"}
 	    })
+	    this.editor.commands.addCommand({
+		name: "keyf",
+		exec: function() {
+		    _this.showMenu(_this.allMenuItems,_this.jq(ID_MENU) ,"All Commands",true);
+		},
+		bindKey: {mac: "ctrl-f", win: "ctrl-f"}
+	    })
+
+
 	    this.editor.commands.addCommand({
 		name: "keyh",
 		exec: function() {
@@ -902,7 +912,6 @@ function  SeesvForm(inputId, entry,params) {
 			//		    Utils.makeDownloadFile("script.sh",result);
 			//		    return;
 		    }
-
 
 		    if(result.indexOf("<table")>0  || result.indexOf("<div")>0  || result.indexOf("<row")>0)
 			showHtml = true;
