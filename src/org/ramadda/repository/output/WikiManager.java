@@ -6832,7 +6832,7 @@ public class WikiManager extends RepositoryManager
             }
 
             String prop = link.getOutputType().getId();
-            String js = "javascript:insertTags(" + HU.squote(textAreaId)
+            String js = "javascript:WikiUtil.insertTags(" + HU.squote(textAreaId)
 		+ "," + HU.squote("{{") + "," + HU.squote("}}") + ","
 		+ HU.squote(prop) + ");";
         }
@@ -6845,7 +6845,7 @@ public class WikiManager extends RepositoryManager
         if ((fromType != null) && (fromType.size() > 0)) {
             fromTypeBuff = new StringBuilder();
             for (String[] pair : fromType) {
-                String js = "javascript:insertTags(" + HU.squote(textAreaId)
+                String js = "javascript:WikiUtil.insertTags(" + HU.squote(textAreaId)
 		    + "," + HU.squote(pair[1]) + ",'');";
                 fromTypeBuff.append(HU.href(js, pair[0]));
                 fromTypeBuff.append("<br>");
@@ -7069,7 +7069,7 @@ public class WikiManager extends RepositoryManager
             sb.append(HU.br());
 	    for(String[]tuple: fromType) {
                 String  textToInsert = tuple[1].replace("\n","\\n");
-                String js2 = "javascript:insertTags(" + HU.squote(textAreaId)
+                String js2 = "javascript:WikiUtil.insertTags(" + HU.squote(textAreaId)
 		    + "," + HU.squote("{{" + textToInsert + " ")
 		    + "," + HU.squote("}}") + "," + HU.squote("")
 		    + ");";
@@ -7102,7 +7102,7 @@ public class WikiManager extends RepositoryManager
                     textToInsert += " " + tag.attrs;
                 }
 
-                String js2 = "javascript:insertTags(" + HU.squote(textAreaId)
+                String js2 = "javascript:WikiUtil.insertTags(" + HU.squote(textAreaId)
 		    + "," + HU.squote("{{" + textToInsert + " ")
 		    + "," + HU.squote("}}") + "," + HU.squote("")
 		    + ");";
@@ -7143,10 +7143,10 @@ public class WikiManager extends RepositoryManager
         String js;
         if (suffix.length() == 0) {
             String prop = prefix + example + suffix;
-            js = "javascript:insertText(" + HU.squote(textAreaId) + ","
+            js = "javascript:WikiUtil.insertText(" + HU.squote(textAreaId) + ","
 		+ HU.squote(prop) + ");";
         } else {
-            js = "javascript:insertTags(" + HU.squote(textAreaId) + ","
+            js = "javascript:WikiUtil.insertTags(" + HU.squote(textAreaId) + ","
 		+ HU.squote(prefix) + "," + HU.squote(suffix) + ","
 		+ HU.squote(example) + ");";
         }

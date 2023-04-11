@@ -3856,22 +3856,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     getErrorDialog: function(msg) {
         return "<div class=\"ramadda-message\"><table><tr valign=top><td><div class=\"ramadda-message-link\"><img border=\"0\"  src=\"/repository/icons/error.png\"  /></div></td><td><div class=\"ramadda-message-inner\">" + msg + "</div></td></tr></table></div>";
     },
-    getWikiEditor: function(id) {
-        if (!this.wikiEditors) return null;
-        return  this.wikiEditors[id];
-    },
-    handleWikiEditorSubmit: function() {
-        if (!this.wikiEditors) return;
-        for (a in this.wikiEditors) {
-            let editor= this.wikiEditors[a];
-            editor.handleSubmit();
-        }
-    },
-    addWikiEditor:function(editor,id) {
-        if(!this.wikiEditors)  this.wikiEditors={};
-        id = id || editor.getId();
-        this.wikiEditors[id] = editor;
-    },
     makeBreadcrumbsInit: function(id) {
         //If page isn't loaded then register a callback
         if(!Utils.getPageLoaded()) {
@@ -4151,27 +4135,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             return this.bootstrapClasses[cols];
         }
         return "col-md-1";
-    },
-    initWikiEditor(entry, wikiId, textId,cbxId) {
-        var textBlock = textId +"_block";
-        var wikiBlock = wikiId +"_block";
-        $("#" + cbxId).click(() => {
-            var editor = HtmlUtils.getWikiEditor(wikiId);
-            var on  = $("#" + cbxId).is(':checked');
-            if(on) {
-                $("#" + textBlock).css("display","none");
-                $("#" + wikiBlock).css("display","block");
-                var val = $("#" + textId).val();
-                editor.getEditor().setValue(val,8);
-                $("#" + wikiId).focus();
-            } else {
-                var val = editor.getEditor().getValue();
-                $("#" + textId).val(val);
-                $("#" + textBlock).css("display","block");
-                $("#" + wikiBlock).css("display","none");
-                $("#" + textId).focus();
-            }
-        })
     },
     toggleDialogs:{},
     makeDialog: function(args) {

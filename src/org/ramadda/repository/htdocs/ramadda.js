@@ -125,13 +125,12 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	if (selector.selecttype == "wikilink") {
 	    let args = {entryId: entryId,name:value};
 	    if(opts) $.extend(args, opts);
-            insertAtCursor(selector.elementId, selector.textComp.obj,args);
+            WikiUtil.insertAtCursor(selector.elementId, selector.textComp.obj,args);
 	} else   if (selector.selecttype == "fieldname") {
-            insertAtCursor(selector.elementId, selector.textComp.obj,  value);
+            WikiUtil.insertAtCursor(selector.elementId, selector.textComp.obj,  value);
 	} else   if (selector.selecttype == "image") {
-            insertAtCursor(selector.elementId, selector.textComp.obj,  "{{image entry=\"" + entryId +"\" caption=\"" + value+"\" width=400px align=center}} ");	
+            WikiUtil.insertAtCursor(selector.elementId, selector.textComp.obj,  "{{image entry=\"" + entryId +"\" caption=\"" + value+"\" width=400px align=center}} ");	
 	} else if (selector.selecttype == "entryid") {
-            //        insertTagsInner(selector.elementId, selector.textComp.obj, "" +entryId+"|"+value+" "," ","importtype");
 	    let editor = HU.getWikiEditor(selector.elementId);
 	    if(editor) {
 		editor.insertTags(entryId, " ", "importtype");
@@ -139,11 +138,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		if(selector.props && selector.props.callback) {
 		    selector.props.callback(entryId,opts);
 		} else {
-		    insertText(selector.elementId,entryId);
+		    WikiUtil.insertText(selector.elementId,entryId);
 		}
 	    }
 	} else if (selector.selecttype == "entry:entryid") {
-            //        insertTagsInner(selector.elementId, selector.textComp.obj, "" +entryId+"|"+value+" "," ","importtype");
             HU.getWikiEditor(selector.elementId).insertTags("entry:" + entryId, " ", "importtype");
 	} else {
             selector.getHiddenComponent().val(entryId);

@@ -4980,10 +4980,12 @@ public class TypeHandler extends RepositoryManager {
                         rows = rows * 2;
                     }
                     if (isWiki) {
+			sb.append("<tr><td colspan=2>");
                         addWikiEditor(request, entry, sb, formInfo,
                                       ARG_DESCRIPTION, desc, "",
                                       false, Entry.MAX_DESCRIPTION_LENGTH,
                                       true);
+			sb.append("</td></tr>");
                     } else {
                         desc = desc.trim();
                         boolean isTextWiki = isWikiText(desc);
@@ -5025,7 +5027,7 @@ public class TypeHandler extends RepositoryManager {
                             tmpSB.append(HtmlUtils.textArea(ARG_DESCRIPTION,
 							    desc, rows, HU.attr("placeholder","Description")+HtmlUtils.id(textId)));
                             HtmlUtils.script(tmpSB,
-                                             "HtmlUtils.initWikiEditor("
+                                             "WikiUtil.initWikiEditor("
                                              + HtmlUtils.squote((entry
                                                  == null)
                                     ? ""
@@ -5479,7 +5481,6 @@ public class TypeHandler extends RepositoryManager {
                 getRepository().getWikiManager().makeWikiEditBar(request,
                     entry, editorId);
             if (stringDefined(label)) {
-                sb.append("<tr><td colspan=2>");
                 sb.append(HU.b(msgLabel(label)));
                 sb.append(HU.br());
             }
@@ -5523,7 +5524,7 @@ public class TypeHandler extends RepositoryManager {
         if (getWikiManager().initWikiEditor(request, sb)) {
             if ((formInfo != null) && !readOnly) {
                 formInfo.appendExtraJS(
-                    "HtmlUtil.handleWikiEditorSubmit();\n");
+                    "WikiUtil.handleWikiEditorSubmit();\n");
             }
         }
 
@@ -5539,10 +5540,7 @@ public class TypeHandler extends RepositoryManager {
         if ( !readOnly) {
             HU.close(sb, "div");
         }
-
-	if (stringDefined(label)) {
-            sb.append("</td></tr>");
-        }
+	
 
         return editorId;
     }
