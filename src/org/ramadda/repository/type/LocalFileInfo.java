@@ -44,6 +44,10 @@ public class LocalFileInfo {
 
 
     /** _more_ */
+    public static final int COL_DATE_PATTERNS = COL++;
+
+
+    /** _more_ */
     public static final int COL_NAMES = COL++;
 
 
@@ -58,6 +62,8 @@ public class LocalFileInfo {
     private List<String> excludes;
 
     private String directoryType;
+
+    private String datePatterns;
 
 
     /** _more_ */
@@ -84,6 +90,7 @@ public class LocalFileInfo {
 	directoryType = (String) values[COL_DIRECTORY_TYPE];
 	if(!Utils.stringDefined(directoryType)) directoryType=null;
 
+	datePatterns = (String) values[COL_DATE_PATTERNS];
 
         names    = get(values, COL_NAMES);
         includes = get(values, COL_INCLUDES);
@@ -232,6 +239,10 @@ public class LocalFileInfo {
     public String getDirectoryType() {
 	return directoryType;
     }
+
+    public String getDatePatterns() {
+	return datePatterns;
+    }    
 
 
 }

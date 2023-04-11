@@ -84,6 +84,12 @@ message="" prefix="----_nl_:h3 Pages" showIcon=false details=false sort=entryord
      <column name="directory_type"  group="Attributes"       type="string"     label="Directory Type" 
 	     showinhtml="false"
 	     suffix="Entry type to use for directories. Note: If you change this then you should also clear the cache with the Admin-&gt;Maintenance-&gt;Clear Cache"/>
+     <column name="date_patterns"  group="Attributes"
+	     type="string"     label="Date Patterns" 
+	     rows="5"
+	     suffix="e.g.:&lt;br&gt;yyyyMMdd&lt;br&gt;yyyy-MM-dd&lt;br&gt;yyyy_MM_dd&lt;br&gt;yyyyMMddHHmm&lt;br&gt;yyyy_MM_dd_HHmm&lt;br&gt;yyyy-MM-dd_HHmm"
+	     showinhtml="false"/>
+
      <column name="naming"  group="Attributes"       type="string"     label="Naming" rows="5" suffix="pattern:replacement e.g.&lt;br&gt;&lt;i&gt;NAM:North American Model&lt;br&gt;path:GFS:Global Forecast Model&lt;br&gt;&lt;i&gt;"  showinhtml="false"/>
     <wikis tag="simple"><![CDATA[{{tabletree showType=false  showSize=false   showCreateDate=false}}]]></wikis>
  </type>

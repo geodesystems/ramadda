@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -601,13 +602,24 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
             }
             values = entry.getTypeHandler().getEntryValues(entry);
         }
+	long fileDate =  targetFile.lastModified();
+	long fromDate = fileDate;
+	String datePatterns = localFileInfo.getDatePatterns();
+	if(datePatterns!=null) {
+	    Date tmpDate = Utils.extractDate(datePatterns, targetFile.getName());
+	    if(tmpDate!=null) {
+		fromDate = tmpDate.getTime();
+	    }
+	}
+
+
         entry.initEntry(name, desc, parent,
                         getUserManager().getLocalFileUser(),
                         new Resource(targetFile, (targetFile.isDirectory()
                 ? Resource.TYPE_LOCAL_DIRECTORY
                 : Resource.TYPE_LOCAL_FILE)), "", Entry.DEFAULT_ORDER,
-                targetFile.lastModified(), targetFile.lastModified(),
-                targetFile.lastModified(), targetFile.lastModified(), values);
+			fileDate, fileDate,
+			fromDate, fromDate, values);
 
 
         if (templateEntry != null) {
