@@ -3741,10 +3741,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         if(!HtmlUtils.loadSlides()) {
 	    tries++;
 	    if(tries>10) return;
-	    console.log("MS-1");
 	    setTimeout(()=>{
 		HtmlUtils.makeSlides(id,args);
 	    },1000);
+	    return;
 	}
         let opts = {
             dots:true
