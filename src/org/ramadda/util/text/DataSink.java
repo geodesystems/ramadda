@@ -110,14 +110,6 @@ public abstract class DataSink extends Processor implements Cloneable,SeesvPlugi
     public void finish(TextReader ctx) throws Exception {}
 
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sat, Apr 3, '21
-     * @author         Enter your name here...
-     */
     public static class ToJson extends Processor {
 
         /** _more_ */
@@ -406,15 +398,6 @@ public abstract class DataSink extends Processor implements Cloneable,SeesvPlugi
 
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 16, '15
-     * @author         Enter your name here...
-     */
     public static class ToDb extends Processor {
 
         /**  */
@@ -638,14 +621,6 @@ public abstract class DataSink extends Processor implements Cloneable,SeesvPlugi
 
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 16, '15
-     * @author         Enter your name here...
-     */
     public static class ToUrl extends Processor {
 	List<String> ids;
 

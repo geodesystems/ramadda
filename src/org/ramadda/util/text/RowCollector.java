@@ -954,13 +954,11 @@ public class RowCollector extends Processor {
 	    throws Exception {
             List values = row.getValues();
             if (cnt == 0) {
-                ctx.getWriter().println(
-					"<table  class='stripe hover ramadda-table ramadda-csv-table' >");
+                ctx.getWriter().println("<table  class='stripe hover ramadda-table ramadda-csv-table' >");
             }
             maxCount = Math.max(maxCount, values.size());
             String open  = "<td>";
             String close = "</td>";
-
             if (cnt == 0) {
                 ctx.getWriter().println("<thead>");
                 ctx.getWriter().println("<tr valign=top>");
@@ -969,7 +967,6 @@ public class RowCollector extends Processor {
             } else {
                 ctx.getWriter().println("<tr  valign=top class=" + (even?"ramadda-row-even":"ramadda-row-odd") +">");
             }
-
 
             String style = "";
             //Check for the width
@@ -1286,14 +1283,6 @@ public class RowCollector extends Processor {
         }
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...    
-     */
     public static class CountUnique extends RowCollector {
 
         /**  */
@@ -1380,14 +1369,6 @@ public class RowCollector extends Processor {
         }
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...    
-     */
     public static class Normal extends RowCollector {
 
         /**

@@ -1429,7 +1429,6 @@ public class Filter extends Processor {
             if (row.size() < cnt) {
                 return false;
             }
-
             return true;
         }
     }
@@ -1922,6 +1921,8 @@ public class Filter extends Processor {
 		    if(mode.equals("?")) debug = true;
 		    else fuzzyThreshold = Integer.parseInt(mode);
 		}
+	    } else {
+		throw new IllegalArgumentException("-unique: unknown mode:"  + mode + " valid values: exact fuzzy"); 
 	    }
     
         }
