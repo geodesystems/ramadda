@@ -901,6 +901,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
         boolean minified = getRepository().getMinifiedOk();
+	minified= false;
         if (minified) {
             HtmlUtils.cssLink(sb,
                               getPageHandler().getCdnPath(OPENLAYERS_BASE_V2
