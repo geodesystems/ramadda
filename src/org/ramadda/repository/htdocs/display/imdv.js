@@ -1335,7 +1335,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		html += HU.formEntryTop('Label:',input);
 		let prop = 'externalGraphic';
 		let icon = this.lastIcon || tmpStyle.externalGraphic;
-		let icons = HU.image(icon,['id',this.domId(prop+'_image')]) +
+		let targetIconId = this.domId(prop+'_image');
+		let icons = HU.image(icon,['id',targetIconId]) +
 		    HU.hidden('',icon,['id',this.domId(prop)]);
 		if(!Utils.isDefined(this.lastIncludeIcon)) this.lastIncludeIcon = true;
 		html += HU.formEntry('',HU.checkbox(this.domId('includeicon'),[],this.lastIncludeIcon,'Include Icon')+' ' + icons);
@@ -2705,7 +2706,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let value = jqid(id).val();
 		if(!value) {
 		    value = jqid(id+'_image').val();
-		    console.log(prop,id,value);
 		}
 
 		if(prop && value) {
@@ -2816,6 +2816,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let _this = this;
 	    let used = this.getUsedMarkers();
 	    let prop = icons.attr('icon-property');
+	    let apply = icon=>{
+		this.jq(prop+'_image').attr('src',icon);
+		this.jq(prop).val(icon);			
+		if(callback) callback(icon);
+	    }
+
 	    if(used.length>0) {
 		let html = HU.b("Recent: ");
 		used.forEach(icon=>{
@@ -2824,16 +2830,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		});
 		this.jq('recenticons').html(html);
 		this.jq('recenticons').find('.ramadda-icons-recent').click(function(){
-		    let icon = $(this).attr('icon');
-		    _this.jq(prop+"_image").attr('src',icon);
-		    _this.jq(prop).val(icon);			
-		    if(callback) callback(icon);
+		    apply($(this).attr('icon'));
 		});
 	    }
 
 
-
 	    HU.getEmojis(emojis=>{
+		let prefix = HU.getUniqueId('icons_');
 		let html = "";
 		emojis.forEach(cat=>{
 		    if(html!="") html+="</div>";
@@ -2845,16 +2848,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		});
 		html+="</div>";
 		html = HU.div(['style',HU.css('width','400px','max-height','200px','overflow-y','auto')], html);
-		html = HU.input("","",['id',this.domId(prop+'_search'),'placeholder','Search','size','30']) +"<br>"+
+		html = HU.input("","",['id',prefix+'_search','placeholder','Search','size','30']) +"<br>"+
 		    html;
 		icons.html(html);
-		let _this = this;
 		let images = icons.find('.ramadda-imdv-image');
 		images.click(function() {
-		    let src = $(this).attr('src');
-		    _this.jq(prop+"_image").attr('src',src);
-		    _this.jq(prop).val(src);			
-		    if(callback) callback(src);
+		    apply($(this).attr('src'));
 		});
 		let cats = icons.find('.ramadda-imdv-image-category');
 		let search = (value) =>{
@@ -2892,7 +2891,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    });
 
 		};
-		jqid(this.domId(prop+'_search')).keyup(function() {
+		jqid(prefix+'_search').keyup(function() {
 		    search($(this).val());
 		});
 	    });
