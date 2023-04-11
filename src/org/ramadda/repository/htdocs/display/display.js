@@ -263,7 +263,7 @@ function makeDisplayTooltip(header,imgs,text) {
 	}
 	let imgHtml = imgs.reduce((acc,img)=>{
 	    if(!img.startsWith("/")) {
-		img = ramaddaBaseUrl +"/help/display/" + img;
+		img = RamaddaUtil.getUrl("/help/display/" + img);
 	    }
 	    return acc+"<td><img src="+ img +" width=250px></td>";
 	},"<table><tr valign=top>");
@@ -1903,7 +1903,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
 	wikify:function(wiki,entryId,wikiCallback,wikiError) {
 	    wikiError = wikiError || (error=>{this.handleError(error);});
-	    let url = ramaddaBaseUrl + "/wikify";
+	    let url = RamaddaUtil.getUrl("/wikify");
 	    $.post(url,{
 		doImports:"false",
 		entryid:entryId??this.getProperty("entryId"),
@@ -4168,7 +4168,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             args.push("description_encoded");
             args.push(window.btoa(wiki));
-            let url = HU.getUrl(ramaddaBaseUrl + "/entry/publish", args);
+            let url = HU.getUrl(RamaddaUtil.getUrl("/entry/publish"), args);
             window.open(url, '_blank');
         },
         getChildEntries: function(includeFixed) {
@@ -4274,7 +4274,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 
 
-            let url = ramaddaBaseUrl + "/entry/copy?action.force=copy&from=" + from;
+            let url = RamaddaUtil.getUrl("/entry/copy?action.force=copy&from=" + from);
             window.open(url, '_blank');
 
         },
@@ -4327,7 +4327,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             if (image.indexOf("http") == 0) {
 				url = image;
                             } else {
-				url = ramaddaBaseUrl + "/metadata/view/" + image + "?element=1&entryid=" + entry.getId() + "&metadata_id=" + metadata[i].id + "&thumbnail=false";
+				url = RamaddaUtil.getUrl("/metadata/view/" + image + "?element=1&entryid=" + entry.getId() + "&metadata_id=" + metadata[i].id + "&thumbnail=false");
                             }
                             html += HU.image(url, [ATTR_CLASS, "display-entry-thumbnail"]);
 			}

@@ -2604,7 +2604,7 @@ var Utils =  {
         let _this = this;
         let newVal = input.val()||"";
         Utils.searchLastInput = newVal;
-        let url = ramaddaBaseUrl + "/search/suggest?text=" + encodeURIComponent(newVal);
+        let url = RamaddaUtil.getUrl("/search/suggest?text=" + encodeURIComponent(newVal));
         if (type) url += "&type=" + type;
         if(here.length>0 && here.is(':checked') && ramaddaThisEntry)
             url +="&ancestor=" + ramaddaThisEntry;
@@ -2629,12 +2629,12 @@ var Utils =  {
                 let name = value.name;
                 let id = value.id;
                 let v = name.replace(/\"/g, "_quote_");
-                let entryLink =  HU.href(ramaddaBaseUrl + "/entry/show?entryid=" + id,HU.getIconImage(value.icon||icon_blank16) + SPACE+name,[TITLE,"View entry",STYLE,HU.css("display","inline-block","width","100%"), CLASS,"ramadda-highlightable"]);
+                let entryLink =  HU.href(RamaddaUtil.getUrl("/entry/show?entryid=" + id),HU.getIconImage(value.icon||icon_blank16) + SPACE+name,[TITLE,"View entry",STYLE,HU.css("display","inline-block","width","100%"), CLASS,"ramadda-highlightable"]);
                 let searchLink;
                 if(submitForm) {
                     searchLink =  HU.span([CLASS,"ramadda-highlightable ramadda-search-input","index",i,TITLE,"Search for"],HtmlUtils.getIconImage("fa-search"));
                 } else {
-                    searchLink =  HU.href(ramaddaBaseUrl + "/search/do?text=" + encodeURIComponent(v),HtmlUtils.getIconImage("fa-search"),[TITLE,"Search for"]);
+                    searchLink =  HU.href(RamaddaUtil.getUrl( "/search/do?text=" + encodeURIComponent(v)),HtmlUtils.getIconImage("fa-search"),[TITLE,"Search for"]);
                 }
                 let row =  searchLink +  SPACE + entryLink;
                 //                      html += HtmlUtils.div([CLASS, 'ramadda-search-suggestion ' + (even ? 'ramadda-row-even' : 'ramadda-row-odd')], row);
@@ -2674,7 +2674,7 @@ var Utils =  {
         anchor = id;
 	//      anchor = anchor || id;
         let value = Utils.searchLastInput||"";
-        let form = "<form action='" + ramaddaBaseUrl + "/search/do'>";
+        let form = "<form action='" + RamaddaUtil.getUrl('/search/do')+"'>";
         form += HU.open('input',['value', value, 'placeholder','Search text', 'autocomplete','off','autofocus','true','id','popup_search_input','class', 'ramadda-search-input',
                                  STYLE,HU.css('margin-left','4px', 'padding','2px','width','250px','border','0px'),'name','text']);
         if(ramaddaThisEntry) {
@@ -2684,14 +2684,15 @@ var Utils =  {
 
         let linksId = HU.getUniqueId();
 	let searchLink = 
-	    HU.link(ramaddaBaseUrl + '/search/form', 'Search Form', [TITLE, 'Go to search form', STYLE,HU.css('color','#888','font-size','13px')]);
+	    HU.link(RamaddaUtil.getUrl('/search/form'),
+		    'Search Form', [TITLE, 'Go to search form', STYLE,HU.css('color','#888','font-size','13px')]);
         let links =  HU.div(["id", linksId,STYLE,HU.css('text-align','right','color','#888','font-size','13px')],
 			    searchLink);
 //  +
 //                            " | " +
-//                            HU.link(ramaddaBaseUrl + '/search/type', 'By Type', [TITLE, 'Go to type form', STYLE,HU.css('color','#888','font-size','13px')]) +
+	//                            HU.link(RamaddaUtil.getUrl('/search/type'), 'By Type', [TITLE, 'Go to type form', STYLE,HU.css('color','#888','font-size','13px')]) +
 //                            " | " +
-//                            HU.link(ramaddaBaseUrl + '/search/browse', 'By Metadata', [TITLE, 'Go to metadata form', STYLE,HU.css('color','#888','font-size','13px')]));
+	//                            HU.link(RamaddaUtil.getUrl('/search/browse'), 'By Metadata', [TITLE, 'Go to metadata form', STYLE,HU.css('color','#888','font-size','13px')]));
 
         let resultsId = HU.getUniqueId('searchresults');
         let results = HU.div([ID,resultsId,CLASS,'ramadda-search-popup-results']);
@@ -2988,7 +2989,7 @@ var Utils =  {
 
 var GuiUtils = {
     getProxyUrl: function(url) {
-        let base = ramaddaBaseUrl + "/proxy?trim=true&url=";
+        let base = RamaddaUtil.getUrl( "/proxy?trim=true&url=");
         return base + encodeURIComponent(url);
     },
 
@@ -3412,7 +3413,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    cb(this.emojis);
 	    return;
 	}
-        $.getJSON(ramaddaBaseUrl+"/emojis/emojis.json", data=>{
+        $.getJSON(RamaddaUtil.getCdnUrl('/emojis/emojis.json'), data=>{
 	    let emojis  = [];
 	    let cats = {};
 	    this.emojis = [];
@@ -3432,7 +3433,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		let url = item.image;
 		if(!url.startsWith("/")) url = "/emojis/" + url
 		cat.images.push({name:item.name,
-				 image:ramaddaBaseUrl+url});
+				 image:RamaddaUtil.getCdnUrl(url)});
 
 	    })
 	    this.emojis=emojis;
@@ -4956,7 +4957,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 entryId = toks[0].trim();
             }
             var attach = toks[1].trim();
-            return ramaddaBaseUrl + "/metadata/view/" + attach + "?entryid=" + entryId;
+            return RamaddaUtil.getUrl( "/metadata/view/" + attach + "?entryid=" + entryId);
         }
         return tag;
     },

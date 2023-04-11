@@ -529,11 +529,11 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		toks = toks.map(tok=>{return tok.replace(/_comma_/g,",")});		
 		let getUrl = url =>{
 		    if(url.startsWith("resources")) {
-			url = ramaddaBaseUrl +"/" + url;
+			url = RamaddaUtil.getCdnUrl("/" + url);
 		    } else if(url.startsWith("/resources")) {
-			url = ramaddaBaseUrl + url;			
+			url = RamaddaUtil.getCdnUrl(url);			
 		    } else    if(!url.startsWith("/") && !url.startsWith("http")) {
-			url = ramaddaBaseUrl +"/entry/get?entryid=" + url;
+			url = RamaddaUtil.getUrl("/entry/get?entryid=" + url);
 		    }
 		    return url;
 		};
@@ -580,7 +580,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		//do this later so the map displays its initial location OK
 		setTimeout(()=>{
                     if (_this.getProperty("kmlLayer")) {
-			let url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + _this.getProperty("kmlLayer");
+			let url = RamaddaUtil.getUrl("/entry/show?output=shapefile.kml&entryid=" + _this.getProperty("kmlLayer"));
 			_this.addBaseMapLayer(url, true);
                     }
                     if (_this.getProperty("geojsonLayer")) {
@@ -1343,7 +1343,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 let toks = this.layerEntries.split(",");
                 for (let i = 0; i < toks.length; i++) {
                     let tok = toks[i];
-                    let url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + tok;
+                    let url = RamaddaUtil.getUrl("/entry/show?output=shapefile.kml&entryid=" + tok);
                     this.map.addKMLLayer("layer", url, true, selectCallback, unselectCallback);
                     //TODO: Center on the kml
                 }
@@ -1485,7 +1485,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 //If args was defined then default to search
                 this.layerSelectPath = "/search/do";
             }
-            let url = ramaddaBaseUrl + this.layerSelectPath;
+            let url = RamaddaUtil.getUrl(this.layerSelectPath);
             if (args) {
                 let toks = args.split(",");
                 for (let i = 0; i < toks.length; i++) {
@@ -1571,7 +1571,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     let url = entry.getRamadda().getEntryDownloadUrl(entry);
                     layer = this.map.addGeoJsonLayer(this.getProperty("geojsonLayerName"), url, this.doDisplayMap(), selectCallback, unselectCallback, null, null, true);
                 } else {
-                    let url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + entry.getId();
+                    let url = RamaddaUtil.getUrl("/entry/show?output=shapefile.kml&entryid=" + entry.getId());
                     layer = this.map.addKMLLayer(entry.getName(), url, true, selectCallback, unselectCallback, null, null, true);
                 }
                 this.addedLayers[entry.getId()] = layer;
@@ -1722,7 +1722,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    Utils.copyToClipboard(loc+"\n");
 		    console.log(loc);
 		} else  {
-		    let url = ramaddaBaseUrl +"/map/getaddress?latitude=" + lat +"&longitude=" + lon;
+		    let url = RamaddaUtil.getUrl("/map/getaddress?latitude=" + lat +"&longitude=" + lon);
 		    $.getJSON(url, data=>{
 			if(data.length==0) {
 			    console.log(loc+",,,,,");
@@ -1753,8 +1753,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(Utils.isAnonymous()) return;
 		let text = prompt("Marker text", "");
 		if(!text) return;
-		let url = ramaddaBaseUrl +"/metadata/addform?entryid=" + this.getProperty("entryId")+"&metadata_type=map_marker&metadata_attr1=" +
-		    encodeURIComponent(text) +"&metadata_attr2=" + lat +"," + lon; 
+		let url = RamaddaUtil.getUrl("/metadata/addform?entryid=" + this.getProperty("entryId")+"&metadata_type=map_marker&metadata_attr1=" +
+					     encodeURIComponent(text) +"&metadata_attr2=" + lat +"," + lon); 
 		window.location = url;
 		if(debug) console.log("\tclick:shift");
 		return
@@ -2856,7 +2856,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.getProperty("showRegionSelector")) {
 		//Fetch the regions
 		if(!ramaddaMapRegions) {
-		    let jqxhr = $.getJSON(ramaddaBaseUrl +"/regions.json", data=> {
+		    let jqxhr = $.getJSON(RamaddaUtil.getCdnUrl("/regions.json"), data=> {
 			if (GuiUtils.isJsonError(data)) {
 			    console.log("Error fetching regions");
 			    ramaddaMapRegions=[];
@@ -3733,7 +3733,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let rotateField = this.getFieldById(fields, this.getProperty("rotateField"));	    
 	    let markerIcon = this.getProperty("markerIcon",this.getProperty("pointIcon"));
 	    if(markerIcon && markerIcon.startsWith("/")) {
-                markerIcon =  ramaddaBaseUrl + markerIcon;
+                markerIcon =  RamaddaUtil.getCdnUrl(markerIcon);
 	    }
 	    let usingIcon = markerIcon || iconField;
 	    let showPoint = !usingIcon;
@@ -4665,7 +4665,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (this.getProperty("markerIcon")) {
                 let icon = this.getProperty("markerIcon");
                 if (icon.startsWith("/"))
-                    return ramaddaBaseUrl + icon;
+                    return RamaddaUtil.getCdnUrl(icon);
                 else
                     return icon;
             }
@@ -5202,7 +5202,7 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 		    let mapFile = this.getPropertyMapFile();
 		    let mapEntry = this.getMapEntry();
 		    if(mapEntry!=null) {
-			mapFile = ramaddaBaseUrl + "/entry/get?entryid=" + mapEntry;
+			mapFile = RamaddaUtil.getUrl("/entry/get?entryid=" + mapEntry);
 		    } else {
 			if(!mapFile.startsWith("/") && !mapFile.startsWith("http")) {
 			    mapFile =ramaddaCdn +"/resources/" + mapFile;
