@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Apr 11 10:22:05 MDT 2023";
+var build_date="RAMADDA build date: Tue Apr 11 10:34:44 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -4452,7 +4452,7 @@ function DisplayThing(argId, argProperties) {
 			attrs[f.getId() +"_image"] =  img;
 			attrs[f.getId() +"_url"] =  value;
 		    } else {
-			attrs[f.getId() +"_url"] =  ramaddaCdn+"/icons/blank.gif";
+			attrs[f.getId() +"_url"] =  RamaddaUtil.getCdnUrl("/icons/blank.gif");
 			attrs[f.getId() +"_image"] =  "";
 		    }
 		} else if(f.getType()=="movie") {
@@ -6247,7 +6247,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return this.entries != null && this.entries.length > 0;
         },
         getWaitImage: function() {
-            return HU.image(ramaddaCdn + "/icons/progress.gif");
+            return HU.image(RamaddaUtil.getCdnUrl("/icons/progress.gif"));
         },
 	useDisplayMessage:function() {
 	    return true;
@@ -7960,7 +7960,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             if (entry.getFilesize() > 0) {
                 html += HU.formEntry("File:", entry.getFilename() + " " +
-				     HU.href(entry.getResourceUrl(), HU.image(ramaddaCdn + "/icons/download.png"),["download",null]) + " " +
+				     HU.href(entry.getResourceUrl(), HU.image(RamaddaUtil.getCdnUrl("/icons/download.png")),["download",null]) + " " +
 				     entry.getFormattedFilesize());
             }
             for (let colIdx = 0; colIdx < columns.length; colIdx++) {
@@ -8296,15 +8296,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let toolbarItems = [];
 	    let props = "{showMenu:true,showTitle:true}";
             //                 toolbarItems.push(HU.tag(TAG_A, [ATTR_HREF, entry.getEntryUrl(),"target","_"], 
-            //                                                HU.image(ramaddaCdn +"/icons/application-home.png",["border",0,ATTR_TITLE,"View Entry"])));
+            //                                                HU.image(RamaddaUtil.getCdnUrl("/icons/application-home.png"),["border",0,ATTR_TITLE,"View Entry"])));
             if (entry.getType().getId() == "type_wms_layer") {
                 toolbarItems.push(HU.tag(TAG_A, ["onclick", get + ".addMapLayer(" + HU.sqt(entry.getId()) + ");"],
-					 HU.image(ramaddaCdn + "/icons/map.png", ["border", 0, ATTR_TITLE, "Add Map Layer"])));
+					 HU.image(RamaddaUtil.getCdnUrl("/icons/map.png"), ["border", 0, ATTR_TITLE, "Add Map Layer"])));
 
             }
             if (entry.getType().getId() == "geo_shapefile" || entry.getType().getId() == "geo_geojson") {
                 toolbarItems.push(HU.tag(TAG_A, ["onclick", get + ".addMapLayer(" + HU.sqt(entry.getId()) + ");"],
-					 HU.image(ramaddaCdn + "/icons/map.png", ["border", 0, ATTR_TITLE, "Add Map Layer"])));
+					 HU.image(RamaddaUtil.getCdnUrl("/icons/map.png"), ["border", 0, ATTR_TITLE, "Add Map Layer"])));
 
             }
 
@@ -8329,7 +8329,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				     HU.getIconImage("fa-file", ["border", 0, ATTR_TITLE, "Show Entry"])));
             if (entry.getFilesize() > 0) {
                 toolbarItems.push(HU.tag(TAG_A, [ATTR_HREF, entry.getResourceUrl(),"download",null],
-					 HU.image(ramaddaCdn + "/icons/download.png", ["border", 0, ATTR_TITLE, "Download (" + entry.getFormattedFilesize() + ")"])));
+					 HU.image(RamaddaUtil.getCdnUrl("/icons/download.png"), ["border", 0, ATTR_TITLE, "Download (" + entry.getFormattedFilesize() + ")"])));
 
             }
 
@@ -8568,7 +8568,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
         getEntryMenuButton: function(entry) {
             let menuButton = HU.onClick(this.getGet() + ".showEntryMenu(event, '" + entry.getId() + "');",
-					HU.image(ramaddaCdn + "/icons/menu.png",
+					HU.image(RamaddaUtil.getCdnUrl("/icons/menu.png"),
 						 [ATTR_CLASS, "display-entry-toolbar-item", ATTR_ID, this.getDomId(ID_MENU_BUTTON + entry.getIdForDom())]));
             return menuButton;
         },
@@ -9051,7 +9051,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getMenuButton:function() {
             let get = this.getGet();
             let button = HU.onClick(get + ".showDialog();",
-				    HU.image(ramaddaCdn + "/icons/downdart.png",
+				    HU.image(RamaddaUtil.getCdnUrl("/icons/downdart.png"),
 					     [ATTR_CLASS, "display-dialog-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)]));
 	    button+=" ";
 	    return button;
@@ -9307,11 +9307,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             labels.push("Copy Display");
             if (this.jsonUrl != null) {
                 calls.push(get + ".fetchUrl('json');");
-                images.push(ramaddaCdn + "/icons/json.png");
+                images.push(RamaddaUtil.getCdnUrl("/icons/json.png"));
                 labels.push("Download JSON");
 
                 calls.push(get + ".fetchUrl('csv');");
-                images.push(ramaddaCdn + "/icons/csv.png");
+                images.push(RamaddaUtil.getCdnUrl("/icons/csv.png"));
                 labels.push("Download CSV");
             }
             for (let i = 0; i < calls.length; i++) {
@@ -21728,7 +21728,7 @@ addGlobalDisplayType({
 function RamaddaCardsDisplay(displayManager, id, properties) {
     const ID_RESULTS = "results";
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_CARDS, properties);
-    Utils.importJS(ramaddaCdn + "/lib/color-thief.umd.js",
+    Utils.importJS(RamaddaUtil.getCdnUrl("/lib/color-thief.umd.js"),
 		   () => {},
 		   (jqxhr, settings, exception) => {
 		       console.log("err");
@@ -26952,8 +26952,8 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             if(!this.loadedResources) {
 		if(this.loadingSkewt) return;
 		this.loadingSkewt=true;
-                await Utils.importCSS(ramaddaCdn +"/lib/skewt/sounding.css");
-                await Utils.importJS(ramaddaCdn+"/lib/skewt/d3skewt.js");
+                await Utils.importCSS(RamaddaUtil.getCdnUrl("/lib/skewt/sounding.css"));
+                await Utils.importJS(RamaddaUtil.getCdnUrl("/lib/skewt/d3skewt.js"));
                 this.loadedResources = true;
             }
 
@@ -27554,7 +27554,7 @@ function RamaddaVennDisplay(displayManager, id, properties) {
         updateUI: function() {
 	    if(!loadedVenn) {
 		loadedVenn = true;
-		var includes = "<script src='" + ramaddaCdn + "/lib/venn.js'></script>";
+		var includes = "<script src='" + RamaddaUtil.getCdnUrl("/lib/venn.js")+"'></script>";
 		this.writeHtml(ID_DISPLAY_TOP, includes);
 	    }
 	    let _this = this;
@@ -27786,7 +27786,7 @@ function RamaddaChernoffDisplay(displayManager, id, properties) {
         updateUI: function() {
             if (!this.written) {
                 this.written = true;
-                var includes = "<script src='" + ramaddaCdn + "/lib/chernoff.js'></script>";
+                var includes = "<script src='" + RamaddaUtil.getCdnUrl("/lib/chernoff.js")+"'></script>";
                 this.writeHtml(ID_DISPLAY_TOP, includes);
             }
             this.updateUIInner();
@@ -28065,8 +28065,8 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
     const ID_BUBBLES = "bubbles";
     const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_D3BUBBLE, properties);
     if(!window["BubbleChart"]) {
-	Utils.importJS(ramaddaCdn +"/lib/d3/d3-legend.min.js");
-	Utils.importJS(ramaddaCdn +"/lib/d3/bubblechart.js");
+	Utils.importJS(RamaddaUtil.getCdnUrl("/lib/d3/d3-legend.min.js"));
+	Utils.importJS(RamaddaUtil.getCdnUrl("/lib/d3/bubblechart.js"));
     }
     let myProps = [
 	{label:'Bubble Chart'},
@@ -28400,8 +28400,8 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
         updateUI: function() {
 	    if(!this.loadedJq) {
 		this.loadedJq = true;
-		let includes = "<link rel='stylesheet' href='" + ramaddaCdn + "/lib/jqcloud.min.css'>";
-		includes += "<script src='" + ramaddaCdn + "/lib/jqcloud.min.js'></script>";
+		let includes = "<link rel='stylesheet' href='" + RamaddaUtil.getCdnUrl("/lib/jqcloud.min.css")+"'>";
+		includes += "<script src='" + RamaddaUtil.getCdnUrl("/lib/jqcloud.min.js")+"'></script>";
 		this.writeHtml(ID_DISPLAY_TOP, includes);
 		let _this = this;
 		let tmp = $("body");
@@ -30065,7 +30065,7 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
             this.updateUIInner();
         },
         updateUI: function() {
-            var includes = "<script src='" + ramaddaCdn + "/lib/compromise.min.js'></script>";
+            var includes = "<script src='" + RamaddaUtil.getCdnUrl("/lib/compromise.min.js")+"'></script>";
             this.writeHtml(ID_DISPLAY_TOP, includes);
             let _this = this;
             var func = function() {
@@ -31764,7 +31764,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
             if (this.ramaddas.length > 0) {
                 let repositoriesSelect = HU.openTag(TAG_SELECT, [ATTR_ID, this.getDomId(ID_REPOSITORY), ATTR_CLASS, "display-repositories-select"]);
-                let icon = ramaddaCdn + "/icons/favicon.png";
+                let icon = RamaddaUtil.getCdnUrl("/icons/favicon.png");
                 for (let i = 0; i < this.ramaddas.length; i++) {
                     let ramadda = this.ramaddas[i];
                     let attrs = [ATTR_TITLE, "", ATTR_VALUE, ramadda.getId(),
@@ -35046,9 +35046,9 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		toks = toks.map(tok=>{return tok.replace(/_comma_/g,",")});		
 		let getUrl = url =>{
 		    if(url.startsWith("resources")) {
-			url = RamaddaUtil.getCdnUrl("/" + url);
+			url = RamaddaUtil.getUrl("/" + url);
 		    } else if(url.startsWith("/resources")) {
-			url = RamaddaUtil.getCdnUrl(url);			
+			url = RamaddaUtil.getUrl(url);			
 		    } else    if(!url.startsWith("/") && !url.startsWith("http")) {
 			url = RamaddaUtil.getUrl("/entry/get?entryid=" + url);
 		    }
@@ -37088,7 +37088,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		url  =url.trim();
 		if(url.length==0) return;
 		if(!url.startsWith("/") && !url.startsWith("http")) {
-		    url = ramaddaCdn + "/resources/" +url;			
+		    url = RamaddaUtil.getCdnUrl("/resources/" +url);			
 		}
 		let success = (data) =>{
 		    data=JSON.parse(data);
@@ -37373,7 +37373,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.getProperty("showRegionSelector")) {
 		//Fetch the regions
 		if(!ramaddaMapRegions) {
-		    let jqxhr = $.getJSON(RamaddaUtil.getCdnUrl("/regions.json"), data=> {
+		    let jqxhr = $.getJSON(RamaddaUtil.getUrl("/regions.json"), data=> {
 			if (GuiUtils.isJsonError(data)) {
 			    console.log("Error fetching regions");
 			    ramaddaMapRegions=[];
@@ -38180,8 +38180,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    featuresToAdd.push(this.map.createPoint(ID,  tpoints[0], attrs, null));
 		} else {
 		    if(this.getShowPathEndPoint()) {
-			featuresToAdd.push(this.map.createMarker("startpoint", tpoints[0],ramaddaCdn+"/icons/map/marker-green.png"));
-			featuresToAdd.push(this.map.createMarker("endpoint", tpoints[tpoints.length-1],ramaddaCdn+"/icons/map/marker-blue.png"));
+			featuresToAdd.push(this.map.createMarker("startpoint", tpoints[0],RamaddaUtil.getCdnUrl("/icons/map/marker-green.png")));
+			featuresToAdd.push(this.map.createMarker("endpoint", tpoints[tpoints.length-1],RamaddaUtil.getCdnUrl("/icons/map/marker-blue.png")));
 		    }
 		    let poly = this.map.createPolygon(ID, "", tpoints, attrs, null);
 		    poly.noSelect = true;
@@ -39188,7 +39188,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
             displayMapCurrentMarker++;
             if (displayMapCurrentMarker >= displayMapMarkers.length) displayMapCurrentMarker = 0;
-            return ramaddaCdn + "/lib/openlayers/v2/img/" + displayMapMarkers[displayMapCurrentMarker];
+            return RamaddaUtil.getCdnUrl("/lib/openlayers/v2/img/" + displayMapMarkers[displayMapCurrentMarker]);
         },
 	highlightMarker:null,
         handleEventRecordHighlight: function(source, args) {
@@ -39322,7 +39322,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	    if(!grid) {
 		if(ramaddaGridState.loading[what]) return;
 		ramaddaGridState.loading[what] = true;
-		let url = ramaddaCdn +"/resources/grid_"+ what+".json";
+		let url = RamaddaUtil.getCdnUrl("/resources/grid_"+ what+".json");
 		$.getJSON(url, ( data ) =>{
 		    ramaddaGridState.grids[what] = data;
 		    this.updateUI();
@@ -39722,7 +39722,7 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 			mapFile = RamaddaUtil.getUrl("/entry/get?entryid=" + mapEntry);
 		    } else {
 			if(!mapFile.startsWith("/") && !mapFile.startsWith("http")) {
-			    mapFile =ramaddaCdn +"/resources/" + mapFile;
+			    mapFile =RamaddaUtil.getCdnUrl("/resources/" + mapFile);
 			}
 		    }
 		    $.getJSON(mapFile, (data) =>{
@@ -51225,9 +51225,9 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	{p:'hideBanner',ex:"true"},
     ];
 
-    Utils.importJS(ramaddaCdn+"/lib/timeline3/timeline.js");
+    Utils.importJS(RamaddaUtil.getCdnUrl("/lib/timeline3/timeline.js"));
     let css = "https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css";
-    //    css =  ramaddaCdn+"/lib/timeline3/timeline.css";
+    //    css =  RamaddaUtil.getCdnUrl("/lib/timeline3/timeline.css");
     $(HU.tag('link',['rel','stylesheet','href', css,'type','text/css'] )).appendTo("head");
    
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -52616,7 +52616,7 @@ function RamaddaTsneDisplay(displayManager, id, properties) {
                 this.setDisplayMessage(this.getLoadingMessage());
                 return;
             }
-            await Utils.importJS(ramaddaCdn + "/lib/tsne.js");
+            await Utils.importJS(RamaddaUtil.getCdnUrl("/lib/tsne.js"));
             //Height is the height of the overall display including the menu bar
             let height = this.getProperty("height",400);
             if (String(height).endsWith("px")) height = String(height).replace("px", "");
@@ -56118,7 +56118,7 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
         },
 	updateUI:function(args) {
 	    if(!window.Plotly) {
-		let url = ramaddaCdn+"/lib/plotly/plotly-2.18.2.js";
+		let url = RamaddaUtil.getCdnUrl("/lib/plotly/plotly-2.18.2.js");
 		let callback = this.loadingJS?null:   ()=>{
 //		    Utils.loadScript('/repository/lib/d3/d3.js');
 		    this.updateUI(args);
