@@ -529,9 +529,9 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		toks = toks.map(tok=>{return tok.replace(/_comma_/g,",")});		
 		let getUrl = url =>{
 		    if(url.startsWith("resources")) {
-			url = RamaddaUtil.getCdnUrl("/" + url);
+			url = RamaddaUtil.getUrl("/" + url);
 		    } else if(url.startsWith("/resources")) {
-			url = RamaddaUtil.getCdnUrl(url);			
+			url = RamaddaUtil.getUrl(url);			
 		    } else    if(!url.startsWith("/") && !url.startsWith("http")) {
 			url = RamaddaUtil.getUrl("/entry/get?entryid=" + url);
 		    }
@@ -2571,7 +2571,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		url  =url.trim();
 		if(url.length==0) return;
 		if(!url.startsWith("/") && !url.startsWith("http")) {
-		    url = ramaddaCdn + "/resources/" +url;			
+		    url = RamaddaUtil.getCdnUrl("/resources/" +url);			
 		}
 		let success = (data) =>{
 		    data=JSON.parse(data);
@@ -2856,7 +2856,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.getProperty("showRegionSelector")) {
 		//Fetch the regions
 		if(!ramaddaMapRegions) {
-		    let jqxhr = $.getJSON(RamaddaUtil.getCdnUrl("/regions.json"), data=> {
+		    let jqxhr = $.getJSON(RamaddaUtil.getUrl("/regions.json"), data=> {
 			if (GuiUtils.isJsonError(data)) {
 			    console.log("Error fetching regions");
 			    ramaddaMapRegions=[];
@@ -3663,8 +3663,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    featuresToAdd.push(this.map.createPoint(ID,  tpoints[0], attrs, null));
 		} else {
 		    if(this.getShowPathEndPoint()) {
-			featuresToAdd.push(this.map.createMarker("startpoint", tpoints[0],ramaddaCdn+"/icons/map/marker-green.png"));
-			featuresToAdd.push(this.map.createMarker("endpoint", tpoints[tpoints.length-1],ramaddaCdn+"/icons/map/marker-blue.png"));
+			featuresToAdd.push(this.map.createMarker("startpoint", tpoints[0],RamaddaUtil.getCdnUrl("/icons/map/marker-green.png")));
+			featuresToAdd.push(this.map.createMarker("endpoint", tpoints[tpoints.length-1],RamaddaUtil.getCdnUrl("/icons/map/marker-blue.png")));
 		    }
 		    let poly = this.map.createPolygon(ID, "", tpoints, attrs, null);
 		    poly.noSelect = true;
@@ -4671,7 +4671,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
             displayMapCurrentMarker++;
             if (displayMapCurrentMarker >= displayMapMarkers.length) displayMapCurrentMarker = 0;
-            return ramaddaCdn + "/lib/openlayers/v2/img/" + displayMapMarkers[displayMapCurrentMarker];
+            return RamaddaUtil.getCdnUrl("/lib/openlayers/v2/img/" + displayMapMarkers[displayMapCurrentMarker]);
         },
 	highlightMarker:null,
         handleEventRecordHighlight: function(source, args) {
@@ -4805,7 +4805,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	    if(!grid) {
 		if(ramaddaGridState.loading[what]) return;
 		ramaddaGridState.loading[what] = true;
-		let url = ramaddaCdn +"/resources/grid_"+ what+".json";
+		let url = RamaddaUtil.getCdnUrl("/resources/grid_"+ what+".json");
 		$.getJSON(url, ( data ) =>{
 		    ramaddaGridState.grids[what] = data;
 		    this.updateUI();
@@ -5205,7 +5205,7 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 			mapFile = RamaddaUtil.getUrl("/entry/get?entryid=" + mapEntry);
 		    } else {
 			if(!mapFile.startsWith("/") && !mapFile.startsWith("http")) {
-			    mapFile =ramaddaCdn +"/resources/" + mapFile;
+			    mapFile =RamaddaUtil.getCdnUrl("/resources/" + mapFile);
 			}
 		    }
 		    $.getJSON(mapFile, (data) =>{

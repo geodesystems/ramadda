@@ -891,7 +891,7 @@ WikiEditor.prototype = {
 	    html+=HU.div(['style','position:relative;'],
 			 HU.textarea('','',['placeholder','','id',this.domId('transcribe_text'), 'rows',6,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;'])+
 			 HU.div(['style','display:none;position:absolute;top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);','id',this.domId('transcribe_loading')],
-				HU.image(ramaddaCdn + '/icons/mapprogress.gif',['style','width:100px;'])));
+				HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),['style','width:100px;'])));
 
 
 	    html+=HU.buttons([HU.span(['class','ramadda-dialog-button','append','true'],"Append"),
@@ -1001,7 +1001,7 @@ WikiEditor.prototype = {
 	html+=HU.div(['style','position:relative;'],
 		   HU.textarea('','',['placeholder','Results','id',this.domId('rewrite-results'), 'rows',6,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;'])+
 		   HU.div(['style','display:none;position:absolute;top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);','id',this.domId('gpt-loading')],
-			  HU.image(ramaddaCdn + '/icons/mapprogress.gif',['style','width:100px;'])));
+			  HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),['style','width:100px;'])));
 
 
 

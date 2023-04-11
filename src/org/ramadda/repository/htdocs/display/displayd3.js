@@ -220,8 +220,8 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             if(!this.loadedResources) {
 		if(this.loadingSkewt) return;
 		this.loadingSkewt=true;
-                await Utils.importCSS(ramaddaCdn +"/lib/skewt/sounding.css");
-                await Utils.importJS(ramaddaCdn+"/lib/skewt/d3skewt.js");
+                await Utils.importCSS(RamaddaUtil.getCdnUrl("/lib/skewt/sounding.css"));
+                await Utils.importJS(RamaddaUtil.getCdnUrl("/lib/skewt/d3skewt.js"));
                 this.loadedResources = true;
             }
 
@@ -822,7 +822,7 @@ function RamaddaVennDisplay(displayManager, id, properties) {
         updateUI: function() {
 	    if(!loadedVenn) {
 		loadedVenn = true;
-		var includes = "<script src='" + ramaddaCdn + "/lib/venn.js'></script>";
+		var includes = "<script src='" + RamaddaUtil.getCdnUrl("/lib/venn.js")+"'></script>";
 		this.writeHtml(ID_DISPLAY_TOP, includes);
 	    }
 	    let _this = this;
@@ -1054,7 +1054,7 @@ function RamaddaChernoffDisplay(displayManager, id, properties) {
         updateUI: function() {
             if (!this.written) {
                 this.written = true;
-                var includes = "<script src='" + ramaddaCdn + "/lib/chernoff.js'></script>";
+                var includes = "<script src='" + RamaddaUtil.getCdnUrl("/lib/chernoff.js")+"'></script>";
                 this.writeHtml(ID_DISPLAY_TOP, includes);
             }
             this.updateUIInner();
@@ -1333,8 +1333,8 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
     const ID_BUBBLES = "bubbles";
     const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_D3BUBBLE, properties);
     if(!window["BubbleChart"]) {
-	Utils.importJS(ramaddaCdn +"/lib/d3/d3-legend.min.js");
-	Utils.importJS(ramaddaCdn +"/lib/d3/bubblechart.js");
+	Utils.importJS(RamaddaUtil.getCdnUrl("/lib/d3/d3-legend.min.js"));
+	Utils.importJS(RamaddaUtil.getCdnUrl("/lib/d3/bubblechart.js"));
     }
     let myProps = [
 	{label:'Bubble Chart'},

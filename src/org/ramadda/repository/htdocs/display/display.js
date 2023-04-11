@@ -850,7 +850,7 @@ function DisplayThing(argId, argProperties) {
 			attrs[f.getId() +"_image"] =  img;
 			attrs[f.getId() +"_url"] =  value;
 		    } else {
-			attrs[f.getId() +"_url"] =  ramaddaCdn+"/icons/blank.gif";
+			attrs[f.getId() +"_url"] =  RamaddaUtil.getCdnUrl("/icons/blank.gif");
 			attrs[f.getId() +"_image"] =  "";
 		    }
 		} else if(f.getType()=="movie") {
@@ -2645,7 +2645,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return this.entries != null && this.entries.length > 0;
         },
         getWaitImage: function() {
-            return HU.image(ramaddaCdn + "/icons/progress.gif");
+            return HU.image(RamaddaUtil.getCdnUrl("/icons/progress.gif"));
         },
 	useDisplayMessage:function() {
 	    return true;
@@ -4358,7 +4358,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             if (entry.getFilesize() > 0) {
                 html += HU.formEntry("File:", entry.getFilename() + " " +
-				     HU.href(entry.getResourceUrl(), HU.image(ramaddaCdn + "/icons/download.png"),["download",null]) + " " +
+				     HU.href(entry.getResourceUrl(), HU.image(RamaddaUtil.getCdnUrl("/icons/download.png")),["download",null]) + " " +
 				     entry.getFormattedFilesize());
             }
             for (let colIdx = 0; colIdx < columns.length; colIdx++) {
@@ -4694,15 +4694,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let toolbarItems = [];
 	    let props = "{showMenu:true,showTitle:true}";
             //                 toolbarItems.push(HU.tag(TAG_A, [ATTR_HREF, entry.getEntryUrl(),"target","_"], 
-            //                                                HU.image(ramaddaCdn +"/icons/application-home.png",["border",0,ATTR_TITLE,"View Entry"])));
+            //                                                HU.image(RamaddaUtil.getCdnUrl("/icons/application-home.png"),["border",0,ATTR_TITLE,"View Entry"])));
             if (entry.getType().getId() == "type_wms_layer") {
                 toolbarItems.push(HU.tag(TAG_A, ["onclick", get + ".addMapLayer(" + HU.sqt(entry.getId()) + ");"],
-					 HU.image(ramaddaCdn + "/icons/map.png", ["border", 0, ATTR_TITLE, "Add Map Layer"])));
+					 HU.image(RamaddaUtil.getCdnUrl("/icons/map.png"), ["border", 0, ATTR_TITLE, "Add Map Layer"])));
 
             }
             if (entry.getType().getId() == "geo_shapefile" || entry.getType().getId() == "geo_geojson") {
                 toolbarItems.push(HU.tag(TAG_A, ["onclick", get + ".addMapLayer(" + HU.sqt(entry.getId()) + ");"],
-					 HU.image(ramaddaCdn + "/icons/map.png", ["border", 0, ATTR_TITLE, "Add Map Layer"])));
+					 HU.image(RamaddaUtil.getCdnUrl("/icons/map.png"), ["border", 0, ATTR_TITLE, "Add Map Layer"])));
 
             }
 
@@ -4727,7 +4727,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				     HU.getIconImage("fa-file", ["border", 0, ATTR_TITLE, "Show Entry"])));
             if (entry.getFilesize() > 0) {
                 toolbarItems.push(HU.tag(TAG_A, [ATTR_HREF, entry.getResourceUrl(),"download",null],
-					 HU.image(ramaddaCdn + "/icons/download.png", ["border", 0, ATTR_TITLE, "Download (" + entry.getFormattedFilesize() + ")"])));
+					 HU.image(RamaddaUtil.getCdnUrl("/icons/download.png"), ["border", 0, ATTR_TITLE, "Download (" + entry.getFormattedFilesize() + ")"])));
 
             }
 
@@ -4966,7 +4966,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
         getEntryMenuButton: function(entry) {
             let menuButton = HU.onClick(this.getGet() + ".showEntryMenu(event, '" + entry.getId() + "');",
-					HU.image(ramaddaCdn + "/icons/menu.png",
+					HU.image(RamaddaUtil.getCdnUrl("/icons/menu.png"),
 						 [ATTR_CLASS, "display-entry-toolbar-item", ATTR_ID, this.getDomId(ID_MENU_BUTTON + entry.getIdForDom())]));
             return menuButton;
         },
@@ -5449,7 +5449,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getMenuButton:function() {
             let get = this.getGet();
             let button = HU.onClick(get + ".showDialog();",
-				    HU.image(ramaddaCdn + "/icons/downdart.png",
+				    HU.image(RamaddaUtil.getCdnUrl("/icons/downdart.png"),
 					     [ATTR_CLASS, "display-dialog-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)]));
 	    button+=" ";
 	    return button;
@@ -5705,11 +5705,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             labels.push("Copy Display");
             if (this.jsonUrl != null) {
                 calls.push(get + ".fetchUrl('json');");
-                images.push(ramaddaCdn + "/icons/json.png");
+                images.push(RamaddaUtil.getCdnUrl("/icons/json.png"));
                 labels.push("Download JSON");
 
                 calls.push(get + ".fetchUrl('csv');");
-                images.push(ramaddaCdn + "/icons/csv.png");
+                images.push(RamaddaUtil.getCdnUrl("/icons/csv.png"));
                 labels.push("Download CSV");
             }
             for (let i = 0; i < calls.length; i++) {

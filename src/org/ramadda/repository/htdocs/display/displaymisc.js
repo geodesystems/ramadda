@@ -562,9 +562,9 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	{p:'hideBanner',ex:"true"},
     ];
 
-    Utils.importJS(ramaddaCdn+"/lib/timeline3/timeline.js");
+    Utils.importJS(RamaddaUtil.getCdnUrl("/lib/timeline3/timeline.js"));
     let css = "https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css";
-    //    css =  ramaddaCdn+"/lib/timeline3/timeline.css";
+    //    css =  RamaddaUtil.getCdnUrl("/lib/timeline3/timeline.css");
     $(HU.tag('link',['rel','stylesheet','href', css,'type','text/css'] )).appendTo("head");
    
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -1953,7 +1953,7 @@ function RamaddaTsneDisplay(displayManager, id, properties) {
                 this.setDisplayMessage(this.getLoadingMessage());
                 return;
             }
-            await Utils.importJS(ramaddaCdn + "/lib/tsne.js");
+            await Utils.importJS(RamaddaUtil.getCdnUrl("/lib/tsne.js"));
             //Height is the height of the overall display including the menu bar
             let height = this.getProperty("height",400);
             if (String(height).endsWith("px")) height = String(height).replace("px", "");

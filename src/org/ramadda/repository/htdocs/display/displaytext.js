@@ -231,8 +231,8 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
         updateUI: function() {
 	    if(!this.loadedJq) {
 		this.loadedJq = true;
-		let includes = "<link rel='stylesheet' href='" + ramaddaCdn + "/lib/jqcloud.min.css'>";
-		includes += "<script src='" + ramaddaCdn + "/lib/jqcloud.min.js'></script>";
+		let includes = "<link rel='stylesheet' href='" + RamaddaUtil.getCdnUrl("/lib/jqcloud.min.css")+"'>";
+		includes += "<script src='" + RamaddaUtil.getCdnUrl("/lib/jqcloud.min.js")+"'></script>";
 		this.writeHtml(ID_DISPLAY_TOP, includes);
 		let _this = this;
 		let tmp = $("body");
@@ -1896,7 +1896,7 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
             this.updateUIInner();
         },
         updateUI: function() {
-            var includes = "<script src='" + ramaddaCdn + "/lib/compromise.min.js'></script>";
+            var includes = "<script src='" + RamaddaUtil.getCdnUrl("/lib/compromise.min.js")+"'></script>";
             this.writeHtml(ID_DISPLAY_TOP, includes);
             let _this = this;
             var func = function() {
