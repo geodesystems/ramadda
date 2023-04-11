@@ -1,4 +1,8 @@
 [
+{"name":"dots-blue","image":"/icons/dots/blue.png","category":"Map"},
+{"name":"dots-green","image":"/icons/dots/green.png","category":"Map"},
+{"name":"dots-purple","image":"/icons/dots/purple.png","category":"Map"},
+{"name":"dots-red","image":"/icons/dots/red.png","category":"Map"},
 {"name":"marker-blue","image":"/map/marker-blue.png","category":"Map"},
 {"name":"marker-gold","image":"/map/marker-gold.png","category":"Map"},
 {"name":"marker-green","image":"/map/marker-green.png","category":"Map"},
