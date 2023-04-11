@@ -4279,7 +4279,6 @@ public class WikiManager extends RepositoryManager
 	String style    = getProperty(wikiUtil, props, ATTR_STYLE, "");
 	String tagOpen  = getProperty(wikiUtil, props, ATTR_TAGOPEN,  "<li>");
 	String tagClose =  getProperty(wikiUtil, props, ATTR_TAGCLOSE,"");
-	System.err.println("tag open:" + tagOpen);
 
 	if(decorate) {
 	    tagOpen = "<div class=' ramadda-entry-nav-page  ramadda-entry-nav-page-decorated '><div class='ramadda-nav-page-label'>";
