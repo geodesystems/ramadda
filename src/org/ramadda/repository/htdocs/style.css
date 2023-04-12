@@ -1851,27 +1851,6 @@ mapheader {
 }
 
 
-.ui-selectmenu-menu {
-    /* shadow popup */ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
-}
-
-.ui-selectmenu-menu {
-    max-height:200px;
-    overflow-y:auto;
-}
-
-.ui-tooltip {
-    border:1px solid #999 !important;
-    margin:0px;
-    padding:4px;
-    box-shadow: 0px 0px 0px  rgba(0, 0, 0, 0);
-}
-
-.ui-tabs .ramadda-section  {
-    padding-left:0px;
-    padding-right:0px;
-
-}
 
 .ramadda-section-full  {
     padding:0px;
@@ -1991,6 +1970,28 @@ thin_hr,.ramadda-thin-hr {
     font-size:80%;
 }
 
+.ui-selectmenu-menu {
+    /* shadow popup */ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
+}
+
+.ui-selectmenu-menu {
+    max-height:200px;
+    overflow-y:auto;
+}
+
+.ui-tooltip {
+    border:1px solid #999 !important;
+    margin:0px;
+    padding:4px;
+    box-shadow: 0px 0px 0px  rgba(0, 0, 0, 0);
+}
+
+.ui-tabs .ramadda-section  {
+    padding-left:0px;
+    padding-right:0px;
+
+}
+
 /* jquery resets */
 .ui-widget {
     font-family: inherit;
@@ -2022,6 +2023,8 @@ thin_hr,.ramadda-thin-hr {
     width: 150px;
 }
 
+
+
 .ui-menu .ui-state-active {
     border:1px solid transparent;
     background:#eee;
@@ -2030,7 +2033,6 @@ thin_hr,.ramadda-thin-hr {
 .ui-menu .ui-widget-header {
     padding: 0.2em;
     background:#eee;
-
 }
 
 .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default   {
@@ -2107,6 +2109,11 @@ ul {
 .ramadda-slides-bigarrow .slick-prev {
     left: -30px !important;
 }
+
+.slick-slide {
+}
+
+
 
 .ramadda-slider-value {
     font-family: Verdana, Arial, sans-serif;
@@ -5384,10 +5391,12 @@ a.wiki-link-noexist {
 }
 
 /* override jquery padding */
+/*
 .ui-menu .ui-icon {
     position: relative;
     left: 0
 }
+*/
 
 .ramadda-select-icon {
 }
