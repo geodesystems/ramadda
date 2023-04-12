@@ -3559,6 +3559,8 @@ public class WikiManager extends RepositoryManager
                 checkHeading(request, wikiUtil, props, sb);
             }
 
+
+	    boolean  linkTop = getProperty(wikiUtil, props, "linkTop",false);
             for (Entry child : children) {
                 String title = getEntryDisplayName(child);
                 if (showicon) {
@@ -3612,7 +3614,10 @@ public class WikiManager extends RepositoryManager
 					  : linklabel);
 
                     //                    content.append(HU.br());
-                    content.append(HU.leftRight("", href));
+		    if(linkTop)
+			content = new StringBuilder(HU.center(href)+content.toString());
+		    else
+			content.append(HU.center(href));
                 }
 		String theContent;
 		if(flipCards) {
@@ -3813,7 +3818,6 @@ public class WikiManager extends RepositoryManager
                 // need to set the height of the div to include the nav bar
                 Utils.concatBuff(sb, "#", slideId, " { width: ",
                                  width + "; height: " + (height + 30), "}\n");
-
 
                 int border = getProperty(wikiUtil, props, ATTR_BORDER, 1);
                 String borderColor = getProperty(wikiUtil, props,
@@ -7588,6 +7592,7 @@ public class WikiManager extends RepositoryManager
             image = HU.div(image,
                            HU.cssClass("entry-simple-image")
                            + HU.style(divStyle));
+
             if ( !haveText) {
                 return image;
             }
