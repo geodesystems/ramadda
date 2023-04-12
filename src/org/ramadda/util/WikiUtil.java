@@ -823,8 +823,7 @@ public class WikiUtil {
 	String           middleStyle          = "";
 	String           rightStyle          = "";	
 	int menuCnt = 0;
-	String menuId = null;
-
+	List<String> menuIds = new ArrayList<String>();
 
 	Utils.UniConsumer<String> segmentOpen = (tline) ->{
 	    if (accordionStates.size() == 0) {
@@ -1419,19 +1418,17 @@ public class WikiUtil {
 		    buff.append("\n");
                     List<String> toks  = Utils.splitUpTo(tline, " ", 2);
 		    String attrs = "";
-		    if(menuCnt==0) {
-			if(menuId!=null) {
-			    HU.script(buff, "$('#" +menuId+"').menu();\n");
-			}
-
-			attrs +=HU.attrs("id",menuId);
-		    } else {
-			HU.open(buff, "li");
-			HU.open(buff,"div");
-			buff.append(toks.size()>1?toks.get(1):"No label");
-			HU.close(buff,"div","\n");
-		    }
 		    menuCnt++;
+		    if(menuCnt==1) {
+			String menuId = HU.getUniqueId("menu_");
+			attrs += HU.attrs("id",menuId);
+			menuIds.add(menuId);
+		    } else {
+			HU.open(buff,"li");
+			if(toks.size()>1) {
+			    buff.append(HU.div(toks.get(1)));
+			}
+		    }
 		    HU.open(buff,"ul",attrs);
 		    buff.append("\n");
 		    continue;
@@ -1439,13 +1436,9 @@ public class WikiUtil {
 
                 if (tline.startsWith("-menu")) {
 		    menuCnt--;
-		    if(menuCnt>0)
-			HU.close(buff,"ul","li","\n");
-		    else
-			HU.close(buff,"ul","\n");		    
-		    if(menuCnt<=0) {
-			HU.script(buff, "$('#" +menuId+"').menu();\n");
-			menuId = null;
+		    HU.close(buff,"ul","\n");
+		    if(menuCnt>0) {
+			HU.close(buff,"li","\n");
 		    }
 		    continue;
 		}
@@ -3312,8 +3305,9 @@ public class WikiUtil {
         }
 
 
-	if(menuId!=null) {
-	    buff.append("Unfinished menu");
+	//Add the menus init calls
+	for(String menuId:menuIds) {
+	    HU.script(buff, "$('#" +menuId+"').menu();\n");
 	}
 
         //end of processing
