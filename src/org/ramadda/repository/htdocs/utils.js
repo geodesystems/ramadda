@@ -3734,31 +3734,15 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return HtmlUtils.makeMessage("fas fa-spinner fa-spin",msg);
     },    
 
-    makeSlides: function(id,args, tries) {
+    makeSlides: async function(id,args, tries) {
 	if(!Utils.isDefined(tries)) {
 	    tries = 0;
 	}
-        if(!HtmlUtils.loadSlides()) {
-	    tries++;
-	    if(tries>10) return;
-	    setTimeout(()=>{
-		HtmlUtils.makeSlides(id,args);
-	    },1000);
-	    return;
-	}
+	await HtmlUtils.loadSlides();
         let opts = {
             dots:true
         };
         if(args) $.extend(opts,args);
-        if(!$("#" + id).slick) {
-	    tries++;
-	    if(tries>10) return;
-	    //not loaded yet
-	    setTimeout(()=>{
-		HtmlUtils.makeSlides(id,args);
-	    },500);
-	}
-
         $("#" + id).slick(opts);
         HtmlUtils.swapHtml("#" + id +"_headercontents", "#" + id +"_header");
         //Do this later because of the swapHtml
@@ -3776,13 +3760,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         });
 
     },
-    loadSlides: function() {
+    loadSlides: async function() {
         if(!HtmlUtils.slidesLoaded) {
-            let base =  ramaddaCdn +"/lib/slick/";
-            let imports = HU.cssLink(base+"slick.css") + "\n" + HU.cssLink(base+"slick-theme.css") + "\n";
-            $(imports).appendTo("head");
-            imports = HU.javascriptLink(base+"slick.min.js");
-            $(imports).appendTo("body");
+	    $('<link>').appendTo('head').attr({type: 'text/css', rel: 'stylesheet',
+					       href: RamaddaUtil.getCdnUrl("/lib/slick/slick.css")});
+	    $('<link>').appendTo('head').attr({type: 'text/css', rel: 'stylesheet',
+					       href: RamaddaUtil.getCdnUrl("/lib/slick/slick-theme.css")});
+            await Utils.importJS(RamaddaUtil.getCdnUrl("/lib/slick/slick.min.js"));
             HtmlUtils.slidesLoaded = true;
 	    return false;
 	}
