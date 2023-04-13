@@ -2895,7 +2895,8 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
             let fields = this.getSelectedFields([]);
             if (fields.length == 0) fields = allFields;
 	    fields = fields.filter(field=>{
-		if (!field.isFieldNumeric() || field.isFieldGeo()) return false;
+		if (field.isFieldGeo()) return false;
+//		if (!field.isFieldNumeric() || field.isFieldGeo()) return false;
 		return true;
 	    });
             let fieldCnt = fields.length;
@@ -2918,7 +2919,6 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 	    let row;
 	    this.csv.push(row=[]);
 	    fields.forEach(field=>{
-                if (!field.isFieldNumeric() || field.isFieldGeo()) return;
                 let label = useIdTop ? field.getId() : this.getFieldLabel(field);
 		row.push(label);
                 if (short) label = "";
@@ -2937,10 +2937,30 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 	    if(colors) colors =  this.addAlpha(colors,0.5);
 
 	    let sideHeadingStyle=this.getSideHeadingStyle('');
+	    let stringMap = {};
+	    fields.forEach(field=>{
+		if(!field.isNumeric()) {
+		    stringMap[field.getId()] = {
+			count:0,
+			seen:{}
+		    };
+		}
+	    });
+	    let getValue = (field,value) =>{
+		if(!field.isNumeric()) {
+		    let map =  stringMap[field.getId()];
+		    if(!Utils.isDefined(map.seen[value])) {
+			map.seen[value]  = map.count++;
+		    }
+		    return  map.seen[value];
+		}
+		return value;
+	    }
+
+
             for (let fieldIdx1 = 0; fieldIdx1 < fields.length; fieldIdx1++) {
 		this.csv.push(row=[]);
                 let field1 = fields[fieldIdx1];
-                if (!field1.isFieldNumeric() || field1.isFieldGeo()) continue;
                 let label = useIdSide ? field1.getId() : this.getFieldLabel(field1);
 		row.push(label);
 		label.replace(/ /g, SPACE);
@@ -2950,19 +2970,17 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                 let rowName = this.getFieldLabel(field1);
                 for (let fieldIdx2 = 0; fieldIdx2 < fields.length; fieldIdx2++) {
                     let field2 = fields[fieldIdx2];
-                    if (!field2.isFieldNumeric() || field2.isFieldGeo()) {
-			continue;
-		    }
                     let colName = this.getFieldLabel(field2);
                     let t1 = 0;
                     let t2 = 0;
                     let cnt = 0;
-
                     for (let rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
                         let tuple = this.getDataValues(dataList[rowIdx]);
-                        let v1 = tuple[field1.getIndex()];
-                        let v2 = tuple[field2.getIndex()];
-			if(isNaN(v1) || isNaN(v2)) continue;
+                        let v1 = getValue(field1,tuple[field1.getIndex()]);
+                        let v2 = getValue(field2,tuple[field2.getIndex()]);
+			if(isNaN(v1) || isNaN(v2)) {
+			    continue;
+			}
                         t1 += v1;
                         t2 += v2;
                         cnt++;
@@ -2974,8 +2992,8 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                     let sum3 = 0;
                     for (let rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
                         let tuple = this.getDataValues(dataList[rowIdx]);
-                        let v1 = tuple[field1.getIndex()];
-                        let v2 = tuple[field2.getIndex()];
+                        let v1 = getValue(field1,tuple[field1.getIndex()]);
+                        let v2 = getValue(field2,tuple[field2.getIndex()]);			
 			if(isNaN(v1) || isNaN(v2)) continue;
                         sum1 += (v1 - avg1) * (v2 - avg2);
                         sum2 += (v1 - avg1) * (v1 - avg1);
