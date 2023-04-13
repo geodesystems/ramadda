@@ -1364,6 +1364,7 @@ WikiEditor.prototype = {
 	this.showTagEdit(tagInfo,result);
     },
     showTagEdit:function(tagInfo,result) {
+	let _this = this;
 	//xxxx
 	let blocks = result.blocks;
 	let title = result.title;
