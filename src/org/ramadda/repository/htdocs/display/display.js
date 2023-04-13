@@ -6361,8 +6361,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(vertical) {
 		header2 = HU.div([CLASS,"display-header-vertical"],header2);
 	    } else {
-		header2=HU.div([STYLE,"line-height:0;"],
-			       header2);
+		let style = HU.css('line-height','0');
+		if(this.getProperty('headerCenter',true)) style +=HU.css('text-align','center');
+		header2=HU.div([STYLE,style],   header2);
 	    }
 	    header2 = HU.leftRightTable(header2,
 					HU.span([ID,this.getDomId(ID_HEADER2_SUFFIX),CLASS,''],''));
