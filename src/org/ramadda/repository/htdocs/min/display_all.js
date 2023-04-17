@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Apr 12 20:46:57 MDT 2023";
+var build_date="RAMADDA build date: Mon Apr 17 09:54:44 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -110,7 +110,7 @@ $.extend(Utils,{
 	    if(attr) attrs.push(attr,value);
             ct = HtmlUtils.div(attrs,ct);
             if(wikiEditor) {
-                var call = "insertText(" + HtmlUtils.squote(wikiEditor.getId()) +","+HtmlUtils.squote("colorTable=" + colortable.id)+")";
+                var call = "WikiUtil.insertText(" + HtmlUtils.squote(wikiEditor.getId()) +","+HtmlUtils.squote("colorTable=" + colortable.id)+")";
                 item = HtmlUtils.onClick(call,ct);
                 popup+=item;
                 items.push(item);
@@ -34620,6 +34620,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'linkGroup',ex:'some_name',tt:"Map groups to link with"},
 	{p:'initialLocation', ex:'lat,lon',tt:"initial location"},
 	{p:'defaultMapLayer',ex:'osm|google.roads|esri.street|opentopo|esri.topo|usfs|usgs.topo|google.terrain|google.satellite|naip|usgs.imagery|esri.shaded|esri.lightgray|esri.darkgray|esri.terrain|shadedrelief|esri.aeronautical|historic|osm.toner|osm.toner.lite|watercolor'},
+	{p:'justShowMapLayer',ex:true,tt:'If true then just show map layer, don\'t use it for data display'},
 //	{p:'mapLayers',ex:'ol.openstreetmap,esri.topo,esri.street,esri.worldimagery,esri.lightgray,esri.physical,opentopo,usgs.topo,usgs.imagery,usgs.relief,osm.toner,osm.toner.lite,watercolor'},
 	{p:'extraLayers',tt:'comma separated list of layers to display'},
 	{p:'linkField',tt:'The field in the data to match with the map field, e.g., geoid'},
@@ -35135,11 +35136,12 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 					 function(map, layer) {
 					     _this.baseMapLoaded(layer, url);
 					 }, !hasBounds);
-                else
+                else {
                     this.map.addGeoJsonLayer(this.getProperty("geojsonLayerName"), url, this.doDisplayMap(), selectFunc, null, attrs,
 					     function(map, layer) {
 						 _this.baseMapLoaded(layer, url);
 					     }, !hasBounds);
+		}
             } else if (mapLoadInfo.layer) {
                 this.cloneLayer(mapLoadInfo.layer);
             } else {
@@ -35148,6 +35150,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
             }
         },
         baseMapLoaded: function(layer, url) {
+	    if(this.getJustShowMapLayer()) return;
             this.vectorLayer = layer;
             this.applyVectorMap();
             mapLoadInfo = displayMapUrlToVectorListeners[url];
@@ -53391,6 +53394,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 	{p:'range.high.max',ex:'1'},
 	{p:'short',ex:'true',tt:'Abbreviated display'},
 	{p:'showValue',ex:'false',tt:'Show the values'},
+	{p:'stringsOk',ex:'true',tt:'Show string values'},	
 	{p:'useId ',ex:' true',tt:'Use field id instead of label'},
 	{p:'useIdTop',ex:'true',tt:'Use field id for top header'},
 	{p:'useIdSide ',ex:'true',tt:'Use field id for side header'},
@@ -53558,9 +53562,10 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
             let allFields = this.dataCollection.getList()[0].getRecordFields();
             let fields = this.getSelectedFields([]);
             if (fields.length == 0) fields = allFields;
+	    let stringsOk = this.getStringsOk();
 	    fields = fields.filter(field=>{
 		if (field.isFieldGeo()) return false;
-//		if (!field.isFieldNumeric() || field.isFieldGeo()) return false;
+		if(!stringsOk && !field.isFieldNumeric())  return false;
 		return true;
 	    });
             let fieldCnt = fields.length;
