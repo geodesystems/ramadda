@@ -102,6 +102,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'linkGroup',ex:'some_name',tt:"Map groups to link with"},
 	{p:'initialLocation', ex:'lat,lon',tt:"initial location"},
 	{p:'defaultMapLayer',ex:'osm|google.roads|esri.street|opentopo|esri.topo|usfs|usgs.topo|google.terrain|google.satellite|naip|usgs.imagery|esri.shaded|esri.lightgray|esri.darkgray|esri.terrain|shadedrelief|esri.aeronautical|historic|osm.toner|osm.toner.lite|watercolor'},
+	{p:'justShowMapLayer',ex:true,tt:'If true then just show map layer, don\'t use it for data display'},
 //	{p:'mapLayers',ex:'ol.openstreetmap,esri.topo,esri.street,esri.worldimagery,esri.lightgray,esri.physical,opentopo,usgs.topo,usgs.imagery,usgs.relief,osm.toner,osm.toner.lite,watercolor'},
 	{p:'extraLayers',tt:'comma separated list of layers to display'},
 	{p:'linkField',tt:'The field in the data to match with the map field, e.g., geoid'},
@@ -617,11 +618,12 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 					 function(map, layer) {
 					     _this.baseMapLoaded(layer, url);
 					 }, !hasBounds);
-                else
+                else {
                     this.map.addGeoJsonLayer(this.getProperty("geojsonLayerName"), url, this.doDisplayMap(), selectFunc, null, attrs,
 					     function(map, layer) {
 						 _this.baseMapLoaded(layer, url);
 					     }, !hasBounds);
+		}
             } else if (mapLoadInfo.layer) {
                 this.cloneLayer(mapLoadInfo.layer);
             } else {
@@ -630,6 +632,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
             }
         },
         baseMapLoaded: function(layer, url) {
+	    if(this.getJustShowMapLayer()) return;
             this.vectorLayer = layer;
             this.applyVectorMap();
             mapLoadInfo = displayMapUrlToVectorListeners[url];
