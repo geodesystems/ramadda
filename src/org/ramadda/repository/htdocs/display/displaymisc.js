@@ -2727,6 +2727,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 	{p:'range.high.max',ex:'1'},
 	{p:'short',ex:'true',tt:'Abbreviated display'},
 	{p:'showValue',ex:'false',tt:'Show the values'},
+	{p:'stringsOk',ex:'true',tt:'Show string values'},	
 	{p:'useId ',ex:' true',tt:'Use field id instead of label'},
 	{p:'useIdTop',ex:'true',tt:'Use field id for top header'},
 	{p:'useIdSide ',ex:'true',tt:'Use field id for side header'},
@@ -2894,9 +2895,10 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
             let allFields = this.dataCollection.getList()[0].getRecordFields();
             let fields = this.getSelectedFields([]);
             if (fields.length == 0) fields = allFields;
+	    let stringsOk = this.getStringsOk();
 	    fields = fields.filter(field=>{
 		if (field.isFieldGeo()) return false;
-//		if (!field.isFieldNumeric() || field.isFieldGeo()) return false;
+		if(!stringsOk && !field.isFieldNumeric())  return false;
 		return true;
 	    });
             let fieldCnt = fields.length;
