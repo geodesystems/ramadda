@@ -108,7 +108,7 @@ $.extend(Utils,{
 	    if(attr) attrs.push(attr,value);
             ct = HtmlUtils.div(attrs,ct);
             if(wikiEditor) {
-                var call = "insertText(" + HtmlUtils.squote(wikiEditor.getId()) +","+HtmlUtils.squote("colorTable=" + colortable.id)+")";
+                var call = "WikiUtil.insertText(" + HtmlUtils.squote(wikiEditor.getId()) +","+HtmlUtils.squote("colorTable=" + colortable.id)+")";
                 item = HtmlUtils.onClick(call,ct);
                 popup+=item;
                 items.push(item);
