@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Apr 17 09:54:44 MDT 2023";
+var build_date="RAMADDA build date: Mon Apr 17 18:52:48 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -35370,6 +35370,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'voronoiStrokeDashstyle',d:'solid'},
 	{p:'voronoiFillColor',d:'transparent'},
 	{p:'voronoiFillOpacity',d:1.0},	
+	{p:'voronoiPadding',ex:0.1,tt:'% to pad the bounds, 0-1.0'},
 	{label:'Heatmap'},
 	{p:'doHeatmap',ex:'true',tt:'Grid the data into an image',canCache:true},
 	{p:'hmShowPoints',ex:'true',tt:'Also show the map points'},
@@ -37898,6 +37899,19 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         makeVoronoi: function(records, fields, points,bounds) {
 	    if(!MapUtils.loadTurf(()=>{this.makeVoronoi(records, fields, points,bounds);})) {
 		return;
+	    }
+
+	    let pad;
+	    //pad the bounds
+	    if(pad = this.getVoronoiPadding(0)) {
+		let  w = bounds.east-bounds.west;
+		let  h = bounds.north-bounds.south;		
+		let b = $.extend({},bounds);
+		b.west = Math.max(-180, b.west-w*pad);
+		b.east = Math.min(180,b.east+w*pad);
+		b.north=  Math.min(90,b.north+h*pad);
+		b.south = Math.max(-90,b.south-h*pad);				
+		bounds = b;
 	    }
 
 	    let options = {
