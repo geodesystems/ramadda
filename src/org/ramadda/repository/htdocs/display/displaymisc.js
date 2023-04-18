@@ -8,6 +8,7 @@ const DISPLAY_TREE = "tree";
 const DISPLAY_TIMELINE = "timeline";
 const DISPLAY_HOURS = "hours";
 const DISPLAY_BLANK = "blank";
+const DISPLAY_HOOK = "blank";
 const DISPLAY_PRE = "pre";
 const DISPLAY_HTMLTABLE = "htmltable";
 const DISPLAY_RECORDS = "records";
@@ -185,6 +186,14 @@ addGlobalDisplayType({
     forUser: true,
     category: CATEGORY_CONTROLS,
     tooltip: makeDisplayTooltip("Shows no data",null,"Useful for just showing filters, etc")                                                
+});
+addGlobalDisplayType({
+    type: DISPLAY_HOOK,
+    label: "Hook",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_CONTROLS,
+    tooltip: makeDisplayTooltip("Add your own Javascript",null,"Integrate your own Javascript")                                                
 });
 addGlobalDisplayType({
     type: DISPLAY_PRE,
@@ -978,6 +987,39 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
 		    color =  colorBy.getColor(record.getData()[colorBy.index], record);
 		});
 		colorBy.displayColorTable();
+	    }
+	}});
+}
+
+
+
+function RamaddaHookDisplay(displayManager, id, properties) {
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_HOOK, properties);
+    if(properties.hook) {
+	this.hook = new window[properties.hook];
+    }
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+        needsData: function() {
+            return true;
+        },
+	call:function(what,data) {
+	    if(!this.hook) return false;
+	    if(!this.hook[what])  {
+		return false;
+	    }
+	    this.hook[what](this,data);
+	    return true;
+	},
+	updateUI: function() {
+	    if(!this.hook) {
+		this.setContents('No hook defined');
+		return;
+	    }
+	    let records = this.filterData();
+	    if(!records) return;
+            let fields = this.getSelectedFields([]);
+	    if(!this.call('updateUI',{fields:fields,data:records})) {
+		this.setContents('No updateUI defined in hook');
 	    }
 	}});
 }
