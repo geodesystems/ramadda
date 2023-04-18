@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Apr 17 18:54:48 MDT 2023";
+var build_date="RAMADDA build date: Tue Apr 18 04:20:42 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -34620,6 +34620,8 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'linkGroup',ex:'some_name',tt:"Map groups to link with"},
 	{p:'initialLocation', ex:'lat,lon',tt:"initial location"},
 	{p:'defaultMapLayer',ex:'osm|google.roads|esri.street|opentopo|esri.topo|usfs|usgs.topo|google.terrain|google.satellite|naip|usgs.imagery|esri.shaded|esri.lightgray|esri.darkgray|esri.terrain|shadedrelief|esri.aeronautical|historic|osm.toner|osm.toner.lite|watercolor'},
+	{p:'geojsonLayer',ex:'entry ID',tt:'Display the geojson layer file held by give entry'},
+	{p:'geojsonLayerName',d:'Map'},
 	{p:'justShowMapLayer',ex:true,tt:'If true then just show map layer, don\'t use it for data display'},
 //	{p:'mapLayers',ex:'ol.openstreetmap,esri.topo,esri.street,esri.worldimagery,esri.lightgray,esri.physical,opentopo,usgs.topo,usgs.imagery,usgs.relief,osm.toner,osm.toner.lite,watercolor'},
 	{p:'extraLayers',tt:'comma separated list of layers to display'},
@@ -35132,12 +35134,12 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                     strokeWidth: this.getProperty("vectorLayerStrokeWidth",1),
 		}
                 if (isKml)
-                    this.map.addKMLLayer(this.getProperty("kmlLayerName"), url, this.doDisplayMap(), selectFunc, null, attrs,
+                    this.map.addKMLLayer(this.getProperty('kmlLayerName','Map'), url, this.doDisplayMap(), selectFunc, null, attrs,
 					 function(map, layer) {
 					     _this.baseMapLoaded(layer, url);
 					 }, !hasBounds);
                 else {
-                    this.map.addGeoJsonLayer(this.getProperty("geojsonLayerName"), url, this.doDisplayMap(), selectFunc, null, attrs,
+                    this.map.addGeoJsonLayer(this.getProperty('geojsonLayerName','Map'), url, this.doDisplayMap(), selectFunc, null, attrs,
 					     function(map, layer) {
 						 _this.baseMapLoaded(layer, url);
 					     }, !hasBounds);
@@ -36091,7 +36093,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 let layer;
                 if (type == "geo_geojson") {
                     let url = entry.getRamadda().getEntryDownloadUrl(entry);
-                    layer = this.map.addGeoJsonLayer(this.getProperty("geojsonLayerName"), url, this.doDisplayMap(), selectCallback, unselectCallback, null, null, true);
+                    layer = this.map.addGeoJsonLayer(this.getProperty('geojsonLayerName','Map'), url, this.doDisplayMap(), selectCallback, unselectCallback, null, null, true);
                 } else {
                     let url = RamaddaUtil.getUrl("/entry/show?output=shapefile.kml&entryid=" + entry.getId());
                     layer = this.map.addKMLLayer(entry.getName(), url, true, selectCallback, unselectCallback, null, null, true);
@@ -50689,6 +50691,7 @@ const DISPLAY_TREE = "tree";
 const DISPLAY_TIMELINE = "timeline";
 const DISPLAY_HOURS = "hours";
 const DISPLAY_BLANK = "blank";
+const DISPLAY_HOOK = "blank";
 const DISPLAY_PRE = "pre";
 const DISPLAY_HTMLTABLE = "htmltable";
 const DISPLAY_RECORDS = "records";
@@ -50866,6 +50869,14 @@ addGlobalDisplayType({
     forUser: true,
     category: CATEGORY_CONTROLS,
     tooltip: makeDisplayTooltip("Shows no data",null,"Useful for just showing filters, etc")                                                
+});
+addGlobalDisplayType({
+    type: DISPLAY_HOOK,
+    label: "Hook",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_CONTROLS,
+    tooltip: makeDisplayTooltip("Add your own Javascript",null,"Integrate your own Javascript")                                                
 });
 addGlobalDisplayType({
     type: DISPLAY_PRE,
@@ -51659,6 +51670,39 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
 		    color =  colorBy.getColor(record.getData()[colorBy.index], record);
 		});
 		colorBy.displayColorTable();
+	    }
+	}});
+}
+
+
+
+function RamaddaHookDisplay(displayManager, id, properties) {
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_HOOK, properties);
+    if(properties.hook) {
+	this.hook = new window[properties.hook];
+    }
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+        needsData: function() {
+            return true;
+        },
+	call:function(what,data) {
+	    if(!this.hook) return false;
+	    if(!this.hook[what])  {
+		return false;
+	    }
+	    this.hook[what](this,data);
+	    return true;
+	},
+	updateUI: function() {
+	    if(!this.hook) {
+		this.setContents('No hook defined');
+		return;
+	    }
+	    let records = this.filterData();
+	    if(!records) return;
+            let fields = this.getSelectedFields([]);
+	    if(!this.call('updateUI',{fields:fields,data:records})) {
+		this.setContents('No updateUI defined in hook');
 	    }
 	}});
 }
