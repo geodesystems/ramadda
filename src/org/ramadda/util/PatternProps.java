@@ -44,12 +44,18 @@ public class PatternProps {
         this.props = props;
         for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
             String key = (String) keys.nextElement();
-            if (StringUtil.containsRegExp(key)) {
+	    //Don't check for "."
+	    String cleanKey = key.replace(".","_");
+            if (StringUtil.containsRegExp(cleanKey)) {
                 String value = props.get(key);
                 patterns.add(Pattern.compile(key, Pattern.MULTILINE));
                 strings.add(value);
             }
         }
+    }
+
+    public String toString() {
+	return "props:" + props +"  patterns:" + patterns +" strings:" + strings;
     }
 
     /**
