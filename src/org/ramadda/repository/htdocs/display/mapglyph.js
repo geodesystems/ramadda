@@ -744,6 +744,11 @@ MapGlyph.prototype = {
 	    if(glyphField) {
 		line = line.replace(/\${_field}/g,glyphField);
 	    }
+	    let extra = '';
+	    ['scale','offset1','offset2'].forEach(a=>{
+		if(attrs[a]) extra+= ' ' + a +'=' + attrs[a] +' ';
+	    });
+	    line = line.replace(/\${_extra}/g,extra);
 	    Object.keys(attrs).forEach(key=>{
 		if(key=='label') return;
 		line = line.replaceAll("\${" + key+"}",attrs[key]);
@@ -752,12 +757,13 @@ MapGlyph.prototype = {
 	    line = line.replaceAll(/\${unit}/g,'');
 	    line = line.replaceAll(/\${icon}/g,this.getIcon());	    
 
-	    props = $.extend(props,{
-		glyphField:glyphField,
-		canvasWidth:canvasWidth,
-		canvasHeight: canvasHeight,
-		entryname: this.getName(),
-	    });
+	    props = Utils.clone({},
+				props,{
+				    glyphField:glyphField,
+				    canvasWidth:canvasWidth,
+				    canvasHeight: canvasHeight,
+				    entryname: this.getName(),
+				},attrs);
 	    glyphs.push(new Glyph(this.display,1.0, data.getRecordFields(),data.getRecords(),props,line));
 	});
 	let cid = HU.getUniqueId("canvas_");
