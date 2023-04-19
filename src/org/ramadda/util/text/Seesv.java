@@ -2640,6 +2640,10 @@ public class Seesv implements SeesvCommands {
 		ARG_LABEL,"% Increase",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS), 
 		new Arg("how far back","",ATTR_TYPE,TYPE_NUMBER)),
+        new Cmd(CMD_DIFF, "Difference from previous value",
+		ARG_LABEL,"Difference",
+                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS), 
+		new Arg("how far back (default 1)","",ATTR_TYPE,TYPE_NUMBER)),	
         new Cmd(CMD_AVERAGE, "Calculate a moving average", 
 		new Arg(ARG_COLUMNS,"Columns",ATTR_TYPE,"columns"),
                 new Arg("period","",ATTR_TYPE,TYPE_NUMBER),
@@ -3875,9 +3879,13 @@ public class Seesv implements SeesvCommands {
 	    });
 
 	defineFunction(CMD_INCREASE,2,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.ColumnIncrease(args.get(++i), parseInt(args.get(++i))));
+		ctx.addProcessor(new Converter.ColumnIncrease(args.get(++i), parseInt(args.get(++i),1)));
 		return i;
 	    });
+	defineFunction(CMD_DIFF,2,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.ColumnDiff(args.get(++i), parseInt(args.get(++i),1)));
+		return i;
+	    });	
 	defineFunction(CMD_COLUMN_AND,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.And(args.get(++i), getCols(args.get(++i))));
 		return i;
@@ -5679,8 +5687,14 @@ public class Seesv implements SeesvCommands {
     }
 
 
-    public static int parseInt(String s) {
-	return Integer.parseInt(s.trim());
+    public static int parseInt(String s,int...dflt) {
+	s = s.trim();
+	try {
+	    return Integer.parseInt(s.trim());
+	} catch(NumberFormatException nfe) {
+	    if(dflt.length>0) return dflt[0];
+	    throw nfe;
+	}
     }
 
     public static double parseDouble(String s, double ...dflt) {

@@ -246,6 +246,7 @@ public interface SeesvCommands {
     public static final String CMD_SUMMARY="-summary";
     public static final String CMD_HISTOGRAM="-histogram";
     public static final String CMD_PERCENT="-percent";
+    public static final String CMD_DIFF = "-diff";
     public static final String CMD_INCREASE="-increase";
     public static final String CMD_AVERAGE="-average";
     public static final String CMD_RANGES="-ranges";

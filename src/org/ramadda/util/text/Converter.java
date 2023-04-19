@@ -2033,7 +2033,7 @@ public abstract class Converter extends Processor {
                 String type   = (defaultTypeFromProperties != null)
 		    ? defaultTypeFromProperties
 		    : defaultType;
-                //              System.err.println("id:"  + id  + " default:" + type);
+		//		System.err.println("id:"  + id  + " default:" + type);
                 boolean isGeo = false;
 
                 boolean chartable = Seesv.getDbProp(props, id, "chartable",
@@ -2097,7 +2097,14 @@ public abstract class Converter extends Processor {
 
                 //              System.err.println("\tfinal type:" + type);
 
+
                 type = Seesv.getDbProp(props, id, i, "type", type);
+		//		System.err.println("ID:"  + id  + " type:" + type +" format:" + format);
+
+
+
+
+
                 if (Misc.equals(type, "enum")) {
                     type = "enumeration";
                 }
@@ -2113,12 +2120,16 @@ public abstract class Converter extends Processor {
                     attrs.append(" enumeratedValues=\"" + enumeratedValues
                                  + "\"");
                 }
+
+
                 if (Misc.equals(type, "date")) {
                     if (format == null) {
                         format = "yyyy-MM-dd";
                     }
                     attrs.append(" format=\"" + format + "\" ");
                 }
+
+
                 if (type.equals("double") || type.equals("integer")) {
                     if (chartable) {
                         attrs.append(" chartable=\"" + "true" + "\" ");
@@ -2234,16 +2245,8 @@ public abstract class Converter extends Processor {
 
 
 
-    /**
-     * Class description
-     *
-     * @version        $version$, Tue, Nov 19, '19
-     * @author         Enter your name here...
-     */
     public static class ColumnIncrease extends Converter {
 
-
-        /* */
 
         /** _more_ */
         int step;
@@ -2300,6 +2303,56 @@ public abstract class Converter extends Processor {
 
     }
 
+    public static class ColumnDiff extends Converter {
+
+
+        /** _more_ */
+        int step;
+
+        /* */
+
+        /** _more_ */
+        List<Double> values = new ArrayList<Double>();
+
+        /**
+         * @param col _more_
+         * @param step _more_
+         */
+        public ColumnDiff(String col, int step) {
+            super(col);
+            this.step = step;
+        }
+
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            int col = getIndex(ctx);
+            if (rowCnt++ == 0) {
+                add(ctx, row, row.get(col) + " difference");
+                return row;
+            }
+            double v = Double.parseDouble(row.get(col).toString());
+            if (values.size() < step) {
+                add(ctx, row,  Double.valueOf(Double.NaN));
+            } else {
+                double pastValue = values.get(0);
+                values.remove(0);
+                double increase = 0;
+		double diff = v - pastValue;
+		add(ctx, row, Double.valueOf(diff));
+            }
+            values.add(v);
+
+            return row;
+        }
+
+    }
+    
 
     /**
      * Class description
