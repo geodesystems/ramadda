@@ -4485,6 +4485,9 @@ public class WikiManager extends RepositoryManager
 		    v = "unknown macro:" +macro.getId();
 		}
 		if(v!=null) {
+		    if(macro.getProperty("includeIcon",false)) {
+			v = HU.img(getPageHandler().getIconUrl(request, child)) +" " + v;
+		    }
 		    if(macro.getProperty("link",false)) {
 			if(macro.getProperty("noline",true)) {
 			    v = HU.href(getEntryManager().getEntryUrl(request, child),v,
