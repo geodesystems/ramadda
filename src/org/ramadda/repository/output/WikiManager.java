@@ -4140,7 +4140,7 @@ public class WikiManager extends RepositoryManager
 						height, noTemplate,props);
 
             return sb.toString();
-        } else if (theTag.equals(WIKI_TAG_TEMPLATE)) {
+        } else if (theTag.equals(WIKI_TAG_ENTRIES_TEMPLATE)) {
             List<Entry> children = getEntries(request, wikiUtil,
 					      originalEntry, entry, props);
 

@@ -392,7 +392,7 @@ public interface WikiConstants {
     /**  */
     public static final String WIKI_TAG_PAGETEMPLATE = "pagetemplate";
 
-    public static final String WIKI_TAG_TEMPLATE = "template";    
+    public static final String WIKI_TAG_ENTRIES_TEMPLATE = "entries_template";    
 
     /** _more_ */
     public static final String WIKI_TAG_WIKITEXT = "wikitext";
