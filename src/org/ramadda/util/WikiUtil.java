@@ -3122,10 +3122,11 @@ public class WikiUtil {
                     Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
                             ? toks.get(1)
                             : "");
+		    if(tline.equals("+rowtight")) props.put("tight","true");
                     rowStates.add(new RowState(buff, props));
                     continue;
                 }
-                if (tline.equals("-row")) {
+                if (tline.startsWith("-row")) {
                     if (rowStates.size() == 0) {
                         wikiError(buff, "Error: unopened row");
                         continue;
@@ -3133,7 +3134,6 @@ public class WikiUtil {
                     RowState rowState = rowStates.get(rowStates.size() - 1);
                     rowState.closeRow(buff);
                     rowStates.remove(rowStates.size() - 1);
-
                     continue;
                 }
 
