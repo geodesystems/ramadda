@@ -104,6 +104,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    console.error('Failed loading mapresources.json:' + err);
 	});
     }
+
     ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPolygon, {
 	CLASS_NAME:'IMDV Image Handler',
 	initialize: function(control, callbacks, options) {
@@ -3025,9 +3026,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 
 	loadAnnotationJson: function(mapJson,map) {
-//	    this.voroni();
-
-
 	    let glyphs = mapJson.glyphs||[];
 	    glyphs.forEach(jsonObject=>{
 		let mapGlyph = this.makeGlyphFromJson(jsonObject);
