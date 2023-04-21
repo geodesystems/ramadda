@@ -5113,14 +5113,11 @@ public class EntryManager extends RepositoryManager {
 
 
         request.ensureAuthToken();
+	addSessionEntry(request, toEntry);
         if (isMove) {
-            Entry toGroup = (Entry) toEntry;
-
-            return processEntryMove(request, toGroup, entries);
+            return processEntryMove(request, toEntry, entries);
         } else if (isCopy) {
-            Entry toGroup = (Entry) toEntry;
-
-            return processEntryCopy(request, toGroup, null, entries);
+            return processEntryCopy(request, toEntry, null, entries);
         } else if (isLink) {
             if (entries.size() == 1) {
                 return new Result(
@@ -5156,7 +5153,6 @@ public class EntryManager extends RepositoryManager {
 				   final String pathTemplate,
                                    final List<Entry> entries)
 	throws Exception {
-
 
         final String link =
             HU.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
