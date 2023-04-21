@@ -1599,6 +1599,18 @@ public class WikiManager extends RepositoryManager
         wiki = getPageHandler().translate(request, wiki);
         Result result = new Result("", new StringBuilder(wiki));
         result.setShouldDecorate(false);
+
+	/*
+	  if(true) {
+	    Result result2 = new Result("", new StringBuilder("XXXX"));
+	    result2.setShouldDecorate(false);
+	    return result2;
+	    }*/
+	
+
+
+
+
         return result;
     }
 
@@ -4146,8 +4158,9 @@ public class WikiManager extends RepositoryManager
 
 	    if(children.size()==0) return null;
 	    
-	    String prefix = getProperty(wikiUtil, props, "prefix","");
-	    String suffix = getProperty(wikiUtil, props, "suffix","");
+	    String style = getProperty(wikiUtil, props, "style","");
+	    String prefix = getProperty(wikiUtil, props, "before","");
+	    String suffix = getProperty(wikiUtil, props, "after","");
 	    String delimiter = getProperty(wikiUtil, props, "delimiter","");	    
 	    sb.append(prefix);
 	    String template = getProperty(wikiUtil, props,

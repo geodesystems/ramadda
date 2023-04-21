@@ -2093,7 +2093,7 @@ public class ImageOutputHandler extends OutputHandler {
 
         String playerTemplate =
             repository.getResource(
-                "/org/ramadda/repository/resources/web/imageplayer.html");
+                "/org/ramadda/repository/htdocs/imageplayer/imageplayer.html");
         playerTemplate = playerTemplate.replace("${imagePlayerVar}", playerVar);
         playerTemplate = playerTemplate.replace("${imagePlayerId}", playerId);
 
