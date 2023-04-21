@@ -1129,7 +1129,7 @@ public class Entry implements Cloneable {
      */
     public double[] getCenter() {
         return new double[] { south + (north - south) / 2,
-	    east + (west - east) / 2 };
+			      east + (west - east) / 2 };
     }
 
     /**
@@ -2357,5 +2357,38 @@ public class Entry implements Cloneable {
 	return cacheActiveLimit;
     }
 
+    public static class EntryHistory {
+	public Date date;
+	public String id;
+	public String description;
+	public String name;
+	public Hashtable props;
+	public EntryHistory(Entry entry) {
+	    date = new Date();
+	    this.id = entry.getId();
+	    this.name = entry.getName();
+	    this.description = entry.getDescription();
+	}
+
+	public void putProperty(Object key, Object value) {
+	    if(props==null) props = new Hashtable();
+	    props.put(key,value);
+	}
+	public Object getProperty(Object key,Object dflt) {
+	    if(props==null) return  dflt;
+	    Object v = props.get(key);
+	    if(v==null) return dflt;
+	    return v;
+	}	
+
+	public Date getDate() {
+	    return date;
+	}
+
+	public String getDescription() {
+	    return description;
+	}
+
+    }
 
 }
