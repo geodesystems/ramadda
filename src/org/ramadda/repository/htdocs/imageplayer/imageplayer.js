@@ -113,7 +113,28 @@ function ImagePlayer(args)  {
 	}
 	html = HU.div(['id',this.getId('imagewrapper'),'style',wrapperCss],
 		      html);
+
 	this.jq("animation").html(html);
+	let imageWrapper = this.jq('imagewrapper');
+	//As the window changes size check the size of the wrapper
+	$(window).resize(()=>{
+            if(this.pendingResizeTimeout) {
+                clearTimeout(this.pendingResizeTimeout);
+                this.pendingResizeTimeout = null;
+	    }
+	    let func = ()=>{
+		let imageHeight=100;
+		this.images.forEach((image,idx)=>{
+		    if(!image.domElement) return;
+		    let height = image.domElement.height();
+		    if(height>imageHeight) {
+			imageHeight=height;
+			imageWrapper.css('height',height+'px');
+		    }
+		});
+	    }
+	    this.pendingResizeTimeout = setTimeout(func, 500);
+	});
 	let imageHeight=100;
 	this.images.forEach((image,idx)=>{
 	    image.domElement = this.jq('image_'+idx);
@@ -122,7 +143,7 @@ function ImagePlayer(args)  {
 		let height = $(this).height();
 		if(height>imageHeight) {
 		    imageHeight=height;
-		    _this.jq('imagewrapper').css('height',height+'px');
+		    imageWrapper.css('height',height+'px');
 		}
 	    });
 	});
