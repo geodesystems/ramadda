@@ -12,16 +12,9 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.FormInfo;
-
 import org.ramadda.util.HtmlUtils;
-
 import org.ramadda.util.WikiUtil;
-
-
 import org.ramadda.util.sql.Clause;
-
-
-import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.sql.SqlUtil;
 
 
@@ -373,6 +366,21 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
+    @Override
+    public   Entry.EntryHistory createHistory(Entry entry) {
+	Entry.EntryHistory history = super.createHistory(entry);
+	Object[] values = entry.getValues();
+	if ((values != null) && (values.length > 0)
+	    && (values[0] != null)) {
+	    //	    System.err.println("value:" + values[0]);
+	    history.putProperty("wikitext",values[0]);
+	}
+
+	return history;
+    }
+
+
+
     /**
      * _more_
      *
@@ -412,6 +420,13 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
                 wikiText = (String) values[0];
             }
         }
+	Entry.EntryHistory entryHistory = (Entry.EntryHistory) formInfo.getHistory();
+	if(entryHistory!=null) {
+	    wikiText = (String)entryHistory.getProperty("wikitext",wikiText);
+	    //	    System.err.println("H:" + wikiText);
+	}
+
+
         if (request.defined(WikiPageOutputHandler.ARG_WIKI_EDITWITH)) {
             Date dttm = new Date(
                             (long) request.get(
@@ -430,8 +445,12 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
                     + getDateHandler().formatDate(wph.getDate())));
         }
 
-        sb.append(HU.formEntry(msgLabel("Title"),
-                               HU.input(ARG_NAME, name, size)));
+	sb.append("<tr><td colspan=2>");
+        sb.append(HU.input(ARG_NAME, name,
+			   HU.attr("autofocus","true") +
+			   HU.attr("placeholder", "Name") +
+			   size));
+	sb.append("</td></tr>");
 
         if (entry != null) {
 
