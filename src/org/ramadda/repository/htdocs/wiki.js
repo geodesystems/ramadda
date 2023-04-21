@@ -4,199 +4,201 @@
 
 
 var wikiPopup = null;
-var WikiUtil = {
-    initWikiEditor(entry, wikiId, textId,cbxId) {
-        var textBlock = textId +"_block";
-        var wikiBlock = wikiId +"_block";
-        $("#" + cbxId).click(() => {
-            var editor = WikiUtil.getWikiEditor(wikiId);
-            var on  = $("#" + cbxId).is(':checked');
-            if(on) {
-                $("#" + textBlock).css("display","none");
-                $("#" + wikiBlock).css("display","block");
-                var val = $("#" + textId).val();
-                editor.getEditor().setValue(val,8);
-                $("#" + wikiId).focus();
-            } else {
-                var val = editor.getEditor().getValue();
-                $("#" + textId).val(val);
-                $("#" + textBlock).css("display","block");
-                $("#" + wikiBlock).css("display","none");
-                $("#" + textId).focus();
+if(!window.WikiUtil) {
+    window.WikiUtil = {
+	initWikiEditor(entry, wikiId, textId,cbxId) {
+            var textBlock = textId +"_block";
+            var wikiBlock = wikiId +"_block";
+            $("#" + cbxId).click(() => {
+		var editor = WikiUtil.getWikiEditor(wikiId);
+		var on  = $("#" + cbxId).is(':checked');
+		if(on) {
+                    $("#" + textBlock).css("display","none");
+                    $("#" + wikiBlock).css("display","block");
+                    var val = $("#" + textId).val();
+                    editor.getEditor().setValue(val,8);
+                    $("#" + wikiId).focus();
+		} else {
+                    var val = editor.getEditor().getValue();
+                    $("#" + textId).val(val);
+                    $("#" + textBlock).css("display","block");
+                    $("#" + wikiBlock).css("display","none");
+                    $("#" + textId).focus();
+		}
+            })
+	},
+	handleWikiEditorSubmit: function() {
+            if (!this.wikiEditors) return;
+            for (a in this.wikiEditors) {
+		let editor= this.wikiEditors[a];
+		editor.handleSubmit();
             }
-        })
-    },
-    handleWikiEditorSubmit: function() {
-        if (!this.wikiEditors) return;
-        for (a in this.wikiEditors) {
-            let editor= this.wikiEditors[a];
-            editor.handleSubmit();
-        }
-    },
-    getWikiEditor: function(id) {
-        if (!this.wikiEditors) return null;
-        return  this.wikiEditors[id];
-    },
-    addWikiEditor:function(editor,id) {
-        if(!this.wikiEditors)  this.wikiEditors={};
-        id = id || editor.getId();
-        this.wikiEditors[id] = editor;
-    },
+	},
+	getWikiEditor: function(id) {
+            if (!this.wikiEditors) return null;
+            return  this.wikiEditors[id];
+	},
+	addWikiEditor:function(editor,id) {
+            if(!this.wikiEditors)  this.wikiEditors={};
+            id = id || editor.getId();
+            this.wikiEditors[id] = editor;
+	},
 
-    insertDisplayText:function(id, value) {
-	let type = window.globalDisplayTypesMap[value];
-	if(!type) {
-	    WikiUtil.insertText(value);
-	    return;
-	}
-	let t = "{{";
-	if(type.type=="group") {
-	    t+="group ";
-	} else  {
-	    t +="display_" + type.type +" ";
-	}
-	if(type.wiki)  t += type.wiki;
-	t+="}} ";
-	if(wikiPopup)
-	    wikiPopup.hide();
-	WikiUtil.insertText(id,t);
-    },
+	insertDisplayText:function(id, value) {
+	    let type = window.globalDisplayTypesMap[value];
+	    if(!type) {
+		WikiUtil.insertText(value);
+		return;
+	    }
+	    let t = "{{";
+	    if(type.type=="group") {
+		t+="group ";
+	    } else  {
+		t +="display_" + type.type +" ";
+	    }
+	    if(type.wiki)  t += type.wiki;
+	    t+="}} ";
+	    if(wikiPopup)
+		wikiPopup.hide();
+	    WikiUtil.insertText(id,t);
+	},
 
-    insertText:function(id, value) {
-	HtmlUtils.hidePopupObject();
-	var popup = HtmlUtils.getTooltip();
-	if(popup)
-	    popup.hide();
-	var handler = getHandler(id);
-	if (handler) {
-            handler.insertText(value);
-            return;
-	}
-	var editor = WikiUtil.getWikiEditor(id);
-	if (editor) {
-            editor.insertAtCursor(value);
-	    return;
-	}
-	var textComp = GuiUtils.getDomObject(id);
-	if (textComp) {
-            WikiUtil.insertAtCursor(id, textComp.obj, value);
-	}
-    },
+	insertText:function(id, value) {
+	    HtmlUtils.hidePopupObject();
+	    var popup = HtmlUtils.getTooltip();
+	    if(popup)
+		popup.hide();
+	    var handler = getHandler(id);
+	    if (handler) {
+		handler.insertText(value);
+		return;
+	    }
+	    var editor = WikiUtil.getWikiEditor(id);
+	    if (editor) {
+		editor.insertAtCursor(value);
+		return;
+	    }
+	    var textComp = GuiUtils.getDomObject(id);
+	    if (textComp) {
+		WikiUtil.insertAtCursor(id, textComp.obj, value);
+	    }
+	},
 
 
 
-    insertAtCursor:function(id, myField, value) {
-	var editor = WikiUtil.getWikiEditor(id);
-	if(value.entryId && editor) {
-	    editor.handleEntryLink(value.entryId, value.name,null,false,value);
-	    return;
-	}
+	insertAtCursor:function(id, myField, value) {
+	    var editor = WikiUtil.getWikiEditor(id);
+	    if(value.entryId && editor) {
+		editor.handleEntryLink(value.entryId, value.name,null,false,value);
+		return;
+	    }
 
 
-	if (editor) {
-	    value = Utils.decodeText(value);    
-	    editor.insertAtCursor(value);
-            return;
-	}
+	    if (editor) {
+		value = Utils.decodeText(value);    
+		editor.insertAtCursor(value);
+		return;
+	    }
 
-	HtmlUtils.insertIntoTextarea(myField,value);
-    },
-
-
-
-    insertTags:function(id, tagOpen, tagClose, sampleText) {
-	HtmlUtils.hidePopupObject();
-	var handler = getHandler(id);
-	if (handler) {
-            handler.insertTags(tagOpen, tagClose, sampleText);
-            return;
-	}
-	let editor = WikiUtil.getWikiEditor(id);
-	if(editor) {
-	    editor.insertTags(tagOpen,tagClose, sampleText);
-	    return;
-	}
-	console.log("Could not find editor:" + id);
-    },
+	    HtmlUtils.insertIntoTextarea(myField,value);
+	},
 
 
 
-    // apply tagOpen/tagClose to selection in textarea,
-    // use sampleText instead of selection if there is none
-    insertTagsInner:function(id, txtarea, tagOpen, tagClose, sampleText) {
-	var selText, isSample = false;
-	tagOpen = Utils.decodeText(tagOpen);
-	tagClose = Utils.decodeText(tagClose);    
-	var editor = WikiUtil.getWikiEditor(id);
-	if (editor) {
-	    editor=editor.getEditor();
-            var text = tagOpen + tagClose + " ";
-            var cursor = editor.getCursorPosition();
-            editor.insert(text);
-            if (tagOpen.endsWith("\n")) {
-		cursor.row++;
-		cursor.column = 0;
-            } else {
-		cursor.column += tagOpen.length;
-            }
-            editor.selection.moveTo(cursor.row, cursor.column);
-            editor.focus();
-            return;
-	}
+	insertTags:function(id, tagOpen, tagClose, sampleText) {
+	    HtmlUtils.hidePopupObject();
+	    var handler = getHandler(id);
+	    if (handler) {
+		handler.insertTags(tagOpen, tagClose, sampleText);
+		return;
+	    }
+	    let editor = WikiUtil.getWikiEditor(id);
+	    if(editor) {
+		editor.insertTags(tagOpen,tagClose, sampleText);
+		return;
+	    }
+	    console.log("Could not find editor:" + id);
+	},
 
 
-	if (txtarea.selectionStart || txtarea.selectionStart == '0') { // Mozilla
-            //save textarea scroll position
-            var textScroll = txtarea.scrollTop;
-            //get current selection
-            txtarea.focus();
-            var startPos = txtarea.selectionStart;
-            var endPos = txtarea.selectionEnd;
-            selText = txtarea.value.substring(startPos, endPos);
-            //insert tags
-            txtarea.value = txtarea.value.substring(0, startPos) +
-		tagOpen + selText + tagClose +
-		txtarea.value.substring(endPos, txtarea.value.length);
-            if (isSample) {
-		txtarea.selectionStart = startPos + tagOpen.length;
-		txtarea.selectionEnd = startPos + tagOpen.length + selText.length;
-            } else {
-		txtarea.selectionStart = startPos + tagOpen.length + selText.length + tagClose.length;
-		txtarea.selectionEnd = txtarea.selectionStart - tagClose.length;
-            }
-            //restore textarea scroll position
-            txtarea.scrollTop = textScroll;
-            return;
-	}
+
+	// apply tagOpen/tagClose to selection in textarea,
+	// use sampleText instead of selection if there is none
+	insertTagsInner:function(id, txtarea, tagOpen, tagClose, sampleText) {
+	    var selText, isSample = false;
+	    tagOpen = Utils.decodeText(tagOpen);
+	    tagClose = Utils.decodeText(tagClose);    
+	    var editor = WikiUtil.getWikiEditor(id);
+	    if (editor) {
+		editor=editor.getEditor();
+		var text = tagOpen + tagClose + " ";
+		var cursor = editor.getCursorPosition();
+		editor.insert(text);
+		if (tagOpen.endsWith("\n")) {
+		    cursor.row++;
+		    cursor.column = 0;
+		} else {
+		    cursor.column += tagOpen.length;
+		}
+		editor.selection.moveTo(cursor.row, cursor.column);
+		editor.focus();
+		return;
+	    }
 
 
-	if (document.selection && document.selection.createRange) { // IE/Opera
-            //save window scroll position
-            if (document.documentElement && document.documentElement.scrollTop)
-		var winScroll = document.documentElement.scrollTop
-            else if (document.body)
-		var winScroll = document.body.scrollTop;
-            //get current selection  
-            txtarea.focus();
-            var range = document.selection.createRange();
-            selText = range.text;
-            //insert tags
-            range.text = tagOpen + selText + tagClose;
-            //mark sample text as selected
-            if (isSample && range.moveStart) {
-		if (window.opera)
-                    tagClose = tagClose.replace(/\n/g, '');
-		range.moveStart('character', -tagClose.length - selText.length);
-		range.moveEnd('character', -tagClose.length);
-            }
-            if (range.select) {
-		range.select();
-            }
-            //restore window scroll position
-            if (document.documentElement && document.documentElement.scrollTop)
-		document.documentElement.scrollTop = winScroll
-            else if (document.body)
-		document.body.scrollTop = winScroll;
+	    if (txtarea.selectionStart || txtarea.selectionStart == '0') { // Mozilla
+		//save textarea scroll position
+		var textScroll = txtarea.scrollTop;
+		//get current selection
+		txtarea.focus();
+		var startPos = txtarea.selectionStart;
+		var endPos = txtarea.selectionEnd;
+		selText = txtarea.value.substring(startPos, endPos);
+		//insert tags
+		txtarea.value = txtarea.value.substring(0, startPos) +
+		    tagOpen + selText + tagClose +
+		    txtarea.value.substring(endPos, txtarea.value.length);
+		if (isSample) {
+		    txtarea.selectionStart = startPos + tagOpen.length;
+		    txtarea.selectionEnd = startPos + tagOpen.length + selText.length;
+		} else {
+		    txtarea.selectionStart = startPos + tagOpen.length + selText.length + tagClose.length;
+		    txtarea.selectionEnd = txtarea.selectionStart - tagClose.length;
+		}
+		//restore textarea scroll position
+		txtarea.scrollTop = textScroll;
+		return;
+	    }
+
+
+	    if (document.selection && document.selection.createRange) { // IE/Opera
+		//save window scroll position
+		if (document.documentElement && document.documentElement.scrollTop)
+		    var winScroll = document.documentElement.scrollTop
+		else if (document.body)
+		    var winScroll = document.body.scrollTop;
+		//get current selection  
+		txtarea.focus();
+		var range = document.selection.createRange();
+		selText = range.text;
+		//insert tags
+		range.text = tagOpen + selText + tagClose;
+		//mark sample text as selected
+		if (isSample && range.moveStart) {
+		    if (window.opera)
+			tagClose = tagClose.replace(/\n/g, '');
+		    range.moveStart('character', -tagClose.length - selText.length);
+		    range.moveEnd('character', -tagClose.length);
+		}
+		if (range.select) {
+		    range.select();
+		}
+		//restore window scroll position
+		if (document.documentElement && document.documentElement.scrollTop)
+		    document.documentElement.scrollTop = winScroll
+		else if (document.body)
+		    document.body.scrollTop = winScroll;
+	    }
 	}
     }
 }
@@ -204,7 +206,6 @@ var WikiUtil = {
 function  WikiEditor(entryId, formId, id, hidden,argOptions) {
     if(formId) {
 	//If we are editing then listen for the submit and clear the editorChanged flag
-	//so the
 	$('#' + formId).submit(()=>{
 	    this.editorChanged = false;
 	    return true;
@@ -1210,7 +1211,6 @@ WikiEditor.prototype = {
 	};
 	let text = this.getValue();
 	let url = ramaddaBaseUrl + "/wikify";
-
 	$.post(url,{
 	    doImports:"false",
 	    entryid:entry,
