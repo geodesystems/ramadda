@@ -274,11 +274,11 @@ public class Request implements Constants, Cloneable {
             that.canStreamResult    = false;
             that.printWriter        = this.printWriter;
             that.parameters         = (this.parameters != null)
-                                      ? new Hashtable(this.parameters)
-                                      : new Hashtable();
+		? new Hashtable(this.parameters)
+		: new Hashtable();
             that.originalParameters = (this.originalParameters != null)
-                                      ? new Hashtable(this.originalParameters)
-                                      : new Hashtable();
+		? new Hashtable(this.originalParameters)
+		: new Hashtable();
 
             if (repository != null) {
                 that.repository = repository;
@@ -330,7 +330,7 @@ public class Request implements Constants, Cloneable {
      */
     public String getStringOrSession(String key, String sessionPrefix,
                                      String dflt)
-            throws Exception {
+	throws Exception {
         if (defined(key)) {
             return getString(key);
         }
@@ -349,7 +349,7 @@ public class Request implements Constants, Cloneable {
      */
     public void putSession(String key, String value) throws Exception {
         getRepository().getSessionManager().putSessionProperty(this, key,
-                value);
+							       value);
     }
 
     /**
@@ -361,7 +361,7 @@ public class Request implements Constants, Cloneable {
     public void putSessionIfDefined(String key, String prefix) {
         try {
             getRepository().getSessionManager().putSessionProperty(this,
-                    prefix + key, getString(key, ""));
+								   prefix + key, getString(key, ""));
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
@@ -569,10 +569,10 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     public String entryUrl(RequestUrl theUrl, Entry entry, String arg,
-                            boolean fullPath, String... args) {
+			   boolean fullPath, String... args) {
         if (entry.getIsRemoteEntry()) {
             String id = repository.getEntryManager().getRemoteEntryInfo(
-                            entry.getId())[1];
+									entry.getId())[1];
             if (id.length() == 0) {
                 return entry.getRemoteServer().getUrl() + theUrl.getPath();
             }
@@ -585,8 +585,8 @@ public class Request implements Constants, Cloneable {
         }
 
         String path = fullPath
-                      ? getEntryUrlPath(theUrl.toString(), entry)
-                      : makeUrlPath(theUrl);
+	    ? getEntryUrlPath(theUrl.toString(), entry)
+	    : makeUrlPath(theUrl);
         String url  = HtmlUtils.url(path, arg, entry.getId());
         url = HtmlUtils.url(url, args);
 
@@ -1004,7 +1004,7 @@ public class Request implements Constants, Cloneable {
             }
 
             if ((exceptArgsPattern != null)
-                    && arg.matches(exceptArgsPattern)) {
+		&& arg.matches(exceptArgsPattern)) {
                 continue;
             }
             //      System.out.println(arg+":" + exceptArgsPattern+":");
@@ -1018,11 +1018,11 @@ public class Request implements Constants, Cloneable {
                 for (int i = 0; i < l.size(); i++) {
                     String svalue = (String) l.get(i);
                     if ((svalue.length() == 0)
-                            || svalue.equals(TypeHandler.ALL)) {
+			|| svalue.equals(TypeHandler.ALL)) {
                         continue;
                     }
                     if ((exceptValues != null)
-                            && (exceptValues.contains(svalue))) {
+			&& (exceptValues.contains(svalue))) {
                         continue;
                     }
 
@@ -1067,7 +1067,7 @@ public class Request implements Constants, Cloneable {
      */
     public void addFormHiddenArguments(Appendable sb,
                                        HashSet<String> exceptArgs)
-            throws Exception {
+	throws Exception {
         //Just in case, never want to let slip the passwords
         exceptArgs.add(ARG_USER_PASSWORD);
         exceptArgs.add(ARG_USER_PASSWORD1);
@@ -1093,7 +1093,7 @@ public class Request implements Constants, Cloneable {
                 for (int i = 0; i < l.size(); i++) {
                     String svalue = (String) l.get(i);
                     if ((svalue.length() == 0)
-                            || svalue.equals(TypeHandler.ALL)) {
+			|| svalue.equals(TypeHandler.ALL)) {
                         continue;
                     }
                     sb.append(HtmlUtils.hidden(arg, svalue));
@@ -1123,7 +1123,7 @@ public class Request implements Constants, Cloneable {
             StringBuilder sb  = new StringBuilder();
             int           cnt = 0;
             for (Enumeration keys =
-                    parameters.keys(); keys.hasMoreElements(); ) {
+		     parameters.keys(); keys.hasMoreElements(); ) {
                 String arg   = (String) keys.nextElement();
                 Object value = parameters.get(arg);
                 if (value instanceof List) {
@@ -1293,8 +1293,8 @@ public class Request implements Constants, Cloneable {
         Request that = (Request) o;
 
         return this.urlPath.equals(that.urlPath)
-               && Misc.equals(this.user, that.user)
-               && this.originalParameters.equals(that.originalParameters);
+	    && Misc.equals(this.user, that.user)
+	    && this.originalParameters.equals(that.originalParameters);
     }
 
 
@@ -1305,7 +1305,7 @@ public class Request implements Constants, Cloneable {
      */
     public int hashCode() {
         return urlPath.hashCode() ^ Misc.hashcode(user)
-               ^ originalParameters.hashCode();
+	    ^ originalParameters.hashCode();
     }
 
     /**
@@ -1375,8 +1375,8 @@ public class Request implements Constants, Cloneable {
      */
     public void put(Object key, Object value, boolean singular) {
         Object existing = singular
-                          ? null
-                          : parameters.get(key);
+	    ? null
+	    : parameters.get(key);
         if (existing != null) {
             if (existing instanceof List) {
                 ((List) existing).add(value);
@@ -1604,7 +1604,7 @@ public class Request implements Constants, Cloneable {
                 //Encode this to keep from a spoof attack
                 message = HtmlUtils.entityEncode(message);
                 sb.append(
-                    repository.getPageHandler().showDialogNote(message));
+			  repository.getPageHandler().showDialogNote(message));
                 remove(ARG_MESSAGE);
             }
         } catch (java.io.IOException ioe) {
@@ -1709,7 +1709,7 @@ public class Request implements Constants, Cloneable {
             System.err.println("\targ session:" + argSessionId);
             System.err.println("\tmySessionId:" + mySessionId);
             /*
-            for (Enumeration keys = parameters.keys(); keys.hasMoreElements(); ) {System.err.println("\tkey:" + keys.nextElement());        }
+	      for (Enumeration keys = parameters.keys(); keys.hasMoreElements(); ) {System.err.println("\tkey:" + keys.nextElement());        }
             */
         }
         //      debug = false;
@@ -1718,14 +1718,14 @@ public class Request implements Constants, Cloneable {
             if (argSessionId.equals(mySessionId)) {
                 if (debug) {
                     System.err.println(
-                        "\tensureAuthToken arg session id == session id");
+				       "\tensureAuthToken arg session id == session id");
                 }
 
                 return;
             }
             if (debug) {
                 System.err.println(
-                    "\tensureAuthToken arg session id != session id");
+				   "\tensureAuthToken arg session id != session id");
             }
         }
 
@@ -1745,9 +1745,9 @@ public class Request implements Constants, Cloneable {
                 return;
             }
             getRepository().getLogManager().logError(
-                "Request.ensureAuthToken: authToken != sessionAuth :"
-                + "\n\tsession:" + mySessionId + "\n\tauth token:"
-                + authToken + "\n\tsession hashed:" + sessionAuth, null);
+						     "Request.ensureAuthToken: authToken != sessionAuth :"
+						     + "\n\tsession:" + mySessionId + "\n\tauth token:"
+						     + authToken + "\n\tsession hashed:" + sessionAuth, null);
         }
 
         //If we are publishing anonymously then don't look for a auth token
@@ -1760,8 +1760,8 @@ public class Request implements Constants, Cloneable {
             System.err.println("Bad");
         }
         getRepository().getLogManager().logError(
-            "Request.ensureAuthToken: something null:" + "\n\tsession:"
-            + mySessionId + "\n\tauth token:" + authToken, null);
+						 "Request.ensureAuthToken: something null:" + "\n\tsession:"
+						 + mySessionId + "\n\tauth token:" + authToken, null);
 
         throw new IllegalArgumentException("Bad authentication token");
     }
@@ -1850,7 +1850,7 @@ public class Request implements Constants, Cloneable {
             //checker =  Pattern.compile(repository.getProperty(PROP_REQUEST_PATTERN));
         }
 
-        //      if(key.equals("dbsortdir1")) System.err.println("getString:\n"+ Utils.getStack(5));
+	//	if(key.equals(ARG_DESCRIPTION)) System.err.println("getString:\n"+ Utils.getStack(10));
         return getCheckedString(key, dflt, checker);
     }
 
@@ -1913,7 +1913,7 @@ public class Request implements Constants, Cloneable {
     /**
      *
      * @param s _more_
-      * @return _more_
+     * @return _more_
      */
     public static String cleanXSS(String s) {
         String onPattern =
@@ -2161,7 +2161,7 @@ public class Request implements Constants, Cloneable {
         }
         String llString = (String) getString(from, "").trim();
         if ((llString == null) || (llString.length() == 0)
-                || (llString.startsWith("${"))) {
+	    || (llString.startsWith("${"))) {
             return dflt;
         }
         double result = Utils.decodeLatLon(llString);
@@ -2189,7 +2189,7 @@ public class Request implements Constants, Cloneable {
         String llString = (String) getString(from, "").trim();
         //        System.err.println("\tllstring:" + llString);
         if ((llString == null) || (llString.length() == 0)
-                || (llString.startsWith("${"))) {
+	    || (llString.startsWith("${"))) {
             return dflt;
         }
 
@@ -2324,7 +2324,7 @@ public class Request implements Constants, Cloneable {
      * @throws java.text.ParseException On badness
      */
     public Date[] getDateRange(String from, String to, Date dflt)
-            throws java.text.ParseException {
+	throws java.text.ParseException {
         return getDateRange(from, to, ARG_RELATIVEDATE, dflt);
     }
 
@@ -2342,7 +2342,7 @@ public class Request implements Constants, Cloneable {
      */
     public Date[] getDateRange(String from, String to, String relativeArg,
                                Date dflt)
-            throws java.text.ParseException {
+	throws java.text.ParseException {
         String fromDate = "";
         String toDate   = "";
         if (defined(from) || defined(to)) {
@@ -2483,9 +2483,9 @@ public class Request implements Constants, Cloneable {
         //TODO: be smarter about this
         String ua = getUserAgent("").toLowerCase();
         isMobile = (ua.indexOf("iphone") >= 0)
-                   || (ua.indexOf("android") >= 0)
-                   || (ua.indexOf("mobile") >= 0)
-                   || (ua.indexOf("blackberry") >= 0);
+	    || (ua.indexOf("android") >= 0)
+	    || (ua.indexOf("mobile") >= 0)
+	    || (ua.indexOf("blackberry") >= 0);
         isRobot = checkForRobot();
     }
 
@@ -3081,7 +3081,7 @@ public class Request implements Constants, Cloneable {
     /**
      *
      * @param key _more_
-      * @return _more_
+     * @return _more_
      */
     public String getPropertyOrArg(String key) {
         String s = (String) getExtraProperty(key);
@@ -3166,7 +3166,7 @@ public class Request implements Constants, Cloneable {
      */
     public boolean responseAsJson() {
         return getString(ARG_RESPONSE, "").equals(RESPONSE_JSON)
-               || getString(ARG_OUTPUT).equals("json");
+	    || getString(ARG_OUTPUT).equals("json");
     }
 
     /**
@@ -3245,7 +3245,7 @@ public class Request implements Constants, Cloneable {
     public PageStyle getPageStyle(Entry entry) {
         if (pageStyle == null) {
             pageStyle = repository.getPageHandler().doMakePageStyle(this,
-                    entry);
+								    entry);
         }
 
         return pageStyle;
@@ -3268,7 +3268,7 @@ public class Request implements Constants, Cloneable {
         OutputStream os = getHttpServletResponse().getOutputStream();
         InputStream fis =
             getRepository().getStorageManager().getFileInputStream(
-                file.toString());
+								   file.toString());
         IOUtil.writeTo(fis, os);
         IOUtil.close(os);
         IOUtil.close(fis);
@@ -3288,7 +3288,7 @@ public class Request implements Constants, Cloneable {
      */
     public Result returnStream(String filename, String mimeType,
                                InputStream is)
-            throws Exception {
+	throws Exception {
         getHttpServletResponse().setContentType(mimeType);
         setReturnFilename(filename, true);
 
@@ -3333,7 +3333,7 @@ public class Request implements Constants, Cloneable {
      * @throws Exception _more_
      */
     public Result getOutputStreamResult(String filename, String mimeType)
-            throws Exception {
+	throws Exception {
         getHttpServletResponse().setContentType(mimeType);
         setReturnFilename(filename, true);
         Result result = new Result(filename, (byte[]) null, mimeType);
@@ -3469,7 +3469,7 @@ public class Request implements Constants, Cloneable {
         for (String argPrefix : argPrefixes) {
             if (defined(argPrefix)) {
                 List<String> toks = Utils.split(getString(argPrefix, ""),
-                                        ",", true, true);
+						",", true, true);
                 //n,w,s,e
                 if (toks.size() == 4) {
                     for (int i = 0; i < 4; i++) {
