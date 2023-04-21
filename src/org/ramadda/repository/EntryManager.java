@@ -174,6 +174,10 @@ public class EntryManager extends RepositoryManager {
     /** _more_ */
     private TTLCache<String, Entry> synthEntryCache;
 
+    //Keep the history around for 10 minutes
+    private TTLCache<String,List<Entry.EntryHistory>> entryHistories =
+	new TTLCache<String,List<Entry.EntryHistory>>(10*60*1000);
+
 
     /**
      * _more_
@@ -1923,10 +1927,35 @@ public class EntryManager extends RepositoryManager {
             String cancelButton = HU.submit(msg("Cancel"), ARG_CANCEL);
             String buttons      = ((entry != null)
                                    ? HU.buttons(submitButton, cancelButton)
-                                   : HU.buttons(submitButton,
-						cancelButton));
+                                   : HU.buttons(submitButton,cancelButton));
+
+            FormInfo formInfo = new FormInfo(formId);
+	    String message=null;
+
+	    List<Entry.EntryHistory> history = getEntryHistory(entry);
+	    if(request.exists(ARG_UNDO)) {
+		if(history!=null && history.size()>0) {
+		    Entry.EntryHistory entryHistory = history.get(history.size()-1);
+		    history.remove(history.size()-1);
+		    message="Showing version: " + entryHistory.date;
+		    formInfo.setHistory(entryHistory);
+		}
+	    }
+
+	    if(history!=null && history.size()>0) {
+		buttons+=HU.space(2) +HU.submit("Undo", ARG_UNDO,
+						HU.attr("title","Revert description to:" +
+							history.get(history.size()-1).date));
+	    }
+
+
+
 
             HU.row(sb, HU.colspan(buttons, 2));
+	    if(message!=null) {
+		HU.row(sb, HU.colspan(message, 2));
+	    }
+
             if (entry != null) {
                 sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
                 sb.append(HU.hidden(ARG_ENTRY_TIMESTAMP,
@@ -1961,7 +1990,7 @@ public class EntryManager extends RepositoryManager {
                 sb.append(HU.hidden(ARG_GROUP, group.getId()));
             }
 
-            FormInfo formInfo = new FormInfo(formId);
+
             typeHandler.addToEntryForm(request, sb, group, entry, formInfo);
             formInfo.addToForm(sb);
             HU.row(sb, HU.colspan(buttons, 2));
@@ -2303,7 +2332,6 @@ public class EntryManager extends RepositoryManager {
     private Result doProcessEntryChangeInner(Request request, boolean forUpload,
 					     Object actionId, Entry parentEntry, Entry entry)
 	throws Exception {
-
         User user = request.getUser();
         if (forUpload) {
             logInfo("upload doProcessEntryChange user = " + user);
@@ -2332,17 +2360,25 @@ public class EntryManager extends RepositoryManager {
             }
 
 
-            //Remove this entry from the memory cache 
-            //so edits don't show up for others
-            removeFromCache(entry);
+            if (request.exists(ARG_UNDO)) {
+		return processEntryForm(request);
+	    }
 
-            typeHandler = entry.getTypeHandler();
-            newEntry    = false;
 
             if (request.exists(ARG_CANCEL)) {
                 return new Result(
 				  request.entryUrl(getRepository().URL_ENTRY_SHOW, entry));
             }
+
+
+            //Remove this entry from the memory cache 
+            //so edits don't show up for others
+            removeFromCache(entry);
+	    addEntryHistory(entry);
+
+            typeHandler = entry.getTypeHandler();
+            newEntry    = false;
+
 
             if ((entry != null) && isAnonymousUpload(entry)) {
                 if (request.get(ARG_JUSTPUBLISH, false)) {
@@ -3018,9 +3054,30 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+    private synchronized Entry.EntryHistory addEntryHistory(Entry entry) {
+	Entry.EntryHistory history = entry.getTypeHandler().createHistory(entry);
+	List<Entry.EntryHistory> list = entryHistories.get(entry.getId());
+	if(list==null) {
+	    list = new ArrayList<Entry.EntryHistory>();
+	    entryHistories.put(entry.getId(),list);
+	}
+	//keep around the last 5
+	while(list.size()>5) list.remove(0);
+	list.add(history);
+	return history;
+    }
+    
+    private List<Entry.EntryHistory> getEntryHistory(Entry entry) {
+	if(entry==null) return null;
+	return entryHistories.get(entry.getId());
+    }
+
+
     private void unzipResource(Request request, Entry parentEntry, User user,
 			       List<NewEntryInfo> infos,
-			       String resource,String datePattern, boolean testNew,List<String>testLog ) throws Exception {
+			       String resource,
+			       String datePattern,
+			       boolean testNew,List<String>testLog ) throws Exception {
 	Hashtable<String, Entry> nameToGroup = new Hashtable<String,  Entry>();
 	InputStream fis =
 	    getStorageManager().getFileInputStream(resource);
@@ -3133,6 +3190,7 @@ public class EntryManager extends RepositoryManager {
         String  description = request.getAnonymousEncodedString(isWiki
 								? ARG_WIKITEXT
 								: ARG_DESCRIPTION, dflt).trim();
+
         if (request.get(ARG_ISWIKI, false)) {
             if ( !description.startsWith(WIKI_PREFIX)) {
                 description = WIKI_PREFIX+"\n" + description;
