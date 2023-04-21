@@ -214,10 +214,12 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
 							 "addHeader", true);
         boolean showDetails = getWikiManager().getProperty(wikiUtil, props,
 							   "showDetails", true);
+        boolean showLabel = getWikiManager().getProperty(wikiUtil, props,
+							   "showLabel", true);	
         if (tag.equals("nws.hazards")) {
             addHazard(request, entry, sb, addHeader);
         } else if (tag.equals("nws.current")) {
-            addCurrent(request, entry, sb, addHeader, vertical, showDetails);
+            addCurrent(request, entry, sb, addHeader, vertical, showDetails,showLabel);
         } else if (tag.equals("nws.forecast")) {
             addForecast(request, entry, sb, addHeader, cnt);
             if (showDetails) {
@@ -226,12 +228,12 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
         } else if (tag.equals("nws.details")) {
             addDetails(request, entry, sb, addHeader, cnt);
         } else if (tag.equals("nws.weather")) {
-            addCurrent(request, entry, sb, addHeader, vertical, showDetails);
+            addCurrent(request, entry, sb, addHeader, vertical, showDetails,showLabel);
             addForecast(request, entry, sb, addHeader, cnt);
         } else if (tag.equals("nws.all")) {
             addHazard(request, entry, sb, addHeader);
             sb.append("<br>");
-            addCurrent(request, entry, sb, addHeader, vertical, true);
+            addCurrent(request, entry, sb, addHeader, vertical, true,showLabel);
             addForecast(request, entry, sb, addHeader, 1000);
             addDetails(request, entry, sb, addHeader, 1000);
         } else {
@@ -255,7 +257,8 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
             contents = HU.center("<b>" + heading + "</b>") + contents;
         }
 
-        return HU.div(contents, HU.style("display:inline-block;"));
+        return contents;
+	//        return HU.div(contents, HU.style("display:inline-block;"));
     }
 
 
@@ -341,7 +344,7 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
      */
     private void addCurrent(Request request, Entry entry, Appendable sb,
                             boolean addHeader, boolean vertical,
-                            boolean showDetails)
+                            boolean showDetails,boolean showLabel)
 	throws Exception {
         Weather current = getCurrent(entry);
         if ((current == null) || (current.times.size() == 0)) {
@@ -359,13 +362,16 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
         }
         dateFormat.applyPattern("MMM d - H:mm z");
         Weather.Time time = current.times.get(0);
-        HU.open(sb, "div", HU.cssClass("nws-block"));
+	//        HU.open(sb, "div", HU.cssClass("nws-block"));
         if (addHeader) {
             String link = HU.href(getEntryManager().getEntryUrl(request, entry),
 				  current.location,
-				  HU.cssClass("ramadda-clickable")+HU.style("text-decoration:none;font-size:16px;color:#135897;"));
+				  HU.cssClass("ramadda-clickable")+
+				  HU.style("text-decoration:none;" + (showLabel?"font-size:16px;color:#135897;":""))
+);
 				  
-            String header = "Current conditions at<br>" + link;
+            String header = showLabel?  "Current conditions at<br>":"";
+	    header += link;
             HU.div(sb, header, HU.cssClass("nws-header"));
             HU.open(sb, "div", HU.cssClass("nws-contents"));
         }
@@ -408,7 +414,7 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
         if (addHeader) {
             HU.close(sb, "div");
         }
-        HU.close(sb, "div");
+	//        HU.close(sb, "div");
 
     }
 
