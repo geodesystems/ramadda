@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Apr 19 12:11:17 MDT 2023";
+var build_date="RAMADDA build date: Fri Apr 21 07:36:21 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -40613,6 +40613,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    console.error('Failed loading mapresources.json:' + err);
 	});
     }
+
     ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPolygon, {
 	CLASS_NAME:'IMDV Image Handler',
 	initialize: function(control, callbacks, options) {
@@ -43534,9 +43535,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 
 	loadAnnotationJson: function(mapJson,map) {
-//	    this.voroni();
-
-
 	    let glyphs = mapJson.glyphs||[];
 	    glyphs.forEach(jsonObject=>{
 		let mapGlyph = this.makeGlyphFromJson(jsonObject);
