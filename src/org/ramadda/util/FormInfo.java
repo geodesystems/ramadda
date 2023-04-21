@@ -1,19 +1,10 @@
 /**
-Copyright (c) 2008-2021 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2021 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
-// Copyright (c) 2008-2021 Geode Systems LLC
-// SPDX-License-Identifier: Apache-2.0
-
 package org.ramadda.util;
-
-
 import java.util.ArrayList;
 import java.util.List;
-
-
-/**
- */
 
 public class FormInfo {
 
@@ -25,6 +16,8 @@ public class FormInfo {
 
     /** _more_ */
     private StringBuilder extraJS = new StringBuilder();
+
+    private Object history;
 
     /**
      * _more_
@@ -58,9 +51,9 @@ public class FormInfo {
         StringBuilder validateJavascript = new StringBuilder("");
         addJavascriptValidation(validateJavascript);
         String script = JQuery.ready(JQuery.submit(JQuery.id(formId),
-        //                                                   extraJS +
-        //                                                   "event.preventDefault();return;\n" +
-        validateJavascript.toString() + "\n" + extraJS));
+						   //                                                   extraJS +
+						   //                                                   "event.preventDefault();return;\n" +
+						   validateJavascript.toString() + "\n" + extraJS));
         HtmlUtils.script(sb, script);
     }
 
@@ -72,6 +65,26 @@ public class FormInfo {
     public String getId() {
         return formId;
     }
+
+
+    /**
+       Set the History property.
+
+       @param value The new value for History
+    **/
+    public void setHistory (Object value) {
+	history = value;
+    }
+
+    /**
+       Get the History property.
+
+       @return The History
+    **/
+    public Object getHistory () {
+	return history;
+    }
+
 
 
     /**
@@ -245,8 +258,8 @@ public class FormInfo {
             Utils.append(js,
                          "if(!GuiUtils.inputValueOk(" + HtmlUtils.squote(id)
                          + "," + value + "," + (min
-                    ? "true"
-                    : "false") + ")) {\n");
+						? "true"
+						: "false") + ")) {\n");
             String message;
             if (min) {
                 message = label + " is < " + value;
@@ -344,7 +357,7 @@ public class FormInfo {
                          "if(!GuiUtils.inputLengthOk(" + HtmlUtils.squote(id)
                          + "," + length + ", true)) {\n");
             String message = label + " is too short. Minimum length is "
-                             + length;
+		+ length;
             error(js, message);
             Utils.append(js, "}\n");
         }
