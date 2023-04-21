@@ -693,6 +693,8 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_CANCEL = "cancel";
 
+    public static final String ARG_UNDO = "undo";
+
     /** _more_ */
     public static final String ARG_EXECUTE = "execute";
 
