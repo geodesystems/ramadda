@@ -1109,6 +1109,12 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
+    public   Entry.EntryHistory createHistory(Entry entry) {
+	return new  Entry.EntryHistory(entry);
+    }
+
+
+
     /**
      * _more_
      *
@@ -4976,6 +4982,12 @@ public class TypeHandler extends RepositoryManager {
                     if (entry != null) {
                         desc = entry.getDescription();
                     }
+		    Entry.EntryHistory entryHistory = (Entry.EntryHistory) formInfo.getHistory();
+		    if(entryHistory!=null) {
+			desc = entryHistory.getDescription();
+		    }
+
+
                     if (desc.length() > 100) {
                         rows = rows * 2;
                     }
