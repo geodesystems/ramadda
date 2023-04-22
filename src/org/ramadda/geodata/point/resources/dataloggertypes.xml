@@ -4,7 +4,7 @@
      <property name="icon" value="/point/campbell.png"/>
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
      <property name="form.area.show" value="false"/>
-     <property name="form.location.show" value="false"/>
+     <property name="form.location.show" value="true"/>
      <property name="subset.area.show" value="false"/>
      <property name="subset.date.show" value="true"/>     
  <property name="record.properties">
