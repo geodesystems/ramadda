@@ -367,7 +367,7 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
 	//        HU.open(sb, "div", HU.cssClass("nws-block"));
         if (showHeader) {
             String link = HU.href(getEntryManager().getEntryUrl(request, entry),
-				  current.location,
+				  entry.getName(),
 				  HU.cssClass("ramadda-clickable")+
 				  HU.style("text-decoration:none;" + (showLabel?"font-size:16px;color:#135897;":""))
 );
