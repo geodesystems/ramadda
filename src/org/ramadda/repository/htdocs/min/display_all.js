@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Apr 21 10:55:47 MDT 2023";
+var build_date="RAMADDA build date: Sat Apr 22 06:55:37 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -50496,10 +50496,12 @@ MapGlyph.prototype = {
         let callback = (entries)=>{
 	    this.clearChildren();
 	    this.children = [];
-
 	    this.entries = entries;
 	    entries.forEach((e,idx)=>{
-		if(!e.hasLocation()) return;
+		if(!e.hasLocation()) {
+		    console.log("mutli entry has no location:" + e);
+		    return;
+		}
 		let  pt = MapUtils.createPoint(e.getLongitude(),e.getLatitude());
 		pt = this.display.getMap().transformLLPoint(pt);
 		let style = Utils.clone({},this.style);
