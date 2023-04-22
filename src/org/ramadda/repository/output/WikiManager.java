@@ -1330,6 +1330,14 @@ public class WikiManager extends RepositoryManager
         return getProperty(wikiUtil, props, ATTR_MESSAGE, message);
     }
 
+    public String makeErrorMessage(Request requests, WikiUtil wikiUtil,Hashtable props,
+				   String tag,
+				   String dfltMsg) {
+	String msg = getMessage(wikiUtil, props,  null);
+	if(msg!=null) return msg;
+	if(dfltMsg==null) dfltMsg = "Could not process tag:" + tag;
+	return HU.span(dfltMsg,HU.cssClass("ramadda-wiki-error"));
+    }
 
 
     /**
@@ -3307,7 +3315,7 @@ public class WikiManager extends RepositoryManager
 					      originalEntry, entry, props, false,
 					      APPLY_PREFIX);
             if (children.size() == 0) {
-                return null;
+		return  makeErrorMessage(request,wikiUtil,props,theTag, "No entries available");
             }
             String layout = getProperty(wikiUtil, props,
                                         APPLY_PREFIX + "layout", "table");
@@ -4022,8 +4030,8 @@ public class WikiManager extends RepositoryManager
             List<Entry> children = getEntries(request, wikiUtil,
 					      originalEntry, entry, props, true);
             if (children.size() == 0) {
-                return null;
-            }
+		return  makeErrorMessage(request,wikiUtil,props,theTag, "No image entries available");
+	    }
             ImageOutputHandler ioh = getImageOutputHandler();
             Request imageRequest = request.cloneMe();
 
@@ -4144,7 +4152,7 @@ public class WikiManager extends RepositoryManager
             List<Entry> children = getEntries(request, wikiUtil,
 					      originalEntry, entry, props);
             if (children.size() == 0) {
-                return null;
+		return  makeErrorMessage(request,wikiUtil,props,theTag, "No entries available");
             }
             boolean noTemplate = getProperty(wikiUtil, props, "noTemplate",
                                              true);
@@ -4156,7 +4164,9 @@ public class WikiManager extends RepositoryManager
             List<Entry> children = getEntries(request, wikiUtil,
 					      originalEntry, entry, props);
 
-	    if(children.size()==0) return null;
+	    if(children.size()==0) {
+		return  makeErrorMessage(request,wikiUtil,props,theTag, "No entries available");
+	    }
 	    
 	    String style = getProperty(wikiUtil, props, "style","");
 	    String prefix = getProperty(wikiUtil, props, "before","");
@@ -4187,7 +4197,7 @@ public class WikiManager extends RepositoryManager
                     return makeCard(request, wikiUtil, props, entry);
                 }
 
-                return null;
+		return  makeErrorMessage(request,wikiUtil,props,theTag, "No entries available");
             }
 	    List<String> pre = null;
 	    List<String> post = null;

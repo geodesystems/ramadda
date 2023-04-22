@@ -200,8 +200,11 @@ h4 {
 
 
 .ramadda-wiki-error, .ramadda-error {
+    display:inline-block;
     font-weight: bold; 
-    background: #FF4500;
+    margin:4px;
+    border:1px solid #000;
+    background:orangered;
     padding:4px;
 }
 
