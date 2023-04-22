@@ -131,7 +131,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	} else   if (selector.selecttype == "image") {
             WikiUtil.insertAtCursor(selector.elementId, selector.textComp.obj,  "{{image entry=\"" + entryId +"\" caption=\"" + value+"\" width=400px align=center}} ");	
 	} else if (selector.selecttype == "entryid") {
-	    let editor = HU.getWikiEditor(selector.elementId);
+	    let editor = WikiUtil.getWikiEditor(selector.elementId);
 	    if(editor) {
 		editor.insertTags(entryId, " ", "importtype");
 	    } else {
@@ -142,7 +142,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		}
 	    }
 	} else if (selector.selecttype == "entry:entryid") {
-            HU.getWikiEditor(selector.elementId).insertTags("entry:" + entryId, " ", "importtype");
+            WikiUtil.getWikiEditor(selector.elementId).insertTags("entry:" + entryId, " ", "importtype");
 	} else {
             selector.getHiddenComponent().val(entryId);
             selector.getTextComponent().val(value);
