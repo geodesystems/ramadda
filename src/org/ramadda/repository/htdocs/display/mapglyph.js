@@ -4610,10 +4610,12 @@ MapGlyph.prototype = {
         let callback = (entries)=>{
 	    this.clearChildren();
 	    this.children = [];
-
 	    this.entries = entries;
 	    entries.forEach((e,idx)=>{
-		if(!e.hasLocation()) return;
+		if(!e.hasLocation()) {
+		    console.log("mutli entry has no location:" + e);
+		    return;
+		}
 		let  pt = MapUtils.createPoint(e.getLongitude(),e.getLatitude());
 		pt = this.display.getMap().transformLLPoint(pt);
 		let style = Utils.clone({},this.style);
