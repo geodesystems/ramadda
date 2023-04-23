@@ -99,7 +99,7 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
             formInfo.addMaxSizeValidation(column.getLabel(), textAreaId,
                                           5000);
             String suffix =
-                "entry ids - one per row<br>Or use the  <a target=_help href=\"http://ramadda.org/repository/userguide/wikitext.html#collection\">entry shortcut and search</a> services";
+                "entry ids - one per row<br>Or use the  <a target=_help href=\"/repository/userguide/wiki/wikitext.html#collection\">entry shortcut and search</a> services";
             String buttons = OutputHandler.getSelect(request, textAreaId,
                                  "Add entry id", true, "entryid", entry,
 						     false,false);
