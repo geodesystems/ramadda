@@ -1842,11 +1842,13 @@ public class EntryManager extends RepositoryManager {
                                       : getRepository().getTypeHandler(type))
                                    : entry.getTypeHandler());
 
-	if(typeHandler!=null) {
-	    if(!typeHandler.canCreate(request))
-		throw new IllegalArgumentException("User cannot create entry of type:" + typeHandler);
+	if ( !canBeCreatedBy(request, typeHandler)) {
+            getPageHandler().makeEntrySection(request, group, sb,
+					      "New Entry Error",
+					      getPageHandler().showDialogError(
+									       "User cannot create entry of type:" + typeHandler));
+	    return group;
 	}
-
         addSessionType(request, type);
 
 
