@@ -248,7 +248,7 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
 	sb = new StringBuilder();
 	sb.append(
 		  HU.cssBlock(
-			      ".nws-contents {padding:5px;}\n.nws-label {white-space:nowrap;max-width:90px;overflow-x:auto;}\n.nws-block {display:inline-block;border: 0px red solid;  border-radius: 4px;}\n.nws-header {font-weight:bold;background:#eee; padding:5px;}\n.nws-block-hazard {border-color:#EED4D4;}\n.nws-block-hazard .nws-header {background:#EED4D4; color:#A80000}\n"));
+			      ".nws-contents {max-width:100%;padding:5px;}\n.nws-header-label {font-weight:bold;margin:5px;}\n.nws-label {font-size:80%;white-space:nowrap;max-width:90px;overflow-x:auto;}\n.nws-block {max-width:100%;display:inline-block;border: 0px red solid;  border-radius: 4px;}\n.nws-header {font-weight:bold;background:#eee; padding:5px;}\n.nws-block-hazard {border-color:#EED4D4;}\n.nws-block-hazard .nws-header {background:#EED4D4; color:#A80000}\n"));
 	sb.append(contents);
 	contents = sb.toString();
 
@@ -458,9 +458,9 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
                 break;
             }
             sb.append(
-		      HU.td(
-			    time.label,
-			    "align=center style=\" margin:5px;  font-weight: bold;\" "));
+		      HU.td(HU.div(time.label,
+				   HU.cssClass("nws-label nws-header-label")),
+			    HU.attr("align","center")));
         }
         sb.append("</tr>");
         sb.append("<tr>");
@@ -488,10 +488,12 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
             }
             if (time.max != null) {
                 td = HU.div("High: " + time.max + "F",
-			    " style=\"xmargin:5px; color:red;\" ");
+			    HU.cssClass("nws-label") +
+			    HU.style("color:red;"));
             } else if (time.min != null) {
                 td = HU.div("Low: " + time.min + "F",
-			    "style=\"xmargin:5px; color:blue;\" ");
+			    HU.cssClass("nws-label") +
+			    HU.style("color:blue;"));
             } else {
                 td = "";
             }
