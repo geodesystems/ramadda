@@ -3485,6 +3485,14 @@ public class PageHandler extends RepositoryManager {
                                          false, null,false);
     }
 
+    public void makeEntrySection(Request request, Entry entry, Appendable sb,
+                                 String title,String contents)
+            throws Exception {
+	entrySectionOpen(request, entry, sb,title);
+	sb.append(contents);
+	entrySectionClose(request, entry, sb);
+    }
+
     /**
      * _more_
      *
@@ -3861,14 +3869,14 @@ public class PageHandler extends RepositoryManager {
                                Appendable sb, String label, String extra)
             throws Exception {
         String baseSelect = OutputHandler.getGroupSelect(request, selectId);
-
+	String event = HU.onMouseClick(OutputHandler.getSelectEvent(request, selectId, false, "", entry));
         sb.append(HU.hidden(selectId + "_hidden", ((entry != null)
                 ? entry.getId()
                 : ""), HU.id(selectId + "_hidden")));
         sb.append(HU.formEntry(msgLabel(label),
                                HU.disabledInput(selectId, ((entry != null)
                 ? entry.getFullName()
-                : ""), HU.id(selectId) + HU.SIZE_60 + ((entry == null)
+							   : ""), HU.id(selectId) + event + HU.style("cursor:pointer;") +HU.SIZE_60 + ((entry == null)
                 ? HU.cssClass(CSS_CLASS_REQUIRED_DISABLED)
 						       : "")) + HU.space(2) + baseSelect + extra));
     }
