@@ -2981,7 +2981,7 @@ img.metadata-tag-selected {
 }
 
 .ramadda-required-disabled {
-    border : 0px #888888 solid;
+    border : 1px transparent solid;
     background: #ffaaaa;
 }
 
