@@ -3920,6 +3920,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public Result makeErrorResult(Request request, String msg) {
 	return makeErrorResult(request, msg, true);
     }
+
     public Result makeErrorResult(Request request, String msg,boolean decorate) {	
         StringBuilder sb = new StringBuilder(decorate?makeErrorResponse(request, msg):msg);
         Result        result = null;
@@ -3933,7 +3934,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
             result = new Result("", sb, MIME_TEXT);
             result.setShouldDecorate(false);
         } else {
-            result = new Result(msg("Error"), sb);
+	    StringBuilder tmp = new StringBuilder();
+	    getPageHandler().sectionOpen(request, tmp,"Error",false);
+	    tmp.append(sb);
+	    getPageHandler().sectionClose(request, tmp);
+            result = new Result(msg("Error"), tmp);
         }
 	result.setResponseCode(Result.RESPONSE_INTERNALERROR);
         return result;
@@ -4630,7 +4635,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         Result result = makeErrorResult(request, "Unknown request " + request.getRequestPath());
         result.setResponseCode(Result.RESPONSE_NOTFOUND);
-
         return result;
 
 

@@ -3574,12 +3574,16 @@ public class PageHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public void sectionOpen(Request request, Appendable sb, String title,
-                            boolean showLine)
-            throws Exception {
-        sb.append(HU.sectionOpen(null, showLine));
-        if (title != null) {
-            HU.sectionTitle(sb, title);
-        }
+                            boolean showLine) {
+
+	try {
+	    sb.append(HU.sectionOpen(null, showLine));
+	    if (title != null) {
+		HU.sectionTitle(sb, title);
+	    }
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
     }
 
     /**
@@ -3590,9 +3594,13 @@ public class PageHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public void sectionClose(Request request, Appendable sb)
-            throws Exception {
-        sb.append(HU.sectionClose());
+    public void sectionClose(Request request, Appendable sb)  {
+	try {
+	    sb.append(HU.sectionClose());
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
+
     }
 
 
