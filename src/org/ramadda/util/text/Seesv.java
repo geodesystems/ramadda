@@ -140,7 +140,7 @@ public class Seesv implements SeesvCommands {
 
     private SeesvContext seesvContext;
 
-    private List<DataSink> sinks;
+    private List<ExtCommand> extCommands;
 
     private boolean hasSink = false;
 
@@ -262,7 +262,7 @@ public class Seesv implements SeesvCommands {
 	this.inDater = seesv.inDater;
 	this.outDater = seesv.outDater;	
         this.js      = seesv.js;
-	this.sinks = seesv.sinks;
+	this.extCommands = seesv.extCommands;
 	this.macros.putAll(seesv.macros);
         //        this.delimiter = seesv.delimiter;
     }
@@ -279,12 +279,13 @@ public class Seesv implements SeesvCommands {
     **/
     public void setSeesvContext (SeesvContext value) {
 	seesvContext = value;
-	sinks = new ArrayList<DataSink>();
+	extCommands = new ArrayList<ExtCommand>();
+	//	ExtCommand cmd = new TestCommand1();
 	try {
 	    for(Class c: seesvContext.getClasses()) {
-		if (DataSink.class.isAssignableFrom(c)) {
-		    DataSink sink = (DataSink) c.getDeclaredConstructor().newInstance();
-		    sinks.add(sink);
+		if (ExtCommand.class.isAssignableFrom(c)) {
+		    ExtCommand command = (ExtCommand) c.getDeclaredConstructor().newInstance();
+		    extCommands.add(command);
 		}
 
 	    }
@@ -5486,15 +5487,17 @@ public class Seesv implements SeesvCommands {
 		    continue;
 		}
 
-		if(sinks!=null) {
+		if(extCommands!=null) {
 		    boolean gotOne = false;
-		    for(DataSink sink:sinks) {
-			if(sink.canHandle(this,arg)) {
-			    DataSink other = sink.cloneMe();
+		    for(ExtCommand command:extCommands) {
+			if(command.canHandle(this,arg)) {
+			    ExtCommand other = command.cloneMe();
 			    i = other.processArgs(this,args,i);
 			    ctx.addProcessor(other);
 			    gotOne = true;
-			    hasSink = true;
+			    if(other.isSink()) {
+				hasSink = true;
+			    }
 			    break;
 			}
 		    }

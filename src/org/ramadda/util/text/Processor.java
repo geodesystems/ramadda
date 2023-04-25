@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2021 Geode Systems LLC
+Copyright (c) 2008-2023 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -354,6 +354,19 @@ public abstract class Processor extends SeesvOperator {
             nextProcessor.finish(ctx);
         }
     }
+
+    public void finishRows(TextReader ctx,List<Row> rows) throws Exception {
+	//If this command collects rows then this is how we finish them
+        Processor nextProcessor = getNextProcessor();
+        if (nextProcessor != null) {
+            for (Row row : rows) {
+                row = nextProcessor.handleRow(ctx, row);
+            }
+            nextProcessor.finish(ctx);
+        }
+    }
+
+
 
 
     /**
