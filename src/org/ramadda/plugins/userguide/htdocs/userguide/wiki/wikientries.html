@@ -88,72 +88,42 @@ syntax:
 e.g., if we wanted to show the information tabs for an entry we'd do:
 <pre>{<noop>{information}}</pre>
 
+Which gives  us:
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/wikiinformation.png?version=753.0"><img  src="images/wikiinformation.png?version=753.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/wikiinformation.png?version=753.0" ></a></div></div>
 
-For example, if we want to import the information block with it open:
-<pre>{<noop>{information <i>open="true"</i>}}</pre>
-
-This would give us:
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/wikiinformation.png?version=243.0"><img  src="images/wikiinformation.png?version=243.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/wikiinformation.png?version=243.0" ></a></div></div>
-
-
-<a name='entry'></a>
-:lheading Specify other entries
+<a name='entryselection'></a>
+:lheading Specify Other Entries
 
 Normally, all property tags refer to the current entry.
 However, another entry can be specified  with the "entry"
 attribute, e.g:
 <pre>{<noop>{information <i>entry="some other entry id or an entry selection</i>}}</pre>
 
-See the below 
 
-
-<a name='entryselection'></a>
-:lheading Entry Selection
-
-
-<a  href="https://ramadda.org/repository/a/userguide_entryselection">Here</a> is an export
-of a collection of folders and files that demonstrate various entry selections.
-:p
-
-<ul>
-<li> <i>this</i> - the current entry
-<li> <i>children</i> - the children entry
-<li> <i>grandchildren</i> - the grandchildren entries
-<li> <i>greatgrandchildren</i> - the great-grandchildren entries
-<li> <i>parent</i>  - the parent entry
-<li> <i>grandparent</i> - the grandparent entry
-<li> <i>ancestors</i> - the ancestors up to the top-level entry
-<li> <i>siblings</i> - the sibling entries
-<li> <i>links</i>  - the associated or linked entries
-<li> <i>search</i>  - search the entire repository. The search terms are defined as attributes and described below.
-
-</ul>
-
-
-The entry value can be:
+The entry="..." can be:
 <ul>
 <p>
-<li> The ID of an entry
-<p>
-<li> The alias of an entry
-<p>
-<li> The entry itself - "this"
-<p>    
-<li> Its full path, e.g., /Top/.../entry_name
-<p>
-<li> The parent entry - "parent" 
-<p>
-<li> The parent of the parent entry  -"grandparent"
-<p>
+  <li> The ID of an entry:
+<pre>{<noop>{name entry=&quot;some id&quot;}<noop>}</pre>
+  <li> The alias of an entry:
+    <pre>{<noop>{name entry=&quot;some alias&quot;}<noop>}</pre>
+  <li> The entry itself - "this":
+    <pre>{<noop>{name entry=&quot;this&quot;}<noop>}</pre>
+<li> Its full path:
+    <pre>{<noop>{name entry=&quot;/Top/.../entry name&quot;}<noop>}</pre>
+<li> The parent entry:
+      <pre>{<noop>{name entry=&quot;parent&quot;}<noop>}</pre>
+<li> The parent of the parent entry:
+      <pre>{<noop>{name entry=&quot;grandparent&quot;}<noop>}</pre>
 <li> An entry linked to the entry. Either "link" to find the first one or to specify an entry type
 use "link:type:entry_type"
-<p>
 <li> An ancestor entry of a particular type using "ancestor:".<br>
 For example, if you wanted to display the links of the first ancestor of an entry of type "group":
 <pre>
 {<noop>{links entry=&quot;ancestor:type:group&quot;}<noop>}
 </pre>
 <p>    
+
 
 <a name="childprefix"></a>
 <li> 
@@ -209,6 +179,43 @@ with the "ancestor:" prefix:
 </ul>
 
 
+
+
+<a name='entries'></a>
+:lheading Specify Multiple Entries
+
+Many wiki tags (e.g., links) display a number of entries. The entries are specified with
+as a comma separated list of entry ids, aliases or entry selections.
+<pre>{<noop>{links entries="entryid1,entryid2,entry selection,..."}}</pre>
+
+There are many ways to specify what entries are being used.
+<a  href="Entry_Selection.zip">Here</a> is an export
+of a collection of folders and files that demonstrate various entry selections.
+Import it into your RAMADDA and view the page source.
+
+
+<ul>
+<li> <i>this</i> - the current entry
+<pre>{<noop>{links entries="entryid1,this"}}</pre>
+<li> <i>children</i> - the children entry
+<pre>{<noop>{links entries="children"}}</pre>
+<li> <i>grandchildren</i> - the grandchildren entries
+<pre>{<noop>{links entries="grandchildren"}}</pre>
+<li> <i>greatgrandchildren</i> - the great-grandchildren entries
+<pre>{<noop>{links entries="greatgrandchildren"}}</pre>
+<li> <i>parent</i>  - the parent entry
+<pre>{<noop>{links entries="parent,..."}}</pre>
+<li> <i>grandparent</i> - the grandparent entry
+<pre>{<noop>{links entries="grandparent,..."}}</pre>
+<li> <i>ancestors</i> - the ancestors up to the top-level entry
+<pre>{<noop>{links entries="ancestors"}}</pre>
+<li> <i>siblings</i> - the sibling entries
+<pre>{<noop>{links entries="siblings"}}</pre>
+<li> <i>links</i>  - the associated or linked entries
+<li> <i>search</i>  - search the entire repository. The search terms are defined as attributes and described below.
+</ul>
+
+The above tags
 
 
 <a name='alias'></a>

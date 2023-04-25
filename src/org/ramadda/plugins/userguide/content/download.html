@@ -8,7 +8,19 @@ When you are viewing a Folder or other container entry open the menu (<img src="
 
 [ht::cimg images/downloadmenu.png {} {border=0}]
 
-The Zip and Download Tree will produce a .zip file of the entire entry hierarchy. Note - there are size limits in place (some number of GB).
+The Zip and Download Tree will produce a .zip file of the entire entry hierarchy.
+There are 2 size limits, one for anonymous (non-logged in) users, one for logged in users. The defaults are 4GB and 8GB respectively.
+These can be overwritten by setting the RAMADDA properties:
+<pre>
+ramadda.zip.anonymous.maxsizemb=&lt;value&gt;
+ramadda.zip.registered.maxsizemb=&lt;value&gt;
+
+e.g.: for 8 and 16 GB:
+ramadda.zip.anonymous.maxsizemb=8000
+ramadda.zip.registered.maxsizemb=160000
+
+</pre>
+
 
 The Bulk Download Script will return a shell script that, when run on your machine, will recreate the entry hierarchy a directories on your machine and will download the files. Note: this uses some shell programming and the curl program to download the files. This has been tested on Mac and Unix machines but not in Windows.
 
