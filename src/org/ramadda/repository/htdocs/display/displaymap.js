@@ -735,7 +735,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'doInitCenter',tt:'Center the maps on initialization'},
 	{p:'boundsAnimation',ex:true,tt:'Animate when map is centered'},
 	{p:'iconField',ex:'""',tt:'Field id for the image icon url'},
-	{p:'rotateField',ex:'""',tt:'Field id for degrees rotation'},	
+	{p:'rotateField',ex:'""',tt:'Field id for degrees rotation'},
+	{p:'rotateScale',d:'1.0',tt:'Scale value to multiply the rotate field value by to get degrees rotation'},		
 
 	{label:"Map GUI"},
 	{p:'showTableOfContents',ex:'true',tt:'Show left table of contents'},
@@ -3750,6 +3751,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
             let rotateField = this.getFieldById(fields, this.getProperty("rotateField"));	    
+	    let rotateScale = this.getRotateScale();
 	    let markerIcon = this.getProperty("markerIcon",this.getProperty("pointIcon"));
 	    if(markerIcon && markerIcon.startsWith("/")) {
                 markerIcon =  RamaddaUtil.getCdnUrl(markerIcon);
@@ -4317,7 +4319,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    } else  {
 			let attrs = {
 			}
-			if(rotateField) attrs.rotation = record.getValue(rotateField.getIndex());
+			if(rotateField) {
+			    attrs.rotation = rotateScale*record.getValue(rotateField.getIndex());
+			}
 			mapPoint = this.map.createMarker("pt-" + i, point, markerIcon, "pt-" + i,null,null,iconSize,null,null,attrs);
 			mapPoint.levelRange = this.pointLevelRange;
 			mapPoint.textGetter= textGetter;
@@ -4368,7 +4372,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(showPoint || colorByEnabled)  {
 		    if(!props.graphicName)
 			props.graphicName = graphicName;
-		    if(rotateField) props.rotation = record.getValue(rotateField.getIndex());
+		    if(rotateField) {
+			props.rotation = rotateScale*record.getValue(rotateField.getIndex());
+		    }
 		    props.fillColor =   colorBy.getColorFromRecord(record, props.fillColor);
 
 		    if(radius>0) {

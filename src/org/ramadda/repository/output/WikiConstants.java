@@ -489,6 +489,8 @@ public interface WikiConstants {
     /** wiki import */
     public static final String WIKI_TAG_COMMENTS = "comments";
 
+
+
     /** _more_ */
     public static final String WIKI_TAG_TAGCLOUD = "tagcloud";
 
@@ -701,6 +703,7 @@ public interface WikiConstants {
 
     public static final String WIKI_TAG_MAPPOPUP = "mappopup";
 
+    public static final String WIKI_TAG_QRCODE = "qrcode";
 
 
     /** property delimiter */

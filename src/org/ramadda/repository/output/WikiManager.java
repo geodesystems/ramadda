@@ -2061,6 +2061,22 @@ public class WikiManager extends RepositoryManager
             }
 
             return text;
+        } else if (theTag.equals(WIKI_TAG_QRCODE)) {
+	    sb.append(HU.importJS(getRepository().getHtdocsUrl("/lib/qrcode.js")));
+	    String id = HU.getUniqueId("qrcode_");
+            String url = getProperty(wikiUtil, props, "url",
+				     request.getAbsoluteUrl(request.entryUrl(getRepository().URL_ENTRY_SHOW, entry)));
+	    HU.href(sb,url,    HU.div("",HU.attr("id",id)),HU.attr("target","_link"));
+	    String width = getProperty(wikiUtil,props,"width","128");
+	    String height = getProperty(wikiUtil,props,"height",width);
+	    String js  = "new QRCode(" + HU.squote(id)+","+
+		JsonUtil.map("text",JsonUtil.quote(url),"width",width,
+			     "height",height,
+			     "colorDark",JsonUtil.quote(getProperty(wikiUtil,props,"colorDark","#000000")),
+			     "colorLight",JsonUtil.quote(getProperty(wikiUtil,props,"colorLight","#ffffff"))) +");\n";
+							       
+	    HU.script(sb,js);
+	    return sb.toString();
         } else if (theTag.equals(WIKI_TAG_LINK)) {
             boolean linkResource = getProperty(wikiUtil, props,
 					       ATTR_LINKRESOURCE, false);
