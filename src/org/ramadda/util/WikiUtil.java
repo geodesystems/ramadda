@@ -922,8 +922,25 @@ public class WikiUtil {
 		//                buff.append("</nowiki>");
                 continue;
             }
-            if (chunk.type == chunk.TYPE_PRE) {
-		buff.append("\n<pre");
+
+
+            if (chunk.type == chunk.TYPE_PRE || chunk.type==chunk.TYPE_XML) {
+		String id = HU.getUniqueId("xml_");
+		String attrs = HU.attrs("id",id);
+		Hashtable props = null;
+		if(Utils.stringDefined(chunk.rest)) {
+		    props = HU.parseHtmlProperties(chunk.rest);
+		} 
+		if(props!=null) {
+		    if(Utils.getProperty(props,"addCopy",true)) attrs+=HU.attrs("add-copy","true");
+		    if(Utils.getProperty(props,"addDownload",true)) {
+			attrs+=HU.attrs("add-download","true");
+			attrs+=HU.attrs("download-file",Utils.getProperty(props,"downloadFile",Utils.getProperty(props,"downloadFileName","download.xml")));
+		    }
+		}
+
+		buff.append("\n<pre ");
+		buff.append(attrs);
 		if(Utils.stringDefined(chunk.rest)) {
 		    buff.append(" ");
 		    buff.append(chunk.rest);
@@ -931,8 +948,13 @@ public class WikiUtil {
 		buff.append(">");
                 String s = chunk.buff.toString().replaceAll("\\{\\{",
                                "{<noop>{");
+		if(chunk.type==chunk.TYPE_XML) {
+		    s=s.replace("<","&lt;").replace(">","&gt;");
+		}
                 buff.append(s);
                 buff.append("</pre>\n");
+		HU.script(buff,"Utils.addCopyLink('" +id+"');");
+
 		//                buff.append("</nowiki>");
                 continue;
             }
@@ -943,8 +965,6 @@ public class WikiUtil {
 	    boolean skipping = false;
 	    int avatarCount=0;
 	    String balloonAfter = null;
-	    String xmlId =null;
-  
 
             for (String line : text.split("\n")) {
                 if ((line.indexOf("${") >= 0)
@@ -991,34 +1011,6 @@ public class WikiUtil {
 		    continue;
 		}
 
-                if (tline.startsWith("+xml")) {
-		    Hashtable props = getProps.apply(tline);
-		    xmlId = HU.getUniqueId("xml_");
-		    String attrs = HU.attrs("id",xmlId);
-		    if(Utils.getProperty(props,"addCopy",true)) attrs+=HU.attrs("add-copy","true");
-		    if(Utils.getProperty(props,"addDownload",true)) {
-			attrs+=HU.attrs("add-download","true");
-			attrs+=HU.attrs("download-file",Utils.getProperty(props,"downloadFile","download.xml"));			
-		    }
-		    buff.append(HU.open("div",HU.style("position:relative;")+attrs));
-		    buff.append(HU.open("pre"));
-		    continue;
-		}
-
-                if (tline.startsWith("-xml")) {
-		    buff.append("</pre>\n");
-		    buff.append("</div>\n");		    
-		    HU.script(buff,"Utils.addCopyLink('" +xmlId+"');");
-		    xmlId=null;
-		    continue;
-		}
-
-		if(xmlId!=null) {
-		    line = Utils.replace(line,"&","&amp;","<","&lt;",">","&gt;");
-		    buff.append(line);
-		    buff.append("\n");
-		    continue;
-		}
 
 
                 if (tline.startsWith("+if")) {
@@ -4605,6 +4597,8 @@ public class WikiUtil {
 
         static int TYPE_PRETAG = TYPE++;	
 
+        /** _more_ */
+        static int TYPE_XML = TYPE++;
 
 
         /** _more_ */
@@ -4692,6 +4686,9 @@ public class WikiUtil {
             if (type == TYPE_PRE) {
                 return "PRE";
             }
+            if (type == TYPE_XML) {
+                return "XML";
+            }	    
             if (type == TYPE_PRETAG) {
                 return "PRE";
             }	    
@@ -4734,13 +4731,13 @@ public class WikiUtil {
             String[] lines           = s.split("\n");
             Chunk    chunk           = null;
             String[] prefixes        = new String[] {
-                "<nowiki>", "+css", "+javascript", "<script", "+pre", "<pre", "```"
+                "<nowiki>", "+css", "+javascript", "<script", "+pre", "<pre", "```","+xml"
             };
             String[] suffixes        = new String[] {
-                "</nowiki>", "-css", "-javascript", "</script>", "-pre", "</pre>", "```"
+                "</nowiki>", "-css", "-javascript", "</script>", "-pre", "</pre>", "```","-xml"
             };
             int[]    types           = new int[] {
-                TYPE_NOWIKI, TYPE_CSS, TYPE_JS, TYPE_JSTAG,TYPE_PRE, TYPE_PRETAG, TYPE_CODE
+                TYPE_NOWIKI, TYPE_CSS, TYPE_JS, TYPE_JSTAG,TYPE_PRE, TYPE_PRETAG, TYPE_CODE,TYPE_XML
             };
             String   lookingForClose = null;
             for (String line : lines) {
@@ -4775,6 +4772,7 @@ public class WikiUtil {
                     for (int i = 0; i < prefixes.length; i++) {
                         String prefix = prefixes[i];
 			String tline = line.trim();
+
                         if (Utils.startsWithIgnoreCase(tline, prefix)) {
                             gotIt = true;
                             int type = types[i];
@@ -4787,7 +4785,7 @@ public class WikiUtil {
                                         + " looking for close:"
                                         + lookingForClose);
                             }
-                            if (type == TYPE_CODE||type==TYPE_PRE) {
+                            if (type == TYPE_CODE||type==TYPE_PRE || type==TYPE_XML) {
                                 chunks.add(chunk = new Chunk(type, rest));
                             } else {
                                 chunks.add(chunk = new Chunk(type));
