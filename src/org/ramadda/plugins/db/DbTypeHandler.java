@@ -681,7 +681,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      *
      * @return _more_
      */
-    public List<Column> getColumns() {
+    public List<Column> getDbColumns() {
         return getDbInfo().getColumns();
     }
 
@@ -692,7 +692,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      *
      * @return _more_
      */
-    public List<Column> getColumns(boolean sorted) {
+    public List<Column> getDbColumns(boolean sorted) {
         return getDbInfo().getColumns(sorted);
     }
 
@@ -821,7 +821,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	String desc = entry.getDescription();
 	if (desc!=null && isWikiText(desc)) {
 	    if(!request.anyDefined(ARG_DB_CONFIRM,ARG_DB_APPLY,ARG_DB_CREATE,ARG_DB_DELETE,ARG_DB_COPY,ARG_DB_EDIT,ARG_DB_EDITFORM,ARG_MESSAGE,ARG_DB_ACTION,ARG_WHAT,ARG_DB_VIEW,ARG_DB_ENTRY)) {
-		System.err.println("skipping: "  + request);
 		return null;
 	    }
 	}
@@ -1478,7 +1477,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         //Only add the geo clauses if we aren't also doing the print output
         if ( !forPrint && doingGeo) {
             List<Clause> geoClauses = new ArrayList<Clause>();
-            for (Column column : getColumns()) {
+            for (Column column : getDbColumns()) {
                 column.addGeoExclusion(geoClauses);
             }
             if (geoClauses.size() > 0) {
@@ -2194,7 +2193,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         DbNamedBuffer buffer = new DbNamedBuffer(searchForLabel, formHeader,
                                    Utils.makeID(searchForLabel));
         buffers.add(buffer);
-        for (Column column : getColumns(true)) {
+        for (Column column : getDbColumns(true)) {
             if ( !normalForm && column.isType(column.DATATYPE_LATLON)) {
                 continue;
             }
@@ -2618,7 +2617,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                             false, false, false);
         }
 
-        for (Column column : getColumns()) {
+        for (Column column : getDbColumns()) {
             column.assembleWhereClause(request, where, searchCriteria);
         }
 
@@ -3266,7 +3265,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         List<String>  colNames = tableHandler.getColumnNames();
         Object[]      values   = getValues(entry, dbid);
         initializeValueArray(request, dbid, values);
-        for (Column column : getColumns()) {
+        for (Column column : getDbColumns()) {
             if ( !isNew && !column.getEditable()) {
                 continue;
             }
@@ -3453,7 +3452,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             throws Exception {
 
         Column theColumn = null;
-        for (Column column : getColumns()) {
+        for (Column column : getDbColumns()) {
             if (column.getType().equals(Column.DATATYPE_EMAIL)) {
                 theColumn = column;
             }
@@ -4935,7 +4934,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		theSB.append(map.getHiliteHref(dbid, label));
                 theSB.append("</div>");
                 //            theSB.append(HtmlUtils.br());
-                String info = getHtml(request, entry, dbid, getColumns(),
+                String info = getHtml(request, entry, dbid, getDbColumns(),
                                       values, sdf,dateTimeSdf);
                 String mapInfo = extraLabel + info;
                 mapInfo = mapInfo.replace("\r", " ");
@@ -6540,7 +6539,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         SimpleDateFormat sdf = getDateFormat(request,entry);
         SimpleDateFormat dateTimeSdf = getDateTimeFormat(request,entry);	
-        for (Column column : getColumns(true)) {
+        for (Column column : getDbColumns(true)) {
             if ( !isDataColumn(column)) {
                 continue;
             }
@@ -6651,7 +6650,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             throws Exception {
         String        label = template;
         StringBuilder sb    = new StringBuilder();
-        for (Column column : getColumns()) {
+        for (Column column : getDbColumns()) {
             sb.setLength(0);
             column.formatValue(request, entry, sb, Column.OUTPUT_HTML,
                                values, sdf, false);
@@ -6695,7 +6694,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
             return sb.toString().trim();
         }
-        for (Column column : getColumns()) {
+        for (Column column : getDbColumns()) {
             if ( !isDataColumn(column)) {
                 continue;
             }

@@ -28,6 +28,7 @@ import ucar.unidata.xml.XmlUtil;
 import java.lang.reflect.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
 
@@ -243,7 +244,6 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
 
 
     public Result processUploadData(Request request) throws Exception {
-	//44cc70be-fcdb-4488-8775-f7aed132b672
 	String id  = request.getString("instrument_id",null);
 	if(id==null) id = request.getString(ARG_ENTRYID,null);
 	if(id==null) {
@@ -312,6 +312,8 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
 
 	try {
 	    dbt.doStore(entry, values, true);
+	    entry.setChangeDate(new Date().getTime());
+	    getEntryManager().updateEntry(request, entry);
 	} catch(Exception exc) {
 	    getLogManager().logError("Error handling /db/upload on entry:" + entry.getName(),exc);
 	    return handleApiError(request,exc.getMessage());

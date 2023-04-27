@@ -581,7 +581,7 @@ public abstract class ValueIterator implements DbConstants {
             }
             String dbid = (String) values[IDX_DBID];
 
-            String info = db.getHtml(request, entry, dbid, db.getColumns(),
+            String info = db.getHtml(request, entry, dbid, db.getDbColumns(),
                                      values, dateSdf,dateTimeSdf);
             sb.append(XmlUtil.openTag(RssUtil.TAG_ITEM));
             sb.append(XmlUtil.tag(RssUtil.TAG_PUBDATE, "",

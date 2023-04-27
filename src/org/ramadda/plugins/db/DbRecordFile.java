@@ -128,7 +128,7 @@ public class DbRecordFile extends CsvFile implements DbConstants {
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
-        for (Column column : typeHandler.getColumns()) {
+        for (Column column : typeHandler.getDbColumns()) {
             String dflt = (String) ((recordProps == null)
                                     ? null
                                     : recordProps.get(column.getName()
