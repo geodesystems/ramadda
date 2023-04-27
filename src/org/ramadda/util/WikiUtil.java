@@ -925,12 +925,12 @@ public class WikiUtil {
 
 
             if (chunk.type == chunk.TYPE_PRE || chunk.type==chunk.TYPE_XML) {
-		String id = HU.getUniqueId("xml_");
+		String id = HU.getUniqueId("block_");
 		String attrs = HU.attrs("id",id);
 		Hashtable props = null;
-		if(Utils.stringDefined(chunk.rest)) {
-		    props = HU.parseHtmlProperties(chunk.rest);
-		} 
+		if(chunk.type==chunk.TYPE_XML) {
+		    props = HU.parseHtmlProperties(chunk.rest!=null?chunk.rest:"");
+		}
 		if(props!=null) {
 		    if(Utils.getProperty(props,"addCopy",true)) attrs+=HU.attrs("add-copy","true");
 		    if(Utils.getProperty(props,"addDownload",true)) {
