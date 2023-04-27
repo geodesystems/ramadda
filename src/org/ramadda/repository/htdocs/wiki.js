@@ -2010,11 +2010,14 @@ WikiEditor.prototype = {
 
 	    table: Utils.mergeLists([
 		{label:'Table Properties'},
+		{p:'showEntryDetails',ex:'false'},
 		{p:'showCategories',ex:'true'},
 		{p:'showDate',ex:'true'},
 		{p:'showCreateDate',ex:'true'},
 		{p:'showChangeDate',ex:'true'},
-		{p:'show',ex:'&lt;column name&gt;=true'},],
+		{p:'showColumns',ex:'false'},		
+		{p:'show&lt;column name&gt',ex:'false',tt:'show or hide the given column'},
+		{p:'nameLabel',tt:'Override the name label'}],
 				    this.groupAttributes),
 	    
 	    recent: Utils.mergeLists([
