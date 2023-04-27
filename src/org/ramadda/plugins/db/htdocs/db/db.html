@@ -16,7 +16,7 @@ There are lots of examples on
 
 :heading Defining a new Data Table
 Here is an example DB xml file that defines an "example_instrument" database.
-+xml
++xml downloadFileName="instrumentdb.xml"
 <tables>
   <table   id="example_instrument"  name="Example Instrument" cansearch="true"  canlist="true">
     <column  name="temp"  type="double"  label="Temperature"   />
@@ -55,7 +55,7 @@ their own value and/or use values that have already been created.
 If its a string or a clob then you also need to specify a size (byte size)
 <p>
 Here is another example, a tasks data table - 
-+xml
++xml downloadFileName="tasksdb.xml"
 <table id="tasks" name="Tasks" icon="/db/tasks.gif">
   <column name="title" type="string" label="Title" cansearch="true"   canlist="true" required="true"/>
   <column name="priority" type="enumeration" label="Priority" values="High,Medium,Low" cansearch="true"   canlist="true"/>
@@ -93,7 +93,7 @@ Templates are specified within the table tag with a template tag. There can be a
 A template is defined with an id, name and (optional) mimetype. You can define  optional prefix and suffix.
 The main part of the template is define with the contents tag. This holds macros with the names of the table columns.
 
-+xml
++xml downloadFileName="crashesdb.xml"
 <tables>
   <table  id="airplane_crashes"  name="Airplane Crashes"  icon="/db/database.png" >
     ...
@@ -117,5 +117,34 @@ Operator: ${operator}
 </tables>
 -xml
 
+:heading Base Type
+Each DB entry can have it's own properties like a regular entry type. This is accomplished
+by adding a basetype section to the table definition. For example, below there is
+an example instrument database defintion. The basetype section defines properties
+for the instrument entry, e.g., that the spatial area is shown in the form, its icon and
+a site_id property.
+
++xml downloadFileName="instrumentdb.xml"
+<table   id="example_instrument"  name="Example Instrument" cansearch="true"  canlist="true">
+  <!--
+      To add properties to the example_instrument entry add a basetype node that contains
+      the type columns. you can also add properties, icons and default wiki text
+    -->
+  <basetype>
+    <property name="form.area.show" value="true"/>
+    <property name="icon" value="/icons/someicon.png"/>
+    <column  name="site_id"  type="string"  label="Site ID"   />
+    <wiki>
+      <![CDATA[
++section title={{name}}
+{{display_linechart }} 
+-section
+	]]>
+    </wiki>
+  </basetype>
+  <column  name="temp"  type="double"  label="Temperature"   />
+  <column  name="rh"  type="double"  label="Relative Humidity"   />
+</table>
+-xml
 
 -section
