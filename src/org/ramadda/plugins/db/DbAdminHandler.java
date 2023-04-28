@@ -310,8 +310,40 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
 				  "parameters", params.toString());
 	}
 
+
+	Date date =null;
+	for(Object o:values) {
+	    //Get the last date
+	    if(o instanceof Date) {
+		date = (Date)o;
+	    }
+	}
 	try {
 	    dbt.doStore(entry, values, true);
+	    //If a date hasn't been set then 
+	    if(date!=null) {
+		/*
+		System.err.println("have date:" + date);
+		System.err.println("create date:" +new Date(entry.getCreateDate()));
+		System.err.println("start date:" +new Date(entry.getStartDate()));		
+		System.err.println("end date:" +new Date(entry.getEndDate()));
+		*/
+		if(entry.getCreateDate() == entry.getStartDate() &&
+		   entry.getStartDate()==entry.getEndDate()) {
+		    //		    System.err.println("setting range");
+		    entry.setStartDate(date.getTime());
+		    entry.setEndDate(date.getTime());		    
+		} else {
+		    if(date.getTime()<entry.getStartDate()) {
+			//			System.err.println("setting start");
+			entry.setStartDate(date.getTime());
+		    }
+		    if(date.getTime()>entry.getEndDate()) {
+			//			System.err.println("setting end");
+			entry.setEndDate(date.getTime());
+		    }
+		}
+	    }
 	    entry.setChangeDate(new Date().getTime());
 	    getEntryManager().updateEntry(request, entry);
 	} catch(Exception exc) {
