@@ -36,6 +36,8 @@ import java.net.*;
 
 import java.text.SimpleDateFormat;
 
+import java.util.function.BiConsumer;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -1738,6 +1740,8 @@ public class HtmlOutputHandler extends OutputHandler {
                           Appendable sb, Hashtable props)
             throws Exception {
 
+	String NA = "---";
+	
         if (props == null) {
             props = new Hashtable();
         }
@@ -1746,12 +1750,23 @@ public class HtmlOutputHandler extends OutputHandler {
                                                  ARG_SHOWCATEGORIES, true));
         Hashtable<String, List<Entry>> map = new Hashtable<String,
                                                  List<Entry>>();
+        List<String> displayColumns = null;
+	String tmpColumns = Utils.getProperty(props, "columns", null);
+	if(tmpColumns!=null) {
+	    displayColumns = new ArrayList<String>();
+	    for(String col: Utils.split(tmpColumns,",",true,true)) {
+		if(!col.startsWith("#")) displayColumns.add(col);
+		
+	    }
+	}
+	
+
         boolean showColumns = Utils.getProperty(props, "showColumns", true);
         boolean showDate = Utils.getProperty(props, "showDate", true);
-        boolean showCreateDate = Utils.getProperty(props, "showCreateDate",
-                                     false);
-        boolean showChangeDate = Utils.getProperty(props, "showChangeDate",
-                                     true);
+        boolean showCreateDate = Utils.getProperty(props, "showCreateDate", false);
+        boolean showChangeDate = Utils.getProperty(props, "showChangeDate", true);
+        boolean showFromDate = Utils.getProperty(props, "showFromDate", false);
+        boolean showToDate = Utils.getProperty(props, "showToDate", false);		
         boolean showEntryDetails = Utils.getProperty(props, "showEntryDetails",
                                      true);	
 
@@ -1803,11 +1818,15 @@ public class HtmlOutputHandler extends OutputHandler {
                                        ? "File"
                                        : typeHandler.getLabel();
             List<Column> columns     = typeHandler.getColumns();
+	    Hashtable<String,Column> columnMap = new Hashtable<String,Column>();
+	    if(columns!=null)
+		for(Column column: columns) columnMap.put(column.getName(),column);
             StringBuffer tableSB     = new StringBuffer();
             tableSB.append("<div class=\"entry-table-wrapper\">");
             String tableId = HU.getUniqueId("entrytable_");
             tableSB.append(HU.open(HU.TAG_TABLE, HU.attrs(new String[] {
                 "class", "entry-table", "width", "100%", "cellspacing", "0",
+		"table-searching","true",
                 "cellpadding", "0", "border", "0", HU.ATTR_ID, tableId
             })));
             tableSB.append("<thead>");
@@ -1823,41 +1842,72 @@ public class HtmlOutputHandler extends OutputHandler {
 		    if(mtd!=null) showMetadata.add(mtd);
 		}
 	    }
-            tableSB.append(HU.th(HU.b(msg(Utils.getProperty(props,"nameLabel","Name")))));
-            numCols++;
-            if (showDate) {
-                tableSB.append(HU.th(HU.b(msg("Date"))));
-            }
-            if (showCreateDate) {
-                tableSB.append(HU.th(HU.b(msg("Create Date"))));
-            }
-            if (showChangeDate) {
-                tableSB.append(HU.th(HU.b(msg("Change Date"))));
-            }
+	    if(displayColumns!=null) {
+		for(String col: displayColumns) {
+		    String label=Utils.getProperty(props,col+"Label",null);
+		    if(label==null) {
+			if(col.equals("name")) label = "Name";
+			else if(col.equals("file")) label = "Size";
+			else if(col.equals("createDate")) label = "Created";
+			else if(col.equals("changeDate")) label = "Last Updated";			
+			else if(col.equals("fromDate")) label = "From Date";
+			else if(col.equals("toDate")) label = "To Date";
+			else {
+			    Column column = columnMap.get(col);
+			    if(column!=null) label = column.getLabel();
+			}
+			if(label==null) {
+			    label = Utils.makeLabel(col);
+			}
+		    }
+		    tableSB.append(HU.th(HU.b(label)));
+		    numCols++;
+		}
+	    } else {
+		tableSB.append(HU.th(HU.b(Utils.getProperty(props,"nameLabel","Name"))));
+		numCols++;
+		if (showDate) {
+		    tableSB.append(HU.th(HU.b(Utils.getProperty(props,"dateLabel","Date"))));
+		}
+		if (showCreateDate) {
+		    tableSB.append(HU.th(HU.b(Utils.getProperty(props,"createDateLabel","Create Date"))));
+		}
+		if (showChangeDate) {
+		    tableSB.append(HU.th(HU.b(Utils.getProperty(props,"changeDateLabel","Change Date"))));
+		}
+		if (showFromDate) {
+		    tableSB.append(HU.th(HU.b(Utils.getProperty(props,"fromDateLabel","From Date"))));
+		}
+		if (showToDate) {
+		    tableSB.append(HU.th(HU.b(Utils.getProperty(props,"toDateLabel","To Date"))));
+		}
+	    }
             boolean haveFiles = false;
-            for (Entry entry : entries) {
-                if (entry.isFile()) {
-                    haveFiles = true;
+	    if(displayColumns==null) {
+		for (Entry entry : entries) {
+		    if (entry.isFile()) {
+			haveFiles = true;
+			break;
+		    }
+		}
+		if (haveFiles) {
+		    numCols++;
+		    tableSB.append(HU.th(HU.b(msg("Size")), " align=right "));
+		}
 
-                    break;
-                }
-            }
-            if (haveFiles) {
-                numCols++;
-                tableSB.append(HU.th(HU.b(msg("Size")), " align=right "));
-            }
-            if (columns != null) {
-                for (Column column : columns) {
-                    if ((column.getRows() <= 1) && column.getCanShow()) {
-                        if (column.getCanList() && 
-			    Utils.getProperty(props,
-					      "show" + column.getName(), showColumns)) {
-                            numCols++;
-                            tableSB.append(HU.th(HU.b(column.getLabel())));
-                        }
-                    }
-                }
-            }
+		if (columns != null) {
+		    for (Column column : columns) {
+			if ((column.getRows() <= 1) && column.getCanShow()) {
+			    if (column.getCanList() && 
+				Utils.getProperty(props,
+						  "show" + column.getName(), showColumns)) {
+				numCols++;
+				tableSB.append(HU.th(HU.b(column.getLabel())));
+			    }
+			}
+		    }
+		}
+	    }
 
 	    if(showMetadata!=null) {
 		for(MetadataType mtd: showMetadata) {
@@ -1871,91 +1921,159 @@ public class HtmlOutputHandler extends OutputHandler {
 
             String  blank = HU.img(getRepository().getIconUrl(ICON_BLANK));
             boolean odd   = true;
+	    String dateAttrs = HU.cssClass("entry-table-date")+" width=10% align=right ";
+	    BiConsumer<Entry,Long> fmt = (entry,date)->{
+		String value =  getDateHandler().formatDateShort(request,  entry, date);
+		tableSB.append(HU.col(value,dateAttrs));
+	    };
+
             for (Entry entry : entries) {
+		EntryLink entryLink = null;
+		String name = getEntryDisplayName(entry);
+		Object[] values = entry.getValues();
                 tableSB.append(HU.open(HU.TAG_TR,
                                        HU.attrs(new String[] { "class", odd
                         ? "odd"
                         : "even", "valign", "top" })));
 
-		String name = getEntryDisplayName(entry);
-		EntryLink entryLink = null;
-		if(showEntryDetails) {
-		    entryLink = getEntryManager().getAjaxLink(request,
-							      entry, name);
-		    tableSB.append(HU.col(entryLink.getLink(),
-					  " nowrap "
-					  + HU.cssClass("entry-table-name")));
-		} else {
-		    String entryIcon = getPageHandler().getIconUrl(request, entry);
-		    String url = getEntryManager().getEntryUrl(request, entry);
-		    tableSB.append(HU.col(HU.href(url,HU.image(entryIcon)+HU.space(1) +name),
-					  " nowrap "
-					  + HU.cssClass("entry-table-name")));
+		if(displayColumns!=null) {
+		    for(String col: displayColumns) {
+			String value=null;
+			if(col.equals("name")) {
+			    String entryIcon = getPageHandler().getIconUrl(request, entry);
+			    String url = getEntryManager().getEntryUrl(request, entry);
+			    tableSB.append(HU.col(HU.href(url,HU.image(entryIcon)+HU.space(1) +name),
+						  " nowrap "
+						  + HU.cssClass("entry-table-name")));
+			    continue;
+			} else if(col.equals("file")) {
+			    String downloadLink =
+				HU.href(
+					entry.getTypeHandler().getEntryResourceUrl(
+										   request, entry), HU.img(
+													   getIconUrl(ICON_DOWNLOAD), msg("Download"),
+													   ""));
+
+			    if (entry.isFile()) {
+				tableSB.append(
+					       HU.col(formatFileLength(
+								       entry.getResource().getFileSize()) + " "
+						      + downloadLink, " align=right nowrap "));
+			    } else {
+				tableSB.append(HU.col("---", " align=right nowrap "));
+			    }
+			    continue;
+			} else if(col.equals("createDate")) {
+			    fmt.accept(entry,entry.getCreateDate());
+			    continue;
+			} else if(col.equals("changeDate")) {
+			    fmt.accept(entry,entry.getChangeDate());
+			    continue;
+			} else if(col.equals("fromDate")) {
+			    fmt.accept(entry,entry.getStartDate());
+			    continue;
+			} else if(col.equals("toDate")) {
+			    fmt.accept(entry,entry.getEndDate());
+			    continue;
+			} else {
+			    Column column = columnMap.get(col);
+			    if(column!=null) {
+				String s = column.getString(values);
+				if (s == null) {
+				    s = "";
+				}
+				s = entry.getTypeHandler().decorateValue(
+									 request, entry, column, s);
+				if (column.isNumeric()) {
+				    tableSB.append(HU.colRight(s));
+				} else {
+				    HU.col(tableSB, s);
+				}
+				continue;
+			    }
+			    value=NA;
+			}
+			tableSB.append(HU.col(value,
+					      " nowrap "
+					      + HU.cssClass("entry-table-name")));
+
+		    }
+		} else  {
+		    if(showEntryDetails) {
+			entryLink = getEntryManager().getAjaxLink(request,
+								  entry, name);
+			tableSB.append(HU.col(entryLink.getLink(),
+					      " nowrap "
+					      + HU.cssClass("entry-table-name")));
+		    } else {
+			String entryIcon = getPageHandler().getIconUrl(request, entry);
+			String url = getEntryManager().getEntryUrl(request, entry);
+			tableSB.append(HU.col(HU.href(url,HU.image(entryIcon)+HU.space(1) +name),
+					      " nowrap "
+					      + HU.cssClass("entry-table-name")));
+		    }
+
+		    if (showDate) {
+			String date = getDateHandler().formatDateShort(request,
+								       entry, entry.getStartDate());
+			tableSB.append(HU.col(date,
+					      " class=\"entry-table-date\" width=10% align=right "));
+		    }
+
+		    if (showCreateDate) {
+			fmt.accept(entry,entry.getCreateDate());
+	
+		    }
+
+		    if (showChangeDate) {
+			fmt.accept(entry,entry.getChangeDate());
+		    }
+		    if (showFromDate) {
+			fmt.accept(entry,entry.getStartDate());
+		    }
+		    if (showToDate) {
+			fmt.accept(entry,entry.getEndDate());
+		    }		
+		    if (haveFiles) {
+			String downloadLink =
+			    HU.href(
+				    entry.getTypeHandler().getEntryResourceUrl(
+									       request, entry), HU.img(
+												       getIconUrl(ICON_DOWNLOAD), msg("Download"),
+												       ""));
+			
+			if (entry.isFile()) {
+			    tableSB.append(
+					   HU.col(formatFileLength(
+								   entry.getResource().getFileSize()) + " "
+						  + downloadLink, " align=right nowrap "));
+			} else {
+			    tableSB.append(HU.col(NA, " align=right nowrap "));
+			}
+		    }
+		    
+		    if (columns != null) {
+			for (Column column : columns) {
+			    if (column.getCanShow() && (column.getRows() <= 1)) {
+				if (column.getCanList()
+				    && Utils.getProperty(props,
+							 "show" + column.getName(), showColumns)) {
+				    String s = column.getString(values);
+				    if (s == null) {
+					s = "";
+				    }
+				    s = entry.getTypeHandler().decorateValue(
+									     request, entry, column, s);
+				    if (column.isNumeric()) {
+					tableSB.append(HU.colRight(s));
+				    } else {
+					HU.col(tableSB, s);
+				    }
+				}
+			    }
+			}
+		    }
 		}
-
-                if (showDate) {
-                    String date = getDateHandler().formatDateShort(request,
-                                      entry, entry.getStartDate());
-                    tableSB.append(HU.col(date,
-                            " class=\"entry-table-date\" width=10% align=right "));
-                }
-
-                if (showCreateDate) {
-                    String date = getDateHandler().formatDateShort(request,
-                                      entry, entry.getCreateDate());
-                    tableSB.append(HU.col(date,
-                            " class=\"entry-table-date\" width=10% align=right "));
-                }
-
-                if (showChangeDate) {
-                    String date = getDateHandler().formatDateShort(request,
-                                      entry, entry.getChangeDate());
-                    tableSB.append(HU.col(date,
-                            " class=\"entry-table-date\" width=10% align=right "));
-                }
-
-
-                if (haveFiles) {
-                    String downloadLink =
-                        HU.href(
-                            entry.getTypeHandler().getEntryResourceUrl(
-                                request, entry), HU.img(
-                                getIconUrl(ICON_DOWNLOAD), msg("Download"),
-                                ""));
-
-                    if (entry.isFile()) {
-                        tableSB.append(
-                            HU.col(formatFileLength(
-                                entry.getResource().getFileSize()) + " "
-                                    + downloadLink, " align=right nowrap "));
-                    } else {
-                        tableSB.append(HU.col("NA", " align=right nowrap "));
-                    }
-
-                }
-
-                Object[] values = entry.getValues();
-                if (columns != null) {
-                    for (Column column : columns) {
-                        if (column.getCanShow() && (column.getRows() <= 1)) {
-                            if (column.getCanList()
-				&& Utils.getProperty(props,
-                                        "show" + column.getName(), showColumns)) {
-                                String s = column.getString(values);
-                                if (s == null) {
-                                    s = "";
-                                }
-                                s = entry.getTypeHandler().decorateValue(
-                                    request, entry, column, s);
-                                if (column.isNumeric()) {
-                                    tableSB.append(HU.colRight(s));
-                                } else {
-                                    HU.col(tableSB, s);
-                                }
-                            }
-                        }
-                    }
-                }
 
 		if(showMetadata!=null) {
 		    List<Metadata> metadataList = getMetadataManager().getMetadata(request,entry);
@@ -1964,7 +2082,7 @@ public class HtmlOutputHandler extends OutputHandler {
 			if(byType!=null && byType.size()>0) {
 			    tableSB.append(HU.col(byType.get(0).getAttr1()));
 			} else {
-			    tableSB.append(HU.col("---"));
+			    tableSB.append(HU.col(NA));
 			}
 		    }
 		}
