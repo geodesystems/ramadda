@@ -311,6 +311,8 @@ public class Column implements DataTypes, Constants, Cloneable {
     /** _more_ */
     private String unit;
 
+
+
     /** _more_ */
     private boolean changeType = false;
 
@@ -394,6 +396,8 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     /** _more_ */
     private List<TwoFacedObject> enumValues;
+
+    private Hashtable<String,String> iconMap;
 
     /** _more_ */
     private List<TwoFacedObject> jsonValues;
@@ -635,6 +639,16 @@ public class Column implements DataTypes, Constants, Cloneable {
         rows           = getAttributeOrTag(element, ATTR_ROWS, rows);
         columns        = getAttributeOrTag(element, ATTR_COLUMNS, columns);
 
+	String tmpIconMap = getAttributeOrTag(element, "iconmap", null);
+	if(tmpIconMap!=null) {
+	    iconMap = new Hashtable<String,String>();
+	    for(String tuple: Utils.split(tmpIconMap,",",true,true)) {
+		List<String>toks = Utils.splitUpTo(tuple,":",2);
+		if(toks.size()==2) {
+		    iconMap.put(toks.get(0),toks.get(1));
+		}
+	    }
+	}
         lookupDB = getAttributeOrTag(element, ATTR_LOOKUPDB, (String) null);
 
         String tmp = getAttributeOrTag(element, "numberFormat", null);
@@ -729,14 +743,19 @@ public class Column implements DataTypes, Constants, Cloneable {
      * @return _more_
      */
     public String decorate(String v) {
-
         Display d = getDisplay(v);
         if (d == null) {
+	    if(iconMap!=null) {
+		String icon  =iconMap.get(v);
+		if(icon!=null) {
+		    v = HU.image(getRepository().getIconUrl(icon)) +" " + v;
+		}
+	    }
+
             return v;
         }
 
-        //      if(true) throw new IllegalArgumentException("");
-        return d.decorate(v);
+	return d.decorate(v);
     }
 
 
@@ -1490,14 +1509,23 @@ public class Column implements DataTypes, Constants, Cloneable {
                 }
             }
 
+
             if (rows > 1) {
                 s = getRepository().getWikiManager().wikifyEntry(request,
                         entry, s, false, null);
             } else if (isEnumeration() && !raw) {
+		String v = s;
                 String label = getEnumLabel(s);
                 if (label != null) {
                     s = label;
                 }
+		if(iconMap!=null) {
+
+		    String icon  =iconMap.get(v);
+		    if(icon!=null) {
+			s = HU.image(getRepository().getIconUrl(icon)) +" " + s;
+		    }
+		}
             }
             sb.append(s);
         }
@@ -4484,6 +4512,9 @@ public class Column implements DataTypes, Constants, Cloneable {
             if (color != null) {
                 style += "color:" + color + ";";
             }
+
+
+
 
             if (style.length() > 0) {
                 v = HtmlUtils.div(v, HtmlUtils.style(style));
