@@ -250,7 +250,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         //Initialize this type handler with a string blob
         Element root = XmlUtil.getRoot("<type></type>");
-        XmlUtil.create("action", root, new String[] {"name","searchform","label","Search Form","icon","fas fa-search"});
+        XmlUtil.create("action", root, new String[] {"name","dbsearchform","label","Search Form","icon","fas fa-search"});
+        XmlUtil.create("action", root, new String[] {"name","dblist","label","DB List","icon","fas fa-list"});	
 
 
         root.setAttribute(ATTR_SUPER, "type_point");
@@ -811,10 +812,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             return new Result(getTitle(request, entry), sb);
         }
 
-	
-	String template =  getWikiTemplate(request,  entry);
-	if(Utils.stringDefined(template)) {
-	    return null;
+	if(!request.exists(ARG_DB_VIEW) && !request.exists(ARG_DB_CREATE)) {
+	    String template =  getWikiTemplate(request,  entry);
+	    if(Utils.stringDefined(template)) {
+		return null;
+	    }
 	}
 	
 
@@ -1586,9 +1588,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     public Result processEntryAction(Request request, Entry entry)
             throws Exception {
         String action = request.getString("action", "");
-	if(action.equals("searchform")) {
+	if(action.equals("dbsearchform")) {
 	    return getEntryManager().addEntryHeader(request, entry,handleSearchForm(request, entry));
 	}
+	if(action.equals("dblist")) {
+	    request.put(ARG_DB_VIEW,VIEW_TABLE);
+	    return getHtmlDisplay(request, entry);
+	}	
 	return super.processEntryAction(request,entry);
     }
 
@@ -3381,6 +3387,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         String            sql        = makeInsertOrUpdateSql(entry, (isNew
                 ? null
                 : dbid));
+	System.err.println(sql);
         PreparedStatement stmt       = connection.prepareStatement(sql);
 	for (Object[] values : valueList) {
 	    int stmtIdx = tableHandler.setStatement(entry, values, stmt,
