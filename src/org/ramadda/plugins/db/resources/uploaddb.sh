@@ -1,7 +1,10 @@
 
-
-#e.g.:
-#uploadhost="https://localhost:8430"
+#usage:
+#uploaddb.sh https://ramadda.org uploadkey entry_id file.txt
+#where file.txt is, e.g.:
+#temp=5&rh=0.4
+#temp=7&rh=0.6
+#...
 
 uploadhost="${1}"
 uploadkey="${2}"
