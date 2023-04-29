@@ -6573,32 +6573,31 @@ public class Repository extends RepositoryBase implements RequestHandler,
         StringBuilder sb = new StringBuilder("");
         getPageHandler().sectionOpen(request, sb,"Repository Information",false);
         sb.append(HtmlUtils.formTable());
-        sb.append(
-		  HtmlUtils.formEntry(
-				      msgLabel("RAMADDA Version"),
-				      RepositoryUtil.getVersion()));
-        sb.append(
-		  HtmlUtils.formEntry(
-				      msgLabel("Build Date"),
-				      getRepository().getProperty(PROP_BUILD_DATE, "N/A")));
+	
+
+	HtmlUtils.formEntry(sb, msgLabel("Start Time"),
+			    startTime.toString());
+	HtmlUtils.formEntry(sb, msgLabel("RAMADDA Version"),
+			    RepositoryUtil.getVersion());
+	HtmlUtils.formEntry(sb, msgLabel("Build Date"),
+			    getRepository().getProperty(PROP_BUILD_DATE, "N/A"));
         String version =
             Runtime.class.getPackage().getImplementationVersion();
-        sb.append(HtmlUtils.formEntry(msgLabel("Java Version"), version));
+        HtmlUtils.formEntry(sb,msgLabel("Java Version"), version);
         getAdmin().addInfo(request, sb);
         if (request.exists("class")) {
             Class c = Class.forName(request.getString("class", ""));
             URL classesRootDir =
                 c.getProtectionDomain().getCodeSource().getLocation();
-            sb.append(HtmlUtils.formEntry(msgLabel("Class location - "
+            HtmlUtils.formEntry(sb, msgLabel("Class location - "
 						   + request.getString("class",
-								       "")), classesRootDir.toString()));
+								       "")), classesRootDir.toString());
 
         }
 
-
-        sb.append(HtmlUtils.formEntry(msgLabel("Port"), "" + getPort()));
-        sb.append(HtmlUtils.formEntry(msgLabel("Https Port"),
-                                      "" + getHttpsPort()));
+	
+        HtmlUtils.formEntry(sb,msgLabel("Port"), "" + getPort());
+        HtmlUtils.formEntry(sb, msgLabel("Https Port"), "" + getHttpsPort());
 
         sb.append(HtmlUtils.formTableClose());
         getPageHandler().sectionClose(request, sb);
