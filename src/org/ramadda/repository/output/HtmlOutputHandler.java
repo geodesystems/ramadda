@@ -1825,8 +1825,8 @@ public class HtmlOutputHandler extends OutputHandler {
             tableSB.append("<div class=\"entry-table-wrapper\">");
             String tableId = HU.getUniqueId("entrytable_");
             tableSB.append(HU.open(HU.TAG_TABLE, HU.attrs(new String[] {
-                "class", "entry-table", "width", "100%", "cellspacing", "0",
-		"table-searching","true",
+                "class", "ramadda-table entry-table", "width", "100%", "cellspacing", "0",
+		"table-ordering",Utils.getProperty(props,"tableOrdering","false"),
                 "cellpadding", "0", "border", "0", HU.ATTR_ID, tableId
             })));
             tableSB.append("<thead>");
@@ -1915,16 +1915,14 @@ public class HtmlOutputHandler extends OutputHandler {
 		}
 	    }
 
-            tableSB.append("</tr>");
-            tableSB.append("</thead>");
-            tableSB.append("<tbody>");
+            tableSB.append("</tr></thead><tbody>");
 
             String  blank = HU.img(getRepository().getIconUrl(ICON_BLANK));
             boolean odd   = true;
 	    String dateAttrs = HU.cssClass("entry-table-date")+" width=10% align=right ";
 	    BiConsumer<Entry,Long> fmt = (entry,date)->{
 		String value =  getDateHandler().formatDateShort(request,  entry, date);
-		tableSB.append(HU.col(value,dateAttrs));
+		tableSB.append(HU.col(value,HU.attr("data-sort",""+date) +dateAttrs));
 	    };
 
             for (Entry entry : entries) {
@@ -1942,23 +1940,20 @@ public class HtmlOutputHandler extends OutputHandler {
 			if(col.equals("name")) {
 			    String entryIcon = getPageHandler().getIconUrl(request, entry);
 			    String url = getEntryManager().getEntryUrl(request, entry);
-			    tableSB.append(HU.col(HU.href(url,HU.image(entryIcon)+HU.space(1) +name),
+			    tableSB.append(HU.col(HU.href(url,HU.image(entryIcon))+HU.space(1) +HU.href(url,name),
+						  HU.attr("data-sort",name)+
 						  " nowrap "
 						  + HU.cssClass("entry-table-name")));
 			    continue;
 			} else if(col.equals("file")) {
-			    String downloadLink =
-				HU.href(
-					entry.getTypeHandler().getEntryResourceUrl(
-										   request, entry), HU.img(
-													   getIconUrl(ICON_DOWNLOAD), msg("Download"),
-													   ""));
-
 			    if (entry.isFile()) {
+				String downloadLink =
+				    HU.href(entry.getTypeHandler().getEntryResourceUrl(request, entry),
+					    HU.img(getIconUrl(ICON_DOWNLOAD), msg("Download"),""));
 				tableSB.append(
 					       HU.col(formatFileLength(
 								       entry.getResource().getFileSize()) + " "
-						      + downloadLink, " align=right nowrap "));
+						      + downloadLink, HU.attr("data-sort",""+entry.getResource().getFileSize()) + " align=right nowrap "));
 			    } else {
 				tableSB.append(HU.col("---", " align=right nowrap "));
 			    }

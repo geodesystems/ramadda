@@ -2012,6 +2012,7 @@ WikiEditor.prototype = {
 		{label:'Table Properties'},
 		{p:'showEntryDetails',ex:'false'},
 		{p:'columns',ex:'name,file,createDate,changeDate,fromDate,toDate,#entryField1,#entryField2'},
+		{p:'tableOrdering',ex:'true'},
 		{p:'showCategories',ex:'true'},
 		{p:'showDate',ex:'true'},
 		{p:'showCreateDate',ex:'true'},
