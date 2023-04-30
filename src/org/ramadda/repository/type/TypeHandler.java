@@ -172,6 +172,20 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     public static final String TAG_PROPERTY = "property";
 
+    public static final String FIELD_NAME = "name";
+    public static final String FIELD_DESCRIPTION = "description";    
+    public static final String FIELD_SNIPPET = "snippet";
+    public static final String FIELD_ICON = "icon";
+    public static final String FIELD_FILE = "file";
+    public static final String FIELD_DATE = "date";
+    public static final String FIELD_CREATEDATE = "createdate";
+    public static final String FIELD_CHANGEDATE = "changedate";
+    public static final String FIELD_FROMDATE = "fromdate";
+    public static final String FIELD_TODATE = "todate";
+    
+
+
+
     /** _more_ */
     public static final String ATTR_NAME = "name";
 
@@ -285,6 +299,9 @@ public class TypeHandler extends RepositoryManager {
     private String iconPath;
 
     private String mimeType = "unknown";
+
+
+    Hashtable<String,Column> columnMap;
 
 
     /** _more_ */
@@ -609,18 +626,6 @@ public class TypeHandler extends RepositoryManager {
             if (llf != null) {
                 latLonFormat = new DecimalFormat(llf);
             }
-
-	    /*
-	    if(wikiTemplate!=null) {
-		for(String line:Utils.split(wikiTemplate,"\n",true,true)) {
-		    //		    if(line.matches(".*entries *=.*") && line.indexOf("listentries")<0) System.err.println(this+":" + line.trim());
-		    if(line.matches(".*entries\\..*") && line.indexOf("listentries")<0) System.err.println(this+":" + line.trim());
-		}
-
-	    }
-	    */
-	    
-
 
 
         } catch (Exception exc) {
@@ -1988,15 +1993,6 @@ public class TypeHandler extends RepositoryManager {
     public boolean okToShowInHtml(Entry entry, String arg, boolean dflt) {
         String key   = "html." + arg + ".show";
         String value = getProperty(entry, key, "" + dflt);
-        /*
-        if(arg.equals("owner")) {
-            System.err.println("Type:" + type);
-            System.err.println("Props:" + properties);
-            System.err.println("Owner:" + key + " " + value);
-            System.err.println("Props:" + properties);
-        }
-        */
-
         return value.equals("true");
     }
 
@@ -2166,19 +2162,16 @@ public class TypeHandler extends RepositoryManager {
     public boolean convertIdsFromImportInFile(Entry newEntry,
             List<String[]> idList) {
         if (idList.size() == 0) {
-            //      System.err.println("no ids");
             return false;
         }
 
         if ( !newEntry.getResource().isFile()) {
-            //      System.err.println("no file");
             return false;
         }
         File f = newEntry.getResource().getTheFile();
         //Check that it is a stored file
         File storageDir = new File(getStorageManager().getStorageDir());
         if ( !IO.isADescendent(storageDir, f)) {
-            //      System.err.println("not in storage");
             return false;
         }
         try {
@@ -2190,9 +2183,7 @@ public class TypeHandler extends RepositoryManager {
                 }
                 txt = txt.replaceAll(tuple[0].trim(), tuple[1]);
             }
-            //      System.err.println("new text:" + txt);
             if ( !orig.equals(txt)) {
-                //              System.err.println("writing");
                 getStorageManager().writeFile(f, txt);
             }
         } catch (Exception exc) {
@@ -2302,13 +2293,6 @@ public class TypeHandler extends RepositoryManager {
                     origValues[origColumn.getOffset()];
             }
         }
-
-        /*
-        System.err.println("type:" + this);
-        for(int i=0;i<values.length;i++) {
-            System.err.println("value[" + i +"] = " + values[i]);
-        }
-        */
         //Now store the changes
         getEntryManager().updateEntry(request, entry);
 
@@ -2542,18 +2526,14 @@ public class TypeHandler extends RepositoryManager {
     public boolean anySuperTypesOfThisType() {
         Class       myClass = getClass();
         TypeHandler parent  = this.parent;
-        //      System.err.println("any super types:" + this);
 
         while (parent != null) {
-            //      System.err.println("parent:" + parent);
             if (parent.getClass().isAssignableFrom(myClass)) {
-                //              System.err.println("Have super class");
                 return true;
             }
             parent = parent.getParent();
         }
 
-        //        System.err.println("Don't Have super class");
         return false;
     }
 
@@ -2577,7 +2557,6 @@ public class TypeHandler extends RepositoryManager {
         if (filePattern == null) {
             return false;
         }
-        //        System.err.println("Pattern:" + filePattern + " name:" + name );
 
 	if(fileNotPattern!=null) {
             if (name.matches(fileNotPattern)) {
@@ -3730,12 +3709,6 @@ public class TypeHandler extends RepositoryManager {
 		}
 		sb.append(formEntry(request, msgLabel("Created by"),
 				    userSearchLink));
-		/*
-		  String tt = JQuery.select(JQuery.id(userLinkId)) +".tooltip({content: function() {return 'tooltip';}});\n";
-		  sb.append(HtmlUtils.comment("user tooltip"));
-		  sb.append(HtmlUtils.script("\n$(function() {\n" + tt +"\n});\n"));
-		  System.err.println(tt);
-		*/
 	    }
 
             boolean hasDataDate = false;
@@ -5576,6 +5549,22 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+    public String getFieldLabel(String field) {
+	if(field.equals(FIELD_NAME)) return  "Name";
+	else if(field.equals(FIELD_FILE)) return  "Size";
+	else if(field.equals(FIELD_CREATEDATE)) return  "Created";
+	else if(field.equals(FIELD_CHANGEDATE)) return  "Last Updated";			
+	else if(field.equals(FIELD_FROMDATE)) return  "From Date";
+	else if(field.equals(FIELD_TODATE)) return  "To Date";
+	else {
+	    Column column = getColumn(field);
+	    if(column!=null) return column.getLabel();
+	}
+	return Utils.makeLabel(field);
+    }
+	
+
+
 
     /**
      * _more_
@@ -5589,13 +5578,14 @@ public class TypeHandler extends RepositoryManager {
         if (columns == null) {
             return null;
         }
-        for (Column c : columns) {
-            if (c.getName().equalsIgnoreCase(columnName)) {
-                return c;
-            }
-        }
-
-        return null;
+	if(columnMap==null) {
+	    Hashtable<String,Column> tmp= new Hashtable<String,Column>();
+	    for(Column column: columns) {
+		tmp.put(column.getName(),column);
+	    }
+	    columnMap = tmp;
+	}
+	return columnMap.get(columnName);
     }
 
     
