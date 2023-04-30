@@ -735,6 +735,17 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
+    public String getIcon(String v) {
+	if(iconMap!=null) {
+	    String icon  =iconMap.get(v);
+	    if(icon!=null) {
+		return  HU.image(getRepository().getIconUrl(icon));
+	    }
+	}
+	return null;
+    }
+
+
     /**
      * _more_
      *
@@ -745,13 +756,10 @@ public class Column implements DataTypes, Constants, Cloneable {
     public String decorate(String v) {
         Display d = getDisplay(v);
         if (d == null) {
-	    if(iconMap!=null) {
-		String icon  =iconMap.get(v);
-		if(icon!=null) {
-		    v = HU.image(getRepository().getIconUrl(icon)) +" " + v;
-		}
+	    String icon = getIcon(v);
+	    if(icon!=null) {
+		v = HU.image(getRepository().getIconUrl(icon)) + v;
 	    }
-
             return v;
         }
 
