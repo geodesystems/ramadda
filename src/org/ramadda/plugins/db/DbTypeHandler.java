@@ -704,7 +704,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      *
      * @return _more_
      */
-    public Column getColumn(String name) {
+    public Column getDbColumn(String name) {
         return getDbInfo().getColumn(name);
     }
 
@@ -4166,7 +4166,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                 new ArrayList()));
         for (int i = 0; i < args.size(); i++) {
             String col    = args.get(i);
-            Column column = getColumn(col);
+            Column column = getDbColumn(col);
             if (column == null) {
                 System.err.println("DbTypeHandler: could not find column:"
                                    + col);
@@ -4214,7 +4214,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         for (String col :
                 (List<String>) request.get(ARG_AGG,
                                            new ArrayList<String>())) {
-            Column aggColumn = getColumn(col);
+            Column aggColumn = getDbColumn(col);
             if (aggColumn == null) {
                 continue;
             }
@@ -4228,7 +4228,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             aggColumn.setType(aggColumn.DATATYPE_DOUBLE);
         }
         for (int i = 0; i < 3; i++) {
-            Column aggColumn = getColumn(request.getString(ARG_AGG + i, ""));
+            Column aggColumn = getDbColumn(request.getString(ARG_AGG + i, ""));
             if (aggColumn == null) {
                 continue;
             }
@@ -5683,7 +5683,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             for (int i = 1; i <= numOrders; i++) {
                 if (request.defined(ARG_DB_SORTBY + i)) {
                     String by     = request.getString(ARG_DB_SORTBY + i, "");
-                    Column column = getColumn(by);
+                    Column column = getDbColumn(by);
                     if (column != null) {
                         by = column.getSortByColumn();
                         boolean asc = request.getString(ARG_DB_SORTDIR + i,
@@ -5796,12 +5796,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                     new ArrayList()));
             for (int i = 0; i < args.size(); i++) {
                 String  col           = args.get(i);
-                Column  groupByColumn = getColumn(col);
+                Column  groupByColumn = getDbColumn(col);
                 boolean doYear        = false;
                 if ((groupByColumn == null) && col.startsWith("year(")) {
                     String tmp = col.substring(5);
                     tmp           = tmp.substring(0, tmp.length() - 1);
-                    groupByColumn = getColumn(tmp);
+                    groupByColumn = getDbColumn(tmp);
                     doYear        = true;
                     col = getRepository().getDatabaseManager().getExtractYear(
                         tmp);
@@ -5835,7 +5835,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         ? ""
                         : i), new ArrayList<String>());
                 for (String c : aggColNames) {
-                    Column aggColumn = getColumn(c);
+                    Column aggColumn = getDbColumn(c);
                     if (aggColumn != null) {
                         aggColumns.add(aggColumn.getName());
                         aggLabels.add(aggColumn.getLabel());
