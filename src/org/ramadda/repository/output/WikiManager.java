@@ -4191,6 +4191,7 @@ public class WikiManager extends RepositoryManager
 	    sb.append(prefix);
 	    String template = getProperty(wikiUtil, props,
 					  "template", "${name link=true}");
+	    template = template.replace("_space_","&nbsp;").replace("_nl_","\n");
 
 	    List<Utils.Macro> macros   =  Utils.splitMacros(template);
 	    for (int i=0;i<children.size();i++) {
@@ -4492,36 +4493,50 @@ public class WikiManager extends RepositoryManager
 		label.append(macro.getText());
 	    } else {
 		String v=null;
-		if(macro.getId().equals("icon")) {
+		if(macro.getId().equals(TypeHandler.FIELD_ICON)) {
 		    v =HU.img(getPageHandler().getIconUrl(request, child));
-		} else if(macro.getId().equals("name")) {
+		} else if(macro.getId().equals(TypeHandler.FIELD_NAME)) {
 		    v = getEntryDisplayName(child);
-		} else if(macro.getId().equals("snippet")) {
+		} else if(macro.getId().equals(TypeHandler.FIELD_SNIPPET)) {
 		    v = getSnippet(request, child,macro.getProperty("wikify",false),
 				   macro.getProperty("default",""));
-		} else if(macro.getId().equals(ARG_CREATEDATE)) {
+		} else if(macro.getId().equals(TypeHandler.FIELD_CREATEDATE)) {
 		    v= getDateHandler().formatDateWithMacro(request, child,
 							    child.getCreateDate(),macro);
-		} else if(macro.getId().equals(ARG_CHANGEDATE)) {
+		} else if(macro.getId().equals(TypeHandler.FIELD_CHANGEDATE)) {
 		    v = getDateHandler().formatDateWithMacro(request, child,
 							     child.getCreateDate(), macro);
-		} else if(macro.getId().equals(ARG_FROMDATE)) {
+		} else if(macro.getId().equals(TypeHandler.FIELD_FROMDATE)) {
 		    v = getDateHandler().formatDateWithMacro(request, child,
 								      child.getStartDate(),macro);
-		} else if(macro.getId().equals(ARG_TODATE)) {
+		} else if(macro.getId().equals(TypeHandler.FIELD_TODATE)) {
 		    v = getDateHandler().formatDateWithMacro(request, child,
 							     child.getEndDate(),macro);
-		} else if(macro.getId().equals(ARG_DATE)) {
+		} else if(macro.getId().equals(TypeHandler.FIELD_DATE)) {
 		    v = getDateHandler().formatDateWithMacro(request, child,
 								      child.getStartDate(),macro);
-		} else if(macro.getId().equals("description")) {
+		} else if(macro.getId().equals(TypeHandler.FIELD_DESCRIPTION)) {
 		    String desc = child.getDescription();		
 		    if(macro.getProperty("wikify",false)) {
 			desc  = wikifyEntry(request, child, desc);
 		    }
 		    v = desc;
 		} else {
-		    v = "unknown macro:" +macro.getId();
+		    Column column = child.getTypeHandler().getColumn(macro.getId());
+		    if(column!=null) {
+			Object[] values = child.getValues();
+			v = column.getString(values);
+			if (v == null) {
+			    v = "";
+			}
+			if(macro.getProperty("justIcon",false)) {
+			    v = column.getIcon(v);
+			} else {
+			    v= child.getTypeHandler().decorateValue(request, child, column, v);
+			}
+		    } else {		    
+			v = "unknown macro:" +macro.getId();
+		    }
 		}
 		if(v!=null) {
 		    if(macro.getProperty("includeIcon",false)) {
