@@ -24,7 +24,10 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
-
+import org.eclipse.jetty.security.ConstraintMapping;
+import org.eclipse.jetty.security.ConstraintSecurityHandler;
+import org.eclipse.jetty.util.component.LifeCycle;
+import org.eclipse.jetty.util.security.Constraint;
 
 import org.ramadda.repository.Constants;
 import org.ramadda.repository.Repository;
@@ -89,6 +92,29 @@ public class JettyServer implements Constants {
 
         context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
+	//block TRACE calls
+	//from https://stackoverflow.com/questions/67503838/disable-trace-for-embedded-jetty-server
+	ConstraintSecurityHandler constraintSecurityHandler = new ConstraintSecurityHandler();
+	context.setSecurityHandler(constraintSecurityHandler);
+        Constraint constraintDisableTrace = new Constraint();
+        constraintDisableTrace.setAuthenticate(true);
+        ConstraintMapping mappingDisableTrace = new ConstraintMapping();
+        mappingDisableTrace.setPathSpec("/");
+        mappingDisableTrace.setMethod("TRACE");
+        mappingDisableTrace.setConstraint(constraintDisableTrace);
+        constraintSecurityHandler.addConstraintMapping(mappingDisableTrace);
+
+        Constraint constraintEnabledEverythingButTrace = new Constraint();
+        ConstraintMapping mappingEnableEverythingButTrace = new ConstraintMapping();
+        mappingEnableEverythingButTrace.setPathSpec("/");
+        mappingEnableEverythingButTrace.setMethodOmissions(new String[]{"TRACE"});
+        mappingEnableEverythingButTrace.setConstraint(constraintEnabledEverythingButTrace);
+        constraintSecurityHandler.addConstraintMapping(mappingEnableEverythingButTrace);
+
+
+
+
+
         GzipHandler gzipHandler = new GzipHandler();
         //        gzipHandler.addIncludedMimeTypes("application/vnd.google-earth.kml+xml","application/vnd.google-earth.kmz");
         gzipHandler.addIncludedMethods("GET", "POST");
