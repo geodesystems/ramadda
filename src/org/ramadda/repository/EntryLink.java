@@ -26,6 +26,8 @@ public class EntryLink {
     /** _more_ */
     private String uid;
 
+    private String folderClickUrl;
+
     /**
      * _more_
      *
@@ -33,10 +35,11 @@ public class EntryLink {
      * @param folderBlock _more_
      * @param uid _more_
      */
-    public EntryLink(String link, String folderBlock, String uid) {
+    public EntryLink(String link, String folderBlock, String uid, String folderClickUrl) {
         this.link        = link;
         this.folderBlock = folderBlock;
         this.uid         = uid;
+	this.folderClickUrl = folderClickUrl;
     }
 
     /**
@@ -100,6 +103,24 @@ public class EntryLink {
      */
     public String getUid() {
         return uid;
+    }
+
+    /**
+       Set the FolderClickUrl property.
+
+       @param value The new value for FolderClickUrl
+    **/
+    public void setFolderClickUrl (String value) {
+	folderClickUrl = value;
+    }
+
+    /**
+       Get the FolderClickUrl property.
+
+       @return The FolderClickUrl
+    **/
+    public String getFolderClickUrl () {
+	return folderClickUrl;
     }
 
 
