@@ -6863,17 +6863,18 @@ public class EntryManager extends RepositoryManager {
         boolean okToMove    = !request.getUser().getAnonymous();
         String  prefix      = "";
 
+	String folderClickUrl =null;
         if (forTree) {
-            String folderClickUrl = HU.url(entryShowUrl, ARG_ENTRYID,
-					   entry.getId(), ARG_OUTPUT, output,
-					   ARG_DETAILS,
-					   Boolean.toString(showDetails),
-					   "showIcon",
-					   Boolean.toString(showIcon),						  
-					   ARG_DISPLAYLINK,
-					   Boolean.toString(showUrl), forTreeView
-					   ? ARG_TREEVIEW
-					   : "nop", "true");
+            folderClickUrl = HU.url(entryShowUrl, ARG_ENTRYID,
+				    entry.getId(), ARG_OUTPUT, output,
+				    ARG_DETAILS,
+				    Boolean.toString(showDetails),
+				    "showIcon",
+				    Boolean.toString(showIcon),						  
+				    ARG_DISPLAYLINK,
+				    Boolean.toString(showUrl), forTreeView
+				    ? ARG_TREEVIEW
+				    : "nop", "true");
 	    if(nameTemplate!=null)
 		folderClickUrl+="&"+HU.arg("nameTemplate",nameTemplate);
             String message = entry.isGroup()
@@ -6958,7 +6959,7 @@ public class EntryManager extends RepositoryManager {
 						 CSS_CLASS_FOLDER_BLOCK,
 						 HU.ATTR_ID, uid)));
 
-        return new EntryLink(sb.toString(), folderBlock, uid);
+        return new EntryLink(sb.toString(), folderBlock, uid, folderClickUrl);
 
     }
 
