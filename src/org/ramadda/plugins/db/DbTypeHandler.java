@@ -3760,7 +3760,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                            "border", "1", "cellspacing", "0", "cellpadding",
                            "0", "width", "100%");
             HtmlUtils.open(tableHeader, "tr", "valign", "top");
-	    System.err.println(forPrint +" " + numberEntries);
             if ( !forPrint) {
                 makeTableHeader(tableHeader, "&nbsp;");
             } else {
