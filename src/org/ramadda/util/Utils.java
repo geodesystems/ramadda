@@ -1726,6 +1726,18 @@ public class Utils extends IO {
         return map;
     }
 
+    public static Hashtable makeMap(List args) {
+        Hashtable map = new Hashtable();
+        for (int i = 0; i < args.size(); i += 2) {
+            if (args.get(i + 1) != null) {
+                map.put(args.get(i), args.get(i + 1));
+            }
+
+        }
+
+        return map;
+    }    
+
 
 
     /**
@@ -4915,6 +4927,7 @@ public class Utils extends IO {
 	private boolean isText;
 	private String macro;
 	private Hashtable properties;
+
 	public Macro(boolean isText, String macro) {
 	    this.isText= isText;
 	    this.macro  =macro.trim();
@@ -4932,6 +4945,7 @@ public class Utils extends IO {
 	    }
 	}
 
+
 	public boolean isText() {
 	    return isText;
 	}
@@ -4946,6 +4960,16 @@ public class Utils extends IO {
 
 	public String toString() {
 	    return macro;
+	}
+
+	public void putProperty(Object key,Object value) {
+	    if(properties==null) properties= new Hashtable();
+	    properties.put(key,value);
+	}
+
+	public Object getProperty(Object key) {
+	    if(properties==null) return null;
+	    return properties.get(key);
 	}
 
 	public String getProperty(String key, String dflt) {
