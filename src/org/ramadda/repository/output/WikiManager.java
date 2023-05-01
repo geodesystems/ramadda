@@ -4532,7 +4532,26 @@ public class WikiManager extends RepositoryManager
 			if(macro.getProperty("justIcon",false)) {
 			    v = column.getIcon(v);
 			} else {
-			    v= child.getTypeHandler().decorateValue(request, child, column, v);
+			    String icon = macro.getProperty("icons",null);
+			    if(icon!=null) {
+				List<String> icons = (List<String>)macro.getProperty("iconlist");
+				if(icons==null) {
+				    icons =Utils.split(icon,",");
+				    macro.putProperty("iconlist",icons);
+				}
+				String url = null;
+				for(int i=0;i<icons.size();i+=2) {
+				    if(v.matches(icons.get(i))) {
+					url = icons.get(i+1);
+					break;
+				    }
+				}
+				if(url!=null) {
+				    v = HU.img(getRepository().getIconUrl(url),v,"");
+				}
+			    } else {
+				v= child.getTypeHandler().decorateValue(request, child, column, v);
+			    }
 			}
 		    } else {		    
 			v = "unknown macro:" +macro.getId();
