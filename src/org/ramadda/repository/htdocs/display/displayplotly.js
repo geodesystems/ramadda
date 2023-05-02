@@ -1112,7 +1112,10 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 	{p:'chart.fill',d:'rgb(254, 247, 234)',ex:'color'},
 	{p:'chartArea.fill',d:'rgb(254, 247, 234)',ex:'color'},
 	{p:'xAxis2Title',d:'Conductivity',ex:''},
-	{p:'lineColor',d:'rgba(0,0,0,0.2)'}
+	{p:'lineColor',d:'rgba(0,0,0,0.2)'},
+	{p:'lineWidth',d:1},
+	{p:'markerSize',d:16},
+	{p:'symbol',d:'circle',ex:'circle|square|diamond|cross|x|triangle-up|triangle-down|pentagon|hexagon|hexagram|star|hash'},
     ]);
 
     RamaddaUtil.defineMembers(this, {
@@ -1149,15 +1152,15 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 		    y: index,
 		    x: x,
 		    type: 'scatter',
-		    mode: this.getProperty("profileMode",'lines'),
+		    mode: this.getProfileMode(),
                     name: field.getLabel(),
                     marker: {
                         line: {
                             color: this.getLineColor(),
-                            width: 1,
+                            width: this.getLineWidth(),
                         },
-                        symbol: 'circle',
-                        size: 16
+                        symbol: this.getProperty('symbol'+ (idx+1),this.getSymbol()),
+                        size: this.getMarkerSize()
                     }
 		};
 		if(idx>0)
