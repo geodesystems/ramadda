@@ -397,7 +397,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     /** _more_ */
     private List<TwoFacedObject> enumValues;
 
-    private Hashtable<String,String> iconMap;
+    private List<String> icons;
 
     /** _more_ */
     private List<TwoFacedObject> jsonValues;
@@ -639,15 +639,9 @@ public class Column implements DataTypes, Constants, Cloneable {
         rows           = getAttributeOrTag(element, ATTR_ROWS, rows);
         columns        = getAttributeOrTag(element, ATTR_COLUMNS, columns);
 
-	String tmpIconMap = getAttributeOrTag(element, "iconmap", null);
-	if(tmpIconMap!=null) {
-	    iconMap = new Hashtable<String,String>();
-	    for(String tuple: Utils.split(tmpIconMap,",",true,true)) {
-		List<String>toks = Utils.splitUpTo(tuple,":",2);
-		if(toks.size()==2) {
-		    iconMap.put(toks.get(0),toks.get(1));
-		}
-	    }
+	String tmpIcons = getAttributeOrTag(element, "iconmap", null);
+	if(tmpIcons!=null) {
+	    icons = Utils.split(tmpIcons,",");
 	}
         lookupDB = getAttributeOrTag(element, ATTR_LOOKUPDB, (String) null);
 
@@ -736,11 +730,16 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
     public String getIcon(String v) {
-	if(iconMap!=null) {
-	    String icon  =iconMap.get(v);
-	    if(icon!=null) {
-		return  HU.image(getRepository().getIconUrl(icon));
-	    }
+	if(icons!=null) {
+	    String icon = null;
+	    for(int i=0;i<icons.size();i+=2) {
+		if(v.matches(icons.get(i))) {
+		    icon = icons.get(i+1);
+		    break;
+		}
+	    }	    
+	    if(icon!=null) 
+		return  getRepository().getIconUrl(icon);
 	}
 	return null;
     }
@@ -758,7 +757,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         if (d == null) {
 	    String icon = getIcon(v);
 	    if(icon!=null) {
-		v = HU.image(getRepository().getIconUrl(icon)) + v;
+		v = HU.image(icon) + HU.space(1) + v;
 	    }
             return v;
         }
@@ -1527,12 +1526,9 @@ public class Column implements DataTypes, Constants, Cloneable {
                 if (label != null) {
                     s = label;
                 }
-		if(iconMap!=null) {
-
-		    String icon  =iconMap.get(v);
-		    if(icon!=null) {
-			s = HU.image(getRepository().getIconUrl(icon)) +" " + s;
-		    }
+		String icon  =getIcon(v);
+		if(icon!=null) {
+		    s = HU.image(icon) +HU.space(1) + s;
 		}
             }
             sb.append(s);
