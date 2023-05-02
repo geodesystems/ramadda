@@ -10,6 +10,41 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     currentRamaddaBase:null,
 
     currentSelector:null,
+    initToggleTable:function(container) {
+	$(container).find('.entry-arrow').click(function() {
+	    let url = $(this).attr('data-url');
+	    if(!url) return;
+	    let title = $(this).attr('data-title')??'';
+	    let handler = request => {
+		if (request.responseXML == null) return;
+		let xmlDoc = request.responseXML.documentElement;
+		let script;
+		let html;
+		for (i = 0; i < xmlDoc.childNodes.length; i++) {
+		    let childNode = xmlDoc.childNodes[i];
+		    if (childNode.tagName == "javascript") {
+			script = getChildText(childNode);
+		    } else if (childNode.tagName == "content") {
+			html = getChildText(childNode);
+		    } else {}
+		}
+		if (!html) {
+		    html = getChildText(xmlDoc);
+		}
+		if (html) {
+		    html = HU.div(['style',HU.css('margin','5px','max-height','300px','overflow-y','auto')], html);
+		    let dialog =  HU.makeDialog({content:html,my:"left top",at:"left bottom",
+						 title:title,anchor:this,draggable:true,header:true,inPlace:false,stick:true});
+
+		    Utils.checkTabs(html);
+		}
+		if (script) {
+		    eval(script);
+		}
+	    }
+            GuiUtils.loadXML(url, handler);
+	});
+    },
     selectInitialClick:function(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props) {
 	if(RamaddaUtils.currentSelector) {
 	    RamaddaUtils.currentSelector.cancel();
@@ -929,6 +964,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     changeImages: new Array(),
 
     folderClick:function(uid, url, changeImg) {
+	console.log(url);
 	RamaddaUtil.changeImages[uid] = changeImg;
 	let jqBlock = $("#" + uid);
 	if (jqBlock.length == 0) {
