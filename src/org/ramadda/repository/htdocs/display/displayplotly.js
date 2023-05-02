@@ -946,7 +946,7 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
     let myProps = [
 	{label:'Dotplot Display'},
 	{p:'fields',ex:''},
-	{p:'labelField',ex:''},	
+	{p:'labelField',ex:''},
     ];
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -1112,6 +1112,7 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 	{p:'chart.fill',d:'rgb(254, 247, 234)',ex:'color'},
 	{p:'chartArea.fill',d:'rgb(254, 247, 234)',ex:'color'},
 	{p:'xAxis2Title',d:'Conductivity',ex:''},
+	{p:'lineColor',d:'rgba(0,0,0,0.2)'}
     ]);
 
     RamaddaUtil.defineMembers(this, {
@@ -1152,7 +1153,7 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
                     name: field.getLabel(),
                     marker: {
                         line: {
-                            color: 'rgba(156, 165, 196, 1.0)',
+                            color: this.getLineColor(),
                             width: 1,
                         },
                         symbol: 'circle',
