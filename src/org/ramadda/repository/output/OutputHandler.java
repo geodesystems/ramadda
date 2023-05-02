@@ -1420,7 +1420,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                           + " "
                         : "") + getEntryManager().getEntryDisplayName(entry);
         String link = HU.href(getEntryManager().getEntryURL(request, entry),
-                              label);
+                              label,HU.cssClass("ramadda-clickable"));
         htmlSB.append(link + "<br>");
 
     }
