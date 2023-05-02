@@ -38,7 +38,11 @@ csvcommands4=-addheader,date.type_csvcommandspace_date_csvcommandspace_date.form
 {{property max=10000}}
 {{group showMenu=true}}
 {{display_profile showMenu=true yAxisReverse=true marginTop=25  profileMode=markers
+profileMode="lines+markers"
+markerSize=8
 indexField=".*depth.*" 
+symbol1=circle
+symbol2=diamond
 fields=".*temp.*,sal.*" 
 }} 
 
