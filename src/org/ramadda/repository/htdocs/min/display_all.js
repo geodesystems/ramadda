@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue May  2 10:41:08 MDT 2023";
+var build_date="RAMADDA build date: Tue May  2 10:46:14 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -38268,11 +38268,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let glyphSize =this.getProperty('glyphSize','32');
             let rotateField = this.getFieldById(fields, this.getProperty('rotateField'));	   
 	    let rotateScale = this.getRotateScale();
-	    let markerIcon = this.getProperty('markerIcon',this.getProperty('pointIcon'));
-	    if(markerIcon && markerIcon.startsWith('cdn:')) {
-		markerIcon=markerIcon.replace('cdn:','');
-                markerIcon =  RamaddaUtil.getCdnUrl(markerIcon);
-	    }
+	    let markerIcon = this.getMarkerIcon(this.getProperty('pointIcon'));
 	    let usingIcon = markerIcon || iconField;
 	    let showPoint = !usingIcon;
 	    if(glyphs.length>0) showPoint=this.getProperty('showPoint',true);
@@ -39203,14 +39199,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             return null;
         },
 
-        getMarkerIcon: function() {
+        getMarkerIcon: function(dflt) {
             if (this.getProperty("markerIcon")) {
                 let icon = this.getProperty("markerIcon");
-                if (icon.startsWith("/"))
-                    return RamaddaUtil.getCdnUrl(icon);
-                else
-                    return icon;
+		if(icon.startsWith('cdn:')) {
+		    icon=markerIcon.replace('cdn:','');
+                    icon =  RamaddaUtil.getCdnUrl(icon);
+		}
+                return icon;
             }
+	    if(dflt) return dflt;
             displayMapCurrentMarker++;
             if (displayMapCurrentMarker >= displayMapMarkers.length) displayMapCurrentMarker = 0;
             return RamaddaUtil.getCdnUrl("/lib/openlayers/v2/img/" + displayMapMarkers[displayMapCurrentMarker]);
