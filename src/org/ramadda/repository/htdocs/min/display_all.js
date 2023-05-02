@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue May  2 05:19:12 MDT 2023";
+var build_date="RAMADDA build date: Tue May  2 10:41:08 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -38265,34 +38265,33 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let canvasBorder = this.getProperty('canvasBorder');
 	    let canvasWidth =this.getCanvasWidth();
 	    let canvasHeight =this.getCanvasHeight();
-	    let glyphSize =this.getProperty("glyphSize","32");
-
-
-            let rotateField = this.getFieldById(fields, this.getProperty("rotateField"));	    
+	    let glyphSize =this.getProperty('glyphSize','32');
+            let rotateField = this.getFieldById(fields, this.getProperty('rotateField'));	   
 	    let rotateScale = this.getRotateScale();
-	    let markerIcon = this.getProperty("markerIcon",this.getProperty("pointIcon"));
-	    if(markerIcon && markerIcon.startsWith("/")) {
+	    let markerIcon = this.getProperty('markerIcon',this.getProperty('pointIcon'));
+	    if(markerIcon && markerIcon.startsWith('cdn:')) {
+		markerIcon=markerIcon.replace('cdn:','');
                 markerIcon =  RamaddaUtil.getCdnUrl(markerIcon);
 	    }
 	    let usingIcon = markerIcon || iconField;
 	    let showPoint = !usingIcon;
-	    if(glyphs.length>0) showPoint=this.getProperty("showPoint",true);
+	    if(glyphs.length>0) showPoint=this.getProperty('showPoint',true);
 
-            let iconSize = parseFloat(this.getProperty("iconSize",this.getProperty("radius",32)));
+            let iconSize = parseFloat(this.getProperty('iconSize',this.getProperty('radius',32)));
 	    let iconMap = this.getIconMap();
-	    let dfltShape = this.getProperty("defaultShape",null);
-	    let dfltShapes = ["circle","triangle","star",  "square", "cross","x", "lightning","rectangle","church"];
+	    let dfltShape = this.getProperty('defaultShape',null);
+	    let dfltShapes = ['circle','triangle','star',  'square', 'cross','x', 'lightning','rectangle','church'];
 	    let dfltShapeIdx=0;
 	    let shapeBy = {
-		id: this.getDisplayProp(source, "shapeBy", null),
+		id: this.getDisplayProp(source, 'shapeBy', null),
 		field:null,
 		map: {}
 	    }
 
 
-	    if(this.getDisplayProp(source, "shapeByMap", null)) {
-		this.getDisplayProp(source, "shapeByMap", null).split(",").forEach((pair)=>{
-		    let tuple = pair.split(":");
+	    if(this.getDisplayProp(source, 'shapeByMap', null)) {
+		this.getDisplayProp(source, 'shapeByMap', null).split(',').forEach((pair)=>{
+		    let tuple = pair.split(':');
 		    shapeBy.map[tuple[0]] = tuple[1];
 		})
 	    }
