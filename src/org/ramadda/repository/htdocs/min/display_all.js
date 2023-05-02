@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue May  2 04:43:57 MDT 2023";
+var build_date="RAMADDA build date: Tue May  2 05:19:12 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -57023,7 +57023,7 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
     let myProps = [
 	{label:'Dotplot Display'},
 	{p:'fields',ex:''},
-	{p:'labelField',ex:''},	
+	{p:'labelField',ex:''},
     ];
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -57189,6 +57189,10 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 	{p:'chart.fill',d:'rgb(254, 247, 234)',ex:'color'},
 	{p:'chartArea.fill',d:'rgb(254, 247, 234)',ex:'color'},
 	{p:'xAxis2Title',d:'Conductivity',ex:''},
+	{p:'lineColor',d:'rgba(0,0,0,0.2)'},
+	{p:'lineWidth',d:1},
+	{p:'markerSize',d:16},
+	{p:'symbol',d:'circle',ex:'circle|square|diamond|cross|x|triangle-up|triangle-down|pentagon|hexagon|hexagram|star|hash'},
     ]);
 
     RamaddaUtil.defineMembers(this, {
@@ -57225,15 +57229,15 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 		    y: index,
 		    x: x,
 		    type: 'scatter',
-		    mode: this.getProperty("profileMode",'lines'),
+		    mode: this.getProfileMode(),
                     name: field.getLabel(),
                     marker: {
                         line: {
-                            color: 'rgba(156, 165, 196, 1.0)',
-                            width: 1,
+                            color: this.getLineColor(),
+                            width: this.getLineWidth(),
                         },
-                        symbol: 'circle',
-                        size: 16
+                        symbol: this.getProperty('symbol'+ (idx+1),this.getSymbol()),
+                        size: this.getMarkerSize()
                     }
 		};
 		if(idx>0)
