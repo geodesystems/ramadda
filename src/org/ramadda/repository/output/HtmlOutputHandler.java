@@ -1237,20 +1237,6 @@ public class HtmlOutputHandler extends OutputHandler {
             entry.getTypeHandler().addReadOnlyWikiEditor(request, entry,
                     suffix, desc);
             suffix.append(HtmlUtils.sectionClose());
-	    /*
-
-            desc = processText(request, entry, desc);
-            StringBuffer descSB =
-                new StringBuffer("\n<div class=\"description\">\n");
-            descSB.append(desc);
-            descSB.append("</div>\n");
-	    */
-            //            sb.append(HU.makeShowHideBlock(msg("Description"),
-            //                    descSB.toString(), open));
-
-            //            sb.append(HU.makeToggleInline("",
-            //                                                desc, true));
-	    //            sb.append(desc);
         }
         if (isWiki) {
             suffix.append(HtmlUtils.sectionOpen("Wiki Text", false));
@@ -1759,16 +1745,13 @@ public class HtmlOutputHandler extends OutputHandler {
 		
 	    }
 	}
-	
-
         boolean showColumns = Utils.getProperty(props, "showColumns", true);
         boolean showDate = Utils.getProperty(props, "showDate", true);
         boolean showCreateDate = Utils.getProperty(props, "showCreateDate", false);
         boolean showChangeDate = Utils.getProperty(props, "showChangeDate", true);
         boolean showFromDate = Utils.getProperty(props, "showFromDate", false);
         boolean showToDate = Utils.getProperty(props, "showToDate", false);		
-        boolean showEntryDetails = Utils.getProperty(props, "showEntryDetails",
-                                     true);	
+        boolean showEntryDetails = Utils.getProperty(props, "showEntryDetails",  true);	
 
         List<String> types = new ArrayList<String>();
         for (Entry entry : allEntries) {
@@ -1811,7 +1794,6 @@ public class HtmlOutputHandler extends OutputHandler {
         int          typeCnt  = 0;
         for (String type : types) {
             typeCnt++;
-            int          numCols     = 0;
             List<Entry>  entries     = map.get(type);
             TypeHandler  typeHandler = entries.get(0).getTypeHandler();
 	    List<Column> columns     = typeHandler.getColumns();
@@ -1830,8 +1812,6 @@ public class HtmlOutputHandler extends OutputHandler {
             })));
             tableSB.append("<thead>");
             tableSB.append("<tr valign=bottom>");
-            numCols++;
-
 	    List<MetadataType> showMetadata = null;
 	    String tmp = Utils.getProperty(props,"showMetadata",null);
 	    if(tmp!=null) {
@@ -1841,35 +1821,34 @@ public class HtmlOutputHandler extends OutputHandler {
 		    if(mtd!=null) showMetadata.add(mtd);
 		}
 	    }
+            boolean haveFiles = false;
+	    List<String> headers = new ArrayList<String>();
 	    if(displayColumns!=null) {
 		for(String col: displayColumns) {
 		    String label=Utils.getProperty(props,col+"Label",null);
 		    if(label==null) {
 			label = typeHandler.getFieldLabel(col);
 		    }
-		    tableSB.append(HU.th(HU.b(label)));
-		    numCols++;
+		    headers.add(label);
 		}
 	    } else {
-		tableSB.append(HU.th(HU.b(Utils.getProperty(props,"nameLabel","Name"))));
-		numCols++;
+		headers.add(Utils.getProperty(props,"nameLabel","Name"));
 		if (showDate) {
-		    tableSB.append(HU.th(HU.b(Utils.getProperty(props,"dateLabel","Date"))));
+		    headers.add(Utils.getProperty(props,"dateLabel","Date"));
 		}
 		if (showCreateDate) {
-		    tableSB.append(HU.th(HU.b(Utils.getProperty(props,"createDateLabel","Create Date"))));
+		    headers.add(Utils.getProperty(props,"createDateLabel","Create Date"));
 		}
 		if (showChangeDate) {
-		    tableSB.append(HU.th(HU.b(Utils.getProperty(props,"changeDateLabel","Change Date"))));
+		    headers.add(Utils.getProperty(props,"changeDateLabel","Change Date"));
 		}
 		if (showFromDate) {
-		    tableSB.append(HU.th(HU.b(Utils.getProperty(props,"fromDateLabel","From Date"))));
+		    headers.add(Utils.getProperty(props,"fromDateLabel","From Date"));
 		}
 		if (showToDate) {
-		    tableSB.append(HU.th(HU.b(Utils.getProperty(props,"toDateLabel","To Date"))));
+		    headers.add(Utils.getProperty(props,"toDateLabel","To Date"));
 		}
 	    }
-            boolean haveFiles = false;
 	    if(displayColumns==null) {
 		for (Entry entry : entries) {
 		    if (entry.isFile()) {
@@ -1878,8 +1857,7 @@ public class HtmlOutputHandler extends OutputHandler {
 		    }
 		}
 		if (haveFiles) {
-		    numCols++;
-		    tableSB.append(HU.th(HU.b(msg("Size")), " align=right "));
+		    headers.add("Size");
 		}
 
 		if (columns != null) {
@@ -1888,8 +1866,7 @@ public class HtmlOutputHandler extends OutputHandler {
 			    if (column.getCanList() && 
 				Utils.getProperty(props,
 						  "show" + column.getName(), showColumns)) {
-				numCols++;
-				tableSB.append(HU.th(HU.b(column.getLabel())));
+				headers.add(column.getLabel());
 			    }
 			}
 		    }
@@ -1898,10 +1875,14 @@ public class HtmlOutputHandler extends OutputHandler {
 
 	    if(showMetadata!=null) {
 		for(MetadataType mtd: showMetadata) {
-		    tableSB.append(HU.th(mtd.getName()));
+		    headers.add(mtd.getName());
 		}
 	    }
 
+	    int numCols = headers.size();
+	    for(String header: headers) {
+		tableSB.append(HU.th(HU.b(header)));
+	    }
             tableSB.append("</tr></thead><tbody>");
 
             String  blank = HU.img(getRepository().getIconUrl(ICON_BLANK));
@@ -1912,39 +1893,48 @@ public class HtmlOutputHandler extends OutputHandler {
 		tableSB.append(HU.col(value,HU.attr("data-sort",""+date) +dateAttrs));
 	    };
 
+	    int cnt = 0;
+	    tableSB.append("\n\n");
             for (Entry entry : entries) {
 		typeHandler = entry.getTypeHandler();
 		columns     = typeHandler.getColumns();
-		EntryLink entryLink = null;
 		String name = getEntryDisplayName(entry);
-		Object[] values = entry.getValues();
-                tableSB.append(HU.open(HU.TAG_TR,
-                                       HU.attrs(new String[] { "class", odd
-                        ? "odd"
-                        : "even", "valign", "top" })));
+		Object[] values = entry.getValues();	
+		EntryLink entryLink = showEntryDetails?getEntryManager().getAjaxLink(request, entry, name):null;
+		String toggle = "";
+		if(entryLink!=null) {
+		    toggle = HU.span(getIconImage("fas fa-caret-right"),
+				     HU.attrs("style","margin-right:4px;","class", "entry-arrow ramadda-clickable",
+					      "title","Click to view contents",
+					      "data-title",entry.getName(),
+					      "data-url",entryLink.getFolderClickUrl()));
+		}
 
+
+                HU.open(tableSB, "tr",
+			HU.attrs(new String[] { "class", odd
+				? "odd"
+				: "even", "valign", "top" }));
 		if(displayColumns!=null) {
 		    for(String col: displayColumns) {
 			String value=null;
 			if(col.equals(TypeHandler.FIELD_NAME)) {
 			    String entryIcon = getPageHandler().getIconUrl(request, entry);
 			    String url = getEntryManager().getEntryUrl(request, entry);
-			    tableSB.append(HU.col(HU.href(url,HU.image(entryIcon))+HU.space(1) +HU.href(url,name),
-						  HU.attr("data-sort",name)+
-						  " nowrap "
-						  + HU.cssClass("entry-table-name")));
+			    HU.col(tableSB,toggle+HU.href(url,HU.image(entryIcon))+HU.space(1) +HU.href(url,name),
+				   HU.attr("data-sort",name)+
+				   " nowrap "
+				   + HU.cssClass("entry-table-name"));
 			    continue;
 			} else if(col.equals(TypeHandler.FIELD_FILE)) {
 			    if (entry.isFile()) {
 				String downloadLink =
 				    HU.href(entry.getTypeHandler().getEntryResourceUrl(request, entry),
 					    HU.img(getIconUrl(ICON_DOWNLOAD), msg("Download"),""));
-				tableSB.append(
-					       HU.col(formatFileLength(
-								       entry.getResource().getFileSize()) + " "
-						      + downloadLink, HU.attr("data-sort",""+entry.getResource().getFileSize()) + " align=right nowrap "));
+				HU.col(tableSB,formatFileLength(entry.getResource().getFileSize()) + " "
+				       + downloadLink, HU.attr("data-sort",""+entry.getResource().getFileSize()) + " align=right nowrap ");
 			    } else {
-				tableSB.append(HU.col("---", " align=right nowrap "));
+				HU.col(tableSB,"---", " align=right nowrap ");
 			    }
 			    continue;
 			} else if(col.equals(TypeHandler.FIELD_CREATEDATE)) {
@@ -1966,8 +1956,7 @@ public class HtmlOutputHandler extends OutputHandler {
 				if (v == null) {
 				    v = "";
 				}
-				String s = entry.getTypeHandler().decorateValue(
-									 request, entry, column, v);
+				String s = entry.getTypeHandler().decorateValue(request, entry, column, v);
 				if (column.isNumeric()) {
 				    HU.col(tableSB, s,HU.attr("align","right") +HU.attr("data-sort",v));
 				} else {
@@ -1978,31 +1967,24 @@ public class HtmlOutputHandler extends OutputHandler {
 			    HU.col(tableSB,NA);
 			}
 		    }
-		} else  {
-		    if(showEntryDetails) {
-			entryLink = getEntryManager().getAjaxLink(request,
-								  entry, name);
-			tableSB.append(HU.col(entryLink.getLink(),
-					      " nowrap "
-					      + HU.cssClass("entry-table-name")));
-		    } else {
-			String entryIcon = getPageHandler().getIconUrl(request, entry);
-			String url = getEntryManager().getEntryUrl(request, entry);
-			tableSB.append(HU.col(HU.href(url,HU.image(entryIcon)+HU.space(1) +name),
-					      " nowrap "
-					      + HU.cssClass("entry-table-name")));
-		    }
+		}  else {
+		    String entryIcon = getPageHandler().getIconUrl(request, entry);
+		    String url = getEntryManager().getEntryUrl(request, entry);
+		    String label = HU.href(url,HU.image(entryIcon)) + HU.space(1) +HU.href(url,name);
+		    if(toggle!=null) {
+			label = toggle+label;
+		    } 
+		    HU.col(tableSB,label,  " nowrap "+ HU.cssClass("entry-table-name"));
 
 		    if (showDate) {
 			String date = getDateHandler().formatDateShort(request,
 								       entry, entry.getStartDate());
-			tableSB.append(HU.col(date,
-					      " class=\"entry-table-date\" width=10% align=right "));
+			HU.col(tableSB, date, " class=\"entry-table-date\" width=10% align=right ");
 		    }
 
 		    if (showCreateDate) {
 			fmt.accept(entry,entry.getCreateDate());
-	
+
 		    }
 
 		    if (showChangeDate) {
@@ -2023,12 +2005,10 @@ public class HtmlOutputHandler extends OutputHandler {
 												       ""));
 			
 			if (entry.isFile()) {
-			    tableSB.append(
-					   HU.col(formatFileLength(
-								   entry.getResource().getFileSize()) + " "
-						  + downloadLink, " align=right nowrap "));
+			    HU.col(tableSB,formatFileLength(entry.getResource().getFileSize()) + " "
+				   + downloadLink, " align=right nowrap ");
 			} else {
-			    tableSB.append(HU.col(NA, " align=right nowrap "));
+			    HU.col(tableSB, NA, " align=right nowrap ");
 			}
 		    }
 		    
@@ -2060,37 +2040,33 @@ public class HtmlOutputHandler extends OutputHandler {
 		    for(MetadataType mtd: showMetadata) {
 			List<Metadata> byType = getMetadataManager().getMetadata(request,entry,metadataList, mtd.getId());
 			if(byType!=null && byType.size()>0) {
-			    tableSB.append(HU.col(byType.get(0).getAttr1()));
+			    HU.col(tableSB,byType.get(0).getAttr1());
 			} else {
-			    tableSB.append(HU.col(NA));
+			    HU.col(tableSB,NA);
 			}
 		    }
 		}
-		
-
-
-                tableSB.append("</tr>");
+		HU.close(tableSB, "tr");
+		tableSB.append("\n");
+		/*
 		if(entryLink!=null) {
 		    HU.open(tableSB, "tr", "class", (odd ? "odd" : "even"));
 		    HU.makeTag(tableSB, "td", entryLink.getFolderBlock(),
 			       "class", "entry-table-block", "colspan",
 			       "" + numCols);
+		    for(int i=0;i<numCols-1;i++)
+			HU.col(tableSB,"",HU.style("display:none;"));
 		    HU.close(tableSB, "tr");
-		}
+		    }*/
                 odd = !odd;
             }
-            tableSB.append("</tbody>");
-            tableSB.append("</table>");
-
-            //            String script = JQuery.ready(JQuery.select(JQuery.id(tableId)) +".dataTable();\n");
-            //            sb.append(HU.script(script));
-
+            tableSB.append("\n</tbody></table>\n");
             if (typeCnt > 1) {
                 sb.append("<p>");
             }
 
             tableSB.append("</div>");
-
+	    tableSB.append(HU.script("RamaddaUtils.initToggleTable('#" + tableId+"');"));
             contents.add(tableSB.toString());
             titles.add(typeLabel);
 
