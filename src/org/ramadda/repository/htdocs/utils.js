@@ -5031,9 +5031,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         var url = $("#" + formId).attr("action") + "?";
         var inputs = $("#" + formId + " :input");
         var cnt = 0;
-        var seen = {};
         var pairs = [];
 	let args = "";
+	let seenValue = {};
+	let added = (name,value) =>{
+	    let key = name +'---' + value; 
+	    if(seenValue[key])  return true;
+	    seenValue[key] = true;
+	    return false;
+	}
+
 
         inputs.each(function(i, item) {
             if (item.name == "" || item.value == null || item.value == "") return;
@@ -5059,34 +5066,35 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                     return;
                 }
             }
-            if (item.name && seen[item.name]) {
-		//Don't skip duplicates
-		//                return;
-            }
-            if (item.name) {
-                seen[item.name] = true;
-            }
 
             if (skip != null) {
                 for (var i = 0; i < skip.length; i++) {
-                    var pattern = skip[i];
+                    let pattern = skip[i];
                     if (item.name.match(pattern)) {
                         return;
                     }
                 }
             }
             if(item.id=="formurl") return;
-	    //            console.log("item:"   + item.id +" type:" +item.type + " value:" + item.value);
+
+	    let defaultValue = item.attributes["default-value"]?.value;
+	    if(item.name=='dbsortdir1') {
+//		console.dir(item.attributes);
+	    }
+//            console.log("item:"   + item.id +" type:" +item.type + " value:" + item.value);
             var values = [];
             if (item.type == "select-multiple" && item.selectedOptions) {
                 for (a in item.selectedOptions) {
                     option = item.selectedOptions[a];
                     if (Utils.isDefined(option.value)) {
-                        values.push(option.value);
+			if(defaultValue!=option.value)
+                            values.push(option.value);
                     }
                 }
             } else {
-                values.push(item.value);
+		if(defaultValue!=item.value) {
+                    values.push(item.value);
+		}
             }
 
 
@@ -5100,14 +5108,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    }
 
             for (v in values) {
-                if (cnt > 0) url += "&";
-                cnt++;
                 value = values[v];
                 pairs.push({
                     item: item,
                     value: value
                 });
-                url += encodeURIComponent(item.name) + "=" + encodeURIComponent(value);
+		if(!added(item.name,value)) {
+                    if (cnt > 0) url += "&";
+                    cnt++;		    
+                    url += encodeURIComponent(item.name) + "=" + encodeURIComponent(value);
+		}
             }
         });
 
