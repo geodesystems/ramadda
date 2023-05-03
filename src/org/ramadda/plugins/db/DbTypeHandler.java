@@ -93,6 +93,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
     public static final String ARG_SAMPLE = "sample";
 
+    public static final String ATTR_SHOWSUMMARY = "search_showsummary";    
+
+
+    private static final String ORDER_DESC = "desc";
+    private static final String ORDER_ASC = "asc";    
     /** _more_ */
     public static final boolean debugTimes = false;
 
@@ -110,6 +115,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
     /** _more_ */
     private List<String> icons;
+
+    private boolean showSummary = true;
 
     /** _more_ */
     private String tableIcon = "";
@@ -207,6 +214,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         String dfltOrderProp = XmlUtil.getAttribute(tableNode,
                                    "defaultOrder", (String) null);
 
+	showSummary = XmlUtil.getAttribute(tableNode,ATTR_SHOWSUMMARY,true);
         if (dfltOrderProp != null) {
             dfltOrder = new ArrayList<List<String>>();
             for (String tok : Utils.split(dfltOrderProp, ";")) {
@@ -315,8 +323,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     private List<TwoFacedObject> getOrderTfos() {
         if (orderTfos == null) {
             orderTfos = new ArrayList<TwoFacedObject>();
-            orderTfos.add(new TwoFacedObject("Down", "desc"));
-            orderTfos.add(new TwoFacedObject("Up", "asc"));
+            orderTfos.add(new TwoFacedObject("Down", ORDER_DESC));
+            orderTfos.add(new TwoFacedObject("Up", ORDER_ASC));
         }
 
         return orderTfos;
@@ -394,9 +402,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         viewList.add(new TwoFacedObject("CSV", VIEW_CSV));
 
         if (showDateView && dbInfo.getHasDate()) {
+	    /*
             viewList.add(new TwoFacedObject("Calendar", VIEW_CALENDAR));
             //            viewList.add(new TwoFacedObject("Timeline", VIEW_TIMELINE));
             viewList.add(new TwoFacedObject("ICAL", VIEW_ICAL));
+	    */
         }
 
         for (Column gridColumn : dbInfo.getCategoryColumns()) {
@@ -1578,7 +1588,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         DbInfo              dbInfo     = getDbInfo();
 	String url =request.getAbsoluteUrl("/db/upload?entryid=" + entry.getId());
 	for(Column c:dbInfo.getColumnsToUse()) {
-	    url+="&amp;" +c.getName()+"=0.0";
+	    String sample = "0.0";
+	    if(c.isDate()) sample="yyyy-MM-dd";
+	    else if(c.isString()) sample="value";	    
+	    url+="&amp;" +c.getName()+"=" + sample;
 	}
 	url+="&amp;key=HIDDEN";
 	sb.append(HU.formEntry("Upload URL:",url));
@@ -2187,8 +2200,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             sb.append(
                 HtmlUtils.select(
                     ARG_DB_VIEW, viewList, request.getString(
-                        ARG_DB_VIEW, defaultView), HtmlUtils.attr(
-                        "default", VIEW_TABLE) + HtmlUtils.cssClass(
+                        ARG_DB_VIEW, defaultView),
+		    /*HtmlUtils.attr("default", VIEW_TABLE)+*/  HtmlUtils.cssClass(
                         "search-select")) + HtmlUtils.space(2) + count);
         }
 
@@ -2266,7 +2279,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
         if (normalForm) {
-            if (tfos.size() > 0) {
+            if (tfos.size() > 0 && showSummary) {
                 buffers.add(buffer = new DbNamedBuffer("Summary", formHeader,
                         "summary"));
                 buffer.append(
@@ -2309,7 +2322,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 buffer.append(formEntry(request, msgLabel("Aggregate"),
                                         aggSB.toString()));
 
-                String dfltDir = "desc";
+                String dfltDir = ORDER_DESC;
                 String groupOrder = HtmlUtils.select(
                                         ARG_DB_GROUP_SORTBY, sorttfos,
                                         request.getString(
@@ -2354,7 +2367,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             String order = "";
             for (int i = 1; i <= numOrders; i++) {
                 String dfltCol = orderBy;
-                String dfltDir = "desc";
+                String dfltDir = ORDER_DESC;
                 if ((dfltOrder != null) && (i - 1 < dfltOrder.size())) {
                     List<String> toks = dfltOrder.get(i - 1);
                     if (toks.size() > 0) {
@@ -2371,6 +2384,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     HtmlUtils.cssClass("search-select")) + HU.select(
                         ARG_DB_SORTDIR + i, getOrderTfos(),
                         request.getString(ARG_DB_SORTDIR + i, dfltDir),
+			HU.attr("default-value",ORDER_DESC) +
                         HtmlUtils.cssClass("search-select")) + HU.space(2);
             }
 
@@ -2464,7 +2478,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                                 ARG_ENTRIES_PER_PAGE,
                                                 request.getString(
                                                     ARG_ENTRIES_PER_PAGE,
-                                                    "30"), HtmlUtils.SIZE_5) +
+                                                    ""), HtmlUtils.SIZE_5) +
 		HU.space(4) +
 		HU.labeledCheckbox(ARG_NUMBER_ENTRIES,"true",request.get(ARG_NUMBER_ENTRIES,false),
 				   "Number results");
@@ -2477,13 +2491,15 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
             buffer.append(formEntry(request, msgLabel("Printing"), print));
 
-	    String simpleMap = HtmlUtils.labeledCheckbox(
-						       "simpleMap", "true",
-						       request.get("simpleMap", false),
-						       "Simple");
+	    if (dbInfo.getHasLocation()) {
+		String simpleMap = HtmlUtils.labeledCheckbox(
+							     "simpleMap", "true",
+							     request.get("simpleMap", false),
+							     "Simple");
 
-            buffer.append(formEntry(request, "Map:",simpleMap+HU.space(2)+"Height:" +
-				    HU.input("mapheight",request.getString("mapheight","500"),HU.SIZE_5)));
+		buffer.append(formEntry(request, "Map:",simpleMap+HU.space(2)+"Height:" +
+					HU.input("mapheight",request.getString("mapheight","500"),HU.SIZE_5)));
+	    }
 	}
 
 
@@ -3720,8 +3736,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         String baseUrl = request.getUrl(except, null);
         boolean asc = request.getString(ARG_DB_SORTDIR1,
                                         (dbInfo.getDfltSortAsc()
-                                         ? "asc"
-                                         : "desc")).equals("asc");
+                                         ? ORDER_ASC
+                                         : ORDER_DESC)).equals(ORDER_ASC);
 
 
         String sortBy = request.getString(ARG_DB_SORTBY1,
@@ -4372,8 +4388,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                 ARG_ENTRYID, entry.getId(), ARG_DB_SEARCH,
                                 "true", searchArg, value, ARG_DB_SORTDIR1,
                                 dbInfo.getDfltSortAsc()
-                                ? "asc"
-                                : "desc"
+                                ? ORDER_ASC
+                                : ORDER_DESC
                             });
 
                             if (dbInfo.getDfltSortColumn() != null) {
@@ -4496,8 +4512,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         new String[] {
                     ARG_ENTRYID, entry.getId(), ARG_DB_SEARCH, "true",
                     searchArg, value, ARG_DB_SORTDIR1, dbInfo.getDfltSortAsc()
-                            ? "asc"
-                            : "desc", ARG_DB_VIEW,
+                            ? ORDER_ASC
+                            : ORDER_DESC, ARG_DB_VIEW,
                     request.getString(ARG_DB_VIEW, VIEW_TABLE)
                 });
                 if (dbInfo.getDfltSortColumn() != null) {
@@ -5669,8 +5685,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 && !request.defined(ARG_DB_SORTBY1)) {
             request.put(ARG_DB_SORTBY1, dbInfo.getDfltSortColumn().getName());
             request.put(ARG_DB_SORTDIR1, dbInfo.getDfltSortAsc()
-                                         ? "asc"
-                                         : "desc");
+                                         ? ORDER_ASC
+                                         : ORDER_DESC);
         }
 
 
@@ -5686,7 +5702,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     if (column != null) {
                         by = column.getSortByColumn();
                         boolean asc = request.getString(ARG_DB_SORTDIR + i,
-                                          "asc").equals("asc");
+                                          ORDER_ASC).equals(ORDER_ASC);
                         if (order.length() > 0) {
                             order += ",";
                         }
@@ -5806,8 +5822,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         tmp);
                     //                    extract (year from col)
                     orderBy = SqlUtil.orderBy(col,
-                            request.getEnum(ARG_DB_GROUP_SORTDIR, "desc",
-                                            "desc", "asc").equals("desc"));
+                            request.getEnum(ARG_DB_GROUP_SORTDIR, ORDER_DESC,
+                                            ORDER_DESC, ORDER_ASC).equals(ORDER_DESC));
                 }
 
                 if (groupByColumn != null) {
@@ -5869,7 +5885,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     }
                     orderBy = SqlUtil.orderBy(sort,
                             request.getString(ARG_DB_GROUP_SORTDIR,
-                                "desc").equals("desc"));
+                                ORDER_DESC).equals(ORDER_DESC));
                 }
 
                 String label = agg;

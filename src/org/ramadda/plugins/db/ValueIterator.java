@@ -664,7 +664,7 @@ public abstract class ValueIterator implements DbConstants {
         public void initialize(Request request, boolean doGroupBy)
                 throws Exception {
             super.initialize(request, doGroupBy);
-            makeResult(".json", "");
+            makeResult(".json", "application/json");
             columns     = db.getColumnsToUse(request, false);
             columnNames = Column.getNames(columns);
             for (int i = 0; i < columns.size(); i++) {

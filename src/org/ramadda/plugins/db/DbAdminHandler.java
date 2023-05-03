@@ -65,6 +65,7 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
     /** _more_ */
     public static final String ATTR_ID = "id";
 
+
     /** _more_ */
     public static final String ATTR_NAME = "name";
 

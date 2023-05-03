@@ -193,7 +193,7 @@ var DB =  {
 	embed+=" args=\"" + attrs +"\" ";
 	embed+=" }}";
 	embed = embed.replace(/\"/g,"&quot;");
-	var html = "<div style=\"display:inline-block;width:16px;\"></div> <input id=dbwikiembed size=80 value=\"" +embed +"\"/>";
+	var html = "<input style='margin-top:4px;' id=dbwikiembed size=80 value=\"" +embed +"\"/>";
 	return HtmlUtil.div(["class","ramadda-form-url"],  html);
 
     },
