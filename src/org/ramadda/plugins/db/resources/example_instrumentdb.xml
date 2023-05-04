@@ -1,0 +1,29 @@
+<tables>
+  <!--      this is an example db file for specifying an instrument      -->
+  <table   id="example_instrument"  name="Example Instrument" cansearch="true"  canlist="true"
+	   search_showsummary="false">
+    <!--
+	To add properties to the example_instrument entry add a basetype node that contains
+	the type columns. you can also add properties, icons and default wiki text
+    -->
+    <basetype>
+      <property name="form.area.show" value="true"/>
+      <property name="icon" value="/icons/chart.png"/>
+      <column  name="site_id"  type="string"  label="Site ID"   />
+      <column  name="status"  type="enumeration"  label="Status" values="active,inactive,broken"      
+	       iconmap="active,/icons/mdots/green.png,inactive,/icons/mdots/purple.png,broken,/icons/mdots/red.png"  />
+<!-- This overrides the default display -->
+      <wiki>
+	<![CDATA[+section title={{name}}
+{{display_linechart }}
+----
+{{information  details="false"  showTitle="false"  }} 
+-section]]>
+      </wiki>
+    </basetype>
+    <!-- The data columns -->
+    <column  name="timestamp"  type="date"  label="Time Stamp"   />
+    <column  name="temp"  type="double"  label="Temperature"   />
+    <column  name="rh"  type="double"  label="Relative Humidity"   />
+  </table>
+</tables>
