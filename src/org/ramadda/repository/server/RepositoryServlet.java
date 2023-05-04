@@ -263,6 +263,8 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                       HttpServletResponse response)
             throws IOException, ServletException {
 
+
+
         // there can be only one
         if (repository == null) {
             try {
@@ -280,7 +282,9 @@ public class RepositoryServlet extends HttpServlet implements Constants {
 
         RequestHandler handler          = new RequestHandler(request);
         Result         repositoryResult = null;
+	
         boolean        isHeadRequest    = request.getMethod().equals("HEAD");
+	//	System.err.println("R: " + request.getRequestURI() +" " +request.getMethod());
         try {
             boolean debug = false;
             //      boolean debug = "/repository/entry/show".equals(request.getRequestURI()) || request.getRequestURI().indexOf("/repository/a")>=0;
@@ -297,8 +301,6 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                 repositoryRequest.setOutputStream(response.getOutputStream());
                 repositoryRequest.setFileUploads(handler.fileUploads);
                 repositoryRequest.setHttpHeaderArgs(handler.httpArgs);
-                // create a org.ramadda.repository.Result object and transpose the relevant info into a HttpServletResponse object
-
                 //Some headers to tighten up security
                 response.setHeader("Referrer-Policy", "no-referrer");
                 //don't do this as it blocks some valid embeds
@@ -306,13 +308,8 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                 //
                 response.setHeader("X-Content-Type-Options", "nosniff");
 
-
                 repositoryResult =
                     repository.handleRequest(repositoryRequest);
-                if (standAloneServer != null) {
-                    //We are running stand-alone so nothing is doing logging
-
-                }
             } catch (Throwable e) {
                 e = LogUtil.getInnerException(e);
                 logException(e, request);
@@ -342,17 +339,12 @@ public class RepositoryServlet extends HttpServlet implements Constants {
 
                 Date lastModified = repositoryResult.getLastModified();
                 if (lastModified != null) {
-                    response.addDateHeader("Last-Modified",
-                                           lastModified.getTime());
+                    response.addDateHeader("Last-Modified", lastModified.getTime());
                 }
 
                 if (repositoryResult.getCacheOk()) {
-                    //                    response.setHeader("Cache-Control",  "public,max-age=259200");
-                    response.setHeader("Expires",
-                                       "Tue, 08 Jan 2028 07:41:19 GMT");
-                    if (lastModified == null) {
-                        //response.setHeader("Last-Modified", "Tue, 20 Jan 2010 01:45:54 GMT");
-                    }
+		    //response.setHeader("Cache-Control",  "public,max-age=259200");
+		    response.setHeader("Expires", "Tue, 08 Jan 2028 07:41:19 GMT");
                 } else {
                     response.setHeader("Cache-Control", "no-cache");
                 }
