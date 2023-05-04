@@ -179,6 +179,8 @@ public class EntryManager extends RepositoryManager {
 	new TTLCache<String,List<Entry.EntryHistory>>(10*60*1000);
 
 
+    private boolean httpCacheFile = true;
+    
     /**
      * _more_
      *
@@ -186,6 +188,15 @@ public class EntryManager extends RepositoryManager {
      */
     public EntryManager(Repository repository) {
         super(repository);
+    }
+
+    /**
+     * _more_
+     */
+    @Override
+    public void initAttributes() {
+        super.initAttributes();
+	httpCacheFile = getRepository().getProperty("ramadda.http.cachefile", true);
     }
 
 
@@ -4706,7 +4717,7 @@ public class EntryManager extends RepositoryManager {
             result.addHttpHeader("Accept-Ranges", "bytes");
             result.addHttpHeader(HU.HTTP_CONTENT_LENGTH, "" + length);
             result.setLastModified(new Date(file.lastModified()));
-            result.setCacheOk(getRepository().getProperty("ramadda.http.cachefile", true));
+            result.setCacheOk(httpCacheFile);
 	    return result;
         }
 
