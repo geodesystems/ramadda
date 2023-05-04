@@ -822,7 +822,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             return new Result(getTitle(request, entry), sb);
         }
 
-	if(!request.exists(ARG_DB_VIEW) && !request.exists(ARG_DB_CREATE)) {
+	if(!request.exists(ARG_DB_VIEW) && !request.exists(ARG_DB_CREATE) && !request.exists("result")) {
 	    String template =  getWikiTemplate(request,  entry);
 	    if(Utils.stringDefined(template)) {
 		return null;
@@ -1160,6 +1160,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      */
     public String addSearchAgain(Request request, Entry entry, Appendable sb, boolean inToggle)
             throws Exception {
+        boolean forPrint = request.get(ARG_FOR_PRINT, false);
+	if(forPrint) return "";
+
         String formId     = HtmlUtils.getUniqueId("form_");
         String searchForm = getSearchForm(request, entry, formId).toString();
 	if(inToggle) {
@@ -1185,6 +1188,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     public void addPrevNext(Request request, Entry entry, Appendable sb,
                             int numValues)
             throws Exception {
+        boolean forPrint = request.get(ARG_FOR_PRINT, false);
+	if(forPrint) return;
+
         if (numValues > 0) {
             if (isGroupBy(request)) {
                 numValues--;
@@ -3888,10 +3894,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         double[] max     = new double[columnsToUse.size()];
 
         boolean  even    = true;
-        int      lineCnt = -1;
+        int      lineCnt = 0;
         for (int cnt = 0; cnt < valueList.size(); cnt++) {
             lineCnt++;
-            if (forPrint && (lineCnt >= entriesPerPage)) {
+            if (forPrint && (lineCnt > entriesPerPage)) {
                 lineCnt = 0;
                 hb.append("</table>");
                 hb.append("<div class=pagebreak></div>");

@@ -168,7 +168,7 @@ public abstract class ValueIterator implements DbConstants {
 	    }
 	    db.addSearchAgain(request, entry,sb,!nothingFound);
 	    viewHeaderId = Utils.getGuid();
-	    HU.div(sb, "",  HtmlUtils.id(viewHeaderId));
+	    HU.div(sb, "",  HU.id(viewHeaderId));
 	    //	    db.addPrevNext(request, entry,sb,max);
 	}
     }
@@ -279,7 +279,7 @@ public abstract class ValueIterator implements DbConstants {
 	    db.addPrevNext(request, entry,tmp,rowCnt);
 	    String tmpId = Utils.getGuid();
 	    Appendable sb       = getBuffer();
-	    HU.div(sb, tmp.toString(),  HtmlUtils.id(tmpId));
+	    HU.div(sb, tmp.toString(),  HU.id(tmpId));
 	    sb.append(HU.script("DB.initHeader('" + viewHeaderId + "','" + tmpId +"')"));
 	}
 
@@ -773,7 +773,7 @@ public abstract class ValueIterator implements DbConstants {
             Appendable    sb = getBuffer();
 	    if(rowCnt==0) {
                 if ( !fromSearch) {
-                    sb.append(HtmlUtils.br());
+                    sb.append(HU.br());
                     sb.append(
                         db.getPageHandler().showDialogNote(
                             db.msgLabel("No entries in")
@@ -893,11 +893,11 @@ public abstract class ValueIterator implements DbConstants {
                 throws Exception {
             super(request, db, entry,fromSearch);
             entryProps      = db.getProperties(entry);
-            editImg = HtmlUtils.img(
+            editImg = HU.img(
                 getRepository().getUrlBase() + "/db/database_edit.png",
                 db.msg("View entry"));
             viewImg =
-                HtmlUtils.img(getRepository().getUrlBase()
+                HU.img(getRepository().getUrlBase()
                               + "/db/database_go.png", db.msg("View entry"));
         }
 
@@ -935,12 +935,10 @@ public abstract class ValueIterator implements DbConstants {
             if (doForm) {
                 String formUrl =
                     request.makeUrl(db.getRepository().URL_ENTRY_SHOW);
-                HtmlUtils.form(sb, formUrl);
-                HtmlUtils.hidden(sb, ARG_ENTRYID, entry.getId(), "");
+                HU.form(sb, formUrl);
+                HU.hidden(sb, ARG_ENTRYID, entry.getId(), "");
             }
 
-            int entriesPerPage = request.get(ARG_ENTRIES_PER_PAGE, 8);
-	    boolean numberEntries = request.get(ARG_NUMBER_ENTRIES,false);
             if (forPrint) {
                 canEdit = false;
             }
@@ -973,17 +971,19 @@ public abstract class ValueIterator implements DbConstants {
             }
             if ( !embedded && (actions.size() > 0)) {
                 if (doForm) {
-                    sb.append(HtmlUtils.submit(db.msgLabel("Do"), ARG_DB_DO));
-                    sb.append(HtmlUtils.select(ARG_DB_ACTION, actions));
+                    sb.append(HU.submit(db.msgLabel("Do"), ARG_DB_DO));
+                    sb.append(HU.select(ARG_DB_ACTION, actions));
                 }
             }
-            HtmlUtils.open(tableHeader, "table", "entryid", entry.getId(),
+            HU.open(tableHeader, "table", "entryid", entry.getId(),
                            "id", tableId, "class", "dbtable", "border", "1",
                            "cellspacing", "0", "cellpadding", "0", "width",
                            "100%");
-            HtmlUtils.open(tableHeader, "tr", "valign", "top");
+            HU.open(tableHeader, "tr", "valign", "top");
             if ( !forPrint) {
-                db.makeTableHeader(tableHeader, "&nbsp;");
+		if(numberEntries)
+		    db.makeTableHeader(tableHeader, "#");
+                db.makeTableHeader(tableHeader, "&nbsp;");		
             } else {
 		if(numberEntries)
 		    db.makeTableHeader(tableHeader, "#");
@@ -1009,23 +1009,23 @@ public abstract class ValueIterator implements DbConstants {
                 if (sortColumn.equals(sortBy)) {
                     if (asc) {
                         extra = " "
-                                + HtmlUtils.img(
+                                + HU.img(
                                     db.getRepository().getIconUrl(
                                         ICON_UPDART));
                     } else {
                         extra = " "
-                                + HtmlUtils.img(
+                                + HU.img(
                                     db.getRepository().getIconUrl(
                                         ICON_DOWNDART));
                     }
                     asc = !asc;
                 } else {
                     extra = " "
-                            + HtmlUtils.img(
+                            + HU.img(
                                 db.getRepository().getIconUrl(ICON_BLANK),
-                                "", HtmlUtils.attr("width", "10"));
+                                "", HU.attr("width", "10"));
                 }
-                String link = HtmlUtils.href(baseUrl + "&" + ARG_DB_SORTBY1
+                String link = HU.href(baseUrl + "&" + ARG_DB_SORTBY1
                                              + "=" + sortColumn + "&"
                                              + ARG_DB_SORTDIR1 + (asc
                         ? "=asc"
@@ -1037,7 +1037,7 @@ public abstract class ValueIterator implements DbConstants {
             for (String col : extraCols) {
                 db.makeTableHeader(tableHeader, col);
             }
-            HtmlUtils.close(tableHeader, "tr");
+            HU.close(tableHeader, "tr");
 
 
 
@@ -1085,9 +1085,9 @@ public abstract class ValueIterator implements DbConstants {
                 new Hashtable<String, Hashtable<Object, Integer>>();
 
             String popupId = "dbrowpopup_" + entry.getId();
-            sb.append(HtmlUtils.div("",
-                                    HtmlUtils.id(popupId)
-                                    + HtmlUtils.cssClass("ramadda-popup")));
+            sb.append(HU.div("",
+                                    HU.id(popupId)
+                                    + HU.cssClass("ramadda-popup")));
             sum = new double[columns.size()];
             min = new double[columns.size()];
             max = new double[columns.size()];
@@ -1109,60 +1109,55 @@ public abstract class ValueIterator implements DbConstants {
 
             Appendable sb = getBuffer();
             if (rowCnt++ == 0) {
-		//                double mem1 = Utils.getUsedMemory();
                 initializeTable(request);
-		//                double mem2 = Utils.getUsedMemory();
-		//                System.err.println("initializeTable Memory:"
-		//                                   + Utils.decimals(mem2 - mem1, 1));
             }
 
             lineCnt++;
             if (forPrint && (lineCnt >= entriesPerPage)) {
-                lineCnt = 0;
+                lineCnt = 1;
                 sb.append("</table>");
                 sb.append("<div class=pagebreak></div>");
                 sb.append(tableHeader);
             }
-
             String dbid  = (String) values[IDX_DBID];
             String cbxId = ARG_DBID + (rowCnt);
             String divId = "div_" + dbid;
             sb.append("\n");
             HU.open(sb, "tr", "dbrowid", dbid);
 	    if(numberEntries)
-                HtmlUtils.td(sb, ""+(rowCnt));
+                HU.td(sb, ""+(rowCnt),HU.attr("align","right"));
             if ( !forPrint) {
-                HtmlUtils.open(sb, "td", "width", "10", "style",
+                HU.open(sb, "td", "width", "10", "style",
                                "white-space:nowrap;");
-                HtmlUtils.open(sb, "div", "id", divId);
+                HU.open(sb, "div", "id", divId);
                 if (doForm) {
                     String call =
-                        HtmlUtils.attr(
-                            HtmlUtils.ATTR_ONCLICK,
-                            HtmlUtils.call(
-					   "HtmlUtils.checkboxClicked",
-                                HtmlUtils.comma(
+                        HU.attr(
+                            HU.ATTR_ONCLICK,
+                            HU.call(
+					   "HU.checkboxClicked",
+                                HU.comma(
                                     "event",
-                                    HtmlUtils.squote(ARG_DBID_SELECTED),
-                                    HtmlUtils.squote(cbxId))));
+                                    HU.squote(ARG_DBID_SELECTED),
+                                    HU.squote(cbxId))));
 
                     call = "";
-                    HtmlUtils.checkbox(sb, ARG_DBID_SELECTED, dbid, false,
+                    HU.checkbox(sb, ARG_DBID_SELECTED, dbid, false,
                                        "id=" + cbxId + " " + call);
                 }
                 if (canEdit) {
                     if (editUrl == null) {
                         editUrl = db.getEditUrl(request, entry, "_DBROWID_");
                     }
-                    HtmlUtils.href(sb, editUrl.replace("_DBROWID_", dbid),
+                    HU.href(sb, editUrl.replace("_DBROWID_", dbid),
                                    editImg);
                 }
                 if (viewUrl == null) {
                     viewUrl = db.getViewUrl(request, entry, "_DBROWID_");
                 }
-                HtmlUtils.href(sb, viewUrl.replace("_DBROWID_", dbid),
+                HU.href(sb, viewUrl.replace("_DBROWID_", dbid),
                                viewImg);
-                HtmlUtils.close(sb, "div", "td");
+                HU.close(sb, "div", "td");
             }
 
 
@@ -1188,14 +1183,14 @@ public abstract class ValueIterator implements DbConstants {
                 }
 
                 if (column.isString()) {
-                    HtmlUtils.open(sb, "td");
+                    HU.open(sb, "td");
                 } else if (column.isNumeric()) {
-                    HtmlUtils.open(sb, "td", "align", "right");
+                    HU.open(sb, "td", "align", "right");
                 } else {
-                    HtmlUtils.open(sb, "td");
+                    HU.open(sb, "td");
                 }
 
-                HtmlUtils.open(sb, HtmlUtils.TAG_DIV, "class", "dbcell");
+                HU.open(sb, HU.TAG_DIV, "class", "dbcell");
 
                 if (column.isEnumeration()) {
                     String value = (String) values[column.getOffset()];
@@ -1213,9 +1208,9 @@ public abstract class ValueIterator implements DbConstants {
                                     prefix = new StringBuilder();
                                 }
                                 prefix.append(
-                                    HtmlUtils.img(
+                                    HU.img(
                                         db.getDbIconUrl(icon), "",
-                                        HtmlUtils.attr("width", "16")));
+                                        HU.attr("width", "16")));
                                 prefix.append(" ");
 
                             }
@@ -1236,8 +1231,8 @@ public abstract class ValueIterator implements DbConstants {
                                 if (prefix == null) {
                                     prefix = new StringBuilder();
                                 }
-                                prefix.append(HtmlUtils.span(content,
-                                        HtmlUtils.style(style)));
+                                prefix.append(HU.span(content,
+                                        HU.style(style)));
                             }
                         }
                         if (prefix != null) {
@@ -1270,8 +1265,8 @@ public abstract class ValueIterator implements DbConstants {
                                         + sourceColumn)));
                     sb.append("&nbsp;");
                 }
-                HtmlUtils.close(sb, HtmlUtils.TAG_DIV);
-                HtmlUtils.close(sb, HtmlUtils.TAG_TD);
+                HU.close(sb, HU.TAG_DIV);
+                HU.close(sb, HU.TAG_TD);
 
                 if (column.isEnumeration() && column.getDoStats()) {
                     Hashtable<Object, Integer> numUniques =
@@ -1311,26 +1306,26 @@ public abstract class ValueIterator implements DbConstants {
             Appendable    sb = getBuffer();
             StringBuilder hb = new StringBuilder();
             if ( !forPrint && (rowCnt > 0)) {
-                HtmlUtils.comment(hb, "summmary");
-                HtmlUtils.open(hb, "tr", "valign", "top");
-                HtmlUtils.tag(hb, "td", HtmlUtils.attrs("align", "right"),
+                HU.comment(hb, "summmary");
+                HU.open(hb, "tr", "valign", "top");
+                HU.tag(hb, "td", HU.attrs("align", "right"),
                               "#" + rowCnt);
                 for (int i = 0; i < columns.size(); i++) {
                     Column column = columns.get(i);
                     if (column.isNumeric() && column.getDoStats()) {
                         double  avg   = sum[i] / rowCnt;
                         boolean round = column.isInteger();
-                        HtmlUtils.open(hb, "td", "class", "dbtable-summary");
-                        hb.append(HtmlUtils.formTable());
-                        hb.append(HtmlUtils.formEntry("Average:",
+                        HU.open(hb, "td", "class", "dbtable-summary");
+                        hb.append(HU.formTable());
+                        hb.append(HU.formEntry("Average:",
                                 db.format(avg, round)));
-                        hb.append(HtmlUtils.formEntry("Minimum:",
+                        hb.append(HU.formEntry("Minimum:",
                                 db.format(min[i], round)));
-                        hb.append(HtmlUtils.formEntry("Maximum:",
+                        hb.append(HU.formEntry("Maximum:",
                                 db.format(max[i], round)));
-                        hb.append(HtmlUtils.formEntry("Total:",
+                        hb.append(HU.formEntry("Total:",
                                 db.format(sum[i], round)));
-                        HtmlUtils.close(hb, "table", "td");
+                        HU.close(hb, "table", "td");
                     } else if (column.isEnumeration()
                                && column.getDoStats()) {
                         Hashtable<Object, Integer> numUniques =
@@ -1338,13 +1333,13 @@ public abstract class ValueIterator implements DbConstants {
                         if (numUniques == null) {
                             continue;
                         }
-                        HtmlUtils.open(hb, "td", "class", "dbtable-summary");
-                        hb.append(HtmlUtils.formTable());
+                        HU.open(hb, "td", "class", "dbtable-summary");
+                        hb.append(HU.formTable());
                         int cnt = 0;
                         for (Enumeration keys = numUniques.keys();
                                 keys.hasMoreElements(); ) {
                             if (cnt++ > 10) {
-                                hb.append(HtmlUtils.formEntry("", "..."));
+                                hb.append(HU.formEntry("", "..."));
 
                                 break;
                             }
@@ -1353,23 +1348,23 @@ public abstract class ValueIterator implements DbConstants {
                             if (key.toString().length() == 0) {
                                 key = "&lt;blank&gt;";
                             }
-                            hb.append(HtmlUtils.formEntry(key + ":",
+                            hb.append(HU.formEntry(key + ":",
                                     value.toString()));
                         }
-                        HtmlUtils.close(hb, "table", "td");
+                        HU.close(hb, "table", "td");
                     } else {
-                        HtmlUtils.tag(hb, "td", "", "&nbsp;");
+                        HU.tag(hb, "td", "", "&nbsp;");
                     }
                 }
                 for (String col : extraCols) {
-                    HtmlUtils.open(hb, HtmlUtils.TAG_TD, "");
-                    HtmlUtils.close(hb, HtmlUtils.TAG_TD);
+                    HU.open(hb, HU.TAG_TD, "");
+                    HU.close(hb, HU.TAG_TD);
                 }
-                HtmlUtils.close(hb, "tr");
-                HtmlUtils.close(hb, "table");
+                HU.close(hb, "tr");
+                HU.close(hb, "table");
 		sb.append(HU.script("DB.initTable('" + tableId + "')"));
             } 
-		hb.append(HtmlUtils.formClose());
+		hb.append(HU.formClose());
             sb.append(hb.toString());
 
             super.finish(request);
@@ -1720,7 +1715,7 @@ public abstract class ValueIterator implements DbConstants {
             String label = getKmlLabel(request, entry, values, null);
             String viewUrl = request.getAbsoluteUrl(db.getViewUrl(request,
                                  entry, dbid));
-            String        href = HtmlUtils.href(viewUrl, label);
+            String        href = HU.href(viewUrl, label);
             StringBuilder desc = new StringBuilder(href + "<br>");
             db.getHtml(request, desc, entry, values, false);
             Element placemark = KmlUtil.placemark(folder, label,
@@ -1834,7 +1829,7 @@ public abstract class ValueIterator implements DbConstants {
                 Column c = columns.get(i);
             }
             Appendable sb = getBuffer();
-	    HtmlUtils.cssLink(sb,
+	    HU.cssLink(sb,
 			      db.getPageHandler().makeHtdocsUrl("/db/dbstyle.css"));
 	    sb.append(
 		      HU.importCss(
@@ -1953,26 +1948,26 @@ public abstract class ValueIterator implements DbConstants {
 
 	    enumValues = db.getEnumValues(request, entry, gridColumn);
 	    sb.append(
-		      HtmlUtils.cssBlock(
+		      HU.cssBlock(
 					 ".gridtable td {padding:5px;padding-bottom:0px;padding-top:8px;}\n.gridon {background: #88C957;}\n.gridoff {background: #eee;}"));
 	    sb.append(
 		      "<table cellspacing=0 cellpadding=0 border=1 width=100% class=\"gridtable\">\n");
 	    sb.append("<tr>");
 	    int width = 100 / (enumValues.size() + 1);
 	    db.makeTableHeader(sb, "&nbsp;",
-			       HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, width + "%"));
+			       HU.attr(HU.ATTR_WIDTH, width + "%"));
 	    String key = db.getTableHandler().getTableName() + "." + gridColumn.getName();
 	    for (TwoFacedObject tfo : enumValues) {
 		String value = tfo.getId().toString();
 		String searchUrl =
-		    HtmlUtils.url(
+		    HU.url(
 				  request.makeUrl(getRepository().URL_ENTRY_SHOW),
 				  new String[] {
 				      ARG_ENTRYID, entry.getId(), ARG_DB_SEARCH, "true", key, value
 				  });
 
-		db.makeTableHeader(sb, "&nbsp;" + HtmlUtils.href(searchUrl, value),
-				   HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
+		db.makeTableHeader(sb, "&nbsp;" + HU.href(searchUrl, value),
+				   HU.attr(HU.ATTR_WIDTH,
 						  width + "%"));
 	    }
         }
@@ -1999,21 +1994,21 @@ public abstract class ValueIterator implements DbConstants {
             String rowId = "row_" + values[IDX_DBID];
             String event = db.getEventJS(request, entry, values[IDX_DBID],
 					 rowId, rowId);
-            String href = HtmlUtils.href(url,
+            String href = HU.href(url,
                                          db.getLabel(request, entry,
 						  values, dateSdf));
-            sb.append(HtmlUtils.col("&nbsp;" + href,
-                                    HtmlUtils.id(rowId) + event
-                                    + HtmlUtils.cssClass("dbcategoryrow")));
+            sb.append(HU.col("&nbsp;" + href,
+                                    HU.id(rowId) + event
+                                    + HU.cssClass("dbcategoryrow")));
             String rowValue = (String) values[gridColumn.getOffset()];
             for (TwoFacedObject tfo : enumValues) {
                 String value = tfo.getId().toString();
                 if (Misc.equals(value, rowValue)) {
-                    sb.append(HtmlUtils.col("&nbsp;",
-                                            HtmlUtils.cssClass("dbgridon")));
+                    sb.append(HU.col("&nbsp;",
+                                            HU.cssClass("dbgridon")));
                 } else {
-                    sb.append(HtmlUtils.col("&nbsp;",
-                                            HtmlUtils.cssClass("dbgridoff")));
+                    sb.append(HU.col("&nbsp;",
+                                            HU.cssClass("dbgridoff")));
                 }
             }
         }
@@ -2028,7 +2023,7 @@ public abstract class ValueIterator implements DbConstants {
          */
         public void finish(Request request) throws Exception {
             Appendable sb = getBuffer();
-	    HtmlUtils.close(sb, "table");
+	    HU.close(sb, "table");
             super.finish(request);
         }
     }
@@ -2109,7 +2104,7 @@ public abstract class ValueIterator implements DbConstants {
                          : db.getViewUrl(request, entry,
                                       (String) valuesArray[IDX_DBID]);
             String label    = db.getLabel(request, entry, valuesArray, dateSdf);
-            String href     = HtmlUtils.href(url, label);
+            String href     = HU.href(url, label);
 
             String rowValue = (String) valuesArray[gridColumn.getOffset()];
             if (rowValue == null) {
@@ -2123,9 +2118,9 @@ public abstract class ValueIterator implements DbConstants {
             String rowId = "row_" + valuesArray[IDX_DBID];
             String event = db.getEventJS(request, entry, valuesArray[IDX_DBID],
                                       rowId, rowId);
-            buffer.append(HtmlUtils.div(href,
-                                        HtmlUtils.cssClass("dbcategoryrow")
-                                        + HtmlUtils.id(rowId) + event));
+            buffer.append(HU.div(href,
+                                        HU.cssClass("dbcategoryrow")
+                                        + HU.id(rowId) + event));
         }
 
 
@@ -2143,10 +2138,10 @@ public abstract class ValueIterator implements DbConstants {
 	    
 	    for (String rowValue : rowValues) {
 		titles.add(rowValue);
-		tabs.add(HtmlUtils.insetDiv(map.get(rowValue).toString(), 0, 20,
+		tabs.add(HU.insetDiv(map.get(rowValue).toString(), 0, 20,
 					    10, 0));
 	    }
-	    HtmlUtils.makeAccordion(sb, titles, tabs, false);
+	    HU.makeAccordion(sb, titles, tabs, false);
             super.finish(request);
         }
     }
