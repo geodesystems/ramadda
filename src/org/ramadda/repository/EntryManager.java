@@ -4706,8 +4706,7 @@ public class EntryManager extends RepositoryManager {
             result.addHttpHeader("Accept-Ranges", "bytes");
             result.addHttpHeader(HU.HTTP_CONTENT_LENGTH, "" + length);
             result.setLastModified(new Date(file.lastModified()));
-            result.setCacheOk(
-			      getRepository().getProperty("ramadda.http.cachefile", false));
+            result.setCacheOk(getRepository().getProperty("ramadda.http.cachefile", true));
 	    return result;
         }
 
