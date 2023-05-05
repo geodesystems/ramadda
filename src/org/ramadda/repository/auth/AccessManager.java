@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2023 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.repository.auth;
@@ -23,11 +23,11 @@ import org.ramadda.util.sql.SqlUtil;
 
 import org.w3c.dom.*;
 
+
 import ucar.unidata.util.Misc;
-
 import ucar.unidata.util.StringUtil;
-
 import ucar.unidata.util.TwoFacedObject;
+import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
 
@@ -67,14 +67,24 @@ import java.util.zip.*;
 @SuppressWarnings("unchecked")
 public class AccessManager extends RepositoryManager {
 
+    public static final String TAG_PERMISSIONS = "permissions";
+    public static final String TAG_PERMISSION = "permission";
+    public static final String TAG_ROLE = "role";
+    public static final String ATTR_ACTION = "action";
+    public static final String ATTR_ROLE = "role";
+    public static final String ATTR_DATAPOLICY = "datapolicy";    
+
+
+
+
     /** _more_ */
     public RequestUrl URL_ACCESS_FORM = new RequestUrl(getRepository(),
-                                            "/access/form", "Access");
+						       "/access/form", "Access");
 
 
     /** _more_ */
     public RequestUrl URL_ACCESS_CHANGE = new RequestUrl(getRepository(),
-                                              "/access/change");
+							 "/access/change");
 
 
     /** _more_ */
@@ -84,7 +94,7 @@ public class AccessManager extends RepositoryManager {
     /** _more_ */
     private TTLCache<String, Object[]> recentPermissions =
         new TTLCache<String, Object[]>(5 * 60 * 1000,
-                     "Access Manager Permissions");
+				       "Access Manager Permissions");
 
 
     /** _more_ */
@@ -140,15 +150,15 @@ public class AccessManager extends RepositoryManager {
     public AccessManager(Repository repository) {
         super(repository);
         Misc.run(new Runnable() {
-            public void run() {
-                try {
-                    runDataPolicyFetch();
-                } catch (Exception exc) {
-                    getLogManager().logError(
-                        "Error running runDataPolicyFetch");
-                }
-            }
-        });
+		public void run() {
+		    try {
+			runDataPolicyFetch();
+		    } catch (Exception exc) {
+			getLogManager().logError(
+						 "Error running runDataPolicyFetch");
+		    }
+		}
+	    });
 
     }
 
@@ -157,15 +167,15 @@ public class AccessManager extends RepositoryManager {
      */
     public void updateLocalDataPolicies() {
         Misc.runInABit(5000, new Runnable() {
-            public void run() {
-                try {
-                    doDataPolicyFetch();
-                } catch (Exception exc) {
-                    getLogManager().logError("calling doDataPolicyFetch",
-                                             exc);
-                }
-            }
-        });
+		public void run() {
+		    try {
+			doDataPolicyFetch();
+		    } catch (Exception exc) {
+			getLogManager().logError("calling doDataPolicyFetch",
+						 exc);
+		    }
+		}
+	    });
     }
 
 
@@ -181,7 +191,7 @@ public class AccessManager extends RepositoryManager {
         //        Misc.sleepSeconds(10);
         Misc.sleepSeconds(2);
         debugDataPolicy = getRepository().getProperty(PROP_DATAPOLICY_DEBUG,
-                false);
+						      false);
         int minutes = getRepository().getProperty(PROP_DATAPOLICY_SLEEP, 5);
         while (true) {
             haveDoneDataPolicyFetch = true;
@@ -227,8 +237,8 @@ public class AccessManager extends RepositoryManager {
             }
             try {
                 url = url.replace(
-                    "${this}",
-                    getRepository().getTmpRequest().getAbsoluteUrl(""));
+				  "${this}",
+				  getRepository().getTmpRequest().getAbsoluteUrl(""));
             } catch (Exception exc) {
                 getLogManager().logError("Error getting self url", exc);
                 continue;
@@ -245,7 +255,7 @@ public class AccessManager extends RepositoryManager {
                     tmpDataPolicies.addAll(lcp);
                     for (DataPolicy dataPolicy : lcp) {
                         tmpDataPoliciesMap.put(dataPolicy.getId(),
-                                dataPolicy);
+					       dataPolicy);
                     }
                     continue;
                 }
@@ -258,8 +268,8 @@ public class AccessManager extends RepositoryManager {
                 for (int i = 0; i < jpolicies.length(); i++) {
                     JSONObject policy = jpolicies.getJSONObject(i);
                     DataPolicy dataPolicy = new DataPolicy(this, url,
-                                                policy.optString("url",
-                                                    null), name, policy);
+							   policy.optString("url",
+									    null), name, policy);
                     if (debug) {
                         System.err.println("\tpolicy:" + dataPolicy);
                     }
@@ -291,11 +301,11 @@ public class AccessManager extends RepositoryManager {
             id = id.replaceAll("_", "-");
 
             licenses.add(
-                new License(
-                    "localcontexts-label-" + id, label.getString("name"),
-                    "https://localcontexts.org/labels/traditional-knowledge-labels/",
-                    label.getString("img_url"),
-                    label.getString("default_text")));
+			 new License(
+				     "localcontexts-label-" + id, label.getString("name"),
+				     "https://localcontexts.org/labels/traditional-knowledge-labels/",
+				     label.getString("img_url"),
+				     label.getString("default_text")));
         }
 
     }
@@ -309,7 +319,7 @@ public class AccessManager extends RepositoryManager {
      * @throws Exception _more_
      */
     private List<DataPolicy> loadLocalContexts(JSONObject obj, String fromUrl)
-            throws Exception {
+	throws Exception {
         List<DataPolicy> dps      = new ArrayList<DataPolicy>();
         List<License>    licenses = new ArrayList<License>();
         for (String type : new String[] { "bc_labels", "tk_labels" }) {
@@ -325,6 +335,80 @@ public class AccessManager extends RepositoryManager {
 
         return dps;
     }
+
+    private boolean isActionExportable(String action) {
+	return action.equals(Permission.ACTION_VIEW) ||
+	    action.equals(Permission.ACTION_VIEWCHILDREN) ||
+	    action.equals(Permission.ACTION_FILE)||
+	    action.equals(Permission.ACTION_EXPORT);
+    }
+
+
+
+    public void applyEntryXml(Entry entry,  Element node) throws Exception {
+        List<Permission> permissions = new ArrayList<Permission>();
+	for(Element permissionNode: (List<Element>) XmlUtil.findChildren(node,TAG_PERMISSION)) {
+	    String dataPolicyId = XmlUtil.getAttribute(permissionNode, ATTR_DATAPOLICY,(String)null);
+	    List<Role> roles = new ArrayList<Role>();
+	    if(stringDefined(dataPolicyId)) {
+		DataPolicy dataPolicy = getDataPolicy(dataPolicyId);
+		if(dataPolicy==null) {
+		    System.err.println("AccessManager.applyEntryXml: unable to find data policy:" + dataPolicyId);
+		    continue;
+		}
+		permissions.addAll(dataPolicy.getPermissions());
+		continue;
+	    } 
+	    String action = XmlUtil.getAttribute(permissionNode, ATTR_ACTION,(String)null);
+	    if(!stringDefined(action) || !isActionExportable(action)) {
+		System.err.println("AccessManager.applyEntryXml: action not exportable:" + action);
+		continue;
+	    }
+	    for(Element roleNode: (List<Element>) XmlUtil.findChildren(permissionNode,TAG_ROLE)) {
+
+		roles.add(new Role(XmlUtil.getAttribute(roleNode, ATTR_ROLE,(String) null)));
+	    }
+	    permissions.add(new  Permission(action, roles));
+	}
+        entry.setPermissions(permissions);
+        insertPermissions(null, entry, permissions);
+    }
+
+
+    public void addEntryXml(Entry entry, Document doc, Element node) throws Exception {
+	Element permissionsNode = null;
+
+        for(Permission permission: getPermissions(entry)) {
+	    String action = permission.getAction();
+	    String dataPolicyId = permission.getDataPolicyId();	    
+	    if(!stringDefined(dataPolicyId) && !isActionExportable(action)) continue;
+
+	    if(permissionsNode==null) {
+		permissionsNode= XmlUtil.create(doc, TAG_PERMISSIONS, node);
+	    }
+
+
+	    Element actionNode = XmlUtil.create(doc, TAG_PERMISSION, permissionsNode);
+
+	    if(stringDefined(dataPolicyId)) {
+		actionNode.setAttribute(ATTR_DATAPOLICY, dataPolicyId);
+		continue;
+	    }
+
+            actionNode.setAttribute(ATTR_ACTION, action);
+	    /*
+	      <permission action="action"><role>cdata role</role></permission>
+	    */
+	    List<Role> roles = permission.getRoles();
+	    for(Role role: roles) {
+		Element roleNode = XmlUtil.create(doc, TAG_ROLE, actionNode);
+		roleNode.setAttribute(ATTR_ROLE, role.getRole());
+		
+	    }
+	}
+    }
+
+
 
     /**
      * _more_
@@ -347,7 +431,7 @@ public class AccessManager extends RepositoryManager {
     public void initAttributes() {
         super.initAttributes();
         stopAtFirstRole = getRepository().getProperty(PROP_STOPATFIRSTROLE,
-                true);
+						      true);
     }
 
 
@@ -361,15 +445,15 @@ public class AccessManager extends RepositoryManager {
     public void initTopEntry(Entry mainEntry) throws Exception {
         List<Permission> permissions = new ArrayList<Permission>();
         Utils.add(
-            permissions,
-            new Permission(Permission.ACTION_VIEW, Role.ROLE_ANY),
-            new Permission(Permission.ACTION_VIEWCHILDREN, Role.ROLE_ANY),
-            new Permission(Permission.ACTION_FILE, Role.ROLE_ANY),
-            new Permission(Permission.ACTION_EXPORT, Role.ROLE_NONE),
-            new Permission(Permission.ACTION_EDIT, Role.ROLE_NONE),
-            new Permission(Permission.ACTION_NEW, Role.ROLE_NONE),
-            new Permission(Permission.ACTION_DELETE, Role.ROLE_NONE),
-            new Permission(Permission.ACTION_COMMENT, Role.ROLE_ANY));
+		  permissions,
+		  new Permission(Permission.ACTION_VIEW, Role.ROLE_ANY),
+		  new Permission(Permission.ACTION_VIEWCHILDREN, Role.ROLE_ANY),
+		  new Permission(Permission.ACTION_FILE, Role.ROLE_ANY),
+		  new Permission(Permission.ACTION_EXPORT, Role.ROLE_NONE),
+		  new Permission(Permission.ACTION_EDIT, Role.ROLE_NONE),
+		  new Permission(Permission.ACTION_NEW, Role.ROLE_NONE),
+		  new Permission(Permission.ACTION_DELETE, Role.ROLE_NONE),
+		  new Permission(Permission.ACTION_COMMENT, Role.ROLE_ANY));
         mainEntry.setPermissions(permissions);
         insertPermissions(null, mainEntry, permissions);
     }
@@ -391,8 +475,8 @@ public class AccessManager extends RepositoryManager {
 	if(debug) System.err.println("canDoAction:" + action);
         if (getRepository().isReadOnly()) {
             if ( !(action.equals(Permission.ACTION_VIEW)
-                    || action.equals(Permission.ACTION_VIEWCHILDREN)
-                    || action.equals(Permission.ACTION_FILE))) {
+		   || action.equals(Permission.ACTION_VIEWCHILDREN)
+		   || action.equals(Permission.ACTION_FILE))) {
 		if(debug) System.err.println("\tisReadOnly and action isn't allowed");
                 return false;
             }
@@ -406,11 +490,11 @@ public class AccessManager extends RepositoryManager {
 
         if (request.exists(ARG_ENTRYID)) {
             Entry entry = getEntryManager().getEntry(request,
-                              request.getString(ARG_ENTRYID, ""), false);
+						     request.getString(ARG_ENTRYID, ""), false);
             if (entry == null) {
                 throw new RepositoryUtil.MissingEntryException(
-                    "Could not find entry:"
-                    + request.getString(ARG_ENTRYID, ""));
+							       "Could not find entry:"
+							       + request.getString(ARG_ENTRYID, ""));
             }
 
             return canDoAction(request, entry, action);
@@ -418,12 +502,12 @@ public class AccessManager extends RepositoryManager {
 
         if (request.exists(ARG_ENTRYIDS)) {
             for (String id :
-                    Utils.split(request.getString(ARG_ENTRYIDS, ""), ",",
-                                true, true)) {
+		     Utils.split(request.getString(ARG_ENTRYIDS, ""), ",",
+				 true, true)) {
                 Entry entry = getEntryManager().getEntry(request, id, false);
                 if (entry == null) {
                     throw new RepositoryUtil.MissingEntryException(
-                        "Could not find entry:" + id);
+								   "Could not find entry:" + id);
                 }
                 if ( !canDoAction(request, entry, action)) {
                     return false;
@@ -437,8 +521,8 @@ public class AccessManager extends RepositoryManager {
             Entry group = getEntryManager().findGroup(request);
             if (group == null) {
                 throw new RepositoryUtil.MissingEntryException(
-                    "Could not find folder:"
-                    + request.getString(ARG_GROUP, ""));
+							       "Could not find folder:"
+							       + request.getString(ARG_GROUP, ""));
             }
             boolean canDo = canDoAction(request, group, action);
 
@@ -453,9 +537,9 @@ public class AccessManager extends RepositoryManager {
                 getAssociationManager().getAssociations(request, clause);
             if (associations.size() == 1) {
                 Entry fromEntry = getEntryManager().getEntry(request,
-                                      associations.get(0).getFromId());
+							     associations.get(0).getFromId());
                 Entry toEntry = getEntryManager().getEntry(request,
-                                    associations.get(0).getToId());
+							   associations.get(0).getToId());
                 if (canDoAction(request, fromEntry, action)) {
                     return true;
                 }
@@ -470,7 +554,7 @@ public class AccessManager extends RepositoryManager {
         }
 
         throw new RepositoryUtil.MissingEntryException(
-            "Could not find entry or folder");
+						       "Could not find entry or folder");
         //        return false;
     }
 
@@ -492,7 +576,7 @@ public class AccessManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public boolean canDoAction(Request request, Entry entry, String action)
-            throws Exception {
+	throws Exception {
         return canDoAction(request, entry, action, false);
     }
 
@@ -511,15 +595,15 @@ public class AccessManager extends RepositoryManager {
      */
     public boolean canDoAction(Request request, Entry entry, String action,
                                boolean log)
-            throws Exception {
+	throws Exception {
 
         boolean debug =false;
 	if(debug) System.err.println("canDoAction:" + action+" entry:" + entry);
         if (getRepository().isReadOnly()) {
             if ( !(action.equals(Permission.ACTION_VIEW)
-                    || action.equals(Permission.ACTION_EXPORT)
-                    || action.equals(Permission.ACTION_VIEWCHILDREN)
-                    || action.equals(Permission.ACTION_FILE))) {
+		   || action.equals(Permission.ACTION_EXPORT)
+		   || action.equals(Permission.ACTION_VIEWCHILDREN)
+		   || action.equals(Permission.ACTION_FILE))) {
 		if(debug) System.err.println("\tnot ok: isReadOnly");
                 return false;
             }
@@ -552,7 +636,7 @@ public class AccessManager extends RepositoryManager {
      */
     private boolean canDoAction(Request request, String requestIp, User user,
                                 boolean log, Entry entry, String action)
-            throws Exception {
+	throws Exception {
 
         boolean debug =false;
 	if(debug) System.err.println("canDoAction: user:" + user +" entry:" + entry +" action:" + action);
@@ -626,8 +710,8 @@ public class AccessManager extends RepositoryManager {
         }
 
         String key = "a:" + action + "_u:" + user.getId() + "_roles:"
-                     + user.getRoles() + "_ip:" + requestIp + "_e:"
-                     + entry.getId();
+	    + user.getRoles() + "_ip:" + requestIp + "_e:"
+	    + entry.getId();
         Object[] pastResult = recentPermissions.get(key);
         Date     now        = new Date();
         if (pastResult != null) {
@@ -687,8 +771,8 @@ public class AccessManager extends RepositoryManager {
     public boolean canSetAccess(Request request, Entry entry) {
         User user = request.getUser();
         if (user.getAdmin()
-                || ( !user.getAnonymous()
-                     && Misc.equals(user, entry.getUser()))) {
+	    || ( !user.getAnonymous()
+		 && Misc.equals(user, entry.getUser()))) {
             return true;
         }
 
@@ -715,7 +799,7 @@ public class AccessManager extends RepositoryManager {
     private boolean canDoActionInner(Request request, String requestIp,
                                      User user, boolean log, Entry entry,
                                      String action)
-            throws Exception {
+	throws Exception {
         if (entry == null) {
             return false;
         }
@@ -855,7 +939,7 @@ public class AccessManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public boolean canAccessFile(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         //Check if its a crawler
         if ((request != null) && request.getIsRobot()) {
             return false;
@@ -875,7 +959,7 @@ public class AccessManager extends RepositoryManager {
      * @throws Exception  problem figuring it out
      */
     public boolean canViewFile(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         //Check if its a crawler
         if ((request != null) && request.getIsRobot()) {
             return false;
@@ -896,7 +980,7 @@ public class AccessManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public boolean canDownload(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
 	return canDownload(request, entry, false);
     }
 
@@ -960,7 +1044,7 @@ public class AccessManager extends RepositoryManager {
                 if ( !entry.getResource().getTheFile().exists()) {
                     if(debug)System.err.println ("\tfile is missing");
                     entry = getEntryManager().handleMissingFileEntry(request,
-                            entry);
+								     entry);
                     if (entry == null) {
 			if(debug)
 			    System.err.println ("\tnot ok: missing entry got deleted");
@@ -981,8 +1065,8 @@ public class AccessManager extends RepositoryManager {
 
         Entry parent = entry.getParentEntry();
         if ((parent != null)
-                && !canDoAction(request, parent,
-                                Permission.ACTION_VIEWCHILDREN)) {
+	    && !canDoAction(request, parent,
+			    Permission.ACTION_VIEWCHILDREN)) {
 	    if(debug) System.err.println("\tnot ok: parent cannot view children");
             return null;
         }
@@ -1009,7 +1093,7 @@ public class AccessManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public List<Entry> filterEntries(Request request, List entries)
-            throws Exception {
+	throws Exception {
         List<Entry> filtered = new ArrayList();
         for (int i = 0; i < entries.size(); i++) {
             Entry entry = (Entry) entries.get(i);
@@ -1087,7 +1171,7 @@ public class AccessManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public boolean canDoExport(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         return canDoAction(request, entry, Permission.ACTION_EXPORT);
     }
 
@@ -1101,7 +1185,7 @@ public class AccessManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public boolean canDoComment(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         return canDoAction(request, entry, Permission.ACTION_COMMENT);
     }
 
@@ -1139,7 +1223,7 @@ public class AccessManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public boolean canDoUpload(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         return canDoAction(request, entry, Permission.ACTION_UPLOAD);
     }
 
@@ -1152,7 +1236,7 @@ public class AccessManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public boolean canDoDelete(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
 	if(entry!=null && getEntryManager().isSynthEntry(entry.getId())) return false;
         return canDoAction(request, entry, Permission.ACTION_DELETE);
     }
@@ -1166,7 +1250,7 @@ public class AccessManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public boolean canDoViewChildren(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         return canDoAction(request, entry, Permission.ACTION_VIEWCHILDREN);
     }
 
@@ -1182,7 +1266,7 @@ public class AccessManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public boolean canDoType1Action(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         return canDoAction(request, entry, Permission.ACTION_TYPE1);
     }
 
@@ -1198,7 +1282,7 @@ public class AccessManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public boolean canDoType2Action(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         return canDoAction(request, entry, Permission.ACTION_TYPE2);
     }
 
@@ -1214,16 +1298,16 @@ public class AccessManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public void listAccess(Request request, Entry entry, StringBuffer sb)
-            throws Exception {
+	throws Exception {
         if (entry == null) {
             return;
         }
         List<Permission> permissions = getPermissions(entry);
         String entryUrl = HtmlUtils.href(request.makeUrl(URL_ACCESS_FORM,
-                              ARG_ENTRYID, entry.getId()), entry.getName());
+							 ARG_ENTRYID, entry.getId()), entry.getName());
 
         Hashtable<String, List<Permission>> map = new Hashtable<String,
-                                                      List<Permission>>();
+	    List<Permission>>();
         for (Permission permission : permissions) {
             List<Permission> p =
                 (List<Permission>) map.get(permission.getAction());
@@ -1258,25 +1342,25 @@ public class AccessManager extends RepositoryManager {
                             }
                             label = HU.href(url, label,
                                             HU.attrs("target", "_datapolicy",
-                                                "title", title)) + "&nbsp;*";
+						     "title", title)) + "&nbsp;*";
 
                         }
                         tmp.append(HU.div(label,
                                           HU.cssClass("ramadda-role "
-                                              + clazz)));
+						      + clazz)));
                     }
                 }
                 cols.append(HtmlUtils.cols(tmp.toString()));
             }
         }
         sb.append(
-            HtmlUtils.row(
-                cols.toString(),
-                HU.attr("valign", "top")
-                + HtmlUtils.cssClass("ramadda-access-summary")));
+		  HtmlUtils.row(
+				cols.toString(),
+				HU.attr("valign", "top")
+				+ HtmlUtils.cssClass("ramadda-access-summary")));
         listAccess(request,
                    getEntryManager().getEntry(request,
-                       entry.getParentEntryId()), sb);
+					      entry.getParentEntryId()), sb);
     }
 
 
@@ -1291,22 +1375,22 @@ public class AccessManager extends RepositoryManager {
      */
     private void insertPermissions(Request request, Entry entry,
                                    List<Permission> permissions)
-            throws Exception {
+	throws Exception {
         clearCache();
         getDatabaseManager().delete(
-            Tables.PERMISSIONS.NAME,
-            Clause.eq(Tables.PERMISSIONS.COL_ENTRY_ID, entry.getId()));
+				    Tables.PERMISSIONS.NAME,
+				    Clause.eq(Tables.PERMISSIONS.COL_ENTRY_ID, entry.getId()));
 
         for (Permission permission : permissions) {
             List<Role> roles        = permission.getRoles();
             String     dataPolicyId = permission.getDataPolicyId();
             for (Role role : roles) {
                 getDatabaseManager().executeInsert(Tables.PERMISSIONS.INSERT,
-                        new Object[] { entry.getId(),
-                                       permission.getAction(),
-                                       role.getRole(), (dataPolicyId == null)
-                        ? ""
-                        : dataPolicyId });
+						   new Object[] { entry.getId(),
+								  permission.getAction(),
+								  role.getRole(), (dataPolicyId == null)
+								  ? ""
+								  : dataPolicyId });
             }
         }
         entry.setPermissions(permissions);
@@ -1324,7 +1408,7 @@ public class AccessManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public boolean hasPermissionSet(Entry entry, String permission)
-            throws Exception {
+	throws Exception {
         for (Permission p : getPermissions(entry)) {
             if (Misc.equals(p.getAction(), permission)) {
                 return true;
@@ -1344,7 +1428,7 @@ public class AccessManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public List<DataPolicy> getDataPolicies(Entry entry, boolean inherited)
-            throws Exception {
+	throws Exception {
         List<DataPolicy> dataPolicies = new ArrayList<DataPolicy>();
         if (this.dataPolicies.size() == 0) {
             return dataPolicies;
@@ -1393,17 +1477,17 @@ public class AccessManager extends RepositoryManager {
             return getUpdatedPermissions(entry, permissions);
         }
         SqlUtil.Iterator iter = getDatabaseManager().getIterator(
-                                    getDatabaseManager().select(
-                                        Tables.PERMISSIONS.COLUMNS,
-                                        Tables.PERMISSIONS.NAME,
-                                        Clause.eq(
-                                            Tables.PERMISSIONS.COL_ENTRY_ID,
-                                            entry.getId())));
+								 getDatabaseManager().select(
+											     Tables.PERMISSIONS.COLUMNS,
+											     Tables.PERMISSIONS.NAME,
+											     Clause.eq(
+												       Tables.PERMISSIONS.COL_ENTRY_ID,
+												       entry.getId())));
 
         permissions = new ArrayList<Permission>();
         ResultSet results;
         Hashtable<String, List<Role>> actions = new Hashtable<String,
-                                                    List<Role>>();
+	    List<Role>>();
         while ((results = iter.getNext()) != null) {
             int    col          = 1;
             String id           = results.getString(col++);
@@ -1420,7 +1504,7 @@ public class AccessManager extends RepositoryManager {
             if (roles == null) {
                 roles = new ArrayList<Role>();
                 Permission permission = new Permission(dataPolicyId, action,
-                                            roles);
+						       roles);
                 permissions.add(permission);
                 actions.put(key, roles);
             }
@@ -1440,7 +1524,7 @@ public class AccessManager extends RepositoryManager {
      *  @return _more_
      */
     private List<Permission> getUpdatedPermissions(Entry entry,
-            List<Permission> permissions) {
+						   List<Permission> permissions) {
         boolean hasDataPolicy = false;
         boolean debug         = false;
         if (debug) {
@@ -1501,11 +1585,13 @@ public class AccessManager extends RepositoryManager {
      *  @return _more_
      */
     private DataPolicy getDataPolicy(Permission permission) {
-        String id = permission.getDataPolicyId();
+	return getDataPolicy(permission.getDataPolicyId());
+    }
+
+    private DataPolicy getDataPolicy(String id) {	
         if ( !Utils.stringDefined(id)) {
             return null;
         }
-
         return dataPoliciesMap.get(id);
     }
 
@@ -1548,9 +1634,9 @@ public class AccessManager extends RepositoryManager {
                                    List<DataPolicy> dataPolicies,
                                    boolean includeCollection,
                                    boolean includePermissions)
-            throws Exception {
+	throws Exception {
         LinkedHashMap<String, StringBuilder> map = new LinkedHashMap<String,
-                                                       StringBuilder>();
+	    StringBuilder>();
         for (DataPolicy dataPolicy : dataPolicies) {
             String fromLabel = dataPolicy.getFromName();
             String url       = dataPolicy.getMainUrl();
@@ -1570,21 +1656,21 @@ public class AccessManager extends RepositoryManager {
             }
 
             buff.append(
-                HU.div(HtmlUtils.img(
-                    getRepository().getIconUrl(
-                        "fa-solid fa-building-shield")) + " "
-                            + HU.italics(label)));
+			HU.div(HtmlUtils.img(
+					     getRepository().getIconUrl(
+									"fa-solid fa-building-shield")) + " "
+			       + HU.italics(label)));
             if (Utils.stringDefined(dataPolicy.getDescription())) {
                 buff.append(
-                    HU.div(dataPolicy.getDescription(),
-                           HU.cssClass("ramadda-datapolicy-description")));
+			    HU.div(dataPolicy.getDescription(),
+				   HU.cssClass("ramadda-datapolicy-description")));
             }
             buff.append("<ul>");
             for (String citation : dataPolicy.getCitations()) {
                 if (Utils.stringDefined(citation)) {
                     buff.append(
-                        HU.div(citation.replaceAll("\n", "<br>"),
-                               HU.cssClass("ramadda-datapolicy-citation")));
+				HU.div(citation.replaceAll("\n", "<br>"),
+				       HU.cssClass("ramadda-datapolicy-citation")));
                 }
             }
             boolean       didLicenses = false;
@@ -1592,8 +1678,8 @@ public class AccessManager extends RepositoryManager {
             for (License license : dataPolicy.getLicenses()) {
                 didLicenses = true;
                 lbuff.append(
-                    HU.div(getMetadataManager().getLicenseHtml(
-                        license, null)));
+			     HU.div(getMetadataManager().getLicenseHtml(
+									license, null)));
             }
             if (didLicenses) {
                 String tmp = HU.div(lbuff.toString(),
@@ -1608,7 +1694,7 @@ public class AccessManager extends RepositoryManager {
                     StringBuilder permissionsSB = new StringBuilder();
                     permissionsSB.append("<ul>");
                     for (Permission permission :
-                            dataPolicy.getPermissions()) {
+			     dataPolicy.getPermissions()) {
                         permissionsSB.append("<li>");
                         permissionsSB.append("Action: ");
                         permissionsSB.append(permission.getAction());
@@ -1616,13 +1702,13 @@ public class AccessManager extends RepositoryManager {
                         for (Role role : permission.getRoles()) {
                             permissionsSB.append("<li>");
                             permissionsSB.append(HU.span(role.toString(),
-                                    HU.cssClass(role.getCssClass())));
+							 HU.cssClass(role.getCssClass())));
                         }
                         permissionsSB.append("</ul>");
                     }
                     permissionsSB.append("</ul>");
                     buff.append(HU.makeShowHideBlock("Permissions",
-                            permissionsSB.toString(), false));
+						     permissionsSB.toString(), false));
                 }
             }
             buff.append("</ul>");
@@ -1673,17 +1759,17 @@ public class AccessManager extends RepositoryManager {
         StringBuffer currentAccess = new StringBuffer();
         currentAccess.append(HtmlUtils.open(HtmlUtils.TAG_TABLE,
                                             HU.attrs("celladding", "0",
-                                                "cellspacing", "0")));
+						     "cellspacing", "0")));
         StringBuffer header =
             new StringBuffer(HtmlUtils.cols(HtmlUtils.bold(msg("Entry"))));
         for (int i = 0; i < Permission.ACTIONS.length; i++) {
             header.append(HtmlUtils.cols(msg(Permission.ACTION_NAMES[i])));
         }
         currentAccess.append(
-            HtmlUtils.row(
-                header.toString(),
-                HU.attr("valign", "top")
-                + HtmlUtils.cssClass("ramadda-access-summary-header")));
+			     HtmlUtils.row(
+					   header.toString(),
+					   HU.attr("valign", "top")
+					   + HtmlUtils.cssClass("ramadda-access-summary-header")));
 
         listAccess(request, entry, currentAccess);
         currentAccess.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
@@ -1739,13 +1825,13 @@ public class AccessManager extends RepositoryManager {
                 }
                 //                items.add(new TwoFacedObject(dataPolicy.getName(),  dataPolicy.getId()));
                 items.add(new HtmlUtils.Selector(dataPolicy.getName(),
-                        dataPolicy.getId(), dataPolicy.getLabel(), null, 0,
-                        0, false));
+						 dataPolicy.getId(), dataPolicy.getLabel(), null, 0,
+						 0, false));
             }
             String extraSelect = HU.cssClass("ramadda-pulldown")
-                                 + HtmlUtils.attr(HtmlUtils.ATTR_MULTIPLE,
-                                     "true") + HtmlUtils.attr("size",
-                                         "" + (Math.min(items.size(), 4)));
+		+ HtmlUtils.attr(HtmlUtils.ATTR_MULTIPLE,
+				 "true") + HtmlUtils.attr("size",
+							  "" + (Math.min(items.size(), 4)));
             if (debug) {
                 System.err.println("items:" + items);
                 //                System.err.println("selected:" + selected);
@@ -1755,7 +1841,7 @@ public class AccessManager extends RepositoryManager {
             sb.append(HU.b("Data Policy:") + " " + select);
             sb.append(HU.href(getRepository().getUrlBase()
                               + "/access/datapolicies", "View Data Policies",
-                                  HU.attr("target", "_datapolicies")));
+			      HU.attr("target", "_datapolicies")));
         }
 
         sb.append("<table id='accessform' style=''><tr valign=top>");
@@ -1763,16 +1849,16 @@ public class AccessManager extends RepositoryManager {
         sb.append("<table style='margin-right:10px;' >");
         List opts = new ArrayList();
         Utils.add(
-            opts, new TwoFacedObject("Add role", ""),
-            new TwoFacedObject("User ID", "user:&lt;user id&gt;"),
-            new TwoFacedObject("Logged in user", Role.ROLE_USER.getRole()),
-            new TwoFacedObject("No one", Role.ROLE_NONE.getRole()),
-            new TwoFacedObject("IP Address", "ip:&lt;ip address&gt;"),
-            new TwoFacedObject(
-                "Anonymous users",
-                Role.ROLE_ANONYMOUS.getRole()), Role.ROLE_ANY.getRole(),
-                    new TwoFacedObject(
-                        "Guest user", Role.ROLE_GUEST.getRole()));
+		  opts, new TwoFacedObject("Add role", ""),
+		  new TwoFacedObject("User ID", "user:&lt;user id&gt;"),
+		  new TwoFacedObject("Logged in user", Role.ROLE_USER.getRole()),
+		  new TwoFacedObject("No one", Role.ROLE_NONE.getRole()),
+		  new TwoFacedObject("IP Address", "ip:&lt;ip address&gt;"),
+		  new TwoFacedObject(
+				     "Anonymous users",
+				     Role.ROLE_ANONYMOUS.getRole()), Role.ROLE_ANY.getRole(),
+		  new TwoFacedObject(
+				     "Guest user", Role.ROLE_GUEST.getRole()));
         opts.addAll(getUserManager().getUserRoles());
 
         sb.append("<tr valign=top>");
@@ -1791,31 +1877,31 @@ public class AccessManager extends RepositoryManager {
             String action     = Permission.ACTIONS[i];
             if (action.equals(Permission.ACTION_TYPE1)) {
                 actionName = entry.getTypeHandler().getTypePermissionName(
-                    Permission.ACTION_TYPE1);
+									  Permission.ACTION_TYPE1);
             } else if (action.equals(Permission.ACTION_TYPE2)) {
                 actionName = entry.getTypeHandler().getTypePermissionName(
-                    Permission.ACTION_TYPE2);
+									  Permission.ACTION_TYPE2);
             }
             String label =
                 HtmlUtils.href(
-                    getRepository().getUrlBase() + "/userguide/access.html#"
-                    + action, HtmlUtils.img(
-                        getRepository().getIconUrl(
-                            "fas fa-question-circle")), HtmlUtils.attr(
-                                HtmlUtils.ATTR_TARGET,
-                                "_help")) + HtmlUtils.space(1)
-                                          + msg(actionName);
+			       getRepository().getUrlBase() + "/userguide/access.html#"
+			       + action, HtmlUtils.img(
+						       getRepository().getIconUrl(
+										  "fas fa-question-circle")), HtmlUtils.attr(
+															     HtmlUtils.ATTR_TARGET,
+															     "_help")) + HtmlUtils.space(1)
+		+ msg(actionName);
             String extra = "";
             if (i == 0) {
                 extra = HU.select("", opts, (String) null, HU.id("roles"));
             }
             extra = HU.div(extra, HU.id("holder_" + i));
             sb.append(HtmlUtils.rowTop(HtmlUtils.cols(label,
-                    HtmlUtils.textArea(ARG_ROLES + "."
-                                       + Permission.ACTIONS[i], roles, 5, 20,
-                                           HU.attr("roleindex", "" + i)
-                                           + HU.id("textarea_"
-                                               + i)), extra)));
+						      HtmlUtils.textArea(ARG_ROLES + "."
+									 + Permission.ACTIONS[i], roles, 5, 20,
+									 HU.attr("roleindex", "" + i)
+									 + HU.id("textarea_"
+										 + i)), extra)));
         }
         sb.append("</tr></table></td>");
         sb.append("<td rowspan=6><b>" + msgLabel("Current settings")
@@ -1838,7 +1924,7 @@ public class AccessManager extends RepositoryManager {
         getPageHandler().entrySectionClose(request, entry, sb);
 
         return getEntryManager().makeEntryEditResult(request, entry,
-                msg("Edit Access"), sb);
+						     msg("Edit Access"), sb);
 
 
 
@@ -1864,17 +1950,17 @@ public class AccessManager extends RepositoryManager {
         for (int i = 0; i < Permission.ACTIONS.length; i++) {
             List<String> roles =
                 Utils.split(request.getString(ARG_ROLES + "."
-                    + Permission.ACTIONS[i], ""), "\n", true, true);
+					      + Permission.ACTIONS[i], ""), "\n", true, true);
             if (roles.size() > 0) {
                 permissions.add(new Permission(Permission.ACTIONS[i],
-                        Role.makeRoles(roles)));
+					       Role.makeRoles(roles)));
             }
         }
 
         if (request.exists(ARG_DATAPOLICY)) {
             for (String id :
-                    (List<String>) request.get(ARG_DATAPOLICY,
-                        new ArrayList<String>())) {
+		     (List<String>) request.get(ARG_DATAPOLICY,
+						new ArrayList<String>())) {
                 DataPolicy dataPolicy = dataPoliciesMap.get(id);
                 if (dataPolicy != null) {
                     permissions.addAll(dataPolicy.getPermissions());
@@ -1888,7 +1974,7 @@ public class AccessManager extends RepositoryManager {
         return new Result(request.makeUrl(URL_ACCESS_FORM, ARG_ENTRYID,
                                           entry.getId(), ARG_MESSAGE,
                                           getRepository().translate(request,
-                                              MSG_ACCESS_CHANGED)));
+								    MSG_ACCESS_CHANGED)));
 
     }
 
@@ -1932,7 +2018,7 @@ public class AccessManager extends RepositoryManager {
          * @throws Exception _more_
          */
         public void addAuthForm(Request request, User user, Appendable sb)
-                throws Exception {}
+	    throws Exception {}
 
         /**
          * _more_
@@ -1946,8 +2032,8 @@ public class AccessManager extends RepositoryManager {
          * @throws Exception _more_
          */
         public boolean userHasBeenAuthenticated(Request request, User user,
-                Appendable sb)
-                throws Exception {
+						Appendable sb)
+	    throws Exception {
             return true;
         }
 

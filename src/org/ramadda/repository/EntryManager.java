@@ -7,6 +7,7 @@ package org.ramadda.repository;
 
 
 import org.ramadda.repository.auth.AccessException;
+import org.ramadda.repository.auth.AccessManager;
 import org.ramadda.repository.auth.AuthorizationMethod;
 import org.ramadda.repository.auth.User;
 import org.ramadda.repository.database.DatabaseManager;
@@ -6024,7 +6025,6 @@ public class EntryManager extends RepositoryManager {
 
             }
             String xml = XmlUtil.toString(resultRoot);
-
             return new Result(xml, MIME_XML);
         }
 
@@ -6173,6 +6173,17 @@ public class EntryManager extends RepositoryManager {
         }
 
         addNewEntries(request, newEntries, true);
+
+	for(Entry newEntry: newEntries) {
+	    Element permissions = (Element)
+		newEntry.getProperty(AccessManager.TAG_PERMISSIONS);
+	    if(permissions!=null) {
+		getAccessManager().applyEntryXml(newEntry, permissions);
+	    }
+	}
+
+
+
 
         return newEntries;
     }
@@ -6596,6 +6607,12 @@ public class EntryManager extends RepositoryManager {
 			    entryOrder,
                             createDate.getTime(), changeDate.getTime(),
                             fromDate.getTime(), toDate.getTime(), null);
+
+	    Element permissions  =XmlUtil.findChild(node,AccessManager.TAG_PERMISSIONS);
+	    if(permissions!=null) {
+		entry.putProperty(AccessManager.TAG_PERMISSIONS, permissions);
+	    }
+
 
 	    String pathTemplate = request.getString(ARG_PATHTEMPLATE,"");
 	    if(Utils.stringDefined(pathTemplate)) {
