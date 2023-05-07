@@ -3605,9 +3605,8 @@ public class EntryManager extends RepositoryManager {
 
 
     public boolean okToDelete(Request request, Entry entry) throws Exception {
-        if (entry.isTopEntry()) {
-	    return false;
-        }
+	if(getRootEntry().getId().equals(entry.getId())) return false;
+	//        if (entry.isTopEntry()) {return false;}
 	if(!getAccessManager().canDoDelete(request, entry)) {
 	    return false;
 	}
