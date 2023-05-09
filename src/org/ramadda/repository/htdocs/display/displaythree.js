@@ -147,6 +147,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	{p:'labelResolution',d:3},
 	{p:'labelIncludeDot',d:true},		
 	{p:'labelAltitude',d:0.01},		
+	{p:'imageField',tt:'Field id image overlay'},
 	{p:'latField1',tt:'Field id for segments'},
 	{p:'lonField1',tt:'Field id for segments'},
 	{p:'latField2',tt:'Field id for segments'},
@@ -164,6 +165,8 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	{p:'doPopup',d:true,ex:'',tt:''},
 	{p:'centerOnFilterChange',d:true,ex:false,tt:'Center map when the data filters change'},	
     ];
+
+
     const SUPER = new RamaddaThree_Base(displayManager, id, DISPLAY_THREE_GLOBE, properties);
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
@@ -183,13 +186,16 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    let bounds = RecordUtil.getBounds(records);
 	    let lat = bounds.south+(bounds.north-bounds.south)/2;
 	    let lng = bounds.west+(bounds.east-bounds.west)/2;
-	    this.globe.pointOfView({lat: lat,
-				    lng: lng,
-				    alt:10000});
+	    if(!isNaN(lat) && !isNaN(lng)) {
+		this.globe.pointOfView({lat: lat,
+					lng: lng,
+					alt:10000});
+	    }
 
 	},
 
         updateUI: async function() {
+	    
 	    if(!window["THREE"]) {
 		if(!ramaddaLoadedThree) {
                     ramaddaLoadedThree = true;
@@ -209,7 +215,6 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		return
 	    }	    
 
-
             SUPER.updateUI.call(this);
 	    this.jq(ID_POPUP).hide();
 	    let records =this.filterData();
@@ -219,6 +224,13 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    if(!this.globe) {
 		this.createGlobe();
 	    }
+
+
+	    if(this.imageField && records.length>0) {
+		let url = this.imageField.getValue(records[0]);
+		this.globe.globeImageUrl(url);
+	    }
+
 
             let colorBy = this.getColorByInfo(records);
 	    let dfltColor = this.getColor();
@@ -292,6 +304,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		    .labelSize('labelSize')		
 		    .labelResolution(this.getLabelResolution());
 	    }
+
 
 	    let polygonField = this.getFieldById(null, this.getProperty("polygonField"));
 	    let latField1 = this.getFieldById(null, this.getProperty("latField1"));
@@ -415,8 +428,18 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 
 	    }
 
+	    let haveLatLong=false;
+	    pointData.every(pt=>{
+		if(Utils.isDefined(pt.lat)) {
+		    console.dir(pt);
+		    haveLatLong = true;
+		    return false;
+		}
+		return true;
+	    });
 
-	    if(pointData.length>0) {
+
+	    if(haveLatLong && pointData.length>0) {
 		if(this.getShowSpheres()) {
 		    this.globe.customLayerData(pointData)
 			.customThreeObject(d => new THREE.Mesh(
@@ -535,6 +558,11 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    }
 	},
 	createGlobe:function() {
+
+	    this.imageField = this.getFieldById(null, this.getImageField());
+	    
+
+
 	    let _this = this;
 	    let popup = HU.div([CLASS,"display-three-globe-popup",ID,this.domId(ID_POPUP),STYLE,HU.css("display","none","position","absolute","left","60%","top","0px")],"");
 	    let pos = HU.div([TITLE,"Select Position", CLASS,"ramadda-clickable", ID,this.domId(ID_POSITION_BUTTON),STYLE,HU.css("position","absolute","left","10px","top","10px","z-index","1000")],HU.getIconImage("fa-globe"));
@@ -585,11 +613,11 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    if(bgImage) {
 		this.globe.backgroundImageUrl(bgImage);
 	    }
+
 	    let bg = this.getBackgroundColor();
 	    if(bg) {
 		this.globe.backgroundColor(bg);
 	    }
-
 
 	    try {
 		let canvas = this.jq(ID_GLOBE).find('canvas');
@@ -940,6 +968,7 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 
 //	    records = [...records,...records,...records,...records,...records]
 //	    records = [...records,...records,...records,...records,...records]	    
+
 
 
 	    let sqrt = Math.ceil(Math.sqrt(records.length));
