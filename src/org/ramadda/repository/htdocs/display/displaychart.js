@@ -405,7 +405,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    if(debug)
 		console.log("\tcalling displayData");
 	    if(args.dataFilterChanged) {
-		this.setDisplayMessage(this.getLoadingMessage());
+		//this.setDisplayMessage(this.getLoadingMessage());
 		setTimeout(()=>{
 		    this.displayData(args.reload, debug);
 		},1);
