@@ -2966,6 +2966,7 @@ public class WikiUtil {
 
                 if (tline.startsWith(":heading")
 		    ||  tline.startsWith(":lheading")
+		    ||  tline.startsWith(":noheading")		    
                         || tline.startsWith(":block")
                         || tline.startsWith(":credit")
                         || tline.startsWith(":note")
@@ -2986,7 +2987,7 @@ public class WikiUtil {
                         clazz = "ramadda-" + what;
                     }
 		    String attrs = "";
-                    if (what.startsWith("heading") || what.startsWith("lheading")) {
+                    if (what.startsWith("heading") || what.startsWith("lheading") || what.startsWith("noheading")) {
 			String id = "heading-" +Utils.makeID(blob);
                         defineHeading.accept(buff, blob, 1);
 			buff.append(HU.anchorName(id));
@@ -2994,6 +2995,7 @@ public class WikiUtil {
 			attrs = HU.attrs("id",id);
 			clazz+=" ramadda-linkable ";
                     }
+		    if(what.startsWith("noheading")) blob = "";
                     buff.append(HU.div(HU.div(blob, HU.cssClass(clazz)+attrs),
                                        HU.cssClass("ramadda-" + what
                                            + "-outer")));
