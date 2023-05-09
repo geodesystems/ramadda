@@ -1608,15 +1608,22 @@ WikiEditor.prototype = {
 	if(this.wikiAttributes[tagInfo.tag]) {
 	    return this.wikiAttributes[tagInfo.tag];
 	}
+	let merge = (list) =>{
+	    if(!list) list = [];
+	    if(this.wikiAttributes[tagInfo.tag+'_extra']) {
+		list=Utils.mergeLists(list,this.wikiAttributes[tagInfo.tag+'_extra']);
+	    }		
+	    return list;
+	}
 	if(!this.wikiAttributesFromServer) {
 	    let url = RamaddaUtils.getUrl('/wikitags');
 	    $.getJSON(url, (data) =>{
 		this.wikiAttributesFromServer= data;
-		callback(this.wikiAttributesFromServer[tagInfo.tag]);
+		callback(merge(this.wikiAttributesFromServer[tagInfo.tag]));
 	    });
 	    return false;
 	}
-	return this.wikiAttributesFromServer[tagInfo.tag];
+	return merge(this.wikiAttributesFromServer[tagInfo.tag]);
     },
 
     getDisplayAttributes:function(tagInfo) {
@@ -1777,6 +1784,7 @@ WikiEditor.prototype = {
 	this.wikiAttributes = {
 	    tree: treeAttrs,	
 	    tabletree: treeAttrs,
+	    gallery_extra:this.groupAttributes,
 	    links: Utils.mergeLists([
 		{label:'Links Properties'},
 		{p:'info',ex:'List children entries'},
