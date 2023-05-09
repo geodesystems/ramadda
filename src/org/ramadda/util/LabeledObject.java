@@ -19,6 +19,7 @@ import java.util.List;
  *
  * @param <ObjectType>
  */
+@SuppressWarnings("unchecked")
 public class LabeledObject<ObjectType> {
 
     /** _more_ */
