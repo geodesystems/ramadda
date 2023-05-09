@@ -54,6 +54,10 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
     const ID_GLOBE = "globe";
     const ID_POPUP = "popup";
     const ID_POSITION_BUTTON = "positionbutton";        
+    if(!properties.width && properties.globeWidth) {
+	properties.width = properties.globeWidth;
+    }
+
     let positions = {
 "Base":{
 position: {x:6.048899205465489e-21,y:1.832130202344028e-20,z:250},
