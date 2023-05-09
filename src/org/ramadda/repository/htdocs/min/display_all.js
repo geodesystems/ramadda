@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue May  9 09:48:47 MDT 2023";
+var build_date="RAMADDA build date: Tue May  9 11:41:34 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -58038,6 +58038,10 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
     const ID_GLOBE = "globe";
     const ID_POPUP = "popup";
     const ID_POSITION_BUTTON = "positionbutton";        
+    if(!properties.width && properties.globeWidth) {
+	properties.width = properties.globeWidth;
+    }
+
     let positions = {
 "Base":{
 position: {x:6.048899205465489e-21,y:1.832130202344028e-20,z:250},
