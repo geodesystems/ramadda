@@ -2053,6 +2053,7 @@ public class ImageOutputHandler extends OutputHandler {
             return;
         }
 
+	String labelTemplate = Utils.getProperty(props,"labelTemplate",null);
         if (checkSort && !request.exists(ARG_ASCENDING)) {
             entries = getEntryUtil().sortEntriesOnDate(entries, true);
         }
@@ -2082,7 +2083,10 @@ public class ImageOutputHandler extends OutputHandler {
             if (cnt == 0) {
                 firstImage = url;
             }
-            String entryUrl = getEntryLink(request, entry);
+	    String label = getEntryManager().getEntryDisplayName(entry);
+	    if(labelTemplate!=null) label = labelTemplate.replace("${name}",label);
+							    
+	    String entryUrl  =  HU.href(getEntryManager().getEntryURL(request, entry), label);
             String dttm     = getEntryUtil().formatDate(request, entry);
             entryUrl = entryUrl.replace("\"", "\\\"");
 	    images.add(JsonUtil.map("url",JsonUtil.quote(url),
