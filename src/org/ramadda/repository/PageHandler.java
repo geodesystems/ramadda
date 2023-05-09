@@ -491,6 +491,7 @@ public class PageHandler extends RepositoryManager {
 					    //"/esdlcolortables.js",
 					    "/display/pointdata.js", 
 					    "/display/widgets.js",
+					    "/display/animation.js",					    
 					    "/display/colorby.js",
 					    "/display/glyph.js",
 					    "/display/display.js",
