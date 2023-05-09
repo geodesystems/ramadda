@@ -874,7 +874,7 @@ public class Request implements Constants, Cloneable {
         String  protocol;
         boolean alwaysHttps = repository.getAlwaysHttps();
         boolean sslEnabled  = repository.isSSLEnabled(this);
-        if (alwaysHttps && sslEnabled) {
+        if (sslEnabled) {
             port     = getRepository().getHttpsPort();
             protocol = "https";
         } else {
