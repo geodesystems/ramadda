@@ -1611,6 +1611,7 @@ public class EntryManager extends RepositoryManager {
         printRequest(request, group);
         boolean      doLatest    = request.get(ARG_LATEST, false);
         List<Entry>  children     = new ArrayList<Entry>();
+
 	if(outputHandler.requiresChildrenEntries(request, outputType, group)) {
 	    try {
 		getChildrenEntries(request,outputHandler,group, children);
@@ -1656,6 +1657,14 @@ public class EntryManager extends RepositoryManager {
 		System.err.println("E:" + children.get(i).getName());
 	    }
 	}
+	
+	if(request.getString(ARG_ORDERBY,"").equals(ORDERBY_NUMBER)) {
+	    List<Entry> tmp = EntryUtil.sortEntriesOnNumber(children, !request.get(ARG_ASCENDING,true));
+	    children.clear();
+	    children.addAll(tmp);
+	}
+
+
     }
 
     /**
@@ -9329,6 +9338,10 @@ public class EntryManager extends RepositoryManager {
 	    }
 	}
 
+
+	if(request.getString(ARG_ORDERBY,"").equals(ORDERBY_NUMBER)) {
+	    children = EntryUtil.sortEntriesOnNumber(children, !request.get(ARG_ASCENDING,true));
+	}
 
 	children =applyFilter(request,children,select);
         return parentEntry.getTypeHandler().postProcessEntries(request,
