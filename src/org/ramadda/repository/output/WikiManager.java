@@ -2785,6 +2785,19 @@ public class WikiManager extends RepositoryManager
 		    String entries = getProperty(wikiUtil,props,ATTR_ENTRIES,null);
 		    jsonUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT,
 					       JsonOutputHandler.OUTPUT_JSON_POINT.getId());
+		    String orderBy = getProperty(wikiUtil, props,"orderby",null);
+		    if(orderBy!=null)
+			jsonUrl+="&orderby=" + orderBy;
+		    String sortBy = getProperty(wikiUtil, props,"sortby",null);
+		    if(sortBy!=null)
+			jsonUrl+="&orderby=" + sortBy;		    
+		    String ascending = getProperty(wikiUtil, props,"ascending",null);
+		    if(ascending!=null)
+			jsonUrl+="&ascending=" + ascending;
+		    String sortDir = getProperty(wikiUtil, props,"sortdir",null);
+		    if(sortDir!=null)
+			jsonUrl+="&ascending=" + sortDir.equals("up");
+
 		    if(entries!=null) jsonUrl = HU.url(jsonUrl,ATTR_ENTRIES,entries);
 		}
 		//If there is an ancestor specified then we use the /search/do url
