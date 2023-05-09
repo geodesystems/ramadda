@@ -127,6 +127,12 @@ public class ServerInfo implements Constants {
     }
 
 
+    public ServerInfo(String url, Element element) {
+	this(element);
+	this.url = url;
+    }
+
+
     /**
      * _more_
      *
@@ -302,6 +308,12 @@ public class ServerInfo implements Constants {
         if (url != null) {
             return url;
         }
+
+	if(sslPort>0) {
+	    if(sslPort==443)
+		return "https://" + hostname + basePath;
+            return "https://" + hostname + basePath+":" + sslPort;
+	}
         if ((port == -1) || (port == 80)) {
             return "http://" + hostname + basePath;
         }
