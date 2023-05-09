@@ -169,6 +169,8 @@ public class JsonOutputHandler extends OutputHandler {
         } else {
             allEntries.addAll(children);
         }
+
+
         StringBuilder sb = new StringBuilder();
         if ((outputType != null) && outputType.equals(OUTPUT_JSON_POINT)) {
             makePointJson(request, group, allEntries, sb,doSort);
@@ -296,25 +298,12 @@ public class JsonOutputHandler extends OutputHandler {
                 }
             }
         }
-	if(sort)
+	if(sort) {
 	    entries = EntryUtil.sortEntriesOnDate(entries, false);
+	}
         List<String> fields     = new ArrayList<String>();
         boolean      remote     = request.get("remoteRequest", false);
         boolean      imagesOnly = request.get("imagesOnly", false);
-
-        /*      items.add(JsonUtil.quote(entry.getName()));
-        items.add(JsonUtil.quote(entry.getDescription()));
-        items.add(JsonUtil.quote(entry.getId()));
-        items.add(JsonUtil.quote(entry.getTypeHandler().getType()));
-        items.add(JsonUtil.quote(entry.getTypeHandler().getLabel()));
-        items.add(JsonUtil.quote(formatDate(entry.getStartDate())));
-        items.add(JsonUtil.quote(formatDate(entry.getEndDate())));
-        items.add(JsonUtil.quote(formatDate(entry.getCreateDate())));
-        items.add(JsonUtil.quote(request.getAbsoluteUrl(getPageHandler().getIconUrl(request, entry))));
-        items.add(JsonUtil.quote(getEntryManager().getEntryUrl(request, entry)));
-        */
-
-
         boolean addSnippets = request.get("addSnippets", false);
 
         addPointHeader(fields, "name", "Name", "string");
