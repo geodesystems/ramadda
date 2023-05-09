@@ -2209,8 +2209,6 @@ public class Seesv implements SeesvCommands {
                 new Arg("file", "File to join with", ATTR_TYPE, "file"),
                 new Arg("source_columns", "source key columns"),
 		new Arg("default_value", "default value")),
-        new Cmd(CMD_CROSS, "Make a cross product of 2 data files",
-                new Arg("file", "File to cross with", ATTR_TYPE, "file")),
         new Cmd(CMD_FUZZYJOIN, "Join the 2 files together using fuzzy matching logic",
 		ARG_LABEL,"Fuzzy Join",
                 new Arg("threshold", "Score threshold 0-100. Default:85. Higher number better match"),
@@ -2220,6 +2218,8 @@ public class Seesv implements SeesvCommands {
                 new Arg("source_columns", "source key columns"),
 		new Arg("default_value", "default value")),
 
+        new Cmd(CMD_CROSS, "Make a cross product of 2 data files",
+                new Arg("file", "File to cross with", ATTR_TYPE, "file")),
 
 
         new Cmd(CMD_NORMAL, "Normalize the strings",
