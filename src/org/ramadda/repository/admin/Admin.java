@@ -51,7 +51,8 @@ import java.sql.Statement;
 import java.text.DecimalFormat;
 
 import java.text.SimpleDateFormat;
-
+import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -88,6 +89,10 @@ public class Admin extends RepositoryManager {
 
     /**  */
     public static final String ACTION_LISTMISSING = "action.listmissing";
+
+    public static final String ACTION_LISTORPHANS = "action.listorphans";
+
+    public static final String ARG_DELETEORPHANS = "deleteorphans";    
 
     /** _more_ */
     public static final String ACTION_CLEARCACHE = "action.clearcache";
@@ -2620,6 +2625,74 @@ public class Admin extends RepositoryManager {
 
     }
 
+    public void listOrphans(Request request, Appendable sb)
+            throws Exception {
+	boolean delete = request.get(ARG_DELETEORPHANS,false);
+
+        Statement statement =
+            getDatabaseManager().select(
+					SqlUtil.comma(Tables.ENTRIES.COL_ID,
+						      Tables.ENTRIES.COL_PARENT_GROUP_ID),
+					Tables.ENTRIES.NAME,
+					null, getDatabaseManager().makeOrderBy(Tables.ENTRIES.COL_CREATEDATE, true));
+
+        SqlUtil.Iterator iter = getDatabaseManager().getIterator(statement);
+        ResultSet        results;
+        int              cnt        = 0;
+        int              orphanCnt        = 0;
+        int              deleteCnt        = 0;		
+        StringBuilder    buff       = new StringBuilder();
+	if(!delete)
+	    buff.append("<table><tr><td><b>Entry</b></td></td></tr>");
+
+	Entry root = getEntryManager().getRootEntry();
+        boolean even = true;
+        while ((results = iter.getNext()) != null) {
+            cnt++;
+            if ((cnt % 1000) == 0) {
+                System.err.println("cnt:" + cnt);
+            }
+            int    col = 1;
+            String id  = results.getString(col++);
+	    if(id.equals(root.getId())) continue;
+            String parentId  = results.getString(col++);	    
+            Entry  parent = getEntryManager().getEntry(request, parentId);
+	    if(parent!=null) continue;
+            even = !even;
+            Entry  entry = getEntryManager().getEntry(request, id);
+	    if(delete) {
+		//		if(deleteCnt++>100) break;
+		getEntryManager().deleteEntry(request, entry);
+		continue;
+	    }
+
+
+
+            String clazz = even
+                           ? "ramadda-row-even"
+                           : "ramadda-row-odd";
+            if (entry == null) {
+                buff.append("<tr class=" + clazz
+                            + "  valign=top><td>NULL Entry " + id
+                            + "</td></tr>");
+		continue;
+            } 
+
+	    orphanCnt++;
+	    buff.append("<tr class=" + clazz + " valign=top>"
+			+ HU.td(getEntryManager().getEntryLink(request, entry,  true, "")) +
+			"</tr>");
+        }
+	if(!delete) {
+	    buff.append("</table>");
+	    sb.append("Total entries: #" + cnt + "<br>");
+	    sb.append("Total orphan entries: #" + orphanCnt + "<br>");
+	} else {
+	    buff.append(getPageHandler().showDialogNote("Orphan entries deleted"));
+	}	    
+        sb.append(buff);
+    }
+    
 
     /**
      * _more_
@@ -2634,12 +2707,58 @@ public class Admin extends RepositoryManager {
 
         StringBuffer  sb         = new StringBuffer();
 
-        StringBuilder filePathSB = new StringBuilder();
-        filePathSB.append(HtmlUtils.sectionOpen(null, false));
-        filePathSB.append(HtmlUtils.h3("Change file paths"));
+	int[] cnt = {0};
+	BiConsumer<StringBuffer, String> header= (buff,label) -> {
+	    if(cnt[0]>0) buff.append("<hr>");
+	    cnt[0]++;
+	    buff.append(HU.center(HU.div(label,HU.cssClass("ramadda-heading"))));
+	};
+
+        StringBuffer  topSB         = new StringBuffer();
+
+	header.accept(topSB, "Caches");
+	request.formPostWithAuthToken(topSB, URL_ADMIN_MAINTENANCE, "");
+	topSB.append(HtmlUtils.submit(msg("Clear all caches"), ACTION_CLEARCACHE));
+	topSB.append(HtmlUtils.formClose());
+	
+
+	header.accept(topSB, "Clear Passwords");
+	request.formPostWithAuthToken(topSB, URL_ADMIN_MAINTENANCE, "");
+	topSB.append(HU.note("Note:  All users including you will have to reset their passwords. If you do not have email enabled then only the admin will be able to reset the passwords. So, if you do this then right away, while your session is active, go and change your password. If things go bad and you can't login at all see the  <a href=\"http://ramadda.org/repository/userguide/faq.html#faq1_cat1_6\">FAQ</a> post."));
+
+	topSB.append(HtmlUtils.submit(msg("Clear all passwords"), ACTION_PASSWORDS_CLEAR));
+	topSB.append(HtmlUtils.space(2));
+	topSB.append(HtmlUtils.labeledCheckbox(ARG_PASSWORDS_CLEAR_CONFIRM,
+					    "true", false,
+					    "Yes, really clear all passwords"));
+
+	topSB.append(HtmlUtils.formClose());
+
+	
+	header.accept(topSB, "Export Database");
+	request.formPostWithAuthToken(topSB, URL_ADMIN_MAINTENANCE, "");
+	topSB.append(HU.note("You can write out the database for backup or transfer to a new database")
+		  + "<br>"
+		  + HtmlUtils.submit(
+				     msg("Export the database"), ACTION_DUMPDB));
+
+	topSB.append(HtmlUtils.formClose());
+
+	header.accept(topSB, "Reindex Lucene Index");
+	request.formPostWithAuthToken(topSB, URL_ADMIN_MAINTENANCE, "");
+	topSB.append(HU.note("Reindex all deletes entire index. Reindex partial only in indexes entries not already indexed")
+		  + HtmlUtils.submit(msg("Reindex all"), ACTION_FULLINDEX)
+		  + HU.space(2)
+		  + HtmlUtils.submit(
+				     msg("Reindex partial"), ACTION_PARTIALINDEX));
+	topSB.append(HtmlUtils.formClose());
+
+
+
+        StringBuffer filePathSB = new StringBuffer();
+	header.accept(filePathSB,"Change file paths");
         request.formPostWithAuthToken(filePathSB, URL_ADMIN_MAINTENANCE, "");
-        filePathSB.append(
-            "Change the stored file path for all entries that match the following pattern");
+        filePathSB.append(HU.note("Change the stored file path for all entries that match the following pattern"));
         filePathSB.append(HtmlUtils.formTable());
         filePathSB.append(HtmlUtils.formEntry(msgLabel("File Pattern"),
                 HtmlUtils.input(ARG_CHANGEPATHS_PATTERN,
@@ -2655,27 +2774,35 @@ public class Admin extends RepositoryManager {
                                            ACTION_CHANGEPATHS));
         filePathSB.append(HtmlUtils.space(2));
         filePathSB.append(HtmlUtils.labeledCheckbox(ARG_CHANGEPATHS_CONFIRM, "true",
-						    false,"Yes, I really want to change all of the file paths"));
-        filePathSB.append(HtmlUtils.sectionClose());
-
+						    false,"Yes, really change all of the file paths"));
         filePathSB.append(HtmlUtils.formClose());
 
 
-        StringBuilder missingSB = new StringBuilder();
-        missingSB.append(HtmlUtils.sectionOpen(null, false));
-        missingSB.append(HtmlUtils.h3("List missing files"));
+        StringBuffer missingSB = new StringBuffer();
+	header.accept(missingSB,"List missing files");
         request.formPostWithAuthToken(missingSB, URL_ADMIN_MAINTENANCE, "");
-        missingSB.append("Skip pattern: "
-                         + HtmlUtils.input("pattern",
-                                           request.getString("pattern", ""),
-                                           HtmlUtils.SIZE_50));
-        missingSB.append("<br>");
-
+        missingSB.append(HtmlUtils.formTable());
+        HU.formEntry(missingSB,msgLabel("Skip pattern"),
+		     HtmlUtils.input("pattern",
+				     request.getString("pattern", ""),
+				     HtmlUtils.SIZE_50));
+        missingSB.append(HtmlUtils.formTableClose());
         missingSB.append(HtmlUtils.submit(msg("List missing files"),
                                           ACTION_LISTMISSING));
-        missingSB.append(HtmlUtils.sectionClose());
-        missingSB.append(HtmlUtils.formClose());
 
+
+        StringBuffer orphansSB = new StringBuffer();
+	header.accept(orphansSB,"List orphan entries");
+	orphansSB.append(HU.note("This lists all entries that don't have a parent entry. Normally this shouldn't happen but to due an occasional bug there can be entries that aren't part of the main hierarchy."));
+        request.formPostWithAuthToken(orphansSB, URL_ADMIN_MAINTENANCE, "");
+	orphansSB.append(HtmlUtils.submit(msg("List orphans"), ACTION_LISTORPHANS));
+	if (request.defined(ACTION_LISTORPHANS)) {
+	    orphansSB.append(HU.space(2));
+	    orphansSB.append(HtmlUtils.labeledCheckbox(ARG_DELETEORPHANS, "true",
+						       false,"Delete all of the below entries and any descendent entries"));
+	}
+
+        orphansSB.append(HtmlUtils.formClose());
 
 
 
@@ -2706,6 +2833,12 @@ public class Admin extends RepositoryManager {
             listMissingFiles(request, sb);
 
             return makeResult(request, "RAMADDA-Admin-Missing Files", sb);
+        } else if (request.defined(ACTION_LISTORPHANS)) {
+            sb.append(orphansSB);
+	    sb.append("<div style=margin-left:20px;>");
+            listOrphans(request, sb);
+	    sb.append("</div>");
+            return makeResult(request, "RAMADDA-Admin-Orphan Entries", sb);
         } else if (request.defined(ACTION_CHANGEPATHS)) {
             if (request.defined(ARG_CHANGEPATHS_PATTERN)) {
                 StringBuilder tmp = new StringBuilder();
@@ -2758,73 +2891,24 @@ public class Admin extends RepositoryManager {
 
 
 
-            request.formPostWithAuthToken(sb, URL_ADMIN_MAINTENANCE, "");
-
-            sb.append(
-                HtmlUtils.section(
-                    HtmlUtils.h3(msg("Caches"))
-                    + HtmlUtils.submit(
-                        msg("Clear all caches"), ACTION_CLEARCACHE)));
-            sb.append(HtmlUtils.formClose());
 
 
 
 
-            StringBuffer tmp = new StringBuffer();
-            tmp.append(HtmlUtils.submit(msg("Clear all passwords"),
-                                        ACTION_PASSWORDS_CLEAR));
-            tmp.append(HtmlUtils.space(2));
-            tmp.append(HtmlUtils.labeledCheckbox(ARG_PASSWORDS_CLEAR_CONFIRM,
-						 "true", false,
-						 "Yes, I really want to delete all passwords"));
-            tmp.append(HtmlUtils.br());
-            tmp.append(
-                getPageHandler().showDialogNote(
-                    "Note:  All users including you will have to reset their passwords. If you do not have email enabled then only the admin will be able to reset the passwords. So, if you do this then right away, while your session is active, go and change your password. If things go bad and you can't login at all see the  <a href=\"http://ramadda.org/repository/userguide/faq.html#faq1_cat1_6\">FAQ</a> post."));
-
-            request.formPostWithAuthToken(sb, URL_ADMIN_MAINTENANCE, "");
-            sb.append(HtmlUtils.section(HtmlUtils.h3(msg("Clear Passwords"))
-                                        + tmp.toString()));
-            sb.append(HtmlUtils.formClose());
 
 
-
-            request.formPostWithAuthToken(sb, URL_ADMIN_MAINTENANCE, "");
-            sb.append(
-                HtmlUtils.section(
-                    HtmlUtils.h3(msg("Export Database"))
-                    + msg("You can write out the database for backup or transfer to a new database")
-                    + "<br>"
-                    + HtmlUtils.submit(
-                        msg("Export the database"), ACTION_DUMPDB)));
-
-            sb.append(HtmlUtils.formClose());
-
-            request.formPostWithAuthToken(sb, URL_ADMIN_MAINTENANCE, "");
-            sb.append(
-                HtmlUtils.section(
-                    HtmlUtils.h3(msg("Reindex Lucene Index"))
-                    + "Reindex all deletes entire index. Reindex partial only in indexes entries not already indexed"
-                    + "<br>"
-                    + HtmlUtils.submit(msg("Reindex all"), ACTION_FULLINDEX)
-                    + HU.space(2)
-                    + HtmlUtils.submit(
-                        msg("Reindex partial"), ACTION_PARTIALINDEX)));
-            sb.append(HtmlUtils.formClose());
-
-
-
-
+            sb.append(topSB);
             sb.append(filePathSB);
             sb.append(missingSB);
+            sb.append(orphansSB);	    
 
             if (getRepository().getShutdownEnabled()) {
                 request.formPostWithAuthToken(sb, URL_ADMIN_MAINTENANCE, "");
-                sb.append(HtmlUtils.section(HtmlUtils.h3(msg("Shutdown"))
-                        + HtmlUtils.submit(msg("Shutdown server"), ACTION_SHUTDOWN)
-                        + HtmlUtils.space(2)
-					    + HtmlUtils.labeledCheckbox(ARG_SHUTDOWN_CONFIRM, "true", false,
-									"Yes, I really want to shutdown the server")));
+		header.accept(sb, "Shutdown");
+                sb.append(HtmlUtils.submit(msg("Shutdown server"), ACTION_SHUTDOWN)
+			  + HtmlUtils.space(2)
+			  + HtmlUtils.labeledCheckbox(ARG_SHUTDOWN_CONFIRM, "true", false,
+						      "Yes, really shutdown the server"));
                 sb.append(HtmlUtils.formClose());
             }
 

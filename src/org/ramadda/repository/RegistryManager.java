@@ -145,7 +145,7 @@ public class RegistryManager extends RepositoryManager {
                 String url = request.getString(ARG_REGISTRY_URL, "");
                 URL fullUrl =
                     new URL(
-                        HtmlUtils.url(
+                        HU.url(
                             url + getRepository().URL_INFO.getPath(),
                             new String[] { ARG_RESPONSE,
                                            RESPONSE_XML }));
@@ -160,7 +160,7 @@ public class RegistryManager extends RepositoryManager {
                                 "Failed to read information from:"
                                 + fullUrl));
                     } else {
-                        ServerInfo serverInfo = new ServerInfo(root);
+                        ServerInfo serverInfo = new ServerInfo(url,root);
                         serverInfo.setEnabled(true);
                         addRemoteServer(serverInfo, true);
 
@@ -175,20 +175,20 @@ public class RegistryManager extends RepositoryManager {
             }
 
             sb.append(request.formPost(URL_REGISTRY_REMOTESERVERS, ""));
-            sb.append(HtmlUtils.formTable());
-            sb.append(HtmlUtils.p());
+            sb.append(HU.formTable());
+            sb.append(HU.p());
 
             sb.append(
-                HtmlUtils.formEntry(
+                HU.formEntry(
                     msgLabel("URL"),
-                    HtmlUtils.input(
+                    HU.input(
                         ARG_REGISTRY_URL,
                         request.getString(ARG_REGISTRY_URL, ""),
-                        HtmlUtils.SIZE_60)));
-            sb.append(HtmlUtils.formTableClose());
-            sb.append(HtmlUtils.submit("Add New Server", ARG_REGISTRY_ADD));
-            sb.append(HtmlUtils.submit("Cancel", ARG_CANCEL));
-            sb.append(HtmlUtils.formClose());
+                        HU.SIZE_60)));
+            sb.append(HU.formTableClose());
+            sb.append(HU.submit("Add New Server", ARG_REGISTRY_ADD));
+            sb.append(HU.submit("Cancel", ARG_CANCEL));
+            sb.append(HU.formClose());
 
             return getAdmin().makeResult(request, "RAMADDA-Admin-Remote Servers", sb);
 
@@ -240,35 +240,31 @@ public class RegistryManager extends RepositoryManager {
             checkApi();
         }
 
-        sb.append(HtmlUtils.sectionOpen());
+	getPageHandler().sectionOpen(request, sb,"Remote Servers",false);
         sb.append(request.formPost(URL_REGISTRY_REMOTESERVERS, ""));
         sb.append(
-            HtmlUtils.buttons(
-                HtmlUtils.submit(msg("Change"), ARG_CHANGE),
-                HtmlUtils.submit(msg("Delete Selected"), ARG_DELETE),
-                HtmlUtils.submit(msg("Add New Server"), ARG_REGISTRY_ADD),
-                HtmlUtils.submit(
+            HU.buttons(
+                HU.submit(msg("Change"), ARG_CHANGE),
+                HU.submit(msg("Delete Selected"), ARG_DELETE),
+                HU.submit(msg("Add New Server"), ARG_REGISTRY_ADD),
+                HU.submit(
                     msg("Reload from Registry Servers"),
                     ARG_REGISTRY_RELOAD)));
-        sb.append(HtmlUtils.open(HtmlUtils.TAG_UL));
+        sb.append(HU.open(HU.TAG_UL));
         List<ServerInfo> remoteServers = getRemoteServers();
-        sb.append(HtmlUtils.br());
+        sb.append(HU.br());
 
-        sb.append(HtmlUtils.open(HtmlUtils.TAG_TABLE));
+        sb.append(HU.open(HU.TAG_TABLE));
         int idCnt = 0;
-        sb.append(
-            HtmlUtils
-                .row(HtmlUtils
-                    .cols(HtmlUtils.space(2) + HtmlUtils.b(msg("Select"))
-                          + HtmlUtils.space(2), HtmlUtils.space(2)
-                              + HtmlUtils.b(msg("Enabled"))
-                              + HtmlUtils.space(2), HtmlUtils.space(2)
-                                  + HtmlUtils.b(msg("Repository"))
-                                  + HtmlUtils.space(2))));
+        sb.append(HU.row(HU.cols(HU.b(msg("Select"))
+				 + HU.space(2),  HU.b(msg("Enabled"))
+				 + HU.space(2), HU.space(2)
+				 + HU.b(msg("Repository"))
+				 + HU.space(2))));
 
 
         for (ServerInfo serverInfo : remoteServers) {
-            sb.append(HtmlUtils.hidden(ARG_REGISTRY_SERVER,
+            sb.append(HU.hidden(ARG_REGISTRY_SERVER,
                                        serverInfo.getId()));
             String argBase    = serverInfo.getArgBase();
             String cbx1Id     = ARG_REGISTRY_SELECTED + argBase;
@@ -277,41 +273,42 @@ public class RegistryManager extends RepositoryManager {
             String urlFldId   = ARG_REGISTRY_URL + argBase;
 
             String call1 =
-                HtmlUtils.attr(
-                    HtmlUtils.ATTR_ONCLICK,
-                    HtmlUtils.call(
-                        "HtmlUtils.checkboxClicked",
-                        HtmlUtils.comma(
-                            "event", HtmlUtils.squote(ARG_REGISTRY_SELECTED),
-                            HtmlUtils.squote(cbx1Id))));
+                HU.attr(
+                    HU.ATTR_ONCLICK,
+                    HU.call(
+                        "HU.checkboxClicked",
+                        HU.comma(
+                            "event", HU.squote(ARG_REGISTRY_SELECTED),
+                            HU.squote(cbx1Id))));
 
             String call2 =
-                HtmlUtils.attr(
-                    HtmlUtils.ATTR_ONCLICK,
-                    HtmlUtils.call(
-                        "HtmlUtils.checkboxClicked",
-                        HtmlUtils.comma(
-                            "event", HtmlUtils.squote(ARG_REGISTRY_ENABLED),
-                            HtmlUtils.squote(cbx2Id))));
+                HU.attr(
+                    HU.ATTR_ONCLICK,
+                    HU.call(
+                        "HU.checkboxClicked",
+                        HU.comma(
+                            "event", HU.squote(ARG_REGISTRY_ENABLED),
+                            HU.squote(cbx2Id))));
 
-            String cbx1 = HtmlUtils.checkbox(cbx1Id, "true", false,
-                                             HtmlUtils.id(cbx1Id) + call1);
+            String cbx1 = HU.checkbox(cbx1Id, "true", false,
+                                             HU.id(cbx1Id) + call1);
 
-            String cbx2 = HtmlUtils.checkbox(cbx2Id, "true",
+            String cbx2 = HU.checkbox(cbx2Id, "true",
                                              serverInfo.getEnabled(),
-                                             HtmlUtils.id(cbx2Id) + call2);
-            sb.append(HtmlUtils.row(HtmlUtils.cols(cbx1, cbx2,
-                    HtmlUtils.insetDiv(HtmlUtils.input(labelFldId,
-                        serverInfo.getLabel(), HtmlUtils.SIZE_50), 5, 10, 5,
-                            10), HtmlUtils.insetDiv(HtmlUtils.input(urlFldId,
-                                serverInfo.getUrl(), HtmlUtils.SIZE_50), 5,
+                                             HU.id(cbx2Id) + call2);
+            sb.append(HU.row(HU.cols(cbx1, cbx2,
+                    HU.insetDiv(HU.input(labelFldId,
+                        serverInfo.getLabel(), HU.SIZE_50), 5, 10, 5,
+                            10), HU.insetDiv(HU.input(urlFldId,
+                                serverInfo.getUrl(), HU.SIZE_50), 5,
                                     10, 5, 10))));
         }
 
-        sb.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
-        sb.append(HtmlUtils.close(HtmlUtils.TAG_UL));
-        sb.append(HtmlUtils.formClose());
-        sb.append(HtmlUtils.sectionClose());
+        sb.append(HU.close(HU.TAG_TABLE));
+        sb.append(HU.close(HU.TAG_UL));
+        sb.append(HU.formClose());
+
+	getPageHandler().sectionClose(request, sb);
 
 
         return getAdmin().makeResult(request, msg("RAMADDA-Admin-Remote Servers"), sb);
@@ -414,29 +411,29 @@ public class RegistryManager extends RepositoryManager {
     public void addAdminSettings(Request request, StringBuffer csb)
             throws Exception {
         String helpLink =
-            HtmlUtils.href(getRepository().getUrlBase()
+            HU.href(getRepository().getUrlBase()
                            + "/userguide/remoteservers.html", msg("Help"),
-                               HtmlUtils.attr(HtmlUtils.ATTR_TARGET,
+                               HU.attr(HU.ATTR_TARGET,
                                    "_help"));
         csb.append(
-            HtmlUtils.row(
-                HtmlUtils.colspan(msgHeader("Server Registry"), 2)));
+            HU.row(
+                HU.colspan(msgHeader("Server Registry"), 2)));
 
 
-	HtmlUtils.formEntry(csb,  "",
-			    HtmlUtils.labeledCheckbox(
+	HU.formEntry(csb,  "",
+			    HU.labeledCheckbox(
 						      PROP_REGISTRY_ENABLED, "true", isEnabledAsServer(),
 						      msg("Enable this server to be a registry for other servers")));
 
         csb.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 "",
                 msgLabel("Servers this server registers with")
-                + HtmlUtils.space(2) + helpLink));
+                + HU.space(2) + helpLink));
         csb.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 "",
-                HtmlUtils.textArea(
+                HU.textArea(
                     PROP_REGISTRY_SERVERS,
                     getRepository().getProperty(PROP_REGISTRY_SERVERS, ""),
                     5, 60)));
@@ -721,7 +718,7 @@ public class RegistryManager extends RepositoryManager {
     public void registerWithServer(String url) throws Exception {
         ServerInfo serverInfo = getRepository().getServerInfo();
         url = url + getRepository().URL_REGISTRY_ADD.getPath();
-        URL theUrl = new URL(HtmlUtils.url(url, ARG_REGISTRY_CLIENT,
+        URL theUrl = new URL(HU.url(url, ARG_REGISTRY_CLIENT,
                                            serverInfo.getUrl()));
         try {
             String  contents = getStorageManager().readSystemResource(theUrl);
@@ -877,7 +874,7 @@ public class RegistryManager extends RepositoryManager {
      */
     private void fetchRemoteServers(String serverUrl) throws Exception {
         serverUrl = serverUrl + getRepository().URL_REGISTRY_LIST.getPath();
-        serverUrl = HtmlUtils.url(serverUrl, ARG_RESPONSE, RESPONSE_XML);
+        serverUrl = HU.url(serverUrl, ARG_RESPONSE, RESPONSE_XML);
         String contents =
             getStorageManager().readSystemResource(new URL(serverUrl));
         Element root = XmlUtil.getRoot(contents);
@@ -955,7 +952,7 @@ public class RegistryManager extends RepositoryManager {
             throws Exception {
 
         String serverUrl =
-            HtmlUtils.url(
+            HU.url(
                 serverInfo.getUrl()
                 + getRepository().URL_REGISTRY_INFO.getPath(), new String[] {
                     ARG_RESPONSE,
@@ -1055,6 +1052,10 @@ public class RegistryManager extends RepositoryManager {
 
 
         StringBuffer sb = new StringBuffer();
+	getPageHandler().sectionOpen(request, sb,"Repository Registry List",false);
+
+
+
         for (int i = 0; i < 2; i++) {
             boolean          evenRow = false;
             boolean          didone  = false;
@@ -1066,7 +1067,7 @@ public class RegistryManager extends RepositoryManager {
                     continue;
                 }
                 if ( !didone) {
-                    sb.append(HtmlUtils.p());
+                    sb.append(HU.p());
                     if (i == 0) {
                         sb.append(msgHeader("Registered Servers"));
                     } else {
@@ -1074,27 +1075,27 @@ public class RegistryManager extends RepositoryManager {
                     }
                     sb.append("<table cellspacing=\"0\" cellpadding=\"4\">");
                     sb.append(
-                        HtmlUtils.row(
-                            HtmlUtils.headerCols(
+                        HU.row(
+                            HU.headerCols(
                                 new String[] { msg("Repository"),
                             msg("URL"), msg("Is Registry?") })));
                 }
                 didone = true;
                 seen.add(serverInfo);
-                sb.append(HtmlUtils.row(HtmlUtils.cols(new String[] {
+                sb.append(HU.row(HU.cols(new String[] {
                     serverInfo.getLabel(),
-                    HtmlUtils.href(serverInfo.getUrl(), serverInfo.getUrl()),
+                    HU.href(serverInfo.getUrl(), serverInfo.getUrl()),
                     (serverInfo.getIsRegistry()
                      ? msg("Yes")
-                     : msg("No")) }), HtmlUtils.cssClass(evenRow
+                     : msg("No")) }), HU.cssClass(evenRow
                         ? "listrow1"
                         : "listrow2")));
                 String desc = serverInfo.getDescription();
-                if ((desc != null) && (desc.trim().length() > 0)) {
-                    desc = HtmlUtils.makeShowHideBlock(msg("Description"),
+                if (stringDefined(desc)) {
+                    desc = HU.makeShowHideBlock(msg("Description"),
                             desc, false);
-                    sb.append(HtmlUtils.row(HtmlUtils.colspan(desc, 3),
-                                            HtmlUtils.cssClass(evenRow
+                    sb.append(HU.row(HU.colspan(desc, 3),
+                                            HU.cssClass(evenRow
                             ? "listrow1"
                             : "listrow2")));
                 }
@@ -1105,10 +1106,11 @@ public class RegistryManager extends RepositoryManager {
             }
             if (isEnabledAsServer()) {
                 if ((i == 0) && !didone) {
-                    sb.append(msg("No servers are registered"));
+                    sb.append("This RAMADDA can act as a registry server but no servers are currently registered");
                 }
             }
         }
+	getPageHandler().sectionClose(request, sb);
         Result result = new Result(msg("Registry List"), sb);
 
         return result;
