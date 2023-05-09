@@ -830,8 +830,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	}
 	
 
+
 	String desc = entry.getDescription();
-	if (desc!=null && isWikiText(desc)) {
+	if (stringDefined(desc) && isWikiText(desc) && !desc.trim().equals("<wiki>")) {
 	    if(!request.anyDefined(ARG_DB_CONFIRM,ARG_DB_APPLY,ARG_DB_CREATE,ARG_DB_DELETE,ARG_DB_COPY,ARG_DB_EDIT,ARG_DB_EDITFORM,ARG_MESSAGE,ARG_DB_ACTION,ARG_WHAT,ARG_DB_VIEW,ARG_DB_ENTRY)) {
 		return null;
 	    }
@@ -849,6 +850,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
             return handleForm(request, entry, null, true, doAnonForm);
         }
+
 
 
 
@@ -877,6 +879,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
             return handleForm(request, entry, null, true, false);
         }
+
 
         if (request.exists(ARG_DB_EDITSQL) || view.equals(VIEW_EDIT)) {
             if ( !canEdit) {
@@ -952,7 +955,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             return handleQuery(request, entry, action,
                                Clause.eq(COL_ID, entry.getId()), false);
         }
-
         return handleSearchForm(request, entry);
     }
 
