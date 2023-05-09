@@ -4063,11 +4063,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 
-
-	    console.log("Records:" + records.length);
-
-
-
+	    if(this.animationControl) {
+		this.animationControl.applyLabelTemplate(records);
+	    }
             return this.handleResult("filterData",records);
         },
 	//TODO: this will support a handler pattern that allows for insertion

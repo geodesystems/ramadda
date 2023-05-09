@@ -33,6 +33,7 @@ function DisplayAnimation(display, enabled,attrs) {
 	baseDomId:attrs.baseDomId,
 	labelSize:display.getProperty("animationLabelSize","12pt"),
 	labelStyle:display.getProperty("animationLabelStyle",""),
+	labelTemplate:display.getProperty("animationLabelTemplate"),
         running: false,
         inAnimation: false,
         begin: null,
@@ -818,12 +819,25 @@ function DisplayAnimation(display, enabled,attrs) {
 	    return HU.span([STYLE,HU.css("font-size",this.labelSize)+this.labelStyle],label);
 	},
 
+	applyLabelTemplate: function(records) {
+	    if(!this.labelTemplate) return;
+	    if(records &&records.length ) {
+		let record = records[0];
+		let label = this.display.applyRecordTemplate(record, null,null,this.labelTemplate);
+		this.label.html(this.makeLabel(label));
+	    }
+	},
+
 	updateLabels: function() {
 	    if(!this.label) return;
-	    console.log("update labels");
 	    if(!this.makeSlider) {
 		this.label.html(HU.leftCenterRight(this.makeLabel(this.formatAnimationDate(this.dateMin)),this.makeLabel("# " +this.tickCount), this.makeLabel(this.formatAnimationDate(this.dateMax))));
 	    } else {
+		if(this.labelTemplate) {
+		    //If there is a labelTemplate then the display will call applyLabelTemplate when
+		    //it has filtered its records
+		    return;
+		}
 		if (this.mode == MODE_FRAME && this.begin.getTime() == this.end.getTime()) {
 		    this.label.html(this.makeLabel(this.formatAnimationDate(this.begin)));
 		} else {
