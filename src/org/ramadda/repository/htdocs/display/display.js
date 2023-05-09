@@ -1739,6 +1739,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{label:'Animation'},
 	{p:'doAnimation',ex:true},
 	{p:'animationMode',ex:'sliding|frame|cumulative'},
+	{p:'animationuseIndex',ex:'true'},
 	{p:'animationHighlightRecord',ex:true},
 	{p:'animationHighlightRecordList',ex:true},
 	{p:'animationPropagateRecordSelection',ex:true,tt:'If the animation is in frame mode then propagate the date'},
@@ -1746,6 +1747,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'acceptEventAnimationChange',ex:false},
 	{p:'acceptDateRangeChange',ex:true},
 	{p:'animationDateFormat',ex:'yyyy'},
+	{p:'animationLabelTemplate'},
 	{p:'animationLabelSize',ex:'12pt'},
 	{p:'animationStyle'},				
 	{p:'animationTooltipShow',ex:'true'},
@@ -3768,8 +3770,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 //	    if(debug)   this.logMsg("checking dates");
 	    records = records.filter((record,idx)=>{
                 let date = record.getDate();
-		if(!date) return true;
-		return this.dateInRange(date,idx<5 && debug);
+		return this.dateInRange(date,idx,idx<5 && debug);
 	    });
 	    if(debug)   this.logMsg("filter Fields:" + this.filters.length +" #records:" + records.length);
 
@@ -4062,6 +4063,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 
+
+	    console.log("Records:" + records.length);
 
 
 
@@ -7507,10 +7510,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             return this.hasDate;
         },
-        dateInRange: function(date, debug) {
+        dateInRange: function(date, idx, debug) {
 	    if(debug) {
 		this.logMsg("dateInRange: date:" + date +" minDate:" + this.minDateObj +" maxDate:" + this.maxDateObj);
 	    }
+
+//	    if(this.minDateObj)console.log("index:" +this.minDateObj.index +" " +this.maxDateObj.index)
+	    if(this.minDateObj &&this.minDateObj.isIndex) {
+//		console.dir('min',this.minDateObj.index,idx);
+		if(idx<this.minDateObj.index) return false;
+	    }
+	    if(this.maxDateObj &&this.maxDateObj.isIndex) {
+//		console.dir('max',this.maxDateObj.index,idx);
+		if(idx>this.maxDateObj.index) return false;
+		return true;
+	    }	    
 
             if (date != null) {
 		if(this.dateRangeDoDay && this.minDateObj) {
@@ -7790,7 +7804,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             for (let rowIdx = 0; rowIdx < records.length; rowIdx++) {
                 let record = records[rowIdx];
                 let date = record.getDate();
-                if (!this.dateInRange(date)) {
+                if (!this.dateInRange(date,rowIdx)) {
 		    continue;
 		}
                 rowCnt++;
