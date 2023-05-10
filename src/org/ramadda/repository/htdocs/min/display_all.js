@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue May  9 11:41:34 MDT 2023";
+var build_date="RAMADDA build date: Wed May 10 08:39:39 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -58037,7 +58037,8 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
     const ID_CONTAINER = "container";
     const ID_GLOBE = "globe";
     const ID_POPUP = "popup";
-    const ID_POSITION_BUTTON = "positionbutton";        
+    const ID_POSITION_BUTTON = "positionbutton";
+    const ID_ROTATE_BUTTON = "rotatebutton";            
     if(!properties.width && properties.globeWidth) {
 	properties.width = properties.globeWidth;
     }
@@ -58148,6 +58149,8 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	{p:'geojson',tt:'base layer map or used for chloropleth display',ex:'us_states.geojson|us_counties.geojson|countries.geojson|entryid|url'},
 	{p:'polygonNameField',tt:'Field to match with the name field in the geojson map, e.g., state'},
 	{p:'polygonAltitude',d:0.01},
+
+	{p:'autoRotate',ex:'true'},
 
 	{p:'selectedDiv',ex:'div id to show selected record'},
 	{p:'doPopup',d:true,ex:'',tt:''},
@@ -58546,19 +58549,17 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    }
 	},
 	createGlobe:function() {
-
 	    this.imageField = this.getFieldById(null, this.getImageField());
-	    
-
-
 	    let _this = this;
 	    let popup = HU.div([CLASS,"display-three-globe-popup",ID,this.domId(ID_POPUP),STYLE,HU.css("display","none","position","absolute","left","60%","top","0px")],"");
 	    let pos = HU.div([TITLE,"Select Position", CLASS,"ramadda-clickable", ID,this.domId(ID_POSITION_BUTTON),STYLE,HU.css("position","absolute","left","10px","top","10px","z-index","1000")],HU.getIconImage("fa-globe"));
+	    let rotate = HU.div([TITLE,"Toggle rotate", CLASS,"ramadda-clickable", ID,this.domId(ID_ROTATE_BUTTON),STYLE,HU.css("position","absolute","left","10px","top","30px","z-index","1000")],HU.getIconImage("fa-rotate"));	    
 	    let w  = parseInt(this.getGlobeWidth());
 	    let h = parseInt(this.getGlobeHeight());
 
 	    let globe = HU.div([STYLE,HU.css("position","relative")],
 			       pos +
+			       rotate+
 			       popup +
 			       HU.div(['style',HU.css('width',(w+2)+'px')+this.getGlobeStyle(''),ID, this.domId(ID_GLOBE)]));
 	    let html = HU.center(globe);
@@ -58568,6 +58569,11 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		this.jq(ID_POPUP).hide();
 	    });
 		
+
+	    this.jq(ID_ROTATE_BUTTON).click(()=>{
+		let scope = this.getControls();
+		scope.autoRotate = !scope.autoRotate;
+	    });
 
 	    this.jq(ID_POSITION_BUTTON).click(()=>{
 		let html = "";
@@ -58711,6 +58717,10 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		    return;
 		}
 		this.setPosition(pos);
+	    }
+
+	    if(this.getAutoRotate()) {
+		this.getControls().autoRotate = true;
 	    }
 
 	    this.callHook("createGlobe");
