@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed May 10 08:39:39 MDT 2023";
+var build_date="RAMADDA build date: Wed May 10 09:02:32 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -58100,6 +58100,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	{p:"globeBackgroundImage",ex:"night-sky.png|white.png|lightblue.png|black.png"},
 	{p:'backgroundColor',d:'#CAE1FF',ex:'#ffffff'},
 	{p:"initialPosition",ex:"North America|South America|Europe|Asia|Africa|Australia|South Pole|North Pole"},
+	{p:"initialZoom",ex:"1",tt:'lower number more zoomed'},
 	{p:'linked',ex:true,tt:"Link location with other globes"},
 	{p:'linkGroup',ex:'some_name',tt:"Globe groups to link with"},
 	{p:'mapColor',d:'blue'},	
@@ -58591,6 +58592,9 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 
 	    let domGlobe = document.getElementById(this.domId(ID_GLOBE));
 	    this.globe = Globe()(domGlobe);	    	    
+	    if(Utils.isDefined(this.getInitialZoom())) {
+		this.globe.pointOfView({ lat: 0, lng: 0, altitude:  this.getInitialZoom()});
+	    }
 	    this.globe.onGlobeReady(()=>this.addLights());
 	    this.globe.width(w);
 	    this.globe.height(h);
@@ -58721,6 +58725,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 
 	    if(this.getAutoRotate()) {
 		this.getControls().autoRotate = true;
+//		console.dir(this.getControls())
 	    }
 
 	    this.callHook("createGlobe");
