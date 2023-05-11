@@ -129,6 +129,7 @@ public interface SeesvCommands {
     public static final String CMD_CLONE="-clone";
     public static final String CMD_MERGE="-merge";
     public static final String CMD_SPLIT="-split";
+    public static final String CMD_ROLL="-roll";    
     public static final String CMD_SPLAT="-splat";
     public static final String CMD_SHIFT="-shift";
     public static final String CMD_SLICE="-slice";

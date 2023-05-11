@@ -167,6 +167,69 @@ public abstract class Converter extends Processor {
     }
 
 
+
+    /**
+     * Class description
+     *
+     * @version        $version$, Fri, Jan 9, '15
+     * @author         Jeff McWhirter
+     */
+    public static class Roller extends Converter {
+
+        /**
+         *
+         * @param ctx _more_
+         * @param cols _more_
+         */
+        public Roller(TextReader ctx, List<String> cols) {
+            super(cols);
+        }
+
+	List<Row> prev= new ArrayList<Row>();
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+	    if(rowCnt++==0) return row;
+            List<Integer> indices = getIndices(ctx);
+	    Row templateRow = new Row();
+	    for(int i=0;i<row.size();i++) {
+		if(!row.indexOk(i)) continue;
+		if(!indices.contains(i)) {
+		    templateRow.add(row.get(i));
+		}
+	    }
+	    int baseIndex = indices.get(0);
+	    for(int i:indices) {
+		if(!row.indexOk(i)) continue;
+		Object v = row.get(i);
+		Row newRow = new Row(templateRow);
+		newRow.insert(baseIndex,v);
+		prev.add(newRow);
+	    }
+	    if(prev.size()>0) {
+		row = prev.get(0);
+		prev.remove(0);
+		return row;
+	    }
+	    return null;
+        }
+
+        public void finish(TextReader ctx) throws Exception {
+	    if(prev.size()>0) {
+		finishRows(ctx, prev);
+	    }
+	}
+
+    }
+
+
+
+
     /**
      * Class description
      *

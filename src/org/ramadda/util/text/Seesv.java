@@ -2145,6 +2145,8 @@ public class Seesv implements SeesvCommands {
 		new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("delimiter"),
 		new Arg(ARG_NAME, "new column name")),
+        new Cmd(CMD_ROLL, "Roll columns down into rows",
+                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
         new Cmd(CMD_SHIFT, "Shift columns over by count for given rows",
                 new Arg("rows", "Rows to apply to", ATTR_TYPE, TYPE_ROWS),
                 new Arg(ARG_COLUMN, "Column to start at", ATTR_TYPE, TYPE_COLUMN),
@@ -4665,6 +4667,13 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });	
 
+	defineFunction(CMD_ROLL, 1,(ctx,args,i) -> {
+		List<String> cols  = getCols(args.get(++i));
+		ctx.addProcessor(new Converter.Roller(ctx, cols));
+		return i;
+	    });
+
+
 	defineFunction(CMD_SPLAT, 4,(ctx,args,i) -> {
 		String key       = args.get(++i);
 		String value     = args.get(++i);
@@ -5216,8 +5225,13 @@ public class Seesv implements SeesvCommands {
 	
 
 	defineFunction(CMD_OUTPUT,1,(ctx,args,i) -> {
-		if(!commandLine) throw new IllegalArgumentException(CMD_OUTPUT+" only enabled for command line usage");
 		String file  = args.get(++i);
+		if(inputFiles!=null && inputFiles.size()>0) {
+		    File tmp = new File(inputFiles.get(0));
+		    file = file.replace("${name}", IOUtil.stripExtension(tmp.getName()));
+		}
+		if(!commandLine) throw new IllegalArgumentException(CMD_OUTPUT+" only enabled for command line usage");
+
 		try {
 		    checkOkToWrite(file);
 		} catch(Exception exc) {
@@ -5365,8 +5379,9 @@ public class Seesv implements SeesvCommands {
      * @return _more_
      * @throws Exception _more_
      */
-    public boolean parseArgs(List<String> args, TextReader ctx,    List<String> files)
+    public boolean parseArgs(List<String> args, TextReader ctx,    final List<String> files)
 	throws Exception {
+	this.inputFiles = files;
 	boolean            addFiles      = files.size() == 0;
 	Filter.FilterGroup subFilter     = null;
 	boolean            doArgs        = false;
