@@ -51,7 +51,7 @@
 </style>
 
 <h2>RAMADDA SeeSV</h2>
-<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Values'>Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric'>Numeric</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc'>Misc</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 290 commands for manipulating CSV and other types of files</center>
+<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Values'>Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric'>Numeric</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc'>Misc</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 292 commands for manipulating CSV and other types of files</center>
 
 :pagesearch selector=.seesv-item hideAll=.seesv-hide
 
@@ -1206,7 +1206,7 @@ How many rows to skip<br>
 Column indices. Can include ranges, e.g. 0-5<br>
 </ul>
 </div></div></ul><br class=seesv-hide><div class=seesv-hide><hr><a name='Slice and Dice'></a><b style='font-size:120%;'>Slice and Dice</b><br>
-Add/remove columns, rows, restructure, etc</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-columns'><i>-columns</i>: Only include the given columns</a><li> <a href='#-notcolumns'><i>-notcolumns</i>: Don't include given columns</a><li> <a href='#-firstcolumns'><i>-firstcolumns</i>: Move columns to beginning</a><li> <a href='#-columnsbefore'><i>-columnsbefore</i>: Move columns before the given column</a><li> <a href='#-columnsafter'><i>-columnsafter</i>: Move columns after given column</a><li> <a href='#-delete'><i>-delete</i>: Remove the columns</a><li> <a href='#-cut'><i>-cut</i>: Drop rows</a><li> <a href='#-include'><i>-include</i>: Only include specified rows</a><li> <a href='#-rows_first'><i>-rows_first</i>: Move rows to the top that match the pattern</a><li> <a href='#-rows_last'><i>-rows_last</i>: Move rows to the end of list that match the pattern</a><li> <a href='#-copy'><i>-copy</i>: Copy column</a><li> <a href='#-add'><i>-add</i>: Add new columns</a><li> <a href='#-insert'><i>-insert</i>: Insert new column values</a><li> <a href='#-concat'><i>-concat</i>: Create a new column from the given columns</a><li> <a href='#-concatrows'><i>-concatrows</i>: Concatenate multiple rows into a single row</a><li> <a href='#-combine'><i>-combine</i>: Combine columns with the delimiter. deleting columns</a><li> <a href='#-combineinplace'><i>-combineinplace</i>: Combine columns with the delimiter</a><li> <a href='#-merge'><i>-merge</i>: Apply operators to columns</a><li> <a href='#-split'><i>-split</i>: Split the column</a><li> <a href='#-splat'><i>-splat</i>: Create a new column from the values in the given column</a><li> <a href='#-shift'><i>-shift</i>: Shift columns over by count for given rows</a><li> <a href='#-slice'><i>-slice</i>: Slide columns down and over to append new rows to the bottom</a><li> <a href='#-addcell'><i>-addcell</i>: Add a new cell at row/column</a><li> <a href='#-deletecell'><i>-deletecell</i>: Delete cell at row/column</a><li> <a href='#-clone'><i>-clone</i>: Clone each row N times</a><li> <a href='#-appendrows'><i>-appendrows</i>: Only include specified rows</a><li> <a href='#-mergerows'><i>-mergerows</i>: Merge rows</a><li> <a href='#-rowop'><i>-rowop</i>: Apply an operator to columns and merge rows</a><li> <a href='#-rotate'><i>-rotate</i>: Rotate the data</a><li> <a href='#-flip'><i>-flip</i>: Reverse the order of the rows except the header</a><li> <a href='#-makefields'><i>-makefields</i>: Make new columns from data values</a><li> <a href='#-furl'><i>-furl</i>: Use values in header to make new row</a><li> <a href='#-explode'><i>-explode</i>: Make separate files based on value of column</a><li> <a href='#-join'><i>-join</i>: Join the 2 files together</a><li> <a href='#-cross'><i>-cross</i>: Make a cross product of 2 data files</a><li> <a href='#-fuzzyjoin'><i>-fuzzyjoin</i>: Join the 2 files together using fuzzy matching logic</a><li> <a href='#-normal'><i>-normal</i>: Normalize the strings</a><li> <a href='#-countunique'><i>-countunique</i>: Count number of unique values</a><li> <a href='#-dissect'><i>-dissect</i>: Make fields based on patterns</a><li> <a href='#-keyvalue'><i>-keyvalue</i>: Make fields from key/value pairs, e.g. name1=value1 name2=value2 ...</a><li> <a href='#-firstchars'><i>-firstchars</i>: Extract first N characters and create new column</a><li> <a href='#-lastchars'><i>-lastchars</i>: Extract last N characters and create new column</a><li> <a href='#-between_indices'><i>-between_indices</i>: Extract characters between the 2 indices</a><li> <a href='#-fromheading'><i>-fromheading</i>: Extract column values from headings</a></ul></div></div><div class=seesv-item>
+Add/remove columns, rows, restructure, etc</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-columns'><i>-columns</i>: Only include the given columns</a><li> <a href='#-notcolumns'><i>-notcolumns</i>: Don't include given columns</a><li> <a href='#-firstcolumns'><i>-firstcolumns</i>: Move columns to beginning</a><li> <a href='#-columnsbefore'><i>-columnsbefore</i>: Move columns before the given column</a><li> <a href='#-columnsafter'><i>-columnsafter</i>: Move columns after given column</a><li> <a href='#-delete'><i>-delete</i>: Remove the columns</a><li> <a href='#-cut'><i>-cut</i>: Drop rows</a><li> <a href='#-include'><i>-include</i>: Only include specified rows</a><li> <a href='#-rows_first'><i>-rows_first</i>: Move rows to the top that match the pattern</a><li> <a href='#-rows_last'><i>-rows_last</i>: Move rows to the end of list that match the pattern</a><li> <a href='#-copy'><i>-copy</i>: Copy column</a><li> <a href='#-add'><i>-add</i>: Add new columns</a><li> <a href='#-insert'><i>-insert</i>: Insert new column values</a><li> <a href='#-concat'><i>-concat</i>: Create a new column from the given columns</a><li> <a href='#-concatrows'><i>-concatrows</i>: Concatenate multiple rows into a single row</a><li> <a href='#-combine'><i>-combine</i>: Combine columns with the delimiter. deleting columns</a><li> <a href='#-combineinplace'><i>-combineinplace</i>: Combine columns with the delimiter</a><li> <a href='#-merge'><i>-merge</i>: Apply operators to columns</a><li> <a href='#-split'><i>-split</i>: Split the column</a><li> <a href='#-splat'><i>-splat</i>: Create a new column from the values in the given column</a><li> <a href='#-roll'><i>-roll</i>: Roll columns down into rows</a><li> <a href='#-shift'><i>-shift</i>: Shift columns over by count for given rows</a><li> <a href='#-slice'><i>-slice</i>: Slide columns down and over to append new rows to the bottom</a><li> <a href='#-addcell'><i>-addcell</i>: Add a new cell at row/column</a><li> <a href='#-deletecell'><i>-deletecell</i>: Delete cell at row/column</a><li> <a href='#-clone'><i>-clone</i>: Clone each row N times</a><li> <a href='#-appendrows'><i>-appendrows</i>: Only include specified rows</a><li> <a href='#-mergerows'><i>-mergerows</i>: Merge rows</a><li> <a href='#-rowop'><i>-rowop</i>: Apply an operator to columns and merge rows</a><li> <a href='#-rotate'><i>-rotate</i>: Rotate the data</a><li> <a href='#-flip'><i>-flip</i>: Reverse the order of the rows except the header</a><li> <a href='#-makefields'><i>-makefields</i>: Make new columns from data values</a><li> <a href='#-furl'><i>-furl</i>: Use values in header to make new row</a><li> <a href='#-explode'><i>-explode</i>: Make separate files based on value of column</a><li> <a href='#-join'><i>-join</i>: Join the 2 files together</a><li> <a href='#-fuzzyjoin'><i>-fuzzyjoin</i>: Join the 2 files together using fuzzy matching logic</a><li> <a href='#-cross'><i>-cross</i>: Make a cross product of 2 data files</a><li> <a href='#-normal'><i>-normal</i>: Normalize the strings</a><li> <a href='#-countunique'><i>-countunique</i>: Count number of unique values</a><li> <a href='#-dissect'><i>-dissect</i>: Make fields based on patterns</a><li> <a href='#-keyvalue'><i>-keyvalue</i>: Make fields from key/value pairs, e.g. name1=value1 name2=value2 ...</a><li> <a href='#-firstchars'><i>-firstchars</i>: Extract first N characters and create new column</a><li> <a href='#-lastchars'><i>-lastchars</i>: Extract last N characters and create new column</a><li> <a href='#-between_indices'><i>-between_indices</i>: Extract characters between the 2 indices</a><li> <a href='#-fromheading'><i>-fromheading</i>: Extract column values from headings</a></ul></div></div><div class=seesv-item>
 <a name='-columns'></a><div class=command> <i><a href='#-columns'>-columns</a></i>  &lt;columns&gt; </div><div class=command-block>Only include the given columns<br class=seesv-hide>
 <ul>
 <li> <i>columns</i>:
@@ -1384,6 +1384,12 @@ Key column<br>
 new column name<br>
 </ul>
 </div></div><div class=seesv-item>
+<a name='-roll'></a><div class=command> <i><a href='#-roll'>-roll</a></i>  &lt;columns&gt; </div><div class=command-block>Roll columns down into rows<br class=seesv-hide>
+<ul>
+<li> <i>columns</i>:
+Column indices. Can include ranges, e.g. 0-5<br>
+</ul>
+</div></div><div class=seesv-item>
 <a name='-shift'></a><div class=command> <i><a href='#-shift'>-shift</a></i>  &lt;rows&gt;  &lt;column&gt;  &lt;count&gt; </div><div class=command-block>Shift columns over by count for given rows<br class=seesv-hide>
 <ul>
 <li> <i>rows</i>:
@@ -1517,6 +1523,22 @@ source key columns<br>
 default value<br>
 </ul>
 </div></div><div class=seesv-item>
+<a name='-fuzzyjoin'></a><div class=command> <i><a href='#-fuzzyjoin'>-fuzzyjoin</a></i>  &lt;threshold&gt;  &lt;key columns&gt;  &lt;value_columns&gt;  &lt;file&gt;  &lt;source_columns&gt;  &lt;default_value&gt; </div><div class=command-block>Join the 2 files together using fuzzy matching logic<br class=seesv-hide>
+<ul>
+<li> <i>threshold</i>:
+Score threshold 0-100. Default:85. Higher number better match<br>
+<li> <i>key columns</i>:
+Numeric column numbers of the file to join with<br>
+<li> <i>value_columns</i>:
+numeric columns of the values to join<br>
+<li> <i>file</i>:
+File to join with<br>
+<li> <i>source_columns</i>:
+source key columns<br>
+<li> <i>default_value</i>:
+default value<br>
+</ul>
+</div></div><div class=seesv-item>
 <a name='-cross'></a><div class=command> <i><a href='#-cross'>-cross</a></i>  &lt;file&gt; </div><div class=command-block>Make a cross product of 2 data files<br class=seesv-hide>
 <ul>
 <li> <i>file</i>:
@@ -1554,22 +1576,6 @@ Would give:
 <tr><td style='padding:4px;border:1px solid #ccc;' >d</td><td style='padding:4px;border:1px solid #ccc;' >3</td></tr>
 </table><br>
 <p></div></div><div class=seesv-item>
-<a name='-fuzzyjoin'></a><div class=command> <i><a href='#-fuzzyjoin'>-fuzzyjoin</a></i>  &lt;threshold&gt;  &lt;key columns&gt;  &lt;value_columns&gt;  &lt;file&gt;  &lt;source_columns&gt;  &lt;default_value&gt; </div><div class=command-block>Join the 2 files together using fuzzy matching logic<br class=seesv-hide>
-<ul>
-<li> <i>threshold</i>:
-Score threshold 0-100. Default:85. Higher number better match<br>
-<li> <i>key columns</i>:
-Numeric column numbers of the file to join with<br>
-<li> <i>value_columns</i>:
-numeric columns of the values to join<br>
-<li> <i>file</i>:
-File to join with<br>
-<li> <i>source_columns</i>:
-source key columns<br>
-<li> <i>default_value</i>:
-default value<br>
-</ul>
-</div></div><div class=seesv-item>
 <a name='-normal'></a><div class=command> <i><a href='#-normal'>-normal</a></i>  &lt;columns&gt; </div><div class=command-block>Normalize the strings<br class=seesv-hide>
 <ul>
 <li> <i>columns</i>:
@@ -2114,7 +2120,7 @@ Gives
 <li> <i>what</i>:
 firstname|lastname|fullname|etc<br>
 <li> <i>columns</i>:
-Columns to change. Of none given then add the fake value<br>
+Columns to change. If none given then add the fake value<br>
 </ul>
 The -faker command uses the <a href="https://github.com/DiUS/java-faker">Java Faker</a> package
 and takes any of the below commands:
@@ -2395,7 +2401,7 @@ Unit-milliseconds,seconds,minutes,hours,days values:milliseconds,seconds,minutes
 <,<=,=,!=,>=,> values:<,<=,=,!=,>=,> <br>
 </ul>
 </div></div></ul><br class=seesv-hide><div class=seesv-hide><hr><a name='Numeric'></a><b style='font-size:120%;'>Numeric</b><br>
-</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-scale'><i>-scale</i>: Set value={value+delta1}*scale+delta2</a><li> <a href='#-makenumber'><i>-makenumber</i>: Make number</a><li> <a href='#-generate'><i>-generate</i>: Add row values</a><li> <a href='#-decimals'><i>-decimals</i>: Round decimals</a><li> <a href='#-fuzz'><i>-fuzz</i>: fuzz the number. if num_places less than zero than that is the # of decimals. else that is the lower digits to fuzz out</a><li> <a href='#-ceil'><i>-ceil</i>: Set the max value</a><li> <a href='#-floor'><i>-floor</i>: Set the min value</a><li> <a href='#-delta'><i>-delta</i>: Add column that is the delta from the previous step</a><li> <a href='#-runningsum'><i>-runningsum</i>: Make a running sum of the column values</a><li> <a href='#-operator'><i>-operator</i>: Apply the operator to the given columns and create new one</a><li> <a href='#-compare'><i>-compare</i>: Add a true/false column comparing the values</a><li> <a href='#-round'><i>-round</i>: Round the values</a><li> <a href='#-abs'><i>-abs</i>: Make absolute values</a><li> <a href='#-clip'><i>-clip</i>: Clip the number to within the range</a><li> <a href='#-rand'><i>-rand</i>: make random value</a><li> <a href='#-even'><i>-even</i>: Add true if the column starts with an even number</a><li> <a href='#-sum'><i>-sum</i>: Sum values keying on key column value. If no value columns specified then do a count</a><li> <a href='#-pivot'><i>-pivot</i>: Make a pivot table</a><li> <a href='#-summary'><i>-summary</i>: count/sum/average/min/max values keying on key column value. If no value columns specified then do a count</a><li> <a href='#-histogram'><i>-histogram</i>: Make a histogram with the given column and bins</a><li> <a href='#-percent'><i>-percent</i>: Add columns together. Replace with their percentage</a><li> <a href='#-increase'><i>-increase</i>: Calculate percent increase</a><li> <a href='#-average'><i>-average</i>: Calculate a moving average</a><li> <a href='#-ranges'><i>-ranges</i>: Create a new column with the (string) ranges where the value falls in</a><li> <a href='#-bytes'><i>-bytes</i>: Convert suffixed values (e.g., 2 MB) into the number</a><li> <a href='#-column_and'><i>-column_and</i>: And values</a><li> <a href='#-colum_nor'><i>-colum_nor</i>: Or values</a><li> <a href='#-column_not'><i>-column_not</i>: Not value</a><li> <a href='#-check'><i>-check</i>: Check that the values are numbers</a></ul></div></div><div class=seesv-item>
+</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-scale'><i>-scale</i>: Set value={value+delta1}*scale+delta2</a><li> <a href='#-makenumber'><i>-makenumber</i>: Make number</a><li> <a href='#-generate'><i>-generate</i>: Add row values</a><li> <a href='#-decimals'><i>-decimals</i>: Round decimals</a><li> <a href='#-fuzz'><i>-fuzz</i>: fuzz the number. if num_places less than zero than that is the # of decimals. else that is the lower digits to fuzz out</a><li> <a href='#-ceil'><i>-ceil</i>: Set the max value</a><li> <a href='#-floor'><i>-floor</i>: Set the min value</a><li> <a href='#-delta'><i>-delta</i>: Add column that is the delta from the previous step</a><li> <a href='#-runningsum'><i>-runningsum</i>: Make a running sum of the column values</a><li> <a href='#-operator'><i>-operator</i>: Apply the operator to the given columns and create new one</a><li> <a href='#-compare'><i>-compare</i>: Add a true/false column comparing the values</a><li> <a href='#-round'><i>-round</i>: Round the values</a><li> <a href='#-abs'><i>-abs</i>: Make absolute values</a><li> <a href='#-clip'><i>-clip</i>: Clip the number to within the range</a><li> <a href='#-rand'><i>-rand</i>: make random value</a><li> <a href='#-even'><i>-even</i>: Add true if the column starts with an even number</a><li> <a href='#-sum'><i>-sum</i>: Sum values keying on key column value. If no value columns specified then do a count</a><li> <a href='#-pivot'><i>-pivot</i>: Make a pivot table</a><li> <a href='#-summary'><i>-summary</i>: count/sum/average/min/max values keying on key column value. If no value columns specified then do a count</a><li> <a href='#-histogram'><i>-histogram</i>: Make a histogram with the given column and bins</a><li> <a href='#-percent'><i>-percent</i>: Add columns together. Replace with their percentage</a><li> <a href='#-increase'><i>-increase</i>: Calculate percent increase</a><li> <a href='#-diff'><i>-diff</i>: Difference from previous value</a><li> <a href='#-average'><i>-average</i>: Calculate a moving average</a><li> <a href='#-ranges'><i>-ranges</i>: Create a new column with the (string) ranges where the value falls in</a><li> <a href='#-bytes'><i>-bytes</i>: Convert suffixed values (e.g., 2 MB) into the number</a><li> <a href='#-column_and'><i>-column_and</i>: And values</a><li> <a href='#-colum_nor'><i>-colum_nor</i>: Or values</a><li> <a href='#-column_not'><i>-column_not</i>: Not value</a><li> <a href='#-check'><i>-check</i>: Check that the values are numbers</a></ul></div></div><div class=seesv-item>
 <a name='-scale'></a><div class=command> <i><a href='#-scale'>-scale</a></i>  &lt;column&gt;  &lt;delta1&gt;  &lt;scale&gt;  &lt;delta2&gt; </div><div class=command-block>Set value={value+delta1}*scale+delta2<br class=seesv-hide>
 <ul>
 <li> <i>column</i>:
@@ -2735,6 +2741,14 @@ Columns to add<br>
 <li> <i>column</i>:
 <br>
 <li> <i>how far back</i>:
+<br>
+</ul>
+</div></div><div class=seesv-item>
+<a name='-diff'></a><div class=command> <i><a href='#-diff'>-diff</a></i>  &lt;column&gt;  &lt;how far back (default 1)&gt; </div><div class=command-block>Difference from previous value<br class=seesv-hide>
+<ul>
+<li> <i>column</i>:
+<br>
+<li> <i>how far back (default 1)</i>:
 <br>
 </ul>
 </div></div><div class=seesv-item>
@@ -3301,7 +3315,7 @@ url2.html,contents of url2
 
 
 <p></div></div></ul><br class=seesv-hide><div class=seesv-hide><hr><a name='Output'></a><b style='font-size:120%;'>Output</b><br>
-</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-print'><i>-print</i>: Delimited output</a><li> <a href='#-printdelim'><i>-printdelim</i>: Print with delimited output</a><li> <a href='#-o'><i>-o</i>: Write to the given file (command line only)</a><li> <a href='#-comment'><i>-comment</i>: Add a comment to the output</a><li> <a href='#-outputprefix'><i>-outputprefix</i>: Specify text to add to the beginning of the file</a><li> <a href='#-highlight'><i>-highlight</i>: Highlight the columns</a><li> <a href='#-background'><i>-background</i>: Background the columns</a><li> <a href='#-printheader'><i>-printheader</i>: Print header</a><li> <a href='#-raw'><i>-raw</i>: Print the file raw</a><li> <a href='#-table'><i>-table</i>: Print HTML table and stats</a><li> <a href='#-cols'><i>-cols</i>: Set the width of the columns for output. Use with -p</a><li> <a href='#-stats'><i>-stats</i>: Print summary stats</a><li> <a href='#-torecord'><i>-torecord</i>: Print records</a><li> <a href='#-toxml'><i>-toxml</i>: Generate XML</a><li> <a href='#-tojson'><i>-tojson</i>: Generate JSON</a><li> <a href='#-tourl'><i>-tourl</i>: Generate DB publish urls</a><li> <a href='#-todb'><i>-todb</i>: Write to Database</a><li> <a href='#-template'><i>-template</i>: Apply the template to make the output</a><li> <a href='#-subd'><i>-subd</i>: Subdivide into different files</a><li> <a href='#-maptiles'><i>-maptiles</i>: Tile the data on lat/lon</a><li> <a href='#-chunk'><i>-chunk</i>: Make a number of output files with a max number of rows</a><li> <a href='#-addheader'><i>-addheader</i>: Add the RAMADDA point properties</a><li> <a href='#-db'><i>-db</i>: Generate the RAMADDA db xml from the header</a><li> <a href='#-dbprops'><i>-dbprops</i>: Print to stdout props for db generation</a><li> <a href='#-write'><i>-write</i>: Write the contents of a row to a named file</a><li> <a href='#-fields'><i>-fields</i>: Print the fields</a><li> <a href='#-run'><i>-run</i>: </a><li> <a href='#-progress'><i>-progress</i>: Show progress</a><li> <a href='#-debugrows'><i>-debugrows</i>: Debug # rows</a><li> <a href='#-script'><i>-script</i>: Generate the script to call</a><li> <a href='#-pointheader'><i>-pointheader</i>: Generate the RAMADDA point properties</a><li> <a href='#-args'><i>-args</i>: Generate the CSV file commands</a><li> <a href='#-typexml'><i>-typexml</i>: Generate the type xml</a></div><div class=seesv-item>
+</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-print'><i>-print</i>: Delimited output</a><li> <a href='#-printdelim'><i>-printdelim</i>: Print with delimited output</a><li> <a href='#-o'><i>-o</i>: Write to the given file (command line only)</a><li> <a href='#-comment'><i>-comment</i>: Add a comment to the output</a><li> <a href='#-outputprefix'><i>-outputprefix</i>: Specify text to add to the beginning of the file</a><li> <a href='#-highlight'><i>-highlight</i>: Highlight the columns</a><li> <a href='#-background'><i>-background</i>: Background the columns</a><li> <a href='#-printheader'><i>-printheader</i>: Print header</a><li> <a href='#-raw'><i>-raw</i>: Print the file raw</a><li> <a href='#-table'><i>-table</i>: Print HTML table and stats</a><li> <a href='#-cols'><i>-cols</i>: Set the width of the columns for output. Use with -p</a><li> <a href='#-stats'><i>-stats</i>: Print summary stats</a><li> <a href='#-torecord'><i>-torecord</i>: Print records</a><li> <a href='#-script'><i>-script</i>: Generate script</a><li> <a href='#-toxml'><i>-toxml</i>: Generate XML</a><li> <a href='#-tojson'><i>-tojson</i>: Generate JSON</a><li> <a href='#-tourl'><i>-tourl</i>: Generate DB publish urls</a><li> <a href='#-todb'><i>-todb</i>: Write to Database</a><li> <a href='#-template'><i>-template</i>: Apply the template to make the output</a><li> <a href='#-subd'><i>-subd</i>: Subdivide into different files</a><li> <a href='#-maptiles'><i>-maptiles</i>: Tile the data on lat/lon</a><li> <a href='#-chunk'><i>-chunk</i>: Make a number of output files with a max number of rows</a><li> <a href='#-addheader'><i>-addheader</i>: Add the RAMADDA point properties</a><li> <a href='#-db'><i>-db</i>: Generate the RAMADDA db xml from the header</a><li> <a href='#-dbprops'><i>-dbprops</i>: Print to stdout props for db generation</a><li> <a href='#-write'><i>-write</i>: Write the contents of a row to a named file</a><li> <a href='#-fields'><i>-fields</i>: Print the fields</a><li> <a href='#-run'><i>-run</i>: </a><li> <a href='#-progress'><i>-progress</i>: Show progress</a><li> <a href='#-debugrows'><i>-debugrows</i>: Debug # rows</a><li> <a href='#-pointheader'><i>-pointheader</i>: Generate the RAMADDA point properties</a><li> <a href='#-args'><i>-args</i>: Generate the CSV file commands</a><li> <a href='#-typexml'><i>-typexml</i>: Generate the type xml</a></div><div class=seesv-item>
 <a name='-print'></a><div class=command> <i><a href='#-print'>-print</a></i> </div><div class=command-block>Delimited output<br class=seesv-hide>
 </div></div><div class=seesv-item>
 <a name='-printdelim'></a><div class=command> <i><a href='#-printdelim'>-printdelim</a></i>  &lt;delimiter&gt; </div><div class=command-block>Print with delimited output<br class=seesv-hide>
@@ -3360,6 +3374,8 @@ Column width<br>
 <a name='-stats'></a><div class=command> <i><a href='#-stats'>-stats</a></i> </div><div class=command-block>Print summary stats<br class=seesv-hide>
 </div></div><div class=seesv-item>
 <a name='-torecord'></a><div class=command> <i><a href='#-torecord'>-torecord</a></i> </div><div class=command-block>Print records<br class=seesv-hide>
+</div></div><div class=seesv-item>
+<a name='-script'></a><div class=command> <i><a href='#-script'>-script</a></i> </div><div class=command-block>Generate script<br class=seesv-hide>
 </div></div><div class=seesv-item>
 <a name='-toxml'></a><div class=command> <i><a href='#-toxml'>-toxml</a></i>  &lt;outer tag&gt;  &lt;inner tag&gt; </div><div class=command-block>Generate XML<br class=seesv-hide>
 <ul>
@@ -3613,8 +3629,6 @@ How often to print<br>
 <li> <i>rows</i>:
 # of rows<br>
 </ul>
-</div></div><div class=seesv-item>
-<a name='-script'></a><div class=command> <i><a href='#-script'>-script</a></i> </div><div class=command-block>Generate the script to call<br class=seesv-hide>
 </div></div><div class=seesv-item>
 <a name='-pointheader'></a><div class=command> <i><a href='#-pointheader'>-pointheader</a></i> </div><div class=command-block>Generate the RAMADDA point properties<br class=seesv-hide>
 </div></div><div class=seesv-item>
