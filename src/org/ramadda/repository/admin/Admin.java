@@ -18,6 +18,7 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
+import org.ramadda.util.WikiUtil;
 
 import org.ramadda.util.sql.Clause;
 
@@ -92,7 +93,6 @@ public class Admin extends RepositoryManager {
 
     public static final String ACTION_LISTORPHANS = "action.listorphans";
 
-    public static final String ARG_DELETEORPHANS = "deleteorphans";    
 
     /** _more_ */
     public static final String ACTION_CLEARCACHE = "action.clearcache";
@@ -2627,8 +2627,6 @@ public class Admin extends RepositoryManager {
 
     public void listOrphans(Request request, Appendable sb)
             throws Exception {
-	boolean delete = request.get(ARG_DELETEORPHANS,false);
-
         Statement statement =
             getDatabaseManager().select(
 					SqlUtil.comma(Tables.ENTRIES.COL_ID,
@@ -2641,10 +2639,7 @@ public class Admin extends RepositoryManager {
         int              cnt        = 0;
         int              orphanCnt        = 0;
         int              deleteCnt        = 0;		
-        StringBuilder    buff       = new StringBuilder();
-	if(!delete)
-	    buff.append("<table><tr><td><b>Entry</b></td></td></tr>");
-
+	List<Entry> orphans = new ArrayList<Entry>();
 	Entry root = getEntryManager().getRootEntry();
         boolean even = true;
         while ((results = iter.getNext()) != null) {
@@ -2660,37 +2655,12 @@ public class Admin extends RepositoryManager {
 	    if(parent!=null) continue;
             even = !even;
             Entry  entry = getEntryManager().getEntry(request, id);
-	    if(delete) {
-		//		if(deleteCnt++>100) break;
-		getEntryManager().deleteEntry(request, entry);
-		continue;
-	    }
-
-
-
-            String clazz = even
-                           ? "ramadda-row-even"
-                           : "ramadda-row-odd";
-            if (entry == null) {
-                buff.append("<tr class=" + clazz
-                            + "  valign=top><td>NULL Entry " + id
-                            + "</td></tr>");
-		continue;
-            } 
-
+	    orphans.add(entry);
 	    orphanCnt++;
-	    buff.append("<tr class=" + clazz + " valign=top>"
-			+ HU.td(getEntryManager().getEntryLink(request, entry,  true, "")) +
-			"</tr>");
         }
-	if(!delete) {
-	    buff.append("</table>");
-	    sb.append("Total entries: #" + cnt + "<br>");
-	    sb.append("Total orphan entries: #" + orphanCnt + "<br>");
-	} else {
-	    buff.append(getPageHandler().showDialogNote("Orphan entries deleted"));
-	}	    
-        sb.append(buff);
+	sb.append("Total entries: #" + cnt + "<br>");
+	sb.append("Total orphan entries: #" + orphans.size() + "<br>");
+	sb.append(getWikiManager().makeTableTree(request, new WikiUtil(),new Hashtable(), orphans));
     }
     
 
@@ -2796,12 +2766,6 @@ public class Admin extends RepositoryManager {
 	orphansSB.append(HU.note("This lists all entries that don't have a parent entry. Normally this shouldn't happen but to due an occasional bug there can be entries that aren't part of the main hierarchy."));
         request.formPostWithAuthToken(orphansSB, URL_ADMIN_MAINTENANCE, "");
 	orphansSB.append(HtmlUtils.submit(msg("List orphans"), ACTION_LISTORPHANS));
-	if (request.defined(ACTION_LISTORPHANS)) {
-	    orphansSB.append(HU.space(2));
-	    orphansSB.append(HtmlUtils.labeledCheckbox(ARG_DELETEORPHANS, "true",
-						       false,"Delete all of the below entries and any descendent entries"));
-	}
-
         orphansSB.append(HtmlUtils.formClose());
 
 
