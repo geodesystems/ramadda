@@ -1793,6 +1793,7 @@ public class Entry implements Cloneable {
      * @return  true if they are equal
      */
     public boolean equals(Object o) {
+	if(o==null) return false;
         if ( !o.getClass().equals(getClass())) {
             return false;
         }
