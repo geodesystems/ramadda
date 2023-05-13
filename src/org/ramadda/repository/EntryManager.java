@@ -1938,7 +1938,7 @@ public class EntryManager extends RepositoryManager {
 					     ARG_SAVENEXT));
 
 
-            String deleteButton = (((entry != null) && entry.isTopEntry())
+            String deleteButton = (((entry != null) && isTopEntry(entry))
                                    ? ""
                                    : HU.submit(msg("Delete"),
 					       ARG_DELETE,
@@ -2887,9 +2887,7 @@ public class EntryManager extends RepositoryManager {
                 }
             }
 
-            if (entry.isTopEntry()) {
-                //fatalError(request,"Cannot edit top-level folder");
-            }
+
             Date[] dateRange = request.getDateRange(ARG_FROMDATE, ARG_TODATE,
 						    new Date());
             String newName = request.getString(ARG_NAME, entry.getLabel());
@@ -3612,9 +3610,14 @@ public class EntryManager extends RepositoryManager {
 
 
 
+    public boolean isTopEntry(Entry entry) {
+	return getRootEntry().getId().equals(entry.getId());
+    }
+
+
 
     public boolean okToDelete(Request request, Entry entry) throws Exception {
-	if(getRootEntry().getId().equals(entry.getId())) return false;
+	if(isTopEntry(entry)) return false;
 	//        if (entry.isTopEntry()) {return false;}
 	if(!getAccessManager().canDoDelete(request, entry)) {
 	    return false;
@@ -3740,7 +3743,7 @@ public class EntryManager extends RepositoryManager {
                 throw new RepositoryUtil.MissingEntryException(
 							       "Could not find entry:" + id);
             }
-            if (entry.isTopEntry()) {
+            if (isTopEntry(entry)) {
 		return new Result("Entry Delete", getPageHandler().makeEntryPage(request, entry, "Entry delete",
 								     getPageHandler().showDialogError("Cannot delete top-level folder")));
             }
@@ -4883,7 +4886,7 @@ public class EntryManager extends RepositoryManager {
                 throw new RepositoryUtil.MissingEntryException(
 							       "Could not find entry:" + id);
             }
-            if (entry.isTopEntry()) {
+            if (isTopEntry(entry)) {
                 StringBuilder sb = new StringBuilder();
                 sb.append(
 			  getPageHandler().showDialogNote(
