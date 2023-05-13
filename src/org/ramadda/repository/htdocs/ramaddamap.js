@@ -3345,7 +3345,12 @@ RepositoryMap.prototype = {
 
 
     getVisibilityCheckbox:function(ramaddaId) { 
-	return $('#' + "visible_" + this.mapId + "_" + ramaddaId);
+	let cbx =  $('#' + "visible_" + this.mapId + "_" + ramaddaId);
+	//Check for the _ id problem
+	if(cbx.length==0) {
+	    cbx =  $('#' + "visible_" + this.mapId + "_" + ramaddaId.replace(/-/g,'_'));
+	}
+	return cbx;
     },
 
     searchMarkers:  function(text) {
@@ -3860,7 +3865,7 @@ RepositoryMap.prototype = {
 
     isLayerVisible:  function(id, parentId) {
         //        let cbx =   $(':input[id*=\"' + "visible_" + this.mapId +"_" + id+'\"]');
-        let cbx = $('#' + "visible_" + this.mapId + "_" + id);
+        let cbx = this.getVisibilityCheckbox(id);
         if (cbx.length == 0 && parentId != null) cbx = $('#' + "visible_" + this.mapId + "_" + parentId);
         if (cbx.length == 0) return true;
         return cbx.is(':checked');
