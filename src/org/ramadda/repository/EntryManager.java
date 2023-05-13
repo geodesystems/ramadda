@@ -4825,11 +4825,12 @@ public class EntryManager extends RepositoryManager {
         entries = getAccessManager().filterEntries(request, entries);
         Entry group = null;
         for (Entry entry : entries) {
+	    Entry parent = entry.getParentEntry();
+	    if(parent==null) continue;
             if (group == null) {
-                group = entry.getParentEntry();
-            } else if ( !group.equals(entry.getParentEntry())) {
+                group = parent;
+	    } else if ( !group.equals(parent)) {
                 group = null;
-
                 break;
             }
         }
