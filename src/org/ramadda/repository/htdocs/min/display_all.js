@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri May 12 17:39:03 MDT 2023";
+var build_date="RAMADDA build date: Sun May 14 07:57:31 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -31300,7 +31300,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{p:'textRequired',d:false},
         {p:'searchText',d: '',tt:'Initial search text'},
 	{p:'searchPrefix',ex:'name:, contents:, path:'},
-        {p:'showMetadata',d: true},
+        {p:'showMetadata',d: false},
 	{p:'metadataTypes', d:'enum_tag:Tag,content.keyword:Keyword,thredds.variable:Variable'},
         {p:'showTags',d: true},	
 	{p:'tagPopupLimit',d: 25,tt:'When do we show the tag popup' },		
@@ -31325,6 +31325,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         metadata: {},
         metadataLoading: {},
 	ctor: function() {
+	    console.log("smtd1-" + this.getShowMetadata());
 	    if (this.getShowMetadata() && this.getShowSearchSettings()) {
 		let metadataTypesAttr = this.getMetadataTypes();
 		//look for type:value:label, or type:label,
@@ -32012,6 +32013,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
             extra += HU.div([ATTR_ID, this.getDomId(ID_TYPEFIELDS)], "");
 
+	    console.log("smtd2-" + this.getShowMetadata());
             if (this.getShowMetadata()) {
 		let metadataBlock = "";
                 for (let i = 0; i < this.metadataTypeList.length; i++) {
@@ -32647,7 +32649,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 
 	    let titles = [];
 	    let contents = [];
-	    this.getDisplayTypes("list,images,timeline,map").split(",").forEach(type=>{
+	    this.getDisplayTypes("list").split(",").forEach(type=>{
 		if(type=="list") {
 		    titles.push("List");
 		    contents.push(this.getEntriesTree(entries));

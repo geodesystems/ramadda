@@ -443,7 +443,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{p:'textRequired',d:false},
         {p:'searchText',d: '',tt:'Initial search text'},
 	{p:'searchPrefix',ex:'name:, contents:, path:'},
-        {p:'showMetadata',d: true},
+        {p:'showMetadata',d: false},
 	{p:'metadataTypes', d:'enum_tag:Tag,content.keyword:Keyword,thredds.variable:Variable'},
         {p:'showTags',d: true},	
 	{p:'tagPopupLimit',d: 25,tt:'When do we show the tag popup' },		
@@ -1790,7 +1790,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 
 	    let titles = [];
 	    let contents = [];
-	    this.getDisplayTypes("list,images,timeline,map").split(",").forEach(type=>{
+	    this.getDisplayTypes("list").split(",").forEach(type=>{
 		if(type=="list") {
 		    titles.push("List");
 		    contents.push(this.getEntriesTree(entries));

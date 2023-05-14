@@ -2,7 +2,7 @@
 +skip
 Hi, this is RAMADDA's wiki text. The wiki tag above tells RAMADDA to treat this description as wiki
 The +section, +row, +col etc tags do the layout
-Documentation here: https://ramadda.org/repository/userguide/wikitext.html
+Documentation here: https://ramadda.org/repository/userguide/wiki/wikitext.html
 -skip
 +section title="Welcome to your RAMADDA" #
 +row
@@ -27,7 +27,8 @@ Geode Systems
 -col
 -row
 -section
-+section label="Your Content" #
+----
++section label="Your Content" 
 :note Here are some folders to get you started. Feel free to add, delete or rename any of this content.
 <p>
 {{tree showtoggle="false"}}
