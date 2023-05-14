@@ -11,7 +11,7 @@ Documentation here: https://ramadda.org/repository/userguide/wiki/wikitext.html
 Thanks for trying RAMADDA.
 :br
 Keep in touch by joining the <a href=https://groups.google.com/g/ramadda>Google Groups mailing list</a>. If you have any problems or suggestions please send a note to <a href="mailto:jeff.mcwhirter@gmail.com">jeff.mcwhirter@gmail.com</a>
-<br>
+:br
 Jeff McWhirter
 :br
 Geode Systems
@@ -19,7 +19,7 @@ Geode Systems
 -col
 +col-md-8
 * Use the <i class="fas fa-cog"></i> icon above to <a  href="/repository/user/login">login</a> and <a href="/repository/admin/settings">administer</a> your RAMADDA
-* <a href="/repository/entry/form?entryid=${topid}">Edit</a> this page - <a target="_docs" href="https://ramadda.org/repository/userguide/wikitext.html">Documentation</a>
+* <a href="/repository/entry/form?entryid=${topid}">Edit</a> this page - <a target="_docs" href="https://ramadda.org/repository/userguide/wiki/wikitext.html">Documentation</a>
 * Lots of ways to view and edit this page with the <i class="fas fa-caret-down"></i> menu above
 * Create new <a href="/repository/entry/form?group=${topid}&type=group">folders</a> or upload <a href="/repository/entry/form?group=${topid}&type=file">files</a>
 * <a href="/repository/search/form">Search</a> this repository
