@@ -1,0 +1,69 @@
+<services>
+<!-- Set a property service.test2=/path/to/executable.sh in a .properties file in your RAMADDA home dir -->
+    <service 
+       id="test_service1"  
+       command="${service.test2}" 
+       label="Run example service 1" 
+       icon="/icons/pdf.png" >
+    <description><![CDATA[Runs an example service]]></description>
+<!-- Define the command line arguments -->
+
+<!--
+Each arg tag has the following attributes:
+type (string, flag, enumeration, value,int, entry, etc)
+name - the url argument id 
+value - a value to use - may contain ${...} macros
+label
+help - shown in the form
+values - list of comma separated enum values
+prefix - added to the arg list if the value is defined
+-->
+
+
+<!-- Always have 'any value' as an arg -->
+       <arg value="any value"/>
+
+<!-- specify type='enumeration' for a pull down list. Add the "none" item -->
+       <arg name="fruit1" type="enumeration" values="apple,banana,orange" addNone="true"/>
+
+<!-- specify value:label pairs -->
+       <arg name="fruit2" type="enumeration" values="apple:Apple label,banana:Banana label,orange:Orange label"/>
+
+<!-- Specify a value attribute where the macro '${value}' is replaced with the selected value -->
+       <arg name="fruit3" type="enumeration" values="apple,banana,orange" value="fruit=${value}"/>
+
+<!-- Input field -->
+       <arg name="string1" type="string" size="50"  label="Some string" help="Help text goes after the field"/>
+
+<!-- If the string is defined then also add the prefix as an argument -->
+       <arg name="string2" type="string" size="50"  label="Some string" prefix="-string"/>
+
+<!-- use an int type-->
+       <arg name="length" type="int" default="5"  label="Length"/>
+
+
+<!-- If checkbox is selected then add the value as an arg-->
+       <arg name="flag1" type="flag"   label="Some flag" value="flag1 selected"/>
+
+<!-- If checkbox is selected then add the "-someflag" "flag1" -->
+       <arg name="flag2" type="flag"   label="Some flag" prefix="-someflag" value="flag1"/>
+
+<!-- Args of type entry match up with specific entry types in ramadda -->
+       <arg value="${entry.file}" type="entry" entryType="type_document_pdf" primary="true" label="Input PDF File" ></arg>
+
+<!-- This uses the macro ${entry.file.base} to get the base name (minus the suffix) of the selected entry's file
+So, if we having incoming.pdf the output file is incoming.txt -->
+       <arg value="${file}" file="${entry.file.base}.txt"></arg>
+
+<!--
+Now define the outputs. Each output has a regexp pattern that matches on any generated file
+You can specify an entry type for the entries that get created for each file
+-->
+       <output type="file" pattern=".*\.txt"/>
+       <output type="type_image" pattern=".*\.png"/>
+
+<!-- If the service produces text to the stdout then this specifies to write to a file -->
+      <output showResults="true" stdout="true" filename="test.txt"/>
+   
+ </service>
+</services>

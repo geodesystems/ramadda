@@ -2,15 +2,7 @@
 
 index.html
 >releasenotes.html
--examples/folder.xml
--examples/project.xml
--examples/glossary.xml
--examples/exampletypes.xml.txt
--examples/test.zip
 -repository.dummy_properties
--examples/pdfboxoutputhandlers_ex.xml
--examples/pdfbox.sh
--examples/README.INSTALLER
 -map.html
 >user.html
 >title:RAMADDA Entries
