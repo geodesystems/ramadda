@@ -596,6 +596,21 @@ public class Admin extends RepositoryManager {
                     IOUtil.write(fos, sb.toString());
                 }
             }
+
+            File initPropertiesFile = new File(
+                               IOUtil.joinDir(
+                                   getStorageManager().getRepositoryDir(),
+                                   "repository.properties"));
+            if ( !initPropertiesFile.exists()) {
+		String properties = getStorageManager().readUncheckedSystemResource("/org/ramadda/repository/resources/init.repository.properties");
+
+                try (FileOutputStream fos = new FileOutputStream(initPropertiesFile)) {
+                    IOUtil.write(fos, properties);
+                }
+            }
+
+
+
         }
 
         return installPassword;
