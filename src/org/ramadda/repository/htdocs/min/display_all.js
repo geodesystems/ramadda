@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue May 16 08:02:13 MDT 2023";
+var build_date="RAMADDA build date: Tue May 16 08:51:34 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -37045,21 +37045,24 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.vectorMapApplied  = false;
 	    this.updateUI({source:args.source, dataFilterChanged:true, dontSetBounds:true,  reload:true,callback: (records)=>{
 		if(args.source=="animation") return;
-		if(this.getCenterOnFilterChange(false)) {
-		    if (this.vectorLayer && this.showVectorLayer) {
-			if(this.getShowPoints()) {
-			    if(records && records.length)
-				this.map.centerOnMarkers(null, false, true);
-			} else {
-			    this.map.zoomToLayer(this.vectorLayer,1.2);
-			}
-		    } else if(this.lastImageLayer) {
-			this.map.zoomToLayer(this.lastImageLayer);
-		    } else {
-			//true -> Just markers
-			if(records && records.length)
-			    this.map.centerOnMarkers(null, false, true);
+		if(!this.getCenterOnFilterChange(false)) return;
+		if(this.getShowPoints() && records && records.length) {
+		    //If we have our own features then just zoom to that layer and return
+		    if(this.myFeatureLayer?.features?.length) {
+			this.map.zoomToLayer(this.myFeatureLayer);
+			return
 		    }
+		    this.map.centerOnMarkers(null, false, true);
+		    return;
+		}
+		if (this.vectorLayer && this.showVectorLayer) {
+		    this.map.zoomToLayer(this.vectorLayer,1.2);
+		} else if(this.lastImageLayer) {
+		    this.map.zoomToLayer(this.lastImageLayer);
+		} else {
+		    //true -> Just markers
+		    if(records && records.length)
+			this.map.centerOnMarkers(null, false, true);
 		}
 	    }});
 	},
@@ -38898,19 +38901,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    seen[key]++;
 		}
 
-
 		let mapPoint=null;
 		let mapPoints =recordLayout.features;
-
-		//marker
-
 		if(usingIcon) {
 		    if(iconField) {
 			let tuple = record.getData();
 			let icon = tuple[iconField.getIndex()];
 			if(iconMap) {
 			    icon = iconMap[icon];
-			    if(!icon) icon = this.getMarkerIcon();
+			    if(!icon) icon = this.getMarkerIcon(null,true);
 			}
 			let size = iconSize;
 			if(sizeBy.index>=0) {
@@ -38936,7 +38935,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			this.markers[record.getId()] = mapPoint;
 		    }
 		}
-
 
 		if(glyphs.length>0) {
 		    let cid = HU.getUniqueId("canvas_");
@@ -39056,11 +39054,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if (showSegments) {
 		this.map.centerOnMarkers();
 	    }
-
-
-//Don't think we have to do this here. Saves lots of draw time
-//	    if(this.map.circles)
-//		this.map.circles.redraw();
 
 
 	    let legendSide = this.getProperty("sizeByLegendSide");
@@ -39291,7 +39284,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             return null;
         },
 
-        getMarkerIcon: function(dflt) {
+        getMarkerIcon: function(dflt,autoVersion) {
             if (this.getProperty("markerIcon")) {
                 let icon = this.getProperty("markerIcon");
 		if(icon.startsWith('cdn:')) {
@@ -39301,6 +39294,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 return icon;
             }
 	    if(dflt) return dflt;
+	    if(!autoVersion) return null;
             displayMapCurrentMarker++;
             if (displayMapCurrentMarker >= displayMapMarkers.length) displayMapCurrentMarker = 0;
             return RamaddaUtil.getCdnUrl("/lib/openlayers/v2/img/" + displayMapMarkers[displayMapCurrentMarker]);
@@ -39360,7 +39354,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 }
                 let icon = displayMapMarkerIcons[source];
                 if (icon == null) {
-                    icon = this.getMarkerIcon();
+                    icon = this.getMarkerIcon(null,true);
                     displayMapMarkerIcons[source] = icon;
                 }
                 this.myMarkers[source] = this.map.addMarker(source.getId(), point, icon, "", args.html, null, 24);
