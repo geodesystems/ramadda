@@ -25,34 +25,31 @@ The instance type depends on your expected load. For example
 <a href="https://ramadda.org">https://ramadda.org</a> runs on a t2.medium but a 
 t2.micro or t2.small works just fine.
 
-<li> Configure Instance Details<br>
-The defaults should be OK but you may want to  create a new network and  subnet.
+<li> Key pair<br>
+Select "Create new key pair". 
+This is what you use to SSH to your instance. Do not lose it!
+Once downloaded, you will need to change permissions on your pem file, e.g.
+<pre>
+chmod 600 ramadda.pem
+</pre>
+  
+
+
+<li>Network settings<br>
+You should allow SSH, HTTPS and HTTP traffic to your server
+
 
 <li>Add Storage<br>
-The instance comes with a smallish volume where /home is mounted. 
+The instance comes with a smallish root volume where /home is mounted. 
 You should add a new volume. 
 This is where RAMADDA's home directory, uploaded files and database will be stored. The size depends on the expected size of your RAMADDA use.
 For example, for the <a href="https://ramadda.org">https://ramadda.org</a> 
 repository (which has a ton of content) the database size is ~4GB and the files take up ~20GB.
 
 
-<li> Configure Security Group<br>
-Create a security group with the following ports:
-<pre>
-SSH  port 22
-HTTP port 80 - Source should be the default <i>0.0.0.0/0, ::/0</i>
-HTTPS port 443 - Source should be the default <i>0.0.0.0/0, ::/0</i>
-</pre>
-
 
 
 <li> Review Instance Launch<br>
-Create (or select an existing) key pair file (e.g., ramadda.pem) and download it. 
-This is what you use to SSH to your instance. Do not lose it!
-Once downloaded, you will need to change permissions on your pem file, e.g.
-<pre>
-chmod 600 ramadda.pem
-</pre>
    
 <li> Elastic IPS (optional) <br>
 By default the IP address associated with your instance can change when the instance is stopped and restarted. You can use the AWS Elastic IP service to create a permanent IP address for your instance. In the AWS console under Network and Security select "Elastic IPs".   Next, select "Allocate Elastic IP address" to create a new IP address. Then associate the IP address with your new instance.

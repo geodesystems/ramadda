@@ -121,7 +121,7 @@ yum install -y emacs > /dev/null
 yum install -y git > /dev/null
 
 #java
-yum install java-1.8.0-openjdk-devel
+yum install java
 sudo /usr/sbin/alternatives --config java
 sudo /usr/sbin/alternatives --config javac
 #yum install -y java > /dev/null
