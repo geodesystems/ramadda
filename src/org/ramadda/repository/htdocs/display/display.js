@@ -1158,7 +1158,10 @@ function DisplayThing(argId, argProperties) {
 		    tt+=labelValue+"=" + initValue;
 		    
 		    if(value.length>100) {
-			value  = HU.div([STYLE,HU.css("max-height","100px","overflow-y","auto")],value);
+			//Only if its not an image
+			if(!String(value).match('<img')) {
+			    value  = HU.div([STYLE,HU.css("max-height","100px","overflow-y","auto")],value);
+			}
 		    }
 		    let label = this.formatRecordLabel(labelValue)+":";
 		    if(labelWidth) {
@@ -6841,8 +6844,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let _this = this;
 		if(!jq) jq = this.jq(ID_DISPLAY_CONTENTS);
 		jq.find("[field-id]").click(function() {
+		    let fieldId = $(this).attr('field-id');
 		    let args = {
-			id:$(this).attr("field-id"),
+			id:fieldId,
 			fieldId: fieldId,
 			value: $(this).attr("field-value")
 		    };

@@ -3737,6 +3737,11 @@ function RamaddaBoxtableDisplay(displayManager, id, properties) {
 	{p:'categoryField',ex:''},
 	{p:'colorBy',ex:''},
 	{p:'tableWidth',ex:'300'},
+	{p:'labelTemplate'},
+	{p:'labelStyle'},
+	{p:'imageField'},
+	{p:'imageWidth',d:'30px'},
+	{p:'labelColumnWidth',ex:'300px'}	
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
@@ -3753,6 +3758,11 @@ function RamaddaBoxtableDisplay(displayManager, id, properties) {
 		this.setDisplayMessage("No category field field specified");
 		return;
 	    }
+
+	    let imageWidth = this.getImageWidth('30px');
+	    let imageField = this.getFieldById(null,this.getImageField());
+	    let labelTemplate = this.getLabelTemplate();
+	    let labelStyle = this.getLabelStyle('');
 	    let colors = this.getColorTable();
 	    if(!colors) colors = Utils.getColorTable("blues",true);
 	    let colorBy = this.getColorByInfo(records,null,null,colors);
@@ -3771,6 +3781,7 @@ function RamaddaBoxtableDisplay(displayManager, id, properties) {
 		list.push(r);
 	    });
 	    let html = HU.open(TABLE,[CLASS,'display-colorboxes-table','cellpadding',5]);
+	    let labelColumnWidth=this.getLabelColumnWidth();
 	    let tableWidth=this.getProperty("tableWidth",300);
 	    cats.sort((a,b)=>{
 		return catMap[b].max - catMap[a].max;
@@ -3780,19 +3791,39 @@ function RamaddaBoxtableDisplay(displayManager, id, properties) {
 		let length = catMap[cat].list.length;
 		let label = HU.span(["field-id",categoryField.getId(),
 				     "field-value",cat], cat);
-		let row = HU.open(TR,['valign','top'],HU.td(['align','right',CLASS,'display-colorboxes-header'],label+ "("+length+")"));
-		row+=	  HU.open(TD,[WIDTH,'${tableWidth}']);
+		let tdAttrs = ['align','right',CLASS,'display-colorboxes-header'];
+		if(labelColumnWidth)
+		    tdAttrs.push(WIDTH,labelColumnWidth);
+		let row = HU.open(TR,['valign','center'],HU.td(tdAttrs,label+ " ("+length+")"));
+		row+=	  HU.open(TD);
+
+
 		if(colorBy.index) {
 		    catMap[cat].list.sort((a,b)=>{
 			return b.getData()[colorBy.index]-a.getData()[colorBy.index];
 		    });
 		}
-		catMap[cat].list.map((record,idx)=>{
+		catMap[cat].list.forEach((record,idx)=>{
 		    let color = "#ccc";
 		    if(colorBy.index) {
 			color =  colorBy.getColor(record.getData()[colorBy.index], record) || color;
 		    }
-		    row +=HU.div([TITLE,"",RECORD_ID, record.getId(), CLASS,"display-colorboxes-box",STYLE,HU.css('background', color)],"");
+		    let style = '';
+		    let contents = '';
+		    let clazz='';
+		    if(imageField) {
+			let url = imageField.getValue(record);
+			contents  = HU.div(['style','text-align:center;'],HU.image(url,['width',imageWidth]));
+			clazz ='display-colorboxes-image';
+		    } else {
+			style = HU.css('background', color);
+			clazz ='display-colorboxes-box';
+		    }
+		    if(labelTemplate) {
+			let label = this.applyRecordTemplate(record, null,null,labelTemplate);
+			contents +=HU.div(['class','display-colorboxes-label','style',labelStyle],label);
+		    }
+		    row +=HU.div([TITLE,"",RECORD_ID, record.getId(), CLASS,'ramadda-clickable ' + clazz,STYLE,style],contents);
 		});
 		row+=HU.close(TD,TR);
 		html+=row;
@@ -3803,7 +3834,7 @@ function RamaddaBoxtableDisplay(displayManager, id, properties) {
 	    colorBy.displayColorTable(500);
 	    if(!this.getProperty("tooltip"))
 		this.setProperty("tooltip","${default}");
-	    this.makeTooltips(this.find(".display-colorboxes-box"),records);
+	    this.makeTooltips(this.find(".display-colorboxes-box,.display-colorboxes-image"),records);
 	    this.addFieldClickHandler(null, records);
 	}
     })

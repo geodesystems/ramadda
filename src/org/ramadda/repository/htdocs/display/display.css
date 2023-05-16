@@ -2348,13 +2348,28 @@ font-weight:bold;
     border: 1px solid #888;
 }
 
+.display-colorboxes-label {
+    text-align:center;
+    font-size:80%;
+}
+
 .display-colorboxes-header {
     cursor:pointer;
+    font-weight:bold;
 }
 
 
+.display-colorboxes-image {
+    display:inline-block;
+    margin:2px;
+    margin-left:4px;
+}
+
+.display-colorboxes-image img {
+    border-radius:50%;
+}
+
 .display-colorboxes-box {
-    cursor:pointer;
     border: 1px solid #ddd;
     border-radius: 4px;
     display:inline-block;
