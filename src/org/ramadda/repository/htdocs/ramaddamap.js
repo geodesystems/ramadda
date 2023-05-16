@@ -1114,30 +1114,29 @@ RepositoryMap.prototype = {
         if (!force) {
 	    let didMarkers = false;
 
-	    this.externalLayers.forEach(layer=>{
-                let dataBounds = layer.getDataExtent();
-		if(debugBounds)
-		    console.log("centerOnMarkers using external layer");
-                bounds = this.transformProjBounds(dataBounds);
-		didMarkers = true;
-	    });
+	    if(!justMarkerLayer) {
+		this.externalLayers.forEach(layer=>{
+                    let dataBounds = layer.getDataExtent();
+		    if(debugBounds)
+			console.log("centerOnMarkers using external layer");
+		    bounds = MapUtils.extendBounds(bounds,this.transformProjBounds(dataBounds));
+		    didMarkers = true;
+		});
+	    }		
 
             if (this.markers) {
                 // markers are in projection coordinates
                 let dataBounds = this.markers.getDataExtent();
 		if(debugBounds)
 		    console.log("centerOnMarkers using markers.getDataExtent");
-                bounds = this.transformProjBounds(dataBounds);
+		bounds = MapUtils.extendBounds(bounds,this.transformProjBounds(dataBounds));
 		didMarkers = true;
             }
 	    if(bounds && isNaN(bounds.left)) bounds = null;
             if (this.circles) {
                 let dataBounds = this.circles.getDataExtent();
                 let b = this.transformProjBounds(dataBounds);
-                if (bounds)
-                    bounds.extend(b);
-                else
-                    bounds = b;
+		bounds = MapUtils.extendBounds(bounds,b);
 		didMarkers = true;
 		if(debugBounds)
 		    console.log("centerOnMarkers using circles.getDataExtent:" + b);
@@ -1148,11 +1147,7 @@ RepositoryMap.prototype = {
             if ( !bounds || !didMarkers || !justMarkerLayer) {
                 if (this.lines) {
                     let dataBounds = this.lines.getDataExtent();
-                    let fromLine = this.transformProjBounds(dataBounds);
-                    if (bounds)
-                        bounds.extend(fromLine);
-                    else
-                        bounds = fromLine;
+		    bounds = MapUtils.extendBounds(bounds,this.transformProjBounds(dataBounds));
 		    if(debugBounds)
 			console.log("centerOnMarkers using lines.getDataExtent");
                 }
@@ -1168,10 +1163,7 @@ RepositoryMap.prototype = {
                     if (dataBounds) {
                         let latLonBounds = this.transformProjBounds(dataBounds);
 			if(!this.validBounds(latLonBounds)) continue;
-                        if (bounds)
-                            bounds.extend(latLonBounds);
-                        else
-                            bounds = latLonBounds;
+			bounds = MapUtils.extendBounds(bounds,latLonBounds);
 			if(debugBounds)
 			    console.log("centerOnMarkers using layer.getDataExtent: " + latLonBounds +" layer=" + layer.name +" " + layer.ramaddaId);
                     }
@@ -1288,8 +1280,7 @@ RepositoryMap.prototype = {
 	    if(debugBounds) console.log("setViewToBounds center");
 	    this.getMap().setCenter(projBounds.getCenterLonLat());
         } else {
-	    if(debugBounds)
-		console.log(bounds.getCenterLonLat());
+//	    if(debugBounds)console.log(bounds.getCenterLonLat());
 	    this.getMap().setCenter(projBounds.getCenterLonLat());
             this.zoomToExtent(projBounds);
         }
