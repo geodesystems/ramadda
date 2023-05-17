@@ -1996,6 +1996,8 @@ WikiEditor.prototype = {
 		{p:'showLine',ex:'true'},
 		{p:'showSnippetHover',ex:'true'},		
 		{p:'showPlaceholder',ex:'true',tt:'Show placeholder image'},
+		{p:'addTags',ex:'true'},
+		{p:'tagTypes',ex:'content.keyword'},
 		{p:'addPageSearch',d:true,tt:'Add the page search form'},
 		{p:'captionPrefix',ex:'Click to view example: ',tt:'To use for popup images'}],
 				   this.groupAttributes),

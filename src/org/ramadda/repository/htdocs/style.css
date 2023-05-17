@@ -2902,6 +2902,16 @@ pre {
     color:rgb(51,51,51);
 }
 
+.bs-inner .metadata-tag {
+    font-size:9pt;
+}
+
+.bs-inner .ramadda-snippet {
+    font-size:9pt;
+    max-height:120px;
+    overflow-y:auto;
+}
+
 .metadata-tag:hover {
     border:1px solid #888;
 }
