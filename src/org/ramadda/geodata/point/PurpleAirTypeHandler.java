@@ -445,6 +445,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 	if(result.getError()) {
 	    String error = result.getResult();
 	    try {
+		System.err.println("PURPLE AIR:" + result.getCode() +" " + error);
 		error = new JSONObject(error).getString("description");
 	    } catch(Exception ignore) {}
 	    error = Utils.stripTags(error);
