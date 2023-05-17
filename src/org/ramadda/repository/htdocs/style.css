@@ -1018,6 +1018,8 @@ a.ramadda-menubar-button:hover {
     padding:5px;
 }
 
+
+
 .ramadda-entry-link .ramadda-snippet {
     margin-left:20px;
 }
@@ -2907,6 +2909,8 @@ pre {
 }
 
 .bs-inner .ramadda-snippet {
+    padding-top:0px;
+    margin-bottom:10px;
     font-size:9pt;
     max-height:120px;
     overflow-y:auto;

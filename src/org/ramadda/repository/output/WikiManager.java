@@ -3550,8 +3550,7 @@ public class WikiManager extends RepositoryManager
                 }
             }
 
-            boolean addTags = getProperty(wikiUtil, props, "addTags",
-					  false);
+
 
             boolean showHeading = !flipCards && getProperty(wikiUtil, props, "showHeading",
 							    true);
@@ -3623,29 +3622,6 @@ public class WikiManager extends RepositoryManager
 		String inner = my_getWikiInclude(wikiUtil, newRequest,
 						 originalEntry, child, tag, tmpProps, "", true);
                 StringBuilder content =   new StringBuilder();
-		List<Metadata> tagList =null;
-		if(addTags) {
-		    String[] tagTypes;
-		    String  tagType = getProperty(wikiUtil, props, "tagTypes",null);
-		    if(tagType!=null) {
-			tagTypes = Utils.toStringArray(Utils.split(tagType,",",true,true));
-		    } else {
-			tagTypes = new String[]{"enum_tag","content.keyword"};
-		    }
-		    tagList = 
-			getMetadataManager().findMetadata(request, child,
-							  tagTypes, false);
-		    if(tagList!=null && tagList.size()>0) {
-			content.append("<div class=metadata-tags>");
-			for(Metadata metadata: tagList) {
-			    MetadataHandler mtdh = getMetadataManager().findHandler(metadata.getType());
-			    content.append(mtdh.getTag(request, metadata));
-			}
-			content.append("</div>");
-		    }
-
-		}
-
 		content.append(inner);
                 if (showLink) {
                     String url;
@@ -5261,8 +5237,7 @@ public class WikiManager extends RepositoryManager
                 snippet = wikifyEntry(request, entry, snippet, false, 
                                       wikiUtil.getNotTags());
                 if (showSnippet) {
-                    HU.div(card, snippet, HU.cssClass("ramadda-snippet"));
-
+                    HU.div(card, snippet,"");
                 } else if (showSnippetHover) {
 		    String clazz = "ramadda-snippet-hover";
                     HU.div(card, snippet, HU.cssClass(clazz));
@@ -5270,6 +5245,28 @@ public class WikiManager extends RepositoryManager
                 }
             }
         }
+
+	boolean addTags = getProperty(wikiUtil, props, "addTags", false);
+	if(addTags) {
+	    String[] tagTypes;
+	    String  tagType = getProperty(wikiUtil, props, "tagTypes",null);
+	    if(tagType!=null) {
+		tagTypes = Utils.toStringArray(Utils.split(tagType,",",true,true));
+	    } else {
+		tagTypes = new String[]{"enum_tag","content.keyword"};
+	    }
+	    List<Metadata> tagList =getMetadataManager().findMetadata(request, entry,
+						  tagTypes, false);
+	    if(tagList!=null && tagList.size()>0) {
+		card.append("<div class=metadata-tags>");
+		for(Metadata metadata: tagList) {
+		    MetadataHandler mtdh = getMetadataManager().findHandler(metadata.getType());
+		    String searchUrl = mtdh.getSearchUrl(request, metadata);
+		    card.append(HU.href(searchUrl,mtdh.getTag(request, metadata)));
+		}
+		card.append("</div>");
+	    }
+	}
 
 
 
