@@ -226,3 +226,22 @@ host    all             all             ::1/128                 ident
 
     
 }
+
+
+generate_keystore() {
+    password="ssl_${RANDOM}_${RANDOM}_${RANDOM}"
+    echo "Generating new keystore file: ${RAMADDA_HOME_DIR}/keystore  for host: $host."
+    echo "The password is stored in ${RAMADDA_HOME_DIR}/ssl.properties"
+    rm -f ${RAMADDA_HOME_DIR}/keystore
+    printf "${password}\n${password}\n${host}\nRAMADDA\nRAMADDA\ncity\nstate\ncountry\nyes\n\n" | keytool -genkey -keyalg RSA -alias ramadda -keystore ${RAMADDA_HOME_DIR}/keystore > /dev/null 2> /dev/null
+    printf "#generated password\n\nramadda.ssl.password=${password}\nramadda.ssl.keypassword=${password}\nramadda.ssl.port=443\n" > ${RAMADDA_HOME_DIR}/ssl.properties
+    printf "\nIf you need to create a new key then delete ${RAMADDA_HOME_DIR}/keystore and run:\n    keytool -genkey -keyalg RSA -alias ramadda -keystore ${RAMADDA_HOME_DIR}/keystore\nIf you are installing your own certificate then generate the keystore and copy it to ${RAMADDA_HOME_DIR}\n"
+    printf "Note: since this is a self-signed certificate your browser will show that this is an insecure connection\n"
+    printf "\n"
+}
+
+
+generate_install_password() {
+    export install_password="${RANDOM}_${RANDOM}"
+    printf  "ramadda.install.password=${install_password}" > ${RAMADDA_HOME_DIR}/install.properties
+}
