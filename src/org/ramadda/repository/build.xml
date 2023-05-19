@@ -2,7 +2,7 @@
 
 <project basedir="../../../.." default="all" name="Ramadda">
 
-    <target name="all" depends="ramadda.jar,repository.war,ramadda.zip,installer,htdocs">
+    <target name="all" depends="ramadda.jar,repository.war,ramadda.zip,htdocs">
     </target>
 
 
@@ -76,7 +76,6 @@
         -->
         <antcall target="ramadda.zip"/>
         <antcall target="repository.war"/>
-        <antcall target="installer"/>
 <!--
         <antcall target="client"/>
 -->
@@ -156,40 +155,6 @@
 
     </target>
 
-
-    <target name="installer" depends="init">
-        <property name="installer_dir" value="${dist_dir}/ramaddainstaller" />
-        <mkdir dir="${installer_dir}"/>
-        <copy overwrite="true" file="${release_dir}/installer/lib.sh" todir="${installer_dir}"/>
-        <copy overwrite="true" file="${release_dir}/installer/postgres.sh" todir="${installer_dir}"/>	
-        <copy overwrite="true" file="${release_dir}/installer/installer.sh" todir="${installer_dir}">
-            <filterset>
-                <filter token="VERSION" value="${version}"/>
-                <filter token="RELEASE_VERSION" value="${release_version}"/>
-            </filterset>
-
-        </copy>
-        <copy overwrite="true" file="${release_dir}/installer/aws.sh" todir="${installer_dir}">
-            <filterset>
-                <filter token="VERSION" value="${version}"/>
-                <filter token="RELEASE_VERSION" value="${release_version}"/>
-            </filterset>
-          </copy>
-        <copy overwrite="true" file="${release_dir}/installer/update.sh" todir="${installer_dir}">
-            <filterset>
-                <filter token="VERSION" value="${version}"/>
-            </filterset>
-          </copy>
-        <copy overwrite="true" file="${release_dir}/installer/README" todir="${installer_dir}">
-            <filterset>
-                <filter token="VERSION" value="${version}"/>
-                <filter token="RELEASE_VERSION" value="${release_version}"/>
-            </filterset>
-        </copy>
-        <zip destfile="${dist_dir}/ramaddainstaller.zip">
-         <zipfileset dir="${installer_dir}" includes="*" prefix="ramaddainstaller"/>
-        </zip>
-    </target>
 
 
     <target name="compile" depends="init,clean">
