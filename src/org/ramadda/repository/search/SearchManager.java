@@ -757,7 +757,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		if(request.get(ARG_EXTRACT_KEYWORDS,false)) {
 		    List<String> keywords = getKeywords(request, entry, fileCorpus,tokenLimit);
 		    if(keywords!=null && keywords.size()>0) {
+			int cnt = 0;
 			for(String word:keywords) {
+			    //Only do 6
+			    if(cnt++>6) break;
 			    word = word.replace("."," ").replaceAll("  +"," ");
 			    word = word.trim();
 			    if(word.length()<=3) continue;
