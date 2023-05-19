@@ -5016,6 +5016,13 @@ public class Seesv implements SeesvCommands {
 						     parseDouble(args.get(++i))));
 		return i;
 	    });
+	defineFunction(CMD_GE, 2,(ctx,args,i) -> {
+		handlePattern(ctx, ctx.getFilterToAddTo(),
+			      new Filter.ValueFilter(ctx,
+						     getCols(args.get(++i)), Filter.ValueFilter.OP_GE,
+						     parseDouble(args.get(++i))));
+		return i;
+	    });	
 
 	defineFunction(CMD_HAS, 1,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(),
