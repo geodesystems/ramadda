@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+
 <project basedir="." default="release" name="RAMADDA">
 
   <target name="init">
@@ -80,6 +81,7 @@
     <copy overwrite="true" file="${dist_plugins}/miscplugins.jar"  todir="${src_dir}/org/ramadda/repository/resources/plugins"/>
     <echo message="Building RAMADDA"/>
     <ant antfile="${src_dir}/org/ramadda/repository/build.xml" inheritAll="false" target="release"/>
+    <antcall target="installer"/>
   </target>
 
 
@@ -602,6 +604,46 @@
   </target>
 
 
+
+  <target name="installer" depends="init">
+    <property name="installer_dir" value="${dist_dir}/ramaddainstaller" />
+    <mkdir dir="${installer_dir}"/>
+    <copy overwrite="true" file="${release_dir}/installer/lib.sh" todir="${installer_dir}"/>
+    <copy overwrite="true" file="${release_dir}/installer/postgres.sh" todir="${installer_dir}"/>	
+    <copy overwrite="true" file="${release_dir}/installer/installer.sh" todir="${installer_dir}">
+      <filterset>
+        <filter token="VERSION" value="${version}"/>
+        <filter token="RELEASE_VERSION" value="${release_version}"/>
+      </filterset>
+      
+    </copy>
+    <copy overwrite="true" file="${release_dir}/installer/aws.sh" todir="${installer_dir}">
+      <filterset>
+        <filter token="VERSION" value="${version}"/>
+        <filter token="RELEASE_VERSION" value="${release_version}"/>
+      </filterset>
+    </copy>
+    <copy overwrite="true" file="${release_dir}/installer/update.sh" todir="${installer_dir}">
+      <filterset>
+        <filter token="VERSION" value="${version}"/>
+      </filterset>
+    </copy>
+    <copy overwrite="true" file="${release_dir}/installer/updateimage.sh" todir="${installer_dir}">
+      <filterset>
+        <filter token="VERSION" value="${version}"/>
+      </filterset>
+    </copy>
+
+    <copy overwrite="true" file="${release_dir}/installer/README" todir="${installer_dir}">
+      <filterset>
+        <filter token="VERSION" value="${version}"/>
+        <filter token="RELEASE_VERSION" value="${release_version}"/>
+      </filterset>
+    </copy>
+    <zip destfile="${dist_dir}/ramaddainstaller.zip">
+      <zipfileset dir="${installer_dir}" includes="*" prefix="ramaddainstaller"/>
+    </zip>
+  </target>
 
 
 
