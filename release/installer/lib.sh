@@ -6,7 +6,8 @@
 
 
 INSTALLER_DIR="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
-
+export SERVICE_NAME="ramadda"
+export SERVICE_DIR="/etc/rc.d/init.d"
 
 export OS_REDHAT="redhat"
 export OS_AMAZON="amazon_linux"
@@ -20,6 +21,8 @@ export YUM_ARG=""
 export USER_DIR=$PARENT_DIR
 export BASE_DIR=/mnt/ramadda
 export RAMADDA_HOME_DIR=$BASE_DIR/repository
+export RUNTIME_DIR=${BASE_DIR}/runtime
+export RAMADDA_SERVER_DIR=${RUNTIME_DIR}/ramaddaserver
 export MOUNT_DIR=""
 
 export promptUser=1
@@ -227,6 +230,11 @@ host    all             all             ::1/128                 ident
     
 }
 
+download_installer() {
+    rm -f ${INSTALLER_DIR}/ramaddaserver.zip
+    echo "Downloading RAMADDA from ${RAMADDA_DOWNLOAD}"
+    wget -O ${INSTALLER_DIR}/ramaddaserver.zip ${RAMADDA_DOWNLOAD}
+}
 
 generate_keystore() {
     password="ssl_${RANDOM}_${RANDOM}_${RANDOM}"
