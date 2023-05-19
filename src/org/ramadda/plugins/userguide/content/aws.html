@@ -17,9 +17,18 @@ Here are the steps to install the stand-alone version of RAMADDA on an AWS insta
 go to the  Instances page and select  "Launch Instance".
 
 <li> Choose an Amazon Machine Image (AMI)<br>
-Pick a standard Amazon Linux 2 AMI image. Note: RAMADDA can run on REDHAT Linux but the installer
-has not been fully tested.
+Pick a standard Amazon Linux 2 AMI image. 
++callout-info
+Note: The installer does not work on the Amazon Linux 2023 AMI image
+as that image does not support the amazon-linux-extras package manager.
+-callout
 
+
++callout-info
+Note: RAMADDA can run on REDHAT Linux but the installer
+has not been fully tested. 
+-callout
+  
 <li> Choose an Instance Type<br>
 The instance type depends on your expected load. For example 
 <a href="https://ramadda.org">https://ramadda.org</a> runs on a t2.medium but a 
@@ -34,7 +43,6 @@ chmod 600 ramadda.pem
 </pre>
   
 
-
 <li>Network settings<br>
 You should allow SSH, HTTPS and HTTP traffic to your server
 
@@ -42,10 +50,11 @@ You should allow SSH, HTTPS and HTTP traffic to your server
 <li>Add Storage<br>
 The instance comes with a smallish root volume where /home is mounted. 
 You should add a new volume. 
-This is where RAMADDA's home directory, uploaded files and database will be stored. The size depends on the expected size of your RAMADDA use.
+The model that we follow is to have an additional large size volume that will hold
+RAMADDA's home directory, uploaded files and database. 
+The size depends on the expected size of your RAMADDA use.
 For example, for the <a href="https://ramadda.org">https://ramadda.org</a> 
 repository (which has a ton of content) the database size is ~4GB and the files take up ~20GB.
-
 
 
 
@@ -93,10 +102,16 @@ Java, Postgres and the RAMADDA server.
 
 The installer will:
 <ul>
-<li> Mount the EBS volume as /mnt/ramadda
-<li> Install and configure PostgreSQL. A ramadda user and a repository database will be created
-<li> Download and install RAMADDA
-<li> Configure RAMADDA with a (temporary) self-signed certificate for HTTPS access
+<li> Mount the EBS volume as <i>/mnt/ramadda</i>
+
+<li> Install and configure PostgreSQL. A ramadda user and a repository database will be created.
+  The database will be stored at: 
+<i>/mnt/ramadda/pgsql</i> and which is linked to
+from <i>/var/lib/pgsql</i>
+
+<li> Download and install RAMADDA. 
+
+<li> Configure RAMADDA with a (temporary) self-signed certificate for HTTPS access.
 <li> Install RAMADDA as a service. To start and stop RAMADDA do:
 <pre>
 sudo service ramadda start
@@ -120,8 +135,11 @@ The install will result in:
 /home/ec2-user/ramaddainstaller/update.sh - A script to run to update your RAMADDA server. Run it as
 sudo sh /home/ec2-user/ramaddainstaller/update.sh
 
-/home/ec2-user/ramadda - The installed server
-/home/ec2-user/ramadda/ramadda.log - The log output of the server
+/mnt/ramadda/runtime - The installed server
+/mnt/ramadda/runtime/ramadda.log - The log output of the server
+/mnt/ramadda/runtime/ramaddaserver - The ramadda executable
+The service runs
+/mnt/ramadda/runtime/ramaddaserver/ramadda.sh 
 
 /mnt/ramadda/repository - The RAMADDA home directory. 
 /mnt/ramadda/repository/install.properties - Holds the database password
