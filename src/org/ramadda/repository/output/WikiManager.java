@@ -6984,7 +6984,7 @@ public class WikiManager extends RepositoryManager
 
 	List<String> etcLinks = new ArrayList<String>();
 	Utils.add(etcLinks, findButton, previewButton,tidyButton);
-	if(getRepository().isGptEnabled()) {
+	if(getRepository().isLLMEnabled()) {
 	    etcLinks.add(HU.href("#", "GPT",
 				 HU.attrs("id", textAreaId+"_rewrite")));
 	    etcLinks.add(HU.href("#", "Transcribe",

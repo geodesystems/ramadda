@@ -234,7 +234,7 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
     this.ID_WIKI_POPUP_CANCEL= "wiki-popup-cancel";
     this.ID_WIKI_POPUP_TIDY ="wiki-popup-tidy";
     this.ID_WIKI_POPUP_COMPACT ="wiki-popup-compact";
-    this.ID_GPT_INPUT = "gpt-input";
+    this.ID_LLM_INPUT = "llm-input";
 
     this.initAttributes();
     var options = {
@@ -335,7 +335,7 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
     });	
     this.jq("rewrite").click(()=>{
 	HtmlUtils.hidePopupObject();
-	this.doGpt();
+	this.doLlm();
     });
     this.jq("transcribe").click(()=>{
 	HtmlUtils.hidePopupObject();
@@ -822,7 +822,7 @@ WikiEditor.prototype = {
 	    'type': this.transcribeMime
 	});
 	let formData = new FormData();
-	let url = RamaddaUtils.getUrl("/gpt/transcribe");
+	let url = RamaddaUtils.getUrl("/llm/transcribe");
 	let data = new FormData();
 	this.jq('transcribe_loading').show();
 	data.append('mimetype', this.transcribeMime);
@@ -946,19 +946,19 @@ WikiEditor.prototype = {
 	    alert(`Error initializing transcription: ${err}`);
 	});
     },
-    doGpt:function() {
-	if(!this.addedGptListener) {
+    doLlm:function() {
+	if(!this.addedLlmListener) {
 	    this.editor.getSession().selection.on('changeSelection', ()=> {
 		let text = this.getEditor().getSelectedText();
-		if(Utils.stringDefined(text) && !this.gptReplacing) {
-		    this.jq(this.ID_GPT_INPUT).val(text);
+		if(Utils.stringDefined(text) && !this.llmReplacing) {
+		    this.jq(this.ID_LLM_INPUT).val(text);
 		}
 	    });
 	}
 	    
 
 
-	let gptText = this.getEditor().getSelectedText()??'';
+	let llmText = this.getEditor().getSelectedText()??'';
 	let options = [{value:'',label:'Select prompt'}];
 	//Some of these prompts are from https://github.com/f/awesome-chatgpt-prompts
 	let prompts =
@@ -990,18 +990,18 @@ WikiEditor.prototype = {
 	    HU.formEntry('Prompt:',HU.div(['id',promptMenuContainerId]))+
 	    HU.formEntry('','Or enter prompt:') +
 	    HU.formEntry('Prompt prefix:',HU.input('',this.lastPromptPrefix??'',
-						   ['class','wiki-gpt-input','style','width:500px;','id',this.domId('gpt-prompt-prefix')])) +
+						   ['class','wiki-llm-input','style','width:500px;','id',this.domId('llm-prompt-prefix')])) +
 	    HU.formEntry('Prompt suffix:',
-			 HU.input('',this.lastPromptSuffix??'',['class','wiki-gpt-input','style','width:500px;','id',this.domId('gpt-prompt-suffix')])) +
+			 HU.input('',this.lastPromptSuffix??'',['class','wiki-llm-input','style','width:500px;','id',this.domId('llm-prompt-suffix')])) +
 	    HU.formTableClose();
-	html+=HU.textarea('',gptText,['placeholder','Enter input or select text in editor','id',this.domId(this.ID_GPT_INPUT), 'rows',6,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;']);
+	html+=HU.textarea('',llmText,['placeholder','Enter input or select text in editor','id',this.domId(this.ID_LLM_INPUT), 'rows',6,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;']);
 
 	html+='<br>';
-	html+=HU.span(['id',this.domId('gpt-call')],'Evaluate');	    
+	html+=HU.span(['id',this.domId('llm-call')],'Evaluate');	    
 	
 	html+=HU.div(['style','position:relative;'],
 		   HU.textarea('','',['placeholder','Results','id',this.domId('rewrite-results'), 'rows',6,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;'])+
-		   HU.div(['style','display:none;position:absolute;top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);','id',this.domId('gpt-loading')],
+		   HU.div(['style','display:none;position:absolute;top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);','id',this.domId('llm-loading')],
 			  HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),['style','width:100px;'])));
 
 
@@ -1011,27 +1011,27 @@ WikiEditor.prototype = {
 			HU.span(['class','ramadda-dialog-button',ID,this.domId("cancel")],"Cancel")]);
 			 html = HU.div(['class','ramadda-dialog'],html);
 
-			 let dialog = this.gptDialog = HU.makeDialog({content:html,anchor:this.getScroller(),
+			 let dialog = this.llmDialog = HU.makeDialog({content:html,anchor:this.getScroller(),
 				    my: "left bottom",     
 				    at: "left+200" +" top-50",
-				    title:"GPT",
+				    title:"LLM",
 				    header:true,sticky:true,draggable:true,modal:false});	
 
 
 	let call = (prompt) =>{
-	    gptText = this.jq(this.ID_GPT_INPUT).val()??'';
-	    this.jq('gpt-loading').show();
-	    let url = RamaddaUtils.getUrl("/gpt/rewrite");
-	    let args = {text:gptText};
+	    llmText = this.jq(this.ID_LLM_INPUT).val()??'';
+	    this.jq('llm-loading').show();
+	    let url = RamaddaUtils.getUrl("/llm/rewrite");
+	    let args = {text:llmText};
 	    if(prompt) {
 		args.promptprefix = prompt;
 	    } else {
-		args.promptprefix=this.lastPromptPrefix=this.jq('gpt-prompt-prefix').val();
-		args.promptsuffix=this.lastPromptSuffix=this.jq('gpt-prompt-suffix').val();
+		args.promptprefix=this.lastPromptPrefix=this.jq('llm-prompt-prefix').val();
+		args.promptsuffix=this.lastPromptSuffix=this.jq('llm-prompt-suffix').val();
 	    }
 	    $.post(url,args,
 		   data=>{
-		       _this.jq('gpt-loading').hide();
+		       _this.jq('llm-loading').hide();
 		       if(!Utils.stringDefined(data.result)) {
 			   alert('No result');
 			   return;
@@ -1039,14 +1039,14 @@ WikiEditor.prototype = {
 		       let result = data.result.trim();
 		       this.jq('rewrite-results').val(result);
 		   }).fail(data=>{
-		       _this.jq('gpt-loading').hide();
+		       _this.jq('llm-loading').hide();
 		       alert('Rewrite failed');
 		   });
 	}
 	let makePromptMenu = () =>{
-	    let promptMenu = HU.select("",['id', this.domId('gptprompts')],options);
+	    let promptMenu = HU.select("",['id', this.domId('llmprompts')],options);
 	    jqid(promptMenuContainerId).html(promptMenu);
-	    this.jq('gptprompts').change(function() {
+	    this.jq('llmprompts').change(function() {
 		let idx = $(this).val();
 		let prompt = prompts[idx];
 		if(!prompt) {
@@ -1064,17 +1064,17 @@ WikiEditor.prototype = {
 	makePromptMenu();
 
 
-	dialog.find('.wiki-gpt-input').keypress(function(e){
+	dialog.find('.wiki-llm-input').keypress(function(e){
 	    if(e.keyCode == 13) {
 		call();
 	    }
 	});
-	this.jq('gpt-call').button().click(()=>{
+	this.jq('llm-call').button().click(()=>{
 	    call();
 	});
 	let _this = this;
 	dialog.find('.ramadda-dialog-button').button().click(function() {
-	    _this.gptReplacing = true;	    
+	    _this.llmReplacing = true;	    
 	    let val = _this.jq('rewrite-results').val();
 	    if(!val) return;
 	    if($(this).attr('replace')) {
@@ -1084,7 +1084,7 @@ WikiEditor.prototype = {
 	    } else {
 		dialog.remove();
 	    }
-	    _this.gptReplacing = false;	    
+	    _this.llmReplacing = false;	    
 	});
 
 	

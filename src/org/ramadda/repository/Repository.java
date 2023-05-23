@@ -152,7 +152,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 							  PropertyProvider {
 
 
-    private static boolean  debugGpt = false;
+
 
     public static final boolean debugInit = false;
 
@@ -571,8 +571,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private boolean ignoreSSL = false;
 
+    private static boolean  debugLLM = true;
     public static final int GPT_TOKEN_LIMIT = 3000;
-
 
     /**
      * _more_
@@ -6077,14 +6077,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    public boolean isGptEnabled() {
-	return Utils.stringDefined(getProperty("gpt.api.key"));
+    public boolean isLLMEnabled() {
+	return Utils.stringDefined(getProperty("gpt.api.key")) ||
+	    Utils.stringDefined(getProperty("palm.api.key"));
     }
 
 
 
 
-    public Result processGpt(Request request)  throws Exception {
+    public Result processLLM(Request request)  throws Exception {
 	if(request.isAnonymous()) {
 	    String json = JsonUtil.map(Utils.makeList("error", JsonUtil.quote("You must be logged in to use the rewrite service")));
 	    return new Result("", new StringBuilder(json), "text/json");
@@ -6092,11 +6093,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 	String text =request.getString("text","");
 	String promptPrefix = request.getString("promptprefix",
-						"Rewrite the following text:");
-	String promptSuffix = request.getString("promptsuffix",
-						"");
+						"Rewrite the following text as college level material:");
+	String promptSuffix = request.getString("promptsuffix", "");
 	//	text = callGpt("Rewrite the following text:","",new StringBuilder(text),1000,false);		    
-	text = callGpt(promptPrefix,promptSuffix,new StringBuilder(text),1000,false,null);		    
+	text = callLLM(promptPrefix,promptSuffix,new StringBuilder(text),1000,false,null);		    
 	String json = JsonUtil.map(Utils.makeList("result", JsonUtil.quote(text)));
 	return new Result("", new StringBuilder(json), "text/json");
 	
@@ -6121,9 +6121,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    return makeJsonErrorResult("You must be logged in to use the rewrite service");
 	}
 	String gptKey = getRepository().getProperty("gpt.api.key");
-	if(gptKey==null) {
-	    if(debugGpt) System.err.println("\tno gptKey");
-	    return makeJsonErrorResult("GPT is not enabled");
+	String palmKey = getRepository().getProperty("palm.api.key");
+	if(gptKey==null && palmKey==null) {
+	    if(debugLLM) System.err.println("\tno LLM keys");
+	    return makeJsonErrorResult("LLM processing is not enabled");
 	}
 
 	File file = new File(request.getUploadedFile("audio-file"));
@@ -6161,13 +6162,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    public String callGpt(String prompt1,String prompt2,StringBuilder corpus,int tokens,boolean tokenize,int[]initTokenLimit)
+    public String callLLM(String prompt1,String prompt2,StringBuilder corpus,int tokens,boolean tokenize,int[]initTokenLimit)
 	throws Exception {
-	if(debugGpt) System.err.println("callGpt");
+	if(debugLLM) System.err.println("callLLM");
 	String text = corpus.toString();
 	String gptKey = getRepository().getProperty("gpt.api.key");
-	if(gptKey==null) {
-	    if(debugGpt) System.err.println("\tno gptKey");
+	String palmKey = getRepository().getProperty("palm.api.key");	
+	if(gptKey==null && palmKey==null) {
+	    if(debugLLM) System.err.println("\tno LLM key");
 	    return null;
 	}
 
@@ -6179,11 +6181,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    if(!tokenize) {
 		gptCorpus.append(text);
 	    } else {
-		//	    debugGpt = true;
-		if(debugGpt) System.err.println("Repository.callGpt tokenizing " + text.length());
+		//	    debugLLM = true;
+		if(debugLLM) System.err.println("Repository.callGpt tokenizing " + text.length());
 		text = Utils.removeNonAscii(text," ").replaceAll("[,-\\.\n]+"," ").replaceAll("  +"," ");
 		if(text.trim().length()==0) {
-		    if(debugGpt) System.err.println("\tRepository.callGpt no text");
+		    if(debugLLM) System.err.println("\tRepository.callGpt no text");
 		    return null;
 		}
 		List<String> toks = Utils.split(text," ",true,true);
@@ -6198,11 +6200,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		    gptCorpus.append(tok);
 		    gptCorpus.append(" ");
 		}
-		if(debugGpt) System.err.println("\tRepository.callGpt done tokenizing: i=" + i +" extraCnt=" + extraCnt);
+		if(debugLLM) System.err.println("\tRepository.callGpt done tokenizing: i=" + i +" extraCnt=" + extraCnt);
 	    }
 	    gptCorpus.append("\n\n");
 	    gptCorpus.append(prompt2);
-	    if(debugGpt) System.err.println("Repository.callGpt return max tokens:" + tokens);
+	    if(debugLLM) System.err.println("Repository.callGpt return max tokens:" + tokens);
 	    String gptText =  gptCorpus.toString();
 	    List<String> args = Utils.makeList("temperature", "0",
 					       "max_tokens" ,""+ tokens,
@@ -6233,19 +6235,24 @@ public class Repository extends RepositoryBase implements RequestHandler,
 			//			throw new RuntimeException("Unable to process GPT request:" + result.getResult());
 		    }
 		    tokenLimit-=1000;
-		    if(debugGpt)
+		    if(debugLLM)
 			System.err.println("Repostory.callGpt: too many tokens. Trying again with limit:" + tokenLimit);
 		    continue;
 		} catch(Exception exc) {
-		    System.err.println("EXC:" + exc);
 		    exc.printStackTrace();
-
 		    throw new RuntimeException("Unable to process GPT request:" + result.getResult());
 		}
 	    }
 
 	    JSONObject json = new JSONObject(result.getResult());
-	    if(debugGpt)	    System.err.println("gpt json:" + json);		
+	    if(debugLLM)	    System.err.println("LLM json:" + json);		
+	    //Google PALM
+	    if(json.has("candidates")) {
+		JSONArray candidates = json.getJSONArray("candidates");
+		JSONObject candidate= candidates.getJSONObject(0);
+		return candidate.optString("output",null);
+	    }
+
 	    if(json.has("choices")) {
 		JSONArray choices = json.getJSONArray("choices");
 		if(choices.length()>0) {

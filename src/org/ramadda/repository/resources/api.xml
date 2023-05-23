@@ -124,8 +124,8 @@
     <api request="/dummy"                  method="processDummy"/>
     <api request="/install"                method="processDummyInstall" needs_ssl="true"/>
     <api request="/tifftopng"              method="processTiffToPng"/>
-    <api request="/gpt/rewrite"            method="processGpt" name="Rewrite"/>
-    <api request="/gpt/transcribe"         method="processTranscribe" name="Rewrite"/>      
+    <api request="/llm/rewrite"            method="processLLM" name="Rewrite"/>
+    <api request="/llm/transcribe"         method="processTranscribe" name="Rewrite"/>      
     
     
     <api request="/proxy/*"                method="processProxy"/>
