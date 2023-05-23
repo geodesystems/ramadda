@@ -8,7 +8,7 @@ const DISPLAY_TREE = "tree";
 const DISPLAY_TIMELINE = "timeline";
 const DISPLAY_HOURS = "hours";
 const DISPLAY_BLANK = "blank";
-const DISPLAY_HOOK = "blank";
+const DISPLAY_HOOK = "hook";
 const DISPLAY_PRE = "pre";
 const DISPLAY_HTMLTABLE = "htmltable";
 const DISPLAY_RECORDS = "records";
@@ -1018,7 +1018,7 @@ function RamaddaHookDisplay(displayManager, id, properties) {
 	    let records = this.filterData();
 	    if(!records) return;
             let fields = this.getSelectedFields([]);
-	    if(!this.call('updateUI',{fields:fields,data:records})) {
+	    if(!this.call('updateUI',{fields:fields,records:records})) {
 		this.setContents('No updateUI defined in hook');
 	    }
 	}});
