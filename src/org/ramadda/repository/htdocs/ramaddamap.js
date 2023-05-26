@@ -3166,13 +3166,14 @@ RepositoryMap.prototype = {
 	}
     },
 
-    createXYZLayer:  function(name, url, attribution,notBaseLayer) {
+    createXYZLayer:  function(name, url, attribution,notBaseLayer,visible) {
+	visible=  Utils.getBoolean(visible);
         let options = {
             sphericalMercator: MapUtils.defaults.doSphericalMercator,
             numZoomLevels: MapUtils.defaults.zoomLevels,
             wrapDateLine: MapUtils.defaults.wrapDateline,
 	    isBaseLayer: !notBaseLayer,
-	    visibility: false
+	    visibility: visible
         };
         if (attribution)
             options.attribution = attribution;
