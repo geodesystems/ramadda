@@ -552,10 +552,15 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		let type = list[0];
 		for(let i=1;i<list.length;i+=2) {
 		    let v = list[i+1]
+		    if(!v) {
+			console.log("Poorly formed extraLayers:" +tuple);
+			continue;
+		    }
 		    args[list[i].trim()] =  Utils.getProperty(v.replace(/_semicolon_/g,':').replace(/_comma_/g,','));
 		}
 
 		let getUrl = url =>{
+		    if(!url) return null;
 		    if(url.startsWith("resources")) {
 			url = RamaddaUtil.getUrl("/" + url);
 		    } else if(url.startsWith("/resources")) {
@@ -570,14 +575,21 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		let isBaseLayer = Utils.isDefined(args.baseLayer)?args.baseLayer:false;
 		let visible = Utils.isDefined(args.visible)?args.visible:true;
 		if(type=="baselayer") {
-		    let layer = this.map.getBaseLayer(args['layer']);
+		    if(!args.layer && list.length==2) {
+			args.layer = list[1];
+		    }
+		    if(!args.layer) {
+			this.logMsg("Could not find base layer:",tuple);
+			return;
+		    }
+		    let layer = this.map.getBaseLayer(args.layer);
 		    if(!layer) {
-			this.logMsg("Could not find base layer:" + toks[1]);
+			this.logMsg("Could not find base layer:",tuple);
 		    } else {
 			layer.setVisibility(true);
 		    }
 		} else 	if(type=="geojson" || type=="kml") {
-		    let url = getUrl(args['url']);
+		    let url = getUrl(args.url);
 		    if(!args.fillColor) args.fillColor='transparent';
 		    //(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent)
 		    if(type=="kml") {
