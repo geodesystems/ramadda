@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed May 17 10:11:09 MDT 2023";
+var build_date="RAMADDA build date: Fri May 26 07:00:04 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -34715,8 +34715,15 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'geojsonLayer',ex:'entry ID',tt:'Display the geojson layer file held by give entry'},
 	{p:'geojsonLayerName',d:'Map'},
 	{p:'justShowMapLayer',ex:true,tt:'If true then just show map layer, don\'t use it for data display'},
-//	{p:'mapLayers',ex:'ol.openstreetmap,esri.topo,esri.street,esri.worldimagery,esri.lightgray,esri.physical,opentopo,usgs.topo,usgs.imagery,usgs.relief,osm.toner,osm.toner.lite,watercolor'},
-	{p:'extraLayers',tt:'comma separated list of layers to display'},
+	{p:'extraLayer1',label:'XYZ Layer',
+	 ex:'xyz:name:Some Name:url:https\\\\://server/tiles/${z}/${x}/${y}.png:baseLayer:false:visible:true'},
+	{p:'extraLayer1',label:'WMS Layer',
+	 ex:'wms:name:Some Name:url:https\://server/tiles/${z}/${x}/${y}.png:baseLayer:false:visible:true'},
+	{p:'extraLayer1',label:'GeoJSON Layer',
+	 ex:'geojson:name:Some Name:url:resources/usmap.json:fillColor:transparent'},
+	{p:'extraLayer1',label:'KML Layer',
+	 ex:'geojson:name:Some Name:url:resources/usmap.json:fillColor:transparent'},		
+
 	{p:'linkField',tt:'The field in the data to match with the map field, e.g., geoid'},
 	{p:'linkFeature',tt:'The field in the map to match with the data field, e.g., geoid'},	
 
@@ -35134,12 +35141,30 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		this.editableMap.loadMap(this.getProperty("annotationLayer"));
 	    }
 	    
+	    let extras = [];
+	    if(this.getExtraLayers()) {
+		extras =Utils.mergeLists(extras,    this.getExtraLayers('').split(","));
+	    }
+	    if(Utils.stringDefined(this.getProperty('extraLayer'))) {
+		extras.push(this.getProperty('extraLayer'));    
+	    }
+	    for(let i=1;true;i++) {
+		if(!Utils.stringDefined(this.getProperty('extraLayer'+i))) break;
+		extras.push(this.getProperty('extraLayer'+i));    
+	    }
 //extraLayers="baselayer:nexrad,geojson:US States:resources/usmap.json:fillColor:transparent"
-	    this.getProperty("extraLayers","").split(",").forEach(tuple=>{
+	    extras.forEach(tuple=>{
 		if(tuple.trim().length==0) return;
-		let toks = tuple.split(":");
-		toks = toks.map(tok=>{return tok.replace(/_semicolon_/g,":")});
-		toks = toks.map(tok=>{return tok.replace(/_comma_/g,",")});		
+		tuple = tuple.replace(/https:/g,'https_semicolon_');
+		tuple = tuple.replace(/\\:/g,'_semicolon_');		
+		let args= {};
+		let list = tuple.split(":");
+		let type = list[0];
+		for(let i=1;i<list.length;i+=2) {
+		    let v = list[i+1]
+		    args[list[i].trim()] =  Utils.getProperty(v.replace(/_semicolon_/g,':').replace(/_comma_/g,','));
+		}
+
 		let getUrl = url =>{
 		    if(url.startsWith("resources")) {
 			url = RamaddaUtil.getUrl("/" + url);
@@ -35151,24 +35176,19 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		    return url;
 		};
 
-		let type = toks[0];
+		let name = args['name'] ?? type;
+		let isBaseLayer = Utils.isDefined(args.baseLayer)?args.baseLayer:false;
+		let visible = Utils.isDefined(args.visible)?args.visible:true;
 		if(type=="baselayer") {
-		    let layer = this.map.getBaseLayer(toks[1]);
+		    let layer = this.map.getBaseLayer(args['layer']);
 		    if(!layer) {
 			this.logMsg("Could not find base layer:" + toks[1]);
 		    } else {
 			layer.setVisibility(true);
 		    }
 		} else 	if(type=="geojson" || type=="kml") {
-		    let name = toks[1];		
-		    let url = getUrl(toks[2]);
-//		    console.log("Adding geojson:" + url);
-		    let args = {
-			fillColor:'transparent',
-		    }
-		    for(let i=3;i<toks.length;i+=2) {
-			args[toks[i]] = toks[i+1];
-		    }
+		    let url = getUrl(args['url']);
+		    if(!args.fillColor) args.fillColor='transparent';
 		    //(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent)
 		    if(type=="kml") {
 			this.map.addKmlLayer(name, url, false, null, null, args, null);
@@ -35176,12 +35196,32 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 			this.map.addGeoJsonLayer(name, url, false, null, null, args, null);
 		    }
 		} else if(type=="wms") {
-		    let name = toks[1];
-		    let url = toks[2];
-		    let layer=toks[3];
-		    let opacity = toks[4];
-                    this.map.addWMSLayer(name,url,layer, false,true,{visible:true,opacity:opacity});
-		  //  "wms:ESRI Aeronautical,https://wms.chartbundle.com/mp/service,sec",
+		    let url = args.url;
+		    if(!url) {
+			console.log("no url in wms:",args);
+			return;
+		    }
+		    let layer=args.layer;
+		    if(!layer) {
+			console.log("no layer in wms:",args);
+			return;
+		    }
+		    let opacity = args.opacity??1;
+		    layer =  this.map.addWMSLayer(name,url,layer, isBaseLayer,true,{visible:visible,opacity:opacity});
+		    if(isBaseLayer && (visible || this.getDefaultMapLayer()==name)) {
+			this.map.getMap().setBaseLayer(layer);
+		    }
+		} else if(type=="xyz") {
+		    let url = args.url;
+		    if(!url) {
+			console.log("no url in xyz:",args);
+			return;
+		    }
+		    let layer = this.map.createXYZLayer(name,url,args.attribution,!isBaseLayer,visible);
+                    this.map.addLayer(layer);
+		    if(isBaseLayer && (visible || this.getDefaultMapLayer()==name)) {
+			this.map.getMap().setBaseLayer(layer);
+		    }
 		} else {
 		    console.log("Unknown map type:" + type)
 		}
@@ -36270,7 +36310,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    this.highlightMarker =  this.getMap().createPoint("highlight", point, attrs);
 		}
 		if(this.highlightMarker) this.addFeatures([this.highlightMarker]);
-		if(andCenter && this.getProperty("centerOnHighlight",false)) {
+		if(andCenter && this.getCenterOnHighlight()) {
 		    this.getMap().setCenter(point);
 		}
 	    }
@@ -50786,7 +50826,7 @@ const DISPLAY_TREE = "tree";
 const DISPLAY_TIMELINE = "timeline";
 const DISPLAY_HOURS = "hours";
 const DISPLAY_BLANK = "blank";
-const DISPLAY_HOOK = "blank";
+const DISPLAY_HOOK = "hook";
 const DISPLAY_PRE = "pre";
 const DISPLAY_HTMLTABLE = "htmltable";
 const DISPLAY_RECORDS = "records";
@@ -51796,7 +51836,7 @@ function RamaddaHookDisplay(displayManager, id, properties) {
 	    let records = this.filterData();
 	    if(!records) return;
             let fields = this.getSelectedFields([]);
-	    if(!this.call('updateUI',{fields:fields,data:records})) {
+	    if(!this.call('updateUI',{fields:fields,records:records})) {
 		this.setContents('No updateUI defined in hook');
 	    }
 	}});
