@@ -1095,12 +1095,17 @@ var Utils =  {
 	});
     },
 
+    getBoolean:function(v) {
+	if(!Utils.isDefined(v)) return false;
+	return Utils.getProperty(v);
+    },
+
     /** if v is 'true' or 'false' then return true or false
 	else return v;
     */
     getProperty:function(v) {
 	if(Utils.isDefined(v)) {
-	    v = String(v);
+	    v = String(v).trim();
 	    if(v==='true') return true;
 	    if(v==='false') return false;		
 	    return v;
