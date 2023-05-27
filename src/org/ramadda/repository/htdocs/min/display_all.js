@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri May 26 07:10:38 MDT 2023";
+var build_date="RAMADDA build date: Sat May 27 07:35:02 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -5502,6 +5502,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		{p:'sizeByRadiusMax',ex:'20',tt:'Scale size by'},
 		{p:'sizeByLegendSide',ex:'bottom|top|left|right'},,
 		{p:'sizeByLegendStyle'},
+		{p:'sizeByLegendLabel'},		
 		{p:'sizeBySteps',ex:'value1:size1,v2:s2,...',tt:'Use steps for sizes'},
 	    ]);
 	},
@@ -35576,7 +35577,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(legendSide) {
 		let legend = HU.div([ID,this.domId(ID_SIZEBY_LEGEND)]);
 		if(legendSide=="top") {
-		    this.jq(ID_TOP).append(legend);
+		    this.jq(ID_HEADER0).append(legend);
 		} else if(legendSide=="left") {
 		    this.jq(ID_LEFT).append(legend);
 		} else if(legendSide=="right") {
@@ -38440,6 +38441,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 
 	    let sizeBy = new SizeBy(this, this.getProperty("sizeByAllRecords",true)?this.getData().getRecords():records);
+
+
+
             for (let i = 0; i < fields.length; i++) {
                 let field = fields[i];
                 if (field.getId() == shapeBy.id || ("#" + (i + 1)) == shapeBy.id) {
@@ -39108,11 +39112,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 
 
-	    let legendSide = this.getProperty("sizeByLegendSide");
+	    let legendSide = this.getSizeByLegendSide();
 	    if(legendSide) {
 		let legend = sizeBy.getLegend(5,fillColor,legendSide=="left" || legendSide=="right");
 		if(legend !="") {
-		    let style = this.getProperty("sizeByLegendStyle");
+		    let label = this.getSizeByLegendLabel();
+		    if(label) legend=HU.div(['style','text-align:center;font-weight:bold'],label)+legend;
+		    let style = this.getSizeByLegendStyle();
 		    if(style) legend = HU.div([STYLE,style],legend);
 		    this.jq(ID_SIZEBY_LEGEND).html(legend);
 		    this.callingUpdateSize = true;
