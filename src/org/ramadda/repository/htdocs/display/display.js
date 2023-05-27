@@ -1824,6 +1824,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		{p:'sizeByRadiusMax',ex:'20',tt:'Scale size by'},
 		{p:'sizeByLegendSide',ex:'bottom|top|left|right'},,
 		{p:'sizeByLegendStyle'},
+		{p:'sizeByLegendLabel'},		
 		{p:'sizeBySteps',ex:'value1:size1,v2:s2,...',tt:'Use steps for sizes'},
 	    ]);
 	},

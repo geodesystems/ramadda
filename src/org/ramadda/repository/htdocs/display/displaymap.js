@@ -966,7 +966,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(legendSide) {
 		let legend = HU.div([ID,this.domId(ID_SIZEBY_LEGEND)]);
 		if(legendSide=="top") {
-		    this.jq(ID_TOP).append(legend);
+		    this.jq(ID_HEADER0).append(legend);
 		} else if(legendSide=="left") {
 		    this.jq(ID_LEFT).append(legend);
 		} else if(legendSide=="right") {
@@ -3830,6 +3830,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 
 	    let sizeBy = new SizeBy(this, this.getProperty("sizeByAllRecords",true)?this.getData().getRecords():records);
+
+
+
             for (let i = 0; i < fields.length; i++) {
                 let field = fields[i];
                 if (field.getId() == shapeBy.id || ("#" + (i + 1)) == shapeBy.id) {
@@ -4498,11 +4501,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 
 
-	    let legendSide = this.getProperty("sizeByLegendSide");
+	    let legendSide = this.getSizeByLegendSide();
 	    if(legendSide) {
 		let legend = sizeBy.getLegend(5,fillColor,legendSide=="left" || legendSide=="right");
 		if(legend !="") {
-		    let style = this.getProperty("sizeByLegendStyle");
+		    let label = this.getSizeByLegendLabel();
+		    if(label) legend=HU.div(['style','text-align:center;font-weight:bold'],label)+legend;
+		    let style = this.getSizeByLegendStyle();
 		    if(style) legend = HU.div([STYLE,style],legend);
 		    this.jq(ID_SIZEBY_LEGEND).html(legend);
 		    this.callingUpdateSize = true;
