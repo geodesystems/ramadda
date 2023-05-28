@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat May 27 07:35:02 MDT 2023";
+var build_date="RAMADDA build date: Sat May 27 18:15:57 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -34712,7 +34712,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'linked',ex:true,tt:"Link location with other maps"},
 	{p:'linkGroup',ex:'some_name',tt:"Map groups to link with"},
 	{p:'initialLocation', ex:'lat,lon',tt:"initial location"},
-	{p:'defaultMapLayer',ex:'osm|google.roads|esri.street|opentopo|esri.topo|usfs|usgs.topo|google.terrain|google.satellite|naip|usgs.imagery|esri.shaded|esri.lightgray|esri.darkgray|esri.terrain|shadedrelief|esri.aeronautical|historic|osm.toner|osm.toner.lite|watercolor'},
+	{p:'defaultMapLayer',ex:'osm|google.roads|esri.street|google.hybrid|google.roads|google.terrain|google.satellite|opentopo|esri.topo|usfs|usgs.topo|naip|usgs.imagery|esri.shaded|esri.lightgray|esri.darkgray|esri.terrain|shadedrelief|esri.aeronautical|historic|osm.toner|osm.toner.lite|watercolor'},
 	{p:'geojsonLayer',ex:'entry ID',tt:'Display the geojson layer file held by give entry'},
 	{p:'geojsonLayerName',d:'Map'},
 	{p:'justShowMapLayer',ex:true,tt:'If true then just show map layer, don\'t use it for data display'},
@@ -35358,37 +35358,36 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{label:'Map Properties'},
 	{p:'strokeWidth',d:1},
 	{p:'strokeColor',d:'#000'},
-	{p:"strokeOpacity",d:1},
-	{p:"fillColor",d:"blue"},
-	{p:"fillOpacity",d:0.5},
-	{p:'radius',d:5,tt:"Size of the map points"},
-	{p:'scaleRadius',ex:"true",tt:'Scale the radius based on # points shown'},
-	{p:'radiusScale',ex:"value,size,value,size e.g.: 10000,1,8000,2,5000,3,2000,3,1000,5,500,6,250,8,100,10,50,12",tt:'Radius scale'},
-	{p:'maxRadius',ex:"16",d:1000},
+	{p:'strokeOpacity',d:1},
+	{p:'fillColor',d:'blue'},
+	{p:'fillOpacity',d:0.5},
+	{p:'radius',d:5,tt:'Size of the map points'},
+	{p:'scaleRadius',ex:'true',tt:'Scale the radius based on # points shown'},
+	{p:'radiusScale',ex:'value,size,value,size e.g.: 10000,1,8000,2,5000,3,2000,3,1000,5,500,6,250,8,100,10,50,12',tt:'Radius scale'},
+	{p:'maxRadius',ex:'16',d:1000},
 	{p:'shape',d:'circle',ex:'plane|star|cross|x|square|triangle|circle|lightning|church',tt:'Use shape'},
-	{p:'markerIcon',ex:"/icons/..."},
+	{p:'markerIcon',ex:'/icons/...'},
 	{p:'iconSize',ex:16},
-	{p:'justOneMarker',ex:"true",tt:'This is for data that is all at one point and you want to support selecting points for other displays'},	
+	{p:'justOneMarker',ex:'true',tt:'This is for data that is all at one point and you want to support selecting points for other displays'},	
 	{p:'showPoints',ex:'true',tt:'Also show the map points when showing heatmap or glyphs or vectors'},
 	{p:'applyPointsToVectors',d:true,tt:'If false then just show any attached map vectors without coloring them from the points'},
 	{p:'bounds',ex:'north,west,south,east',tt:'initial bounds'},
 	{p:'gridBounds',ex:'north,west,south,east'},	
-	{p:'mapCenter',ex:'lat,lon',tt:"initial position"},
-	{p:'zoomLevel',ex:4,tt:"initial zoom"},
-	{p:'zoomTimeout',ex:500,tt:"initial zoom timeout delay. set this if the map is in tabs, etc, and not going to the initial zoom"},
+	{p:'mapCenter',ex:'lat,lon',tt:'initial position'},
+	{p:'zoomLevel',ex:4,tt:'initial zoom'},
+	{p:'zoomTimeout',ex:500,tt:'initial zoom timeout delay. set this if the map is in tabs, etc, and not going to the initial zoom'},
 	{p:'fixedPosition',ex:true,tt:'Keep the initial position'},
-	{p:'linked',ex:true,tt:"Link location with other maps"},
-	{p:'linkGroup',ex:'some_name',tt:"Map groups to link with"},
-	{p:'initialLocation', ex:'lat,lon',tt:"initial location"},
-	{p:'defaultMapLayer',ex:'ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|esri.lightgray|esri.physical|opentopo|usgs.topo|usgs.imagery|usgs.relief|osm.toner|osm.toner.lite|watercolor'},
-//	{p:'mapLayers',ex:'ol.openstreetmap,esri.topo,esri.street,esri.worldimagery,esri.lightgray,esri.physical,opentopo,usgs.topo,usgs.imagery,usgs.relief,osm.toner,osm.toner.lite,watercolor'},
+	{p:'linked',ex:true,tt:'Link location with other maps'},
+	{p:'linkGroup',ex:'some_name',tt:'Map groups to link with'},
+	{p:'initialLocation', ex:'lat,lon',tt:'initial location'},
+	{p:'defaultMapLayer',ex:'osm|google.roads|esri.street|google.hybrid|google.terrain|google.satellite|opentopo|esri.topo|usfs|usgs.topo|naip|usgs.imagery|esri.shaded|esri.lightgray|esri.darkgray|esri.terrain|shadedrelief|esri.aeronautical|historic|osm.toner|osm.toner.lite|watercolor'},
 	{p:'extraLayers',tt:'comma separated list of layers to display',
 	 ex:'baselayer:goes-visible,baselayer:nexrad,geojson:US States:/resources/usmap.json:fillColor:transparent'},
 
-	{p:'doPopup', ex:'false',tt:"Don't show popups"},
-	{p:'doPopupSlider', ex:'true',tt:"Do the inline popup that slides down"},
-	{p:'popupSliderRight', ex:'true',tt:"Position the inline slider to the right"},	
-	{p:'popupSliderStyle', ex:'max-width:300px;overflow-x:auto;',tt:""},	
+	{p:'doPopup', ex:'false',tt:'Do not show popups'},
+	{p:'doPopupSlider', ex:'true',tt:'Do the inline popup that slides down'},
+	{p:'popupSliderRight', ex:'true',tt:'Position the inline slider to the right'},	
+	{p:'popupSliderStyle', ex:'max-width:300px;overflow-x:auto;',tt:''},	
 	{p:'labelField',ex:'',tt:'field to show in TOC'},
 	{p:'showRegionSelector',ex:true},
 	{p:'regionSelectorLabel'},	
@@ -35401,7 +35400,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'rotateField',ex:'""',tt:'Field id for degrees rotation'},
 	{p:'rotateScale',d:'1.0',tt:'Scale value to multiply the rotate field value by to get degrees rotation'},		
 
-	{label:"Map GUI"},
+	{label:'Map GUI'},
 	{p:'showTableOfContents',ex:'true',tt:'Show left table of contents'},
 	{p:'tableOfContentsTitle'},
 	{p:'showMarkersToggle',ex:'true',tt:'Show the toggle checkbox for the marker layer'},
@@ -35413,7 +35412,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	{label:'Map Highlight'},
 	{p:'showRecordSelection',ex:'false',d:'true'},
-	{p:'highlight',ex:'true',tt:"Show mouse over highlights"},
+	{p:'highlight',ex:'true',tt:'Show mouse over highlights'},
 	{p:'displayDiv',tt:'Div id to show highlights in'},
 	{p:'showRecordHighlight',d:true},
 	{p:'recordHighlightFeature',ex:'true',tt:'If there is a vector map that is being shown then highlight the map feature instead of drawing a point'},
@@ -35432,23 +35431,23 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'unhighlightStrokeColor',ex:'#aaa',tt:'Stroke color for when records are unhighlighted with the filters'},
 	{p:'unhighlightRadius',d:-1,ex:'1',tt:'Radius for when records are highlighted with the filters'},
 
-	{label:"Map Collisions"},
-	{p:'handleCollisions',ex:'true',tt:"Handle point collisions"},
-	{p:'collisionFixed',canCache:true,d:false,ex:'false',tt:"Always show markers",canCache:true},
-	{p:'collisionMinPixels',d:16,ex:'16',tt:"How spread out",canCache:true},
-	{p:'collisionDotColor',d:'blue',tt:"Color of dot drawn at center",canCache:true},
+	{label:'Map Collisions'},
+	{p:'handleCollisions',ex:'true',tt:'Handle point collisions'},
+	{p:'collisionFixed',canCache:true,d:false,ex:'false',tt:'Always show markers',canCache:true},
+	{p:'collisionMinPixels',d:16,ex:'16',tt:'How spread out',canCache:true},
+	{p:'collisionDotColor',d:'blue',tt:'Color of dot drawn at center',canCache:true},
 	{p:'collisionDotColorOn',canCache:true},
 	{p:'collisionDotColorOff',canCache:true},		
-	{p:'collisionDotRadius',d:6,tt:"Radius of dot drawn at center",canCache:true},
-	{p:'collisionScaleDots',ex:'false',d:true,tt:"Scale the group dots",canCache:true},
+	{p:'collisionDotRadius',d:6,tt:'Radius of dot drawn at center',canCache:true},
+	{p:'collisionScaleDots',ex:'false',d:true,tt:'Scale the group dots',canCache:true},
 				
-	{p:'collisionLineColor',ex:'red',tt:"Color of line drawn at center",canCache:true},
-	{p:'collisionIcon',ex:'/icons/...',tt:"Use an icon for collisions",canCache:true},
+	{p:'collisionLineColor',ex:'red',tt:'Color of line drawn at center',canCache:true},
+	{p:'collisionIcon',ex:'/icons/...',tt:'Use an icon for collisions',canCache:true},
 	{p:'collisionIconSize',d:16,ex:'16',canCache:true},
-	{p:'collisionTooltip',ex:'${default}',tt:"Tooltip to use for collision dot",canCache:true},
+	{p:'collisionTooltip',ex:'${default}',tt:'Tooltip to use for collision dot',canCache:true},
 
 
-	{label:"Map Lines"},
+	{label:'Map Lines'},
 	{p:'showSegments',ex:'true',tt:'If data has 2 lat/lon locations draw a line'},
 	{p:'segmentWidth',d:'1',tt:'Segment line width'},	
 	{p:'useGreatCircle',d:false,ex:'true',tt:'use great circle routes for segments'},
@@ -35465,30 +35464,30 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'lonField2',tt:'Field id for segments'},
 	{p:'trackUrlField',ex:'field id',tt:'The data can contain a URL that points to data'},
 
-	{label:"Map Labels"},
-	{p:"labelTemplate",ex:"${field}",tt:"Display labels in the map"},
-	{p:"labelKeyField",ex:"field",tt:"Make a key, e.g., A, B, C, ... based on the value of the key field"},	
-	{p:"labelLimit",ex:"1000",tt:"Max number of records to display labels"},
-  	{p:"doLabelGrid",ex:"true",tt:"Use a grid to determine if a label should be shown"},		
-	{p:"labelFontColor",ex:"#000"},
-	{p:"labelFontSize",ex:"12px"},
-	{p:"labelFontFamily",ex:"'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"},
-	{p:"labelFontWeight",ex:"plain"},
-	{p:"labelAlign",ex:"l|c|r t|m|b"},
-	{p:"labelXOffset",ex:"0"},
-	{p:"labelYOffset",ex:"0"},
-	{p:"labelOutlineColor",ex:"#fff"},
-	{p:"labelOutlineWidth",ex:"0"},
+	{label:'Map Labels'},
+	{p:'labelTemplate',ex:'${field}',tt:'Display labels in the map'},
+	{p:'labelKeyField',ex:'field',tt:'Make a key, e.g., A, B, C, ... based on the value of the key field'},	
+	{p:'labelLimit',ex:'1000',tt:'Max number of records to display labels'},
+  	{p:'doLabelGrid',ex:'true',tt:'Use a grid to determine if a label should be shown'},		
+	{p:'labelFontColor',ex:'#000'},
+	{p:'labelFontSize',ex:'12px'},
+	{p:'labelFontFamily',ex:'\'Open Sans\', Helvetica Neue, Arial, Helvetica, sans-serif'},
+	{p:'labelFontWeight',ex:'plain'},
+	{p:'labelAlign',ex:'l|c|r t|m|b'},
+	{p:'labelXOffset',ex:'0'},
+	{p:'labelYOffset',ex:'0'},
+	{p:'labelOutlineColor',ex:'#fff'},
+	{p:'labelOutlineWidth',ex:'0'},
 
 
 	{label:'Map Glyphs'},
 	{p:'doGridPoints',ex:'true',tt:'Display a image showing shapes or bars',canCache:true},
 	{p:'gridWidth',ex:'800',tt:'Width of the canvas'},
-	{label:'label glyph',p:"glyph1",ex:"type:label,pos:sw,dx:10,dy:-10,label:field_colon_ ${field}_nl_field2_colon_ ${field2}"},
-	{label:'rect glyph', p:"glyph1",ex:"type:rect,pos:sw,dx:10,dy:0,colorBy:field,width:150,height:100"},
-	{label:'circle glyph',p:"glyph1",ex:"type:circle,pos:n,dx:10,dy:-10,fill:true,colorBy:field,width:20,baseWidth:5,sizeBy:field"},
-	{label:'3dbar glyph', p:"glyph1",ex:"type:3dbar,pos:sw,dx:0,dy:0,height:30,width:6,baseHeight:5,sizeBy:field"},
-	{label:'gauge glyph',p:"glyph1",ex:"type:gauge,color:#000,pos:sw,width:50,height:50,dx:10,dy:-10,sizeBy:field,sizeByMin:0"},
+	{label:'label glyph',p:'glyph1',ex:'type:label,pos:sw,dx:10,dy:-10,label:field_colon_ ${field}_nl_field2_colon_ ${field2}'},
+	{label:'rect glyph', p:'glyph1',ex:'type:rect,pos:sw,dx:10,dy:0,colorBy:field,width:150,height:100'},
+	{label:'circle glyph',p:'glyph1',ex:'type:circle,pos:n,dx:10,dy:-10,fill:true,colorBy:field,width:20,baseWidth:5,sizeBy:field'},
+	{label:'3dbar glyph', p:'glyph1',ex:'type:3dbar,pos:sw,dx:0,dy:0,height:30,width:6,baseHeight:5,sizeBy:field'},
+	{label:'gauge glyph',p:'glyph1',ex:'type:gauge,color:#000,pos:sw,width:50,height:50,dx:10,dy:-10,sizeBy:field,sizeByMin:0'},
 
 	{label:'Hex map, Voronoi, etc'},
 	{p:'mapType',ex:'hex or triangle or square or voronoi',tt:'Create a hex or triangle or square or voronoi map'},
@@ -35573,19 +35572,19 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         initDisplay: function() {
             SUPER.initDisplay.call(this);
             let _this = this;
-	    let legendSide = this.getProperty("sizeByLegendSide");
+	    let legendSide = this.getProperty('sizeByLegendSide');
 	    if(legendSide) {
 		let legend = HU.div([ID,this.domId(ID_SIZEBY_LEGEND)]);
-		if(legendSide=="top") {
+		if(legendSide=='top') {
 		    this.jq(ID_HEADER0).append(legend);
-		} else if(legendSide=="left") {
+		} else if(legendSide=='left') {
 		    this.jq(ID_LEFT).append(legend);
-		} else if(legendSide=="right") {
+		} else if(legendSide=='right') {
 		    this.jq(ID_RIGHT).append(legend);
-		} else if(legendSide=="bottom") {
+		} else if(legendSide=='bottom') {
 		    this.jq(ID_BOTTOM).append(legend);
 		} else {
-		    console.log("Unknown legend side:" + legendSide);
+		    console.log('Unknown legend side:' + legendSide);
 		}
 	    }
 	    this.startProgress();
@@ -36325,6 +36324,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(this.highlightMarker) this.addFeatures([this.highlightMarker]);
 		if(andCenter && this.getCenterOnHighlight()) {
 		    this.getMap().setCenter(point);
+		    this.getMap().setZoom(16);
 		}
 	    }
 	},
@@ -38531,6 +38531,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 	    let tooltip = this.getProperty("tooltip");
+	    let haveTooltip = Utils.stringDefined(tooltip);
 	    let highlight = this.getProperty("highlight");
 	    let highlightTemplate = this.getProperty("highlightTemplate");
 	    if(highlightTemplate)
@@ -38992,6 +38993,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		}
 
+
 		if(glyphs.length>0) {
 		    let cid = HU.getUniqueId("canvas_");
 		    let c = HU.tag("canvas",[CLASS,"", WIDTH,canvasWidth,HEIGHT,canvasHeight,ID,cid]);
@@ -39037,6 +39039,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    props.fillColor =   colorBy.getColorFromRecord(record, props.fillColor);
 
 		    if(radius>0) {
+			if(haveTooltip) {
+			    props.cursor = 'pointer';
+			}
+
 			mapPoint = this.map.createPoint("pt-" + i, point, props, null);
 			mapPoint.levelRange = this.pointLevelRange;
 			pointsToAdd.push(mapPoint);
