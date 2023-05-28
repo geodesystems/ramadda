@@ -783,6 +783,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'centerOnFilterChange',ex:true,tt:'Center map when the data filters change'},
 	{p:'centerOnHighlight',ex:true,tt:'Center map when a record is highlighted'},
 	{p:'centerOnMarkersAfterUpdate',ex:true,tt:'Always center on the markers'},	
+	{p:'zoomLevelOnHighlight',ex:16,tt:'Set the zoom level'},
 	{p:'doInitCenter',tt:'Center the maps on initialization'},
 	{p:'boundsAnimation',ex:true,tt:'Animate when map is centered'},
 	{p:'iconField',ex:'""',tt:'Field id for the image icon url'},
@@ -1713,7 +1714,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(this.highlightMarker) this.addFeatures([this.highlightMarker]);
 		if(andCenter && this.getCenterOnHighlight()) {
 		    this.getMap().setCenter(point);
-		    this.getMap().setZoom(16);
+		    if(this.getZoomLevelOnHighlight())
+			this.getMap().setZoom(this.getZoomLevelOnHighlight());
+
 		}
 	    }
 	},
