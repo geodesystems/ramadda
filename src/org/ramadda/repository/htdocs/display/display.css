@@ -222,13 +222,6 @@ a.display-container {
     font-weight:600;
 }
 
-.display-header-vertical .display-filter-label {
-    font-weight:bold;
-}
-
-.display-header-vertical .display-header-span {
-    display:block;
-}
 
 .display-filter-label-vertical {
     text-align:left;
@@ -343,10 +336,19 @@ a.display-container {
 }
 
 .display-header-span {
-    display:inline-block;
+    display:inline;
     line-height:1.25em;
     text-align:center;
 }
+
+.display-header-vertical .display-filter-label {
+    font-weight:bold;
+}
+
+.display-header-vertical .display-header-span {
+    display:block;
+}
+
 
 .display-header-vertical .display-header-span {
     text-align:left;
