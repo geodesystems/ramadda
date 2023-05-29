@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat May 27 18:20:00 MDT 2023";
+var build_date="RAMADDA build date: Mon May 29 07:58:20 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -5191,6 +5191,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'showChildTitle',canCache:true},
 	{p:'showEntryIcon',ex:true},
 	{p:'layoutHere',ex:true},
+	{p:'headerDiv',tt:'div id of an alternate place to display the header'},	
 	{p:'width',doGetter:false,ex:'100%'},
 	{p:'height',doGetter:false,ex:'400'},
 	{p:'tooltip',doGetter:false,d:'${default}'},
@@ -9186,6 +9187,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let top =  this.getProperty("showHeader",true)?HU.leftCenterRight(topLeft, topCenter, topRight, null, null, null,{
                 valign: "bottom"
             }):"";
+	    //See if we are drawing the header somewhere else
+	    if(this.getHeaderDiv()) {
+		$('#'+ this.getHeaderDiv()).html(top);
+		top='';
+	    }
+
             let header = h1;
 	    if(h2Separate) header+=h2;
 	    top =  header +  top;	    
@@ -9772,7 +9779,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(this.getShowProgress(false)) {
 		header2 += HU.div([ID,this.getDomId(ID_DISPLAY_PROGRESS), STYLE,HU.css("display","inline-block","margin-right","4px","min-width","20px")]);
 	    }
-	    header2 += HU.div([CLASS,"display-header-span"],"");
 	    header2 += HU.div([ID,this.getDomId(ID_HEADER2_PREPREPREFIX),CLASS,"display-header-span"],"");
 	    header2 += HU.div([ID,this.getDomId(ID_HEADER2_PREPREFIX),CLASS,"display-header-span"],"");
 	    header2 += HU.div([ID,this.getDomId(ID_HEADER2_PREFIX),CLASS,"display-header-span"],"");
@@ -9782,6 +9788,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		header2 += HU.div([CLASS,"display-header-span display-filter",ID,this.getDomId(ID_PAGE_COUNT)]);
 	    }
 	    header2+=HU.div([ID,this.getDomId(ID_REQUEST_PROPERTIES),CLASS,"display-header-span"],"");
+
+
+
 	    if(this.getProperty("legendFields") || this.getProperty("showFieldLegend",false)) {
 		let colors = this.getColorList();
 		let fields =  this.getFieldsByIds(null, this.getProperty("legendFields", this.getPropertyFields(this.getProperty("sumFields"))));
@@ -10040,6 +10049,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let filterBar = searchBar+bottom[0] + HU.div([ID,this.domId(ID_TAGBAR)],"");
 		header2+=HU.div([CLASS,"display-header-span " +  filterClass,STYLE,style,ID,this.getDomId(ID_FILTERBAR)],filterBar);
 	    }
+
+
 
 	    if(vertical) {
 		header2 = HU.div([CLASS,"display-header-vertical"],header2);
@@ -36325,8 +36336,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(this.highlightMarker) this.addFeatures([this.highlightMarker]);
 		if(andCenter && this.getCenterOnHighlight()) {
 		    this.getMap().setCenter(point);
-		    if(this.getZoomLevelOnHighlight())
+		    if(this.getZoomLevelOnHighlight()) {
 			this.getMap().setZoom(this.getZoomLevelOnHighlight());
+		    }
 
 		}
 	    }
