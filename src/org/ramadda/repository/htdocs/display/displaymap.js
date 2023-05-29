@@ -1714,8 +1714,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(this.highlightMarker) this.addFeatures([this.highlightMarker]);
 		if(andCenter && this.getCenterOnHighlight()) {
 		    this.getMap().setCenter(point);
-		    if(this.getZoomLevelOnHighlight())
+		    if(this.getZoomLevelOnHighlight()) {
 			this.getMap().setZoom(this.getZoomLevelOnHighlight());
+		    }
 
 		}
 	    }
