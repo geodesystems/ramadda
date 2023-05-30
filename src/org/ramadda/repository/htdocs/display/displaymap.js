@@ -532,8 +532,8 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    }
 	    
 	    let extras = [];
-	    if(this.getExtraLayers()) {
-		extras =Utils.mergeLists(extras,    this.getExtraLayers('').split(","));
+	    if(this.getProperty('extraLayers')) {
+		extras =Utils.mergeLists(extras,    this.getProperty('extraLayers').split(","));
 	    }
 	    if(Utils.stringDefined(this.getProperty('extraLayer'))) {
 		extras.push(this.getProperty('extraLayer'));    
