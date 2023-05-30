@@ -3348,7 +3348,7 @@ public class WikiManager extends RepositoryManager
             }
             String layout = getProperty(wikiUtil, props,
                                         APPLY_PREFIX + "layout", "table");
-            int columns = getProperty(wikiUtil, props,
+           int columns = getProperty(wikiUtil, props,
                                       APPLY_PREFIX + ATTR_COLUMNS, 1);
             if (columns > children.size()) {
                 columns = children.size();
@@ -3597,6 +3597,16 @@ public class WikiManager extends RepositoryManager
             tmpProps.remove(ATTR_ENTRY);
             tmpProps.remove(ATTR_ENTRIES);
             tmpProps.remove(ATTR_FIRST);
+	    //Check for any child. prefix properties
+	    for (Enumeration keys = tmpProps.keys(); keys.hasMoreElements(); ) {
+		Object key = keys.nextElement();
+		String skey = key.toString();
+		if(skey.startsWith("tag.")) {
+		    tmpProps.put(skey.substring("tag.".length()), tmpProps.get(key));
+		    tmpProps.remove(key);
+		}
+	    }
+
             if (doingGrid || flipCards) {
                 tmpProps.put("showHeading", "false");
                 if (tmpProps.get(ATTR_SHOWICON) == null) {
