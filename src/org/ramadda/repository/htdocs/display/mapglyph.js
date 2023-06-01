@@ -549,7 +549,12 @@ MapGlyph.prototype = {
 	let gi = this.getGlyphInfo();
 	if(this.glyphFieldsContainer) {
 	    jqid(this.glyphFieldsContainer).remove();
+	    this.glyphFieldsContainer=null;
 	}
+	if(!this.getProperty('showGlyphMenu',true,true)) {
+	    return
+	}
+
 	if(Utils.stringDefined(gi.fields)) {
 	    this.glyphFieldsId = HU.getUniqueId('glyphfields_');
 	    this.glyphFieldsContainer = HU.getUniqueId('glyphfields_');
