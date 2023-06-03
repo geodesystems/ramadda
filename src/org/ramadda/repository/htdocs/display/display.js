@@ -5522,7 +5522,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let rightInner="";
 	    let leftInner="";
 
-	    let bottom = HU.div([ATTR_CLASS, "", ATTR_ID, this.getDomId(ID_BOTTOM)]);
+	    let bottom='';
 	    let legend = HU.div([ID,this.getDomId(ID_LEGEND)]);
 
 	    let ctSide = this.getProperty("colorTableSide","bottom");
@@ -5535,6 +5535,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    } else {
 		bottom+=colorTable;
 	    }
+	    bottom += HU.div([ATTR_CLASS, "", ATTR_ID, this.getDomId(ID_BOTTOM)]);
 	    bottom+=legend;
 	    let leftStyle = "";
 	    if(this.getProperty("leftSideWidth"))
