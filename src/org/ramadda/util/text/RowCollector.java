@@ -1961,7 +1961,7 @@ public class RowCollector extends Processor {
             this.util      = util;
             this.justStats = justStats;
             interactive    = util.getInteractive();
-	    interactive=true;
+	    //	    interactive=true;
         }
 
 
