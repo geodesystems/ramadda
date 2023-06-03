@@ -754,7 +754,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'scaleRadius',ex:'true',tt:'Scale the radius based on # points shown'},
 	{p:'radiusScale',ex:'value,size,value,size e.g.: 10000,1,8000,2,5000,3,2000,3,1000,5,500,6,250,8,100,10,50,12',tt:'Radius scale'},
 	{p:'maxRadius',ex:'16',d:1000},
-	{p:'shape',d:'circle',ex:'plane|star|cross|x|square|triangle|circle|lightning|church',tt:'Use shape'},
+	{p:'shape',d:'circle',ex:'plane|star|cross|diamond|x|square|triangle|circle|lightning|church',tt:'Use shape'},
+	{p:'shapeBy',tt:'field to shape by'},
+	{p:'shapeByMap',ex:'value1:circle|triangle|star|square|cross|diamond|x|lightning|rectangle|church:label1,value2:...'},
+	{p:'defaultShape',ex:'circle|triangle|star|square|cross|diamond|x|lightning|rectangle|church'},	
 	{p:'markerIcon',ex:'/icons/...'},
 	{p:'iconSize',ex:16},
 	{p:'justOneMarker',ex:'true',tt:'This is for data that is all at one point and you want to support selecting points for other displays'},	
@@ -3822,7 +3825,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let shapeBy = {
 		id: this.getDisplayProp(source, 'shapeBy', null),
 		field:null,
-		map: {}
+		map: {},
+		labels:{},
+		patterns:[]
 	    }
 
 
@@ -3830,6 +3835,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.getDisplayProp(source, 'shapeByMap', null).split(',').forEach((pair)=>{
 		    let tuple = pair.split(':');
 		    shapeBy.map[tuple[0]] = tuple[1];
+		    if(tuple[0].match('(\\*|\\.||\\+)')) {
+			shapeBy.patterns.push({pattern:tuple[0],shape:tuple[1]});
+			shapeBy.labels[tuple[0]] = tuple[2] ??tuple[0];
+		    }
+
 		})
 	    }
 
@@ -4186,17 +4196,35 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(shapeBy.field) {
 		    let gv = values[shapeBy.index];
 		    if(gv)  {
-			if(!Utils.isDefined(shapeBy.map[gv])) {
+			let _gv = String(gv).toLowerCase();
+			let shape = null;
+			shapeBy.patterns.every(pattern=>{
+				if(_gv.match(pattern.pattern)) {
+				    shape =  pattern.shape;
+				    return false;
+				}
+				return true;
+			    });
+
+			if(!shape) shape = shapeBy.map[_gv];
+
+
+			if(!shape) {
 			    if(dfltShape) {
-				shapeBy.map[gv] = dfltShape;
+//				shape = shapeBy.map[_gv] =  dfltShape;
+				shape =   dfltShape;
+				shapeBy.labels[_gv] = gv;
 			    } else {
 				if(dfltShapeIdx>=dfltShapes.length)
 				    dfltShapeIdx = 0;
-				shapeBy.map[gv] = dfltShapes[dfltShapeIdx++];
+				shape = shapeBy.map[_gv] = dfltShapes[dfltShapeIdx++];
+				shapeBy.labels[_gv] = gv;
 			    }
 			}
-			if(Utils.isDefined(shapeBy.map[gv])) {
-			    props.graphicName = shapeBy.map[gv];
+			if(!shape)
+			    shape = shapeBy.map[_gv];
+			if(Utils.isDefined(shape)) {
+			    props.graphicName = shape;
 			}
 			
 		    }
@@ -4526,10 +4554,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 	    }
 	    times = [new Date()];
-	    this.jq(ID_BOTTOM).append(HU.div([ID,this.domId(ID_SHAPES)]));
 	    if (didColorBy) {
 		this.showColorTable(colorBy);
 	    }
+	    this.jq(ID_BOTTOM).append(HU.div([ID,this.domId(ID_SHAPES)]));
 	    times.push(new Date());
 //	    Utils.displayTimes("final map points:",times, true);
 
@@ -4544,16 +4572,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(shapeBy.field) {
 		let shapes = shapeBy.field.getLabel()+": ";
 		for(v in shapeBy.map) {
+		    let label = shapeBy.labels[v]??v;
 		    let shape = shapeBy.map[v];
 		    if(shape=="circle") shape=HU.getIconImage("fa-circle");
 		    else if(shape=="square") shape=HU.getIconImage("fa-square");		    
 		    else if(shape=="rectangle") shape=HU.getIconImage("fa-square");		    
-		    else if(shape=="star") shape=HU.getIconImage("fa-star");		    
+		    else if(shape=="star") shape=HU.getIconImage("fa-star");
+		    else if(shape=="diamond") shape=HU.getIconImage("fa-diamond");		    		    
 		    else if(shape=="triangle") shape=HU.getIconImage("/icons/triangle.png",["width","16px"]);		    
 		    else if(shape=="lightning") shape=HU.getIconImage("/icons/lightning.png",["width","16px"]);		    
 		    else if(shape=="cross") shape=HU.getIconImage("/icons/cross.png",["width","16px"]);		    
 		    else if(shape=="church") shape=HU.getIconImage("fa-cross");
-		    shapes+=shape+" " + v +SPACE2;
+		    shapes+=shape+" " + label +SPACE2;
 		}
 		this.jq(ID_SHAPES).html(HU.center(shapes));
 	    }
