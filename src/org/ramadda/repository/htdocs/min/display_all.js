@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Jun  3 10:04:06 MDT 2023";
+var build_date="RAMADDA build date: Tue Jun  6 06:37:35 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -5191,7 +5191,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'showChildTitle',canCache:true},
 	{p:'showEntryIcon',ex:true},
 	{p:'layoutHere',ex:true},
-	{p:'headerDiv',tt:'div id of an alternate place to display the header'},	
+	{p:'headerDiv',tt:'div id of an alternate place to display the header'},
+	{p:'footerDiv',tt:'div id of an alternate place to display the footer'},		
 	{p:'width',doGetter:false,ex:'100%'},
 	{p:'height',doGetter:false,ex:'400'},
 	{p:'tooltip',doGetter:false,d:'${default}'},
@@ -9231,8 +9232,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    table+= HU.tr(["valign","top"],HU.td(['width',sideWidth],left) + HU.td(['width',centerWidth],contents) +HU.td(['width',sideWidth],right));
 	    if(this.getProperty('showDisplayBottom',true)) {
-		if(this.getProperty("bottomDiv")) {
-		    jqid(this.getProperty("bottomDiv")).html(bottom);
+		if(this.getFooterDiv(this.getProperty('bottomDiv'))) {
+		    jqid(this.getFooterDiv(this.getProperty('bottomDiv'))).html(bottom);
 		    bottom = "";
 		}
 		table+= HU.tr([],HU.td(['width',sideWidth]) + HU.td(['width',centerWidth],bottom) +HU.td(['width',sideWidth]));
@@ -35366,6 +35367,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     this.defineSizeByProperties();
+    let shapes = 'square|triangle|downtriangle|circle|plane|star|cross|diamond|x|thinx||lightning|church';
     let myProps = [
 	{label:'Map Properties'},
 	{p:'strokeWidth',d:1},
@@ -35377,10 +35379,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'scaleRadius',ex:'true',tt:'Scale the radius based on # points shown'},
 	{p:'radiusScale',ex:'value,size,value,size e.g.: 10000,1,8000,2,5000,3,2000,3,1000,5,500,6,250,8,100,10,50,12',tt:'Radius scale'},
 	{p:'maxRadius',ex:'16',d:1000},
-	{p:'shape',d:'circle',ex:'plane|star|cross|diamond|x|square|triangle|circle|lightning|church',tt:'Use shape'},
+	{p:'shape',d:'circle',ex:shapes,tt:'Use shape'},
 	{p:'shapeBy',tt:'field to shape by'},
-	{p:'shapeByMap',ex:'value1:circle|triangle|star|square|cross|diamond|x|lightning|rectangle|church:label1,value2:...'},
-	{p:'defaultShape',ex:'circle|triangle|star|square|cross|diamond|x|lightning|rectangle|church'},	
+	{p:'shapeByMap',ex:'value1:' + shapes+':label1,value2:...'},
+	{p:'defaultShape',ex:shapes},
 	{p:'markerIcon',ex:'/icons/...'},
 	{p:'iconSize',ex:16},
 	{p:'justOneMarker',ex:'true',tt:'This is for data that is all at one point and you want to support selecting points for other displays'},	
@@ -35432,7 +35434,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'displayDiv',tt:'Div id to show highlights in'},
 	{p:'showRecordHighlight',d:true},
 	{p:'recordHighlightFeature',ex:'true',tt:'If there is a vector map that is being shown then highlight the map feature instead of drawing a point'},
-	{p:'recordHighlightShape',ex:'circle|star|cross|x|square|triangle|circle|lightning|rectangle'},
+	{p:'recordHighlightShape',ex:shapes},
 	{p:'recordHighlightRadius',ex:'20',tt:'Radius to use to show other displays highlighted record'},
 	{p:'recordHighlightStrokeWidth',ex:'2',tt:'Stroke to use to show other displays highlighted record'},
 	{p:'recordHighlightStrokeColor',ex:'red',tt:'Color to use to show other displays highlighted record'},
@@ -38445,6 +38447,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let dfltShape = this.getProperty('defaultShape',null);
 	    let dfltShapes = ['circle','triangle','star',  'square', 'cross','x', 'lightning','rectangle','church'];
 	    let dfltShapeIdx=0;
+
 	    let shapeBy = {
 		id: this.getDisplayProp(source, 'shapeBy', null),
 		field:null,
@@ -38769,6 +38772,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    let colorByEnabled = colorBy.isEnabled();
 	    let graphicName = this.getPropertyShape();
+
 	    let didMarker = false;
 	    let times=[new Date()];
 	    records.forEach((record,idx)=>{
