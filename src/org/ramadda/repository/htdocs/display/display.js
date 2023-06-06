@@ -1513,7 +1513,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'showChildTitle',canCache:true},
 	{p:'showEntryIcon',ex:true},
 	{p:'layoutHere',ex:true},
-	{p:'headerDiv',tt:'div id of an alternate place to display the header'},	
+	{p:'headerDiv',tt:'div id of an alternate place to display the header'},
+	{p:'footerDiv',tt:'div id of an alternate place to display the footer'},		
 	{p:'width',doGetter:false,ex:'100%'},
 	{p:'height',doGetter:false,ex:'400'},
 	{p:'tooltip',doGetter:false,d:'${default}'},
@@ -5553,8 +5554,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    table+= HU.tr(["valign","top"],HU.td(['width',sideWidth],left) + HU.td(['width',centerWidth],contents) +HU.td(['width',sideWidth],right));
 	    if(this.getProperty('showDisplayBottom',true)) {
-		if(this.getProperty("bottomDiv")) {
-		    jqid(this.getProperty("bottomDiv")).html(bottom);
+		if(this.getFooterDiv(this.getProperty('bottomDiv'))) {
+		    jqid(this.getFooterDiv(this.getProperty('bottomDiv'))).html(bottom);
 		    bottom = "";
 		}
 		table+= HU.tr([],HU.td(['width',sideWidth]) + HU.td(['width',centerWidth],bottom) +HU.td(['width',sideWidth]));
