@@ -4159,7 +4159,7 @@ public class Column implements DataTypes, Constants, Cloneable {
      * @return _more_
      */
     public String toString() {
-        return name;
+        return name+" type:" + type;
     }
 
     /**
