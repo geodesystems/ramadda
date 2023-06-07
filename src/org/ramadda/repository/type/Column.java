@@ -1888,6 +1888,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                           int valueIdx)
             throws Exception {
         if (isType(DATATYPE_INT)) {
+	    System.err.println("C:" + this);
             int value = results.getInt(valueIdx);
             if (results.wasNull()) {
                 if (databaseDflt != null) {
