@@ -3449,7 +3449,8 @@ public abstract class Processor extends SeesvOperator {
             }
         }
 
-
+	int xcnt = 0;
+	int ycnt = 0;	
         /**
          * _more_
          *
@@ -3508,7 +3509,7 @@ public abstract class Processor extends SeesvOperator {
                 if (headerRow1 == null) {
                     headerRow1 = row;
                 }
-                //              System.err.println("key:" + key +" row:" + row);
+		//		if(xcnt++<10)   System.err.println("key:" + key +" row:" + row);
                 map.put(key, row);
             }
             if (operator == null) {
@@ -3550,6 +3551,7 @@ public abstract class Processor extends SeesvOperator {
             for (int i : keys2Indices) {
                 key += row.getString(i) + "_";
             }
+	    //	    if(ycnt++<10)System.err.println("value:" + key);
             Row other = map.get(key);
             if (other == null) {
                 for (int j : values1Indices) {
@@ -3559,6 +3561,7 @@ public abstract class Processor extends SeesvOperator {
                 return row;
             }
             for (int j : values1Indices) {
+		//		if(xcnt++<50) System.err.println("J:" +j +" " +other.get(j));
                 row.add(other.get(j));
             }
 
