@@ -164,6 +164,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
     private int nonUniqueCnt = 0;    
 
+    private int skipCnt = 0;
+
+
     /** _more_ */
     private int newEntryCnt = 0;
 
@@ -651,6 +654,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         }
 
 	List<String> entryMsg = new ArrayList<String>();
+	String msg = "";
         if (entryCnt > 0) {
             long   dt      = ((getActive()
                                ? System.currentTimeMillis()
@@ -665,17 +669,22 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 timeMsg = ((int) (100 * dt / 60.0)) / 100.0 + " minutes "
 		    + ePerM + " entries/minute";
             }
-            entryMsg.add("Found " + entryCnt + " file" + ((entryCnt == 1)
-							  ? ""
-							  : "s") + " (" + newEntryCnt + " new)");
-        }
-	if(nonUniqueCnt>0) {
-	    entryMsg.add("Found " + nonUniqueCnt +" files already added");
+	    msg +=  "found " + entryCnt + Utils.plural(entryCnt," potential file") + ".";
+	    msg += " " + newEntryCnt + Utils.plural(newEntryCnt," new file")+".";
+	    if(nonUniqueCnt>0) {
+		msg += " " + nonUniqueCnt+" " + Utils.plural(nonUniqueCnt," file") +" already added.";
+	    }
+	}
+	if(skipCnt>0) {
+	    msg+=" " + skipCnt+" " + Utils.plural(skipCnt,"file")+" skipped.";
+	}
+	if(msg.length()>0) {
+            entryMsg.add(msg);
 	}
 
 
 	if(totalAddedEntries>0) {
-	    entryMsg.add("Created " + totalAddedEntries +" new entries");
+	    entryMsg.add("Created " + totalAddedEntries +(totalAddedEntries==1?" new entry":" new entries"));
 	}
 	entryMsg.addAll(otherMsgs);
 
@@ -754,6 +763,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             return;
         }
 
+	skipCnt  = 0;
         entryCnt    = 0;
 	nonUniqueCnt  = 0;
         newEntryCnt = 0;
@@ -936,6 +946,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         List<Entry>         needToAdd = new ArrayList<Entry>();
         List<HarvesterFile> tmpDirs   = new ArrayList<HarvesterFile>(dirs);
         entryCnt    = 0;
+	skipCnt = 0;
 	nonUniqueCnt = 0;
         newEntryCnt = 0;
 	totalAddedEntries = 0;
@@ -997,21 +1008,29 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                     }
                     continue;
                 }
+		//Check if it matches the pattern, etc
+		if(!isFileOk(f)) {
+		    skipCnt++;
+		    continue;
+		}
+
+		//Check if it has changed recently
                 long fileTime = f.lastModified();
                 //time diff threshold = 1 minute
                 long now = System.currentTimeMillis();
                 if ((now - fileTime) < FILE_CHANGED_TIME_THRESHOLD_MS) {
+		    skipCnt++;
 		    int diff = (int)((now-fileTime)/1000.0);
 		    String message = "Skipping recently modified file: " + f
-			+ " seconds since modified:"
-			+ diff;
-		    String htmlMessage=message+"<br>Ready to harvest in " + (FILE_CHANGED_TIME_THRESHOLD_MS/1000-diff)  +" seconds";
+			+ " date:" + new Date(fileTime);
+		    String htmlMessage=message+" ready in " + (FILE_CHANGED_TIME_THRESHOLD_MS/1000-diff)  +" seconds";
 		    otherMsgs.add(htmlMessage);
                     logHarvesterInfo(message);
                     //Reset the state that gets set and checked in hasChanged so we can return to this dir
                     dirInfo.reset();
                     continue;
                 }
+
                 Entry entry = null;
                 try {
                     entry = processFile(dirInfo, f, entriesMap);
@@ -1030,14 +1049,13 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                     continue;
                 }
                 if (entry == null) {
-                    logHarvesterInfo("No entry created for file: " + f);
-
+		    //                    logHarvesterInfo("No entry created for file: " + f);
                     continue;
                 }
 
 
                 entryCnt++;
-                //              System.err.println(entryCnt +" " + f);
+		//		System.err.println(entryCnt +" " + f);
                 if (getTestMode()) {
                     if (entryCnt >= getTestCount()) {
                         return;
@@ -1080,7 +1098,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 newEntryCnt += uniqueEntries.size();
                 needToAdd.addAll(uniqueEntries);
                 for (Entry newEntry : uniqueEntries) {
-                    logHarvesterInfo("New entry:" + newEntry.getResource());
+                    logHarvesterInfo("creating new entry:" + newEntry.getResource());
                     dirInfo.addFile(newEntry.getResource().getPath());
                 }
                 if (needToAdd.size() > 999) {
@@ -1434,12 +1452,17 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
      *
      * @throws Exception _more_
      */
-    public Entry processFile(HarvesterFile fileInfo, FileWrapper f,
+    private Entry processFile(HarvesterFile fileInfo, FileWrapper f,
                              Hashtable<String, Entry> entriesMap)
 	throws Exception {
-
-        logHarvesterInfo("processFile:" + f);
+	//        logHarvesterInfo("processFile:" + f);
         Request request = getRequest();
+        Matcher matcher = null;
+        return harvestFile(fileInfo, f, matcher, entriesMap);
+    }
+
+
+    private boolean isFileOk(FileWrapper f) {
         String filePath = f.toString();
         String fileName = f.getName();
         //check if its a hidden file
@@ -1448,29 +1471,27 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         if ( !isPlaceholder) {
             if (f.getName().startsWith(".")) {
                 logHarvesterInfo("File is hidden file:" + f);
-
-                return null;
+                return false;
             }
         }
 
         if (fileName.equals("ramadda.properties")
 	    || fileName.equals(".this.ramadda.xml")) {
-            return null;
+            return false;
         }
         filePath = filePath.replace("\\", "/");
 
-        Matcher matcher = null;
         if (filePattern != null && filePattern.size()>0) {
 	    if(!PatternHolder.checkPatterns(filePattern,filePath)) {
                 debug("file:<i>" + filePath + "</i> does not match pattern");
                 logHarvesterInfo("file:" + filePath + " does not match pattern");
-                return null;
+                return false;
             }
         }
 	if(sizeLimit>=0) {
 	    if(sizeLimit>f.length()) {
 		System.err.println("Over size limit:" + f.length());
-		return null;
+		return false;
 	    }
 	}
 
@@ -1479,14 +1500,13 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	    if(PatternHolder.checkPatterns(notfilePattern,filePath)) {
 		logHarvesterInfo("excluding file because it matches the NOT pattern:"
 				 + filePath);
-		return null;
+		return false;
             }
         }
 
         debug("file:<i>" + filePath + "</i> matches pattern");
-        return harvestFile(fileInfo, f, matcher, entriesMap);
+	return true;
     }
-
 
     /**
      * _more_
@@ -1875,28 +1895,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         super.clearCache();
     }
 
-
-    /**
-     * _more_
-     *
-     * @param type _more_
-     * @param filepath _more_
-     * @param entriesMap _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public Entry processFile(TypeHandler type, String filepath,
-                             Hashtable<String, Entry> entriesMap)
-	throws Exception {
-        if ( !this.getTypeHandler(TypeHandler.TYPE_FINDMATCH).equals(type)) {
-            return null;
-        }
-        FileWrapper fileWrapper = FileWrapper.createFileWrapper(filepath);
-        return processFile(new HarvesterFile(fileWrapper.getParentFile()), fileWrapper,
-                           entriesMap);
-    }
 
 
     /**
