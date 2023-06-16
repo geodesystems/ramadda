@@ -5834,10 +5834,10 @@ public class Utils extends IO {
      */
     public static String plural(int count, String label) {
         if (count == 1) {
-            return count + " " + label;
+            return  label;
         }
 
-        return count + " " + label + "s";
+        return  label + "s";
     }
 
     /**
@@ -5849,15 +5849,15 @@ public class Utils extends IO {
      */
     public static String formatMinutes(int minutes) {
         if (minutes < 60) {
-            return plural(minutes, "minute");
+            return minutes+" " +plural(minutes, "minute");
         }
         int hours = minutes / 60;
         int rem   = minutes - (hours * 60);
         if (rem == 0) {
-            return plural(hours, "hour");
+            return hours+" " + plural(hours, "hour");
         }
 
-        return plural(hours, "hour") + " " + plural(rem, "minute");
+        return hours+ " "+ plural(hours, "hour") + " " + rem+" " + plural(rem, "minute");
     }
 
 

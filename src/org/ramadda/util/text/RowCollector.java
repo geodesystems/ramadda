@@ -2047,7 +2047,7 @@ public class RowCollector extends Processor {
                 Object[] array = values.toArray();
                 Arrays.sort(array, comp);
                 values = (List<Object[]>) Misc.toList(array);
-                String html = Utils.plural(values.size(), "unique value");
+                String html = values.size() +" " + Utils.plural(values.size(), "unique value");
                 if(justStats)
                     html+="<div style='margin-right:5px;max-height:300px;overflow-y:auto;'>";
                 else
