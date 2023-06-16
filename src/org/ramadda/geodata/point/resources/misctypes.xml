@@ -209,7 +209,6 @@ record.type.default=double
 :navtop  fixed=true
 {{description wikify=true}}
 :heading Skew-T
-{{display_download}}
 <div style="height:500px;position:relative;">
 {{display_skewt skewtWidth="550" skewtHeight="450" hodographWidth=300}}
 </div>
@@ -263,7 +262,7 @@ point.csvcommands=-skip, 10,-stop,.*&lt;PRE&gt;.*,-print
 +section title={{name}}
 {{description wikify=true}}
 <div style="height:600px;">
-{{display type=skewt layoutHere=true  skewtWidth="550" skewtHeight="550" hodographWidth=200 showMenu=false showTitle=false}}
+{{display_skewt layoutHere=true  skewtWidth="550" skewtHeight="550" hodographWidth=200 showMenu=false showTitle=false}}
 </div>
 :br
 +row
@@ -307,7 +306,7 @@ point.csvcommands=-delimiter,spaces,-start,(?s)----.*,-start,(?s)----.*,-stop,(?
 +section title={{name}}
 {{description wikify=true}}
 <div style="height:600px;">
-{{display type=skewt layoutHere=true  skewtWidth="550" skewtHeight="550" hodographWidth=200 showMenu=false showTitle=false}}
+{{display_skewt layoutHere=true  skewtWidth="550" skewtHeight="550" hodographWidth=200 showMenu=false showTitle=false}}
 </div>
 :br
 +row
@@ -360,7 +359,7 @@ lastHeaderPattern=IX.*
 +section title={{name}}
 {{description wikify=true}}
 <div style="height:600px;">
-{{display type=skewt layoutHere=true  
+{{display_skewt layoutHere=true  
 height=400
 skewtWidth=400 skewtHeight="400" hodographWidth=200 showMenu=false showTitle=false windStride=100}}
 </div>
@@ -406,7 +405,7 @@ point.csvcommands=-alldata,-skip,7,-widths,7_comma_7_comma_7_comma_7_comma_7_com
 <div style="height:600px;">
 +row
 +col-8
-{{display type=skewt layoutHere=true  skewtWidth="500" skewtHeight="550" hodographWidth=150 showMenu=false showTitle=false}}
+{{display_skewt layoutHere=true  skewtWidth="500" skewtHeight="550" hodographWidth=150 showMenu=false showTitle=false}}
 -col
 +col-4
 Click to select new sounding
@@ -454,7 +453,7 @@ lastHeaderPattern=^ +s.*
 +section title={{name}}
 {{description wikify=true}}
 <div style="height:600px;">
-{{display type=skewt layoutHere=true  
+{{display_skewt layoutHere=true  
 height=400
 skewtWidth=400 skewtHeight="400" hodographWidth=200 showMenu=false showTitle=false windStride=100}}
 </div>
