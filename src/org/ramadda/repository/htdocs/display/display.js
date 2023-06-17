@@ -1545,14 +1545,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'showRecordPager',ex:true,tt:'Show the prev/next pager'},
 	{p:'recordPagerNumber',d:100,tt:'How many records to show'},	
 	{p:'noun',ex:'images'},
-	{p:'doEntries',ex:true,tt:'Make the children entries be data'},
-	{p:'addAttributes',ex:true,tt:'Include the extra attributes of the children'},
 	{p:'sortFields',tt:'Comma separated list of fields to sort the data on'},
 	{p:'sortAscending',ex:'true|false',d:true},
 	{p:'showSortDirection',ex:true},		
 	{p:'sortOnDate',ex:'true'},
 	{p:'sortByFields',ex:'',tt:'Show sort by fields in a menu'},
 	{p:'sortHighlight',ex:true,tt:'Sort based on highlight from the filters'},
+	{p:'doEntries',ex:true,tt:'Make the children entries be data'},
+	{p:'addAttributes',ex:true,tt:'Include the extra attributes of the children'},
+	{p:'orderby',ex:'fromdate|todate|name|number',tt:'When showing entries as data how to sort or order the entries'},
+	{p:'ascending',ex:'true',tt:'When showing entries as data how to sort or order the entries'},		
+
 	{p:'showDisplayFieldsMenu',ex:true},
 	{p:'displayFieldsMenuMultiple',ex:true},
 	{p:'displayFieldsMenuSide',ex:'left'},
@@ -5582,6 +5585,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return height;
         },
         getContentsStyle: function() {
+
             let style = "";
             let height = this.getHeightForStyle();
             if (height) {
