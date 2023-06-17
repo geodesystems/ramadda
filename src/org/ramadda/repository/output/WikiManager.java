@@ -2772,11 +2772,24 @@ public class WikiManager extends RepositoryManager
 
             String jsonUrl = null;
 	    ServerInfo serverInfo = getServer(request, entry, wikiUtil, props);
-            boolean doEntries = getProperty(wikiUtil, props, "doEntries",
-                                            false);
+            boolean doEntries = getProperty(wikiUtil, props, "doEntries",false);
             boolean doEntry = getProperty(wikiUtil, props, "doEntry", false);
 
             if (doEntries || doEntry) {
+		String extra ="";
+		String orderBy = getProperty(wikiUtil, props,"orderby",null);
+		if(orderBy!=null)
+		    extra+="&orderby=" + orderBy;
+		String sortBy = getProperty(wikiUtil, props,"sortby",null);
+		if(sortBy!=null)
+		    extra+="&orderby=" + sortBy;		    
+		String ascending = getProperty(wikiUtil, props,"ascending",null);
+		if(ascending!=null)
+		    extra+="&ascending=" + ascending;
+		String sortDir = getProperty(wikiUtil, props,"sortdir",null);
+		if(sortDir!=null)
+		    extra+="&ascending=" + sortDir.equals("up");
+
 		if(serverInfo!=null) {
 		    jsonUrl = HtmlUtils.url(serverInfo.getUrl()+  "/entry/show",
 					    ARG_ENTRYID,entry.getId(), ARG_OUTPUT,
@@ -2785,19 +2798,6 @@ public class WikiManager extends RepositoryManager
 		    String entries = getProperty(wikiUtil,props,ATTR_ENTRIES,null);
 		    jsonUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT,
 					       JsonOutputHandler.OUTPUT_JSON_POINT.getId());
-		    String orderBy = getProperty(wikiUtil, props,"orderby",null);
-		    if(orderBy!=null)
-			jsonUrl+="&orderby=" + orderBy;
-		    String sortBy = getProperty(wikiUtil, props,"sortby",null);
-		    if(sortBy!=null)
-			jsonUrl+="&orderby=" + sortBy;		    
-		    String ascending = getProperty(wikiUtil, props,"ascending",null);
-		    if(ascending!=null)
-			jsonUrl+="&ascending=" + ascending;
-		    String sortDir = getProperty(wikiUtil, props,"sortdir",null);
-		    if(sortDir!=null)
-			jsonUrl+="&ascending=" + sortDir.equals("up");
-
 		    if(entries!=null) jsonUrl = HU.url(jsonUrl,ATTR_ENTRIES,entries);
 		}
 		//If there is an ancestor specified then we use the /search/do url
@@ -2805,13 +2805,14 @@ public class WikiManager extends RepositoryManager
 		ancestor = getProperty(wikiUtil, props, "ancestor",(String)null);
 		
                 if (ancestor!=null || doSearch) {
-		    String orderBy = ORDERBY_FROMDATE;
-		    boolean ascending =false;
+		    //		    String orderBy = ORDERBY_FROMDATE;
+		    //		    boolean ascending =false;
 		    jsonUrl = HU.url(getRepository().getUrlBase()+"/search/do", ARG_OUTPUT,
-				     JsonOutputHandler.OUTPUT_JSON_POINT.getId(),
-				     ARG_ORDERBY,orderBy+(ascending?"_ascending":"_descending"));
+				     JsonOutputHandler.OUTPUT_JSON_POINT.getId()
+				     /*,ARG_ORDERBY,orderBy+(ascending?"_ascending":"_descending")*/);
 
 		}
+		if(extra.length()>0) jsonUrl+=extra;
 		if(doSearch) {
 		    String type = getProperty(wikiUtil, props, "type",(String) null);
 		    if(type!=null)
