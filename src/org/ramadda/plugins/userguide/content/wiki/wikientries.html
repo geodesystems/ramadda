@@ -7,58 +7,6 @@ RAMADDA's wiki text can display entries in numerous ways.
 -callout
 
 
-[ug::wikiheading {Linking} entrylink]
-Normally in a wiki a link to another page is of the form:
-[wiki::text {
-[[Page name]]
-}]
-
-In RAMADDA you can use the name of another entry to create the link.
-You can use the Add entry link menu to select an entry. 
-This produces wiki text of the form:
-[wiki::text {
-[[entry id|Label to show for link]]
-}]
-
-e.g.:
-[wiki::text {
-[[7ca13e52-8efb-4d17-863f-e17027dbcc22|Earthquake data]]
-}]
-
-You can also just specify an entry by name. Either an absolute path:
-[wiki::text {
-[[Top entry/Some other entry]]
-}]
-
-Or relative to the wiki entry:
-[wiki::text {
-[[Some entry]]
-}]
-
-You can also set the output type for an entry using the hashtag (#) symbol after the entry id:
-
-[wiki::text {
-[[7ca13e52-8efb-4d17-863f-e17027dbcc22#html.table|Earthquake data as a table]]
-}]
-
-which will override the default display.
-
-
-If the entry with the given name does not exist then the link will take one to the
-create entry form.
-
-
-[ug::wikiheading {Wiki Properties} properties]
-You can also import content from the current Wiki Page entry or any other entry with the import  
-syntax:
-[wiki::text [wiki::tag {&lt;property&gt;  &lt;name="value" pairs&gt;}]]
-
-e.g., if we wanted to show the information tabs for an entry we'd do:
-[wiki::text [wiki::tag information]]
-
-Which gives  us:
-[ht::screenshot images/wikiinformation.png]
-
 [ug::wikiheading {Specify Other Entries} entryselection]
 Normally, all property tags refer to the current entry.
 However, another entry can be specified  with the "entry"
@@ -96,7 +44,7 @@ For example, if you wanted to display the links of the first ancestor of an entr
 A child entry of an entry by prefixing the entry id with "child:". The entry id can then
     have a number of semi-colon separated specifiers for the form:
 [wiki::text {
-{{image entry="child:entry:&lt;another parent entry&gt;;type:&lt;entry type id&gt;;orderby:&lt;order&gt;ascending:true"  }}
+{{image entry="child:entry:&lt;another parent entry&gt;;type:&lt;entry type id&gt;;orderby:&lt;order&gt;;ascending:true"  }}
 e.g.:
 {{image entry="child:entry:4b46e0c4-e5ac-4620-86e7-17c87c96de34;ascending:true"}}
 }]
@@ -179,8 +127,58 @@ Import it into your RAMADDA and view the page source.
 <li> <i>search</i>  - search the entire repository. The search terms are defined as attributes and described below.
 </ul>
 
-The above tags
+:b Some examples:
+<ul>
+  <li> Search for all entries of "some type" order by date ascending:
+    [wiki::text { {{tabletree  entries="search:type:&lt;some type&gt;;orderby:date;ascending:true" }}}]
 
+  <li> Search for entries rooted at the hierarchy of the current entry:
+    [wiki::text {{{links entries="search:ancestor:this;orderby:size;max:5"}}}]
+
+  <li>  Search under this for name=Folder:
+    [wiki::text {{{links entries="search:ancestor:this;name:Folder"}}}]
+
+  <li> Search under this for text=foobar:
+    [wiki::text {{{links entries="search:ancestor:this;text:foobar"}}}]
+
+  <li> Search under this for files size&gt;10 &lt;1000:
+    [wiki::text {{{links entries="search:ancestor:this;sizemin:10;sizemax:1000"}}}]
+
+  <li> Name of the Folder 1 child of Folders:
+    [wiki::text {{{name entry="child:entry:&lt;some entry id&gt;;orderby:name;ascending:true;" }}}]
+
+  <li> Name of the parent Folder of the Folders folder (this one):
+    [wiki::text {{{name entry="parent:entry:&lt;some entry id&gt;" }}}]
+
+  <li> CSV children of folder1, orderby size smallest to biggest:
+    [wiki::text {{{links entries="children:entry:&lt;some entry id&gt;;type:type_document_csv;orderby:size;ascending:true"}}}]
+
+  <li> CSV children of folder1, orderby size, biggest to smallest:
+    [wiki::text {{{links entries="children:entry:&lt;some entry id&gt;;type:type_document_csv;orderby:size;ascending:false"}}}]
+
+  <li> CSV children of folder1, orderby size, biggest to smallest, followed by the children of the folders entry
+    [wiki::text {{{links entries="children:entry:&lt;some entry id&gt;;type:type_document_csv;orderby:size;ascending:false,children:entry:&lt;some entry id&gt;"}}}]
+
+  <li> Grandchildren, name ascending:
+  [wiki::text {{{links entries="grandchildren:orderby:name;ascending:true"}}}]
+
+  <li> Grandchildren, name ascending, using entry:this
+    [wiki::text {{{links entries="grandchildren:entry:this;orderby:name;ascending:true"}}}]
+
+  <li> Grandchildren, name descending:
+    [wiki::text {{{links entries="grandchildren:orderby:name;ascending:false"}}}]
+
+  <li> Grandchildren, name ascending, max=2:
+  [wiki::text {{{links entries="grandchildren:orderby:name;ascending:true;max:2"}}}]
+
+
+  <li> Great Grandchildren, orderby name
+  [wiki::text {{{links entries="greatgrandchildren:orderby:name;ascending:true;"}}}]
+
+  <li> Ancestors of file 1
+    [wiki::text {{{links entries="ancestors:entry:&lt;some entry id&gt;;"}}}]
+
+</ul>
 
 [ug::wikiheading {Alias tag} alias]
 The alias tag allows you to specify some entry and associate it with an alias. You can then
@@ -360,6 +358,59 @@ search.createdate.relative=-1 day
 search
 }]
 
+
+
+[ug::wikiheading {Linking} entrylink]
+Normally in a wiki a link to another page is of the form:
+[wiki::text {
+[[Page name]]
+}]
+
+In RAMADDA you can use the name of another entry to create the link.
+You can use the Add entry link menu to select an entry. 
+This produces wiki text of the form:
+[wiki::text {
+[[entry id|Label to show for link]]
+}]
+
+e.g.:
+[wiki::text {
+[[7ca13e52-8efb-4d17-863f-e17027dbcc22|Earthquake data]]
+}]
+
+You can also just specify an entry by name. Either an absolute path:
+[wiki::text {
+[[Top entry/Some other entry]]
+}]
+
+Or relative to the wiki entry:
+[wiki::text {
+[[Some entry]]
+}]
+
+You can also set the output type for an entry using the hashtag (#) symbol after the entry id:
+
+[wiki::text {
+[[7ca13e52-8efb-4d17-863f-e17027dbcc22#html.table|Earthquake data as a table]]
+}]
+
+which will override the default display.
+
+
+If the entry with the given name does not exist then the link will take one to the
+create entry form.
+
+
+[ug::wikiheading {Wiki Properties} properties]
+You can also import content from the current Wiki Page entry or any other entry with the import  
+syntax:
+[wiki::text [wiki::tag {&lt;property&gt;  &lt;name="value" pairs&gt;}]]
+
+e.g., if we wanted to show the information tabs for an entry we'd do:
+[wiki::text [wiki::tag information]]
+
+Which gives  us:
+[ht::screenshot images/wikiinformation.png]
 
 
 

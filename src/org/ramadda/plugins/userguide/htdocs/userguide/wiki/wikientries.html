@@ -22,6 +22,9 @@
 pre {
     margin-left:15px;
 }
+.ramadda-lheading {
+    margin-top:15px;
+}
 </style>
 
 <div class="ramadda-doc-contents" style="margin-left:20px;">
@@ -34,62 +37,6 @@ pre {
 RAMADDA's wiki text can display entries in numerous ways.
 -callout
 
-
-<a name='entrylink'></a>
-:lheading Linking
-
-Normally in a wiki a link to another page is of the form:
-<pre>
-[[Page name]]
-</pre>
-
-In RAMADDA you can use the name of another entry to create the link.
-You can use the Add entry link menu to select an entry. 
-This produces wiki text of the form:
-<pre>
-[[entry id|Label to show for link]]
-</pre>
-
-e.g.:
-<pre>
-[[7ca13e52-8efb-4d17-863f-e17027dbcc22|Earthquake data]]
-</pre>
-
-You can also just specify an entry by name. Either an absolute path:
-<pre>
-[[Top entry/Some other entry]]
-</pre>
-
-Or relative to the wiki entry:
-<pre>
-[[Some entry]]
-</pre>
-
-You can also set the output type for an entry using the hashtag (#) symbol after the entry id:
-
-<pre>
-[[7ca13e52-8efb-4d17-863f-e17027dbcc22#html.table|Earthquake data as a table]]
-</pre>
-
-which will override the default display.
-
-
-If the entry with the given name does not exist then the link will take one to the
-create entry form.
-
-
-<a name='properties'></a>
-:lheading Wiki Properties
-
-You can also import content from the current Wiki Page entry or any other entry with the import  
-syntax:
-<pre>{<noop>{&lt;property&gt;  &lt;name="value" pairs&gt;}}</pre>
-
-e.g., if we wanted to show the information tabs for an entry we'd do:
-<pre>{<noop>{information}}</pre>
-
-Which gives  us:
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/wikiinformation.png?version=106.0"><img  src="images/wikiinformation.png?version=106.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/wikiinformation.png?version=106.0" ></a></div></div>
 
 <a name='entryselection'></a>
 :lheading Specify Other Entries
@@ -130,7 +77,7 @@ For example, if you wanted to display the links of the first ancestor of an entr
 A child entry of an entry by prefixing the entry id with "child:". The entry id can then
     have a number of semi-colon separated specifiers for the form:
 <pre>
-{<noop>{image entry="child:entry:&lt;another parent entry&gt;;type:&lt;entry type id&gt;;orderby:&lt;order&gt;ascending:true"  }}
+{<noop>{image entry="child:entry:&lt;another parent entry&gt;;type:&lt;entry type id&gt;;orderby:&lt;order&gt;;ascending:true"  }}
 e.g.:
 {<noop>{image entry="child:entry:4b46e0c4-e5ac-4620-86e7-17c87c96de34;ascending:true"}}
 </pre>
@@ -215,8 +162,58 @@ Import it into your RAMADDA and view the page source.
 <li> <i>search</i>  - search the entire repository. The search terms are defined as attributes and described below.
 </ul>
 
-The above tags
+:b Some examples:
+<ul>
+  <li> Search for all entries of "some type" order by date ascending:
+    <pre> {<noop>{tabletree  entries="search:type:&lt;some type&gt;;orderby:date;ascending:true" }}</pre>
 
+  <li> Search for entries rooted at the hierarchy of the current entry:
+    <pre>{<noop>{links entries="search:ancestor:this;orderby:size;max:5"}}</pre>
+
+  <li>  Search under this for name=Folder:
+    <pre>{<noop>{links entries="search:ancestor:this;name:Folder"}}</pre>
+
+  <li> Search under this for text=foobar:
+    <pre>{<noop>{links entries="search:ancestor:this;text:foobar"}}</pre>
+
+  <li> Search under this for files size&gt;10 &lt;1000:
+    <pre>{<noop>{links entries="search:ancestor:this;sizemin:10;sizemax:1000"}}</pre>
+
+  <li> Name of the Folder 1 child of Folders:
+    <pre>{<noop>{name entry="child:entry:&lt;some entry id&gt;;orderby:name;ascending:true;" }}</pre>
+
+  <li> Name of the parent Folder of the Folders folder (this one):
+    <pre>{<noop>{name entry="parent:entry:&lt;some entry id&gt;" }}</pre>
+
+  <li> CSV children of folder1, orderby size smallest to biggest:
+    <pre>{<noop>{links entries="children:entry:&lt;some entry id&gt;;type:type_document_csv;orderby:size;ascending:true"}}</pre>
+
+  <li> CSV children of folder1, orderby size, biggest to smallest:
+    <pre>{<noop>{links entries="children:entry:&lt;some entry id&gt;;type:type_document_csv;orderby:size;ascending:false"}}</pre>
+
+  <li> CSV children of folder1, orderby size, biggest to smallest, followed by the children of the folders entry
+    <pre>{<noop>{links entries="children:entry:&lt;some entry id&gt;;type:type_document_csv;orderby:size;ascending:false,children:entry:&lt;some entry id&gt;"}}</pre>
+
+  <li> Grandchildren, name ascending:
+  <pre>{<noop>{links entries="grandchildren:orderby:name;ascending:true"}}</pre>
+
+  <li> Grandchildren, name ascending, using entry:this
+    <pre>{<noop>{links entries="grandchildren:entry:this;orderby:name;ascending:true"}}</pre>
+
+  <li> Grandchildren, name descending:
+    <pre>{<noop>{links entries="grandchildren:orderby:name;ascending:false"}}</pre>
+
+  <li> Grandchildren, name ascending, max=2:
+  <pre>{<noop>{links entries="grandchildren:orderby:name;ascending:true;max:2"}}</pre>
+
+
+  <li> Great Grandchildren, orderby name
+  <pre>{<noop>{links entries="greatgrandchildren:orderby:name;ascending:true;"}}</pre>
+
+  <li> Ancestors of file 1
+    <pre>{<noop>{links entries="ancestors:entry:&lt;some entry id&gt;;"}}</pre>
+
+</ul>
 
 <a name='alias'></a>
 :lheading Alias tag
@@ -408,6 +405,63 @@ search.createdate.relative=-1 day
 search
 </pre>
 
+
+
+<a name='entrylink'></a>
+:lheading Linking
+
+Normally in a wiki a link to another page is of the form:
+<pre>
+[[Page name]]
+</pre>
+
+In RAMADDA you can use the name of another entry to create the link.
+You can use the Add entry link menu to select an entry. 
+This produces wiki text of the form:
+<pre>
+[[entry id|Label to show for link]]
+</pre>
+
+e.g.:
+<pre>
+[[7ca13e52-8efb-4d17-863f-e17027dbcc22|Earthquake data]]
+</pre>
+
+You can also just specify an entry by name. Either an absolute path:
+<pre>
+[[Top entry/Some other entry]]
+</pre>
+
+Or relative to the wiki entry:
+<pre>
+[[Some entry]]
+</pre>
+
+You can also set the output type for an entry using the hashtag (#) symbol after the entry id:
+
+<pre>
+[[7ca13e52-8efb-4d17-863f-e17027dbcc22#html.table|Earthquake data as a table]]
+</pre>
+
+which will override the default display.
+
+
+If the entry with the given name does not exist then the link will take one to the
+create entry form.
+
+
+<a name='properties'></a>
+:lheading Wiki Properties
+
+You can also import content from the current Wiki Page entry or any other entry with the import  
+syntax:
+<pre>{<noop>{&lt;property&gt;  &lt;name="value" pairs&gt;}}</pre>
+
+e.g., if we wanted to show the information tabs for an entry we'd do:
+<pre>{<noop>{information}}</pre>
+
+Which gives  us:
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/wikiinformation.png?version=309.0"><img  src="images/wikiinformation.png?version=309.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/wikiinformation.png?version=309.0" ></a></div></div>
 
 
 
