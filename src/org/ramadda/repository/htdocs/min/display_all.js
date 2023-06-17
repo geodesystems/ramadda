@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Jun 15 07:26:13 MDT 2023";
+var build_date="RAMADDA build date: Sat Jun 17 07:47:41 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -5223,14 +5223,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'showRecordPager',ex:true,tt:'Show the prev/next pager'},
 	{p:'recordPagerNumber',d:100,tt:'How many records to show'},	
 	{p:'noun',ex:'images'},
-	{p:'doEntries',ex:true,tt:'Make the children entries be data'},
-	{p:'addAttributes',ex:true,tt:'Include the extra attributes of the children'},
 	{p:'sortFields',tt:'Comma separated list of fields to sort the data on'},
 	{p:'sortAscending',ex:'true|false',d:true},
 	{p:'showSortDirection',ex:true},		
 	{p:'sortOnDate',ex:'true'},
 	{p:'sortByFields',ex:'',tt:'Show sort by fields in a menu'},
 	{p:'sortHighlight',ex:true,tt:'Sort based on highlight from the filters'},
+	{p:'doEntries',ex:true,tt:'Make the children entries be data'},
+	{p:'addAttributes',ex:true,tt:'Include the extra attributes of the children'},
+	{p:'orderby',ex:'date|fromdate|todate|name|number',tt:'When showing entries as data how to sort or order the entries'},
+	{p:'ascending',ex:'true',tt:'When showing entries as data how to sort or order the entries'},		
+
 	{p:'showDisplayFieldsMenu',ex:true},
 	{p:'displayFieldsMenuMultiple',ex:true},
 	{p:'displayFieldsMenuSide',ex:'left'},
@@ -9260,6 +9263,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return height;
         },
         getContentsStyle: function() {
+
             let style = "";
             let height = this.getHeightForStyle();
             if (height) {
@@ -27083,9 +27087,37 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             }
 //          console.log("skewt.updateui-2");
             let skewtId = this.getDomId(ID_SKEWT);
-            let html = HtmlUtils.div(["id", skewtId], "");
+	    let html = '';
+            html += HU.div(['title','Download skew-t data','id',this.domId('download'),'class','ramadda-clickable','style','text-align:right;margin-right:20px;'],HU.getIconImage('fas fa-download'));
+	    html += HU.div(["id", skewtId], "");
             this.setContents(html);
-            var date = records[0].getDate();
+	    this.jq('download').click(()=>{
+		if(!this.dataObject) {
+		    alert('No data available');
+		    return;
+		}		    
+		let keys = Object.keys(this.dataObject);
+		keys = Utils.removeItem(keys,'records');
+		let data = '';
+		keys.forEach((key,idx)=>{
+		    if(idx>0) data+=',';
+		    data+=key
+		})
+		data+='\n';
+		let cnt = this.dataObject[keys[0]].length;
+		for(let i=0;i<cnt;i++) {
+		    keys.forEach((key,idx)=>{
+			if(idx>0) data+=',';
+			let v = parseFloat(this.dataObject[key][i]);
+			v = Utils.trimDecimals(v,4);
+			data+=v;
+		    });
+		    data+='\n';
+		}
+		Utils.makeDownloadFile(this.getProperty('title','skewt').replace(/ /g,'_')+'.csv',data);
+
+	    });
+            let date = records[0].getDate();
             if(this.jq(ID_DATE_LABEL).length==0) {
                 this.jq(ID_TOP_LEFT).append(HtmlUtils.div([ID,this.getDomId(ID_DATE_LABEL)]));
             }
@@ -27094,7 +27126,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             } else {
                 this.jq(ID_DATE_LABEL).html("");
             }
-            var options = {};
+            let options = {};
             if (this.propertyDefined("showHodograph"))
                 options.showHodograph = this.getProperty("showHodograph", true);
             if (this.propertyDefined("showText"))
@@ -27125,14 +27157,14 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 {id:'vwind',aliases:['v-component_of_wind_isobaric','v']},
             ];
             //TODO: check for units
-            var data ={};
-            var dataFields ={};
+            let data ={};
+            let dataFields ={};
             for(let i=0;i<names.length;i++) {
-                var obj = names[i];
-                var id = obj.id;
-                var field = this.getFieldById(fields,id,false,true);
+                let obj = names[i];
+                let id = obj.id;
+                let field = this.getFieldById(fields,id,false,true);
                 if(field == null) {
-                    for(var j=0;j<obj.aliases.length;j++) {
+                    for(let j=0;j<obj.aliases.length;j++) {
                         field = this.getFieldById(fields,obj.aliases[j],false,true);
                         if(field) break;
                     }
@@ -27162,14 +27194,14 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
 
 	    data.records = records;
             if(!data.height) {
-                var pressures = [
+                let pressures = [
                     1013.25, 954.61, 898.76, 845.59, 795.01, 746.91, 701.21,
                     657.80, 616.6, 577.52, 540.48, 505.39, 472.17, 440.75,
                     411.05, 382.99, 356.51, 331.54, 303.00, 285.85, 264.99,
                     226.99, 193.99, 165.79, 141.70, 121.11, 103.52, 88.497,
                     75.652, 64.674, 55.293, 25.492, 11.970, 5.746, 2.871,
                     1.491, 0.798, 0.220, 0.052, 0.010,];
-                var alts = [
+                let alts = [
                     0, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000,
                     5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000,
                     11000, 12000, 13000, 14000, 15000, 16000, 17000, 18000, 19000,
@@ -27178,18 +27210,18 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 ];
                 
                 data.height = [];
-                for(var i=0;i<data.pressure.length;i++) {
-                    var pressure = data.pressure[i];
-                    var alt = alts[alts.length-1];
-                    for(var j=0;j<pressures.length;j++) {
+                for(let i=0;i<data.pressure.length;i++) {
+                    let pressure = data.pressure[i];
+                    let alt = alts[alts.length-1];
+                    for(let j=0;j<pressures.length;j++) {
                         if(pressure>=pressures[j]) {
                             if(j==0) alt = 0;
                             else {
-                                var p1 = pressures[j-1];
-                                var p2 = pressures[j];
-                                var a1 = alts[j-1];
-                                var a2 = alts[j];
-                                var percent = 1-(pressure-p2)/(p1-p2);
+                                let p1 = pressures[j-1];
+                                let p2 = pressures[j];
+                                let a1 = alts[j-1];
+                                let a2 = alts[j];
+                                let percent = 1-(pressure-p2)/(p1-p2);
                                 alt = (a2-a1)*percent+a1;
                             }
                             break;
@@ -27206,10 +27238,10 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                     return;
                 }
                 data.dewpoint = [];
-                for(var i=0;i<data.rh.length;i++) {
-                    var rh=data.rh[i];
-                    var t=data.temperature[i];
-                    var dp = t-(100-rh)/5;
+                for(let i=0;i<data.rh.length;i++) {
+                    let rh=data.rh[i];
+                    let t=data.temperature[i];
+                    let dp = t-(100-rh)/5;
                     data.dewpoint.push(dp);
                 }
             }
@@ -27221,22 +27253,22 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 }
                 data.wind_speed = [];
                 data.wind_direction = [];
-                for(var i=0;i<data.uwind.length;i++) {
-                    var u = data.uwind[i];
-                    var v = data.vwind[i];
-                    var ws = Math.sqrt(u*u+v*v);
-                    var wdir = 180+(180/Math.PI)*Math.atan2(v,u);
+                for(let i=0;i<data.uwind.length;i++) {
+                    let u = data.uwind[i];
+                    let v = data.vwind[i];
+                    let ws = Math.sqrt(u*u+v*v);
+                    let wdir = 180+(180/Math.PI)*Math.atan2(v,u);
                     data.wind_speed.push(ws);
                     data.wind_direction.push(wdir);
                 }
             }
 
-            var alldata = data;
+            let alldata = data;
             data = {};
             //if any missing then don't include
             for(a  in alldata) data[a] = [];
             alldata[names[0].id].map((v,idx)=>{
-                var ok = true;
+                let ok = true;
                 for(id in alldata) {
                     if(isNaN(alldata[id][idx])) {
                         ok = false;
@@ -27260,6 +27292,8 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 this.displayError(this.getNoDataMessage());
                 return;
             }
+	    this.dataObject = data;
+
             options.myid = this.getId();
 	    options.mouseDownListener = (record)=>{
 		if(record) {
@@ -27275,7 +27309,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             }
             await this.getDisplayEntry((e)=>{
 		if(!e) return;
-                var q= e.getAttribute("variables");
+                let q= e.getAttribute("variables");
                 if(!q) return;
                 q = q.value;
                 q = q.replace(/\r\n/g,"\n");
@@ -27299,18 +27333,18 @@ function RamaddaD3Display(displayManager, id, properties) {
             this.setDisplayTitle(properties.graph.title);
 
             //Note: use innerHeight/innerWidth wiki attributes
-            var width = this.getProperty("innerWidth", 600);
-            var height = this.getProperty("innerHeight", 300);
-            var margin = {
+            let width = this.getProperty("innerWidth", 600);
+            let height = this.getProperty("innerHeight", 300);
+            let margin = {
                 top: 20,
                 right: 50,
                 bottom: 30,
                 left: 50
             };
-            var divStyle =
+            let divStyle =
                 "height:" + height + "px;" +
                 "width:" + width + "px;";
-            var html = HtmlUtils.div([ATTR_ID, this.getDomId(ID_SVG), ATTR_STYLE, divStyle], "");
+            let html = HtmlUtils.div([ATTR_ID, this.getDomId(ID_SVG), ATTR_STYLE, divStyle], "");
             this.setContents(html);
 
             // To create dynamic size of the div
@@ -27320,8 +27354,8 @@ function RamaddaD3Display(displayManager, id, properties) {
             //                console.log("WxH:" + this.displayHeight +" " + this.displayWidth);
 
             // To solve the problem with the classess within the class
-            var myThis = this;
-            var zoom = d3.behavior.zoom()
+            let myThis = this;
+            let zoom = d3.behavior.zoom()
                 .on("zoom", function() {
                     myThis.zoomBehaviour()
                 });
@@ -27365,11 +27399,11 @@ function RamaddaD3Display(displayManager, id, properties) {
 
 
             // Color Bar
-            var colors = ["#00008B", "#0000CD", "#0000FF", "#00FFFF", "#7CFC00", "#FFFF00", "#FFA500", "#FF4500", "#FF0000", "#8B0000"];
+            let colors = ["#00008B", "#0000CD", "#0000FF", "#00FFFF", "#7CFC00", "#FFFF00", "#FFA500", "#FF4500", "#FF0000", "#8B0000"];
 
-            var colorSpacing = 100 / (colors.length - 1);
+            let colorSpacing = 100 / (colors.length - 1);
 
-            var colorBar = D3Util.addColorBar(this.svg, colors, colorSpacing, this.displayWidth);
+            let colorBar = D3Util.addColorBar(this.svg, colors, colorSpacing, this.displayWidth);
             this.color = d3.scale.category10();
             this.updateUI();
         },
@@ -27380,8 +27414,8 @@ function RamaddaD3Display(displayManager, id, properties) {
             this.addFieldsCheckboxes();
         },
         getDialogContents: function() {
-            var height = this.getProperty(PROP_HEIGHT, "400");
-            var html = HtmlUtils.div([ATTR_ID, this.getDomId(ID_FIELDS), ATTR_CLASS, "display-fields", ]);
+            let height = this.getProperty(PROP_HEIGHT, "400");
+            let html = HtmlUtils.div([ATTR_ID, this.getDomId(ID_FIELDS), ATTR_CLASS, "display-fields", ]);
             html += SUPER.getDialogContents.apply(this);
             return html;
         },
@@ -27393,7 +27427,7 @@ function RamaddaD3Display(displayManager, id, properties) {
             //Note: Not sure why onlyZoom was a function param. The pointData gets passes in 
             //when the json is loaded
             //            updateUI: function(onlyZoom) {
-            var onlyZoom = false;
+            let onlyZoom = false;
 
             //Note: if we write to the SVG dom element then we lose the svg object that got created in initDisplay
             //Not sure how to show a message to the user
@@ -27401,7 +27435,7 @@ function RamaddaD3Display(displayManager, id, properties) {
                 return;
             }
             test = this;
-            var selectedFields = this.getSelectedFields();
+            let selectedFields = this.getSelectedFields();
             if (selectedFields.length == 0) {
                 //this.writeHtml(ID_SVG, "No fields selected");
                 return;
@@ -27414,16 +27448,16 @@ function RamaddaD3Display(displayManager, id, properties) {
                 return;
             }
 
-            var fields = pointData.getNumericFields();
-            var records = pointData.getRecords();
-            var ranges = RecordUtil.getRanges(fields, records);
-            var elevationRange = RecordUtil.getElevationRange(fields, records);
-            var offset = (elevationRange[1] - elevationRange[0]) * 0.05;
+            let fields = pointData.getNumericFields();
+            let records = pointData.getRecords();
+            let ranges = RecordUtil.getRanges(fields, records);
+            let elevationRange = RecordUtil.getElevationRange(fields, records);
+            let offset = (elevationRange[1] - elevationRange[0]) * 0.05;
             // To be used inside a function we can use this.x inside them so we extract as variables. 
-            var x = this.x;
-            var y = this.y;
-            var color = this.color;
-            var axis = properties.graph.axis;
+            let x = this.x;
+            let y = this.y;
+            let color = this.color;
+            let axis = properties.graph.axis;
 
             if (onlyZoom) {
                 this.zoom.x(this.x);
@@ -27449,12 +27483,12 @@ function RamaddaD3Display(displayManager, id, properties) {
             this.svg.selectAll(".line").remove();
             this.svg.selectAll(".legendElement").remove();
 
-            var myThis = this;
-            for (var fieldIdx = 0; fieldIdx < selectedFields.length; fieldIdx++) {
-                var dataIndex = selectedFields[fieldIdx].getIndex();
-                var range = ranges[dataIndex];
+            let myThis = this;
+            for (let fieldIdx = 0; fieldIdx < selectedFields.length; fieldIdx++) {
+                let dataIndex = selectedFields[fieldIdx].getIndex();
+                let range = ranges[dataIndex];
                 // Plot line for the values
-                var line = d3.svg.line()
+                let line = d3.svg.line()
                     .x(function(d) {
                         return x(D3Util.getDataValue(axis.x, d, selectedFields[fieldIdx].getIndex()));
                     })
@@ -27480,12 +27514,12 @@ function RamaddaD3Display(displayManager, id, properties) {
                 }
 
                 if (properties.graph.derived != null) {
-                    var funcs = properties.graph.derived.split(",");
+                    let funcs = properties.graph.derived.split(",");
                     for (funcIdx = 0; funcIdx < funcs.length; funcIdx++) {
-                        var func = funcs[funcIdx];
+                        let func = funcs[funcIdx];
                         if (func == FUNC_MOVINGAVERAGE) {
                             // Plot moving average Line
-                            var movingAverageLine = d3.svg.line()
+                            let movingAverageLine = d3.svg.line()
                                 .x(function(d) {
                                     return x(D3Util.getDataValue(axis.x, d, selectedFields[fieldIdx].getIndex()));
                                 })
