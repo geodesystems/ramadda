@@ -7029,7 +7029,7 @@ public class WikiManager extends RepositoryManager
         makeHelp.accept("/userguide/wiki/wikitext.html#gridlayout", "Grid layout");
         makeHelp.accept("/userguide/wiki/wikientries.html",
                         "Specifying the entry");
-        makeHelp.accept("/userguide/wiki/wikitext.html#entries",
+        makeHelp.accept("/userguide/wiki/wikientries.html#entries",
                         "Specifying multiple entries");
         makeHelp.accept("/search/providers", "Search Providers");
         makeHelp.accept("/search/info#entrytypes", "Entry Types");
