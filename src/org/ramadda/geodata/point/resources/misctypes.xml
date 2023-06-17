@@ -209,9 +209,7 @@ record.type.default=double
 :navtop  fixed=true
 {{description wikify=true}}
 :heading Skew-T
-<div style="height:500px;position:relative;">
 {{display_skewt skewtWidth="550" skewtHeight="450" hodographWidth=300}}
-</div>
 ----
 :heading Table & Chart
 +tabs
