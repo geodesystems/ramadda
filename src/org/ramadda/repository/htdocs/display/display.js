@@ -1553,7 +1553,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'sortHighlight',ex:true,tt:'Sort based on highlight from the filters'},
 	{p:'doEntries',ex:true,tt:'Make the children entries be data'},
 	{p:'addAttributes',ex:true,tt:'Include the extra attributes of the children'},
-	{p:'orderby',ex:'fromdate|todate|name|number',tt:'When showing entries as data how to sort or order the entries'},
+	{p:'orderby',ex:'date|fromdate|todate|name|number',tt:'When showing entries as data how to sort or order the entries'},
 	{p:'ascending',ex:'true',tt:'When showing entries as data how to sort or order the entries'},		
 
 	{p:'showDisplayFieldsMenu',ex:true},
