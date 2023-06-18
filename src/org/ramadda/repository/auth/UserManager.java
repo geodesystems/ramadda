@@ -1451,6 +1451,11 @@ public class UserManager extends RepositoryManager {
         return getAdmin().makeResult(request, msg("New User"), sb);
     }
 
+    private String cleanUserId(String id) {
+	id = id.trim().toLowerCase().replace(" ","_");
+	return id;
+    }
+
 
     /**
      * _more_
@@ -1508,7 +1513,7 @@ public class UserManager extends RepositoryManager {
 
                     break;
                 }
-                String id        = toks.get(0);
+                String id        = cleanUserId(toks.get(0));
                 String password1 = toks.get(1);
                 String name      = ((toks.size() >= 3)
                                     ? toks.get(2)
@@ -1550,7 +1555,7 @@ public class UserManager extends RepositoryManager {
             boolean admin     = false;
 
             if (request.defined(ARG_USER_ID)) {
-                id        = request.getString(ARG_USER_ID, "").trim();
+                id        = cleanUserId(request.getString(ARG_USER_ID, ""));
                 name      = request.getString(ARG_USER_NAME, name).trim();
                 desc = request.getString(ARG_USER_DESCRIPTION, name).trim();
                 email     = request.getString(ARG_USER_EMAIL, "").trim();
