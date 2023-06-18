@@ -777,7 +777,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		if(isNew) {
 		    if(request.get(ARG_EXTRACT_SUMMARY,false)) {
 			if(debugLLM) System.err.println("SearchManager: callLLM: summary");
-			String summary = getRepository().callLLM("Summarize the following text. Assume the reader has a college education. Limit the summary to no more than 4 sentences.","",fileCorpus,200,true,tokenLimit);
+			String prompt = request.getString(ARG_EXTRACT_SUMMARY_PROMPT,"");
+			if(!stringDefined(prompt))
+			    prompt = SUMMARY_PROMPT;
+			String summary = getRepository().callLLM(prompt,"",fileCorpus,200,true,tokenLimit);
 			if(debugLLM) System.err.println("got summary:" + summary);
 			if(stringDefined(summary)) {
 			    summary = Utils.stripTags(summary).trim().replaceAll("^:+","");

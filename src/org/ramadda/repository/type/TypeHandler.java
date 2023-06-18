@@ -5300,8 +5300,10 @@ public class TypeHandler extends RepositoryManager {
 		HU.labeledCheckbox(ARG_EXTRACT_TITLE, "true", false,"Extract title") +
 		space +
 		HU.labeledCheckbox(ARG_EXTRACT_AUTHORS, "true", false,"Extract authors") +
-		space +
-		HU.labeledCheckbox(ARG_EXTRACT_SUMMARY, "true", false, "Extract summary") +
+		"<br>" +
+		HU.labeledCheckbox(ARG_EXTRACT_SUMMARY, "true", false, "Extract summary with the prompt:") +
+		"<br>" +
+		HU.textArea(ARG_EXTRACT_SUMMARY_PROMPT, SUMMARY_PROMPT,3,50) +
 		"<br>" +
 		"Note: when extracting keywords, title, etc., the file text is sent to the <a href=https://openai.com/api/>OpenAI GPT API</a> for processing.<br>There will also be a delay before the results are shown for the new entry.";
 	}

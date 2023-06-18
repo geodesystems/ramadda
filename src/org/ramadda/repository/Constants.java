@@ -1035,9 +1035,11 @@ public interface Constants {
     /**  */
     public static final String ARG_EXTRACT_KEYWORDS = "extract_keywords";
     public static final String ARG_EXTRACT_SUMMARY = "extract_summary";    
+    public static final String ARG_EXTRACT_SUMMARY_PROMPT = "extract_summary_prompt";    
     public static final String ARG_EXTRACT_AUTHORS = "extract_authors";
     public static final String ARG_EXTRACT_TITLE = "extract_title";	        
-
+    public static final String SUMMARY_PROMPT = "Summarize the following text. \nAssume the reader has a college education. \nLimit the summary to no more than 4 sentences.";
+    
     /** _more_ */
     public static final String ARG_FROMHARVESTER = "fromharvester";
 
