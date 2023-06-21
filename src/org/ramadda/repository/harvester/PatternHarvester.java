@@ -466,9 +466,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 					sizeLimit+"",
 					HU.SIZE_5) +" (MB)"));
         sb.append(HU.formEntry(msgLabel("Max level"),
-			       HU.input(ATTR_MAXLEVEL,
-					maxLevel+"",
-					HU.SIZE_5) +" How far down the hierarchy does the harvester go"));	
+			       HU.hbox(HU.input(ATTR_MAXLEVEL,  maxLevel+"", HU.SIZE_5),
+				       "How far down the directory hierarchy does the harvester go<br>-1 -&gt; no limit<br>0 -&gt; just files under the main directories<br>1 -&gt; files under sub-directories<br>etc.")));
 
         sb.append(HU.formEntry("",
 			       HU.labeledCheckbox(ATTR_IGNORE_ERRORS,
@@ -856,39 +855,46 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	throws Exception {
 	final PatternHarvester thisHarvester = this;
         final List<HarvesterFile> dirs       = new ArrayList();
+	final boolean hasLevel = thisHarvester.maxLevel>=0;
+	//	System.err.println("ViewFile max level:" +thisHarvester.maxLevel);
         FileWrapper.FileViewer    fileViewer = new FileWrapper.FileViewer() {
 		@Override
 		public int viewFile(int level, FileWrapper f,FileWrapper[] siblings) throws Exception {
-		    if(thisHarvester.maxLevel>=0 && level>=thisHarvester.maxLevel-1)   {
+		    if (!f.isDirectory()) {
+			return DO_CONTINUE;
+		    }			
+		    //		    System.err.println("\tlevel:" + level +" file:" + f);
+
+		    if(hasLevel && level>=thisHarvester.maxLevel)   {
 			return DO_DONTRECURSE;
 		    }
 		    if ( !canContinueRunning(timestamp)) {
 			return DO_STOP;
 		    }
-		    if (f.isDirectory()) {
-			if (f.getName().startsWith(".")) {
-			    return DO_DONTRECURSE;
-			}
-			if ( !okToRecurse(f)) {
-			    return DO_DONTRECURSE;
-			}
-			dirs.add(new HarvesterFile(f, rootDir, true));
-			status = new StringBuffer(
-						  "Looking for initial directory listing<br>Found:"
-						  + dirs.size() + " directories");
-			for(int i=dirs.size()-10;i<dirs.size();i++) {
-			    if(i<0) continue;
-			    status.append("<br>" + dirs.get(i));
-			}
-			if (dirs.size() > 100) {
-			    logHarvesterInfo("Collected " + dirs.size()
-					     + " dirs");
-			}
+
+		    if (f.getName().startsWith(".")) {
+			return DO_DONTRECURSE;
+		    }
+		    if ( !okToRecurse(f)) {
+			return DO_DONTRECURSE;
+		    }
+		    dirs.add(new HarvesterFile(f, rootDir, true));
+		    status = new StringBuffer(
+					      "Looking for initial directory listing<br>Found:"
+					      + dirs.size() + " directories");
+		    for(int i=dirs.size()-10;i<dirs.size();i++) {
+			if(i<0) continue;
+			status.append("<br>" + dirs.get(i));
+		    }
+		    if (dirs.size() > 100) {
+			logHarvesterInfo("Collected " + dirs.size()
+					 + " dirs");
 		    }
 		    return DO_CONTINUE;
 		}
 	    };
         FileWrapper.walkDirectory(rootDir, fileViewer);
+	//	System.err.println("DIRS:" + dirs);
         return dirs;
     }
 
@@ -986,6 +992,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 logHarvesterInfo("Directory:" + dirInfo.getFile() + " * no files *");
                 continue;
             }
+	    //	    System.err.println("dir:"+ dirInfo);
 
             logHarvesterInfo("Directory:" + dirInfo.getFile() + "  found " + files.length + " files");
             printTab = "\t\t";
@@ -994,10 +1001,14 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 		//		System.err.println("FILE:" +f.getName() +" level:" + f.getLevel());
 		if(maxLevel>0 && f.getLevel()>this.maxLevel)   {
 		    //		    System.err.println("TOO DEEP:" + f.getName());
-		    continue;
+		    //		    continue;
 		}
 
+		
                 if (f.isDirectory()) {
+		    continue;
+		    /*
+
                     //If this is a directory then check if we already have it 
                     //in the list. If not then add it to the main list and the local list
                     if ( !hasDir(f)) {
@@ -1007,9 +1018,13 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                         }
                     }
                     continue;
+		    */
                 }
+		//		System.err.println("\tfile:" + f);
+
 		//Check if it matches the pattern, etc
 		if(!isFileOk(f)) {
+		    //		    System.err.println("SKIP:" + f);
 		    skipCnt++;
 		    continue;
 		}
