@@ -1159,7 +1159,7 @@ WikiEditor.prototype = {
 	    } else {
 		let left = Utils.join([
 		    HU.span([CLASS, 'ramadda-clickable',ID,this.domId(this.ID_WIKI_PREVIEW_OPEN)], HtmlUtils.getIconImage('fa-sync',['title','Preview Again'])),
-		    HU.checkbox('',[TITLE,'Live Preview',ID,this.domId(this.ID_WIKI_PREVIEW_LIVE)],this.previewLive,'')+SPACE4,
+		    HU.checkbox('',[TITLE,'Live Preview',ID,this.domId(this.ID_WIKI_PREVIEW_LIVE)],this.previewLive,'Live')+SPACE4,
 		    HU.span([CLASS, 'ramadda-clickable',TITLE,'Wordcount',ID,this.domId(this.ID_WIKI_PREVIEW_WORDCOUNT)], HtmlUtils.getIconImage('fa-calculator')),
 
 		    HU.span([CLASS, 'ramadda-clickable',TITLE,'Copy',ID,this.domId(this.ID_WIKI_PREVIEW_COPY)], HtmlUtils.getIconImage('fa-copy')),
@@ -1751,7 +1751,8 @@ WikiEditor.prototype = {
 	    {label:'Collection Properties'},
 	    {p:'sortby',ex:'name|date|changedate|createdate|entryorder|number',tt:'sort type -name,date, change date, create date'},
 	    {p:'sortdir',ex:'up|down',tt:'direction of sort. use up for oldest to youngest'},
-	    {p:'entries',ex:'entryid1,entryid2,entryid3..',tt:'comma separated list of entry ids to use' },
+	    {label:'Specify entries',p:'entries',ex:'\"entryid1,entryid2,entryid3..\"',tt:'comma separated list of entry ids to use' },
+	    {label:'Specify entries by search',p:'entries',ex:'search:type:<some type>;orderby:date;ascending:false',tt:'comma separated list of entry ids to use' },	    
 	    {p:'entries.filter',ex:'file|folder|image|type:some type|geo|name:name pattern|suffix:file suffixes',tt:'allows you to select what entries to use'},
 	    {p:'exclude',ex:'entryid1,entryid2,entryid3..',tt:'comma separated list of entry ids to not use'},
 	    {p:'first',ex:'entryid1,entryid2,entryid3..',tt:'comma separated list of entry ids to use first'},
