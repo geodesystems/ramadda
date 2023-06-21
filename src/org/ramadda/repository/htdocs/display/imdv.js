@@ -2934,6 +2934,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		return;
 	    }
 	    let json = this.makeJson();
+//	    console.log(json);
 	    let url = Ramadda.getUrl("/entry/setfile"); 
             let args = {
                 entryid: this.getProperty("entryId"),
@@ -2944,6 +2945,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    formdata.append("file",json);
 	    $.ajax({
 		url: url,
+		cache:false,
 		data: formdata,
 		processData: false,
 		contentType: false,
@@ -2971,6 +2973,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 		$.ajax({
                     url: url,
+		cache:false,
                     dataType: 'text',
                     success: (data) => {
 			finish();
@@ -3745,6 +3748,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
             $.ajax({
                 url: url,
                 dataType: 'text',
+		cache:false,
                 success: (data) => {
 		    finish();
 		    if(data=="") data="[]";
