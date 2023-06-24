@@ -650,7 +650,7 @@ public class WikiManager extends RepositoryManager
 
 	List<String> toks = Utils.split(string,";",true,true);
 	String orderBy = null;//ORDERBY_FROMDATE;
-	boolean ascending = false;
+	Boolean ascending = null;
 	String name=null;
         String filter = getProperty(wikiUtil, props,
 				    ATTR_ENTRIES + ".filter",
@@ -704,6 +704,14 @@ public class WikiManager extends RepositoryManager
 	    } else if(what.equals(ARG_ASCENDING)) {
 		ascending = value.length()==0|| value.equals("true");			
 		select.setAscending(ascending);
+	    } else if(what.equals(ARG_DESCENDING)) {
+		select.setAscending(ascending = value.equals("false"));
+	    } else if(what.equals("sortdir")) {
+		if(value.equals("up") || value.equals("ascending")) 
+		    select.setAscending(ascending = true);
+		else if(value.equals("down") || value.equals("descending")) 
+		    select.setAscending(ascending = false);
+		else System.err.println("Unknown sort dir:" + what);
 	    } else if(what.equals("entry")) {
 		entry = findEntryFromId(request,  entry, wikiUtil, props, value);
 		select.setEntry(entry);
@@ -725,7 +733,9 @@ public class WikiManager extends RepositoryManager
 	    }
 	}		
 	if(orderBy!=null)
-	    myRequest.put(ARG_ORDERBY,orderBy+(ascending?"_ascending":"_descending"));
+	    myRequest.put(ARG_ORDERBY,orderBy);
+	if(ascending!=null) 
+	    myRequest.put(ATTR_SORT_DIR,ascending?"up":"down");
 	if(filter!=null) select.setFilter(filter);
 	return select;
     }
@@ -921,6 +931,8 @@ public class WikiManager extends RepositoryManager
 	SelectInfo select = getSelectFromString(request, entry, wikiUtil,
 						props,entryId.equals(ID_SEARCH)?"":
 						Utils.clip(entryId,PREFIX_SEARCH));
+	//xxxxx
+	System.err.println("R:" + select.getRequest().format());
 	List<Entry> entries=  getSearchManager().doSearch(select.getRequest(),select);
 	return getEntryManager().applyFilter(request, entries, select);
     }
@@ -6033,20 +6045,38 @@ public class WikiManager extends RepositoryManager
         request = myRequest;
 	String prefix = getProperty(wikiUtil,props,"argPrefix","");
         int         max         =   getProperty(wikiUtil, props, ARG_MAX, -1);
-        String      orderBy     = null;
-        if (orderBy == null) {
-            orderBy = getProperty(wikiUtil, props, "sort");
-	    if (orderBy == null) {
-		orderBy = getProperty(wikiUtil, props, "sortby");
+        String      orderBy     =  getProperty(wikiUtil, props, "sort");
+	if (orderBy == null) {
+	    orderBy = getProperty(wikiUtil, props, "sortby");
+	}
+	if (orderBy == null) {
+	    orderBy = getProperty(wikiUtil, props, "orderby");
+	}	    
+
+	//xxxxx
+	String sortDir = getProperty(wikiUtil,props,ATTR_SORT_DIR,
+				     getProperty(wikiUtil,props,ATTR_SORT_ORDER,null));
+
+	if(sortDir==null) {
+	    String v = getProperty(wikiUtil,props,"ascending",null);
+	    if(v!=null) {
+		if(v.equals("true")) sortDir=DIR_UP;
+		else if(v.equals("false")) sortDir = DIR_DOWN;
 	    }
-        }
+	}
 
-	boolean descending = getProperty(wikiUtil,props,ATTR_SORT_DIR,
-					 getProperty(wikiUtil,props,ATTR_SORT_ORDER,"down")).equals("down");
+	if(sortDir==null) {
+	    String v = getProperty(wikiUtil,props,"descending",null);
+	    if(v!=null) {
+		if(v.equals("true")) sortDir=DIR_DOWN;
+		else if(v.equals("false")) sortDir = DIR_UP;
+	    }
+	}
+
+	if(sortDir==null) sortDir = DIR_DOWN;
+	boolean descending = sortDir.equals(DIR_DOWN);
+
         HashSet     nots        = new HashSet();
-
-
-	
 	SelectInfo select=null;
 	Utils.TriFunction<SelectInfo,String,String,String> matches =
 	    getIdMatcher(request, baseEntry,wikiUtil,props);
