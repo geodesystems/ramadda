@@ -278,6 +278,11 @@ public class TextRecord extends DataRecord {
 
 
 
+    private void debugLine(String s){
+	s = s.replace("\n","_N");
+	System.err.println(s+"******");
+    }
+
     /**
      * _more_
      *
@@ -290,13 +295,10 @@ public class TextRecord extends DataRecord {
     public String readNextLine(RecordIO recordIO) throws Exception {
         boolean debug = false;
         if (textReader == null) {
-            textReader = new TextReader();
+            textReader = recordIO.getTextReader();
 	    if(cleanInput) {
 		textReader.setCleanInput(true);
 	    }
-            //      System.err.println("making text reader:" +(nio?"new way":"old way"));
-            InputStream fis = recordIO.getInputStream();
-	    textReader.setReader(recordIO.getBufferedReader());
         }
         while (true) {
             if (firstDataLine != null) {
@@ -304,31 +306,31 @@ public class TextRecord extends DataRecord {
                 firstDataLine = null;
             } else {
                 currentLine = recordIO.getAndClearPutback();
-                if (currentLine == null) {
-                    currentLine = textReader.readLine();
-                }
-            }
-            if (currentLine == null) {
-                if (debug) {
-                    System.err.println("TextRecord: currentLine is null");
-                }
+		//if(debug && currentLine!=null)	    debugLine("PUT BACK:" + currentLine);
+		if (currentLine == null) {
+		    currentLine = textReader.readLine();
+		    //  if(debug)debugLine("READ LINE 1:" + currentLine);
+		}
+	    }
+	    if (currentLine == null) {
+		if (debug) {
+		    System.err.println("TextRecord: currentLine is null");
+		}
+		return null;
+	    }
+	    if ( !lineOk(currentLine)) {
+		if (debug) {
+		    debugLine("TextRecord: currentLine not ok:" + currentLine);
+		}
+		continue;
+	    }
 
-                return null;
-            }
-            if ( !lineOk(currentLine)) {
-                if (debug) {
-                    System.err.println("TextRecord: currentLine not ok:"
-                                       + currentLine);
-                }
-                continue;
-            }
+	    if (debug) {
+		debugLine("TextRecord: currentLine:" + currentLine);
+	    }
 
-            if (debug) {
-                System.err.println("TextRecord: currentLine:" + currentLine);
-            }
-
-            return currentLine;
-        }
+	    return currentLine;
+	}
     }
 
     /**
@@ -373,13 +375,13 @@ public class TextRecord extends DataRecord {
                 if (line == null) {
                     return ReadStatus.EOF;
                 }
+		//		debugLine("READ LINE:" + line);
 		//This gets set when we're making the record count or when we are seeking to the last records
 		if(skipProcessing) {
 		    skipCnt++;
 		    return ReadStatus.OK;
 		}
 
-                //                System.err.println("LINE:" + line);
                 if (matchUpColumns && (rawOK == null)) {
                     List<String> toks = Utils.tokenizeColumns(line,
                                             tokenizer);
@@ -431,10 +433,10 @@ public class TextRecord extends DataRecord {
                                           + "Bad token count: expected: "
                                           + tokens.length + " got: "
                                           + toks.size() + "\n");
-                    if (line.length() > 1000) {
-                        line = line.substring(0, 999) + "...";
+                    if (line.length() > 5000) {
+                        line = line.substring(0, 4999) + "...";
                     }
-                    msg.append("Line:" + line + "\n");
+                    msg.append("Line:" + line.replace("\n","_N") + "\n");
                     /*
                     msg.append("\nExpected:");
                     for (int i = 0; i < fields.size(); i++) {
@@ -474,6 +476,7 @@ public class TextRecord extends DataRecord {
                         msg.append("\n");
                     }
 
+		    //		    System.err.println(Utils.getStack(10));
                     throw new IllegalArgumentException(msg.toString());
                 }
                 int targetIdx = 0;
