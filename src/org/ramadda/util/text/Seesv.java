@@ -1888,6 +1888,18 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_SKIPLINES, "Skip number of raw lines.",
 		ARG_LABEL,"Skip Lines",
                 new Arg("lines", "How many raw lines to skip", ATTR_TYPE, TYPE_NUMBER)),	
+        new Cmd(CMD_MAXROWS, "Set max rows to process",
+		ARG_LABEL,"Max Rows",		
+		new Arg("rows","Number of rows",ATTR_TYPE, TYPE_NUMBER)),
+        new Cmd(CMD_FIND, "Pass through rows that the columns each match the pattern",
+		ARG_LABEL,"Match",
+                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
+		new Arg(ARG_PATTERN, "regexp or prefix with includes:s1,s2 to do substrings match", ATTR_TYPE, TYPE_PATTERN)),
+        new Cmd(CMD_NOTPATTERN,
+                "Pass through rows that don't match the pattern",
+		ARG_LABEL,"Not Match",
+                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
+                new Arg(ARG_PATTERN, "regexp or prefix with includes:s1,s2 to do substrings match", ATTR_TYPE, TYPE_PATTERN)),
         new Cmd(CMD_IF, "Next N args specify a filter command followed by any change commands followed by an -endif."),
         new Cmd(CMD_START, "Start at pattern in source file",
                 new Arg("start pattern", "", ATTR_TYPE, TYPE_PATTERN)),
@@ -1902,10 +1914,10 @@ public class Seesv implements SeesvCommands {
                 new Arg("filters",
                         "Comma separated list of strings to filter on")),
         new Cmd(CMD_MIN,
-		"Only pass thorough lines that have at least this number of columns",
+		"Only pass thorough lines that have at least this number of columns. Specify \"\" to use the number of columns in the header",
 		new Arg("min # columns", "", ATTR_TYPE, TYPE_NUMBER)),
         new Cmd(CMD_MAX,
-		"Only pass through lines that have no more than this number of columns",
+		"Only pass through lines that have no more than this number of columns. Specify \"\" to use the number of columns in the header",
 		new Arg("max # columns", "", ATTR_TYPE, TYPE_NUMBER)),
         new Cmd(CMD_NUMCOLUMNS,
 		"Remove or add values so each row has the number of columns",
@@ -1913,15 +1925,6 @@ public class Seesv implements SeesvCommands {
 		new Arg("number", "", ATTR_TYPE, TYPE_NUMBER)),
         new Cmd(CMD_HAS, "Only pass through anything if the data has the given columns",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
-        new Cmd(CMD_FIND, "Pass through rows that the columns each match the pattern",
-		ARG_LABEL,"Match",
-                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
-		new Arg(ARG_PATTERN, "regexp or prefix with includes:s1,s2 to do substrings match", ATTR_TYPE, TYPE_PATTERN)),
-        new Cmd(CMD_NOTPATTERN,
-                "Pass through rows that don't match the pattern",
-		ARG_LABEL,"Not Match",
-                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
-                new Arg(ARG_PATTERN, "regexp or prefix with includes:s1,s2 to do substrings match", ATTR_TYPE, TYPE_PATTERN)),
         new Cmd(CMD_FUZZYPATTERN, "Pass through rows that the columns each fuzzily match the pattern",
 		ARG_LABEL,"Fuzzy match",
                 new Arg("threshold", "Score threshold 0-100. Default:85. Higher number better match"),
@@ -2775,9 +2778,6 @@ public class Seesv implements SeesvCommands {
 		ARG_LABEL,"File Pattern",
 		new Arg(ARG_NAME,"Macro name"),
 		new Arg(ARG_PATTERN,"Pattern",ATTR_TYPE, TYPE_PATTERN)),		
-        new Cmd(CMD_MAXROWS, "Set max rows to process",
-		ARG_LABEL,"Max Rows",		
-		new Arg("rows","Number of rows",ATTR_TYPE, TYPE_NUMBER)),
         new Cmd(CMD_CHANGELINE,  "Change the line",
 		ARG_LABEL,"Change Line",
                 new Arg("from","From pattern"),
@@ -3469,12 +3469,14 @@ public class Seesv implements SeesvCommands {
 	    });
 
 	defineFunction(CMD_MIN,1,(ctx,args,i) -> {
-		ctx.addProcessor(new Filter.MinColumns(ctx, parseInt(args.get(++i))));
+		String s = args.get(++i).trim();
+		ctx.addProcessor(new Filter.MinColumns(ctx, s.length()==0?-1:parseInt(s)));
 		return i;
 	    });
 
 	defineFunction(CMD_MAX,1,(ctx,args,i) -> {
-		ctx.addProcessor(new Filter.MaxColumns(ctx, parseInt(args.get(++i))));
+		String s = args.get(++i).trim();
+		ctx.addProcessor(new Filter.MaxColumns(ctx, s.length()==0?-1:parseInt(s)));
 		return i;
 	    });
 

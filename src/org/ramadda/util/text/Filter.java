@@ -1426,6 +1426,10 @@ public class Filter extends Processor {
          */
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
+	    if(cnt<0) {
+		cnt = row.size();
+		return true;
+	    }
             if (row.size() < cnt) {
                 return false;
             }
@@ -1469,6 +1473,10 @@ public class Filter extends Processor {
          */
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
+	    if(cnt<0) {
+		cnt = row.size();
+		return true;
+	    }
             if (row.size() > cnt) {
                 return false;
             }
