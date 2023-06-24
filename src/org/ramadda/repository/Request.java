@@ -2544,6 +2544,17 @@ public class Request implements Constants, Cloneable {
     }
 
 
+    public String format() {
+	StringBuilder sb = new StringBuilder(urlPath+"\n");
+	for (Enumeration keys =
+		 parameters.keys(); keys.hasMoreElements(); ) {
+	    String key = (String) keys.nextElement();
+	    sb.append("\t" + key+"=" + parameters.get(key).toString().replace("\n"," ")+"\n");
+	}
+	return sb.toString();
+    }
+
+
     /**
      * _more_
      *
