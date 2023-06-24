@@ -54,19 +54,22 @@ ready access to a Windows machine to test on so there may be some rough edges.
 There have been problems reported running under Tomcat so we would suggest
 running <a href="#standalone">standalone</a>.
 :p
-There is a section on windows in the
+To run on Windows you will need to first install <a href="https://www.theserverside.com/blog/Coffee-Talk-Java-News-Stories-and-Opinions/How-do-I-install-Java-on-Windows">Java</a>.
+Once you have Java installed consult the section on Windows in the
 <a href="https://github.com/geodesystems/ramadda/blob/master/release/standalone/README">README</a>
-in the standalone zip file.  The standalone release contains a
+in the RAMADDA standalone zip file.  The standalone release contains a
 <a href="https://github.com/geodesystems/ramadda/blob/master/release/standalone/ramadda.bat">ramadda.bat</a>.
 As described in the ramadda.bat file you set up the JAVA_HOME, RAMADDA_HOME and RAMADDA_PORT environment variables.
 :p
-Try running the .bat from the command line.  If it all works then you can just fire up RAMADDA by running the .bat when you want to.
-If you want to add the .bat as a service so that RAMADDA is always running you can use this app to install and run the .bat as a
+Try running the .bat from the command line.  If it all works then you can just fire up RAMADDA by running the
+.bat when you want to.
+If you want to add the .bat as a service so that RAMADDA is always running you can use the NSSM application to install and
+run the .bat as a
 service- \[https://nssm.cc/ https://nssm.cc/\]
 
 
 <subhead intoc="false" id="standalone">Running Standalone</subhead>
-You can run RAMADDA stand-alone from the command line. This requires  Java 1.7 or greater. 
+You can run RAMADDA stand-alone from the command line. This requires  Java 1.8 or greater. 
 
 <ol>
 <li> Download the ramaddaserver.zip from the <a href="https://ramadda.org/repository/alias/release">Geode Systems</a> site.
