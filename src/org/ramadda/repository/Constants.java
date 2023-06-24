@@ -677,6 +677,11 @@ public interface Constants {
 
     /** _more_ */
     public static final String ARG_ASCENDING = "ascending";
+    public static final String ARG_DESCENDING = "descending";    
+
+    public static final String DIR_UP = "up";
+    public static final String DIR_DOWN = "down";
+
 
     /** _more_ */
     public static final String ARG_ASSOCIATION = "association";
