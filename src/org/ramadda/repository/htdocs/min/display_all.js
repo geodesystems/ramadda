@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Jun 18 08:24:51 MDT 2023";
+var build_date="RAMADDA build date: Sat Jun 24 05:13:14 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -43680,6 +43680,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		return;
 	    }
 	    let json = this.makeJson();
+//	    console.log(json);
 	    let url = Ramadda.getUrl("/entry/setfile"); 
             let args = {
                 entryid: this.getProperty("entryId"),
@@ -43690,6 +43691,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    formdata.append("file",json);
 	    $.ajax({
 		url: url,
+		cache:false,
 		data: formdata,
 		processData: false,
 		contentType: false,
@@ -43717,6 +43719,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 		$.ajax({
                     url: url,
+		cache:false,
                     dataType: 'text',
                     success: (data) => {
 			finish();
@@ -44491,6 +44494,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
             $.ajax({
                 url: url,
                 dataType: 'text',
+		cache:false,
                 success: (data) => {
 		    finish();
 		    if(data=="") data="[]";
