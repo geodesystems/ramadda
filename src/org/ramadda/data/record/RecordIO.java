@@ -5,6 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.record;
 
+import org.ramadda.util.text.TextReader;
 
 import java.io.*;
 
@@ -210,6 +211,14 @@ public class RecordIO {
         return bufferedReader;
     }
 
+    private TextReader textReader;
+    public TextReader getTextReader() throws Exception {
+	if(textReader==null)
+	    textReader = new TextReader();
+	textReader.setReader(getBufferedReader());
+	return textReader;
+    }
+
     /**
      * Read a line from the buffered reader
      *
@@ -217,15 +226,14 @@ public class RecordIO {
      *
      * @throws IOException On badness
      */
-    public String readLine() throws IOException {
+    public String readLine() throws Exception {
         if (putBackLine != null) {
             String s = putBackLine;
             putBackLine = null;
 
             return s;
         }
-
-        return getBufferedReader().readLine();
+	return getTextReader().readLine();
     }
 
     /**
