@@ -1436,7 +1436,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		    }
 		    if(f.getType()=="image") {
 			let url = record.getValue(f.getIndex());
-			sv = HU.image(url,[STYLE,HU.css("width","150px;")]);
+			sv = HU.image(url,['loading','lazy',STYLE,HU.css("width","150px;")]);
 		    }
 
 		    if(idx==0 && iconField) {
