@@ -128,7 +128,7 @@ public class TextReader implements Cloneable {
     private List<Integer> widths;
 
     /** _more_ */
-    private String comment = "#";
+    private String inputComment = "#";
 
     private List<String> comments = new ArrayList<String>();
 
@@ -823,6 +823,9 @@ public class TextReader implements Cloneable {
 	return comments;
     }
 	    
+    public void setInputComment(String c) {
+	inputComment = c;
+    }
 
     /**
      * _more_
@@ -971,7 +974,7 @@ public class TextReader implements Cloneable {
      * @return _more_
      */
     public boolean lineOk(String line) {
-        if ((comment != null) && line.startsWith(comment)) {
+        if ((inputComment != null) && inputComment.length()>0 && line.startsWith(inputComment)) {
             return false;
         }
 	//	System.err.println("\tlineOk: " +line +" seen:" + seenStartPattern);

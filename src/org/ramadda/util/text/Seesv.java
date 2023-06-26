@@ -1779,6 +1779,8 @@ public class Seesv implements SeesvCommands {
         new Category("Input","Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XML, Shapefile, etc."),
         new Cmd(CMD_DELIMITER, "Specify a delimiter",
                 new Arg("delimiter", "Use 'space' for space, 'tab' for tab",  ATTR_SIZE, "5")),
+        new Cmd(CMD_DELIMITER, "Specify the input comment character",
+                new Arg("comment", "",  ATTR_SIZE, "5")),	
         new Cmd(CMD_TAB, "Use tabs. A shortcut for -delimiter tab"),
         new Cmd(CMD_WIDTHS, "Columns are fixed widths",
 		new Arg("widths", "w1,w2,...,wN")),
@@ -2796,8 +2798,7 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_PROP, "Set a property",
                 new Arg("property", "", "values", "position"),
                 new Arg("value", "start, end, etc")),
-        new Cmd(CMD_COMMENT, "",
-		new Arg("comment")),
+	//        new Cmd(CMD_COMMENT, "",new Arg("comment")),
         new Cmd(CMD_VERIFY,
                 "Verify that all of the rows have the same # of columns"),
         new Cmd(CMD_EXT,
@@ -3804,6 +3805,10 @@ public class Seesv implements SeesvCommands {
 		ctx.setDelimiter(delimiter = args.get(++i));
 		return i;
 	    });
+	defineFunction(CMD_INPUTCOMMENT,1,(ctx,args,i) -> {
+		ctx.setInputComment(args.get(++i));
+		return i;
+	    });	
 	defineFunction(CMD_QUOTESNOTSPECIAL,0,(ctx,args,i) -> {
 		ctx.setQuotesNotSpecial(true);
 		return i;
