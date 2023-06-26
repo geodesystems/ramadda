@@ -836,6 +836,8 @@ public class EntryManager extends RepositoryManager {
 
 	HU.formEntry(sb, msgLabel("Snapshot type"), HU.select(ARG_SNAPSHOT_TYPE, types));
 	getPageHandler().addEntrySelect(request, parent, ARG_DEST_ENTRY,sb,"Destination Entry", "");
+	String base = request.getAbsoluteUrl("");
+	HU.formEntry(sb, msgLabel("URL Base"), HU.input("snapshotbase",base));
 	HU.formTableClose(sb);
 	sb.append(HU.submit(msg("Create snapshot"), ARG_OK));
 	sb.append(HU.SPACE);
@@ -869,6 +871,8 @@ public class EntryManager extends RepositoryManager {
 	request.putExtraProperty(PROP_MAKESNAPSHOT,"true");
 	List<String[]> snapshotFiles = new ArrayList<String[]>();
 	request.putExtraProperty("snapshotfiles", snapshotFiles);
+	Hashtable<String,String> snapshotMap = new Hashtable<String,String>();
+	request.putExtraProperty("snapshotmap", snapshotMap);
 	request.put(ARG_OUTPUT,OutputHandler.OUTPUT_HTML.getId());
 	request.put("ramadda.showjsonld", "false");
 	getRepository().getHtmlOutputHandler().handleDefaultWiki(request, entry,sb);
@@ -876,12 +880,14 @@ public class EntryManager extends RepositoryManager {
 	tmpResult.setTitle(entry.getName());
 	Request tmpRequest = request.cloneMe();
 
-	if(makeEntry) {
-	    //use empty template when we generate a an entry 
+	if(makeEntry || makeExport) {
+	    //use empty template when we generate  an entry 
 	    tmpRequest.put(ARG_TEMPLATE,"empty");
 	}
 	if(makeExport) {
-	    tmpRequest.appendHead0("<base href='" + request.getAbsoluteUrl("") +"' target='_blank'>\n");
+	    String base = request.getString("snapshotbase","");
+	    if(!stringDefined(base)) base = request.getAbsoluteUrl("");
+	    tmpRequest.appendHead0("<base href='" + base +"' target='_blank'>\n");
 	}
 	tmpRequest.setUser(getUserManager().getAnonymousUser());
 	getPageHandler().decorateResult(tmpRequest, tmpResult);
@@ -892,7 +898,7 @@ public class EntryManager extends RepositoryManager {
 	    //	    html = html.replaceAll("/" + RepositoryUtil.getHtdocsVersion(),"");
 	    OutputStream os = request.getHttpServletResponse().getOutputStream();
 	    request.getHttpServletResponse().setContentType("multipart/x-zip");
-	    request.setReturnFilename(IOUtil.stripExtension(entry.getName())+"_snapshot.zip");
+	    request.setReturnFilename(IOUtil.stripExtension(Utils.makeID(entry.getName()))+"_snapshot.zip");
 	    FileWriter zipFileWriter= new FileWriter(new ZipOutputStream(os));
 	    zipFileWriter.setCompressionOn();
 	    for(String[]tuple: snapshotFiles) {
@@ -902,7 +908,7 @@ public class EntryManager extends RepositoryManager {
                 zipFileWriter.writeFile(jsonFileName, fis);
 		IOUtil.close(fis);
 	    }
-	    zipFileWriter.writeFile(IOUtil.stripExtension(entry.getName())+".html", html.getBytes());
+	    zipFileWriter.writeFile(IOUtil.stripExtension(Utils.makeID(entry.getName()))+".html", html.getBytes());
 	    zipFileWriter.close();
 	    Result result = Result.makeNoOpResult();
 	    result.setShouldDecorate(false);

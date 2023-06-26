@@ -2928,18 +2928,23 @@ public class WikiManager extends RepositoryManager
 	    if(Misc.equals("true",request.getExtraProperty(PROP_MAKESNAPSHOT))) {
 		if(request.isAnonymous()) throw new RuntimeException("Anonymous users cannot make snapshots");
 		List<String[]> snapshotFiles = (List<String[]>) request.getExtraProperty("snapshotfiles");
-		File tmpFile = getStorageManager().getTmpFile(request, "point.json");
-		Date now = new Date();
-		String fileName = jsonUrl.replaceAll("^/.*\\?","").replace("output=points.product&product=points.json&","").replaceAll("[&=\\?]+","_").replace("entryid_","");
-		fileName += "_"+  now.getTime() +".json";
-		fileName =  Utils.makeID(entry.getName()) +"_"+fileName;
-		snapshotFiles.add(new String[]{tmpFile.toString(), fileName, entry.getName()});
-		URL url = new URL(request.getAbsoluteUrl(jsonUrl).replace("localhost:","127.0.0.1:"));
+		Hashtable<String,String> snapshotMap = (Hashtable<String,String>) request.getExtraProperty("snapshotmap");
+		String fileName = snapshotMap.get(jsonUrl);
+		if(fileName==null) {
+		    File tmpFile = getStorageManager().getTmpFile(request, "point.json");
+		    Date now = new Date();
+		    fileName = jsonUrl.replaceAll("^/.*\\?","").replace("output=points.product&product=points.json&","").replaceAll("[&=\\?]+","_").replace("entryid_","");
+		    fileName += "_"+  now.getTime() +".json";
+		    fileName =  Utils.makeID(entry.getName()) +"_"+fileName;
+		    snapshotFiles.add(new String[]{tmpFile.toString(), fileName, entry.getName()});
+		    snapshotMap.put(jsonUrl, fileName);
+		    URL url = new URL(request.getAbsoluteUrl(jsonUrl).replace("localhost:","127.0.0.1:"));
+		    OutputStream fos = getStorageManager().getFileOutputStream(tmpFile);
+		    InputStream fis = IO.getInputStream(url);
+		    IOUtil.writeTo(fis, fos);
+		    IOUtil.close(fos);
+		}
 		jsonUrl = fileName;
-		OutputStream fos = getStorageManager().getFileOutputStream(tmpFile);
-		InputStream fis = IO.getInputStream(url);
-		IOUtil.writeTo(fis, fos);
-		IOUtil.close(fos);
 	    }
 
 
