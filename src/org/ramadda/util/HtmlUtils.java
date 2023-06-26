@@ -4640,12 +4640,9 @@ public class HtmlUtils implements HtmlUtilsConstants {
      */
     public static String mouseClickHref(String call, String label,
                                         String extra) {
-        //        return "<a href=\"javascript:void(0)\" " +onMouseClick(call) +">" +label +"</a>";
         String result = tag(TAG_A,
-                            attrs(ATTR_HREF, "javascript:void(0);")
-                            + onMouseClick(call) + extra, label);
-        //        System.err.println(result);
-
+			    //			    attrs(ATTR_HREF, "javascript:void(0);")
+                            onMouseClick(call) + extra, label);
         return result;
     }
 
@@ -4663,7 +4660,8 @@ public class HtmlUtils implements HtmlUtilsConstants {
                                       String label, String extra)
             throws Exception {
         tag(sb, TAG_A,
-            attrs(ATTR_HREF, "javascript:void(0);") + onMouseClick(call)
+	    //            attrs(ATTR_HREF, "#") + 
+	    onMouseClick(call)
             + extra, label);
     }
 
