@@ -247,4 +247,35 @@ fields=date[type="string" isdate="true"] time[type="string" istime="true"],LATIT
 	</type>
 	
 
+<type name="type_ndbc_buoy" 
+description="NDBC Buoy Data" 
+super="type_point" 
+category="Point Data"
+supercategory="Geoscience"
+handler="org.ramadda.geodata.point.NdbcBuoyTypeHandler">
+<column  name="station"  label="Station ID" type="string" cansearch="true"/>
+<column  name="data_type"  label="Data Type" type="enumeration" cansearch="true"
+	 values="txt:standard meteorological data,drift:meteorological data from drifting buoys,cwind:continuous winds data,spec:spectral wave summaries,data:_spec raw spectral wave data,swdir:spectral wave data (alpha1),swdir2:spectral wave data (alpha2),swr1:spectral wave data (r1),swr2:spectral wave data (r2),adcp:Acoustic Doppler Current Profiler,ocean:oceanographic data, tide:tide data"/>  
+
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property name="record.properties">
+csvcommands1=-delimiter,spaces,-inputcomment,,-cut
+csvcommands2=0,-set,0,0,yr
+csvcommands3=-combine,yr\,mo\,dy\,hr\,mn,-,date,-firstcolumns
+csvcommands4=date,-indateformat,yyyy-MM-dd-HH-mm,,-convertdate
+csvcommands5=date,-change,6-50,MM,NaN
+csvcommands6=-addheader,
+date.format_csvcommandspace_{yyyy-MM-dd_csvcommandspace_hh:mm:ss}
+,-print
+</property>
+<wiki>
+<![CDATA[
++section  title="{{name}}"
+Put display wiki text here
+-section
+]]>
+</wiki>
+</type>
+
+
 </types>
