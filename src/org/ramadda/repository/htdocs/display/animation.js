@@ -130,7 +130,6 @@ function DisplayAnimation(display, enabled,attrs) {
 		if(!seen[date]) {
 		    seen[date] = true;
 		    this.dates.push(this.makeDate(date));
-		    this.dates.push(date);
 		    this.dateToRecordMap[date] = r;
 		}
 		return true;
@@ -138,7 +137,7 @@ function DisplayAnimation(display, enabled,attrs) {
 	    this.dates.sort(function(a,b) {
 		return a.value - b.value;
 	    });
-	    
+	    	
             this.dateRange = this.dateMax.getTime() - this.dateMin.getTime();
 	    this.steps= parseFloat(this.display.getProperty("animationSteps", 60));
 	    this.setWindow();
@@ -526,7 +525,8 @@ function DisplayAnimation(display, enabled,attrs) {
 		    this.end = this.makeDate(new Date(this.begin.getTime()+(fullRange?this.window:diff)));
 		} else if (this.mode == MODE_FRAME) {
 		    this.frameIndex = 0;
-		    this.setBeginEnd(this.deltaFrame(0));
+		    let date = this.deltaFrame(0);
+		    this.setBeginEnd(date);
 		} else {
 		    this.setEnd(new Date(this.dateMin.getTime()+this.window));
 		}
