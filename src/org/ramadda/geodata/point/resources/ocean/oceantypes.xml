@@ -253,25 +253,53 @@ super="type_point"
 category="Point Data"
 supercategory="Geoscience"
 handler="org.ramadda.geodata.point.NdbcBuoyTypeHandler">
-<column  name="station"  label="Station ID" type="string" cansearch="true"/>
-<column  name="data_type"  label="Data Type" type="enumeration" cansearch="true"
-	 values="txt:standard meteorological data,drift:meteorological data from drifting buoys,cwind:continuous winds data,spec:spectral wave summaries,data:_spec raw spectral wave data,swdir:spectral wave data (alpha1),swdir2:spectral wave data (alpha2),swr1:spectral wave data (r1),swr2:spectral wave data (r2),adcp:Acoustic Doppler Current Profiler,ocean:oceanographic data, tide:tide data"/>  
+  <property name="icon" value="/point/noaa.gif"/>
+  <property name="form.area.show" value="false"/>
+  <property name="form.location.show" value="true"/>
+  <property name="form.date.show" value="false"/>
+  <property name="form.resource.show" value="false"/>
+  <property name="form.properties.show" value="false"/>
+  <property name="form.header.new">
+<![CDATA[+note\nJust need to specify the Station ID. See the map at <a target=_map href=https://www.ndbc.noaa.gov/>nbdc.noaa.gov</a>\n-note]]></property>    
+  <column  name="station"  label="Station ID" type="string" cansearch="true"/>
+  <column  name="data_type"  label="Data Type" type="enumeration" cansearch="true"
+	   values="txt:standard meteorological data,drift:meteorological data from drifting buoys,cwind:continuous winds data,spec:spectral wave summaries,data:_spec raw spectral wave data,swdir:spectral wave data (alpha1),swdir2:spectral wave data (alpha2),swr1:spectral wave data (r1),swr2:spectral wave data (r2),adcp:Acoustic Doppler Current Profiler,ocean:oceanographic data, tide:tide data"/>  
 
-<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+  <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property name="record.properties">
 csvcommands1=-delimiter,spaces,-inputcomment,,-cut
-csvcommands2=0,-set,0,0,yr
-csvcommands3=-combine,yr\,mo\,dy\,hr\,mn,-,date,-firstcolumns
-csvcommands4=date,-indateformat,yyyy-MM-dd-HH-mm,,-convertdate
-csvcommands5=date,-change,6-50,MM,NaN
-csvcommands6=-addheader,
-date.format_csvcommandspace_{yyyy-MM-dd_csvcommandspace_hh:mm:ss}
-,-print
+csvcommands2=1,-set,0,0,yy
+csvcommands3=-set,1,0,month,-combine
+csvcommands4=yy\,month\,dd\,hh\,mm,-,date,-firstcolumns,date
+csvcommands5=-indateformat,yyyy-MM-dd-HH-mm,,-convertdate,date
+csvcommands6=-notcolumns,yy\,month\,dd\,hh\,mm,-change,1-50,MM
+csvcommands7=NaN,-addheader,date.format_csvcommandspace_{yyyy-MM-dd_csvcommandspace_hh:mm:ss},-print
 </property>
 <wiki>
 <![CDATA[
-+section  title="{{name}}"
-Put display wiki text here
++section title="Station {{field name=station}} - {{name}}"
+:navtop
++toggle Buoy Information
++row
++col-9
+{{description wikify=true}}
+-col
++col-3
+<a target=_site href="https://www.ndbc.noaa.gov/station_page.php?station={{field  name=station}}">NDBC Site</a>
+&nbsp;
+<a target=_site href="https://www.ndbc.noaa.gov/data/realtime2/{{field name=station}}.{{field name=data_type raw=true}}">Raw Data</a>
+{{mapentry height=200px}}
+-col
+-row
+-toggle
+:heading Chart
+{{property max="20000"}}
+{{group}}
+{{display_linechart showMenu=true fields="#2"}} 
+{{display_linechart showMenu=true fields="#3"}} 
+:heading Table
+{{display_download}}
+{{display_htmltable  includeDate=false }} 
 -section
 ]]>
 </wiki>

@@ -12,10 +12,15 @@ import org.ramadda.data.services.PointTypeHandler;
 import org.ramadda.data.services.RecordTypeHandler;
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
+
+import ucar.unidata.util.Misc;
+import ucar.unidata.util.StringUtil;
 
 import org.w3c.dom.*;
 
+import java.net.URL;
 import java.io.*;
 
 import java.text.SimpleDateFormat;
@@ -59,6 +64,50 @@ public class NdbcBuoyTypeHandler extends PointTypeHandler {
 
 
 
+    @Override
+    public void initializeNewEntry(Request request, Entry entry,
+                                   boolean fromImport)
+            throws Exception {
+	super.initializeNewEntry(request, entry, fromImport);
+	if(fromImport) return;
+	String id = (String)  entry.getValue(IDX_STATION_ID);
+	if(!stringDefined(id)) return;
+	String url = "https://www.ndbc.noaa.gov/station_page.php?station=" + id;
+	try {
+	    String html = IO.readUrl(new URL(url));
+	    String name =  StringUtil.findPattern(html,"(?i).*currentstnname *= *'([^']+)'");
+	    String mtd = StringUtil.findPattern(html,"(?s).*<div id=\"stn_metadata\">(.*?)</p>.*");
+	    if(mtd!=null) {
+		mtd = mtd.replace("<p>","");
+		StringBuilder sb = new StringBuilder("<div>");
+		for(String line: Utils.split(mtd,"\n",true,true)) {
+		    line = line.replace("<b>","").replace("</b>","");
+		    line = line.replace("<p>","").replace("</p>","").replace("<br>","").trim();		    
+		    if(line.length()==0) continue;
+		    if(((line.indexOf(" N ")>=0) || (line.indexOf(" S ")>=0)) &&
+		       ((line.indexOf(" E ")>=0) || (line.indexOf(" W ")>=0))) continue;
+		    sb.append(line);
+		    sb.append("<br>\n");
+		}
+		sb.append("</div>");
+		entry.setDescription(entry.getDescription()+sb.toString());
+		String lat = StringUtil.findPattern(mtd,"<b>([0-9\\.]+ (N|S)) ");
+		if(lat!=null) {
+		    entry.setLatitude(Misc.decodeLatLon(lat));
+		}
+		String lon = StringUtil.findPattern(mtd," ([0-9\\.]+ (W|E)) ");
+		if(lon!=null) {
+		    entry.setLongitude(Misc.decodeLatLon(lon));
+		}		
+	    }
+	    if(name!=null) entry.setName(name);
+	} catch(Exception exc) {
+	    System.err.println("Error:" + exc +" url:" + url);
+	    exc.printStackTrace();
+	}
+    }
+
+
     /**
      * _more_
      *
@@ -79,5 +128,12 @@ public class NdbcBuoyTypeHandler extends PointTypeHandler {
         return url;
     }
 
+
+    public static void main(String[]args) {
+  	String mtd = "<p><b>Owned and maintained by National Data Buoy Center</b><br>\n		<b>3-meter foam buoy</b><br>\n		<b>SCOOP payload</b><br>\n		<b>31.759 N 74.936 W (31&#176;45'33\" N 74&#176;56'10\" W)</b><br>\n		<br>";
+	//	String name =  StringUtil.findPattern(s,"(?i).*currentstnname *= *'+([^'])'.*");
+	System.err.println(StringUtil.findPattern(mtd,"<b>([0-9\\.]+ (N|S))"));
+
+    }
 
 }
