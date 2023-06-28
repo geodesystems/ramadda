@@ -1,0 +1,309 @@
+<types supercategory="Geoscience">
+
+  <type name="type_point_ocean"  description="" super="type_point" category="Ocean and Water Data" foruser="false">
+  </type>
+
+<type name="type_point_ex02" description="EX02 Base" super="type_point_ocean" foruser="false"
+      handler="org.ramadda.data.services.PointTypeHandler">
+  <property name="icon" value="/point/exo2.png"/>
+  <property name="form.properties.show" value="false"/>
+  <property name="form.date.show" value="false"/>
+  <property name="form.area.show" value="false"/>
+  <property name="form.location.show" value="true"/>
+  <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<!--
+    The record.properties defines the set of csv commands used to clean up the input file
+-->
+<property name="record.properties">
+csvcommands1=-bom,-encoding,UTF-16LE
+csvcommands2=-skiplines,9,-concat,date_mm_dd_yyyy\,time_hh_mm_ss,_csvcommandspace_
+csvcommands3=date,-firstcolumns,date,-notcolumns,date_mm_dd_yyyy\,time_hh_mm_ss\,time_fract_sec
+csvcommands4=-addheader,date.type_csvcommandspace_date_csvcommandspace_date.format_csvcommandspace_{MM/dd/yyyy_csvcommandspace_HH:mm:ss},-print
+</property>
+<column  name="station"  label="Station" type="enumerationplus" cansearch="true">
+   <property name="record_field" value="site_name"/>
+</column>
+<column  name="serial_number"  label="Serial Number" type="enumerationplus" cansearch="true"/>
+
+
+<!-- specify the default wiki here for backwards compatability -->
+<wiki>
+<![CDATA[
++section title="Station: {{field name=station}} - {{name}}"
+<div style='text-align:right;'> 
+<span style='display:inline-block;margin-right:10px'>{{fromdate  format="yyyy-MM-dd HH:mm z"}}</span>
+<span style='display:inline-block;'>{{resource  message="" title="Download Data"}}</span>
+</div> 
+{{description wikify=true}}
+{{property max=10000}}
+{{group showMenu=true}}
+{{display_profile showMenu=true yAxisReverse=true marginTop=25  profileMode=markers
+profileMode="lines+markers"
+markerSize=8
+indexField=".*depth.*" 
+symbol1=circle
+symbol2=diamond
+fields=".*temp.*,sal.*" 
+}} 
+
+:heading Table
+{{display_download showMenu=false}} 
+{{display_htmltable showMenu=false}}
+-section
+]]>
+</wiki>
+</type>
+
+
+<type name="type_point_ex02_sonde" description="EX02 Sonde" super="type_point_ex02" foruser="true">
+</type>
+
+<type name="type_point_ex02_timeseries" description="EX02 Time Series" super="type_point_ex02" foruser="true">
+<wiki>
+<![CDATA[
++section title="Station: {{field name=station}} - {{name}}"
+<div style='text-align:right;'> 
+<span style='display:inline-block;margin-right:10px'>{{fromdate  format="yyyy-MM-dd HH:mm z"}}</span>
+<span style='display:inline-block;'>{{resource  message="" title="Download Data"}}</span>
+</div> 
+{{description wikify=true}}
+{{group showMenu=true}}
+{{display_linechart showMenu=true fields=".*temp.*,sal.*" }} 
+
+:heading Table
+{{display_download showMenu=false showDateSelect=true}} 
+{{display_htmltable showMenu=false}}
+-section
+]]>
+</wiki>
+</type>
+
+
+
+
+  <type name="type_point_ocean_netcdf_track"  super="type_point_ocean" description="NetCDF Track Data"  handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="isTrajectory" value="true"/>
+     <property name="icon" value="/point/glider.png"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.ocean.NetcdfOceanTrajectoryFile"/>
+     <column  name="platform"  type="enumerationplus" label="Platform" cansearch="true"/>
+  </type>
+
+  <type name="type_point_ocean_netcdf_glider"  super="type_point_ocean_netcdf_track" description="NetCDF Glider Data"  handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="isTrajectory" value="true"/>
+     <property name="icon" value="/point/glider.png"/>
+  </type>
+
+  <type name="type_point_ocean_netcdf_easycurrents"  super="type_point_ocean_netcdf_track" description="NetCDF Easycurrents Data"  handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="icon" value="/point/easycurrents.png"/>
+
+<!--
+These don't define the fields or their order. They just define the default attributes
+-->
+
+     <property name="record.properties">
+			fields=v[chartable=""false],u[chartable=""false],speed[chartable="true" sortorder="2"],direction[chartable="true" sortorder="1"]
+     </property>
+
+  </type>
+
+  <type name="type_point_ocean_cnv"  super="type_point_ocean" description="SeaBird CNV Data"
+	handler="org.ramadda.data.services.PointTypeHandler" pattern=".*\.cnv">
+     <property name="isTrajectory" value="true"/>
+     <property name="icon" value="/point/sbe.png"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.ocean.CnvPointFile"/>
+<wiki>
+<![CDATA[
++section title={{name}}
+{{group showMenu=true}}
+{{display_download max="20000" showMenu=false}}
++row
++col-8
+{{display_linechart showMenu=true max="50000"
+fields="prDM,t090C"
+}}
+{{display_linechart showMenu=true max="50000"
+fields="sal00,sbeox0Mg/L"
+}}
+-col
++col-4
+{{display_map max="50000"}}
+-col
+-row
+----
+:heading Metadata
+<div style='max-height:200px;overflow-y:auto;'>
+{{description wikify=true}}
+</div>
+:br
+{{information details="true"}}
+-section
+]]>
+</wiki>
+
+
+  </type>
+
+  <type name="type_point_ocean_ooi_dmgx"  super="type_point_ocean" description="OOI Data"  handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="icon" value="/point/ooi.png"/>
+     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+     <property name="record.properties">
+delimiter=
+position.required=false
+skiplines=1
+dateformat=yyyy/MM/dd HH:mm:ss
+fields=date[type="string" isdate="true"],time[type="string" istime="true"],ax_g[searchable="true" chartable="true"], ay_g[searchable="true" chartable="true"], az_g[searchable="true" chartable="true"], rx_rad_s[searchable="true" chartable="true"], ry_rad_s[searchable="true" chartable="true"],  rz_rad_s[searchable="true" chartable="true"],  mx_gauss[searchable="true" chartable="true"],  my_gauss[searchable="true" chartable="true"],  mz_gauss[searchable="true" chartable="true"], t_sec[]
+     </property>
+
+  </type>
+
+  <type name="type_point_ocean_csv_easycurrents"  super="type_point_ocean" description="CSV Easycurrents Data"  handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="icon" value="/point/easycurrents.png"/>
+     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+     <property name="record.properties">
+delimiter=,
+position.required=false
+skiplines=11
+dateformat=yyyy-MM-dd HH:mm:ss
+fields=date[type="string" isdate="true"] time[type="string" istime="true"],LATITUDE[isLatitude="true"],LONGITUDE[isLongitude="true"],CURRENT_DIRECTION[searchable="true" chartable="true" sortorder="1"],CURRENT_SPEED[searchable="true" chartable="true" sortorder="2"],X[searchable="true" chartable="true"],Y[searchable="true" chartable="true"],QC[searchable="true" chartable="true"],HDOP[searchable="true" chartable="true"],VDOP[searchable="true" chartable="true"],PDOP[searchable="true" chartable="true"],RSSI[searchable="true" chartable="true"],SATELLITES[searchable="true" chartable="true"]
+     </property>
+	<wiki><![CDATA[
++inset
+		
+			<table border="0" width=100% cellspacing=0 cellpadding=0 height="100%">
+				<tr>
+					<td  valign=top width="70%">
+						<div class="entry-page-main">
+:title {{name}}
+						{{information details="true"}}
+						
+						{{chart  width="800"  height="600"  fields="CURRENT_SPEED"  fromdate=""  todate=""  }}
+						{{chart  width="800"  height="600"  fields="CURRENT_DIRECTION"  fromdate=""  todate=""  }}
+						{{chart  width="800"  height="600"  fields="CURRENT_SPEED,CURRENT_DIRECTION"  fromdate=""  todate=""  }}
+						
+						</div>
+						</td>
+						<td valign="center" align="center" height="100%" width="6"><div class="entry-page-divider"> </div></td>
+						<td  valign=top width="28%">
+						<div class="entry-page-info">
+						<p>
+						{{tools includeicon="true" title="Links" message=""}}
+						</p>
+						<p>
+						'''Date period:'''<br/>
+						{{fromdate }}<br/>
+						{{todate }}
+						</p><p>
+						{{map message="" width="250" height="250"  box.maxheight="300" block.show="true" block.title="Map" block.open="true"}}
+						</p><p>
+						{{list includeicon="true" details="false" entries="siblings,links" exclude="this" message="" box.maxheight="200" box.class="entry-sidebox" block.show="true" block.title="Related" block.open="true"}}
+						
+						</p>
+						
+						</div>
+					</td>
+				</tr>
+			</table>
+-inset
+			]]>
+			</wiki>
+
+  </type>	
+  
+  <type   name="type_point_ocean_csv_sado_position"  super="type_point_ocean" 
+			description="SADO Position Data"  handler="org.ramadda.data.services.PointTypeHandler">
+		 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+                 <property name="isTrajectory" value="true"/>
+		 <property name="record.properties">
+	delimiter=,
+	position.required=false
+	skiplines=1
+	
+	fields=date[type="date" isdate="true" format="dd-mm-yyyy HH:mm:ss"],longitude[isLongitude="true"],latitude[isLatitude="true"],COURSE[searchable="true" chartable="true" sortorder="1"],velocity[searchable="true" chartable="true" sortorder="5"],depth[searchable="true" chartable="true" sortorder="10"],cog[searchable="true" chartable="true"],sog[searchable="true" chartable="true"],sensor_date[searchable="true" chartable="true" type="date" format="dd-mm-yyyy HH:mm:ss"]
+		 </property>
+	</type>
+  
+	  	<type   name="type_point_ocean_csv_sado_TTS"  super="type_point_ocean" 
+			description="SADO TTS Data"  handler="org.ramadda.data.services.PointTypeHandler">
+		 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+		 <property name="record.properties">
+	delimiter=,
+	position.required=false
+	skiplines=1
+	dateformat=dd-mm-yyyy HH:mm:ss
+	fields=fecha[type="string" isdate="true"] time[type="string" istime="true"],salinity[searchable="true" chartable="true" sortorder="20"],temperature[searchable="true" chartable="true" sortorder="30"],fluor[searchable="true" chartable="true" sortorder="1"],sigmat[searchable="true" chartable="true" sortorder="10"],sensor_date[type="string" searchable="true" chartable="true"]
+		 </property>
+	</type>
+	
+	<type   name="type_point_ocean_csv_sado_meteo"  super="type_point_ocean" 
+			description="SADO Meteo Data"  handler="org.ramadda.data.services.PointTypeHandler">
+		 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+		 <property name="record.properties">
+	delimiter=,
+	position.required=false
+	skiplines=1
+	dateformat=dd-mm-yyyy HH:mm:ss
+	fields=fecha[type="string" isdate="true"] time[type="string" istime="true"],wind_mean_speed[searchable="true" chartable="true" sortorder="20"],wind_speed[searchable="true" chartable="true" sortorder="30"],wind_direction[searchable="true" chartable="true" sortorder="1"],air_temperature[searchable="true" chartable="true" sortorder="10"],humidity[searchable="true" chartable="true" sortorder="10"],solar_radiation[searchable="true" chartable="true" sortorder="10"],pressure[searchable="true" chartable="true" sortorder="10"],water_temperature[searchable="true" chartable="true" sortorder="10"],sensor_date[type="string" searchable="true" chartable="false"]		 
+		</property>
+	</type>
+	
+
+<type name="type_ndbc_buoy" 
+description="NDBC Buoy Data" 
+super="type_point" 
+category="Point Data"
+supercategory="Geoscience"
+handler="org.ramadda.geodata.point.NdbcBuoyTypeHandler">
+  <property name="icon" value="/point/noaa.gif"/>
+  <property name="form.area.show" value="false"/>
+  <property name="form.location.show" value="true"/>
+  <property name="form.date.show" value="false"/>
+  <property name="form.resource.show" value="false"/>
+  <property name="form.properties.show" value="false"/>
+  <property name="form.header.new">
+<![CDATA[+note\nJust need to specify the Station ID. See the map at <a target=_map href=https://www.ndbc.noaa.gov/>nbdc.noaa.gov</a>\n-note]]></property>    
+  <column  name="station"  label="Station ID" type="string" cansearch="true"/>
+  <column  name="data_type"  label="Data Type" type="enumeration" cansearch="true"
+	   values="txt:standard meteorological data,drift:meteorological data from drifting buoys,cwind:continuous winds data,spec:spectral wave summaries,data:_spec raw spectral wave data,swdir:spectral wave data (alpha1),swdir2:spectral wave data (alpha2),swr1:spectral wave data (r1),swr2:spectral wave data (r2),adcp:Acoustic Doppler Current Profiler,ocean:oceanographic data, tide:tide data"/>  
+
+  <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property name="record.properties">
+csvcommands1=-delimiter,spaces,-inputcomment,,-cut
+csvcommands2=1,-set,0,0,yy
+csvcommands3=-set,1,0,month,-combine
+csvcommands4=yy\,month\,dd\,hh\,mm,-,date,-firstcolumns,date
+csvcommands5=-indateformat,yyyy-MM-dd-HH-mm,,-convertdate,date
+csvcommands6=-notcolumns,yy\,month\,dd\,hh\,mm,-change,1-50,MM
+csvcommands7=NaN,-addheader,date.format_csvcommandspace_{yyyy-MM-dd_csvcommandspace_hh:mm:ss},-print
+</property>
+<wiki>
+<![CDATA[
++section title="Station {{field name=station}} - {{name}}"
+:navtop
++toggle Buoy Information
++row
++col-9
+{{description wikify=true}}
+-col
++col-3
+<a target=_site href="https://www.ndbc.noaa.gov/station_page.php?station={{field  name=station}}">NDBC Site</a>
+&nbsp;
+<a target=_site href="https://www.ndbc.noaa.gov/data/realtime2/{{field name=station}}.{{field name=data_type raw=true}}">Raw Data</a>
+{{mapentry height=200px}}
+-col
+-row
+-toggle
+:heading Chart
+{{property max="20000"}}
+{{group}}
+{{display_linechart showMenu=true fields="#2"}} 
+{{display_linechart showMenu=true fields="#3"}} 
+:heading Table
+{{display_download}}
+{{display_htmltable  includeDate=false }} 
+-section
+]]>
+</wiki>
+</type>
+
+
+</types>
