@@ -4465,6 +4465,19 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+    public void addToEntryFormHeader(Request request, Appendable sb,boolean newEntry) {
+	String header = getTypeProperty(newEntry?"form.header.new":"form.header", (String) null);
+	if(header==null) header = getTypeProperty("form.header", (String) null);
+	if(header!=null) {
+	    header = header.replace("\\n","\n");
+	    try {
+		sb.append(getWikiManager().wikify(request, header));
+	    } catch(Exception exc) {
+		throw new RuntimeException(exc);
+	    }
+	}
+    }
+
     /**
      * _more_
      *

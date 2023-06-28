@@ -1903,6 +1903,9 @@ public class EntryManager extends RepositoryManager {
 					       : msg("Create new entry")));
         }
 
+	if(typeHandler!=null) {
+	    typeHandler.addToEntryFormHeader(request, sb,entry==null);
+	}
 
 
         String formId = request.getUniqueId("entryform_");
