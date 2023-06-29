@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Jun 29 09:54:30 MDT 2023";
+var build_date="RAMADDA build date: Thu Jun 29 10:27:12 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -25392,7 +25392,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         insertText: function(value) {
             var id = this.getDomId(ID_INPUT);
             var textComp = GuiUtils.getDomObject(id);
-            insertAtCursor(id, textComp.obj, value);
+            WikiUtil.insertAtCursor(id, textComp.obj, value);
             this.calculateInputHeight();
         },
         showNotebookMenu: function() {
@@ -42948,7 +42948,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let target = $(this).attr('target');		
 		var textComp = GuiUtils.getDomObject(target);
 		if(textComp) {
-		    insertAtCursor('', textComp.obj, value);
+		    WikiUtil.insertAtCursor('', textComp.obj, value);
 		}
 	    });
 	},
@@ -46288,7 +46288,7 @@ MapGlyph.prototype = {
 		let line = info.id+'.' + item+'\n';
 		let textComp = GuiUtils.getDomObject(target);
 		if(textComp) {
-		    insertAtCursor('', textComp.obj, line);
+		    WikiUtil.insertAtCursor('', textComp.obj, line);
 		}
 	    });
 	});
