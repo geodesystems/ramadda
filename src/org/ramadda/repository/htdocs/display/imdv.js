@@ -2202,7 +2202,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let target = $(this).attr('target');		
 		var textComp = GuiUtils.getDomObject(target);
 		if(textComp) {
-		    insertAtCursor('', textComp.obj, value);
+		    WikiUtil.insertAtCursor('', textComp.obj, value);
 		}
 	    });
 	},

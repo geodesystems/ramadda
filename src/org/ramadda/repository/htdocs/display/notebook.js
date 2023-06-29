@@ -1245,7 +1245,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         insertText: function(value) {
             var id = this.getDomId(ID_INPUT);
             var textComp = GuiUtils.getDomObject(id);
-            insertAtCursor(id, textComp.obj, value);
+            WikiUtil.insertAtCursor(id, textComp.obj, value);
             this.calculateInputHeight();
         },
         showNotebookMenu: function() {
