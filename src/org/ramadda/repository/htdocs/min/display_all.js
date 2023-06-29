@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Jun 28 10:14:20 MDT 2023";
+var build_date="RAMADDA build date: Thu Jun 29 09:54:30 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -44904,7 +44904,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	propertyCache:{
 	},
 	getMapProperty: function(name,dflt,debug) {
-//	    debug = name=='legendWidth';
+//	    debug = name=='mapLegendPosition';
 //	    if(debug)	console.dir(this.properties);
 	    if(debug)
 		console.log("getProperty:" + name);
@@ -44939,7 +44939,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 
 	    if(Utils.isDefined(value)) {
-		return Utils.getProperty(value);
+		value = Utils.getProperty(value);
 	    }
 		    
 	    return value;
@@ -45473,11 +45473,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    legendStyle+=HU.css(pos,legendPosition[pos]);
 		}
 	    });
+	    if(legendStyle=='') legendStyle='left:50px;top:20px;'
 
 	    //gotta have this here or else the draggable sets it to relative
 	    legendStyle+=HU.css('position','absolute');
 	    let innerDiv = HU.div(['id',this.domId(ID_LEGEND_MAP_WRAPPER),'class','imdv-legend-map-wrapper','style',legendStyle]);
 	    let inner = $(innerDiv);
+
 	    this.jq(ID_MAP_CONTAINER).append(inner);
 	    let haveCleared = false;
 	    inner.draggable({
