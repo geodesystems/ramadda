@@ -159,7 +159,7 @@ MapGlyph.prototype = {
 		let line = info.id+'.' + item+'\n';
 		let textComp = GuiUtils.getDomObject(target);
 		if(textComp) {
-		    insertAtCursor('', textComp.obj, line);
+		    WikiUtil.insertAtCursor('', textComp.obj, line);
 		}
 	    });
 	});
