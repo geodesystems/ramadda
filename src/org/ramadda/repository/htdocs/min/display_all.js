@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Jun 29 10:27:12 MDT 2023";
+var build_date="RAMADDA build date: Thu Jun 29 13:54:15 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -58611,7 +58611,6 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    let haveLatLong=false;
 	    pointData.every(pt=>{
 		if(Utils.isDefined(pt.lat)) {
-		    console.dir(pt);
 		    haveLatLong = true;
 		    return false;
 		}
