@@ -295,8 +295,8 @@ csvcommands7=NaN,-addheader,date.format_csvcommandspace_{yyyy-MM-dd_csvcommandsp
 :heading Chart
 {{property max="20000"}}
 {{group}}
-{{display_linechart showMenu=true fields="#2"}} 
-{{display_linechart showMenu=true fields="#3"}} 
+{{display_linechart showMenu=true fields="atmp|#2"}} 
+{{display_linechart showMenu=true fields="pres|#3"}} 
 :heading Table
 {{display_download}}
 {{display_htmltable  includeDate=false }} 
