@@ -1105,9 +1105,10 @@ var Utils =  {
     */
     getProperty:function(v) {
 	if(Utils.isDefined(v)) {
-	    v = String(v).trim();
-	    if(v==='true') return true;
-	    if(v==='false') return false;		
+	    if(typeof v!='string') return v;
+	    let sv = String(v).trim();
+	    if(sv==='true') return true;
+	    if(sv==='false') return false;		
 	    return v;
 	}
 	return null;
