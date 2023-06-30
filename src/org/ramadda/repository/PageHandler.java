@@ -3769,7 +3769,8 @@ public class PageHandler extends RepositoryManager {
     }
 
     /** _more_ */
-    private static String CDN = null;
+    private static String CDNROOT = null;
+    private static String CDNHTDOCS = null;    
 
     /**
       * @return _more_
@@ -3835,8 +3836,14 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public String getCdnPath(String path) {
+	return getCdnPath(path,path);
+    }
+
+    public String getCdnPath(String fullPath,String path) {	
         if (getRepository().getCdnOk()) {
-            return getCdn() + path;
+	    if(fullPath.startsWith("/src"))
+		return getCdnRoot() + fullPath;
+            return getCdn() + fullPath;
         } else {
             return getRepository().getHtdocsUrl(path);
         }
@@ -3844,21 +3851,23 @@ public class PageHandler extends RepositoryManager {
 
 
 
+    private String getCdnRoot() {
+	getCdn();
+	return CDNROOT;
+    }
+
     /**
      *  @return _more_
      */
     private String getCdn() {
-        if (CDN == null) {
-            String root = "https://cdn.jsdelivr.net/gh/geodesystems/ramadda@"
-                          + RepositoryUtil.getVersion();
-            CDN = root + "/src/org/ramadda/repository/htdocs";
-            //      CDN =   "https://cdn.jsdelivr.net/gh/geodesystems/ramadda@latest/src/org/ramadda/repository/htdocs";
+        if (CDNHTDOCS == null) {
+            CDNROOT = "https://cdn.jsdelivr.net/gh/geodesystems/ramadda@"  + RepositoryUtil.getVersion();
+            CDNHTDOCS = CDNROOT + "/src/org/ramadda/repository/htdocs";
             if (getRepository().getCdnOk()) {
-                System.err.println("RAMADDA: Using CDN:" + root);
+                System.err.println("RAMADDA: Using CDN:" + CDNROOT);
             }
         }
-
-        return CDN;
+        return CDNHTDOCS;
     }
 
 
