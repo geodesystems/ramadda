@@ -3362,6 +3362,16 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+    /*
+      If just one arg then return the PageHandler.getCdnPath
+      If 2 args then the first arg is the full /src/org/ramadda/... path and the
+      second arg is the short path, e.g., /media/annotation.js
+     */
+    public String getHtdocsPath(String ...path) {
+	return getPageHandler().getCdnPath(path[0],path.length>1?path[1]:path[0]);
+	//	return getPageHandler().makeHtdocsUrl(path);
+    }
+
 
     /**
      * _more_
