@@ -41,7 +41,7 @@ function RamaddaAnnotation(annotorius,divId,topDivId,attrs,entryAttribute) {
     this.authToken = attrs.authToken;
     this.annotations = attrs.annotations;
     this.zoomable = attrs.zoomable;
-
+    this.top = Utils.isDefined(attrs.top)?attrs.top:true;
     if(this.canEdit) {
 	if(attrs.showToolbar) {
 	    Annotorious.Toolbar(annotorius, document.getElementById(topDivId));
@@ -98,16 +98,24 @@ RamaddaAnnotation.prototype = {
 		});
 	    }
 	    if(title=="") title = "&lt;annotation&gt;"
-
-	    title  = HU.b(title.replace(/ /g,"&nbsp;"));
+	    if(this.top) 
+		title  = HU.b(title.replace(/ /g,"&nbsp;"));
+	    else
+		title  = HU.b(title);
 	    let body = title;
 	    if(contents.length>0) {
 		body += HU.div(['class','ramadda-annotation-body'],Utils.join(contents,"<br>"));
 	    }
-	    html+=HU.td(['title','Click to view&#013;Shift-click to zoom to','width',width,'class','ramadda-clickable ramadda-hoverable ramadda-annotation','index',aidx], body);
+	    if(this.top) 
+		html+=HU.td(['title','Click to view&#013;Shift-click to zoom to','width',width,'class','ramadda-clickable ramadda-hoverable ramadda-annotation','index',aidx], body);
+	    else
+		html+=HU.div(['title','Click to view&#013;Shift-click to zoom to','width',width,'class','ramadda-clickable ramadda-hoverable ramadda-annotation','index',aidx], body);
 	});
 
-	html = HU.div(['class','ramadda-annotation-bar'], HU.table([],HU.tr(['valign','top'],html)));
+	if(this.top)
+	    html = HU.div(['class','ramadda-annotation-bar'], HU.table([],HU.tr(['valign','top'],html)));
+	else
+	    html = HU.div(['class','ramadda-annotation-bar'], html);
 	this.div.html(html);
 	let _this = this;
 	this.div.find('.ramadda-annotation').click(function(event) {

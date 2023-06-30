@@ -177,10 +177,12 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
 	Utils.add(jsonProps,"authToken",HU.quote(authToken));
 	Utils.add(jsonProps,"entryId",HU.quote(entry.getId()));
 	Utils.add(jsonProps,"name",HU.quote(entry.getName()));	
+        Utils.add(jsonProps, "top", "false");
         return  jsonProps;
     }
 
-    private String makeLayout(Request request, Entry entry,StringBuilder sb,Hashtable props) throws Exception {
+    private String makeLayout(Request request, Entry entry,StringBuilder sb,Hashtable props)
+	throws Exception {
 	initImports(request,sb);
         String        width  = Utils.getProperty(props, "width", "800px");
         String        height = Utils.getProperty(props, "height", "600px");
@@ -198,15 +200,18 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
         }
 	style += Utils.getProperty(props, "style","");
         style = style.replaceAll("\n", " ");
-	HU.open(sb,"center");
-	HU.open(sb,"div",HU.attrs("style",HU.css("text-align","left","display","inline-block","width",width)));
         String id = HU.getUniqueId("zoomify_div");
 	String main = HU.div("",HU.attrs("style",mainStyle,"id", id));
 	String top = HU.div("", HU.attrs("id", id+"_top"));
 	String bar = HU.div("", HU.attrs("id", id+"_annotations"));
-        sb.append(HU.div(top +
-			 HU.div(bar+main,HU.attrs("class","ramadda-annotation-wrapper","style", style)),""));
-        sb.append("\n</div>\n");
+	HU.open(sb,"center");
+	main = HU.div(main,HU.attrs("style",HU.css("text-align","left","display","inline-block","width",width)));
+	//        sb.append(HU.div(top + HU.div(bar+main,HU.attrs("class","ramadda-annotation-wrapper","style", style)),""));
+	String table = HU.table(HU.row(HU.col(bar,HU.attr("width","150px")) +
+				       HU.col(HU.div(main,HU.attrs("class","ramadda-annotation-wrapper","style", style)),"")+HU.col("",HU.attr("width","150px")),HU.attr("valign","top")),
+				HU.attr("width",width));
+        sb.append(HU.div(top +table));
+	//        sb.append("\n</div>\n");
 	HU.close(sb,"center");
 	return id;
     }
