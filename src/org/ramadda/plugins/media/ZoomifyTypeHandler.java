@@ -111,7 +111,8 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
     }
 
     private String htdocs(String path) {
-	return getPageHandler().makeHtdocsUrl(path);
+	return getPageHandler().getCdnPath(path);
+	//	return getPageHandler().makeHtdocsUrl(path);
     }
 
 

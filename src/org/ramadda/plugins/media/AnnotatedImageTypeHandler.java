@@ -56,7 +56,8 @@ public class AnnotatedImageTypeHandler extends ImageTypeHandler  {
     }
 
     private String htdocs(String path) {
-	return getPageHandler().makeHtdocsUrl(path);
+	return getPageHandler().getCdnPath(path);
+	//	return getPageHandler().makeHtdocsUrl(path);
     }
 
 
