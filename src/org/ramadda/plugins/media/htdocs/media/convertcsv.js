@@ -554,6 +554,12 @@ function  SeesvForm(inputId, entry,params) {
 			    inEscape = true;
 			continue;
 		    }
+		    //If we run into another command then break
+		    if(c=='-' && !inQuote) {
+			right--;
+			break
+		    }			
+
 		    if(inEscape) {
 			append(c);
 			inEscape = false;
@@ -1076,11 +1082,11 @@ function  SeesvForm(inputId, entry,params) {
 				    _this.makeHeaderMenu(field+".type","date","date")+ SPACE2 +
 				    _this.makeHeaderMenu(field+".type","url","url")+SPACE2 +
 				    _this.makeHeaderMenu(field+".type","image","image");
-				html +="<br>" +  
-				    _this.makeHeaderMenu(field+".unit","unit","unit")+
-				    SPACE2;
+				html += '<br>' +
+				    _this.makeHeaderMenu(field+".label",'{' + field+'}','label')+ SPACE2 +
+				    _this.makeHeaderMenu(field+".unit","unit","unit");
 				html +="<br>" +
-				    _this.makeHeaderMenu(field+".format","{yyyy-MM-dd hh:mm:ss}","add date format")+ SPACE2;
+				    _this.makeHeaderMenu(field+".format","{yyyy-MM-dd hh:mm:ss}","date format")+ SPACE2;
 				
 
 				html+="</div>";
@@ -1245,6 +1251,7 @@ function  SeesvForm(inputId, entry,params) {
 		});
 	},
 	addCommand:function(cmd, args, anchor) {
+	    
 	    if(typeof cmd == "string") {
 		cmd = this.commandsMap[cmd];
 	    }
@@ -1347,6 +1354,7 @@ function  SeesvForm(inputId, entry,params) {
 	    inner+=HU.formTableClose();
 	    let help = ramaddaBaseUrl +'/userguide/seesv.html#' + cmd.command;
 	    help = HU.div(['style',HU.css('display','inline-block'),'id',this.domId('showhelp')], HU.href(help,"Help",['title','Command Help','target','_help']));
+
 	    let buttons = HU.buttons([HU.div([ID,this.domId(ID_ADDCOMMAND)],opts.add?"Add Command":"Change Command"),
 				      HU.div([ID,this.domId(ID_CANCELCOMMAND)],"Cancel"),help]);
 
