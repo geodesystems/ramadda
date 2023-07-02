@@ -1869,6 +1869,7 @@ public abstract class Converter extends Processor {
             for (int i = 0; i < row.size(); i++) {
                 String s = row.getString(i);
                 s = Utils.makeID(s);
+		if(s.length()==0) s="column" + (i+1);
                 row.set(i, s);
             }
 
