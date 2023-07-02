@@ -897,7 +897,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
      *
      * @throws Exception _more_
      */
-    private String getHtmlImports(Request request) throws Exception {
+    public String getHtmlImports(Request request) throws Exception {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
         boolean minified = getRepository().getMinifiedOk();
