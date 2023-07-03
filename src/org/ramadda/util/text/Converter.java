@@ -4357,7 +4357,6 @@ public abstract class Converter extends Processor {
                             List<String> toks) {
             super(cols);
             this.name = name;
-            this.map  = map;
             for (int i = 0; i < toks.size(); i += 2) {
                 map.put(toks.get(i), toks.get(i + 1));
             }

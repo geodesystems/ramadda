@@ -7,6 +7,7 @@ package org.ramadda.util.text;
 
 public interface SeesvCommands {
 
+    public static final String HELP_PATTERN = "Regexp pattern. <a href=https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html target=_help>Help</a>";
     public static final String HELP_SUBSTITUTION = "use $1, $2, etc for pattern (...) matches";
     public static final String HELP_COLUMNS = "Column indices. Can include ranges, e.g. 0-5";
 
