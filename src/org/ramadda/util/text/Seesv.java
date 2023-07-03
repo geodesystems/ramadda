@@ -2763,10 +2763,10 @@ public class Seesv implements SeesvCommands {
 
         /** * Other  * */
         new Category("Misc"),
-        new Cmd(CMD_PROC, "Apply the commands to each of the columns",
+        new Cmd(CMD_APPLY, "Apply the commands to each of the columns",
 		ARG_LABEL,"Procedure",
 		new Arg(ARG_COLUMNS, "Columns to expand with", ATTR_TYPE, TYPE_COLUMNS),
-		new Arg("commands", "Commands. Ends with -endproc", ATTR_ROWS, "6")),
+		new Arg("commands", "Commands. Ends with -endapply", ATTR_ROWS, "6")),
         new Cmd(CMD_SORTBY, "", ARG_LABEL,"Sort",
                 new Arg(ARG_COLUMNS, "Column to sort on", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("direction", "Direction", ATTR_TYPE, "enumeration","values","up,down"),
@@ -3571,12 +3571,13 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-	defineFunction(new String[]{CMD_PROC,CMD_EXPANDCOMMANDS},1, (ctx,args,i) -> {
+	defineFunction(new String[]{CMD_APPLY,CMD_PROC,CMD_EXPANDCOMMANDS},1, (ctx,args,i) -> {
 		List<String> cols =  Utils.split(args.get(++i), ",", true, true);
 		List<String> applyArgs = new ArrayList<String>();
 		while(true) {
 		    if(i>=args.size()) throw new RuntimeException("Unclosed -exand");
 		    String a = args.get(++i);
+		    if(a.equals("-endapply")) break;
 		    if(a.equals("-endproc")) break;
 		    if(a.equals("-endexpandcommands")) break;		    
 		    applyArgs.add(a);

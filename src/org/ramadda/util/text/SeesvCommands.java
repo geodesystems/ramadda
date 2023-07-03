@@ -273,7 +273,8 @@ public interface SeesvCommands {
     public static final String CMD_POPULATION="-population";
     public static final String CMD_NEIGHBORHOOD="-neighborhood";
     public static final String CMD_EXPANDCOMMANDS="-expandcommands";
-    public static final String CMD_PROC="-proc";    
+    public static final String CMD_PROC="-proc";
+    public static final String CMD_APPLY="-apply";        
     public static final String CMD_SORTBY="-sortby";
     public static final String CMD_SORT="-sort";
     public static final String CMD_DESCSORT="-descsort";
