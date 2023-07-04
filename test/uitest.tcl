@@ -125,7 +125,7 @@ proc capture {_group name url {doDisplays 1} {sleep 3}} {
     set thumb thumb_${_group}_${clean}.png
     set consoleFile console_${_group}_${clean}.txt
     if {![file exists $thumb]} {
-	puts stderr "\ttesting $name\n\turl:$url"
+	puts stderr "\t$name url:$url"
 	#Bring Firefox to the front and tell it to load the page
 	if {[regexp ramadda.org $url]} {
 	    if {![regexp fortest $url]} {
@@ -193,15 +193,17 @@ proc capture {_group name url {doDisplays 1} {sleep 3}} {
 	    if {$line==""} continue;
 	    if {$debug} {puts stderr "Line: $line"}
 
-
 	    if {[regexp {Cannot load.*.map} $line]} {
 		continue;
 	    }
 
-
 	    if {[regexp {The input spec uses.*} $line]} {
 		continue;
 	    }		
+
+	    if {[regexp {Failed to load resource: the server responded with a status of 404.*} $line]} {
+		continue;
+	    }
 
 	    if {[regexp {Failed to load resource.*.map} $line]} {
 		continue;

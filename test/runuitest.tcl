@@ -107,12 +107,12 @@ if {[llength $urls]} {
     #runGroup Covid 52644ac1-f6d6-45ea-88af-b5d2ec75742e
     runGroup "Text" 23847d93-4bca-4d54-a6db-f96a19be250b
     runGroup "Boulder and Colorado" 4624f63d-cd71-43e8-a558-83835c6b5541
-    runGroup Dashboards eb4102f8-720f-4ef3-9211-0ce5940da04d
+    runGroup "Dashboards" eb4102f8-720f-4ef3-9211-0ce5940da04d
     runGroup "Media" bca6228e-3f8e-49d4-a20e-b5a0ea8a6441
-    runGroup Cards e4b6667d-d640-4048-a756-b06e4c352a62 3
+    runGroup "Cards" e4b6667d-d640-4048-a756-b06e4c352a62 3
     #runGroup Features 26fff0d9-3de7-4bbd-8a6f-a26d8a287f4a
-    runGroup Misc a7fe0b5c-5c1b-4005-afce-e92b082fa335
-    runGroup Notebooks 38bb6bb4-3f51-4625-9acd-c79c4f445c78
+    runGroup "Misc" a7fe0b5c-5c1b-4005-afce-e92b082fa335
+    runGroup "Notebooks" 38bb6bb4-3f51-4625-9acd-c79c4f445c78
 }
 finish
 exit
