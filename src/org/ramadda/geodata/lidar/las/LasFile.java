@@ -17,6 +17,8 @@
 package org.ramadda.geodata.lidar.las;
 
 
+
+import org.ramadda.util.IO;
 import org.ramadda.data.record.*;
 import org.ramadda.geodata.lidar.*;
 
@@ -135,8 +137,8 @@ public class LasFile extends LidarFile {
      * @param filename las file to open
      * @throws IOException On badness
      */
-    public LasFile(String filename) throws IOException {
-        super(filename);
+    public LasFile(IO.Path path) throws IOException {
+        super(path);
     }
 
 
@@ -952,7 +954,7 @@ public class LasFile extends LidarFile {
         for (String arg : args) {
             try {
                 long    t1      = System.currentTimeMillis();
-                LasFile lasFile = new LasFile(arg);
+                LasFile lasFile = new LasFile(new IO.Path(arg));
                 System.err.println("reading:" + arg);
                 lasFile.read();
                 StringBuffer buff = new StringBuffer();

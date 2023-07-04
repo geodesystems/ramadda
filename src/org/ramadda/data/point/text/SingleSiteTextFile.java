@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.data.point.text;
 
 
+import org.ramadda.util.IO;
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 
@@ -35,26 +36,22 @@ public abstract class SingleSiteTextFile extends CsvFile {
     /**
      * ctor
      *
-     *
-     * @param filename _more_
-     *
      * @throws IOException _more_
      */
-    public SingleSiteTextFile(String filename) throws IOException {
-        super(filename);
+    public SingleSiteTextFile(IO.Path path) throws IOException {
+        super(path);
     }
 
     /**
      * _more_
      *
-     * @param filename _more_
      * @param properties _more_
      *
      * @throws IOException _more_
      */
-    public SingleSiteTextFile(String filename, Hashtable properties)
+    public SingleSiteTextFile(IO.Path path, Hashtable properties)
             throws IOException {
-        super(filename, properties);
+        super(path, properties);
     }
 
 

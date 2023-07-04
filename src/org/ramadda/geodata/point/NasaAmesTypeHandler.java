@@ -24,9 +24,9 @@ import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
+
 import org.ramadda.util.HtmlUtils;
-
-
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
 
@@ -115,8 +115,8 @@ public class NasaAmesTypeHandler extends PointTypeHandler {
                                        Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
-        return new NasaAmesRecordFile(getPathForEntry(request, entry,true));
-    }
+        return new NasaAmesRecordFile(new IO.Path(getPathForEntry(request, entry,true)));
+    } 
 
     /**
      * _more_
@@ -209,8 +209,8 @@ public class NasaAmesTypeHandler extends PointTypeHandler {
          *
          * @throws IOException _more_
          */
-        public NasaAmesRecordFile(String filename) throws IOException {
-            super(filename);
+        public NasaAmesRecordFile(IO.Path path) throws IOException {
+            super(path);
         }
 
 

@@ -16,7 +16,7 @@
 
 package org.ramadda.geodata.point.aon;
 
-
+import org.ramadda.util.IO;
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 
@@ -40,11 +40,10 @@ public class SwitchyardPointFile extends SingleSiteTextFile {
     /**
      * ctor
      *
-     * @param filename The file
      * @throws IOException
      */
-    public SwitchyardPointFile(String filename) throws IOException {
-        super(filename);
+    public SwitchyardPointFile(IO.Path path) throws IOException {
+        super(path);
     }
 
 

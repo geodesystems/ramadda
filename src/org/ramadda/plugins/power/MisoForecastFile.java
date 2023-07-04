@@ -11,6 +11,7 @@ import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 
 
+import org.ramadda.util.IO;
 import org.ramadda.repository.RepositoryUtil;
 
 import org.w3c.dom.Element;
@@ -38,12 +39,11 @@ public class MisoForecastFile extends CsvFile {
     /**
      * ctor
      *
-     * @param filename _more_
      *
      * @throws IOException _more_
      */
-    public MisoForecastFile(String filename) throws IOException {
-        super(filename);
+    public MisoForecastFile(IO.Path path) throws IOException {
+        super(path);
     }
 
     /**

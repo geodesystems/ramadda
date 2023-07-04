@@ -6,14 +6,9 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.data.point.binary;
 
 
-import org.ramadda.data.point.*;
-
-
+import org.ramadda.util.IO;
 import org.ramadda.data.record.*;
-
-import ucar.unidata.util.Misc;
-
-import ucar.unidata.util.StringUtil;
+import org.ramadda.data.point.*;
 
 import java.awt.*;
 import java.awt.image.*;
@@ -47,12 +42,10 @@ public class FloatLatLonAltBinaryFile extends PointFile {
      *
      *
      *
-     * @param filename _more_
-     *
      * @throws IOException _more_
      */
-    public FloatLatLonAltBinaryFile(String filename) throws IOException {
-        super(filename);
+    public FloatLatLonAltBinaryFile(IO.Path path) throws IOException {
+        super(path);
     }
 
     /**
@@ -101,7 +94,7 @@ public class FloatLatLonAltBinaryFile extends PointFile {
         try {
             long numRecords = super.getNumRecords();
             if (numRecords == 0) {
-                setNumRecords(new File(getFilename()).length()
+                setNumRecords(new File(getPath().getPath()).length()
                               / doMakeRecord(null).getRecordSize());
             }
 
@@ -154,7 +147,7 @@ public class FloatLatLonAltBinaryFile extends PointFile {
             try {
                 long t1 = System.currentTimeMillis();
                 FloatLatLonAltBinaryFile file =
-                    new FloatLatLonAltBinaryFile(arg);
+                    new FloatLatLonAltBinaryFile(new IO.Path(arg));
                 final int[]   cnt      = { 0 };
                 RecordVisitor metadata = new RecordVisitor() {
                     public boolean visitRecord(RecordFile file,

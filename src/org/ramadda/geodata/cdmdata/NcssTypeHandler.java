@@ -349,7 +349,7 @@ public class NcssTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public IO.Request getPathForRecordEntry(Entry entry,
+    public IO.Path getPathForRecordEntry(Entry entry,
                                         Hashtable requestProperties)
             throws Exception {
         String url = entry.getResource().getPath();
@@ -360,7 +360,7 @@ public class NcssTypeHandler extends PointTypeHandler {
         url = Utils.normalizeTemplateUrl(url);
         //subst the location
         url = super.convertPath(entry, url, requestProperties);
-        return new IO.Request(url);
+        return new IO.Path(url);
     }
 
     /**
@@ -399,8 +399,7 @@ public class NcssTypeHandler extends PointTypeHandler {
                                        Hashtable requestProperties)
             throws Exception {
         Hashtable props = getRecordProperties(entry);
-        return new CsvFile(getPathForRecordEntry(entry, requestProperties).getPath(),
-                           props);
+        return new CsvFile(getPathForRecordEntry(entry, requestProperties), props);
     }
 
 

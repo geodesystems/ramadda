@@ -9,6 +9,7 @@ package org.ramadda.data.point.text;
 import org.ramadda.data.point.*;
 import org.ramadda.data.record.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.Station;
 import org.ramadda.util.Utils;
 
@@ -89,38 +90,34 @@ public abstract class TextFile extends PointFile {
      * ctor
      *
      *
-     * @param filename _more_
-     *
      * @throws IOException _more_
      */
-    public TextFile(String filename) throws IOException {
-        super(filename);
+    public TextFile(IO.Path path) throws IOException {
+        super(path);
     }
 
     /**
      * _more_
      *
-     * @param filename _more_
      * @param properties _more_
      *
      * @throws IOException _more_
      */
-    public TextFile(String filename, Hashtable properties)
+    public TextFile(IO.Path path, Hashtable properties)
             throws IOException {
-        super(filename, properties);
+        super(path, properties);
     }
 
 
     /**
      * _more_
      *
-     * @param filename _more_
      * @param context _more_
      * @param properties _more_
      */
-    public TextFile(String filename, RecordFileContext context,
+    public TextFile(IO.Path path, RecordFileContext context,
                     Hashtable properties) {
-        super(filename, context, properties);
+       super(path, context, properties);
     }
 
     /** _more_ */

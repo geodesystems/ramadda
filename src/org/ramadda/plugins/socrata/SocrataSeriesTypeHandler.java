@@ -21,6 +21,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
@@ -128,7 +129,7 @@ public class SocrataSeriesTypeHandler extends PointTypeHandler {
                                                  "0");
 
         //        System.err.println("Socrata data URL: " + url);
-        SimpleSocrataFile file = new SimpleSocrataFile(url);
+        SimpleSocrataFile file = new SimpleSocrataFile(new IO.Path(url));
         String fields          = (String) entry.getProperty("socrata.fields");
         Integer locationIndex =
             (Integer) entry.getProperty("socrata.locationIndex");
@@ -275,8 +276,8 @@ public class SocrataSeriesTypeHandler extends PointTypeHandler {
          *
          * @throws IOException _more_
          */
-        public SimpleSocrataFile(String filename) throws IOException {
-            super(filename);
+        public SimpleSocrataFile(IO.Path path) throws IOException {
+            super(path);
         }
 
         /**

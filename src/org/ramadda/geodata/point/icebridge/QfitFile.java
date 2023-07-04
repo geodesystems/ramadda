@@ -17,6 +17,7 @@
 package org.ramadda.geodata.point.icebridge;
 
 
+import org.ramadda.util.IO;
 import org.ramadda.data.point.PointFile;
 import org.ramadda.data.record.*;
 
@@ -71,12 +72,11 @@ public class QfitFile extends PointFile {
     /**
      * _more_
      *
-     * @param filename _more_
      *
      * @throws java.io.IOException _more_
      */
-    public QfitFile(String filename) throws java.io.IOException {
-        super(filename);
+    public QfitFile(IO.Path path) throws java.io.IOException {
+        super(path);
     }
 
     /**

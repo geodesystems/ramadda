@@ -11,6 +11,7 @@ import org.ramadda.data.record.*;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Station;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
 import ucar.unidata.util.IOUtil;
@@ -32,17 +33,15 @@ import java.util.List;
 public class HeaderPointFile extends CsvFile {
 
 
-
     /**
      * ctor
      *
      *
-     * @param filename _more_
      *
      * @throws IOException On badness
      */
-    public HeaderPointFile(String filename) throws IOException {
-        super(filename);
+    public HeaderPointFile(IO.Path path) throws IOException {
+        super(path);
     }
 
 

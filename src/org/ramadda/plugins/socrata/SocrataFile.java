@@ -15,6 +15,7 @@ import org.ramadda.repository.Entry;
 
 
 import org.ramadda.repository.RepositoryUtil;
+import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
@@ -48,12 +49,11 @@ public class SocrataFile extends CsvFile {
     /**
      * ctor
      *
-     * @param filename _more_
      *
      * @throws IOException _more_
      */
-    public SocrataFile(String filename) throws IOException {
-        super(filename);
+    public SocrataFile(IO.Path path) throws IOException {
+        super(path);
     }
 
 

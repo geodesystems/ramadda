@@ -98,7 +98,7 @@ public class NwsObsTypeHandler extends NwsStationTypeHandler {
                                        Hashtable requestProperties)
             throws Exception {
         return new NwsObsRecordFile(getRepository(), entry,
-                                       getPathForEntry(request, entry,true));
+				    new IO.Path(getPathForEntry(request, entry,true)));
     }
 
 
@@ -129,9 +129,9 @@ public class NwsObsTypeHandler extends NwsStationTypeHandler {
          * @throws IOException _more_
          */
         public NwsObsRecordFile(Repository repository, Entry entry,
-                                   String filename)
+				IO.Path path)
                 throws IOException {
-            super(filename);
+            super(path);
             this.repository = repository;
             this.entry      = entry;
         }

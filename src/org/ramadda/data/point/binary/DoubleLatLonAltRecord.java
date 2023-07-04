@@ -5,7 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.point.binary;
 
-
+import org.ramadda.util.IO;
 import org.ramadda.data.record.*;
 
 import java.io.*;

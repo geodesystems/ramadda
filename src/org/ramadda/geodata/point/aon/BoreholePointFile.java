@@ -16,6 +16,7 @@
 
 package org.ramadda.geodata.point.aon;
 
+import org.ramadda.util.IO;
 
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
@@ -49,12 +50,11 @@ public class BoreholePointFile extends SingleSiteTextFile {
      * ctor
      *
      *
-     * @param filename _more_
      *
      * @throws IOException _more_
      */
-    public BoreholePointFile(String filename) throws IOException {
-        super(filename);
+    public BoreholePointFile(IO.Path path) throws IOException {
+        super(path);
     }
 
     /**
@@ -65,9 +65,9 @@ public class BoreholePointFile extends SingleSiteTextFile {
      *
      * @throws IOException _more_
      */
-    public BoreholePointFile(String filename, Hashtable properties)
+    public BoreholePointFile(IO.Path path, Hashtable properties)
             throws IOException {
-        super(filename, properties);
+        super(path, properties);
     }
 
 

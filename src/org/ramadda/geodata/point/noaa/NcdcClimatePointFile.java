@@ -16,6 +16,7 @@
 
 package org.ramadda.geodata.point.noaa;
 
+import org.ramadda.util.IO;
 
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
@@ -33,12 +34,11 @@ public class NcdcClimatePointFile extends HeaderPointFile {
      * ctor
      *
      *
-     * @param filename _more_
      *
      * @throws IOException On badness
      */
-    public NcdcClimatePointFile(String filename) throws IOException {
-        super(filename);
+    public NcdcClimatePointFile(IO.Path path) throws IOException {
+        super(path);
     }
 
 

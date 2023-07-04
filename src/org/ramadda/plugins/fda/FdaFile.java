@@ -15,6 +15,7 @@ import org.ramadda.repository.Entry;
 
 
 import org.ramadda.repository.RepositoryUtil;
+import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
@@ -59,8 +60,8 @@ public class FdaFile extends CsvFile {
      *
      * @throws IOException _more_
      */
-    public FdaFile(String filename) throws IOException {
-        super(filename);
+    public FdaFile(IO.Path path) throws IOException {
+        super(path);
     }
 
 

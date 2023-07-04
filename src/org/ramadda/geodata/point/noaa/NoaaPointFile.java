@@ -16,6 +16,7 @@
 
 package org.ramadda.geodata.point.noaa;
 
+import org.ramadda.util.IO;
 
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
@@ -55,12 +56,11 @@ public class NoaaPointFile extends CsvFile {
     /**
      * ctor
      *
-     * @param filename _more_
      *
      * @throws IOException On badness
      */
-    public NoaaPointFile(String filename) throws IOException {
-        super(filename);
+    public NoaaPointFile(IO.Path path) throws IOException {
+        super(path);
     }
 
 

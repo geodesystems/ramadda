@@ -16,7 +16,9 @@
 
 package org.ramadda.projects.asdi;
 
+import org.ramadda.util.IO;
 import org.ramadda.data.point.*;
+
 import org.ramadda.data.point.text.*;
 
 import org.ramadda.util.Utils;
@@ -66,12 +68,11 @@ public class NoaaIsdFile extends CsvFile {
     /**
      * ctor
      *
-     * @param filename _more_
      *
      * @throws IOException On badness
      */
-    public NoaaIsdFile(String filename)  throws java.io.IOException {
-        super(filename);
+    public NoaaIsdFile(IO.Path path)  throws java.io.IOException {
+        super(path);
     }
 
 

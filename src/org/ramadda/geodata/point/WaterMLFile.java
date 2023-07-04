@@ -10,6 +10,7 @@ import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 
+import org.ramadda.util.IO;
 import org.ramadda.util.WaterMLUtil;
 
 import org.w3c.dom.*;
@@ -55,11 +56,10 @@ public class WaterMLFile extends PointFile {
     /**
      * The constructor
      *
-     * @param filename file
      * @throws IOException On badness
      */
-    public WaterMLFile(String filename) throws IOException {
-        super(filename);
+    public WaterMLFile(IO.Path path) throws IOException {
+        super(path);
         sdf = makeDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     }
 

@@ -16,6 +16,7 @@
 
 package org.ramadda.geodata.point.eol;
 
+import org.ramadda.util.IO;
 
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
@@ -35,11 +36,10 @@ public class CeopPointFile extends CsvFile {
     /**
      * The constructor
      *
-     * @param filename file
      * @throws IOException On badness
      */
-    public CeopPointFile(String filename) throws IOException {
-        super(filename);
+    public CeopPointFile(IO.Path path) throws IOException {
+        super(path);
     }
 
 

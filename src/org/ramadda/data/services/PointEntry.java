@@ -13,7 +13,7 @@ import org.ramadda.data.point.binary.*;
 import org.ramadda.data.record.*;
 import org.ramadda.data.record.filter.*;
 
-
+import org.ramadda.util.IO;
 import org.ramadda.repository.*;
 
 import ucar.unidata.util.IOUtil;
@@ -238,10 +238,10 @@ public class PointEntry extends RecordEntry {
 
             if (isDoubleBinaryFile(quickscanFile)) {
                 binaryPointFile =
-                    new DoubleLatLonBinaryFile(quickscanFile.toString());
+                    new DoubleLatLonBinaryFile(new IO.Path(quickscanFile.toString()));
             } else {
                 binaryPointFile =
-                    new FloatLatLonBinaryFile(quickscanFile.toString());
+                    new FloatLatLonBinaryFile(new IO.Path(quickscanFile.toString()));
             }
         }
 

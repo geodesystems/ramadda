@@ -6,6 +6,8 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.data.docs;
 
 
+import org.ramadda.util.IO;
+
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
@@ -56,14 +58,13 @@ public class ConvertibleFile extends CsvFile {
      * @param cth _more_
      * @param entry _more_
      * @param commands _more_
-     * @param filename _more_
      *
      * @throws IOException on badness
      */
     public ConvertibleFile(Request request,ConvertibleTypeHandler cth, Entry entry,
-                           List<String> commands, String filename)
+                           List<String> commands, IO.Path path)
             throws IOException {
-        super(filename, cth, null);
+        super(path, cth, null);
 	this.cth = cth;
 	this.request = request;
         this.entry    = entry;

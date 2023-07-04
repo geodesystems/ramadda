@@ -8,6 +8,7 @@ package org.ramadda.data.point.text;
 
 import org.ramadda.data.point.*;
 import org.ramadda.data.record.*;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.text.Seesv;
 
@@ -53,38 +54,33 @@ public class CsvFile extends TextFile {
     /**
      * ctor
      *
-     *
-     * @param filename _more_
-     *
      * @throws IOException on badness
      */
-    public CsvFile(String filename) throws IOException {
-        super(filename);
+    public CsvFile(IO.Path path) throws IOException {
+        super(path);
     }
 
     /**
      * ctor
      *
-     * @param filename _more_
      * @param properties _more_
      *
      * @throws IOException on badness
      */
-    public CsvFile(String filename, Hashtable properties) throws IOException {
-        super(filename, properties);
+    public CsvFile(IO.Path path, Hashtable properties) throws IOException {
+        super(path, properties);
     }
 
 
     /**
      * _more_
      *
-     * @param filename _more_
      * @param context _more_
      * @param properties _more_
      */
-    public CsvFile(String filename, RecordFileContext context,
+    public CsvFile(IO.Path path, RecordFileContext context,
                    Hashtable properties) {
-        super(filename, context, properties);
+        super(path, context, properties);
     }
 
     /** _more_ */
@@ -458,7 +454,7 @@ public class CsvFile extends TextFile {
                 }
                 System.err.println("Error in CsvFile:" + "no " + PROP_FIELDS
                                    + " properties found for file: "
-                                   + getFilename());
+                                   + getPath());
 
                 throw new IllegalArgumentException(
                     "No fields defined for file");
@@ -516,7 +512,7 @@ public class CsvFile extends TextFile {
             try {
                 long                t1       = System.currentTimeMillis();
                 final int[]         cnt      = { 0 };
-                CsvFile             file     = new CsvFile(arg);
+                CsvFile             file     = new CsvFile(new IO.Path(arg));
                 final RecordVisitor metadata = new RecordVisitor() {
                     public boolean visitRecord(RecordFile file,
                             VisitInfo visitInfo, BaseRecord record) {

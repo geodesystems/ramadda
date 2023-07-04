@@ -71,7 +71,7 @@ public abstract class RecordFile {
     private static final GeoRecord dummy3 = null;
 
     /** The file */
-    private String filename;
+    private IO.Path path;
 
     /** default skip factor */
     private int defaultSkip = -1;
@@ -153,11 +153,10 @@ public abstract class RecordFile {
     /**
      * _more_
      *
-     * @param filename _more_
      * @param properties _more_
      */
-    public RecordFile(String filename, Hashtable properties) {
-        this.filename   = filename;
+    public RecordFile(IO.Path path, Hashtable properties) {
+        this.path   = path;
         this.properties = properties;
     }
 
@@ -168,8 +167,8 @@ public abstract class RecordFile {
      * @param filename The file
      *
      */
-    public RecordFile(String filename) {
-        this(filename, null);
+    public RecordFile(IO.Path path) {
+        this(path, null);
     }
 
 
@@ -177,13 +176,12 @@ public abstract class RecordFile {
     /**
      * _more_
      *
-     * @param filename _more_
      * @param context _more_
      * @param properties _more_
      */
-    public RecordFile(String filename, RecordFileContext context,
+    public RecordFile(IO.Path path, RecordFileContext context,
                       Hashtable properties) {
-        this(filename, properties);
+        this(path, properties);
         this.context = context;
     }
 
@@ -266,7 +264,6 @@ public abstract class RecordFile {
     /**
      * _more_
      *
-     * @param filename _more_
      * @param properties _more_
      * @param requestProperties _more_
      *
@@ -275,16 +272,16 @@ public abstract class RecordFile {
      * @throws CloneNotSupportedException On badness
      * @throws Exception _more_
      */
-    public RecordFile cloneMe(String filename, Hashtable properties,
+    public RecordFile cloneMe(IO.Path path, Hashtable properties,
                               Hashtable requestProperties)
             throws CloneNotSupportedException, Exception {
         RecordFile that = cloneMe();
         that.initAfterClone();
-        that.setFilename(filename);
+        that.setPath(path);
         this.requestProperties = requestProperties;
         if (properties == null) {
-            properties = getPropertiesForFile(filename,
-                    that.getPropertiesFileName());
+            properties = getPropertiesForFile(path.getPath(),
+					      that.getPropertiesFileName());
         }
         that.setProperties(properties);
 
@@ -647,17 +644,16 @@ public abstract class RecordFile {
      */
     public InputStream doMakeInputStream(boolean buffered) throws Exception {
         String path = getNormalizedFilename();
-	System.err.println("RecordFile.doMakeInputStream:" + path);
         if (debug) {
             System.err.println(mycnt+" RecordFile.doMakeInputStream path:" + path);
         }
 
         if (path.toLowerCase().endsWith(".xls")) {
-	    return XlsUtil.xlsToCsv(new IO.Request(path));
+	    return XlsUtil.xlsToCsv(new IO.Path(path));
         }
 
         if (path.toLowerCase().endsWith(".xlsx")) {
-	    return XlsUtil.xlsxToCsv(new IO.Request(path));
+	    return XlsUtil.xlsxToCsv(new IO.Path(path));
         }	
 
         if (path.endsWith(".zip") || getProperty("isZip", false)) {
@@ -1016,14 +1012,14 @@ public abstract class RecordFile {
         int      skip     = getSkip(visitInfo);
 	int reallySkip = 0;
 	if(last>=0) {
-	    Integer num = pointCountCache.get(filename);
+	    Integer num = pointCountCache.get(path.getPath());
 	    if(num==null) {
 		long t1  = System.currentTimeMillis();
 		num = new Integer(countRecords());
 		long t2  = System.currentTimeMillis();
 		//		Utils.printTimes("RecordFile.countRecords",t1,t2);
 	    }
-	    pointCountCache.put(filename,num);
+	    pointCountCache.put(path.getPath(),num);
 	    numRecords = num;
 	    if(numRecords>last) {
 		reallySkip = numRecords-last;
@@ -1419,7 +1415,7 @@ public abstract class RecordFile {
      * @return _more_
      */
     public String toString() {
-        return filename;
+        return path.getPath();
     }
 
 
@@ -1428,10 +1424,13 @@ public abstract class RecordFile {
      *
      * @return _more_
      */
-    public String getFilename() {
-        return filename;
+    public IO.Path getPath() {
+        return path;
     }
 
+    public String getFilename() {
+	return getPath().getPath();
+    }
 
     /**
      * _more_
@@ -1439,7 +1438,7 @@ public abstract class RecordFile {
      * @return _more_
      */
     public String getNormalizedFilename() {
-        String path        = Utils.normalizeTemplateUrl(filename);
+        String path        = Utils.normalizeTemplateUrl(this.path.getPath());
         String pathReplace = (String) getProperty("pathReplace");
         if (pathReplace != null) {
             List<String> toks = StringUtil.splitUpTo(pathReplace, ":", 2);
@@ -1460,12 +1459,9 @@ public abstract class RecordFile {
 
 
     /**
-     * Set the filename
-     *
-     * @param filename filename
      */
-    public void setFilename(String filename) {
-        this.filename = filename;
+    public void setPath(IO.Path path) {
+        this.path = path;
     }
 
     /**

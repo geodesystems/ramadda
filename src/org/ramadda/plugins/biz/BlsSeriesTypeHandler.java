@@ -15,6 +15,7 @@ import org.ramadda.data.services.PointTypeHandler;
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.text.Seesv;
 
@@ -134,7 +135,7 @@ public class BlsSeriesTypeHandler extends PointTypeHandler {
                                        Hashtable requestProperties)
             throws Exception {
         return new BlsRecordFile(getRepository(),
-                                 getPathForEntry(request, entry,true), entry);
+                                 new IO.Path(getPathForEntry(request, entry,true)), entry);
     }
 
 
@@ -163,10 +164,10 @@ public class BlsSeriesTypeHandler extends PointTypeHandler {
          *
          * @throws IOException _more_
          */
-        public BlsRecordFile(Repository repository, String filename,
+        public BlsRecordFile(Repository repository, IO.Path path,
                              Entry entry)
                 throws IOException {
-            super(filename);
+            super(path);
             this.repository = repository;
             this.entry      = entry;
         }

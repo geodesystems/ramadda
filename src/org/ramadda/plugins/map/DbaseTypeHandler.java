@@ -20,6 +20,7 @@ import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.type.GenericTypeHandler;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 
@@ -102,7 +103,7 @@ public class DbaseTypeHandler extends PointTypeHandler implements WikiConstants 
                                        Hashtable requestProperties)
             throws Exception {
         return new DbaseRecordFile(request, entry,
-                                   entry.getResource().getPath(), null);
+                                   new IO.Path(entry.getResource().getPath()), null);
     }
 
 
@@ -127,8 +128,8 @@ public class DbaseTypeHandler extends PointTypeHandler implements WikiConstants 
             return;
         }
         DbaseRecordFile recordFile = new DbaseRecordFile(request, entry,
-                                         entry.getResource().getPath(),
-                                         getDbf(entry));
+							 new IO.Path(entry.getResource().getPath()),
+							 getDbf(entry));
         String props = recordFile.getEntryFieldsProperties();
         getEntryValues(entry)[IDX_PROPERTIES] = props;
     }
@@ -211,10 +212,10 @@ public class DbaseTypeHandler extends PointTypeHandler implements WikiConstants 
          *
          * @throws Exception _more_
          */
-        public DbaseRecordFile(Request request, Entry entry, String filename,
+        public DbaseRecordFile(Request request, Entry entry, IO.Path path,
                                DbaseFile dbf)
                 throws Exception {
-            super(filename);
+            super(path);
             //Get the properties from the entry
             props        = getRecordProperties(entry);
             this.request = request;

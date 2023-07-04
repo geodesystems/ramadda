@@ -11,11 +11,13 @@ import org.ramadda.data.record.*;
 import org.ramadda.data.record.filter.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Station;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.geo.GeoUtils;
 
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
+
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -181,13 +183,10 @@ public abstract class PointFile extends RecordFile implements Cloneable,
      * ctor
      *
      *
-     * @param filename point data file
-     *
-     *
      * @throws IOException _more_
      */
-    public PointFile(String filename) throws IOException {
-        super(filename);
+    public PointFile(IO.Path path) throws IOException {
+        super(path);
     }
 
 
@@ -195,14 +194,13 @@ public abstract class PointFile extends RecordFile implements Cloneable,
      * ctor
      *
      *
-     * @param filename point data file
      * @param properties _more_
      *
      * @throws IOException _more_
      */
-    public PointFile(String filename, Hashtable properties)
+    public PointFile(IO.Path path, Hashtable properties)
             throws IOException {
-        super(filename, properties);
+        super(path, properties);
     }
 
 
@@ -214,9 +212,9 @@ public abstract class PointFile extends RecordFile implements Cloneable,
      * @param context _more_
      * @param properties _more_
      */
-    public PointFile(String filename, RecordFileContext context,
+    public PointFile(IO.Path path, RecordFileContext context,
                      Hashtable properties) {
-        super(filename, context, properties);
+        super(path, context, properties);
     }
 
 

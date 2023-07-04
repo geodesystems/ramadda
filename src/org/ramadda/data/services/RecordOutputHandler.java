@@ -773,7 +773,7 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
             throws Exception {
         RecordEntry recordEntry = recordEntries.get(0);
         String ext = IOUtil.getFileExtension(
-                         recordEntry.getRecordFile().getFilename());
+					     recordEntry.getRecordFile().getPath().getPath());
         VisitInfo visitInfo = recordEntry.getRecordFile().doMakeVisitInfo();
         OutputStream outputStream = getOutputStream(request,
                                         jobInfo.getJobId(), mainEntry, ext);

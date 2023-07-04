@@ -12,6 +12,8 @@ import org.ramadda.data.services.PointTypeHandler;
 import org.ramadda.data.services.RecordTypeHandler;
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
+
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.text.Seesv;
 
@@ -73,7 +75,7 @@ public class DaymetTypeHandler extends PointTypeHandler {
                                        Hashtable requestProperties)
             throws Exception {
         return new DaymetRecordFile(getRepository(), entry,
-                                    getPathForEntry(request, entry,true));
+                                    new IO.Path(getPathForEntry(request, entry,true)));
     }
 
 
@@ -150,14 +152,13 @@ public class DaymetTypeHandler extends PointTypeHandler {
          *
          * @param repository _more_
          * @param entry _more_
-         * @param filename _more_
-         *
+	 *
          * @throws IOException _more_
          */
         public DaymetRecordFile(Repository repository, Entry entry,
-                                String filename)
+                                IO.Path path)
                 throws IOException {
-            super(filename);
+            super(path);
             this.repository = repository;
             this.entry      = entry;
         }

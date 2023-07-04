@@ -17,6 +17,7 @@
 package org.ramadda.geodata.point.gcnet;
 
 
+import org.ramadda.util.IO;
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
@@ -36,11 +37,10 @@ public class GCNetPointFile extends CsvFile {
     /**
      * ctor
      *
-     * @param filename filename
      * @throws IOException On badness
      */
-    public GCNetPointFile(String filename) throws IOException {
-        super(filename);
+    public GCNetPointFile(IO.Path path) throws IOException {
+        super(path);
     }
 
 

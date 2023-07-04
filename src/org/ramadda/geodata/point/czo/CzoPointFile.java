@@ -17,6 +17,7 @@
 package org.ramadda.geodata.point.czo;
 
 
+import org.ramadda.util.IO;
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 
@@ -42,11 +43,10 @@ public class CzoPointFile extends CsvFile {
     /**
      * The constructor
      *
-     * @param filename file
      * @throws IOException On badness
      */
-    public CzoPointFile(String filename) throws IOException {
-        super(filename);
+    public CzoPointFile(IO.Path path) throws IOException {
+        super(path);
     }
 
 

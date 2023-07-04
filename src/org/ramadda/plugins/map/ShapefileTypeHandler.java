@@ -20,6 +20,7 @@ import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.type.GenericTypeHandler;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
 import org.ramadda.util.geo.*;
@@ -162,7 +163,7 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
         ShapefileRecordFile recordFile =
             new ShapefileRecordFile(getRepository().getTmpRequest(), entry,
                                     getRecordProperties(entry),
-                                    entry.getResourcePath(request), shapefile);
+                                    new IO.Path(entry.getResourcePath(request)), shapefile);
         String props = recordFile.getEntryFieldsProperties();
 
         getEntryValues(entry)[IDX_PROPERTIES] = props;
@@ -407,7 +408,7 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
                                        Hashtable requestProperties)
             throws Exception {
         return new ShapefileRecordFile(request, entry, properties,
-                                       entry.getResourcePath(request), null);
+                                       new IO.Path(entry.getResourcePath(request)), null);
     }
 
 
@@ -481,9 +482,9 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
          */
         public ShapefileRecordFile(Request request, Entry entry,
                                    Hashtable entryProperties,
-                                   String filename, EsriShapefile shapefile)
+                                   IO.Path path, EsriShapefile shapefile)
                 throws Exception {
-            super(filename);
+            super(path);
             props          = entryProperties;
             this.addShapes = request.get(PROP_ADD_SHAPES, false);
             this.addPoints = request.get(PROP_ADD_POINTS, false);

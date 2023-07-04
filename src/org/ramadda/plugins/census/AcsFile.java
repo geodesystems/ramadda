@@ -18,6 +18,7 @@ import org.ramadda.repository.RepositoryUtil;
 
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.util.geo.Place;
@@ -70,28 +71,26 @@ public class AcsFile extends CsvFile {
     /**
      * ctor
      *
-     * @param filename _more_
      *
      * @throws IOException _more_
      */
-    public AcsFile(String filename) throws IOException {
-        super(filename);
+    public AcsFile(IO.Path path) throws IOException {
+        super(path);
     }
 
     /**
      * _more_
      *
-     * @param filename _more_
      * @param labels _more_
      * @param includeSpecial _more_
      * @param pattern _more_
      *
      * @throws IOException _more_
      */
-    public AcsFile(String filename, List<String> labels,
+    public AcsFile(IO.Path path, List<String> labels,
                    boolean includeSpecial, String pattern)
             throws IOException {
-        super(filename);
+        super(path);
         this.labels         = labels;
         this.includeSpecial = includeSpecial;
         if ((pattern != null) && pattern.equals("")) {

@@ -17,6 +17,7 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.text.Seesv;
 import org.ramadda.util.Github;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
 
@@ -114,7 +115,7 @@ public class GithubTypeHandler extends PointTypeHandler {
                                        Hashtable requestProperties)
             throws Exception {
         return new GithubRecordFile(getRepository(),
-				    getPathForEntry(request, entry, true), entry);
+				    new IO.Path(getPathForEntry(request, entry, true)), entry);
     }
 
 
@@ -138,15 +139,14 @@ public class GithubTypeHandler extends PointTypeHandler {
          *
          *
          * @param repository _more_
-         * @param filename _more_
          * @param entry _more_
          *
          * @throws IOException _more_
          */
-        public GithubRecordFile(Repository repository, String filename,
+        public GithubRecordFile(Repository repository, IO.Path path,
                              Entry entry)
                 throws IOException {
-            super(filename);
+            super(path);
             this.repository = repository;
             this.entry      = entry;
 	    putProperty(PROP_SKIPLINES, "1");

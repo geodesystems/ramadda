@@ -21,6 +21,7 @@ import org.ramadda.data.point.*;
 
 
 import org.ramadda.data.record.*;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
 import ucar.ma2.DataType;
@@ -71,15 +72,10 @@ public class NetcdfTrajectoryFile extends NetcdfPointFile {
     /**
      * ctor
      *
-     *
-     *
-     *
-     *
-     * @param filename _more_
      * @throws IOException On badness
      */
-    public NetcdfTrajectoryFile(String filename) throws IOException {
-        super(filename);
+    public NetcdfTrajectoryFile(IO.Path path) throws IOException {
+        super(path);
     }
 
 

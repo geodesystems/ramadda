@@ -19,6 +19,7 @@ import org.ramadda.repository.database.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
@@ -72,8 +73,8 @@ public class EnigmaTable extends CsvFile {
      *
      * @throws IOException _more_
      */
-    public EnigmaTable(String filename) throws IOException {
-        super(filename);
+    public EnigmaTable(IO.Path path) throws IOException {
+        super(path);
     }
 
 

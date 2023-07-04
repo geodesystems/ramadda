@@ -5,6 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.point.binary;
 
+import org.ramadda.util.IO;
 
 import org.ramadda.data.point.*;
 
@@ -51,8 +52,8 @@ public class FloatLatLonBinaryFile extends PointFile {
      *
      * @throws IOException _more_
      */
-    public FloatLatLonBinaryFile(String filename) throws IOException {
-        super(filename);
+    public FloatLatLonBinaryFile(IO.Path path) throws IOException {
+        super(path);
     }
 
     /**
@@ -100,7 +101,7 @@ public class FloatLatLonBinaryFile extends PointFile {
         try {
             long numRecords = super.getNumRecords();
             if (numRecords == 0) {
-                setNumRecords(new File(getFilename()).length()
+                setNumRecords(new File(getPath().getPath()).length()
                               / doMakeRecord(null).getRecordSize());
             }
 
@@ -152,7 +153,7 @@ public class FloatLatLonBinaryFile extends PointFile {
             }
             try {
                 long                  t1       = System.currentTimeMillis();
-                FloatLatLonBinaryFile file = new FloatLatLonBinaryFile(arg);
+                FloatLatLonBinaryFile file = new FloatLatLonBinaryFile(new IO.Path(arg));
                 final int[]           cnt      = { 0 };
                 RecordVisitor         metadata = new RecordVisitor() {
                     public boolean visitRecord(RecordFile file,

@@ -3264,9 +3264,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         "Uploaded file does not exist");
                 }
                 if (f.toString().toLowerCase().endsWith(".xls")) {
-                    source = new NamedInputStream(f.toString(),XlsUtil.xlsToCsv(new IO.Request(f.toString())));
+                    source = new NamedInputStream(f.toString(),XlsUtil.xlsToCsv(new IO.Path(f.toString())));
                 } else if (f.toString().toLowerCase().endsWith(".xlsx")) {
-                    source = new NamedInputStream(f.toString(),XlsUtil.xlsxToCsv(new IO.Request(f.toString())));
+                    source = new NamedInputStream(f.toString(),XlsUtil.xlsxToCsv(new IO.Path(f.toString())));
                 } else {
                     source = new NamedInputStream(f.toString(),getStorageManager().getFileInputStream(f));
                 }

@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2013 ramadda.org
  * http://ramadda.org
@@ -22,6 +21,7 @@
 
 package org.ramadda.geodata.point.icebridge;
 
+import org.ramadda.util.IO;
 import org.ramadda.data.record.*;
 import java.io.*;
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ import org.ramadda.data.point.PointFile;
 /** This is generated code from generate.tcl. Do not edit it! */
 public class McordsIrmcr3File extends org.ramadda.data.point.text.TextFile {
 public McordsIrmcr3File()  {}
-public McordsIrmcr3File(String filename) throws java.io.IOException {super(filename);}
+public McordsIrmcr3File(IO.Path path) throws java.io.IOException {super(path);}
 public BaseRecord doMakeRecord(VisitInfo visitInfo) {return new McordsIrmcr3Record(this);}
 public static void main(String[]args) throws Exception {PointFile.test(args, McordsIrmcr3File.class);
 }

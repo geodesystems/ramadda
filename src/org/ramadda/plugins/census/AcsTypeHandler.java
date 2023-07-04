@@ -15,7 +15,10 @@ import org.ramadda.data.services.PointTypeHandler;
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
+
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
+
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
@@ -224,9 +227,9 @@ public class AcsTypeHandler extends PointTypeHandler {
                 pattern = metadataList.get(0).getAttr1();
             }
         }
-        AcsFile file = new AcsFile(getPathForEntry(request, entry,true),
+        AcsFile file = new AcsFile(new IO.Path(getPathForEntry(request, entry,true)),
                                    StringUtil.split(header, "\n", true,
-                                       true), includeSpecial, pattern);
+						    true), includeSpecial, pattern);
 
         file.putProperty("output.latlon", "false");
         file.setVariables(vars);

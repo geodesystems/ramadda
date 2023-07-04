@@ -8,11 +8,9 @@ package org.ramadda.data.point.text;
 
 import org.ramadda.data.point.*;
 
-
-
-
 import org.ramadda.data.record.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import java.awt.*;
@@ -39,24 +37,21 @@ public abstract class StandardCsvPointFile extends TextFile {
     /**
      * ctor
      *
-     *
-     * @param filename _more_
-     *
+
      * @throws IOException _more_
      */
-    public StandardCsvPointFile(String filename) throws IOException {
-        super(filename);
+    public StandardCsvPointFile(IO.Path path) throws IOException {
+        super(path);
     }
 
     /**
      * _more_
      *
-     * @param filename _more_
      * @param properties _more_
      *
      * @throws IOException _more_
      */
-    public StandardCsvPointFile(String filename, Hashtable properties)
+    public StandardCsvPointFile(IO.Path path, Hashtable properties)
             throws IOException {
         //        super(filename, properties);
         System.err.println("STD");
@@ -67,13 +62,12 @@ public abstract class StandardCsvPointFile extends TextFile {
     /**
      * _more_
      *
-     * @param filename _more_
      * @param context _more_
      * @param properties _more_
      */
-    public StandardCsvPointFile(String filename, RecordFileContext context,
+    public StandardCsvPointFile(IO.Path path, RecordFileContext context,
                                 Hashtable properties) {
-        super(filename, context, properties);
+        super(path, context, properties);
     }
 
 

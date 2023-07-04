@@ -9,7 +9,7 @@ package org.ramadda.plugins.biz;
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
-
+import org.ramadda.util.IO;
 
 import org.ramadda.repository.RepositoryUtil;
 
@@ -43,8 +43,8 @@ public class FredFile extends CsvFile {
      *
      *     @throws IOException _more_
      */
-    public FredFile(String filename) throws IOException {
-        super(filename);
+    public FredFile(IO.Path path) throws IOException {
+        super(path);
     }
 
     /**

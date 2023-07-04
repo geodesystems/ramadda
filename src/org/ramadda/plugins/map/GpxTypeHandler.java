@@ -20,6 +20,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.JQuery;
 
 
@@ -938,7 +939,7 @@ public class GpxTypeHandler extends PointTypeHandler {
                                        Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
-        return new GpxRecordFile(this, entry, entry.getResource().getPath());
+        return new GpxRecordFile(this, entry, new IO.Path(entry.getResource().getPath()));
     }
 
 
@@ -969,9 +970,9 @@ public class GpxTypeHandler extends PointTypeHandler {
          * @throws IOException _more_
          */
         public GpxRecordFile(GpxTypeHandler typeHandler, Entry entry,
-                             String filename)
-                throws IOException {
-            super(filename);
+                             IO.Path path)
+	    throws IOException {
+            super(path);
             this.typeHandler = typeHandler;
             this.entry       = entry;
         }

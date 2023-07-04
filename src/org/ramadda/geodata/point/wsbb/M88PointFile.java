@@ -20,6 +20,7 @@ package org.ramadda.geodata.point.wsbb;
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 
+import org.ramadda.util.IO;
 import org.ramadda.data.record.*;
 
 import ucar.unidata.util.Misc;
@@ -127,11 +128,10 @@ public class M88PointFile extends CsvFile {
     /**
      * The constructor
      *
-     * @param filename file
      * @throws IOException On badness
      */
-    public M88PointFile(String filename) throws IOException {
-        super(filename);
+    public M88PointFile(IO.Path path) throws IOException {
+        super(path);
     }
 
     /**

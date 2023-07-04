@@ -129,9 +129,8 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
                 "ConvertibleTypeHandler.getPathForRecordEntry entry:" + entry
                 + " commands:" + commands);
         }
-        IO.Request          path = getPathForRecordEntry(entry,
-							 requestProperties);
-        ConvertibleFile file = new ConvertibleFile(request, this, entry, args, path.getPath());
+        IO.Path          path = getPathForRecordEntry(entry,requestProperties);
+        ConvertibleFile file = new ConvertibleFile(request, this, entry, args, path);
 
         return file;
     }

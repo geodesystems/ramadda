@@ -5,24 +5,15 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.point.binary;
 
-
+import org.ramadda.util.IO;
 import org.ramadda.data.point.*;
-import org.ramadda.data.point.*;
-
-
 import org.ramadda.data.record.*;
-
 import ucar.unidata.util.Misc;
-
 import ucar.unidata.util.StringUtil;
-
 import java.awt.*;
 import java.awt.image.*;
-
 import java.io.*;
-
 import java.util.List;
-
 import javax.swing.*;
 
 
@@ -45,15 +36,10 @@ public class DoubleLatLonBinaryFile extends PointFile {
     /**
      * ctor
      *
-     *
-     *
-     *
-     * @param filename _more_
-     *
      * @throws IOException _more_
      */
-    public DoubleLatLonBinaryFile(String filename) throws IOException {
-        super(filename);
+    public DoubleLatLonBinaryFile(IO.Path path) throws IOException {
+        super(path);
     }
 
 
@@ -67,7 +53,7 @@ public class DoubleLatLonBinaryFile extends PointFile {
         try {
             long numRecords = super.getNumRecords();
             if (numRecords == 0) {
-                setNumRecords(new File(getFilename()).length()
+                setNumRecords(new File(getPath().getPath()).length()
                               / doMakeRecord(null).getRecordSize());
             }
 
@@ -108,7 +94,7 @@ public class DoubleLatLonBinaryFile extends PointFile {
      * @return _more_
      */
     public BaseRecord doMakeRecord(VisitInfo visitInfo) {
-        String filename = getFilename().toLowerCase();
+        String filename = getPath().getPath().toLowerCase();
         if (filename.endsWith(".llai")) {
             return new DoubleLatLonAltIntensityRecord(this);
         }

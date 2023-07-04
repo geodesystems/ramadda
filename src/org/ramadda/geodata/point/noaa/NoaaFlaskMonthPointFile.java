@@ -16,7 +16,7 @@
 
 package org.ramadda.geodata.point.noaa;
 
-
+import org.ramadda.util.IO;
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 
@@ -62,11 +62,10 @@ public class NoaaFlaskMonthPointFile extends NoaaPointFile {
     /**
      * ctor
      *
-     * @param filename _more_
      * @throws IOException On badness
      */
-    public NoaaFlaskMonthPointFile(String filename) throws IOException {
-        super(filename);
+    public NoaaFlaskMonthPointFile(IO.Path path) throws IOException {
+        super(path);
     }
 
 

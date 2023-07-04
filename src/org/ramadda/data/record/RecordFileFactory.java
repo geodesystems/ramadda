@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.data.record;
 
 
+import org.ramadda.util.IO;
 import org.ramadda.data.record.*;
 import org.ramadda.data.record.filter.*;
 
@@ -113,7 +114,7 @@ public class RecordFileFactory {
         for (RecordFile f : prototypes) {
             if (f.canLoad(path)) {
                 //                System.err.println("loading " +  f.getClass().getName());
-                return f.cloneMe(path, properties, requestProperties);
+                return f.cloneMe(new IO.Path(path), properties, requestProperties);
             }
         }
 

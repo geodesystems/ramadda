@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.data.services;
 
 
+import org.ramadda.util.IO;
 import org.ramadda.data.point.text.MultiMonthFile;
 import org.ramadda.data.record.RecordFile;
 import org.ramadda.repository.Entry;
@@ -136,7 +137,7 @@ public class NoaaPsdMonthlyClimateIndexTypeHandler extends PointTypeHandler {
                 missing = (Double) values[2];
             }
         }
-        RecordFile myRF = new MultiMonthFile(loc, name, description, units,
+        RecordFile myRF = new MultiMonthFile(new IO.Path(loc), name, description, units,
                                              missing);
 
         return myRF;

@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.geodata.lidar;
 
 
+import org.ramadda.util.IO;
 import org.ramadda.data.point.*;
 
 import org.ramadda.data.record.*;
@@ -50,8 +51,8 @@ public abstract class LidarFile extends PointFile {
      * @param filename _more_
      * @throws IOException _more_
      */
-    public LidarFile(String filename) throws IOException {
-        super(filename);
+    public LidarFile(IO.Path path) throws IOException {
+        super(path);
     }
 
 
@@ -64,9 +65,9 @@ public abstract class LidarFile extends PointFile {
      *
      * @throws IOException _more_
      */
-    public LidarFile(String filename, Hashtable properties)
+    public LidarFile(IO.Path path, Hashtable properties)
             throws IOException {
-        super(filename, properties);
+        super(path, properties);
     }
 
 

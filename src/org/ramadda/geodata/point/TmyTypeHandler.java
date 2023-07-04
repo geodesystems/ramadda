@@ -12,6 +12,7 @@ import org.ramadda.data.services.PointTypeHandler;
 import org.ramadda.data.services.RecordTypeHandler;
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.text.Seesv;
 
@@ -85,7 +86,7 @@ public class TmyTypeHandler extends PointTypeHandler {
                                        Hashtable requestProperties)
             throws Exception {
         return new TmyRecordFile(getRepository(), entry,
-                                 entry.getResource().getPath(), this);
+                                 new IO.Path(entry.getResource().getPath()), this);
     }
 
 
@@ -142,15 +143,14 @@ public class TmyTypeHandler extends PointTypeHandler {
          *
          * @param repository _more_
          * @param entry _more_
-         * @param filename _more_
          * @param context _more_
          *
          * @throws IOException _more_
          */
         public TmyRecordFile(Repository repository, Entry entry,
-                             String filename, RecordFileContext context)
+                             IO.Path path, RecordFileContext context)
                 throws IOException {
-            super(filename, context, null);
+            super(path, context, null);
             this.repository = repository;
             this.entry      = entry;
         }

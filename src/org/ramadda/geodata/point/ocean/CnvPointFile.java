@@ -21,6 +21,7 @@ import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
 import ucar.unidata.util.Misc;
@@ -48,11 +49,10 @@ public class CnvPointFile extends CsvFile {
     /**
      * ctor
      *
-     * @param filename point file
      * @throws IOException On badneess
      */
-    public CnvPointFile(String filename) throws IOException {
-        super(filename);
+    public CnvPointFile(IO.Path path) throws IOException {
+        super(path);
     }
 
 

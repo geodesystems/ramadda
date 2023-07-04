@@ -21,7 +21,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
-
+import org.ramadda.util.IO;
 
 import org.ramadda.util.Utils;
 import org.ramadda.util.text.Seesv;
@@ -108,7 +108,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
                                        Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
-        return new OpenAQRecordFile(getPathForEntry(request, entry,true));
+        return new OpenAQRecordFile(new IO.Path(getPathForEntry(request, entry,true)));
     }
 
 
@@ -128,7 +128,6 @@ public class OpenAQTypeHandler extends PointTypeHandler {
         String location = entry.getStringValue(IDX_LOCATION, (String) null);
         if ( !Utils.stringDefined(location)) {
             System.err.println("no location");
-
             return null;
         }
         Date now = new Date();
@@ -176,12 +175,11 @@ public class OpenAQTypeHandler extends PointTypeHandler {
         /**
          * _more_
          *
-         * @param filename _more_
          *
          * @throws IOException _more_
          */
-        public OpenAQRecordFile(String filename) throws IOException {
-            super(filename);
+        public OpenAQRecordFile(IO.Path path) throws IOException {
+            super(path);
         }
 
 
@@ -199,8 +197,9 @@ public class OpenAQTypeHandler extends PointTypeHandler {
         @Override
         public InputStream doMakeInputStream(boolean buffered)
                 throws Exception {
-            PipedInputStream      in   = new PipedInputStream();
-            PipedOutputStream     out  = new PipedOutputStream(in);
+	    //            PipedInputStream      in   = new PipedInputStream();
+	    //            PipedOutputStream     out  = new PipedOutputStream(in);
+
             ByteArrayOutputStream bos  = new ByteArrayOutputStream();
             String[]              args = new String[] {
                 "-columns", "location,utc,parameter,value,latitude,longitude",
@@ -212,9 +211,15 @@ public class OpenAQTypeHandler extends PointTypeHandler {
             Seesv csvUtil = new Seesv(args,
                                           new BufferedOutputStream(bos),
                                           null);
+	    InputStream is = super.doMakeInputStream(buffered);
+	    System.err.println("IS:" + IO.readInputStream(is));
+
+
             csvUtil.setInputStream(super.doMakeInputStream(buffered));
             csvUtil.run(null);
 
+
+	    System.err.println("B:" + new String(bos.toByteArray()));
             return new BufferedInputStream(
                 new ByteArrayInputStream(bos.toByteArray()));
         }

@@ -5,6 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.geodata.point;
 
+import org.ramadda.util.IO;
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
@@ -28,12 +29,10 @@ public class IdvPointFile extends CsvFile {
      * ctor
      *
      *
-     * @param filename _more_
-     *
      * @throws IOException _more_
      */
-    public IdvPointFile(String filename) throws IOException {
-        super(filename);
+    public IdvPointFile(IO.Path path) throws IOException {
+        super(path);
     }
 
     /**
@@ -44,9 +43,9 @@ public class IdvPointFile extends CsvFile {
      *
      * @throws IOException _more_
      */
-    public IdvPointFile(String filename, Hashtable properties)
+    public IdvPointFile(IO.Path path, Hashtable properties)
             throws IOException {
-        super(filename, properties);
+        super(path, properties);
     }
 
 

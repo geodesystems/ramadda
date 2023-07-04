@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.data.point.text;
 
 
+import org.ramadda.util.IO;
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 
@@ -42,27 +43,25 @@ public class MultiMonthFile extends CsvFile {
     /**
      * The constructor
      *
-     * @param filename file
      * @throws IOException On badness
      */
-    public MultiMonthFile(String filename) throws IOException {
-        this(filename, "index", "Index", "", -99.9);
+    public MultiMonthFile(IO.Path path) throws IOException {
+        this(path, "index", "Index", "", -99.9);
     }
 
     /**
      * The constructor
      *
-     * @param filename file
      * @param varName _more_
      * @param varDesc _more_
      * @param unit _more_
      * @param missing _more_
      * @throws IOException On badness
      */
-    public MultiMonthFile(String filename, String varName, String varDesc,
+    public MultiMonthFile(IO.Path path, String varName, String varDesc,
                           String unit, double missing)
             throws IOException {
-        super(filename);
+        super(path);
         this.varName = varName;
         this.varDesc = varDesc;
         this.unit    = unit;

@@ -17,6 +17,7 @@
 package org.ramadda.geodata.point.netcdf;
 
 
+import org.ramadda.util.IO;
 import org.ramadda.data.point.*;
 
 
@@ -77,24 +78,22 @@ public class NetcdfPointFile extends PointFile {
     /**
      * ctor
      *
-     * @param filename _more_
      * @throws IOException On badness
      */
-    public NetcdfPointFile(String filename) throws IOException {
-        super(filename);
+    public NetcdfPointFile(IO.Path path) throws IOException {
+        super(path);
     }
 
 
     /**
      * ctor
      *
-     * @param filename _more_
      * @param properties _more_
      * @throws IOException On badness
      */
-    public NetcdfPointFile(String filename, Hashtable properties)
+    public NetcdfPointFile(IO.Path path, Hashtable properties)
             throws IOException {
-        super(filename, properties);
+        super(path, properties);
     }
 
 

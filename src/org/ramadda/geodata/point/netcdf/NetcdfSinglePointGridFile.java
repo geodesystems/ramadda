@@ -17,6 +17,7 @@
 package org.ramadda.geodata.point.netcdf;
 
 
+import org.ramadda.util.IO;
 import org.ramadda.data.point.PointFile;
 import org.ramadda.data.record.BaseRecord;
 import org.ramadda.data.record.RecordField;
@@ -58,25 +59,23 @@ public class NetcdfSinglePointGridFile extends PointFile {
     /**
      * Create a NetcdfSinglePointGridFile from the file
      *
-     * @param filename  the filename
      *
      * @throws IOException problem opening file
      */
-    public NetcdfSinglePointGridFile(String filename) throws IOException {
-        super(filename);
+    public NetcdfSinglePointGridFile(IO.Path path) throws IOException {
+        super(path);
     }
 
     /**
      * Create a NetcdfSinglePointGridFile from the file and properties
      *
-     * @param filename  the filename
      * @param properties  properties
      *
      * @throws IOException problem opening file
      */
-    public NetcdfSinglePointGridFile(String filename, Hashtable properties)
+    public NetcdfSinglePointGridFile(IO.Path path, Hashtable properties)
             throws IOException {
-        super(filename, properties);
+        super(path, properties);
     }
 
     /**

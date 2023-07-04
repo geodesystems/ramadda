@@ -677,7 +677,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
                                        Hashtable requestProperties)
             throws Exception {
         return new PurpleAirRecordFile(getRepository(), this,entry,
-                                       getPathForEntry(request, entry, true));
+                                       new IO.Path(getPathForEntry(request, entry, true)));
     }
 
 
@@ -704,14 +704,13 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
          *
          * @param repository _more_
          * @param entry _more_
-         * @param filename _more_
          *
          * @throws IOException _more_
          */
         public PurpleAirRecordFile(Repository repository, PurpleAirTypeHandler typeHandler, Entry entry,
-                                   String filename)
+                                   IO.Path path)
                 throws IOException {
-            super(filename);
+            super(path);
 	    this.typeHandler = typeHandler;
             this.repository = repository;
             this.entry      = entry;

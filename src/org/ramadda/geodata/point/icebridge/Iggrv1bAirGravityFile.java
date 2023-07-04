@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2013 ramadda.org
  * http://ramadda.org
@@ -19,8 +18,9 @@
  */
 
 
-
 package org.ramadda.geodata.point.icebridge;
+
+import org.ramadda.util.IO;
 
 import org.ramadda.data.record.*;
 import java.io.*;
@@ -36,7 +36,7 @@ import org.ramadda.data.point.PointFile;
 /** This is generated code from generate.tcl. Do not edit it! */
 public class Iggrv1bAirGravityFile extends org.ramadda.data.point.text.TextFile {
 public Iggrv1bAirGravityFile()  {}
-public Iggrv1bAirGravityFile(String filename) throws java.io.IOException {super(filename);}
+public Iggrv1bAirGravityFile(IO.Path path) throws java.io.IOException {super(path);}
 public BaseRecord doMakeRecord(VisitInfo visitInfo) {return new Iggrv1bAirGravityRecord(this);}
 public static void main(String[]args) throws Exception {PointFile.test(args, Iggrv1bAirGravityFile.class);
 }

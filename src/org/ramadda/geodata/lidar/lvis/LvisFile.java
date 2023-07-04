@@ -20,6 +20,7 @@ package org.ramadda.geodata.lidar.lvis;
 import org.ramadda.data.point.PointFile;
 
 
+import org.ramadda.util.IO;
 import org.ramadda.data.record.*;
 import org.ramadda.data.record.filter.*;
 
@@ -78,10 +79,10 @@ public class LvisFile extends LidarFile {
      *
      * @throws IOException _more_
      */
-    public LvisFile(String filename) throws IOException {
-        super(filename);
-        findFileType(filename);
-        findVersion(filename);
+    public LvisFile(IO.Path path) throws IOException {
+        super(path);
+        findFileType(path.getPath());
+        findVersion(path.getPath());
     }
 
 
@@ -126,11 +127,12 @@ public class LvisFile extends LidarFile {
      *
      * @param filename _more_
      */
-    public void setFilename(String filename) {
-        super.setFilename(filename);
+    @Override
+    public void setPath(IO.Path path) {
+        super.setPath(path);
         try {
-            findFileType(filename);
-            findVersion(filename);
+            findFileType(path.getPath());
+            findVersion(path.getPath());
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
@@ -454,7 +456,7 @@ public class LvisFile extends LidarFile {
             }
             try {
                 long     t1       = System.currentTimeMillis();
-                LvisFile lvisFile = new LvisFile(arg);
+                LvisFile lvisFile = new LvisFile(new IO.Path(arg));
                 long numRecords =
                     new File(arg).length()
                     / lvisFile.makeRecord(new VisitInfo()).getRecordSize();

@@ -17,6 +17,7 @@
 package org.ramadda.geodata.point.above;
 
 
+import org.ramadda.util.IO;
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 
@@ -50,12 +51,11 @@ public class AmerifluxLevel2PointFile extends CsvFile {
     /**
      * ctor
      *
-     * @param filename _more_
      *
      * @throws IOException _more_
      */
-    public AmerifluxLevel2PointFile(String filename) throws IOException {
-        super(filename);
+    public AmerifluxLevel2PointFile(IO.Path path) throws IOException {
+        super(path);
     }
 
     /**

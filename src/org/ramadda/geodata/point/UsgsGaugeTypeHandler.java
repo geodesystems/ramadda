@@ -86,7 +86,7 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
                                        Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
-        return new UsgsGaugeRecordFile(getPathForRecordEntry(entry,requestProperties).getPath(), properties);
+        return new UsgsGaugeRecordFile(new IO.Path(getPathForRecordEntry(entry,requestProperties).getPath()), properties);
     }
 
     /**
@@ -101,14 +101,13 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
         /**
          * _more_
          *
-         * @param filename _more_
          * @param properties _more_
          *
          * @throws IOException _more_
          */
-        public UsgsGaugeRecordFile(String filename, Hashtable properties)
+        public UsgsGaugeRecordFile(IO.Path path, Hashtable properties)
                 throws IOException {
-            super(filename, properties);
+            super(path, properties);
 
         }
 

@@ -16,6 +16,7 @@
 
 package org.ramadda.geodata.point.amrc;
 
+import org.ramadda.util.IO;
 
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
@@ -103,11 +104,10 @@ public class AmrcFinalQCPointFile extends CsvFile {
     /**
      * The constructor
      *
-     * @param filename file
      * @throws IOException On badness
      */
-    public AmrcFinalQCPointFile(String filename) throws IOException {
-        super(filename);
+    public AmrcFinalQCPointFile(IO.Path path) throws IOException {
+        super(path);
     }
 
 

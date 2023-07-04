@@ -39,9 +39,8 @@ public class EiaFile extends CsvFile {
      *
      * @throws IOException _more_
      */
-    public EiaFile(String filename) throws IOException {
-        super(filename);
-	//	System.out.println(filename);
+    public EiaFile(IO.Path path) throws IOException {
+        super(path);
     }
 
 

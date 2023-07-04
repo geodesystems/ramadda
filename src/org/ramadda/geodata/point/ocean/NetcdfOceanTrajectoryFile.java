@@ -23,7 +23,9 @@ import org.ramadda.geodata.point.netcdf.*;
 
 
 import org.ramadda.data.record.*;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
+
 
 import ucar.unidata.util.Misc;
 
@@ -53,16 +55,10 @@ public class NetcdfOceanTrajectoryFile extends NetcdfTrajectoryFile {
 
     /**
      * ctor
-     *
-     *
-     *
-     *
-     *
-     * @param filename _more_
      * @throws IOException On badness
      */
-    public NetcdfOceanTrajectoryFile(String filename) throws IOException {
-        super(filename);
+    public NetcdfOceanTrajectoryFile(IO.Path path) throws IOException {
+        super(path);
     }
 
 

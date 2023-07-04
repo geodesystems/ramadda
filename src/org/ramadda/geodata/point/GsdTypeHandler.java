@@ -101,7 +101,7 @@ public class GsdTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public IO.Request getPathForRecordEntry(Entry entry,
+    public IO.Path getPathForRecordEntry(Entry entry,
 					    Hashtable requestProperties)
             throws Exception {
         String url   = URL_TEMPLATE;
@@ -123,7 +123,7 @@ public class GsdTypeHandler extends PointTypeHandler {
                                    ? lon
                                    : "-105");
         url = super.convertPath(entry, url, requestProperties);
-        return new IO.Request(url);
+        return new IO.Path(url);
     }
 
 

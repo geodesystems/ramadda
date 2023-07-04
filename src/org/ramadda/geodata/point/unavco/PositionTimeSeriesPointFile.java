@@ -20,6 +20,7 @@ package org.ramadda.geodata.point.unavco;
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 
+import org.ramadda.util.IO;
 import org.ramadda.data.record.*;
 
 import ucar.unidata.util.StringUtil;
@@ -50,13 +51,12 @@ public class PositionTimeSeriesPointFile extends CsvFile {
     /**
      * ctor
      *
-     * @param filename _more_
      *
      * @throws IOException _more_
      */
-    public PositionTimeSeriesPointFile(String filename) throws IOException {
-        super(filename);
-        isPos = filename.endsWith(".pos");
+    public PositionTimeSeriesPointFile(IO.Path path) throws IOException {
+        super(path);
+        isPos = path.getPath().endsWith(".pos");
     }
 
     /*

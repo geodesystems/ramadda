@@ -528,7 +528,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
      *
      * @throws Exception _more_
      */
-    public IO.Request getPathForRecordEntry(Entry entry,
+    public IO.Path getPathForRecordEntry(Entry entry,
 					    Hashtable requestProperties)
             throws Exception {
         String path = getPathForEntry(null, entry,true);
@@ -538,7 +538,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
                 + " path:" + path + " resource:" + entry.getResource());
         }
         path = convertPath(entry, path, requestProperties);
-        return new IO.Request(path);
+        return new IO.Path(path);
     }
 
 
@@ -581,7 +581,6 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     public String convertPath(Entry entry, String path,
 			      Hashtable requestProperties)
             throws Exception {
-	debug=true;
         if (debug) {
             System.err.println(
                 "RecordTypeHandler.convertPath entry:" + entry
@@ -715,23 +714,22 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
                                        Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
-        IO.Request request = getPathForRecordEntry(entry, requestProperties);
-        if (request == null) {
+        IO.Path path = getPathForRecordEntry(entry, requestProperties);
+        if (path == null) {
             return null;
         }
 
         Class c = Misc.findClass(className);
-        Constructor ctor = Misc.findConstructor(c, new Class[] { String.class,
+        Constructor ctor = Misc.findConstructor(c, new Class[] { IO.Path.class,
                 Hashtable.class });
         if (ctor != null) {
-            return (RecordFile) ctor.newInstance(new Object[] { request.getPath(),
-                    properties });
+            return (RecordFile) ctor.newInstance(new Object[] { path, properties });
         }
-        ctor = Misc.findConstructor(c, new Class[] { String.class });
+        ctor = Misc.findConstructor(c, new Class[] { IO.Path.class });
 
         if (ctor != null) {
             RecordFile recordFile =
-                (RecordFile) ctor.newInstance(new Object[] { request.getPath()});
+                (RecordFile) ctor.newInstance(new Object[] {path});
 
             return recordFile;
         }

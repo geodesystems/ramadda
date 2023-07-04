@@ -16,6 +16,7 @@
 
 package org.ramadda.geodata.point.above;
 
+import org.ramadda.util.IO;
 
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
@@ -43,25 +44,23 @@ public class CmcSweMonthlyClimate extends CsvFile {
      * ctor
      *
      *
-     * @param filename _more_
      *
      * @throws IOException _more_
      */
-    public CmcSweMonthlyClimate(String filename) throws IOException {
-        super(filename);
+    public CmcSweMonthlyClimate(IO.Path path) throws IOException {
+        super(path);
     }
 
     /**
      * _more_
      *
-     * @param filename _more_
      * @param properties _more_
      *
      * @throws IOException _more_
      */
-    public CmcSweMonthlyClimate(String filename, Hashtable properties)
+    public CmcSweMonthlyClimate(IO.Path path, Hashtable properties)
             throws IOException {
-        super(filename, properties);
+        super(path, properties);
     }
 
 

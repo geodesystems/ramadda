@@ -17,6 +17,7 @@
 package org.ramadda.geodata.point.wsbb;
 
 
+import org.ramadda.util.IO;
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
@@ -44,11 +45,10 @@ public class IAGA2002PointFile extends CsvFile {
     /**
      * The constructor
      *
-     * @param filename file
      * @throws IOException On badness
      */
-    public IAGA2002PointFile(String filename) throws IOException {
-        super(filename);
+    public IAGA2002PointFile(IO.Path path) throws IOException {
+        super(path);
     }
 
     /**
