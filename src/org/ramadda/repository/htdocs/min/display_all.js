@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Jul  2 22:58:09 MDT 2023";
+var build_date="RAMADDA build date: Tue Jul  4 12:45:41 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -167,8 +167,8 @@ $.extend(Utils,{
                 colorToString[v.color]+=HtmlUtils.div(["title",v.value,STYLE,style],value);
             });
         }
-        min = parseFloat(min);
-        max = parseFloat(max);
+//        min = parseFloat(min);
+//        max = parseFloat(max);
 	let clazz = " display-colortable " +(!options.tooltips && options.showColorTableDots?"display-colortable-dots":"");
         let divargs = [CLASS, clazz];
         if(Utils.isDefined(options.width)) {
@@ -182,6 +182,8 @@ $.extend(Utils,{
             html +='<tr>';
         }
         let formatter = n=>{
+	    if(typeof n == "string") return n;
+	    n = parseFloat(n);
 	    if(isNaN(n)) return '';
             if(options.decimals>=0)
                 return number_format(n,options.decimals);
@@ -2786,7 +2788,12 @@ ColorByInfo.prototype = {
 	    cbs.sort((a,b)=>{
 		return a.value.toString().localeCompare(b.value.toString());
 	    });
-	    this.display.displayColorTable(colors, domId || ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
+	    let getValue = v=>{
+		if(this.doingDates) return new Date(v);
+		return v;
+	    }
+	    this.display.displayColorTable(colors, domId || ID_COLORTABLE, getValue(this.origMinValue),
+					   getValue(this.origMaxValue), {
 		label:this.getDoCount()?'Count':null,
 		field: this.field,
 		colorByInfo:this,
@@ -2854,6 +2861,7 @@ ColorByInfo.prototype = {
 	this.origMaxValue=max;
     },
     getColorFromRecord: function(record, dflt, checkHistory,debug) {
+
 	if(!this.initDisplayCalled)   this.initDisplay();
 	if(this.filterHighlight && !record.isHighlight(this.display)) {
 	    return this.display.getUnhighlightColor();
@@ -2879,6 +2887,11 @@ ColorByInfo.prototype = {
 		value = total/records.length;
 	    } else {
 		value= records[0].getData()[this.index];
+	    }
+	    //check if it is a date
+	    if(value.getTime) {
+		value = value.getTime();
+		this.doingDates = true;
 	    }
 	    value = this.getDoCount()?records.length:value;
 	    return  this.getColor(value, record,checkHistory);
@@ -4619,6 +4632,7 @@ function DisplayThing(argId, argProperties) {
 	},
 	getRecordUrlHtml: function(attrs, field, record) {
 	    let value = record.getValue(field.getIndex());
+	    if(!Utils.stringDefined(value)) return '';
 	    let linkLabel = value||"Link";
 	    linkLabel = linkLabel.replace(/^https?:\/\//,"");
 	    linkLabel = linkLabel.replace(/\?.*/,"");
@@ -5621,6 +5635,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return this.getProperty("colorTableSide","bottom") == "bottom" || this.getProperty("colorTableSide","bottom") == "top";
 	},
         displayColorTable: function(ct, domId, min, max, args) {
+	    console.log(min,max);
+	    //Check if it is a date
+	    if(min && min.getTime)  {min  =this.formatDate(min);}
+	    if(max && max.getTime)  {max  =this.formatDate(max);}	    
 	    if(!args) args = {};
 	    args.showColorTableDots = this.getProperty('showColorTableDots');
 	    args.decimals = this.getProperty('colorTableDotsDecimals',-1);
@@ -52018,7 +52036,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	{p:'numRecords',ex:'5000',d:5000,tt:'Number of records to show'},
 	{p:'scrollY',ex:'300px'},				
 	{p:'includeGeo',ex:'true',d:false},
-	{p:'includeDate',ex:'true',d:true},
+	{p:'includeDate',ex:'true',d:false},
 	{p:'includeRowIndex',ex:'true',d:false},	
 	{p:'includeFieldDescription'},
 	{p:'fancy',ex:'true',d:true},
