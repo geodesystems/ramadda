@@ -1032,34 +1032,34 @@ public class IO {
     
     public static Result getHttpResult(String type, URL url, String body, String... args)
             throws Exception {	
-	return getHttpResult(new Request(url.toString(),type,body,args));
+	return getHttpResult(new Path(url.toString(),type,body,args));
     }
 
 
-    public static Result getHttpResult(Request request)
+    public static Result getHttpResult(Path path)
             throws Exception {	
-	URL url = new URL(request.path);
+	URL url = new URL(path.getPath());
 
         checkFile(url);
         HttpURLConnection connection =
             (HttpURLConnection) url.openConnection();
-	if(request.method.equals(HTTP_METHOD_POST)) 
+	if(path.method.equals(HTTP_METHOD_POST)) 
 	    connection.setDoOutput(true);
         //        connection.setDoInput(true);
         //        connection.setInstanceFollowRedirects(false);
-	connection.setRequestMethod(request.method);
+	connection.setRequestMethod(path.method);
         //        connection.setRequestProperty("charset", "utf-8");
         //      System.err.println("header:");
-	if(request.requestArgs!=null) {
-	    for (int i = 0; i < request.requestArgs.length; i += 2) {
+	if(path.requestArgs!=null) {
+	    for (int i = 0; i < path.requestArgs.length; i += 2) {
 		//            System.err.println(args[i]+":" + args[i+1]);
-		connection.setRequestProperty(request.requestArgs[i], request.requestArgs[i + 1]);
+		connection.setRequestProperty(path.requestArgs[i], path.requestArgs[i + 1]);
 	    }
 	}
-        if (request.body != null) {
+        if (path.body != null) {
             connection.setRequestProperty("Content-Length",
-                                          Integer.toString(request.body.length()));
-            connection.getOutputStream().write(request.body.getBytes("UTF-8"));
+                                          Integer.toString(path.body.length()));
+            connection.getOutputStream().write(path.body.getBytes("UTF-8"));
         }
         try {
             BufferedReader in = new BufferedReader(
@@ -2019,25 +2019,29 @@ public class IO {
     }
 
 
-    public static class Request {
+    public static class Path {
 	private String path;
 	private String method;
 	private String body;
 	private String[] requestArgs;
-	public Request(String path) {
+	public Path(String path) {
 	    this.path = path;
 	    this.method = HTTP_METHOD_GET;
 	}
 
-	public Request(String path,String method,String[] args) {
+	public Path(String path,String method,String[] args) {
 	    this(path);
 	    this.method = method;
 	    this.requestArgs = args;
 	}
 
-	public Request(String path,String method,String body,String[] args) {
+	public Path(String path,String method,String body,String[] args) {
 	    this(path,method,args);
 	    this.body = body;
+	}
+
+	public String toString() {
+	    return path;
 	}
 
 	public String getPath() {
