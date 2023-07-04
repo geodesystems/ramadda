@@ -6704,6 +6704,8 @@ public abstract class Converter extends Processor {
         /** _more_ */
         private List<String> values;
 
+	private String value;
+
         /**
          * @param col _more_
          * @param name _more_
@@ -6712,6 +6714,7 @@ public abstract class Converter extends Processor {
         public ColumnInserter(String col, String name, String value) {
             super(col);
             this.values = Utils.split(value, ",", false, false);
+	    this.value = value;
             this.name   = name;
         }
 
@@ -6729,10 +6732,13 @@ public abstract class Converter extends Processor {
             if (rowCnt == 0) {
                 v = name;
             } else if (rowCnt < values.size()) {
-                v = values.get(rowCnt);
+                //v = values.get(rowCnt);
+		v = this.value;
             } else {
-                v = values.get(values.size() - 1);
+		//                v = values.get(values.size() - 1);
+		v = this.value;
             }
+	    v =v.replace("${row}",rowCnt+"");
             rowCnt++;
             if ((col < 0) || (col > row.getValues().size())) {
                 row.getValues().add(v);

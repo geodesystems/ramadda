@@ -2122,7 +2122,7 @@ public class Seesv implements SeesvCommands {
 		new Arg(ARG_COLUMN, "Column to insert before", ATTR_TYPE, TYPE_COLUMN),
 		new Arg(ARG_NAME, "Name of new column"),		
 		new Arg("values",
-			"Single value or comma separated for multiple rows", ATTR_TYPE,
+			"Value to insert. Use ${row} to add the row index", ATTR_TYPE,
 			TYPE_LIST)),
 	new Cmd(CMD_CONCAT, "Create a new column from the given columns",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
