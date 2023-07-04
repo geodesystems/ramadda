@@ -33,6 +33,7 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.NamedInputStream;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 import org.ramadda.util.XlsUtil;
@@ -3263,9 +3264,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         "Uploaded file does not exist");
                 }
                 if (f.toString().toLowerCase().endsWith(".xls")) {
-                    source = new NamedInputStream(f.toString(),XlsUtil.xlsToCsv(f.toString()));
+                    source = new NamedInputStream(f.toString(),XlsUtil.xlsToCsv(new IO.Request(f.toString())));
                 } else if (f.toString().toLowerCase().endsWith(".xlsx")) {
-                    source = new NamedInputStream(f.toString(),XlsUtil.xlsxToCsv(f.toString()));
+                    source = new NamedInputStream(f.toString(),XlsUtil.xlsxToCsv(new IO.Request(f.toString())));
                 } else {
                     source = new NamedInputStream(f.toString(),getStorageManager().getFileInputStream(f));
                 }

@@ -13,6 +13,7 @@ import org.ramadda.data.services.RecordTypeHandler;
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
@@ -100,8 +101,8 @@ public class GsdTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public String getPathForRecordEntry(Entry entry,
-                                        Hashtable requestProperties)
+    public IO.Request getPathForRecordEntry(Entry entry,
+					    Hashtable requestProperties)
             throws Exception {
         String url   = URL_TEMPLATE;
         String lat   = (String) requestProperties.get("latitude");
@@ -121,10 +122,8 @@ public class GsdTypeHandler extends PointTypeHandler {
         url = url.replace("{lon}", (lon != null)
                                    ? lon
                                    : "-105");
-        url = super.getPathForRecordEntry(entry, url, requestProperties);
-        System.err.println("url:" + url);
-
-        return url;
+        url = super.convertPath(entry, url, requestProperties);
+        return new IO.Request(url);
     }
 
 
@@ -141,7 +140,7 @@ public class GsdTypeHandler extends PointTypeHandler {
     @Override
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
-        return getPathForRecordEntry(entry, request.getDefinedProperties());
+        return getPathForRecordEntry(entry, request.getDefinedProperties()).getPath();
     }
 
 

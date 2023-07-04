@@ -12,6 +12,7 @@ import org.ramadda.data.services.PointTypeHandler;
 import org.ramadda.data.services.RecordTypeHandler;
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
@@ -85,8 +86,7 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
                                        Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
-        return new UsgsGaugeRecordFile(getPathForRecordEntry(entry,
-                requestProperties), properties);
+        return new UsgsGaugeRecordFile(getPathForRecordEntry(entry,requestProperties).getPath(), properties);
     }
 
     /**

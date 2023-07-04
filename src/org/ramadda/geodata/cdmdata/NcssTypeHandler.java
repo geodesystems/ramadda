@@ -14,6 +14,7 @@ import org.ramadda.data.services.RecordTypeHandler;
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.text.Seesv;
 
@@ -348,7 +349,7 @@ public class NcssTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public String getPathForRecordEntry(Entry entry,
+    public IO.Request getPathForRecordEntry(Entry entry,
                                         Hashtable requestProperties)
             throws Exception {
         String url = entry.getResource().getPath();
@@ -358,9 +359,8 @@ public class NcssTypeHandler extends PointTypeHandler {
                               "+10 days"));
         url = Utils.normalizeTemplateUrl(url);
         //subst the location
-        url = super.getPathForRecordEntry(entry, url, requestProperties);
-
-        return url;
+        url = super.convertPath(entry, url, requestProperties);
+        return new IO.Request(url);
     }
 
     /**
@@ -376,7 +376,7 @@ public class NcssTypeHandler extends PointTypeHandler {
     @Override
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
-        return getPathForRecordEntry(entry, request.getDefinedProperties());
+        return getPathForRecordEntry(entry, request.getDefinedProperties()).getPath();
     }
 
 
@@ -399,8 +399,7 @@ public class NcssTypeHandler extends PointTypeHandler {
                                        Hashtable requestProperties)
             throws Exception {
         Hashtable props = getRecordProperties(entry);
-
-        return new CsvFile(getPathForRecordEntry(entry, requestProperties),
+        return new CsvFile(getPathForRecordEntry(entry, requestProperties).getPath(),
                            props);
     }
 

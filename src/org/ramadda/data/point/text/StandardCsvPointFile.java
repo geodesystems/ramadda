@@ -13,16 +13,10 @@ import org.ramadda.data.point.*;
 
 import org.ramadda.data.record.*;
 import org.ramadda.util.HtmlUtils;
-
-import org.ramadda.util.XlsUtil;
-
 import ucar.unidata.util.Misc;
-
 import ucar.unidata.util.StringUtil;
-
 import java.awt.*;
 import java.awt.image.*;
-
 import java.io.*;
 
 import java.util.ArrayList;

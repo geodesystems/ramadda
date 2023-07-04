@@ -80,7 +80,7 @@ public class VegaTypeHandler extends ConvertibleTypeHandler {
             throws Exception {
         return new VegaRecordFile(getRepository(), this, entry,
                                   getPathForRecordEntry(entry,
-                                      requestProperties));
+							requestProperties).getPath());
     }
 
 

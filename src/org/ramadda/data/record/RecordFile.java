@@ -70,8 +70,6 @@ public abstract class RecordFile {
     /** force compile */
     private static final GeoRecord dummy3 = null;
 
-
-
     /** The file */
     private String filename;
 
@@ -649,19 +647,18 @@ public abstract class RecordFile {
      */
     public InputStream doMakeInputStream(boolean buffered) throws Exception {
         String path = getNormalizedFilename();
-        //      System.err.println("RecordFile.doMakeInputStream:" + path);
+	System.err.println("RecordFile.doMakeInputStream:" + path);
         if (debug) {
             System.err.println(mycnt+" RecordFile.doMakeInputStream path:" + path);
         }
 
         if (path.toLowerCase().endsWith(".xls")) {
-	    return XlsUtil.xlsToCsv(path);
+	    return XlsUtil.xlsToCsv(new IO.Request(path));
         }
 
         if (path.toLowerCase().endsWith(".xlsx")) {
-	    return XlsUtil.xlsxToCsv(path);
+	    return XlsUtil.xlsxToCsv(new IO.Request(path));
         }	
-
 
         if (path.endsWith(".zip") || getProperty("isZip", false)) {
             InputStream    fis = IO.getInputStream(path);
@@ -1436,7 +1433,6 @@ public abstract class RecordFile {
     }
 
 
-
     /**
      * _more_
      *
@@ -1458,7 +1454,6 @@ public abstract class RecordFile {
                 }
             }
         }
-
         return path;
     }
 

@@ -21,6 +21,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.PropertyProvider;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
@@ -527,8 +528,8 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
      *
      * @throws Exception _more_
      */
-    public String getPathForRecordEntry(Entry entry,
-                                        Hashtable requestProperties)
+    public IO.Request getPathForRecordEntry(Entry entry,
+					    Hashtable requestProperties)
             throws Exception {
         String path = getPathForEntry(null, entry,true);
         if (debug) {
@@ -536,9 +537,8 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
                 "RecordTypeHandler.getPathForRecordEntry entry:" + entry
                 + " path:" + path + " resource:" + entry.getResource());
         }
-        path = getPathForRecordEntry(entry, path, requestProperties);
-
-        return path;
+        path = convertPath(entry, path, requestProperties);
+        return new IO.Request(path);
     }
 
 
@@ -578,12 +578,13 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
      *
      * @throws Exception _more_
      */
-    public String getPathForRecordEntry(Entry entry, String path,
-                                        Hashtable requestProperties)
+    public String convertPath(Entry entry, String path,
+			      Hashtable requestProperties)
             throws Exception {
+	debug=true;
         if (debug) {
             System.err.println(
-                "RecordTypeHandler.getPathForRecordEntry entry:" + entry
+                "RecordTypeHandler.convertPath entry:" + entry
                 + " path:" + path);
         }
         List<Macro> macros = getMacros(entry);
@@ -693,7 +694,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         }
 
         return (RecordFile) getRecordFileFactory().doMakeRecordFile(
-            getPathForRecordEntry(entry, requestProperties), properties,
+								    getPathForRecordEntry(entry, requestProperties).getPath(), properties,
             requestProperties);
     }
 
@@ -714,22 +715,23 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
                                        Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
-        String path = getPathForRecordEntry(entry, requestProperties);
-        if (path == null) {
+        IO.Request request = getPathForRecordEntry(entry, requestProperties);
+        if (request == null) {
             return null;
         }
+
         Class c = Misc.findClass(className);
         Constructor ctor = Misc.findConstructor(c, new Class[] { String.class,
                 Hashtable.class });
         if (ctor != null) {
-            return (RecordFile) ctor.newInstance(new Object[] { path,
+            return (RecordFile) ctor.newInstance(new Object[] { request.getPath(),
                     properties });
         }
         ctor = Misc.findConstructor(c, new Class[] { String.class });
 
         if (ctor != null) {
             RecordFile recordFile =
-                (RecordFile) ctor.newInstance(new Object[] { path });
+                (RecordFile) ctor.newInstance(new Object[] { request.getPath()});
 
             return recordFile;
         }

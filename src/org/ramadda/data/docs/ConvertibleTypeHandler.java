@@ -13,6 +13,7 @@ import org.ramadda.data.services.PointTypeHandler;
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 import org.ramadda.util.text.Seesv;
@@ -128,9 +129,9 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
                 "ConvertibleTypeHandler.getPathForRecordEntry entry:" + entry
                 + " commands:" + commands);
         }
-        String          path = getPathForRecordEntry(entry,
-                                   requestProperties);
-        ConvertibleFile file = new ConvertibleFile(request, this, entry, args, path);
+        IO.Request          path = getPathForRecordEntry(entry,
+							 requestProperties);
+        ConvertibleFile file = new ConvertibleFile(request, this, entry, args, path.getPath());
 
         return file;
     }

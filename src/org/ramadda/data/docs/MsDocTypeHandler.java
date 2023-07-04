@@ -11,9 +11,6 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 
-import org.ramadda.util.XlsUtil;
-
-
 import org.w3c.dom.*;
 
 import ucar.unidata.util.IOUtil;
