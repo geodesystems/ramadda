@@ -370,7 +370,12 @@ ColorByInfo.prototype = {
 	    cbs.sort((a,b)=>{
 		return a.value.toString().localeCompare(b.value.toString());
 	    });
-	    this.display.displayColorTable(colors, domId || ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
+	    let getValue = v=>{
+		if(this.doingDates) return new Date(v);
+		return v;
+	    }
+	    this.display.displayColorTable(colors, domId || ID_COLORTABLE, getValue(this.origMinValue),
+					   getValue(this.origMaxValue), {
 		label:this.getDoCount()?'Count':null,
 		field: this.field,
 		colorByInfo:this,
@@ -438,6 +443,7 @@ ColorByInfo.prototype = {
 	this.origMaxValue=max;
     },
     getColorFromRecord: function(record, dflt, checkHistory,debug) {
+
 	if(!this.initDisplayCalled)   this.initDisplay();
 	if(this.filterHighlight && !record.isHighlight(this.display)) {
 	    return this.display.getUnhighlightColor();
@@ -463,6 +469,11 @@ ColorByInfo.prototype = {
 		value = total/records.length;
 	    } else {
 		value= records[0].getData()[this.index];
+	    }
+	    //check if it is a date
+	    if(value.getTime) {
+		value = value.getTime();
+		this.doingDates = true;
 	    }
 	    value = this.getDoCount()?records.length:value;
 	    return  this.getColor(value, record,checkHistory);
