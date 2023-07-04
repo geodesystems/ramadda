@@ -83,8 +83,8 @@ public class XlsUtil {
      *
      * @return _more_
      */
-    public static InputStream xlsxToCsv(IO.Request request) {
-        return xlsxToCsv(request, -1);
+    public static InputStream xlsxToCsv(IO.Path path) {
+        return xlsxToCsv(path, -1);
     }
 
 
@@ -94,7 +94,7 @@ public class XlsUtil {
      * @param maxRows _more_
       * @return _more_
      */
-    public static InputStream xlsxToCsv(final IO.Request request, int maxRows) {
+    public static InputStream xlsxToCsv(final IO.Path path, int maxRows) {
         try {
             final PipedOutputStream    pos = new PipedOutputStream();
             final BufferedOutputStream bos = new BufferedOutputStream(pos);
@@ -105,7 +105,7 @@ public class XlsUtil {
                     try {
                         InputStream is = new BufferedInputStream(
                                              IO.getInputStream(
-							       request.getPath(), XlsUtil.class));
+							       path.getPath(), XlsUtil.class));
                         Workbook wb = StreamingReader.builder()
                         //                      .rowCacheSize(100)    
                         //                      .bufferSize(4096)     
@@ -245,8 +245,8 @@ public class XlsUtil {
      * @param filename _more_
      *  @return _more_
      */
-    public static InputStream xlsToCsv(IO.Request request) {
-        return xlsToCsv(request, -1);
+    public static InputStream xlsToCsv(IO.Path path) {
+        return xlsToCsv(path, -1);
     }
 
     /**
@@ -254,7 +254,7 @@ public class XlsUtil {
      * @param maxRows _more_
      * @return _more_
      */
-    public static InputStream xlsToCsv(IO.Request request, int maxRows) {
+    public static InputStream xlsToCsv(IO.Path path, int maxRows) {
         try {
             final PipedOutputStream pos = new PipedOutputStream();
             final PipedInputStream  pis = new PipedInputStream(pos);
@@ -262,7 +262,7 @@ public class XlsUtil {
             ucar.unidata.util.Misc.run(new Runnable() {
                 public void run() {
                     try {
-                        InputStream myxls = IO.getInputStream(request.getPath(),
+                        InputStream myxls = IO.getInputStream(path.getPath(),
                                                 XlsUtil.class);
                         HSSFWorkbook wb         = new HSSFWorkbook(myxls);
                         HSSFSheet    sheet      = wb.getSheetAt(0);
@@ -374,9 +374,9 @@ public class XlsUtil {
             for (int i = 0; i < 10; i++) {
                 long t1 = System.currentTimeMillis();
                 if (arg.endsWith(".xlsx")) {
-                    csv = IO.readInputStream(xlsxToCsv(new IO.Request(arg), -50));
+                    csv = IO.readInputStream(xlsxToCsv(new IO.Path(arg), -50));
                 } else {
-                    csv = IO.readInputStream(xlsToCsv(new IO.Request(arg)));
+                    csv = IO.readInputStream(xlsToCsv(new IO.Path(arg)));
                 }
                 long t2 = System.currentTimeMillis();
                 Utils.printTimes("read", t1, t2);
