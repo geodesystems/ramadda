@@ -1024,27 +1024,42 @@ public class IO {
 	return getHttpResult(HTTP_METHOD_GET,url,null, args);
     }
 
+
+    public static Result doPostResult(URL url, String body, String... args)
+            throws Exception {
+	return getHttpResult(HTTP_METHOD_POST,url,body, args);
+    }
+    
     public static Result getHttpResult(String type, URL url, String body, String... args)
             throws Exception {	
+	return getHttpResult(new Request(url.toString(),type,body,args));
+    }
+
+
+    public static Result getHttpResult(Request request)
+            throws Exception {	
+	URL url = new URL(request.path);
 
         checkFile(url);
         HttpURLConnection connection =
             (HttpURLConnection) url.openConnection();
-	if(type.equals(HTTP_METHOD_POST)) 
+	if(request.method.equals(HTTP_METHOD_POST)) 
 	    connection.setDoOutput(true);
         //        connection.setDoInput(true);
         //        connection.setInstanceFollowRedirects(false);
-        connection.setRequestMethod(type);
+	connection.setRequestMethod(request.method);
         //        connection.setRequestProperty("charset", "utf-8");
         //      System.err.println("header:");
-        for (int i = 0; i < args.length; i += 2) {
-            //            System.err.println(args[i]+":" + args[i+1]);
-            connection.setRequestProperty(args[i], args[i + 1]);
-        }
-        if (body != null) {
+	if(request.requestArgs!=null) {
+	    for (int i = 0; i < request.requestArgs.length; i += 2) {
+		//            System.err.println(args[i]+":" + args[i+1]);
+		connection.setRequestProperty(request.requestArgs[i], request.requestArgs[i + 1]);
+	    }
+	}
+        if (request.body != null) {
             connection.setRequestProperty("Content-Length",
-                                          Integer.toString(body.length()));
-            connection.getOutputStream().write(body.getBytes("UTF-8"));
+                                          Integer.toString(request.body.length()));
+            connection.getOutputStream().write(request.body.getBytes("UTF-8"));
         }
         try {
             BufferedReader in = new BufferedReader(
@@ -1910,6 +1925,12 @@ public class IO {
      */
     public static void main(String[] args) throws Exception {
 	if(true) {
+	    String body="{\"id\": \"64a36ea7145ac\"}";
+	    System.out.println(doPostResult(new URL("https://www.spotternetwork.org/positions"),body,"Content-Type","application/json"));
+	    return;
+	}	    
+
+	if(true) {
 	    //	    args = new String[]{"Authorization"," Bearer openai key"};
 	    List postArgs   =new ArrayList();
 	    //	    Utils.add(postArgs,"audio-file",new File("/Users/jeffmc/test.webm"));
@@ -1998,6 +2019,31 @@ public class IO {
     }
 
 
+    public static class Request {
+	private String path;
+	private String method;
+	private String body;
+	private String[] requestArgs;
+	public Request(String path) {
+	    this.path = path;
+	    this.method = HTTP_METHOD_GET;
+	}
 
+	public Request(String path,String method,String[] args) {
+	    this(path);
+	    this.method = method;
+	    this.requestArgs = args;
+	}
+
+	public Request(String path,String method,String body,String[] args) {
+	    this(path,method,args);
+	    this.body = body;
+	}
+
+	public String getPath() {
+	    return path;
+	}
+
+    }
 
 }
