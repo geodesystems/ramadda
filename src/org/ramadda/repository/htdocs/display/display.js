@@ -941,6 +941,7 @@ function DisplayThing(argId, argProperties) {
 	},
 	getRecordUrlHtml: function(attrs, field, record) {
 	    let value = record.getValue(field.getIndex());
+	    if(!Utils.stringDefined(value)) return '';
 	    let linkLabel = value||"Link";
 	    linkLabel = linkLabel.replace(/^https?:\/\//,"");
 	    linkLabel = linkLabel.replace(/\?.*/,"");
@@ -1943,6 +1944,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return this.getProperty("colorTableSide","bottom") == "bottom" || this.getProperty("colorTableSide","bottom") == "top";
 	},
         displayColorTable: function(ct, domId, min, max, args) {
+	    console.log(min,max);
+	    //Check if it is a date
+	    if(min && min.getTime)  {min  =this.formatDate(min);}
+	    if(max && max.getTime)  {max  =this.formatDate(max);}	    
 	    if(!args) args = {};
 	    args.showColorTableDots = this.getProperty('showColorTableDots');
 	    args.decimals = this.getProperty('colorTableDotsDecimals',-1);
