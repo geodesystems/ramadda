@@ -1081,7 +1081,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	{p:'numRecords',ex:'5000',d:5000,tt:'Number of records to show'},
 	{p:'scrollY',ex:'300px'},				
 	{p:'includeGeo',ex:'true',d:false},
-	{p:'includeDate',ex:'true',d:true},
+	{p:'includeDate',ex:'true',d:false},
 	{p:'includeRowIndex',ex:'true',d:false},	
 	{p:'includeFieldDescription'},
 	{p:'fancy',ex:'true',d:true},
