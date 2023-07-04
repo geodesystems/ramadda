@@ -1043,13 +1043,13 @@ public class Seesv implements SeesvCommands {
         for (String file : files) {
 	    try {
 		if (file.toLowerCase().endsWith(".xls")) {
-		    InputStream bais=  XlsUtil.xlsToCsv(file);
+		    InputStream bais=  XlsUtil.xlsToCsv(new IO.Request(file));
 		    ReadableByteChannel in = Channels.newChannel(bais);
 		    channels.add(new NamedChannel(file, in));
 		    continue;
 		}
 		if (file.toLowerCase().endsWith(".xlsx")) {
-		    InputStream bais=  XlsUtil.xlsxToCsv(file);
+		    InputStream bais=  XlsUtil.xlsxToCsv(new IO.Request(file));
 		    ReadableByteChannel in = Channels.newChannel(bais);
 		    channels.add(new NamedChannel(file, in));
 		    continue;
@@ -1169,9 +1169,9 @@ public class Seesv implements SeesvCommands {
 	    checkOkToRead(file);
         }
         if (file.endsWith(".xls")) {
-            return  XlsUtil.xlsToCsv(file,myTextReader.getMaxRows());
+            return  XlsUtil.xlsToCsv(new IO.Request(file),myTextReader.getMaxRows());
 	} else if (file.endsWith(".xlsx")) {
-            return  XlsUtil.xlsxToCsv(file,myTextReader.getMaxRows());
+            return  XlsUtil.xlsxToCsv(new IO.Request(file),myTextReader.getMaxRows());
 	} else if (file.toLowerCase().endsWith(".gz") || file.toLowerCase().endsWith(".gzip")) {
 	    return new BufferedInputStream(new GZIPInputStream(new FileInputStream(file)));
         } else if (!makeInputStreamRaw && file.toLowerCase().endsWith(".zip")) {
