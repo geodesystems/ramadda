@@ -165,8 +165,8 @@ $.extend(Utils,{
                 colorToString[v.color]+=HtmlUtils.div(["title",v.value,STYLE,style],value);
             });
         }
-        min = parseFloat(min);
-        max = parseFloat(max);
+//        min = parseFloat(min);
+//        max = parseFloat(max);
 	let clazz = " display-colortable " +(!options.tooltips && options.showColorTableDots?"display-colortable-dots":"");
         let divargs = [CLASS, clazz];
         if(Utils.isDefined(options.width)) {
@@ -180,6 +180,8 @@ $.extend(Utils,{
             html +='<tr>';
         }
         let formatter = n=>{
+	    if(typeof n == "string") return n;
+	    n = parseFloat(n);
 	    if(isNaN(n)) return '';
             if(options.decimals>=0)
                 return number_format(n,options.decimals);
