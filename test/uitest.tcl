@@ -197,6 +197,7 @@ proc capture {_group name url {doDisplays 1} {sleep 3}} {
 		continue;
 	    }
 
+	    
 	    if {[regexp {The input spec uses.*} $line]} {
 		continue;
 	    }		
@@ -211,7 +212,7 @@ proc capture {_group name url {doDisplays 1} {sleep 3}} {
 	    
 
 	    set skip 0
-	    foreach pattern { {googleads\.g\.doubleclick\.net} {Version} {\[Warning\]} {\[Log\]} {The input spec uses Vega} } {
+	    foreach pattern { {Unrecognized Content-Security-Policy directive} {googleads\.g\.doubleclick\.net} {Version} {\[Warning\]} {\[Log\]} {The input spec uses Vega} } {
 		if {[regexp ".*$pattern.*" $line]} {
 		    set skip 1
 		}
