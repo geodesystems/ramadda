@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Jul  5 12:49:23 MDT 2023";
+var build_date="RAMADDA build date: Wed Jul  5 13:02:39 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -41862,7 +41862,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    mapOptions.legendText = args.legendText;
 		    this.clearCommands();
 		    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,style);
-		    mapGlyph.setMapServerUrl(args.url,args.layerName,args.legendUrl,predefined);
+		    mapGlyph.setMapServerUrl(args.url,args.layerName,args.legendUrl,this.jq('predefined').val());
 		    mapGlyph.checkMapServer();
 		    this.addGlyph(mapGlyph);
 		    this.clearMessage2(1000);
