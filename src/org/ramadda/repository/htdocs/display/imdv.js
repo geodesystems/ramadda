@@ -3188,7 +3188,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			 'dragPanEnabled=false',
 			 'addCurrentLocationMarker=true',
 			 'centerOnCurrentLocation=true',
-			 'currentLocationUpdateTime=milliseconds',
+			 'currentLocationUpdateTime=seconds',
 			 'graticuleStyle=strokeColor:#000,strokeWidth:1,strokeDashstyle:dot'];
 	    let help = 'Add property:' + this.makeSideHelp(lines,this.domId('otherproperties_input'),{suffix:'\n'});
 	    accords.push({header:'Other Properties',
@@ -3322,7 +3322,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 
 		this.currentLocationMarker =
-		    this.getMap().addMarker("location", lonlat, null, "", "Current Location", 20, 20);
+		    this.getMap().addMarker('location', lonlat, null, '', 'Current Location', 20, 20);
 		if(this.getMapProperty('centerOnCurrentLocation')) {
 		    this.getMap().setCenter(lonlat);
 		}
@@ -3334,7 +3334,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(this.checkCurrentLocationTimeout) clearTimeout(this.checkCurrentLocationTimeout);
 	    this.checkCurrentLocationTimeout = setTimeout(()=>{
 		this.checkCurrentLocation();
-	    },this.getMapProperty('currentLocationUpdateTime',1000*30));
+	    },1000*parseFloat(this.getMapProperty('currentLocationUpdateTime',30)));
 
 	},
 	checkOpacitySlider:function() {
