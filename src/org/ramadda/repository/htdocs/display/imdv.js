@@ -3185,7 +3185,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    let props = this.getMapProperty('otherProperties','');
 	    let lines = ['legendLabel=Some label',...IMDV_PROPERTY_HINTS,
-			'graticuleStyle=strokeColor:#000,strokeWidth:1,strokeDashstyle:dot'];
+			 'dragPanEnabled=false',
+			 'addCurrentLocationMarker=true',
+			 'centerOnCurrentLocation=true',
+			 'currentLocationUpdateTime=milliseconds',
+			 'graticuleStyle=strokeColor:#000,strokeWidth:1,strokeDashstyle:dot'];
 	    let help = 'Add property:' + this.makeSideHelp(lines,this.domId('otherproperties_input'),{suffix:'\n'});
 	    accords.push({header:'Other Properties',
 			  contents:
@@ -3281,9 +3285,53 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.getMap().initMousePositionReadout();
 	    else
 		this.getMap().destroyMousePositionReadout();		
+
+	    if(this.getMapProperty('dragPanEnabled',true)) {
+		this.map.setDragPanEnabled(true);
+	    } else {
+		this.map.setDragPanEnabled(false);
+	    }
+	    this.checkCurrentLocation();
 	},
 	
+	checkCurrentLocation:function() {
+	    if(this.currentLocationMarker) {
+		this.getMap().removeMarker(this.currentLocationMarker);
+		this.currentLocationMarker=null;
+	    }
+            if (!navigator.geolocation) return;
+	    if(!this.getMapProperty('addCurrentLocationMarker',false)) return;
+	    let geoOptions = {
+		enableHighAccuracy: true, 
+		maximumAge        : 30000, 
+		timeout           : 27000
+	    };
+            navigator.geolocation.getCurrentPosition(position=> {
+		let lat = position.coords.latitude;
+		let lon = position.coords.longitude;
+		let lonlat = MapUtils.createLonLat(lon,lat);
+		console.log('current location',lat,lon);
+		if(this.currentLocationMarker) {
+		    this.getMap().removeMarker(this.currentLocationMarker);
+		    this.currentLocationMarker=null;
+		}
 
+		this.currentLocationMarker =
+		    this.getMap().addMarker("location", lonlat, null, "", "Current Location", 20, 20);
+		if(this.getMapProperty('centerOnCurrentLocation')) {
+		    this.getMap().setCenter(lonlat);
+		}
+            },error=>{
+		console.error(error);
+	    },geoOptions);
+
+	    //Add a timeout callback
+	    if(this.checkCurrentLocationTimeout) clearTimeout(this.checkCurrentLocationTimeout);
+	    this.checkCurrentLocationTimeout = setTimeout(()=>{
+		this.checkCurrentLocation();
+	    },this.getMapProperty('currentLocationUpdateTime',1000*30));
+
+	},
 	checkOpacitySlider:function() {
 	    let visible;
 	    if(Utils.isDefined(this.getMapProperty('showOpacitySlider')))
