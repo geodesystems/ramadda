@@ -99,10 +99,11 @@ public class ConvertibleFile extends CsvFile {
     @Override
     public void runSeesv(Seesv csvUtil, boolean buffered)
             throws Exception {
-	List<String> files = null;
+	List<IO.Path> files = null;
         if (entry.getResource().hasResource()) {
-            files = new ArrayList<String>();
-            files.add(entry.getTypeHandler().getStorageManager().getEntryFile(entry).toString());
+            files = new ArrayList<IO.Path>();
+	    files.add(getPath());
+	    //            files.add(new IO.Path(entry.getTypeHandler().getStorageManager().getEntryFile(entry).toString()));
         }
         csvUtil.run(files);
     }

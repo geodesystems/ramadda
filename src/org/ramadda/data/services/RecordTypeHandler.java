@@ -18,6 +18,7 @@ import org.ramadda.data.record.filter.*;
 import org.ramadda.data.services.RecordEntry;
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.util.HtmlUtils;
@@ -528,17 +529,41 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
      *
      * @throws Exception _more_
      */
-    public IO.Path getPathForRecordEntry(Entry entry,
-					    Hashtable requestProperties)
-            throws Exception {
-        String path = getPathForEntry(null, entry,true);
+    public IO.Path getPathForRecordEntry(Entry entry,  Hashtable requestProperties)
+	throws Exception {
+        String thePath = getPathForEntry(null, entry,true);
+        thePath  = convertPath(entry, thePath, requestProperties);
+	IO.Path path = new IO.Path(thePath);
+
+	List<Metadata> metadataList =
+	    getMetadataManager().findMetadata(getRepository().getTmpRequest(), entry,
+					      new String[]{"requestinformation"}, true);
+	if ((metadataList != null) && (metadataList.size() > 0)) {
+	    Metadata mtd= metadataList.get(0);
+	    path.setMethod(mtd.getAttr1());
+	    String args = mtd.getAttr2();
+	    if(stringDefined(args)) {
+		for(String pair: Utils.split(args,"\n",true,true)) {
+		    List<String> tuple= Utils.splitUpTo(pair,"=",2);
+		    if(tuple.size()==2) {
+			String v = getRepository().applyPropertyMacros(tuple.get(1).trim());
+			//			System.err.println("request arg:" + tuple.get(0) +" value:" + v);
+			path.setRequestArgs(new String[]{tuple.get(0).trim(),v});
+		    }
+		}
+	    }
+	    if(stringDefined(mtd.getAttr3())) {
+		path.setBody(getRepository().applyPropertyMacros(mtd.getAttr3()));
+		//		System.err.println("body:" +getRepository().applyPropertyMacros(mtd.getAttr3()));
+	    }
+	}
+
         if (debug) {
             System.err.println(
                 "RecordTypeHandler.getPathForRecordEntry entry:" + entry
-                + " path:" + path + " resource:" + entry.getResource());
+                + " path:" + thePath + " resource:" + entry.getResource());
         }
-        path = convertPath(entry, path, requestProperties);
-        return new IO.Path(path);
+        return path;
     }
 
 

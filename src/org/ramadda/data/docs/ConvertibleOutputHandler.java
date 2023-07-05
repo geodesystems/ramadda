@@ -9,6 +9,8 @@ package org.ramadda.data.docs;
 import org.ramadda.repository.*;
 import org.ramadda.repository.PluginManager;
 import org.ramadda.repository.output.*;
+import org.ramadda.data.services.RecordTypeHandler;
+
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
@@ -633,7 +635,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
             throws Exception {
 
         try {
-            List<String> files = new ArrayList<String>();
+            List<IO.Path> files = new ArrayList<IO.Path>();
 	    String path;
 	    String fileSuffix = ".csv";
 	    if(args.contains("-tojson")) fileSuffix = ".json";
@@ -643,7 +645,11 @@ public class ConvertibleOutputHandler extends OutputHandler {
 	    } else {
 		path = entry.getResource().getPath();
 	    }
-            files.add(path);
+	    if(entry.getTypeHandler() instanceof RecordTypeHandler) {
+		files.add(((RecordTypeHandler)entry.getTypeHandler()).getPathForRecordEntry( entry,  new Hashtable()));
+	    } else {
+		files.add(new IO.Path(path));
+	    }
             File f = getStorageManager().makeTmpFile(
                          runDir,
                          IOUtil.stripExtension(

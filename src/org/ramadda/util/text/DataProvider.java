@@ -1257,12 +1257,12 @@ public abstract class DataProvider extends SeesvOperator {
         public void initialize(Seesv seesv, TextReader textReader)
                 throws Exception {
             super.initialize(seesv, textReader);
-            List<String> files = seesv.getInputFiles();
+            List<IO.Path> files = seesv.getInputFiles();
             if (files.size() == 0) {
                 return;
             }
-            String  path = files.get(0);
-            Element root = KmlUtil.readKml(path, textReader.getInputStream());
+            IO.Path  path = files.get(0);
+            Element root = KmlUtil.readKml(path.getPath(), textReader.getInputStream());
             read(root);
         }
 

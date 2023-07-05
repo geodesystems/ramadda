@@ -79,8 +79,7 @@ public class VegaTypeHandler extends ConvertibleTypeHandler {
                                        Hashtable requestProperties)
             throws Exception {
         return new VegaRecordFile(getRepository(), this, entry,
-                                  new IO.Path(getPathForRecordEntry(entry,
-								    requestProperties).getPath()));
+                                  getPathForRecordEntry(entry,  requestProperties));
     }
 
 
@@ -354,8 +353,7 @@ public class VegaTypeHandler extends ConvertibleTypeHandler {
             if (dataUrl != null) {
                 return IO.getInputStream(new URL(dataUrl));
             }
-            String path = getNormalizedFilename();
-
+            IO.Path path = getNormalizedFilename();
             return IO.doMakeInputStream(path, buffered);
         }
 

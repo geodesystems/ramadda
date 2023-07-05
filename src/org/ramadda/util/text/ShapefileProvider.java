@@ -64,17 +64,16 @@ public class ShapefileProvider extends DataProvider.BulkDataProvider {
      */
     public void initialize(Seesv seesv, TextReader textReader)
             throws Exception {
-        List<String> files = seesv.getInputFiles();
+        List<IO.Path> files = seesv.getInputFiles();
         if (files.size() == 0) {
             return;
         }
-        String      path = files.get(0);
+        IO.Path      path = files.get(0);
         InputStream is   = textReader.getInputStream();
         if (is == null) {
-            is = IO.getInputStream(path);
+            is = IO.doMakeInputStream(path,true);
         }
-        FeatureCollection fc = FeatureCollection.getFeatureCollection(path,
-                                   is);
+        FeatureCollection fc = FeatureCollection.getFeatureCollection(path.getPath(),  is);
 
         List<DbaseDataWrapper> datum    = fc.getDatum();
         List<Feature>          features = (List<Feature>) fc.getFeatures();

@@ -643,21 +643,21 @@ public abstract class RecordFile {
      * @throws Exception _more_
      */
     public InputStream doMakeInputStream(boolean buffered) throws Exception {
-        String path = getNormalizedFilename();
+        IO.Path  path = getNormalizedFilename();
         if (debug) {
             System.err.println(mycnt+" RecordFile.doMakeInputStream path:" + path);
         }
 
-        if (path.toLowerCase().endsWith(".xls")) {
-	    return XlsUtil.xlsToCsv(new IO.Path(path));
+        if (path.getPath().toLowerCase().endsWith(".xls")) {
+	    return XlsUtil.xlsToCsv(path);
         }
 
-        if (path.toLowerCase().endsWith(".xlsx")) {
-	    return XlsUtil.xlsxToCsv(new IO.Path(path));
+        if (path.getPath().toLowerCase().endsWith(".xlsx")) {
+	    return XlsUtil.xlsxToCsv(path);
         }	
 
-        if (path.endsWith(".zip") || getProperty("isZip", false)) {
-            InputStream    fis = IO.getInputStream(path);
+        if (path.getPath().endsWith(".zip") || getProperty("isZip", false)) {
+            InputStream    fis = IO.getInputStream(path.getPath());
             ZipInputStream zin = new ZipInputStream(fis);
             ZipEntry       ze  = null;
             while ((ze = zin.getNextEntry()) != null) {
@@ -679,12 +679,9 @@ public abstract class RecordFile {
         }
 
         try {
-            //            System.err.println("path:" + path);
-            //            return Utils.doMakeInputStream(path, buffered);
             return IO.doMakeInputStream(path, buffered);
         } catch (Exception exc) {
             System.err.println("Error reading data:" + path);
-
             throw exc;
         }
     }
@@ -702,7 +699,7 @@ public abstract class RecordFile {
     public DataOutputStream doMakeOutputStream() throws IOException {
         return new DataOutputStream(
             new BufferedOutputStream(
-                new FileOutputStream(getNormalizedFilename()), 10000));
+				     new FileOutputStream(getNormalizedFilename().getPath()), 10000));
     }
 
     /**
@@ -1437,7 +1434,7 @@ public abstract class RecordFile {
      *
      * @return _more_
      */
-    public String getNormalizedFilename() {
+    public IO.Path getNormalizedFilename() {
         String path        = Utils.normalizeTemplateUrl(this.path.getPath());
         String pathReplace = (String) getProperty("pathReplace");
         if (pathReplace != null) {
@@ -1453,7 +1450,7 @@ public abstract class RecordFile {
                 }
             }
         }
-        return path;
+	return  new IO.Path(this.path,path);
     }
 
 

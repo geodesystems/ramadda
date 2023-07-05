@@ -134,7 +134,7 @@ public class Seesv implements SeesvCommands {
 
     private MapProvider mapProvider;    
 
-    private List<String> inputFiles;
+    private List<IO.Path> inputFiles;
 
     private boolean makeInputStreamRaw = false;
 
@@ -267,7 +267,7 @@ public class Seesv implements SeesvCommands {
         //        this.delimiter = seesv.delimiter;
     }
 
-    public List<String> getInputFiles() {
+    public List<IO.Path> getInputFiles() {
 	return inputFiles;
     }
 
@@ -549,7 +549,7 @@ public class Seesv implements SeesvCommands {
      *
      * @throws Exception _more_
      */
-    public void run(List<String> files) throws Exception {
+    public void run(List<IO.Path> files) throws Exception {
         try {
             runInner(files);
         } catch (Exception exc) {
@@ -577,10 +577,10 @@ public class Seesv implements SeesvCommands {
      *
      * @throws Exception _more_
      */
-    private void runInner(List<String> files) throws Exception {
+    private void runInner(List<IO.Path> files) throws Exception {
 
         if (files == null) {
-            files = new ArrayList<String>();
+            files = new ArrayList<IO.Path>();
         }
 	this.inputFiles = files;
         boolean      doConcat      = false;
@@ -796,7 +796,7 @@ public class Seesv implements SeesvCommands {
 
         currentArg = null;
         if (printArgs) {
-            for (String f : files) {
+            for (IO.Path f : files) {
                 System.out.print(f + " ");
             }
             if (files.size() == 0) {
@@ -810,7 +810,7 @@ public class Seesv implements SeesvCommands {
 	} else if (doAppend) {
             IO.append(files, getOutputStream(),appendSkip);
 	} else if (doLast) {
-            lastLines(new File(files.get(0)), getOutputStream(),lastLines);	    	    
+            lastLines(files.get(0), getOutputStream(),lastLines);	    	    
         } else if (doHeader) {
             header(files, myTextReader, doPoint);
         } else if (doRaw) {
@@ -1013,15 +1013,15 @@ public class Seesv implements SeesvCommands {
      *
      * @throws Exception _more_
      */
-    private List<NamedInputStream> getStreams(List<String> files)
+    private List<NamedInputStream> getStreams(List<IO.Path> files)
 	throws Exception {
         if (debugFiles) {
             System.err.println("getStreams:" + files);
         }
         ArrayList<NamedInputStream> streams =
             new ArrayList<NamedInputStream>();
-        for (String file : files) {
-            streams.add(new NamedInputStream(file, wrapInputStream(makeInputStream(file))));
+        for (IO.Path file : files) {
+            streams.add(new NamedInputStream(file.getPath(), wrapInputStream(makeInputStream(file))));
         }
         if (inputStream != null) {
             streams.add(new NamedInputStream("input", wrapInputStream(inputStream)));
@@ -1164,18 +1164,18 @@ public class Seesv implements SeesvCommands {
      *
      * @throws Exception _more_
      */
-    public InputStream makeInputStream(String file) throws Exception {
-	if(!Utils.isUrl(file)) {
-	    checkOkToRead(file);
+    public InputStream makeInputStream(IO.Path file) throws Exception {
+	if(!Utils.isUrl(file.getPath())) {
+	    checkOkToRead(file.getPath());
         }
-        if (file.endsWith(".xls")) {
-            return  XlsUtil.xlsToCsv(new IO.Path(file),myTextReader.getMaxRows());
-	} else if (file.endsWith(".xlsx")) {
-            return  XlsUtil.xlsxToCsv(new IO.Path(file),myTextReader.getMaxRows());
-	} else if (file.toLowerCase().endsWith(".gz") || file.toLowerCase().endsWith(".gzip")) {
-	    return new BufferedInputStream(new GZIPInputStream(new FileInputStream(file)));
-        } else if (!makeInputStreamRaw && file.toLowerCase().endsWith(".zip")) {
-            InputStream    fis = IO.getInputStream(file.toString());
+        if (file.matchesSuffix(".xls")) {
+            return  XlsUtil.xlsToCsv(file,myTextReader.getMaxRows());
+	} else if (file.matchesSuffix(".xlsx")) {
+            return  XlsUtil.xlsxToCsv(file,myTextReader.getMaxRows());
+	} else if (file.matchesSuffix(".gz",".gzip")) {
+	    return new BufferedInputStream(new GZIPInputStream(new FileInputStream(file.getPath())));
+        } else if (!makeInputStreamRaw && file.matchesSuffix(".zip")) {
+            InputStream    fis = IO.getInputStream(file.getPath());
             ZipInputStream zin = new ZipInputStream(fis);
             ZipEntry       ze  = null;
             while ((ze = zin.getNextEntry()) != null) {
@@ -1194,9 +1194,9 @@ public class Seesv implements SeesvCommands {
 	    throw new IllegalArgumentException("Could not find .csv, .tsv or .txt file in the zip file");
 
         } else {
-            if (new File(file).exists()) {
+            if (file.isFile()) {
                 try {
-		    FileInputStream fis = new FileInputStream(file);
+		    FileInputStream fis = new FileInputStream(file.getPath());
 		    //		    InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
 		    //		    BufferedReader reader = new BufferedReader(isr)
                     return new BufferedInputStream(fis);
@@ -1205,7 +1205,7 @@ public class Seesv implements SeesvCommands {
                     throw exc;
                 }
             }
-            return IO.getInputStream(file);
+            return IO.doMakeInputStream(file,true);
         }
     }
 
@@ -1219,7 +1219,7 @@ public class Seesv implements SeesvCommands {
      *
      * @throws Exception _more_
      */
-    public void header(List<String> files, TextReader ctx, boolean asPoint)
+    public void header(List<IO.Path> files, TextReader ctx, boolean asPoint)
 	throws Exception {
         PrintWriter   writer    = ctx.getWriter();
         List<Integer> widths    = ctx.getWidths();
@@ -1228,7 +1228,7 @@ public class Seesv implements SeesvCommands {
             delimiter = ",";
         }
         List<BufferedReader> readers = new ArrayList<BufferedReader>();
-        for (String file : files) {
+        for (IO.Path file : files) {
             readers.add(
 			new BufferedReader(
 					   new InputStreamReader(makeInputStream(file))));
@@ -1291,14 +1291,14 @@ public class Seesv implements SeesvCommands {
         writer.close();
     }
 
-    public void lastLines(File file, OutputStream os, int lines)
+    public void lastLines(IO.Path file, OutputStream os, int lines)
 	throws Exception {
-	BufferedReader br = new BufferedReader(new InputStreamReader(makeInputStream(file.toString())));
+	BufferedReader br = new BufferedReader(new InputStreamReader(makeInputStream(file)));
 	TextReader textReader = new TextReader(br);
 	//??	textReader.setCleanInput(true);
 	int numLines = textReader.countLines();
 	br.close();
-	br = new BufferedReader(new InputStreamReader(makeInputStream(file.toString())));
+	br = new BufferedReader(new InputStreamReader(makeInputStream(file)));
 	textReader = new TextReader(br);
 	int linesToSkip = numLines-lines;
 	//??	textReader.setCleanInput(true);
@@ -1325,14 +1325,14 @@ public class Seesv implements SeesvCommands {
      *
      *     @throws Exception _more_
      */
-    public void raw(List<String> files, TextReader ctx) throws Exception {
+    public void raw(List<IO.Path> files, TextReader ctx) throws Exception {
         int         numLines    = ctx.getMaxRows();
         PrintWriter writer      = ctx.getWriter();
         String      prepend     = ctx.getPrepend();
         int         chars       = 0;
         int         LINE_LIMIT  = 2000;
         int         CHARS_LIMIT = 3000000;
-        for (String file : files) {
+        for (IO.Path file : files) {
             int                  lineCnt = 0;
             List<BufferedReader> readers = new ArrayList<BufferedReader>();
             if (ctx.getPrepend() != null) {
@@ -5254,7 +5254,7 @@ public class Seesv implements SeesvCommands {
 	defineFunction(CMD_OUTPUT,1,(ctx,args,i) -> {
 		String file  = args.get(++i);
 		if(inputFiles!=null && inputFiles.size()>0) {
-		    File tmp = new File(inputFiles.get(0));
+		    File tmp = new File(inputFiles.get(0).getPath());
 		    file = file.replace("${name}", IOUtil.stripExtension(tmp.getName()));
 		}
 		if(!commandLine) throw new IllegalArgumentException(CMD_OUTPUT+" only enabled for command line usage");
@@ -5406,7 +5406,7 @@ public class Seesv implements SeesvCommands {
      * @return _more_
      * @throws Exception _more_
      */
-    public boolean parseArgs(List<String> args, TextReader ctx,    final List<String> files)
+    public boolean parseArgs(List<String> args, TextReader ctx,    final List<IO.Path> files)
 	throws Exception {
 	this.inputFiles = files;
 	boolean            addFiles      = files.size() == 0;
@@ -5449,25 +5449,24 @@ public class Seesv implements SeesvCommands {
 
 
 	if(filePatternNames.size()>0) {
-	    List<String> tmpFiles = new ArrayList<String>();
+	    List<IO.Path> tmpFiles = new ArrayList<IO.Path>();
 	    if(files.size()>0) {
-		for(String arg: files) {
-		    File  f = new File(arg);
-		    tmpFiles.add(f.getName());
+		for(IO.Path arg: files) {
+		    tmpFiles.add(arg);
 		}
 	    } else  {
 		for (int i = newArgs.size()-1; i>=0;i--) {
 		    String arg = newArgs.get(i);
 		    File  f = new File(arg);
 		    if(f.exists()) {
-			tmpFiles.add(f.getName());
+			tmpFiles.add(new IO.Path(f.getName()));
 			break;
 		    }
 		}
 	    }
-	    for(String file: tmpFiles) {
+	    for(IO.Path file: tmpFiles) {
 		for(int i=0;i<filePatterns.size();i++) {
-		    String value = StringUtil.findPattern(file, ".*"+filePatterns.get(i));
+		    String value = StringUtil.findPattern(file.getPath(), ".*"+filePatterns.get(i));
 		    System.err.println("file:" + file +" pattern:" + filePatterns.get(i) +" " + value);
 		    if(value!=null) {
 			macros.put(filePatternNames.get(i), value);
@@ -5594,7 +5593,7 @@ public class Seesv implements SeesvCommands {
 		    if (debugFiles) {
 			System.err.println("adding file:" + arg);
 		    }
-		    files.add(arg);
+		    files.add(new IO.Path(arg));
 		} else {
 		    //		    System.err.println("no files");
 		    //                    throw new IllegalArgumentException("Unknown arg:" + arg);
