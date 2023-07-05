@@ -4596,6 +4596,21 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+    public String applyPropertyMacros(String s) {
+	StringBuilder sb = new StringBuilder();
+	for(Utils.Macro macro:Utils.splitMacros(s)) {
+	    if(macro.isText()) {
+		sb.append(macro.getText());
+	    } else {
+		String id = macro.getId();
+		String v = getProperty("property." + id,"");
+		sb.append(v);
+	    }
+	}
+	return sb.toString();
+    }
+
+
     private Result processHtmlPage(Request request, InputStream inputStream, boolean decorate) throws Exception {
 	String html = IOUtil.readInputStream(inputStream);
 	html = getPageHandler().applyBaseMacros(html);
