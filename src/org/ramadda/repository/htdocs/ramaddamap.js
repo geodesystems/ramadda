@@ -3441,21 +3441,30 @@ RepositoryMap.prototype = {
 	    console.trace();
         return this.map;
     },
+    setDragPanEnabled:function(enabled) {
+	if(this.dragPanControl) {
+            if (!enabled) 
+		this.dragPanControl.deactivate();
+	    else
+		this.dragPanControl.activate();	    
+        }
+    },
+
+
     initMap:  function(doRegion) {
 	let _this = this;
         this.startTime = Date.now();
         if (this.inited)
             return;
         this.inited = true;
-        if (this.params.enableDragPan) {
-            this.getMap().addControl(new OpenLayers.Control.Navigation({
-                zoomWheelEnabled: this.params.scrollToZoom,
-                dragPanOptions: {
-                    enableKinetic: true
-                }
-            }));
-        }
-
+        this.dragPanControl = new OpenLayers.Control.Navigation({
+            zoomWheelEnabled: this.params.scrollToZoom,
+            dragPanOptions: {
+                enableKinetic: true
+            }
+        });
+        this.getMap().addControl(this.dragPanControl);
+	this.setDragPanEnabled(this.params.enableDragPan);
 	if(this.params.scrollToZoom) {
 	    //	$("#"+this.mapDivId+"_themap").attr('tabindex','1');
 	    const el = document.querySelector("#"+this.mapDivId+"_themap");
