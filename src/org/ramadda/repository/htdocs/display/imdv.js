@@ -1099,7 +1099,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    mapOptions.legendText = args.legendText;
 		    this.clearCommands();
 		    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,style);
-		    mapGlyph.setMapServerUrl(args.url,args.layerName,args.legendUrl,predefined);
+		    mapGlyph.setMapServerUrl(args.url,args.layerName,args.legendUrl,this.jq('predefined').val());
 		    mapGlyph.checkMapServer();
 		    this.addGlyph(mapGlyph);
 		    this.clearMessage2(1000);
