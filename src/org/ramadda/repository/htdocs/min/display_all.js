@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Jul  5 07:11:16 MDT 2023";
+var build_date="RAMADDA build date: Wed Jul  5 12:49:23 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -5635,7 +5635,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return this.getProperty("colorTableSide","bottom") == "bottom" || this.getProperty("colorTableSide","bottom") == "top";
 	},
         displayColorTable: function(ct, domId, min, max, args) {
-	    console.log(min,max);
 	    //Check if it is a date
 	    if(min && min.getTime)  {min  =this.formatDate(min);}
 	    if(max && max.getTime)  {max  =this.formatDate(max);}	    
