@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2023 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util;
@@ -96,7 +96,7 @@ public class IO {
      * _more_
      *
      * @param file _more_
-      * @return _more_
+     * @return _more_
      */
     public static File getCacheDir() {
         if (cacheDir == null) {
@@ -113,7 +113,7 @@ public class IO {
     /**
      *
      * @param filename _more_
-      * @return _more_
+     * @return _more_
      */
     public static File getCacheFile(String filename) {
         if (cacheDir == null) {
@@ -225,7 +225,7 @@ public class IO {
      * @throws FileNotFoundException _more_
      */
     public static InputStream getInputStream(String filename)
-            throws FileNotFoundException, Exception {
+	throws FileNotFoundException, Exception {
         return getInputStream(filename, IO.class);
     }
 
@@ -241,7 +241,7 @@ public class IO {
      */
     public static InputStream getInputStream(String filename,
                                              boolean convertZipIfNeeded)
-            throws FileNotFoundException, Exception {
+	throws FileNotFoundException, Exception {
         return getInputStream(filename, IO.class, convertZipIfNeeded);
     }
 
@@ -260,7 +260,7 @@ public class IO {
      * @throws FileNotFoundException _more_
      */
     public static InputStream getInputStream(String filename, Class origin)
-            throws FileNotFoundException, Exception {
+	throws FileNotFoundException, Exception {
         checkFile(filename);
         //Check for malformed URL
         if (filename.matches("(?i)^https:/[^/]+.*")) {
@@ -295,7 +295,7 @@ public class IO {
      */
     public static InputStream getInputStream(String filename, Class origin,
                                              boolean convertZipIfNeeded)
-            throws FileNotFoundException, Exception {
+	throws FileNotFoundException, Exception {
         InputStream inputStream = getInputStream(filename, origin);
         if (convertZipIfNeeded) {
             return convertInputStream(filename, inputStream);
@@ -316,7 +316,7 @@ public class IO {
      */
     public static String readInputStream(InputStream is) throws IOException {
         return org.apache.commons.io.IOUtils.toString(is,
-                StandardCharsets.UTF_8);
+						      StandardCharsets.UTF_8);
         //        return IOUtil.readContents(is);
     }
 
@@ -331,7 +331,7 @@ public class IO {
      * @throws Exception _more_
      */
     public static String readChannel(ReadableByteChannel channel)
-            throws Exception {
+	throws Exception {
         ByteArrayOutputStream bos       = new ByteArrayOutputStream();
         ByteBuffer            buffer    = ByteBuffer.allocate(32000);
         int                   bytesRead = 0;
@@ -405,10 +405,15 @@ public class IO {
      * @throws IOException _more_
      */
     public static InputStream doMakeInputStream(String filename,
-            boolean buffered)
-            throws IOException {
-        return doMakeInputStream(filename, buffered, 0);
+						boolean buffered)
+	throws IOException {
+        return doMakeInputStream(new Path(filename), buffered, 0);
     }
+
+    public static InputStream doMakeInputStream(Path path,boolean buffered)
+	throws IOException {
+        return doMakeInputStream(path, buffered, 0);
+    }    
 
 
     /**
@@ -422,50 +427,66 @@ public class IO {
      *
      * @throws IOException _more_
      */
-    private static InputStream doMakeInputStream(String filename,
-            boolean buffered, int tries)
-            throws IOException {
-
-        checkFile(filename);
+    private static InputStream doMakeInputStream(Path path, boolean buffered, int tries)
+	throws IOException {
+        checkFile(path.getPath());
         int         size = 8000;
         InputStream is   = null;
-        if (new File(filename).exists()) {
-            is = new FileInputStream(filename);
+        if (new File(path.getPath()).exists()) {
+            is = new FileInputStream(path.getPath());
         } else {
+	    String surl = path.getPath();
             //Try it as a url
-            if (filename.startsWith("//")) {
-                filename = "https:" + filename;
+            if (surl.startsWith("//")) {
+                surl = "https:" + surl;
             }
-            URL           url              = new URL(filename);
+            URL           url              = new URL(surl);
             URLConnection connection       = null;
             boolean       handlingRedirect = false;
-
             try {
                 //              System.err.println ("URL: " + url);
                 connection = url.openConnection();
                 connection.addRequestProperty("Accept", "*/*");
                 connection.addRequestProperty("Host", url.getHost());
                 connection.addRequestProperty("User-Agent", "ramadda");
+		if(path.requestArgs!=null) {
+		    for(int i=0;i<path.requestArgs.length;i+=2) {
+			connection.addRequestProperty(path.requestArgs[i],path.requestArgs[i+1]);
+		    }			
+		}
                 if (connection instanceof HttpURLConnection) {
                     HttpURLConnection huc = (HttpURLConnection) connection;
+		    //System.err.println("IO.doMakeInputStream: path=" + path);
+		    if(path.isMethodPost())  {
+			huc.setRequestMethod(HTTP_METHOD_POST);
+		    }
+
+		    if(path.body!=null) {
+			huc.setDoOutput(true);
+			huc.setRequestProperty("Content-Length",
+						  Integer.toString(path.body.length()));
+			huc.getOutputStream().write(path.body.getBytes());
+		    }
+
+
                     int               response = huc.getResponseCode();
                     //Check for redirect
                     if ((response == HttpURLConnection
-                            .HTTP_MOVED_TEMP) || (response == HttpURLConnection
-                            .HTTP_MOVED_PERM) || (response == HttpURLConnection
-                            .HTTP_SEE_OTHER)) {
+			 .HTTP_MOVED_TEMP) || (response == HttpURLConnection
+					       .HTTP_MOVED_PERM) || (response == HttpURLConnection
+								     .HTTP_SEE_OTHER)) {
                         String newUrl = connection.getHeaderField("Location");
                         System.err.println("redirect from:" + url);
                         System.err.println("redirect to:" + newUrl);
                         //Don't follow too many redirects
                         if (tries > 10) {
                             throw new IllegalArgumentException(
-                                "Too many nested URL fetches:" + filename);
+							       "Too many nested URL fetches:" + path);
                         }
                         //call this method recursively with the new URL
                         handlingRedirect = true;
 
-                        return doMakeInputStream(newUrl, buffered, tries + 1);
+                        return doMakeInputStream(new IO.Path(path,newUrl), buffered, tries + 1);
                     }
                 }
                 //              System.err.println ("OK: " + url);
@@ -474,10 +495,11 @@ public class IO {
                 if (handlingRedirect) {
                     throw exc;
                 }
-                System.err.println("Error URL: " + filename);
+                System.err.println("Error URL: " + path);
+		exc.printStackTrace();
                 String msg = "An error has occurred";
                 if ((connection != null)
-                        && (connection instanceof HttpURLConnection)) {
+		    && (connection instanceof HttpURLConnection)) {
                     HttpURLConnection huc  = (HttpURLConnection) connection;
                     int               code = huc.getResponseCode();
                     if (code == 403) {
@@ -486,10 +508,16 @@ public class IO {
                         msg = "Response code: " + code + " ";
                         try {
                             InputStream err = huc.getErrorStream();
-                            String response = new String(readBytes(err,
-                                                  10000));
-                            msg += " Message: " + response;
-                        } catch (Exception ignoreIt) {}
+			    if(err==null) {
+				System.err.println("Error: errorInputStream is null");
+			    }  else {
+				String response = new String(readBytes(err,
+								       10000));
+				msg += " Message: " + response;
+			    }
+                        } catch (Exception ignoreIt) {
+			    System.err.println("Error reading error response:" + ignoreIt);
+			}
                     }
                 }
 
@@ -498,7 +526,7 @@ public class IO {
         }
 
         try {
-            is = convertInputStream(filename, is);
+            is = convertInputStream(path.getPath(), is);
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
@@ -530,8 +558,8 @@ public class IO {
      * @throws Exception _more_
      */
     public static InputStream convertInputStream(String filename,
-            InputStream is)
-            throws Exception {
+						 InputStream is)
+	throws Exception {
         if (filename.toLowerCase().endsWith(".gz")) {
             is = new GZIPInputStream(is);
         }
@@ -569,7 +597,7 @@ public class IO {
      * @throws IOException _more_
      */
     public static byte[] readBytes(InputStream is, int maxSize)
-            throws IOException {
+	throws IOException {
         int    totalRead = 0;
         byte[] content   = new byte[100000];
         try {
@@ -660,7 +688,7 @@ public class IO {
      * @throws Exception _more_
      */
     public static boolean writeFile(URL url, OutputStream os)
-            throws Exception {
+	throws Exception {
         if (url.getProtocol().equals("ftp")) {
             FTPClient ftpClient = null;
             try {
@@ -678,7 +706,7 @@ public class IO {
             }
         } else {
             InputStream is = Utils.getInputStream(url.toString(),
-                                 Utils.class);
+						  Utils.class);
             IOUtil.writeTo(is, os);
 
             return true;
@@ -712,7 +740,7 @@ public class IO {
      * @throws Exception _more_
      */
     public static String readContents(String contentName, Class clazz)
-            throws Exception {
+	throws Exception {
         checkFile(contentName);
         boolean isUrl = false;
         try {
@@ -752,7 +780,7 @@ public class IO {
      * @throws Exception _more_
      */
     public static String readContents(String contentName, String dflt)
-            throws Exception {
+	throws Exception {
         checkFile(contentName);
         boolean isUrl = false;
         try {
@@ -835,7 +863,7 @@ public class IO {
      * @throws Exception _more_
      */
     private static InputStream getInputStream(URL url, int tries)
-            throws Exception {
+	throws Exception {
         checkFile(url.toString());
         URLConnection connection = url.openConnection();
         connection.setRequestProperty("User-Agent", "ramadda");
@@ -844,14 +872,14 @@ public class IO {
             HttpURLConnection huc      = (HttpURLConnection) connection;
             int               response = huc.getResponseCode();
             if ((response == HttpURLConnection.HTTP_MOVED_TEMP)
-                    || (response == HttpURLConnection.HTTP_MOVED_PERM)
-                    || (response == HttpURLConnection.HTTP_SEE_OTHER)) {
+		|| (response == HttpURLConnection.HTTP_MOVED_PERM)
+		|| (response == HttpURLConnection.HTTP_SEE_OTHER)) {
                 String newUrl = connection.getHeaderField("Location");
                 //                System.err.println(newUrl);
                 //Don't follow too many redirects
                 if (tries > 10) {
                     throw new IllegalArgumentException(
-                        "Too many nested URL fetches:" + url);
+						       "Too many nested URL fetches:" + url);
                 }
 
                 //call this method recursively with the new URL
@@ -888,7 +916,7 @@ public class IO {
      * @throws Exception _more_
      */
     public static String doPost(URL url, String body, String... args)
-            throws Exception {
+	throws Exception {
         return doHttpRequest(HTTP_METHOD_POST, url, body, args);
     }
 
@@ -906,7 +934,7 @@ public class IO {
      */
     public static String doHttpRequest(String action, URL url, String body,
                                        String... args)
-            throws Exception {
+	throws Exception {
         //        URL url = new URL(request); 
         checkFile(url);
         HttpURLConnection connection =
@@ -931,9 +959,9 @@ public class IO {
         }
         try {
             return readString(
-                new BufferedReader(
-                    new InputStreamReader(
-                        connection.getInputStream(), "UTF-8")));
+			      new BufferedReader(
+						 new InputStreamReader(
+								       connection.getInputStream(), "UTF-8")));
         } catch (Exception exc) {
             System.err.println("IO: error doing http request:" + action
                                + "\nURL:" + url + "\nreturn code:"
@@ -961,8 +989,8 @@ public class IO {
     public static String readError(HttpURLConnection conn) {
         try {
             return readString(
-                new BufferedReader(
-                    new InputStreamReader(conn.getErrorStream(), "UTF-8")));
+			      new BufferedReader(
+						 new InputStreamReader(conn.getErrorStream(), "UTF-8")));
 
         } catch (Exception exc) {
             return "No error message";
@@ -1015,29 +1043,29 @@ public class IO {
      *
      * @param url _more_
      * @param args _more_
-      * @return _more_
+     * @return _more_
      *
      * @throws Exception _more_
      */
     public static Result doGetResult(URL url, String... args)
-            throws Exception {
+	throws Exception {
 	return getHttpResult(HTTP_METHOD_GET,url,null, args);
     }
 
 
     public static Result doPostResult(URL url, String body, String... args)
-            throws Exception {
+	throws Exception {
 	return getHttpResult(HTTP_METHOD_POST,url,body, args);
     }
     
     public static Result getHttpResult(String type, URL url, String body, String... args)
-            throws Exception {	
+	throws Exception {	
 	return getHttpResult(new Path(url.toString(),type,body,args));
     }
 
 
     public static Result getHttpResult(Path path)
-            throws Exception {	
+	throws Exception {	
 	URL url = new URL(path.getPath());
 
         checkFile(url);
@@ -1057,15 +1085,16 @@ public class IO {
 	    }
 	}
         if (path.body != null) {
+	    connection.setDoOutput(true);
             connection.setRequestProperty("Content-Length",
                                           Integer.toString(path.body.length()));
             connection.getOutputStream().write(path.body.getBytes("UTF-8"));
         }
         try {
             BufferedReader in = new BufferedReader(
-                                    new InputStreamReader(
-                                        connection.getInputStream(),
-                                        "UTF-8"));
+						   new InputStreamReader(
+									 connection.getInputStream(),
+									 "UTF-8"));
 
             StringBuilder sb = new StringBuilder();
             String        line;
@@ -1244,7 +1273,7 @@ public class IO {
      * @throws Exception _more_
      */
     public static Result getInputStreamFromGet(URL url, String... args)
-            throws Exception {
+	throws Exception {
         checkFile(url);
 
         HttpURLConnection connection =
@@ -1438,15 +1467,15 @@ public class IO {
      *
      * @throws Exception On badness
      */
-    public static void concat(List<String> files, OutputStream out)
-            throws Exception {
+    public static void concat(List<IO.Path> files, OutputStream out)
+	throws Exception {
         PrintWriter          writer    = new PrintWriter(out);
         String               delimiter = ",";
         List<BufferedReader> readers   = new ArrayList<BufferedReader>();
-        for (String file : files) {
+        for (IO.Path file : files) {
             readers.add(
-                new BufferedReader(
-                    new InputStreamReader(new FileInputStream(file))));
+			new BufferedReader(
+					   new InputStreamReader(new FileInputStream(file.getPath()))));
         }
         while (true) {
             int nullCnt = 0;
@@ -1482,15 +1511,15 @@ public class IO {
      *
      * @throws Exception On badness
      */
-    public static void append(List<String> files, OutputStream out,
+    public static void append(List<IO.Path> files, OutputStream out,
                               int rowSkip)
-            throws Exception {
+	throws Exception {
         PrintWriter writer    = new PrintWriter(out);
         String      delimiter = ",";
         for (int i = 0; i < files.size(); i++) {
             BufferedReader br = new BufferedReader(
-                                    new InputStreamReader(
-                                        new FileInputStream(files.get(i))));
+						   new InputStreamReader(
+									 new FileInputStream(files.get(i).getPath())));
             int skip = rowSkip;
             while (true) {
                 String line = br.readLine();
@@ -1620,59 +1649,59 @@ public class IO {
         final PrintStream oldErr = System.err;
         final PrintStream oldOut = System.out;
         System.setErr(new PrintStream(oldOut) {
-            @Override
-            public void println(Object x) {
-                oldErr.println("**************   ERROR\n"
-                               + Utils.getStack(10) + "\n************");
-                oldErr.println(x);
-            }
-            @Override
-            public void print(Object x) {
-                oldErr.println("**************   ERROR\n"
-                               + Utils.getStack(10) + "\n************");
-                oldErr.print(x);
-            }
-            @Override
-            public void println(boolean x) {
-                oldErr.println("**************   ERROR\n"
-                               + Utils.getStack(10) + "\n************");
-                oldErr.println(x);
-            }
-            @Override
-            public void print(boolean x) {
-                oldErr.println("**************   ERROR\n"
-                               + Utils.getStack(10) + "\n************");
-                oldErr.print(x);
-            }
+		@Override
+		public void println(Object x) {
+		    oldErr.println("**************   ERROR\n"
+				   + Utils.getStack(10) + "\n************");
+		    oldErr.println(x);
+		}
+		@Override
+		public void print(Object x) {
+		    oldErr.println("**************   ERROR\n"
+				   + Utils.getStack(10) + "\n************");
+		    oldErr.print(x);
+		}
+		@Override
+		public void println(boolean x) {
+		    oldErr.println("**************   ERROR\n"
+				   + Utils.getStack(10) + "\n************");
+		    oldErr.println(x);
+		}
+		@Override
+		public void print(boolean x) {
+		    oldErr.println("**************   ERROR\n"
+				   + Utils.getStack(10) + "\n************");
+		    oldErr.print(x);
+		}
 
-            @Override
-            public void println(String x) {
-                oldErr.println("**************   ERROR\n"
-                               + Utils.getStack(10) + "\n************");
-                oldErr.println(x);
-            }
-            @Override
-            public void print(String x) {
-                oldErr.println("**************   ERROR\n"
-                               + Utils.getStack(10) + "\n************");
-                oldErr.print(x);
-            }
-            @Override
-            public void println(int x) {
-                oldErr.println("**************   ERROR\n"
-                               + Utils.getStack(10) + "\n************");
-                oldErr.println(x);
-            }
-            @Override
-            public void print(int x) {
-                oldErr.println("**************   ERROR\n"
-                               + Utils.getStack(10) + "\n************");
-                oldErr.print(x);
-            }
+		@Override
+		public void println(String x) {
+		    oldErr.println("**************   ERROR\n"
+				   + Utils.getStack(10) + "\n************");
+		    oldErr.println(x);
+		}
+		@Override
+		public void print(String x) {
+		    oldErr.println("**************   ERROR\n"
+				   + Utils.getStack(10) + "\n************");
+		    oldErr.print(x);
+		}
+		@Override
+		public void println(int x) {
+		    oldErr.println("**************   ERROR\n"
+				   + Utils.getStack(10) + "\n************");
+		    oldErr.println(x);
+		}
+		@Override
+		public void print(int x) {
+		    oldErr.println("**************   ERROR\n"
+				   + Utils.getStack(10) + "\n************");
+		    oldErr.print(x);
+		}
 
 
 
-        });
+	    });
     }
 
 
@@ -1693,20 +1722,20 @@ public class IO {
         final PrintStream oldErr = System.err;
         final PrintStream oldOut = System.out;
         System.setOut(new PrintStream(oldErr) {
-            @Override
-            public void print(Object x) {
-                oldOut.print("**************   OUT\n" + Utils.getStack(10)
-                             + "\n************");
-                oldOut.print(x);
-            }
+		@Override
+		public void print(Object x) {
+		    oldOut.print("**************   OUT\n" + Utils.getStack(10)
+				 + "\n************");
+		    oldOut.print(x);
+		}
 
-            @Override
-            public void println(Object x) {
-                oldOut.println("**************   OUT\n" + Utils.getStack(10)
-                               + "\n************");
-                oldOut.println(x);
-            }
-        });
+		@Override
+		public void println(Object x) {
+		    oldOut.println("**************   OUT\n" + Utils.getStack(10)
+				   + "\n************");
+		    oldOut.println(x);
+		}
+	    });
     }
 
 
@@ -1809,32 +1838,32 @@ public class IO {
             tmp.add(new Object[] { file, v1 });
         }
         Comparator comp = new Comparator() {
-            public int compare(Object o1, Object o2) {
-                Object[] t1     = (Object[]) o1;
-                Object[] t2     = (Object[]) o2;
-                double   v1     = (double) t1[1];
-                double   v2     = (double) t2[1];
-                int      result = (v1 < v2)
-                                  ? -1
-                                  : (v1 == v2)
-                                    ? 0
-                                    : 1;
-                if (descending) {
-                    if (result >= 1) {
-                        return -1;
-                    } else if (result <= -1) {
-                        return 1;
-                    }
+		public int compare(Object o1, Object o2) {
+		    Object[] t1     = (Object[]) o1;
+		    Object[] t2     = (Object[]) o2;
+		    double   v1     = (double) t1[1];
+		    double   v2     = (double) t2[1];
+		    int      result = (v1 < v2)
+			? -1
+			: (v1 == v2)
+			? 0
+			: 1;
+		    if (descending) {
+			if (result >= 1) {
+			    return -1;
+			} else if (result <= -1) {
+			    return 1;
+			}
 
-                    return 0;
-                }
+			return 0;
+		    }
 
-                return result;
-            }
-            public boolean equals(Object obj) {
-                return obj == this;
-            }
-        };
+		    return result;
+		}
+		public boolean equals(Object obj) {
+		    return obj == this;
+		}
+	    };
         Object[] array = tmp.toArray();
         Arrays.sort(array, comp);
         List<File> result = new ArrayList<File>();
@@ -1851,7 +1880,7 @@ public class IO {
      *
      * @param fileOrUrl _more_
      * @param suffix _more_
-      * @return _more_
+     * @return _more_
      */
     public static boolean hasSuffix(String fileOrUrl, String suffix) {
         fileOrUrl = fileOrUrl.toLowerCase();
@@ -1925,12 +1954,6 @@ public class IO {
      */
     public static void main(String[] args) throws Exception {
 	if(true) {
-	    String body="{\"id\": \"64a36ea7145ac\"}";
-	    System.out.println(doPostResult(new URL("https://www.spotternetwork.org/positions"),body,"Content-Type","application/json"));
-	    return;
-	}	    
-
-	if(true) {
 	    //	    args = new String[]{"Authorization"," Bearer openai key"};
 	    List postArgs   =new ArrayList();
 	    //	    Utils.add(postArgs,"audio-file",new File("/Users/jeffmc/test.webm"));
@@ -1959,42 +1982,42 @@ public class IO {
 
 
         ucar.unidata.util.Misc.run(new Runnable() {
-            public void run() {
-                try {
-                    PrintWriter pw = new PrintWriter(pos);
-                    for (int i = 0; i < 10; i++) {
-                        pw.println("LINE:" + i);
-                        pw.flush();
-                        ucar.unidata.util.Misc.sleep(500);
-                    }
-                    System.err.println("done writing");
-                    pos.close();
-                } catch (Exception exc) {
-                    System.err.println("write err:" + exc);
-                    exc.printStackTrace();
-                }
-            }
-        });
+		public void run() {
+		    try {
+			PrintWriter pw = new PrintWriter(pos);
+			for (int i = 0; i < 10; i++) {
+			    pw.println("LINE:" + i);
+			    pw.flush();
+			    ucar.unidata.util.Misc.sleep(500);
+			}
+			System.err.println("done writing");
+			pos.close();
+		    } catch (Exception exc) {
+			System.err.println("write err:" + exc);
+			exc.printStackTrace();
+		    }
+		}
+	    });
 
         ucar.unidata.util.Misc.run(new Runnable() {
-            public void run() {
-                try {
-                    InputStreamReader isr =
-                        new InputStreamReader(pis,
-                            java.nio.charset.StandardCharsets.UTF_8);
-                    BufferedReader reader = new BufferedReader(isr);
-                    String         line;
-                    while ((line = reader.readLine()) != null) {
-                        System.err.println("read:" + line);
-                    }
-                    running[0] = false;
-                    System.err.println("read: done");
-                } catch (Exception exc) {
-                    System.err.println("write err:" + exc);
-                    exc.printStackTrace();
-                }
-            }
-        });
+		public void run() {
+		    try {
+			InputStreamReader isr =
+			    new InputStreamReader(pis,
+						  java.nio.charset.StandardCharsets.UTF_8);
+			BufferedReader reader = new BufferedReader(isr);
+			String         line;
+			while ((line = reader.readLine()) != null) {
+			    System.err.println("read:" + line);
+			}
+			running[0] = false;
+			System.err.println("read: done");
+		    } catch (Exception exc) {
+			System.err.println("write err:" + exc);
+			exc.printStackTrace();
+		    }
+		}
+	    });
 
 
         while (running[0]) {
@@ -2006,7 +2029,6 @@ public class IO {
             String url =
                 "https://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Global_onedeg/Best?var=Temperature_surface&var=Visibility_surface&var=Water_equivalent_of_accumulated_snow_depth_surface&var=Wind_speed_gust_surface&latitude=%24%7Blatitude%7D&longitude=%24%7Blongitude%7D&time_start=2021-03-30&time_end=2021-04-09&vertCoord=&accept=csv";
             doMakeInputStream(url, false);
-
             return;
         }
 
@@ -2024,9 +2046,18 @@ public class IO {
 	private String method;
 	private String body;
 	private String[] requestArgs;
+
+	public Path(Path path) {
+	    this(path.method, path.body,path.requestArgs);
+	}
+
+	public Path(Path path, String newPath) {
+	    this(path);
+	    this.path = newPath;
+	}
+
 	public Path(String path) {
 	    this.path = path;
-	    this.method = HTTP_METHOD_GET;
 	}
 
 	public Path(String path,String method,String[] args) {
@@ -2040,13 +2071,99 @@ public class IO {
 	    this.body = body;
 	}
 
+	public boolean matchesSuffix(String ...patterns) {
+	    for(String pattern: patterns) {
+		if(getPath().toLowerCase().endsWith(pattern)) return true;
+	    }
+	    return false;
+	}
+
+	public boolean isMethodPost() {
+	    if(method==null) return false;
+	    return method.equals(HTTP_METHOD_POST);
+	}
+
+	public boolean isFile() {
+	    return new File(getPath()).exists();
+	}
+
 	public String toString() {
+	    return path + (method!=null?" method:" + method:"") + (body!=null?" body:" + body:"");
+	}
+
+	/**
+	   Set the Path property.
+
+	   @param value The new value for Path
+	**/
+	public void setPath (String value) {
+	    path = value;
+	}
+
+	/**
+	   Get the Path property.
+
+	   @return The Path
+	**/
+	public String getPath () {
 	    return path;
 	}
 
-	public String getPath() {
-	    return path;
+	/**
+	   Set the Method property.
+
+	   @param value The new value for Method
+	**/
+	public void setMethod (String value) {
+	    method = value;
 	}
+
+	/**
+	   Get the Method property.
+
+	   @return The Method
+	**/
+	public String getMethod () {
+	    return method;
+	}
+
+	/**
+	   Set the Body property.
+
+	   @param value The new value for Body
+	**/
+	public void setBody (String value) {
+	    body = value;
+	}
+
+	/**
+	   Get the Body property.
+
+	   @return The Body
+	**/
+	public String getBody () {
+	    return body;
+	}
+	/**
+	   Set the RequestArgs property.
+
+	   @param value The new value for RequestArgs
+	**/
+	public void setRequestArgs (String[] value) {
+	    requestArgs = value;
+	}
+
+	/**
+	   Get the RequestArgs property.
+
+	   @return The RequestArgs
+	**/
+	public String[] getRequestArgs () {
+	    return requestArgs;
+	}
+
+
+
 
     }
 
