@@ -1,5 +1,3 @@
-
-
 index.html
 >releasenotes.html
 -repository.dummy_properties
@@ -52,6 +50,7 @@ index.html
 >>gpt.html
 >>readonly.html
 >>plugins.html
+>>maps.html
 >>services.html
 >>templates.html
 >>admin.html
