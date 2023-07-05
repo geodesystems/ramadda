@@ -468,8 +468,26 @@ Add an output that shows up in the list of tools/services for an entry
     </type>
 
 
-</handler>
+    <type
+       searchable="false" browsable="false"
+       name="Request Information"
+       id="requestinformation"
+       >
+      <help>
+<![CDATA[
+Specify the type and optional body of a URL request for data
+]]>
+</help>
+      <element  name="method" label="Method" datatype="enumeration" 
+		values="GET,POST" default="GET"/>
+      <element name="Request Args" 	 rows="5" suffix="One per line. Form:&lt;br&gt;key=value"/>      
+      <element name="Body" 	 rows="10" suffix="To include private API keys use the macro ${foo} and set a RAMADDA property to&lt;br&gt;property.foo=API_KEY"/>
+    </type>
 
+
+
+
+</handler>
 
 
 
