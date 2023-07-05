@@ -12,7 +12,7 @@ function makeWxLayers() {
 	{name:'GOES Infrared',maxZoom:maxZoom,   id:'goes-ir-4km-900913', alias:'goes-ir'},
 	{name:'GOES Water Vapor', maxZoom:maxZoom,id:'goes-wv-4km-900913', alias:'goes-wv'},
 	{name:'GOES Visible', maxZoom:maxZoom,id:'goes-vis-1km-900913', alias:'goes-visible'},
-	{name:'NWS Radar', maxZoom:maxZoom,id:'nexrad-n0q-900913',alias:'nexrad'},
+	{name:'NWS Radar', maxZoom:11,id:'nexrad-n0q-900913',alias:'nexrad'},
 	{name:'24 hr precip', maxZoom:maxZoom,id:'q2-p24h-900913',alias:'precipitation'}];
 
     //This is a  bit more complex than most layer specifications as it calculates the resolution
