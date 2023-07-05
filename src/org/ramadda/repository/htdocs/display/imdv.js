@@ -3299,8 +3299,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.getMap().removeMarker(this.currentLocationMarker);
 		this.currentLocationMarker=null;
 	    }
-            if (!navigator.geolocation) return;
-	    if(!this.getMapProperty('addCurrentLocationMarker',false)) return;
+	    if(!this.getMapProperty('addCurrentLocationMarker',false)) {
+		return;
+	    }
+            if (!navigator.geolocation) {
+		console.log('no navigator.geolocation available');
+		return;
+	    }
 	    let geoOptions = {
 		enableHighAccuracy: true, 
 		maximumAge        : 30000, 
