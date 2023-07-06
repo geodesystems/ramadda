@@ -43,6 +43,39 @@ Any markdown
 </pre>
 
 
++row
++col-6
+<pre>
+```markdown
+Example markdown text from [https://markdown-it.github.io/](https://markdown-it.github.io/)
+# h1 Heading 
+## h2 Heading
+### h3 Heading
+#### h4 Heading
+##### h5 Heading
+###### h6 Heading
+
+## Lists
+Unordered
+
++ Create a list by starting a line with `+`, `-`, or `*`
++ Sub-lists are made by indenting 2 spaces:
+  - Marker character change forces new list start:
+    * Ac tristique libero volutpat at
+    + Facilisis in pretium nisl aliquet
+    - Nulla volutpat aliquam velit
++ Very easy!
+
+Ordered
+
+1. Lorem ipsum dolor sit amet
+2. Consectetur adipiscing elit
+3. Integer molestie lorem at massa
+```
+</pre>
+
+-col
++col-6
 
 ```markdown
 Example markdown text from [https://markdown-it.github.io/](https://markdown-it.github.io/)
@@ -71,6 +104,9 @@ Ordered
 3. Integer molestie lorem at massa
 ```
 
+
+-col
+-row
 
 
 :heading Media
@@ -133,6 +169,8 @@ To embed code do the following:
 </pre>
 Currently only javascript is formatted.
 For example:
++row
++col-6
 <pre>
 ```javascript
 let l = []; 
@@ -142,17 +180,19 @@ for(let i=0;&lt;l.length;i++) {
 var x = {}
 ```
 </pre>
-
-e.g.:
+-col
++col-6
 
 ```javascript
 let l = []; 
 for(let i=0;&lt;l.length;i++) {
-    console.log(l\[i\]);
+    console.log(l[i]);
 }
 var x = {}
 ```
 
+-col
+-row
 
 :heading LaTeX
 To embed LaTeXd do:
@@ -248,11 +288,11 @@ Gives:
   "width": 360,
   "height":200,
   "data": {
-    "values": \[
+    "values": [
       {"a": "A","b": 28}, {"a": "B","b": 55}, {"a": "C","b": 43},
       {"a": "D","b": 91}, {"a": "E","b": 81}, {"a": "F","b": 53},
       {"a": "G","b": 19}, {"a": "H","b": 87}, {"a": "I","b": 52}
-    \]
+   ]
   },
   "mark": "bar",
   "encoding": {
