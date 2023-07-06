@@ -1,0 +1,238 @@
+[ht::head {Wiki Embeds} ]
+<%nochildlist%>
+
+:navtop
+
+:heading Markdown
+You can embed Markdown with:
+[wiki::text {
+```markdown
+Any markdown
+```
+}]
+
+
+[wiki::raw {
+```markdown
+Example markdown text from [https://markdown-it.github.io/](https://markdown-it.github.io/)
+# h1 Heading 
+## h2 Heading
+### h3 Heading
+#### h4 Heading
+##### h5 Heading
+###### h6 Heading
+
+## Lists
+Unordered
+
++ Create a list by starting a line with `+`, `-`, or `*`
++ Sub-lists are made by indenting 2 spaces:
+  - Marker character change forces new list start:
+    * Ac tristique libero volutpat at
+    + Facilisis in pretium nisl aliquet
+    - Nulla volutpat aliquam velit
++ Very easy!
+
+Ordered
+
+1. Lorem ipsum dolor sit amet
+2. Consectetur adipiscing elit
+3. Integer molestie lorem at massa
+```
+}]
+
+
+:heading Media
+You can embed Twitter, YouTube, Vimeo and other media as:
+[wiki::text {
+@(https://twitter.com/Interior/status/463440424141459456)
+@(https://vimeo.com/515404225k)
+@(https://www.youtube.com/watch?v=BGaCjM2hal4)
+@(https://www.facebook.com/don.murray.121/posts/10219628323639292)
+}]
+
+e.g.:
+@(https://twitter.com/Interior/status/463440424141459456)
+
+:br
+
+Set dimensions on videos:
+[wiki::text {
+@(https://vimeo.com/515404225 width=300 height=200)
+
+@(https://www.youtube.com/watch?v=BGaCjM2hal4 width=300 height=200)
+}]
+
+
+Add a style to the embed:
+[wiki::text {
+ @(https://vimeo.com/515404225 width=300 height=200 link=true label="Click here" style="display:block;background:red;margin:20px;")
+}]
+
+Add a link to the embed:
+[wiki::text {
+  @(https://www.youtube.com/watch?v=BGaCjM2hal4 width=300 height=200 start=600  link=true label="Click here")
+}]
+
+
+:heading Github Checkins
+Embed  Github checkins with:
+[wiki::text {
+@(github user=some_user_name)  
+
+#or a repository
+@(github owner=repository_owner repository=repository)
+
+#don't show avatar image
+@(github owner=repository_owner repository=repository decorate=false)
+}]
+
+
+
+
+
+
+:heading Embedding Javascript
+To embed code do the following:
+[wiki::text {
+ ```&lt;option language&gt;
+ code
+ here
+```
+}]
+Currently only javascript is formatted.
+For example:
+[wiki::text {
+```javascript
+let l = []; 
+for(let i=0;&lt;l.length;i++) {
+    console.log(l\[i\]);
+}
+var x = {}
+```
+}]
+
+e.g.:
+[wiki::raw {
+```javascript
+let l = []; 
+for(let i=0;&lt;l.length;i++) {
+    console.log(l\[i\]);
+}
+var x = {}
+```
+}]
+
+:heading LaTeX
+To embed LaTeXd do:
+[wiki::text {
+```latex
+\left[\begin{array}{c}
+\mathbf{x}_{t,i}\\
+\mathbf{v}_{t,i}\\
+\theta_{t,i}\\
+\omega_{t,i}
+\end{array}\right]  =  \left[\begin{array}{c}
+\mathbf{x}_{t-1,i}\\
+\mathbf{v}_{t-1,i}\\
+\theta_{t-1,i}\\
+\omega_{t-1,i}
+\end{array}\right]+\Delta\left[\begin{array}{c}
+\mathbf{v}_{t-1,i}\\
+\left(T_{t,i}+\epsilon_{T}\right)cos\left(\theta_{t-1,i}\right)-\rho_{\mathbf{v}}\left\Vert \mathbf{v}_{t-1,i}\right\Vert ^{2}\frac{\mathbf{v}_{t-1,i}}{\left\Vert \mathbf{v}_{t-1,i}\right\Vert }\\
+\left(T_{t,i}+\epsilon_{T}\right)sin\left(\theta_{t-1,i}\right)-\rho_{\mathbf{v}}\left\Vert \mathbf{v}_{t-1,i}\right\Vert ^{2}\frac{\mathbf{v}_{t-1,i}}{\left\Vert \mathbf{v}_{t-1,i}\right\Vert }\\
+\omega_{t-1,i}\\
+Y_{t,i}-\rho_{\omega}\omega_{t-1,i}^{2}+\epsilon_{Y}
+\end{array}\right]
+```
+}]
+
+
+Which gives:
+[wiki::raw {
+```latex
+\left[\begin{array}{c}
+\mathbf{x}_{t,i}\\
+\mathbf{v}_{t,i}\\
+\theta_{t,i}\\
+\omega_{t,i}
+\end{array}\right]  =  \left[\begin{array}{c}
+\mathbf{x}_{t-1,i}\\
+\mathbf{v}_{t-1,i}\\
+\theta_{t-1,i}\\
+\omega_{t-1,i}
+\end{array}\right]+\Delta\left[\begin{array}{c}
+\mathbf{v}_{t-1,i}\\
+\left(T_{t,i}+\epsilon_{T}\right)cos\left(\theta_{t-1,i}\right)-\rho_{\mathbf{v}}\left\Vert \mathbf{v}_{t-1,i}\right\Vert ^{2}\frac{\mathbf{v}_{t-1,i}}{\left\Vert \mathbf{v}_{t-1,i}\right\Vert }\\
+\left(T_{t,i}+\epsilon_{T}\right)sin\left(\theta_{t-1,i}\right)-\rho_{\mathbf{v}}\left\Vert \mathbf{v}_{t-1,i}\right\Vert ^{2}\frac{\mathbf{v}_{t-1,i}}{\left\Vert \mathbf{v}_{t-1,i}\right\Vert }\\
+\omega_{t-1,i}\\
+Y_{t,i}-\rho_{\omega}\omega_{t-1,i}^{2}+\epsilon_{Y}
+\end{array}\right]
+```
+}]
+
+
+:heading Vega Charts
+You can embed charts defined in the vega-lite schema directly into a wiki page.
+More information onv vega-list is available <a href="https://vega.github.io/vega/examples/">here</a>
+
+The format is:
+[wiki::text {
+```vega-lite
+You vega-lite schema here
+```
+}]
+
+e.g.:
+[wiki::text {
+```vega-lite
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+  "description": "A simple bar chart with embedded data. An example vega-lite file.",
+  "width": 360,
+  "height":200,
+  "data": {
+    "values": \[
+      {"a": "A","b": 28}, {"a": "B","b": 55}, {"a": "C","b": 43},
+      {"a": "D","b": 91}, {"a": "E","b": 81}, {"a": "F","b": 53},
+      {"a": "G","b": 19}, {"a": "H","b": 87}, {"a": "I","b": 52}
+    \]
+  },
+  "mark": "bar",
+  "encoding": {
+    "x": {"field": "a", "type": "ordinal"},
+    "y": {"field": "b", "type": "quantitative"}
+  }
+}
+```
+}]
+
+
+Gives:
+[wiki::raw {
+```vega-lite
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+  "description": "A simple bar chart with embedded data. An example vega-lite file.",
+  "width": 360,
+  "height":200,
+  "data": {
+    "values": \[
+      {"a": "A","b": 28}, {"a": "B","b": 55}, {"a": "C","b": 43},
+      {"a": "D","b": 91}, {"a": "E","b": 81}, {"a": "F","b": 53},
+      {"a": "G","b": 19}, {"a": "H","b": 87}, {"a": "I","b": 52}
+    \]
+  },
+  "mark": "bar",
+  "encoding": {
+    "x": {"field": "a", "type": "ordinal"},
+    "y": {"field": "b", "type": "quantitative"}
+  }
+}
+```
+}]
+
+
+
+
+[ht::foot]

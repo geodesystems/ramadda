@@ -1,0 +1,285 @@
+<html>
+<head>
+<title>Wiki Embeds</title>
+  <link rel="stylesheet" type="text/css" href="../default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<div class="ramadda-doc-header">
+<div style='padding-top:12px;margin-bottom:4px;'><a href="../toc.html#wiki/embeds.html"><span title="Table of contents"><i  style='font-size:16pt;'  class="fa fa-list "></i></span></a> &nbsp; <a href="../index.html">RAMADDA User Guide</a>  > <a href="../page_wikifacilities.html">Wiki Facilities</a> </div>
+<table width=100% cellspacing=0 cellpadding=0 >
+<tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikitext.html"><table><td valign=center><td><span title="Previous: Wiki Text"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Wiki Text</td></tr></table></a></div></div></td>
+<td width=50% align=center>
+<div class="ramadda-page-title"><a href="#">Section 6.2: Wiki Embeds</a></div>
+</td>
+<td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikientries.html"><table><tr valign=center><td>Wiki Display of Entries</td><td><span title="Next: Wiki Display of Entries"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+</tr></table>
+</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+.ramadda-lheading {
+    margin-top:15px;
+}
+</style>
+
+<div class="ramadda-doc-contents" style="margin-left:20px;">
+
+
+
+
+:navtop
+
+:heading Markdown
+You can embed Markdown with:
+<pre>
+```markdown
+Any markdown
+```
+</pre>
+
+
+
+```markdown
+Example markdown text from [https://markdown-it.github.io/](https://markdown-it.github.io/)
+# h1 Heading 
+## h2 Heading
+### h3 Heading
+#### h4 Heading
+##### h5 Heading
+###### h6 Heading
+
+## Lists
+Unordered
+
++ Create a list by starting a line with `+`, `-`, or `*`
++ Sub-lists are made by indenting 2 spaces:
+  - Marker character change forces new list start:
+    * Ac tristique libero volutpat at
+    + Facilisis in pretium nisl aliquet
+    - Nulla volutpat aliquam velit
++ Very easy!
+
+Ordered
+
+1. Lorem ipsum dolor sit amet
+2. Consectetur adipiscing elit
+3. Integer molestie lorem at massa
+```
+
+
+
+:heading Media
+You can embed Twitter, YouTube, Vimeo and other media as:
+<pre>
+@(https://twitter.com/Interior/status/463440424141459456)
+@(https://vimeo.com/515404225k)
+@(https://www.youtube.com/watch?v=BGaCjM2hal4)
+@(https://www.facebook.com/don.murray.121/posts/10219628323639292)
+</pre>
+
+e.g.:
+@(https://twitter.com/Interior/status/463440424141459456)
+
+:br
+
+Set dimensions on videos:
+<pre>
+@(https://vimeo.com/515404225 width=300 height=200)
+
+@(https://www.youtube.com/watch?v=BGaCjM2hal4 width=300 height=200)
+</pre>
+
+
+Add a style to the embed:
+<pre>
+ @(https://vimeo.com/515404225 width=300 height=200 link=true label="Click here" style="display:block;background:red;margin:20px;")
+</pre>
+
+Add a link to the embed:
+<pre>
+  @(https://www.youtube.com/watch?v=BGaCjM2hal4 width=300 height=200 start=600  link=true label="Click here")
+</pre>
+
+
+:heading Github Checkins
+Embed  Github checkins with:
+<pre>
+@(github user=some_user_name)  
+
+#or a repository
+@(github owner=repository_owner repository=repository)
+
+#don't show avatar image
+@(github owner=repository_owner repository=repository decorate=false)
+</pre>
+
+
+
+
+
+
+:heading Embedding Javascript
+To embed code do the following:
+<pre>
+ ```&lt;option language&gt;
+ code
+ here
+```
+</pre>
+Currently only javascript is formatted.
+For example:
+<pre>
+```javascript
+let l = []; 
+for(let i=0;&lt;l.length;i++) {
+    console.log(l\[i\]);
+}
+var x = {}
+```
+</pre>
+
+e.g.:
+
+```javascript
+let l = []; 
+for(let i=0;&lt;l.length;i++) {
+    console.log(l\[i\]);
+}
+var x = {}
+```
+
+
+:heading LaTeX
+To embed LaTeXd do:
+<pre>
+```latex
+\left[\begin{array}{c}
+\mathbf{x}_{t,i}\\
+\mathbf{v}_{t,i}\\
+\theta_{t,i}\\
+\omega_{t,i}
+\end{array}\right]  =  \left[\begin{array}{c}
+\mathbf{x}_{t-1,i}\\
+\mathbf{v}_{t-1,i}\\
+\theta_{t-1,i}\\
+\omega_{t-1,i}
+\end{array}\right]+\Delta\left[\begin{array}{c}
+\mathbf{v}_{t-1,i}\\
+\left(T_{t,i}+\epsilon_{T}\right)cos\left(\theta_{t-1,i}\right)-\rho_{\mathbf{v}}\left\Vert \mathbf{v}_{t-1,i}\right\Vert ^{2}\frac{\mathbf{v}_{t-1,i}}{\left\Vert \mathbf{v}_{t-1,i}\right\Vert }\\
+\left(T_{t,i}+\epsilon_{T}\right)sin\left(\theta_{t-1,i}\right)-\rho_{\mathbf{v}}\left\Vert \mathbf{v}_{t-1,i}\right\Vert ^{2}\frac{\mathbf{v}_{t-1,i}}{\left\Vert \mathbf{v}_{t-1,i}\right\Vert }\\
+\omega_{t-1,i}\\
+Y_{t,i}-\rho_{\omega}\omega_{t-1,i}^{2}+\epsilon_{Y}
+\end{array}\right]
+```
+</pre>
+
+
+Which gives:
+
+```latex
+\left[\begin{array}{c}
+\mathbf{x}_{t,i}\\
+\mathbf{v}_{t,i}\\
+\theta_{t,i}\\
+\omega_{t,i}
+\end{array}\right]  =  \left[\begin{array}{c}
+\mathbf{x}_{t-1,i}\\
+\mathbf{v}_{t-1,i}\\
+\theta_{t-1,i}\\
+\omega_{t-1,i}
+\end{array}\right]+\Delta\left[\begin{array}{c}
+\mathbf{v}_{t-1,i}\\
+\left(T_{t,i}+\epsilon_{T}\right)cos\left(\theta_{t-1,i}\right)-\rho_{\mathbf{v}}\left\Vert \mathbf{v}_{t-1,i}\right\Vert ^{2}\frac{\mathbf{v}_{t-1,i}}{\left\Vert \mathbf{v}_{t-1,i}\right\Vert }\\
+\left(T_{t,i}+\epsilon_{T}\right)sin\left(\theta_{t-1,i}\right)-\rho_{\mathbf{v}}\left\Vert \mathbf{v}_{t-1,i}\right\Vert ^{2}\frac{\mathbf{v}_{t-1,i}}{\left\Vert \mathbf{v}_{t-1,i}\right\Vert }\\
+\omega_{t-1,i}\\
+Y_{t,i}-\rho_{\omega}\omega_{t-1,i}^{2}+\epsilon_{Y}
+\end{array}\right]
+```
+
+
+
+:heading Vega Charts
+You can embed charts defined in the vega-lite schema directly into a wiki page.
+More information onv vega-list is available <a href="https://vega.github.io/vega/examples/">here</a>
+
+The format is:
+<pre>
+```vega-lite
+You vega-lite schema here
+```
+</pre>
+
+e.g.:
+<pre>
+```vega-lite
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+  "description": "A simple bar chart with embedded data. An example vega-lite file.",
+  "width": 360,
+  "height":200,
+  "data": {
+    "values": \[
+      {"a": "A","b": 28}, {"a": "B","b": 55}, {"a": "C","b": 43},
+      {"a": "D","b": 91}, {"a": "E","b": 81}, {"a": "F","b": 53},
+      {"a": "G","b": 19}, {"a": "H","b": 87}, {"a": "I","b": 52}
+    \]
+  },
+  "mark": "bar",
+  "encoding": {
+    "x": {"field": "a", "type": "ordinal"},
+    "y": {"field": "b", "type": "quantitative"}
+  }
+}
+```
+</pre>
+
+
+Gives:
+
+```vega-lite
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+  "description": "A simple bar chart with embedded data. An example vega-lite file.",
+  "width": 360,
+  "height":200,
+  "data": {
+    "values": \[
+      {"a": "A","b": 28}, {"a": "B","b": 55}, {"a": "C","b": 43},
+      {"a": "D","b": 91}, {"a": "E","b": 81}, {"a": "F","b": 53},
+      {"a": "G","b": 19}, {"a": "H","b": 87}, {"a": "I","b": 52}
+    \]
+  },
+  "mark": "bar",
+  "encoding": {
+    "x": {"field": "a", "type": "ordinal"},
+    "y": {"field": "b", "type": "quantitative"}
+  }
+}
+```
+
+
+
+
+
+
+</div>
+<p>
+
+<p>&nbsp;<p>
+
+<div class="ramadda-doc-footer">
+<table width=100% cellspacing=0 cellpadding=0 >
+<tr><td width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikitext.html"><table><td valign=center><td><span title="Previous: Wiki Text"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Wiki Text</td></tr></table></a></div></div></td>
+<td align=right width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikientries.html"><table><tr valign=center><td>Wiki Display of Entries</td><td><span title="Next: Wiki Display of Entries"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+</tr></table>
+</div>
+<p>
+</div>
+</body>
+</html>
+

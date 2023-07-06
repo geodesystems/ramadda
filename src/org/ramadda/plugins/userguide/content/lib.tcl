@@ -5,10 +5,14 @@
 
 gen::setDoTclEvaluation 1
 gen::setTargetDir ../htdocs/userguide
-gen::defineMacro {<%ramadda.version%>} {12.136.0}
+gen::defineMacro {<%ramadda.version%>} {12.140.0}
 
 
 namespace eval wiki {}
+
+proc wiki::raw {t} {
+     return $t
+}
 
 proc wiki::clean {t} {
      regsub -all "\{\{" $t "\{<noop>\{" t

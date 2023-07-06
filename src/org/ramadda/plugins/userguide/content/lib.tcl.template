@@ -10,6 +10,10 @@ gen::defineMacro {<%ramadda.version%>} {@VERSION@}
 
 namespace eval wiki {}
 
+proc wiki::raw {t} {
+     return $t
+}
+
 proc wiki::clean {t} {
      regsub -all "\{\{" $t "\{<noop>\{" t
      set t
