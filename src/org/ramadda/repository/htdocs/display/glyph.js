@@ -175,6 +175,7 @@ Glyph.prototype = {
 		color=  props.colorByInfo.getColor(v);
 	    } else if(args.colorValue) {
 		color=  props.colorByInfo.getColor(args.colorValue);
+		color = props.colorByInfo.convertColor(color, args.colorValue);
 	    }
 	}
 	let lengthPercent = 1.0;

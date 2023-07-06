@@ -1741,10 +1741,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'intensityTargetMin',ex:1},
 	{p:'intensityTargetMax',ex:0},
 	{p:'convertColorAlpha',ex:true},
-	{p:'alphaSourceMin',ex:0},
-	{p:'alphaSourceMax',ex:100},
-	{p:'alphaTargetMin',ex:0},
-	{p:'alphaTargetMax',ex:1},
+	{p:'alphaSourceMin',ex:0,tt:'map value into range then map it into transparency'},
+	{p:'alphaSourceMax',ex:100,tt:'map value into range then map it into transparency'},
+	{p:'alphaTargetMin',ex:0,tt:'map value into range then map it into transparency'},
+	{p:'alphaTargetMax',ex:1,tt:'map value into range then map it into transparency'},
+	{p:'alphaMin',ex:1,tt:'set to transparent any value below the alpha min'},
+	{p:'alphaMax',ex:1,tt:'set to transparent any value above the alpha max'},	
 	{label:'Animation'},
 	{p:'doAnimation',ex:true},
 	{p:'animationMode',ex:'sliding|frame|cumulative'},
@@ -2155,7 +2157,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	addAlpha: function(colors, alpha) {
 	    if(!colors) return null;
 	    alpha = Utils.isDefined(alpha)?alpha:this.getProperty("colorTableAlpha");
-	    if(!alpha) return colors;
+	    if(!Utils.isDefined(alpha)) return colors;
 	    colors=  Utils.cloneList(colors);
 	    let ac = [];
 	    colors.forEach((c)=>{

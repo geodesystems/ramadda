@@ -83,6 +83,10 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 
 
     this.convertAlpha = this.getProperty("convertColorAlpha",false);
+    this.alphaMin = this.getProperty("alphaMin");
+    this.alphaMax = this.getProperty("alphaMax");    
+    this.hasAlphaMin = Utils.isDefined(this.alphaMin);
+    this.hasAlphaMax = Utils.isDefined(this.alphaMax);    
     if(this.convertAlpha) {
 	if(!Utils.isDefined(this.getProperty("alphaSourceMin"))) {
 	    var min = 0, max=0;
@@ -598,8 +602,27 @@ ColorByInfo.prototype = {
 	//		    console.log(color +" " + result +" intensity:" + intensity +" min:" + this.intensityTargetM
 	return result || color;
     },
+    xcnt:0,
     convertColorAlpha: function(color, colorByValue) {
-	if(!this.convertAlpha) return color;
+	if(this.hasAlphaMin) {
+	    if(colorByValue<=this.alphaMin) {
+		let result =  Utils.addAlphaToColor(color, 0.0);
+		return result || color;
+	    }
+
+	}
+
+	if(this.hasAlphaMax) {
+	    if(colorByValue>=this.alphaMax) {
+		let result =  Utils.addAlphaToColor(color, 0.0);
+		return result || color;
+	    }
+	}	
+
+
+	if(!this.convertAlpha) {
+	    return color;
+	}
 	percent = (colorByValue-this.alphaSourceMin)/(this.alphaSourceMax-this.alphaSourceMin);
 	alpha=this.alphaTargetMin+percent*(this.alphaTargetMax-this.alphaTargetMin);
 	let result =  Utils.addAlphaToColor(color, alpha);
