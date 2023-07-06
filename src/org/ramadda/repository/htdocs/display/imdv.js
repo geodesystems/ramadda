@@ -4575,14 +4575,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    this.getMap().currentPopup = popup;
 		    this.getMap().getMap().addPopup(popup);
 		    jqid(id).html(html);
+		    //For some reason the links don't work in the popup
+		    //so we do this and handle the clicks here
 		    jqid(id).find('a').each(function() {
-			if(!$(this).attr('target')) $(this).attr('target','_blank');
-			return
-			/* not sure why I do this since it screws up links with targets*/
 			$(this).click(function(){
 			    let url = $(this).attr('href');
-			    if(url)
-				window.location=url;
+			    if(url) {
+				window.open(url,'_blank');
+			    }
 			});
 		    });
 
