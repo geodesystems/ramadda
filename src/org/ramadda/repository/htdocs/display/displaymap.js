@@ -124,7 +124,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'boundsFillColor',d:'transparent'},
 	{p:'boundsFillOpacity',d:'0.0'},			
 
-	{p:'showOpacitySlider',ex:'false',d:false},
+	{p:'showOpacitySlider',ex:'false'},
 	{p:'showLocationSearch',ex:'true'},
 	{p:'showLatLonPosition',ex:'false',d:true},
 	{p:'showLayerSwitcher',d:true,ex:'false'},
