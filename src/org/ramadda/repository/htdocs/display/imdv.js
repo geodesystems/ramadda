@@ -4576,13 +4576,16 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    this.getMap().getMap().addPopup(popup);
 		    jqid(id).html(html);
 		    jqid(id).find('a').each(function() {
+			if(!$(this).attr('target')) $(this).attr('target','_blank');
+			return
+			/* not sure why I do this since it screws up links with targets*/
 			$(this).click(function(){
 			    let url = $(this).attr('href');
 			    if(url)
 				window.location=url;
 			});
-
 		    });
+
 		}
 
 
