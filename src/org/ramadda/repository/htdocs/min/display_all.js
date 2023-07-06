@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Jul  6 07:55:38 MDT 2023";
+var build_date="RAMADDA build date: Thu Jul  6 12:43:21 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -2501,6 +2501,10 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 
 
     this.convertAlpha = this.getProperty("convertColorAlpha",false);
+    this.alphaMin = this.getProperty("alphaMin");
+    this.alphaMax = this.getProperty("alphaMax");    
+    this.hasAlphaMin = Utils.isDefined(this.alphaMin);
+    this.hasAlphaMax = Utils.isDefined(this.alphaMax);    
     if(this.convertAlpha) {
 	if(!Utils.isDefined(this.getProperty("alphaSourceMin"))) {
 	    var min = 0, max=0;
@@ -3016,8 +3020,27 @@ ColorByInfo.prototype = {
 	//		    console.log(color +" " + result +" intensity:" + intensity +" min:" + this.intensityTargetM
 	return result || color;
     },
+    xcnt:0,
     convertColorAlpha: function(color, colorByValue) {
-	if(!this.convertAlpha) return color;
+	if(this.hasAlphaMin) {
+	    if(colorByValue<=this.alphaMin) {
+		let result =  Utils.addAlphaToColor(color, 0.0);
+		return result || color;
+	    }
+
+	}
+
+	if(this.hasAlphaMax) {
+	    if(colorByValue>=this.alphaMax) {
+		let result =  Utils.addAlphaToColor(color, 0.0);
+		return result || color;
+	    }
+	}	
+
+
+	if(!this.convertAlpha) {
+	    return color;
+	}
 	percent = (colorByValue-this.alphaSourceMin)/(this.alphaSourceMax-this.alphaSourceMin);
 	alpha=this.alphaTargetMin+percent*(this.alphaTargetMax-this.alphaTargetMin);
 	let result =  Utils.addAlphaToColor(color, alpha);
@@ -3360,6 +3383,7 @@ Glyph.prototype = {
 		color=  props.colorByInfo.getColor(v);
 	    } else if(args.colorValue) {
 		color=  props.colorByInfo.getColor(args.colorValue);
+		color = props.colorByInfo.convertColor(color, args.colorValue);
 	    }
 	}
 	let lengthPercent = 1.0;
@@ -5432,10 +5456,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'intensityTargetMin',ex:1},
 	{p:'intensityTargetMax',ex:0},
 	{p:'convertColorAlpha',ex:true},
-	{p:'alphaSourceMin',ex:0},
-	{p:'alphaSourceMax',ex:100},
-	{p:'alphaTargetMin',ex:0},
-	{p:'alphaTargetMax',ex:1},
+	{p:'alphaSourceMin',ex:0,tt:'map value into range then map it into transparency'},
+	{p:'alphaSourceMax',ex:100,tt:'map value into range then map it into transparency'},
+	{p:'alphaTargetMin',ex:0,tt:'map value into range then map it into transparency'},
+	{p:'alphaTargetMax',ex:1,tt:'map value into range then map it into transparency'},
+	{p:'alphaMin',ex:1,tt:'set to transparent any value below the alpha min'},
+	{p:'alphaMax',ex:1,tt:'set to transparent any value above the alpha max'},	
 	{label:'Animation'},
 	{p:'doAnimation',ex:true},
 	{p:'animationMode',ex:'sliding|frame|cumulative'},
@@ -5846,7 +5872,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	addAlpha: function(colors, alpha) {
 	    if(!colors) return null;
 	    alpha = Utils.isDefined(alpha)?alpha:this.getProperty("colorTableAlpha");
-	    if(!alpha) return colors;
+	    if(!Utils.isDefined(alpha)) return colors;
 	    colors=  Utils.cloneList(colors);
 	    let ac = [];
 	    colors.forEach((c)=>{
