@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Jul  6 06:41:18 MDT 2023";
+var build_date="RAMADDA build date: Thu Jul  6 07:49:53 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -45339,13 +45339,16 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    this.getMap().getMap().addPopup(popup);
 		    jqid(id).html(html);
 		    jqid(id).find('a').each(function() {
+			if(!$(this).attr('target')) $(this).attr('target','_blank');
+			return
+			/* not sure why I do this since it screws up links with targets*/
 			$(this).click(function(){
 			    let url = $(this).attr('href');
 			    if(url)
 				window.location=url;
 			});
-
 		    });
+
 		}
 
 
