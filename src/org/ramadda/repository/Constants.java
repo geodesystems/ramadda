@@ -2001,6 +2001,18 @@ public interface Constants {
     public static final String ARG_PASSWORDS_CLEAR_CONFIRM =
         "action.passwords.clear.confirm";
 
+    public static  final boolean ARG_INLINE_DFLT = false;
+    public static  final boolean ARG_INLINE_TRUE = true;
+    public static  final boolean ARG_INLINE_FALSE = true;    
+    public static  final boolean ARG_FULL_DFLT = false;
+    public static  final boolean ARG_FULL_TRUE = true;
+    public static  final boolean ARG_FULL_FALSEE = false;    
+    public static  final boolean ARG_ADDPATH_DFLT = false;
+    public static  final boolean ARG_ADDPATH_TRUE = true;
+    public static  final boolean ARG_ADDPATH_FALSE = false;    
+
+
+
 
 
     /** _more_ */
@@ -2423,6 +2435,7 @@ public interface Constants {
     /** _more_ */
     public static final RequestArgument REQUESTARG_LONGITUDE =
         new RequestArgument("ramadda.arg.longitude");
+
 
 
 

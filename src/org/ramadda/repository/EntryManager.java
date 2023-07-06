@@ -108,16 +108,7 @@ import java.util.zip.ZipInputStream;
 @SuppressWarnings("unchecked")
 public class EntryManager extends RepositoryManager {
 
-    public static  final boolean ARG_INLINE_DFLT = false;
-    public static  final boolean ARG_INLINE_TRUE = true;
-    public static  final boolean ARG_INLINE_FALSE = true;    
 
-    public static  final boolean ARG_FULL_DFLT = false;
-    public static  final boolean ARG_FULL_TRUE = true;
-    public static  final boolean ARG_FULL_FALSEE = false;    
-    public static  final boolean ARG_ADDPATH_DFLT = false;
-    public static  final boolean ARG_ADDPATH_TRUE = true;
-    public static  final boolean ARG_ADDPATH_FALSE = false;    
 
     /** _more_ */
     public static final String[] PRELOAD_CATEGORIES = { "Documents",
@@ -1369,7 +1360,7 @@ public class EntryManager extends RepositoryManager {
 	    Entry newEntry = addFileEntry(request, tmpFile,
 					  group, null, name, description, request.getUser(),
 					  typeHandler, null);
-	    String url = getEntryResourceUrl(request, newEntry,ARG_INLINE_DFLT,ARG_FULL_DFLT,ARG_ADDPATH_TRUE);
+	    String url = getEntryResourceUrl(request, newEntry,ARG_INLINE_DFLT,ARG_FULL_DFLT,ARG_ADDPATH_TRUE,false);
 
 	    sb.append(JsonUtil.mapAndQuote(Utils.makeList("status","ok","message","File added","entryid",newEntry.getId(),"name",newEntry.getName(),"type",newEntry.getTypeHandler().getType(), "geturl",
 							  url)));
@@ -8836,7 +8827,7 @@ public class EntryManager extends RepositoryManager {
      * @return _more_
      */
     public String getEntryResourceUrl(Request request, Entry entry) {
-        return getEntryResourceUrl(request, entry, ARG_INLINE_DFLT,ARG_FULL_DFLT,ARG_ADDPATH_DFLT);
+        return getEntryResourceUrl(request, entry, ARG_INLINE_DFLT,ARG_FULL_DFLT,ARG_ADDPATH_DFLT,false);
     }
 
 
@@ -8851,9 +8842,16 @@ public class EntryManager extends RepositoryManager {
      * @return _more_
      */
     public String getEntryResourceUrl(Request request, Entry entry,boolean inline,
-				      boolean full, boolean addPath) { 
+				      boolean full, boolean addPath) {
 
-        if (entry.getResource().isUrl()) {
+	return getEntryResourceUrl(request, entry, inline,full, addPath, false);
+    }
+
+    public String getEntryResourceUrl(Request request, Entry entry,boolean inline,
+				      boolean full, boolean addPath, boolean proxyIfNeeded) { 	
+
+
+        if (!proxyIfNeeded && entry.getResource().isUrl()) {
             try {
                 return entry.getTypeHandler().getPathForEntry(request, entry,false);
             } catch (Exception exc) {
