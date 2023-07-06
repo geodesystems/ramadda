@@ -315,8 +315,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
     //Set these so the glyphs can access them
     this.ID_LEGEND_MAP = ID_LEGEND_MAP;
 
-    if(!Utils.isDefined(properties.showOpacitySlider)&&!Utils.isDefined(getGlobalDisplayProperty('showOpacitySlider'))) 
-	properties.showOpacitySlider=false; 
+//    if(!Utils.isDefined(properties.showOpacitySlider)&&!Utils.isDefined(getGlobalDisplayProperty('showOpacitySlider'))) 
+//	properties.showOpacitySlider=false; 
     const SUPER = new RamaddaBaseMapDisplay(displayManager,  id, DISPLAY_IMDV,  properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
@@ -3186,6 +3186,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let props = this.getMapProperty('otherProperties','');
 	    let lines = ['legendLabel=Some label',...IMDV_PROPERTY_HINTS,
 			 'dragPanEnabled=false',
+			 'zoomPanEnabled=false',			 
 			 'addCurrentLocationMarker=true',
 			 'centerOnCurrentLocation=true',
 			 'currentLocationUpdateTime=seconds',
@@ -3225,7 +3226,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				    'topWikiText', this.jq('topwikitext_input').val(),
 				    'bottomWikiText', this.jq('bottomwikitext_input').val(),
 				    'otherProperties', this.jq('otherproperties_input').val());		
-
 
 		this.propertyCache = {}
 		this.parsedMapProperties = null;
@@ -3286,11 +3286,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    else
 		this.getMap().destroyMousePositionReadout();		
 
-	    if(this.getMapProperty('dragPanEnabled',true)) {
-		this.map.setDragPanEnabled(true);
-	    } else {
-		this.map.setDragPanEnabled(false);
-	    }
+	    this.map.setDragPanEnabled(this.getMapProperty('dragPanEnabled',true));
+	    this.map.setZoomPanEnabled(this.getMapProperty('zoomPanEnabled',true));	    
+
 	    this.checkCurrentLocation();
 	},
 	
@@ -4211,7 +4209,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	propertyCache:{
 	},
 	getMapProperty: function(name,dflt,debug) {
-//	    debug = name=='mapLegendPosition';
+//	    debug = name=='showOpacitySlider';
 //	    if(debug)	console.dir(this.properties);
 	    if(debug)
 		console.log("getProperty:" + name);
