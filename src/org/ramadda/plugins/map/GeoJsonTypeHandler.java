@@ -147,11 +147,9 @@ public class GeoJsonTypeHandler extends GenericTypeHandler implements WikiConsta
     @Override
     public boolean addToMap(Request request, Entry entry, MapInfo map)
             throws Exception {
-        if ( !entry.isFile()) {
-            return true;
-        }
+	//        String url = getEntryManager().getEntryResourceUrl(request, entry);
+	String url = getEntryManager().getEntryResourceUrl(request, entry,ARG_INLINE_DFLT,ARG_FULL_DFLT,ARG_ADDPATH_TRUE,true);
 
-        String url = getEntryManager().getEntryResourceUrl(request, entry);
         map.addGeoJsonUrl(entry.getName(), url, true,
                           ShapefileOutputHandler.makeMapStyle(request,
 							      entry),true);
