@@ -5313,6 +5313,7 @@ RepositoryMap.prototype = {
 	if(!features) return null;
 	let bounds = MapUtils.createBounds();
 	features.forEach((feature,idx)=>{
+	    if(!feature.geometry) return;
 	    if(MapUtils.isFeatureVisible(feature)) {
 		bounds = MapUtils.extendBounds(bounds, feature.geometry.getBounds());
 	    }
