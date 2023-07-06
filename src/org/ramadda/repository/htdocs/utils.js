@@ -2931,18 +2931,22 @@ var Utils =  {
                    "yellow":"#ffff00","yellowgreen":"#9acd32"},
 
     addAlphaToColor: function(c, alpha) {
+
         c = this.colorToRgb[c] || c;
-        if(!alpha) alpha = "0.5";
+        if(!Utils.isDefined(alpha)) {
+	    alpha = "0.5";
+	}
+
         if(c.indexOf("#")==0) {
-            var rgb = Utils.hexToRgb(c);
+            let rgb = Utils.hexToRgb(c);
             if(rgb) {
                 c = "rgba(" + rgb.r+"," + rgb.g +"," + rgb.b+"," + alpha+")";
             }
             return c;
         }
-        c = c.replace(/rgb *\((.*),(.*),(.*)\)/,"rgba($1,$2,$3,_alpha_)");
-        c = c.replace("_alpha_",alpha);
-        return c;
+
+        let c2 = c.replace(/rgba? *\(([^,]+),([^,]+),([^,\)]+).*/,'rgba($1,$2,$3,' + alpha+')');
+        return c2;
     },
 
     enumTypeCount: -1,
