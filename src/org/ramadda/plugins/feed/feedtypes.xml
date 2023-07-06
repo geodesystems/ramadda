@@ -11,7 +11,7 @@
   </type>
 
   <type name="nwsfeed"  supercategory="Geoscience" description="NWS Forecast Feed"   handler="org.ramadda.plugins.feed.DwmlFeedTypeHandler" foruser="true" category="Geoscience Data">  
-     <property name="icon" value="/feed/nws.png"/>
+     <property name="icon" value="/feed/nws3.png"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.resource.download.show" value="false"/>
      <property name="form.datatype.show" value="false"/>

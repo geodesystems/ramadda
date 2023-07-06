@@ -321,7 +321,9 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
         }
         HU.open(sb, "div", HU.style("padding-left:5px;"));
         sb.append(HU.tag("ul"));
-        sb.append(forecast.hazards.toString());
+	String link = forecast.hazards.toString();
+	link = link.replace("<a ","<a target='_wx' ");
+	sb.append(link);
         sb.append("</ul>");
         HU.close(sb, "div");
         if (showHeader) {
