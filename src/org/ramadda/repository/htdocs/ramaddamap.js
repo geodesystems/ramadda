@@ -785,6 +785,7 @@ function RepositoryMap(mapId, params) {
         showLatLonPosition: false,
         showZoomPanControl: false,
         showZoomOnlyControl: true,
+        enableDragPan: true,
         showSearch: false,
 	showBookmarks:false,
         showBounds: true,
@@ -796,7 +797,6 @@ function RepositoryMap(mapId, params) {
 	popupHeight:250,	
 	popupSliderRight:false,
 	doSelect:true,
-        enableDragPan: true,
 	addMarkerOnClick:false,
 	linked:false,
 	linkGroup:null,
@@ -3231,8 +3231,6 @@ RepositoryMap.prototype = {
 	}
 	//	console.log(l);
 
-
-	return;
 	this.graticule= this.createGraticule({
 	    strokeColor: "#888",
 	    strokeWidth: 2,
@@ -3449,7 +3447,16 @@ RepositoryMap.prototype = {
 		this.dragPanControl.activate();	    
         }
     },
-
+    setZoomPanEnabled:function(enabled) {
+	if(!enabled) {
+	    if(this.panZoomControl) 
+		this.panZoomControl.destroy();
+	    this.panZoomControl= null;
+	} else {
+	    if(!this.panZoomControl) 
+		this.getMap().addControl(this.panZoomControl = new OpenLayers.Control.PanZoom());
+	}
+    },
 
     initMap:  function(doRegion) {
 	let _this = this;
@@ -3492,7 +3499,8 @@ RepositoryMap.prototype = {
 	}
 
         if (this.params.showZoomPanControl && !this.params.showZoomOnlyControl) {
-            this.getMap().addControl(new OpenLayers.Control.PanZoom());
+	    this.setZoomPanEnabled(true);
+
         }
         if (this.params.showZoomOnlyControl && !this.params.showZoomPanControl) {
             this.getMap().addControl(new OpenLayers.Control.Zoom());
