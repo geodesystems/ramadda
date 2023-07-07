@@ -57,6 +57,32 @@ public class FeedTypeHandler extends ExtensibleGroupTypeHandler {
 
 
 
+    public void initializeEntryFromForm(Request request, Entry entry,
+                                        Entry parent, boolean newEntry)
+	throws Exception {
+        super.initializeEntryFromForm(request, entry, parent, newEntry);
+	if(!newEntry) return;
+        String      url   = entry.getResource().getPath();
+        if (Utils.stringDefined(entry.getName()) || !stringDefined(url))  return;
+	Element root = readRoot(entry);
+	if(root==null) return;
+
+        if (root.getTagName().equals(RssUtil.TAG_RSS)) {
+	    Element channel = XmlUtil.getElement(root, RssUtil.TAG_CHANNEL);
+	    if(channel!=null) {
+		String title = XmlUtil.getGrandChildText(channel, RssUtil.TAG_TITLE,
+						     "");
+		entry.setName(title);
+	    }
+        } else if (root.getTagName().equals(AtomUtil.TAG_FEED)) {
+	    //TODO
+	}
+    }
+
+
+
+
+
     /**
      * _more_
      *
@@ -413,22 +439,10 @@ public class FeedTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param mainEntry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public List<Entry> getFeedEntries(Request request, Entry mainEntry)
-            throws Exception {
-        List<Entry> items = new ArrayList<Entry>();
-        String      url   = mainEntry.getResource().getPath();
+    private Element readRoot(Entry entry) throws Exception {
+        String      url   = entry.getResource().getPath();
         if ((url == null) || (url.trim().length() == 0)) {
-            return items;
+            return null;
         }
 
         String  xml = "";
@@ -444,16 +458,29 @@ public class FeedTypeHandler extends ExtensibleGroupTypeHandler {
                 logError("Error reading feed:" + url + " xml:" + xml,
                          secondExc);
 
-                return items;
+                return null;
             }
         }
+	return XmlUtil.getRoot(xml);
+    }
 
-        root = XmlUtil.getRoot(xml);
 
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param mainEntry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<Entry> getFeedEntries(Request request, Entry mainEntry)
+            throws Exception {
+        List<Entry> items = new ArrayList<Entry>();
+        Element root = readRoot(mainEntry);
         if (root == null) {
-            logError("Error reading feed - root is null. url:" + url
-                     + " xml:" + xml, null);
-
             return items;
         }
         if (root.getTagName().equals(RssUtil.TAG_RSS)) {
