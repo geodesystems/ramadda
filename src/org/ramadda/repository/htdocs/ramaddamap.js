@@ -1565,7 +1565,7 @@ RepositoryMap.prototype = {
     },
     makePopup: function(projPoint, text, props) {
 	if(debugPopup)
-	    console.log("makePopup");
+	    console.log("makePopup:" + text);
 	props = props||{};
 	let size  =  MapUtils.createSize(props.width|| this.params.popupWidth||200, props.height || this.params.popupHeight||200);
 	return  new OpenLayers.Popup("popup",
@@ -5407,6 +5407,7 @@ RepositoryMap.prototype = {
 
 
     showMarkerPopup:  function(marker, fromClick, simplePopup) {
+
 	if(debugPopup) console.log("showMarkerPopup");
 
         if (this.entryClickHandler && window[this.entryClickHandler]) {
@@ -5482,6 +5483,8 @@ RepositoryMap.prototype = {
         if (fromClick && marker.locationKey != null) {
             markers = this.seenMarkers[marker.locationKey];
             if (markers && markers.length > 1) {
+	    if(debugPopup)
+		console.log('showMarkerPopup: seenMarkers:', markers.length);
                 markerText = "";
                 for (let i = 0; i < markers.length; i++) {
                     otherMarker = markers[i];
@@ -5553,6 +5556,7 @@ RepositoryMap.prototype = {
 	props.width = props.width??inputProps.minSizeX??this.params.popupWidth;
 	props.height = props.height??inputProps.minSizeY??this.params.popupHeight;	
         let popup = this.makePopup( projPoint,div,props);
+	if(debugPopup) console.log('showMarkerPopup:', markerText);
         marker.popupText = popup;
         popup.marker = marker;
         this.addPopup(popup);
@@ -5631,6 +5635,13 @@ RepositoryMap.prototype = {
         if (this.markers) {
             this.markers.removeFeatures(markers);
         }
+	//remove the marker from the seenMarkers map
+	markers.forEach(marker=>{
+	    if(!marker.locationKey) return;
+            let seenMarkers = this.seenMarkers[marker.locationKey];
+            if (!seenMarkers) return;
+            this.seenMarkers[marker.locationKey] = Utils.removeElement(this.seenMarkers[marker.locationKey], marker);
+	});
     },    
     createFeatureLayer: function(name, canSelect,style,opts) {
         let base_style = $.extend({},MapUtils.getVectorStyle('default'));
