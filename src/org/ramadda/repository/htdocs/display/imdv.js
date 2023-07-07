@@ -53,6 +53,11 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 
 
 let ImdvUtils = {
+    getImdv: function(id) {
+	return Utils.displaysMap[id];
+    },
+
+
     applyFeatureStyle:function(feature,style) {
 	if(!feature.style) {
 	    feature.style=style;
@@ -568,7 +573,17 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		handleRouteData(data);
 	    }).fail(fail);
 	},	    
+	addIsolineToCurrentMarker() {
+	    if(!this.currentLocationMarker) return;
+	    this.addIsolineAt(this.currentLocationMarker.location);
+	},
 	addIsolineForMarker:function(glyph) {
+	    let center = this.getMap().transformProjPoint(glyph.getCentroid());
+	    this.addIsolineAt(center);
+	},
+
+	addIsolineAt:function(center) {
+	    this.getMap().closePopup();
 	    let html = HU.formTable();
 	    html+=HU.formEntry('Mode:' , HU.select('',['id',this.domId('isolinemode')],['car','bicycle','pedestrian'],this.isolineMode));
 	    html+=HU.formEntry('Range:' , HU.input('',this.isolineValue??'10',['id',this.domId('isolinevalue'),'size','5']) +
@@ -585,8 +600,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.isolineValue=this.jq('isolinevalue').val();		
 		this.isolineType=this.jq('isolinetype').val();		
 		dialog.remove();
-		let center = this.getMap().transformProjPoint(glyph.getCentroid());
-		this.createIsoline(this.isolineMode,this.isolineValue,this.isolineType,center.y,center.x,{});
+		this.createIsoline(this.isolineMode,this.isolineValue,this.isolineType,Utils.getDefined(center.y,center.lat),Utils.getDefined(center.x,center.lon),{});
 	    };
 	    dialog.find('.ramadda-button-ok').button().click(ok);
 	    dialog.find('.ramadda-button-cancel').button().click(()=>{
@@ -3292,6 +3306,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.checkCurrentLocation();
 	},
 	
+	xcnt:0,
 	checkCurrentLocation:function() {
 	    if(this.currentLocationMarker) {
 		this.getMap().removeMarker(this.currentLocationMarker);
@@ -3319,8 +3334,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    this.currentLocationMarker=null;
 		}
 
+		let popup = '<center><h2>Current Location</h2></center>';
+		if(this.isHereEnabled()) {
+		    popup+=HU.onClick('ImdvUtils.getImdv(\'' + this.getId() +'\').addIsolineToCurrentMarker()','Add Isoline');
+		}
 		this.currentLocationMarker =
-		    this.getMap().addMarker('location', lonlat, null, '', 'Current Location', 20, 20);
+		    this.getMap().addMarker('location', lonlat, null, '', popup, 20, 20);
 		if(this.getMapProperty('centerOnCurrentLocation')) {
 		    this.getMap().setCenter(lonlat);
 		}
