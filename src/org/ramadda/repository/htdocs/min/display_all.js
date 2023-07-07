@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Jul  6 12:43:21 MDT 2023";
+var build_date="RAMADDA build date: Fri Jul  7 07:50:01 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -5293,6 +5293,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'request.startdate',tt:'Start date of data',ex:'yyyy-MM-dd or relative:-1 week|-6 months|-2 years|etc'},
 	{p:'request.enddate',tt:'End date of data',ex:'yyyy-MM-dd or relative:-1 week|-6 months|-2 years|etc'},
 	{p:'requestFields',tt:'Comma separated list of fields for querying server side data'},
+	{p:'requestFieldsShow',d:true,ex:'false',tt:'Show the request fields'},
 	{p:'requestFieldsDefault',d:true,tt:'Use the default date,stride,limit fields'},
 	{p:'requestPrefix',ex:'search.', tt:'Prefix to prepend to the url argument'},
 	{p:'requestFieldsLive',d:true,tt:'Is the request applied when a widget changes'},
@@ -9574,7 +9575,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 					    this.getProperty('requestFieldsToggleOpen',false),
 					    {orientation:'horizontal'});
 	    }
-	    if(!this.getProperty('requestFieldsShow',true)) {
+	    if(!this.getRequestFieldsShow()) {
 		requestProps = HU.div(['style','display:none;'], requestProps);
 	    }
 	    if(Utils.stringDefined(requestProps)) {
@@ -40842,6 +40843,11 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 
 
 let ImdvUtils = {
+    getImdv: function(id) {
+	return Utils.displaysMap[id];
+    },
+
+
     applyFeatureStyle:function(feature,style) {
 	if(!feature.style) {
 	    feature.style=style;
@@ -41357,7 +41363,17 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		handleRouteData(data);
 	    }).fail(fail);
 	},	    
+	addIsolineToCurrentMarker() {
+	    if(!this.currentLocationMarker) return;
+	    this.addIsolineAt(this.currentLocationMarker.location);
+	},
 	addIsolineForMarker:function(glyph) {
+	    let center = this.getMap().transformProjPoint(glyph.getCentroid());
+	    this.addIsolineAt(center);
+	},
+
+	addIsolineAt:function(center) {
+	    this.getMap().closePopup();
 	    let html = HU.formTable();
 	    html+=HU.formEntry('Mode:' , HU.select('',['id',this.domId('isolinemode')],['car','bicycle','pedestrian'],this.isolineMode));
 	    html+=HU.formEntry('Range:' , HU.input('',this.isolineValue??'10',['id',this.domId('isolinevalue'),'size','5']) +
@@ -41374,8 +41390,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.isolineValue=this.jq('isolinevalue').val();		
 		this.isolineType=this.jq('isolinetype').val();		
 		dialog.remove();
-		let center = this.getMap().transformProjPoint(glyph.getCentroid());
-		this.createIsoline(this.isolineMode,this.isolineValue,this.isolineType,center.y,center.x,{});
+		this.createIsoline(this.isolineMode,this.isolineValue,this.isolineType,Utils.getDefined(center.y,center.lat),Utils.getDefined(center.x,center.lon),{});
 	    };
 	    dialog.find('.ramadda-button-ok').button().click(ok);
 	    dialog.find('.ramadda-button-cancel').button().click(()=>{
@@ -44081,6 +44096,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.checkCurrentLocation();
 	},
 	
+	xcnt:0,
 	checkCurrentLocation:function() {
 	    if(this.currentLocationMarker) {
 		this.getMap().removeMarker(this.currentLocationMarker);
@@ -44108,8 +44124,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    this.currentLocationMarker=null;
 		}
 
+		let popup = '<center><h2>Current Location</h2></center>';
+		if(this.isHereEnabled()) {
+		    popup+=HU.onClick('ImdvUtils.getImdv(\'' + this.getId() +'\').addIsolineToCurrentMarker()','Add Isoline');
+		}
 		this.currentLocationMarker =
-		    this.getMap().addMarker('location', lonlat, null, '', 'Current Location', 20, 20);
+		    this.getMap().addMarker('location', lonlat, null, '', popup, 20, 20);
 		if(this.getMapProperty('centerOnCurrentLocation')) {
 		    this.getMap().setCenter(lonlat);
 		}
