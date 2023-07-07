@@ -1578,6 +1578,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'request.startdate',tt:'Start date of data',ex:'yyyy-MM-dd or relative:-1 week|-6 months|-2 years|etc'},
 	{p:'request.enddate',tt:'End date of data',ex:'yyyy-MM-dd or relative:-1 week|-6 months|-2 years|etc'},
 	{p:'requestFields',tt:'Comma separated list of fields for querying server side data'},
+	{p:'requestFieldsShow',d:true,ex:'false',tt:'Show the request fields'},
 	{p:'requestFieldsDefault',d:true,tt:'Use the default date,stride,limit fields'},
 	{p:'requestPrefix',ex:'search.', tt:'Prefix to prepend to the url argument'},
 	{p:'requestFieldsLive',d:true,tt:'Is the request applied when a widget changes'},
@@ -5859,7 +5860,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 					    this.getProperty('requestFieldsToggleOpen',false),
 					    {orientation:'horizontal'});
 	    }
-	    if(!this.getProperty('requestFieldsShow',true)) {
+	    if(!this.getRequestFieldsShow()) {
 		requestProps = HU.div(['style','display:none;'], requestProps);
 	    }
 	    if(Utils.stringDefined(requestProps)) {
