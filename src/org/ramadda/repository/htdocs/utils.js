@@ -345,11 +345,11 @@ var Utils =  {
 	});	
     },
     copyToClipboard:function(text) {
-        var $temp = $("<textarea></textarea>");
-        $("body").append($temp);
-        $temp.val(text).select();
+        let temp = $("<textarea></textarea>");
+        $("body").append(temp);
+        temp.val(text).select();
         document.execCommand("copy");
-        $temp.remove();
+        temp.remove();
     },
     isAnonymous: function() {
         return ramaddaUser =="anonymous";
@@ -5034,14 +5034,19 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
 
 
-    handleFormChangeShowUrl: function(entryid, formId, outputId, skip, hook,includeCopyArgs) {
+    handleFormChangeShowUrl: function(entryid, formId, outputId, skip, hook, params) {
+	let opts = {
+	    showInputField:true,
+	    includeCopyArgs:false
+	}
+	if(params) $.extend(opts,params);
         if (skip == null) {
             skip = [".*OpenLayers_Control.*", "authtoken"];
         }
-        var url = $("#" + formId).attr("action") + "?";
-        var inputs = $("#" + formId + " :input");
-        var cnt = 0;
-        var pairs = [];
+        let url = $("#" + formId).attr("action") + "?";
+        let inputs = $("#" + formId + " :input");
+        let cnt = 0;
+        let pairs = [];
 	let args = "";
 	let seenValue = {};
 	let added = (name,value) =>{
@@ -5134,15 +5139,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         let base = window.location.protocol + "//" + window.location.host;
         url = base + url;
 
-        let input = HtmlUtils.input("formurl", url, ["size", "80","id","formurl"]);
+        let input = opts.showInputField?HtmlUtils.input("formurl", url, ["size", "80","id","formurl"]):
+	    HtmlUtils.hidden("formurl", url, ["size", "80","id","formurl"]);
         let html = '<p>' +HtmlUtils.div(["class", "ramadda-form-url"], 
 					input+SPACE2+
-					(includeCopyArgs?
+					(opts.includeCopyArgs?
 					 HU.span(['id','argscopy','class','ramadda-clickable','title','Copy json for subset action'],
 						 HtmlUtils.getIconImage('fas fa-earth-americas')) +SPACE2:'')+
 					HU.span(['id','clipboard','class','ramadda-clickable','title','Copy URL to clipboard'],
 						HtmlUtils.getIconImage('fas fa-clipboard')) + SPACE2+
-					HtmlUtils.href(url, HtmlUtils.getIconImage('fas fa-link')));
+					HU.href(url, HtmlUtils.getIconImage('fas fa-link'),['title','Form URL']));
         if (hook) {
             html += hook({
                 entryId: entryid,
@@ -5161,11 +5167,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    alert('URL copied to clipboard');
 	});	
     },
-    makeUrlShowingForm: function(entryId, formId, outputId, skip, hook,includeCopyJson) {
+    makeUrlShowingForm: function(entryId, formId, outputId, skip, hook,args) {
         $("#" + formId + " :input").change(function() {
-            HtmlUtils.handleFormChangeShowUrl(entryId, formId, outputId, skip, hook,includeCopyJson);
+            HtmlUtils.handleFormChangeShowUrl(entryId, formId, outputId, skip, hook,args);
         });
-        HtmlUtils.handleFormChangeShowUrl(entryId, formId, outputId, skip, hook,includeCopyJson);
+        HtmlUtils.handleFormChangeShowUrl(entryId, formId, outputId, skip, hook,args);
     },
     select: function(name, attrs,list, selected,maxWidth,debug) {
         var select = this.openTag("select", attrs);
