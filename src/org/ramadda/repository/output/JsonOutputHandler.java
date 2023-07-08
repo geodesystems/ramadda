@@ -75,7 +75,8 @@ public class JsonOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_JSON = new OutputType("JSON",
                                                      "json",
-                                                     OutputType.TYPE_FEEDS,
+                                                     OutputType.TYPE_FEEDS|
+								OutputType.TYPE_FORSEARCH,
                                                      "", ICON_JSON);
 
     /** _more_ */
