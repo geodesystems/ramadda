@@ -1610,6 +1610,9 @@ MapGlyph.prototype = {
 	    body += HU.div(['class','imdv-legend-offset imdv-legend-text'],text);
 	}
 
+	let boxStyle = 'display:inline-block;width:14px;height:14px;margin-right:4px;';
+	let legend = '';
+	let styleLegend='';
 	if(this.isMap()) {
 	    if(!this.mapLoaded) {
 		if(this.isVisible()) 
@@ -1617,9 +1620,6 @@ MapGlyph.prototype = {
 		return body;
 	    }
 
-	    let boxStyle = 'display:inline-block;width:14px;height:14px;margin-right:4px;';
-	    let legend = '';
-	    let styleLegend='';
 	    this.getStyleGroups().forEach((group,idx)=>{
 		styleLegend+=HU.openTag('table',['width','100%']);
 		styleLegend+= HU.openTag('tr',['title',this.display.canEdit()?'Select style':'','class',CLASS_IMDV_STYLEGROUP +(this.display.canEdit()?' ramadda-clickable':''),'index',idx]);
@@ -1640,55 +1640,57 @@ MapGlyph.prototype = {
 		    legend+=styleLegend;
 	    }
 
-	    if(this.attrs.mapStyleRules) {
-		let rulesLegend = '';
-		let lastProperty='';
-		this.attrs.mapStyleRules.forEach(rule=>{
-		    if(rule.type=='use') return;
-		    if(!Utils.stringDefined(rule.property)) return;
-		    let propOp = rule.property+rule.type;
-		    if(lastProperty!=propOp) {
-			if(rulesLegend!='') rulesLegend+='</table>';
-			let type = rule.type;
-			if(type=='==') type='=';
-			type = type.replace(/</g,'&lt;').replace(/>/g,'&gt;');
-			rulesLegend+= HU.b(this.makeLabel(rule.property,true))+' ' +type+'<br><table width=100%>';
-		    }
-		    lastProperty  = propOp;
-		    let label = rule.value;
-		    label   = HU.span(['style','font-size:9pt;'],label);
-		    let item = '<tr><td width=16px>';
-		    let lineWidth;
-		    let lineStyle;
-		    let lineColor;
-		    let svg;
-		    let havePattern = rule.style.indexOf('fillPattern')>=0;
-		    let fillColor,strokeColor;
-		    let styleObj = {};
-		    rule.style.split('\n').forEach(line=>{
-			line  = line.trim();
-			if(line=='') return;
-			let toks = line.split(':');
-			styleObj[toks[0]] = toks[1];
-		    });
-
-		    let style = boxStyle +this.getLegendStyle(styleObj);
-		    let div=HU.div(['class','circles-1','style',style],'');
-		    item+=div+'</td>';
-		    item += '</td><td>'+ label+'</td></tr>';
-		    rulesLegend+=HU.div([],item);
-		});
-		if(rulesLegend!='') {
-		    rulesLegend+= '</table>';
-		    legend+=rulesLegend;
+	}
+	//true=>forLegend
+	let mapStyleRules;
+	if((mapStyleRules=this.getMapStyleRules(true)).length>0) {
+	    let rulesLegend = '';
+	    let lastProperty='';
+	    mapStyleRules.forEach(rule=>{
+		if(rule.type=='use') return;
+		if(!Utils.stringDefined(rule.property)) return;
+		let propOp = rule.property+rule.type;
+		if(lastProperty!=propOp) {
+		    if(rulesLegend!='') rulesLegend+='</table>';
+		    let type = rule.type;
+		    if(type=='==') type='=';
+		    type = type.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+		    rulesLegend+= HU.b(this.makeLabel(rule.property,true))+' ' +type+'<br><table width=100%>';
 		}
+		lastProperty  = propOp;
+		let label = rule.value;
+		label   = HU.span(['style','font-size:9pt;'],label);
+		let item = '<tr><td width=16px>';
+		let lineWidth;
+		let lineStyle;
+		let lineColor;
+		let svg;
+		let havePattern = rule.style.indexOf('fillPattern')>=0;
+		let fillColor,strokeColor;
+		let styleObj = {};
+		rule.style.split('\n').forEach(line=>{
+		    line  = line.trim();
+		    if(line=='') return;
+		    let toks = line.split(':');
+		    styleObj[toks[0]] = toks[1];
+		});
+
+		let style = boxStyle +this.getLegendStyle(styleObj);
+		let div=HU.div(['class','circles-1','style',style],'');
+		item+=div+'</td>';
+		item += '</td><td>'+ label+'</td></tr>';
+		rulesLegend+=HU.div([],item);
+	    });
+	    if(rulesLegend!='') {
+		rulesLegend+= '</table>';
+		legend+=rulesLegend;
 	    }
-	    if(legend!='') {
-		if(showInMapLegend)
-		    inMapLegend+=legend;
-		else
-		    body+=HU.toggleBlock('Legend',legend,true);
-	    }
+	}
+	if(legend!='') {
+	    if(showInMapLegend)
+		inMapLegend+=legend;
+	    else
+		body+=HU.toggleBlock('Legend',legend,true);
 	}
 
 
@@ -2080,7 +2082,9 @@ MapGlyph.prototype = {
 		setOpacity(event,ui);
 	    }});
 	
-	this.makeFeatureFilters();
+	if(!this.isGroup()) {
+	    this.makeFeatureFilters();
+	}
 	if(this.isMap() && this.mapLoaded) {
 	    let addColor= (obj,prefix, strings) => {
 		if(obj && Utils.stringDefined(obj.property)) {
@@ -2355,17 +2359,6 @@ MapGlyph.prototype = {
 	this.image.mapGlyph = this;
 	this.initImageLayer(this.image);
     },     
-    hasMapFeatures: function() {
-	if(!this.isMap() || !this?.mapLayer?.features || this.mapLayer.features.length==0) return false;
-	return true;
-    },
-    canDoMapStyle: function() {
-	if(!this.hasMapFeatures() || !this.mapLayer.features[0].attributes ||
-	   Object.keys(this.mapLayer.features[0].attributes).length==0) {
-	    return false;
-	}
-	return true;
-    },
 
     applyPropertiesComponent: function(newStyle) {
 	let oldStyle = this.style;
@@ -2615,7 +2608,7 @@ MapGlyph.prototype = {
 	    }  else  if(info.samples.length) {
 		tt = Utils.join(info.getSamplesLabels(), ", ");
 		if(info.isEnumeration()) {
-		    wrapper.html(HU.select("",['id','mapvalue_' + index],info.samples,value));
+		    wrapper.html(HU.select("",['id','mapvalue_' + index],info.samples,value,20));
 		} else {
 		    wrapper.html(HU.input("",value,['id','mapvalue_' + index,'size','15']));
 		}
@@ -2806,7 +2799,8 @@ MapGlyph.prototype = {
 
 
 	if(!this.canDoMapStyle()) return;
-	let attrs = this.mapLayer.features[0].attributes;
+	let attrs = this.getExampleMapLayer()?.features[0].attributes ?? {};
+	//xxx
 	let featureInfo = this.featureInfo = this.getFeatureInfoList();
 	let keys  = Object.keys(featureInfo);
 	let numeric = featureInfo.filter(info=>{return info.isNumeric();});
@@ -2862,7 +2856,7 @@ MapGlyph.prototype = {
 	    sample+=a+'=' + v+'&#013;';
 	}
 	rulesTable+=HU.tr([],HU.tds(['style','font-weight:bold;'],['Property','Operator','Value','Style']));
-	let rules = this.getMapStyleRules();
+	let rules = this.getMapStyleRules(true);
 	let styleTitle = 'e.g.:&#013;fillColor:red&#013;fillOpacity:0.5&#013;strokeColor:blue&#013;strokeWidth:1&#013;strokeDashstyle:solid|dot|dash|dashdot|longdash|longdashdot';
 	for(let index=0;index<20;index++) {
 	    let rule = index<rules.length?rules[index]:{};
@@ -2877,7 +2871,7 @@ MapGlyph.prototype = {
 		    title = Utils.join(info.getSamplesLabels(), ', ');
 	    }
 	    if(info?.isEnumeration()) {
-		valueInput = HU.select('',['id','mapvalue_' + index],info.samples,value); 
+		valueInput = HU.select('',['id','mapvalue_' + index],info.samples,value,20); 
 	    } else {
 		valueInput = HU.input('',value,['id','mapvalue_' + index,'size','15']);
 	    }
@@ -2923,7 +2917,10 @@ MapGlyph.prototype = {
 	styleGroupsUI += HU.closeTag('table');
 	styleGroupsUI = HU.div(['style',HU.css('max-height','150px','overflow-y','auto')], styleGroupsUI);
 
-	content.push({header:'Style Groups',contents:styleGroupsUI});
+	//Don't add style groups if it is a group, just map glyphs
+	if(!this.isGroup()) {
+	    content.push({header:'Style Groups',contents:styleGroupsUI});
+	}
 	content.push({header:'Labels',
 		      contents:mapPointsRange+  HU.b('Label Template:')+'<br>' +mapPoints});
 
@@ -2934,9 +2931,6 @@ MapGlyph.prototype = {
 	    this.attrs.styleGroups = [];
 	}
 	return this.attrs.styleGroups??[];
-    },
-    getMapStyleRules: function() {
-	return this.attrs.mapStyleRules??[];
     },
 
     
@@ -2960,12 +2954,59 @@ MapGlyph.prototype = {
 	if(!Utils.isDefined(value)) return null;
 	return  this.cleanupFeatureValue(value);
     },
+    hasMapFeatures: function() {
+	if(!this.isMap() || !this?.getExampleMapLayer()?.features || this.getExampleMapLayer()?.features.length==0) return false;
+	return true;
+    },
+    canDoMapStyle: function() {
+	let features = this.getExampleFeatures();
+	if(!features || features.length==0) return false;
+	if(!features[0].attributes ||   Object.keys(features[0].attributes).length==0) {
+	    return false;
+	}
+	return true;
+    },
+
+    getMapStyleRules(justMine) {
+	let debug = false;
+	if(debug)
+	    console.log('getMapStyleRules:' + this.getName());
+	let rules =[];
+	if(this.attrs.mapStyleRules && this.attrs.mapStyleRules.length>0) {
+	    rules = Utils.mergeLists(this.attrs.mapStyleRules);
+	}
+	if(justMine) {
+	    return rules;
+	}
+	if(this.getParentGlyph()) {
+	    if(debug)
+		console.log('\tasking parent');
+	    rules = Utils.mergeLists(rules,this.getParentGlyph().getMapStyleRules());
+	}
+	return rules;
+    },
+    getExampleFeatures: function() {
+	return this.getExampleMapLayer()?.features;
+    },
+
+    getExampleMapLayer: function() {
+	if(this.mapLayer) return this.mapLayer;
+	let children = 	this.getChildren();
+	if(!children) return null;
+	for(let i=0;i<children.length;i++) {
+	    let layer = children[i].getExampleMapLayer();
+	    if(layer) return  layer;
+	}
+	return null;
+    },
+
     getFeatureInfoList:function() {
 	if(this.featureInfo) return this.featureInfo;
-	if(!this.mapLayer?.features) return [];
-	let features= this.mapLayer.features;
-	if(!this.mapLayer || this.mapLayer.features.length==0) return [];
-	let attrs = this.mapLayer.features[0].attributes;
+	let mapLayer = this.getExampleMapLayer();
+	if(!mapLayer?.features) return [];
+	let features= mapLayer.features;
+	if(!features || features.length==0) return [];
+	let attrs = features[0].attributes;
 	let keys =   Object.keys(attrs);
 	let _this = this;
 	let first = [];		
@@ -3566,13 +3607,24 @@ MapGlyph.prototype = {
     },
 
     applyMapStyle:function(skipLegendUI) {
+	let debug = true;
+	if(debug)
+	    console.log("applyMapStyle:" + this.getName());
+    	this.applyChildren(child=>{child.applyMapStyle(skipLegendUI);});
 	let _this = this;
 	//If its a map then set the style on the map features
-	if(!this.mapLayer || !this.mapLoaded) return;
+	if(!this.mapLayer || !this.mapLoaded) {
+	    if(debug)
+		console.log("\tnot loaded")
+	    return;
+	}
 
 	let features= this.mapLayer.features;
-	if(!features) return
-	if(!skipLegendUI && this.canDoMapStyle()) {
+	if(!features) {
+	    if(debug) console.log("\tno features");
+	    return
+	}
+	if(!skipLegendUI && this.canDoMapStyle() && !this.isGroup()) {
 	    this.makeFeatureFilters();
 	}
 
@@ -3582,6 +3634,7 @@ MapGlyph.prototype = {
 	}
 	let style = this.style;
 	let rules = this.getMapStyleRules();
+//	if(debug) console.dir("\tmapStyleRules",rules);
 	let useRules = [];
 	if(rules) {
 	    rules = rules.filter(rule=>{
@@ -3680,12 +3733,21 @@ MapGlyph.prototype = {
 	}
 
 
+	if(debug) console.log("\tfeatures:" + features?.length);
 	//Check for any rule based styles
 	let attrs = features.length>0?features[0].attributes:{};
 	let keys  = Object.keys(attrs);
 	if(rules && rules.length>0) {
 	    this.mapLayer.style = null;
-	    this.mapLayer.styleMap = this.display.getMap().getVectorLayerStyleMap(this.mapLayer, style,rules);
+	    let seen = {};
+	    let uniqueRules = rules.filter(rule=>{
+		let key = rule.property+'__'+rule.value;
+		if(seen[key]) return false;
+		seen[key] = true;
+		return true;
+	    });
+	    if(debug) console.dir("\tadding styleMap unique rules",uniqueRules);
+	    this.mapLayer.styleMap = this.display.getMap().getVectorLayerStyleMap(this.mapLayer, style,uniqueRules);
 	    features.forEach((f,idx)=>{
 		f.style = null;
 	    });
@@ -3700,7 +3762,7 @@ MapGlyph.prototype = {
 	    let anyNumber =  false;
 	    features.forEach((f,idx)=>{
 		let value = this.getFeatureValue(f,prop);
-		if(isNaN(+value)) {
+		if(isNaN(parseFloat(value))) {
 		    if(!strings.includes(value)) {
 			strings.push(value);
 		    }
@@ -3752,6 +3814,7 @@ MapGlyph.prototype = {
 	applyColors(this.attrs.fillColorBy,'fillColor',this.fillStrings);
 	applyColors(this.attrs.strokeColorBy,'strokeColor',this.strokeStrings);	
 
+	if(debug) console.log("\tuseRules:" + useRules?.length);
 	if(useRules.length>0) {
 	    useRules.forEach(rule=>{
 		let styles = [];
