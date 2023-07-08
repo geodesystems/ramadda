@@ -2175,7 +2175,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 					    "[\".*OpenLayers_Control.*\"]",
 					    request.isAnonymous()
 					    ? null
-					    : "DB.addUrlShowingForm",false);
+					    : "DB.addUrlShowingForm");
 	}
 
         return sb;
