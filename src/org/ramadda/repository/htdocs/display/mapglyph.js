@@ -1378,7 +1378,7 @@ MapGlyph.prototype = {
 	}
 	if(forLegend) {
 	    let clazz = 'imdv-legend-label';
-	    label = HU.div(['class','ramadda-clickable ' + clazz,'glyphid',this.getId()],label);
+	    label = HU.div(['class','ramadda-clickable ' + clazz,'glyphid',this.getId(),'id',this.domId('legendlabel')],label);
 	    return [label,right];
 	}
 	return label;
@@ -4761,6 +4761,7 @@ MapGlyph.prototype = {
 	if(this.isSelected()) {
 	    return;
 	}
+	this.jq('legendlabel').css('font-weight','bold');
 	this.selected = true;
 	this.selectDots = [];
 	let pointCount = 0;
@@ -4802,6 +4803,7 @@ MapGlyph.prototype = {
 	return pointCount;
     },
     unselect:function() {
+	this.jq('legendlabel').css('font-weight','normal');
 	this.applyChildren(child=>{child.unselect();});
 	if(!this.isSelected()) {
 	    return;
