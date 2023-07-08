@@ -1888,7 +1888,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @return _more_
      */
     public String getSearchUrl(Request request) {
-        return request.makeUrl(URL_ENTRY_SEARCH, ARG_NAME, WHAT_ENTRIES);
+	//        return request.makeUrl(URL_ENTRY_SEARCH, ARG_NAME, WHAT_ENTRIES);
+        return request.makeUrl(URL_ENTRY_SEARCH);
     }
 
     /**
@@ -1927,23 +1928,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         return HU.submit(msg("Search"), ARG_SEARCH_SUBMIT);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
-    private void getFormOpen(Request request, Appendable sb)
-	throws Exception {
-        sb.append(
-		  HU.form(
-				 getSearchUrl(request),
-				 makeFormSubmitDialog(sb, msg("Searching..."))
-				 + " name=\"searchform\" "));
-    }
-
 
     /**
      * _more_
@@ -1955,12 +1939,24 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      */
     private void makeSearchForm(Request request, Appendable sb)
 	throws Exception {
-        getFormOpen(request, sb);
+	sb.append("\n");
+	String id = HU.getUniqueId("searchform_");
+        sb.append(HU.formPost(getSearchUrl(request),
+			      ""
+			      //			      makeFormSubmitDialog(sb, msg("Searching..."))
+			      + HU.attr("id",id)
+			      + HU.attr("name","searchform")));
+
+
+	sb.append("\n");
         sb.append(getTextField(request));
         sb.append(" ");
         sb.append(getSearchButtons(request));
+	sb.append("\n");
         StringBuilder searchForm = new StringBuilder();
         makeSearchForm(request, searchForm, true, false);
+	OutputHandler.addUrlShowingForm(searchForm,null,id,null,null,"showInputField","false");
+	searchForm.append("<p>");
         String        inner         = searchForm.toString();
         StringBuilder formSB        = new StringBuilder();
         boolean       showProviders = request.get("show_providers", false);
