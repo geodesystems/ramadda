@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Jul  8 06:38:05 MDT 2023";
+var build_date="RAMADDA build date: Sat Jul  8 07:14:18 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -49235,6 +49235,18 @@ MapGlyph.prototype = {
 	return this.getExampleMapLayer()?.features;
     },
 
+    getMapFeatures: function() {
+	if(this.mapLayer) return this.mapLayer.features;
+	let children = 	this.getChildren();
+	if(!children) return null;
+	let features = [];
+	for(let i=0;i<children.length;i++) {
+	    let childFeatures = children[i].getMapFeatures();
+	    if(childFeatures) features = Utils.mergeLists(features,childFeatures);
+	}
+	return features;
+    },
+
     getExampleMapLayer: function() {
 	if(this.mapLayer) return this.mapLayer;
 	let children = 	this.getChildren();
@@ -49248,9 +49260,7 @@ MapGlyph.prototype = {
 
     getFeatureInfoList:function() {
 	if(this.featureInfo) return this.featureInfo;
-	let mapLayer = this.getExampleMapLayer();
-	if(!mapLayer?.features) return [];
-	let features= mapLayer.features;
+	let features= this.getMapFeatures();
 	if(!features || features.length==0) return [];
 	let attrs = features[0].attributes;
 	let keys =   Object.keys(attrs);
@@ -49338,9 +49348,11 @@ MapGlyph.prototype = {
 	});
 
 
-	this.featureInfo =  Utils.mergeLists(first,middle,last);
+	let featureInfo =  Utils.mergeLists(first,middle,last);
+	let featureInfoMap = {};
+
 	features.forEach((f,fidx)=>{
-	    this.featureInfo.forEach(info=>{
+	    featureInfo.forEach(info=>{
 		let value= this.getFeatureValue(f,info.property);
 		if(!Utils.isDefined(value)) return;
 		if(isNaN(value) || info.samples.length>0) {
@@ -49367,8 +49379,8 @@ MapGlyph.prototype = {
 	});
 
 
-	this.featureInfoMap = {};
-	this.featureInfo.forEach(info=>{
+
+	featureInfo.forEach(info=>{
 	    if(info.samples.length) {
 		let items = info.samples.map(item=>{
 		    return {value:item,label:Utils.makeLabel(item)};
@@ -49377,10 +49389,15 @@ MapGlyph.prototype = {
 		    return a.label.localeCompare(b.label);
 		});
 	    }
-	    this.featureInfoMap[info.property] = info;
-	    this.featureInfoMap[info.id] = info;	    
+	    featureInfoMap[info.property] = info;
+	    featureInfoMap[info.id] = info;	    
 	});
-	return this.featureInfo;
+	this.featureInfoMap =featureInfoMap;	    
+	if(!this.isGroup()) {
+	    this.featureInfo =featureInfo;
+	}
+
+	return featureInfo;
     },
     getFeatureInfo:function(property) {
 	this.getFeatureInfoList();
@@ -49853,7 +49870,7 @@ MapGlyph.prototype = {
     },
 
     applyMapStyle:function(skipLegendUI) {
-	let debug = true;
+	let debug = false;
 	if(debug)
 	    console.log("applyMapStyle:" + this.getName());
     	this.applyChildren(child=>{child.applyMapStyle(skipLegendUI);});
