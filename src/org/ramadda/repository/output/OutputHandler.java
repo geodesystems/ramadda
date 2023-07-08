@@ -995,7 +995,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
     public static void addUrlShowingForm(Appendable sb, String formId,
                                          String skipList)
             throws Exception {
-        addUrlShowingForm(sb, null, formId, skipList, null, false);
+        addUrlShowingForm(sb, null, formId, skipList, null);
     }
 
     /**
@@ -1012,10 +1012,14 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
      */
     public static void addUrlShowingForm(Appendable sb, Entry entry,
                                          String formId, String skipList,
-                                         String hook, boolean includeCopyArgs)
+                                         String hook, String...opts)
             throws Exception {
         String outputId = HtmlUtils.getUniqueId("output_");
         HtmlUtils.div(sb, "", HtmlUtils.id(outputId));
+	//	String args = JsonUtil.map("includeCopyArgs","" + includeCopyArgs);
+	List<String> tmp = new ArrayList<String>();
+	for(String opt:opts) tmp.add(opt);
+	String args = JsonUtil.map(tmp);
         HtmlUtils.script(sb,
                          HtmlUtils.call("HtmlUtil.makeUrlShowingForm",
                                         (entry == null)
@@ -1026,7 +1030,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                                                     outputId), (skipList
                                                         != null)
                 ? skipList
-                : "null", "" + hook, "" + includeCopyArgs));
+					: "null", hook==null?"null": hook, args));
     }
 
 
