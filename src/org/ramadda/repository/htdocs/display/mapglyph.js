@@ -2372,6 +2372,8 @@ MapGlyph.prototype = {
 		return;
 	    }
 
+	    if(!this.mapServerLayer) return;
+
 	    if(!Utils.isDefined(andZoom)) andZoom = true;
 	    if(Utils.isDefined(this.style.opacity)) {
 		this.mapServerLayer.opacity = +this.style.opacity;
