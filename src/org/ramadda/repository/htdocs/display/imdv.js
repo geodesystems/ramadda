@@ -3360,9 +3360,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    //Add a timeout callback
 	    if(this.checkCurrentLocationTimeout) clearTimeout(this.checkCurrentLocationTimeout);
-	    this.checkCurrentLocationTimeout = setTimeout(()=>{
-		this.checkCurrentLocation();
-	    },1000*parseFloat(this.getMapProperty('currentLocationUpdateTime',30)));
+	    if(Utils.isDefined(this.getMapProperty('currentLocationUpdateTime'))) {
+		this.checkCurrentLocationTimeout = setTimeout(()=>{
+		    this.checkCurrentLocation();
+		},1000*parseFloat(this.getMapProperty('currentLocationUpdateTime',30)));
+	    }		
 
 	},
 	checkOpacitySlider:function() {
