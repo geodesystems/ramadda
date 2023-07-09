@@ -1935,6 +1935,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	makeGlyphButtons:function(mapGlyph,includeEdit) {
 	    if(!this.canChange()) return '';
 	    let buttons = [];
+	    let buttonsRight = [];	    
 	    let icon = i=>{
 		return HU.getIconImage(i,[],BUTTON_IMAGE_ATTRS);
 	    };
@@ -1944,7 +1945,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		buttons.push(
 		    HU.span([CLASS,'ramadda-clickable',TITLE,'Select','glyphid',mapGlyph.getId(),'buttoncommand',ID_SELECT],
 			    icon('fas fa-hand-pointer')));
-		buttons.push(HU.span([CLASS,'ramadda-clickable',TITLE,'Delete','glyphid',mapGlyph.getId(),'buttoncommand',ID_DELETE],icon('fa-solid fa-delete-left')));
+		buttons.push(HU.span([CLASS,'ramadda-clickable',TITLE,'Delete','glyphid',mapGlyph.getId(),'buttoncommand',ID_DELETE],icon('fas fa-eraser')));
 
 		if(mapGlyph.isMarker() && this.isIsolineEnabled()) {
 		    buttons.push(HU.span([CLASS,'ramadda-clickable',TITLE,'Add Isoline',
@@ -1952,10 +1953,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 	    }
 	    if(mapGlyph.isGroup()) {
-		buttons.push(HU.span([CLASS,'ramadda-clickable',TITLE,'Cycle visibility children. Shift-key: all visible; Meta-key: all hidden',
-					  'glyphid',mapGlyph.getId(),'buttoncommand',"cyclevis"],icon('fa-solid fa-arrows-spin')));
+		buttonsRight.push(HU.span([CLASS,'ramadda-clickable',TITLE,'Cycle visibility children. Shift-key: all visible; Meta-key: all hidden',
+					  'glyphid',mapGlyph.getId(),'buttoncommand',"cyclevis"],icon('fas fa-arrows-spin')));
 	    }
-	    return Utils.wrap(buttons,HU.open('span',['style',HU.css('margin-right','8px')]),'</span>');
+	    let attrs = ['style',HU.css('margin-right','8px')];
+	    let bar =  Utils.wrap(buttons,HU.open('span',attrs),'</span>');
+	    if(buttonsRight.length) bar = HU.leftRight(bar,Utils.wrap(buttonsRight,'<span>','</span>'));
+	    return bar;
 	},
 	makeListItem:function(mapGlyph,idx) {
 	    let style  = mapGlyph.getStyle()||{};

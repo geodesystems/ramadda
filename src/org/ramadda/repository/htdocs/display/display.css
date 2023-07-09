@@ -3037,7 +3037,8 @@ table.dataTable tfoot td {
 }
 
 .imdv-legend-label-invisible {
-    background:#ecf8fc;
+    /*background:#ecf8fc;*/
+    background:#eee;
 }
 
 .imdv-filter-enum {

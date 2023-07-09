@@ -1724,7 +1724,8 @@ MapGlyph.prototype = {
 	    if(showInMapLegend)
 		inMapLegend+=legend;
 	    else
-		body+=HU.toggleBlock('Legend',legend,true);
+		body+=HU.toggleBlock(HU.span(['title','Legend'],HU.getIconImage('fas fa-list',null,['style',HU.css("font-size","8pt")])),
+				     /*'Legend',*/legend,true);
 	}
 
 
@@ -2296,7 +2297,10 @@ MapGlyph.prototype = {
 	//Only create the map if we're visible
 	if(!this.isMap() || !this.isVisible()) return;
 	if(this.mapLayer==null) {
-	    if(!Utils.isDefined(andZoom)) andZoom = true;
+	    if(!Utils.isDefined(andZoom)) {
+		//Not sure why we do this
+		//		andZoom = true;
+	    }
 	    this.setMapLayer(this.display.createMapLayer(this,this.attrs,this.style,andZoom));
 	    this.applyMapStyle();
 	}
