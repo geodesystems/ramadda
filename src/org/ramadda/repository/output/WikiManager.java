@@ -8107,6 +8107,7 @@ public class WikiManager extends RepositoryManager
 	    String googleKey = GeoUtils.getGoogleKey();	
 	    if(hereKey!=null) {
 		props.put("hereRoutingEnabled","true");
+		props.put("isolineEnabled","true");
 	    }
 	    if(googleKey!=null) {
 		props.put("googleRoutingEnabled","true");
