@@ -404,6 +404,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	isRouteEnabled:function() {
 	    return this.isHereEnabled() || this.getProperty('googleRoutingEnabled');
 	},
+	isIsolineEnabled:function() {
+	    return this.getProperty('isolineEnabled');
+	},
 	isHereEnabled:function() {
 	    return this.getProperty('hereRoutingEnabled');
 	},
@@ -573,7 +576,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		handleRouteData(data);
 	    }).fail(fail);
 	},	    
-	addIsolineToCurrentMarker() {
+	addIsolineForCurrentMarker() {
 	    if(!this.currentLocationMarker) return;
 	    this.addIsolineAt(this.currentLocationMarker.location);
 	},
@@ -582,7 +585,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.addIsolineAt(center);
 	},
 
-	addIsolineAt:function(center) {
+	addIsolineAt:function(center,lon) {
+	    if(Utils.isDefined(lon) && (typeof center=='number')) {
+		center = {y:center,x:lon};
+	    }
 	    this.getMap().closePopup();
 	    let html = HU.formTable();
 	    html+=HU.formEntry('Mode:' , HU.select('',['id',this.domId('isolinemode')],['car','bicycle','pedestrian'],this.isolineMode));
@@ -1908,6 +1914,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    return;
 		}
 		if(command=='toback') _this.changeOrder(false,mapGlyph);
+		else if(command=='cyclevis') mapGlyph.toggleVisibility(event);		
 		else if(command=='tofront') _this.changeOrder(true,mapGlyph);		
 		else if(command=='edit') {
 		    _this.editFeatureProperties(mapGlyph);
@@ -1932,17 +1939,21 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		return HU.getIconImage(i,[],BUTTON_IMAGE_ATTRS);
 	    };
 	    if(includeEdit) {
-		buttons.push(HU.span([CLASS,'ramadda-clickable',TITLE,'Edit','glyphid',mapGlyph.getId(),'buttoncommand','edit'],
+		buttons.push(HU.span([CLASS,'ramadda-clickable',TITLE,'Settings','glyphid',mapGlyph.getId(),'buttoncommand','edit'],
 				     icon('fas fa-cog')));
 		buttons.push(
 		    HU.span([CLASS,'ramadda-clickable',TITLE,'Select','glyphid',mapGlyph.getId(),'buttoncommand',ID_SELECT],
 			    icon('fas fa-hand-pointer')));
 		buttons.push(HU.span([CLASS,'ramadda-clickable',TITLE,'Delete','glyphid',mapGlyph.getId(),'buttoncommand',ID_DELETE],icon('fa-solid fa-delete-left')));
 
-		if(mapGlyph.isMarker()) {
+		if(mapGlyph.isMarker() && this.isIsolineEnabled()) {
 		    buttons.push(HU.span([CLASS,'ramadda-clickable',TITLE,'Add Isoline',
-					  'glyphid',mapGlyph.getId(),'buttoncommand',"addisoline"],icon('fa-regular fa-circle-xmark')));
+					  'glyphid',mapGlyph.getId(),'buttoncommand',"addisoline"],icon('fa-regular fa-circle-dot')));
 		}
+	    }
+	    if(mapGlyph.isGroup()) {
+		buttons.push(HU.span([CLASS,'ramadda-clickable',TITLE,'Cycle visibility children. Shift-key: all visible; Meta-key: all hidden',
+					  'glyphid',mapGlyph.getId(),'buttoncommand',"cyclevis"],icon('fa-solid fa-arrows-spin')));
 	    }
 	    return Utils.wrap(buttons,HU.open('span',['style',HU.css('margin-right','8px')]),'</span>');
 	},
@@ -3335,8 +3346,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 
 		let popup = '<center><h2>Current Location</h2></center>';
-		if(this.isHereEnabled()) {
-		    popup+=HU.onClick('ImdvUtils.getImdv(\'' + this.getId() +'\').addIsolineToCurrentMarker()','Add Isoline');
+		if(this.isIsolineEnabled()) {
+		    popup+=HU.onClick('ImdvUtils.getImdv(\'' + this.getId() +'\').addIsolineForCurrentMarker()',	    HU.getIconImage('fa-regular fa-circle-dot')+' ' +'Add Isoline');
 		}
 		this.currentLocationMarker =
 		    this.getMap().addMarker('location', lonlat, null, '', popup, 20, 20);
@@ -4593,6 +4604,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let popup =this.getMap().makePopup(location,div,props);
 		    this.getMap().currentPopup = popup;
 		    this.getMap().getMap().addPopup(popup);
+		    if(this.isIsolineEnabled()) {
+			let latlon =   this.getMap().transformProjPoint(location);
+			html+='<p>'+
+			    HU.onClick('ImdvUtils.getImdv(\'' + this.getId() +'\').addIsolineAt('+ latlon.lat+',' + latlon.lon+')',
+				       HU.getIconImage('fa-regular fa-circle-dot')+' ' +'Add Isoline');
+		    }
 		    jqid(id).html(html);
 		    //For some reason the links don't work in the popup
 		    //so we do this and handle the clicks here

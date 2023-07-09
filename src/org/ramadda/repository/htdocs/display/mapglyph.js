@@ -253,6 +253,40 @@ MapGlyph.prototype = {
 	return obj;
     },	
 
+    toggleVisibility:function(event) {
+	let children = 	this.getChildren();
+	if(!children||children.length==0) return;
+	if(event.shiftKey) {
+	    children.forEach(child=>{
+		child.setVisible(true,true);
+	    });
+	    return
+	}
+	if(event.metaKey) {
+	    children.forEach(child=>{
+		child.setVisible(false,true);
+	    });
+	    return
+	}	
+
+
+	let nextIdx=0;
+	if(!this.visibleChild) nextIdx=0;
+	else {
+	    nextIdx = children.indexOf(this.visibleChild);
+	    if(nextIdx<0) nextIdx=0;
+	    else if(nextIdx==children.length-1) nextIdx=0;
+	    else nextIdx++;
+	}
+	children.forEach((child,idx) =>{
+	    if(idx==nextIdx) {
+		child.setVisible(true,true);
+		this.visibleChild = child;
+	    }  else {
+		child.setVisible(false,true);
+	    }
+	});
+    },
     applyStyleToChildren:function(prop,value) {
 	this.applyChildren(child=>{
 	    if(child.style) {
