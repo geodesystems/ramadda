@@ -1393,6 +1393,11 @@ MapGlyph.prototype = {
 	    if(url && forLegend)
 		icon = HU.href(url,icon,['target','_entry']);
 	    let showZoomTo = forLegend && this.hasBounds();
+	    if(this.isGroup()) {
+		right+=SPACE+HU.span([CLASS,'ramadda-clickable',TITLE,'Cycle visibility children. Shift-key: all visible; Meta-key: all hidden',
+				      'glyphid',this.getId(),'buttoncommand',"cyclevis"],HU.getIconImage('fas fa-arrows-spin',[],BUTTON_IMAGE_ATTRS));
+	    }
+
 	    if(showZoomTo) {
 		right+=SPACE+
 		    HU.span([CLASS,'ramadda-clickable imdv-legend-item-view',
@@ -1610,7 +1615,10 @@ MapGlyph.prototype = {
 	let showInMapLegend=this.getProperty('showLegendInMap',false) && !this.display.getShowLegendInMap();
 	let inMapLegend='';
 	let body = '';
-	let buttons = this.display.makeGlyphButtons(this,this.canEdit());
+	
+	let debug = this.getName()=='Alerts';
+	let buttons = this.display.makeGlyphButtons(this,this.canEdit(),this.getName()=='Alerts');
+
 	if(this.isMap() && this.getProperty('showFeaturesTable',true))  {
 	    this.showFeatureTableId = HU.getUniqueId('btn');
 	    if(buttons!=null) buttons = HU.space(1)+buttons;
@@ -1618,23 +1626,14 @@ MapGlyph.prototype = {
 			       HU.getIconImage('fas fa-table',[],BUTTON_IMAGE_ATTRS)) +buttons;
 	}
 
-	/** For now don't add this as we can also get it through the entry link below
-	    if(this.downloadUrl) {
-	    if(buttons!=null) buttons = HU.space(1)+buttons;
-	    buttons = HU.href(this.downloadUrl,HU.getIconImage('fas fa-download',[],BUTTON_IMAGE_ATTRS),['target','_download','title','Download','class','ramadda-clickable']) +buttons;
-	    }
-	*/
-
-
 	if(this.attrs.entryId) {
 	    if(buttons!=null) buttons = HU.space(1)+buttons;
 	    url = RamaddaUtils.getEntryUrl(this.attrs.entryId);
 	    buttons = HU.href(url,HU.getIconImage('fas fa-home',[],BUTTON_IMAGE_ATTRS),['target','_entry','title','View entry','class','ramadda-clickable']) +buttons;
 	}	
-
-	
-	if((!this.display.canEdit() && !this.getProperty('showButtons',true))/* || this.isEphemeral*/)
+	if((!this.display.canEdit() && !this.getProperty('showButtons',true))) {
 	    buttons = '';
+	}
 
 	if(buttons!='')
 	    body+=HU.div(['class','imdv-legend-offset'],buttons);

@@ -1932,10 +1932,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 	},
 	
-	makeGlyphButtons:function(mapGlyph,includeEdit) {
+	makeGlyphButtons:function(mapGlyph,includeEdit,debug) {
 	    if(!this.canChange()) return '';
 	    let buttons = [];
-	    let buttonsRight = [];	    
 	    let icon = i=>{
 		return HU.getIconImage(i,[],BUTTON_IMAGE_ATTRS);
 	    };
@@ -1952,13 +1951,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					  'glyphid',mapGlyph.getId(),'buttoncommand',"addisoline"],icon('fa-regular fa-circle-dot')));
 		}
 	    }
-	    if(mapGlyph.isGroup()) {
-		buttonsRight.push(HU.span([CLASS,'ramadda-clickable',TITLE,'Cycle visibility children. Shift-key: all visible; Meta-key: all hidden',
-					  'glyphid',mapGlyph.getId(),'buttoncommand',"cyclevis"],icon('fas fa-arrows-spin')));
-	    }
 	    let attrs = ['style',HU.css('margin-right','8px')];
 	    let bar =  Utils.wrap(buttons,HU.open('span',attrs),'</span>');
-	    if(buttonsRight.length) bar = HU.leftRight(bar,Utils.wrap(buttonsRight,'<span>','</span>'));
 	    return bar;
 	},
 	makeListItem:function(mapGlyph,idx) {
