@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Jul  8 22:24:02 MDT 2023";
+var build_date="RAMADDA build date: Sun Jul  9 06:31:48 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -42725,6 +42725,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	makeGlyphButtons:function(mapGlyph,includeEdit) {
 	    if(!this.canChange()) return '';
 	    let buttons = [];
+	    let buttonsRight = [];	    
 	    let icon = i=>{
 		return HU.getIconImage(i,[],BUTTON_IMAGE_ATTRS);
 	    };
@@ -42734,7 +42735,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		buttons.push(
 		    HU.span([CLASS,'ramadda-clickable',TITLE,'Select','glyphid',mapGlyph.getId(),'buttoncommand',ID_SELECT],
 			    icon('fas fa-hand-pointer')));
-		buttons.push(HU.span([CLASS,'ramadda-clickable',TITLE,'Delete','glyphid',mapGlyph.getId(),'buttoncommand',ID_DELETE],icon('fa-solid fa-delete-left')));
+		buttons.push(HU.span([CLASS,'ramadda-clickable',TITLE,'Delete','glyphid',mapGlyph.getId(),'buttoncommand',ID_DELETE],icon('fas fa-eraser')));
 
 		if(mapGlyph.isMarker() && this.isIsolineEnabled()) {
 		    buttons.push(HU.span([CLASS,'ramadda-clickable',TITLE,'Add Isoline',
@@ -42742,10 +42743,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 	    }
 	    if(mapGlyph.isGroup()) {
-		buttons.push(HU.span([CLASS,'ramadda-clickable',TITLE,'Cycle visibility children. Shift-key: all visible; Meta-key: all hidden',
-					  'glyphid',mapGlyph.getId(),'buttoncommand',"cyclevis"],icon('fa-solid fa-arrows-spin')));
+		buttonsRight.push(HU.span([CLASS,'ramadda-clickable',TITLE,'Cycle visibility children. Shift-key: all visible; Meta-key: all hidden',
+					  'glyphid',mapGlyph.getId(),'buttoncommand',"cyclevis"],icon('fas fa-arrows-spin')));
 	    }
-	    return Utils.wrap(buttons,HU.open('span',['style',HU.css('margin-right','8px')]),'</span>');
+	    let attrs = ['style',HU.css('margin-right','8px')];
+	    let bar =  Utils.wrap(buttons,HU.open('span',attrs),'</span>');
+	    if(buttonsRight.length) bar = HU.leftRight(bar,Utils.wrap(buttonsRight,'<span>','</span>'));
+	    return bar;
 	},
 	makeListItem:function(mapGlyph,idx) {
 	    let style  = mapGlyph.getStyle()||{};
@@ -47989,7 +47993,8 @@ MapGlyph.prototype = {
 	    if(showInMapLegend)
 		inMapLegend+=legend;
 	    else
-		body+=HU.toggleBlock('Legend',legend,true);
+		body+=HU.toggleBlock(HU.span(['title','Legend'],HU.getIconImage('fas fa-list',null,['style',HU.css("font-size","8pt")])),
+				     /*'Legend',*/legend,true);
 	}
 
 
@@ -48561,7 +48566,10 @@ MapGlyph.prototype = {
 	//Only create the map if we're visible
 	if(!this.isMap() || !this.isVisible()) return;
 	if(this.mapLayer==null) {
-	    if(!Utils.isDefined(andZoom)) andZoom = true;
+	    if(!Utils.isDefined(andZoom)) {
+		//Not sure why we do this
+		//		andZoom = true;
+	    }
 	    this.setMapLayer(this.display.createMapLayer(this,this.attrs,this.style,andZoom));
 	    this.applyMapStyle();
 	}
