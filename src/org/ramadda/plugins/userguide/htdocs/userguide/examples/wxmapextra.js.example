@@ -4,15 +4,22 @@
 //
 
 
+
 //
 //This adds a number of WMTS layers of weather data
+//from  https://mesonet.agron.iastate.edu/ogc/
 //
 function makeWxLayers() {
     let maxZoom =  8;
     let wlayers = [ 
 	{name:'NEXRAD Reflectivity', maxZoom:11,id:'nexrad-n0q-900913',alias:'nexrad'},
-	{name:'NEXRAD - 15 minutes old', maxZoom:11,id:'nexrad-n0q-900913-m15m',alias:'nexrad-15'},
-	{name:'NEXRAD - 30 minutes old', maxZoom:11,id:'nexrad-n0q-900913-m30m',alias:'nexrad-30'},		
+	{name:'NEXRAD - 5 minutes old', maxZoom:11,id:'nexrad-n0q-900913-m5m',alias:'nexrad-5'},
+	{name:'NEXRAD - 10 minutes old', maxZoom:11,id:'nexrad-n0q-900913-m10m',alias:'nexrad-10'},
+	{name:'NEXRAD - 20 minutes old', maxZoom:11,id:'nexrad-n0q-900913-m20m',alias:'nexrad-20'},
+	{name:'NEXRAD - 30 minutes old', maxZoom:11,id:'nexrad-n0q-900913-m30m',alias:'nexrad-30'},	
+	{name:'NEXRAD - 40 minutes old', maxZoom:11,id:'nexrad-n0q-900913-m40m',alias:'nexrad-40'},	
+	{name:'NEXRAD - 50 minutes old', maxZoom:11,id:'nexrad-n0q-900913-m50m',alias:'nexrad-50'},		
+
 	{name:'NEXRAD Echo Tops', maxZoom:11,id:'nexrad-eet-900913',alias:'echotops'},	
 	{name:'1 Hour Precip', maxZoom:11,id:'q2-n1p-900913',alias:'1hourprecip'},
 	{name:'24 hr precip', maxZoom:maxZoom,id:'q2-p24h-900913',alias:'precipitation'},
