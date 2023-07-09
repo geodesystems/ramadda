@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Jul  8 21:59:07 MDT 2023";
+var build_date="RAMADDA build date: Sat Jul  8 22:24:02 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -44150,9 +44150,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    //Add a timeout callback
 	    if(this.checkCurrentLocationTimeout) clearTimeout(this.checkCurrentLocationTimeout);
-	    this.checkCurrentLocationTimeout = setTimeout(()=>{
-		this.checkCurrentLocation();
-	    },1000*parseFloat(this.getMapProperty('currentLocationUpdateTime',30)));
+	    if(Utils.isDefined(this.getMapProperty('currentLocationUpdateTime'))) {
+		this.checkCurrentLocationTimeout = setTimeout(()=>{
+		    this.checkCurrentLocation();
+		},1000*parseFloat(this.getMapProperty('currentLocationUpdateTime',30)));
+	    }		
 
 	},
 	checkOpacitySlider:function() {
