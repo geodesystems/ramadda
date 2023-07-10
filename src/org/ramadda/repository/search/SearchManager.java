@@ -750,8 +750,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    StringBuilder fileCorpus = new StringBuilder();
             addContentField(entry, doc, FIELD_CONTENTS, entry.getResource().getTheFile(), true, fileCorpus);
 	    corpus.append(fileCorpus);
-	    int[]tokenLimit = new int[]{Repository.GPT_TOKEN_LIMIT};
-
+	    int[]tokenLimit = new int[]{-1};
 	    if(/*isNew && */request!=null) {
 		boolean entryChanged = false;
 		if(request.get(ARG_EXTRACT_KEYWORDS,false)) {
@@ -780,7 +779,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			String prompt = request.getString(ARG_EXTRACT_SUMMARY_PROMPT,"");
 			if(!stringDefined(prompt))
 			    prompt = SUMMARY_PROMPT;
-			String summary = getRepository().callLLM(prompt,"",fileCorpus,200,true,tokenLimit);
+			String summary = getRepository().callLLM(request, prompt,"",fileCorpus,200,true,tokenLimit);
 			if(debugLLM) System.err.println("got summary:" + summary);
 			if(stringDefined(summary)) {
 			    summary = Utils.stripTags(summary).trim().replaceAll("^:+","");
@@ -792,7 +791,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 		    if(request.get(ARG_EXTRACT_TITLE,false)) {
 			if(debugLLM) System.err.println("SearchManager: callLLM: title");
-			String title = getRepository().callLLM("Extract the title from the following document:","",fileCorpus,200,true,tokenLimit);
+			String title = getRepository().callLLM(request, "Extract the title from the following document:","",fileCorpus,200,true,tokenLimit);
 			if(debugLLM) System.err.println("got title:" + title);
 			if(stringDefined(title)) {
 			    title = title.trim().replaceAll("\"","").replaceAll("\"","");
@@ -805,7 +804,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 		    if(request.get(ARG_EXTRACT_AUTHORS,false)) {
 			if(debugLLM) System.err.println("SearchManager: callLLM: authors");
-			String authors = getRepository().callLLM("Extract the author's names and only the author's names from the first few pages in the following text and separate the names with a comma:","",fileCorpus,200,true,tokenLimit);		    
+			String authors = getRepository().callLLM(request, "Extract the author's names and only the author's names from the first few pages in the following text and separate the names with a comma:","",fileCorpus,200,true,tokenLimit);		    
 			if(debugLLM) System.err.println("got authors:" + authors);
 			if(stringDefined(authors)) {
 			    entryChanged = true;
@@ -905,7 +904,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	List<String> keywords = new ArrayList<String>();
 	if(debugLLM) System.err.println("SearchManager: callLLM: keywords");
-	String result = getRepository().callLLM("Extract keywords from the following text. Limit your response to no more than 10 keywords:","Keywords:",fileCorpus,60,true,tokenLimit);
+	String result = getRepository().callLLM(request, "Extract keywords from the following text. Limit your response to no more than 10 keywords:","Keywords:",fileCorpus,60,true,tokenLimit);
 	if(debugLLM) System.err.println("got:" + result);
 	if(result!=null) {
 	    for(String tok:Utils.split(result,",",true,true)) {
