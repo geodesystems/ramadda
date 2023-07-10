@@ -705,6 +705,10 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		if(this.zooming) return;
 		let globeDisplays = 
 		    Utils.displaysList.filter(d=>{
+			if(!d.getId) {
+			    console.dir(d);
+			    return false;
+			}
 			if(d.getId() == this.getId()) return false;
 			if(d.type!=DISPLAY_THREE_GLOBE) return false;
 			if(!d.getLinked()) return false;
