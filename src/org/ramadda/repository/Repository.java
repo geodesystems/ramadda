@@ -6195,7 +6195,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 	boolean useGPT4 = false;
 	if(isGPT4Enabled()) {
-	    useGPT4 = request.get(ARG_USEGPT4,false);
+	    //If no arg then default to gpt4
+	    if(request.exists(ARG_USEGPT4)) 
+		useGPT4 = request.get(ARG_USEGPT4,false);
+	    else
+		useGPT4 = true;
 	}
 
 	if(initTokenLimit==null) 
