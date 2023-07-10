@@ -1038,6 +1038,8 @@ public interface Constants {
     public static final String ARG_METADATA_ADD = "metadata.add";
 
     /**  */
+    public static final String ARG_USEGPT4  = "usegpt4";
+
     public static final String ARG_EXTRACT_KEYWORDS = "extract_keywords";
     public static final String ARG_EXTRACT_SUMMARY = "extract_summary";    
     public static final String ARG_EXTRACT_SUMMARY_PROMPT = "extract_summary_prompt";    
