@@ -572,7 +572,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private boolean ignoreSSL = false;
 
     private static boolean  debugLLM = true;
-    public static final int GPT_TOKEN_LIMIT = 3000;
+    public static final int GPT3_TOKEN_LIMIT = 3000;
+    public static final int GPT4_TOKEN_LIMIT = 6000;
 
     /**
      * _more_
@@ -6097,6 +6098,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    Utils.stringDefined(getProperty("palm.api.key"));
     }
 
+    public boolean isGPT4Enabled() {
+	return getProperty("gpt.gpt4.enabled",false);
+    }    
+
 
 
 
@@ -6111,7 +6116,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 						"Rewrite the following text as college level material:");
 	String promptSuffix = request.getString("promptsuffix", "");
 	//	text = callGpt("Rewrite the following text:","",new StringBuilder(text),1000,false);		    
-	text = callLLM(promptPrefix,promptSuffix,new StringBuilder(text),1000,false,null);		    
+	text = callLLM(request, promptPrefix,promptSuffix,new StringBuilder(text),1000,false,null);		    
 	String json = JsonUtil.map(Utils.makeList("result", JsonUtil.quote(text)));
 	return new Result("", new StringBuilder(json), "text/json");
 	
@@ -6177,7 +6182,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    public String callLLM(String prompt1,String prompt2,StringBuilder corpus,int tokens,boolean tokenize,int[]initTokenLimit)
+    public String callLLM(Request request, String prompt1,String prompt2,StringBuilder corpus,int maxReturnTokens,boolean tokenize,int[]initTokenLimit)
 	throws Exception {
 	if(debugLLM) System.err.println("callLLM");
 	String text = corpus.toString();
@@ -6188,9 +6193,25 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    return null;
 	}
 
-	int tokenLimit = initTokenLimit!=null?initTokenLimit[0]:GPT_TOKEN_LIMIT;
+	boolean useGPT4 = false;
+	if(isGPT4Enabled()) {
+	    useGPT4 = request.get(ARG_USEGPT4,false);
+	}
+
+	if(initTokenLimit==null) 
+	    initTokenLimit = new int[]{-1};
+
+	if(initTokenLimit[0]<=0) {
+	    if(useGPT4)
+		initTokenLimit[0] = Repository.GPT4_TOKEN_LIMIT;
+	    else
+		initTokenLimit[0] = Repository.GPT3_TOKEN_LIMIT;
+	} 
+
+
+	int tokenLimit = initTokenLimit[0];
 	while(tokenLimit>=500) {
-	    if(initTokenLimit!=null) initTokenLimit[0] = tokenLimit;
+	    initTokenLimit[0] = tokenLimit;
 	    StringBuilder gptCorpus = new StringBuilder(prompt1);
 	    gptCorpus.append("\n\n");
 	    if(!tokenize) {
@@ -6219,23 +6240,22 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    }
 	    gptCorpus.append("\n\n");
 	    gptCorpus.append(prompt2);
-	    if(debugLLM) System.err.println("Repository.callGpt return max tokens:" + tokens);
 	    String gptText =  gptCorpus.toString();
+	    if(debugLLM) System.err.println("Repository.callGpt  max return tokens:" + maxReturnTokens +" use gpt4:" + useGPT4 +" text length:" + gptText.length() +" tokenCnt:" + initTokenLimit[0]);
 	    List<String> args = Utils.makeList("temperature", "0",
-					       "max_tokens" ,""+ tokens,
+					       "max_tokens" ,""+ maxReturnTokens,
 					       "top_p", "1.0");
-	    boolean useTurbo = true;
-	    if(!useTurbo) {
-		Utils.add(args,"model",JsonUtil.quote("text-davinci-003"),"prompt",  JsonUtil.quote(gptText));
-	    } else {
+
+	    if(useGPT4) 
+		Utils.add(args,"model",JsonUtil.quote("gpt-4"));
+	    else
 		Utils.add(args,"model",JsonUtil.quote("gpt-3.5-turbo"));
-		Utils.add(args,"messages",JsonUtil.list(JsonUtil.map(
-								     "role",JsonUtil.quote("user"),
-								     "content",JsonUtil.quote(gptText))));
-	    }
+	    Utils.add(args,"messages",JsonUtil.list(JsonUtil.map(
+								 "role",JsonUtil.quote("user"),
+								 "content",JsonUtil.quote(gptText))));
 
 	    String body = JsonUtil.map(args);
-	    String url = useTurbo?"https://api.openai.com/v1/chat/completions":"https://api.openai.com/v1/completions";
+	    String url = "https://api.openai.com/v1/chat/completions";
 	    IO.Result  result = IO.getHttpResult(IO.HTTP_METHOD_POST
 						 , new URL(url), body,
 						 "Content-Type","application/json",
