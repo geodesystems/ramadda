@@ -1434,7 +1434,8 @@ RepositoryMap.prototype = {
             var url = getRamadda().getEntryDownloadUrl(this.geojsonLayer);
             this.addGeoJsonLayer(this.geojsonLayerName, url, false, null, null, null, null);
         }
-	Utils.addDisplay(this);
+	//Not sure why we do this as addDisplay should only be for the displays under display/
+	//	Utils.addDisplay(this);
 	//Do this later for when this map is being shown for a display_map
 	let makeSlider = () =>{
 	    let slider = "Image Opacity:&nbsp;" + 
