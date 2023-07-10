@@ -3037,7 +3037,6 @@ table.dataTable tfoot td {
 }
 
 .imdv-legend-label-invisible {
-    /*background:#ecf8fc;*/
     background:#eee;
 }
 
@@ -3045,9 +3044,7 @@ table.dataTable tfoot td {
     background:var(--color-mellow-yellow);
 }
 
-
 .imdv-filter-enum {
-    /*max-width:180px;*/
 }
 
 .imdv-properties-section {
