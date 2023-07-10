@@ -22,9 +22,8 @@ if [  "$2" ]; then
 fi
 
 pushd ${RAMADDA_SRC}
-#not now
-#echo "making htdocs";
-#${ANT_HOME} -S -buildfile ${RAMADDA_SRC}/src/org/ramadda/repository/build.xml htdocs
+echo "making htdocs";
+${ANT_HOME} -S -buildfile ${RAMADDA_SRC}/src/org/ramadda/repository/build.xml htdocs
 
 echo "Pulling"
 git pull
