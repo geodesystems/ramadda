@@ -5316,9 +5316,14 @@ public class TypeHandler extends RepositoryManager {
 	String extract = "";
 
 	if(getSearchManager().isSummaryExtractionEnabled()) {
-	    extract += "<p>"+
-		HU.labeledCheckbox(ARG_EXTRACT_KEYWORDS, "true", false,
-				   "Extract keywords") +
+	    extract += "<p>";
+
+	    if(getRepository().isGPT4Enabled()) {
+		extract+=HU.labeledCheckbox(ARG_USEGPT4, "true", false,   "Use GPT 4") +"<br>";
+	    }
+
+	    extract+= HU.labeledCheckbox(ARG_EXTRACT_KEYWORDS, "true", false,
+					 "Extract keywords") +
 		space + 
 		HU.labeledCheckbox(ARG_EXTRACT_TITLE, "true", false,"Extract title") +
 		space +
