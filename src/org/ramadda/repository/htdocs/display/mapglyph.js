@@ -256,6 +256,9 @@ MapGlyph.prototype = {
     toggleVisibility:function(event) {
 	let children = 	this.getChildren();
 	if(!children||children.length==0) return;
+	children.forEach(child=>{
+	    child.highlighted=false;
+	});
 	if(event.shiftKey) {
 	    children.forEach(child=>{
 		child.setVisible(true,true);
@@ -269,7 +272,6 @@ MapGlyph.prototype = {
 	    return
 	}	
 
-
 	let nextIdx=0;
 	if(!this.visibleChild) nextIdx=0;
 	else {
@@ -280,7 +282,7 @@ MapGlyph.prototype = {
 	}
 	children.forEach((child,idx) =>{
 	    if(idx==nextIdx) {
-		child.setVisible(true,true);
+		child.setVisible(true,true,true);
 		this.visibleChild = child;
 	    }  else {
 		child.setVisible(false,true);
@@ -1568,6 +1570,10 @@ MapGlyph.prototype = {
 	    opts.idToGlyph[this.getId()] = this;
 	let clazz = "";
 	if(!this.getVisible()) clazz+=' imdv-legend-label-invisible ';
+	if(this.highlighted) {
+	    clazz+= ' imdv-legend-label-highlight '
+	}
+
 	html+=HU.open('div',['id',this.domId('legend_'),'glyphid',this.getId(),'class','imdv-legend-item '+clazz]);
 	html+=HU.div(['style','display: flex;'],HU.div(['style','margin-right:4px;'],block.header)+
 		     HU.div(['style','width:80%;'], label[0])+
@@ -4304,7 +4310,8 @@ MapGlyph.prototype = {
 	return this.attrs.visibleLevelRange;
     },
 
-    setVisible:function(visible,callCheck) {
+    setVisible:function(visible,callCheck,highlighted) {
+	this.highlighted = highlighted;
 	if(!visible) {
 	    if(this.stepMarker) {
 		this.display.removeFeatures([this.stepMarker]);
@@ -4323,10 +4330,16 @@ MapGlyph.prototype = {
 	    this.checkVisible();
 	this.checkMapLayer();
 	let legend = this.getLegendDiv();
-	if(this.getVisible()) 
-	    legend.removeClass('imdv-legend-label-invisible');
-	else
-	    legend.addClass('imdv-legend-label-invisible');			    
+	legend.removeClass('imdv-legend-label-invisible');
+	legend.removeClass('imdv-legend-label-highlight');
+//	console.log('\tsetVisible:',this.getName(),this.getVisible(),this.highlighted);
+	if(this.getVisible()) {
+	    if(this.highlighted) {
+		legend.addClass('imdv-legend-label-highlight');
+	    } 
+	} else {
+	    legend.addClass('imdv-legend-label-invisible');
+	}
     },
     getVisible:function() {
 	if(!Utils.isDefined(this.attrs.visible)) this.attrs.visible = true;

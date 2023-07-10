@@ -3041,6 +3041,11 @@ table.dataTable tfoot td {
     background:#eee;
 }
 
+.imdv-legend-label-highlight {
+    background:var(--color-mellow-yellow);
+}
+
+
 .imdv-filter-enum {
     /*max-width:180px;*/
 }
