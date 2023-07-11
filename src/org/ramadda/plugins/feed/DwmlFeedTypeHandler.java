@@ -363,32 +363,6 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public List<String[]> getWikiEditLinks() {
-        List<String[]> fromParent = super.getWikiEditLinks();
-
-        List<String[]> links      = new ArrayList<String[]>();
-        if (fromParent != null) {
-            links.addAll(fromParent);
-        }
-        links.add(new String[] { "Hazards",
-                                 "{{nws.hazards showHeader=false}}" });
-        links.add(new String[] { "Current Conditions",
-                                 "{{nws.current showHeader=false showDetails=true}}" });
-        links.add(new String[] { "Forecast",
-                                 "{{nws.forecast showHeader=false showDetails=true count=1000}}" });
-        links.add(new String[] { "Forecast Details",
-                                 "{{nws.details showHeader=false}}" });
-        links.add(new String[] { "Forecast All",
-                                 "{{nws.all showHeader=false}}" });
-
-        return links;
-    }
-
 
     /**
      * _more_
