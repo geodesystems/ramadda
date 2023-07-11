@@ -188,6 +188,7 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
 		    sb.append("\n");		    
 		}
 	    }
+	    System.err.println(sb);
 	    return new BufferedInputStream(new  ByteArrayInputStream(sb.toString().getBytes()));
         }
 
