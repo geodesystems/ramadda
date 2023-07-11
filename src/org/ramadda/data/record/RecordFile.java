@@ -1412,7 +1412,7 @@ public abstract class RecordFile {
      * @return _more_
      */
     public String toString() {
-        return path.getPath();
+        return path==null?"no path":path.getPath();
     }
 
 
