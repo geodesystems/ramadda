@@ -326,6 +326,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'dragToZoom',d:true},
 	{p:'dragToPan',d:false},	
 
+	{p:'skipMissing',d:false,ex:'true',tt:'skip rows  that have any missing values'},
+	{p:'interpolateNulls',d:true,ex:'true'},
+
 	{label:'Trendlines'},
 	{p:'showTrendLines',d:null,ex:"true",canCache:true},
 	{p:"trendlineType",ex:"exponential",canCache:true},
@@ -1425,6 +1428,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    console.log("row[" + rowIdx+"]:");
 
 		let fIdx=0;
+		let rowOk = true;
+		let skipMissing = this.getSkipMissing();
                 for (let colIdx = 0; colIdx < row.length; colIdx++) {
 		    let field = selectedFields[fIdx++];
                     let value = row[colIdx];
@@ -1439,14 +1444,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    } else {
 			let type = (typeof value);
 			if(type == "number") {
-			    //check for a NaN faking it is a number
-//			    if(field && field.isFieldNumeric()) {
-				if(formatNumbers) {
-				    value = {v:value,f:String(this.formatNumber(value))};
-				}
-//			    } else {
-//				value = String(value);
-//			    }
+			    if(skipMissing && isNaN(value)) {
+				rowOk = false;
+				break;
+			    }
+			    if(formatNumbers) {
+				value = {v:value,f:String(this.formatNumber(value))};
+			    }
 			}  else if(type=="boolean") {
 			    value = String(value);
 			}
@@ -1482,6 +1486,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    }
 		}
 
+		if(!rowOk) continue;
 
 		if(addTooltip) {
 		    let tooltip = "";
@@ -1609,6 +1614,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         },
         makeChartOptions: function(dataList, props, selectedFields) {
             let chartOptions = {
+		interpolateNulls: this.getInterpolateNulls(),
                 tooltip: {
                     isHtml: true,
 //		    ignoreBounds: true, 
