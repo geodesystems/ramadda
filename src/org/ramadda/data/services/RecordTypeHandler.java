@@ -606,11 +606,13 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     public String convertPath(Entry entry, String path,
 			      Hashtable requestProperties)
             throws Exception {
+
         if (debug) {
             System.err.println(
                 "RecordTypeHandler.convertPath entry:" + entry
                 + " path:" + path);
         }
+	if(path==null) return null;
         List<Macro> macros = getMacros(entry);
         if (macros != null) {
             for (Macro macro : macros) {
