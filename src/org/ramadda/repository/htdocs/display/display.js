@@ -715,6 +715,52 @@ function DisplayThing(argId, argProperties) {
 	    return v;
 	},
 
+	createCommandText:function(commandText,commandMap) {
+	    let cmd='';
+	    let macros = Utils.tokenizeMacros(commandText);
+	    macros.tokens.forEach(token=>{
+		if(token.type=='string') {
+		    cmd+=token.s;
+		    return;
+		}
+		if(token.tag=='command') {
+		    commandMap[token.id] = token;
+		    if(!token.attrs.labels) {
+			console.dir('No labels:',token);
+			return;
+		    }
+		    let labels = token.attrs.labels.split(',');
+		    cmd+=HU.select('',['class','display-command','commandId',token.id],labels);
+		    return;
+		}
+		console.dir('Unknown command token',token);
+	    });
+	    return cmd;
+	},
+	initCommandText:function(commandMap,div) {
+	    let _this = this;
+	    div.find('.display-command').change(function() {
+		let commandId = $(this).attr('commandId');
+		let command = commandMap[commandId];
+		if(!command) {
+		    console.log('Could not find command:' + commandId);
+		}
+		//		    console.dir(command);
+		let index = $(this).prop('selectedIndex');
+		Object.keys(command.attrs).forEach(key=>{
+		    if(key=='labels') return;
+		    let list = command.attrs[key].split(',');
+		    let value = list[index];
+		    if(!value) {
+			console.log('could not find command value in list:', list);
+			return
+		    }
+		    _this.setProperty(key,value);
+		});
+		_this.updateUI();
+	    });
+	},
+
 	applyRecordTemplate: function(record, row, fields, template, props,macros, debug) {
 	    if(!row) row = this.getDataValues(record);
 	    if(!fields) fields = record.getFields();
@@ -1523,6 +1569,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'tooltipPositionAt',ex:'left bottom+2'},		
 	{p:'tooltipFields',canCache:true},
 	{p:'tooltipNotFields',canCache:true,d:''},
+	{p:'selectPopup',ex:'${default}',tt:'Template to use to make a popup when a record is selected'},
+	{p:'selectPopupTitle'},
+	{p:'headerText',ex:'blah blah ${command labels=\"log scale,linear scale\" xAxisType=log,linear} blah',
+	 tt:'Text to show above the display. Can contain ${command ...} templates'},
 	{p:'imageWidth',canCache:true},		
 	{p:'includeFieldDescriptionInTooltip',canCache:true,d:true},
 	{p:'recordTemplate',doGetter:false,ex:'${default}',tt:'Template for popups etc. Can be ${default attrs} or \'${field} .. ${fieldn}...\''},
@@ -1552,6 +1602,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'sortOnDate',ex:'true'},
 	{p:'sortByFields',ex:'',tt:'Show sort by fields in a menu'},
 	{p:'sortHighlight',ex:true,tt:'Sort based on highlight from the filters'},
+	{p:'reverse',ex:'true',t:'Reverse the records'},
 	{p:'doEntries',ex:true,tt:'Make the children entries be data'},
 	{p:'addAttributes',ex:true,tt:'Include the extra attributes of the children'},
 	{p:'orderby',ex:'date|fromdate|todate|name|number',tt:'When showing entries as data how to sort or order the entries'},
@@ -2555,6 +2606,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	},
         propagateEventRecordSelection: function(args) {
+	    if(this.getSelectPopup() && args.record) {
+		let html = this.applyRecordTemplate(args.record,this.getDataValues(args.record),null, this.getSelectPopup());
+		this.showDialog(html,null,null,this.getSelectPopupTitle());
+	    }
+
+
 	    if(displayDebug.notifyEvent)
 		console.log(this.type+".propagateEventRecordSelection");
 	    if(this.shareEvent(DisplayEvent.setEntry,this.getProperty(DisplayEvent.setEntry.shareGroup,this.getProperty("shareSelectedEntry")))) {
@@ -3293,7 +3350,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 	    }
 
-	    if(this.getProperty("reverse",false)) {
+	    if(this.getReverse()) {
 		records = Utils.cloneList(records);
 		let tmp = [];
 		for(let i=records.length-1;i>=0;i--)
@@ -5458,7 +5515,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(width && width!="-1") {
                     div.css("width",HU.getDimension(width));
 		}
+		let commandText = this.getHeaderText();
+		let commandMap = {};
+		if(commandText) {
+		    html= this.createCommandText(commandText, commandMap) + html;
+		}
 		div.html(html);
+		if(commandText)
+		    this.initCommandText(commandMap,div);
             } else {
                 console.log("error: no div defined for display:" + this.getType());
             }
@@ -7119,7 +7183,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 //		this.dialogElement = this.jq(ID_DIALOG);
 	    }
 	    let html = this.makeDialog(text);
-	    this.dialog = HU.makeDialog({content:html,title:title||this.getTitle(),anchor:from||this.jq(ID_MENU_BUTTON),draggable:true,header:true});
+	    let at = 'left bottom';
+	    if(!from && this.jq(ID_MENU_BUTTON).length) {
+		from=this.jq(ID_MENU_BUTTON);
+	    }
+	    if(!from) {
+		from=this.jq(ID_DISPLAY_CONTENTS);
+		at = 'left top';
+	    }
+
+	    this.dialog = HU.makeDialog({content:html,title:title||this.getTitle(),anchor:from,at:at,draggable:true,header:true});
 	    if(initDialog) initDialog();
             else this.initDialog();
 	    return this.dialog;
