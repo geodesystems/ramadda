@@ -10,7 +10,9 @@
      <property name="form.date.show" value="false"/>
   </type>
 
-  <type name="nwsfeed"  supercategory="Geoscience" description="NWS Forecast Feed"   handler="org.ramadda.plugins.feed.DwmlFeedTypeHandler" foruser="true" category="Geoscience Data">  
+  <type name="nwsfeed"   super="type_point" description="NWS Forecast Feed"
+	supercategory="Geoscience" category="Geoscience Data" 
+	handler="org.ramadda.plugins.feed.DwmlFeedTypeHandler" foruser="true" >  
      <property name="icon" value="/feed/nws3.png"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.resource.download.show" value="false"/>
@@ -19,6 +21,9 @@
      <property name="form.area.show" value="true"/>
      <property name="form.location.show" value="true"/>
      <column name="timezone" type="string" label="Timezone" showinhtml="false" editable="true" />
+ <property name="record.properties">
+fields=date[type=date],min_temperature[type=double label="Min Temperature"],max_temperature[type=double label="Max Temperature"],description[type=string],icon[type=image]
+</property>
      <wiki><![CDATA[
 +section title={{name}}
 {{description}}

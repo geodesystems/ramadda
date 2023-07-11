@@ -12,21 +12,25 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.AtomUtil;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.RssUtil;
+import org.ramadda.util.IO;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 
-import org.w3c.dom.*;
+import org.ramadda.data.point.text.*;
+import org.ramadda.data.record.*;
 
-import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.Misc;
-import ucar.unidata.util.StringUtil;
+import org.ramadda.data.services.PointTypeHandler;
+import org.ramadda.data.services.RecordTypeHandler;
+
 import ucar.unidata.xml.XmlUtil;
 
-import java.net.URL;
 
+import org.w3c.dom.*;
+
+
+import java.net.URL;
+import java.io.*;
 import java.text.SimpleDateFormat;
 
 
@@ -43,7 +47,12 @@ import java.util.TimeZone;
 /**
  */
 @SuppressWarnings("unchecked")
-public class DwmlFeedTypeHandler extends GenericTypeHandler {
+public class DwmlFeedTypeHandler extends PointTypeHandler {
+
+    /** _more_ */
+    private static int IDX = RecordTypeHandler.IDX_LAST + 1;
+    private static int IDX_TIMEZONE = IDX++;
+
 
     /** _more_ */
     private TTLCache<String, Weather> forecastCache = new TTLCache<String,
@@ -97,6 +106,95 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
             }
         }
     }
+
+    @Override
+    public RecordFile doMakeRecordFile(Request request, Entry entry,
+                                       Hashtable properties,
+                                       Hashtable requestProperties)
+            throws Exception {
+        return new DwmlRecordFile(getRepository(), this, entry);
+    }
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Sat, Dec 8, '18
+     * @author         Enter your name here...
+     */
+    public static class DwmlRecordFile extends CsvFile {
+
+        /** _more_ */
+        private Repository repository;
+
+        /** _more_ */
+        private String dataUrl;
+
+        /** _more_ */
+        private Entry entry;
+
+	DwmlFeedTypeHandler typeHandler;
+
+        /**
+         * _more_
+         *
+         *
+         * @param repository _more_
+         * @param ctx _more_
+         * @param entry _more_
+         *
+         * @throws IOException _more_
+         */
+        public DwmlRecordFile(Repository repository, DwmlFeedTypeHandler ctx, Entry entry)
+                throws IOException {
+            super(null, ctx, null);
+	    typeHandler = ctx;
+            this.repository = repository;
+            this.entry      = entry;
+        }
+
+
+	private String format(String s) {
+	    if(s==null) return "NaN";
+	    if(s.indexOf(",")>=0) return "\"" + s +"\"";
+	    return s;
+	}
+
+        /**
+         * @param buffered _more_
+         *
+         * @return _more_
+         *
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public InputStream doMakeInputStream(boolean buffered)
+                throws Exception {
+	    Weather forecast = typeHandler.getForecast(entry);
+	    StringBuilder sb = new StringBuilder();
+	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+	    if(forecast!=null) {
+		for(Weather.Time t: forecast.times) {
+		    sb.append(sdf.format(t.date));
+		    sb.append(",");
+		    sb.append(format(t.min));
+		    sb.append(",");
+		    sb.append(format(t.max));
+		    sb.append(",");
+		    sb.append(format(t.words));
+		    sb.append(",");
+		    sb.append(format(t.icon));
+		    sb.append("\n");		    
+		}
+	    }
+	    return new BufferedInputStream(new  ByteArrayInputStream(sb.toString().getBytes()));
+        }
+
+
+    }
+
+
 
     /**
      * _more_
@@ -355,7 +453,7 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
             return;
         }
         SimpleDateFormat dateFormat = new SimpleDateFormat();
-        String           timezone   = entry.getStringValue(0, "");
+        String           timezone   = entry.getStringValue(IDX_TIMEZONE, "");
         if ( !Utils.stringDefined(timezone)) {
             timezone = getEntryUtil().getTimezone(request,entry);
         }
