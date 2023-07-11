@@ -4169,7 +4169,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    console.log("didMarker");
 			return;
 		    }
-                    this.map.removeMarker(this.justOneMarker);
+                    if(this.justOneMarker)
+			this.map.removeMarker(this.justOneMarker);
                     if(!isNaN(point.x) && !isNaN(point.y)) {
 			didMarker = true;
                         this.justOneMarker= this.map.createMarker(id, [point.x,point.y], null, "", "");

@@ -5638,6 +5638,7 @@ RepositoryMap.prototype = {
         }
 	//remove the marker from the seenMarkers map
 	markers.forEach(marker=>{
+	    if(!marker) return;
 	    if(!marker.locationKey) return;
             let seenMarkers = this.seenMarkers[marker.locationKey];
             if (!seenMarkers) return;
