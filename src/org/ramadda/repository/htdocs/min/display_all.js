@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jul 10 23:54:38 MDT 2023";
+var build_date="RAMADDA build date: Tue Jul 11 14:41:16 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -4430,6 +4430,52 @@ function DisplayThing(argId, argProperties) {
 	    return v;
 	},
 
+	createCommandText:function(commandText,commandMap) {
+	    let cmd='';
+	    let macros = Utils.tokenizeMacros(commandText);
+	    macros.tokens.forEach(token=>{
+		if(token.type=='string') {
+		    cmd+=token.s;
+		    return;
+		}
+		if(token.tag=='command') {
+		    commandMap[token.id] = token;
+		    if(!token.attrs.labels) {
+			console.dir('No labels:',token);
+			return;
+		    }
+		    let labels = token.attrs.labels.split(',');
+		    cmd+=HU.select('',['class','display-command','commandId',token.id],labels);
+		    return;
+		}
+		console.dir('Unknown command token',token);
+	    });
+	    return cmd;
+	},
+	initCommandText:function(commandMap,div) {
+	    let _this = this;
+	    div.find('.display-command').change(function() {
+		let commandId = $(this).attr('commandId');
+		let command = commandMap[commandId];
+		if(!command) {
+		    console.log('Could not find command:' + commandId);
+		}
+		//		    console.dir(command);
+		let index = $(this).prop('selectedIndex');
+		Object.keys(command.attrs).forEach(key=>{
+		    if(key=='labels') return;
+		    let list = command.attrs[key].split(',');
+		    let value = list[index];
+		    if(!value) {
+			console.log('could not find command value in list:', list);
+			return
+		    }
+		    _this.setProperty(key,value);
+		});
+		_this.updateUI();
+	    });
+	},
+
 	applyRecordTemplate: function(record, row, fields, template, props,macros, debug) {
 	    if(!row) row = this.getDataValues(record);
 	    if(!fields) fields = record.getFields();
@@ -5238,6 +5284,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'tooltipPositionAt',ex:'left bottom+2'},		
 	{p:'tooltipFields',canCache:true},
 	{p:'tooltipNotFields',canCache:true,d:''},
+	{p:'selectPopup',ex:'${default}',tt:'Template to use to make a popup when a record is selected'},
+	{p:'selectPopupTitle'},
+	{p:'headerText',ex:'blah blah ${command labels=\"log scale,linear scale\" xAxisType=log,linear} blah',
+	 tt:'Text to show above the display. Can contain ${command ...} templates'},
 	{p:'imageWidth',canCache:true},		
 	{p:'includeFieldDescriptionInTooltip',canCache:true,d:true},
 	{p:'recordTemplate',doGetter:false,ex:'${default}',tt:'Template for popups etc. Can be ${default attrs} or \'${field} .. ${fieldn}...\''},
@@ -5267,6 +5317,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'sortOnDate',ex:'true'},
 	{p:'sortByFields',ex:'',tt:'Show sort by fields in a menu'},
 	{p:'sortHighlight',ex:true,tt:'Sort based on highlight from the filters'},
+	{p:'reverse',ex:'true',t:'Reverse the records'},
 	{p:'doEntries',ex:true,tt:'Make the children entries be data'},
 	{p:'addAttributes',ex:true,tt:'Include the extra attributes of the children'},
 	{p:'orderby',ex:'date|fromdate|todate|name|number',tt:'When showing entries as data how to sort or order the entries'},
@@ -6270,6 +6321,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	},
         propagateEventRecordSelection: function(args) {
+	    if(this.getSelectPopup() && args.record) {
+		let html = this.applyRecordTemplate(args.record,this.getDataValues(args.record),null, this.getSelectPopup());
+		this.showDialog(html,null,null,this.getSelectPopupTitle());
+	    }
+
+
 	    if(displayDebug.notifyEvent)
 		console.log(this.type+".propagateEventRecordSelection");
 	    if(this.shareEvent(DisplayEvent.setEntry,this.getProperty(DisplayEvent.setEntry.shareGroup,this.getProperty("shareSelectedEntry")))) {
@@ -7008,7 +7065,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 	    }
 
-	    if(this.getProperty("reverse",false)) {
+	    if(this.getReverse()) {
 		records = Utils.cloneList(records);
 		let tmp = [];
 		for(let i=records.length-1;i>=0;i--)
@@ -9173,7 +9230,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(width && width!="-1") {
                     div.css("width",HU.getDimension(width));
 		}
+		let commandText = this.getHeaderText();
+		let commandMap = {};
+		if(commandText) {
+		    html= this.createCommandText(commandText, commandMap) + html;
+		}
 		div.html(html);
+		if(commandText)
+		    this.initCommandText(commandMap,div);
             } else {
                 console.log("error: no div defined for display:" + this.getType());
             }
@@ -10834,7 +10898,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 //		this.dialogElement = this.jq(ID_DIALOG);
 	    }
 	    let html = this.makeDialog(text);
-	    this.dialog = HU.makeDialog({content:html,title:title||this.getTitle(),anchor:from||this.jq(ID_MENU_BUTTON),draggable:true,header:true});
+	    let at = 'left bottom';
+	    if(!from && this.jq(ID_MENU_BUTTON).length) {
+		from=this.jq(ID_MENU_BUTTON);
+	    }
+	    if(!from) {
+		from=this.jq(ID_DISPLAY_CONTENTS);
+		at = 'left top';
+	    }
+
+	    this.dialog = HU.makeDialog({content:html,title:title||this.getTitle(),anchor:from,at:at,draggable:true,header:true});
 	    if(initDialog) initDialog();
             else this.initDialog();
 	    return this.dialog;
@@ -49939,8 +50012,8 @@ MapGlyph.prototype = {
 
     applyMapStyle:function(skipLegendUI) {
 	let debug = false;
-	if(debug)
-	    console.log("applyMapStyle:" + this.getName());
+	//	debug=true;
+	if(debug)   console.log("applyMapStyle:" + this.getName());
     	this.applyChildren(child=>{child.applyMapStyle(skipLegendUI);});
 	let _this = this;
 	//If its a map then set the style on the map features
@@ -50023,6 +50096,7 @@ MapGlyph.prototype = {
 	let strokeProperty = this.getProperty('map.property.strokeColor');
 	let labelProperty = this.getProperty('map.property.label');	
 
+	if(debug)   console.dir(style);
 	this.mapLayer.style = style;
 	if(features) {
 	    features.forEach((f,idx)=>{
@@ -50035,14 +50109,14 @@ MapGlyph.prototype = {
 		    if(labelProperty && Utils.stringDefined(f.attributes[labelProperty]))  {
 			let label = f.attributes[labelProperty];
 			if(true || label.indexOf('disproportionate')>=0) {
-			if(label.length>20) {
-			    let tmp = Utils.splitList(label.split(' '),4);
-			    label = '';
-			    tmp.forEach(l=>{
-				label+=Utils.join(l,' ')+'\n'
-			    });
-			}
-//			    label = "hello there\nhow are you\nI am fine"
+			    if(label.length>20) {
+				let tmp = Utils.splitList(label.split(' '),4);
+				label = '';
+				tmp.forEach(l=>{
+				    label+=Utils.join(l,' ')+'\n'
+				});
+			    }
+			    //			    label = "hello there\nhow are you\nI am fine"
 			    featureStyle = Utils.clone(featureStyle,{
 				strokeColor:'transparent',
 				textBackgroundFillColor:featureStyle.fillColor,
@@ -50058,6 +50132,7 @@ MapGlyph.prototype = {
 		    }
 
 		}
+//		if(debug)   console.dir("\tfeature style:",featureStyle);
 		ImdvUtils.applyFeatureStyle(f, featureStyle);
 		f.originalStyle = Utils.clone(style);			    
 	    });
@@ -56749,8 +56824,16 @@ var ID_PLOTY = "plotly";
 function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
     let SUPER = new RamaddaFieldsDisplay(displayManager, id, type, properties);
     //Dynamically load plotly
-    RamaddaUtil.inherit(this, SUPER);
-    RamaddaUtil.defineMembers(this, {
+    let myProps = [
+	{label:'Plotly Properties'},
+	{p:'plotTitle'},
+	{p:'font'},
+	{p:'fontSize',d:12},
+	{p:'fontColor',d:'#000'}];
+
+    defineDisplay(this, SUPER, myProps, {
+//    RamaddaUtil.inherit(this, SUPER);
+//    RamaddaUtil.defineMembers(this, {
 	getRequirement:function() {
 	    return "Plotly";
 	},
@@ -56844,11 +56927,23 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
 		}
 	    },1);
         },
+	makeLayout:function(layout) {
+            let myLayout = {
+                title: this.getPlotTitle(''),
+		font: {
+		    family: this.getFont(),
+		    size: this.getFontSize(),
+		    color: this.getFontColor()
+		}
+	    };
+	    if(layout) return $.extend(layout,myLayout);
+	    return myLayout;
+	},
         handleClickEvent: function(data) {
 	    if(data.points && data.points.length>0) {
 		let record = data.points[0].record;
 		if(!record) {
-		    var index = data.points[0].pointIndex;
+		    let index = data.points[0].pointIndex;
 		    record = this.indexToRecord[index];
 		}
 		//		console.log("index:" + index +" record:"+  record);
@@ -57566,11 +57661,32 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
         width: "600px",
         height: "400px",
     });
+
+
     let SUPER = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_DOTPLOT, properties);
     let myProps = [
 	{label:'Dotplot Display'},
 	{p:'fields',ex:''},
 	{p:'labelField',ex:''},
+	{p:'lineColor',d:'rgba(156, 165, 196, 1.0)'},
+	{p:'symbol',d:'circle',ex:'circle|circle-open|circle-dot|circle-open-dot|square|square-open|square-dot|square-open-dot|diamond|diamond-open|diamond-dot|diamond-open-dot|cross|cross-open|cross-dot|cross-open-dot|x|x-open|x-dot|x-open-dot|triangle-up|triangle-up-open|triangle-up-dot|triangle-up-open-dot|triangle-down|triangle-down-open|triangle-down-dot|triangle-down-open-dot|triangle-left|triangle-left-open|triangle-left-dot|triangle-left-open-dot|triangle-right|triangle-right-open|triangle-right-dot|triangle-right-open-dot|triangle-ne|triangle-ne-open|triangle-ne-dot|triangle-ne-open-dot|triangle-se|triangle-se-open|triangle-se-dot|triangle-se-open-dot|triangle-sw|triangle-sw-open|triangle-sw-dot|triangle-sw-open-dot|triangle-nw|triangle-nw-open|triangle-nw-dot|triangle-nw-open-dot|pentagon|pentagon-open|pentagon-dot|pentagon-open-dot|hexagon|hexagon-open|hexagon-dot|hexagon-open-dot|hexagon2|hexagon2-open|hexagon2-dot|hexagon2-open-dot|octagon|octagon-open|octagon-dot|octagon-open-dot|star|star-open|star-dot|star-open-dot|hexagram|hexagram-open|hexagram-dot|hexagram-open-dot|star-triangle-up|star-triangle-up-open|star-triangle-up-dot|star-triangle-up-open-dot|star-triangle-down|star-triangle-down-open|star-triangle-down-dot|star-triangle-down-open-dot|star-square|star-square-open|star-square-dot|star-square-open-dot|star-diamond|star-diamond-open|star-diamond-dot|star-diamond-open-dot|diamond-tall|diamond-tall-open|diamond-tall-dot|diamond-tall-open-dot|diamond-wide|diamond-wide-open|diamond-wide-dot|diamond-wide-open-dot|hourglass|hourglass-open|bowtie|bowtie-open|circle-cross|circle-cross-open|circle-x|circle-x-open|square-cross|square-cross-open|square-x|square-x-open|diamond-cross|diamond-cross-open|diamond-x|diamond-x-open|cross-thin|cross-thin-open|x-thin|x-thin-open|asterisk|asterisk-open|hash|hash-open|hash-dot|hash-open-dot|y-up|y-up-open|y-down|y-down-open|y-left|y-left-open|y-right|y-right-open|line-ew|line-ew-open|line-ns|line-ns-open|line-ne|line-ne-open|line-nw|line-nw-open|arrow-up|arrow-up-open|arrow-down|arrow-down-open|arrow-left|arrow-left-open|arrow-right|arrow-right-open|arrow-bar-up|arrow-bar-up-open|arrow-bar-down|arrow-bar-down-open|arrow-bar-left|arrow-bar-left-open|arrow-bar-right|arrow-bar-right-open|arrow|arrow-open|arrow-wide|arrow-wide-open'},
+	{p:'dotSize',d:16},
+	{p:'&lt;field&gt;.dotSize',ex:16},	
+        {p:"yAxisTitle"},
+	{p:"yAxisType",ex:'log'},
+	{p:"yAxisShowLine",d:true},
+	{p:"yAxisShowGrid",d:false},
+	{p:"xAxisTitle"},
+	{p:"xAxisType",ex:'log'},
+	{p:"xAxisShowGrid",d:false},
+	{p:"xAxisShowLine",d:true},
+	{p:"marginLeft",d:140},
+	{p:"marginRight",d:40},
+	{p:"marginBottom",d:50},
+	{p:"marginTop",d:20},
+	{p:"chartFill"},
+	{p:"chartAreaFill"},
+	
     ];
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -57579,6 +57695,16 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
         },
 
         updateUIInner: function() {
+//https://codepen.io/etpinard/pen/LLZGZV
+	    /*
+	    let sym = Plotly.PlotSchema.get().traces.scatter.attributes.marker.symbol.values.filter(s => typeof s === 'string' && !s.match(/^[0-9]+$/))
+	    let list='';
+	    sym.forEach(s=>{list+=s+','});
+	    console.log(list);
+	    */
+
+
+
             let records = this.filterData();
             if (!records) return;
             var pointData = this.getData();
@@ -57618,9 +57744,13 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
             var colorBy = this.getColorByInfo(records);
 	    var  didColorBy = false;
             for (i in fields) {
-                var color = i >= colors.length ? colors[0] : colors[i];
-                var field = fields[i];
-                var values = this.getColumnValues(records, field).values;
+                let field = fields[i];
+                let size = this.getDotSize(this.getProperty(field.getId()+'.dotSize'));
+                let symbol = this.getSymbol(this.getProperty(field.getId()+'.symbol'));
+                let lineColor = this.getLineColor(this.getProperty(field.getId()+'.lineColor'));
+                let color = this.getProperty(field.getId()+'.color');
+		if(!color)color= i >= colors.length ? colors[0] : colors[i];
+                let values = this.getColumnValues(records, field).values;
                 if (colorBy.index >= 0) {
 		    color = [];
 		    records.map(record=>{
@@ -57644,28 +57774,33 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
                     marker: {
                         color: color,
                         line: {
-                            color: 'rgba(156, 165, 196, 1.0)',
+                            color: lineColor,
                             width: 1,
                         },
-                        symbol: 'circle',
-                        size: 16
+                        symbol: symbol,
+                        size: size
                     }
                 });
             }
+	    
 
-
-
-            var layout = {
-                title: '',
+            let layout = this.makeLayout({
                 yaxis: {
-                    title: this.getProperty("yAxisTitle", labelName),
-                    showline: this.getProperty("yAxisShowLine", true),
-                    showgrid: this.getProperty("yAxisShowGrid", true),
+                    title: this.getYAxisTitle(labelName),
+		    type:this.getYAxisType(),
+                    showline: this.getYAxisShowLine(),
+                    showgrid: this.getYAxisShowGrid(),
+                    tickfont: {
+                        font: {
+                            color: 'rgb(102, 102, 102)',
+                        }
+                    },
                 },
                 xaxis: {
-                    title: this.getProperty("xAxisTitle", fields[i].getLabel()),
-                    showgrid: this.getProperty("xAxisShowGrid", false),
-                    showline: this.getProperty("xAxisShowLine", true),
+                    title: this.getXAxisTitle(fields[i].getLabel()),
+		    type:this.getXAxisType(),
+                    showgrid: this.getXAxisShowGrid(false),
+                    showline: this.getXAxisShowLine(true),
                     linecolor: 'rgb(102, 102, 102)',
                     titlefont: {
                         font: {
@@ -57682,10 +57817,10 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
                     tickcolor: 'rgb(102, 102, 102)'
                 },
                 margin: {
-                    l: this.getProperty("marginLeft", 140),
-                    r: this.getProperty("marginRight", 40),
-                    b: this.getProperty("marginBottom", 50),
-                    t: this.getProperty("marginTop", 20),
+                    l: this.getMarginLeft(),
+                    r: this.getMarginRight(40),
+                    b: this.getMarginBottom(),
+                    t: this.getMarginTop(),
                 },
                 legend: {
                     font: {
@@ -57694,10 +57829,10 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
                     yanchor: 'middle',
                     xanchor: 'right'
                 },
-                paper_bgcolor: this.getProperty("chart.fill", 'rgb(254, 247, 234)'),
-                plot_bgcolor: this.getProperty("chartArea.fill", 'rgb(254, 247, 234)'),
+                paper_bgcolor: this.getChartFill(this.getProperty("chart.fill",'rgb(254, 247, 234)')),
+                plot_bgcolor: this.getChartAreaFill(this.getProperty("chartArea.fill", 'rgb(254, 247, 234)')),
                 hovermode: 'closest'
-            };
+            });
             this.setDimensions(layout, 2);
             this.makePlot(plotData, layout);
 	    if(didColorBy) {
@@ -58214,12 +58349,13 @@ function TextcountDisplay(displayManager, id, properties) {
 	    if(!data.points || data.points.length<=0) {
 		return;
 	    }
-	    var pointNumber = data.points[0].pointNumber;
-	    var pattern = this.patternList[pointNumber];
-	    var args = {
+	    let pointNumber = data.points[0].pointNumber;
+	    let pattern = this.patternList[pointNumber];
+	    let args = {
 		fieldId: this.textField.getId(),
 		value: pattern
 	    };
+
 	    this.propagateEvent(DisplayEvent.filterChanged, args);
 	},
 
