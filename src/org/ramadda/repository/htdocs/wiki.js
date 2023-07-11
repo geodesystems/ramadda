@@ -107,7 +107,7 @@ if(!window.WikiUtil) {
 
 	insertTags:function(id, tagOpen, tagClose, sampleText) {
 	    HtmlUtils.hidePopupObject();
-	    var handler = getHandler(id);
+	    let handler = getHandler(id);
 	    if (handler) {
 		handler.insertTags(tagOpen, tagClose, sampleText);
 		return;
@@ -125,7 +125,7 @@ if(!window.WikiUtil) {
 	// apply tagOpen/tagClose to selection in textarea,
 	// use sampleText instead of selection if there is none
 	insertTagsInner:function(id, txtarea, tagOpen, tagClose, sampleText) {
-	    var selText, isSample = false;
+	    let selText, isSample = false;
 	    tagOpen = Utils.decodeText(tagOpen);
 	    tagClose = Utils.decodeText(tagClose);    
 	    var editor = WikiUtil.getWikiEditor(id);
@@ -510,11 +510,11 @@ WikiEditor.prototype = {
     },
 
     insertTags:function(tagOpen, tagClose, sampleText) {
-	var selText, isSample = false;
+	let selText, isSample = false;
 	tagOpen = Utils.decodeText(tagOpen);
 	tagClose = Utils.decodeText(tagClose);    
-        var text = tagOpen + tagClose + " ";
-        var cursor = this.getEditor().getCursorPosition();
+        let text = (tagOpen??'') + (tagClose??'') + " ";
+        let cursor = this.getEditor().getCursorPosition();
         this.getEditor().insert(text);
         if (tagOpen.endsWith("\n")) {
             cursor.row++;
