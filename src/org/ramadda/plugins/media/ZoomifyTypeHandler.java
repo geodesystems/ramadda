@@ -205,9 +205,16 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
 	HU.open(sb,"center");
 	main = HU.div(main,HU.attrs("style",HU.css("text-align","left","display","inline-block","width",width)));
 	//        sb.append(HU.div(top + HU.div(bar+main,HU.attrs("class","ramadda-annotation-wrapper","style", style)),""));
-	String table = HU.table(HU.row(HU.col(bar,HU.attr("width","150px")) +
-				       HU.col(HU.div(main,HU.attrs("class","ramadda-annotation-wrapper","style", style)),"")+HU.col("",HU.attr("width","150px")),HU.attr("valign","top")),
-				HU.attr("width",width));
+	String cols = "";
+	if(Utils.getProperty(props,"showLeftColumn",true))  {
+	    cols+=HU.col(bar,HU.attr("width","150px"));
+	}
+	cols+=
+	    HU.col(HU.div(main,HU.attrs("class","ramadda-annotation-wrapper","style", style)),"");
+	if(Utils.getProperty(props,"showRightColumn",true))  {
+	    cols +=HU.col("",HU.attr("width","150px"));
+	}
+	String table = HU.table(HU.row(cols,HU.attr("valign","top")), HU.attr("width",width));
         sb.append(HU.div(top +table));
 	//        sb.append("\n</div>\n");
 	HU.close(sb,"center");
