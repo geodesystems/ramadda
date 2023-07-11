@@ -41139,7 +41139,8 @@ OpenLayers.Renderer.SVG = OpenLayers.Class(OpenLayers.Renderer.Elements, {
 	if(style.fillPattern && style.fillPattern!='' && window.olGetPatternId) {
 	    let id = window.olGetPatternId(this, style.fillPattern,style.strokeColor,style.fillColor);
             node.setAttributeNS(null, "fill", 'url(#' + id+')');
-            node.setAttributeNS(null, "fill-opacity", style.strokeOpacity);
+            node.setAttributeNS(null, "fill-opacity", style.fillOpacity);
+//            node.setAttributeNS(null, "fill-opacity", style.strokeOpacity);
 	} else    if (options.isFilled) {
             node.setAttributeNS(null, "fill", style.fillColor);
             node.setAttributeNS(null, "fill-opacity", style.fillOpacity);

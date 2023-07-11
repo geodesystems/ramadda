@@ -3670,8 +3670,8 @@ MapGlyph.prototype = {
 
     applyMapStyle:function(skipLegendUI) {
 	let debug = false;
-	if(debug)
-	    console.log("applyMapStyle:" + this.getName());
+	//	debug=true;
+	if(debug)   console.log("applyMapStyle:" + this.getName());
     	this.applyChildren(child=>{child.applyMapStyle(skipLegendUI);});
 	let _this = this;
 	//If its a map then set the style on the map features
@@ -3754,6 +3754,7 @@ MapGlyph.prototype = {
 	let strokeProperty = this.getProperty('map.property.strokeColor');
 	let labelProperty = this.getProperty('map.property.label');	
 
+	if(debug)   console.dir(style);
 	this.mapLayer.style = style;
 	if(features) {
 	    features.forEach((f,idx)=>{
@@ -3766,14 +3767,14 @@ MapGlyph.prototype = {
 		    if(labelProperty && Utils.stringDefined(f.attributes[labelProperty]))  {
 			let label = f.attributes[labelProperty];
 			if(true || label.indexOf('disproportionate')>=0) {
-			if(label.length>20) {
-			    let tmp = Utils.splitList(label.split(' '),4);
-			    label = '';
-			    tmp.forEach(l=>{
-				label+=Utils.join(l,' ')+'\n'
-			    });
-			}
-//			    label = "hello there\nhow are you\nI am fine"
+			    if(label.length>20) {
+				let tmp = Utils.splitList(label.split(' '),4);
+				label = '';
+				tmp.forEach(l=>{
+				    label+=Utils.join(l,' ')+'\n'
+				});
+			    }
+			    //			    label = "hello there\nhow are you\nI am fine"
 			    featureStyle = Utils.clone(featureStyle,{
 				strokeColor:'transparent',
 				textBackgroundFillColor:featureStyle.fillColor,
@@ -3789,6 +3790,7 @@ MapGlyph.prototype = {
 		    }
 
 		}
+//		if(debug)   console.dir("\tfeature style:",featureStyle);
 		ImdvUtils.applyFeatureStyle(f, featureStyle);
 		f.originalStyle = Utils.clone(style);			    
 	    });
