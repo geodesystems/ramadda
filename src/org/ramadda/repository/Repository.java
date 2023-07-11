@@ -6184,7 +6184,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     public String callLLM(Request request, String prompt1,String prompt2,StringBuilder corpus,int maxReturnTokens,boolean tokenize,int[]initTokenLimit)
 	throws Exception {
-	if(debugLLM) System.err.println("callLLM");
 	String text = corpus.toString();
 	String gptKey = getRepository().getProperty("gpt.api.key");
 	String palmKey = getRepository().getProperty("palm.api.key");	
@@ -6195,11 +6194,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 	boolean useGPT4 = false;
 	if(isGPT4Enabled()) {
-	    //If no arg then default to gpt4
-	    if(request.exists(ARG_USEGPT4)) 
-		useGPT4 = request.get(ARG_USEGPT4,false);
-	    else
-		useGPT4 = true;
+	    useGPT4 = request.get(ARG_USEGPT4,false);
 	}
 
 	if(initTokenLimit==null) 

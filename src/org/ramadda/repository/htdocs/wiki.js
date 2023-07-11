@@ -1022,7 +1022,8 @@ WikiEditor.prototype = {
 	    llmText = this.jq(this.ID_LLM_INPUT).val()??'';
 	    this.jq('llm-loading').show();
 	    let url = RamaddaUtils.getUrl("/llm/rewrite");
-	    let args = {text:llmText};
+	    let args = {usegpt4:true,
+			text:llmText};
 	    if(prompt) {
 		args.promptprefix = prompt;
 	    } else {
