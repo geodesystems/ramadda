@@ -344,13 +344,25 @@ var Utils =  {
 	    Utils.makeDownloadFile(div.attr('download-file')??'download.txt',contents);
 	});	
     },
-    copyToClipboard:function(text) {
+    copyToClipboardOld:function(text) {
         let temp = $("<textarea></textarea>");
         $("body").append(temp);
         temp.val(text).select();
-        document.execCommand("copy");
+        if(!document.execCommand("copy")) {
+	    console.error('Copy to clipboard failed');
+	}
         temp.remove();
     },
+    copyToClipboard:function(text) {
+	navigator.clipboard.writeText(text)
+	    .then(() => {
+//		console.log('Text successfully copied to clipboard!');
+	    })
+	    .catch((error) => {
+		console.error('Unable to write to clipboard with navigator.clipboard.writeText:'+ error);
+		Utils.copyToClipboardOld(text);
+	    });
+    },    
     isAnonymous: function() {
         return ramaddaUser =="anonymous";
     },
