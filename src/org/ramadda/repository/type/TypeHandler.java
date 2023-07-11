@@ -5406,7 +5406,15 @@ public class TypeHandler extends RepositoryManager {
      * @return _more_
      */
     public List<String[]> getWikiEditLinks() {
-        return null;
+	String links = getTypeProperty("wiki.edit.links",(String) null);
+	if(links==null) return null;
+	List<String>lines = Utils.split(links.trim(),"\n",true,true);
+	List<String[]> list = new ArrayList<String[]>();
+	for(int i=0;i<lines.size();i+=2) {
+	    if(i>=lines.size()-1) break;
+	    list.add(new String[]{lines.get(i),lines.get(i+1)});
+	}
+        return list;
     }
 
 
