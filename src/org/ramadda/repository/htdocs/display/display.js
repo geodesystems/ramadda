@@ -1565,6 +1565,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'footerDiv',tt:'div id of an alternate place to display the footer'},		
 	{p:'width',doGetter:false,ex:'100%'},
 	{p:'height',doGetter:false,ex:'400'},
+	{p:'noWrapper',ex:true,tt:'Don\'t make the header and footer. Just this core display'},
 	{p:'tooltip',doGetter:false,d:'${default}'},
 	{p:'tooltipPositionMy',ex:'left top'},
 	{p:'tooltipPositionAt',ex:'left bottom+2'},		
@@ -5507,6 +5508,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let divId = this.getProperty("targetDiv",this.getProperty(PROP_DIVID,null,null,true),null,true);
             if (divId != null) {
                 let html = this.getHtml();
+//		console.log("*****",html,"*******");
 		let div = $("#" + divId);
 		let inline = this.getProperty("displayInline");
 		if(inline) {
@@ -5559,6 +5561,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
           That needs to call setContents with the html contents of the display
         */
         getHtml: function() {
+            let contents = this.getContentsDiv();
+	    if(this.getNoWrapper()) return contents;
+
             let get = this.getGet();
             let button = "";
             if (this.getShowMenu()) {
@@ -5628,7 +5633,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let right = HU.div([ATTR_ID, this.getDomId(ID_RIGHT)],rightInner);
 	    let sideWidth = "1px";
 	    let centerWidth = "100%";	    
-            let contents = this.getContentsDiv();
 	    let h0 = 	HU.div([ID,this.getDomId(ID_HEADER0),CLASS,"display-header-block display-header0"], "");
 	    //Gack! We set a transparent 1px border here because for some reason the google charts will have a little bit of scroll in them if we don't set a border	
             let table =   h0+HU.open('table', [STYLE,this.isGoogleChart?"border:1px solid transparent;":'',CLASS, 'display-ui-table', 'width','100%','border','0','cellpadding','0','cellspacing','0']);
@@ -5711,7 +5715,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		contentsAttrs.push("expandable-height");
 		contentsAttrs.push(this.getProperty("expandableHeight"));
 	    }
-	    let contents =  top + "\n" +HU.div(contentsAttrs, "") + "\n" +bottom;
+	    let mainDiv = HU.div(contentsAttrs, "");
+	    if(this.getNoWrapper()) return mainDiv;
+
+	    let contents =  top + "\n" +mainDiv + "\n" +bottom;
             return contents;
         },
 
