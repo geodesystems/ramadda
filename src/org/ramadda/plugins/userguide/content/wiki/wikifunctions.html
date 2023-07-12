@@ -16,6 +16,10 @@ For example, if your record has a field "title" you can set a tooltip with:
 tooltip="Title: ${title}"
 </pre>
 
+There is also another property, selectPopup, that is a template like the
+tooltip but pops up a dialog when a record is clicked.
+
+
 <b>Template Modifiers</b><br>
 There can be any number of modifier attributes specified within a macro. 
 For example, if one of the field values is a date (e.g. "date_field") then a format can be specified with:
@@ -123,6 +127,37 @@ sortAscending=false
 }} 
 }]
 
+
+:lheading Header Text
+The headerText property specifies HTML and  template macros for adding text and
+interactive widgets that control a display.
+For example the display at
+\[https://ramadda.org/repository/a/water_cycle ramadda.org\] uses the following headerText:
+[ht::pre {
+headerText="<center>Showing pool and flux estimates
+  ${attribute labels=\"with ranges,without ranges\"
+  fields=\"range_low_km_3_comma_value_km_3_comma_range_high_km_3,value_km_3\"}, on a
+  ${attribute labels=\"log scale,linear scale\"
+  xAxisType=log,linear}
+</center>"
+}]
+This results in:
+
+[ht::screenshot images/charts/headertext.png {}]
+
+Each macro is of the form:
+<pre>
+{attribute labels="label1,label2,...,labelN" 
+somefield1="value1,value2,...,valueN"
+somefield2="value1,value2,...,valueN"
+</pre>  
+
+A menu is created with the labels. On user interaction with the menu the properties, e.g., somefield1, somefield2, will be set based on the corresponding value.
+
+In the above example this sets the "fields" property on the 
+display to the specified value in the fields comma separated list
+(not some values contain commas which are escaped with _comma_).
+It also sets the   xAxisType property to one of "log" or "linear".
 
 
 <a name=derived></a>
