@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Jul 11 17:32:28 MDT 2023";
+var build_date="RAMADDA build date: Tue Jul 11 18:14:44 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -4438,8 +4438,8 @@ function DisplayThing(argId, argProperties) {
 		    cmd+=token.s;
 		    return;
 		}
-		if(token.tag=='command') {
-		    commandMap[token.id] = token;
+		commandMap[token.id] = token;
+		if(token.tag=='attribute') {
 		    if(!token.attrs.labels) {
 			console.dir('No labels:',token);
 			return;
@@ -4459,6 +4459,7 @@ function DisplayThing(argId, argProperties) {
 		let command = commandMap[commandId];
 		if(!command) {
 		    console.log('Could not find command:' + commandId);
+		    return;
 		}
 		//		    console.dir(command);
 		let index = $(this).prop('selectedIndex');
@@ -5288,6 +5289,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'selectPopupTitle'},
 	{p:'headerText',ex:'blah blah ${command labels=\"log scale,linear scale\" xAxisType=log,linear} blah',
 	 tt:'Text to show above the display. Can contain ${command ...} templates'},
+	{p:'headerTextDiv',tt:'divid to put header text in'},
 	{p:'imageWidth',canCache:true},		
 	{p:'includeFieldDescriptionInTooltip',canCache:true,d:true},
 	{p:'recordTemplate',doGetter:false,ex:'${default}',tt:'Template for popups etc. Can be ${default attrs} or \'${field} .. ${fieldn}...\''},
@@ -9232,12 +9234,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 		let commandText = this.getHeaderText();
 		let commandMap = {};
+		let headerDiv=div;
 		if(commandText) {
-		    html= this.createCommandText(commandText, commandMap) + html;
+		    let cmd= this.createCommandText(commandText, commandMap);
+		    if(this.getHeaderTextDiv()) {
+			headerDiv=jqid(this.getHeaderTextDiv());
+			headerDiv.html(cmd);
+		    } else {
+			html = cmd+ html;
+		    }
 		}
 		div.html(html);
 		if(commandText)
-		    this.initCommandText(commandMap,div);
+		    this.initCommandText(commandMap,headerDiv);
             } else {
                 console.log("error: no div defined for display:" + this.getType());
             }
