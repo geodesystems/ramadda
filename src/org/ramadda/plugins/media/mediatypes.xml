@@ -424,5 +424,33 @@ Zoomable Image
 </type>
 
 
+<type name="type_iiif"        super="type_media" supercategory="" description="IIIF Document"
+      pattern=".iiif.*"
+      handler="org.ramadda.plugins.media.IIIFTypeHandler" foruser="true" >  
+  <property name="form.file.show" value="false"/>
+  <property name="icon" value="/media/iiif.png"/>
+  <property name="form.date.show" value="false"/>
+  <property name="form.area.show" value="true"/>
+  <property name="wiki.edit.links">
+    <![CDATA[
+IIIF
+{{iiif thumbnailPosition=far-right width=800px height=500px}}
+]]>
+</property>
+
+<wiki><![CDATA[
++section title={{name}}
+{{description wikify=true}}
++toggle Document Information
+{{information  details="true"  showTitle="false"  }}
+-toggle
++centerdiv
+{{iiif thumbnailPosition=far-bottom width=1000px height=600px}}
+-centerdiv
+-section
+]]>
+</wiki>
+</type>
+
 
 </types>

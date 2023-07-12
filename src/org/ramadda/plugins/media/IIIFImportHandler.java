@@ -156,57 +156,7 @@ public class IIIFImportHandler extends ImportHandler {
 		if(topMetadata!=null) metadataList.add(topMetadata);
 		JSONArray canvasMetadata = canvas.optJSONArray("metadata");
 		if(canvasMetadata!=null) metadataList.add(canvasMetadata);
-		for(JSONArray metadatas: metadataList) {
-		    for (int k = 0; k < metadatas.length(); k++) {
-			JSONObject metadata   = metadatas.getJSONObject(k);
-			String mlabel =  metadata.getString("label");
-			List<String> values = new ArrayList<String>();
-			JSONArray tmp = metadata.optJSONArray("value");
-			if(tmp!=null) {
-			    for(int l=0;l<tmp.length();l++)
-				values.add(tmp.getString(l));
-			} else {
-			    String tmp2 = metadata.optString("value");
-			    if(tmp2!=null)
-				values.add(tmp2);
-			}
-			for(String mvalue: values) {
-			    String mtype = ContentMetadataHandler.TYPE_PROPERTY;
-			    String v1=mlabel;
-			    String v2= mvalue;
-			    if(mlabel.equals("Author")) {
-				v1 = v2;v2=null; mtype="metadata_author";
-			    } else if(mlabel.equals("Publisher")) {
-				v1 = v2;v2=null; mtype="metadata_publisher";
-			    } else if(mlabel.equals("Title")) {
-				album.setName(v2); v1=null;
-			    } else if(mlabel.equals("Location")) {
-				v1 = v2;v2=null; mtype="content.location";
-			    } else if(mlabel.equals("Subject")) {
-				v1 = v2;v2=null; mtype="content.subject";
-			    } else if(mlabel.equals("Subjects")) {
-				v1 = v2;v2=null; mtype="content.subject";
-			    } else if(mlabel.equals("Short Title")) {
-				v1=null;
-			    } else if(mlabel.equals("Note")) {
-				v1=null; album.setDescription(v2);
-			    } else  if(mlabel.startsWith("Download")) {
-				v1=null;
-			    } else  if(mlabel.equals("Date")) {
-				Date dttm = Utils.parseDate(v2);
-				System.err.println(v2 +" " + dttm);
-				if(dttm!=null)
-				    album.setStartAndEndDate(dttm.getTime());
-				v1=null;
-			    }
-			    if(v1!=null) {
-				getRepository().getMetadataManager().addMetadata(request,album,
-										 mtype,
-										 v1,v2);
-			    }
-			}
-		    }
-		}
+		addMetadata(getRepository(), request,album,metadataList);
 		JSONArray images = canvas.getJSONArray("images");
 		int imageCnt = 0;
 		for (int k = 0; k < images.length(); k++) {
@@ -246,6 +196,64 @@ public class IIIFImportHandler extends ImportHandler {
                 new Result("", sb));
     }
 
+
+
+    public static void addMetadata(Repository repository,Request request,Entry entry,List<JSONArray>metadataList) throws Exception {
+	for(JSONArray metadatas: metadataList) {
+	    for (int k = 0; k < metadatas.length(); k++) {
+		JSONObject metadata   = metadatas.getJSONObject(k);
+		String mlabel =  metadata.getString("label");
+		List<String> values = new ArrayList<String>();
+		JSONArray tmp = metadata.optJSONArray("value");
+		if(tmp!=null) {
+		    for(int l=0;l<tmp.length();l++)
+			values.add(tmp.getString(l));
+		} else {
+		    String tmp2 = metadata.optString("value");
+		    if(tmp2!=null)
+			values.add(tmp2);
+		}
+		for(String mvalue: values) {
+		    String mtype = ContentMetadataHandler.TYPE_PROPERTY;
+		    String v1=mlabel;
+		    String v2= mvalue;
+		    if(mlabel.equals("Author")) {
+			v1 = v2;v2=null; mtype="metadata_author";
+		    } else if(mlabel.equals("Publisher")) {
+			v1 = v2;v2=null; mtype="metadata_publisher";
+		    } else if(mlabel.equals("Title")) {
+			if(!Utils.stringDefined(entry.getName())) 
+			entry.setName(v2); v1=null;
+		    } else if(mlabel.equals("Location")) {
+			v1 = v2;v2=null; mtype="content.location";
+		    } else if(mlabel.equals("Subject")) {
+			v1 = v2;v2=null; mtype="content.subject";
+		    } else if(mlabel.equals("Subjects")) {
+			v1 = v2;v2=null; mtype="content.subject";
+		    } else if(mlabel.equals("Short Title")) {
+			v1=null;
+		    } else if(mlabel.equals("Note")) {
+			v1=null;
+			if(!Utils.stringDefined(entry.getDescription())) 
+			    entry.setDescription(v2);
+		    } else  if(mlabel.startsWith("Download")) {
+			v1=null;
+		    } else  if(mlabel.equals("Date")) {
+			Date dttm = Utils.parseDate(v2);
+			System.err.println(v2 +" " + dttm);
+			if(dttm!=null)
+			    entry.setStartAndEndDate(dttm.getTime());
+			v1=null;
+		    }
+		    if(v1!=null) {
+			repository.getMetadataManager().addMetadata(request,entry,
+								    mtype,
+								    v1,v2);
+		    }
+		}
+	    }
+	}
+    }
 
 
 }
