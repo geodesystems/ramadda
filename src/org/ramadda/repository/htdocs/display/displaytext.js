@@ -857,6 +857,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		var style = this.getTemplateStyle("");
 		let handleSelectOnClick = this.getPropertyHandleSelectOnClick(true);
 
+		let noWrapper = this.getNoWrapper();
 		for(var rowIdx=0;rowIdx<selected.length;rowIdx++) {
 		    if(max!=-1 && rowIdx>=max) break;
 		    if(cols>0) {
@@ -902,7 +903,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    }
 		    if(!handleSelectOnClick)
 			recordStyle+=HU.css("cursor","default");
-		    let tag = HU.openTag("div",[CLASS,"display-template-record",STYLE,recordStyle, ID, this.getId() +"-" + record.getId(), TITLE,"",RECORD_ID,record.getId(),RECORD_INDEX, rowIdx]);
+		    let tag = HU.openTag("div",[CLASS,noWrapper?'':'display-template-record',STYLE,recordStyle, ID, this.getId() +"-" + record.getId(), TITLE,"",RECORD_ID,record.getId(),RECORD_INDEX, rowIdx]);
 		    s = macros.apply(rowAttrs);
 		    if(s.startsWith("<td")) {
 			s = s.replace(/<td([^>]*)>/,"<td $1>"+tag);
