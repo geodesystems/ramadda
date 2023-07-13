@@ -317,6 +317,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
     const ID_LEGEND_MAP_WRAPPER = 'legend_map_wrapper';
     const ID_LEGEND_MAP = 'legend_map';            
     const ID_MAP_PROPERTIES = 'mapproperties';
+    const ID_DROP_BEGINNING = 'dropbeginning';
+    const ID_DROP_END = 'dropend';
     //Set these so the glyphs can access them
     this.ID_LEGEND_MAP = ID_LEGEND_MAP;
 
@@ -1221,6 +1223,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    if(glyphType.isMultiEntry()) {
 			this.clearCommands();
 			mapOptions.name = mapOptions.entryName?? attrs.entryName;
+			delete mapOptions['icon'];
 			delete mapOptions['entryName']
 			let mapGlyph = this.handleNewFeature(null,style,mapOptions);
 			mapGlyph.addEntries(true);
@@ -3071,6 +3074,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 
 	makeGlyphFromJson:function(jsonObject) {
+//	    console.dir(jsonObject);
 	    let mapOptions = jsonObject.mapOptions;
 	    if(!mapOptions) {
 		mapOptions = {
@@ -3102,6 +3106,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 	    if(glyphType.isData()) {
 		let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions,null,style);
+		console.log('data:'+ mapGlyph.getName());
 		mapGlyph.addData(mapOptions.displayAttrs,false);
 		return mapGlyph;
 	    }
@@ -4160,7 +4165,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  MyEntryPoint,
 			  {tooltip:"Display children entries of selected entry",
 			   isMultiEntry:true,
-			   icon:Ramadda.getUrl("/icons/sitemap.png")});
+			   icon:Ramadda.getUrl("/icons/folder.png")});
 
 	    new GlyphType(this,GLYPH_DATA,"Data", {},
 			  MyEntryPoint,
@@ -4284,6 +4289,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    label.droppable( {
 		hoverClass: 'imdv-legend-item-droppable',
 		accept:'.imdv-legend-item',
+		tolerance:'pointer',
 		drop: (event,ui)=>{
 		    notify();
 		    let draggedGlyph = this.findGlyph(ui.draggable.attr('glyphid'));
@@ -4291,41 +4297,48 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			console.log('Could not find dragged glyph');
 			return;
 		    }
-		    this.handleDroppedGlyph(draggedGlyph,droppedOnGlyph);
+		    this.handleDroppedGlyph(draggedGlyph,droppedOnGlyph,label);
 		}
 	    });
 	},
-	handleDroppedGlyph:function(draggedGlyph,droppedOnGlyph) {
+	handleDroppedGlyph:function(draggedGlyph,droppedOnGlyph,target) {
 	    let debug = false;
 	    if(this.handleDropTimeout) {
 		if(debug)	    console.log('clearing pending drop');
 		clearTimeout(this.handleDropTimeout);
 	    }
 	    this.handleDropTimeout = setTimeout(()=>{
-		if(debug)	    console.log(this.name +' handleDrop');
 		this.handleDropTimeout = null;
 		this.removeMapGlyph(draggedGlyph);
 		draggedGlyph.setParentGlyph(null);
 		if(droppedOnGlyph) {
+		    if(debug)	    console.log('handleDrop: ' + droppedOnGlyph.getName());
 		    if(droppedOnGlyph.isGroup()) {
 			if(debug)		console.log('landed on group');
 			droppedOnGlyph.addChildGlyph(draggedGlyph);
 			draggedGlyph.changeOrder(false);
 		    } else {
-			if(droppedOnGlyph.getParentGlyph()) {
+			if(droppedOnGlyph.getParentGlyph() && droppedOnGlyph.getParentGlyph().isGroup()) {
 			    if(debug) console.log('landed on glyph in a group');
 			    droppedOnGlyph.getParentGlyph().addChildGlyph(draggedGlyph);
 			    this.moveGlyphBefore(droppedOnGlyph, 
 						 draggedGlyph,
 						 droppedOnGlyph.getParentGlyph().getChildren());
 			} else {
+			    if(debug) console.log('moving before:' + droppedOnGlyph.getName());
 			    this.moveGlyphBefore(droppedOnGlyph, draggedGlyph);
 			}
 		    }
-		} else {
+		} else if(target) {
 		    draggedGlyph.setParentGlyph(null);
 		    Utils.removeItem(this.getGlyphs(),draggedGlyph);
-		    this.getGlyphs().push(draggedGlyph);
+		    if(target.attr('id')==this.domId(ID_DROP_BEGINNING)) {
+			if(debug) console.log('dropped on beginning');
+			this.getGlyphs().unshift(draggedGlyph);
+		    } else  {
+			if(debug) console.log('dropped on end');
+			this.getGlyphs().push(draggedGlyph);
+		    }
 		    draggedGlyph.changeOrder(false);
 		    this.featureChanged();
 		    this.redraw();
@@ -4371,11 +4384,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.getMap().checkLayerOrder();
 
 	    this.inMapLegend='';
+	    if(glyphs.length)
+		html+=HU.div(['id',this.domId(ID_DROP_BEGINNING),'class','ximdv-legend-item','style','width:100%;height:1px;'],'');
 	    glyphs.forEach((mapGlyph,idx)=>{
 		html+=mapGlyph.makeLegend({idToGlyph:idToGlyph});
 	    });
 	    if(glyphs.length)
-		html+=HU.div(['id',this.domId('dropend'),'class','imdv-legend-item','style','width:100%;height:1em;'],'');
+		html+=HU.div(['id',this.domId(ID_DROP_END),'class','imdv-legend-item','style','width:100%;height:1em;'],'');
 
 	    if(Utils.stringDefined(legendLabel)) {
 		legendLabel=legendLabel.replace(/\\n/,'<br>');
@@ -4434,7 +4449,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.jq(ID_LEGEND).html(html);
 	    }
 
-	    this.makeLegendDroppable(null,this.jq('dropend'),null);
+	    this.makeLegendDroppable(null,this.jq(ID_DROP_BEGINNING),null);
+	    this.makeLegendDroppable(null,this.jq(ID_DROP_END),null);
 
 	    HU.initToggleBlock(this.jq(ID_LEGEND),(id,visible,element)=>{
 		let mapGlyph = idToGlyph[element.attr('map-glyph-id')];

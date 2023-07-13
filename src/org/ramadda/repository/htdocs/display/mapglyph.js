@@ -688,6 +688,9 @@ MapGlyph.prototype = {
 	let g = this.getEntryGlyphs(true);
 	g = g.replace(/\\ *\n/g,'');
 	let lines = Utils.split(g,'\n',true,true);
+//	console.log(this.getName() + ' glyphs: ' + g.trim())
+
+
 //	console.log(this.getName());
 	lines.forEach(line=>{
 	    line = line.trim();
@@ -1430,6 +1433,7 @@ MapGlyph.prototype = {
 	if(jsonObject.children) {
 	    jsonObject.children.forEach(childJson=>{
 		let child = this.display.makeGlyphFromJson(childJson);
+		console.log("loadJson child=" + child.getName());
 		if(child) {
 		    this.addChildGlyph(child);
 		}
@@ -1881,6 +1885,22 @@ MapGlyph.prototype = {
 
 	return body;
     },
+    canDrop: function() {
+	if(this.getParentGlyph()) {
+	    if(!this.isGroup() && !this.getParentGlyph().isGroup()) {
+		return false;
+	    }
+	} else {
+	    return true;
+	}
+    },
+
+    canDrag: function() {
+	if(this.getParentGlyph() && !this.getParentGlyph().isGroup()) {
+	    return false;
+	}
+	return true;
+    },
     initLegend:function() {
 	let _this = this;
 
@@ -1919,17 +1939,20 @@ MapGlyph.prototype = {
 	    let label = this.getLegendDiv().find('.imdv-legend-label');
 	    //Set the last dropped time so we don't also handle this as a setVisibility click
 	    let notify = ()=>{_this.display.setLastDroppedTime(new Date());};
-	    this.getLegendDiv().draggable({
-		cursor: "crosshair",
-		start: notify,
-		drag: notify,
-		stop: notify,
-		containment:this.display.domId(ID_LEGEND),
-		revert: true
-	    });
-	    this.display.makeLegendDroppable(this,label,notify);
-	    //Only drop on the legend label
-
+	    if(this.canDrag()) {
+		this.getLegendDiv().draggable({
+		    handle:label,
+		    cursor: "crosshair",
+		    start: notify,
+		    drag: notify,
+		    stop: notify,
+		    containment:this.display.domId(ID_LEGEND),
+		    revert: true
+		});
+	    }
+	    if(this.canDrop()) {
+		this.display.makeLegendDroppable(this,label,notify);
+	    }
 	    let items = this.jq(ID_LEGEND).find('.imdv-legend-label');
 	    let rows = jqid('glyphstyle_'+this.getId()).find('.' + CLASS_IMDV_STYLEGROUP);
 
