@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Jul 11 18:31:06 MDT 2023";
+var build_date="RAMADDA build date: Thu Jul 13 12:20:57 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -5280,6 +5280,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'footerDiv',tt:'div id of an alternate place to display the footer'},		
 	{p:'width',doGetter:false,ex:'100%'},
 	{p:'height',doGetter:false,ex:'400'},
+	{p:'noWrapper',ex:true,tt:'Don\'t make the header and footer. Just this core display'},
 	{p:'tooltip',doGetter:false,d:'${default}'},
 	{p:'tooltipPositionMy',ex:'left top'},
 	{p:'tooltipPositionAt',ex:'left bottom+2'},		
@@ -9222,6 +9223,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let divId = this.getProperty("targetDiv",this.getProperty(PROP_DIVID,null,null,true),null,true);
             if (divId != null) {
                 let html = this.getHtml();
+//		console.log("*****",html,"*******");
 		let div = $("#" + divId);
 		let inline = this.getProperty("displayInline");
 		if(inline) {
@@ -9274,6 +9276,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
           That needs to call setContents with the html contents of the display
         */
         getHtml: function() {
+            let contents = this.getContentsDiv();
+	    if(this.getNoWrapper()) return contents;
+
             let get = this.getGet();
             let button = "";
             if (this.getShowMenu()) {
@@ -9343,7 +9348,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let right = HU.div([ATTR_ID, this.getDomId(ID_RIGHT)],rightInner);
 	    let sideWidth = "1px";
 	    let centerWidth = "100%";	    
-            let contents = this.getContentsDiv();
 	    let h0 = 	HU.div([ID,this.getDomId(ID_HEADER0),CLASS,"display-header-block display-header0"], "");
 	    //Gack! We set a transparent 1px border here because for some reason the google charts will have a little bit of scroll in them if we don't set a border	
             let table =   h0+HU.open('table', [STYLE,this.isGoogleChart?"border:1px solid transparent;":'',CLASS, 'display-ui-table', 'width','100%','border','0','cellpadding','0','cellspacing','0']);
@@ -9426,7 +9430,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		contentsAttrs.push("expandable-height");
 		contentsAttrs.push(this.getProperty("expandableHeight"));
 	    }
-	    let contents =  top + "\n" +HU.div(contentsAttrs, "") + "\n" +bottom;
+	    let mainDiv = HU.div(contentsAttrs, "");
+	    if(this.getNoWrapper()) return mainDiv;
+
+	    let contents =  top + "\n" +mainDiv + "\n" +bottom;
             return contents;
         },
 
@@ -29299,6 +29306,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		var style = this.getTemplateStyle("");
 		let handleSelectOnClick = this.getPropertyHandleSelectOnClick(true);
 
+		let noWrapper = this.getNoWrapper();
 		for(var rowIdx=0;rowIdx<selected.length;rowIdx++) {
 		    if(max!=-1 && rowIdx>=max) break;
 		    if(cols>0) {
@@ -29344,7 +29352,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    }
 		    if(!handleSelectOnClick)
 			recordStyle+=HU.css("cursor","default");
-		    let tag = HU.openTag("div",[CLASS,"display-template-record",STYLE,recordStyle, ID, this.getId() +"-" + record.getId(), TITLE,"",RECORD_ID,record.getId(),RECORD_INDEX, rowIdx]);
+		    let tag = HU.openTag("div",[CLASS,noWrapper?'':'display-template-record',STYLE,recordStyle, ID, this.getId() +"-" + record.getId(), TITLE,"",RECORD_ID,record.getId(),RECORD_INDEX, rowIdx]);
 		    s = macros.apply(rowAttrs);
 		    if(s.startsWith("<td")) {
 			s = s.replace(/<td([^>]*)>/,"<td $1>"+tag);
@@ -40928,7 +40936,9 @@ var CLASS_IMDV_STYLEGROUP= 'imdv-stylegroup';
 var CLASS_IMDV_STYLEGROUP_SELECTED = 'imdv-stylegroup-selected';
 var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'filter.zoomonchange.show=false',
-			  'filter.toggle.show=false','showButtons=false','showLegendInMap=true','showMeasures=false'];
+			  'filter.toggle.show=false',
+			  'showButtons=false',
+			  'showMeasures=false'];
 
 
 let ImdvUtils = {
@@ -41196,6 +41206,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
     const ID_LEGEND_MAP_WRAPPER = 'legend_map_wrapper';
     const ID_LEGEND_MAP = 'legend_map';            
     const ID_MAP_PROPERTIES = 'mapproperties';
+    const ID_DROP_BEGINNING = 'dropbeginning';
+    const ID_DROP_END = 'dropend';
     //Set these so the glyphs can access them
     this.ID_LEGEND_MAP = ID_LEGEND_MAP;
 
@@ -42100,6 +42112,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    if(glyphType.isMultiEntry()) {
 			this.clearCommands();
 			mapOptions.name = mapOptions.entryName?? attrs.entryName;
+			delete mapOptions['icon'];
 			delete mapOptions['entryName']
 			let mapGlyph = this.handleNewFeature(null,style,mapOptions);
 			mapGlyph.addEntries(true);
@@ -43950,6 +43963,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 
 	makeGlyphFromJson:function(jsonObject) {
+//	    console.dir(jsonObject);
 	    let mapOptions = jsonObject.mapOptions;
 	    if(!mapOptions) {
 		mapOptions = {
@@ -43981,6 +43995,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 	    if(glyphType.isData()) {
 		let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions,null,style);
+		console.log('data:'+ mapGlyph.getName());
 		mapGlyph.addData(mapOptions.displayAttrs,false);
 		return mapGlyph;
 	    }
@@ -44097,7 +44112,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    accords.push({header:'Other Properties',
 			  contents:
 			  HU.hbox([
-			      HU.textarea('',props,['id',this.domId('otherproperties_input'),'rows','8','cols','60']),HU.space(2),help])
+			      HU.textarea('',props,['id',this.domId('otherproperties_input'),'rows','8','cols','40']),HU.space(2),help])
 			 });
 	    
 
@@ -45039,7 +45054,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  MyEntryPoint,
 			  {tooltip:"Display children entries of selected entry",
 			   isMultiEntry:true,
-			   icon:Ramadda.getUrl("/icons/sitemap.png")});
+			   icon:Ramadda.getUrl("/icons/folder.png")});
 
 	    new GlyphType(this,GLYPH_DATA,"Data", {},
 			  MyEntryPoint,
@@ -45163,6 +45178,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    label.droppable( {
 		hoverClass: 'imdv-legend-item-droppable',
 		accept:'.imdv-legend-item',
+		tolerance:'pointer',
 		drop: (event,ui)=>{
 		    notify();
 		    let draggedGlyph = this.findGlyph(ui.draggable.attr('glyphid'));
@@ -45170,41 +45186,48 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			console.log('Could not find dragged glyph');
 			return;
 		    }
-		    this.handleDroppedGlyph(draggedGlyph,droppedOnGlyph);
+		    this.handleDroppedGlyph(draggedGlyph,droppedOnGlyph,label);
 		}
 	    });
 	},
-	handleDroppedGlyph:function(draggedGlyph,droppedOnGlyph) {
+	handleDroppedGlyph:function(draggedGlyph,droppedOnGlyph,target) {
 	    let debug = false;
 	    if(this.handleDropTimeout) {
 		if(debug)	    console.log('clearing pending drop');
 		clearTimeout(this.handleDropTimeout);
 	    }
 	    this.handleDropTimeout = setTimeout(()=>{
-		if(debug)	    console.log(this.name +' handleDrop');
 		this.handleDropTimeout = null;
 		this.removeMapGlyph(draggedGlyph);
 		draggedGlyph.setParentGlyph(null);
 		if(droppedOnGlyph) {
+		    if(debug)	    console.log('handleDrop: ' + droppedOnGlyph.getName());
 		    if(droppedOnGlyph.isGroup()) {
 			if(debug)		console.log('landed on group');
 			droppedOnGlyph.addChildGlyph(draggedGlyph);
 			draggedGlyph.changeOrder(false);
 		    } else {
-			if(droppedOnGlyph.getParentGlyph()) {
+			if(droppedOnGlyph.getParentGlyph() && droppedOnGlyph.getParentGlyph().isGroup()) {
 			    if(debug) console.log('landed on glyph in a group');
 			    droppedOnGlyph.getParentGlyph().addChildGlyph(draggedGlyph);
 			    this.moveGlyphBefore(droppedOnGlyph, 
 						 draggedGlyph,
 						 droppedOnGlyph.getParentGlyph().getChildren());
 			} else {
+			    if(debug) console.log('moving before:' + droppedOnGlyph.getName());
 			    this.moveGlyphBefore(droppedOnGlyph, draggedGlyph);
 			}
 		    }
-		} else {
+		} else if(target) {
 		    draggedGlyph.setParentGlyph(null);
 		    Utils.removeItem(this.getGlyphs(),draggedGlyph);
-		    this.getGlyphs().push(draggedGlyph);
+		    if(target.attr('id')==this.domId(ID_DROP_BEGINNING)) {
+			if(debug) console.log('dropped on beginning');
+			this.getGlyphs().unshift(draggedGlyph);
+		    } else  {
+			if(debug) console.log('dropped on end');
+			this.getGlyphs().push(draggedGlyph);
+		    }
 		    draggedGlyph.changeOrder(false);
 		    this.featureChanged();
 		    this.redraw();
@@ -45250,11 +45273,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.getMap().checkLayerOrder();
 
 	    this.inMapLegend='';
+	    if(glyphs.length)
+		html+=HU.div(['id',this.domId(ID_DROP_BEGINNING),'class','ximdv-legend-item','style','width:100%;height:1px;'],'');
 	    glyphs.forEach((mapGlyph,idx)=>{
 		html+=mapGlyph.makeLegend({idToGlyph:idToGlyph});
 	    });
 	    if(glyphs.length)
-		html+=HU.div(['id',this.domId('dropend'),'class','imdv-legend-item','style','width:100%;height:1em;'],'');
+		html+=HU.div(['id',this.domId(ID_DROP_END),'class','imdv-legend-item','style','width:100%;height:1em;'],'');
 
 	    if(Utils.stringDefined(legendLabel)) {
 		legendLabel=legendLabel.replace(/\\n/,'<br>');
@@ -45313,7 +45338,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.jq(ID_LEGEND).html(html);
 	    }
 
-	    this.makeLegendDroppable(null,this.jq('dropend'),null);
+	    this.makeLegendDroppable(null,this.jq(ID_DROP_BEGINNING),null);
+	    this.makeLegendDroppable(null,this.jq(ID_DROP_END),null);
 
 	    HU.initToggleBlock(this.jq(ID_LEGEND),(id,visible,element)=>{
 		let mapGlyph = idToGlyph[element.attr('map-glyph-id')];
@@ -45660,6 +45686,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 											 HU.td(['align','right','style','padding-right:10px;','width','50%'],mapHeader+address)));
 	    }
 	    
+
 
 	    this.jq(ID_TOP_LEFT).html(menuBar);
             this.jq(ID_ADDRESS_INPUT).keypress(function(event) {
@@ -46816,23 +46843,25 @@ MapGlyph.prototype = {
 
 	if(this.isEntry() || this.isGroup() || this.isMultiEntry()) {
 	    let contents ='';
-	    let help = this.getHelp('multientry.html');
+	    let help = this.getHelp('dataicons.html');
 	    contents+= HU.leftRightTable(HU.checkbox(this.domId('showmultidata'),[],this.getShowMultiData(),'Show data as icons'),help);
 	    contents+='<thin_hr></thin_hr><br>';
 
 	    let gi  =this.getGlyphInfo();
 	    let fields1 = HU.b('Menu Fields:')+'<br>'+
 		HU.textarea('',gi.fields??'',
-			    ['placeholder','e.g.: field_id,label=Some label','id',this.domId('glyphfields'),'rows',3,'cols', 60]);
+			    ['placeholder','field pattern,label=<label>,unit=<unit>\ne.g.:\ntemperature|temp_c,label=Temperature,unit=C','id',this.domId('glyphfields'),'rows',4,'cols', 60]);
 	    let  fields2= HU.b('Initial field:')+'<br>'+
 		HU.input('',gi.field??'',['id',this.domId('glyphfield'),'size','25','placeholder','Initial field']) +'<br>' +
 		HU.b('Menu Label:') +'<br>'  +
 		HU.input('',gi.label??'',['id',this.domId('glyphlabel'),'size','25']);
 	    contents+=HU.table(HU.tr(['valign','top'],HU.td(fields1) +HU.td(HU.div(['style','margin-left:8px;'],fields2))));
+	    contents+='<p>';
 
 	    contents+=  HU.div(['id',this.domId('glyph_add_default'),
 				'title','Set default properties and glyphs'],'Set Defaults:');
 
+	    contents+=  ' Note: this overrides any default data icons';
 	    contents+='<br>';
 	    contents+=HU.b('Canvas: ') +
 		'W: ' + HU.input('',gi.width??'',['id',this.domId('glyphwidth'),'size','3']) +
@@ -46844,7 +46873,7 @@ MapGlyph.prototype = {
 	    contents+=  HU.div(['style','padding-top:0.5em;padding-bottom:0.5em;'],
 			       HU.b('Properties:') + HU.space(1) +
 			       HU.input('',gi.props??'',['id',this.domId('glyphprops'),'size','80']));
-	    contents+=HU.b('Glyphs:') +'<br>';
+	    contents+=HU.b('Icon Specification:')  +'<br>';
 	    contents +=
 		HU.textarea('',gi.glyphs??'',[ID,this.domId('entryglyphs'),'rows',3,'cols', 90]);
 	    content.push({
@@ -47040,6 +47069,9 @@ MapGlyph.prototype = {
 	let g = this.getEntryGlyphs(true);
 	g = g.replace(/\\ *\n/g,'');
 	let lines = Utils.split(g,'\n',true,true);
+//	console.log(this.getName() + ' glyphs: ' + g.trim())
+
+
 //	console.log(this.getName());
 	lines.forEach(line=>{
 	    line = line.trim();
@@ -47782,6 +47814,7 @@ MapGlyph.prototype = {
 	if(jsonObject.children) {
 	    jsonObject.children.forEach(childJson=>{
 		let child = this.display.makeGlyphFromJson(childJson);
+		console.log("loadJson child=" + child.getName());
 		if(child) {
 		    this.addChildGlyph(child);
 		}
@@ -48233,6 +48266,22 @@ MapGlyph.prototype = {
 
 	return body;
     },
+    canDrop: function() {
+	if(this.getParentGlyph()) {
+	    if(!this.isGroup() && !this.getParentGlyph().isGroup()) {
+		return false;
+	    }
+	} else {
+	    return true;
+	}
+    },
+
+    canDrag: function() {
+	if(this.getParentGlyph() && !this.getParentGlyph().isGroup()) {
+	    return false;
+	}
+	return true;
+    },
     initLegend:function() {
 	let _this = this;
 
@@ -48271,17 +48320,20 @@ MapGlyph.prototype = {
 	    let label = this.getLegendDiv().find('.imdv-legend-label');
 	    //Set the last dropped time so we don't also handle this as a setVisibility click
 	    let notify = ()=>{_this.display.setLastDroppedTime(new Date());};
-	    this.getLegendDiv().draggable({
-		cursor: "crosshair",
-		start: notify,
-		drag: notify,
-		stop: notify,
-		containment:this.display.domId(ID_LEGEND),
-		revert: true
-	    });
-	    this.display.makeLegendDroppable(this,label,notify);
-	    //Only drop on the legend label
-
+	    if(this.canDrag()) {
+		this.getLegendDiv().draggable({
+		    handle:label,
+		    cursor: "crosshair",
+		    start: notify,
+		    drag: notify,
+		    stop: notify,
+		    containment:this.display.domId(ID_LEGEND),
+		    revert: true
+		});
+	    }
+	    if(this.canDrop()) {
+		this.display.makeLegendDroppable(this,label,notify);
+	    }
 	    let items = this.jq(ID_LEGEND).find('.imdv-legend-label');
 	    let rows = jqid('glyphstyle_'+this.getId()).find('.' + CLASS_IMDV_STYLEGROUP);
 
