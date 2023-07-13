@@ -235,6 +235,7 @@ textarea {
     float: left;
 }
 
+/** jeffmc: for some reason this screws up the entry table in RAMADDA
 [class*=column]+[class*=column]:last-child {
     float: right;
 }
@@ -242,6 +243,7 @@ textarea {
 [class*=column]+[class*=column].end {
     float: left;
 }
+*/
 
 @media only screen {
     .column,
@@ -3373,7 +3375,9 @@ button.dropdown.secondary:after {
 .prefix,
 select {
     font-size: 1rem;
+/*jeffmc:
     height: 2.64286rem;
+*/
 }
 
 form .row-usna .row-usna {
@@ -3701,7 +3705,9 @@ textarea {
 }
 
 select {
+    /*jeffmc: this screws up the menu arrow
     -webkit-appearance: none!important;
+   */
     background-color: #fafafa;
     background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgeD0iMTJweCIgeT0iMHB4IiB3aWR0aD0iMjRweCIgaGVpZ2h0PSIzcHgiIHZpZXdCb3g9IjAgMCA2IDMiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDYgMyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBvbHlnb24gcG9pbnRzPSI1Ljk5MiwwIDIuOTkyLDMgLTAuMDA4LDAgIi8+PC9zdmc+);
     background-position: 100% center;
