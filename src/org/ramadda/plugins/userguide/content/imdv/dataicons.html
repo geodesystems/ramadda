@@ -9,7 +9,7 @@ can display the most recent data for the entry. This includes individual
 Entry glyphs, entries added under a Multi-Entry and any entryies under a Group glyph.
 -callout
 
-:heading Showing data icons
+:heading Showing Data Icons
 
 For example, the Purple Air sensors  can show the PM2.5 measurements and a color coded circle.
 
@@ -39,7 +39,7 @@ You should have a map that looks like below.  From the top-level File menu selec
 
 [ht::cimg images/multientrymap1.png {} {width=600px}]
 
-:heading Adding a field select menu
+:heading Adding a Field Select Menu
 You can add a pull down menu at the top of the page that allows the user to select which field
 is displayed. To do this you will first need to know what are the field identifiers for
 the data entry. Navigate to one of the data entrys you will be displaying, e.g., the Purple Air sensor and view the Metadata page (from the entry's popup menu) to show the metadata. Note the
@@ -62,6 +62,25 @@ label=... property in the Menu Fields:
 
 [ht::screenshot images/multientryprops3.png]
 
+
+:heading Different Data Types
+The data icons can be used with a group of entry glyphs where the entries have different data, e.g., CR1000 Data Logger, Purple Air, NWS ASOS data, etc.
+The menu fields can have a pattern for the field ID. For example, below the first menu row
+matches on any field that is "temperature" or "atmos_temp". The second row just is pm2.5.
+
+<pre>
+temperature|atmos_temp,label=TemperatureX,unit=C
+pm2.5,label=PM 2.5
+</pre>
+
+To have all of the data icons be the same format select "Set Defaults", this will override the
+default display of the data icons. The Icon Specification is the same as used for the
+wiki <a href=../wiki/canvasglyphs.html>canvas display</a>.
+
+Now, with the above settings if the PM2.5 field is selected in the field menu then only those
+glyphs that have a data field that matches the selected PM2.5 field will be shown.
+
+[ht::screenshot images/multientryprops4.png]
 
 
 </body>
