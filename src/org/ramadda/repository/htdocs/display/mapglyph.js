@@ -464,23 +464,25 @@ MapGlyph.prototype = {
 
 	if(this.isEntry() || this.isGroup() || this.isMultiEntry()) {
 	    let contents ='';
-	    let help = this.getHelp('multientry.html');
+	    let help = this.getHelp('dataicons.html');
 	    contents+= HU.leftRightTable(HU.checkbox(this.domId('showmultidata'),[],this.getShowMultiData(),'Show data as icons'),help);
 	    contents+='<thin_hr></thin_hr><br>';
 
 	    let gi  =this.getGlyphInfo();
 	    let fields1 = HU.b('Menu Fields:')+'<br>'+
 		HU.textarea('',gi.fields??'',
-			    ['placeholder','e.g.: field_id,label=Some label','id',this.domId('glyphfields'),'rows',3,'cols', 60]);
+			    ['placeholder','field pattern,label=<label>,unit=<unit>\ne.g.:\ntemperature|temp_c,label=Temperature,unit=C','id',this.domId('glyphfields'),'rows',4,'cols', 60]);
 	    let  fields2= HU.b('Initial field:')+'<br>'+
 		HU.input('',gi.field??'',['id',this.domId('glyphfield'),'size','25','placeholder','Initial field']) +'<br>' +
 		HU.b('Menu Label:') +'<br>'  +
 		HU.input('',gi.label??'',['id',this.domId('glyphlabel'),'size','25']);
 	    contents+=HU.table(HU.tr(['valign','top'],HU.td(fields1) +HU.td(HU.div(['style','margin-left:8px;'],fields2))));
+	    contents+='<p>';
 
 	    contents+=  HU.div(['id',this.domId('glyph_add_default'),
 				'title','Set default properties and glyphs'],'Set Defaults:');
 
+	    contents+=  ' Note: this overrides any default data icons';
 	    contents+='<br>';
 	    contents+=HU.b('Canvas: ') +
 		'W: ' + HU.input('',gi.width??'',['id',this.domId('glyphwidth'),'size','3']) +
@@ -492,7 +494,7 @@ MapGlyph.prototype = {
 	    contents+=  HU.div(['style','padding-top:0.5em;padding-bottom:0.5em;'],
 			       HU.b('Properties:') + HU.space(1) +
 			       HU.input('',gi.props??'',['id',this.domId('glyphprops'),'size','80']));
-	    contents+=HU.b('Glyphs:') +'<br>';
+	    contents+=HU.b('Icon Specification:')  +'<br>';
 	    contents +=
 		HU.textarea('',gi.glyphs??'',[ID,this.domId('entryglyphs'),'rows',3,'cols', 90]);
 	    content.push({

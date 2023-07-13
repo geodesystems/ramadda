@@ -49,7 +49,9 @@ var CLASS_IMDV_STYLEGROUP= 'imdv-stylegroup';
 var CLASS_IMDV_STYLEGROUP_SELECTED = 'imdv-stylegroup-selected';
 var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'filter.zoomonchange.show=false',
-			  'filter.toggle.show=false','showButtons=false','showLegendInMap=true','showMeasures=false'];
+			  'filter.toggle.show=false',
+			  'showButtons=false',
+			  'showMeasures=false'];
 
 
 let ImdvUtils = {
@@ -3223,7 +3225,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    accords.push({header:'Other Properties',
 			  contents:
 			  HU.hbox([
-			      HU.textarea('',props,['id',this.domId('otherproperties_input'),'rows','8','cols','60']),HU.space(2),help])
+			      HU.textarea('',props,['id',this.domId('otherproperties_input'),'rows','8','cols','40']),HU.space(2),help])
 			 });
 	    
 
@@ -4797,6 +4799,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 											 HU.td(['align','right','style','padding-right:10px;','width','50%'],mapHeader+address)));
 	    }
 	    
+
 
 	    this.jq(ID_TOP_LEFT).html(menuBar);
             this.jq(ID_ADDRESS_INPUT).keypress(function(event) {
