@@ -37,59 +37,6 @@ show the Purple Air time series.
 
 [ht::cimg images/defaultmultientry.png {} {width=600px}]
 
-:heading Showing data icons
-If the children entries of the Multi-Entry are data then you can
-show the most recent data instead of the default icons.
-For example, the Purple Air sensors  can show the PM2.5 measurements and a color coded circle.
-
-[ht::screenshot images/purpleair.png]
-
-
-NWS station data shows temperature, wind speed and pressure:
-
-[ht::screenshot images/nws.png]
-
-CR1000 data logger entries show either temperature or relative humidity:
-
-[ht::screenshot images/cr1000.png]
-
-To enable data icon displays bring up the Properties dialog for the Multi-Entry with
-the <i class="fas fa-cog" style="color:#ccc;"></i> in the legend:
-
-[ht::screenshot images/multientrylegend.png]
-
-Under the Data Icons tab select "Show data as icons" and press OK. 
-Your map should now show the sensor data.
-
-[ht::screenshot images/multientryprops.png]
-
-You should have a map that looks like below.  From the top-level File menu select Save.
-
-[ht::cimg images/multientrymap1.png {} {width=600px}]
-
-:heading Adding a field select menu
-You can add a pull down menu at the top of the page that allows the user to select which field
-is displayed. To do this you will first need to know what are the field identifiers for
-the data entry. Navigate to one of the data entrys you will be displaying, e.g., the Purple Air sensor and view the Metadata page (from the entry's popup menu) to show the metadata. Note the
-fields you want to use. For Purple Air we are going to use pm1.0, pm2.5 and pm10.0.
-
-[ht::screenshot images/metadata.png]
-
-
-Now, back to the IDMV map, bring up the properties dialog for the multi-entry. Under the Menu Fields
-add the fields you want to use. Optionally you can specify an initial field and a menu label.
-
-[ht::screenshot images/multientryprops2.png]
-
-You should now have a menu shown that allows you to select the field to display:
-
-[ht::cimg images/multientrymap2.png {} {width=600px}]
-
-You can specify an alternative label to show in the menu as below by specifying a
-label=... property in the Menu Fields:
-
-[ht::screenshot images/multientryprops3.png]
-
 
 
 </body>

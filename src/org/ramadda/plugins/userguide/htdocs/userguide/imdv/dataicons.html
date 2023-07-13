@@ -1,0 +1,114 @@
+<html>
+<head>
+<title>Data Icons</title>
+  <link rel="stylesheet" type="text/css" href="../default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<div class="ramadda-doc-header">
+<div style='padding-top:12px;margin-bottom:4px;'><a href="../toc.html#imdv/dataicons.html"><span title="Table of contents"><i  style='font-size:16pt;'  class="fa fa-list "></i></span></a> &nbsp; <a href="../index.html">RAMADDA User Guide</a>  > <a href="index.html">Integrated Map Data Viewer (IMDV)</a> </div>
+<table width=100% cellspacing=0 cellpadding=0 >
+<tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="multientry.html"><table><td valign=center><td><span title="Previous: The Multi-Entry Glyph"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>The Multi-Entry Glyph</td></tr></table></a></div></div></td>
+<td width=50% align=center>
+<div class="ramadda-page-title"><a href="#">Section 7.6: Data Icons</a></div>
+</td>
+<td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="imdvglyphs.html"><table><tr valign=center><td>Custom Data Icons</td><td><span title="Next: Custom Data Icons"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+</tr></table>
+</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+.ramadda-lheading {
+    margin-top:15px;
+}
+</style>
+
+<div class="ramadda-doc-contents" style="margin-left:20px;">
+
+
+
+:navtop
+:p
++callout-info
+If any entry that is also a data entry is being displayed in the IMDV map
+then the marker shown in the map
+can display the most recent data for the entry. This includes individual
+Entry glyphs, entries added under a Multi-Entry and any entryies under a Group glyph.
+-callout
+
+:heading Showing data icons
+
+For example, the Purple Air sensors  can show the PM2.5 measurements and a color coded circle.
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/purpleair.png?version=877.0"><img  src="images/purpleair.png?version=877.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/purpleair.png?version=877.0" ></a></div></div>
+
+
+NWS station data shows temperature, wind speed and pressure:
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/nws.png?version=877.0"><img  src="images/nws.png?version=877.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/nws.png?version=877.0" ></a></div></div>
+
+CR1000 data logger entries show either temperature or relative humidity:
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/cr1000.png?version=877.0"><img  src="images/cr1000.png?version=877.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/cr1000.png?version=877.0" ></a></div></div>
+
+To enable data icon displays bring up the Properties dialog for the relevant glyph
+(this may be a Multi-Entry, an Entry Marker or a Group)
+<i class="fas fa-cog" style="color:#ccc;"></i> in the legend:
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/multientrylegend.png?version=877.0"><img  src="images/multientrylegend.png?version=877.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/multientrylegend.png?version=877.0" ></a></div></div>
+
+Under the Data Icons tab select "Show data as icons" and press OK. 
+Your map should now show the sensor data.
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/multientryprops.png?version=877.0"><img  src="images/multientryprops.png?version=877.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/multientryprops.png?version=877.0" ></a></div></div>
+
+You should have a map that looks like below.  From the top-level File menu select Save.
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/multientrymap1.png?version=877.0"><img  src="images/multientrymap1.png?version=877.0" width=600px alt="images/multientrymap1.png?version=877.0" ></a></div></div>
+
+:heading Adding a field select menu
+You can add a pull down menu at the top of the page that allows the user to select which field
+is displayed. To do this you will first need to know what are the field identifiers for
+the data entry. Navigate to one of the data entrys you will be displaying, e.g., the Purple Air sensor and view the Metadata page (from the entry's popup menu) to show the metadata. Note the
+fields you want to use. For Purple Air we are going to use pm1.0, pm2.5 and pm10.0.
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/metadata.png?version=877.0"><img  src="images/metadata.png?version=877.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/metadata.png?version=877.0" ></a></div></div>
+
+
+Now, back to the IDMV map, bring up the properties dialog for the multi-entry. Under the Menu Fields
+add the fields you want to use. Optionally you can specify an initial field and a menu label.
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/multientryprops2.png?version=877.0"><img  src="images/multientryprops2.png?version=877.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/multientryprops2.png?version=877.0" ></a></div></div>
+
+You should now have a menu shown that allows you to select the field to display:
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/multientrymap2.png?version=877.0"><img  src="images/multientrymap2.png?version=877.0" width=600px alt="images/multientrymap2.png?version=877.0" ></a></div></div>
+
+You can specify an alternative label to show in the menu as below by specifying a
+label=... property in the Menu Fields:
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/multientryprops3.png?version=877.0"><img  src="images/multientryprops3.png?version=877.0"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/multientryprops3.png?version=877.0" ></a></div></div>
+
+
+
+
+</div>
+<p>
+<div  class="childlist" ><table  width="100%" ></table></div>
+<p>&nbsp;<p>
+
+<div class="ramadda-doc-footer">
+<table width=100% cellspacing=0 cellpadding=0 >
+<tr><td width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="multientry.html"><table><td valign=center><td><span title="Previous: The Multi-Entry Glyph"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>The Multi-Entry Glyph</td></tr></table></a></div></div></td>
+<td align=right width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="imdvglyphs.html"><table><tr valign=center><td>Custom Data Icons</td><td><span title="Next: Custom Data Icons"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+</tr></table>
+</div>
+<p>
+</div>
+</body>
+</html>
+
