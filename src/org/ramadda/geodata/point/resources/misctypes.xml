@@ -131,7 +131,7 @@ height=400px isPath=true radius=6 strokeWidth=0 colorBy=# colorByFields="#" colo
   <![CDATA[
 props:fontSize:0px,iconSize:20,canvasWidth:100,canvasHeight:100,font:28px sans-serif,defaultField:pm2.5,
 circle,width:cw-10,height:ch,pos:c,dx:cw2,dy:-ch2,colorBy:${_field},colorTable:airquality,colorByMin:0,colorByMax:300
-label,pos:c,dx:cw2,dy:-ch2,label:${${_field}}
+label,pos:c,dx:cw2,dy:-ch2,label:${${_field} decimals=2}
 ]]></property>
 
 <property name="bubble">
