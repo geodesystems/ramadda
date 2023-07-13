@@ -275,6 +275,13 @@ csvcommands5=-indateformat,yyyy-MM-dd-HH-mm,,-convertdate,date
 csvcommands6=-notcolumns,yy\,month\,dd\,hh\,mm,-change,1-50,MM
 csvcommands7=NaN,-addheader,date.format_csvcommandspace_{yyyy-MM-dd_csvcommandspace_hh:mm:ss},-print
 </property>
+<property name="mapglyphs">
+props:fontSize:0px,iconSize:75,canvasWidth:500,canvasHeight:100,fill:#efefef,borderWidth:2,borderColor:#000,font:bold 36px sans-serif
+image,pos:nw,dx:10,dy:10-ch,width:60,height:60,url:${root}/point/noaa.gif
+label,pady:5,pos:nw,dx:80,dy:10-ch,label:${entryname}  
+label,pos:s,dx:cw2,dy:-10,font:36px sans-serif,label:${match  pattern="(atmp)" prefixLabel=true}
+</property>
+
 <wiki>
 <![CDATA[
 +section title="Station {{field name=station}} - {{name}}"
