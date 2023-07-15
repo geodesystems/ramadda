@@ -10,6 +10,7 @@ var LINETYPE_CURVE='curve';
 var LINETYPE_STEPPED='stepped';        
 var ID_ADDDOTS = 'adddots';
 var ID_LINETYPE = 'linetype';
+var ID_SHOWDATAICONS = 'showdataicons';
 
 function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
     if(!type) {
@@ -241,7 +242,19 @@ MapGlyph.prototype = {
 	    }
 	    obj.style = style;
 	}
+
+	//Set the location
 	obj.points = this.getPoints(obj);
+
+	if(this.isMultiEntry() && this.children) {
+	    let locs = attrs.childrenLocations??{};
+	    attrs.childrenLocations=locs;
+	    this.children.forEach(child=>{
+		if(child.overrideLocation) {
+		    locs[child.attrs.entryId] = child.overrideLocation;
+		}
+	    });
+	}
 	if(this.haveChildren()) {
 	    let childrenJson=[];
 	    this.getChildren().forEach(child=>{
@@ -462,10 +475,11 @@ MapGlyph.prototype = {
 			 HU.space(2),ex]);
 	content.push({header:'Flags',contents:html});
 
-	if(this.isEntry() || this.isGroup() || this.isMultiEntry()) {
+	if(this.isDataIconCapable()) {
 	    let contents ='';
 	    let help = this.getHelp('dataicons.html');
-	    contents+= HU.leftRightTable(HU.checkbox(this.domId('showmultidata'),[],this.getShowMultiData(),'Show data as icons'),help);
+	    contents+= HU.leftRightTable(HU.checkbox(this.domId(ID_SHOWDATAICONS),[],
+						     this.getShowDataIcons(),'Show data as icons'),help);
 	    contents+='<thin_hr></thin_hr><br>';
 
 	    let gi  =this.getGlyphInfo();
@@ -531,11 +545,10 @@ MapGlyph.prototype = {
 	await this.getElevations(pts,callback,update);
     },
 
-
+    isDataIconCapable:function() {
+	return this.isEntry() || this.isGroup()  || this.isMultiEntry();
+    },
     applyPropertiesDialog: function() {
-	if(this.jq("showmultidata").length) {
-	    this.setShowMultiData(this.jq("showmultidata").is(':checked'));
-	}
 	//Make sure we do this after we set the above style properties
 	this.setName(this.jq("mapglyphname").val());
 	this.attrs.legendText = this.jq('legendtext').val();
@@ -544,9 +557,13 @@ MapGlyph.prototype = {
 	    this.setUseEntryLabel(this.jq("useentrylabel").is(":checked"));
 	    this.setUseEntryLocation(this.jq("useentrylocation").is(":checked"));
 	}
-	if(this.isEntry() || this.isGroup()  || this.isMultiEntry()) {
+	if(this.isDataIconCapable()) {
+	    if(this.jq(ID_SHOWDATAICONS).length) {
+		this.setShowDataIcons(this.jq(ID_SHOWDATAICONS).is(':checked'));
+	    }
+
 	    let gi = this.getGlyphInfo();
-	    gi.glyphs = this.jq("entryglyphs").val();
+	    gi.glyphs = this.jq('entryglyphs').val();
 	    gi.fields=this.jq('glyphfields').val();
 	    gi.width=this.jq('glyphwidth').val();
 	    gi.height=this.jq('glyphheight').val();	    
@@ -554,7 +571,7 @@ MapGlyph.prototype = {
 	    gi.props=this.jq('glyphprops').val();
 	    gi.field=this.jq('glyphfield').val();
 	    gi.label=this.jq('glyphlabel').val();	    	    
-	    if(this.isGroup()) 
+	    if(this.canHaveChildren()) 
 		this.applyGlyphField();
 	    else if(this.isEntry()) 
 		this.applyEntryGlyphs();
@@ -619,14 +636,6 @@ MapGlyph.prototype = {
 	}
     },
 
-    applyGlyphField: function() {
-	if(this.isEntry()) {
-	    this.applyEntryGlyphs();
-	}
-	this.applyChildren(child=>{
-	    child.applyGlyphField();
-	});
-    },
     featureSelected:function(feature,layer,event) {
 	//	console.log('imdv.featureSelected');
 	if(this.selectedStyleGroup) {
@@ -660,28 +669,43 @@ MapGlyph.prototype = {
     clearDataIcon: function() {
 	//Is this a data icon
 	if(this.style && this.style.externalGraphic && this.style.externalGraphic.startsWith('data:')) {
-	    
 	    if(this.attrs.dataIconOriginal) {
+		console.log('isDataIcon-orig');
 		let o = this.attrs.dataIconOriginal;
 		this.style.externalGraphic=o.externalGraphic;
 		this.style.pointRadius = o.pointRadius;
 		this.style.fontSize = o.fontSize;		
 	    } else {
+		console.log('isDataIcon-null');
 		this.style.externalGraphic=null;
 	    }
 
 	}
     },
 
+    applyGlyphField: function() {
+	if(this.isEntry()) {
+	    this.applyEntryGlyphs();
+	}
+	this.applyChildren(child=>{
+	    child.applyGlyphField();
+	});
+    },
+
     applyEntryGlyphs:function(force) {
-	if(!force && !this.getShowMultiData()) {
+	let debug  = true;
+	if(!force && !this.getShowDataIcons()) {
+	    if(debug)	    console.log('applyEntryGlyphs - none',this.getName());
 	    this.clearDataIcon();
+//	    this.display.redraw(this);
 	    return;
 	}
 	if(!Utils.stringDefined(this.getEntryGlyphs(true))) {
+	    if(debug) console.log('applyEntryGlyphs - none2',this.getName());
 	    return;
 	}
 
+	if(debug)	console.log('applyEntryGlyphs',this.getName());
 	let opts = {
 	    entryId:this.attrs.entryId
 	};
@@ -709,7 +733,6 @@ MapGlyph.prototype = {
 				      {entryId:opts.entryId});
 	let callback = (data)=>{
 	    this.makeGlyphs(pointData,data,glyphs);
-	    this.display.clearFeatureChanged();
 	}
 	let fauxDisplay  = {
 	    display:this.display,
@@ -2223,6 +2246,9 @@ MapGlyph.prototype = {
     },
     
 
+    canHaveChildren:function() {
+	return this.isGroup() || this.isMultiEntry();
+    },
     isMarker:function() {
 	return this.getType() ==GLYPH_MARKER;
     },
@@ -2253,15 +2279,15 @@ MapGlyph.prototype = {
     isMultiEntry:function() {
 	return this.getType()==GLYPH_MULTIENTRY;
     },
-    getShowMultiData:function() {
-	if(this.attrs.showmultidata) return true;
+    getShowDataIcons:function() {
+	if(this.attrs.showdataicons) return true;
 	if(this.getParentGlyph()) {
-	    return this.getParentGlyph().getShowMultiData();
+	    return this.getParentGlyph().getShowDataIcons();
 	}
 	return false;
     },
-    setShowMultiData:function(v) {
-	this.attrs.showmultidata = v;
+    setShowDataIcons:function(v) {
+	this.attrs.showdataicons = v;
     },
     setMapServerUrl:function(url,wmsLayer,legendUrl,predefined,mapOptions) {
 	this.style.legendUrl = legendUrl;
@@ -4180,6 +4206,10 @@ MapGlyph.prototype = {
 	    this.image.moveTo(this.image.extent,true,true);
 	}
 
+	if(this.getParentGlyph()?.isMultiEntry()) {
+	    this.overrideLocation = this.getPoints({});
+	}
+
 	this.display.checkSelected(this);
     },
     removeImage:function() {
@@ -4766,6 +4796,7 @@ MapGlyph.prototype = {
     },
     addEntries: function(andZoom) {
 	if(!this.checkVisible()) return;
+	if(this.haveAddedEntries) return;
 	this.haveAddedEntries = true;
 	let entryId = this.getEntryId();
         let entry =  new Entry({
@@ -4780,7 +4811,18 @@ MapGlyph.prototype = {
 		    console.log("mutli entry has no location:" + e);
 		    return;
 		}
-		let  pt = MapUtils.createPoint(e.getLongitude(),e.getLatitude());
+		let overrideLocation;
+		if(this.attrs.childrenLocations) {
+		    overrideLocation = this.attrs.childrenLocations[e.getId()];
+		}
+		let latLon;
+
+		if(overrideLocation) {
+		    latLon = {latitude:overrideLocation[0],longitude:overrideLocation[1]};
+		} else {
+		    latLon = {latitude:e.getLatitude(),longitude:e.getLongitude()};
+		}
+		let pt = MapUtils.createPoint(latLon.longitude,latLon.latitude);
 		pt = this.display.getMap().transformLLPoint(pt);
 		let style = Utils.clone({},this.style);
 		style.externalGraphic = e.getIconUrl();
@@ -4807,11 +4849,12 @@ MapGlyph.prototype = {
 			     entryId:e.getId(),
 			     icon:e.getIconUrl()
 			    };
-		let points =[e.getLatitude(),e.getLongitude()];
+		let points =[latLon.latitude,latLon.longitude];
 		let mapGlyph = this.display.createMapMarker(GLYPH_ENTRY,attrs, style,points,false);
+		mapGlyph.overrideLocation = overrideLocation;
 		mapGlyph.isEphemeral = true;
 		this.addChildGlyph(mapGlyph);
-		if(this.getShowMultiData()) {
+		if(this.getShowDataIcons()) {
 		    mapGlyph.applyEntryGlyphs(true);
 		}
 	    });

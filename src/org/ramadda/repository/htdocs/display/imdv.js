@@ -735,6 +735,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    return this.myLayer;
 	},
 	redraw: function(feature) {
+	    console.dir('redraw',feature?feature.name:'no feature')
 	    ImdvUtils.scheduleRedraw(this.myLayer,feature);
 	},
 	getNewFeature: function() {
@@ -2314,7 +2315,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		mapGlyph.makeLegend();
 		mapGlyph.initLegend();
 		this.showMapLegend();
-		//TODO:
 		this.redraw(mapGlyph);
 	    };
 	},
@@ -3034,7 +3034,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
             this.getGlyphs().forEach(mapGlyph=>{
 		let json = mapGlyph.makeJson();
 		list.push(json);
-
 	    });
 	    let latlon = this.getMap().getBounds();
 	    let tbounds =  _this.getMap().transformLLBounds(latlon);
@@ -3058,7 +3057,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	loadAnnotationJson: function(mapJson,map) {
 	    let glyphs = mapJson.glyphs||[];
-	    glyphs.forEach(jsonObject=>{
+	    glyphs.forEach((jsonObject,idx)=>{
 		let mapGlyph = this.makeGlyphFromJson(jsonObject);
 		if(mapGlyph) this.addGlyph(mapGlyph,true);
 	    });
@@ -3076,6 +3075,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 
 	makeGlyphFromJson:function(jsonObject) {
+
+	    //For backwards compat
 //	    console.dir(jsonObject);
 	    let mapOptions = jsonObject.mapOptions;
 	    if(!mapOptions) {
@@ -3083,6 +3084,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    type:jsonObject.type
 		}
 	    }
+	    if(Utils.isDefined(mapOptions.showmultidata))  {
+		mapOptions.showdataicons = mapOptions.showmultidata;
+		delete mapOptions.showmultidata;
+	    }
+
 	    mapOptions.id = jsonObject.id;
 	    let type = jsonObject.type||mapOptions.type;
 	    //for backwards compatabity
@@ -3140,7 +3146,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }  		
 	    let points=jsonObject.points;
 	    if(!points || points.length==0) {
-		console.log("Unknown glyph:" + mapOptions.type);
+		console.dir("No points defined for glyph:", glyphType.type);
+		console.dir(jsonObject);
 		return null;
 	    }
 
