@@ -37,14 +37,8 @@ import java.util.List;
  *
  *
  */
-public class IIIFTypeHandler extends ExtensibleGroupTypeHandler {
+public class IIIFCollectionTypeHandler extends TypeHandler {
 
-
-    /** _more_ */
-    private static int IDX = 0;
-
-    /** _more_ */
-    public static final int IDX_STYLE = IDX++;
 
     /**
      * _more_
@@ -54,73 +48,25 @@ public class IIIFTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    public IIIFTypeHandler(Repository repository, Element entryNode)
+    public IIIFCollectionTypeHandler(Repository repository, Element entryNode)
             throws Exception {
-        super(repository, entryNode);
+        super(repository,entryNode);
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fromImport _more_
-     *
-     * @throws Exception _more_
-     */
-    @Override
-    public void initializeNewEntry(Request request, Entry entry,
-                                   boolean fromImport)
-            throws Exception {
-        super.initializeNewEntry(request, entry, fromImport);
-	String url = getPathForEntry(request, entry,true);
-	if(!stringDefined(url)) return;
-	IO.Result result = IO.doGetResult(new URL(url));
-	if(result.getError()) {
-	    String error = result.getResult();
-	    getLogManager().logError("IIIF: Error reading url:" + url+" error:" +error);
-	    return;
-	}
-	String json = result.getResult();
-	JSONObject root           = new JSONObject(json);
-	String label = root.optString("label");
-	if(stringDefined(label) && !stringDefined(entry.getName())) entry.setName(label);
-	String description = root.optString("description");
-	if(stringDefined(description) && !stringDefined(entry.getDescription())) entry.setDescription("+note\n"+description+"\n-note\n");	
-	try {
-	    String thumbnail   = JU.readValue(root,"thumbnail.@id",null);
-	    if(thumbnail!=null) {
-		getRepository().getMetadataManager().addThumbnailUrl(request, entry,thumbnail,Utils.getFileTail(thumbnail))
-;
-		System.err.println(thumbnail);
-
-	    }
-	} catch(Exception exc) {
-	    getLogManager().logError("IIIF error reading thumbnail:" + url,exc);
-	}
-
-	JSONArray topMetadata   = root.optJSONArray("metadata");
-	if(topMetadata!=null)  {
-	    List<JSONArray> metadataList = new ArrayList<JSONArray>();
-	    metadataList.add(topMetadata);
-	    IIIFImportHandler.addMetadata(getRepository(), request,entry,metadataList);
-	}
-
-
-    }
 
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
             throws Exception {
-        if ( !tag.equals("iiif_document")) {
+        if ( !tag.equals("iiif_collection")) {
             return super.getWikiInclude(wikiUtil, request, originalEntry,
                                         entry, tag, props);
         }
 
-	return getIIIFDisplay(request, entry, props,null);
+	List<Entry> children = getEntryManager().getChildren(request, entry);
+	if(children.size()==0) return "No IIIF Documents";
+	return IIIFTypeHandler.getIIIFDisplay(request, children.get(0), props,children);
     }
 
     public static String getIIIFDisplay(Request request, Entry entry, Hashtable props,List<Entry> catalog)

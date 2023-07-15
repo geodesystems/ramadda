@@ -424,17 +424,39 @@ Zoomable Image
 </type>
 
 
-<type name="type_iiif"        super="type_media" supercategory="" description="IIIF Document"
+<type name="type_iiif_collection"       isgroup="true" description="IIIF Collection"
+      childtypes="type_iiif_document"
+      handler="org.ramadda.plugins.media.IIIFCollectionTypeHandler" foruser="true" >  
+  <property name="icon" value="/media/iiif.png"/>
+  <property name="wiki.edit.links">
+    <![CDATA[
+IIIF Collection
+{{iiif_collection thumbnailPosition=far-right width=800px height=500px}}
+]]>
+</property>
+
+<wiki><![CDATA[
++section title={{name}}
+{{description wikify=true}}
++centerdiv
+{{iiif_collection thumbnailPosition=far-bottom width=1000px height=600px}}
+-centerdiv
+-section
+]]>
+</wiki>
+</type>
+
+<type name="type_iiif_document"        super="type_media" supercategory="" description="IIIF Document"
       pattern=".iiif.*"
-      handler="org.ramadda.plugins.media.IIIFTypeHandler" foruser="true" >  
+      handler="org.ramadda.plugins.media.IIIFDocumentTypeHandler" foruser="true" >  
   <property name="form.file.show" value="false"/>
   <property name="icon" value="/media/iiif.png"/>
   <property name="form.date.show" value="false"/>
   <property name="form.area.show" value="true"/>
   <property name="wiki.edit.links">
     <![CDATA[
-IIIF
-{{iiif thumbnailPosition=far-right width=800px height=500px}}
+IIIF Document
+{{iiif_document thumbnailPosition=far-right width=800px height=500px}}
 ]]>
 </property>
 
@@ -445,12 +467,11 @@ IIIF
 {{information  details="true"  showTitle="false"  }}
 -toggle
 +centerdiv
-{{iiif thumbnailPosition=far-bottom width=1000px height=600px}}
+{{iiif_document thumbnailPosition=far-bottom width=1000px height=600px}}
 -centerdiv
 -section
 ]]>
 </wiki>
 </type>
-
 
 </types>
