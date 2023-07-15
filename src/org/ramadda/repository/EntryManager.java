@@ -7884,7 +7884,7 @@ public class EntryManager extends RepositoryManager {
 	    Hashtable   seen          = new Hashtable();
 
 
-	    SelectInfo select = new SelectInfo(request, null);
+	    SelectInfo select = new SelectInfo(request);
 	    String order = getQueryOrderAndLimit(request, false, null,  select);
 	    if(typeHandler==null)
 		typeHandler =  getRepository().getTypeHandler(request);
