@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Jul 15 09:46:14 MDT 2023";
+var build_date="RAMADDA build date: Sat Jul 15 10:35:17 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -56838,6 +56838,7 @@ function RamaddaStripesDisplay(displayManager, id, properties) {
 	{p:'stripeHeight',d:'100px'},
 	{p:'stripeWidth',d:3,tt:'Make sure this is a whole number'},
 	{p:'showLabel',d:false,ex:'true'},
+	{p:'showLegend',d:false,ex:'true'},
 	{p:'showColorTable',d:false,ex:'true'}	,
 	{p:'showColorTableBottom',d:false,ex:'true'},
 	{p:'groupBy',tt:'Field id to group by'},	    
@@ -56873,10 +56874,26 @@ function RamaddaStripesDisplay(displayManager, id, properties) {
 	    records.forEach(record=>{
 		recordMap[record.getId()]  =record;
 	    });
-	    let html = '<center>';
+	    let html = '<center><div style="display:inline-block;">';
 	    let colorBys = [];
 	    let stripeWidth=this.getStripeWidth();
 	    let groups = Object.keys(groupedRecords);
+
+	    let makeLegend = ()=>{
+		let left =this.formatDate(records[0].getDate());
+		if(this.getShowLabel()) {
+		    left  = HU.div(['style','margin-left:2em;'], left);
+		}
+		let center = HU.div(['style','text-align:center;'],this.formatDate(records[parseInt(records.length/2)].getDate()));
+		html+=HU.leftCenterRight(left,
+					 center,
+					 this.formatDate(records[records.length-1].getDate()),
+					 '20%','60%','20%');
+
+	    };
+	    if(this.getShowLegend()) {
+		makeLegend();
+	    }
 	    groups.forEach((key,groupIdx)=>{
 		if(groupField) {
 		    html+=key;
@@ -56884,6 +56901,8 @@ function RamaddaStripesDisplay(displayManager, id, properties) {
 		let records =groupedRecords[key];
 		fields.forEach((field,fidx)=>{
 		    html+='<table>';
+		    let isLast = (groupIdx==groups.length-1 && fidx==fields.length-1);
+		    let isFirst = (groupIdx==0 && fidx==0);
 		    let colorBy = new  ColorByInfo(this,allFields, records, '',null,null,null,field);
 		    colorBys.push(colorBy);
 		    if(fields.length>1)
@@ -56908,13 +56927,16 @@ function RamaddaStripesDisplay(displayManager, id, properties) {
 		    });
 		    html+='</tr>';
 		    html+='</table>';
-		    if((groupIdx==groups.length-1 && fidx==fields.length-1 &&this.getShowColorTableBottom()) || this.getShowColorTable()) {
+		    if((isLast &&this.getShowColorTableBottom()) || this.getShowColorTable()) {
 			html+=HU.div(['id',this.domId('colortable_'  + fidx),'style',
 				      HU.css('width',(stripeWidth*records.length)+'px','margin-bottom','5px','height','1em')],'');
 		    }
 		});
 	    });
-	    html+='</center>';
+	    if(this.getShowLegend()) {
+		makeLegend();
+	    }
+	    html+='</div></center>';
 	    this.setContents(html); 
 	    colorBys.forEach((colorBy,fidx)=>{
 		colorBy.displayColorTable(null,null,'colortable_'+fidx);
