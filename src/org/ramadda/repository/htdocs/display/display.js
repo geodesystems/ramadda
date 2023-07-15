@@ -1678,6 +1678,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'&lt;field&gt;.filterValues'},
 	{p:'&lt;field&gt;.filterMultiple',ex:true},
 	{p:'&lt;field&gt;.filterMultipleSize',ex:5},
+	{p:'&lt;field&gt;.filterIncludeAll',ex:true},
 	{p:'&lt;field&gt;.filterLive',ex:'true',tt:'Search live as the user presses a key'},
 	{p:'filterShowCount',ex:false},
 	{p:'filterShowTotal',ex:true},		
