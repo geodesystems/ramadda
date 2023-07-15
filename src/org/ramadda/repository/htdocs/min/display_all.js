@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Jul 13 12:20:57 MDT 2023";
+var build_date="RAMADDA build date: Sat Jul 15 09:46:14 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -5393,6 +5393,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'&lt;field&gt;.filterValues'},
 	{p:'&lt;field&gt;.filterMultiple',ex:true},
 	{p:'&lt;field&gt;.filterMultipleSize',ex:5},
+	{p:'&lt;field&gt;.filterIncludeAll',ex:true},
 	{p:'&lt;field&gt;.filterLive',ex:'true',tt:'Search live as the user presses a key'},
 	{p:'filterShowCount',ex:false},
 	{p:'filterShowTotal',ex:true},		
@@ -15170,6 +15171,13 @@ function RecordFilter(display,filterFieldId, properties) {
 		widget.find("[value='" + prop.value +"']").addClass("display-filter-button-selected");
 	    }
 	},
+	getIncludeAll:function() {
+	    return
+	    this.getProperty(this.getId() +".includeAll",
+			     this.getProperty(this.getId() +".filterIncludeAll",
+					      this.getProperty("filterIncludeAll", 
+							       this.getProperty("filter.includeAll", true))));
+	},
 	getWidget: function(fieldMap, bottom,records, vertical) {
 	    this.records = records;
 	    let debug = false;
@@ -15189,6 +15197,7 @@ function RecordFilter(display,filterFieldId, properties) {
             let widget;
 	    let widgetId = this.widgetId = this.getFilterId(this.getId());
 	    let widgetLabel =   this.getProperty(this.getId()+".filterLabel",this.getLabel());
+	    let includeAll = this.getIncludeAll();
 
             if(this.ops) {
 		let labels =[];
@@ -15206,7 +15215,6 @@ function RecordFilter(display,filterFieldId, properties) {
 		let attrs= [STYLE,widgetStyle, ID,widgetId,"fieldId",this.getId()];
 		let filterValues = this.getProperty(this.getId()+".filterValues");
                 let enums = [];
-		let includeAll = this.getProperty(this.getId() +".includeAll",this.getProperty("filter.includeAll", true));
 		let allName = this.getProperty(this.getId() +".allName","-");
 		enums.push(['',allName]);
 		if(filterValues) {
@@ -15235,7 +15243,6 @@ function RecordFilter(display,filterFieldId, properties) {
 
 		if(this.displayType!="menu") {
 		    if(debug) console.log("\tnot menu");
-		    let includeAll = this.getProperty(this.getId() +".includeAll",this.getProperty("filter.includeAll", true));
 		    if(!includeAll && dfltValue == FILTER_ALL) dfltValue = enums[0].value;
 		    let buttons = "";
 		    let colorMap = Utils.parseMap(this.getProperty(this.getId() +".filterColorByMap"));
@@ -15525,7 +15532,6 @@ function RecordFilter(display,filterFieldId, properties) {
 		    enums.push({value:tok,count:count});
 		})
 	    }
-	    let includeAll = this.getProperty(this.getId() +".includeAll",this.getProperty("filter.includeAll", true));
 	    if(enums == null) {
 		let depend = this.getProperty(this.getId() +".depends");
 		if(depend) {
@@ -15533,6 +15539,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		}
 		let allName = this.getProperty(this.getId() +".allName",!showLabel?this.getLabel():"All");
 		enums = [];
+		let includeAll = this.getIncludeAll();
 		if(includeAll && !this.getProperty(this.getId() +".filterLabel",null,true)) {
 		    enums.push({value:[FILTER_ALL,allName]});
 		}
@@ -15593,7 +15600,7 @@ function RecordFilter(display,filterFieldId, properties) {
 			enumValues.push(obj);
 		    });
 		});
-		if(this.getProperty(this.getId() +".filterSort",true)) {
+		if(this.getProperty(this.getId() +".filterSort",this.getProperty('filterSort',true))) {
 		    let sortCount = this.getProperty(this.getId() +".filterSortCount",true);
 		    enumValues.sort((a,b)  =>{
 			if(sortCount && a.count && b.count) {
@@ -41622,6 +41629,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    return this.myLayer;
 	},
 	redraw: function(feature) {
+	    console.dir('redraw',feature?feature.name:'no feature')
 	    ImdvUtils.scheduleRedraw(this.myLayer,feature);
 	},
 	getNewFeature: function() {
@@ -43201,7 +43209,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		mapGlyph.makeLegend();
 		mapGlyph.initLegend();
 		this.showMapLegend();
-		//TODO:
 		this.redraw(mapGlyph);
 	    };
 	},
@@ -43921,7 +43928,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
             this.getGlyphs().forEach(mapGlyph=>{
 		let json = mapGlyph.makeJson();
 		list.push(json);
-
 	    });
 	    let latlon = this.getMap().getBounds();
 	    let tbounds =  _this.getMap().transformLLBounds(latlon);
@@ -43945,7 +43951,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	loadAnnotationJson: function(mapJson,map) {
 	    let glyphs = mapJson.glyphs||[];
-	    glyphs.forEach(jsonObject=>{
+	    glyphs.forEach((jsonObject,idx)=>{
 		let mapGlyph = this.makeGlyphFromJson(jsonObject);
 		if(mapGlyph) this.addGlyph(mapGlyph,true);
 	    });
@@ -43963,6 +43969,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 
 	makeGlyphFromJson:function(jsonObject) {
+
+	    //For backwards compat
 //	    console.dir(jsonObject);
 	    let mapOptions = jsonObject.mapOptions;
 	    if(!mapOptions) {
@@ -43970,6 +43978,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    type:jsonObject.type
 		}
 	    }
+	    if(Utils.isDefined(mapOptions.showmultidata))  {
+		mapOptions.showdataicons = mapOptions.showmultidata;
+		delete mapOptions.showmultidata;
+	    }
+
 	    mapOptions.id = jsonObject.id;
 	    let type = jsonObject.type||mapOptions.type;
 	    //for backwards compatabity
@@ -44027,7 +44040,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }  		
 	    let points=jsonObject.points;
 	    if(!points || points.length==0) {
-		console.log("Unknown glyph:" + mapOptions.type);
+		console.dir("No points defined for glyph:", glyphType.type);
+		console.dir(jsonObject);
 		return null;
 	    }
 
@@ -46389,6 +46403,7 @@ var LINETYPE_CURVE='curve';
 var LINETYPE_STEPPED='stepped';        
 var ID_ADDDOTS = 'adddots';
 var ID_LINETYPE = 'linetype';
+var ID_SHOWDATAICONS = 'showdataicons';
 
 function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
     if(!type) {
@@ -46620,7 +46635,19 @@ MapGlyph.prototype = {
 	    }
 	    obj.style = style;
 	}
+
+	//Set the location
 	obj.points = this.getPoints(obj);
+
+	if(this.isMultiEntry() && this.children) {
+	    let locs = attrs.childrenLocations??{};
+	    attrs.childrenLocations=locs;
+	    this.children.forEach(child=>{
+		if(child.overrideLocation) {
+		    locs[child.attrs.entryId] = child.overrideLocation;
+		}
+	    });
+	}
 	if(this.haveChildren()) {
 	    let childrenJson=[];
 	    this.getChildren().forEach(child=>{
@@ -46841,10 +46868,11 @@ MapGlyph.prototype = {
 			 HU.space(2),ex]);
 	content.push({header:'Flags',contents:html});
 
-	if(this.isEntry() || this.isGroup() || this.isMultiEntry()) {
+	if(this.isDataIconCapable()) {
 	    let contents ='';
 	    let help = this.getHelp('dataicons.html');
-	    contents+= HU.leftRightTable(HU.checkbox(this.domId('showmultidata'),[],this.getShowMultiData(),'Show data as icons'),help);
+	    contents+= HU.leftRightTable(HU.checkbox(this.domId(ID_SHOWDATAICONS),[],
+						     this.getShowDataIcons(),'Show data as icons'),help);
 	    contents+='<thin_hr></thin_hr><br>';
 
 	    let gi  =this.getGlyphInfo();
@@ -46910,11 +46938,10 @@ MapGlyph.prototype = {
 	await this.getElevations(pts,callback,update);
     },
 
-
+    isDataIconCapable:function() {
+	return this.isEntry() || this.isGroup()  || this.isMultiEntry();
+    },
     applyPropertiesDialog: function() {
-	if(this.jq("showmultidata").length) {
-	    this.setShowMultiData(this.jq("showmultidata").is(':checked'));
-	}
 	//Make sure we do this after we set the above style properties
 	this.setName(this.jq("mapglyphname").val());
 	this.attrs.legendText = this.jq('legendtext').val();
@@ -46923,9 +46950,13 @@ MapGlyph.prototype = {
 	    this.setUseEntryLabel(this.jq("useentrylabel").is(":checked"));
 	    this.setUseEntryLocation(this.jq("useentrylocation").is(":checked"));
 	}
-	if(this.isEntry() || this.isGroup()  || this.isMultiEntry()) {
+	if(this.isDataIconCapable()) {
+	    if(this.jq(ID_SHOWDATAICONS).length) {
+		this.setShowDataIcons(this.jq(ID_SHOWDATAICONS).is(':checked'));
+	    }
+
 	    let gi = this.getGlyphInfo();
-	    gi.glyphs = this.jq("entryglyphs").val();
+	    gi.glyphs = this.jq('entryglyphs').val();
 	    gi.fields=this.jq('glyphfields').val();
 	    gi.width=this.jq('glyphwidth').val();
 	    gi.height=this.jq('glyphheight').val();	    
@@ -46933,7 +46964,7 @@ MapGlyph.prototype = {
 	    gi.props=this.jq('glyphprops').val();
 	    gi.field=this.jq('glyphfield').val();
 	    gi.label=this.jq('glyphlabel').val();	    	    
-	    if(this.isGroup()) 
+	    if(this.canHaveChildren()) 
 		this.applyGlyphField();
 	    else if(this.isEntry()) 
 		this.applyEntryGlyphs();
@@ -46998,14 +47029,6 @@ MapGlyph.prototype = {
 	}
     },
 
-    applyGlyphField: function() {
-	if(this.isEntry()) {
-	    this.applyEntryGlyphs();
-	}
-	this.applyChildren(child=>{
-	    child.applyGlyphField();
-	});
-    },
     featureSelected:function(feature,layer,event) {
 	//	console.log('imdv.featureSelected');
 	if(this.selectedStyleGroup) {
@@ -47039,28 +47062,43 @@ MapGlyph.prototype = {
     clearDataIcon: function() {
 	//Is this a data icon
 	if(this.style && this.style.externalGraphic && this.style.externalGraphic.startsWith('data:')) {
-	    
 	    if(this.attrs.dataIconOriginal) {
+		console.log('isDataIcon-orig');
 		let o = this.attrs.dataIconOriginal;
 		this.style.externalGraphic=o.externalGraphic;
 		this.style.pointRadius = o.pointRadius;
 		this.style.fontSize = o.fontSize;		
 	    } else {
+		console.log('isDataIcon-null');
 		this.style.externalGraphic=null;
 	    }
 
 	}
     },
 
+    applyGlyphField: function() {
+	if(this.isEntry()) {
+	    this.applyEntryGlyphs();
+	}
+	this.applyChildren(child=>{
+	    child.applyGlyphField();
+	});
+    },
+
     applyEntryGlyphs:function(force) {
-	if(!force && !this.getShowMultiData()) {
+	let debug  = true;
+	if(!force && !this.getShowDataIcons()) {
+	    if(debug)	    console.log('applyEntryGlyphs - none',this.getName());
 	    this.clearDataIcon();
+//	    this.display.redraw(this);
 	    return;
 	}
 	if(!Utils.stringDefined(this.getEntryGlyphs(true))) {
+	    if(debug) console.log('applyEntryGlyphs - none2',this.getName());
 	    return;
 	}
 
+	if(debug)	console.log('applyEntryGlyphs',this.getName());
 	let opts = {
 	    entryId:this.attrs.entryId
 	};
@@ -47088,7 +47126,6 @@ MapGlyph.prototype = {
 				      {entryId:opts.entryId});
 	let callback = (data)=>{
 	    this.makeGlyphs(pointData,data,glyphs);
-	    this.display.clearFeatureChanged();
 	}
 	let fauxDisplay  = {
 	    display:this.display,
@@ -48602,6 +48639,9 @@ MapGlyph.prototype = {
     },
     
 
+    canHaveChildren:function() {
+	return this.isGroup() || this.isMultiEntry();
+    },
     isMarker:function() {
 	return this.getType() ==GLYPH_MARKER;
     },
@@ -48632,15 +48672,15 @@ MapGlyph.prototype = {
     isMultiEntry:function() {
 	return this.getType()==GLYPH_MULTIENTRY;
     },
-    getShowMultiData:function() {
-	if(this.attrs.showmultidata) return true;
+    getShowDataIcons:function() {
+	if(this.attrs.showdataicons) return true;
 	if(this.getParentGlyph()) {
-	    return this.getParentGlyph().getShowMultiData();
+	    return this.getParentGlyph().getShowDataIcons();
 	}
 	return false;
     },
-    setShowMultiData:function(v) {
-	this.attrs.showmultidata = v;
+    setShowDataIcons:function(v) {
+	this.attrs.showdataicons = v;
     },
     setMapServerUrl:function(url,wmsLayer,legendUrl,predefined,mapOptions) {
 	this.style.legendUrl = legendUrl;
@@ -50559,6 +50599,10 @@ MapGlyph.prototype = {
 	    this.image.moveTo(this.image.extent,true,true);
 	}
 
+	if(this.getParentGlyph()?.isMultiEntry()) {
+	    this.overrideLocation = this.getPoints({});
+	}
+
 	this.display.checkSelected(this);
     },
     removeImage:function() {
@@ -51145,6 +51189,7 @@ MapGlyph.prototype = {
     },
     addEntries: function(andZoom) {
 	if(!this.checkVisible()) return;
+	if(this.haveAddedEntries) return;
 	this.haveAddedEntries = true;
 	let entryId = this.getEntryId();
         let entry =  new Entry({
@@ -51159,7 +51204,18 @@ MapGlyph.prototype = {
 		    console.log("mutli entry has no location:" + e);
 		    return;
 		}
-		let  pt = MapUtils.createPoint(e.getLongitude(),e.getLatitude());
+		let overrideLocation;
+		if(this.attrs.childrenLocations) {
+		    overrideLocation = this.attrs.childrenLocations[e.getId()];
+		}
+		let latLon;
+
+		if(overrideLocation) {
+		    latLon = {latitude:overrideLocation[0],longitude:overrideLocation[1]};
+		} else {
+		    latLon = {latitude:e.getLatitude(),longitude:e.getLongitude()};
+		}
+		let pt = MapUtils.createPoint(latLon.longitude,latLon.latitude);
 		pt = this.display.getMap().transformLLPoint(pt);
 		let style = Utils.clone({},this.style);
 		style.externalGraphic = e.getIconUrl();
@@ -51186,11 +51242,12 @@ MapGlyph.prototype = {
 			     entryId:e.getId(),
 			     icon:e.getIconUrl()
 			    };
-		let points =[e.getLatitude(),e.getLongitude()];
+		let points =[latLon.latitude,latLon.longitude];
 		let mapGlyph = this.display.createMapMarker(GLYPH_ENTRY,attrs, style,points,false);
+		mapGlyph.overrideLocation = overrideLocation;
 		mapGlyph.isEphemeral = true;
 		this.addChildGlyph(mapGlyph);
-		if(this.getShowMultiData()) {
+		if(this.getShowDataIcons()) {
 		    mapGlyph.applyEntryGlyphs(true);
 		}
 	    });
@@ -51377,6 +51434,7 @@ const DISPLAY_CANVAS = "canvas";
 const DISPLAY_FIELDTABLE = "fieldtable";
 const DISPLAY_SELECTEDRECORDS = "selectedrecords";
 const DISPLAY_DATEGRID = "dategrid";
+const DISPLAY_STRIPES = "stripes";
 
 addGlobalDisplayType({
     type: DISPLAY_RANKING,
@@ -51386,6 +51444,17 @@ addGlobalDisplayType({
     category: CATEGORY_TABLE,
     tooltip: makeDisplayTooltip("Show fields ordered by values","ranking.png")                            
 });
+
+addGlobalDisplayType({
+    type: DISPLAY_STRIPES,
+    label: "Stripes",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_MISC,
+    tooltip: makeDisplayTooltip("Show color stripes","stripes.png")                            
+});
+
+
 addGlobalDisplayType({
     type: DISPLAY_CORRELATION,
     label: "Correlation",
@@ -52331,7 +52400,7 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
 	    if(!records) return;
 	    let colorBy = this.getColorByInfo(records);
 	    if(colorBy.index>=0) {
-		records.map(record=>{
+		records.forEach(record=>{
 		    color =  colorBy.getColor(record.getData()[colorBy.index], record);
 		});
 		colorBy.displayColorTable();
@@ -56759,6 +56828,109 @@ function RamaddaDategridDisplay(displayManager, id, properties) {
     });
 }
 
+
+
+function RamaddaStripesDisplay(displayManager, id, properties) {
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_STRIPES, properties);
+    let myProps = [
+	{label:'Stripes'},
+	{p:'colorBy',ex:'',tt:'Field id to color by'},
+	{p:'stripeHeight',d:'100px'},
+	{p:'stripeWidth',d:3,tt:'Make sure this is a whole number'},
+	{p:'showLabel',d:false,ex:'true'},
+	{p:'showColorTable',d:false,ex:'true'}	,
+	{p:'showColorTableBottom',d:false,ex:'true'},
+	{p:'groupBy',tt:'Field id to group by'},	    
+    ];
+
+
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+        updateUI: function() {
+	    let records = this.filterData();
+	    if(!records) return;
+	    let fields = this.getFieldsByIds(null,this.getPropertyFields());
+	    if(fields.length==0) {
+                this.handleError("No field specified");
+		return;
+	    }
+
+	    let groupField = this.getFieldById(null,  this.getGroupBy());
+	    let groupedRecords={};
+	    if(groupField) {
+		records.forEach((record,idx)=>{
+		    let value = groupField.getValue(record);
+		    if(!groupedRecords[value]) {
+			groupedRecords[value] = [];
+		    }
+		    groupedRecords[value].push(record);
+		});
+	    } else {
+		groupedRecords['all'] = records;
+	    }
+	    let allFields = this.getFields();
+	    let stripeHeight=this.getStripeHeight();
+	    let recordMap={};
+	    records.forEach(record=>{
+		recordMap[record.getId()]  =record;
+	    });
+	    let html = '<center>';
+	    let colorBys = [];
+	    let stripeWidth=this.getStripeWidth();
+	    let groups = Object.keys(groupedRecords);
+	    groups.forEach((key,groupIdx)=>{
+		if(groupField) {
+		    html+=key;
+		}
+		let records =groupedRecords[key];
+		fields.forEach((field,fidx)=>{
+		    html+='<table>';
+		    let colorBy = new  ColorByInfo(this,allFields, records, '',null,null,null,field);
+		    colorBys.push(colorBy);
+		    if(fields.length>1)
+			html+='<tr style="border-bottom:1px solid #efefef;">';
+		    else html+='<tr>';
+		    if(this.getShowLabel()) {
+			html+=HU.td(['width','2em','style','max-width:2em;width:2em'],
+				    HU.div(['width','2em','style',
+					    HU.css('max-width','2em','width','2em','max-height',HU.getDimension(stripeHeight)),'class','display-stripes-vertical-label'],field.getLabel()));
+		    }
+		    records.forEach((record,idx)=>{
+			let color =  colorBy.getColorFromRecord(record);
+			let data = field.getValue(record);
+			let date  = record.getDate();
+			let title =field.getLabel()+': '+data;
+			if(date) title = this.formatDate(date) +' - ' + title;
+			let contents = '';
+			html+=HU.td([RECORD_ID,record.getId(),
+				     'class','display-stripes-stripe',
+				     'style',HU.css('height',HU.getDimension(stripeHeight),'background',color),
+				     'title',title,'width',stripeWidth],contents);
+		    });
+		    html+='</tr>';
+		    html+='</table>';
+		    if((groupIdx==groups.length-1 && fidx==fields.length-1 &&this.getShowColorTableBottom()) || this.getShowColorTable()) {
+			html+=HU.div(['id',this.domId('colortable_'  + fidx),'style',
+				      HU.css('width',(stripeWidth*records.length)+'px','margin-bottom','5px','height','1em')],'');
+		    }
+		});
+	    });
+	    html+='</center>';
+	    this.setContents(html); 
+	    colorBys.forEach((colorBy,fidx)=>{
+		colorBy.displayColorTable(null,null,'colortable_'+fidx);
+	    });
+	    let _this = this;
+	    let stripes =   this.getContents().find('.display-stripes-stripe');
+	    this.makeTooltips(stripes,records);
+	    stripes.click(function() {
+		let record = recordMap[$(this).attr('record-id')];
+		_this.propagateEventRecordSelection({record: record});
+	    });
+
+
+	},
+    });
+}
 /**
    Copyright 2008-2023 Geode Systems LLC
 */
