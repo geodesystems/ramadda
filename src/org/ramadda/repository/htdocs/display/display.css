@@ -2151,6 +2151,10 @@ font-weight:bold;
 
 
 
+.display-stripes-stripe {
+    cursor:pointer;
+}
+
 .display-slides-strip {
     display:flex;
     white-space:nowrap;
@@ -2331,6 +2335,12 @@ font-weight:bold;
     font-size:7pt;
     margin-left:6px;
 }
+
+.display-stripes-vertical-label {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+  }
+
 
 
 .display-cooc-rowheader {
