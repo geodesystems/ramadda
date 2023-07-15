@@ -2436,7 +2436,12 @@ public class EntryManager extends RepositoryManager {
 			      getPageHandler().showDialogError(
 							       msg(
 								   "Error: The entry you are editing has been edited since the time you began the edit"
-								   + dateRange)));
+								   + dateRange+"<p>Below is the text you were editing")));
+		    
+
+
+
+		    sb.append(HU.textArea("",request.getString(ARG_DESCRIPTION,""),10,100));
                     getPageHandler().entrySectionClose(request, entry, sb);
 
                     return addEntryHeader(request, entry,
