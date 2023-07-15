@@ -37,7 +37,7 @@ import java.util.List;
  *
  *
  */
-public class IIIFTypeHandler extends ExtensibleGroupTypeHandler {
+public class IIIFDocumentTypeHandler extends ExtensibleGroupTypeHandler {
 
 
     /** _more_ */
@@ -54,7 +54,7 @@ public class IIIFTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    public IIIFTypeHandler(Repository repository, Element entryNode)
+    public IIIFDocumentTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
@@ -119,16 +119,25 @@ public class IIIFTypeHandler extends ExtensibleGroupTypeHandler {
             return super.getWikiInclude(wikiUtil, request, originalEntry,
                                         entry, tag, props);
         }
-
-	return getIIIFDisplay(request, entry, props,null);
+	return getIIIFDisplay(getRepository(),request, entry, props,null);
     }
 
-    public static String getIIIFDisplay(Request request, Entry entry, Hashtable props,List<Entry> catalog)
+    public static String makeWindow(Request request,Entry entry, Hashtable props) throws Exception {
+	String url = entry.getTypeHandler().getPathForEntry(request, entry,true);
+	return JU.map("loadedManifest",
+		      JU.quote(url),
+		      "view",JU.quote(Utils.getProperty(props,"view","single")),
+		      "canvasIndex","2",
+		      "thumbnailNavigationPosition",
+		      JU.quote(Utils.getProperty(props,"thumbnailPosition","far-right")));
+    }
+
+    public static String getIIIFDisplay(Repository repository,Request request, Entry entry, Hashtable props,List<Entry> catalog)
             throws Exception {
         StringBuilder sb = new StringBuilder();
 	String uid = HU.getUniqueId("iiif_");
 	sb.append("<!-- begin IIIF Mirador embed -->\n");
-	sb.append(HU.importCss(".MuiTypography-h4,.MuiTypography-body1, .mirador48, .mirador18, .MuiSvgIcon-root {font-size: var(--font-size)}"));
+	sb.append(HU.importCss(".MuiAppBar-root {z-index:900;}\n.MuiTypography-h6, .MuiTypography-h4,.MuiTypography-body1, .mirador36, .mirador48, .mirador18, .MuiSvgIcon-root {font-size: var(--font-size)}"));
 	HU.div(sb,"",HU.attrs("id",uid,"style",HU.css("position","relative",
 						      "width",Utils.getProperty(props,"width","1000px"),
 
@@ -141,13 +150,19 @@ public class IIIFTypeHandler extends ExtensibleGroupTypeHandler {
 	StringBuilder js = new StringBuilder();
 	List<String> attrs = new ArrayList<String>();
 	Utils.add(attrs,"id",JU.quote(uid));
-	Utils.add(attrs,"manifests",JU.map(url, JU.map("view",JU.quote("gallery"))));
-	Utils.add(attrs,"windows",JU.list(JU.map("loadedManifest",
-						 JU.quote(url),
-						 "view",JU.quote(Utils.getProperty(props,"view","single")),
-						 "canvasIndex","2",
-						 "thumbnailNavigationPosition",
-						 JU.quote(Utils.getProperty(props,"thumbnailPosition","far-right")))));
+	List<String> windows = new ArrayList<String>();
+	if(catalog==null) {
+	    windows.add(makeWindow(request, entry,props));
+	} else {
+	    int max = Utils.getProperty(props,"max",4);
+	    for(int i=0;i<catalog.size()&& i<max;i++) {
+		windows.add(makeWindow(request, catalog.get(i),props));
+	    }
+	}	    
+	//	Utils.add(attrs,"manifests",JU.map(url, JU.map("view",JU.quote("gallery"))));
+	Utils.add(attrs,"windows",JU.list(windows));
+
+
 	//Hide the workspace for single IIIF entry
 	if(catalog==null) {
 	    Utils.add(attrs,"workspaceControlPanel",JU.map("enabled",Utils.getProperty(props,"workspaceEnabled","false")));

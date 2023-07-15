@@ -7,6 +7,7 @@ package org.ramadda.plugins.media;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.util.SelectInfo;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.WikiUtil;
@@ -65,57 +66,13 @@ public class IIIFCollectionTypeHandler extends TypeHandler {
         }
 
 	List<Entry> children = getEntryManager().getChildren(request, entry);
+	children = getEntryManager().applyFilter(request, children,new SelectInfo(request, "type_iiif_document"));
 	if(children.size()==0) return "No IIIF Documents";
-	return IIIFTypeHandler.getIIIFDisplay(request, children.get(0), props,children);
+
+
+
+	return IIIFDocumentTypeHandler.getIIIFDisplay(getRepository(), request, children.get(0), props,children);
     }
-
-    public static String getIIIFDisplay(Request request, Entry entry, Hashtable props,List<Entry> catalog)
-            throws Exception {
-        StringBuilder sb = new StringBuilder();
-	String uid = HU.getUniqueId("iiif_");
-	sb.append("<!-- begin IIIF Mirador embed -->\n");
-	sb.append(HU.importCss(".MuiTypography-h4,.MuiTypography-body1, .mirador48, .mirador18, .MuiSvgIcon-root {font-size: var(--font-size)}"));
-	HU.div(sb,"",HU.attrs("id",uid,"style",HU.css("position","relative",
-						      "width",Utils.getProperty(props,"width","1000px"),
-
-
-						      "height",Utils.getProperty(props,"height","600px"))));
-	sb.append("\n");
-	sb.append(HU.importJS("https://unpkg.com/mirador@latest/dist/mirador.min.js"));
-	sb.append("\n");
-	String url = entry.getTypeHandler().getPathForEntry(request, entry,true);
-	StringBuilder js = new StringBuilder();
-	List<String> attrs = new ArrayList<String>();
-	Utils.add(attrs,"id",JU.quote(uid));
-	Utils.add(attrs,"manifests",JU.map(url, JU.map("view",JU.quote("gallery"))));
-	Utils.add(attrs,"windows",JU.list(JU.map("loadedManifest",
-						 JU.quote(url),
-						 "view",JU.quote(Utils.getProperty(props,"view","single")),
-						 "canvasIndex","2",
-						 "thumbnailNavigationPosition",
-						 JU.quote(Utils.getProperty(props,"thumbnailPosition","far-right")))));
-	//Hide the workspace for single IIIF entry
-	if(catalog==null) {
-	    Utils.add(attrs,"workspaceControlPanel",JU.map("enabled",Utils.getProperty(props,"workspaceEnabled","false")));
-	}
-	if(catalog!=null && catalog.size()>0) {
-	    List<String> l = new ArrayList<String>();
-	    for(Entry e:catalog) {
-		if(e.getTypeHandler().isType("type_iiif_document")) {
-		    l.add(JU.map("manifestId",JU.quote(e.getTypeHandler().getPathForEntry(request, e,true))));
-		}
-	    }
-	    if(l.size()>0) {
-		Utils.add(attrs,"catalog",JU.list(l));
-	    }
-	}
-	js.append("var mirador = Mirador.viewer(" + JU.map(attrs)+");\n");
-	HU.script(sb,js.toString());
-	sb.append("\n");
-        return sb.toString();
-    }
-
-
 
 
 

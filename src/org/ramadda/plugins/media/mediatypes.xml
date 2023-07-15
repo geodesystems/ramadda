@@ -441,6 +441,8 @@ IIIF Collection
 +centerdiv
 {{iiif_collection thumbnailPosition=far-bottom width=1000px height=600px}}
 -centerdiv
+:heading Documents
+{{tabletree}}
 -section
 ]]>
 </wiki>
