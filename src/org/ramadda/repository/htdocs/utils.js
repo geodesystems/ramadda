@@ -4081,9 +4081,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     leftCenterRight: function(left, center, right, leftWidth, centerWidth, rightWidth, attrs,cellStyle) {
         if (!attrs) attrs = {};
         if (!attrs.valign) attrs.valign = "top";
-        //        if (leftWidth == null) leftWidth = "33%";
-        //        if (centerWidth == null) centerWidth = "33%";
-        //        if (rightWidth == null) rightWidth = "33%";
         if(!cellStyle) cellStyle = "";
         return this.tag("table", ["border", 0, "width", "100%", "cellspacing", "0", "cellpadding", "0"],
                         this.tr(["valign", attrs.valign],
