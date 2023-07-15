@@ -1909,6 +1909,13 @@ function RecordFilter(display,filterFieldId, properties) {
 		widget.find("[value='" + prop.value +"']").addClass("display-filter-button-selected");
 	    }
 	},
+	getIncludeAll:function() {
+	    return
+	    this.getProperty(this.getId() +".includeAll",
+			     this.getProperty(this.getId() +".filterIncludeAll",
+					      this.getProperty("filterIncludeAll", 
+							       this.getProperty("filter.includeAll", true))));
+	},
 	getWidget: function(fieldMap, bottom,records, vertical) {
 	    this.records = records;
 	    let debug = false;
@@ -1928,6 +1935,7 @@ function RecordFilter(display,filterFieldId, properties) {
             let widget;
 	    let widgetId = this.widgetId = this.getFilterId(this.getId());
 	    let widgetLabel =   this.getProperty(this.getId()+".filterLabel",this.getLabel());
+	    let includeAll = this.getIncludeAll();
 
             if(this.ops) {
 		let labels =[];
@@ -1945,7 +1953,6 @@ function RecordFilter(display,filterFieldId, properties) {
 		let attrs= [STYLE,widgetStyle, ID,widgetId,"fieldId",this.getId()];
 		let filterValues = this.getProperty(this.getId()+".filterValues");
                 let enums = [];
-		let includeAll = this.getProperty(this.getId() +".includeAll",this.getProperty("filter.includeAll", true));
 		let allName = this.getProperty(this.getId() +".allName","-");
 		enums.push(['',allName]);
 		if(filterValues) {
@@ -1974,7 +1981,6 @@ function RecordFilter(display,filterFieldId, properties) {
 
 		if(this.displayType!="menu") {
 		    if(debug) console.log("\tnot menu");
-		    let includeAll = this.getProperty(this.getId() +".includeAll",this.getProperty("filter.includeAll", true));
 		    if(!includeAll && dfltValue == FILTER_ALL) dfltValue = enums[0].value;
 		    let buttons = "";
 		    let colorMap = Utils.parseMap(this.getProperty(this.getId() +".filterColorByMap"));
@@ -2264,7 +2270,6 @@ function RecordFilter(display,filterFieldId, properties) {
 		    enums.push({value:tok,count:count});
 		})
 	    }
-	    let includeAll = this.getProperty(this.getId() +".includeAll",this.getProperty("filter.includeAll", true));
 	    if(enums == null) {
 		let depend = this.getProperty(this.getId() +".depends");
 		if(depend) {
@@ -2272,6 +2277,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		}
 		let allName = this.getProperty(this.getId() +".allName",!showLabel?this.getLabel():"All");
 		enums = [];
+		let includeAll = this.getIncludeAll();
 		if(includeAll && !this.getProperty(this.getId() +".filterLabel",null,true)) {
 		    enums.push({value:[FILTER_ALL,allName]});
 		}
@@ -2332,7 +2338,7 @@ function RecordFilter(display,filterFieldId, properties) {
 			enumValues.push(obj);
 		    });
 		});
-		if(this.getProperty(this.getId() +".filterSort",true)) {
+		if(this.getProperty(this.getId() +".filterSort",this.getProperty('filterSort',true))) {
 		    let sortCount = this.getProperty(this.getId() +".filterSortCount",true);
 		    enumValues.sort((a,b)  =>{
 			if(sortCount && a.count && b.count) {
