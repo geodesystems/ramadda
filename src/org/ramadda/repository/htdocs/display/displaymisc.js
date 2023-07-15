@@ -29,6 +29,7 @@ const DISPLAY_CANVAS = "canvas";
 const DISPLAY_FIELDTABLE = "fieldtable";
 const DISPLAY_SELECTEDRECORDS = "selectedrecords";
 const DISPLAY_DATEGRID = "dategrid";
+const DISPLAY_STRIPES = "stripes";
 
 addGlobalDisplayType({
     type: DISPLAY_RANKING,
@@ -38,6 +39,17 @@ addGlobalDisplayType({
     category: CATEGORY_TABLE,
     tooltip: makeDisplayTooltip("Show fields ordered by values","ranking.png")                            
 });
+
+addGlobalDisplayType({
+    type: DISPLAY_STRIPES,
+    label: "Stripes",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_MISC,
+    tooltip: makeDisplayTooltip("Show color stripes","stripes.png")                            
+});
+
+
 addGlobalDisplayType({
     type: DISPLAY_CORRELATION,
     label: "Correlation",
@@ -983,7 +995,7 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
 	    if(!records) return;
 	    let colorBy = this.getColorByInfo(records);
 	    if(colorBy.index>=0) {
-		records.map(record=>{
+		records.forEach(record=>{
 		    color =  colorBy.getColor(record.getData()[colorBy.index], record);
 		});
 		colorBy.displayColorTable();
@@ -5411,3 +5423,106 @@ function RamaddaDategridDisplay(displayManager, id, properties) {
     });
 }
 
+
+
+function RamaddaStripesDisplay(displayManager, id, properties) {
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_STRIPES, properties);
+    let myProps = [
+	{label:'Stripes'},
+	{p:'colorBy',ex:'',tt:'Field id to color by'},
+	{p:'stripeHeight',d:'100px'},
+	{p:'stripeWidth',d:3,tt:'Make sure this is a whole number'},
+	{p:'showLabel',d:false,ex:'true'},
+	{p:'showColorTable',d:false,ex:'true'}	,
+	{p:'showColorTableBottom',d:false,ex:'true'},
+	{p:'groupBy',tt:'Field id to group by'},	    
+    ];
+
+
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+        updateUI: function() {
+	    let records = this.filterData();
+	    if(!records) return;
+	    let fields = this.getFieldsByIds(null,this.getPropertyFields());
+	    if(fields.length==0) {
+                this.handleError("No field specified");
+		return;
+	    }
+
+	    let groupField = this.getFieldById(null,  this.getGroupBy());
+	    let groupedRecords={};
+	    if(groupField) {
+		records.forEach((record,idx)=>{
+		    let value = groupField.getValue(record);
+		    if(!groupedRecords[value]) {
+			groupedRecords[value] = [];
+		    }
+		    groupedRecords[value].push(record);
+		});
+	    } else {
+		groupedRecords['all'] = records;
+	    }
+	    let allFields = this.getFields();
+	    let stripeHeight=this.getStripeHeight();
+	    let recordMap={};
+	    records.forEach(record=>{
+		recordMap[record.getId()]  =record;
+	    });
+	    let html = '<center>';
+	    let colorBys = [];
+	    let stripeWidth=this.getStripeWidth();
+	    let groups = Object.keys(groupedRecords);
+	    groups.forEach((key,groupIdx)=>{
+		if(groupField) {
+		    html+=key;
+		}
+		let records =groupedRecords[key];
+		fields.forEach((field,fidx)=>{
+		    html+='<table>';
+		    let colorBy = new  ColorByInfo(this,allFields, records, '',null,null,null,field);
+		    colorBys.push(colorBy);
+		    if(fields.length>1)
+			html+='<tr style="border-bottom:1px solid #efefef;">';
+		    else html+='<tr>';
+		    if(this.getShowLabel()) {
+			html+=HU.td(['width','2em','style','max-width:2em;width:2em'],
+				    HU.div(['width','2em','style',
+					    HU.css('max-width','2em','width','2em','max-height',HU.getDimension(stripeHeight)),'class','display-stripes-vertical-label'],field.getLabel()));
+		    }
+		    records.forEach((record,idx)=>{
+			let color =  colorBy.getColorFromRecord(record);
+			let data = field.getValue(record);
+			let date  = record.getDate();
+			let title =field.getLabel()+': '+data;
+			if(date) title = this.formatDate(date) +' - ' + title;
+			let contents = '';
+			html+=HU.td([RECORD_ID,record.getId(),
+				     'class','display-stripes-stripe',
+				     'style',HU.css('height',HU.getDimension(stripeHeight),'background',color),
+				     'title',title,'width',stripeWidth],contents);
+		    });
+		    html+='</tr>';
+		    html+='</table>';
+		    if((groupIdx==groups.length-1 && fidx==fields.length-1 &&this.getShowColorTableBottom()) || this.getShowColorTable()) {
+			html+=HU.div(['id',this.domId('colortable_'  + fidx),'style',
+				      HU.css('width',(stripeWidth*records.length)+'px','margin-bottom','5px','height','1em')],'');
+		    }
+		});
+	    });
+	    html+='</center>';
+	    this.setContents(html); 
+	    colorBys.forEach((colorBy,fidx)=>{
+		colorBy.displayColorTable(null,null,'colortable_'+fidx);
+	    });
+	    let _this = this;
+	    let stripes =   this.getContents().find('.display-stripes-stripe');
+	    this.makeTooltips(stripes,records);
+	    stripes.click(function() {
+		let record = recordMap[$(this).attr('record-id')];
+		_this.propagateEventRecordSelection({record: record});
+	    });
+
+
+	},
+    });
+}
