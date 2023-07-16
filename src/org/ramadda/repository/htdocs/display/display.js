@@ -162,14 +162,30 @@ displayDefineEvent("filterChanged");
 
 var globalDisplayCount = 0;
 var DISPLAY_COUNT=0;
-function addGlobalDisplayProperty(name, value) {
+function addGlobalDisplayProperty(name, value,displayType) {
     if (window.globalDisplayProperties == null) {
         window.globalDisplayProperties = {};
     }
     if(value==="true") value = true;
     else if(value==="false") value=false;
+    if(displayType) name=displayType+'.' + name;
     window.globalDisplayProperties[name] = value;
 }
+
+function getGlobalDisplayProperty(name,displayType) {
+    if (window.globalDisplayProperties == null) {
+        return null;
+    }
+
+    if(displayType) {
+	let name2=displayType+'.' + name;
+	if(Utils.isDefined(window.globalDisplayProperties[name2])) {
+	    return window.globalDisplayProperties[name2];
+	}
+    }
+    return window.globalDisplayProperties[name];
+}
+
 
 
 function addGlobalDisplayType(type, front) {
@@ -277,12 +293,6 @@ function makeDisplayTooltip(header,imgs,text) {
     return h;
 }
 
-function getGlobalDisplayProperty(name) {
-    if (window.globalDisplayProperties == null) {
-        return null;
-    }
-    return window.globalDisplayProperties[name];
-}
 
 
 let addDisplayListener = null;
@@ -1381,6 +1391,7 @@ function DisplayThing(argId, argProperties) {
 	priorProps:{},
         getProperty: function(key, dflt, skipThis, skipParent) {
 	    let debug = displayDebug.getProperty;
+
 	    if(!this.getPropertyCounts[key]) {
 		this.getPropertyCounts[key]=0;
 	    }
@@ -1406,7 +1417,7 @@ function DisplayThing(argId, argProperties) {
 //	    debug = this.getPropertyCounts[key]==1;
 //	    if(debug)
 //		console.log("getProperty:" + key +"  dflt:"+ dflt);
-	    let value =  this.getPropertyInner(key,null,skipThis, skipParent);
+	    let value =  this.getPropertyInner(key,null,skipThis, skipParent,this);
 	    if(debug) 
 		console.log("getProperty:" + key +"  dflt:"+ dflt +" got:" + value);
 	    if(this.writePropertyDef!=null) {
@@ -1431,9 +1442,10 @@ function DisplayThing(argId, argProperties) {
 //	    this.priorProps[key] = value;
 	    return value;
 	},
-        getPropertyInner: function(keys, dflt,skipThis, skipParent) {	    
+        getPropertyInner: function(keys, dflt,skipThis, skipParent,srcDisplay) {	    
 	    let debug = displayDebug.getProperty;
 	    debug = this.debugGetProperty;
+	    srcDisplay = srcDisplay??this;
 	    if(!Array.isArray(keys)) keys = [keys];
 //	    debug = keys.includes('iconSize');
 
@@ -1459,7 +1471,7 @@ function DisplayThing(argId, argProperties) {
 		    let key = keys[i];
 		    let fromParent=null;
 		    if (this.displayParent != null) {
-			fromParent =  this.displayParent.getPropertyInner("inherit."+key, skipThis);
+			fromParent =  this.displayParent.getPropertyInner("inherit."+key, skipThis,null, srcDisplay);
 		    }
 		    if (!fromParent && this.getDisplayManager) {
 			fromParent=  this.getDisplayManager().getPropertyInner("inherit."+key);
@@ -1474,16 +1486,16 @@ function DisplayThing(argId, argProperties) {
 		if(!skipParent) {
 		    if (this.displayParent != null) {
 			if(debug) console.log("\tgetProperty calling parent");
-			return this.displayParent.getPropertyInner(keys, skipThis);
+			return this.displayParent.getPropertyInner(keys, dflt, skipThis,null,srcDisplay);
 		    }
 		    if (this.getDisplayManager) {
 			if(debug) console.log("\tgetProperty-5");
-			return   this.getDisplayManager().getPropertyInner(keys);
+			return   this.getDisplayManager().getPropertyInner(keys,null,null,null,srcDisplay);
 		    }
 		}
 		for(let i=0;i<keys.length;i++) {
 		    let key = keys[i];
-		    value = getGlobalDisplayProperty(key);
+		    value = getGlobalDisplayProperty(key,srcDisplay?srcDisplay.type:this.type);
 		    if (Utils.isDefined(value)) {
 			if(debug) console.log("\tgetProperty-6:" + value);
 			return value;
