@@ -5562,6 +5562,7 @@ function RamaddaStripesDisplay(displayManager, id, properties) {
 		    }
 		    let divId = HU.getUniqueId('div_');
 		    table.append(HU.div(['id',divId,'style',HU.css('position','absolute',
+								   'pointer-events','none',
 								   'margin-left',this.getShowLabel()?labelWidth:'0px',
 								   'left','0px',
 								   'top','0px',
