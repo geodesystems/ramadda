@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Jul 16 12:29:36 MDT 2023";
+var build_date="RAMADDA build date: Sun Jul 16 13:31:23 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -5106,7 +5106,6 @@ function DisplayThing(argId, argProperties) {
 	priorProps:{},
         getProperty: function(key, dflt, skipThis, skipParent) {
 	    let debug = displayDebug.getProperty;
-
 	    if(!this.getPropertyCounts[key]) {
 		this.getPropertyCounts[key]=0;
 	    }
@@ -5186,13 +5185,15 @@ function DisplayThing(argId, argProperties) {
 		    let key = keys[i];
 		    let fromParent=null;
 		    if (this.displayParent != null) {
-			fromParent =  this.displayParent.getPropertyInner("inherit."+key, skipThis,null, srcDisplay);
+			fromParent =  this.displayParent.getPropertyInner("inherit."+key, dflt,skipThis,null, srcDisplay);
+			if(debug) console.log("\tgetProperty from display parent:" + fromParent);
 		    }
 		    if (!fromParent && this.getDisplayManager) {
 			fromParent=  this.getDisplayManager().getPropertyInner("inherit."+key);
+			if(debug) console.log("\tgetProperty from display manager:" + fromParent);
 		    }
 		    if(fromParent) {
-			if(debug) console.log("\tgetProperty-3");
+			if(debug) console.log("\tgetProperty from parent:" + fromParent);
 			return fromParent;
 		    }
 		}
