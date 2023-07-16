@@ -155,7 +155,7 @@ public class IIIFDocumentTypeHandler extends ExtensibleGroupTypeHandler {
 	if(catalog==null) {
 	    windows.add(makeWindow(request, entry,props));
 	} else {
-	    int max = Utils.getProperty(props,"max",4);
+	    int max = Utils.getProperty(props,"max",2);
 	    for(int i=0;i<catalog.size()&& i<max;i++) {
 		windows.add(makeWindow(request, catalog.get(i),props));
 	    }
