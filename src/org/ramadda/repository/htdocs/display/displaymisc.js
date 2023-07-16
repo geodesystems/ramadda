@@ -3240,6 +3240,7 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
 	{p:'showDefault',ex:'false'},
 	{p:'showMin',ex:'false',canCache:true},
 	{p:'showMax',ex:'false',canCache:true},
+	{p:'showRange',d:false,ex:'true',canCache:true},
         {p:'showAverage',ex:'false',canCache:true},
         {p:'showStd',ex:'false',canCache:true},
         {p:'showPercentile',ex:'false',canCache:true},
@@ -3409,6 +3410,8 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                     header.push("25%","50%","75%");
                 if (this.getShowMax(dflt)) 
                     header.push("Max");
+                if (this.getShowRange()) 
+                    header.push("Range");		
                 if (this.getShowTotal(dflt)) 
                     header.push("Total");
                 if (this.getShowAverage(dflt)) 
@@ -3475,6 +3478,8 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                         values.push("-","-","-");
                     if (this.getShowMax(dflt))
                         values.push("-");
+                    if (this.getShowRange())
+                        values.push("-");		    
                     values.push("-");
                     if (this.getShowAverage(dflt)) 
                         values.push("-");
@@ -3503,6 +3508,8 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                     }
                     if (this.getShowMax(dflt)) 
                         values.push(this.formatNumber(stat.max));
+                    if (this.getShowRange()) 
+                        values.push(this.formatNumber(stat.max-stat.min));		    
                     if (this.getShowTotal(dflt)) 
                         values.push(total);
                     if (this.getShowAverage(dflt)) 
