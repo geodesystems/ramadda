@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Jul 15 15:24:22 MDT 2023";
+var build_date="RAMADDA build date: Sun Jul 16 05:21:38 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -646,16 +646,16 @@ function DateRangeWidget(display, what) {
 
 
 
-
-
-
-
-function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, margin) {
-    if(!attrs) attrs = {};
-    if(!margin)
-	margin = { top: 0, right: 0, bottom: 0, left: 0 };
-    const INNER_WIDTH  = w - margin.left - margin.right;
-    const INNER_HEIGHT = h - margin.top - margin.bottom;
+function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
+    let opts = {
+	theMargin:{ top: 0, right: 0, bottom: 0, left: 0 }
+    }
+    if(params) {
+	if(params.margin) $.extend(opts.theMargin,params.margin);
+	$.extend(opts,params);
+    }
+    const INNER_WIDTH  = w - opts.theMargin.left - opts.theMargin.right;
+    const INNER_HEIGHT = h - opts.theMargin.top - opts.theMargin.bottom;
     const BAR_WIDTH  = w / data.length;
     const x    = d3.scaleLinear().domain([0, data.length]).range([0, INNER_WIDTH]);
     const y    = d3.scaleLinear().domain([min, max]).range([INNER_HEIGHT, 0]);
@@ -669,21 +669,21 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
 	  .attr('width', w)
 	  .attr('height', h)
 	  .append('g')
-	  .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+	  .attr('transform', 'translate(' + opts.theMargin.left + ',' + opts.theMargin.top + ')');
     const line = d3.line()
 	  .x((d, i) => x(i))
 	  .y(d => y(d));
 
-    let lineColor = attrs.lineColor||display.getSparklineLineColor();
-    let barColor = attrs.barColor ||display.getSparklineBarColor();
-    let circleColor = attrs.circleColor ||display.getSparklineCircleColor();
-    let circleRadius = attrs.circleRadius ||display.getSparklineCircleRadius();
-    let lineWidth = attrs.lineWidth ||display.getSparklineLineWidth();
-    let defaultShowEndPoints = true;
+    let lineColor = opts.lineColor||display.getSparklineLineColor();
+    let barColor = opts.barColor ||display.getSparklineBarColor();
+    let circleColor = opts.circleColor ||display.getSparklineCircleColor();
+    let circleRadius = opts.circleRadius ||display.getSparklineCircleRadius();
+    let lineWidth = opts.lineWidth ||display.getSparklineLineWidth();
+    let defaultShowEndPoints = false;
     let getColor = (d,i,dflt)=>{
 	return colorBy?colorBy.getColorFromRecord(records[i], dflt):dflt;
     };
-    let showBars = attrs.showBars|| display.getSparklineShowBars();
+    let showBars = opts.showBars|| display.getSparklineShowBars();
     svg.append('line')
 	.attr('x1',0)
 	.attr('y1', 0)
@@ -722,7 +722,7 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
     }
 
 
-    if(attrs.showLines|| display.getSparklineShowLines()) {
+    if(opts.showLines|| display.getSparklineShowLines()) {
 	svg.selectAll('line').data(data).enter().append("line")
 	    .attr('x1', (d,i)=>{return x(i)})
 	    .attr('y1', (d,i)=>{return y(d)})
@@ -737,7 +737,7 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
     }
 
 
-    if(attrs.showCircles || display.getSparklineShowCircles()) {
+    if(opts.showCircles || display.getSparklineShowCircles()) {
 	svg.selectAll('circle').data(data).enter().append("circle")
 	    .attr('r', (d,i)=>{return isNaN(d)?0:circleRadius})
 	    .attr('cx', (d,i)=>{return getNum(x(i))})
@@ -748,24 +748,24 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
 
 
 
-    if(attrs.showEndpoints || display.getSparklineShowEndPoints(defaultShowEndPoints)) {
+    if(opts.showEndpoints || display.getSparklineShowEndPoints(defaultShowEndPoints)) {
 	let fidx=0;
 	while(isNaN(data[fidx]) && fidx<data.length) fidx++;
 	let lidx=data.length-1;
 	while(isNaN(data[lidx]) && lidx>=0) lidx--;	
 	svg.append('circle')
-	    .attr('r', attrs.endPointRadius|| display.getSparklineEndPointRadius())
+	    .attr('r', opts.endPointRadius|| display.getSparklineEndPointRadius())
 	    .attr('cx', x(fidx))
 	    .attr('cy', y(data[fidx]))
-	    .attr('fill', attrs.endPoint1Color || display.getSparklineEndPoint1Color() || getColor(data[0],0,display.getSparklineEndPoint1Color()));
+	    .attr('fill', opts.endPoint1Color || display.getSparklineEndPoint1Color() || getColor(data[0],0,display.getSparklineEndPoint1Color()));
 	svg.append('circle')
-	    .attr('r', attrs.endPointRadius|| display.getSparklineEndPointRadius())
+	    .attr('r', opts.endPointRadius|| display.getSparklineEndPointRadius())
 	    .attr('cx', x(lidx))
 	    .attr('cy', y(data[lidx]))
-	    .attr('fill', attrs.endPoint2Color || display.getSparklineEndPoint2Color()|| getColor(data[data.length-1],data.length-1,display.getSparklineEndPoint2Color()));
+	    .attr('fill', opts.endPoint2Color || display.getSparklineEndPoint2Color()|| getColor(data[data.length-1],data.length-1,display.getSparklineEndPoint2Color()));
     }
     let _display = display;
-    let doTooltip = display.getSparklineDoTooltip()  || attrs.doTooltip;
+    let doTooltip = display.getSparklineDoTooltip()  || opts.doTooltip;
     svg.on("click", function() {
 	let coords = d3.mouse(this);
 	if(records) {
@@ -38225,9 +38225,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			ctx.stroke();
 		    });
 		} else {
-		    drawSparkLine(this,"#"+ info.id,w,h,info.data,info.records,allData.min,allData.max,colorBy);
+		    drawSparkline(this,"#"+ info.id,w,h,info.data,info.records,allData.min,allData.max,colorBy);
 		    $('#' + info.hoverId).css('background','#fff').css('border','1px solid #ccc');
-		    drawSparkLine(this,"#"+ info.hoverId,hoverW,hoverH,info.data,info.records,allData.min,allData.max,colorBy);		    
+		    drawSparkline(this,"#"+ info.hoverId,hoverW,hoverH,info.data,info.records,allData.min,allData.max,colorBy);		    
 		}
 	    });
 	    let items = this.find(".display-map-html-item");
@@ -39874,7 +39874,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		    let style = HU.css(WIDTH,cellWidth+'px',HEIGHT, (height-vOffset) +'px','position','absolute','left','0px','top', vOffset+'px');
 		    let innerDiv = HU.div([ID, innerId, STYLE,style]);
 		    $("#" + s.cellId).append(innerDiv);
-		    drawSparkLine(this, "#"+innerId,cellWidth,height-vOffset,s.data,s.records,minData,maxData,sparkLinesColorBy);
+		    drawSparkline(this, "#"+innerId,cellWidth,height-vOffset,s.data,s.records,minData,maxData,sparkLinesColorBy);
 		});
 	    }
 
@@ -55852,7 +55852,7 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 			c =  c + HU.tag(BR) + label;
 		    $("#"+id).append(HU.div([STYLE,HU.css('display','inline-block','margin','4px')],c));
 		    let gcol = this.getColumnValues(grecords, field);
-		    drawSparkLine(this, "#"+gid,w,h,gcol.values,grecords,min,max,colorBy);
+		    drawSparkline(this, "#"+gid,w,h,gcol.values,grecords,min,max,colorBy);
 		});		
 	    } else {
 		html = HU.div([CLASS,"display-sparkline-sparkline",ID,this.domId(ID_INNER),STYLE,HU.css('width', w+'px','height', h+'px')]);
@@ -55865,7 +55865,7 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 		if(left!=""  || right!="")
 		    html = HU.leftCenterRight(left,html,right,"1%","99%","1%",null,"padding:2px 2px;");
 		this.setContents(html); 
-		drawSparkLine(this, "#"+id,w,h,col.values,records,min,max,colorBy);
+		drawSparkline(this, "#"+id,w,h,col.values,records,min,max,colorBy);
 	    }
 	    let t2 = new Date();
 //	    Utils.displayTimes("sparkline",[t1,t2],true);
@@ -56841,9 +56841,10 @@ function RamaddaStripesDisplay(displayManager, id, properties) {
 	{p:'showLegend',d:false,ex:'true'},
 	{p:'showColorTable',d:false,ex:'true'}	,
 	{p:'showColorTableBottom',d:false,ex:'true'},
-	{p:'groupBy',tt:'Field id to group by'},	    
+	{p:'groupBy',tt:'Field id to group by'},
+	{p:'drawSparkline',ex:'true'},
     ];
-
+    myProps.push(...RamaddaDisplayUtils.sparklineProps);
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         updateUI: function() {
@@ -56894,13 +56895,17 @@ function RamaddaStripesDisplay(displayManager, id, properties) {
 	    if(this.getShowLegend()) {
 		makeLegend();
 	    }
+	    let blocks = [];
+	    let labelWidth='2em';
 	    groups.forEach((key,groupIdx)=>{
 		if(groupField) {
 		    html+=key;
 		}
 		let records =groupedRecords[key];
 		fields.forEach((field,fidx)=>{
-		    html+='<table>';
+		    let uid = HU.getUniqueId('table_');
+		    html+=HU.open('table',['id',uid,'style',HU.css('position','relative')]);
+		    blocks.push({domId:uid,records:records,field:field});
 		    let isLast = (groupIdx==groups.length-1 && fidx==fields.length-1);
 		    let isFirst = (groupIdx==0 && fidx==0);
 		    let colorBy = new  ColorByInfo(this,allFields, records, '',null,null,null,field);
@@ -56909,9 +56914,11 @@ function RamaddaStripesDisplay(displayManager, id, properties) {
 			html+='<tr style="border-bottom:1px solid #efefef;">';
 		    else html+='<tr>';
 		    if(this.getShowLabel()) {
-			html+=HU.td(['width','2em','style','max-width:2em;width:2em'],
-				    HU.div(['width','2em','style',
-					    HU.css('max-width','2em','width','2em','max-height',HU.getDimension(stripeHeight)),'class','display-stripes-vertical-label'],field.getLabel()));
+			html+=HU.td(['width',labelWidth,
+				     'class','display-stripes-stripe-label',
+				     'style','max-width:2em;width:2em'],
+				    HU.div(['width',labelWidth,'style',
+					    HU.css('max-width',labelWidth,'width',labelWidth,'max-height',HU.getDimension(stripeHeight)),'class','display-stripes-vertical-label'],field.getLabel()));
 		    }
 		    records.forEach((record,idx)=>{
 			let color =  colorBy.getColorFromRecord(record);
@@ -56920,10 +56927,11 @@ function RamaddaStripesDisplay(displayManager, id, properties) {
 			let title =field.getLabel()+': '+data;
 			if(date) title = this.formatDate(date) +' - ' + title;
 			let contents = '';
-			html+=HU.td([RECORD_ID,record.getId(),
+			let attrs = [RECORD_ID,record.getId(),
 				     'class','display-stripes-stripe',
 				     'style',HU.css('height',HU.getDimension(stripeHeight),'background',color),
-				     'title',title,'width',stripeWidth],contents);
+				     'title',title,'width',stripeWidth];
+			html+=HU.td(attrs,contents);
 		    });
 		    html+='</tr>';
 		    html+='</table>';
@@ -56941,6 +56949,30 @@ function RamaddaStripesDisplay(displayManager, id, properties) {
 	    colorBys.forEach((colorBy,fidx)=>{
 		colorBy.displayColorTable(null,null,'colortable_'+fidx);
 	    });
+	    if(this.getDrawSparkline()) {
+		blocks.forEach(block=>{
+		    let table = $('#'+ block.domId);
+		    let labelColumn = table.find('.display-stripes-stripe-label');
+		    let w = table.width();
+		    let h = table.height();		
+		    if(labelColumn.length>0) {
+			w -=labelColumn.width();
+		    }
+		    let divId = HU.getUniqueId('div_');
+		    table.append(HU.div(['id',divId,'style',HU.css('position','absolute',
+								   'margin-left',this.getShowLabel()?labelWidth:'0px',
+								   'left','0px',
+								   'top','0px',
+								   'width',w+'px',
+								   'height',h+'px')],''));
+		    let column = this.getColumnValues(block.records, block.field);
+		    let m = 5;
+		    drawSparkline(this,"#"+ divId,w,h,
+				  column.values,block.records,column.min,column.max,null,
+				  {margin:{top:m,bottom:m}});
+		});
+	    }
+
 	    let _this = this;
 	    let stripes =   this.getContents().find('.display-stripes-stripe');
 	    this.makeTooltips(stripes,records);
