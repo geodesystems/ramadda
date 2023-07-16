@@ -3338,12 +3338,12 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                     }
                     stat.isNumber = field.isNumeric();
                     stat.count++;
-                    if (v == null) {
+                    if (v == null || isNaN(v)) {
                         stat.numMissing++;
                     } else {
                         stat.numNotMissing++;
                     }
-                    if ((v!==null) && (typeof v == 'number')) {
+                    if (!isNaN(v) && (v!==null) && (typeof v == 'number')) {
                         let label = this.getFieldLabel(field).toLowerCase();
                         if (label.indexOf("latitude") >= 0 || label.indexOf("longitude") >= 0) {
 			    return;
