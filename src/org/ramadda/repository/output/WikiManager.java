@@ -2533,6 +2533,9 @@ public class WikiManager extends RepositoryManager
             return "";
         } else if (theTag.equals(WIKI_TAG_DISPLAYPROPERTIES)) {
 	    String entryId = Utils.getProperty(props, ARG_ENTRYID,(String)null);
+	    String displayType = Utils.getProperty(props, "displayType",(String)null);
+	    if(displayType==null) displayType="null";
+	    else displayType=HU.squote(displayType);
 	    if(entryId!=null) {
 		Entry propEntry = getEntryManager().getEntry(request,entryId);
 		if(propEntry!=null) {
@@ -2553,7 +2556,7 @@ public class WikiManager extends RepositoryManager
 			    label = label.substring(0,lengthLimit-1)+"...";
 			}
 			wikiUtil.appendJavascript("addGlobalDisplayProperty(" + HU.squote(keyPrefix+key+keySuffix)
-						  + "," + HU.squote(label) + ");\n");
+						  + "," + HU.squote(label) + "," + displayType+");\n");
 			
 		    }
 		}
@@ -2564,7 +2567,7 @@ public class WikiManager extends RepositoryManager
                 String key   = (String) keys.nextElement();
                 String value = (String) props.get(key);
 		value = value.replaceAll("\n"," ");
-                wikiUtil.appendJavascript(HU.call("addGlobalDisplayProperty",HU.squote(key),HU.squote(value)));
+                wikiUtil.appendJavascript(HU.call("addGlobalDisplayProperty",HU.squote(key),HU.squote(value),displayType));
             }
             return "";
 
