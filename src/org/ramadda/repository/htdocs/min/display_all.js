@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Jul 16 05:27:33 MDT 2023";
+var build_date="RAMADDA build date: Sun Jul 16 10:23:18 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -3911,6 +3911,7 @@ var RamaddaDisplayUtils = {
 	{p:'showDate',ex:'true'},
 	{p:'showMin',ex:'true'},
 	{p:'showMax',ex:'true'},
+	{p:'sparklineUseAllRecords',ex:'true',tt:'Use all of the records for the min/max.\nUseful for multiples'},	
 	{p:'labelStyle',ex:''},			
 	{p:'sparklineWidth',d:60, canCache:true},
 	{p:'sparklineHeight',d:20, canCache:true},
@@ -56847,9 +56848,16 @@ function RamaddaStripesDisplay(displayManager, id, properties) {
     myProps.push(...RamaddaDisplayUtils.sparklineProps);
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+        checkLayout: function() {
+	    //This gets called when the display is in a tab
+	    //If we are showing sparklings then redraw
+	    if(this.getShowSparkline()) {
+		this.updateUI();
+	    }
+	},
         updateUI: function() {
-	    let records = this.filterData();
-	    if(!records) return;
+	    let allRecords = this.filterData();
+	    if(!allRecords) return;
 	    let fields = this.getFieldsByIds(null,this.getPropertyFields());
 	    if(fields.length==0) {
                 this.handleError("No field specified");
@@ -56859,7 +56867,7 @@ function RamaddaStripesDisplay(displayManager, id, properties) {
 	    let groupField = this.getFieldById(null,  this.getGroupBy());
 	    let groupedRecords={};
 	    if(groupField) {
-		records.forEach((record,idx)=>{
+		allRecords.forEach((record,idx)=>{
 		    let value = groupField.getValue(record);
 		    if(!groupedRecords[value]) {
 			groupedRecords[value] = [];
@@ -56867,12 +56875,12 @@ function RamaddaStripesDisplay(displayManager, id, properties) {
 		    groupedRecords[value].push(record);
 		});
 	    } else {
-		groupedRecords['all'] = records;
+		groupedRecords['all'] = allRecords;
 	    }
 	    let allFields = this.getFields();
 	    let stripeHeight=this.getStripeHeight();
 	    let recordMap={};
-	    records.forEach(record=>{
+	    allRecords.forEach(record=>{
 		recordMap[record.getId()]  =record;
 	    });
 	    let html = '<center><div style="display:inline-block;">';
@@ -56881,14 +56889,14 @@ function RamaddaStripesDisplay(displayManager, id, properties) {
 	    let groups = Object.keys(groupedRecords);
 
 	    let makeLegend = ()=>{
-		let left =this.formatDate(records[0].getDate());
+		let left =this.formatDate(allRecords[0].getDate());
 		if(this.getShowLabel()) {
 		    left  = HU.div(['style','margin-left:2em;'], left);
 		}
-		let center = HU.div(['style','text-align:center;'],this.formatDate(records[parseInt(records.length/2)].getDate()));
+		let center = HU.div(['style','text-align:center;'],this.formatDate(allRecords[parseInt(allRecords.length/2)].getDate()));
 		html+=HU.leftCenterRight(left,
 					 center,
-					 this.formatDate(records[records.length-1].getDate()),
+					 this.formatDate(allRecords[allRecords.length-1].getDate()),
 					 '20%','60%','20%');
 
 	    };
@@ -56965,17 +56973,20 @@ function RamaddaStripesDisplay(displayManager, id, properties) {
 								   'top','0px',
 								   'width',w+'px',
 								   'height',h+'px')],''));
+
 		    let column = this.getColumnValues(block.records, block.field);
+		    let minMaxColumn = this.getColumnValues(this.getSparklineUseAllRecords()?allRecords:block.records, block.field);		    
 		    let m = 5;
 		    drawSparkline(this,"#"+ divId,w,h,
-				  column.values,block.records,column.min,column.max,null,
+				  column.values,block.records,
+				  minMaxColumn.min,minMaxColumn.max,null,
 				  {margin:{top:m,bottom:m}});
 		});
 	    }
 
 	    let _this = this;
 	    let stripes =   this.getContents().find('.display-stripes-stripe');
-	    this.makeTooltips(stripes,records);
+	    this.makeTooltips(stripes,allRecords);
 	    stripes.click(function() {
 		let record = recordMap[$(this).attr('record-id')];
 		_this.propagateEventRecordSelection({record: record});
