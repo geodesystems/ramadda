@@ -5437,7 +5437,7 @@ function RamaddaStripesDisplay(displayManager, id, properties) {
 	{p:'showColorTable',d:false,ex:'true'}	,
 	{p:'showColorTableBottom',d:false,ex:'true'},
 	{p:'groupBy',tt:'Field id to group by'},
-	{p:'drawSparkline',ex:'true'},
+	{p:'showSparkline',ex:'true'},
     ];
     myProps.push(...RamaddaDisplayUtils.sparklineProps);
 
@@ -5544,7 +5544,7 @@ function RamaddaStripesDisplay(displayManager, id, properties) {
 	    colorBys.forEach((colorBy,fidx)=>{
 		colorBy.displayColorTable(null,null,'colortable_'+fidx);
 	    });
-	    if(this.getDrawSparkline()) {
+	    if(this.getShowSparkline()) {
 		blocks.forEach(block=>{
 		    let table = $('#'+ block.domId);
 		    let labelColumn = table.find('.display-stripes-stripe-label');
