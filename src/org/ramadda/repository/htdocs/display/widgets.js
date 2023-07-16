@@ -217,16 +217,16 @@ function DateRangeWidget(display, what) {
 
 
 
-
-
-
-
-function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, margin) {
-    if(!attrs) attrs = {};
-    if(!margin)
-	margin = { top: 0, right: 0, bottom: 0, left: 0 };
-    const INNER_WIDTH  = w - margin.left - margin.right;
-    const INNER_HEIGHT = h - margin.top - margin.bottom;
+function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
+    let opts = {
+	theMargin:{ top: 0, right: 0, bottom: 0, left: 0 }
+    }
+    if(params) {
+	if(params.margin) $.extend(opts.theMargin,params.margin);
+	$.extend(opts,params);
+    }
+    const INNER_WIDTH  = w - opts.theMargin.left - opts.theMargin.right;
+    const INNER_HEIGHT = h - opts.theMargin.top - opts.theMargin.bottom;
     const BAR_WIDTH  = w / data.length;
     const x    = d3.scaleLinear().domain([0, data.length]).range([0, INNER_WIDTH]);
     const y    = d3.scaleLinear().domain([min, max]).range([INNER_HEIGHT, 0]);
@@ -240,21 +240,21 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
 	  .attr('width', w)
 	  .attr('height', h)
 	  .append('g')
-	  .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+	  .attr('transform', 'translate(' + opts.theMargin.left + ',' + opts.theMargin.top + ')');
     const line = d3.line()
 	  .x((d, i) => x(i))
 	  .y(d => y(d));
 
-    let lineColor = attrs.lineColor||display.getSparklineLineColor();
-    let barColor = attrs.barColor ||display.getSparklineBarColor();
-    let circleColor = attrs.circleColor ||display.getSparklineCircleColor();
-    let circleRadius = attrs.circleRadius ||display.getSparklineCircleRadius();
-    let lineWidth = attrs.lineWidth ||display.getSparklineLineWidth();
-    let defaultShowEndPoints = true;
+    let lineColor = opts.lineColor||display.getSparklineLineColor();
+    let barColor = opts.barColor ||display.getSparklineBarColor();
+    let circleColor = opts.circleColor ||display.getSparklineCircleColor();
+    let circleRadius = opts.circleRadius ||display.getSparklineCircleRadius();
+    let lineWidth = opts.lineWidth ||display.getSparklineLineWidth();
+    let defaultShowEndPoints = false;
     let getColor = (d,i,dflt)=>{
 	return colorBy?colorBy.getColorFromRecord(records[i], dflt):dflt;
     };
-    let showBars = attrs.showBars|| display.getSparklineShowBars();
+    let showBars = opts.showBars|| display.getSparklineShowBars();
     svg.append('line')
 	.attr('x1',0)
 	.attr('y1', 0)
@@ -293,7 +293,7 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
     }
 
 
-    if(attrs.showLines|| display.getSparklineShowLines()) {
+    if(opts.showLines|| display.getSparklineShowLines()) {
 	svg.selectAll('line').data(data).enter().append("line")
 	    .attr('x1', (d,i)=>{return x(i)})
 	    .attr('y1', (d,i)=>{return y(d)})
@@ -308,7 +308,7 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
     }
 
 
-    if(attrs.showCircles || display.getSparklineShowCircles()) {
+    if(opts.showCircles || display.getSparklineShowCircles()) {
 	svg.selectAll('circle').data(data).enter().append("circle")
 	    .attr('r', (d,i)=>{return isNaN(d)?0:circleRadius})
 	    .attr('cx', (d,i)=>{return getNum(x(i))})
@@ -319,24 +319,24 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
 
 
 
-    if(attrs.showEndpoints || display.getSparklineShowEndPoints(defaultShowEndPoints)) {
+    if(opts.showEndpoints || display.getSparklineShowEndPoints(defaultShowEndPoints)) {
 	let fidx=0;
 	while(isNaN(data[fidx]) && fidx<data.length) fidx++;
 	let lidx=data.length-1;
 	while(isNaN(data[lidx]) && lidx>=0) lidx--;	
 	svg.append('circle')
-	    .attr('r', attrs.endPointRadius|| display.getSparklineEndPointRadius())
+	    .attr('r', opts.endPointRadius|| display.getSparklineEndPointRadius())
 	    .attr('cx', x(fidx))
 	    .attr('cy', y(data[fidx]))
-	    .attr('fill', attrs.endPoint1Color || display.getSparklineEndPoint1Color() || getColor(data[0],0,display.getSparklineEndPoint1Color()));
+	    .attr('fill', opts.endPoint1Color || display.getSparklineEndPoint1Color() || getColor(data[0],0,display.getSparklineEndPoint1Color()));
 	svg.append('circle')
-	    .attr('r', attrs.endPointRadius|| display.getSparklineEndPointRadius())
+	    .attr('r', opts.endPointRadius|| display.getSparklineEndPointRadius())
 	    .attr('cx', x(lidx))
 	    .attr('cy', y(data[lidx]))
-	    .attr('fill', attrs.endPoint2Color || display.getSparklineEndPoint2Color()|| getColor(data[data.length-1],data.length-1,display.getSparklineEndPoint2Color()));
+	    .attr('fill', opts.endPoint2Color || display.getSparklineEndPoint2Color()|| getColor(data[data.length-1],data.length-1,display.getSparklineEndPoint2Color()));
     }
     let _display = display;
-    let doTooltip = display.getSparklineDoTooltip()  || attrs.doTooltip;
+    let doTooltip = display.getSparklineDoTooltip()  || opts.doTooltip;
     svg.on("click", function() {
 	let coords = d3.mouse(this);
 	if(records) {

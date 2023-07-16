@@ -4447,7 +4447,7 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 			c =  c + HU.tag(BR) + label;
 		    $("#"+id).append(HU.div([STYLE,HU.css('display','inline-block','margin','4px')],c));
 		    let gcol = this.getColumnValues(grecords, field);
-		    drawSparkLine(this, "#"+gid,w,h,gcol.values,grecords,min,max,colorBy);
+		    drawSparkline(this, "#"+gid,w,h,gcol.values,grecords,min,max,colorBy);
 		});		
 	    } else {
 		html = HU.div([CLASS,"display-sparkline-sparkline",ID,this.domId(ID_INNER),STYLE,HU.css('width', w+'px','height', h+'px')]);
@@ -4460,7 +4460,7 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 		if(left!=""  || right!="")
 		    html = HU.leftCenterRight(left,html,right,"1%","99%","1%",null,"padding:2px 2px;");
 		this.setContents(html); 
-		drawSparkLine(this, "#"+id,w,h,col.values,records,min,max,colorBy);
+		drawSparkline(this, "#"+id,w,h,col.values,records,min,max,colorBy);
 	    }
 	    let t2 = new Date();
 //	    Utils.displayTimes("sparkline",[t1,t2],true);
@@ -5436,9 +5436,10 @@ function RamaddaStripesDisplay(displayManager, id, properties) {
 	{p:'showLegend',d:false,ex:'true'},
 	{p:'showColorTable',d:false,ex:'true'}	,
 	{p:'showColorTableBottom',d:false,ex:'true'},
-	{p:'groupBy',tt:'Field id to group by'},	    
+	{p:'groupBy',tt:'Field id to group by'},
+	{p:'drawSparkline',ex:'true'},
     ];
-
+    myProps.push(...RamaddaDisplayUtils.sparklineProps);
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         updateUI: function() {
@@ -5489,13 +5490,17 @@ function RamaddaStripesDisplay(displayManager, id, properties) {
 	    if(this.getShowLegend()) {
 		makeLegend();
 	    }
+	    let blocks = [];
+	    let labelWidth='2em';
 	    groups.forEach((key,groupIdx)=>{
 		if(groupField) {
 		    html+=key;
 		}
 		let records =groupedRecords[key];
 		fields.forEach((field,fidx)=>{
-		    html+='<table>';
+		    let uid = HU.getUniqueId('table_');
+		    html+=HU.open('table',['id',uid,'style',HU.css('position','relative')]);
+		    blocks.push({domId:uid,records:records,field:field});
 		    let isLast = (groupIdx==groups.length-1 && fidx==fields.length-1);
 		    let isFirst = (groupIdx==0 && fidx==0);
 		    let colorBy = new  ColorByInfo(this,allFields, records, '',null,null,null,field);
@@ -5504,9 +5509,11 @@ function RamaddaStripesDisplay(displayManager, id, properties) {
 			html+='<tr style="border-bottom:1px solid #efefef;">';
 		    else html+='<tr>';
 		    if(this.getShowLabel()) {
-			html+=HU.td(['width','2em','style','max-width:2em;width:2em'],
-				    HU.div(['width','2em','style',
-					    HU.css('max-width','2em','width','2em','max-height',HU.getDimension(stripeHeight)),'class','display-stripes-vertical-label'],field.getLabel()));
+			html+=HU.td(['width',labelWidth,
+				     'class','display-stripes-stripe-label',
+				     'style','max-width:2em;width:2em'],
+				    HU.div(['width',labelWidth,'style',
+					    HU.css('max-width',labelWidth,'width',labelWidth,'max-height',HU.getDimension(stripeHeight)),'class','display-stripes-vertical-label'],field.getLabel()));
 		    }
 		    records.forEach((record,idx)=>{
 			let color =  colorBy.getColorFromRecord(record);
@@ -5515,10 +5522,11 @@ function RamaddaStripesDisplay(displayManager, id, properties) {
 			let title =field.getLabel()+': '+data;
 			if(date) title = this.formatDate(date) +' - ' + title;
 			let contents = '';
-			html+=HU.td([RECORD_ID,record.getId(),
+			let attrs = [RECORD_ID,record.getId(),
 				     'class','display-stripes-stripe',
 				     'style',HU.css('height',HU.getDimension(stripeHeight),'background',color),
-				     'title',title,'width',stripeWidth],contents);
+				     'title',title,'width',stripeWidth];
+			html+=HU.td(attrs,contents);
 		    });
 		    html+='</tr>';
 		    html+='</table>';
@@ -5536,6 +5544,30 @@ function RamaddaStripesDisplay(displayManager, id, properties) {
 	    colorBys.forEach((colorBy,fidx)=>{
 		colorBy.displayColorTable(null,null,'colortable_'+fidx);
 	    });
+	    if(this.getDrawSparkline()) {
+		blocks.forEach(block=>{
+		    let table = $('#'+ block.domId);
+		    let labelColumn = table.find('.display-stripes-stripe-label');
+		    let w = table.width();
+		    let h = table.height();		
+		    if(labelColumn.length>0) {
+			w -=labelColumn.width();
+		    }
+		    let divId = HU.getUniqueId('div_');
+		    table.append(HU.div(['id',divId,'style',HU.css('position','absolute',
+								   'margin-left',this.getShowLabel()?labelWidth:'0px',
+								   'left','0px',
+								   'top','0px',
+								   'width',w+'px',
+								   'height',h+'px')],''));
+		    let column = this.getColumnValues(block.records, block.field);
+		    let m = 5;
+		    drawSparkline(this,"#"+ divId,w,h,
+				  column.values,block.records,column.min,column.max,null,
+				  {margin:{top:m,bottom:m}});
+		});
+	    }
+
 	    let _this = this;
 	    let stripes =   this.getContents().find('.display-stripes-stripe');
 	    this.makeTooltips(stripes,records);

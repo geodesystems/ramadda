@@ -3420,9 +3420,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			ctx.stroke();
 		    });
 		} else {
-		    drawSparkLine(this,"#"+ info.id,w,h,info.data,info.records,allData.min,allData.max,colorBy);
+		    drawSparkline(this,"#"+ info.id,w,h,info.data,info.records,allData.min,allData.max,colorBy);
 		    $('#' + info.hoverId).css('background','#fff').css('border','1px solid #ccc');
-		    drawSparkLine(this,"#"+ info.hoverId,hoverW,hoverH,info.data,info.records,allData.min,allData.max,colorBy);		    
+		    drawSparkline(this,"#"+ info.hoverId,hoverW,hoverH,info.data,info.records,allData.min,allData.max,colorBy);		    
 		}
 	    });
 	    let items = this.find(".display-map-html-item");
@@ -5069,7 +5069,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		    let style = HU.css(WIDTH,cellWidth+'px',HEIGHT, (height-vOffset) +'px','position','absolute','left','0px','top', vOffset+'px');
 		    let innerDiv = HU.div([ID, innerId, STYLE,style]);
 		    $("#" + s.cellId).append(innerDiv);
-		    drawSparkLine(this, "#"+innerId,cellWidth,height-vOffset,s.data,s.records,minData,maxData,sparkLinesColorBy);
+		    drawSparkline(this, "#"+innerId,cellWidth,height-vOffset,s.data,s.records,minData,maxData,sparkLinesColorBy);
 		});
 	    }
 
