@@ -1567,16 +1567,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'width',doGetter:false,ex:'100%'},
 	{p:'height',doGetter:false,ex:'400'},
 	{p:'noWrapper',ex:true,tt:'Don\'t make the header and footer. Just this core display'},
-	{p:'tooltip',doGetter:false,d:'${default}'},
-	{p:'tooltipPositionMy',ex:'left top'},
-	{p:'tooltipPositionAt',ex:'left bottom+2'},		
-	{p:'tooltipFields',canCache:true},
-	{p:'tooltipNotFields',canCache:true,d:''},
-	{p:'selectPopup',ex:'${default}',tt:'Template to use to make a popup when a record is selected'},
-	{p:'selectPopupTitle'},
-	{p:'headerText',ex:'blah blah ${command labels=\"log scale,linear scale\" xAxisType=log,linear} blah',
-	 tt:'Text to show above the display. Can contain ${command ...} templates'},
-	{p:'headerTextDiv',tt:'divid to put header text in'},
 	{p:'imageWidth',canCache:true},		
 	{p:'includeFieldDescriptionInTooltip',canCache:true,d:true},
 	{p:'recordTemplate',doGetter:false,ex:'${default}',tt:'Template for popups etc. Can be ${default attrs} or \'${field} .. ${fieldn}...\''},
@@ -1617,6 +1607,25 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'displayFieldsMenuSide',ex:'left'},
 	{p:'displayHeaderSide',ex:'left'},
 	{p:'leftSideWidth',ex:'150px'},		
+	{label:'Tooltips'},
+	{p:'tooltip',doGetter:false,d:'${default}'},
+	{p:'tooltipDelay',d:1000},
+	{p:'tooltipEffect',d:'fadeIn'},
+	{p:'tooltipDuration',d:500},	
+	{p:'tooltipImmediate',d:false,ex:'true',tt:'Show tooltip immediately'},	
+	{p:'tooltipPositionMy',ex:'left top'},
+	{p:'tooltipPositionAt',ex:'left bottom+2'},		
+	{p:'tooltipCollision'},
+	{p:'tooltipFields',canCache:true},
+	{p:'tooltipNotFields',canCache:true,d:''},
+	{p:'selectPopup',ex:'${default}',tt:'Template to use to make a popup when a record is selected'},
+	{p:'selectPopupTitle'},
+	{p:'headerText',ex:'blah blah ${command labels=\"log scale,linear scale\" xAxisType=log,linear} blah',
+	 tt:'Text to show above the display. Can contain ${command ...} templates'},
+	{p:'headerTextDiv',tt:'divid to put header text in'},
+
+
+
 	{label:'Formatting'},
 	{p:'dateFormat',canCache:true,
 	 ex:'yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm'},
@@ -7050,19 +7059,24 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			_this.getDisplayManager().notifyEvent(DisplayEvent.recordHighlight, _this, {highlight:false,record: record});
 		},
 		position: {
-		    my: _this.getProperty("tooltipPositionMy", "left top"),
-		    at: _this.getProperty("tooltipPositionAt", "left bottom+2"),
-		    collision: _this.getProperty("tooltipCollision", "flip")
-		},
-		show: {
-		    delay: parseFloat(_this.getProperty("tooltipDelay",1000)),
-		    duration: parseFloat(_this.getProperty("tooltipDuration",500)),
-	    
+		    my: _this.getTooltipPositionMy("left top"),
+		    at: _this.getTooltipPositionAt("left bottom+2"),
+		    collision: _this.getTooltipCollision("flip")
 		},
 		classes: {
 		    "ui-tooltip": _this.getProperty("tooltipClass", "ramadda-shadow-box  display-tooltip")
 		}
 	    };
+	    if(this.getTooltipImmediate()) {
+		$.extend(tooltipFunc,{show: false, hide:false});
+	    } else {
+		$.extend(tooltipFunc,{
+		    show: {
+			delay: parseFloat(_this.getTooltipDelay()),
+			effect:this.getTooltipEffect(),
+			duration: parseFloat(_this.getTooltipDuration()),
+		    }});
+	    }
 	    if(selector.length>500) {
 		//A hack to fix really slow tooltip calls when there are lots of elements
 		selector.mouseenter(function() {
