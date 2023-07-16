@@ -196,6 +196,7 @@ var RamaddaDisplayUtils = {
 	{p:'showDate',ex:'true'},
 	{p:'showMin',ex:'true'},
 	{p:'showMax',ex:'true'},
+	{p:'sparklineUseAllRecords',ex:'true',tt:'Use all of the records for the min/max.\nUseful for multiples'},	
 	{p:'labelStyle',ex:''},			
 	{p:'sparklineWidth',d:60, canCache:true},
 	{p:'sparklineHeight',d:20, canCache:true},
