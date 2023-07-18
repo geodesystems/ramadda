@@ -159,6 +159,13 @@
 	priority="3"
 	help="Contains structured CSV data"
 	>
+    <property name="record.properties">
+      <![CDATA[
+	       firstLineDefinesFields=true
+	       commentLineStart=#
+      ]]>
+    </property>
+
     <column  name="data"  label="Data" cansearch="false" size="50000" type="clob" rows="50" columns="80" showinhtml="false"/>
   </type>
 
