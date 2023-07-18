@@ -4733,13 +4733,13 @@ public class WikiUtil {
             String[] lines           = s.split("\n");
             Chunk    chunk           = null;
             String[] prefixes        = new String[] {
-                "<nowiki>", "+css", "+javascript", "<script", "+pre", "<pre", "```","+xml"
+                "<nowiki>", "+css", "+javascript", "+script","<script", "+pre", "<pre", "```","+xml"
             };
             String[] suffixes        = new String[] {
-                "</nowiki>", "-css", "-javascript", "</script>", "-pre", "</pre>", "```","-xml"
+                "</nowiki>", "-css", "-javascript", "-script","</script>", "-pre", "</pre>", "```","-xml"
             };
             int[]    types           = new int[] {
-                TYPE_NOWIKI, TYPE_CSS, TYPE_JS, TYPE_JSTAG,TYPE_PRE, TYPE_PRETAG, TYPE_CODE,TYPE_XML
+                TYPE_NOWIKI, TYPE_CSS, TYPE_JS, TYPE_JS,TYPE_JSTAG,TYPE_PRE, TYPE_PRETAG, TYPE_CODE,TYPE_XML
             };
             String   lookingForClose = null;
             for (String line : lines) {
