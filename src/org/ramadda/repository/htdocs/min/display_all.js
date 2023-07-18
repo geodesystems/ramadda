@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Jul 18 04:25:58 MDT 2023";
+var build_date="RAMADDA build date: Tue Jul 18 05:33:12 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -18040,6 +18040,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'highlightShowFieldsSize',d:"4",ex:'4'},
 	{p:"acceptHighlightFieldsEvent",d:true,ex:'true'},
 	{p:'highlightDim',d:'true',ex:'true',tt:'Dim the non highlight lines'},
+	{p:'chartWidth',ex:''},
+	{p:'chartHeight',ex:''},
+	{p:'chartLeft',ex:'0'},
+	{p:'chartRight',ex:'0'},
+	{p:'chartTop',ex:'0'},
+	{p:'chartBottom',ex:'0'},
 
 	{p:'lineDashStyle',d:null,ex:'2,2,20,2,20'},
 	{p:'highlight.lineDashStyle',d:'2,2,20,2,20',ex:'2,2,20,2,20'},
@@ -19890,12 +19896,6 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 	{p:'multiLabelTemplate',ex:'${value}'},
 	{p:'multiChartsLabelPosition',ex:'bottom|top|none'},
 	{inlineLabel:'Chart Layout'},
-	{p:'chartWidth',ex:''},
-	{p:'chartHeight',ex:''},
-	{p:'chartLeft',ex:'0'},
-	{p:'chartRight',ex:'0'},
-	{p:'chartTop',ex:'0'},
-	{p:'chartBottom',ex:'0'},
 	{p:'lineColor',ex:''},
 	{p:'chartBackground',ex:''},
 	{p:'chart.fill',ex:''},
@@ -20224,15 +20224,17 @@ function PiechartDisplay(displayManager, id, properties) {
 	{p:'groupBy',ex:''},
 	{p:'groupByCount',ex:'true'},
 	{p:'groupByCountLabel',ex:''},
+	{p:'showTopLegend'},
 	{p:'binCount',ex:'true'},
 	{p:'pieHole',ex:'0.5'},
 	{p:'is3D',ex:'true'},
 	{p:'bins',ex:''},
 	{p:'binMin',ex:''},
 	{p:'binMax',ex:'max'},
+	{p:'sumFields',ex:'true'},
 	{p:'sliceVisibilityThreshold',ex:'0.01'},
 	{p:'pieSliceTextColor',ex:'black'},
-	{p:'pieSliceBorderColor',ex:'black'}
+	{p:'pieSliceBorderColor',d:'white',ex:'black'}
     ];
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -20246,7 +20248,7 @@ function PiechartDisplay(displayManager, id, properties) {
 	    this.uniqueValues = [];
 	    this.uniqueValuesMap = {};
 	    SUPER.makeGoogleChart.call(this, dataList, props, selectedFields);
-	    if(!this.getProperty("showTopLegend")) return;
+	    if(!this.getShowTopLegend()) return;
 	    let legend = "";
 	    let colors = this.getColorList();
 	    let colorCnt = 0;
@@ -20318,35 +20320,35 @@ function PiechartDisplay(displayManager, id, properties) {
 		//		ignoreBounds: true,
             };
 	    this.chartOptions.legend = {'position':this.getProperty("legendPosition", 'right'),'alignment':'center'};
-            if (this.getProperty("bins", null)) {
+            if (this.getBins()) {
                 chartOptions.title = "Bins: " + this.getDataValues(dataList[0])[1];
-	    } else if(this.getProperty("sumFields")) {
+	    } else if(this.getSumFields()) {
                 chartOptions.title = this.getProperty("chartTitle","Categories/Values");
             } else {
                 chartOptions.title = this.getDataValues(dataList[0])[0] + " - " + this.getDataValues(dataList[0])[1];
             }
 
-            if (this.is3D) {
+            if (this.getIs3D()) {
                 chartOptions.is3D = true;
             }
-            if (this.pieHole) {
+            if (this.getPieHole()) {
                 chartOptions.pieHole = this.pieHole;
             }
-            if (this.sliceVisibilityThreshold) {
+            if (this.getSliceVisibilityThreshold()) {
                 chartOptions.sliceVisibilityThreshold = this.sliceVisibilityThreshold;
             }
 
-	    chartOptions.pieSliceBorderColor = this.getProperty("pieSliceBorderColor","transparent");
+	    chartOptions.pieSliceBorderColor = this.getPieSliceBorderColor();
 	    chartOptions.pieSliceTextStyle  = {
-		color: this.getProperty("pieSliceTextColor","white")
+		color: this.getPieSliceTextColor()
             };
 
 	    chartOptions.chartArea = {};
 	    $.extend(chartOptions.chartArea, {
-                left: this.getProperty("chartLeft", 0),
-                right: this.getProperty("chartRight", 0),
-                top: this.getProperty("chartTop", 0),
-		bottom: this.getProperty("chartBottom",0),
+                left: this.getChartLeft(0),
+                right: this.getChartRight(0),
+                top: this.getChartTop(0),
+		bottom: this.getChartBottom(0),
                 width: '100%',
                 height: '100%'
             });
@@ -20373,18 +20375,18 @@ function PiechartDisplay(displayManager, id, properties) {
             dataTable.addColumn("number", header[1]);
 
 
-            if (this.getProperty("bins", null)) {
+            if (this.getBins()) {
                 let bins = parseInt(this.getProperty("bins", null));
                 let min = Number.MAX_VALUE;
                 let max = Number.MIN_VALUE;
                 let haveMin = false;
                 let haveMax = false;
-                if (this.getProperty("binMin")) {
-                    min = parseFloat(this.getProperty("binMin"));
+                if (this.getBinMin()) {
+                    min = parseFloat(this.getBinMin());
                     haveMin = true;
                 }
-                if (this.getProperty("binMax")) {
-                    max = parseFloat(this.getProperty("binMax"));
+                if (this.getBinMax()) {
+                    max = parseFloat(this.getBinMax());
                     haveMax = true;
                 }
 
@@ -20433,12 +20435,12 @@ function PiechartDisplay(displayManager, id, properties) {
                                bin.values.length
 			      ]);
                 }
-            } else if(this.getProperty("sumFields")) {
+            } else if(this.getSumFields()) {
 		dataTable = new google.visualization.DataTable();
 		dataTable.addColumn("string", "Category");
 		dataTable.addColumn("number", "Value");
 		let records=  this.filterData();
-		let sumFields =  this.getFieldsByIds(null, this.getProperty("sumFields"));
+		let sumFields =  this.getFieldsByIds(null, this.getSumFields());
 		let sums = [];
 		sumFields.map(f=>{sums.push(0)});
 		if(this.chartCount>=0) {
@@ -20469,10 +20471,6 @@ function PiechartDisplay(displayManager, id, properties) {
 		    this.uniqueValues.push(s);
 		}
 	    });
-	    //	    list =[];
-	    //	    for(i=0;i<20;i++)list.push([""+i,5]);
-
-
             dataTable.addRows(list);
             return dataTable;
         }
