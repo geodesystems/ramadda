@@ -2138,8 +2138,8 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 	{p:'multiLabelTemplate',ex:'${value}'},
 	{p:'multiChartsLabelPosition',ex:'bottom|top|none'},
 	{inlineLabel:'Chart Layout'},
-	{p:'chartHeight',ex:''},
 	{p:'chartWidth',ex:''},
+	{p:'chartHeight',ex:''},
 	{p:'chartLeft',ex:'0'},
 	{p:'chartRight',ex:'0'},
 	{p:'chartTop',ex:'0'},
@@ -2552,7 +2552,6 @@ function PiechartDisplay(displayManager, id, properties) {
                 style += "height:" + "100%;";
             }
 	    //	    style += "border:1px solid green;"
-	    style += "padding:5px;"
             divAttrs.push(style);
             return HU.div(divAttrs, "");
         },
