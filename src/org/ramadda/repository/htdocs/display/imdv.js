@@ -735,7 +735,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    return this.myLayer;
 	},
 	redraw: function(feature) {
-	    console.dir('redraw',feature?feature.name:'no feature')
 	    ImdvUtils.scheduleRedraw(this.myLayer,feature);
 	},
 	getNewFeature: function() {
