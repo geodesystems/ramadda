@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Jul 16 13:38:52 MDT 2023";
+var build_date="RAMADDA build date: Tue Jul 18 04:25:58 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -19890,8 +19890,8 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 	{p:'multiLabelTemplate',ex:'${value}'},
 	{p:'multiChartsLabelPosition',ex:'bottom|top|none'},
 	{inlineLabel:'Chart Layout'},
-	{p:'chartHeight',ex:''},
 	{p:'chartWidth',ex:''},
+	{p:'chartHeight',ex:''},
 	{p:'chartLeft',ex:'0'},
 	{p:'chartRight',ex:'0'},
 	{p:'chartTop',ex:'0'},
@@ -20304,7 +20304,6 @@ function PiechartDisplay(displayManager, id, properties) {
                 style += "height:" + "100%;";
             }
 	    //	    style += "border:1px solid green;"
-	    style += "padding:5px;"
             divAttrs.push(style);
             return HU.div(divAttrs, "");
         },
@@ -41657,7 +41656,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    return this.myLayer;
 	},
 	redraw: function(feature) {
-	    console.dir('redraw',feature?feature.name:'no feature')
 	    ImdvUtils.scheduleRedraw(this.myLayer,feature);
 	},
 	getNewFeature: function() {
