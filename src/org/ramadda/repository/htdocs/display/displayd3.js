@@ -7,6 +7,7 @@
 const DISPLAY_D3_GLIDER_CROSS_SECTION = "GliderCrossSection";
 //const DISPLAY_D3_PROFILE = "profile";
 const DISPLAY_D3_LINECHART = "D3LineChart";
+const DISPLAY_D3_PLOT = "d3plot";
 const DISPLAY_SKEWT = "skewt";
 const DISPLAY_VENN = "venn";
 const DISPLAY_CHERNOFF = "chernoff";
@@ -14,6 +15,15 @@ const DISPLAY_D3BUBBLE = "d3bubble";
 const DISPLAY_MINIDOTS = "minidots";
 
 //Note: Added requiresData and category
+addGlobalDisplayType({
+    type: DISPLAY_D3_PLOT,
+    forUser: true,
+    label: "D3 Plot",
+    requiresData: true,
+    category: "Charts"
+});
+
+
 addGlobalDisplayType({
     type: DISPLAY_D3_LINECHART,
     forUser: false,
@@ -99,6 +109,91 @@ const FUNC_MOVINGAVERAGE = "movingAverage";
 
 const D3Util = {
     foo: "bar",
+    initPlot:function(display,opts) {
+	opts = opts??{};
+	['caption',
+	 ['plotWidth','width'],
+	 ['plotHeight','height'],
+	 'marginTop','marginRight','marginBottom','marginLeft','grid'].forEach(prop=>{
+	     if(!Array.isArray(prop)) prop = [prop,prop];
+	     if(!Utils.isDefined(opts[prop[1]])) {
+		 opts[prop[1]] = display.getProperty(prop[0]);
+	     }
+	});
+	return opts;
+    },
+    initMarks:function(display, marks) {
+	if(display.getProperty('showFrame')) {
+	    marks.push(Plot.frame());
+	}
+//	marks.push(Plot.text(["Hello, world!"], {frameAnchor: "left"}));
+	Utils.split(display.getProperty("rules",""),",").forEach(rule=>{
+//	    console.log("adding rule:" + rule);
+            marks.push(Plot.ruleY([parseFloat(rule)]));
+	});
+    },
+    createMarks:function(display, fields, records,args) {
+	let marks = [];
+	args = args??{};
+	this.initMarks(display, marks);
+	fields.forEach((field,idx)=>{
+	    let opts = {};
+	    $.extend(opts,args);
+            marks.push(D3Util.createMark(display, field,records,idx,opts));
+	}); 
+	return marks;
+    },
+    getProperty(display, prefix,prop,dflt) {
+	return  display.getProperty(prefix+'.'+prop,display.getProperty(prop))??dflt;
+    },
+    createMark:function(display, field,records,index,args) {
+	args = args??args;
+	if(!args.array) {
+	    args.array=this.getD3Data(display,field,records,{includeDate:args.includeDate});
+	}
+	let opts = {x: "Date", y: field.getId()};
+	let colors = args.colors?? display.getColorList();
+	let fill = args.fill??this.getProperty(display,field.getId(),'fillColor');
+
+	opts.strokeWidth =parseFloat(args.strokeWidth??this.getProperty(display,field.getId(),'strokeWidth',1));
+	opts.stroke =  args.stroke??this.getProperty(display,field.getId(), 'strokeColor','#000');
+	
+	let mark;
+	let markType  = display.getProperty(field.getId()+'.markType',display.getProperty('markType','line'));
+	if(markType=='bar') {
+	    opts.fill = fill;
+	    mark= Plot.barY(args.array, opts);
+	} else if(markType=='dot') {
+	    opts.fill = fill;
+	    opts.r = parseFloat(this.getProperty(display,field.getId(),'radius',4));
+	    mark= Plot.dot(args.array, opts);	    
+	} else if(markType=='line') {
+	    mark= Plot.lineY(args.array, opts);
+	} else {
+	    console.error('Unknown mark type:' + markType);
+	    mark= Plot.lineY(args.array, opts);
+	}
+	return mark;
+    },	
+    getD3Data:function(display,fields,records,args) {
+	if(!Array.isArray(fields)) fields=[fields];
+	args = args??{};
+	let opts = {
+	    includeDate:false
+	}
+	$.extend(opts,args);
+	let d3Array = [];
+	records.forEach((record,idx)=>{
+	    let obj = {};
+	    if(opts.includeDate)
+		obj.Date = record.getDate();
+	    fields.forEach(field=>{
+		obj[field.getId()] = field.getValue(record);  
+	    });
+	    d3Array.push(obj);
+	});    
+	return d3Array;
+    },
     getAxis: function(axisType, range) {
         var axis;
         if (axisType == FIELD_TIME) {
@@ -186,6 +281,31 @@ const D3Util = {
 
         return colorBar;
     }
+}
+
+
+function RamaddaD3plotDisplay(displayManager, id, properties) {
+    const SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_D3_PLOT, properties);
+    let myProps = [
+        {label:'D3 Plot Attributes'},
+        {p:'skewtWidth',ex:'500'},
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+        needsData: function() {
+            return true;
+        },
+        updateUI: async function() {
+	    if(!window.Plot) {
+		await Utils.importJS('https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.9/dist/plot.umd.min.js')
+	    }
+            let records =  this.filterData();
+	    if(!records) return;
+            let fields = this.getSelectedFields([]);
+	    let marks = D3Util.createMarks(this,fields,records,{includeDate:true});    
+	    let plot = Plot.plot(D3Util.initPlot(this,{marks:marks}));
+	    this.getContents().html(plot);
+	}
+    });
 }
 
 
