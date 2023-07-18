@@ -617,7 +617,7 @@ a.display-container {
 
 .display-record-table-label {
     font-weight:bold;
-    max-width:100px;
+    max-width:150px;
     overflow-x:auto;
 }
 

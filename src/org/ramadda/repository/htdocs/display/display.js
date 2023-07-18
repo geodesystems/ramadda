@@ -1057,6 +1057,7 @@ function DisplayThing(argId, argProperties) {
 	},
         getRecordHtml: function(record, fields, template, props, debug) {
 	    props= props??{};
+	    if(!props.labelStyle) props.labelStyle=this.getLabelStyle();
 	    fields = this.getFields(fields);
 	    if(!fields) return "";
 	    let dflt = this.getRecordHtmlProps();
@@ -1584,6 +1585,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'includeFieldDescriptionInTooltip',canCache:true,d:true},
 	{p:'recordTemplate',doGetter:false,ex:'${default}',tt:'Template for popups etc. Can be ${default attrs} or \'${field} .. ${fieldn}...\''},
 	{p:'recordHtmlStyle',canCache:true},
+	{p:'labelStyle',ex:''},			
 	{p:'titleTemplate',doGetter:false,ex:'${field1}',tt:'Template for title in ${default} template display'},	
 	{p:'itemsPerColumn',canCache:true,d:50,tt:'How many items to show in each column in a tooltip'},
 	{p:'labelColumnAttrs',canCache:true,ex:'align,right',tt:'Attributes of the label column in the record templates'},
