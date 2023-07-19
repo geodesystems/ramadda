@@ -59,8 +59,7 @@ public class GeoJson extends JsonUtil {
      *
      * @throws Exception _more_
      */
-    public static void geojsonFileToCsv(String file, PrintStream pw,
-                                        String colString)
+    public static void geojsonFileToCsv(String file, PrintStream pw, String colString)
             throws Exception {
         String contents = IOUtil.readContents(file, JsonUtil.class);
         //        InputStream    is   = IOUtil.getInputStream(file, JsonUtil.class);
@@ -162,6 +161,7 @@ public class GeoJson extends JsonUtil {
         /**  */
         boolean addPolygon;
 
+
         /**
          *
          *
@@ -189,7 +189,6 @@ public class GeoJson extends JsonUtil {
             if (addPolygon) {
                 header.add("polygon");
             }
-
             return header;
         }
 
@@ -238,7 +237,6 @@ public class GeoJson extends JsonUtil {
                 }
                 values.add(poly.toString());
             }
-
             return values;
         }
 
@@ -656,6 +654,20 @@ public class GeoJson extends JsonUtil {
 
     }
 
+    public static void reverse(String f) throws Exception {
+        JSONObject            obj      =
+            new JSONObject(new JSONTokener(new FileInputStream(f)));
+        JSONArray             features = readArray(obj, "features");
+	List<Object> objects = new ArrayList<Object>();
+	for (int idx1 = 0; idx1 < features.length(); idx1++) {
+	    objects.add(0,features.getJSONObject(idx1));
+	}
+	features.clear();
+	features.putAll(objects);
+	System.out.println(obj.toString());
+    }
+
+
     /**
      * _more_
      *
@@ -664,6 +676,9 @@ public class GeoJson extends JsonUtil {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+
+	reverse(args[0]);
+	if(true) return;
 
         split(args[0]);
 	if(true) return;
