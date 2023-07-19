@@ -85,6 +85,7 @@ some_property.filter.type=enumeration
 The <b>Style</b> section of the settings dialog lets you specify the standard set of map styles, e.g.,
 stroke color, stroke width, fill color, etc.
 In our example we've changed the Stroke Color to be gray and the Stroke Width to be 1. 
+<a name=mapstylerules></a>
 :p
 
 
@@ -101,7 +102,16 @@ specify a min/max range.
 The <b>Style Rules</b> allows you to specify specific property value tests mapped to a set of styles.
 In our example we color any feature with
 Ownership="County Conservation Easement" with green and Ownership="County Owned Open Space" with blue.
-Mouse over the styles to see the format. 
+Mouse over the styles to see the format, e.g.: 
+<pre>
+  fillColor:red
+  fillOpacity:0.5
+  strokeColor:blue
+  strokeWidth:2
+  strokeDashstyle:solid|dot|dash|dashdot|longdash|longdashdot
+  externalGraphic:/repository/map/marker-blue.png
+</pre>
+
 :p
 The <b>Style Groups</b>  section allows you to specify one or more groups and the corresponding styles
 for those groups. This enables you to "paint" specific polygons in the map.
