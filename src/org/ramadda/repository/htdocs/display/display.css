@@ -3016,7 +3016,8 @@ table.dataTable tfoot td {
 }
 
 .imdv-legend-item-droppable {
-    background:var(--highlight-background);
+    background:var(--color-mellow-yellow);
+//    background:var(--highlight-background);
     border-top:2px solid #000;
     border-bottom:2px solid #000;    
 }
