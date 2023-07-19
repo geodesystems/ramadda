@@ -67,6 +67,8 @@ let ImdvUtils = {
 	}
 	let geom = feature?.geometry?.CLASS_NAME;
 	if(geom=='OpenLayers.Geometry.Point' && Utils.stringDefined(feature.style.externalGraphic)) {
+	    feature.style= style;
+	    //not sure why we have this here but  for now just set the style on the feature
 	    for(a in style) {
 		//TODO:
 	    }
@@ -92,6 +94,7 @@ let ImdvUtils = {
 	}
 	layer.redrawPending = true;
 	setTimeout(()=>{
+//	    console.log('redrawing layer:',layer.name);
 	    layer.redraw();
 	    layer.redrawPending = false;
 	},1)
@@ -718,12 +721,17 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    style = Utils.clone({},style?? (feature?.style) ?? {});
 	    mapOptions = Utils.clone({},mapOptions??feature?.mapOptions ?? style?.mapOptions);
 	    delete style.mapOptions;
-	    if(feature && feature.style && feature.style.mapOptions)
+	    if(feature?.style?.mapOptions)
 		delete feature.style.mapOptions;
 	    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, feature,style);
 	    this.addGlyph(mapGlyph);
 	    mapGlyph.glyphCreated();
 	    this.clearMessage2(1000);
+	    if(mapGlyph.isMap()) {
+		setTimeout(()=>{
+		    mapGlyph.panMapTo();
+		},100);
+	    }
 	    return mapGlyph;
 	},
 	handleGlyphsChanged: function (){
@@ -2291,6 +2299,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    style.cursor = 'pointer';
 		}
 
+
+
 		if(mapGlyph.isData()) {
 		    let displayAttrs = this.parseDisplayAttrs(this.jq('displayattrs').val());
 		    mapGlyph.applyDisplayAttrs(displayAttrs);
@@ -2310,11 +2320,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    mapGlyph.checkImage();
 		}
 
+
 		mapGlyph.applyStyle(style);
 		mapGlyph.makeLegend();
 		mapGlyph.initLegend();
 		this.showMapLegend();
-		this.redraw(mapGlyph);
+		mapGlyph.redraw();
 	    };
 	},
 	doEdit: function(mapGlyph) {
@@ -2848,6 +2859,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.jq(prop+'_image').attr('src',icon);
 		this.jq(prop).val(icon);			
 		if(callback) callback(icon);
+		if(Utils.stringDefined(icon)) {
+		    Utils.copyToClipboard(icon);
+		    console.log('icon:' + icon +' copied to clipboard');
+		}
 	    }
 
 	    if(used.length>0) {
@@ -2876,9 +2891,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		});
 		html+="</div>";
 		html = HU.div(['style',HU.css('width','400px','max-height','200px','overflow-y','auto')], html);
-		html = HU.input("","",['id',prefix+'_search','placeholder','Search','size','30']) +"<br>"+
+		html = HU.input("","",['id',prefix+'_search','placeholder','Search','size','30']) +' ' +
+		    HU.span(['class','ramadda-clickable ramadda-imdv-image-delete'],'Clear')+
+		    '<br>'+
 		    html;
 		icons.html(html);
+		icons.find('.ramadda-imdv-image-delete').button().click(()=>{
+		    apply('');
+		});
 		let images = icons.find('.ramadda-imdv-image');
 		images.click(function() {
 		    apply($(this).attr('src'));
@@ -4309,7 +4329,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 	    });
 	},
-	handleDroppedGlyph:function(draggedGlyph,droppedOnGlyph,target) {
+	handleDroppedGlyph:function(draggedGlyph,targetGlyph,target) {
 	    let debug = false;
 	    if(this.handleDropTimeout) {
 		if(debug)	    console.log('clearing pending drop');
@@ -4319,22 +4339,22 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.handleDropTimeout = null;
 		this.removeMapGlyph(draggedGlyph);
 		draggedGlyph.setParentGlyph(null);
-		if(droppedOnGlyph) {
-		    if(debug)	    console.log('handleDrop: ' + droppedOnGlyph.getName());
-		    if(droppedOnGlyph.isGroup()) {
-			if(debug)		console.log('landed on group');
-			droppedOnGlyph.addChildGlyph(draggedGlyph);
+		if(targetGlyph) {
+		    if(debug)	    console.log('handleDrop: target:' + targetGlyph.getName());
+		    if(targetGlyph.isGroup()) {
+			if(debug)		console.log('landed on group',targetGlyph.getName());
+			targetGlyph.addChildGlyph(draggedGlyph);
 			draggedGlyph.changeOrder(false);
 		    } else {
-			if(droppedOnGlyph.getParentGlyph() && droppedOnGlyph.getParentGlyph().isGroup()) {
+			if(targetGlyph.getParentGlyph() && targetGlyph.getParentGlyph().isGroup()) {
 			    if(debug) console.log('landed on glyph in a group');
-			    droppedOnGlyph.getParentGlyph().addChildGlyph(draggedGlyph);
-			    this.moveGlyphBefore(droppedOnGlyph, 
+			    targetGlyph.getParentGlyph().addChildGlyph(draggedGlyph);
+			    this.moveGlyphBefore(targetGlyph, 
 						 draggedGlyph,
-						 droppedOnGlyph.getParentGlyph().getChildren());
+						 targetGlyph.getParentGlyph().getChildren());
 			} else {
-			    if(debug) console.log('moving before:' + droppedOnGlyph.getName());
-			    this.moveGlyphBefore(droppedOnGlyph, draggedGlyph);
+			    if(debug) console.log('moving before:' + targetGlyph.getName());
+			    this.moveGlyphBefore(targetGlyph, draggedGlyph);
 			}
 		    }
 		} else if(target) {
