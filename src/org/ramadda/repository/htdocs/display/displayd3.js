@@ -131,6 +131,14 @@ const D3Util = {
 //	    console.log("adding rule:" + rule);
             marks.push(Plot.ruleY([parseFloat(rule)]));
 	});
+	marks.push(Plot.axisX({anchor: "top",interval:100}));
+	marks.push(Plot.gridX({interval: 1000, stroke: "red", strokeOpacity: 0.5}));
+/*	opts.x = {grid: display.getProperty('xAxisGrid',false),
+		  axis: display.getProperty('xAxisPosition','bottom'),
+		  interval:20};
+		  */
+
+
     },
     createMarks:function(display, fields, records,args) {
 	let marks = [];
