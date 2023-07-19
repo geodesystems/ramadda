@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Jul 18 13:02:51 MDT 2023";
+var build_date="RAMADDA build date: Wed Jul 19 08:30:23 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -27147,6 +27147,14 @@ const D3Util = {
 //	    console.log("adding rule:" + rule);
             marks.push(Plot.ruleY([parseFloat(rule)]));
 	});
+	marks.push(Plot.axisX({anchor: "top",interval:100}));
+	marks.push(Plot.gridX({interval: 1000, stroke: "red", strokeOpacity: 0.5}));
+/*	opts.x = {grid: display.getProperty('xAxisGrid',false),
+		  axis: display.getProperty('xAxisPosition','bottom'),
+		  interval:20};
+		  */
+
+
     },
     createMarks:function(display, fields, records,args) {
 	let marks = [];
@@ -41108,6 +41116,8 @@ let ImdvUtils = {
 	}
 	let geom = feature?.geometry?.CLASS_NAME;
 	if(geom=='OpenLayers.Geometry.Point' && Utils.stringDefined(feature.style.externalGraphic)) {
+	    feature.style= style;
+	    //not sure why we have this here but  for now just set the style on the feature
 	    for(a in style) {
 		//TODO:
 	    }
@@ -41133,6 +41143,7 @@ let ImdvUtils = {
 	}
 	layer.redrawPending = true;
 	setTimeout(()=>{
+//	    console.log('redrawing layer:',layer.name);
 	    layer.redraw();
 	    layer.redrawPending = false;
 	},1)
@@ -41759,12 +41770,17 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    style = Utils.clone({},style?? (feature?.style) ?? {});
 	    mapOptions = Utils.clone({},mapOptions??feature?.mapOptions ?? style?.mapOptions);
 	    delete style.mapOptions;
-	    if(feature && feature.style && feature.style.mapOptions)
+	    if(feature?.style?.mapOptions)
 		delete feature.style.mapOptions;
 	    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, feature,style);
 	    this.addGlyph(mapGlyph);
 	    mapGlyph.glyphCreated();
 	    this.clearMessage2(1000);
+	    if(mapGlyph.isMap()) {
+		setTimeout(()=>{
+		    mapGlyph.panMapTo();
+		},100);
+	    }
 	    return mapGlyph;
 	},
 	handleGlyphsChanged: function (){
@@ -43332,6 +43348,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    style.cursor = 'pointer';
 		}
 
+
+
 		if(mapGlyph.isData()) {
 		    let displayAttrs = this.parseDisplayAttrs(this.jq('displayattrs').val());
 		    mapGlyph.applyDisplayAttrs(displayAttrs);
@@ -43351,11 +43369,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    mapGlyph.checkImage();
 		}
 
+
 		mapGlyph.applyStyle(style);
 		mapGlyph.makeLegend();
 		mapGlyph.initLegend();
 		this.showMapLegend();
-		this.redraw(mapGlyph);
+		mapGlyph.redraw();
 	    };
 	},
 	doEdit: function(mapGlyph) {
@@ -43889,6 +43908,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.jq(prop+'_image').attr('src',icon);
 		this.jq(prop).val(icon);			
 		if(callback) callback(icon);
+		if(Utils.stringDefined(icon)) {
+		    Utils.copyToClipboard(icon);
+		    console.log('icon:' + icon +' copied to clipboard');
+		}
 	    }
 
 	    if(used.length>0) {
@@ -43917,9 +43940,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		});
 		html+="</div>";
 		html = HU.div(['style',HU.css('width','400px','max-height','200px','overflow-y','auto')], html);
-		html = HU.input("","",['id',prefix+'_search','placeholder','Search','size','30']) +"<br>"+
+		html = HU.input("","",['id',prefix+'_search','placeholder','Search','size','30']) +' ' +
+		    HU.span(['class','ramadda-clickable ramadda-imdv-image-delete'],'Clear')+
+		    '<br>'+
 		    html;
 		icons.html(html);
+		icons.find('.ramadda-imdv-image-delete').button().click(()=>{
+		    apply('');
+		});
 		let images = icons.find('.ramadda-imdv-image');
 		images.click(function() {
 		    apply($(this).attr('src'));
@@ -45350,7 +45378,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 	    });
 	},
-	handleDroppedGlyph:function(draggedGlyph,droppedOnGlyph,target) {
+	handleDroppedGlyph:function(draggedGlyph,targetGlyph,target) {
 	    let debug = false;
 	    if(this.handleDropTimeout) {
 		if(debug)	    console.log('clearing pending drop');
@@ -45360,22 +45388,22 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.handleDropTimeout = null;
 		this.removeMapGlyph(draggedGlyph);
 		draggedGlyph.setParentGlyph(null);
-		if(droppedOnGlyph) {
-		    if(debug)	    console.log('handleDrop: ' + droppedOnGlyph.getName());
-		    if(droppedOnGlyph.isGroup()) {
-			if(debug)		console.log('landed on group');
-			droppedOnGlyph.addChildGlyph(draggedGlyph);
+		if(targetGlyph) {
+		    if(debug)	    console.log('handleDrop: target:' + targetGlyph.getName());
+		    if(targetGlyph.isGroup()) {
+			if(debug)		console.log('landed on group',targetGlyph.getName());
+			targetGlyph.addChildGlyph(draggedGlyph);
 			draggedGlyph.changeOrder(false);
 		    } else {
-			if(droppedOnGlyph.getParentGlyph() && droppedOnGlyph.getParentGlyph().isGroup()) {
+			if(targetGlyph.getParentGlyph() && targetGlyph.getParentGlyph().isGroup()) {
 			    if(debug) console.log('landed on glyph in a group');
-			    droppedOnGlyph.getParentGlyph().addChildGlyph(draggedGlyph);
-			    this.moveGlyphBefore(droppedOnGlyph, 
+			    targetGlyph.getParentGlyph().addChildGlyph(draggedGlyph);
+			    this.moveGlyphBefore(targetGlyph, 
 						 draggedGlyph,
-						 droppedOnGlyph.getParentGlyph().getChildren());
+						 targetGlyph.getParentGlyph().getChildren());
 			} else {
-			    if(debug) console.log('moving before:' + droppedOnGlyph.getName());
-			    this.moveGlyphBefore(droppedOnGlyph, draggedGlyph);
+			    if(debug) console.log('moving before:' + targetGlyph.getName());
+			    this.moveGlyphBefore(targetGlyph, draggedGlyph);
 			}
 		    }
 		} else if(target) {
@@ -47604,6 +47632,13 @@ MapGlyph.prototype = {
     getFeatures: function() {
 	return this.features;
     },
+    redraw:function() {
+	if(this.getMapLayer()) {
+	    ImdvUtils.scheduleRedraw(this.getMapLayer(),this);
+	} else {
+	    this.display.redraw(this);
+	}
+    },
     checkLineType:function(points) {
 	if(this.attrs.lineType==LINETYPE_GREATCIRCLE || this.attrs.lineType==LINETYPE_CURVE) {
 	    if(!MapUtils.loadTurf(()=>{
@@ -47792,8 +47827,9 @@ MapGlyph.prototype = {
 	    bounds = MapUtils.createBounds(b[0],b[1],b[2],b[3]);
 	    bounds = this.getMap().transformLLBounds(bounds);
 	}
-	if(!bounds)
+	if(!bounds) {
 	    bounds = this.getBounds();
+	}
 	if(bounds) {
 	    this.display.getMap().zoomToExtent(bounds);
 	}
@@ -47978,7 +48014,7 @@ MapGlyph.prototype = {
 	}
 
 	if(forLegend) {
-	    label = HU.div(['title',theLabel+'<br>Click to toggle visibility<br>Shift-click to select','style',HU.css('xmax-width','150px','overflow-x','hidden','white-space','nowrap')], label);	    
+	    label = HU.div(['title',theLabel+'<br>Click to toggle visibility<br>Shift-click to select','style',HU.css('overflow-x','hidden','white-space','nowrap')], label);	    
 	}
 	if(right!='') {
 	    right= HU.span(['style',HU.css('white-space','nowrap')], right);
@@ -47997,7 +48033,6 @@ MapGlyph.prototype = {
 	if(jsonObject.children) {
 	    jsonObject.children.forEach(childJson=>{
 		let child = this.display.makeGlyphFromJson(childJson);
-		console.log("loadJson child=" + child.getName());
 		if(child) {
 		    this.addChildGlyph(child);
 		}
@@ -48253,6 +48288,7 @@ MapGlyph.prototype = {
 	if((mapStyleRules=this.getMapStyleRules(true)).length>0) {
 	    let rulesLegend = '';
 	    let lastProperty='';
+	    let ruleCnt = 0;
 	    mapStyleRules.forEach(rule=>{
 		if(rule.type=='use') return;
 		if(!Utils.stringDefined(rule.property)) return;
@@ -48282,17 +48318,25 @@ MapGlyph.prototype = {
 		    styleObj[toks[0]] = toks[1];
 		});
 
+		//not now:		if(Utils.stringDefined(styleObj.externalGraphic??this.style.externalGraphic)) return;
+		ruleCnt++;
+
 		let style = boxStyle +this.getLegendStyle(styleObj);
-		let div=HU.div(['class','circles-1','style',style],'');
+		let legendContents = Utils.stringDefined(styleObj.externalGraphic??this.style.externalGraphic)?
+		    HU.image(styleObj.externalGraphic??this.style.externalGraphic,['width','14px']):null;
+		let div=legendContents??HU.div(['class','circles-1','style',style]);
 		item+=div+'</td>';
 		item += '</td><td>'+ label+'</td></tr>';
 		rulesLegend+=HU.div([],item);
 	    });
-	    if(rulesLegend!='') {
+	    if(!ruleCnt) rulesLegend=null;
+	    if(Utils.stringDefined(rulesLegend)) {
 		rulesLegend+= '</table>';
 		legend+=rulesLegend;
 	    }
 	}
+
+
 	if(legend!='') {
 	    if(showInMapLegend)
 		inMapLegend+=legend;
@@ -48454,9 +48498,8 @@ MapGlyph.prototype = {
 	    if(!this.isGroup() && !this.getParentGlyph().isGroup()) {
 		return false;
 	    }
-	} else {
-	    return true;
-	}
+	} 
+	return true;
     },
 
     canDrag: function() {
@@ -48516,7 +48559,7 @@ MapGlyph.prototype = {
 	    }
 	    if(this.canDrop()) {
 		this.display.makeLegendDroppable(this,label,notify);
-	    }
+	    } 
 	    let items = this.jq(ID_LEGEND).find('.imdv-legend-label');
 	    let rows = jqid('glyphstyle_'+this.getId()).find('.' + CLASS_IMDV_STYLEGROUP);
 
@@ -50260,7 +50303,7 @@ MapGlyph.prototype = {
 
     applyMapStyle:function(skipLegendUI) {
 	let debug = false;
-	//	debug=true;
+//	debug=true;
 	if(debug)   console.log("applyMapStyle:" + this.getName());
     	this.applyChildren(child=>{child.applyMapStyle(skipLegendUI);});
 	let _this = this;
@@ -50344,7 +50387,7 @@ MapGlyph.prototype = {
 	let strokeProperty = this.getProperty('map.property.strokeColor');
 	let labelProperty = this.getProperty('map.property.label');	
 
-	if(debug)   console.dir(style);
+//	if(debug)   console.dir(style);
 	this.mapLayer.style = style;
 	if(features) {
 	    features.forEach((f,idx)=>{
@@ -50380,14 +50423,13 @@ MapGlyph.prototype = {
 		    }
 
 		}
-//		if(debug)   console.dir("\tfeature style:",featureStyle);
+		if(debug && idx<3)   console.dir("\tfeature style:",featureStyle);
 		ImdvUtils.applyFeatureStyle(f, featureStyle);
 		f.originalStyle = Utils.clone(style);			    
 	    });
 	}
 
 
-	if(debug) console.log("\tfeatures:" + features?.length);
 	//Check for any rule based styles
 	let attrs = features.length>0?features[0].attributes:{};
 	let keys  = Object.keys(attrs);
@@ -50401,14 +50443,19 @@ MapGlyph.prototype = {
 		return true;
 	    });
 	    if(debug) console.dir("\tadding styleMap unique rules",uniqueRules);
+	    olDebug = true;
 	    this.mapLayer.styleMap = this.display.getMap().getVectorLayerStyleMap(this.mapLayer, style,uniqueRules);
 	    features.forEach((f,idx)=>{
-		f.style = null;
+		f.fidx=idx;
+		f.style=null;
 	    });
 	} 
 
-	let applyColors = (obj,attr,strings)=>{
+	let applyColors = (obj,attr,stringList,debug)=>{
 	    if(!obj || !Utils.stringDefined(obj?.property))  return;
+	    if(debug)
+		console.log('applyColors',attr);
+	    let strings  =[]
 	    let prop =obj.property;
 	    let min =Number.MAX_VALUE;
 	    let max =Number.MIN_VALUE;
@@ -50441,7 +50488,12 @@ MapGlyph.prototype = {
 		return a.localeCompare(b);
 	    });
 
+	    //If there was no numbers then we pass back the strings
+	    if(!anyNumber) {
+		stringList.push(...strings);
+	    }
 	    let range = max-min;
+	    if(debug) console.log('applyColors min:' + min +' max:' + max);
 	    features.forEach((f,idx)=>{
 		let value = this.getFeatureValue(f,prop);
 		if(!Utils.isDefined(value)) {
@@ -50455,16 +50507,20 @@ MapGlyph.prototype = {
 		    let percent = (value-min)/range;
 		    index = Math.max(0,Math.min(ct.length-1,Math.round(percent*ct.length)));
 		}
+
 		if(!f.style)
 		    f.style = $.extend({},style);
 		f.style[attr]=ct[index];
+		if(debug && idx<3) {
+		    console.log('\t'+attr+'='+f.style[attr]);
+//		    console.dir(f.style);
+		}
 	    });
 	};
 
 
 	this.fillStrings = [];
 	this.strokeStrings = [];		
-	
 	applyColors(this.attrs.fillColorBy,'fillColor',this.fillStrings);
 	applyColors(this.attrs.strokeColorBy,'strokeColor',this.strokeStrings);	
 
