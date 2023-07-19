@@ -2196,7 +2196,7 @@ RepositoryMap.prototype = {
 
     getVectorLayerStyleMap: function(layer, args,ruleString) {
 	//	ruleString = 'OWN_TYPE_NAME:~:.*Conservation.*:fillColor:red:strokeColor:black;OWN_TYPE_NAME:~:Joint:fillColor:blue';
-        var props = {
+        let props = {
             pointRadius: this.params.pointRadius,
             fillOpacity: this.params.fillOpacity,
             fillColor: this.params.fillColor,
@@ -2208,25 +2208,27 @@ RepositoryMap.prototype = {
             select_strokeColor: "#666",
             select_strokeWidth: 1
         };
-	if (args) RamaddaUtil.inherit(props, args);
+	if (args) $.extend(props, args);
 
-        var temporaryStyle = $.extend({}, MapUtils.getVectorStyle("temporary"));
-        $.extend(temporaryStyle, {
+        let temporaryStyle = $.extend({}, MapUtils.getVectorStyle("temporary"));
+        $.extend(temporaryStyle, props);
+/*        $.extend(temporaryStyle, {
             pointRadius: props.pointRadius,
             fillOpacity: props.fillOpacity,
             strokeWidth: props.strokeWidth,
             strokeColor: props.strokeColor,
-        });
-        var selectStyle = $.extend({}, MapUtils.getVectorStyle("select"));
+        });*/
+        let selectStyle = $.extend({}, MapUtils.getVectorStyle("select"));
         $.extend(selectStyle, {
             pointRadius: 3,
             fillOpacity: props.select_fillOpacity,
             fillColor: props.select_fillColor,
             strokeColor: props.select_strokeColor,
-            strokeWidth: props.select_strokeWidth
+            strokeWidth: props.select_strokeWidth,
+	    externalGraphic:props.externalGraphic	    
         });
 
-        var defaultStyle = $.extend({}, MapUtils.getVectorStyle("default"));
+        let defaultStyle = $.extend({}, MapUtils.getVectorStyle("default"));
         $.extend(defaultStyle, {
             pointRadius: props.pointRadius,
             fillOpacity: props.fillOpacity,
@@ -2234,7 +2236,8 @@ RepositoryMap.prototype = {
 	    fillPattern: props.fillPattern,
             fill: props.fill,
             strokeColor: props.strokeColor,
-            strokeWidth: props.strokeWidth
+            strokeWidth: props.strokeWidth,
+	    externalGraphic:props.externalGraphic
         });
 
 
@@ -2304,13 +2307,19 @@ RepositoryMap.prototype = {
 		} else {
 		    props.value= numeric?+rule.value:rule.value;
 		}		    
-		var rule = new OpenLayers.Rule({
+		let olRule = new OpenLayers.Rule({
 		    filter: new OpenLayers.Filter.Comparison(props),
 		    symbolizer: tmp
 		});
-		mapRules.push(rule);
-		mapRules.push(new OpenLayers.Rule({elseFilter: true}));
+		mapRules.push(olRule);
 	    });
+	    mapRules.push(new OpenLayers.Rule({elseFilter: true,symbolizer:args}));
+	    let finalRule = new OpenLayers.Rule({
+		filter: new OpenLayers.Filter.Comparison(),
+		symbolizer: args
+	    });
+//	    mapRules.push(finalRule);
+
 	    map.styles.default.addRules(mapRules);
 	}
         return map;
