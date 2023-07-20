@@ -198,9 +198,15 @@ mapVar="gpxMap${entryid}" }}
 </type>
 
 
-  <type name="geo_geojson"  mimetype="application/json" description="GeoJson File"   handler="org.ramadda.plugins.map.GeoJsonTypeHandler" pattern="(.*\.geojson$)" metadata="map_style">
+  <type name="geo_geojson"  super="type_point" mimetype="application/json" description="GeoJson File"   handler="org.ramadda.plugins.map.GeoJsonTypeHandler" pattern="(.*\.geojson$)" metadata="map_style">
     <property name="icon" value="/icons/mapfile.png"/>
-     <property name="mimetype" value="application/geo+json"/>    
+    <property name="mimetype" value="application/geo+json"/>    
+    <property name="record.properties">
+      <![CDATA[
+	       firstLineDefinesFields=true
+      ]]>
+    </property>
+
 
 <wiki>
 <![CDATA[

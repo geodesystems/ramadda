@@ -8,6 +8,12 @@ package org.ramadda.plugins.map;
 
 import org.json.*;
 
+import org.ramadda.data.point.text.*;
+import org.ramadda.data.record.*;
+
+import org.ramadda.data.services.PointTypeHandler;
+import org.ramadda.data.services.RecordTypeHandler;
+
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
@@ -17,6 +23,7 @@ import org.ramadda.repository.output.KmlOutputHandler;
 import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.type.GenericTypeHandler;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.util.geo.Bounds;
@@ -31,7 +38,7 @@ import ucar.unidata.util.IOUtil;
 import java.awt.geom.Rectangle2D;
 
 
-import java.io.File;
+import java.io.*;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -40,7 +47,8 @@ import java.util.List;
 
 /**
  */
-public class GeoJsonTypeHandler extends GenericTypeHandler implements WikiConstants {
+public class GeoJsonTypeHandler extends PointTypeHandler
+    implements WikiConstants {
 
     /**
      * _more_
@@ -158,6 +166,78 @@ public class GeoJsonTypeHandler extends GenericTypeHandler implements WikiConsta
     }
 
 
+
+    @Override
+    public RecordFile doMakeRecordFile(Request request, Entry entry,
+                                       Hashtable properties,
+                                       Hashtable requestProperties)
+            throws Exception {
+        return new GeoJsonRecordFile(request, getRepository(), this, entry,new IO.Path(getPathForEntry(request, entry,true)));
+    }
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Sat, Dec 8, '18
+     * @author         Enter your name here...
+     */
+    public static class GeoJsonRecordFile extends CsvFile {
+
+        /** _more_ */
+        private Repository repository;
+
+        /** _more_ */
+        private String dataUrl;
+
+        /** _more_ */
+        private Entry entry;
+
+	GeoJsonTypeHandler typeHandler;
+
+        /**
+         * _more_
+         *
+         *
+         * @param repository _more_
+         * @param ctx _more_
+         * @param entry _more_
+         *
+         * @throws IOException _more_
+         */
+        public GeoJsonRecordFile(Request request, Repository repository, GeoJsonTypeHandler ctx, Entry entry,IO.Path path)
+                throws IOException {
+            super(path, ctx, null);
+	    typeHandler = ctx;
+            this.repository = repository;
+            this.entry      = entry;
+        }
+
+
+        /**
+         * @param buffered _more_
+         *
+         * @return _more_
+         *
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public InputStream doMakeInputStream(boolean buffered)
+                throws Exception {
+	    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+	    PrintStream           pw  = new PrintStream(bos);
+	    InputStream source = super.doMakeInputStream(buffered);
+	    GeoJson.geojsonToCsv(source, pw, (String) null,false);
+	    pw.close();
+	    InputStream is = new BufferedInputStream(new  ByteArrayInputStream(bos.toByteArray()));
+	    source.close();
+	    bos.close();
+	    return is;
+        }
+
+
+    }
 
 
 }
