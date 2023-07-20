@@ -3999,6 +3999,8 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 
 function RamaddaDatatableDisplay(displayManager, id, properties) {
     const SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_DATATABLE, properties);
+    const ID_COLORTABLE = 'datatable_colortable'
+    const ID_PIECOLORS = 'datatable_piecolors'    
     let myProps = [
 	{label:'Data Table'},
 	{p:'columnSelector',ex:'date_day|date_hour|date_dow|date_month|date_year'},
@@ -4011,7 +4013,8 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 	{p:'showColumnSelector',ex:'false'},
 	{p:'showRowSelector',ex:'false'},
 	{p:'showValues',ex:'false'},
-	{p:'showColors',ex:'false'},
+	{p:'showColors',ex:'true',d:false},
+	{p:'showPieColors',ex:'true',d:false},	
 	{p:'showRowTotals',ex:'false'},
 	{p:'showColumnTotals',ex:'false'},
 	{p:'slantHeader',ex:'true'}
@@ -4028,7 +4031,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
                 return;
 	    }  
 	    let colors = this.getColorTable(true);
-	    if (!colors) colors = Utils.getColorTable("blues",true);
+	    if (!colors) colors = Utils.ColorTables.cats.colors;
 	    let checkers = this.getTheDataFilters(this.getProperty("dataCheckers"));
 	    let cells = {};
 	    let countFields= this.getFieldsByIds(null, this.getProperty("countFields"));
@@ -4132,6 +4135,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 		return "null";
 	    });
 
+	    let uniqueValues = {};
 	    records.map((r,i)=>{
 		let row =getId(rowSelector,r,rows);
 		let column =getId(columnSelector,r,columns);
@@ -4167,6 +4171,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 		    let cf = cell.countFields[f.getId()];
 		    if(!cf.counts[v]) {
 			cf.counts[v] = 0;
+			uniqueValues[v] = true;
 			cf.values.push(v);
 		    }
 		    cf.counts[v]++;
@@ -4197,7 +4202,8 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 
 
 	    let showValues = this.getProperty("showValues", true);
-	    let showColors = this.getProperty("showColors", true);
+	    let showColors = this.getShowColors();
+	    let showPieColors = this.getShowPieColors();
 	    let cellCount = columns.length;
 	    let maxRowValue = 0;
 	    let maxColumnValue = 0;
@@ -4304,7 +4310,12 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 	    }
 	    table+=HU.close(TR);
 	    table+=HU.open(TR,[],HU.td());
-	    table+=HU.td(['colspan',cellCount,CLASS,'display-datatable-footer','align','center',ID,this.domId("ct")]);
+	    table+=HU.td(['colspan',cellCount,CLASS,'display-datatable-footer','align','center',ID,this.domId(ID_COLORTABLE)]);
+	    table+=HU.close(TD);
+	    table+=HU.open(TR,[],HU.td());
+	    table+=HU.td(['colspan',cellCount,CLASS,'display-datatable-footer','align','center',ID,this.domId(ID_PIECOLORS)]);
+	    
+
 	    table+=HU.close(TR,TABLE);
 
 	    if(topSpace>0) {
@@ -4344,20 +4355,31 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 	    });
 
 	    let pieWidth=this.getProperty("pieWidth", 30);
+
+	    let colorMap = {};
+	    Object.keys(uniqueValues).forEach((key,idx)=>{
+		colorMap[key] = colors[idx%colors.length];
+	    });
+
+
+
+	    let xcnt = 0;
 	    this.find(".display-datatable-counts").each(function() {
+//		xcnt++;	if(xcnt<3|| xcnt>3) return;
 		let key = $(this).attr("data-key");	
 		let cell = cells[key];
-		countFields.forEach(f=>{
-		    let html = _this.getFieldLabel(f)+HU.tag(BR);
+		countFields.forEach((f,idx)=>{
+		    let html = HU.center(HU.b(_this.getFieldLabel(f)));
 		    let cf = cell.countFields[f.getId()];
 		    let data=[];
 		    cf.values.forEach(v=>{
 			data.push([v,cf.counts[v]]);
-			html+= v +":" + cf.counts[v]+SPACE + HU.tag(BR);
+			html+= v +":" + cf.counts[v]+SPACE + '<br>';
 		    });
 		    let id = _this.domId(cell.row+"-"+cell.column+"-" + f.getId());
 		    $(this).append(HU.div([CLASS,"display-datatable-piechart",ID,id,TITLE,"", STYLE,HU.css(WIDTH, pieWidth+'px',HEIGHT, pieWidth+'px')]));
-		    drawPieChart(_this, "#"+id,pieWidth,pieWidth,data);
+		    //drawPieChart(display, dom,width,height,array,min,max,colorBy,attrs) {
+		    drawPieChart(_this, "#"+id,pieWidth,pieWidth,data,null,null,null,{colorMap:colorMap});
 		    $("#" + id).tooltip({
 			content: function() {
 			    return html;
@@ -4388,8 +4410,16 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 		},
 	    });
 	    if(showColors) {
-		this.displayColorTable(colors, "ct", min,max,{});
+		this.displayColorTable(colors, ID_COLORTABLE, min,max,{});
 	    }
+	    if(showPieColors) {
+		let stringValues = Object.keys(colorMap).map(key=>{
+		    return {value:key,color:colorMap[key]};
+		});
+		this.jq(ID_PIECOLORS).html('pie colors');
+		this.displayColorTable(colors, ID_PIECOLORS, min,max,{stringValues:stringValues});
+	    }
+
 	},
     })
 }
