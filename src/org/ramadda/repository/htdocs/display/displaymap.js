@@ -2067,10 +2067,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             this.selectedMarker = marker;
         },
         applyVectorMap: function(force, textGetter, args) {
-
-
-	    
-
 	    let debug = false;
             if (!force && this.vectorMapApplied) {
                 return;
@@ -2335,19 +2331,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		feature.newStyle = null;
 	    });
 
-	    return
 	    
-
-
-//	    console.log("redraw:" + redrawCnt);
-
+	    /** TODO?
             if (!args.dontSetBounds && maxExtent && !this.hadInitialPosition && this.getCenterOnFilterChange(true)) {
-//		console.log("max:" + this.map.transformProjBounds(maxExtent));
 		this.map.zoomToExtent(maxExtent, true);
 	    }
 	    if(!this.getProperty("fixedPosition",false))  {
 		this.hadInitialPosition    = false;
-	    }
+		}
+		*/
 
 
         },
@@ -3527,6 +3519,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let vpoints = [];
 //	    console.time('x');
 	    let yes= 0, no=0;
+
 
 	    points.forEach((p,idx)=>{
 		let record = records[idx];
