@@ -120,6 +120,20 @@ const D3Util = {
 		 opts[prop[1]] = display.getProperty(prop[0]);
 	     }
 	});
+
+
+	/*
+	opts.x = {x:{
+	    round: true, nice: d3.utcYear,type:'band',ticks:10,
+	    axis: display.getProperty('xAxisPosition','bottom')
+	    }};
+	    */
+/*
+	opts.x = {grid: display.getProperty('xAxisGrid',false),
+		  ticks:10};
+		  */
+
+
 	return opts;
     },
     initMarks:function(display, marks) {
@@ -131,15 +145,12 @@ const D3Util = {
 //	    console.log("adding rule:" + rule);
             marks.push(Plot.ruleY([parseFloat(rule)]));
 	});
-	marks.push(Plot.axisX({anchor: "top",interval:100}));
-	marks.push(Plot.gridX({interval: 1000, stroke: "red", strokeOpacity: 0.5}));
-/*	opts.x = {grid: display.getProperty('xAxisGrid',false),
-		  axis: display.getProperty('xAxisPosition','bottom'),
-		  interval:20};
-		  */
 
-
+	marks.push(Plot.axisX({ticks: d3.utcYear.every(50), tickFormat: "%Y"}));
+//	marks.push(Plot.axisX({anchor: "top",tickSpacing:200,xticks:10}));
+//	marks.push(Plot.gridX({ticks:5, stroke: "#efefef", strokeOpacity: 0.5}));
     },
+
     createMarks:function(display, fields, records,args) {
 	let marks = [];
 	args = args??{};
@@ -194,6 +205,7 @@ const D3Util = {
 	records.forEach((record,idx)=>{
 	    let obj = {};
 	    if(opts.includeDate)
+//		obj.Date = Utils.formatDateYYYYMMDD(record.getDate());
 		obj.Date = record.getDate();
 	    fields.forEach(field=>{
 		obj[field.getId()] = field.getValue(record);  
@@ -310,7 +322,8 @@ function RamaddaD3plotDisplay(displayManager, id, properties) {
 	    if(!records) return;
             let fields = this.getSelectedFields([]);
 	    let marks = D3Util.createMarks(this,fields,records,{includeDate:true});    
-	    let plot = Plot.plot(D3Util.initPlot(this,{marks:marks}));
+	    let opts=D3Util.initPlot(this,{marks:marks});
+	    let plot = Plot.plot(opts);
 	    this.getContents().html(plot);
 	}
     });
