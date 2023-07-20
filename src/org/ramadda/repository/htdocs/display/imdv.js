@@ -4889,16 +4889,18 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let pos = _this.mapProperties.mapLegendPosition = {};
 		    pos.left = inner.css('left');		    
 		    pos.top = inner.css('top');
+
 		    return
+		    /* TODO?
 		    let set = (which,v) =>{
 			v =  Math.max(0,(parseInt(v)))+'px';
 			pos[which] =v;
-			//			inner.css(pos,v);
 		    }
 		    if(top<ph-bottom) set('top',top);
 		    else set('bottom',(ph-bottom));
 		    if(left<pw-right) set('left',left);
 		    else set('right',pw-right);
+		    */
 		}
 	    });
 	},
