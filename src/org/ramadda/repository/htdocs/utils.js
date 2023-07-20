@@ -511,6 +511,12 @@ var Utils =  {
         return list;
     },
 
+    //Make a list of {key:'key',value:'value'} from the given map
+    makeKeyValueList:function(map) {
+	return Object.keys(map).map(key=>{
+	    return {key:key,value:map[key]};
+	});
+    },
     mergeLists: function(l1,l2,l3,l4,l5) {
         let l = [];
         if(l1) l1.map(e=>l.push(e));
