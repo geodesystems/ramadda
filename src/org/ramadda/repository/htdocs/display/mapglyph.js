@@ -1054,7 +1054,7 @@ MapGlyph.prototype = {
     },
     getFilterable: function() {
 	return false;
-	return this.attrs.filterable??true;
+//	return this.attrs.filterable??true;
     },
     getAllFeatures: function() {
 	let features=[];
