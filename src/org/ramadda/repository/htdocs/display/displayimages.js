@@ -469,13 +469,14 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		    return false;
 		}
 
-
 		return true;
+		/*** TODO?
 		let image = record.getValue(imageField.getIndex());
 		if(!Utils.stringDefined(image) && !includeBlanks) {
 		    return false;
 		}
 		return true;
+		*/
 	    }});
             if(!records) return;
 
