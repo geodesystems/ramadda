@@ -488,8 +488,8 @@ D3Skewt.prototype = {
 		skewt.options.mouseDownListener(skewt.d.record);
 	}
 
-	function mousemove() {
-	    var y0 = skewt.y.invert(d3.mouse(this)[1]); // get y value of mouse pointer in pressure space
+	function mousemove(e) {
+	    var y0 = skewt.y.invert(e.offsetY);
 	    var i = skewt.bisectTemp(skewt.mouseoverdata, y0, 1, skewt.mouseoverdata.length - 1);
 	    var d0 = skewt.mouseoverdata[i - 1];
 	    var d1 = skewt.mouseoverdata[i];
