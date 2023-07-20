@@ -490,6 +490,7 @@ public class PageHandler extends RepositoryManager {
 		for(String js: new String[]{"/colortables.js",
 					    //"/esdlcolortables.js",
 					    "/display/pointdata.js", 
+					    "/display/filters.js", 
 					    "/display/widgets.js",
 					    "/display/animation.js",					    
 					    "/display/colorby.js",
