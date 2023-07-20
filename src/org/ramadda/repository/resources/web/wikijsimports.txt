@@ -1,8 +1,12 @@
-#cdn:https://cdnjs.cloudflare.com/ajax/libs/d3/5.15.0/d3.min.js:integrity:sha512-PLXQkW9K9twsr6kg2YomYaGdxSAEWSlr25vmbfxXxnYtDop+CPzidL8IDsQZMNPYF2UgLSLVyUxyAjwyTcMVtQ==
-#nocdn:/lib/d3/d3.min.js
+cdn:https://cdnjs.cloudflare.com/ajax/libs/d3/5.15.0/d3.min.js:integrity:sha512-PLXQkW9K9twsr6kg2YomYaGdxSAEWSlr25vmbfxXxnYtDop+CPzidL8IDsQZMNPYF2UgLSLVyUxyAjwyTcMVtQ==
+nocdn:/lib/d3/d3.min.js
 
-cdn:https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js
-nocdn:/lib/d3/7.8.5/d3.min.js
+#/lib/d3/d3.js
+#cdn:https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js
+#nocdn:/lib/d3/7.8.5/d3.min.js
+
+#cdn:https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.js
+#nocdn:/lib/d3/7.8.5/d3.js
 
 
 
