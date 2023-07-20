@@ -459,6 +459,14 @@ function drawPieChart(display, dom,width,height,array,min,max,colorBy,attrs) {
     if(!attrs) attrs = {};
     let margin = Utils.isDefined(attrs.margin)?attrs.margin:4;
     let colors = attrs.pieColors||Utils.ColorTables.cats.colors;
+    let colorMap = attrs.colorMap;
+    if(!colorMap) {
+	colorMap  = {};
+	array.forEach((tuple,idx)=>{
+	    let key = tuple[0];
+	    colorMap[key] = colors[idx%colors.length];
+	})
+    }
 
     let radius = Math.min(width, height) / 2 - margin
     let svg = d3.select(dom)
@@ -472,15 +480,10 @@ function drawPieChart(display, dom,width,height,array,min,max,colorBy,attrs) {
 	data[tuple[0]] = tuple[1];
     })
 
-    // set the color scale
-    let color = d3.scaleOrdinal()
-	.domain(data)
-	.range(colors)
 
     // Compute the position of each group on the pie:
-    let pie = d3.pie()
-	.value(function(d) {return d.value; })
-    let data_ready = pie(d3.entries(data))
+    let pie = d3.pie().value(function(d) {return d.value; })
+    let data_ready = pie(Utils.makeKeyValueList(data));
 
     // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
     svg
@@ -492,7 +495,9 @@ function drawPieChart(display, dom,width,height,array,min,max,colorBy,attrs) {
 	      .innerRadius(0)
 	      .outerRadius(radius)
 	     )
-	.attr('fill', function(d){ return(color(d.data.key)) })
+	.attr('fill', function(d){
+	    return colorMap[d.data.key];
+	})
 	.attr("stroke", "black")
 	.style("stroke-width", "1px")
 	.style("opacity", 0.7)
