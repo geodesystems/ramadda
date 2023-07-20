@@ -889,6 +889,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'doTrianglemap',ex:'true',tt:'Create a triangle map'},		
 	{p:'doSquaremap',ex:'true',tt:'Create a square map'},		
 	{p:'hexmapShowCount',ex:'true',tt:'Display the count'},
+	{p:'hexmapMinValue',ex:'1',tt:'If doing averages this is the lower cut off to add to a total'},
+	{p:'hexmapMaxValue',ex:'100',tt:'If doing averages this is the upper cut off to add to a total'},
 	{p:'hexmapUseFullBounds',d:true,tt:'When filtering is the original fill bounds used'},
 	{p:'hexmapPadding',tt:'Percent to bad out the bounding box',d:0.05},
 	{p:'hexmapCellSide',tt:'How many on a side',d:25},
@@ -3559,9 +3561,23 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
             let colorBy = this.getColorByInfo(records,'hexmapColorBy',null,null,null,
 					      this.lastColorBy,
-					      {colorTableProperty:'hexmapColorTable'});
+					      {colorTableProperty:'hexmapColorTable',
+					       minValue:this.getHexmapMinValue(),
+					       maxValue:this.getHexmapMaxValue()});
 	    if(this.getHexmapShowCount()) {
 		colorBy.setDoCount(minCount,maxCount);
+	    } else {
+		//recalculate the color ranges based on the average value
+		let minValue = NaN;
+		let maxValue = NaN;		
+		this.hexmapLayer.features.forEach((f,idx)=>{
+		    let records=hexgrid.features[idx].records;
+		    if(!records || records.length==0) return;
+		    let value = colorBy.doAverage(records);
+		    minValue = Utils.min(minValue,value);
+		    maxValue = Utils.max(maxValue,value);		    
+		});
+		colorBy.setRange(minValue,maxValue, true);
 	    }
 	    this.lastColorBy = colorBy;
 	    let textGetter = this.getTextGetter(fields);
@@ -3578,12 +3594,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		fillColor:this.getHexmapEmptyFillColor(style.fillColor),
 		fillOpacity:this.getHexmapFillOpacity()						
 	    }
+
+
+
 	    this.hexmapLayer.features.forEach((f,idx)=>{
 		let records=hexgrid.features[idx].records;
 		let s = (records && records.length>0)?style:emptyStyle;
 		s = Utils.clone({},s);
 		if(records && records.length>0 && colorBy.isEnabled()) {
-		    s.fillColor= colorBy.getColorFromRecord(records);
+		    s.fillColor= colorBy.getColorFromRecord(records,null,null,null);
+		    if(isNaN(colorBy.lastValue)) {
+			s.display='none';
+		    }
 		} 
 		f.records  =records;
 		f.style=s;
@@ -3593,7 +3615,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (colorBy.isEnabled()) {
 		colorBy.displayColorTable();
 	    }
-
 	},
 	
 
