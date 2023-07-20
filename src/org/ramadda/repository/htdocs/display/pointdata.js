@@ -1910,7 +1910,6 @@ function RecordFilter(display,filterFieldId, properties) {
 	    }
 	},
 	getIncludeAll:function() {
-	    return
 	    this.getProperty(this.getId() +".includeAll",
 			     this.getProperty(this.getId() +".filterIncludeAll",
 					      this.getProperty("filterIncludeAll", 
