@@ -3133,7 +3133,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 	    if(glyphType.isData()) {
 		let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions,null,style);
-		console.log('data:'+ mapGlyph.getName());
 		mapGlyph.addData(mapOptions.displayAttrs,false);
 		return mapGlyph;
 	    }

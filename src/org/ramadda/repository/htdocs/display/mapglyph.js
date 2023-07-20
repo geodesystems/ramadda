@@ -4411,6 +4411,8 @@ MapGlyph.prototype = {
 	    });
 	}
 
+
+
 	if(callCheck)
 	    this.checkVisible();
 	this.checkMapLayer();
@@ -4516,8 +4518,8 @@ MapGlyph.prototype = {
 	if(this.image) {
 	    this.image.setVisibility(visible);
 	}	
-	if(this.displayInfo && this.displayInfo.display) {
-	    this.displayInfo.display.setVisible(visible);
+	if(this.isData()) { 
+	    this.checkDataDisplayVisibility();
 	}
 
 	if(this.mapLabels && this.mapLoaded) {
@@ -4704,8 +4706,10 @@ MapGlyph.prototype = {
 				      {entryId:entryId});
 	
 	let divId   = HU.getUniqueId("display_");
+	let outerDivId   = HU.getUniqueId("outerdisplay_");	
 	let bottomDivId   = HU.getUniqueId("displaybottom_");	    
-	this.display.jq(ID_HEADER1).append(HU.div([ID,divId]));
+	let headerDiv = HU.div([ID,outerDivId],HU.div([ID,divId]));
+	this.display.jq(ID_HEADER1).append(headerDiv);
 	this.display.jq(ID_BOTTOM).append(HU.div([ID,bottomDivId]));	    
 	let attrs = {"externalMap":this.display.getMap(),
 		     "isContained":true,
@@ -4735,9 +4739,25 @@ MapGlyph.prototype = {
 	};
 	this.displayInfo =   {
 	    display:display,
+	    outerDivId:outerDivId,
 	    divId:divId,
 	    bottomDivId: bottomDivId
 	};
+	this.checkDataDisplayVisibility();
+    },
+    checkDataDisplayVisibility:function() {
+	if(!this.displayInfo) return;
+	let visible = this.isVisible();
+	if(this.displayInfo.display) {
+	    this.displayInfo.display.setVisible(visible);
+	}
+	let div = jqid(this.displayInfo.divId);
+	let outerDiv = jqid(this.displayInfo.outerDivId);	
+	if(visible) {
+	    outerDiv.removeClass('imdv-legend-label-invisible');
+	}    else {
+	    outerDiv.addClass('imdv-legend-label-invisible');
+	}
     },
     getDecoration:function(small) {
 	let type = this.getType();

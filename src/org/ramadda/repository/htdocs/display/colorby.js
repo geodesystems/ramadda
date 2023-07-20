@@ -1,6 +1,9 @@
 function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix, theField, props,lastColorBy) {
     this.properties = props || {};
     if(!prop) prop = "colorBy";
+    if(Utils.isDefined(this.properties.minValue)) this.properties.hasMinValue = true;
+    if(Utils.isDefined(this.properties.maxValue)) this.properties.hasMaxValue = true;    
+
     if ( !propPrefix ) {
 	propPrefix = ["colorBy",""];
     } else if( !Array.isArray(propPrefix) ) {
@@ -446,8 +449,25 @@ ColorByInfo.prototype = {
 	this.origMinValue=min;
 	this.origMaxValue=max;
     },
+    isValueOk:function(v) {
+	if(this.properties.hasMinValue && v<this.properties.minValue) return false;
+	if(this.properties.hasMaxValue && v>this.properties.maxValue) return false;		    
+	if(isNaN(v)) return false;
+	return true;
+    },
+    doAverage:function(records) {
+	let total = 0;
+	let cnt = 0;
+	records.forEach(r=>{
+	    let v = r.getData()[this.index];
+	    if(!this.isValueOk(v)) return;
+	    total+= v;
+	    cnt++;
+	});
+	return  total/cnt;
+    },
     getColorFromRecord: function(record, dflt, checkHistory,debug) {
-
+	this.lastValue = NaN;
 	if(!this.initDisplayCalled)   this.initDisplay();
 	if(this.filterHighlight && !record.isHighlight(this.display)) {
 	    return this.display.getUnhighlightColor();
@@ -466,11 +486,8 @@ ColorByInfo.prototype = {
 	if (this.index >= 0 || this.getDoCount()) {
 	    let value;
 	    if(records.length>1) {
-		let total = 0;
-		records.forEach(r=>{
-		    total+= r.getData()[this.index];
-		});
-		value = total/records.length;
+		value = this.doAverage(records);
+//		if(isNaN(value))  console.log(records.length,cnt,total,value)
 	    } else {
 		value= records[0].getData()[this.index];
 	    }
@@ -480,6 +497,7 @@ ColorByInfo.prototype = {
 		this.doingDates = true;
 	    }
 	    value = this.getDoCount()?records.length:value;
+	    this.lastValue = value;
 	    return  this.getColor(value, record,checkHistory);
 	} else if(this.timeField) {
 	    let value;
@@ -488,12 +506,14 @@ ColorByInfo.prototype = {
 	    }  else {
 		value = records[0].getTime().getTime();
 	    }
+	    this.lastValue = value;
 //	    console.log(value);
 	    return  this.getColor(value, records[0],checkHistory);
 	} 
 	if(this.fieldValue == "year") {
 	    if(records[0].getDate()) {
 		let value = records[0].getDate().getUTCFullYear();
+		this.lastValue = value;
 		return this.getColor(value, records[0]);
 	    }
 	}
