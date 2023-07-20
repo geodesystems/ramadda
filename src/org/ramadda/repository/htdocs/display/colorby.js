@@ -475,7 +475,7 @@ ColorByInfo.prototype = {
 		value= records[0].getData()[this.index];
 	    }
 	    //check if it is a date
-	    if(value.getTime) {
+	    if(value?.getTime) {
 		value = value.getTime();
 		this.doingDates = true;
 	    }
