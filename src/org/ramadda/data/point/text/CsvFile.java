@@ -238,7 +238,15 @@ public class CsvFile extends TextFile {
         if (debug) {
             System.err.println(
                 "CsvFile.doMakeInputStream commands: hasAddHeader:"
-                + hasAddHeader + " commands:" + commands);
+                + hasAddHeader);
+	    StringBuilder sb = new StringBuilder();
+	    for(String s: commands) {
+		s= s.trim();
+		if(s.indexOf(" ")>=0) s="\"" + s +"\"";
+		sb.append(s);
+		sb.append(" ");
+	    }
+	    System.err.println("csv commands:" + sb);
         }
         hasCsvCommands = true;
         File file = checkCachedFile();
