@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Jul 21 12:51:38 MDT 2023";
+var build_date="RAMADDA build date: Fri Jul 21 13:05:27 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -57465,7 +57465,7 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
         },
 	updateUI:function(args) {
 	    if(!window.Plotly) {
-		let url = RamaddaUtil.getCdnUrl("/lib/plotly/plotly-2.18.2.js");
+		let url = RamaddaUtil.getCdnUrl("/lib/plotly/plotly-2.24.1.js");
 		let callback = this.loadingJS?null:   ()=>{
 //		    Utils.loadScript('/repository/lib/d3/d3.js');
 		    this.updateUI(args);
