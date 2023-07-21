@@ -104,6 +104,7 @@ if {[llength $urls]} {
     runGroup "Maps" 1d0fa3f5-407e-4a39-a3da-9a5ed7e1e687
     runGroup "Data tables" b36bb6fc-b2c4-4d12-8c31-1f4dcff6881e
     runGroup "Science Data" 1012d4bb-5e57-460a-95f5-07c997bd04e8
+    runGroup "Soundings" 53f411f7-9390-4afc-9cb9-e7313030498b
     #runGroup Covid 52644ac1-f6d6-45ea-88af-b5d2ec75742e
     runGroup "Text" 23847d93-4bca-4d54-a6db-f96a19be250b
     runGroup "Boulder and Colorado" 4624f63d-cd71-43e8-a558-83835c6b5541
