@@ -1836,6 +1836,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         getFetchUrl: async function(url, type, callback) {
             //Check for entry id
             url = Utils.replaceRoot(url);
+
             if (url.match(/^[a-z0-9]+-[a-z0-9].*/)) {
                 return Utils.call(callback, ramaddaBaseUrl + "/entry/get?entryid=" + url);
             } else {
@@ -2554,25 +2555,26 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                         endsWith = true;
                     }
                     for (var childIdx = 0; childIdx < children.length; childIdx++) {
-                        var name = children[childIdx].getName();
+			let theChild = children[childIdx];
+                        var name = theChild.getName();
                         if (startsWith && endsWith) {
                             if (name.includes(dir)) {
-                                child = children[childIdx];
+                                child = theChild;
                                 break;
                             }
                         } else if (startsWith) {
                             if (name.startsWith(dir)) {
-                                child = children[childIdx];
+                                child = theChild;
                                 break;
                             }
                         } else if (endsWith) {
                             if (name.endsWith(dir)) {
-                                child = children[childIdx];
+                                child = theChild;
                                 break;
                             }
                         }
-                        if (children[childIdx].getName() == dir) {
-                            child = children[childIdx];
+                        if (theChild.getName() == dir || theChild.getFilename()==dir) {
+                            child = theChild;
                             break;
                         }
                     }
