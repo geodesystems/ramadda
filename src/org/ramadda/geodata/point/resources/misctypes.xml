@@ -295,7 +295,10 @@ Data courtesy of
  <property name="record.properties">
 fields=level[type=string],pressure[unit="mb" label="pressure" type=double],height[unit="meters" label="Height" type=double],temperature[unit="C" label="Temperature" type=double],dewpoint[unit="C" label="Dewpoint" type=double],relative_humidity[unit="%" label="Relative humidity" type=double],dd[label="DD" unit="C" type="double"],wetbulb[label="Wet Bulb" unit="C" type="double"],wind_direction[unit="degrees" label="Wind direction" type=double],wind_speed[unit="knots" label="Wind speed" type=double],theta[label="Theta" unit="K" type=double],thetav[unit="K" label="Theta-V" type=double],thetaw[unit="K" label="Theta-W"  type=double],thetae[unit="K" label="Theta-E"  type=double],mixing_ratio[unit="g/kg" label="Mixing ratio" type=double]
 picky=false
-point.csvcommands=-delimiter,spaces,-start,(?s)----.*,-start,(?s)----.*,-stop,(?s)TRP.*,-print
+csvcommands1=-delimiter,spaces,-start
+csvcommands2=LEV.*,-inputnotcontains,LEV\,mb\,------,-stop,TRP
+csvcommands3=-print
+
      </property>
      <column  name="station_id"  label="Station ID" type="string" />
      <column  name="variables"  rows="10" htmlTemplate="&lt;pre&gt;${value}&lt;/pre&gt;" showinhtml="false" label="Variables" size="2000" type="string" />
