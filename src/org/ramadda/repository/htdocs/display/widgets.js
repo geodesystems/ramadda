@@ -341,8 +341,8 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
     }
     let _display = display;
     let doTooltip = display.getSparklineDoTooltip()  || opts.doTooltip;
-    svg.on("click", function() {
-	let coords = d3.mouse(this);
+    svg.on("click", function(event) {
+	let coords = d3.pointer(event);
 	if(records) {
 	    let record = records[Math.round(x.invert(coords[0]))]
 	    if(record)
@@ -353,9 +353,9 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
 
 
     if(doTooltip) {
-	svg.on("mouseover", function() {
+	svg.on("mouseover", function(event) {
 	    if(!records) return;
-	    let coords = d3.mouse(this);
+	    let coords = d3.pointer(event);
 	    let record = records[Math.round(x.invert(coords[0]))]
 	    if(!record) return;
 	    let html = _display.getRecordHtml(record);
@@ -419,8 +419,8 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
 
     let _display = display;
     let doTooltip = display.getProperty("sparklineDoTooltip", true)  || attrs.doTooltip;
-    svg.on("click", function() {
-	let coords = d3.mouse(this);
+    svg.on("click", function(event) {
+	let coords = d3.pointer(event);
 	if(records) {
 	    let record = records[Math.round(x.invert(coords[0]))]
 	    if(record)
@@ -430,15 +430,14 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
 
 
     if(doTooltip) {
-	svg.on("mouseover", function() {
+	svg.on("mouseover", function(event) {
 	    d3.select(this).attr("r", 10).style("fill", "red");
 	    let ele = $(dom);
 	    ele.attr('r', 20);
-	    console.log("mouse over:" + d3.select(this).attr(RECORD_ID));
 	    if(true) return
 	    let record = recordMap[ele.attr(RECORD_ID)];
 	    console.log(ele.attr(RECORD_ID) +" " + record);
-	    let coords = d3.mouse(this);
+	    let coords = d3.pointer(event);
 	    if(!record) return;
 	    let html = _display.getRecordHtml(record);
 	    let offset = ele.offset().top + ele.height();
