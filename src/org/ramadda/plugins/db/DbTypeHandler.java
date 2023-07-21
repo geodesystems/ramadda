@@ -3092,7 +3092,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    TextReader                textReader = new TextReader();
 	    textReader.setInput(new NamedInputStream("input",
 						     new BufferedInputStream(source)));
-	    textReader.setSkip(skip);
+	    textReader.setSkipRows(skip);
 	    textReader.setDelimiter(delimiter);
 	    textReader.addProcessor(myProcessor);
 	    Seesv csvUtil = new Seesv(new ArrayList<String>());
