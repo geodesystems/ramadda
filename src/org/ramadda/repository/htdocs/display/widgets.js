@@ -218,6 +218,10 @@ function DateRangeWidget(display, what) {
 
 
 function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
+    if(w<0 || h<0) {
+	return;
+    }
+
     let opts = {
 	theMargin:{ top: 0, right: 0, bottom: 0, left: 0 }
     }
