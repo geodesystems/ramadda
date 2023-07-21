@@ -792,7 +792,7 @@ function  SeesvForm(inputId, entry,params) {
 	    let isTypeXml = cmds && cmds.indexOf("-typexml")>=0;
 	    let isScript  = args.csvoutput=="-script";
 	    let isArgs  = args.csvoutput=="-args";
-	    let debug = cmds.match("-debug");
+	    let debug = cmds.match("-debug($| )");
 	    let rawInput = this.getInput();
 	    haveOutput = Utils.isDefined(args.csvoutput);
 	    if(!doExplode &&  cmds.indexOf("-count")<0  && cmds.indexOf("-db") <0 && !haveOutput)  {
