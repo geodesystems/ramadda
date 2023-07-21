@@ -83,7 +83,7 @@ public class GsdTypeHandler extends PointTypeHandler {
                                              topProps);
 
             return url
-                   + "&latitude=${latitude}&longitude=${longitude}&model=${model}";
+                   + "&latitude=${latitude}&longitude=${longitude}";
         }
 
         return super.getUrlForWiki(request, entry, tag, props, topProps);
@@ -102,7 +102,7 @@ public class GsdTypeHandler extends PointTypeHandler {
      */
     @Override
     public IO.Path getPathForRecordEntry(Entry entry,
-					    Hashtable requestProperties)
+					 Hashtable requestProperties)
             throws Exception {
         String url   = URL_TEMPLATE;
         String lat   = (String) requestProperties.get("latitude");
@@ -114,7 +114,6 @@ public class GsdTypeHandler extends PointTypeHandler {
         if (model.length() == 0) {
             model = "GFS";
         }
-
         url = url.replace("{model}", model);
         url = url.replace("{lat}", (lat != null)
                                    ? lat
@@ -123,6 +122,7 @@ public class GsdTypeHandler extends PointTypeHandler {
                                    ? lon
                                    : "-105");
         url = super.convertPath(entry, url, requestProperties);
+	//	System.err.println("GSD Sounding URL:" +url);
         return new IO.Path(url);
     }
 
