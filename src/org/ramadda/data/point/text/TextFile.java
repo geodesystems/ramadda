@@ -545,75 +545,81 @@ public abstract class TextFile extends PointFile {
 		System.err.println("fieldsLine:" + fieldsLine);		
 	    }
             if (fieldsLine != null) {
-                String defaultType      = getProperty("record.type.default", null);
-                String delim      = getProperty(PROP_DELIMITER, ",");
-                String sampleLine = visitInfo.getRecordIO().readLine();
-                visitInfo.getRecordIO().putBackLine(sampleLine);
-                List<String> toks = Utils.tokenizeColumns(fieldsLine, delim);
-                List<String> sampleToks = Utils.tokenizeColumns(sampleLine,
-								delim);
-                List<String> cleaned = new ArrayList<String>();
-                boolean      didDate = false;
-                for (int tokIdx = 0; tokIdx < toks.size(); tokIdx++) {
-                    String tok    = toks.get(tokIdx);
-                    String sample = tokIdx<sampleToks.size()?sampleToks.get(tokIdx).toLowerCase():"";
-                    tok = tok.replaceAll("\"", "");
-                    String        name  = tok;
-                    String        id    = Utils.makeID(tok);
-                    StringBuilder attrs = new StringBuilder();
-                    name = Utils.makeLabel(name.replaceAll(",", "&#44;"));
-                    attrs.append(attrLabel(name));
-                    boolean isDate =
-                        id.matches(
-                            "^(timestamp|week_ended|date|month|year|as_of|end_date|per_end_date|obs_date|quarter)$");
-                    //                    System.err.println("id:" + id +" isDate:" + isDate);
-                    if ( !isDate) {
-                        isDate = Utils.isDate(sample);
-                    }
-		    if(!isDate) {
-			String type = getProperty("record.type." + id,null);
-			if(type==null) type=defaultType;
-			if(type==null) {
-			    if (Utils.isNumber(sample)) {
-				type =RecordField.TYPE_DOUBLE;
-			    } else {
-				type  = RecordField.TYPE_STRING;
-			    }
+		if(fieldsLine.indexOf("[")>0) {
+                    if(debug)
+                        System.err.println("Treating fields line as the RAMADDA point header");
+                    putProperty(PROP_FIELDS, fieldsLine);
+		}  else {
+		    String defaultType      = getProperty("record.type.default", null);
+		    String delim      = getProperty(PROP_DELIMITER, ",");
+		    String sampleLine = visitInfo.getRecordIO().readLine();
+		    visitInfo.getRecordIO().putBackLine(sampleLine);
+		    List<String> toks = Utils.tokenizeColumns(fieldsLine, delim);
+		    List<String> sampleToks = Utils.tokenizeColumns(sampleLine,
+								    delim);
+		    List<String> cleaned = new ArrayList<String>();
+		    boolean      didDate = false;
+		    for (int tokIdx = 0; tokIdx < toks.size(); tokIdx++) {
+			String tok    = toks.get(tokIdx);
+			String sample = tokIdx<sampleToks.size()?sampleToks.get(tokIdx).toLowerCase():"";
+			tok = tok.replaceAll("\"", "");
+			String        name  = tok;
+			String        id    = Utils.makeID(tok);
+			StringBuilder attrs = new StringBuilder();
+			name = Utils.makeLabel(name.replaceAll(",", "&#44;"));
+			attrs.append(attrLabel(name));
+			boolean isDate =
+			    id.matches(
+				       "^(timestamp|week_ended|date|month|year|as_of|end_date|per_end_date|obs_date|quarter)$");
+			//                    System.err.println("id:" + id +" isDate:" + isDate);
+			if ( !isDate) {
+			    isDate = Utils.isDate(sample);
 			}
-			attrs.append(attrType(type));
-		    }
+			if(!isDate) {
+			    String type = getProperty("record.type." + id,null);
+			    if(type==null) type=defaultType;
+			    if(type==null) {
+				if (Utils.isNumber(sample)) {
+				    type =RecordField.TYPE_DOUBLE;
+				} else {
+				    type  = RecordField.TYPE_STRING;
+				}
+			    }
+			    attrs.append(attrType(type));
+			}
 
-                    if (isDate) {
-                        if ( !didDate) {
-                            String format = (String) getProperty(id
-                                                + ".format");
-                            if (format == null) {
-                                if (id.equals("timestamp")) {
-                                    format = "BAD";
-                                    format = "yyyy-MM-dd HH:mm:ss";
-                                } else if (id.equals("time")) {
-                                    format = "yyyy-MM-dd'T'HH:mm:ss";
-                                } else {
-                                    format = "yyyy-MM-dd";
-                                }
-                            }
-                            attrs.append(attrType(RecordField.TYPE_DATE));
-                            attrs.append(attrFormat(format));
-                            didDate = true;
-                        } else {
-                            attrs.append(attrType(RecordField.TYPE_STRING));
-                        }
-                    } else {
-                        attrs.append(attrChartable());
-                    }
-                    String unit = (String) getProperty(id + ".unit");
-                    if (unit != null) {
-                        attrs.append(attrUnit(unit));
-                    }
-                    cleaned.add(id + "[" + attrs + "]");
-                }
-                String f = makeFields(cleaned);
-                putProperty(PROP_FIELDS, f);
+			if (isDate) {
+			    if ( !didDate) {
+				String format = (String) getProperty(id
+								     + ".format");
+				if (format == null) {
+				    if (id.equals("timestamp")) {
+					format = "BAD";
+					format = "yyyy-MM-dd HH:mm:ss";
+				    } else if (id.equals("time")) {
+					format = "yyyy-MM-dd'T'HH:mm:ss";
+				    } else {
+					format = "yyyy-MM-dd";
+				    }
+				}
+				attrs.append(attrType(RecordField.TYPE_DATE));
+				attrs.append(attrFormat(format));
+				didDate = true;
+			    } else {
+				attrs.append(attrType(RecordField.TYPE_STRING));
+			    }
+			} else {
+			    attrs.append(attrChartable());
+			}
+			String unit = (String) getProperty(id + ".unit");
+			if (unit != null) {
+			    attrs.append(attrUnit(unit));
+			}
+			cleaned.add(id + "[" + attrs + "]");
+		    }
+		    String f = makeFields(cleaned);
+		    putProperty(PROP_FIELDS, f);
+		}
             }
         } else {
             commentLineStart = getProperty("commentLineStart", null);
