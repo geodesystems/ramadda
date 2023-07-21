@@ -305,7 +305,7 @@ public class TabularOutputHandler extends OutputHandler {
         List       props      = new ArrayList();
 
         TextReader textReader = new TextReader();
-        textReader.setSkip(getSkipRows(request, entry));
+        textReader.setSkipRows(getSkipRows(request, entry));
         textReader.setMaxRows(getRowCount(request, entry, MAX_ROWS));
 
         String delimiter = getDelimiter(entry);
@@ -470,7 +470,7 @@ public class TabularOutputHandler extends OutputHandler {
         };
 
         TextReader info = new TextReader();
-        info.setSkip(0);
+        info.setSkipRows(0);
         info.setMaxRows(100);
         for (String s : args) {
             if (s.matches("(<|<=|>|>=|=|<>|!=)")) {
@@ -801,7 +801,7 @@ public class TabularOutputHandler extends OutputHandler {
             Sheet sheet = wb.getSheetAt(sheetIdx);
             //            System.err.println("\tsheet:" + sheet.getSheetName() + " #rows:" + sheet.getLastRowNum());
             List<List<Object>> rows      = new ArrayList<List<Object>>();
-            int                sheetSkip = visitInfo.getSkip();
+            int                sheetSkip = visitInfo.getSkipRows();
 	    int rowIdx=0;
 	    for (Row row : sheet) {
 		rowIdx++;
@@ -1145,7 +1145,7 @@ public class TabularOutputHandler extends OutputHandler {
                 getRowCount(request, entry, Integer.MAX_VALUE), sheetsToShow);
 
         TextReader info = new TextReader();
-        info.setSkip(getSkipRows(request, entry));
+        info.setSkipRows(getSkipRows(request, entry));
         info.setMaxRows(getRowCount(request, entry, MAX_ROWS));
         //        http:://localhost:8080/repository/entry/show?entryid=740ae258-805d-4a1f-935d-289d0a6e5519&output=media_tabular_extractsheet&serviceform=true&execute=Execute
 
