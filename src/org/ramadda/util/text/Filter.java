@@ -834,14 +834,13 @@ public class Filter extends Processor {
          */
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
-
             if (cnt++ == 0) {
                 return true;
             }
             boolean ok    = true;
             boolean debug = false;  //cnt<3;
             if (debug) {
-                System.err.println("rowOk");
+                System.err.println("rowOk:" + row);
             }
             for (int idx : getIndices(ctx)) {
                 if (debug) {
@@ -851,7 +850,6 @@ public class Filter extends Processor {
                     if (debug) {
                         System.err.println("\tbreak1:" + ok);
                     }
-
                     break;
                 }
                 if (idx >= row.size()) {

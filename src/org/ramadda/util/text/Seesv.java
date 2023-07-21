@@ -644,6 +644,15 @@ public class Seesv implements SeesvCommands {
 		    i++;
 		    continue;
 		}
+		//Don't include maxrows or print commands
+		if(arg.equals("-print")) {
+		    continue;
+		}
+		if(arg.equals("-maxrows")) {
+		    i++;
+		    continue;
+		}
+
 		if (argsBuff == null) {
 		    argsBuff = new StringBuilder();
 		    argsBuff.append("csvcommands1=");
@@ -946,7 +955,7 @@ public class Seesv implements SeesvCommands {
 	    if(rowCnt++==0 && fileCnt>0) {
 		continue;
 	    }
-            if (rowCnt <= ctx.getSkip()) {
+            if (rowCnt <= ctx.getSkipRows()) {
                 continue;
             }
 
@@ -2061,7 +2070,7 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_SKIPPATTERN, "Skip any line that matches the pattern",
 		ARG_LABEL,"Skip Pattern",
                 new Arg(ARG_PATTERN, "", ATTR_TYPE, TYPE_PATTERN)),
-        new Cmd(CMD_SKIP, "Skip number of processed rows.",
+        new Cmd(CMD_SKIPROWS, "Skip number of processed rows.",
 		ARG_LABEL,"Skip Rows",
                 new Arg("rows", "How many rows to skip", ATTR_TYPE, TYPE_NUMBER)),
 
@@ -3329,8 +3338,8 @@ public class Seesv implements SeesvCommands {
 
     private void makeFunctions() {
 
-	defineFunction(CMD_SKIP,1,(ctx,args,i) -> {
-		ctx.setSkip(parseInt(args.get(++i)));
+	defineFunction(new String[]{CMD_SKIPROWS,"-skip"},1,(ctx,args,i) -> {
+		ctx.setSkipRows(parseInt(args.get(++i)));
 		return i;
 	    });
 	defineFunction(CMD_SKIPLINES,1,(ctx,args,i) -> {
@@ -5498,6 +5507,14 @@ public class Seesv implements SeesvCommands {
 	    currentArg = arg;
 	    try {
 		if (doArgs) {
+		    //Don't include maxrows or print commands
+		    if(arg.equals("-print")) {
+			continue;
+		    }
+		    if(arg.equals("-maxrows")) {
+			i++;
+			continue;
+		    }
 		    if (pw == null) {
 			pw = new PrintWriter(getOutputStream());
 			pw.print("csvcommands1=");

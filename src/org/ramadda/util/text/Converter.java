@@ -4964,7 +4964,7 @@ public abstract class Converter extends Processor {
                             Double.valueOf((value + delta1) * scale
 					   + delta2).toString());
                 } catch (NumberFormatException nfe) {
-		    System.err.println("Error converting:" +row.get(index).toString());
+		    System.err.println("Error converting:" +row.get(index).toString() + " in row:" + row);
 		}
             }
 
@@ -6866,25 +6866,16 @@ public abstract class Converter extends Processor {
      */
     public static class ColumnMacro extends Converter {
 
-        /* */
+	private  String spattern;
 
-        /** _more_ */
         private Pattern pattern;
 
-        /* */
-
-        /** _more_ */
         private String template;
 
-        /* */
-
-        /** _more_ */
         private String label;
 
-        /* */
-
-        /** _more_ */
         private String value;
+
 
         /**
          * @param pattern _more_
@@ -6892,10 +6883,10 @@ public abstract class Converter extends Processor {
          * @param label _more_
          */
         public ColumnMacro(String pattern, String template, String label) {
+	    spattern = pattern;
             this.pattern  = Pattern.compile(pattern, Pattern.MULTILINE);
             this.template = template;
             this.label    = label;
-
         }
 
         /**
@@ -6905,30 +6896,42 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
+	    boolean debug =false;
             if ((rowCnt++ == 0) && !label.equals("none")) {
                 row.getValues().add(label);
                 return row;
             }
             if (value == null) {
+		if(debug)
+		    System.err.println("checking value with pattern:" + spattern +" template:" + template);
                 for (String hline : ctx.getHeaderLines()) {
+		    if(debug)
+			System.err.println("header line:" + hline);
                     Matcher matcher = pattern.matcher(hline);
                     if (matcher.find()) {
+			if(debug)
+			    System.err.println("\tmatched");
                         String v = template;
                         for (int i = 0; i < matcher.groupCount(); i++) {
-                            v = v.replace("{" + (i + 1) + "}",
-                                          matcher.group(i + 1));
+			    String m = matcher.group(i + 1);
+			    if(debug)
+				System.err.println("\tpattern group:" + (i+1)+"="+ m);
+                            v = v.replace("{" + (i + 1) + "}",m);
                         }
                         value = v;
-
+			if(debug) System.err.println("\tvalue:" + value);
                         break;
-                    }
+                    } else {
+			if(debug) System.err.println("\tno match");
+		    }
                 }
             }
             if (value == null) {
+		if(debug)
+		    System.err.println("\tno value found");
                 value = "";
             }
             row.getValues().add(value);
-
             return row;
         }
     }

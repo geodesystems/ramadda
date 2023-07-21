@@ -143,11 +143,14 @@ public class TextReader implements Cloneable {
     private String startPattern;
     private boolean seenStartPattern  =false;
 
-    /** _more_ */
-    private int skip = 0;
-
     /**  */
     private int skipLines = 0;
+
+
+    /** _more_ */
+    private int skipRows = 0;
+
+
 
     /** _more_ */
     private int visitedRows = 0;
@@ -1716,8 +1719,8 @@ public class TextReader implements Cloneable {
      *
      * @param value The new value for Skip
      */
-    public void setSkip(int value) {
-        skip = value;
+    public void setSkipRows(int value) {
+        skipRows = value;
     }
 
     /**
@@ -1725,8 +1728,8 @@ public class TextReader implements Cloneable {
      *
      * @return The Skip
      */
-    public int getSkip() {
-        return skip;
+    public int getSkipRows() {
+        return skipRows;
     }
 
 

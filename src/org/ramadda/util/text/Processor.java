@@ -499,7 +499,6 @@ public abstract class Processor extends SeesvOperator {
 
 
 
-
     /**
      * Class description
      *
@@ -1373,7 +1372,6 @@ public abstract class Processor extends SeesvOperator {
                 System.err.println("row #" + rowCnt + " cols: " + row.size()
                                    + " data:" + row.getValues());
             }
-
             return row;
         }
     }

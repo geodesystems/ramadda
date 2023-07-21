@@ -675,7 +675,7 @@ public class SeesvOperator {
             }
 
             for (int i = 0; i < header.size(); i++) {
-                String colName = (String) header.get(i);
+                String colName =  Utils.getNonNull(header.get(i),"").toString();
                 String colId   = Utils.makeID(colName, false);
                 columnNames.add(colName);
                 colName = colName.trim();

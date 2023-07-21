@@ -110,7 +110,7 @@ public interface SeesvCommands {
     public static final String CMD_IFMATCHESFILE="-ifmatchesfile";
     public static final String CMD_IFNOTMATCHESFILE="-ifnotmatchesfile";
     public static final String CMD_SKIPPATTERN="-skippattern";
-    public static final String CMD_SKIP="-skip";
+    public static final String CMD_SKIPROWS="-skipROWS";
     public static final String CMD_COLUMNS="-columns";
     public static final String CMD_NOTCOLUMNS="-notcolumns";
     public static final String CMD_FIRSTCOLUMNS="-firstcolumns";
