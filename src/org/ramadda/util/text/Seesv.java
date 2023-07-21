@@ -2909,7 +2909,8 @@ public class Seesv implements SeesvCommands {
 		new Arg("rows", "# of rows")),	
         new Cmd(CMD_POINTHEADER, "Generate the RAMADDA point properties",
 		ARG_LABEL,"Generate Point Properties"),
-        new Cmd(CMD_ARGS, "Generate the CSV file commands"),
+        new Cmd(CMD_ARGS, "Generate the CSV file commands",
+		ARG_LABEL,"CSV File Commands"),
         new Cmd(CMD_TYPE_XML, "Generate the RAMADDA type xml",
 		ARG_LABEL,"Generate type.xml",
 		new Arg("type_id","Type ID, e.g.type_point_mypointdata"),
@@ -3477,7 +3478,6 @@ public class Seesv implements SeesvCommands {
 
 	defineFunction(CMD_STOP,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Filter.Stop(ctx,args.get(++i)));
-
 		return i;
 	    });
 
