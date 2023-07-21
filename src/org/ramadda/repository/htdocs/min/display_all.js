@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Jul 21 08:07:03 MDT 2023";
+var build_date="RAMADDA build date: Fri Jul 21 12:51:38 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -647,6 +647,10 @@ function DateRangeWidget(display, what) {
 
 
 function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
+    if(w<0 || h<0) {
+	return;
+    }
+
     let opts = {
 	theMargin:{ top: 0, right: 0, bottom: 0, left: 0 }
     }
@@ -26187,6 +26191,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         getFetchUrl: async function(url, type, callback) {
             //Check for entry id
             url = Utils.replaceRoot(url);
+
             if (url.match(/^[a-z0-9]+-[a-z0-9].*/)) {
                 return Utils.call(callback, ramaddaBaseUrl + "/entry/get?entryid=" + url);
             } else {
@@ -26905,25 +26910,26 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                         endsWith = true;
                     }
                     for (var childIdx = 0; childIdx < children.length; childIdx++) {
-                        var name = children[childIdx].getName();
+			let theChild = children[childIdx];
+                        var name = theChild.getName();
                         if (startsWith && endsWith) {
                             if (name.includes(dir)) {
-                                child = children[childIdx];
+                                child = theChild;
                                 break;
                             }
                         } else if (startsWith) {
                             if (name.startsWith(dir)) {
-                                child = children[childIdx];
+                                child = theChild;
                                 break;
                             }
                         } else if (endsWith) {
                             if (name.endsWith(dir)) {
-                                child = children[childIdx];
+                                child = theChild;
                                 break;
                             }
                         }
-                        if (children[childIdx].getName() == dir) {
-                            child = children[childIdx];
+                        if (theChild.getName() == dir || theChild.getFilename()==dir) {
+                            child = theChild;
                             break;
                         }
                     }
@@ -27710,11 +27716,11 @@ function RamaddaD3Display(displayManager, id, properties) {
                 .attr("height", this.displayHeight + margin.top + margin.bottom)
                 .attr(ATTR_CLASS, "D3graph")
                 .call(zoom)
-                .on("click", function() {
-                    myThis.click(d3.event)
+                .on("click", function(event) {
+                    myThis.click(event)
                 })
-                .on("dblclick", function() {
-                    myThis.dbclick(d3.event)
+                .on("dblclick", function(event) {
+                    myThis.dbclick(event)
                 })
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -27845,8 +27851,8 @@ function RamaddaD3Display(displayManager, id, properties) {
                     .datum(records)
                     .attr(ATTR_CLASS, "line")
                     .attr("d", line)
-                    .on("mousemove", function() {
-                        myThis.mouseover(d3.event)
+                    .on("mousemove", function(event) {
+                        myThis.mouseover(event)
                     })
                     .attr("fill", "none")
                     .attr("stroke", function(d) {
@@ -27923,9 +27929,8 @@ function RamaddaD3Display(displayManager, id, properties) {
         },
         //this gets called when an event source has selected a record
         handleEventRecordSelection: function(source, args) {},
-        mouseover: function() {
+        mouseover: function(event) {
             // TO DO
-            testing = d3.event;
             console.log("mouseover");
         },
         click: function(event) {
@@ -40281,13 +40286,13 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 	    let _this = this;
 	    idToRecord  = idToRecord|| this.idToRecord;
 	    tooltipDiv = tooltipDiv || this.makeTooltipDiv();
-	    polys.on('click', function (d, i) {
+	    polys.on('click', function (event, d) {
 		let poly = d3.select(this);
 		let record = idToRecord[poly.attr(RECORD_ID)];
 		if(record)
 		    _this.propagateEventRecordSelection({record: record});
 	    });
-	    polys.on('mouseover', function (d, i) {
+	    polys.on('mouseover', function (event, i) {
 		let poly = d3.select(this);
 		let record = idToRecord[poly.attr(RECORD_ID)];
 		poly.attr("lastStroke",poly.attr("stroke"))
@@ -40307,8 +40312,8 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 		}
 		if(tt) {
 		    _this.tooltipDiv.html(tt)
-			.style("left", (d3.event.pageX + 10) + "px")
-			.style("top", (d3.event.pageY + 20) + "px");
+			.style("left", (event.pageX + 10) + "px")
+			.style("top", (event.pageY + 20) + "px");
 		    _this.tooltipDiv.style("opacity", 1);
 		    //For now don't transition as it seems to screw up
 		    //subsequent mouse overs

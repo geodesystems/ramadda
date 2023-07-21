@@ -88,17 +88,17 @@ function BubbleChart(dom,data, args) {
 	.enter().append('g')
 	.attr('class', 'node')
 	.call(d3.drag()
-	      .on('start', (d) => {
-		  if (!d3.event.active) { simulation.alphaTarget(0.2).restart(); }
+	      .on('start', (event,d) => {
+		  if (!event.active) { simulation.alphaTarget(0.2).restart(); }
 		  d.fx = d.x;
 		  d.fy = d.y;
 	      })
-	      .on('drag', (d) => {
-		  d.fx = d3.event.x;
-		  d.fy = d3.event.y;
+	      .on('drag', (event,d) => {
+		  d.fx = event.x;
+		  d.fy = event.y;
 	      })
-	      .on('end', (d) => {
-		  if (!d3.event.active) { simulation.alphaTarget(0); }
+	      .on('end', (event,d) => {
+		  if (!event.active) { simulation.alphaTarget(0); }
 		  d.fx = null;
 		  d.fy = null;
 	      }));
@@ -208,9 +208,9 @@ function BubbleChart(dom,data, args) {
 	.html(d => d.desc);
 
 
-    node.on('click', (currentNode) => {
-	d3.event.stopPropagation();
-	let currentTarget = d3.event.currentTarget; // the <g> el
+    node.on('click', (event,currentNode) => {
+	event.stopPropagation();
+	let currentTarget = event.currentTarget; // the <g> el
 
 	if (currentNode === focusedNode) {
 	    // no focusedNode or same focused node is clicked
@@ -241,7 +241,7 @@ function BubbleChart(dom,data, args) {
 		});
 	}
 
-	// if (!d3.event.active) simulation.alphaTarget(0.5).restart();
+	// if (!event.active) simulation.alphaTarget(0.5).restart();
 
 	d3.transition().duration(2000).ease(d3.easePolyOut)
 	    .tween('moveIn', () => {
@@ -275,8 +275,8 @@ function BubbleChart(dom,data, args) {
     });
 
     // blur
-    d3.select(document).on('click', () => {
-	let target = d3.event.target;
+    d3.select(document).on('click', (event) => {
+	let target = event.target;
 	// check if click on document but not on the circle overlay
 	if (!target.closest('#circle-overlay') && focusedNode) {
 	    focusedNode.fx = null;

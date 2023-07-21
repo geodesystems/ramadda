@@ -170,8 +170,8 @@ function D3Graph(div, nodes, links, width, height) {
         force.start();
     }
 
-    this.nodeClicked = function(d) {
-        if (d3.event.altKey && d.url) {
+    this.nodeClicked = function(event,d) {
+        if (event.altKey && d.url) {
             window.location = d.url;
             return;
         }

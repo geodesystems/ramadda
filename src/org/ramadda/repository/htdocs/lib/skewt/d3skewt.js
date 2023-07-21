@@ -687,9 +687,9 @@ D3Skewt.prototype = {
 	    })
 	
 	skewt.allbarbs.style('cursor', 'pointer')
-	skewt.allbarbs.on("click", function(d,e) {
+	skewt.allbarbs.on("click", function(event,d) {
 	    skewt.allbarbs.remove();
-	    if(d3.event.shiftKey) {
+	    if(event.shiftKey) {
 		skewt.options.barbSkip--;
 		skewt.options.barbSkip = Math.max(1,skewt.options.barbSkip);
 	    } else {

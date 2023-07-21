@@ -663,11 +663,11 @@ function RamaddaD3Display(displayManager, id, properties) {
                 .attr("height", this.displayHeight + margin.top + margin.bottom)
                 .attr(ATTR_CLASS, "D3graph")
                 .call(zoom)
-                .on("click", function() {
-                    myThis.click(d3.event)
+                .on("click", function(event) {
+                    myThis.click(event)
                 })
-                .on("dblclick", function() {
-                    myThis.dbclick(d3.event)
+                .on("dblclick", function(event) {
+                    myThis.dbclick(event)
                 })
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -798,8 +798,8 @@ function RamaddaD3Display(displayManager, id, properties) {
                     .datum(records)
                     .attr(ATTR_CLASS, "line")
                     .attr("d", line)
-                    .on("mousemove", function() {
-                        myThis.mouseover(d3.event)
+                    .on("mousemove", function(event) {
+                        myThis.mouseover(event)
                     })
                     .attr("fill", "none")
                     .attr("stroke", function(d) {
@@ -876,9 +876,8 @@ function RamaddaD3Display(displayManager, id, properties) {
         },
         //this gets called when an event source has selected a record
         handleEventRecordSelection: function(source, args) {},
-        mouseover: function() {
+        mouseover: function(event) {
             // TO DO
-            testing = d3.event;
             console.log("mouseover");
         },
         click: function(event) {

@@ -5277,13 +5277,13 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 	    let _this = this;
 	    idToRecord  = idToRecord|| this.idToRecord;
 	    tooltipDiv = tooltipDiv || this.makeTooltipDiv();
-	    polys.on('click', function (d, i) {
+	    polys.on('click', function (event, d) {
 		let poly = d3.select(this);
 		let record = idToRecord[poly.attr(RECORD_ID)];
 		if(record)
 		    _this.propagateEventRecordSelection({record: record});
 	    });
-	    polys.on('mouseover', function (d, i) {
+	    polys.on('mouseover', function (event, i) {
 		let poly = d3.select(this);
 		let record = idToRecord[poly.attr(RECORD_ID)];
 		poly.attr("lastStroke",poly.attr("stroke"))
@@ -5303,8 +5303,8 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 		}
 		if(tt) {
 		    _this.tooltipDiv.html(tt)
-			.style("left", (d3.event.pageX + 10) + "px")
-			.style("top", (d3.event.pageY + 20) + "px");
+			.style("left", (event.pageX + 10) + "px")
+			.style("top", (event.pageY + 20) + "px");
 		    _this.tooltipDiv.style("opacity", 1);
 		    //For now don't transition as it seems to screw up
 		    //subsequent mouse overs
