@@ -212,7 +212,7 @@ proc capture {_group name url {doDisplays 1} {sleep 3}} {
 	    
 
 	    set skip 0
-	    foreach pattern { {Unrecognized Content-Security-Policy directive} {googleads\.g\.doubleclick\.net} {Version} {\[Warning\]} {\[Log\]} {The input spec uses Vega} } {
+	    foreach pattern { {A server with the specified hostname could not be found} {Unrecognized Content-Security-Policy directive} {googleads\.g\.doubleclick\.net} {Version} {\[Warning\]} {\[Log\]} {The input spec uses Vega} } {
 		if {[regexp ".*$pattern.*" $line]} {
 		    set skip 1
 		}
