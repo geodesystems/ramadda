@@ -586,7 +586,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    }
 	},
 	getIncludeAll:function() {
-	    this.getProperty(this.getId() +".includeAll",
+	    return this.getProperty(this.getId() +".includeAll",
 			     this.getProperty(this.getId() +".filterIncludeAll",
 					      this.getProperty("filterIncludeAll", 
 							       this.getProperty("filter.includeAll", true))));
