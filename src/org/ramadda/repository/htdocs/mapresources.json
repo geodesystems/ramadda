@@ -14,6 +14,12 @@
  {"name":"US Counties",
   "type":"geo_geojson",
   "url":"https://ramadda.org/repository/entry/show/Home/Content/Maps/US+Counties?entryid=us_counties&output=geojson.geojson"},
+
+ {"name":"US Cities",
+  "type":"geo_geojson",
+  "url":"https://ramadda.org/repository/entry/get/countries.geojson?entryid=uscities"
+ },
+
  {"name":"US Congressional Districts",
   "type":"geo_geojson",
   "url":"https://ramadda.org/repository/entry/show/Home/Content/Maps/2019+Congressional+Districts?entryid=us_congress&output=geojson.geojson"},
