@@ -1142,6 +1142,7 @@ var Utils =  {
     },
     
     wrap: function(l, prefix, suffix) {
+	if(!l) return null;
         let s= ""; 
         l.forEach(item=>{
             s+=prefix + item +suffix;
