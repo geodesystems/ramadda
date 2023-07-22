@@ -932,7 +932,7 @@ public class WikiManager extends RepositoryManager
 						props,entryId.equals(ID_SEARCH)?"":
 						Utils.clip(entryId,PREFIX_SEARCH));
 	//xxxxx
-	System.err.println("R:" + select.getRequest().format());
+	//	System.err.println("R:" + select.getRequest().format());
 	List<Entry> entries=  getSearchManager().doSearch(select.getRequest(),select);
 	return getEntryManager().applyFilter(request, entries, select);
     }
