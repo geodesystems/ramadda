@@ -4418,7 +4418,11 @@ RepositoryMap.prototype = {
     closePopup:  function(evt) {
         if (this.currentPopup) {
 	    this.getMap().removePopup(this.currentPopup);
-            this.currentPopup.destroy();
+	    try {
+		this.currentPopup.destroy();
+	    } catch(err) {
+		console.error('Error destroying map popup:' + err);
+	    }
             this.currentPopup = null;
             this.hiliteBox('');
             if (this.selectedFeature) {
