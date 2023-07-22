@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Jul 21 14:30:20 MDT 2023";
+var build_date="RAMADDA build date: Sat Jul 22 06:04:16 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -36151,6 +36151,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.hexmapLayer=null;
 	},
 
+	getMyMapLayers:function() {
+	    return [this.heatmapLayers,this.voronoiLayer,this.hexmapLayer];
+	},
+
 	toString: function() {
 	    return "displaymap";
 	},
@@ -37833,8 +37837,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
 
 
-
-
 	    if(this.updateUICallback) {
 		clearTimeout(this.updateUICallback);
 		this.updateUICallback = null;
@@ -37893,8 +37895,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    console.log(exc.stack);
 		    this.setMessage("Error:" + exc);
 		}
-		this.setIsFinished();
+	    this.notifyExternalDisplay();
+
+	    this.setIsFinished();
 //	    });
+	},
+	notifyExternalDisplay:function() {
+	    let externalDisplay = this.getProperty("externalDisplay");
+	    if(externalDisplay) {
+		externalDisplay.externalDisplayReady(this);
+	    }
 	},
 	filterDataPhase2:function(records) {
 	    records = SUPER.filterDataPhase2.call(this,records);
@@ -38506,6 +38516,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (colorBy.isEnabled()) {
 		colorBy.displayColorTable();
 	    }
+	    this.notifyExternalDisplay();
+
 	},
 
         makeHexmap: function(records, fields, points,bounds) {
@@ -38623,6 +38635,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (colorBy.isEnabled()) {
 		colorBy.displayColorTable();
 	    }
+
+	    this.notifyExternalDisplay();	    
+
+
+
 	},
 	
 
@@ -43777,7 +43794,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let html = buttons;
 	    let accord;
 	    if(mapGlyph) {
-		accord= HU.makeTabs(content);
+		accord= HU.makeTabs(content,{contentsStyle:'min-height:400px;min-width:750px;'});
 		html+=accord.contents;
 	    } else {
 		html+=HU.center(HU.b('Default Style')) + content[0].contents;
@@ -45489,6 +45506,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	getShowLegendInMap() {
 	    return  this.getMapProperty('legendPosition','left')=='map';
 	},
+	checkGlyphLayers:function() {
+	    let baseIndex = 100;
+	    this.getGlyphs().forEach((mapGlyph,idx)=>{
+		baseIndex = mapGlyph.setLayerLevel(baseIndex);
+	    });
+	    this.getMap().checkLayerOrder();
+	},
 	makeLegend: function() {
 	    let _this = this;
 	    let legendDiv = this.getMapProperty("legendDivId");
@@ -45515,11 +45539,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    } else {
 		this.jq(ID_ADDRESS).hide();
 	    }
-	    let baseIndex = 100;
-	    glyphs.forEach((mapGlyph,idx)=>{
-		baseIndex = mapGlyph.setLayerLevel(baseIndex);
-	    });
-	    this.getMap().checkLayerOrder();
+	    this.checkGlyphLayers();
+
+
 
 	    this.inMapLegend='';
 	    if(glyphs.length)
@@ -45695,8 +45717,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
         initDisplay: function(embedded) {
 	    let _this = this;
 	    SUPER.initDisplay.call(this)
-	    
-	    this.myLayer = this.map.createFeatureLayer('Annotation Features',false,null,{rendererOptions: {zIndexing: true}});
+	    this.myLayer = this.map.createFeatureLayer('IMDV Features',false,null,{rendererOptions: {zIndexing: true}});
 	    //For now don't have a separate selection layer?
 	    //	    this.selectionLayer = this.map.createFeatureLayer('Selection',false,null,{rendererOptions: {zIndexing: true}});	    
 	    this.selectionLayer = this.myLayer;
@@ -48174,22 +48195,24 @@ MapGlyph.prototype = {
 	return this.jq('legend_');
     },
     setLayerLevel:function(level) {
-	if(this.getMapLayer()) {
-	    this.getMapLayer().ramaddaLayerIndex=level++;
-	}
+	let setIndex= (layer) =>{
+	    if(layer) {
+		level++;
+		layer.ramaddaLayerIndex=level;
+	    }
+	}	    
+	setIndex(this.getMapLayer());
 	if(this.imageLayers) {
 	    this.imageLayers.forEach(obj=>{
-		if(obj.layer) {
-		    obj.layer.ramaddaLayerIndex=level++;
-		}
+		setIndex(obj.layer);
 	    });
 	}
-	if(this.mapServerLayer) {
-	    this.mapServerLayer.ramaddaLayerIndex=level++;
-	}
-
-	if(this.image) {
-	    this.image.ramaddaLayerIndex=level++;
+	setIndex(this.mapServerLayer);
+	setIndex(this.image);
+	if(this.displayInfo?.display?.getMyMapLayers) {
+	    this.displayInfo.display.getMyMapLayers().forEach(layer=>{
+		setIndex(layer);
+	    });
 	}
 
 	this.applyChildren(mapGlyph=>{level = mapGlyph.setLayerLevel(level);});
@@ -49126,6 +49149,9 @@ MapGlyph.prototype = {
 
 
 	if(this.isMap()) {
+	    this.attrs.subsetSkip = jqid(this.domId('subsetSkip')).val();
+	    this.attrs.subsetReverse = jqid(this.domId('subsetReverse')).is(':checked');
+	    this.attrs.subsetSimplify= jqid(this.domId('subsetSimplify')).is(':checked');
 	    this.setMapPointsRange(jqid('mappoints_range').val());
 	    this.setMapLabelsTemplate(jqid('mappoints_template').val());	    
 	    let styleGroups = this.getStyleGroups();
@@ -49530,18 +49556,8 @@ MapGlyph.prototype = {
 	    doSequence:doSequence});
     },
     getPropertiesComponent: function(content) {
-	if(this.isGroup() && this.display.isRouteEnabled()) {
-	    let html = this.display.createRouteForm(true);
-	    let buttons  =HU.div(['id',this.domId('createroute'),CLASS,'display-button'], 'Create Route');
-	    html+=HU.div(['style',HU.css('margin-top','5px')], buttons);
-	    html=HU.div(['style',HU.css('margin','5px')],html);
-	    content.push({header:'Make Route', contents:html});
-	}
-
-
 	if(!this.canDoMapStyle()) return;
 	let attrs = this.getExampleMapLayer()?.features[0].attributes ?? {};
-	//xxx
 	let featureInfo = this.featureInfo = this.getFeatureInfoList();
 	let keys  = Object.keys(featureInfo);
 	let numeric = featureInfo.filter(info=>{return info.isNumeric();});
@@ -49664,6 +49680,30 @@ MapGlyph.prototype = {
 	}
 	content.push({header:'Labels',
 		      contents:mapPointsRange+  HU.b('Label Template:')+'<br>' +mapPoints});
+
+	if(this.isMap()) {
+	    let subset = HU.b('Feature Subset')+'<br>';
+	    subset += '<table>';
+	    subset+=HU.formEntry('Skip:',
+ 				 HU.input('',this.attrs.subsetSkip??'0',
+					  ['id',this.domId('subsetSkip'),'size','6'])+
+				 ' ' +'Prunes features');
+	    subset+=HU.formEntry('',
+				 HU.checkbox(this.domId('subsetReverse'),
+					     ['id',this.domId('subsetReverse')],
+					     this.attrs.subsetReverse,'Reverse features'));
+	    subset+=HU.formEntry('',
+				 HU.checkbox(this.domId('subsetSimplify'),
+					     ['id',this.domId('subsetSimplify')],
+					     this.attrs.subsetSimplify,'Simplify geometry' +
+					     ' ' +'(for now this sets feature.components.length=1)'));
+	    subset += '</table>';	    
+	    content.push({header:'Subset',
+			  contents:subset});
+
+	}
+
+
 
 	content.push({header:'Sample Values',contents:ex});
     },
@@ -50382,6 +50422,67 @@ MapGlyph.prototype = {
 	    if(debug) console.log("\tno features");
 	    return
 	}
+	if(!this.originalFeatures) this.originalFeatures = features;
+	else features = this.originalFeatures;
+
+	let changedFeaturesList = false;
+	if(this.attrs.subsetSimplify) {
+	    this.haveChangedGeometry=true;
+//	    console.log('prune geometry');
+	    this.mapLayer.removeFeatures(features);
+	    this.originalFeatures.forEach(feature=>{
+		if(!feature.geometry.originalComponents) {
+		    feature.geometry.originalComponents = [...feature.geometry.components];
+		}
+		feature.geometry.components.length=1;
+	    });
+	    this.mapLayer.addFeatures(features);	    
+	} else if(this.haveChangedGeometry) {
+//	    console.log('reset geometry');
+	    this.haveChangedGeometry = false;
+	    this.mapLayer.removeFeatures(features);
+	    features.forEach(feature=>{
+		if(feature.geometry.originalComponents) {
+		    feature.geometry.components = [...feature.geometry.originalComponents];
+		}
+	    });
+	    this.mapLayer.addFeatures(features);	    	    
+	}
+
+	if(Utils.isNumber(this.attrs.subsetSkip) && this.attrs.subsetSkip>0) {
+	    let tmp = [];
+	    let cnt = 0;
+	    features.forEach((feature,idx)=>{
+		cnt--;
+		if(cnt<0) {
+		    tmp.push(feature);
+		    cnt = this.attrs.subsetSkip;
+		}
+	    });
+	    changedFeaturesList = true;
+	    this.mapLayer.removeFeatures(this.originalFeatures);
+	    this.mapLayer.addFeatures(tmp);	    
+	    features = this.mapLayer.features;
+	} 
+
+	if(this.attrs.subsetReverse) {
+	    let tmp = [];
+	    features.forEach(feature=>{
+		tmp.unshift(feature);
+	    });
+	    changedFeaturesList = true;
+	    this.mapLayer.removeFeatures(features);
+	    this.mapLayer.addFeatures(tmp);	    
+	    features = tmp;
+	}
+
+	if(!changedFeaturesList && this.originalFeatures.length!=features.length) {
+	    this.mapLayer.removeFeatures(this.mapLayer.features);
+	    this.mapLayer.addFeatures(this.originalFeatures);	    
+	    features = this.originalFeatures;
+	}
+
+
 	if(!skipLegendUI && this.canDoMapStyle() && !this.isGroup()) {
 	    this.makeFeatureFilters();
 	}
@@ -51342,6 +51443,7 @@ MapGlyph.prototype = {
 	this.display.jq(ID_HEADER1).append(headerDiv);
 	this.display.jq(ID_BOTTOM).append(HU.div([ID,bottomDivId]));	    
 	let attrs = {"externalMap":this.display.getMap(),
+		     "externalDisplay":this,
 		     "isContained":true,
 		     "showRecordSelection":true,
 		     "showInnerContents":false,
@@ -51375,6 +51477,9 @@ MapGlyph.prototype = {
 	};
 	this.checkDataDisplayVisibility();
     },
+    externalDisplayReady:function(display) {
+	this.display.checkGlyphLayers();
+    },
     checkDataDisplayVisibility:function() {
 	if(!this.displayInfo) return;
 	let visible = this.isVisible();
@@ -51385,8 +51490,10 @@ MapGlyph.prototype = {
 	let outerDiv = jqid(this.displayInfo.outerDivId);	
 	if(visible) {
 	    outerDiv.removeClass('imdv-legend-label-invisible');
+	    outerDiv.find('input').prop('disabled',false);
 	}    else {
 	    outerDiv.addClass('imdv-legend-label-invisible');
+	    outerDiv.find('input').prop('disabled',true);
 	}
     },
     getDecoration:function(small) {
