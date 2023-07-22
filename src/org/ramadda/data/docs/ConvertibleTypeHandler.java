@@ -137,35 +137,6 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
 
 
 
-    /**
-     *
-     * @param wikiUtil _more_
-     * @param request _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
-    @Override
-    public String getWikiInclude(WikiUtil wikiUtil, Request request,
-                                 Entry originalEntry, Entry entry,
-                                 String tag, Hashtable props)
-            throws Exception {
-        if ( !tag.equals("convertform") && !tag.equals("seesv")) {
-            return super.getWikiInclude(wikiUtil, request, originalEntry,
-                                        entry, tag, props);
-        }
-        ConvertibleOutputHandler coh =
-            (ConvertibleOutputHandler) (ConvertibleOutputHandler) getRepository()
-                .getOutputHandler(ConvertibleOutputHandler.class);
-        StringBuilder sb = new StringBuilder();
-        coh.makeConvertForm(request, entry, sb,props);
-
-        return sb.toString();
-    }
 
 
 

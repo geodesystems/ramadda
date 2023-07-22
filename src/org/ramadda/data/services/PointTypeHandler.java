@@ -12,6 +12,8 @@ import org.ramadda.data.record.RecordField;
 import org.ramadda.data.record.RecordFile;
 import org.ramadda.data.record.RecordFileFactory;
 import org.ramadda.data.record.RecordVisitorGroup;
+import org.ramadda.util.WikiUtil;
+import org.ramadda.data.docs.*;
 
 import org.ramadda.data.record.VisitInfo;
 import org.ramadda.data.services.PointEntry;
@@ -1070,6 +1072,24 @@ public class PointTypeHandler extends RecordTypeHandler {
     }
 
 
+
+    @Override
+    public String getWikiInclude(WikiUtil wikiUtil, Request request,
+                                 Entry originalEntry, Entry entry,
+                                 String tag, Hashtable props)
+            throws Exception {
+        if ( !tag.equals("convertform") && !tag.equals("seesv")) {
+            return super.getWikiInclude(wikiUtil, request, originalEntry,
+                                        entry, tag, props);
+        }
+        ConvertibleOutputHandler coh =
+            (ConvertibleOutputHandler) (ConvertibleOutputHandler) getRepository()
+                .getOutputHandler(ConvertibleOutputHandler.class);
+        StringBuilder sb = new StringBuilder();
+        coh.makeConvertForm(request, entry, sb,props);
+
+        return sb.toString();
+    }
 
 
 
