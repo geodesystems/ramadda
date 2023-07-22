@@ -1143,6 +1143,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.hexmapLayer=null;
 	},
 
+	getMyMapLayers:function() {
+	    return [this.heatmapLayers,this.voronoiLayer,this.hexmapLayer];
+	},
+
 	toString: function() {
 	    return "displaymap";
 	},
@@ -2825,8 +2829,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
 
 
-
-
 	    if(this.updateUICallback) {
 		clearTimeout(this.updateUICallback);
 		this.updateUICallback = null;
@@ -2885,8 +2887,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    console.log(exc.stack);
 		    this.setMessage("Error:" + exc);
 		}
-		this.setIsFinished();
+	    this.notifyExternalDisplay();
+
+	    this.setIsFinished();
 //	    });
+	},
+	notifyExternalDisplay:function() {
+	    let externalDisplay = this.getProperty("externalDisplay");
+	    if(externalDisplay) {
+		externalDisplay.externalDisplayReady(this);
+	    }
 	},
 	filterDataPhase2:function(records) {
 	    records = SUPER.filterDataPhase2.call(this,records);
@@ -3498,6 +3508,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (colorBy.isEnabled()) {
 		colorBy.displayColorTable();
 	    }
+	    this.notifyExternalDisplay();
+
 	},
 
         makeHexmap: function(records, fields, points,bounds) {
@@ -3615,6 +3627,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (colorBy.isEnabled()) {
 		colorBy.displayColorTable();
 	    }
+
+	    this.notifyExternalDisplay();	    
+
+
+
 	},
 	
 

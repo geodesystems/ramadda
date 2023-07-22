@@ -1544,22 +1544,24 @@ MapGlyph.prototype = {
 	return this.jq('legend_');
     },
     setLayerLevel:function(level) {
-	if(this.getMapLayer()) {
-	    this.getMapLayer().ramaddaLayerIndex=level++;
-	}
+	let setIndex= (layer) =>{
+	    if(layer) {
+		level++;
+		layer.ramaddaLayerIndex=level;
+	    }
+	}	    
+	setIndex(this.getMapLayer());
 	if(this.imageLayers) {
 	    this.imageLayers.forEach(obj=>{
-		if(obj.layer) {
-		    obj.layer.ramaddaLayerIndex=level++;
-		}
+		setIndex(obj.layer);
 	    });
 	}
-	if(this.mapServerLayer) {
-	    this.mapServerLayer.ramaddaLayerIndex=level++;
-	}
-
-	if(this.image) {
-	    this.image.ramaddaLayerIndex=level++;
+	setIndex(this.mapServerLayer);
+	setIndex(this.image);
+	if(this.displayInfo?.display?.getMyMapLayers) {
+	    this.displayInfo.display.getMyMapLayers().forEach(layer=>{
+		setIndex(layer);
+	    });
 	}
 
 	this.applyChildren(mapGlyph=>{level = mapGlyph.setLayerLevel(level);});
@@ -4712,6 +4714,7 @@ MapGlyph.prototype = {
 	this.display.jq(ID_HEADER1).append(headerDiv);
 	this.display.jq(ID_BOTTOM).append(HU.div([ID,bottomDivId]));	    
 	let attrs = {"externalMap":this.display.getMap(),
+		     "externalDisplay":this,
 		     "isContained":true,
 		     "showRecordSelection":true,
 		     "showInnerContents":false,
@@ -4745,6 +4748,9 @@ MapGlyph.prototype = {
 	};
 	this.checkDataDisplayVisibility();
     },
+    externalDisplayReady:function(display) {
+	this.display.checkGlyphLayers();
+    },
     checkDataDisplayVisibility:function() {
 	if(!this.displayInfo) return;
 	let visible = this.isVisible();
@@ -4755,8 +4761,10 @@ MapGlyph.prototype = {
 	let outerDiv = jqid(this.displayInfo.outerDivId);	
 	if(visible) {
 	    outerDiv.removeClass('imdv-legend-label-invisible');
+	    outerDiv.find('input').prop('disabled',false);
 	}    else {
 	    outerDiv.addClass('imdv-legend-label-invisible');
+	    outerDiv.find('input').prop('disabled',true);
 	}
     },
     getDecoration:function(small) {

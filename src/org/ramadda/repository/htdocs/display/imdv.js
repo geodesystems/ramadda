@@ -4378,6 +4378,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	getShowLegendInMap() {
 	    return  this.getMapProperty('legendPosition','left')=='map';
 	},
+	checkGlyphLayers:function() {
+	    let baseIndex = 100;
+	    this.getGlyphs().forEach((mapGlyph,idx)=>{
+		baseIndex = mapGlyph.setLayerLevel(baseIndex);
+	    });
+	    this.getMap().checkLayerOrder();
+	},
 	makeLegend: function() {
 	    let _this = this;
 	    let legendDiv = this.getMapProperty("legendDivId");
@@ -4404,11 +4411,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    } else {
 		this.jq(ID_ADDRESS).hide();
 	    }
-	    let baseIndex = 100;
-	    glyphs.forEach((mapGlyph,idx)=>{
-		baseIndex = mapGlyph.setLayerLevel(baseIndex);
-	    });
-	    this.getMap().checkLayerOrder();
+	    this.checkGlyphLayers();
+
+
 
 	    this.inMapLegend='';
 	    if(glyphs.length)
@@ -4584,8 +4589,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
         initDisplay: function(embedded) {
 	    let _this = this;
 	    SUPER.initDisplay.call(this)
-	    
-	    this.myLayer = this.map.createFeatureLayer('Annotation Features',false,null,{rendererOptions: {zIndexing: true}});
+	    this.myLayer = this.map.createFeatureLayer('IMDV Features',false,null,{rendererOptions: {zIndexing: true}});
 	    //For now don't have a separate selection layer?
 	    //	    this.selectionLayer = this.map.createFeatureLayer('Selection',false,null,{rendererOptions: {zIndexing: true}});	    
 	    this.selectionLayer = this.myLayer;
