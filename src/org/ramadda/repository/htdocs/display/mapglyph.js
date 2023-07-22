@@ -2498,6 +2498,9 @@ MapGlyph.prototype = {
 
 
 	if(this.isMap()) {
+	    this.attrs.subsetSkip = jqid(this.domId('subsetSkip')).val();
+	    this.attrs.subsetReverse = jqid(this.domId('subsetReverse')).is(':checked');
+	    this.attrs.subsetSimplify= jqid(this.domId('subsetSimplify')).is(':checked');
 	    this.setMapPointsRange(jqid('mappoints_range').val());
 	    this.setMapLabelsTemplate(jqid('mappoints_template').val());	    
 	    let styleGroups = this.getStyleGroups();
@@ -2902,18 +2905,8 @@ MapGlyph.prototype = {
 	    doSequence:doSequence});
     },
     getPropertiesComponent: function(content) {
-	if(this.isGroup() && this.display.isRouteEnabled()) {
-	    let html = this.display.createRouteForm(true);
-	    let buttons  =HU.div(['id',this.domId('createroute'),CLASS,'display-button'], 'Create Route');
-	    html+=HU.div(['style',HU.css('margin-top','5px')], buttons);
-	    html=HU.div(['style',HU.css('margin','5px')],html);
-	    content.push({header:'Make Route', contents:html});
-	}
-
-
 	if(!this.canDoMapStyle()) return;
 	let attrs = this.getExampleMapLayer()?.features[0].attributes ?? {};
-	//xxx
 	let featureInfo = this.featureInfo = this.getFeatureInfoList();
 	let keys  = Object.keys(featureInfo);
 	let numeric = featureInfo.filter(info=>{return info.isNumeric();});
@@ -3036,6 +3029,30 @@ MapGlyph.prototype = {
 	}
 	content.push({header:'Labels',
 		      contents:mapPointsRange+  HU.b('Label Template:')+'<br>' +mapPoints});
+
+	if(this.isMap()) {
+	    let subset = HU.b('Feature Subset')+'<br>';
+	    subset += '<table>';
+	    subset+=HU.formEntry('Skip:',
+ 				 HU.input('',this.attrs.subsetSkip??'0',
+					  ['id',this.domId('subsetSkip'),'size','6'])+
+				 ' ' +'Prunes features');
+	    subset+=HU.formEntry('',
+				 HU.checkbox(this.domId('subsetReverse'),
+					     ['id',this.domId('subsetReverse')],
+					     this.attrs.subsetReverse,'Reverse features'));
+	    subset+=HU.formEntry('',
+				 HU.checkbox(this.domId('subsetSimplify'),
+					     ['id',this.domId('subsetSimplify')],
+					     this.attrs.subsetSimplify,'Simplify geometry' +
+					     ' ' +'(for now this sets feature.components.length=1)'));
+	    subset += '</table>';	    
+	    content.push({header:'Subset',
+			  contents:subset});
+
+	}
+
+
 
 	content.push({header:'Sample Values',contents:ex});
     },
@@ -3754,6 +3771,67 @@ MapGlyph.prototype = {
 	    if(debug) console.log("\tno features");
 	    return
 	}
+	if(!this.originalFeatures) this.originalFeatures = features;
+	else features = this.originalFeatures;
+
+	let changedFeaturesList = false;
+	if(this.attrs.subsetSimplify) {
+	    this.haveChangedGeometry=true;
+//	    console.log('prune geometry');
+	    this.mapLayer.removeFeatures(features);
+	    this.originalFeatures.forEach(feature=>{
+		if(!feature.geometry.originalComponents) {
+		    feature.geometry.originalComponents = [...feature.geometry.components];
+		}
+		feature.geometry.components.length=1;
+	    });
+	    this.mapLayer.addFeatures(features);	    
+	} else if(this.haveChangedGeometry) {
+//	    console.log('reset geometry');
+	    this.haveChangedGeometry = false;
+	    this.mapLayer.removeFeatures(features);
+	    features.forEach(feature=>{
+		if(feature.geometry.originalComponents) {
+		    feature.geometry.components = [...feature.geometry.originalComponents];
+		}
+	    });
+	    this.mapLayer.addFeatures(features);	    	    
+	}
+
+	if(Utils.isNumber(this.attrs.subsetSkip) && this.attrs.subsetSkip>0) {
+	    let tmp = [];
+	    let cnt = 0;
+	    features.forEach((feature,idx)=>{
+		cnt--;
+		if(cnt<0) {
+		    tmp.push(feature);
+		    cnt = this.attrs.subsetSkip;
+		}
+	    });
+	    changedFeaturesList = true;
+	    this.mapLayer.removeFeatures(this.originalFeatures);
+	    this.mapLayer.addFeatures(tmp);	    
+	    features = this.mapLayer.features;
+	} 
+
+	if(this.attrs.subsetReverse) {
+	    let tmp = [];
+	    features.forEach(feature=>{
+		tmp.unshift(feature);
+	    });
+	    changedFeaturesList = true;
+	    this.mapLayer.removeFeatures(features);
+	    this.mapLayer.addFeatures(tmp);	    
+	    features = tmp;
+	}
+
+	if(!changedFeaturesList && this.originalFeatures.length!=features.length) {
+	    this.mapLayer.removeFeatures(this.mapLayer.features);
+	    this.mapLayer.addFeatures(this.originalFeatures);	    
+	    features = this.originalFeatures;
+	}
+
+
 	if(!skipLegendUI && this.canDoMapStyle() && !this.isGroup()) {
 	    this.makeFeatureFilters();
 	}
