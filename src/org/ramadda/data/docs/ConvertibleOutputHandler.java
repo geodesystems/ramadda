@@ -10,6 +10,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.PluginManager;
 import org.ramadda.repository.output.*;
 import org.ramadda.data.services.RecordTypeHandler;
+import org.ramadda.data.services.PointTypeHandler;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
@@ -279,8 +280,8 @@ public class ConvertibleOutputHandler extends OutputHandler {
      *
      * @return _more_
      */
-    public ConvertibleTypeHandler getTypeHandler(Entry entry) {
-        return (ConvertibleTypeHandler) entry.getTypeHandler();
+    public PointTypeHandler getTypeHandler(Entry entry) {
+        return (PointTypeHandler) entry.getTypeHandler();
     }
 
     /**
