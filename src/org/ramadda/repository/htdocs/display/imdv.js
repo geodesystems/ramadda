@@ -2666,7 +2666,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let html = buttons;
 	    let accord;
 	    if(mapGlyph) {
-		accord= HU.makeTabs(content);
+		accord= HU.makeTabs(content,{contentsStyle:'min-height:400px;min-width:750px;'});
 		html+=accord.contents;
 	    } else {
 		html+=HU.center(HU.b('Default Style')) + content[0].contents;
