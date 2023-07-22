@@ -1440,6 +1440,9 @@ function  SeesvForm(inputId, entry,params) {
     });
 
     this.init();
+    if(this.params.initialCommand) {
+	this.display(this.params.initialCommand,null,true);
+    }
     this.lastSavedInput = this.getInput();
 
 }
