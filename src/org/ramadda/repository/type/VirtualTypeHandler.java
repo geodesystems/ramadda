@@ -162,7 +162,8 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
             //Don't cache for now
             cachedIds.put(idString, fromCache);
             List<String> lines = new ArrayList<String>();
-            for (String line : Utils.split(idString, "\n", true, true)) {
+	    String unescaped = Utils.unescapeNL(idString);
+	    for (String line : Utils.split(unescaped, "\n", true, true)) {
                 if (line.startsWith("#")) {
                     continue;
                 }
