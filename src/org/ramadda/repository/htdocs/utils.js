@@ -3965,7 +3965,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return HtmlUtils.div(["style", style], html);
 
     },
-    makeTabs(list) {
+    makeTabs(list,args) {
+	let opts = {};
+	if(args) $.extend(opts,args);
 	let id = HU.getUniqueId('tabs_');
 	let html=HU.open('div',['id',id]);
 	html+='\n';
@@ -3976,7 +3978,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	});
 	html+='</ul>\n';
 	list.forEach((tab,idx)=>{
-	    html+=HU.div(['id',id+'-'+(idx+1)], tab.contents);
+	    let contents = tab.contents;
+	    if(opts.contentsStyle) {
+		contents = HU.div(['style',opts.contentsStyle], contents);
+	    }
+	    html+=HU.div(['id',id+'-'+(idx+1)], contents);
 	    html+='\n';
 	});
 	html+='</div>';
