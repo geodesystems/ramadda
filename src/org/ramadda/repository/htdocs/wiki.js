@@ -989,8 +989,8 @@ WikiEditor.prototype = {
 	    HU.formTable() +
 	    HU.formEntry('Prompt:',HU.div(['id',promptMenuContainerId]))+
 	    HU.formEntry('','Or enter prompt:') +
-	    HU.formEntry('Prompt prefix:',HU.input('',this.lastPromptPrefix??'',
-						   ['class','wiki-llm-input','style','width:500px;','id',this.domId('llm-prompt-prefix')])) +
+	    HU.formEntry('Prompt prefix:',HU.textarea('',this.lastPromptPrefix??'',
+						      ['class','wiki-llm-input','style','width:500px;','id',this.domId('llm-prompt-prefix'),'rows',5])) +
 	    HU.formEntry('Prompt suffix:',
 			 HU.input('',this.lastPromptSuffix??'',['class','wiki-llm-input','style','width:500px;','id',this.domId('llm-prompt-suffix')])) +
 	    HU.formTableClose();
