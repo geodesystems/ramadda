@@ -619,6 +619,7 @@ new MapLayer('osm','OSM',['//a.tile.openstreetmap.org/${z}/${x}/${y}.png',
 			  '//b.tile.openstreetmap.org/${z}/${x}/${y}.png',
 			  '//c.tile.openstreetmap.org/${z}/${x}/${y}.png']);
 
+
 new MapLayer('esri.topo','ESRI Topo','https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}',{isForMap:true});
 new MapLayer('google.roads','Google Maps - Roads','https://mt0.google.com/vt/lyrs=m&hl=en&x=${x}&y=${y}&z=${z}');
 new MapLayer('google.hybrid','Google Maps - Hybrid','https://mt0.google.com/vt/lyrs=y&hl=en&x=${x}&y=${y}&z=${z}');
@@ -1978,9 +1979,8 @@ RepositoryMap.prototype = {
 	//Offset a bunch from the base
 	let base = this.numberOfBaseLayers+100;
 	let debug = false;
-	//	debug = true;
+//	debug = true;
 	let max = 0;
-	//debug=true
 	if(debug)   console.log("***** layer order");
 	let changed = false;
 	let setIndex=layer=>{
@@ -1999,7 +1999,8 @@ RepositoryMap.prototype = {
 	};
 	this.nonSelectLayers.forEach(setIndex);
 	this.loadedLayers.forEach(setIndex);
-	this.externalLayers.forEach(setIndex);
+//	console.log("external")
+//	this.externalLayers.forEach(setIndex);
 	if (this.boxes) {
 	    if(debug)console.log("\tboxes");
 	    setIndex(this.boxes);
@@ -5661,7 +5662,6 @@ RepositoryMap.prototype = {
 	opts = opts||{};
 	opts.style = base_style;
         let layer =  MapUtils.createLayerVector(name||"Markers", opts);
-
 	this.externalLayers.push(layer);
         this.addVectorLayer(layer,canSelect);
 	return layer;
