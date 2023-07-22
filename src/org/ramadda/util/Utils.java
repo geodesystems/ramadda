@@ -5010,6 +5010,11 @@ public class Utils extends IO {
     }
 
 
+    public static String unescapeNL(String s) {
+	return s.replaceAll("\\\\\r?\n","");
+    }
+
+
     /**
      * _more_
      *
