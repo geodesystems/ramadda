@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jul 24 04:36:35 MDT 2023";
+var build_date="RAMADDA build date: Mon Jul 24 10:08:31 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -43067,8 +43067,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    else
 			_this.selectGlyph(mapGlyph);
 		} else if(command==ID_DELETE) {
-		    HU.makeOkCancelDialog($(this),'Are you sure you want to delete this glyph?',
-					  ()=>{_this.removeMapGlyphs([mapGlyph]);});
+		    if(_this.dontAskDelete) {
+			_this.removeMapGlyphs([mapGlyph]);
+		    } else {
+			let dontAsk = HU.checkbox(_this.domId('dontask'),['id',_this.domId('dontask'),'class',''],false,'Don\'t ask again');
+			HU.makeOkCancelDialog($(this),'Are you sure you want to delete this glyph?',
+					      ()=>{
+						  _this.dontAskDelete  = _this.jq('dontask').is(':checked');
+						  _this.removeMapGlyphs([mapGlyph]);},null,dontAsk);
+		    }
 		}
 	    });
 	},
@@ -47145,15 +47152,20 @@ MapGlyph.prototype = {
 		    HU.tag('label',['for', id,'title',''],  'Use the default data icon specification for the entry');
 		contents+='<br>';
 		contents+=  HU.radio(id+'_oruse', id, '', 'false', !on) +
-		    HU.tag('label',['for', id+'_oruse','title',''],  'Use parent group\'s or the below if defined:');
+		    HU.tag('label',['for', id+'_oruse','title',''],  'Use parent group\'s or the below if defined');
 		contents+='<br>';
 	    }
 
 
+
+	    let buttonList = [HU.span(['id',this.domId('dataicon_add_default'),'title','Set example values'],'Apply Defaults')];
+	    if(Utils.stringDefined(this.transientProperties.mapglyphs)) {
+		buttonList.push(HU.span(['glyphid',this.getId(),'class','ramadda-clickable','title','Apply settings from entry','id',this.domId('applyentrydataicon')],'Apply from Entry'));
+	    }
+	    buttonList.push(HU.span(['id',this.domId('dataicon_clear_default'),'title','Clear properties'],'Clear'));
+
 	    let dataIconInfo  =this.getDataIconInfo();
-	    contents+=  HU.buttons([
-		HU.span(['id',this.domId('dataicon_add_default'),'title','Set example values'],'Set Values'),
-		HU.span(['id',this.domId('dataicon_clear_default'),'title','Clear properties'],'Clear')],
+	    contents+=  HU.buttons(buttonList,
 				   null,HU.css('text-align','left'));
 
 	    let fields1 = HU.b('Menu Fields:')+'<br>'+
@@ -47514,12 +47526,12 @@ MapGlyph.prototype = {
 	    lines.push(line);
 	});
 	makeProps(this.getDataIconProperty(ID_DATAICON_PROPS));
+
 	let cvrt=(v,dflt)=>{
 	    if(!Utils.stringDefined(v)) return dflt;
 	    return v;
 	};
 
-//	console.log(props);	console.log(lines);
 
 
 	//This recurses up the glyph tree
@@ -47532,7 +47544,6 @@ MapGlyph.prototype = {
 	}
 	let markerFields = this.getDataIconProperty(ID_DATAICON_FIELDS);
 	let attrs = {};
-//	console.log("selectedField",selectedField);
 	if(debugDataIcons)
 	    console.log({size,canvasWidth,canvasHeight});
 	if(selectedField && markerFields) {
@@ -47610,9 +47621,10 @@ MapGlyph.prototype = {
 	    if(isReady) pending.push(isReady);
 	});
 
-	if(isShown &&props.borderColor) {
+
+	if(isShown && props.borderColor) {
 	    ctx.strokeStyle = props.borderColor;
-	    ctx.lineWidth=parseFloat(props.borderWidth??1);
+	    ctx.lineWidth=parseFloat(props.borderWidth??17);
 	    let d = 0.5*ctx.lineWidth;
 	    ctx.strokeRect(0+d,0+d,canvasWidth-d*2,canvasHeight-d*2);
 	    ctx.strokeStyle = null;
@@ -49347,6 +49359,21 @@ MapGlyph.prototype = {
 	    [ID_DATAICON_LABEL,''],
 	    [ID_DATAICON_PROPS,DEFAULT_DATAICON_PROPS,''],
 	    [ID_DATAICON_MARKERS,DEFAULT_DATAICONS]];
+
+	this.jq('applyentrydataicon').button().click(()=>{
+	    let props = '';
+	    let markers='';
+	    Utils.split(this.transientProperties.mapglyphs,'\n',true,true).forEach(line=>{
+		if(line.startsWith("#")) return;
+		if(line.startsWith('props:')) {
+		    props+=line.substring('props:'.length);
+		} else {
+		    markers+=line+'\n';
+		}
+	    });
+	    this.jq(ID_DATAICON_PROPS).val(props);
+	    this.jq(ID_DATAICON_MARKERS).val(markers);	    
+	});
 	this.jq('dataicon_add_default').button().click(() =>{
 	    props.forEach(tuple=>{	     	      
 		 if(!Utils.stringDefined(this.jq(tuple[0]).val()))
