@@ -315,6 +315,103 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
 
     }
 
+    public static class ToGeojson extends Processor {
+
+	private Row header;
+	private int latitudeIndex = -1;
+	private int longitudeIndex = -1;	
+	private String slat;
+	private String slon;	
+	private boolean all;
+	private List<Integer> indices;
+
+        /**
+         */
+        public ToGeojson(String slat, String slon,List<String> cols) {
+            super(cols);
+	    all = cols.size()==1 && cols.get(0).equals("*");
+	    this.slat = slat;
+	    this.slon = slon;
+        }
+
+
+        /**
+         */
+        @Override
+        public void finish(TextReader ctx) throws Exception {
+	    System.err.println(ctx.getInputFile() +" " + rowCnt);
+            PrintWriter writer = ctx.getWriter();
+	    writer.print("]}\n");
+	    writer.flush();
+	    writer.close();
+        }
+
+	private String qt(String s) {
+	    s = s.replace("\\"," ");
+	    s = s.replace("\"","\\\"");
+	    return HU.quote(s);
+	}
+        /**
+         * _more_
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) throws Exception {
+            PrintWriter writer = ctx.getWriter();
+	    if(rowCnt++==0) {
+		header = row;
+		latitudeIndex = getIndex(ctx,slat);
+		longitudeIndex = getIndex(ctx,slon);		    
+		if(latitudeIndex<0  || longitudeIndex<0) {
+		    throw new IllegalArgumentException("Could not find lat/lon index in:" +row);
+		}
+		writer.print("{\"type\":\"FeatureCollection\",\"features\":[\n");
+		return row;
+            }
+	    if(rowCnt>2) writer.print(",\n");
+	    writer.print("{ \"type\": \"Feature\", \"properties\": {");
+	    int cnt = 0;
+	    if(indices==null) {
+		if(all) {
+		    indices = new ArrayList<Integer>();
+		    for(int i=0;i<header.size();i++) {
+			if(i!=latitudeIndex && i!=longitudeIndex) indices.add(i);
+		    }
+		} else {
+		    indices = getIndices(ctx);
+		}
+	    }
+
+	    for(int i: indices) {
+		if(!row.indexOk(i)) continue;
+		if(cnt>0) writer.print(",");
+		writer.print(HU.quote(header.getString(i)) +":");
+		String v = row.getString(i);
+		if(Utils.isNumber(v)) {
+		    writer.print(v);
+		} else {
+		    writer.print(qt(v));
+		}
+		cnt++;
+	    }
+	    writer.print("},\n");
+	    writer.print("\"geometry\":{ \"type\": \"Point\", \"coordinates\": [" +
+			 row.get(longitudeIndex) +"," + row.get(latitudeIndex)+"]}");
+	    writer.print("}");
+            return row;
+        }
+
+    }
+
+
+
+
     public static class ToDb extends Processor {
 
         /**  */

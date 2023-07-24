@@ -1806,7 +1806,7 @@ public class Seesv implements SeesvCommands {
 		new Arg("header", "Column names", ATTR_TYPE, TYPE_LIST)),
 
         new Cmd(CMD_MULTIFILES, "Treat input files separately",ARG_LABEL,"Multi-files",
-		new Arg("template", "File template  - ${source} ${name} ${count}")),
+		new Arg("template", "File template  - ${file_shortname} ${file_name} ${count}")),
 
         new Cmd(CMD_JSON, "Parse the input as json",
 		ARG_LABEL,"Read JSON",
@@ -2845,7 +2845,6 @@ public class Seesv implements SeesvCommands {
 		new Arg("color", "Color",
 			ATTR_TYPE, "enumeration","values","red,green,yellow,blue,purple,cyan")),
         new Cmd(CMD_BACKGROUND, "Background the columns",
-		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
 		new Arg("color", "Color",
 			ATTR_TYPE, "enumeration","values","red,green,yellow,blue,purple,cyan")),	
         new Cmd(CMD_PRINTHEADER, "Print header",
@@ -2863,6 +2862,11 @@ public class Seesv implements SeesvCommands {
 		new Arg("inner tag")),
         new Cmd(CMD_TOJSON, "Generate JSON",
 		ARG_LABEL,"To JSON"),
+        new Cmd(CMD_TOGEOJSON, "Generate GeoJSON",
+		ARG_LABEL,"To GeoJSON",
+                new Arg("latitude", "latitude column", ATTR_TYPE, TYPE_COLUMN),
+                new Arg("longitude", "longitude column", ATTR_TYPE, TYPE_COLUMN),		
+		new Arg(ARG_COLUMNS, "property columns - use * for all", ATTR_TYPE, TYPE_COLUMNS)),
         new Cmd(CMD_TOURL, "Generate DB publish urls",
 		ARG_LABEL,"To Publish URLS"),
 	new Cmd(CMD_TODB, "Write to Database",
@@ -5199,6 +5203,14 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
+	defineFunction(CMD_TOGEOJSON,3,(ctx,args,i) -> {
+		hasSink = true;
+		ctx.addProcessor(new DataSink.ToGeojson(args.get(++i),
+							args.get(++i),
+							getCols(args.get(++i))));
+		return i;
+	    });	
+
 	defineFunction(CMD_TODB,4,(ctx,args,i) -> {
 		//		hasSink = true;
 		ctx.addProcessor(new DataSink.ToDb(this, args.get(++i), args.get(++i),args.get(++i),parseProps(args.get(++i))));
@@ -5325,8 +5337,8 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-	defineFunction(CMD_SUBD,3,(ctx,args,i) -> {
-		ctx.addProcessor(new Processor.Subd(this,getCols(args.get(++i)),
+	defineFunction(CMD_SUBD,3,(ctx,args,i) -> {	
+	ctx.addProcessor(new Processor.Subd(this,getCols(args.get(++i)),
 						    args.get(++i), args.get(++i)));
 		return i;
 	    });

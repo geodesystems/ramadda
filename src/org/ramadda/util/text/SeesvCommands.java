@@ -308,6 +308,7 @@ public interface SeesvCommands {
     public static final String CMD_TOURL="-tourl";
     public static final String CMD_TORECORD="-torecord";
     public static final String CMD_TOXML="-toxml";
+    public static final String CMD_TOGEOJSON="-togeojson";    
     public static final String CMD_TOJSON="-tojson";
     public static final String CMD_TODB="-todb";
     public static final String CMD_TEMPLATE="-template";
