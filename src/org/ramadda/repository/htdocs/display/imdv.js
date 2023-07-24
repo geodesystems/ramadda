@@ -1284,7 +1284,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    mapOptions.name = attrs.name;
 			    let points = Utils.isDefined(attrs.latitude)?[attrs.latitude,attrs.longitude]:[attrs.north,attrs.west];
 			    let mapGlyph = this.createMapMarker(GLYPH_ENTRY,mapOptions, style,points,true);
-			    mapGlyph.applyEntryGlyphs();
+			    mapGlyph.applyDataIcon();
 			    this.clearCommands();
 			    mapGlyph.panMapTo();
 			    return
@@ -4370,6 +4370,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    this.featureChanged();
 		    this.redraw();
 		}
+		draggedGlyph.glyphHasBeenDropped();
 		this.handleGlyphsChanged();
 		this.redraw();
 	    },1);
