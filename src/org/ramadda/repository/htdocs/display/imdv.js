@@ -2268,13 +2268,18 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(line.title) {
 		    attrs.push('title',line.title);
 		}
+		let skip = line.skip;
 		if(line.line) {
 		    line = line.line;
+		}
+		if(skip) {
+		    help+=HU.div([],line);
+		    return;
 		}
 		attrs.push('value',props.prefix + line + props.suffix);
 		help+=HU.div(attrs,line);
 	    });
-	    help = HU.div(['class','imdv-side-help'], help);
+	    help = HU.div(['class','imdv-side-help','style',props.style??''], help);
 	    return help;
 	},
 	getFeaturePropertyApply:function() {
