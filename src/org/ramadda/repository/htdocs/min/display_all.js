@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Jul 22 12:27:23 MDT 2023";
+var build_date="RAMADDA build date: Mon Jul 24 04:36:35 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -42412,7 +42412,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    mapOptions.name = attrs.name;
 			    let points = Utils.isDefined(attrs.latitude)?[attrs.latitude,attrs.longitude]:[attrs.north,attrs.west];
 			    let mapGlyph = this.createMapMarker(GLYPH_ENTRY,mapOptions, style,points,true);
-			    mapGlyph.applyEntryGlyphs();
+			    mapGlyph.applyDataIcon();
 			    this.clearCommands();
 			    mapGlyph.panMapTo();
 			    return
@@ -45498,6 +45498,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    this.featureChanged();
 		    this.redraw();
 		}
+		draggedGlyph.glyphHasBeenDropped();
 		this.handleGlyphsChanged();
 		this.redraw();
 	    },1);
@@ -46651,8 +46652,12 @@ function olCheckLabelBackground(renderer,   style,label,featureId,bbox) {
 
 
 
-var DEFAULT_GLYPH_PROPS = 'font:50px sans-serif,lineWidth:5,requiredField:${_field},borderColor:#000,fill:#eee';
-var DEFAULT_GLYPHS = 'label,pos:nw,dx:80,dy:-ch+20,label:${${_field} decimals=1 suffix=" ${unit}"}\nimage,pos:nw,dx:10,dy:10-ch,width:60,height:60,url:${icon}';
+var debugDataIcons = false;
+
+var DEFAULT_DATAICON_PROPS = 'font:50px sans-serif,lineWidth:5,requiredField:${_field},borderColor:#000,fill:#eee';
+var DEFAULT_DATAICONS = 'label,pos:nw,dx:80,dy:-ch+20,label:${${_field} decimals=1 suffix=" ${unit}"}\nimage,pos:nw,dx:10,dy:10-ch,width:60,height:60,url:${icon}';
+var DEFAULT_DATAICON_FIELD='temp.*|.*temp';
+var DEFAULT_DATAICON_FIELDS=DEFAULT_DATAICON_FIELD+',label=Temperature,unit=C\ndewpoint,label=Dewpoint,unit=C';
 
 
 var LINETYPE_STRAIGHT='straight';
@@ -46662,6 +46667,17 @@ var LINETYPE_STEPPED='stepped';
 var ID_ADDDOTS = 'adddots';
 var ID_LINETYPE = 'linetype';
 var ID_SHOWDATAICONS = 'showdataicons';
+
+var ID_DATAICON_USEENTRY = 'dataicon_useentry';
+var ID_DATAICON_MARKERS = 'dataicon_markers';
+var ID_DATAICON_LABEL='dataicon_label';
+var ID_DATAICON_FIELDS='dataicon_fields';
+var ID_DATAICON_INIT_FIELD='dataicon_init_field';
+var ID_DATAICON_SELECTED_FIELD='dataicon_selected_field';
+var ID_DATAICON_WIDTH='dataicon_width';
+var ID_DATAICON_HEIGHT='dataicon_height';
+var ID_DATAICON_SIZE='dataicon_size';
+var ID_DATAICON_PROPS='dataicon_props';
 
 function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
     if(!type) {
@@ -46736,7 +46752,7 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
 		    this.addFeature(feature,true,true);
 		}
 
-		this.applyEntryGlyphs();
+		this.applyDataIcon();
 		this.applyMapStyle();
 		this.display.redraw(this);
 		this.display.makeLegend();
@@ -46756,8 +46772,7 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
     if(this.isRings()) {
 	this.checkRings();
     }
-
-    this.checkGlyphFields();
+    this.checkDataIcon();
 }
 
 
@@ -46991,16 +47006,6 @@ MapGlyph.prototype = {
     isMultiEntry:  function() {
 	return this.type == GLYPH_MULTIENTRY;
     },
-    getEntryGlyphs:function(checkTransient) {
-	let glyphs = this.getGlyphProperty('glyphs');
-	if(Utils.stringDefined(glyphs)) {
-	    return glyphs;
-	}
-	if(checkTransient) {
-	    return this.transientProperties.mapglyphs;
-	}
-	return null;
-    },
     getRadii:function() {
 	if(!this.attrs.radii) {
 	    let level = this.display.getCurrentLevel();
@@ -47081,10 +47086,7 @@ MapGlyph.prototype = {
 	html+=HU.b('Name: ') +nameWidget+'<br>';
 	let level = this.getVisibleLevelRange()??{};
 	html+= HU.checkbox(this.domId('visible'),[],this.getVisible(),'Visible')+'<br>';
-
-
 	html+=this.display.getLevelRangeWidget(level,this.getShowMarkerWhenNotVisible());
-	
 
 	let domId = this.display.domId('glyphedit_popupText');
 	let featureInfo = this.getFeatureInfoList();
@@ -47129,50 +47131,60 @@ MapGlyph.prototype = {
 	if(this.isDataIconCapable()) {
 	    let contents ='';
 	    let help = this.getHelp('dataicons.html');
-	    contents+= HU.leftRightTable(HU.checkbox(this.domId(ID_SHOWDATAICONS),[],
-						     this.getShowDataIcons(),'Show data as icons'),help);
-	    contents+='<thin_hr></thin_hr><br>';
+	    let dataIconsSelect= 'Show data icons: '+
+		HU.select('',['id',this.domId(ID_SHOWDATAICONS)],
+			  ['inherited','yes','no'],
+			  this.attrs[ID_SHOWDATAICONS]??'inherited');
+			  
+	    contents+= HU.leftRightTable(dataIconsSelect,help);
+	    contents+='<thin_hr></thin_hr>';
+	    if(Utils.stringDefined(this.transientProperties.mapglyphs)) {
+		let on = this.getAttribute(ID_DATAICON_USEENTRY);
+		let id = this.domId(ID_DATAICON_USEENTRY);
+		contents+=  HU.radio(id, id, '', 'true', on) +
+		    HU.tag('label',['for', id,'title',''],  'Use the default data icon specification for the entry');
+		contents+='<br>';
+		contents+=  HU.radio(id+'_oruse', id, '', 'false', !on) +
+		    HU.tag('label',['for', id+'_oruse','title',''],  'Use parent group\'s or the below if defined:');
+		contents+='<br>';
+	    }
 
-	    let gi  =this.getGlyphInfo();
+
+	    let dataIconInfo  =this.getDataIconInfo();
+	    contents+=  HU.buttons([
+		HU.span(['id',this.domId('dataicon_add_default'),'title','Set example values'],'Set Values'),
+		HU.span(['id',this.domId('dataicon_clear_default'),'title','Clear properties'],'Clear')],
+				   null,HU.css('text-align','left'));
+
 	    let fields1 = HU.b('Menu Fields:')+'<br>'+
-		HU.textarea('',gi.fields??'',
-			    ['placeholder','field pattern,label=<label>,unit=<unit>\ne.g.:\ntemperature|temp_c,label=Temperature,unit=C','id',this.domId('glyphfields'),'rows',4,'cols', 60]);
+		HU.textarea('',dataIconInfo[ID_DATAICON_FIELDS]??'',
+			    ['placeholder','field pattern,label=<label>,unit=<unit>\ne.g.:\n'+
+			     DEFAULT_DATAICON_FIELDS,'id',this.domId(ID_DATAICON_FIELDS),'rows',4,'cols', 60]);
 	    let  fields2= HU.b('Initial field:')+'<br>'+
-		HU.input('',gi.field??'',['id',this.domId('glyphfield'),'size','25','placeholder','Initial field']) +'<br>' +
+		HU.input('',dataIconInfo[ID_DATAICON_INIT_FIELD]??'',['id',this.domId(ID_DATAICON_INIT_FIELD),'size','25','placeholder','Initial field']) +'<br>' +
 		HU.b('Menu Label:') +'<br>'  +
-		HU.input('',gi.label??'',['id',this.domId('glyphlabel'),'size','25']);
+		HU.input('',dataIconInfo[ID_DATAICON_LABEL]??'',['id',this.domId(ID_DATAICON_LABEL),'size','25']);
+
 	    contents+=HU.table(HU.tr(['valign','top'],HU.td(fields1) +HU.td(HU.div(['style','margin-left:8px;'],fields2))));
 	    contents+='<p>';
-
-	    contents+=  HU.div(['id',this.domId('glyph_add_default'),
-				'title','Set default properties and glyphs'],'Set Defaults:');
-
-	    contents+=  ' Note: this overrides any default data icons';
-	    contents+='<br>';
 	    contents+=HU.b('Canvas: ') +
-		'W: ' + HU.input('',gi.width??'',['id',this.domId('glyphwidth'),'size','3']) +
-		' H: ' + HU.input('',gi.height??'',['id',this.domId('glyphheight'),'size','3']) +
+		'W: ' + HU.input('',dataIconInfo[ID_DATAICON_WIDTH]??'',['id',this.domId(ID_DATAICON_WIDTH),'size','3']) +
+		' H: ' + HU.input('',dataIconInfo[ID_DATAICON_HEIGHT]??'',['id',this.domId(ID_DATAICON_HEIGHT),'size','3']) +
 		HU.space(2) + HU.b('Icon Size: ') +
-		HU.input('',gi.iconsize??'',['id',this.domId('iconsize'),'size','3']);
+		HU.input('',dataIconInfo[ID_DATAICON_SIZE]??'',['id',this.domId(ID_DATAICON_SIZE),'size','3']);
 
 
-	    contents+=  HU.div(['style','padding-top:0.5em;padding-bottom:0.5em;'],
+	    contents+=  HU.div(['style','xpadding-top:0.5em;padding-bottom:0.5em;'],
 			       HU.b('Properties:') + HU.space(1) +
-			       HU.input('',gi.props??'',['id',this.domId('glyphprops'),'size','80']));
+			       HU.input('',dataIconInfo[ID_DATAICON_PROPS]??'',['id',this.domId(ID_DATAICON_PROPS),'size','80']));
 	    contents+=HU.b('Icon Specification:')  +'<br>';
 	    contents +=
-		HU.textarea('',gi.glyphs??'',[ID,this.domId('entryglyphs'),'rows',3,'cols', 90]);
+		HU.textarea('',dataIconInfo[ID_DATAICON_MARKERS]??'',[ID,this.domId(ID_DATAICON_MARKERS),'rows',3,'cols', 90]);
 	    content.push({
 		header:'Data Icons',
 		contents: contents});
 
 	}
-
-	
-	
-
-
-
 
     },
     addElevations:async function(update,done) {
@@ -47196,9 +47208,6 @@ MapGlyph.prototype = {
 	await this.getElevations(pts,callback,update);
     },
 
-    isDataIconCapable:function() {
-	return this.isEntry() || this.isGroup()  || this.isMultiEntry();
-    },
     applyPropertiesDialog: function() {
 	//Make sure we do this after we set the above style properties
 	this.setName(this.jq("mapglyphname").val());
@@ -47210,28 +47219,23 @@ MapGlyph.prototype = {
 	}
 	if(this.isDataIconCapable()) {
 	    if(this.jq(ID_SHOWDATAICONS).length) {
-		this.setShowDataIcons(this.jq(ID_SHOWDATAICONS).is(':checked'));
+		this.setShowDataIcons(this.jq(ID_SHOWDATAICONS).val());
 	    }
+	    this.setAttribute(ID_DATAICON_USEENTRY,this.jq(ID_DATAICON_USEENTRY).is(':checked'));
 
-	    let gi = this.getGlyphInfo();
-	    gi.glyphs = this.jq('entryglyphs').val();
-	    gi.fields=this.jq('glyphfields').val();
-	    gi.width=this.jq('glyphwidth').val();
-	    gi.height=this.jq('glyphheight').val();	    
-	    gi.iconsize=this.jq('iconsize').val();
-	    gi.props=this.jq('glyphprops').val();
-	    gi.field=this.jq('glyphfield').val();
-	    gi.label=this.jq('glyphlabel').val();	    	    
-	    if(this.canHaveChildren()) 
-		this.applyGlyphField();
-	    else if(this.isEntry()) 
-		this.applyEntryGlyphs();
+	    let dataIconInfo = this.getDataIconInfo();
+	    [ID_DATAICON_MARKERS, ID_DATAICON_FIELDS,ID_DATAICON_INIT_FIELD,
+	     ID_DATAICON_WIDTH, ID_DATAICON_HEIGHT, ID_DATAICON_SIZE,
+	     ID_DATAICON_LABEL, ID_DATAICON_PROPS].forEach(prop=>{
+		 dataIconInfo[prop] = this.jq(prop).val();
+	     });
+	    this.applyDataIcon();
 	}
-	this.setVisible(this.jq("visible").is(":checked"),true);
+	this.setVisible(this.jq('visible').is(':checked'),true);
 	this.parsedProperties = null;
 	this.attrs.properties = this.jq('miscproperties').val();
-	this.setVisibleLevelRange(this.display.jq("minlevel").val().trim(),
-				  this.display.jq("maxlevel").val().trim());
+	this.setVisibleLevelRange(this.display.jq('minlevel').val().trim(),
+				  this.display.jq('maxlevel').val().trim());
 	this.setShowMarkerWhenNotVisible(this.display.jq('showmarkerwhennotvisible').is(':checked'));
 
 	if(this.isMapServer()  && this.getDatacubeVariable()) {
@@ -47248,43 +47252,7 @@ MapGlyph.prototype = {
 	    this.attrs.rangeRingStyle = this.jq('rangeringstyle').val();
 	    if(this.features.length>0) this.features[0].style.strokeColor='transparent';
 	}
-	this.checkGlyphFields();
-    },
-    checkGlyphFields:function() {
-	let _this = this;
-	let gi = this.getGlyphInfo();
-	if(this.glyphFieldsContainer) {
-	    jqid(this.glyphFieldsContainer).remove();
-	    this.glyphFieldsContainer=null;
-	}
-	if(!this.getProperty('showGlyphMenu',true,true)) {
-	    return
-	}
-
-	if(Utils.stringDefined(gi.fields)) {
-	    this.glyphFieldsId = HU.getUniqueId('glyphfields_');
-	    this.glyphFieldsContainer = HU.getUniqueId('glyphfields_');
-	    let items = [];
-	    Utils.split(gi.fields,'\n',true,true).forEach(item=>{
-		let toks = Utils.split(item,',',true,true);
-		let map = {};
-		for(let i=1;i<toks.length;i++) {
-		    let toks2 = Utils.split(toks[i],"=",true,true);
-		    if(toks2.length>1) map[toks2[0]] = toks2[1];
-		}
-		items.push({value:toks[0],label:map.label});
-	    });
-	    let menu = HU.select('',['id',this.glyphFieldsId],
-				 items,
-				 gi.field);
-	    let label = Utils.stringDefined(gi.label)?gi.label:'Select field';
-	    this.display.jq(ID_HEADER1).append(HU.div(['style',HU.css('display','inline-block','margin-right','20px'),'id',this.glyphFieldsContainer],
-						      HU.b(label)+':'+HU.space(1)+menu));
-	    jqid(this.glyphFieldsId).change(function(){
-		_this.getGlyphInfo().field = $(this).val();
-		_this.applyGlyphField();
-	    });
-	}
+	this.checkDataIcon();
     },
 
     featureSelected:function(feature,layer,event) {
@@ -47315,75 +47283,190 @@ MapGlyph.prototype = {
 	//	this.display.getMap().onFeatureSelect(feature.layer,event)
     },
     glyphCreated:function() {
-	this.applyEntryGlyphs();
+	this.applyDataIcon();
     },
+
+
+    isDataIconCapable:function() {
+	return this.isEntry() || this.isGroup()  || this.isMultiEntry();
+    },
+    getDataIconInfo:function(v) {
+	let ID = 'dataIconInfo';
+	//check for old property
+	if(this.attrs.glyphInfo) {
+	    if(!this.attrs[ID]) {
+		this.attrs[ID] = this.attrs.glyphInfo;
+	    }
+	    this.attrs.glyphInfo = null;
+	}
+
+	if(!this.attrs[ID]) {
+	    this.attrs[ID] = {};
+	}
+	let info =  this.attrs[ID];
+	//backwards compat
+	if(info.glyphs) {
+	    if(!info[ID_DATAICON_MARKERS]) info[ID_DATAICON_MARKERS]= info.glyphs;
+	    info.glyphs=null;
+	}
+	return info;
+    },
+    getDataIconProperty:function(property,dflt) {
+	let debug = false;
+//	debug=property==ID_DATAICON_SELECTED_FIELD;
+	if(this.getAttribute(ID_DATAICON_USEENTRY)) {
+	    return dflt;
+	}	    
+
+	if(debug) {
+	    console.log("getDataIconProperty:" + this.getName()+' prop='+property);
+	    console.dir(this.getDataIconInfo());
+	}
+	if(Utils.stringDefined(this.getDataIconInfo()[property])) {
+	    if(debug)
+		console.log("\tmine:" +this.getDataIconInfo()[property]);
+	    return this.getDataIconInfo()[property];
+	}
+	if(property==ID_DATAICON_INIT_FIELD) {
+	    if(this.dataIconFieldsId) {
+		glyphField = jqid(this.dataIconFieldsId).val();
+		if(glyphField) return glyphField;
+	    }
+	}
+
+	if(this.getParentGlyph()) {
+	    if(debug)
+		console.log("\tasking parent");
+	    return this.getParentGlyph().getDataIconProperty(property,dflt);
+	}
+	return dflt;
+    },
+    getDataIconMarkers:function() {
+	if(this.getAttribute(ID_DATAICON_USEENTRY)) {
+	    if(Utils.stringDefined(this.transientProperties.mapglyphs)) {
+		return this.transientProperties.mapglyphs;
+	    }
+	}
+	let markers = this.getDataIconProperty(ID_DATAICON_MARKERS);
+	if(Utils.stringDefined(markers)) {
+	    return markers;
+	}
+	return this.transientProperties.mapglyphs;
+    },
+
+    checkDataIcon:function() {
+	let _this = this;
+	let dataIconInfo = this.getDataIconInfo();
+	if(this.dataIconContainer) {
+	    jqid(this.dataIconContainer).remove();
+	    this.dataIconContainer=null;
+	}
+	if(!this.getProperty('showGlyphMenu',true,true)) {
+	    return
+	}
+
+	if(Utils.stringDefined(dataIconInfo[ID_DATAICON_FIELDS])) {
+	    this.dataIconFieldsId = HU.getUniqueId('dataiconfields_');
+	    this.dataIconContainer = HU.getUniqueId('dataiconfieldscontainer_');
+	    let items = [];
+	    Utils.split(dataIconInfo[ID_DATAICON_FIELDS],'\n',true,true).forEach(item=>{
+		let toks = Utils.split(item,',',true,true);
+		let map = {};
+		for(let i=1;i<toks.length;i++) {
+		    let toks2 = Utils.split(toks[i],"=",true,true);
+		    if(toks2.length>1) map[toks2[0]] = toks2[1];
+		}
+		items.push({value:toks[0],label:map.label});
+	    });
+	    let menu = HU.select('',['id',this.dataIconFieldsId],
+				 items,
+				 Utils.getStringDefined(dataIconInfo[ID_DATAICON_SELECTED_FIELD],
+							dataIconInfo[ID_DATAICON_INIT_FIELD]));
+	    let label = Utils.getStringDefined(dataIconInfo[ID_DATAICON_LABEL],'Select field');
+	    this.display.jq(ID_HEADER1).append(HU.div(['style',HU.css('display','inline-block','margin-right','20px'),'id',this.dataIconContainer],
+						      HU.b(label)+':'+HU.space(1)+menu));
+	    jqid(this.dataIconFieldsId).change(function(){
+		_this.getDataIconInfo()[ID_DATAICON_SELECTED_FIELD] = $(this).val();
+		_this.applyDataIcon();
+	    });
+	}
+    },
+
+
     clearDataIcon: function() {
 	//Is this a data icon
-	if(this.style && this.style.externalGraphic && this.style.externalGraphic.startsWith('data:')) {
+	if(this.style?.externalGraphic?.startsWith('data:')) {
 	    if(this.attrs.dataIconOriginal) {
-		console.log('isDataIcon-orig');
 		let o = this.attrs.dataIconOriginal;
+//		console.log('\tisDataIcon-orig:',this.attrs.dataIconOriginal);
 		this.style.externalGraphic=o.externalGraphic;
 		this.style.pointRadius = o.pointRadius;
 		this.style.fontSize = o.fontSize;		
 	    } else {
-		console.log('isDataIcon-null');
+//		console.log('\tisDataIcon-null');
 		this.style.externalGraphic=null;
 	    }
-
+	    this.applyStyle();
 	}
     },
 
-    applyGlyphField: function() {
+    glyphHasBeenDropped:function() {
+	if(this.getShowDataIcons()) {
+	    this.applyDataIcon();
+	} else {
+	    this.clearDataIcon();
+	}
+    },
+
+    applyDataIcon: function() {
 	if(this.isEntry()) {
-	    this.applyEntryGlyphs();
+	    this.makeDataIcon();
 	}
 	this.applyChildren(child=>{
-	    child.applyGlyphField();
+	    child.applyDataIcon();
 	});
     },
 
-    applyEntryGlyphs:function(force) {
-	let debug  = true;
+    makeDataIcon:function(force) {
+	if(!this.isVisible())  {
+	    return;
+	}
+	let debug  = false;
+//	debug=true;
 	if(!force && !this.getShowDataIcons()) {
-	    if(debug)	    console.log('applyEntryGlyphs - none',this.getName());
+	    if(debug)	    console.log('makeDataIcon - none',this.getName());
 	    this.clearDataIcon();
 //	    this.display.redraw(this);
 	    return;
 	}
-	if(!Utils.stringDefined(this.getEntryGlyphs(true))) {
-	    if(debug) console.log('applyEntryGlyphs - none2',this.getName());
+	let markersString = this.getDataIconMarkers();
+	if(!Utils.stringDefined(markersString)) {
+	    if(debug) console.log('makeDataIcon - none2',this.getName());
 	    return;
 	}
-
-	if(debug)	console.log('applyEntryGlyphs',this.getName());
+	if(debug)	console.log('makeDataIcon',this.getName());
 	let opts = {
 	    entryId:this.attrs.entryId
 	};
 
-	let glyphs = [];
-	let g = this.getEntryGlyphs(true);
-	g = g.replace(/\\ *\n/g,'');
-	let lines = Utils.split(g,'\n',true,true);
-//	console.log(this.getName() + ' glyphs: ' + g.trim())
-
-
-//	console.log(this.getName());
+	let markers = [];
+	markersString = markersString.replace(/\\ *\n/g,'');
+	let lines = Utils.split(markersString,'\n',true,true);
 	lines.forEach(line=>{
 	    line = line.trim();
 	    if(line.startsWith("#") || line == "") return;
 	    //console.log('\tline:'+line);
-	    glyphs.push(line);
+	    markers.push(line);
 	});
-	if(glyphs.length==0) {
-	    console.log("\tno glyphs-2");
+	if(markers.length==0) {
+	    console.log("\tno markers-2");
 	    return;
 	}
 	let url = Ramadda.getUrl("/entry/data?record.last=1&max=1&entryid=" + opts.entryId);
 	let pointData = new PointData("",  null,null,url,
 				      {entryId:opts.entryId});
 	let callback = (data)=>{
-	    this.makeGlyphs(pointData,data,glyphs);
+	    this.makeDataIcons(pointData,data,markers);
 	}
 	let fauxDisplay  = {
 	    display:this.display,
@@ -47409,8 +47492,8 @@ MapGlyph.prototype = {
 	}
 	pointData.loadData(fauxDisplay,null);
     },
-    makeGlyphs: function(pointData,data,glyphLines) {
-	let glyphs = [];
+    makeDataIcons: function(pointData,data,markerLines) {
+	let markers = [];
 	let lines=[];
 	let props = {};
 	let makeProps = line=>{
@@ -47421,7 +47504,7 @@ MapGlyph.prototype = {
 		}
 	    });
 	};
-	glyphLines.forEach(line=>{
+	markerLines.forEach(line=>{
 	    line = line.trim();
 	    if(line.startsWith("#")) return;
 	    if(line.startsWith('props:')) {
@@ -47430,26 +47513,32 @@ MapGlyph.prototype = {
 	    }
 	    lines.push(line);
 	});
-	makeProps(this.getGlyphProperty('props'));
-
+	makeProps(this.getDataIconProperty(ID_DATAICON_PROPS));
 	let cvrt=(v,dflt)=>{
 	    if(!Utils.stringDefined(v)) return dflt;
 	    return v;
 	};
 
-	//This recurses up the glyph tree
-	let size=cvrt(this.getGlyphProperty('iconsize'),props.iconSize??100);
-	let canvasWidth=parseFloat(cvrt(this.getGlyphProperty('width'),props.canvasWidth??100));
-	let canvasHeight=parseFloat(cvrt(this.getGlyphProperty('height'),props.canvasHeight??100));	
-//	console.log(canvasWidth,canvasHeight,size);
+//	console.log(props);	console.log(lines);
 
-	let glyphField=this.getGlyphProperty('field');
-	let glyphFields = this.getGlyphProperty('fields');
+
+	//This recurses up the glyph tree
+	let size=cvrt(this.getDataIconProperty(ID_DATAICON_SIZE),props.iconSize??100);
+	let canvasWidth=parseFloat(cvrt(this.getDataIconProperty(ID_DATAICON_WIDTH),props.canvasWidth??100));
+	let canvasHeight=parseFloat(cvrt(this.getDataIconProperty(ID_DATAICON_HEIGHT),props.canvasHeight??100));
+	let selectedField=this.getDataIconProperty(ID_DATAICON_SELECTED_FIELD);
+	if(!Utils.stringDefined(selectedField)) {
+	    selectedField=this.getDataIconProperty(ID_DATAICON_INIT_FIELD);
+	}
+	let markerFields = this.getDataIconProperty(ID_DATAICON_FIELDS);
 	let attrs = {};
-	if(glyphField && glyphFields) {
-	    Utils.split(glyphFields,'\n',true,true).every(item=>{
+//	console.log("selectedField",selectedField);
+	if(debugDataIcons)
+	    console.log({size,canvasWidth,canvasHeight});
+	if(selectedField && markerFields) {
+	    Utils.split(markerFields,'\n',true,true).every(item=>{
 		let toks = Utils.split(item,',',true,true);
-		if(toks[0]!=glyphField) return true;
+		if(toks[0]!=selectedField) return true;
 		for(let i=1;i<toks.length;i++) {
 		    let toks2 = Utils.split(toks[i],"=",true,true);
 		    attrs[toks2[0]] = toks2[1]??'';
@@ -47458,12 +47547,15 @@ MapGlyph.prototype = {
 	    });
 	}
 
+	
 	lines.forEach(line=>{
 	    line = line.trim();
 	    if(line.startsWith('#')) return;
-	    if(glyphField) {
-		line = line.replace(/\${_field}/g,glyphField);
+	    if(selectedField) {
+		line = line.replace(/\${_field}/g,selectedField);
 	    }
+	    //console.log('DATAICON LINE:',line);
+
 	    let extra = '';
 	    ['scale','offset1','offset2'].forEach(a=>{
 		if(attrs[a]) extra+= ' ' + a +'=' + attrs[a] +' ';
@@ -47479,20 +47571,22 @@ MapGlyph.prototype = {
 
 	    props = Utils.clone({},
 				props,{
-				    glyphField:glyphField,
+				    glyphField:selectedField,
 				    canvasWidth:canvasWidth,
 				    canvasHeight: canvasHeight,
 				    entryname: this.getName(),
 				},attrs);
-	    glyphs.push(new Glyph(this.display,1.0, data.getRecordFields(),data.getRecords(),props,line));
+	    if(debugDataIcons)
+		console.log('line:'+ line);
+	    markers.push(new Glyph(this.display,1.0, data.getRecordFields(),data.getRecords(),props,line));
 	});
 	let cid = HU.getUniqueId("canvas_");
 	let c = HU.tag("canvas",[CLASS,"", STYLE,"xdisplay:none;", 	
 				 WIDTH,canvasWidth,HEIGHT,canvasHeight,ID,cid]);
 
 	let isShown = true;
-	glyphs.forEach(glyph=>{
-	    if(!glyph.okToShow()) {
+	markers.forEach(marker=>{
+	    if(!marker.okToShow()) {
 		isShown=false;
 	    }
 	});
@@ -47509,10 +47603,10 @@ MapGlyph.prototype = {
 	ctx.fillStyle="#000";
 	let pending = [];
 	let records = data.getRecords();
-	glyphs.forEach(glyph=>{
+	markers.forEach(marker=>{
 	    //if its an image glyph then the image might not be loaded so the call returns a
 	    //isReady function that we keep checking until it is ready
-	    let isReady =  glyph.draw(props, canvas, ctx, 0,canvasHeight,{record:records[records.length-1]});
+	    let isReady =  marker.draw(props, canvas, ctx, 0,canvasHeight,{record:records[records.length-1]});
 	    if(isReady) pending.push(isReady);
 	});
 
@@ -47567,42 +47661,16 @@ MapGlyph.prototype = {
     setDownloadUrl:function(url) {
 	this.downloadUrl =url;
     },
-    getGlyphInfo:function(v) {
-	if(!this.attrs.glyphInfo)
-	    this.attrs.glyphInfo = {};
-	return this.attrs.glyphInfo;
+
+    setAttribute:function(property,value) {
+	this.attrs[property] = value;
     },
-    getGlyphProperty:function(property,dflt) {
-	let debug = false;
-//	debug = (property=='field');
-	if(debug) {
-	    console.log("getGlyphProperty:" + property);
-	    console.dir(this.getGlyphInfo());
-	}
-	if(Utils.stringDefined(this.getGlyphInfo()[property])) {
-	    if(debug)
-		console.log("mine:" +this.getGlyphInfo()[property]);
-	    return this.getGlyphInfo()[property];
-	}
-	if(property=='field') {
-	    if(this.glyphFieldsId) {
-		glyphField = jqid(this.glyphFieldsId).val();
-		if(glyphField) return glyphField;
-	    }
-	}
+    getAttribute:function(property,value,dflt) {
+	if(!Utils.isDefined(this.attrs[property])) return dflt;
+	return Utils.getProperty(this.attrs[property]);
+    },
 
 
-	if(this.getParentGlyph()) {
-	    if(debug)
-		console.log("asking parent");
-	    return this.getParentGlyph().getGlyphProperty(property,dflt);
-	}
-	return dflt;
-    },
-    setEntryGlyphs:function(v) {
-	this.getGlyphInfo().glyphs = v;
-	return this;
-    },
     getUseEntryLocation: function() {
 	return this.attrs.useentrylocation;
     },
@@ -48075,7 +48143,7 @@ MapGlyph.prototype = {
 	}
 
 	if(glyphType) {
-	    let icon = Utils.getStringDefined([this.style.externalGraphic,this.attrs.icon,glyphType.getIcon()]);
+	    let icon = Utils.getStringDefined(this.style.externalGraphic,this.attrs.icon,glyphType.getIcon());
 	    if(icon.startsWith('data:')) icon = this.attrs.icon;
 	    if(icon && icon.endsWith('blank.gif')) icon = glyphType.getIcon();
 	    icon = HU.image(icon,['width','18px']);
@@ -48948,14 +49016,19 @@ MapGlyph.prototype = {
 	return this.getType()==GLYPH_MULTIENTRY;
     },
     getShowDataIcons:function() {
-	if(this.attrs.showdataicons) return true;
+	if(this.attrs[ID_SHOWDATAICONS] ===true)
+	    this.attrs[ID_SHOWDATAICONS] = 'yes';
+	else if(this.attrs[ID_SHOWDATAICONS] ===false)
+	    this.attrs[ID_SHOWDATAICONS] = 'no';	
+	if(this.attrs[ID_SHOWDATAICONS] ==='yes') return true;
+	if(this.attrs[ID_SHOWDATAICONS] ==='no') return false;	
 	if(this.getParentGlyph()) {
 	    return this.getParentGlyph().getShowDataIcons();
 	}
 	return false;
     },
     setShowDataIcons:function(v) {
-	this.attrs.showdataicons = v;
+	this.attrs[ID_SHOWDATAICONS] = v;
     },
     setMapServerUrl:function(url,wmsLayer,legendUrl,predefined,mapOptions) {
 	this.style.legendUrl = legendUrl;
@@ -49265,16 +49338,27 @@ MapGlyph.prototype = {
 	});
     },
     initPropertiesComponent: function(dialog) {
-	this.jq('glyph_add_default').button().click(() =>{
-	    [['glyphwidth','300'],
-	     ['glyphheight','100'],	     
-	     ['iconsize','40'],
-	     ['glyphprops',DEFAULT_GLYPH_PROPS],
-	     ['entryglyphs',DEFAULT_GLYPHS]].forEach(tuple=>{	     	      
+	let props = [
+	    [ID_DATAICON_FIELDS,  DEFAULT_DATAICON_FIELDS],
+	    [ID_DATAICON_INIT_FIELD,DEFAULT_DATAICON_FIELD],
+	    [ID_DATAICON_WIDTH,'300'],
+	    [ID_DATAICON_HEIGHT,'100'],	     
+	    [ID_DATAICON_SIZE,'40'],
+	    [ID_DATAICON_LABEL,''],
+	    [ID_DATAICON_PROPS,DEFAULT_DATAICON_PROPS,''],
+	    [ID_DATAICON_MARKERS,DEFAULT_DATAICONS]];
+	this.jq('dataicon_add_default').button().click(() =>{
+	    props.forEach(tuple=>{	     	      
 		 if(!Utils.stringDefined(this.jq(tuple[0]).val()))
 		    this.jq(tuple[0]).val(tuple[1]);
 	     });
 	});
+	this.jq('dataicon_clear_default').button().click(() =>{
+	    props.forEach(tuple=>{	     	      
+		this.jq(tuple[0]).val('');
+	     });
+	});
+
 
 
 
@@ -50899,7 +50983,8 @@ MapGlyph.prototype = {
 	}		
     },
     applyStyle:function(style,skipChangeNotification) {
-	this.style = style;
+	if(style)
+	    this.style = style;
 	this.applyMapStyle();
 	if(this.getMapServerLayer()) {
 	    if(Utils.isDefined(style.opacity)) {
@@ -51640,7 +51725,7 @@ MapGlyph.prototype = {
 		mapGlyph.isEphemeral = true;
 		this.addChildGlyph(mapGlyph);
 		if(this.getShowDataIcons()) {
-		    mapGlyph.applyEntryGlyphs(true);
+		    mapGlyph.makeDataIcon(true);
 		}
 	    });
 	    //call getBounds  so they are cached
@@ -51728,9 +51813,9 @@ MapGlyph.prototype = {
     },
     
     doRemove:function() {
-	if(this.glyphFieldsContainer) {
-	    jqid(this.glyphFieldsContainer).remove();
-	    this.glyphFieldsContainer=null;
+	if(this.dataIconContainer) {
+	    jqid(this.dataIconContainer).remove();
+	    this.dataIconContainer=null;
 	}
 
 	if(this.stepMarker) {
