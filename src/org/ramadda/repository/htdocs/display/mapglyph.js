@@ -965,7 +965,7 @@ MapGlyph.prototype = {
 
 	if(isShown && props.borderColor) {
 	    ctx.strokeStyle = props.borderColor;
-	    ctx.lineWidth=parseFloat(props.borderWidth??17);
+	    ctx.lineWidth=parseFloat(props.borderWidth??1);
 	    let d = 0.5*ctx.lineWidth;
 	    ctx.strokeRect(0+d,0+d,canvasWidth-d*2,canvasHeight-d*2);
 	    ctx.strokeStyle = null;
