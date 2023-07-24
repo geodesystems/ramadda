@@ -117,11 +117,14 @@ public class GeoJson extends JsonUtil {
         for (int i = 0; i < features.length(); i++) {
             JSONObject feature = features.getJSONObject(i);
             JSONObject props   = feature.getJSONObject("properties");
-            for (String name : JSONObject.getNames(props)) {
-                if ( !names.contains(name)) {
-                    names.add(name);
-                }
-            }
+	    String[] nameList = JSONObject.getNames(props);
+	    if(nameList!=null) {
+		for (String name : nameList) {
+		    if ( !names.contains(name)) {
+			names.add(name);
+		    }
+		}
+	    }
         }
 
         List<String> nameList = new ArrayList<String>();
