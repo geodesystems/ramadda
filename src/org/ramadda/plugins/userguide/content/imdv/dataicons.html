@@ -30,7 +30,7 @@ To enable data icon displays bring up the Properties dialog for the relevant gly
 
 [ht::screenshot images/multientrylegend.png]
 
-Under the Data Icons tab select "Show data as icons" and press OK. 
+Under the Data Icons tab select "yes" for "Show data as icons" and press OK. 
 Your map should now show the sensor data.
 
 [ht::screenshot images/multientryprops.png]
@@ -38,6 +38,17 @@ Your map should now show the sensor data.
 You should have a map that looks like below.  From the top-level File menu select Save.
 
 [ht::cimg images/multientrymap1.png {} {width=600px}]
+
+The "Show data as icons" can be "yes", "no" or "inherited". If "inherited" is selected then
+if the glyph is under a Group then the data icon settings for the Group are used.
+
+
+The "Use the default data icon specification for the entry" and 
+"Use parent group's or the below if defined" toggle specify whether to use
+the default data icon for the Entry (like in the Purple Air example) or to
+use a custom data icon. Using the parent group's data icon specification
+allows one to have a group of data icon glyphs in a map that all have the same representation.
+
 
 :heading Adding a Field Select Menu
 You can add a pull down menu at the top of the page that allows the user to select which field
@@ -50,17 +61,15 @@ fields you want to use. For Purple Air we are going to use pm1.0, pm2.5 and pm10
 
 Now, back to the IDMV map, bring up the properties dialog for the multi-entry. Under the Menu Fields
 add the fields you want to use. Optionally you can specify an initial field and a menu label.
+You can specify an alternative label to show in the menu as below by specifying a
+label=... property in the Menu Fields:
+
 
 [ht::screenshot images/multientryprops2.png]
 
 You should now have a menu shown that allows you to select the field to display:
 
 [ht::cimg images/multientrymap2.png {} {width=600px}]
-
-You can specify an alternative label to show in the menu as below by specifying a
-label=... property in the Menu Fields:
-
-[ht::screenshot images/multientryprops3.png]
 
 
 :heading Different Data Types
