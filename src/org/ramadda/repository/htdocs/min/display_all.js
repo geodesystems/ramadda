@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jul 24 10:12:43 MDT 2023";
+var build_date="RAMADDA build date: Mon Jul 24 13:49:53 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -43396,13 +43396,18 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(line.title) {
 		    attrs.push('title',line.title);
 		}
+		let skip = line.skip;
 		if(line.line) {
 		    line = line.line;
+		}
+		if(skip) {
+		    help+=HU.div([],line);
+		    return;
 		}
 		attrs.push('value',props.prefix + line + props.suffix);
 		help+=HU.div(attrs,line);
 	    });
-	    help = HU.div(['class','imdv-side-help'], help);
+	    help = HU.div(['class','imdv-side-help','style',props.style??''], help);
 	    return help;
 	},
 	getFeaturePropertyApply:function() {
@@ -46818,6 +46823,9 @@ MapGlyph.prototype = {
 			   'filter.live=true');
 
 	    }
+	    if(info.isEnumeration()) {
+		items.push('label.feature_value=');
+	    }
 	    items.push('colortable.select=true');
 
 	    items.forEach(item=>{
@@ -47113,7 +47121,8 @@ MapGlyph.prototype = {
 
 	content.push({header:'Properties',contents:html});
 
-	html=  this.getHelp('#miscproperties')+'<br>';
+	html='';
+//	html=  this.getHelp('#miscproperties')+'<br>';
 	let miscLines =[...IMDV_PROPERTY_HINTS];
 	if(this.isMap()) {
 	    miscLines.push('map.label.maxlength=100','map.label.maxlinelength=15',
@@ -47122,16 +47131,17 @@ MapGlyph.prototype = {
 			   'map.label.padding=2');
 	}
 
-	miscLines.push('<hr>');
-	this.getFeatureInfoList().forEach(info=>{
-	    //	    miscLines.push({line:info.id+'.show=true',title:info.property});
+	this.getFeatureInfoList().forEach((info,idx)=>{
+	    if(idx==0) {
+		miscLines.push({skip:true,line:'<thin_hr></thin_hr><b>Features</b>'});
+	    }		
 	    miscLines.push({info:info.id,title:info.getLabel()});	    
 	});
 
-	let miscHelp =this.display.makeSideHelp(miscLines,this.domId('miscproperties'),{suffix:'\n'});
-	let ex = 'Add property:' + miscHelp;
+	let miscHelp =this.display.makeSideHelp(miscLines,this.domId('miscproperties'),{style:'height:350px;max-height:350px;',suffix:'\n'});
+	let ex = HU.b('Add property:') + miscHelp
 
-	html += HU.hbox([HU.textarea('',this.attrs.properties??'',[ID,this.domId('miscproperties'),'rows',6,'cols', 40]),
+	html += HU.hbox([HU.textarea('',this.attrs.properties??'',[ID,this.domId('miscproperties'),'rows',16,'cols', 40]),
 			 HU.space(2),ex]);
 	content.push({header:'Flags',contents:html});
 
@@ -47221,6 +47231,9 @@ MapGlyph.prototype = {
     },
 
     applyPropertiesDialog: function() {
+	//Clear out any feature infos
+	this.featureInfo=null;
+
 	//Make sure we do this after we set the above style properties
 	this.setName(this.jq("mapglyphname").val());
 	this.attrs.legendText = this.jq('legendtext').val();
@@ -47264,6 +47277,9 @@ MapGlyph.prototype = {
 	    this.attrs.rangeRingStyle = this.jq('rangeringstyle').val();
 	    if(this.features.length>0) this.features[0].style.strokeColor='transparent';
 	}
+
+
+
 	this.checkDataIcon();
     },
 
@@ -48468,6 +48484,9 @@ MapGlyph.prototype = {
 		}
 		lastProperty  = propOp;
 		let label = rule.value;
+		let info = this.getFeatureInfo(rule.property);
+		if(info) label = info.getValueLabel(rule.value);
+
 		label   = HU.span(['style','font-size:9pt;'],label);
 		let item = '<tr><td width=16px>';
 		let lineWidth;
@@ -49739,7 +49758,8 @@ MapGlyph.prototype = {
 		    title = Utils.join(info.getSamplesLabels(), ', ');
 	    }
 	    if(info?.isEnumeration()) {
-		valueInput = HU.select('',['id','mapvalue_' + index],info.samples,value,20); 
+		valueInput = HU.select('',['id','mapvalue_' + index],info.getSamplesForMenu(),value,20); 
+		
 	    } else {
 		valueInput = HU.input('',value,['id','mapvalue_' + index,'size','15']);
 	    }
@@ -49915,74 +49935,7 @@ MapGlyph.prototype = {
 	let middle=[];
 	let last = [];
 	keys.forEach(key=>{
-	    let info = {
-		property:key,
-		id:Utils.makeId(key),
-		min:NaN,
-		max:NaN,
-		type:'',
-		getId:function() {
-		    return this.id;
-		},
-		getProperty:function(prop,dflt,checkGlyph) {
-		    if(checkGlyph) dflt=_this.getProperty(prop,dflt);
-		    let v =   _this.getProperty(this.id+'.' + prop,dflt);
-		    return v;
-		},
-		show: function() {
-		    return  this.getProperty('show',_this.getProperty('feature.show',true));
-		},
-		showFilter: function() {
-		    let dflt = _this.getProperty('filter.show',this.show());
-		    let show =   this.getProperty('filter.show',dflt);
-		    return show;
-		},
-		showTable: function() {
-		    return this.getProperty('table.show',_this.getProperty('table.show',this.show()));
-		},
-		showPopup: function() {
-		    return this.getProperty('popup.show',_this.getProperty('popup.show',this.show()));
-		},				
-		isColorTableSelect: function() {
-		    return this.getProperty('colortable.select',_this.getProperty('colortable.select',false));
-		},
-
-		getType:function() {
-		    return this.getProperty('type',this.type);
-		},
-		getLabel:function(addSpan) {
-		    let label  =this.getProperty('label');
-		    if(!Utils.stringDefined(label)) label  =_this.display.makeLabel(this.property);
-		    if(addSpan) label = HU.span(['title',this.property],label);
-		    return label;
-		},
-
-		format:function(value) {
-		    if(this.isNumeric()) {
-			let decimals = this.getProperty('format.decimals',-1,true);
-			if(decimals>=0&&!isNaN(value)) {
-			    value = Utils.trimDecimals(value,decimals);
-			}
-		    }
-		    return value;
-		},
-		isNumeric:function(){return this.isInt() || this.getType()=='numeric';},
-		isInt:function() {return this.getType()=='int';},
-		isString:function() {return this.getType()=='string';},
-		isEnumeration:function() {return this.getType()=='enumeration';},
-		seen:{},
-		samples:[],
-		getSamplesLabels:function() {
-		    return this.samples.map(sample=>{return sample.label;});
-		},
-		getSamplesValues:function() {
-		    return this.samples.map(sample=>{
-			let cnt = this.seen[sample.value];
-			return sample.value +' ('+ cnt+')';
-		    });
-		}		
-
-	    };
+	    let info = new FeatureInfo(this,key);
 	    let _c = info.property.toLowerCase();
 	    if(_c.indexOf('objectid')>=0) {
 		last.push(info);
@@ -49999,42 +49952,13 @@ MapGlyph.prototype = {
 
 	features.forEach((f,fidx)=>{
 	    featureInfo.forEach(info=>{
-		let value= this.getFeatureValue(f,info.property);
-		if(!Utils.isDefined(value)) return;
-		if(isNaN(value) || info.samples.length>0) {
-		    if(info.samples.length<30) {
-			info.type='enumeration';
-			if(!info.seen[value]) {
-			    info.seen[value] = 0;
-			    info.samples.push(value);
-			}
-			info.seen[value]++;
-		    } else {
-			info.type='string';
-		    }
-		} else if(!isNaN(value)) {
-		    if(info.type != 'numeric')
-			info.type='int';
-		    if(Math.round(value)!=value) {
-			info.type = 'numeric';
-		    }
-		    info.min = isNaN(info.min)?value:Math.min(info.min,value);
-		    info.max = isNaN(info.max)?value:Math.max(info.max,value);			
-		}
+		info.initValues(f);
 	    });
 	});
 
 
-
 	featureInfo.forEach(info=>{
-	    if(info.samples.length) {
-		let items = info.samples.map(item=>{
-		    return {value:item,label:Utils.makeLabel(item)};
-		});
-		info.samples =  items.sort((a,b)=>{
-		    return a.label.localeCompare(b.label);
-		});
-	    }
+	    info.finishInit();
 	    featureInfoMap[info.property] = info;
 	    featureInfoMap[info.id] = info;	    
 	});
@@ -50052,7 +49976,9 @@ MapGlyph.prototype = {
     },
     makeLabel:function(l,makeSpan) {
 	let info = this.getFeatureInfo(l);
-	if(info) return info.getLabel(makeSpan);
+	if(info) {
+	    return info.getLabel(makeSpan);
+	}
 	let id = Utils.makeId(l);
 	let label = l;
 	if(id=='shapestlength') {
@@ -51907,6 +51833,123 @@ MapGlyph.prototype = {
     }
 }
 
+function FeatureInfo(mapGlyph,key) {
+    $.extend(this,{
+	mapGlyph:mapGlyph,
+	property:key,
+	id:Utils.makeId(key),
+	min:NaN,
+	max:NaN,
+	type:'',
+	seen:{},
+	samples:[],
+    });
+}
+
+FeatureInfo.prototype= {
+    getId:function() {
+	return this.id;
+    },
+    getProperty:function(prop,dflt,checkGlyph) {
+	if(checkGlyph) dflt=this.mapGlyph.getProperty(prop,dflt);
+	let v =   this.mapGlyph.getProperty(this.id+'.' + prop,dflt);
+	return v;
+    },
+    show: function() {
+	return  this.getProperty('show',this.mapGlyph.getProperty('feature.show',true));
+    },
+    showFilter: function() {
+	let dflt = this.mapGlyph.getProperty('filter.show',this.show());
+	let show =   this.getProperty('filter.show',dflt);
+	return show;
+    },
+    showTable: function() {
+	return this.getProperty('table.show',this.mapGlyph.getProperty('table.show',this.show()));
+    },
+    showPopup: function() {
+	return this.getProperty('popup.show',this.mapGlyph.getProperty('popup.show',this.show()));
+    },				
+    isColorTableSelect: function() {
+	return this.getProperty('colortable.select',this.mapGlyph.getProperty('colortable.select',false));
+    },
+    getType:function() {
+	return this.getProperty('type',this.type);
+    },
+    getLabel:function(addSpan) {
+	let label  =this.getProperty('label');
+	if(!Utils.stringDefined(label)) label  =this.mapGlyph.display.makeLabel(this.property);
+	if(addSpan) label = HU.span(['title',this.property],label);
+	return label;
+    },
+    getValueLabel:function(v) {
+	let label = this.getProperty('label.' +v?.toLowerCase(), null);
+	if(!label) label = Utils.makeLabel(v);
+	return label;
+    },
+    format:function(value) {
+	if(this.isNumeric()) {
+	    let decimals = this.getProperty('format.decimals',-1,true);
+	    if(decimals>=0&&!isNaN(value)) {
+		value = Utils.trimDecimals(value,decimals);
+	    }
+	}
+	return value;
+    },
+    isNumeric:function(){return this.isInt() || this.getType()=='numeric';},
+    isInt:function() {return this.getType()=='int';},
+    isString:function() {return this.getType()=='string';},
+    isEnumeration:function() {return this.getType()=='enumeration';},
+    getSamplesLabels:function() {
+	return this.samples.map(sample=>{return sample.label;});
+    },
+    getSamplesForMenu:function() {
+	return this.samples;
+    },
+    getSamplesValues:function() {
+	return this.samples.map(sample=>{
+	    let cnt = this.seen[sample.value];
+	    return sample.value +' ('+ cnt+')';
+	});
+    },
+    initValues:function(f) {
+	let value= this.mapGlyph.getFeatureValue(f,this.property);
+	if(!Utils.isDefined(value)) return;
+	if(isNaN(value) || this.samples.length>0) {
+	    if(this.samples.length<30) {
+		this.type='enumeration';
+		if(!this.seen[value]) {
+		    this.seen[value] = 0;
+		    this.samples.push(value);
+		}
+		this.seen[value]++;
+	    } else {
+		this.type='string';
+	    }
+	} else if(!isNaN(value)) {
+	    if(this.type != 'numeric')
+		this.type='int';
+	    if(Math.round(value)!=value) {
+		this.type = 'numeric';
+	    }
+	    this.min = isNaN(this.min)?value:Math.min(this.min,value);
+	    this.max = isNaN(this.max)?value:Math.max(this.max,value);			
+	}
+    },
+
+    finishInit:function() {
+	if(this.samples.length) {
+	    let items = this.samples.map(item=>{
+		return {value:item,label:this.getValueLabel(item)};
+//		return {value:item,label:Utils.makeLabel(item)};
+	    });
+	    this.samples =  items.sort((a,b)=>{
+		return a.label.localeCompare(b.label);
+	    });
+	}
+    }
+    
+    
+}
 /*
   Copyright 2008-2023 Geode Systems LLC
 */
