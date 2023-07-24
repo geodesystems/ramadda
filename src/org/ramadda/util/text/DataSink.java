@@ -339,7 +339,6 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
          */
         @Override
         public void finish(TextReader ctx) throws Exception {
-	    System.err.println(ctx.getInputFile() +" " + rowCnt);
             PrintWriter writer = ctx.getWriter();
 	    writer.print("]}\n");
 	    writer.flush();
