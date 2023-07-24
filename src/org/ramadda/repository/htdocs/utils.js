@@ -2257,9 +2257,9 @@ var Utils =  {
         return false;
     },
     /** Return the first string that is defined in the arguments */
-    getStringDefined: function(args) {
-	for(let i=0;i<args.length;i++) {
-	    if(Utils.stringDefined(args[i])) return args[i];
+    getStringDefined: function() {
+	for(let i=0;i<arguments.length;i++) {
+	    if(Utils.stringDefined(arguments[i])) return arguments[i];
 	}
 	return null;
     },
