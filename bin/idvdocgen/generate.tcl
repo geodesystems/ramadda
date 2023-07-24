@@ -3,7 +3,8 @@
 exec tclsh "$0" "$@"
 
 
-set ::image_version [expr ceil(1000*rand())]
+set ::image_version [expr int(ceil(1000*rand()))]
+#puts "VERSION: $::image_version"
 package require http 
 
 namespace eval ug {}
