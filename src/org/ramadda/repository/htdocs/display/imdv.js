@@ -1939,8 +1939,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    else
 			_this.selectGlyph(mapGlyph);
 		} else if(command==ID_DELETE) {
-		    HU.makeOkCancelDialog($(this),'Are you sure you want to delete this glyph?',
-					  ()=>{_this.removeMapGlyphs([mapGlyph]);});
+		    if(_this.dontAskDelete) {
+			_this.removeMapGlyphs([mapGlyph]);
+		    } else {
+			let dontAsk = HU.checkbox(_this.domId('dontask'),['id',_this.domId('dontask'),'class',''],false,'Don\'t ask again');
+			HU.makeOkCancelDialog($(this),'Are you sure you want to delete this glyph?',
+					      ()=>{
+						  _this.dontAskDelete  = _this.jq('dontask').is(':checked');
+						  _this.removeMapGlyphs([mapGlyph]);},null,dontAsk);
+		    }
 		}
 	    });
 	},
