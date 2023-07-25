@@ -1030,8 +1030,9 @@ function RamaddaHookDisplay(displayManager, id, properties) {
 	    let records = this.filterData();
 	    if(!records) return;
             let fields = this.getSelectedFields([]);
+	    let allFields = this.getFields();
 	    this.clearDisplayMessage();
-	    if(!this.call('updateUI',{fields:fields,records:records})) {
+	    if(!this.call('updateUI',{allFields:allFields,fields:fields,records:records})) {
 		this.setContents('No updateUI defined in hook');
 	    }
 	}});
