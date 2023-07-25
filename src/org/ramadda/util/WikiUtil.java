@@ -2525,7 +2525,7 @@ public class WikiUtil {
                     continue;
                 }
 
-                if (tline.startsWith(":script")) {
+                if (tline.startsWith(":script") || tline.startsWith(":javascript")) {
                     List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     HU.importJS(buff, toks.get(1));
 
