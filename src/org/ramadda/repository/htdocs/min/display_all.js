@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jul 24 16:30:48 MDT 2023";
+var build_date="RAMADDA build date: Tue Jul 25 06:18:21 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -52982,8 +52982,9 @@ function RamaddaHookDisplay(displayManager, id, properties) {
 	    let records = this.filterData();
 	    if(!records) return;
             let fields = this.getSelectedFields([]);
+	    let allFields = this.getFields();
 	    this.clearDisplayMessage();
-	    if(!this.call('updateUI',{fields:fields,records:records})) {
+	    if(!this.call('updateUI',{allFields:allFields,fields:fields,records:records})) {
 		this.setContents('No updateUI defined in hook');
 	    }
 	}});
