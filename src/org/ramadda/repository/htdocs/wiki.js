@@ -744,11 +744,53 @@ WikiEditor.prototype = {
 	if(!confirm('This will remove blank links and trim each line. Continue?')) return;
 	let text = this.getValue();
 	let tmp = '';
-	let append=line=>{
-	    tmp+=line.trim()+'\n';
+	let append=(line,notTrim)=>{
+	    if(notTrim)
+		tmp+=line+'\n';
+	    else
+		tmp+=line.trim()+'\n';
+
 	};
 	let lineLength=80;
-	Utils.split(text,'\n',true,true).forEach(line=>{
+	let injs = false;
+	let indent = 0;
+	Utils.split(text,'\n').forEach(line=>{
+	    if(line.startsWith("-javascript")) {
+		injs = false;
+		append(line);
+		return;
+	    }
+	    if(line.startsWith("+javascript")) {
+		injs = true;
+		append(line);
+		return;
+	    }
+	    if(injs) {
+		//A poor man's JS formatting
+		let _line = line.trim();
+		let tabs ='';
+		let checkIndent = true;
+		if(_line.match(/\}+\);?/) || _line.match(/\} *,/)) {
+		    indent--;
+		    checkIndent = false;
+		}
+		if(indent<0) indent=0;
+		new Array(indent).fill(0).forEach(v=>{tabs+='\t'});
+		tmp+=tabs+_line+'\n';
+		if(_line.startsWith('//') || !checkIndent) {
+		    return;
+		}
+
+		if(_line.endsWith('{')) {
+		    indent++;
+		} else if(_line.endsWith('}') ||
+			  _line.endsWith('});') ||
+			  _line.endsWith('});')) {
+		    indent--;
+		}
+		return;
+	    }
+
 	    if(line.length<lineLength) {
 		append(line);
 		return;
@@ -757,6 +799,7 @@ WikiEditor.prototype = {
 		append(line);
 		return;
 	    }
+	    line = line.trim();
 	    while(line.length>lineLength) {
 		let prefix  = line.substring(0,lineLength);
 		let suffix = line.substring(lineLength);		
