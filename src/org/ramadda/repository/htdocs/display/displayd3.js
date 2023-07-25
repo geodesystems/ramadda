@@ -32,13 +32,13 @@ addGlobalDisplayType({
     category: "Charts"
 });
 /*
-addGlobalDisplayType({
-    type: DISPLAY_D3_PROFILE,
-    forUser: false,
-    label: "Profile",
-    requiresData: true,
-    category: "Charts"
-});
+  addGlobalDisplayType({
+  type: DISPLAY_D3_PROFILE,
+  forUser: false,
+  label: "Profile",
+  requiresData: true,
+  category: "Charts"
+  });
 */
 addGlobalDisplayType({
     type: DISPLAY_D3_GLIDER_CROSS_SECTION,
@@ -108,7 +108,6 @@ const TYPE_ELEVATION = "elevation";
 const FUNC_MOVINGAVERAGE = "movingAverage";
 
 const D3Util = {
-    foo: "bar",
     initPlot:function(display,opts) {
 	opts = opts??{};
 	['caption',
@@ -119,19 +118,18 @@ const D3Util = {
 	     if(!Utils.isDefined(opts[prop[1]])) {
 		 opts[prop[1]] = display.getProperty(prop[0]);
 	     }
-	});
-
+	 });
 
 	/*
-	opts.x = {x:{
-	    round: true, nice: d3.utcYear,type:'band',ticks:10,
-	    axis: display.getProperty('xAxisPosition','bottom')
-	    }};
-	    */
-/*
-	opts.x = {grid: display.getProperty('xAxisGrid',false),
-		  ticks:10};
-		  */
+	  opts.x = {x:{
+	  round: true, nice: d3.utcYear,type:'band',ticks:10,
+	  axis: display.getProperty('xAxisPosition','bottom')
+	  }};
+	*/
+	/*
+	  opts.x = {grid: display.getProperty('xAxisGrid',false),
+	  ticks:10};
+	*/
 
 
 	return opts;
@@ -140,15 +138,14 @@ const D3Util = {
 	if(display.getProperty('showFrame')) {
 	    marks.push(Plot.frame());
 	}
-//	marks.push(Plot.text(["Hello, world!"], {frameAnchor: "left"}));
+	//	marks.push(Plot.text(["Hello, world!"], {frameAnchor: "left"}));
 	Utils.split(display.getProperty("rules",""),",").forEach(rule=>{
-//	    console.log("adding rule:" + rule);
             marks.push(Plot.ruleY([parseFloat(rule)]));
 	});
 
 	marks.push(Plot.axisX({ticks: d3.utcYear.every(50), tickFormat: "%Y"}));
-//	marks.push(Plot.axisX({anchor: "top",tickSpacing:200,xticks:10}));
-//	marks.push(Plot.gridX({ticks:5, stroke: "#efefef", strokeOpacity: 0.5}));
+	//	marks.push(Plot.axisX({anchor: "top",tickSpacing:200,xticks:10}));
+	//	marks.push(Plot.gridX({ticks:5, stroke: "#efefef", strokeOpacity: 0.5}));
     },
 
     createMarks:function(display, fields, records,args) {
@@ -205,7 +202,7 @@ const D3Util = {
 	records.forEach((record,idx)=>{
 	    let obj = {};
 	    if(opts.includeDate)
-//		obj.Date = Utils.formatDateYYYYMMDD(record.getDate());
+		//		obj.Date = Utils.formatDateYYYYMMDD(record.getDate());
 		obj.Date = record.getDate();
 	    fields.forEach(field=>{
 		obj[field.getId()] = field.getValue(record);  
@@ -316,13 +313,38 @@ function RamaddaD3plotDisplay(displayManager, id, properties) {
         },
         updateUI: async function() {
 	    if(!window.Plot) {
+		if(this.awaiting) return;
+		this.awaiting = true;
 		await Utils.importJS('https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.9/dist/plot.umd.min.js')
+		this.awaiting = false;
+	    }
+	    if(this.awaiting) {
+		return;
 	    }
             let records =  this.filterData();
-	    if(!records) return;
+	    if(!records) {
+		return;
+	    }
             let fields = this.getSelectedFields([]);
+	    let data=D3Util.getD3Data(this,fields,records,{includeDate:true});
 	    let marks = D3Util.createMarks(this,fields,records,{includeDate:true});    
 	    let opts=D3Util.initPlot(this,{marks:marks});
+/*
+  color bar example
+  https://observablehq.com/@observablehq/plot-warming-stripes
+	    let opts2 = {
+		x: {round: true},
+		color: {scheme: "BuRd"},
+		marks: [
+		    Plot.lineY(data, {
+			x: "Date",
+			y: "gcag",
+//			interval: "year", // yearly data
+//			inset: 0 // no gaps
+		    })
+		]
+		}
+		*/
 	    let plot = Plot.plot(opts);
 	    this.getContents().html(plot);
 	}
@@ -377,13 +399,13 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
 		return;
 	    }
 
-//          console.log("skewt.updateui-1");
+	    //          console.log("skewt.updateui-1");
             let records =  this.filterData();
             if (!records || records.length==0) {
                 this.setDisplayMessage(this.getLoadingMessage());
                 return;
             }
-//          console.log("skewt.updateui-2");
+	    //          console.log("skewt.updateui-2");
             let skewtId = this.getDomId(ID_SKEWT);
 	    let html = '';
             html += HU.div(['title','Download skew-t data','id',this.domId('download'),'class','ramadda-clickable','style','text-align:right;margin-right:20px;'],HU.getIconImage('fas fa-download'));
@@ -478,7 +500,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
 		    return acc+field.getId()+"<br>";
 		},"<br>Fields:<br>");
 	    }
-		
+	    
 
             if(!data.pressure) {
                 this.displayError("No pressure defined in data." + getFieldIds());
@@ -545,7 +567,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             }
 
             if(!data.wind_speed) {
-               if(!data.uwind || !data.vwind) {
+		if(!data.uwind || !data.vwind) {
                     this.displayError("No wind speed defined in data."  + getFieldIds());
                     return;
                 }
@@ -922,29 +944,29 @@ function RamaddaD3LineChartDisplay(displayManager, id, properties) {
 
 
 /*
-function RamaddaProfileDisplay(displayManager, id, properties) {
-    var dfltProperties = {};
-    //Note: use json structures to define the props
-    dfltProperties.graph = {
-        title: "Profile chart",
-        derived: null,
-        axis: {
-            y: {
-                type: TYPE_ELEVATION,
-                fieldname: FIELD_DEPTH,
-                fieldIdx: 3,
-                reverse: true
-            },
-            x: {
-                type: TYPE_VALUE,
-                fieldname: FIELD_VALUE,
-            },
-        }
-    };
-    //Note: now set the properties
-    properties = $.extend(dfltProperties, properties);
-    return new RamaddaD3Display(displayManager, id, properties);
-}
+  function RamaddaProfileDisplay(displayManager, id, properties) {
+  var dfltProperties = {};
+  //Note: use json structures to define the props
+  dfltProperties.graph = {
+  title: "Profile chart",
+  derived: null,
+  axis: {
+  y: {
+  type: TYPE_ELEVATION,
+  fieldname: FIELD_DEPTH,
+  fieldIdx: 3,
+  reverse: true
+  },
+  x: {
+  type: TYPE_VALUE,
+  fieldname: FIELD_VALUE,
+  },
+  }
+  };
+  //Note: now set the properties
+  properties = $.extend(dfltProperties, properties);
+  return new RamaddaD3Display(displayManager, id, properties);
+  }
 */
 
 
@@ -1099,7 +1121,7 @@ function RamaddaVennDisplay(displayManager, id, properties) {
             d3.selectAll(id + " .venn-circle text")
                 .style("fill", function(d, i) {
                     return i < textColors.length ? textColors[i] : textColors[i % textColors.length]; 
-               })
+		})
                 .style("font-size", this.getProperty("fontSize", "16px"))
                 .style("font-weight", this.getProperty("fontWeight", "100"));
 
