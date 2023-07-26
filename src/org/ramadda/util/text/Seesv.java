@@ -2578,7 +2578,7 @@ public class Seesv implements SeesvCommands {
 	new Category("Numeric"),
         new Cmd(CMD_SCALE, "Set value={value+delta1}*scale+delta2",
 		ARG_LABEL,"Scale Value",
-                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS),
+                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
 		new Arg("delta1","",ATTR_TYPE,TYPE_NUMBER),
 		new Arg("scale","",ATTR_TYPE,TYPE_NUMBER),
                 new Arg("delta2","",ATTR_TYPE,TYPE_NUMBER)),
