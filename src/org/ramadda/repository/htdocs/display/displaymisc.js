@@ -1098,6 +1098,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	{p:'includeDate',ex:'true',d:false},
 	{p:'includeRowIndex',ex:'true',d:false},	
 	{p:'includeFieldDescription'},
+	{p:'includeUnits',d:true},
 	{p:'fancy',ex:'true',d:true},
 	{p:'maxLength',ex:'500',d:-1, tt:'If string is gt maxLength then scroll it'},
 	{p:'colorCells',ex:'field1,field2'},
@@ -1255,6 +1256,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    let includeIdx = this.getIncludeRowIndex();
 	    let includeGeo = this.getIncludeGeo();
 	    let includeDate = this.getIncludeDate();	    
+	    let includeUnits = this.getIncludeUnits();	    
 	    let html='';
 	    //Only do the hover when we aren't coloring the rows
 	    if(!colorRowBy) {
@@ -1337,12 +1339,13 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		    attrs.push("sorted");
 		    attrs.push("true");
 		}
+
 		if(fancy) {
 		    let label = this.getFieldLabel(f);
 		    if(sort) label = HU.getIconImage(sortAscending?"fas fa-arrow-down":"fas fa-arrow-up",null, [STYLE,HU.css('font-size','8pt !important')]) +" " + label;
-		    header1+=HU.th(attrs,HU.div(headerAttrs,label));
+		    let desc = includeUnits?f.getUnitLabel(this):f.getLabel(this);
+		    header1+=HU.th(attrs,HU.div(headerAttrs,desc));
 		    header2+=HU.th(attrs,HU.div(headerAttrs,f.getDescription()??""));
-
 		}
 		else {
 		    header1+=HU.th(attrs,HU.div(headerAttrs,f.getId() +"[" + f.getType()+"]"));
