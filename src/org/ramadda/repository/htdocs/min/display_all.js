@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Jul 25 20:54:04 MDT 2023";
+var build_date="RAMADDA build date: Wed Jul 26 05:34:39 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -33282,7 +33282,8 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	{p:'maxWidth',ex:200},		
 	{p:'autoSearch',ex:true},
 	{p:'showHeader',ex:true},
-	{p:'inputSize',d:'100',ex:'100%'},
+	{p:'inputSize',d:'200px',ex:'100%'},
+	{p:'placeholder'},
 	{p:'searchEntryType',ex:'',tt:'Constrain search to entries of this type'},		
 	{p:'doPageSearch',ex:'true'},
 	{p:'doTagSearch',ex:'true'},	
@@ -33291,7 +33292,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	{p:'pageSearchParent',ex:'.class or #id',tt:'set this to limit the scope of the search'},		
     ];
 
-    if(!properties.width) properties.width="230px";
+    if(!properties.width) properties.width=properties.inputSize??"230px";
     const SUPER   = new RamaddaSearcherDisplay(displayManager, id, DISPLAY_SIMPLESEARCH, properties);
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	callNumber:1,
@@ -33310,6 +33311,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
             }
             this.haveDisplayed = true;
             this.createUI();
+
 
 	    let contents = "";
 	    if(this.getDoTagSearch()) {
@@ -33354,6 +33356,10 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		this.setContents(this.getDefaultHtml());
 	    }
 
+
+	    if(this.getDoPageSearch()) {
+		this.jq(ID_TEXT_FIELD).focus();
+	    }
 
 	    this.initHtml();
 	    let input = this.jq(ID_TEXT_FIELD);
@@ -33422,7 +33428,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    
 	    let eg = this.getEgText();
 	    let text  = this.getFormText();
-	    let size = this.getPropertyInputSize();
+	    let size = HU.getDimension(this.getPropertyInputSize());
             let textField = HU.input("", text, [STYLE, HU.css("width", size), "placeholder", eg, ATTR_CLASS, "display-search-input", ATTR_ID, this.getDomId(ID_TEXT_FIELD)]);
 
 	    form += textField;
