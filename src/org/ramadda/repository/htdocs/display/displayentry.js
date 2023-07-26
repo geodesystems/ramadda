@@ -2031,6 +2031,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
             this.haveDisplayed = true;
             this.createUI();
 
+
 	    let contents = "";
 	    if(this.getDoTagSearch()) {
 		let sel = this.getPageSearchSelectors();
@@ -2074,6 +2075,10 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		this.setContents(this.getDefaultHtml());
 	    }
 
+
+	    if(this.getDoPageSearch()) {
+		this.jq(ID_TEXT_FIELD).focus();
+	    }
 
 	    this.initHtml();
 	    let input = this.jq(ID_TEXT_FIELD);
