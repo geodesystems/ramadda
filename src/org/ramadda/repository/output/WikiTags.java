@@ -112,6 +112,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					"#showControls","false",
 					"#smallButtons","true",
 					"#compact","true",
+					"#dateFormat","yyyy-MM-dd HH:mm z",
 					"#lazyLoading","false",
 					"#loopDelay","1000"),
                             new WikiTag(WIKI_TAG_FLIPCARDS, null, 
