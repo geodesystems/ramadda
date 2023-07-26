@@ -695,12 +695,20 @@ MapGlyph.prototype = {
 
 	if(debug) {
 	    console.log("getDataIconProperty:" + this.getName()+' prop='+property);
-	    console.dir(this.getDataIconInfo());
 	}
-	if(Utils.stringDefined(this.getDataIconInfo()[property])) {
-	    if(debug)
-		console.log("\tmine:" +this.getDataIconInfo()[property]);
-	    return this.getDataIconInfo()[property];
+	let value = this.getDataIconInfo()[property];
+	if(Utils.stringDefined(value)) {
+	    if(debug) console.log("\tmine:" +value);
+	    //If it is the field then make sure it is in the FIELDS
+	    if(property==ID_DATAICON_SELECTED_FIELD) {
+		let fields = this.getDataIconInfo()[ID_DATAICON_FIELDS];
+		if(!Utils.stringDefined(fields) ||
+		   (fields && fields.indexOf(value)<0)) {
+		       value = null;
+		   }
+	    }
+	    if(value)
+		return value;
 	}
 	if(property==ID_DATAICON_INIT_FIELD) {
 	    if(this.dataIconFieldsId) {
@@ -741,6 +749,7 @@ MapGlyph.prototype = {
 	if(!this.getProperty('showGlyphMenu',true,true)) {
 	    return
 	}
+
 
 	if(Utils.stringDefined(dataIconInfo[ID_DATAICON_FIELDS])) {
 	    this.dataIconFieldsId = HU.getUniqueId('dataiconfields_');
@@ -939,14 +948,12 @@ MapGlyph.prototype = {
 	    });
 	}
 
-	
 	lines.forEach(line=>{
 	    line = line.trim();
 	    if(line.startsWith('#')) return;
 	    if(selectedField) {
-		line = line.replace(/\${_field}/g,selectedField);
+		line = line.replace(/\${_field}/g,selectedField.replace(/ /g,''));
 	    }
-	    //console.log('DATAICON LINE:',line);
 
 	    let extra = '';
 	    ['scale','offset1','offset2'].forEach(a=>{
