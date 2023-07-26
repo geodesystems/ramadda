@@ -265,6 +265,7 @@ handler="org.ramadda.geodata.point.NdbcBuoyTypeHandler">
   <column  name="data_type"  label="Data Type" type="enumeration" cansearch="true"
 	   values="txt:standard meteorological data,drift:meteorological data from drifting buoys,cwind:continuous winds data,spec:spectral wave summaries,data:_spec raw spectral wave data,swdir:spectral wave data (alpha1),swdir2:spectral wave data (alpha2),swr1:spectral wave data (r1),swr2:spectral wave data (r2),adcp:Acoustic Doppler Current Profiler,ocean:oceanographic data, tide:tide data"/>  
 
+
   <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property name="record.properties">
 csvcommands1=-delimiter,spaces,-inputcomment,,-cut
@@ -272,8 +273,10 @@ csvcommands2=1,-set,0,0,yy
 csvcommands3=-set,1,0,month,-combine
 csvcommands4=yy\,month\,dd\,hh\,mm,-,date,-firstcolumns,date
 csvcommands5=-indateformat,yyyy-MM-dd-HH-mm,,-convertdate,date
-csvcommands6=-notcolumns,yy\,month\,dd\,hh\,mm,-change,1-50,MM
-csvcommands7=NaN,-addheader,date.format_csvcommandspace_{yyyy-MM-dd_csvcommandspace_hh:mm:ss},-print
+csvcommands6=-notcolumns,yy\,month\,dd\,hh\,mm,-change,1-50,MM,NaN
+#convert kts to m/s use the .* pattern since this is a wildcard and the field might not exist
+csvcommands7=-scale,.*wspd_comma_.*gst,0,0.514444,0,-decimals,.*wspd_comma_.*gst,2
+csvcommands8=-addheader,gst.unit m/s wspd.unit m/s date.format_csvcommandspace_{yyyy-MM-dd_csvcommandspace_hh:mm:ss},-print
 </property>
 <property name="mapglyphs">
 props:fontSize:0px,iconSize:75,canvasWidth:500,canvasHeight:100,fill:#efefef,borderWidth:2,borderColor:#000,font:bold 36px sans-serif
