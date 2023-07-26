@@ -146,7 +146,7 @@ public class XlsUtil {
                         wb.close();
                         is.close();
                     } catch (Exception exc) {
-                        System.err.println("Error reading NwsObs:" + exc);
+                        System.err.println("Error converting xls:" +path+"\nError:" + exc);
                         exc.printStackTrace();
                     }
                 }
@@ -227,7 +227,7 @@ public class XlsUtil {
                         pw.flush();
                         pw.close();
                     } catch (Exception exc) {
-                        System.err.println("Error reading NwsObs:" + exc);
+                        System.err.println("Error converting xls:" +filename+"\nError:" + exc);
                         exc.printStackTrace();
                     }
                 }
@@ -294,7 +294,7 @@ public class XlsUtil {
                         pw.flush();
                         pw.close();
                     } catch (Exception exc) {
-                        System.err.println("Error reading NwsObs:" + exc);
+                        System.err.println("Error converting xls:" +path+"\nError:" + exc);
                         exc.printStackTrace();
                     }
                 }
