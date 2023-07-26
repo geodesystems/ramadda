@@ -18,6 +18,7 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 
 import java.awt.Image;
+import java.util.Date;
 
 import java.io.*;
 
@@ -1953,6 +1954,18 @@ public class IO {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+
+	if(true) {
+	    File dir = new File(args[0]);
+	    for(File f: dir.listFiles()){
+		long t  =f.lastModified();
+		Date d = new Date(t);
+		System.out.println(f+" " + d);
+	    }
+	    return;
+	}
+
+
 	if(true) {
 	    //	    args = new String[]{"Authorization"," Bearer openai key"};
 	    List postArgs   =new ArrayList();
