@@ -189,7 +189,7 @@ public class NwsObsTypeHandler extends NwsStationTypeHandler {
 			    pw.flush();
 			    pw.close();
 			} catch(Exception exc) {
-			    System.err.println("Error reading NwsObs:" + exc);
+			    System.err.println("Error reading NwsObs:" + getFilename()+"\nError:" + exc);
 			    exc.printStackTrace();
 			}
 		    }});
