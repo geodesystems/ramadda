@@ -1186,6 +1186,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		return;
 	    }
 
+
+
 	    if(glyphType.isImage() || glyphType.isEntry()||glyphType.isMultiEntry() || glyphType.isMap() || glyphType.isData()) {
 		let callback = (entryId,imageUrlOrEntryAttrs,resourceId) =>{
 		    let attrs = {};
@@ -1198,6 +1200,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let mapOptions = Utils.clone({},tmpMapOptions);
 		    attrs.entryId = entryId;
 		    let style = Utils.clone({},tmpStyle);
+
+		    if(glyphType.isMultiEntry()) {
+			style.externalGraphic = attrs.icon??glyphType.getIcon();
+		    }
+
 		    if(glyphType.isImage()) {
 			style.strokeColor='#ccc';
 			style.fillColor = 'transparent';
@@ -2321,8 +2328,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 
 		mapGlyph.applyPropertiesComponent(style);
-		mapGlyph.applyPropertiesDialog();
-
+		mapGlyph.applyPropertiesDialog(style);
 
 		if(mapGlyph.getImage()) {
 		    if(mapGlyph.getImage().imageHook) {
@@ -2332,8 +2338,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    mapGlyph.checkImage();
 		}
 
+//		mapGlyph.applyStyle(style);
 
-		mapGlyph.applyStyle(style);
 		mapGlyph.makeLegend();
 		mapGlyph.initLegend();
 		this.showMapLegend();
@@ -4197,9 +4203,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   isEntry:true,
 			   icon:Ramadda.getUrl("/icons/entry.png")});
 	    new GlyphType(this,GLYPH_MULTIENTRY,"Multi Entry",
-			  Utils.clone(
-			      {showLabels:true,
-			       pointRadius:12},
+			  Utils.clone(	
+			      {externalGraphic: externalGraphic},
+			      {showLabels:true, pointRadius:12},
 			      textStyle),
 			  MyEntryPoint,
 			  {tooltip:"Display children entries of selected entry",
