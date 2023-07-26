@@ -53,6 +53,7 @@ import java.net.*;
 
 
 import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 import java.util.ArrayList;
 
@@ -2042,6 +2043,8 @@ public class ImageOutputHandler extends OutputHandler {
                            boolean checkSort)
             throws Exception {
 	if(props==null)props = new Hashtable();
+	String dateFormat = Utils.getProperty(props,"dateFormat",null);
+	SimpleDateFormat sdf =null;
         boolean       useAttachment = request.get("useAttachment",
 						  Utils.getProperty(props,"useAttachment",false));
         String        playerId  = HU.getUniqueId("imageplayer_");
@@ -2087,7 +2090,17 @@ public class ImageOutputHandler extends OutputHandler {
 	    if(labelTemplate!=null) label = labelTemplate.replace("${name}",label);
 							    
 	    String entryUrl  =  HU.href(getEntryManager().getEntryURL(request, entry), label);
-            String dttm     = getEntryUtil().formatDate(request, entry);
+	    if(dateFormat!=null) {
+		sdf = new SimpleDateFormat(dateFormat);
+		String tz = getEntryUtil().getTimezone(request,entry);
+		if(tz!=null) {
+		    sdf.setTimeZone(TimeZone.getTimeZone(tz));
+		}
+
+		dateFormat=null;
+	    }
+            String dttm     = sdf!=null?sdf.format(entry.getStartDate()):
+		getEntryUtil().formatDate(request, entry);
             entryUrl = entryUrl.replace("\"", "\\\"");
 	    images.add(JsonUtil.map("url",JsonUtil.quote(url),
 				    "label",JsonUtil.quote(entryUrl),
