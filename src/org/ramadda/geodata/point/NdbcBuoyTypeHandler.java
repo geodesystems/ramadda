@@ -100,7 +100,7 @@ public class NdbcBuoyTypeHandler extends PointTypeHandler {
 		    entry.setLongitude(Misc.decodeLatLon(lon));
 		}		
 	    }
-	    if(name!=null) entry.setName(name);
+	    if(name!=null && !stringDefined(entry.getName())) entry.setName(name);
 	} catch(Exception exc) {
 	    System.err.println("Error:" + exc +" url:" + url);
 	    exc.printStackTrace();
