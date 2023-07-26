@@ -2416,6 +2416,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    let isGroup = mapGlyph?mapGlyph.isGroup():false;
 	    if(style) {
+		if(mapGlyph) {
+		    style = mapGlyph.getStyleForProperties(style);
+		}
 		props = [];
 		let isImage = style.imageUrl;
 		for(a in style) {
@@ -2425,7 +2428,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    props.push(a);
 		    values[a] = style[a];
 		}
-		//		if(mapGlyph && mapGlyph.getType()==GLYPH_MARKER) {props = ["pointRadius","externalGraphic"];} 
 	    } else {
 		props = ['strokeColor','strokeWidth','strokeDashstyle','strokeOpacity',
 			 'fillColor','fillOpacity','fillPattern',

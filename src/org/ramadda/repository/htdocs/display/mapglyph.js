@@ -1,7 +1,7 @@
 
-
 var debugDataIcons = false;
 
+var DATAICON_PROPERTIES = ['externalGraphic','pointRadius','label'];
 var DEFAULT_DATAICON_PROPS = 'font:50px sans-serif,lineWidth:5,requiredField:${_field},borderColor:#000,fill:#eee';
 var DEFAULT_DATAICONS = 'label,pos:nw,dx:80,dy:-ch+20,label:${${_field} decimals=1 suffix=" ${unit}"}\nimage,pos:nw,dx:10,dy:10-ch,width:60,height:60,url:${icon}';
 var DEFAULT_DATAICON_FIELD='temp.*|.*temp';
@@ -26,6 +26,10 @@ var ID_DATAICON_WIDTH='dataicon_width';
 var ID_DATAICON_HEIGHT='dataicon_height';
 var ID_DATAICON_SIZE='dataicon_size';
 var ID_DATAICON_PROPS='dataicon_props';
+
+//attr flags
+var ID_DATAICON_SHOWING = 'dataIconShowing';
+var ID_DATAICON_ORIGINAL = 'dataIconOriginal';
 
 function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
     if(!type) {
@@ -112,15 +116,13 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
 
 	//And call getBounds so the bounds object gets cached for later use on reload
 	this.getBounds();
-
-
     }
 
 
     if(this.isRings()) {
 	this.checkRings();
     }
-    this.checkDataIcon();
+    this.checkDataIconMenu();
 }
 
 
@@ -566,7 +568,7 @@ MapGlyph.prototype = {
 	await this.getElevations(pts,callback,update);
     },
 
-    applyPropertiesDialog: function() {
+    applyPropertiesDialog: function(style) {
 	//Clear out any feature infos
 	this.featureInfo=null;
 
@@ -577,20 +579,6 @@ MapGlyph.prototype = {
 	    this.setUseEntryName(this.jq("useentryname").is(":checked"));
 	    this.setUseEntryLabel(this.jq("useentrylabel").is(":checked"));
 	    this.setUseEntryLocation(this.jq("useentrylocation").is(":checked"));
-	}
-	if(this.isDataIconCapable()) {
-	    if(this.jq(ID_SHOWDATAICONS).length) {
-		this.setShowDataIcons(this.jq(ID_SHOWDATAICONS).val());
-	    }
-	    this.setAttribute(ID_DATAICON_USEENTRY,this.jq(ID_DATAICON_USEENTRY).is(':checked'));
-
-	    let dataIconInfo = this.getDataIconInfo();
-	    [ID_DATAICON_MARKERS, ID_DATAICON_FIELDS,ID_DATAICON_INIT_FIELD,
-	     ID_DATAICON_WIDTH, ID_DATAICON_HEIGHT, ID_DATAICON_SIZE,
-	     ID_DATAICON_LABEL, ID_DATAICON_PROPS].forEach(prop=>{
-		 dataIconInfo[prop] = this.jq(prop).val();
-	     });
-	    this.applyDataIcon();
 	}
 	this.setVisible(this.jq('visible').is(':checked'),true);
 	this.parsedProperties = null;
@@ -615,32 +603,55 @@ MapGlyph.prototype = {
 	}
 
 
+	if(this.isMultiEntry()) {
+	    this.applyChildren(child=>{
+		let newStyle = $.extend({},style);
+		newStyle.label = child.style.label;
+		newStyle.externalGraphic = child.style.externalGraphic;		
+		child.applyStyle(newStyle);
+	    });
+	}
 
-	this.checkDataIcon();
+
+	if(this.isDataIconCapable()) {
+	    if(this.jq(ID_SHOWDATAICONS).length) {
+		this.setShowDataIcons(this.jq(ID_SHOWDATAICONS).val());
+	    }
+	    this.setAttribute(ID_DATAICON_USEENTRY,this.jq(ID_DATAICON_USEENTRY).is(':checked'));
+	    let dataIconInfo = this.getDataIconInfo();
+	    [ID_DATAICON_MARKERS, ID_DATAICON_FIELDS,ID_DATAICON_INIT_FIELD,
+	     ID_DATAICON_WIDTH, ID_DATAICON_HEIGHT, ID_DATAICON_SIZE,
+	     ID_DATAICON_LABEL, ID_DATAICON_PROPS].forEach(prop=>{
+		 dataIconInfo[prop] = this.jq(prop).val();
+	     });
+	}
+
+	this.applyStyle(style);
+
+	if(this.isDataIconCapable()) {
+	    this.applyDataIcon();
+	    this.checkDataIconMenu();
+	}
     },
 
+    
     featureSelected:function(feature,layer,event) {
-	//	console.log('imdv.featureSelected');
 	if(this.selectedStyleGroup) {
 	    let indices = this.selectedStyleGroup.indices;
-	    //	    console.log('\thave a selectedStyleGroup');
 	    if(indices.includes(feature.featureIndex)) {
 		this.selectedStyleGroup.indices = Utils.removeItem(indices,feature.featureIndex);
 		feature.style =  feature.originalStyle = null;
-		//		console.log("removing selected:" + feature.featureIndex,indices);
 	    } else {
 		this.getStyleGroups().forEach((group,idx)=>{
 		    group.indices = Utils.removeItem(group.indices,feature.featureIndex);
 		});
 		feature.style = feature.originalStyle = $.extend(feature.style??{},this.selectedStyleGroup.style);
 		indices.push(feature.featureIndex);
-		//		console.log("adding selected:" + feature.featureIndex,indices);
 	    }
 	    ImdvUtils.scheduleRedraw(layer,feature);
 	    this.display.featureChanged(true);	    
 	    return
 	}
-	//	console.log('\tcalling onFeatureSelect');
 	this.display.getMap().onFeatureSelect(feature.layer,event)
     },
     featureUnselected:function(feature,layer,event) {
@@ -705,6 +716,7 @@ MapGlyph.prototype = {
 	}
 	return dflt;
     },
+
     getDataIconMarkers:function() {
 	if(this.getAttribute(ID_DATAICON_USEENTRY)) {
 	    if(Utils.stringDefined(this.transientProperties.mapglyphs)) {
@@ -718,7 +730,8 @@ MapGlyph.prototype = {
 	return this.transientProperties.mapglyphs;
     },
 
-    checkDataIcon:function() {
+
+    checkDataIconMenu:function() {
 	let _this = this;
 	let dataIconInfo = this.getDataIconInfo();
 	if(this.dataIconContainer) {
@@ -757,19 +770,25 @@ MapGlyph.prototype = {
     },
 
 
+    getStyleForProperties:function(style) {
+	return this.resetDataIconOriginal(style);
+    },
+
+    resetDataIconOriginal:function(style) {
+	style = style??this.style;
+	if(this.attrs[ID_DATAICON_ORIGINAL]) {
+	    let o = this.attrs[ID_DATAICON_ORIGINAL];
+	    DATAICON_PROPERTIES.forEach(prop=>{
+		style[prop] = o[prop]??this.style[prop];
+	    });
+	}
+	return style;
+    },
     clearDataIcon: function() {
-	//Is this a data icon
-	if(this.style?.externalGraphic?.startsWith('data:')) {
-	    if(this.attrs.dataIconOriginal) {
-		let o = this.attrs.dataIconOriginal;
-//		console.log('\tisDataIcon-orig:',this.attrs.dataIconOriginal);
-		this.style.externalGraphic=o.externalGraphic;
-		this.style.pointRadius = o.pointRadius;
-		this.style.fontSize = o.fontSize;		
-	    } else {
-//		console.log('\tisDataIcon-null');
-		this.style.externalGraphic=null;
-	    }
+	if(this.getDataIconShowing()) {
+	    this.setDataIconShowing(false);
+	    this.resetDataIconOriginal();
+	    this.attrs[ID_DATAICON_ORIGINAL] = null;
 	    this.applyStyle();
 	}
     },
@@ -782,6 +801,7 @@ MapGlyph.prototype = {
 	}
     },
 
+
     applyDataIcon: function() {
 	if(this.isEntry()) {
 	    this.makeDataIcon();
@@ -791,21 +811,20 @@ MapGlyph.prototype = {
 	});
     },
 
+
     makeDataIcon:function(force) {
+	let debug  = false;
+//	debug=true;
+
 	if(!this.isVisible())  {
 	    return;
 	}
-	let debug  = false;
-//	debug=true;
 	if(!force && !this.getShowDataIcons()) {
-	    if(debug)	    console.log('makeDataIcon - none',this.getName());
 	    this.clearDataIcon();
-//	    this.display.redraw(this);
 	    return;
 	}
 	let markersString = this.getDataIconMarkers();
 	if(!Utils.stringDefined(markersString)) {
-	    if(debug) console.log('makeDataIcon - none2',this.getName());
 	    return;
 	}
 	if(debug)	console.log('makeDataIcon',this.getName());
@@ -856,28 +875,37 @@ MapGlyph.prototype = {
 	}
 	pointData.loadData(fauxDisplay,null);
     },
+    parseDataIconProps:function(props,line) {
+	Utils.split(line??'',',',true,true).forEach(line2=>{
+	    let toks = Utils.split(line2,":",true,true);
+	    if(toks.length==2) {
+		props[toks[0]] = toks[1];
+	    }
+	});
+    },
+    getDataIconShowing: function() {
+	return this.attrs[ID_DATAICON_SHOWING];
+    },
+    setDataIconShowing: function(v) {
+	this.attrs[ID_DATAICON_SHOWING] =v;
+    },    
+
+
+
     makeDataIcons: function(pointData,data,markerLines) {
 	let markers = [];
 	let lines=[];
 	let props = {};
-	let makeProps = line=>{
-	    Utils.split(line??'',',',true,true).forEach(line2=>{
-		let toks = Utils.split(line2,":",true,true);
-		if(toks.length==2) {
-		    props[toks[0]] = toks[1];
-		}
-	    });
-	};
 	markerLines.forEach(line=>{
 	    line = line.trim();
 	    if(line.startsWith("#")) return;
 	    if(line.startsWith('props:')) {
-		makeProps(line.substring('props:'.length));
+		this.parseDataIconProps(props,line.substring('props:'.length));
 		return;
 	    }
 	    lines.push(line);
 	});
-	makeProps(this.getDataIconProperty(ID_DATAICON_PROPS));
+	this.parseDataIconProps(props,this.getDataIconProperty(ID_DATAICON_PROPS));
 
 	let cvrt=(v,dflt)=>{
 	    if(!Utils.stringDefined(v)) return dflt;
@@ -891,6 +919,7 @@ MapGlyph.prototype = {
 	let canvasWidth=parseFloat(cvrt(this.getDataIconProperty(ID_DATAICON_WIDTH),props.canvasWidth??100));
 	let canvasHeight=parseFloat(cvrt(this.getDataIconProperty(ID_DATAICON_HEIGHT),props.canvasHeight??100));
 	let selectedField=this.getDataIconProperty(ID_DATAICON_SELECTED_FIELD);
+
 	if(!Utils.stringDefined(selectedField)) {
 	    selectedField=this.getDataIconProperty(ID_DATAICON_INIT_FIELD);
 	}
@@ -983,26 +1012,34 @@ MapGlyph.prototype = {
 	    ctx.lineWidth=1;
 	}
 
+	//Save the original style
+	if(!this.getDataIconShowing()) {
+	    //Check for the case where the style has been set with a data icon when we have the properties dialog up
+	    if(!this.style?.externalGraphic?.startsWith('data')) {
+		this.attrs[ID_DATAICON_ORIGINAL] = {};
+		DATAICON_PROPERTIES.forEach(prop=>{
+		    this.attrs[ID_DATAICON_ORIGINAL][prop] = this.style[prop];
+		});
+	    }
+	} 
+	this.setDataIconShowing(true);
 	let finish = ()=>{
+	    //Check for a race condition
+	    if(!this.getDataIconShowing())  {
+		return;
+	    }
+
 	    let img = canvas.toDataURL();
 	    if($('#testimg').length) 
 		$("#testimg").html(HU.tag("img",["src",img]));
 	    canvas.remove();
-	    //Save the original style
-	    if(!this.attrs.dataIconOriginal) {
-		this.attrs.dataIconOriginal = {
-		    externalGraphic:this.style.externalGraphic,
-		    pointRadius:this.style.pointRadius,		    
-		    fontSize:this.style.fontSize,		    
-		}
-	    }
-	    this.style.fontSize='0px';
+	    this.style.label=null;
 	    this.style.pointRadius=size;
 	    this.style.externalGraphic=img;
-	    this.applyStyle(this.style,true);		
+//	    console.log("set",this.style.externalGraphic.substring(0,20));
+	    this.applyStyle(this.style,true,true);		
 	    this.display.redraw();
 	};
-
 
 	let check = () =>{
 	    let allGood = true;
@@ -1019,6 +1056,7 @@ MapGlyph.prototype = {
 		setTimeout(check,100);
 	    }
 	};
+
 	check();
     },
 
@@ -2716,17 +2754,37 @@ MapGlyph.prototype = {
 	    [ID_DATAICON_MARKERS,DEFAULT_DATAICONS]];
 
 	this.jq('applyentrydataicon').button().click(()=>{
-	    let props = '';
+	    let propsLine = '';
 	    let markers='';
 	    Utils.split(this.transientProperties.mapglyphs,'\n',true,true).forEach(line=>{
 		if(line.startsWith("#")) return;
 		if(line.startsWith('props:')) {
-		    props+=line.substring('props:'.length);
+		    propsLine+=line.substring('props:'.length);
 		} else {
 		    markers+=line+'\n';
 		}
 	    });
-	    this.jq(ID_DATAICON_PROPS).val(props);
+	    let props = {};
+	    this.parseDataIconProps(props,propsLine);
+	    if(Utils.isDefined(props.canvasWidth)) {
+		this.jq(ID_DATAICON_WIDTH).val(props.canvasWidth);
+		delete props.canvasWidth;
+	    }
+	    if(Utils.isDefined(props.canvasHeight)) {
+		this.jq(ID_DATAICON_HEIGHT).val(props.canvasHeight);
+		delete props.canvasHeight;
+	    }
+	    if(Utils.isDefined(props.iconSize)) {
+		this.jq(ID_DATAICON_SIZE).val(props.iconSize);
+		delete props.iconSize;
+	    }
+	    let tmp = '';
+	    Object.keys(props).forEach((key,idx)=>{
+		if(idx>0) tmp+=',';
+		tmp+=key+':'+props[key];
+	    });
+
+	    this.jq(ID_DATAICON_PROPS).val(tmp);
 	    this.jq(ID_DATAICON_MARKERS).val(markers);	    
 	});
 	this.jq('dataicon_add_default').button().click(() =>{
@@ -4271,13 +4329,19 @@ MapGlyph.prototype = {
 	    this.display.addFeatures(this.rings);
 	}		
     },
-    applyStyle:function(style,skipChangeNotification) {
-	if(style)
+    applyStyle:function(style,skipChangeNotification,isForDataIcon) {
+	if(style) {
 	    this.style = style;
+	}
+	//check for the data icon state
+	if(this.isDataIconCapable() && !isForDataIcon) {
+	    this.resetDataIconOriginal();
+	}
+
 	this.applyMapStyle();
 	if(this.getMapServerLayer()) {
-	    if(Utils.isDefined(style.opacity)) {
-		this.getMapServerLayer().opacity = +style.opacity;
+	    if(Utils.isDefined(this.style.opacity)) {
+		this.getMapServerLayer().opacity = +this.style.opacity;
 		this.getMapServerLayer().setVisibility(false);
 		this.getMapServerLayer().setVisibility(true);
 		ImdvUtils.scheduleRedraw(this.getMapServerLayer());
@@ -4524,7 +4588,6 @@ MapGlyph.prototype = {
 	let legend = this.getLegendDiv();
 	legend.removeClass('imdv-legend-label-invisible');
 	legend.removeClass('imdv-legend-label-highlight');
-//	console.log('\tsetVisible:',this.getName(),this.getVisible(),this.highlighted);
 	if(this.getVisible()) {
 	    if(this.highlighted) {
 		legend.addClass('imdv-legend-label-highlight');
@@ -4967,7 +5030,7 @@ MapGlyph.prototype = {
 	    this.entries = entries;
 	    entries.forEach((e,idx)=>{
 		if(!e.hasLocation()) {
-		    console.log("mutli entry has no location:" + e);
+		    console.log("multi entry has no location:" + e);
 		    return;
 		}
 		let overrideLocation;
@@ -4987,7 +5050,7 @@ MapGlyph.prototype = {
 		style.externalGraphic = e.getIconUrl();
 		style.strokeWidth=1;
 		style.strokeColor="transparent";
-//		style.fontSize='12px';
+		style.fontSize='12px';
 		if(style.showLabels) {
 		    let label  =e.getName();
 		    let toks = Utils.split(label," ",true,true);
@@ -5003,6 +5066,7 @@ MapGlyph.prototype = {
 		} else {
 		    style.label=null;
 		}
+		
 		let attrs = {name:e.getName(),
 			     mapglyphs:e.mapglyphs,
 			     entryId:e.getId(),
