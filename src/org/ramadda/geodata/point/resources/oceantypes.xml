@@ -275,8 +275,7 @@ csvcommands4=yy\,month\,dd\,hh\,mm,-,date,-firstcolumns,date
 csvcommands5=-indateformat,yyyy-MM-dd-HH-mm,,-convertdate,date
 csvcommands6=-notcolumns,yy\,month\,dd\,hh\,mm,-change,1-50,MM,NaN
 #convert kts to m/s use the .* pattern since this is a wildcard and the field might not exist
-csvcommands7=-scale,.*wspd_comma_.*gst,0,0.514444,0,-decimals,.*wspd_comma_.*gst,2
-csvcommands8=-addheader,gst.unit m/s wspd.unit m/s date.format_csvcommandspace_{yyyy-MM-dd_csvcommandspace_hh:mm:ss},-print
+csvcommands7=-addheader,wdir.unit degT wspd.unit m/s gst.unit m/s  wvht.unit m   dpd.unit sec   apd.unit  sec mwd.unit degT   pres.unit hPa  atmp.unit C  wtmp.unit  C dewp.unit  C vis.unit  nmi ptdy.unit   hPa tide.unit ft date.format_csvcommandspace_{yyyy-MM-dd_csvcommandspace_hh:mm:ss},-print
 </property>
 <property name="mapglyphs">
 props:fontSize:0px,iconSize:75,canvasWidth:500,canvasHeight:100,fill:#efefef,borderWidth:2,borderColor:#000,font:bold 36px sans-serif
