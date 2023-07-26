@@ -172,6 +172,7 @@ public class NwsObsTypeHandler extends NwsStationTypeHandler {
 					row.append(time);
 					continue;
 				    }
+
 				    JSONObject fobj = properties.optJSONObject(f);
 				    if(fobj==null) {
 					row.append("NaN");
@@ -179,6 +180,10 @@ public class NwsObsTypeHandler extends NwsStationTypeHandler {
 				    }
 				    double d =fobj.optDouble("value"); 
 				    if(!Double.isNaN(d)) gotOneGoodOne = true;
+				    //convert km/h to m/s
+				    if(f.equals("windSpeed") || f.equals("windGust")) {
+					d = d*0.277778;
+				    }
 				    row.append(d);
 				}		    
 				if(gotOneGoodOne) {
