@@ -842,13 +842,38 @@ function DisplayThing(argId, argProperties) {
 			}
 			return true;
 		    });
-		    
+		} else if(t.tag) {
+		    fields.every(f=>{
+			if(f.getId().match(t.tag) || f.getLabel().match(t.tag)) {
+			    field =f;
+			    if(debug) console.log("found pattern:" + f);
+			    return false;
+			}
+			return true;
+		    });
 		}
 		if(field) {
 		    t.tag = field.getId();
 		    t.attrs['label'] = field.getLabel();
-		}
+		    let unit = field.getUnit();
+		    if(!unit) unit=props.unit;
+		    if(!unit) unit='';
+		    if(t.attrs.suffix) {
+			t.attrs.suffix = String(t.attrs.suffix).replace('\${unit}', unit).replace('\${fieldName}',field.getLabel()).replace('\${fieldId}',field.getId());
+		    }
+		    if(t.attrs.prefix) {
+			t.attrs.prefix = String(t.attrs.prefix).replace('\${unit}', unit).replace('\${fieldName}',field.getLabel()+": ").replace('\${fieldId}',field.getId()+": ");
+		    }		    
+		} else {
+		    let unit = props.unit??'';
+		    if(t.attrs.suffix) {
+			t.attrs.suffix = String(t.attrs.suffix).replace('\${unit}', unit).replace('\${fieldName}','').replace('\${fieldId}','');
+		    }
+		    if(t.attrs.prefix) {
+			t.attrs.prefix = String(t.attrs.suffix).replace('\${unit}', unit).replace('\${fieldName}','').replace('\${fieldId}','');
+		    }
 
+		}
 
 		if(t.tag=="default") {
 		    attrs[t.tag] =  this.getRecordHtml(record, fields, "${default}",t.attrs);

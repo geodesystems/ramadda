@@ -4,8 +4,12 @@ var debugDataIcons = false;
 var DATAICON_PROPERTIES = ['externalGraphic','pointRadius','label'];
 var DEFAULT_DATAICON_PROPS = 'font:50px sans-serif,lineWidth:5,requiredField:${_field},borderColor:#000,fill:#eee';
 var DEFAULT_DATAICONS = 'label,pos:nw,dx:80,dy:-ch+20,label:${${_field} decimals=1 suffix=" ${unit}"}\nimage,pos:nw,dx:10,dy:10-ch,width:60,height:60,url:${icon}';
-var DEFAULT_DATAICON_FIELD='temp.*|.*temp';
-var DEFAULT_DATAICON_FIELDS=DEFAULT_DATAICON_FIELD+',label=Temperature,unit=C\ndewpoint,label=Dewpoint,unit=C';
+//DEFAULT_DATAICONS='label,pos:nw,dx:10,dy:-ch+20,label:${${_field} decimals=1 suffix=" ${unit}" prefix="${fieldName}"}\nimage,pos:nw,dx:10,dy:10-ch,width:60,height:60,url:${icon}'
+
+
+
+var DEFAULT_DATAICON_FIELD='atmp|temp.*|.*temp';
+var DEFAULT_DATAICON_FIELDS=DEFAULT_DATAICON_FIELD+',label=Temperature,unit=C\ndewpoint,label=Dewpoint,unit=C\n.*rh|relativehumidity,label=Relative Humidity,unit=%';
 
 
 var LINETYPE_STRAIGHT='straight';
@@ -857,6 +861,7 @@ MapGlyph.prototype = {
 	let url = Ramadda.getUrl("/entry/data?record.last=1&max=1&entryid=" + opts.entryId);
 	let pointData = new PointData("",  null,null,url,
 				      {entryId:opts.entryId});
+
 	let callback = (data)=>{
 	    this.makeDataIcons(pointData,data,markers);
 	}
@@ -960,13 +965,21 @@ MapGlyph.prototype = {
 		if(attrs[a]) extra+= ' ' + a +'=' + attrs[a] +' ';
 	    });
 	    line = line.replace(/\${_extra}/g,extra);
+	    let unit = '';
 	    Object.keys(attrs).forEach(key=>{
+		if(key=='unit') {
+		    unit = attrs[key];
+		    return;
+		}
 		if(key=='label') return;
 		line = line.replaceAll("\${" + key+"}",attrs[key]);
 	    });
+
 	    //In case there wasn't a unit
-	    line = line.replaceAll(/\${unit}/g,'');
+//	    line = line.replaceAll(/\${unit}/g,'');
 	    line = line.replaceAll(/\${icon}/g,this.getIcon());	    
+//	    console.log(line);
+
 
 	    props = Utils.clone({},
 				props,{
@@ -974,6 +987,7 @@ MapGlyph.prototype = {
 				    canvasWidth:canvasWidth,
 				    canvasHeight: canvasHeight,
 				    entryname: this.getName(),
+				    unit:unit
 				},attrs);
 	    if(debugDataIcons)
 		console.log('line:'+ line);
@@ -5035,9 +5049,11 @@ MapGlyph.prototype = {
 	    this.clearChildren();
 	    this.children = [];
 	    this.entries = entries;
+	    let someNotLocated = false;
 	    entries.forEach((e,idx)=>{
 		if(!e.hasLocation()) {
-		    console.log("multi entry has no location:" + e);
+		    console.log("multi entry has no location:" + e.getName());
+		    someNotLocated = true;
 		    return;
 		}
 		let overrideLocation;

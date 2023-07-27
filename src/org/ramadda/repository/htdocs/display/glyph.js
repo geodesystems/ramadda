@@ -202,7 +202,8 @@ Glyph.prototype = {
 	    let text = String(label);
 	    if(args.record) {
 		text = this.display.applyRecordTemplate(args.record, null,null,text,{
-		    entryname:props.entryname
+		    entryname:props.entryname,
+		    unit:props.unit
 		});
 	    }
 

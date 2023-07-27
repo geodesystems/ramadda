@@ -843,9 +843,11 @@ function RecordField(props, source) {
         getUnitLabel: function() {
             return this.getLabel() + this.getUnitSuffix();
         },
-        getUnitSuffix: function() {
-            if (this.unit && this.unit != "")
+        getUnitSuffix: function(plain) {
+            if (this.unit && this.unit != "") {
+		if(plain) return "[" + this.unit + "]";
                 return "&nbsp;[" + this.unit + "]";
+	    } 
             return "";
         },
 
