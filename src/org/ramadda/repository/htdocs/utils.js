@@ -3442,7 +3442,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    cb(this.emojis);
 	    return;
 	}
-        $.getJSON(RamaddaUtil.getCdnUrl('/emojis/emojis.json'), data=>{
+        $.getJSON(RamaddaUtil.getUrl('/emojis/emojis.json'), data=>{
 	    let emojis  = [];
 	    let cats = {};
 	    this.emojis = [];
@@ -3462,7 +3462,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		let url = item.image;
 		if(!url.startsWith("/")) url = "/emojis/" + url
 		cat.images.push({name:item.name,
-				 image:RamaddaUtil.getCdnUrl(url)});
+				 image:RamaddaUtil.getUrl(url)});
 
 	    })
 	    this.emojis=emojis;
