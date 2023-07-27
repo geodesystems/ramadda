@@ -3954,6 +3954,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			}
 
 			this.getMap().applyHighlightStyle(this.getOtherProperties());
+
+			//If there was a location in the URL then don't set the location here
+			if(Utils.stringDefined(HU.getUrlArgument(ARG_ZOOMLEVEL))) {
+			    zoomLevel=null;
+			}
+			if(Utils.stringDefined(HU.getUrlArgument(ARG_MAPCENTER))) {
+			    bounds = null;
+			}
+
 			if(zoomLevel>=0 && Utils.isDefined(zoomLevel)) {
 			    _this.getMap().setZoom(zoomLevel);
 			}

@@ -455,13 +455,13 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                 params.initialLocation = {lon:+this.getProperty("longitude", -105),
 					  lat:+this.getProperty("latitude", 40)};
 	    }
-	    if(this.getMapCenter()) {
+	    if(!Utils.stringDefined(HU.getUrlArgument(ARG_MAPCENTER)) && this.getMapCenter()) {
 		this.hadInitialPosition = true;
 		[lat,lon] =  this.getMapCenter().replace("%2C",",").split(",");
                 params.initialLocation = {lon:lon,lat:lat};
 	    }
 
-	    if(this.getZoomLevel()) {
+	    if(Utils.stringDefined(HU.getUrlArgument(ARG_ZOOMLEVEL)) && this.getZoomLevel()) {
 		this.hadInitialPosition = true;
                 params.initialZoom = +this.getZoomLevel();
 		params.initialZoomTimeout = this.getZoomTimeout();

@@ -657,7 +657,8 @@ new MapLayer('gray','','',{type:'simple'});
 
 MapUtils.initSymbols();
 
-
+var ARG_ZOOMLEVEL = 'zoomLevel';
+var ARG_MAPCENTER = 'mapCenter';
 
 var ramaddaMapMap = {};
 
@@ -729,6 +730,12 @@ function RepositoryMap(mapId, params) {
     if (!params) params = {};
     this.params = params;
     this.mapId = mapId || "map";
+
+    [ARG_MAPCENTER,ARG_ZOOMLEVEL].forEach(prop=>{
+	if(Utils.stringDefined(HU.getUrlArgument(prop))) {
+	    params[prop]  = HU.getUrlArgument(prop);
+	}
+    });
     if(params.mapCenter) {
 	[lat,lon] =  	params.mapCenter.replace("%2C",",").split(",")
 	params.initialLocation = {lon:lon,lat:lat};
@@ -1538,10 +1545,10 @@ RepositoryMap.prototype = {
 	latlon.right = r(latlon.right);
 
 	HU.addToDocumentUrl("map_bounds",latlon.top + "," + latlon.left + "," + latlon.bottom + "," + latlon.right);
-	HU.addToDocumentUrl("zoomLevel" , this.getMap().getZoom());
+	HU.addToDocumentUrl(ARG_ZOOMLEVEL , this.getMap().getZoom());
 
 	let center =   this.transformProjPoint(this.getMap().getCenter())
-        HU.addToDocumentUrl("mapCenter", r(center.lat)+","+ r(center.lon));
+        HU.addToDocumentUrl(ARG_MAPCENTER, r(center.lat)+","+ r(center.lon));
     },
     baseLayerChanged: function() {
         let baseLayer = this.getMap().baseLayer;

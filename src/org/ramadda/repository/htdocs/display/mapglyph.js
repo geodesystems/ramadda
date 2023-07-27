@@ -1074,14 +1074,21 @@ MapGlyph.prototype = {
 		return;
 	    }
 
-	    let img = canvas.toDataURL();
-	    if($('#testimg').length) 
-		$("#testimg").html(HU.tag("img",["src",img]));
-	    canvas.remove();
-	    this.style.label=null;
-	    this.style.pointRadius=size;
-	    this.style.externalGraphic=img;
-//	    console.log("set",this.style.externalGraphic.substring(0,20));
+	    try {
+		let img = canvas.toDataURL();
+		if($('#testimg').length) 
+		    $("#testimg").html(HU.tag("img",["src",img]));
+		canvas.remove();
+		this.style.label=null;
+		this.style.pointRadius=size;
+		this.style.externalGraphic=img;
+	    } catch(err) {
+		console.error('Error',err);
+		if(String(err).indexOf('insecure')>=0) {
+		    alert('There was an error making the data icon.\nPerhaps one of the images is from an external server');
+		
+		}
+	    }
 	    this.applyStyle(this.style,true,true);		
 	    this.display.redraw();
 	};
