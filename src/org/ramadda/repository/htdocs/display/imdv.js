@@ -2908,6 +2908,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 
 
+	    //Note: the emojis have to come from this RAMADDA instead of the CDN
+	    //because if we use the CDN icon in the data icon canvas we get an security error
 	    HU.getEmojis(emojis=>{
 		let prefix = HU.getUniqueId('icons_');
 		let html = "";
