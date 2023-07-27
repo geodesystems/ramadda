@@ -18,6 +18,7 @@ import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.Result;
 import org.ramadda.repository.ServiceInfo;
+import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.auth.AccessException;
 import org.ramadda.repository.job.JobInfo;
 import org.ramadda.repository.output.OutputHandler;
@@ -810,6 +811,22 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
             return null;
         }
         file.putProperty("entry", entry);
+	List<Metadata> metadataList =
+	    getMetadataManager().findMetadata(getRepository().getTmpRequest(), entry,
+					      new String[]{"pointdata_units"}, true);
+	if ((metadataList != null) && (metadataList.size() > 0)) {
+	    StringBuilder sb = new StringBuilder();
+	    for(Metadata mtd: metadataList) {
+		sb.append(mtd.getAttr1());
+		sb.append("\n");
+	    }
+	    List<String[]> units = new ArrayList<String[]>();
+	    for(String line: Utils.split(sb.toString(),"\n",true,true)) {
+		List<String> toks = Utils.splitUpTo(line,"=",2);
+		if(toks.size()==2) units.add(new String[]{toks.get(0),toks.get(1)});
+	    }
+	    file.setUnitPatterns(units);
+	}
 
         return file;
     }
