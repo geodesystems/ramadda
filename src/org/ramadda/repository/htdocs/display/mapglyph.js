@@ -747,39 +747,52 @@ MapGlyph.prototype = {
 	let _this = this;
 	let dataIconInfo = this.getDataIconInfo();
 	if(this.dataIconContainer) {
-	    jqid(this.dataIconContainer).remove();
-	    this.dataIconContainer=null;
+	    jqid(this.dataIconContainer).hide();
 	}
 	if(!this.getProperty('showGlyphMenu',true,true)) {
 	    return
 	}
 
+	if(!Utils.stringDefined(dataIconInfo[ID_DATAICON_FIELDS])) {
+	    return;
+	}	    
+	this.dataIconFieldsId = HU.getUniqueId('dataiconfields_');
 
-	if(Utils.stringDefined(dataIconInfo[ID_DATAICON_FIELDS])) {
-	    this.dataIconFieldsId = HU.getUniqueId('dataiconfields_');
+
+	if(!this.dataIconContainer || jqid(this.dataIconContainer).length==0) {
 	    this.dataIconContainer = HU.getUniqueId('dataiconfieldscontainer_');
-	    let items = [];
-	    Utils.split(dataIconInfo[ID_DATAICON_FIELDS],'\n',true,true).forEach(item=>{
-		let toks = Utils.split(item,',',true,true);
-		let map = {};
-		for(let i=1;i<toks.length;i++) {
-		    let toks2 = Utils.split(toks[i],"=",true,true);
-		    if(toks2.length>1) map[toks2[0]] = toks2[1];
-		}
-		items.push({value:toks[0],label:map.label});
-	    });
-	    let menu = HU.select('',['id',this.dataIconFieldsId],
-				 items,
-				 Utils.getStringDefined(dataIconInfo[ID_DATAICON_SELECTED_FIELD],
-							dataIconInfo[ID_DATAICON_INIT_FIELD]));
-	    let label = Utils.getStringDefined(dataIconInfo[ID_DATAICON_LABEL],'Select field');
-	    this.display.jq(ID_HEADER1).append(HU.div(['style',HU.css('display','inline-block','margin-right','20px'),'id',this.dataIconContainer],
-						      HU.b(label)+':'+HU.space(1)+menu));
-	    jqid(this.dataIconFieldsId).change(function(){
-		_this.getDataIconInfo()[ID_DATAICON_SELECTED_FIELD] = $(this).val();
-		_this.applyDataIcon();
-	    });
+	    this.display.jq(ID_HEADER1).append(HU.div(['style',HU.css('display','inline-block','margin-right','20px'),'id',this.dataIconContainer]));
 	}
+	jqid(this.dataIconContainer).show();
+
+
+	let items = [];
+	Utils.split(dataIconInfo[ID_DATAICON_FIELDS],'\n',true,true).forEach(item=>{
+	    let toks = Utils.split(item,',',true,true);
+	    let map = {};
+	    for(let i=1;i<toks.length;i++) {
+		let toks2 = Utils.split(toks[i],"=",true,true);
+		if(toks2.length>1) map[toks2[0]] = toks2[1];
+	    }
+	    items.push({value:toks[0],label:map.label});
+	});
+	let menu = HU.select('',['id',this.dataIconFieldsId],
+			     items,
+			     Utils.getStringDefined(dataIconInfo[ID_DATAICON_SELECTED_FIELD],
+						    dataIconInfo[ID_DATAICON_INIT_FIELD]));
+	let label = Utils.getStringDefined(dataIconInfo[ID_DATAICON_LABEL],'Select field');
+	let clazz = '';
+	if(!this.isVisible()) {
+	    clazz+=' imdv-legend-label-invisible ';
+	}
+	let contents = HU.div(['class',clazz,'style',HU.css('padding','4px')],HU.b(label)+':'+HU.space(1)+menu);
+	jqid(this.dataIconContainer).html(contents);
+
+	jqid(this.dataIconFieldsId).change(function(){
+	    _this.getDataIconInfo()[ID_DATAICON_SELECTED_FIELD] = $(this).val();
+	    _this.applyDataIcon();
+	});
+
     },
 
 
@@ -4616,6 +4629,10 @@ MapGlyph.prototype = {
 	} else {
 	    legend.addClass('imdv-legend-label-invisible');
 	}
+
+	this.checkDataIconMenu();	
+
+
     },
     getVisible:function() {
 	if(!Utils.isDefined(this.attrs.visible)) this.attrs.visible = true;
