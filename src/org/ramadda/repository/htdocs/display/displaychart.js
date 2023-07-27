@@ -290,10 +290,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'highlightDim',d:'true',ex:'true',tt:'Dim the non highlight lines'},
 	{p:'chartWidth',ex:''},
 	{p:'chartHeight',ex:''},
-	{p:'chartLeft',ex:'0'},
-	{p:'chartRight',ex:'0'},
-	{p:'chartTop',ex:'0'},
-	{p:'chartBottom',ex:'0'},
+	{p:'chartLeft',d:0},
+	{p:'chartRight',d:0},
+	{p:'chartTop',d:10,ex:'0'},
+	{p:'chartBottom',ex:'0',d:0},
 
 	{p:'lineDashStyle',d:null,ex:'2,2,20,2,20'},
 	{p:'highlight.lineDashStyle',d:'2,2,20,2,20',ex:'2,2,20,2,20'},
@@ -2195,12 +2195,12 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
                 chartOptions.chartArea = {};
             }
 	    $.extend(chartOptions.chartArea, {
-                left: this.getProperty("chartLeft", this.chartDimensions.left),
-                right: this.getProperty("chartRight", this.chartDimensions.right),
-                top: this.getProperty("chartTop", "10"),
-		bottom: this.getProperty("chartBottom"),
-                height: this.getProperty("chartHeight", "70%"),
-                width: this.getProperty("chartWidth", this.chartDimensions.width),
+                left: this.getChartLeft(this.chartDimensions.left),
+                right: this.getChartRight(this.chartDimensions.right),
+                top: this.getChartTop(),
+		bottom: this.getChartBottom(50),
+                height: this.getChartHeight('70%'),
+                width: this.getChartWidth(this.chartDimensions.width),
             });
 	    ["left","top","right","bottom"].forEach(a=>{
 		let v =chartOptions.chartArea[a];
@@ -2593,10 +2593,10 @@ function PiechartDisplay(displayManager, id, properties) {
 
 	    chartOptions.chartArea = {};
 	    $.extend(chartOptions.chartArea, {
-                left: this.getChartLeft(0),
-                right: this.getChartRight(0),
-                top: this.getChartTop(0),
-		bottom: this.getChartBottom(0),
+                left: this.getChartLeft(),
+                right: this.getChartRight(),
+                top: this.getChartTop(),
+		bottom: this.getChartBottom(),
                 width: '100%',
                 height: '100%'
             });
@@ -3300,12 +3300,11 @@ function BubbleDisplay(displayManager, id, properties) {
                 chartOptions.colors = Utils.getColorTable("rainbow", true);
             }
 	    $.extend(chartOptions.chartArea, {
-                left: this.getProperty("chartLeft", this.chartDimensions.left),
-                right: this.getProperty("chartRight", this.chartDimensions.right),
-                top: this.getProperty("chartTop", "10"),
-		bottom: this.getProperty("chartBottom",40),
-		//                width: this.getProperty("chartWidth", '98%'),
-                height: this.getProperty("chartHeight", '200')
+                left: this.getChartLeft(this.chartDimensions.left),
+                right: this.getChartRight(this.chartDimensions.right),
+                top: this.getChartTop(10),
+		bottom: this.getChartBottom(40),
+                height: this.getChartHeight(200)
             });
             chartOptions.height = "100px";
             chartOptions.sizeAxis = {
