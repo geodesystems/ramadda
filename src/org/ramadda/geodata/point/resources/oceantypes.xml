@@ -281,7 +281,7 @@ csvcommands7=-addheader,wdir.unit degT wspd.unit m/s gst.unit m/s  wvht.unit m  
 props:fontSize:0px,iconSize:75,canvasWidth:500,canvasHeight:100,fill:#efefef,borderWidth:2,borderColor:#000,font:bold 36px sans-serif
 image,pos:nw,dx:10,dy:10-ch,width:60,height:60,url:${root}/point/noaa.gif
 label,pady:5,pos:nw,dx:80,dy:10-ch,label:${entryname}  
-label,pos:s,dx:cw2,dy:-10,font:36px sans-serif,label:${match  pattern="(atmp)" prefixLabel=true}
+label,pos:s,dx:cw2,dy:-10,font:36px sans-serif,label:${match  pattern="(atmp)" suffix=" ${unit}" prefixLabel=true}
 </property>
 
 <wiki>
