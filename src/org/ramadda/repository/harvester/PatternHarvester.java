@@ -88,6 +88,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     /** attribute id */
     public static final String ATTR_MOVETOSTORAGE = "movetostorage";
 
+    public static final String ATTR_DELETE_WHEN_FILE_SIZE_DIFFERS = "delete_when_file_size_differs";
+
 
     public static final String ATTR_PUSHGEO = "pushgeo";    
 
@@ -146,6 +148,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
     /** _more_ */
     private boolean moveToStorage = false;
+
+    /** _more_ */
+    private boolean deleteWhenFileSizeDiffers = false;
 
     /** _more_ */
     private List<HarvesterFile> dirs;
@@ -251,8 +256,10 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     protected void init(Element element) throws Exception {
         super.init(element);
 
-        moveToStorage = XmlUtil.getAttribute(element, ATTR_MOVETOSTORAGE,
-                                             moveToStorage);
+        moveToStorage = XmlUtil.getAttribute(element, ATTR_MOVETOSTORAGE, moveToStorage);
+        deleteWhenFileSizeDiffers = XmlUtil.getAttribute(element, ATTR_DELETE_WHEN_FILE_SIZE_DIFFERS,
+							 false);
+
         filePatternString = XmlUtil.getAttribute(element, ATTR_FILEPATTERN,
 						 filePatternString);
 
@@ -317,6 +324,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         element.setAttribute(ATTR_MAKETHUMBNAILS, makeThumbnails+"");		
         element.setAttribute(ATTR_MAXLEVEL, maxLevel+"");	
         element.setAttribute(ATTR_MOVETOSTORAGE, "" + moveToStorage);
+	element.setAttribute(ATTR_DELETE_WHEN_FILE_SIZE_DIFFERS, "" + deleteWhenFileSizeDiffers);	
+
         element.setAttribute(ATTR_DATEFORMAT, dateFormat);
 
     }
@@ -368,11 +377,21 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         sdf            = null;
         init();
         dateFormat = request.getUnsafeString(ATTR_DATEFORMAT, dateFormat);
+
+
         if (request.exists(ATTR_MOVETOSTORAGE)) {
             moveToStorage = request.get(ATTR_MOVETOSTORAGE, moveToStorage);
         } else {
             moveToStorage = false;
         }
+
+        if (request.exists(ATTR_DELETE_WHEN_FILE_SIZE_DIFFERS)) {
+            deleteWhenFileSizeDiffers = request.get(ATTR_DELETE_WHEN_FILE_SIZE_DIFFERS, deleteWhenFileSizeDiffers);
+        } else {
+            deleteWhenFileSizeDiffers = false;
+        }
+
+
     }
 
     /**
@@ -515,14 +534,22 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 					dateFormat, HU.SIZE_60)));
 
 
-        String moveNote =
-            msg(
-		"Note: This will move the files from their current location to RAMADDA's storage directory");
-        sb.append(HU.formEntry(msgLabel("Move file to storage"),
-			       HU.checkbox(ATTR_MOVETOSTORAGE,
+        String moveNote =HU.div("Note: This will move the files from their current location to RAMADDA's storage directory",
+				HU.cssClass("ramadda-callout ramadda-callout-info"));
+	sb.append(HU.formEntry("",moveNote));
+        sb.append(HU.formEntry("",
+			       HU.labeledCheckbox(ATTR_MOVETOSTORAGE,
 					   "true",
-					   moveToStorage) + HU.space(1)
-			       + moveNote));
+						  moveToStorage,"Move file to storage")));
+
+        String deleteNote =HU.div("Note: If the file has already been harvested but has since changed it's size then delete the existing entry and re-harvest",
+				  HU.cssClass("ramadda-callout ramadda-callout-info"));
+	sb.append(HU.formEntry("",deleteNote));
+        sb.append(HU.formEntry("",
+			       HU.labeledCheckbox(ATTR_DELETE_WHEN_FILE_SIZE_DIFFERS,
+						  "true",
+						  deleteWhenFileSizeDiffers,"Delete matching entry and re-add when file size differs")));
+
 
 
 	List<String> mtds = new ArrayList<String>();
@@ -1091,17 +1118,17 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 								    existingId);
                         if (existing != null) {
                             //                      System.err.println("existing:" + existing.getResource() +" " + existing.getResource().getFileSizeRaw() +" found:" +  found.getResource().getFileSizeRaw());
-                            if (existing.getResource().getFileSizeRaw()
+
+			    if (deleteWhenFileSizeDiffers &&
+				existing.getResource().getFileSizeRaw()
 				!= found.getResource().getFileSizeRaw()) {
                                 uniqueEntries.add(found);
                                 getEntryManager().deleteEntry(request,
 							      existing);
-                                logHarvesterInfo("Replacing entry:"
-						 + existing);
+                                logHarvesterInfo("File sizes are different. replacing entry:" + existing);
                                 if (replaceInPlace) {
                                     found.setId(existing.getId());
                                 }
-
                                 continue;
                             }
                         } else {
