@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Jul 27 04:54:15 MDT 2023";
+var build_date="RAMADDA build date: Thu Jul 27 10:17:41 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -35519,13 +35519,13 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                 params.initialLocation = {lon:+this.getProperty("longitude", -105),
 					  lat:+this.getProperty("latitude", 40)};
 	    }
-	    if(this.getMapCenter()) {
+	    if(!Utils.stringDefined(HU.getUrlArgument(ARG_MAPCENTER)) && this.getMapCenter()) {
 		this.hadInitialPosition = true;
 		[lat,lon] =  this.getMapCenter().replace("%2C",",").split(",");
                 params.initialLocation = {lon:lon,lat:lat};
 	    }
 
-	    if(this.getZoomLevel()) {
+	    if(Utils.stringDefined(HU.getUrlArgument(ARG_ZOOMLEVEL)) && this.getZoomLevel()) {
 		this.hadInitialPosition = true;
                 params.initialZoom = +this.getZoomLevel();
 		params.initialZoomTimeout = this.getZoomTimeout();
@@ -45138,6 +45138,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			}
 
 			this.getMap().applyHighlightStyle(this.getOtherProperties());
+
+			//If there was a location in the URL then don't set the location here
+			if(Utils.stringDefined(HU.getUrlArgument(ARG_ZOOMLEVEL))) {
+			    zoomLevel=null;
+			}
+			if(Utils.stringDefined(HU.getUrlArgument(ARG_MAPCENTER))) {
+			    bounds = null;
+			}
+
 			if(zoomLevel>=0 && Utils.isDefined(zoomLevel)) {
 			    _this.getMap().setZoom(zoomLevel);
 			}
@@ -47822,14 +47831,21 @@ MapGlyph.prototype = {
 		return;
 	    }
 
-	    let img = canvas.toDataURL();
-	    if($('#testimg').length) 
-		$("#testimg").html(HU.tag("img",["src",img]));
-	    canvas.remove();
-	    this.style.label=null;
-	    this.style.pointRadius=size;
-	    this.style.externalGraphic=img;
-//	    console.log("set",this.style.externalGraphic.substring(0,20));
+	    try {
+		let img = canvas.toDataURL();
+		if($('#testimg').length) 
+		    $("#testimg").html(HU.tag("img",["src",img]));
+		canvas.remove();
+		this.style.label=null;
+		this.style.pointRadius=size;
+		this.style.externalGraphic=img;
+	    } catch(err) {
+		console.error('Error',err);
+		if(String(err).indexOf('insecure')>=0) {
+		    alert('There was an error making the data icon.\nPerhaps one of the images is from an external server');
+		
+		}
+	    }
 	    this.applyStyle(this.style,true,true);		
 	    this.display.redraw();
 	};
