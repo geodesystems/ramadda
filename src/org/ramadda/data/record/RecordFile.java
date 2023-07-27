@@ -114,6 +114,7 @@ public abstract class RecordFile {
     private Date baseDate;
 
 
+    private List<String[]> unitPatterns;
 
     /** _more_ */
     private SimpleDateFormat[] mySdfs;
@@ -147,7 +148,6 @@ public abstract class RecordFile {
      */
     public RecordFile(Hashtable properties) {
         this.properties = properties;
-
     }
 
     /**
@@ -1916,6 +1916,24 @@ public abstract class RecordFile {
      */
     public Date getBaseDate() {
         return baseDate;
+    }
+
+    /**
+       Set the UnitPatterns property.
+
+       @param value The new value for UnitPatterns
+    **/
+    public void setUnitPatterns (List<String[]> value) {
+	unitPatterns = value;
+    }
+
+    /**
+       Get the UnitPatterns property.
+
+       @return The UnitPatterns
+    **/
+    public List<String[]> getUnitPatterns () {
+	return unitPatterns;
     }
 
 
