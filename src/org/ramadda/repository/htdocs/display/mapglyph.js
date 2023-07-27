@@ -216,7 +216,13 @@ MapGlyph.prototype = {
 	callback(elevations,ok);
     },
     getIcon: function() {
-	return this.attrs.icon??this.display.getGlyphType(this.getType()).getIcon();
+	if(Utils.stringDefined(this.attrs.icon)) {
+	    return this.attrs.icon;
+	}
+	if(this.attrs[ID_DATAICON_ORIGINAL] && Utils.stringDefined(this.attrs[ID_DATAICON_ORIGINAL].externalGraphic)) {
+	    return this.attrs[ID_DATAICON_ORIGINAL].externalGraphic;
+	}
+	return this.style.externalGraphic ??this.display.getGlyphType(this.getType()).getIcon();
     },
     putTransientProperty(name,value) {
 	this.transientProperties[name] = value;
@@ -808,6 +814,9 @@ MapGlyph.prototype = {
 		style[prop] = o[prop]??this.style[prop];
 	    });
 	}
+	if(Utils.stringDefined(this.attrs.icon)) {
+	    style.externalGraphic = this.attrs.icon;
+	}
 	return style;
     },
     clearDataIcon: function() {
@@ -990,8 +999,10 @@ MapGlyph.prototype = {
 
 	    //In case there wasn't a unit
 //	    line = line.replaceAll(/\${unit}/g,'');
+//	    console.log(this.getIcon());
+//	    console.log('before:'+line);
 	    line = line.replaceAll(/\${icon}/g,this.getIcon());	    
-//	    console.log(line);
+//	    console.log('after:'+line);
 
 
 	    props = Utils.clone({},
@@ -2659,6 +2670,15 @@ MapGlyph.prototype = {
 	    }
 	}
 
+	if(this.isMultiEntry()) {
+	    let childIcon = this.style.childIcon;
+	    if(Utils.stringDefined(childIcon)) {
+		this.applyChildren(child=>{
+		    child.style.externalGraphic = childIcon;
+		    child.attrs.icon = childIcon;		    
+		});
+	    }
+	}
 
 	if(this.isMap()) {
 	    this.attrs.subsetSkip = jqid(this.domId('subsetSkip')).val();
@@ -5088,6 +5108,9 @@ MapGlyph.prototype = {
 		pt = this.display.getMap().transformLLPoint(pt);
 		let style = Utils.clone({},this.style);
 		style.externalGraphic = e.getIconUrl();
+		if(Utils.stringDefined(this.style.childIcon)) {
+		    style.externalGraphic = this.style.childIcon;
+		}
 		style.strokeWidth=1;
 		style.strokeColor="transparent";
 		style.fontSize='12px';
@@ -5110,7 +5133,7 @@ MapGlyph.prototype = {
 		let attrs = {name:e.getName(),
 			     mapglyphs:e.mapglyphs,
 			     entryId:e.getId(),
-			     icon:e.getIconUrl()
+			     icon:style.externalGraphic
 			    };
 		let points =[latLon.latitude,latLon.longitude];
 		let mapGlyph = this.display.createMapMarker(GLYPH_ENTRY,attrs, style,points,false);

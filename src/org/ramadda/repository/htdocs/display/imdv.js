@@ -1395,7 +1395,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    dialog.remove();
 		}
 
-		this.addIconSelection(this.jq('icons'));
+		this.initIconSelection(this.jq('icons'));
 		let cancel = ()=>{
 		    closeDialog();
 		}
@@ -2298,7 +2298,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		} else if(props) {
 		    props.forEach(prop=>{
 			let id = 'glyphedit_' + prop;
-			if(prop.toLowerCase().indexOf('externalgraphic')>=0) 
+			if(prop.toLowerCase().indexOf('externalgraphic')>=0 || prop=='childIcon') 
 			    id =prop;
 			if(prop=='labelSelect') return;
 			let v = this.jq(id).val();
@@ -2311,7 +2311,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			style[prop] = v;
 		    });
 		}
-		if(style.externalGraphic && !style.externalGraphic.startsWith('data:')) mapGlyph.attrs.icon=style.externalGraphic;
+		if(style.externalGraphic && !style.externalGraphic.startsWith('data:')) {
+		    mapGlyph.attrs.icon=style.externalGraphic;
+		}
 		if(Utils.stringDefined(style.popupText)) {
 		    style.cursor = 'pointer';
 		} else {
@@ -2470,9 +2472,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(prop=="pointRadius") label = "Size";
 		let widget;
 		let extra ='';
-		if(prop=="externalGraphic" || prop.indexOf('ExternalGraphic')>=0) {
+		if(prop=='externalGraphic' || prop.indexOf('ExternalGraphic')>=0 || prop=='childIcon') {
 //		    shared = false;
 		    label="Marker"
+		    if(prop=='childIcon') label = 'Child Entry Icon';
 		    let options = "";
 		    let graphic = values[prop];
 		    if(!Utils.isDefined(graphic))
@@ -2711,8 +2714,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    return;
 			}
 			this.setProperty(prop, value);
-			if(prop == "externalGraphic") {
-			    value = this.jq('externalGraphic_image').val();
+			if(prop == 'externalGraphic' || prop=='childIcon') {
+			    value = this.jq(prop+'_image').val();
 			    if(value && Ramadda.isRamaddaUrl(value))
 				value = Ramadda.getUrl(value);
 			}
@@ -2808,7 +2811,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 	    let icons =dialog.find('.imdv-icons');
 	    if(icons.length>0) {
-		this.addIconSelection(icons);
+		this.initIconSelection(icons);
 	    }
 
 	    dialog.find('.ramadda-slider').each(function() {
@@ -2871,6 +2874,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 	    });
 	},
+	initIconSelection:function(icons, callback) {
+	    let _this = this;
+	    icons.each(function() {
+		_this.addIconSelection($(this),callback);
+	    });
+	},
+
 	addIconSelection:function(icons, callback) {
 	    let _this = this;
 	    let used = this.getUsedMarkers();
@@ -2913,12 +2923,19 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		html = HU.div(['style',HU.css('width','400px','max-height','200px','overflow-y','auto')], html);
 		html = HU.input("","",['id',prefix+'_search','placeholder','Search','size','30']) +' ' +
 		    HU.span(['class','ramadda-clickable ramadda-imdv-image-delete'],'Clear')+
+		    HU.space(2) +
+		    HU.span(['class','ramadda-clickable ramadda-imdv-image-add'],'Set URL')+		    
 		    '<br>'+
 		    html;
 		icons.html(html);
 		icons.find('.ramadda-imdv-image-delete').button().click(()=>{
 		    apply('');
 		});
+		icons.find('.ramadda-imdv-image-add').button().click(()=>{
+		    let url = prompt("Image URL:");
+		    if(!url) return;
+		    apply(url);
+		});		
 		let images = icons.find('.ramadda-imdv-image');
 		images.click(function() {
 		    apply($(this).attr('src'));
@@ -4207,6 +4224,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    new GlyphType(this,GLYPH_MULTIENTRY,"Multi Entry",
 			  Utils.clone(	
 			      {externalGraphic: externalGraphic},
+			      {childIcon:''},
 			      {showLabels:true, pointRadius:12},
 			      textStyle),
 			  MyEntryPoint,
