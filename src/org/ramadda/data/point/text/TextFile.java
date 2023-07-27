@@ -25,6 +25,7 @@ import java.io.*;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Enumeration;
 import java.util.List;
 
 
@@ -612,6 +613,30 @@ public abstract class TextFile extends PointFile {
 			    attrs.append(attrChartable());
 			}
 			String unit = (String) getProperty(id + ".unit");
+			if (unit == null) {
+			    Hashtable properties= getProperties();
+			    //Check for patterns
+			    for (Enumeration keys = properties.keys(); keys.hasMoreElements(); ) {
+				String key =  keys.nextElement().toString();
+				if(!key.startsWith("unit:")) continue;
+				String pattern = key.substring("unit:".length());
+				if(id.matches(pattern)) {
+				    unit = (String) properties.get(key);
+				    break;
+				}
+			    }
+			}
+			if (unit == null) {
+			    List<String[]> unitPatterns = getUnitPatterns();
+			    if(unitPatterns!=null) {
+				for(String[]pair: unitPatterns) {
+				    if(id.matches(pair[0])) {
+					unit = pair[1];
+					break;
+				    }
+				}
+			    }
+			}
 			if (unit != null) {
 			    attrs.append(attrUnit(unit));
 			}
