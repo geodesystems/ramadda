@@ -460,6 +460,26 @@ Add an output that shows up in the list of tools/services for an entry
     </type>
     
 
+    <type name="Point Data Units" id="pointdata_units">
+      <element
+         default=""
+         name="Types"
+	 rows="10">
+<suffix>
+<![CDATA[
+Specify units of the form<pre>
+pattern=unit
+e.g.:
+(temp.*|.*temp)=C
+(.*rh|.*humidity.*)=%
+</pre>
+]]>
+</suffix>
+</element>
+    </type>
+
+
+
     <type
 	xforuser="false"
        name="Entry Votes"
