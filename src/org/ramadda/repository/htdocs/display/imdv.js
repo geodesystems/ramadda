@@ -2537,9 +2537,17 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			if(prop=="textBackgroundFillOpacity" || prop=="textBackgroundPadding" || prop=="strokeWidth" || prop=="pointRadius" || prop=="fontSize" || prop=="imageOpacity" || prop=='dotSize') size="4";
 			else if(prop=="fontFamily") size="60";
 			else if(prop.toLowerCase().indexOf('url')>=0) size="60";
-			else if(prop=='transform') {
-			    size="60";
-			    extra = HU.space(2) +HU.href('https://developer.mozilla.org/en-US/docs/Web/CSS/transform','Help',['target','_help']);
+			else if(prop=='clippath') {
+			    size='60';
+			    extra = '<br>clip the image, e.g.,<pre>polygon(x1 y1,x2 y2,x3 y3,x4 y4)\n'+
+				'e.g., to clip 5% from left, 18% from top and 10% from right do:\n'+
+				'polygon(5% 18%,95% 18%,95% 90%,5% 90%)'+
+				'</pre>';
+			    extra += HU.href('https://developer.mozilla.org/en-US/docs/Web/CSS/clip-path','Help',['target','_help']);
+			} else if(prop=='transform') {
+			    size='60';
+			    extra = '<br>Apply CSS transform. e.g., to shrink the lower part of an image do:<pre>perspective(10px) rotateX(-0.05deg)</pre>';
+			    extra += HU.href('https://developer.mozilla.org/en-US/docs/Web/CSS/transform','Help',['target','_help']);
 			}
 			if(prop.indexOf("Color")>=0) {
 			    widget =  HU.input("",v,['class','ramadda-imdv-color',ID,domId,"size",8]);
@@ -4216,7 +4224,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				      {imageOpacity:this.getImageOpacity(1)},
 				      lineStyle,
 				      {rotation:0,
-				       transform:''}),
+				       transform:'',
+				       clippath:''}),
 				      ImageHandler,
 				      {tooltip:"Select an image entry to display",
 				       snapAngle:90,sides:4,irregular:true,isImage:true,
