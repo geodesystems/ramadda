@@ -13,6 +13,13 @@ a.display-container {
     vertical-align:top;
 }
 
+
+.display-gauge svg g text {
+    font-size: 12px;
+}
+
+
+
 .display-contents-inner {
     height:100%;
 }
@@ -731,14 +738,20 @@ a.display-container {
 
 
 .display-dialog-button {
-    padding-left: 6px;
-    padding-right: 6px;
+    padding:2px;
+/*
+    padding-left: 2px;
+    padding-right:4px;
     padding-top: 4px;
     padding-bottom: 2px;
+*/
+
     margin-bottom:1px;
     margin-right:2px;
-    border:1px #ccc solid; 
-    background-color: #efefef;
+/* 
+   border:1px #ccc solid; 
+   background-color: #efefef;
+*/
 }
 
 .display-dialog-button:hover {
