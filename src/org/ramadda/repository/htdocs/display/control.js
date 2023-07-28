@@ -193,13 +193,14 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
 		if(args.record) records = [args.record];
 	    }
 	    records.every((r,idx)=>{
-		if(r.getId() == args.record.getId()) {
+		if(r.getId() == args.record.getId() || r.getTime() == args.record.getTime()) {
 		    this.index = idx;
 		    this.applyStep(false);
 		    return false;
 		}
 		return true;
 	    });
+
         },
         faster: function() {
             this.sleepTime = this.sleepTime / 2;
@@ -265,15 +266,18 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
 		case '+':_this.faster();break;
 		case '-':_this.slower();break;
 		}
-	    });
-	    
+	
 
+	    });
+	    if(!Utils.isDefined(this.index)) {
+		console.log(records.length,this.getStartIndex(0));
+		this.setIndex(Math.min(records.length-1,this.getStartIndex(0)));
+	    }
 
         },
     });
 
     this.sleepTime = +this.getSleepTime(500);
-    this.index=+this.getStartIndex(0);
 }
 
 
