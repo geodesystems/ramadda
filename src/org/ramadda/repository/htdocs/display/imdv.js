@@ -2819,7 +2819,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.initGlyphButtons(dialog);
 		dialog.find('#clippathdraw').button().click(function(){
 		    let input = _this.jq('glyphedit_clippath');
-		    let html = HU.image(mapGlyph.style.imageUrl,['title','Click to select point\nshift-click:use previous X\nmeta-click: use previous Y', 'width','600px','class','theimage','style',HU.css('cursor','pointer','border','1px solid #ccc')]);
+		    let html = HU.div(['style','display:inline-block;background:#ccc;'], HU.image(mapGlyph.style.imageUrl,['title','Click to select point\nshift-click:use previous X\nmeta-click: use previous Y', 'width','600px','class','theimage','style',HU.css('cursor','pointer','border','1px solid #ccc')]));
 		    let buttons = HU.buttons([HU.div([CLASS,'ramadda-button-clear display-button'], 'Clear'),
 					      HU.div([CLASS,'ramadda-button-ok display-button'], 'OK'),
 					      HU.div([CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
