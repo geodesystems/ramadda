@@ -153,6 +153,7 @@ public class ExtEditor extends RepositoryManager {
     /** _more_ */
     public static final String ARG_EXTEDIT_CHANGETYPE = "extedit.changetype";
 
+
     /** _more_ */
     public static final String ARG_EXTEDIT_CHANGETYPE_RECURSE =
         "extedit.changetype.recurse";
@@ -161,6 +162,10 @@ public class ExtEditor extends RepositoryManager {
     public static final String ARG_EXTEDIT_CHANGETYPE_RECURSE_CONFIRM =
         "extedit.changetype.recurse.confirm";
 
+
+    public static final String ARG_EXTEDIT_ADDALIAS = "extedit.addalias";
+
+    public static final String ARG_EXTEDIT_ADDALIAS_TEMPLATE = "extedit.addalias.template";        
 
     /**
      * _more_
@@ -189,6 +194,7 @@ public class ExtEditor extends RepositoryManager {
 	    //	    ARG_EXTEDIT_REINDEX,
 	    ARG_EXTEDIT_REPORT,
 	    ARG_EXTEDIT_CHANGETYPE,
+	    ARG_EXTEDIT_ADDALIAS,	    
 	    ARG_EXTEDIT_CHANGETYPE_RECURSE,
 	    ARG_EXTEDIT_URL_CHANGE,
 	    ARG_EXTEDIT_JS,
@@ -315,6 +321,64 @@ public class ExtEditor extends RepositoryManager {
             prefix.append(
                 getPageHandler().showDialogNote(
                     msg("Entry type has been changed")));
+        } else  if (request.exists(ARG_EXTEDIT_ADDALIAS)) {
+	    String template = request.getString(ARG_EXTEDIT_ADDALIAS_TEMPLATE,"");
+	    StringBuilder results = new StringBuilder();
+	    results.append("<ul>");
+	    int cnt = 0;
+            for(Entry child: getEntryManager().getChildren(request, entry)) {
+		if(!getAccessManager().canDoEdit(request, child)) {
+		    continue;
+		} 
+		List<Metadata> metadataList =
+		    getMetadataManager().findMetadata(request, child,
+						      new String[]{ContentMetadataHandler.TYPE_ALIAS},false);
+		if(metadataList!=null && metadataList.size()>0) {
+		    results.append("<li>");
+		    results.append(HU.href(getEntryManager().getEntryURL(request, child), child.getName()));
+		    results.append(HU.space(2));
+		    results.append("** already has an alias:" + metadataList.get(0).getAttr1());
+		    continue;
+		}
+
+
+		String alias = template.replace("${name}",Utils.makeID(IOUtil.stripExtension(child.getName()))).toLowerCase();
+		List<Entry> entries =  getEntryManager().getEntriesFromAlias(request,
+									     alias);
+		if(entries.size()>0) {
+		    results.append("<li>");
+		    results.append(HU.href(getEntryManager().getEntryURL(request, child), child.getName()));
+		    results.append(HU.space(2));
+		    results.append("** alias already exists:" + alias);
+		    continue;
+		}
+
+		cnt++;
+		getRepository().getMetadataManager().addMetadata(request,child,
+								 new Metadata(request.getRepository().getGUID(),
+									      entry.getId(),
+									      ContentMetadataHandler.TYPE_ALIAS, false,
+									      alias, null, null, null, null));
+
+		
+		getEntryManager().updateEntry(request, child);
+		results.append("<li>");
+                results.append(HU.href(getEntryManager().getEntryURL(request, child), child.getName()));
+		results.append(HU.space(2));
+		results.append("new alias:" + alias);
+	    }
+	    sb.append("</ul>");
+	    if(cnt==0)
+		prefix.append(
+			      getPageHandler().showDialogNote(
+							      msg("No aliases have been added")));
+	    else
+		prefix.append(
+			      getPageHandler().showDialogNote(
+							      msg("Aliases have been added")));	    	    
+	    prefix.append(results);
+
+
         } else if (request.exists(ARG_EXTEDIT_CHANGETYPE_RECURSE)) {
             final boolean forReal =
                 request.get(ARG_EXTEDIT_CHANGETYPE_RECURSE_CONFIRM, false);
@@ -721,6 +785,12 @@ public class ExtEditor extends RepositoryManager {
 					     request.get(ARG_EXTEDIT_REPORT_MISSING,false),"Show missing files")  + "<br>");
 		sb.append(HU.labeledCheckbox(ARG_EXTEDIT_REPORT_FILES, "true", request.get(ARG_EXTEDIT_REPORT_FILES,false),"Show OK files") + "<p>");
 		closer.accept(form, "Generate File Listing");
+	    } else if(form.equals(ARG_EXTEDIT_ADDALIAS)){
+		opener.accept("Add aliases to children entries");
+		sb.append(HU.b("Template: " +
+			       HU.input(ARG_EXTEDIT_ADDALIAS_TEMPLATE,request.getString(ARG_EXTEDIT_ADDALIAS_TEMPLATE,""),
+					HU.attr("size","60")+HU.attr("placeholder","e.g., cr1000_${name}"))));
+		closer.accept(form, "Add Aliases");		
 	    }  else if(form.equals(ARG_EXTEDIT_CHANGETYPE)){
 		opener.accept("Change Entry Type");
 		sb.append(msgLabel("New type"));
