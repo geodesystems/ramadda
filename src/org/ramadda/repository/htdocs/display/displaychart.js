@@ -780,7 +780,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    //Do this here because the title, if displayed, may hold a {field} macro
 	    //that doesn't get set before we've loaded the data
 	    if(this.lastSelectedFields && this.lastSelectedFields.length>0) {
-		this.jq(ID_TITLE_FIELD).html(this.lastSelectedFields[0].getLabel());
+		this.jq(ID_TITLE_FIELD).html(this.lastSelectedFields[0].getLabel(this));
 	    }
 
             let props = {
@@ -1502,7 +1502,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			let label = "";
 			if (theRecord) {
 			    for (let j = 0; j < tooltipFields.length; j++) {
-				label += "<b>" + tooltipFields[j].getLabel() + "</b>: " +
+				label += "<b>" + tooltipFields[j].getLabel(this) + "</b>: " +
 				    theRecord.getValue(tooltipFields[j].getIndex()) + "<br>";
 			    }
 			}
@@ -1932,6 +1932,32 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    }
 
 	},
+	doMultiChartsByField:function() {
+	    return this.getProperty('doMultiChartsByField');
+	},
+	makeMultiChart:function (label, dataList, fields,props) {
+	    let multiStyle="width:200px;" + this.getProperty("multiStyle","")+"display:block;";
+	    let multiLabelTemplate=this.getProperty("multiLabelTemplate","${value}");
+	    let labelPosition = this.getProperty("multiChartsLabelPosition","bottom");
+	    let tmpChartOptions = this.chartOptions;
+	    this.chartOptions = $.extend({},this.chartOptions);
+	    label = multiLabelTemplate.replace("${value}",label);
+	    let header = HU.div([CLASS,"display-multi-header"], label);
+	    let top =labelPosition=="top"?header:"";
+	    let bottom = labelPosition=="bottom"?header:"";
+	    let innerId = this.domId(ID_CHART)+"_" + this.chartCount;
+	    let div = HU.div([CLASS,"display-multi-div", STYLE,HU.css('display','inline-block')+ multiStyle], top + this.getChartDiv(innerId) + bottom);
+	    this.jq(ID_CHARTS_INNER).append(div);
+	    let chart = this.makeGoogleChartInner(dataList, innerId, props, fields);
+	    if(chart) {
+		this.charts.push(chart);
+		chart.chartOptions = this.chartOptions;
+	    }
+	    this.chartOptions =tmpChartOptions;
+	    return chart;
+	},
+
+
 	doMakeGoogleChartInner: function(dataList, props, selectedFields) {
             if (typeof google == 'undefined') {
                 this.setDisplayMessage("No google");
@@ -1952,8 +1978,24 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    //Clear out any existing charts
 	    this.clearChart();
 	    if(this.getProperty("doMultiCharts",this.getProperty("multipleCharts",false))) {
+		this.jq(ID_CHARTS).html(HU.div([ID,this.domId(ID_CHARTS_INNER),STYLE,HU.css('text-align','center')]));
+		if(this.doMultiChartsByField()) {
+		    this.multiChartData=[];
+		    selectedFields.forEach((field,idx)=>{
+			this.chartCount  =idx;
+			let dataList = this.getStandardData([field], props);
+			let chart = this.makeMultiChart(field.getLabel(), dataList, [field], props);
+			this.multiChartData.push({props:props,
+						  fields:[field],
+						  dataList:dataList,
+						  field:field,
+						  chartOptions:chart.chartOptions,
+						  chart:chart});
+		    });
+		    return;
+		}
+
 		let multiField=this.getFieldById(null,this.getProperty("multiField"));
-		let labelPosition = this.getProperty("multiChartsLabelPosition","bottom");
 		let map = {};
 		let groups = [];
 		let tmp = [];
@@ -1979,9 +2021,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    }
 		    list.push(v);
 		})
-		this.jq(ID_CHARTS).html(HU.div([ID,this.domId(ID_CHARTS_INNER),STYLE,HU.css('text-align','center')]));
-		let multiStyle="width:200px;" + this.getProperty("multiStyle","");
-		let multiLabelTemplate=this.getProperty("multiLabelTemplate","${value}");
 		if(multiField) groups.sort();
 		groups.forEach((groupValue,idx)=>{
 		    this.chartCount  =idx;
@@ -1989,17 +2028,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    let list = map[groupValue];
 		    tmpDataList.push(dataList[0]);
 		    tmpDataList = Utils.mergeLists(tmpDataList,list);
-		    let innerId = this.domId(ID_CHART)+"_" + this.chartCount;
 		    let label = groupValue;
 		    if(groupValue.getTime) label = this.formatDate(groupValue);
-		    label = multiLabelTemplate.replace("${value}",label);
-		    let header = HU.div([CLASS,"display-multi-header"], label);
-		    let top =labelPosition=="top"?header:"";
-		    let bottom = labelPosition=="bottom"?header:"";
-		    let div = HU.div([CLASS,"display-multi-div", STYLE,HU.css('display','inline-block')+ multiStyle], top + this.getChartDiv(innerId) + bottom);
-		    this.jq(ID_CHARTS_INNER).append(div);
-		    let chart = this.makeGoogleChartInner(tmpDataList, innerId, props, selectedFields);
-		    if(chart) this.charts.push(chart);
+		    this.makeMultiChart(label, tmpDataList,  selectedFields,props);
+
 		});
 	    } else {
 		this.jq(ID_CHARTS).append(this.getChartDiv(this.domId(ID_CHART)));
@@ -2007,6 +2039,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		if(chart) this.charts.push(chart);
 	    }
 	},
+	drawChart:function(chart,dataTable,chartOptions) {
+	    chart.draw(dataTable, chartOptions);
+	},
+
 	makeGoogleChartInner: function(dataList, chartId, props, selectedFields) {
 	    let chartDiv = document.getElementById(chartId);
 	    if(!chartDiv) {
@@ -2044,7 +2080,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    if(!this.animationCalled) {
 			this.animationCalled = true;
 			this.mapCharts(chart=>{
-			    chart.draw(dataTable, this.chartOptions);
+			    this.drawChart(chart,dataTable, this.chartOptions);
 			});
 		    }
 		});
@@ -2062,8 +2098,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    ]);
 
 		    let t1 = new Date();
-		    chart.draw(this.useTestData?testData:dataTable, this.chartOptions);
-//		    Utils.displayTimes("chart.draw",[t1,new Date()],true);
+		    this.drawChart(chart, this.useTestData?testData:dataTable, this.chartOptions);
 		} catch(err) {
 		    this.handleError("Error creating chart:" + err,err);
 		    return null;
@@ -2261,7 +2296,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
                 chartOptions.vAxis.title = this.getProperty("vAxisTitle");
 		if(chartOptions.vAxis.title && dataFields) {
 		    let label = dataFields.reduce((acc,v)=>{
-			return acc+" " + v.getLabel();
+			return acc+" " + v.getLabel(this);
 		    },"");
 		    chartOptions.vAxis.title = chartOptions.vAxis.title.replace("${fields}",label);
 		}
@@ -2701,7 +2736,7 @@ function PiechartDisplay(displayManager, id, properties) {
 		    });
 		});
 		sumFields.map((f,idx)=>{
-                    list.push([f.getLabel(),sums[idx]>0?sums[idx]:0]);
+                    list.push([f.getLabel(this),sums[idx]>0?sums[idx]:0]);
 		});
 
             } else {
@@ -2871,7 +2906,7 @@ function WordtreeDisplay(displayManager, id, properties) {
                 let field = fields[i];
                 if (header != "")
                     header += " -&gt;";
-                header += field.getLabel();
+                header += field.getLabel(this);
                 if (!field.isFieldNumeric()) continue;
                 let column = this.getColumnValues(records, field);
                 let buckets = [];
@@ -3564,7 +3599,7 @@ function TreemapDisplay(displayManager, id, properties) {
             let tmptt = [];
             let seen = {};
             this.addTuple(data, colorField, {}, "Node", "Parent", "Value", "Color");
-            let root = strings[0].getLabel();
+            let root = strings[0].getLabel(this);
             this.addTuple(data, colorField, seen, root, null, 0, 0);
             let keys = {};
             let call = this.getGet();
@@ -3597,7 +3632,7 @@ function TreemapDisplay(displayManager, id, properties) {
                     let v = row[tooltipFields[f].getIndex()];
                     let field = tooltipFields[f];
                     v = HU.onClick(call + ".valueClicked('" + field.getId() + "','" + v + "')", v, []);
-                    tt += HU.b(field.getLabel()) + ": " + v + "<br>";
+                    tt += HU.b(field.getLabel(this)) + ": " + v + "<br>";
                 }
                 tt += "</div></div>";
                 tmptt.push(tt);
@@ -3678,7 +3713,7 @@ function TimerangechartDisplay(displayManager, id, properties) {
             if (stringField) {
                 dataTable.addColumn({
                     type: 'string',
-                    id: stringField.getLabel()
+                    id: stringField.getLabel(this)
                 });
             } else {
                 dataTable.addColumn({
@@ -3711,11 +3746,11 @@ function TimerangechartDisplay(displayManager, id, properties) {
 
             dataTable.addColumn({
                 type: 'date',
-                id: dateFields[0].getLabel()
+                id: dateFields[0].getLabel(this)
             });
             dataTable.addColumn({
                 type: 'date',
-                id: dateFields[1].getLabel()
+                id: dateFields[1].getLabel(this)
             });
 
 
@@ -3911,19 +3946,68 @@ function CalendarDisplay(displayManager, id, properties) {
 
 function GaugeDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaGoogleChart(displayManager, id, DISPLAY_GAUGE, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    properties.multiChartsLabelPosition = 'none';
+    let myProps = [
+	{label:'Gauge'},
+	{p:'minorTicks',d:0},
+	{p:'majorTicks',ex:'10,20,30,40'},
+	{p:'fontSize',ex:'14pt'},
+	{p:'greenFrom',ex:0},
+	{p:'greenTo',ex:10},
+	{p:'yellowFrom',ex:0},
+	{p:'yellowTo',ex:10},		
+	{p:'redFrom',ex:0},
+	{p:'redColor',ex:'#ff0000'},
+	{p:'yellowColor',ex:'#ff0000'},
+	{p:'greenColor',ex:'#ff0000'},	
+	{p:'redTo',ex:10},
+	{p:'gaugeMin',tt:'min gauge value'},
+	{p:'gaugeMax',tt:'max gauge value'},
+	{p:'field_based_values',tt:'all of the above can have fieldid.propert, e.g., temp.redFrom=...'},		
+    ];
+
+
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	getRequiredPackages: function() {
 	    return ['gauge'];
 	},
         getChartHeight: function() {
-            return this.getProperty("height", this.getChartWidth());
+            return this.getProperty("chartHeight", this.getChartWidth());
         },
         getChartWidth: function() {
-            return this.getProperty("width", "150");
+            return this.getProperty("chartWidth", "150");
         },
+
+	//check the font size
+	drawChart(chart,dataTable,chartOptions) {
+	    SUPER.drawChart.call(this,chart,dataTable,chartOptions);
+	    let items = $(chart.container).find('svg g text');
+	    if(this.getFontSize()) {
+		items.css('font-size',this.getFontSize());
+	    }
+	},
+	doMultiChartsByField:function() {
+	    //If we are doing multi charts then do them by field (columns)
+	    return true;
+	},
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
             this.dataList = dataList;
-            this.chartOptions = chartOptions;
+            let field = selectedFields[0];
+	    let c = (props)=>{
+		props.forEach(prop=>{
+		    let v = this.getFieldProperty(field,prop);
+		    if(Utils.isDefined(v))
+			chartOptions[prop] = v;
+		});
+	    };
+	    c(['redFrom','redTo','yellowFrom','yellowTo','greenFrom','greenTo','greenColor','redColor','yellowColor','min','max']);
+	    $.extend(chartOptions,{
+		minorTicks: this.getFieldProperty(field,'minorTicks',0)
+	    });
+	    if(Utils.stringDefined(this.getFieldProperty(field,'majorTicks'))) {
+		chartOptions.majorTicks =  Utils.split(this.getFieldProperty(field,'majorTicks'));
+	    }
+
             let min = Number.MAX_VALUE;
             let max = Number.MIN_VALUE;
             let setMinMax = true;
@@ -3935,19 +4019,21 @@ function GaugeDisplay(displayManager, id, properties) {
                         continue;
                     }
                     let value = tuple[col];
-                    min = Math.min(min, value);
-                    max = Math.max(max, value);
+                    min = Utils.min(min, value);
+                    max = Utils.max(max, value);
                 }
             }
             min = Utils.formatNumber(min, true);
             max = Utils.formatNumber(max, true);
-            if (Utils.isDefined(this.gaugeMin)) {
+	    let gaugeMin  = this.getFieldProperty(field,'gaugeMin');
+	    let gaugeMax  = this.getFieldProperty(field,'gaugeMax');
+            if (Utils.isDefined(gaugeMin)) {
                 setMinMax = true;
-                min = parseFloat(this.gaugeMin);
+                min = parseFloat(gaugeMin);
             }
-            if (Utils.isDefined(this.gaugeMax)) {
+            if (Utils.isDefined(gaugeMax)) {
                 setMinMax = true;
-                max = parseFloat(this.gaugeMax);
+                max = parseFloat(gaugeMax);
             }
             if (setMinMax) {
                 chartOptions.min = min;
@@ -3983,13 +4069,22 @@ function GaugeDisplay(displayManager, id, properties) {
                 let value = row[i];
                 list.push([h, Utils.formatNumber(value, true)]);
             }
+
             return google.visualization.arrayToDataTable(list);
         },
         setChartSelection: function(index) {
             this.index = index;
+	    if(this.multiChartData) {
+		this.multiChartData.forEach(info=>{
+		    //{dataList:dataList,field:field,chartOptions:chart.chartOptions,chart:chart});
+		    let dataTable = this.makeDataTable(info.dataList,info.props, info.fields);
+                    this.drawChart(info.chart,dataTable, info.chartOptions);
+		});
+		return
+	    }
             let dataTable = this.makeDataTable(this.dataList);
-            this.mapCharts(chart=>{
-                chart.draw(dataTable, this.chartOptions);
+            this.mapCharts((chart,idx)=>{
+                this.drawChart(chart,dataTable, this.chartOptions);
 	    });
         },
     });
@@ -4201,7 +4296,7 @@ function OrgchartDisplay(displayManager, id, properties) {
             data.addRows(rows);
             let chart = new google.visualization.OrgChart(document.getElementById(this.domId(ID_ORGCHART)));
             // Draw the chart, setting the allowHtml option to true for the tooltips.
-            chart.draw(data, {'allowHtml':true,'allowCollapse':true,
+            this.drawChart(chart, data, {'allowHtml':true,'allowCollapse':true,
 			      'size':this.getProperty("treeNodeSize","medium")});
 	}
     });
