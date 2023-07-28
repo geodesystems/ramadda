@@ -787,6 +787,7 @@ public class ExtEditor extends RepositoryManager {
 		closer.accept(form, "Generate File Listing");
 	    } else if(form.equals(ARG_EXTEDIT_ADDALIAS)){
 		opener.accept("Add aliases to children entries");
+		sb.append("Use the macro \"${name}\" in the template to create the alias<br>");
 		sb.append(HU.b("Template: " +
 			       HU.input(ARG_EXTEDIT_ADDALIAS_TEMPLATE,request.getString(ARG_EXTEDIT_ADDALIAS_TEMPLATE,""),
 					HU.attr("size","60")+HU.attr("placeholder","e.g., cr1000_${name}"))));
