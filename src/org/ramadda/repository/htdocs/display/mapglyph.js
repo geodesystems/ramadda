@@ -2033,10 +2033,12 @@ MapGlyph.prototype = {
 	}
 
 	if(this.display.canEdit() && (this.image || Utils.stringDefined(this.style.imageUrl))) {
+/*
 	    body+='Rotation:';
 	    body += HU.center(
 		HU.div(['title','Set image rotation','slider-min',-360,'slider-max',360,'slider-value',this.style.rotation??0,
-			ID,this.domId('image_rotation_slider'),'class','ramadda-slider',STYLE,HU.css('display','inline-block','width','90%')],''));
+		ID,this.domId('image_rotation_slider'),'class','ramadda-slider',STYLE,HU.css('display','inline-block','width','90%')],''));
+		*/
 	}
 
 	let item  = (content,checkInMap,addDecoration) => {
