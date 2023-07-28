@@ -1415,6 +1415,40 @@ function DisplayThing(argId, argProperties) {
 	transientProperties:{},
 	getPropertyCounts:{},
 	priorProps:{},
+	getAliasForField:function(field) {
+	    if(!this.aliasList) {
+		this.aliasList  =[];
+		Object.keys(this.properties).forEach(key=>{
+		    key = String(key);
+		    if(key.startsWith("alias.")) {
+			let pattern = this.properties[key];
+			key = key.substring("alias.".length);
+			this.aliasList.push({alias:key,pattern:pattern});
+		    }
+		});
+	    }
+	    let list = [];
+	    this.aliasList.forEach(alias=>{
+		if(field.getId()==alias.pattern || field.getId().match(alias.pattern)) {
+		    list.push(alias.alias)
+		}
+	    });
+	    return list;
+	},
+	getFieldProperty:function(field,prop,dflt){
+	    let v =   this.getProperty(field.getId()+'.'+prop);
+	    if(Utils.isDefined(v)) return v;
+	    //check for aliases properties
+	    let aliases = this.getAliasForField(field);
+	    aliases.every(alias=>{
+		v =   this.getProperty(alias+'.'+prop);
+		if(Utils.isDefined(v)) return false;		
+		return true;
+	    });
+	    if(Utils.isDefined(v)) return v;
+	    return this.getProperty(prop,dflt);
+	},
+
         getProperty: function(key, dflt, skipThis, skipParent) {
 	    let debug = displayDebug.getProperty;
 	    if(!this.getPropertyCounts[key]) {
@@ -1597,6 +1631,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'fieldAliases',canCache:true},
 	{p:'prefixFields',tt:'Field to always add to the beginning of the list'},
 	{p:'showMenu',ex:true},	      
+	{p:'showMenuRight',ex:true},	      
 	{p:'showTitle',ex:true},
 	{p:'showChildTitle',canCache:true},
 	{p:'showEntryIcon',ex:true},
@@ -5593,7 +5628,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let get = this.getGet();
             let button = HU.onClick(get + ".showDialog();",
 				    HU.image(RamaddaUtil.getCdnUrl("/icons/downdart.png"),
-					     [ATTR_CLASS, "display-dialog-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)]));
+					     ['title','Show display menu',ATTR_CLASS, "display-dialog-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)]));
 	    button+=" ";
 	    return button;
 	},
@@ -5617,17 +5652,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             let get = this.getGet();
             let button = "";
-            if (this.getShowMenu()) {
+            if (this.getShowMenu() || this.getShowMenuRight()) {
                 button = this.getMenuButton();
             }
-	    if(this.getShowProgress(false)) {
-		//		button += HU.image(icon_progress,[ID,this.getDomId(ID_DISPLAY_PROGRESS)]);
-	    }
             let title = "";
             if (this.getShowTitle()) {
                 title = this.getTitle(false).trim();
             }
 
+	    let rightContents='';
+	    if(this.getShowMenuRight()) {
+		rightContents =button;
+		button='';
+	    }
             let topLeft = "";
             if (button != "" || title != "") {
                 let titleDiv = this.getTitleHtml(title);
@@ -5645,7 +5682,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let h1 = 	HU.div(['style',headerStyle,ID,this.getDomId(ID_HEADER1),CLASS,"display-header-block display-header1"], "");
 	    let h2 = HU.div(['style',headerStyle,ID,this.getDomId(ID_HEADER2),CLASS,"display-header-block display-header2"], "");
             let topCenter = HU.div([ID, this.getDomId(ID_TOP),CLASS,"display-header-block"], h2Separate?"":h2);
-            let topRight = HU.div([ID, this.getDomId(ID_TOP_RIGHT)], "");
+            let topRight = HU.div([ID, this.getDomId(ID_TOP_RIGHT)], rightContents);
 	    let top =  this.getProperty("showHeader",true)?HU.leftCenterRight(topLeft, topCenter, topRight, null, null, null,{
                 valign: "bottom"
             }):"";
@@ -7915,7 +7952,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     //                        console.log("Skipping:" + field.getLabel());
                     //                        continue;
                 }
-                let name = field.getLabel();
+                let name = field.getLabel(this);
                 if (showUnit && field.getUnit() != null) {
                     name += " (" + field.getUnit() + ")";
                 }
