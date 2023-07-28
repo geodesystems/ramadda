@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Jul 28 12:39:54 MDT 2023";
+var build_date="RAMADDA build date: Fri Jul 28 12:48:18 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -44138,7 +44138,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.initGlyphButtons(dialog);
 		dialog.find('#clippathdraw').button().click(function(){
 		    let input = _this.jq('glyphedit_clippath');
-		    let html = HU.image(mapGlyph.style.imageUrl,['width','600px','class','theimage','style',HU.css('cursor','pointer','border','1px solid #ccc')]);
+		    let html = HU.image(mapGlyph.style.imageUrl,['title','Click to select point\nshift-click:use previous X\nmeta-click: use previous Y', 'width','600px','class','theimage','style',HU.css('cursor','pointer','border','1px solid #ccc')]);
 		    let buttons = HU.buttons([HU.div([CLASS,'ramadda-button-clear display-button'], 'Clear'),
 					      HU.div([CLASS,'ramadda-button-ok display-button'], 'OK'),
 					      HU.div([CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
@@ -44181,10 +44181,16 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 		    let image = dialog.find('.theimage');
 		    let w = image.width();
 		    let h = image.height();		    
+		    let lastX=0;
+		    let lastY=0;		    
 		    image.mousedown(function(e){
 			let offset = $(this).offset();
 			let x=e.pageX - offset.left;
 			let y  =e.pageY - offset.top;
+			if(e.originalEvent.shiftKey) x = lastX;
+			if(e.originalEvent.metaKey) y = lastY;			
+			console.log(x,y,lastX,lastY);
+			lastX = x; lastY = y;
 			if(path!='') path+=', ';
 			let xp = parseInt(100*(x/w));
 			let yp = parseInt(100*(y/h));			
