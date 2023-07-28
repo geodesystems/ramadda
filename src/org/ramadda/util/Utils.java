@@ -2714,6 +2714,7 @@ public class Utils extends IO {
 				 ":", delimiter,
 				 "&", delimiter,
 				 " ", delimiter,
+				 "\\*",delimiter,
 				 "\\.", delimiter,
 				 "\n", delimiter,
 				 "\\(", delimiter,
