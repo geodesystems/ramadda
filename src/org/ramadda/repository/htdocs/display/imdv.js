@@ -2824,12 +2824,26 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					      HU.div([CLASS,'ramadda-button-ok display-button'], 'OK'),
 					      HU.div([CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
 
-		    html = buttons+HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']) +
+		    let tryIt = true;
+		    html = buttons+
+			HU.span(['class','ramadda-clickable','id','pathtry','style','width:4em'],
+				'Try') +HU.space(1) +
+HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']) +
 			'<br>'+html;
 		    html = HU.div(['style',HU.css('margin','10px','text-align','center')],html);
 		    let path='';
 		    let dialog = HU.makeDialog({content:html,title:'Edit Clip Path',draggable:true,header:true,anchor:$(this),my:"left top",at:"left bottom"});
 		    let output = dialog.find('.pathoutput');
+		    dialog.find('#pathtry').button().click(function(){
+			if(tryIt) {
+			    image.css('clip-path',output.val());
+			    $(this).html('Reset');
+			} else {
+			    image.css('clip-path','');
+			    $(this).html('Try');
+			}
+			tryIt = !tryIt;
+		    });
 		    dialog.find('.ramadda-button-clear').button().click(()=>{
 			path='';
 			output.val('');
