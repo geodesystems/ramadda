@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Jul 28 13:05:08 MDT 2023";
+var build_date="RAMADDA build date: Fri Jul 28 15:09:43 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -47415,7 +47415,11 @@ MapGlyph.prototype = {
 	}
 	html+=HU.b('Name: ') +nameWidget+'<br>';
 	let level = this.getVisibleLevelRange()??{};
-	html+= HU.checkbox(this.domId('visible'),[],this.getVisible(),'Visible')+'<br>';
+	html+= HU.checkbox(this.domId('visible'),[],this.getVisible(),'Visible')
+	if(this.getMapLayer()) {
+	    html+= HU.space(4)+HU.checkbox(this.domId('canselect'),[],this.getCanSelect(),'Can Select');
+	}
+	html+='<br>';	
 	html+=this.display.getLevelRangeWidget(level,this.getShowMarkerWhenNotVisible());
 
 	let domId = this.display.domId('glyphedit_popupText');
@@ -47558,6 +47562,11 @@ MapGlyph.prototype = {
 	    this.setUseEntryLocation(this.jq("useentrylocation").is(":checked"));
 	}
 	this.setVisible(this.jq('visible').is(':checked'),true);
+	if(this.jq('canselect').length) {
+	    this.attrs.canSelect = this.jq('canselect').is(':checked');
+	    if(this.getMapLayer()) this.getMapLayer().canSelect = this.attrs.canSelect;
+	}
+
 	this.parsedProperties = null;
 	this.attrs.properties = this.jq('miscproperties').val();
 	this.setVisibleLevelRange(this.display.jq('minlevel').val().trim(),
@@ -49515,9 +49524,14 @@ MapGlyph.prototype = {
     getAttributes: function() {
 	return this.attrs;
     },
+    getCanSelect:function() {
+	if(!Utils.isDefined(this.attrs.canSelect)) return true;
+	return this.attrs.canSelect;
+    },
     setMapLayer:function(mapLayer) {
 	this.mapLayer = mapLayer;
 	if(mapLayer) {
+	    mapLayer.canSelect=this.getCanSelect();
 	    mapLayer.mapGlyph = this;
 	    mapLayer.textGetter = (feature)=>{
 		let text  = this.getPopupText();
