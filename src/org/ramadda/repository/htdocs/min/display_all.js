@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Jul 28 10:35:42 MDT 2023";
+var build_date="RAMADDA build date: Fri Jul 28 12:12:43 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -43858,7 +43858,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			} else if(prop=='clippath') {
 			    label='Image Clip Path';
 			    size='60';
-			    extra = '<br>clip the image, e.g.,<pre>polygon(x1 y1,x2 y2,x3 y3,x4 y4)\n'+
+			    extra = '<br>' + HU.span(['id','clippathdraw', 'class','ramadda-clickable','title','Draw polygon'],HU.getIconImage('fas fa-draw-polygon')+' clip the image') +', e.g.,<pre>polygon(x1 y1,x2 y2,x3 y3,x4 y4)\n'+
 				'e.g., to clip 5% from left, 18% from top and 10% from right do:\n'+
 				'polygon(5% 18%,95% 18%,95% 90%,5% 90%)'+
 				'</pre>';
@@ -44136,7 +44136,52 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(mapGlyph) {
 		mapGlyph.initPropertiesComponent(dialog);
 		this.initGlyphButtons(dialog);
+		dialog.find('#clippathdraw').button().click(function(){
+		    let input = _this.jq('glyphedit_clippath');
+		    let html = HU.image(mapGlyph.style.imageUrl,['width','600px','class','theimage','style',HU.css('cursor','pointer','border','1px solid #ccc')]);
+		    let buttons = HU.buttons([HU.div([CLASS,'ramadda-button-clear display-button'], 'Clear'),
+					      HU.div([CLASS,'ramadda-button-ok display-button'], 'OK'),
+					      HU.div([CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
+
+		    html = buttons+HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']) +
+			'<br>'+html;
+		    html = HU.div(['style',HU.css('margin','10px','text-align','center')],html);
+		    let path='';
+		    let dialog = HU.makeDialog({content:html,title:'Edit Clip Path',draggable:true,header:true,anchor:$(this),my:"left top",at:"left bottom"});
+		    let output = dialog.find('.pathoutput');
+		    dialog.find('.ramadda-button-clear').button().click(()=>{
+			path='';
+			output.val('');
+		    });
+		    dialog.find('.ramadda-button-ok').button().click(()=>{
+			let val = output.val();
+			dialog.remove();
+			input.val(val);
+		    });
+		    dialog.find('.ramadda-button-cancel').button().click(()=>{
+			dialog.remove();
+		    });		    
+		    
+
+
+		    let image = dialog.find('.theimage');
+		    let w = image.width();
+		    let h = image.height();		    
+		    image.mousedown(function(e){
+			let offset = $(this).offset();
+			let x=e.pageX - offset.left;
+			let y  =e.pageY - offset.top;
+			if(path!='') path+=', ';
+			let xp = parseInt(100*(x/w));
+			let yp = parseInt(100*(y/h));			
+			path+=xp+'% ' + yp +'%'; 
+			output.val('polygon(' + path +')');
+		    });
+		});
 	    }
+
+
+
 	    let icons =dialog.find('.imdv-icons');
 	    if(icons.length>0) {
 		this.initIconSelection(icons);
@@ -48935,10 +48980,12 @@ MapGlyph.prototype = {
 	}
 
 	if(this.display.canEdit() && (this.image || Utils.stringDefined(this.style.imageUrl))) {
+/*
 	    body+='Rotation:';
 	    body += HU.center(
 		HU.div(['title','Set image rotation','slider-min',-360,'slider-max',360,'slider-value',this.style.rotation??0,
-			ID,this.domId('image_rotation_slider'),'class','ramadda-slider',STYLE,HU.css('display','inline-block','width','90%')],''));
+		ID,this.domId('image_rotation_slider'),'class','ramadda-slider',STYLE,HU.css('display','inline-block','width','90%')],''));
+		*/
 	}
 
 	let item  = (content,checkInMap,addDecoration) => {
