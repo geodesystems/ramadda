@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Jul 28 07:24:41 MDT 2023";
+var build_date="RAMADDA build date: Fri Jul 28 10:35:42 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -43651,13 +43651,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		mapGlyph.applyPropertiesComponent(style);
 		mapGlyph.applyPropertiesDialog(style);
 
-		if(mapGlyph.getImage()) {
-		    if(mapGlyph.getImage().imageHook) {
-			mapGlyph.getImage().imageHook();
-		    }
-		    mapGlyph.getImage().setOpacity(style.imageOpacity);
-		    mapGlyph.checkImage();
-		}
 
 //		mapGlyph.applyStyle(style);
 
@@ -43770,6 +43763,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		dotSize: {label:'Line Dots',strip:'dot'},
 		labelAlign: {label:'Label',strip:'label'},
 		textBackgroundStrokeColor: {label:'Text Background',strip:'textBackground'},		
+		transform:{label:'Image Transforms'}
 	    };
 
 	    props.forEach(prop=>{
@@ -43856,7 +43850,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			if(prop=="textBackgroundFillOpacity" || prop=="textBackgroundPadding" || prop=="strokeWidth" || prop=="pointRadius" || prop=="fontSize" || prop=="imageOpacity" || prop=='dotSize') size="4";
 			else if(prop=="fontFamily") size="60";
 			else if(prop.toLowerCase().indexOf('url')>=0) size="60";
-			else if(prop=='clippath') {
+			else if(prop=='imagefilter') {
+			    label = 'Image Filter'
+			    size='60';
+			    extra='<br>e.g.:<pre>contrast(200%) grayscale(80%) brightness(0.4)\ninvert(75%) saturate(30%) sepia(60%)</pre>';
+			    extra += HU.href('https://developer.mozilla.org/en-US/docs/Web/CSS/filter','Help',['target','_help']);
+			} else if(prop=='clippath') {
+			    label='Image Clip Path';
 			    size='60';
 			    extra = '<br>clip the image, e.g.,<pre>polygon(x1 y1,x2 y2,x3 y3,x4 y4)\n'+
 				'e.g., to clip 5% from left, 18% from top and 10% from right do:\n'+
@@ -43864,6 +43864,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				'</pre>';
 			    extra += HU.href('https://developer.mozilla.org/en-US/docs/Web/CSS/clip-path','Help',['target','_help']);
 			} else if(prop=='transform') {
+			    label='Image Transform';
 			    size='60';
 			    extra = '<br>Apply CSS transform. e.g., to shrink the lower part of an image do:<pre>perspective(10px) rotateX(-0.05deg)</pre>';
 			    extra += HU.href('https://developer.mozilla.org/en-US/docs/Web/CSS/transform','Help',['target','_help']);
@@ -45390,7 +45391,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			      textStyle,
 			      {fillColor:'transparent',
 			       labelSelect:true},
-			      textBackgroundStyle), 
+			      textBackgroundStyle,
+			      {transform:'', clippath:'', imagefilter:''}), 
 			  MyEntryPoint,
 			  {isGroup:true, tooltip:'Add group',			  
 			   icon:Ramadda.getUrl("/icons/chart_organisation.png")});
@@ -45543,8 +45545,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				      {imageOpacity:this.getImageOpacity(1)},
 				      lineStyle,
 				      {rotation:0,
-				       transform:'',
-				       clippath:''}),
+				       transform:'', clippath:'', imagefilter:''}),
 				      ImageHandler,
 				      {tooltip:"Select an image entry to display",
 				       snapAngle:90,sides:4,irregular:true,isImage:true,
@@ -47543,6 +47544,22 @@ MapGlyph.prototype = {
 	    this.applyDataIcon();
 	    this.checkDataIconMenu();
 	}
+
+	if(this.getImage()) {
+	    this.getImage().setOpacity(style.imageOpacity);
+	    this.checkImage();
+	}
+
+	//If we are a group then this triggers a redraw of any descendent images
+	//to apply the inherited image transform
+	this.applyChildren(child=>{
+	    if(child.getImage()) {
+		child.checkImage();
+	    }
+	},true);
+
+
+
     },
 
     
@@ -48302,6 +48319,12 @@ MapGlyph.prototype = {
 	    }
 	}
     },
+    getStyleFromTree: function(prop,dflt) {
+	if(Utils.stringDefined(this.style[prop])) return this.style[prop];
+	if(this.getParentGlyph()) return this.getParentGlyph().getStyleFromTree(prop,dflt);
+	return dflt;
+    },
+
     getStyle: function(applyMacros) {
 	if(applyMacros) {
 	    let tmpStyle = this.style??{};
@@ -48561,10 +48584,11 @@ MapGlyph.prototype = {
 	}
     },
 
-    applyChildren:function(func) {
+    applyChildren:function(func,descend) {
 	if(!this.haveChildren()) return;
 	this.getChildren().forEach(child=>{
 	    func(child);
+	    if(descend) child.applyChildren(func,descend);
 	});
     },
     getChildren: function() {
@@ -51472,7 +51496,7 @@ MapGlyph.prototype = {
 		if(element.style)
 		    element.style.transform=transform;
 		element.style['clip-path']=  this.style.clippath;
-//		element.style['transform-origin'] = 'bottom center';
+		element.style.filter = this.getStyleFromTree('imagefilter');
 		//                    OpenLayers.Util.modifyDOMElement(element, null, null, null, null, null, null, null);
 	    }
 	}
