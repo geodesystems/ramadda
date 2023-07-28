@@ -642,6 +642,22 @@ MapGlyph.prototype = {
 	    this.applyDataIcon();
 	    this.checkDataIconMenu();
 	}
+
+	if(this.getImage()) {
+	    this.getImage().setOpacity(style.imageOpacity);
+	    this.checkImage();
+	}
+
+	//If we are a group then this triggers a redraw of any descendent images
+	//to apply the inherited image transform
+	this.applyChildren(child=>{
+	    if(child.getImage()) {
+		child.checkImage();
+	    }
+	},true);
+
+
+
     },
 
     
@@ -1401,6 +1417,12 @@ MapGlyph.prototype = {
 	    }
 	}
     },
+    getStyleFromTree: function(prop,dflt) {
+	if(Utils.stringDefined(this.style[prop])) return this.style[prop];
+	if(this.getParentGlyph()) return this.getParentGlyph().getStyleFromTree(prop,dflt);
+	return dflt;
+    },
+
     getStyle: function(applyMacros) {
 	if(applyMacros) {
 	    let tmpStyle = this.style??{};
@@ -1660,10 +1682,11 @@ MapGlyph.prototype = {
 	}
     },
 
-    applyChildren:function(func) {
+    applyChildren:function(func,descend) {
 	if(!this.haveChildren()) return;
 	this.getChildren().forEach(child=>{
 	    func(child);
+	    if(descend) child.applyChildren(func,descend);
 	});
     },
     getChildren: function() {
@@ -4571,7 +4594,7 @@ MapGlyph.prototype = {
 		if(element.style)
 		    element.style.transform=transform;
 		element.style['clip-path']=  this.style.clippath;
-//		element.style['transform-origin'] = 'bottom center';
+		element.style.filter = this.getStyleFromTree('imagefilter');
 		//                    OpenLayers.Util.modifyDOMElement(element, null, null, null, null, null, null, null);
 	    }
 	}
