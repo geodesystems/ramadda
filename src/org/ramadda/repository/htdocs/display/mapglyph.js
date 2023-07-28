@@ -4560,6 +4560,7 @@ MapGlyph.prototype = {
 	    if(Utils.isDefined(this.style.rotation) && this.style.rotation!=0)
 		transform += ' rotate(' + this.style.rotation +'deg)';
 	    if(!Utils.stringDefined(transform))  transform=null;
+
 	    let childNodes = this.image.div.childNodes;
 	    for(let i = 0, len = childNodes.length; i < len; ++i) {
                 let element = childNodes[i].firstChild || childNodes[i];
@@ -4569,6 +4570,8 @@ MapGlyph.prototype = {
                 }
 		if(element.style)
 		    element.style.transform=transform;
+		element.style['clip-path']=  this.style.clippath;
+//		element.style['transform-origin'] = 'bottom center';
 		//                    OpenLayers.Util.modifyDOMElement(element, null, null, null, null, null, null, null);
 	    }
 	}
