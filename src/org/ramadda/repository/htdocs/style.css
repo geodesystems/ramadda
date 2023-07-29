@@ -3277,6 +3277,10 @@ a.btn-primary:link, a.btn-primary  {
     padding-left:4px;
     display:inline-block;
     background:var(--header-background);
+    font-weight:bold;
+}
+
+.ramadda-select-icon {
 }
 
 
@@ -5433,8 +5437,6 @@ a.wiki-link-noexist {
 }
 */
 
-.ramadda-select-icon {
-}
 
 
 
