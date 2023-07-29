@@ -563,9 +563,7 @@ public class TypeHandler extends RepositoryManager {
                 services.add(new Service(getRepository(), serviceNode));
             }
 
-	    metadataTypes = Utils.split(EnumeratedMetadataHandler.TYPE_TAG + ","
-					+ ContentMetadataHandler.TYPE_THUMBNAIL + ","
-					+ ContentMetadataHandler.TYPE_ALIAS,",");
+	    metadataTypes = makeInitialMetadataTypes();
 
 	    for(String mtd: Utils.split(Utils.getAttributeOrTag(node,ATTR_METADATA,""),",",true,true)) {
 		if(!metadataTypes.contains(mtd)) metadataTypes.add(mtd);
@@ -657,6 +655,12 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+    public List<String> makeInitialMetadataTypes() {
+	return Utils.split(EnumeratedMetadataHandler.TYPE_TAG + ","
+			   + ContentMetadataHandler.TYPE_THUMBNAIL + ","
+			   + ContentMetadataHandler.TYPE_ALIAS,",");
+    }
+
     /**
      * _more_
      *
@@ -664,10 +668,7 @@ public class TypeHandler extends RepositoryManager {
      */
     private List<String> getMetadataTypes() {
         if (metadataTypes == null) {
-            metadataTypes =
-                Utils.split(EnumeratedMetadataHandler.TYPE_TAG + ","
-                            + ContentMetadataHandler.TYPE_THUMBNAIL, ",",
-                                true, true);
+            metadataTypes = makeInitialMetadataTypes();
         }
 
         return metadataTypes;
