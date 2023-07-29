@@ -4982,7 +4982,8 @@ public class EntryManager extends RepositoryManager {
 	    if(toEntry!=null) {
 		getPageHandler().entrySectionOpen(request, toEntry,sb,msg(label),false);
 	    } else {
-		HU.sectionOpen(sb,msg(label),false);
+		getPageHandler().sectionOpen(request, sb,msg(label),false);
+		//		HU.sectionOpen(sb,msg(label),false);
 	    }
 	    HU.div(sb, msg("The entries"), HU.cssClass("entry-confirm-header"));
             sb.append(fromDiv);
