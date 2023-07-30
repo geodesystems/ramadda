@@ -3140,7 +3140,7 @@ public class WikiUtil {
                     continue;
                 }
 
-                if (tline.startsWith(":rem")) {
+                if (tline.startsWith(":rem") || tline.startsWith(":skip")) {
                     continue;
                 }
 
