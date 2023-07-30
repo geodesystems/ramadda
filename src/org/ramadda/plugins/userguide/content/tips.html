@@ -22,9 +22,11 @@ image:
 The wiki editor also supports pasting an image that has been copied to the clipboard (e.g., through a screen grab). A new image entry is created and the above dialog is shown.
 
 
+
 <a name="inpage"></a>
 :heading Search in page
-There is a new wiki display  component that supports searching within a page.
+The is a wiki display  component, <i>display_simplesearch</i>,
+that supports searching within a page.
 This can be seen  in the <a href="https://ramadda.org/repository/a/maps">Maps Gallery</a>
 [ht::screenshot images/inpage.png {Search in page}]
 
@@ -37,7 +39,7 @@ This supports grid, gallery and entry tree/table displays.
 
 
 <a name="fullscreen"></a>
-:heading Showing components in full-screen mode
+:heading Full-screen mode
 In wiki text add the below to provide a full screen mode. When mousing over the
 component an icon <span><i class="fas fa-expand-arrows-alt"></i></span> is shown
 in the upper right.
@@ -48,5 +50,17 @@ Anything here...
 </pre>
 
 
+<a name="draft"></a>
+:heading Draft Pages
+Using the wiki tags +draft/-draft will show the enclosed section as a draft.
+<pre>
+....
+<noop>+draft
+Anything here...
+<noop>-draft
+...
+</pre>
+
+[ht::screenshot images/draft.png]
 
 [ht::foot]
