@@ -31,9 +31,9 @@ This can be seen  in the <a href="https://ramadda.org/repository/a/maps">Maps Ga
 [ht::screenshot images/inpage.png {Search in page}]
 
 Add this to a page with:
-<pre>
-{<noop>{display_simplesearch  doPageSearch=true  placeholder="Search in page"}}
-</pre>
+[wiki::text {
+{{display_simplesearch  doPageSearch=true  placeholder="Search in page"}}
+}]
 
 This supports grid, gallery and entry tree/table displays.
 
@@ -43,24 +43,37 @@ This supports grid, gallery and entry tree/table displays.
 In wiki text add the below to provide a full screen mode. When mousing over the
 component an icon <span><i class="fas fa-expand-arrows-alt"></i></span> is shown
 in the upper right.
-<pre>
-<noop>+fullscreen
+[wiki::text {
++fullscreen
 Anything here...
-<noop>-fullscreen
-</pre>
+-fullscreen
+}]
 
 
 <a name="draft"></a>
 :heading Draft Pages
 Using the wiki tags +draft/-draft will show the enclosed section as a draft.
-<pre>
+[wiki::text {
 ....
-<noop>+draft
++draft
 Anything here...
-<noop>-draft
+-draft
 ...
-</pre>
+}]
 
-[ht::screenshot images/draft.png]
+
+:heading Skip
+To skip a block of text do:
+[wiki::text {
+....
++skip
+Anything here...
+-skip
+...
+Or
+:skip Any line
+}]
+
+
 
 [ht::foot]
