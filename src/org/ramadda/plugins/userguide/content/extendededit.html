@@ -6,6 +6,8 @@
 <a name=extended></a>
 There are a number of other edit capabilities under the Edit-&gt;Extended Edit menu. 
 
+
+
 :heading Setting Metadata
 For Folders you can recurse down the entry hierarchy and set the spatial and/or temporal bounds of each entry as the union of its children entry metadata.
 When applied the set of entries that have been changed will be shown:
@@ -13,11 +15,35 @@ When applied the set of entries that have been changed will be shown:
 [ht::screenshot images/extedit_metadata.png]
 
 
-:heading File Listing
-The Generate File Listing will provide a summary of all of the files in the hierarchy. You 
-can choose to only list entries that have a file that is missing or only list entries that are OK.
+<a name="addalias"></a>
+:heading Adding Aliases
+Any entry can have one or more  aliases, e.g., "mydata". When an entry has an alias then it can be accessed via:
+<pre>
+https://yourramadda.org/repository/a/mydata
+</pre>
 
-[ht::screenshot images/extedit_listing.png]
+An alias is a property and can be added with the entry menu-&gt;Add Alias:
+[ht::screenshot images/addalias1.png]
+
+Alternatively, you can go to entry menu-&gt;Add Property and select Add Alias under the
+Thumbnails, Page Style, Etc., section:
+[ht::screenshot images/addalias2.png]
+
+If you have a number of entries that you want to add an alias for you can do that through the
+Extended Edit page:
+
+[ht::screenshot images/addalias3.png]
+
+Scroll down to the "Add aliases for children entries" section and provide the template with the ${name} macro. The name will be a cleaned up version (lower case, no spaces, no special characters) of each entry name:
+[ht::screenshot images/addalias4.png]
+
+Initially no aliases will be added. Select the entries you want an alias for and press "Add aliases to selected entries".
+If an entry already has an alias then no new alias will
+be added. If an entry exists somewhere else that has the same alias then the alias won't be added.
+You can always go and edit any of these aliases through the entry's Edit Properties section.
+
+[ht::screenshot images/addalias5.png]
+
 
 
 :heading Change Entry Type
@@ -49,6 +75,13 @@ to match on the File entries that you want to change.
 :heading Change Descendents URL Path
 You can recurse through the descendents and change the entries that have URLs.
 [ht::screenshot images/extedit_urls.png]
+
+:heading File Listing
+The Generate File Listing will provide a summary of all of the files in the hierarchy. You 
+can choose to only list entries that have a file that is missing or only list entries that are OK.
+
+[ht::screenshot images/extedit_listing.png]
+
 
 
 
