@@ -2711,18 +2711,16 @@ public class Utils extends IO {
         label = label.trim().toLowerCase();
 	label = Utils.replaceAll(label,delimiter,"thedelimiter");
 	label = Utils.replaceAll(label,
-				 ":", delimiter,
-				 "&", delimiter,
-				 " ", delimiter,
+				 ":+", delimiter,
+				 "&+", delimiter,
+				 "\\s+", delimiter,
 				 "\\*",delimiter,
 				 "\\.", delimiter,
-				 "\n", delimiter,
+				 "(\r|\n)+", delimiter,
 				 "\\(", delimiter,
 				 "\\)", delimiter,
 				 "\\?", delimiter,
 				 "[\"'`]+", "").trim();
-	//        label = label.replaceAll("\\([^\\)]+\\)", "XXX");
-
         label = Utils.replaceAll(label,
 				 "-", delimiter,
 				 ",", delimiter,
@@ -6073,6 +6071,12 @@ public class Utils extends IO {
 
         return d2;
     }
+
+
+    public interface VarArgsConsumer<T> {
+        void accept(T ...s);
+    }
+
 
 
     /**
