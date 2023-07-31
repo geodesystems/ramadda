@@ -1808,6 +1808,14 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return tag(TAG_TD, extra, content);
     }
 
+    public static String tr(String content) {
+	return tr(content,"");
+    }
+
+    public static String tr(String content, String extra) {
+        return tag(TAG_TR, extra, content);
+    }
+
     /**
      * _more_
      *
