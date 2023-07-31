@@ -2624,7 +2624,7 @@ a.ramadda-next-previous {
 }
 
 
-.ramadda-td, .entry-table  td {
+.table-spaced td, .ramadda-td, .entry-table  td {
     padding-top: 6px;
     padding-bottom: 4px;
     padding-left: 0.5em;
