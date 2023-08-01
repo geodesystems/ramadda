@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jul 31 05:19:05 EDT 2023";
+var build_date="RAMADDA build date: Mon Jul 31 22:47:41 EDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -44311,7 +44311,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 		    html+=HU.open('div',['class','ramadda-imdv-image-category']);
 		    html+=HU.div(['class','ramadda-imdv-image-category-label'],HU.b(cat.name));
 		    cat.images.forEach(image=>{
-			html+=HU.image(image.image,['class','ramadda-clickable ramadda-imdv-image','width','24px','loading','lazy','title',image.name]);
+			html+=HU.image(image.image,['class','ramadda-clickable ramadda-imdv-image','width','24px','style','margin-right:4px;margin-bottom:2px;','loading','lazy','title',image.name]);
 		    });
 		});
 		html+="</div>";
