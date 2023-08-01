@@ -1328,13 +1328,17 @@ RepositoryMap.prototype = {
     },
     zoomToExtent: function(bounds,flag) {
 	if(debugBounds) {
-	    console.log("zoomToExtent:"  + bounds);
+	    console.log("zoomToExtent:", bounds);
 	}
-	if(isNaN(bounds.left) ||
-	   isNaN(bounds.right) ||
-	   isNaN(bounds.top) ||
-	   isNaN(bounds.bottom)) {
-	    console.error("zoomToExtent: bounds are bad:" + bounds);
+	let ok = num=>{
+	    return !isNaN(num) && Utils.isDefined(num);
+	}
+	if(!ok(bounds.left) ||
+	   !ok(bounds.right) ||
+	   !ok(bounds.top) ||
+	   !ok(bounds.bottom)) {
+	    if(debugBounds)
+		console.error("zoomToExtent: bounds are bad:" + bounds);
 	    return
 	}
 	if(bounds.left == bounds.right || bounds.top == bounds.bottom) {
