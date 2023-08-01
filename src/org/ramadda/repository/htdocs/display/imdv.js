@@ -322,6 +322,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
     const ID_LEGEND_MAP_WRAPPER = 'legend_map_wrapper';
     const ID_LEGEND_MAP = 'legend_map';            
     const ID_MAP_PROPERTIES = 'mapproperties';
+    const ID_MAP_RESETMAPVIEW = 'resetmapview';
     const ID_DROP_BEGINNING = 'dropbeginning';
     const ID_DROP_END = 'dropend';
     //Set these so the glyphs can access them
@@ -1214,12 +1215,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    mapOptions.entryId = entryId;
 		    mapOptions.entryType = attrs.entryType;
 		    mapOptions.thumbnailUrl = attrs.thumbnailUrl;
-		    attrs.name = attrs.name??attrs.entryName;
+		    attrs.name = attrs.name??Utils.makeLabel(attrs.entryName);
 		    delete attrs.entryName;
 		    if(glyphType.isMap()) {
 			if(resourceId) {
 			    let resource  =MAP_RESOURCES_MAP[resourceId];
-			    attrs.name = resource.name;
+			    attrs.name = Utils.makeLabel(resource.name);
 			    attrs.entryType = resource.type;
 			    attrs.resourceUrl = resource.url;
 			    if(resource.style) $.extend(style,resource.style);
@@ -1227,7 +1228,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 			$.extend(mapOptions,attrs);
 			let mapGlyph = this.handleNewFeature(null,style,mapOptions);
-			mapGlyph.checkMapLayer();
+			mapGlyph.checkMapLayer(true);
 			this.clearCommands();
 			return;
 		    } 
@@ -2250,7 +2251,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(!value) return;
 		value = value.replace(/\\n/g,'\n');
 		let target = $(this).attr('target');		
-		var textComp = GuiUtils.getDomObject(target);
+		let textComp = GuiUtils.getDomObject(target);
 		if(textComp) {
 		    WikiUtil.insertAtCursor('', textComp.obj, value);
 		}
@@ -3515,7 +3516,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 	    if(Utils.isDefined(this.getMapProperty('showOpacitySlider')))
 		visible = this.getMapProperty('showOpacitySlider');
 	    else
-		visible = this.getShowOpacitySlider(true);
+		visible = this.getShowOpacitySlider(false);
 	    this.getMap().showOpacitySlider(visible);
 
 	},
@@ -3536,6 +3537,9 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 	    html+=div;
 	    html+= this.menuItem(this.domId(ID_PROPERTIES),"Set Default Style...");
 	    html+= this.menuItem(this.domId(ID_MAP_PROPERTIES),"Properties...");
+	    if(this.initialLocation) {
+		html+= this.menuItem(this.domId(ID_MAP_RESETMAPVIEW),"Reset Map View");
+	    }
 	    html+=div;
 	    html+= HU.href(Ramadda.getUrl('/userguide/imdv/index.html'),'Help',['target','_help']);
 	    html  = this.makeMenu(html);
@@ -3546,45 +3550,54 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 		HU.hidePopupObject(null,true);
 	    };
 
-	    this.jq(ID_NAVIGATE).click(function() {
+	    this.jq(ID_NAVIGATE).click(()=> {
 		clear();
-		_this.setCommand(null);
+		this.setCommand(null);
 	    });
-	    this.jq(ID_MAP_PROPERTIES).click(function(){
+	    this.jq(ID_MAP_RESETMAPVIEW).click(()=>{
 		clear();
-		_this.doMapProperties();
+		if(this.initialLocation?.zoomLevel>=0 && Utils.isDefined(this.initialLocation?.zoomLevel)) {
+		    this.getMap().setZoom(this.initialLocation?.zoomLevel);
+		}
+		if(this.initialLocation?.bounds) {
+		    this.map.getMap().setCenter(this.initialLocation?.bounds.getCenterLonLat());
+		}
 	    });
-	    this.jq(ID_SAVE).click(function(){
+	    this.jq(ID_MAP_PROPERTIES).click(()=>{
 		clear();
-		_this.doSave();
+		this.doMapProperties();
 	    });
-	    this.jq(ID_SAVEAS).click(function(){
+	    this.jq(ID_SAVE).click(()=>{
 		clear();
-		_this.doSaveAs();
+		this.doSave();
+	    });
+	    this.jq(ID_SAVEAS).click(()=>{
+		clear();
+		this.doSaveAs();
 	    });	    
-	    this.jq(ID_DOWNLOAD).click(function(){
+	    this.jq(ID_DOWNLOAD).click(()=>{
 		clear();
-		_this.doDownload();
+		this.doDownload();
 	    });	    
-	    this.jq(ID_IMPORT).click(function(){
+	    this.jq(ID_IMPORT).click(()=>{
 		clear();
-		_this.doImport();
+		this.doImport();
 	    });
-	    this.jq(ID_PROPERTIES).click(function(){
+	    this.jq(ID_PROPERTIES).click(()=>{
 		clear();
-		_this.doProperties();
+		this.doProperties();
 	    });
-	    this.jq(ID_REFRESH).click(function(){
+	    this.jq(ID_REFRESH).click(()=>{
 		clear();
 		ImdvUtils.scheduleRedraw(this.myLayer);
 	    });
-	    this.jq(ID_CLEAR).click(function(){
+	    this.jq(ID_CLEAR).click(()=>{
 		clear();
-		_this.unselectAll();
+		this.unselectAll();
 	    });	    
-	    this.jq(ID_CMD_LIST).click(function(){
+	    this.jq(ID_CMD_LIST).click(()=>{
 		clear();
-		_this.listFeatures();
+		this.listFeatures();
 	    });	    
 	},
 
@@ -3644,26 +3657,24 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 	},
 	showNewMenu: function(button) {
 	    let _this = this;
-	    let html ="<table><tr valign=top>";
+	    let html ='<table><tr valign=top><td>';
 	    let tmp = Utils.splitList(this.glyphTypes,this.glyphTypes.length/3);
-	    tmp.forEach(glyphTypes=>{
-		html+="<td>&nbsp;</td>";
-		html+="<td>";
-		glyphTypes.forEach(glyphType=>{
-		    if(!glyphType.handler) return;
-		    let icon = glyphType.options.icon||Ramadda.getUrl("/map/marker-blue.png");
-		    let label = HU.image(icon,['width','16']) +SPACE1 + glyphType.getName();
-		    if(glyphType.getTooltip())
-			label = HU.span(['title',glyphType.getTooltip()],label);
-		    html+= this.menuItem(this.domId("menunew_" + glyphType.type),label+SPACE2);
-		});
-		html+="</td>";
+	    this.glyphTypes.forEach(glyphType=>{
+		if(glyphType.type=='map' || glyphType.type=='freehand') {
+		    html+='<td>&nbsp;</td><td>';
+		}
+		if(!glyphType.handler) return;
+		let icon = glyphType.options.icon||Ramadda.getUrl('/map/marker-blue.png');
+		let label = HU.image(icon,['width','16']) +SPACE1 + glyphType.getName();
+		if(glyphType.getTooltip())
+		    label = HU.span(['title',glyphType.getTooltip()],label);
+		html+= this.menuItem(this.domId('menunew_' + glyphType.type),label+SPACE2);
 	    });
-	    html+="</tr></table>";
+	    html+='</td></tr></table>';
 	    html  = this.makeMenu(html);
 	    this.dialog = HU.makeDialog({content:html,anchor:button});
 	    this.glyphTypes.forEach(g=>{
-		this.jq("menunew_" + g.type).click(function(){
+		this.jq('menunew_' + g.type).click(function(){
 		    HtmlUtils.hidePopupObject(null,true);
 		    _this.setCommand(g.type);
 		});
@@ -3999,6 +4010,10 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 								json.bounds.north);
 
 				bounds =  _this.getMap().transformLLBounds(bounds);
+				this.initialLocation = {
+				    zoomLevel:zoomLevel,
+				    bounds:bounds
+				}
 			    } else {
 				_this.getGlyphs().forEach(mapGlyph=>{
 				    let feature = mapGlyph.getFeature();
@@ -4232,14 +4247,14 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 			      fillOpacity:1.0,fillPattern:''}),
 			  MyRegularPolygon,
 			  {snapAngle:10,sides:3,
-			   icon:Ramadda.getUrl("/icons/triangle.png")});				
+			   icon:Ramadda.getUrl("/icons/triangle_blue.png")});				
 	    new GlyphType(this,GLYPH_HEXAGON, "Hexagon",
 			  Utils.clone(lineStyle,{
 			      fillColor:"transparent",
 			      fillOpacity:1.0,fillPattern:''}),
 			  MyRegularPolygon,
 			  {snapAngle:90,sides:6,
-			   icon:Ramadda.getUrl("/icons/hexagon.png")});		
+			   icon:Ramadda.getUrl("/icons/hexagon_blue.png")});		
 	    new GlyphType(this,GLYPH_RINGS,"Range Rings",
 			  Utils.clone(lineStyle,
 				      {fillColor:"transparent",

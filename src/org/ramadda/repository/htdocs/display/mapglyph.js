@@ -1484,7 +1484,7 @@ MapGlyph.prototype = {
 		bounds = MapUtils.extendBounds(bounds,
 					       this.display.getMap().getFeaturesBounds(this.rings));
 	    }
-	} if(this.isMapServer()) {
+	} else if(this.isMapServer()) {
 	    if(this.getDatacubeVariable() && Utils.isDefined(this.getDatacubeAttr('geospatial_lat_min'))) {
 		let attrs = this.getDatacubeAttrs();
 		bounds= MapUtils.createBounds(attrs.geospatial_lon_min, attrs.geospatial_lat_min, attrs.geospatial_lon_max, attrs.geospatial_lat_max);
@@ -3580,8 +3580,8 @@ MapGlyph.prototype = {
 		if(isNaN(filter.max) || filter.max>max) filter.max = max;
 		filter.type="range";
 		let line =
-		    HU.leftRightTable(HU.div(['id',this.domId('slider_min_'+ id),'style','max-width:50px;overflow-x:auto;'],Utils.formatNumber(filter.min??min)),
-				      HU.div(['id',this.domId('slider_max_'+ id),'style','max-width:50px;overflow-x:auto;'],Utils.formatNumber(filter.max??max)));
+		    HU.leftRightTable(HU.div(['id',this.domId('slider_min_'+ id),'style','max-width:70px;overflow-x:auto;'],Utils.formatNumber(filter.min??min)),
+				      HU.div(['id',this.domId('slider_max_'+ id),'style','max-width:70px;overflow-x:auto;'],Utils.formatNumber(filter.max??max)));
 		let slider =  HU.div(['slider-min',min,'slider-max',max,'slider-isint',info.isInt(),
 				      'slider-value-min',filter.min??info.min,'slider-value-max',filter.max??info.max,
 				      'filter-property',info.property,'feature-id',info.id,'class','imdv-filter-slider',
@@ -5197,8 +5197,9 @@ MapGlyph.prototype = {
 	    this.getBounds();
 	    this.display.makeLegend();
 	    this.checkVisible();
-	    if(andZoom)
+	    if(andZoom) {
 		this.panMapTo();
+	    }
 	    this.showMultiEntries();
 	};
 	entry.getChildrenEntries(callback);
