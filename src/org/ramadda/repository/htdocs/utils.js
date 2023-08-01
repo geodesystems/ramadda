@@ -1529,9 +1529,8 @@ var Utils =  {
 	if(!dontSplitOnCaps) {
 	    s = s.replace(/([a-z]+)([A-Z])/g,"$1 $2");
 	}
-	s = s.replace(/_/g," ");
+	s = s.replace(/_/g,' ').replace(/  +/g,' ').replace(/-+/g,' ');
         s =  this.camelCase(s);
-	s = s.replace(/  +/g," ");
 	return s;
     },
     makeId: function(s) {
