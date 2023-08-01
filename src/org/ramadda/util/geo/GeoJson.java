@@ -215,8 +215,11 @@ public class GeoJson extends JsonUtil {
                 pts = new ArrayList<List<Point>>();
             }
             Bounds    bounds   = getFeatureBounds(feature, null, pts);
+	    if(bounds==null) return null;
             JSONArray geom     = readArray(feature, "geometry.coordinates");
+	    if(geom==null) return null;
             String    type     = readValue(feature, "geometry.type", "NULL");
+	    if(type==null) return null;
             Point     centroid = bounds.getCenter();
             for (String name : names) {
                 String value = props.optString(name, "");
@@ -538,6 +541,7 @@ public class GeoJson extends JsonUtil {
             return bounds;
         }
         String type = readValue(feature, "geometry.type", "NULL");
+	if(type==null) return bounds;
         if (type.equals("Polygon") || type.equals("MultiLineString")) {
             for (int idx1 = 0; idx1 < coords1.length(); idx1++) {
                 JSONArray   coords2 = coords1.getJSONArray(idx1);
