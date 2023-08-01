@@ -1107,14 +1107,17 @@ public class HtmlOutputHandler extends OutputHandler {
 		Entry grandParent = getEntryManager().getParent(request,
 								localeEntry);
 		String indent = "";
-		if (grandParent != null) {
-		    sb.append(getSelectLink(request, grandParent, seen,
-					    target));
-		}
 		sb.append(indent);
 		sb.append(getSelectLink(request, localeEntry, seen,
 					target));
 		localeId = localeEntry.getId();
+		if (grandParent != null) {
+		    sb.append(getSelectLink(request, grandParent, seen,
+					    target));
+		}
+
+
+
 		sb.append(HU.close("div"));
 		sb.append(sectionDivider);
 	    }
