@@ -1152,12 +1152,15 @@ var Utils =  {
 
     parseMap: function(str,delim1,delim2) {
         if(str==null) return null;
-        var toks = str.split(delim1??",");
-        var map = {};
+        let toks = str.split(delim1??",");
+        let map = {};
         for (var i = 0; i < toks.length; i++) {
-            var toks2 = toks[i].split(delim2??":");
-            if (toks2.length > 1) {
-                map[toks2[0].trim()] = toks2[1].trim();
+	    let tok = toks[i];
+	    let index = tok.indexOf(delim2??":");
+            if (index>=0) {
+		let key = tok.substring(0,index);
+		let value = tok.substring(index+1);
+                map[key] = value;
             }
         }
         return map;
@@ -1597,6 +1600,22 @@ var Utils =  {
 	}
         return true;
     },
+    /** Return the first string that is defined in the arguments */
+    getStringDefined: function() {
+	for(let i=0;i<arguments.length;i++) {
+	    if(Utils.stringDefined(arguments[i])) return arguments[i];
+	}
+	return null;
+    },
+
+    getDefined: function() {
+	for(let i=0;i<arguments.length;i++) {
+	    let v = arguments[i];
+            if (Utils.isDefined(v)) return v;
+	}
+        return null;
+    },
+
     tokenizeMacros:function(s,args,debug) {
         let opts = {
         };
@@ -2254,21 +2273,6 @@ var Utils =  {
             return true;
         }
         return false;
-    },
-    /** Return the first string that is defined in the arguments */
-    getStringDefined: function() {
-	for(let i=0;i<arguments.length;i++) {
-	    if(Utils.stringDefined(arguments[i])) return arguments[i];
-	}
-	return null;
-    },
-
-    getDefined: function() {
-	for(let i=0;i<arguments.length;i++) {
-	    let v = arguments[i];
-            if (Utils.isDefined(v)) return v;
-	}
-        return null;
     },
     cleanId: function(id) {
         id = id.replace(/:/g, "_").replace(/\./g, "_").replace(/=/g, "_").replace(/\//g, "_").replace(/[\(\)]/g,"_");
