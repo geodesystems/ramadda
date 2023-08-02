@@ -50,6 +50,7 @@ var CLASS_IMDV_STYLEGROUP_SELECTED = 'imdv-stylegroup-selected';
 var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'filter.zoomonchange.show=false',
 			  'filter.toggle.show=false',
+			  'legendTooltip=',
 			  'showButtons=false',
 			  'showMeasures=false'];
 
@@ -4933,6 +4934,9 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 	    }
 	},
 
+	appendHeader:function(html) {
+	    this.jq(ID_HEADER0).append(html);
+	},
 	makeMenuBar:function() {
 	    if(!this.getMapProperty('showMenuBar',true)) return;
 	    let _this = this;

@@ -337,7 +337,7 @@ a.display-container {
     padding-right:2px;
 }
 
-.display-header1, .display-header2, .display-header3 {
+.display-header0, .display-header1, .display-header2, .display-header3 {
   text-align:center;
   font-size:90% !important;
 }
@@ -3049,6 +3049,10 @@ table.dataTable tfoot td {
     font-size:80%;
 }
 
+.imdv-legend-top-body {
+    font-size:90%;
+}
+
 
 .imdv-legend-label {
     user-select:none;
@@ -3066,6 +3070,12 @@ table.dataTable tfoot td {
 .imdv-legend-label-highlight {
     background:var(--color-mellow-yellow);
 }
+
+.imdv-filter-slider-label {
+    max-width:70px;
+    overflow-x:auto;
+}
+
 
 .imdv-filter-enum {
 }
