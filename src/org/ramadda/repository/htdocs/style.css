@@ -180,17 +180,21 @@ h6 {
 
 
 
-.ramadda-page-heading a, a.ramadda-page-heading, .ramadda-heading, .ramadda-lheading, .ramadda-blurb {
+ramadda-heading, .ramadda-page-heading a, a.ramadda-page-heading, .ramadda-heading, .ramadda-lheading, .ramadda-blurb {
     font-size:140%;
 }
 
-.ramadda-page-heading, .ramadda-heading  {
+ramadda-heading, .ramadda-page-heading, .ramadda-heading  {
     padding: 0px;
     margin: 0px;
     text-align: center;
 }
 
-.ramadda-page-heading {
+ramadda-heading {
+    display:block;
+}
+
+ramadda-heading, .ramadda-page-heading {
     font-weight:bold;
 }
 
@@ -1329,6 +1333,7 @@ a.ramadda-menubar-button:hover {
 /* avoid pink tiles */
 .olImageLoadError {
     background-color: transparent !important;
+    display:none;
 }
 
 .olButton, div.olMap {
