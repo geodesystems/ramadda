@@ -37,7 +37,7 @@ var UNIT_KM='km';
 var UNIT_M='m';
 var UNIT_NM='nm';
 
-
+var CLASS_CLICKABLE = 'ramadda-clickable';
 
 function noop() {}
 
@@ -327,12 +327,12 @@ var Utils =  {
 	let downloadId = id+"_download";	
 	let pos = 10;
 	if(div.attr('add-copy')=='true') {
-	    let copy = HU.div(['id',copyId,TITLE,"Copy to clipboard", CLASS,"ramadda-clickable", STYLE,HU.css("position","absolute","right",pos+"px","top","5px")], HU.getIconImage("fas fa-clipboard"));
+	    let copy = HU.div(['id',copyId,TITLE,"Copy to clipboard", CLASS,CLASS_CLICKABLE, STYLE,HU.css("position","absolute","right",pos+"px","top","5px")], HU.getIconImage("fas fa-clipboard"));
 	    pos+=20;
 	    jqid(id).append(copy);
 	}
 	if(div.attr('add-download')=='true') {
-	    let download = HU.div(['id',downloadId,TITLE,"Download", CLASS,"ramadda-clickable", STYLE,HU.css("position","absolute","right",pos+"px","top","5px")], HU.getIconImage("fas fa-download"));
+	    let download = HU.div(['id',downloadId,TITLE,"Download", CLASS,CLASS_CLICKABLE, STYLE,HU.css("position","absolute","right",pos+"px","top","5px")], HU.getIconImage("fas fa-download"));
 
 	    jqid(id).append(download);
 	}	
@@ -2074,7 +2074,7 @@ var Utils =  {
 
                             let pre = value.substring(0,idx) +HU.span([ID,id+"_ellipsis"], "...");
                             let post = HU.span([ID,id+"_post",STYLE,HU.css('display','none')], value.substring(idx));                       
-                            let toggle = HU.div(['onclick',"Utils.toggleShowMore('" + id+"')",ID,id,CLASS,'ramadda-showmore ramadda-clickable'], "Show More " + HU.getIconImage("fas fa-sort-down"));                   
+                            let toggle = HU.div(['onclick',"Utils.toggleShowMore('" + id+"')",ID,id,CLASS,'ramadda-showmore ' + CLASS_CLICKABLE], "Show More " + HU.getIconImage("fas fa-sort-down"));                   
                             value = pre + post + toggle;
                         }
 
@@ -2711,7 +2711,7 @@ var Utils =  {
         form += HU.open('input',['value', value, 'placeholder','Search text', 'autocomplete','off','autofocus','true','id','popup_search_input','class', 'ramadda-search-input',
                                  STYLE,HU.css('margin-left','4px', 'padding','2px','width','250px','border','0px'),'name','text']);
         if(ramaddaThisEntry) {
-            form+=HU.checkbox("popup_search_here",['name','ancestor', 'value',ramaddaThisEntry, TITLE,"Search under this entry"],false) +HU.tag("label",[CLASS,"ramadda-clickable", "for","popup_search_here"]," here" + SPACE);
+            form+=HU.checkbox("popup_search_here",['name','ancestor', 'value',ramaddaThisEntry, TITLE,"Search under this entry"],false) +HU.tag("label",[CLASS,CLASS_CLICKABLE, "for","popup_search_here"]," here" + SPACE);
         }
         form +="</form>";
 
@@ -2854,7 +2854,7 @@ var Utils =  {
     treeViewClick:function(viewId,entryId, url, label, template) {
 	let href = HU.href(url,
 			   HU.getIconImage('fa-solid fa-link') +  " " +  label,
-			   ['class','ramadda-clickable']);
+			   ['class',CLASS_CLICKABLE]);
         jqid(viewId+'_header').html(href);
         if (template)
             url = url + "&template=" + template;
@@ -3304,6 +3304,7 @@ var TAG_TR = "tr";
 var TAG_TD = "td";
 var TAG_UL = "ul";
 var TAG_OL = "ol";
+var ATTR_SRC = "src";
 var ATTR_WIDTH = "width";
 var ATTR_HREF = "href";
 var ATTR_BORDER = "border";
@@ -3344,6 +3345,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    HU.doPageSearch($(this).val(),select,parentSelect,hideAll);
 	});
     },		       
+    classes:function() {
+	return Utils.join(Array.from(arguments),' ');
+    },
     doPageSearch(value,select,parentSelect,hideAll) {
 	let s  = $(select);
 	if(hideAll) {
@@ -3544,7 +3548,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 if(data.length==0) return;
                 let suggest = "";
                 data.forEach(d=>{
-                    suggest+=HU.div([CLASS,"ramadda-clickable ramadda-suggest","suggest",d],d);
+                    suggest+=HU.div([CLASS,CLASS_CLICKABLE +' ramadda-suggest',"suggest",d],d);
                 });
                 let html = HU.div([CLASS,"ramadda-search-popup",STYLE,HU.css("max-width","200px",
                                                                              "padding","4px")],suggest);
@@ -4006,7 +4010,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let html = HU.open('div',['class','ui-accordion ui-widget ui-helper-reset','id',id]);
 	list.forEach(item=>{
 	    html+=HU.tag('h3',['class','ui-accordion-header ui-helper-reset ui-corner-top','style','border:0px;background:none;'],
-			 HU.href('#',HU.span(['class','ramadda-clickable'],item.header??item.label)));
+			 HU.href('#',HU.span(['class',CLASS_CLICKABLE],item.header??item.label)));
 	    html+=HU.div(['id',HU.getUniqueId('accordion_'),'class','ramadda-accordion-contents'],item.contents);
 	})
 	html+='</div>';
@@ -4078,15 +4082,15 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return this.div([STYLE,HU.css("display","inline-block")],col);
     },    
     makeOkCancelDialog:function(anchor,msg,okFunc,cancelFunc,extra) {
-	let buttonList = [HU.div(['action','ok','class','ramadda-button ramadda-clickable'],'OK'),
-			  HU.div(['class','ramadda-button ramadda-clickable'],'Cancel')];
+	let buttonList = [HU.div(['action','ok','class','ramadda-button ' + CLASS_CLICKABLE],'OK'),
+			  HU.div(['class','ramadda-button ' + CLASS_CLICKABLE],'Cancel')];
 
 	if(extra) buttonList.push(extra);
 	let buttons = HU.buttons(buttonList);
 	let html = msg+"<br>" + buttons;
 	html = HU.div(['class','ramadda-popup-dialog ramadda-nowrap'],html);
 	let dialog = HU.makeDialog({content:html,header:false,anchor:anchor,my:"left top",at:"left bottom"});
-	dialog.find('.ramadda-clickable').button().click(function() {
+	dialog.find('.' + CLASS_CLICKABLE).button().click(function() {
 	    if($(this).attr('action')=='ok') {
 		okFunc();
 	    } else if(cancelFunc) {
@@ -4879,7 +4883,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
     },
     makeExpandable:function(selector,fullScreen) {
-        let icon =HtmlUtils.getIconImage("fas fa-expand-arrows-alt",['class','ramaddda-clickable'],[]);
+        let icon =HtmlUtils.getIconImage("fas fa-expand-arrows-alt",['class',CLASS_CLICKABLE],[]);
         let id = HtmlUtils.getUniqueId();
         let html= HtmlUtils.div(["id",id,"title","Expand", "class","ramadda-expandable-link", "style","display:none;cursor:pointer;text-align:right;position:absolute;right:0px;top:0px;margin-top:0px;"],icon);
         $(selector).append(html);
@@ -5179,9 +5183,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         let html = '<p>' +HtmlUtils.div(["class", "ramadda-form-url"], 
 					input+SPACE2+
 					(opts.includeCopyArgs?
-					 HU.span(['id','argscopy','class','ramadda-clickable','title','Copy json for subset action'],
+					 HU.span(['id','argscopy','class',CLASS_CLICKABLE,'title','Copy json for subset action'],
 						 HtmlUtils.getIconImage('fas fa-earth-americas')) +SPACE2:'')+
-					HU.span(['id','clipboard','class','ramadda-clickable','title','Copy URL to clipboard'],
+					HU.span(['id','clipboard','class',CLASS_CLICKABLE,'title','Copy URL to clipboard'],
 						HtmlUtils.getIconImage('fas fa-clipboard')) + SPACE2+
 					HU.href(url, HtmlUtils.getIconImage('fas fa-link'),['title','Form URL']));
         if (hook) {
@@ -5376,7 +5380,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         message=  HU.div([STYLE,"margin:10px;"], message);
 
         let closeId = Utils.getUniqueId("close_");
-        let close = HU.div([ID,closeId,CLASS,"ramadda-clickable",                           
+        let close = HU.div([ID,closeId,CLASS,CLASS_CLICKABLE,                           
                             STYLE,HU.css("position","absolute","right","10px","top","10px")],
                            HU.getIconImage("far fa-window-close"));
         let inner = close + message;
@@ -5435,7 +5439,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     toggleBlock: function(label, contents, visible, args,result) {
         let opts = {
-            headerClass:'ramadda-noselect entry-toggleblock-label ramadda-hoverable ramadda-clickable',
+            headerClass:'ramadda-noselect entry-toggleblock-label ramadda-hoverable ' + CLASS_CLICKABLE,
             headerStyle:'',
 	    orientation:'h',
 	    imgopen:'fas fa-caret-down',
@@ -5475,7 +5479,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     toggleBlockNew: function(label, contents, visible, args) {
 	if(!Utils.isDefined(visible))  visible=false;
         let opts = {
-            headerClass:"ramadda-noselect ramadda-toggleblock-label ramadda-clickable",
+            headerClass:"ramadda-noselect ramadda-toggleblock-label " + CLASS_CLICKABLE,
             headerStyle:""
         };
         if(args) $.extend(opts, args);
