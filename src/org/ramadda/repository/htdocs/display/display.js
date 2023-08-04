@@ -659,7 +659,10 @@ function DisplayThing(argId, argProperties) {
 	},
 	getContents: function() {
 	    return this.jq(ID_DISPLAY_CONTENTS);
-	},	
+	},
+	getContainer: function() {
+	    return this.jq(ID_DISPLAY_CONTAINER);
+	},		
         jq: function(componentId) {
             return $("#" + this.getDomId(componentId));
         },
