@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Aug  4 06:40:01 EDT 2023";
+var build_date="RAMADDA build date: Fri Aug  4 07:17:26 EDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -41365,8 +41365,8 @@ var GLYPH_TYPES_LINES = [GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_POLYGON,
 var GLYPH_TYPES_LINES_STRAIGHT = [GLYPH_LINE,GLYPH_POLYLINE];
 var GLYPH_TYPES_CLOSED = [GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED,GLYPH_BOX,GLYPH_TRIANGLE,GLYPH_HEXAGON];
 var MAP_TYPES = ['geo_geojson','geo_gpx','geo_shapefile','geo_kml'];
-var LEGEND_IMAGE_ATTRS = ['style','color:#ccc;font-size:9pt;'];
-var BUTTON_IMAGE_ATTRS = ['style','color:#ccc;'];
+var LEGEND_IMAGE_ATTRS = [ATTR_STYLE,'color:#ccc;font-size:9pt;'];
+var BUTTON_IMAGE_ATTRS = [ATTR_STYLE,'color:#ccc;'];
 var CLASS_IMDV_STYLEGROUP= 'imdv-stylegroup';
 var CLASS_IMDV_STYLEGROUP_SELECTED = 'imdv-stylegroup-selected';
 var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
@@ -41768,8 +41768,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let providers = [];
 		if(this.getProperty('googleRoutingEnabled')) providers.push('google');
 		if(this.getProperty('hereRoutingEnabled')) providers.push('here');			
-		html+=HU.formEntry('Provider:', HU.select('',['id',this.domId('routeprovider')],providers,this.routeProvider));
-		html+=HU.formEntry('Route Type:' , HU.select('',['id',this.domId('routetype')],['car','bicycle','pedestrian'],this.routeType));
+		html+=HU.formEntry('Provider:', HU.select('',[ATTR_ID,this.domId('routeprovider')],providers,this.routeProvider));
+		html+=HU.formEntry('Route Type:' , HU.select('',[ATTR_ID,this.domId('routetype')],['car','bicycle','pedestrian'],this.routeType));
 		if(addSequence) {
 		    if(this.getProperty('hereRoutingEnabled')) {
 			html += HU.formEntry('',HU.checkbox(this.domId('routedosequence'),[],false,
@@ -41942,15 +41942,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 	    this.getMap().closePopup();
 	    let html = HU.formTable();
-	    html+=HU.formEntry('Mode:' , HU.select('',['id',this.domId('isolinemode')],['car','bicycle','pedestrian'],this.isolineMode));
-	    html+=HU.formEntry('Range:' , HU.input('',this.isolineValue??'10',['id',this.domId('isolinevalue'),'size','5']) +
+	    html+=HU.formEntry('Mode:' , HU.select('',[ATTR_ID,this.domId('isolinemode')],['car','bicycle','pedestrian'],this.isolineMode));
+	    html+=HU.formEntry('Range:' , HU.input('',this.isolineValue??'10',[ATTR_ID,this.domId('isolinevalue'),'size','5']) +
 			       HU.space(2)+
-			       HU.select('',['id',this.domId('isolinetype')],[{label:'Time (minutes)',value:'time'},{label:'Distance (miles)',value:'distance'}],this.isolineType));	    
+			       HU.select('',[ATTR_ID,this.domId('isolinetype')],[{label:'Time (minutes)',value:'time'},{label:'Distance (miles)',value:'distance'}],this.isolineType));	    
 	    html+=HU.formTableClose();
-	    let buttons  =HU.div([CLASS,'ramadda-button-ok display-button'], 'OK') + SPACE2 +
-		HU.div([CLASS,'ramadda-button-cancel display-button'], 'Cancel');	    
-	    html+=HU.div(['style',HU.css('text-align','right','margin-top','5px')], buttons);
-	    html=HU.div(['style',HU.css('margin','5px')],html);
+	    let buttons  =HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK') + SPACE2 +
+		HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel');	    
+	    html+=HU.div([ATTR_STYLE,HU.css('text-align','right','margin-top','5px')], buttons);
+	    html=HU.div([ATTR_STYLE,HU.css('margin','5px')],html);
 	    let dialog = HU.makeDialog({content:html,title:'Select Isoline Type',draggable:true,header:true,my:'left top',at:'left bottom',anchor:this.jq(ID_MENU_NEW)});
 	    let ok = ()=>{
 		this.isolineMode=this.jq('isolinemode').val();
@@ -42149,9 +42149,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		} else {
 		    let html = '';
 		    data.result.forEach((loc,idx)=>{
-			html+=HU.div(['index',idx,'class','ramadda-clickable ramadda-menu-item'],loc.name);
+			html+=HU.div(['index',idx,ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-menu-item')],loc.name);
 		    });
-		    html = HU.div(['style','max-height:200px;overflow-y:auto;'], html);
+		    html = HU.div([ATTR_STYLE,'max-height:200px;overflow-y:auto;'], html);
 		    let dialog = HU.makeDialog({content:html,header:false,anchor:widget,my:'left top',at:'left bottom'});
 		    let _this = this;
 		    dialog.find('.ramadda-menu-item').click(function() {
@@ -42345,7 +42345,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 
 	wrapDialog:function(html) {
-	    return HU.div(['style','margin:5px;'],html);
+	    return HU.div([ATTR_STYLE,'margin:5px;'],html);
 	},
 
 	setCommand:function(command, args) {
@@ -42413,7 +42413,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		wmtHtml+='<br>';
 		wmtHtml+='<br>Or enter either a TMS/WMS server URL with a layer name:';
 		let form = (label,name,size)=>{
-		    wmtHtml+=HU.formEntry(label+':',HU.input('',this.cache[name]??'',['id',this.domId(name),'size',size??'60']));
+		    wmtHtml+=HU.formEntry(label+':',HU.input('',this.cache[name]??'',[ATTR_ID,this.domId(name),'size',size??'60']));
 		}
 		let args = [
 		    ['Name','servername'],
@@ -42435,25 +42435,25 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 		let contents = [];
 		let ids =Utils.mergeLists([{value:'',label:'Select'}],RAMADDA_MAP_LAYERS.map(l=>{return [l.id,l.name]}));
-		let predefined =  HU.select('',['id',this.domId('predefined')],ids,this.cache['predefined']);	
+		let predefined =  HU.select('',[ATTR_ID,this.domId('predefined')],ids,this.cache['predefined']);	
 		let html = 'Pre-defined layer: ' + predefined;
 		html+=wmtHtml;
 
 
 		let buttons = HU.buttons([
-		    HU.div([CLASS,'ramadda-button-ok display-button'], 'OK'),
-		    HU.div([CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
+		    HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK'),
+		    HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
 		html+=buttons;
 		contents.push({label:'WMS/WMTS',contents:html});
 
-		let datacube = HU.div(['id',this.domId('datacube_contents')],'Loading...');
+		let datacube = HU.div([ATTR_ID,this.domId('datacube_contents')],'Loading...');
 		contents.push({label:'Data Cubes',contents:datacube});
 
-		let stac = HU.div(['id',this.domId('stac_contents')]);
+		let stac = HU.div([ATTR_ID,this.domId('stac_contents')]);
 		contents.push({label:'STAC',contents: stac});
 
 		let tabs = HU.makeTabs(contents)
-		html=HU.div(['style','min-width:600px;min-height:400px;margin:10px;'], tabs.contents);
+		html=HU.div([ATTR_STYLE,'min-width:600px;min-height:400px;margin:10px;'], tabs.contents);
 
 		let dialog = this.mapServerDialog = HU.makeDialog({remove:false,content:html,title:'Map Server',header:true,my:'left top',at:'left bottom',draggable:true,anchor:this.jq(ID_MENU_NEW)});
 		//We don't want to remove the dialog, just show it
@@ -42692,13 +42692,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		};
 		let extra = null;
 		if(glyphType.isImage()) {
-		    extra = HU.b('Enter Image URL: ') + HU.input('',this.lastImageUrl??'',['id',this.getDomId('imageurl'),'size','40']);
+		    extra = HU.b('Enter Image URL: ') + HU.input('',this.lastImageUrl??'',[ATTR_ID,this.getDomId('imageurl'),'size','40']);
 		} else if(glyphType.isMap() && MAP_RESOURCES) {
 		    let ids = MAP_RESOURCES.map((r,idx)=>{
 			return [idx,r.name];
 		    });
 		    ids = Utils.mergeLists([['','Select Resource']],ids);
-		    extra = HU.b('Load Map: ') + HU.select('',['id',this.domId('mapresource')],ids);
+		    extra = HU.b('Load Map: ') + HU.select('',[ATTR_ID,this.domId('mapresource')],ids);
 		}			    
 		if(extra!=null) {
 		    extra = this.wrapDialog(extra + '<br>Or select entry:');
@@ -42721,18 +42721,19 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let prop = 'externalGraphic';
 		let icon = this.lastIcon || tmpStyle.externalGraphic;
 		let targetIconId = this.domId(prop+'_image');
-		let icons = HU.image(icon,['id',targetIconId]) +
-		    HU.hidden('',icon,['id',this.domId(prop)]);
+		let icons = HU.image(icon,[ATTR_ID,targetIconId]) +
+		    HU.hidden('',icon,[ATTR_ID,this.domId(prop)]);
 		if(!Utils.isDefined(this.lastIncludeIcon)) this.lastIncludeIcon = true;
 		html += HU.formEntry('',HU.checkbox(this.domId('includeicon'),[],this.lastIncludeIcon,'Include Icon')+' ' + icons);
 		html+='</table>';
-		html+=HU.div(['style',HU.css('text-align','center','padding-bottom','8px','margin-bottom','8px','border-bottom','1px solid #ccc')], HU.div([CLASS,'ramadda-button-ok display-button'], 'OK') + SPACE2 +
-			     HU.div([CLASS,'ramadda-button-cancel display-button'], 'Cancel'));
+		html+=HU.div([ATTR_STYLE,HU.css('text-align','center','padding-bottom','8px','margin-bottom','8px','border-bottom','1px solid #ccc')],
+			     HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK') + SPACE2 +
+			     HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel'));
 		
 		html+=HU.b('Select Icon');
-		html+=HU.div(['id',this.domId('recenticons')]);
-		html+=HU.div(['id',this.domId('icons'),'icon-property',prop]);
-		html=HU.div(['style',HU.css('xmin-width','250px','margin','5px')],html);
+		html+=HU.div([ATTR_ID,this.domId('recenticons')]);
+		html+=HU.div([ATTR_ID,this.domId('icons'),'icon-property',prop]);
+		html=HU.div([ATTR_STYLE,HU.css('margin','5px')],html);
 		let dialog =  HU.makeDialog({content:html,title:'Marker',header:true,my:'left top',at:'left bottom',draggable:true,anchor:this.jq(ID_MENU_NEW)});
 
 		let closeDialog = () =>{
@@ -42777,10 +42778,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    if(glyphType.isRoute()) {
 		let html = this.createRouteForm();
-		let buttons  =HU.div([CLASS,'ramadda-button-ok display-button'], 'OK') + SPACE2 +
-		    HU.div([CLASS,'ramadda-button-cancel display-button'], 'Cancel');	    
-		html+=HU.div(['style',HU.css('text-align','right','margin-top','5px')], buttons);
-		html=HU.div(['style',HU.css('margin','5px')],html);
+		let buttons  =HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK') + SPACE2 +
+		    HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel');	    
+		html+=HU.div([ATTR_STYLE,HU.css('text-align','right','margin-top','5px')], buttons);
+		html=HU.div([ATTR_STYLE,HU.css('margin','5px')],html);
 		let dialog = HU.makeDialog({content:html,title:'Select Route Type',header:true,my:'left top',at:'left bottom',anchor:this.jq(ID_MENU_NEW)});
 		let ok = ()=>{
 		    cmd.handler.finishedWithRoute = false;
@@ -42804,8 +42805,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	
 	initStac:function(dialog) {
 	    let load;
-	    let stac= HU.div(['id',this.domId('stac_top')]) +
-		HU.div(['id',this.domId('stac_output')]);
+	    let stac= HU.div([ATTR_ID,this.domId('stac_top')]) +
+		HU.div([ATTR_ID,this.domId('stac_output')]);
 	    this.jq('stac_contents').html(stac);
 	    let catalogUrl = Ramadda.getUrl('/resources/stac_catalogs.json');
 	    let stacLinks = [{value:'',label:'Select'}, {value:catalogUrl,label:'Stac Catalogs'},
@@ -42814,11 +42815,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    seenStacUrls[catalogUrl]=true;
 	    let makeTop=(current)=>{ 
 		let input = this.jq('stac_input').val()??'';
-		let plus = HU.span(['id',this.domId('stac_add'),'class','ramadda-clickable','title','Add a STAC catalog URL'],HU.getIconImage('fas fa-plus'));
-		let back  = HU.span(['id',this.domId('stac_back'),'class','ramadda-clickable','title','Go back'],HU.getIconImage('fas fa-rotate-left'));
+		let plus = HU.span([ATTR_ID,this.domId('stac_add'),ATTR_CLASS,CLASS_CLICKABLE,ATTR_TITLE,'Add a STAC catalog URL'],HU.getIconImage('fas fa-plus'));
+		let back  = HU.span([ATTR_ID,this.domId('stac_back'),ATTR_CLASS,CLASS_CLICKABLE,ATTR_TITLE,'Go back'],HU.getIconImage('fas fa-rotate-left'));
 
-		let top = back +' ' + plus+' '+HU.select("",['style','max-width:500px;overflow:none;','id',this.domId('stac_url')],stacLinks,current,100);
-		top = HU.div(['style','border-bottom:1px solid #ddd;padding-bottom:6px;margin-bottom:6px;'], top);
+		let top = back +' ' + plus+' '+HU.select("",[ATTR_STYLE,'max-width:500px;overflow:none;',ATTR_ID,this.domId('stac_url')],stacLinks,current,100);
+		top = HU.div([ATTR_STYLE,'border-bottom:1px solid #ddd;padding-bottom:6px;margin-bottom:6px;'], top);
 		this.jq('stac_top').html(top);
 		this.jq('stac_url').change(()=>{
 		    let url = this.jq('stac_url').val();
@@ -42845,13 +42846,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 
 		this.jq('stac_add').click(function() {
-		    let link = HU.href('https://stacindex.org/catalogs',HU.getIconImage('fas fa-binoculars'),['target','_stacindex','title','Look for catatalogs on stacindex.org']);
-		    let input = HU.input('','',['id',_this.domId('stac_add_url'),'style','width:400px;'])+' ' +link;
+		    let link = HU.href('https://stacindex.org/catalogs',HU.getIconImage('fas fa-binoculars'),['target','_stacindex',ATTR_TITLE,'Look for catatalogs on stacindex.org']);
+		    let input = HU.input('','',[ATTR_ID,_this.domId('stac_add_url'),ATTR_STYLE,'width:400px;'])+' ' +link;
 		    let html = HU.b('STAC  Catalog URL: ') + input;
 		    html+= HU.buttons([
-			HU.div([CLASS,'stac-add-ok display-button'], 'OK'),
-			HU.div([CLASS,'stac-add-cancel display-button'], 'Cancel')]);
-		    html=HU.div(['style','margin:5px;margin-top:10px;'],html);
+			HU.div([ATTR_CLASS,'stac-add-ok display-button'], 'OK'),
+			HU.div([ATTR_CLASS,'stac-add-cancel display-button'], 'Cancel')]);
+		    html=HU.div([ATTR_STYLE,'margin:5px;margin-top:10px;'],html);
 		    let dialog =  HU.makeDialog({content:html,anchor:$(this),remove:false,xmodal:true,sticky:true});
 
 		    _this.jq('stac_add_url').keypress((event)=>{
@@ -42898,7 +42899,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 		
 		let html = '';
-		let title = (data.title??baseUrl)+HU.space(1) + HU.href(baseUrl,HU.getIconImage('fas fa-link',[],['style','font-size:9pt;']),['target','_stac']);
+		let title = (data.title??baseUrl)+HU.space(1) + HU.href(baseUrl,HU.getIconImage('fas fa-link',[],[ATTR_STYLE,'font-size:9pt;']),['target','_stac']);
 		html+=HU.center(HU.b(title));
 		if(data.description) {
 		    let desc = Utils.stripTags(data.description);
@@ -42906,7 +42907,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    desc = desc.replace(/[\n\s*\n]\n+/g,'\n').trim();
 		    //		    console.log("AFTER:" +desc);
 		    desc = desc.replace(/[\n\n]+/g,'\n').replace(/\n/g,'<br>');
-		    html+=HU.div(['class','boxquote','style','max-width:600px;overflow-z:auto;max-height:100px;overflow-y:auto;'],desc);
+		    html+=HU.div([ATTR_CLASS,'boxquote',ATTR_STYLE,'max-width:600px;overflow-z:auto;max-height:100px;overflow-y:auto;'],desc);
 		}
 		let linksHtml1 ='';
 		let linksHtml2 ='';		
@@ -42920,7 +42921,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			let label = link.title;
 			if(!label)
 			    label  = url.replace(/.*\/([^\/]+$)/,"$1");
-			let href = HU.href(url,HU.getIconImage('fas fa-link',[],['title',link.summary??'','style','font-size:9pt;'])+' '+label+(link.rel?' ('+link.rel+')':''),['target','_stactarget','class','ramadda-clickable']);
+			let href = HU.href(url,HU.getIconImage('fas fa-link',[],[ATTR_TITLE,link.summary??'',ATTR_STYLE,'font-size:9pt;'])+' '+label+(link.rel?' ('+link.rel+')':''),['target','_stactarget',ATTR_CLASS,CLASS_CLICKABLE]);
 
 			let isJson;
 			if(Utils.isDefined(link.variables)) {
@@ -42938,7 +42939,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    linksHtml2+=HU.tr(HU.td(['width','10%','nowrap','true'],'')+HU.td(href));
 			} else {
 			    linksHtml1+=HU.tr(HU.td(['width','10%','nowrap','true'],
-						    HU.div(['title',url,'class','imdv-stac-item'],HU.span(['link',url,'class','imdv-stac-link'], 'Load'))) +
+						    HU.div([ATTR_TITLE,url,ATTR_CLASS,'imdv-stac-item'],HU.span(['link',url,ATTR_CLASS,'imdv-stac-link'], 'Load'))) +
 					      HU.td(href));
 			}
 
@@ -42962,13 +42963,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 			let label = asset.name??asset.title??key;
 			let assetUrl = new URL(asset.href,baseUrl).href;
-			let link = HU.href(assetUrl,HU.getIconImage('fas fa-link',[],['style','font-size:9pt;'])+' ' +label +' ('+ asset.type+')',['title',assetUrl,'target','_stactarget','class','ramadda-clickable']);
+			let link = HU.href(assetUrl,HU.getIconImage('fas fa-link',[],[ATTR_STYLE,'font-size:9pt;'])+' ' +label +' ('+ asset.type+')',[ATTR_TITLE,assetUrl,'target','_stactarget',ATTR_CLASS,CLASS_CLICKABLE]);
 			let type= asset.type??asset.media_type;
 			let isImage = type&& type.indexOf('image')>=0;
 
 			if(asset.href.endsWith('ovr')) isImage= false;
 			if(isImage) {
-			    images+=HU.tr(HU.td(['width','10%','nowrap','true'], HU.div(['class','imdv-stac-item'],HU.span(['asset-id',key,'class','imdv-stac-asset'], 'Add Image')))+
+			    images+=HU.tr(HU.td(['width','10%','nowrap','true'], HU.div([ATTR_CLASS,'imdv-stac-item'],HU.span(['asset-id',key,ATTR_CLASS,'imdv-stac-asset'], 'Add Image')))+
 					  HU.td(link));
 			} else {
 			    other+=HU.tr(HU.td('')+ HU.td(link));
@@ -42984,13 +42985,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    html+=HU.b('Links:<br>');
 		    linksHtml=HU.table(linksHtml);
 		    if(assetsHtml!='') 
-			html+=HU.div(['style','max-height:5em;overflow-y:auto;'], linksHtml);
+			html+=HU.div([ATTR_STYLE,'max-height:5em;overflow-y:auto;'], linksHtml);
 		    else
 			html+= linksHtml;		    
 		}
 
 		html+=assetsHtml;
-		html=HU.div(['style','max-height:300px;overflow-y:auto;'], html);
+		html=HU.div([ATTR_STYLE,'max-height:300px;overflow-y:auto;'], html);
 		this.jq('stac_output').html(html);
 		this.jq('stac_output').find('.imdv-stac-link').button().click(function() {
 		    load($(this).attr('link'));
@@ -43050,8 +43051,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	initDatacube:function(dialog) {
 	    let _this = this;
-	    let datacube= HU.div(['id',this.domId('datacube_top')]) +
-		HU.div(['id',this.domId('datacube_output')]);
+	    let datacube= HU.div([ATTR_ID,this.domId('datacube_top')]) +
+		HU.div([ATTR_ID,this.domId('datacube_output')]);
 	    this.jq('datacube_contents').html(datacube);
 
 	    let load;
@@ -43062,18 +43063,18 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    let makeTop=(current)=>{ 
 		let input = this.jq('datacube_input').val()??'';
-		let plus = HU.span(['id',this.domId('datacube_add'),'class','ramadda-clickable','title','Add a Data Cube server URL'],HU.getIconImage('fas fa-plus'));
-		let top =plus +' ' +HU.select("",['style','max-width:500px;overflow:none;','id',this.domId('datacube_url')],datacubeLinks,current,100);
-		top = HU.div(['style','border-bottom:1px solid #ddd;padding-bottom:6px;margin-bottom:6px;'], top);
+		let plus = HU.span([ATTR_ID,this.domId('datacube_add'),ATTR_CLASS,CLASS_CLICKABLE,ATTR_TITLE,'Add a Data Cube server URL'],HU.getIconImage('fas fa-plus'));
+		let top =plus +' ' +HU.select("",[ATTR_STYLE,'max-width:500px;overflow:none;',ATTR_ID,this.domId('datacube_url')],datacubeLinks,current,100);
+		top = HU.div([ATTR_STYLE,'border-bottom:1px solid #ddd;padding-bottom:6px;margin-bottom:6px;'], top);
 		this.jq('datacube_top').html(top);
 
 		this.jq('datacube_add').click(function() {
-		    let input = HU.input('','',['id',_this.domId('datacube_add_url'),'style','width:400px;']);
+		    let input = HU.input('','',[ATTR_ID,_this.domId('datacube_add_url'),ATTR_STYLE,'width:400px;']);
 		    let html = HU.b('DATACUBE  Catalog URL: ') + input;
 		    html+= HU.buttons([
-			HU.div([CLASS,'datacube-add-ok display-button'], 'OK'),
-			HU.div([CLASS,'datacube-add-cancel display-button'], 'Cancel')]);
-		    html=HU.div(['style','margin:5px;margin-top:10px;'],html);
+			HU.div([ATTR_CLASS,'datacube-add-ok display-button'], 'OK'),
+			HU.div([ATTR_CLASS,'datacube-add-cancel display-button'], 'Cancel')]);
+		    html=HU.div([ATTR_STYLE,'margin:5px;margin-top:10px;'],html);
 		    let dialog =  HU.makeDialog({content:html,anchor:$(this),remove:false,xmodal:true,sticky:true});
 
 		    let add = ()=>{
@@ -43128,7 +43129,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let selectId = HU.getUniqueId('select_');
 		    selects.push(selectId);	
 		    html+=HU.formEntry(dataset.title+':',
-				       HU.select("",['style',selectStyle,'id',selectId,'dataset',idx],items));
+				       HU.select("",[ATTR_STYLE,selectStyle,ATTR_ID,selectId,'dataset',idx],items));
 		    if(dataset.placeGroups) {
 			let maps=[{value:'',label:'Select'}];
 			dataset.placeGroups.forEach((group,idx)=>{
@@ -43141,15 +43142,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    let selectId = HU.getUniqueId('mapselect_');
 			    selects.push(selectId);	
 			    html+=HU.formEntry("Maps:",
-					       HU.select("",['ismap','true','style',selectStyle,'id',selectId],maps));
+					       HU.select("",['ismap','true',ATTR_STYLE,selectStyle,ATTR_ID,selectId],maps));
 			}
 		    }
 		});
 		html+='</table>';
-		html = HU.div(['style','auto;max-height:400px;overflow-y:auto;'], html);
+		html = HU.div([ATTR_STYLE,'auto;max-height:400px;overflow-y:auto;'], html);
 		html+= HU.buttons([
-		    HU.div([CLASS,'ramadda-button-ok-datacube display-button'], 'OK'),
-		    HU.div([CLASS,'ramadda-button-cancel-datacube display-button'], 'Cancel')]);
+		    HU.div([ATTR_CLASS,'ramadda-button-ok-datacube display-button'], 'OK'),
+		    HU.div([ATTR_CLASS,'ramadda-button-cancel-datacube display-button'], 'Cancel')]);
 		
 		let datacubeDialog=this.jq('datacube_output');
 		datacubeDialog.html(html);
@@ -43241,7 +43242,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    //	    this.unselectAll();
 	    HtmlUtils.hidePopupObject();
 	    this.showCommandMessage('');
-	    let buttons = this.jq(ID_COMMANDS).find('.ramadda-clickable');
+	    let buttons = this.jq(ID_COMMANDS).find('.' + CLASS_CLICKABLE);
 	    buttons.removeClass('imdv-command-active');
 	    buttons.each(function() {
 		$(this).attr('selected',false);
@@ -43293,7 +43294,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    if(_this.dontAskDelete) {
 			_this.removeMapGlyphs([mapGlyph]);
 		    } else {
-			let dontAsk = HU.checkbox(_this.domId('dontask'),['id',_this.domId('dontask'),'class',''],false,'Don\'t ask again');
+			let dontAsk = HU.checkbox(_this.domId('dontask'),[ATTR_ID,_this.domId('dontask'),ATTR_CLASS,''],false,'Don\'t ask again');
 			HU.makeOkCancelDialog($(this),'Are you sure you want to delete this glyph?',
 					      ()=>{
 						  _this.dontAskDelete  = _this.jq('dontask').is(':checked');
@@ -43310,19 +43311,19 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		return HU.getIconImage(i,[],BUTTON_IMAGE_ATTRS);
 	    };
 	    if(includeEdit) {
-		buttons.push(HU.span([CLASS,'ramadda-clickable',TITLE,'Settings','glyphid',mapGlyph.getId(),'buttoncommand','edit'],
+		buttons.push(HU.span([ATTR_CLASS,CLASS_CLICKABLE,TITLE,'Settings','glyphid',mapGlyph.getId(),'buttoncommand','edit'],
 				     icon('fas fa-cog')));
 		buttons.push(
-		    HU.span([CLASS,'ramadda-clickable',TITLE,'Select','glyphid',mapGlyph.getId(),'buttoncommand',ID_SELECT],
+		    HU.span([ATTR_CLASS,CLASS_CLICKABLE,TITLE,'Select','glyphid',mapGlyph.getId(),'buttoncommand',ID_SELECT],
 			    icon('fas fa-hand-pointer')));
-		buttons.push(HU.span([CLASS,'ramadda-clickable',TITLE,'Delete','glyphid',mapGlyph.getId(),'buttoncommand',ID_DELETE],icon('fas fa-eraser')));
+		buttons.push(HU.span([ATTR_CLASS,CLASS_CLICKABLE,TITLE,'Delete','glyphid',mapGlyph.getId(),'buttoncommand',ID_DELETE],icon('fas fa-eraser')));
 
 		if(mapGlyph.isMarker() && this.isIsolineEnabled()) {
-		    buttons.push(HU.span([CLASS,'ramadda-clickable',TITLE,'Add Isoline',
+		    buttons.push(HU.span([ATTR_CLASS,CLASS_CLICKABLE,TITLE,'Add Isoline',
 					  'glyphid',mapGlyph.getId(),'buttoncommand',"addisoline"],icon('fa-regular fa-circle-dot')));
 		}
 	    }
-	    let attrs = ['style',HU.css('margin-right','8px')];
+	    let attrs = [ATTR_STYLE,HU.css('margin-right','8px')];
 	    let bar =  Utils.wrap(buttons,HU.open('span',attrs),'</span>');
 	    return bar;
 	},
@@ -43330,8 +43331,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let style  = mapGlyph.getStyle()||{};
 	    let line = "";
 	    let type = mapGlyph.getType();
-	    let select = HU.span(['title','Click to select','style',HU.css('padding-left','0px','padding-right','5px'), 'glyphid',mapGlyph.getId(),'class','ramadda-clickable imdv-feature '], HU.getIconImage('fas fa-arrow-pointer'));
-	    let visible = HU.checkbox('',['style','margin-right:5px;','title','Visible','glyphid',mapGlyph.getId(),'class','ramadda-clickable imdv-feature-visible '],mapGlyph.getVisible());
+	    let select = HU.span([ATTR_TITLE,'Click to select',ATTR_STYLE,HU.css('padding-left','0px','padding-right','5px'), 'glyphid',mapGlyph.getId(),
+				  ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'imdv-feature')], HU.getIconImage('fas fa-arrow-pointer'));
+	    let visible = HU.checkbox('',[ATTR_STYLE,'margin-right:5px;',ATTR_TITLE,'Visible','glyphid',mapGlyph.getId(),
+					  ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'imdv-feature-visible')],mapGlyph.getVisible());
 	    let title =  mapGlyph.getLabel();
 	    title+='<br>' +
 		select + visible +
@@ -43383,7 +43386,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			console.error(inner);
 		    }
 		}
-		let skip = ['hereRoutingEnabled','googleRoutingEnabled','canEdit','title','bounds','zoomLevel','mapCenter','width','height','user','entryIcon','entryId','thisEntryType','fileUrl','popupWidth','popupHeight','divid'];
+		let skip = ['hereRoutingEnabled','googleRoutingEnabled','canEdit',ATTR_TITLE,'bounds','zoomLevel','mapCenter','width','height','user','entryIcon','entryId','thisEntryType','fileUrl','popupWidth','popupHeight','divid'];
 		let userInput = "";
 		for(key in attrs) {
 		    if(skip.includes(key)) continue;
@@ -43392,10 +43395,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 		let widget =  msg+HU.textarea("",userInput,[ID,this.domId('displayattrs'),"rows",10,"cols", 60]);
 		let andZoom = HU.checkbox(this.domId('andzoom'),[],true,"Zoom to display");
-		let buttons  =HU.center(HU.div([CLASS,'ramadda-button-ok display-button'], "OK") + SPACE2 +
-					HU.div([CLASS,'ramadda-button-cancel display-button'], "Cancel"));
+		let buttons  =HU.center(HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], "OK") + SPACE2 +
+					HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], "Cancel"));
 		
-		widget = HU.div(['style',HU.css('margin','4px')], widget+"<br>"+andZoom + buttons);
+		widget = HU.div([ATTR_STYLE,HU.css('margin','4px')], widget+"<br>"+andZoom + buttons);
 		
 		let dialog =  HU.makeDialog({content:widget,anchor:this.jq(ID_MENU_FILE),title:"Map Display Attributes",header:true,draggable:true,remove:false});
 
@@ -43446,7 +43449,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(mapGlyph.isSelected()) {
 		    clazz+= " " + LIST_SELECTED_CLASS;
 		}
-		features+=HU.openTag("tr",['class',LIST_ROW_CLASS+" " + clazz,'valign','top','style','border-bottom:1px solid #ccc',"glyphid",mapGlyph.getId()]);
+		features+=HU.openTag("tr",[ATTR_CLASS,LIST_ROW_CLASS+" " + clazz,'valign','top',ATTR_STYLE,'border-bottom:1px solid #ccc',"glyphid",mapGlyph.getId()]);
 		let tds=this.makeListItem(mapGlyph,idx);
 		features+=tds;
 		features+="</tr>";
@@ -43502,11 +43505,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    html+=HU.div([ID,this.domId(ID_LIST), STYLE,HU.css('margin-bottom','10px','border','1px solid #ccc', 'max-height','300px','max-width','600px','overflow-x','auto','overflow-y','auto')], '');
 
 	    html+='<center>';
-	    html +=HU.div([ID,this.domId(ID_LIST_DELETE), CLASS,'display-button'], 'Delete Selected');
+	    html +=HU.div([ID,this.domId(ID_LIST_DELETE), ATTR_CLASS,'display-button'], 'Delete Selected');
 	    html += SPACE2;	    
-	    html +=HU.div([ID,this.domId(ID_LIST_CANCEL), CLASS,'display-button'], 'Close');	    
+	    html +=HU.div([ID,this.domId(ID_LIST_CANCEL), ATTR_CLASS,'display-button'], 'Close');	    
 	    html+='</center>';
-	    html  = HU.div([CLASS,'wiki-editor-popup'], html);
+	    html  = HU.div([ATTR_CLASS,'wiki-editor-popup'], html);
 	    let dialog = this.listDialog  = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_FILE),title:'Features',header:true,draggable:true,remove:false});
 	    this.addFeatureList();
 	    let _this  = this;
@@ -43611,13 +43614,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    return
 		}
 		if(line.info) {
-		    help+=HU.div(['class','ramadda-clickable imdv-property-popup','target',target,
+		    help+=HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'imdv-property-popup'),'target',target,
 				  'info-id',line.info], line.title);
 		    return;
 		}
-		let attrs = ['class','ramadda-clickable imdv-property','target',target];
+		let attrs = [ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'imdv-property'),'target',target];
 		if(line.title) {
-		    attrs.push('title',line.title);
+		    attrs.push(ATTR_TITLE,line.title);
 		}
 		let skip = line.skip;
 		if(line.line) {
@@ -43630,7 +43633,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		attrs.push('value',props.prefix + line + props.suffix);
 		help+=HU.div(attrs,line);
 	    });
-	    help = HU.div(['class','imdv-side-help','style',props.style??''], help);
+	    help = HU.div([ATTR_CLASS,'imdv-side-help',ATTR_STYLE,props.style??''], help);
 	    return help;
 	},
 	getFeaturePropertyApply:function() {
@@ -43701,16 +43704,16 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	
 	makeMenu: function(html) {
-	    return  HU.div([CLASS,'wiki-editor-popup'], html);
+	    return  HU.div([ATTR_CLASS,'wiki-editor-popup'], html);
 	},
 	menuItem: function(id,label,cmd) {
 	    if(cmd) {
 		//		HU.image(icon_command,['width','12px']);
 		let prefix = '';
 		if(cmd!='Esc') prefix = 'Ctrl-';
-		label = HU.leftRightTable(label,HU.div(['style','margin-left:8px;'], HU.span(['style','color:#ccc'], prefix+cmd)));
+		label = HU.leftRightTable(label,HU.div([ATTR_STYLE,'margin-left:8px;'], HU.span([ATTR_STYLE,'color:#ccc'], prefix+cmd)));
 	    }
-	    return  HU.div([ID,id,CLASS,'ramadda-clickable'],label);
+	    return  HU.div([ID,id,ATTR_CLASS,CLASS_CLICKABLE],label);
 	},
 	editFeatureProperties:function(mapGlyph) {
 	    this.doProperties(mapGlyph.getStyle(), this.getFeaturePropertyApply(), mapGlyph);
@@ -43722,14 +43725,16 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let bar = "";
 	    let cnt = 0;
 	    colors.forEach(color=>{
-		bar += HU.div(['title',color,'color',color,'widget-id',domId,'class','ramadda-clickable ramadda-color-select ramadda-dot', 'style',HU.css('background',color)]) +HU.space(1);
+		bar += HU.div([ATTR_TITLE,color,'color',color,'widget-id',domId,
+			       ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-color-select','ramadda-dot'),
+			       ATTR_STYLE,HU.css('background',color)]) +HU.space(1);
 		cnt++;
 		if(cnt>=10) {
 		    cnt = 0;
 		    bar+="<br>";
 		}
 	    });
-	    bar = HU.div(['style','max-height:150px;overflow-y:auto;border:1px solid #ccc;'],bar);
+	    bar = HU.div([ATTR_STYLE,'max-height:150px;overflow-y:auto;border:1px solid #ccc;'],bar);
 	    return bar;
 	},
 	
@@ -43740,7 +43745,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(p=='') return {value:'',label:'None'};
 		return {value:p,label:p};
 	    });
-	    return  HU.select("",['id',domId],opts,v);
+	    return  HU.select("",[ATTR_ID,domId],opts,v);
 	},
 
 
@@ -43799,7 +43804,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let header = headers[prop];
 		if(header) {
 		    strip=header.strip;
-		    html+=HU.tr([],HU.td(['colspan',2],HU.div(['class','imdv-form-header'],header.label)));
+		    html+=HU.tr([],HU.td(['colspan',2],HU.div([ATTR_CLASS,'imdv-form-header'],header.label)));
 		}  else if(strip && !prop.startsWith(strip)) {
 		    html+=HU.tr([],HU.td(['colspan',2],''));
 		    strip = null;
@@ -43819,13 +43824,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    if(!Utils.isDefined(graphic))
 			graphic = this.getExternalGraphic();
 		    domId = this.domId(prop);
-		    let div = HU.div(['class','imdv-icons',
-				'style','margin-left:5px;display:inline-block;',
+		    let div = HU.div([ATTR_CLASS,'imdv-icons',
+				ATTR_STYLE,'margin-left:5px;display:inline-block;',
 				'icon-property',prop,
-				      'id',this.domId(prop+"_icons")],'Loading...');
-		    widget = HU.hidden("",graphic,['id',domId]) +
+				      ATTR_ID,this.domId(prop+"_icons")],'Loading...');
+		    widget = HU.hidden("",graphic,[ATTR_ID,domId]) +
 			'<table><tr valign=top><td width=1%>' +
-			HU.image(graphic,['width','24px','id',this.domId(prop+'_image')]) +
+			HU.image(graphic,['width','24px',ATTR_ID,this.domId(prop+'_image')]) +
 			'</td><td>' +
 			div +
 			"</td></tr></table>";
@@ -43852,22 +43857,23 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			if(icons.length>0) {
 			    let hdr = HU.b("Add icon: ");
 			    icons.forEach(icon=>{
-				hdr+=HU.span(['class','ramadda-clickable ramadda-icons-recent','icon',icon,'textarea',domId],
+				hdr+=HU.span([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-icons-recent'),
+					      'icon',icon,'textarea',domId],
 					     HU.getIconImage(icon,['width','16px']));
 				hdr+=' ';
 			    });
 			    widget = HU.div([],hdr)+widget;
 			}
 		    } else if(prop=="strokeDashstyle") {
-			widget = HU.select("",['id',domId],['solid','dot','dash','dashdot','longdash','longdashdot'],v);
+			widget = HU.select("",[ATTR_ID,domId],['solid','dot','dash','dashdot','longdash','longdashdot'],v);
 		    } else if(prop=="strokeLinecap") {
-			widget = HU.select("",['id',domId],['butt','round','square'],v);
+			widget = HU.select("",[ATTR_ID,domId],['butt','round','square'],v);
 		    } else if(prop=="fontWeight") {
-			widget = HU.select("",['id',domId],["normal","bold","lighter","bolder","100","200","300","400","500","600","700","800","900"],v);
+			widget = HU.select("",[ATTR_ID,domId],["normal","bold","lighter","bolder","100","200","300","400","500","600","700","800","900"],v);
  		    } else if(prop=="fontStyle") {
-			widget = HU.select("",['id',domId],["normal","italic"],v);			
+			widget = HU.select("",[ATTR_ID,domId],["normal","italic"],v);			
 		    } else if(prop=='textBackgroundShape') {
-			widget = HU.select('',['id',domId],['rectangle','circle','ellipse'],v);
+			widget = HU.select('',[ATTR_ID,domId],['rectangle','circle','ellipse'],v);
 		    } else {
 			if(prop == "pointRadius") {
 			    label="Size";
@@ -43883,7 +43889,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			} else if(prop=='clippath') {
 			    label='Image Clip Path';
 			    size='60';
-			    extra = '<br>' + HU.span(['id','clippathdraw', 'class','ramadda-clickable','title','Draw polygon'],HU.getIconImage('fas fa-draw-polygon')+' clip the image') +', e.g.,<pre>polygon(x1 y1,x2 y2,x3 y3,x4 y4)\n'+
+			    extra = '<br>' + HU.span([ATTR_ID,'clippathdraw', ATTR_CLASS,CLASS_CLICKABLE,ATTR_TITLE,'Draw polygon'],HU.getIconImage('fas fa-draw-polygon')+' clip the image') +', e.g.,<pre>polygon(x1 y1,x2 y2,x3 y3,x4 y4)\n'+
 				'e.g., to clip 5% from left, 18% from top and 10% from right do:\n'+
 				'polygon(5% 18%,95% 18%,95% 90%,5% 90%)'+
 				'</pre>';
@@ -43895,8 +43901,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    extra += HU.href('https://developer.mozilla.org/en-US/docs/Web/CSS/transform','Help',['target','_help']);
 			}
 			if(prop.indexOf("Color")>=0) {
-			    widget =  HU.input("",v,['class','ramadda-imdv-color',ID,domId,"size",8]);
-			    widget =  HU.div(['id',domId+'_display','class','ramadda-dot', 'style',HU.css('background',Utils.stringDefined(v)?v:'transparent')]) +
+			    widget =  HU.input("",v,[ATTR_CLASS,'ramadda-imdv-color',ID,domId,"size",8]);
+			    widget =  HU.div([ATTR_ID,domId+'_display',ATTR_CLASS,'ramadda-dot', ATTR_STYLE,HU.css('background',Utils.stringDefined(v)?v:'transparent')]) +
 				HU.space(2)+widget;
 			    //			    widget  = HU.table(['cellpadding','0','cellspacing','0'],HU.tr(['valign','top'],HU.tds([],[widget,bar])));
 			} else if(prop=="labelAlign") {
@@ -43906,7 +43912,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    let items = [["lt","Left Top"],["ct","Center Top"],["rt","Right Top"],
 					 ["lm","Left Middle"],["cm","Center Middle"],["rm","Right Middle"],
 					 ["lb","Left Bottom"],["cb","Center Bottom"],["rb","Right Bottom"]];
-			    widget =  HU.select("",['id',domId],items,v);			
+			    widget =  HU.select("",[ATTR_ID,domId],items,v);			
 			} else if(prop=="showLabels") {
 			    widget = HU.checkbox(domId,[],v);
 			} else if(prop=='graphicName') {
@@ -43917,7 +43923,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				if(p=='') return {value:'',label:'None'};
 				return {value:p,label:p};
 			    });
-			    widget =  HU.select("",['id',domId],opts,v);			
+			    widget =  HU.select("",[ATTR_ID,domId],opts,v);			
 			} else if(prop=='fillPattern') {
 			    widget = this.getFillPatternSelect(domId,v);
 			} else if(prop.indexOf('Radius')>=0 ||
@@ -43938,12 +43944,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    if(prop.indexOf("Offset")>=0) size=8;
 			    widget =  HU.input("",v,[ID,domId,"size",size])+HU.space(4) +
 				
-			    HU.div(['slider-min',min,'slider-max',max,'slider-step',1,'slider-value',v,'slider-id',domId,ID,domId+'_slider','class','ramadda-slider',STYLE,HU.css("display","inline-block","width","200px")],"");
+			    HU.div(['slider-min',min,'slider-max',max,'slider-step',1,'slider-value',v,'slider-id',domId,ID,domId+'_slider',ATTR_CLASS,'ramadda-slider',STYLE,HU.css("display","inline-block","width","200px")],"");
 
 			} else if(prop.toLowerCase().indexOf("opacity")>=0) {
 			    if(!v || v=="") v= 1;
 			    widget =  HU.input("",v,[ID,domId,"size",4])+HU.space(4) +
-				HU.div(['slider-min',0,'slider-max',1,'slider-value',v,'slider-id',domId,ID,domId+'_slider','class','ramadda-slider',STYLE,HU.css("display","inline-block","width","200px")],"");
+				HU.div(['slider-min',0,'slider-max',1,'slider-value',v,'slider-id',domId,ID,domId+'_slider',ATTR_CLASS,'ramadda-slider',STYLE,HU.css("display","inline-block","width","200px")],"");
 			} else {
 			    widget =  HU.input("",v,[ID,this.domId(id),"size",size]);
 			}
@@ -43951,8 +43957,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 		let suffix='';
 		if(isGroup && shared) {
-		    suffix=HU.span(['title','Apply this style to children glyphs',
-				    'class','ramadda-clickable imdv-style-suffix','widget-id',domId,'property',prop],HU.getIconImage('fas fa-folder-tree'));
+		    suffix=HU.span([ATTR_TITLE,'Apply this style to children glyphs',
+				    ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'imdv-style-suffix'),
+				    'widget-id',domId,'property',prop],HU.getIconImage('fas fa-folder-tree'));
 		}
 		if(label=='') label='Label';
 
@@ -43960,20 +43967,20 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		html+='\n';
 	    });
 	    html+="</table>";
-	    html = HU.div(['class','imdv-form',STYLE,HU.css("max-height","350px","overflow-y","scroll","margin-bottom","5px")], html);
+	    html = HU.div([ATTR_CLASS,'imdv-form',STYLE,HU.css("max-height","350px","overflow-y","scroll","margin-bottom","5px")], html);
 	    return {props:props,html:html};
 	},
 	
 	getLevelRangeWidget:function(level,showMarkerToo) {
 	    if(!level) level={};
 	    let visibleCbx =
-		HU.checkbox(this.domId('showmarkerwhennotvisible'),['id',this.domId('showmarkerwhennotvisible')],
+		HU.checkbox(this.domId('showmarkerwhennotvisible'),[ATTR_ID,this.domId('showmarkerwhennotvisible')],
 			    showMarkerToo,'Show marker instead');
 	    return  HU.b("Visible between levels:") + HU.space(3) +visibleCbx +'<br>'+
 		HU.select("",[ID,this.domId("minlevel")],this.levels,Utils.isDefined(level.min)?level.min:"",null,true) +
 		" &lt;= level &lt;= " +
 		HU.select("",[ID,this.domId("maxlevel")],this.levels,Utils.isDefined(level.max)?level.max:"")+" " +
-		HU.span(['class','imdv-currentlevellabel'], "(current level: " + this.getCurrentLevel()+")") +'<br>';
+		HU.span([ATTR_CLASS,'imdv-currentlevellabel'], "(current level: " + this.getCurrentLevel()+")") +'<br>';
 	},
 	doProperties: function(style, apply,mapGlyph) {
 	    let _this = this;
@@ -43981,15 +43988,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let props;
 	    let buttons = "";
 	    buttons+="<center>";
-	    buttons +=HU.div([CLASS,"display-button","command",ID_APPLY], "Apply");
+	    buttons +=HU.div([ATTR_CLASS,"display-button","command",ID_APPLY], "Apply");
 	    buttons += SPACE2;
-	    buttons +=HU.div([CLASS,"display-button","command",ID_OK], "Ok");
+	    buttons +=HU.div([ATTR_CLASS,"display-button","command",ID_OK], "Ok");
 	    buttons += SPACE2;
 	    if(mapGlyph) {
-		buttons +=HU.div([CLASS,"display-button","command",ID_DELETE], "Delete");
+		buttons +=HU.div([ATTR_CLASS,"display-button","command",ID_DELETE], "Delete");
 		buttons += SPACE2;
 	    }
-	    buttons +=HU.div([CLASS,"display-button","command",ID_CANCEL], "Cancel");	   
+	    buttons +=HU.div([ATTR_CLASS,"display-button","command",ID_CANCEL], "Cancel");	   
 	    buttons+="</center>";
 	    let content =[];
 	    if(mapGlyph) {
@@ -44014,9 +44021,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			if(block.items.length==0) return
 			if(seen[block.title]) return;
 			seen[block.title] = true;
-			items.push(HU.div(['class','ramadda-clickable','blockidx',idx], block.title));
+			items.push(HU.div([ATTR_CLASS,CLASS_CLICKABLE,'blockidx',idx], block.title));
 		    });
-		    menuBar = HU.div([],HU.b("Add:"))+HU.div(['id',this.domId('displayattrsmenubar'),'style',HU.css('margin-left','5px','max-height','200px','overflow-y','auto')], Utils.join(items,""));
+		    menuBar = HU.div([],HU.b("Add:"))+HU.div([ATTR_ID,this.domId('displayattrsmenubar'),ATTR_STYLE,HU.css('margin-left','5px','max-height','200px','overflow-y','auto')], Utils.join(items,""));
 		}
 		let displayAttrs = mapGlyph.getDisplayAttrs();
 		let attrs = "";
@@ -44030,10 +44037,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    } else {
 		let r =  this.makeStyleForm(style,mapGlyph);
 		let div =
-		    HU.checkbox(this.domId('styledialogactive'),['id',
+		    HU.checkbox(this.domId('styledialogactive'),[ATTR_ID,
 								 this.domId('styledialogactive')], false,
 				'Active') +r.html;
-		content.push({header:"Style",contents:HU.div(['id',this.domId('styledialog')],div)});
+		content.push({header:"Style",contents:HU.div([ATTR_ID,this.domId('styledialog')],div)});
 		props = r.props;
 	    }
 	    if(mapGlyph) {
@@ -44048,7 +44055,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		html+=HU.center(HU.b('Default Style')) + content[0].contents;
 	    }
 	    html+=buttons;
-	    html  = HU.div(['style',HU.css('min-width','700px','min-height','400px'),CLASS,"wiki-editor-popup"], html);
+	    html  = HU.div([ATTR_STYLE,HU.css('min-width','700px','min-height','400px'),ATTR_CLASS,"wiki-editor-popup"], html);
 	    this.map.ignoreKeyEvents = true;
 	    let dialog = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_FILE),title:"Map Properties" + (mapGlyph?": "+mapGlyph.getName():""),header:true,draggable:true,resizable:true});
 	    if(accord) 
@@ -44105,7 +44112,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		ifApply();
 	    });
 	    this.jq('styledialog').find('input').change(function(event) {
-		if($(this).attr('id')!=_this.domId('styledialogactive')) {
+		if($(this).attr(ATTR_ID)!=_this.domId('styledialogactive')) {
 		    ifApply();
 		}
 	    });
@@ -44134,10 +44141,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 
 
-	    this.jq('displayattrsmenubar').find('.ramadda-clickable').click(function() {
+	    this.jq('displayattrsmenubar').find('.' + CLASS_CLICKABLE).click(function() {
 		let block = blocks[$(this).attr('blockidx')];
 		let sub = Utils.join(block.items,"");
-		sub = HU.div(['style','max-height:200px;overflow-y:auto;'], sub);
+		sub = HU.div([ATTR_STYLE,'max-height:200px;overflow-y:auto;'], sub);
 		let dialog = HU.makeDialog({content:sub,anchor:$(this)});
 		let insert = line=>{
 		    if(!line) return
@@ -44163,18 +44170,18 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.initGlyphButtons(dialog);
 		dialog.find('#clippathdraw').button().click(function(){
 		    let input = _this.jq('glyphedit_clippath');
-		    let html = HU.div(['style','display:inline-block;background:#ccc;'], HU.image(mapGlyph.style.imageUrl,['title','Click to select point\nshift-click:use previous X\nmeta-click: use previous Y', 'width','600px','class','theimage','style',HU.css('cursor','pointer','border','1px solid #ccc')]));
-		    let buttons = HU.buttons([HU.div([CLASS,'ramadda-button-clear display-button'], 'Clear'),
-					      HU.div([CLASS,'ramadda-button-ok display-button'], 'OK'),
-					      HU.div([CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
+		    let html = HU.div([ATTR_STYLE,'display:inline-block;background:#ccc;'], HU.image(mapGlyph.style.imageUrl,[ATTR_TITLE,'Click to select point\nshift-click:use previous X\nmeta-click: use previous Y', 'width','600px',ATTR_CLASS,'theimage',ATTR_STYLE,HU.css('cursor','pointer','border','1px solid #ccc')]));
+		    let buttons = HU.buttons([HU.div([ATTR_CLASS,'ramadda-button-clear display-button'], 'Clear'),
+					      HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK'),
+					      HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
 
 		    let tryIt = true;
 		    html = buttons+
-			HU.span(['class','ramadda-clickable','id','pathtry','style','width:4em'],
+			HU.span([ATTR_CLASS,CLASS_CLICKABLE,ATTR_ID,'pathtry',ATTR_STYLE,'width:4em'],
 				'Try') +HU.space(1) +
-HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']) +
+HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.5em;']) +
 			'<br>'+html;
-		    html = HU.div(['style',HU.css('margin','10px','text-align','center')],html);
+		    html = HU.div([ATTR_STYLE,HU.css('margin','10px','text-align','center')],html);
 		    let path='';
 		    let dialog = HU.makeDialog({content:html,title:'Edit Clip Path',draggable:true,header:true,anchor:$(this),my:"left top",at:"left bottom"});
 		    let output = dialog.find('.pathoutput');
@@ -44249,7 +44256,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 	    });
 
 	    dialog.find('.ramadda-imdv-color').focus(function() {
-		let id = $(this).attr('id');
+		let id = $(this).attr(ATTR_ID);
 		let bar = _this.makeColorBar(id);
 		let dialog = HU.makeDialog({content:bar,header:false,anchor:$(this),my:"left top",at:"left bottom"});
 		dialog.find('.ramadda-color-select').click(function(){
@@ -44265,7 +44272,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 
 	    dialog.find('.ramadda-imdv-color').change(function() {
 		let c = $(this).val();
-		let id = $(this).attr('id');
+		let id = $(this).attr(ATTR_ID);
 		$("#"+ id+'_display').css('background',c);
 		ifApply();
 	    });
@@ -44304,7 +44311,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 	    let used = this.getUsedMarkers();
 	    let prop = icons.attr('icon-property');
 	    let apply = icon=>{
-		this.jq(prop+'_image').attr('src',icon);
+		this.jq(prop+'_image').attr(ATTR_SRC,icon);
 		this.jq(prop).val(icon);			
 		if(callback) callback(icon);
 		if(Utils.stringDefined(icon)) {
@@ -44316,7 +44323,8 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 	    if(used.length>0) {
 		let html = HU.b("Recent: ");
 		used.forEach(icon=>{
-		    html+=HU.span(['class','ramadda-clickable ramadda-icons-recent','icon',icon],
+		    html+=HU.span([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-icons-recent'),
+				   'icon',icon],
 				  HU.getIconImage(icon,['width','24px']));
 		});
 		this.jq('recenticons').html(html);
@@ -44333,18 +44341,19 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 		let html = "";
 		emojis.forEach(cat=>{
 		    if(html!="") html+="</div>";
-		    html+=HU.open('div',['class','ramadda-imdv-image-category']);
-		    html+=HU.div(['class','ramadda-imdv-image-category-label'],HU.b(cat.name));
+		    html+=HU.open('div',[ATTR_CLASS,'ramadda-imdv-image-category']);
+		    html+=HU.div([ATTR_CLASS,'ramadda-imdv-image-category-label'],HU.b(cat.name));
 		    cat.images.forEach(image=>{
-			html+=HU.image(image.image,['class','ramadda-clickable ramadda-imdv-image','width','24px','style','margin-right:4px;margin-bottom:2px;','loading','lazy','title',image.name]);
+			html+=HU.image(image.image,[ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-imdv-image'),
+						    'width','24px',ATTR_STYLE,'margin-right:4px;margin-bottom:2px;','loading','lazy',ATTR_TITLE,image.name]);
 		    });
 		});
 		html+="</div>";
-		html = HU.div(['style',HU.css('width','400px','max-height','200px','overflow-y','auto')], html);
-		html = HU.input("","",['id',prefix+'_search','placeholder','Search','size','30']) +' ' +
-		    HU.span(['class','ramadda-clickable ramadda-imdv-image-delete'],'Clear')+
+		html = HU.div([ATTR_STYLE,HU.css('width','400px','max-height','200px','overflow-y','auto')], html);
+		html = HU.input("","",[ATTR_ID,prefix+'_search','placeholder','Search','size','30']) +' ' +
+		    HU.span([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-imdv-image-delete')],'Clear')+
 		    HU.space(2) +
-		    HU.span(['class','ramadda-clickable ramadda-imdv-image-add'],'Set URL')+		    
+		    HU.span([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-imdv-image-add')],'Set URL')+		    
 		    '<br>'+
 		    html;
 		icons.html(html);
@@ -44358,7 +44367,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 		});		
 		let images = icons.find('.ramadda-imdv-image');
 		images.click(function() {
-		    apply($(this).attr('src'));
+		    apply($(this).attr(ATTR_SRC));
 		});
 		let cats = icons.find('.ramadda-imdv-image-category');
 		let search = (value) =>{
@@ -44366,7 +44375,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 			let textOk = true;		
 			if(value) {
 			    textOk = false;
-			    let html = $(this).attr('title').toLowerCase();
+			    let html = $(this).attr(ATTR_TITLE).toLowerCase();
 			    if(html.indexOf(value)>=0) {
 				textOk=true;
 			    }
@@ -44644,9 +44653,9 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 	    if(!this.mapProperties)this.mapProperties={};
 	    let accords = [];
 
-	    let buttons = HU.buttons([HU.div([CLASS,'ramadda-button-apply display-button'], 'Apply'),
-				      HU.div([CLASS,'ramadda-button-ok display-button'], 'OK'),
-				      HU.div([CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
+	    let buttons = HU.buttons([HU.div([ATTR_CLASS,'ramadda-button-apply display-button'], 'Apply'),
+				      HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK'),
+				      HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
 	    let cbxs = [
 		HU.checkbox(this.domId('showopacityslider'),[],
 			    this.getMapProperty('showOpacitySlider',this.getShowOpacitySlider()),'Show Opacity Slider'),
@@ -44658,7 +44667,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 			    this.getMapProperty('showMousePosition',false),'Show Mouse Position'),
 		HU.checkbox(this.domId('showaddress'), [],
 			    this.getMapProperty('showAddress',false),'Show Address'),
-		HU.checkbox(this.domId('usercanchange'),['title','Non logged in users can add glyphs and change styles but can\'t save'],
+		HU.checkbox(this.domId('usercanchange'),[ATTR_TITLE,'Non logged in users can add glyphs and change styles but can\'t save'],
 			    this.getMapProperty('userCanChange',false),'Anon. users can change'),
 		
 	    ];
@@ -44667,13 +44676,13 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 
 	    let right = HU.formTable();
 	    right+=HU.formEntry('Legend position:',
-				HU.select('',['id',this.domId('legendposition')],[{label:'Left',value:'left'},
+				HU.select('',[ATTR_ID,this.domId('legendposition')],[{label:'Left',value:'left'},
 										  {label:'Right',value:'right'},
 										  {label:'In Map',value:'map'},
 										  {label:'None',value:'none'}],
 					  this.getMapProperty('legendPosition','left')));
 	    right+=HU.formEntry('Legend width:',
-				HU.input('',this.getMapProperty('legendWidth',''),['id',this.domId('legendwidth'),'size','4']));
+				HU.input('',this.getMapProperty('legendWidth',''),[ATTR_ID,this.domId('legendwidth'),'size','4']));
 	    
 	    right+=HU.formTableClose();
 	    right+=HU.checkbox(this.domId('showbasemapselect'), [],
@@ -44691,10 +44700,10 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 			  contents:
 			  HU.b('Top Wiki Text:') +'<br>' +
 			  HU.textarea('',this.getMapProperty('topWikiText',''),
-				      ['id',this.domId('topwikitext_input'),'rows','4','cols','80']) +"<br>" +
+				      [ATTR_ID,this.domId('topwikitext_input'),'rows','4','cols','80']) +"<br>" +
 			  HU.b('Bottom Wiki Text:') +'<br>' +
 			  HU.textarea('',this.getMapProperty('bottomWikiText',''),
-				      ['id',this.domId('bottomwikitext_input'),'rows','4','cols','80']) +'<br>'
+				      [ATTR_ID,this.domId('bottomwikitext_input'),'rows','4','cols','80']) +'<br>'
 			 });
 
 	    let props = this.getMapProperty('otherProperties','');
@@ -44709,14 +44718,14 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 	    accords.push({header:'Other Properties',
 			  contents:
 			  HU.hbox([
-			      HU.textarea('',props,['id',this.domId('otherproperties_input'),'rows','8','cols','40']),HU.space(2),help])
+			      HU.textarea('',props,[ATTR_ID,this.domId('otherproperties_input'),'rows','8','cols','40']),HU.space(2),help])
 			 });
 	    
 
 	    //	    let accord = HU.makeAccordionHtml(accords);
 	    let accord = HU.makeTabs(accords);	    
 	    let html = buttons + accord.contents;
-	    html  = HU.div(['style','min-width:700px;min-height:300px;margin:10px;'],html);
+	    html  = HU.div([ATTR_STYLE,'min-width:700px;min-height:300px;margin:10px;'],html);
 	    let anchor = this.jq(ID_MENU_FILE);
 	    let dialog = HU.makeDialog({content:html,title:'Properties',header:true,
 					my:'left top',at:'left bottom',draggable:true,anchor:anchor});
@@ -44967,7 +44976,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 	    let cssStyle = "";
 	    if(color) cssStyle= HU.css('border-bottom' , "3px " + line+ " " +color);
 	    let dim = 'width:30px;height:6px;';
-	    return  HU.div(['style','margin-bottom:5px;margin-right:5px;display:inline-block;'+dim + cssStyle]);
+	    return  HU.div([ATTR_STYLE,'margin-bottom:5px;margin-right:5px;display:inline-block;'+dim + cssStyle]);
 	},
 
 	showMapLegend: function() {
@@ -44984,14 +44993,14 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 		feature.legendId = id;
 		map[id] = mapGlyph;
 		let item = this.getDecoration(feature.style) + msg;
-		html+=HU.div(['class','ramadda-clickable','id',id],item);
+		html+=HU.div([ATTR_CLASS,CLASS_CLICKABLE,ATTR_ID,id],item);
 	    });
 	    if(html!="") {
-		html = HU.div(['style','padding:5px;border : var(--basic-border);  background-color : var(--color-mellow-yellow);'], html);
+		html = HU.div([ATTR_STYLE,'padding:5px;border : var(--basic-border);  background-color : var(--color-mellow-yellow);'], html);
 	    }
 	    this.jq(ID_MESSAGE3).html(html);
-	    this.jq(ID_MESSAGE3).find('.ramadda-clickable').click(function() {
-		let id = $(this).attr('id');
+	    this.jq(ID_MESSAGE3).find('.' + CLASS_CLICKABLE).click(function() {
+		let id = $(this).attr(ATTR_ID);
 		_this.selectGlyph(map[id]);
 	    });
 	},
@@ -45013,7 +45022,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 		let icon = glyphType.options.icon||Ramadda.getUrl('/map/marker-blue.png');
 		let label = HU.image(icon,['width','16']) +SPACE1 + glyphType.getName();
 		if(glyphType.getTooltip())
-		    label = HU.span(['title',glyphType.getTooltip()],label);
+		    label = HU.span([ATTR_TITLE,glyphType.getTooltip()],label);
 		html+= this.menuItem(this.domId('menunew_' + glyphType.type),label+SPACE2);
 	    });
 	    html+='</td></tr></table>';
@@ -45044,7 +45053,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 			null,
 			[ID_EDIT,'Edit Properties','P']].reduce((prev,tuple)=>{
 			    prev = prev || '';
-			    if(!tuple) return prev+ HU.div([CLASS,'ramadda-menu-divider']);						
+			    if(!tuple) return prev+ HU.div([ATTR_CLASS,'ramadda-menu-divider']);						
 			    return prev + 	this.menuItem(this.domId(tuple[0]),tuple[1],tuple[2]);
 			},'');
 	    
@@ -45704,7 +45713,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 	},
 	showMessage:function(msg,clearTime)  {
 	    if(msg!='')
-		msg = HU.div(['class','imdv-message-inner'],msg);
+		msg = HU.div([ATTR_CLASS,'imdv-message-inner'],msg);
 	    this.jq(ID_MESSAGE).html(msg);
 	    this.jq(ID_MESSAGE).show();
 	    if(this.messageErase) clearTimeout(this.messageErase);
@@ -45844,7 +45853,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 		} else if(target) {
 		    draggedGlyph.setParentGlyph(null);
 		    Utils.removeItem(this.getGlyphs(),draggedGlyph);
-		    if(target.attr('id')==this.domId(ID_DROP_BEGINNING)) {
+		    if(target.attr(ATTR_ID)==this.domId(ID_DROP_BEGINNING)) {
 			if(debug) console.log('dropped on beginning');
 			this.getGlyphs().unshift(draggedGlyph);
 		    } else  {
@@ -45889,7 +45898,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 	    let glyphs = this.getGlyphs();
 	    let html = '';
 	    if(this.getMapProperty('showBaseMapSelect')) {
-		html+=HU.div(['style','margin-bottom:4px;','class',CLASS_LEGEND_OFFSET], HU.b('Base Map: ') +this.getBaseLayersSelect());
+		html+=HU.div([ATTR_STYLE,'margin-bottom:4px;',ATTR_CLASS,CLASS_LEGEND_OFFSET], HU.b('Base Map: ') +this.getBaseLayersSelect());
 	    }
 
 	    if(this.getMapProperty('showAddress',false)) {
@@ -45903,12 +45912,12 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 
 	    this.inMapLegend='';
 	    if(glyphs.length)
-		html+=HU.div(['id',this.domId(ID_DROP_BEGINNING),'style','width:100%;height:1px;'],'');
+		html+=HU.div([ATTR_ID,this.domId(ID_DROP_BEGINNING),ATTR_STYLE,'width:100%;height:1px;'],'');
 	    glyphs.forEach((mapGlyph,idx)=>{
 		html+=mapGlyph.makeLegend({idToGlyph:idToGlyph});
 	    });
 	    if(glyphs.length)
-		html+=HU.div(['id',this.domId(ID_DROP_END),'class',CLASS_LEGEND_ITEM,'style','width:100%;height:1em;'],'');
+		html+=HU.div([ATTR_ID,this.domId(ID_DROP_END),ATTR_CLASS,CLASS_LEGEND_ITEM,ATTR_STYLE,'width:100%;height:1em;'],'');
 
 	    if(Utils.stringDefined(legendLabel)) {
 		legendLabel=legendLabel.replace(/\\n/,'<br>');
@@ -45921,7 +45930,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 		let css  = HU.css('max-width',HU.getDimension(legendWidth),'width',HU.getDimension(legendWidth));
 		if(height && !inMap && !legendDiv) css+=HU.css('height',legendHeight);
 		if(!legendDiv) {
-		    let attrs = ['class','imdv-legend','style',css]
+		    let attrs = [ATTR_CLASS,'imdv-legend',ATTR_STYLE,css]
 		    html  = HU.div(attrs,html);
 		}
 	    }
@@ -45931,7 +45940,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 	    }
 	    this.jq(ID_LEGEND_MAP_WRAPPER).html('');
 	    if(this.inMapLegend!='' || inMap) {
-		let inMapLegend=HU.div(['id',this.domId(ID_LEGEND_MAP)],this.inMapLegend);
+		let inMapLegend=HU.div([ATTR_ID,this.domId(ID_LEGEND_MAP)],this.inMapLegend);
 		let toggleResult = {};
 		let toggleListener = (id,vis)=>{
 		    this.setMapProperty('mapLegendOpen',vis);
@@ -45941,7 +45950,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 					   this.getMapProperty('mapLegendOpen',true),
 					   {animated:300,listener:toggleListener},toggleResult);
 		if(inMap) {
-		    inMapLegend = HU.div(['id',this.domId(ID_LEGEND)], inMapLegend);
+		    inMapLegend = HU.div([ATTR_ID,this.domId(ID_LEGEND)], inMapLegend);
 		}
 		this.jq(ID_LEGEND_MAP_WRAPPER).html(inMapLegend);
 		this.mapLegendToggleId = toggleResult.id;
@@ -45962,7 +45971,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 
 	    if(legendContainer && !inMap) {
 		legendContainer.show();
-		legendContainer.html(HU.div(['id',this.domId(ID_LEGEND)],''));
+		legendContainer.html(HU.div([ATTR_ID,this.domId(ID_LEGEND)],''));
 		this.jq(ID_LEGEND).html(html);
 	    }
 
@@ -45999,8 +46008,8 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 	    let items = this.getContainer().find('.' + CLASS_LEGEND_LABEL);
 	    items.tooltip({
 		content: function () {
-		    let title =  $(this).prop('title');
-		    title=HU.div(['style','font-size:10pt;'],title);
+		    let title =  $(this).prop(ATTR_TITLE);
+		    title=HU.div([ATTR_STYLE,'font-size:10pt;'],title);
 		    return title;
 		},
 		show: {
@@ -46122,7 +46131,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 		let showPopup = (html,props)=>{
 		    this.getMap().lastClickTime  = new Date().getTime();
 		    let id = HU.getUniqueId('div');
-		    let div = HU.div(['id',id]);
+		    let div = HU.div([ATTR_ID,id]);
 		    let location = e.feature.geometry.getBounds().getCenterLonLat();
 		    if(this.getMap().currentPopup) {
 			this.getMap().onPopupClose();
@@ -46205,7 +46214,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 			wiki = '{{mappopup}}';
 		    let wikiCallback = html=>{
 			html = mapGlyph.convertPopupText(html);
-			html = HU.div(['style','max-height:300px;overflow-y:auto;'],html);
+			html = HU.div([ATTR_STYLE,'max-height:300px;overflow-y:auto;'],html);
 			doPopup(html,{width:this.getProperty('popupWidth',width),
 				      height:this.getProperty('popupHeight',height)});
 		    };
@@ -46232,16 +46241,16 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 
 	    this.createMapLegendWrapper();
 
-	    let legendLeft = HU.div(['id',this.domId(ID_LEGEND_LEFT),'style','display:none']);
+	    let legendLeft = HU.div([ATTR_ID,this.domId(ID_LEGEND_LEFT),ATTR_STYLE,'display:none']);
 	    this.jq(ID_LEFT).html(legendLeft);
-	    let legendRight = HU.div(['id',this.domId(ID_LEGEND_RIGHT),'style','display:none']);
+	    let legendRight = HU.div([ATTR_ID,this.domId(ID_LEGEND_RIGHT),ATTR_STYLE,'display:none']);
 	    this.jq(ID_RIGHT).html(legendRight);	    
 
 	    this.jq(ID_HEADER0).append(HU.div([ID,this.domId('topwikitext')]));
 	    this.jq(ID_BOTTOM).append(HU.div([ID,this.domId('bottomwikitext')]));	    
-	    let message2 = HU.div([ID,this.domId(ID_MESSAGE2),CLASS,'ramadda-imdv-message2'],'');
+	    let message2 = HU.div([ID,this.domId(ID_MESSAGE2),ATTR_CLASS,'ramadda-imdv-message2'],'');
 	    this.jq(ID_MAP_CONTAINER).append(message2);
-	    let message3 = HU.div([ID,this.domId(ID_MESSAGE3),CLASS,'ramadda-imdv-message3'],'');
+	    let message3 = HU.div([ID,this.domId(ID_MESSAGE3),ATTR_CLASS,'ramadda-imdv-message3'],'');
 	    if(this.getShowMapLegend()) {
 		this.jq(ID_MAP_CONTAINER).append(message3);
 	    }
@@ -46282,34 +46291,36 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 	    let _this = this;
 	    let menuBar=  '';
 	    [[ID_MENU_FILE,'File'],[ID_MENU_EDIT,'Edit'],[ID_MENU_NEW,'New']].forEach(t=>{
-		menuBar+=   HU.div([ID,this.domId(t[0]),CLASS,'ramadda-menubar-button'],t[1])});
-	    menuBar = HU.div([CLASS,'ramadda-menubar'], menuBar);
+		menuBar+=   HU.div([ID,this.domId(t[0]),ATTR_CLASS,'ramadda-menubar-button'],t[1])});
+	    menuBar = HU.div([ATTR_CLASS,'ramadda-menubar'], menuBar);
 
 	    let address =
-		HU.span(['style',HU.css('position','relative')], 
-			HU.div(['style','display:inline-block;','id',this.domId(ID_ADDRESS_CLEAR),'title','Clear','class','ramadda-clickable'],HU.getIconImage('fa-solid fa-eraser',[],['style','color:#ccc;'])) +
+		HU.span([ATTR_STYLE,HU.css('position','relative')], 
+			HU.div([ATTR_STYLE,'display:inline-block;',ATTR_ID,this.domId(ID_ADDRESS_CLEAR),ATTR_TITLE,'Clear',ATTR_CLASS,CLASS_CLICKABLE],HU.getIconImage('fa-solid fa-eraser',[],[ATTR_STYLE,'color:#ccc;'])) +
 			' ' +
-			HU.div(['id',this.domId(ID_ADDRESS_WAIT),'style',HU.css('position','absolute','right','0px',
+			HU.div([ATTR_ID,this.domId(ID_ADDRESS_WAIT),ATTR_STYLE,HU.css('position','absolute','right','0px',
 										'display','inline-block','margin-right','2px','width','20px')])+
-			HU.input('','',['id',this.domId(ID_ADDRESS_INPUT),'placeholder','Search for address','size','20']));
+			HU.input('','',[ATTR_ID,this.domId(ID_ADDRESS_INPUT),'placeholder','Search for address','size','20']));
 
 	    if(this.canChange()) {
-		address = address +' ' +HU.checkbox(this.domId(ID_ADDRESS_ADD),['id',this.domId(ID_ADDRESS_ADD),'title','Add marker to map'],false);
+		address = address +' ' +HU.checkbox(this.domId(ID_ADDRESS_ADD),[ATTR_ID,this.domId(ID_ADDRESS_ADD),ATTR_TITLE,'Add marker to map'],false);
 	    }
-	    address=HU.span(['style','margin-right:5px'], address);
+	    address=HU.span([ATTR_STYLE,'margin-right:5px'], address);
 
-	    address = HU.div(['style',HU.css('white-space','nowrap','display','none','position','relative'),'id',this.domId(ID_ADDRESS)], address);	    
+	    address = HU.div([ATTR_STYLE,HU.css('white-space','nowrap','display','none','position','relative'),
+			      ATTR_ID,this.domId(ID_ADDRESS)], address);	    
 	    
-	    let message = HU.div([ID,this.domId(ID_MESSAGE),'class','imdv-message']);
-	    let mapHeader = HU.div([STYLE,HU.css('margin-left','10px'), ID,this.domId(ID_MAP)+'_header']);
+	    let message = HU.div([ID,this.domId(ID_MESSAGE),ATTR_CLASS,'imdv-message']);
+	    let mapHeader = HU.div([STYLE,HU.css('margin-left','10px'),
+				    ATTR_ID,this.domId(ID_MAP)+'_header']);
 	    if(this.canChange()) {
-		menuBar= HU.table(['id',this.domId(ID_MAP_MENUBAR),'width','100%'],HU.tr(['valign','bottom'],HU.td([],menuBar) +
+		menuBar= HU.table([ATTR_ID,this.domId(ID_MAP_MENUBAR),'width','100%'],HU.tr(['valign','bottom'],HU.td([],menuBar) +
 											 HU.td(['width','50%'], message) +
-											 HU.td(['align','right','style','padding-right:10px;','width','50%'],mapHeader+address)));
+											 HU.td(['align','right',ATTR_STYLE,'padding-right:10px;','width','50%'],mapHeader+address)));
 	    } else {
-		menuBar= HU.table(['id',this.domId(ID_MAP_MENUBAR),'width','100%'],HU.tr(['valign','bottom'],HU.td([],'') +
+		menuBar= HU.table([ATTR_ID,this.domId(ID_MAP_MENUBAR),'width','100%'],HU.tr(['valign','bottom'],HU.td([],'') +
 											 HU.td(['width','50%'], message) +
-											 HU.td(['align','right','style','padding-right:10px;','width','50%'],mapHeader+address)));
+											 HU.td(['align','right',ATTR_STYLE,'padding-right:10px;','width','50%'],mapHeader+address)));
 	    }
 	    
 
@@ -46353,7 +46364,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 
 	    //gotta have this here or else the draggable sets it to relative
 	    legendStyle+=HU.css('position','absolute');
-	    let innerDiv = HU.div(['id',this.domId(ID_LEGEND_MAP_WRAPPER),'class','imdv-legend-map-wrapper','style',legendStyle]);
+	    let innerDiv = HU.div([ATTR_ID,this.domId(ID_LEGEND_MAP_WRAPPER),ATTR_CLASS,'imdv-legend-map-wrapper',ATTR_STYLE,legendStyle]);
 	    let inner = $(innerDiv);
 
 	    this.jq(ID_MAP_CONTAINER).append(inner);
@@ -46364,7 +46375,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 		//so if right or bottom were set then those get nuked
 		//because the drag drags left/top
 		start:function() {
-		    //		    inner.attr('style','position:absolute;');
+		    //		    inner.attr(ATTR_STYLE,'position:absolute;');
 		},
 		stop:function() {
 		    let top = inner.position().top;
@@ -46435,7 +46446,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 	    this.jq(ID_MAP).css('caret-color','transparent');
 
 
-	    //		this.jq(ID_LEFT).html(HU.div([ID,this.domId(ID_COMMANDS),CLASS,'imdv-commands']));
+	    //		this.jq(ID_LEFT).html(HU.div([ID,this.domId(ID_COMMANDS),ATTR_CLASS,'imdv-commands']));
 	    let keyboardControl = new OpenLayers.Control();
 	    let control = new OpenLayers.Control();
 	    let callbacks = {
@@ -47181,12 +47192,12 @@ MapGlyph.prototype = {
 
 	    items.forEach(item=>{
 		let label = item.replace('=.*','');
-		html+=HU.div(['style','margin-left:10px;', 'class','ramadda-menu-item ramadda-clickable','item',item],item);
+		html+=HU.div([ATTR_STYLE,'margin-left:10px;', ATTR_CLASS,HU.classes('ramadda-menu-item',CLASS_CLICKABLE),'item',item],item);
 	    });
 
-	    html = HU.div(['style','margin-left:10px;margin-right:10px;'],html);
+	    html = HU.div([ATTR_STYLE,'margin-left:10px;margin-right:10px;'],html);
 	    let dialog =  HU.makeDialog({content:html, anchor:$(this)});
-	    dialog.find('.ramadda-clickable').click(function() {
+	    dialog.find('.' + CLASS_CLICKABLE).click(function() {
 		dialog.remove();
 		let item = $(this).attr('item');
 		let line = info.id+'.' + item+'\n';
@@ -47414,32 +47425,32 @@ MapGlyph.prototype = {
     addToStyleDialog:function(style) {
 	if(this.isRings()) {
 	    return HU.formEntry('Rings Radii:',HU.input('',Utils.join(this.getRadii(),','),
-							['id',this.domId('radii'),'size','40'])+' e.g., 1km, 2mi (miles), 100ft') +
+							[ATTR_ID,this.domId('radii'),'size','40'])+' e.g., 1km, 2mi (miles), 100ft') +
 		HU.formEntryTop('Rings Labels:',
 				HU.hbox([HU.input('',this.attrs.rangeRingLabels??'',
-						  ['id',this.domId('rangeringlabels'),'size','40']),
+						  [ATTR_ID,this.domId('rangeringlabels'),'size','40']),
 					 'Use ${d} macro for the distance e.g.:<br> Label 1 ${d}, ..., Label N ${d}  '])) +
 
 		HU.formEntry('Ring label angle:',
 			     HU.input('',Utils.isDefined(this.attrs.rangeRingAngle)?this.attrs.rangeRingAngle:90+45,[
-				 'id',this.domId('rangeringangle'),'size',4]) +' Leave blank to not show labels') +
+				 ATTR_ID,this.domId('rangeringangle'),'size',4]) +' Leave blank to not show labels') +
 		HU.formEntryTop('Ring Styles',
-				HU.hbox([HU.textarea('',this.attrs.rangeRingStyle??'',['id',this.domId('rangeringstyle'),'rows',5,'cols', 40]),
+				HU.hbox([HU.textarea('',this.attrs.rangeRingStyle??'',[ATTR_ID,this.domId('rangeringstyle'),'rows',5,'cols', 40]),
 					 'Format:<br>ring #,style:value,style:value  e.g.:<br>1,fillColor:red,strokeColor:blue<br>2,strokeDashstyle:dot|dash|dashdot|longdash<br>N,strokeColor:black<br>*,strokeWidth:5<br>even,...<br>odd,...']));
 	}
 	if(this.isMapServer() && this.getDatacubeVariable()) {
-	    return HU.formEntry('Color Table:',HU.div(['id',this.domId('colortableproperties')]));
+	    return HU.formEntry('Color Table:',HU.div([ATTR_ID,this.domId('colortableproperties')]));
 	}	    
 
 	if(this.isStraightLine()) {
 	    return HU.formEntry('Line type:',
-				HU.select('',['id',this.domId(ID_LINETYPE)],[
+				HU.select('',[ATTR_ID,this.domId(ID_LINETYPE)],[
 				    {value:LINETYPE_STRAIGHT,label:'Straight'},
 				    {value:LINETYPE_STEPPED,label:'Stepped'},
 				    {value:LINETYPE_CURVE,label:'Curve'},
 				    {value:LINETYPE_GREATCIRCLE,label:'Great Circle'}],
 					  this.attrs.lineType)) +
-		HU.formEntry('',HU.checkbox(this.domId(ID_ADDDOTS),['id',this.domId(ID_ADDDOTS)],this.attrs.addDots,'Add dots'));
+		HU.formEntry('',HU.checkbox(this.domId(ID_ADDDOTS),[ATTR_ID,this.domId(ID_ADDDOTS)],this.attrs.addDots,'Add dots'));
 	}
 
 	return '';
@@ -47450,7 +47461,7 @@ MapGlyph.prototype = {
 	let layout = (lbl,widget)=>{
 	    html+=HU.b(lbl)+'<br>'+widget+'<br>';
 	}
-	let nameWidget = HU.input('',this.getName(),['id',this.domId('mapglyphname'),'size','40']);
+	let nameWidget = HU.input('',this.getName(),[ATTR_ID,this.domId('mapglyphname'),'size','40']);
 	if(this.isEntry()) {
 	    nameWidget+='<br>' +HU.checkbox(this.domId('useentryname'),[],this.getUseEntryName(),'Use name from entry');
 	    nameWidget+=HU.space(3) +HU.checkbox(this.domId('useentrylocation'),[],this.getUseEntryLocation(),'Use location from entry');
@@ -47472,7 +47483,7 @@ MapGlyph.prototype = {
 	let propsHelp =this.display.makeSideHelp(lines,domId,{prefix:'${',suffix:'}'});
 	html+=HU.leftRightTable(HU.b('Popup Text:'),
 				this.getHelp('#popuptext'));
-	let help = 'Add macro:'+ HU.div(['class','imdv-side-help'],propsHelp);
+	let help = 'Add macro:'+ HU.div([ATTR_CLASS,'imdv-side-help'],propsHelp);
 	html+= HU.hbox([HU.textarea('',style.popupText??'',[ID,domId,'rows',4,'cols', 40]),HU.space(2),help]);
 
 	html+=HU.b('Legend Text:') +'<br>' +
@@ -47510,7 +47521,7 @@ MapGlyph.prototype = {
 	    let contents ='';
 	    let help = this.getHelp('dataicons.html');
 	    let dataIconsSelect= 'Show data icons: '+
-		HU.select('',['id',this.domId(ID_SHOWDATAICONS)],
+		HU.select('',[ATTR_ID,this.domId(ID_SHOWDATAICONS)],
 			  ['inherited','yes','no'],
 			  this.attrs[ID_SHOWDATAICONS]??'inherited');
 			  
@@ -47520,20 +47531,20 @@ MapGlyph.prototype = {
 		let on = this.getAttribute(ID_DATAICON_USEENTRY);
 		let id = this.domId(ID_DATAICON_USEENTRY);
 		contents+=  HU.radio(id, id, '', 'true', on) +
-		    HU.tag('label',['for', id,'title',''],  'Use the default data icon specification for the entry');
+		    HU.tag('label',['for', id,ATTR_TITLE,''],  'Use the default data icon specification for the entry');
 		contents+='<br>';
 		contents+=  HU.radio(id+'_oruse', id, '', 'false', !on) +
-		    HU.tag('label',['for', id+'_oruse','title',''],  'Use parent group\'s or the below if defined');
+		    HU.tag('label',['for', id+'_oruse',ATTR_TITLE,''],  'Use parent group\'s or the below if defined');
 		contents+='<br>';
 	    }
 
 
 
-	    let buttonList = [HU.span(['id',this.domId('dataicon_add_default'),'title','Set example values'],'Apply Defaults')];
+	    let buttonList = [HU.span([ATTR_ID,this.domId('dataicon_add_default'),ATTR_TITLE,'Set example values'],'Apply Defaults')];
 	    if(Utils.stringDefined(this.transientProperties.mapglyphs)) {
-		buttonList.push(HU.span(['glyphid',this.getId(),'class','ramadda-clickable','title','Apply settings from entry','id',this.domId('applyentrydataicon')],'Apply from Entry'));
+		buttonList.push(HU.span(['glyphid',this.getId(),ATTR_CLASS,CLASS_CLICKABLE,ATTR_TITLE,'Apply settings from entry',ATTR_ID,this.domId('applyentrydataicon')],'Apply from Entry'));
 	    }
-	    buttonList.push(HU.span(['id',this.domId('dataicon_clear_default'),'title','Clear properties'],'Clear'));
+	    buttonList.push(HU.span([ATTR_ID,this.domId('dataicon_clear_default'),ATTR_TITLE,'Clear properties'],'Clear'));
 
 	    let dataIconInfo  =this.getDataIconInfo();
 	    contents+=  HU.buttons(buttonList,
@@ -47542,24 +47553,24 @@ MapGlyph.prototype = {
 	    let fields1 = HU.b('Menu Fields:')+'<br>'+
 		HU.textarea('',dataIconInfo[ID_DATAICON_FIELDS]??'',
 			    ['placeholder','field pattern,label=<label>,unit=<unit>\ne.g.:\n'+
-			     DEFAULT_DATAICON_FIELDS,'id',this.domId(ID_DATAICON_FIELDS),'rows',4,'cols', 60]);
+			     DEFAULT_DATAICON_FIELDS,ATTR_ID,this.domId(ID_DATAICON_FIELDS),'rows',4,'cols', 60]);
 	    let  fields2= HU.b('Initial field:')+'<br>'+
-		HU.input('',dataIconInfo[ID_DATAICON_INIT_FIELD]??'',['id',this.domId(ID_DATAICON_INIT_FIELD),'size','25','placeholder','Initial field']) +'<br>' +
+		HU.input('',dataIconInfo[ID_DATAICON_INIT_FIELD]??'',[ATTR_ID,this.domId(ID_DATAICON_INIT_FIELD),'size','25','placeholder','Initial field']) +'<br>' +
 		HU.b('Menu Label:') +'<br>'  +
-		HU.input('',dataIconInfo[ID_DATAICON_LABEL]??'',['id',this.domId(ID_DATAICON_LABEL),'size','25']);
+		HU.input('',dataIconInfo[ID_DATAICON_LABEL]??'',[ATTR_ID,this.domId(ID_DATAICON_LABEL),'size','25']);
 
-	    contents+=HU.table(HU.tr(['valign','top'],HU.td(fields1) +HU.td(HU.div(['style','margin-left:8px;'],fields2))));
+	    contents+=HU.table(HU.tr(['valign','top'],HU.td(fields1) +HU.td(HU.div([ATTR_STYLE,'margin-left:8px;'],fields2))));
 	    contents+='<p>';
 	    contents+=HU.b('Canvas: ') +
-		'W: ' + HU.input('',dataIconInfo[ID_DATAICON_WIDTH]??'',['id',this.domId(ID_DATAICON_WIDTH),'size','3']) +
-		' H: ' + HU.input('',dataIconInfo[ID_DATAICON_HEIGHT]??'',['id',this.domId(ID_DATAICON_HEIGHT),'size','3']) +
+		'W: ' + HU.input('',dataIconInfo[ID_DATAICON_WIDTH]??'',[ATTR_ID,this.domId(ID_DATAICON_WIDTH),'size','3']) +
+		' H: ' + HU.input('',dataIconInfo[ID_DATAICON_HEIGHT]??'',[ATTR_ID,this.domId(ID_DATAICON_HEIGHT),'size','3']) +
 		HU.space(2) + HU.b('Icon Size: ') +
-		HU.input('',dataIconInfo[ID_DATAICON_SIZE]??'',['id',this.domId(ID_DATAICON_SIZE),'size','3']);
+		HU.input('',dataIconInfo[ID_DATAICON_SIZE]??'',[ATTR_ID,this.domId(ID_DATAICON_SIZE),'size','3']);
 
 
-	    contents+=  HU.div(['style','xpadding-top:0.5em;padding-bottom:0.5em;'],
+	    contents+=  HU.div([ATTR_STYLE,'padding-bottom:0.5em;'],
 			       HU.b('Properties:') + HU.space(1) +
-			       HU.input('',dataIconInfo[ID_DATAICON_PROPS]??'',['id',this.domId(ID_DATAICON_PROPS),'size','80']));
+			       HU.input('',dataIconInfo[ID_DATAICON_PROPS]??'',[ATTR_ID,this.domId(ID_DATAICON_PROPS),'size','80']));
 	    contents+=HU.b('Icon Specification:')  +'<br>';
 	    contents +=
 		HU.textarea('',dataIconInfo[ID_DATAICON_MARKERS]??'',[ID,this.domId(ID_DATAICON_MARKERS),'rows',3,'cols', 90]);
@@ -47801,7 +47812,7 @@ MapGlyph.prototype = {
 
 	if(!this.dataIconContainer || jqid(this.dataIconContainer).length==0) {
 	    this.dataIconContainer = HU.getUniqueId('dataiconfieldscontainer_');
-	    this.display.jq(ID_HEADER1).append(HU.div(['style',HU.css('display','inline-block','margin-right','20px'),'id',this.dataIconContainer]));
+	    this.display.jq(ID_HEADER1).append(HU.div([ATTR_STYLE,HU.css('display','inline-block','margin-right','20px'),ATTR_ID,this.dataIconContainer]));
 	}
 	jqid(this.dataIconContainer).show();
 
@@ -47816,7 +47827,7 @@ MapGlyph.prototype = {
 	    }
 	    items.push({value:toks[0],label:map.label});
 	});
-	let menu = HU.select('',['id',this.dataIconFieldsId],
+	let menu = HU.select('',[ATTR_ID,this.dataIconFieldsId],
 			     items,
 			     Utils.getStringDefined(dataIconInfo[ID_DATAICON_SELECTED_FIELD],
 						    dataIconInfo[ID_DATAICON_INIT_FIELD]));
@@ -47825,7 +47836,7 @@ MapGlyph.prototype = {
 	if(!this.isVisible()) {
 	    clazz+=' ' + CLASS_LEGEND_LABEL_INVISIBLE;
 	}
-	let contents = HU.div(['class',clazz,'style',HU.css('padding','4px')],HU.b(label)+':'+HU.space(1)+menu);
+	let contents = HU.div([ATTR_CLASS,clazz,ATTR_STYLE,HU.css('padding','4px')],HU.b(label)+':'+HU.space(1)+menu);
 	jqid(this.dataIconContainer).html(contents);
 
 	jqid(this.dataIconFieldsId).change(function(){
@@ -48052,7 +48063,7 @@ MapGlyph.prototype = {
 	    markers.push(new Glyph(this.display,1.0, data.getRecordFields(),data.getRecords(),props,line));
 	});
 	let cid = HU.getUniqueId("canvas_");
-	let c = HU.tag("canvas",[CLASS,"", STYLE,"xdisplay:none;", 	
+	let c = HU.tag("canvas",[ATTR_CLASS,"", STYLE,"xdisplay:none;", 	
 				 WIDTH,canvasWidth,HEIGHT,canvasHeight,ID,cid]);
 
 	let isShown = true;
@@ -48111,7 +48122,7 @@ MapGlyph.prototype = {
 	    try {
 		let img = canvas.toDataURL();
 		if($('#testimg').length) 
-		    $("#testimg").html(HU.tag("img",["src",img]));
+		    $("#testimg").html(HU.tag("img",[ATTR_SRC,img]));
 		canvas.remove();
 		this.style.label=null;
 		this.style.pointRadius=size;
@@ -48188,24 +48199,24 @@ MapGlyph.prototype = {
 	this.entries.forEach(entry=>{
 	    map[entry.getId()] = entry;
 	    let link = entry.getLink(null,true,['target','_entry']);
-	    link = HU.div(['style','white-space:nowrap;max-width:180px;overflow-x:hidden;','title',entry.getName()], link);
+	    link = HU.div([ATTR_STYLE,'white-space:nowrap;max-width:180px;overflow-x:hidden;',ATTR_TITLE,entry.getName()], link);
 	    let add = '';
 	    if(MAP_TYPES.includes(entry.getType().getId())) {
-		add = HU.span(['class','ramadda-clickable','title','add map','entryid',entry.getId(),'command',GLYPH_MAP],HU.getIconImage('fas fa-plus'));
+		add = HU.span([ATTR_CLASS,CLASS_CLICKABLE,ATTR_TITLE,'add map','entryid',entry.getId(),'command',GLYPH_MAP],HU.getIconImage('fas fa-plus'));
 	    } else if(entry.isPoint) {
-		add = HU.span(['class','ramadda-clickable','title','add data','entryid',entry.getId(),'command',GLYPH_DATA],HU.getIconImage('fas fa-plus'));
+		add = HU.span([ATTR_CLASS,CLASS_CLICKABLE,ATTR_TITLE,'add data','entryid',entry.getId(),'command',GLYPH_DATA],HU.getIconImage('fas fa-plus'));
 	    } else if(entry.isGroup) {
-		add = HU.span(['class','ramadda-clickable','title','add multi entry','entryid',entry.getId(),'command',GLYPH_MULTIENTRY],HU.getIconImage('fas fa-plus'));
+		add = HU.span([ATTR_CLASS,CLASS_CLICKABLE,ATTR_TITLE,'add multi entry','entryid',entry.getId(),'command',GLYPH_MULTIENTRY],HU.getIconImage('fas fa-plus'));
 	    } else {
 	    }		
 	    if(add!='') {
 		link = HU.leftRightTable(link,add);
 	    }
 
-	    html+=HU.div(['style',HU.css('white-space','nowrap')],link);
+	    html+=HU.div([ATTR_STYLE,HU.css('white-space','nowrap')],link);
 	});
 	if(html!='') {
-	    html = HU.div(['class','ramadda-cleanscroll', 'style','max-height:200px;overflow-y:auto;'], HU.div(['style','margin-right:10px;'],html));
+	    html = HU.div([ATTR_CLASS,'ramadda-cleanscroll', ATTR_STYLE,'max-height:200px;overflow-y:auto;'], HU.div([ATTR_STYLE,'margin-right:10px;'],html));
 	    this.jq('multientry').html(HU.b('Entries')+html);
 	}
 	this.jq('multientry').find('[command]').click(function(){
@@ -48652,19 +48663,19 @@ MapGlyph.prototype = {
 		icon = HU.href(url,icon,['target','_entry']);
 	    let showZoomTo = args.forLegend && this.hasBounds();
 	    if(this.isGroup()) {
-		right+=SPACE+HU.span([CLASS,'ramadda-clickable',TITLE,'Cycle visibility children. Shift-key: all visible; Meta-key: all hidden',
+		right+=SPACE+HU.span([ATTR_CLASS,CLASS_CLICKABLE,TITLE,'Cycle visibility children. Shift-key: all visible; Meta-key: all hidden',
 				      'glyphid',this.getId(),'buttoncommand',"cyclevis"],HU.getIconImage('fas fa-arrows-spin',[],BUTTON_IMAGE_ATTRS));
 	    }
 
 	    if(showZoomTo) {
 		right+=SPACE+
-		    HU.span([CLASS,'ramadda-clickable ' + CLASS_LEGEND_ITEM_VIEW,
+		    HU.span([ATTR_CLASS,HU.classes(CLASS_CLICKABLE, CLASS_LEGEND_ITEM_VIEW),
 			     'glyphid',this.getId(),
 			     TITLE,'Click:Move to; Shift-click:Zoom in',],
 			    HU.getIconImage('fas fa-magnifying-glass',[],LEGEND_IMAGE_ATTRS));
 	    }
 	    if(args.addIcon)
-		label = HU.span(['style','margin-right:5px;'], icon)  + label;
+		label = HU.span([ATTR_STYLE,'margin-right:5px;'], icon)  + label;
 	}
 
 	if(args.forLegend) {
@@ -48673,15 +48684,15 @@ MapGlyph.prototype = {
 	    let title = HU.b(HU.center(theLabel))+
 		(extra??'') +
 		'Click to toggle visibility<br>Shift-click to select';
-	    label = HU.div(['title',title,'style',HU.css('overflow-x','hidden','white-space','nowrap')], label);	    
+	    label = HU.div([ATTR_TITLE,title,ATTR_STYLE,HU.css('overflow-x','hidden','white-space','nowrap')], label);	    
 	}
 	if(right!='') {
-	    right= HU.span(['style',HU.css('white-space','nowrap')], right);
-	    //	    label=HU.leftRightTable(label,right);
+	    right= HU.span([ATTR_STYLE,HU.css('white-space','nowrap')], right);
 	}
 	if(args.forLegend) {
 	    let clazz = CLASS_LEGEND_LABEL;
-	    label = HU.div(['class','ramadda-clickable ' + clazz,'glyphid',this.getId()],label);
+	    label = HU.div([ATTR_CLASS,HU.classes(CLASS_CLICKABLE, clazz),
+			    'glyphid',this.getId()],label);
 	    return [label,right];
 	}
 	return label;
@@ -48810,23 +48821,25 @@ MapGlyph.prototype = {
 	    return "";
 	}
 	let label =  this.getLabel({forLegend:true,addDecorator:true});
-	let body = HU.div(['class',CLASS_LEGEND_INNER],this.getLegendBody());
+	let body = HU.div([ATTR_CLASS,CLASS_LEGEND_INNER],this.getLegendBody());
 
 	if(this.imageLayers) {
 	    let cbx='';
 	    if(this.getMapLayer() && this.getMapLayer().features.length) {
-		cbx+=HU.div([],HU.checkbox(Utils.getUniqueId(''),['imageid','main','class','imdv-imagelayer-checkbox'],
+		cbx+=HU.div([],HU.checkbox(Utils.getUniqueId(''),['imageid','main',
+								  ATTR_CLASS,'imdv-imagelayer-checkbox'],
 					   this.isImageLayerVisible({id:'main'}),
 					   'Main Layer'));
 	    }
 	    this.imageLayerMap = {};
 	    this.imageLayers.forEach(obj=>{
 		this.imageLayerMap[obj.id] = obj;
-		cbx+=HU.div([],HU.checkbox(Utils.getUniqueId(''),['imageid',obj.id,'class','imdv-imagelayer-checkbox'],
+		cbx+=HU.div([],HU.checkbox(Utils.getUniqueId(''),['imageid',obj.id,
+								  ATTR_CLASS,'imdv-imagelayer-checkbox'],
 					   this.isImageLayerVisible(obj),
 					   obj.name));
 	    });
-	    body+=HU.div(['class',CLASS_LEGEND_OFFSET],cbx);
+	    body+=HU.div([ATTR_CLASS,CLASS_LEGEND_OFFSET],cbx);
 	}
 	if(this.haveChildren()) {
 	    let child="";
@@ -48834,7 +48847,7 @@ MapGlyph.prototype = {
 		let childHtml = mapGlyph.makeLegend(opts);
 		if(childHtml) child+=childHtml;
 	    });
-	    body+=HU.div(['class',CLASS_LEGEND_OFFSET],child);
+	    body+=HU.div([ATTR_CLASS,CLASS_LEGEND_OFFSET],child);
 	}
 
 	let block = HU.toggleBlockNew("",body,this.getLegendVisible(),
@@ -48848,12 +48861,13 @@ MapGlyph.prototype = {
 	    clazz+= ' ' + CLASS_LEGEND_LABEL_HIGHLIGHT;
 	}
 
-	html+=HU.open('div',['id',this.domId(ID_GLYPH_LEGEND),'glyphid',this.getId(),'class',CLASS_LEGEND_ITEM+' '+clazz]);
-	html+=HU.div(['style','display: flex;'],HU.div(['style','margin-right:4px;'],block.header)+
-		     HU.div(['style','width:80%;'], label[0])+
+	html+=HU.open('div',[ATTR_ID,this.domId(ID_GLYPH_LEGEND),'glyphid',this.getId(),
+			     ATTR_CLASS,HU.classes(CLASS_LEGEND_ITEM,clazz)]);
+	html+=HU.div([ATTR_STYLE,'display: flex;'],HU.div([ATTR_STYLE,'margin-right:4px;'],block.header)+
+		     HU.div([ATTR_STYLE,'width:80%;'], label[0])+
 		     HU.div([],label[1]));
 
-	html+=HU.div(['class','imdv-legend-body'],block.body);
+	html+=HU.div([ATTR_CLASS,'imdv-legend-body'],block.body);
 	html+=HU.close('div');
 	return html;
     },
@@ -48902,25 +48916,27 @@ MapGlyph.prototype = {
 	if(this.isMap() && this.getProperty('showFeaturesTable',true))  {
 	    this.showFeatureTableId = HU.getUniqueId('btn');
 	    if(buttons!=null) buttons = HU.space(1)+buttons;
-	    buttons =  HU.span(['id',this.showFeatureTableId,'title','Show features table','class','ramadda-clickable'],
+	    buttons =  HU.span([ATTR_ID,this.showFeatureTableId,ATTR_TITLE,'Show features table',
+				ATTR_CLASS,CLASS_CLICKABLE],
 			       HU.getIconImage('fas fa-table',[],BUTTON_IMAGE_ATTRS)) +buttons;
 	}
 
 	if(this.attrs.entryId) {
 	    if(buttons!=null) buttons = HU.space(1)+buttons;
 	    url = RamaddaUtils.getEntryUrl(this.attrs.entryId);
-	    buttons = HU.href(url,HU.getIconImage('fas fa-home',[],BUTTON_IMAGE_ATTRS),['target','_entry','title','View entry','class','ramadda-clickable']) +buttons;
+	    buttons = HU.href(url,HU.getIconImage('fas fa-home',[],BUTTON_IMAGE_ATTRS),['target','_entry',ATTR_TITLE,'View entry',
+											ATTR_CLASS,CLASS_CLICKABLE]) +buttons;
 	}	
 	if((!this.display.canEdit() && !this.getProperty('showButtons',true))) {
 	    buttons = '';
 	}
 
 	if(buttons!='')
-	    body+=HU.div(['class',CLASS_LEGEND_OFFSET],buttons);
+	    body+=HU.div([ATTR_CLASS,CLASS_LEGEND_OFFSET],buttons);
 	//	    body+=HU.center(buttons);
 	if(Utils.stringDefined(this.attrs.legendText)) {
 	    let text = this.attrs.legendText.replace(/\n/g,'<br>');
-	    body += HU.div(['class',CLASS_LEGEND_OFFSET+' imdv-legend-text'],text);
+	    body += HU.div([ATTR_CLASS,HU.classes(CLASS_LEGEND_OFFSET,'imdv-legend-text')],text);
 	}
 
 	let boxStyle = 'display:inline-block;width:14px;height:14px;margin-right:4px;';
@@ -48929,16 +48945,17 @@ MapGlyph.prototype = {
 	if(this.isMap()) {
 	    if(!this.mapLoaded) {
 		if(this.isVisible()) 
-		    body += HU.div(['class',CLASS_LEGEND_INNER],'Loading...');
+		    body += HU.div([ATTR_CLASS,CLASS_LEGEND_INNER],'Loading...');
 		return body;
 	    }
 
 	    this.getStyleGroups().forEach((group,idx)=>{
 		styleLegend+=HU.openTag('table',['width','100%']);
-		styleLegend+= HU.openTag('tr',['title',this.display.canEdit()?'Select style':'','class',CLASS_IMDV_STYLEGROUP +(this.display.canEdit()?' ramadda-clickable':''),'index',idx]);
+		styleLegend+= HU.openTag('tr',[ATTR_TITLE,this.display.canEdit()?'Select style':'',
+					       ATTR_CLASS,HU.classes(CLASS_IMDV_STYLEGROUP,(this.display.canEdit()?CLASS_CLICKABLE:'')),'index',idx]);
 		let style = boxStyle + this.getLegendStyle(group.style);
 		styleLegend+=HU.tag('td',['width','18px'],
-				    HU.div(['style', style]));
+				    HU.div([ATTR_STYLE, style]));
 		styleLegend +=HU.tag('td',[], group.label);
 		styleLegend+='</tr>';
 		styleLegend+='</table>'
@@ -48946,7 +48963,7 @@ MapGlyph.prototype = {
 
 
 	    if(styleLegend!='') {
-		styleLegend=HU.div(['id','glyphstyle_' + this.getId()], styleLegend);
+		styleLegend=HU.div([ATTR_ID,'glyphstyle_' + this.getId()], styleLegend);
 		if(showInMapLegend)
 		    inMapLegend+=styleLegend;
 		else
@@ -48976,7 +48993,7 @@ MapGlyph.prototype = {
 		let info = this.getFeatureInfo(rule.property);
 		if(info) label = info.getValueLabel(rule.value);
 
-		label   = HU.span(['style','font-size:9pt;'],label);
+		label   = HU.span([ATTR_STYLE,'font-size:9pt;'],label);
 		let lineWidth;
 		let lineStyle;
 		let lineColor;
@@ -48999,7 +49016,7 @@ MapGlyph.prototype = {
 		    legendContents =
 			HU.image(styleObj.externalGraphic??this.style.externalGraphic,['width','14px']);
 		}
-		let div=legendContents??HU.div(['class','circles-1','style',style]);
+		let div=legendContents??HU.div([ATTR_CLASS,'circles-1',ATTR_STYLE,style]);
 		let item = HU.tr([],
 				 HU.td(['width','16px'], div) +
 				 HU.td([],label));
@@ -49017,7 +49034,7 @@ MapGlyph.prototype = {
 	    if(showInMapLegend)
 		inMapLegend+=legend;
 	    else
-		body+=HU.toggleBlock(HU.span(['title','Legend'],HU.getIconImage('fas fa-list',null,['style',HU.css("font-size","8pt")])),
+		body+=HU.toggleBlock(HU.span([ATTR_TITLE,'Legend'],HU.getIconImage('fas fa-list',null,[ATTR_STYLE,HU.css("font-size","8pt")])),
 				     /*'Legend',*/legend,true);
 	}
 
@@ -49025,7 +49042,7 @@ MapGlyph.prototype = {
 	let showAnimation = false;
 	if(this.isMapServer() && this.getDatacubeVariable() && this.getDatacubeVariable().dims && this.getDatacubeVariable().shape && this.getDatacubeAttr('time_coverage_start')) {
 	    let v = this.getDatacubeVariable();
-	    body+='Time: ' + HU.span(['id',this.domId('time_current')],this.getCurrentTimeStep()??'')+'<br>';
+	    body+='Time: ' + HU.span([ATTR_ID,this.domId('time_current')],this.getCurrentTimeStep()??'')+'<br>';
 	    let idx=v.dims.indexOf('time');
 	    let numTimes = v.shape[idx];
 	    let start =new Date(v.attrs.time_coverage_start);
@@ -49036,8 +49053,8 @@ MapGlyph.prototype = {
 	    }
 
 	    let slider = 
-		HU.div(['title','Set time','slider-min',start.getTime(),'slider-max',end.getTime(),'slider-value',value,
-			ID,this.domId('time_slider'),'class','ramadda-slider',STYLE,HU.css('display','inline-block','width','90%')],'');
+		HU.div([ATTR_TITLE,'Set time','slider-min',start.getTime(),'slider-max',end.getTime(),'slider-value',value,
+			ID,this.domId('time_slider'),ATTR_CLASS,'ramadda-slider',STYLE,HU.css('display','inline-block','width','90%')],'');
 
 	    let anim = HU.join([
 		['Settings','fa-cog','settings'],
@@ -49047,7 +49064,8 @@ MapGlyph.prototype = {
 		['Step forward','fa-step-forward','stepforward'],
 		['Go to end','fa-forward','end']
 	    ].map(t=>{
-		return HU.span(['class','imdv-time-anim ramadda-clickable','title',t[0],'action',t[2]],HU.getIconImage(t[1]));
+		return HU.span([ATTR_CLASS,HU.classes('imdv-time-anim',CLASS_CLICKABLE),
+				ATTR_TITLE,t[0],'action',t[2]],HU.getIconImage(t[1]));
 	    }),HU.space(2));
 
 	    if(this.getProperty('showAnimation',true)) {
@@ -49056,8 +49074,8 @@ MapGlyph.prototype = {
 		body+=slider;
 		let fstart = this.formatDate(start);
 		let fend = this.formatDate(end);
-		body+=HU.leftRightTable(HU.span(['id',this.domId('time_min')],fstart),
-					HU.span(['id',this.domId('time_max')],fend));
+		body+=HU.leftRightTable(HU.span([ATTR_ID,this.domId('time_min')],fstart),
+					HU.span([ATTR_ID,this.domId('time_max')],fend));
 	    }
 	}
 
@@ -49070,16 +49088,16 @@ MapGlyph.prototype = {
 		body+='Opacity:';
 	    body += 
 		HU.center(
-		    HU.div(['title','Set image opacity','slider-min',0,'slider-max',1,'slider-value',v,
-			    ID,this.domId('image_opacity_slider'),'class','ramadda-slider',STYLE,HU.css('display','inline-block','width','90%')],''));
+		    HU.div([ATTR_TITLE,'Set image opacity','slider-min',0,'slider-max',1,'slider-value',v,
+			    ID,this.domId('image_opacity_slider'),ATTR_CLASS,'ramadda-slider',STYLE,HU.css('display','inline-block','width','90%')],''));
 	}
 
 	if(this.display.canEdit() && (this.image || Utils.stringDefined(this.style.imageUrl))) {
 /*
 	    body+='Rotation:';
 	    body += HU.center(
-		HU.div(['title','Set image rotation','slider-min',-360,'slider-max',360,'slider-value',this.style.rotation??0,
-		ID,this.domId('image_rotation_slider'),'class','ramadda-slider',STYLE,HU.css('display','inline-block','width','90%')],''));
+		HU.div([ATTR_TITLE,'Set image rotation','slider-min',-360,'slider-max',360,'slider-value',this.style.rotation??0,
+		ID,this.domId('image_rotation_slider'),ATTR_CLASS,'ramadda-slider',STYLE,HU.css('display','inline-block','width','90%')],''));
 		*/
 	}
 
@@ -49088,27 +49106,27 @@ MapGlyph.prototype = {
 		if(addDecoration && Utils.stringDefined(content)) {
 		    content = HU.hbox([this.getDecoration(true),content]);
 		}
-		inMapLegend+=HU.div(['style','max-width:200px'],content);
+		inMapLegend+=HU.div([ATTR_STYLE,'max-width:200px'],content);
 	    } else {
 		if(Utils.stringDefined(content)) {	
-		    body+=HU.div(['class','imdv-legend-body-item'], content);
+		    body+=HU.div([ATTR_CLASS,'imdv-legend-body-item'], content);
 		}
 	    }
 	};
 
 
 	let colorTableLegend ='';
-	body+=HU.div(['id',this.domId('legendcolortableprops')]);
-	colorTableLegend+=HU.div(['id',this.domId('legendcolortable_fill')]);
-	colorTableLegend+=HU.div(['id',this.domId('legendcolortable_stroke')]);	
-	colorTableLegend+=HU.div(['id',this.domId(ID_MAPLEGEND)]);
+	body+=HU.div([ATTR_ID,this.domId('legendcolortableprops')]);
+	colorTableLegend+=HU.div([ATTR_ID,this.domId('legendcolortable_fill')]);
+	colorTableLegend+=HU.div([ATTR_ID,this.domId('legendcolortable_stroke')]);	
+	colorTableLegend+=HU.div([ATTR_ID,this.domId(ID_MAPLEGEND)]);
 	if(showInMapLegend)
 	    inMapLegend+=colorTableLegend;
 	else
 	    body+=colorTableLegend;
 
 	//Put the placeholder here for map filters
-	body+=HU.div(['id',this.domId(ID_MAPFILTERS)]);
+	body+=HU.div([ATTR_ID,this.domId(ID_MAPFILTERS)]);
 
 	if(this.type==GLYPH_LABEL && this.style.label) {
 	    item(this.style.label.replace(/\"/g,"\\"));
@@ -49118,17 +49136,17 @@ MapGlyph.prototype = {
 	    item(distances,true,true);
 	}
 	if(this.isMultiEntry()) {
-//	    item(HU.div(['id',this.domId('multientry')]));
+//	    item(HU.div([ATTR_ID,this.domId('multientry')]));
 	}
 
 	if(this.isShape()) {
 	    item('',true,true);
 	}
 	if(Utils.stringDefined(this.style.imageUrl)) {
-	    item(HU.center(HU.href(this.style.imageUrl,HU.image(this.style.imageUrl,['style',HU.css('margin-bottom','4px','border','1px solid #ccc','width','150px')]),['target','_image'])));
+	    item(HU.center(HU.href(this.style.imageUrl,HU.image(this.style.imageUrl,[ATTR_STYLE,HU.css('margin-bottom','4px','border','1px solid #ccc','width','150px')]),['target','_image'])));
 	}
 	if(Utils.stringDefined(this.style.legendUrl)) {
-	    item(HU.center(HU.href(this.style.legendUrl,HU.image(this.style.legendUrl,['style',HU.css('margin-bottom','4px','border','1px solid #ccc','width','150px')]),['target','_image'])));
+	    item(HU.center(HU.href(this.style.legendUrl,HU.image(this.style.legendUrl,[ATTR_STYLE,HU.css('margin-bottom','4px','border','1px solid #ccc','width','150px')]),['target','_image'])));
 	}
 
 
@@ -49139,16 +49157,16 @@ MapGlyph.prototype = {
 		    let title = '';
 		    let attrs = [];
 		    if(step.lat) {
-			attrs.push('title','Click to view','class','imdv-route-step ramadda-clickable',
+			attrs.push(ATTR_TITLE,'Click to view',ATTR_CLASS,HU.classes('imdv-route-step',CLASS_CLICKABLE),
 				   'lat',step.lat,
 				   'lon',step.lon);
 		    } else {
-			attrs.push('class','imdv-route-step');
+			attrs.push(ATTR_CLASS,'imdv-route-step');
 		    }
 		    instr+=HU.div(attrs, step.instr);
 		});
 		body+=HU.center(HU.b('Directions')) +
-		    HU.div(['style','max-height:200px;overflow-y:auto;'],instr);
+		    HU.div([ATTR_STYLE,'max-height:200px;overflow-y:auto;'],instr);
 	    }
 	}
 	
@@ -49159,10 +49177,10 @@ MapGlyph.prototype = {
 	this.jq('maplegend').remove();
 	if(inMapLegend!='') {
 	    inMapLegend=
-		HU.div(['title',this.getName(),'style','white-space:nowrap;max-width:150px;overflow-x:hidden'],HU.b(this.getName())) +
+		HU.div([ATTR_TITLE,this.getName(),ATTR_STYLE,'white-space:nowrap;max-width:150px;overflow-x:hidden'],HU.b(this.getName())) +
 		inMapLegend;
 
-	    inMapLegend = HU.div(['style','border-bottom:var(--basic-border);padding:4px;','id',this.domId('maplegend')], inMapLegend);
+	    inMapLegend = HU.div([ATTR_STYLE,'border-bottom:var(--basic-border);padding:4px;',ATTR_ID,this.domId('maplegend')], inMapLegend);
 	    this.display.addToMapLegend(this,inMapLegend);
 	}
 	
@@ -49366,17 +49384,17 @@ MapGlyph.prototype = {
 		let html = HU.formTable();
 
 		html+=HU.formEntry('Time Pause:', HU.input("",_this.attrs.timeAnimationPause??4000,
-							   ['id',_this.domId('timeanimation_pause'),'size','4']) +' (ms)');
+							   [ATTR_ID,_this.domId('timeanimation_pause'),'size','4']) +' (ms)');
 		html+=HU.formEntry('Time Step:', HU.input("",_this.attrs.timeAnimationStep??1,
-							  ['id',_this.domId('timeanimation_step'),'size','4']) +' Time steps to skip');		
+							  [ATTR_ID,_this.domId('timeanimation_step'),'size','4']) +' Time steps to skip');		
 		html+='</table>';
 
 		let buttons = HU.buttons([
-		    HU.div([CLASS,'ramadda-button-ok ramadda-button-apply display-button'], 'Apply'),
-		    HU.div([CLASS,'ramadda-button-ok display-button'], 'OK'),
-		    HU.div([CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
+		    HU.div([ATTR_CLASS,'ramadda-button-ok ramadda-button-apply display-button'], 'Apply'),
+		    HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK'),
+		    HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
 		html+=buttons;
-		html = HU.div(['style','margin:6px;'], html);
+		html = HU.div([ATTR_STYLE,'margin:6px;'], html);
 		let dialog = HU.makeDialog({content:html,title:'Time Animation Settings',draggable:true,header:true,my:"left top",at:"left bottom",anchor:$(this)});
 		
 		dialog.find('.display-button').button().click(function() {
@@ -49439,7 +49457,7 @@ MapGlyph.prototype = {
 		    let div = this.getColorTableDisplay(obj.colorTable,obj.min,obj.max,true,obj.isEnumeration, strings);
 		    let html = HU.b(HU.center(this.makeLabel(obj.property,true)));
 		    if(obj.isEnumeration) {
-			html+=HU.div(['style','max-height:150px;overflow-y:auto;'],div);
+			html+=HU.div([ATTR_STYLE,'max-height:150px;overflow-y:auto;'],div);
 		    } else {
 			html+=HU.center(div);
 		    }
@@ -49459,8 +49477,8 @@ MapGlyph.prototype = {
 				horizontal:false,
 				showRange: false,
 			    });
-			    html = HU.div(['style','max-height:200px;overflow-y:auto;margin:2px;'], html);
-			    let dialog = HU.makeDialog({content:html,title:HU.div(['style','margin-left:20px;margin-right:20px;'], _this.makeLabel(obj.property,true)+' Legend'),header:true,my:"left top",at:"left bottom",draggable:true,anchor:$(this)});
+			    html = HU.div([ATTR_STYLE,'max-height:200px;overflow-y:auto;margin:2px;'], html);
+			    let dialog = HU.makeDialog({content:html,title:HU.div([ATTR_STYLE,'margin-left:20px;margin-right:20px;'], _this.makeLabel(obj.property,true)+' Legend'),header:true,my:"left top",at:"left bottom",draggable:true,anchor:$(this)});
 			    _this.initColorTableDots(obj, dialog);
 			});
 		    }
@@ -49474,7 +49492,7 @@ MapGlyph.prototype = {
 	    });
 
 	    if(ctProps.length>1) {
-		let menu = HU.select('',['id',this.domId('colortableproperty')],
+		let menu = HU.select('',[ATTR_ID,this.domId('colortableproperty')],
 				     ctProps.map(info=>{return {
 					 value:info.id,label:info.getLabel()}}),this.attrs.fillColorBy.property);
 		this.jq('legendcolortableprops').html(HU.b('Color by: ') + menu);
@@ -49833,7 +49851,7 @@ MapGlyph.prototype = {
             height: "20px",
 	    showRange:showRange
         });
-	let attrs = [TITLE,id,'style','margin-right:4px;',"colortable",id]
+	let attrs = [TITLE,id,ATTR_STYLE,'margin-right:4px;',"colortable",id]
 	//	if(ct.colors.length>20)   attrs.push(STYLE,HU.css('width','400px'));
         return  HtmlUtils.div(attrs,display);
     },
@@ -49850,7 +49868,7 @@ MapGlyph.prototype = {
 	    coll[2].forEach(c=>{
 		let name = c[0];
 		let url = 'data:image/png;base64,' + c[1];
-		html+=HU.image(url,['class','ramadda-clickable','colorbar',name, 'height','20px','width','256px','title',name]);
+		html+=HU.image(url,[ATTR_CLASS,CLASS_CLICKABLE,'colorbar',name, 'height','20px','width','256px',ATTR_TITLE,name]);
 		html+='<br>';
 		if(name==currentColorbar) {
 		    image = c[1];
@@ -49858,11 +49876,11 @@ MapGlyph.prototype = {
 	    });
 	});
 	let url = image?('data:image/png;base64,' + image):null;
-	this.jq('colortableproperties').html(HU.div(['id',this.domId('colortable'),'class','ramadda-clickable','title','Click to select color bar'],
+	this.jq('colortableproperties').html(HU.div([ATTR_ID,this.domId('colortable'),ATTR_CLASS,CLASS_CLICKABLE,ATTR_TITLE,'Click to select color bar'],
 						    url? HU.image(url,['height','20px','width','256px']):'No image'));
 
 	let _this = this;
-	html = HU.div(['style','margin:8px;max-height:200px;overflow-y:auto;'], html);
+	html = HU.div([ATTR_STYLE,'margin:8px;max-height:200px;overflow-y:auto;'], html);
 	this.jq('colortable').click(function() {
 	    let colorSelect = HU.makeDialog({content:html,
 					     my:'left top',
@@ -50027,17 +50045,17 @@ MapGlyph.prototype = {
 	    let value = jqid('mapvalue_' + index).val();
 	    let wrapper = jqid('mapvaluewrapper_' + index);
 	    if(info.isNumeric()) {
-		wrapper.html(HU.input("",value,['id','mapvalue_' + index,'size','15']));
+		wrapper.html(HU.input("",value,[ATTR_ID,'mapvalue_' + index,'size','15']));
 		tt=info.min +" - " + info.max;
 	    }  else  if(info.samples.length) {
 		tt = Utils.join(info.getSamplesLabels(), ", ");
 		if(info.isEnumeration()) {
-		    wrapper.html(HU.select("",['id','mapvalue_' + index],info.samples,value,20));
+		    wrapper.html(HU.select("",[ATTR_ID,'mapvalue_' + index],info.samples,value,20));
 		} else {
-		    wrapper.html(HU.input("",value,['id','mapvalue_' + index,'size','15']));
+		    wrapper.html(HU.input("",value,[ATTR_ID,'mapvalue_' + index,'size','15']));
 		}
 	    }
-	    jqid('mapvalue_' + index).attr('title',tt);
+	    jqid('mapvalue_' + index).attr(ATTR_TITLE,tt);
 	});
 
 
@@ -50060,7 +50078,8 @@ MapGlyph.prototype = {
 	    let attrs = feature.attributes;
 	    let first = rowCnt++==0;
 	    if(first) {
-		table = HU.openTag('table',['id',id,'table-ordering','true','table-searching','true','table-height','400px','class','stripe rowborder ramadda-table'])
+		table = HU.openTag('table',[ATTR_ID,id,'table-ordering','true','table-searching','true','table-height','400px',
+					    ATTR_CLASS,'stripe rowborder ramadda-table'])
 		table+='<thead><tr>';
 		stats = [];
 		columns.forEach((column,idx)=>{
@@ -50070,7 +50089,8 @@ MapGlyph.prototype = {
 		table+=HU.close('tr','thead','tbody');
 	    }
 	    this.featureTableMap[rowIdx] =feature;
-	    table+=HU.openTag('tr',['title','Click to zoom to','featureidx', rowIdx,'class','imdv-feature-table-row ramadda-clickable']);
+	    table+=HU.openTag('tr',[ATTR_TITLE,'Click to zoom to','featureidx', rowIdx,
+				    ATTR_CLASS,HU.classes('imdv-feature-table-row',CLASS_CLICKABLE)]);
 	    columns.forEach((column,idx)=>{
 		let stat =  stats[idx];
 		let v= this.getFeatureValue(feature,column.property)??'';
@@ -50089,14 +50109,14 @@ MapGlyph.prototype = {
 		    sv = Utils.stripTags(sv);
 		}
 		sv=column.format(sv);
-		table+=HU.tag('td',['style',isNumber?'text-align:right':'','align',isNumber?'right':'left'],sv);
+		table+=HU.tag('td',[ATTR_STYLE,isNumber?'text-align:right':'','align',isNumber?'right':'left'],sv);
 	    });
 	});
 	if(stats) {
 	    table+='<tfoot><tr>';
 	    let fmt = (label,amt) =>{
-		return HU.tr(HU.td(['style','text-align:right','align','right'],HU.b(label)) +
-			     HU.td(['style','text-align:right','align','right'],Utils.formatNumberComma(amt)));
+		return HU.tr(HU.td([ATTR_STYLE,'text-align:right','align','right'],HU.b(label)) +
+			     HU.td([ATTR_STYLE,'text-align:right','align','right'],Utils.formatNumberComma(amt)));
 	    };
 	    columns.forEach((column,idx)=>{
 		let stat =  stats[idx];
@@ -50152,11 +50172,11 @@ MapGlyph.prototype = {
 	let table =this.getFeaturesTable(tableId);
 	let html='';
 	if(!table) {
-	    html += HU.div(['style','width:200px;margin:10px;'],'No data');
+	    html += HU.div([ATTR_STYLE,'width:200px;margin:10px;'],'No data');
 	} else {
 	    html +=  
-		HU.div(['style',HU.css('margin','5px','max-width','1000px','overflow-x','scroll')],table);
-	    html = HU.div(['style','margin:5px;'], html);
+		HU.div([ATTR_STYLE,HU.css('margin','5px','max-width','1000px','overflow-x','scroll')],table);
+	    html = HU.div([ATTR_STYLE,'margin:5px;'], html);
 	}
 	this.jq('featurestable').html(html);
 	HU.formatTable('#'+tableId,{scrollX:true});
@@ -50169,9 +50189,9 @@ MapGlyph.prototype = {
     showFeaturesTable:function(anchor) {
 	if(this.featuresTableDialog)
 	    this.featuresTableDialog.remove();
-	let html =  HU.div(['id',this.domId('downloadfeatures'),'class','ramadda-clickable'],'Download Table');
-	html+=HU.div(['id',this.domId('featurestable')]);
-	html = HU.div(['style','margin:10px;'], html);
+	let html =  HU.div([ATTR_ID,this.domId('downloadfeatures'),ATTR_CLASS,CLASS_CLICKABLE],'Download Table');
+	html+=HU.div([ATTR_ID,this.domId('featurestable')]);
+	html = HU.div([ATTR_STYLE,'margin:10px;'], html);
 	this.featuresTableDialog =
 	    HU.makeDialog({content:html,title:this.name,header:true,draggable:true,
 			   my:'left top',
@@ -50220,7 +50240,7 @@ MapGlyph.prototype = {
 	let numeric = featureInfo.filter(info=>{return info.isNumeric();});
 	let enums = featureInfo.filter(info=>{return info.isEnumeration();});
 	let colorBy = '';
-	colorBy+=HU.leftRightTable(HU.checkbox(this.domId('fillcolors'),['id',this.domId('fillcolors')],
+	colorBy+=HU.leftRightTable(HU.checkbox(this.domId('fillcolors'),[ATTR_ID,this.domId('fillcolors')],
 					       this.attrs.fillColors,'Fill Colors'),
 				   this.getHelp('mapfiles.html#mapstylerules'));
 
@@ -50229,10 +50249,10 @@ MapGlyph.prototype = {
 	    let numericProperties=Utils.mergeLists([['','Select']],numeric.map(info=>{return {value:info.property,label:info.getLabel()};}));
 	    let mapComp = (obj,prefix) =>{
 		let comp = '';
-		comp+=HU.div(['class','formgroupheader'], 'Map value to ' + prefix +' color')+ HU.formTable();
-		comp += HU.formEntry('Property:', HU.select('',['id',this.domId(prefix+'colorby_property')],numericProperties,obj.property) +HU.space(2)+ HU.b('Range: ') + HU.input('',obj.min??'', ['id',this.domId(prefix+'colorby_min'),'size','6','title','min value']) +' -- '+    HU.input('',obj.max??'', ['id',this.domId(prefix+'colorby_max'),'size','6','title','max value']));
-		comp += HU.hidden('',obj.colorTable||'blues',['id',this.domId(prefix+'colorby_colortable')]);
-		comp+=HU.formEntry('Color table:', HU.div(['id',this.domId(prefix+'colorby_colortable_label')])+
+		comp+=HU.div([ATTR_CLASS,'formgroupheader'], 'Map value to ' + prefix +' color')+ HU.formTable();
+		comp += HU.formEntry('Property:', HU.select('',[ATTR_ID,this.domId(prefix+'colorby_property')],numericProperties,obj.property) +HU.space(2)+ HU.b('Range: ') + HU.input('',obj.min??'', [ATTR_ID,this.domId(prefix+'colorby_min'),'size','6',ATTR_TITLE,'min value']) +' -- '+    HU.input('',obj.max??'', [ATTR_ID,this.domId(prefix+'colorby_max'),'size','6',ATTR_TITLE,'max value']));
+		comp += HU.hidden('',obj.colorTable||'blues',[ATTR_ID,this.domId(prefix+'colorby_colortable')]);
+		comp+=HU.formEntry('Color table:', HU.div([ATTR_ID,this.domId(prefix+'colorby_colortable_label')])+
 				   Utils.getColorTablePopup(null,null,'Select',true,'prefix',prefix));
 		comp+=HU.close('table');
 		return comp;
@@ -50269,7 +50289,7 @@ MapGlyph.prototype = {
 	    v = v.replace(/"/g,'').replace(/\n/g,' ');
 	    sample+=a+'=' + v+'&#013;';
 	}
-	rulesTable+=HU.tr([],HU.tds(['style','font-weight:bold;'],['Property','Operator','Value','Style']));
+	rulesTable+=HU.tr([],HU.tds([ATTR_STYLE,'font-weight:bold;'],['Property','Operator','Value',ATTR_STYLE]));
 	let rules = this.getMapStyleRules(true);
 	let styleTitle = 'e.g.:&#013;fillColor:red&#013;fillOpacity:0.5&#013;strokeColor:blue&#013;strokeWidth:1&#013;strokeDashstyle:solid|dot|dash|dashdot|longdash|longdashdot';
 	for(let index=0;index<20;index++) {
@@ -50285,27 +50305,27 @@ MapGlyph.prototype = {
 		    title = Utils.join(info.getSamplesLabels(), ', ');
 	    }
 	    if(info?.isEnumeration()) {
-		valueInput = HU.select('',['id','mapvalue_' + index],info.getSamplesForMenu(),value,20); 
+		valueInput = HU.select('',[ATTR_ID,'mapvalue_' + index],info.getSamplesForMenu(),value,20); 
 		
 	    } else {
-		valueInput = HU.input('',value,['id','mapvalue_' + index,'size','15']);
+		valueInput = HU.input('',value,[ATTR_ID,'mapvalue_' + index,'size','15']);
 	    }
-	    let propSelect =HU.select('',['id','mapproperty_' + index,'mapproperty_index',index],properties,rule.property);
-	    let opSelect =HU.select('',['id','maptype_' + index],operators,rule.type);	    
-	    valueInput =HU.span(['id','mapvaluewrapper_' + index],valueInput);
+	    let propSelect =HU.select('',[ATTR_ID,'mapproperty_' + index,'mapproperty_index',index],properties,rule.property);
+	    let opSelect =HU.select('',[ATTR_ID,'maptype_' + index],operators,rule.type);	    
+	    valueInput =HU.span([ATTR_ID,'mapvaluewrapper_' + index],valueInput);
 	    let s = Utils.stringDefined(rule.style)?rule.style:'';
-	    let styleInput = HU.textarea('',s,['id','mapstyle_' + index,'rows','3','cols','30','title',styleTitle]);
+	    let styleInput = HU.textarea('',s,[ATTR_ID,'mapstyle_' + index,'rows','3','cols','30',ATTR_TITLE,styleTitle]);
 	    rulesTable+=HU.tr(['valign','top'],HU.tds([],[propSelect,opSelect,valueInput,styleInput]));
 	}
 	rulesTable += '</table>';
-	let table = HU.b('Style Rules')+HU.div(['class','imdv-properties-section'], rulesTable);
+	let table = HU.b('Style Rules')+HU.div([ATTR_CLASS,'imdv-properties-section'], rulesTable);
 	content.push({header:'Style Rules', contents:colorBy+table});
 
 
 	let mapPointsRange = HU.leftRightTable(HU.b('Visiblity limit: ') + HU.select('',[ID,'mappoints_range'],this.display.levels,this.getMapPointsRange()??'',null,true) + ' '+
-					       HU.span(['class','imdv-currentlevellabel'], '(current level: ' + this.display.getCurrentLevel()+')'),
+					       HU.span([ATTR_CLASS,'imdv-currentlevellabel'], '(current level: ' + this.display.getCurrentLevel()+')'),
 					       this.getHelp('mapfiles.html#map_labels'));
-	let mapPoints = HU.textarea('',this.getMapLabelsTemplate()??'',['id','mappoints_template','rows','6','cols','40','title','Map points template, e.g., ${code}']);
+	let mapPoints = HU.textarea('',this.getMapLabelsTemplate()??'',[ATTR_ID,'mappoints_template','rows','6','cols','40',ATTR_TITLE,'Map points template, e.g., ${code}']);
 
 	let propsHelp =this.display.makeSideHelp(helpLines,'mappoints_template',{prefix:'${',suffix:'}'});
 	mapPoints = HU.hbox([mapPoints,HU.space(2),'Add property:' + propsHelp]);
@@ -50321,16 +50341,16 @@ MapGlyph.prototype = {
 	    let group = styleGroups[i];
 	    let prefix = 'mapstylegroups_' + i;
 	    styleGroupsUI+=HU.tr([],HU.tds([],[
-		HU.input('',group?.label??'',['id',prefix+'_label','size','10']),
-		HU.input('',group?.style.fillColor??'',['class','ramadda-imdv-color','id',prefix+'_fillcolor','size','6']),
-		HU.input('',group?.style.fillOpacity??'',['title','0-1','id',prefix+'_fillopacity','size','2']),		
-		HU.input('',group?.style.strokeColor??'',['class','ramadda-imdv-color','id',prefix+'_strokecolor','size','6']),
-		HU.input('',group?.style.strokeWidth??'',['id',prefix+'_strokewidth','size','6']),
+		HU.input('',group?.label??'',[ATTR_ID,prefix+'_label','size','10']),
+		HU.input('',group?.style.fillColor??'',[ATTR_CLASS,'ramadda-imdv-color',ATTR_ID,prefix+'_fillcolor','size','6']),
+		HU.input('',group?.style.fillOpacity??'',[ATTR_TITLE,'0-1',ATTR_ID,prefix+'_fillopacity','size','2']),		
+		HU.input('',group?.style.strokeColor??'',[ATTR_CLASS,'ramadda-imdv-color',ATTR_ID,prefix+'_strokecolor','size','6']),
+		HU.input('',group?.style.strokeWidth??'',[ATTR_ID,prefix+'_strokewidth','size','6']),
 		this.display.getFillPatternSelect(prefix+'_fillpattern',group?.style.fillPattern??''),
 		Utils.join(group?.indices??[],',')]));
 	}
 	styleGroupsUI += HU.closeTag('table');
-	styleGroupsUI = HU.div(['style',HU.css('max-height','150px','overflow-y','auto')], styleGroupsUI);
+	styleGroupsUI = HU.div([ATTR_STYLE,HU.css('max-height','150px','overflow-y','auto')], styleGroupsUI);
 
 	//Don't add style groups if it is a group, just map glyphs
 	if(!this.isGroup()) {
@@ -50344,15 +50364,15 @@ MapGlyph.prototype = {
 	    subset += '<table>';
 	    subset+=HU.formEntry('Skip:',
  				 HU.input('',this.attrs.subsetSkip??'0',
-					  ['id',this.domId('subsetSkip'),'size','6'])+
+					  [ATTR_ID,this.domId('subsetSkip'),'size','6'])+
 				 ' ' +'Prunes features');
 	    subset+=HU.formEntry('',
 				 HU.checkbox(this.domId('subsetReverse'),
-					     ['id',this.domId('subsetReverse')],
+					     [ATTR_ID,this.domId('subsetReverse')],
 					     this.attrs.subsetReverse,'Reverse features'));
 	    subset+=HU.formEntry('',
 				 HU.checkbox(this.domId('subsetSimplify'),
-					     ['id',this.domId('subsetSimplify')],
+					     [ATTR_ID,this.domId('subsetSimplify')],
 					     this.attrs.subsetSimplify,'Simplify geometry' +
 					     ' ' +'(for now this sets feature.components.length=1)'));
 	    subset += '</table>';	    
@@ -50515,7 +50535,7 @@ MapGlyph.prototype = {
 	} else {
 	    label =  this.display.makeLabel(l);
 	}
-	if(makeSpan) label = HU.span(['title','aka:' +id], label);
+	if(makeSpan) label = HU.span([ATTR_TITLE,'aka:' +id], label);
 	return label;
     },
 
@@ -50587,10 +50607,10 @@ MapGlyph.prototype = {
 	    if(!Utils.isDefined(filter.max) || isNaN(filter.max)) filter.max = info.max;	    
 	    filter.property =  info.property;
 	    let id = info.getId();
-	    let label = HU.span(['title',info.property],HU.b(info.getLabel()));
+	    let label = HU.span([ATTR_TITLE,info.property],HU.b(info.getLabel()));
 	    if(info.isString())  {
 		filter.type="string";
-		let attrs =['filter-property',info.property,'class',CLASS_FILTER_STRING,'id',this.domId('string_'+ id),'size',20];
+		let attrs =['filter-property',info.property,ATTR_CLASS,CLASS_FILTER_STRING,ATTR_ID,this.domId('string_'+ id),'size',20];
 		attrs.push('placeholder',this.getProperty(info.property.toLowerCase()+'.filterPlaceholder',''));
 		let string=label+":<br>" +
 		    HU.input("",filter.stringValue??"",attrs) +"<br>";
@@ -50610,7 +50630,7 @@ MapGlyph.prototype = {
 			return {value:sample.value,label:label}
 		    });
 		    let line=label+":<br>" +
-			HU.select("",['style','width:90%;','filter-property',info.property,'class','imdv-filter-enum','id',this.domId('enum_'+ id),'multiple',null,'size',Math.min(info.samples.length,showTop?3:5)],options,filter.enumValues,50)+"<br>";
+			HU.select("",[ATTR_STYLE,'width:90%;','filter-property',info.property,ATTR_CLASS,'imdv-filter-enum',ATTR_ID,this.domId('enum_'+ id),'multiple',null,'size',Math.min(info.samples.length,showTop?3:5)],options,filter.enumValues,50)+"<br>";
 		    add(info,'enums',line);
 		}
 		return;
@@ -50625,21 +50645,22 @@ MapGlyph.prototype = {
 		if(isNaN(filter.max) || filter.max>max) filter.max = max;
 		filter.type="range";
 		let line =
-		    HU.leftRightTable(HU.div(['id',this.domId('slider_min_'+ id),
-					      'class',CLASS_FILTER_SLIDER_LABEL],Utils.formatNumber(filter.min??min)),
-				      HU.div(['id',this.domId('slider_max_'+ id),
-					      'class',CLASS_FILTER_SLIDER_LABEL],Utils.formatNumber(filter.max??max)));
-		if(showTop) line = HU.div(['style',HU.css('width','120px')], line);
+		    HU.leftRightTable(HU.div([ATTR_ID,this.domId('slider_min_'+ id),
+					      ATTR_CLASS,CLASS_FILTER_SLIDER_LABEL],Utils.formatNumber(filter.min??min)),
+				      HU.div([ATTR_ID,this.domId('slider_max_'+ id),
+					      ATTR_CLASS,CLASS_FILTER_SLIDER_LABEL],Utils.formatNumber(filter.max??max)));
+		if(showTop) line = HU.div([ATTR_STYLE,HU.css('width','120px')], line);
 		let slider =  HU.div(['slider-min',min,'slider-max',max,'slider-isint',info.isInt(),
 				      'slider-value-min',filter.min??info.min,'slider-value-max',filter.max??info.max,
 				      'filter-property',info.property,'feature-id',info.id,
-				      'class',CLASS_FILTER_SLIDER,
-				      'style',HU.css("display","inline-block","width","100%")],"");
+				      ATTR_CLASS,CLASS_FILTER_SLIDER,
+				      ATTR_STYLE,HU.css("display","inline-block","width","100%")],"");
 		if(info.getProperty('filter.animate',false)) {
 		    line+=HU.table(['width','100%'],
 				   HU.tr([],
 					 HU.td(['width','18px'],HU.span(['feature-id',info.id,
-									 'class',CLASS_FILTER_PLAY+' ramadda-clickable','title','Play'],HU.getIconImage('fas fa-play'))) +
+									 ATTR_CLASS,HU.classes(CLASS_FILTER_PLAY,CLASS_CLICKABLE),
+									 ATTR_TITLE,'Play'],HU.getIconImage('fas fa-play'))) +
 					 HU.td([],slider)));
 		} else {
 		    line+=slider;
@@ -50656,9 +50677,9 @@ MapGlyph.prototype = {
 
 
 	if(contents.sliders!='')
-	    contents.sliders = HU.div(['style',HU.css('margin-left','10px','margin-right','20px')],contents.sliders);
+	    contents.sliders = HU.div([ATTR_STYLE,HU.css('margin-left','10px','margin-right','20px')],contents.sliders);
 	if(contents.first!='')
-	    contents.first = HU.div(['style',HU.css('margin-left','10px','margin-right','20px')],contents.first);	    
+	    contents.first = HU.div([ATTR_STYLE,HU.css('margin-left','10px','margin-right','20px')],contents.first);	    
 
 	if(this.topHeaderId) {
 	    jqid(this.topHeaderId).html('');
@@ -50666,12 +50687,12 @@ MapGlyph.prototype = {
 	if(contents.top.length) {
 	    if(!this.topHeaderId) {
 		this.topHeaderId = HU.getUniqueId('topheader');
-		this.display.appendHeader(HU.div(['class','imdv-legend-top','style',HU.css('display','inline-block'),'id',this.topHeaderId]));
+		this.display.appendHeader(HU.div([ATTR_CLASS,'imdv-legend-top',ATTR_STYLE,HU.css('display','inline-block'),ATTR_ID,this.topHeaderId]));
 	    }
 
 	    let label =  this.getLabel({addIcon:false,forLegend:true})[0];
 	    //HU.b(this.getName()+':'))
-	    let top = HU.div(['style',HU.css('font-weight','bold','text-align','center')], label) +HU.hbox(contents.top.map(c=>{return HU.div(['style','margin-right:10px;'], c);}));
+	    let top = HU.div([ATTR_STYLE,HU.css('font-weight','bold','text-align','center')], label) +HU.hbox(contents.top.map(c=>{return HU.div([ATTR_STYLE,'margin-right:10px;'], c);}));
 	    jqid(this.topHeaderId).html(top);
 	}
 
@@ -50688,28 +50709,30 @@ MapGlyph.prototype = {
 		this.updateFeaturesTable();
 	    };
 
-	    let clearAll = HU.span(['style','margin-right:5px;','class','ramadda-clickable imdv-legend-clearall','title','Clear Filters'],HU.getIconImage('fas fa-eraser',null,LEGEND_IMAGE_ATTRS));
+	    let clearAll = HU.span([ATTR_STYLE,'margin-right:5px;',
+				    ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'imdv-legend-clearall'),
+				    ATTR_TITLE,'Clear Filters'],HU.getIconImage('fas fa-eraser',null,LEGEND_IMAGE_ATTRS));
 
 	    this.zoomonchangeid = HU.getUniqueId("andzoom");
 
-	    widgets = HU.div(['style','padding-bottom:5px;max-height:200px;overflow-y:auto;'], widgets);
+	    widgets = HU.div([ATTR_STYLE,'padding-bottom:5px;max-height:200px;overflow-y:auto;'], widgets);
 	    let filtersHeader ='';
 	    if(this.getProperty('filter.zoomonchange.show',true)) {
 		filtersHeader = HU.checkbox(this.zoomonchangeid,
-					    ['title','Zoom on change','id',this.zoomonchangeid],
+					    [ATTR_TITLE,'Zoom on change',ATTR_ID,this.zoomonchangeid],
 					    this.getZoomOnChange(),
-					    HU.span(['title','Zoom on change','style','margin-left:12px;'], HU.getIconImage('fas fa-binoculars',[],LEGEND_IMAGE_ATTRS)));
+					    HU.span([ATTR_TITLE,'Zoom on change',ATTR_STYLE,'margin-left:12px;'], HU.getIconImage('fas fa-binoculars',[],LEGEND_IMAGE_ATTRS)));
 	    }
-	    let filtersCount = HU.span(['id',this.domId('filters_count')],Utils.isDefined(this.visibleFeatures)?'#'+this.visibleFeatures:'');
+	    let filtersCount = HU.span([ATTR_ID,this.domId('filters_count')],Utils.isDefined(this.visibleFeatures)?'#'+this.visibleFeatures:'');
 	    filtersHeader = HU.leftRightTable(filtersHeader, clearAll);
 
 	    if(this.getProperty('filter.toggle.show',true)) {
 		let toggle = HU.toggleBlockNew('Filters ' + filtersCount,filtersHeader + widgets,this.getFiltersVisible(),{separate:true,headerStyle:'display:inline-block;',callback:null});
-		this.jq(ID_MAPFILTERS).html(HU.div(['style','margin-right:5px;'],toggle.header+toggle.body));
+		this.jq(ID_MAPFILTERS).html(HU.div([ATTR_STYLE,'margin-right:5px;'],toggle.header+toggle.body));
 		HU.initToggleBlock(this.jq(ID_MAPFILTERS),(id,visible)=>{this.setFiltersVisible(visible);});
 	    } else  {
 		filtersHeader+=filtersCount;
-		this.jq(ID_MAPFILTERS).html(HU.div(['style','margin-right:5px;'],filtersHeader  + 
+		this.jq(ID_MAPFILTERS).html(HU.div([ATTR_STYLE,'margin-right:5px;'],filtersHeader  + 
 						   widgets));
 		this.setFiltersVisible(true);		    
 	    }
@@ -50955,11 +50978,11 @@ MapGlyph.prototype = {
 	let _this  = this;
 	let dots = dialog.find('.display-colortable-dot-item');
 	dots.css({cursor:'pointer',title:'Click to show legend'});
-	dots.addClass('ramadda-clickable');
+	dots.addClass(CLASS_CLICKABLE);
 	let select = jqid(_this.domId('enum_'+ Utils.makeId(obj.property)));
 	select.find('option').each(function() {
 	    if($(this).prop('selected')) {
-		let value = $(this).prop('title');
+		let value = $(this).prop(ATTR_TITLE);
 		let dot = dialog.find('.display-colortable-dot-item[label="' +value+'"]');
 		dot.addClass('display-colortable-dot-item-selected');
 	    }
@@ -51973,7 +51996,7 @@ MapGlyph.prototype = {
 	let id = this.getFixedId();
 	jqid(id).remove();
 	let text = this.style.text??"";
-	let html = HU.div(['id',id,CLASS,"ramadda-imdv-fixed",'style',css],"");
+	let html = HU.div([ATTR_ID,id,ATTR_CLASS,"ramadda-imdv-fixed",ATTR_STYLE,css],"");
 	this.display.jq(ID_MAP_CONTAINER).append(html);
 	let toggleLabel = null;
 	if(text.startsWith("toggle:")) {
@@ -52027,7 +52050,7 @@ MapGlyph.prototype = {
 	    this.display.wikify(text,null,wiki=>{
 		if(toggleLabel)
 		    wiki = HU.toggleBlock(toggleLabel+SPACE2, wiki,false);
-		wiki = HU.div(['style','max-height:300px;overflow-y:auto;'],wiki);
+		wiki = HU.div([ATTR_STYLE,'max-height:300px;overflow-y:auto;'],wiki);
 		jqid(id).html(wiki);
 		initFixed();
 	    });
@@ -52143,7 +52166,7 @@ MapGlyph.prototype = {
 		css.push('background',style.fillColor);
 	    }
 	    css.push('height',dim);
-	    return HU.div(['style',HU.css(css)]);
+	    return HU.div([ATTR_STYLE,HU.css(css)]);
 	} else if(type==GLYPH_HEXAGON) {
 	    css=[];
 	    if(Utils.stringDefined(style.fillColor)) {
@@ -52153,7 +52176,7 @@ MapGlyph.prototype = {
 		css.push('color',style.strokeColor);
 	    }		
 	    css.push('font-size',small?'16px':'32px','vertical-align','center');
-	    return HU.span(['style',HU.css(css)],"&#x2B22;");
+	    return HU.span([ATTR_STYLE,HU.css(css)],"&#x2B22;");
 	} else if(type==GLYPH_CIRCLE || type==GLYPH_POINT) {
 	    if(Utils.stringDefined(style.fillColor)) {
 		css.push('background',style.fillColor);
@@ -52164,7 +52187,7 @@ MapGlyph.prototype = {
 		css.push('height',dim);
 		css.push('width',dim);
 	    }		    
-	    return HU.div(['class','ramadda-dot', 'style',HU.css(css)]);
+	    return HU.div([ATTR_CLASS,'ramadda-dot', ATTR_STYLE,HU.css(css)]);
 	} else if(type==GLYPH_LINE ||
 		  type==GLYPH_POLYLINE ||
 		  type==GLYPH_POLYGON ||
@@ -52181,9 +52204,9 @@ MapGlyph.prototype = {
 	    } else {
 		css.push('margin-bottom','4px','border-bottom', style.borderWidth+"px" + " " + line+ " " +style.strokeColor);
 	    }
-	    return HU.div(['style',HU.css(css)]);
+	    return HU.div([ATTR_STYLE,HU.css(css)]);
 	}
-	return HU.div(['style',HU.css('display','inline-block','border','1px solid transparent','width',small?'10px':'50px')]);
+	return HU.div([ATTR_STYLE,HU.css('display','inline-block','border','1px solid transparent','width',small?'10px':'50px')]);
     },
     isClosed: function() {
 	return GLYPH_TYPES_CLOSED.includes(this.type);
@@ -52462,7 +52485,7 @@ FeatureInfo.prototype= {
     getLabel:function(addSpan) {
 	let label  =this.getProperty('label');
 	if(!Utils.stringDefined(label)) label  =this.mapGlyph.display.makeLabel(this.property);
-	if(addSpan) label = HU.span(['title',this.property],label);
+	if(addSpan) label = HU.span([ATTR_TITLE,this.property],label);
 	return label;
     },
     getValueLabel:function(v) {
