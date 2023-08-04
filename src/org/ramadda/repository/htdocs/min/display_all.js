@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Aug  2 07:34:26 EDT 2023";
+var build_date="RAMADDA build date: Fri Aug  4 06:03:42 EDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -4403,7 +4403,10 @@ function DisplayThing(argId, argProperties) {
 	},
 	getContents: function() {
 	    return this.jq(ID_DISPLAY_CONTENTS);
-	},	
+	},
+	getContainer: function() {
+	    return this.jq(ID_DISPLAY_CONTAINER);
+	},		
         jq: function(componentId) {
             return $("#" + this.getDomId(componentId));
         },
@@ -41374,6 +41377,26 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'showMeasures=false'];
 
 
+var CLASS_LEGEND_LABEL = 'imdv-legend-label';
+var CLASS_LEGEND_LABEL_INVISIBLE = 'imdv-legend-label-invisible';
+var CLASS_LEGEND_LABEL_HIGHLIGHT = 'imdv-legend-label-highlight';
+var CLASS_LEGEND_ITEM = 'imdv-legend-item';
+var CLASS_LEGEND_OFFSET = 'imdv-legend-offset';
+var CLASS_LEGEND_INNER = 'imdv-legend-inner';
+var CLASS_LEGEND_ITEM_VIEW = 'imdv-legend-item-view';
+var CLASS_LEGEND_ITEM_DROPPABLE= 'imdv-legend-item-droppable';
+
+
+
+var CLASS_FILTER_SLIDER = 'imdv-filter-slider';
+var CLASS_FILTER_SLIDER_LABEL = 'imdv-filter-slider-label';
+var CLASS_FILTER_PLAY = 'imdv-filter-play';
+var CLASS_FILTER_STRING = 'imdv-filter-string';
+ 
+
+var ID_GLYPH_LEGEND = 'glyphlegend';
+
+
 let ImdvUtils = {
     getImdv: function(id) {
 	return Utils.displaysMap[id];
@@ -44629,6 +44652,8 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 			    this.getMapProperty('showOpacitySlider',this.getShowOpacitySlider()),'Show Opacity Slider'),
 		HU.checkbox(this.domId('showgraticules'),[],
 			    this.getMapProperty('showGraticules',false),'Show Graticules'),
+		HU.checkbox(this.domId('showoverviewmap'),[],
+			    this.getMapProperty('showOverviewMap',false),'Show Overview Map'),		
 		HU.checkbox(this.domId('showmouseposition'), [],
 			    this.getMapProperty('showMousePosition',false),'Show Mouse Position'),
 		HU.checkbox(this.domId('showaddress'), [],
@@ -44707,6 +44732,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 		this.setMapProperty('userCanChange', this.jq('usercanchange').is(':checked'),
 				    'showOpacitySlider', this.jq('showopacityslider').is(':checked'),
 				    'showGraticules',this.jq('showgraticules').is(':checked'),
+				    'showOverviewMap',this.jq('showoverviewmap').is(':checked'),				    
 				    'showMousePosition', this.jq('showmouseposition').is(':checked'),
 				    'showAddress', this.jq('showaddress').is(':checked'),
 				    'legendPosition',this.jq('legendposition').val(),
@@ -44770,6 +44796,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 		}
 	    }
 	    this.getMap().setGraticulesVisible(this.getMapProperty('showGraticules'),gratStyle);
+	    this.getMap().setShowOverviewMap(this.getMapProperty('showOverviewMap'));
 	    if(this.getMapProperty('showMousePosition'))
 		this.getMap().initMousePositionReadout();
 	    else
@@ -45773,8 +45800,8 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 	makeLegendDroppable:function(droppedOnGlyph,label,notify) {
 	    notify = notify?? (()=>{this.setLastDroppedTime(new Date());});
 	    label.droppable( {
-		hoverClass: 'imdv-legend-item-droppable',
-		accept:'.imdv-legend-item',
+		hoverClass: CLASS_LEGEND_ITEM_DROPPABLE,
+		accept:'.' + CLASS_LEGEND_ITEM,
 		tolerance:'pointer',
 		drop: (event,ui)=>{
 		    notify();
@@ -45863,7 +45890,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 	    let glyphs = this.getGlyphs();
 	    let html = '';
 	    if(this.getMapProperty('showBaseMapSelect')) {
-		html+=HU.div(['style','margin-bottom:4px;','class','imdv-legend-offset'], HU.b('Base Map: ') +this.getBaseLayersSelect());
+		html+=HU.div(['style','margin-bottom:4px;','class',CLASS_LEGEND_OFFSET], HU.b('Base Map: ') +this.getBaseLayersSelect());
 	    }
 
 	    if(this.getMapProperty('showAddress',false)) {
@@ -45877,12 +45904,12 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 
 	    this.inMapLegend='';
 	    if(glyphs.length)
-		html+=HU.div(['id',this.domId(ID_DROP_BEGINNING),'class','ximdv-legend-item','style','width:100%;height:1px;'],'');
+		html+=HU.div(['id',this.domId(ID_DROP_BEGINNING),'style','width:100%;height:1px;'],'');
 	    glyphs.forEach((mapGlyph,idx)=>{
 		html+=mapGlyph.makeLegend({idToGlyph:idToGlyph});
 	    });
 	    if(glyphs.length)
-		html+=HU.div(['id',this.domId(ID_DROP_END),'class','imdv-legend-item','style','width:100%;height:1em;'],'');
+		html+=HU.div(['id',this.domId(ID_DROP_END),'class',CLASS_LEGEND_ITEM,'style','width:100%;height:1em;'],'');
 
 	    if(Utils.stringDefined(legendLabel)) {
 		legendLabel=legendLabel.replace(/\\n/,'<br>');
@@ -45934,7 +45961,6 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 	    } else {
 	    }
 
-
 	    if(legendContainer && !inMap) {
 		legendContainer.show();
 		legendContainer.html(HU.div(['id',this.domId(ID_LEGEND)],''));
@@ -45950,10 +45976,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 	    });
 
 
-	    if(!legendContainer) {
-		return;
-	    }
-	    legendContainer.find('.imdv-legend-item-edit').click(function(event) {
+	    this.getContainer().find('.imdv-legend-item-edit').click(function(event) {
 		event.stopPropagation();
 		let id = $(this).attr('glyphid');
 		let mapGlyph = _this.findGlyph(id);
@@ -45961,7 +45984,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 		_this.editFeatureProperties(mapGlyph);
 	    });
 
-	    legendContainer.find('.imdv-legend-item-view').click(function(event) {
+	    this.getContainer().find('.' + CLASS_LEGEND_ITEM_VIEW).click(function(event) {
 		event.stopPropagation();
 		let id = $(this).attr('glyphid');
 		let mapGlyph = _this.findGlyph(id);
@@ -45973,9 +45996,8 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 	    this.getGlyphs().forEach((mapGlyph,idx)=>{
 		mapGlyph.initLegend();
 	    });
-	    this.initGlyphButtons(legendContainer);
-
-	    let items = legendContainer.find('.imdv-legend-label');
+	    this.initGlyphButtons(this.getContainer());
+	    let items = this.getContainer().find('.' + CLASS_LEGEND_LABEL);
 	    items.tooltip({
 		content: function () {
 		    let title =  $(this).prop('title');
@@ -47002,6 +47024,8 @@ var LINETYPE_STRAIGHT='straight';
 var LINETYPE_GREATCIRCLE='greatcircle';
 var LINETYPE_CURVE='curve';
 var LINETYPE_STEPPED='stepped';        
+
+
 var ID_ADDDOTS = 'adddots';
 var ID_LINETYPE = 'linetype';
 var ID_SHOWDATAICONS = 'showdataicons';
@@ -47800,7 +47824,7 @@ MapGlyph.prototype = {
 	let label = Utils.getStringDefined(dataIconInfo[ID_DATAICON_LABEL],'Select field');
 	let clazz = '';
 	if(!this.isVisible()) {
-	    clazz+=' imdv-legend-label-invisible ';
+	    clazz+=' ' + CLASS_LEGEND_LABEL_INVISIBLE;
 	}
 	let contents = HU.div(['class',clazz,'style',HU.css('padding','4px')],HU.b(label)+':'+HU.space(1)+menu);
 	jqid(this.dataIconContainer).html(contents);
@@ -48589,12 +48613,19 @@ MapGlyph.prototype = {
 
 	return  !this.isFixed();
     },
-    getLabel:function(forLegend,addDecorator) {
+    getLabel:function(opts) {
+	opts = opts??{};
+	let args = {
+	    forLegend:false,
+	    addDecorator:false,
+	    addIcon:true
+	}
+	$.extend(args,opts);
 	let name = this.getName();
 	let label;
 	let theLabel;
 	if(Utils.stringDefined(name)) {
-	    if(!forLegend)
+	    if(!args.forLegend)
 		theLabel= this.getType()+': '+name;
 	    else
 		theLabel = name;
@@ -48608,7 +48639,7 @@ MapGlyph.prototype = {
 	let url = null;
 	let glyphType = this.display.getGlyphType(this.getType());
 	let right = '';
-	if(addDecorator) {
+	if(args.addDecorator) {
 	    //For now don't add the decoration (the graphic indicator)
 	    //right+=this.getDecoration(true);
 	}
@@ -48618,9 +48649,9 @@ MapGlyph.prototype = {
 	    if(icon.startsWith('data:')) icon = this.attrs.icon;
 	    if(icon && icon.endsWith('blank.gif')) icon = glyphType.getIcon();
 	    icon = HU.image(icon,['width','18px']);
-	    if(url && forLegend)
+	    if(url && args.forLegend)
 		icon = HU.href(url,icon,['target','_entry']);
-	    let showZoomTo = forLegend && this.hasBounds();
+	    let showZoomTo = args.forLegend && this.hasBounds();
 	    if(this.isGroup()) {
 		right+=SPACE+HU.span([CLASS,'ramadda-clickable',TITLE,'Cycle visibility children. Shift-key: all visible; Meta-key: all hidden',
 				      'glyphid',this.getId(),'buttoncommand',"cyclevis"],HU.getIconImage('fas fa-arrows-spin',[],BUTTON_IMAGE_ATTRS));
@@ -48628,19 +48659,20 @@ MapGlyph.prototype = {
 
 	    if(showZoomTo) {
 		right+=SPACE+
-		    HU.span([CLASS,'ramadda-clickable imdv-legend-item-view',
+		    HU.span([CLASS,'ramadda-clickable ' + CLASS_LEGEND_ITEM_VIEW,
 			     'glyphid',this.getId(),
 			     TITLE,'Click:Move to; Shift-click:Zoom in',],
 			    HU.getIconImage('fas fa-magnifying-glass',[],LEGEND_IMAGE_ATTRS));
 	    }
-	    label = HU.span(['style','margin-right:5px;'], icon)  + label;
+	    if(args.addIcon)
+		label = HU.span(['style','margin-right:5px;'], icon)  + label;
 	}
 
-	if(forLegend) {
+	if(args.forLegend) {
 	    let extra = this.getProperty('legendTooltip',null);
 	    if(extra) extra = HU.div([],extra);
 	    let title = HU.b(HU.center(theLabel))+
-		(extra??'')
+		(extra??'') +
 		'Click to toggle visibility<br>Shift-click to select';
 	    label = HU.div(['title',title,'style',HU.css('overflow-x','hidden','white-space','nowrap')], label);	    
 	}
@@ -48648,9 +48680,9 @@ MapGlyph.prototype = {
 	    right= HU.span(['style',HU.css('white-space','nowrap')], right);
 	    //	    label=HU.leftRightTable(label,right);
 	}
-	if(forLegend) {
-	    let clazz = 'imdv-legend-label';
-	    label = HU.div(['class','ramadda-clickable ' + clazz,'glyphid',this.getId(),'id',this.domId('legendlabel')],label);
+	if(args.forLegend) {
+	    let clazz = CLASS_LEGEND_LABEL;
+	    label = HU.div(['class','ramadda-clickable ' + clazz,'glyphid',this.getId()],label);
 	    return [label,right];
 	}
 	return label;
@@ -48737,7 +48769,7 @@ MapGlyph.prototype = {
     
 
     getLegendDiv:function() {
-	return this.jq('legend_');
+	return this.jq(ID_GLYPH_LEGEND);
     },
     setLayerLevel:function(level) {
 	let setIndex= (layer) =>{
@@ -48763,14 +48795,23 @@ MapGlyph.prototype = {
 	this.applyChildren(mapGlyph=>{level = mapGlyph.setLayerLevel(level);});
 	return level;
     },
+    findInLegend:function(clazz) {
+	if(clazz.startsWith('imdv-'))  clazz='.'+ clazz;
+	let sel = '#' + this.domId(ID_GLYPH_LEGEND) +' '+clazz;
+	if(this.topHeaderId)
+	    sel+=', #' +this.topHeaderId+ ' ' + clazz;
+	return  $(sel);
+    },
+    
+
     makeLegend:function(opts) {
 	opts = opts??{};
 	let html = '';
 	if(!this.display.getShowLegendShapes() && this.isShape()) {
 	    return "";
 	}
-	let label =  this.getLabel(true,true);
-	let body = HU.div(['class','imdv-legend-inner'],this.getLegendBody());
+	let label =  this.getLabel({forLegend:true,addDecorator:true});
+	let body = HU.div(['class',CLASS_LEGEND_INNER],this.getLegendBody());
 
 	if(this.imageLayers) {
 	    let cbx='';
@@ -48786,7 +48827,7 @@ MapGlyph.prototype = {
 					   this.isImageLayerVisible(obj),
 					   obj.name));
 	    });
-	    body+=HU.div(['class','imdv-legend-offset'],cbx);
+	    body+=HU.div(['class',CLASS_LEGEND_OFFSET],cbx);
 	}
 	if(this.haveChildren()) {
 	    let child="";
@@ -48794,7 +48835,7 @@ MapGlyph.prototype = {
 		let childHtml = mapGlyph.makeLegend(opts);
 		if(childHtml) child+=childHtml;
 	    });
-	    body+=HU.div(['class','imdv-legend-offset'],child);
+	    body+=HU.div(['class',CLASS_LEGEND_OFFSET],child);
 	}
 
 	let block = HU.toggleBlockNew("",body,this.getLegendVisible(),
@@ -48803,12 +48844,12 @@ MapGlyph.prototype = {
 	if(opts.idToGlyph)
 	    opts.idToGlyph[this.getId()] = this;
 	let clazz = "";
-	if(!this.getVisible()) clazz+=' imdv-legend-label-invisible ';
+	if(!this.getVisible()) clazz+=' ' + CLASS_LEGEND_LABEL_INVISIBLE;
 	if(this.highlighted) {
-	    clazz+= ' imdv-legend-label-highlight '
+	    clazz+= ' ' + CLASS_LEGEND_LABEL_HIGHLIGHT;
 	}
 
-	html+=HU.open('div',['id',this.domId('legend_'),'glyphid',this.getId(),'class','imdv-legend-item '+clazz]);
+	html+=HU.open('div',['id',this.domId(ID_GLYPH_LEGEND),'glyphid',this.getId(),'class',CLASS_LEGEND_ITEM+' '+clazz]);
 	html+=HU.div(['style','display: flex;'],HU.div(['style','margin-right:4px;'],block.header)+
 		     HU.div(['style','width:80%;'], label[0])+
 		     HU.div([],label[1]));
@@ -48876,11 +48917,11 @@ MapGlyph.prototype = {
 	}
 
 	if(buttons!='')
-	    body+=HU.div(['class','imdv-legend-offset'],buttons);
+	    body+=HU.div(['class',CLASS_LEGEND_OFFSET],buttons);
 	//	    body+=HU.center(buttons);
 	if(Utils.stringDefined(this.attrs.legendText)) {
 	    let text = this.attrs.legendText.replace(/\n/g,'<br>');
-	    body += HU.div(['class','imdv-legend-offset imdv-legend-text'],text);
+	    body += HU.div(['class',CLASS_LEGEND_OFFSET+' imdv-legend-text'],text);
 	}
 
 	let boxStyle = 'display:inline-block;width:14px;height:14px;margin-right:4px;';
@@ -48889,7 +48930,7 @@ MapGlyph.prototype = {
 	if(this.isMap()) {
 	    if(!this.mapLoaded) {
 		if(this.isVisible()) 
-		    body += HU.div(['class','imdv-legend-inner'],'Loading...');
+		    body += HU.div(['class',CLASS_LEGEND_INNER],'Loading...');
 		return body;
 	    }
 
@@ -49179,7 +49220,7 @@ MapGlyph.prototype = {
 
 
 	if(this.display.canEdit()) {
-	    let label = this.getLegendDiv().find('.imdv-legend-label');
+	    let label = this.getLegendDiv().find('.' + CLASS_LEGEND_LABEL);
 	    //Set the last dropped time so we don't also handle this as a setVisibility click
 	    let notify = ()=>{_this.display.setLastDroppedTime(new Date());};
 	    if(this.canDrag()) {
@@ -49196,7 +49237,7 @@ MapGlyph.prototype = {
 	    if(this.canDrop()) {
 		this.display.makeLegendDroppable(this,label,notify);
 	    } 
-	    let items = this.jq(ID_LEGEND).find('.imdv-legend-label');
+	    let items = this.jq(ID_LEGEND).find('.' + CLASS_LEGEND_LABEL);
 	    let rows = jqid('glyphstyle_'+this.getId()).find('.' + CLASS_IMDV_STYLEGROUP);
 
 	    rows.click(function() {
@@ -50548,7 +50589,7 @@ MapGlyph.prototype = {
 	    let label = HU.span(['title',info.property],HU.b(info.getLabel()));
 	    if(info.isString())  {
 		filter.type="string";
-		let attrs =['filter-property',info.property,'class','imdv-filter-string','id',this.domId('string_'+ id),'size',20];
+		let attrs =['filter-property',info.property,'class',CLASS_FILTER_STRING,'id',this.domId('string_'+ id),'size',20];
 		attrs.push('placeholder',this.getProperty(info.property.toLowerCase()+'.filterPlaceholder',''));
 		let string=label+":<br>" +
 		    HU.input("",filter.stringValue??"",attrs) +"<br>";
@@ -50583,17 +50624,21 @@ MapGlyph.prototype = {
 		if(isNaN(filter.max) || filter.max>max) filter.max = max;
 		filter.type="range";
 		let line =
-		    HU.leftRightTable(HU.div(['id',this.domId('slider_min_'+ id),'class','imdv-filter-slider-label'],Utils.formatNumber(filter.min??min)),
-				      HU.div(['id',this.domId('slider_max_'+ id),'class','imdv-filter-slider-label'],Utils.formatNumber(filter.max??max)));
+		    HU.leftRightTable(HU.div(['id',this.domId('slider_min_'+ id),
+					      'class',CLASS_FILTER_SLIDER_LABEL],Utils.formatNumber(filter.min??min)),
+				      HU.div(['id',this.domId('slider_max_'+ id),
+					      'class',CLASS_FILTER_SLIDER_LABEL],Utils.formatNumber(filter.max??max)));
 		if(showTop) line = HU.div(['style',HU.css('width','120px')], line);
 		let slider =  HU.div(['slider-min',min,'slider-max',max,'slider-isint',info.isInt(),
 				      'slider-value-min',filter.min??info.min,'slider-value-max',filter.max??info.max,
-				      'filter-property',info.property,'feature-id',info.id,'class','imdv-filter-slider',
+				      'filter-property',info.property,'feature-id',info.id,
+				      'class',CLASS_FILTER_SLIDER,
 				      'style',HU.css("display","inline-block","width","100%")],"");
 		if(info.getProperty('filter.animate',false)) {
 		    line+=HU.table(['width','100%'],
 				   HU.tr([],
-					 HU.td(['width','18px'],HU.span(['feature-id',info.id,'class','imdv-filter-play ramadda-clickable','title','Play'],HU.getIconImage('fas fa-play'))) +
+					 HU.td(['width','18px'],HU.span(['feature-id',info.id,
+									 'class',CLASS_FILTER_PLAY+' ramadda-clickable','title','Play'],HU.getIconImage('fas fa-play'))) +
 					 HU.td([],slider)));
 		} else {
 		    line+=slider;
@@ -50620,11 +50665,12 @@ MapGlyph.prototype = {
 	if(contents.top.length) {
 	    if(!this.topHeaderId) {
 		this.topHeaderId = HU.getUniqueId('topheader');
-		this.display.appendHeader(HU.div(['style',HU.css('display','inline-block'),'id',this.topHeaderId]));
+		this.display.appendHeader(HU.div(['class','imdv-legend-top','style',HU.css('display','inline-block'),'id',this.topHeaderId]));
 	    }
-//	    let top = HU.hbox(Utils.mergeLists([HU.b(this.getName()+':')+HU.space(2)],contents.top.map(c=>{return HU.div(['style','margin-right:10px;'], c);})));
-	    let top = HU.div(['style',HU.css('text-align','left')], HU.b(this.getName()+':')) +HU.hbox(contents.top.map(c=>{return HU.div(['style','margin-right:10px;'], c);}));
-	    top = HU.div(['class','imdv-legend-top-body'],top);
+
+	    let label =  this.getLabel({addIcon:false,forLegend:true})[0];
+	    //HU.b(this.getName()+':'))
+	    let top = HU.div(['style',HU.css('font-weight','bold','text-align','center')], label) +HU.hbox(contents.top.map(c=>{return HU.div(['style','margin-right:10px;'], c);}));
 	    jqid(this.topHeaderId).html(top);
 	}
 
@@ -50641,7 +50687,7 @@ MapGlyph.prototype = {
 		this.updateFeaturesTable();
 	    };
 
-	    let clearAll = HU.span(['style','margin-right:5px;','class','ramadda-clickable','title','Clear Filters','id',this.domId('filters_clearall')],HU.getIconImage('fas fa-eraser',null,LEGEND_IMAGE_ATTRS));
+	    let clearAll = HU.span(['style','margin-right:5px;','class','ramadda-clickable imdv-legend-clearall','title','Clear Filters'],HU.getIconImage('fas fa-eraser',null,LEGEND_IMAGE_ATTRS));
 
 	    this.zoomonchangeid = HU.getUniqueId("andzoom");
 
@@ -50672,16 +50718,7 @@ MapGlyph.prototype = {
 		_this.setZoomOnChange($(this).is(':checked'));
 	    });
 
-	    //This finds both in the side legend and the top legend
-	    let find = clazz=>{
-		let sel = '#' + this.domId(ID_MAPFILTERS) +' '+clazz;
-		if(this.topHeaderId)
-		    sel+=', #' +this.topHeaderId+ ' ' + clazz;
-		return  $(sel);
-	    }
-
-
-	    find('filters_clearall').click(()=>{
+	    this.findInLegend('.imdv-legend-clearall').click(()=>{
 		this.display.featureChanged();
 		this.attrs.featureFilters = {};
 		this.applyMapStyle();
@@ -50691,7 +50728,7 @@ MapGlyph.prototype = {
 		}
 	    });
     
-	    find('.imdv-filter-string').keypress(function(event) {
+	    this.findInLegend(CLASS_FILTER_STRING).keypress(function(event) {
 		let keycode = (event.keyCode ? event.keyCode : event.which);
                 if (keycode == 13) {
 		    let key = $(this).attr('filter-property');
@@ -50702,7 +50739,7 @@ MapGlyph.prototype = {
 		    update();
 		}
 	    });
-	    find('.imdv-filter-enum').change(function(event) {
+	    this.findInLegend('.imdv-filter-enum').change(function(event) {
 		let key = $(this).attr('filter-property');
 		let filter = filters[key]??{};
 		filter.property = key;
@@ -50713,7 +50750,7 @@ MapGlyph.prototype = {
 
 	    let sliderMap = {};
 	    
-	    find('.imdv-filter-slider').each(function() {
+	    this.findInLegend(CLASS_FILTER_SLIDER).each(function() {
 		let theFeatureId = $(this).attr('feature-id');
 		let onSlide = function( event, ui, force) {
 		    let featureInfo = _this.getFeatureInfo(theFeatureId);
@@ -50773,7 +50810,7 @@ MapGlyph.prototype = {
 		$(this).slider(args);		
 	    });
 
-	    find('.imdv-filter-play').click(function() {
+	    this.findInLegend(CLASS_FILTER_PLAY).click(function() {
 		let playing = $(this).attr('playing');
 		let info = _this.filterInfo[$(this).attr('feature-id')];
 		if(!info) return;
@@ -51711,39 +51748,30 @@ MapGlyph.prototype = {
 
 	this.attrs.visible = visible;
     	this.applyChildren(child=>{child.setVisible(visible, callCheck);});
-	if(this.rings) {
-	    this.rings.forEach(feature=>{
-		MapUtils.setFeatureVisible(feature,visible);
-	    });
-	}
-
-
+	Utils.forEach(this.rings,f=>{MapUtils.setFeatureVisible(f,visible);});
 
 	if(callCheck)
 	    this.checkVisible();
 	this.checkMapLayer();
 	let legend = this.getLegendDiv();
-	legend.removeClass('imdv-legend-label-invisible');
-	legend.removeClass('imdv-legend-label-highlight');
+	legend.removeClass(CLASS_LEGEND_LABEL_INVISIBLE);
+	legend.removeClass(CLASS_LEGEND_LABEL_HIGHLIGHT);
 	if(this.getVisible()) {
 	    if(this.highlighted) {
-		legend.addClass('imdv-legend-label-highlight');
+		legend.addClass(CLASS_LEGEND_LABEL_HIGHLIGHT);
 	    } 
 	} else {
-	    legend.addClass('imdv-legend-label-invisible');
+	    legend.addClass(CLASS_LEGEND_LABEL_INVISIBLE);
 	}
 
 	if(this.topHeaderId) {
 	    if(this.getVisible()) {
-		jqid(this.topHeaderId).removeClass('imdv-legend-label-invisible');
+		jqid(this.topHeaderId).removeClass(CLASS_LEGEND_LABEL_INVISIBLE);
 	    } else {
-		jqid(this.topHeaderId).addClass('imdv-legend-label-invisible');
+		jqid(this.topHeaderId).addClass(CLASS_LEGEND_LABEL_INVISIBLE);
 	    }
-
 	}
 	this.checkDataIconMenu();	
-
-
     },
     getVisible:function() {
 	if(!Utils.isDefined(this.attrs.visible)) this.attrs.visible = true;
@@ -52075,10 +52103,10 @@ MapGlyph.prototype = {
 	let div = jqid(this.displayInfo.divId);
 	let outerDiv = jqid(this.displayInfo.outerDivId);	
 	if(visible) {
-	    outerDiv.removeClass('imdv-legend-label-invisible');
+	    outerDiv.removeClass(CLASS_LEGEND_LABEL_INVISIBLE);
 	    outerDiv.find('input').prop('disabled',false);
 	}    else {
-	    outerDiv.addClass('imdv-legend-label-invisible');
+	    outerDiv.addClass(CLASS_LEGEND_LABEL_INVISIBLE);
 	    outerDiv.find('input').prop('disabled',true);
 	}
     },
@@ -52261,7 +52289,7 @@ MapGlyph.prototype = {
 	if(this.isSelected()) {
 	    return;
 	}
-	this.jq('legendlabel').css('font-weight','bold');
+	this.findInLegend(CLASS_LEGEND_LABEL).css('font-weight','bold');
 	this.selected = true;
 	this.selectDots = [];
 	let pointCount = 0;
@@ -52303,7 +52331,7 @@ MapGlyph.prototype = {
 	return pointCount;
     },
     unselect:function() {
-	this.jq('legendlabel').css('font-weight','normal');
+	this.findInLegend(CLASS_LEGEND_LABEL).css('font-weight','normal');
 	this.applyChildren(child=>{child.unselect();});
 	if(!this.isSelected()) {
 	    return;
