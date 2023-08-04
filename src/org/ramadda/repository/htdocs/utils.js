@@ -517,6 +517,10 @@ var Utils =  {
 	    return {key:key,value:map[key]};
 	});
     },
+    //Apply forEach if the list is non null
+    forEach:function(list,func) {
+	if(list) list.forEach(func);
+    },
     mergeLists: function(l1,l2,l3,l4,l5) {
         let l = [];
         if(l1) l1.map(e=>l.push(e));
