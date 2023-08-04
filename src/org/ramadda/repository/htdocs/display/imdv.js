@@ -3508,7 +3508,6 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 		let lat = position.coords.latitude;
 		let lon = position.coords.longitude;
 		let lonlat = MapUtils.createLonLat(lon,lat);
-		console.log('current location',lat,lon);
 		if(this.currentLocationMarker) {
 		    this.getMap().removeMarker(this.currentLocationMarker);
 		    this.currentLocationMarker=null;

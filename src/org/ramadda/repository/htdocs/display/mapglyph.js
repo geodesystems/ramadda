@@ -1962,7 +1962,7 @@ MapGlyph.prototype = {
 		    let type = rule.type;
 		    if(type=='==') type='=';
 		    type = type.replace(/</g,'&lt;').replace(/>/g,'&gt;');
-		    rulesLegend+= HU.b(this.makeLabel(rule.property,true))+' ' +type+'<br><table width=100%>';
+		    rulesLegend+= HU.b(this.makeLabel(rule.property,true))+' ' +type+'<br><table width=100%>\n';
 		}
 		lastProperty  = propOp;
 		let label = rule.value;
@@ -1970,7 +1970,6 @@ MapGlyph.prototype = {
 		if(info) label = info.getValueLabel(rule.value);
 
 		label   = HU.span(['style','font-size:9pt;'],label);
-		let item = '<tr><td width=16px>';
 		let lineWidth;
 		let lineStyle;
 		let lineColor;
@@ -1984,16 +1983,19 @@ MapGlyph.prototype = {
 		    let toks = line.split(':');
 		    styleObj[toks[0]] = toks[1];
 		});
-
-		//not now:		if(Utils.stringDefined(styleObj.externalGraphic??this.style.externalGraphic)) return;
 		ruleCnt++;
-
 		let style = boxStyle +this.getLegendStyle(styleObj);
-		let legendContents = Utils.stringDefined(styleObj.externalGraphic??this.style.externalGraphic)?
-		    HU.image(styleObj.externalGraphic??this.style.externalGraphic,['width','14px']):null;
+		let legendContents = null;
+		//If there is a pointRadius and a graphic then show the graphic in the legend
+		if(Utils.isDefined(styleObj.pointRadius) && 
+		   Utils.stringDefined(styleObj.externalGraphic??this.style.externalGraphic)) {
+		    legendContents =
+			HU.image(styleObj.externalGraphic??this.style.externalGraphic,['width','14px']);
+		}
 		let div=legendContents??HU.div(['class','circles-1','style',style]);
-		item+=div+'</td>';
-		item += '</td><td>'+ label+'</td></tr>';
+		let item = HU.tr([],
+				 HU.td(['width','16px'], div) +
+				 HU.td([],label));
 		rulesLegend+=HU.div([],item);
 	    });
 	    if(!ruleCnt) rulesLegend=null;
