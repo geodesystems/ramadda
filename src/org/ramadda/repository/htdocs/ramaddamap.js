@@ -3317,6 +3317,18 @@ RepositoryMap.prototype = {
         }
 	return null;
     },
+    setShowOverviewMap:function(v) {
+	if(!v) {
+	    if(this.overviewMap) {
+		this.overviewMap.destroy();
+	    }
+	    this.overviewMap=null;
+	    return;
+	}
+	if(!this.overviewMap) {
+	    this.getMap().addControl(this.overviewMap = new OpenLayers.Control.OverviewMap({maximized:true,autoPan:true}));
+	}
+    },
     setGraticulesVisible:function(visible,style) {
 	this.params.showLatLonLines=visible;
 	if(this.graticule) {
@@ -3532,7 +3544,10 @@ RepositoryMap.prototype = {
         if (this.params.showScaleLine) {
             this.getMap().addControl(new OpenLayers.Control.ScaleLine());
         }
-	//	this.getMap().addControl(new OpenLayers.Control.OverviewMap());
+	if(this.params.showOverviewMap) {
+	    this.setShowOverviewMap(true);
+	}
+
 
         let keyboardControl = new OpenLayers.Control();
         let control = new OpenLayers.Control();
