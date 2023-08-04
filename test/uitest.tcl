@@ -137,12 +137,12 @@ proc capture {_group name url {doDisplays 1} {sleep 3}} {
 	    exec osascript -e {activate application "Safari"}
 	    exec osascript -e $cmd
 	    if {[catch {
+		if {$sleep>0} {
+		    exec sleep $sleep
+		}
 		if {$doDisplays} {
 		    exec osascript $::mydir/captureDisplays.scpt
 		}  else {
-		    if {$sleep>0} {
-			exec sleep $sleep
-		    }
 		    exec osascript $::mydir/capture.scpt
 		}
 	    } err]} {
