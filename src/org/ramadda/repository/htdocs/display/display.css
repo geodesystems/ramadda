@@ -2996,6 +2996,13 @@ table.dataTable tfoot td {
     border-bottom:1px solid #dadada;
 }
 
+.imdv-legend-top {
+    margin-right:10px;
+    padding:5px;
+
+}
+
+
 .imdv-legend-offset {
     margin-left:10px;
 }

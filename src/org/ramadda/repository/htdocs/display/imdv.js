@@ -55,6 +55,26 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'showMeasures=false'];
 
 
+var CLASS_LEGEND_LABEL = 'imdv-legend-label';
+var CLASS_LEGEND_LABEL_INVISIBLE = 'imdv-legend-label-invisible';
+var CLASS_LEGEND_LABEL_HIGHLIGHT = 'imdv-legend-label-highlight';
+var CLASS_LEGEND_ITEM = 'imdv-legend-item';
+var CLASS_LEGEND_OFFSET = 'imdv-legend-offset';
+var CLASS_LEGEND_INNER = 'imdv-legend-inner';
+var CLASS_LEGEND_ITEM_VIEW = 'imdv-legend-item-view';
+var CLASS_LEGEND_ITEM_DROPPABLE= 'imdv-legend-item-droppable';
+
+
+
+var CLASS_FILTER_SLIDER = 'imdv-filter-slider';
+var CLASS_FILTER_SLIDER_LABEL = 'imdv-filter-slider-label';
+var CLASS_FILTER_PLAY = 'imdv-filter-play';
+var CLASS_FILTER_STRING = 'imdv-filter-string';
+ 
+
+var ID_GLYPH_LEGEND = 'glyphlegend';
+
+
 let ImdvUtils = {
     getImdv: function(id) {
 	return Utils.displaysMap[id];
@@ -3310,6 +3330,8 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 			    this.getMapProperty('showOpacitySlider',this.getShowOpacitySlider()),'Show Opacity Slider'),
 		HU.checkbox(this.domId('showgraticules'),[],
 			    this.getMapProperty('showGraticules',false),'Show Graticules'),
+		HU.checkbox(this.domId('showoverviewmap'),[],
+			    this.getMapProperty('showOverviewMap',false),'Show Overview Map'),		
 		HU.checkbox(this.domId('showmouseposition'), [],
 			    this.getMapProperty('showMousePosition',false),'Show Mouse Position'),
 		HU.checkbox(this.domId('showaddress'), [],
@@ -3388,6 +3410,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 		this.setMapProperty('userCanChange', this.jq('usercanchange').is(':checked'),
 				    'showOpacitySlider', this.jq('showopacityslider').is(':checked'),
 				    'showGraticules',this.jq('showgraticules').is(':checked'),
+				    'showOverviewMap',this.jq('showoverviewmap').is(':checked'),				    
 				    'showMousePosition', this.jq('showmouseposition').is(':checked'),
 				    'showAddress', this.jq('showaddress').is(':checked'),
 				    'legendPosition',this.jq('legendposition').val(),
@@ -3451,6 +3474,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 		}
 	    }
 	    this.getMap().setGraticulesVisible(this.getMapProperty('showGraticules'),gratStyle);
+	    this.getMap().setShowOverviewMap(this.getMapProperty('showOverviewMap'));
 	    if(this.getMapProperty('showMousePosition'))
 		this.getMap().initMousePositionReadout();
 	    else
@@ -4454,8 +4478,8 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 	makeLegendDroppable:function(droppedOnGlyph,label,notify) {
 	    notify = notify?? (()=>{this.setLastDroppedTime(new Date());});
 	    label.droppable( {
-		hoverClass: 'imdv-legend-item-droppable',
-		accept:'.imdv-legend-item',
+		hoverClass: CLASS_LEGEND_ITEM_DROPPABLE,
+		accept:'.' + CLASS_LEGEND_ITEM,
 		tolerance:'pointer',
 		drop: (event,ui)=>{
 		    notify();
@@ -4544,7 +4568,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 	    let glyphs = this.getGlyphs();
 	    let html = '';
 	    if(this.getMapProperty('showBaseMapSelect')) {
-		html+=HU.div(['style','margin-bottom:4px;','class','imdv-legend-offset'], HU.b('Base Map: ') +this.getBaseLayersSelect());
+		html+=HU.div(['style','margin-bottom:4px;','class',CLASS_LEGEND_OFFSET], HU.b('Base Map: ') +this.getBaseLayersSelect());
 	    }
 
 	    if(this.getMapProperty('showAddress',false)) {
@@ -4558,12 +4582,12 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 
 	    this.inMapLegend='';
 	    if(glyphs.length)
-		html+=HU.div(['id',this.domId(ID_DROP_BEGINNING),'class','ximdv-legend-item','style','width:100%;height:1px;'],'');
+		html+=HU.div(['id',this.domId(ID_DROP_BEGINNING),'style','width:100%;height:1px;'],'');
 	    glyphs.forEach((mapGlyph,idx)=>{
 		html+=mapGlyph.makeLegend({idToGlyph:idToGlyph});
 	    });
 	    if(glyphs.length)
-		html+=HU.div(['id',this.domId(ID_DROP_END),'class','imdv-legend-item','style','width:100%;height:1em;'],'');
+		html+=HU.div(['id',this.domId(ID_DROP_END),'class',CLASS_LEGEND_ITEM,'style','width:100%;height:1em;'],'');
 
 	    if(Utils.stringDefined(legendLabel)) {
 		legendLabel=legendLabel.replace(/\\n/,'<br>');
@@ -4615,7 +4639,6 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 	    } else {
 	    }
 
-
 	    if(legendContainer && !inMap) {
 		legendContainer.show();
 		legendContainer.html(HU.div(['id',this.domId(ID_LEGEND)],''));
@@ -4631,10 +4654,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 	    });
 
 
-	    if(!legendContainer) {
-		return;
-	    }
-	    legendContainer.find('.imdv-legend-item-edit').click(function(event) {
+	    this.getContainer().find('.imdv-legend-item-edit').click(function(event) {
 		event.stopPropagation();
 		let id = $(this).attr('glyphid');
 		let mapGlyph = _this.findGlyph(id);
@@ -4642,7 +4662,7 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 		_this.editFeatureProperties(mapGlyph);
 	    });
 
-	    legendContainer.find('.imdv-legend-item-view').click(function(event) {
+	    this.getContainer().find('.' + CLASS_LEGEND_ITEM_VIEW).click(function(event) {
 		event.stopPropagation();
 		let id = $(this).attr('glyphid');
 		let mapGlyph = _this.findGlyph(id);
@@ -4654,9 +4674,8 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 	    this.getGlyphs().forEach((mapGlyph,idx)=>{
 		mapGlyph.initLegend();
 	    });
-	    this.initGlyphButtons(legendContainer);
-
-	    let items = legendContainer.find('.imdv-legend-label');
+	    this.initGlyphButtons(this.getContainer());
+	    let items = this.getContainer().find('.' + CLASS_LEGEND_LABEL);
 	    items.tooltip({
 		content: function () {
 		    let title =  $(this).prop('title');
