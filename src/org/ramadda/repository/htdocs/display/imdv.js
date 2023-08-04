@@ -87,12 +87,17 @@ let ImdvUtils = {
 	    return;
 	}
 	let geom = feature?.geometry?.CLASS_NAME;
+	//If it is a point and has a graphic then we want to try to use the original graphic
+	//if there isn't one in the new style
 	if(geom=='OpenLayers.Geometry.Point' && Utils.stringDefined(feature.style.externalGraphic)) {
-	    feature.style= style;
-	    //not sure why we have this here but  for now just set the style on the feature
-	    for(a in style) {
-		//TODO:
+	    style = $.extend({},style);
+	    if(!feature.originalGraphic)
+		feature.originalGraphic = feature.style.externalGraphic;
+
+	    if(!Utils.stringDefined(style.externalGraphic)) {
+		style.externalGraphic = feature.originalGraphic;
 	    }
+	    feature.style= style;
 	} else {
 	    feature.style= style;
 	}
@@ -2535,7 +2540,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			if(icons.length>0) {
 			    let hdr = HU.b("Add icon: ");
 			    icons.forEach(icon=>{
-				hdr+=HU.span([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-icons-recent'),
+				hdr+=HU.span([ATTR_CLASS,
+					      HU.classes(CLASS_CLICKABLE,'ramadda-icons-recent'),
 					      'icon',icon,'textarea',domId],
 					     HU.getIconImage(icon,['width','16px']));
 				hdr+=' ';
