@@ -21,6 +21,13 @@
 */
 }
 
+.olControlOverviewMapElement {
+    padding:0px;
+    border:1px solid #aaa;
+    background-color:#ccc; 
+}
+
+
 .olControlAttribution {
     bottom: 0px;
 } 
