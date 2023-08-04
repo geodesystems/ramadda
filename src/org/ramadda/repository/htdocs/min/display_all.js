@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Aug  4 06:03:42 EDT 2023";
+var build_date="RAMADDA build date: Fri Aug  4 06:40:01 EDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -44830,7 +44830,6 @@ HU.input('','',['class','pathoutput','size','60','style','margin-bottom:0.5em;']
 		let lat = position.coords.latitude;
 		let lon = position.coords.longitude;
 		let lonlat = MapUtils.createLonLat(lon,lat);
-		console.log('current location',lat,lon);
 		if(this.currentLocationMarker) {
 		    this.getMap().removeMarker(this.currentLocationMarker);
 		    this.currentLocationMarker=null;
@@ -48970,7 +48969,7 @@ MapGlyph.prototype = {
 		    let type = rule.type;
 		    if(type=='==') type='=';
 		    type = type.replace(/</g,'&lt;').replace(/>/g,'&gt;');
-		    rulesLegend+= HU.b(this.makeLabel(rule.property,true))+' ' +type+'<br><table width=100%>';
+		    rulesLegend+= HU.b(this.makeLabel(rule.property,true))+' ' +type+'<br><table width=100%>\n';
 		}
 		lastProperty  = propOp;
 		let label = rule.value;
@@ -48978,7 +48977,6 @@ MapGlyph.prototype = {
 		if(info) label = info.getValueLabel(rule.value);
 
 		label   = HU.span(['style','font-size:9pt;'],label);
-		let item = '<tr><td width=16px>';
 		let lineWidth;
 		let lineStyle;
 		let lineColor;
@@ -48992,16 +48990,19 @@ MapGlyph.prototype = {
 		    let toks = line.split(':');
 		    styleObj[toks[0]] = toks[1];
 		});
-
-		//not now:		if(Utils.stringDefined(styleObj.externalGraphic??this.style.externalGraphic)) return;
 		ruleCnt++;
-
 		let style = boxStyle +this.getLegendStyle(styleObj);
-		let legendContents = Utils.stringDefined(styleObj.externalGraphic??this.style.externalGraphic)?
-		    HU.image(styleObj.externalGraphic??this.style.externalGraphic,['width','14px']):null;
+		let legendContents = null;
+		//If there is a pointRadius and a graphic then show the graphic in the legend
+		if(Utils.isDefined(styleObj.pointRadius) && 
+		   Utils.stringDefined(styleObj.externalGraphic??this.style.externalGraphic)) {
+		    legendContents =
+			HU.image(styleObj.externalGraphic??this.style.externalGraphic,['width','14px']);
+		}
 		let div=legendContents??HU.div(['class','circles-1','style',style]);
-		item+=div+'</td>';
-		item += '</td><td>'+ label+'</td></tr>';
+		let item = HU.tr([],
+				 HU.td(['width','16px'], div) +
+				 HU.td([],label));
 		rulesLegend+=HU.div([],item);
 	    });
 	    if(!ruleCnt) rulesLegend=null;
