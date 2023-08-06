@@ -12,6 +12,7 @@ var icon_help = "fas fa-question-circle";
 var icon_command = ramaddaCdn + "/icons/command.png";
 var icon_rightarrow = ramaddaCdn + "/icons/grayrightarrow.gif";
 var icon_downdart = ramaddaCdn + "/icons/downdart.gif";
+var icon_updart = ramaddaCdn + "/icons/updart.gif";
 var icon_rightdart = ramaddaCdn + "/icons/rightdart.gif";
 var icon_progress = ramaddaCdn + "/icons/progress.gif";
 var icon_wait = ramaddaCdn + "/icons/wait.gif";
