@@ -2988,11 +2988,16 @@ table.dataTable tfoot td {
     border-bottom:var(--basic-border);
 }
 
+.imdv-legend::-webkit-scrollbar {
+    display:none;
+}
+
+
 .imdv-legend {
     min-width:200px;
     max-width:200px;    
     width:200px;
-    overflow-y:auto;
+    overflow-y:scroll;
     border-bottom:1px solid #dadada;
 }
 

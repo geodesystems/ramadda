@@ -604,8 +604,8 @@ MapGlyph.prototype = {
 
 	this.parsedProperties = null;
 	this.attrs.properties = this.jq('miscproperties').val();
-	this.setVisibleLevelRange(this.display.jq('minlevel').val().trim(),
-				  this.display.jq('maxlevel').val().trim());
+	this.setVisibleLevelRange(this.display.jq('level_range_min').val(),
+				  this.display.jq('level_range_max').val());
 	this.setShowMarkerWhenNotVisible(this.display.jq('showmarkerwhennotvisible').is(':checked'));
 
 	if(this.isMapServer()  && this.getDatacubeVariable()) {
