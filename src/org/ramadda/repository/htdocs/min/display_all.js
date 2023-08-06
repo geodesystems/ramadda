@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Aug  4 08:18:34 EDT 2023";
+var build_date="RAMADDA build date: Sun Aug  6 07:54:09 EDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -41707,7 +41707,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
         myLayer: [],
 	glyphs:[],
 	markers:{},
-	levels: [['','None'],[4,'4 - Most zoomed out'],5,6,7,8,
+	minLevel:2,maxLevel:20,
+	levels: [['','None'],[2,'2 - Most zoomed out'],3,4,5,6,7,8,
 		 9,10,11,12,13,14,15,16,17,18,19,[20,'20 - Most zoomed in']],
 	DOT_STYLE:{
 	    zIndex:1000,
@@ -43977,16 +43978,46 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    return {props:props,html:html};
 	},
 	
+	setLevelRangeTick:function() {
+	    let current = this.getCurrentLevel();
+	    let perc = 100*(current-this.minLevel)/(this.maxLevel-this.minLevel);
+	    this.jq('level_range_tick').css('left',perc+'%');
+	    this.jq('level_range_tick').attr('title','Current level:' + current);
+	},
 	getLevelRangeWidget:function(level,showMarkerToo) {
 	    if(!level) level={};
 	    let visibleCbx =
 		HU.checkbox(this.domId('showmarkerwhennotvisible'),[ATTR_ID,this.domId('showmarkerwhennotvisible')],
 			    showMarkerToo,'Show marker instead');
-	    return  HU.b("Visible between levels:") + HU.space(3) +visibleCbx +'<br>'+
-		HU.select("",[ID,this.domId("minlevel")],this.levels,Utils.isDefined(level.min)?level.min:"",null,true) +
-		" &lt;= level &lt;= " +
-		HU.select("",[ID,this.domId("maxlevel")],this.levels,Utils.isDefined(level.max)?level.max:"")+" " +
-		HU.span([ATTR_CLASS,'imdv-currentlevellabel'], "(current level: " + this.getCurrentLevel()+")") +'<br>';
+	    let min = level.min??this.minLevel;
+	    let max = level.max??this.maxLevel;	    
+	    let current = this.getCurrentLevel();
+	    let perc = 100*(current-this.minLevel)/(this.maxLevel-this.minLevel);
+	    let width = '400px';
+	    let widget =   HU.b("Visible between levels:") + HU.space(3) +visibleCbx +'<br>';
+	    widget+=HU.hidden('',level.min??this.minLevel,
+			      [ATTR_ID,this.domId('level_range_min')]) +
+		HU.hidden('',level.max??this.maxLevel,[ATTR_ID,this.domId('level_range_max')])
+	    let slider =
+		HU.div([ATTR_ID,this.domId('level_range_slider'),ATTR_STYLE,HU.css('margin-bottom','110px','margin-top','10px','position','relative','width',width)]);
+
+	    let tick = HU.image(icon_downdart,
+				[ATTR_ID,
+				 this.domId('level_range_tick'),
+				 ATTR_STYLE,HU.css('position','absolute','top','0px')]);
+	    let sample1 = HU.image(RamaddaUtil.getCdnUrl('/map/zoom/zoom' + min+'.png'),
+				   [ATTR_ID,this.domId('level_range_sample_min_image'),
+				    ATTR_STYLE,'position:absolute;left:0px;bottom:0px;',
+				    ATTR_WIDTH,'120px']);
+	    let sample2 = HU.image(RamaddaUtil.getCdnUrl('/map/zoom/zoom' + max+'.png'),
+				   [ATTR_ID,this.domId('level_range_sample_max_image'),
+				    ATTR_STYLE,'position:absolute;right:0px;bottom:0px;',
+				   ATTR_WIDTH,'120px']);	    
+	    let container = HU.div([ATTR_STYLE,HU.css('display','inline-block','position','relative')],
+				   slider +tick+sample1+sample2);
+
+
+	    return widget+container;
 	},
 	doProperties: function(style, apply,mapGlyph) {
 	    let _this = this;
@@ -44147,6 +44178,29 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 
 
+
+	    this.jq('level_range_slider').slider({
+		range:true,
+		min:this.minLevel,
+		max:this.maxLevel,
+		values:[
+		    parseInt(this.jq('level_range_min').val()??this.minLevel),
+		    parseInt(this.jq('level_range_max').val()??this.maxLevel)],		
+		slide:(event,ui)=>{
+		    let min = ui.values[0];
+		    let max = ui.values[1];		    
+		    this.jq('level_range_min').val(min);
+		    this.jq('level_range_max').val(max);		    
+		    this.jq('level_range_sample_min_image').attr('src',
+								 RamaddaUtil.getCdnUrl('/map/zoom/zoom' + min+'.png'));
+		    
+		    this.jq('level_range_sample_max_image').attr('src',
+								 RamaddaUtil.getCdnUrl('/map/zoom/zoom' + max+'.png'));
+		}
+
+	    });
+
+	    
 	    this.jq('displayattrsmenubar').find('.' + CLASS_CLICKABLE).click(function() {
 		let block = blocks[$(this).attr('blockidx')];
 		let sub = Utils.join(block.items,"");
@@ -44245,6 +44299,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		this.initIconSelection(icons);
 	    }
 
+	    this.setLevelRangeTick();
 	    dialog.find('.ramadda-slider').each(function() {
 		let min = $(this).attr('slider-min');
 		let max = $(this).attr('slider-max');
@@ -46105,6 +46160,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    setTimeout(()=>{
 		this.getMap().getMap().events.register('zoomend', '', () =>{
 		    this.checkVisible();
+		    this.setLevelRangeTick();
 		    $('.imdv-currentlevellabel').html('(current level: ' + this.getCurrentLevel()+')');
 
 		},true);
@@ -47628,8 +47684,8 @@ MapGlyph.prototype = {
 
 	this.parsedProperties = null;
 	this.attrs.properties = this.jq('miscproperties').val();
-	this.setVisibleLevelRange(this.display.jq('minlevel').val().trim(),
-				  this.display.jq('maxlevel').val().trim());
+	this.setVisibleLevelRange(this.display.jq('level_range_min').val(),
+				  this.display.jq('level_range_max').val());
 	this.setShowMarkerWhenNotVisible(this.display.jq('showmarkerwhennotvisible').is(':checked'));
 
 	if(this.isMapServer()  && this.getDatacubeVariable()) {
