@@ -1199,27 +1199,27 @@ var Utils =  {
         }
         return date;
     },
-    createDateInner: function(d) {
+    createDateInner: function(d,now) {
         if(!d) return d;
         if(d.getTime) return d;
         d = d.trim();
-        let regexp = new RegExp("^(\\+|-)?([0-9]+) *(minute|hour|day|week|month|year)$");
+        let regexp = new RegExp("^(\\+|-)?([0-9]+) *(minute|hour|day|week|month|year)s?$");
         let toks = d.match(regexp);
         if(toks) {
             let mult = parseFloat(toks[1]+toks[2]);
             let what = toks[3];
-            let now = new Date();
+	    if(!now)  now = new Date();
             let date = now.getTime();
-            if(what == "minute")
+            if(what == "minute" || what=="minutes")
                 return new Date(date+mult*1000*60);
-            if(what == "hour")
+            if(what == "hour" || what == "hours")
                 return new Date(date+mult*1000*60*60);
-            if(what == "day")
+            if(what == "day" || what == "days")
                 return new Date(date+mult*1000*60*60*24);
-            if(what == "week") {
+            if(what == "week" || what=="weeks") {
                 return new Date(date+mult*1000*60*60*24*7);
             }
-            if(what == "month")
+            if(what == "month" || what=="months")
                 return new Date(date+mult*1000*60*60*24*7*31);
             return new Date(date+mult*1000*60*60*24*365);
         }
@@ -5062,9 +5062,28 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return cbx;
     },
 
+    radioGroup: function(name, list,selected) {
+	let html = '';
+	list.forEach((item,idx)=>{
+            let label = item;
+            if(Array.isArray(item)) {
+                label=item[1];
+                item = item[0];
+            } else if(Utils.isDefined(item.value)) {
+		label = item.label??item.value;
+		item = item.value;
+	    }
+	    let id = HU.getUniqueId('radio_');
+	    html+=HU.radio(id,name,'',item,selected?selected==item:idx==0)+
+		HU.tag('label',['for',id],label) + '<br>';
+	    html+='\n';
+	});
+	return html;
+    },
+
     radio: function(id, name, radioclass, value, checked, extra) {
         if (!extra) extra = "";
-        var html = "<input id='" + id + "'  class='" + radioclass + "' name='" + name + "' type=radio value='" + value + "' ";
+        let html = "<input id='" + id + "'  class='" + radioclass + "' name='" + name + "' type=radio value='" + value + "' ";
         if (checked) {
             html += " checked ";
         }
