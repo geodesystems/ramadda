@@ -735,20 +735,20 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    } else {
 		selected = records;
 	    }
-	    var contents = "";
+	    let contents = "";
 	    if(selected.length==0) {
 		contents = this.getEmptyMessage("Nothing found");
 	    }
 
-            var colorBy = this.getColorByInfo(selected);
+            let colorBy = this.getColorByInfo(selected);
 
 
 	    let attrs = {};
 	    attrs["selectedCount"] = selected.length;
 	    attrs["totalCount"] = records.length;
 	    for(var i=0;i<fields.length;i++) {
-		var f = fields[i];
-		var s = summary[f.getId()];
+		let f = fields[i];
+		let s = summary[f.getId()];
 		if(!s) continue;
 		if(f.isDate) {
 		    attrs[f.getId()+"_min"] = s.min;
@@ -768,8 +768,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		}
 	    }
 
-	    var headerTemplate = this.getProperty("headerTemplate","");
-	    var footerTemplate = this.getProperty("footerTemplate","");
+	    let headerTemplate = this.getProperty("headerTemplate","");
+	    let footerTemplate = this.getProperty("footerTemplate","");
 
 	    if(selected.length==1) {
 		let row = this.getDataValues(selected[0]);
