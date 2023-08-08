@@ -178,19 +178,19 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 "csv.lastinput." + entry.getId());
 
         if ((lastInput == null)
-                && entry.getTypeHandler().isType("type_convertible")) {
+                && entry.getTypeHandler().isType(ConvertibleTypeHandler.TYPE_CONVERTIBLE)) {
             lastInput =
                 (String) entry.getValue(ConvertibleTypeHandler.IDX_COMMANDS);
 
-
-            if (!Utils.stringDefined(lastInput)) {
-                if (entry.getTypeHandler().isType(
-                        TabularTypeHandler.TYPE_TABULAR)) {
-                    lastInput = (String) entry.getValue(
-							TabularTypeHandler.IDX_CONVERT);
-                }
-            }
+	}
+	if (!Utils.stringDefined(lastInput)) {
+	    if (entry.getTypeHandler().isType(TabularTypeHandler.TYPE_TABULAR)) {
+		lastInput = (String) entry.getValue(TabularTypeHandler.IDX_CONVERT);
+	    }
         }
+	if (!Utils.stringDefined(lastInput)) {
+	    lastInput = (String) entry.getValue("convert_commands");
+	}
 
 
         if (lastInput != null) {
@@ -361,10 +361,9 @@ public class ConvertibleOutputHandler extends OutputHandler {
         if (save && (lastInput != null)) {
             getSessionManager().putSessionProperty(request,
                     "csv.lastinput." + entry.getId(), lastInput);
-            if (getAccessManager().canDoEdit(request, entry)
-		&& (entry.getTypeHandler().isType("type_convertible"))) {
-                entry.setValue("convert_commands",
-                               lastInput);
+            if (getAccessManager().canDoEdit(request, entry)) {
+		//		&& (entry.getTypeHandler().isType(ConvertibleTypeHandler.TYPE_CONVERTIBLE))) {
+                entry.setValue("convert_commands", lastInput);
                 getEntryManager().updateEntry(request, entry);
             }
         }
@@ -729,7 +728,8 @@ public class ConvertibleOutputHandler extends OutputHandler {
             return false;
         }
 
-        return entry.getTypeHandler().isType("type_convertible");
+        return entry.getTypeHandler().isType(ConvertibleTypeHandler.TYPE_CONVERTIBLE) ||
+	    entry.getTypeHandler().getTypeProperty("iscsvconvertible",false);
     }
 
 
