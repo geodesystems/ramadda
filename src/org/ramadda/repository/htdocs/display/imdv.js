@@ -2908,13 +2908,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.initGlyphButtons(dialog);
 		dialog.find('#clippathdraw').button().click(function(){
 		    let input = _this.jq('glyphedit_clippath');
-		    let html = HU.div([ATTR_STYLE,'display:inline-block;background:#ccc;'], HU.image(mapGlyph.style.imageUrl,[ATTR_TITLE,'Click to select point\nshift-click:use previous X\nmeta-click: use previous Y', 'width','600px',ATTR_CLASS,'theimage',ATTR_STYLE,HU.css('cursor','pointer','border','1px solid #ccc')]));
-		    let buttons = HU.buttons([HU.div([ATTR_CLASS,'ramadda-button-clear display-button'], 'Clear'),
-					      HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK'),
+		    let html = HU.div([ATTR_ID,_this.domId('clippath_container'),ATTR_STYLE,HU.css('position','relative','display','inline-block','background','#ccc;')],
+				      HU.image(mapGlyph.style.imageUrl,[ATTR_TITLE,'Click to select point\nshift-click:use previous X\nmeta-click: use previous Y', 'width','600px',ATTR_CLASS,'theimage',ATTR_STYLE,HU.css('cursor','pointer','border','1px solid #ccc')]));
+		    let buttons = HU.buttons([HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK'),
 					      HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
 
 		    let tryIt = true;
 		    html = buttons+
+			HU.div([ATTR_CLASS,'ramadda-button-clear display-button'], 'Clear')+HU.space(1)+
 			HU.span([ATTR_CLASS,CLASS_CLICKABLE,ATTR_ID,'pathtry',ATTR_STYLE,'width:4em'],
 				'Try') +HU.space(1) +
 HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.5em;']) +
@@ -2923,7 +2924,32 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		    let path='';
 		    let dialog = HU.makeDialog({content:html,title:'Edit Clip Path',draggable:true,header:true,anchor:$(this),my:"left top",at:"left bottom"});
 		    let output = dialog.find('.pathoutput');
-		    dialog.find('#pathtry').button().click(function(){
+		    let image = dialog.find('.theimage');
+		    let canvas;
+		    let ctx;
+		    image.on('load', function() {
+			let container = _this.jq('clippath_container');
+			container.append(
+			    HU.tag('canvas',[ATTR_ID,_this.domId('clippath_canvas'),
+					     'width',image.width(),
+					     'height',image.height(),					     
+					     ATTR_STYLE,HU.css('position','absolute','pointer-events','none','left','0px','top','0px',
+							       'background','transparent')]));
+			
+			canvas = document.getElementById(_this.domId('clippath_canvas'));
+			ctx = canvas.getContext("2d");
+			ctx.strokeStyle= "blue";
+			ctx.lineWidth=1;
+		    });
+
+
+		    let clear = () =>{
+			if(!ctx) return;
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+		    };
+
+		    let tryButton = dialog.find('#pathtry').button();
+		    tryButton.click(function(){
 			if(tryIt) {
 			    image.css('clip-path',output.val());
 			    $(this).html('Reset');
@@ -2936,6 +2962,10 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		    dialog.find('.ramadda-button-clear').button().click(()=>{
 			path='';
 			output.val('');
+			image.css('clip-path','');
+			tryButton.html('Try');
+			tryIt=true;
+			clear();
 		    });
 		    dialog.find('.ramadda-button-ok').button().click(()=>{
 			let val = output.val();
@@ -2945,21 +2975,26 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		    dialog.find('.ramadda-button-cancel').button().click(()=>{
 			dialog.remove();
 		    });		    
-		    
 
-
-		    let image = dialog.find('.theimage');
 		    let w = image.width();
 		    let h = image.height();		    
 		    let lastX=0;
 		    let lastY=0;		    
+		    
 		    image.mousedown(function(e){
 			let offset = $(this).offset();
 			let x=e.pageX - offset.left;
 			let y  =e.pageY - offset.top;
 			if(e.originalEvent.shiftKey) x = lastX;
 			if(e.originalEvent.metaKey) y = lastY;			
-			console.log(x,y,lastX,lastY);
+			if(ctx && path!='') {
+			    ctx.beginPath();
+			    ctx.moveTo(lastX,lastY);
+			    ctx.lineTo(x,y);			    
+			    ctx.stroke();
+			}
+
+
 			lastX = x; lastY = y;
 			if(path!='') path+=', ';
 			let xp = parseInt(100*(x/w));
@@ -3492,8 +3527,8 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 
 		this.propertyCache = {}
 		this.parsedMapProperties = null;
-		let min = this.jq("minlevel").val().trim();
-		let max = this.jq("maxlevel").val().trim();
+		let min = this.jq("minlevel").val()?.trim();
+		let max = this.jq("maxlevel").val()?.trim();
 		if(min=="") min = null;
 		if(max=="") max = null;	
 		this.setMapProperty('visibleLevelRange', {min:min,max:max},
