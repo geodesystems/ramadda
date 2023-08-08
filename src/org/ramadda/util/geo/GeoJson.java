@@ -205,6 +205,7 @@ public class GeoJson extends JsonUtil {
                 return makeHeader();
             }
             if (featureIdx >= features.length()) {
+		System.err.println("DONE:" + featureIdx+" " + features.length());
                 return null;
             }
             List<String>      values  = new ArrayList<String>();
@@ -215,13 +216,7 @@ public class GeoJson extends JsonUtil {
                 pts = new ArrayList<List<Point>>();
             }
             Bounds    bounds   = getFeatureBounds(feature, null, pts);
-	    if(bounds==null) return null;
-            JSONArray geom     = readArray(feature, "geometry.coordinates");
-	    if(geom==null) return null;
-            String    type     = readValue(feature, "geometry.type", "NULL");
-	    if(type==null) return null;
-            Point     centroid = bounds.getCenter();
-            for (String name : names) {
+	    for (String name : names) {
                 String value = props.optString(name, "");
                 value = value.replaceAll("\n", " ");
                 if (value.indexOf(",") >= 0) {
@@ -229,8 +224,17 @@ public class GeoJson extends JsonUtil {
                 }
                 values.add(value);
             }
-            Utils.add(values, "" + centroid.getLatitude(),
-                      "" + centroid.getLongitude());
+	    if(bounds!=null) {
+		//		JSONArray geom     = readArray(feature, "geometry.coordinates");
+		//		String    type     = readValue(feature, "geometry.type", "NULL");
+
+		Point     centroid = bounds.getCenter();
+		Utils.add(values, "" + centroid.getLatitude(),
+			  "" + centroid.getLongitude());
+	    } else {
+		Utils.add(values,"NaN","NaN");
+	    }
+	    
             if (addPolygon) {
                 StringBuilder poly = new StringBuilder();
                 for (List<Point> p2 : pts) {
