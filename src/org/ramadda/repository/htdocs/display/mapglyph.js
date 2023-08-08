@@ -218,6 +218,8 @@ MapGlyph.prototype = {
 	callback(elevations,ok);
     },
     getIcon: function() {
+	console.trace('get icon');
+
 	if(Utils.stringDefined(this.attrs.icon)) {
 	    return this.attrs.icon;
 	}
@@ -841,8 +843,10 @@ MapGlyph.prototype = {
 		style[prop] = o[prop]??this.style[prop];
 	    });
 	}
-	if(Utils.stringDefined(this.attrs.icon)) {
-	    style.externalGraphic = this.attrs.icon;
+	if(this.isDataIconCapable()) {
+	    if(Utils.stringDefined(this.attrs.icon)) {
+		style.externalGraphic = this.attrs.icon;
+	    }
 	}
 	return style;
     },
@@ -2125,7 +2129,8 @@ MapGlyph.prototype = {
 	    item('',true,true);
 	}
 	if(Utils.stringDefined(this.style.imageUrl)) {
-	    item(HU.center(HU.href(this.style.imageUrl,HU.image(this.style.imageUrl,[ATTR_STYLE,HU.css('margin-bottom','4px','border','1px solid #ccc','width','150px')]),['target','_image'])));
+	    let filter = this.getStyleFromTree('imagefilter');
+	    item(HU.center(HU.href(this.style.imageUrl,HU.image(this.style.imageUrl,[ATTR_STYLE,HU.css('margin-bottom','4px','border','1px solid #ccc','width','150px','filter',filter??'')]),['target','_image'])));
 	}
 	if(Utils.stringDefined(this.style.legendUrl)) {
 	    item(HU.center(HU.href(this.style.legendUrl,HU.image(this.style.legendUrl,[ATTR_STYLE,HU.css('margin-bottom','4px','border','1px solid #ccc','width','150px')]),['target','_image'])));
@@ -2793,12 +2798,13 @@ MapGlyph.prototype = {
 	if(!this.canDoMapStyle()) return;
 	this.attrs.fillColors = this.jq('fillcolors').is(':checked');
 	let getColorBy=(prefix)=>{
-	    return {
+	    return  {
 		property:this.jq(prefix +'colorby_property').val(),
 		min:this.jq(prefix +'colorby_min').val(),
 		max:this.jq(prefix +'colorby_max').val(),
 		colorTable:this.jq(prefix +'colorby_colortable').val()};		
 	};
+
 
 	this.attrs.fillColorBy =  getColorBy('fill');
 	this.attrs.strokeColorBy =  getColorBy('stroke');	
@@ -3231,7 +3237,7 @@ MapGlyph.prototype = {
 	    let numericProperties=Utils.mergeLists([['','Select']],numeric.map(info=>{return {value:info.property,label:info.getLabel()};}));
 	    let mapComp = (obj,prefix) =>{
 		let comp = '';
-		comp+=HU.div([ATTR_CLASS,'formgroupheader'], 'Map value to ' + prefix +' color')+ HU.formTable();
+		comp += HU.div([ATTR_CLASS,'formgroupheader'], 'Map value to ' + prefix +' color')+ HU.formTable();
 		comp += HU.formEntry('Property:', HU.select('',[ATTR_ID,this.domId(prefix+'colorby_property')],numericProperties,obj.property) +HU.space(2)+ HU.b('Range: ') + HU.input('',obj.min??'', [ATTR_ID,this.domId(prefix+'colorby_min'),'size','6',ATTR_TITLE,'min value']) +' -- '+    HU.input('',obj.max??'', [ATTR_ID,this.domId(prefix+'colorby_max'),'size','6',ATTR_TITLE,'max value']));
 		comp += HU.hidden('',obj.colorTable||'blues',[ATTR_ID,this.domId(prefix+'colorby_colortable')]);
 		comp+=HU.formEntry('Color table:', HU.div([ATTR_ID,this.domId(prefix+'colorby_colortable_label')])+
@@ -3674,14 +3680,14 @@ MapGlyph.prototype = {
 
 	    let label =  this.getLabel({addIcon:false,forLegend:true})[0];
 	    //HU.b(this.getName()+':'))
-	    let top = HU.div([ATTR_STYLE,HU.css('font-weight','bold','text-align','center')], label) +HU.hbox(contents.top.map(c=>{return HU.div([ATTR_STYLE,'margin-right:10px;'], c);}));
+	    let top = HU.div([ATTR_STYLE,HU.css('font-weight','bold','text-align','center')], label) +HU.hbox(contents.top.map(c=>{return HU.div([ATTR_STYLE,'margin-right:15px;'], c);}));
 	    jqid(this.topHeaderId).html(top);
 	}
 
 
 	let widgets = contents.first+contents.enums+contents.sliders+contents.strings;
 
-	if(Utils.stringDefined(widgets) ||contents.top) {
+	if(Utils.stringDefined(widgets) ||contents.top.length) {
 	    let update = () =>{
 		this.display.featureHasBeenChanged = true;
 		this.applyMapStyle(true);
@@ -3758,8 +3764,8 @@ MapGlyph.prototype = {
 	    
 	    this.findInLegend(CLASS_FILTER_SLIDER).each(function() {
 		let theFeatureId = $(this).attr('feature-id');
+		let featureInfo = _this.getFeatureInfo(theFeatureId);
 		let onSlide = function( event, ui, force) {
-		    let featureInfo = _this.getFeatureInfo(theFeatureId);
 		    let id = featureInfo.property;
 		    let filter = filters[id]??{};
 		    if(ui.animValues) {
@@ -3796,6 +3802,7 @@ MapGlyph.prototype = {
 		    if(range>10)
 			step = Math.max(1,Math.floor(range/100));		    
 		}
+		step = featureInfo.getStep(step);
 		sliderMap[$(this).attr('feature-id')] = {
 		    slider:   $(this),
 		    slide:onSlide,
@@ -4253,8 +4260,10 @@ MapGlyph.prototype = {
 		obj.isEnumeration = true;
 	    } else {
 		obj.isEnumeration = false;
-		obj.min = min;
-		obj.max = max;		
+		if(!Utils.isDefined(obj.min))
+		    obj.min = min;
+		if(!Utils.isDefined(obj.max))
+		    obj.max = max;		
 	    }
 	    strings = strings.sort((a,b)=>{
 		return a.localeCompare(b);
@@ -4264,8 +4273,8 @@ MapGlyph.prototype = {
 	    if(!anyNumber) {
 		stringList.push(...strings);
 	    }
-	    let range = max-min;
-	    if(debug) console.log('applyColors min:' + min +' max:' + max);
+	    let range = obj.max-obj.min;
+	    if(debug) console.log('applyColors min:' + obj.min +' max:' + obj.max);
 	    features.forEach((f,idx)=>{
 		let value = this.getFeatureValue(f,prop);
 		if(!Utils.isDefined(value)) {
@@ -4276,7 +4285,7 @@ MapGlyph.prototype = {
 		    index = (strings.indexOf(value)%ct.length);
 		} else {
 		    value = +value;
-		    let percent = (value-min)/range;
+		    let percent = (value-obj.min)/range;
 		    index = Math.max(0,Math.min(ct.length-1,Math.round(percent*ct.length)));
 		}
 
@@ -4525,6 +4534,9 @@ MapGlyph.prototype = {
 	    }
 	}
 
+
+
+
 	let tmpStyle= this.getStyle(true);
 	this.features.forEach(feature=>{
 	    if(feature.style && !feature.fixedStyle) {
@@ -4667,16 +4679,20 @@ MapGlyph.prototype = {
 	}
 	this.setRotation(this.style.rotation);
     },
+    getImageTransform:function() {
+	let transform = '';
+	if(Utils.stringDefined(this.style.transform)) 
+	    transform = this.style.transform;
+	if(Utils.isDefined(this.style.rotation) && this.style.rotation!=0)
+	    transform += ' rotate(' + this.style.rotation +'deg)';
+	if(!Utils.stringDefined(transform))  transform=null;
+	return transform;
+    },
+
     initImageLayer:function(image) {
 	this.image = image;
 	image.imageHook = (image)=> {
-	    let transform='';
-	    if(Utils.stringDefined(this.style.transform)) 
-		transform = this.style.transform;
-	    if(Utils.isDefined(this.style.rotation) && this.style.rotation!=0)
-		transform += ' rotate(' + this.style.rotation +'deg)';
-	    if(!Utils.stringDefined(transform))  transform=null;
-
+	    let transform=this.getImageTransform();
 	    let childNodes = this.image.div.childNodes;
 	    for(let i = 0, len = childNodes.length; i < len; ++i) {
                 let element = childNodes[i].firstChild || childNodes[i];
@@ -5488,6 +5504,11 @@ FeatureInfo.prototype= {
     isInt:function() {return this.getType()=='int';},
     isString:function() {return this.getType()=='string';},
     isEnumeration:function() {return this.getType()=='enumeration'||this.getType()=='enum';},
+    getStep:function(dflt) {
+	let s = this.getProperty('step');
+	if(Utils.isDefined(s)) return parseFloat(s);
+	return dflt;
+    },
     getSamplesLabels:function() {
 	return this.samples.map(sample=>{return sample.label;});
     },
