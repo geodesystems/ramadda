@@ -36,6 +36,7 @@ import java.util.List;
  */
 public class ConvertibleTypeHandler extends PointTypeHandler {
 
+    public static final String TYPE_CONVERTIBLE = "type_convertible";
 
     /** _more_ */
     private static int IDX = 0;
@@ -68,24 +69,7 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
         super(repository, entryNode);
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param properties _more_
-     * @param requestProperties _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    @Override
-    public RecordFile doMakeRecordFile(Request request, Entry entry,
-                                       Hashtable properties,
-                                       Hashtable requestProperties)
-            throws Exception {
+    public List<String> getCsvCommands(Request request, Entry entry) throws Exception {
         String commands =
             (String) entry.getValue(ConvertibleTypeHandler.IDX_COMMANDS);
         if ( !Utils.stringDefined(commands)) {
@@ -122,12 +106,36 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
             }
             args.add(arg);
         }
-        commands = Utils.join(args, " ", false);
+	return args;
+    }	
+
+
+    /**
+     * _more_
+     *
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param properties _more_
+     * @param requestProperties _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    @Override
+    public RecordFile doMakeRecordFile(Request request, Entry entry,
+                                       Hashtable properties,
+                                       Hashtable requestProperties)
+            throws Exception {
+	List<String> args = getCsvCommands(request, entry);
         if (debug) {
             System.err.println(
                 "ConvertibleTypeHandler.getPathForRecordEntry entry:" + entry
-                + " commands:" + commands);
+                + " commands:" + Utils.join(args, " ", false));
         }
+
+
         IO.Path          path = getPathForRecordEntry(entry,requestProperties);
         ConvertibleFile file = new ConvertibleFile(request, this, entry, args, path);
 
