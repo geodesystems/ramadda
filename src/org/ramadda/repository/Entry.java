@@ -910,9 +910,12 @@ public class Entry implements Cloneable {
      *
      * @return _more_
      */
-    public Object getValue(String column) {
-        int index = getTypeHandler().getValueIndex(column);
-        return getValue(index);
+    public Object getValue(String col) {
+	Column column = getTypeHandler().findColumn(col);
+	if(column == null) {
+	    return null;
+	}
+        return getValue(column.getOffset());
     }
 
     /**
