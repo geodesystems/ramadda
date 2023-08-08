@@ -11,6 +11,8 @@ import org.json.*;
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 
+import org.ramadda.data.docs.ConvertibleTypeHandler;
+import org.ramadda.data.docs.ConvertibleFile;
 import org.ramadda.data.services.PointTypeHandler;
 import org.ramadda.data.services.RecordTypeHandler;
 
@@ -47,7 +49,7 @@ import java.util.List;
 
 /**
  */
-public class GeoJsonTypeHandler extends PointTypeHandler
+public class GeoJsonTypeHandler extends ConvertibleTypeHandler
     implements WikiConstants {
 
     /**
@@ -172,7 +174,9 @@ public class GeoJsonTypeHandler extends PointTypeHandler
                                        Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
-        return new GeoJsonRecordFile(request, getRepository(), this, entry,new IO.Path(getPathForEntry(request, entry,true)));
+	
+	List<String> args = getCsvCommands(request, entry);
+        return new GeoJsonRecordFile(request, getRepository(), this, entry,args,new IO.Path(getPathForEntry(request, entry,true)));
     }
 
     /**
@@ -182,7 +186,7 @@ public class GeoJsonTypeHandler extends PointTypeHandler
      * @version        $version$, Sat, Dec 8, '18
      * @author         Enter your name here...
      */
-    public static class GeoJsonRecordFile extends CsvFile {
+    public static class GeoJsonRecordFile extends ConvertibleFile {
 
         /** _more_ */
         private Repository repository;
@@ -205,9 +209,9 @@ public class GeoJsonTypeHandler extends PointTypeHandler
          *
          * @throws IOException _more_
          */
-        public GeoJsonRecordFile(Request request, Repository repository, GeoJsonTypeHandler ctx, Entry entry,IO.Path path)
+        public GeoJsonRecordFile(Request request, Repository repository, GeoJsonTypeHandler ctx, Entry entry,List<String> args, IO.Path path)
                 throws IOException {
-            super(path, ctx, null);
+            super(request,  ctx, entry, args, path);
 	    typeHandler = ctx;
             this.repository = repository;
             this.entry      = entry;
@@ -225,6 +229,10 @@ public class GeoJsonTypeHandler extends PointTypeHandler
         @Override
         public InputStream doMakeInputStream(boolean buffered)
                 throws Exception {
+	    List<String> commands =getCsvCommands();
+	    if(commands.size()>0) {
+		return super.doMakeInputStream(buffered);
+	    }
 	    ByteArrayOutputStream bos = new ByteArrayOutputStream();
 	    PrintStream           pw  = new PrintStream(bos);
 	    InputStream source = super.doMakeInputStream(buffered);
