@@ -170,6 +170,9 @@ function RecordFilter(display,filterFieldId, properties) {
 	    if(this.isText) return false;
 	    return this.getField().isFieldEnumeration();
 	},
+	isFieldDate: function() {
+	    return this.getFieldType()=="date";
+	},	
 	isFieldMultiEnumeration: function() {
 	    return this.getField().isFieldMultiEnumeration();
 	},
@@ -238,9 +241,9 @@ function RecordFilter(display,filterFieldId, properties) {
 		if(minValue!= dfltMinValue || maxValue!= dfltMaxValue) {
 		    value = [minValue,maxValue];
 		}
- 	    } else if(this.getFieldType()=="date"){
-		let date1 = $("#" + this.display.getDomId("filterby_" + this.getId()+"_date1")).val();
-		let date2 = $("#" + this.display.getDomId("filterby_" + this.getId()+"_date2")).val();
+ 	    } else if(this.isFieldDate()){
+		let date1 = $("#" + this.display.getDomId("filterby_" + this.getId()+"_date_from")).val();
+		let date2 = $("#" + this.display.getDomId("filterby_" + this.getId()+"_date_to")).val();
 		if(date1!=null && date1.trim()!="") 
 		    date1 =  Utils.parseDate(date1);
 		else
@@ -326,7 +329,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		if(isNaN(rowValue) || rowValue=="")  ok =false;
 		else if(!isNaN(this.mySearch.value[0]) && rowValue<this.mySearch.value[0]) ok = false;
 		else if(!isNaN(this.mySearch.value[1]) && rowValue>this.mySearch.value[1]) ok = false;
-	    } else if(this.getFieldType()=="date"){
+	    } else if(this.isFieldDate()){
 		if(this.mySearch.value &&  Array.isArray(this.mySearch.value)) {
 		    if(rowValue == null) {
 			ok = false;
@@ -457,6 +460,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	},
 	    
 	initWidget: function(inputFunc) {
+	    let _this= this;
 	    if(!this.isEnabled()) return;
 	    this.inputFunc = inputFunc;
 	    this.fakeInput  = {
@@ -478,8 +482,56 @@ function RecordFilter(display,filterFieldId, properties) {
 		}
 	    }
 
-
 	    this.initDateWidget(inputFunc);
+	    let processDateSelect = (v)=>{
+		let now=new Date();
+		let from = now;
+		let to;
+		let widgetId = _this.widgetId;
+		if(v=='') {
+		    jqid(widgetId+'_date_from').val('');
+		    jqid(widgetId+'_date_to').val('');		    
+		    inputFunc(jqid(widgetId+'_date_from'),null,{from:'',to:'',select:''});
+		    return;
+		}
+		if(v=='thisyear') {
+		    let year  = now.getFullYear();
+		    from = new Date(year, 0, 1);
+		    to = new Date(year, 11, 31);			
+		} else    if(v.startsWith('year_')) {
+		    let year = parseInt(v.substring('year_'.length));
+		    from = new Date(year, 0, 1);
+		    to = new Date(year, 11, 31);			
+		} else    if(v=='ytd') {
+		    let year  = now.getFullYear();
+		    from = new Date(year, 0, 1);
+		    to = now;
+		} else {
+		    let date =Utils.createDateInner(v,now);
+		    if(date.getTime()<now.getTime()) {
+			from = date; to = now;
+		    } else {
+			from = now; to = date;
+		    }
+		}
+		from = Utils.formatDateYYYYMMDD(from);
+		to = Utils.formatDateYYYYMMDD(to);		    
+		jqid(widgetId+'_date_from').val(from);
+		jqid(widgetId+'_date_to').val(to);		    
+		inputFunc(jqid(widgetId+'_date_from'),null,{from:from,to:to,select:v});
+	    };
+	    
+	    if(this.dateRadiosId) {
+		jqid(this.dateRadiosId).find('input:radio').change(function() {
+		    processDateSelect($(this).attr('value'));
+		});
+	    }
+
+	    if(this.dateSelectId) {
+		jqid(this.dateSelectId).change(function() {
+		    processDateSelect($(this).val());
+		});
+	    }
 	    //	HtmlUtils.initSelect($("#" + this.widgetId));
 	    if(this.tagCbxs) {
 		let _this = this;
@@ -566,11 +618,18 @@ function RecordFilter(display,filterFieldId, properties) {
 
 
 	    let id = this.widgetId;
-	    if(prop.id && prop.id.endsWith("date1")) {
-		id+="_date1";
-	    } else 	if(prop.id && prop.id.endsWith("date2")) {
-		id+="_date2";
+	    if(this.isFieldDate() && prop?.value?.select) {
+		jqid(id+'_date_from').val(prop.value.from);
+		jqid(id+'_date_to').val(prop.value.to);
+		jqid(id+'_date_select').val(prop.value.select);				
+		return
 	    }
+	    if(prop.id && prop.id.endsWith("date_from")) {
+		id+="_date_from";
+	    } else 	if(prop.id && prop.id.endsWith("date_to")) {
+		id+="_date_to";
+	    }
+
 
 	    let widget = $("#"+id);
 	    if(widget.attr("isCheckbox")) {
@@ -592,6 +651,7 @@ function RecordFilter(display,filterFieldId, properties) {
 							       this.getProperty("filter.includeAll", true))));
 	},
 	getWidget: function(fieldMap, bottom,records, vertical) {
+	    let labelVertical = vertical || this.getProperty(this.getId()+".filterLabelVertical",false)  || this.getProperty("filterLabelVertical",false);
 	    this.records = records;
 	    let debug = false;
 	    if(debug) console.log(this.id +".getWidget");
@@ -611,6 +671,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    let widgetId = this.widgetId = this.getFilterId(this.getId());
 	    let widgetLabel =   this.getProperty(this.getId()+".filterLabel",this.getLabel());
 	    let includeAll = this.getIncludeAll();
+
 
             if(this.ops) {
 		let labels =[];
@@ -842,10 +903,40 @@ function RecordFilter(display,filterFieldId, properties) {
 		widget += '-';
                 widget += HtmlUtils.input('',dfltValueMax,[STYLE,maxStyle,'data-type',this.getFieldType(),'data-max',max,'class','display-filter-range display-filter-input', 'id',widgetId+'_max','xsize',3,'fieldId',this.getId()]);
 	    } else if(this.getFieldType() == 'date') {
-                widget =HtmlUtils.datePicker('','',['class','display-filter-input','style',widgetStyle, 'id',widgetId+'_date1','fieldId',this.getId()]) +'-' +
-		    HtmlUtils.datePicker('','',['class','display-filter-input','style',widgetStyle, 'id',widgetId+'_date2','fieldId',this.getId()]);
-		this.dateIds.push(widgetId+'_date1');
-		this.dateIds.push(widgetId+'_date2');
+                widget =HtmlUtils.datePicker('','',['class','display-filter-input','style',widgetStyle, 'id',widgetId+'_date_from','fieldId',this.getId()]) +'-' +
+		    HtmlUtils.datePicker('','',['class','display-filter-input','style',widgetStyle, 'id',widgetId+'_date_to','fieldId',this.getId()]);
+		this.dateIds.push(widgetId+'_date_from');
+		this.dateIds.push(widgetId+'_date_to');
+
+		let selects = this.getProperty(this.getId()+'.filterDateSelects');
+
+		if(selects) {
+		    if(!this.getProperty(this.getId()+'.filterDateShowRange',true)) {
+			widget  = HU.span([ATTR_STYLE,'display:none;'], widget);
+		    }
+		    this.dateSelectId = widgetId+'_date_select';
+		    selects = selects.split(",").map(o=>{
+			let toks = Utils.split(o,':',true,true);
+			if(toks.length==2) return {value:toks[0],label:toks[1]};
+			return {value:o,label:o};
+		    });
+		    let select;
+		    if(this.getProperty(this.getId()+'.filterDateShowRadio',false)) {
+			this.dateRadiosId = widgetId+'_date_radios';
+			let name = HU.getUniqueId('radios_');
+			selects = Utils.mergeLists([{value:'',label:'All dates'}],selects);
+			select = HU.div([ATTR_ID,this.dateRadiosId,
+					 ATTR_STYLE,HU.css('text-align','left')], HU.radioGroup(name, selects));
+		    } else {
+			selects = Utils.mergeLists([{value:'',label:'Select date'}],selects);
+			select= HU.select('',[ATTR_ID,widgetId+'_date_select','ignore',true],selects);
+		    }
+		    if(labelVertical)
+			widget += select;
+		    else
+			widget=HU.span([],widget)+HU.span([ATTR_STYLE,'margin-left:5px'],select);
+		}
+
             } else {
 		let dfltValue = this.getPropertyFromUrl(this.getId() +".filterValue","");
 		let width = this.getProperty(this.getId() +".filterWidth","150px");		
@@ -888,7 +979,6 @@ function RecordFilter(display,filterFieldId, properties) {
 		    if(!Utils.stringDefined(widgetLabel)) widgetLabel = "";
 		    else widgetLabel = widgetLabel+": ";
 		}
-		let labelVertical = vertical || this.getProperty(this.getId()+".filterLabelVertical",false)  || this.getProperty("filterLabelVertical",false);
 		widgetLabel = this.display.makeFilterLabel(widgetLabel,tt,labelVertical);
 		if(labelVertical) widgetLabel = widgetLabel+"<br>";
 		if(vertical) {
@@ -900,6 +990,9 @@ function RecordFilter(display,filterFieldId, properties) {
 	    if(!vertical)
 		widget= widget +(this.hideFilterWidget?"":"&nbsp;&nbsp;");
 	    if(this.prefix) widget = this.prefix+widget;
+
+	    let show = this.getProperty(this.getId() +".filterShow",this.getProperty("filterShow",true));
+	    if(!show) widget=HU.div([ATTR_STYLE,'display:none;'], widget);
 
 	    return widget;
 	},

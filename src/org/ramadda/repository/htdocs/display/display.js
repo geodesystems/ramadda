@@ -1760,6 +1760,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'headerOrientation',ex:'vertical'},
 	{p:'filterSliderImmediate',ex:true,tt:'Apply the change while sliding'},
 	{p:'filterLogic',ex:'and|or',tt:'Specify logic to apply filters'},		
+	{p:'&lt;field&gt;.filterShow',ex:'false'},
 	{p:'&lt;field&gt;.filterValue'},
 	{p:'&lt;field&gt;.filterValueMin'},
 	{p:'&lt;field&gt;.filterValueMax'},
@@ -1768,6 +1769,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'&lt;field&gt;.filterMultipleSize',ex:5},
 	{p:'&lt;field&gt;.filterIncludeAll',ex:true},
 	{p:'&lt;field&gt;.filterLive',ex:'true',tt:'Search live as the user presses a key'},
+	{p:'&lt;field&gt;.filterDateSelects',
+	 ex:'-30 days:Last 30 days,-60 days:Last 60 days,-90 days:Last 90 days,ytd:Year to date,thisyear:This year,year_2022:2022',
+	 tt:'Add a menu of select choices for dates'},	
+	{p:'&lt;field&gt;.filterDateShowRange',ex:true},
+	{p:'&lt;field&gt;.filterDateShowRadio',ex:true},
+
+	{p:'filterDateSelectRadio',ex:true},
 	{p:'filterShowCount',ex:false},
 	{p:'filterShowTotal',ex:true},		
 	{p:'&lt;field&gt;.filterLabel'},
@@ -2592,10 +2600,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let filter = this.filterMap?this.filterMap[prop.fieldId]:null;
 		if(!filter) return;
 		let widgetId = this.getFilterId(prop.fieldId);
-		if(prop.id && prop.id.endsWith("date1")) {
-		    widgetId+="_date1";
-		} else 	if(prop.id && prop.id.endsWith("date2")) {
-		    widgetId+="_date2";
+		if(prop.id && prop.id.endsWith("date_from")) {
+		    widgetId+="_date_from";
+		} else 	if(prop.id && prop.id.endsWith("date_to")) {
+		    widgetId+="_date_to";
 		}
 		if(prop.fieldId == "_highlight") {
 		    this.jq(ID_FILTER_HIGHLIGHT).val(prop.value);
@@ -3939,20 +3947,24 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 	    if(debug)   this.logMsg("filter Fields:" + this.filters.length +" #records:" + records.length);
 
+//	    debug = this.type=='template';
 	    if(this.filters.length) {
 		let newData = [];
 		let logic = this.getProperty("filterLogic","and");
 		this.filters.forEach(f=>f.prepareToFilter(debug));
 		if(debug)
-		    this.logMsg("filter:" + this.filters.length);
+		    this.logMsg("filter:" + this.filters.length+' #records:' + records.length);
 		records.forEach((record,rowIdx)=>{
+		    let _debug = rowIdx<5&&debug;
 		    let allOk = true;
 		    let anyOk = false;		    
 		    this.filters.forEach(filter=>{
 			if(!filter.isEnabled()) {
+			    if(_debug) this.logMsg('filter not enabled');
 			    return;
 			}
-			let filterOk = filter.isRecordOk(record, rowIdx<5&&debug);
+			let filterOk = filter.isRecordOk(record, _debug);
+			if(_debug) this.logMsg('Filter ok:' + filterOk);
 			if(!filterOk) allOk = false;
 			else anyOk = true;
 		    });
@@ -6262,7 +6274,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 
-
 	    let hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
 	    let vertical =  this.getProperty("headerOrientation","horizontal") == "vertical";
 	    let filterClass = "display-filter";
@@ -6585,14 +6596,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
  	    let inputFunc = (input, input2, value) =>{
 		let debug = false;
 		if(this.ignoreFilterChange) return;
+		if(input.attr('ignore')) return;
                 let id = input.attr(ID);
 		if(!id) {
-		    console.log("No ID attribute");
+		    console.log("No ID attribute for filter");
 		    return;
 		}
 		if(debug)
 		    console.log(this.type+" filter change");
-
 
 		let changedFilter;
 		let changedFilterId;
@@ -6674,6 +6685,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(debug)
 		    console.log("calling dataFilterChanged");
 		_this.dataFilterChanged();
+
 
 		let records =[];
 		let predecessorChanged = false;
