@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Aug  6 07:54:09 EDT 2023";
+var build_date="RAMADDA build date: Tue Aug  8 05:01:20 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -29582,20 +29582,20 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    } else {
 		selected = records;
 	    }
-	    var contents = "";
+	    let contents = "";
 	    if(selected.length==0) {
 		contents = this.getEmptyMessage("Nothing found");
 	    }
 
-            var colorBy = this.getColorByInfo(selected);
+            let colorBy = this.getColorByInfo(selected);
 
 
 	    let attrs = {};
 	    attrs["selectedCount"] = selected.length;
 	    attrs["totalCount"] = records.length;
 	    for(var i=0;i<fields.length;i++) {
-		var f = fields[i];
-		var s = summary[f.getId()];
+		let f = fields[i];
+		let s = summary[f.getId()];
 		if(!s) continue;
 		if(f.isDate) {
 		    attrs[f.getId()+"_min"] = s.min;
@@ -29615,8 +29615,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		}
 	    }
 
-	    var headerTemplate = this.getProperty("headerTemplate","");
-	    var footerTemplate = this.getProperty("footerTemplate","");
+	    let headerTemplate = this.getProperty("headerTemplate","");
+	    let footerTemplate = this.getProperty("footerTemplate","");
 
 	    if(selected.length==1) {
 		let row = this.getDataValues(selected[0]);
@@ -35663,7 +35663,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                 params.initialLocation = {lon:lon,lat:lat};
 	    }
 
-	    if(Utils.stringDefined(HU.getUrlArgument(ARG_ZOOMLEVEL)) && this.getZoomLevel()) {
+	    if(!Utils.stringDefined(HU.getUrlArgument(ARG_ZOOMLEVEL)) && this.getZoomLevel()) {
 		this.hadInitialPosition = true;
                 params.initialZoom = +this.getZoomLevel();
 		params.initialZoomTimeout = this.getZoomTimeout();
@@ -44230,13 +44230,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.initGlyphButtons(dialog);
 		dialog.find('#clippathdraw').button().click(function(){
 		    let input = _this.jq('glyphedit_clippath');
-		    let html = HU.div([ATTR_STYLE,'display:inline-block;background:#ccc;'], HU.image(mapGlyph.style.imageUrl,[ATTR_TITLE,'Click to select point\nshift-click:use previous X\nmeta-click: use previous Y', 'width','600px',ATTR_CLASS,'theimage',ATTR_STYLE,HU.css('cursor','pointer','border','1px solid #ccc')]));
-		    let buttons = HU.buttons([HU.div([ATTR_CLASS,'ramadda-button-clear display-button'], 'Clear'),
-					      HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK'),
+		    let html = HU.div([ATTR_ID,_this.domId('clippath_container'),ATTR_STYLE,HU.css('position','relative','display','inline-block','background','#ccc;')],
+				      HU.image(mapGlyph.style.imageUrl,[ATTR_TITLE,'Click to select point\nshift-click:use previous X\nmeta-click: use previous Y', 'width','600px',ATTR_CLASS,'theimage',ATTR_STYLE,HU.css('cursor','pointer','border','1px solid #ccc')]));
+		    let buttons = HU.buttons([HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK'),
 					      HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
 
 		    let tryIt = true;
 		    html = buttons+
+			HU.div([ATTR_CLASS,'ramadda-button-clear display-button'], 'Clear')+HU.space(1)+
 			HU.span([ATTR_CLASS,CLASS_CLICKABLE,ATTR_ID,'pathtry',ATTR_STYLE,'width:4em'],
 				'Try') +HU.space(1) +
 HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.5em;']) +
@@ -44245,7 +44246,32 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		    let path='';
 		    let dialog = HU.makeDialog({content:html,title:'Edit Clip Path',draggable:true,header:true,anchor:$(this),my:"left top",at:"left bottom"});
 		    let output = dialog.find('.pathoutput');
-		    dialog.find('#pathtry').button().click(function(){
+		    let image = dialog.find('.theimage');
+		    let canvas;
+		    let ctx;
+		    image.on('load', function() {
+			let container = _this.jq('clippath_container');
+			container.append(
+			    HU.tag('canvas',[ATTR_ID,_this.domId('clippath_canvas'),
+					     'width',image.width(),
+					     'height',image.height(),					     
+					     ATTR_STYLE,HU.css('position','absolute','pointer-events','none','left','0px','top','0px',
+							       'background','transparent')]));
+			
+			canvas = document.getElementById(_this.domId('clippath_canvas'));
+			ctx = canvas.getContext("2d");
+			ctx.strokeStyle= "blue";
+			ctx.lineWidth=1;
+		    });
+
+
+		    let clear = () =>{
+			if(!ctx) return;
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+		    };
+
+		    let tryButton = dialog.find('#pathtry').button();
+		    tryButton.click(function(){
 			if(tryIt) {
 			    image.css('clip-path',output.val());
 			    $(this).html('Reset');
@@ -44258,6 +44284,10 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		    dialog.find('.ramadda-button-clear').button().click(()=>{
 			path='';
 			output.val('');
+			image.css('clip-path','');
+			tryButton.html('Try');
+			tryIt=true;
+			clear();
 		    });
 		    dialog.find('.ramadda-button-ok').button().click(()=>{
 			let val = output.val();
@@ -44267,21 +44297,26 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		    dialog.find('.ramadda-button-cancel').button().click(()=>{
 			dialog.remove();
 		    });		    
-		    
 
-
-		    let image = dialog.find('.theimage');
 		    let w = image.width();
 		    let h = image.height();		    
 		    let lastX=0;
 		    let lastY=0;		    
+		    
 		    image.mousedown(function(e){
 			let offset = $(this).offset();
 			let x=e.pageX - offset.left;
 			let y  =e.pageY - offset.top;
 			if(e.originalEvent.shiftKey) x = lastX;
 			if(e.originalEvent.metaKey) y = lastY;			
-			console.log(x,y,lastX,lastY);
+			if(ctx && path!='') {
+			    ctx.beginPath();
+			    ctx.moveTo(lastX,lastY);
+			    ctx.lineTo(x,y);			    
+			    ctx.stroke();
+			}
+
+
 			lastX = x; lastY = y;
 			if(path!='') path+=', ';
 			let xp = parseInt(100*(x/w));
@@ -44814,8 +44849,8 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 
 		this.propertyCache = {}
 		this.parsedMapProperties = null;
-		let min = this.jq("minlevel").val().trim();
-		let max = this.jq("maxlevel").val().trim();
+		let min = this.jq("minlevel").val()?.trim();
+		let max = this.jq("maxlevel").val()?.trim();
 		if(min=="") min = null;
 		if(max=="") max = null;	
 		this.setMapProperty('visibleLevelRange', {min:min,max:max},
@@ -47298,6 +47333,8 @@ MapGlyph.prototype = {
 	callback(elevations,ok);
     },
     getIcon: function() {
+	console.trace('get icon');
+
 	if(Utils.stringDefined(this.attrs.icon)) {
 	    return this.attrs.icon;
 	}
@@ -47921,8 +47958,10 @@ MapGlyph.prototype = {
 		style[prop] = o[prop]??this.style[prop];
 	    });
 	}
-	if(Utils.stringDefined(this.attrs.icon)) {
-	    style.externalGraphic = this.attrs.icon;
+	if(this.isDataIconCapable()) {
+	    if(Utils.stringDefined(this.attrs.icon)) {
+		style.externalGraphic = this.attrs.icon;
+	    }
 	}
 	return style;
     },
@@ -49205,7 +49244,8 @@ MapGlyph.prototype = {
 	    item('',true,true);
 	}
 	if(Utils.stringDefined(this.style.imageUrl)) {
-	    item(HU.center(HU.href(this.style.imageUrl,HU.image(this.style.imageUrl,[ATTR_STYLE,HU.css('margin-bottom','4px','border','1px solid #ccc','width','150px')]),['target','_image'])));
+	    let filter = this.getStyleFromTree('imagefilter');
+	    item(HU.center(HU.href(this.style.imageUrl,HU.image(this.style.imageUrl,[ATTR_STYLE,HU.css('margin-bottom','4px','border','1px solid #ccc','width','150px','filter',filter??'')]),['target','_image'])));
 	}
 	if(Utils.stringDefined(this.style.legendUrl)) {
 	    item(HU.center(HU.href(this.style.legendUrl,HU.image(this.style.legendUrl,[ATTR_STYLE,HU.css('margin-bottom','4px','border','1px solid #ccc','width','150px')]),['target','_image'])));
@@ -49873,12 +49913,13 @@ MapGlyph.prototype = {
 	if(!this.canDoMapStyle()) return;
 	this.attrs.fillColors = this.jq('fillcolors').is(':checked');
 	let getColorBy=(prefix)=>{
-	    return {
+	    return  {
 		property:this.jq(prefix +'colorby_property').val(),
 		min:this.jq(prefix +'colorby_min').val(),
 		max:this.jq(prefix +'colorby_max').val(),
 		colorTable:this.jq(prefix +'colorby_colortable').val()};		
 	};
+
 
 	this.attrs.fillColorBy =  getColorBy('fill');
 	this.attrs.strokeColorBy =  getColorBy('stroke');	
@@ -50311,7 +50352,7 @@ MapGlyph.prototype = {
 	    let numericProperties=Utils.mergeLists([['','Select']],numeric.map(info=>{return {value:info.property,label:info.getLabel()};}));
 	    let mapComp = (obj,prefix) =>{
 		let comp = '';
-		comp+=HU.div([ATTR_CLASS,'formgroupheader'], 'Map value to ' + prefix +' color')+ HU.formTable();
+		comp += HU.div([ATTR_CLASS,'formgroupheader'], 'Map value to ' + prefix +' color')+ HU.formTable();
 		comp += HU.formEntry('Property:', HU.select('',[ATTR_ID,this.domId(prefix+'colorby_property')],numericProperties,obj.property) +HU.space(2)+ HU.b('Range: ') + HU.input('',obj.min??'', [ATTR_ID,this.domId(prefix+'colorby_min'),'size','6',ATTR_TITLE,'min value']) +' -- '+    HU.input('',obj.max??'', [ATTR_ID,this.domId(prefix+'colorby_max'),'size','6',ATTR_TITLE,'max value']));
 		comp += HU.hidden('',obj.colorTable||'blues',[ATTR_ID,this.domId(prefix+'colorby_colortable')]);
 		comp+=HU.formEntry('Color table:', HU.div([ATTR_ID,this.domId(prefix+'colorby_colortable_label')])+
@@ -50754,14 +50795,14 @@ MapGlyph.prototype = {
 
 	    let label =  this.getLabel({addIcon:false,forLegend:true})[0];
 	    //HU.b(this.getName()+':'))
-	    let top = HU.div([ATTR_STYLE,HU.css('font-weight','bold','text-align','center')], label) +HU.hbox(contents.top.map(c=>{return HU.div([ATTR_STYLE,'margin-right:10px;'], c);}));
+	    let top = HU.div([ATTR_STYLE,HU.css('font-weight','bold','text-align','center')], label) +HU.hbox(contents.top.map(c=>{return HU.div([ATTR_STYLE,'margin-right:15px;'], c);}));
 	    jqid(this.topHeaderId).html(top);
 	}
 
 
 	let widgets = contents.first+contents.enums+contents.sliders+contents.strings;
 
-	if(Utils.stringDefined(widgets) ||contents.top) {
+	if(Utils.stringDefined(widgets) ||contents.top.length) {
 	    let update = () =>{
 		this.display.featureHasBeenChanged = true;
 		this.applyMapStyle(true);
@@ -50838,8 +50879,8 @@ MapGlyph.prototype = {
 	    
 	    this.findInLegend(CLASS_FILTER_SLIDER).each(function() {
 		let theFeatureId = $(this).attr('feature-id');
+		let featureInfo = _this.getFeatureInfo(theFeatureId);
 		let onSlide = function( event, ui, force) {
-		    let featureInfo = _this.getFeatureInfo(theFeatureId);
 		    let id = featureInfo.property;
 		    let filter = filters[id]??{};
 		    if(ui.animValues) {
@@ -50876,6 +50917,7 @@ MapGlyph.prototype = {
 		    if(range>10)
 			step = Math.max(1,Math.floor(range/100));		    
 		}
+		step = featureInfo.getStep(step);
 		sliderMap[$(this).attr('feature-id')] = {
 		    slider:   $(this),
 		    slide:onSlide,
@@ -51333,8 +51375,10 @@ MapGlyph.prototype = {
 		obj.isEnumeration = true;
 	    } else {
 		obj.isEnumeration = false;
-		obj.min = min;
-		obj.max = max;		
+		if(!Utils.isDefined(obj.min))
+		    obj.min = min;
+		if(!Utils.isDefined(obj.max))
+		    obj.max = max;		
 	    }
 	    strings = strings.sort((a,b)=>{
 		return a.localeCompare(b);
@@ -51344,8 +51388,8 @@ MapGlyph.prototype = {
 	    if(!anyNumber) {
 		stringList.push(...strings);
 	    }
-	    let range = max-min;
-	    if(debug) console.log('applyColors min:' + min +' max:' + max);
+	    let range = obj.max-obj.min;
+	    if(debug) console.log('applyColors min:' + obj.min +' max:' + obj.max);
 	    features.forEach((f,idx)=>{
 		let value = this.getFeatureValue(f,prop);
 		if(!Utils.isDefined(value)) {
@@ -51356,7 +51400,7 @@ MapGlyph.prototype = {
 		    index = (strings.indexOf(value)%ct.length);
 		} else {
 		    value = +value;
-		    let percent = (value-min)/range;
+		    let percent = (value-obj.min)/range;
 		    index = Math.max(0,Math.min(ct.length-1,Math.round(percent*ct.length)));
 		}
 
@@ -51605,6 +51649,9 @@ MapGlyph.prototype = {
 	    }
 	}
 
+
+
+
 	let tmpStyle= this.getStyle(true);
 	this.features.forEach(feature=>{
 	    if(feature.style && !feature.fixedStyle) {
@@ -51747,16 +51794,20 @@ MapGlyph.prototype = {
 	}
 	this.setRotation(this.style.rotation);
     },
+    getImageTransform:function() {
+	let transform = '';
+	if(Utils.stringDefined(this.style.transform)) 
+	    transform = this.style.transform;
+	if(Utils.isDefined(this.style.rotation) && this.style.rotation!=0)
+	    transform += ' rotate(' + this.style.rotation +'deg)';
+	if(!Utils.stringDefined(transform))  transform=null;
+	return transform;
+    },
+
     initImageLayer:function(image) {
 	this.image = image;
 	image.imageHook = (image)=> {
-	    let transform='';
-	    if(Utils.stringDefined(this.style.transform)) 
-		transform = this.style.transform;
-	    if(Utils.isDefined(this.style.rotation) && this.style.rotation!=0)
-		transform += ' rotate(' + this.style.rotation +'deg)';
-	    if(!Utils.stringDefined(transform))  transform=null;
-
+	    let transform=this.getImageTransform();
 	    let childNodes = this.image.div.childNodes;
 	    for(let i = 0, len = childNodes.length; i < len; ++i) {
                 let element = childNodes[i].firstChild || childNodes[i];
@@ -52568,6 +52619,11 @@ FeatureInfo.prototype= {
     isInt:function() {return this.getType()=='int';},
     isString:function() {return this.getType()=='string';},
     isEnumeration:function() {return this.getType()=='enumeration'||this.getType()=='enum';},
+    getStep:function(dflt) {
+	let s = this.getProperty('step');
+	if(Utils.isDefined(s)) return parseFloat(s);
+	return dflt;
+    },
     getSamplesLabels:function() {
 	return this.samples.map(sample=>{return sample.label;});
     },
