@@ -2077,7 +2077,10 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 
 
 	    if(this.getDoPageSearch()) {
-		this.jq(ID_TEXT_FIELD).focus();
+		//Put this in a timeout because if it is in a tabs then the whole page gets scrolled
+                setTimeout(()=>{
+		    this.jq(ID_TEXT_FIELD).focus();
+                },500);
 	    }
 
 	    this.initHtml();
