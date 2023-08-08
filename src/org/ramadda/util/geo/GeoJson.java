@@ -205,7 +205,6 @@ public class GeoJson extends JsonUtil {
                 return makeHeader();
             }
             if (featureIdx >= features.length()) {
-		System.err.println("DONE:" + featureIdx+" " + features.length());
                 return null;
             }
             List<String>      values  = new ArrayList<String>();
