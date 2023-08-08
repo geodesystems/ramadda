@@ -461,7 +461,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                 params.initialLocation = {lon:lon,lat:lat};
 	    }
 
-	    if(Utils.stringDefined(HU.getUrlArgument(ARG_ZOOMLEVEL)) && this.getZoomLevel()) {
+	    if(!Utils.stringDefined(HU.getUrlArgument(ARG_ZOOMLEVEL)) && this.getZoomLevel()) {
 		this.hadInitialPosition = true;
                 params.initialZoom = +this.getZoomLevel();
 		params.initialZoomTimeout = this.getZoomTimeout();
