@@ -441,6 +441,12 @@ ColorByInfo.prototype = {
     getDoCount:function() {
 	return this.doCount;
     },
+    getDoTotal:function() {
+	return this.doTotalCount;
+    },    
+    setDoTotal:function(v) {
+	this.doTotalCount=v;
+    },
     setDoCount:function(min,max) {
 	this.doCount = true;
         this.minValue = min;
@@ -466,6 +472,17 @@ ColorByInfo.prototype = {
 	});
 	return  total/cnt;
     },
+    doTotal:function(records) {
+	let total = 0;
+	let cnt = 0;
+	records.forEach(r=>{
+	    let v = r.getData()[this.index];
+	    if(!this.isValueOk(v)) return;
+	    total+= v;
+	    cnt++;
+	});
+	return  total;
+    },    
     getColorFromRecord: function(record, dflt, checkHistory,debug) {
 	this.lastValue = NaN;
 	if(!this.initDisplayCalled)   this.initDisplay();
@@ -486,7 +503,7 @@ ColorByInfo.prototype = {
 	if (this.index >= 0 || this.getDoCount()) {
 	    let value;
 	    if(records.length>1) {
-		value = this.doAverage(records);
+		value = this.getDoTotal()?this.doTotal(records):this.doAverage(records);
 //		if(isNaN(value))  console.log(records.length,cnt,total,value)
 	    } else {
 		value= records[0].getData()[this.index];
