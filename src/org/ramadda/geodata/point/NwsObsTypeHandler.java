@@ -150,11 +150,15 @@ public class NwsObsTypeHandler extends NwsStationTypeHandler {
 			    pw.print(fields);
 			    pw.print("\n");
 			    List<String> fieldList = Utils.split(fields,",",true,true);
-			    for (int i = 0; i < features.length(); i++) {
+			    String lastTime = "NONE";
+			    int rows = 0;
+			    //Run through the features in reverse order as it is most recent first
+			    for (int i = features.length()-1;i>=0; i--) {
 				JSONObject feature = features.getJSONObject(i);
 				JSONObject properties= feature.getJSONObject("properties");		
 				StringBuilder row = new StringBuilder();
 				boolean gotOneGoodOne = false;
+				rows++;
 				for(int j=0;j<fieldList.size();j++) {
 				    if(j>0) row.append(",");
 				    String f = fieldList.get(j);
@@ -169,6 +173,7 @@ public class NwsObsTypeHandler extends NwsStationTypeHandler {
 				    if(f.equals("timestamp")) {
 					String time = properties.getString(f);
 					time = time.replace("+00:00","");
+					lastTime = time;
 					row.append(time);
 					continue;
 				    }
@@ -193,6 +198,7 @@ public class NwsObsTypeHandler extends NwsStationTypeHandler {
 			    }
 			    pw.flush();
 			    pw.close();
+			    //			    System.err.println("***** fetching:" +getFilename() +" last time:" + lastTime +" #rows:" + rows);
 			} catch(Exception exc) {
 			    System.err.println("Error reading NwsObs:" + getFilename()+"\nError:" + exc);
 			    exc.printStackTrace();
