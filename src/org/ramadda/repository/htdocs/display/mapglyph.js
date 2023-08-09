@@ -218,8 +218,6 @@ MapGlyph.prototype = {
 	callback(elevations,ok);
     },
     getIcon: function() {
-	console.trace('get icon');
-
 	if(Utils.stringDefined(this.attrs.icon)) {
 	    return this.attrs.icon;
 	}
