@@ -233,11 +233,15 @@ var Utils =  {
         return meta.attr('content')=="POST";
     },
     max: function(v1,v2) {
+	if(!Utils.isDefined(v1)) return v2;
+	if(!Utils.isDefined(v2)) return v1;	
         if(isNaN(v1)) return v2;
         if(isNaN(v2)) return v1;        
         return Math.max(v1,v2);
     },
     min: function(v1,v2) {
+	if(!Utils.isDefined(v1)) return v2;
+	if(!Utils.isDefined(v2)) return v1;	
         if(isNaN(v1)) return v2;
         if(isNaN(v2)) return v1;        
         return Math.min(v1,v2);
