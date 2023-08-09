@@ -1629,16 +1629,18 @@ var RecordUtil = {
         for (j = 0; j < records.length; j++) {
             var record = records[j];
             if (!isNaN(record.getLatitude()) && !isNaN(record.getLongitude())) {
-                if (j == 0) {
+		if(record.getLatitude()==0)
+		    console.log(record.getLatitude(),record.getLongitude());
+		if (j == 0) {
                     north = record.getLatitude();
                     south = record.getLatitude();
                     west = record.getLongitude();
                     east = record.getLongitude();
                 } else {
-                    north = Math.max(north, record.getLatitude());
-                    south = Math.min(south, record.getLatitude());
-                    west = Math.min(west, record.getLongitude());
-                    east = Math.max(east, record.getLongitude());
+                    north = Utils.max(north, record.getLatitude());
+                    south = Utils.min(south, record.getLatitude());
+                    west = Utils.min(west, record.getLongitude());
+                    east = Utils.max(east, record.getLongitude());
                 }
                 if (record.getLongitude() < -180 || record.getLatitude() > 90) {
 		    //		    if(errorCnt++<50)
