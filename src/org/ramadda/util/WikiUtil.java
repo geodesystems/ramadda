@@ -1781,19 +1781,23 @@ public class WikiUtil {
                     TabState     tabInfo  = new TabState();
                     String       divClass = "";
 		    Hashtable props = getProps.apply(tline);
-		    if (props.get("center") != null) {
+		    if (Utils.getProperty(props,"center",false)) {
 			divClass += " ramadda-tabs-center ";
 		    }
 
-		    if (props.get("min") != null) {
+		    if (Utils.getProperty(props,"min",false)) {
 			divClass += " ramadda-tabs-min ";
-		    } else if (props.get("minarrow") != null) {
+		    } else if (Utils.getProperty(props,"minarrow",false)) {
 			divClass +=
 			    " ramadda-tabs-min ramadda-tabs-minarrow ";
 		    }
 
-		    if (props.get("transparent") != null) {
+		    if (Utils.getProperty(props,"transparent",false)) {
 			divClass += " ramadda-tabs-transparent ";
+		    }
+		    String clazz= "";
+		    if(Utils.getProperty(props,"tight",false)) {
+			clazz = "ramadda-tabs-tight";
 		    }
 		    
 		    tabInfo.minHeight = (String) props.get("minHeight");
@@ -1805,7 +1809,7 @@ public class WikiUtil {
                     buff.append("\n");
                     HU.open(buff, HU.TAG_DIV, "class", divClass);
                     HU.open(buff, HU.TAG_DIV, "id", tabInfo.id, "class",
-                            "ui-tabs");
+                            "ui-tabs " + clazz);
                     buff.append("\n");
                     HU.open(tabInfo.title, HU.TAG_UL);
                     tabInfo.title.append("\n");
