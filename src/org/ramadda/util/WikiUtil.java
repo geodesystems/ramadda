@@ -1787,7 +1787,8 @@ public class WikiUtil {
 
 		    if (Utils.getProperty(props,"min",false)) {
 			divClass += " ramadda-tabs-min ";
-		    } else if (Utils.getProperty(props,"minarrow",false)) {
+		    } else if (Utils.getProperty(props,"minarrow",false) ||
+			       Utils.getProperty(props,"minArrow",false)) {
 			divClass +=
 			    " ramadda-tabs-min ramadda-tabs-minarrow ";
 		    }
@@ -1797,9 +1798,13 @@ public class WikiUtil {
 		    }
 		    String clazz= "";
 		    if(Utils.getProperty(props,"tight",false)) {
-			clazz = "ramadda-tabs-tight";
+			clazz += " ramadda-tabs-tight ";
 		    }
 		    
+		    if(Utils.getProperty(props,"noBorder",false)) {
+			clazz+= " ramadda-tabs-noborder ";
+		    }
+
 		    tabInfo.minHeight = (String) props.get("minHeight");
 		    if (tabInfo.minHeight != null) {
 			tabInfo.minHeight = getSize(tabInfo.minHeight);

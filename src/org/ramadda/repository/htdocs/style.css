@@ -5291,6 +5291,9 @@ a.wiki-link-noexist {
     padding:0em  !important;
 }
 
+.ramadda-tabs-noborder .ui-tabs-panel {
+    border: 0px solid transparent !important;
+}
 
 /** for pagination **/
 .vertical-center {
