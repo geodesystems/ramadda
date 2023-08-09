@@ -285,7 +285,7 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
             if (childFile.isHidden()) {
                 continue;
             }
-            if ((age != 0) && (now - childFile.lastModified()) < age) {
+            if ((age > 0) && (now - childFile.lastModified()) < age) {
                 continue;
             }
             if ( !match(childFile, includes, true)) {
