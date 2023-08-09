@@ -889,12 +889,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'doTrianglemap',ex:'true',tt:'Create a triangle map'},		
 	{p:'doSquaremap',ex:'true',tt:'Create a square map'},		
 	{p:'hexmapShowCount',ex:'true',tt:'Display the count'},
+	{p:'hexmapShowTotal',ex:'true',tt:'Total the values'},	
 	{p:'hexmapMinValue',ex:'1',tt:'If doing averages this is the lower cut off to add to a total'},
 	{p:'hexmapMaxValue',ex:'100',tt:'If doing averages this is the upper cut off to add to a total'},
 	{p:'hexmapUseFullBounds',d:true,tt:'When filtering is the original fill bounds used'},
 	{p:'hexmapPadding',tt:'Percent to bad out the bounding box',d:0.05},
-	{p:'hexmapCellSide',tt:'How many on a side',d:25},
-	{p:'hexmapUnits',tt:'Side units',d:'miles'},
+	{p:'hexmapCellSide',tt:'How many on units per side',d:25},
+	{p:'hexmapUnits',tt:'Side units',ex:'miles|kilometers|degrees|radians',d:'miles'},
 	{p:'hexmapStrokeColor',d:'blue'},
 	{p:'hexmapStrokeWidth',d:1},
 	{p:'hexmapStrokeOpacity',d:1.0},
@@ -902,6 +903,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'hexmapFillColor',d:'transparent'},
 	{p:'hexmapFillOpacity',d:1.0},	
 	{p:'hexmapColorBy',tt:'Field id to color the hexmap by'},
+	{p:'hexmapColorTable',tt:'Color table for hexmap'},	
 	{p:'hexmapEmptyStrokeColor'},
 	{p:'hexmapEmptyStrokeWidth'},
 	{p:'hexmapEmptyFillColor'},
@@ -985,15 +987,26 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	    this.startProgress();
         },
+
         checkLayout: function() {
             if (!this.map) {
                 return;
             }
             let d = this.jq(ID_MAP);
-            if (d.width() > 0 && this.lastWidth != d.width() && this.map) {
+            if (d.width() ==0) return;
+	    //Wait a bit so the dom settles down
+	    setTimeout(()=>{
+		this.checkLayoutInner();
+	    },1000);
+	},
+
+        checkLayoutInner: function() {
+            let d = this.jq(ID_MAP);
+            this.map.getMap().updateSize();
+            if (d.width() > 0 && this.lastWidth != d.width()) {
                 this.lastWidth = d.width();
-                this.map.getMap().updateSize();
             }
+
 	    if(!this.setMapLocationAndZoom && this.mapParams) {
 		this.setMapLocationAndZoom = true;
 		if(this.mapParams.initialZoom>=0) {
@@ -1003,8 +1016,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    let loc = MapUtils.createLonLat(this.mapParams.initialLocation.lon, this.mapParams.initialLocation.lat);
 		    this.map.setCenter(loc);
 		}
-
 	    }
+	    //And for some reason we need a little more delay for the final redraw
+	    setTimeout(()=>{
+		this.map.redraw();
+	    },500);
         },
 
 	handlePopup: function(feature, popup) {
@@ -3516,7 +3532,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(!MapUtils.loadTurf(()=>{this.makeHexmap(records, fields, points,bounds);})) {
 		return;
 	    }
-
 	    let bbox =  this.makeTurfBounds(this.getHexmapUseFullBounds()?this.fullBounds:bounds,this.getHexmapPadding());
 	    let cellSide = this.getHexmapCellSide();
 	    let options = {units: this.getHexmapUnits()};
@@ -3529,9 +3544,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    } else {
 		hexgrid = turf.hexGrid(bbox, cellSide, options);
 	    }
-
 	    let vpoints = [];
-//	    console.time('x');
 	    let yes= 0, no=0;
 
 
@@ -3567,10 +3580,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    minCount=minCount==-1?feature.records.length:Math.min(minCount, feature.records.length);		    
 		}
 	    });
-//	    console.timeEnd('x');
-//	    console.log("yes:" + yes +" no:" + no);
 	    this.hexmapLayer =this.createGeoJsonLayer('Hexmap',hexgrid,this.hexmapLayer);
-
             let colorBy = this.getColorByInfo(records,'hexmapColorBy',null,null,null,
 					      this.lastColorBy,
 					      {colorTableProperty:'hexmapColorTable',
@@ -3579,13 +3589,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.getHexmapShowCount()) {
 		colorBy.setDoCount(minCount,maxCount);
 	    } else {
+		let doTotal = this.getHexmapShowTotal();
+		colorBy.setDoTotal(doTotal);
 		//recalculate the color ranges based on the average value
 		let minValue = NaN;
 		let maxValue = NaN;		
 		this.hexmapLayer.features.forEach((f,idx)=>{
 		    let records=hexgrid.features[idx].records;
 		    if(!records || records.length==0) return;
-		    let value = colorBy.doAverage(records);
+		    let value = doTotal?
+			colorBy.doTotal(records):
+			colorBy.doAverage(records);
 		    minValue = Utils.min(minValue,value);
 		    maxValue = Utils.max(maxValue,value);		    
 		});
