@@ -5287,6 +5287,11 @@ a.wiki-link-noexist {
     padding-right:1em;
 }
 
+.ramadda-tabs-tight .ui-tabs-panel {
+    padding:0em  !important;
+}
+
+
 /** for pagination **/
 .vertical-center {
     text-align:center;
