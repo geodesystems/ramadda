@@ -1988,6 +1988,11 @@ RepositoryMap.prototype = {
 	Utils.toBack(this.nonSelectLayers, layer);
 	this.checkLayerOrder();
     },    
+    redraw: function() {
+	this.getMap().layers.forEach(layer=>{
+	    layer.redraw();
+	});
+    },
     checkLayerOrder: function() {
 	//Offset a bunch from the base
 	let base = this.numberOfBaseLayers+100;
