@@ -262,6 +262,26 @@ Change how entries are sorted. e.g., by name, by date, ascending, etc.
     </type>
 
     <type
+       name="Wiki Property"
+       showinhtml="false"
+       id="wikiproperty">
+      <help>
+<![CDATA[
+	 Specify a property value to be substituted in wiki text. Form in the wiki text is:
+<pre>
+.... ${wikiproperty.theproperty default="some value"} ...
+</pre>	 
+
+]]>
+</help>
+<element name="key" label="Key" datatype="string" suffix="match &quot;theproperty&quot; above"/>
+<element name="value" label="Value" datatype="string" rows="5"/>
+</type>
+
+
+
+
+    <type
        searchable="true" browsable="true"
        name="Alias"
        id="content.alias"
