@@ -528,4 +528,83 @@ indexField="depth" fields="salinity,density"
 </type>
 
 
+
+<type name="type_buoy_nortekadcp" 
+description="NORTEK ADCP Buoy" 
+super="type_point" 
+category="Point Data"
+supercategory="Geoscience"
+handler="org.ramadda.data.services.PointTypeHandler">
+  <property name="icon" value="/point/nortek.png"/>
+  <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+  <property name="form.area.show" value="false"/>
+  <property name="form.location.show" value="true"/>
+  <property name="form.properties.show" value="false"/>
+  <column  name="instrument"  label="Instrument" type="enumerationplus" cansearch="true"/>
+  <property name="record.pattern.date.format" value="yyyy-MM-dd HH:mm:ss"/>
+  <property name="record.patterns"
+	    value="latitude:.*Latitude_comma_(.*?)_comma_,longitude:.*Longitude_comma_(.*?)_comma_,instrument:.*Instrument +ID_comma_(.*?)\n"/>
+<property name="record.properties">
+commentLineStart=%
+fieldRow=-2
+stripBom=true
+record.type.time=date
+record.format.time=MM/dd/yyyy hh:mm:ss a
+</property>
+<property name="bubble">
+<![CDATA[
++section  title={{name}}
+{{display_profile showMenu=true yAxisReverse=true marginTop=40  profileMode=markers
+profileMode="lines+markers" markerSize=8 symbol1=circle symbol2=diamond
+indexField="depth" fields="temperature,conductivity"
+}}
+-section
+]]></property>
+
+
+<property name="mapglyphs">
+props:fontSize:0px,iconSize:75,canvasWidth:500,canvasHeight:100,fill:#efefef,borderWidth:2,borderColor:#000,font:bold 36px sans-serif
+image,pos:nw,dx:10,dy:10-ch,width:60,height:60,url:${icon}
+label,pady:5,pos:nw,dx:80,dy:10-ch,label:${entryname}  
+label,pos:s,dx:cw2,dy:-10,font:36px sans-serif,label:${match  pattern="(atmp)" suffix=" ${unit}" prefixLabel=true}
+</property>
+
+<wiki>
+<![CDATA[
++section title={{name}}
+:navtop
+:heading Charts
+{{display_linechart fields=temperature}} 
+{{display_linechart height=250px  vAxisSelectedFields=true 
+fields="lower_speed,upper_speed"}} 
++row
++col-3
+-col
++col-6
+{{display_profile showMenu=true yAxisReverse=true marginTop=40                                                                           
+profileMode="lines+markers" markerSize=2 symbol1=circle                                                                                     
+indexField="depth" fields="temperature"                                                                                                         
+}} 
+-col
+-row
+
+:heading Table
+{{display_download }} 
+{{display_table }}
+
+:heading Instrument Information
++row
++col-8
+{{information}}
+-col
++col-4
+{{mapentry}}
+-col
+-row
+-section
+]]>
+</wiki>
+</type>
+
+
 </types>
