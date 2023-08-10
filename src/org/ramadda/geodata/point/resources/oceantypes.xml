@@ -235,7 +235,8 @@ fields=date[type="string" isdate="true"] time[type="string" istime="true"],LATIT
 	</type>
 	
 	<type   name="type_point_ocean_csv_sado_meteo"  super="type_point_ocean" 
-			description="SADO Meteo Data"  handler="org.ramadda.data.services.PointTypeHandler">
+		description="SADO Meteo Data"
+		handler="org.ramadda.data.services.PointTypeHandler">
 		 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 		 <property name="record.properties">
 	delimiter=,
@@ -309,6 +310,122 @@ label,pos:s,dx:cw2,dy:-10,font:36px sans-serif,label:${match  pattern="(atmp)" s
 :heading Table
 {{display_download}}
 {{display_htmltable  includeDate=false }} 
+-section
+]]>
+</wiki>
+</type>
+
+
+
+<!--
+Below is an type definition for the SOFAR buoy file format
+The type name can be anything but it is good to have it be prefaced with type_...
+
+The super is the super type, i.e., the base type type_point
+The category and supercategory are for showing this type in the
+New->Choose Type form
+
+The handler is the default PointTypeHandler
+-->
+<type name="type_buoy_sofar" 
+description="SOFAR Buoy Data" 
+super="type_point" 
+category="Point Data"
+supercategory="Geoscience"
+handler="org.ramadda.data.services.PointTypeHandler">
+<!--
+define the icon for this type. This is in the plugins htdocs/point directory 
+-->
+  <property name="icon" value="/point/sofar.png"/>
+<!--
+This is the main class for handling text/csv data files
+-->
+
+  <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<!--   Some properties for what we show in the edit form  -->
+  <property name="form.area.show" value="false"/>
+  <property name="form.location.show" value="true"/>
+  <property name="form.altitude.show" value="true"/>
+  <property name="form.date.show" value="false"/>
+  <property name="form.properties.show" value="false"/>
+<!-- This defines a metadata attribute. It should get filled out by the record.patterns below -->
+<column  name="device"  label="Device" type="enumerationplus" cansearch="true"/>
+<column  name="cast_duration"  label="Cast Duration" type="double" cansearch="false"/>
+<column  name="samples_per_second"  label="Samples/Second" type="double" cansearch="false"/>
+
+
+  <!-- This is a set of pattern matching for pulling out latitude, longitude and date from the text header
+       It is of the form:
+       field1:pattern,field2:pattern,...
+ -->
+  <property name="record.pattern.date.format" value="yyyy-MM-dd HH:mm:ss"/>
+  <property name="record.patterns"
+	    value="latitude:.*Start +latitude_comma_(.*?)\n,longitude:.*Start +longitude_comma_(.*?)\n,date:.*Cast +time +\(UTC\)_comma_(.*)\n,elevation:.*Start +altitude_comma_(.*?)\n,device:.*Device_comma_(.*?)\n,cast_duration:.*Cast +duration +\(Seconds\)_comma_(.*?)\n,samples_per_second:.*Samples +per +second_comma_(.*?)\n"/>
+  <!-- These are properties for the CsvFile code when parsing the file
+       the sofar buoy header has % for a delimiter
+       The firstLineDefinesFields flag specifies that the first non comment line in the file is a comma separated list
+       of field names and possibly units
+-->
+<property name="record.properties">
+commentLineStart=%
+firstLineDefinesFields=true                                                          
+</property>
+
+<!-- for the map -->
+<property name="bubble">
+<![CDATA[
++section  title={{name}}
+{{display_profile showMenu=true yAxisReverse=true marginTop=40  profileMode=markers
+profileMode="lines+markers" markerSize=8 symbol1=circle symbol2=diamond
+indexField="depth" fields="temperature,conductivity"
+}}
+-section
+]]></property>
+
+
+<!-- This is the data icons for the IMDV map -->
+<property name="mapglyphs">
+props:fontSize:0px,iconSize:75,canvasWidth:500,canvasHeight:100,fill:#efefef,borderWidth:2,borderColor:#000,font:bold 36px sans-serif
+image,pos:nw,dx:10,dy:10-ch,width:60,height:60,url:${icon}
+label,pady:5,pos:nw,dx:80,dy:10-ch,label:${entryname}  
+label,pos:s,dx:cw2,dy:-10,font:36px sans-serif,label:${match  pattern="(atmp)" suffix=" ${unit}" prefixLabel=true}
+</property>
+<!-- The default wiki display for this entry -->
+<wiki>
+<![CDATA[
++section title={{name}}
+:navtop
+{{description wikify=true}}
+
+:heading Plots
+{{group hAxisTitle=Depth tooltip="${default}"}}    
++row tight=true
++col-6
+{{display_profile showMenu=true yAxisReverse=true marginTop=40  profileMode=markers
+profileMode="lines+markers" markerSize=8 symbol1=circle symbol2=diamond
+indexField="depth" fields="temperature,conductivity"
+}}
+-col
++col-6
+{{display_profile showMenu=true yAxisReverse=true marginTop=40  profileMode=markers
+profileMode="lines+markers" markerSize=8 symbol1=circle symbol2=diamond
+indexField="depth" fields="salinity,density"
+}}
+-col
+-row
+:heading Table
+{{display_download}}
+{{display_htmltable  includeUnits=false}}
+:heading Buoy Information
++row
++col-8
+{{information}}
+-col
++col-4
+{{mapentry}}
+-col
+-row
+
 -section
 ]]>
 </wiki>
