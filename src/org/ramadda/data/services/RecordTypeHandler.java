@@ -391,7 +391,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
             if (p == null) {
                 p = new Hashtable();
             }
-            p.putAll(Utils.getProperties(typeProperties));
+            p.putAll(Utils.getProperties(typeProperties,true));
         }
 
 
