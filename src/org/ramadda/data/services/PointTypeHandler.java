@@ -604,7 +604,6 @@ public class PointTypeHandler extends RecordTypeHandler {
                                            PointMetadataHarvester metadata)
             throws Exception {
 
-	boolean debug =getRepository().getProperty("debug.pointdata.new",false);
 
         PointEntry pointEntry = (PointEntry) recordEntry;
         Entry      entry      = pointEntry.getEntry();
@@ -612,7 +611,7 @@ public class PointTypeHandler extends RecordTypeHandler {
             return;
         }
 
-
+	boolean debug =getRepository().getProperty("debug.pointdata.new",entry.getTypeHandler().getTypeProperty("debug.pointdata.new",true));
 
 
 
@@ -795,12 +794,12 @@ public class PointTypeHandler extends RecordTypeHandler {
                     String pattern = toks2.get(1).replace("_comma_",",").replace("_nl_","\n").replace("\\n","\n");
                     String value   = StringUtil.findPattern(header, pattern);
 		    if(debug)
-			System.err.println("\t" +field +" p:" + pattern +" v:" +value);
+			System.err.println("\t" +field +" p:" + pattern.trim() +" v:" +value);
                     if (Utils.stringDefined(value)) {
                         if (field.equals("latitude")) {
-                            entry.setLatitude(Utils.decodeLatLon(value));
+                            entry.setLatitude(decode(value));
                         } else if (field.equals("longitude")) {
-                            entry.setLongitude(Utils.decodeLatLon(value));
+                            entry.setLongitude(decode(value));
                         } else if (field.equals("elevation") || field.equals("altitude")) {
                             entry.setAltitude(Double.parseDouble(value));
                         } else if (field.equals("time")) {
@@ -814,9 +813,12 @@ public class PointTypeHandler extends RecordTypeHandler {
                             if (time != null) {
                                 value += " " + time;
                             }
-                            Date date = sdf.parse(value);
-                            //                      System.err.println("date:" + date);
-                            entry.setStartAndEndDate(date.getTime());
+			    //A hack
+			    if(!value.trim().equals("none") && !value.trim().equals("")) {
+				Date date = sdf.parse(value);
+				//                      System.err.println("date:" + date);
+				entry.setStartAndEndDate(date.getTime());
+			    }
                         } else {
                             if (columns != null) {
                                 for (Column c : columns) {
@@ -835,6 +837,16 @@ public class PointTypeHandler extends RecordTypeHandler {
 
 
 
+    }
+
+    private double decode(String lls) {
+	lls = lls.trim();
+        lls = lls.replace(" ", ":");
+        lls = lls.replace(":S", "S");
+        lls = lls.replace(":N", "N");
+        lls = lls.replace(":E", "E");
+        lls = lls.replace(":W", "W");
+        return Utils.decodeLatLon(lls);
     }
 
 
