@@ -502,7 +502,7 @@ public abstract class RecordFile {
      */
     public String getProperty(String prop, String dflt) {
         String s= getProperty(properties, prop, dflt);
-
+	if(s!=null) s = s.trim();
 	return s;
     }
 
