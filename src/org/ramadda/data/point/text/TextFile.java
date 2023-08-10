@@ -178,7 +178,6 @@ public abstract class TextFile extends PointFile {
      */
     public boolean getFirstLineFields() {
         return getProperty("firstLineDefinesFields", firstLineFields);
-
     }
 
 
@@ -459,7 +458,6 @@ public abstract class TextFile extends PointFile {
                 }
                 if ( !isHeaderLine(line)) {
                     visitInfo.getRecordIO().putBackLine(line);
-
                     break;
                 }
                 if ( !haveReadHeader) {
@@ -515,6 +513,7 @@ public abstract class TextFile extends PointFile {
             }
             String line       = null;
             String fieldsLine = null;
+            commentLineStart = getProperty("commentLineStart", "#");
             while (true) {
                 line = visitInfo.getRecordIO().readLine();
                 if ( !haveReadHeader) {
@@ -522,7 +521,7 @@ public abstract class TextFile extends PointFile {
                 }
                 skipCnt--;
 		//Not sure if this should be here for all files but skip over any comment lines 
-		if(line.startsWith("#")) continue;
+		if(line.startsWith(commentLineStart)) continue;
                 fieldRow--;
                 if (fieldRow <= 0) {
                     fieldsLine = line;
@@ -564,10 +563,21 @@ public abstract class TextFile extends PointFile {
 			String tok    = toks.get(tokIdx);
 			String sample = tokIdx<sampleToks.size()?sampleToks.get(tokIdx).toLowerCase():"";
 			tok = tok.replaceAll("\"", "");
+			StringBuilder attrs = new StringBuilder();
+			//Assume it is name(unit)
+			int idx1= tok.indexOf("(");
+			if(idx1>=0) {
+			    int idx2= tok.indexOf(")");
+			    if(idx2>idx1) {
+				String unit = tok.substring(idx1+1,idx2).trim();
+				tok = tok.substring(0,idx1).trim();
+				attrs.append(attrUnit(unit));
+			    }
+			}
 			String        name  = tok;
 			String        id    = Utils.makeID(tok);
-			StringBuilder attrs = new StringBuilder();
-			name = Utils.makeLabel(name.replaceAll(",", "&#44;"));
+			name = name.replaceAll(",", "&#44;");
+			name = Utils.makeLabel(name);
 			attrs.append(attrLabel(name));
 			boolean isDate =
 			    id.matches(
@@ -646,7 +656,7 @@ public abstract class TextFile extends PointFile {
 		    putProperty(PROP_FIELDS, f);
 		}
             }
-        } else {
+	} else {
             commentLineStart = getProperty("commentLineStart", null);
             boolean seenLastHeaderPattern = false;
             for (int i = 0; i < skipCnt; ) {
