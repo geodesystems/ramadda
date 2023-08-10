@@ -604,6 +604,8 @@ public class PointTypeHandler extends RecordTypeHandler {
                                            PointMetadataHarvester metadata)
             throws Exception {
 
+	boolean debug =getRepository().getProperty("debug.pointdata.new",false);
+
         PointEntry pointEntry = (PointEntry) recordEntry;
         Entry      entry      = pointEntry.getEntry();
         if ( !shouldProcessResource(null, entry)) {
@@ -769,15 +771,12 @@ public class PointTypeHandler extends RecordTypeHandler {
 		    }
 		}
 	    }
-	    
-
-
 	}
 
 
-
-
         String header = pointEntry.getRecordFile().getTextHeader();
+	if(debug)
+	    System.err.println("header:" + header);
         if ((header != null) && (header.length() > 0)
                 && getTypeProperty("point.initialize", true)) {
 
@@ -793,15 +792,16 @@ public class PointTypeHandler extends RecordTypeHandler {
                         continue;
                     }
                     String field   = toks2.get(0).trim();
-                    String pattern = toks2.get(1).replace("_comma_",",");
+                    String pattern = toks2.get(1).replace("_comma_",",").replace("_nl_","\n").replace("\\n","\n");
                     String value   = StringUtil.findPattern(header, pattern);
-		    //		    System.err.println("\t" +field +" p:" + pattern +" v:" +value);
+		    if(debug)
+			System.err.println("\t" +field +" p:" + pattern +" v:" +value);
                     if (Utils.stringDefined(value)) {
                         if (field.equals("latitude")) {
                             entry.setLatitude(Utils.decodeLatLon(value));
                         } else if (field.equals("longitude")) {
                             entry.setLongitude(Utils.decodeLatLon(value));
-                        } else if (field.equals("elevation")) {
+                        } else if (field.equals("elevation") || field.equals("altitude")) {
                             entry.setAltitude(Double.parseDouble(value));
                         } else if (field.equals("time")) {
                             time = value;
