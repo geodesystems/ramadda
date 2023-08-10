@@ -431,5 +431,84 @@ indexField="depth" fields="salinity,density"
 </wiki>
 </type>
 
+<!-- a duplicate of the sofar type -->
+<type name="type_ctd_castaway" 
+description="Castaway CTD Data" 
+super="type_point" 
+category="Point Data"
+supercategory="Geoscience"
+handler="org.ramadda.data.services.PointTypeHandler">
+  <property name="icon" value="/point/sontek.png"/>
+  <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+  <property name="form.area.show" value="false"/>
+  <property name="form.location.show" value="true"/>
+  <property name="form.altitude.show" value="true"/>
+  <property name="form.date.show" value="false"/>
+  <property name="form.properties.show" value="false"/>
+  <column  name="device"  label="Device" type="enumerationplus" cansearch="true"/>
+  <column  name="cast_duration"  label="Cast Duration" type="double" cansearch="false"/>
+  <column  name="samples_per_second"  label="Samples/Second" type="double" cansearch="false"/>
+  <property name="record.pattern.date.format" value="yyyy-MM-dd HH:mm:ss"/>
+  <property name="record.patterns"
+	    value="latitude:.*Start +latitude_comma_(.*?)\n,longitude:.*Start +longitude_comma_(.*?)\n,date:.*Cast +time +\(UTC\)_comma_(.*)\n,elevation:.*Start +altitude_comma_(.*?)\n,device:.*Device_comma_(.*?)\n,cast_duration:.*Cast +duration +\(Seconds\)_comma_(.*?)\n,samples_per_second:.*Samples +per +second_comma_(.*?)\n"/>
+<property name="record.properties">
+commentLineStart=%
+firstLineDefinesFields=true                                                          
+</property>
+<property name="bubble">
+<![CDATA[
++section  title={{name}}
+{{display_profile showMenu=true yAxisReverse=true marginTop=40  profileMode=markers
+profileMode="lines+markers" markerSize=8 symbol1=circle symbol2=diamond
+indexField="depth" fields="temperature,conductivity"
+}}
+-section
+]]></property>
+
+
+<property name="mapglyphs">
+props:fontSize:0px,iconSize:75,canvasWidth:500,canvasHeight:100,fill:#efefef,borderWidth:2,borderColor:#000,font:bold 36px sans-serif
+image,pos:nw,dx:10,dy:10-ch,width:60,height:60,url:${icon}
+label,pady:5,pos:nw,dx:80,dy:10-ch,label:${entryname}  
+label,pos:s,dx:cw2,dy:-10,font:36px sans-serif,label:${match  pattern="(atmp)" suffix=" ${unit}" prefixLabel=true}
+</property>
+<wiki>
+<![CDATA[
++section title={{name}}
+:navtop
+{{description wikify=true}}
+:heading Plots
+{{group hAxisTitle=Depth tooltip="${default}"}}    
++row tight=true
++col-6
+{{display_profile showMenu=true yAxisReverse=true marginTop=40  profileMode=markers
+profileMode="lines+markers" markerSize=8 symbol1=circle symbol2=diamond
+indexField="depth" fields="temperature,conductivity"
+}}
+-col
++col-6
+{{display_profile showMenu=true yAxisReverse=true marginTop=40  profileMode=markers
+profileMode="lines+markers" markerSize=8 symbol1=circle symbol2=diamond
+indexField="depth" fields="salinity,density"
+}}
+-col
+-row
+:heading Table
+{{display_download}}
+{{display_htmltable  includeUnits=false}}
+:heading Buoy Information
++row
++col-8
+{{information}}
+-col
++col-4
+{{mapentry}}
+-col
+-row
+-section
+]]>
+</wiki>
+</type>
+
 
 </types>
