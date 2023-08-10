@@ -1,6 +1,8 @@
 <types supercategory="Geoscience">
 
-  <type name="type_point_cr1000"  description="CR1000 Data Logger File" super="type_point" category="Point Data"  handler="org.ramadda.data.services.PointTypeHandler" pattern="(?i).*CR1000.*\.dat">
+  <type name="type_point_cr1000"  description="CR1000 Data Logger File" super="type_point" category="Point Data"
+	handler="org.ramadda.data.services.PointTypeHandler"
+	pattern="(?i).*CR1000.*\.dat">
      <property name="icon" value="/point/campbell.png"/>
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
      <property name="form.area.show" value="false"/>
@@ -58,26 +60,39 @@ label,pos:s,dx:cw2,dy:-10,font:36px sans-serif,label:${match  pattern="(temp|rh)
 <div style="max-height:200px; overflow-y:auto;">
 {{description wikify=true}}
 </div>
-{{property lastRecords="20000"}}
+{{property lastRecords="${wikiproperty.cr1000.count default="5000"}"}}
 <table><tr valign=top>
 <td>{{group groupDiv="cr1000charts" showMenu=true loadingMessage="" noDataMessage=""
 requestFieldsShow=false chartLeft=100 
+request.limit.default="${wikiproperty.cr1000.count default="5000"}"
 dataFilters="lessthan(field=.*temp.*,value=1000,label=,enabled=true);greaterthan(field=.*baro.*,value=0,label=,enabled=true);" 
 headerStyle="text-align:left"
 }}
 :rem Put the blank here but have it be displayed in the targetDiv below
 :rem We do this because we want the download to show first but the blank
 :rem should actually run first so it gets the point data with the request fields
-{{display_blank targetDiv="datalogger_blank_div" requestFieldsDefault=true showMenu=false requestFieldsShow=true loadingMessage="icon_progress Loading data..." noDataMessage="No data available"}}
+{{display_blank targetDiv="datalogger_blank_div"
+requestFieldsDefault=true showMenu=false requestFieldsShow=true
+loadingMessage="icon_progress Loading data..."
+noDataMessage="No data available"}}
 </td>
-<td width=20px>{{display_download  dataFilters="" iconSize=14px showMenu=false showDateSelect=true lastRecords="20000"}}</td>
+<td width=20px>
+{{display_download  dataFilters="" iconSize=14px showMenu=false showDateSelect=true
+lastRecords="${wikiproperty.cr1000.count default="5000"}"}}
+</td>
 <td><div id="datalogger_blank_div"></div>
 </td>
 </tr></table>
 <div id="cr1000charts"></div>
-{{display_linechart showMenu=true fieldsPatterns=".*temp.*|.*hmo.*|.*flow.*|rpsdata_1|.*cell_1" lastRecords="20000"}}
-{{display_linechart showMenu=true fieldsPatterns=".*ph.*|.*rh.*|batt_volt_min|.*area.*|rpsdata_2" lastRecords="20000"}}
-{{display_linechart showMenu=true fieldsPatterns=".*depth.*|.*pres.*|baro.*|.*dewpt.*|.*vol.*|rpsdata_3" lastRecords="20000"}}
+{{display_linechart showMenu=true
+fieldsPatterns="${wikiproperty.cr1000.field1 default=".*temp.*|.*hmo.*|.*flow.*|rpsdata_1|.*cell_1"}"
+lastRecords="${wikiproperty.cr1000.count default="5000"}"}}
+{{display_linechart showMenu=true
+fieldsPatterns="${wikiproperty.cr1000.field2 default=".*ph.*|.*rh.*|batt_volt_min|.*area.*|rpsdata_2"}"
+lastRecords="${wikiproperty.cr1000.count default="5000"}"}}
+{{display_linechart showMenu=true
+fieldsPatterns="${wikiproperty.cr1000.field3 default=".*depth.*|.*pres.*|baro.*|.*dewpt.*|.*vol.*|rpsdata_3"}"
+lastRecords="${wikiproperty.cr1000.count default="5000"}"}}
 :br
 ----
 :heading Metadata
