@@ -371,7 +371,9 @@ public abstract class TextFile extends PointFile {
      * @return _more_
      */
     public boolean isHeaderLine(String line) {
-        return line.startsWith("#");
+	if(commentLineStart==null)
+	    commentLineStart = getProperty("commentLineStart", "#");
+        return line.startsWith(commentLineStart);
     }
 
     /**
@@ -397,23 +399,20 @@ public abstract class TextFile extends PointFile {
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
 
         boolean debug             = false;
-
         boolean haveReadHeader    = headerLines.size() > 0;
         String  headerDelimiter   = getHeaderDelimiter();
         boolean firstLineFields   = getFirstLineFields();
         String  sfieldRow         = (String) getProperty("fieldRow", null);
+
         String  lastHeaderPattern = getProperty("lastHeaderPattern", null);
 	int skipCnt  = getSkipLines(visitInfo);
 	if (debug) {
 	    System.err.println(
-			       "TextFile.prepareToVisit: skipLines:"+skipCnt+" haveReadHeader:" + haveReadHeader +" headerDelimiter:" + headerDelimiter + " firstLineFields:" + firstLineFields+" lastHeaderPattern:" + lastHeaderPattern);
+			       "TextFile.prepareToVisit: skipLines:"+skipCnt+" haveReadHeader:" + haveReadHeader +" headerDelimiter:" + headerDelimiter + " firstLineFields:" + firstLineFields+" lastHeaderPattern:" + lastHeaderPattern +" field row:" + sfieldRow);
 	}
 
         if (headerDelimiter != null) {
-            if (debug) {
-                System.err.println(
-                    "TextFile.prepareToVisit: headerDelimiter");
-            }
+            if (debug)  System.err.println("TextFile.prepareToVisit: headerDelimiter");
             boolean starts = headerDelimiter.startsWith("starts:");
             if (starts) {
                 headerDelimiter =
@@ -503,23 +502,44 @@ public abstract class TextFile extends PointFile {
 
             }
         } else if (firstLineFields || (sfieldRow != null)) {
-            int fieldRow = (sfieldRow != null)
+            int theFieldRow = (sfieldRow != null)
                            ? Integer.parseInt(sfieldRow)
                            : 0;
+	    int fieldRow = theFieldRow;
+            commentLineStart = getProperty("commentLineStart", "#");
+	    boolean bom = getProperty("stripBom",false);
             if (debug) {
-                System.err.println(
-                    "TextFile.prepareToVisit: firstLineFields=true skipLines="
-                    + skipCnt);
+                System.err.println("TextFile.prepareToVisit: firstLineFields=" + firstLineFields +" field row:" + fieldRow +" skipLines=" + skipCnt +" comment line:" + commentLineStart);
             }
             String line       = null;
             String fieldsLine = null;
-            commentLineStart = getProperty("commentLineStart", "#");
+
             while (true) {
                 line = visitInfo.getRecordIO().readLine();
+		if(bom) {
+		    line = line.substring(1);
+		    bom = false;
+		}
+
+		//This means that the fields are in the last of the header lines
+		if(theFieldRow<0) {
+		    if(!line.startsWith(commentLineStart)) {
+			visitInfo.getRecordIO().putBackLine(line);
+			break;
+		    }
+		    System.err.println("HEADER:" + line);
+		}
+
+
                 if ( !haveReadHeader) {
                     headerLines.add(line);
                 }
                 skipCnt--;
+
+		if(theFieldRow<0) {
+		    continue;
+		}
+
 		//Not sure if this should be here for all files but skip over any comment lines 
 		if(line.startsWith(commentLineStart)) continue;
                 fieldRow--;
@@ -539,6 +559,15 @@ public abstract class TextFile extends PointFile {
                 }
                 skipCnt--;
             }
+	    
+	    if(theFieldRow<0) {
+		int idx = headerLines.size()+theFieldRow;
+		if(idx<0 || idx>=headerLines.size()) {
+		    throw new IllegalArgumentException("bad field row index: header size:" + headerLines.size() +" field row:" + theFieldRow + " index:" +idx);
+		}
+		fieldsLine = headerLines.get(idx);
+		fieldsLine = fieldsLine.replaceAll("^"+commentLineStart,"");
+	    }
 
 	    if(debug) {
 		System.err.println("headerLines:" + headerLines);
@@ -579,15 +608,19 @@ public abstract class TextFile extends PointFile {
 			name = name.replaceAll(",", "&#44;");
 			name = Utils.makeLabel(name);
 			attrs.append(attrLabel(name));
-			boolean isDate =
-			    id.matches(
+			String type = getProperty("record.type." + id,null);
+			boolean isDate =false;
+			if(type!=null) isDate = type.trim().equals("date");
+			else {
+			    isDate = id.matches(
 				       "^(timestamp|week_ended|date|month|year|as_of|end_date|per_end_date|obs_date|quarter)$");
 			//                    System.err.println("id:" + id +" isDate:" + isDate);
-			if ( !isDate) {
-			    isDate = Utils.isDate(sample);
+			    if ( !isDate) {
+				isDate = Utils.isDate(sample);
+			    }
 			}
+
 			if(!isDate) {
-			    String type = getProperty("record.type." + id,null);
 			    if(type==null) type=defaultType;
 			    if(type==null) {
 				if (Utils.isNumber(sample)) {
@@ -601,8 +634,7 @@ public abstract class TextFile extends PointFile {
 
 			if (isDate) {
 			    if ( !didDate) {
-				String format = (String) getProperty(id
-								     + ".format");
+				String format = getProperty(id + ".format",getProperty("record.format." + id,null));
 				if (format == null) {
 				    if (id.equals("timestamp")) {
 					format = "BAD";
