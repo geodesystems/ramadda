@@ -1654,6 +1654,14 @@ WikiEditor.prototype = {
 	}
 	let merge = (list) =>{
 	    if(!list) list = [];
+	    list = list.map(item=>{
+		if(!item.p) return item;
+		//strip off the comments that can come from the server
+		if(String(item.p).startsWith('#')) {
+		    item.p = String(item.p).substring(1);
+		}
+		return item;
+	    });
 	    if(this.wikiAttributes[tagInfo.tag+'_extra']) {
 		list=Utils.mergeLists(list,this.wikiAttributes[tagInfo.tag+'_extra']);
 	    }		
