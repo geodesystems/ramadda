@@ -124,7 +124,7 @@ to allow the user to filter the data. The filter_... macros in the templates
 display the values of those filter fields. The prefix/suffix attributes in the macros
 allow one to show a phrase only if a text filter value is selected by the user.
 
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/charts/template.png?version=994"><img  src="images/charts/template.png?version=994" width="90%" alt="images/charts/template.png?version=994" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/charts/template.png?version=127"><img  src="images/charts/template.png?version=127" width="90%" alt="images/charts/template.png?version=127" ></a></div></div>
 
 The template display is specified as:
 <pre>
@@ -143,7 +143,7 @@ filterFields="elev,elev_gain,distance,range,class" hideFilterWidget="true"
 The below display (from  <a href="https://ramadda.org/repository/alias/mass_shootings">here</a>) 
 showing mass shooting data uses two different template displays as defined here.
 
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image2"></a><div><a href="images/template2.png?version=994"><img  src="images/template2.png?version=994" width=600 alt="Template Example" ></a><br><span class="caption">Image 2: Template Example</span></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image2"></a><div><a href="images/template2.png?version=127"><img  src="images/template2.png?version=127" width=600 alt="Template Example" ></a><br><span class="caption">Image 2: Template Example</span></div></div>
 
 <pre>
 {<noop>{display_template
@@ -174,7 +174,7 @@ headerText=&quot;&lt;center&gt;Showing pool and flux estimates
 </pre>
 This results in:
 
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/charts/headertext.png?version=994"><img  src="images/charts/headertext.png?version=994"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/charts/headertext.png?version=994" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/charts/headertext.png?version=127"><img  src="images/charts/headertext.png?version=127"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/charts/headertext.png?version=127" ></a></div></div>
 
 Each macro is of the form:
 <pre>
@@ -249,6 +249,47 @@ tag global properties can be specified that are applicable to all displays on th
 {<noop>{displayProperty name="Temperature_surface.unit" value="C"}}
 {<noop>{displayProperty name="Pressure_surface.scale" value="0.01"}}
 {<noop>{displayProperty name="Pressure_surface.unit" value="hPa"}}
+</pre>
+
+
+:lheading Wiki Properties
+You can specify certain macros in your wiki text the value of which can be specified by
+either a special "wikiproperties" entry property or by a repository wide RAMADDA property.
+:br
+In your wiki text a wiki property macro is defined by:
+<pre>
+.... ${wikiproperty.&lt;some property name&gt; default="some default value"} ...
+</pre>
+
+For example, the CR1000 data logger entry type has default wiki text with the following
+wiki properties:
+<pre>
+{<noop>{display_linechart 
+fieldsPatterns="${wikiproperty.cr1000.field1 default=".*temp.*|.*hmo.*|.*flow.*|rpsdata_1|.*cell_1"}"
+lastRecords="${wikiproperty.cr1000.count default="5000"}"}}
+{<noop>{display_linechart 
+fieldsPatterns="${wikiproperty.cr1000.field2 default=".*ph.*|.*rh.*|batt_volt_min|.*area.*|rpsdata_2"}"
+lastRecords="${wikiproperty.cr1000.count default="5000"}"}}
+{<noop>{display_linechart 
+fieldsPatterns="${wikiproperty.cr1000.field2 default=".*depth.*|.*pres.*|baro.*|.*dewpt.*|.*vol.*|rpsdata_3"}"
+lastRecords="${wikiproperty.cr1000.count default="5000"}"}}
+</pre>
+
+If you wanted to override what fields are used simply go to Add Properties and select "Add Wiki Property"
+under the "Thumbnails, Page Style, Etc." section. The Key is the macro name without the "wikiproperty." prefix. The
+value is the text that is substituted for the macro. In the below case we are overriding the field that is displayed
+for the second line chart. If you wanted to have this property applied to a whole collection of CR1000 entries
+then add the property to the container folder and check off "Inherited".
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/wikiproperty1.png?version=127"><img  src="images/wikiproperty1.png?version=127"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/wikiproperty1.png?version=127" ></a></div></div>
+
+For the case of the CR1000 entries the number of records can also be specified with the "cr1000.count" property:
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/wikiproperty2.png?version=127"><img  src="images/wikiproperty2.png?version=127"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/wikiproperty2.png?version=127" ></a></div></div>
+
+To specify a wiki property system wide add a property definition with the fill property name
+to the repository.properties file in your RAMADDA home directory:
+<pre>
+wikiproperty.cr1000.field1=some value
 </pre>
 
 
