@@ -4894,13 +4894,39 @@ public class Utils extends IO {
      * @return _more_
      */
     public static List<Macro> splitMacros(String s) {
-	List<String> toks  = StringUtil.splitMacros(s);
+	return splitMacros(s,"${","}");
+    }
+
+    public static List<Macro> splitMacros(String s, String opener, String closer) {
+	List<String> toks  = splitOnMacros(s, opener,closer);
 	List<Macro> macros = new ArrayList<Macro>();
 	for(int i=0;i<toks.size();i++) {
 	    macros.add(new Macro(i / 2.0 == (int) i / 2,toks.get(i)));
 	}
 	return macros;
     }
+
+    public static List<String> splitOnMacros(String s,String opener, String closer) {
+	List<String> tokens = new ArrayList<String>();
+	int idx1 = s.indexOf(opener);
+	while (idx1 >= 0) {
+	    int idx2 = s.indexOf(closer, idx1);
+	    if (idx2 < 0) {
+		break;
+	    }
+	    tokens.add(s.substring(0, idx1));
+	    tokens.add(s.substring(idx1 + 2, idx2));
+	    s = s.substring(idx2 + 1);
+	    idx1 = s.indexOf(opener);
+	}
+	if (s.length() > 0) {
+	    tokens.add(s);
+	}
+	return tokens;
+    }
+
+
+
 
     public static String applyCase(String caseType, String s) {
 	if (caseType.equals("lower")) {
