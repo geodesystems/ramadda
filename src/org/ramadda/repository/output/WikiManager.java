@@ -504,6 +504,53 @@ public class WikiManager extends RepositoryManager
                               HashSet notTags)
 	throws Exception {
 
+	if(wikiContent.indexOf("${wikiproperty.")>=0) {
+	    boolean debug = getRepository().getProperty("wikiproperty.debug",false);
+	    List<Utils.Macro> macros = Utils.splitMacros(wikiContent,"${wikiproperty.","}");
+	    StringBuilder sb = new StringBuilder();
+	    if(debug)
+		System.err.println("checking wiki property for entry:" + entry);
+	    for(Utils.Macro macro: macros) {
+		if(macro.isText()) {
+		    sb.append(macro.getText());
+		    continue;
+		}
+
+		String  v = null;
+		List<Metadata> metadataList =
+		    getMetadataManager().findMetadata(request, entry,
+						      new String[]{"wikiproperty"}, true);
+
+		if ((metadataList != null) && (metadataList.size() > 0)) {
+		    for(Metadata metadata: metadataList) {
+			if(("wikiproperty."+metadata.getAttr1().trim()).equals(macro.getText())) {
+			    v = metadata.getAttr2();
+			    break;
+			}
+		    }
+		}
+
+		if(v==null) {
+		    v = getRepository().getProperty(macro.getText(),null);
+		}
+
+		if(v==null) {
+		    v = macro.getProperty("default","");
+		    if(debug)
+			System.err.println("\twiki property:" + macro.getText()+ " using default:" + v);
+		} else {
+		    if(debug)
+			System.err.println("\twiki property:" + macro.getText()+ " got value:" + v);
+		}
+
+		if(v!=null) {
+		    sb.append(v);
+		    continue;
+		}
+	    }
+	    wikiContent=sb.toString();
+	}
+
 	//Check for loops
 	boolean isPrimaryRequest = false;
 	Hashtable alreadyDoingIt  = (Hashtable) request.getExtraProperty("alreadyDoingIt");
