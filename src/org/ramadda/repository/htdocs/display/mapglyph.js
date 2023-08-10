@@ -1069,13 +1069,25 @@ MapGlyph.prototype = {
 	ctx.fillStyle="#000";
 	let pending = [];
 	let records = data.getRecords();
+	let numberCount = 0;
+	let missingCount = 0;	
 	markers.forEach(marker=>{
 	    //if its an image glyph then the image might not be loaded so the call returns a
 	    //isReady function that we keep checking until it is ready
 	    let isReady =  marker.draw(props, canvas, ctx, 0,canvasHeight,{record:records[records.length-1]});
 	    if(isReady) pending.push(isReady);
+	    //check for missing
+	    if(!marker.isImage()) {
+		numberCount++;
+		if(marker.hadMissingValue()) {
+		    missingCount++;
+		}
+	    }
 	});
 
+	if(numberCount>0 && numberCount==missingCount) {
+	    isShown=false;
+	}
 
 	if(isShown && props.borderColor) {
 	    ctx.strokeStyle = props.borderColor;
@@ -1110,6 +1122,9 @@ MapGlyph.prototype = {
 		canvas.remove();
 		this.style.label=null;
 		this.style.pointRadius=size;
+		if(!isShown) {
+		    this.style.pointRadius=0;
+		}
 		this.style.externalGraphic=img;
 	    } catch(err) {
 		console.error('Error',err);

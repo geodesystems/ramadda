@@ -129,6 +129,7 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	}
     }
 
+    props.wasNaN = false;
     props.dontShow =false;
     if(!props.colorByInfo && props.colorBy) {
 	props.colorByField=display.getFieldById(fields,props.colorBy);
@@ -147,12 +148,10 @@ function Glyph(display, scale, fields, records, args, attrs) {
     }
 
     if(props.requiredField) {
-	if(!display.getFieldById(fields,props.requiredField)) {
+	if(!(this.theRequiredField = display.getFieldById(fields,props.requiredField))) {
 	    props.dontShow = true;
 	}
     }
-
-
 }
 
 
@@ -161,9 +160,16 @@ Glyph.prototype = {
     okToShow:function() {
 	return !this.properties.dontShow;
     },
+    hadMissingValue:function() {
+	return this.properties.wasNaN;
+    },    
     getColorByInfo:function() {
 	return this.properties.colorByInfo;
     },
+    isImage: function() {
+	return this.properties.type=='image';
+    },
+
     draw: function(opts, canvas, ctx, x,y,args,debug) {
 	let props = this.properties;
 	if(props.dontShow)return;
@@ -172,6 +178,7 @@ Glyph.prototype = {
 	if(props.colorByInfo) {
 	    if(props.colorByField) {
 		let v = args.record.getValue(props.colorByField.getIndex());
+		if(isNaN(v)) props.wasNaN = true;
 		color=  props.colorByInfo.getColor(v);
 	    } else if(args.colorValue) {
 		color=  props.colorByInfo.getColor(args.colorValue);
@@ -181,6 +188,7 @@ Glyph.prototype = {
 	let lengthPercent = 1.0;
 	if(props.sizeByInfo) {
 	    let v = args.record.getValue(props.sizeByField.getIndex());
+	    if(isNaN(v)) props.wasNaN = true;
 	    lengthPercent = props.sizeByInfo.getValuePercent(v);
 	}
 
@@ -200,11 +208,15 @@ Glyph.prototype = {
 		return;
 	    }
 	    let text = String(label);
+
 	    if(args.record) {
 		text = this.display.applyRecordTemplate(args.record, null,null,text,{
 		    entryname:props.entryname,
 		    unit:props.unit
 		});
+		if(text.indexOf('NaN')>=0) {
+		    props.wasNaN = true;
+		}
 	    }
 
 	    if(!isNaN(parseFloat(text))) {
@@ -283,7 +295,7 @@ Glyph.prototype = {
 		ctx.fillRect(pt.x,pt.y, props.width, props.height);
 	    if(props.stroke) 
 		ctx.strokeRect(pt.x,pt.y, props.width, props.height);
-	} else if(props.type=='image') {
+	} else if(this.isImage()) {
 	    let src = props.url;
 	    if(!src && props.imageField) {
 		src =  args.record.getValue(props.imageField.getIndex());
