@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Aug  9 08:04:47 MDT 2023";
+var build_date="RAMADDA build date: Wed Aug  9 18:27:12 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -3382,6 +3382,7 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	}
     }
 
+    props.wasNaN = false;
     props.dontShow =false;
     if(!props.colorByInfo && props.colorBy) {
 	props.colorByField=display.getFieldById(fields,props.colorBy);
@@ -3400,12 +3401,10 @@ function Glyph(display, scale, fields, records, args, attrs) {
     }
 
     if(props.requiredField) {
-	if(!display.getFieldById(fields,props.requiredField)) {
+	if(!(this.theRequiredField = display.getFieldById(fields,props.requiredField))) {
 	    props.dontShow = true;
 	}
     }
-
-
 }
 
 
@@ -3414,9 +3413,16 @@ Glyph.prototype = {
     okToShow:function() {
 	return !this.properties.dontShow;
     },
+    hadMissingValue:function() {
+	return this.properties.wasNaN;
+    },    
     getColorByInfo:function() {
 	return this.properties.colorByInfo;
     },
+    isImage: function() {
+	return this.properties.type=='image';
+    },
+
     draw: function(opts, canvas, ctx, x,y,args,debug) {
 	let props = this.properties;
 	if(props.dontShow)return;
@@ -3425,6 +3431,7 @@ Glyph.prototype = {
 	if(props.colorByInfo) {
 	    if(props.colorByField) {
 		let v = args.record.getValue(props.colorByField.getIndex());
+		if(isNaN(v)) props.wasNaN = true;
 		color=  props.colorByInfo.getColor(v);
 	    } else if(args.colorValue) {
 		color=  props.colorByInfo.getColor(args.colorValue);
@@ -3434,6 +3441,7 @@ Glyph.prototype = {
 	let lengthPercent = 1.0;
 	if(props.sizeByInfo) {
 	    let v = args.record.getValue(props.sizeByField.getIndex());
+	    if(isNaN(v)) props.wasNaN = true;
 	    lengthPercent = props.sizeByInfo.getValuePercent(v);
 	}
 
@@ -3453,11 +3461,15 @@ Glyph.prototype = {
 		return;
 	    }
 	    let text = String(label);
+
 	    if(args.record) {
 		text = this.display.applyRecordTemplate(args.record, null,null,text,{
 		    entryname:props.entryname,
 		    unit:props.unit
 		});
+		if(text.indexOf('NaN')>=0) {
+		    props.wasNaN = true;
+		}
 	    }
 
 	    if(!isNaN(parseFloat(text))) {
@@ -3536,7 +3548,7 @@ Glyph.prototype = {
 		ctx.fillRect(pt.x,pt.y, props.width, props.height);
 	    if(props.stroke) 
 		ctx.strokeRect(pt.x,pt.y, props.width, props.height);
-	} else if(props.type=='image') {
+	} else if(this.isImage()) {
 	    let src = props.url;
 	    if(!src && props.imageField) {
 		src =  args.record.getValue(props.imageField.getIndex());
@@ -19711,8 +19723,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             this.setPropertyOn(chartOptions.hAxis.textStyle, "hAxis.text.bold", "bold", textBold);
             this.setPropertyOn(chartOptions.vAxis.textStyle, "vAxis.text.bold", "bold", textBold);
 
-	    chartOptions.vAxis.title  = Utils.decodeText(this.getProperty("vAxis.text", this.getProperty("vAxisText")));
-	    chartOptions.hAxis.title  = Utils.decodeText(this.getProperty("hAxis.text", this.getProperty("hAxisText")));	    
+	    chartOptions.vAxis.title  = Utils.decodeText(this.getProperty("vAxis.text", this.getProperty("vAxisText",this.getProperty("vAxisTitle"))));
+
+	    chartOptions.hAxis.title  = Utils.decodeText(this.getProperty("hAxis.text", this.getProperty("hAxisText",this.getProperty("hAxisTitle"))));	    
 	    chartOptions.hAxis.slantedText = this.getProperty("hAxis.slantedText",this.getProperty("slantedText",false));
             this.setPropertyOn(chartOptions.hAxis.titleTextStyle, "hAxis.text.color", "color", textColor);
             this.setPropertyOn(chartOptions.vAxis.titleTextStyle, "vAxis.text.color", "color", textColor);
@@ -47474,8 +47487,6 @@ MapGlyph.prototype = {
 	callback(elevations,ok);
     },
     getIcon: function() {
-	console.trace('get icon');
-
 	if(Utils.stringDefined(this.attrs.icon)) {
 	    return this.attrs.icon;
 	}
@@ -48327,13 +48338,25 @@ MapGlyph.prototype = {
 	ctx.fillStyle="#000";
 	let pending = [];
 	let records = data.getRecords();
+	let numberCount = 0;
+	let missingCount = 0;	
 	markers.forEach(marker=>{
 	    //if its an image glyph then the image might not be loaded so the call returns a
 	    //isReady function that we keep checking until it is ready
 	    let isReady =  marker.draw(props, canvas, ctx, 0,canvasHeight,{record:records[records.length-1]});
 	    if(isReady) pending.push(isReady);
+	    //check for missing
+	    if(!marker.isImage()) {
+		numberCount++;
+		if(marker.hadMissingValue()) {
+		    missingCount++;
+		}
+	    }
 	});
 
+	if(numberCount>0 && numberCount==missingCount) {
+	    isShown=false;
+	}
 
 	if(isShown && props.borderColor) {
 	    ctx.strokeStyle = props.borderColor;
@@ -48368,6 +48391,9 @@ MapGlyph.prototype = {
 		canvas.remove();
 		this.style.label=null;
 		this.style.pointRadius=size;
+		if(!isShown) {
+		    this.style.pointRadius=0;
+		}
 		this.style.externalGraphic=img;
 	    } catch(err) {
 		console.error('Error',err);
