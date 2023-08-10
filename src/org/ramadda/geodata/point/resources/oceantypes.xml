@@ -108,25 +108,35 @@ These don't define the fields or their order. They just define the default attri
 
   <type name="type_point_ocean_cnv"  super="type_point_ocean" description="SeaBird CNV Data"
 	handler="org.ramadda.data.services.PointTypeHandler" pattern=".*\.cnv">
-     <property name="isTrajectory" value="true"/>
      <property name="icon" value="/point/sbe.png"/>
+     <property name="isTrajectory" value="true"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="true"/>
      <property name="record.file.class" value="org.ramadda.geodata.point.ocean.CnvPointFile"/>
+     <column  name="station"  label="Station ID" type="enumerationplus" cansearch="true"/>
+     <property name="record.pattern.date.format" value="MMM dd yyyy HH:mm:ss"/>
+     <property name="record.patterns"
+	       value="date:.*NMEA +UTC +\(Time\) += +(.*?)\n,latitude:.*Latitude =(.*?)\n,longitude:.*Longitude += *(.*?)\n,station:.*Station: +(.*?)\n"/>
+
+
 <wiki>
 <![CDATA[
 +section title={{name}}
-{{group showMenu=true}}
-{{display_download max="20000" showMenu=false}}
-+row
-+col-8
-{{display_linechart showMenu=true max="50000"
-fields="prDM,t090C"
-}}
-{{display_linechart showMenu=true max="50000"
-fields="sal00,sbeox0Mg/L"
+{{property max=20000}}
+{{group }}
+{{display_download iconSize=12pt}}
++row tight=true
++col-6
+{{display_profile showMenu=true yAxisReverse=true marginTop=40  profileMode=markers
+profileMode="lines+markers" markerSize=8 symbol1=circle symbol2=diamond
+indexField="prdm" fields="t068c,c0s_m"
 }}
 -col
-+col-4
-{{display_map max="50000"}}
++col-6
+{{display_profile showMenu=true yAxisReverse=true marginTop=40  profileMode=markers
+profileMode="lines+markers" markerSize=8 symbol1=circle symbol2=diamond
+indexField="prdm" fields="t068c,sal00"
+}}
 -col
 -row
 ----
@@ -135,7 +145,14 @@ fields="sal00,sbeox0Mg/L"
 {{description wikify=true}}
 </div>
 :br
++row
++col-8
 {{information details="true"}}
+-col
++col-4
+{{mapentry zoomLevel=6}}
+-col
+-row
 -section
 ]]>
 </wiki>
