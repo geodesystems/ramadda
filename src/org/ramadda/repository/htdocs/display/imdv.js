@@ -745,6 +745,25 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	handleEvent:function(event,lonlat) {
 	    return;
 	},
+        handleKeyUp:function(event) {
+	    if(event.key!='Shift') return false;
+	    this.getSelected().forEach(glyph=>{
+		if(glyph.isImage() && glyph.getImage()) {
+                    glyph.getImage().setOpacity(1);
+		}
+	    });
+	    return true;
+	},
+        handleKeyDown:function(event) {
+	    if(event.key!='Shift') return false;
+	    this.getSelected().forEach(glyph=>{
+		if(glyph.isImage() && glyph.getImage()) {
+                    glyph.getImage().setOpacity(0.3);
+		}
+	    });
+	    return true;
+	},	
+
 	handleNewFeature:function(feature,style,mapOptions) {
 	    style = Utils.clone({},style?? (feature?.style) ?? {});
 	    mapOptions = Utils.clone({},mapOptions??feature?.mapOptions ?? style?.mapOptions);
@@ -3926,8 +3945,9 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		this.selectGlyph(mapGlyph,20,true);
 	    });
 	},
-	unselectAll:function() {
+	unselectAll:function(except) {
 	    this.getGlyphs().forEach(mapGlyph=>{
+		if(except == mapGlyph) return;
 		this.unselectGlyph(mapGlyph);
 	    });
 	},	
@@ -5358,8 +5378,15 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    }));
 
 	    let MyMover =  OpenLayers.Class(OpenLayers.Control.ModifyFeature, {
-		dragStart: function() {
+		dragStart: function(feature) {
 		    OpenLayers.Control.ModifyFeature.prototype.dragStart.apply(this, arguments);
+		    if(feature && feature.mapGlyph) {
+			_this.unselectAll(feature.mapGlyph);
+			if(!feature.mapGlyph.isSelected()) {
+			    _this.selectGlyph(feature.mapGlyph);
+			}
+		    }
+
 		},
 		dragComplete: function() {
 		    OpenLayers.Control.ModifyFeature.prototype.dragComplete.apply(this, arguments);
@@ -5443,7 +5470,6 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    let reshaper = new MyMover(this.myLayer, {
 		theDisplay:this,
 		onDrag: function(feature, pixel) {
-		    //console.log('on drag');
 		    imageChecker(feature);},
 		createVertices:false,
 		mode:OpenLayers.Control.ModifyFeature.RESHAPE});

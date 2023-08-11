@@ -482,6 +482,12 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                 this.map = new RepositoryMap(this.domId(ID_MAP), params);
 		this.map.myid = this.getLogLabel();
 		//Set this so there is no popup on the off feature
+		this.map.addKeyUpListener(event=>{
+		    this.handleKeyUp(event);
+		});
+		this.map.addKeyDownListener(event=>{
+		    this.handleKeyDown(event);
+		});		
 		this.map.textGetter = (layer,feature) =>{
 		    return null;
 		};
@@ -645,6 +651,10 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		},500);
             }
         },
+        handleKeyUp:function(event) {
+	},
+        handleKeyDown:function(event) {
+	},	
         addBaseMapLayer: function(url, isKml) {
             let _this = this;
             mapLoadInfo = displayMapUrlToVectorListeners[url];
