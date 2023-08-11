@@ -643,10 +643,10 @@ new MapLayer('publiclands','Public Lands','https://caltopo.com/tile/sma/${z}/${x
 new MapLayer('federallands','Federal Lands',['//gis.blm.gov/arcgis/rest/services/lands/BLM_Natl_SMA_Cached_without_PriUnk/MapServer/tile/${z}/${y}/${x}']);
 new MapLayer('historic','Historic','https://caltopo.com/tile/1900/${z}/${x}/${y}.png',{attribution:'Map from Caltopo',isOverlay:true});
 new MapLayer('esri.aeronautical','ESRI Aeronautical','https://wms.chartbundle.com/mp/service',{type:'wms',layer:'sec'});
-new MapLayer('osm.toner','OSM-Toner','https://stamen-tiles.a.ssl.fastly.net/toner/${z}/${x}/${y}.png');
-new MapLayer('osm.toner.lite','OSM-Toner Lite','https://stamen-tiles.a.ssl.fastly.net/toner-lite/${z}/${x}/${y}.png');
+new MapLayer('osm.toner','OSM-Toner','https://tiles.stadiamaps.com/tiles/stamen_toner/${z}/${x}/${y}.png');
+new MapLayer('osm.toner.lite','OSM-Toner Lite','https://tiles.stadiamaps.com/tiles/stamen_toner_lite/${z}/${x}/${y}.png');
 new MapLayer('cartolight','Carto-Light','https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/${z}/${x}/${y}.png');
-new MapLayer('watercolor','Watercolor','https://stamen-tiles.a.ssl.fastly.net/watercolor/${z}/${x}/${y}.png');
+//new MapLayer('watercolor','Watercolor','https://stamen-tiles.a.ssl.fastly.net/watercolor/${z}/${x}/${y}.png');
 new MapLayer('moon','Moon','https://cartocdn-gusc.global.ssl.fastly.net/opmbuilder/api/v1/map/named/opm-moon-basemap-v0-1/all/${z}/${x}/${y}.png');
 new MapLayer('mars','Mars','https://cartocdn-gusc.global.ssl.fastly.net/opmbuilder/api/v1/map/named/opm-mars-basemap-v0-1/all/${z}/${x}/${y}.png');
 new MapLayer('lightblue','','',{type:'simple'});
@@ -3680,11 +3680,17 @@ RepositoryMap.prototype = {
 	}
     },
     handleKeyDown:function(evt) {
+	if(this.keyDownListener) {
+	    if(this.keyDownListener(evt)) return;
+	}
+
 	if(event.ctrlKey) return;
-        if (evt.keyCode == 79) {
+        if (evt.keyCode == 79 || evt.key=='Shift') {
             if (!this.imageLayersList) return;
 	    if(this.ignoreKeyEvents) return;
 	    this.imageLayersList.forEach(image=>{
+		if(!image.getVisibility()) return;
+		
                 if (!Utils.isDefined(image.opacity)) {
                     image.opacity = 1.0;
                 }
@@ -3696,6 +3702,7 @@ RepositoryMap.prototype = {
                 }
                 if (opacity < 0) opacity = 0;
                 else if (opacity > 1) opacity = 1;
+//		if(evt.key=='Shift') opacity = 0.1;
                 image.setOpacity(opacity);
             });
         }
@@ -3704,9 +3711,6 @@ RepositoryMap.prototype = {
                 this.selectImage.setVisibility(!this.selectImage.getVisibility());
             }
         }
-	if(this.keyDownListener) {
-	    this.keyDownListener(evt);
-	}
     },
     addKeyUpListener:function(listener) {
 	this.keyUpListener = listener;
