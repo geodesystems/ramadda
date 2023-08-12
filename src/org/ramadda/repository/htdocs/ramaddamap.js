@@ -327,6 +327,7 @@ var MapUtils =  {
 	    padding:2
 	}
 	if(args) $.extend(opts,args);
+	opts.padding = Math.min(10,opts.padding);
 	let ptMap={4:{x:1.75,y:5.99},
 		   5:{x:2.19,y:7.5},
 		   6:{x:2.63,y:8.99},
@@ -404,6 +405,7 @@ var MapUtils =  {
 	    });
 	}
 
+
 	let dim;
 	features.forEach(feature=>{
 	    feature.labelInfo=null;
@@ -473,6 +475,7 @@ var MapUtils =  {
 		    if(x>=gridW) break;
 		    for(let y=indexY;clear && y<indexY+feature.labelInfo.height;y++) {
 			if(y>=gridH) break;
+
 			let key  = x+'_'+y;
 			if(grid[key]) {
 			    clear = false;
