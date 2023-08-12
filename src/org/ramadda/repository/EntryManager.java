@@ -4466,7 +4466,9 @@ public class EntryManager extends RepositoryManager {
 			      + msg(typeHandler.getLabel()));
 		    
 		    String help = typeHandler.getHelp();
-		    HU.div(sb,href,HU.attrs("class","type-list-item","title",help!=null?help:""));
+		    String title = typeHandler.getLabel();
+		    if(help!=null) title+= " - " + help;
+		    HU.div(sb,href,HU.attrs("class","type-list-item","title",title));
 		}
 		if(didSub) {
 		    sb.append("</div></div>");
