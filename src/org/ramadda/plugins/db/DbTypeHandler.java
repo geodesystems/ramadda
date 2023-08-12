@@ -2994,7 +2994,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 							   org.ramadda.util.text.Row row) {
 		    try {
 			myCnt++;
-			if(myCnt%100==0) System.err.println("count:" + myCnt);
+			if(myCnt%1000==0) System.err.println("count:" + myCnt);
 			Object[] values = tableHandler.makeEntryValueArray();
 			cnt[0]++;
 			initializeValueArray(request, null, values);
@@ -3412,7 +3412,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         String            sql        = makeInsertOrUpdateSql(entry, (isNew
                 ? null
                 : dbid));
-	System.err.println(sql);
+	//	System.err.println(sql);
         PreparedStatement stmt       = connection.prepareStatement(sql);
 	for (Object[] values : valueList) {
 	    int stmtIdx = tableHandler.setStatement(entry, values, stmt,
@@ -3549,7 +3549,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         DbInfo dbInfo = getDbInfo();
         if (dbInfo.getLatLonColumn() != null) {
             return dbInfo.getLatLonColumn().getLatLon(values);
-        } else if ((dbInfo.getLatLonColumn() != null)
+        } else if ((dbInfo.getLatColumn() != null)
                    && (dbInfo.getLonColumn() != null)) {
             return new double[] { dbInfo.getLatColumn().getDouble(values),
                                   dbInfo.getLonColumn().getDouble(values) };
