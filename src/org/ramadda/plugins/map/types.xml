@@ -198,7 +198,9 @@ mapVar="gpxMap${entryid}" }}
 </type>
 
 
-  <type name="geo_geojson"  super="type_convertible" mimetype="application/json" description="GeoJson File"   handler="org.ramadda.plugins.map.GeoJsonTypeHandler" pattern="(.*\.geojson$)" metadata="map_style">
+<type name="geo_geojson"  super="type_convertible" mimetype="application/json" description="GeoJson File"
+      handler="org.ramadda.plugins.map.GeoJsonTypeHandler"
+      pattern="(.*\.geojson$)" metadata="map_style">
     <property name="icon" value="/icons/mapfile.png"/>
     <property name="mimetype" value="application/geo+json"/>    
     <property name="iscsvconvertible" value="true"/>
@@ -207,7 +209,9 @@ mapVar="gpxMap${entryid}" }}
 	       firstLineDefinesFields=true
       ]]>
     </property>
+<!--
     <column name="convert_commands" type="string" label="Convert Commands" showinhtml="false" showinform="false"/>
+    -->
 
 
 <wiki>
