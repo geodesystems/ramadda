@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Aug 14 08:10:08 MDT 2023";
+var build_date="RAMADDA build date: Mon Aug 14 09:31:37 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -11632,6 +11632,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return {index:this.recordToIndex[closest.getId()], record:closest};
 	},
         makeDataArray: function(dataList) {
+	    if(!dataList) return null;
             if (dataList.length == 0) return dataList;
             let data = [];
             if (dataList[0].getData) {
@@ -15056,8 +15057,9 @@ var RecordUtil = {
         for (j = 0; j < records.length; j++) {
             var record = records[j];
             if (!isNaN(record.getLatitude()) && !isNaN(record.getLongitude())) {
-		if(record.getLatitude()==0)
-		    console.log(record.getLatitude(),record.getLongitude());
+		if(record.getLatitude()==0) {
+//		    console.log(record.getLatitude(),record.getLongitude());
+		}
 		if (j == 0) {
                     north = record.getLatitude();
                     south = record.getLatitude();
@@ -23698,7 +23700,6 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
 
 	    });
 	    if(!Utils.isDefined(this.index)) {
-		console.log(records.length,this.getStartIndex(0));
 		this.setIndex(Math.min(records.length-1,this.getStartIndex(0)));
 	    }
 
