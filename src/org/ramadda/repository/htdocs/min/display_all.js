@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Aug 14 09:36:34 MDT 2023";
+var build_date="RAMADDA build date: Mon Aug 14 10:00:11 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -18276,17 +18276,19 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
     const SUPER = new RamaddaFieldsDisplay(displayManager, id, chartType, properties);
     let myProps = [
 	{label:'Chart Style'},
-	{p:'highlightFields',d:null,ex:'fields'},
-	{p:'highlightShowFields',d:null,ex:'true'},
-	{p:'highlightShowFieldsSize',d:"4",ex:'4'},
-	{p:"acceptHighlightFieldsEvent",d:true,ex:'true'},
-	{p:'highlightDim',d:'true',ex:'true',tt:'Dim the non highlight lines'},
 	{p:'chartWidth',ex:''},
 	{p:'chartHeight',ex:''},
 	{p:'chartLeft',d:0},
 	{p:'chartRight',d:0},
 	{p:'chartTop',d:10,ex:'0'},
 	{p:'chartBottom',ex:'0',d:0},
+
+	{p:'textFontSize',ex:12},
+	{p:'textBold',ex:true},
+	{p:'textItalic',ex:true},
+	{p:'textColor',ex:'green'},
+	{p:'textFontName',ex:'Times'},
+	
 
 	{p:'lineDashStyle',d:null,ex:'2,2,20,2,20'},
 	{p:'highlight.lineDashStyle',d:'2,2,20,2,20',ex:'2,2,20,2,20'},
@@ -18297,6 +18299,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'highlight.labelInLegend',d:null,ex:'label',canCache:true},
 	{p:'nohighlight.labelInLegend',d:null,ex:'label',canCache:true},	
 	{p:'some_field.labelInLegend',d:null,ex:'label',canCache:true},
+
+	{p:'highlightFields',d:null,ex:'fields'},
+	{p:'highlightShowFields',d:null,ex:'true'},
+	{p:'highlightShowFieldsSize',d:"4",ex:'4'},
+	{p:"acceptHighlightFieldsEvent",d:true,ex:'true'},
+	{p:'highlightDim',d:'true',ex:'true',tt:'Dim the non highlight lines'},
+
 
 	{p:'seriesType',d:null,ex:'line|area|bars',canCache:true},
 	{p:'highlight.seriesType',d:null,ex:'line|area|bars',canCache:true},
@@ -19718,12 +19727,27 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    this.setPropertyOn(chartOptions.vAxis, "vAxis.baselineColor", "baselineColor", this.getProperty("baselineColor")|| lineColor);
 
             let textColor = this.getProperty("textColor", "#000");
-	    let textBold = this.getProperty("textBold", "false");
+	    let textBold = this.getProperty("textBold", false);
+	    let textItalic = this.getProperty("textItalic", false);	    
+            let textFontName = this.getProperty("textFontName");
+            let fontSize = this.getProperty("textFontSize",12);	    
+
             this.setPropertyOn(chartOptions.hAxis.textStyle, "hAxis.text.color", "color", this.getProperty("axis.text.color", textColor));
             this.setPropertyOn(chartOptions.vAxis.textStyle, "vAxis.text.color", "color", this.getProperty("axis.text.color", textColor));
 
+
             this.setPropertyOn(chartOptions.hAxis.textStyle, "hAxis.text.bold", "bold", textBold);
             this.setPropertyOn(chartOptions.vAxis.textStyle, "vAxis.text.bold", "bold", textBold);
+
+            this.setPropertyOn(chartOptions.hAxis.textStyle, "hAxis.text.italic", "italic", textItalic);
+            this.setPropertyOn(chartOptions.vAxis.textStyle, "vAxis.text.italic", "italic", textItalic);
+
+            this.setPropertyOn(chartOptions.hAxis.textStyle, "hAxis.text.fontName", "fontName", textFontName);
+            this.setPropertyOn(chartOptions.vAxis.textStyle, "vAxis.text.fontName", "fontName", textFontName);
+
+            this.setPropertyOn(chartOptions.hAxis.textStyle, "hAxis.text.fontSize", "fontSize",fontSize);
+            this.setPropertyOn(chartOptions.vAxis.textStyle, "vAxis.text.fontSize", "fontSize", fontSize);
+
 
 	    chartOptions.vAxis.title  = Utils.decodeText(this.getProperty("vAxis.text", this.getProperty("vAxisText",this.getProperty("vAxisTitle"))));
 
@@ -19830,6 +19854,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		Utils.makeDownloadFile("props.txt",this.getPropertyOutput);
 	    }
             this.setContents(HU.div([ID,this.domId(ID_CHARTS)]));
+	    
+
+
             return chartOptions;
         },
         getChartHeight: function() {
