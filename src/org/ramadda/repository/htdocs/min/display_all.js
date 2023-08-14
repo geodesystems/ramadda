@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Aug 14 09:31:37 MDT 2023";
+var build_date="RAMADDA build date: Mon Aug 14 09:36:34 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -19930,7 +19930,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    return this.getProperty('doMultiChartsByField');
 	},
 	makeMultiChart:function (label, dataList, fields,props) {
-	    let multiStyle="width:200px;" + this.getProperty("multiStyle","")+"display:block;";
+	    let multiStyle="width:200px;" + this.getProperty("multiStyle","");
 	    let multiLabelTemplate=this.getProperty("multiLabelTemplate","${value}");
 	    let labelPosition = this.getProperty("multiChartsLabelPosition","bottom");
 	    let tmpChartOptions = this.chartOptions;
