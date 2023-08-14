@@ -270,7 +270,6 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
 
 	    });
 	    if(!Utils.isDefined(this.index)) {
-		console.log(records.length,this.getStartIndex(0));
 		this.setIndex(Math.min(records.length-1,this.getStartIndex(0)));
 	    }
 
