@@ -7859,6 +7859,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return {index:this.recordToIndex[closest.getId()], record:closest};
 	},
         makeDataArray: function(dataList) {
+	    if(!dataList) return null;
             if (dataList.length == 0) return dataList;
             let data = [];
             if (dataList[0].getData) {
