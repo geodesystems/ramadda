@@ -108,6 +108,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
                                        Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
+	System.err.println(getPathForEntry(request, entry,true));
         return new OpenAQRecordFile(new IO.Path(getPathForEntry(request, entry,true)));
     }
 
