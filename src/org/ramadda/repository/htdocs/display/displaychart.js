@@ -1937,7 +1937,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    return this.getProperty('doMultiChartsByField');
 	},
 	makeMultiChart:function (label, dataList, fields,props) {
-	    let multiStyle="width:200px;" + this.getProperty("multiStyle","")+"display:block;";
+	    let multiStyle="width:200px;" + this.getProperty("multiStyle","");
 	    let multiLabelTemplate=this.getProperty("multiLabelTemplate","${value}");
 	    let labelPosition = this.getProperty("multiChartsLabelPosition","bottom");
 	    let tmpChartOptions = this.chartOptions;
