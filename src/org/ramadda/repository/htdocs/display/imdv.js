@@ -52,7 +52,7 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'filter.toggle.show=false',
 			  'legendTooltip=',
 			  'showButtons=false',
-			  'showMeasures=false'];
+			  'showMeasures=false','showTextSearch=true'];
 
 
 var CLASS_LEGEND_LABEL = 'imdv-legend-label';
@@ -4297,10 +4297,12 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 			  Utils.clone(
 			      {externalGraphic: externalGraphic,
 			       pointRadius:this.getPointRadius(10)},
+			      {fillColor:'transparent',
+			       fillOpacity:1,
+			       pointRadius:6,
+			       labelSelect:true},
 			      lineStyle,
 			      textStyle,
-			      {fillColor:'transparent',
-			       labelSelect:true},
 			      textBackgroundStyle,
 			      {transform:'', clippath:'', imagefilter:''}), 
 			  MyEntryPoint,
