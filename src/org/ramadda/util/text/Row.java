@@ -330,7 +330,7 @@ public class Row {
         /** _more_ */
         private boolean isNumber = false;
 
-	private String how;
+	private String how="string";
 
         /**
          *
@@ -340,7 +340,8 @@ public class Row {
         public RowCompare(List<Integer> indices, boolean asc,String how) {
             this.indices   = indices;
             this.ascending = asc;
-	    this.how = how;
+	    this.how = how.trim();
+	    if(this.how.equals("")) this.how = "string";
         }
 
 
@@ -369,53 +370,53 @@ public class Row {
         public int compare(Row r1, Row r2) {
             int result;
             for (int idx : indices) {
-                if ((idx < 0) || (idx >= r1.size())) {
-                    return 1;
-                }
-                if ((idx < 0) || (idx >= r2.size())) {
-                    return 0;
-                }
-                Object o1 = r1.get(idx);
-                Object o2 = r2.get(idx);
-                String s1 = o1.toString();
-                String s2 = o2.toString();
 		int dir = 0;
-		if(how.equals("string")) {
-		    dir= s1.compareTo(s2);
-		} else if(how.equals("length")) {
-		    dir= s1.length()-s2.length();
-		} else if(how.equals("extract")) {
-		    String[] p1 = Utils.findPatterns(s1,"[^\\d]*([\\d\\.]+)([^\\d]*)");
-		    String[] p2 = Utils.findPatterns(s2,"[^\\d]*([\\d\\.]+)([^\\d]*)");		    
-		    if(p1==null && p2==null) dir = 0;
-		    else if(p1==null) dir=-1;
-		    else if(p2==null) dir=1;
-		    else {
-			dir = (int)(Double.parseDouble(p1[0])-Double.parseDouble(p2[0]));
-			if(dir==0) {
-			    dir= p1[0].compareTo(p2[1]);
-			}
-		    }
-		} else {
-		    if ( !checked) {
-			try {
-			    checked = true;
-			    double d = Double.parseDouble(s1);
-			    isNumber = true;
-			} catch (Exception e) {}
-		    }
-		    if (isNumber) {
-			double d1 = Double.parseDouble(s1);
-			double d2 = Double.parseDouble(s2);
-			if (d1 < d2) {
-			    dir = -1;
-			} else if (d1 > d2) {
-			    dir = 1;
-			} else {
-			    dir = 0;
+                if ((idx < 0) || (idx >= r1.size())) {
+		    dir = 1;
+                } else if ((idx < 0) || (idx >= r2.size())) {
+		    dir = -1;
+                } else {
+		    Object o1 = r1.get(idx);
+		    Object o2 = r2.get(idx);
+		    String s1 = o1.toString();
+		    String s2 = o2.toString();
+		    if(how.equals("string")) {
+			dir= s1.compareTo(s2);
+		    } else if(how.equals("length")) {
+			dir= s1.length()-s2.length();
+		    } else if(how.equals("extract")) {
+			String[] p1 = Utils.findPatterns(s1,"[^\\d]*([\\d\\.]+)([^\\d]*)");
+			String[] p2 = Utils.findPatterns(s2,"[^\\d]*([\\d\\.]+)([^\\d]*)");		    
+			if(p1==null && p2==null) dir = 0;
+			else if(p1==null) dir=-1;
+			else if(p2==null) dir=1;
+			else {
+			    dir = (int)(Double.parseDouble(p1[0])-Double.parseDouble(p2[0]));
+			    if(dir==0) {
+				dir= p1[0].compareTo(p2[1]);
+			    }
 			}
 		    } else {
-			dir = s1.compareTo(s2);
+			if ( !checked) {
+			    try {
+				checked = true;
+				double d = Double.parseDouble(s1);
+				isNumber = true;
+			    } catch (Exception e) {}
+			}
+			if (isNumber) {
+			    double d1 = Double.parseDouble(s1);
+			    double d2 = Double.parseDouble(s2);
+			    if (d1 < d2) {
+				dir = -1;
+			    } else if (d1 > d2) {
+				dir = 1;
+			    } else {
+				dir = 0;
+			    }
+			} else {
+			    dir = s1.compareTo(s2);
+			}
 		    }
 		}
 		if (dir == 0) {

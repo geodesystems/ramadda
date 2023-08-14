@@ -1743,7 +1743,8 @@ public abstract class Converter extends Processor {
                     }
                     writer.print(id + "[" + attrs + "] ");
                 } else {
-                    writer.println("#" + i + " " + col);
+		    String id = makeID(col);
+                    writer.println("#" + i + " " + col + " id:" + id );
                 }
             }
             if (asPoint) {

@@ -1270,6 +1270,8 @@ public abstract class Processor extends SeesvOperator {
         /**  */
         int every;
 
+	String prefix;
+	
         /**  */
         int printCnt = 0;
 
@@ -1280,9 +1282,11 @@ public abstract class Processor extends SeesvOperator {
          *
          * @param every _more_
          */
-        public Progress(int every) {
+        public Progress(String prefix,int every) {
+	    this.prefix = prefix;
             this.every = every;
         }
+
 
         /**
          *
@@ -1320,7 +1324,7 @@ public abstract class Processor extends SeesvOperator {
                 System.err.println(rowCnt);
             } else if ((rowCnt) % every == 0) {
                 printCnt++;
-                String pre = "\b\b\b\b\b\b\b\b\b\b\b";
+                String pre = "\b\b\b\b\b\b\b\b\b\b\b"+prefix;
                 System.err.print(pre
                                  + StringUtil.padRight("#" + rowCnt, 10,
                                      " "));

@@ -2779,7 +2779,7 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_SORTBY, "", ARG_LABEL,"Sort",
                 new Arg(ARG_COLUMNS, "Column to sort on", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("direction", "Direction", ATTR_TYPE, "enumeration","values","up,down"),
-		new Arg("how", "How", ATTR_TYPE, "enumeration","values","string,number,length,extract")),
+		new Arg("how", "How to sort - string, length, extract (number)", ATTR_TYPE, "enumeration","values","string,number,length,extract")),
 
 	/*        new Cmd(CMD_SORT, "Sort",
 		  new Arg(ARG_COLUMNS, "Column to sort on", ATTR_TYPE, TYPE_COLUMNS)),
@@ -5138,7 +5138,13 @@ public class Seesv implements SeesvCommands {
 	    });
 
 	defineFunction(new String[]{CMD_PROGRESS,"-dots"},1,(ctx,args,i) -> {
-		ctx.addProcessor(new Processor.Progress(parseInt(args.get(++i))));
+		String cnt = args.get(++i);
+		String prefix ="";
+		if(cnt.startsWith("tab")) {
+		    prefix = "\t";
+		    cnt = cnt.substring("tab".length());
+		}
+		ctx.addProcessor(new Processor.Progress(prefix,parseInt(cnt)));
 		return i;
 	    });
 
