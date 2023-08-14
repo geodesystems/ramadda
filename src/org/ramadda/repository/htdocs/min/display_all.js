@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Aug 14 10:00:11 MDT 2023";
+var build_date="RAMADDA build date: Mon Aug 14 14:03:38 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -41566,7 +41566,7 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'filter.toggle.show=false',
 			  'legendTooltip=',
 			  'showButtons=false',
-			  'showMeasures=false'];
+			  'showMeasures=false','showTextSearch=true'];
 
 
 var CLASS_LEGEND_LABEL = 'imdv-legend-label';
@@ -45811,10 +45811,12 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 			  Utils.clone(
 			      {externalGraphic: externalGraphic,
 			       pointRadius:this.getPointRadius(10)},
+			      {fillColor:'transparent',
+			       fillOpacity:1,
+			       pointRadius:6,
+			       labelSelect:true},
 			      lineStyle,
 			      textStyle,
-			      {fillColor:'transparent',
-			       labelSelect:true},
 			      textBackgroundStyle,
 			      {transform:'', clippath:'', imagefilter:''}), 
 			  MyEntryPoint,
@@ -47929,7 +47931,7 @@ MapGlyph.prototype = {
 	    this.setUseEntryLabel(this.jq("useentrylabel").is(":checked"));
 	    this.setUseEntryLocation(this.jq("useentrylocation").is(":checked"));
 	}
-	this.setVisible(this.jq('visible').is(':checked'),true);
+	this.setVisible(this.jq('visible').is(':checked'),true,null,true);
 	if(this.jq('canselect').length) {
 	    this.attrs.canSelect = this.jq('canselect').is(':checked');
 	    if(this.getMapLayer()) this.getMapLayer().canSelect = this.attrs.canSelect;
@@ -49173,7 +49175,18 @@ MapGlyph.prototype = {
 	    });
 	    body+=HU.div([ATTR_CLASS,CLASS_LEGEND_OFFSET],cbx);
 	}
+
+
+
+
 	if(this.haveChildren()) {
+	    if(this.getProperty('showTextSearch',false)) {
+		let input =  HU.input('',this.getProperty('searchtext')??'',[ATTR_STYLE,'width:100%',ATTR_PLACEHOLDER,'Search Text',ATTR_ID,this.domId('searchtext')]);
+		body+=HU.div([ATTR_STYLE,'margin-bottom:4px;margin-left:8px;margin-right:8px;'],input);
+	    }
+
+
+
 	    let child="";
 	    this.applyChildren(mapGlyph=>{
 		let childHtml = mapGlyph.makeLegend(opts);
@@ -49540,6 +49553,9 @@ MapGlyph.prototype = {
     initLegend:function() {
 	let _this = this;
 
+
+
+
 	let steps = this.getLegendDiv().find('.imdv-route-step');
 	steps.click(function(){
 	    let lon = $(this).attr('lon');
@@ -49781,6 +49797,17 @@ MapGlyph.prototype = {
 		setOpacity(event,ui);
 	    }});
 	
+	if(this.haveChildren()) {
+	    this.jq('searchtext').change(function(){
+		let text=$(this).val();
+		_this.setProperty('searchtext', text);
+		_this.applyChildren(child=>{
+		    child.applyFeatureFilters();
+		},true);
+	    });
+	}
+
+
 	if(!this.isGroup()) {
 	    this.makeFeatureFilters();
 	}
@@ -50877,10 +50904,15 @@ MapGlyph.prototype = {
 	let newLine = key+'='+value;
 	if(this.attrs.properties) {
 	    let tmp = '';
-	    Utils.split(this.attrs.properties,'\n').forEach(line=>{
-		if(line.match('^ *' +key+' *=')) line = newLine;
+	    let hadMatch =false;
+	    Utils.split(this.attrs.properties,'\n',true,true).forEach(line=>{
+		if(line.match('^ *' +key+' *=')) {
+		    hadMatch=true;
+		    line = newLine;
+		}
 		tmp+=line+'\n';
 	    });
+	    if(!hadMatch) tmp+=newLine+'\n';
 	    this.attrs.properties = tmp;
 	} else {
 	    this.attrs.properties = newLine+'\n';
@@ -50896,7 +50928,6 @@ MapGlyph.prototype = {
 	    if(!this.parsedProperties) {
 		this.parsedProperties = Utils.parseMap(this.attrs.properties,"\n","=")??{};
 	    }
-
 
 	    let v = this.parsedProperties[key];
 	    if(debug) console.log("V:" + v);
@@ -50963,6 +50994,7 @@ MapGlyph.prototype = {
 			    label = '&lt;blank&gt;' +' (' + info.seen[sample.value]+')';
 			return {value:sample.value,label:label}
 		    });
+
 		    let line=label+":<br>" +
 			HU.select("",[ATTR_STYLE,'width:90%;','filter-property',info.property,ATTR_CLASS,'imdv-filter-enum',ATTR_ID,this.domId('enum_'+ id),'multiple',null,'size',Math.min(info.samples.length,showTop?3:5)],options,filter.enumValues,50)+"<br>";
 		    add(info,'enums',line);
@@ -51465,39 +51497,18 @@ MapGlyph.prototype = {
 		return Utils.stringDefined(rule.property);
 	    });
 	}
-
-	let featureFilters = this.attrs.featureFilters ??{};
-	let rangeFilters = [];
-	let stringFilters =[];
-	let enumFilters =[];	
-	for(a in featureFilters) {
-	    let filter= featureFilters[a];
-	    if(!filter.property) {
-		continue;
-	    }
-	    let info =this.getFeatureInfo(filter.property);
-	    if(!info) {
-		continue;
-	    }
-	    if(info && !info.showFilter()) continue;
-	    if(filter.type=="string") {
-		if(Utils.stringDefined(filter.stringValue)) stringFilters.push(filter);
-	    } else if(filter.type=="enum") {
-		if(filter.enumValues && filter.enumValues.length>0) enumFilters.push(filter);
-	    } else {
-		if(Utils.isDefined(filter.min) || Utils.isDefined(filter.max)) {
-		    if(filter.min!=filter.minValue || filter.max!=filter.maxValue) {
-			rangeFilters.push(filter);
-		    }
-		}
-	    }
-	}
-
 	if(features) {
 	    features.forEach((feature,idx)=>{
 		feature.featureIndex = idx;
 	    });
 	}
+
+
+
+
+
+
+
 
 	if(this.mapLabels) {
 	    this.display.removeFeatures(this.mapLabels);
@@ -51735,49 +51746,7 @@ MapGlyph.prototype = {
 	}
 
 	this.visibleFeatures = 0;
-	let redrawFeatures = false;
-	let max =-1;
-	features.forEach((f,idx)=>{
-	    let visible = true;
-	    rangeFilters.every(filter=>{
-		let value=this.getFeatureValue(f,filter.property);
-		if(Utils.isDefined(value)) {
-		    max = Math.max(max,value);
-		    visible = value>=filter.min && value<=filter.max;
-		    //		    if(value>1000) console.log(filter.property,value,visible,filter.min,filter.max);
-		}
-		return visible;
-	    });
-	    if(visible) {
-		stringFilters.every(filter=>{
-		    let value=this.getFeatureValue(f,filter.property)??'';
-		    if(Utils.isDefined(value)) {
-			value= String(value).toLowerCase();
-			visible = value.indexOf(filter.stringValue)>=0;
-		    }
-		    return visible;
-		});
-	    }
-	    if(visible) {
-		enumFilters.every(filter=>{
-		    let value=this.getFeatureValue(f,filter.property)??'';
-		    visible =filter.enumValues.includes(value);
-		    return visible;
-		});
-	    }		
-
-	    if(visible) this.visibleFeatures++;
-	    f.isVisible  = visible;
-	    MapUtils.setFeatureVisible(f,visible);
-	    if(f.mapLabel) {
-		redrawFeatures = true;
-		f.mapLabel.isFiltered=!visible;
-		MapUtils.setFeatureVisible(f.mapLabel,visible);
-	    }
-	});
-
-
-	this.jq('filters_count').html('#' + this.visibleFeatures);
+	this.applyFeatureFilters(features);
 
 
 	if(this.attrs.fillColors) {
@@ -51818,11 +51787,121 @@ MapGlyph.prototype = {
 	    this.display.addFeatures(this.mapLabels);
 	}	    
 	ImdvUtils.scheduleRedraw(this.mapLayer);
+    },
+    applyFeatureFilters:function(features) {
+	let redraw = false;
+	if(!features)  {
+	    features=this.mapLayer?.features;
+	    redraw = true;
+	}
+	if(!features) return;
+	let featureFilters = this.attrs.featureFilters ??{};
+	let rangeFilters = [];
+	let stringFilters =[];
+	let enumFilters =[];	
+	for(a in featureFilters) {
+	    let filter= featureFilters[a];
+	    if(!filter.property) {
+		continue;
+	    }
+	    let info =this.getFeatureInfo(filter.property);
+	    if(!info) {
+		continue;
+	    }
+	    if(info && !info.showFilter()) continue;
+	    if(filter.type=="string") {
+		if(Utils.stringDefined(filter.stringValue)) stringFilters.push(filter);
+	    } else if(filter.type=="enum") {
+		if(filter.enumValues && filter.enumValues.length>0) enumFilters.push(filter);
+	    } else {
+		if(Utils.isDefined(filter.min) || Utils.isDefined(filter.max)) {
+		    if(filter.min!=filter.minValue || filter.max!=filter.maxValue) {
+			rangeFilters.push(filter);
+		    }
+		}
+	    }
+	}
+
+
+	let redrawFeatures = false;
+	let max =-1;
+	let text = this.getProperty('showTextSearch',null,true)?this.getProperty('searchtext',null,true):null;
+	if(!Utils.stringDefined(text)) { text=null;}
+	else text = text.toLowerCase();
+	features.forEach((f,idx)=>{
+	    let visible = true;
+	    rangeFilters.every(filter=>{
+		let value=this.getFeatureValue(f,filter.property);
+		if(Utils.isDefined(value)) {
+		    max = Math.max(max,value);
+		    visible = value>=filter.min && value<=filter.max;
+		    //		    if(value>1000) console.log(filter.property,value,visible,filter.min,filter.max);
+		}
+		return visible;
+	    });
+	    if(visible) {
+		stringFilters.every(filter=>{
+		    let value=this.getFeatureValue(f,filter.property)??'';
+		    if(Utils.isDefined(value)) {
+			value= String(value).toLowerCase();
+			visible = value.indexOf(filter.stringValue)>=0;
+		    }
+		    return visible;
+		});
+	    }
+	    if(visible && text) {
+		if(f.attributes) {
+		    let numStrings = 0;
+		    let numMatched = 0;
+		    let matched  = false;
+		    Object.keys(f.attributes).every(key=>{
+			let value = f.attributes[key];
+			if(value  && typeof value == 'string') {
+			    numStrings++;
+			    matched = value.toLowerCase().indexOf(text)>=0;
+			    if(matched) return false;
+			}
+			return true;
+		    })
+		    if(numStrings && !matched) {
+			visible=false;
+		    }
+		}
+	    }
+
+
+	    if(visible) {
+		enumFilters.every(filter=>{
+		    let value=this.getFeatureValue(f,filter.property)??'';
+		    visible =filter.enumValues.includes(value);
+		    return visible;
+		});
+	    }		
+
+
+
+
+	    if(visible) this.visibleFeatures++;
+	    f.isVisible  = visible;
+	    MapUtils.setFeatureVisible(f,visible);
+	    if(f.mapLabel) {
+		redrawFeatures = true;
+		f.mapLabel.isFiltered=!visible;
+		MapUtils.setFeatureVisible(f.mapLabel,visible);
+	    }
+	});
+
+	this.jq('filters_count').html('#' + this.visibleFeatures);
+	if(redraw) {
+	    ImdvUtils.scheduleRedraw(this.mapLayer);
+	}
+
 	if(redrawFeatures) {
 	    this.display.redraw();
 	}
-    },
 
+    },
+    
     checkRings:function(points) {
 	if(!this.features[0]){
 	    console.log("range rings has no features");
@@ -52106,7 +52185,7 @@ MapGlyph.prototype = {
 	return this.attrs.visibleLevelRange;
     },
 
-    setVisible:function(visible,callCheck,highlighted) {
+    setVisible:function(visible,callCheck,highlighted,skipChildren) {
 	this.highlighted = highlighted;
 	if(!visible) {
 	    if(this.stepMarker) {
@@ -52115,7 +52194,9 @@ MapGlyph.prototype = {
 	}
 
 	this.attrs.visible = visible;
-    	this.applyChildren(child=>{child.setVisible(visible, callCheck);});
+	if(!skipChildren) {
+    	    this.applyChildren(child=>{child.setVisible(visible, callCheck);});
+	}
 	Utils.forEach(this.rings,f=>{MapUtils.setFeatureVisible(f,visible);});
 
 	if(callCheck)
