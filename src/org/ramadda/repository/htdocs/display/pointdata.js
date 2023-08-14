@@ -1629,8 +1629,9 @@ var RecordUtil = {
         for (j = 0; j < records.length; j++) {
             var record = records[j];
             if (!isNaN(record.getLatitude()) && !isNaN(record.getLongitude())) {
-		if(record.getLatitude()==0)
-		    console.log(record.getLatitude(),record.getLongitude());
+		if(record.getLatitude()==0) {
+//		    console.log(record.getLatitude(),record.getLongitude());
+		}
 		if (j == 0) {
                     north = record.getLatitude();
                     south = record.getLatitude();
