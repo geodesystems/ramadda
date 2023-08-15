@@ -1,5 +1,6 @@
 <types supercategory="Geoscience">
-  <type name="type_awc_metar"  super="type_point" description="AWC Weather Observations"  handler="org.ramadda.geodata.point.AwcMetarTypeHandler">
+  <type name="type_awc_metar"  super="type_point" description="AWC Weather Observations"
+	handler="org.ramadda.geodata.point.AwcMetarTypeHandler">
      <property name="form.file.show" value="false"/>
      <property name="form.resource.show" value="false"/>
      <property name="point.initialize" value="false"/>
@@ -8,8 +9,14 @@
      <property name="form.date.show" value="false"/>          
      <property name="icon" value="/point/noaa.gif"/>
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+     <!-- We use the csvcommands to sort the records because the data is coming in in reverse chrono order
+	  the csv command needs to skip the first 5 lines.
+	  then those recrods gets passed off to the CsvFile for further processing and the skiplines=1
+	  says to strip off the fields
+	  -->
  <property name="record.properties">
-skiplines=6
+csvcommands1=-skiplines,5,-sortby,observation_time,up,string
+skiplines=1
 fields=raw_text[chartable=true type=string],station_id[type=string],observation_time[chartable=true type=date format="yyyy-MM-dd'T'HH:mm:ss"],latitude[chartable=true isLatitude=true],longitude[chartable=true isLongitude=true],temp_c[chartable=true unit=celsius],dewpoint_c[chartable=true unit=celsius],wind_dir_degrees[chartable=true unit=degrees],wind_speed_kt[chartable=true unit=knots],wind_gust_kt[chartable=true unit=knots],visibility_statute_mi[chartable=true],altim_in_hg[chartable=true],sea_level_pressure_mb[chartable=true],corrected[type=string],auto[type=string],auto_station[type="string"],maintenance_indicator_on[type=string],no_signal[type=string],lightning_sensor_off[type=string],freezing_rain_sensor_off[type=string],present_weather_sensor_off[type=string],wx_string[type=string],sky_cover1[type=string],cloud_base_ft_agl1[chartable=true],sky_cover2[type=string],cloud_base_ft_agl2[chartable=true],sky_cover3[type=string],cloud_base_ft_agl3[chartable=true],sky_cover4[type=string],cloud_base_ft_agl4[chartable=true],flight_category[type=string],three_hr_pressure_tendency_mb[chartable=true],maxT_c[chartable=true],minT_c[chartable=true],maxT24hr_c[chartable=true],minT24hr_c[chartable=true],precip_in[chartable=true],pcp3hr_in[chartable=true],pcp6hr_in[chartable=true],pcp24hr_in[chartable=true],snow_in[chartable=true],vert_vis_ft[chartable=true],metar_type[type=string],elevation_m[isElevation=true unit=m]
      </property>
      <column  name="site_id"  type="enumerationplus" label="Site ID" cansearch="true" values="file:/org/ramadda/geodata/point/resources/weatherstations.txt"/>
@@ -42,7 +49,8 @@ fields=raw_text[chartable=true type=string],station_id[type=string],observation_
   </type>
 
 
-  <type name="type_nws_obs"  super="type_point" description="NWS Current Observations"  handler="org.ramadda.geodata.point.NwsObsTypeHandler">
+  <type name="type_nws_obs"  super="type_point" description="NWS Current Observations"
+	handler="org.ramadda.geodata.point.NwsObsTypeHandler">
      <property name="form.file.show" value="false"/>
      <property name="form.resource.show" value="false"/>
      <property name="point.initialize" value="false"/>
