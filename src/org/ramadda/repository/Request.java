@@ -875,13 +875,11 @@ public class Request implements Constants, Cloneable {
         boolean alwaysHttps = repository.getAlwaysHttps();
         boolean sslEnabled  = repository.isSSLEnabled(this);
         if (sslEnabled) {
-            port     = getRepository().getHttpsPort();
             protocol = "https";
         } else {
-            port     = getServerPort();
             protocol = "http";
         }
-        if ((httpServletRequest != null) && !alwaysHttps) {
+        if (httpServletRequest != null && !alwaysHttps) {
             String scheme = httpServletRequest.getScheme();
             if (scheme != null) {
                 List<String> toks = Utils.split(scheme, "/", true, true);
@@ -890,14 +888,18 @@ public class Request implements Constants, Cloneable {
                 }
             }
         }
-        //        System.err.println("Request.getAbsoluteUrl:" + protocol +" port:" + port);
+	if(protocol.equals("http"))
+	    port     = getServerPort();
+	else
+            port     = getRepository().getHttpsPort();
+
+	//	System.err.println("Request.getAbsoluteUrl:" + protocol +" port:" + port);
         if (port == 80) {
             return protocol + "://" + getServerName() + url;
         } else {
             if (protocol.equals("https") && (port == 443)) {
                 return protocol + "://" + getServerName() + url;
             }
-
             return protocol + "://" + getServerName() + ":" + port + url;
         }
     }
