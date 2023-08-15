@@ -6578,7 +6578,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    searchBar+= HU.span([CLASS,"display-filter-label",ID,this.getDomId(ID_FILTER_COUNT)],"");
 		}
 		let filterBar = searchBar+bottom[0] + HU.div([ID,this.domId(ID_TAGBAR)],"");
-//		header2+=HU.div([CLASS,CLASS_HEADER_SPAN+" " +  filterClass,STYLE,style,ID,this.getDomId(ID_FILTERBAR)],filterBar);
+		header2+=HU.div([CLASS,CLASS_HEADER_SPAN+" " +  filterClass,STYLE,style,ID,this.getDomId(ID_FILTERBAR)],filterBar);
 	    }
 
 
