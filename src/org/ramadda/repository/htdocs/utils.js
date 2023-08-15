@@ -1526,6 +1526,10 @@ var Utils =  {
         }
         return arg1;
     },
+    isTrue: function(v) {
+	if(v===null) return false;
+	return (String(v)=='true');
+    },
     isDefined: function(v) {
         let ok = true;
         let a = Array.from(arguments).every(v=>{
