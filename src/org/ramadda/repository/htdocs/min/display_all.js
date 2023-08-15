@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Aug 15 10:10:41 MDT 2023";
+var build_date="RAMADDA build date: Tue Aug 15 10:21:31 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -10351,7 +10351,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    searchBar+= HU.span([CLASS,"display-filter-label",ID,this.getDomId(ID_FILTER_COUNT)],"");
 		}
 		let filterBar = searchBar+bottom[0] + HU.div([ID,this.domId(ID_TAGBAR)],"");
-//		header2+=HU.div([CLASS,CLASS_HEADER_SPAN+" " +  filterClass,STYLE,style,ID,this.getDomId(ID_FILTERBAR)],filterBar);
+		header2+=HU.div([CLASS,CLASS_HEADER_SPAN+" " +  filterClass,STYLE,style,ID,this.getDomId(ID_FILTERBAR)],filterBar);
 	    }
 
 
@@ -29816,8 +29816,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    let f = filter.getField();
 		    let fid = "filter_" + f.getId();
 		    if(f.isNumeric()) {
-			let min = $("#" + this.domId("filterby_" + f.getId()+"_min")).val().trim();
-			let max = $("#" + this.domId("filterby_" + f.getId()+"_max")).val().trim();
+			let min = $("#" + this.domId("filterby_" + f.getId()+"_min")).val()?.trim();
+			let max = $("#" + this.domId("filterby_" + f.getId()+"_max")).val()?.trim();
 			attrs[fid +"_min"] = min;
 			attrs[fid +"_max"] = max;
 		    } else {

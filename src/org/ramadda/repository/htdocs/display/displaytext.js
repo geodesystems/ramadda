@@ -790,8 +790,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    let f = filter.getField();
 		    let fid = "filter_" + f.getId();
 		    if(f.isNumeric()) {
-			let min = $("#" + this.domId("filterby_" + f.getId()+"_min")).val().trim();
-			let max = $("#" + this.domId("filterby_" + f.getId()+"_max")).val().trim();
+			let min = $("#" + this.domId("filterby_" + f.getId()+"_min")).val()?.trim();
+			let max = $("#" + this.domId("filterby_" + f.getId()+"_max")).val()?.trim();
 			attrs[fid +"_min"] = min;
 			attrs[fid +"_max"] = max;
 		    } else {
