@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Aug 15 09:14:48 MDT 2023";
+var build_date="RAMADDA build date: Tue Aug 15 10:01:07 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -43876,7 +43876,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    props.forEach(prop=>{
 			let id = 'glyphedit_' + prop;
 			if(prop.toLowerCase().indexOf('externalgraphic')>=0 || prop=='childIcon')  {
-			    if(this.jq(prop).attr('clearpressed')) {
+			    if(Utils.isTrue(this.jq(prop).attr('clearpressed'))) {
 				style[prop+'_cleared'] = true;
 			    } else {
 				style[prop+'_cleared'] = false;
@@ -44639,10 +44639,11 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    let prop = icons.attr('icon-property');
 	    let apply = (icon,clear)=>{
 		this.jq(prop+'_image').attr(ATTR_SRC,icon);
-		if(clear)
-		    this.jq(prop).attr('clearpressed',true);			
-		else
-		    this.jq(prop).attr('clearpressed',false);			
+		if(clear) {
+		    this.jq(prop).attr('clearpressed',true);
+		} else {
+		    this.jq(prop).attr('clearpressed',false);
+		}
 		this.jq(prop).val(icon);			
 		if(callback) callback(icon);
 		if(Utils.stringDefined(icon)) {
@@ -51506,11 +51507,14 @@ MapGlyph.prototype = {
 	    this.addFillImage(features);
 	}
 	let style = this.style;
-	if(style.externalGraphic_cleared) {
+	if(Utils.isTrue(style.externalGraphic_cleared)) {
 	    features.forEach(f=>{
-		f.style.externalGraphic = null;
+		if(f.style)
+		    f.style.externalGraphic = null;
 	    });
 	}
+	delete style.externalGraphic_cleared;
+
 
 	let rules = this.getMapStyleRules();
 //	if(debug) console.dir("\tmapStyleRules",rules);
@@ -51550,7 +51554,7 @@ MapGlyph.prototype = {
 
 	if(debug)   console.dir(style);
 	this.mapLayer.style = style;
-	style.externalGraphic = null;
+//	style.externalGraphic = null;
 
 	if(features) {
 	    features.forEach((f,idx)=>{
