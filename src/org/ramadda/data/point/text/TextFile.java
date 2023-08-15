@@ -527,7 +527,6 @@ public abstract class TextFile extends PointFile {
 			visitInfo.getRecordIO().putBackLine(line);
 			break;
 		    }
-		    System.err.println("HEADER:" + line);
 		}
 
 
@@ -540,11 +539,17 @@ public abstract class TextFile extends PointFile {
 		    continue;
 		}
 
+		//Check for the #fields=...
+		if(line.startsWith("#fields=")) {
+		    fieldsLine = line;
+		}
+
 		//Not sure if this should be here for all files but skip over any comment lines 
 		if(line.startsWith(commentLineStart)) continue;
                 fieldRow--;
                 if (fieldRow <= 0) {
-                    fieldsLine = line;
+		    if(fieldsLine==null)
+			fieldsLine = line;
                     break;
                 }
             }
@@ -577,6 +582,7 @@ public abstract class TextFile extends PointFile {
 		if(fieldsLine.indexOf("[")>0) {
                     if(debug)
                         System.err.println("Treating fields line as the RAMADDA point header");
+		    fieldsLine=fieldsLine.replaceAll("^# *fields=","");
                     putProperty(PROP_FIELDS, fieldsLine);
 		}  else {
 		    String defaultType      = getProperty("record.type.default", null);
