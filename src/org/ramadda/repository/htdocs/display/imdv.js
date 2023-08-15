@@ -2349,7 +2349,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    props.forEach(prop=>{
 			let id = 'glyphedit_' + prop;
 			if(prop.toLowerCase().indexOf('externalgraphic')>=0 || prop=='childIcon')  {
-			    if(this.jq(prop).attr('clearpressed')) {
+			    if(Utils.isTrue(this.jq(prop).attr('clearpressed'))) {
 				style[prop+'_cleared'] = true;
 			    } else {
 				style[prop+'_cleared'] = false;
@@ -3112,10 +3112,11 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    let prop = icons.attr('icon-property');
 	    let apply = (icon,clear)=>{
 		this.jq(prop+'_image').attr(ATTR_SRC,icon);
-		if(clear)
-		    this.jq(prop).attr('clearpressed',true);			
-		else
-		    this.jq(prop).attr('clearpressed',false);			
+		if(clear) {
+		    this.jq(prop).attr('clearpressed',true);
+		} else {
+		    this.jq(prop).attr('clearpressed',false);
+		}
 		this.jq(prop).val(icon);			
 		if(callback) callback(icon);
 		if(Utils.stringDefined(icon)) {

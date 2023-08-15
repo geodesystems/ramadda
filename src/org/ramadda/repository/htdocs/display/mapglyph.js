@@ -4147,11 +4147,14 @@ MapGlyph.prototype = {
 	    this.addFillImage(features);
 	}
 	let style = this.style;
-	if(style.externalGraphic_cleared) {
+	if(Utils.isTrue(style.externalGraphic_cleared)) {
 	    features.forEach(f=>{
-		f.style.externalGraphic = null;
+		if(f.style)
+		    f.style.externalGraphic = null;
 	    });
 	}
+	delete style.externalGraphic_cleared;
+
 
 	let rules = this.getMapStyleRules();
 //	if(debug) console.dir("\tmapStyleRules",rules);
@@ -4191,7 +4194,7 @@ MapGlyph.prototype = {
 
 	if(debug)   console.dir(style);
 	this.mapLayer.style = style;
-	style.externalGraphic = null;
+//	style.externalGraphic = null;
 
 	if(features) {
 	    features.forEach((f,idx)=>{
