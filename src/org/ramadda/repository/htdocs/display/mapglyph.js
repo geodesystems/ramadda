@@ -4153,9 +4153,6 @@ MapGlyph.prototype = {
 		    f.style.externalGraphic = null;
 	    });
 	}
-	delete style.externalGraphic_cleared;
-
-
 	let rules = this.getMapStyleRules();
 //	if(debug) console.dir("\tmapStyleRules",rules);
 	let useRules = [];
