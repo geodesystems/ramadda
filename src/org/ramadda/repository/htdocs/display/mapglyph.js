@@ -4064,7 +4064,6 @@ MapGlyph.prototype = {
 
     applyMapStyle:function(skipLegendUI) {
 	let debug = false;
-//	debug=true;
 	if(debug)   console.log("applyMapStyle:" + this.getName());
     	this.applyChildren(child=>{child.applyMapStyle(skipLegendUI);});
 	let _this = this;
@@ -4080,6 +4079,7 @@ MapGlyph.prototype = {
 	    if(debug) console.log("\tno features");
 	    return
 	}
+
 	if(!this.originalFeatures) this.originalFeatures = features;
 	else features = this.originalFeatures;
 
@@ -4150,6 +4150,12 @@ MapGlyph.prototype = {
 	    this.addFillImage(features);
 	}
 	let style = this.style;
+	if(style.externalGraphic_cleared) {
+	    features.forEach(f=>{
+		f.style.externalGraphic = null;
+	    });
+	}
+
 	let rules = this.getMapStyleRules();
 //	if(debug) console.dir("\tmapStyleRules",rules);
 	let useRules = [];
