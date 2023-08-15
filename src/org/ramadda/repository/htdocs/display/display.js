@@ -118,6 +118,7 @@ const HIGHLIGHT_COLOR = "#436EEE";
 
 const VALUE_NONE = "--none--";
 
+var CLASS_HEADER_SPAN = "display-header-span";
 
 const DisplayEvent = {
 };
@@ -6043,15 +6044,26 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 					    this.getProperty('requestFieldsToggleOpen',false),
 					    {orientation:'horizontal'});
 	    }
-	    if(!this.getRequestFieldsShow()) {
-		requestProps = HU.div(['style','display:none;'], requestProps);
-	    }
 	    if(Utils.stringDefined(requestProps)) {
+		if(!this.getRequestFieldsShow()) {
+		    requestProps = HU.div(['style','display:none;'], requestProps);
+		}
 		this.writeHeader(ID_REQUEST_PROPERTIES, HU.div([],requestProps));
+		if(!this.getRequestFieldsShow()) {
+		    //Hide this so it doesn't screw up the spacing
+		    this.jq(ID_REQUEST_PROPERTIES).css('display','none');
+		}
 	    }
 	    //Keep track of the values because there can be spurious changes triggered
 	    //when the user clicks in a time range field
 	    let valueMap = {}
+	    let applyButton = this.jq('requestapply').button();
+	    let applyRequest = ()=>{
+		applyButton.css('background','');
+		applyButton.css('border-color','');		    
+		this.macroChanged();
+		this.reloadData();
+	    };
 	    let macroChange = (macro,value,what,force,apply)=>{
 		if(what) {
 		    if(!force && value == valueMap[macro.urlarg+'_'+what]) {
@@ -6063,9 +6075,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 
 		if(this.settingMacroValue) return;
+		let reloaded = false;
 		if((apply || live) && macro.triggerReload) {
-		    this.macroChanged();
-		    this.reloadData();
+		    reloaded=true;
+		    applyRequest();
+		} else {
+		    applyButton.css('background','lightblue');
+		    applyButton.css('border-color','#000');		    
 		}
 		if(!macro.name) return;
 		this.settingMacroValue = true;
@@ -6080,9 +6096,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.settingMacroValue = false;
 	    };
 
-	    this.jq('requestapply').button().click(()=>{
-		this.macroChanged();
-		this.reloadData();
+	    applyButton.click(()=>{
+		applyRequest();
 	    });
 
 	    let sliderFunc = function() {
@@ -6296,16 +6311,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(this.getShowProgress(false)) {
 		header2 += HU.div([ID,this.getDomId(ID_DISPLAY_PROGRESS), STYLE,HU.css("display","inline-block","margin-right","4px","min-width","20px")]);
 	    }
-	    header2 += HU.div([ID,this.getDomId(ID_HEADER2_PREPREPREFIX),CLASS,"display-header-span"],"");
-	    header2 += HU.div([ID,this.getDomId(ID_HEADER2_PREPREFIX),CLASS,"display-header-span"],"");
-	    header2 += HU.div([ID,this.getDomId(ID_HEADER2_PREFIX),CLASS,"display-header-span"],"");
+	    header2 += HU.div([ID,this.getDomId(ID_HEADER2_PREPREPREFIX),ATTR_CLASS,CLASS_HEADER_SPAN],"");
+	    header2 += HU.div([ID,this.getDomId(ID_HEADER2_PREPREFIX),ATTR_CLASS,CLASS_HEADER_SPAN],"");
+	    header2 += HU.div([ID,this.getDomId(ID_HEADER2_PREFIX),ATTR_CLASS,CLASS_HEADER_SPAN],"");
 	    header2 +=  this.getHeader2();
 	    if(this.getProperty("pageRequest",false) || this.getProperty("filterPaginate")) {
 		
-		header2 += HU.div([CLASS,"display-header-span display-filter",ID,this.getDomId(ID_PAGE_COUNT)]);
+		header2 += HU.div([ATTR_CLASS,CLASS_HEADER_SPAN+" display-filter",ATTR_ID,this.getDomId(ID_PAGE_COUNT)]);
 	    }
-	    header2+=HU.div([ID,this.getDomId(ID_REQUEST_PROPERTIES),CLASS,"display-header-span"],"");
-
+	    header2+=HU.div([ATTR_ID,this.getDomId(ID_REQUEST_PROPERTIES),ATTR_CLASS,CLASS_HEADER_SPAN],"");
 
 
 	    if(this.getProperty("legendFields") || this.getProperty("showFieldLegend",false)) {
@@ -6564,7 +6578,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    searchBar+= HU.span([CLASS,"display-filter-label",ID,this.getDomId(ID_FILTER_COUNT)],"");
 		}
 		let filterBar = searchBar+bottom[0] + HU.div([ID,this.domId(ID_TAGBAR)],"");
-		header2+=HU.div([CLASS,"display-header-span " +  filterClass,STYLE,style,ID,this.getDomId(ID_FILTERBAR)],filterBar);
+//		header2+=HU.div([CLASS,CLASS_HEADER_SPAN+" " +  filterClass,STYLE,style,ID,this.getDomId(ID_FILTERBAR)],filterBar);
 	    }
 
 
@@ -6572,12 +6586,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(vertical) {
 		header2 = HU.div([CLASS,"display-header-vertical"],header2);
 	    } else {
-		let style = HU.css('line-height','0');
+		let style = HU.css('line-height','0px');
 		if(this.getProperty('headerCenter',true)) style +=HU.css('text-align','center');
 		header2=HU.div([STYLE,style],   header2);
 	    }
 	    header2 = HU.leftRightTable(header2,
-					HU.span([ID,this.getDomId(ID_HEADER2_SUFFIX),CLASS,''],''));
+					HU.div([ATTR_ID,this.getDomId(ID_HEADER2_SUFFIX)],''));
 	    					
 	    let headerSide = this.getDisplayHeaderSide();
 	    if(headerSide == "left") 

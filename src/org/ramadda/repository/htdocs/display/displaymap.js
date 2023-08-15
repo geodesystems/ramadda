@@ -2573,8 +2573,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		html += HU.checkbox("",[ID,this.domId("showVectorLayerToggle")],!this.showVectorLayer) +" " +
 		    this.getProperty("showVectorLayerToggleLabel","Show Points") +SPACE4;
 	    }
-	    html += HU.span([ID,this.domId("locations")]);
-
+	    html += HU.div([ATTR_CLASS,CLASS_HEADER_SPAN,ATTR_ID,this.domId("locations")]);
 	    return html;
 	},
 	locationMenuCnt:0,

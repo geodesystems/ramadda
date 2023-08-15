@@ -1866,7 +1866,9 @@ MapGlyph.prototype = {
 	if(opts.idToGlyph)
 	    opts.idToGlyph[this.getId()] = this;
 	let clazz = "";
-	if(!this.getVisible()) clazz+=' ' + CLASS_LEGEND_LABEL_INVISIBLE;
+	if(!this.getVisible()) {
+	    clazz+=' ' + CLASS_LEGEND_LABEL_INVISIBLE;
+	}
 	if(this.highlighted) {
 	    clazz+= ' ' + CLASS_LEGEND_LABEL_HIGHLIGHT;
 	}
@@ -2217,10 +2219,6 @@ MapGlyph.prototype = {
     },
     initLegend:function() {
 	let _this = this;
-
-
-
-
 	let steps = this.getLegendDiv().find('.imdv-route-step');
 	steps.click(function(){
 	    let lon = $(this).attr('lon');
@@ -4079,7 +4077,6 @@ MapGlyph.prototype = {
 	    if(debug) console.log("\tno features");
 	    return
 	}
-
 	if(!this.originalFeatures) this.originalFeatures = features;
 	else features = this.originalFeatures;
 
@@ -4179,8 +4176,6 @@ MapGlyph.prototype = {
 
 
 
-
-
 	if(this.mapLabels) {
 	    this.display.removeFeatures(this.mapLabels);
 	    this.mapLabels = null;
@@ -4194,8 +4189,10 @@ MapGlyph.prototype = {
 	let strokeProperty = this.getProperty('map.property.strokeColor');
 	let labelProperty = this.getProperty('map.property.label');	
 
-//	if(debug)   console.dir(style);
+	if(debug)   console.dir(style);
 	this.mapLayer.style = style;
+	style.externalGraphic = null;
+
 	if(features) {
 	    features.forEach((f,idx)=>{
 		let featureStyle = Utils.clone(style);
@@ -4420,6 +4417,8 @@ MapGlyph.prototype = {
 	this.applyFeatureFilters(features);
 
 
+
+
 	if(this.attrs.fillColors) {
 	    //	let ct = Utils.getColorTable('googlecharts',true);
 	    let ct = Utils.getColorTable('d3_schemeCategory20',true);	
@@ -4460,6 +4459,8 @@ MapGlyph.prototype = {
 	ImdvUtils.scheduleRedraw(this.mapLayer);
     },
     applyFeatureFilters:function(features) {
+	let debug = false;
+//	debug = true;
 	let redraw = false;
 	if(!features)  {
 	    features=this.mapLayer?.features;
@@ -4501,11 +4502,13 @@ MapGlyph.prototype = {
 	else text = text.toLowerCase();
 	features.forEach((f,idx)=>{
 	    let visible = true;
+	    if(debug && idx<5) console.log("feature check filter:");
 	    rangeFilters.every(filter=>{
 		let value=this.getFeatureValue(f,filter.property);
 		if(Utils.isDefined(value)) {
 		    max = Math.max(max,value);
 		    visible = value>=filter.min && value<=filter.max;
+		    if(debug && idx<5) console.log("\trange:",filter,value);
 		    //		    if(value>1000) console.log(filter.property,value,visible,filter.min,filter.max);
 		}
 		return visible;
@@ -4516,6 +4519,7 @@ MapGlyph.prototype = {
 		    if(Utils.isDefined(value)) {
 			value= String(value).toLowerCase();
 			visible = value.indexOf(filter.stringValue)>=0;
+			if(debug && idx<5) console.log("\tstring:",filter,value);
 		    }
 		    return visible;
 		});
@@ -4535,6 +4539,7 @@ MapGlyph.prototype = {
 			return true;
 		    })
 		    if(numStrings && !matched) {
+			if(debug && idx<5) console.log("\ttext:",text);
 			visible=false;
 		    }
 		}
@@ -4545,6 +4550,7 @@ MapGlyph.prototype = {
 		enumFilters.every(filter=>{
 		    let value=this.getFeatureValue(f,filter.property)??'';
 		    visible =filter.enumValues.includes(value);
+		    if(debug && idx<5) console.log("\tenum",filter,value);
 		    return visible;
 		});
 	    }		

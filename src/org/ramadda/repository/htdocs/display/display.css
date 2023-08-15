@@ -343,10 +343,15 @@ a.display-container {
 }
 
 .display-header-span {
-    display:inline;
+    display:inline-block;
     line-height:1.25em;
     text-align:center;
 }
+
+.display-header-span:empty {
+    display:none;
+}
+
 
 .display-header-vertical .display-filter-label {
     font-weight:bold;
