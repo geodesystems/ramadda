@@ -39,8 +39,6 @@ import java.util.zip.*;
  */
 @SuppressWarnings("unchecked")
 public abstract class RecordFile {
-    static int xcnt = 0;
-    int mycnt = xcnt++;
 
     private static TTLCache<String, Integer> pointCountCache = new TTLCache<String,Integer>(5*60*1000,"RecordFile Point Count" );
 
@@ -645,7 +643,7 @@ public abstract class RecordFile {
     public InputStream doMakeInputStream(boolean buffered) throws Exception {
         IO.Path  path = getNormalizedFilename();
         if (debug) {
-            System.err.println(mycnt+" RecordFile.doMakeInputStream path:" + path);
+            System.err.println("RecordFile.doMakeInputStream path:" + path);
         }
 
         if (path.getPath().toLowerCase().endsWith(".xls")) {
