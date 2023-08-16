@@ -1824,6 +1824,8 @@ public abstract class DataProvider extends SeesvOperator {
 
 	private boolean doingSpaces = false;
 
+	private boolean debugInput = false;
+	
         /**
          * _more_
          *
@@ -1835,6 +1837,7 @@ public abstract class DataProvider extends SeesvOperator {
             if (this.ctx != null) {
                 this.deHeader = Misc.equals("true",
                                             ctx.getProperty("deheader"));
+		this.debugInput = ctx.getDebugInput();
             }
             this.rawLines = rawLines;
         }
@@ -1875,7 +1878,11 @@ public abstract class DataProvider extends SeesvOperator {
                 throws Exception {
             super.initialize(seesv, ctx);
             this.ctx = ctx;
+	    if(ctx!=null)
+		this.debugInput = ctx.getDebugInput();
         }
+
+	private int lineCnt=0;
 
         /**
          * _more_
@@ -1887,6 +1894,10 @@ public abstract class DataProvider extends SeesvOperator {
         public Row readRow() throws Exception {
             while (true) {
                 String line = ctx.readLine();
+		if(debugInput) {
+		    if(lineCnt++<5)
+			System.err.println("LINE:" + line);
+		}
                 if (line == null) {
                     return null;
                 }

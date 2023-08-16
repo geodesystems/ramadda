@@ -231,6 +231,8 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private boolean debug = false;
 
+    private boolean debugInput = false;    
+
     /** _more_ */
     private StringBuilder debugSB = new StringBuilder();
 
@@ -1298,6 +1300,27 @@ public class TextReader implements Cloneable {
     public void setDebug(boolean debug) {
         this.debug = debug;
     }
+
+    /**
+       Set the DebugInput property.
+
+       @param value The new value for DebugInput
+    **/
+    public void setDebugInput (boolean value) {
+	debugInput = value;
+    }
+
+    /**
+       Get the DebugInput property.
+
+       @return The DebugInput
+    **/
+    public boolean getDebugInput () {
+	return debugInput;
+    }
+
+
+
 
     public void print(Object o) {
 	getWriter().print(o);

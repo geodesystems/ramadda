@@ -5605,6 +5605,11 @@ public class Seesv implements SeesvCommands {
 		    outputScript(args, ctx);
 		    return false;
 		}		
+		if (arg.equals("-debuginput")) {
+		    ctx.setDebugInput(true);
+		    continue;
+		}
+
 		if (arg.equals("-debug")) {
 		    ctx.setDebug(true);
 		    ctx.printDebug("arguments: ");
