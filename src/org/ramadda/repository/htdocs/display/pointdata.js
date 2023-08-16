@@ -249,9 +249,21 @@ function PointData(name, recordFields, records, url, properties) {
 	    return null;
 	},
         getCacheUrl: function() {
-	    if(this.baseUrl) return this.baseUrl;
-	    if(this.parentPointData) return this.parentPointData.getCacheUrl();
-	    return null;
+	    if(!this.cacheUrl) {
+		if(this.baseUrl) {
+		    this.cacheUrl = this.baseUrl;
+		} else  if(this.parentPointData) {
+		    this.cacheUrl  =this.parentPointData.getCacheUrl();
+		}
+		if(this.cacheUrl) {
+		    if(this.display && this.display.displayManager) {
+			let props = {lat: this.lat,lon: this.lon};
+			this.cacheUrl = this.display.displayManager.getJsonUrl(this.cacheUrl, this.display, props);
+//			console.log('CACHE',this.cacheUrl)
+		    }
+		}
+	    }
+	    return this.cacheUrl;
 	},	
         equals: function(that) {
 	    if(this.jsonUrl) {
@@ -336,14 +348,15 @@ function PointData(name, recordFields, records, url, properties) {
                 console.log("No URL");
                 return;
             }
-            let props = {
-                lat: this.lat,
-                lon: this.lon,
-            };
 	    jsonUrl = root.url;
-
-	    if(display && display.displayManager)
+	    this.display = display;
+	    if(display && display.displayManager) {
+		let props = {
+                    lat: this.lat,
+                    lon: this.lon,
+		};
 		jsonUrl = display.displayManager.getJsonUrl(root.url, display, props);
+	    }
 	    root.jsonUrl = jsonUrl;
             root.loadPointJson(jsonUrl, display, reload,callback);
         },
