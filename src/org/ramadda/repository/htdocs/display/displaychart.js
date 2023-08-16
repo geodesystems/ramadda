@@ -1958,6 +1958,29 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		chartOptions.hAxis.maxValue = x.max;
 	    }
 
+	    let vaxes = {};
+	    let getProp = (f,prop,dflt)=>{
+		let v= Utils.getProperty(this.getProperty(f.getId()+'.' + prop,this.getProperty(prop,dflt)));
+		return v;
+	    }
+	    selectedFields.forEach((f,idx)=>{
+		let min = this.getProperty(f.getId()+'.vAxisMinValue');
+		let max = this.getProperty(f.getId()+'.vAxisMaxValue');		
+		let viewWindow = {};
+		if(Utils.isDefined(min)) viewWindow.min= parseFloat(min);
+		if(Utils.isDefined(max)) viewWindow.max= parseFloat(max);		
+		vaxes[idx] = { viewWindow: viewWindow}
+		vaxes[idx].title=getProp(f,'vAxisTitle')
+		let ts = vaxes[idx].textStyle={};
+		ts.color= getProp(f,'vAxis.text.color');
+		ts.fontSize=getProp(f,'vAxis.text.fontSize');
+		ts.fontName = getProp(f,'vAxis.text.fontName');
+		ts.bold=getProp(f,'vAxis.text.bold');
+		ts.italic=getProp(f,'vAxis.text.italic');		
+	    })
+
+	    chartOptions.vAxes = vaxes;
+
 	    if(this.getProperty("vAxisFixedRange") || this.getProperty("vAxisSelectedFields") || this.getProperty("vAxisAllFields")) {
 		let min = Number.MAX_VALUE;
 		let max = Number.MIN_VALUE;		
@@ -2205,6 +2228,8 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
  	{p:'indexIsString',ex:'true',tt:'if index is a string set to true'},
 	{p:'vAxisMinValue',ex:''},
 	{p:'vAxisMaxValue',ex:''},
+	{p:'&lt;field&gt;.vAxisMinValue',ex:'',tt:'Min value for the field'},
+	{p:'&lt;field&gt;.vAxisMaxValue',ex:'',tt:'Max value for the field'},	
 	{p:'vAxisSharedRange',ex:'true',tt:'use the same max value across all time series'},
 	{p:'vAxisReverse',ex:'true',tt:'Reverse the v axis'},
 	{p:"hAxisFixedRange"},
@@ -2250,18 +2275,42 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 	{p:'vAxis.baselineColor',ex:''},
 	{p:'textColor',ex:'#000'},
 	{p:'textBold',ex:'true'},
+
 	{p:'axis.text.color',ex:'#000'},
 	{p:'hAxis.text.color',ex:'#000'},
-	{p:'axis.text.color',ex:'#000'},
 	{p:'vAxis.text.color',ex:'#000'},
-	{p:'hAxis.text.bold',ex:'false'},
-	{p:'vAxis.text.bold',ex:'false'},
+	{p:'&lt;field&gt;.vAxis.text.color',ex:'#000'},
+
+	{p:'hAxis.text.fontSize',ex:'16'},
+	{p:'vAxis.text.fontSize',ex:'16'},
+	{p:'&lt;field&gt;.vAxis.text.fontSize',ex:'16'},
+
+	{p:'hAxis.text.fontName',ex:'Times'},
+	{p:'vAxis.text.fontName',ex:'Times'},
+	{p:'&lt;field&gt;.vAxis.text.fontName',ex:'Times'},		
+
+
+	{p:'hAxis.text.bold',ex:'true'},
+	{p:'vAxis.text.bold',ex:'true'},
+	{p:'&lt;field&gt;.vAxis.text.bold',ex:'true'},	
+
+	{p:'hAxis.text.italic',ex:'true'},
+	{p:'vAxis.text.italic',ex:'true'},
+	{p:'&lt;field&gt;.vAxis.text.italic',ex:'true'},	
+
+
 	{p:'vAxisText',ex:''},
 	{p:'vAxis.text',ex:''},
+
 	{p:'slantedText',ex:'true'},
 	{p:'hAxis.slantedText',ex:''},
 	{p:'hAxis.text.color',ex:'#000'},
 	{p:'vAxis.text.color',ex:'#000'},
+
+	{p:'&lt;field&gt;.vAxis.text.color',ex:'#000'},
+
+
+
 	{p:'legend.position',ex:'top|bottom|none'},
 	{p:'legend.text.color',ex:'#000'},
 	{p:'hAxis.ticks',ex:''},
