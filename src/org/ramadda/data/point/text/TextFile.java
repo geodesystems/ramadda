@@ -516,6 +516,7 @@ public abstract class TextFile extends PointFile {
 
             while (true) {
                 line = visitInfo.getRecordIO().readLine();
+		if(line==null) break;
 		if(bom) {
 		    line = line.substring(1);
 		    bom = false;

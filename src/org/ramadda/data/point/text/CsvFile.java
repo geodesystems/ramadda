@@ -12,6 +12,7 @@ import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.text.Seesv;
 
+import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
@@ -45,10 +46,13 @@ public class CsvFile extends TextFile {
     /**  */
     private boolean hasAddHeader = false;
 
+    static int fcnt = 0;
+
     /**
      * ctor
      */
-    public CsvFile() {}
+    public CsvFile() {
+    }
 
 
     /**
@@ -307,8 +311,9 @@ public class CsvFile extends TextFile {
      */
     public void runSeesv(Seesv csvUtil, boolean buffered)
             throws Exception {
-        csvUtil.setInputStream(doMakeInputStream(csvUtil, buffered));
-        csvUtil.run(null);
+	InputStream inputStream =doMakeInputStream(csvUtil, buffered);
+	csvUtil.setInputStream(inputStream);
+	csvUtil.run(null);
     }
 
     public List<String>  preprocessCsvCommands(List<String>  commands) throws Exception {
@@ -460,12 +465,11 @@ public class CsvFile extends TextFile {
                 if (failureOk) {
                     return new ArrayList<RecordField>();
                 }
-                System.err.println("Error in CsvFile:" + "no " + PROP_FIELDS
+                System.err.println("Error in CsvFile:" +" no " + PROP_FIELDS
                                    + " properties found for file: "
                                    + getPath());
 
-                throw new IllegalArgumentException(
-                    "No fields defined for file");
+                throw new IllegalArgumentException("No fields defined for file");
             }
             fieldString = "";
         }
