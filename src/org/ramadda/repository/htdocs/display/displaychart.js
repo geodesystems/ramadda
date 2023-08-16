@@ -1328,6 +1328,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			dataTable.addColumn({
 			    type: 'string',
 			    role: 'annotation',
+			    id: 'annotation',
 			    'p': {
 				'html': true
 			    }
@@ -1363,14 +1364,21 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		for(let i=0;i<dataTable.getNumberOfColumns();i++)
 		    console.log("\tcol[" + i +"]=" + dataTable.getColumnLabel(i) +" type:" + dataTable.getColumnType(i));
 	    }
-	    if(this.getProperty("annotations") ||  this.getProperty("annotationFields")) {
+	    let annotationStride = this.getAnnotationStride(0);
+	    let annotationLabelTemplate = this.getAnnotationLabelTemplate();
+
+	    let annotationCnt = 0;	    
+	    if(Utils.stringDefined(this.getProperty("annotations")) ||
+	       Utils.stringDefined(this.getProperty("annotationFields"))) {
 		let clonedList = Utils.cloneList(dataList);
 		clonedList.shift();
 		this.annotations  = new Annotations(this,clonedList);
+
 		if(this.annotations.hasFields()) {
                     dataTable.addColumn({
 			type: 'string',
 			role: 'annotation',
+			id: 'annotation',
 			'p': {
                             'html': true
 			}
@@ -1385,7 +1393,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		}
 	    }
 
-	    if(this.annotations && this.annotations.isEnabled()) {
+	    if(this.annotations?.isEnabled()) {
 		if(this.annotations.getShowLegend()) {
 		    //Pad the left to align with  the chart axis
 		    this.jq(ID_LEGEND).html("<table width=100%><tr valign=top><td width=10%></td><td width=90%>" +
@@ -1395,6 +1403,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		dataTable.addColumn({
                     type: 'string',
                     role: 'annotation',
+		    id: 'annotation',
                     'p': {
                         'html': true
                     }
@@ -1409,7 +1418,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    }
 
 
-	    let annotationCnt=0;
 	    let times = [new Date()];
 	    let records = [];
             for (let i = 1; i < dataList.length; i++) {
@@ -1541,11 +1549,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		}
 
 
-		if(this.annotations && this.annotations.hasFields()) {
+		if(this.annotations?.hasFields()) {
                     if (theRecord) {
 			let desc = "";
 			this.annotations.getFields().forEach(f=>{
-			    let d = ""+theRecord.getValue(f.getIndex());
+			    let d = HU.b(f.getLabel())+': '+f.getValue(theRecord);
 			    if(d!="")
 				desc+= (d+"<br>");
 			});
@@ -1553,19 +1561,29 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			desc = desc.replace(/ /g,"&nbsp;");
 			annotationCnt++;
 			let label = null; 
-			if(desc.trim().length>0) {
-			    label =""+( this.annotations.labelField?theRecord.getValue(this.annotations.labelField.getIndex()):(annotationCnt))
-			    if(label.trim().length==0) label = ""+annotationCnt;
+			if(annotationLabelTemplate) {
+			    label = this.applyRecordTemplate(theRecord, null, null,annotationLabelTemplate);
+			} else {
+			    if(desc.trim().length>0) {
+				label =""+(this.annotations.labelField?theRecord.getValue(this.annotations.labelField.getIndex()):("#"+annotationCnt))
+				if(label.trim().length==0) label = "#"+annotationCnt;
+			    }
 			}
-			debug =true;
+//			debug =true;
 			if(debug && rowIdx<debugRows) {
 			    console.log("\t label:" + label);
 			    console.log("\t desc:" + desc);
 			}
+
 			debug =false;
-			console.log("A2:" +label);
-			newRow.push(label);
-			newRow.push(desc);
+			if(annotationStride<=0 || (annotationCnt%annotationStride)==0) {
+			    newRow.push(label);
+			    newRow.push(desc);
+			} else {
+			    newRow.push(null);
+			    newRow.push(null);
+
+			}
 		    } else {
 			if(i<2)
 			    console.log("No records for annotation");
@@ -2196,8 +2214,10 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 	{p:'hAxisLogScale',ex:'true'},
 	{p:'tooltipFields',ex:''},
 	{p:'annotations',ex:'date,label,desc;date,label,desc;',tt:'e.g. 2008-09-29,A,Start of housing crash;2008-11-04,B,Obama elected;'},
- 	{p:'annotationFields',ex:''},
-	{p:'annotationLabelField',ex:''},
+ 	{p:'annotationFields',ex:'',tt:'Set of fields to add an annotation to the line chart'},
+ 	{p:'annotationStride',ex:10,tt:'Only show every N annotations'},
+ 	{p:'annotationLabelField',ex:'field',tt:'Field to use for annotation label'},		
+ 	{p:'annotationLabelTemplate',ex:'"${field}',tt:'Template to use for label'},		
  	{p:'dateType',ex:'datetime'},
  	{p:'addTooltip',ex:'false',tt:'Set this to false for multi-series charts if you only want the hovered series to show in the tt'},
 	{inlineLabel:'Multiples Charts'},
