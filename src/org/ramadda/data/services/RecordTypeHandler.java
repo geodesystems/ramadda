@@ -457,7 +457,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
             }
         }
 
-        return "record_" + entry.getChangeDate() + suffix + ".csv";
+        return "record_" + entry.getChangeDate() + suffix.toLowerCase() + ".csv";
     }
 
 
