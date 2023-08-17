@@ -54,6 +54,11 @@ import java.util.regex.*;
 @SuppressWarnings("unchecked")
 public abstract class DataProvider extends SeesvOperator {
 
+    boolean debugInput = false;
+
+
+    TextReader ctx;
+
     /** _more_ */
     private Seesv seesv;
 
@@ -73,6 +78,10 @@ public abstract class DataProvider extends SeesvOperator {
      * @throws Exception _more_
      */
     public void initialize(Seesv seesv, TextReader ctx) throws Exception {
+	this.ctx = ctx;
+	if (ctx != null) {
+	    this.debugInput = ctx.getDebugInput();
+	}
         rowCnt = 0;
     }
 
@@ -167,10 +176,10 @@ public abstract class DataProvider extends SeesvOperator {
          *
          * @return _more_
          */
+	int debugCnt=0;
         protected boolean addRow(Row row) {
-            //      System.err.println("row:" + row);
             rows.add(row);
-
+	    //	    if(debugInput && debugCnt++<10)System.err.println("row:" + row);
             return true;
         }
 
@@ -663,12 +672,15 @@ public abstract class DataProvider extends SeesvOperator {
          * @throws Exception _more_
          */
         public void tokenize(TextReader ctx, String s) throws Exception {
+
             boolean    debug = false;
+	    debug = debugInput;
+	    if(debug) 	System.err.println("Json.tokenize: array path:" + arrayPath +" object path:" + objectPath);
             int        xcnt  = 0;
             JSONArray  array = null;
             JSONObject root  = null;
             if (debug) {
-                System.err.println("JSON:" + s);
+                System.err.println("JSON:" + Utils.clip(s,200,"..."));
             }
             try {
                 root = new JSONObject(s);
@@ -676,8 +688,7 @@ public abstract class DataProvider extends SeesvOperator {
                     array = JsonUtil.readArray(root, arrayPath);
                 }
                 if (debug) {
-                    System.err.println("array path:" + arrayPath + " a:"
-                                       + array);
+		    //                    System.err.println("array path:" + arrayPath + " a:"   + Utils.clip(array.toString(),200,"..."));
                 }
             } catch (Exception exc) {
                 if (debug) {
@@ -717,6 +728,7 @@ public abstract class DataProvider extends SeesvOperator {
             List<String> objectPathList = null;
             if (Utils.stringDefined(objectPath)) {
                 objectPathList = Utils.split(objectPath, ",", true, true);
+		if(debug) System.err.println("object path list:" + objectPathList);
             }
             List<String> names = null;
             for (int arrayIdx = 0; arrayIdx < array.length(); arrayIdx++) {
@@ -726,6 +738,7 @@ public abstract class DataProvider extends SeesvOperator {
 		//		System.err.println("ROW:"+ arrayIdx);
                 if (objectPathList != null) {
                     JSONObject jrow = array.getJSONObject(arrayIdx);
+		    if(debug && arrayIdx<5) System.err.println("ROW:" + jrow);
                     for (String tok : objectPathList) {
 			//			System.err.println("\ttok:" + tok);
                         if (tok.equals("*")) {
@@ -774,12 +787,14 @@ public abstract class DataProvider extends SeesvOperator {
                             JsonUtil.getHashtable(
                                 array.getJSONArray(arrayIdx), true,
                                 arrayKeys));
+			//			if(debug && arrayIdx<5) System.err.println("PRIMARY1:" + primary);
                     } catch (Exception exc) {
                         try {
                             primary.putAll(
                                 JsonUtil.getHashtable(
                                     array.getJSONObject(arrayIdx), true,
                                     arrayKeys));
+			    //			    if(debug && arrayIdx<5) System.err.println("PRIMARY2:" + primary);
                         } catch (Exception exc2) {
                             //Maybe it is an array of strings
                             for (int arrayIdx2 = 0;
@@ -792,11 +807,11 @@ public abstract class DataProvider extends SeesvOperator {
                                 row.add(v);
                                 addRow(row);
                             }
-
                             return;
                         }
                     }
-                }
+		}
+
 
                 if (secondary.size() == 0) {
                     secondary.add(primary);
@@ -804,25 +819,29 @@ public abstract class DataProvider extends SeesvOperator {
                     for (Hashtable h : secondary) {
                         h.putAll(primary);
                     }
-                }
+		}
+
+
                 if (names == null) {
                     names = new ArrayList<String>();
                     Row row = makeRow();
                     addRow(row);
                     if (arrayKeys.size() > 0) {
                         names.addAll(arrayKeys);
+			if(debug) System.err.println("names 1:" + names);
                     } else {
                         for (Enumeration keys = secondary.get(0).keys();
                                 keys.hasMoreElements(); ) {
-                            names.add((String) keys.nextElement());
+			    names.add((String) keys.nextElement());
                         }
+			if(debug) System.err.println("names 2:" + names);
                     }
                     //              names = (List<String>) Utils.sort(names);
                     for (String name : names) {
                         row.add(name);
                     }
 		    //		    System.err.println("names:" + names);
-                }
+		}
                 /*
                   JSONArray fields = root.optJSONArray("fields");
                   if(fields!=null) {
@@ -847,7 +866,18 @@ public abstract class DataProvider extends SeesvOperator {
                     }
                 }
             }
-        }
+	    
+	    if (debug) {
+		List<Row> rows = getRows();
+		for(int i=0;i<rows.size()&& i<5;i++) {
+		    System.err.println("ROW:" + rows.get(i));
+		}
+	    }
+	}
+
+
+
+
     }
 
     /**
@@ -1824,7 +1854,6 @@ public abstract class DataProvider extends SeesvOperator {
 
 	private boolean doingSpaces = false;
 
-	private boolean debugInput = false;
 	
         /**
          * _more_
@@ -1833,11 +1862,9 @@ public abstract class DataProvider extends SeesvOperator {
          * @param rawLines _more_
          */
         public CsvDataProvider(TextReader ctx, int rawLines) {
-            this.ctx = ctx;
-            if (this.ctx != null) {
+            if (ctx != null) {
                 this.deHeader = Misc.equals("true",
                                             ctx.getProperty("deheader"));
-		this.debugInput = ctx.getDebugInput();
             }
             this.rawLines = rawLines;
         }
@@ -1877,9 +1904,6 @@ public abstract class DataProvider extends SeesvOperator {
         public void initialize(Seesv seesv, TextReader ctx)
                 throws Exception {
             super.initialize(seesv, ctx);
-            this.ctx = ctx;
-	    if(ctx!=null)
-		this.debugInput = ctx.getDebugInput();
         }
 
 	private int lineCnt=0;
@@ -1975,8 +1999,6 @@ public abstract class DataProvider extends SeesvOperator {
      */
     public static class Lines extends DataProvider {
 
-        /**  */
-        TextReader ctx;
 
         /**  */
         boolean didFirst = false;
@@ -1988,19 +2010,6 @@ public abstract class DataProvider extends SeesvOperator {
 
 
 
-        /**
-         * _more_
-         *
-         * @param seesv _more_
-         * @param ctx _more_
-         *
-         * @throws Exception _more_
-         */
-        public void initialize(Seesv seesv, TextReader ctx)
-                throws Exception {
-            super.initialize(seesv, ctx);
-            this.ctx = ctx;
-        }
 
         /**
          * _more_
