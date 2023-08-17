@@ -533,8 +533,8 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
 	throws Exception {
         String thePath = getPathForEntry(null, entry,true);
         thePath  = convertPath(entry, thePath, requestProperties);
+	thePath = getRepository().applyPropertyMacros(thePath);
 	IO.Path path = new IO.Path(thePath);
-
 	List<Metadata> metadataList =
 	    getMetadataManager().findMetadata(getRepository().getTmpRequest(), entry,
 					      new String[]{"requestinformation"}, true);
@@ -557,6 +557,19 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
 		//		System.err.println("body:" +getRepository().applyPropertyMacros(mtd.getAttr3()));
 	    }
 	}
+
+	int arg=1;
+	while(true) {
+	    String property = getTypeProperty("request_arg" + arg,null);
+	    if(property==null) break;
+ 	    arg++;
+	    List<String> toks = Utils.splitUpTo(property,":",2);
+	    if(toks.size()!=2) continue;
+	    String value = getRepository().applyPropertyMacros(toks.get(1));
+	    //	    System.err.println("request arg:" + toks.get(0) +"=" + value);
+	    path.setRequestArgs(new String[]{toks.get(0),value});
+	}
+
 
         if (debug) {
             System.err.println(
