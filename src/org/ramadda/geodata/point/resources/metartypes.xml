@@ -9,11 +9,16 @@
      <property name="form.date.show" value="false"/>          
      <property name="icon" value="/point/noaa.gif"/>
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+     <property name="form.header.new">
+       <![CDATA[+note\nJust need to specify the Site  ID. See the maps on [https://ramadda.org/repository/a/awc_metars RAMADDA]\n-note]]>
+     </property>    
+
      <!-- We use the csvcommands to sort the records because the data is coming in in reverse chrono order
 	  the csv command needs to skip the first 5 lines.
 	  then those recrods gets passed off to the CsvFile for further processing and the skiplines=1
 	  says to strip off the fields
 	  -->
+
  <property name="record.properties">
 csvcommands1=-skiplines,5,-sortby,observation_time,up,string
 skiplines=1
