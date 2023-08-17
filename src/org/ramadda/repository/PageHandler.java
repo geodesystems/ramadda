@@ -2730,6 +2730,8 @@ public class PageHandler extends RepositoryManager {
                     HU.img(getIconUrl(request, entry)) + " "
                     + getEntryDisplayName(entry));
 
+
+
         String        menuId = HU.getUniqueId("menulink");
         String menuLinkImg =
             HU.span(HU.img("fas fa-caret-down"),
@@ -3646,7 +3648,7 @@ public class PageHandler extends RepositoryManager {
         if (entry != null) {
             String label = Utils.stringDefined(entryLabel)
                            ? entryLabel
-                           : entry.getTypeHandler().getEntryName(entry);
+		: getEntryDisplayName(entry);
             label = HU.href(getEntryManager().getEntryUrl(request, entry),
                             label);
             HU.sectionTitle(sb, label);
