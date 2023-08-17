@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -892,7 +893,7 @@ public class JsonUtil {
                 return dflt;
             }
             try {
-                obj = obj.getJSONObject(tok);
+                obj = readObjectFromTok(obj,tok);
             } catch (org.json.JSONException ignore) {
                 //There is the case where the named field is a string and not an object
                 return null;
@@ -940,6 +941,35 @@ public class JsonUtil {
         return obj;
     }
 
+    public static JSONObject readObjectFromTok(JSONObject obj, String tok)  {
+	if(StringUtil.containsRegExp(tok)) {
+	    for(Iterator<String> keys=obj.keys();keys.hasNext();) {
+		String key = keys.next();
+		if(key.matches(tok)) {
+		    return obj.getJSONObject(key);
+		}
+	    }
+	} else {
+	    return  obj.getJSONObject(tok);
+	}
+	return null;
+    }
+
+    public static JSONArray readArrayFromTok(JSONObject obj, String tok)  {
+	if(StringUtil.containsRegExp(tok)) {
+	    for(Iterator<String> keys=obj.keys();keys.hasNext();) {
+		String key = keys.next();
+		if(key.matches(tok)) {
+		    return obj.getJSONArray(key);
+		}
+	    }
+	} else {
+	    return  obj.getJSONArray(tok);
+	}
+	return null;
+    }
+
+
 
     /**
      * _more_
@@ -964,22 +994,14 @@ public class JsonUtil {
                 int aidx = Integer.parseInt(tok.substring(idx1 + 1, idx2));
                 JSONArray a         = obj.getJSONArray(arrayName);
                 obj = a.getJSONObject(aidx);
-
                 continue;
             }
-
-
-            obj = obj.getJSONObject(tok);
+	    obj = readObjectFromTok(obj,tok);
             if (obj == null) {
                 return null;
             }
         }
-
-        if ( !obj.has(lastTok)) {
-            return null;
-        }
-
-        return obj.getJSONArray(lastTok);
+        return readArrayFromTok(obj,lastTok);
     }
 
     /**
