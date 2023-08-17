@@ -101,7 +101,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'linked',ex:true,tt:"Link location with other maps"},
 	{p:'linkGroup',ex:'some_name',tt:"Map groups to link with"},
 	{p:'initialLocation', ex:'lat,lon',tt:"initial location"},
-	{p:'defaultMapLayer',ex:'osm|google.roads|esri.street|google.hybrid|google.roads|google.terrain|google.satellite|opentopo|esri.topo|usfs|usgs.topo|naip|usgs.imagery|esri.shaded|esri.lightgray|esri.darkgray|esri.terrain|shadedrelief|esri.aeronautical|historic|osm.toner|osm.toner.lite|watercolor'},
+	{p:'defaultMapLayer',ex:'osm|google.roads|esri.street|google.hybrid|google.roads|google.terrain|google.satellite|opentopo|esri.topo|usfs|usgs.topo|naip|usgs.imagery|esri.shaded|esri.lightgray|esri.darkgray|esri.terrain|shadedrelief|esri.aeronautical|historic|osm.toner|osm.toner.lite'},
 	{p:'geojsonLayer',ex:'entry ID',tt:'Display the geojson layer file held by give entry'},
 	{p:'geojsonLayerName',d:'Map'},
 	{p:'justShowMapLayer',ex:true,tt:'If true then just show map layer, don\'t use it for data display'},
@@ -127,6 +127,16 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'showOpacitySlider',ex:'false'},
 	{p:'showLocationSearch',ex:'true'},
 	{p:'showLatLonPosition',ex:'false',d:true},
+	{p:'showOverviewMap',ex:true},
+	{p:'overviewMapWidth',d:180},
+	{p:'overviewMapHeight',d:90},
+	{p:'overviewMapHeight',d:90},
+	{p:'overviewMapResolution',d:1},					
+	{p:'overviewMapMinRatio',d:24},
+	{p:'overviewMapMaxRatio',d:64},
+	
+	{p:'overviewMapLayer',ex:'osm|google.roads|esri.street|google.hybrid|google.roads|google.terrain|google.satellite|opentopo|esri.topo|usfs|usgs.topo|naip|usgs.imagery|esri.shaded|esri.lightgray|esri.darkgray|esri.terrain|shadedrelief|esri.aeronautical|historic|osm.toner|osm.toner.lite'},
+	{p:'showGraticules',ex:true},	
 	{p:'showLayerSwitcher',d:true,ex:'false'},
 	{p:'showScaleLine',ex:'true',d:false},
 	{p:'showZoomPanControl',ex:'true',d:true},
@@ -480,6 +490,25 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		}
 		this.initMapParams(params);
                 this.map = new RepositoryMap(this.domId(ID_MAP), params);
+		if(this.getShowOverviewMap()) {
+		    let opts = {size:{}};
+		    let layer = this.getOverviewMapLayer();
+		    if(layer) {
+			layer = this.getMap().getMapLayer(layer);
+			if(layer) {
+			    opts.layers=[layer.clone()]
+			}
+		    }
+		    opts.size.w=this.getOverviewMapWidth();
+		    opts.size.h=this.getOverviewMapHeight();		    
+		    opts.resolutionFactor = this.getOverviewMapResolution();
+		    opts.minRatio = this.getOverviewMapMinRatio();
+		    opts.maxRatio = this.getOverviewMapMaxRatio();		    
+		    this.map.setShowOverviewMap(true,opts);
+		}
+		if(this.getShowGraticules()) {
+		    this.map.setGraticulesVisible(true);
+		}		
 		this.map.myid = this.getLogLabel();
 		//Set this so there is no popup on the off feature
 		this.map.addKeyUpListener(event=>{
@@ -783,7 +812,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'linked',ex:true,tt:'Link location with other maps'},
 	{p:'linkGroup',ex:'some_name',tt:'Map groups to link with'},
 	{p:'initialLocation', ex:'lat,lon',tt:'initial location'},
-	{p:'defaultMapLayer',ex:'osm|google.roads|esri.street|google.hybrid|google.terrain|google.satellite|opentopo|esri.topo|usfs|usgs.topo|naip|usgs.imagery|esri.shaded|esri.lightgray|esri.darkgray|esri.terrain|shadedrelief|esri.aeronautical|historic|osm.toner|osm.toner.lite|watercolor'},
+	{p:'defaultMapLayer',ex:'osm|google.roads|esri.street|google.hybrid|google.terrain|google.satellite|opentopo|esri.topo|usfs|usgs.topo|naip|usgs.imagery|esri.shaded|esri.lightgray|esri.darkgray|esri.terrain|shadedrelief|esri.aeronautical|historic|osm.toner|osm.toner.lite'},
 	{p:'extraLayers',tt:'comma separated list of layers to display',
 	 ex:'baselayer:goes-visible,baselayer:nexrad,geojson:US States:/resources/usmap.json:fillColor:transparent'},
 
