@@ -601,6 +601,10 @@ MapLayer.prototype = {
 	return true;
     },
     createMapLayer:function(map) {
+	this.layer = this.createMapLayerInner(map);
+	return this.layer;
+    },
+    createMapLayerInner:function(map) {	
 	if(this.opts.creator) {
 	    return  this.opts.creator(this,map);
 	}
@@ -624,6 +628,28 @@ new MapLayer('osm','OSM',['//a.tile.openstreetmap.org/${z}/${x}/${y}.png',
 
 
 
+
+/*
+https://geoint.nrlssc.navy.mil/#/
+let cvrt = (layer,m)=>{
+    let url = '//geoint.nrlssc.navy.mil/nrltileserver/wmts/1.0.0/{layer}/default/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png';
+    url = 'https://geoint.nrlssc.navy.mil/nrltileserver/wmts/DBDBV/1.0.0/{layer}/default/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png'
+    m=m??'GoogleMapsCompatible';
+//    m='GlobalCRS84Pixel';
+//    m='GlobalCRS84Scale';
+//    m='GoogleCRS84Quad';
+//    m='NRLTileScheme';
+//    m='NRLTileScheme256';
+//    m='NRLTileSchemeAlt1';
+//    m='UPSNorthTileSet';
+//    m='UPSSouthTileSet';
+    return url.replace(/{layer}/,layer).replace(/{TileMatrixSet}/,m).replace(/{TileMatrix}/,'\${z}').replace(/{TileRow}/,'\${y}').replace(/{TileCol}/,'\${x}');
+};
+new MapLayer('test','Test',[cvrt()]);
+new MapLayer('bluemarble','Blue Marble',[cvrt('bluemarble','GoogleMapsCompatible')]);
+*/
+
+
 new MapLayer('esri.topo','ESRI Topo','https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}',{isForMap:true});
 new MapLayer('google.roads','Google Maps - Roads','https://mt0.google.com/vt/lyrs=m&hl=en&x=${x}&y=${y}&z=${z}');
 new MapLayer('google.hybrid','Google Maps - Hybrid','https://mt0.google.com/vt/lyrs=y&hl=en&x=${x}&y=${y}&z=${z}');
@@ -635,6 +661,7 @@ new MapLayer('caltopo.mapbuilder','MapBuilder Topo','https://img.caltopo.com/til
 new MapLayer('usgs.topo','USGS Topo','https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/${z}/${y}/${x}',{attribution:'USGS - The National Map'});
 new MapLayer('google.terrain','Google Maps - Terrain','https://mt0.google.com/vt/lyrs=p&hl=en&x=${x}&y=${y}&z=${z}');
 new MapLayer('google.satellite','Google Maps - Satellite','https://mt0.google.com/vt/lyrs=s&hl=en&x=${x}&y=${y}&z=${z}');
+
 new MapLayer('naip','NAIP Imagery','https://caltopo.com/tile/n/${z}/${x}/${y}.png',{attribution:'Map from Caltopo'});
 new MapLayer('usgs.imagery','USGS Imagery','https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSImageryOnly/MapServer/tile/${z}/${y}/${x}', {attribution:'USGS - The National Map'});
 new MapLayer('esri.shaded','ESRI Shaded Relief','https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/${z}/${y}/${x}');
@@ -644,6 +671,13 @@ new MapLayer('esri.terrain','ESRI Terrain','https://server.arcgisonline.com/ArcG
 new MapLayer('shadedrelief','Shaded Relief','https://caltopo.com/tile/hs_m315z45s3/${z}/${x}/${y}.png',{attribution:'Map from Caltopo'});
 new MapLayer('publiclands','Public Lands','https://caltopo.com/tile/sma/${z}/${x}/${y}.png',{attribution:'Map from Caltopo',isOverlay:true});
 new MapLayer('federallands','Federal Lands',['//gis.blm.gov/arcgis/rest/services/lands/BLM_Natl_SMA_Cached_without_PriUnk/MapServer/tile/${z}/${y}/${x}']);
+new MapLayer('seafloor','Seafloor',['//tiles.arcgis.com/tiles/C8EMgrsFcRFL6LrL/arcgis/rest/services/GEBCO_basemap_NCEI/MapServer/tile/${z}/${y}/${x}']);
+
+
+
+
+
+
 new MapLayer('historic','Historic','https://caltopo.com/tile/1900/${z}/${x}/${y}.png',{attribution:'Map from Caltopo',isOverlay:true});
 new MapLayer('esri.aeronautical','ESRI Aeronautical','https://wms.chartbundle.com/mp/service',{type:'wms',layer:'sec'});
 new MapLayer('osm.toner','OSM-Toner','https://tiles.stadiamaps.com/tiles/stamen_toner/${z}/${x}/${y}.png');
@@ -961,6 +995,9 @@ function RepositoryMap(mapId, params) {
             }
         }
     };
+
+
+//    this.addLayer(wmts);
 
 
     this.mapOptions = options;
@@ -1415,6 +1452,7 @@ RepositoryMap.prototype = {
 		_this.zoomChanged();
                 _this.locationChanged();
 		_this.setNoPointerEvents();
+//		console.log( _this.getMap().getZoom());
             });
             _this.getMap().events.register("moveend", "ramaddamap", function() {
                 _this.locationChanged();
@@ -2216,6 +2254,10 @@ RepositoryMap.prototype = {
         }
     },
 
+    getMapLayer:function(id) {
+	let layer = RAMADDA_MAP_LAYERS_MAP[id];
+	return layer?.layer;
+    },
     getVectorLayerStyleMap: function(layer, args,ruleString) {
 	//	ruleString = 'OWN_TYPE_NAME:~:.*Conservation.*:fillColor:red:strokeColor:black;OWN_TYPE_NAME:~:Joint:fillColor:blue';
         let props = {
@@ -3325,7 +3367,7 @@ RepositoryMap.prototype = {
         }
 	return null;
     },
-    setShowOverviewMap:function(v) {
+    setShowOverviewMap:function(v,args) {
 	if(!v) {
 	    if(this.overviewMap) {
 		this.overviewMap.destroy();
@@ -3333,8 +3375,14 @@ RepositoryMap.prototype = {
 	    this.overviewMap=null;
 	    return;
 	}
+
 	if(!this.overviewMap) {
-	    this.getMap().addControl(this.overviewMap = new OpenLayers.Control.OverviewMap({maximized:true,autoPan:true}));
+	    let opts = 	{
+		maximized:true,
+		autoPan:true};
+	    if(args)
+		$.extend(opts,args)
+	    this.getMap().addControl(this.overviewMap = new OpenLayers.Control.OverviewMap(opts));
 	}
     },
     setGraticulesVisible:function(visible,style) {
