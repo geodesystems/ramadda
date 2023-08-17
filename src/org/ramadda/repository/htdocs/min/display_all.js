@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Aug 16 08:14:37 MDT 2023";
+var build_date="RAMADDA build date: Thu Aug 17 10:27:45 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -18370,7 +18370,17 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:"trendlineVisibleInLegend",ex:"true",canCache:true},
 	{p:"trendlineColor",ex:"",canCache:true},
 	{p:"trendlineLineWidth",ex:"true",canCache:true},
-	{p:"trendlineOpacity",ex:"0.3",canCache:true}		    		    		    
+	{p:"trendlineOpacity",ex:"0.3",canCache:true},		    		    		    
+
+	{p:'Annotations'},
+	{p:'annotations',ex:'date,label,desc;date,label,desc;',tt:'e.g. 2008-09-29,A,Start of housing crash;2008-11-04,B,Obama elected;'},
+ 	{p:'annotationFields',ex:'',tt:'Set of fields to add an annotation to the line chart'},
+ 	{p:'annotationStride',ex:10,tt:'Only show every N annotations'},
+ 	{p:'annotationLabelField',ex:'field',tt:'Field to use for annotation label'},		
+ 	{p:'annotationLabelTemplate',ex:'"${field}',tt:'Template to use for label'},		
+	
+
+
     ];
     this.debugTimes = false;
 
@@ -19348,6 +19358,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			dataTable.addColumn({
 			    type: 'string',
 			    role: 'annotation',
+			    id: 'annotation',
 			    'p': {
 				'html': true
 			    }
@@ -19383,14 +19394,22 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		for(let i=0;i<dataTable.getNumberOfColumns();i++)
 		    console.log("\tcol[" + i +"]=" + dataTable.getColumnLabel(i) +" type:" + dataTable.getColumnType(i));
 	    }
-	    if(this.getProperty("annotations") ||  this.getProperty("annotationFields")) {
+
+	    let annotationStride = this.getAnnotationStride(0);
+	    let annotationLabelTemplate = this.getAnnotationLabelTemplate();
+
+	    let annotationCnt = 0;	    
+	    if(Utils.stringDefined(this.getProperty("annotations")) ||
+	       Utils.stringDefined(this.getProperty("annotationFields"))) {
 		let clonedList = Utils.cloneList(dataList);
 		clonedList.shift();
 		this.annotations  = new Annotations(this,clonedList);
+
 		if(this.annotations.hasFields()) {
                     dataTable.addColumn({
 			type: 'string',
 			role: 'annotation',
+			id: 'annotation',
 			'p': {
                             'html': true
 			}
@@ -19405,7 +19424,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		}
 	    }
 
-	    if(this.annotations && this.annotations.isEnabled()) {
+	    if(this.annotations?.isEnabled()) {
 		if(this.annotations.getShowLegend()) {
 		    //Pad the left to align with  the chart axis
 		    this.jq(ID_LEGEND).html("<table width=100%><tr valign=top><td width=10%></td><td width=90%>" +
@@ -19415,6 +19434,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		dataTable.addColumn({
                     type: 'string',
                     role: 'annotation',
+		    id: 'annotation',
                     'p': {
                         'html': true
                     }
@@ -19429,7 +19449,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    }
 
 
-	    let annotationCnt=0;
 	    let times = [new Date()];
 	    let records = [];
             for (let i = 1; i < dataList.length; i++) {
@@ -19561,11 +19580,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		}
 
 
-		if(this.annotations && this.annotations.hasFields()) {
+		if(this.annotations?.hasFields()) {
                     if (theRecord) {
 			let desc = "";
 			this.annotations.getFields().forEach(f=>{
-			    let d = ""+theRecord.getValue(f.getIndex());
+			    let d = HU.b(f.getLabel())+': '+f.getValue(theRecord);
 			    if(d!="")
 				desc+= (d+"<br>");
 			});
@@ -19573,19 +19592,29 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			desc = desc.replace(/ /g,"&nbsp;");
 			annotationCnt++;
 			let label = null; 
-			if(desc.trim().length>0) {
-			    label =""+( this.annotations.labelField?theRecord.getValue(this.annotations.labelField.getIndex()):(annotationCnt))
-			    if(label.trim().length==0) label = ""+annotationCnt;
+			if(annotationLabelTemplate) {
+			    label = this.applyRecordTemplate(theRecord, null, null,annotationLabelTemplate);
+			} else {
+			    if(desc.trim().length>0) {
+				label =""+(this.annotations.labelField?theRecord.getValue(this.annotations.labelField.getIndex()):("#"+annotationCnt))
+				if(label.trim().length==0) label = "#"+annotationCnt;
+			    }
 			}
-			debug =true;
+//			debug =true;
 			if(debug && rowIdx<debugRows) {
 			    console.log("\t label:" + label);
 			    console.log("\t desc:" + desc);
 			}
+
 			debug =false;
-			console.log("A2:" +label);
-			newRow.push(label);
-			newRow.push(desc);
+			if(annotationStride<=0 || (annotationCnt%annotationStride)==0) {
+			    newRow.push(label);
+			    newRow.push(desc);
+			} else {
+			    newRow.push(null);
+			    newRow.push(null);
+
+			}
 		    } else {
 			if(i<2)
 			    console.log("No records for annotation");
@@ -19960,6 +19989,29 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		chartOptions.hAxis.maxValue = x.max;
 	    }
 
+	    let vaxes = {};
+	    let getProp = (f,prop,dflt)=>{
+		let v= Utils.getProperty(this.getProperty(f.getId()+'.' + prop,this.getProperty(prop,dflt)));
+		return v;
+	    }
+	    selectedFields.forEach((f,idx)=>{
+		let min = this.getProperty(f.getId()+'.vAxisMinValue');
+		let max = this.getProperty(f.getId()+'.vAxisMaxValue');		
+		let viewWindow = {};
+		if(Utils.isDefined(min)) viewWindow.min= parseFloat(min);
+		if(Utils.isDefined(max)) viewWindow.max= parseFloat(max);		
+		vaxes[idx] = { viewWindow: viewWindow}
+		vaxes[idx].title=getProp(f,'vAxisTitle')
+		let ts = vaxes[idx].textStyle={};
+		ts.color= getProp(f,'vAxis.text.color');
+		ts.fontSize=getProp(f,'vAxis.text.fontSize');
+		ts.fontName = getProp(f,'vAxis.text.fontName');
+		ts.bold=getProp(f,'vAxis.text.bold');
+		ts.italic=getProp(f,'vAxis.text.italic');		
+	    })
+
+	    chartOptions.vAxes = vaxes;
+
 	    if(this.getProperty("vAxisFixedRange") || this.getProperty("vAxisSelectedFields") || this.getProperty("vAxisAllFields")) {
 		let min = Number.MAX_VALUE;
 		let max = Number.MIN_VALUE;		
@@ -20207,6 +20259,8 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
  	{p:'indexIsString',ex:'true',tt:'if index is a string set to true'},
 	{p:'vAxisMinValue',ex:''},
 	{p:'vAxisMaxValue',ex:''},
+	{p:'&lt;field&gt;.vAxisMinValue',ex:'',tt:'Min value for the field'},
+	{p:'&lt;field&gt;.vAxisMaxValue',ex:'',tt:'Max value for the field'},	
 	{p:'vAxisSharedRange',ex:'true',tt:'use the same max value across all time series'},
 	{p:'vAxisReverse',ex:'true',tt:'Reverse the v axis'},
 	{p:"hAxisFixedRange"},
@@ -20215,9 +20269,6 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 	{p:'vAxisLogScale',ex:'true'},
 	{p:'hAxisLogScale',ex:'true'},
 	{p:'tooltipFields',ex:''},
-	{p:'annotations',ex:'date,label,desc;date,label,desc;',tt:'e.g. 2008-09-29,A,Start of housing crash;2008-11-04,B,Obama elected;'},
- 	{p:'annotationFields',ex:''},
-	{p:'annotationLabelField',ex:''},
  	{p:'dateType',ex:'datetime'},
  	{p:'addTooltip',ex:'false',tt:'Set this to false for multi-series charts if you only want the hovered series to show in the tt'},
 	{inlineLabel:'Multiples Charts'},
@@ -20250,18 +20301,42 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 	{p:'vAxis.baselineColor',ex:''},
 	{p:'textColor',ex:'#000'},
 	{p:'textBold',ex:'true'},
+
 	{p:'axis.text.color',ex:'#000'},
 	{p:'hAxis.text.color',ex:'#000'},
-	{p:'axis.text.color',ex:'#000'},
 	{p:'vAxis.text.color',ex:'#000'},
-	{p:'hAxis.text.bold',ex:'false'},
-	{p:'vAxis.text.bold',ex:'false'},
+	{p:'&lt;field&gt;.vAxis.text.color',ex:'#000'},
+
+	{p:'hAxis.text.fontSize',ex:'16'},
+	{p:'vAxis.text.fontSize',ex:'16'},
+	{p:'&lt;field&gt;.vAxis.text.fontSize',ex:'16'},
+
+	{p:'hAxis.text.fontName',ex:'Times'},
+	{p:'vAxis.text.fontName',ex:'Times'},
+	{p:'&lt;field&gt;.vAxis.text.fontName',ex:'Times'},		
+
+
+	{p:'hAxis.text.bold',ex:'true'},
+	{p:'vAxis.text.bold',ex:'true'},
+	{p:'&lt;field&gt;.vAxis.text.bold',ex:'true'},	
+
+	{p:'hAxis.text.italic',ex:'true'},
+	{p:'vAxis.text.italic',ex:'true'},
+	{p:'&lt;field&gt;.vAxis.text.italic',ex:'true'},	
+
+
 	{p:'vAxisText',ex:''},
 	{p:'vAxis.text',ex:''},
+
 	{p:'slantedText',ex:'true'},
 	{p:'hAxis.slantedText',ex:''},
 	{p:'hAxis.text.color',ex:'#000'},
 	{p:'vAxis.text.color',ex:'#000'},
+
+	{p:'&lt;field&gt;.vAxis.text.color',ex:'#000'},
+
+
+
 	{p:'legend.position',ex:'top|bottom|none'},
 	{p:'legend.text.color',ex:'#000'},
 	{p:'hAxis.ticks',ex:''},
@@ -35498,7 +35573,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'linked',ex:true,tt:"Link location with other maps"},
 	{p:'linkGroup',ex:'some_name',tt:"Map groups to link with"},
 	{p:'initialLocation', ex:'lat,lon',tt:"initial location"},
-	{p:'defaultMapLayer',ex:'osm|google.roads|esri.street|google.hybrid|google.roads|google.terrain|google.satellite|opentopo|esri.topo|usfs|usgs.topo|naip|usgs.imagery|esri.shaded|esri.lightgray|esri.darkgray|esri.terrain|shadedrelief|esri.aeronautical|historic|osm.toner|osm.toner.lite|watercolor'},
+	{p:'defaultMapLayer',ex:'osm|google.roads|esri.street|google.hybrid|google.roads|google.terrain|google.satellite|opentopo|esri.topo|usfs|usgs.topo|naip|usgs.imagery|esri.shaded|esri.lightgray|esri.darkgray|esri.terrain|shadedrelief|esri.aeronautical|historic|osm.toner|osm.toner.lite'},
 	{p:'geojsonLayer',ex:'entry ID',tt:'Display the geojson layer file held by give entry'},
 	{p:'geojsonLayerName',d:'Map'},
 	{p:'justShowMapLayer',ex:true,tt:'If true then just show map layer, don\'t use it for data display'},
@@ -35524,6 +35599,16 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'showOpacitySlider',ex:'false'},
 	{p:'showLocationSearch',ex:'true'},
 	{p:'showLatLonPosition',ex:'false',d:true},
+	{p:'showOverviewMap',ex:true},
+	{p:'overviewMapWidth',d:180},
+	{p:'overviewMapHeight',d:90},
+	{p:'overviewMapHeight',d:90},
+	{p:'overviewMapResolution',d:1},					
+	{p:'overviewMapMinRatio',d:24},
+	{p:'overviewMapMaxRatio',d:64},
+	
+	{p:'overviewMapLayer',ex:'osm|google.roads|esri.street|google.hybrid|google.roads|google.terrain|google.satellite|opentopo|esri.topo|usfs|usgs.topo|naip|usgs.imagery|esri.shaded|esri.lightgray|esri.darkgray|esri.terrain|shadedrelief|esri.aeronautical|historic|osm.toner|osm.toner.lite'},
+	{p:'showGraticules',ex:true},	
 	{p:'showLayerSwitcher',d:true,ex:'false'},
 	{p:'showScaleLine',ex:'true',d:false},
 	{p:'showZoomPanControl',ex:'true',d:true},
@@ -35877,6 +35962,25 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		}
 		this.initMapParams(params);
                 this.map = new RepositoryMap(this.domId(ID_MAP), params);
+		if(this.getShowOverviewMap()) {
+		    let opts = {size:{}};
+		    let layer = this.getOverviewMapLayer();
+		    if(layer) {
+			layer = this.getMap().getMapLayer(layer);
+			if(layer) {
+			    opts.layers=[layer.clone()]
+			}
+		    }
+		    opts.size.w=this.getOverviewMapWidth();
+		    opts.size.h=this.getOverviewMapHeight();		    
+		    opts.resolutionFactor = this.getOverviewMapResolution();
+		    opts.minRatio = this.getOverviewMapMinRatio();
+		    opts.maxRatio = this.getOverviewMapMaxRatio();		    
+		    this.map.setShowOverviewMap(true,opts);
+		}
+		if(this.getShowGraticules()) {
+		    this.map.setGraticulesVisible(true);
+		}		
 		this.map.myid = this.getLogLabel();
 		//Set this so there is no popup on the off feature
 		this.map.addKeyUpListener(event=>{
@@ -36180,7 +36284,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'linked',ex:true,tt:'Link location with other maps'},
 	{p:'linkGroup',ex:'some_name',tt:'Map groups to link with'},
 	{p:'initialLocation', ex:'lat,lon',tt:'initial location'},
-	{p:'defaultMapLayer',ex:'osm|google.roads|esri.street|google.hybrid|google.terrain|google.satellite|opentopo|esri.topo|usfs|usgs.topo|naip|usgs.imagery|esri.shaded|esri.lightgray|esri.darkgray|esri.terrain|shadedrelief|esri.aeronautical|historic|osm.toner|osm.toner.lite|watercolor'},
+	{p:'defaultMapLayer',ex:'osm|google.roads|esri.street|google.hybrid|google.terrain|google.satellite|opentopo|esri.topo|usfs|usgs.topo|naip|usgs.imagery|esri.shaded|esri.lightgray|esri.darkgray|esri.terrain|shadedrelief|esri.aeronautical|historic|osm.toner|osm.toner.lite'},
 	{p:'extraLayers',tt:'comma separated list of layers to display',
 	 ex:'baselayer:goes-visible,baselayer:nexrad,geojson:US States:/resources/usmap.json:fillColor:transparent'},
 
