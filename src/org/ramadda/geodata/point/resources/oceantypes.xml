@@ -6,6 +6,7 @@
 <type name="type_point_ex02" description="EX02 Base" super="type_point_ocean" foruser="false"
       handler="org.ramadda.data.services.PointTypeHandler">
   <property name="icon" value="/point/exo2.png"/>
+  <property name="form.resource.show" value="false"/>
   <property name="form.properties.show" value="false"/>
   <property name="form.date.show" value="false"/>
   <property name="form.area.show" value="false"/>
@@ -113,11 +114,11 @@ These don't define the fields or their order. They just define the default attri
      <property name="form.area.show" value="false"/>
      <property name="form.location.show" value="true"/>
      <property name="record.file.class" value="org.ramadda.geodata.point.ocean.CnvPointFile"/>
-     <column  name="station"  label="Station ID" type="enumerationplus" cansearch="true"/>
      <property name="record.pattern.date.format" value="MMM dd yyyy HH:mm:ss"/>
      <property name="record.patterns"
 	       value="date:.*NMEA +UTC +\(Time\) += +(.*?)\n,latitude:.*Latitude =(.*?)\n,longitude:.*Longitude += *(.*?)\n,station:.*Station: +(.*?)\n"/>
 
+     <column  name="station"  label="Station ID" type="enumerationplus" cansearch="true"/>
 
 <wiki>
 <![CDATA[
@@ -284,7 +285,7 @@ handler="org.ramadda.geodata.point.NdbcBuoyTypeHandler">
 	   values="txt:standard meteorological data,drift:meteorological data from drifting buoys,cwind:continuous winds data,spec:spectral wave summaries,data:_spec raw spectral wave data,swdir:spectral wave data (alpha1),swdir2:spectral wave data (alpha2),swr1:spectral wave data (r1),swr2:spectral wave data (r2),adcp:Acoustic Doppler Current Profiler,ocean:oceanographic data, tide:tide data"/>  
 
 
-  <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property name="record.properties">
 csvcommands1=-delimiter,spaces,-inputcomment,,-cut
 csvcommands2=1,-set,0,0,yy
@@ -447,6 +448,95 @@ indexField="depth" fields="salinity,density"
 ]]>
 </wiki>
 </type>
+
+<type name="type_buoy_sofar_api" 
+      description="SOFAR Buoy Data from API" 
+      super="type_point" 
+      category="Point Data"
+      supercategory="Geoscience"
+      handler="org.ramadda.data.services.PointTypeHandler">
+  <property name="icon" value="/point/sofar.png"/>
+  <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+  <property name="form.header.new">
+    <![CDATA[+note\nJust need to specify the Spotter ID. Make sure you have the property:<i>property.sofar.api.key</i> set in your RAMADDA\n-note]]>
+  </property>    
+  <!--   Some properties for what we show in the edit form  -->
+  <property name="form.resource.show" value="false"/>
+  <property name="form.area.show" value="false"/>
+  <property name="form.location.show" value="true"/>
+  <property name="form.altitude.show" value="true"/>
+  <property name="form.date.show" value="false"/>
+  <property name="form.properties.show" value="false"/>
+
+
+<!-- These is a template that gets filled out with the spotter_id of this entry -->
+
+
+  <property name="fixed_url" value="https://api.sofarocean.com/api/wave-data?spotterId=${spotter_id}&amp;limit=500&amp;includeWindData=true&amp;includeSurfaceTempData=true&amp;includeTrack=true&amp;includeBarometerData=true"/>
+
+  <!-- This gets passed as an http argument and is the authentication for the request
+       get the api key from https://spotter.sofarocean.com/overview
+       then set the below property in a repository.properties file
+       property.sofar.api.key=your API key
+  -->
+  <property name="request_arg1" value="token:${sofar.api.key}"/>
+
+  <column  name="spotter_id"  label="Spotter ID" type="string" cansearch="true"/>
+
+<!-- These commands convert the JSON to the standard CSV -->
+
+
+  <property name="record.properties">
+    csvcommands1=-json,data.surfaceTemp,,-columnsbefore,0,timestamp_comma_degrees,-addheader,timestamp.format {yyyy-MM-dd'T'HH:mm:ss} degrees.unit C timestamp.type date peakperiod.label {Peak Period} meandirectionalspread.label {Mean Directional Spread} meandirection.label {Mean Direction} peakdirection.label {Peak Direction} timestamp.label {Timestamp} meanperiod.label {Mean Period}  significantwaveheight.label {Significant Wave Height} peakdirectionalspread.label {Peak Directional Spread} ,-print
+  </property>
+
+
+  <!-- for the map -->
+  <property name="bubble">
+<![CDATA[
++section  title={{name}}
+{{display_profile showMenu=true yAxisReverse=true marginTop=40  profileMode=markers
+profileMode="lines+markers" markerSize=8 symbol1=circle symbol2=diamond
+indexField="depth" fields="temperature,conductivity"
+}}
+-section
+]]></property>
+
+
+<!-- This is the data icons for the IMDV map -->
+<property name="mapglyphs">
+props:fontSize:0px,iconSize:75,canvasWidth:500,canvasHeight:100,fill:#efefef,borderWidth:2,borderColor:#000,font:bold 36px sans-serif
+image,pos:nw,dx:10,dy:10-ch,width:60,height:60,url:${icon}
+label,pady:5,pos:nw,dx:80,dy:10-ch,label:${entryname}  
+label,pos:s,dx:cw2,dy:-10,font:36px sans-serif,label:${match  pattern="(atmp)" suffix=" ${unit}" prefixLabel=true}
+</property>
+<!-- The default wiki display for this entry -->
+<wiki>
+<![CDATA[
++section title="{{name}}"
+:navtop
+{{description wikify=true}}
+:heading Map
+{{display_map height=400px  
+showOverviewMap=true overviewMapWidth=240 overviewMapHeight=120  overviewMapResolution=6
+showGraticules=true
+#zoomLevel=19
+#mapCenter=38.86226%2C-74.25452
+isTrajectory=true   showPoints=true  tooltip="${default}"
+radius=3
+}}
+
+:heading Charts
+{{display_linechart fields="temp.*|significantwaveheight"}} 
+
+:heading Table
+{{display_table }} 
+-section
+]]>
+</wiki>
+</type>
+
+
 
 <!-- a duplicate of the sofar type -->
 <type name="type_ctd_castaway" 
