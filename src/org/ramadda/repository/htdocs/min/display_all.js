@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Aug 17 10:27:45 MDT 2023";
+var build_date="RAMADDA build date: Thu Aug 17 10:35:34 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -39293,7 +39293,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    return $.extend({},p);
 		});
                 let attrs = {
-                    strokeWidth: this.getProperty("strokeWidth",2),
+                    strokeWidth: this.getProperty('pathStrokeWidth',
+						  this.getProperty("strokeWidth",2)),
                     strokeColor: this.getPathColor(this.getStrokeColor("blue")),
 		    fillColor:this.getProperty("fillColor","transparent")
                 }
