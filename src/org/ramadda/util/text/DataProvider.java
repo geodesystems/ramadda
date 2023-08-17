@@ -67,6 +67,11 @@ public abstract class DataProvider extends SeesvOperator {
      */
     public DataProvider() {}
 
+    /**
+     * _more_
+     */
+    public DataProvider(TextReader ctx) {this.ctx=ctx;}    
+
 
     /**
      * _more_
@@ -1839,9 +1844,6 @@ public abstract class DataProvider extends SeesvOperator {
         /** _more_ */
         int rawLines = 0;
 
-        /** _more_ */
-        TextReader ctx;
-
 
         /** _more_ */
         int rowCnt = 0;
@@ -1862,6 +1864,7 @@ public abstract class DataProvider extends SeesvOperator {
          * @param rawLines _more_
          */
         public CsvDataProvider(TextReader ctx, int rawLines) {
+	    super(ctx);
             if (ctx != null) {
                 this.deHeader = Misc.equals("true",
                                             ctx.getProperty("deheader"));
