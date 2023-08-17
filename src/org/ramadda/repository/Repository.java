@@ -4604,7 +4604,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		sb.append(macro.getText());
 	    } else {
 		String id = macro.getId();
-		String v = getProperty("property." + id,"");
+		String v = getProperty("property." + id,"missing:property." + id);
 		sb.append(v);
 	    }
 	}
