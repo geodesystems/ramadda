@@ -350,7 +350,17 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:"trendlineVisibleInLegend",ex:"true",canCache:true},
 	{p:"trendlineColor",ex:"",canCache:true},
 	{p:"trendlineLineWidth",ex:"true",canCache:true},
-	{p:"trendlineOpacity",ex:"0.3",canCache:true}		    		    		    
+	{p:"trendlineOpacity",ex:"0.3",canCache:true},		    		    		    
+
+	{p:'Annotations'},
+	{p:'annotations',ex:'date,label,desc;date,label,desc;',tt:'e.g. 2008-09-29,A,Start of housing crash;2008-11-04,B,Obama elected;'},
+ 	{p:'annotationFields',ex:'',tt:'Set of fields to add an annotation to the line chart'},
+ 	{p:'annotationStride',ex:10,tt:'Only show every N annotations'},
+ 	{p:'annotationLabelField',ex:'field',tt:'Field to use for annotation label'},		
+ 	{p:'annotationLabelTemplate',ex:'"${field}',tt:'Template to use for label'},		
+	
+
+
     ];
     this.debugTimes = false;
 
@@ -1364,6 +1374,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		for(let i=0;i<dataTable.getNumberOfColumns();i++)
 		    console.log("\tcol[" + i +"]=" + dataTable.getColumnLabel(i) +" type:" + dataTable.getColumnType(i));
 	    }
+
 	    let annotationStride = this.getAnnotationStride(0);
 	    let annotationLabelTemplate = this.getAnnotationLabelTemplate();
 
@@ -2238,11 +2249,6 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 	{p:'vAxisLogScale',ex:'true'},
 	{p:'hAxisLogScale',ex:'true'},
 	{p:'tooltipFields',ex:''},
-	{p:'annotations',ex:'date,label,desc;date,label,desc;',tt:'e.g. 2008-09-29,A,Start of housing crash;2008-11-04,B,Obama elected;'},
- 	{p:'annotationFields',ex:'',tt:'Set of fields to add an annotation to the line chart'},
- 	{p:'annotationStride',ex:10,tt:'Only show every N annotations'},
- 	{p:'annotationLabelField',ex:'field',tt:'Field to use for annotation label'},		
- 	{p:'annotationLabelTemplate',ex:'"${field}',tt:'Template to use for label'},		
  	{p:'dateType',ex:'datetime'},
  	{p:'addTooltip',ex:'false',tt:'Set this to false for multi-series charts if you only want the hovered series to show in the tt'},
 	{inlineLabel:'Multiples Charts'},
