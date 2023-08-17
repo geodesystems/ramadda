@@ -517,19 +517,20 @@ label,pos:s,dx:cw2,dy:-10,font:36px sans-serif,label:${match  pattern="(atmp)" s
 :navtop
 {{description wikify=true}}
 :heading Map
-{{display_map height=400px  
++center
+{{display_map height=400px   width="800px"
 showOverviewMap=true overviewMapWidth=240 overviewMapHeight=120  overviewMapResolution=6
 showGraticules=true
-#zoomLevel=19
-#mapCenter=38.86226%2C-74.25452
 isTrajectory=true   showPoints=true  tooltip="${default}"
-radius=3
+radius=4 colorBy=degrees strokeWidth=0 pathStrokeWidth=0.5 colorTable=plotly_bluered
 }}
+-center
 
 :heading Charts
 {{display_linechart fields="temp.*|significantwaveheight"}} 
 
 :heading Table
+{{display_download}}
 {{display_table }} 
 -section
 ]]>
