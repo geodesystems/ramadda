@@ -1229,13 +1229,12 @@ public class Entry implements Cloneable {
      * @return the base label
      */
     public String getBaseLabel() {
-        if ((name != null) && (name.trim().length() > 0)) {
+        if (Utils.stringDefined(name)) {
             return name;
         }
-        if ((description != null) && (description.trim().length() > 0)) {
-            return description;
-        }
-
+	//        if ((description != null) && (description.trim().length() > 0)) {
+	//            return description;
+	//        }
         return "";
 
     }
