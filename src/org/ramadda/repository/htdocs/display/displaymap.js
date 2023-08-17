@@ -3821,7 +3821,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    return $.extend({},p);
 		});
                 let attrs = {
-                    strokeWidth: this.getProperty("strokeWidth",2),
+                    strokeWidth: this.getProperty('pathStrokeWidth',
+						  this.getProperty("strokeWidth",2)),
                     strokeColor: this.getPathColor(this.getStrokeColor("blue")),
 		    fillColor:this.getProperty("fillColor","transparent")
                 }
