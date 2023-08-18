@@ -4326,7 +4326,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 			      lineStyle,
 			      textStyle,
 			      textBackgroundStyle,
-			      {transform:'', clippath:'', imagefilter:''}), 
+			      {transform:'', clippath:'', imagefilter:'',imagecss:''}), 
 			  MyEntryPoint,
 			  {isGroup:true, tooltip:'Add group',			  
 			   icon:Ramadda.getUrl("/icons/chart_organisation.png")});

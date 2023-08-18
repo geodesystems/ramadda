@@ -4806,8 +4806,9 @@ MapGlyph.prototype = {
 		    element.style.transform=transform;
 		element.style['clip-path']=  this.style.clippath;
 		if(this.style.imagecss) {
-		    Utils.split(this.style.imagecss,'n',true,true).forEach(line=>{
-			let toks = Utils.split(line,'=');
+		    Utils.split(this.style.imagecss,'\n',true,true).forEach(line=>{
+			let toks = Utils.split(line,'=',true,true);
+//			console.log(toks[0]+':'+ toks[1]);
 			element.style[toks[0]] = toks[1];
 		    });
 		}
