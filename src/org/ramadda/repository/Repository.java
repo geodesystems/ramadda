@@ -564,6 +564,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private String languageDefault = "";
 
+    private boolean runningStandAlone = false;
+
 
     /** _more_ */
     private int overridePort = -1;
@@ -800,6 +802,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public Object getStandAloneServer() {
         return standAloneServer;
     }
+
+    public void setRunningStandalone(boolean v) {
+	runningStandAlone = v;
+    }
+
 
     /**
      * _more_
@@ -6613,11 +6620,21 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
         StringBuilder sb = new StringBuilder("");
         getPageHandler().sectionOpen(request, sb,"Repository Information",false);
+	sb.append(HU.center(HU.img(getHtdocsUrl("/images/poweredby.png"),"Powered by RAMADDA",HU.attr("width","200px"))));
+	sb.append(getPageHandler().showDialogNote("This is a RAMADDA server. RAMADDA is developed by <a style='text-decoration: underline;' href='https://geodesystems.com'>Geode Systems</a>. Further information is available at  <a style='text-decoration: underline;' href=https://ramadda.org/repository/a/ramadda_information>ramadda.org</a>."));
+
+
+	String info = getProperty("ramadda.information",null);
+	if(info!=null)
+	    sb.append(info);
+
         sb.append(HtmlUtils.formTable());
-	
+	String contact = getProperty("ramadda.contact",null);
+	if(contact!=null)
+	    HtmlUtils.formEntry(sb, msgLabel("Contact"),contact);
 
 	HtmlUtils.formEntry(sb, msgLabel("Start Time"),
-			    startTime.toString());
+			    getDateHandler().formatDate(startTime));
 	HtmlUtils.formEntry(sb, msgLabel("RAMADDA Version"),
 			    RepositoryUtil.getVersion());
 	HtmlUtils.formEntry(sb, msgLabel("Build Date"),
@@ -6637,8 +6654,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
 	
+        HtmlUtils.formEntry(sb, msgLabel("Stand alone"), "" + runningStandAlone);
         HtmlUtils.formEntry(sb,msgLabel("Port"), "" + getPort());
         HtmlUtils.formEntry(sb, msgLabel("Https Port"), "" + getHttpsPort());
+
 
         sb.append(HtmlUtils.formTableClose());
         getPageHandler().sectionClose(request, sb);
