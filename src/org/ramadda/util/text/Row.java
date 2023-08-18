@@ -46,6 +46,8 @@ public class Row {
     /** _more_ */
     private List values;
 
+    private Date dateForSort;
+
     /**
      * _more_
      */
@@ -318,6 +320,8 @@ public class Row {
      */
     public static class RowCompare implements Comparator<Row> {
 
+	private TextReader ctx;
+
         /** _more_ */
         private boolean checked = false;
 
@@ -337,7 +341,8 @@ public class Row {
          * @param indices _more_
          * @param asc _more_
          */
-        public RowCompare(List<Integer> indices, boolean asc,String how) {
+        public RowCompare(TextReader ctx,List<Integer> indices, boolean asc,String how) {
+	    this.ctx = ctx;
             this.indices   = indices;
             this.ascending = asc;
 	    this.how = how.trim();
@@ -352,7 +357,8 @@ public class Row {
          * @param idx _more_
          * @param asc _more_
          */
-        public RowCompare(int idx, boolean asc) {
+        public RowCompare(TextReader ctx,int idx, boolean asc) {
+	    this.ctx= ctx;
             this.indices = new ArrayList<Integer>();
             this.indices.add(idx);
             this.ascending = asc;
@@ -384,6 +390,27 @@ public class Row {
 			dir= s1.compareTo(s2);
 		    } else if(how.equals("length")) {
 			dir= s1.length()-s2.length();
+		    } else if(how.equals("date")) {
+			Date d1 = r1.dateForSort;
+			Date d2 = r2.dateForSort;
+			if(d1==null) {
+			    try {
+				r1.dateForSort = d1 = ctx.parseDate(s1);
+			    } catch(Exception exc) {
+				System.err.println("bad date: " + s1);
+			    }
+			}
+			if(d2==null) {
+			    try {
+				r2.dateForSort = d2 = ctx.parseDate(s2);
+			    } catch(Exception exc) {
+				System.err.println("bad date: " + s2);
+			    }
+			}
+			if(d1==null && d2==null) dir = 0;
+			else if(d1==null) dir=-1;
+			else if(d2==null) dir=1;
+			else dir = d1.compareTo(d2);
 		    } else if(how.equals("extract")) {
 			String[] p1 = Utils.findPatterns(s1,"[^\\d]*([\\d\\.]+)([^\\d]*)");
 			String[] p2 = Utils.findPatterns(s2,"[^\\d]*([\\d\\.]+)([^\\d]*)");		    

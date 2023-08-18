@@ -1818,6 +1818,20 @@ public class Seesv implements SeesvCommands {
 			"One or more paths to the objects e.g. geometry,features",
 			"label", "Object paths",
 			ATTR_TYPE, TYPE_LIST, ATTR_SIZE, "30")),
+        new Cmd(CMD_JSONJOIN, "Join different arrays in the input JSON",
+		ARG_LABEL,"Join JSON",
+                new Arg("arrayPaths",
+			"comma separated list of the array paths",
+			"label", "Array paths",
+			ATTR_SIZE, "30"),
+		new Arg("keys",
+			"Comma separated list of keys to match on",
+			"label", "Keys"),
+		new Arg("pattern",
+			"Optional pattern to replace the key value with",
+			"label", "Pattern"),
+		new Arg("replace","Pattern replace"),
+		new Arg("missing","Missing value")),
         new Cmd(CMD_JSONVALUE, "Extract a value from a JSON column",
 		ARG_LABEL,"JSON Value",
                 new Arg(ARG_COLUMNS, "Column names", ATTR_TYPE, TYPE_COLUMNS),
@@ -2779,7 +2793,7 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_SORTBY, "", ARG_LABEL,"Sort",
                 new Arg(ARG_COLUMNS, "Column to sort on", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("direction", "Direction", ATTR_TYPE, "enumeration","values","up,down"),
-		new Arg("how", "How to sort - string, length, extract (number)", ATTR_TYPE, "enumeration","values","string,number,length,extract")),
+		new Arg("how", "How to sort - string, length, date, extract (number)", ATTR_TYPE, "enumeration","values","string,number,length,extract")),
 
 	/*        new Cmd(CMD_SORT, "Sort",
 		  new Arg(ARG_COLUMNS, "Column to sort on", ATTR_TYPE, TYPE_COLUMNS)),
@@ -4495,6 +4509,11 @@ public class Seesv implements SeesvCommands {
 
 		return i;
 	    });
+	defineFunction(CMD_JSONJOIN,5,(ctx,args,i) -> {
+		ctx.getProviders().add(new DataProvider.JsonJoinDataProvider(args.get(++i), args.get(++i),args.get(++i),args.get(++i),args.get(++i)));
+
+		return i;
+	    });	
 	defineFunction(CMD_JSONVALUE,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.JsonValue(getCols(args.get(++i)), 
 							 args.get(++i)));

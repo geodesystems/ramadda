@@ -885,6 +885,61 @@ public abstract class DataProvider extends SeesvOperator {
 
     }
 
+    public static class JsonJoinDataProvider extends BulkDataProvider {
+
+        /** _more_ */
+        private String arrayPaths;
+
+        /** _more_ */
+        private String key;
+
+	private String pattern;
+
+	private String replace;
+
+	private String missing; 
+
+        /**
+         * _more_
+         *
+         */
+        public JsonJoinDataProvider(String arrayPaths, String key, String pattern,
+				    String replace,String missing) {
+            super();
+            this.arrayPaths  = arrayPaths;
+	    this.key = key;
+	    this.pattern = pattern;
+	    this.replace =replace;
+	    this.missing = missing;
+        }
+
+
+        /**
+         * _more_
+         *
+         * @param ctx _more_
+         * @param s _more_
+         *
+         * @throws Exception _more_
+         */
+        public void tokenize(TextReader ctx, String s) throws Exception {
+
+            boolean    debug = false;
+	    debug = debugInput;
+            JSONObject root  = new JSONObject(s);
+	    List<List<String>> results = JsonUtil.joinArrays(root,
+							      Utils.split(arrayPaths,",",true,true),
+							      Utils.split(key,",",true,true),
+							      pattern,replace,missing);
+	    for(List<String> values: results) {
+		Row row = new Row(values);
+		addRow(row);
+	    }
+	}
+    }
+
+
+
     /**
      * Class description
      *

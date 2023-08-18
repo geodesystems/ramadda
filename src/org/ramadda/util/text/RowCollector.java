@@ -1911,7 +1911,7 @@ public class RowCollector extends Processor {
             }
             Row headerRow = rows.get(0);
             rows.remove(0);
-            Collections.sort(rows, new Row.RowCompare(indices, asc,how));
+            Collections.sort(rows, new Row.RowCompare(ctx,indices, asc,how));
             rows.add(0, headerRow);
 
             return rows;
