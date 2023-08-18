@@ -4805,6 +4805,13 @@ MapGlyph.prototype = {
 		if(element.style)
 		    element.style.transform=transform;
 		element.style['clip-path']=  this.style.clippath;
+		if(this.style.imagecss) {
+		    Utils.split(this.style.imagecss,'n',true,true).forEach(line=>{
+			let toks = Utils.split(line,'=');
+			element.style[toks[0]] = toks[1];
+		    });
+		}
+
 		element.style.filter = this.getStyleFromTree('imagefilter');
 		//                    OpenLayers.Util.modifyDOMElement(element, null, null, null, null, null, null, null);
 	    }

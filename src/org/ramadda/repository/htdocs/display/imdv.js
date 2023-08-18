@@ -2550,6 +2550,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			v = this[propFunc]?this[propFunc]():this.getProperty(prop);
 		    }
 		    let size = "20";
+		    let rows = 1;
 		    if(prop=="label") {
 			size="80";
 			widget =  HU.textarea("",v,[ID,domId,"rows",3,"cols", 60]);
@@ -2591,7 +2592,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			if(prop=="textBackgroundFillOpacity" || prop=="textBackgroundPadding" || prop=="strokeWidth" || prop=="pointRadius" || prop=="fontSize" || prop=="imageOpacity" || prop=='dotSize') size="4";
 			else if(prop=="fontFamily") size="60";
 			else if(prop.toLowerCase().indexOf('url')>=0) size="60";
-			else if(prop=='imagefilter') {
+			else if(prop=='imagecss') {
+			    label = 'Image CSS';
+			    size='60';
+			    rows=5;
+			    extra = '<pre>property=value...</pre>'
+			} else if(prop=='imagefilter') {
 			    label = 'Image Filter'
 			    size='60';
 			    extra='<br>e.g.:<pre>contrast(200%) grayscale(80%) brightness(0.4)\ninvert(75%) saturate(30%) sepia(60%)</pre>';
@@ -2660,6 +2666,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    if(!v || v=="") v= 1;
 			    widget =  HU.input("",v,[ID,domId,"size",4])+HU.space(4) +
 				HU.div(['slider-min',0,'slider-max',1,'slider-value',v,'slider-id',domId,ID,domId+'_slider',ATTR_CLASS,'ramadda-slider',STYLE,HU.css("display","inline-block","width","200px")],"");
+			} else  if (rows>1) {
+			    widget =
+				HU.textarea("",v,[ATTR_ID,this.domId(id),"rows",rows,"cols",size]);
+
 			} else {
 			    widget =  HU.input("",v,[ID,this.domId(id),"size",size]);
 			}
@@ -4469,7 +4479,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 				      {imageOpacity:this.getImageOpacity(1)},
 				      lineStyle,
 				      {rotation:0,
-				       transform:'', clippath:'', imagefilter:''}),
+				       transform:'', clippath:'', imagefilter:'',imagecss:''}),
 				      ImageHandler,
 				      {tooltip:"Select an image entry to display",
 				       snapAngle:90,sides:4,irregular:true,isImage:true,
