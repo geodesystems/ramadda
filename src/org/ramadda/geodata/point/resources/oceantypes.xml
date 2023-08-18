@@ -487,7 +487,7 @@ indexField="depth" fields="salinity,density"
 
 
   <property name="record.properties">
-    csvcommands1=-json,data.surfaceTemp,,-columnsbefore,0,timestamp_comma_degrees,-addheader,timestamp.format {yyyy-MM-dd'T'HH:mm:ss} degrees.unit C timestamp.type date peakperiod.label {Peak Period} meandirectionalspread.label {Mean Directional Spread} meandirection.label {Mean Direction} peakdirection.label {Peak Direction} timestamp.label {Timestamp} meanperiod.label {Mean Period}  significantwaveheight.label {Significant Wave Height} peakdirectionalspread.label {Peak Directional Spread} ,-print
+    csvcommands1=-indateformat,yyyy-MM-dd'T'HH:mm:ss,,-jsonjoin,data.surfaceTemp\,data.wind\,data.waves,timestamp,:...000Z,,NaN,-columnsbefore,0,timestamp_comma_degrees,-sortby,timestamp,up,date,-addheader,timestamp.format {yyyy-MM-dd'T'HH:mm:ss} degrees.unit C timestamp.type date peakperiod.label {Peak Period} meandirectionalspread.label {Mean Directional Spread} meandirection.label {Mean Direction} peakdirection.label {Peak Direction} timestamp.label {Timestamp} meanperiod.label {Mean Period}  significantwaveheight.label {Significant Wave Height} peakdirectionalspread.label {Peak Directional Spread} ,-print
   </property>
 
 
@@ -495,10 +495,8 @@ indexField="depth" fields="salinity,density"
   <property name="bubble">
 <![CDATA[
 +section  title={{name}}
-{{display_profile showMenu=true yAxisReverse=true marginTop=40  profileMode=markers
-profileMode="lines+markers" markerSize=8 symbol1=circle symbol2=diamond
-indexField="depth" fields="temperature,conductivity"
-}}
+{{display_linechart fields="degrees"}}
+{{display_linechart fields="significantwaveheight"}} 
 -section
 ]]></property>
 
@@ -508,7 +506,7 @@ indexField="depth" fields="temperature,conductivity"
 props:fontSize:0px,iconSize:75,canvasWidth:500,canvasHeight:100,fill:#efefef,borderWidth:2,borderColor:#000,font:bold 36px sans-serif
 image,pos:nw,dx:10,dy:10-ch,width:60,height:60,url:${icon}
 label,pady:5,pos:nw,dx:80,dy:10-ch,label:${entryname}  
-label,pos:s,dx:cw2,dy:-10,font:36px sans-serif,label:${match  pattern="(atmp)" suffix=" ${unit}" prefixLabel=true}
+label,pos:s,dx:cw2,dy:-10,font:36px sans-serif,label:${match  pattern="(degrees|significantwaveheight)" suffix=" ${unit}" prefixLabel=true}
 </property>
 <!-- The default wiki display for this entry -->
 <wiki>
@@ -527,7 +525,8 @@ radius=4 colorBy=degrees strokeWidth=0 pathStrokeWidth=0.5 colorTable=plotly_blu
 -center
 
 :heading Charts
-{{display_linechart fields="temp.*|significantwaveheight"}} 
+{{display_linechart fields="degrees"}}
+{{display_linechart fields="significantwaveheight"}} 
 
 :heading Table
 {{display_download}}
