@@ -457,6 +457,7 @@ indexField="depth" fields="salinity,density"
       handler="org.ramadda.data.services.PointTypeHandler">
   <property name="icon" value="/point/sofar.png"/>
   <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+  <property name="record.processresource" value="true"/>
   <property name="form.header.new">
     <![CDATA[+note\nJust need to specify the Spotter ID. Make sure you have the property:<i>property.sofar.api.key</i> set in your RAMADDA\n-note]]>
   </property>    
