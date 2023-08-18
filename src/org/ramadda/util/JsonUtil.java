@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2023 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util;
@@ -21,12 +21,16 @@ import java.io.*;
 import java.util.regex.Pattern;
 import java.text.StringCharacterIterator;
 
+import java.util.regex.Pattern;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -100,7 +104,7 @@ public class JsonUtil {
      */
     public static void addGeolocation(Appendable pw, double lat, double lon,
                                       double elevation)
-            throws Exception {
+	throws Exception {
 
         pw.append(attr(FIELD_LATITUDE, lat));
         pw.append(",\n");
@@ -112,11 +116,113 @@ public class JsonUtil {
 
 
 
+    /*
+      This method create a set of rows of date that are the result of joining the field values in a set of
+      arrays (defined by arrayPaths) matching on the fields defined by keyList. If an array does not have a corresponding
+      object for a particular key value then missing is used to fill in the value
+      @param root the json root object
+      @param arrayPaths the object paths to each array
+      @param keyList List of fields to key on
+      @param pattern If defined then replace the key value with the pattern/replace strings
+      @param missing Missing value
+    */
+    public static List<List<String>> joinArrays(JSONObject root, List<String> arrayPaths,
+						List<String> keyList,
+						String pattern,
+						String replace, String missing) {
+	boolean hasPattern = Utils.stringDefined(pattern);
+	List<List<String>> results = new ArrayList<List<String>>();
+	List<Hashtable<String,JSONObject>> maps =
+	    new ArrayList<Hashtable<String,JSONObject>>();
+	Set<String> keys = new LinkedHashSet<String>();
+	LinkedHashSet<String> fieldsMap = new LinkedHashSet<String>();
+	List<List<String>> fieldsList = new ArrayList<List<String>>();
+	for(String arrayPath: arrayPaths) {
+	    JSONArray array =  readArray(root, arrayPath);
+	    if(array==null) {
+		continue;
+	    }
+	    Hashtable<String,JSONObject> map = new Hashtable<String,JSONObject>();
+	    maps.add(map);
+	    List<String> myFields = new ArrayList<String>();
+	    fieldsList.add(myFields);
+	    boolean addedFields = false;
+	    for (int i = 0; i < array.length(); i++) {
+		JSONObject item = array.getJSONObject(i);
+		String keyValue = null;
+		if(keyList.size()==0) {
+		    keyValue = item.optString(keyList.get(0),null);
+		} else {
+		    StringBuilder sb = new StringBuilder();
+		    for(String key: keyList) {
+			if(item.has(key)) {
+			    if(sb.length()>0) sb.append("_");
+			    sb.append(item.optString(key,""));
+			}
+		    }
+		    keyValue = sb.toString();
+		}
+		if(keyValue==null) {
+		    continue;
+		}
+		if(hasPattern) {
+		    keyValue = keyValue.replaceAll(pattern,replace);
+		}		    
+		keys.add(keyValue);
+		map.put(keyValue,item);
+		if(!addedFields) {
+		    addedFields = true;
+		    for(String field:Utils.unroll(item.keySet())) {
+			if(!fieldsMap.contains(field)) {
+			    myFields.add(field);
+			    fieldsMap.add(field);
+			}
+		    }
+		}
+	    }
+	}
+
+	List<String> header = new ArrayList<String>();
+	results.add(header);
+	for(List<String> fields:fieldsList) {
+	    header.addAll(fields);
+	}
+
+	for(String keyValue: Utils.unroll(keys)) {
+	    List<String> row = new ArrayList<String>();
+	    results.add(row);
+	    for(int i=0;i<maps.size();i++) {
+		Hashtable<String,JSONObject> map = maps.get(i);
+		List<String> fields = fieldsList.get(i);
+		JSONObject obj = map.get(keyValue);
+		//Find the first row that has the key value
+		if(obj==null) {
+		    for(int j=0;j<maps.size() && obj==null;j++) {
+			obj = maps.get(j).get(keyValue);			
+		    }
+		}		    
+
+		if(obj==null) {
+		    for(String field: fields) {
+			row.add(missing);
+		    }
+		    continue;
+		}
+		for(String field: fields) {
+		    String s = obj.optString(field,missing);
+		    row.add(s);
+		}
+	    }
+	}
+	return results;
+    }
+
+
     /**
      *   This quotes every other list value for showing in a map
      *
      * @param values _more_
-      * @return _more_
+     * @return _more_
      */
     public static List quoteList(List values) {
         List quoted = new ArrayList();
@@ -325,7 +431,7 @@ public class JsonUtil {
     /**
      *
      * @param values _more_
-      * @return _more_
+     * @return _more_
      */
     public static List<String> quote(List values) {
         List result = new ArrayList<String>();
@@ -570,7 +676,7 @@ public class JsonUtil {
         }
 
         if ((d == Double.NEGATIVE_INFINITY)
-                || (d == Double.POSITIVE_INFINITY)) {
+	    || (d == Double.POSITIVE_INFINITY)) {
             return true;
         }
 
@@ -723,17 +829,17 @@ public class JsonUtil {
                 continue;
             }
             double lat = Double.parseDouble(readValue(camera,
-                             "Location.Latitude", "0.0"));
+						      "Location.Latitude", "0.0"));
             double lon = Double.parseDouble(readValue(camera,
-                             "Location.Longitude", "0.0"));
+						      "Location.Longitude", "0.0"));
             JSONArray views = readArray(camera, "CameraView");
             for (int j = 0; j < views.length(); j++) {
                 JSONObject view = views.getJSONObject(j);
                 StringBuilder desc = new StringBuilder(readValue(view,
-                                         "ViewDescription", ""));
+								 "ViewDescription", ""));
                 String dttm = readValue(view, "LastUpdatedDate", "");
                 String url = "http://www.cotrip.org/"
-                             + readValue(view, "ImageLocation", "");
+		    + readValue(view, "ImageLocation", "");
                 desc.append("<br>");
                 String cameraName = readValue(view, "CameraName", "NA");
                 String roadName   = readValue(view, "RoadName", "NA");
@@ -779,10 +885,10 @@ public class JsonUtil {
                 inner += HtmlUtils.tag("description", "",
                                        "<![CDATA[" + desc + "]]>");
                 System.out.println(XmlUtil.tag("entry",
-                        XmlUtil.attrs(new String[] {
-                    "type", "type_image_webcam", "url", url, "latitude",
-                    lat + "", "longitude", "" + lon, "name", name
-                }), inner));
+					       XmlUtil.attrs(new String[] {
+						       "type", "type_image_webcam", "url", url, "latitude",
+						       lat + "", "longitude", "" + lon, "name", name
+						   }), inner));
 
             }
         }
@@ -818,7 +924,7 @@ public class JsonUtil {
      * @throws Exception _more_
      */
     private static void xmlToJson(Element node, Appendable sb)
-            throws Exception {
+	throws Exception {
         List<String> attrs = new ArrayList<String>();
         attrs.add("xml_tag");
         attrs.add(quote(node.getTagName()));
@@ -866,7 +972,7 @@ public class JsonUtil {
 
     /*
       return the string denoted by path. Catch and ignore any errors
-     */
+    */
     public static String readValue(String json, String path, String dflt) {
 	try {
 	    return readValue(new JSONObject(json),path, dflt);
@@ -964,7 +1070,7 @@ public class JsonUtil {
 		}
 	    }
 	} else {
-	    return  obj.getJSONArray(tok);
+	    return  obj.optJSONArray(tok);
 	}
 	return null;
     }
@@ -1036,7 +1142,7 @@ public class JsonUtil {
      * @throws Exception _more_
      */
     public static String format(String json, boolean forHtml)
-            throws Exception {
+	throws Exception {
 	String s;
 	try {
 	    JSONObject obj = new JSONObject(json.toString());
@@ -1051,18 +1157,18 @@ public class JsonUtil {
 	}
         if (forHtml) {
             s = s.replaceAll("\t", "  ").replaceAll("<",
-                             "&lt;").replaceAll(">", "&gt;");
+						    "&lt;").replaceAll(">", "&gt;");
 
             s = s.replaceAll(
-                "\\{",
-                "<span class=ramadda-json-openbracket>{</span><span class='ramadda-json-block'>");
+			     "\\{",
+			     "<span class=ramadda-json-openbracket>{</span><span class='ramadda-json-block'>");
             s = s.replaceAll("( *)\\}( *)([^,])", "</span>$1$2}$3");
             s = s.replaceAll("( *)\\}( *),", "</span>$1}$2,");
             s = s.replaceAll("}}", "}</span>}");
 
             s = s.replaceAll(
-                "\\[",
-                "<span class=ramadda-json-openbracket>[</span><span class='ramadda-json-block'>");
+			     "\\[",
+			     "<span class=ramadda-json-openbracket>[</span><span class='ramadda-json-block'>");
             s = s.replaceAll("( *)\\]( *)([^,])", "</span>$1$2]$3");
             s = s.replaceAll("( *)\\]( *),", "</span>$1]$2,");
 
@@ -1081,7 +1187,17 @@ public class JsonUtil {
      *
      * @throws Exception _more_
      */
-    public static void main(String[] args) throws Exception {}
+    public static void main(String[] args) throws Exception {
+        JSONObject obj     = new JSONObject(IO.readInputStream(new FileInputStream(args[0])));
+	List<List<String>> results =
+	    joinArrays(obj, Utils.split(args[1],",",true,true),
+		       Utils.split(args[2],",",true,true),null,null,
+		       "missing");
+	for(int i=0;i<results.size();i++) {
+	    System.out.print(org.ramadda.util.text.Seesv.columnsToString(results.get(i),",",true));
+	}
+	System.exit(0);
+    }
 
 
     /**
@@ -1115,15 +1231,15 @@ public class JsonUtil {
      * @return _more_
      */
     public static Hashtable getHashtableFromObject(JSONObject obj,
-            boolean primitiveOnly, List<String> arrayKeys) {
+						   boolean primitiveOnly, List<String> arrayKeys) {
         Hashtable hashtable = new Hashtable();
         JSONArray names     = obj.names();
         for (int i = 0; i < names.length(); i++) {
             String name  = (String) names.get(i);
             Object value = obj.get(name);
             if (primitiveOnly
-                    && ((value instanceof JSONObject)
-                        || (value instanceof JSONArray))) {
+		&& ((value instanceof JSONObject)
+		    || (value instanceof JSONArray))) {
                 continue;
             }
             hashtable.put(name, value);
@@ -1142,13 +1258,13 @@ public class JsonUtil {
      * @return _more_
      */
     public static Hashtable getHashtableFromArray(JSONArray obj,
-            boolean primitiveOnly, List<String> arrayKeys) {
+						  boolean primitiveOnly, List<String> arrayKeys) {
         Hashtable hashtable = new Hashtable();
         for (int i = 0; i < obj.length(); i++) {
             Object value = obj.get(i);
             if (primitiveOnly
-                    && ((value instanceof JSONObject)
-                        || (value instanceof JSONArray))) {
+		&& ((value instanceof JSONObject)
+		    || (value instanceof JSONArray))) {
                 continue;
             }
             String index = "Index " + i;
@@ -1163,7 +1279,7 @@ public class JsonUtil {
 
     /**
        Make a List from the array. For now this expects strings in the array
-     */
+    */
     public static List<String> getList(JSONArray array) {
 	List<String> result  = new ArrayList<String>();
 	for(int i=0;i<array.length();i++) {
