@@ -56,6 +56,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -3782,6 +3783,15 @@ public class Utils extends IO {
 
 
 
+    public static <T> List<T> unroll(Set<T> set)  {
+	List<T> l = new ArrayList<T>();
+	Iterator<T> iter = set.iterator();
+	while (iter.hasNext()) {
+	    l.add(iter.next());
+	}
+	return l;
+
+    }
 
 
     /**  */
