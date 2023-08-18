@@ -172,6 +172,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
         tmpRepository.init(webAppProperties);
         initRepository(tmpRepository, checkSsl);
         repository = tmpRepository;
+	repository.setRunningStandalone(true);
     }
 
 
