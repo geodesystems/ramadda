@@ -463,9 +463,8 @@ indexField="depth" fields="salinity,density"
   </property>    
   <!--   Some properties for what we show in the edit form  -->
   <property name="form.resource.show" value="false"/>
-  <property name="form.area.show" value="false"/>
-  <property name="form.location.show" value="true"/>
-  <property name="form.altitude.show" value="true"/>
+  <property name="form.area.show" value="true"/>
+  <property name="form.altitude.show" value="false"/>
   <property name="form.date.show" value="false"/>
   <property name="form.properties.show" value="false"/>
 
