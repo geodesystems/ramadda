@@ -459,7 +459,7 @@ indexField="depth" fields="salinity,density"
   <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
   <property name="record.processresource" value="true"/>
   <property name="form.header.new">
-    <![CDATA[+note\nJust need to specify the Spotter ID. Make sure you have the property:<i>property.sofar.api.key</i> set in your RAMADDA\n-note]]>
+    <![CDATA[+note\nJust need to specify a name and  the Spotter ID. Make sure you have the property:<i>property.sofar.api.key</i> set in your RAMADDA\n-note]]>
   </property>    
   <!--   Some properties for what we show in the edit form  -->
   <property name="form.resource.show" value="false"/>
