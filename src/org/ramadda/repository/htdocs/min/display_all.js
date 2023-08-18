@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Aug 18 13:39:02 MDT 2023";
+var build_date="RAMADDA build date: Fri Aug 18 13:50:51 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -45971,7 +45971,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 			      lineStyle,
 			      textStyle,
 			      textBackgroundStyle,
-			      {transform:'', clippath:'', imagefilter:''}), 
+			      {transform:'', clippath:'', imagefilter:'',imagecss:''}), 
 			  MyEntryPoint,
 			  {isGroup:true, tooltip:'Add group',			  
 			   icon:Ramadda.getUrl("/icons/chart_organisation.png")});
@@ -52294,8 +52294,9 @@ MapGlyph.prototype = {
 		    element.style.transform=transform;
 		element.style['clip-path']=  this.style.clippath;
 		if(this.style.imagecss) {
-		    Utils.split(this.style.imagecss,'n',true,true).forEach(line=>{
-			let toks = Utils.split(line,'=');
+		    Utils.split(this.style.imagecss,'\n',true,true).forEach(line=>{
+			let toks = Utils.split(line,'=',true,true);
+//			console.log(toks[0]+':'+ toks[1]);
 			element.style[toks[0]] = toks[1];
 		    });
 		}
