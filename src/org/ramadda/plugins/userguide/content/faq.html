@@ -14,6 +14,21 @@ then on the Login page you should see &quot;Forget your User ID?&quot; and
 &quot;Forget your Password?&quot; links. 
 </faqitem>
 
+<faqitem q="How do I tell what version of RAMADDA is running?" >
+Just go to the <a href="${root}/info">${root}/info</a> link.
+
+If you want to add a contact for your site then set the property in a
+.properties file in your RAMADDA home directory:
+<pre>
+ ramadda.contact=...
+</pre>
+
+You can add any other information for this page with:
+<pre>
+ramadda.information=This  is my server...
+</pre>
+</faqitem>
+
 
 <faqitem id="checkbox" q="How do I select multiple checkboxes at once?">
 In RAMADDA when there is a collection of checkboxes in a form (e.g., in the entry list or in the edit metadata form)
