@@ -18,6 +18,10 @@ var LINETYPE_CURVE='curve';
 var LINETYPE_STEPPED='stepped';        
 
 
+
+
+
+
 var ID_ADDDOTS = 'adddots';
 var ID_LINETYPE = 'linetype';
 var ID_SHOWDATAICONS = 'showdataicons';
@@ -297,12 +301,55 @@ MapGlyph.prototype = {
 	return obj;
     },	
 
-    toggleVisibility:function(event) {
+    checkLayersAnimationButton:function() {
+	if(this.attrs[PROP_LAYERS_ANIMATION_ON]) {
+	    this.jq(PROP_LAYERS_ANIMATION_PLAY).html(HU.getIconImage(icon_stop));
+	} else {
+	    this.jq(PROP_LAYERS_ANIMATION_PLAY).html(HU.getIconImage(icon_play));
+	}
+    },
+    checkLayersAnimation:function(skipCall) {
+	if(this.animationTimeout) clearTimeout(this.animationTimeout);
+	this.animationTimeout = null;
+	if(!this.getProperty(PROP_LAYERS_ANIMATION_SHOW)) {
+	    this.attrs[PROP_LAYERS_ANIMATION_ON] = false;
+	    return;
+	}
+	this.checkLayersAnimationButton();
+	if(!this.getVisible()) {
+	    return;
+	}
+	if(skipCall) return;
+	if(this.attrs[PROP_LAYERS_ANIMATION_ON]) {
+	    let pause = this.getProperty(PROP_LAYERS_ANIMATION_DELAY,1000);
+	    let stepAnimation = () =>{
+		this.toggleLayersVisibility();
+		this.checkLayersAnimation(true);
+		this.animationTimeout = setTimeout(stepAnimation,pause);
+		return;
+//		this.jq(PROP_LAYERS_ANIMATION_PLAY).html(HU.getIconImage(icon_stop,null,[ATTR_STYLE,'color:blue;']));
+		setTimeout(()=>{
+		    this.jq(PROP_LAYERS_ANIMATION_PLAY).html(HU.getIconImage(icon_stop));
+		},300);
+
+	    }
+	    stepAnimation();
+	}
+    },
+    toggleLayersAnimation:function() {
+	this.attrs[PROP_LAYERS_ANIMATION_ON]	  =  !this.attrs[PROP_LAYERS_ANIMATION_ON];
+	if(this.attrs[PROP_LAYERS_ANIMATION_ON] && !this.getVisible()) {
+	    this.setVisible(true,null,null,true);
+	}
+	this.checkLayersAnimation();
+    },
+    toggleLayersVisibility:function(event) {
 	let children = 	this.getChildren();
 	if(!children||children.length==0) return;
 	children.forEach(child=>{
 	    child.highlighted=false;
 	});
+	event = event??{};
 	if(event.shiftKey) {
 	    children.forEach(child=>{
 		child.setVisible(true,true);
@@ -478,6 +525,9 @@ MapGlyph.prototype = {
 	html='';
 //	html=  this.getHelp('#miscproperties')+'<br>';
 	let miscLines =[...IMDV_PROPERTY_HINTS];
+	if(this.canHaveChildren()) {
+	    miscLines.push(...IMDV_GROUP_PROPERTY_HINTS);
+	}
 	if(this.isMap()) {
 	    miscLines.push('map.label.maxlength=100','map.label.maxlinelength=15',
 			   'map.label.pixelsperline=10',
@@ -1622,6 +1672,7 @@ MapGlyph.prototype = {
 
 	return  !this.isFixed();
     },
+
     getLabel:function(opts) {
 	opts = opts??{};
 	let args = {
@@ -1661,9 +1712,21 @@ MapGlyph.prototype = {
 	    if(url && args.forLegend)
 		icon = HU.href(url,icon,['target','_entry']);
 	    let showZoomTo = args.forLegend && this.hasBounds();
-	    if(this.isGroup()) {
-		right+=SPACE+HU.span([ATTR_CLASS,CLASS_CLICKABLE,TITLE,'Cycle visibility children. Shift-key: all visible; Meta-key: all hidden',
-				      'glyphid',this.getId(),'buttoncommand',"cyclevis"],HU.getIconImage('fas fa-arrows-spin',[],BUTTON_IMAGE_ATTRS));
+	    if(this.canHaveChildren()) {
+		if(this.getProperty(PROP_LAYERS_ANIMATION_SHOW)) {
+		    right+=SPACE+HU.span([ATTR_CLASS,CLASS_CLICKABLE,
+					  ATTR_TITLE,'Play',
+					  ATTR_ID,this.domId(PROP_LAYERS_ANIMATION_PLAY),
+					  'glyphid',this.getId(),'buttoncommand',PROP_LAYERS_ANIMATION_PLAY],
+					 HU.getIconImage(icon_play,[],BUTTON_IMAGE_ATTRS));
+		}
+
+		if(this.getProperty(PROP_LAYERS_STEP_SHOW)) {
+		    right+=SPACE+HU.span([ATTR_CLASS,CLASS_CLICKABLE,
+					  ATTR_TITLE,'Cycle visibility children. Shift-key: all visible; Meta-key: all hidden',
+					  'glyphid',this.getId(),'buttoncommand',PROP_LAYERS_STEP_SHOW],
+					 HU.getIconImage('fas fa-arrows-spin',[],BUTTON_IMAGE_ATTRS));
+		}
 	    }
 
 	    if(showZoomTo) {
@@ -2217,8 +2280,19 @@ MapGlyph.prototype = {
 	}
 	return true;
     },
+    
     initLegend:function() {
 	let _this = this;
+	if(this.canHaveChildren()) {
+	    if(this.getProperty(PROP_LAYERS_ANIMATION_SHOW)) {
+		this.jq(PROP_LAYERS_ANIMATION_PLAY).click(()=>{
+		    this.checkLayersAnimation();
+		});
+	    }
+	    this.checkLayersAnimation();
+	}	    
+
+
 	let steps = this.getLegendDiv().find('.imdv-route-step');
 	steps.click(function(){
 	    let lon = $(this).attr('lon');
@@ -2361,16 +2435,16 @@ MapGlyph.prototype = {
 		    clearTimeout(_this.timeAnimationTimeout);
 		_this.timeAnimationTimeout=null;
 		if(_this.timeAnimationRunning) {
-		    $(this).html(HU.getIconImage('fas fa-play'));
+		    $(this).html(HU.getIconImage(icon_play));
 		} else {
-		    $(this).html(HU.getIconImage('fas fa-stop'));
+		    $(this).html(HU.getIconImage(icon_stop));
 		    let stepTime = () =>{
 			let current = +slider.slider('value');
 			current = current+(_this.attrs.timeAnimationStep??1)*step;
 			change(current);
 			//			console.log("current time: " +new Date(current) +' step:' + _this.attrs.timeAnimationStep);
 			if(current>=max) {
-			    $(this).html(HU.getIconImage('fas fa-play'));
+			    $(this).html(HU.getIconImage(icon_play));
 			    _this.timeAnimationRunning = false;
 			    return
 			}
@@ -3689,7 +3763,7 @@ MapGlyph.prototype = {
 				   HU.tr([],
 					 HU.td(['width','18px'],HU.span(['feature-id',info.id,
 									 ATTR_CLASS,HU.classes(CLASS_FILTER_PLAY,CLASS_CLICKABLE),
-									 ATTR_TITLE,'Play'],HU.getIconImage('fas fa-play'))) +
+									 ATTR_TITLE,'Play'],HU.getIconImage(icon_play))) +
 					 HU.td([],slider)));
 		} else {
 		    line+=slider;
@@ -3876,19 +3950,19 @@ MapGlyph.prototype = {
 		if(!sliderInfo) return;
 		let slider = sliderInfo.slider;
 		if(Utils.isDefined(playing) && playing==='true') {
-		    $(this).html(HU.getIconImage('fas fa-play'));
+		    $(this).html(HU.getIconImage(icon_play));
 		    $(this).attr('playing',false);
 		    if(animation.timeout) {
 			clearTimeout(animation.timeout);
 			animation.timeout = null;
 		    }
 		} else {
-		    $(this).html(HU.getIconImage('fas fa-stop'));
+		    $(this).html(HU.getIconImage(icon_stop));
 		    $(this).attr('playing',true);
 		    let step = (_values) =>{
 			let values = _values?? slider.slider('values');
 			if(values[1]>=sliderInfo.max) {
-			    $(this).html(HU.getIconImage('fas fa-play'));
+			    $(this).html(HU.getIconImage(icon_play));
 			    $(this).attr('playing',false);			    
 			    return;
 			}
@@ -4883,6 +4957,12 @@ MapGlyph.prototype = {
     	    this.applyChildren(child=>{child.setVisible(visible, callCheck);});
 	}
 	Utils.forEach(this.rings,f=>{MapUtils.setFeatureVisible(f,visible);});
+
+	if(this.canHaveChildren()) {
+	    if(!visible) this.attrs[PROP_LAYERS_ANIMATION_ON]=false;
+	    this.checkLayersAnimationButton();
+	}
+
 
 	if(callCheck)
 	    this.checkVisible();

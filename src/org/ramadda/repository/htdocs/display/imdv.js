@@ -54,6 +54,18 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'showButtons=false',
 			  'showMeasures=false','showTextSearch=true'];
 
+var PROP_LAYERS_STEP_SHOW= "showLayersStep";
+var PROP_LAYERS_ANIMATION_SHOW = "showLayersAnimation";
+var PROP_LAYERS_ANIMATION_PLAY = "layersAnimationPlay";
+var PROP_LAYERS_ANIMATION_DELAY = "layersAnimationDelay";
+var PROP_LAYERS_ANIMATION_ON = "layersAnimatioOn";
+
+var IMDV_GROUP_PROPERTY_HINTS= [PROP_LAYERS_STEP_SHOW+'=true',
+				PROP_LAYERS_ANIMATION_SHOW+'=true',
+				PROP_LAYERS_ANIMATION_DELAY+'=1000',
+				PROP_LAYERS_ANIMATION_PLAY+'=true'];				
+
+
 
 var CLASS_LEGEND_LABEL = 'imdv-legend-label';
 var CLASS_LEGEND_LABEL_INVISIBLE = 'imdv-legend-label-invisible';
@@ -1982,7 +1994,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    return;
 		}
 		if(command=='toback') _this.changeOrder(false,mapGlyph);
-		else if(command=='cyclevis') mapGlyph.toggleVisibility(event);		
+		else if(command==PROP_LAYERS_STEP_SHOW) mapGlyph.toggleLayersVisibility(event);
+		else if(command==PROP_LAYERS_ANIMATION_PLAY) mapGlyph.toggleLayersAnimation(event);				
 		else if(command=='tofront') _this.changeOrder(true,mapGlyph);		
 		else if(command=='edit') {
 		    _this.editFeatureProperties(mapGlyph);
