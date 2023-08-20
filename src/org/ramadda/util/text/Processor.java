@@ -2718,6 +2718,9 @@ public abstract class Processor extends SeesvOperator {
                 }
 
 
+		boolean showMultiples ="true".equals(getDbProp(colId, "show_multiples","true"));
+		if(!showMultiples)
+		    attrs.append(XmlUtil.attrs(new String[] {"enumeration_multiples","false"}));
 
                 canSearch = "true".equals(getDbProp(colId, "cansearch",
                         canSearch + ""));
