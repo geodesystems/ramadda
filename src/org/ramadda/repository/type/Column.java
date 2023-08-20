@@ -375,6 +375,8 @@ public class Column implements DataTypes, Constants, Cloneable {
     /** _more_ */
     private boolean canSort;
 
+    private boolean enumerationShowMultiples = true;
+
     /** _more_ */
     private int searchRows;
 
@@ -621,6 +623,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         searchRows = getAttributeOrTag(element, ATTR_SEARCHROWS, 1);
         canSearchText = getAttributeOrTag(element, ATTR_CANSEARCHTEXT,
                                           canSearch);
+	enumerationShowMultiples = getAttributeOrTag(element,"enumeration_multiples",true);
         advancedSearch = getAttributeOrTag(element, ATTR_ADVANCED, false);
         editable       = getAttributeOrTag(element, ATTR_EDITABLE, true);
         showInForm = getAttributeOrTag(element, ATTR_SHOWINFORM, showInForm);
@@ -3559,7 +3562,10 @@ public class Column implements DataTypes, Constants, Cloneable {
                 tmpb.append(" ");
 		i++;
             }
-            widget = HU.div(tmpb.toString(), HU.cssClass("ramadda-widgets-enumeration"));
+	    widget = tmpb.toString();
+	    if(enumerationShowMultiples) {
+		widget = HU.div(widget, HU.cssClass("ramadda-widgets-enumeration"));
+	    }
             //      System.err.println("widget:" + widget.length() +" " + tmpValues.size());
         } else if (isNumeric()) {
             String toId = Utils.makeID(searchArg + "_to");
