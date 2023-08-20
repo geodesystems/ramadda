@@ -808,6 +808,7 @@ function RepositoryMap(mapId, params) {
 	selectStrokeWidth:null,
 	selectFillOpacity:0.4,	
 
+	maxZoom:18,
         scrollToZoom: true,
         selectOnHover: false,
         highlightOnHover: true,
@@ -1250,7 +1251,6 @@ RepositoryMap.prototype = {
 	if(debugBounds)
 	    console.log("calling setViewToBounds: " + bounds);
         this.setViewToBounds(bounds);
-
     },
     initRegionSelector:function(selectId,div,forSelection) {
 	this.regionSelector = $('#' + selectId);
@@ -1336,6 +1336,10 @@ RepositoryMap.prototype = {
 	    this.getMap().setCenter(projBounds.getCenterLonLat());
             this.zoomToExtent(projBounds);
         }
+	if(this.getMap().getZoom()>this.params.maxZoom) {
+            this.getMap().zoomTo(this.params.maxZoom);
+	}
+
     },
     setCenter:function(to) {
 	if(debugBounds)
@@ -1453,6 +1457,7 @@ RepositoryMap.prototype = {
                 _this.locationChanged();
 		_this.setNoPointerEvents();
 //		console.log( _this.getMap().getZoom());
+
             });
             _this.getMap().events.register("moveend", "ramaddamap", function() {
                 _this.locationChanged();
