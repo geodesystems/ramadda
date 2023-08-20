@@ -3922,7 +3922,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     "Click to view details"));
 
 	    if(numberEntries) {
-                HtmlUtils.td(hb, ""+(cnt+1));
+                HtmlUtils.td(hb, "#"+(cnt+1));
 	    }
 		
             even = !even;
@@ -4817,7 +4817,17 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
         int cnt=0;
+	int listCnt = 0;
+
 	for (List listValues : lists) {
+	    sb.append(HU.comment("XLIST"));
+	    if(forPrint && listCnt>0) {
+                sb.append("<div class=pagebreak></div>\n");
+		addViewHeader(request, entry, sb, VIEW_MAP,
+			      valueList.size(), fromSearch, links);
+	    }
+	    listCnt++;
+	    
             String mapDisplayId = "mapDisplay_" + Utils.getGuid();
             props.put("displayDiv", mapDisplayId);
             MapInfo map = getRepository().getMapManager().createMap(request,
@@ -4849,8 +4859,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         "\n.db-map-list-inner {max-height: " + height
                         + "px; overflow-y: auto; overflow-x:auto; }\n\n"));
             } else {}
+	    entryList.append("\n");
             HtmlUtils.open(entryList, "div", "class", "db-map-list-outer");
             HtmlUtils.open(entryList, "div", "class", "db-map-list-inner");
+	    entryList.append("\n");
             StringBuilder                    theSB  = entryList;
             Hashtable<String, StringBuilder> catMap = null;
             List<String>                     cats   = null;
@@ -4952,19 +4964,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 }
                 String viewUrl = getViewUrl(request, entry, dbid);
                 if ( !forPrint) {
-                    theSB.append(HtmlUtils.href(viewUrl,
-                            HtmlUtils.img(iconToUse,
-                    //                        getRepository().getUrlBase() + "/db/database_go.png",
-                    msg("View entry"), "width=16")));
+                    theSB.append(HtmlUtils.href(viewUrl,HU.img(iconToUse, msg("View entry"), "width=16")));
                 }
                 theSB.append(" ");
                 String label = getMapLabel(request, entry, values, sdf,
-                                           forPrint);
-		if(numberEntries)
-		    label = (++cnt)+" " + label;
+                                           forPrint,numberEntries?"#" +(++cnt)+" ":"");
+
 		theSB.append(map.getHiliteHref(dbid, label));
                 theSB.append("</div>");
-                //            theSB.append(HtmlUtils.br());
                 String info = getHtml(request, entry, dbid, getDbColumns(),
                                       values, sdf,dateTimeSdf);
                 String mapInfo = extraLabel + info;
@@ -4974,6 +4981,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 String mapLabel = label;
                 if (forPrint) {
                     mapLabel = "";
+		    mapInfo="";
                 }
 
 
@@ -5014,8 +5022,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     open = false;
                 }
             }
+	    entryList.append("\n");
             entryList.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
             entryList.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+	    entryList.append("\n");
 
 	    map.center();
             if ( !simpleMap) {
@@ -5024,14 +5034,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         ? " db-map-table-print "
                         : ""), "cellpadding", "0", "border", "0", "width",
                                "100%");
+		sb.append("\n");
                 HtmlUtils.open(sb, "tr", "valign", "top");
-                sb.append(HtmlUtils.col(entryList.toString(),
-                                        " class=\"db-map-column\" "
-                                        + HtmlUtils.attr("width",
-                                            leftWidth)));
-                sb.append(HtmlUtils.col(map.getHtml(),
-                                        "  class=\"db-map-column\" "
-                                        + mapAttrs));
+                HtmlUtils.col(sb, entryList.toString(),
+			       HU.clazz("db-map-column")
+			       + HtmlUtils.attr("width",
+						leftWidth));
+		HU.col(sb,map.getHtml(),  HU.clazz("db-map-column") + mapAttrs+HU.attr("align","center"));
                 if ( !forPrint) {
                     String searchLink = "";
                     if (formId != null) {
@@ -5045,11 +5054,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         searchLink + "<div id=\"" + mapDisplayId
                         + "\" style=\"width:250px;max-width:250px;overflow-x:hidden;max-height:"
                         + height + "px; overflow-y:auto;\"></div>";
-
-                    sb.append(
-                        HtmlUtils.col(
-                            rightDiv, " class=\"db-map-column\"  width=250"));
-
+                    sb.append(HtmlUtils.col(rightDiv, HU.clazz("db-map-column") +HU.attr("width","250")));
                 }
                 HtmlUtils.close(sb, "tr", "table");
             } else {
@@ -5057,12 +5062,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    }
             String js =
 		map.getVariableName()+  ".highlightMarkers('.db-map-list-outer .db-map-list-entry');";
-            sb.append(HtmlUtils.script(JQuery.ready(js)));
-            if (forPrint) {
-                sb.append("<div class=pagebreak></div>");
-            }
-
+	    sb.append(HtmlUtils.script(JQuery.ready(js)));
 	}
+	
 
 
 
@@ -6602,13 +6604,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      * @throws Exception _more_
      */
     public String getLabel(Request request, Entry entry, Object[] values,
-                           SimpleDateFormat sdf)
+                           SimpleDateFormat sdf,String...prefix)
             throws Exception {
         String lbl = getLabelInner(request, entry, values, sdf);
         if ( !Utils.stringDefined(lbl)) {
             lbl = "---";
         }
 
+	if(prefix.length>0 && prefix[0]!=null) lbl = prefix+lbl;
         return lbl;
     }
 
@@ -6628,18 +6631,18 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      * @throws Exception _more_
      */
     public String getMapLabel(Request request, Entry entry, Object[] values,
-                              SimpleDateFormat sdf, boolean forPrint)
+                              SimpleDateFormat sdf, boolean forPrint,String prefix)
             throws Exception {
         if (forPrint && (mapLabelTemplatePrint != null)) {
             return applyTemplate(request, entry, values, sdf,
-                                 mapLabelTemplatePrint);
+                                 mapLabelTemplatePrint,prefix);
         }
         if (mapLabelTemplate != null) {
             return applyTemplate(request, entry, values, sdf,
-                                 mapLabelTemplate);
+                                 mapLabelTemplate,prefix);
         }
 
-        return getLabel(request, entry, values, sdf);
+        return getLabel(request, entry, values, sdf,prefix);
     }
 
 
@@ -6677,7 +6680,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      */
     public String applyTemplate(Request request, Entry entry,
                                 Object[] values, SimpleDateFormat sdf,
-                                String template)
+                                String template,String...prefix)
             throws Exception {
         String        label = template;
         StringBuilder sb    = new StringBuilder();
@@ -6689,6 +6692,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                   sb.toString());
         }
 
+	label = label.replace("${_prefix}", (prefix.length>0 && prefix[0]!=null)?prefix[0]:"");
         return label;
     }
 
