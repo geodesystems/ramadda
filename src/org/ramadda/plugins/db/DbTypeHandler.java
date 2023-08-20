@@ -4751,13 +4751,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
             if (column.getType().equals(Column.DATATYPE_LATLONBBOX)) {
                 theColumn = column;
-
                 break;
             }
             if (column.getType().equals(Column.DATATYPE_LATLON)) {
                 theColumn = column;
                 bbox      = false;
-
                 break;
             }
         }
@@ -4809,6 +4807,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             Utils.split(request.getString(ARG_EXTRA_COLUMNS, ""), "\n", true,
                         true);
         List<List> lists;
+
         if (forPrint) {
             lists = (List<List>) Utils.splitList(valueList, entriesPerPage+1);
         } else {
@@ -4820,7 +4819,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	int listCnt = 0;
 
 	for (List listValues : lists) {
-	    sb.append(HU.comment("XLIST"));
 	    if(forPrint && listCnt>0) {
                 sb.append("<div class=pagebreak></div>\n");
 		addViewHeader(request, entry, sb, VIEW_MAP,
@@ -4832,7 +4830,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             props.put("displayDiv", mapDisplayId);
             MapInfo map = getRepository().getMapManager().createMap(request,
 								    entry, width, height, false, props);
-	    map.addProperty("linked","true");
+	    //	    map.addProperty("linked","true");
 	    //Add the search bounding box if defined
 	    for (Column column : tableHandler.getColumns()) {
 		if(column.isType(column.DATATYPE_LATLON)) {
@@ -4876,7 +4874,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		radius = 2;
 	    } else  if(listValues.size()>500) {
 		radius = 4;
+	    } else  if(forPrint) {
+		radius=4;
 	    }
+
             for (Object obj : listValues) {
                 Object[] values = (Object[]) obj;
                 String   dbid   = (String) values[IDX_DBID];
