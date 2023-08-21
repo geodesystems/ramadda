@@ -27,6 +27,7 @@ import org.ramadda.repository.type.*;
 
 import org.ramadda.repository.util.FileWriter;
 import org.ramadda.util.geo.Bounds;
+import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.FormInfo;
 
 import org.ramadda.util.HtmlUtils;
@@ -1051,7 +1052,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         List<String> headerToks = new ArrayList<String>();
         String baseUrl =
-            HtmlUtils.url(request.makeUrl(getRepository().URL_ENTRY_SHOW),
+            HU.url(request.makeUrl(getRepository().URL_ENTRY_SHOW),
                           new String[] { ARG_ENTRYID,
                                          entry.getId() });
         boolean[] addNext = { false };
@@ -1059,8 +1060,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         addHeaderItems(request, entry, view, headerToks, baseUrl, addNext);
 
         if (headerToks.size() > 1) {
-            HtmlUtils.div(sb, StringUtil.join("&nbsp;|&nbsp;", headerToks),
-                          HtmlUtils.cssClass(CSS_DB_HEADER));
+            HU.div(sb, StringUtil.join("&nbsp;|&nbsp;", headerToks),
+                          HU.cssClass(CSS_DB_HEADER));
         }
 
 
@@ -1073,17 +1074,17 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 StringBuilder link = new StringBuilder();
                 if (m.getId().equals(searchId)) {
                     request.remove(ARG_DB_SEARCHNAME);
-                    headerToks.add(HtmlUtils.b(m.getAttr1()));
+                    headerToks.add(HU.b(m.getAttr1()));
                 } else {
                     String url = baseUrl + "&"
-                                 + HtmlUtils.args(ARG_DB_SEARCH, "true",
+                                 + HU.args(ARG_DB_SEARCH, "true",
                                      ARG_DB_SEARCHID, m.getId());
 
-                    headerToks.add(HtmlUtils.href(url, m.getAttr1()));
+                    headerToks.add(HU.href(url, m.getAttr1()));
                 }
             }
-            sb.append(HtmlUtils.div(StringUtil.join("&nbsp;|&nbsp;",
-                    headerToks), HtmlUtils.cssClass(CSS_DB_HEADER)));
+            sb.append(HU.div(StringUtil.join("&nbsp;|&nbsp;",
+                    headerToks), HU.cssClass(CSS_DB_HEADER)));
         }
 
 
@@ -1095,11 +1096,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
         if (extraLinks != null) {
-            HtmlUtils.div(sb, extraLinks, HtmlUtils.cssClass(CSS_DB_HEADER));
+            HU.div(sb, extraLinks, HU.cssClass(CSS_DB_HEADER));
         }
 
         if (request.defined(ARG_DB_SEARCHNAME)) {
-            HtmlUtils.sectionHeader(sb,
+            HU.sectionHeader(sb,
                                     request.getString(ARG_DB_SEARCHNAME, ""));
         }
         if (request.defined(ARG_DB_SEARCHDESC)) {
@@ -1166,10 +1167,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         boolean forPrint = request.get(ARG_FOR_PRINT, false);
 	if(forPrint) return "";
 
-        String formId     = HtmlUtils.getUniqueId("form_");
+        String formId     = HU.getUniqueId("form_");
         String searchForm = getSearchForm(request, entry, formId).toString();
 	if(inToggle) {
-	    sb.append(HtmlUtils.makeShowHideBlock(msg("Search again"),
+	    sb.append(HU.makeShowHideBlock(msg("Search again"),
 						  searchForm, false));
 	} else {
 	    sb.append(searchForm);
@@ -1253,7 +1254,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         DbInfo dbInfo = getDbInfo();
 
         if (showInHeader(VIEW_SEARCH, true)) {
-            headerToks.add(HtmlUtils.href(baseUrl + "&" + ARG_DB_VIEW + "="
+            headerToks.add(HU.href(baseUrl + "&" + ARG_DB_VIEW + "="
                                           + VIEW_SEARCH, msg("Search"),
                                               view.equals(VIEW_SEARCH)
                     ? HU.style("font-weight:bold;")
@@ -1264,7 +1265,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             if (view.equals(VIEW_TABLE)) {
                 addNext[0] = true;
             }
-            headerToks.add(HtmlUtils.href(baseUrl + "&" + ARG_DB_VIEW + "="
+            headerToks.add(HU.href(baseUrl + "&" + ARG_DB_VIEW + "="
                                           + VIEW_TABLE, msg("List"),
                                               view.equals(VIEW_TABLE)
                     ? HU.style("font-weight:bold;")
@@ -1273,7 +1274,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         if (dbInfo.getHasDate()) {
             if (showInHeader(VIEW_CALENDAR)) {
-                headerToks.add(HtmlUtils.href(baseUrl + "&" + ARG_DB_VIEW
+                headerToks.add(HU.href(baseUrl + "&" + ARG_DB_VIEW
                         + "=" + VIEW_CALENDAR, msg("Calendar"),
                             view.equals(VIEW_CALENDAR)
                             ? HU.style("font-weight:bold;")
@@ -1286,7 +1287,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 if (view.equals(VIEW_MAP)) {
                     addNext[0] = true;
                 }
-                headerToks.add(HtmlUtils.href(baseUrl + "&" + ARG_DB_VIEW
+                headerToks.add(HU.href(baseUrl + "&" + ARG_DB_VIEW
                         + "=" + VIEW_MAP, msg("Map"), view.equals(VIEW_MAP)
                         ? HU.style("font-weight:bold;")
                         : ""));
@@ -1302,7 +1303,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             for (Column column : dbInfo.getCategoryColumns()) {
                 String label = column.getLabel();
                 if (showInHeader(VIEW_CATEGORY + column.getName())) {
-                    headerToks.add(HtmlUtils.href(baseUrl + "&" + ARG_DB_VIEW
+                    headerToks.add(HU.href(baseUrl + "&" + ARG_DB_VIEW
                             + "=" + VIEW_CATEGORY + column.getName() + "&"
                             + ARG_DB_COLUMN + "=" + column.getName(), label,
                                 view.equals(VIEW_CATEGORY + column.getName())
@@ -1317,7 +1318,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         boolean canDoNew = getAccessManager().canDoNew(request, entry);
 
         if (canDoNew && showInHeader(VIEW_NEW, true)) {
-            headerToks.add(HtmlUtils.href(baseUrl + "&" + ARG_DB_VIEW + "="
+            headerToks.add(HU.href(baseUrl + "&" + ARG_DB_VIEW + "="
                                           + VIEW_NEW, msg("New"),
                                               view.equals(VIEW_NEW)
                     ? HU.style("font-weight:bold;")
@@ -1325,7 +1326,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
         if (canEdit) {
-            headerToks.add(HtmlUtils.href(baseUrl + "&" + ARG_DB_VIEW + "="
+            headerToks.add(HU.href(baseUrl + "&" + ARG_DB_VIEW + "="
                                           + VIEW_EDIT, msg("Edit"),
                                               view.equals(VIEW_EDIT)
                     ? HU.style("font-weight:bold;")
@@ -1392,7 +1393,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             StringBuilder sb = new StringBuilder();
             addViewHeader(request, entry, sb, VIEW_TABLE, null);
             if ( !isEmbedded(request)) {
-                sb.append(HtmlUtils.makeShowHideBlock(msg("Search again"),
+                sb.append(HU.makeShowHideBlock(msg("Search again"),
                         getSearchForm(request, entry).toString(), false));
             }
             Column iterateColumn = null;
@@ -1455,9 +1456,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                     tmpSB);
                 }
                 sb.append(
-                    HtmlUtils.div(
+                    HU.div(
                         tmpSB.toString(),
-                        HtmlUtils.cssClass("db_iterate_block")));
+                        HU.cssClass("db_iterate_block")));
 
             }
             getPageHandler().entrySectionClose(request, entry, sb);
@@ -1782,7 +1783,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         if ((dbInfo.getUrlColumn() != null) && (entry != null)) {
             String baseUrl =
                 request.getAbsoluteUrl(
-                    HtmlUtils.url(
+                    HU.url(
                         request.makeUrl(getRepository().URL_ENTRY_SHOW),
                         new String[] { ARG_ENTRYID,
                                        entry.getId() }));
@@ -1805,11 +1806,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         + "='+" + selected;
             }
 
-            String href = HtmlUtils.href(jsUrl,
+            String href = HU.href(jsUrl,
                                          " Add URL to " + entry.getName());
             formBuffer.append(
-                HtmlUtils.row(
-                    HtmlUtils.colspan(
+                HU.row(
+                    HU.colspan(
                         "Bookmark this link to add new items to the database: "
                         + href, 2)));
         }
@@ -1841,17 +1842,17 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 
         formBuffer.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 "",
-                HtmlUtils.checkbox(
+                HU.checkbox(
                     PROP_ANONFORM_ENABLED, "true",
                     Misc.getProperty(
                         props, PROP_ANONFORM_ENABLED, false)) + " "
                             + msg("Allow anonymous form submission")));
-        formBuffer.append(HtmlUtils.formEntry(msgLabel("Message"),
-                HtmlUtils.input(PROP_ANONFORM_MESSAGE,
+        formBuffer.append(HU.formEntry(msgLabel("Message"),
+                HU.input(PROP_ANONFORM_MESSAGE,
                     Misc.getProperty(props, PROP_ANONFORM_MESSAGE, ""),
-                        HtmlUtils.SIZE_80) + " "
+                        HU.SIZE_80) + " "
                             + msg("What to show the user after they create an item")));
     }
 
@@ -1906,11 +1907,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             List<TwoFacedObject> tfos = getEnumValues(request, entry, col);
             if ((tfos != null) && (tfos.size() < 150) && (tfos.size() > 0)) {
                 formBuffer.append(
-                    HtmlUtils.row(
-                        HtmlUtils.colspan(
-                            HtmlUtils.div(
+                    HU.row(
+                        HU.colspan(
+                            HU.div(
                                 msg("Settings for") + " " + col.getLabel(),
-                                HtmlUtils.cssClass("formgroupheader")), 2)));
+                                HU.cssClass("formgroupheader")), 2)));
 
                 for (TwoFacedObject tfo : tfos) {
                     String value        = tfo.getId().toString();
@@ -1925,27 +1926,27 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     String        colorArg = colorID + "." + value;
                     String        iconArg  = iconID + "." + value;
                     StringBuilder colorSB  = new StringBuilder();
-                    colorSB.append(HtmlUtils.radio(colorArg, "",
+                    colorSB.append(HU.radio(colorArg, "",
                             currentColor.equals("")));
                     colorSB.append(msg("None"));
                     colorSB.append(" ");
                     for (String c : colors) {
                         colorSB.append(
-                            HtmlUtils.span(
-                                HtmlUtils.radio(
+                            HU.span(
+                                HU.radio(
                                     colorArg, c,
-                                    currentColor.equals(c)), HtmlUtils.style(
+                                    currentColor.equals(c)), HU.style(
                                         "margin-left:2px; margin-right:2px; padding-left:5px; padding-right:7px; border:1px solid #000; background-color:"
                                         + c)));
                     }
                     StringBuilder iconSB = new StringBuilder();
-                    iconSB.append(HtmlUtils.radio(iconArg, "",
+                    iconSB.append(HU.radio(iconArg, "",
                             currentIcon.equals("")));
                     iconSB.append(msg("None"));
                     iconSB.append("  ");
                     iconSB.append(msg("Custom:"));
                     iconSB.append(" ");
-                    iconSB.append(HtmlUtils.input(iconArg + "_custom",
+                    iconSB.append(HU.input(iconArg + "_custom",
                             baseIcons.contains(currentIcon)
                             ? ""
                             : currentIcon, 20));
@@ -1959,30 +1960,30 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
                             continue;
                         }
-                        iconSB.append(HtmlUtils.radio(iconArg, icon,
+                        iconSB.append(HU.radio(iconArg, icon,
                                 currentIcon.equals(icon)));
-                        iconSB.append(HtmlUtils.img(getDbIconUrl(icon),
+                        iconSB.append(HU.img(getDbIconUrl(icon),
                                 IOUtil.getFileTail(icon), "width=24"));
                         iconSB.append(" ");
                     }
-                    formBuffer.append(HtmlUtils.formEntry(msgLabel("Value"),
+                    formBuffer.append(HU.formEntry(msgLabel("Value"),
                             value));
                     formBuffer.append(
-                        HtmlUtils.formEntryTop(
+                        HU.formEntryTop(
                             msgLabel("Color"), colorSB.toString()));
                     String iconMsg = "";
                     if (currentIcon.length() > 0) {
-                        iconMsg = HtmlUtils.img(getDbIconUrl(currentIcon),
+                        iconMsg = HU.img(getDbIconUrl(currentIcon),
                                 currentIcon, "width=16");
                     }
                     formBuffer.append(
-                        HtmlUtils.formEntryTop(
+                        HU.formEntryTop(
                             msgLabel("Icon"),
-                            HtmlUtils.makeShowHideBlock(
+                            HU.makeShowHideBlock(
                                 iconMsg, iconSB.toString(), false)));
-                    formBuffer.append(HtmlUtils.formEntry("", "<hr>"));
+                    formBuffer.append(HU.formEntry("", "<hr>"));
                 }
-                formBuffer.append(HtmlUtils.formEntry("", sb.toString()));
+                formBuffer.append(HU.formEntry("", sb.toString()));
             }
         }
 
@@ -2103,12 +2104,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             throws Exception {
         super.addToProcessingForm(request, entry, sb);
         StringBuilder inner = new StringBuilder();
-        inner.append(HtmlUtils.formTable());
+        inner.append(HU.formTable());
         getSearchFormInner(request, entry, inner, false,null);
-        inner.append(HtmlUtils.formTableClose());
+        inner.append(HU.formTableClose());
         org.ramadda.data.services.PointFormHandler.formGroup(request, sb,
                 "Database Search",
-                HtmlUtils.makeShowHideBlock("", inner.toString(), false));
+                HU.makeShowHideBlock("", inner.toString(), false));
     }
 
     /**
@@ -2123,7 +2124,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      */
     public StringBuilder getSearchForm(Request request, Entry entry)
             throws Exception {
-        String formId = HtmlUtils.getUniqueId("form_");
+        String formId = HU.getUniqueId("form_");
 
         return getSearchForm(request, entry, formId);
     }
@@ -2146,11 +2147,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         StringBuilder sb = new StringBuilder();
         String formUrl   = request.makeUrl(getRepository().URL_ENTRY_SHOW);
         sb.append(HU.comment("search form open"));
-        sb.append(HtmlUtils.uploadForm(formUrl, HtmlUtils.id(formId)));
+        sb.append(HU.uploadForm(formUrl, HU.id(formId)));
         sb.append("\n");
-        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+        sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
         HU.open(sb, "div", HU.cssClass("ramadda-form-block"));
-        String buttons = HtmlUtils.submit(msg("Search"), ARG_DB_SEARCH);
+        String buttons = HU.submit(msg("Search"), ARG_DB_SEARCH);
         sb.append(buttons);
         getSearchFormInner(request, entry, sb, true,formId);
         if (formJS != null) {
@@ -2161,9 +2162,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         HU.close(sb, "div");
         StringBuilder js = new StringBuilder();
         js.append("$( document ).ready(function() {HtmlUtil.initSelect('.search-select');\n});");
-        HtmlUtils.script(sb, js.toString());
+        HU.script(sb, js.toString());
         sb.append(HU.comment("search form close"));
-        sb.append(HtmlUtils.formClose());
+        sb.append(HU.formClose());
 
 
 	if(request.get("showLinks",true)) {
@@ -2199,25 +2200,25 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         if (normalForm) {
             String count = msgLabel("Count") + " "
-                           + HtmlUtils.input(ARG_MAX, getMax(request),
-                                             HtmlUtils.SIZE_5
-                                             + HtmlUtils.attr("default",
+                           + HU.input(ARG_MAX, getMax(request),
+                                             HU.SIZE_5
+                                             + HU.attr("default",
                                                  "" + DEFAULT_MAX));
 
             sb.append(HU.space(2));
             sb.append("View As: ");
             sb.append(
-                HtmlUtils.select(
+                HU.select(
                     ARG_DB_VIEW, viewList, request.getString(
                         ARG_DB_VIEW, defaultView),
-		    /*HtmlUtils.attr("default", VIEW_TABLE)+*/  HtmlUtils.cssClass(
-                        "search-select")) + HtmlUtils.space(2) + count);
+		    /*HU.attr("default", VIEW_TABLE)+*/  HU.cssClass(
+                        "search-select")) + HU.space(2) + count);
         }
 
         List<Clause>        where      = null;
         DbInfo              dbInfo     = getDbInfo();
         List<DbNamedBuffer> buffers    = new ArrayList<DbNamedBuffer>();
-        String              formHeader = HtmlUtils.formTable(true);
+        String              formHeader = HU.formTable(true);
         DbNamedBuffer buffer = new DbNamedBuffer(searchForLabel, formHeader,
                                    Utils.makeID(searchForLabel));
         buffers.add(buffer);
@@ -2294,7 +2295,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 buffer.append(
                     formEntry(
                         request, msgLabel("Group By"),
-                        HtmlUtils.select(
+                        HU.select(
                             ARG_GROUPBY, tfos,
                             (List<String>) request.get(
                                 ARG_GROUPBY,
@@ -2312,51 +2313,51 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 StringBuilder aggSB = new StringBuilder();
                 for (int i = 0; i < 3; i++) {
                     aggSB.append(
-                        HtmlUtils.select(
+                        HU.select(
                             ARG_AGG
                             + i, aggtfos, request.getString(
-                                ARG_AGG + i, ""), HtmlUtils.cssClass(
-                                "search-select")) + HtmlUtils.space(2)
-                                    + HtmlUtils.select(
+                                ARG_AGG + i, ""), HU.cssClass(
+                                "search-select")) + HU.space(2)
+                                    + HU.select(
                                         ARG_AGG_TYPE
                                         + i, aggTypes, request.getString(
                                             ARG_AGG_TYPE
-                                            + i, ""), HtmlUtils.cssClass(
+                                            + i, ""), HU.cssClass(
                                                 "search-select")));
                     aggSB.append("<br>");
                 }
-                aggSB.append(HtmlUtils.labeledCheckbox(ARG_AGG_PERCENT,
+                aggSB.append(HU.labeledCheckbox(ARG_AGG_PERCENT,
                         "true", request.get(ARG_AGG_PERCENT, false),
                         "Show percentage"));
                 buffer.append(formEntry(request, msgLabel("Aggregate"),
                                         aggSB.toString()));
 
                 String dfltDir = ORDER_DESC;
-                String groupOrder = HtmlUtils.select(
+                String groupOrder = HU.select(
                                         ARG_DB_GROUP_SORTBY, sorttfos,
                                         request.getString(
                                             ARG_DB_GROUP_SORTBY,
-                                            ""), HtmlUtils.cssClass(
+                                            ""), HU.cssClass(
                                                 "search-select"));
                 groupOrder += HU.space(2);
                 groupOrder += HU.select(
                     ARG_DB_GROUP_SORTDIR, getOrderTfos(),
                     request.getString(ARG_DB_GROUP_SORTDIR, dfltDir),
-                    HtmlUtils.cssClass("search-select"));
+                    HU.cssClass("search-select"));
                 buffer.append(formEntry(request, msgLabel("Order"),
                                         groupOrder));
                 if (aggtfos.size() > 0) {
                     buffer.append(
                         formEntry(
                             request, msgLabel("Iterate"),
-                            HtmlUtils.select(
+                            HU.select(
                                 ARG_DB_ITERATE, aggtfos,
                                 request.getString(ARG_DB_ITERATE, ""),
-                                HtmlUtils.cssClass(
-                                    "search-select")) + HtmlUtils.space(1)
+                                HU.cssClass(
+                                    "search-select")) + HU.space(1)
                                         + "Enter values to iterate search on:"
-                                        + HtmlUtils.br()
-                                        + HtmlUtils.textArea(
+                                        + HU.br()
+                                        + HU.textArea(
                                             ARG_DB_ITERATE_VALUES,
                                             request.getString(
                                                 ARG_DB_ITERATE_VALUES,
@@ -2387,14 +2388,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     }
                 }
 
-                order += HtmlUtils.select(
+                order += HU.select(
                     ARG_DB_SORTBY + i, sorttfos,
                     request.getString(ARG_DB_SORTBY + i, dfltCol),
-                    HtmlUtils.cssClass("search-select")) + HU.select(
+                    HU.cssClass("search-select")) + HU.select(
                         ARG_DB_SORTDIR + i, getOrderTfos(),
                         request.getString(ARG_DB_SORTDIR + i, dfltDir),
 			HU.attr("default-value",ORDER_DESC) +
-                        HtmlUtils.cssClass("search-select")) + HU.space(2);
+                        HU.cssClass("search-select")) + HU.space(2);
             }
 
             buffer.append(formEntry(request, msgLabel("Order By"), order));
@@ -2405,49 +2406,49 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         StringBuilder viewSB      = new StringBuilder();
         boolean       defaultShow = false;
-        viewSB.append(HtmlUtils.labeledCheckbox(ARG_DB_SHOW + "toggleall",
+        viewSB.append(HU.labeledCheckbox(ARG_DB_SHOW + "toggleall",
                 "true", false, "Toggle All"));
         viewSB.append("<br>");
         for (Column column : dbInfo.getColumnsToUse()) {
             String arg = ARG_DB_SHOW + "_" + column.getName();
-            viewSB.append(HtmlUtils.labeledCheckbox(arg, "true",
+            viewSB.append(HU.labeledCheckbox(arg, "true",
                     request.get(arg, defaultShow), column.getLabel()));
             viewSB.append("<br>");
         }
         buffer.append(formEntry(request, msgLabel("Display"),
-                                HtmlUtils.makeShowHideBlock("",
+                                HU.makeShowHideBlock("",
                                     viewSB.toString(), false)));
 
 	if(formId!=null)
-	    buffer.append(HtmlUtils.script("DB.toggleAllInit("+HU.squote(formId)+");"));
+	    buffer.append(HU.script("DB.toggleAllInit("+HU.squote(formId)+");"));
 	else
-	    buffer.append(HtmlUtils.script("DB.toggleAllInit();"));	
+	    buffer.append(HU.script("DB.toggleAllInit();"));	
 
 
         StringBuilder uniqueSB = new StringBuilder();
         for (Column column : dbInfo.getColumnsToUse()) {
             String arg = ARG_DB_UNIQUE + "_" + column.getName();
-            uniqueSB.append(HtmlUtils.labeledCheckbox(arg, "true",
+            uniqueSB.append(HU.labeledCheckbox(arg, "true",
                     request.get(arg, false), column.getLabel()));
             uniqueSB.append("<br>");
         }
         buffer.append(formEntry(request, msgLabel("Uniques"),
-                                HtmlUtils.makeShowHideBlock("",
+                                HU.makeShowHideBlock("",
                                     uniqueSB.toString(), false)));
 
         buffers.add(buffer = new DbNamedBuffer("Advanced Options",
                 formHeader, "advanced"));
         if (normalForm) {
-            buffer.append(HtmlUtils.formEntry(msgLabel("Search Type"),
-                    HtmlUtils.labeledCheckbox(ARG_DB_OR, "true",
+            buffer.append(HU.formEntry(msgLabel("Search Type"),
+                    HU.labeledCheckbox(ARG_DB_OR, "true",
                         request.get(ARG_DB_OR, false),
                         "Match any of the above search criteria (OR logic)")));
-            buffer.append(HtmlUtils.formEntry(msgLabel("Sample"),
-					      HtmlUtils.input(ARG_SAMPLE,request.getString(ARG_SAMPLE,""),HtmlUtils.SIZE_5) +"% 1-100 Only show the percentage of the results"));
+            buffer.append(HU.formEntry(msgLabel("Sample"),
+					      HU.input(ARG_SAMPLE,request.getString(ARG_SAMPLE,""),HU.SIZE_5) +"% 1-100 Only show the percentage of the results"));
 
             String suffix = getAccessManager().canDoEdit(request, entry)
-                            ? HtmlUtils.space(2)
-                              + HtmlUtils.labeledCheckbox(
+                            ? HU.space(2)
+                              + HU.labeledCheckbox(
                                   ARG_DB_DOSAVESEARCH, "true",
                                   request.get(ARG_DB_DOSAVESEARCH, false),
                                   "Save Search")
@@ -2459,18 +2460,18 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             buffer.append(
                 HU.formEntry(
                     msgLabel("Extra Columns"),
-                    HtmlUtils.textArea(
+                    HU.textArea(
                         ARG_EXTRA_COLUMNS,
                         request.getString(ARG_EXTRA_COLUMNS, ""), 5, 40)));
             buffer.append(
                 formEntry(
                     request, msgLabel("Search Name"),
-                    HtmlUtils.input(
+                    HU.input(
                         ARG_DB_SEARCHNAME,
                         request.getString(ARG_DB_SEARCHNAME, ""),
-                        HtmlUtils.SIZE_50) + suffix));
+                        HU.SIZE_50) + suffix));
             buffer.append(formEntry(request, msgLabel("Description"),
-                                    HtmlUtils.textArea(ARG_DB_SEARCHDESC,
+                                    HU.textArea(ARG_DB_SEARCHDESC,
                                         request.getString(ARG_DB_SEARCHDESC,
                                             ""), 5, 40)));
             String searchFrom = request.getString(ARG_SEARCH_FROM, null);
@@ -2478,7 +2479,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 buffer.append(HU.hidden(ARG_SEARCH_FROM, searchFrom));
             }
 
-            String print = HtmlUtils.labeledCheckbox(
+            String print = HU.labeledCheckbox(
                                ARG_FOR_PRINT, "true",
                                request.get(ARG_FOR_PRINT, false),
                                "Printable") + HU.space(4)
@@ -2487,21 +2488,25 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                                 ARG_ENTRIES_PER_PAGE,
                                                 request.getString(
                                                     ARG_ENTRIES_PER_PAGE,
-                                                    ""), HtmlUtils.SIZE_5) +
+                                                    ""), HU.SIZE_5) +
 		HU.space(4) +
 		HU.labeledCheckbox(ARG_NUMBER_ENTRIES,"true",request.get(ARG_NUMBER_ENTRIES,false),
-				   "Number results");
+				   "Number results") +
+		HU.space(4) +
+		HU.labeledCheckbox(ARG_TILE_ENTRIES,"true",request.get(ARG_TILE_ENTRIES,false),
+				   "Tile map results");		
+		
             if (addressTemplate != null) {
                 print += "<br>" + HU.b("Address label skip: ")
                          + HU
                          .input("addresslabelskip", request
-                             .getString("addresslabelskip", ""), HtmlUtils
+                             .getString("addresslabelskip", ""), HU
                              .SIZE_5) + " Use Avery 8160 or 5160. Print with top margin: 0.5in, left: 0.19in";
             }
             buffer.append(formEntry(request, msgLabel("Printing"), print));
 
 	    if (dbInfo.getHasLocation()) {
-		String simpleMap = HtmlUtils.labeledCheckbox(
+		String simpleMap = HU.labeledCheckbox(
 							     "simpleMap", "true",
 							     request.get("simpleMap", false),
 							     "Simple");
@@ -2515,7 +2520,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         int    cnt         = 0;
         String formSection = request.getString("formsection", null);
         for (DbNamedBuffer b : buffers) {
-            b.append(HtmlUtils.formTableClose());
+            b.append(HU.formTableClose());
             if (b.anchor != null) {
                 sb.append(HU.anchorName(b.anchor));
             }
@@ -2532,12 +2537,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 }
             }
             HU.div(sb,
-                   HtmlUtils.makeShowHideBlock(b.getName(), contents, show),
+                   HU.makeShowHideBlock(b.getName(), contents, show),
                    HU.cssClass("ramadda-form-block"));
         }
 
 
-        sb.append(HtmlUtils.script("Utils.initRangeSelect()"));
+        sb.append(HU.script("Utils.initRangeSelect()"));
 
 
         /*
@@ -2545,15 +2550,15 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
           advanced.append(
           formEntry(
           request, "",
-          HtmlUtils.checkbox(ARG_DB_ALL, "true", false) + " "
+          HU.checkbox(ARG_DB_ALL, "true", false) + " "
           + msg("Search across all databases")));
           }
         */
         /*
-          advanced.append(HtmlUtils.formTableClose());
+          advanced.append(HU.formTableClose());
           sb.append("<tr><td colspan=3>");
-          HtmlUtils.makeAccordion(sb, msg("Advanced..."),
-          HtmlUtils.inset(advanced.toString(), 0, 20,
+          HU.makeAccordion(sb, msg("Advanced..."),
+          HU.inset(advanced.toString(), 0, 20,
           10, 0));
           sb.append("</td></tr>");
         */
@@ -2618,7 +2623,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                 ? pair.get(1)
                                 : "");
                         value = value.replaceAll("\\+", " ");
-                        value = HtmlUtils.urlDecode(value);
+                        value = HU.urlDecode(value);
                         //false means not singular
                         r.put(pair.get(0), value, false);
                     }
@@ -2789,7 +2794,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
         String url =
-            HtmlUtils.url(request.makeUrl(getRepository().URL_ENTRY_SHOW),
+            HU.url(request.makeUrl(getRepository().URL_ENTRY_SHOW),
                           new String[] { ARG_ENTRYID,
                                          entry.getId(), ARG_MESSAGE,
                                          "Entries deleted" });
@@ -2835,13 +2840,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     msg("No entries were selected")));
         } else {
             String formUrl = request.makeUrl(getRepository().URL_ENTRY_SHOW);
-            sb.append(HtmlUtils.formPost(formUrl));
-            sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
-            sb.append(HtmlUtils.hidden(ARG_DB_ACTION, action));
+            sb.append(HU.formPost(formUrl));
+            sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
+            sb.append(HU.hidden(ARG_DB_ACTION, action));
 
 
             for (Object dbid : dbids) {
-                sb.append(HtmlUtils.hidden(ARG_DBID_SELECTED,
+                sb.append(HU.hidden(ARG_DBID_SELECTED,
                                            dbid.toString()));
             }
 
@@ -2852,13 +2857,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
             addViewHeader(request, entry, sb, "", null);
             sb.append(getPageHandler().showDialogQuestion(msg(msg),
-                    HtmlUtils.submit(msg("Yes"), ARG_DB_DELETECONFIRM)
-                    + HtmlUtils.space(2)
-                    + HtmlUtils.submit(msg("Cancel"), ARG_DB_LIST)));
+                    HU.submit(msg("Yes"), ARG_DB_DELETECONFIRM)
+                    + HU.space(2)
+                    + HU.submit(msg("Cancel"), ARG_DB_LIST)));
             addViewFooter(request, entry, sb);
         }
 
-        sb.append(HtmlUtils.formClose());
+        sb.append(HU.formClose());
 
         return new Result(getTitle(request, entry), sb);
     }
@@ -3318,7 +3323,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 
         String url =
-            HtmlUtils.url(request.makeUrl(getRepository().URL_ENTRY_SHOW),
+            HU.url(request.makeUrl(getRepository().URL_ENTRY_SHOW),
                           new String[] {
             ARG_ENTRYID, entry.getId(), ARG_DBID, (String) values[IDX_DBID],
             ARG_DB_EDITFORM, "true"
@@ -3494,43 +3499,43 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
         StringBuilder sb = new StringBuilder();
         makeForm(request, entry, sb);
-        sb.append(HtmlUtils.hidden(ARG_DB_ACTION, ACTION_EMAIL));
-        sb.append(HtmlUtils.submit(msg("Send Message")));
-        sb.append(HtmlUtils.space(2));
-        sb.append(HtmlUtils.submit(msg("Cancel"), ARG_DB_LIST));
-        sb.append(HtmlUtils.formTable());
+        sb.append(HU.hidden(ARG_DB_ACTION, ACTION_EMAIL));
+        sb.append(HU.submit(msg("Send Message")));
+        sb.append(HU.space(2));
+        sb.append(HU.submit(msg("Cancel"), ARG_DB_LIST));
+        sb.append(HU.formTable());
 
         for (Object[] values : valueList) {
             String toId = (String) values[IDX_DBID];
-            sb.append(HtmlUtils.hidden(ARG_DBID_SELECTED, toId));
+            sb.append(HU.hidden(ARG_DBID_SELECTED, toId));
         }
 
 
-        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+        sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(formEntry(request, msgLabel("From name"),
-                            HtmlUtils.input(ARG_EMAIL_FROMNAME,
+                            HU.input(ARG_EMAIL_FROMNAME,
                                             request.getUser().getName(),
-                                            HtmlUtils.SIZE_40)));
+                                            HU.SIZE_40)));
         sb.append(formEntry(request, msgLabel("From email"),
-                            HtmlUtils.input(ARG_EMAIL_FROMADDRESS,
+                            HU.input(ARG_EMAIL_FROMADDRESS,
                                             request.getUser().getEmail(),
-                                            HtmlUtils.SIZE_40)));
-        String bcc = HtmlUtils.checkbox(ARG_EMAIL_BCC, "true", false)
-                     + HtmlUtils.space(1) + msg("Send as BCC");
+                                            HU.SIZE_40)));
+        String bcc = HU.checkbox(ARG_EMAIL_BCC, "true", false)
+                     + HU.space(1) + msg("Send as BCC");
 
         sb.append(
             formEntry(
                 request, msgLabel("Subject"),
-                HtmlUtils.input(ARG_EMAIL_SUBJECT, "", HtmlUtils.SIZE_40)
-                + HtmlUtils.space(2) + bcc));
+                HU.input(ARG_EMAIL_SUBJECT, "", HU.SIZE_40)
+                + HU.space(2) + bcc));
         sb.append(
-            HtmlUtils.formEntryTop(
+            HU.formEntryTop(
                 msgLabel("Message"),
-                HtmlUtils.textArea(ARG_EMAIL_MESSAGE, "", 30, 60)));
-        sb.append(HtmlUtils.formTableClose());
-        sb.append(HtmlUtils.submit(msg("Send Message")));
-        sb.append(HtmlUtils.formTableClose());
-        sb.append(HtmlUtils.formClose());
+                HU.textArea(ARG_EMAIL_MESSAGE, "", 30, 60)));
+        sb.append(HU.formTableClose());
+        sb.append(HU.submit(msg("Send Message")));
+        sb.append(HU.formTableClose());
+        sb.append(HU.formClose());
 
         return new Result(getTitle(request, entry), sb);
     }
@@ -3576,12 +3581,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         StringBuilder sb = new StringBuilder();
         String xmlUrl = getViewUrl(request, entry, dbRowId.toString())
                         + "&result=xml";
-        rowId = HtmlUtils.squote(rowId);
-        divId = HtmlUtils.squote(divId);
-        String popupId = HtmlUtils.squote("dbrowpopup_" + entry.getId());
-        sb.append(HtmlUtils.onMouseClick(HtmlUtils.call("DB.rowClick",
-                HtmlUtils.comma("event", rowId, popupId,
-                                HtmlUtils.squote(xmlUrl)))));
+        rowId = HU.squote(rowId);
+        divId = HU.squote(divId);
+        String popupId = HU.squote("dbrowpopup_" + entry.getId());
+        sb.append(HU.onMouseClick(HU.call("DB.rowClick",
+                HU.comma("event", rowId, popupId,
+                                HU.squote(xmlUrl)))));
 
         return sb.toString();
     }
@@ -3669,9 +3674,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     protected void addStyleSheet(Request request, Appendable sb) throws Exception {
 	if(request.getExtraProperty("added dbjs")==null) {
 	    request.putExtraProperty("added dbjs","true");
-	    HtmlUtils.cssLink(sb,
+	    HU.cssLink(sb,
 			      getPageHandler().makeHtdocsUrl("/db/dbstyle.css"));
-	    HtmlUtils.importJS(sb, getPageHandler().makeHtdocsUrl("/db/db.js"));
+	    HU.importJS(sb, getPageHandler().makeHtdocsUrl("/db/db.js"));
 	}
     }
 
@@ -3688,14 +3693,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                    String... extraAttrs)
             throws Exception {
         StringBuilder attrs = new StringBuilder();
-        HtmlUtils.cssClass(attrs, CSS_DB_TABLEHEADER);
+        HU.cssClass(attrs, CSS_DB_TABLEHEADER);
         for (String attr : extraAttrs) {
             attrs.append(" ");
             attrs.append(attr);
         }
-        HtmlUtils.col(
-            sb, HtmlUtils.div(
-                contents, HtmlUtils.cssClass(
+        HU.col(
+            sb, HU.div(
+                contents, HU.cssClass(
                     CSS_DB_TABLEHEADER_INNER)), attrs.toString());
     }
 
@@ -3726,8 +3731,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         StringBuilder    hb           = new StringBuilder();
         if (doForm) {
             String formUrl = request.makeUrl(getRepository().URL_ENTRY_SHOW);
-            hb.append(HtmlUtils.form(formUrl));
-            hb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+            hb.append(HU.form(formUrl));
+            hb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
         }
         boolean canEdit = getAccessManager().canDoEdit(request, entry);
         boolean forPrint       = request.get(ARG_FOR_PRINT, false);
@@ -3777,14 +3782,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
             if ( !isEmbedded(request) && (actions.size() > 0)) {
                 if (doForm) {
-                    hb.append(HtmlUtils.submit(msgLabel("Do"), ARG_DB_DO));
-                    hb.append(HtmlUtils.select(ARG_DB_ACTION, actions));
+                    hb.append(HU.submit(msgLabel("Do"), ARG_DB_DO));
+                    hb.append(HU.select(ARG_DB_ACTION, actions));
                 }
             }
-            HtmlUtils.open(tableHeader, "table", "class", "dbtable",
+            HU.open(tableHeader, "table", "class", "dbtable",
                            "border", "1", "cellspacing", "0", "cellpadding",
                            "0", "width", "100%");
-            HtmlUtils.open(tableHeader, "tr", "valign", "top");
+            HU.open(tableHeader, "tr", "valign", "top");
             if ( !forPrint) {
                 makeTableHeader(tableHeader, "&nbsp;");
             } else {
@@ -3812,23 +3817,23 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 if (sortColumn.equals(sortBy)) {
                     if (asc) {
                         extra = " "
-                                + HtmlUtils.img(
+                                + HU.img(
                                     getRepository().getIconUrl(ICON_UPDART));
                     } else {
                         extra = " "
-                                + HtmlUtils.img(
+                                + HU.img(
                                     getRepository().getIconUrl(
                                         ICON_DOWNDART));
                     }
                     asc = !asc;
                 } else {
                     extra = " "
-                            + HtmlUtils.img(
+                            + HU.img(
                                 getRepository().getIconUrl(ICON_BLANK), "",
-                                HtmlUtils.attr("width", "10"));
+                                HU.attr("width", "10"));
                 }
 
-                String link = HtmlUtils.href(baseUrl + "&" + ARG_DB_SORTBY1
+                String link = HU.href(baseUrl + "&" + ARG_DB_SORTBY1
                                              + "=" + sortColumn + "&"
                                              + ARG_DB_SORTDIR1 + (asc
                         ? "=asc"
@@ -3839,7 +3844,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 makeTableHeader(tableHeader, col);
             }
 
-            HtmlUtils.close(tableHeader, "tr");
+            HU.close(tableHeader, "tr");
         }
 
 
@@ -3887,9 +3892,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             new Hashtable<String, Hashtable<Object, Integer>>();
 
         String popupId = "dbrowpopup_" + entry.getId();
-        hb.append(HtmlUtils.div("",
-                                HtmlUtils.id(popupId)
-                                + HtmlUtils.cssClass("ramadda-popup")));
+        hb.append(HU.div("",
+                                HU.id(popupId)
+                                + HU.cssClass("ramadda-popup")));
 
 
         double[] sum     = new double[columnsToUse.size()];
@@ -3915,54 +3920,54 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             String event = getEventJS(request, entry, values[IDX_DBID],
                                       rowId, divId);
             hb.append("\n");
-            hb.append(HtmlUtils.open(HtmlUtils.TAG_TR, "valign", "top",
+            hb.append(HU.open(HU.TAG_TR, "valign", "top",
                                      "class", (even
                     ? " ramadda-row-even "
                     : " ramadda-row-odd ") + " dbrow ", "id", rowId, "title",
                     "Click to view details"));
 
 	    if(numberEntries) {
-                HtmlUtils.td(hb, "#"+(cnt+1));
+                HU.td(hb, "#"+(cnt+1));
 	    }
 		
             even = !even;
             if ( !forPrint) {
-                HtmlUtils.open(hb, "td", "width", "10", "style",
+                HU.open(hb, "td", "width", "10", "style",
                                "white-space:nowrap;");
-                HtmlUtils.open(hb, "div", "class", "ramadda-db-div", "id",
+                HU.open(hb, "div", "class", "ramadda-db-div", "id",
                                divId);
                 if (doForm) {
                     String call =
-                        HtmlUtils.attr(
-                            HtmlUtils.ATTR_ONCLICK,
-                            HtmlUtils.call(
-                                "HtmlUtils.checkboxClicked",
-                                HtmlUtils.comma(
+                        HU.attr(
+                            HU.ATTR_ONCLICK,
+                            HU.call(
+                                "HU.checkboxClicked",
+                                HU.comma(
                                     "event",
-                                    HtmlUtils.squote(ARG_DBID_SELECTED),
-                                    HtmlUtils.squote(cbxId))));
+                                    HU.squote(ARG_DBID_SELECTED),
+                                    HU.squote(cbxId))));
 
-                    hb.append(HtmlUtils.checkbox(ARG_DBID_SELECTED, dbid,
-                            false, HtmlUtils.id(cbxId) + call));
+                    hb.append(HU.checkbox(ARG_DBID_SELECTED, dbid,
+                            false, HU.id(cbxId) + call));
                 }
                 if (canEdit) {
                     String editUrl = getEditUrl(request, entry, dbid);
                     hb.append(
-                        HtmlUtils.href(
+                        HU.href(
                             editUrl,
-                            HtmlUtils.img(
+                            HU.img(
                                 getRepository().getUrlBase()
                                 + "/db/database_edit.png", msg(
                                     "Edit entry"))));
                 }
                 String viewUrl = getViewUrl(request, entry, dbid);
                 hb.append(
-                    HtmlUtils.href(
+                    HU.href(
                         viewUrl,
-                        HtmlUtils.img(
+                        HU.img(
                             getRepository().getUrlBase()
                             + "/db/database_go.png", msg("View entry"))));
-                HtmlUtils.close(hb, "div", "td");
+                HU.close(hb, "div", "td");
             }
 
 
@@ -3986,16 +3991,16 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     }
                 }
                 if (column.isString()) {
-                    HtmlUtils.open(hb, "td",
+                    HU.open(hb, "td",
                                    event
-                                   + HtmlUtils.attr("class", "dbtablecell"));
+                                   + HU.attr("class", "dbtablecell"));
                 } else if (column.isNumeric()) {
-                    HtmlUtils.open(hb, "td", event + "align=right");
+                    HU.open(hb, "td", event + "align=right");
                 } else {
-                    HtmlUtils.open(hb, "td", event);
+                    HU.open(hb, "td", event);
                 }
 
-                HtmlUtils.open(hb, HtmlUtils.TAG_DIV, "class", "dbtablecell");
+                HU.open(hb, HU.TAG_DIV, "class", "dbtablecell");
 
 
                 if (column.isEnumeration()) {
@@ -4014,9 +4019,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                     prefix = new StringBuilder();
                                 }
                                 prefix.append(
-                                    HtmlUtils.img(
+                                    HU.img(
                                         getDbIconUrl(icon), "",
-                                        HtmlUtils.attr("width", "16")));
+                                        HU.attr("width", "16")));
                                 prefix.append(" ");
 
                             }
@@ -4037,8 +4042,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                 if (prefix == null) {
                                     prefix = new StringBuilder();
                                 }
-                                prefix.append(HtmlUtils.span(content,
-                                        HtmlUtils.style(style)));
+                                prefix.append(HU.span(content,
+                                        HU.style(style)));
                             }
                         }
                         if (prefix != null) {
@@ -4073,8 +4078,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                         + sourceColumn)));
                     hb.append("&nbsp;");
                 }
-                HtmlUtils.close(hb, HtmlUtils.TAG_DIV);
-                HtmlUtils.close(hb, HtmlUtils.TAG_TD);
+                HU.close(hb, HU.TAG_DIV);
+                HU.close(hb, HU.TAG_TD);
 
                 if (column.isEnumeration() && column.getDoStats()) {
                     Hashtable<Object, Integer> numUniques =
@@ -4092,46 +4097,46 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
             }
             for (String col : extraCols) {
-                HtmlUtils.open(hb, HtmlUtils.TAG_TD, "");
-                HtmlUtils.close(hb, HtmlUtils.TAG_TD);
+                HU.open(hb, HU.TAG_TD, "");
+                HU.close(hb, HU.TAG_TD);
             }
             hb.append("</tr>");
         }
 
         if ( !forPrint && (valueList.size() > 0)) {
-            HtmlUtils.comment(hb, "summmary");
-            HtmlUtils.open(hb, "tr", "valign", "top");
-            HtmlUtils.tag(hb, "td", HtmlUtils.attrs("align", "right"),
+            HU.comment(hb, "summmary");
+            HU.open(hb, "tr", "valign", "top");
+            HU.tag(hb, "td", HU.attrs("align", "right"),
                           "#" + valueList.size());
             for (int i = 0; i < columnsToUse.size(); i++) {
                 Column column = columnsToUse.get(i);
                 if (column.isNumeric() && column.getDoStats()) {
                     double  avg   = sum[i] / valueList.size();
                     boolean round = column.isInteger();
-                    HtmlUtils.open(hb, "td", "class", "dbtable-summary");
-                    hb.append(HtmlUtils.formTable());
-                    hb.append(HtmlUtils.formEntry("Average:",
+                    HU.open(hb, "td", "class", "dbtable-summary");
+                    hb.append(HU.formTable());
+                    hb.append(HU.formEntry("Average:",
                             format(avg, round)));
-                    hb.append(HtmlUtils.formEntry("Minimum:",
+                    hb.append(HU.formEntry("Minimum:",
                             format(min[i], round)));
-                    hb.append(HtmlUtils.formEntry("Maximum:",
+                    hb.append(HU.formEntry("Maximum:",
                             format(max[i], round)));
-                    hb.append(HtmlUtils.formEntry("Total:",
+                    hb.append(HU.formEntry("Total:",
                             format(sum[i], round)));
-                    HtmlUtils.close(hb, "table", "td");
+                    HU.close(hb, "table", "td");
                 } else if (column.isEnumeration() && column.getDoStats()) {
                     Hashtable<Object, Integer> numUniques =
                         uniques.get(column.getName());
                     if (numUniques == null) {
                         continue;
                     }
-                    HtmlUtils.open(hb, "td", "class", "dbtable-summary");
-                    hb.append(HtmlUtils.formTable());
+                    HU.open(hb, "td", "class", "dbtable-summary");
+                    hb.append(HU.formTable());
                     int rowCnt = 0;
                     for (Enumeration keys = numUniques.keys();
                             keys.hasMoreElements(); ) {
                         if (rowCnt++ > 10) {
-                            hb.append(HtmlUtils.formEntry("", "..."));
+                            hb.append(HU.formEntry("", "..."));
 
                             break;
                         }
@@ -4140,24 +4145,24 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         if (key.toString().length() == 0) {
                             key = "&lt;blank&gt;";
                         }
-                        hb.append(HtmlUtils.formEntry(key + ":",
+                        hb.append(HU.formEntry(key + ":",
                                 value.toString()));
                     }
-                    HtmlUtils.close(hb, "table", "td");
+                    HU.close(hb, "table", "td");
                 } else {
-                    HtmlUtils.tag(hb, "td", "", "&nbsp;");
+                    HU.tag(hb, "td", "", "&nbsp;");
                 }
             }
             for (String col : extraCols) {
-                HtmlUtils.open(hb, HtmlUtils.TAG_TD, "");
-                HtmlUtils.close(hb, HtmlUtils.TAG_TD);
+                HU.open(hb, HU.TAG_TD, "");
+                HU.close(hb, HU.TAG_TD);
             }
 
-            HtmlUtils.close(hb, "tr");
-            HtmlUtils.close(hb, "table");
+            HU.close(hb, "tr");
+            HU.close(hb, "table");
         } else {
             if ( !fromSearch) {
-                hb.append(HtmlUtils.br());
+                hb.append(HU.br());
                 hb.append(
                     getPageHandler().showDialogNote(
                         msgLabel("No entries in")
@@ -4167,7 +4172,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     getPageHandler().showDialogNote(msg("Nothing found")));
             }
         }
-        hb.append(HtmlUtils.formClose());
+        hb.append(HU.formClose());
         sb.append(hb.toString());
     }
 
@@ -4291,7 +4296,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         int           numGroupByColumns = groupByColumns.size();
         StringBuilder hb                = new StringBuilder();
         if (valueList.size() > 0) {
-            HtmlUtils.open(hb, "table", "class", "dbtable", "border", "1",
+            HU.open(hb, "table", "class", "dbtable", "border", "1",
                            "cellspacing", "0", "cellpadding", "0");
         }
         boolean       addPercent = request.get(ARG_AGG_PERCENT, false);
@@ -4327,7 +4332,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         for (int cnt = 0; cnt < valueList.size(); cnt++) {
             Object[] values = valueList.get(cnt);
             if (cnt == 0) {
-                HtmlUtils.open(hb, "tr", "valign", "top", "class", "dbrow");
+                HU.open(hb, "tr", "valign", "top", "class", "dbrow");
                 for (int cnt2 = 0; cnt2 < values.length; cnt2++) {
                     Object obj = values[cnt2];
                     makeTableHeader(hb, "" + obj);
@@ -4336,9 +4341,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         makeTableHeader(hb, "Percent");
                     }
                 }
-                HtmlUtils.close(hb, "tr");
+                HU.close(hb, "tr");
             } else {
-                HtmlUtils.open(cb, "tr", "valign", "top", "class", "dbrow");
+                HU.open(cb, "tr", "valign", "top", "class", "dbrow");
                 int col = 0;
                 for (int i = 0; i < values.length; i++) {
                     Object obj           = values[i];
@@ -4350,34 +4355,34 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     //              System.err.println(groupByColumn + " " + unit +" " + prefix);
                     if (obj instanceof Double) {
                         double d = (Double) obj;
-                        HtmlUtils.td(cb, format((Double) obj, false),
+                        HU.td(cb, format((Double) obj, false),
                                      "align=right");
                         if (addPercent) {
                             if (sum[col] != 0) {
-                                HtmlUtils.td(cb,
+                                HU.td(cb,
                                              pfmt.format(100 * d / sum[col])
                                              + "%", "align=right");
                             } else {
-                                HtmlUtils.td(cb, "NA");
+                                HU.td(cb, "NA");
                             }
                         }
                     } else if (obj instanceof Integer) {
                         int d = (Integer) obj;
-                        HtmlUtils.td(cb, obj.toString(), "align=right");
+                        HU.td(cb, obj.toString(), "align=right");
                         if (addPercent) {
                             if (sum[col] != 0) {
-                                HtmlUtils.td(cb,
+                                HU.td(cb,
                                              pfmt.format(100 * d / sum[col])
                                              + "%", "align=right");
                             } else {
-                                HtmlUtils.td(cb, "NA");
+                                HU.td(cb, "NA");
                             }
                         }
                     } else {
-                        HtmlUtils.open(cb, "td");
-                        HtmlUtils.open(
+                        HU.open(cb, "td");
+                        HU.open(
                             cb, "div",
-                            HtmlUtils.cssClass("db-group-table-cell"));
+                            HU.cssClass("db-group-table-cell"));
                         String s = "" + obj;
                         if (s.length() == 0) {
                             s = "&lt;blank&gt;";
@@ -4390,7 +4395,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                 value = groupByColumn.getEnumValue(value);
                             }
                             String url =
-                                HtmlUtils
+                                HU
                                     .url(request
                                         .makeUrl(getRepository()
                                             .URL_ENTRY_SHOW), new String[] {
@@ -4405,14 +4410,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                 url += "&" + ARG_DB_SORTBY1 + "="
                                        + dbInfo.getDfltSortColumn().getName();
                             }
-                            s = HtmlUtils.href(
+                            s = HU.href(
                                 url, s,
-                                HtmlUtils.attr("title", "Click to search")
-                                + HtmlUtils.cssClass("ramadda-db-link"));
+                                HU.attr("title", "Click to search")
+                                + HU.cssClass("ramadda-db-link"));
                         }
                         cb.append(s);
-                        HtmlUtils.close(cb, "div");
-                        HtmlUtils.close(cb, "td");
+                        HU.close(cb, "div");
+                        HU.close(cb, "td");
                     }
                     col++;
                 }
@@ -4422,28 +4427,28 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         if (valueList.size() > 0) {
             hb.append(cb);
-            HtmlUtils.open(hb, "tr", "valign", "top", "class", "dbrow");
+            HU.open(hb, "tr", "valign", "top", "class", "dbrow");
             for (int i = 0; i < sum.length; i++) {
                 if (i < numGroupByColumns) {
-                    HtmlUtils.td(hb, "Total", "style=\"background:#eee;\"");
+                    HU.td(hb, "Total", "style=\"background:#eee;\"");
                 } else {
                     if (Double.isNaN(sum[i])) {
-                        HtmlUtils.td(hb, "NA", "style=\"background:#eee;\"");
+                        HU.td(hb, "NA", "style=\"background:#eee;\"");
                     } else {
-                        HtmlUtils.td(
+                        HU.td(
                             hb, format(sum[i], false),
                             "align=right  style=\"background:#eee;\"");
                     }
                     if ((i >= numGroupByColumns) && addPercent) {
-                        HtmlUtils.td(hb, "", "style=\"background:#eee;\"");
+                        HU.td(hb, "", "style=\"background:#eee;\"");
                     }
                 }
             }
             //      if (addPercent) {
-            //          HtmlUtils.td(hb, "&nbsp;",  "style=\"background:#eee;\"");
+            //          HU.td(hb, "&nbsp;",  "style=\"background:#eee;\"");
             //      }
-            HtmlUtils.close(hb, "tr");
-            HtmlUtils.close(hb, "table");
+            HU.close(hb, "tr");
+            HU.close(hb, "table");
         } else {
             hb.append(getPageHandler().showDialogNote(msg("Nothing found")));
         }
@@ -4516,7 +4521,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     //                    value = "\"" + value + "\"";
                 }
                 String url =
-                    HtmlUtils.url(
+                    HU.url(
                         request.makeUrl(getRepository().URL_ENTRY_SHOW),
                         new String[] {
                     ARG_ENTRYID, entry.getId(), ARG_DB_SEARCH, "true",
@@ -4531,10 +4536,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 }
 
                 if (addLink) {
-                    html = HtmlUtils.href(
+                    html = HU.href(
                         url, html,
-                        HtmlUtils.attr("title", "Click to search")
-                        + HtmlUtils.cssClass("ramadda-db-link"));
+                        HU.attr("title", "Click to search")
+                        + HU.cssClass("ramadda-db-link"));
                 }
             }
         }
@@ -4645,7 +4650,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      * @return _more_
      */
     protected String getEditUrl(Request request, Entry entry, String dbid) {
-        return HtmlUtils.url(request.makeUrl(getRepository().URL_ENTRY_SHOW),
+        return HU.url(request.makeUrl(getRepository().URL_ENTRY_SHOW),
                              new String[] {
             ARG_ENTRYID, entry.getId(), ARG_DBID, dbid, ARG_DB_EDITFORM,
             "true"
@@ -4662,10 +4667,32 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      * @return _more_
      */
     protected String getViewUrl(Request request, Entry entry, String dbid) {
-        return HtmlUtils.url(request.makeUrl(getRepository().URL_ENTRY_SHOW),
+        return HU.url(request.makeUrl(getRepository().URL_ENTRY_SHOW),
                              new String[] {
             ARG_ENTRYID, entry.getId(), ARG_DBID, dbid, ARG_DB_ENTRY, "true"
         });
+    }
+
+    private static class Location {
+	boolean bbox             = true;
+	boolean hasLocation = true;
+	double latitude;
+	double longitude;
+	double north, west, south, east;
+
+	public void init() {
+	    latitude = longitude = north = west = east=south   = Double.NaN;
+	}
+	public boolean hasLocation() {
+	    return hasPoint()||hasBounds();
+	}
+	public boolean hasPoint() {
+	    return !Double.isNaN(latitude) && !Double.isNaN(longitude);
+	}
+	public boolean hasBounds() {
+	    return !Double.isNaN(north) && !Double.isNaN(west)&& !Double.isNaN(south)
+		&& !Double.isNaN(east);
+	}		
     }
 
     /**
@@ -4685,6 +4712,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             throws Exception {
 
         boolean       forPrint   = request.get(ARG_FOR_PRINT, false);
+        boolean       doTile = request.get(ARG_TILE_ENTRIES,false);
         DbInfo        dbInfo     = getDbInfo();
         Hashtable     entryProps = getProperties(entry);
         boolean canEdit = getAccessManager().canDoEdit(request, entry);
@@ -4701,10 +4729,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                    valueList.size(), fromSearch, links);
         }
 
-
         Column  theColumn        = null;
         Column  searchColumn     = null;
-        boolean bbox             = true;
+	final Location location = new Location();
 
         String  searchFrom       = request.getString(ARG_SEARCH_FROM, null);
         String  searchColumnName = null;
@@ -4742,7 +4769,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                            "ramadda-clickable"));
 
             sb.append(HU.space(2) + href + HU.space(2) + clear);
-        }
+	}
 
         for (Column column : tableHandler.getColumns()) {
             if ((searchColumnName != null)
@@ -4755,10 +4782,47 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
             if (column.getType().equals(Column.DATATYPE_LATLON)) {
                 theColumn = column;
-                bbox      = false;
+                location.bbox      = false;
                 break;
             }
         }
+
+
+	Utils.BiConsumer<Column,Object[]>  getLocation =  new Utils.BiConsumer<Column,Object[]>() {
+		public void accept(Column theColumn, Object[] values){
+		    location.init();
+		    if (theColumn == null) {
+			location.latitude  = dbInfo.getLatColumn().getDouble(values);
+			location.longitude  = dbInfo.getLonColumn().getDouble(values);
+		    } else {
+			if ( !location.bbox) {
+			    //Check if the lat/lon is defined
+			    if ( !theColumn.hasLatLon(values)) {
+				return;
+			    }
+			    double[] ll = theColumn.getLatLon(values);
+			    location.latitude = ll[0];
+			    location.longitude = ll[1];
+			} else {
+			    if ( !theColumn.hasLatLonBox(values)) {
+				return;
+			    }
+			    double[] ll = theColumn.getLatLonBbox(values);
+			    location.north = ll[0];
+			    location.west  = ll[1];
+			    location.south = ll[2];
+			    location.east  = ll[3];
+			}
+		    }
+		}
+
+
+	    };
+
+
+
+
+
 
         if ((theColumn == null) && (dbInfo.getLatColumn() == null)
                 && (dbInfo.getLonColumn() == null)) {
@@ -4807,9 +4871,30 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             Utils.split(request.getString(ARG_EXTRA_COLUMNS, ""), "\n", true,
                         true);
         List<List> lists;
-
-        if (forPrint) {
-            lists = (List<List>) Utils.splitList(valueList, entriesPerPage+1);
+	if (forPrint) {
+	    if(doTile) {
+		List<GeoUtils.TiledObject> tiledObjects = new ArrayList<GeoUtils.TiledObject>();
+		for (Object[] value : valueList) {
+		    getLocation.accept(theColumn, value);
+		    if(location.hasPoint()) {
+			tiledObjects.add(new GeoUtils.TiledObject(value,location.latitude,location.longitude));
+		    } else 	if(location.hasBounds()) {
+			//TODO
+			//tiledObjects.add(new Utils.TiledObject(value,location.latitude,location.longitude);
+		    }
+		}
+		List<GeoUtils.Tile> tiles = GeoUtils.tile(tiledObjects,5);
+		lists = new ArrayList<List>();
+		for(GeoUtils.Tile tile: tiles)  {
+		    List l = new ArrayList();
+		    for(GeoUtils.TiledObject obj: tile.getObjects()) {
+			l.add(obj.getObject());
+		    }
+		    lists.addAll((List<List>) Utils.splitList(l, entriesPerPage+1));
+		}
+	    } else {
+		lists = (List<List>) Utils.splitList(valueList, entriesPerPage+1);
+	    }
         } else {
             lists = new ArrayList<List>();
             lists.add(valueList);
@@ -4817,20 +4902,21 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         int cnt=0;
 	int listCnt = 0;
-
 	for (List listValues : lists) {
 	    if(forPrint && listCnt>0) {
-                sb.append("<div class=pagebreak></div>\n");
-		addViewHeader(request, entry, sb, VIEW_MAP,
-			      valueList.size(), fromSearch, links);
+		sb.append("<div class=pagebreak></div>\n");
+		addViewHeader(request, entry, sb, VIEW_MAP,    valueList.size(), fromSearch, links);
 	    }
 	    listCnt++;
 	    
-            String mapDisplayId = "mapDisplay_" + Utils.getGuid();
-            props.put("displayDiv", mapDisplayId);
+	    String mapDisplayId = "mapDisplay_" + Utils.getGuid();
+	    props.put("displayDiv", mapDisplayId);
             MapInfo map = getRepository().getMapManager().createMap(request,
 								    entry, width, height, false, props);
-	    //	    map.addProperty("linked","true");
+
+            boolean simpleMap = request.get("simpleMap", false);
+            StringBuilder entryList = new StringBuilder();
+	    String listId = HU.getUniqueId("list_");
 	    //Add the search bounding box if defined
 	    for (Column column : tableHandler.getColumns()) {
 		if(column.isType(column.DATATYPE_LATLON)) {
@@ -4850,16 +4936,16 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    }
 
 
-            StringBuilder entryList = new StringBuilder();
+
             if ( !forPrint) {
                 sb.append(
-                    HtmlUtils.cssBlock(
+                    HU.cssBlock(
                         "\n.db-map-list-inner {max-height: " + height
                         + "px; overflow-y: auto; overflow-x:auto; }\n\n"));
-            } else {}
+            } 
 	    entryList.append("\n");
-            HtmlUtils.open(entryList, "div", "class", "db-map-list-outer");
-            HtmlUtils.open(entryList, "div", "class", "db-map-list-inner");
+            HU.open(entryList, "div", "class", "db-map-list-outer","id",listId);
+            HU.open(entryList, "div", "class", "db-map-list-inner");
 	    entryList.append("\n");
             StringBuilder                    theSB  = entryList;
             Hashtable<String, StringBuilder> catMap = null;
@@ -4881,42 +4967,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             for (Object obj : listValues) {
                 Object[] values = (Object[]) obj;
                 String   dbid   = (String) values[IDX_DBID];
-                double   lat    = 0;
-                double   lon    = 0;
-                double
-                    north       = 0,
-                    west        = 0,
-                    south       = 0,
-                    east        = 0;
-                if (theColumn == null) {
-                    lat  = dbInfo.getLatColumn().getDouble(values);
-                    lon  = dbInfo.getLonColumn().getDouble(values);
-                    bbox = false;
-                } else {
-                    if ( !bbox) {
-                        //Check if the lat/lon is defined
-                        if ( !theColumn.hasLatLon(values)) {
-                            continue;
-                        }
-                        double[] ll = theColumn.getLatLon(values);
-                        lat = ll[0];
-                        lon = ll[1];
-                    } else {
-                        if ( !theColumn.hasLatLonBox(values)) {
-                            continue;
-                        }
-                        double[] ll = theColumn.getLatLonBbox(values);
-                        north = ll[0];
-                        west  = ll[1];
-                        south = ll[2];
-                        east  = ll[3];
-                    }
-                }
-
-                if (bbox) {
+		getLocation.accept(theColumn, values);
+		if(!location.hasLocation()) continue;
+                if (location.hasBounds()) {
                     map.addBox("", "", "",
-                               new MapBoxProperties("red", false), north,
-                               west, south, east);
+                               new MapBoxProperties("red", false), location.north,
+                               location.west, location.south, location.east);
                 }
                 if (getDbInfo().getMapCategoryColumn() != null) {
                     String cat =
@@ -4939,7 +4995,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 String attrIcon  = getIconFor(entry, entryProps, values);
                 if (attrIcon != null) {
                     iconToUse = getDbIconUrl(attrIcon);
-                    //                theSB.append(HtmlUtils.img(iconToUse,"", "width=16"));
+                    //                theSB.append(HU.img(iconToUse,"", "width=16"));
                 }
                 String extraLabel = "";
                 if (searchColumn != null) {
@@ -4965,7 +5021,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 }
                 String viewUrl = getViewUrl(request, entry, dbid);
                 if ( !forPrint) {
-                    theSB.append(HtmlUtils.href(viewUrl,HU.img(iconToUse, msg("View entry"), "width=16")));
+                    theSB.append(HU.href(viewUrl,HU.img(iconToUse, msg("View entry"), "width=16")));
                 }
                 theSB.append(" ");
                 String label = getMapLabel(request, entry, values, sdf,
@@ -4986,60 +5042,59 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 }
 
 
-                if ( !bbox) {
-		    if(lat==0 && lon==0) continue;
+                if (location.hasPoint()) {
 		    if(useDot) {
-			map.addCircle(dbid,  lat,  lon, radius,
+			map.addCircle(dbid,  location.latitude,  location.longitude, radius,
 				      0,"#fff",
 				      "blue",mapInfo);
 		    } else {
-			map.addMarker(dbid, lat, lon, ((polygonColumn != null)
+			map.addMarker(dbid, location.latitude, location.longitude, ((polygonColumn != null)
                             ? polygonColumn.getString(values)
                             : null), useDot
                                      ? "dot"
                                      : iconToUse, mapLabel, mapInfo, null);
 		    }
-                } else {
+                } else if(location.hasBounds()) {
                     if ( !makeRectangles) {
-                        map.addMarker(dbid, new LatLonPointImpl(south, east),
+                        map.addMarker(dbid, new LatLonPointImpl(location.south, location.east),
                                       iconToUse, mapLabel, mapInfo);
                     } else {
-                        map.addMarker(dbid, new LatLonPointImpl(south
-                                + (north - south) / 2, west
-                                    + (east - west)
+                        map.addMarker(dbid, new LatLonPointImpl(location.south
+                                + (location.north - location.south) / 2, location.west
+                                    + (location.east - location.west)
                                       / 2), mapLabel, icon, mapInfo);
                     }
                 }
             }
-            boolean simpleMap = request.get("simpleMap", false);
             if (catMap != null) {
                 boolean open = true;
                 for (String cat : cats) {
                     StringBuilder catSB = catMap.get(cat);
-                    String content = HtmlUtils.insetLeft(catSB.toString(),
+                    String content = HU.insetLeft(catSB.toString(),
                                          20);
-                    entryList.append(HtmlUtils.makeShowHideBlock(cat,
+                    entryList.append(HU.makeShowHideBlock(cat,
                             content, open));
                     open = false;
                 }
             }
 	    entryList.append("\n");
-            entryList.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
-            entryList.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+            entryList.append(HU.close(HU.TAG_DIV));
+            entryList.append(HU.close(HU.TAG_DIV));
 	    entryList.append("\n");
-
 	    map.center();
-            if ( !simpleMap) {
-                HtmlUtils.open(sb, "table", "border","1","class",
+            if (simpleMap) {
+                sb.append(map.getHtml());
+	    } else {
+                HU.open(sb, "table", "class",
                                " db-map-table " + (forPrint
                         ? " db-map-table-print "
                         : ""), "cellpadding", "0", "border", "0", "width",
                                "100%");
 		sb.append("\n");
-                HtmlUtils.open(sb, "tr", "valign", "top");
-                HtmlUtils.col(sb, entryList.toString(),
+                HU.open(sb, "tr", "valign", "top");
+                HU.col(sb, entryList.toString(),
 			       HU.clazz("db-map-column")
-			       + HtmlUtils.attr("width",
+			       + HU.attr("width",
 						leftWidth));
 		HU.col(sb,map.getHtml(),  HU.clazz("db-map-column") + mapAttrs+HU.attr("align","center"));
                 if ( !forPrint) {
@@ -5055,20 +5110,15 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         searchLink + "<div id=\"" + mapDisplayId
                         + "\" style=\"width:250px;max-width:250px;overflow-x:hidden;max-height:"
                         + height + "px; overflow-y:auto;\"></div>";
-                    sb.append(HtmlUtils.col(rightDiv, HU.clazz("db-map-column") +HU.attr("width","250")));
+                    sb.append(HU.col(rightDiv, HU.clazz("db-map-column") +HU.attr("width","250")));
                 }
-                HtmlUtils.close(sb, "tr", "table");
-            } else {
-                sb.append(map.getHtml());
+                HU.close(sb, "tr", "table");
 	    }
-            String js =
-		map.getVariableName()+  ".highlightMarkers('.db-map-list-outer .db-map-list-entry');";
-	    sb.append(HtmlUtils.script(JQuery.ready(js)));
+	    
+	    String js =	map.getVariableName()+  ".highlightMarkers( '#" + listId+"  .db-map-list-entry');";
+	    sb.append(HU.script(JQuery.ready(js)));
 	}
 	
-
-
-
 
         if ( !isEmbedded(request) && !forPrint) {
             addViewFooter(request, entry, sb);
@@ -5428,7 +5478,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 newRequest.put("mapBounds", bounds);
             }
             if (newRequest.defined(ARG_DB_SEARCHNAME)) {
-                HtmlUtils.sectionHeader(
+                HU.sectionHeader(
                     sb, newRequest.getString(ARG_DB_SEARCHNAME, ""));
             }
             if (newRequest.defined(ARG_DB_SEARCHDESC)) {
@@ -5504,7 +5554,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      */
     public String getHref(Request request, Entry entry, String view,
                           String label) {
-        return HtmlUtils.href(getUrl(request, entry, view), label);
+        return HU.href(getUrl(request, entry, view), label);
     }
 
     /**
@@ -5520,7 +5570,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      */
     public String getHref(Request request, Entry entry, String view,
                           String label, String suffix) {
-        return HtmlUtils.href(getUrl(request, entry, view, suffix), label);
+        return HU.href(getUrl(request, entry, view, suffix), label);
     }
 
 
@@ -5549,7 +5599,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      */
     public String getUrl(Request request, Entry entry, String view,
                          String suffix) {
-        return HtmlUtils.url(request.makeUrl(getRepository().URL_ENTRY_SHOW)
+        return HU.url(request.makeUrl(getRepository().URL_ENTRY_SHOW)
                              + suffix, new String[] { ARG_ENTRYID,
                 entry.getId(), ARG_DB_VIEW, view });
     }
@@ -5625,14 +5675,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             if (label.length() == 0) {
                 label = "NA";
             }
-            String href = HtmlUtils.href(url, label);
+            String href = HU.href(url, label);
 
             /*
               if (canEdit) {
               String editUrl = getEditUrl(request, entry, dbid);
-              href = HtmlUtils.href(
+              href = HU.href(
               editUrl,
-              HtmlUtils.img(
+              HU.img(
               getRepository().getUrlBase()
               + "/db/database_edit.png", msg("Edit entry"))) + " "
               + href;
@@ -5642,11 +5692,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             String rowId = "row_" + values[IDX_DBID];
             String event = getEventJS(request, entry, values[IDX_DBID],
                                       rowId, rowId);
-            href = HtmlUtils.div(href,
-                                 HtmlUtils.cssClass("dbcategoryrow")
-                                 + HtmlUtils.id(rowId) + event);
+            href = HU.div(href,
+                                 HU.cssClass("dbcategoryrow")
+                                 + HU.id(rowId) + event);
             //            getHtml(request, html, entry, values);
-            String block = HtmlUtils.makeShowHideBlock(href, html.toString(),
+            String block = HU.makeShowHideBlock(href, html.toString(),
                                false);
             calEntries.add(new CalendarOutputHandler.CalendarEntry(date,
                     href, href));
@@ -5925,12 +5975,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 for (Column column : tableHandler.getColumns()) {
                     if (column.getType().equals(Column.DATATYPE_LATLONBBOX)) {
                         theColumn = column;
-
                         break;
                     }
                     if (column.getType().equals(Column.DATATYPE_LATLON)) {
                         theColumn = column;
-
                         break;
                     }
                 }
@@ -6137,10 +6185,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      * @return _more_
      */
     public String makeForm(Request request, Entry entry, Appendable sb) {
-        String formId  = HtmlUtils.getUniqueId("entryform_");
+        String formId  = HU.getUniqueId("entryform_");
         String formUrl = request.makeUrl(getRepository().URL_ENTRY_SHOW);
-        Utils.append(sb, HtmlUtils.uploadForm(formUrl, HtmlUtils.id(formId)));
-        Utils.append(sb, HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+        Utils.append(sb, HU.uploadForm(formUrl, HU.id(formId)));
+        Utils.append(sb, HU.hidden(ARG_ENTRYID, entry.getId()));
         return formId;
     }
 
@@ -6176,53 +6224,53 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         Object[]      values     = null;
         if (dbid != null) {
             values = getValues(entry, dbid);
-            formBuffer.append(HtmlUtils.hidden(ARG_DBID, dbid));
-            formBuffer.append(HtmlUtils.hidden(ARG_DBID_SELECTED, dbid));
+            formBuffer.append(HU.hidden(ARG_DBID, dbid));
+            formBuffer.append(HU.hidden(ARG_DBID_SELECTED, dbid));
         }
 
         StringBuilder buttons = new StringBuilder();
         if (doAnonForm) {
-            buttons.append(HtmlUtils.submit(msg("Submit"), ARG_DB_CREATE));
+            buttons.append(HU.submit(msg("Submit"), ARG_DB_CREATE));
         } else if (forEdit) {
             if (dbid == null) {
-                buttons.append(HtmlUtils.submit(msg("Create entry"),
+                buttons.append(HU.submit(msg("Create entry"),
                         ARG_DB_CREATE));
-                buttons.append(HtmlUtils.buttonSpace());
+                buttons.append(HU.buttonSpace());
             } else {
-                buttons.append(HtmlUtils.submit(msg("Edit entry"),
+                buttons.append(HU.submit(msg("Edit entry"),
                         ARG_DB_EDIT));
-                buttons.append(HtmlUtils.buttonSpace());
-                buttons.append(HtmlUtils.submit(msg("Copy entry"),
+                buttons.append(HU.buttonSpace());
+                buttons.append(HU.submit(msg("Copy entry"),
                         ARG_DB_COPY));
-                buttons.append(HtmlUtils.buttonSpace());
-                buttons.append(HtmlUtils.submit(msg("Delete entry"),
+                buttons.append(HU.buttonSpace());
+                buttons.append(HU.submit(msg("Delete entry"),
                         ARG_DB_DELETE));
-                buttons.append(HtmlUtils.buttonSpace());
+                buttons.append(HU.buttonSpace());
             }
-            buttons.append(HtmlUtils.submit(msg("Cancel"), ARG_DB_LIST));
-            buttons.append(HtmlUtils.buttonSpace());
+            buttons.append(HU.submit(msg("Cancel"), ARG_DB_LIST));
+            buttons.append(HU.buttonSpace());
         }
 
 
 
         formBuffer.append(buttons);
-        formBuffer.append(HtmlUtils.formTable());
+        formBuffer.append(HU.formTable());
         FormInfo formInfo = new FormInfo(formId);
         tableHandler.addColumnsToEntryForm(request, formBuffer, entry,
                                            values, formInfo, this);
 
-        formBuffer.append(HtmlUtils.formTableClose());
+        formBuffer.append(HU.formTableClose());
         formBuffer.append(buttons);
-        formBuffer.append(HtmlUtils.formClose());
+        formBuffer.append(HU.formClose());
 
         StringBuilder validateJavascript = new StringBuilder("");
         formInfo.addJavascriptValidation(validateJavascript);
         String script = JQuery.ready(JQuery.submit(JQuery.id(formId),
                             validateJavascript.toString()));
-        formBuffer.append(HtmlUtils.script(script));
+        formBuffer.append(HU.script(script));
 
         if (doAnonForm) {
-            sb.append(entry.getDescription() + HtmlUtils.p() + formBuffer);
+            sb.append(entry.getDescription() + HU.p() + formBuffer);
         } else {
             if (forEdit && (dbid == null)) {
                 createBulkForm(request, entry, sb, formBuffer);
@@ -6278,7 +6326,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                          column.getName()));
         }
         String formId = makeForm(request, entry, sb);
-        sb.append(HtmlUtils.hidden(ARG_DB_EDITSQL, "true"));
+        sb.append(HU.hidden(ARG_DB_EDITSQL, "true"));
 
         boolean        showApply = true;
         List<Object[]> values    = null;
@@ -6330,9 +6378,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     sb.append(
                         getPageHandler().showDialogQuestion(
                             "Are you sure you want to apply the update?",
-                            HtmlUtils.submit(msg("Yes"), ARG_DB_CONFIRM)
+                            HU.submit(msg("Yes"), ARG_DB_CONFIRM)
                             + " "
-                            + HtmlUtils.submit(msg("Cancel"), ARG_CANCEL)));
+                            + HU.submit(msg("Cancel"), ARG_CANCEL)));
                     showApply = false;
                 }
                 try {
@@ -6355,38 +6403,38 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
 
-        sb.append(HtmlUtils.formTable());
+        sb.append(HU.formTable());
         if (showApply) {
             sb.append(
-                HtmlUtils.formEntry(
+                HU.formEntry(
                     "",
-                    HtmlUtils.submit(msg("Apply"), ARG_DB_APPLY) + " "
-                    + HtmlUtils.submit(msg("Test"), ARG_DB_TEST)));
+                    HU.submit(msg("Apply"), ARG_DB_APPLY) + " "
+                    + HU.submit(msg("Test"), ARG_DB_TEST)));
         }
         sb.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 "Set:",
-                HtmlUtils.select(
+                HU.select(
                     ARG_DB_COLUMN, tfos,
                     request.getString(ARG_DB_COLUMN, "")) + " = "
-                        + HtmlUtils.input(
+                        + HU.input(
                             ARG_DB_SETVALUE,
                             request.getString(ARG_DB_SETVALUE, ""),
-                            HtmlUtils.SIZE_20)));
+                            HU.SIZE_20)));
 
         for (int i = 1; i <= 3; i++) {
-            sb.append(HtmlUtils.formEntry((i == 1)
+            sb.append(HU.formEntry((i == 1)
                                           ? "Where:"
-                                          : "", HtmlUtils.select(ARG_DB_WHERECOLUMN
+                                          : "", HU.select(ARG_DB_WHERECOLUMN
                                           + i, tfos1, request.getString(ARG_DB_WHERECOLUMN
-                                              + i, "")) + HtmlUtils.select(ARG_DB_WHEREOP
+                                              + i, "")) + HU.select(ARG_DB_WHEREOP
                                                   + i, ops, request.getString(ARG_DB_WHEREOP
-                                                      + i, "=")) + HtmlUtils.input(ARG_DB_WHEREVALUE
+                                                      + i, "=")) + HU.input(ARG_DB_WHEREVALUE
                                                           + i, request.getString(ARG_DB_WHEREVALUE
-                                                              + i, ""), HtmlUtils.SIZE_20)));
+                                                              + i, ""), HU.SIZE_20)));
         }
-        sb.append(HtmlUtils.formTableClose());
-        sb.append(HtmlUtils.formClose());
+        sb.append(HU.formTableClose());
+        sb.append(HU.formClose());
 
 
         if (values != null) {
@@ -6435,39 +6483,39 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         StringBuilder bulkSB = new StringBuilder();
         makeForm(request, entry, bulkSB);
         StringBuilder bulkButtons = new StringBuilder();
-        bulkButtons.append(HtmlUtils.submit(msg("Create entries"),
+        bulkButtons.append(HU.submit(msg("Create entries"),
                                             ARG_DB_CREATE));
-        bulkButtons.append(HtmlUtils.submit(msg("Cancel"), ARG_DB_LIST));
+        bulkButtons.append(HU.submit(msg("Cancel"), ARG_DB_LIST));
         bulkSB.append(bulkButtons);
-        bulkSB.append(HtmlUtils.p());
+        bulkSB.append(HU.p());
         bulkSB.append(msgLabel("Upload a file"));
-        bulkSB.append(HtmlUtils.formTable());
+        bulkSB.append(HU.formTable());
         bulkSB.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 msgLabel("File"),
-                HtmlUtils.fileInput(ARG_DB_BULK_FILE, HtmlUtils.SIZE_60)));
+                HU.fileInput(ARG_DB_BULK_FILE, HU.SIZE_60)));
         if (request.getUser().getAdmin()) {
             bulkSB.append(
-                HtmlUtils.formEntry(
+                HU.formEntry(
                     msgLabel("Or server side file"),
-                    HtmlUtils.input(
-                        ARG_DB_BULK_LOCALFILE, "", HtmlUtils.SIZE_60)));
+                    HU.input(
+                        ARG_DB_BULK_LOCALFILE, "", HU.SIZE_60)));
         }
         bulkSB.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 msgLabel("Delimiter"),
-                HtmlUtils.input(ARG_DB_BULK_DELIMITER, ",", HtmlUtils.SIZE_5)
-                + HtmlUtils.space(2) + msgLabel("# Header Lines")
-                + HtmlUtils.input(ARG_DB_BULK_SKIP, "1", HtmlUtils.SIZE_5)));
+                HU.input(ARG_DB_BULK_DELIMITER, ",", HU.SIZE_5)
+                + HU.space(2) + msgLabel("# Header Lines")
+                + HU.input(ARG_DB_BULK_SKIP, "1", HU.SIZE_5)));
 
-        bulkSB.append(HtmlUtils
-            .formEntry("", HtmlUtils
-                .labeledCheckbox(ARG_DB_BULK_NUKEIT, "true", false, "Delete existing database") + HtmlUtils
+        bulkSB.append(HU
+            .formEntry("", HU
+                .labeledCheckbox(ARG_DB_BULK_NUKEIT, "true", false, "Delete existing database") + HU
                 .space(2) + HU
                 .b("!!! Important: this will delete everything in the existing database before doing the bulk load !!!")));
 
-        bulkSB.append(HtmlUtils.formTableClose());
-        bulkSB.append(HtmlUtils.p());
+        bulkSB.append(HU.formTableClose());
+        bulkSB.append(HU.p());
         bulkSB.append(msgLabel("Or enter text"));
         List colIds = new ArrayList();
         for (Column column : dbInfo.getColumnsToUse()) {
@@ -6482,11 +6530,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             bulkSB.append(column.getLabel());
             cnt++;
         }
-        bulkSB.append(HtmlUtils.br());
-        bulkSB.append(HtmlUtils.textArea(ARG_DB_BULK_TEXT, "", 10, 80));
-        bulkSB.append(HtmlUtils.p());
+        bulkSB.append(HU.br());
+        bulkSB.append(HU.textArea(ARG_DB_BULK_TEXT, "", 10, 80));
+        bulkSB.append(HU.p());
         bulkSB.append(bulkButtons);
-        bulkSB.append(HtmlUtils.formClose());
+        bulkSB.append(HU.formClose());
         List<String> tabTitles   = new ArrayList<String>();
         List<String> tabContents = new ArrayList<String>();
        if (showEntryCreate) {
@@ -6509,7 +6557,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      * @return _more_
      */
     private String insetHtml(Object html) {
-        return HtmlUtils.insetDiv(html.toString(), 0, 10, 0, 10);
+        return HU.insetDiv(html.toString(), 0, 10, 0, 10);
     }
 
 
@@ -6566,9 +6614,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         Object[] values, boolean asXml)
             throws Exception {
         if (asXml) {
-            sb.append(HtmlUtils.formTable("formtable_tight"));
+            sb.append(HU.formTable("formtable_tight"));
         } else {
-            sb.append(HtmlUtils.formTable());
+            sb.append(HU.formTable());
         }
 
         SimpleDateFormat sdf = getDateFormat(request,entry);
@@ -6587,7 +6635,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             tmp = tmp.replaceAll("'", "&apos;");
             sb.append(formEntry(request, column.getLabel() + ":", tmp));
         }
-        sb.append(HtmlUtils.formTableClose());
+        sb.append(HU.formTableClose());
 
     }
 
@@ -6773,7 +6821,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                              SimpleDateFormat sdf,SimpleDateFormat dateTimeSdf)
             throws Exception {
         StringBuilder sb = new StringBuilder();
-        sb.append(HtmlUtils.formTable());
+        sb.append(HU.formTable());
         int valueIdx = 0;
         for (Column column : columns) {
             if ( !isDataColumn(column)) {
@@ -6791,7 +6839,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             tmp = tmp.replaceAll("'", "&apos;");
             sb.append(formEntry(request, column.getLabel() + ":", tmp));
         }
-        sb.append(HtmlUtils.formTableClose());
+        sb.append(HU.formTableClose());
 
         return sb.toString();
     }
