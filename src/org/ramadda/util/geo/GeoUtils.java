@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2023 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util.geo;
@@ -82,7 +82,7 @@ public class GeoUtils {
 
     /** _more_ */
     public static final double WGS84_E_2 = (WGS84_A_2 - WGS84_B_2)
-                                           / WGS84_A_2;
+	/ WGS84_A_2;
 
     /** _more_ */
     public static final double DEG2RAD = Math.PI / 180.0;
@@ -124,7 +124,7 @@ public class GeoUtils {
 
     /** _more_ */
     private static final String[] citySuffixes = new String[] { "city",
-            "town", "cdp", "village" };
+								"town", "cdp", "village" };
 
     /** _more_ */
     private static final String[] countySuffixes = new String[] {
@@ -175,7 +175,7 @@ public class GeoUtils {
     }
 
     /**
-      * @return _more_
+     * @return _more_
      */
     public static String getHereKey() {
         return hereKey;
@@ -204,7 +204,7 @@ public class GeoUtils {
      */
     public static String date2GPS(Calendar date) {
         long elapsedTime = date.getTimeInMillis()
-                           - GPS_DATE.getTimeInMillis();
+	    - GPS_DATE.getTimeInMillis();
         double elapsedDays = elapsedTime / MS_PER_DAY;
         double fullDays    = Math.floor(elapsedDays);
         /*
@@ -282,7 +282,7 @@ public class GeoUtils {
      * @return _more_
      */
     public static double[] wgs84XYZToLatLonAlt(double x, double y, double z,
-            double[] result) {
+					       double[] result) {
         double lat, lon, alt;
         double cos_lat, sin_lat, last_lat, p, N;
         double r = Math.sqrt(x * x + y * y + z * z);
@@ -318,8 +318,8 @@ public class GeoUtils {
                 lat = Math.atan(z / (p * (1. - WGS84_E_2 * (N / (N + alt)))));
             } else {
                 lat = (z < 0.)
-                      ? -Math.PI / 2.
-                      : Math.PI / 2.;
+		    ? -Math.PI / 2.
+		    : Math.PI / 2.;
             }
         } while ((last_lat - lat) != 0 && (loop++ < 10));
 
@@ -377,7 +377,7 @@ public class GeoUtils {
      * @throws Exception _more_
      */
     public static Address getAddress(double lat, double lon)
-            throws Exception {
+	throws Exception {
         String                    key   = lat + "_" + lon;
         Hashtable<String, Address> addresses= getAddresses();
         if (addresses != null) {
@@ -407,7 +407,7 @@ public class GeoUtils {
      * @throws Exception _more_
      */
     private static Address getAddressInner(double lat, double lon)
-            throws Exception {
+	throws Exception {
         initKeys();
         Address address = null;
         if ((address == null) && (googleKey != null)) {
@@ -434,8 +434,8 @@ public class GeoUtils {
      * @throws Exception _more_
      */
     private static Address getAddressFromLatLonGeocodeio(double lat,
-            double lon)
-            throws Exception {
+							 double lon)
+	throws Exception {
         /*
           https://www.geocod.io/docs/#reverse-geocoding
           {
@@ -475,8 +475,8 @@ public class GeoUtils {
         }
 
         String address = components.getString("number") + " "
-                         + components.getString("street") + " "
-                         + components.getString("suffix");
+	    + components.getString("street") + " "
+	    + components.getString("suffix");
 
         return new Address(address.trim(), components.getString("city"),
                            components.getString("county"),
@@ -495,7 +495,7 @@ public class GeoUtils {
      * @throws Exception _more_
      */
     private static Address getAddressFromLatLonHere(double lat, double lon)
-            throws Exception {
+	throws Exception {
         /*
           https://developer.here.com/develop/rest-apis
           https://revgeocode.search.hereapi.com/v1/revgeocode?at=52.5228,13.4124
@@ -522,8 +522,8 @@ public class GeoUtils {
         */
         String url =
             HtmlUtils.url(
-                "https://revgeocode.search.hereapi.com/v1/revgeocode", "at",
-                lat + "," + lon, "apiKey", hereKey);
+			  "https://revgeocode.search.hereapi.com/v1/revgeocode", "at",
+			  lat + "," + lon, "apiKey", hereKey);
         //      System.err.println(url);
         String json = IO.doGet(new URL(url));
 	//	System.err.println(json);
@@ -628,7 +628,7 @@ public class GeoUtils {
      * @return _more_
      */
     public static Place getLocationFromAddress(String address,
-            Bounds bounds) {
+					       Bounds bounds) {
         try {
             Place place = getLocationFromAddressInner(address, bounds, false);
             //      System.err.println("PLACE:"  + place);
@@ -664,9 +664,9 @@ public class GeoUtils {
      * @throws Exception _more_
      */
     public static Feature findFeature(String path, double lat, double lon)
-            throws Exception {
+	throws Exception {
         FeatureCollection fc = FeatureCollection.getFeatureCollection(path,
-                                   null);
+								      null);
         if (fc == null) {
             String _path = path.toLowerCase();
             if (path.equals("counties")) {
@@ -680,11 +680,11 @@ public class GeoUtils {
                 _path = path;
             }
             if ( !_path.endsWith(".zip") && !_path.startsWith("/")
-                    && !_path.endsWith("json")) {
+		 && !_path.endsWith("json")) {
                 path = "/org/ramadda/util/geo/resources/" + path + ".zip";
             }
             fc = FeatureCollection.getFeatureCollection(path,
-                    IO.getInputStream(path));
+							IO.getInputStream(path));
         }
 
         return fc.find((float) lat, (float) lon);
@@ -705,7 +705,7 @@ public class GeoUtils {
      */
     public static Object findFeatureField(String path, String field,
                                           double lat, double lon, Object dflt)
-            throws Exception {
+	throws Exception {
         Feature feature = findFeature(path, lat, lon);
         if (feature != null) {
             Hashtable data = feature.getData();
@@ -728,8 +728,8 @@ public class GeoUtils {
      * @throws Exception _more_
      */
     public static List<Object> findFeatureFields(String path,
-            List<String> fields, double lat, double lon)
-            throws Exception {
+						 List<String> fields, double lat, double lon)
+	throws Exception {
         if (fields.size() == 0) {
             String       v  = findFeatureName(path, lat, lon, "");
             List<Object> vs = new ArrayList<Object>();
@@ -760,7 +760,7 @@ public class GeoUtils {
 
     /** _more_ */
     private static final String[] NAME_FIELDS = new String[] { "name",
-            "state_name", "cntry_name", "tzid" };
+							       "state_name", "cntry_name", "tzid" };
 
     /**
      * _more_
@@ -776,7 +776,7 @@ public class GeoUtils {
      */
     public static String findFeatureName(String path, double lat, double lon,
                                          String dflt)
-            throws Exception {
+	throws Exception {
         Feature feature = findFeature(path, lat, lon);
         if (feature != null) {
             Hashtable data = feature.getData();
@@ -824,6 +824,61 @@ public class GeoUtils {
 
     private static String cleanAddress(String s) {
 	return s.toLowerCase().replaceAll("[-_]+"," ").replaceAll("\\s\\s+"," ");
+    }
+
+    public static class TiledObject {
+	public double latitude;
+	public double longitude;
+	public Object object;
+	public TiledObject(Object _object,double _latitude, double _longitude) {
+	    this.object = _object;
+	    this.latitude = _latitude;
+	    this.longitude = _longitude;	    
+	}
+	public Object getObject() {
+	    return object;
+	}
+
+
+    }
+
+
+    public static class Tile {
+	private List<TiledObject> objects = new ArrayList<TiledObject>();
+	public Tile() {
+	}
+
+	public void add(TiledObject obj) {
+	    objects.add(obj);
+	}
+
+	public List<TiledObject> getObjects() {
+	    return objects;
+	}
+    }    
+
+    public static List<Tile> tile(List<TiledObject> objects, int dim) {
+	List<Tile> tiles = new ArrayList<Tile>();
+	Bounds bounds = new Bounds();
+	for(TiledObject obj: objects) {
+	    bounds.expand(obj.latitude,obj.longitude);
+	}
+	Hashtable<String,Tile> tilesMap = new Hashtable<String,Tile>();
+	double latitudeStep = (bounds.getNorth()-bounds.getSouth())/dim;
+	double longitudeStep = (bounds.getEast()-bounds.getWest())/dim;	
+	for(TiledObject obj: objects) {
+	    //40-50 
+	    int yIndex = latitudeStep==0? 0:(int)((obj.latitude-bounds.getSouth())/latitudeStep);
+	    int xIndex = longitudeStep==0? 0:(int)((obj.longitude-bounds.getWest())/longitudeStep);	    
+	    String key = yIndex+"_"+xIndex;
+	    Tile tile = tilesMap.get(key);
+	    if(tile==null) {
+		tilesMap.put(key, tile = new Tile());
+		tiles.add(tile);
+	    }
+	    tile.add(obj);
+	}
+	return tiles;
     }
 
     private static class Locale {
@@ -1013,7 +1068,7 @@ public class GeoUtils {
                     state = state.toLowerCase();
                     state = state.replaceAll("\\.", "");
                     List<String> tmp = StringUtil.split(state, "-", true,
-                                           true);
+							true);
                     tmp.add((String) statesMap.get(state));
                     tmp.add("**");
                     for (String st : tmp) {
@@ -1029,7 +1084,7 @@ public class GeoUtils {
                             for (String suffix : citySuffixes) {
                                 //                          System.out.println(city + suffix+"," + st);
                                 place2 = citiesMap.get(cityTok + " " + suffix
-                                        + "," + st);
+						       + "," + st);
                                 if (place2 != null) {
                                     return place2;
                                 }
@@ -1040,7 +1095,7 @@ public class GeoUtils {
 
                 if (state != null) {
                     place = GeoResource.RESOURCE_CITIES.getPlace(city + ","
-                            + state);
+								 + state);
                     if (place != null) {
                         return place;
                     }
@@ -1165,22 +1220,22 @@ public class GeoUtils {
         if (place == null && googleKey != null) {
             try {
 		String url =HtmlUtils.url("https://maps.googleapis.com/maps/api/geocode/json",
-				   "address", address, "key" ,googleKey);
+					  "address", address, "key" ,googleKey);
                 if (bounds != null) {
                     url += "&bounds=" + bounds.getSouth() + ","
-                           + bounds.getWest() + "|" + bounds.getNorth() + ","
-                           + bounds.getEast();
+			+ bounds.getWest() + "|" + bounds.getNorth() + ","
+			+ bounds.getEast();
                 }
                 String result = IO.readContents(url, GeoUtils.class);
                 name = StringUtil.findPattern(result,
-                        "\"formatted_address\"\\s*:\\s*\"([^\"]+)\"");
+					      "\"formatted_address\"\\s*:\\s*\"([^\"]+)\"");
                 if (name == null) {
                     name = address;
                 }
                 latString = StringUtil.findPattern(result,
-                        "\"lat\"\\s*:\\s*([-\\d\\.]+),");
+						   "\"lat\"\\s*:\\s*([-\\d\\.]+),");
                 lonString = StringUtil.findPattern(result,
-                        "\"lng\"\\s*:\\s*([-\\d\\.]+)\\s*");
+						   "\"lng\"\\s*:\\s*([-\\d\\.]+)\\s*");
                 if ((latString != null) && (lonString != null)) {
                     place = new Place(name, latString, lonString);
                 }
@@ -1208,9 +1263,9 @@ public class GeoUtils {
             String result = IO.readContents(url, GeoUtils.class);
             //"lat":39.988424,"lng":-105.226083
             latString = StringUtil.findPattern(result,
-                    "\"lat\"\\s*:\\s*([-\\d\\.]+),");
+					       "\"lat\"\\s*:\\s*([-\\d\\.]+),");
             lonString = StringUtil.findPattern(result,
-                    "\"lng\"\\s*:\\s*([-\\d\\.]+)\\s*");
+					       "\"lng\"\\s*:\\s*([-\\d\\.]+)\\s*");
             if ((latString != null) && (lonString != null)) {
                 place = new Place(name, latString, lonString);
             }
@@ -1224,13 +1279,13 @@ public class GeoUtils {
         }
         if ((place == null) && (hereKey != null)) {
             String url = HtmlUtils.url(
-                             "https://geocode.search.hereapi.com/v1/geocode",
-                             "q", address, "apiKey", hereKey);
+				       "https://geocode.search.hereapi.com/v1/geocode",
+				       "q", address, "apiKey", hereKey);
             String result = IO.doGet(new URL(url));
             latString = StringUtil.findPattern(result,
-                    "\"lat\"\\s*:\\s*([-\\d\\.]+),");
+					       "\"lat\"\\s*:\\s*([-\\d\\.]+),");
             lonString = StringUtil.findPattern(result,
-                    "\"lng\"\\s*:\\s*([-\\d\\.]+)\\s*");
+					       "\"lng\"\\s*:\\s*([-\\d\\.]+)\\s*");
             if ((latString != null) && (lonString != null)) {
                 place = new Place(name, latString, lonString);
             }
@@ -1249,9 +1304,9 @@ public class GeoUtils {
 				      "format","json","benchmark","2020","address", address);
             String result = IO.readContents(url, GeoUtils.class);
             latString = StringUtil.findPattern(result,
-                    "\"y\"\\s*:\\s*([-\\d\\.]+)");
+					       "\"y\"\\s*:\\s*([-\\d\\.]+)");
             lonString = StringUtil.findPattern(result,
-                    "\"x\"\\s*:\\s*([-\\d\\.]+)\\s*");
+					       "\"x\"\\s*:\\s*([-\\d\\.]+)\\s*");
             if ((latString != null) && (lonString != null)) {
                 place = new Place(name, latString, lonString);
             }
@@ -1307,7 +1362,7 @@ public class GeoUtils {
         String key = System.getenv("PRECISELY_API_KEY");
         if (key == null) {
             throw new RuntimeException(
-                "No PRECISELY_API_KEY environment variable set");
+				       "No PRECISELY_API_KEY environment variable set");
         }
         String b64 = Utils.encodeBase64(key.trim());
 	System.err.println("key:" + key);
@@ -1340,10 +1395,10 @@ public class GeoUtils {
             if (cacheFile.exists()) {
                 hoods = new Hashtable<String, String>();
                 for (String line :
-                        StringUtil.split(IO.readContents(cacheFile), "\n",
-                                         true, true)) {
+			 StringUtil.split(IO.readContents(cacheFile), "\n",
+					  true, true)) {
                     List<String> toks = StringUtil.split(line,
-                                            cacheDelimiter);
+							 cacheDelimiter);
                     hoods.put(toks.get(0), toks.get(1));
                 }
             }
@@ -1364,12 +1419,12 @@ public class GeoUtils {
             File cacheFile = new File(IOUtil.joinDir(cacheDir,
 						     "addresses.txt"));
             if (cacheFile.exists()) {
-               addresses = new Hashtable<String, Address>();
+		addresses = new Hashtable<String, Address>();
                 for (String line :
 			 StringUtil.split(IO.readContents(cacheFile), "\n",
 					  true, true)) {
                     List<String> toks = StringUtil.split(line,
-                                            cacheDelimiter);
+							 cacheDelimiter);
 		    String key = toks.get(0);
 		    Address address = new Address();
 		    address.decode(toks.get(1));
@@ -1396,7 +1451,7 @@ public class GeoUtils {
      * @throws Exception _more_
      */
     public static String getNeighborhood(double lat, double lon)
-            throws Exception {
+	throws Exception {
         String                    key   = lat + "_" + lon;
         Hashtable<String, String> hoods = getHoods();
         if (hoods != null) {
@@ -1418,7 +1473,7 @@ public class GeoUtils {
     }
 
     private static String getNeighborhoodGoogle(double lat, double lon)
-            throws Exception {
+	throws Exception {
 	String url=HtmlUtils.url("https://maps.googleapis.com/maps/api/geocode/json",
 				 "result_type","neighborhood",
 				 "key",googleKey,
@@ -1426,14 +1481,14 @@ public class GeoUtils {
         String json = IO.doGet(new URL(url));
 	//	System.err.println(json);
 	/*
- "results" : [
-      {
-         "address_components" : [
-            {
-               "long_name" : "Keewayden",
-               "short_name" : "Keewayden",
-               "types" : [ "neighborhood", "political" ]
-            },
+	  "results" : [
+	  {
+	  "address_components" : [
+	  {
+	  "long_name" : "Keewayden",
+	  "short_name" : "Keewayden",
+	  "types" : [ "neighborhood", "political" ]
+	  },
 	*/
 	JSONObject obj = new JSONObject(json);
 	JSONArray results = obj.optJSONArray("results");
@@ -1457,7 +1512,7 @@ public class GeoUtils {
     }
 
     private static String getNeighborhoodInner(double lat, double lon)
-            throws Exception {
+	throws Exception {
 	initKeys();
 	if(googleKey!=null) {
 	    //	    return getNeighborhoodGoogle(lat,lon);
@@ -1465,12 +1520,12 @@ public class GeoUtils {
         String token = getPreciselyToken(false);
         if (token == null) {
             throw new RuntimeException(
-                "Unable to authenticate with precisely");
+				       "Unable to authenticate with precisely");
         }
         URL url =
             new URL(
-                "https://api.precisely.com/neighborhoods/v1/place/bylocation?latitude="
-                + lat + "&longitude=" + lon);
+		    "https://api.precisely.com/neighborhoods/v1/place/bylocation?latitude="
+		    + lat + "&longitude=" + lon);
         String json;
         try {
             json = IO.doGet(url, "Authorization", " Bearer " + token,
@@ -1483,7 +1538,7 @@ public class GeoUtils {
             token = getPreciselyToken(true);
             if (token == null) {
                 throw new RuntimeException(
-                    "Unable to authenticate with precisely");
+					   "Unable to authenticate with precisely");
             }
             json = IO.doGet(url, "Authorization", " Bearer " + token,
                             "Accept", "application/json");
@@ -1525,14 +1580,14 @@ public class GeoUtils {
         String json = IO.doGet(new URL(url));
 	lastJson = json;
 	/*
- "results" : [
-      {
-         "address_components" : [
-            {
-               "long_name" : "Keewayden",
-               "short_name" : "Keewayden",
-               "types" : [ "neighborhood", "political" ]
-            },
+	  "results" : [
+	  {
+	  "address_components" : [
+	  {
+	  "long_name" : "Keewayden",
+	  "short_name" : "Keewayden",
+	  "types" : [ "neighborhood", "political" ]
+	  },
 	*/
 	JSONObject obj = new JSONObject(json);
 	JSONArray results = obj.optJSONArray("results");
@@ -1583,24 +1638,24 @@ public class GeoUtils {
      */
     public static double[] getBounds(double[] pts) {
         double north = Double.NaN,
-               south = Double.NaN,
-               east  = Double.NaN,
-               west  = Double.NaN;
+	    south = Double.NaN,
+	    east  = Double.NaN,
+	    west  = Double.NaN;
         for (int i = 0; i < pts.length - 1; i += 2) {
             double lon = pts[i];
             double lat = pts[i + 1];
             north = (i == 0)
-                    ? lat
-                    : Math.max(north, lat);
+		? lat
+		: Math.max(north, lat);
             south = (i == 0)
-                    ? lat
-                    : Math.min(north, lat);
+		? lat
+		: Math.min(north, lat);
             west  = (i == 0)
-                    ? lon
-                    : Math.min(west, lon);
+		? lon
+		: Math.min(west, lon);
             east  = (i == 0)
-                    ? lon
-                    : Math.max(east, lon);
+		? lon
+		: Math.max(east, lon);
         }
 
         return new double[] { north, west, south, east };
