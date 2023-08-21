@@ -6130,6 +6130,17 @@ public class Utils extends IO {
     }
 
     /**
+     */
+    public interface BiConsumer<S,T> {
+
+        /**
+         */
+        void accept(S s, T t);
+    }
+
+
+
+    /**
      * Interface description
      *
      *
