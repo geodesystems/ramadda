@@ -1327,9 +1327,13 @@ RepositoryMap.prototype = {
 
 
     setViewToBounds: function(bounds) {
+	let singlePoint = bounds.left==bounds.right;
         let projBounds = this.transformLLBounds(bounds);
         if (projBounds.getWidth() == 0) {
 	    if(debugBounds) console.log("setViewToBounds center");
+	    //Set the center then zoom then set the center again
+	    this.getMap().setCenter(projBounds.getCenterLonLat());
+            this.getMap().zoomTo(this.params.maxZoom);
 	    this.getMap().setCenter(projBounds.getCenterLonLat());
         } else {
 //	    if(debugBounds)console.log(bounds.getCenterLonLat());
@@ -1640,8 +1644,7 @@ RepositoryMap.prototype = {
     highlightMarkers:function(selector,  background1, background2, id) {
 	let _this =  this;
 	if(!background1) background1= '#ffffcc';
-	$(selector).mouseenter(
-            function() {
+	$(selector).mouseenter(function() {
 		if (background1)
                     $(this).css('background', background1);
 		if (!$(this).data('mapid'))
@@ -1666,8 +1669,7 @@ RepositoryMap.prototype = {
 				       attrs);
 		markerMap[id] = point;
             });
-	$(selector).mouseleave(
-            function() {
+	$(selector).mouseleave(function() {
 		if (background2)
                     $(this).css('background', background2);
 		else 
