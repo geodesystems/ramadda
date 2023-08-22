@@ -773,6 +773,7 @@ function RepositoryMap(mapId, params) {
     [ARG_MAPCENTER,ARG_ZOOMLEVEL].forEach(prop=>{
 	if(Utils.stringDefined(HU.getUrlArgument(prop))) {
 	    params[prop]  = HU.getUrlArgument(prop);
+	    if(debugBounds)console.log("url arg:"+ prop+"=" + params[prop]);
 	}
     });
     if(params.mapCenter) {
@@ -853,7 +854,10 @@ function RepositoryMap(mapId, params) {
 
 
     if(!Utils.isDefined(params.initialZoom)) {
-	params.initialZoom= Utils.isDefined(params.zoomLevel)?params.zoomLevel:MapUtils.defaults.defaultZoomLevel;
+	params.initialZoom= Utils.isDefined(params[ARG_ZOOMLEVEL])?params[ARG_ZOOMLEVEL]:MapUtils.defaults.defaultZoomLevel;
+	if(debugBounds) console.log("setting initial zoom:",params.initialZoom);
+    } else {
+	if(debugBounds) console.log("initial zoom already set:",params.initialZoom);
     }
 
     $.extend(dflt, params);
@@ -959,6 +963,7 @@ function RepositoryMap(mapId, params) {
         maxResolution: 156543.0339,
         maxExtent: MapUtils.defaults.maxExtent,
         div: this.mapDivId,
+	zoom:this.params.initialZoom,
         eventListeners: {
             featureover: function(e) {
 		if(_this.featureOverHandler) {
@@ -1333,7 +1338,7 @@ RepositoryMap.prototype = {
 	    if(debugBounds) console.log("setViewToBounds center");
 	    //Set the center then zoom then set the center again
 	    this.getMap().setCenter(projBounds.getCenterLonLat());
-            this.getMap().zoomTo(this.params.maxZoom);
+            this.zoomTo(this.params.maxZoom);
 	    this.getMap().setCenter(projBounds.getCenterLonLat());
         } else {
 //	    if(debugBounds)console.log(bounds.getCenterLonLat());
@@ -1341,7 +1346,8 @@ RepositoryMap.prototype = {
             this.zoomToExtent(projBounds);
         }
 	if(this.getMap().getZoom()>this.params.maxZoom) {
-            this.getMap().zoomTo(this.params.maxZoom);
+	    if(debugBounds)  console.log("setViewToBounds- setting to max zoom",this.params.maxZoom);
+            this.zoomTo(this.params.maxZoom);
 	}
 
     },
@@ -1355,14 +1361,19 @@ RepositoryMap.prototype = {
 	return this.getMap().getZoom();
     },
     setZoom: function(zoom) {
+	this.zoomTo(zoom);
+    },
+    zoomTo:function(zoom) {
 	if(debugBounds)
-	    console.log("setZoom");
-        this.getMap().zoomTo(zoom);
+	    console.log("zoomTo:",zoom);
+	this.getMap().zoomTo(parseInt(zoom));
+
     },
     zoomToLayer:  function(layer,scale)  {
         let dataBounds = this.getLayerVisbileExtent(layer);
 	if(!dataBounds)
 	    dataBounds = layer.extent;
+	if(debugBounds)  console.log("zoomToLayer:",dataBounds);
         if (dataBounds) {
 	    if(scale)
 		dataBounds = dataBounds.scale(parseFloat(scale),dataBounds.getCenterPixel());
@@ -1409,10 +1420,12 @@ RepositoryMap.prototype = {
     },
     setInitialCenterAndZoom: function(lon, lat, zoomLevel) {
         this.defaultLocation = MapUtils.createLonLat(lon, lat);
+	this.setInitialZoom(zoomLevel);
         this.params.initialZoom = zoomLevel;
     },
     setInitialZoom: function(zoomLevel) {
         this.params.initialZoom = zoomLevel;
+	if(debugBounds) console.log("setInitialZoom:",this.params.initialZoom);
     },
     setInitialCenter: function(lon,lat) {
         this.defaultLocation = MapUtils.createLonLat(lon, lat);
@@ -1460,8 +1473,7 @@ RepositoryMap.prototype = {
 		_this.zoomChanged();
                 _this.locationChanged();
 		_this.setNoPointerEvents();
-//		console.log( _this.getMap().getZoom());
-
+		if(debugBounds)  console.log("zoomend",_this.getMap().getZoom());
             });
             _this.getMap().events.register("moveend", "ramaddamap", function() {
                 _this.locationChanged();
@@ -1601,6 +1613,8 @@ RepositoryMap.prototype = {
 	latlon.right = r(latlon.right);
 
 	HU.addToDocumentUrl("map_bounds",latlon.top + "," + latlon.left + "," + latlon.bottom + "," + latlon.right);
+	if(debugBounds)
+	    console.log("locationChanged: setting url args:",this.getMap().getZoom());
 	HU.addToDocumentUrl(ARG_ZOOMLEVEL , this.getMap().getZoom());
 
 	let center =   this.transformProjPoint(this.getMap().getCenter())
@@ -3783,7 +3797,8 @@ RepositoryMap.prototype = {
             let projPoint = this.transformLLPoint(this.defaultLocation);
             this.getMap().setCenter(projPoint);
 	    if(!(this.params.initialZoom>=0)) {
-		this.getMap().zoomTo(4);
+		if(debugBounds)  console.log("zoomTo:",4);
+		this.zoomTo(4);
 	    }
 	    this.defaultLocation = null;
 	} else  if (this.defaultBounds) {
@@ -3810,6 +3825,8 @@ RepositoryMap.prototype = {
 		  });
 		  console.log(width +" " + zoom);
 		*/
+		if(debugBounds)
+		    console.log("overriding initialZoom:",zoom);
 		this.params.initialZoom = zoom;
 	    }
             this.defaultBounds = null;
@@ -3818,16 +3835,18 @@ RepositoryMap.prototype = {
         }
 
 	if(this.params.initialZoom>=0) {
-	    if(debugBounds)
-		console.log("initial zoom:" + this.params.initialZoom);
 	    let zoom = this.params.initialZoom;
+	    if(debugBounds)
+		console.log("initial zoom:" + zoom);
 	    this.params.initialZoom=-1;
-	    this.getMap().zoomTo(zoom);
+	    this.zoomTo(zoom);
 	    //In case we are in tabs then set the zoom level later
 	    if(true || this.initialZoomTimeout) {
 		setTimeout(()=>{
-		    this.getMap().zoomTo(zoom);
-		},this.initialZoomTimeout);
+		    return;
+		    if(debugBounds)console.log("initial zoom time out:" + zoom);
+		    this.zoomTo(zoom);
+		},this.initialZoomTimeout??500);
 	    }
 	}
     },
@@ -4219,7 +4238,7 @@ RepositoryMap.prototype = {
                 let level = this.getMap().getZoom();
                 level--;
                 if (this.getMap().isValidZoomLevel(level)) {
-                    this.getMap().zoomTo(level);
+                    this.zoomTo(level);
                 }
                 return;
             }
@@ -4227,7 +4246,7 @@ RepositoryMap.prototype = {
                 let level = this.getMap().getZoom();
                 level++;
                 if (this.getMap().isValidZoomLevel(level)) {
-                    this.getMap().zoomTo(level);
+                    this.zoomTo(level);
                 }
                 return;
             }
