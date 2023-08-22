@@ -2367,7 +2367,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
-        buffers.add(buffer = new DbNamedBuffer("Order By/Display",
+        buffers.add(buffer = new DbNamedBuffer("Order By/Display/Uniques",
                 formHeader, "orderby"));
         if (sorttfos.size() > 0) {
             String orderBy = "";
