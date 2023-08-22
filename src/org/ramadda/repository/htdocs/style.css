@@ -765,6 +765,12 @@ a.ramadda-entry-nav-page {
     user-select: none; 
 }
 
+/** for maps **/
+.ramadda-map-container tspan::selection {
+    color: none;
+    background-color: none;    
+}
+
 .ramadda-menubar-button-last {
     border-right:0px #ccc solid;
 }
