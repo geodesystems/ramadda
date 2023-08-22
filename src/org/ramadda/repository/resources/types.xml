@@ -32,7 +32,7 @@
 {{description wikify=true}}
 {{tree entries="children:type:type_documentation"
 message="" prefix="----_nl_:h3 Pages" showIcon=false details=false sort=entryorder,name  showTitle=true decorate=false}}
-{{display_simplesearch destDiv=ramadda-nav-1 ancestor="ancestor:type:type_documentation" inputSize=20 placeholder="Search docs"}}
+{{display_simplesearch destDiv=ramadda-nav-1 ancestor="ancestor:type:type_documentation" inputSize="200px" placeholder="Search docs"}}
 {{links entry=parent showTitle=true  destDiv=ramadda-nav-2  sort=entryorder,name highlightThis=true contentsStyle="max-height:200px;overflow-y:auto;"}}
 :p
 +inset left=0 right=0 top=30 bottom=30
