@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Aug 21 07:49:34 MDT 2023";
+var build_date="RAMADDA build date: Tue Aug 22 08:37:56 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -35569,7 +35569,8 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'gridBounds',ex:'north,west,south,east'},	
 	{p:'mapCenter',ex:'lat,lon',tt:"initial position"},
 	{p:'zoomLevel',ex:4,tt:"initial zoom"},
-	{p:'zoomTimeout',ex:500,tt:"initial zoom timeout delay. set this if the map is in tabs, etc, and not going to the initial zoom"},
+	{p:'zoomTimeout',ex:500,
+	 tt:"initial zoom timeout delay. set this if the map is in tabs, etc, and not going to the initial zoom"},
 	{p:'linked',ex:true,tt:"Link location with other maps"},
 	{p:'linkGroup',ex:'some_name',tt:"Map groups to link with"},
 	{p:'initialLocation', ex:'lat,lon',tt:"initial location"},
@@ -35856,7 +35857,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    if(!this.setMapLocationAndZoom && this.mapParams) {
 		this.setMapLocationAndZoom = true;
 		if(this.mapParams.initialZoom>=0) {
-		    this.map.getMap().zoomTo(this.mapParams.initialZoom);
+		    this.map.zoomTo(this.mapParams.initialZoom);
 		}
 		if(this.mapParams.initialLocation) {
 		    let loc = MapUtils.createLonLat(this.mapParams.initialLocation.lon, this.mapParams.initialLocation.lat);
@@ -35947,6 +35948,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		this.hadInitialPosition = true;
                 params.initialZoom = +this.getZoomLevel();
 		params.initialZoomTimeout = this.getZoomTimeout();
+		if(debugBounds) console.log("DisplayMap - set initialZoom", params.initialZoom);
 	    }
 
             this.map = this.getProperty("theMap", null);
@@ -36521,7 +36523,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(!this.setMapLocationAndZoom && this.mapParams) {
 		this.setMapLocationAndZoom = true;
 		if(this.mapParams.initialZoom>=0) {
-		    this.map.getMap().zoomTo(this.mapParams.initialZoom);
+		    this.map.zoomTo(this.mapParams.initialZoom);
 		}
 		if(this.mapParams.initialLocation) {
 		    let loc = MapUtils.createLonLat(this.mapParams.initialLocation.lon, this.mapParams.initialLocation.lat);
@@ -38124,7 +38126,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    _this.locationFeatures = [];
 		    if($(this).attr("longitude")) {
 			let point = MapUtils.createLonLat(+$(this).attr("longitude"),+$(this).attr("latitude"));
-			_this.map.getMap().zoomTo(9);
+			_this.map.zoomTo(9);
 			_this.map.setCenter(point);
 		    } else if($(this).attr("north")) {
 			_this.map.setViewToBounds(new RamaddaBounds(+$(this).attr("north"),+$(this).attr("west"),+$(this).attr("south"),+$(this).attr("east")));
@@ -41731,6 +41733,14 @@ var CLASS_FILTER_STRING = 'imdv-filter-string';
 
 var ID_GLYPH_LEGEND = 'glyphlegend';
 
+var ID_LEVEL_RANGE_SLIDER = 'level_range_slider';
+var ID_LEVEL_RANGE_CLEAR = 'level_range_clear';
+var ID_LEVEL_RANGE_CHANGED = 'level_range_changed';
+var ID_LEVEL_RANGE_MIN = 'level_range_min';
+var ID_LEVEL_RANGE_MAX = 'level_range_max';
+
+var ID_LEVEL_RANGE_SAMPLE_MIN = 'level_range_sample_min';
+var ID_LEVEL_RANGE_SAMPLE_MAX = 'level_range_sample_max';
 
 let ImdvUtils = {
     getImdv: function(id) {
@@ -44179,6 +44189,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let label = prop;
 		if(strip) label = label.replace(strip,'');
 		label =  Utils.makeLabel(label);		
+		if(prop.endsWith('_cleared')) return;
 		if(prop=="pointRadius") label = "Size";
 		let widget;
 		let extra ='';
@@ -44367,21 +44378,29 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let width = '400px';
 	    let widget =   HU.b("Visible between levels:") + HU.space(3) +visibleCbx +'<br>';
 	    widget+=HU.hidden('',level.min??this.minLevel,
-			      [ATTR_ID,this.domId('level_range_min')]) +
-		HU.hidden('',level.max??this.maxLevel,[ATTR_ID,this.domId('level_range_max')])
+			      [ATTR_ID,this.domId(ID_LEVEL_RANGE_MIN)]) +
+		HU.hidden('',level.max??this.maxLevel,[ATTR_ID,this.domId(ID_LEVEL_RANGE_MAX)])
+	    widget+=HU.hidden('','',[ATTR_ID,this.domId(ID_LEVEL_RANGE_CHANGED)]);
 	    let slider =
-		HU.div([ATTR_ID,this.domId('level_range_slider'),ATTR_STYLE,HU.css('margin-bottom','110px','margin-top','10px','position','relative','width',width)]);
+		HU.div([ATTR_ID,this.domId(ID_LEVEL_RANGE_SLIDER),ATTR_STYLE,HU.css('margin-bottom','110px','margin-top','10px','position','relative','width',width)]);
+
+	    let clear = HU.span([ATTR_TITLE,'Clear range values',
+				 ATTR_STYLE,HU.css('margin-left','10px'),
+				 ATTR_CLASS,'ramadda-clickable',
+				 ATTR_ID,this.domId(ID_LEVEL_RANGE_CLEAR)],
+				HU.getIconImage('fas fa-delete-left'));
+	    slider= HU.hbox([slider,clear]);
 
 	    let tick = HU.image(icon_downdart,
 				[ATTR_ID,
 				 this.domId('level_range_tick'),
 				 ATTR_STYLE,HU.css('position','absolute','top','0px')]);
 	    let sample1 = HU.image(RamaddaUtil.getCdnUrl('/map/zoom/zoom' + min+'.png'),
-				   [ATTR_ID,this.domId('level_range_sample_min_image'),
+				   [ATTR_ID,this.domId(ID_LEVEL_RANGE_SAMPLE_MIN),
 				    ATTR_STYLE,'position:absolute;left:0px;bottom:0px;',
 				    ATTR_WIDTH,'120px']);
 	    let sample2 = HU.image(RamaddaUtil.getCdnUrl('/map/zoom/zoom' + max+'.png'),
-				   [ATTR_ID,this.domId('level_range_sample_max_image'),
+				   [ATTR_ID,this.domId(ID_LEVEL_RANGE_SAMPLE_MAX),
 				    ATTR_STYLE,'position:absolute;right:0px;bottom:0px;',
 				   ATTR_WIDTH,'120px']);	    
 	    let container = HU.div([ATTR_STYLE,HU.css('display','inline-block','position','relative')],
@@ -44549,25 +44568,34 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		HtmlUtils.insertIntoTextarea(textarea,icon);
 	    });
 
+	    let setLevelRange = (min,max)=>{		    
+		this.jq(ID_LEVEL_RANGE_CHANGED).val('changed');
+		this.jq(ID_LEVEL_RANGE_MIN).val(min);
+		this.jq(ID_LEVEL_RANGE_MAX).val(max);		    
+		this.jq(ID_LEVEL_RANGE_SAMPLE_MIN).attr('src',
+							RamaddaUtil.getCdnUrl('/map/zoom/zoom' + min+'.png'));
+		
+		this.jq(ID_LEVEL_RANGE_SAMPLE_MAX).attr('src',
+							RamaddaUtil.getCdnUrl('/map/zoom/zoom' + max+'.png'));
+	    }
+	    
 
-
-	    this.jq('level_range_slider').slider({
+	    this.jq(ID_LEVEL_RANGE_CLEAR).click(()=>{
+		setLevelRange(this.minLevel,this.maxLevel);
+		this.jq(ID_LEVEL_RANGE_CHANGED).val('cleared');
+		this.jq(ID_LEVEL_RANGE_SLIDER).slider('values',[this.minLevel,this.maxLevel]);
+	    });
+	    this.jq(ID_LEVEL_RANGE_SLIDER).slider({
 		range:true,
 		min:this.minLevel,
 		max:this.maxLevel,
 		values:[
-		    parseInt(this.jq('level_range_min').val()??this.minLevel),
-		    parseInt(this.jq('level_range_max').val()??this.maxLevel)],		
+		    parseInt(this.jq(ID_LEVEL_RANGE_MIN).val()??this.minLevel),
+		    parseInt(this.jq(ID_LEVEL_RANGE_MAX).val()??this.maxLevel)],		
 		slide:(event,ui)=>{
 		    let min = ui.values[0];
 		    let max = ui.values[1];		    
-		    this.jq('level_range_min').val(min);
-		    this.jq('level_range_max').val(max);		    
-		    this.jq('level_range_sample_min_image').attr('src',
-								 RamaddaUtil.getCdnUrl('/map/zoom/zoom' + min+'.png'));
-		    
-		    this.jq('level_range_sample_max_image').attr('src',
-								 RamaddaUtil.getCdnUrl('/map/zoom/zoom' + max+'.png'));
+		    setLevelRange(min,max);
 		}
 
 	    });
@@ -47997,7 +48025,7 @@ MapGlyph.prototype = {
 	    nameWidget+=HU.space(3) +HU.checkbox(this.domId('useentrylocation'),[],this.getUseEntryLocation(),'Use location from entry');
 	}
 	html+=HU.b('Name: ') +nameWidget+'<br>';
-	let level = this.getVisibleLevelRange()??{};
+	let level = this.getVisibleLevelRange(true)??{};
 	html+= HU.checkbox(this.domId('visible'),[],this.getVisible(),'Visible')
 	if(this.getMapLayer()) {
 	    html+= HU.space(4)+HU.checkbox(this.domId('canselect'),[],this.getCanSelect(),'Can Select');
@@ -48155,8 +48183,13 @@ MapGlyph.prototype = {
 
 	this.parsedProperties = null;
 	this.attrs.properties = this.jq('miscproperties').val();
-	this.setVisibleLevelRange(this.display.jq('level_range_min').val(),
-				  this.display.jq('level_range_max').val());
+	if(this.display.jq(ID_LEVEL_RANGE_CHANGED).val()=='changed') {
+	    this.setVisibleLevelRange(this.display.jq(ID_LEVEL_RANGE_MIN).val(),
+				      this.display.jq(ID_LEVEL_RANGE_MAX).val());
+	} else 	if(this.display.jq(ID_LEVEL_RANGE_CHANGED).val()=='cleared') {
+	    this.attrs.visibleLevelRange = null;
+	    this.checkVisible();
+	}
 	this.setShowMarkerWhenNotVisible(this.display.jq('showmarkerwhennotvisible').is(':checked'));
 
 	if(this.isMapServer()  && this.getDatacubeVariable()) {
@@ -52437,9 +52470,9 @@ MapGlyph.prototype = {
     getShowMarkerWhenNotVisible:function() {
 	return this.attrs.showMarkerWhenNotVisible;
     },
-    getVisibleLevelRange:function() {
+    getVisibleLevelRange:function(skipParent) {
 	let r =this.attrs.visibleLevelRange;
-	if((!r || !Utils.isDefined(r.min)) && this.getParentGlyph()) {
+	if(!skipParent && (!r || !Utils.isDefined(r.min)) && this.getParentGlyph()) {
 	    return this.getParentGlyph().getVisibleLevelRange();
 	}
 	return this.attrs.visibleLevelRange;
