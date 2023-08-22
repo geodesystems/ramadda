@@ -97,7 +97,8 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'gridBounds',ex:'north,west,south,east'},	
 	{p:'mapCenter',ex:'lat,lon',tt:"initial position"},
 	{p:'zoomLevel',ex:4,tt:"initial zoom"},
-	{p:'zoomTimeout',ex:500,tt:"initial zoom timeout delay. set this if the map is in tabs, etc, and not going to the initial zoom"},
+	{p:'zoomTimeout',ex:500,
+	 tt:"initial zoom timeout delay. set this if the map is in tabs, etc, and not going to the initial zoom"},
 	{p:'linked',ex:true,tt:"Link location with other maps"},
 	{p:'linkGroup',ex:'some_name',tt:"Map groups to link with"},
 	{p:'initialLocation', ex:'lat,lon',tt:"initial location"},
@@ -384,7 +385,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    if(!this.setMapLocationAndZoom && this.mapParams) {
 		this.setMapLocationAndZoom = true;
 		if(this.mapParams.initialZoom>=0) {
-		    this.map.getMap().zoomTo(this.mapParams.initialZoom);
+		    this.map.zoomTo(this.mapParams.initialZoom);
 		}
 		if(this.mapParams.initialLocation) {
 		    let loc = MapUtils.createLonLat(this.mapParams.initialLocation.lon, this.mapParams.initialLocation.lat);
@@ -475,6 +476,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		this.hadInitialPosition = true;
                 params.initialZoom = +this.getZoomLevel();
 		params.initialZoomTimeout = this.getZoomTimeout();
+		if(debugBounds) console.log("DisplayMap - set initialZoom", params.initialZoom);
 	    }
 
             this.map = this.getProperty("theMap", null);
@@ -1049,7 +1051,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(!this.setMapLocationAndZoom && this.mapParams) {
 		this.setMapLocationAndZoom = true;
 		if(this.mapParams.initialZoom>=0) {
-		    this.map.getMap().zoomTo(this.mapParams.initialZoom);
+		    this.map.zoomTo(this.mapParams.initialZoom);
 		}
 		if(this.mapParams.initialLocation) {
 		    let loc = MapUtils.createLonLat(this.mapParams.initialLocation.lon, this.mapParams.initialLocation.lat);
@@ -2652,7 +2654,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    _this.locationFeatures = [];
 		    if($(this).attr("longitude")) {
 			let point = MapUtils.createLonLat(+$(this).attr("longitude"),+$(this).attr("latitude"));
-			_this.map.getMap().zoomTo(9);
+			_this.map.zoomTo(9);
 			_this.map.setCenter(point);
 		    } else if($(this).attr("north")) {
 			_this.map.setViewToBounds(new RamaddaBounds(+$(this).attr("north"),+$(this).attr("west"),+$(this).attr("south"),+$(this).attr("east")));
