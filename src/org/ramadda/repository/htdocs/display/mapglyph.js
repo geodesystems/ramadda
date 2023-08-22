@@ -496,7 +496,7 @@ MapGlyph.prototype = {
 	    nameWidget+=HU.space(3) +HU.checkbox(this.domId('useentrylocation'),[],this.getUseEntryLocation(),'Use location from entry');
 	}
 	html+=HU.b('Name: ') +nameWidget+'<br>';
-	let level = this.getVisibleLevelRange()??{};
+	let level = this.getVisibleLevelRange(true)??{};
 	html+= HU.checkbox(this.domId('visible'),[],this.getVisible(),'Visible')
 	if(this.getMapLayer()) {
 	    html+= HU.space(4)+HU.checkbox(this.domId('canselect'),[],this.getCanSelect(),'Can Select');
@@ -654,8 +654,13 @@ MapGlyph.prototype = {
 
 	this.parsedProperties = null;
 	this.attrs.properties = this.jq('miscproperties').val();
-	this.setVisibleLevelRange(this.display.jq('level_range_min').val(),
-				  this.display.jq('level_range_max').val());
+	if(this.display.jq(ID_LEVEL_RANGE_CHANGED).val()=='changed') {
+	    this.setVisibleLevelRange(this.display.jq(ID_LEVEL_RANGE_MIN).val(),
+				      this.display.jq(ID_LEVEL_RANGE_MAX).val());
+	} else 	if(this.display.jq(ID_LEVEL_RANGE_CHANGED).val()=='cleared') {
+	    this.attrs.visibleLevelRange = null;
+	    this.checkVisible();
+	}
 	this.setShowMarkerWhenNotVisible(this.display.jq('showmarkerwhennotvisible').is(':checked'));
 
 	if(this.isMapServer()  && this.getDatacubeVariable()) {
@@ -4936,9 +4941,9 @@ MapGlyph.prototype = {
     getShowMarkerWhenNotVisible:function() {
 	return this.attrs.showMarkerWhenNotVisible;
     },
-    getVisibleLevelRange:function() {
+    getVisibleLevelRange:function(skipParent) {
 	let r =this.attrs.visibleLevelRange;
-	if((!r || !Utils.isDefined(r.min)) && this.getParentGlyph()) {
+	if(!skipParent && (!r || !Utils.isDefined(r.min)) && this.getParentGlyph()) {
 	    return this.getParentGlyph().getVisibleLevelRange();
 	}
 	return this.attrs.visibleLevelRange;
