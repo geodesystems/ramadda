@@ -1165,15 +1165,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         String script = (startupScript != null)
 	    ? startupScript
-	    : getProperty("ramadda.startupscript");
-        if (script != null) {
+	    : getScriptPath("ramadda.startupscript");
+        if (Utils.stringDefined(script)) {
             try {
-		List<String> commands  =Utils.split(script," ", true,true);
-		ProcessBuilder pb = new ProcessBuilder(commands);
-		Process     process = pb.start();
+		makeProcessBuilder(Utils.split(script," ", true,true)).start();
             } catch (Exception exc) {
-                System.err.println("Error running startup script:" + script
-                                   + "\n" + exc);
+                System.err.println("Error running startup script:" + script+ "\n" + exc);
             }
         }
         Repository theRepository = this;
@@ -3931,7 +3928,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public Result makeErrorResult(Request request, String msg,boolean decorate) {	
         StringBuilder sb = new StringBuilder(decorate?makeErrorResponse(request, msg):msg);
         Result        result = null;
-	System.err.println("***** ERROR *****");
 	msg = HU.strictSanitizeString(msg);
 
         if (request.responseAsJson()) {
@@ -4893,6 +4889,72 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+
+
+
+
+    private HashSet<String> scriptPaths = new HashSet<String>();
+
+    /**
+       this returns a path defined by the given property name that
+       will be used to do an external execute. This is just a wrapper
+       around getLocalProperty but we use it to keep track of what scripts
+       are being accessed
+     */
+    public String getScriptPath(String name,String...dflts) {
+	String path =  getLocalProperty(name, dflts!=null && dflts.length>0?dflts[0]:null);
+	if(Utils.stringDefined(path)) {
+	    if(!scriptPaths.contains(path)) {
+		scriptPaths.add(path);
+		getLogManager().logInfoAndPrint("RAMADDA: adding script path: " + name+"="+path);
+	    }
+	}
+	return path;
+    }
+
+    public boolean isScriptOk(String path) {
+	boolean ok= scriptPaths.contains(path);
+	System.err.println("script ok:" +path +" " + ok);
+	return ok;
+    }
+
+    public ProcessBuilder makeProcessBuilder(List<String> commands) {
+	String command = commands.get(0);
+	if(!isScriptOk(command)) {
+	    throw new IllegalArgumentException("Error executing commands: given command is not in allowable list of commands:" + command);
+	}
+	return new ProcessBuilder(commands);
+    }
+
+
+    /**
+       Run the external commands.
+       Returns a 2-array:
+       array[0] = error results; 
+       array[1] = results; 
+    */
+    public String[] runCommands(List<String>commands) throws Exception {
+        ProcessBuilder pb      = makeProcessBuilder(commands);
+        Process        process = pb.start();
+        InputStream    is      = process.getInputStream();
+        InputStream    es      = process.getErrorStream();	
+	String results =  IO.readInputStream(is);
+        String error = IO.readInputStream(es);
+	return new String[]{error,results};
+    }
+
+
+    public String getScriptPathFromTree(String name, String dflt) {
+        String value = getScriptPath(name, (String) null);
+        if (Utils.stringDefined(value)) {
+            return value;
+        }
+        if (getParentRepository() != null) {
+            return getParentRepository().getScriptPath(name, dflt);
+        }
+
+        return dflt;
+    }
 
 
 
