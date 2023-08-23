@@ -1625,9 +1625,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
             IOUtil.close(fos);
         }
 
-        HtmlUtils.setBlockHideShowImage(getIconUrl(ICON_MINUS),
+        HU.setBlockHideShowImage(getIconUrl(ICON_MINUS),
                                         getIconUrl(ICON_PLUS));
-        HtmlUtils.setInlineHideShowImage(getIconUrl(ICON_MINUS),
+        HU.setInlineHideShowImage(getIconUrl(ICON_MINUS),
                                          getIconUrl(ICON_PLUS));
 
         getLogManager().logInfo("RAMADDA started");
@@ -3407,7 +3407,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 			    continue;
 			}
 			forAdmin.append(resource.getTheFile().toString());
-			forAdmin.append(HtmlUtils.br());
+			forAdmin.append(HU.br());
 
 			sb.append(
 				  child.getTypeHandler().getEntryResourceHref(
@@ -3415,7 +3415,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 			sb.append(
 				  formatFileLength(
 						   child.getResource().getFileSize(), true));
-			sb.append(HtmlUtils.br());
+			sb.append(HU.br());
 			didOne = true;
 		    }
 		    if (request.getUser().getAdmin()) {
@@ -3715,7 +3715,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     sb.append(
 			      getPageHandler().showDialogError(inner.getMessage()));
                     sb.append(getUserManager().makeLoginForm(request,
-							     HtmlUtils.hiddenBase64(ARG_REDIRECT, request.getUrl())));
+							     HU.hiddenBase64(ARG_REDIRECT, request.getUrl())));
 
                 } else {  //auth isnt html
                     sb.append(inner.getMessage());
@@ -3731,12 +3731,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
 			String redirectUrl =
 			    Utils.encodeBase64(request.getUrl());
                         String url =
-                            HtmlUtils.url(URL_SSLREDIRECT.toString(),
+                            HU.url(URL_SSLREDIRECT.toString(),
                                           ARG_REDIRECT, redirectUrl);
                         result = new Result(url);
                     } else {
                         result = new Result("Error", sb);
-			result.addHttpHeader(HtmlUtils.HTTP_WWW_AUTHENTICATE, "Basic realm=\"ramadda\"");
+			result.addHttpHeader(HU.HTTP_WWW_AUTHENTICATE, "Basic realm=\"ramadda\"");
                         result.setResponseCode(Result.RESPONSE_UNAUTHORIZED);
                     }
 
@@ -3747,8 +3747,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
             if (!request.responseAsJson() && (request.getUser() != null) && request.getUser().getAdmin()) {
                 sb.append(
-			  HtmlUtils.pre(
-					HtmlUtils.entityEncode(
+			  HU.pre(
+					HU.strictSanitizeString(
 							       LogUtil.getStackTrace(inner))));
             }
 
@@ -3756,7 +3756,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
             if (badAccess) {
                 result.setResponseCode(Result.RESPONSE_UNAUTHORIZED);
-                //                result.addHttpHeader(HtmlUtils.HTTP_WWW_AUTHENTICATE,"Basic realm=\"repository\"");
+                //                result.addHttpHeader(HU.HTTP_WWW_AUTHENTICATE,"Basic realm=\"repository\"");
             } else {
                 result.setResponseCode(Result.RESPONSE_INTERNALERROR);
                 getLogManager().logError("Error handling request:" + request
@@ -3869,10 +3869,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         sb.append(getPageHandler().showDialogError(message + "<br>"
 						   + inner.getMessage()));
         if ((request.getUser() != null) && request.getUser().getAdmin()) {
-            String stack = HtmlUtils.pre(
-					 HtmlUtils.entityEncode(
+            String stack = HU.pre(
+					 HU.entityEncode(
 								LogUtil.getStackTrace(inner)));
-            sb.append(HtmlUtils.makeShowHideBlock("Stack", stack, false));
+            sb.append(HU.makeShowHideBlock("Stack", stack, false));
         }
 
         return sb.toString();
@@ -3913,7 +3913,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         } else {
             msg = "Error:" + inner.getMessage();
         }
-
         return makeErrorResult(request, msg);
     }
 
@@ -3932,6 +3931,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public Result makeErrorResult(Request request, String msg,boolean decorate) {	
         StringBuilder sb = new StringBuilder(decorate?makeErrorResponse(request, msg):msg);
         Result        result = null;
+	System.err.println("***** ERROR *****");
+	msg = HU.strictSanitizeString(msg);
+
         if (request.responseAsJson()) {
             result = new Result("", sb, JsonUtil.MIMETYPE);
             result.setShouldDecorate(false);
@@ -4003,6 +4005,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public String makeErrorResponse(Request request, String msg) {
+	msg = HU.strictSanitizeString(msg);
         msg = translate(request, msg);
         if (request.responseAsJson()) {
             return JsonUtil.mapAndQuote(Utils.makeList("error", msg));
@@ -4013,13 +4016,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
             return msg;
         } else {
 	    //true->remove URL args
-            msg = HtmlUtils.sanitizeString(msg,true);
+            msg = HU.sanitizeString(msg,true);
             StringBuilder sb = new StringBuilder();
             sb.append(
 		      getPageHandler().showDialogError(
 						       getPageHandler().translate(
 										  request, "An error has occurred") + ":"
-						       + HtmlUtils.p() + msg));
+						       + HU.p() + msg));
 
             return sb.toString();
         }
@@ -4049,7 +4052,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		      getPageHandler().showDialogNote(
 						      getPageHandler().translate(
 										 request, "An error has occurred") + ":"
-						      + HtmlUtils.p() + msg));
+						      + HU.p() + msg));
 
             return sb.toString();
         }
@@ -4181,6 +4184,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
+    private static String hashStringSalt = null;
+    private static Object HASH_MUTEX = new Object();
+
+
     /**
      *  Convert the sessionId into a authorization token that is used to verify form
      *  submissions, etc.
@@ -4193,7 +4200,21 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (sessionId == null) {
             return "";
         }
-
+	if(hashStringSalt==null) {
+	    synchronized(HASH_MUTEX) {
+		hashStringSalt = getDbProperty("authtoken_salt",(String)null);
+		if(hashStringSalt==null) {
+		    hashStringSalt = ""+Math.random();
+		    //		    System.err.println("new hash string:"+ hashStringSalt);
+		    try {
+			writeGlobal("authtoken_salt",hashStringSalt);
+		    } catch(Exception exc) {
+			throw new RuntimeException(exc);
+		    }
+		}
+	    }
+	}
+	sessionId  =hashStringSalt + sessionId;
         return RepositoryUtil.hashString(sessionId);
     }
 
@@ -4208,7 +4229,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             String sessionId = request.getSessionId();
             if (sessionId != null) {
                 String authToken = getAuthToken(sessionId);
-                sb.append(HtmlUtils.hidden(ARG_AUTHTOKEN, authToken));
+                sb.append(HU.hidden(ARG_AUTHTOKEN, authToken));
             }
         } catch (java.io.IOException ioe) {
             throw new RuntimeException(ioe);
@@ -4579,7 +4600,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                             Result result =
                                 getRepository().makeErrorResult(request,
 								"Could not find aliased entry:"
-								+ HtmlUtils.sanitizeString(alias));
+								+ HU.sanitizeString(alias));
                             result.setResponseCode(Result.RESPONSE_NOTFOUND);
 
                             return result;
@@ -4647,7 +4668,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
     public  Result make404(Request request) throws Exception {
-        String userAgent = request.getHeaderArg(HtmlUtils.HTTP_USER_AGENT);
+        String userAgent = request.getHeaderArg(HU.HTTP_USER_AGENT);
         if (userAgent == null) {
             userAgent = "Unknown";
         }
@@ -5320,6 +5341,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public double getDbProperty(String name, double dflt) {
         return Misc.getProperty(getDbProperties(), name, dflt);
     }
+
+    public String getDbProperty(String name, String dflt) {
+        return Misc.getProperty(getDbProperties(), name, dflt);
+    }    
 
 
 
@@ -6072,29 +6097,29 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 return new Result("", sb);
             }
             sb.append("Bad pass phrase");
-            sb.append(HtmlUtils.p());
+            sb.append(HU.p());
         }
-        sb.append(HtmlUtils.p());
+        sb.append(HU.p());
         sb.append(
 		  "This form allows you to clear any caches and have RAMADDA reload properties");
-        sb.append(HtmlUtils.br());
+        sb.append(HU.br());
         if (passPhrase.length() == 0) {
             sb.append(
 		      "The pass phrase needs to be set as a property on your server - <i>ramadda.passphrase</i>");
-            sb.append(HtmlUtils.br());
+            sb.append(HU.br());
         }
         sb.append(
 		  "Note: The pass phrase is not meant to be secure, it is just used so anonymous users can't be clearing your repository state");
-        sb.append(HtmlUtils.hr());
-        sb.append(HtmlUtils.formTable());
+        sb.append(HU.hr());
+        sb.append(HU.formTable());
         sb.append(request.formPost(URL_CLEARSTATE));
-        sb.append(HtmlUtils.formEntry(msgLabel("Pass Phrase"),
-                                      HtmlUtils.input(PROP_PASSPHRASE)));
+        sb.append(HU.formEntry(msgLabel("Pass Phrase"),
+                                      HU.input(PROP_PASSPHRASE)));
         sb.append(
-		  HtmlUtils.formEntry(
-				      "", HtmlUtils.submit("Clear Repository State")));
-        sb.append(HtmlUtils.formTableClose());
-        sb.append(HtmlUtils.formClose());
+		  HU.formEntry(
+				      "", HU.submit("Clear Repository State")));
+        sb.append(HU.formTableClose());
+        sb.append(HU.formClose());
 
         return new Result("", sb);
     }
@@ -6628,38 +6653,38 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	if(info!=null)
 	    sb.append(info);
 
-        sb.append(HtmlUtils.formTable());
+        sb.append(HU.formTable());
 	String contact = getProperty("ramadda.contact",null);
 	if(contact!=null)
-	    HtmlUtils.formEntry(sb, msgLabel("Contact"),contact);
+	    HU.formEntry(sb, msgLabel("Contact"),contact);
 
-	HtmlUtils.formEntry(sb, msgLabel("Start Time"),
+	HU.formEntry(sb, msgLabel("Start Time"),
 			    getDateHandler().formatDate(startTime));
-	HtmlUtils.formEntry(sb, msgLabel("RAMADDA Version"),
+	HU.formEntry(sb, msgLabel("RAMADDA Version"),
 			    RepositoryUtil.getVersion());
-	HtmlUtils.formEntry(sb, msgLabel("Build Date"),
+	HU.formEntry(sb, msgLabel("Build Date"),
 			    getRepository().getProperty(PROP_BUILD_DATE, "N/A"));
         String version =
             Runtime.class.getPackage().getImplementationVersion();
-        HtmlUtils.formEntry(sb,msgLabel("Java Version"), version);
+        HU.formEntry(sb,msgLabel("Java Version"), version);
         getAdmin().addInfo(request, sb);
         if (request.exists("class")) {
             Class c = Class.forName(request.getString("class", ""));
             URL classesRootDir =
                 c.getProtectionDomain().getCodeSource().getLocation();
-            HtmlUtils.formEntry(sb, msgLabel("Class location - "
+            HU.formEntry(sb, msgLabel("Class location - "
 						   + request.getString("class",
 								       "")), classesRootDir.toString());
 
         }
 
 	
-        HtmlUtils.formEntry(sb, msgLabel("Stand alone"), "" + runningStandAlone);
-        HtmlUtils.formEntry(sb,msgLabel("Port"), "" + getPort());
-        HtmlUtils.formEntry(sb, msgLabel("Https Port"), "" + getHttpsPort());
+        HU.formEntry(sb, msgLabel("Stand alone"), "" + runningStandAlone);
+        HU.formEntry(sb,msgLabel("Port"), "" + getPort());
+        HU.formEntry(sb, msgLabel("Https Port"), "" + getHttpsPort());
 
 
-        sb.append(HtmlUtils.formTableClose());
+        sb.append(HU.formTableClose());
         getPageHandler().sectionClose(request, sb);
         return new Result("", sb);
     }
@@ -6733,10 +6758,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public Result processColorTables(Request request) throws Exception {
         StringBuilder sb = new StringBuilder();
         getPageHandler().sectionOpen(request, sb,"Color Tables",false);	
-        sb.append(HtmlUtils.div("", "id='colortables'"));
-	sb.append(HtmlUtils.importJS(getHtdocsUrl("/colortables.js")));
-	//sb.append(HtmlUtils.importJS(getHtdocsUrl("/esdlcolortables.js")));	
-        sb.append(HtmlUtils.script("Utils.displayAllColorTables('colortables');"));
+        sb.append(HU.div("", "id='colortables'"));
+	sb.append(HU.importJS(getHtdocsUrl("/colortables.js")));
+	//sb.append(HU.importJS(getHtdocsUrl("/esdlcolortables.js")));	
+        sb.append(HU.script("Utils.displayAllColorTables('colortables');"));
         getPageHandler().sectionClose(request, sb);
         return new Result("", sb);
     }
@@ -6771,7 +6796,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             StringBuilder tmpSB = new StringBuilder();
             tmpSB.append("<li>");
             String fullUrl = getUrlBase() + url[0];
-            tmpSB.append(HtmlUtils.href(fullUrl, url[1]));
+            tmpSB.append(HU.href(fullUrl, url[1]));
             tmpSB.append("<br>&nbsp;");
             cats.get((url[2] == null)
                      ? "Other Documentation"
@@ -6780,7 +6805,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         for (String cat : cats.getCategories()) {
             StringBuilder cb = cats.get(cat);
             if (cb.length() > 0) {
-                sb.append(HtmlUtils.h3(cat));
+                sb.append(HU.h3(cat));
                 sb.append("<ul>");
                 sb.append(cb);
                 sb.append("</ul>");
@@ -6934,9 +6959,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (typeList.size() > 0) {
             for (TwoFacedObject tfo : typeList) {
                 if (what.equals(tfo.getId())) {
-                    links.add(HtmlUtils.span(tfo.toString(), extra1));
+                    links.add(HU.span(tfo.toString(), extra1));
                 } else {
-                    links.add(HtmlUtils.href(request.makeUrl(URL_LIST_SHOW,
+                    links.add(HU.href(request.makeUrl(URL_LIST_SHOW,
 							     ARG_WHAT, (String) tfo.getId(), ARG_TYPE,
 							     (String) typeHandler.getType()), tfo.toString(),
 					     extra2));
@@ -6953,9 +6978,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         String[] names = { "Types", "Tags", "Associations" };
         for (int i = 0; i < whats.length; i++) {
             if (what.equals(whats[i])) {
-                links.add(HtmlUtils.span(names[i], extra1));
+                links.add(HU.span(names[i], extra1));
             } else {
-                links.add(HtmlUtils.href(request.makeUrl(URL_LIST_SHOW,
+                links.add(HU.href(request.makeUrl(URL_LIST_SHOW,
 							 ARG_WHAT, whats[i]) + typeAttr, names[i], extra2));
             }
         }
@@ -7252,7 +7277,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                          typeHandler.getType()));
         }
 
-        return HtmlUtils.select(arg, items, selected,attrs);
+        return HU.select(arg, items, selected,attrs);
     }
 
 
