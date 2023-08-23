@@ -1706,6 +1706,7 @@ public class Request implements Constants, Cloneable {
         String  mySessionId  = getSessionId();
         String  argSessionId = getString(ARG_SESSIONID, (String) null);
 	//	debug=true;
+	//	System.err.println("ensure auth token:" + urlPath);
         if (mySessionId == null) {
             mySessionId = argSessionId;
         }
@@ -2235,11 +2236,11 @@ public class Request implements Constants, Cloneable {
      */
     public int get(Object key, int dflt) {
         String result = (String) getValue(key, (String) null);
-        if ((result == null) || (result.trim().length() == 0)) {
+        if (!Utils.stringDefined(result)) {
             return dflt;
         }
 
-        return Integer.parseInt(result);
+        return Integer.parseInt(result.trim());
     }
 
 
