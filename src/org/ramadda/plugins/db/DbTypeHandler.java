@@ -185,6 +185,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
     /** _more_ */
     private String mapLabelTemplatePrint;
+    private int mapDotLimit=100;
+
 
     /** _more_ */
     private String searchForLabel = "Search For";
@@ -258,6 +260,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         this.mapLabelTemplatePrint = Utils.getAttributeOrTag(tableNode,
                 "mapLabelTemplatePrint", null);
 
+	mapDotLimit = Utils.getAttributeOrTag(tableNode,"mapDotLimit",mapDotLimit);
         //Initialize this type handler with a string blob
         Element root = XmlUtil.getRoot("<type></type>");
         XmlUtil.create("action", root, new String[] {"name","dbsearchform","label","Search Form","icon","fas fa-search"});
@@ -4954,7 +4957,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 catMap = new Hashtable<String, StringBuilder>();
                 cats   = new ArrayList<String>();
             }
-	    boolean useDot = forPrint || listValues.size()>100;
+
+	    boolean useDot = forPrint || listValues.size()>mapDotLimit;
 	    int radius = 6;
 	    if(listValues.size()>1000) {
 		radius = 2;
