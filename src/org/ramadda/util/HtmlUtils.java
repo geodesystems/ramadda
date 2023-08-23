@@ -6252,6 +6252,28 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
     }
 
+
+    public static String[] strictSanitizeStrings(String...strings) {
+	String[] result = new String[strings.length];
+	for(int i=0;i<strings.length;i++)
+	    result[i] = strictSanitizeString(strings[i]);
+	return result;
+    }
+
+
+    public static String strictSanitizeString(String s) {    
+        s = s.replaceAll("<", "___").replaceAll(">", "___");
+        s = s.replaceAll("(?i)(script)", "_$1_");
+        s = s.replaceAll("(?i)(src)(" + Utils.WHITESPACE_CHARCLASS + "*=)",
+                         "_$1_$2");
+        s = s.replaceAll("(?i)(onclick)(" + Utils.WHITESPACE_CHARCLASS
+                         + "*=)", "_$1_$2");
+
+        return s;
+    }    
+
+
+
     /**
      * _more_
      *
