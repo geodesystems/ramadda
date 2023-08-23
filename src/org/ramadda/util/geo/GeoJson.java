@@ -228,8 +228,8 @@ public class GeoJson extends JsonUtil {
 		//		String    type     = readValue(feature, "geometry.type", "NULL");
 
 		Point     centroid = bounds.getCenter();
-		Utils.add(values, "" + centroid.getLatitude(),
-			  "" + centroid.getLongitude());
+		Utils.add(values, "" + dec(centroid.getLatitude()),
+			  "" + dec(centroid.getLongitude()));
 	    } else {
 		Utils.add(values,"NaN","NaN");
 	    }
@@ -238,9 +238,9 @@ public class GeoJson extends JsonUtil {
                 StringBuilder poly = new StringBuilder();
                 for (List<Point> p2 : pts) {
                     for (Point tuple : p2) {
-                        poly.append("" + tuple.getLatitude());
+                        poly.append("" + dec(tuple.getLatitude()));
                         poly.append(";");
-                        poly.append("" + tuple.getLongitude());
+                        poly.append("" + dec(tuple.getLongitude()));
                         poly.append(";");
                     }
                 }
@@ -433,6 +433,9 @@ public class GeoJson extends JsonUtil {
     }
 
 
+    private static double dec(double d) {
+	return Utils.decimals(d,6);
+    }
 
     /**
      * _more_
