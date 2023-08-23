@@ -221,6 +221,7 @@ public class ExtEditor extends RepositoryManager {
         final EntryManager entryManager = getEntryManager();
 
         if (request.exists(ARG_EXTEDIT_EDIT)) {
+            request.ensureAuthToken();
 	    final JpegMetadataHandler jpegMetadataHandler = (JpegMetadataHandler) getMetadataManager().getHandler(JpegMetadataHandler.class);
             final boolean doMd5     = request.get(ARG_EXTEDIT_MD5, false);
             final boolean doSpatial = request.get(ARG_EXTEDIT_SPATIAL, false);
@@ -319,6 +320,7 @@ public class ExtEditor extends RepositoryManager {
 	    what = new String[]{ARG_EXTEDIT_REINDEX};
 	    */
         } else  if (request.exists(ARG_EXTEDIT_CHANGETYPE)) {
+            request.ensureAuthToken();
             TypeHandler newTypeHandler = getRepository().getTypeHandler(
                                              request.getString(
                                                  ARG_EXTEDIT_NEWTYPE, ""));
@@ -331,6 +333,9 @@ public class ExtEditor extends RepositoryManager {
 	    what = new String[]{ARG_EXTEDIT_ADDALIAS};
 	    boolean firstTime = !request.exists(ARG_EXTEDIT_ADDALIAS_NOTFIRST);
             boolean confirmed =  request.exists(ARG_EXTEDIT_ADDALIAS_CONFIRM);
+	    if(confirmed) {
+		request.ensureAuthToken();
+	    }
 	    boolean defaultChecked = firstTime;
 	    String template = request.getString(ARG_EXTEDIT_ADDALIAS_TEMPLATE,"").trim();
 	    formSuffix.append(HU.hidden(ARG_EXTEDIT_ADDALIAS_NOTFIRST,"true"));
@@ -407,6 +412,7 @@ public class ExtEditor extends RepositoryManager {
 	    }
 	    formSuffix.append(list);
         } else if (request.exists(ARG_EXTEDIT_CHANGETYPE_RECURSE)) {
+            request.ensureAuthToken();
             final boolean forReal =
                 request.get(ARG_EXTEDIT_CHANGETYPE_RECURSE_CONFIRM, false);
             final TypeHandler newTypeHandler = getRepository().getTypeHandler(
@@ -468,6 +474,7 @@ public class ExtEditor extends RepositoryManager {
 	    actionId = getActionManager().runAction(action,"Change Type","",finalEntry);
 	    what = new String[]{ARG_EXTEDIT_CHANGETYPE_RECURSE};
         } else if (request.exists(ARG_EXTEDIT_JS)) {
+            request.ensureAuthToken();
             final boolean forReal =
                 request.get(ARG_EXTEDIT_JS_CONFIRM, false);
 	    final String js = request.getString(ARG_EXTEDIT_SOURCE,"");
@@ -605,6 +612,7 @@ public class ExtEditor extends RepositoryManager {
 	    what = new String[]{ARG_EXTEDIT_JS};
 	    canCancel = true;
         } else if (request.exists(ARG_EXTEDIT_URL_CHANGE)) {
+            request.ensureAuthToken();
             final String pattern = request.getString(ARG_EXTEDIT_URL_PATTERN,
                                        (String) null);
             final String to = request.getString(ARG_EXTEDIT_URL_TO,
@@ -641,6 +649,7 @@ public class ExtEditor extends RepositoryManager {
 	    actionId = getActionManager().runAction(action,"","",finalEntry);
 	    what = new String[]{ARG_EXTEDIT_URL_CHANGE};
         } else  if (request.exists(ARG_EXTEDIT_REPORT)) {
+            request.ensureAuthToken();
             final long[] size     = { 0 };
             final int[]  numFiles = { 0 };
             final boolean showMissing =
@@ -784,8 +793,8 @@ public class ExtEditor extends RepositoryManager {
 	tfos.add(0,new HtmlUtils.Selector("Select one","",""));
 
 	for(String form: what) {
-	    sb.append(request.form(getRepository().URL_ENTRY_EXTEDIT,
-				   HU.attr("name", "entryform")));
+	    request.formPostWithAuthToken(sb, getRepository().URL_ENTRY_EXTEDIT,
+					  HU.attr("name", "entryform"));
 	    sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
 	    if(form.equals(ARG_EXTEDIT_EDIT)) {
 		opener.accept("Spatial and Temporal Metadata");
