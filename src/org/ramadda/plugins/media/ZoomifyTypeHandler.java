@@ -87,7 +87,7 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
         if ( !entry.isFile()) {
             return;
         }
-        String slicer = getRepository().getProperty("ramadda.image.slicer");
+        String slicer = getRepository().getLocalProperty("ramadda.image.slicer",null);
         if (slicer == null) {
             return;
         }
@@ -97,7 +97,6 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
         List<String> commands = new ArrayList<String>();
         Utils.add(commands, "sh", slicer, "-i",
                   entry.getResource().getPath(), "-o", imagesDir.toString());
-	System.err.println(commands);
         ProcessBuilder pb = new ProcessBuilder(commands);
         pb.redirectErrorStream(true);
         Process     process = pb.start();
