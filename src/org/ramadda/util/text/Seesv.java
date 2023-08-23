@@ -3771,7 +3771,7 @@ public class Seesv implements SeesvCommands {
 	    });
 	defineFunction(CMD_EXT,1,(ctx,args,i) -> {
 		if(!commandLine)
-		    throw new IllegalArgumentException(CMD_EXT "is only available from command line");
+		    throw new IllegalArgumentException(CMD_EXT +  "is only available from command line");
 		List<String> a = new ArrayList<String>();
 		String id = args.get(++i);
 		int j=i+1;
@@ -3785,7 +3785,7 @@ public class Seesv implements SeesvCommands {
 	    });
 	defineFunction(CMD_EXEC,1,(ctx,args,i) -> {
 		if(!commandLine)
-		    throw new IllegalArgumentException(CMD_EXT "is only available from command line");
+		    throw new IllegalArgumentException(CMD_EXEC + "is only available from command line");
 		List<String> a = new ArrayList<String>();
 		String id = args.get(++i);
 		int j=i+1;
