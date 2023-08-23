@@ -1019,7 +1019,8 @@ public class JobManager extends RepositoryManager {
         if (stdErrPrintWriter == null) {
             stdErrPrintWriter = new PrintWriter(errorBuf);
         }
-        ProcessBuilder pb = new ProcessBuilder(commands);
+
+        ProcessBuilder pb = getRepository().makeProcessBuilder(commands);
         if (envVars != null) {
             Map<String, String> env = pb.environment();
             //env.clear();
@@ -1061,7 +1062,7 @@ public class JobManager extends RepositoryManager {
 
         List<String> commands = new ArrayList<String>();
         commands.add(command);
-        ProcessBuilder pb = new ProcessBuilder(commands);
+        ProcessBuilder pb = getRepository().makeProcessBuilder(commands);
         pb.directory(workingDir);
 
         ProcessRunner runner = new ProcessRunner(pb, timeOutInSeconds,
