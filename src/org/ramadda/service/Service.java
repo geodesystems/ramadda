@@ -460,7 +460,7 @@ public class Service extends RepositoryManager {
             }
             if (pathProperty != null) {
                 String pathPropertyValue =
-                    getRepository().getPropertyFromTree(pathProperty, null);
+                    getRepository().getScriptPathFromTree(pathProperty, null);
                 if (pathPropertyValue != null) {
                     pathPropertyValue =
                         getStorageManager().localizePath(pathPropertyValue);
