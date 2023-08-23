@@ -1697,6 +1697,10 @@ public class Request implements Constants, Cloneable {
      * _more_
      */
     public void ensureAuthToken() {
+	ensureAuthToken(false);
+    }	
+
+    public void ensureAuthToken(boolean justUseSessionId) {	
         boolean debug        = false;
         String  authToken    = getString(ARG_AUTHTOKEN, (String) null);
         String  mySessionId  = getSessionId();
@@ -1706,48 +1710,39 @@ public class Request implements Constants, Cloneable {
         }
 
         if (debug) {
-            System.err.println("ensureAuthToken");
-            System.err.println("\tauthToken:" + authToken);
-            System.err.println("\targ session:" + argSessionId);
-            System.err.println("\tmySessionId:" + mySessionId);
-            /*
-	      for (Enumeration keys = parameters.keys(); keys.hasMoreElements(); ) {System.err.println("\tkey:" + keys.nextElement());        }
-            */
+            System.err.println("ensureAuthToken: " +
+			       " just use session id:" + justUseSessionId+
+			       " authToken:" + Utils.clip(authToken,10,"...") +
+			       " arg session:" + Utils.clip(argSessionId,10,"...")+
+			       " mySessionId:" + Utils.clip(mySessionId,10,"..."));
         }
-        //      debug = false;
 
-        if ((authToken == null) && (argSessionId != null)) {
-            if (argSessionId.equals(mySessionId)) {
+        if (justUseSessionId || (authToken==null && argSessionId!=null)) {
+	    if(argSessionId != null && argSessionId.equals(mySessionId)) {
                 if (debug) {
-                    System.err.println(
-				       "\tensureAuthToken arg session id == session id");
+                    System.err.println("\tOK - arg session id == session id");
                 }
-
                 return;
             }
             if (debug) {
-                System.err.println(
-				   "\tensureAuthToken arg session id != session id");
+                System.err.println("\tnot OK arg session id != session id");
             }
         }
 
-        if ((authToken != null) && (mySessionId != null)) {
-            if (debug) {
-                System.err.println("\tchecking auth token");
-            }
-            String sessionAuth = RepositoryUtil.hashString(mySessionId);
-            if (debug) {
-                System.err.println("\thashed sessionId:" + sessionAuth);
-            }
+	
+        if (!justUseSessionId && authToken != null && mySessionId != null) {
+            String sessionAuth = getRepository().getAuthToken(mySessionId);
             if (authToken.trim().equals(sessionAuth)) {
                 if (debug) {
-                    System.err.println("\tok");
+                    System.err.println("\tauth token is ok");
                 }
-
                 return;
             }
-            getRepository().getLogManager().logError(
-						     "Request.ensureAuthToken: authToken != sessionAuth :"
+            if (debug) {
+                System.err.println("\tauth token is no ok");
+            }
+
+            getRepository().getLogManager().logError("Request.ensureAuthToken: authToken != sessionAuth :"
 						     + "\n\tsession:" + mySessionId + "\n\tauth token:"
 						     + authToken + "\n\tsession hashed:" + sessionAuth, null);
         }
@@ -1757,15 +1752,13 @@ public class Request implements Constants, Cloneable {
             return;
         }
 
-
         if (debug) {
-            System.err.println("Bad");
+            System.err.println("Bad auth token");
         }
-        getRepository().getLogManager().logError(
-						 "Request.ensureAuthToken: something null:" + "\n\tsession:"
+        getRepository().getLogManager().logError("Request.ensureAuthToken: failed:" + "\n\tsession:"
 						 + mySessionId + "\n\tauth token:" + authToken, null);
 
-        throw new IllegalArgumentException("Bad authentication token");
+        throw new IllegalArgumentException("Bad authentication token:" + authToken);
     }
 
 
@@ -1891,6 +1884,18 @@ public class Request implements Constants, Cloneable {
 
         return s;
     }
+
+    public String getStrictSanitizedString(String key, String dflt) {
+        if (checker == null) {
+            //Don't run the checker for now
+            //checker =  Pattern.compile(repository.getProperty(PROP_REQUEST_PATTERN));
+        }
+        String s = getCheckedString(key, dflt, checker);
+        s = HtmlUtils.strictSanitizeString(s);
+
+        return s;
+    }
+
 
 
     /**
@@ -2648,7 +2653,7 @@ public class Request implements Constants, Cloneable {
     public String getAuthToken() {
         String sessionId = getSessionId();
         if (sessionId != null) {
-            return RepositoryUtil.hashString(sessionId);
+            return getRepository().getAuthToken(sessionId);
         }
 
         return "";
