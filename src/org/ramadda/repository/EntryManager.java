@@ -1315,6 +1315,7 @@ public class EntryManager extends RepositoryManager {
 
 
     public Result processEntryAddFile(Request request) throws Exception {
+        request.ensureAuthToken();
 	StringBuilder sb = new StringBuilder();
 	request.setReturnFilename("result.json");
 	String fileContents = request.getString("file",(String) null);
@@ -2185,6 +2186,7 @@ public class EntryManager extends RepositoryManager {
 
 
     public Result processEntrySetFile(final Request request) throws Exception {
+	request.ensureAuthToken();
 	StringBuilder sb = new StringBuilder();
         Entry         entry = getEntry(request);
 	if(entry==null) {
@@ -3660,7 +3662,7 @@ public class EntryManager extends RepositoryManager {
         }
 
         if (request.exists(ARG_CANCEL)) {
-            return new Result(request.entryUrl(getRepository().URL_ENTRY_FORM, entry));
+            return new Result(request.entryUrl(getRepository().URL_ENTRY_SHOW, entry));
         }
 
 
@@ -5497,7 +5499,8 @@ public class EntryManager extends RepositoryManager {
      */
     public Result processEntryXmlCreate(Request request) throws Exception {
         try {
-            request.ensureAuthToken();
+	    //true implies just check the session id
+            request.ensureAuthToken(true);
             return processEntryXmlCreateInner(request);
         } catch (Exception exc) {
             if (request.getString(ARG_RESPONSE, "").equals(RESPONSE_XML)) {
