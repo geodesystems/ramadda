@@ -90,6 +90,13 @@ var Utils =  {
 	}
 	return first;
     },
+    preventSubmit:function(event) {
+        if (event.keyCode === 13) { 
+            return false; 
+        }
+	return true;
+    },
+
     throttle:function(f, delay) {
 	let timer = 0;
 	return function(...args) {
