@@ -3303,12 +3303,9 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    let json = this.makeJson();
 //	    console.log(json);
 	    let url = Ramadda.getUrl("/entry/setfile"); 
-            let args = {
-                entryid: this.getProperty("entryId"),
-		"file": json,
-            };
-	    var formdata = new FormData();
+	    let formdata = new FormData();
 	    formdata.append("entryid",this.getProperty("entryId"));
+	    formdata.append("authtoken",this.getProperty("authToken"));	    
 	    formdata.append("file",json);
 	    $.ajax({
 		url: url,
@@ -5267,12 +5264,13 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    if(!this.canChange()) return;
 	    if(this.haveMadeControls) return;
 	    this.haveMadeControls = true;
+	    
 	    Utils.initDragAndDrop(this.jq(ID_MAP),
 				  event=>{},
 				  event=>{},
 				  (event,item,result) =>{
 				      let entryId = this.getProperty('entryId') || this.entryId;
-				      Ramadda.handleDropEvent(event, item, result, entryId,(data,entryid, name,isImage)=>{
+				      Ramadda.handleDropEvent(event, item, result, entryId,this.getProperty("authToken"),(data,entryid, name,isImage)=>{
 
 					  name = name??data.name;
 					  if(MAP_TYPES.includes(data.type)) {
