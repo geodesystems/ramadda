@@ -244,9 +244,12 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
     };
     if (argOptions)
         $.extend(options, argOptions);
+    let authToken = options.authToken;
+    if(options.authToken) delete options.authToken;
+
     $.extend(this,
 	     {id:id,
-	      authToken:options.authToken,
+	      authToken:authToken,
 	      editor:ace.edit(id),
 	      formId:formId,
 	      hidden:hidden});
