@@ -6262,6 +6262,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
 
     public static String strictSanitizeString(String s) {    
+	if(s==null) return s;
         s = s.replaceAll("<", "___").replaceAll(">", "___");
         s = s.replaceAll("(?i)(script)", "_$1_");
         s = s.replaceAll("(?i)(src)(" + Utils.WHITESPACE_CHARCLASS + "*=)",
