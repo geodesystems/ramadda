@@ -180,6 +180,15 @@ h6 {
 
 
 
+.ramadda-captcha {
+    display:inline-block;
+    margin:8px;
+    padding:8px;
+    border:var(--basic-border);
+    background:var(--color-mellow-yellow);
+    border-radius:var(--default-radius);
+}
+
 ramadda-heading, .ramadda-page-heading a, a.ramadda-page-heading, .ramadda-heading, .ramadda-lheading, .ramadda-blurb {
     font-size:140%;
 }
