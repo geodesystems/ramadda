@@ -1700,37 +1700,25 @@ public class Request implements Constants, Cloneable {
 	ensureAuthToken(false);
     }	
 
-    public void ensureAuthToken(boolean justUseSessionId) {	
+    public void ensureAuthToken(boolean checkSessionId) {	
         boolean debug        = false;
         String  authToken    = getString(ARG_AUTHTOKEN, (String) null);
         String  mySessionId  = getSessionId();
         String  argSessionId = getString(ARG_SESSIONID, (String) null);
+	debug=true;
         if (mySessionId == null) {
             mySessionId = argSessionId;
         }
 
         if (debug) {
             System.err.println("ensureAuthToken: " +
-			       " just use session id:" + justUseSessionId+
+			       " check session id:" + checkSessionId+
 			       " authToken:" + Utils.clip(authToken,10,"...") +
 			       " arg session:" + Utils.clip(argSessionId,10,"...")+
 			       " mySessionId:" + Utils.clip(mySessionId,10,"..."));
         }
 
-        if (justUseSessionId || (authToken==null && argSessionId!=null)) {
-	    if(argSessionId != null && argSessionId.equals(mySessionId)) {
-                if (debug) {
-                    System.err.println("\tOK - arg session id == session id");
-                }
-                return;
-            }
-            if (debug) {
-                System.err.println("\tnot OK arg session id != session id");
-            }
-        }
-
-	
-        if (!justUseSessionId && authToken != null && mySessionId != null) {
+        if (authToken != null && mySessionId != null) {
             String sessionAuth = getRepository().getAuthToken(mySessionId);
             if (authToken.trim().equals(sessionAuth)) {
                 if (debug) {
@@ -1741,11 +1729,20 @@ public class Request implements Constants, Cloneable {
             if (debug) {
                 System.err.println("\tauth token is no ok");
             }
-
-            getRepository().getLogManager().logError("Request.ensureAuthToken: authToken != sessionAuth :"
-						     + "\n\tsession:" + mySessionId + "\n\tauth token:"
-						     + authToken + "\n\tsession hashed:" + sessionAuth, null);
         }
+
+        if (checkSessionId &&  argSessionId!=null && mySessionId!=null) {
+	    if(argSessionId.equals(mySessionId)) {
+                if (debug) {
+                    System.err.println("\tOK - arg session id == session id");
+                }
+                return;
+            }
+            if (debug) {
+                System.err.println("\tnot OK arg session id != session id");
+            }
+        }
+	
 
         //If we are publishing anonymously then don't look for a auth token
         if (get(ARG_ANONYMOUS, false) && isAnonymous()) {
@@ -1755,8 +1752,9 @@ public class Request implements Constants, Cloneable {
         if (debug) {
             System.err.println("Bad auth token");
         }
+
         getRepository().getLogManager().logError("Request.ensureAuthToken: failed:" + "\n\tsession:"
-						 + mySessionId + "\n\tauth token:" + authToken, null);
+						 + mySessionId + "\n\targ session:" + argSessionId +"\n\tauth token:" + authToken, null);
 
         throw new IllegalArgumentException("Bad authentication token:" + authToken);
     }
