@@ -73,8 +73,7 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
 
             return;
         }
-        String gdal = getRepository().getProperty("service.gdal",
-                          (String) null);
+        String gdal = getRepository().getScriptPath("service.gdal");
 
         if (gdal == null) {
             System.err.println("no gdal");

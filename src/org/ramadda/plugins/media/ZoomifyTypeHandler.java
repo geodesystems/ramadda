@@ -97,7 +97,7 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
         List<String> commands = new ArrayList<String>();
         Utils.add(commands, "sh", slicer, "-i",
                   entry.getResource().getPath(), "-o", imagesDir.toString());
-        ProcessBuilder pb = new ProcessBuilder(commands);
+        ProcessBuilder pb = getRepository().makeProcessBuilder(commands);
         pb.redirectErrorStream(true);
         Process     process = pb.start();
         InputStream is      = process.getInputStream();
