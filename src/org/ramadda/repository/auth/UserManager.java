@@ -37,7 +37,7 @@ import java.awt.Graphics2D;
 import java.awt.image.*;
 
 import java.io.*;
-
+import java.util.Base64;
 
 
 import java.security.MessageDigest;
@@ -55,9 +55,19 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Random;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+
+import javax.imageio.ImageIO;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+
+
+
 
 
 /**
@@ -280,6 +290,9 @@ public class UserManager extends RepositoryManager {
     /** _more_ */
     private String userAgree;
 
+    private List<Captcha> captchas;
+
+
 
     /**
      * ctor
@@ -288,6 +301,97 @@ public class UserManager extends RepositoryManager {
      */
     public UserManager(Repository repository) {
         super(repository);
+
+	initCaptchas();
+    }
+
+
+    private void initCaptchas() {
+	try {
+	    captchas  =new ArrayList<Captcha>();
+	    for(int i=0;i<100;i++) {
+		int v1 = (int)(Math.random()*100);
+		int v2 = (int)(Math.random()*100);	    
+		int value = v1+v2;
+		String s = v1+"+"+v2+"=";
+		int width = 85;
+		int height =25;
+		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		Graphics2D g2d = image.createGraphics();
+		g2d.setColor(new Color(220,220,220));
+
+		g2d.fillRect(0, 0, width, height);
+		Font font = new Font("Arial", Font.BOLD, 18);
+		g2d.setFont(font);
+		g2d.setColor(Color.BLACK);
+		g2d.drawString(s, 10, height-5);
+		g2d.dispose();
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ImageIO.write(image, "png", baos);
+		byte[] imageBytes = baos.toByteArray();
+		String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+		String dataUrl = "data:image/png;base64," + base64Image;
+		captchas.add(new Captcha(captchas.size(),value,dataUrl));
+		//		System.out.println(HU.image(dataUrl));
+		//		System.out.println(HU.div(v1+" " + v2,""));
+	    }
+	} catch(Exception exc) {
+	    System.err.println("error making captchas");
+	    exc.printStackTrace();
+	}
+    }
+
+    public static class Captcha {
+	int index;
+	int value;
+	String image;
+	Captcha(int _index,int _value, String _image) {
+	    this.index = _index;
+	    this.value = _value;
+	    this.image = _image;
+	}
+	public String getImage() {
+	    return image;
+	}
+	public int getValue() {
+	    return value;
+	}
+	public String getHtml() {
+	    return HU.hidden(ARG_CAPTCHA_INDEX,""+index)+ 
+		HU.div("To verify this action please enter the value<br>"+
+			  HU.image(image)+
+			  HU.space(1) +
+		       HU.input(ARG_CAPTCHA_RESPONSE,"",
+				HU.attrs("onkeydown","return Utils.preventSubmit(event)",
+					 "placeholder","value","size","5")),HU.clazz("ramadda-captcha"))+"<br>";
+											      
+	}
+    }
+
+    public Captcha getCaptcha() {
+	Random random = new Random();
+        int randomIndex = random.nextInt(captchas.size());
+        return captchas.get(randomIndex);
+    }
+
+    public boolean verifyCaptcha(Request request,Appendable sb) throws Exception {
+	boolean ok = true;
+	try {
+	    int index = request.get(ARG_CAPTCHA_INDEX,-1);
+	    int value = request.get(ARG_CAPTCHA_RESPONSE,-1);
+	    if(index<0 || index>=captchas.size()) {
+		ok = false;
+	    } else  {
+		Captcha captcha = captchas.get(index);
+		ok =  captcha.value == value;
+	    }
+	} catch(Exception ignore) {
+	    ok  =false;
+	}
+	if(!ok && sb!=null) {
+	    sb.append(getPageHandler().showDialogError("Bad CAPTCHA response"));
+	}
+	return ok;
     }
 
 
@@ -1249,24 +1353,24 @@ public class UserManager extends RepositoryManager {
             throw new IllegalArgumentException(
                 msgLabel("Could not find user") + userId);
         }
+        StringBuffer sb = new StringBuffer();
+        StringBuffer sb2 = new StringBuffer();
+	boolean ok   = false;
+	if(request.defined(ARG_USER_DELETE_CONFIRM) ||
+	   request.defined(ARG_USER_CHANGE)) {
+	    ok = verifyCaptcha(request,sb2);
+	}
 
-        if (request.defined(ARG_USER_DELETE_CONFIRM)) {
+        if (ok && request.defined(ARG_USER_DELETE_CONFIRM)) {
             request.ensureAuthToken();
             deleteUser(user);
-
             return new Result(
                 request.makeUrl(getRepositoryBase().URL_USER_LIST));
         }
 
 
-        StringBuffer sb = new StringBuffer();
-        HtmlUtils.titleSectionOpen(sb, "Edit User Settings");
 
-        getWikiManager().makeCallout(sb, request,
-                                     "<b>" + "User: " + user.getLabel()
-                                     + "</b>");
-
-        if (request.defined(ARG_USER_CHANGE)) {
+        if (ok && request.defined(ARG_USER_CHANGE)) {
             request.ensureAuthToken();
             if ( !checkAndSetNewPassword(request, user)) {
                 sb.append(
@@ -1285,11 +1389,16 @@ public class UserManager extends RepositoryManager {
 	    updateUser(user);
         }
 
-
+        HtmlUtils.titleSectionOpen(sb, "Edit User");
+        getWikiManager().makeCallout(sb, request,
+                                     "<b>" + "User: " + user.getLabel()
+                                     + "</b>");
+	sb.append(sb2);
 
         request.formPostWithAuthToken(sb, getRepositoryBase().URL_USER_EDIT);
         sb.append(HtmlUtils.hidden(ARG_USER_ID, user.getId()));
-        if (request.defined(ARG_USER_DELETE)) {
+        if (request.defined(ARG_USER_DELETE)||
+	    request.defined(ARG_USER_DELETE_CONFIRM)) {
             sb.append(
                 getPageHandler().showDialogQuestion(
                     msg("Are you sure you want to delete the user?"),
@@ -1298,6 +1407,7 @@ public class UserManager extends RepositoryManager {
                             msg("Yes"),
                             ARG_USER_DELETE_CONFIRM), HtmlUtils.submit(
                                 msg("Cancel"), ARG_USER_CANCEL))));
+	    sb.append(getCaptcha().getHtml());
         } else {
             String buttons =
                 HtmlUtils.submit(msg("Change User"), ARG_USER_CHANGE)
@@ -1306,6 +1416,7 @@ public class UserManager extends RepositoryManager {
                 + HtmlUtils.space(2)
                 + HtmlUtils.submit(msg("Cancel"), ARG_CANCEL);
             sb.append(buttons);
+	    sb.append(getCaptcha().getHtml());
             makeUserForm(request, user, sb, true);
 	    //            if (user.canChangePassword()) {
                 sb.append(HtmlUtils.p());
@@ -1469,7 +1580,14 @@ public class UserManager extends RepositoryManager {
     public Result adminUserNewDo(Request request) throws Exception {
 
         request.ensureAuthToken();
+
         StringBuffer sb          = new StringBuffer();
+	if(!verifyCaptcha(request,sb)) {
+	    makeNewUserForm(request, sb);
+	    return getAdmin().makeResult(request, msg("New User"), sb);
+	}
+
+
         StringBuffer errorBuffer = new StringBuffer();
         List<User>   users       = new ArrayList<User>();
         boolean      ok          = true;
@@ -1538,6 +1656,7 @@ public class UserManager extends RepositoryManager {
 
 
             if ( !ok) {
+
                 makeNewUserForm(request, sb);
 
                 return getAdmin().makeResult(request, msg("New User"), sb);
@@ -1880,6 +1999,7 @@ public class UserManager extends RepositoryManager {
         sb.append(HtmlUtils.p());
         sb.append(top);
         sb.append(HtmlUtils.p());
+	sb.append(getCaptcha().getHtml());
         sb.append(HtmlUtils.submit(msg("Create User"), ARG_USER_NEW));
         sb.append(HtmlUtils.formClose());
 
@@ -3678,6 +3798,10 @@ public class UserManager extends RepositoryManager {
         if (result != null) {
             return result;
         }
+	return makeUserSettingsForm(request,"");
+    }
+
+    public Result  makeUserSettingsForm(Request request,String extra) throws Exception {
         StringBuilder sb = new StringBuilder();
         sb.append(HtmlUtils.sectionOpen(null, false));
         User user = request.getUser();
@@ -3685,12 +3809,13 @@ public class UserManager extends RepositoryManager {
         sb.append(HtmlUtils.p());
         sb.append(HU.div("User Settings",HU.cssClass("formgroupheader")));
 	sb.append("<br>");
+    sb.append(extra);
         request.uploadFormWithAuthToken(sb,
 					getRepositoryBase().URL_USER_CHANGE);
 	String buttons = HtmlUtils.submit(msg("Change Settings"), ARG_USER_CHANGE);
         sb.append(buttons);
+	sb.append(getCaptcha().getHtml());
         makeUserForm(request, user, sb, false);
-        sb.append(buttons);
         sb.append(HtmlUtils.formClose());
 
         if (user.canChangePassword()) {
@@ -3701,6 +3826,7 @@ public class UserManager extends RepositoryManager {
             makePasswordForm(request, user, sb);
             sb.append(HtmlUtils.submit(msg("Change Password"),
                                        ARG_USER_CHANGE));
+	    sb.append(getCaptcha().getHtml());
             sb.append(HtmlUtils.formClose());
         }
 
@@ -3781,10 +3907,14 @@ public class UserManager extends RepositoryManager {
         }
         User         user = request.getUser();
         StringBuffer sb   = new StringBuffer();
-        request.ensureAuthToken();
 	if(user.getIsGuest()) {
 	    sb.append(getPageHandler().showDialogWarning("Guest users cannot change settings"));
 	    return new Result("",sb);
+	}
+
+        request.ensureAuthToken();
+	if(!verifyCaptcha(request,sb)) {
+	    return  makeUserSettingsForm(request,sb.toString());
 	}
 
         boolean settingsOk = true;
