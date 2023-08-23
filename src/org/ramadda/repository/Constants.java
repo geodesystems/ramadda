@@ -1183,6 +1183,9 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_USER_MESSAGE = "usermessage";
 
+    public static final String ARG_CAPTCHA_INDEX = "captchindex";
+    public static final String ARG_CAPTCHA_RESPONSE = "captchresponse";    
+
     /** _more_ */
     public static final String ARG_USER_ID = "user_id";
 
