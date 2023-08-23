@@ -2404,7 +2404,7 @@ public class UserManager extends RepositoryManager {
 
         if (user == null) {
             sb.append(msgLabel("Unknown user"));
-            sb.append(request.getString(ARG_USER_ID, ""));
+            sb.append(request.getStrictSanitizedString(ARG_USER_ID, ""));
             sb.append(HtmlUtils.sectionClose());
 
             return new Result(msg("User Profile"), sb);
