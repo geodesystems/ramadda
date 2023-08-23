@@ -2278,26 +2278,6 @@ public class Utils extends IO {
 
 
     /**
-       Run the external commands.
-       Returns a 2-array:
-       array[0] = error results; 
-       array[1] = results; 
-    */
-    public static String[] runCommands(List<String>commands) throws Exception {
-        ProcessBuilder pb      = new ProcessBuilder(commands);
-        Process        process = pb.start();
-        InputStream    is      = process.getInputStream();
-        InputStream    es      = process.getErrorStream();	
-	//	System.err.println("Read is");
-	String results =  IO.readInputStream(is);
-	//	System.err.println("Read error");
-        String error = IO.readInputStream(es);
-	//	System.err.println("Done");
-	return new String[]{error,results};
-    }
-
-
-    /**
      * _more_
      *
      * @param props _more_
