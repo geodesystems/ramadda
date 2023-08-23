@@ -5552,14 +5552,18 @@ public class TypeHandler extends RepositoryManager {
             }
         }
 
-        sb.append(HU.script("new WikiEditor("
-                                   + HU.squote((entry == null)
-                ? ""
-                : entry.getId()) + "," + ((formInfo == null)
-                                          ? "null"
-                                          : "'" + formInfo.getId()
-                                            + "'") + ",'" + editorId + "','"
-                                                + hiddenId + "');"));
+	String authToken = request.getAuthToken();
+
+        sb.append(HU.script(HU.call("new WikiEditor",
+				    HU.squote((entry == null)
+					      ? ""
+					      : entry.getId()),
+				    ((formInfo == null)
+				     ? "null"
+				     : HU.squote(formInfo.getId())),
+				    HU.squote(editorId),
+				    HU.squote(hiddenId),
+				    JsonUtil.map("authToken",HU.squote(authToken)))));
 
         if ( !readOnly) {
             HU.close(sb, "div");
