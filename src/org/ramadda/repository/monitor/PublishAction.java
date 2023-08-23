@@ -214,7 +214,7 @@ public class PublishAction extends MonitorAction {
 								entries, true, true,false);
 
             String id =
-                RepositoryClient.importToRamadda(new URL(destRamadda),
+                RepositoryClient.publishToRamadda(new URL(destRamadda),
 						 userId, password, parentEntryId, getPathTemplate(),file.toString());
             monitor.logInfo(this, "published to:" + destRamadda + " id:" + id);
         } catch (Exception exc) {
