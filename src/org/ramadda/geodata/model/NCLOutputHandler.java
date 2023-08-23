@@ -176,7 +176,7 @@ public class NCLOutputHandler extends OutputHandler {
      */
     public NCLOutputHandler(Repository repository) throws Exception {
         super(repository, "NCL");
-        ncargRoot = getRepository().getProperty(PROP_NCARG_ROOT, null);
+        ncargRoot = getRepository().getScriptPath(PROP_NCARG_ROOT);
         if (ncargRoot == null) {
 	    if(!warned) {
 		repository.getLogManager().logWarning("To run NCL, set the "
@@ -184,9 +184,8 @@ public class NCLOutputHandler extends OutputHandler {
 		warned= true;
 	    }
         }
-        convertPath = getRepository().getProperty(PROP_CONVERT_PATH,
-                "convert");
-        gsPath = getRepository().getProperty(PROP_GHOSTSCRIPT_PATH, "gs");
+        convertPath = getRepository().getScriptPath(PROP_CONVERT_PATH,"convert");
+        gsPath = getRepository().getScriptPath(PROP_GHOSTSCRIPT_PATH, "gs");
         resourceDir = IOUtil.joinDir(getStorageManager().getResourceDir(),
                                      "ncl");
         cmapDir = IOUtil.joinDir(resourceDir, "colormaps");
@@ -204,10 +203,9 @@ public class NCLOutputHandler extends OutputHandler {
             throws Exception {
         super(repository, element);
         addType(OUTPUT_NCL_MAPPLOT);
-        ncargRoot = getRepository().getProperty(PROP_NCARG_ROOT, null);
-        convertPath = getRepository().getProperty(PROP_CONVERT_PATH,
-                "convert");
-        gsPath = getRepository().getProperty(PROP_GHOSTSCRIPT_PATH, "gs");
+        ncargRoot = getRepository().getScriptPath(PROP_NCARG_ROOT);
+        convertPath = getRepository().getScriptPath(PROP_CONVERT_PATH, "convert");
+        gsPath = getRepository().getScriptPath(PROP_GHOSTSCRIPT_PATH, "gs");
         resourceDir = IOUtil.joinDir(getStorageManager().getResourceDir(),
                                      "ncl");
         cmapDir = IOUtil.joinDir(resourceDir, "colormaps");

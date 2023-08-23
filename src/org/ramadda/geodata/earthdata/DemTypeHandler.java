@@ -73,7 +73,7 @@ public class DemTypeHandler extends GdalTypeHandler {
             throw new AccessException("No access to file", request);
         }
         request.setCORSHeaderOnResponse();
-        String convert = getRepository().getProperty("service.gdal.gdaldem", "");
+        String convert = getRepository().getScriptPath("service.gdal.gdaldem", "");
         if ( !Utils.stringDefined(convert)) {
             return returnNA(request);
         }
@@ -87,7 +87,7 @@ public class DemTypeHandler extends GdalTypeHandler {
 						  "hillshade",
 						  getStorageManager().getEntryResourcePath(entry),
 						  cachedFile.toString());
-                String[] results = Utils.runCommands(commands);
+                String[] results = getRepository().runCommands(commands);
                 if (Utils.stringDefined(results[0])) {
                     if (results[0].toLowerCase().indexOf("error") >= 0) {
                         System.err.println("Results running commands:"

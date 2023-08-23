@@ -228,8 +228,8 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
             throw new AccessException("No access to file", request);
         }
         request.setCORSHeaderOnResponse();
-        String convert = getRepository().getProperty("ramadda.convert", "");
-	String translate = getRepository().getProperty("service.gdal.gdal_translate","");
+        String convert = getRepository().getScriptPath("ramadda.convert", "");
+	String translate = getRepository().getScriptPath("service.gdal.gdal_translate","");
         if ( !Utils.stringDefined(convert) && !Utils.stringDefined(translate)) {
             return returnNA(request);
         }
@@ -255,7 +255,7 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
 						      getStorageManager().getEntryResourcePath(entry),
 						      cachedFile.toString());
 		//		System.err.println("geotiff-4:" + Utils.join(commands," "));
-                String[] results = Utils.runCommands(commands);
+                String[] results = getRepository().runCommands(commands);
 		//		System.err.println("done");
                 if (Utils.stringDefined(results[0])) {
                     if (results[0].toLowerCase().indexOf("error") >= 0) {

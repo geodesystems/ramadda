@@ -15,6 +15,7 @@ import org.ramadda.repository.job.JobManager;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.util.Utils;
 import org.ramadda.util.HtmlUtils;
 
 
@@ -218,8 +219,8 @@ public class GpsOutputHandler extends OutputHandler {
         addType(OUTPUT_GPS_QC);
         addType(OUTPUT_GPS_OPUS);
         addType(OUTPUT_GPS_CONTROLPOINTS);
-        teqcPath   = getRepository().getProperty(PROP_TEQC, null);
-        runPkrPath = getRepository().getProperty(PROP_RUNPKR, null);
+        teqcPath   = getRepository().getScriptPath(PROP_TEQC);
+        runPkrPath = getRepository().getScriptPath(PROP_RUNPKR);
     }
 
 
@@ -1303,8 +1304,8 @@ public class GpsOutputHandler extends OutputHandler {
                            getRepository().getTmpRequest(),
                            IOUtil.getFileTail(
                                IOUtil.stripExtension(inputFile)) + ".dat");
-        ProcessBuilder pb1 = new ProcessBuilder(runPkrPath, "-d", "-g",
-                                 inputFile, datFile.toString());
+	List<String> commands = (List<String>)Utils.makeList(runPkrPath, "-d", "-g",inputFile, datFile.toString());
+	ProcessBuilder pb1 = getRepository().makeProcessBuilder(commands);
         Process process1 = pb1.start();
         String errorMsg =
             new String(IOUtil.readBytes(process1.getErrorStream()));
@@ -1343,8 +1344,8 @@ public class GpsOutputHandler extends OutputHandler {
             return "none";
         }
 
-        ProcessBuilder pb      = new ProcessBuilder(teqcPath, flag,
-                                     inputFile);
+	List<String> commands = (List<String>)Utils.makeList(teqcPath, flag,inputFile);
+	ProcessBuilder pb      = getRepository().makeProcessBuilder(commands);
         Process        process = pb.start();
         String errorMsg =
             new String(IOUtil.readBytes(process.getErrorStream()));

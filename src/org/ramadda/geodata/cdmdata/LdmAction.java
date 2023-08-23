@@ -64,8 +64,6 @@ public class LdmAction extends MonitorAction {
     /** _more_ */
     private String queue = "";
 
-    /** _more_ */
-    private String pqinsert = "";
 
     /** _more_ */
     private String feed = "SPARE";
@@ -138,7 +136,6 @@ public class LdmAction extends MonitorAction {
      */
     public void applyEditForm(Request request, EntryMonitor monitor) {
         super.applyEditForm(request, monitor);
-        this.pqinsert  = request.getString(getArgId(PROP_LDM_PQINSERT), "");
         this.feed      = request.getString(getArgId(PROP_LDM_FEED), "");
         this.queue     = request.getString(getArgId(PROP_LDM_QUEUE), "");
         this.productId = request.getString(getArgId(PROP_LDM_PRODUCTID), "");
@@ -161,11 +158,13 @@ public class LdmAction extends MonitorAction {
         sb.append(HtmlUtils.colspan("LDM Action", 2));
 
         String ldmExtra1 = "";
+	/*
         if ((pqinsert.length() > 0) && !new File(pqinsert).exists()) {
             ldmExtra1 = HtmlUtils.space(2)
                         + HtmlUtils.span("File does not exist!",
                                          HtmlUtils.cssClass("errorlabel"));
         }
+	*/
         String ldmExtra2 = "";
         if ((queue.length() > 0) && !new File(queue).exists()) {
             ldmExtra2 = HtmlUtils.space(2)
@@ -177,9 +176,10 @@ public class LdmAction extends MonitorAction {
         sb.append(
             HtmlUtils.formEntry(
                 "Path to pqinsert:",
-                HtmlUtils.input(
-                    getArgId(PROP_LDM_PQINSERT), pqinsert,
-                    HtmlUtils.SIZE_60) + ldmExtra1));
+		"This needs to be set in a repository.properties file on your file system: ramadda.ldm.pqinsert"));
+	//                HtmlUtils.input(
+	//                    getArgId(PROP_LDM_PQINSERT), pqinsert,
+	//                    HtmlUtils.SIZE_60) + ldmExtra1));
         sb.append(
             HtmlUtils.formEntry(
                 "Queue Location:",
@@ -227,7 +227,14 @@ public class LdmAction extends MonitorAction {
             id = monitor.getRepository().getEntryManager().replaceMacros(
                 entry, id);
 
-            insertIntoQueue(monitor.getRepository(), pqinsert, queue, feed,
+
+	    String path = monitor.getRepository().getScriptPath("ramadda.ldm.pqinsert");
+	    if(!Utils.stringDefined(path)) {
+		throw new IllegalStateException("no ramadda.ldm.pqinsert path defined");
+	    }
+							   
+
+            insertIntoQueue(monitor.getRepository(), path, queue, feed,
                             id, resource.getPath());
 
         } catch (Exception exc) {
@@ -260,7 +267,7 @@ public class LdmAction extends MonitorAction {
 							      queue, file);
         //        System.err.println("Executing:" + command);
 	
-	ProcessBuilder pb = new ProcessBuilder(commands);
+	ProcessBuilder pb = repository.makeProcessBuilder(commands);
 	Process     process = pb.start();
         int     result  = process.waitFor();
         if (result == 0) {
@@ -288,7 +295,6 @@ public class LdmAction extends MonitorAction {
      * @param value The new value for Pqinsert
      */
     public void setPqinsert(String value) {
-        pqinsert = value;
     }
 
     /**
@@ -297,7 +303,7 @@ public class LdmAction extends MonitorAction {
      * @return The Pqinsert
      */
     public String getPqinsert() {
-        return pqinsert;
+	return "";
     }
 
 

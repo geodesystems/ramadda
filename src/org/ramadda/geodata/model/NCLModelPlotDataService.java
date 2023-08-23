@@ -726,7 +726,7 @@ public class NCLModelPlotDataService extends NCLDataService {
             envMap.put("output", outputType);
             envMap.put("mask", maskType);
             envMap.put("shademask", Boolean.toString(shadeMask));
-            envMap.put("rpath", repository.getProperty("r.rscript.path", ""));
+            envMap.put("rpath", repository.getScriptPath("r.rscript.path", ""));
 
             Hashtable    args     = request.getArgs();
             List<String> varNames = new ArrayList<String>();
@@ -1108,7 +1108,7 @@ public class NCLModelPlotDataService extends NCLDataService {
         envMap.put("output", outputType);
         envMap.put("mask", maskType);
         envMap.put("shademask", Boolean.toString(shadeMask));
-        String rpath = repository.getProperty("r.rscript.path");
+        String rpath = repository.getScriptPath("r.rscript.path");
         if (rpath != null) {
             envMap.put("rpath", rpath);
         }

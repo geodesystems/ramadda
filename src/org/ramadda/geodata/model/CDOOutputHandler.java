@@ -342,7 +342,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
      */
     public CDOOutputHandler(Repository repository) throws Exception {
         super(repository, "CDO");
-        cdoPath = getRepository().getProperty(PROP_CDO_PATH, null);
+        cdoPath = getRepository().getScriptPath(PROP_CDO_PATH);
     }
 
     /**
@@ -356,7 +356,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
             throws Exception {
         super(repository, element);
         addType(OUTPUT_CDO);
-        cdoPath = getRepository().getProperty(PROP_CDO_PATH, null);
+        cdoPath = getRepository().getScriptPath(PROP_CDO_PATH);
     }
 
     /**

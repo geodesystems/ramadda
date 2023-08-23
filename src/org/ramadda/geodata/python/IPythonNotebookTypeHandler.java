@@ -105,8 +105,8 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
     private String getHtmlDisplayInner(Request request, Entry entry)
             throws Exception {
         String jupyterPath =
-            getRepository().getProperty("ramadda.jupyter.path",
-                                        (String) null);
+            getRepository().getLocalProperty("ramadda.jupyter.path",
+					     (String) null);
         if (jupyterPath != null) {
             //            System.err.println(jupyterPath);
             return renderNotebookWithJupyter(request, entry, jupyterPath);
@@ -137,7 +137,7 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
         commands.add("html");
         commands.add("--stdout");
         commands.add(getStorageManager().getEntryFile(entry).toString());
-        ProcessBuilder pb = new ProcessBuilder(commands);
+        ProcessBuilder pb = getRepository().makeProcessBuilder(commands);
         pb.redirectErrorStream(true);
         Process     process = pb.start();
         InputStream is      = process.getInputStream();
