@@ -246,6 +246,7 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
         $.extend(options, argOptions);
     $.extend(this,
 	     {id:id,
+	      authToken:options.authToken,
 	      editor:ace.edit(id),
 	      formId:formId,
 	      hidden:hidden});
@@ -269,9 +270,10 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
 				  this.lastPosition = this.getEditor().getCursorPosition();
 			      }
 
-			      Ramadda.handleDropEvent(event, item, result, this.entryId,(data, entryid, name,isImage)=>{
-				  this.handleEntryLink(entryid, name,this.lastPosition,true,{isImage:isImage});
-			      });
+			      Ramadda.handleDropEvent(event, item, result, this.entryId,this.authToken,
+						      (data, entryid, name,isImage)=>{
+							  this.handleEntryLink(entryid, name,this.lastPosition,true,{isImage:isImage});
+						      });
 			  });
 
 
