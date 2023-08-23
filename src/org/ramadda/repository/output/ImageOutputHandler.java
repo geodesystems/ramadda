@@ -1872,7 +1872,7 @@ public class ImageOutputHandler extends OutputHandler {
         int          delay                 = request.get("delay", 100);
         int          loopCount             = request.get("loopcount", 0);
         List<String> commands              = new ArrayList<String>();
-        commands.add(repository.getProperty("service.imagemagick")
+        commands.add(getRepository().getScriptPath("service.imagemagick")
                      + "/convert");
         commands.addAll(Utils.makeList("-loop", loopCount + "", "-delay",
                                        delay + "", "-dispose", "Background"));
