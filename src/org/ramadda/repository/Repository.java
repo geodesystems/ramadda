@@ -577,6 +577,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public static final int GPT3_TOKEN_LIMIT = 3000;
     public static final int GPT4_TOKEN_LIMIT = 6000;
 
+
+    private static String hashStringSalt = null;
+    private static Object HASH_MUTEX = new Object();
+    private HashSet<String> scriptPaths = new HashSet<String>();    
+
+
     /**
      * _more_
      *
@@ -1168,6 +1174,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    : getScriptPath("ramadda.startupscript");
         if (Utils.stringDefined(script)) {
             try {
+		scriptPaths.add(script);
 		makeProcessBuilder(Utils.split(script," ", true,true)).start();
             } catch (Exception exc) {
                 System.err.println("Error running startup script:" + script+ "\n" + exc);
@@ -4180,8 +4187,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    private static String hashStringSalt = null;
-    private static Object HASH_MUTEX = new Object();
+
 
 
     /**
@@ -4893,7 +4899,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    private HashSet<String> scriptPaths = new HashSet<String>();
+
 
     /**
        this returns a path defined by the given property name that
