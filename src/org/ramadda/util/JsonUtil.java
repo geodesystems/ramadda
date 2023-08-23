@@ -1188,6 +1188,7 @@ public class JsonUtil {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+	/* Dont' have this in the release as it pulls too many things in
         JSONObject obj     = new JSONObject(IO.readInputStream(new FileInputStream(args[0])));
 	List<List<String>> results =
 	    joinArrays(obj, Utils.split(args[1],",",true,true),
@@ -1197,6 +1198,7 @@ public class JsonUtil {
 	    System.out.print(org.ramadda.util.text.Seesv.columnsToString(results.get(i),",",true));
 	}
 	System.exit(0);
+	**/
     }
 
 
