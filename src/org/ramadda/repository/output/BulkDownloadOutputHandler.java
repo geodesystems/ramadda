@@ -267,6 +267,11 @@ public class BulkDownloadOutputHandler extends OutputHandler {
     }
 
 
+    private String sanitize(String s) {
+	return s.replace("$","_dollar_");
+    }
+
+
     /**
      * _more_
      *
@@ -329,10 +334,11 @@ public class BulkDownloadOutputHandler extends OutputHandler {
                 }
             }
 
-            String destFile = entry.getName();
+            String destFile = sanitize(entry.getName());
             if (entry.getResource().isFile()
                     && getAccessManager().canDownload(request, entry)) {
-                String tail = getStorageManager().getFileTail(entry);
+                String tail = sanitize(getStorageManager().getFileTail(entry));
+		System.err.println("DEST:" + destFile +" tail:" + tail);
                 int    cnt  = 1;
                 destFile = tail;
                 //Handle duplicate file names
@@ -410,7 +416,7 @@ public class BulkDownloadOutputHandler extends OutputHandler {
                                   List<List<String>> outputPairs,
                                   boolean includeGroupOutputs, boolean wget)
             throws Exception {
-        String dirName = IOUtil.cleanFileName(entry.getName());
+        String dirName = sanitize(IOUtil.cleanFileName(entry.getName()));
         if (dirName.length() == 0) {
             dirName = entry.getId();
         }
