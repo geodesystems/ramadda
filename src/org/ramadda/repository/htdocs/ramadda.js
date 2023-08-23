@@ -830,7 +830,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	}			      
     },
 
-    handleDropEvent:function(event,file, result,entryId,callback) {
+    handleDropEvent:function(event,file, result,entryId,authToken,callback) {
 	let isImage= file.type.match('^image.*');
 	let url = RamaddaUtil.getUrl("/entry/addfile");
 	let desc = "";
@@ -847,6 +847,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	}
 	let data = new FormData();
 	data.append("filename",fileName);
+	if(authToken)
+	    data.append("authtoken",authToken);
 	//A hack for shapefiles and geojson
 	if(file.type=='application/zip') 
 	    data.append("filetype",'geo_shapefile');
