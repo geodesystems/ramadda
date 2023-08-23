@@ -349,7 +349,7 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
         Utils.add(jsonProps, "id", JsonUtil.quote(id));
 	String sessionId = request.getSessionId();
 	if(sessionId!=null) {
-	    String authToken = RepositoryUtil.hashString(sessionId);
+	    String authToken = getRepository().getAuthToken(sessionId);
 	    Utils.add(jsonProps, "authtoken", JsonUtil.quote(authToken));
 	}
 
