@@ -405,13 +405,13 @@ public class RepositoryClient extends RepositoryBase {
      *
      * @throws Exception _more_
      */
-    public static String importToRamadda(URL host, String user,
+    public static String publishToRamadda(URL host, String user,
                                          String passwd, String parent,String pathTemplate,
                                          String filePath)
             throws Exception {
         RepositoryClient client = new RepositoryClient(host, user, passwd);
 
-        return client.importToRamadda(parent, pathTemplate, filePath);
+        return client.publishToRamadda(parent, pathTemplate, filePath);
     }
 
 
@@ -491,11 +491,7 @@ public class RepositoryClient extends RepositoryBase {
 
         List<HttpFormEntry> postEntries = new ArrayList<HttpFormEntry>();
         postEntries.add(HttpFormEntry.hidden(ARG_SESSIONID, getSessionId()));
-        /*
-        postEntries.add(
-            HttpFormEntry.hidden(
-            ARG_AUTHTOKEN, RepositoryUtil.hashString(getSessionId())));
-        */
+	//        postEntries.add(HttpFormEntry.hidden(ARG_AUTHTOKEN, RepositoryUtil.hashString(getSessionId())));
         postEntries.add(HttpFormEntry.hidden(ARG_RESPONSE, RESPONSE_XML));
         postEntries.add(new HttpFormEntry(ARG_FILE, "entries.zip",
                                           bos.toByteArray()));
@@ -640,7 +636,7 @@ public class RepositoryClient extends RepositoryBase {
      *
      * @throws Exception _more_
      */
-    public String importToRamadda(String parent, String pathTemplate,String filePath)
+    public String publishToRamadda(String parent, String pathTemplate,String filePath)
             throws Exception {
         checkSession();
 
@@ -1197,8 +1193,8 @@ public class RepositoryClient extends RepositoryBase {
      */
     public void addUrlArgs(List entries) {
         entries.add(HttpFormEntry.hidden(ARG_SESSIONID, getSessionId()));
-        //        String authToken = RepositoryUtil.hashString(getSessionId());
-        //        entries.add(HttpFormEntry.hidden(ARG_AUTHTOKEN, authToken));
+	//	String authToken = RepositoryUtil.hashString(getSessionId());
+	//	entries.add(HttpFormEntry.hidden(ARG_AUTHTOKEN, authToken));
         entries.add(HttpFormEntry.hidden(ARG_RESPONSE, RESPONSE_XML));
         if (isAnonymous()) {
             entries.add(HttpFormEntry.hidden(ARG_ANONYMOUS, "true"));
@@ -1762,7 +1758,7 @@ public class RepositoryClient extends RepositoryBase {
         checkSession();
         url = HtmlUtils.url(url, new String[] {
             ARG_RESPONSE, RESPONSE_XML, ARG_SESSIONID, getSessionId(),
-            /*ARG_AUTHTOKEN, RepositoryUtil.hashString(getSessionId())*/
+            //ARG_AUTHTOKEN, RepositoryUtil.hashString(getSessionId())
         }, false);
         System.err.println("url:" + url);
         String  xml  = IOUtil.readContents(url, getClass());
@@ -2102,41 +2098,6 @@ public class RepositoryClient extends RepositoryBase {
                   + arg);
         }
     }
-
-
-
-    /**
-     * _more_
-     *
-     * @param entryId _more_
-     *
-     * @return _more_
-     */
-    public boolean deleteEntry(String entryId) {
-        try {
-            if (entryId == null) {
-                return false;
-            }
-            List entries = new ArrayList();
-            addUrlArgs(entries);
-            entries.add(HttpFormEntry.hidden(ARG_ENTRYID, entryId));
-            entries.add(HttpFormEntry.hidden(ARG_DELETE_CONFIRM, "OK"));
-            String[] result = doPost(URL_ENTRY_DELETE, entries);
-            if (result[0] != null) {
-                handleError("Error deleting entry:\n" + result[0], null);
-
-                return false;
-            }
-
-            return true;
-        } catch (Exception exc) {
-            handleError("Error deleting entry", exc);
-        }
-
-        return false;
-
-    }
-
 
 
 
