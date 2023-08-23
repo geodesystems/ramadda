@@ -238,8 +238,7 @@ public class LogManager extends RepositoryManager {
         message = message.replace(LOG_MACRO_USER, "-");
         message = message.replace(LOG_MACRO_SIZE, "" + count);
         message = message.replaceAll("\\$", "_dollar_");
-
-
+	message= HU.strictSanitizeString(message);
         MyLogger logger = getAccessLogger();
         if (logger != null) {
             logger.info(message);
@@ -999,6 +998,7 @@ public class LogManager extends RepositoryManager {
             boolean      lastOneBlank = false;
 	    List<String> lines = Utils.split(logString, "\n", false, false);
             for (String line : lines) {
+		line = HU.strictSanitizeString(line);
 		//When there are lots of lines then skip the first one since it might be partial
 		if ( !didOne && lines.size()>25) {
 		    didOne = true;
@@ -1091,6 +1091,7 @@ public class LogManager extends RepositoryManager {
                 userAgent = "Msnbot";
             } else {
                 isBot = false;
+		userAgent = HU.strictSanitizeString(userAgent);
                 String full = userAgent;
                 int    idx  = userAgent.indexOf("(");
                 if (idx > 0) {
@@ -1098,9 +1099,6 @@ public class LogManager extends RepositoryManager {
                     userAgent = HtmlUtils.makeShowHideBlock(
                         HtmlUtils.entityEncode(userAgent), full, false);
                 }
-
-
-
             }
 
             String dttm = getDateHandler().formatDate(logEntry.getDate());
@@ -1109,8 +1107,8 @@ public class LogManager extends RepositoryManager {
                           ? logEntry.getUser().getLabel()
                           : "anonymous";
             user = user.replace(" ", "&nbsp;");
-            String cols = HtmlUtils.cols(user, dttm, path, logEntry.getIp(),
-                                         userAgent);
+            String cols = HtmlUtils.cols(HU.strictSanitizeStrings(user, dttm, path, logEntry.getIp()));
+	    cols+=HU.cols(userAgent);
             sb.append(HtmlUtils.row(cols,
                                     HtmlUtils.attr(HtmlUtils.ATTR_VALIGN,
                                         "top") + ( !isBot
