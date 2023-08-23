@@ -303,7 +303,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     public void initAttributes() {
         super.initAttributes();
         showMetadata = getRepository().getProperty(PROP_SEARCH_SHOW_METADATA, true);
-	tesseractPath = getRepository().getProperty("ramadda.tesseract");
+	tesseractPath = getRepository().getScriptPath("ramadda.tesseract");
 	indexImages = getRepository().getProperty("ramadda.indeximages",false);
         isLuceneEnabled = getRepository().getProperty(PROP_SEARCH_LUCENE_ENABLED, true);
     }
@@ -1016,7 +1016,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		File tmp  =getStorageManager().getUniqueScratchFile("output");
 		List<String> commands = new ArrayList<String>();
 		Utils.add(commands, tesseractPath,f.toString(), tmp.toString());
-		ProcessBuilder pb = new ProcessBuilder(commands);
+		ProcessBuilder pb = getRepository().makeProcessBuilder(commands);
 		pb.redirectErrorStream(true);
 		Process     process = pb.start();
 		InputStream is      = process.getInputStream();
