@@ -801,7 +801,7 @@ function RepositoryMap(mapId, params) {
 	highlightStrokeColor:"red",
 	highlightFillColor:"match",	
 	highlightStrokeWidth:2,
-	highlightFillOpacity:0.75,
+	highlightFillOpacity:0.5,
 
 	selectStrokeColor:null,
 	selectStrokeOpacity:null,
@@ -1921,10 +1921,11 @@ RepositoryMap.prototype = {
 
 	let highlightStyle = this.getLayerHighlightStyle(layer);
 	$.extend(style, {
-	    strokeColor:this.params.selectStrokeColor || highlightStyle.strokeColor,
-	    strokeWidth: this.params.selectStrokeWidth || highlightStyle.strokeWidth,
-	    strokeOpacity: this.params.selectStrokeOpacity ||0.75,
-	    fillOpacity: this.params.selectFillOpacity ||highlightStyle.fillOpacity,
+	    strokeColor:this.params.selectStrokeColor ?? highlightStyle.strokeColor,
+	    strokeWidth: this.params.selectStrokeWidth ?? highlightStyle.strokeWidth,
+	    strokeOpacity: this.params.selectStrokeOpacity ?? 0.75,
+	    fillColor:this.params.selectFillColor ??highlightStyle.fillColor,
+	    fillOpacity: this.params.selectFillOpacity ??highlightStyle.fillOpacity,
 	    fill: true,
 	});
 
@@ -1932,10 +1933,13 @@ RepositoryMap.prototype = {
 	    style.fillColor  = this.params.selectFillColor || highlightStyle.fillColor;
 	} 
 
+	if(style.fillColor=="match") {
+	    style.fillColor = style.strokeColor;
+	}
+
 	if(this.params.changeSizeOnSelect && Utils.isDefined(style.pointRadius)) {
 	    style.pointRadius = Math.round(style.pointRadius*1.5);
 	}
-
 
 	this.checkMatchStyle(fs,style);
 
@@ -2324,7 +2328,6 @@ RepositoryMap.prototype = {
             strokeWidth: props.strokeWidth,
 	    externalGraphic:props.externalGraphic
         });
-
 
         let map = MapUtils.createStyleMap({
             "temporary": temporaryStyle,
@@ -4996,7 +4999,7 @@ RepositoryMap.prototype = {
 	    this.addPolygonString(polygon,{
 		fill: true,
 		fillColor: "#0000ff",
-		fillOpacity: 0.10,
+		fillOpacity: 0.05,
 		strokeWidth:1,
 		strokeColor:"blue"},true,text);
 	}
@@ -5087,7 +5090,7 @@ RepositoryMap.prototype = {
 	let polys = [];
 	segments.forEach(p=>{
 	    if(p.length>0)
-		polys.push(this.createPolygon("polygon", "",p,polygonProps,text,true));
+		polys.push(this.createPolygon("polygon", "",p,polygonProps,text,false));
 	});
 	return polys;
     },
