@@ -10,7 +10,7 @@ Documentation here: https://ramadda.org/repository/userguide/wiki/wikitext.html
 +box
 Thanks for trying RAMADDA.
 :br
-Keep in touch by joining the <a href=https://groups.google.com/g/ramadda>Google Groups mailing list</a>. If you have any problems or suggestions please send a note to <a href="mailto:jeff.mcwhirter@gmail.com">jeff.mcwhirter@gmail.com</a>
+Keep in touch by joining the <a href=https://groups.google.com/g/ramadda>Google Groups mailing list</a>. If you have any problems or suggestions please send a note to <a href="mailto:info@ramadda.org">info@ramadda.org</a>
 :br
 Jeff McWhirter
 :br
