@@ -6691,6 +6691,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+    public Result processSecurity(Request request) throws Exception {
+	String contact = getProperty("ramadada.security.contact","mailto:info@ramadda.org");
+	StringBuilder sb = new StringBuilder();
+	sb.append("Contact: " + contact+"\n");
+	sb.append("Expires: 2030-12-01T19:00:00.000Z\n");
+	return new Result(sb.toString(), MIME_TEXT);
+    }
+
     /**
      * _more_
      *

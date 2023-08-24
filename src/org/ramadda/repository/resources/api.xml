@@ -5,6 +5,7 @@
   <group>
     <api request="/ping"             method="processPing"/>
     <api request="/info"             method="processInfo"/>
+    <api request="/well-known/security.txt" method="processSecurity"/>
     <api request="/httptest"         method="processHttpTest"/>
     <api request="/license"          method="processLicense"/>
     <api request="/robots.txt"       method="processRobotsTxt"/>
