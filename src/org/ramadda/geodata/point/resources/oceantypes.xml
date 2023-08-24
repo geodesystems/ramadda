@@ -282,13 +282,14 @@ handler="org.ramadda.geodata.point.NdbcBuoyTypeHandler">
 <![CDATA[+note\nJust need to specify the Station ID. See the map at <a target=_map href=https://www.ndbc.noaa.gov/>nbdc.noaa.gov</a>\n-note]]></property>    
   <column  name="station"  label="Station ID" type="string" cansearch="true"/>
   <column  name="data_type"  label="Data Type" type="enumeration" cansearch="true"
-	   values="txt:standard meteorological data,drift:meteorological data from drifting buoys,cwind:continuous winds data,spec:spectral wave summaries,data:_spec raw spectral wave data,swdir:spectral wave data (alpha1),swdir2:spectral wave data (alpha2),swr1:spectral wave data (r1),swr2:spectral wave data (r2),adcp:Acoustic Doppler Current Profiler,ocean:oceanographic data, tide:tide data"/>  
+	   values="txt:standard meteorological data,drift:meteorological data from drifting buoys,cwind:continuous winds data,adcp:acoustic doppler current profiler,ocean:oceanographic data, tide:tide data"/>  
 
 
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property name="record.properties">
+picky=false
 csvcommands1=-delimiter,spaces,-inputcomment,,-cut
-csvcommands2=1,-set,0,0,yy
+csvcommands2=1,-numcolumns,-1,-set,0,0,yy
 csvcommands3=-set,1,0,month,-combine
 csvcommands4=yy\,month\,dd\,hh\,mm,-,date,-firstcolumns,date
 csvcommands5=-indateformat,yyyy-MM-dd-HH-mm,,-convertdate,date
@@ -300,8 +301,16 @@ csvcommands7=-addheader,wdir.unit degT wspd.unit m/s gst.unit m/s  wvht.unit m  
 props:fontSize:0px,iconSize:75,canvasWidth:500,canvasHeight:100,fill:#efefef,borderWidth:2,borderColor:#000,font:bold 36px sans-serif
 image,pos:nw,dx:10,dy:10-ch,width:60,height:60,url:${icon}
 label,pady:5,pos:nw,dx:80,dy:10-ch,label:${entryname}  
-label,pos:s,dx:cw2,dy:-10,font:36px sans-serif,label:${match  pattern="(atmp)" suffix=" ${unit}" prefixLabel=true}
+label,pos:s,dx:cw2,dy:-10,font:36px sans-serif,label:${match  pattern="(atmp|spd01)" suffix=" ${unit}" prefixLabel=true}
 </property>
+
+<property name="bubble">
+<![CDATA[
++section  title={{name}}
+{{display_linechart showMenu=true fields="atmp|spd01|#2"}} 
+{{display_linechart showMenu=true fields="pres|dir01|#3"}} 
+-section
+]]></property>
 
 <wiki>
 <![CDATA[
@@ -323,8 +332,8 @@ label,pos:s,dx:cw2,dy:-10,font:36px sans-serif,label:${match  pattern="(atmp)" s
 :heading Chart
 {{property max="20000"}}
 {{group}}
-{{display_linechart showMenu=true fields="atmp|#2"}} 
-{{display_linechart showMenu=true fields="pres|#3"}} 
+{{display_linechart showMenu=true fields="atmp|spd01|#2"}} 
+{{display_linechart showMenu=true fields="pres|dir01|#3"}} 
 :heading Table
 {{display_download}}
 {{display_htmltable  includeDate=false }} 
