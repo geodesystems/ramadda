@@ -385,7 +385,7 @@ public class DocsTypeHandler extends GdataTypeHandler {
      */
     public static void main(String[] args) throws Exception {
         DocsService client = new DocsService("ramadda");
-        client.setUserCredentials("jeff.mcwhirter@gmail.com", args[0]);
+        client.setUserCredentials("info@ramadda.org", args[0]);
         //        DocumentQuery query = new DocumentQuery(new URL("https://docs.google.com/feeds/default/private/full/-/folder"));
         String url =
             "https://docs.google.com/feeds/default/private/full/folder%3Aroot/contents?showfolders=true";

@@ -476,7 +476,7 @@ public class CalendarTypeHandler extends GdataTypeHandler {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        String userId = "jeff.mcwhirter@gmail.com";
+        String userId = "info@ramadda.org";
         CalendarService myService =
             new CalendarService("exampleCo-exampleApp-1");
         myService.setUserCredentials(userId, args[0]);

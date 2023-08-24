@@ -465,7 +465,7 @@ public class RegistrationDbTypeHandler extends DbTypeHandler {
             String business = Misc.getProperty(props, PROP_PAYPAL_BUSINESS,
                                   "");
             if ( !Utils.stringDefined(business)) {
-                business = "jeff.mcwhirter@gmail.com";
+                business = "info@ramadda.org";
             }
             url = url.replace("${paypal_business}", business);
             //<Company>_<Service>_<Product>_<Country>

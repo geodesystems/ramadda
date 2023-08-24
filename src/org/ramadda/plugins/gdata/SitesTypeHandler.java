@@ -397,7 +397,7 @@ public class SitesTypeHandler extends GdataTypeHandler {
     public static void main(String[] args) throws Exception {
 
         SitesService client = new SitesService("ramadda");
-        client.setUserCredentials("jeff.mcwhirter@gmail.com", args[0]);
+        client.setUserCredentials("info@ramadda.org", args[0]);
         String   url = "https://sites.google.com/feeds/content/site/nlaswiki";
         SiteFeed contentFeed = client.getFeed(new URL(url), SiteFeed.class);
         for (BaseEntry entry : contentFeed.getEntries()) {

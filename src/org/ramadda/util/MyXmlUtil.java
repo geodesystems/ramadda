@@ -1,6 +1,5 @@
 /*
  * Copyright 1997-2022 Unidata Program Center/University Corporation for Atmospheric Research
- * Copyright 2010-2015 Jeff McWhirter
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by

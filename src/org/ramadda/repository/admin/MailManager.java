@@ -474,7 +474,7 @@ public class MailManager extends RepositoryManager {
 
         // Create a message with the specified information. 
         MimeMessage msg = new MimeMessage(session);
-        msg.setFrom(new InternetAddress("jeff.mcwhirter@gmail.com"));
+        msg.setFrom(new InternetAddress("info@ramadda.org"));
         Address[] array = new Address[to.size()];
         for (int i = 0; i < to.size(); i++) {
             array[i] = to.get(i);
