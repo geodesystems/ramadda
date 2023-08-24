@@ -843,6 +843,7 @@ public abstract class Converter extends Processor {
                 }
             }
             for (Integer idx : indices) {
+		if(!row.indexOk(idx)) continue;
                 String s = row.getString(idx);
                 result.add(s);
             }
@@ -6176,7 +6177,6 @@ public abstract class Converter extends Processor {
      * @author         Enter your name here...
      */
     public static class NumColumns extends Converter {
-
         /**  */
         int number;
 
@@ -6194,6 +6194,10 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
+	    if(number<0) {
+		number =row.size();
+		return row;
+	    }
             List values = row.getValues();
             while (values.size() < number) {
                 values.add("");
@@ -6345,7 +6349,6 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader ctx, Row row) {
             List<Integer> indices = getIndices(ctx);
-            System.err.println("process:" + row);
             for (Integer idx : indices) {
                 int index = idx.intValue();
                 if ((index < 0) || (index >= row.size())) {
