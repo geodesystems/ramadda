@@ -6,6 +6,8 @@
 package org.ramadda.util;
 
 
+import org.apache.commons.io.FilenameUtils;
+
 import org.apache.commons.net.ftp.*;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.mime.*;
@@ -625,7 +627,7 @@ public class IO {
                 }
             }
         } finally {
-            IOUtil.close(is);
+            close(is);
         }
         byte[] results = new byte[totalRead];
         System.arraycopy(content, 0, results, 0, totalRead);
@@ -796,6 +798,14 @@ public class IO {
     }
 
 
+    public static String stripExtension(String file) {
+	return FilenameUtils.removeExtension(file);
+    }
+
+    public static String getFileExtension(String file) {
+	return FilenameUtils.getExtension(file);
+    }
+
 
 
     /**
@@ -812,8 +822,7 @@ public class IO {
         URL         u  = new URL(url);
         InputStream is = getInputStream(u);
         String      s  = IOUtil.readContents(is);
-        IOUtil.close(is);
-
+        close(is);
         return s;
     }
 
@@ -833,8 +842,7 @@ public class IO {
         }
         InputStream is = getInputStream(url);
         String      s  = IOUtil.readContents(is);
-        IOUtil.close(is);
-
+        close(is);
         return s;
     }
 
@@ -1361,8 +1369,8 @@ public class IO {
             long result = IOUtil.writeTo(is, fos);
             numBytes = result;
         } finally {
-            IOUtil.close(fos);
-            IOUtil.close(is);
+            close(fos);
+            close(is);
             if (numBytes <= 0) {
                 try {
                     file.delete();
@@ -1381,11 +1389,28 @@ public class IO {
      * @param inputStream _more_
      */
     public static void close(InputStream inputStream) {
-        IOUtil.close(inputStream);
+        if (inputStream == null) {
+            return;
+        }
+        try {
+            inputStream.close();
+        } catch (Exception ignore) {}
     }
 
 
-
+   /**                                                                                             
+     * _more_                                                                                       
+     *                                                                                              
+     * @param outputStream _more_                                                                   
+     */
+    public static void close(OutputStream outputStream) {
+        if (outputStream == null) {
+            return;
+        }
+        try {
+            outputStream.close();
+        } catch (Exception ignore) {}
+    }
 
 
 
@@ -1880,7 +1905,7 @@ public class IO {
     /**
      *
      * @param fileOrUrl _more_
-     * @param suffix _more_
+a     * @param suffix _more_
      * @return _more_
      */
     public static boolean hasSuffix(String fileOrUrl, String suffix) {
