@@ -109,7 +109,7 @@ public class AuthManager extends RepositoryManager {
 		g.setColor(Color.BLACK);
 		g.drawRect(0, 0, IMAGE_WIDTH-1, IMAGE_HEIGHT-1);
 		//		Font font = new Font("Arial", Font.BOLD, 18);
-		Font font = new Font("Verdana", Font.BOLD, TEXTSIZE);
+		Font font = new Font("Arial", Font.BOLD, TEXTSIZE);
 		g.setFont(font);
 		g.setColor(Color.LIGHT_GRAY);
 		drawWord(g,font,bgword,0.6);
