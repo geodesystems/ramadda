@@ -1390,7 +1390,6 @@ public class Utils extends IO {
     public static int getYear(Date date) {
         GregorianCalendar cal = new GregorianCalendar();
         cal.setTime(date);
-
         return cal.get(cal.YEAR);
     }
 
@@ -5391,14 +5390,17 @@ public class Utils extends IO {
         StringBuilder sb = new StringBuilder();
         if (inverse) {
             for (int i = l.size() - 1; i >= 0; i--) {
+		Object s = l.get(i);
+		if(s==null) continue;
                 if (sb.length() > 0) {
                     sb.append(delim);
                 }
-                sb.append(l.get(i));
-
+                sb.append(s);
             }
         } else {
             for (int i = 0; i < l.size(); i++) {
+		Object s = l.get(i);
+		if(s==null) continue;
                 if (sb.length() > 0) {
                     sb.append(delim);
                 }
