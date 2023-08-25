@@ -100,7 +100,7 @@ label,pady:10,pos:n,dx:cw2,dy:-ch+60,font:36px sans-serif,label:${temperature de
 
 -col
 +col-md-4
-{{map  zoomLevel=3 height="350"  layoutHere="true" }}
+{{map  singlePointZoom=7 zoomLevel=3 height="350"  layoutHere="true" }}
 -col
 -row
 ----
