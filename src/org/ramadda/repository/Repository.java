@@ -3477,7 +3477,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	StringBuilder sb = new StringBuilder();
 	sb.append("<div style='margin-left:20px;'>\n");
 	int cnt = 1;
-	for(String line: Utils.split(IOUtil.readContents("/org/ramadda/repository/resources//xss-payload-list.txt",getClass()),"\n",true,true)) {
+	for(String line: Utils.split(IOUtil.readContents("/org/ramadda/repository/resources/xss-payload-list.txt",getClass()),"\n",true,true)) {
 	    if(line.equals("quit")) break;
 	    if(line.startsWith("#")) continue;
 	    line  =Request.cleanXSS(line);
