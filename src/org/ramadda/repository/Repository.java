@@ -32,6 +32,7 @@ import org.ramadda.repository.auth.AuthorizationMethod;
 import org.ramadda.repository.auth.SessionManager;
 import org.ramadda.repository.auth.User;
 import org.ramadda.repository.auth.UserManager;
+import org.ramadda.repository.auth.AuthManager;
 import org.ramadda.repository.database.DatabaseManager;
 import org.ramadda.repository.database.Tables;
 import org.ramadda.repository.ftp.FtpManager;
@@ -263,6 +264,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     /** The UserManager */
     private UserManager userManager;
+
+    private AuthManager authManager;    
 
     /** The MonitorManager */
     private MonitorManager monitorManager;
@@ -578,8 +581,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public static final int GPT4_TOKEN_LIMIT = 6000;
 
 
-    private static String hashStringSalt = null;
-    private static Object HASH_MUTEX = new Object();
+
     private HashSet<String> scriptPaths = new HashSet<String>();    
 
 
@@ -1041,6 +1043,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
             repositoryManagers     = null;
             userManager            = null;
+            authManager            = null;	    
             monitorManager         = null;
             sessionManager         = null;
             wikiManager            = null;
@@ -1649,9 +1652,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //Initialize the local repositories in a thread
         Misc.run(getLocalRepositoryManager(), "initializeLocalRepositories");
 
-        /**
-         * getAdmin().checkRegistration();
-         */
 
         if (getParentRepository() == null) {
             GeoUtils.setGoogleKey(getProperty("google.key", (String) null));
@@ -1662,9 +1662,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
 
-	//Call this so it gets instantiated
+	//create some of them to prevent the slight possiblitity of race conditions and to start them up if needed
+	getAuthManager();
+	getUserManager();
+	getSessionManager();	
 	getMonitorManager();
-	//	testLocal();
+
+
+
 	if(Repository.debugInit)   System.err.println("Repository.initServer:done");
     }
 
@@ -2211,6 +2216,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return new UserManager(this);
     }
 
+    protected AuthManager doMakeAuthManager() {
+        return new AuthManager(this);
+    }    
+
 
     //TODO: use this to synchronize the getters below
 
@@ -2229,6 +2238,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         return userManager;
     }
+
+    public AuthManager getAuthManager() {
+        if (authManager == null) {
+            authManager = doMakeAuthManager();
+        }
+        return authManager;
+    }    
 
 
 
@@ -4179,68 +4195,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-
-    /**
-     *  Convert the sessionId into a authorization token that is used to verify form
-     *  submissions, etc.
-     *
-     * @param sessionId _more_
-     *
-     * @return _more_
-     */
-    public String getAuthToken(String sessionId) {
-        if (sessionId == null) {
-            return "";
-        }
-	if(hashStringSalt==null) {
-	    synchronized(HASH_MUTEX) {
-		hashStringSalt = getDbProperty("authtoken_salt",(String)null);
-		if(hashStringSalt==null) {
-		    hashStringSalt = ""+Math.random();
-		    //		    System.err.println("new hash string:"+ hashStringSalt);
-		    try {
-			writeGlobal("authtoken_salt",hashStringSalt);
-		    } catch(Exception exc) {
-			throw new RuntimeException(exc);
-		    }
-		}
-	    }
-	}
-	sessionId  =hashStringSalt + sessionId;
-        return RepositoryUtil.hashString(sessionId);
-    }
-
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param sb _more_
-     */
-    public void addAuthToken(Request request, Appendable sb) {
-        try {
-            String sessionId = request.getSessionId();
-            if (sessionId != null) {
-                String authToken = getAuthToken(sessionId);
-                sb.append(HU.hidden(ARG_AUTHTOKEN, authToken));
-            }
-        } catch (java.io.IOException ioe) {
-            throw new RuntimeException(ioe);
-        }
-
-    }
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     */
-    public void addAuthToken(Request request) {
-        String sessionId = request.getSessionId();
-        if (sessionId != null) {
-            String authToken = getAuthToken(sessionId);
-            request.put(ARG_AUTHTOKEN, authToken);
-        }
-    }
 
 
 

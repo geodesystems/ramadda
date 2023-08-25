@@ -224,7 +224,7 @@ public class ApiMethod {
             }
         }
         if (requiresAuthToken) {
-            request.ensureAuthToken();
+            repository.getAuthManager().ensureAuthToken(request);
         }
         if (actions.size() > 0) {
             for (int i = 0; i < actions.size(); i++) {

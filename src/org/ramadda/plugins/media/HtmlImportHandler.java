@@ -336,7 +336,7 @@ public class HtmlImportHandler extends ImportHandler {
                               final String pattern)
             throws Exception {
         //IMPORTANT!
-        request.ensureAuthToken();
+        getAuthManager().ensureAuthToken(request);
         ActionManager.Action action = new ActionManager.Action() {
             public void run(Object actionId) throws Exception {
                 StringBuilder sb    = new StringBuilder("");

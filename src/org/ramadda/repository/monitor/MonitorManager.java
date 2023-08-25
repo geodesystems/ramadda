@@ -394,7 +394,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
             throws Exception {
 
         if (request.exists(ARG_MONITOR_DELETE_CONFIRM)) {
-            request.ensureAuthToken();
+            getAuthManager().ensureAuthToken(request);
             deleteMonitor(monitor);
 
             return new Result(
@@ -404,7 +404,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
         }
 
         if (request.exists(ARG_MONITOR_CHANGE)) {
-            request.ensureAuthToken();
+            getAuthManager().ensureAuthToken(request);
             monitor.applyEditForm(request);
             updateMonitor(monitor);
 

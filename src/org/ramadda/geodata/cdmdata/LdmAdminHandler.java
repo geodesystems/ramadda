@@ -50,6 +50,7 @@ public class LdmAdminHandler extends AdminHandlerImpl {
      * @param blockId which section
      * @param sb form buffer to append to
      */
+    /*** Don't do this. This should be set as a home directory property
     @Override
     public void addToAdminSettingsForm(String blockId, StringBuffer sb) {
         //Are we in the access section
@@ -93,11 +94,8 @@ public class LdmAdminHandler extends AdminHandlerImpl {
                     LdmAction.PROP_LDM_QUEUE, ldmQueue,
                     HtmlUtils.SIZE_60) + ldmExtra2));
 
-
-
-
     }
-
+    ***/
 
 
 

@@ -1,0 +1,356 @@
+/**
+   Copyright (c) 2008-2023 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
+*/
+
+package org.ramadda.repository.auth;
+
+
+import org.ramadda.repository.*;
+import org.ramadda.repository.output.*;
+import org.ramadda.repository.type.*;
+
+
+import org.ramadda.util.Utils;
+import org.ramadda.util.TTLCache;
+
+
+import java.io.*;
+import java.util.Base64;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+
+import java.awt.image.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Font;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+
+
+
+/**
+ * Handles auth stuff
+ *
+ * @author Jeff McWhirter
+ */
+@SuppressWarnings("unchecked")
+public class AuthManager extends RepositoryManager {
+
+    private List<Captcha> captchas;
+
+    /** store the number of bad captcha attempts for each user. clear every hour */
+    private TTLCache<String,Integer> badCaptchaCount =
+	new TTLCache<String,Integer>(60*60*1000);
+
+    private static int MAX_BAD_CAPTCHA_COUNT = 20;    
+
+    private static String hashStringSalt = null;
+    private static Object HASH_MUTEX = new Object();
+
+    /**
+     * ctor
+     *
+     * @param repository the repository
+     */
+    public AuthManager(Repository repository) {
+        super(repository);
+	initCaptchas();
+    }
+
+
+    private void initCaptchas() {
+	try {
+	    captchas  =new ArrayList<Captcha>();
+	    String alpha = "abcdefghijklmnopqrstuvwxyz";
+	    //	    List<String> words = Utils.split(getStorageManager().readUncheckedSystemResource("/org/ramadda/repository/resources/sgb-words.txt"),"\n",true,true);
+	    Random random = new Random();
+	    for(int i=0;i<1000;i++) {
+		String word = "";
+		for(int j=0;j<5;j++ ) {
+		    int index = random.nextInt(alpha.length());
+		    word+=alpha.charAt(index);
+		}
+		//		int index = random.nextInt(words.size());
+		//		String word = words.get(index);
+		//		words.remove(index);
+		int width = 85;
+		int height =25;
+		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		Graphics2D g2d = image.createGraphics();
+		g2d.setColor(new Color(220,220,220));
+
+		g2d.fillRect(0, 0, width, height);
+		Font font = new Font("Arial", Font.BOLD, 18);
+		g2d.setFont(font);
+		g2d.setColor(Color.BLACK);
+		g2d.drawString(word, 10, height-5);
+		g2d.dispose();
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ImageIO.write(image, "png", baos);
+		byte[] imageBytes = baos.toByteArray();
+		String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+		String dataUrl = "data:image/png;base64," + base64Image;
+		captchas.add(new Captcha(this,captchas.size(),word,dataUrl));
+		//		System.out.println(HU.image(dataUrl));
+		//		System.out.println(HU.div(v1+" " + v2,""));
+	    }
+	} catch(Exception exc) {
+	    System.err.println("error making captchas");
+	    exc.printStackTrace();
+	}
+    }
+
+    public static class Captcha {
+	private AuthManager authManager;
+	private int index;
+	private String value;
+	private String image;
+	
+	Captcha(AuthManager _authManager,int _index,String _value, String _image) {
+	    this.authManager =_authManager;
+	    this.index = _index;
+	    this.value = _value;
+	    this.image = _image;
+	}
+
+	public void ensureAuthToken(Request request) {
+	    authManager.ensureAuthToken(request,getAuthTokenExtra());
+	}
+
+	public void addAuthToken(Request request, Appendable sb) {
+	    authManager.addAuthToken(request,sb,getAuthTokenExtra());
+	}
+
+	public String getImage() {
+	    return image;
+	}
+	public String getAuthTokenExtra() {
+	    return ARG_CAPTCHA_INDEX+"="+index; 
+	}
+	public String getHtml(Request request) {
+	    StringBuilder sb = new StringBuilder();
+	    authManager.addAuthToken(request, sb,getAuthTokenExtra());
+	    sb.append(HU.hidden(ARG_CAPTCHA_INDEX,""+index));
+	    HU.div(sb,"To verify this action please type in the word<br>"+
+		       HU.image(image)+
+		       HU.space(1) +
+		       HU.input(ARG_CAPTCHA_RESPONSE,"",
+				HU.attrs("onkeydown","return Utils.preventSubmit(event)",
+					 "placeholder","word","size","5")),HU.clazz("ramadda-captcha"));
+											      
+	    sb.append("<br>");
+	    return sb.toString();
+	}
+    }
+
+    public Captcha getCaptcha() {
+	Random random = new Random();
+        int randomIndex = random.nextInt(captchas.size());
+        return captchas.get(randomIndex);
+    }
+
+
+    /**
+       this checks if the user has had too many captcha requests
+       if ok, then it checks that the captch text entereed by the user matches
+       with the captcha specified by the captch index from the form
+       if ok, then it checks that the auth token on the form (which is a hash of
+       the session id and the captcha index) matches
+       if the auth token does not match then an exception is thrown
+     */
+    public Captcha verifyCaptcha(Request request,Appendable sb) throws Exception {
+	User user = request.getUser();
+	String userName  = user==null?"null":user.getId();
+	Integer count = badCaptchaCount.get(userName);
+	if (count == null) {
+	    count = new Integer(0);
+	    badCaptchaCount.put(userName,count);
+	}
+
+	if (count.intValue() > MAX_BAD_CAPTCHA_COUNT) {
+	    sb.append(getPageHandler().showDialogError("Too many CAPTCHA attempts. You will have to wait for a while or restart the server."));
+	    return null;
+	}
+
+
+
+	Captcha captcha = null;
+	boolean ok = true;
+	try {
+	    int index = request.get(ARG_CAPTCHA_INDEX,-1);
+	    String value = request.getString(ARG_CAPTCHA_RESPONSE,"").trim().toLowerCase();
+	    if(index<0 || index>=captchas.size()) {
+		ok = false;
+	    } else  {
+		captcha = captchas.get(index);
+		ok =  captcha.value.equals(value);
+	    }
+	} catch(Exception ignore) {
+	    ok  =false;
+	}
+
+	if(ok) {
+	    badCaptchaCount.remove(userName);
+	} else {
+	    count = Integer.valueOf(count.intValue() + 1);
+	    badCaptchaCount.put(userName,count);
+	}
+
+
+	if(!ok && sb!=null) {
+	    sb.append(getPageHandler().showDialogError("Bad CAPTCHA response." +
+						       (MAX_BAD_CAPTCHA_COUNT-count.intValue() <5?" You only have a few more tries":"")));
+	    
+	}
+	if(!ok) return null;
+        captcha.ensureAuthToken(request);
+	return captcha;
+    }
+
+
+    /**
+     *  Convert the sessionId into a authorization token that is used to verify form
+     *  submissions, etc.
+     *
+     * @param sessionId _more_
+     *
+     * @return _more_
+     */
+    public String getAuthToken(String s, String ...ids) {
+	if(hashStringSalt==null) {
+	    synchronized(HASH_MUTEX) {
+		hashStringSalt = getRepository().getDbProperty("authtoken_salt",(String)null);
+		if(hashStringSalt==null) {
+		    synchronized(HASH_MUTEX) {
+			hashStringSalt = ""+Math.random();
+			try {
+			    getRepository().writeGlobal("authtoken_salt",hashStringSalt);
+			} catch(Exception exc) {
+			    throw new RuntimeException(exc);
+			}
+		    }
+		}
+	    }
+	}
+	if(s==null) s="";
+	if(ids.length>0) {
+	    s = s+"_"+Utils.join("_",ids);
+	}
+	s = hashStringSalt+"_"+s;
+	//	return s;
+	return RepositoryUtil.hashString(s);
+    }
+
+
+    public void addCaptcha(Request request, Appendable sb)  {
+	try {
+	    sb.append(getCaptcha().getHtml(request));
+        } catch (java.io.IOException ioe) {
+            throw new RuntimeException(ioe);
+        }
+    }
+
+
+    public void addAuthToken(Request request, Appendable sb,String ...extra) {	
+        try {
+            String sessionId = request.getSessionId();
+            if (sessionId != null) {
+                String authToken = getAuthToken(sessionId,extra);
+		System.err.println("AUTHTOKEN:" + authToken);
+		//		System.err.println(Utils.getStack(10));
+                sb.append(HU.hidden(ARG_AUTHTOKEN, authToken));
+            }
+        } catch (java.io.IOException ioe) {
+            throw new RuntimeException(ioe);
+        }
+
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     */
+    public void addAuthToken(Request request) {
+        String sessionId = request.getSessionId();
+        if (sessionId != null) {
+            String authToken = getAuthToken(sessionId);
+            request.put(ARG_AUTHTOKEN, authToken);
+        }
+    }
+    
+
+    /**
+     * _more_
+     */
+    public void ensureAuthToken(Request request, String...extra) {
+	ensureAuthToken(request,false,extra);
+    }	
+
+    public void ensureAuthToken(Request request, boolean checkSessionId,String ...extra) {	
+        boolean debug        = false;
+        String  authToken    = request.getString(ARG_AUTHTOKEN, (String) null);
+        String  mySessionId  = request.getSessionId();
+        String  argSessionId = request.getString(ARG_SESSIONID, (String) null);
+	debug=true;
+	//	System.err.println("ensure auth token:" + urlPath);
+        if (mySessionId == null) {
+            mySessionId = argSessionId;
+        }
+
+        if (debug) {
+            System.err.println("ensureAuthToken: " +
+			       " check session id:" + checkSessionId+
+			       " authToken:" + Utils.clip(authToken,10,"...") +
+			       " arg session:" + Utils.clip(argSessionId,10,"...")+
+			       " mySessionId:" + Utils.clip(mySessionId,10,"..."));
+        }
+
+        if (authToken != null && mySessionId != null) {
+            String sessionAuth = getAuthToken(mySessionId,extra);
+            if (authToken.trim().equals(sessionAuth)) {
+                if (debug) {
+                    System.err.println("\tauth token is ok");
+                }
+                return;
+            }
+            if (debug) {
+                System.err.println("\tauth token is no ok");
+            }
+        }
+
+        if (checkSessionId &&  argSessionId!=null && mySessionId!=null) {
+	    if(argSessionId.equals(mySessionId)) {
+                if (debug) {
+                    System.err.println("\tOK - arg session id == session id");
+                }
+                return;
+            }
+            if (debug) {
+                System.err.println("\tnot OK arg session id != session id");
+            }
+        }
+	
+
+        //If we are publishing anonymously then don't look for a auth token
+        if (request.get(ARG_ANONYMOUS, false) && request.isAnonymous()) {
+            return;
+        }
+
+        if (debug) {
+            System.err.println("Bad auth token");
+        }
+
+        getRepository().getLogManager().logError("Request.ensureAuthToken: failed:" + "\n\tsession:"
+						 + mySessionId + "\n\targ session:" + argSessionId +"\n\tauth token:" + authToken, null);
+
+        throw new IllegalArgumentException("Bad authentication token:" + authToken);
+    }
+
+
+
+}

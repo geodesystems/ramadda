@@ -195,6 +195,16 @@ public class RepositoryManager implements RepositorySource, Constants,
     }
 
 
+    public String formPropValue(Request request, String prop,String dflt) {
+	return request.getString(prop,getRepository().getProperty(prop,dflt));
+    }
+
+    public boolean formPropValue(Request request, String prop, boolean dflt) {
+	return request.get(prop,getRepository().getProperty(prop,dflt));
+    }    
+
+
+
     /**
      * _more_
      *
@@ -687,6 +697,10 @@ public class RepositoryManager implements RepositorySource, Constants,
     public UserManager getUserManager() {
         return repository.getUserManager();
     }
+
+    public AuthManager getAuthManager() {
+        return repository.getAuthManager();
+    }    
 
     /**
      * _more_

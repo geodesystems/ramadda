@@ -186,7 +186,7 @@ public class CommentManager extends RepositoryManager {
     public Result processCommentsEdit(Request request) throws Exception {
         Entry entry = getEntryManager().getEntry(request);
         //TODO: actually support comment editing
-        request.ensureAuthToken();
+        getAuthManager().ensureAuthToken(request);
         getDatabaseManager().delete(
             Tables.COMMENTS.NAME,
             Clause.eq(
@@ -236,7 +236,7 @@ public class CommentManager extends RepositoryManager {
                 getPageHandler().showDialogNote(
                     msg("Please enter a comment")));
         } else {
-            request.ensureAuthToken();
+            getAuthManager().ensureAuthToken(request);
             getDatabaseManager().executeInsert(Tables.COMMENTS.INSERT,
                     new Object[] {
                 getRepository().getGUID(), entry.getId(),
@@ -260,7 +260,7 @@ public class CommentManager extends RepositoryManager {
                   + getEntryManager().getEntryLink(request, entry, ""));
         //        sb.append(request.form(getRepository().URL_COMMENTS_ADD, BLANK));
         sb.append(request.form(getRepository().URL_COMMENTS_ADD, BLANK));
-        getRepository().addAuthToken(request, sb);
+        getAuthManager().addAuthToken(request, sb);
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.formEntry(msgLabel("Subject"),

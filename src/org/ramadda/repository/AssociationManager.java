@@ -105,7 +105,7 @@ public class AssociationManager extends RepositoryManager {
             if (type.length() == 0) {
                 type = request.getString(ARG_TYPE, "").trim();
             }
-            request.ensureAuthToken();
+            getAuthManager().ensureAuthToken(request);
             addAssociation(request, fromEntry, toEntry, name, type);
 
             //            return new Result(request.entryUrl(getRepository().URL_ENTRY_SHOW, fromEntry));
@@ -191,7 +191,7 @@ public class AssociationManager extends RepositoryManager {
 
 
         if (request.exists(ARG_DELETE_CONFIRM)) {
-            request.ensureAuthToken();
+            getAuthManager().ensureAuthToken(request);
             getDatabaseManager().delete(Tables.ASSOCIATIONS.NAME, clause);
             fromEntry.setAssociations(null);
             toEntry.setAssociations(null);
@@ -205,7 +205,7 @@ public class AssociationManager extends RepositoryManager {
         getPageHandler().entrySectionOpen(request, fromEntry, sb,
                                           msg("Delete Link"), false);
 
-        getRepository().addAuthToken(request, hidden);
+        getAuthManager().addAuthToken(request, hidden);
         hidden.append(HU.hidden(ARG_ASSOCIATION, associationId));
         String form = PageHandler.makeOkCancelForm(request,
                           getRepository().URL_ASSOCIATION_DELETE,
@@ -321,7 +321,7 @@ public class AssociationManager extends RepositoryManager {
      */
     public String addAssociation(Request request, Association association)
             throws Exception {
-        request.ensureAuthToken();
+        getAuthManager().ensureAuthToken(request);
         String id = getRepository().getGUID();
         getDatabaseManager().executeInsert(Tables.ASSOCIATIONS.INSERT,
                                            new Object[] { association.getId(),
@@ -394,7 +394,7 @@ public class AssociationManager extends RepositoryManager {
      */
     public void deleteAssociation(Request request, Association association)
             throws Exception {
-        request.ensureAuthToken();
+        getAuthManager().ensureAuthToken(request);
         getDatabaseManager().delete(Tables.ASSOCIATIONS.NAME,
                                     Clause.eq(Tables.ASSOCIATIONS.COL_ID,
                                         association.getId()));

@@ -4190,7 +4190,7 @@ public class TypeHandler extends RepositoryManager {
 								parent, null, name, "", request.getUser(),
                                      typeHandler, null);
 
-                getRepository().addAuthToken(request);
+                getAuthManager().addAuthToken(request);
                 getAssociationManager().addAssociation(request, entry,
                         newEntry, "derived", "derived");
             }

@@ -788,7 +788,7 @@ public class EntryManager extends RepositoryManager {
 	}
 
 	if(request.defined(ARG_OK)) {
-	    request.ensureAuthToken();
+	    getAuthManager().ensureAuthToken(request);
 	    return makeSnapshot(request, entry);
 	}
 	return makeSnapshotForm(request, entry,null);
@@ -1315,7 +1315,7 @@ public class EntryManager extends RepositoryManager {
 
 
     public Result processEntryAddFile(Request request) throws Exception {
-        request.ensureAuthToken();
+        getAuthManager().ensureAuthToken(request);
 	StringBuilder sb = new StringBuilder();
 	request.setReturnFilename("result.json");
 	String fileContents = request.getString("file",(String) null);
@@ -2150,7 +2150,7 @@ public class EntryManager extends RepositoryManager {
      */
     public Result processEntryChange(final Request request) throws Exception {
         boolean download = request.get(ARG_RESOURCE_DOWNLOAD, false);
-        request.ensureAuthToken();
+        getAuthManager().ensureAuthToken(request);
         if (download) {
             ActionManager.Action action = new ActionManager.Action() {
 		    public void run(Object actionId) throws Exception {
@@ -2186,7 +2186,7 @@ public class EntryManager extends RepositoryManager {
 
 
     public Result processEntrySetFile(final Request request) throws Exception {
-	request.ensureAuthToken();
+	getAuthManager().ensureAuthToken(request);
 	StringBuilder sb = new StringBuilder();
         Entry         entry = getEntry(request);
 	if(entry==null) {
@@ -3664,7 +3664,7 @@ public class EntryManager extends RepositoryManager {
 
         StringBuilder sb    = new StringBuilder();
         if (request.exists(ARG_DELETE_CONFIRM)) {
-            request.ensureAuthToken();
+            getAuthManager().ensureAuthToken(request);
             List<Entry> entries = new ArrayList<Entry>();
             entries.add(entry);
             Entry group = findGroup(request, entry.getParentEntryId());
@@ -3708,7 +3708,7 @@ public class EntryManager extends RepositoryManager {
         StringBuilder fb = new StringBuilder();
         fb.append(request.form(getRepository().URL_ENTRY_DELETE, BLANK));
 
-        getRepository().addAuthToken(request, fb);
+        getAuthManager().addAuthToken(request, fb);
         fb.append(HU.buttons(HU.submit(msg("OK"),
 				       ARG_DELETE_CONFIRM), HU.submit(msg("Cancel"),
 								      ARG_CANCEL)));
@@ -3822,7 +3822,7 @@ public class EntryManager extends RepositoryManager {
 	}
 
         if (request.exists(ARG_DELETE_CONFIRM)) {
-            request.ensureAuthToken();
+            getAuthManager().ensureAuthToken(request);
             return asynchDeleteEntries(request, entries);
         }
 
@@ -5144,7 +5144,7 @@ public class EntryManager extends RepositoryManager {
         }
 
 
-        request.ensureAuthToken();
+        getAuthManager().ensureAuthToken(request);
 	addSessionEntry(request, toEntry);
         if (isMove) {
             return processEntryMove(request, toEntry, entries);
@@ -5496,7 +5496,7 @@ public class EntryManager extends RepositoryManager {
     public Result processEntryXmlCreate(Request request) throws Exception {
         try {
 	    //true implies just check the session id
-            request.ensureAuthToken(true);
+            getAuthManager().ensureAuthToken(request,true);
             return processEntryXmlCreateInner(request);
         } catch (Exception exc) {
             if (request.getString(ARG_RESPONSE, "").equals(RESPONSE_XML)) {
@@ -5628,7 +5628,7 @@ public class EntryManager extends RepositoryManager {
 
 
         if (request.exists(ARG_CONFIRM)) {
-            request.ensureAuthToken();
+            getAuthManager().ensureAuthToken(request);
             if (parent == null) {
                 sb.append(
 			  getPageHandler().showDialogNote(
@@ -8242,7 +8242,7 @@ public class EntryManager extends RepositoryManager {
         addNewEntry(request, newEntry);
         if ((associatedEntry != null)
 	    && !isSynthEntry(associatedEntry.getId())) {
-            getRepository().addAuthToken(request);
+            getAuthManager().addAuthToken(request);
             getAssociationManager().addAssociation(request, associatedEntry,
 						   newEntry, "", associationType);
         }

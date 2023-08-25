@@ -682,7 +682,7 @@ public class Request implements Constants, Cloneable {
     public void formPostWithAuthToken(Appendable sb, RequestUrl theUrl,
                                       String extra) {
         Utils.append(sb, formPost(theUrl, extra));
-        repository.addAuthToken(this, sb);
+        getRepository().getAuthManager().addAuthToken(this, sb);
     }
 
 
@@ -711,7 +711,7 @@ public class Request implements Constants, Cloneable {
         } catch (Exception exc) {
             throw new IllegalArgumentException(exc);
         }
-        repository.addAuthToken(this, sb);
+        getRepository().getAuthManager().addAuthToken(this, sb);
     }
 
 
@@ -1694,73 +1694,6 @@ public class Request implements Constants, Cloneable {
         }
     }
 
-    /**
-     * _more_
-     */
-    public void ensureAuthToken() {
-	ensureAuthToken(false);
-    }	
-
-    public void ensureAuthToken(boolean checkSessionId) {	
-        boolean debug        = false;
-        String  authToken    = getString(ARG_AUTHTOKEN, (String) null);
-        String  mySessionId  = getSessionId();
-        String  argSessionId = getString(ARG_SESSIONID, (String) null);
-	//	debug=true;
-	//	System.err.println("ensure auth token:" + urlPath);
-        if (mySessionId == null) {
-            mySessionId = argSessionId;
-        }
-
-        if (debug) {
-            System.err.println("ensureAuthToken: " +
-			       " check session id:" + checkSessionId+
-			       " authToken:" + Utils.clip(authToken,10,"...") +
-			       " arg session:" + Utils.clip(argSessionId,10,"...")+
-			       " mySessionId:" + Utils.clip(mySessionId,10,"..."));
-        }
-
-        if (authToken != null && mySessionId != null) {
-            String sessionAuth = getRepository().getAuthToken(mySessionId);
-            if (authToken.trim().equals(sessionAuth)) {
-                if (debug) {
-                    System.err.println("\tauth token is ok");
-                }
-                return;
-            }
-            if (debug) {
-                System.err.println("\tauth token is no ok");
-            }
-        }
-
-        if (checkSessionId &&  argSessionId!=null && mySessionId!=null) {
-	    if(argSessionId.equals(mySessionId)) {
-                if (debug) {
-                    System.err.println("\tOK - arg session id == session id");
-                }
-                return;
-            }
-            if (debug) {
-                System.err.println("\tnot OK arg session id != session id");
-            }
-        }
-	
-
-        //If we are publishing anonymously then don't look for a auth token
-        if (get(ARG_ANONYMOUS, false) && isAnonymous()) {
-            return;
-        }
-
-        if (debug) {
-            System.err.println("Bad auth token");
-        }
-
-        getRepository().getLogManager().logError("Request.ensureAuthToken: failed:" + "\n\tsession:"
-						 + mySessionId + "\n\targ session:" + argSessionId +"\n\tauth token:" + authToken, null);
-
-        throw new IllegalArgumentException("Bad authentication token:" + authToken);
-    }
-
 
     /**
      * _more_
@@ -2653,7 +2586,7 @@ public class Request implements Constants, Cloneable {
     public String getAuthToken() {
         String sessionId = getSessionId();
         if (sessionId != null) {
-            return getRepository().getAuthToken(sessionId);
+            return getRepository().getAuthManager().getAuthToken(sessionId);
         }
 
         return "";

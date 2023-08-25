@@ -842,7 +842,7 @@ public class GpsOutputHandler extends OutputHandler {
                                            .getName()));
 
                 sb.append("<br>");
-                getRepository().addAuthToken(request);
+                getAuthManager().addAuthToken(request);
                 getAssociationManager().addAssociation(request, newEntry,
                         rawEntry, "generated rinex",
                         ASSOCIATION_TYPE_GENERATED_FROM);
@@ -1251,7 +1251,7 @@ public class GpsOutputHandler extends OutputHandler {
                                        newEntry.getId() }), newEntry
                                            .getName()));
 
-            getRepository().addAuthToken(request);
+            getAuthManager().addAuthToken(request);
             for (Entry solutionEntry : solutionEntries) {
                 getAssociationManager().addAssociation(request, newEntry,
                         solutionEntry, "", ASSOCIATION_TYPE_GENERATED_FROM);
@@ -2033,7 +2033,7 @@ public class GpsOutputHandler extends OutputHandler {
                 }
             }
         }
-        getRepository().addAuthToken(request);
+        getAuthManager().addAuthToken(request);
         getAssociationManager().addAssociation(request, newEntry, rinexEntry,
                 "generated rinex",
                 GpsOutputHandler.ASSOCIATION_TYPE_GENERATED_FROM);

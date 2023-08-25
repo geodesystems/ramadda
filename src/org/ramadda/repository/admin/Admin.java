@@ -539,16 +539,16 @@ public class Admin extends RepositoryManager {
 
         license = license.replace("(C)", "&copy;");
         license = license.replace("(c)", "&copy;");
-        sb.append(HtmlUtils.textArea("", license, 10, 120));
-        sb.append(HtmlUtils.br());
+        sb.append(HU.textArea("", license, 10, 120));
+        sb.append(HU.br());
 
-        sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                                 HtmlUtils.cssClass("registration-agree")));
+        sb.append(HU.open(HU.TAG_DIV,
+                                 HU.cssClass("registration-agree")));
         sb.append(
-            HtmlUtils.labeledCheckbox(
+            HU.labeledCheckbox(
                 ARG_AGREE, "true", false,
                 "I agree to the above license and conditions of use for the RAMADDA software"));
-        sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+        sb.append(HU.close(HU.TAG_DIV));
 
         return sb.toString();
     }
@@ -690,7 +690,7 @@ public class Admin extends RepositoryManager {
                         "Error: Incorrect installation password"));
                 firstTime = true;
             } else {
-                sb.append(HtmlUtils.hidden(PROP_INSTALL_PASSWORD,
+                sb.append(HU.hidden(PROP_INSTALL_PASSWORD,
                                            givenPassword));
             }
         }
@@ -706,10 +706,10 @@ public class Admin extends RepositoryManager {
             msg += "</ul>";
             msg += "If you change any of these settings be sure to restart your RAMADDA";
             sb.append(note(msg));
-            sb.append(HtmlUtils.formTable());
+            sb.append(HU.formTable());
 
             sb.append(
-                HtmlUtils.formEntry(
+                HU.formEntry(
                     "Home Directory:",
                     getStorageManager().getRepositoryDir().toString()));
             getDatabaseManager().addInfo(sb);
@@ -718,20 +718,20 @@ public class Admin extends RepositoryManager {
                     note("Since this configuration is web-based we use the install password to verify your identity."),
                     2));
             sb.append(
-                HtmlUtils.formEntry(
+                HU.formEntry(
                     msgLabel("Install Password"),
-                    HtmlUtils.input(PROP_INSTALL_PASSWORD, "") + " "
+                    HU.input(PROP_INSTALL_PASSWORD, "") + " "
                     + "Specified in "
                     + getStorageManager().getRepositoryDir().toString()
                     + "/install.propertes"));
-            sb.append(HtmlUtils.formTableClose());
-            sb.append(HtmlUtils.submit(msg("Next"),
+            sb.append(HU.formTableClose());
+            sb.append(HU.submit(msg("Next"),
                                        ARG_ADMIN_INSTALLNOTICESHOWN));
         } else if ( !haveDoneInstallStep(ARG_ADMIN_LICENSEREAD)) {
             title = "License and Conditions of Use";
             sb.append(getLicenseForm());
-            sb.append(HtmlUtils.br());
-            sb.append(HtmlUtils.submit(msg("Next")));
+            sb.append(HU.br());
+            sb.append(HU.submit(msg("Next")));
         } else if ( !haveDoneInstallStep(ARG_ADMIN_ADMINCREATED)) {
             title = "Configuration";
             String       id          = "admin";
@@ -753,17 +753,17 @@ public class Admin extends RepositoryManager {
                 boolean okToAdd = true;
                 if (id.length() == 0) {
                     okToAdd = false;
-                    errorBuffer.append(HtmlUtils.space(2));
+                    errorBuffer.append(HU.space(2));
                     errorBuffer.append(msg("Please enter an ID"));
-                    errorBuffer.append(HtmlUtils.br());
+                    errorBuffer.append(HU.br());
                 }
 
                 if ((password1.length() == 0)
                         || !password1.equals(password2)) {
                     okToAdd = false;
-                    errorBuffer.append(HtmlUtils.space(2));
+                    errorBuffer.append(HU.space(2));
                     errorBuffer.append(msg("Invalid password"));
-                    errorBuffer.append(HtmlUtils.br());
+                    errorBuffer.append(HU.br());
                 }
 
 
@@ -879,39 +879,39 @@ public class Admin extends RepositoryManager {
                 " <span class=\"ramadda-required-field\">* required</span>";
             String required2 =
                 " <span class=\"ramadda-required-field\">*</span>";
-            sb.append(HtmlUtils.formTable());
+            sb.append(HU.formTable());
             sb.append(
-                HtmlUtils.row(
-                    HtmlUtils.colspan(msgHeader("Administrator Login"), 2)));
+                HU.row(
+                    HU.colspan(msgHeader("Administrator Login"), 2)));
             sb.append(
-                HtmlUtils.formEntry(
+                HU.formEntry(
                     msgLabel("ID"),
-                    HtmlUtils.input(UserManager.ARG_USER_ID, id)
+                    HU.input(UserManager.ARG_USER_ID, id)
                     + required1));
             sb.append(
-                HtmlUtils.formEntry(
+                HU.formEntry(
                     msgLabel("Name"),
-                    HtmlUtils.input(UserManager.ARG_USER_NAME, name)));
+                    HU.input(UserManager.ARG_USER_NAME, name)));
             sb.append(
-                HtmlUtils.formEntry(
+                HU.formEntry(
                     msgLabel("Email"),
-                    HtmlUtils.input(
+                    HU.input(
                         UserManager.ARG_USER_EMAIL,
                         request.getString(UserManager.ARG_USER_EMAIL, ""))));
             sb.append(
-                HtmlUtils.formEntry(
+                HU.formEntry(
                     msgLabel("Password"),
-                    HtmlUtils.password(UserManager.ARG_USER_PASSWORD1)
+                    HU.password(UserManager.ARG_USER_PASSWORD1)
                     + required2));
             sb.append(
-                HtmlUtils.formEntry(
+                HU.formEntry(
                     msgLabel("Password Again"),
-                    HtmlUtils.password(UserManager.ARG_USER_PASSWORD2)
+                    HU.password(UserManager.ARG_USER_PASSWORD2)
                     + required2));
 
             sb.append(
-                HtmlUtils.row(
-                    HtmlUtils.colspan(msgHeader("Server Information"), 2)));
+                HU.row(
+                    HU.colspan(msgHeader("Server Information"), 2)));
             String hostname = "";
             String port     = "";
             if (request.getHttpServletRequest() != null) {
@@ -924,23 +924,23 @@ public class Admin extends RepositoryManager {
             port     = request.getString(PROP_PORT, port);
 
             sb.append(
-                HtmlUtils.formEntry(
+                HU.formEntry(
                     msgLabel("Repository Name"),
-                    HtmlUtils.input(
+                    HU.input(
                         PROP_REPOSITORY_NAME,
                         request.getString(
                             PROP_REPOSITORY_NAME,
                             getRepository().getProperty(
                                 PROP_REPOSITORY_NAME,
-                                "RAMADDA Repository")), HtmlUtils.SIZE_60)));
+                                "RAMADDA Repository")), HU.SIZE_60)));
 
             sb.append(
-                HtmlUtils.formEntry(
+                HU.formEntry(
                     "",
                     "RAMADDA comes with a set of plugins that add functionality. You can install them now or later if you wish."));
             //TODO: read the plugins.xml file and offer more plugins
             //than the hard coded all plugin
-            sb.append(HtmlUtils.hidden("hascbx", "true"));
+            sb.append(HU.hidden("hascbx", "true"));
             boolean hascbx = request.get("hascbx", false);
             for (String plugin : PluginManager.PLUGINS) {
                 String pluginName =
@@ -950,13 +950,13 @@ public class Admin extends RepositoryManager {
                 boolean value   = request.get(cbxName, hascbx
                         ? false
                         : dflt);
-                sb.append(HtmlUtils.formEntry("",
-                        HtmlUtils.labeledCheckbox(cbxName, "true", value,
+                sb.append(HU.formEntry("",
+                        HU.labeledCheckbox(cbxName, "true", value,
                             "Install plugin: " + pluginName)));
             }
-            sb.append(HtmlUtils.formTableClose());
-            sb.append(HtmlUtils.br());
-            sb.append(HtmlUtils.submit(msg("Initialize Server")));
+            sb.append(HU.formTableClose());
+            sb.append(HU.br());
+            sb.append(HU.submit(msg("Initialize Server")));
         } else {
             //Should never get here
             title = "Error";
@@ -970,7 +970,7 @@ public class Admin extends RepositoryManager {
         getPageHandler().sectionOpen(request, finalSB, title, false);
         finalSB.append(sb);
         getPageHandler().sectionClose(request, finalSB);
-        finalSB.append(HtmlUtils.formClose());
+        finalSB.append(HU.formClose());
 
         return new Result(msg(title), finalSB);
 
@@ -1055,7 +1055,7 @@ public class Admin extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result adminPluginUpload(Request request) throws Exception {
-        request.ensureAuthToken();
+        getAuthManager().ensureAuthToken(request);
 
         return getRepository().getPluginManager().adminPluginUpload(request);
     }
@@ -1094,11 +1094,11 @@ public class Admin extends RepositoryManager {
                                       " name=\"admin\"");
 
         if ( !getDatabaseManager().hasConnection()) {
-            sb.append(HtmlUtils.hidden(ARG_ADMIN_WHAT, "restart"));
-            sb.append(HtmlUtils.submit("Restart Database"));
+            sb.append(HU.hidden(ARG_ADMIN_WHAT, "restart"));
+            sb.append(HU.submit("Restart Database"));
         } else {
-            sb.append(HtmlUtils.hidden(ARG_ADMIN_WHAT, "shutdown"));
-            sb.append(HtmlUtils.submit("Shut Down Database"));
+            sb.append(HU.hidden(ARG_ADMIN_WHAT, "shutdown"));
+            sb.append(HU.submit("Shut Down Database"));
         }
         sb.append("</form>");
 
@@ -1119,14 +1119,14 @@ public class Admin extends RepositoryManager {
         StringBuffer sb = new StringBuffer();
         List<ApiMethod> apiMethods =
             getRepository().getApiManager().getApiMethods();
-        sb.append(HtmlUtils.formTable());
-        sb.append(HtmlUtils.row(HtmlUtils.cols("Name", "Admin", "Actions")));
+        sb.append(HU.formTable());
+        sb.append(HU.row(HU.cols("Name", "Admin", "Actions")));
         for (ApiMethod apiMethod : apiMethods) {
-            sb.append(HtmlUtils.row(HtmlUtils.cols(apiMethod.getName(),
+            sb.append(HU.row(HU.cols(apiMethod.getName(),
                     "" + apiMethod.getMustBeAdmin(),
                     StringUtil.join(",", apiMethod.getActions()))));
         }
-        sb.append(HtmlUtils.formTableClose());
+        sb.append(HU.formTableClose());
 
         return makeResult(request, "RAMADDA-Admin-Actions", sb);
     }
@@ -1181,7 +1181,7 @@ public class Admin extends RepositoryManager {
                 dumpDatabase(actionId);
             }
         };
-        String href = HtmlUtils.href(request.makeUrl(URL_ADMIN_MAINTENANCE),
+        String href = HU.href(request.makeUrl(URL_ADMIN_MAINTENANCE),
                                      "Continue");
 
         Result result = getActionManager().doAction(request, action,
@@ -1224,7 +1224,7 @@ public class Admin extends RepositoryManager {
                 }
             }
         };
-        String href = HtmlUtils.href(request.makeUrl(URL_ADMIN_MAINTENANCE),
+        String href = HU.href(request.makeUrl(URL_ADMIN_MAINTENANCE),
                                      "Continue");
 
         Result result = getActionManager().doAction(request, action,
@@ -1320,15 +1320,15 @@ public class Admin extends RepositoryManager {
         sb.append(header("Repository Administration"));
         sb.append("<ul>\n");
         sb.append("<li> ");
-        sb.append(HtmlUtils.href(request.makeUrl(URL_ADMIN_STARTSTOP),
+        sb.append(HU.href(request.makeUrl(URL_ADMIN_STARTSTOP),
                                  "Administer Database"));
         sb.append("<li> ");
-        sb.append(HtmlUtils.href(request.makeUrl(URL_ADMIN_TABLES),
+        sb.append(HU.href(request.makeUrl(URL_ADMIN_TABLES),
                                  "Show Tables"));
         sb.append("<li> ");
-        sb.append(HtmlUtils.href(request.makeUrl(URL_ADMIN_STATS), "System"));
+        sb.append(HU.href(request.makeUrl(URL_ADMIN_STATS), "System"));
         sb.append("<li> ");
-        sb.append(HtmlUtils.href(request.makeUrl(URL_ADMIN_SQL),
+        sb.append(HU.href(request.makeUrl(URL_ADMIN_SQL),
                                  "Execute SQL"));
         sb.append("</ul>");
 
@@ -1349,83 +1349,55 @@ public class Admin extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result adminSettings(Request request) throws Exception {
+	return adminSettings(request, "");
+    }
+
+
+    public Result adminSettings(Request request,String extraTop) throws Exception {
+
 
         StringBuilder sb = new StringBuilder();
-        request.formPostWithAuthToken(sb, URL_ADMIN_SETTINGS_DO, null);
-        String size = HtmlUtils.SIZE_60;
-        sb.append(HtmlUtils.sectionOpen(null, false));
-        sb.append(HtmlUtils.submit(msg("Change Settings")));
-        sb.append(HtmlUtils.p());
+	sb.append(extraTop);
+        String size = HU.SIZE_60;
+        sb.append(request.formPost(URL_ADMIN_SETTINGS_DO));
+        sb.append(HU.sectionOpen(null, false));
+        sb.append(HU.submit(msg("Change Settings")));
+	getAuthManager().addCaptcha(request,sb);
+        sb.append(HU.p());
         StringBuffer csb = new StringBuffer();
-        csb.append(HtmlUtils.formTable());
-
-
-        /*
-        csb.append(HtmlUtils.row(HtmlUtils.colspan(msgHeader("Registration"),
-                2)));
-
-
-        String regKey = getRepository().getProperty(PROP_REGISTER_KEY, "");
-        csb.append(HtmlUtils.formEntry(msgLabel("Key"),
-                                       HtmlUtils.input(PROP_REGISTER_KEY,
-                                           regKey, HtmlUtils.SIZE_90)));
-        if (isRegistered()) {
-            csb.append(HtmlUtils.formEntry("",
-                                           "Registered for " + numberUsers
-                                           + " users"));
-        } else {
-            if (Utils.stringDefined(regKey)) {
-                csb.append(HtmlUtils.formEntry("", "Invalid registration"));
-            } else {
-                csb.append(HtmlUtils.formEntry("", "Not registered"));
-            }
-            }
-*/
-
+        csb.append(HU.formTable());
         csb.append(
-            HtmlUtils.row(
-                HtmlUtils.colspan(msgHeader("Site Information"), 2)));
+            HU.row(
+                HU.colspan(msgHeader("Site Information"), 2)));
         String allSslCbx =
-            HtmlUtils.space(3)
-            + HtmlUtils.labeledCheckbox(
+            HU.space(3)
+            + HU.labeledCheckbox(
                 PROP_ACCESS_ALLSSL, "true",
-                getRepository().getProperty(PROP_ACCESS_ALLSSL, false),
+                formPropValue(request,PROP_ACCESS_ALLSSL, false),
 		"Force all connections to be secure");
 
         String sslMsg =
             "Note: To enable ssl see the <a target=\"_help\" href=\"http://ramadda.org/repository/userguide/installing.html#ssl\">installation guide</a>";
         csb.append(
-            HtmlUtils.formEntryTop(
+            HU.formEntryTop(
                 msgLabel("SSL"),
-                getPageHandler().showDialogNote(sslMsg) + HtmlUtils.br()
+                getPageHandler().showDialogNote(sslMsg) + HU.br()
                 + allSslCbx));
 
 
+	HU.formEntry(csb,
+			    msgLabel("Hostname"),
+			    HU.input(PROP_HOSTNAME,formPropValue(request,PROP_HOSTNAME,""), HU.SIZE_40));
 
-        csb.append(
-            HtmlUtils.formEntry(
-                msgLabel("Hostname"),
-                HtmlUtils.input(
-                    PROP_HOSTNAME,
-                    getRepository().getProperty(PROP_HOSTNAME, ""),
-                    HtmlUtils.SIZE_40)));
+	HU.formEntry(csb,
+			    msgLabel("HTTP Port"),
+			    HU.input(PROP_PORT, formPropValue(request,PROP_PORT,""), HU.SIZE_5));
 
-        csb.append(
-            HtmlUtils.formEntry(
-                msgLabel("HTTP Port"),
-                HtmlUtils.input(
-                    PROP_PORT, getRepository().getProperty(PROP_PORT, ""),
-                    HtmlUtils.SIZE_5)));
-
-        String cbx = HtmlUtils.labeledCheckbox(
+        String cbx = HU.labeledCheckbox(
 					       PROP_USE_FIXED_HOSTNAME, "true",
-					       getRepository().getProperty(PROP_USE_FIXED_HOSTNAME, false),
+					       formPropValue(request, PROP_USE_FIXED_HOSTNAME, false),
 					       "Use the fixed hostname:port in absolute URLs instead of the request's info");
-
-
-	HtmlUtils.formEntry(csb,
-			    msgLabel("Absolute URLs"),
-			    cbx);
+	HU.formEntry(csb, msgLabel("Absolute URLs"),  cbx);
 
         //Force the creation of some of the managers
         getRepository().getMailManager();
@@ -1439,188 +1411,142 @@ public class Admin extends RepositoryManager {
         }
 
 
+	HU.row(csb, HU.colspan(msgHeader("Extra Properties"), 2));
         csb.append(
-            HtmlUtils.row(
-                HtmlUtils.colspan(msgHeader("Extra Properties"), 2)));
-        csb.append(
-            HtmlUtils.formEntryTop(
+            HU.formEntryTop(
                 msgLabel("Properties"),
-                HtmlUtils.textArea(
+                HU.textArea(
                     PROP_PROPERTIES,
-                    getRepository().getProperty(
-                        PROP_PROPERTIES,
-                        "#add extra properties\n#name=value\n#ramadda.html.template.default=fixedmapheader\n\n"), 10, 80)));
-
-
-
+                    formPropValue(request,PROP_PROPERTIES,
+				 "#add extra properties\n#name=value\n#ramadda.html.template.default=fixedmapheader\n\n"), 10, 80)));
 
 
 
         StringBuffer dsb = new StringBuffer();
 
-        dsb.append(HtmlUtils.formTable());
+        dsb.append(HU.formTable());
         dsb.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 msgLabel("Title"),
-                HtmlUtils.input(
+                HU.input(
                     PROP_REPOSITORY_NAME,
-                    getRepository().getProperty(
-                        PROP_REPOSITORY_NAME, "Repository"), size)));
+                    formPropValue(request, PROP_REPOSITORY_NAME, "RAMADDA Repository"), size)));
         dsb.append(
-            HtmlUtils.formEntryTop(
+            HU.formEntryTop(
                 msgLabel("Description"),
-                HtmlUtils.textArea(
+                HU.textArea(
                     PROP_REPOSITORY_DESCRIPTION,
-                    getRepository().getProperty(
-                        PROP_REPOSITORY_DESCRIPTION, ""), 5, 60)));
+		    formPropValue(request,PROP_REPOSITORY_DESCRIPTION, ""), 5, 60)));
 
         dsb.append(
-            HtmlUtils.formEntryTop(
+            HU.formEntryTop(
                 msgLabel("Footer"),
-                HtmlUtils.textArea(
+                HU.textArea(
                     PROP_HTML_FOOTER,
-                    getRepository().getProperty(PROP_HTML_FOOTER, ""), 5,
+		    formPropValue(request,PROP_HTML_FOOTER, ""), 5,
                     60)));
 
-        dsb.append(
-            HtmlUtils.formEntry(
-                msgLabel("Logo Image Location"),
-                HtmlUtils.input(
-                    PROP_LOGO_IMAGE,
-                    getRepository().getProperty(PROP_LOGO_IMAGE, ""), size)));
-        dsb.append(
-            HtmlUtils.formEntry(
-                msgLabel("Logo URL"),
-                HtmlUtils.input(
-                    PROP_LOGO_URL,
-                    getRepository().getProperty(PROP_LOGO_URL, ""), size)));
+	HU.formEntry(dsb, msgLabel("Logo Image Location"),
+                HU.input(PROP_LOGO_IMAGE,
+			 formPropValue(request,PROP_LOGO_IMAGE, ""), size));
+	HU.formEntry(dsb, msgLabel("Logo URL"),
+		     HU.input(PROP_LOGO_URL,
+			      formPropValue(request,PROP_LOGO_URL, ""), size));
 
 
-
-        dsb.append(HtmlUtils.formEntry("", msg("System Message")));
         String systemMessage = getRepository().getSystemMessage();
+	if(systemMessage == null)systemMessage="";
+	HU.formEntry(dsb,
+		     msgLabel("System Message"),
+		     HU.textArea(PROP_SYSTEM_MESSAGE, request.getString(PROP_SYSTEM_MESSAGE,systemMessage),
+				 5, 60));
+
+
 
         dsb.append(
-            HtmlUtils.formEntry(
-                msgLabel("Message"),
-                HtmlUtils.textArea(
-                    PROP_SYSTEM_MESSAGE, ((systemMessage == null)
-                                          ? ""
-                                          : systemMessage), 5, 60)));
-
-
-        String phrases = getRepository().getProperty(PROP_ADMIN_PHRASES,
-                             (String) null);
-        if (phrases == null) {
-            phrases = "#label=new label to use\n#e.g.: Foo=Bar";
-        }
-
-        dsb.append(
-            HtmlUtils.formEntryTop(
+            HU.formEntryTop(
                 msgLabel("Ignore Page Styles"),
-                HtmlUtils.checkbox(
+                HU.checkbox(
                     PROP_NOSTYLE, "true",
-                    getRepository().getProperty(PROP_NOSTYLE, false))));
-
+                    formPropValue(request,PROP_NOSTYLE, false))));
 
         dsb.append(
-            HtmlUtils.formEntryTop(
+            HU.formEntryTop(
                 msgLabel("Translations"),
-                HtmlUtils.textArea(PROP_ADMIN_PHRASES, phrases, 5, 60)));
+                HU.textArea(PROP_ADMIN_PHRASES,
+			    formPropValue(request, PROP_ADMIN_PHRASES,"#label=new label to use\n#e.g.: Foo=Bar"),
+			    5, 60)));
 
 
-        /*
-        dsb.append(
-            HtmlUtils.formEntryTop(
-                msgLabel("Facebook Comments API Key"),
-                HtmlUtils.input(
-                    PROP_FACEBOOK_CONNECT_KEY,
-                    getRepository().getProperty(PROP_FACEBOOK_CONNECT_KEY, ""), size)));
-        dsb.append(
-            HtmlUtils.formEntryTop(
-                msgLabel("Enable Ratings"),
-                HtmlUtils.checkbox(
-                    PROP_RATINGS_ENABLE, "true",
-                    getRepository().getProperty(PROP_RATINGS_ENABLE, false))));
-
-        */
-
-        dsb.append(HtmlUtils.formEntryTop(msgLabel("Google Maps Keys"), "<table><tr valign=top><td>"
-                + HtmlUtils.textArea(PROP_GOOGLEAPIKEYS, getRepository().getProperty(PROP_GOOGLEAPIKEYS, ""), 5, 80)
+	/*** not needed
+        dsb.append(HU.formEntryTop(msgLabel("Google Maps Keys"), "<table><tr valign=top><td>"
+                + HU.textArea(PROP_GOOGLEAPIKEYS, getRepository().getProperty(PROP_GOOGLEAPIKEYS, ""), 5, 80)
                 + "</td><td>One per line:<br><i>host domain;apikey</i><br>e.g.:<i>www.yoursite.edu;google api key</i></table>"));
-
-
-
+	****/
 
 
         StringBuffer asb = new StringBuffer();
-        asb.append(HtmlUtils.formTable());
+        asb.append(HU.formTable());
 
 
-        asb.append(HtmlUtils.row(HtmlUtils.colspan(msgHeader("Site Access"),
+        asb.append(HU.row(HU.colspan(msgHeader("Site Access"),
                 2)));
         asb.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 "",
-                HtmlUtils.labeledCheckbox(
+                HU.labeledCheckbox(
 					  PROP_ACCESS_ADMINONLY, "true",
-					  getRepository().getProperty(
-								      PROP_ACCESS_ADMINONLY, false),
+					  formPropValue(request, PROP_ACCESS_ADMINONLY, false),
 					  "Only allows administrators to access the site")));
         asb.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 "",
-                HtmlUtils.labeledCheckbox(
+                HU.labeledCheckbox(
                     PROP_ACCESS_REQUIRELOGIN, "true",
-                    getRepository().getProperty(
-						PROP_ACCESS_REQUIRELOGIN, false),
+                    formPropValue(request,PROP_ACCESS_REQUIRELOGIN, false),
 		    "Require login to access the site")));
 
         asb.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 "",
-                HtmlUtils.labeledCheckbox(
+                HU.labeledCheckbox(
                     PROP_ACCESS_NOBOTS, "true",
-                    getRepository().getProperty(
-						PROP_ACCESS_NOBOTS, false),
+                    formPropValue(request,PROP_ACCESS_NOBOTS, false),
 		    "Disallow robots")));
 
 
 
-        asb.append(HtmlUtils.colspan(msgHeader("Anonymous Uploads"), 2));
+        asb.append(HU.colspan(msgHeader("Anonymous Uploads"), 2));
         asb.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 msgLabel("Max directory size"),
-                HtmlUtils.input(
+                HU.input(
                     PROP_UPLOAD_MAXSIZEGB,
-                    "" + getRepository().getProperty(
-                        PROP_UPLOAD_MAXSIZEGB,
-                        10.0), HtmlUtils.SIZE_10) + " (GBytes)"));
+                    formPropValue(request,PROP_UPLOAD_MAXSIZEGB,"10.0"),
+		    HU.SIZE_10) + " (GBytes)"));
 
 
-        asb.append(HtmlUtils.colspan(msgHeader("Cache Size"), 2));
+        asb.append(HU.colspan(msgHeader("Cache Size"), 2));
         asb.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 msgLabel("Size"),
-                HtmlUtils.input(
+                HU.input(
                     PROP_CACHE_MAXSIZEGB,
-                    "" + getRepository().getProperty(
-                        PROP_CACHE_MAXSIZEGB,
-                        10.0), HtmlUtils.SIZE_10) + " (GBytes)"));
+                    formPropValue(request,PROP_CACHE_MAXSIZEGB,"10.0"),
+		    HU.SIZE_10) + " (GBytes)"));
 
 
 
-        asb.append(HtmlUtils.colspan(msgHeader("File Access"), 2));
-        String fileWidget = HtmlUtils.textArea(
+        asb.append(HU.colspan(msgHeader("File Access"), 2));
+        String fileWidget = HU.textArea(
                                 PROP_LOCALFILEPATHS,
-                                getRepository().getProperty(
-                                    PROP_LOCALFILEPATHS, ""), 5, 40);
+                                formPropValue(request, PROP_LOCALFILEPATHS, ""), 5, 40);
         String fileLabel =
             msg("Enter one server file system directory per line")
-            + HtmlUtils.br()
+            + HU.br()
             + msg("Directories that RAMADDA is allowed to serve files from")
             + " " + "(e.g., from harvesters or the server file view entries)";
-        asb.append(HtmlUtils.formEntryTop(msgLabel("File system access"),
+        asb.append(HU.formEntryTop(msgLabel("File system access"),
                                           "<table><tr valign=top><td>"
                                           + fileWidget + "</td><td>"
                                           + fileLabel
@@ -1639,13 +1565,13 @@ public class Admin extends RepositoryManager {
             adminHandler.addToAdminSettingsForm(BLOCK_DISPLAY, dsb);
             adminHandler.addToAdminSettingsForm(BLOCK_ACCESS, asb);
         }
-        csb.append(HtmlUtils.formTableClose());
-        dsb.append(HtmlUtils.formTableClose());
-        asb.append(HtmlUtils.formTableClose());
+        csb.append(HU.formTableClose());
+        dsb.append(HU.formTableClose());
+        asb.append(HU.formTableClose());
 
 
         StringBuffer osb = new StringBuffer();
-        osb.append(HtmlUtils.formTable());
+        osb.append(HU.formTable());
 
 
         StringBuffer     outputSB         = new StringBuffer();
@@ -1661,25 +1587,25 @@ public class Admin extends RepositoryManager {
             if ( !Misc.equals(lastCategoryName, type.getGroupName())) {
                 if (lastCategoryName != null) {
                     outputSB.append("</div>\n");
-                    outputSB.append(HtmlUtils.p());
+                    outputSB.append(HU.p());
                 }
                 lastCategoryName = type.getGroupName();
                 if (lastCategoryName != null) {
-                    HtmlUtils.div(outputSB, lastCategoryName,
-                                  HtmlUtils.cssClass(CSS_CLASS_HEADING_2));
+                    HU.div(outputSB, lastCategoryName,
+                                  HU.cssClass(CSS_CLASS_HEADING_2));
                 }
                 outputSB.append("\n<div style=\"margin-left:20px\">");
             }
-            outputSB.append(HtmlUtils.labeledCheckbox("outputtype." + type.getId(),
+            outputSB.append(HU.labeledCheckbox("outputtype." + type.getId(),
 						      "true", ok,type.getLabel()));
         }
         outputSB.append("</div>\n");
-        String outputDiv = HtmlUtils.div(outputSB.toString(),
-                                         HtmlUtils.cssClass("scrollablediv"));
+        String outputDiv = HU.div(outputSB.toString(),
+                                         HU.cssClass("scrollablediv"));
         osb.append("\n");
-        String doAllOutput = HtmlUtils.labeledCheckbox("outputtype.all", "true",
+        String doAllOutput = HU.labeledCheckbox("outputtype.all", "true",
 						       false, "Use all");
-        osb.append(HtmlUtils.formEntryTop("", doAllOutput + outputDiv));
+        osb.append(HU.formEntryTop("", doAllOutput + outputDiv));
         osb.append("\n");
         StringBuffer handlerSB = new StringBuffer();
         List<OutputHandler> outputHandlers =
@@ -1694,8 +1620,8 @@ public class Admin extends RepositoryManager {
             osb.append(extra);
         }
 
-        osb.append(HtmlUtils.formEntry("&nbsp;<p>", ""));
-        osb.append(HtmlUtils.formTableClose());
+        osb.append(HU.formEntry("&nbsp;<p>", ""));
+        osb.append(HU.formTableClose());
 
 
         List<String> titles = new ArrayList<String>();
@@ -1707,12 +1633,16 @@ public class Admin extends RepositoryManager {
         tabs.add(asb.toString());
         titles.add("Display");
         tabs.add(dsb.toString());
-        titles.add("Available Output Types");
-        tabs.add(osb.toString());
-        HtmlUtils.makeAccordion(sb, titles, tabs, true, "ramadda-accordion",
+
+	//        titles.add("Available Output Types");
+	//        tabs.add(osb.toString());
+
+
+
+        HU.makeAccordion(sb, titles, tabs, true, "ramadda-accordion",
                                 null);
-        sb.append(HtmlUtils.formClose());
-        sb.append(HtmlUtils.sectionClose());
+        sb.append(HU.formClose());
+        sb.append(HU.sectionClose());
 
         return makeResult(request, msg("RAMADDA-Admin-Settings"), sb);
     }
@@ -1729,7 +1659,7 @@ public class Admin extends RepositoryManager {
     public void addInfo(Request request, Appendable sb) throws Exception {
         /*
         if (isRegistered()) {
-            sb.append(HtmlUtils.formEntry("Registered", regId));
+            sb.append(HU.formEntry("Registered", regId));
         }
         */
     }
@@ -1744,11 +1674,11 @@ public class Admin extends RepositoryManager {
      * @return _more_
      */
     private String makeConfigBlock(String title, String contents) {
-        return HtmlUtils.makeShowHideBlock(
+        return HU.makeShowHideBlock(
             msg(title),
-            HtmlUtils.div(contents, HtmlUtils.cssClass("admin-block-inner")),
-            false, HtmlUtils.cssClass(CSS_CLASS_HEADING_2),
-            HtmlUtils.cssClass("admin-block"));
+            HU.div(contents, HU.cssClass("admin-block-inner")),
+            false, HU.cssClass(CSS_CLASS_HEADING_2),
+            HU.cssClass("admin-block"));
     }
 
 
@@ -1825,7 +1755,10 @@ public class Admin extends RepositoryManager {
      */
     public Result adminSettingsDo(Request request) throws Exception {
 
-        request.ensureAuthToken();
+	StringBuilder sb = new StringBuilder();
+	if(getAuthManager().verifyCaptcha(request,sb)==null) {
+	    return adminSettings(request, sb.toString());
+	}
 
         for (RepositoryManager manager :
                 getRepository().getRepositoryManagers()) {
@@ -1905,6 +1838,7 @@ public class Admin extends RepositoryManager {
 
         List<OutputType> types = getRepository().getOutputTypes();
         boolean          doAll = request.get("outputtype.all", false);
+	doAll = true;
         for (OutputType type : types) {
             if ( !type.getForUser()) {
                 continue;
@@ -1939,7 +1873,7 @@ public class Admin extends RepositoryManager {
         }
 
 
-        return new Result(request.makeUrl(URL_ADMIN_SETTINGS));
+	return adminSettings(request, getPageHandler().showDialogNote("Settings have changed"));
 
     }
 
@@ -1958,7 +1892,7 @@ public class Admin extends RepositoryManager {
      */
     public Result adminAccess(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
-        sb.append(HtmlUtils.sectionOpen(null, false));
+        sb.append(HU.sectionOpen(null, false));
         sb.append(msgHeader("Access Overview"));
 
         Statement statement =
@@ -1989,17 +1923,17 @@ public class Admin extends RepositoryManager {
         }
 
         sb.append("<table cellspacing=\"0\" cellpadding=\"0\">");
-        sb.append(HtmlUtils.row(HtmlUtils.cols(HtmlUtils.space(10),
-                HtmlUtils.b(msg("Action")) + HtmlUtils.space(3),
-                HtmlUtils.b(msg("Role")))));
+        sb.append(HU.row(HU.cols(HU.space(10),
+                HU.b(msg("Action")) + HU.space(3),
+                HU.b(msg("Role")))));
         for (String id : ids) {
             Entry entry = getEntryManager().getEntry(request, id);
             if (entry == null) {
                 continue;
             }
             sb.append(
-                HtmlUtils.row(
-                    HtmlUtils.colspan(
+                HU.row(
+                    HU.colspan(
                         getPageHandler().getBreadCrumbs(
                             request, entry, null,
                             getRepository().URL_ACCESS_FORM, 80), 3)));
@@ -2007,16 +1941,16 @@ public class Admin extends RepositoryManager {
                 (List<Permission>) idToPermissions.get(id);
             for (Permission permission : permissions) {
                 Role role = permission.getRoles().get(0);
-                String row = HtmlUtils.cols("", permission.getAction(),
+                String row = HU.cols("", permission.getAction(),
                                             role.getRole());
                 String clazz = role.getCssClass();
-                sb.append(HtmlUtils.row(row, HU.cssClass(clazz)));
+                sb.append(HU.row(row, HU.cssClass(clazz)));
             }
             //      System.err.println(sb+"\n");
-            sb.append(HtmlUtils.row(HtmlUtils.colspan("<hr>", 3)));
+            sb.append(HU.row(HU.colspan("<hr>", 3)));
         }
         sb.append("</table>");
-        sb.append(HtmlUtils.sectionClose());
+        sb.append(HU.sectionClose());
 
         return makeResult(request, msg("RAMADDA-Admin-Access Overview"), sb);
     }
@@ -2036,25 +1970,25 @@ public class Admin extends RepositoryManager {
 
 
         StringBuffer  stateSB = new StringBuffer();
-        stateSB.append(HtmlUtils.formTable());
+        stateSB.append(HU.formTable());
         getStorageManager().addInfo(stateSB);
         getDatabaseManager().addInfo(stateSB);
-        stateSB.append(HtmlUtils.formTableClose());
+        stateSB.append(HU.formTableClose());
 
 
 
         StringBuffer statusSB = new StringBuffer();
-        statusSB.append(HtmlUtils.formTable());
+        statusSB.append(HU.formTable());
         statusSB.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 msgLabel("Version"),
                 getRepository().getProperty(PROP_VERSION, "1.0")));
         statusSB.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 msgLabel("Build Date"),
                 getRepository().getProperty(PROP_BUILD_DATE, "N/A")));
         statusSB.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 msgLabel("Java Version"),
                 getRepository().getProperty(PROP_JAVA_VERSION, "N/A")));
 
@@ -2066,12 +2000,12 @@ public class Admin extends RepositoryManager {
         appendMemory(statusSB);
         long uptime = ManagementFactory.getRuntimeMXBean().getUptime();
         /*
-        statusSB.append(HtmlUtils.formEntry(msgLabel("Up Time"),
+        statusSB.append(HU.formEntry(msgLabel("Up Time"),
                                            fmt.format((double) (uptime / 1000
                                                / 60)) + " "
                                                    + msg("minutes")));
         */
-        statusSB.append(HtmlUtils.formEntry(msgLabel("Total # Requests"),
+        statusSB.append(HU.formEntry(msgLabel("Total # Requests"),
                                             getLogManager().getRequestCount()
                                             + ""));
 
@@ -2081,12 +2015,12 @@ public class Admin extends RepositoryManager {
         HU.formEntry(statusSB, msgLabel("Caches"), tmp.toString());
         //        getEntryManager().addStatusInfo(statusSB);
 
-        statusSB.append(HtmlUtils.formTableClose());
+        statusSB.append(HU.formTableClose());
 
 
 
         StringBuffer outputSB = new StringBuffer();
-        outputSB.append(HtmlUtils.formTable());
+        outputSB.append(HU.formTable());
         List<OutputHandler> outputHandlers =
             getRepository().getOutputHandlers();
 
@@ -2098,7 +2032,7 @@ public class Admin extends RepositoryManager {
                 getLogManager().logError("Error getting stats:", exc);
             }
         }
-        outputSB.append(HtmlUtils.formTableClose());
+        outputSB.append(HU.formTableClose());
 
 
         String         props  = getRepository().getPropertiesListing();
@@ -2106,7 +2040,7 @@ public class Admin extends RepositoryManager {
 
         StringBuffer   apiSB  = new StringBuffer();
         List<Object[]> tuples = new ArrayList<Object[]>();
-        apiSB.append(HtmlUtils.formTable());
+        apiSB.append(HU.formTable());
         for (ApiMethod apiMethod :
                 getRepository().getApiManager().getApiMethods()) {
             if (apiMethod.getNumberOfCalls() < 1) {
@@ -2120,13 +2054,13 @@ public class Admin extends RepositoryManager {
         tuples = (List<Object[]>) Misc.sortTuples(tuples, false);
         for (Object[] tuple : tuples) {
             ApiMethod apiMethod = (ApiMethod) tuple[1];
-            apiSB.append(HtmlUtils.formEntry(apiMethod.getName(),
+            apiSB.append(HU.formEntry(apiMethod.getName(),
                                              "# " + msgLabel("Calls")
                                              + apiMethod.getNumberOfCalls()));
         }
 
 
-        apiSB.append(HtmlUtils.formTableClose());
+        apiSB.append(HU.formTableClose());
 
 
         StringBuffer dbSB = new StringBuffer();
@@ -2135,38 +2069,38 @@ public class Admin extends RepositoryManager {
 
 
         StringBuffer sb = new StringBuffer();
-        sb.append(HtmlUtils.sectionOpen(null, false));
+        sb.append(HU.sectionOpen(null, false));
         List<String> titles = new ArrayList<String>();
         List<String> tabs   = new ArrayList<String>();
 
         titles.add(msg("System Status"));
-        tabs.add(HtmlUtils.section(statusSB.toString()));
+        tabs.add(HU.section(statusSB.toString()));
 
         titles.add(msg("System Disk"));
-        tabs.add(HtmlUtils.section(stateSB.toString()));
+        tabs.add(HU.section(stateSB.toString()));
 
         StringBuffer pluginsSB = new StringBuffer();
         getRepository().getPluginManager().addStatusInfo(request, pluginsSB);
 
         titles.add(msg("Plugins"));
-        tabs.add(HtmlUtils.section(pluginsSB.toString()));
+        tabs.add(HU.section(pluginsSB.toString()));
 
         titles.add(msg("API"));
-        tabs.add(HtmlUtils.section(apiSB.toString()));
+        tabs.add(HU.section(apiSB.toString()));
 
         titles.add(msg("Properties"));
-        tabs.add(HtmlUtils.section(props));
+        tabs.add(HU.section(props));
 
         titles.add(msg("Output Handlers"));
-        tabs.add(HtmlUtils.section(outputSB.toString()));
+        tabs.add(HU.section(outputSB.toString()));
 
         titles.add(msg("Database Statistics"));
-        tabs.add(HtmlUtils.section(dbSB.toString()));
+        tabs.add(HU.section(dbSB.toString()));
 
-        HtmlUtils.makeAccordion(sb, titles, tabs, true, "ramadda-accordion",
+        HU.makeAccordion(sb, titles, tabs, true, "ramadda-accordion",
                                 null);
 
-        sb.append(HtmlUtils.sectionClose());
+        sb.append(HU.sectionClose());
 
         return makeResult(request, msg("RAMADDA-Admin-System"), sb);
     }
@@ -2182,7 +2116,7 @@ public class Admin extends RepositoryManager {
      */
     public Result adminSnapshots(Request request) throws Exception {
         StringBuffer sb = new StringBuffer("");
-        sb.append(HtmlUtils.sectionOpen(null, false));
+        sb.append(HU.sectionOpen(null, false));
         File dir = new File(getStorageManager().getHtdocsDir()
                             + "/snapshots/pages");
         File[] files = dir.listFiles();
@@ -2240,30 +2174,30 @@ public class Admin extends RepositoryManager {
         }
 
         StringBuffer sb = new StringBuffer();
-        sb.append(HtmlUtils.sectionOpen(null, false));
+        sb.append(HU.sectionOpen(null, false));
         //        sb.append(msgHeader("SQL"));
-        sb.append(HtmlUtils.p());
-        sb.append(HtmlUtils.href(request.makeUrl(URL_ADMIN_TABLES),
+        sb.append(HU.p());
+        sb.append(HU.href(request.makeUrl(URL_ADMIN_TABLES),
                                  msg("View Schema")));
-        sb.append(HtmlUtils.bold("&nbsp;|&nbsp;"));
-        sb.append(HtmlUtils.href(request.makeUrl(URL_ADMIN_DUMPDB),
+        sb.append(HU.bold("&nbsp;|&nbsp;"));
+        sb.append(HU.href(request.makeUrl(URL_ADMIN_DUMPDB),
                                  msg("Dump Database")));
-        sb.append(HtmlUtils.p());
+        sb.append(HU.p());
         request.uploadFormWithAuthToken(sb, URL_ADMIN_SQL);
 
-        sb.append(HtmlUtils.submit(msg("Execute")));
-        sb.append(HtmlUtils.b("Note: be careful what you do here!"));
-        sb.append(HtmlUtils.br());
-        sb.append(HtmlUtils.textArea(ARG_QUERY, (bulkLoad
+        sb.append(HU.submit(msg("Execute")));
+        sb.append(HU.b("Note: be careful what you do here!"));
+        sb.append(HU.br());
+        sb.append(HU.textArea(ARG_QUERY, (bulkLoad
                 ? ""
                 : (query == null)
                   ? BLANK
                   : query), 10, 100));
-        sb.append(HtmlUtils.p());
+        sb.append(HU.p());
         sb.append("SQL File: ");
-        sb.append(HtmlUtils.fileInput(ARG_SQLFILE, HtmlUtils.SIZE_60));
-        sb.append(HtmlUtils.formClose());
-        sb.append(HtmlUtils.sectionClose());
+        sb.append(HU.fileInput(ARG_SQLFILE, HU.SIZE_60));
+        sb.append(HU.formClose());
+        sb.append(HU.sectionClose());
         sb.append("<table>");
         if (query == null) {
             return makeResult(request, msg("RAMADDA-Admin-SQL"), sb);
@@ -2271,13 +2205,13 @@ public class Admin extends RepositoryManager {
 
         long t1 = System.currentTimeMillis();
 
-        request.ensureAuthToken();
+        getAuthManager().ensureAuthToken(request);
         if ((query.indexOf(";") > 0) || bulkLoad) {
             getDatabaseManager().loadSql(query, false, true);
 
             return makeResult(request, msg("RAMADDA-Admin-SQL"),
                               new StringBuffer("Executed SQL" + "<P>"
-                                  + HtmlUtils.space(1) + sb.toString()));
+                                  + HU.space(1) + sb.toString()));
 
         } else {
             Statement statement = null;
@@ -2314,7 +2248,7 @@ public class Admin extends RepositoryManager {
                         if (col.equals("QUERY PLAN")) {
                             raw = new StringBuilder();
                         }
-                        table.append(HtmlUtils.th(HtmlUtils.bold(HU.div(col,HU.style("margin-left:5px;")))));
+                        table.append(HU.th(HU.bold(HU.div(col,HU.style("margin-left:5px;")))));
                     }
                     table.append("</tr></thead><tbody>");
                 }
@@ -2325,14 +2259,14 @@ public class Admin extends RepositoryManager {
                             == java.sql.Types.TIMESTAMP) {
                         Date dttm = results.getTimestamp(colcnt,
                                         Repository.calendar);
-                        table.append(HtmlUtils.col(formatDate(request,
+                        table.append(HU.col(formatDate(request,
                                 dttm)));
                     } else {
                         String s = results.getString(colcnt);
                         if (s == null) {
                             s = "_null_";
                         }
-                        s = HtmlUtils.entityEncode(s);
+                        s = HU.entityEncode(s);
                         if (raw != null) {
                             raw.append(s);
                             raw.append("\n");
@@ -2340,22 +2274,22 @@ public class Admin extends RepositoryManager {
 
                         if (s.length() > 100) {
                             table.append(
-                                HtmlUtils.col(
-                                    HtmlUtils.textArea("dummy", s, 5, 50)));
+                                HU.col(
+                                    HU.textArea("dummy", s, 5, 50)));
                         } else {
-                            table.append(HtmlUtils.col(HtmlUtils.pre(s,HU.cssClass("ramadda-pre-undecorated"))));
+                            table.append(HU.col(HU.pre(s,HU.cssClass("ramadda-pre-undecorated"))));
                         }
                     }
                 }
                 table.append("</tr>\n");
                 //                if (cnt++ > 1000) {
-                //                    table.append(HtmlUtils.row("..."));
+                //                    table.append(HU.row("..."));
                 //                    break;
                 //                }
             }
             table.append("</tbody></table>");
             if (raw != null) {
-                sb.append(HtmlUtils.pre(raw.toString()));
+                sb.append(HU.pre(raw.toString()));
             } else {
                 sb.append(table);
             }
@@ -2365,7 +2299,7 @@ public class Admin extends RepositoryManager {
 
             return makeResult(request, msg("RAMADDA-Admin-SQL"),
                               new StringBuffer(msgLabel("Fetched rows") + cnt
-                                  + HtmlUtils.space(1) + msgLabel("in")
+                                  + HU.space(1) + msgLabel("in")
                                   + (t2 - t1) + "ms <p>" + sb.toString()));
         }
 
@@ -2432,16 +2366,16 @@ public class Admin extends RepositoryManager {
         double totalMemory       =
             (double) Runtime.getRuntime().totalMemory();
         double        usedMemory = (totalMemory - freeMemory);
-        sb.append(HtmlUtils.formEntry("Max Memory:",
+        sb.append(HU.formEntry("Max Memory:",
                                       fmt.format(maxMemory / 1000000)
                                       + " (MB)"));
-        sb.append(HtmlUtils.formEntry("Total Memory:",
+        sb.append(HU.formEntry("Total Memory:",
                                       fmt.format(totalMemory / 1000000)
                                       + " (MB)"));
-        sb.append(HtmlUtils.formEntry("Free Memory:",
+        sb.append(HU.formEntry("Free Memory:",
                                       fmt.format(freeMemory / 1000000)
                                       + " (MB)"));
-        sb.append(HtmlUtils.formEntry("Used Memory:",
+        sb.append(HU.formEntry("Used Memory:",
                                       fmt.format(usedMemory / 1000000)
                                       + " (MB)"));
 
@@ -2500,20 +2434,20 @@ public class Admin extends RepositoryManager {
      */
     public Result adminPrintStack(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
-        sb.append(HtmlUtils.formTable());
+        sb.append(HU.formTable());
         appendMemory(sb);
-        sb.append(HtmlUtils.formEntry("Start Time:",
+        sb.append(HU.formEntry("Start Time:",
                                       "" + getRepository().getStartTime()));
 
 
         long uptime = ManagementFactory.getRuntimeMXBean().getUptime();
-        //sb.append(HtmlUtils.formEntry("Up Time:",
+        //sb.append(HU.formEntry("Up Time:",
         //                             fmt.format((double) (uptime / 1000
         //                                 / 60)) + " " + msg("minutes")));
-        sb.append(HtmlUtils.formEntry("Up Time:", formatUptime(uptime)));
+        sb.append(HU.formEntry("Up Time:", formatUptime(uptime)));
 
-        sb.append(HtmlUtils.formTableClose());
-        sb.append(HtmlUtils.makeShowHideBlock(msg("Stack"),
+        sb.append(HU.formTableClose());
+        sb.append(HU.makeShowHideBlock(msg("Stack"),
                 "<pre>" + LogUtil.getStackDump(true) + "</pre>", false));
 
         return makeResult(request, msg("RAMADDA-Admin-Stack Trace"), sb);
@@ -2705,40 +2639,40 @@ public class Admin extends RepositoryManager {
 
 	header.accept(topSB, "Caches");
 	request.formPostWithAuthToken(topSB, URL_ADMIN_MAINTENANCE, "");
-	topSB.append(HtmlUtils.submit(msg("Clear all caches"), ACTION_CLEARCACHE));
-	topSB.append(HtmlUtils.formClose());
+	topSB.append(HU.submit(msg("Clear all caches"), ACTION_CLEARCACHE));
+	topSB.append(HU.formClose());
 	
 
 	header.accept(topSB, "Clear Passwords");
 	request.formPostWithAuthToken(topSB, URL_ADMIN_MAINTENANCE, "");
 	topSB.append(HU.note("Note:  All users including you will have to reset their passwords. If you do not have email enabled then only the admin will be able to reset the passwords. So, if you do this then right away, while your session is active, go and change your password. If things go bad and you can't login at all see the  <a href=\"http://ramadda.org/repository/userguide/faq.html#faq1_cat1_6\">FAQ</a> post."));
 
-	topSB.append(HtmlUtils.submit(msg("Clear all passwords"), ACTION_PASSWORDS_CLEAR));
-	topSB.append(HtmlUtils.space(2));
-	topSB.append(HtmlUtils.labeledCheckbox(ARG_PASSWORDS_CLEAR_CONFIRM,
+	topSB.append(HU.submit(msg("Clear all passwords"), ACTION_PASSWORDS_CLEAR));
+	topSB.append(HU.space(2));
+	topSB.append(HU.labeledCheckbox(ARG_PASSWORDS_CLEAR_CONFIRM,
 					    "true", false,
 					    "Yes, really clear all passwords"));
 
-	topSB.append(HtmlUtils.formClose());
+	topSB.append(HU.formClose());
 
 	
 	header.accept(topSB, "Export Database");
 	request.formPostWithAuthToken(topSB, URL_ADMIN_MAINTENANCE, "");
 	topSB.append(HU.note("You can write out the database for backup or transfer to a new database")
 		  + "<br>"
-		  + HtmlUtils.submit(
+		  + HU.submit(
 				     msg("Export the database"), ACTION_DUMPDB));
 
-	topSB.append(HtmlUtils.formClose());
+	topSB.append(HU.formClose());
 
 	header.accept(topSB, "Reindex Lucene Index");
 	request.formPostWithAuthToken(topSB, URL_ADMIN_MAINTENANCE, "");
 	topSB.append(HU.note("Reindex all deletes entire index. Reindex partial only in indexes entries not already indexed")
-		  + HtmlUtils.submit(msg("Reindex all"), ACTION_FULLINDEX)
+		  + HU.submit(msg("Reindex all"), ACTION_FULLINDEX)
 		  + HU.space(2)
-		  + HtmlUtils.submit(
+		  + HU.submit(
 				     msg("Reindex partial"), ACTION_PARTIALINDEX));
-	topSB.append(HtmlUtils.formClose());
+	topSB.append(HU.formClose());
 
 
 
@@ -2746,35 +2680,35 @@ public class Admin extends RepositoryManager {
 	header.accept(filePathSB,"Change file paths");
         request.formPostWithAuthToken(filePathSB, URL_ADMIN_MAINTENANCE, "");
         filePathSB.append(HU.note("Change the stored file path for all entries that match the following pattern"));
-        filePathSB.append(HtmlUtils.formTable());
-        filePathSB.append(HtmlUtils.formEntry(msgLabel("File Pattern"),
-                HtmlUtils.input(ARG_CHANGEPATHS_PATTERN,
+        filePathSB.append(HU.formTable());
+        filePathSB.append(HU.formEntry(msgLabel("File Pattern"),
+                HU.input(ARG_CHANGEPATHS_PATTERN,
                                 request.getString(ARG_CHANGEPATHS_PATTERN,
-                                    ""), HtmlUtils.SIZE_50)));
-        filePathSB.append(HtmlUtils.formEntry(msgLabel("Change to"),
-                HtmlUtils.input(ARG_CHANGEPATHS_TO,
+                                    ""), HU.SIZE_50)));
+        filePathSB.append(HU.formEntry(msgLabel("Change to"),
+                HU.input(ARG_CHANGEPATHS_TO,
                                 request.getString(ARG_CHANGEPATHS_TO, ""),
-                                HtmlUtils.SIZE_50)));
+                                HU.SIZE_50)));
 
-        filePathSB.append(HtmlUtils.formTableClose());
-        filePathSB.append(HtmlUtils.submit(msg("Change file paths"),
+        filePathSB.append(HU.formTableClose());
+        filePathSB.append(HU.submit(msg("Change file paths"),
                                            ACTION_CHANGEPATHS));
-        filePathSB.append(HtmlUtils.space(2));
-        filePathSB.append(HtmlUtils.labeledCheckbox(ARG_CHANGEPATHS_CONFIRM, "true",
+        filePathSB.append(HU.space(2));
+        filePathSB.append(HU.labeledCheckbox(ARG_CHANGEPATHS_CONFIRM, "true",
 						    false,"Yes, really change all of the file paths"));
-        filePathSB.append(HtmlUtils.formClose());
+        filePathSB.append(HU.formClose());
 
 
         StringBuffer missingSB = new StringBuffer();
 	header.accept(missingSB,"List missing files");
         request.formPostWithAuthToken(missingSB, URL_ADMIN_MAINTENANCE, "");
-        missingSB.append(HtmlUtils.formTable());
+        missingSB.append(HU.formTable());
         HU.formEntry(missingSB,msgLabel("Skip pattern"),
-		     HtmlUtils.input("pattern",
+		     HU.input("pattern",
 				     request.getString("pattern", ""),
-				     HtmlUtils.SIZE_50));
-        missingSB.append(HtmlUtils.formTableClose());
-        missingSB.append(HtmlUtils.submit(msg("List missing files"),
+				     HU.SIZE_50));
+        missingSB.append(HU.formTableClose());
+        missingSB.append(HU.submit(msg("List missing files"),
                                           ACTION_LISTMISSING));
 
 
@@ -2782,8 +2716,8 @@ public class Admin extends RepositoryManager {
 	header.accept(orphansSB,"List orphan entries");
 	orphansSB.append(HU.note("This lists all entries that don't have a parent entry. Normally this shouldn't happen but to due an occasional bug there can be entries that aren't part of the main hierarchy."));
         request.formPostWithAuthToken(orphansSB, URL_ADMIN_MAINTENANCE, "");
-	orphansSB.append(HtmlUtils.submit(msg("List orphans"), ACTION_LISTORPHANS));
-        orphansSB.append(HtmlUtils.formClose());
+	orphansSB.append(HU.submit(msg("List orphans"), ACTION_LISTORPHANS));
+        orphansSB.append(HU.formClose());
 
 
 
@@ -2828,9 +2762,9 @@ public class Admin extends RepositoryManager {
                     request.getString(ARG_CHANGEPATHS_TO, ""), tmp,
                     request.get(ARG_CHANGEPATHS_CONFIRM, false));
                 sb.append(
-                    HtmlUtils.div(
+                    HU.div(
                         tmp.toString(),
-                        HtmlUtils.style(
+                        HU.style(
                             "max-height:300px; overflow-y: auto;")));
             } else {
                 sb.append("Change paths fields required");
@@ -2839,14 +2773,14 @@ public class Admin extends RepositoryManager {
 
             return makeResult(request, msg("RAMADDA-Admin-Change File Paths"), sb);
         } else if (request.defined(ACTION_SHUTDOWN)) {
-            request.ensureAuthToken();
+            getAuthManager().ensureAuthToken(request);
             if (getRepository().getShutdownEnabled()) {
                 if (request.get(ARG_SHUTDOWN_CONFIRM, false)) {
                     return processShutdown(request);
                 }
             }
         } else if (request.defined(ACTION_PASSWORDS_CLEAR)) {
-            request.ensureAuthToken();
+            getAuthManager().ensureAuthToken(request);
             if (request.get(ARG_PASSWORDS_CLEAR_CONFIRM, false)) {
                 clearAllPasswords();
                 sb.append(
@@ -2861,14 +2795,14 @@ public class Admin extends RepositoryManager {
         if (runningCleanup) {
             sb.append(msg("Database clean up is running"));
             sb.append("<p>");
-            sb.append(HtmlUtils.submit(msg("Stop cleanup"), ACTION_STOP));
+            sb.append(HU.submit(msg("Stop cleanup"), ACTION_STOP));
         } else {
-            sb.append(HtmlUtils.p());
+            sb.append(HU.p());
             //            sb.append(
             //                msg(
             //                "Cleanup allows you to remove all file entries from the repository database that do not exist on the local file system"));
             //            sb.append("<p>");
-            //            sb.append(HtmlUtils.submit(msg("Start cleanup"), ACTION_START));
+            //            sb.append(HU.submit(msg("Start cleanup"), ACTION_START));
 
 
 
@@ -2886,11 +2820,11 @@ public class Admin extends RepositoryManager {
             if (getRepository().getShutdownEnabled()) {
                 request.formPostWithAuthToken(sb, URL_ADMIN_MAINTENANCE, "");
 		header.accept(sb, "Shutdown");
-                sb.append(HtmlUtils.submit(msg("Shutdown server"), ACTION_SHUTDOWN)
-			  + HtmlUtils.space(2)
-			  + HtmlUtils.labeledCheckbox(ARG_SHUTDOWN_CONFIRM, "true", false,
+                sb.append(HU.submit(msg("Shutdown server"), ACTION_SHUTDOWN)
+			  + HU.space(2)
+			  + HU.labeledCheckbox(ARG_SHUTDOWN_CONFIRM, "true", false,
 						      "Yes, really shutdown the server"));
-                sb.append(HtmlUtils.formClose());
+                sb.append(HU.formClose());
             }
 
 
@@ -2988,7 +2922,7 @@ public class Admin extends RepositoryManager {
                 getEntryManager().deleteEntries(request, entries, null);
                 deleteCnt += entries.size();
                 cleanupStatus = new StringBuffer(msg("Done running cleanup")
-                        + "<br>" + msg("Removed") + HtmlUtils.space(1)
+                        + "<br>" + msg("Removed") + HU.space(1)
                         + deleteCnt + " entries from database");
             }
         } catch (Exception exc) {

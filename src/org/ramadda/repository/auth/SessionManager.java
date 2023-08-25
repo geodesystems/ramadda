@@ -704,7 +704,7 @@ public class SessionManager extends RepositoryManager {
             }
             request.setSessionId(sessionId);
             request.setUser(user);
-            String authToken = getRepository().getAuthToken(sessionId);
+            String authToken = getAuthManager().getAuthToken(sessionId);
             request.put(ARG_AUTHTOKEN, authToken);
         }
 

@@ -472,7 +472,7 @@ public class LocalRepositoryManager extends RepositoryManager {
         sb.append(HtmlUtils.sectionOpen());
 
         if (request.defined(ARG_LOCAL_NEW)) {
-            request.ensureAuthToken();
+            getAuthManager().ensureAuthToken(request);
             if (request.get(ARG_LOCAL_SURE, false)) {
                 processLocalNew(request, sb);
             } else {
@@ -484,7 +484,7 @@ public class LocalRepositoryManager extends RepositoryManager {
 
 
         if (request.defined(ARG_LOCAL_CHANGE)) {
-            request.ensureAuthToken();
+            getAuthManager().ensureAuthToken(request);
             processLocalChange(request, sb);
         }
 

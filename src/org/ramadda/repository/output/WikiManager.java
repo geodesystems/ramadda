@@ -8307,7 +8307,7 @@ public class WikiManager extends RepositoryManager
         if ( !request.isAnonymous()) {
 	    String sessionId = request.getSessionId();
 	    if(sessionId!=null) {
-		String authToken = getRepository().getAuthToken(sessionId);
+		String authToken = getAuthManager().getAuthToken(sessionId);
 		topProps.add("authToken");
 		topProps.add(HU.quote(authToken));
 	    }

@@ -564,6 +564,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @param block _more_
      * @param asb _more_
      */
+    /**** Don't do this
     @Override
     public void addToAdminSettingsForm(String block, StringBuffer asb) {
         if ( !block.equals(Admin.BLOCK_ACCESS)) {
@@ -576,6 +577,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 						      isLuceneEnabled(),
 						      msg("Enable Lucene Indexing and Search")));
     }
+    **/
 
 
     /**

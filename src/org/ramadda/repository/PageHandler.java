@@ -3207,12 +3207,13 @@ public class PageHandler extends RepositoryManager {
             String deleteLink = ( !canEdit
                                   ? ""
                                   : HU.href(request.makeUrl(getRepository().URL_COMMENTS_EDIT,
-                                      ARG_DELETE, "true", ARG_ENTRYID,
-                                      entry.getId(), ARG_AUTHTOKEN,
-                                      getRepository().getAuthToken(request.getSessionId()),
-                                      ARG_COMMENT_ID,
-                                      comment.getId()), getIconImage(ICON_DELETE,
-                                          "title", msg("Delete comment"))));
+							    ARG_DELETE, "true", ARG_ENTRYID,
+							    entry.getId(),
+							    ARG_AUTHTOKEN,
+							    getAuthManager().getAuthToken(request.getSessionId()),
+							    ARG_COMMENT_ID,
+							    comment.getId()), getIconImage(ICON_DELETE,
+											   "title", msg("Delete comment"))));
             if (canEdit) {
                 //                sb.append(HU.formEntry(BLANK, deleteLink));
             }

@@ -330,7 +330,7 @@ public class HarvesterManager extends RepositoryManager {
             return new Result(request.makeUrl(URL_HARVESTERS_LIST));
         }
 
-        request.ensureAuthToken();
+        getAuthManager().ensureAuthToken(request);
         List<Harvester> harvestersBeingCreated = new ArrayList<Harvester>();
         if (request.exists(ARG_HARVESTER_XMLFILE)) {
             String file = request.getUploadedFile(ARG_HARVESTER_XMLFILE);
@@ -533,7 +533,7 @@ public class HarvesterManager extends RepositoryManager {
         if (harvester == null) {
             throw new IllegalArgumentException("Could not find harvester");
         }
-        request.ensureAuthToken();
+        getAuthManager().ensureAuthToken(request);
         if ( !harvester.getIsEditable()) {
             throw new IllegalArgumentException("Cannot edit harvester");
         }

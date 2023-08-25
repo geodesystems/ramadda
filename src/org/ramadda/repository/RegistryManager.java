@@ -415,27 +415,24 @@ public class RegistryManager extends RepositoryManager {
                            + "/userguide/remoteservers.html", msg("Help"),
                                HU.attr(HU.ATTR_TARGET,
                                    "_help"));
-        csb.append(
-            HU.row(
-                HU.colspan(msgHeader("Server Registry"), 2)));
-
+        csb.append(HU.row(
+			  HU.colspan(msgHeader("Server Registry"), 2)));
 
 	HU.formEntry(csb,  "",
 			    HU.labeledCheckbox(
-						      PROP_REGISTRY_ENABLED, "true", isEnabledAsServer(),
-						      msg("Enable this server to be a registry for other servers")));
+					       PROP_REGISTRY_ENABLED, "true", 
+					       formPropValue(request,PROP_REGISTRY_ENABLED,false),
+					       msg("Enable this server to be a registry for other servers")));
 
-        csb.append(
-            HU.formEntry(
-                "",
-                msgLabel("Servers this server registers with")
-                + HU.space(2) + helpLink));
+        csb.append(HU.formEntry("",
+				msgLabel("Servers this server registers with")
+				+ HU.space(2) + helpLink));
         csb.append(
             HU.formEntry(
                 "",
                 HU.textArea(
                     PROP_REGISTRY_SERVERS,
-                    getRepository().getProperty(PROP_REGISTRY_SERVERS, ""),
+		    formPropValue(request,PROP_REGISTRY_SERVERS,""),
                     5, 60)));
 
     }

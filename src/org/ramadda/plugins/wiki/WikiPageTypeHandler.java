@@ -328,7 +328,7 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
             for (Association newAssociation :
                     (List<Association>) new ArrayList(newAssociations)) {
                 if ( !associations.contains(newAssociation)) {
-                    getRepository().addAuthToken(request);
+                    getAuthManager().addAuthToken(request);
                     getAssociationManager().addAssociation(request,
                             newAssociation);
                 }

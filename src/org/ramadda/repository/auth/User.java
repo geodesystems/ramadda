@@ -668,8 +668,8 @@ public class User {
      * @return _more_
      */
     public boolean canEditSettings() {
-        return !(getAnonymous() || getIsGuest() || !getIsLocal());
-        //        return !(getAnonymous() || getIsGuest());
+	if(getAnonymous() || getIsGuest())  return false;
+        return getIsLocal();
     }
 
     /**

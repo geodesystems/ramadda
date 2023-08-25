@@ -1940,7 +1940,7 @@ public class AccessManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result processAccessChange(Request request) throws Exception {
-        request.ensureAuthToken();
+        getAuthManager().ensureAuthToken(request);
         Entry entry = getEntryManager().getEntry(request);
 
         if ( !canSetAccess(request, entry)) {

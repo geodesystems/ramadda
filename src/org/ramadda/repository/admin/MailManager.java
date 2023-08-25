@@ -92,19 +92,19 @@ public class MailManager extends RepositoryManager {
     @Override
     public void addAdminSettings(Request request, StringBuffer sb)
             throws Exception {
-        sb.append(HtmlUtils.row(HtmlUtils.colspan(msgHeader("Email"), 2)));
+        sb.append(HU.row(HU.colspan(msgHeader("Email"), 2)));
         sb.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 msgLabel("Administrator Email"),
-                HtmlUtils.input(
+                HU.input(
                     PROP_ADMIN_EMAIL,
-                    getRepository().getProperty(PROP_ADMIN_EMAIL, ""),
-                    HtmlUtils.SIZE_40)));
+                    formPropValue(request, PROP_ADMIN_EMAIL, ""),
+                    HU.SIZE_40)));
         sb.append(
-            HtmlUtils.formEntry(
-                msgLabel("Mail Server"), HtmlUtils.input(
-                    PROP_ADMIN_SMTP, getRepository().getProperty(
-                        PROP_ADMIN_SMTP, ""), HtmlUtils.SIZE_40) + " "
+            HU.formEntry(
+                msgLabel("Mail Server"), HU.input(
+                    PROP_ADMIN_SMTP,
+		    formPropValue(request, PROP_ADMIN_SMTP, ""), HU.SIZE_40) + " "
                             + msg("For sending password reset messages")));
     }
 

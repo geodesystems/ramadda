@@ -365,7 +365,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                                            .getName()));
 
                 status.append("<br>");
-                getRepository().addAuthToken(request);
+                getAuthManager().addAuthToken(request);
                 getRepository().getAssociationManager().addAssociation(
                     request, newEntry, entry, "generated product",
                     "product generated from");
