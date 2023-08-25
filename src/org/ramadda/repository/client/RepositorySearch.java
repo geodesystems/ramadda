@@ -11,6 +11,8 @@ import org.ramadda.repository.RepositoryUtil;
 import org.ramadda.repository.RequestUrl;
 import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
+
 import org.ramadda.util.Utils;
 
 import org.w3c.dom.Document;
@@ -326,8 +328,8 @@ public class RepositorySearch extends RepositoryClient {
             InputStream inputStream = IOUtil.getInputStream(url, getClass());
             FileOutputStream fos    = new FileOutputStream(f);
             IOUtil.writeTo(inputStream, fos);
-            IOUtil.close(fos);
-            IOUtil.close(inputStream);
+            IO.close(fos);
+            IO.close(inputStream);
             System.err.println(" done");
         }
     }

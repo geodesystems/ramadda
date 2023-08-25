@@ -10,6 +10,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 
 import org.ramadda.util.RssUtil;
 import org.ramadda.util.Utils;
@@ -20,7 +21,6 @@ import org.ramadda.util.sql.SqlUtil;
 import org.w3c.dom.*;
 
 
-import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringBufferCollection;
 
 import ucar.unidata.util.StringUtil;
@@ -119,13 +119,13 @@ public class RssOutputHandler extends OutputHandler {
             links.add(
                 makeLink(
                     request, state.getEntry(), OUTPUT_RSS_SUMMARY,
-                    "/" + IOUtil.stripExtension(state.getEntry().getName())
+                    "/" + IO.stripExtension(state.getEntry().getName())
                     + ".rss"));
 
             links.add(
                 makeLink(
                     request, state.getEntry(), OUTPUT_RSS_FULL,
-                    "/" + IOUtil.stripExtension(state.getEntry().getName())
+                    "/" + IO.stripExtension(state.getEntry().getName())
                     + ".rss"));
         }
     }
@@ -228,7 +228,7 @@ public class RssOutputHandler extends OutputHandler {
                                       HtmlUtils.url(
                                           getRepository().URL_ENTRY_GET
                                           + entry.getId()
-                                          + IOUtil.getFileExtension(
+                                          + IO.getFileExtension(
                                               resource), ARG_ENTRYID,
                                                   entry.getId()
                 /*,                                                                    ARG_IMAGEWIDTH, "75"*/

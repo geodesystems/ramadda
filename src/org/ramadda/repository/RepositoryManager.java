@@ -16,36 +16,19 @@ import org.ramadda.repository.output.JsonOutputHandler;
 
 import org.ramadda.repository.output.WikiManager;
 import org.ramadda.repository.search.*;
+
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.NamedValue;
 import org.ramadda.util.Utils;
 
-
-
-import org.ramadda.util.sql.SqlUtil;
-
-
-
 import org.w3c.dom.*;
-
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.StringUtil;
-
-
 import java.io.*;
-
 import java.io.File;
 import java.io.InputStream;
-
 import java.lang.reflect.*;
-
-
-
 import java.net.*;
-
-
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -1036,7 +1019,7 @@ public class RepositoryManager implements RepositorySource, Constants,
      * @return _more_
      */
     public boolean isTextFile(String file) {
-        String suffix = IOUtil.getFileExtension(file);
+        String suffix = IO.getFileExtension(file);
         suffix = suffix.replace(".", "");
         if (textSuffixes == null) {
             HashSet<String> tmp = new HashSet<String>();

@@ -15,6 +15,8 @@ import org.ramadda.repository.harvester.*;
 
 import org.ramadda.repository.output.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
+
 import org.ramadda.util.JQuery;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
@@ -817,7 +819,7 @@ public class Admin extends RepositoryManager {
                         FileInputStream fis =
                             new FileInputStream(initDescFile);
                         description = IOUtil.readContents(fis);
-                        IOUtil.close(fis);
+                        IO.close(fis);
                     }
 
                     //Make sure we do this now before we do the final init entries
@@ -942,7 +944,7 @@ public class Admin extends RepositoryManager {
             boolean hascbx = request.get("hascbx", false);
             for (String plugin : PluginManager.PLUGINS) {
                 String pluginName =
-                    IOUtil.stripExtension(IOUtil.getFileTail(plugin));
+                    IO.stripExtension(IO.getFileTail(plugin));
                 String  cbxName = makePluginID(plugin);
                 boolean dflt    = !pluginName.equals("bioplugins");
                 boolean value   = request.get(cbxName, hascbx
@@ -994,7 +996,7 @@ public class Admin extends RepositoryManager {
         if (initFile.exists()) {
             FileInputStream fis = new FileInputStream(initFile);
             initEntriesXml = IOUtil.readContents(fis);
-            IOUtil.close(fis);
+            IO.close(fis);
         }
 
         if (initEntriesXml == null) {
@@ -1251,8 +1253,8 @@ public class Admin extends RepositoryManager {
             FileOutputStream     fos = new FileOutputStream(tmp);
             BufferedOutputStream bos = new BufferedOutputStream(fos);
             getDatabaseManager().makeDatabaseCopy(bos, true, actionId);
-            IOUtil.close(bos);
-            IOUtil.close(fos);
+            IO.close(bos);
+            IO.close(fos);
 
             msg = "Database has been exported to: " + tmp;
             StringBuffer sb = new StringBuffer(

@@ -12,6 +12,7 @@ import org.ramadda.repository.harvester.*;
 import org.ramadda.repository.search.*;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.MultiJarClassLoader;
 import org.ramadda.util.MyTrace;
 import org.ramadda.util.TempDir;
@@ -286,7 +287,7 @@ public class PluginManager extends RepositoryManager {
         //If the allplugins was installed then copy the new one over
         File allPlugins =
             new File(IOUtil.joinDir(getStorageManager().getPluginsDir(),
-                                    IOUtil.getFileTail(PLUGIN_ALL)));
+                                    IO.getFileTail(PLUGIN_ALL)));
         if (allPlugins.exists()) {
             getRepository().println(
                 "RAMADDA: getting rid of old allplugins.jar file and replacing it with core and geo plugins");
@@ -299,8 +300,8 @@ public class PluginManager extends RepositoryManager {
             if (new File(
                     IOUtil.joinDir(
                         getStorageManager().getPluginsDir(),
-                        IOUtil.getFileTail(plugin))).exists()) {
-                //getRepository().println("RAMADDA: updating plugin file: " + IOUtil.getFileTail(plugin));
+                        IO.getFileTail(plugin))).exists()) {
+                //getRepository().println("RAMADDA: updating plugin file: " + IO.getFileTail(plugin));
                 copyPlugin(plugin);
             }
         }
@@ -502,7 +503,7 @@ public class PluginManager extends RepositoryManager {
                 OutputStream fos =
                     getStorageManager().getFileOutputStream(tmpFile);
                 IOUtil.writeTo(zin, fos);
-                IOUtil.close(fos);
+                IO.close(fos);
                 processPluginFile(tmpFile.toString(), pluginSB, classLoader,
                                   false);
             }
@@ -663,8 +664,8 @@ public class PluginManager extends RepositoryManager {
         InputStream      inputStream = IOUtil.getInputStream(pluginPath);
         FileOutputStream fos         = new FileOutputStream(newPluginFile);
         IOUtil.writeTo(inputStream, fos);
-        IOUtil.close(inputStream);
-        IOUtil.close(fos);
+        IO.close(inputStream);
+        IO.close(fos);
 
         return newPluginFile;
     }
@@ -772,7 +773,7 @@ public class PluginManager extends RepositoryManager {
         } else if (file.endsWith(".jar") && (file.indexOf("htdocs") < 0)) {
             try {
                 File tmpFile = new File(IOUtil.joinDir(tmpPluginsDir,
-                                   IOUtil.getFileTail(file)));
+                                   IO.getFileTail(file)));
                 IOUtil.writeTo(getStorageManager().getInputStream(file),
                                new FileOutputStream(tmpFile));
                 processPluginFile(tmpFile.toString(), pluginFilesList,

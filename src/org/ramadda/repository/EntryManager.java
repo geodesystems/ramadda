@@ -889,7 +889,7 @@ public class EntryManager extends RepositoryManager {
 	    //	    html = html.replaceAll("/" + RepositoryUtil.getHtdocsVersion(),"");
 	    OutputStream os = request.getHttpServletResponse().getOutputStream();
 	    request.getHttpServletResponse().setContentType("multipart/x-zip");
-	    request.setReturnFilename(IOUtil.stripExtension(Utils.makeID(entry.getName()))+"_snapshot.zip");
+	    request.setReturnFilename(IO.stripExtension(Utils.makeID(entry.getName()))+"_snapshot.zip");
 	    FileWriter zipFileWriter= new FileWriter(new ZipOutputStream(os));
 	    zipFileWriter.setCompressionOn();
 	    for(String[]tuple: snapshotFiles) {
@@ -897,9 +897,9 @@ public class EntryManager extends RepositoryManager {
 		String jsonFileName= tuple[1];
 		FileInputStream fis =new FileInputStream(tmpFile);
                 zipFileWriter.writeFile(jsonFileName, fis);
-		IOUtil.close(fis);
+		IO.close(fis);
 	    }
-	    zipFileWriter.writeFile(IOUtil.stripExtension(Utils.makeID(entry.getName()))+".html", html.getBytes());
+	    zipFileWriter.writeFile(IO.stripExtension(Utils.makeID(entry.getName()))+".html", html.getBytes());
 	    zipFileWriter.close();
 	    Result result = Result.makeNoOpResult();
 	    result.setShouldDecorate(false);
@@ -931,7 +931,7 @@ public class EntryManager extends RepositoryManager {
 	    FileOutputStream fos  = new FileOutputStream(zipFile);
 	    FileWriter zipFileWriter= new FileWriter(new ZipOutputStream(fos));
 	    StringBuilder entriesXml = new StringBuilder("<entries>\n");
-	    String htmlFileName =  IOUtil.stripExtension(entry.getName())+".html";
+	    String htmlFileName =  IO.stripExtension(entry.getName())+".html";
 	    String htmlEntryId = getRepository().getGUID();
 	    entriesXml.append(XmlUtil.tag("entry",XmlUtil.attr("name",entry.getName()+" snapshot") +
 					  XmlUtil.attr("id",htmlEntryId) +
@@ -942,12 +942,12 @@ public class EntryManager extends RepositoryManager {
 	    for(String[]tuple: snapshotFiles) {
 		String tmpFile =tuple[0];
 		String jsonFileName= tuple[1];
-		String jsonFileId = IOUtil.stripExtension(jsonFileName);
+		String jsonFileId = IO.stripExtension(jsonFileName);
 		html = html.replaceAll(jsonFileName,getRepository().getUrlBase()+"/entry/get?entryid=" + jsonFileId);
 		String dataEntryName= tuple[2];		
 		FileInputStream fis =new FileInputStream(tmpFile);
                 zipFileWriter.writeFile(jsonFileName, fis);
-		IOUtil.close(fis);
+		IO.close(fis);
 		entriesXml.append(XmlUtil.tag("entry",XmlUtil.attr("name",dataEntryName+" data") +
 					      XmlUtil.attr("id",jsonFileId) +
 					      XmlUtil.attr("parent",htmlEntryId) +
@@ -992,7 +992,7 @@ public class EntryManager extends RepositoryManager {
 	}
 	f = getStorageManager().checkReadFile(f);
         String mimeType = getRepository().getMimeTypeFromSuffix(
-								IOUtil.getFileExtension(f.toString()));
+								IO.getFileExtension(f.toString()));
 	return new Result(BLANK,
 			  getStorageManager().getFileInputStream(f),
 			  mimeType);
@@ -1356,7 +1356,7 @@ public class EntryManager extends RepositoryManager {
 	    }
 	    tmpFile = getStorageManager().copyToStorage(request, tmpFile,fileName);
 	    String name = fileName.replaceAll("_", " ");
-	    name = IOUtil.stripExtension(name);
+	    name = IO.stripExtension(name);
 	    name = StringUtil.camelCase(name);
 	    Entry newEntry = addFileEntry(request, tmpFile,
 					  group, null, name, description, request.getUser(),
@@ -2227,7 +2227,7 @@ public class EntryManager extends RepositoryManager {
 	File tmpFile = getStorageManager().getTmpFile(request,oldFileName);
         OutputStream  toStream   = getStorageManager().getFileOutputStream(tmpFile);
         IOUtil.writeTo(new ByteArrayInputStream(contents.getBytes()), toStream);
-        IOUtil.close(toStream);
+        IO.close(toStream);
 	File newFile = getStorageManager().moveToStorage(request,
 							 tmpFile);
 	entry.getResource().setFile(newFile,Resource.TYPE_STOREDFILE);
@@ -2547,7 +2547,7 @@ public class EntryManager extends RepositoryManager {
             }
 
             if (resourceName.length() == 0) {
-                resourceName = IOUtil.getFileTail(resource);
+                resourceName = IO.getFileTail(resource);
             }
 
             //The type might accept a .zip file - e.g., shapefiles
@@ -2728,10 +2728,10 @@ public class EntryManager extends RepositoryManager {
                         typeHandler.getTypeProperty("nameTemplate",
 						    (String) null);
                     if (nameTemplate == null) {
-                        name = IOUtil.getFileTail(info.name);
+                        name = IO.getFileTail(info.name);
                         if (request.get(ARG_MAKENAME, false)) {
                             name = name.replaceAll("_", " ");
-                            name = IOUtil.stripExtension(name);
+                            name = IO.stripExtension(name);
                             StringBuilder tmp = new StringBuilder();
                             for (String tok :
 				     Utils.split(name, " ", true, true)) {
@@ -3119,7 +3119,7 @@ public class EntryManager extends RepositoryManager {
 		    continue;
 		}
 		String path = ze.getName();
-		String name = IOUtil.getFileTail(path);
+		String name = IO.getFileTail(path);
 		if (name.equals("MANIFEST.MF")) {
 		    continue;
 		}
@@ -3177,13 +3177,13 @@ public class EntryManager extends RepositoryManager {
 		try {
 		    IOUtil.writeTo(zin, fos);
 		} finally {
-		    IOUtil.close(fos);
+		    IO.close(fos);
 		}
 		infos.add(new NewEntryInfo(name,f.toString(), parent));
 	    }
 	} finally {
-	    IOUtil.close(fis);
-	    IOUtil.close(zin);
+	    IO.close(fis);
+	    IO.close(zin);
 	}
     }	
 
@@ -3248,16 +3248,12 @@ public class EntryManager extends RepositoryManager {
     private File downloadUrl(Request request, String url, Object actionId,
                              Entry entry)
 	throws Exception {
-        if ( !url.toLowerCase().startsWith("http:")
-	     && !url.toLowerCase().startsWith("https:")
-	     && !url.toLowerCase().startsWith("ftp:")) {
-            fatalError(request, "Cannot download url:" + url);
-        }
-        getStorageManager().checkPath(url);
+	getStorageManager().checkUrl(request,url);
+
         URL           fromUrl    = new URL(url);
         URLConnection connection = fromUrl.openConnection();
 	String dispo = connection.getHeaderField("Content-disposition");
-        String        tail       = IOUtil.getFileTail(url);
+        String        tail       = IO.getFileTail(url);
 	if(dispo!=null) {
 	    String filename = StringUtil.findPattern(dispo,"filename=(.*)");
 	    if(stringDefined(filename))
@@ -3284,8 +3280,8 @@ public class EntryManager extends RepositoryManager {
                 return null;
             }
         } finally {
-            IOUtil.close(toStream);
-            IOUtil.close(fromStream);
+            IO.close(toStream);
+            IO.close(fromStream);
         }
 
         return newFile;
@@ -3418,7 +3414,7 @@ public class EntryManager extends RepositoryManager {
             "filename",
             getStorageManager().getFileTail(entry.getResource().getPath()),
             "fileextension",
-            IOUtil.getFileExtension(entry.getResource().getPath()), "name",
+            IO.getFileExtension(entry.getResource().getPath()), "name",
             getEntryDisplayName(entry), "fullname", entry.getFullName(),
             "user", entry.getUser().getLabel(), "url", url
         };
@@ -4505,7 +4501,7 @@ public class EntryManager extends RepositoryManager {
 
         String file = request.getString(ARG_FILESUFFIX, null);
         if (file == null) {
-            file = IOUtil.getFileTail(request.getRequestPath());
+            file = IO.getFileTail(request.getRequestPath());
             request.put(ARG_FILESUFFIX, file);
         }
 
@@ -4645,7 +4641,7 @@ public class EntryManager extends RepositoryManager {
 
         String path = entry.getResource().getPath();
         String mimeType = getRepository().getMimeTypeFromSuffix(
-								IOUtil.getFileExtension(path));
+								IO.getFileExtension(path));
 
 	if(!stringDefined(mimeType) || mimeType.equals("unknown")) {
 	    //If we can't determine  the mime type from the path then sometimes the typehandler
@@ -4661,7 +4657,7 @@ public class EntryManager extends RepositoryManager {
             int width = request.get(ARG_IMAGEWIDTH, 75);
             File thumb = getStorageManager().getThumbFile("entry"
 							  + IOUtil.cleanFileName(entry.getId()) + "_"
-							  + width + IOUtil.getFileExtension(path));
+							  + width + IO.getFileExtension(path));
             if ( !thumb.exists()) {
                 Image image = Utils.readImage(entry.getResource().getPath());
                 image = ImageUtils.resize(image, width, -1);
@@ -5975,7 +5971,7 @@ public class EntryManager extends RepositoryManager {
                             new String(IOUtil.readBytes(entriesStream, null,
 							false));
                     } else {
-                        String name = IOUtil.getFileTail(ze.getName());
+                        String name = IO.getFileTail(ze.getName());
                         File f = getStorageManager().getTmpFile(request,
 								name);
                         OutputStream fos =
@@ -6008,7 +6004,7 @@ public class EntryManager extends RepositoryManager {
                 entriesXml = IOUtil.readInputStream(entriesStream);
             }
         } finally {
-            IOUtil.close(fis);
+            IO.close(fis);
             getStorageManager().deleteFile(new File(file));
         }
 
@@ -6459,7 +6455,7 @@ public class EntryManager extends RepositoryManager {
 				    "").equals("true")) {
             URL u = new URL(url);
             File f = getStorageManager().getTmpFile(request,
-						    IOUtil.getFileTail(u.getFile()));
+						    IO.getFileTail(u.getFile()));
             Utils.writeTo(u, f);
             if ( !f.exists()) {
                 throw new IllegalArgumentException("Failed to download URL:"

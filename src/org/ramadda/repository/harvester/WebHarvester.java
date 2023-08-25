@@ -11,7 +11,7 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
-import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
 import org.ramadda.util.sql.SqlUtil;
@@ -248,22 +248,22 @@ public class WebHarvester extends Harvester {
         StringBuffer sb      = new StringBuffer();
         StringBuffer superSB = new StringBuffer();
 
-        formSB.append(HtmlUtils.formTableClose());
-        superSB.append(HtmlUtils.formTable());
+        formSB.append(HU.formTableClose());
+        superSB.append(HU.formTable());
         super.createEditForm(request, superSB);
         superSB.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 msgLabel("Entry type"),
                 repository.makeTypeSelect(
                     request, false, getTypeHandler().getType(), false,
                     null)));
 
 
-        superSB.append(HtmlUtils.formEntry(msgLabel("User"),
-                                           HtmlUtils.input(ATTR_USER,
+        superSB.append(HU.formEntry(msgLabel("User"),
+                                           HU.input(ATTR_USER,
                                                (getUserName() != null)
                 ? getUserName().trim()
-                : "", HtmlUtils.SIZE_30)));
+                : "", HU.SIZE_30)));
 
 
 
@@ -271,11 +271,11 @@ public class WebHarvester extends Harvester {
         addToEditForm(request, superSB);
 
 
-        superSB.append(HtmlUtils.formTableClose());
-        formSB.append(HtmlUtils.makeShowHideBlock("Basic Information",
+        superSB.append(HU.formTableClose());
+        formSB.append(HU.makeShowHideBlock("Basic Information",
                 superSB.toString(), true));
 
-        sb.append(HtmlUtils.hr());
+        sb.append(HU.hr());
         sb.append("Enter urls and the folders to add them to.");
 
 
@@ -284,65 +284,65 @@ public class WebHarvester extends Harvester {
         StringBuffer entrySB;
         for (HarvesterEntry urlEntry : urlEntries) {
             entrySB = new StringBuffer();
-            entrySB.append(HtmlUtils.formTable());
+            entrySB.append(HU.formTable());
             String link = "";
             if ((urlEntry.url != null) && (urlEntry.url.length() > 0)) {
-                link = HtmlUtils.href(
+                link = HU.href(
                     urlEntry.url,
-                    HtmlUtils.img(getRepository().getIconUrl(ICON_LINK)),
-                    HtmlUtils.attr("target", "_linkpage"));
+                    HU.img(getRepository().getIconUrl(ICON_LINK)),
+                    HU.attr("target", "_linkpage"));
             }
-            String urlInput = HtmlUtils.input(ATTR_URL + cnt, urlEntry.url,
-                                  HtmlUtils.SIZE_80) + link;
+            String urlInput = HU.input(ATTR_URL + cnt, urlEntry.url,
+                                  HU.SIZE_80) + link;
 
-            entrySB.append(HtmlUtils.formEntry(msgLabel("Fetch URL"),
+            entrySB.append(HU.formEntry(msgLabel("Fetch URL"),
                     urlInput));
             addEntryToForm(request, entrySB, urlEntry, cnt);
-            entrySB.append(HtmlUtils.formTableClose());
-            sb.append(HtmlUtils.makeShowHideBlock("URL #" + cnt,
+            entrySB.append(HU.formTableClose());
+            sb.append(HU.makeShowHideBlock("URL #" + cnt,
                     entrySB.toString(), true));
-            sb.append(HtmlUtils.hr());
+            sb.append(HU.hr());
             cnt++;
         }
 
         entrySB = new StringBuffer();
-        entrySB.append(HtmlUtils.formTable());
-        entrySB.append(HtmlUtils.formEntry(msgLabel("Fetch URL"),
-                                           HtmlUtils.input(ATTR_URL + cnt,
-                                               "", HtmlUtils.SIZE_80)));
+        entrySB.append(HU.formTable());
+        entrySB.append(HU.formEntry(msgLabel("Fetch URL"),
+                                           HU.input(ATTR_URL + cnt,
+                                               "", HU.SIZE_80)));
         /*
         entrySB.append(
             RepositoryManager.tableSubHeader("Then create an entry with"));
         entrySB.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 msgLabel("Name"),
-                HtmlUtils.input(
+                HU.input(
                     ATTR_NAME + cnt, "",
-                    HtmlUtils.SIZE_80 + HtmlUtils.title(templateHelp))));
+                    HU.SIZE_80 + HU.title(templateHelp))));
         entrySB.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 msgLabel("Description"),
-                HtmlUtils.input(
+                HU.input(
                     ATTR_DESCRIPTION + cnt, "",
-                    HtmlUtils.SIZE_80 + HtmlUtils.title(templateHelp))));
+                    HU.SIZE_80 + HU.title(templateHelp))));
         entrySB.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 msgLabel("Sub-Folder"),
-                HtmlUtils.input(
+                HU.input(
                     ATTR_GROUP + cnt, "",
-                    HtmlUtils.SIZE_80 + HtmlUtils.title(templateHelp))));
+                    HU.SIZE_80 + HU.title(templateHelp))));
         */
 
-        entrySB.append(HtmlUtils.formTableClose());
+        entrySB.append(HU.formTableClose());
 
-        sb.append(HtmlUtils.makeShowHideBlock("New URL", entrySB.toString(),
+        sb.append(HU.makeShowHideBlock("New URL", entrySB.toString(),
                 true));
 
 
-        sb.append(HtmlUtils.p());
+        sb.append(HU.p());
 
         formSB.append(sb);
-        formSB.append(HtmlUtils.formTable());
+        formSB.append(HU.formTable());
 
     }
 
@@ -370,28 +370,28 @@ public class WebHarvester extends Harvester {
             RepositoryManager.tableSubHeader("Then create an entry with"));
 
         entrySB.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 msgLabel("Name"),
-                HtmlUtils.input(
+                HU.input(
                     ATTR_NAME + cnt, urlEntry.name,
-                    HtmlUtils.SIZE_80 + HtmlUtils.title(templateHelp))));
+                    HU.SIZE_80 + HU.title(templateHelp))));
         entrySB.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 msgLabel("Description"),
-                HtmlUtils.input(
+                HU.input(
                     ATTR_DESCRIPTION + cnt, urlEntry.description,
-                    HtmlUtils.SIZE_80 + HtmlUtils.title(templateHelp))));
+                    HU.SIZE_80 + HU.title(templateHelp))));
 
         addBaseFolderToForm(request, entrySB, urlEntry, cnt);
 
         String fieldId = ATTR_GROUP + cnt;
         entrySB.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 msgLabel("Sub-Folder Template"),
-                HtmlUtils.input(
+                HU.input(
                     fieldId, urlEntry.group,
-                    HtmlUtils.SIZE_80 + HtmlUtils.id(fieldId)
-                    + HtmlUtils.title(templateHelp))));
+                    HU.SIZE_80 + HU.id(fieldId)
+                    + HU.title(templateHelp))));
 
     }
 
@@ -416,17 +416,17 @@ public class WebHarvester extends Harvester {
                                        urlEntry.baseGroupId));
         String baseSelect = OutputHandler.getGroupSelect(request,
                                 baseGroupFieldId);
-        entrySB.append(HtmlUtils.hidden(baseGroupFieldId + "_hidden",
+        entrySB.append(HU.hidden(baseGroupFieldId + "_hidden",
                                         urlEntry.baseGroupId,
-                                        HtmlUtils.id(baseGroupFieldId
+                                        HU.id(baseGroupFieldId
                                             + "_hidden")));
         entrySB.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 msgLabel("Base Folder"),
-                HtmlUtils.disabledInput(baseGroupFieldId, ((baseGroup != null)
+                HU.disabledInput(baseGroupFieldId, ((baseGroup != null)
                 ? baseGroup.getFullName()
-                : ""), HtmlUtils.id(baseGroupFieldId)
-                       + HtmlUtils.SIZE_60) + baseSelect));
+                : ""), HU.id(baseGroupFieldId)
+                       + HU.SIZE_60) + baseSelect));
 
     }
 
@@ -448,7 +448,7 @@ public class WebHarvester extends Harvester {
 
         return status.toString() + ((messages.length() == 0)
                                     ? ""
-                                    : HtmlUtils.makeShowHideBlock("Entries",
+                                    : HU.makeShowHideBlock("Entries",
                                     messages, false));
     }
 
@@ -583,7 +583,7 @@ public class WebHarvester extends Harvester {
 
 
         String fileName = url;
-        String tail     = IOUtil.getFileTail(url);
+        String tail     = IO.getFileTail(url);
         File   tmpFile  = getStorageManager().getTmpFile(null, tail);
         //System.err.println ("WebHarvester: " + getName() +" fetching URL: " + url);
 
@@ -603,7 +603,7 @@ public class WebHarvester extends Harvester {
         Date   createDate = new Date();
         Date   fromDate   = createDate;
         Date   toDate     = createDate;
-        String ext        = IOUtil.getFileExtension(url);
+        String ext        = IO.getFileExtension(url);
         tag = tag.replace("${extension}", ext);
 
         //        groupName = groupName.replace("${dirgroup}", dirGroup);

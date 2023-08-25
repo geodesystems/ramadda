@@ -1683,7 +1683,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         }
 
         Object[] values = typeHandlerToUse.makeEntryValues(entryValues);
-        String   ext    = IOUtil.getFileExtension(filePath);
+        String   ext    = IO.getFileExtension(filePath);
         if (ext.startsWith(".")) {
             ext = ext.substring(1);
         }
@@ -1882,13 +1882,13 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         if ( !Utils.isImage(resource.getPath())) {
             File thumbnail = null;
             File tmp;
-            tmp = new File(IOUtil.stripExtension(resource.getPath())
+            tmp = new File(IO.stripExtension(resource.getPath())
                            + ".thm");
             if (tmp.exists()) {
                 thumbnail = tmp;
             }
             if (thumbnail == null) {
-                tmp = new File(IOUtil.stripExtension(resource.getPath())
+                tmp = new File(IO.stripExtension(resource.getPath())
                                + ".THM");
                 if (tmp.exists()) {
                     thumbnail = tmp;
@@ -1896,7 +1896,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             }
 
             if (thumbnail != null) {
-                String jpegFile = IOUtil.stripExtension(thumbnail.getName())
+                String jpegFile = IO.stripExtension(thumbnail.getName())
 		    + ".jpg";
                 String newThumbFile =
                     getStorageManager().copyToEntryDir(entry, thumbnail,

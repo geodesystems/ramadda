@@ -13,6 +13,7 @@ import org.ramadda.repository.output.PageStyle;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.util.RequestArgument;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.SelectionRectangle;
 import org.ramadda.util.Utils;
 
@@ -3287,8 +3288,8 @@ public class Request implements Constants, Cloneable {
             getRepository().getStorageManager().getFileInputStream(
 								   file.toString());
         IOUtil.writeTo(fis, os);
-        IOUtil.close(os);
-        IOUtil.close(fis);
+        IO.close(os);
+        IO.close(fis);
 
         return result;
     }
@@ -3327,9 +3328,8 @@ public class Request implements Constants, Cloneable {
         result.setNeedToWrite(false);
         OutputStream os = getHttpServletResponse().getOutputStream();
         IOUtil.writeTo(is, os);
-        IOUtil.close(os);
-        IOUtil.close(is);
-
+        IO.close(os);
+        IO.close(is);
         return result;
     }
 

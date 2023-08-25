@@ -24,8 +24,6 @@ import org.ramadda.util.sql.SqlUtil;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
@@ -1041,8 +1039,8 @@ public class HtmlOutputHandler extends OutputHandler {
             throws Exception {
 	children = getSelectEntries(request, children);
         String        selectType = request.getString(ARG_SELECTTYPE, "");
-        boolean       isImage    = Misc.equals(selectType, "image");
-        boolean       isFieldName    = Misc.equals(selectType, "fieldname");	
+        boolean       isImage    = Utils.equals(selectType, "image");
+        boolean       isFieldName    = Utils.equals(selectType, "fieldname");	
         String        localeId   = request.getString(ARG_LOCALEID, null);
         String        target     = request.getString(ATTR_TARGET, "");
         StringBuilder sb         = new StringBuilder();
@@ -1200,7 +1198,7 @@ public class HtmlOutputHandler extends OutputHandler {
         }
         HU.open(sb, "div", HU.clazz(firstCall?"ramadda-select-block":"ramadda-select-inner"));
         for (Entry subGroup : children) {
-            if (Misc.equals(localeId, subGroup.getId())) {
+            if (Utils.equals(localeId, subGroup.getId())) {
                 continue;
             }
             if (isImage && !subGroup.isImage() && !subGroup.isGroup()) {

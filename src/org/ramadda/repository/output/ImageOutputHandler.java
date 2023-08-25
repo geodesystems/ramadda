@@ -12,6 +12,8 @@ import org.ramadda.repository.job.JobManager;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.FileWriter;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
+
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
@@ -290,7 +292,7 @@ public class ImageOutputHandler extends OutputHandler {
                 //                    links.add(makeLink(request, state.getEntry(), OUTPUT_CAPTION));
                 //                }
                 String extension =
-                    IOUtil.getFileExtension(
+                    IO.getFileExtension(
                         state.entry.getResource().getPath()).toLowerCase();
                 if (extension.equals(".mp3") || extension.equals(".mp4")
                         || extension.equals(".mpg")) {
@@ -489,7 +491,7 @@ public class ImageOutputHandler extends OutputHandler {
                     int    version     = 0;
                     File   versionFile = null;
                     String extension   =
-                        IOUtil.getFileExtension(f.toString());
+                        IO.getFileExtension(f.toString());
                     while (true) {
                         File file = new File(entryDir + "/" + "version"
                                              + version + "." + extension);
@@ -536,7 +538,7 @@ public class ImageOutputHandler extends OutputHandler {
                     int    version     = 0;
                     File   versionFile = null;
                     String extension   =
-                        IOUtil.getFileExtension(f.toString());
+                        IO.getFileExtension(f.toString());
                     while (true) {
                         File file = new File(entryDir + "/" + "version"
                                              + version + "." + extension);
@@ -572,7 +574,7 @@ public class ImageOutputHandler extends OutputHandler {
 
         int versions = 0;
         String extension =
-            IOUtil.getFileExtension(entry.getResource().getPath());
+            IO.getFileExtension(entry.getResource().getPath());
         File entryDir = getStorageManager().getEntryDir(entry.getId(), true);
         while (true) {
             File file = new File(entryDir + "/" + "version" + versions + "."
@@ -1252,7 +1254,7 @@ public class ImageOutputHandler extends OutputHandler {
                     try {
                         byte[] imageBytes =
                             IOUtil.readBytes(
-                                Utils.doMakeInputStream(
+					     IO.doMakeInputStream(
                                     child.getResource().getPath(), true));
                         if (imageBytes == null) {
                             System.err.println("no image:" + child);
@@ -1549,7 +1551,7 @@ public class ImageOutputHandler extends OutputHandler {
             Entry  child = entries.get(i);
             String path  = child.getResource().getPath();
             byte[] imageBytes =
-                IOUtil.readBytes(Utils.doMakeInputStream(path, true));
+                IOUtil.readBytes(IO.doMakeInputStream(path, true));
             if (imageBytes == null) {
                 System.err.println("no image:" + child);
 
@@ -1604,7 +1606,7 @@ public class ImageOutputHandler extends OutputHandler {
             String name = getStorageManager().getOriginalFilename(path);
             File   file = getStorageManager().getTmpFile(request, name);
             String ext =
-                IOUtil.getFileExtension(path).toLowerCase().replace(".", "");
+                IO.getFileExtension(path).toLowerCase().replace(".", "");
             if (ext.equals("jpg")) {
                 ext = "jpeg";
             }
@@ -1615,7 +1617,7 @@ public class ImageOutputHandler extends OutputHandler {
             if (entries.size() == 1) {
                 Result result = new Result(new FileInputStream(file),
                                            "image/" + ext);
-                result.setReturnFilename(IOUtil.getFileTail(path));
+                result.setReturnFilename(IO.getFileTail(path));
 
                 return result;
             }
@@ -1659,8 +1661,8 @@ public class ImageOutputHandler extends OutputHandler {
         }
 
         path = getStorageManager().getOriginalFilename(path);
-        String ext = IOUtil.getFileExtension(path).toLowerCase();
-        path = IOUtil.stripExtension(path) + ".b64";
+        String ext = IO.getFileExtension(path).toLowerCase();
+        path = IO.stripExtension(path) + ".b64";
 
         StringBuilder sb = new StringBuilder();
         sb.append("url(data:image/" + ext + ";base64,");
@@ -1748,18 +1750,18 @@ public class ImageOutputHandler extends OutputHandler {
                         if (child.isFile()) {
                             imageFile = child.getResource().getPath();
                         } else if (child.getResource().isUrl()) {
-                            String tail = IOUtil.getFileTail(
+                            String tail = IO.getFileTail(
                                               child.getResource().getPath());
                             File file =
                                 getStorageManager().getTmpFile(request, tail);
                             InputStream is =
-                                Utils.doMakeInputStream(
+                                IO.doMakeInputStream(
                                     child.getResource().getPath(), true);
                             BufferedOutputStream bos =
                                 new BufferedOutputStream(
                                     new FileOutputStream(file));
                             IOUtil.writeTo(is, bos);
-                            IOUtil.close(bos);
+                            IO.close(bos);
                             imageFile = file.toString();
                         }
 
@@ -1777,12 +1779,12 @@ public class ImageOutputHandler extends OutputHandler {
                                                  -1,
                                                  Image.SCALE_AREA_AVERAGING);
                             String newFile =
-                                IOUtil.getFileTail(imageFile).toLowerCase();
+                                IO.getFileTail(imageFile).toLowerCase();
                             if ( !newFile.endsWith(".gif")
                                     || !newFile.endsWith(".png")
                                     || !newFile.endsWith(".jpg")
                                     || !newFile.endsWith(".jpeg")) {
-                                newFile = IOUtil.stripExtension(newFile)
+                                newFile = IO.stripExtension(newFile)
                                           + ".png";
                             }
                             File tmp =
@@ -1802,12 +1804,12 @@ public class ImageOutputHandler extends OutputHandler {
                                            image.getHeight(null) - maxHeight,
                                            0);
                             String newFile =
-                                IOUtil.getFileTail(imageFile).toLowerCase();
+                                IO.getFileTail(imageFile).toLowerCase();
                             if ( !newFile.endsWith(".gif")
                                     || !newFile.endsWith(".png")
                                     || !newFile.endsWith(".jpg")
                                     || !newFile.endsWith(".jpeg")) {
-                                newFile = IOUtil.stripExtension(newFile)
+                                newFile = IO.stripExtension(newFile)
                                           + ".png";
                             }
                             File tmp =

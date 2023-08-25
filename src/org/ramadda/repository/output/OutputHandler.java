@@ -14,7 +14,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.BufferMapList;
 import org.ramadda.util.CategoryBuffer;
-import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.JsonUtil;
 
@@ -428,20 +428,20 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                 label = "Showing: "  + (skip + 1) + "-"  + (skip + cnt);
             }
 	    if (skip > 0) {
-		toks.add(HtmlUtils.href(
+		toks.add(HU.href(
 					request.getUrl(ARG_SKIP) + "&" + ARG_SKIP + "="
 					+ (skip - max), "Previous",
 					HU.cssClass("ramadda-next-previous ramadda-previous")					
-					//HtmlUtils.faIcon("fa-caret-left", "title", "View previous")
+					//HU.faIcon("fa-caret-left", "title", "View previous")
 					));
 	    }
 	
             //      if (cnt >= max) {
-	    toks.add(HtmlUtils.href(
+	    toks.add(HU.href(
 				    request.getUrl(ARG_SKIP) + "&" + ARG_SKIP + "="
 				    + (skip + max), "Next",
 				    HU.cssClass("ramadda-next-previous ramadda-next")));
-	    //HtmlUtils.faIcon("fa-caret-right", "title", "View next")));
+	    //HU.faIcon("fa-caret-right", "title", "View next")));
             //            }
             int moreMax = (int) (max * 1.5);
             if (moreMax < 10) {
@@ -454,13 +454,13 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
             request = request.cloneMe();
 	    toks.add(HU.SPACE2);
             request.put(ARG_MAX, "" + lessMax);
-            toks.add(HtmlUtils.href(request.getUrl(),
-                                    HtmlUtils.faIcon("fa-minus", "title",
+            toks.add(HU.href(request.getUrl(),
+                                    HU.faIcon("fa-minus", "title",
                                         "View less")));
 	    toks.add(HU.SPACE);
             request.put(ARG_MAX, "" + moreMax);
-            toks.add(HtmlUtils.href(request.getUrl(),
-                                    HtmlUtils.faIcon("fa-plus", "title",
+            toks.add(HU.href(request.getUrl(),
+                                    HU.faIcon("fa-plus", "title",
                                         "View more")));
 
             if (toks.size() > 0) {
@@ -507,11 +507,11 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                     stats.append(outputType.getLabel() + " # "
                                  + msgLabel("Calls")
                                  + outputType.getNumberOfCalls()
-                                 + HtmlUtils.br());
+                                 + HU.br());
                 }
             }
 
-            sb.append(HtmlUtils.formEntryTop(msgLabel(name),
+            sb.append(HU.formEntryTop(msgLabel(name),
                                              stats.toString()));
 
         }
@@ -800,12 +800,12 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
             throws Exception {
         String url;
         if (entry == null) {
-            url = HtmlUtils.url(getRepository().URL_ENTRY_SHOW + suffix,
+            url = HU.url(getRepository().URL_ENTRY_SHOW + suffix,
                                 ARG_OUTPUT, outputType.toString());
         } else {
             url = request.getEntryUrlPath(getRepository().URL_ENTRY_SHOW
                                           + suffix, entry);
-            url = HtmlUtils.url(url, ARG_ENTRYID, entry.getId(), ARG_OUTPUT,
+            url = HU.url(url, ARG_ENTRYID, entry.getId(), ARG_OUTPUT,
                                 outputType.toString());
         }
 
@@ -1014,19 +1014,19 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                                          String formId, String skipList,
                                          String hook, String...opts)
             throws Exception {
-        String outputId = HtmlUtils.getUniqueId("output_");
-        HtmlUtils.div(sb, "", HtmlUtils.id(outputId));
+        String outputId = HU.getUniqueId("output_");
+        HU.div(sb, "", HU.id(outputId));
 	//	String args = JsonUtil.map("includeCopyArgs","" + includeCopyArgs);
 	List<String> tmp = new ArrayList<String>();
 	for(String opt:opts) tmp.add(opt);
 	String args = JsonUtil.map(tmp);
-        HtmlUtils.script(sb,
-                         HtmlUtils.call("HtmlUtil.makeUrlShowingForm",
+        HU.script(sb,
+                         HU.call("HtmlUtil.makeUrlShowingForm",
                                         (entry == null)
                                         ? "null"
-                                        : HtmlUtils.quote(
-                                            entry.getId()), HtmlUtils.quote(
-                                                formId), HtmlUtils.quote(
+                                        : HU.quote(
+                                            entry.getId()), HU.quote(
+                                                formId), HU.quote(
                                                     outputId), (skipList
                                                         != null)
                 ? skipList
@@ -1134,17 +1134,17 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         String  selectorId = elementId + ( !hasType
                                            ? ""
                                            : "_" + type);
-        String event = HtmlUtils.call(
+        String event = HU.call(
                            "RamaddaUtils.selectInitialClick",
-                           HtmlUtils.comma(
-                               "event", HtmlUtils.squote(selectorId),
-                               HtmlUtils.squote(elementId),
-                               HtmlUtils.squote(
+                           HU.comma(
+                               "event", HU.squote(selectorId),
+                               HU.squote(elementId),
+                               HU.squote(
                                    Boolean.toString(allEntries)), ( !hasType
                 ? "null"
-                : HtmlUtils.squote(type)), ((entry != null)
-                                            ? HtmlUtils.squote(entry.getId())
-                                            : "null"), HtmlUtils.squote(
+                : HU.squote(type)), ((entry != null)
+                                            ? HU.squote(entry.getId())
+                                            : "null"), HU.squote(
                                                 (request == null)
                 ? ""
                 : request.getString(ARG_ENTRYTYPE, ""))));
@@ -1274,7 +1274,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                                 "isGroup", "" + isGroup, "isImage",
                                 "" + isImage);
 	if(entry.isFile()) {
-	    Utils.add(attrs, "filename",JsonUtil.quote(IOUtil.getFileTail(entry.getResource().getPath())));
+	    Utils.add(attrs, "filename",JsonUtil.quote(IO.getFileTail(entry.getResource().getPath())));
 	}
 	if(entry.isGeoreferenced()) {
 	    Utils.add(attrs, "isGeo","true");

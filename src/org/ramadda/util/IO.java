@@ -799,11 +799,16 @@ public class IO {
 
 
     public static String stripExtension(String file) {
-	return FilenameUtils.removeExtension(file);
+	//IMPORTANT: for now call out to IOUtil 
+	return IOUtil.stripExtension(file);
+	//	return FilenameUtils.removeExtension(file);
     }
 
     public static String getFileExtension(String file) {
-	return FilenameUtils.getExtension(file);
+	//IMPORTANT: us the IOUtil one for now since that returns the extension with a "." prefix
+	//and all of the RAMADDA code that calls this depends on the "."
+	return IOUtil.getFileExtension(file);
+	//	return FilenameUtils.getExtension(file);
     }
 
 
@@ -1979,7 +1984,6 @@ a     * @param suffix _more_
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-
 	if(true) {
 	    File dir = new File(args[0]);
 	    for(File f: dir.listFiles()){

@@ -15,28 +15,14 @@ import org.ramadda.repository.type.TypeHandler;
 
 import org.ramadda.repository.util.ServerInfo;
 
-
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
-
-
-import ucar.unidata.geoloc.Bearing;
-import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.Misc;
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
-
-
 import java.io.*;
-
-import java.io.File;
-
 import java.text.DateFormat;
-
 import java.text.SimpleDateFormat;
 import java.text.StringCharacterIterator;
 
@@ -118,7 +104,7 @@ public class JsonOutputHandler extends OutputHandler {
             links.add(
                 makeLink(
                     request, state.getEntry(), OUTPUT_JSON,
-                    "/" + IOUtil.stripExtension(state.getEntry().getName())
+                    "/" + IO.stripExtension(state.getEntry().getName())
                     + ".json"));
         }
     }
@@ -146,7 +132,7 @@ public class JsonOutputHandler extends OutputHandler {
         if (group.isDummy()) {
             request.setReturnFilename("Search_Results.json");
         } else {
-            request.setReturnFilename(IOUtil.stripExtension(group.getName())
+            request.setReturnFilename(IO.stripExtension(group.getName())
                                       + ".json");
         }
 	boolean doSort = !request.defined(ARG_ORDERBY);
@@ -198,7 +184,7 @@ public class JsonOutputHandler extends OutputHandler {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
-        request.setReturnFilename(IOUtil.stripExtension(entry.getName())
+        request.setReturnFilename(IO.stripExtension(entry.getName())
                                   + ".json");
         List<Entry> allEntries = new ArrayList<Entry>();
         if ( !request.get("children", false)) {

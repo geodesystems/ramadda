@@ -13,6 +13,7 @@ import org.ramadda.repository.type.DataTypes;
 import org.ramadda.util.ColorTable;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
@@ -774,11 +775,9 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         String url      = request.getString(arg + "_url", "");
         String theFile  = null;
         if (url.length() > 0) {
-            String        tail       = IOUtil.getFileTail(url);
+            String        tail       = IO.getFileTail(url);
             File tmpFile = getStorageManager().getTmpFile(request, tail);
-            URL           fromUrl    = new URL(url);
-            URLConnection connection = fromUrl.openConnection();
-            InputStream   fromStream = connection.getInputStream();
+            InputStream   fromStream = getStorageManager().getInputStreamFromUrl(request,url);
             OutputStream toStream =
                 getStorageManager().getFileOutputStream(tmpFile);
             try {
@@ -791,8 +790,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 throw new IllegalArgumentException("Could not download url:"
                         + url);
             } finally {
-                IOUtil.close(toStream);
-                IOUtil.close(fromStream);
+                IO.close(toStream);
+                IO.close(fromStream);
             }
             theFile = tmpFile.toString();
         } else {

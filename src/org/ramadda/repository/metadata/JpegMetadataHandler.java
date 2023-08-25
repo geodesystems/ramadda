@@ -126,7 +126,7 @@ public class JpegMetadataHandler extends MetadataHandler {
 							      BufferedImage.TYPE_INT_RGB);
 
 	long t5= System.currentTimeMillis();
-        String thumbFile = IOUtil.stripExtension(entry.getName()) + "_thumb.";
+        String thumbFile = IO.stripExtension(entry.getName()) + "_thumb.";
 	String format;
         if (path.toLowerCase().endsWith("gif")) {
 	    format = "gif";

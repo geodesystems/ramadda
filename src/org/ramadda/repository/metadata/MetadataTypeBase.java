@@ -8,7 +8,7 @@ package org.ramadda.repository.metadata;
 
 import org.ramadda.repository.*;
 
-import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.NamedValue;
 import org.ramadda.util.Utils;
 
@@ -211,7 +211,7 @@ public class MetadataTypeBase extends RepositoryManager {
                 request.getAbsoluteUrl(handler.getRepository()
                     .getMetadataManager().URL_METADATA_VIEW) + "/" + tail;
 
-            String url = HtmlUtils.url(path, ARG_ELEMENT,
+            String url = HU.url(path, ARG_ELEMENT,
                                        element.getIndex() + "", ARG_ENTRYID,
                                        metadata.getEntryId(),
                                        ARG_METADATA_ID, metadata.getId());
@@ -580,7 +580,7 @@ public class MetadataTypeBase extends RepositoryManager {
                     .URL_METADATA_VIEW + "/" + tail;
 
 
-            return HtmlUtils.url(path, ARG_ELEMENT, element.getIndex() + "",
+            return HU.url(path, ARG_ELEMENT, element.getIndex() + "",
                                  ARG_ENTRYID, metadata.getEntryId(),
                                  ARG_METADATA_ID, metadata.getId());
         }
@@ -609,7 +609,7 @@ public class MetadataTypeBase extends RepositoryManager {
         }
 
         String extra = (forLink
-                        ? HtmlUtils.cssClass(
+                        ? HU.cssClass(
                             "ramadda-thumbnail-image img-thumbnail")
                         : "");
         extra += HU.attrs("style", "max-width:100%;","loading","lazy");
@@ -620,7 +620,7 @@ public class MetadataTypeBase extends RepositoryManager {
 
 
         if (Utils.isImage(f.toString())) {
-            String img = HtmlUtils.img(HtmlUtils.url(path, ARG_ELEMENT,
+            String img = HU.img(HU.url(path, ARG_ELEMENT,
                              element.getIndex() + "", ARG_ENTRYID,
                              metadata.getEntryId(), ARG_METADATA_ID,
                              metadata.getId()), (forLink
@@ -628,19 +628,19 @@ public class MetadataTypeBase extends RepositoryManager {
                     : ""), extra);
 
             if (forLink) {
-                String bigimg = HtmlUtils.img(HtmlUtils.url(path,
+                String bigimg = HU.img(HU.url(path,
                                     ARG_ELEMENT, element.getIndex() + "",
                                     ARG_ENTRYID, metadata.getEntryId(),
                                     ARG_METADATA_ID,
                                     metadata.getId()), "thumbnail", "");
                 StringBuilder tmp = new StringBuilder();
-                img = HtmlUtils.div(img,
-                                    HtmlUtils.cssClass("ramadda-thumbnail"));
-                img = HtmlUtils.makePopup(tmp, img, bigimg,
+                img = HU.div(img,
+                                    HU.cssClass("ramadda-thumbnail"));
+                img = HU.makePopup(tmp, img, bigimg,
                                           new NamedValue("at", "right top"),
                                           new NamedValue("header", true));
-                img = HtmlUtils.div(
-                    img, HtmlUtils.cssClass("ramadda-thumbnail")) + "\n"
+                img = HU.div(
+                    img, HU.cssClass("ramadda-thumbnail")) + "\n"
                         + tmp;
             } else {
                 img = Utils.concatString(img, "\n<br>\n<b>", tail, "</b>\n");
@@ -650,7 +650,7 @@ public class MetadataTypeBase extends RepositoryManager {
         } else if (f.exists()) {
             String name = getStorageManager().getFileTail(f.getName());
 
-            return HtmlUtils.href(HtmlUtils.url(path, ARG_ELEMENT,
+            return HU.href(HU.url(path, ARG_ELEMENT,
                     element.getIndex() + "", ARG_ENTRYID,
                     metadata.getEntryId(), ARG_METADATA_ID,
                     metadata.getId()), name);
@@ -721,13 +721,13 @@ public class MetadataTypeBase extends RepositoryManager {
         String path =
             handler.getRepository().getMetadataManager().URL_METADATA_VIEW
             + "/" + tail;
-        String url = HtmlUtils.url(path, ARG_ELEMENT,
+        String url = HU.url(path, ARG_ELEMENT,
                                    element.getIndex() + "", ARG_ENTRYID,
                                    metadata.getEntryId(), ARG_METADATA_ID,
                                    metadata.getId());
 
         //Get the full file name
-        return new String[] { IOUtil.getFileTail(f.toString()), url,f.toString() };
+        return new String[] { IO.getFileTail(f.toString()), url,f.toString() };
     }
 
 

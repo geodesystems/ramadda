@@ -9,35 +9,16 @@ package org.ramadda.repository.output;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
-import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
-import org.ramadda.util.sql.SqlUtil;
+import ucar.unidata.xml.XmlUtil;
 
 
 import org.w3c.dom.*;
-
-import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.Misc;
-
-
-
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
-
 import java.io.*;
-
 import java.io.File;
-
-
-
 import java.net.*;
-
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
-
 
 import java.util.Calendar;
 import java.util.Date;

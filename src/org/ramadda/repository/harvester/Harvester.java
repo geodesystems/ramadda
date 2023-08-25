@@ -13,6 +13,7 @@ import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.FileWrapper;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.PatternHolder;
 import org.ramadda.util.Utils;
 import org.ramadda.util.geo.*;
@@ -380,7 +381,7 @@ public abstract class Harvester extends RepositoryManager {
         }
         s = getEntryManager().replaceMacros(s, createDate, fromDate, toDate);
         String[] macros = { "filename", filename, "fileextension",
-                            IOUtil.getFileExtension(filename), };
+                            IO.getFileExtension(filename), };
 
         for (int i = 0; i < macros.length; i += 2) {
             String macro = "${" + macros[i] + "}";

@@ -87,8 +87,7 @@ public class MessageApiHandler extends RepositoryManager implements RequestHandl
             throw new IllegalArgumentException("not an image");
         }
         String path = entry.getResource().getPath();
-        String mimeType = getRepository().getMimeTypeFromSuffix(
-                              IOUtil.getFileExtension(path));
+        String mimeType = getRepository().getMimeTypeFromSuffix(path);
 
         String fileName = getStorageManager().getFileTail(entry);
         InputStream inputStream =

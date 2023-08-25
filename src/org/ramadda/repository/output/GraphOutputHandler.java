@@ -11,6 +11,7 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
@@ -23,7 +24,6 @@ import org.ramadda.util.sql.SqlUtil;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
@@ -292,12 +292,12 @@ public class GraphOutputHandler extends OutputHandler {
             throws Exception {
         String divId = "graph_" + (graphCnt++);
         js.append("function createGraph" + divId + "() {\n");
-        sb.append(HtmlUtils.importJS(getFileUrl("/lib/d3/d3.v3.min.js")));
-        sb.append(HtmlUtils.importJS(getFileUrl("/d3graph.js")));
-        sb.append(HtmlUtils.div("",
-                                HtmlUtils.style("width:" + width + ";height:"
-                                    + height) + HtmlUtils.id(divId)
-                                        + HtmlUtils.cssClass("graph-div")));
+        sb.append(HU.importJS(getFileUrl("/lib/d3/d3.v3.min.js")));
+        sb.append(HU.importJS(getFileUrl("/d3graph.js")));
+        sb.append(HU.div("",
+                                HU.style("width:" + width + ";height:"
+                                    + height) + HU.id(divId)
+                                        + HU.cssClass("graph-div")));
 
         return divId;
     }
@@ -328,7 +328,7 @@ public class GraphOutputHandler extends OutputHandler {
         js.append("return new D3Graph(\"#" + id + "\", nodes,links," + width
                   + "," + height + ");\n}\n");
         js.append("var " + id + " = createGraph" + id + "();\n");
-        sb.append(HtmlUtils.script(js.toString()));
+        sb.append(HU.script(js.toString()));
     }
 
 
@@ -430,9 +430,9 @@ public class GraphOutputHandler extends OutputHandler {
         String imageUrl = null;
         if (Utils.isImage(entry.getResource().getPath())) {
             imageUrl =
-                HtmlUtils.url(
+                HU.url(
                     getRepository().URL_ENTRY_GET + entry.getId()
-                    + IOUtil.getFileExtension(
+                    + IO.getFileExtension(
                         entry.getResource().getPath()), ARG_ENTRYID,
                             entry.getId(), ARG_IMAGEWIDTH, "75");
         } else {

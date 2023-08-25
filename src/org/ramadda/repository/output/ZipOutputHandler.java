@@ -15,11 +15,11 @@ import org.ramadda.repository.auth.*;
 
 import org.ramadda.repository.util.FileWriter;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.sql.SqlUtil;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.util.IOUtil;
 import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
@@ -370,7 +370,7 @@ public class ZipOutputHandler extends OutputHandler {
             fileWriter.close();
         }
         if (doingFile) {
-            IOUtil.close(os);
+            IO.close(os);
 
             return new Result(
                 "", getStorageManager().getFileInputStream(tmpFile),

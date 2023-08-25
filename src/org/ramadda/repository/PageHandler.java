@@ -20,6 +20,7 @@ import org.ramadda.repository.output.PageStyle;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.HtmlTemplate;
+import org.ramadda.util.IO;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.JsonUtil;
@@ -29,7 +30,6 @@ import org.ramadda.util.Utils;
 
 
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
@@ -1232,7 +1232,7 @@ public class PageHandler extends RepositoryManager {
         List<String> lines   = Utils.split(content, "\n", true, true);
         Properties   phrases = new Properties();
         String       type    =
-            IOUtil.stripExtension(IOUtil.getFileTail(file));
+            IO.stripExtension(IO.getFileTail(file));
         String       name    = type;
         for (String line : lines) {
             if (line.startsWith("#")) {
@@ -1397,7 +1397,7 @@ public class PageHandler extends RepositoryManager {
             for (String path : templatePaths) {
                 try {
                     //Skip resources called template.html that might be for other things
-                    if (IOUtil.getFileTail(path).equals("template.html")) {
+                    if (IO.getFileTail(path).equals("template.html")) {
                         continue;
                     }
                     String resource =
@@ -1552,7 +1552,6 @@ public class PageHandler extends RepositoryManager {
             if (url != null) {
                 String includedContent =
                     getStorageManager().readSystemResource(new URL(url));
-                //                String includedContent =  IOUtil.readContents(url, Repository.class);
                 template.append(includedContent);
             }
             html = html.substring(idx1);

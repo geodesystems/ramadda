@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 import org.ramadda.repository.auth.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.text.Seesv;
 
@@ -845,7 +846,7 @@ public class LogManager extends RepositoryManager {
                 continue;
             }
             String name  = logFile.getName();
-            String label = IOUtil.stripExtension(name);
+            String label = IO.stripExtension(name);
             label = StringUtil.camelCase(label);
             if (log.equals(name)) {
                 header.add(HtmlUtils.bold(label));

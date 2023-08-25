@@ -227,7 +227,7 @@ public class StacOutputHandler extends OutputHandler {
 	    String _url = url.toLowerCase();
 	    String title = tuple[1];	    
 	    if(title==null) title = "";
-	    String type = getRepository().getMimeTypeFromSuffix(IOUtil.getFileExtension(_url));
+	    String type = getRepository().getMimeTypeFromSuffix(_url);
 	    url = request.getAbsoluteUrl(url);
 	    thumbs.add(JsonUtil.map("href",quote(url),"title",quote(title),"media_type",quote(type)));
 	}

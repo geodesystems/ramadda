@@ -306,7 +306,6 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                         destFilename);
 
                 String        name = request.getString(ARG_PUBLISH_NAME, "");
-                String        suffix = IOUtil.getFileExtension(f.toString());
                 TypeHandler   typeHandler = null;
 
                 final boolean isPointFile = false;

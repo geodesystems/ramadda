@@ -9,13 +9,13 @@ package org.ramadda.repository.output;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.sql.SqlUtil;
 
 
 import org.w3c.dom.*;
 
-import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
@@ -139,7 +139,7 @@ public class TextOutputHandler extends OutputHandler {
 
 
 
-        String suffix = IOUtil.getFileExtension(path);
+        String suffix = IO.getFileExtension(path);
         String type   = getRepository().getMimeTypeFromSuffix(suffix);
         if ((type != null) && type.startsWith("text/")) {
 

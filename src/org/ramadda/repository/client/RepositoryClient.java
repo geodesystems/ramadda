@@ -15,6 +15,7 @@ import org.ramadda.util.HtmlUtils;
 
 import org.ramadda.util.HttpFormEntry;
 import org.ramadda.util.Utils;
+import org.ramadda.util.IO;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -458,7 +459,7 @@ public class RepositoryClient extends RepositoryBase {
          * file
          */
         File file = new File(filePath);
-        entryNode.setAttribute(ATTR_FILE, IOUtil.getFileTail(filePath));
+        entryNode.setAttribute(ATTR_FILE, IO.getFileTail(filePath));
         /*
          * addmetadata
          */
@@ -481,7 +482,7 @@ public class RepositoryClient extends RepositoryBase {
          * add also the file
          */
         String file2string = file.toString();
-        zos.putNextEntry(new ZipEntry(IOUtil.getFileTail(file2string)));
+        zos.putNextEntry(new ZipEntry(IO.getFileTail(file2string)));
         bytes = IOUtil.readBytes(new FileInputStream(file));
         zos.write(bytes, 0, bytes.length);
         zos.closeEntry();
@@ -559,7 +560,7 @@ public class RepositoryClient extends RepositoryBase {
              */
 
 
-            entryNode.setAttribute(ATTR_FILE, IOUtil.getFileTail(f.filePath));
+            entryNode.setAttribute(ATTR_FILE, IO.getFileTail(f.filePath));
 
             //            entryNode.setAttribute(ATTR_EAST, f.east);
             //            entryNode.setAttribute(ATTR_WEST, f.west);
@@ -591,7 +592,7 @@ public class RepositoryClient extends RepositoryBase {
         for (EntryFile f : files) {
             File   file        = new File(f.filePath);
             String file2string = file.toString();
-            zos.putNextEntry(new ZipEntry(IOUtil.getFileTail(file2string)));
+            zos.putNextEntry(new ZipEntry(IO.getFileTail(file2string)));
             bytes = IOUtil.readBytes(new FileInputStream(file));
             zos.write(bytes, 0, bytes.length);
             zos.closeEntry();
@@ -1706,7 +1707,7 @@ public class RepositoryClient extends RepositoryBase {
         postEntries.add(HttpFormEntry.hidden(ARG_GROUP, parent));
         postEntries.add(
             new HttpFormEntry(
-                ARG_FILE, IOUtil.getFileTail(file.toString()),
+                ARG_FILE, IO.getFileTail(file.toString()),
                 IOUtil.readBytes(new FileInputStream(file))));
         String[] result = doPost(URL_ENTRY_XMLCREATE, postEntries);
         if (result[0] != null) {
@@ -1945,7 +1946,7 @@ public class RepositoryClient extends RepositoryBase {
                     entryCnt++;
                     entryNode = makeEntryNode(root, name, parentId);
                     entryNode.setAttribute(ATTR_FILE,
-                                           IOUtil.getFileTail(f.toString()));
+                                           IO.getFileTail(f.toString()));
                     files.add(f);
                 }
             } else if (arg.equals(CMD_FILE)) {
@@ -1958,13 +1959,13 @@ public class RepositoryClient extends RepositoryBase {
                     usage("File does not exist:" + f);
                 }
                 if (name.length() == 0) {
-                    name = IOUtil.getFileTail(f.toString());
+                    name = IO.getFileTail(f.toString());
                 }
                 String parentId = args[++i];
                 entryCnt++;
                 entryNode = makeEntryNode(root, name, parentId);
                 entryNode.setAttribute(ATTR_FILE,
-                                       IOUtil.getFileTail(f.toString()));
+                                       IO.getFileTail(f.toString()));
                 files.add(f);
             } else if (arg.equals("-localfile")) {
                 if (i == args.length) {
@@ -1974,7 +1975,7 @@ public class RepositoryClient extends RepositoryBase {
                 File f = new File(args[i]);
                 //                if(!f.exists()) usage("Bad file:" + args[i]);
                 entryCnt++;
-                entryNode = makeEntryNode(root, IOUtil.getFileTail(args[i]));
+                entryNode = makeEntryNode(root, IO.getFileTail(args[i]));
                 entryNode.setAttribute(ATTR_LOCALFILE, f.getPath());
             } else if (arg.equals("-localfiletomove")) {
                 if (i == args.length) {
@@ -1984,7 +1985,7 @@ public class RepositoryClient extends RepositoryBase {
                 File f = new File(args[i]);
                 //                if(!f.exists()) usage("Bad file:" + args[i]);
                 entryCnt++;
-                entryNode = makeEntryNode(root, IOUtil.getFileTail(args[i]));
+                entryNode = makeEntryNode(root, IO.getFileTail(args[i]));
                 entryNode.setAttribute(ATTR_LOCALFILETOMOVE, f.getPath());
 
             } else if (arg.equals("-description")) {
@@ -2017,7 +2018,7 @@ public class RepositoryClient extends RepositoryBase {
                 if (entryNode == null) {
                     usage("Need to specify a -file first");
                 }
-                addAttachment(entryNode, IOUtil.getFileTail(f.toString()));
+                addAttachment(entryNode, IO.getFileTail(f.toString()));
                 files.add(f);
             } else {
                 if ( !new File(args[i]).exists()) {
@@ -2054,7 +2055,7 @@ public class RepositoryClient extends RepositoryBase {
         }
         //Now write the files
         for (File f : files) {
-            zos.putNextEntry(new ZipEntry(IOUtil.getFileTail(f.toString())));
+            zos.putNextEntry(new ZipEntry(IO.getFileTail(f.toString())));
             byte[] bytes = IOUtil.readBytes(new FileInputStream(f));
             zos.write(bytes, 0, bytes.length);
             zos.closeEntry();

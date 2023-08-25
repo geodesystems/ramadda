@@ -2419,12 +2419,12 @@ public class WikiManager extends RepositoryManager
                     break;
                 }
             }
-            IOUtil.close(fis);
+            IO.close(fis);
 	    if(as!=null) {
 		boolean doFile = false;
 		if(as.equals("file")) {
 		    doFile = true;
-		    String ext = IOUtil.getFileExtension(entry.getResource().getPath()).toLowerCase();
+		    String ext = IO.getFileExtension(entry.getResource().getPath()).toLowerCase();
 		    ext = ext.replace(".","");
 		    as = ext;
 		}
@@ -2992,7 +2992,7 @@ public class WikiManager extends RepositoryManager
 		    OutputStream fos = getStorageManager().getFileOutputStream(tmpFile);
 		    InputStream fis = IO.getInputStream(url);
 		    IOUtil.writeTo(fis, fos);
-		    IOUtil.close(fos);
+		    IO.close(fos);
 		}
 		jsonUrl = fileName;
 	    }

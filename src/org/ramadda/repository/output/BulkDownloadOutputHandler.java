@@ -17,13 +17,11 @@ import org.ramadda.repository.util.SelectInfo;
 
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
 import org.w3c.dom.Element;
 
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.Misc;
-import ucar.unidata.util.StringUtil;
 
 
 import java.util.ArrayList;
@@ -142,7 +140,7 @@ public class BulkDownloadOutputHandler extends OutputHandler {
                             makeLink(
                                 request, state.group, OUTPUT_CURL,
                                 "/"
-                                + IOUtil.stripExtension(
+                                + IO.stripExtension(
                                     state.group.getName()) + "_download.sh"));
                     }
                 } else {
@@ -176,7 +174,7 @@ public class BulkDownloadOutputHandler extends OutputHandler {
         request.setReturnFilename("download.sh");
 
         return outputGroup(request, outputType, null,
-                           (List<Entry>) Misc.newList(entry));
+                           (List<Entry>) Utils.makeList(entry));
     }
 
 
@@ -304,7 +302,7 @@ public class BulkDownloadOutputHandler extends OutputHandler {
             }
             //If this is a real entry (as opposed to the results of a search or selection) then check for entries like the virtual group
             if ( !group.isDummy()) {
-                if ( !Misc.equals(entry.getParentEntryId(), group.getId())) {
+                if ( !Utils.equals(entry.getParentEntryId(), group.getId())) {
                     continue;
                 }
             }
@@ -416,7 +414,7 @@ public class BulkDownloadOutputHandler extends OutputHandler {
                                   List<List<String>> outputPairs,
                                   boolean includeGroupOutputs, boolean wget)
             throws Exception {
-        String dirName = sanitize(IOUtil.cleanFileName(entry.getName()));
+        String dirName = sanitize(IO.cleanFileName(entry.getName()));
         if (dirName.length() == 0) {
             dirName = entry.getId();
         }

@@ -3,8 +3,9 @@ Copyright (c) 2008-2023 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
-package org.ramadda.repository.util;
+package org.ramadda.repository.util;    
 
+import org.ramadda.util.IO;
 
 import ucar.unidata.util.IOUtil;
 
@@ -58,7 +59,7 @@ public class FileWriter {
      */
     public void close() throws Exception {
         if (zos != null) {
-            IOUtil.close(zos);
+            IO.close(zos);
         }
     }
 
@@ -88,14 +89,14 @@ public class FileWriter {
                 IOUtil.writeTo(fis, zos);
                 zos.closeEntry();
             } finally {
-                IOUtil.close(fis);
+                IO.close(fis);
                 zos.closeEntry();
             }
         } else {
             FileOutputStream fos =
                 new FileOutputStream(IOUtil.joinDir(directory, name));
             IOUtil.writeTo(fis, fos);
-            IOUtil.close(fos);
+            IO.close(fos);
         }
     }
 

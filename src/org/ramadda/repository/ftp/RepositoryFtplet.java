@@ -12,6 +12,8 @@ import org.apache.ftpserver.listener.*;
 import org.apache.ftpserver.usermanager.*;
 import org.apache.ftpserver.usermanager.impl.*;
 
+import org.ramadda.util.IO;
+
 
 import org.ramadda.repository.Constants;
 import org.ramadda.repository.Entry;
@@ -619,7 +621,7 @@ public class RepositoryFtplet extends DefaultFtplet {
                 session, fos);
             System.err.println("done");
         } finally {
-            IOUtil.close(fos);
+            IO.close(fos);
         }
 
         newFile = getRepository().getStorageManager().moveToStorage(request,
@@ -825,7 +827,7 @@ public class RepositoryFtplet extends DefaultFtplet {
 
             session.getDataConnection().closeDataConnection();
         } finally {
-            IOUtil.close(inputStream);
+            IO.close(inputStream);
         }
 
         return FtpletResult.SKIP;

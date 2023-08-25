@@ -12,30 +12,17 @@ import org.ramadda.repository.metadata.JpegMetadataHandler;
 import org.ramadda.repository.metadata.Metadata;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
-
 import org.ramadda.util.geo.KmlUtil;
-
-
-import org.w3c.dom.*;
-
-
 
 import ucar.unidata.geoloc.Bearing;
 import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.Misc;
-import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
-
+import org.w3c.dom.*;
 import java.awt.Color;
-
-
 import java.io.*;
-
-import java.io.File;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -107,7 +94,7 @@ public class KmlOutputHandler extends OutputHandler {
             links.add(
                 makeLink(
                     request, state.getEntry(), OUTPUT_KML,
-                    "/" + IOUtil.stripExtension(state.getEntry().getName())
+                    "/" + IO.stripExtension(state.getEntry().getName())
                     + ".kml"));
         }
     }
@@ -454,8 +441,8 @@ public class KmlOutputHandler extends OutputHandler {
     public static boolean isKml(Entry entry) {
         String resource = entry.getResource().getPath();
         if ((resource != null)
-                && (IOUtil.hasSuffix(resource, "kml")
-                    || IOUtil.hasSuffix(resource, "kmz"))) {
+                && (IO.hasSuffix(resource, "kml")
+                    || IO.hasSuffix(resource, "kmz"))) {
             return true;
         }
 

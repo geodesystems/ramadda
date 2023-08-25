@@ -16,6 +16,7 @@ import org.apache.commons.io.IOUtils;
 import org.ramadda.repository.*;
 
 import org.ramadda.util.Utils;
+import org.ramadda.util.IO;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -378,14 +379,14 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                             //IOUtil.writeTo(repositoryResult.getInputStream(),
                             //                               output);
                         } finally {
-                            IOUtil.close(output);
+                            IO.close(output);
                         }
                     } catch (IOException e) {
                         //We'll ignore any ioexception
                     } catch (Exception e) {
                         logException(e, request);
                     } finally {
-                        IOUtil.close(repositoryResult.getInputStream());
+                        IO.close(repositoryResult.getInputStream());
                     }
                 } else {
                     try {
@@ -405,7 +406,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                         } catch (IOException se) {
                             //ignore
                         } finally {
-                            IOUtil.close(output);
+                            IO.close(output);
                         }
                     } catch (Exception e) {
                         logException(e, request);
@@ -419,7 +420,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
         } finally {
             if ((repositoryResult != null)
                     && (repositoryResult.getInputStream() != null)) {
-                IOUtil.close(repositoryResult.getInputStream());
+                IO.close(repositoryResult.getInputStream());
             }
         }
 
@@ -636,7 +637,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                 try {
                     IOUtil.writeTo(inputStream, outputStream);
                 } finally {
-                    IOUtil.close(outputStream);
+                    IO.close(outputStream);
                 }
                 //                item.write(uploadedFile);
             } catch (Exception e) {

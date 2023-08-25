@@ -1214,7 +1214,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //        System.out.println ("RAMADDA:  loading " + path+" " +  tmp.get("ramadda.wiki.macros"));
         //        props.load(inputStream);
         props.putAll(tmp);
-        IOUtil.close(inputStream);
+        IO.close(inputStream);
     }
 
     /**
@@ -1616,7 +1616,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (dumpFile != null) {
             FileOutputStream fos = new FileOutputStream(dumpFile);
             getDatabaseManager().makeDatabaseCopy(fos, true, null);
-            IOUtil.close(fos);
+            IO.close(fos);
         }
 
         HU.setBlockHideShowImage(getIconUrl(ICON_MINUS),
@@ -3583,9 +3583,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
             InputStream fis = getStorageManager().getFileInputStream(f);
             IOUtil.writeTo(fis, zos);
             zos.closeEntry();
-            IOUtil.close(fis);
+            IO.close(fis);
         }
-        IOUtil.close(zos);
+        IO.close(zos);
 
         return result;
     }
@@ -4372,7 +4372,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                              InputStream inputStream, String mimeType,
                              boolean cacheOk, boolean gzipIt)
 	throws Exception {
-        String tail = IOUtil.getFileTail(path);
+        String tail = IO.getFileTail(path);
         //        boolean acceptGzip = request.canAcceptGzip();
         //        acceptGzip =  false;
         //        if(acceptGzip) {
@@ -4444,8 +4444,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
-        String mimeType =
-            getMimeTypeFromSuffix(IOUtil.getFileExtension(path));
+        String mimeType =  getMimeTypeFromSuffix(path);
         if (path.endsWith("asm.data")) {
             mimeType = "application/octet-stream";
         }
@@ -4902,7 +4901,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	if(Utils.stringDefined(path)) {
 	    if(!scriptPaths.contains(path)) {
 		scriptPaths.add(path);
-		getLogManager().logInfoAndPrint("RAMADDA: adding script path: " + name+"="+path);
+		getLogManager().logInfo("RAMADDA: adding script path: " + name+"="+path);
 	    }
 	}
 	return path;
@@ -6405,15 +6404,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    final PipedInputStream      in   = new PipedInputStream();
 	    final PipedOutputStream     out  = new PipedOutputStream(in);
 	    Result theResult = new Result(in,"image/png");
-	    request.setReturnFilename(IOUtil.stripExtension(IO.getFileTail(file))+".png");
+	    request.setReturnFilename(IO.stripExtension(IO.getFileTail(file))+".png");
 	    Misc.run(new Runnable() {
 		    public void run()  {
 			try {
 			    ImageIO.write(tif, "png", out);
 			    out.close();
 			} catch(Exception exc) {
-			    IOUtil.close(in);
-			    IOUtil.close(out);
+			    IO.close(in);
+			    IO.close(out);
 			    System.err.println("Error:" + exc);
 			    exc.printStackTrace();
 			}
@@ -6497,7 +6496,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (request.get("xmltojson", false)) {
             String contents = IOUtil.readInputStream(is);
             contents = contents.trim();
-            IOUtil.close(is);
+            IO.close(is);
             contents = JsonUtil.xmlToJson(XmlUtil.getRoot(contents));
             //            System.out.println(contents);
 
@@ -6509,7 +6508,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (request.get("trim", false)) {
             String contents = IOUtil.readInputStream(is);
             contents = contents.trim();
-            IOUtil.close(is);
+            IO.close(is);
 
             return new Result(new ByteArrayInputStream(contents.getBytes()),
                               "application/json");
@@ -7414,7 +7413,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public String getMimeType(Request request, Entry entry) {
 	String mimetype = entry.getTypeHandler().getTypeProperty("mimetype",null);
 	if(mimetype!=null) return mimetype;
-	return getMimeTypeFromSuffix(IOUtil.getFileExtension(entry.getResource().getPath()));
+	return getMimeTypeFromSuffix(entry.getResource().getPath());
     }
 
     /**
@@ -7424,8 +7423,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public String getMimeTypeFromSuffix(String suffix) {
+    public String getMimeTypeFromSuffix(String path) {
+	String suffix = IO.getFileExtension(path);
+	//A hack because of the mime type properties
+	if(!suffix.startsWith(".")) suffix = "." + suffix;
         String type = (String) mimeTypes.get(suffix);
+	System.err.println("suffix: " + suffix +" type:" + type);
+
         if (type == null) {
             if (suffix.startsWith(".")) {
                 suffix = suffix.substring(1);

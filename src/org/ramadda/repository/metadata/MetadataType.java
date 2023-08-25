@@ -9,7 +9,7 @@ package org.ramadda.repository.metadata;
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.FormInfo;
-import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.sql.SqlUtil;
 
@@ -972,12 +972,11 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         if (f == null) {
             return new Result("", "File does not exist");
         }
-        String mimeType = handler.getRepository().getMimeTypeFromSuffix(
-                              IOUtil.getFileExtension(f.toString()));
+        String mimeType = handler.getRepository().getMimeTypeFromSuffix(f.toString());
 
         if (false && request.get(ARG_THUMBNAIL, false)) {
             File thumb = getStorageManager().getTmpFile(request,
-                             IOUtil.getFileTail(f.toString()));
+                             IO.getFileTail(f.toString()));
             if ( !thumb.exists()) {
                 try {
                     Image image = Utils.readImage(f.toString());

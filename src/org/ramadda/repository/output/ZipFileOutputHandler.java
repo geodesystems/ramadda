@@ -9,7 +9,7 @@ package org.ramadda.repository.output;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.util.HtmlUtils;
-
+import org.ramadda.util.IO;
 import org.ramadda.util.sql.SqlUtil;
 
 
@@ -196,8 +196,8 @@ public class ZipFileOutputHandler extends OutputHandler {
             root.walk(getRepository(), entry, sb, 0);
         } finally {
             zipFile.close();
-            //            IOUtil.close(zin);
-            //            IOUtil.close(fis);
+            //            IO.close(zin);
+            //            IO.close(fis);
         }
     }
 
@@ -266,14 +266,14 @@ public class ZipFileOutputHandler extends OutputHandler {
             if (name.endsWith("/")) {
                 name = name.substring(0, name.length() - 1);
             }
-            name = IOUtil.getFileTail(name);
+            name = IO.getFileTail(name);
             if ( !isDir) {
                 String url = repository.URL_ENTRY_SHOW + "/" + name;
                 url = HtmlUtils.url(url, ARG_ENTRYID, entry.getId(),
                                     ARG_FILE, path, ARG_OUTPUT,
                                     OUTPUT_LIST.getId());
                 sb.append("<div>");
-                String suffix = IOUtil.getFileExtension(name).toLowerCase();
+                String suffix = IO.getFileExtension(name).toLowerCase();
 
                 String icon   = repository.getProperty("file.icon" + suffix);
                 sb.append(repository.getIconImage((icon != null)
@@ -325,14 +325,14 @@ public class ZipFileOutputHandler extends OutputHandler {
                 HttpServletResponse response =
                     request.getHttpServletResponse();
                 String type = getRepository().getMimeTypeFromSuffix(
-                                  IOUtil.getFileExtension(path));
+                                  IO.getFileExtension(path));
                 response.setContentType(type);
                 OutputStream output = response.getOutputStream();
                 try {
                     IOUtil.writeTo(zin, output);
                 } finally {
-                    IOUtil.close(output);
-                    IOUtil.close(zin);
+                    IO.close(output);
+                    IO.close(zin);
                 }
 
                 return Result.makeNoOpResult();

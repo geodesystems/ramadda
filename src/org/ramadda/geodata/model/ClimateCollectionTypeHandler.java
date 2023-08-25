@@ -549,11 +549,9 @@ JQ.button(
                              files.get(0));
 
         //And return the result
-        String extension = IOUtil.getFileExtension(imageFile.toString());
-
-        return new Result("",
+	return new Result("",
                           getStorageManager().getFileInputStream(imageFile),
-                          getRepository().getMimeTypeFromSuffix(extension));
+                          getRepository().getMimeTypeFromSuffix(imageFile.toString()));
     }
 
 

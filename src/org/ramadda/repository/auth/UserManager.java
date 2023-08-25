@@ -15,6 +15,7 @@ import org.ramadda.util.FormInfo;
 
 import org.ramadda.util.HtmlTemplate;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.util.TTLCache;
@@ -1302,7 +1303,7 @@ public class UserManager extends RepositoryManager {
 		//Get rid of the old one
 		File f= getUserAvatarFile(user);
 		if(f!=null) f.delete();
-		String ext = IOUtil.getFileExtension(avatar);
+		String ext = IO.getFileExtension(avatar);
 		File userDir = getStorageManager().getUserDir(user.getId(),true);
 		File upload = new File(avatar);
 		File dest = new File(IOUtil.joinDir(userDir, "avatar" + ext));
@@ -2363,7 +2364,7 @@ public class UserManager extends RepositoryManager {
 	    inputStream = Utils.getInputStream(file,getClass());
 	}
         String mimeType = getRepository().getMimeTypeFromSuffix(
-								IOUtil.getFileExtension(file));
+								IO.getFileExtension(file));
         Result      result      = new Result(inputStream, mimeType);
         result.setCacheOk(false);
         return result;

@@ -10,7 +10,8 @@ import org.apache.commons.net.ftp.*;
 
 import org.ramadda.repository.*;
 
-import org.ramadda.util.HtmlUtils;
+
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
 
@@ -422,11 +423,11 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
                                     ftpClient.retrieveFileStream(path + "/"
                                         + files[i].getName());
                                 if (fis != null) {
-                                    String desc = HtmlUtils.entityEncode(
+                                    String desc = HU.entityEncode(
                                                       IOUtil.readInputStream(
                                                           fis));
                                     parentEntry.setDescription(
-                                        HtmlUtils.pre(desc));
+                                        HU.pre(desc));
                                     fis.close();
                                     ftpClient.completePendingCommand();
                                 }
@@ -744,7 +745,7 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
                          ? (Entry) new Entry(synthId, handler, true)
                          : new Entry(synthId, handler));
 
-        String  name  = IOUtil.getFileTail(ftpFile.getName());
+        String  name  = IO.getFileTail(ftpFile.getName());
         entry.setIsLocalFile(true);
         Entry parent;
         if (myFtpFile.path.equals(baseDir)) {

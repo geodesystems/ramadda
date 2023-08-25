@@ -10,6 +10,7 @@ import org.ramadda.util.FileInfo;
 import org.ramadda.util.FileWrapper;
 import org.ramadda.util.Utils;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -137,7 +138,7 @@ public class HarvesterFile extends FileInfo {
             Properties      properties = new Properties();
             FileInputStream fis        = new FileInputStream(propFile);
             properties.load(fis);
-            IOUtil.close(fis);
+            IO.close(fis);
             String ok = (String) properties.get("harvester.ok");
             if ((ok != null) && ok.trim().equals("false")) {
                 harvester.logHarvesterInfo("Skipping directory:" + dir);

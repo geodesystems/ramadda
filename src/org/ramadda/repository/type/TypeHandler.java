@@ -2598,7 +2598,7 @@ public class TypeHandler extends RepositoryManager {
      * @return _more_
      */
     public String getDefaultEntryName(String path) {
-        return IOUtil.getFileTail(path);
+        return IO.getFileTail(path);
     }
 
     /**
@@ -2967,7 +2967,7 @@ public class TypeHandler extends RepositoryManager {
                 new Link(
                     HtmlUtils.url(
                         getRepository().URL_ENTRY_EXPORT.toString() + "/"
-                        + IOUtil.stripExtension(
+                        + IO.stripExtension(
                             Entry.encodeName(
                                 getEntryName(
                                     entry))) + ".zip", new String[] {
@@ -5817,7 +5817,7 @@ public class TypeHandler extends RepositoryManager {
     public String getIconUrlFromPath(String path) throws Exception {
         String img = ICON_FILE;
         if (path != null) {
-            String suffix = IOUtil.getFileExtension(path.toLowerCase());
+            String suffix = IO.getFileExtension(path.toLowerCase());
             String prop   = getRepository().getProperty("file.icon" + suffix);
             if (prop != null) {
                 img = prop;
@@ -5838,7 +5838,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public String getLabelFromPath(String path) throws Exception {
         if (path != null) {
-            String suffix = IOUtil.getFileExtension(path.toLowerCase());
+            String suffix = IO.getFileExtension(path.toLowerCase());
             String label  = getRepository().getProperty("file.label"
                                 + suffix);
             if (label != null) {
@@ -5860,7 +5860,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public String getUrlFromPath(String path) throws Exception {
         if (path != null) {
-            String suffix = IOUtil.getFileExtension(path.toLowerCase());
+            String suffix = IO.getFileExtension(path.toLowerCase());
             String url    = getRepository().getProperty("file.url" + suffix);
             if (url != null) {
                 return url;

@@ -22,11 +22,11 @@ import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.CategoryList;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
 
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
@@ -360,7 +360,7 @@ public class ExtEditor extends RepositoryManager {
 		boolean selected =
 		    isSelected.contains(child.getId());
 
-		String alias = Utils.makeID(IOUtil.stripExtension(child.getName()));
+		String alias = Utils.makeID(IO.stripExtension(child.getName()));
 		alias = Utils.makeID(template.replace("${name}",alias)).toLowerCase();
 		boolean checked  = defaultChecked || selected;
 		if(metadataList!=null && metadataList.size()>0) {
@@ -677,7 +677,7 @@ public class ExtEditor extends RepositoryManager {
                             append(getPageHandler().getBreadCrumbs(request,
                                     child, entry));
 
-			    String resource = IOUtil.getFileTail(child.getResource().getPath());
+			    String resource = IO.getFileTail(child.getResource().getPath());
 			    String name = getStorageManager().getOriginalFilename(resource);
 			    append(HU.td(HU.div(name,HU.style("margin-left:10px;margin-right:10px;"))));
                             append("</td><td align=right>");

@@ -13,6 +13,8 @@ import org.ramadda.repository.type.*;
 
 import org.ramadda.util.AtomUtil;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
+
 import org.ramadda.util.Utils;
 
 import org.ramadda.util.sql.SqlUtil;
@@ -21,7 +23,6 @@ import org.ramadda.util.sql.SqlUtil;
 import org.w3c.dom.*;
 
 
-import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
@@ -100,7 +101,7 @@ public class AtomOutputHandler extends OutputHandler {
             links.add(
                 makeLink(
                     request, state.getEntry(), OUTPUT_ATOM,
-                    "/" + IOUtil.stripExtension(state.getEntry().getName())
+                    "/" + IO.stripExtension(state.getEntry().getName())
                     + ".xml"));
         }
     }
@@ -190,7 +191,7 @@ public class AtomOutputHandler extends OutputHandler {
                                       HtmlUtils.url(
                                           getRepository().URL_ENTRY_GET
                                           + entry.getId()
-                                          + IOUtil.getFileExtension(
+                                          + IO.getFileExtension(
                                               resource), ARG_ENTRYID,
                                                   entry.getId()));
                 links.add(new AtomUtil.Link(AtomUtil.REL_IMAGE, imageUrl,

@@ -13,7 +13,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
-import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
 import org.ramadda.util.sql.Clause;
@@ -651,13 +651,13 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         StringBuffer         openConnections = new StringBuffer();
         List<ConnectionInfo> infos           = getConnectionInfos();
         for (ConnectionInfo info : infos) {
-            openConnections.append(HtmlUtils.makeShowHideBlock("Open for:"
+            openConnections.append(HU.makeShowHideBlock("Open for:"
                     + ((time - info.time) / 1000)
-                    + " seconds", HtmlUtils.pre(info.msg + "\nStack:"
+                    + " seconds", HU.pre(info.msg + "\nStack:"
                         + info.where), false));
         }
         if (infos.size() > 0) {
-            poolSB.append(HtmlUtils.br());
+            poolSB.append(HU.br());
             poolSB.append(msgLabel("Open connections"));
             poolSB.append(openConnections);
         }
@@ -666,7 +666,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         StringBuffer msgb = new StringBuffer();
         synchronized (scourMessages) {
             if (totalScours > 0) {
-                msgb.append("Total scours:" + totalScours + HtmlUtils.p());
+                msgb.append("Total scours:" + totalScours + HU.p());
             }
             for (String msg : scourMessages) {
                 msgb.append("<pre>" + msg + "</pre>");
@@ -674,8 +674,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             }
             if (scourMessages.size() > 0) {
                 poolSB.append(
-                    HtmlUtils.insetLeft(
-                        HtmlUtils.makeShowHideBlock(
+                    HU.insetLeft(
+                        HU.makeShowHideBlock(
                             msg("Scoured Connections"), msgb.toString(),
                             false), 20));
             }
@@ -683,30 +683,30 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
 
         dbSB.append(
-            HtmlUtils.insetLeft(
-                HtmlUtils.makeShowHideBlock(
+            HU.insetLeft(
+                HU.makeShowHideBlock(
                     msg("Connection Pool"), poolSB.toString(), false), 20));
 
         /**
          * Don't show the entry break down as it can be kind of slow
-         * dbSB.append(HtmlUtils.br());
+         * dbSB.append(HU.br());
          * dbSB.append("<table>\n");
          * String[] names = { msg("Users"), msg("Associations"),
          *                  msg("Metadata Items") };
          * String[] tables = { Tables.USERS.NAME, Tables.ASSOCIATIONS.NAME,
          *                   Tables.METADATA.NAME };
          * for (int i = 0; i < tables.length; i++) {
-         *   dbSB.append(HtmlUtils.row(HtmlUtils.cols(""
+         *   dbSB.append(HU.row(HU.cols(""
          *           + getDatabaseManager().getCount(tables[i].toLowerCase(),
          *               new Clause()), names[i])));
          * }
          *
          *
          * dbSB.append(
-         *   HtmlUtils.row(
-         *       HtmlUtils.colspan(HtmlUtils.bold(msgLabel("Types")), 2)));
+         *   HU.row(
+         *       HU.colspan(HU.bold(msgLabel("Types")), 2)));
          * int total = 0;
-         * dbSB.append(HtmlUtils.row(HtmlUtils.cols(""
+         * dbSB.append(HU.row(HU.cols(""
          *       + getDatabaseManager().getCount(Tables.ENTRIES.NAME,
          *           new Clause()), msg("Total entries"))));
          * for (TypeHandler typeHandler : getRepository().getTypeHandlers()) {
@@ -718,12 +718,12 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
          *                                typeHandler.getType()));
          *
          *   String url =
-         *       HtmlUtils.href(
+         *       HU.href(
          *           request.makeUrl(
          *               getRepository().getSearchManager().URL_SEARCH_FORM,
          *               ARG_TYPE,
          *               typeHandler.getType()), typeHandler.getLabel());
-         *   dbSB.append(HtmlUtils.row(HtmlUtils.cols("" + cnt, url)));
+         *   dbSB.append(HU.row(HU.cols("" + cnt, url)));
          * }
          *
          *
@@ -1178,8 +1178,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      * @param sb _more_
      */
     public void addInfo(StringBuffer sb) {
-        sb.append(HtmlUtils.formEntry("Database:", db));
-        sb.append(HtmlUtils.formEntry("JDBC URL:", connectionURL));
+        sb.append(HU.formEntry("Database:", db));
+        sb.append(HU.formEntry("JDBC URL:", connectionURL));
     }
 
 
@@ -1278,7 +1278,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                             if (ts == null) {
                                 value.append("null");
                             } else {
-                                value.append(HtmlUtils.squote(ts.toString()));
+                                value.append(HU.squote(ts.toString()));
                             }
 
                         } else if (type == java.sql.Types.VARCHAR) {
@@ -1590,7 +1590,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                 }
             }
         } finally {
-            IOUtil.close(dis);
+            IO.close(dis);
             closeConnection(connection);
         }
 
@@ -1841,7 +1841,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         }
         //Write the end tag
         dos.writeInt(DUMPTAG_END);
-        IOUtil.close(dos);
+        IO.close(dos);
 
     }
 
@@ -3015,7 +3015,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             sb.append("<tr valign=top>");
             for (int col = 1; col <= rsmd.getColumnCount(); col++) {
                 Object obj = results.getObject(col);
-                sb.append(HtmlUtils.td((obj != null)
+                sb.append(HU.td((obj != null)
                                        ? obj.toString()
                                        : "null"));
             }

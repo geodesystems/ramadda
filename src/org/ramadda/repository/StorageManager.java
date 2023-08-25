@@ -1201,7 +1201,7 @@ public class StorageManager extends RepositoryManager implements PointFile
 
             FileInputStream fis = new FileInputStream(f);
             String          xml = IOUtil.readContents(fis);
-            IOUtil.close(fis);
+            IO.close(fis);
 
             return Repository.decodeObject(xml);
         }
@@ -1644,7 +1644,7 @@ public class StorageManager extends RepositoryManager implements PointFile
                 DatatypeConverter.parseBase64Binary(fileContents);
             BufferedImage bufferedImage =
                 ImageIO.read(new ByteArrayInputStream(imagedata));
-            String suffix = IOUtil.getFileExtension(fileName).toLowerCase();
+            String suffix = IO.getFileExtension(fileName).toLowerCase();
             if (suffix.startsWith(".")) {
                 suffix = suffix.substring(1);
             }
@@ -1705,8 +1705,8 @@ public class StorageManager extends RepositoryManager implements PointFile
         OutputStream outputStream =
             getStorageManager().getFileOutputStream(f);
         IOUtil.writeTo(inputStream, outputStream);
-        IOUtil.close(inputStream);
-        IOUtil.close(outputStream);
+        IO.close(inputStream);
+        IO.close(outputStream);
         f = getStorageManager().moveToStorage(request, f);
 
         return f;
@@ -1900,13 +1900,13 @@ public class StorageManager extends RepositoryManager implements PointFile
             InputStream fromStream = getInputStream(filename);
 
             newFile = new File(IOUtil.joinDir(getEntryDir(newEntry.getId(),
-                    true), IOUtil.getFileTail(url.getPath())));
+                    true), IO.getFileTail(url.getPath())));
 
 
             OutputStream toStream = getFileOutputStream(newFile);
             IOUtil.writeTo(fromStream, toStream);
-            IOUtil.close(fromStream);
-            IOUtil.close(toStream);
+            IO.close(fromStream);
+            IO.close(toStream);
 
             return newFile.getName();
         }
@@ -1936,10 +1936,10 @@ public class StorageManager extends RepositoryManager implements PointFile
         //        InputStream   fromStream = connection.getInputStream();
         InputStream  fromStream = IO.doMakeInputStream(path, true);
 
-        File         tmpFile    = getTmpFile(null, IOUtil.getFileTail(path));
+        File         tmpFile    = getTmpFile(null, IO.getFileTail(path));
         OutputStream toStream   = getFileOutputStream(tmpFile);
         IOUtil.writeTo(fromStream, toStream);
-        IOUtil.close(fromStream);
+        IO.close(fromStream);
 
         return tmpFile;
     }
@@ -2128,7 +2128,7 @@ public class StorageManager extends RepositoryManager implements PointFile
 
         File newFile = new File(IOUtil.joinDir(storageDir, targetName));
         IOUtil.copyFile(original, newFile);
-        IOUtil.close(original);
+        IO.close(original);
 
         return newFile;
     }
@@ -2168,7 +2168,7 @@ public class StorageManager extends RepositoryManager implements PointFile
     public String getFileTail(Entry entry) {
         String tail;
         if (entry.getIsLocalFile()) {
-            tail = IOUtil.getFileTail(entry.getResource().getPath());
+            tail = IO.getFileTail(entry.getResource().getPath());
         } else {
             tail = getFileTail(entry.getResource().getPath());
         }
@@ -2388,8 +2388,8 @@ public class StorageManager extends RepositoryManager implements PointFile
     public File getEntryFile(Entry entry) throws Exception {
         if (entry.getResource().isS3()) {
             String        bucket = entry.getResource().getPath();
-            String        ext = IOUtil.getFileExtension(bucket).toLowerCase();
-            String tail       = IOUtil.getFileTail(bucket);
+            String        ext = IO.getFileExtension(bucket).toLowerCase();
+            String tail       = IO.getFileTail(bucket);
             String fileName   = Utils.makeMD5(bucket) + "_"+tail;
 	    String[]     pair  = S3File.getBucketAndPrefix(bucket);
             File   cachedFile = getLongTermCacheFile("s3cache", pair[0]+"/"+fileName);
@@ -2544,6 +2544,22 @@ public class StorageManager extends RepositoryManager implements PointFile
     }
 
 
+    public void checkUrl(Request request, String url) throws Exception {
+	System.err.println("checkUrl:" + url);
+
+	String  _url = url.toLowerCase();
+        if ( !_url.startsWith("http:")
+	     && !_url.startsWith("https:")
+	     && !_url.startsWith("ftp:")) {
+            fatalError(request, "Cannot download url:" + url);
+        }
+
+
+
+	checkPath(url);
+    }
+
+
     /**
      * check the path
      *
@@ -2556,14 +2572,12 @@ public class StorageManager extends RepositoryManager implements PointFile
         File f = new File(path);
         if (f.exists()) {
             checkReadFile(f);
-
             return;
         }
 
         if (path.toLowerCase().trim().startsWith("file:")) {
             f = new File(path.substring("file:".length()));
             checkReadFile(f);
-
             return;
         }
 
@@ -2603,7 +2617,7 @@ public class StorageManager extends RepositoryManager implements PointFile
             //Handle the windows file move problem
             if (to.isDirectory()) {
                 to = new File(
-                    IOUtil.joinDir(to, IOUtil.getFileTail(from.toString())));
+                    IOUtil.joinDir(to, IO.getFileTail(from.toString())));
             }
             IOUtil.copyFile(from, to);
             if ( !from.delete()) {
@@ -2696,7 +2710,7 @@ public class StorageManager extends RepositoryManager implements PointFile
             try {
                 return IOUtil.readInputStream(stream);
             } finally {
-                IOUtil.close(stream);
+                IO.close(stream);
             }
         } catch (Exception exc) {
             Repository parent = getRepository().getParentRepository();
@@ -2709,6 +2723,14 @@ public class StorageManager extends RepositoryManager implements PointFile
 
             throw exc;
         }
+    }
+
+
+    public InputStream getInputStreamFromUrl(Request request, String url) throws Exception {
+	checkUrl(request,url);
+	URL           fromUrl    = new URL(url);
+	URLConnection connection = fromUrl.openConnection();
+	return connection.getInputStream();
     }
 
 
@@ -2883,8 +2905,8 @@ public class StorageManager extends RepositoryManager implements PointFile
     public static void doCopy(InputStream is, OutputStream os)
             throws Exception {
         IOUtil.writeTo(is, os);
-        IOUtil.close(is);
-        IOUtil.close(os);
+        IO.close(is);
+        IO.close(os);
     }
 
 
@@ -2911,7 +2933,7 @@ public class StorageManager extends RepositoryManager implements PointFile
                     continue;
                 }
                 String path = ze.getName();
-                String name = IOUtil.getFileTail(path);
+                String name = IO.getFileTail(path);
                 if (name.equals("MANIFEST.MF")) {
                     continue;
                 }
@@ -2921,12 +2943,12 @@ public class StorageManager extends RepositoryManager implements PointFile
                 try {
                     IOUtil.writeTo(zin, fos);
                 } finally {
-                    IOUtil.close(fos);
+                    IO.close(fos);
                 }
             }
         } finally {
-            IOUtil.close(fis);
-            IOUtil.close(zin);
+            IO.close(fis);
+            IO.close(zin);
         }
 
         return files;
@@ -2946,15 +2968,15 @@ public class StorageManager extends RepositoryManager implements PointFile
         if (Utils.isCompressed(f.toString())) {
             File uncompressedFile =
                 getTmpFile(request,
-                           getFileTail(IOUtil.stripExtension(f.toString())));
+                           getFileTail(IO.stripExtension(f.toString())));
             InputStream is = Utils.doMakeInputStream(f.toString(), true);
             if (IOUtil.writeTo(is, new FileOutputStream(uncompressedFile))
                     == 0) {
-                IOUtil.close(is);
+                IO.close(is);
 
                 return null;
             }
-            IOUtil.close(is);
+            IO.close(is);
             f = uncompressedFile;
         }
 

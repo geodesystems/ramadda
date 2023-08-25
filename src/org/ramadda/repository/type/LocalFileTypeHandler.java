@@ -560,7 +560,7 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
                 if (doPath) {
                     name = targetFile.toString();
                 } else {
-                    name = IOUtil.getFileTail(targetFile.toString());
+                    name = IO.getFileTail(targetFile.toString());
                 }
             }
             String[] tuple = Utils.split(pair, ":", 2);
@@ -570,7 +570,7 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
             name = name.replaceAll(".*" + tuple[0] + ".*", tuple[1]);
         }
         if (name == null) {
-            name = IOUtil.getFileTail(targetFile.toString());
+            name = IO.getFileTail(targetFile.toString());
         }
         entry.setIsLocalFile(true);
         Entry parent;

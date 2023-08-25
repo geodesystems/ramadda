@@ -15,6 +15,7 @@ import org.ramadda.repository.database.*;
 import org.ramadda.repository.util.FileWriter;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.JsonUtil;
 
@@ -598,8 +599,8 @@ public class MetadataManager extends RepositoryManager {
                         ContentMetadataHandler.TYPE_THUMBNAIL, false,
                         f.getName(), null, null, null, null));
             } finally {
-                IOUtil.close(fos);
-                IOUtil.close(is);
+                IO.close(fos);
+                IO.close(is);
             }
         } catch (Exception exc) {
 	    getLogManager().logError("Error fetching thumbnail",exc);
@@ -2060,7 +2061,7 @@ public class MetadataManager extends RepositoryManager {
                                          request.getString(ARG_METADATA_ID,
                                              ""));
         if (metadata == null) {
-            String attachment = IOUtil.getFileTail(request.getRequestPath());
+            String attachment = IO.getFileTail(request.getRequestPath());
             for (Metadata md : metadataList) {
                 metadata = md;
                 MetadataType metadataType =
