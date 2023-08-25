@@ -260,8 +260,7 @@ public class AuthManager extends RepositoryManager {
             String sessionId = request.getSessionId();
             if (sessionId != null) {
                 String authToken = getAuthToken(sessionId,extra);
-		System.err.println("AUTHTOKEN:" + authToken);
-		//		System.err.println(Utils.getStack(10));
+		//		System.err.println("AUTHTOKEN:" + authToken);
                 sb.append(HU.hidden(ARG_AUTHTOKEN, authToken));
             }
         } catch (java.io.IOException ioe) {
@@ -296,8 +295,7 @@ public class AuthManager extends RepositoryManager {
         String  authToken    = request.getString(ARG_AUTHTOKEN, (String) null);
         String  mySessionId  = request.getSessionId();
         String  argSessionId = request.getString(ARG_SESSIONID, (String) null);
-	debug=true;
-	//	System.err.println("ensure auth token:" + urlPath);
+	//	debug=true;
         if (mySessionId == null) {
             mySessionId = argSessionId;
         }
