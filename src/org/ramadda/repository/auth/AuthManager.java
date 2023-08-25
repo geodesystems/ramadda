@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Random;
 
 
+import java.awt.geom.AffineTransform;
 import java.awt.image.*;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -60,43 +61,69 @@ public class AuthManager extends RepositoryManager {
         super(repository);
 	initCaptchas();
     }
+    private static final int IMAGE_WIDTH = 100;
+    private static final int IMAGE_HEIGHT =50;
+    private static final int TEXTSIZE=18;
 
 
+
+    private void drawWord(Graphics2D g, Font font, String word,double jiggleY) {
+	int x = 5;
+	int y = IMAGE_HEIGHT / 2 + TEXTSIZE / 2;
+	char[] chars = word.toCharArray();
+	for (int j = 0; j < chars.length; j++) {
+	    char ch = chars[j];
+	    int _x =  x + font.getSize() * j;
+	    //	    int _y =y+ (int) Math.pow(-1, j) * (TEXTSIZE / 6);
+	    double dy = (Math.random()-0.5)*(IMAGE_HEIGHT*jiggleY);
+	    int _y =y+ (int)dy;
+	    String text = String.valueOf(ch);
+	    //-0.5 - 0.5
+	    double angle = (Math.random()-0.5)*45;
+	    g.translate((float)_x,(float)_y);
+	    g.rotate(Math.toRadians(angle));
+	    g.drawString(text,0,0);
+	    g.rotate(-Math.toRadians(angle));
+	    g.translate(-(float)_x,-(float)_y);
+	}
+    }
+    
+	
     private void initCaptchas() {
 	try {
 	    captchas  =new ArrayList<Captcha>();
-	    String alpha = "abcdefghijklmnopqrstuvwxyz";
-	    //	    List<String> words = Utils.split(getStorageManager().readUncheckedSystemResource("/org/ramadda/repository/resources/sgb-words.txt"),"\n",true,true);
+	    String alpha = "abcdefghjkmnopqrstuvwxyz";
 	    Random random = new Random();
 	    for(int i=0;i<1000;i++) {
 		String word = "";
+		String bgword = "";
 		for(int j=0;j<5;j++ ) {
-		    int index = random.nextInt(alpha.length());
-		    word+=alpha.charAt(index);
+		    word+=alpha.charAt(random.nextInt(alpha.length()));
+		    bgword+=alpha.charAt(random.nextInt(alpha.length()));
 		}
-		//		int index = random.nextInt(words.size());
-		//		String word = words.get(index);
-		//		words.remove(index);
-		int width = 85;
-		int height =25;
-		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-		Graphics2D g2d = image.createGraphics();
-		g2d.setColor(new Color(220,220,220));
-
-		g2d.fillRect(0, 0, width, height);
-		Font font = new Font("Arial", Font.BOLD, 18);
-		g2d.setFont(font);
-		g2d.setColor(Color.BLACK);
-		g2d.drawString(word, 10, height-5);
-		g2d.dispose();
+		BufferedImage image = new BufferedImage(IMAGE_WIDTH, IMAGE_HEIGHT, BufferedImage.TYPE_INT_RGB);
+		Graphics2D g = image.createGraphics();
+		//		g.setColor(new Color(220,220,220));
+		g.setColor(new Color(240,240,240));
+		g.fillRect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
+		g.setColor(Color.BLACK);
+		g.drawRect(0, 0, IMAGE_WIDTH-1, IMAGE_HEIGHT-1);
+		//		Font font = new Font("Arial", Font.BOLD, 18);
+		Font font = new Font("Verdana", Font.BOLD, TEXTSIZE);
+		g.setFont(font);
+		g.setColor(Color.LIGHT_GRAY);
+		drawWord(g,font,bgword,0.6);
+		g.setColor(Color.BLACK);
+		drawWord(g,font,word,0.5);
+		g.dispose();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ImageIO.write(image, "png", baos);
 		byte[] imageBytes = baos.toByteArray();
 		String base64Image = Base64.getEncoder().encodeToString(imageBytes);
 		String dataUrl = "data:image/png;base64," + base64Image;
 		captchas.add(new Captcha(this,captchas.size(),word,dataUrl));
-		//		System.out.println(HU.image(dataUrl));
-		//		System.out.println(HU.div(v1+" " + v2,""));
+		System.out.println(HU.image(dataUrl));
+		System.out.println(HU.div(word));
 	    }
 	} catch(Exception exc) {
 	    System.err.println("error making captchas");
@@ -136,7 +163,7 @@ public class AuthManager extends RepositoryManager {
 	    authManager.addAuthToken(request, sb,getAuthTokenExtra());
 	    sb.append(HU.hidden(ARG_CAPTCHA_INDEX,""+index));
 	    HU.div(sb,"To verify this action please type in the word<br>"+
-		       HU.image(image)+
+		   HU.image(image)+
 		       HU.space(1) +
 		       HU.input(ARG_CAPTCHA_RESPONSE,"",
 				HU.attrs("onkeydown","return Utils.preventSubmit(event)",
