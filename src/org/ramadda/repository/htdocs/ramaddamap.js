@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 
@@ -810,6 +811,7 @@ function RepositoryMap(mapId, params) {
 	selectFillOpacity:0.4,	
 
 	maxZoom:18,
+	singlePointZoom:7,
         scrollToZoom: true,
         selectOnHover: false,
         highlightOnHover: true,
@@ -1335,10 +1337,10 @@ RepositoryMap.prototype = {
 	let singlePoint = bounds.left==bounds.right;
         let projBounds = this.transformLLBounds(bounds);
         if (projBounds.getWidth() == 0) {
-	    if(debugBounds) console.log("setViewToBounds center");
+	    if(debugBounds) console.log("setViewToBounds center max zoom:" + this.params.maxZoom);
 	    //Set the center then zoom then set the center again
 	    this.getMap().setCenter(projBounds.getCenterLonLat());
-            this.zoomTo(this.params.maxZoom);
+            this.zoomTo(this.params.singlePointZoom);
 	    this.getMap().setCenter(projBounds.getCenterLonLat());
         } else {
 //	    if(debugBounds)console.log(bounds.getCenterLonLat());
