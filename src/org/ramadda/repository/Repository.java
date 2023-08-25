@@ -7428,8 +7428,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	//A hack because of the mime type properties
 	if(!suffix.startsWith(".")) suffix = "." + suffix;
         String type = (String) mimeTypes.get(suffix);
-	System.err.println("suffix: " + suffix +" type:" + type);
-
         if (type == null) {
             if (suffix.startsWith(".")) {
                 suffix = suffix.substring(1);
