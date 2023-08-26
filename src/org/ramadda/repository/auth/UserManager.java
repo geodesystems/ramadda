@@ -1875,10 +1875,12 @@ public class UserManager extends RepositoryManager {
 
 
 
+	/**
         bulkSB.append(HU.p());
         bulkSB.append(HU.b("User Import:"));
         bulkSB.append(HU.space(1));
         bulkSB.append(HU.fileInput(ARG_USER_IMPORT, ""));
+	**/
 
 
         StringBuffer top = new StringBuffer();
@@ -1891,8 +1893,8 @@ public class UserManager extends RepositoryManager {
         sb.append(HU.p());
         sb.append(top);
         sb.append(HU.p());
-	getAuthManager().addVerification(request,sb);
         sb.append(HU.submit(msg("Create User"), ARG_USER_NEW));
+	getAuthManager().addVerification(request,sb);
         sb.append(HU.formClose());
 
         sb.append(HU.sectionClose());
