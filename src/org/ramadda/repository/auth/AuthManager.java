@@ -13,14 +13,18 @@ import org.ramadda.repository.type.*;
 
 import org.ramadda.util.Utils;
 import org.ramadda.util.TTLCache;
+import ucar.unidata.util.IOUtil;
 
 
 import java.io.*;
 import java.util.Base64;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Hashtable;
+import java.util.Properties;
 import java.util.Random;
 
+import java.nio.charset.*;
 
 import java.awt.geom.AffineTransform;
 import java.awt.image.*;
@@ -52,6 +56,9 @@ public class AuthManager extends RepositoryManager {
     private static String hashStringSalt = null;
     private static Object HASH_MUTEX = new Object();
 
+    private Properties captchaMap;
+
+
     /**
      * ctor
      *
@@ -61,9 +68,9 @@ public class AuthManager extends RepositoryManager {
         super(repository);
 	initCaptchas();
     }
-    private static final int IMAGE_WIDTH = 100;
-    private static final int IMAGE_HEIGHT =50;
-    private static final int TEXTSIZE=18;
+    private static final int IMAGE_WIDTH = 140;
+    private static final int IMAGE_HEIGHT =70;
+    private static final int TEXTSIZE=24;
 
 
 
@@ -94,36 +101,61 @@ public class AuthManager extends RepositoryManager {
 	    captchas  =new ArrayList<Captcha>();
 	    String alpha = "abcdefghjkmnopqrstuvwxyz";
 	    Random random = new Random();
-	    for(int i=0;i<1000;i++) {
-		String word = "";
-		String bgword = "";
-		for(int j=0;j<5;j++ ) {
-		    word+=alpha.charAt(random.nextInt(alpha.length()));
-		    bgword+=alpha.charAt(random.nextInt(alpha.length()));
+	    File indexFile = new File(getStorageManager().getResourceDir(),"captcha.txt");
+	    captchaMap= new Properties();
+	    if(indexFile.exists()) {
+		try(FileInputStream fis = new FileInputStream(indexFile)) {
+		    captchaMap.load(new InputStreamReader(fis, Charset.forName("UTF-8")));
 		}
-		BufferedImage image = new BufferedImage(IMAGE_WIDTH, IMAGE_HEIGHT, BufferedImage.TYPE_INT_RGB);
-		Graphics2D g = image.createGraphics();
-		//		g.setColor(new Color(220,220,220));
-		g.setColor(new Color(240,240,240));
-		g.fillRect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
-		g.setColor(Color.BLACK);
-		g.drawRect(0, 0, IMAGE_WIDTH-1, IMAGE_HEIGHT-1);
-		//		Font font = new Font("Arial", Font.BOLD, 18);
-		Font font = new Font("Arial", Font.BOLD, TEXTSIZE);
-		g.setFont(font);
-		g.setColor(Color.LIGHT_GRAY);
-		drawWord(g,font,bgword,0.6);
-		g.setColor(Color.BLACK);
-		drawWord(g,font,word,0.5);
-		g.dispose();
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ImageIO.write(image, "png", baos);
-		byte[] imageBytes = baos.toByteArray();
-		String base64Image = Base64.getEncoder().encodeToString(imageBytes);
-		String dataUrl = "data:image/png;base64," + base64Image;
-		captchas.add(new Captcha(this,captchas.size(),word,dataUrl));
-		System.out.println(HU.image(dataUrl));
-		System.out.println(HU.div(word));
+	    }
+	    File captchaDir = new File(IOUtil.joinDir(getStorageManager().getHtdocsDir(),"captchas"));
+	    captchaDir.mkdirs();
+	    for(int index=0;index<1000;index++) {
+		String fileName =(String) captchaMap.get("file"+index);
+		String word = (String) captchaMap.get("word"+index);		
+		if(fileName==null) {
+		    fileName = "captcha" + ((int)(Math.random()*1000000)) +".png";
+		    captchaMap.put("file"+index,fileName);
+		}
+		File imageFile = new File(captchaDir,fileName);
+		if(true || !imageFile.exists() || word==null) {
+		    //		    System.err.println("new file:" + fileName);
+		    word = "";
+		    String bgword = "";
+		    for(int j=0;j<5;j++ ) {
+			word+=alpha.charAt(random.nextInt(alpha.length()));
+			bgword+=alpha.charAt(random.nextInt(alpha.length()));
+		    }
+		    BufferedImage image = new BufferedImage(IMAGE_WIDTH, IMAGE_HEIGHT, BufferedImage.TYPE_INT_RGB);
+		    Graphics2D g = image.createGraphics();
+		    g.setColor(new Color(240,240,240));
+		    g.fillRect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
+		    g.setColor(Color.BLACK);
+		    g.drawRect(0, 0, IMAGE_WIDTH-1, IMAGE_HEIGHT-1);
+		    Font font = new Font("Arial", Font.BOLD, TEXTSIZE);
+		    g.setFont(font);
+		    g.setColor(Color.LIGHT_GRAY);
+		    drawWord(g,font,bgword,0.6);
+		    g.setColor(Color.BLACK);
+		    drawWord(g,font,word,0.5);
+		    g.dispose();
+		    FileOutputStream fos = new FileOutputStream(imageFile);
+		    ImageIO.write(image, "png", fos);
+		    captchaMap.put("word"+index,word);
+		    /*		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				ImageIO.write(image, "png", baos);
+				byte[] imageBytes = baos.toByteArray();
+				String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+				String dataUrl = "data:image/png;base64," + base64Image;
+		    */
+		    //		System.out.println(HU.image(dataUrl));
+		    //		System.out.println(HU.div(word));
+		}
+		captchaMap.put("file"+index,fileName);
+		captchas.add(new Captcha(this,index,word,fileName));
+	    }
+	    try(FileOutputStream fos = new FileOutputStream(indexFile)) {
+		captchaMap.store(new OutputStreamWriter(fos, Charset.forName("UTF-8")),null);
 	    }
 	} catch(Exception exc) {
 	    System.err.println("error making captchas");
@@ -136,8 +168,7 @@ public class AuthManager extends RepositoryManager {
 	private int index;
 	private String value;
 	private String image;
-	
-	Captcha(AuthManager _authManager,int _index,String _value, String _image) {
+	Captcha(AuthManager _authManager,int _index,String _value,String _image) {
 	    this.authManager =_authManager;
 	    this.index = _index;
 	    this.value = _value;
@@ -152,19 +183,17 @@ public class AuthManager extends RepositoryManager {
 	    authManager.addAuthToken(request,sb,getAuthTokenExtra());
 	}
 
-	public String getImage() {
-	    return image;
-	}
 	public String getAuthTokenExtra() {
 	    return ARG_CAPTCHA_INDEX+"="+index; 
 	}
 	public String getHtml(Request request) {
 	    StringBuilder sb = new StringBuilder();
+	    String url = authManager.getPageHandler().makeHtdocsUrl("/captchas/" + this.image);
 	    authManager.addAuthToken(request, sb,getAuthTokenExtra());
 	    sb.append(HU.hidden(ARG_CAPTCHA_INDEX,""+index));
 	    HU.div(sb,"To verify this action please type in the word<br>"+
-		   HU.image(image)+
-		       HU.space(1) +
+		   HU.image(url)+
+		       HU.space(2) +
 		       HU.input(ARG_CAPTCHA_RESPONSE,"",
 				HU.attrs("onkeydown","return Utils.preventSubmit(event)",
 					 "placeholder","word","size","5")),HU.clazz("ramadda-captcha"));
@@ -202,8 +231,6 @@ public class AuthManager extends RepositoryManager {
 	    sb.append(getPageHandler().showDialogError("Too many CAPTCHA attempts. You will have to wait for a while or restart the server."));
 	    return null;
 	}
-
-
 
 	Captcha captcha = null;
 	boolean ok = true;
