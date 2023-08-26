@@ -228,10 +228,18 @@ other .properties file in the home directory. It then loads any  properties file
 [ug::link plugins.html plugins] directory.
 <p>
 
-To configure RAMADDA copy <a href="${root}/userguide/repository.dummy_properties">this example</a> and rename it repository.properties. 
+To configure RAMADDA copy <a href="${root}/userguide/repository.dummy_properties">this example</a> and
+rename it repository.properties. 
+<p>
 
-
-
+<a name="dopassword"></a>
+For an additional layer of system security you can have RAMADDA ask for the user's password before a
+site administration change or password change by setting the following property in your repository.properties
+file
+<pre>
+ramadda.auth.dopassword=true
+</pre>
+  
 
 <subhead intoc="false" id="directory">Directory Structure</subhead>
 

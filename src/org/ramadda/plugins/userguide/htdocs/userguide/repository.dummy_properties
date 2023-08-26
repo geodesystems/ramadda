@@ -39,3 +39,17 @@ ramadda.db.postgres.password=some_password
 #ramadda.ssl.port=8043
 
 
+
+
+################################################################################################
+## Security
+################################################################################################
+
+
+## for an extra level of security set one of these to true
+## the dopassword=true will cause RAMADDA to ask for a password before doing online
+## site administration and users changing their password
+ramadda.auth.dopassword=false
+
+## docaptcha=true will make the user solve a captcha before site admin or password change
+ramadda.auth.docaptcha=false

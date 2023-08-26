@@ -243,10 +243,18 @@ other .properties file in the home directory. It then loads any  properties file
 <a href='plugins.html'>plugins</a> directory.
 <p>
 
-To configure RAMADDA copy <a href="${root}/userguide/repository.dummy_properties">this example</a> and rename it repository.properties. 
+To configure RAMADDA copy <a href="${root}/userguide/repository.dummy_properties">this example</a> and
+rename it repository.properties. 
+<p>
 
-
-
+<a name="dopassword"></a>
+For an additional layer of system security you can have RAMADDA ask for the user's password before a
+site administration change or password change by setting the following property in your repository.properties
+file
+<pre>
+ramadda.auth.dopassword=true
+</pre>
+  
 
 <a name="directory"></a><p><div class="ramadda-help-heading">9.0.6 <a href="#directory">Directory Structure</a></div> 
 
