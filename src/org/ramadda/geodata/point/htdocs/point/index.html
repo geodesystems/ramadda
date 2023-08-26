@@ -1,12 +1,47 @@
 <html>
 <title>Point Data</title>
 <body>
-<div class="ramadda-section">
-<ul>
-  <li> <a href="purpleair.html">Purple Air sensor data</a>
-</ul>
++section
+:title Point Data
 
 
+:navtop
+
+:heading Purple Air sensor data
+See the section  <a href="purpleair.html">Purple Air sensor data</a>.
+
+
+
+:heading SOFAR API
+RAMADDA supports accessing real-time data from a <a href="https://www.sofarocean.com/">SOFAR buoy</a>
+with the SOFAR Buoy Data from API entry type. 
+This requires an API key that you can get from your SOFAR dashboard at
+<a href=https://spotter.sofarocean.com/api>https://spotter.sofarocean.com/api</a>.
+Edit one of the  .properties file in your RAMADDA home dir and add the following.
+Once set you can add the SOFAR Data entry and just specify the spotter ID, e.g. SPOT-1234.
+
+<pre>
+property.sofar.api.key=YOUR KEY
+</pre>
+
+:heading Storm Tracker data
+Real time storm tracker positions  from <a href=https://www.spotternetwork.org/positions>
+https://www.spotternetwork.org/</a> can be added to RAMADDA.
+First register on the above site and get an API key. Add the following to one of the .properties
+files in your RAMADDA home directory and restart RAMADDA.
+<pre>
+property.stormtracker.api.key=YOUR KEY
+</pre>
+
+There is no specific entry type for Storm Tracker positions. Rather you can use download
+this export - <a href=Storm_Spotter_Locations.zip>Storm_Spotter_Locations.zip</a> and import it
+into your RAMADDA.
+:p
+This is a generic CSV File entry type but with some CSV commands in the properties that
+convert the JSON from the API into RAMADDA's standard format. There is also
+a Request Information Property that specifies the required HTTP request information.
+
+-section
 </body>
 </html>
 
