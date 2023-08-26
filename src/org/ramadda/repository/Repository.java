@@ -1623,9 +1623,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
         HU.setBlockHideShowImage(getIconUrl(ICON_MINUS),
-                                        getIconUrl(ICON_PLUS));
+				 getIconUrl(ICON_PLUS));
         HU.setInlineHideShowImage(getIconUrl(ICON_MINUS),
-                                         getIconUrl(ICON_PLUS));
+				  getIconUrl(ICON_PLUS));
 
         getLogManager().logInfo("RAMADDA started");
 
@@ -3742,7 +3742,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 			    Utils.encodeBase64(request.getUrl());
                         String url =
                             HU.url(URL_SSLREDIRECT.toString(),
-                                          ARG_REDIRECT, redirectUrl);
+				   ARG_REDIRECT, redirectUrl);
                         result = new Result(url);
                     } else {
                         result = new Result("Error", sb);
@@ -3758,8 +3758,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
             if (!request.responseAsJson() && (request.getUser() != null) && request.getUser().getAdmin()) {
                 sb.append(
 			  HU.pre(
-					HU.strictSanitizeString(
-							       LogUtil.getStackTrace(inner))));
+				 HU.strictSanitizeString(
+							 LogUtil.getStackTrace(inner))));
             }
 
             result = new Result(msg("Error"), sb);
@@ -3880,8 +3880,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 						   + inner.getMessage()));
         if ((request.getUser() != null) && request.getUser().getAdmin()) {
             String stack = HU.pre(
-					 HU.entityEncode(
-								LogUtil.getStackTrace(inner)));
+				  HU.entityEncode(
+						  LogUtil.getStackTrace(inner)));
             sb.append(HU.makeShowHideBlock("Stack", stack, false));
         }
 
@@ -4849,7 +4849,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
        will be used to do an external execute. This is just a wrapper
        around getLocalProperty but we use it to keep track of what scripts
        are being accessed
-     */
+    */
     public String getScriptPath(String name,String...dflts) {
 	String path =  getLocalProperty(name, dflts!=null && dflts.length>0?dflts[0]:null);
 	if(Utils.stringDefined(path)) {
@@ -4931,6 +4931,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
         return value.toString();
+    }
+
+
+    public boolean getLocalProperty(String name, boolean dflt) {
+	String v = getLocalProperty(name,null);
+	if(v==null) return dflt;
+	return v.trim().equals("true");
     }
 
 
@@ -6125,10 +6132,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         sb.append(HU.formTable());
         sb.append(request.formPost(URL_CLEARSTATE));
         sb.append(HU.formEntry(msgLabel("Pass Phrase"),
-                                      HU.input(PROP_PASSPHRASE)));
+			       HU.input(PROP_PASSPHRASE)));
         sb.append(
 		  HU.formEntry(
-				      "", HU.submit("Clear Repository State")));
+			       "", HU.submit("Clear Repository State")));
         sb.append(HU.formTableClose());
         sb.append(HU.formClose());
 
@@ -6678,11 +6685,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    HU.formEntry(sb, msgLabel("Contact"),contact);
 
 	HU.formEntry(sb, msgLabel("Start Time"),
-			    getDateHandler().formatDate(startTime));
+		     getDateHandler().formatDate(startTime));
 	HU.formEntry(sb, msgLabel("RAMADDA Version"),
-			    RepositoryUtil.getVersion());
+		     RepositoryUtil.getVersion());
 	HU.formEntry(sb, msgLabel("Build Date"),
-			    getRepository().getProperty(PROP_BUILD_DATE, "N/A"));
+		     getRepository().getProperty(PROP_BUILD_DATE, "N/A"));
         String version =
             Runtime.class.getPackage().getImplementationVersion();
         HU.formEntry(sb,msgLabel("Java Version"), version);
@@ -6692,8 +6699,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
             URL classesRootDir =
                 c.getProtectionDomain().getCodeSource().getLocation();
             HU.formEntry(sb, msgLabel("Class location - "
-						   + request.getString("class",
-								       "")), classesRootDir.toString());
+				      + request.getString("class",
+							  "")), classesRootDir.toString());
 
         }
 
@@ -6981,9 +6988,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     links.add(HU.span(tfo.toString(), extra1));
                 } else {
                     links.add(HU.href(request.makeUrl(URL_LIST_SHOW,
-							     ARG_WHAT, (String) tfo.getId(), ARG_TYPE,
-							     (String) typeHandler.getType()), tfo.toString(),
-					     extra2));
+						      ARG_WHAT, (String) tfo.getId(), ARG_TYPE,
+						      (String) typeHandler.getType()), tfo.toString(),
+				      extra2));
                 }
             }
         }
@@ -7000,7 +7007,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 links.add(HU.span(names[i], extra1));
             } else {
                 links.add(HU.href(request.makeUrl(URL_LIST_SHOW,
-							 ARG_WHAT, whats[i]) + typeAttr, names[i], extra2));
+						  ARG_WHAT, whats[i]) + typeAttr, names[i], extra2));
             }
         }
 
