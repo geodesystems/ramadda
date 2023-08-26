@@ -1275,19 +1275,19 @@ public class UserManager extends RepositoryManager {
         }
         StringBuffer sb = new StringBuffer();
         StringBuffer sb2 = new StringBuffer();
-	AuthManager.Captcha captcha=null;
+	boolean verified = false;
 	if(request.defined(ARG_USER_DELETE_CONFIRM) ||
 	   request.defined(ARG_USER_CHANGE)) {
-	    captcha = getAuthManager().verifyCaptcha(request,sb2);
+	    verified = getAuthManager().verify(request,sb2);
 	}
 
-        if (captcha!=null && request.defined(ARG_USER_DELETE_CONFIRM)) {
+        if (verified && request.defined(ARG_USER_DELETE_CONFIRM)) {
             deleteUser(user);
             return new Result(
 			      request.makeUrl(getRepositoryBase().URL_USER_LIST));
         }
 
-        if (captcha!=null && request.defined(ARG_USER_CHANGE)) {
+        if (verified && request.defined(ARG_USER_CHANGE)) {
             if ( !checkAndSetNewPassword(request, user)) {
                 sb.append(
 			  getPageHandler().showDialogWarning(
@@ -1319,7 +1319,7 @@ public class UserManager extends RepositoryManager {
 											     msg("Yes"),
 											     ARG_USER_DELETE_CONFIRM), HU.submit(
 																	msg("Cancel"), ARG_USER_CANCEL))));
-	    getAuthManager().addCaptcha(request,sb);
+	    getAuthManager().addVerification(request,sb);
         } else {
             String buttons =
                 HU.submit(msg("Change User"), ARG_USER_CHANGE)
@@ -1328,7 +1328,7 @@ public class UserManager extends RepositoryManager {
                 + HU.space(2)
                 + HU.submit(msg("Cancel"), ARG_CANCEL);
             sb.append(buttons);
-	    getAuthManager().addCaptcha(request,sb);
+	    getAuthManager().addVerification(request,sb);
             makeUserForm(request, user, sb, true);
 	    //            if (user.canChangePassword()) {
 	    sb.append(HU.p());
@@ -1493,7 +1493,7 @@ public class UserManager extends RepositoryManager {
      */
     public Result adminUserNewDo(Request request) throws Exception {
         StringBuffer sb          = new StringBuffer();
-	if(getAuthManager().verifyCaptcha(request,sb)==null) {
+	if(!getAuthManager().verify(request,sb)) {
 	    makeNewUserForm(request, sb);
 	    return getAdmin().makeResult(request, msg("New User"), sb);
 	}
@@ -1755,7 +1755,7 @@ public class UserManager extends RepositoryManager {
 
 
         if (request.defined(ARG_USER_DELETE_CONFIRM) &&
-	    getAuthManager().verifyCaptcha(request,sb)!=null) {
+	    getAuthManager().verify(request,sb)) {
 	    sb.append(HU.p());
 	    for (User user : users) {
 		deleteUser(user);
@@ -1774,7 +1774,7 @@ public class UserManager extends RepositoryManager {
 				   ARG_USER_DELETE_CONFIRM));
 	sb.append(HU.space(2));
 	sb.append(HU.submit(msg("Cancel"), ARG_USER_CANCEL));
-	getAuthManager().addCaptcha(request,sb);
+	getAuthManager().addVerification(request,sb);
 	sb.append(HU.p());
 	for (User user : users) {
 	    String userCbx = HU.checkbox("user_" + user.getId(),
@@ -1891,7 +1891,7 @@ public class UserManager extends RepositoryManager {
         sb.append(HU.p());
         sb.append(top);
         sb.append(HU.p());
-	getAuthManager().addCaptcha(request,sb);
+	getAuthManager().addVerification(request,sb);
         sb.append(HU.submit(msg("Create User"), ARG_USER_NEW));
         sb.append(HU.formClose());
 
@@ -3671,7 +3671,7 @@ public class UserManager extends RepositoryManager {
         sb.append(request.uploadForm(getRepositoryBase().URL_USER_CHANGE));
 	String buttons = HU.submit(msg("Change Settings"), ARG_USER_CHANGE);
         sb.append(buttons);
-	getAuthManager().addCaptcha(request,sb);
+	getAuthManager().addVerification(request,sb);
         makeUserForm(request, user, sb, false);
         sb.append(HU.formClose());
 
@@ -3682,7 +3682,7 @@ public class UserManager extends RepositoryManager {
             makePasswordForm(request, user, sb);
             sb.append(HU.submit(msg("Change Password"),
                                        ARG_USER_CHANGE));
-	    getAuthManager().addCaptcha(request,sb);
+	    getAuthManager().addVerification(request,sb);
             sb.append(HU.formClose());
         }
 
@@ -3768,7 +3768,7 @@ public class UserManager extends RepositoryManager {
 	    return new Result("",sb);
 	}
 
-	if(getAuthManager().verifyCaptcha(request,sb)==null) {
+	if(!getAuthManager().verify(request,sb)) {
 	    return  makeUserSettingsForm(request,sb.toString());
 	}
 

@@ -44,7 +44,12 @@ import javax.imageio.ImageIO;
  */
 @SuppressWarnings("unchecked")
 public class AuthManager extends RepositoryManager {
+    private static final String ARG_EXTRA_PASSWORD = "extrapassword";
 
+    private boolean doCaptcha;
+    private boolean doPassword;
+
+    private Captcha defaultCaptcha;
     private List<Captcha> captchas;
 
     /** store the number of bad captcha attempts for each user. clear every hour */
@@ -66,7 +71,12 @@ public class AuthManager extends RepositoryManager {
      */
     public AuthManager(Repository repository) {
         super(repository);
-	initCaptchas();
+	doCaptcha = repository.getLocalProperty("ramadda.auth.docaptcha",false);
+	doPassword = repository.getLocalProperty("ramadda.auth.dopassword",false);	
+	defaultCaptcha = new Captcha(this,-1,"","");
+	if(doCaptcha && !doPassword) {
+	    initCaptchas();
+	}
     }
     private static final int IMAGE_WIDTH = 140;
     private static final int IMAGE_HEIGHT =70;
@@ -188,22 +198,34 @@ public class AuthManager extends RepositoryManager {
 	}
 	public String getHtml(Request request) {
 	    StringBuilder sb = new StringBuilder();
-	    String url = authManager.getPageHandler().makeHtdocsUrl("/captchas/" + this.image);
-	    authManager.addAuthToken(request, sb,getAuthTokenExtra());
-	    sb.append(HU.hidden(ARG_CAPTCHA_INDEX,""+index));
-	    HU.div(sb,"To verify this action please type in the word<br>"+
-		   HU.image(url)+
+	    if(authManager.doPassword) {
+		authManager.addAuthToken(request, sb);
+		HU.div(sb,
+		       "To verify this action please enter your current password:<br>"+
+		       HU.password(ARG_EXTRA_PASSWORD),
+		       HU.clazz("ramadda-captcha"));
+		
+	    } else if(authManager.doCaptcha) {
+		authManager.addAuthToken(request, sb,getAuthTokenExtra());
+		String url = authManager.getPageHandler().makeHtdocsUrl("/captchas/" + this.image);
+		sb.append(HU.hidden(ARG_CAPTCHA_INDEX,""+index));
+		HU.div(sb,"To verify this action please type in the word<br>"+
+		       HU.image(url)+
 		       HU.space(2) +
 		       HU.input(ARG_CAPTCHA_RESPONSE,"",
 				HU.attrs("onkeydown","return Utils.preventSubmit(event)",
 					 "placeholder","word","size","5")),HU.clazz("ramadda-captcha"));
-											      
-	    sb.append("<br>");
+		
+		sb.append("<br>");
+	    } else {
+		authManager.addAuthToken(request, sb);
+	    }
 	    return sb.toString();
 	}
     }
 
     public Captcha getCaptcha() {
+	if(!doCaptcha) return defaultCaptcha;
 	Random random = new Random();
         int randomIndex = random.nextInt(captchas.size());
         return captchas.get(randomIndex);
@@ -218,7 +240,24 @@ public class AuthManager extends RepositoryManager {
        the session id and the captcha index) matches
        if the auth token does not match then an exception is thrown
      */
-    public Captcha verifyCaptcha(Request request,Appendable sb) throws Exception {
+    public boolean verify(Request request,Appendable sb) throws Exception {
+	if(doPassword) {
+	    String password = request.getString(ARG_EXTRA_PASSWORD,"");
+	    request.remove(ARG_EXTRA_PASSWORD);
+            if ( !getUserManager().isPasswordValid(request.getUser(), password)) {
+		sb.append(getPageHandler().showDialogError("Incorrect password. Please enter your current password."));
+		return false;
+	    }
+	    ensureAuthToken(request);
+	    return true;
+	}
+
+
+	if(!doCaptcha) {
+	    ensureAuthToken(request);
+	    return true;
+	}
+
 	User user = request.getUser();
 	String userName  = user==null?"null":user.getId();
 	Integer count = badCaptchaCount.get(userName);
@@ -229,7 +268,7 @@ public class AuthManager extends RepositoryManager {
 
 	if (count.intValue() > MAX_BAD_CAPTCHA_COUNT) {
 	    sb.append(getPageHandler().showDialogError("Too many CAPTCHA attempts. You will have to wait for a while or restart the server."));
-	    return null;
+	    return false;
 	}
 
 	Captcha captcha = null;
@@ -260,9 +299,9 @@ public class AuthManager extends RepositoryManager {
 						       (MAX_BAD_CAPTCHA_COUNT-count.intValue() <5?" You only have a few more tries":"")));
 	    
 	}
-	if(!ok) return null;
+	if(!ok) return false;
         captcha.ensureAuthToken(request);
-	return captcha;
+	return true;
     }
 
 
@@ -300,7 +339,7 @@ public class AuthManager extends RepositoryManager {
     }
 
 
-    public void addCaptcha(Request request, Appendable sb)  {
+    public void addVerification(Request request, Appendable sb)  {
 	try {
 	    sb.append(getCaptcha().getHtml(request));
         } catch (java.io.IOException ioe) {
@@ -346,6 +385,7 @@ public class AuthManager extends RepositoryManager {
 
     public void ensureAuthToken(Request request, boolean checkSessionId,String ...extra) {	
         boolean debug        = false;
+	//	debug=true;
         String  authToken    = request.getString(ARG_AUTHTOKEN, (String) null);
         String  mySessionId  = request.getSessionId();
         String  argSessionId = request.getString(ARG_SESSIONID, (String) null);

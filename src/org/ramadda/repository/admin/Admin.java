@@ -1362,7 +1362,7 @@ public class Admin extends RepositoryManager {
         sb.append(request.formPost(URL_ADMIN_SETTINGS_DO));
         sb.append(HU.sectionOpen(null, false));
         sb.append(HU.submit(msg("Change Settings")));
-	getAuthManager().addCaptcha(request,sb);
+	getAuthManager().addVerification(request,sb);
         sb.append(HU.p());
         StringBuffer csb = new StringBuffer();
         csb.append(HU.formTable());
@@ -1756,7 +1756,7 @@ public class Admin extends RepositoryManager {
     public Result adminSettingsDo(Request request) throws Exception {
 
 	StringBuilder sb = new StringBuilder();
-	if(getAuthManager().verifyCaptcha(request,sb)==null) {
+	if(!getAuthManager().verify(request,sb)) {
 	    return adminSettings(request, sb.toString());
 	}
 
