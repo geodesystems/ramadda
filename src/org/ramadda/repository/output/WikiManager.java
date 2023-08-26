@@ -4408,7 +4408,6 @@ public class WikiManager extends RepositoryManager
 
 	List<String> links = new ArrayList<String>();
 	if(pre!=null) {
-	    System.err.println("adding pre");
 	    for(String s: pre) links.add("<li> " + s);
 	}
         List<Utils.Macro> macros   = null;
