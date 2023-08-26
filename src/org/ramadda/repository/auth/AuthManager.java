@@ -5,11 +5,7 @@
 
 package org.ramadda.repository.auth;
 
-
 import org.ramadda.repository.*;
-import org.ramadda.repository.output.*;
-import org.ramadda.repository.type.*;
-
 
 import org.ramadda.util.Utils;
 import org.ramadda.util.TTLCache;
@@ -173,56 +169,6 @@ public class AuthManager extends RepositoryManager {
 	}
     }
 
-    public static class Captcha {
-	private AuthManager authManager;
-	private int index;
-	private String value;
-	private String image;
-	Captcha(AuthManager _authManager,int _index,String _value,String _image) {
-	    this.authManager =_authManager;
-	    this.index = _index;
-	    this.value = _value;
-	    this.image = _image;
-	}
-
-	public void ensureAuthToken(Request request) {
-	    authManager.ensureAuthToken(request,getAuthTokenExtra());
-	}
-
-	public void addAuthToken(Request request, Appendable sb) {
-	    authManager.addAuthToken(request,sb,getAuthTokenExtra());
-	}
-
-	public String getAuthTokenExtra() {
-	    return ARG_CAPTCHA_INDEX+"="+index; 
-	}
-	public String getHtml(Request request) {
-	    StringBuilder sb = new StringBuilder();
-	    if(authManager.doPassword) {
-		authManager.addAuthToken(request, sb);
-		HU.div(sb,
-		       "To verify this action please enter your current password:<br>"+
-		       HU.password(ARG_EXTRA_PASSWORD),
-		       HU.clazz("ramadda-captcha"));
-		
-	    } else if(authManager.doCaptcha) {
-		authManager.addAuthToken(request, sb,getAuthTokenExtra());
-		String url = authManager.getPageHandler().makeHtdocsUrl("/captchas/" + this.image);
-		sb.append(HU.hidden(ARG_CAPTCHA_INDEX,""+index));
-		HU.div(sb,"To verify this action please type in the word<br>"+
-		       HU.image(url)+
-		       HU.space(2) +
-		       HU.input(ARG_CAPTCHA_RESPONSE,"",
-				HU.attrs("onkeydown","return Utils.preventSubmit(event)",
-					 "placeholder","word","size","5")),HU.clazz("ramadda-captcha"));
-		
-		sb.append("<br>");
-	    } else {
-		authManager.addAuthToken(request, sb);
-	    }
-	    return sb.toString();
-	}
-    }
 
     public Captcha getCaptcha() {
 	if(!doCaptcha) return defaultCaptcha;
@@ -239,7 +185,7 @@ public class AuthManager extends RepositoryManager {
        if ok, then it checks that the auth token on the form (which is a hash of
        the session id and the captcha index) matches
        if the auth token does not match then an exception is thrown
-     */
+    */
     public boolean verify(Request request,Appendable sb) throws Exception {
 	if(doPassword) {
 	    String password = request.getString(ARG_EXTRA_PASSWORD,"");
@@ -444,5 +390,55 @@ public class AuthManager extends RepositoryManager {
     }
 
 
+    public static class Captcha {
+	private AuthManager authManager;
+	private int index;
+	private String value;
+	private String image;
+	Captcha(AuthManager _authManager,int _index,String _value,String _image) {
+	    this.authManager =_authManager;
+	    this.index = _index;
+	    this.value = _value;
+	    this.image = _image;
+	}
+
+	public void ensureAuthToken(Request request) {
+	    authManager.ensureAuthToken(request,getAuthTokenExtra());
+	}
+
+	public void addAuthToken(Request request, Appendable sb) {
+	    authManager.addAuthToken(request,sb,getAuthTokenExtra());
+	}
+
+	public String getAuthTokenExtra() {
+	    return ARG_CAPTCHA_INDEX+"="+index; 
+	}
+	public String getHtml(Request request) {
+	    StringBuilder sb = new StringBuilder();
+	    if(authManager.doPassword) {
+		authManager.addAuthToken(request, sb);
+		HU.div(sb,
+		       "To verify this action please enter your current password:<br>"+
+		       HU.password(ARG_EXTRA_PASSWORD),
+		       HU.clazz("ramadda-captcha"));
+		
+	    } else if(authManager.doCaptcha) {
+		authManager.addAuthToken(request, sb,getAuthTokenExtra());
+		String url = authManager.getPageHandler().makeHtdocsUrl("/captchas/" + this.image);
+		sb.append(HU.hidden(ARG_CAPTCHA_INDEX,""+index));
+		HU.div(sb,"To verify this action please type in the word<br>"+
+		       HU.image(url)+
+		       HU.space(2) +
+		       HU.input(ARG_CAPTCHA_RESPONSE,"",
+				HU.attrs("onkeydown","return Utils.preventSubmit(event)",
+					 "placeholder","word","size","5")),HU.clazz("ramadda-captcha"));
+		
+		sb.append("<br>");
+	    } else {
+		authManager.addAuthToken(request, sb);
+	    }
+	    return sb.toString();
+	}
+    }
 
 }
