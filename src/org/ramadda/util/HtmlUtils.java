@@ -519,6 +519,16 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return "<p>";
     }
 
+    public static String vspace() {
+	return vspace("0.5em");
+    }
+
+    public static String vspace(String space) {
+	return div("",style("margin-top:" + space));
+    }    
+
+
+
     /**
      * _more_
      *
