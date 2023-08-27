@@ -123,8 +123,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
         actions.add(new CopyAction());
         actions.add(new PublishAction());
         //        actions.add(new FtpAction());
-        actions.add(new ExecAction());
-
+	//        actions.add(new ExecAction());
         for (Class c :
                 getRepository().getPluginManager().getSpecialClasses()) {
             if (MonitorAction.class.isAssignableFrom(c)) {
