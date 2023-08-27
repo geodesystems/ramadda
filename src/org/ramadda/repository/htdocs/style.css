@@ -176,18 +176,7 @@ h6 {
     border:0px;
     outline:none;
 }
-			    
 
-
-
-.ramadda-captcha {
-    display:inline-block;
-    margin:8px;
-    padding:8px;
-    border:var(--basic-border);
-    background:var(--color-mellow-yellow);
-    border-radius:var(--default-radius);
-}
 
 ramadda-heading, .ramadda-page-heading a, a.ramadda-page-heading, .ramadda-heading, .ramadda-lheading, .ramadda-blurb {
     font-size:140%;
@@ -1507,10 +1496,33 @@ mapheader {
 
 
 
+			    
+
+.ramadda-verification, .ramadda-captcha {
+    display:inline-block;
+    margin:8px;
+    padding:8px;
+    border:var(--basic-border);
+    background:var(--color-mellow-yellow);
+    border-radius:var(--default-radius);
+    max-width:500px;
+}
+
+.ramadda-message .ramadda-verification {
+    border:0px solid transparent;
+    margin:0px;
+    padding:0px;
+}
+
+
+.ramadda-message i {
+    font-size:36pt;
+}
+
 .ramadda-message-plain, .ramadda-message {
     display: inline-block;
     border-radius: var(--default-radius);
-    border: 1px #aaa solid;
+    border:var(--basic-border);
     margin:10px;
     padding:5px;
     min-width: 400px;
@@ -1520,6 +1532,19 @@ mapheader {
     background-color : var(--color-mellow-yellow);
 }
 
+
+.ramadda-message-plain {
+    background-color : #fff;
+}
+
+.ramadda-message-info {
+    background-color:#F0F8FF;
+    background-color:#fff;
+}
+
+.ramadda-message-error {
+    /*background-color:#FFF3F7;*/
+}
 
 
 .ramadda-message-icon, .ramadda-message-link {
@@ -4221,18 +4246,16 @@ snippet-hide {
 }
 
 .ramadda-linksheader-on, .ramadda-linksheader-off  {
-    padding: 4px;
-    padding-left: 4px;
-    padding-right: 4px;
-    margin-left: 4px;
-    margin-right: 4px;    
+    padding: 0px;
+    padding-left: 6px;
+    padding-right: 6px;
+    margin-left: 6px;
+    margin-right: 6px;    
     display:inline-block;
 }
 
 .ramadda-linksheader-on {
-//    background:var(--highlight-background);
-background:#efefef;
-
+    background:#efefef;
 }
 
 
