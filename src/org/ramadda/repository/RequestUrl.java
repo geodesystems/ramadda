@@ -55,8 +55,7 @@ public class RequestUrl {
      * @param path _more_
      * @param needsSsl _more_
      */
-    public RequestUrl(RepositorySource repositorySource, String path,
-                      boolean needsSsl) {
+    public RequestUrl(RepositorySource repositorySource, String path, boolean needsSsl) {
         this.repositorySource = repositorySource;
         this.path             = path;
         this.needsSsl         = needsSsl;
@@ -67,6 +66,8 @@ public class RequestUrl {
         }
     }
 
+    private List<String>aliases = new ArrayList<String>();
+
     /**
      * _more_
      *
@@ -75,10 +76,21 @@ public class RequestUrl {
      * @param path _more_
      * @param label _more_
      */
-    public RequestUrl(RepositorySource repositorySource, String path,
-                      String label) {
+    public RequestUrl(RepositorySource repositorySource, String path,  String label,
+		      String...aliases) {
         this(repositorySource, path);
         this.label = label;
+	for(String alias:aliases) this.aliases.add(alias);
+    }
+
+
+
+    public boolean matches(Request request) {
+	String path = request.getRequestPath();
+	if(path.endsWith(getPath())) return true;
+	for(String alias: aliases)
+	    if(path.endsWith(alias)) return true;
+	return false;
     }
 
 
