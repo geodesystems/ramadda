@@ -162,7 +162,6 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
         LDAPManager.debug("Authenticate user: " + userId);
         if ( !isEnabled()) {
             LDAPManager.debug("LDAP not enabled");
-
             return null;
         }
         userCache.remove(userId);

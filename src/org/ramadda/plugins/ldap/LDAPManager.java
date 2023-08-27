@@ -471,7 +471,7 @@ public class LDAPManager {
      * @param msg _more_
      */
     public static void log(String msg) {
-        System.err.println("LDAP:" + msg);
+	//        System.err.println("LDAP:" + msg);
     }
 
     /**
