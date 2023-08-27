@@ -52,4 +52,5 @@ ramadda.db.postgres.password=some_password
 ramadda.auth.dopassword=false
 
 ## docaptcha=true will make the user solve a captcha before site admin or password change
+## dopassword=true is more secure as it is possible to crack the captcha
 ramadda.auth.docaptcha=false

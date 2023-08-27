@@ -233,13 +233,14 @@ rename it repository.properties.
 <p>
 
 <a name="dopassword"></a>
-For an additional layer of system security you can have RAMADDA ask for the user's password before a
-site administration change or password change by setting the following property in your repository.properties
+By default, for an additional layer of system security RAMADDA will require the user's password before a
+site administration change or password change.
+You can disable this behavior by setting the following property in your repository.properties
 file
 <pre>
-ramadda.auth.dopassword=true
+ramadda.auth.dopassword=false
 </pre>
-  
+
 
 <subhead intoc="false" id="directory">Directory Structure</subhead>
 
