@@ -67,8 +67,8 @@ public class AuthManager extends RepositoryManager {
      */
     public AuthManager(Repository repository) {
         super(repository);
+	doPassword = repository.getLocalProperty("ramadda.auth.dopassword",true);	
 	doCaptcha = repository.getLocalProperty("ramadda.auth.docaptcha",false);
-	doPassword = repository.getLocalProperty("ramadda.auth.dopassword",false);	
 	defaultCaptcha = new Captcha(this,-1,"","");
 	if(doCaptcha && !doPassword) {
 	    initCaptchas();
@@ -187,11 +187,15 @@ public class AuthManager extends RepositoryManager {
        if the auth token does not match then an exception is thrown
     */
     public boolean verify(Request request,Appendable sb) throws Exception {
-	if(doPassword) {
+	return verify(request, sb, false);
+    }
+
+    public boolean verify(Request request,Appendable sb, boolean forcePassword) throws Exception {	
+	if(doPassword || forcePassword) {
 	    String password = request.getString(ARG_EXTRA_PASSWORD,"");
 	    request.remove(ARG_EXTRA_PASSWORD);
             if ( !getUserManager().isPasswordValid(request.getUser(), password)) {
-		sb.append(getPageHandler().showDialogError("Incorrect password. Please enter your current password."));
+		sb.append(getPageHandler().showDialogError("Incorrect verification password.<br>Please enter your password."));
 		return false;
 	    }
 	    ensureAuthToken(request);
@@ -285,9 +289,25 @@ public class AuthManager extends RepositoryManager {
     }
 
 
+    public String getVerification(Request request)  {
+	StringBuilder  sb = new StringBuilder();
+	addVerification(request, sb);
+	return sb.toString();
+    }
+
+    private static final String DEFAULT_MESSAGE = "For verification please enter your password";
+
     public void addVerification(Request request, Appendable sb)  {
+	addVerification(request, sb, null,false);
+    }
+
+    public void addVerification(Request request, Appendable sb, String msg)  {
+	addVerification(request, sb,msg,false);
+    }
+
+    public void addVerification(Request request, Appendable sb, String msg, boolean forcePassword)  {	
 	try {
-	    sb.append(getCaptcha().getHtml(request));
+	    sb.append(getCaptcha().getHtml(request,msg,forcePassword));
         } catch (java.io.IOException ioe) {
             throw new RuntimeException(ioe);
         }
@@ -413,14 +433,15 @@ public class AuthManager extends RepositoryManager {
 	public String getAuthTokenExtra() {
 	    return ARG_CAPTCHA_INDEX+"="+index; 
 	}
-	public String getHtml(Request request) {
+	public String getHtml(Request request, String msg,boolean forcePassword) {
+	    if(msg==null) msg = DEFAULT_MESSAGE;
 	    StringBuilder sb = new StringBuilder();
-	    if(authManager.doPassword) {
+	    if(authManager.doPassword||forcePassword) {
 		authManager.addAuthToken(request, sb);
 		HU.div(sb,
-		       "To verify this action please enter your current password:<br>"+
+		       msg+ "<br>" +
 		       HU.password(ARG_EXTRA_PASSWORD),
-		       HU.clazz("ramadda-captcha"));
+		       HU.clazz("ramadda-verification"));
 		
 	    } else if(authManager.doCaptcha) {
 		authManager.addAuthToken(request, sb,getAuthTokenExtra());
@@ -431,7 +452,7 @@ public class AuthManager extends RepositoryManager {
 		       HU.space(2) +
 		       HU.input(ARG_CAPTCHA_RESPONSE,"",
 				HU.attrs("onkeydown","return Utils.preventSubmit(event)",
-					 "placeholder","word","size","5")),HU.clazz("ramadda-captcha"));
+					 "placeholder","word","size","5")),HU.clazz("ramadda-verification"));
 		
 		sb.append("<br>");
 	    } else {
