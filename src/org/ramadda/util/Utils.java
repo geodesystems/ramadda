@@ -3175,6 +3175,15 @@ public class Utils extends IO {
         return sb;
     }
 
+    public static Object multiEquals(Object value,Object dflt,Object...pairs) {
+	if(value==null) return dflt;
+	for(int i=0;i<pairs.length;i+=2) {
+	    if(pairs[i].equals(value)) return pairs[i+1];
+	}
+	return dflt;
+    }
+
+
     /** _more_ */
     public static final String MULTILINE_END = "_multilineend_";
 
