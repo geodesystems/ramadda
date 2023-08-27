@@ -2059,7 +2059,7 @@ public class PageHandler extends RepositoryManager {
 							    "ramadda-user-menu-image");
 
             String settingsUrl =
-                request.makeUrl(getRepositoryBase().URL_USER_FORM);
+                request.makeUrl(getRepositoryBase().URL_USER_SETTINGS);
 
             if (makePopup) {
                 prefix.append(
@@ -2172,7 +2172,7 @@ public class PageHandler extends RepositoryManager {
             }
             String url   = request.makeUrl(requestUrl) + arg;
             String clazz = "ramadda-highlightable ramadda-linksheader-off";
-            if (type.endsWith(requestUrl.getPath())) {
+            if (requestUrl.matches(request)) {
                 onLabel = label;
                 clazz   = "ramadda-highlightable ramadda-linksheader-on";
             }
@@ -2350,33 +2350,28 @@ public class PageHandler extends RepositoryManager {
                       ? HU.jsLink(HU.onMouseClick("hide('messageblock')"),
                                   getIconImage(Constants.ICON_CLOSE))
                       : "&nbsp;";
-        String clazz = Misc.equals(icon, Constants.ICON_DIALOG_INFO)
-                       ? "ramadda-message"
-                       : Misc.equals(icon, Constants.ICON_DIALOG_ERROR)
-                         ? "alert-danger"
-                         : Misc.equals(icon, Constants.ICON_DIALOG_WARNING)
-                           ? "alert-warning"
-                           : "ramadda-message";
-        //For now just use the message class
-        clazz = "ramadda-message";
-        String        faClazz = Misc.equals(icon, Constants.ICON_DIALOG_INFO)
-                                ? "text-primary"
-                                : Misc.equals(icon,
-                                    Constants.ICON_DIALOG_ERROR)
-                                  ? "text-danger"
-                                  : Misc.equals(icon,
-                                      Constants.ICON_DIALOG_WARNING)
-                                    ? "text-warning"
-                                    : "text-primary";
+        String clazz = (String)Utils.multiEquals(icon,"ramadda-message-plain",
+						 Constants.ICON_DIALOG_INFO,
+						 "ramadda-message-info",
+						 Constants.ICON_DIALOG_ERROR,
+						 "ramadda-message-error",
+						 Constants.ICON_DIALOG_WARNING,
+						 "ramadda-message-warning");
+        String faClazz = (String)Utils.multiEquals(icon,"text-primary",
+						   Constants.ICON_DIALOG_INFO,
+						   "text-primary",
+						   Constants.ICON_DIALOG_ERROR,
+						   "text-danger",
+						   Constants.ICON_DIALOG_WARNING,
+						   "text-warning");
         StringBuilder sb      = new StringBuilder();
         sb.append(HU.open(HU.TAG_DIV, "class",
-                          clazz + " ramadda-message-plain ", "id",
-                          "messageblock"));
+                          "ramadda-message " + clazz));
         sb.append("<table width=100%><tr valign=top>");
         if (icon != null) {
             sb.append("<td width=5%><div class=\"ramadda-message-icon\">");
             sb.append(getIconImage(icon + " " + faClazz, "style",
-                                   "font-size:32pt;"));
+                                   "xfont-size:24pt;"));
             sb.append("</div></td>");
         }
         sb.append("<td><div class=\"ramadda-message-inner\">");
