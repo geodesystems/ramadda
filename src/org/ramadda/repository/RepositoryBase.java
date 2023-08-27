@@ -261,13 +261,23 @@ public class RepositoryBase implements Constants, RepositorySource {
                                                    "User Profile");
 
     /** _more_ */
-    public final RequestUrl URL_USER_FORM = new RequestUrl(this,
-                                                "/user/form", "Settings");
+    public final RequestUrl URL_USER_SETTINGS = new RequestUrl(this,
+							       "/user/settings", "Settings",
+							       "/user/changesettings");
 
     /** _more_ */
-    public final RequestUrl URL_USER_CHANGE = new RequestUrl(this,
-                                                  "/user/change");
+    public final RequestUrl URL_USER_PASSWORD = new RequestUrl(this,
+							       "/user/password", "Password",
+							       "/user/changepassword");    
 
+    /** _more_ */
+    public final RequestUrl URL_USER_CHANGE_SETTINGS = new RequestUrl(this,
+								      "/user/changesettings");
+
+    /** _more_ */
+    public final RequestUrl URL_USER_CHANGE_PASSWORD = new RequestUrl(this,
+								      "/user/changepassword");
+    
 
     /** _more_ */
     public final RequestUrl URL_USER_CART = new RequestUrl(this,
@@ -275,7 +285,7 @@ public class RepositoryBase implements Constants, RepositorySource {
 
     /** _more_ */
     public final RequestUrl URL_USER_LIST = new RequestUrl(this,
-                                                "/user/list", "Users");
+							   "/user/list", "Users","/user/edit","/user/new/form");
 
     /** _more_ */
     public final RequestUrl URL_USER_EDIT = new RequestUrl(this,
