@@ -295,7 +295,7 @@ public class AuthManager extends RepositoryManager {
 	return sb.toString();
     }
 
-    private static final String DEFAULT_MESSAGE = "For verification please enter your password";
+    private static final String DEFAULT_MESSAGE = "For verification please enter your current password";
 
     public void addVerification(Request request, Appendable sb)  {
 	addVerification(request, sb, null,false);
