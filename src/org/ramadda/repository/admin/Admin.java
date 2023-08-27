@@ -158,8 +158,7 @@ public class Admin extends RepositoryManager {
 
 
     /** _more_ */
-    public RequestUrl URL_ADMIN_SQL = new RequestUrl(this, "/admin/sql",
-                                          "SQL");
+    public RequestUrl URL_ADMIN_SQL = new RequestUrl(this, "/admin/sql", "Database");
 
 
 
@@ -178,7 +177,7 @@ public class Admin extends RepositoryManager {
     /** _more_ */
     public RequestUrl URL_ADMIN_STARTSTOP = new RequestUrl(this,
                                                 "/admin/startstop",
-                                                "Database");
+                                                "Start/Stop");
 
 
     /** _more_ */
@@ -202,13 +201,13 @@ public class Admin extends RepositoryManager {
 
     /** _more_ */
     public RequestUrl URL_ADMIN_TABLES = new RequestUrl(this,
-                                             "/admin/tables", "Database");
+                                             "/admin/tables", "View Schema");
 
 
     /** _more_ */
     public RequestUrl URL_ADMIN_DUMPDB = new RequestUrl(this,
                                              "/admin/dumpdb",
-                                             "Dump Database");
+                                             "Export Database");
 
     /** _more_ */
     public RequestUrl URL_ADMIN_STATS = new RequestUrl(this, "/admin/stats",
@@ -238,6 +237,10 @@ public class Admin extends RepositoryManager {
 	    /*URL_ADMIN_STARTSTOP,*/
 	    /*URL_ADMIN_TABLES, */
 	    URL_ADMIN_LOG, URL_ADMIN_STACK, URL_ADMIN_SNAPSHOTS, URL_ADMIN_MAINTENANCE
+	});
+
+    private List<RequestUrl> sqlUrls = RequestUrl.toList(new RequestUrl[] {
+	    URL_ADMIN_SQL,URL_ADMIN_TABLES,URL_ADMIN_DUMPDB
 	});
 
 
@@ -1089,7 +1092,7 @@ public class Admin extends RepositoryManager {
                 sb.append("Database is restarted");
             }
         }
-        sb.append("<p>");
+        sb.append(HU.vspace());
         request.formPostWithAuthToken(sb, URL_ADMIN_STARTSTOP,
                                       " name=\"admin\"");
 
@@ -1144,9 +1147,9 @@ public class Admin extends RepositoryManager {
      */
     public Result adminDbTables(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
-        sb.append(header("Database Tables"));
+        getPageHandler().makeLinksHeader(request, sb, sqlUrls, "");
+	//        sb.append(header("Database Tables"));
         sb.append(getDatabaseManager().getDbMetaData());
-
         return makeResult(request, "RAMADDA-Admin-DB", sb);
     }
 
@@ -1167,13 +1170,26 @@ public class Admin extends RepositoryManager {
      */
     public Result adminDbDump(Request request) throws Exception {
         //Only do one at a time
+	StringBuffer sb = new StringBuffer();
         if (amDumpingDb) {
-            StringBuffer sb = new StringBuffer(
-                                  getPageHandler().showDialogWarning(
-                                      "Currently exporting the database"));
-
+            sb.append(messageWarning("Currently exporting the database"));
             return makeResult(request, msg("RAMADDA-Admin-DB Export"), sb);
         }
+
+	boolean doIt = request.exists(ACTION_DUMPDB);
+
+	if(doIt) {
+	    doIt  =getAuthManager().verify(request,sb,true);
+	}
+
+	if(!doIt) {
+	    sb.append(request.formPost(URL_ADMIN_MAINTENANCE));
+	    sb.append(messageNote("You can write out the database for backup or transfer to a new database"));
+	    sb.append(HU.submit(msg("Export the database"), ACTION_DUMPDB));
+	    getAuthManager().addVerification(request,sb,null,true);
+	    sb.append(HU.formClose());
+            return makeResult(request, msg("RAMADDA-Admin-DB Export"), sb);
+	}	    
 
 
         ActionManager.Action action = new ActionManager.Action() {
@@ -1185,7 +1201,7 @@ public class Admin extends RepositoryManager {
                                      "Continue");
 
         Result result = getActionManager().doAction(request, action,
-                            "Dumping database", href);
+                            "Exporting database", href);
 
         return result;
     }
@@ -1363,7 +1379,7 @@ public class Admin extends RepositoryManager {
         sb.append(HU.sectionOpen(null, false));
         sb.append(HU.submit(msg("Change Settings")));
 	getAuthManager().addVerification(request,sb);
-        sb.append(HU.p());
+        sb.append(HU.vspace());
         StringBuffer csb = new StringBuffer();
         csb.append(HU.formTable());
         csb.append(
@@ -1587,7 +1603,7 @@ public class Admin extends RepositoryManager {
             if ( !Misc.equals(lastCategoryName, type.getGroupName())) {
                 if (lastCategoryName != null) {
                     outputSB.append("</div>\n");
-                    outputSB.append(HU.p());
+                    outputSB.append(HU.vspace());
                 }
                 lastCategoryName = type.getGroupName();
                 if (lastCategoryName != null) {
@@ -2173,53 +2189,53 @@ public class Admin extends RepositoryManager {
             }
         }
 
-        StringBuffer sb = new StringBuffer();
-        sb.append(HU.sectionOpen(null, false));
-        //        sb.append(msgHeader("SQL"));
-        sb.append(HU.p());
-        sb.append(HU.href(request.makeUrl(URL_ADMIN_TABLES),
-                                 msg("View Schema")));
-        sb.append(HU.bold("&nbsp;|&nbsp;"));
-        sb.append(HU.href(request.makeUrl(URL_ADMIN_DUMPDB),
-                                 msg("Dump Database")));
-        sb.append(HU.p());
-        request.uploadFormWithAuthToken(sb, URL_ADMIN_SQL);
 
-        sb.append(HU.submit(msg("Execute")));
-        sb.append(HU.b("Note: be careful what you do here!"));
-        sb.append(HU.br());
-        sb.append(HU.textArea(ARG_QUERY, (bulkLoad
+        StringBuffer formSB = new StringBuffer();
+        formSB.append(request.uploadForm(URL_ADMIN_SQL));
+        formSB.append(HU.submit(msg("Execute")));
+	getAuthManager().addVerification(request,formSB,
+					 "For verification enter your password. Be very careful what you do here! This evaluates arbitrary SQL and you can really screw up your RAMADDA if you do something wrong here.",true);
+        formSB.append(HU.br());
+        formSB.append(HU.textArea(ARG_QUERY, (bulkLoad
                 ? ""
                 : (query == null)
                   ? BLANK
-                  : query), 10, 100));
-        sb.append(HU.p());
-        sb.append("SQL File: ");
-        sb.append(HU.fileInput(ARG_SQLFILE, HU.SIZE_60));
-        sb.append(HU.formClose());
-        sb.append(HU.sectionClose());
-        sb.append("<table>");
-        if (query == null) {
+                  : query), 5, 80));
+        formSB.append(HU.vspace());
+        formSB.append("SQL File: ");
+        formSB.append(HU.fileInput(ARG_SQLFILE, HU.SIZE_60));
+        formSB.append(HU.formClose());
+
+        StringBuffer sb = new StringBuffer();
+        getPageHandler().makeLinksHeader(request, sb, sqlUrls, "");	
+
+
+        if (!stringDefined(query)) {
+	    sb.append(formSB);
             return makeResult(request, msg("RAMADDA-Admin-SQL"), sb);
         }
 
-        long t1 = System.currentTimeMillis();
+	StringBuilder vsb = new StringBuilder();
+	if(!getAuthManager().verify(request,vsb,true)) {
+	    sb.append(vsb);
+	    sb.append(formSB);
+            return makeResult(request, msg("RAMADDA-Admin-SQL"), sb);
+	}
 
-        getAuthManager().ensureAuthToken(request);
+
+	sb.append(formSB);
+        long t1 = System.currentTimeMillis();
         if ((query.indexOf(";") > 0) || bulkLoad) {
             getDatabaseManager().loadSql(query, false, true);
-
             return makeResult(request, msg("RAMADDA-Admin-SQL"),
-                              new StringBuffer("Executed SQL" + "<P>"
-                                  + HU.space(1) + sb.toString()));
-
+                              new StringBuffer("Executed SQL" + HU.vspace() +
+					       HU.space(1) + sb.toString()));
         } else {
             Statement statement = null;
             try {
                 statement = getDatabaseManager().execute(query, -1, 10000);
             } catch (Exception exc) {
                 exc.printStackTrace();
-
                 throw exc;
             }
 
@@ -2232,6 +2248,7 @@ public class Admin extends RepositoryManager {
             ResultSetMetaData rsmd   = null;
             StringBuilder     raw    = null;
             StringBuilder     table  = new StringBuilder();
+            StringBuilder     resultsSB  = new StringBuilder();
             while ((results = iter.getNext()) != null) {
                 if (rsmd == null) {
                     rsmd = results.getMetaData();
@@ -2289,20 +2306,20 @@ public class Admin extends RepositoryManager {
             }
             table.append("</tbody></table>");
             if (raw != null) {
-                sb.append(HU.pre(raw.toString()));
+                resultsSB.append(HU.pre(raw.toString()));
             } else {
-                sb.append(table);
+                resultsSB.append(table);
             }
             long t2 = System.currentTimeMillis();
             getRepository().clearCache();
             getRepository().readDatabaseProperties();
-
-            return makeResult(request, msg("RAMADDA-Admin-SQL"),
-                              new StringBuffer(msgLabel("Fetched rows") + cnt
-                                  + HU.space(1) + msgLabel("in")
-                                  + (t2 - t1) + "ms <p>" + sb.toString()));
-        }
-
+	    sb.append(msgLabel("Fetched rows") + cnt
+		      + HU.space(1) + msgLabel("in")
+		      + (t2 - t1) + "ms");
+	    sb.append(HU.vspace());
+	    sb.append(resultsSB);
+            return makeResult(request, msg("RAMADDA-Admin-SQL"),  sb);
+	}
     }
 
     /**
@@ -2644,30 +2661,24 @@ public class Admin extends RepositoryManager {
 	
 
 	header.accept(topSB, "Clear Passwords");
-	request.formPostWithAuthToken(topSB, URL_ADMIN_MAINTENANCE, "");
-	topSB.append(HU.note("Note:  All users including you will have to reset their passwords. If you do not have email enabled then only the admin will be able to reset the passwords. So, if you do this then right away, while your session is active, go and change your password. If things go bad and you can't login at all see the  <a href=\"http://ramadda.org/repository/userguide/faq.html#faq1_cat1_6\">FAQ</a> post."));
+	topSB.append(request.formPost(URL_ADMIN_MAINTENANCE, ""));
+	topSB.append(messageNote("Note:  All users including you will have to reset their passwords. If you do not have email enabled then only the admin will be able to reset the passwords. So, if you do this then right away, while your session is active, go and change your password. If things go bad and you can't login at all see the  <a href=\"http://ramadda.org/repository/userguide/faq.html#faq1_cat1_6\">FAQ</a> post."));
 
 	topSB.append(HU.submit(msg("Clear all passwords"), ACTION_PASSWORDS_CLEAR));
-	topSB.append(HU.space(2));
-	topSB.append(HU.labeledCheckbox(ARG_PASSWORDS_CLEAR_CONFIRM,
-					    "true", false,
-					    "Yes, really clear all passwords"));
-
+	getAuthManager().addVerification(request,topSB,null,true);
 	topSB.append(HU.formClose());
 
 	
 	header.accept(topSB, "Export Database");
-	request.formPostWithAuthToken(topSB, URL_ADMIN_MAINTENANCE, "");
-	topSB.append(HU.note("You can write out the database for backup or transfer to a new database")
-		  + "<br>"
-		  + HU.submit(
-				     msg("Export the database"), ACTION_DUMPDB));
-
+	topSB.append(request.formPost(URL_ADMIN_MAINTENANCE));
+	topSB.append(messageNote("You can write out the database for backup or transfer to a new database"));
+	topSB.append(HU.submit(msg("Export the database"), ACTION_DUMPDB));
+	getAuthManager().addVerification(request,topSB,null,true);
 	topSB.append(HU.formClose());
 
 	header.accept(topSB, "Reindex Lucene Index");
 	request.formPostWithAuthToken(topSB, URL_ADMIN_MAINTENANCE, "");
-	topSB.append(HU.note("Reindex all deletes entire index. Reindex partial only in indexes entries not already indexed")
+	topSB.append(messageNote("Reindex all deletes entire index. Reindex partial only in indexes entries not already indexed")
 		  + HU.submit(msg("Reindex all"), ACTION_FULLINDEX)
 		  + HU.space(2)
 		  + HU.submit(
@@ -2679,7 +2690,7 @@ public class Admin extends RepositoryManager {
         StringBuffer filePathSB = new StringBuffer();
 	header.accept(filePathSB,"Change file paths");
         request.formPostWithAuthToken(filePathSB, URL_ADMIN_MAINTENANCE, "");
-        filePathSB.append(HU.note("Change the stored file path for all entries that match the following pattern"));
+        filePathSB.append(messageNote("Change the stored file path for all entries that match the following pattern"));
         filePathSB.append(HU.formTable());
         filePathSB.append(HU.formEntry(msgLabel("File Pattern"),
                 HU.input(ARG_CHANGEPATHS_PATTERN,
@@ -2714,7 +2725,7 @@ public class Admin extends RepositoryManager {
 
         StringBuffer orphansSB = new StringBuffer();
 	header.accept(orphansSB,"List orphan entries");
-	orphansSB.append(HU.note("This lists all entries that don't have a parent entry. Normally this shouldn't happen but to due an occasional bug there can be entries that aren't part of the main hierarchy."));
+	orphansSB.append(messageNote("This lists all entries that don't have a parent entry. Normally this shouldn't happen but to due an occasional bug there can be entries that aren't part of the main hierarchy."));
         request.formPostWithAuthToken(orphansSB, URL_ADMIN_MAINTENANCE, "");
 	orphansSB.append(HU.submit(msg("List orphans"), ACTION_LISTORPHANS));
         orphansSB.append(HU.formClose());
@@ -2746,7 +2757,6 @@ public class Admin extends RepositoryManager {
         } else if (request.defined(ACTION_LISTMISSING)) {
             sb.append(missingSB);
             listMissingFiles(request, sb);
-
             return makeResult(request, "RAMADDA-Admin-Missing Files", sb);
         } else if (request.defined(ACTION_LISTORPHANS)) {
             sb.append(orphansSB);
@@ -2775,17 +2785,14 @@ public class Admin extends RepositoryManager {
         } else if (request.defined(ACTION_SHUTDOWN)) {
             getAuthManager().ensureAuthToken(request);
             if (getRepository().getShutdownEnabled()) {
-                if (request.get(ARG_SHUTDOWN_CONFIRM, false)) {
+		if(getAuthManager().verify(request,sb,true)) {
                     return processShutdown(request);
                 }
             }
         } else if (request.defined(ACTION_PASSWORDS_CLEAR)) {
-            getAuthManager().ensureAuthToken(request);
-            if (request.get(ARG_PASSWORDS_CLEAR_CONFIRM, false)) {
+	    if(getAuthManager().verify(request,sb,true)) {
                 clearAllPasswords();
-                sb.append(
-                    "All passwords have been cleared. Make sure you go and change your password immediately");
-
+                sb.append("All passwords have been cleared. Make sure you go and change your password immediately");
                 return makeResult(request, msg("RAMADDA-Admin--Maintenance"), sb);
             }
         }
@@ -2794,14 +2801,14 @@ public class Admin extends RepositoryManager {
         String status = cleanupStatus.toString();
         if (runningCleanup) {
             sb.append(msg("Database clean up is running"));
-            sb.append("<p>");
+            sb.append(HU.vspace());
             sb.append(HU.submit(msg("Stop cleanup"), ACTION_STOP));
         } else {
-            sb.append(HU.p());
+            sb.append(HU.vspace());
             //            sb.append(
             //                msg(
             //                "Cleanup allows you to remove all file entries from the repository database that do not exist on the local file system"));
-            //            sb.append("<p>");
+            //            sb.append(HU.vspace());
             //            sb.append(HU.submit(msg("Start cleanup"), ACTION_START));
 
 
@@ -2820,10 +2827,8 @@ public class Admin extends RepositoryManager {
             if (getRepository().getShutdownEnabled()) {
                 request.formPostWithAuthToken(sb, URL_ADMIN_MAINTENANCE, "");
 		header.accept(sb, "Shutdown");
-                sb.append(HU.submit(msg("Shutdown server"), ACTION_SHUTDOWN)
-			  + HU.space(2)
-			  + HU.labeledCheckbox(ARG_SHUTDOWN_CONFIRM, "true", false,
-						      "Yes, really shutdown the server"));
+                sb.append(HU.submit(msg("Shutdown server"), ACTION_SHUTDOWN));
+		getAuthManager().addVerification(request,sb,"To verify shutdown please enter your password",true);
                 sb.append(HU.formClose());
             }
 
