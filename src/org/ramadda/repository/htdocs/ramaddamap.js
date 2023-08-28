@@ -9,9 +9,6 @@ var debugBounds = false;
 var getMapDebug = false;
 var debugPopup = false;
 
-//This gets set by Java
-var ramaddaMapRegions = null;
-
 var RamaddaToFloat = v=>{
     if(v!=null) v=parseFloat(v);
     return v;
@@ -21,6 +18,7 @@ var RamaddaToFloat = v=>{
 
 var MapUtils =  {
     me:'MapUtils',
+    regions:null,
     POSITIONMARKERID: 'location',
     LABEL_MAP:{
 	'aiannhr':'Federal Recognition',

@@ -15,6 +15,9 @@ let displayMapCurrentMarker = -1;
 let displayMapUrlToVectorListeners = {};
 let displayMapMarkerIcons = {};
 
+var ID_REGION_SELECTOR = "regionselector";
+
+
 var debugit = false;
 var debugFeatureLinking = false;
 var debugMapTime = false;
@@ -225,6 +228,79 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                 this.updateUICallback = setTimeout(callback, 1);
             }
         },
+	initRegionsSelector:function(button) {
+	    //Fetch the regions
+	    if(!MapUtils.regions) {
+		let jqxhr = $.getJSON(RamaddaUtil.getUrl("/regions.json"), data=> {
+		    if (GuiUtils.isJsonError(data)) {
+			console.log("Error fetching regions");
+			MapUtils.regions=[];
+			return;
+		    }
+		    MapUtils.regions=data;
+		    this.initRegionsSelector(button);
+		});
+		return;
+	    }		    
+	    let _this = this;
+	    if(_this.regionsDialog) _this.regionsDialog.remove();		
+	    let id = _this.domId(ID_REGION_SELECTOR);
+	    let html = _this.makeRegionsMenu();
+	    html = HU.div([ATTR_CLASS, "ramadda-popup-inner",ATTR_ID,id,
+			   ATTR_STYLE,HU.css('margin-top','0.5em','min-width','800px')],html);
+	    _this.regionsDialog = HU.makeDialog({content:html,title:'Regions',
+						 draggable:true,header:true,
+						 my:'left top',at:'left bottom',anchor:button});
+	    _this.regionsDialog.find(".ramadda-menu-item").click(function() {
+		let region = MapUtils.regions[+$(this).attr("idx")];
+		_this.map.setViewToBounds(new RamaddaBounds(region.north, region.west, region.south, region.east));
+	    });
+	    this.jq('regionsearch').focus();
+	    let regionItems = 	  this.regionsDialog.find(".ramadda-region-item")
+	    this.jq('regionsearch').keyup(function(event) {
+		let text = $(this).val().trim().toLowerCase();
+		regionItems.each(function() {
+		    if(text=='') {
+			$(this).show();
+		    } else {
+			let corpus = $(this).html();
+			if(!corpus) return;
+			corpus =  corpus.toLowerCase();
+			if(corpus.indexOf(text)>=0) {
+			    $(this).show();
+			} else {
+			    $(this).hide();
+			}
+		    }
+		});
+
+	    });
+
+	},
+
+	makeRegionsMenu:function() {
+	    let groups = {};
+	    MapUtils.regions.forEach((r,idx)=>{
+		//skip world as its a dup
+		if(r.name == "World") return
+		let group = r.group;
+		if(group.toLowerCase()=="model regions") group="Regions";
+		let name = r.name.replace(/ /g,"&nbsp;");
+		let item = HU.div([CLASS,"ramadda-menu-item ramadda-region-item", "idx",idx],name);
+		if(!groups[group]) groups[group] = "";
+		groups[group] +=item;});
+	    let html ='';
+	    html+= HU.center(HU.input('','',['placeholder','Find Region','id',this.domId('regionsearch'),'width','10']));
+	    html += "<table width=100%><tr valign=top>";
+	    let keys = Object.keys(groups);
+	    let width = (100/keys.length)+'%';
+	    keys.forEach(group=>{
+		html+= HU.td(['width',width], HU.div([ATTR_STYLE,HU.css("font-weight","bold","border-bottom","1px solid #ccc","margin-right","5px")], Utils.camelCase(group))+HU.div([ATTR_STYLE,HU.css("max-height","200px","overflow-y","auto", "margin-right","10px")], groups[group]));
+	    });
+	    html+="</tr></table>"
+	    return html;
+	},
+
 	getTurfPoints:function(f) {
 	    let p=[];
 	    let coords = f.geometry.coordinates;
@@ -763,7 +839,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
     const ID_HEATMAP_ANIM_STEP_FORWARD = "heatmapanimstepforward";
     const ID_HEATMAP_ANIM_STEP_BACK = "heatmapanimstepback";    
     const ID_HEATMAP_TOGGLE = "heatmaptoggle";    
-    const ID_REGION_SELECTOR = "regionselector";
     const ID_HTMLLAYER = "htmllayer";
     const ID_TRACK_VIEW = "trackview";
 
@@ -2984,52 +3059,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(debug) console.log("displaymap.updateUIInner:" + records.length);
 	    this.haveCalledUpdateUI = true;
 	    if(this.getProperty("showRegionSelector")) {
-		//Fetch the regions
-		if(!ramaddaMapRegions) {
-		    let jqxhr = $.getJSON(RamaddaUtil.getUrl("/regions.json"), data=> {
-			if (GuiUtils.isJsonError(data)) {
-			    console.log("Error fetching regions");
-			    ramaddaMapRegions=[];
-			    return;
-			}
-			ramaddaMapRegions=data;
-		    });
-		}		    
 		let label = this.getProperty("regionSelectorLabel") || HU.getIconImage("fa-globe-americas");
+		
 		let button = HU.div([CLASS,"ramadda-menu-button ramadda-clickable",  TITLE,"Select region", ID,this.domId("selectregion")],label)+SPACE2;
 		this.writeHeader(ID_HEADER2_PREPREFIX, button);
+
 		this.jq("selectregion").click(function() {
-		    let id = _this.domId(ID_REGION_SELECTOR);
-		    let groups = {};
-		    ramaddaMapRegions.forEach((r,idx)=>{
-			//skip world as its a dup
-			if(r.name == "World") return
-			let group = r.group;
-			if(group.toLowerCase()=="model regions") group="Regions";
-			let name = r.name.replace(/ /g,"&nbsp;");
-			let item = HU.div([CLASS,"ramadda-menu-item", "idx",idx],name);
-			if(!groups[group]) groups[group] = "";
-			groups[group] +=item;});
-		    let html = "<table width=100%><tr valign=top>";
-		    Object.keys(groups).forEach(group=>{
-			html+= HU.td([STYLE,HU.css()], HU.div([STYLE,HU.css("font-weight","bold","border-bottom","1px solid #ccc","margin-right","5px")], Utils.camelCase(group))+HU.div([STYLE,HU.css("max-height","200px","overflow-y","auto", "margin-right","10px")], groups[group]));
-		    });
-		    html+="</tr></table>"
-		    //set the global 
-		    let popup = HtmlUtils.setPopupObject(HtmlUtils.getTooltip());
-		    html = HU.div([ID,id],html);
-		    popup.html(HU.div([CLASS, "ramadda-popup-inner"], html));
-		    popup.show();
-		    popup.position({
-			of: $(this),
-			my: "left top",
-			at: "left bottom",
-		    });
-		    _this.jq(ID_REGION_SELECTOR).find(".ramadda-menu-item").click(function() {
-			let region = ramaddaMapRegions[+$(this).attr("idx")];
-			HtmlUtils.hidePopupObject();
-			_this.map.setViewToBounds(new RamaddaBounds(region.north, region.west, region.south, region.east));
-		    });
+		    _this.initRegionsSelector($(this));
 		});
 	    }
 

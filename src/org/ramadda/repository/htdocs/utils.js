@@ -5259,18 +5259,25 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     makeOptions: function(list, selected,maxWidth,debug) {
         let options = "";
         list.forEach(item=>{
+	    let attrs = [];
             let label = item;
             if(Array.isArray(item)) {
                 label=item[1];
                 item = item[0];
             } else if(Utils.isDefined(item.value)) {
+		if(item.imgsrc)
+		    attrs.push('img-src',item.imgsrc);
+		if(item.datatitle)
+		    attrs.push('title',item.datatitle);
+		if(item.datastyle)
+		    attrs.push('data-style',item.datastyle);		
 		label = item.label??item.value;
 		item = item.value;
 	    }
 	    let fullLabel  = label;
             if(maxWidth && label.length>maxWidth)
                 label = label.substring(0,maxWidth)+'...';
-            var extra = '';
+            let extra = '';
             if(selected && Array.isArray(selected)) {
                 if(selected.indexOf(item)>=0) {
                     extra=' selected ';
@@ -5282,7 +5289,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    if(item!=tt) {
 		tt = tt+HU.getTitleBr() + item;
 	    }
-            options+=HU.tag("option",['title',tt,extra,null,'value',item],label);
+	    attrs.push('title',tt,extra,null,'value',item);
+            options+=HU.tag("option",attrs,label);
         });
         return options;
     },
@@ -5627,12 +5635,14 @@ $.widget("custom.iconselectmenu", $.ui.selectmenu, {
 
         let label = item.label;
         let img = item.element.attr("img-src");
+        let title = item.element.attr("title");	
         if(img) {
             if(img.startsWith("fa")) {
                 img = HU.getIconImage(img);
             } else {
-                img = HU.image(img, [STYLE,item.element.attr("data-style")||"", "width",64,
-                                     "class", "ui-icon " + item.element.attr("data-class")]);
+                img = HU.image(img, [ATTR_STYLE,item.element.attr("data-style")||"", "width",64,
+                                     'title',title,
+				     "class", "ui-icon " + item.element.attr("data-class")]);
             }
             $(img).appendTo(wrapper);
         }
@@ -5643,7 +5653,6 @@ $.widget("custom.iconselectmenu", $.ui.selectmenu, {
         if(labelClass) {
             label = HU.div([STYLE,HU.css('width','100%'), 'class', labelClass],label);
         }
-
 
         wrapper.append(label);
         return li.append(wrapper).appendTo(ul);
