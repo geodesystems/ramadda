@@ -5847,6 +5847,14 @@ a.wiki-link-noexist {
     color: var(--hover-color) !important;    
 }
 
+img.ramadda-clickable {
+    border:1px solid transparent;
+}
+img.ramadda-clickable:hover {
+    border:1px solid var(--hover-color);
+}
+
+
 a span i:hover, a:hover span i {
     color: var(--hover-color) !important;    
 }
