@@ -284,6 +284,7 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
     background:#ccc;
 }
 
+
 .ramadda-menu-button {
     background:#fff;
     display:inline-block;
@@ -296,6 +297,7 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
     border:var(--basic-border);
     border-radius:var(--default-radius);
 }
+
 
 
 .ramadda-map-button {
@@ -5437,6 +5439,14 @@ a.wiki-link-noexist {
 }
 
 
+.ramadda-menutree .ui-menu {
+    border  :var(--basic-border);
+    width:200px;
+}
+
+.ramadda-menutree .ui-menu-item-wrapper:not([aria-haspopup="true"]) {
+    padding-left:6px;
+}
 
 
 .display-animation-slider .ui-slider-handle {
