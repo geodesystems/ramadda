@@ -1287,6 +1287,9 @@ public class WikiManager extends RepositoryManager
 	throws Exception {
 
         String src = getProperty(wikiUtil, props, ATTR_SRC, (String) null);
+	if(entry==null) {
+	    return getMessage(wikiUtil, props, msg("No image entry"));
+	}
         if ((src == null) || (src.length() == 0)) {
             if ( !entry.isImage()) {
                 return getMessage(wikiUtil, props, msg("Not an image"));
@@ -6936,24 +6939,22 @@ public class WikiManager extends RepositoryManager
         StringBuilder tags1  = new StringBuilder();
         StringBuilder tags2 = new StringBuilder();
         StringBuilder tags3 = new StringBuilder();
-        StringBuilder tags4 = new StringBuilder();
 	Utils.TriFunction<String,String,String,String> l = (title,pre,post)->{
 	    return getWikiEditLink(textAreaId,title,pre,post,"");
 	};
 
-	Utils.QuadFunction<String,String,String,String,String> l2 = (title,pre,post,tt)->{
+	Utils.QuadFunction<String,String,String,String,String> l2 = (title,tt,pre,post)->{
 	    return getWikiEditLink(textAreaId,title,pre,post,tt);
 	};
 	
         Utils.appendAll(tags1,
 			l.call("Section", "+section title={{name}}_newline__newline_", "-section"),
 			l.call( "Frame", "+frame background=#fff frameSize=0 shadow title=_title_", "-frame"),
-			l.call( "Note", "+note_newline__newline_", "-note"),
 			l.call( "Table", "+table height=400 hover=true cellborder=false rowborder=false stripe=false ordering=false paging=false searching=false_newline_:tr &quot;heading 1&quot; &quot;heading 2&quot;_newline_+tr_newline_:td colum 1_newline_+td_newline_column 2_newline_", "-td_newline_-tr_newline_-table"),
-			l.call( "Row/Column", "+row_newline_+col-6_newline_", "-col_newline_+col-6_newline_-col_newline_-row"),
-			l.call( "Left-right", "+leftright_nl_+left_nl_-left_nl_+right_nl_-right_nl_", "-leftright"),
-			l.call( "Left-middle-right", "+leftmiddleright_nl_+left_nl_-left_nl_+middle_nl_-middle_nl_+right_nl_-right_nl_", "-leftmiddleright"),
-			l.call( "Tabs", "+tabs_newline_+tab tab title_newline_", "-tab_newline_-tabs_newline_"),
+			l2.call( "Row/Column", "Create a bootstrap row", "+row_newline_+col-6_newline_", "-col_newline_+col-6_newline_-col_newline_-row"),
+			l2.call( "Left-right", "2 column table aligned left and right","+leftright_nl_+left_nl_-left_nl_+right_nl_-right_nl_", "-leftright"),
+			l2.call( "Left-middle-right", "3 column table aligned left,center and right","+leftmiddleright_nl_+left_nl_-left_nl_+middle_nl_-middle_nl_+right_nl_-right_nl_", "-leftmiddleright"),
+			l2.call( "Tabs", "Make tabs","+tabs_newline_+tab tab title_newline_", "-tab_newline_-tabs_newline_"),
 			l.call( "Accordion", "+accordion decorate=false collapsible=true activeSegment=0 _newline_+segment segment  title_newline_", "-segment_newline_-accordion_newline_"),
 			l.call( "Slides", "+slides dots=true slidesToShow=1 bigArrow=true  centerMode=true variableWidth=true arrows=true  dots=true  infinite=false style=_qt__qt__nl_+slide Title_nl_", "-slide_nl_-slides_nl_"),
 			l.call("Grid box", "+grid #decorated=true #columns=_qt_1fr 2fr_qt_ _nl_:filler_nl_+gridbox #flex=1 #style=_qt__qt_ #width=_qt__qt_ #title=_qt_Title 1_qt__nl_-gridbox_nl_+gridbox #title=_qt_Title 2_qt__nl_-gridbox_nl_:filler_nl_", "-grid"),
@@ -6982,8 +6983,7 @@ public class WikiManager extends RepositoryManager
 
 
 
-
-        Utils.appendAll(tags3, l.call( "Note", "+note style=\"\" _nl__nl_", "-note"));
+        Utils.appendAll(tags3, l.call( "Note", "+note\\n\\n", "-note"));
         String[] colors = new String[] {"gray",  "yellow"};
         for (String color : colors) {
             tags3.append(
@@ -6996,7 +6996,7 @@ public class WikiManager extends RepositoryManager
 					 "+note-" + color + "_nl__nl_", "-note",""));
         }
 
-        Utils.appendAll(tags3, l.call( "Box", "+box style=\"\" _nl__nl_", "-box"));
+        Utils.appendAll(tags3, l.call( "Box", "+box_nl__nl_", "-box"));
         for (String color : colors) {
             tags3.append(
 			 getWikiEditLink(
@@ -7125,7 +7125,7 @@ public class WikiManager extends RepositoryManager
         String etcButton = makeButton.apply("Etc", etc.toString());
         String helpButton = makeButton.apply("Help", help.toString());
         String formattingButton = makeButton.apply("Formatting",
-						   HU.span(HU.hbox(tags1, tags2,tags3,tags4),
+						   HU.span(HU.hbox(tags1, tags2,tags3),
 							   HU.attrs("data-title","Formatting","class","wiki-menubar-tags")));
 
         StringBuilder misc1 = new StringBuilder();
@@ -7164,16 +7164,16 @@ public class WikiManager extends RepositoryManager
 			l.call("Italic text", "\\'\\'", "\\'\\'"),
 			l.call("Code", "```\\n", "\\n```"));
         Utils.appendAll(misc2,
-			l2.call("Internal link", "[[", "]]", "Link title"),
-			l2.call("External link", "[", "]", "http://www.example.com link title"),
+			l.call("Internal link", "[[id|link text", "]]"),
+			l.call("External link", "[http://www.example.com link title", "]"),
 			l.call("Embed YT, etc.","@(youtube, wikipedia, etc, URL)",""),
-			l2.call("Small text", "<small>", "</small>", "Small text"),
+			l.call("Small text", "<small>", "</small>"),
 			l.call("Horizontal line", "\\n----\\n", ""),
 			l.call("Button", ":button url label", ""),
 			l.call("Remark", "\\n:rem ", ""),
 			l.call("Draft", "+draft", "-draft"),
 			l.call("Reload", "\\n:reload seconds=30 showCheckbox=true showLabel=true", ""),
-			l2.call("After", "+after pause=0 afterFade=5000_newline__newline_", "-after", "After"),
+			l.call("After", "+after pause=0 afterFade=5000_newline__newline_", "-after"),
 			l.call("Odometer", "{{odometer initCount=0 count=100 immediate=true pause=1000}}", ""));
 	
 
@@ -7292,9 +7292,11 @@ public class WikiManager extends RepositoryManager
 		    + "," + HU.squote("{{" + textToInsert + " ")
 		    + "," + HU.squote("}}") + "," + HU.squote("")
 		    + ");";
+		String attrs = HU.attrs("class","wiki-editor-popup-link",
+					"style","margin-left:8px;");
+		if(tag.tt!=null) attrs+=HU.attr("title",tag.tt);
                 sb.append(HU.div(HU.href(js2, tag.label),
-				 HU.attrs("class","wiki-editor-popup-link",
-					  "style","margin-left:8px;")));
+				 attrs));
             }
             sb.append(HU.br());
         }
@@ -7324,18 +7326,24 @@ public class WikiManager extends RepositoryManager
      */
     private String getWikiEditLink(String textAreaId, String label,
                                    String prefix, String suffix,
-                                   String example) {
+                                   String tt) {
         String js;
+	String linkAttrs = "";
+	if(stringDefined(tt)) {
+	    linkAttrs+=HU.attr("title",tt);
+	}
+
         if (suffix.length() == 0) {
-            String prop = prefix + example + suffix;
+            String prop = prefix + suffix;
             js = "javascript:WikiUtil.insertText(" + HU.squote(textAreaId) + ","
 		+ HU.squote(prop) + ");";
         } else {
             js = "javascript:WikiUtil.insertTags(" + HU.squote(textAreaId) + ","
 		+ HU.squote(prefix) + "," + HU.squote(suffix) + ","
-		+ HU.squote(example) + ");";
+		+ HU.squote("") + ");";
         }
-        return HU.div(HU.href(js, label),HU.cssClass("wiki-editor-popup-link"));
+	String attrs=  HU.attrs("class","wiki-editor-popup-link");
+        return HU.div(HU.href(js, label,linkAttrs),attrs);
     }
 
 

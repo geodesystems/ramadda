@@ -3382,7 +3382,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    if(Utils.stringDefined(value)) {
 		value = value.toLowerCase();
 		textOk = false;
-		let html = Utils.stripTags($(this).html()).toLowerCase();
+		let html = $(this).html();
+		//check for title
+		let match = html.match(/title *= *(\"|')([^(\"|')]+)/);
+		if(match) {
+		    html = html+' ' + match[2];
+		} 
+		html = Utils.stripTags(html);
+		html = html.toLowerCase();
 		if(html.indexOf(value)>=0) {
 		    textOk=true;
 		} 
@@ -5955,4 +5962,6 @@ $( document ).ready(function() {
 
 
 Utils.areDisplaysReady()
+
+
 

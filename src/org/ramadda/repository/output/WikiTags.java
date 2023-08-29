@@ -25,33 +25,39 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
     //J--
     public static final WikiTagCategory[] WIKITAGS = {
         new WikiTagCategory("General",
-                            new WikiTag(WIKI_TAG_INFORMATION, null, ATTR_DETAILS, "false",ATTR_SHOWTITLE,"false"),
-                            new WikiTag(WIKI_TAG_NAME,null,"link","true"), 
-                            new WikiTag(WIKI_TAG_DESCRIPTION),
-                            new WikiTag(WIKI_TAG_RESOURCE, null, ATTR_TITLE,"",ATTR_SHOWICON,"true"),
-                            new WikiTag(WIKI_TAG_ENTRYLINK, null, "link","",ATTR_TITLE,"",ATTR_SHOWICON,"true"), 			    
-                            new WikiTag(WIKI_TAG_THIS,null),
-                            new WikiTag(WIKI_TAG_ANCESTOR,null,"type","entry type"), 			    
+                            new WikiTag(WIKI_TAG_NAME,null,"tt","Entry name","link","true"), 
+                            new WikiTag(WIKI_TAG_DESCRIPTION,null,"tt","Entry description","wikify","true"),
+                            new WikiTag(WIKI_TAG_INFORMATION, null, "tt","General entry information",
+					ATTR_DETAILS, "false",ATTR_SHOWTITLE,"false"),
+                            new WikiTag(WIKI_TAG_RESOURCE, null, "tt","Link to entry file",ATTR_TITLE,"",ATTR_SHOWICON,"true"),
+                            new WikiTag(WIKI_TAG_ENTRYLINK,"Entry link", "tt","Link to entry","link","",ATTR_TITLE,"",ATTR_SHOWICON,"true"), 			    
+                            new WikiTag(WIKI_TAG_THIS,"Entry ID","tt","The entry ID"),
+                            new WikiTag(WIKI_TAG_ANCESTOR,"Ancestor ID","tt","ID of ancestor","#type","entry type"), 			    
                             new WikiTag(WIKI_TAG_LABEL, null, ATTR_TEXT,"",ATTR_ID,"arbitrary id to match with property"),
                             new WikiTag(WIKI_TAG_LINK, null, ATTR_TITLE,"","button","false"),
                             new WikiTag(WIKI_TAG_HTML,null,"showTitle","false"),
+                            new WikiTag(WIKI_TAG_IMPORT, null, "tt","Import display of another entry",
+					ATTR_ENTRY,"","showTitle","false"),
+
                             new WikiTag("multi", null, "_attrs", "attr1,attr2"),
                             new WikiTag(WIKI_TAG_SIMPLE, null, ATTR_TEXTPOSITION, POS_LEFT),
-                            new WikiTag(WIKI_TAG_IMPORT, null, ATTR_ENTRY,"","showTitle","false"),
                             new WikiTag(WIKI_TAG_SHOW_AS, null, ATTR_ENTRY,"","type","entry type to display as","#target","target entry"),
                             new WikiTag(WIKI_TAG_EMBED, null, ATTR_ENTRY,"",ATTR_SKIP_LINES,"0",ATTR_MAX_LINES,"1000","style","",ATTR_FORCE,"false",ATTR_MAXHEIGHT,"300",ATTR_ANNOTATE,"true","raw","true","wikify","true"),
                             new WikiTag(WIKI_TAG_TAGS),
                             new WikiTag(WIKI_TAG_FIELD, null, "name", "")),
         new WikiTagCategory("Layout", 
-                            new WikiTag(WIKI_TAG_TABLETREE, null, "simple","false","#maxHeight","500px"),
-                            new WikiTag(WIKI_TAG_FULLTREE, null,"depth","10","addprefix","false","showroot","true","labelWidth","20", ATTR_SHOWICON,"true","types","group,feile,...."),
+                            new WikiTag(WIKI_TAG_TABLETREE, "Entry table/tree", "tt","Standard entry table with tree links",
+					"simple","false","#maxHeight","500px"),
+                            new WikiTag(WIKI_TAG_FULLTREE, "Entry full tree","tt",
+					"Show a tree of entries",
+					"depth","10","addprefix","false","showroot","true","labelWidth","20", ATTR_SHOWICON,"true","types","group,feile,...."),
                             new WikiTag(WIKI_TAG_MENUTREE, null,"depth","10","addprefix","false","showroot","true","menuStyle","","labelWidth","20", ATTR_SHOWICON,"true","types","group,file,...."), 			    			    
                             new WikiTag(WIKI_TAG_LINKS, null),
                             new WikiTag(WIKI_TAG_LIST),
                             new WikiTag(WIKI_TAG_ENTRIES_TEMPLATE,null,"template","${name link=true}","before","",
 					"after",""), 			    
-                            new WikiTag(WIKI_TAG_TABS, null), 
-                            new WikiTag(WIKI_TAG_GRID, null, 
+                            new WikiTag(WIKI_TAG_TABS, null,"tt","Show entries in tabs"), 
+                            new WikiTag(WIKI_TAG_GRID, "Entry grid","tt","Show a grid of entries", 
                                         ATTR_TAG, WIKI_TAG_CARD, 
                                         "inner-height","200", 
 					"width","200px",
@@ -182,6 +188,8 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
         /** _more_ */
         String attrs;
 
+	String tt;
+
         /** _more_ */
         List<String> attrsList = new ArrayList<String>();
 
@@ -222,6 +230,11 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
                         sb.append("_newline_");
                         cnt = 0;
                     }
+		    if(attrs[i]!=null && attrs[i].equals("tt")) {
+			tt = attrs[i+1];
+			continue;
+		    }
+
                     cnt += attrs[i].length() + attrs[i + 1].length();
                     attr(sb, attrs[i], attrs[i + 1]);
                 }

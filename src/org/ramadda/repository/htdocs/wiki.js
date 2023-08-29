@@ -206,39 +206,6 @@ if(!window.WikiUtil) {
 function  WikiEditor(entryId, formId, id, hidden,argOptions) {
     if(formId) {
 	let _this = this;
-	$('#'+id+'_toolbar_search').click(function(){
-	    let popup = '';
-	    $('#' + formId).find('.wiki-menubar-tags').each(function(){
-		if(popup!='')
-		    popup+='<thin_hr>';
-//		popup+=HU.center(HU.b($(this).attr('data-title')));
-		popup+=$(this).html();
-	    });
-	    popup =
-		HU.center(HU.input('','',['placeholder','Find Tag','id',
-					  _this.domId('tagsearch'),'width','10'])) +
-		popup;
-	    popup = HU.div([ATTR_STYLE,HU.css('width','600px',
-					      'height','300px',
-					      'max-height','300px','overflow-y','auto')],
-			   popup);
-	    if(this.tagSelectDialog) this.tagSelectDialog.remove();
-	    this.tagSelectDialog =
-		HU.makeDialog({content:popup,anchor:$(this),title:"Tags",header:true,draggable:true});
-	    _this.jq('tagsearch').focus();
-
-	    this.tagSelectDialog.find('.wiki-editor-popup-category').css('display','none');
-	    let tags = this.tagSelectDialog.find('.wiki-editor-popup-link');
-//	    let tags = this.tagSelectDialog.find('a');	    
-	    _this.jq('tagsearch').keyup(function(event) {
-		let text = $(this).val().trim().toLowerCase();
-		HU.doPageSearch(text,tags);
-	    });
-
-
-
-	});
-
 	//If we are editing then listen for the submit and clear the editorChanged flag
 	$('#' + formId).submit(()=>{
 	    this.editorChanged = false;
@@ -288,6 +255,8 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
 	      formId:formId,
 	      hidden:hidden});
     this.myDiv =  $("#"+this.getId());
+    this.initTagSearch();
+
     WikiUtil.addWikiEditor(this);
     Utils.initDragAndDrop(this.getDiv(),
 			  event=>{
@@ -552,6 +521,13 @@ WikiEditor.prototype = {
 	let selText, isSample = false;
 	tagOpen = Utils.decodeText(tagOpen);
 	tagClose = Utils.decodeText(tagClose);    
+	/*
+	if(sampleText) {
+	    sampleText = Utils.decodeText(sampleText)+'\n';
+	    if(tagOpen) tagOpen = tagOpen.trim()+'\n';
+	}
+        let text = (tagOpen??'') + (sampleText??'')+(tagClose??'') + " ";
+	*/
         let text = (tagOpen??'') + (tagClose??'') + " ";
         let cursor = this.getEditor().getCursorPosition();
         this.getEditor().insert(text);
@@ -1837,6 +1813,43 @@ WikiEditor.prototype = {
 	
     },
 
+    initTagSearch:function() {
+	let popup = '';
+	if(!this.formId) return;
+	$('#' + this.formId).find('.wiki-menubar-tags').each(function(){
+	    if(popup!='')popup+='<thin_hr>';
+	    //		popup+=HU.center(HU.b($(this).attr('data-title')));
+	    popup+=$(this).html();
+	});
+	popup =HU.center(HU.input('','',['placeholder','Find Tag','id', this.domId('tagsearch'),
+					 'style','margin-top:4px;','width','10'])) + popup;
+	popup = HU.div([ATTR_STYLE,HU.css('width','600px',
+					  'height','300px',
+					  'max-height','300px','overflow-y','auto')],popup);
+
+	let _this = this;
+	$('#'+this.id+'_toolbar_search').click(function(){
+	    if(this.tagSelectDialog) this.tagSelectDialog.remove();
+	    this.tagSelectDialog =
+		HU.makeDialog({content:popup,anchor:$(this),at:'left+300 bottom+40',title:"Tags",header:true,draggable:true});
+	    _this.jq('tagsearch').focus();
+
+	    this.tagSelectDialog.find('.wiki-editor-popup-category').css('display','none');
+	    let tags = this.tagSelectDialog.find('.wiki-editor-popup-link');
+//	    let tags = this.tagSelectDialog.find('a');	    
+	    _this.jq('tagsearch').keyup(function(event) {
+		let text = $(this).val().trim().toLowerCase();
+		HU.doPageSearch(text,tags);
+	    });
+
+
+
+	});
+
+
+
+
+    },
     initAttributes:function() {
 	this.groupAttributes = [
 	    {label:'Collection Properties'},
