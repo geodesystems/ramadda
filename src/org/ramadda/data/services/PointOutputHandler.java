@@ -37,6 +37,7 @@ import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.ColorTable;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.SelectionRectangle;
 import org.ramadda.util.Utils;
@@ -1304,6 +1305,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         Result result = null;
         //Make a RecordVisitor for each point product type
         if (formats.contains(OUTPUT_CSV.getId())) {
+	    request.setMimeType(IO.MIME_CSV);
 	    if(!asynch) request.setReturnFilename(returnFileName+".csv");
             visitors.add(makeCsvVisitor(request, entry, pointEntries, null,
                                         null, jobInfo.getJobId()));
