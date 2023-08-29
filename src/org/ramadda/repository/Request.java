@@ -3267,6 +3267,10 @@ public class Request implements Constants, Cloneable {
     }
 
 
+    public void setMimeType(String mimeType) {
+        getHttpServletResponse().setContentType(mimeType);
+    }
+
     /*
       Makes a result where the caller will be writing directly to the
       http output stream which is gotten by calling request.getOutputStream()
