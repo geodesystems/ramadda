@@ -5501,7 +5501,9 @@ a.wiki-link-noexist {
 .wiki-editor-tag-highlight {
 }
 
-
+.wiki-editor-popup-category {
+    font-weight:bold;
+}
 
 
 .wiki-editor-message {
