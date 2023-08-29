@@ -20,7 +20,7 @@ addGlobalDisplayType({
     forUser: true,
     label: "D3 Plot",
     requiresData: true,
-    category: "Charts"
+    category: CATEGORY_MISC
 });
 
 
