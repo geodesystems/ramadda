@@ -4181,7 +4181,7 @@ public class WikiManager extends RepositoryManager
             return getRepository().getUrlBase();
         } else if (theTag.equals(WIKI_TAG_FULLTREE) || theTag.equals(WIKI_TAG_MENUTREE)) {
 	    boolean doMenu = theTag.equals(WIKI_TAG_MENUTREE);
-            int depth = getProperty(wikiUtil, props, "depth", 10);
+            int depth = getProperty(wikiUtil, props, "depth", 4);
             boolean addPrefix = getProperty(wikiUtil, props, "addPrefix",
                                             false);
             boolean showRoot = getProperty(wikiUtil, props, "showroot",
@@ -4195,11 +4195,10 @@ public class WikiManager extends RepositoryManager
 	    if (addPrefix) 
 		style = "list-style-type:none;" + style;
 	    int labelWidth = getProperty(wikiUtil,props,"labelWidth",30);
-	    sb.append("\n");
+	    sb.append(HU.open("span","class","ramadda-menutree"));
 	    doFullTree(request, wikiUtil, originalEntry, entry, props, true, doMenu, menuId,  
                        style, labelWidth, addPrefix, "", showRoot, showIcon, depth, types, sb);
-
-	    sb.append("\n");
+	    sb.append(HU.close("span"));
 	    if(doMenu) {
 		HU.script(sb, "$('#" +menuId+"').menu();\n");
 	    }
@@ -7185,10 +7184,8 @@ public class WikiManager extends RepositoryManager
 						HU.span(makeTagsMenu(entry,textAreaId),
 							HU.attrs("data-title","Entries","class","wiki-menubar-tags")));
 	
-        String displaysButton = HU.href(
-					"javascript:noop()", "Displays",
-					HU.attrs(
-						 "id", "displays_button" + textAreaId,
+        String displaysButton = HU.href("javascript:noop()", "Displays",
+					HU.attrs("id", "displays_button" + textAreaId,
 						 "class",
 						 "ramadda-menubar-button"));
 
