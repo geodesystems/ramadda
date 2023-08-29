@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Aug 28 09:58:08 MDT 2023";
+var build_date="RAMADDA build date: Tue Aug 29 08:24:40 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -3340,7 +3340,7 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	    props.pos = "nw";
     }	
     
-    let cvrt = s=>{
+    let cvrt= this.cvrt = s=>{
 	if(!isNaN(+s)) return +s;
 	s  = String(s);
 	s = s.replace(/canvasWidth2/g,""+(props.canvasWidth/2)).replace(/canvasWidth/g,props.canvasWidth);
@@ -3361,9 +3361,6 @@ function Glyph(display, scale, fields, records, args, attrs) {
 
     props.dx = cvrt(props.dx);
     props.dy = cvrt(props.dy);    
-
-
-
     props.baseWidth = +props.baseWidth;
     props.width = (+props.width)*scale;
     props.height = (+props.height)*scale;
@@ -3608,6 +3605,16 @@ Glyph.prototype = {
 		ctx.fillText(label,cx-props.width/2-dim.width-2,cy);
 		ctx.fillText(props.sizeByInfo.maxValue,cx+props.width/2+2,cy);
 	    }
+	} else if(props.type=='line') {
+	    let x1= this.cvrt(props.x1);
+	    let y1= this.cvrt(props.y1);
+ 	    let x2= this.cvrt(props.x2);
+	    let y2= this.cvrt(props.y2);	    	    
+	    ctx.strokeStyle = props.strokeStyle||'#000';
+	    ctx.beginPath();
+	    ctx.moveTo(x1,y1);
+	    ctx.lineTo(x2,y2);
+	    ctx.stroke();
 	} else if(props.type=='3dbar') {
 	    let pt = Utils.translatePoint(x, y, props.width,  props.height, props.pos,{dx:props.dx,dy:props.dy});
 	    let height = lengthPercent*(props.height) + parseFloat(props.baseHeight);
@@ -27505,7 +27512,7 @@ addGlobalDisplayType({
     forUser: true,
     label: "D3 Plot",
     requiresData: true,
-    category: "Charts"
+    category: CATEGORY_MISC
 });
 
 
@@ -45485,6 +45492,9 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    });	    
 	},
 
+	getZoomImage:function(level) {
+	    return RamaddaUtil.getCdnUrl('/map/zoom/zoom' + level+'.png')
+	},
 	showViewMenu: function(button) {
 	    let _this = this;
 	    let clear = () =>{
@@ -45500,7 +45510,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		html+= this.menuItem(this.domId(ID_MAP_MYLOCATION),"Current Location");
 	    }
 	    html+= this.menuItem(this.domId(ID_MAP_REGIONS),"Regions");
-	    html+= this.menuItem(this.domId(ID_MAP_CHOOSE),"Enter Lat/Lon");	    
+	    html+= this.menuItem(this.domId(ID_MAP_CHOOSE),"Set Location/Zoom");	    
 
 
 	    html  = this.makeMenu(html);
@@ -45510,25 +45520,51 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		let html = HU.formTable();
 		html+=HU.formEntry('Latitude:',HU.input('','',[ATTR_ID,this.domId('choose_latitude')]));
 		html+=HU.formEntry('Longitude:',HU.input('','',[ATTR_ID,this.domId('choose_longitude')]));		
+
 		let opts = [2,3,4,5,6,7,8,9,10,11,13,14,15,16,17,18].map(v=>{
 		    return {label:v,value:v,
-			    //datastyle:'width:100px;height:100px;margin-bottom:2px;border:1px solid #ccc;',
-			    //datatitle:'zoom: '+ v,
-			    //imgsrc:RamaddaUtil.getCdnUrl('/map/zoom/zoom' + v+'.png')
+			    image:this.getZoomImage(v)
 			   };
 		});
-		let zoomMenu = HU.openTag("select",[ATTR_ID,this.domId('choose_zoom')]);
-		zoomMenu+=HU.makeOptions(opts,_this.getCurrentLevel());
-		zoomMenu+=HU.closeTag("select");
-		html+=HU.formEntry('Zoom level:',zoomMenu);
+		let zoomPopup  = '';
+		opts.forEach(level=>{
+		    zoomPopup+=
+			HU.div([ATTR_STYLE,HU.css('margin-bottom','2px')],
+			       HU.image(level.image,
+					['data-level',level.value,
+					 ATTR_TITLE,'Level:' + level.value,
+					 'width','100px',ATTR_CLASS,'ramadda-clickable']));
+		});
+		zoomPopup=HU.div([ATTR_STYLE,'text-align:center;max-height:300px;overflow-y:auto;'], zoomPopup);
+		html+= HU.hidden('',_this.getCurrentLevel(),
+				 [ATTR_ID,this.domId('choose_zoom_value')]);
+		let zoomButton = HU.div([ATTR_ID,this.domId('choose_zoom_button')],
+					HU.image(this.getZoomImage(_this.getCurrentLevel()),
+						 [ATTR_TITLE,'Click to select level',
+						  ATTR_ID,this.domId('choose_zoom_image'),
+					  
+						  'width','100px',ATTR_CLASS,'ramadda-clickable']));
+		html+=HU.formEntry('Zoom Level:',zoomButton);
 		html+=HU.formTableClose();
 		let buttons =HU.div([ATTR_CLASS,'ramadda-button-apply display-button'], 'Apply') + SPACE2 +
 		    HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK') + SPACE2 +
 		    HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel');	    
 		html+=HU.center(buttons);
 		html = HU.div([ATTR_CLASS, 'ramadda-dialog'],html);
-		let dialog = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_VIEW),draggable:true,title:'Enter Lat/Lon',header:true});
-		this.jq('choose_zoom').iconselectmenu({width:300}).addClass("ui-menu-icons ramadda-select-icon");	
+		let dialog = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_VIEW),draggable:true,
+					    title:'Set Location/Zoom',header:true});
+		let zoomDialog;
+		this.jq('choose_zoom_button').click(function(){
+		    if(zoomDialog) zoomDialog.remove();
+		    zoomDialog =HU.makeDialog({content:zoomPopup,anchor:$(this),header:true,title:'&nbsp;&nbsp;Select Zoom Level'});
+		    zoomDialog.find('.ramadda-clickable').click(function() {
+			let zoom  = $(this).attr('data-level');
+			_this.jq('choose_zoom_value').val(zoom);
+			_this.jq('choose_zoom_image').attr('src',$(this).attr('src'));
+			zoomDialog.remove();
+			zoomDialog=null;
+		    });
+		});
 		dialog.find('.display-button').button().click(function(){
 		    if($(this).hasClass('ramadda-button-ok') || $(this).hasClass('ramadda-button-apply')) {
 			let lat = _this.jq('choose_latitude').val().trim();
@@ -45537,9 +45573,10 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 			    let lonlat = MapUtils.createLonLat(lon,lat);
 			    _this.getMap().setCenter(lonlat);
 			}
-			_this.getMap().setZoom(parseInt(_this.jq('choose_zoom').val()));
+			_this.getMap().setZoom(parseInt(_this.jq('choose_zoom_value').val()));
 		    }
 		    if($(this).hasClass('ramadda-button-apply'))  return;
+		    if(zoomDialog) zoomDialog.remove();
 		    dialog.remove();
 		});
 	    });
@@ -48253,7 +48290,7 @@ MapGlyph.prototype = {
 			       HU.input('',dataIconInfo[ID_DATAICON_PROPS]??'',[ATTR_ID,this.domId(ID_DATAICON_PROPS),'size','80']));
 	    contents+=HU.b('Icon Specification:')  +'<br>';
 	    contents +=
-		HU.textarea('',dataIconInfo[ID_DATAICON_MARKERS]??'',[ID,this.domId(ID_DATAICON_MARKERS),'rows',3,'cols', 90]);
+		HU.textarea('',dataIconInfo[ID_DATAICON_MARKERS]??'',[ID,this.domId(ID_DATAICON_MARKERS),'rows',4,'cols', 90]);
 	    content.push({
 		header:'Data Icons',
 		contents: contents});
