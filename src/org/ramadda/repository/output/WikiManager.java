@@ -6972,7 +6972,7 @@ public class WikiManager extends RepositoryManager
 			l.call("Draggable", "+draggable framed=true header=_quote__quote_ style=_quote_background:#fff;_quote_ toggle=_quote_true_quote_ toggleVisible=_quote_true_quote__newline_",
 			       "-draggable"),
 			l.call("Expandable",   "+expandable header=_quote_quote_ expand=true_newline_", "-expandable"),
-			l.call("Fullscreen",   "+fullscreen", "-fullscreen"),
+			l.call("Fullscreen",   "+fullscreen_newline_", "-fullscreen"),
 			l.call("Inset", "+inset top=0 bottom=0 left=0 right=0 _newline_", "-inset"),
 			l.call("Absolute", "\\n+absolute top= bottom= left= right=\\n","-absolute"),
 			l.call("Relative", "\\n+relative\\n","-relative"),
@@ -7125,7 +7125,8 @@ public class WikiManager extends RepositoryManager
         String etcButton = makeButton.apply("Etc", etc.toString());
         String helpButton = makeButton.apply("Help", help.toString());
         String formattingButton = makeButton.apply("Formatting",
-						   HU.hbox(tags1, tags2,tags3,tags4));
+						   HU.span(HU.hbox(tags1, tags2,tags3,tags4),
+							   HU.attrs("data-title","Formatting","class","wiki-menubar-tags")));
 
         StringBuilder misc1 = new StringBuilder();
         StringBuilder misc2 = new StringBuilder();
@@ -7176,11 +7177,14 @@ public class WikiManager extends RepositoryManager
 			l.call("Odometer", "{{odometer initCount=0 count=100 immediate=true pause=1000}}", ""));
 	
 
-        String textButton = makeButton.apply("Misc",
-					     HU.hbox(misc1, misc2,misc3,misc4));
+        String textButton = makeButton.apply("Tags",
+					     HU.span(HU.hbox(misc1, misc2,misc3,misc4),
+						     HU.attrs("data-title","Tags","class","wiki-menubar-tags")));
 
         String entriesButton = makeButton.apply("Entries",
-						makeTagsMenu(entry,textAreaId));
+						HU.span(makeTagsMenu(entry,textAreaId),
+							HU.attrs("data-title","Entries","class","wiki-menubar-tags")));
+	
         String displaysButton = HU.href(
 					"javascript:noop()", "Displays",
 					HU.attrs(
@@ -7206,6 +7210,7 @@ public class WikiManager extends RepositoryManager
         HU.open(buttons, "div",
                 HU.cssClass("ramadda-menubar")
                 + HU.attrs("id", textAreaId + "_toolbar"));
+	buttons.append(HU.span(HU.img(getIconUrl("fas fa-binoculars")),HU.attrs("style","margin-left:4px;","title","Search for tags", "class","ramadda-clickable","id", textAreaId + "_toolbar_search")));
         Utils.appendAll(buttons, HU.span("", HU.id(textAreaId + "_prefix")),
                         formattingButton, textButton, entriesButton);
         if (fromTypeBuff != null) {
@@ -7258,10 +7263,9 @@ public class WikiManager extends RepositoryManager
 		    + "," + HU.squote("{{" + textToInsert + " ")
 		    + "," + HU.squote("}}") + "," + HU.squote("")
 		    + ");";
-                sb.append(inset);
-                sb.append(HU.href(js2, tuple[0]));
-                sb.append(HU.br());
-                sb.append("\n");
+                sb.append(HU.div(HU.href(js2, tuple[0]),
+				 HU.attrs("class","wiki-editor-popup-link",
+					  "style","margin-left:8px;")));
 	    }
             sb.append("</td>");
 	}
@@ -7275,10 +7279,7 @@ public class WikiManager extends RepositoryManager
                     sb.append("</td><td>&nbsp;</td><td valign=top>\n");
                 }
             }
-            sb.append("\n");
-
-            sb.append(HU.b(cat.category));
-            sb.append(HU.br());
+            sb.append(HU.div(cat.category,HU.attrs("class","wiki-editor-popup-category")));
             rowCnt += cat.tags.length;
             for (int tagIdx = 0; tagIdx < cat.tags.length; tagIdx++) {
                 WikiTags.WikiTag tag          = cat.tags[tagIdx];
@@ -7291,10 +7292,9 @@ public class WikiManager extends RepositoryManager
 		    + "," + HU.squote("{{" + textToInsert + " ")
 		    + "," + HU.squote("}}") + "," + HU.squote("")
 		    + ");";
-                sb.append(inset);
-                sb.append(HU.href(js2, tag.label));
-                sb.append(HU.br());
-                sb.append("\n");
+                sb.append(HU.div(HU.href(js2, tag.label),
+				 HU.attrs("class","wiki-editor-popup-link",
+					  "style","margin-left:8px;")));
             }
             sb.append(HU.br());
         }
