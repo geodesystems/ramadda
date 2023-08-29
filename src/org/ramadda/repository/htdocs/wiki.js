@@ -255,8 +255,6 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
 	      formId:formId,
 	      hidden:hidden});
     this.myDiv =  $("#"+this.getId());
-    this.initTagSearch();
-
     WikiUtil.addWikiEditor(this);
     Utils.initDragAndDrop(this.getDiv(),
 			  event=>{
@@ -323,6 +321,7 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
 
     this.getBlock().find("#" + this.id).append(HU.div([STYLE,HU.css("display","none"), CLASS,"wiki-editor-message",ID,this.domId(this.ID_WIKI_MESSAGE)]));
     this.wikiInitDisplaysButton();
+    this.initTagSearch();
 
 
     this.jq("previewbutton").click(()=>{
@@ -1722,40 +1721,49 @@ WikiEditor.prototype = {
 
     
     wikiInitDisplaysButton:function() {
+	if(!window.globalDisplayTypes) return;
 	let id = this.getId();
 	let button = $("#displays_button"+ id);
+        let types = window.globalDisplayTypes;
+        let links = {};
+        let cats = [];
+        let displayTypes = [];
+	DISPLAY_CATEGORIES.forEach(category=>{
+	    links[category] = [];
+	    cats.push(category);
+	});
+	types.forEach(type=>{
+	    if (Utils.isDefined(type.forUser) && !type.forUser) {
+		return;
+	    }
+	    let category = type.category ||  CATEGORY_MISC;
+	    if (links[category] == null) {
+                links[category] = [];
+                cats.push(category);
+	    }
+	    let tooltip = type.tooltip||"";
+	    tooltip = tooltip.replace(/"/g,"&quot;");
+	    let click = "WikiUtil.insertDisplayText('" + id + "','" + type.type+"')";
+	    let link = HU.div(['data-category',category,'data-corpus',type.label+' ' + tooltip,CLASS,"wiki-editor-popup-link"],HU.href("#",type.label,[CLASS,"display-link ",TITLE,tooltip,"onclick", click]));
+	    links[category].push(link);
+        });
+	let menuTags = '';
+	let menu = "<table><tr valign=top>";
+        for (let i = 0; i < cats.length; i++) {
+	    let cat = cats[i];
+	    let menuItems = Utils.join(links[cat],"<div>\n");
+	    menuTags+=  HU.div([ATTR_STYLE,"vertical-align:top;margin-right4px;display:inline-block;"],
+			       Utils.join(links[cat],""));	    
+	    menu += HU.td(['data-category',cat,CLASS,'wiki-editor-display-category'],HU.div([STYLE,'margin-right:5px;'], HU.b(cat)) +"<div style='margin-right:5px;max-height:250px;overflow-y:auto;'>" + menuItems);
+        }
+	menu = HU.div([ID,"wiki-display-popup",STYLE,"font-size:10pt;width:800px;"], menu);
+	this.displaysText = menuTags;
+
+
+	menu = HU.center(HU.input('','',['placeholder','Search','id',this.domId('displaysearch'),'width','10'])) +menu;
+	menu = HU.div(['style','margin:10px;'], menu);
+
 	button.click(() =>{
-	    if(!window.globalDisplayTypes) return;
-            var types = window.globalDisplayTypes;
-            var links = {};
-            var cats = [];
-            var displayTypes = [];
-	    DISPLAY_CATEGORIES.forEach(category=>{
-		links[category] = [];
-		cats.push(category);
-	    });
-	    types.forEach(type=>{
-		if (Utils.isDefined(type.forUser) && !type.forUser) {
-		    return;
-		}
-		var category = type.category ||  CATEGORY_MISC;
-		if (links[category] == null) {
-                    links[category] = [];
-                    cats.push(category);
-		}
-		let tooltip = type.tooltip||"";
-		tooltip = tooltip.replace(/"/g,"&quot;");
-		let click = "WikiUtil.insertDisplayText('" + id + "','" + type.type+"')";
-		let link = HU.div(['data-category',category,'data-corpus',type.label+' ' + tooltip,CLASS,"wiki-editor-popup-link"],HU.href("#",type.label,[CLASS,"display-link ",TITLE,tooltip,"onclick", click]));
-		links[category].push(link);
-            });
-	    let menu = "<table><tr valign=top>";
-            for (let i = 0; i < cats.length; i++) {
-		let cat = cats[i];
-		let menuItems = Utils.join(links[cat],"<div>\n");
-		menu += HU.td(['data-category',cat,CLASS,'wiki-editor-display-category'],HU.div([STYLE,'margin-right:5px;'], HU.b(cat)) +"<div style='margin-right:5px;max-height:250px;overflow-y:auto;'>" + menuItems);
-            }
-	    menu = HU.div([ID,"wiki-display-popup",STYLE,"font-size:10pt;width:800px;"], menu);
 	    let init = ()=>{
 		let tt  =    $("#wiki-display-popup").tooltip({
 		    classes: {"ui-tooltip": "wiki-editor-tooltip"},
@@ -1766,8 +1774,9 @@ WikiEditor.prototype = {
 		    position: { my: "left top", at: "right top" }		
 		});
 	    };
-	    menu = HU.center(HU.input('','',['placeholder','Search','id',this.domId('displaysearch'),'width','10'])) +menu;
-	    menu = HU.div(['style','margin:10px;'], menu);
+
+
+
 	    let popup = HU.makeDialog({content:menu,my:"left top",at:"left-200px bottom",title:"",anchor:button,draggable:true,header:true,initCall:init});
 	    if(wikiPopup) 
 		wikiPopup.hide();
@@ -1818,9 +1827,12 @@ WikiEditor.prototype = {
 	if(!this.formId) return;
 	$('#' + this.formId).find('.wiki-menubar-tags').each(function(){
 	    if(popup!='')popup+='<thin_hr>';
-	    //		popup+=HU.center(HU.b($(this).attr('data-title')));
+	    popup+=HU.center(HU.b($(this).attr('data-title')));
 	    popup+=$(this).html();
 	});
+	if(this.displaysText)
+	    popup+='<thin_hr>' +
+	    HU.center(HU.b("Data Displays")) +this.displaysText;
 	popup =HU.center(HU.input('','',['placeholder','Find Tag','id', this.domId('tagsearch'),
 					 'style','margin-top:4px;','width','10'])) + popup;
 	popup = HU.div([ATTR_STYLE,HU.css('width','600px',
@@ -1833,6 +1845,16 @@ WikiEditor.prototype = {
 	    this.tagSelectDialog =
 		HU.makeDialog({content:popup,anchor:$(this),at:'left+300 bottom+40',title:"Tags",header:true,draggable:true});
 	    _this.jq('tagsearch').focus();
+
+	    this.tagSelectDialog.find('a').tooltip({
+		    classes: {"ui-tooltip": "wiki-editor-tooltip"},
+		    content: function () {
+			return $(this).prop('title');
+		    },
+		    show: { effect: 'slide', delay: 500, duration: 400 },
+		position: { my: "left top", at: "right top" }
+	    });
+
 
 	    this.tagSelectDialog.find('.wiki-editor-popup-category').css('display','none');
 	    let tags = this.tagSelectDialog.find('.wiki-editor-popup-link');

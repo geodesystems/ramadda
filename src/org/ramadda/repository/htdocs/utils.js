@@ -4302,6 +4302,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
 
         let popup=   $(html).appendTo("body");
+	if(true || opts.tooltip) {
+	    popup.find('a,div').tooltip({
+		classes: {"ui-tooltip": "wiki-editor-tooltip"},
+		content: function () {
+		    return $(this).prop('title');
+		},
+		show: { effect: 'slide', delay: 500, duration: 400 },
+		position: { my: "left top", at: "right top" }
+	    });
+	}
 
         if(opts.remove) {
             popup.attr("removeonclose","true");
