@@ -87,7 +87,7 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	    props.pos = "nw";
     }	
     
-    let cvrt = s=>{
+    let cvrt= this.cvrt = s=>{
 	if(!isNaN(+s)) return +s;
 	s  = String(s);
 	s = s.replace(/canvasWidth2/g,""+(props.canvasWidth/2)).replace(/canvasWidth/g,props.canvasWidth);
@@ -108,9 +108,6 @@ function Glyph(display, scale, fields, records, args, attrs) {
 
     props.dx = cvrt(props.dx);
     props.dy = cvrt(props.dy);    
-
-
-
     props.baseWidth = +props.baseWidth;
     props.width = (+props.width)*scale;
     props.height = (+props.height)*scale;
@@ -355,6 +352,16 @@ Glyph.prototype = {
 		ctx.fillText(label,cx-props.width/2-dim.width-2,cy);
 		ctx.fillText(props.sizeByInfo.maxValue,cx+props.width/2+2,cy);
 	    }
+	} else if(props.type=='line') {
+	    let x1= this.cvrt(props.x1);
+	    let y1= this.cvrt(props.y1);
+ 	    let x2= this.cvrt(props.x2);
+	    let y2= this.cvrt(props.y2);	    	    
+	    ctx.strokeStyle = props.strokeStyle||'#000';
+	    ctx.beginPath();
+	    ctx.moveTo(x1,y1);
+	    ctx.lineTo(x2,y2);
+	    ctx.stroke();
 	} else if(props.type=='3dbar') {
 	    let pt = Utils.translatePoint(x, y, props.width,  props.height, props.pos,{dx:props.dx,dy:props.dy});
 	    let height = lengthPercent*(props.height) + parseFloat(props.baseHeight);
