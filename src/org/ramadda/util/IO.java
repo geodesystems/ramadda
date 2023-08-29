@@ -77,6 +77,9 @@ public class IO {
     private static File cacheDir;
 
 
+    public static final String MIME_CSV = "text/csv";
+    public static final String MIME_TEXT = "text/plain";
+
     /**
      * Set the cache location. This is used by PhoneUtils for ismobile lookup
      * and by GeoUtils for geocoding
