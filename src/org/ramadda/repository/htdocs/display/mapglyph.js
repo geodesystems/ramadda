@@ -605,7 +605,7 @@ MapGlyph.prototype = {
 			       HU.input('',dataIconInfo[ID_DATAICON_PROPS]??'',[ATTR_ID,this.domId(ID_DATAICON_PROPS),'size','80']));
 	    contents+=HU.b('Icon Specification:')  +'<br>';
 	    contents +=
-		HU.textarea('',dataIconInfo[ID_DATAICON_MARKERS]??'',[ID,this.domId(ID_DATAICON_MARKERS),'rows',3,'cols', 90]);
+		HU.textarea('',dataIconInfo[ID_DATAICON_MARKERS]??'',[ID,this.domId(ID_DATAICON_MARKERS),'rows',4,'cols', 90]);
 	    content.push({
 		header:'Data Icons',
 		contents: contents});
