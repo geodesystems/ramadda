@@ -130,7 +130,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
                             new WikiTag(WIKI_TAG_DATE_CHANGE,"Change Date", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT), 
 			    new WikiTag(WIKI_TAG_CALENDAR, null, ATTR_DAY, "false"),
                             new WikiTag(WIKI_TAG_DATETABLE, null,"byType","false","showTime","false"),			    			                              new WikiTag(WIKI_TAG_TIMELINE, null, ATTR_HEIGHT, "150")),
-        new WikiTagCategory("Misc",
+        new WikiTagCategory("Misc 1",
                             new WikiTag("counter", null, "key", "key"),
                             new WikiTag("caption", null, "label", "","prefix","Image #:"),
                             new WikiTag(WIKI_TAG_QRCODE, null, "#url","","#width", "128","#height","128","#darkColor","red",
@@ -143,7 +143,8 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
                             new WikiTag(WIKI_TAG_DISPLAYPROPERTIES, null, "displayType","null"),
 
                             new WikiTag(WIKI_TAG_DATAPOLICIES, null, "message","","inherited","true","includePermissions","false"),
-			    new WikiTag(WIKI_TAG_WIKITEXT,null,"showToolbar","false"),
+			    new WikiTag(WIKI_TAG_WIKITEXT,null,"showToolbar","false")),
+        new WikiTagCategory("Misc 2",
                             new WikiTag(WIKI_TAG_BREADCRUMBS),
                             new WikiTag(WIKI_TAG_TOOLS),
                             new WikiTag(WIKI_TAG_TOOLBAR),
