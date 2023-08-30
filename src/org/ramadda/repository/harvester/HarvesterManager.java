@@ -667,10 +667,8 @@ public class HarvesterManager extends RepositoryManager {
 	    sb.append(HtmlUtils.submit(msg("New Harvester")));
 	    sb.append(HtmlUtils.formClose());
 
-	    if (request.exists(ARG_MESSAGE)) {
-		sb.append(
-			  getPageHandler().showDialogNote(
-							  request.getString(ARG_MESSAGE, "")));
+	    if (request.hasMessage()) {
+		sb.append(messageNote(request.getMessage()));
 	    }
 	    sb.append(HU.center(getLogLink()));
 	    makeHarvestersList(request, harvesters, sb);
