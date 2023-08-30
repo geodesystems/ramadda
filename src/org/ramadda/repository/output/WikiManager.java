@@ -4201,7 +4201,6 @@ public class WikiManager extends RepositoryManager
 	    int count =
 		doFullTree(request, wikiUtil, originalEntry, entry, props, true, doMenu, menuId,  
 			   style, labelWidth, addPrefix, "", showRoot, showIcon, depth, types, sb,0);
-	    System.err.println("cnt:" + count);
 	    sb.append(HU.close("span"));
 	    if(doMenu) {
 		HU.script(sb, "$('#" +menuId+"').menu();\n");
@@ -6953,22 +6952,22 @@ public class WikiManager extends RepositoryManager
 	};
 	
         Utils.appendAll(tags1,
-			l.call("Section", "+section title={{name}}_newline__newline_", "-section"),
-			l.call( "Frame", "+frame background=#fff frameSize=0 shadow title=\"\"\\n", "-frame"),
-			l.call( "Table", "+table height=400 hover=true cellborder=false rowborder=false stripe=false ordering=false paging=false searching=false_newline_:tr &quot;heading 1&quot; &quot;heading 2&quot;_newline_+tr_newline_:td colum 1_newline_+td_newline_column 2_newline_", "-td_newline_-tr_newline_-table"),
+			l2.call("Section", "Section wrapper","+section title={{name}}_newline__newline_", "-section"),
+			l2.call( "Frame", "Full page framed section","+frame background=#fff frameSize=0 shadow title=\"\"\\n", "-frame"),
+			l2.call( "Table", "HTML table","+table height=400 hover=true cellborder=false rowborder=false stripe=false ordering=false paging=false searching=false_newline_:tr &quot;heading 1&quot; &quot;heading 2&quot;_newline_+tr_newline_:td colum 1_newline_+td_newline_column 2_newline_", "-td_newline_-tr_newline_-table"),
 			l2.call( "Row/Column", "Create a bootstrap row", "+row_newline_+col-6_newline_", "-col_newline_+col-6_newline_-col_newline_-row"),
 			l2.call( "Left-right", "2 column table aligned left and right","+leftright_nl_+left_nl_-left_nl_+right_nl_-right_nl_", "-leftright"),
 			l2.call( "Left-middle-right", "3 column table aligned left,center and right","+leftmiddleright_nl_+left_nl_-left_nl_+middle_nl_-middle_nl_+right_nl_-right_nl_", "-leftmiddleright"),
 			l2.call( "Tabs", "Make tabs","+tabs_newline_+tab tab title_newline_", "-tab_newline_-tabs_newline_"),
-			l.call( "Accordion", "+accordion decorate=false collapsible=true activeSegment=0 _newline_+segment segment  title_newline_", "-segment_newline_-accordion_newline_"),
-			l.call( "Slides", "+slides dots=true slidesToShow=1 bigArrow=true  centerMode=true variableWidth=true arrows=true  dots=true  infinite=false style=_qt__qt__nl_+slide Title_nl_", "-slide_nl_-slides_nl_"),
-			l.call("Grid box", "+grid #decorated=true #columns=_qt_1fr 2fr_qt_ _nl_:filler_nl_+gridbox #flex=1 #style=_qt__qt_ #width=_qt__qt_ #title=_qt_Title 1_qt__nl_-gridbox_nl_+gridbox #title=_qt_Title 2_qt__nl_-gridbox_nl_:filler_nl_", "-grid"),
-			l.call("Scroll panels","+scroll_newline_+panel color=gradient1 name=home style=_quote__quote_ _newline_+center_newline_<div class=scroll-indicator>Scroll Down</div>_newline_-center_newline_-panel_newline_+panel color=gradient2 name=panel1_newline__newline_-panel_newline_+panel color=blue name=panel2_newline__newline_-panel_newline_", "-scroll") 
+			l2.call( "Accordion", "Accordion layout","+accordion decorate=false collapsible=true activeSegment=0 _newline_+segment segment  title_newline_", "-segment_newline_-accordion_newline_"),
+			l2.call( "Slides", "Slides layout","+slides dots=true slidesToShow=1 bigArrow=true  centerMode=true variableWidth=true arrows=true  dots=true  infinite=false style=_qt__qt__nl_+slide Title_nl_", "-slide_nl_-slides_nl_"),
+			//			l2.call("Grid box", "+grid #decorated=true #columns=_qt_1fr 2fr_qt_ _nl_:filler_nl_+gridbox #flex=1 #style=_qt__qt_ #width=_qt__qt_ #title=_qt_Title 1_qt__nl_-gridbox_nl_+gridbox #title=_qt_Title 2_qt__nl_-gridbox_nl_:filler_nl_", "-grid"),
+			l2.call("Scroll panels","For full page story scroling","+scroll_newline_+panel color=gradient1 name=home style=_quote__quote_ _newline_+center_newline_<div class=scroll-indicator>Scroll Down</div>_newline_-center_newline_-panel_newline_+panel color=gradient2 name=panel1_newline__newline_-panel_newline_+panel color=blue name=panel2_newline__newline_-panel_newline_", "-scroll") 
 			
 			); 
 
         Utils.appendAll(tags2,
-			l.call("Popup", "+popup link=_qt_Link_qt_ icon=_qt_fa-solid fa-arrow-right-from-bracket_qt_ title=_qt_Title_qt_ header=true draggable=true decorate=true sticky=true my=_qt__qt_ at=_qt__qt_ animate=false_nl__nl_", "-popup_nl_"),
+			l2.call("Popup", "Popup link","+popup link=_qt_Link_qt_ icon=_qt_fa-solid fa-arrow-right-from-bracket_qt_ title=_qt_Title_qt_ header=true draggable=true decorate=true sticky=true my=_qt__qt_ at=_qt__qt_ animate=false_nl__nl_", "-popup_nl_"),
 			l.call("Menu", "+menu_nl_    :menuheader Header_nl_    :menuitem Item 1_nl_    +menu Menu 1_nl_        :menuitem Item 2_nl_        +menuitem style=_qt_width:300px; _qt_ _nl_        Menu contents_nl_        -menuitem_nl_    -menu_nl_    +menu Menu 2_nl_        :menuitem Item 3_nl_    -menu_nl_-menu", ""),
 			l.call("Navigation left", ":navleft leftStyle=_qt_width:250px;_qt_ rightStyle=_qt__qt_  maxLevel=_qt_4_qt_", ""),
 			l.call("Navigation top", ":navtop style=_quote__quote_ delimiter=_quote_|_quote_  maxLevel=_qt__qt_", ""),
@@ -7176,7 +7175,7 @@ public class WikiManager extends RepositoryManager
 			l.call("Horizontal line", "\\n----\\n", ""),
 			l.call("Button", ":button url label", ""),
 			l.call("Remark", "\\n:rem ", ""),
-			l.call("Draft", "+draft", "-draft"),
+			l.call("Draft", "+draft\\n", "-draft"),
 			l.call("Reload", "\\n:reload seconds=30 showCheckbox=true showLabel=true", ""),
 			l.call("After", "+after pause=0 afterFade=5000_newline__newline_", "-after"),
 			l.call("Odometer", "{{odometer initCount=0 count=100 immediate=true pause=1000}}", ""));
