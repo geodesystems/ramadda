@@ -7828,7 +7828,6 @@ public class EntryManager extends RepositoryManager {
 
     public List<Entry> getEntryRootTree(Request request) throws Exception {
 	if(request.defined(ARG_ANCESTOR)) {
-	    System.err.println("getEntryRootTree");
 	    String entryRoot = request.getString(ARG_ANCESTOR,"");
 	    Entry root = getEntry(request,entryRoot);
 	    if(root!=null) {
