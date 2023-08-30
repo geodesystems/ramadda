@@ -125,21 +125,25 @@ These don't define the fields or their order. They just define the default attri
 +section title={{name}}
 {{property max=20000}}
 {{group }}
-{{display_download iconSize=12pt}}
+:navtop
+:heading Profiles
 +row tight=true
 +col-6
-{{display_profile showMenu=true yAxisReverse=true marginTop=40  profileMode=markers
-profileMode="lines+markers" markerSize=8 symbol1=circle symbol2=diamond
-indexField="prdm" fields="t068c,c0s_m"
+{{display_profile showMenu=true yAxisReverse=true marginTop=10 
+profileMode="lines+markers" markerSize=8 symbol1=circle
+indexField="depsm|prdm" fields="t.*c"
 }}
 -col
 +col-6
-{{display_profile showMenu=true yAxisReverse=true marginTop=40  profileMode=markers
-profileMode="lines+markers" markerSize=8 symbol1=circle symbol2=diamond
-indexField="prdm" fields="t068c,sal00"
+{{display_profile showMenu=true yAxisReverse=true marginTop=10 
+profileMode="lines+markers" markerSize=8 symbol1=circle 
+indexField="depsm|prdm" fields="sal00"
 }}
 -col
 -row
+:heading Table
+{{display_download iconSize=12pt}}
+{{display_table}}
 ----
 :heading Metadata
 <div style='max-height:200px;overflow-y:auto;'>
