@@ -13,14 +13,11 @@ import org.ramadda.data.record.*;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
-import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.List;
 
 
@@ -62,7 +59,7 @@ public class CnvPointFile extends CsvFile {
      */
     @Override
     public String getDelimiter() {
-        return " ";
+        return DELIMITER_SPACES;
     }
 
 
@@ -157,7 +154,8 @@ public class CnvPointFile extends CsvFile {
                     unit = unit.replace(",", "-");
                 }
                 desc = desc.replace(",", "-");
-                fields.append(makeField(Utils.makeID(name), unit, attr("label", desc),
+		String id = Utils.removeNonAscii(Utils.makeID(name));
+                fields.append(makeField(id, unit, attr("label", desc),
                                         attrChartable(), attrSearchable()));
             }
         }
@@ -168,7 +166,6 @@ public class CnvPointFile extends CsvFile {
         //Clean up non ascii
         String entryDesc = comments.toString();
         entryDesc = entryDesc.replaceAll("[^\n\\x20-\\x7E]+", " ");
-
         //This gets used by ramadda when creating an entry
         setDescriptionFromFile(entryDesc);
 
