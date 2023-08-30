@@ -780,7 +780,7 @@ public class EntryManager extends RepositoryManager {
 
     public Result processMakeSnapshot(Request request, Entry entry) throws Exception {
         if (request.isAnonymous()) {
-	    return makeSnapshotForm(request, entry,getPageHandler().showDialogError("Have to be an logged in to create a file snapshot"));
+	    return makeSnapshotForm(request, entry,messageError("Have to be an logged in to create a file snapshot"));
 	}
 
 	if(request.defined(ARG_CANCEL)) {
@@ -802,7 +802,7 @@ public class EntryManager extends RepositoryManager {
 					  "Create a snapshot");
 	Entry parent = entry.getParentEntry();
 	if(parent==null) {
-	    sb.append(getPageHandler().showDialogError("Cannot snapshot the top-level entry"));
+	    sb.append(messageError("Cannot snapshot the top-level entry"));
 	    return makeEntryEditResult(request,  entry,"Snapshot", sb);
 	}
 
@@ -847,7 +847,7 @@ public class EntryManager extends RepositoryManager {
 	boolean makeEntry = type.equals(SNAPSHOT_ENTRY);	
 	if(makeFile) {
 	    if (!request.isAdmin()) {
-		return makeSnapshotForm(request, entry,getPageHandler().showDialogError("Have to be an admin to create a file snapshot"));
+		return makeSnapshotForm(request, entry,messageError("Have to be an admin to create a file snapshot"));
 	    }
 	}
 	Date now = new Date();
@@ -922,10 +922,10 @@ public class EntryManager extends RepositoryManager {
 	if(makeEntry) {
 	    Entry parent = getEntry(request, request.getString(ARG_DEST_ENTRY+"_hidden",""));
 	    if(parent==null) {
-		return makeSnapshotForm(request, entry,getPageHandler().showDialogError("No parent entry specified"));
+		return makeSnapshotForm(request, entry,messageError("No parent entry specified"));
 	    }
 	    if(!canAddTo(request, parent)) {
-		return makeSnapshotForm(request, entry,getPageHandler().showDialogError("You do not have permission to add to the parent entry"));
+		return makeSnapshotForm(request, entry,messageError("You do not have permission to add to the parent entry"));
 	    }
 	    File zipFile = getStorageManager().getTmpFile(request,"snapshortimport.zip");
 	    FileOutputStream fos  = new FileOutputStream(zipFile);
