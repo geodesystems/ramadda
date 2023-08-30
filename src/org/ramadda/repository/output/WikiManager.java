@@ -616,7 +616,7 @@ public class WikiManager extends RepositoryManager
 	    content = wikiUtil.wikify(wikiContent, this, notTags);
 	} catch(Exception exc) {
             getLogManager().logError("WikiManager.wikifyEntry", exc);
-	    return getPageHandler().showDialogError("An error occurred:" + exc);
+	    return messageError("An error occurred:" + exc);
 	}
         if (wrapInDiv) {
             content = HU.div(content, HU.cssClass("wikicontent")) + "\n";
@@ -3023,8 +3023,7 @@ public class WikiManager extends RepositoryManager
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_EARTH)) {
-            return getPageHandler().showDialogWarning(
-						      "Google earth view is no longer available");
+            return messageWarning("Google earth view is no longer available");
         } else if (theTag.equals(WIKI_TAG_DISPLAY_IMPORTS)) {
 	    StringBuilder tmp = new StringBuilder();
 	    getPageHandler().addDisplayImports(request, tmp,true);
@@ -3212,8 +3211,7 @@ public class WikiManager extends RepositoryManager
             }
 
             if ((tag == null) && (template == null)) {
-                return getPageHandler().showDialogError(
-							"No _tag or _template attribute specified");
+                return getPageHandler().messageError("No _tag or _template attribute specified");
             }
             int multiCount = getProperty(wikiUtil, props, "multiCount", -1);
             if (multiCount > 0) {
@@ -6948,7 +6946,7 @@ public class WikiManager extends RepositoryManager
 	
         Utils.appendAll(tags1,
 			l.call("Section", "+section title={{name}}_newline__newline_", "-section"),
-			l.call( "Frame", "+frame background=#fff frameSize=0 shadow title=_title_", "-frame"),
+			l.call( "Frame", "+frame background=#fff frameSize=0 shadow title=\"\"\\n", "-frame"),
 			l.call( "Table", "+table height=400 hover=true cellborder=false rowborder=false stripe=false ordering=false paging=false searching=false_newline_:tr &quot;heading 1&quot; &quot;heading 2&quot;_newline_+tr_newline_:td colum 1_newline_+td_newline_column 2_newline_", "-td_newline_-tr_newline_-table"),
 			l2.call( "Row/Column", "Create a bootstrap row", "+row_newline_+col-6_newline_", "-col_newline_+col-6_newline_-col_newline_-row"),
 			l2.call( "Left-right", "2 column table aligned left and right","+leftright_nl_+left_nl_-left_nl_+right_nl_-right_nl_", "-leftright"),
