@@ -237,10 +237,10 @@ public class TextRecord extends DataRecord {
     public void setDelimiter(String value) {
         delimiter = value;
         if (( !delimiter.equals("\t") && (delimiter.trim().length() == 0))
-                || delimiter.equals("space")) {
+                || delimiter.equals(CsvFile.DELIMITER_SPACE)) {
             delimiterIsSpace = true;
             delimiter        = " ";
-        } else if (delimiter.equals("spaces")) {
+        } else if (delimiter.equals(CsvFile.DELIMITER_SPACES)) {
             delimiterIsSpaces = true;
             delimiterIsSpace  = true;
         } else if (delimiter.equals("commasorspaces")) {

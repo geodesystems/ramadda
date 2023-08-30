@@ -33,6 +33,10 @@ import java.util.List;
 public class CsvFile extends TextFile {
 
 
+    public static final String DELIMITER_SPACE = "space";
+    public static final String DELIMITER_SPACES = "spaces";    
+
+
     boolean debug             = false;
     boolean debugCsvFile      = false;    
 
