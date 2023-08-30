@@ -32,6 +32,7 @@
     <api request="/entry/new"              method="processEntryNew"        actions="new"/>
     <api request="/entry/upload"           method="processEntryUpload"     actions="upload"/>
     <api request="/entry/addfile"          method="processEntryAddFile"   />
+    <api request="/entry/wikitext"          method="processEntryWikiText"   />
     <api request="/entry/getbyfilename/*"      method="processEntryGetByFilename"    authmethod="httpauth"  />
     <api request="/entry/get/*"            method="processEntryGet"        authmethod="httpauth"  />
     <api request="/entry/getentries"       method="processGetEntries" />

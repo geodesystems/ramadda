@@ -1017,6 +1017,22 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+    public Result processEntryWikiText(Request request) throws Exception {
+	StringBuilder sb = new StringBuilder();
+	Entry entry = getEntryFromRequest(request, ARG_ENTRYID,
+					  getRepository().URL_ENTRY_SHOW,false);
+	if(entry!=null) {
+	    String text = entry.getTypeHandler().getWikiTemplate(request, entry);
+	    if(text!=null) sb.append(text.trim());
+	}
+	if(sb.length()==0) sb.append("no wiki text");
+	Result result  = new Result("", sb, IO.MIME_TEXT);
+	result.setShouldDecorate(false);
+	return result;
+    }
+    
+
+
 
     /**
      * _more_
