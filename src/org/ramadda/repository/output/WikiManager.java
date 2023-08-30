@@ -100,6 +100,10 @@ public class WikiManager extends RepositoryManager
 
 
 
+    //max number of entries in fulltree/menutree
+    private static final int ENTRY_TREE_MAX_COUNT = 1000;
+    private static final int ENTRY_TREE_MAX_DEPTH = 10;    
+
     private int groupCount = 0;
 
 
@@ -4179,7 +4183,7 @@ public class WikiManager extends RepositoryManager
             return getRepository().getUrlBase();
         } else if (theTag.equals(WIKI_TAG_FULLTREE) || theTag.equals(WIKI_TAG_MENUTREE)) {
 	    boolean doMenu = theTag.equals(WIKI_TAG_MENUTREE);
-            int depth = getProperty(wikiUtil, props, "depth", 4);
+            int depth = Math.min(ENTRY_TREE_MAX_DEPTH,getProperty(wikiUtil, props, "depth", 4));
             boolean addPrefix = getProperty(wikiUtil, props, "addPrefix",
                                             false);
             boolean showRoot = getProperty(wikiUtil, props, "showroot",
@@ -4194,8 +4198,10 @@ public class WikiManager extends RepositoryManager
 		style = "list-style-type:none;" + style;
 	    int labelWidth = getProperty(wikiUtil,props,"labelWidth",30);
 	    sb.append(HU.open("span","class","ramadda-menutree"));
-	    doFullTree(request, wikiUtil, originalEntry, entry, props, true, doMenu, menuId,  
-                       style, labelWidth, addPrefix, "", showRoot, showIcon, depth, types, sb);
+	    int count =
+		doFullTree(request, wikiUtil, originalEntry, entry, props, true, doMenu, menuId,  
+			   style, labelWidth, addPrefix, "", showRoot, showIcon, depth, types, sb,0);
+	    System.err.println("cnt:" + count);
 	    sb.append(HU.close("span"));
 	    if(doMenu) {
 		HU.script(sb, "$('#" +menuId+"').menu();\n");
@@ -5191,7 +5197,7 @@ public class WikiManager extends RepositoryManager
      *
      * @throws Exception _more_
      */
-    private void doFullTree(Request request,  WikiUtil wikiUtil,
+    private int doFullTree(Request request,  WikiUtil wikiUtil,
                             Entry originalEntry, Entry entry,
                             Hashtable props,
 			    boolean top, boolean asMenu, String menuId,
@@ -5200,7 +5206,7 @@ public class WikiManager extends RepositoryManager
 			    boolean addPrefix,
                             String prefix, boolean showRoot,
                             boolean showIcon, int depth, List<String> types,
-                            Appendable sb)
+                            Appendable sb,int count)
 	throws Exception {
 	if(top) {
 	    HU.open(sb,"ul",HU.attrs("id",menuId, "style",style));
@@ -5224,7 +5230,6 @@ public class WikiManager extends RepositoryManager
 	    if(top && showRoot) HU.close(sb,"ul","\n");
 	    HU.close(sb,"li","\n");
 	    if(top) HU.close(sb,"ul","\n");
-            return;
         }
         List<Entry> children = getEntries(request, wikiUtil, originalEntry,
                                           entry, props);
@@ -5246,6 +5251,8 @@ public class WikiManager extends RepositoryManager
                     }
                 }
 
+		count++;
+		if(count>ENTRY_TREE_MAX_COUNT) break;
 		if(!top) {
 		    if(!addedUl) {
 			HU.open(sb,"ul",HU.attrs("style",style));
@@ -5256,10 +5263,10 @@ public class WikiManager extends RepositoryManager
                 String p = ((prefix.length() > 0)
                             ? prefix + "."
                             : "") + (cnt++);
-                doFullTree(request,  wikiUtil, originalEntry, child, props,
-			   false, asMenu, null,			   
-                           style, labelWidth, addPrefix, p, showRoot, showIcon, depth, types,
-                           sb);
+                count = doFullTree(request,  wikiUtil, originalEntry, child, props,
+				 false, asMenu, null,			   
+				 style, labelWidth, addPrefix, p, showRoot, showIcon, depth, types,
+				 sb,count);
 	    }
 	    if(addedUl) {
 		HU.close(sb,"ul","\n");
@@ -5268,6 +5275,7 @@ public class WikiManager extends RepositoryManager
 	if(top && showRoot) HU.close(sb,"ul","\n");
 	HU.close(sb,"li","\n");	
 	if(top) HU.close(sb,"ul","\n");
+	return count;
     }
 
     /**
