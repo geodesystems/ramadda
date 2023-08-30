@@ -1,30 +1,31 @@
 [ht::head {Wikis}]
-
 <%nochildlist%>
+:navtop
 +callout-info
 RAMADDA uses wiki text in a number of ways. You can  create Wiki Page entries, you
 can style any entry using wiki text and you can also add in a Page Style metadata element
 that allows you to define the style used for a whole collection of entries.
 -callout
 
-[ug::subheading {Wiki Editor} editor]
+<a name=editor></a>
+:heading  Wiki Editor
 RAMADDA provides a wiki text editor for use with all of the above ways of using wiki text:
 [ht::screenshot images/wikiedit.png {Wiki Text Editor} {border=0 width=70%}]
 
 The menu bar provides a large number of options for entering the wiki text.
 <a name="menubar"></a>
 <ul>
+  <li> The <i class="fas fa-binoculars"></i> link brings up a  dialog that lets you search
+    through all of the different wiki text & tags that you can add through the menus.
 <li> Formatting  - Basic wiki text formatting - sections, tabs, accoridion, slides, notes, etc.
 <p>
-<li> Misc  - Further formatting options  - title, heading, paragraph, links, etc
+<li> Tags  - Further formatting options  - title, heading, paragraph, links, etc
 <p>
 <li> Entries - Wiki display components used to display RAMADDA entries.
 For single entries there is  name, data, description, download, etc.
 For multiple entiries there is tabletree, links, map, gallery, etc
 <p>
-<li> Import Entry  - select an entry then specify how to embed it, e.g. Link, Tree, Gallery, or the entry specifier "entry=ID".
-<p>
-<li> Entry ID - Select an entry and insert its ID.
+<li> Embed Entry  - select an entry then specify how to embed it, e.g. Link, Tree, Gallery, or the entry specifier "entry=ID". For the "Wiki Text" embedding see below.
 <p>
 <li> Displays  - 
 <p>
@@ -33,7 +34,24 @@ For multiple entiries there is tabletree, links, map, gallery, etc
 <li> Etc... - A live preview window, word count and links to help.
 </ul>
 
-[ug::subheading {Section Collapse} collapse]
+
+:heading Embedding Wiki Text 
+Many of the entries in RAMADDA have a default wiki text display. 
+You can access this wiki text and  add it to your editor by-
+<ul>
+  <li> Select the Embed Entry menu
+  <li> Select the entry of interest
+  <li> In the dialog that pops up choose "Wiki Text". This will fetch
+    the default wiki text for the entry and add it to your editor.
+</ul>
+
+[ht::screenshot images/wikitextembed.png]
+
+
+
+
+<a name=collapse></a>
+:heading Section Collapse
 The wiki editor supports collapsing sections of text with the little caret links on the
 left of the page. For example, here is a page:
 
@@ -45,7 +63,8 @@ And collapsing after:
 
 
 
-[ug::subheading {Wiki Page Entries} wikipage]
+<a name=wikipage></a>
+:heading Wiki Page Entries 
 One of the entry types that RAMADDA provides is a Wiki Page entry.
 You create a new Wiki Page just like you create any entry - in a folder
 that you have create privileges for go to  File-&gt;New Entry menu.
@@ -54,14 +73,13 @@ In the form select &quot;Wiki Page&quot; to go to the Wiki Page create form:
 
 
 
-[ug::subheading {Wiki Text in Entries} wikidesc]
+<a name=wikidesc></a>
+:heading Wiki Text in Entries
 You can use the wiki text display capabilities to customize the default
 HTML view of any other entry or folder types. In the description of the entry
 click on the <img src="{{root}}/icons/wiki.png"> checkbox. This enables the wiki text editor:
 
 [ht::screenshot images/wikicreate2.png {Wiki Entry Description}]
-
-
 
 
 
