@@ -73,6 +73,9 @@ public class NCLModelPlotDataService extends NCLDataService {
     private final static String ARG_SHOW_VALUE_TICKS = ARG_NCL_PREFIX
                                                        + "show_rug";
 
+    /** path to ncl */
+    private String nclPath;
+    
     /**
      * Create a new map process
      *
@@ -97,6 +100,8 @@ public class NCLModelPlotDataService extends NCLDataService {
                                    String label)
             throws Exception {
         super(repository, id, label);
+        nclPath = IOUtil.joinDir(nclOutputHandler.getNcargRootDir(), "bin/ncl");
+        nclPath = getRepository().getScriptPath("ramadda.ncl.path",nclPath);
     }
 
     /**
@@ -703,8 +708,7 @@ public class NCLModelPlotDataService extends NCLDataService {
 
             StringBuilder commandString = new StringBuilder();
             List<String>  commands      = new ArrayList<String>();
-            String        ncargRoot     = nclOutputHandler.getNcargRootDir();
-            commands.add(IOUtil.joinDir(ncargRoot, "bin/ncl"));
+            commands.add(nclPath);
             commands
                 .add(IOUtil
                     .joinDir(IOUtil
@@ -1086,8 +1090,7 @@ public class NCLModelPlotDataService extends NCLDataService {
         }
 
         List<String> commands  = new ArrayList<String>();
-        String       ncargRoot = nclOutputHandler.getNcargRootDir();
-        commands.add(IOUtil.joinDir(ncargRoot, "bin/ncl"));
+        commands.add(nclPath);
         commands.add(
             IOUtil.joinDir(
                 IOUtil.joinDir(
