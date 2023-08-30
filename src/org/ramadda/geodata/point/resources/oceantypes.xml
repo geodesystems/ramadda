@@ -121,8 +121,7 @@ These don't define the fields or their order. They just define the default attri
      <column  name="station"  label="Station ID" type="enumerationplus" cansearch="true"/>
 
 <wiki>
-<![CDATA[
-+section title={{name}}
+<![CDATA[+section title={{name}}
 {{property max=20000}}
 {{group }}
 :navtop
