@@ -31,15 +31,30 @@ pre {
 
 
 
+:navtop 
 
++callout-info
+You can control much of how the  entry pages are shown using a Page Style property.
+-callout-info
 
-You can control much of how the  html pages are shown using a Page Style property.
+:heading Creating Page Styles
+
 Go to the <span class="ramadda-docs-menu">Edit-&gt;Add Property</span> menu and
 under "Thumbnails, Page Style, Etc." select Page Style.
 The Page Style property allows you to specify what menus to show, whether to show other features and
-you can also specify a WIKI text template to use for the default HTML views of the entries:
+you can also specify a wiki text template to use for the default HTML views of the entries:
 
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image1"></a><div><a href="images/pagestyle.png?version=364"><img  src="images/pagestyle.png?version=364"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="Page Style Create Form" ></a><br><span class="caption">Image 1: Page Style Create Form</span></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image1"></a><div><a href="images/pagestyle.png?version=906"><img  src="images/pagestyle.png?version=906"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="Page Style Create Form" ></a><br><span class="caption">Image 1: Page Style Create Form</span></div></div>
+
++callout-info
+In the Page Style you can specify whether the style is appicable to the
+current entry with "Apply to entry" and/or specify the entry type
+to which the style is applicable to. 
+:p
+If you want this Page Style to be appicable to a whole sub-tree of RAMADDA entries
+check on the "Inherited" flag for the property.
+-callout-info
+
 
 <ul> 
 <li> Menus.
@@ -53,46 +68,45 @@ view
 other
 </pre>
 
-<b>
++callout-info
 Note: Just so you don't lose the ability to
 edit the entry the menu bar is always shown for users who have edit privileges for the
 entry being displayed.
-</b>
+-callout-info
+
 <li> Breadcrumbs: This is the breadcrumb trail of the ancestors of an entry.
 <li> Show Toolbar: This is the icon toolbar (e.g., edit, delete, copy, etc)
 <li> Show Entry Header: The Entry icon, name and Layout: icons
-<li> Wiki Template: If defined this is the Wiki template used for the default HTML
-display of the entry. See <a href='wikitext.html'>wikitext.html</a> for information on
-the wiki facility.
-<li> Inherited: 
-You can have a Page Style apply to a whole sub-tree of RAMADDA entries. Add the Page Style
-property to the Folder entry and check on the Inherit flag.
 
+
+<li> Wiki Template: If defined this is the Wiki template used for the default HTML
+display of the entry. See <a href='wiki.html'>wiki.html</a> for information on
+the wiki facility.
 </ul>
 
-<p>
-You can have any number of Page Style properties and have them apply to certain entry types
-by specifying the Entry Type. For example, you can have one page style that is applicable
-to File entries and one that is applicable to Folders.
+
+:heading Example
+For example, if you wanted to override the default display of a certain entry type
+(e.g., Seabird CNV files) for the entire repository then do-
+<ul>
+  <li> Add a Page Style property to the top-level entry
+  <li> Check off the "Apply to this entry" box
+  <li> Under Entry Type specify "type_point_ocean_cnv". This can
+    be found by viewing the Information page for one of the entries.
+  <li> Add the wiki text.
+  <li> If you want to use the default wiki text for the entry you can access it
+    through the Embed Entry menu as described <a href=wiki.html#embedding_wiki_text>here</a>
+  <li> Check on the "Inherited" box
+  <li> Save the Page Style and you should now see the changes for any of the entries of the specified type.
+</ul>
 
 
-<a name="templates"></a><p><div class="ramadda-help-heading">5.14.0 <a href="#templates">Page Template</a></div> 
-You can also specify which page template is used for an entry or for a whole tree. 
-
-Go to the <span class="ramadda-docs-menu">Edit-&gt;Add Property</span> menu and under "Thumbnails, Page Style, Etc." select Page Template.  
-Select the page template you want to use. You can create new <a href='templates.html'>templates</a>.
-
-+callout-info
-If you want to have this apply to all entries under the folder then select "Inherit".
--callout-info
-
-If you are 
 
 
 
 </div>
 <p>
-
+<div  class="childlist" ><table  width="100%" ></table></div>
 <p>&nbsp;<p>
 
 <div class="ramadda-doc-footer">

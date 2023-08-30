@@ -1,14 +1,29 @@
 [ht::head {Page Styles}]
 
-<%nochildlist%>
+:navtop 
 
-You can control much of how the  html pages are shown using a Page Style property.
++callout-info
+You can control much of how the  entry pages are shown using a Page Style property.
+-callout-info
+
+:heading Creating Page Styles
+
 Go to the [ht::menu Edit {Add Property}] menu and
 under "Thumbnails, Page Style, Etc." select Page Style.
 The Page Style property allows you to specify what menus to show, whether to show other features and
-you can also specify a WIKI text template to use for the default HTML views of the entries:
+you can also specify a wiki text template to use for the default HTML views of the entries:
 
 [ht::screenshot images/pagestyle.png {Page Style Create Form}]
+
++callout-info
+In the Page Style you can specify whether the style is appicable to the
+current entry with "Apply to entry" and/or specify the entry type
+to which the style is applicable to. 
+:p
+If you want this Page Style to be appicable to a whole sub-tree of RAMADDA entries
+check on the "Inherited" flag for the property.
+-callout-info
+
 
 <ul> 
 <li> Menus.
@@ -22,40 +37,39 @@ view
 other
 </pre>
 
-<b>
++callout-info
 Note: Just so you don't lose the ability to
 edit the entry the menu bar is always shown for users who have edit privileges for the
 entry being displayed.
-</b>
+-callout-info
+
 <li> Breadcrumbs: This is the breadcrumb trail of the ancestors of an entry.
 <li> Show Toolbar: This is the icon toolbar (e.g., edit, delete, copy, etc)
 <li> Show Entry Header: The Entry icon, name and Layout: icons
-<li> Wiki Template: If defined this is the Wiki template used for the default HTML
-display of the entry. See [ug::link wikitext.html wikitext.html] for information on
-the wiki facility.
-<li> Inherited: 
-You can have a Page Style apply to a whole sub-tree of RAMADDA entries. Add the Page Style
-property to the Folder entry and check on the Inherit flag.
 
+
+<li> Wiki Template: If defined this is the Wiki template used for the default HTML
+display of the entry. See [ug::link wiki.html wiki.html] for information on
+the wiki facility.
 </ul>
 
-<p>
-You can have any number of Page Style properties and have them apply to certain entry types
-by specifying the Entry Type. For example, you can have one page style that is applicable
-to File entries and one that is applicable to Folders.
+
+:heading Example
+For example, if you wanted to override the default display of a certain entry type
+(e.g., Seabird CNV files) for the entire repository then do-
+<ul>
+  <li> Add a Page Style property to the top-level entry
+  <li> Check off the "Apply to this entry" box
+  <li> Under Entry Type specify "type_point_ocean_cnv". This can
+    be found by viewing the Information page for one of the entries.
+  <li> Add the wiki text.
+  <li> If you want to use the default wiki text for the entry you can access it
+    through the Embed Entry menu as described <a href=wiki.html#embedding_wiki_text>here</a>
+  <li> Check on the "Inherited" box
+  <li> Save the Page Style and you should now see the changes for any of the entries of the specified type.
+</ul>
 
 
-<subhead intoc="false" id="templates">Page Template</subhead>
-You can also specify which page template is used for an entry or for a whole tree. 
-
-Go to the [ht::menu Edit {Add Property}] menu and under "Thumbnails, Page Style, Etc." select Page Template.  
-Select the page template you want to use. You can create new [ug::link templates.html templates].
-
-+callout-info
-If you want to have this apply to all entries under the folder then select "Inherit".
--callout-info
-
-If you are 
 
 
 [ht::foot]
