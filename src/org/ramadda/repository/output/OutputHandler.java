@@ -722,12 +722,16 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
             }
         }
 
-        String wikiTemplate = entry.getTypeHandler().getWikiTemplate(request,
-                                  entry);
+	String wikiTemplate = null;
         if (wikiTemplate == null) {
             PageStyle pageStyle = request.getPageStyle(entry);
             wikiTemplate = pageStyle.getWikiTemplate(entry);
         }
+
+	if(wikiTemplate==null) {
+	     wikiTemplate = entry.getTypeHandler().getWikiTemplate(request,
+								   entry);
+	}
 
         if (wikiInner != null) {
             if (wikiTemplate == null) {
