@@ -382,6 +382,7 @@ WikiEditor.prototype = {
 	    what.push("ID");
 	    what.push("entry=ID");	    
 	    what.push("Link");
+	    what.push("Wiki Text");
 	    if(opts.isImage) {
 		what.push("Image");
 	    }
@@ -417,6 +418,14 @@ WikiEditor.prototype = {
 	    this.addDialog.remove();
 	    let what=this.lastWhat=menu.val();
 	    let text="";
+	    let insert = text=>{
+		if(pos) {
+		    this.getEditor().session.insert(pos,text);
+		}   else {
+		    this.insertAtCursor(text);
+		}
+	    }
+		
 	    if(what=="Image") {
 		text = "{{image entry=" + entryId+" #caption=\"" + name+"\" bordercolor=\"#ccc\" align=center width=75% }} ";
 	    } else  if(what=="Map") {
@@ -435,6 +444,15 @@ WikiEditor.prototype = {
 		text = "{{import entry=" + entryId+" }}";		
 	    } else  if(what=="Grid") {
 		text = "{{grid entry=" + entryId+" }}";			
+	    } else if(what=="Wiki Text") {
+		let url = RamaddaUtils.getUrl("/entry/wikitext?entryid="+ entryId);
+		console.log(url);
+		$.get(url, (data) =>{
+		    insert(data);
+		}).fail(error=>{
+		    alert("An error occurred:" + error);
+		});
+		return;
 	    } else if(what=="Link") {
 		text = "[[" + entryId +"|" + name+"]] ";
 	    } else if(what=="Nothing") {
@@ -442,11 +460,7 @@ WikiEditor.prototype = {
 	    } else {
 		text = " {{" + what.toLowerCase() +" entry=" + entryId+" }}";				
 	    }
-	    if(pos) {
-		this.getEditor().session.insert(pos,text);
-	    }   else {
-		this.insertAtCursor(text);
-	    }
+	    insert(text);
 	});
     },
 
