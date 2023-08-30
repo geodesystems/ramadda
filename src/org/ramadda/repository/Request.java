@@ -353,6 +353,15 @@ public class Request implements Constants, Cloneable {
 							       value);
     }
 
+    public boolean hasMessage() {
+	return exists(ARG_MESSAGE);
+    }
+
+    public String getMessage() {
+	return getStrictSanitizedString(ARG_MESSAGE, "");
+    }    
+
+
     /**
      * _more_
      *
@@ -1600,14 +1609,13 @@ public class Request implements Constants, Cloneable {
      */
     public void appendMessage(Appendable sb) {
         try {
-            if (defined(ARG_MESSAGE)) {
-                String message = getUnsafeString(ARG_MESSAGE, "");
+            if (hasMessage()) {
+                String message = getMessage();
                 //            message = HtmlUtils.entityEncode(getUnsafeString(ARG_MESSAGE, "");
                 message = PageHandler.getDialogString(message);
                 //Encode this to keep from a spoof attack
                 message = HtmlUtils.entityEncode(message);
-                sb.append(
-			  repository.getPageHandler().showDialogNote(message));
+                sb.append(repository.getPageHandler().showDialogNote(message));
                 remove(ARG_MESSAGE);
             }
         } catch (java.io.IOException ioe) {
@@ -1681,7 +1689,8 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     public boolean isAdmin() {
-        return getUser().getAdmin();
+	User user = getUser();
+        return user==null?false:getUser().getAdmin();
     }
 
 
