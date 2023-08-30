@@ -9,7 +9,9 @@ package org.ramadda.plugins.mail;
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.Utils;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.WikiUtil;
 
 import org.w3c.dom.*;
 
@@ -22,6 +24,9 @@ import ucar.unidata.xml.XmlUtil;
 import java.io.*;
 
 import java.util.Date;
+import java.util.Hashtable;
+import java.util.Properties;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.mail.*;
@@ -37,6 +42,12 @@ public class MailTypeHandler extends GenericTypeHandler {
     /** _more_ */
     public static final String TYPE_MESSAGE = "mail_message";
 
+    private static  int IDX=0;
+    public static final int IDX_SUBJECT=IDX++;
+    public static final int IDX_FROM=IDX++;        
+    public static final int IDX_TO=IDX++;    
+    private Session session;
+
     /**
      * _more_
      *
@@ -48,8 +59,26 @@ public class MailTypeHandler extends GenericTypeHandler {
     public MailTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
+	System.setProperty("mail.mime.address.strict", "false");
+	Properties props = new Properties();
+	props.setProperty("mail.mime.address.strict", "false");
+	this.session = Session.getDefaultInstance(props);
+
     }
 
+    private String clean(String s) {
+	if(s!=null) {
+	    s = s.replace("<", " ").replace(">", " ");
+	}
+	return s;
+    }
+
+    private String clean2(String s) {
+	if(s!=null) {
+	    s = s.replace("<", "&lt;").replace(">", "&gt;");
+	}
+	return s;
+    }    
 
     /**
      * Gets called when the user has created a new entry from the File->New form or
@@ -64,11 +93,14 @@ public class MailTypeHandler extends GenericTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public void initializeEntryFromForm(Request request, Entry entry,
-                                        Entry parent, boolean newEntry)
-            throws Exception {
+    public void initializeNewEntry(Request request, Entry entry,
+                                   boolean fromImport)
+	throws Exception {
+	
+	boolean addProperties = request.get(ARG_METADATA_ADD,false) ||
+	    request.get("fromharvester",false);
         //If this is an edit then return
-        if ( !newEntry) {
+        if (fromImport) {
             return;
         }
 
@@ -77,23 +109,44 @@ public class MailTypeHandler extends GenericTypeHandler {
             return;
         }
 
-        //Extract out the mail message metadata
-        MimeMessage message = new MimeMessage(
-                                  null,
-                                  getStorageManager().getFileInputStream(
-                                      entry.getFile().toString()));
 
+        System.setProperty("mail.mime.address.strict", "false");
+
+        //Extract out the mail message metadata
+        MimeMessage message = new MimeMessage(this.session,
+					      getStorageManager().getFileInputStream(
+										     entry.getFile().toString()));
+
+	String subject = clean(message.getSubject());
+	if (subject == null) {
+	    subject = "";
+	}
         //If the user did not specify a name in the entry form then use the mail subject
-        if (entryHasDefaultName(entry)) {
-            String subject = message.getSubject();
-            if (subject == null) {
-                subject = "";
-            }
+        if (!stringDefined(entry.getDescription()) || entryHasDefaultName(entry)) {
             entry.setName(subject);
         }
-        String       from     = InternetAddress.toString(message.getFrom());
-        String       to =
-            InternetAddress.toString(message.getAllRecipients());
+        String       from     = clean(InternetAddress.toString(message.getFrom()));
+	StringBuilder       toSB = new StringBuilder();
+	Address[]addresses= message.getAllRecipients();
+	if(addresses!=null) {
+	    HashSet<String> seen =  new HashSet<String>();
+	    for(Address address:addresses) {
+		//            toSB.append(InternetAddress.toString(address));
+		String s = clean(address.toString());
+		toSB.append(s);
+		toSB.append("\n");
+		if(addProperties && !seen.contains(s)) {
+		    seen.add(s);
+		    Metadata metadata =
+			new Metadata(
+				     getRepository().getGUID(), entry.getId(),
+				     "email_address",
+				     false, s, null, null, null, null);
+		    getMetadataManager().addMetadata(request,entry, metadata);
+		}
+	    }
+	}
+
         StringBuffer desc     = new StringBuffer();
         Object       content  = message.getContent();
         Date         fromDttm = message.getSentDate();
@@ -114,8 +167,10 @@ public class MailTypeHandler extends GenericTypeHandler {
 
         //Now get the values (this would be the fromaddress and toaddress from types.xml
         Object[] values = getEntryValues(entry);
-        values[0] = from;
-        values[1] = to;
+        values[IDX_SUBJECT] =subject;
+        values[IDX_FROM] = from;
+	String to = Utils.clip(toSB.toString(),19900,"");
+        values[IDX_TO] = toSB.toString();
 
         //Set the description from the mail message
         if (entry.getDescription().length() == 0) {
@@ -124,8 +179,7 @@ public class MailTypeHandler extends GenericTypeHandler {
                 description = description.substring(0,
                         Entry.MAX_DESCRIPTION_LENGTH - 1);
             }
-            System.err.println("desc length:" + description.length());
-            entry.setDescription(description);
+            entry.setDescription(clean2(description));
         }
     }
 
@@ -199,60 +253,66 @@ public class MailTypeHandler extends GenericTypeHandler {
         }
     }
 
+    private String mailLink(String mail) {
+	String url = getRepository().getUrlBase() + "/search/do?metadata_type_email_address=email_address&metadata_attr1_email_address=" + mail;
+	String label = HU.getIconImage("fas fa-search","style","font-size:8pt") + "&nbsp;" + mail;
+	label = HU.span(label,HU.style("white-space:nowrap;"));
+	return HU.href(url,label,HU.title("Search"));
+    }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param wikiTemplate _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+
     @Override
-    public String getInnerWikiContent(Request request, Entry entry,
-                                      String wikiTemplate)
+    public String getWikiInclude(WikiUtil wikiUtil, Request request,
+                                 Entry originalEntry, Entry entry,
+                                 String tag, Hashtable props)
             throws Exception {
-        StringBuffer sb = new StringBuffer();
-        getPageHandler().entrySectionOpen(request, entry, sb, null);
-        String from = entry.getStringValue(0, "");
-        String to   = entry.getStringValue(1, "");
-        sb.append(HtmlUtils.formTable());
-        from = from.replace("<", "&lt;");
-        from = from.replace(">", "&gt;");
-        to   = to.replace("<", "&lt;");
-        to   = to.replace(">", "&gt;");
-        sb.append(HtmlUtils.formEntry(msgLabel("From"), from));
-        sb.append(HtmlUtils.formEntry(msgLabel("To"), to));
-
-
-
-        sb.append(HtmlUtils.formEntry(msgLabel("Date"),
-                                      getDateHandler().formatDate(request,
-                                          new Date(entry.getStartDate()),
-                                          (String) null)));
-        StringBuffer attachmentsSB = new StringBuffer();
-        getMetadataManager().decorateEntry(request, entry, attachmentsSB,
-                                           false);
-
-        sb.append(HtmlUtils.formTableClose());
-        sb.append(HtmlUtils.hr());
-        String desc = entry.getDescription();
-        desc = desc.replaceAll("\r\n\r\n", "\n<p>\n");
-        sb.append(HtmlUtils.div(desc, HtmlUtils.cssClass("mail-body")));
-        if (attachmentsSB.length() > 0) {
-            sb.append(HtmlUtils.hr());
-            sb.append(HtmlUtils.makeShowHideBlock(msg("Attachments"),
-                    "<div class=\"description\">" + attachmentsSB + "</div>",
-                    false));
+        if ( !tag.startsWith("mail_")) {
+            return super.getWikiInclude(wikiUtil, request, originalEntry,
+                                        entry, tag, props);
         }
 
-        getPageHandler().entrySectionClose(request, entry, sb);
+        StringBuilder sb = new StringBuilder();
+        if (tag.equals("mail_header")) {
+	    sb.append(HtmlUtils.formTable());
+	    String subject = clean2(entry.getStringValue(IDX_SUBJECT, ""));
+	    String from = entry.getStringValue(IDX_FROM, "");
+	    sb.append(HtmlUtils.formEntry(msgLabel("Subject"), subject));
+	    sb.append(HtmlUtils.formEntry(msgLabel("From"), mailLink(from)));
+	    StringBuilder to = new StringBuilder();
+	    for(String tom:Utils.split(entry.getStringValue(IDX_TO, ""),"\n",true,true)) {
+		to.append(mailLink(tom));
+		to.append(" ");
+	    }
+	    sb.append(HtmlUtils.formEntry(msgLabel("To"),
+					  HU.div(to.toString(),HU.attrs("style","max-height:100px;overflow-y:auto;"))));
+	    sb.append(HtmlUtils.formEntry(msgLabel("Date"),
+					  getDateHandler().formatDate(request,
+								      new Date(entry.getStartDate()),
+								      (String) null)));
+
+
+	    sb.append(HtmlUtils.formTableClose());
+	    return sb.toString();
+	}
+
+	if(tag.equals("mail_body")) {
+	    String desc = clean2(entry.getDescription());
+	    sb.append(HU.pre(desc,HU.style("max-height:400px;overflow-y:auto;")));
+	    return sb.toString();
+	}
+	if(tag.equals("mail_attachments")) {
+	    StringBuffer attachmentsSB = new StringBuffer();
+	    getMetadataManager().decorateEntry(request, entry, attachmentsSB,
+					       false);
+	    if (attachmentsSB.length() > 0) {
+		sb.append(HtmlUtils.makeShowHideBlock(msg("Attachments"),
+						      "<div class=\"description\">" + attachmentsSB + "</div>",
+						      false));
+	    }
+	}
+	    
 
         return sb.toString();
     }
-
 
 }

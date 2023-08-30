@@ -3,14 +3,39 @@
   <type name="mail_message"  
         description="Mail Message" 
         handler="org.ramadda.plugins.mail.MailTypeHandler" 
-        foruser="false"
+        foruser="true"
         category="Information" 
         pattern=".*\.eml$">
      <property name="icon" value="/mail/email.png"/>
      <property name="form.area.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
-     <column name="fromaddress" type="string" label="From" size="500"/>
-     <column name="toaddress" type="string" label="To"  rows="5" size="1000"/>
+     <column name="subject" type="string" label="Subject" size="5000" cansearch="true"/>
+     <column name="fromaddress" type="string" label="From" size="1000" cansearch="true"/>
+     <column name="toaddress" type="list" label="To"  rows="5" size="20000" cansearch="true" changetype="true"/>
+     <wiki><![CDATA[
++section title={{name}}
++row
++col-md-9 class="entry-page-main"
+{{mail_header}}
+:vspace 0.5em
+{{mail_body}}
+:vspace 0.5em
+{{mail_attachments}}
+-col
++col-md-3
+<div class="entry-page-info">
+{{tools includeicon="true" title="Services" message=""}}
+<br>
+{{list includeicon="true" details="false" entries="siblings,links"  message="" box.maxheight="200" box.class="entry-sidebox" prefix="====Related====" }}
+</div>
+-col
+-row
+-section
+]]>
+</wiki>
+
+
 </type>
+
 
 </types>
