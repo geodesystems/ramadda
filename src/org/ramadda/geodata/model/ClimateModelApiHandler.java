@@ -353,13 +353,15 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
             //make a new input for the next process
             nextInput = dpi.makeInput(output);
+            /*  Debug if files are not found.
             JobManager.CommandResults results =
                 getRepository().getJobManager().executeCommand(commands, envMap,
                     processDir, 60);
             String errorMsg = results.getStderrMsg();
             String outMsg   = results.getStdoutMsg();
             //System.err.println(outMsg);
-            //System.out.println(processDir.listFiles());
+            //System.out.println(StringUtil.toString(processDir.listFiles()));
+             */
 
             //Are we done? This should probably be a check to see if the output has a Result
             //if (output.hasOutput()) {
