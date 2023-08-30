@@ -1408,6 +1408,7 @@ public class WikiUtil {
 		}
                 if (tline.startsWith("+menu")) {
 		    buff.append("\n");
+		    HU.open(buff,"div","class","ramadda-menutree");
                     List<String> toks  = Utils.splitUpTo(tline, " ", 2);
 		    String attrs = "";
 		    menuCnt++;
@@ -1432,7 +1433,9 @@ public class WikiUtil {
 		    if(menuCnt>0) {
 			HU.close(buff,"li","\n");
 		    }
+		    HU.close(buff,"div");
 		    continue;
+
 		}
 
 
