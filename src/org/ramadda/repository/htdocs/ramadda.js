@@ -617,15 +617,14 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 				      let url =  RamaddaUtil.getUrl('/entry/show?entryid=' +newEntryId);
 				      document.location = url;
 				  },
-				  null,null,'Yes','No');
+				  null,null,{okLabel:'Yes',cancelLabel:'No',at:'middle bottom',my:'middle top',
+					     title:'New Entry',header:true});
 	};
-	//initDragAndDrop:function(target, dragOver,dragLeave,drop,type, acceptText,skipEditable) {
-
+	//initDragAndDrop:function(target, dragOver,dragLeave,drop,type, acceptText,skipEditable)
 	Utils.initDragAndDrop($('.ramadda-header'),
 			      event=>{},
 			      event=>{},
 			      (event,item,result,wasDrop) =>{
-				  console.log(1)
 				  Ramadda.handleDropEvent(event, item, result, entryId,authToken,success);
 			      },null,true,true);
     },
@@ -853,12 +852,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let isImage= file.type.match('^image.*');
 	let url = RamaddaUtil.getUrl("/entry/addfile");
 	let desc = "";
-	let name = file.name;
-	if(!name) {
-	    name = prompt("Entry Name:");
-	    if(!name) return;
-	}
-
+	let name = file.name??'file';
 	let fileName = file.name;
 	let suffix;
 	if(file.type=='text/plain') suffix="txt";
@@ -866,44 +860,51 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	if(!fileName) {
 	    fileName =  name+"." + suffix;
 	}
-	let data = new FormData();
-	data.append("filename",fileName);
-	if(authToken)
-	    data.append("authtoken",authToken);
-	//A hack for shapefiles and geojson
-	if(file.type=='application/zip') 
-	    data.append("filetype",'geo_shapefile');
-	else if(file.type=='application/json') 
-	    data.append("filetype",'geo_geojson');	
-	else
-	    data.append("filetype",file.type);
-	data.append("group",entryId);
-	data.append("description",desc);
-	data.append("file", result);
-	let dialog;
-	$.ajax({
-	    url: url,
-	    cache: false,
-	    contentType: false,
-	    processData: false,
-	    method: 'POST',
-	    type: 'POST', 
-	    data: data,
-	    success:  (data) =>{
-		dialog.remove();
-		if(data.status!='ok') {
-		    alert("An error occurred creating entry: "  + data.message);
-		    return;
+	let finish = () =>{
+	    let data = new FormData();
+	    data.append("filename",fileName);
+	    if(authToken)
+		data.append("authtoken",authToken);
+	    //A hack for shapefiles and geojson
+	    if(file.type=='application/zip') 
+		data.append("filetype",'geo_shapefile');
+	    else if(file.type=='application/json') 
+		data.append("filetype",'geo_geojson');	
+	    else
+		data.append("filetype",file.type);
+	    data.append("group",entryId);
+	    data.append("description",desc);
+	    data.append("file", result);
+	    let dialog;
+	    $.ajax({
+		url: url,
+		cache: false,
+		contentType: false,
+		processData: false,
+		method: 'POST',
+		type: 'POST', 
+		data: data,
+		success:  (data) =>{
+		    dialog.remove();
+		    if(data.status!='ok') {
+			alert("An error occurred creating entry: "  + data.message);
+			return;
+		    }
+		    if(callback) callback(data,data.entryid, data.name,isImage);
+		},
+		error: function (err) {
+		    dialog.remove();
+		    alert("An error occurred creating entry: "  + err);
 		}
-		if(callback) callback(data,data.entryid, data.name,isImage);
-	    },
-	    error: function (err) {
-		dialog.remove();
-		alert("An error occurred creating entry: "  + err);
-	    }
-	});
-	let html = HU.div(['style',HU.css('text-align','center','padding','5px')], "Creating entry<br>"+HU.image(ramaddaCdn + '/icons/mapprogress.gif',['width','50px']));
-	dialog = HU.makeDialog({content:html,anchor:$(document),my:"center top",at:"center top+100"});    
+	    });
+	    let html = HU.div(['style',HU.css('text-align','center','padding','5px')], "Creating entry<br>"+HU.image(ramaddaCdn + '/icons/mapprogress.gif',['width','50px']));
+	    dialog = HU.makeDialog({content:html,anchor:$(document),my:"center top",at:"center top+100"});    
+	}
+
+	name = prompt('Dropped file: ' + fileName +"\nNew entry name:");
+	if(!name) return;
+	finish();
+
     },
 
 
