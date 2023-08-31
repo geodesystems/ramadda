@@ -1336,6 +1336,7 @@ public class EntryManager extends RepositoryManager {
 	request.setReturnFilename("result.json");
 	String fileContents = request.getString("file",(String) null);
 	String fileName = request.getString("filename",(String) null);	
+	fileName = fileName.replace("/","_");
 	File tmpFile; 
 	try {
 	    tmpFile = getStorageManager().decodeFileContents(request,fileName, fileContents);
