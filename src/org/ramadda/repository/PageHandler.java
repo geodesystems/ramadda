@@ -825,8 +825,13 @@ public class PageHandler extends RepositoryManager {
 
         Entry  thisEntry = request.getCurrentEntry();
         if (thisEntry != null) {
-            theFooter += HU.script("ramaddaThisEntry='" + thisEntry.getId()
-                                   + "';\n");
+	    String footerScript = "ramaddaThisEntry='" + thisEntry.getId() + "';\n";
+	    if(thisEntry.isGroup() && getAccessManager().canDoNew(request, thisEntry)) {
+		footerScript+=HU.call("RamaddaUtil.initDragAndDropOnHeader",
+				      HU.squote(thisEntry.getId())+"," +
+				      HU.squote(getAuthManager().getAuthToken(request.getSessionId())));
+	    }
+            theFooter += HU.script(footerScript);
         }
 
 	pageLinks.add(HU.makePopup(null, popupImage, menuHtml,
@@ -2355,6 +2360,8 @@ public class PageHandler extends RepositoryManager {
 						 "ramadda-message-info",
 						 Constants.ICON_DIALOG_ERROR,
 						 "ramadda-message-error",
+						 Constants.ICON_DIALOG_QUESTION,
+						 "ramadda-message-question",						 
 						 Constants.ICON_DIALOG_WARNING,
 						 "ramadda-message-warning");
         String faClazz = (String)Utils.multiEquals(icon,"text-primary",

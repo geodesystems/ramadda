@@ -609,7 +609,26 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
 
     },
-    
+    initDragAndDropOnHeader:function(entryId,authToken) {
+	let success = (data, newEntryId, name,isImage)=>{
+	    HU.makeOkCancelDialog($('.ramadda-header'),
+				  'New entry has been created: ' +name+'<br>Do you want to view it?',
+				  ()=>{
+				      let url =  RamaddaUtil.getUrl('/entry/show?entryid=' +newEntryId);
+				      document.location = url;
+				  },
+				  null,null,'Yes','No');
+	};
+	//initDragAndDrop:function(target, dragOver,dragLeave,drop,type, acceptText,skipEditable) {
+
+	Utils.initDragAndDrop($('.ramadda-header'),
+			      event=>{},
+			      event=>{},
+			      (event,item,result,wasDrop) =>{
+				  console.log(1)
+				  Ramadda.handleDropEvent(event, item, result, entryId,authToken,success);
+			      },null,true,true);
+    },
 
     initDragAndDropEntries:function(rows, entryMap,mainId) {
 	rows.mousedown(function(event) {
@@ -841,7 +860,9 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	}
 
 	let fileName = file.name;
-	let suffix = file.type.replace(/image\//,"");
+	let suffix;
+	if(file.type=='text/plain') suffix="txt";
+	else suffix =  file.type.replace(/image\//,"");
 	if(!fileName) {
 	    fileName =  name+"." + suffix;
 	}
