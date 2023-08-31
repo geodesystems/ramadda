@@ -1042,7 +1042,8 @@ public class AccessManager extends RepositoryManager {
         if (entry.getResource() != null) {
             if (!entry.getResource().isS3() && entry.getResource().isFileType()) {
                 if ( !entry.getResource().getTheFile().exists()) {
-                    if(debug)System.err.println ("\tfile is missing");
+                    if(debug)System.err.println ("\tfile is missing:" +
+						 entry.getResource().getTheFile());
                     entry = getEntryManager().handleMissingFileEntry(request,
 								     entry);
                     if (entry == null) {
