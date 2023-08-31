@@ -1022,8 +1022,13 @@ public class EntryManager extends RepositoryManager {
 	Entry entry = getEntryFromRequest(request, ARG_ENTRYID,
 					  getRepository().URL_ENTRY_SHOW,false);
 	if(entry!=null) {
-	    String text = entry.getTypeHandler().getWikiTemplate(request, entry);
-	    if(text!=null) sb.append(text.trim());
+	    String text = "";
+	    if(request.get("usedescription",false))
+		text = entry.getDescription();
+	    else
+		text = entry.getTypeHandler().getWikiTemplate(request, entry);
+	    if(text!=null)
+		sb.append(text.trim());
 	}
 	if(sb.length()==0) sb.append("no wiki text");
 	Result result  = new Result("", sb, IO.MIME_TEXT);

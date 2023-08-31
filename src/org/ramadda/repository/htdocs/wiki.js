@@ -382,7 +382,8 @@ WikiEditor.prototype = {
 	    what.push("ID");
 	    what.push("entry=ID");	    
 	    what.push("Link");
-	    what.push("Wiki Text");
+	    what.push("Wiki Text");	    
+	    what.push("Description");
 	    if(opts.isImage) {
 		what.push("Image");
 	    }
@@ -444,10 +445,12 @@ WikiEditor.prototype = {
 		text = "{{import entry=" + entryId+" }}";		
 	    } else  if(what=="Grid") {
 		text = "{{grid entry=" + entryId+" }}";			
-	    } else if(what=="Wiki Text") {
+	    } else if(what=="Wiki Text" || what=="Description") {
 		let url = RamaddaUtils.getUrl("/entry/wikitext?entryid="+ entryId);
+		if(what=="Description") url+="&usedescription=true";
 		console.log(url);
 		$.get(url, (data) =>{
+		    data = String(data).replace(/^ *<wiki>\s/,'');
 		    insert(data);
 		}).fail(error=>{
 		    alert("An error occurred:" + error);
