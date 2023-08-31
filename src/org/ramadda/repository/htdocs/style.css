@@ -1537,11 +1537,11 @@ mapheader {
 
 .ramadda-message-plain {
     background-color : #fff;
+    background-color:#f8f8f8;    
 }
 
-.ramadda-message-info {
-    background-color:#F0F8FF;
-    background-color:#fff;
+.ramadda-message-info, .ramadda-message-question {
+    background-color:#f8f8f8;    
 }
 
 .ramadda-message-error {
