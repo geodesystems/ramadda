@@ -740,7 +740,6 @@ public class EntryManager extends RepositoryManager {
             if (entry == null) {
                 String entryId = request.getString(urlArg, BLANK);
                 Entry  tmp     = getEntry(request, entryId, false);
-		System.err.println("e2:" + tmp);
                 if (tmp != null) {
                     logInfo("Cannot access entry:" + entryId + "  IP:"
                             + request.getIp());
@@ -772,6 +771,9 @@ public class EntryManager extends RepositoryManager {
                 entry = request.getRootEntry();
             }
         }
+	if(entry!=null) {
+	    request.setCurrentEntry(entry);
+	}
         return entry;
     }
 
@@ -1376,7 +1378,9 @@ public class EntryManager extends RepositoryManager {
 	    if(typeHandler==null) {
 		typeHandler = findDefaultTypeHandler(fileName);
 	    }
+	    //	    System.err.println("tmpFile:" + tmpFile +" " + tmpFile.exists() +  " file name:" + fileName);
 	    tmpFile = getStorageManager().copyToStorage(request, tmpFile,fileName);
+	    //	    System.err.println("newFile:" + tmpFile +" " + tmpFile.exists());
 	    String name = fileName.replaceAll("_", " ");
 	    name = IO.stripExtension(name);
 	    name = StringUtil.camelCase(name);
@@ -7471,8 +7475,6 @@ public class EntryManager extends RepositoryManager {
             throw new RepositoryUtil.MissingEntryException(
 							   "Could not find entry:" + request.getString(urlArg, BLANK));
         }
-	if(entry!=null) request.setCurrentEntry(entry);
-
         return entry;
     }
 
