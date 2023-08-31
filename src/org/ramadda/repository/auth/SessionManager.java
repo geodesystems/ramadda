@@ -68,9 +68,6 @@ public class SessionManager extends RepositoryManager {
     private static final double SESSION_DAYS = 2.0;
 
 
-    /** _more_ */
-    public static final String COOKIE_NAME = "repositorysession";
-
 
     /** _more_ */
     private String cookieName;
@@ -99,6 +96,9 @@ public class SessionManager extends RepositoryManager {
                                                      Object>(5000);
 
 
+    private boolean addAnonymousCookie  = true;
+
+
     /**
      * _more_
      *
@@ -124,6 +124,18 @@ public class SessionManager extends RepositoryManager {
                 cullSessions();
             }
         });
+    }
+
+
+
+    @Override
+    public void initAttributes() {
+	addAnonymousCookie = getRepository().getProperty("ramadda.session.anonymouscookie",true);
+        super.initAttributes();
+    }
+
+    public boolean addAnonymousCookie(Request request) {
+	return addAnonymousCookie;
     }
 
 
@@ -414,8 +426,6 @@ public class SessionManager extends RepositoryManager {
     }
 
 
-    //TODO: we need to clean out old sessions every once in a while
-
 
     /**
      * _more_
@@ -469,18 +479,14 @@ public class SessionManager extends RepositoryManager {
             throws Exception {
         UserSession session = sessionMap.get(sessionId);
         if (session != null) {
-            debugSession(request,
-                         "getSession: got session from session map:"
-                         + session);
+	    //            debugSession(request, "getSession: got session from session map:"+ session);
 
             return session;
         }
         session = anonymousSessionMap.get(sessionId);
         if (session != null) {
-            debugSession(
-                request,
-                "getSession: got session from anonymous session map: "
-                + session);
+	    if(Repository.debugSession)
+		debugSession(request,"getSession: got session from anon session map: " + session);
 
             return session;
         }
@@ -496,9 +502,7 @@ public class SessionManager extends RepositoryManager {
                 session = makeSession(results);
                 session.setLastActivity(new Date());
                 //Remove it from the DB and then re-add it so we update the lastActivity
-                debugSession(request,
-                             "getSession: got session from database:"
-                             + session);
+                debugSession(request,  "getSession: got session from database:" + session);
                 removeSession(request, session.getId());
                 addSession(session);
 
@@ -622,7 +626,7 @@ public class SessionManager extends RepositoryManager {
         for (String cookieValue : cookies) {
             if (user == null) {
                 if (Repository.debugSession) {
-                    //              getRepository().debugSession(request, "checkSession: cookie:"+ cookieValue);
+		    getRepository().debugSession(request, "checkSession: cookie:"+Utils.clip(cookieValue,10,"..."));
                 }
                 UserSession session = getSession(request, cookieValue, false);
                 if (session != null) {
@@ -631,9 +635,8 @@ public class SessionManager extends RepositoryManager {
                     session.setUser(user);
                     request.setSessionId(cookieValue);
                     if (Repository.debugSession) {
-                        //debugSession(request,   "checkSession: got session from cookie:" + session);
+                        debugSession(request,   "checkSession: got session from cookie:" + session);
                     }
-
                     break;
                 }
             }
@@ -745,31 +748,27 @@ public class SessionManager extends RepositoryManager {
 
         if ((request.getSessionId() == null)
                 && !request.defined(ARG_SESSIONID)) {
-            request.setSessionId(createSessionId());
+	    if(addAnonymousCookie(request)) {
+		request.setSessionId(createSessionId());
+	    }
         }
 
         if (user == null) {
             user = getUserManager().getAnonymousUser();
             //Create a temporary session
-            UserSession session =
-                anonymousSessionMap.get(request.getSessionId());
-            if (session == null) {
-                getRepository().debugSession(
-                    request,
-                    "\t******* checkSession: adding anonymous session:"
-                    + request.getSessionId());
-                session = new UserSession(request.getSessionId(), user,
-                                          new Date());
-                anonymousSessionMap.put(request.getSessionId(), session);
-            }
+	    if(addAnonymousCookie(request)) {
+		UserSession session =  anonymousSessionMap.get(request.getSessionId());
+		if (session == null) {
+                    if (Repository.debugSession) 
+			getRepository().debugSession(request,
+						     "\t**** checkSession: adding anonymous session:"
+						     + Utils.clip(request.getSessionId(),10,"..."));
+		    session = new UserSession(request.getSessionId(), user, new Date());
+		    anonymousSessionMap.put(request.getSessionId(), session);
+		}
+	    }
         }
-
-
         request.setUser(user);
-
-
-
-
     }
 
 
@@ -802,9 +801,6 @@ public class SessionManager extends RepositoryManager {
             String cookieValue = (String) subtoks.get(1);
             if (cookieName.equals(getSessionCookieName())) {
                 cookies.add(cookieValue);
-            } else if (cookieName.equals(COOKIE_NAME)) {
-                //For backwards compatability
-                cookies.add(cookieValue);
             }
         }
 
@@ -833,7 +829,10 @@ public class SessionManager extends RepositoryManager {
      * @return _more_
      */
     public String createSessionId() {
-        return getRepository().getGUID() + "_" + Math.random();
+	String session = getRepository().getGUID() + "_" + Math.random();
+	//	System.err.println("create session id:" + Utils.clip(session,10,"..."));
+	//	System.err.println(Utils.getStack(10));
+	return session;
     }
 
 

@@ -3686,6 +3686,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 request.setUser(getUserManager().getAnonymousUser());
                 result = makeErrorResult(request, sessionExc);
                 result.setResponseCode(Result.RESPONSE_UNAUTHORIZED);
+		//TODO
+		System.err.println("SESSION ERROR:" );
+		sessionExc.printStackTrace();
+		return result;
             }
             if (result == null) {
                 result = getResult(request);
@@ -3812,21 +3816,19 @@ public class Repository extends RepositoryBase implements RequestHandler,
             okToAddCookie = false;
         }
 
-        if (okToAddCookie && (result != null)
+        if (okToAddCookie && result != null
 	    && (request.getSessionIdWasSet()
 		|| (request.getSessionId() == null))) {
 	    handleRequestCookie(request, result);
         }
-
         return result;
-
     }
 
 
     public void handleRequestCookie(Request request, Result result) {
-	//	if(result.getCookieWasAdded()) return;
 	if(request.getCookieWasAdded()) return;	
 	if (request.getSessionId() == null) {
+	    if(!getSessionManager().addAnonymousCookie(request)) return;
 	    request.setSessionId(getSessionManager().createSessionId());
 	}
 	String sessionId = request.getSessionId();
