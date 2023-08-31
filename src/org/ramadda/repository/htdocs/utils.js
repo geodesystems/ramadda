@@ -4096,6 +4096,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let buttons = Utils.wrap(args,"<div style='display:inline-block;margin-right:6px;'>","</div>");
 	return HU.div(['class',clazz??'ramadda-button-bar','style',style??''], buttons);
     },
+    vspace:function(dim) {
+	return this.div(['style',this.css('margin-top:',dim??'0.5em')]);
+    },
     hbox: function(args,style) {
         let row = HtmlUtils.openTag("tr", ["valign", "top"]);
         row += Utils.wrap(args, '<td align=left>' +HU.open('div',['style', style??'']),'</div></td>');
@@ -4107,24 +4110,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         let col = HtmlUtils.join(args, "<br>");
         return this.div([STYLE,HU.css("display","inline-block")],col);
     },    
-    makeOkCancelDialog:function(anchor,msg,okFunc,cancelFunc,extra,okLabel,cancelLabel) {
-	let buttonList = [HU.div(['action','ok','class','ramadda-button ' + CLASS_CLICKABLE],okLabel??'OK'),
-			  HU.div(['class','ramadda-button ' + CLASS_CLICKABLE],cancelLabel??'Cancel')];
-
-	if(extra) buttonList.push(extra);
-	let buttons = HU.buttons(buttonList);
-	let html = msg+"<br>" + buttons;
-	html = HU.div(['class','ramadda-popup-dialog ramadda-nowrap'],html);
-	let dialog = HU.makeDialog({content:html,header:false,anchor:anchor,my:"left top",at:"left bottom"});
-	dialog.find('.' + CLASS_CLICKABLE).button().click(function() {
-	    if($(this).attr('action')=='ok') {
-		okFunc();
-	    } else if(cancelFunc) {
-		cancelFunc();
-	    }
-	    dialog.remove();
-	});
-    },
 
 
     leftRight: function(left, right, leftWeight, rightWeight) {
@@ -4197,6 +4182,27 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return "col-md-1";
     },
     toggleDialogs:{},
+    makeOkCancelDialog:function(anchor,msg,okFunc,cancelFunc,extra,opts) {
+	opts = opts??{};
+	let buttonList = [HU.div(['action','ok','class','ramadda-button ' + CLASS_CLICKABLE],opts.okLabel??'OK'),
+			  HU.div(['class','ramadda-button ' + CLASS_CLICKABLE],opts.cancelLabel??'Cancel')];
+
+	if(extra) buttonList.push(extra);
+	let buttons = HU.buttons(buttonList);
+	let html = msg+HU.vspace() + buttons;
+	html = HU.div(['style',opts.style??'padding:5px;'],html);
+	let dialog = HU.makeDialog({content:html,header:false,anchor:anchor,my:opts.my??"left top",at:opts.at??"left bottom",
+				    title:opts.title,header:opts.header,draggable:opts.draggable});
+	dialog.find('.' + CLASS_CLICKABLE).button().click(function() {
+	    if($(this).attr('action')=='ok') {
+		okFunc();
+	    } else if(cancelFunc) {
+		cancelFunc();
+	    }
+	    dialog.remove();
+	});
+    },
+
     makeDialog: function(args) {
         HtmlUtils.hidePopupObject(null,true);
         let opts  = {
@@ -5235,7 +5241,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
         let input = opts.showInputField?HtmlUtils.input("formurl", url, ["size", "80","id","formurl"]):
 	    HtmlUtils.hidden("formurl", url, ["size", "80","id","formurl"]);
-        let html = '<p>' +HtmlUtils.div(["class", "ramadda-form-url"], 
+        let html = HU.vspace() +HtmlUtils.div(["class", "ramadda-form-url"], 
 					input+SPACE2+
 					(opts.includeCopyArgs?
 					 HU.span(['id','argscopy','class',CLASS_CLICKABLE,'title','Copy json for subset action'],
