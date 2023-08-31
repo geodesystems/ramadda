@@ -2483,14 +2483,12 @@ public class PageHandler extends RepositoryManager {
                     break;
                 }
                 for (String type : Utils.split(types, ",", true, true)) {
-                    if (type.equals("file") && !entry.isGroup()) {
+                    if ((type.equals("file") || type.equals("anyfile")) && !entry.isGroup()) {
                         theMetadata = metadata;
-
                         break;
                     }
-                    if (type.equals("folder") && entry.isGroup()) {
+                    if ((type.equals("folder") || type.equals("anygroup")) && entry.isGroup()) {
                         theMetadata = metadata;
-
                         break;
                     }
                     if (entry.getTypeHandler().isType(type)) {
