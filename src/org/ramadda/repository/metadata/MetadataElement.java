@@ -133,8 +133,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
     private int columns = 60;
 
     /** _more_ */
-    //    private List<TwoFacedObject> values;
-    private List<Object> values;    
+    private List<HtmlUtils.Selector> values;    
 
     /** _more_ */
     private Hashtable<String, String> valueMap = new Hashtable<String,
@@ -240,8 +239,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                         true);
             }
 
-	    //            List<TwoFacedObject> enumValues = new ArrayList<TwoFacedObject>();
-            List<Object> enumValues = new ArrayList<Object>();	    
+            List<HtmlUtils.Selector> enumValues = new ArrayList<HtmlUtils.Selector>();	    
             for (String tok : tmpValues) {
                 //Check for comment line
                 if (tok.startsWith("#")) {
@@ -250,21 +248,20 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 int idx = tok.indexOf(delimiter);
                 if (idx < 0) {
                     valueMap.put(tok, tok);
-		    enumValues.add(new TwoFacedObject(tok));
+		    enumValues.add(new HtmlUtils.Selector(tok,tok));
                     continue;
                 }
                 String[] toks = Utils.split(tok, delimiter, 2);
                 if (toks == null) {
                     valueMap.put(tok, tok);
-                    enumValues.add(new TwoFacedObject(tok));
+                    enumValues.add(new HtmlUtils.Selector(tok,tok));
                     continue;
                 }
                 valueMap.put(toks[0], toks[1]);
 		//        public Selector(String label, String id, String tooltip, String icon,int margin, int padding, boolean isHeader) {
-		//                enumValues.add(new TwoFacedObject(toks[1], toks[0]));
                 enumValues.add(new HtmlUtils.Selector(toks[1], toks[0],toks[0],null,0,0,false));
             }
-            enumValues.add(0, new TwoFacedObject(""));
+            enumValues.add(0, new HtmlUtils.Selector("",""));
             setValues(enumValues);
         }
     }
@@ -384,8 +381,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             if (url != null) {
                 return new MetadataHtml(
                     "",
-                    HtmlUtils.img(
-                        url, HtmlUtils.cssClass("ramadda-metadata-image")));
+                    HU.img(
+                        url, HU.cssClass("ramadda-metadata-image")));
             }
 
             return null;
@@ -433,7 +430,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                         if (formInfo.isGroup) {
                             //                            subEntrySB.append("<tr valign=\"top\"><td></td><td>\n");
                         }
-                        subEntrySB.append(HtmlUtils.formEntry(formInfo.label,
+                        subEntrySB.append(HU.formEntry(formInfo.label,
                                 formInfo.content));
                         if (formInfo.isGroup) {
                             //                            subEntrySB.append("</td></tr>\n");
@@ -450,16 +447,16 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 entryCnt++;
                 if (anyChildrenGroups || (children.size() > 1)) {
                     StringBuffer tmp = new StringBuffer();
-                    tmp.append(HtmlUtils.formTable());
+                    tmp.append(HU.formTable());
                     tmp.append(subEntrySB);
-                    tmp.append(HtmlUtils.formTableClose());
-                    entriesSB.append(HtmlUtils.makeToggleInline(entryCnt
+                    tmp.append(HU.formTableClose());
+                    entriesSB.append(HU.makeToggleInline(entryCnt
                             + ") " + subName, tmp.toString(), true));
                     entriesSB.append("<br>");
                 } else {
-                    entriesSB.append(HtmlUtils.formTable());
+                    entriesSB.append(HU.formTable());
                     entriesSB.append(subEntrySB);
-                    entriesSB.append(HtmlUtils.formTableClose());
+                    entriesSB.append(HU.formTableClose());
                 }
             }
             if (haveSubEntries) {
@@ -938,10 +935,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             List names =
                 Utils.split(
                     "blues,blue_green_red,white_blue,blue_red,red_white_blue,blue_white_red,grayscale,inversegrayscale,rainbow,nice,blues,gray_scale,inverse_gray_shade,light_gray_scale,blue_green,blue_purple,green_blue,orange_red,purple_blue,purple_blue_green,purple_red,red_purple,yellow_green,yellow_green_blue,yellow_orange_brown,yellow_orange_red,oranges,purples,reds,greens,map_grays,bright38,precipitation,humidity,temperature,visad,inverse_visad,wind_comps,windspeed,dbz,dbz_nws,topographic", ",");
-            //            List<TwoFacedObject> names = ColorTable.getColorTableNames();
-            //            names.add(0, new TwoFacedObject("--none--", ""));
             names.add(0, new TwoFacedObject("--none--", ""));
-
             return HtmlUtils.select(arg, names, value) + " "
                    + HtmlUtils.href(getRepository().getUrlBase()
                                     + "/colortables", "View",
@@ -984,13 +978,12 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         } else if (dataType.equals(DATATYPE_ENUMERATION)) {
             return HtmlUtils.select(arg, values, value);
         } else if (dataType.equals(DATATYPE_ENUMERATIONPLUS)) {
-            boolean contains = TwoFacedObject.contains(values, value);
-
+            boolean contains = HtmlUtils.Selector.contains(values, value);
             return HtmlUtils.select(arg, values, value) + HtmlUtils.space(2)
                    + msgLabel("Or")
                    + HtmlUtils.input(arg + "_input", (contains
                     ? ""
-                    : value), HtmlUtils.SIZE_30);
+                    : value), HtmlUtils.SIZE_20);
         } else if (dataType.equals(DATATYPE_FILE)) {
             String image = (forEdit
                             ? getFileHtml(request, entry, metadata, this,
@@ -1195,7 +1188,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
      *
      * @param value The new value for Values
      */
-    public void setValues(List<Object> value) {
+    public void setValues(List<HtmlUtils.Selector> value) {
         values = value;
     }
 
@@ -1204,7 +1197,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
      *
      * @return The Values
      */
-    public List<Object> getValues() {
+    public List<HtmlUtils.Selector> getValues() {
         return values;
     }
 
