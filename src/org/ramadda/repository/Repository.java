@@ -1177,7 +1177,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    : getScriptPath("ramadda.startupscript");
         if (Utils.stringDefined(script)) {
             try {
-		scriptPaths.add(script);
+		addScriptPath(script);
 		makeProcessBuilder(Utils.split(script," ", true,true)).start();
             } catch (Exception exc) {
                 System.err.println("Error running startup script:" + script+ "\n" + exc);
@@ -4841,11 +4841,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-
-
-
-
-
     /**
        this returns a path defined by the given property name that
        will be used to do an external execute. This is just a wrapper
@@ -4854,18 +4849,22 @@ public class Repository extends RepositoryBase implements RequestHandler,
     */
     public String getScriptPath(String name,String...dflts) {
 	String path =  getLocalProperty(name, dflts!=null && dflts.length>0?dflts[0]:null);
+	addScriptPath(path);
+    	return path;
+    }
+
+    public void addScriptPath(String path) {
 	if(Utils.stringDefined(path)) {
 	    if(!scriptPaths.contains(path)) {
 		scriptPaths.add(path);
-		getLogManager().logInfo("RAMADDA: adding script path: " + name+"="+path);
+		getLogManager().logInfo("RAMADDA: adding script path: "+path);
 	    }
 	}
-	return path;
     }
 
     public boolean isScriptOk(String path) {
 	boolean ok= scriptPaths.contains(path);
-	System.err.println("script ok:" +path +" " + ok);
+	//	System.err.println("script ok:" +path +" " + ok);
 	return ok;
     }
 
