@@ -2587,7 +2587,8 @@ var Utils =  {
         */
         /* for select menus with icons */
 //        $(parent + ".ramadda-pulldown-with-icons").iconselectmenu().iconselectmenu("menuWidget").addClass("ui-menu-icons ramadda-select-icon");
-        $(parent + ".ramadda-pulldown-with-icons").iconselectmenu({width:300}).addClass("ui-menu-icons ramadda-select-icon");	
+	//iconmenu
+        $(parent + ".ramadda-pulldown-with-icons").iconselectmenu({xxxwidth:300}).addClass("ui-menu-icons ramadda-select-icon");	
     },
     searchLastInput:"",
     searchAscending:false,
@@ -5669,8 +5670,10 @@ $.widget("custom.iconselectmenu", $.ui.selectmenu, {
             }
             $(img).appendTo(wrapper);
         }
+
 	if(!item.element.attr("isheader")) {
-            label = HU.span(['title',label,STYLE,HU.css('display','inline-block','min-width','300px','width','100%','margin-left','32px','white-space','nowrap')], label);
+            label = HU.span(['title',label,STYLE,HU.css('display','inline-block','width','100%',
+							'margin-left',img?'32px':'4px','white-space','nowrap')], label);
         }
         let labelClass = item.element.attr("label-class");
         if(labelClass) {
