@@ -468,7 +468,7 @@ public class Service extends RepositoryManager {
                         command = pathPropertyValue;
                     } else {
                         command = command.replace(macro(pathProperty),
-                                pathPropertyValue);
+						  pathPropertyValue);
                     }
                 }
             }
@@ -522,6 +522,7 @@ public class Service extends RepositoryManager {
 
                 return;
             }
+	    getRepository().addScriptPath(command);
         }
 
 
