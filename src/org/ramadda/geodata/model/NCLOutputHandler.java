@@ -535,7 +535,9 @@ sb.append(HtmlUtils.form(formUrl,
 
         StringBuffer commandString = new StringBuffer();
         List<String> commands      = new ArrayList<String>();
-        commands.add(IOUtil.joinDir(ncargRoot, "bin/ncl"));
+        String nclPath = IOUtil.joinDir(ncargRoot, "bin/ncl");
+        nclPath = getRepository().getScriptPath("ramadda.ncl.path",nclPath);
+        commands.add(nclPath);
         commands.add(
             IOUtil.joinDir(
                 IOUtil.joinDir(getStorageManager().getResourceDir(), "ncl"),
