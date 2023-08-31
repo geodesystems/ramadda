@@ -163,8 +163,8 @@ var Utils =  {
         if(!url) return false;
 	return url.search(/(\.png|\.jpg|\.jpeg|\.gif|\.webp|\.heic)/i) >= 0;
     },
-    initDragAndDrop:function(target, dragOver,dragLeave,drop,type, acceptText) {
-	target.attr('contenteditable',true);
+    initDragAndDrop:function(target, dragOver,dragLeave,drop,type, acceptText,skipEditable) {
+	if(!skipEditable)	target.attr('contenteditable',true);
         target.on('dragover', (event) => {
             event.stopPropagation();
             event.preventDefault();
@@ -4107,9 +4107,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         let col = HtmlUtils.join(args, "<br>");
         return this.div([STYLE,HU.css("display","inline-block")],col);
     },    
-    makeOkCancelDialog:function(anchor,msg,okFunc,cancelFunc,extra) {
-	let buttonList = [HU.div(['action','ok','class','ramadda-button ' + CLASS_CLICKABLE],'OK'),
-			  HU.div(['class','ramadda-button ' + CLASS_CLICKABLE],'Cancel')];
+    makeOkCancelDialog:function(anchor,msg,okFunc,cancelFunc,extra,okLabel,cancelLabel) {
+	let buttonList = [HU.div(['action','ok','class','ramadda-button ' + CLASS_CLICKABLE],okLabel??'OK'),
+			  HU.div(['class','ramadda-button ' + CLASS_CLICKABLE],cancelLabel??'Cancel')];
 
 	if(extra) buttonList.push(extra);
 	let buttons = HU.buttons(buttonList);
