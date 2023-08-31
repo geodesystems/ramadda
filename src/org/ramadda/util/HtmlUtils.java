@@ -3423,6 +3423,21 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
 
 
+	public boolean equals(Object o) {
+	    if(!(o instanceof Selector)) return false;
+	    return this.id.equals(((Selector)o).id);
+	}
+
+	public static boolean contains(List<Selector> l, Object v) {
+	    String s= (v instanceof Selector)?((Selector)v).id:v.toString();
+	    for(Selector sel: l)  {
+		if(sel.id.equals(s)) return true;
+	    }
+	    return false;
+	}
+	
+
+
         /**
          *
          * @param tooltip _more_
