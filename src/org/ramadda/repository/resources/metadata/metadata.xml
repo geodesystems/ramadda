@@ -188,7 +188,7 @@ Control how entries are displayed.
       <element id="showtoolbar" name="Show Toolbar" datatype="boolean" default="true"/>
       <element id="showentryheader" name="Show Entry Header" datatype="boolean" default="true"/>
       <element id="showlayouttoolbar" name="Show Layout Toolbar" datatype="boolean" default="true"/>
-      <element name="entrytype" label="Entry Type" datatype="enumerationplus" values="folder:Folder,file:File"
+      <element name="entrytype" label="Entry Type" datatype="enumerationplus" values="anygroup:Any Group,anyfile:Any File,group:Just Group Entries"
                suffix="Entry type that this page style is applicable to"/>
       <element name="apply_to_this" label="Apply to this entry" datatype="boolean" default="true"
                suffix=""/>
