@@ -78,6 +78,9 @@ for {set i 0} {$i <[llength $argv]} {incr i} {
 }
 
 
+if {$::output==""} {
+    set ::output [open results.html w]
+}
 
 if {$groupUrl!=""} {
     runGroup "Group" $groupUrl

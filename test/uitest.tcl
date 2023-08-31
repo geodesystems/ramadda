@@ -3,7 +3,7 @@ set ::pageCnt 0
 set ::haveWritten 0
 set ::haveWrittenError 0
 set ::initTest 0
-set ::output stdout
+set ::output ""
 set ::consoleCnt 0
 
 proc getUrl {url} {
