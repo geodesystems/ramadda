@@ -611,7 +611,7 @@ public class PointTypeHandler extends RecordTypeHandler {
             return;
         }
 
-	boolean debug =getRepository().getProperty("debug.pointdata.new",entry.getTypeHandler().getTypeProperty("debug.pointdata.new",true));
+	boolean debug =getRepository().getProperty("debug.pointdata.new",entry.getTypeHandler().getTypeProperty("debug.pointdata.new",false));
 
 
 
