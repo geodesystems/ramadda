@@ -408,7 +408,7 @@ WikiEditor.prototype = {
 	    HU.div([STYLE,HU.css("display","inline-block"), CLASS,"ramadda-button",ID,this.domId("addcancel")],"Cancel");
 	html = HU.div([STYLE,HU.css('padding','10px','width','400px')],html);
 	let dialog = this.addDialog = HU.makeDialog({content:html,anchor:this.getScroller(),title:"Select Entry",header:true,
-						     sticky:true,draggable:true,modal:true,xmodalContentsCss:HU.css('left','50px')});
+						     sticky:true,draggable:true,modal:true});
 	let menu = dialog.find("#"+this.domId("addtype"));
 	HU.initSelect(menu);
 	dialog.find("#" +this.domId("addcancel")).button().click(()=>{
