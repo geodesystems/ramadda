@@ -265,19 +265,20 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	});
 	let html = "";
 	let cols = [];
-	cols.push({id:"name",label:"Name"});
+	cols.push({id:"name",label:"Name",width:props.nameWidth});
 	if(props.showDate)
-	    cols.push({id:"fromdate",label:"Date",width:120});		    
+	    cols.push({id:"fromdate",label:"Date",width:props.fromDateWidth??120});		    
 	if(props.showCreateDate)
-	    cols.push({id:"createdate",label:"Create Date",width:120});
+	    cols.push({id:"createdate",label:"Create Date",width:props.createDateWidth??120});
 	if(props.showSize)
-	    cols.push({id:"size",label:"Size",width:100});
+	    cols.push({id:"size",label:"Size",width:props.sizeWidth??100});
 	if(props.showType)
-	    cols.push({id:"type",label:"Type",width:120});		    			
+	    cols.push({id:"type",label:"Type",width:props.typeWidth??120});		    			
 	if(props.showHeader) {
 	    html+="<table cellspacing=0 cellpadding=0 width=100% class=entry-list-header><tr>";
 	    let hdrAttrs = ["class","entry-list-header-column ramadda-clickable"];
 	    cols.forEach((col,idx)=> {
+
 		let attrs = hdrAttrs;
 		let width = col.width;
 		if(idx==0 && props.showForm) {
