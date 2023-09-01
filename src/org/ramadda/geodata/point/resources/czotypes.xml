@@ -1,4 +1,4 @@
-<types supercategory="Geoscience">
+<types supercategory="Geoscience" category="Point Data">
 
   <type name="type_point_hydro"  description="" super="type_point" 
 category="Ocean and Water Data" foruser="false">

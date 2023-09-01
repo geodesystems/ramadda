@@ -1,4 +1,4 @@
-<types supercategory="Geoscience">
+<types supercategory="Geoscience" category="Point Data">
   <type name="type_awc_metar"  super="type_point" description="AWC Weather Observations"
 	handler="org.ramadda.geodata.point.AwcMetarTypeHandler">
      <property name="form.file.show" value="false"/>

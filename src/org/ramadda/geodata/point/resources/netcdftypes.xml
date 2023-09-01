@@ -1,4 +1,4 @@
-<types supercategory="Geoscience">
+<types supercategory="Geoscience" category="Point Data">
 
   <type name="type_point_netcdf"  description="NetCDF Point File" super="type_point" handler="org.ramadda.data.services.PointTypeHandler">
      <property name="record.file.class" value="org.ramadda.geodata.point.netcdf.NetcdfPointFile"/>
