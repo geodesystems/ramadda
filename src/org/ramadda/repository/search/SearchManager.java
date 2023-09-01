@@ -2325,7 +2325,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    sb.append("</center>");
 	}
 	sb.append(HU.open("div","id",uid));
-	
+	sb.append("\n");
         for (EntryManager.SuperType superType :
 		 getEntryManager().getCats(false)) {
 	    if(supers!=null && !supers.contains(superType.getName())) continue;
@@ -2339,28 +2339,26 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                     if (cnt == 0) {
                         continue;
                     }
-                    if ( !didSuper) {
+                    if (!didSuper && showHeader) {
                         didSuper = true;
-			if(showHeader)
-			    sb.append(
-				      "<div class=type-group-container><div class='type-group-header'>"
-				      + superType.getName()
-				      + "</div><div class=type-group>");
+			sb.append("<div class=type-group-container><div class='type-group-header'>"
+				  + superType.getName()
+				  + "</div>\n<div class=type-group>\n");
                     }
                     if ( !didSub) {
                         didSub = true;
-                        sb.append(
-				  "<div class=type-list-container><div class='type-list-header'>"
-				  + typeList.getName()
-				  + "</div>" + HU.open("div","class","type-list","style",listStyle));
+			sb.append(HU.open("div","class","type-list-container"));
+			sb.append("\n");
+			HU.div(sb,typeList.getName(),HU.attrs("class","type-list-header"));
+			sb.append("\n");
+			sb.append(HU.open("div","class","type-list","style",listStyle));
+			sb.append("\n");
                     }
                     String icon = typeHandler.getIconProperty(null);
                     String img;
                     if (icon == null) {
                         icon = ICON_BLANK;
-                        img = HU.img(
-					    typeHandler.getIconUrl(icon), "",
-					    HU.attr(HU.ATTR_WIDTH, "16"));
+                        img = HU.img(typeHandler.getIconUrl(icon), "", HU.attr(HU.ATTR_WIDTH, "16"));
                     } else {
                         img = HU.img(typeHandler.getIconUrl(icon));
                     }
@@ -2378,11 +2376,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                                     help));
                 }
                 if (didSub) {
-                    sb.append("</div></div>");
+                    sb.append("\n</div></div>\n");
                 }
             }
             if (didSuper) {
-                sb.append("</div></div>");
+                sb.append("\n</div></div>\n");
             }
         }
 	sb.append(HU.close("div"));
