@@ -273,7 +273,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	if(props.showSize)
 	    cols.push({id:"size",label:"Size",width:props.sizeWidth??100});
 	if(props.showType)
-	    cols.push({id:"type",label:"Type",width:props.typeWidth??120});		    			
+	    cols.push({id:"type",label:"Type",align:'left',paddingLeft:'10px',width:props.typeWidth??120});		    			
 	if(props.showHeader) {
 	    html+="<table cellspacing=0 cellpadding=0 width=100% class=entry-list-header><tr>";
 	    let hdrAttrs = ["class","entry-list-header-column ramadda-clickable"];
@@ -464,7 +464,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    }
 		    let maxWidth = col.width-20;
 		    maxWidth = col.width;		    
-		    v = HU.div(['style',HU.css('padding-left','5px','white-space','nowrap','width',HU.getDimension(col.width),'text-align','right','max-width',HU.getDimension(maxWidth),'overflow-x','hidden')+(last?HU.css('padding-right','4px'):'')],v);
+		    v = HU.div(['style',HU.css('padding-left',col.paddingLeft??'5px','white-space','nowrap','width',HU.getDimension(col.width),'text-align',col.align??'right','max-width',HU.getDimension(maxWidth),'overflow-x','hidden')+(last?HU.css('padding-right','4px'):'')],v);
 		    attrs.push("align","right");
 		}
 		if(Utils.isDefined(col.width)) {
