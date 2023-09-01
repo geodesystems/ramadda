@@ -360,7 +360,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @return _more_
      */
     public boolean isLuceneEnabled() {
-        return isLuceneEnabled;
+	//For now it is always true
+	return true;
+	//        return isLuceneEnabled;
     }
 
 
@@ -591,7 +593,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     public void applyAdminSettingsForm(Request request) throws Exception {
         getRepository().writeGlobal(
 				    PROP_SEARCH_LUCENE_ENABLED,
-				    isLuceneEnabled = request.get(PROP_SEARCH_LUCENE_ENABLED, false));
+				    isLuceneEnabled = request.get(PROP_SEARCH_LUCENE_ENABLED, true));
     }
 
     /**
@@ -1367,8 +1369,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 
 
-
-
 	String ancestor = request.getString(ARG_ANCESTOR+"_hidden", request.getString(ARG_ANCESTOR,null));
 	if(Utils.stringDefined(ancestor)) {
 	    queries.add(new TermQuery(new Term(FIELD_ANCESTOR, ancestor)));
@@ -2003,9 +2003,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    sb.append(HU.hidden(ARG_ANCESTOR + "_hidden",
 				ancestor!=null?ancestor:"",
 				HU.id(ARG_ANCESTOR + "_hidden")));
-	    sb.append(inset.apply(select + HU.space(1) +
-				  HU.disabledInput(ARG_ANCESTOR, ancestorEntry!=null?ancestorEntry.getName():"",
-						   HU.clazz("disabledinput ramadda-entry-popup-select") + HU.attr("placeholder","Search under") + HU.attr("onClick", event) + HU.SIZE_40 + HU.id(ARG_ANCESTOR))));
+	    String input = HU.disabledInput(ARG_ANCESTOR, ancestorEntry!=null?ancestorEntry.getName():"",
+					    HU.clazz("disabledinput ramadda-entry-popup-select") + HU.attr("placeholder","Search under") + HU.attr("onClick", event) + HU.SIZE_40 + HU.id(ARG_ANCESTOR));
+
+	    sb.append(inset.apply(HU.b("Under Entry:<br>")+
+				  select + HU.space(1) +input ));
 	}
 
 
