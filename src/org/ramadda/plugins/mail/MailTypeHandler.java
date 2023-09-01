@@ -68,7 +68,7 @@ public class MailTypeHandler extends GenericTypeHandler {
 
     private String clean(String s) {
 	if(s!=null) {
-	    s = s.replace("<", " ").replace(">", " ");
+	    s = s.replace("<", " ").replace(">", " ").trim();
 	}
 	return s;
     }
@@ -79,6 +79,18 @@ public class MailTypeHandler extends GenericTypeHandler {
 	}
 	return s;
     }    
+
+    private void addMetadata(Request request,Entry entry,String email) throws Exception {
+	if(!stringDefined(email)) return;
+	Metadata metadata =
+	    new Metadata(
+			 getRepository().getGUID(), entry.getId(),
+			 "email_address",
+			 false, email, null, null, null, null);
+	getMetadataManager().addMetadata(request,entry, metadata);
+    }
+
+
 
     /**
      * Gets called when the user has created a new entry from the File->New form or
@@ -126,10 +138,12 @@ public class MailTypeHandler extends GenericTypeHandler {
             entry.setName(subject);
         }
         String       from     = clean(InternetAddress.toString(message.getFrom()));
+	HashSet<String> seen =  new HashSet<String>();
+	seen.add(from);
+	addMetadata(request,entry,from);
 	StringBuilder       toSB = new StringBuilder();
 	Address[]addresses= message.getAllRecipients();
 	if(addresses!=null) {
-	    HashSet<String> seen =  new HashSet<String>();
 	    for(Address address:addresses) {
 		//            toSB.append(InternetAddress.toString(address));
 		String s = clean(address.toString());
@@ -137,12 +151,7 @@ public class MailTypeHandler extends GenericTypeHandler {
 		toSB.append("\n");
 		if(addProperties && !seen.contains(s)) {
 		    seen.add(s);
-		    Metadata metadata =
-			new Metadata(
-				     getRepository().getGUID(), entry.getId(),
-				     "email_address",
-				     false, s, null, null, null, null);
-		    getMetadataManager().addMetadata(request,entry, metadata);
+		    addMetadata(request,entry,s);
 		}
 	    }
 	}
