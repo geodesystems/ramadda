@@ -266,7 +266,10 @@ public class MailTypeHandler extends GenericTypeHandler {
 	String url = getRepository().getUrlBase() + "/search/do?metadata_type_email_address=email_address&metadata_attr1_email_address=" + mail;
 	String label = HU.getIconImage("fas fa-search","style","font-size:8pt") + "&nbsp;" + mail;
 	label = HU.span(label,HU.style("white-space:nowrap;"));
-	return HU.href(url,label,HU.title("Search"));
+	String link =  HU.href(url,label,HU.title("Search")+HU.style("text-decoration:none;"));
+	link = HU.span(link,HU.attrs("class","ramadda-clickable-span","style","border: 1px solid #ccc;padding: 2px;padding-right: 2px;padding-left: 2px;border-radius: 10px;padding-left: 8px;padding-right: 8px;"));
+	return link;
+
     }
 
 
