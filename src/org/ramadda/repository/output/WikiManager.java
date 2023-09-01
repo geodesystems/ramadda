@@ -1912,6 +1912,26 @@ public class WikiManager extends RepositoryManager
 						      threshold);
 
             return tagCloud.toString();
+	} else if(theTag.equals(WIKI_TAG_SEARCHBYTYPE)) {
+	    HashSet<String> supers = null;
+	    HashSet<String> cats=null;
+	    HashSet<String> types=null;
+	    String listStyle="";
+	    String width = getProperty(wikiUtil,props,"width",null);
+	    if(width!=null) {
+		width = HU.makeDim(width,"px");
+		listStyle+=HU.css("width",width,"max-width",width);
+	    }
+	    boolean showHeader = getProperty(wikiUtil,props,"showHeader",true);
+	    boolean showSearchField = getProperty(wikiUtil,props,"showSearchField",true);
+	    if(props.get("supers")!=null) supers =
+					      (HashSet<String>) Utils.makeHashSet(Utils.split(props.get("supers"),",",true,true));
+	    if(props.get("cats")!=null) cats =
+					      (HashSet<String>) Utils.makeHashSet(Utils.split(props.get("cats"),",",true,true));	    
+	    if(props.get("types")!=null) types =
+					      (HashSet<String>) Utils.makeHashSet(Utils.split(props.get("types"),",",true,true));	    
+	    getSearchManager().addSearchByTypeList(request, sb,showHeader,showSearchField,listStyle,supers,cats,types);
+	    return sb.toString();
         } else if (theTag.equals(WIKI_TAG_USER)) {
 	    List<String> ids = new ArrayList<String>();
 	    String userId = getProperty(wikiUtil,props,"user",null);

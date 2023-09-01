@@ -2280,10 +2280,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         if (lastTok.equals("type")) {
             sb.append(HU.sectionOpen(null, false));
             HU.open(sb, "div", HU.cssClass("ramadda-links"));
-	    sb.append("<center>");
-	    HU.script(sb,"HtmlUtils.initPageSearch('.type-list-item','.type-list-container','Find Type')");
-	    sb.append("</center>");
-            addSearchByTypeList(request, sb);
+            addSearchByTypeList(request, sb,true,true,"",null,null,null);
             HU.close(sb, "div");
             sb.append(HU.sectionClose());
         } else {
@@ -2312,31 +2309,50 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      *
      * @throws Exception _more_
      */
-    private void addSearchByTypeList(Request request, StringBuffer sb)
+    public void addSearchByTypeList(Request request, Appendable sb,
+				    boolean showHeader,
+				    boolean showSearchField,
+				    String listStyle,
+				    HashSet<String> supers,
+				    HashSet<String> cats, HashSet<String> types)
 	throws Exception {
+
+	
+	String uid =  HU.getUniqueId("types");
+	if(showSearchField) {
+	    sb.append("<center>");
+	    HU.script(sb,"HtmlUtils.initPageSearch('.type-list-item','#" + uid +" .type-list-container','Find Type')");
+	    sb.append("</center>");
+	}
+	sb.append(HU.open("div","id",uid));
+	
         for (EntryManager.SuperType superType :
 		 getEntryManager().getCats(false)) {
+	    if(supers!=null && !supers.contains(superType.getName())) continue;
             boolean didSuper = false;
-            for (EntryManager.Types types : superType.getList()) {
+            for (EntryManager.Types typeList : superType.getList()) {
+		if(cats!=null && !cats.contains(typeList.getName())) continue;
                 boolean didSub = false;
-                for (TypeHandler typeHandler : types.getList()) {
+                for (TypeHandler typeHandler : typeList.getList()) {
+		    if(types!=null && !types.contains(typeHandler.getType())) continue;
                     int cnt = getEntryUtil().getEntryCount(typeHandler);
                     if (cnt == 0) {
                         continue;
                     }
                     if ( !didSuper) {
                         didSuper = true;
-                        sb.append(
-				  "<div class=type-group-container><div class='type-group-header'>"
-				  + superType.getName()
-				  + "</div><div class=type-group>");
+			if(showHeader)
+			    sb.append(
+				      "<div class=type-group-container><div class='type-group-header'>"
+				      + superType.getName()
+				      + "</div><div class=type-group>");
                     }
                     if ( !didSub) {
                         didSub = true;
                         sb.append(
 				  "<div class=type-list-container><div class='type-list-header'>"
-				  + types.getName()
-				  + "</div><div class=type-list>");
+				  + typeList.getName()
+				  + "</div>" + HU.open("div","class","type-list","style",listStyle));
                     }
                     String icon = typeHandler.getIconProperty(null);
                     String img;
@@ -2369,6 +2385,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                 sb.append("</div></div>");
             }
         }
+	sb.append(HU.close("div"));
+	
     }
 
 
