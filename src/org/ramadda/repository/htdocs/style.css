@@ -2829,6 +2829,7 @@ td.entry-table-block {
 }
 
 pre {
+    white-space:pre-wrap;
     border : var(--basic-border);
     background:rgb(245,245,245);
     padding:4px;
