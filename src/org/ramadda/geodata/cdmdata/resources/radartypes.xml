@@ -1,7 +1,7 @@
-<types  supercategory="Geoscience">
+<types  supercategory="Geoscience" category="Geoscience Data">
 
 
-<type name="cdm_radar"  description="Base Radar File" foruser="false" category="Radar Data">
+<type name="cdm_radar"  description="Base Radar File" foruser="false" >
     <property name="icon" value="/cdmdata/radar.gif"/>
     <property name="form.todate.show" value="false"/>
     <column name="station_id"  type="enumerationplus" isindex="true" cansearch="true" canlist="true" searchtype="select" label="Station ID" 
