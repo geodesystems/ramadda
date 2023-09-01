@@ -1,6 +1,6 @@
-<types supercategory="Geoscience">
+<types supercategory="Geoscience" category="Ocean and Water Data">
 
-  <type name="type_point_ocean"  description="" super="type_point" category="Ocean and Water Data" foruser="false">
+  <type name="type_point_ocean"  description="" super="type_point" foruser="false">
   </type>
 
 <type name="type_point_ex02" description="EX02 Base" super="type_point_ocean" foruser="false"
@@ -271,8 +271,6 @@ fields=date[type="string" isdate="true"] time[type="string" istime="true"],LATIT
 <type name="type_ndbc_buoy" 
 description="NDBC Buoy Data" 
 super="type_point" 
-category="Point Data"
-supercategory="Geoscience"
 handler="org.ramadda.geodata.point.NdbcBuoyTypeHandler">
   <property name="icon" value="/point/noaa.gif"/>
   <property name="form.area.show" value="false"/>
@@ -359,8 +357,6 @@ The handler is the default PointTypeHandler
 <type name="type_buoy_sofar" 
 description="SOFAR Buoy Data" 
 super="type_point" 
-category="Point Data"
-supercategory="Geoscience"
 handler="org.ramadda.data.services.PointTypeHandler">
 <!--
 define the icon for this type. This is in the plugins htdocs/point directory 
@@ -463,8 +459,6 @@ indexField="depth" fields="salinity,density"
 <type name="type_buoy_sofar_api" 
       description="SOFAR Buoy Data from API" 
       super="type_point" 
-      category="Point Data"
-      supercategory="Geoscience"
       handler="org.ramadda.data.services.PointTypeHandler">
   <property name="icon" value="/point/sofar.png"/>
   <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
@@ -553,8 +547,6 @@ radius=4 colorBy=degrees strokeWidth=0 pathStrokeWidth=0.5 colorTable=plotly_blu
 <type name="type_ctd_castaway" 
 description="Castaway CTD Data" 
 super="type_point" 
-category="Point Data"
-supercategory="Geoscience"
 handler="org.ramadda.data.services.PointTypeHandler">
   <property name="icon" value="/point/sontek.png"/>
   <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
@@ -633,8 +625,6 @@ indexField="depth" fields="salinity,density"
 <type name="type_buoy_nortekadcp" 
 description="NORTEK ADCP Buoy" 
 super="type_point" 
-category="Point Data"
-supercategory="Geoscience"
 handler="org.ramadda.data.services.PointTypeHandler">
   <property name="icon" value="/point/nortek.png"/>
   <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
