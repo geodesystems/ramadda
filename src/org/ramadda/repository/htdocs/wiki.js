@@ -300,6 +300,9 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
     this.editor.container.addEventListener("mouseup", (e) =>{
 	this.handleMouseUp(e);
     });
+    this.editor.container.addEventListener("dblclick", (e) =>{
+	this.handleMouseUp(e,null, true);
+    });    
     this.editor.container.addEventListener("mouseleave", (e) => {
 	this.handleMouseLeave(e);
     });
@@ -1318,7 +1321,16 @@ WikiEditor.prototype = {
 
 
 	if(!title) {
-	    title = Utils.makeLabel(tagInfo.tag) +" Properties";
+	    title = null;
+	    if(this.wikiAttributesFromServer &&
+	       this.wikiAttributesFromServer[tagInfo.tag] &&
+	       this.wikiAttributesFromServer[tagInfo.tag][0]) {
+		title = this.wikiAttributesFromServer[tagInfo.tag][0].label;
+	    }
+		
+	    if(!title)   {
+		title = Utils.makeLabel(tagInfo.tag) +" Properties";
+	    }
 	}
 	
 	let r = {blocks:blocks, title:title,display:display};
@@ -1412,13 +1424,13 @@ WikiEditor.prototype = {
     },
 
 
-    handleMouseUp:function(e,result) {
+    handleMouseUp:function(e,result,doubleClick) {
 	let _this = this;
 	let position = this.getEditor().renderer.screenToTextCoordinates(e.x, e.y);
 	if(!position) return;
 	let tagInfo = this.getTagInfo(position);
 	if(!tagInfo) return;
-	if(!e.metaKey)  {
+	if(!e.metaKey && !doubleClick)  {
 	    if(tagInfo.entryId) {
 		if(e.shiftKey)  {
 		    let url = RamaddaUtils.getEntryUrl(tagInfo.entryId);
@@ -1432,7 +1444,7 @@ WikiEditor.prototype = {
 
 	if(!result) {
 	    this.getAttributeBlocks(tagInfo,false, r=>{
-		this.handleMouseUp(e,r);
+		this.handleMouseUp(e,r,doubleClick);
 	    });
 	    return
 	}
@@ -1646,7 +1658,7 @@ WikiEditor.prototype = {
 	    scroller.css("cursor","context-menu");
 	    let message= "Right-click to show property menu";
 	    if(type!="plus")
-		message+="<br>Cmd-click to edit";
+		message+="<br>Double click to edit";
 	    this.showMessage(message);
 	} else {
 	    scroller.css("cursor","text");

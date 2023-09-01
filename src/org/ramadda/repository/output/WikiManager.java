@@ -1614,7 +1614,7 @@ public class WikiManager extends RepositoryManager
             for (int tagIdx = 0; tagIdx < cat.tags.length; tagIdx++) {
                 WikiTags.WikiTag      tag = cat.tags[tagIdx];
                 List<String> tmp = new ArrayList<String>();
-		String label = Utils.makeLabel(tag.tag) + " properties";
+		String label = Utils.makeLabel(tag.label) + " properties";
                 tmp.add(JsonUtil.map(Utils.makeList("label",JsonUtil.quote(label))));
                 for (int j = 0; j < tag.attrsList.size(); j += 2) {
                     tmp.add(JsonUtil.map(Utils.makeList("p",JsonUtil.quote(tag.attrsList.get(j)),"ex",
