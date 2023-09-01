@@ -289,6 +289,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		if(Utils.isDefined(col.width)) {
 		    attrs = Utils.mergeLists(attrs,["width",col.width]);
 		}
+		attrs.push('style',HU.css('padding-left',col.paddingLeft??'0px'))
 		attrs = Utils.mergeLists(attrs,['orderby',col.id,'title','Sort by '+ col.label]);
 		let v = col.label;
 		if(col.id==props.orderby) {
@@ -465,7 +466,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    let maxWidth = col.width-20;
 		    maxWidth = col.width;		    
 		    v = HU.div(['style',HU.css('padding-left',col.paddingLeft??'5px','white-space','nowrap','width',HU.getDimension(col.width),'text-align',col.align??'right','max-width',HU.getDimension(maxWidth),'overflow-x','hidden')+(last?HU.css('padding-right','4px'):'')],v);
-		    attrs.push("align","right");
+		    attrs.push("align",col.align??"right");
 		}
 		if(Utils.isDefined(col.width)) {
 		    attrs.push("width",HU.getDimension(col.width));
