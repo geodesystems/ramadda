@@ -5855,7 +5855,7 @@ a.wiki-link-noexist {
 
 
 /** Put the clickable and highlightable here so they take precedence */
-.ramadda-clickable input:hover, label:hover, .ramadda-clickable:hover span i, .ramadda-clickable:hover a, .ramadda-clickable:hover {
+.ramadda-clickable input:hover, label:hover, .ramadda-clickable:hover span i, .ramadda-clickable:hover a, .ramadda-clickable:hover, .ramadda-clickable-span:hover {
     cursor:pointer;
     color: var(--hover-color) !important;    
 }
@@ -5863,8 +5863,12 @@ a.wiki-link-noexist {
 img.ramadda-clickable {
     border:1px solid transparent;
 }
-img.ramadda-clickable:hover {
-    border:1px solid var(--hover-color);
+.ramadda-clickable-span:hover, img.ramadda-clickable:hover {
+    border:1px solid var(--hover-color) !important;
+}
+
+.ramadda-clickable-span:hover {
+    background: var(--highlight-background) !important;    
 }
 
 
