@@ -306,7 +306,7 @@ public class MailTypeHandler extends GenericTypeHandler {
 
 	if(tag.equals("mail_body")) {
 	    String desc = clean2(entry.getDescription());
-	    sb.append(HU.pre(desc,HU.style("max-height:400px;overflow-y:auto;")));
+	    sb.append(HU.pre(desc,HU.style("white-space:pre-wrap;max-height:400px;overflow-y:auto;")));
 	    return sb.toString();
 	}
 	if(tag.equals("mail_attachments")) {
