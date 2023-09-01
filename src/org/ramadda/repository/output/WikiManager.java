@@ -1922,6 +1922,11 @@ public class WikiManager extends RepositoryManager
 		width = HU.makeDim(width,"px");
 		listStyle+=HU.css("width",width,"max-width",width);
 	    }
+	    String height = getProperty(wikiUtil,props,"height",null);
+	    if(height!=null) {
+		height = HU.makeDim(height,"px");
+		listStyle+=HU.css("xheight",height,"max-height",height);
+	    }	    
 	    boolean showHeader = getProperty(wikiUtil,props,"showHeader",true);
 	    boolean showSearchField = getProperty(wikiUtil,props,"showSearchField",true);
 	    if(props.get("supers")!=null) supers =
@@ -6978,7 +6983,7 @@ public class WikiManager extends RepositoryManager
 			l2.call( "Row/Column", "Create a bootstrap row", "+row_newline_+col-6_newline_", "-col_newline_+col-6_newline_-col_newline_-row"),
 			l2.call( "Left-right", "2 column table aligned left and right","+leftright_nl_+left_nl_-left_nl_+right_nl_-right_nl_", "-leftright"),
 			l2.call( "Left-middle-right", "3 column table aligned left,center and right","+leftmiddleright_nl_+left_nl_-left_nl_+middle_nl_-middle_nl_+right_nl_-right_nl_", "-leftmiddleright"),
-			l2.call( "Tabs", "Make tabs","+tabs_newline_+tab tab title_newline_", "-tab_newline_-tabs_newline_"),
+			l2.call( "Tabs", "Make tabs","+tabs center=false minarrow=false tight=false noBorder=false #minheight=\"\" _newline_+tab tab title_newline_", "-tab_newline_-tabs_newline_"),
 			l2.call( "Accordion", "Accordion layout","+accordion decorate=false collapsible=true activeSegment=0 _newline_+segment segment  title_newline_", "-segment_newline_-accordion_newline_"),
 			l2.call( "Slides", "Slides layout","+slides dots=true slidesToShow=1 bigArrow=true  centerMode=true variableWidth=true arrows=true  dots=true  infinite=false style=_qt__qt__nl_+slide Title_nl_", "-slide_nl_-slides_nl_"),
 			//			l2.call("Grid box", "+grid #decorated=true #columns=_qt_1fr 2fr_qt_ _nl_:filler_nl_+gridbox #flex=1 #style=_qt__qt_ #width=_qt__qt_ #title=_qt_Title 1_qt__nl_-gridbox_nl_+gridbox #title=_qt_Title 2_qt__nl_-gridbox_nl_:filler_nl_", "-grid"),
