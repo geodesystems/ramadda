@@ -147,10 +147,11 @@ public class MailTypeHandler extends GenericTypeHandler {
 	    for(Address address:addresses) {
 		//            toSB.append(InternetAddress.toString(address));
 		String s = clean(address.toString());
+		if(seen.contains(s)) continue;
+		seen.add(s);
 		toSB.append(s);
 		toSB.append("\n");
-		if(addProperties && !seen.contains(s)) {
-		    seen.add(s);
+		if(addProperties) {
 		    addMetadata(request,entry,s);
 		}
 	    }
@@ -267,7 +268,7 @@ public class MailTypeHandler extends GenericTypeHandler {
 	String label = HU.getIconImage("fas fa-search","style","font-size:8pt") + "&nbsp;" + mail;
 	label = HU.span(label,HU.style("white-space:nowrap;"));
 	String link =  HU.href(url,label,HU.title("Search")+HU.style("text-decoration:none;"));
-	link = HU.span(link,HU.attrs("class","ramadda-clickable-span","style","border: 1px solid #ccc;padding: 2px;padding-right: 2px;padding-left: 2px;border-radius: 10px;padding-left: 8px;padding-right: 8px;"));
+	link = HU.div(link,HU.attrs("class","ramadda-clickable-span","style","display:inline-block;border: 1px solid #ccc;margin-bottom:3px;padding: 1px;padding-right: 1px;padding-left: 1px;border-radius: 10px;padding-left: 8px;padding-right: 8px;"));
 	return link;
 
     }
