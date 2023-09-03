@@ -590,7 +590,8 @@ public class Admin extends RepositoryManager {
                                    "install.properties"));
             if ( !install.exists()) {
                 installPassword = Utils.generatePassword(6);
-                System.err.println("RAMADDA: install password:"
+                System.err.println("RAMADDA: install password created in: " + install);
+                System.err.println("RAMADDA: install password: "
                                    + installPassword);
                 StringBuilder sb = new StringBuilder();
                 sb.append(
@@ -677,6 +678,8 @@ public class Admin extends RepositoryManager {
 
         boolean firstTime =
             !haveDoneInstallStep(ARG_ADMIN_INSTALLNOTICESHOWN);
+
+
         //Always check the password
         if ( !firstTime) {
             if ( !Utils.passwordOK(installPassword, givenPassword)) {

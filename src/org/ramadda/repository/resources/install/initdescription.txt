@@ -24,7 +24,7 @@ Geode Systems
 ** <a  href="{{root}}/user/login">Login</a> to your account
 ** <a href="{{root}}/admin/settings">Administer</a> your RAMADDA
 * Use the entry menu ({{fa icon="fas fa-caret-down"}}) menu above to:
-** <a href="{{root}}/entry/form?entryid=${topid}">Edit</a> this page - <a target="_docs" href="{{root}}/userguide/wiki/wikitext.html">{{fa icon="fas fa-question-circle"}}</a>
+** <a href="{{root}}/entry/form?entryid=${topid}">Edit</a> this page - <a target="_docs" href="{{root}}/userguide/wiki/wiki.html">{{fa icon="fas fa-question-circle"}}</a>
 ** Create new <a href="{{root}}/entry/form?group=${topid}&type=group">folders</a>
 ** Upload <a href="{{root}}/entry/form?group=${topid}&type=file">files</a>
 ** Add <a href="{{root}}/metadata/addform?entryid=${topid}">properties</a>

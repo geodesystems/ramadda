@@ -1148,7 +1148,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         clearAllCaches();
         StringBuilder statusMsg =
-            new StringBuilder("RAMADDA: repository started at:" + new Date());
+            new StringBuilder("RAMADDA: started at:" + new Date());
         statusMsg.append("\n");
         statusMsg.append("RAMADDA: home dir: "
                          + getStorageManager().getRepositoryDir());
@@ -1164,6 +1164,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
                          + (isSSLEnabled(null)
                             ? "SSL port:" + getHttpsPort()
                             : " SSL not enabled"));
+
+	if(!getAdmin().getInstallationComplete()) {
+	    statusMsg.append("\n");
+	    statusMsg.append("RAMADDA: to complete the installation go to: http://localhost:" + getPort());
+	    statusMsg.append("\n");
+	}
+
+
+
         getLogManager().logInfoAndPrint(statusMsg.toString());
 
         if (getProperty("ramadda.beep", false)) {

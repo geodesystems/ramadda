@@ -354,11 +354,12 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                     getRepository().getProperty("db.name", "repository"));
 
             connectionURL = connectionURL.trim();
+	    /*
             System.err.println("RAMADDA: JDBC url:" + connectionURL
                                + ((userName != null)
                                   ? " user name:" + userName
                                   : ""));
-
+	    */
             String encryptPassword =
                 getStorageManager().getEncryptionPassword();
             if ((encryptPassword != null) && isDatabaseDerby()) {
