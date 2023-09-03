@@ -36,7 +36,7 @@ import java.util.regex.*;
 /**
  */
 @SuppressWarnings("unchecked")
-public class WikiUtil {
+public class WikiUtil implements HtmlUtilsConstants {
 
 
     /** _more_          */
@@ -51,8 +51,6 @@ public class WikiUtil {
     /** _more_ */
     public static final String ATTR_DECORATE = "decorate";
 
-    /** _more_ */
-    public static final String ATTR_TITLE = "title";
 
     /** _more_ */
     public static final String ATTR_SHOW = "show";
@@ -765,9 +763,9 @@ public class WikiUtil {
 	    defineHeading.accept(sb,label,level);
 	    String id = "heading-" +Utils.makeID(label);
 	    sb.append(HU.anchorName(id));
-	    label += HU.span("",HU.attrs("id",id+"-hover","class","ramadda-linkable-link"));
-	    String attrs = HU.attrs("id",id,"class","ramadda-linkable");
-	    HU.tag(sb,tag,attrs, HU.div(label,HU.attrs("class","ramadda-heading-inner")));
+	    label += HU.span("",HU.attrs("id",id+"-hover",ATTR_CLASS,"ramadda-linkable-link"));
+	    String attrs = HU.attrs("id",id,ATTR_CLASS,"ramadda-linkable");
+	    HU.tag(sb,tag,attrs, HU.div(label,HU.attrs(ATTR_CLASS,"ramadda-heading-inner")));
 	};
 
 
@@ -850,7 +848,7 @@ public class WikiUtil {
 	    String contentsId = HU.getUniqueId("accordion_contents_");
 	    buff.append(
                         HU.open(
-				"div",
+				TAG_DIV,
 				HU.id(contentsId)
 				+ HU.cssClass("ramadda-accordion-contents")));
 	    buff.append("\n");
@@ -965,6 +963,7 @@ public class WikiUtil {
 	    boolean skipping = false;
 	    int avatarCount=0;
 	    String balloonAfter = null;
+	    Hashtable enlargeProps = null;
 
             for (String line : text.split("\n")) {
                 if ((line.indexOf("${") >= 0)
@@ -1084,7 +1083,7 @@ public class WikiUtil {
 		    String s = wikify(splashBuffer.toString(), handler);
 		    String id = HU.getUniqueId("splash_");
 		    buff.append("\n");
-		    HU.div(buff, s,HU.attrs("id", id, "style","display:none;"));
+		    HU.div(buff, s,HU.attrs("id", id, ATTR_STYLE,"display:none;"));
 		    buff.append("\n");
                     HU.script(buff,
                               "HtmlUtils.makeSplash('',{src:'" + id +"'})");
@@ -1337,18 +1336,18 @@ public class WikiUtil {
 		if (tline.startsWith(":menuitem")) {
                     List<String> toks  = Utils.splitUpTo(tline, " ", 2);
 		    HU.open(buff, "li");
-		    HU.open(buff,"div");
+		    HU.open(buff,TAG_DIV);
 		    buff.append(toks.size()>1?toks.get(1):"No Label");
-		    HU.close(buff,"div","li","\n");
+		    HU.close(buff,TAG_DIV,"li","\n");
 		    continue;
 		}
 		    
 		if (tline.startsWith(":menuheader")) {
 		    List<String> toks  = Utils.splitUpTo(tline, " ", 2);
-		    HU.open(buff, "li",HU.attrs("class","ui-widget-header"));
-		    HU.open(buff,"div");
+		    HU.open(buff, "li",HU.attrs(ATTR_CLASS,"ui-widget-header"));
+		    HU.open(buff,TAG_DIV);
 		    buff.append(toks.size()>1?toks.get(1):"No Label");
-		    HU.close(buff,"div","li","\n");
+		    HU.close(buff,TAG_DIV,"li","\n");
 		    continue;
 		}
 
@@ -1357,13 +1356,13 @@ public class WikiUtil {
 		    Hashtable props = getProps.apply(tline);
 		    String icon = (String) props.get("icon");
 		    String link =  Utils.getProperty(props,"link","");
-		    String style =  Utils.getProperty(props,"style","");
+		    String style =  Utils.getProperty(props,ATTR_STYLE,"");
 		    String linkStyle =  Utils.getProperty(props,"linkStyle","");
 		    String linkTitle =  Utils.getProperty(props,"linkTitle","");		    		    		    
 		    if(icon!=null) link = HU.image(handler.getWikiImageUrl(this, icon, props))+HU.SPACE + link;
 		    else if(link.length()==0) link = "Link";
 		    NamedValue[]args = new NamedValue[]{
-			arg("title",Utils.getProperty(props,"title",null)),
+			arg(ATTR_TITLE,Utils.getProperty(props,ATTR_TITLE,null)),
  			arg("header",Utils.getProperty(props,"header","false")),
 			arg("decorate",Utils.getProperty(props,"decorate","true")),
 			arg("animate",Utils.getProperty(props,"animate","false")),
@@ -1377,14 +1376,14 @@ public class WikiUtil {
 			arg("toggleid",HU.getUniqueId("popup"))
 		    };
 
-		    link = HU.span(link,HU.attr("title",linkTitle) +HU.style(linkStyle));
+		    link = HU.span(link,HU.attr(ATTR_TITLE,linkTitle) +HU.style(linkStyle));
 		    String []tuple=HtmlUtils.makePopupLink(link, args);
 		    String compId = tuple[0];
 		    buff.append(tuple[1]);
-		    HU.open(buff,"div",
+		    HU.open(buff,TAG_DIV,
 			    HU.id(compId)
 			    + HU.style(style)
-			    + HU.attr("style", "display:none;")
+			    + HU.attr(ATTR_STYLE, "display:none;")
 			    + HU.cssClass(HU.CSS_CLASS_POPUP_CONTENTS));
 		    continue;
 		}
@@ -1397,18 +1396,18 @@ public class WikiUtil {
 
 		if (tline.startsWith("+menuitem")) {
 		    Hashtable props = getProps.apply(tline);
-		    String attrs = HU.attrs("style",Utils.getProperty(props,"style",""));
+		    String attrs = HU.attrs(ATTR_STYLE,Utils.getProperty(props,ATTR_STYLE,""));
 		    HU.open(buff, "li",attrs);
-		    HU.open(buff,"div");
+		    HU.open(buff,TAG_DIV);
 		    continue;
 		}
 		if (tline.startsWith("-menuitem")) {
-		    HU.close(buff,"div","li","\n");
+		    HU.close(buff,TAG_DIV,"li","\n");
 		    continue;
 		}
                 if (tline.startsWith("+menu")) {
 		    buff.append("\n");
-		    HU.open(buff,"div","class","ramadda-menutree");
+		    HU.open(buff,TAG_DIV,ATTR_CLASS,"ramadda-menutree");
                     List<String> toks  = Utils.splitUpTo(tline, " ", 2);
 		    String attrs = "";
 		    menuCnt++;
@@ -1433,7 +1432,7 @@ public class WikiUtil {
 		    if(menuCnt>0) {
 			HU.close(buff,"li","\n");
 		    }
-		    HU.close(buff,"div");
+		    HU.close(buff,TAG_DIV);
 		    continue;
 
 		}
@@ -1493,7 +1492,7 @@ public class WikiUtil {
                 }
                 if (tline.equals("+left")) {
                     buff.append("<td width=" + leftWidth+">");
-		    HU.open(buff,"div",HU.attr("style", leftStyle));
+		    HU.open(buff,TAG_DIV,HU.attr(ATTR_STYLE, leftStyle));
                     continue;
                 }
                 if (tline.equals("-left")) {
@@ -1502,7 +1501,7 @@ public class WikiUtil {
                 }
                 if (tline.equals("+middle")) {
                     buff.append("<td align=center width=" + middleWidth + ">");
-		    HU.open(buff,"div",HU.attr("style", middleStyle));
+		    HU.open(buff,TAG_DIV,HU.attr(ATTR_STYLE, middleStyle));
                     continue;
                 }
                 if (tline.equals("-middle")) {
@@ -1511,7 +1510,7 @@ public class WikiUtil {
                 }
                 if (tline.equals("+right")) {
                     buff.append("<td align=right width=" + rightWidth+">");
-		    HU.open(buff,"div",HU.attr("style", rightStyle));
+		    HU.open(buff,TAG_DIV,HU.attr(ATTR_STYLE, rightStyle));
                     continue;
                 }
                 if (tline.equals("-right")) {
@@ -1533,8 +1532,8 @@ public class WikiUtil {
                     String       clazz     = "ramadda-table";
                     if (toks.size() == 2) {
                         Hashtable props = HU.parseHtmlProperties(toks.get(1));
-                        width  = Utils.getProperty(props, "width", width);
-                        height = Utils.getProperty(props, "height", height);
+                        width  = Utils.getProperty(props, ATTR_WIDTH, width);
+                        height = Utils.getProperty(props, ATTR_HEIGHT, height);
                         ordering = Utils.getProperty(props, "ordering",
                                 ordering);
                         paging = Utils.getProperty(props, "paging", paging);
@@ -1669,7 +1668,7 @@ public class WikiUtil {
                         continue;
                     }
 		    Hashtable props = getProps.apply(tline);
-		    String width = Utils.getProperty(props, "width", null);
+		    String width = Utils.getProperty(props, ATTR_WIDTH, null);
                     if (state.inHead) {
                         buff.append("<th " + ((width != null)
                                 ? " width=" + width
@@ -1726,8 +1725,8 @@ public class WikiUtil {
 		    buff.append(HU.script("HtmlUtils.loadSlides();"));
 		    slidesProps.remove("bigArrow");
 		    boolean bigArrow  = Utils.getProperty(slidesProps,"bigArrow",true);
-		    HU.div(buff,"",HU.attrs("id",slidesId+"_header","class","ramadda-slides-header"));
-		    HU.open(buff,"div",HU.attrs("id",slidesId,"class"," ramadda-slides " +(bigArrow?"ramadda-slides-bigarrow":"")));
+		    HU.div(buff,"",HU.attrs("id",slidesId+"_header",ATTR_CLASS,"ramadda-slides-header"));
+		    HU.open(buff,TAG_DIV,HU.attrs("id",slidesId,ATTR_CLASS," ramadda-slides " +(bigArrow?"ramadda-slides-bigarrow":"")));
 		    continue;
 		}
 
@@ -1737,8 +1736,8 @@ public class WikiUtil {
 		    if(slideTitles !=null) {
 			slideTitles.add(title);
 		    }
-		    String style= "margin:10px;padding:10px;" + (slidesProps!=null?Utils.getProperty(slidesProps,"style",""):"");
-		    HU.open(buff,"div",HU.attrs("style",style));
+		    String style= "margin:10px;padding:10px;" + (slidesProps!=null?Utils.getProperty(slidesProps,ATTR_STYLE,""):"");
+		    HU.open(buff,TAG_DIV,HU.attrs(ATTR_STYLE,style));
 		    continue;
 		}
 		if (tline.equals("-slide")) {
@@ -1747,13 +1746,13 @@ public class WikiUtil {
 		}
 
                 if (tline.equals("-slides")) {
-		    //slidesId+"_header","class","ramadda-slides-header"));
-		    HU.close(buff,"div");
+		    //slidesId+"_header",ATTR_CLASS,"ramadda-slides-header"));
+		    HU.close(buff,TAG_DIV);
 		    if(slidesId==null) {
 			buff.append("No open slides tag");
 			continue;
 		    }
-		    slidesProps.remove("style");
+		    slidesProps.remove(ATTR_STYLE);
 		    List<String> args = Utils.makeStringList(Utils.makeList(slidesProps));
 		    String slidesArgs = JsonUtil.mapAndGuessType(args);
 		    boolean anyTitles = false;
@@ -1768,10 +1767,10 @@ public class WikiUtil {
 				String clazz = " ramadda-slides-header-item ";
 				if(cnt++==0) 
 				    clazz += " ramadda-slides-header-item-selected ";
-				HU.div(header,title,HU.attrs("class",clazz,"slideindex",i+""));
+				HU.div(header,title,HU.attrs(ATTR_CLASS,clazz,"slideindex",i+""));
 			    }
 			}
-			HU.div(buff,header.toString(),HU.attrs("id",slidesId+"_headercontents","style","xxdisplay:none;"));
+			HU.div(buff,header.toString(),HU.attrs("id",slidesId+"_headercontents",ATTR_STYLE,"xxdisplay:none;"));
 		    }
 		    buff.append(HU.script(JQuery.ready("HtmlUtils.makeSlides('" + slidesId+"'," + slidesArgs+");")));
 		    continue;
@@ -1815,8 +1814,8 @@ public class WikiUtil {
                     tabStates.add(tabInfo);
                     allTabStates.add(tabInfo);
                     buff.append("\n");
-                    HU.open(buff, HU.TAG_DIV, "class", divClass);
-                    HU.open(buff, HU.TAG_DIV, "id", tabInfo.id, "class",
+                    HU.open(buff, HU.TAG_DIV, ATTR_CLASS, divClass);
+                    HU.open(buff, HU.TAG_DIV, "id", tabInfo.id, ATTR_CLASS,
                             "ui-tabs " + clazz);
                     buff.append("\n");
                     HU.open(tabInfo.title, HU.TAG_UL);
@@ -1849,7 +1848,7 @@ public class WikiUtil {
                     }
                     buff.append(
                         HU.open(
-                            "div",
+                            TAG_DIV,
                             style + HU.id(tabInfo.id + "-" + (tabInfo.cnt))
                             + HU.cssClass("ui-tabs-hide")));
                     buff.append("\n");
@@ -1859,7 +1858,7 @@ public class WikiUtil {
                     if (tline.equals("-tab")) {
                         TabState tabInfo = tabStates.get(tabStates.size()
                                                - 1);
-                        buff.append(HU.close("div"));
+                        buff.append(HU.close(TAG_DIV));
                         buff.append("\n");
                         js.append(
                             "jQuery(function(){\njQuery('#" + tabInfo.id
@@ -1873,8 +1872,8 @@ public class WikiUtil {
                         tabInfo.title.append("</ul>");
                         tabInfo.title.append("\n");
                         tabStates.remove(tabStates.size() - 1);
-                        buff.append(HU.close("div"));
-                        buff.append(HU.close("div"));
+                        buff.append(HU.close(TAG_DIV));
+                        buff.append(HU.close(TAG_DIV));
                         continue;
                     }
 
@@ -2013,7 +2012,7 @@ public class WikiUtil {
                         }
                     }
 
-                    buff.append(HU.open("div", HU.cssClass("inset") + extra));
+                    buff.append(HU.open(TAG_DIV, HU.cssClass("inset") + extra));
 
                     continue;
                 }
@@ -2048,12 +2047,12 @@ public class WikiUtil {
                     String       style = "";
                     String       clazz = "";
 		    Hashtable props = getProps.apply(tline);
-		    String    tmp   = (String) props.get("class");
+		    String    tmp   = (String) props.get(ATTR_CLASS);
 		    if (tmp != null) {
 			clazz = tmp;
 		    }
                     String       id = Utils.getProperty(props,"id",(String)null);
-		    style = (String) props.get("style");
+		    style = (String) props.get(ATTR_STYLE);
 		    if (style == null) {
 			style = "";
 		    }
@@ -2102,7 +2101,7 @@ public class WikiUtil {
 		    String flex =  Utils.getProperty(props,"flex",(String)null);
 		    if(flex!=null)
 			style+= "flex:" + flex+";";
-		    String width =  Utils.getProperty(props,"width",(String)null);
+		    String width =  Utils.getProperty(props,ATTR_WIDTH,(String)null);
 		    if(Utils.stringDefined(width))
 			style+= "width:" + width+";";		    
 
@@ -2113,7 +2112,7 @@ public class WikiUtil {
                     buff.append(HU.open(HU.TAG_DIV,
 					HU.style(style)+
                                         HU.cssClass("ramadda-gridbox")));
-		    String title = Utils.getProperty(props,"title",(String)null);
+		    String title = Utils.getProperty(props,ATTR_TITLE,(String)null);
                     if (title!=null) {
                         buff.append(
                             HU.tag(HU.TAG_DIV,
@@ -2201,7 +2200,7 @@ public class WikiUtil {
                     dragToggle = Utils.getProperty(props, "toggle", false);
                     dragToggleVisible = Utils.getProperty(props,
                             "toggleVisible", true);
-                    String style  = (String) props.get("style");
+                    String style  = (String) props.get(ATTR_STYLE);
                     String header = (String) props.get("header");
                     String clazz  = "ramadda-draggable";
                     if (Misc.equals("true", props.get("framed"))) {
@@ -2210,8 +2209,8 @@ public class WikiUtil {
                     if (style == null) {
                         style = "";
                     }
-                    HU.open(buff, "div", "style","position:relative;");
-                    HU.open(buff, "div", "id", dragId, "style",
+                    HU.open(buff, TAG_DIV, ATTR_STYLE,"position:relative;");
+                    HU.open(buff, TAG_DIV, "id", dragId, ATTR_STYLE,
                             "display:inline-block;z-index:500;" + style);
                     if (header != null) {
                         if (dragToggle) {
@@ -2219,9 +2218,9 @@ public class WikiUtil {
                                      + " " + header;
                         }
                         HU.div(buff, header,
-                               HU.attrs("class", "ramadda-draggable-header"));
+                               HU.attrs(ATTR_CLASS, "ramadda-draggable-header"));
                     }
-                    HU.open(buff, "div", "class", clazz, "id",
+                    HU.open(buff, TAG_DIV, ATTR_CLASS, clazz, "id",
                             dragId + "_frame");
                     if (dragToggle) {
                         HU.script(buff,
@@ -2235,9 +2234,9 @@ public class WikiUtil {
 
                 if (tline.startsWith("-draggable")) {
                     if (dragId != null) {
-                        HU.close(buff, "div");
-                        HU.close(buff, "div");
-                        HU.close(buff, "div");
+                        HU.close(buff, TAG_DIV);
+                        HU.close(buff, TAG_DIV);
+                        HU.close(buff, TAG_DIV);
                         //              HU.script(buff, "$('#" + dragId +"').draggable();\n");
                         HU.script(buff,
                                   "HU.makeDraggable('#" + dragId + "');\n");
@@ -2245,6 +2244,8 @@ public class WikiUtil {
 
                     continue;
                 }
+
+
 
                 if (tline.startsWith("+expandable")) {
 		    Hashtable props = getProps.apply(tline);
@@ -2259,22 +2260,22 @@ public class WikiUtil {
                     if (Misc.equals("true", props.get("framed"))) {
                         clazz = "ramadda-expandable-frame";
                     }
-                    HU.open(buff, "div", "id", dragId, "style",
-                            "position:relative;", "class", clazz2);
+                    HU.open(buff, TAG_DIV, "id", dragId, ATTR_STYLE,
+                            "position:relative;", ATTR_CLASS, clazz2);
                     if (header != null) {
                         HU.div(buff, header,
-                               HU.attrs("class",
+                               HU.attrs(ATTR_CLASS,
                                         "ramadda-expandable-header"));
                     }
-                    HU.open(buff, "div", "class", clazz);
+                    HU.open(buff, TAG_DIV, ATTR_CLASS, clazz);
 
                     continue;
                 }
 
                 if (tline.startsWith("-expandable")) {
                     if (dragId != null) {
-                        HU.close(buff, "div");
-                        HU.close(buff, "div");
+                        HU.close(buff, TAG_DIV);
+                        HU.close(buff, TAG_DIV);
                         //              HU.script(buff, "$('#" + dragId +"').expandable();\n");
                         HU.script(buff,
                                   "HU.makeExpandable('#" + dragId + "');\n");
@@ -2282,6 +2283,37 @@ public class WikiUtil {
 
                     continue;
                 }
+
+                if (tline.startsWith("+enlarge")) {
+		    Hashtable props = enlargeProps = getProps.apply(tline);
+		    String enlargeId = HU.getUniqueId("enlarge");
+		    enlargeProps.put("id",enlargeId);
+		    String height=Utils.getProperty(props,ATTR_HEIGHT,"200px");
+		    String style=Utils.getProperty(props,ATTR_STYLE,"");
+		    String enlargeMsg=Utils.getProperty(props,"enlargeMsg",null);
+		    String shrinkMsg=Utils.getProperty(props,"shrinkMsg",null);		    
+		    buff.append(HU.open(TAG_DIV,ATTR_CLASS,"ramadda-enlarge-outer","id",enlargeId));
+		    buff.append(HU.open(TAG_DIV,ATTR_STYLE,style,ATTR_CLASS,"ramadda-enlarge-inner","id",enlargeId+"_inner"));
+		    buff.append(HU.open(TAG_DIV,ATTR_CLASS,"ramadda-enlarge-inner-inner","id",enlargeId+"_inner_inner",ATTR_STYLE,HU.css(ATTR_HEIGHT,HU.makeDim(height,"px"))));		    
+		    continue;
+		}
+
+                if (tline.startsWith("-enlarge")) {
+		    if(enlargeProps!=null) {
+			buff.append(HU.close(TAG_DIV));
+			buff.append(HU.close(TAG_DIV));
+			buff.append(HU.close(TAG_DIV));
+			String m1 = (String) enlargeProps.get("enlargeLabel");
+			String m2 = (String) enlargeProps.get("shrinkLabel");			
+			HU.script(buff,HU.call("HU.makeEnlargable",
+					       HU.squote(enlargeProps.get("id")),
+					       m1==null?"null":HU.squote(m1),
+					       m2==null?"null":HU.squote(m2)));					       
+					       
+		    }
+		    continue;
+		}		
+
 
                 if (tline.startsWith("+fullscreen")) {
 		    Hashtable props = getProps.apply(tline);
@@ -2296,22 +2328,22 @@ public class WikiUtil {
                     if (Misc.equals("true", props.get("framed"))) {
                         clazz = "ramadda-expandable-frame";
                     }
-                    HU.open(buff, "div", "id", dragId, "style",
-                            "position:relative;", "class", clazz2);
+                    HU.open(buff, TAG_DIV, "id", dragId, ATTR_STYLE,
+                            "position:relative;", ATTR_CLASS, clazz2);
                     if (header != null) {
                         HU.div(buff, header,
-                               HU.attrs("class",
+                               HU.attrs(ATTR_CLASS,
                                         "ramadda-expandable-header"));
                     }
-                    HU.open(buff, "div", "class", clazz);
+                    HU.open(buff, TAG_DIV, ATTR_CLASS, clazz);
 
                     continue;
                 }
 
                 if (tline.startsWith("-fullscreen")) {
                     if (dragId != null) {
-                        HU.close(buff, "div");
-                        HU.close(buff, "div");
+                        HU.close(buff, TAG_DIV);
+                        HU.close(buff, TAG_DIV);
                         //              HU.script(buff, "$('#" + dragId +"').expandable();\n");
                         HU.script(buff,
                                   "HU.makeExpandable('#" + dragId + "',true);\n");
@@ -2340,7 +2372,7 @@ public class WikiUtil {
 
                     String  label       = (String) props.get("label");
                     String  heading     = (String) props.get("heading");
-                    String  title       = (String) props.get("title");
+                    String  title       = (String) props.get(ATTR_TITLE);
                     String  titleStyle  = (String) props.get("titleStyle");
                     String  subTitle    = (String) props.get("subTitle");
 		    if(Misc.equals(getWikiProperty("showTitle"),"false")) {
@@ -2349,8 +2381,8 @@ public class WikiUtil {
 						   
 
 
-                    String  classArg    = (String) props.get("class");
-                    String  style       = (String) props.get("style");
+                    String  classArg    = (String) props.get(ATTR_CLASS);
+                    String  style       = (String) props.get(ATTR_STYLE);
                     String  headerStyle = (String) props.get("headerStyle");
                     boolean doBorderTop = tline.indexOf("----") >= 0;
                     boolean doEvenOdd   = tline.indexOf("#") >= 0;
@@ -2466,8 +2498,8 @@ public class WikiUtil {
                     Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
                             ? toks.get(1)
                             : "");
-                    HU.open(buff, "div",
-                            HU.attrs("class",
+                    HU.open(buff, TAG_DIV,
+                            HU.attrs(ATTR_CLASS,
                                      "ramadda-callout ramadda-callout"
                                      + what));
                     String iconSize = Utils.getProperty(props, "iconSize",
@@ -2485,9 +2517,9 @@ public class WikiUtil {
                                    : null;
                     }
                     if (icon != null) {
-                        icon = HU.faIcon(icon, "style", (iconSize!=null?"font-size:" + iconSize:""));
+                        icon = HU.faIcon(icon, ATTR_STYLE, (iconSize!=null?"font-size:" + iconSize:""));
 			icon = HU.div(icon,
-				      HU.attrs("class", "ramadda-callout-icon"));
+				      HU.attrs(ATTR_CLASS, "ramadda-callout-icon"));
                     } else {
                         icon = "";
                     }
@@ -2495,15 +2527,15 @@ public class WikiUtil {
                         "<table width=100%><tr valign=top><td width=1%>");
 		    buff.append(icon);
                     buff.append("</td><td>");
-                    HU.open(buff, "div",
-                            HU.attrs("class", "ramadda-callout-inner"));
+                    HU.open(buff, TAG_DIV,
+                            HU.attrs(ATTR_CLASS, "ramadda-callout-inner"));
                     continue;
                 }
 
                 if (tline.startsWith("-callout")) {
-                    HU.close(buff, "div");
+                    HU.close(buff, TAG_DIV);
                     buff.append("</td></tr></table>");
-                    HU.close(buff, "div");
+                    HU.close(buff, TAG_DIV);
                     continue;
                 }
 
@@ -2562,7 +2594,7 @@ public class WikiUtil {
                             ? toks.get(1)
                             : "");
                     String name  = (String) props.get("name");
-                    String style = (String) props.get("style");
+                    String style = (String) props.get(ATTR_STYLE);
                     String color = (String) props.get("color");
                     String extra = "";
                     String clazz = "panel ";
@@ -2651,8 +2683,8 @@ public class WikiUtil {
                     if (background != null) {
                         innerStyle += " background:" + background + ";";
                     }
-                    String title = (String) props.get("title");
-                    HU.open(buff, "div",
+                    String title = (String) props.get(ATTR_TITLE);
+                    HU.open(buff, TAG_DIV,
                             HU.cssClass(outerClazz) + HU.style(frameStyle));
                     if (title != null) {
                         String titleBackground =
@@ -2674,7 +2706,7 @@ public class WikiUtil {
                                HU.clazz("ramadda-frame-title")
                                + HU.style(titleStyle));
                     }
-                    HU.open(buff, "div",
+                    HU.open(buff, TAG_DIV,
                             HU.cssClass("ramadda-frame-inner")
                             + HU.style(innerStyle));
 
@@ -2683,8 +2715,8 @@ public class WikiUtil {
 
 
                 if (tline.startsWith("-frame")) {
-                    HU.close(buff, "div");
-                    HU.close(buff, "div");
+                    HU.close(buff, TAG_DIV);
+                    HU.close(buff, TAG_DIV);
 
                     continue;
                 }
@@ -2692,7 +2724,7 @@ public class WikiUtil {
                 if (tline.startsWith("+title")) {
                     StringBuilder extra = new StringBuilder();
                     List<String>  toks  = Utils.splitUpTo(tline, " ", 2);
-                    HU.open(buff, "div", HU.cssClass("ramadda-page-title"));
+                    HU.open(buff, TAG_DIV, HU.cssClass("ramadda-page-title"));
                     String url = getTitleUrl(true);
                     if (url != null) {
                         closeTheTag = true;
@@ -2751,7 +2783,7 @@ public class WikiUtil {
 
                 if (tline.startsWith("+absolute")) {
                     Hashtable props = lineToProps(tline);
-                    String    style = (String) props.get("style");
+                    String    style = (String) props.get(ATTR_STYLE);
                     if (style == null) {
                         style = "";
                     }
@@ -2767,7 +2799,7 @@ public class WikiUtil {
                             style += side + ":" + sv;
                         }
                     }
-                    HU.open(buff, "div", HU.style(style));
+                    HU.open(buff, TAG_DIV, HU.style(style));
 
                     continue;
                 }
@@ -2836,7 +2868,7 @@ public class WikiUtil {
                 if (tline.startsWith(":hspace")) {
                     List<String> toks = Utils.splitUpTo(tline, " ", 2);
 		    String space = toks.size()==1?"10px":HU.makeDim(toks.get(1),"px");
-		    buff.append(HU.div("",HU.style(HU.css("display","inline-block","width",space))));
+		    buff.append(HU.div("",HU.style(HU.css("display","inline-block",ATTR_WIDTH,space))));
 		    continue;
 		}		
 
@@ -2954,7 +2986,7 @@ public class WikiUtil {
                     Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
 								    ? toks.get(1)
 								    : "");
-		    String sel1 = Utils.getProperty(props,"selector","div");
+		    String sel1 = Utils.getProperty(props,"selector",TAG_DIV);
 		    String sel2 = Utils.getProperty(props,"parentSelector",null);
 		    String label = Utils.getProperty(props,"label",null);
 		    String hideAll = Utils.getProperty(props,"hideAll",null);		    		    
@@ -2980,7 +3012,7 @@ public class WikiUtil {
                     buff.append("${" + headingsNav + "}");
 		    if(Utils.getProperty(headingsProps,"fixed",false)) {
 			navId = HU.getUniqueId("nav");
-			buff.append(HU.open("div",HU.cssClass("ramadda-nav-top-fixed")+HU.style("max-height:" + HU.makeDim(Utils.getProperty(headingsProps,"fixedHeight","1000px"),"px")+";") +HU.attrs("id",navId)));
+			buff.append(HU.open(TAG_DIV,HU.cssClass("ramadda-nav-top-fixed")+HU.style("max-height:" + HU.makeDim(Utils.getProperty(headingsProps,"fixedHeight","1000px"),"px")+";") +HU.attrs("id",navId)));
 		    }
                     continue;
                 }
@@ -3014,7 +3046,7 @@ public class WikiUtil {
 			String id = "heading-" +Utils.makeID(blob);
                         defineHeading.accept(buff, blob, 1);
 			buff.append(HU.anchorName(id));
-			blob += HU.span("",HU.attrs("id",id+"-hover","class","ramadda-linkable-link"));
+			blob += HU.span("",HU.attrs("id",id+"-hover",ATTR_CLASS,"ramadda-linkable-link"));
 			attrs = HU.attrs("id",id);
 			clazz+=" ramadda-linkable ";
                     }
@@ -3062,7 +3094,7 @@ public class WikiUtil {
                     //green
 
                     StringBuilder extra     = new StringBuilder();
-                    String        style     = (String)props.get("style");    
+                    String        style     = (String)props.get(ATTR_STYLE);    
                     String        background     = (String)props.get("background");
 		    if(background!=null) {
 			if(style==null) style="";
@@ -3081,12 +3113,12 @@ public class WikiUtil {
                         extra.append(tag);
                         extra.append(" ");
                     }
-                    extra.append(getAttribute(tline, "class", ""));
+                    extra.append(getAttribute(tline, ATTR_CLASS, ""));
                     extra.append(" \" ");
                     buff.append(HU.open(HU.TAG_DIV,
                                         HU.cssClass("ramadda-" + what
                                             + "-outer")));
-                    buff.append(HU.open("div", extra.toString()));
+                    buff.append(HU.open(TAG_DIV, extra.toString()));
 
                     continue;
                 }
@@ -3112,23 +3144,23 @@ public class WikiUtil {
 		    if(Utils.getProperty(props,"avatar",false)) {
 			avatarCount++;
 			if(avatarCount>8) avatarCount=1;
-			balloonAfter = HU.div(HU.image(getHandler().getHtdocsUrl("/avatars/avatar" + avatarCount+".png"),"width","40"),
+			balloonAfter = HU.div(HU.image(getHandler().getHtdocsUrl("/avatars/avatar" + avatarCount+".png"),ATTR_WIDTH,"40"),
 					     HU.cssClass(right?"ramadda-balloon-from-right":
 							 "ramadda-balloon-from-left"));
 		    }
-		    String style=Utils.getProperty(props,"style","");
-		    String width = Utils.getProperty(props,"width",null);
+		    String style=Utils.getProperty(props,ATTR_STYLE,"");
+		    String width = Utils.getProperty(props,ATTR_WIDTH,null);
 		    String outerStyle="";
 		    if(width!=null) outerStyle+="width:" + HU.makeDim(width,"px")+";";
-		    buff.append(HU.open("div",HU.style(outerStyle)));
-		    buff.append(HU.open("div",HU.cssClass(balloonClass)+HU.style(style)));
+		    buff.append(HU.open(TAG_DIV,HU.style(outerStyle)));
+		    buff.append(HU.open(TAG_DIV,HU.cssClass(balloonClass)+HU.style(style)));
 		    continue;
 		}
 
                 if (tline.startsWith("-balloon")) {
-		    buff.append(HU.close("div"));
+		    buff.append(HU.close(TAG_DIV));
 		    if(balloonAfter!=null) buff.append(balloonAfter);
-		    buff.append(HU.close("div"));		    
+		    buff.append(HU.close(TAG_DIV));		    
 		    balloonAfter=null;
 		    continue;
 		}
@@ -3225,12 +3257,12 @@ public class WikiUtil {
                     String        clazz = toks.get(0).substring(1);
                     if (toks.size() > 1) {
                         String attrs = toks.get(1);
-                        String style = getAttribute(attrs, "style");
+                        String style = getAttribute(attrs, ATTR_STYLE);
                         if (style != null) {
                             extra.append(HU.style(style));
                         }
                         clazz = clazz + " "
-                                + getAttribute(attrs, "class", "");
+                                + getAttribute(attrs, ATTR_CLASS, "");
                     }
                     if (clazz.matches("col-[0-9]+")) {
                         clazz = clazz.replace("col-", "col-md-");
@@ -3395,7 +3427,7 @@ public class WikiUtil {
 
 
 	if(navId!=null) {
-	    sb.append(HU.close("div"));
+	    sb.append(HU.close(TAG_DIV));
 	}
         s = sb.toString();
 
@@ -3446,10 +3478,10 @@ public class WikiUtil {
                 }
                 String href = HU.mouseClickHref((left?"HtmlUtils.navLinkClicked('":"HtmlUtils.scrollToAnchor('")
 						+ id + "',-50,"+(navId==null?"null":"'" + navId+"'")+")", label,
-						HU.attrs("class", clazz,"id",id+"_href"));
+						HU.attrs(ATTR_CLASS, clazz,"id",id+"_href"));
                 if (left) {
                     href = HU.div(href,
-                                  HU.attrs("class", "ramadda-nav-left-link",
+                                  HU.attrs(ATTR_CLASS, "ramadda-nav-left-link",
                                            "navlink", id));
                 } else if (list || popup) {
 		}
@@ -3464,8 +3496,8 @@ public class WikiUtil {
 							      "leftStyle", "");
                 String theRightStyle = (String) Utils.getProperty(headingsProps,
 							       "rightStyle", "");
-		String title = Utils.getProperty(headingsProps, "title",null);
-		theLeftStyle = HU.css("width",theLeftWidth) +
+		String title = Utils.getProperty(headingsProps, ATTR_TITLE,null);
+		theLeftStyle = HU.css(ATTR_WIDTH,theLeftWidth) +
 		    theLeftStyle;
 		args.append("leftOpen:" + open +",");
 		args.append("leftWidth:'" + theLeftWidth +"',");		
@@ -3478,7 +3510,7 @@ public class WikiUtil {
                 s = s.replace("${" + headingsNav + "}", "");
 		boolean haveLinks = hb.length()>0;
                 String leftLinks = HU.div(hb.toString(),
-                                          HU.attrs("class","ramadda-nav-left-links"));
+                                          HU.attrs(ATTR_CLASS,"ramadda-nav-left-links"));
 
 		if(title!=null && haveLinks) {
 		    leftLinks = "<div class=ramadda-links>" +HU.h3(title) + "</div>\n" + leftLinks;
@@ -3490,19 +3522,19 @@ public class WikiUtil {
                     + theRightStyle + "' class=ramadda-nav-right>" + s
                     + "</div></div>" + HU.script("HtmlUtils.initNavLinks({" + args+"})");
             } else if (list) {
-                String style = Utils.getProperty(headingsProps, "style", "");
+                String style = Utils.getProperty(headingsProps, ATTR_STYLE, "");
                 s = s.replace("${" + headingsNav + "}",
                               HU.div(hb.toString(),
-                                     HU.attrs("class", "ramadda-nav-list",
-                                         "style", style)));
+                                     HU.attrs(ATTR_CLASS, "ramadda-nav-list",
+                                         ATTR_STYLE, style)));
             } else if (popup) {
-                String style = Utils.getProperty(headingsProps, "style", "");
+                String style = Utils.getProperty(headingsProps, ATTR_STYLE, "");
 		String id = HU.getUniqueId("popup");
 		String p =  HU.div(hb.toString(),
-				   HU.attrs("id",id+"-popup", "class", "ramadda-shadow-box  ramadda-popup ramadda-nav-popup",
-					    "style", style));
-		String icon = HU.span(HU.getIconImage("fa-align-right"),HU.attrs("id",id,"class","ramadda-nav-popup-link","title","Click to view table of contents"));
-		String container = HU.div(icon +p, HU.attrs("class","ramadda-nav-popup-container"));
+				   HU.attrs("id",id+"-popup", ATTR_CLASS, "ramadda-shadow-box  ramadda-popup ramadda-nav-popup",
+					    ATTR_STYLE, style));
+		String icon = HU.span(HU.getIconImage("fa-align-right"),HU.attrs("id",id,ATTR_CLASS,"ramadda-nav-popup-link",ATTR_TITLE,"Click to view table of contents"));
+		String container = HU.div(icon +p, HU.attrs(ATTR_CLASS,"ramadda-nav-popup-container"));
                 String align = Utils.getProperty(headingsProps, "align", "left");
 		String args = JsonUtil.map(Utils.makeList("align",JsonUtil.quote(align)));
 		container += HU.script(JQuery.ready("HtmlUtils.initNavPopup('" + id+"',"+ args+");"));
@@ -3510,11 +3542,11 @@ public class WikiUtil {
 
 
             } else {
-                String style = Utils.getProperty(headingsProps, "style", "");
+                String style = Utils.getProperty(headingsProps, ATTR_STYLE, "");
                 s = s.replace("${" + headingsNav + "}",
                               HU.div(hb.toString(),
-                                     HU.attrs("class", "ramadda-nav-top",
-                                         "style", style)));
+                                     HU.attrs(ATTR_CLASS, "ramadda-nav-top",
+                                         ATTR_STYLE, style)));
 
             }
         }
@@ -3817,7 +3849,7 @@ public class WikiUtil {
 	List<Github.Item> items = Github.fetch(handler,props);
 	boolean decorate = Utils.getProperty(props,"decorate",true);
 	boolean showAuthor = Utils.getProperty(props,"showAuthor",true);	
-	String height = Utils.getProperty(props,"height","200");
+	String height = Utils.getProperty(props,ATTR_HEIGHT,"200");
 	for (int itemIdx = 0; itemIdx < items.size(); itemIdx++) {
 	    Github.Item item=  items.get(itemIdx);
 	    if(itemIdx==0) {
@@ -3828,7 +3860,7 @@ public class WikiUtil {
 	    Github.User user = item.getUser(); 
 	    String name = user.getName();
 	    if(decorate && user.getAvatarUrl()!=null) {
-		name = HU.image(user.getAvatarUrl(),"width","40px") +" "+ name;
+		name = HU.image(user.getAvatarUrl(),ATTR_WIDTH,"40px") +" "+ name;
 	    }
 	    name= HU.href(user.getUrl(),name);
 	    String date = sdf.format(item.getDate());
@@ -3872,10 +3904,10 @@ public class WikiUtil {
         boolean decorate = Misc.equals("true",""+getWikiProperty(props,  "decorate","decorateEmbed","false"));
         String label = (String) getWikiProperty(props, "label", "embedLabel",
                            null);
-        String width = (String) getWikiProperty(props, "width", "embedWidth",
+        String width = (String) getWikiProperty(props, ATTR_WIDTH, "embedWidth",
                            "640");
-        String height = (String) getWikiProperty(props, "height",   "embedHeight", "390");
-        String style = (String)getWikiProperty(props, "style", "embedStyle",getWikiProperty(props, "style", "style",null));
+        String height = (String) getWikiProperty(props, ATTR_HEIGHT,   "embedHeight", "390");
+        String style = (String)getWikiProperty(props, ATTR_STYLE, "embedStyle",getWikiProperty(props, ATTR_STYLE, ATTR_STYLE,null));
         StringBuilder sb = new StringBuilder();
 
         boolean isFacebook =
@@ -3889,7 +3921,7 @@ public class WikiUtil {
                 buff.append(
                     "<div id='fb-root'></div><script async defer crossorigin='anonymous' src='https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v10.0&appId=53108697449' nonce='bNyUnLLe'></script>");
             }
-            width = Utils.getProperty(props, "width", "500");
+            width = Utils.getProperty(props, ATTR_WIDTH, "500");
             sb.append("<div class='fb-post' data-href='" + url
                       + "' data-width='" + width
                       + "' data-show-text='true'></div>");
@@ -3913,13 +3945,13 @@ public class WikiUtil {
 	    String thumb = JsonUtil.readValue(obj,"thumbnail.source",null);
 	    if(thumb!=null) {
 		String iwidth = Utils.getProperty(props, "imageWidth","200px");
-		thumb = HU.image(thumb,"width",HU.makeDim(iwidth,null));
+		thumb = HU.image(thumb,ATTR_WIDTH,HU.makeDim(iwidth,null));
 	    }
 
-	    String title = obj.getString("title");
+	    String title = obj.getString(ATTR_TITLE);
 	    String wurl = JsonUtil.readValue(obj, "content_urls.desktop.page","");
-            width = Utils.getProperty(props, "width",null);
-            height = Utils.getProperty(props, "height","200px");	    
+            width = Utils.getProperty(props, ATTR_WIDTH,null);
+            height = Utils.getProperty(props, ATTR_HEIGHT,"200px");	    
 	    String extract = obj.optString("extract_html","").trim();
 	    extract=extract.replaceAll("^(<p>)+","").replaceAll("(</p>)+$","");
 	    if(height!=null) {
@@ -3934,8 +3966,8 @@ public class WikiUtil {
 	    if(width!=null) {
 		extract = HU.div(extract,HU.style("width:" + HU.makeDim(width,null)));
 	    }
-            String wstyle = Utils.getProperty(props, "style","padding:5px;");
-	    String pstyle =  Utils.getProperty(props, "style","");	    
+            String wstyle = Utils.getProperty(props, ATTR_STYLE,"padding:5px;");
+	    String pstyle =  Utils.getProperty(props, ATTR_STYLE,"");	    
 	    extract = HU.div(extract,HU.style("display:inline-block;" +  wstyle+pstyle));
 	    String header = "";
 	    if(Utils.getProperty(props, "addHeader",true)) 
@@ -4040,9 +4072,9 @@ public class WikiUtil {
             String srcId    = HU.getUniqueId("markdownsrc");
             String targetId = HU.getUniqueId("markdownsrc");
             HU.div(sb, chunk.buff.toString(),
-                   HU.attrs("id", srcId, "style", "display:none;"));
+                   HU.attrs("id", srcId, ATTR_STYLE, "display:none;"));
             HU.div(sb, chunk.buff.toString(),
-                   HU.attrs("id", targetId, "style", ""));
+                   HU.attrs("id", targetId, ATTR_STYLE, ""));
             HU.script(sb,
                       "HtmlUtils.applyMarkdown('" + srcId + "','" + targetId
                       + "');");
@@ -4053,9 +4085,9 @@ public class WikiUtil {
             String srcId    = HU.getUniqueId("latexsrc");
             String targetId = HU.getUniqueId("latexsrc");
             HU.div(sb, chunk.buff.toString(),
-                   HU.attrs("id", srcId, "style", "display:none;"));
+                   HU.attrs("id", srcId, ATTR_STYLE, "display:none;"));
             HU.div(sb, chunk.buff.toString(),
-                   HU.attrs("id", targetId, "style", ""));
+                   HU.attrs("id", targetId, ATTR_STYLE, ""));
             HU.script(sb,
                       "HtmlUtils.applyLatex('" + srcId + "','" + targetId
                       + "');");
@@ -4474,7 +4506,7 @@ public class WikiUtil {
                         clazz += " row-tight ";
                     }
                 }
-                HU.open(buff, "div", HU.clazz(clazz));
+                HU.open(buff, TAG_DIV, HU.clazz(clazz));
             } catch (Exception exc) {
                 throw new IllegalArgumentException(exc);
             }
@@ -4522,7 +4554,7 @@ public class WikiUtil {
         public void openColumn(Appendable buff, String attrs) {
             try {
                 closeColumns(buff);
-                HU.open(buff, "div", attrs);
+                HU.open(buff, TAG_DIV, attrs);
                 colCnt++;
             } catch (Exception exc) {
                 throw new IllegalArgumentException(exc);
@@ -4965,13 +4997,13 @@ public class WikiUtil {
      * _more_
      */
     private static void makeHandlers() {
-        addHandler("code", (wikiUtil, tag, remainder) ->{return HU.span(remainder,HU.attrs("class","ramadda-code"));});
+        addHandler("code", (wikiUtil, tag, remainder) ->{return HU.span(remainder,HU.attrs(ATTR_CLASS,"ramadda-code"));});
 	//        addHandler("fa",(wikiUtil, tag, remainder) ->{return "<span><i class='fa " + remainder +"'></i></span>";});
         addHandler("path",(wikiUtil, tag, remainder) ->{
                 StringBuilder sb = new StringBuilder();
                 String delim =  " <span style='color:#000;font-size:10pt;'><i class='fas fa-caret-right'></i></span> ";
                 String path = Utils.join(Utils.parseCommandLine(remainder),delim);
-                return HU.span(path,HU.attrs("class","ramadda-code ramadda-code-path"));
+                return HU.span(path,HU.attrs(ATTR_CLASS,"ramadda-code ramadda-code-path"));
             });
         addHandler("counter",(wikiUtil, tag, remainder) ->{
                 Hashtable props = HU.parseHtmlProperties(remainder);
@@ -5006,16 +5038,16 @@ public class WikiUtil {
             }
             String caption = "";
             if(label.length()>0)
-                caption = HU.div(label,HU.attrs("class","ramadda-caption"));
+                caption = HU.div(label,HU.attrs(ATTR_CLASS,"ramadda-caption"));
             if(image2) {
                 String src = getProperty(wikiUtil, props, "src",null);
-                String style = getProperty(wikiUtil, props, "style","");
-                String width = getProperty(wikiUtil, props, "width","none");
+                String style = getProperty(wikiUtil, props, ATTR_STYLE,"");
+                String width = getProperty(wikiUtil, props, ATTR_WIDTH,"none");
                 if(src==null) {
                     return errorTag("No src given");
                 }
-                String image = HU.href(src,HU.image(src,"style",style,"alt",label,"width",width.equals("none")||width.equals("")?null:width)) + caption;
-                return HU.anchorName(src) + HU.div(image,HU.attrs("class","ramadda-image-centered"));
+                String image = HU.href(src,HU.image(src,ATTR_STYLE,style,"alt",label,ATTR_WIDTH,width.equals("none")||width.equals("")?null:width)) + caption;
+                return HU.anchorName(src) + HU.div(image,HU.attrs(ATTR_CLASS,"ramadda-image-centered"));
             }
             return caption;
         };
@@ -5039,7 +5071,7 @@ public class WikiUtil {
                 boolean immediate = wikiUtil.getProperty(props, "immediate",false);
                 StringBuilder buff  = new StringBuilder();
                 String        id    = HU.getUniqueId("odometer");
-                String        style = wikiUtil.getProperty(props, "style", "");
+                String        style = wikiUtil.getProperty(props, ATTR_STYLE, "");
                 String        pause = wikiUtil.getProperty(props, "pause", "0");
                 if (wikiUtil.getProperty("added odometer") == null) {
                     wikiUtil.putProperty("added odometer", "yes");
