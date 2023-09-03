@@ -6,7 +6,7 @@ Documentation here: {{root}}/userguide/wiki/wikitext.html
 -skip
 +section title="Welcome to your RAMADDA" #
 +row
-+col-md-4
++col-md-6
 +box
 Thanks for trying RAMADDA.
 :br
@@ -18,10 +18,13 @@ Jeff McWhirter
 Geode Systems
 -box
 -col
-+col-md-8
-* Use the {{fa icon="fas fa-cog"}} icon above to <a  href="{{root}}/user/login">login</a> and <a href="{{root}}/admin/settings">administer</a> your RAMADDA
-* There are lots of ways to view and edit this page with the entry menu ({{fa icon="fas fa-caret-down"}}) menu above. You can:
-** <a href="{{root}}/entry/form?entryid=${topid}">Edit</a> this page - <a target="_docs" href="{{root}}/userguide/wiki/wikitext.html">Documentation</a>
++col-md-6
+* Use the {{fa icon="fas fa-cog"}} icon above to:
+** View <a href='{{root}}/userguide/index.html'>documentation</a>
+** <a  href="{{root}}/user/login">Login</a> to your account
+** <a href="{{root}}/admin/settings">Administer</a> your RAMADDA
+* Use the entry menu ({{fa icon="fas fa-caret-down"}}) menu above to:
+** <a href="{{root}}/entry/form?entryid=${topid}">Edit</a> this page - <a target="_docs" href="{{root}}/userguide/wiki/wikitext.html">{{fa icon="fas fa-question-circle"}}</a>
 ** Create new <a href="{{root}}/entry/form?group=${topid}&type=group">folders</a>
 ** Upload <a href="{{root}}/entry/form?group=${topid}&type=file">files</a>
 ** Add <a href="{{root}}/metadata/addform?entryid=${topid}">properties</a>

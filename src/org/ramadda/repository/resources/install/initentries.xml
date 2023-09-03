@@ -23,9 +23,9 @@
 <description>A place to store web site content</description>
 </entry>
 
-<entry parent="root" name="Development" type="group">
+<entry parent="root" name="Private" type="group">
 <description>
-This is a private area that only admins can access. To view/modify the
+This is a private area that only administrative users can access. To view/modify the
 access settings go to the Access link in the entry menu {{fa icon="fas fa-caret-down"}} above.
 </description>
 <permissions>
