@@ -613,6 +613,8 @@ public interface WikiConstants {
     /** wiki import */
     public static final String WIKI_TAG_IMAGE = "image";
 
+    public static final String WIKI_TAG_FA = "fa";    
+
     /**  */
     public static final String WIKI_TAG_IMAGE2 = "image2";
 

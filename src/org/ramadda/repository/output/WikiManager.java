@@ -1847,7 +1847,6 @@ public class WikiManager extends RepositoryManager
                                        Entry originalEntry, Entry entry,
                                        String theTag, Hashtable props,String remainder)
 	throws Exception {
-
 	if(!checkIf(wikiUtil,request,entry,props)) return "";
         boolean wikify  = getProperty(wikiUtil, props, ATTR_WIKIFY, true);
         String criteria = getProperty(wikiUtil, props, ATTR_IF,
@@ -1902,6 +1901,14 @@ public class WikiManager extends RepositoryManager
 
             return getRepository().getHtmlOutputHandler().getInformationTabs(
 									     myRequest, entry, false);
+        } else if (theTag.equals(WIKI_TAG_FA)) {
+	    String icon=
+		getProperty(wikiUtil, props, "icon", "");
+	    String style=
+		getProperty(wikiUtil, props, "style", "");		
+	    String tmp =  HU.tag("i",HU.attrs("class",icon,"style",style),"");
+	    return tmp;
+		
         } else if (theTag.equals(WIKI_TAG_CAPTION)
                    || theTag.equals(WIKI_TAG_IMAGE2)) {}
         else if (theTag.equals(WIKI_TAG_TAGCLOUD)) {
@@ -7191,7 +7198,8 @@ public class WikiManager extends RepositoryManager
 			l.call("Paragraph", "\\n:p", ""),
 			l.call("Bold text", "\\'\\'\\'", "\\'\\'\\'"),
 			l.call("Italic text", "\\'\\'", "\\'\\'"),
-			l.call("Code", "```\\n", "\\n```"));
+			l.call("Code", "```\\n", "\\n```"),
+			l.call("Font awesome icon","{{fa icon=\"fas fa-cog\" style=\"\"}}",""));
         Utils.appendAll(misc2,
 			l.call("Internal link", "[[id|link text", "]]"),
 			l.call("External link", "[http://www.example.com link title", "]"),
