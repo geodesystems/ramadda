@@ -896,7 +896,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
      *
      * @return _more_
      */
-    public static String squote(String s) {
+    public static String squote(Object s) {
         StringBuilder sb = new StringBuilder();
         squote(sb, s);
 
@@ -912,8 +912,9 @@ public class HtmlUtils implements HtmlUtilsConstants {
      *
      * @return _more_
      */
-    public static Appendable squote(Appendable sb, String s) {
+    public static Appendable squote(Appendable sb, Object o) {
         try {
+	    String s = o.toString();
             sb.append("'");
             if (s.indexOf("\\'") <= 0) {
                 s = s.replace("'", "\\'");
@@ -4819,7 +4820,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static String call(String function, String... args) {
         StringBuilder sb = new StringBuilder(function);
         call(sb, function, args);
-
         return sb.toString();
     }
 
