@@ -2,7 +2,7 @@
 +skip
 Hi, this is RAMADDA's wiki text. The wiki tag above tells RAMADDA to treat this description as wiki
 The +section, +row, +col etc tags do the layout
-Documentation here: https://ramadda.org/repository/userguide/wiki/wikitext.html
+Documentation here: {{root}}/userguide/wiki/wikitext.html
 -skip
 +section title="Welcome to your RAMADDA" #
 +row
@@ -10,30 +10,40 @@ Documentation here: https://ramadda.org/repository/userguide/wiki/wikitext.html
 +box
 Thanks for trying RAMADDA.
 :br
-Keep in touch by joining the <a href=https://groups.google.com/g/ramadda>Google Groups mailing list</a>. If you have any problems or suggestions please send a note to <a href="mailto:info@ramadda.org">info@ramadda.org</a>
-:br
+Keep in touch by joining the <a href=https://groups.google.com/g/ramadda>RAMADDA mailing list</a>.
+If you have any problems or suggestions please send a note to <a href="mailto:info@ramadda.org">info@ramadda.org</a>
+:vspace
 Jeff McWhirter
 :br
 Geode Systems
 -box
 -col
 +col-md-8
-* Use the <i class="fas fa-cog"></i> icon above to <a  href="/repository/user/login">login</a> and <a href="/repository/admin/settings">administer</a> your RAMADDA
-* <a href="/repository/entry/form?entryid=${topid}">Edit</a> this page - <a target="_docs" href="https://ramadda.org/repository/userguide/wiki/wikitext.html">Documentation</a>
-* Lots of ways to view and edit this page with the <i class="fas fa-caret-down"></i> menu above
-* Create new <a href="/repository/entry/form?group=${topid}&type=group">folders</a> or upload <a href="/repository/entry/form?group=${topid}&type=file">files</a>
-* <a href="/repository/search/form">Search</a> this repository
-<p>
+* Use the {{fa icon="fas fa-cog"}} icon above to <a  href="{{root}}/user/login">login</a> and <a href="{{root}}/admin/settings">administer</a> your RAMADDA
+* There are lots of ways to view and edit this page with the entry menu ({{fa icon="fas fa-caret-down"}}) menu above. You can:
+** <a href="{{root}}/entry/form?entryid=${topid}">Edit</a> this page - <a target="_docs" href="{{root}}/userguide/wiki/wikitext.html">Documentation</a>
+** Create new <a href="{{root}}/entry/form?group=${topid}&type=group">folders</a>
+** Upload <a href="{{root}}/entry/form?group=${topid}&type=file">files</a>
+** Add <a href="{{root}}/metadata/addform?entryid=${topid}">properties</a>
+:vspace
 -col
 -row
 -section
 ----
-+section label="Your Content" 
++section label="Folders"  
 :note Here are some folders to get you started. Feel free to add, delete or rename any of this content.
 <p>
 {{tree showtoggle="false"}}
 <p>
 -section
-+section label="Search your repository"
+ ----
++section label="Repository Contents"
+:note This is a listing of all of the entries and their count in the repository.
+{{typesearchlist  showHeader="false"  showSearchField="false"  
+#width="200px"  #height="400px"  #supers="comma separated list of super categories" 
+#cats="comma separated list of categories"  #types="comma separated list of types"  }} 
+-section
+----
++section label="Search your repository" 
 {{display_entrylist}}
 -section

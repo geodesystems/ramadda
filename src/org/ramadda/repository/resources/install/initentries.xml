@@ -1,6 +1,11 @@
 
 <entries>
 
+<entry parent="root" name="Courses" type="group">
+<description>A place to store course information</description>
+</entry>
+
+
 <entry parent="root" name="Projects" type="group">
 <description>A place to store projects</description>
 </entry>
@@ -11,6 +16,23 @@
 
 <entry parent="root" name="Data" type="group">
 <description>A place to store data</description>
+</entry>
+
+
+<entry parent="root" name="Contents" type="group">
+<description>A place to store web site content</description>
+</entry>
+
+<entry parent="root" name="Development" type="group">
+<description>
+This is a private area that only admins can access. To view/modify the
+access settings go to the Access link in the entry menu {{fa icon="fas fa-caret-down"}} above.
+</description>
+<permissions>
+  <permission action="view">
+    <role role="none"/>
+  </permission>
+</permissions>
 </entry>
 
 <!-- not now
