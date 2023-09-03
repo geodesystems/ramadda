@@ -1381,9 +1381,12 @@ public class EntryManager extends RepositoryManager {
 	    //	    System.err.println("tmpFile:" + tmpFile +" " + tmpFile.exists() +  " file name:" + fileName);
 	    tmpFile = getStorageManager().copyToStorage(request, tmpFile,fileName);
 	    //	    System.err.println("newFile:" + tmpFile +" " + tmpFile.exists());
-	    String name = fileName.replaceAll("_", " ");
-	    name = IO.stripExtension(name);
-	    name = StringUtil.camelCase(name);
+	    String name = request.getString(ARG_NAME,null);
+	    if(name == null) {
+		name = fileName.replaceAll("_", " ");
+		name = IO.stripExtension(name);
+		name = StringUtil.camelCase(name);
+	    }
 	    Entry newEntry = addFileEntry(request, tmpFile,
 					  group, null, name, description, request.getUser(),
 					  typeHandler, null);

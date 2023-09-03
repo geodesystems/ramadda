@@ -863,6 +863,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    fileName =  name+"." + suffix;
 	}
 	let finish = () =>{
+	    if(!file.name) {
+		fileName = Utils.makeId(name) +'.' + suffix;
+	    }
+	    
 	    let data = new FormData();
 	    data.append("filename",fileName);
 	    if(authToken)
@@ -874,6 +878,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		data.append("filetype",'geo_geojson');	
 	    else
 		data.append("filetype",file.type);
+	    data.append("name",name);
 	    data.append("group",entryId);
 	    data.append("description",desc);
 	    data.append("file", result);
@@ -903,7 +908,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    dialog = HU.makeDialog({content:html,anchor:$(document),my:"center top",at:"center top+100"});    
 	}
 
-	name = prompt('Dropped file: ' + fileName +"\nNew entry name:");
+	
+	if(file.name)
+	    name = prompt('Dropped file: ' + fileName +"\nNew entry name:");
+	else
+	    name = prompt('Copied file: ' + suffix +"\nNew entry name:");	    
 	if(!name) return;
 	finish();
 
