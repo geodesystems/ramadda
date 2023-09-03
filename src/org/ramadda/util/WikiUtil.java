@@ -2033,6 +2033,17 @@ public class WikiUtil {
 		}		
 
 
+		if (tline.equals("+ralign")) {
+                    buff.append("<div style='text-align:right;'>\n");
+		    continue;
+                }
+
+                if (tline.equals("-ralign")) {
+	            buff.append("</div>\n");
+	            continue;
+                }
+
+
                 if (tline.startsWith("+div")) {
                     String       style = "";
                     String       clazz = "";
@@ -4955,7 +4966,7 @@ public class WikiUtil {
      */
     private static void makeHandlers() {
         addHandler("code", (wikiUtil, tag, remainder) ->{return HU.span(remainder,HU.attrs("class","ramadda-code"));});
-        addHandler("fa",(wikiUtil, tag, remainder) ->{return "<span><i class='fa " + remainder +"'></i></span>";});
+	//        addHandler("fa",(wikiUtil, tag, remainder) ->{return "<span><i class='fa " + remainder +"'></i></span>";});
         addHandler("path",(wikiUtil, tag, remainder) ->{
                 StringBuilder sb = new StringBuilder();
                 String delim =  " <span style='color:#000;font-size:10pt;'><i class='fas fa-caret-right'></i></span> ";
