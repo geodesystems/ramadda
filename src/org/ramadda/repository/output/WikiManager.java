@@ -7008,6 +7008,8 @@ public class WikiManager extends RepositoryManager
 			l.call("Next arrow", "{{next position=relative|fixed decorate=false iconSize=32 sort=name,entryorder sortAscending=true style=_dq_  showName=false}}", ""),
 			l.call("Draggable", "+draggable framed=true header=_quote__quote_ style=_quote_background:#fff;_quote_ toggle=_quote_true_quote_ toggleVisible=_quote_true_quote__newline_",
 			       "-draggable"),
+			l.call("Enlarge","+enlarge height=\"200\" enlargeLabel=\"Show more\" shrinkLabel=\"Show less\"\\n",
+			       "-enlarge"),
 			l.call("Expandable",   "+expandable header=_quote_quote_ expand=true_newline_", "-expandable"),
 			l.call("Fullscreen",   "+fullscreen_newline_", "-fullscreen"),
 			l.call("Inset", "+inset top=0 bottom=0 left=0 right=0 _newline_", "-inset"),

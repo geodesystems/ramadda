@@ -1132,6 +1132,40 @@ a.ramadda-menubar-button:hover {
     padding:4px;
 }
 
+.ramadda-enlarge-outer {
+    position:relative;
+    margin-bottom:20px;
+    padding:2px;
+}
+
+.ramadda-enlarge-inner {
+    position:relative;
+    overflow-y:auto;
+    margin-bottom:20px;
+    border:var(--basic-border);
+}
+
+.ramadda-enlarge-inner-inner {
+    padding:2px;
+}    
+
+.ramadda-enlarge-button {
+    position:absolute;
+    bottom:0px;
+    left:50%;
+    transform: translate(-50%, -10px);
+    background:#fff;
+    border:var(--basic-border);
+    padding:4px;
+    padding-top:1px;
+    padding-bottom:1px;        
+    border-radius: 6px;
+}
+
+.ramadda-enlarge-button:hover {
+    border:1px solid var(--nav-hover-color);
+}
+
 .ramadda-expandable-frame {
     z-index:var(--expandable-z-index);
     border:var(--basic-border);

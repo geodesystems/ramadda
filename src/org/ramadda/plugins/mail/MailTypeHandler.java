@@ -292,12 +292,18 @@ public class MailTypeHandler extends GenericTypeHandler {
 	    sb.append(HtmlUtils.formEntry(msgLabel("Subject"), subject));
 	    sb.append(HtmlUtils.formEntry(msgLabel("From"), mailLink(from)));
 	    StringBuilder to = new StringBuilder();
+	    int toCnt = 0;
 	    for(String tom:Utils.split(entry.getStringValue(IDX_TO, ""),"\n",true,true)) {
 		to.append(mailLink(tom));
 		to.append(" ");
+		toCnt++;
 	    }
-	    sb.append(HtmlUtils.formEntry(msgLabel("To"),
-					  HU.div(to.toString(),HU.attrs("style","max-height:100px;overflow-y:auto;"))));
+	    String toHtml = to.toString();
+	    if(toCnt>4) {
+		toHtml = "+enlarge style=\"border:0px;border-bottom:var(--basic-border);\" height=\"100px\" \n" + toHtml +"\n-enlarge";
+		toHtml = getRepository().getWikiManager().wikify(request, toHtml);
+	    }
+	    sb.append(HtmlUtils.formEntry(msgLabel("To"),toHtml));
 	    sb.append(HtmlUtils.formEntry(msgLabel("Date"),
 					  getDateHandler().formatDate(request,
 								      new Date(entry.getStartDate()),
