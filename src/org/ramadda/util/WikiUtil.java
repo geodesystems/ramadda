@@ -2294,7 +2294,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 		    String shrinkMsg=Utils.getProperty(props,"shrinkMsg",null);		    
 		    buff.append(HU.open(TAG_DIV,ATTR_CLASS,"ramadda-enlarge-outer","id",enlargeId));
 		    buff.append(HU.open(TAG_DIV,ATTR_STYLE,style,ATTR_CLASS,"ramadda-enlarge-inner","id",enlargeId+"_inner"));
-		    buff.append(HU.open(TAG_DIV,ATTR_CLASS,"ramadda-enlarge-inner-inner","id",enlargeId+"_inner_inner",ATTR_STYLE,HU.css(ATTR_HEIGHT,HU.makeDim(height,"px"))));		    
+		    buff.append(HU.open(TAG_DIV,ATTR_CLASS,"ramadda-enlarge-contents","id",enlargeId+"_contents",ATTR_STYLE,HU.css(ATTR_HEIGHT,HU.makeDim(height,"px"))));		    
 		    continue;
 		}
 
