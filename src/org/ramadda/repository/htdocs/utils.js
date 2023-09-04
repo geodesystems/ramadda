@@ -4933,30 +4933,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     makeEnlargableInner:function(id,enlargeMsg,shrinkMsg) {
 	let outer = $('#'+id);
 	let inner = $('#'+id+'_inner');
-	let innerInner = $('#'+id+'_inner_inner');	
+	let contents = $('#'+id+'_contents');	
 	let enlarged = false;
-	enlargeMsg = Utils.stringDefined(enlargeMsg)?enlargeMsg:'Show more';
-	shrinkMsg = Utils.stringDefined(shrinkMsg)?shrinkMsg:'Show less';	
-	let buttonId= id+'_button';
-	let button = HU.div([ATTR_ID,buttonId,ATTR_CLASS,'ramadda-enlarge-button ramadda-clickable'],enlargeMsg);
-	outer.append(button);
-	button = $('#' + buttonId);
-	button.click(function(){
-	    let originalHeight =  $(this).attr('originalheight');
-	    if(!originalHeight) {
-		originalHeight = innerInner.css('height');
-		$(this).attr('originalheight',originalHeight);
-	    }
+	let shrunkHeight= contents.height();
+	enlargeMsg = Utils.getStringDefined(enlargeMsg,'Show more');
+	shrinkMsg = Utils.getStringDefined(shrinkMsg,'Show less');	
+	let bbutton = HU.div([ATTR_ID,id+'_button',ATTR_CLASS,'ramadda-enlarge-button ramadda-enlarge-bbutton ramadda-clickable'],enlargeMsg);
+	$(bbutton).appendTo(outer).click(function(){
 	    enlarged = !enlarged;
-	    if(enlarged) {
-		innerInner.css('height',originalHeight);
-		$(this).attr('enlarged',false);
-		button.html(enlargeMsg);
-	    } else {
-		innerInner.css('height','');
-		$(this).attr('enlarged',true);
-		button.html(shrinkMsg);
-	    }
+	    contents.css('height',enlarged?'':shrunkHeight);
+	    $(this).html(enlarged?enlargeMsg:shrinkMsg);
 	});
     },
     makeExpandable:function(selector,fullScreen) {

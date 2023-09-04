@@ -1145,21 +1145,25 @@ a.ramadda-menubar-button:hover {
     border:var(--basic-border);
 }
 
-.ramadda-enlarge-inner-inner {
+.ramadda-enlarge-contents {
     padding:2px;
 }    
 
 .ramadda-enlarge-button {
+    font-size:70%;
     position:absolute;
-    bottom:0px;
     left:50%;
-    transform: translate(-50%, -10px);
     background:#fff;
     border:var(--basic-border);
     padding:4px;
     padding-top:1px;
     padding-bottom:1px;        
     border-radius: 6px;
+}
+
+.ramadda-enlarge-bbutton {
+    bottom:0px;
+    transform: translate(-50%, -10px);
 }
 
 .ramadda-enlarge-button:hover {
