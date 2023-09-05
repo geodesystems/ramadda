@@ -1995,23 +1995,21 @@ public class WikiUtil implements HtmlUtilsConstants {
                 if (tline.startsWith("+inset")) {
                     List<String>  toks  = Utils.splitUpTo(tline, " ", 2);
                     StringBuilder extra = new StringBuilder();
-                    if (toks.size() > 1) {
-                        StringBuilder styles = new StringBuilder();
-                        for (String side : new String[] { "top", "left",
-                                "bottom", "right" }) {
-                            String v = getAttribute(tline, side);
-                            if (v != null) {
-                                v = getSize(v);
-                                styles.append("margin-" + side + ":" + v
-                                        + ";");
-                            }
+		    Hashtable props = getProps.apply(tline);
+		    StringBuilder styles = new StringBuilder();
+		    String space = Utils.getProperty(props,"space",null);
+		    for (String side : new String[] { "top", "left",
+						      "bottom", "right" }) {
+			String v = Utils.getProperty(props, side,space);
+			if (v != null) {
+			    v = getSize(v);
+			    styles.append("margin-" + side + ":" + v
+					  + ";");
                         }
-
-                        if (styles.length() > 0) {
-                            extra.append(HU.style(styles.toString()));
-                        }
+		    }
+		    if (styles.length() > 0) {
+			extra.append(HU.style(styles.toString()));
                     }
-
                     buff.append(HU.open(TAG_DIV, HU.cssClass("inset") + extra));
 
                     continue;
