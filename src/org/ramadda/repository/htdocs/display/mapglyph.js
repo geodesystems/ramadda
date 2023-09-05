@@ -1543,9 +1543,11 @@ MapGlyph.prototype = {
 	}
 	if(bounds) {
 	    this.display.getMap().zoomToExtent(bounds);
+	    if(bounds.getWidth()==0) andZoomIn = true;
 	}
 	if(andZoomIn) {
-	    this.display.getMap().setZoom(16);
+	    //The -1 is a flag to use the singlePointZoom
+	    this.display.getMap().setZoom(-1);
 	}
     },
     getBounds: function() {
