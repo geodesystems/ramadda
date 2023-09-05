@@ -1184,10 +1184,12 @@ a.ramadda-menubar-button:hover {
 
 
 .ramadda-expandable-header {
-    background:var(--header-background);
-    border:var(--basic-border);    
-    border-bottom:0px solid #ccc;
-    cursor:grab;
+    padding:4px;
+    padding-right:8px;    
+}
+
+.ramadda-expandable-expanded {
+    border:var(--basic-border);        
     padding:4px;
 }
 
@@ -2172,6 +2174,18 @@ ul {
     color:#aaa !important;
 }
 
+.slick-slide {
+    opacity: 0;
+    visibility: hidden;
+}
+
+
+.slick-current {
+    opacity: 1;
+    visibility: visible;
+}
+
+
 .ramadda-slides-container {
     border:var(--basic-border) !important;
 }
@@ -2216,9 +2230,6 @@ ul {
 
 .ramadda-slides-bigarrow .slick-prev {
     left: -30px !important;
-}
-
-.slick-slide {
 }
 
 

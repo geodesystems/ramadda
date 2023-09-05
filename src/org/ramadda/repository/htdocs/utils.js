@@ -3808,11 +3808,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	}
 	await HtmlUtils.loadSlides();
         let opts = {
-            dots:true
+            dots:true,
+	    slidesToShow:1,
+	    variableWidth:true
         };
         if(args) $.extend(opts,args);
+	console.dir(opts);
         $("#" + id).slick(opts);
-        HtmlUtils.swapHtml("#" + id +"_headercontents", "#" + id +"_header");
+        HU.swapHtml("#" + id +"_headercontents", "#" + id +"_header");
         //Do this later because of the swapHtml
         setTimeout(()=>{
             let header = $("#" + id +"_header");
@@ -4942,7 +4945,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	$(bbutton).appendTo(outer).click(function(){
 	    enlarged = !enlarged;
 	    contents.css('height',enlarged?'':shrunkHeight);
-	    $(this).html(enlarged?enlargeMsg:shrinkMsg);
+	    $(this).html(enlarged?shrinkMsg:enlargeMsg);
 	});
     },
     makeExpandable:function(selector,fullScreen) {
@@ -4967,6 +4970,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 icon  = HtmlUtils.getIconImage("fa-expand-arrows-alt");
                 $(this).attr("title","Expand");
                 $(selector).css("left","").css("right","").css("top","").css("bottom","").css("position","relative").css("height", "").css("z-index","").css("background",origBackground?origBackground:"");
+		$(selector).removeClass('ramadda-expandable-expanded');
                 btn.css("display","none");
                 $(selector).find(".ramadda-expandable-target").each(function() {
                     $(this).attr("isexpanded","false");
@@ -4984,6 +4988,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                     HtmlUtils.makeFullScreen(target.get(0));
                     return
                 }               
+		$(selector).addClass('ramadda-expandable-expanded');
                 $(selector).css("left","50px").css("right","5px").css("top","5px").css("position","fixed").css("z-index","2000").css("background","#fff").css("height",h+"px");
                 $(selector).find(".ramadda-expandable-target").each(function() {
 		    //                    $(this).attr("original-height",$(this).css("height"));
@@ -5005,7 +5010,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             }
         };
         $("#" +id).click(expandIt);
-        
         if(expandNow) {
             expandIt();
         }

@@ -105,6 +105,12 @@ public class WikiManager extends RepositoryManager
     private static final int ENTRY_TREE_MAX_DEPTH = 10;    
 
     private int groupCount = 0;
+    
+    private String wikiMenuFormattingButton;
+    private String wikiMenuTagsButton;
+    private String wikiMenuEtcButton;
+    private String wikiMenuHelpButton;
+
 
 
     /** _more_ */
@@ -6952,29 +6958,17 @@ public class WikiManager extends RepositoryManager
                 : null);
     }
 
-    /**
-     *
-     * Make the wiki edit bar
-     *
-     * @param request The request
-     * @param entry   the Entry
-     * @param textAreaId  the textAreaId
-     *
-     * @return  the edit bar
-     *
-     * @throws Exception problems
-     */
-    public String makeWikiEditBar(Request request, Entry entry,
-                                  String textAreaId)
-	throws Exception {
+    private synchronized void initWikiMenuButtons() throws Exception {
+	if(wikiMenuEtcButton!=null) return;
+	String textAreaId = "${textareaid}";
+        String        buttonClass = HU.clazz("ramadda-menubar-button");
+        StringBuilder help        = new StringBuilder();
+        StringBuilder etc        = new StringBuilder();	
 
-        StringBuilder buttons = new StringBuilder();
-        if (request.get("doImports", true)) {
-            getPageHandler().addDisplayImports(request, buttons,true);
-        }
         StringBuilder tags1  = new StringBuilder();
         StringBuilder tags2 = new StringBuilder();
         StringBuilder tags3 = new StringBuilder();
+        StringBuilder tags4 = new StringBuilder();	
 	Utils.TriFunction<String,String,String,String> l = (title,pre,post)->{
 	    return getWikiEditLink(textAreaId,title,pre,post,"");
 	};
@@ -6983,58 +6977,67 @@ public class WikiManager extends RepositoryManager
 	    return getWikiEditLink(textAreaId,title,pre,post,tt);
 	};
 	
+	BiFunction<String,String,String> makeButton = (title,contents)->{
+	    return HU.makePopup(null,HU.div(title,HU.cssClass("ramadda-menubar-button")),
+				HU.div(contents, "class='wiki-editor-popup'"),
+				new NamedValue("linkAttributes", buttonClass));
+	};
+
+
+
         Utils.appendAll(tags1,
-			l2.call("Section", "Section wrapper","+section title={{name}}_newline__newline_", "-section"),
+			l2.call("Section", "Section wrapper. use +section-map for a map bg\nimg:section.png","+section title={{name}}_newline__newline_", "-section"),
 			l2.call( "Frame", "Full page framed section","+frame background=#fff frameSize=0 shadow title=\"\"\\n", "-frame"),
 			l2.call( "Table", "HTML table","+table height=400 hover=true cellborder=false rowborder=false stripe=false ordering=false paging=false searching=false_newline_:tr &quot;heading 1&quot; &quot;heading 2&quot;_newline_+tr_newline_:td colum 1_newline_+td_newline_column 2_newline_", "-td_newline_-tr_newline_-table"),
-			l2.call( "Row/Column", "Create a bootstrap row", "+row_newline_+col-6_newline_", "-col_newline_+col-6_newline_-col_newline_-row"),
+			l2.call( "Row/Column", "Create a 12 unit wide bootstrap row\nimg:row.png", "+row_newline_+col-6_newline_", "-col_newline_+col-6_newline_-col_newline_-row"),
 			l2.call( "Left-right", "2 column table aligned left and right","+leftright_nl_+left_nl_-left_nl_+right_nl_-right_nl_", "-leftright"),
 			l2.call( "Left-middle-right", "3 column table aligned left,center and right","+leftmiddleright_nl_+left_nl_-left_nl_+middle_nl_-middle_nl_+right_nl_-right_nl_", "-leftmiddleright"),
-			l2.call( "Tabs", "Make tabs","+tabs center=false minarrow=false tight=false noBorder=false #minheight=\"\" _newline_+tab tab title_newline_", "-tab_newline_-tabs_newline_"),
-			l2.call( "Accordion", "Accordion layout","+accordion decorate=false collapsible=true activeSegment=0 _newline_+segment segment  title_newline_", "-segment_newline_-accordion_newline_"),
-			l2.call( "Slides", "Slides layout","+slides dots=true slidesToShow=1 bigArrow=true  centerMode=true variableWidth=true arrows=true  dots=true  infinite=false style=_qt__qt__nl_+slide Title_nl_", "-slide_nl_-slides_nl_"),
+			l2.call( "Tabs", "Make tabs\nimg:tabs.png","+tabs center=false minarrow=false tight=false noBorder=false #minheight=\"\" _newline_+tab tab title_newline_", "-tab_newline_-tabs_newline_"),
+			l2.call( "Accordion", "Accordion layout\nimg:accordion.png","+accordion decorate=false collapsible=true activeSegment=0 _newline_+segment segment  title_newline_", "-segment_newline_-accordion_newline_"),
+			l2.call( "Slides", "Slides layout\nimg:slides.png","+slides dots=true slidesToShow=1 bigArrow=true  centerMode=true variableWidth=true arrows=true  dots=true  infinite=false style=_qt__qt__nl_+slide Title_nl_", "-slide_nl_-slides_nl_"),
 			//			l2.call("Grid box", "+grid #decorated=true #columns=_qt_1fr 2fr_qt_ _nl_:filler_nl_+gridbox #flex=1 #style=_qt__qt_ #width=_qt__qt_ #title=_qt_Title 1_qt__nl_-gridbox_nl_+gridbox #title=_qt_Title 2_qt__nl_-gridbox_nl_:filler_nl_", "-grid"),
-			l2.call("Scroll panels","For full page story scroling","+scroll_newline_+panel color=gradient1 name=home style=_quote__quote_ _newline_+center_newline_<div class=scroll-indicator>Scroll Down</div>_newline_-center_newline_-panel_newline_+panel color=gradient2 name=panel1_newline__newline_-panel_newline_+panel color=blue name=panel2_newline__newline_-panel_newline_", "-scroll") 
+			l2.call("Scroll panels","For full page story scrolling\nimg:scroll.png","+scroll_newline_+panel color=gradient1 name=home style=_quote__quote_ _newline_+center_newline_<div class=scroll-indicator>Scroll Down</div>_newline_-center_newline_-panel_newline_+panel color=gradient2 name=panel1_newline__newline_-panel_newline_+panel color=blue name=panel2_newline__newline_-panel_newline_", "-scroll") 
 			
 			); 
 
         Utils.appendAll(tags2,
-			l2.call("Popup", "Popup link","+popup link=_qt_Link_qt_ icon=_qt_fa-solid fa-arrow-right-from-bracket_qt_ title=_qt_Title_qt_ header=true draggable=true decorate=true sticky=true my=_qt__qt_ at=_qt__qt_ animate=false_nl__nl_", "-popup_nl_"),
+			l2.call("Center", "Center text","\\n+center\\n","-center"),
+			l2.call("Center div", "Center the block, not the text","\\n+centerdiv\\n","-centerdiv"),			
+			l2.call("Inset", "top/left/bottom/right spacing","+inset #space=10 top=0 bottom=0 left=0 right=0 _newline_", "-inset"),
+			l2.call("Popup", "Popup link\nimg:popup.png","+popup link=_qt_Link_qt_ icon=_qt_fa-solid fa-arrow-right-from-bracket_qt_ title=_qt_Title_qt_ header=true draggable=true decorate=true sticky=true my=_qt__qt_ at=_qt__qt_ animate=false_nl__nl_", "-popup_nl_"),
 			l.call("Menu", "+menu_nl_    :menuheader Header_nl_    :menuitem Item 1_nl_    +menu Menu 1_nl_        :menuitem Item 2_nl_        +menuitem style=_qt_width:300px; _qt_ _nl_        Menu contents_nl_        -menuitem_nl_    -menu_nl_    +menu Menu 2_nl_        :menuitem Item 3_nl_    -menu_nl_-menu", ""),
+			l2.call("Enlarge/Shrink",
+				"Enlarge/Shrink Toggle\nimg:enlarge.png\nShow content in an expandable block","+enlarge height=\"200\" enlargeLabel=\"Show more\" shrinkLabel=\"Show less\"\\n",
+				"-enlarge"),
+			l2.call("Expandable", "Allow a section to expand to the full browser window",
+				"+expandable header=_quote__quote_ expand=false_newline_", "-expandable"),
+			l2.call("Full screen", "Allow a section to be expanded to full screen",  "+fullscreen_newline_", "-fullscreen"),
+			l2.call("Draggable", "A draggable section\nimg:draggable.png","+draggable framed=true header=_quote__quote_ style=_quote_background:#fff;_quote_ toggle=_quote_true_quote_ toggleVisible=_quote_true_quote__newline_",
+			       "-draggable"));
+
+        Utils.appendAll(tags4,
 			l.call("Navigation left", ":navleft leftStyle=_qt_width:250px;_qt_ rightStyle=_qt__qt_  maxLevel=_qt_4_qt_", ""),
 			l.call("Navigation top", ":navtop style=_quote__quote_ delimiter=_quote_|_quote_  maxLevel=_qt__qt_", ""),
 			l.call("Navigation popup", ":navpopup align=right|left  maxLevel=_qt__qt_", ""),	    
 			l.call("Prev arrow", "{{prev position=relative|fixed decorate=false iconSize=32 sort=name,entryorder sortAscending=true style=_qt_left:250px;_qt_  showName=false}}", ""),
 			l.call("Next arrow", "{{next position=relative|fixed decorate=false iconSize=32 sort=name,entryorder sortAscending=true style=_dq_  showName=false}}", ""),
-			l.call("Draggable", "+draggable framed=true header=_quote__quote_ style=_quote_background:#fff;_quote_ toggle=_quote_true_quote_ toggleVisible=_quote_true_quote__newline_",
-			       "-draggable"),
-			l.call("Enlarge","+enlarge height=\"200\" enlargeLabel=\"Show more\" shrinkLabel=\"Show less\"\\n",
-			       "-enlarge"),
-			l.call("Expandable",   "+expandable header=_quote_quote_ expand=true_newline_", "-expandable"),
-			l.call("Fullscreen",   "+fullscreen_newline_", "-fullscreen"),
-			l.call("Inset", "+inset top=0 bottom=0 left=0 right=0 _newline_", "-inset"),
 			l.call("Absolute", "\\n+absolute top= bottom= left= right=\\n","-absolute"),
-			l.call("Relative", "\\n+relative\\n","-relative"),
-			l.call("Center", "\\n+center\\n","-center")
-			);
+			l.call("Relative", "\\n+relative\\n","-relative"));
 
 
-
-
-        Utils.appendAll(tags3, l.call( "Note", "+note\\n\\n", "-note"));
+        Utils.appendAll(tags3, l2.call( "Note", "A centered text note\nimg:note.png","+note\\n\\n", "-note"));
         String[] colors = new String[] {"gray",  "yellow"};
+	/*
         for (String color : colors) {
-            tags3.append(
-			 getWikiEditLink(
-					 textAreaId, HU.div(
-							    "Note "
+            tags3.append(getWikiEditLink(textAreaId, HU.div("Note "
 							    + color, HU.attrs(
 									      "style", "padding:2px; display:inline-block;", "class", "ramadda-background-"
 									      + color)), 
 					 "+note-" + color + "_nl__nl_", "-note",""));
-        }
+					 }*/
 
         Utils.appendAll(tags3, l.call( "Box", "+box_nl__nl_", "-box"));
+	/*
         for (String color : colors) {
             tags3.append(
 			 getWikiEditLink(
@@ -7045,45 +7048,68 @@ public class WikiManager extends RepositoryManager
 									      + color)), "+box-" + color
 					 + "_nl__nl_", "-box",""));
         }
+	*/
+
+        Utils.appendAll(tags3,
+                        l2.call( "Callout", "Callout box\nimg:callout.png", "+callout_nl__nl_", "-callout"),
+                        l2.call( "Callout info", "Callout box\nimg:calloutinfo.png","+callout-info_nl__nl_", "-callout"),
+                        l2.call( "Callout tip", "Callout box\nimg:callouttip.png","+callout-tip_nl__nl_", "-callout"),
+                        l2.call( "Callout question", "Callout box\nimg:calloutquestion.png","+callout-question_nl__nl_", "-callout"),
+                        l2.call( "Callout warning", "Callout box\nimg:calloutwarning.png","+callout-warning_nl__nl_", "-callout"),
+                        l2.call( "Text Balloon", "Text balloon with avatar\nimg:balloon.png","+balloon-left avatar=true #width=400px #style=\"background:#fffeec;\"_nl__nl_", "-balloon"));
 
 
-        List<Link> links = getRepository().getOutputLinks(request,
-							  new OutputHandler.State(entry));
-        for (Link link : links) {
-            if (link.getOutputType() == null) {
-                continue;
-            }
 
-            String prop = link.getOutputType().getId();
-            String js = "javascript:WikiUtil.insertTags(" + HU.squote(textAreaId)
-		+ "," + HU.squote("{{") + "," + HU.squote("}}") + ","
-		+ HU.squote(prop) + ");";
-        }
+        StringBuilder misc1 = new StringBuilder();
+        StringBuilder misc2 = new StringBuilder();
+        StringBuilder misc3 = new StringBuilder();
+	Utils.appendAll(misc3,
+			l.call( "Macro", ":macro name value_nl_${name}_nl_", ""),
+			l.call( "Template", "+template template_name_nl_... ${var1} ... ${var2}_nl_", "-template"),
+			l.call( "Apply template", "+apply template_name_nl_:var var1 Some value_nl_+var var2_nl_Some other value_nl_..._nl_-var_nl_", "-apply"),
+			l.call( "Inline apply", ":apply template_name var1=\"some value\" var2=\"Some other value\"", ""),
+			l.call( "CSS", "+css_newline_", "-css"),
+			l.call( "PRE", "+pre_newline_", "-pre"),
+                        l.call( "Xml", "+xml addCopy=true addDownload=true downloadFile=download.xml_nl__nl_", "-xml"),
+			l.call( "Javascript", "+js_newline_", "-js"),
+			l.call( "Code", "```_newline__newline_", "```"),
+			l.call( "Property", "{{property name=value", "}}"));
 
-        List<String[]> fromType     = (entry == null)
-	    ? null
-	    : entry.getTypeHandler()
-	    .getWikiEditLinks();
-        Appendable     fromTypeBuff = null;
-        if ((fromType != null) && (fromType.size() > 0)) {
-            fromTypeBuff = new StringBuilder();
-            for (String[] pair : fromType) {
-                String js = "javascript:WikiUtil.insertTags(" + HU.squote(textAreaId)
-		    + "," + HU.squote(pair[1]) + ",'');";
-                fromTypeBuff.append(HU.href(js, pair[0]));
-                fromTypeBuff.append("<br>");
-            }
-        }
+        Utils.appendAll(misc1,
+			l.call( "Title", ":title {{name link=true}}", ""),
+			l.call( "Heading", ":heading your heading", ""),
+			l.call( "Heading-1", ":h1 your heading", ""),
+			l.call( "Heading-2", ":h2 your heading", ""),
+			l.call( "Heading-3", ":h3 your heading", ""),	    
+			l.call("Break", "\\n:br", ""),
+			l.call("Paragraph", "\\n:p", ""),
+			l.call("Bold text", "\\'\\'\\'", "\\'\\'\\'"),
+			l.call("Italic text", "\\'\\'", "\\'\\'"),
+			l.call("Code", "```\\n", "\\n```"),
+			l.call("FA icon","{{fa icon=\"fas fa-cog\" style=\"\"}}",""));
+        Utils.appendAll(misc2,
+			l2.call("Internal link", "Link to another entry","[[id|link text", "]]"),
+			l2.call("External link", "Link to an external URL","[http://www.example.com link title", "]"),
+			l2.call("Embed YT, etc.","Embed content from YouTube, Wikipedia, etc",
+				"@(youtube, wikipedia, etc, URL)",""),
+			l.call("Horizontal line", "\\n----\\n", ""),
+			l2.call("Button", "Add a button with a URL",":button url label", ""),
+			l2.call("Draft", "Show a 'Draft' background","+draft\\n", "-draft"),
+			l2.call("Remark", "One line comment","\\n:rem ", ""),
+			l2.call( "Skip", "Skip a section of wiki text",
+				 "+skip_nl__nl_", "-skip"),
+			l2.call("Reload", "Reload the page after some time",
+				"\\n:reload seconds=30 showCheckbox=true showLabel=true", ""),
+			l2.call("After", "Fade in a block of content after some time","+after pause=0 afterFade=5000_newline__newline_", "-after"),
+			l2.call("Odometer", "Show a spinning counter","{{odometer initCount=0 count=100 immediate=true pause=1000}}", ""));
+	
 
-        String        buttonClass = HU.clazz("ramadda-menubar-button");
-        StringBuilder help        = new StringBuilder();
-        StringBuilder etc        = new StringBuilder();	
+        wikiMenuTagsButton = makeButton.apply("Tags",
+					      HU.span(HU.hbox(misc1, misc2,misc3),
+						      HU.attrs("data-title","Tags","class","wiki-menubar-tags")));
 
-	BiFunction<String,String,String> makeButton = (title,contents)->{
-	    return HU.makePopup(null,HU.div(title,HU.cssClass("ramadda-menubar-button")),
-				HU.div(contents, "class='wiki-editor-popup'"),
-				new NamedValue("linkAttributes", buttonClass));
-	};
+
+
 
         String previewButton =
 	    HU.href("#", "Preview",
@@ -7134,6 +7160,7 @@ public class WikiManager extends RepositoryManager
 				"target=_help") + "<br>");
 	};
 
+	/*
         for (String extraHelp :
 		 Utils.split(request.getString("extrahelp", ""), ",",
 			     true, true)) {
@@ -7143,7 +7170,7 @@ public class WikiManager extends RepositoryManager
                                     Utils.encodeUntrustedText(toks.get(1)),
                                     "target=_help") + "<br>");
             }
-        }
+	    }*/
 
         makeHelp.accept("/userguide/wiki/wikitext.html", "Wiki text");
         makeHelp.accept("/userguide/wiki/wikidisplay.html", "Displays and Charts");
@@ -7158,67 +7185,79 @@ public class WikiManager extends RepositoryManager
         makeHelp.accept("/search/info#metadatatypes", "Metadata Types");
         makeHelp.accept("/colortables", "Color Tables");
 
+        wikiMenuEtcButton = makeButton.apply("Etc", etc.toString());
+        wikiMenuHelpButton = makeButton.apply("Help", help.toString());
+        wikiMenuFormattingButton = makeButton.apply("Formatting",
+						    HU.span(HU.hbox(tags1, tags2,tags3,tags4),
+							    HU.attrs("data-title","Formatting","class","wiki-menubar-tags")));
 
 
-        String etcButton = makeButton.apply("Etc", etc.toString());
-        String helpButton = makeButton.apply("Help", help.toString());
-        String formattingButton = makeButton.apply("Formatting",
-						   HU.span(HU.hbox(tags1, tags2,tags3),
-							   HU.attrs("data-title","Formatting","class","wiki-menubar-tags")));
 
-        StringBuilder misc1 = new StringBuilder();
-        StringBuilder misc2 = new StringBuilder();
-        StringBuilder misc3 = new StringBuilder();
-        StringBuilder misc4 = new StringBuilder();			
-        Utils.appendAll(misc4,
-                        l.call( "Callout", "+callout_nl__nl_", "-callout"),
-                        l.call( "Callout info", "+callout-info_nl__nl_", "-callout"),
-                        l.call( "Callout tip", "+callout-tip_nl__nl_", "-callout"),
-                        l.call( "Callout question", "+callout-question_nl__nl_", "-callout"),
-                        l.call( "Callout warning", "+callout-warning_nl__nl_", "-callout"),
-                        l.call( "Text Balloon", "+balloon-left avatar=true #width=400px #style=\"background:#fffeec;\"_nl__nl_", "-balloon"),
-                        l.call( "Skip", "+skip_nl__nl_", "-skip"));
-	Utils.appendAll(misc3,
-			l.call( "Macro", ":macro name value_nl_${name}_nl_", ""),
-			l.call( "Template", "+template template_name_nl_... ${var1} ... ${var2}_nl_", "-template"),
-			l.call( "Apply template", "+apply template_name_nl_:var var1 Some value_nl_+var var2_nl_Some other value_nl_..._nl_-var_nl_", "-apply"),
-			l.call( "Inline apply", ":apply template_name var1=\"some value\" var2=\"Some other value\"", ""),
-			l.call( "CSS", "+css_newline_", "-css"),
-			l.call( "PRE", "+pre_newline_", "-pre"),
-                        l.call( "Xml", "+xml addCopy=true addDownload=true downloadFile=download.xml_nl__nl_", "-xml"),
-			l.call( "Javascript", "+js_newline_", "-js"),
-			l.call( "Code", "```_newline__newline_", "```"),
-			l.call( "Property", "{{property name=value", "}}"));
+    }
 
-        Utils.appendAll(misc1,
-			l.call( "Title", ":title {{name link=true}}", ""),
-			l.call( "Heading", ":heading your heading", ""),
-			l.call( "Heading-1", ":h1 your heading", ""),
-			l.call( "Heading-2", ":h2 your heading", ""),
-			l.call( "Heading-3", ":h3 your heading", ""),	    
-			l.call("Break", "\\n:br", ""),
-			l.call("Paragraph", "\\n:p", ""),
-			l.call("Bold text", "\\'\\'\\'", "\\'\\'\\'"),
-			l.call("Italic text", "\\'\\'", "\\'\\'"),
-			l.call("Code", "```\\n", "\\n```"),
-			l.call("Font awesome icon","{{fa icon=\"fas fa-cog\" style=\"\"}}",""));
-        Utils.appendAll(misc2,
-			l.call("Internal link", "[[id|link text", "]]"),
-			l.call("External link", "[http://www.example.com link title", "]"),
-			l.call("Embed YT, etc.","@(youtube, wikipedia, etc, URL)",""),
-			l.call("Small text", "<small>", "</small>"),
-			l.call("Horizontal line", "\\n----\\n", ""),
-			l.call("Button", ":button url label", ""),
-			l.call("Remark", "\\n:rem ", ""),
-			l.call("Draft", "+draft\\n", "-draft"),
-			l.call("Reload", "\\n:reload seconds=30 showCheckbox=true showLabel=true", ""),
-			l.call("After", "+after pause=0 afterFade=5000_newline__newline_", "-after"),
-			l.call("Odometer", "{{odometer initCount=0 count=100 immediate=true pause=1000}}", ""));
-	
 
-        String textButton = makeButton.apply("Tags",
-					     HU.span(HU.hbox(misc1, misc2,misc3,misc4),
-						     HU.attrs("data-title","Tags","class","wiki-menubar-tags")));
+    /**
+     *
+     * Make the wiki edit bar
+     *
+     * @param request The request
+     * @param entry   the Entry
+     * @param textAreaId  the textAreaId
+     *
+     * @return  the edit bar
+     *
+     * @throws Exception problems
+     */
+    public String makeWikiEditBar(Request request, Entry entry,
+                                  String textAreaId)
+	throws Exception {
+
+        StringBuilder buttons = new StringBuilder();
+        if (request.get("doImports", true)) {
+            getPageHandler().addDisplayImports(request, buttons,true);
+        }
+	if(wikiMenuEtcButton==null) {
+	    initWikiMenuButtons();
+	}
+
+
+        List<Link> links = getRepository().getOutputLinks(request,
+							  new OutputHandler.State(entry));
+        for (Link link : links) {
+            if (link.getOutputType() == null) {
+                continue;
+            }
+
+            String prop = link.getOutputType().getId();
+            String js = "javascript:WikiUtil.insertTags(" + HU.squote(textAreaId)
+		+ "," + HU.squote("{{") + "," + HU.squote("}}") + ","
+		+ HU.squote(prop) + ");";
+        }
+
+        List<String[]> fromType     = (entry == null)
+	    ? null
+	    : entry.getTypeHandler()
+	    .getWikiEditLinks();
+        Appendable     fromTypeBuff = null;
+        if ((fromType != null) && (fromType.size() > 0)) {
+            fromTypeBuff = new StringBuilder();
+            for (String[] pair : fromType) {
+                String js = "javascript:WikiUtil.insertTags(" + HU.squote(textAreaId)
+		    + "," + HU.squote(pair[1]) + ",'');";
+                fromTypeBuff.append(HU.href(js, pair[0]));
+                fromTypeBuff.append("<br>");
+            }
+        }
+
+
+
+        String        buttonClass = HU.clazz("ramadda-menubar-button");
+	BiFunction<String,String,String> makeButton = (title,contents)->{
+	    return HU.makePopup(null,HU.div(title,HU.cssClass("ramadda-menubar-button")),
+				HU.div(contents, "class='wiki-editor-popup'"),
+				new NamedValue("linkAttributes", buttonClass));
+	};
+
 
         String entriesButton = makeButton.apply("Entries",
 						HU.span(makeTagsMenu(entry,textAreaId),
@@ -7249,7 +7288,7 @@ public class WikiManager extends RepositoryManager
                 + HU.attrs("id", textAreaId + "_toolbar"));
 	buttons.append(HU.span(HU.img(getIconUrl("fas fa-binoculars")),HU.attrs("style","margin-left:4px;","title","Search for tags", "class","ramadda-clickable","id", textAreaId + "_toolbar_search")));
         Utils.appendAll(buttons, HU.span("", HU.id(textAreaId + "_prefix")),
-                        formattingButton, textButton, entriesButton);
+                        wikiMenuFormattingButton, wikiMenuTagsButton, entriesButton);
         if (fromTypeBuff != null) {
 	    buttons.append(HU.makePopup(null,entry.getTypeHandler().getLabel() + " tags",
 					HU.div(fromTypeBuff.toString(), "class='wiki-editor-popup'"),
@@ -7264,11 +7303,12 @@ public class WikiManager extends RepositoryManager
 						    textAreaId);
         }
 
-        buttons.append(etcButton);
-        buttons.append(helpButton);
+        buttons.append(wikiMenuEtcButton);
+        buttons.append(wikiMenuHelpButton);
         HU.close(buttons, "div");
-
-        return buttons.toString();
+	String s = buttons.toString();
+	s = s.replace("${textareaid}",textAreaId);
+        return  s;
     }
 
 
@@ -7331,7 +7371,7 @@ public class WikiManager extends RepositoryManager
 		    + ");";
 		String attrs = HU.attrs("class","wiki-editor-popup-link",
 					"style","margin-left:8px;");
-		if(tag.tt!=null) attrs+=HU.attr("title",tag.tt);
+		if(tag.tt!=null) attrs+=HU.attr("title",getMenuTooltip(tag.tt));
                 sb.append(HU.div(HU.href(js2, tag.label),
 				 attrs));
             }
@@ -7344,8 +7384,18 @@ public class WikiManager extends RepositoryManager
     }
 
 
-
-
+    public String getMenuTooltip(String tt) {
+	if(tt.indexOf("img:")>=0)  {
+	    String img = StringUtil.findPattern(tt, "(img:\\s*[^\\s\n]+)");
+	    if(img!=null) {
+		String url = img.replace("img:","");
+		url = getRepository().getHtdocsUrl("/help/wiki/" + url);
+		tt = tt.replace(img,HU.img(url,"",HU.attr("width","300px")));
+	    }
+	}
+	tt = tt.replace("\n","<br>");
+	return tt;
+    }
 
     /**
      * Add a wiki edit button
@@ -7367,6 +7417,7 @@ public class WikiManager extends RepositoryManager
         String js;
 	String linkAttrs = "";
 	if(stringDefined(tt)) {
+	    tt = getMenuTooltip(tt);
 	    linkAttrs+=HU.attr("title",tt);
 	}
 
