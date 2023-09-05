@@ -908,11 +908,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    dialog = HU.makeDialog({content:html,anchor:$(document),my:"center top",at:"center top+100"});    
 	}
 
-	
+	name = Utils.makeLabel(name.replace(/.[^\.]*$/,''));
 	if(file.name)
-	    name = prompt('Dropped file: ' + fileName +"\nNew entry name:");
+	    name = prompt('Dropped file: ' + fileName +"\nNew entry name:",name);
 	else
-	    name = prompt('Copied file: ' + suffix +"\nNew entry name:");	    
+	    name = prompt('Copied file: ' + suffix +"\nNew entry name:",name);	    
 	if(!name) return;
 	finish();
 
