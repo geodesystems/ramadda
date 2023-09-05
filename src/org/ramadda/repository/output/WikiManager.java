@@ -7068,25 +7068,28 @@ public class WikiManager extends RepositoryManager
 			l.call( "Template", "+template template_name_nl_... ${var1} ... ${var2}_nl_", "-template"),
 			l.call( "Apply template", "+apply template_name_nl_:var var1 Some value_nl_+var var2_nl_Some other value_nl_..._nl_-var_nl_", "-apply"),
 			l.call( "Inline apply", ":apply template_name var1=\"some value\" var2=\"Some other value\"", ""),
+			l2.call( "Javascript", "Include Javascript","+js_newline_", "-js"),
 			l.call( "CSS", "+css_newline_", "-css"),
 			l.call( "PRE", "+pre_newline_", "-pre"),
-                        l.call( "Xml", "+xml addCopy=true addDownload=true downloadFile=download.xml_nl__nl_", "-xml"),
-			l.call( "Javascript", "+js_newline_", "-js"),
+                        l2.call( "Xml", "Include XML","+xml addCopy=true addDownload=true downloadFile=download.xml_nl__nl_", "-xml"),
 			l.call( "Code", "```_newline__newline_", "```"),
-			l.call( "Property", "{{property name=value", "}}"));
+			l2.call( "Property", "Name value properties",
+				 "{{property name=value", "}}"));
 
         Utils.appendAll(misc1,
 			l.call( "Title", ":title {{name link=true}}", ""),
-			l.call( "Heading", ":heading your heading", ""),
+			l2.call( "Heading", "A heading. Is added to any :navtop's",
+				 ":heading your heading", ""),
 			l.call( "Heading-1", ":h1 your heading", ""),
 			l.call( "Heading-2", ":h2 your heading", ""),
 			l.call( "Heading-3", ":h3 your heading", ""),	    
 			l.call("Break", "\\n:br", ""),
 			l.call("Paragraph", "\\n:p", ""),
+			l2.call("Vertical space", "Add vertical space","\\n:vspace 1em", ""),
 			l.call("Bold text", "\\'\\'\\'", "\\'\\'\\'"),
 			l.call("Italic text", "\\'\\'", "\\'\\'"),
 			l.call("Code", "```\\n", "\\n```"),
-			l.call("FA icon","{{fa icon=\"fas fa-cog\" style=\"\"}}",""));
+			l2.call("FA icon","Font Awesome icon","{{fa icon=\"fas fa-cog\" style=\"\"}}",""));
         Utils.appendAll(misc2,
 			l2.call("Internal link", "Link to another entry","[[id|link text", "]]"),
 			l2.call("External link", "Link to an external URL","[http://www.example.com link title", "]"),
