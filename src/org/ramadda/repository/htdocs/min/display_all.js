@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Sep  4 23:25:15 EDT 2023";
+var build_date="RAMADDA build date: Tue Sep  5 00:32:49 EDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -24373,21 +24373,21 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	    
 	    let space = SPACE;
 	    let buttons = "";
-	    if(this.getShowCsvButton(true))
+	    if(this.getShowCsvButton(true)) {
 		buttons+=HU.div([ID,this.getDomId(ID_DOWNLOAD_CSV)],"CSV") +space;
+	    }
 	    if(this.getShowJsonButton(true))
 		buttons+=HU.div([ID,this.getDomId(ID_DOWNLOAD_JSON)],"JSON") +space;
 	    if(this.getShowCopyButton(true))
 		buttons+=  HU.div([ID,this.getDomId(ID_DOWNLOAD_COPY)],"Copy") +space;
 	    buttons+=  HU.div([ID,this.getDomId(ID_CANCEL)],"Cancel");
 	    let html = HU.center("#" +records.length +" records");
-	    html+=HU.center(HU.span(['style','font-size:80%;'], 'Note: this downloads the data currently<br>being shown in the browser'));
-	    HU.center(buttons);
-
+	    html+=HU.center(HU.span([ATTR_STYLE,'font-size:80%;'], 'Note: this downloads the data currently<br>being shown in the browser'));
+	    html+=HU.center(buttons);
 	    if(this.getShowDateSelect()) {
 		html+=HU.formTable();
 		html+=HU.formEntry('From date:',
-				   HU.tag("input",['id',this.domId(ID_FROMDATE),'placeholder','yyyy-MM-dd','size','10','value',this.selectFromDate??'']));
+				   HU.tag("input",[ATTR_ID,this.domId(ID_FROMDATE),'placeholder','yyyy-MM-dd','size','10','value',this.selectFromDate??'']));
 		html+=HU.formEntry('To date:',
 				   HU.tag("input",['id',this.domId(ID_TODATE),'placeholder','yyyy-MM-dd','size','10','value',this.selectToDate??'']));
 		html+=HU.formTableClose();
