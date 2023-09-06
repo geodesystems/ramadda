@@ -1735,6 +1735,12 @@ public class HtmlOutputHandler extends OutputHandler {
         boolean showCategories = request.get(ARG_SHOWCATEGORIES,
                                              Utils.getProperty(props,
                                                  ARG_SHOWCATEGORIES, true));
+        boolean showAllTypes = request.get("showAllTypes",
+                                             Utils.getProperty(props,
+                                                 "showAllTypes", false));
+
+	if(showAllTypes) showCategories = true;
+
         Hashtable<String, List<Entry>> map = new Hashtable<String,
                                                  List<Entry>>();
         List<String> displayColumns = null;
@@ -1753,7 +1759,6 @@ public class HtmlOutputHandler extends OutputHandler {
         boolean showFromDate = Utils.getProperty(props, "showFromDate", false);
         boolean showToDate = Utils.getProperty(props, "showToDate", false);		
         boolean showEntryDetails = Utils.getProperty(props, "showEntryDetails",  true);	
-
         List<String> types = new ArrayList<String>();
         for (Entry entry : allEntries) {
             TypeHandler  typeHandler = entry.getTypeHandler();
@@ -1776,11 +1781,12 @@ public class HtmlOutputHandler extends OutputHandler {
                 }
             }
 
+
             if ( !showCategories) {
                 type = "entries";
             }
 
-
+	    if(showAllTypes) type  =entry.getTypeHandler().getType();
             List<Entry> entries = map.get(type);
             if (entries == null) {
                 entries = new ArrayList<Entry>();
