@@ -4834,6 +4834,8 @@ public class WikiManager extends RepositoryManager
 	}
 
 	for(String prop: new String[]{"maxHeight","details","simple","showHeader","showDate","showCreateDate","showSize",
+				      "columns",
+				      "showAttachments",
 				      "showType","showIcon","showThumbnails","showArrow","showForm","showCrumbs","dateWidth","sizeWidth","nameWidth","typeWidth","createDateWidth","fromDateWidth"}) {
 	    String v =getProperty(wikiUtil, props, prop, (String)null);
 	    if(v!=null) {
