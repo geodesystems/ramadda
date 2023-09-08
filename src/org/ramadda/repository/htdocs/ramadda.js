@@ -246,12 +246,14 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let dflt = !simple;
 	let props =  {
 	    actions:[],
+	    showName:true,
 	    showCrumbs:false,
 	    showHeader:dflt,
 	    showDate:dflt,
 	    showCreateDate:dflt,	    
 	    showSize:dflt,
 	    showType:dflt,
+	    showAttachments:false,
 	    showIcon:dflt,
 	    showThumbnails:dflt,
 	    showArrow:dflt,	    
@@ -265,15 +267,21 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	});
 	let html = "";
 	let cols = [];
-	cols.push({id:"name",label:"Name",width:props.nameWidth});
-	if(props.showDate)
-	    cols.push({id:"fromdate",label:"Date",width:props.fromDateWidth??120});		    
-	if(props.showCreateDate)
-	    cols.push({id:"createdate",label:"Create Date",width:props.createDateWidth??120});
-	if(props.showSize)
-	    cols.push({id:"size",label:"Size",width:props.sizeWidth??100});
-	if(props.showType)
-	    cols.push({id:"type",label:"Type",align:'left',paddingLeft:'10px',width:props.typeWidth??120});		    			
+	let colList = Utils.split(props.columns??'name,date,createdate,size,type,attachments',',',true,true);
+	colList.forEach(c=>{
+	    if(c=='name' && props.showName)
+		cols.push({id:"name",label:"Name",width:props.nameWidth});
+	    else if(c=='date' && props.showDate)
+		cols.push({id:"fromdate",label:"Date",width:props.fromDateWidth??props.dateWidth??120});		    
+	    else if(c=='createdate' && props.showCreateDate)
+		cols.push({id:c,label:"Create Date",width:props.createDateWidth??props.dateWidth??120});
+	    else if(c=='size' && props.showSize)
+		cols.push({id:c,label:"Size",width:props.sizeWidth??100});
+	    else if(c=='type' && props.showType)
+		cols.push({id:c,label:"Type",align:'left',paddingLeft:'10px',width:props.typeWidth??120});
+	    else if(c=='attachments' && props.showAttachments)
+		cols.push({id:c,label:"Attachments",align:'left',paddingLeft:'10px',width:props.attachmentsWidth??240});
+	});
 	if(props.showHeader) {
 	    html+="<table cellspacing=0 cellpadding=0 width=100% class=entry-list-header><tr>";
 	    let hdrAttrs = ["class","entry-list-header-column ramadda-clickable"];
@@ -415,7 +423,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let space = "";
 	let rowClass  = props.simple?'entry-list-simple-row':'entry-list-row entry-list-row-data';
 
-	entries.forEach(entry=>{
+	entries.forEach((entry,entryIdx)=>{
 	    let rowId = Utils.getUniqueId("row_");
 	    let row =  HU.open('div',['entryid',entry.getId(),'id',rowId]);
 	    row +=  HU.open('div',['entryid',entry.getId(),'id',rowId,'class',rowClass]);
@@ -460,7 +468,37 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 			title = 'Right-click to see entry menu. Shift-drag to copy/move';
 		    v =  HU.table([],HU.tr(['valign','top'],HU.tds([],tds)));
 		} else {
-		    if(col.id=="type") {
+		    if(col.id=="attachments") {
+			v='';
+			entry.getMetadata().forEach(m=>{
+			    if(m.type=='content.thumbnail' || m.type=='content.attachment') {
+				let imgUrl;
+				let f = m.value.attr1;
+				let name = f.replace(/.*_file_/,'');
+				let mUrl = HU.url(RamaddaUtil.getBaseUrl()+'/metadata/view/' + f,
+						  ['element','1','entryid',entry.getId(),'metadata_id', m.id]);
+			
+				if(m.type=='content.thumbnail' || Utils.isImage(f)) {
+				    imgUrl = mUrl;
+				    name+='<br>'+HU.image(imgUrl,['width','300px']).replace(/"/g,"'");
+				} else {
+				    f = f.toLowerCase();
+				    let icon  = null;
+				    if(f.endsWith('pdf')) icon='/icons/pdf.png';
+				    else if(f.endsWith('txt')) icon='/icons/txt.png';
+				    else  icon='/icons/file.png';				    				    
+				    if(icon)
+					imgUrl = RamaddaUtil.getBaseUrl()+icon;
+				}
+				if(imgUrl) {
+				    v+=HU.href(mUrl,HU.image(imgUrl,['class','ramadda-attachment ramadda-clickable','title',name,'width','75px','style',HU.css('margin','2px')]));
+				}
+			    }
+			});
+			if(v!='') v  =HU.div(['style',HU.css('max-width',
+							     HU.getDimension(col.width),'overflow-x','auto')], v);
+
+		    } else  if(col.id=="type") {
 			v = HU.href(RamaddaUtil.getUrl("/search/type/" + entry.getType().id),v,["title","Search for entries of type " + v]);
 		    }
 		    let maxWidth = col.width-20;
@@ -487,8 +525,9 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	});
 	html+=HU.close('div');
 
-	$('#'+id).html(html);
-	$('#'+id).find('.ramadda-breadcrumb-toggle').click(function() {
+	let container = $('#'+id);
+	container.html(html);
+	container.find('.ramadda-breadcrumb-toggle').click(function() {
 	    let id = $(this).attr('breadcrumbid');
 	    let crumbs = $('#'+ id);
 	    if(crumbs.css('display')=='none') {
@@ -500,7 +539,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    }
 	});
 
-	$('#'+ id).find('.entry-arrow').click(function() {
+	container.find('.entry-arrow').click(function() {
 	    let entryId = $(this).attr('entryid');
 	    let innerId = $(this).attr('innerid');	    
 	    let inner = $("#"+innerId);
@@ -568,7 +607,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	});
 
 	if(props.simple) return;
-	$('#'+ id).find('.entry-form-select').click(function(event) {
+	container.find('.entry-form-select').click(function(event) {
             let on  = $(this).is(':checked');
 	    let row = $('#' + $(this).attr('rowid'));
 	    HU.checkboxClicked(event,'entry_',$(this).attr('id'));
@@ -580,12 +619,16 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    });
 	});
 
-	$('#'+ id).find('.ramadda-thumbnail-image').click(function() {
+	container.find('.ramadda-thumbnail-image').click(function() {
 	    let src = $(this).attr('src');	
 	    HU.makeDialog({content:HU.image(src),my:'left top',at:'left bottom',anchor:this,header:true,draggable:true});
 	});
 
-	let rows = $('#'+id).find('.entry-list-row');
+	container.find('.ramadda-attachment').tooltip({
+	    show: { effect: 'slideDown', delay: 500, duration: 1000 },
+	    content: function () {return $(this).prop('title');}});
+
+	let rows = container.find('.entry-list-row');
 	rows.bind ('contextmenu', function(event) {
 	    let entryRow = $(this);
 	    let entry = entryMap[$(this).attr('entryid')];

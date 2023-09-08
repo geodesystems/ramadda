@@ -295,14 +295,14 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
 	e.preventDefault();
 	this.handlePopupMenu(e);
     });
-    this.editor.container.addEventListener("mousedown", (e) =>{
-    });
     this.editor.container.addEventListener("mouseup", (e) =>{
 	this.handleMouseUp(e);
     });
-    this.editor.container.addEventListener("dblclick", (e) =>{
-	this.handleMouseUp(e,null, true);
-    });    
+    //For now don't do this
+//    this.editor.container.addEventListener("mousedown", (e) =>{});
+//    this.editor.container.addEventListener("dblclick", (e) =>{
+//	this.handleMouseUp(e,null, true);
+//    });    
     this.editor.container.addEventListener("mouseleave", (e) => {
 	this.handleMouseLeave(e);
     });
@@ -1919,16 +1919,24 @@ WikiEditor.prototype = {
 	let treeAttrs = Utils.mergeLists([
 	    {label:'Table Tree'},
 	    {p:"simple",ex:true},
+	    {p:'columns',ex:'name,date,createdate,size,type,attachments'},
 	    {p:"showHeader",ex:false},
 	    {p:"showDate",ex:false},
 	    {p:"showCreateDate",ex:false},
 	    {p:"showSize",ex:false},
 	    {p:"showType",ex:false},
+	    {p:'showAttachments',ex:'true'},				
 	    {p:"showIcon",ex:false},
 	    {p:"showThumbnails",ex:false},
 	    {p:"showArrow",ex:false},
 	    {p:"showForm",ex:false},
 	    {p:"showCrumbs",ex:true},
+	    {p:'nameWidth',ex:'120'},
+	    {p:'dateWidth',ex:'120'},		
+	    {p:'sizeWidth',ex:'120'},
+	    {p:'typeWidth',ex:'120'},
+	    {p:'attachmentsWidth',ex:'120'},
+
 	    {p:'message',ex:''},
 	    {p:'treePrefix',ex:''},
 	    {p:'addPageSearch',d:true,tt:'Add the page search form'},
@@ -1946,7 +1954,7 @@ WikiEditor.prototype = {
 		{p:'info',ex:'List children entries'},
 		{p:'showIcon',ex:'false'},
 		{p:'showDescription',ex:'true'},
-		{p:'showSnippet',ex:'true'},		
+		{p:'showSnippet',ex:'true'},
 		{p:'linkresource',ex:'true',tt:'Link to the resource'},
 		{p:'linksBefore',ex:'url1;label1,url2;label2'},
 		{p:'linksAfter',ex:'url1;label1,url2;label2'},		
@@ -2179,6 +2187,7 @@ WikiEditor.prototype = {
 		{p:'showEntryDetails',ex:'false'},
 		{p:'columns',ex:'name,file,createdate,changedate,fromdate,todate,#entryField1,#entryField2'},
 		{p:'tableOrdering',ex:'true'},
+		{p:'showAllTypes',ex:'true'},
 		{p:'showCategories',ex:'true'},
 		{p:'showDate',ex:'true'},
 		{p:'showCreateDate',ex:'true'},
