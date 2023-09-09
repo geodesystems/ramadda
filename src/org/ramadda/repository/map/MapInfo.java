@@ -1182,18 +1182,16 @@ public class MapInfo {
                           String icon, String markerName, String info,
                           String parentId) {
 
-        getJS().append(mapVarName + ".addMarker(" + HU.squote(id) + ","
-                       + llp(lat, lon) + "," + ((icon == null)
-                ? "null"
-                : HU.squote(icon)) + ","
-                                   + HU.squote(markerName.replaceAll("'",
-                                       "\\\\'")) + "," + HU.squote(info)
-                                           + "," + ((parentId == null)
-                ? "null"
-                : HU.squote(parentId)) + ",null,null,null,null,"
-                                       + ((polygon != null)
-                                          ? HU.squote(polygon)
-                                          : "null") + ");\n");
+        getJS().append(HU.call(mapVarName + ".addMarker",
+			       HU.squote(id),
+			       llp(lat, lon),
+			       icon == null? "null": HU.squote(icon),
+			       HU.squote(markerName.replaceAll("'", "\\\\'")),
+			       HU.squote(info),
+			       parentId == null ? "null": HU.squote(parentId),
+			       "null","null","null","null",
+			       polygon != null ? HU.squote(polygon) : "null"
+			       )+";\n");
     }
 
 
@@ -1345,9 +1343,10 @@ public class MapInfo {
                            "" + radius, "strokeWidth", "" + strokeWidth,
                            "fillColor", JsonUtil.quote(fillColor),
                            "strokeColor", JsonUtil.quote(strokeColor)));
-        getJS().append(mapVarName + ".addPoint("
-                       + HU.comma(HU.squote(id), llp(lat, lon), attrs,
-                                  HU.squote(info)) + ");\n");
+        getJS().append(HU.call(mapVarName + ".addPoint",
+			       HU.squote(id),
+			       llp(lat, lon), attrs,
+			       HU.squote(info))+";\n");
     }
 
 
