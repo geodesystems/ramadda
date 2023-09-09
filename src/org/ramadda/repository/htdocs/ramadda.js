@@ -480,7 +480,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 			
 				if(m.type=='content.thumbnail' || Utils.isImage(f)) {
 				    imgUrl = mUrl;
-				    name+='<br>'+HU.image(imgUrl,['width','300px']).replace(/"/g,"'");
+				    name+='<br>'+HU.image(imgUrl,['width','290px']).replace(/"/g,"'");
 				} else {
 				    f = f.toLowerCase();
 				    let icon  = null;
