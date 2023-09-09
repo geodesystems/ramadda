@@ -1,10 +1,4 @@
 @charset "UTF-8";
-
-/*
-@import url('https://fonts.googleapis.com/css2?family=Nunito&display=swap');
-*/
-
-
 :root {
     --font-size:12pt;
     --font-family:    "Helvetica Neue", Arial, Helvetica, sans-serif;    
@@ -15,7 +9,6 @@
     --hover-color:var(--highlight-color);
     --highlight-border:1px #aaa solid;
     --highlight-background: #f4f4f4;
-    /*--highlight-background: #C7DEF7;*/
     --header-background:  #eaeaea;
     --href-decoration:none;   
     --href-color: var(--highlight-color);
@@ -653,7 +646,13 @@ a.ramadda-entry-nav-page {
     margin-left:40px;
     margin-right:40px;
     vertical-align:center;
-    /* shadow popup */ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
+    /* shadow popup */ 
+    background-color : #FFF;
+    border:1px solid #ccc;
+    border-radius: 4px;
+    z-index:1000;
+    box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px;
+    -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
 }
 
 .ramadda-entry-nav-page-decorated a {
@@ -1585,7 +1584,6 @@ mapheader {
 }
 
 .ramadda-message-error {
-    /*background-color:#FFF3F7;*/
 }
 
 
@@ -1599,7 +1597,6 @@ mapheader {
 }
 
 .ramadda-confirm {
-//    margin:10px;
     margin-left:20px;
 }
 
@@ -1618,7 +1615,6 @@ mapheader {
 
 
 /** begin colors */
-
 .ramadda-background-dimgray , .ramadda-block-dimgray , .ramadda-heading-dimgray , .ramadda-box-dimgray , .ramadda-note-dimgray , .ramadda-blurb-dimgray  , .ramadda-section-dimgray  {
     background-color: #696d7d;
     border: 1px #fff solid;
@@ -1927,8 +1923,6 @@ mapheader {
 
 
 /* superfish menu styling */
-
-
 .sf-menu   {
     font-size: var(--font-size);
     margin:0px;
@@ -2081,7 +2075,13 @@ thin_hr,.ramadda-thin-hr {
 }
 
 .ui-selectmenu-menu {
-    /* shadow popup */ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
+    /* shadow popup */
+    background-color : #FFF;
+    border:1px solid #ccc;
+    border-radius: 4px;
+    z-index:1000;
+    box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px;
+    -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
 }
 
 .ui-selectmenu-menu {
@@ -2090,12 +2090,14 @@ thin_hr,.ramadda-thin-hr {
 }
 
 .ui-tooltip {
-    border:1px solid #999 !important;    
+    border:1px solid #ccc !important;    
     margin:0px;
     padding:4px;
     padding-top:0px;
     padding-bottom:0px;        
     box-shadow: 0px 0px 0px  rgba(0, 0, 0, 0);
+    box-shadow: 5px 5px 5px rgba(180, 180,180, 0.5);
+    font-size:100%;
 }
 
 .ramadda-tooltip-icon:hover { 
@@ -2162,7 +2164,6 @@ thin_hr,.ramadda-thin-hr {
 }
 
 .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default   {
-    /*background: transparent;*/
     -webkit-touch-callout: none; 
     -webkit-user-select: none; 
     -khtml-user-select: none; 
@@ -2857,7 +2858,7 @@ td.entry-table-block {
   transform-style: preserve-3d;
 }
 
-/* Do an horizontal flip when you move the mouse over the flip box container */
+/* Do a horizontal flip when you move the mouse over the flip box container */
 .ramadda-flip-card:hover .ramadda-flip-card-inner {
   transform: rotateY(180deg);
 }
@@ -3239,21 +3240,20 @@ a.btn-primary:link, a.btn-primary  {
 .ramadda-popup-close {
     padding-left:0px;
     position:absolute;
-    /**nudge it up a bit */
     top:-2px;
     left:0px;
 }
 
 
 .ramadda-modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
+  display: none; 
+  position: fixed; 
   z-index:var(--modal-z-index);
   left: 0;
   top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  width: 100%; 
+  height: 100%; 
+  background-color: rgba(0,0,0,0.4); 
 }
 
 .ramadda-modal-contents {
@@ -3346,7 +3346,12 @@ a.btn-primary:link, a.btn-primary  {
 
 .ramadda-popup-box {
     padding:1px;
-    /* shadow popup */ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
+    background-color : #FFF;
+    border:1px solid #ccc;
+    border-radius: 4px;
+    z-index:1000;
+    box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px;
+    -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
 }
 
 .ramadda-menu-item {
@@ -3614,7 +3619,7 @@ label {
 }
 
 .ramadda-header a:hover  {
-    /* nav-hover */ text-decoration:none; color:var(--highlight-color);    cursor:pointer;
+    text-decoration:none; color:var(--highlight-color);    cursor:pointer;
 }
 
 .ramadda-header-layoutbar {
@@ -4120,7 +4125,7 @@ a.ramadda-menuitem-link {
 
 
 a.ramadda-menuitem-link:hover {
-/* nav-hover */ text-decoration:none; color:var(--highlight-color);    cursor:pointer;
+    text-decoration:none; color:var(--highlight-color);    cursor:pointer;
 }
 
 
@@ -4338,7 +4343,7 @@ snippet-hide {
 }
 
 .subnav a:hover  {
-    /* nav-hover */ text-decoration:none; color:var(--highlight-color);    cursor:pointer;
+    text-decoration:none; color:var(--highlight-color);    cursor:pointer;
 }
 
 .subnavoncomp  {
@@ -4381,7 +4386,7 @@ snippet-hide {
 }
 
 .subnavoffcomp a:hover {
-    /* nav-hover */ text-decoration:none; color:var(--highlight-color);    cursor:pointer;
+    text-decoration:none; color:var(--highlight-color);    cursor:pointer;
 }
 
 .cimg {
@@ -5268,7 +5273,6 @@ a.wiki-link-noexist {
 
 
 /* JQuery overrides */
-/*jeffmc: added these*/
 .ramadda-accordion .ui-accordion-header, .ramadda-accordion .ui-state-default, .ramadda-accordion .ui-state-active {
     border: 0px #fff solid;
     background: none;
@@ -5548,17 +5552,6 @@ a.wiki-link-noexist {
     padding-left: 0.2em;
 }
 
-/* override jquery padding */
-/*
-.ui-menu .ui-icon {
-    position: relative;
-    left: 0
-}
-*/
-
-
-
-
 .wiki-editor {
     position:relative;
 }
@@ -5802,8 +5795,7 @@ a.wiki-link-noexist {
 }
 
 /** Calendar styles **/
- 
-.calnavtable {
+ .calnavtable {
     border-width: 0px;
 }
 
