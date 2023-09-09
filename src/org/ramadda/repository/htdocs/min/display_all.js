@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Sep  5 00:32:49 EDT 2023";
+var build_date="RAMADDA build date: Sat Sep  9 08:21:18 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -49228,9 +49228,11 @@ MapGlyph.prototype = {
 	}
 	if(bounds) {
 	    this.display.getMap().zoomToExtent(bounds);
+	    if(bounds.getWidth()==0) andZoomIn = true;
 	}
 	if(andZoomIn) {
-	    this.display.getMap().setZoom(16);
+	    //The -1 is a flag to use the singlePointZoom
+	    this.display.getMap().setZoom(-1);
 	}
     },
     getBounds: function() {
