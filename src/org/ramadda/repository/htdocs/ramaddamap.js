@@ -1702,7 +1702,7 @@ RepositoryMap.prototype = {
 
 
     applyHighlightStyle:function(opts) {
-	['highlightStrokeColor','highlightStrokeWidth',
+	['pointRadius','highlightStrokeColor','highlightStrokeWidth',
 	 'highlightFillColor', 'highlightFillOpacity'].forEach(a=>{
 	     if(Utils.isDefined(opts[a])) {
 		 let  v= opts[a];
@@ -1927,8 +1927,16 @@ RepositoryMap.prototype = {
 	    strokeOpacity: this.params.selectStrokeOpacity ?? 0.75,
 	    fillColor:this.params.selectFillColor ??highlightStyle.fillColor,
 	    fillOpacity: this.params.selectFillOpacity ??highlightStyle.fillOpacity,
+	    pointRadius: this.params.selectPointRadius ??highlightStyle.pointRadius??fs.pointRadius,	    
 	    fill: true,
 	});
+
+//	console.log(fs.pointRadius,this.params.selectPointRadius,highlightStyle.pointRadius);	 
+
+	if(this.params.changeSizeOnSelect && Utils.isDefined(style.pointRadius)) {
+	    style.pointRadius = Math.round(style.pointRadius*1.5);
+	}
+
 
 	if(style.fillColor!="transparent") {
 	    style.fillColor  = this.params.selectFillColor || highlightStyle.fillColor;
@@ -1938,11 +1946,8 @@ RepositoryMap.prototype = {
 	    style.fillColor = style.strokeColor;
 	}
 
-	if(this.params.changeSizeOnSelect && Utils.isDefined(style.pointRadius)) {
-	    style.pointRadius = Math.round(style.pointRadius*1.5);
-	}
-
 	this.checkMatchStyle(fs,style);
+
 
 	//If it is a graphic then just clone the style
 	if(feature.style &&  feature.style.externalGraphic) {
@@ -1960,7 +1965,6 @@ RepositoryMap.prototype = {
 		}
 	    }
 	}
-
 
 	layer.drawFeature(layer.selectedFeature, style);
         if (layer.selectCallback) {
@@ -4978,34 +4982,6 @@ RepositoryMap.prototype = {
     getDoPopup:function(doPopup) {
 	return this.params.doPopup;
     },
-    
-    addSelectionMarker:function(lonlat,dontPropagate) {
-	if(this.selectorMarker)
-	    this.removeMarker(this.selectorMarker);
-	this.selectorMarker = this.addMarker(MapUtils.POSITIONMARKERID, lonlat, this.params.markerIcon??"", "", "", 40, 20);
-	if(this.getProperty('addMarkerOnClick')) {
-	    if(!dontPropagate)
-		ramaddaMapShareState(this,{marker:lonlat});
-	}
-    },
-
-
-    addMarker:  function(id, location, iconUrl, markerName, text, parentId, size, yoffset, canSelect, attrs,polygon, justCreate) {
-        let marker = this.createMarker(id, location, iconUrl, markerName, text, parentId, size, 0, yoffset, canSelect,attrs);
-	marker.lonlat = location;
-	if(!justCreate) {
-            this.addMarkers([marker]);
-	}
-	if(polygon) {
-	    this.addPolygonString(polygon,{
-		fill: true,
-		fillColor: "#0000ff",
-		fillOpacity: 0.05,
-		strokeWidth:1,
-		strokeColor:"blue"},true,text);
-	}
-        return marker;
-    },
 
     createPolygonString:function(s,polygonProps,latlon,text) {
 	return this.createPolygonFromString(s,polygonProps,latlon,text);
@@ -5357,6 +5333,36 @@ RepositoryMap.prototype = {
 		     ];
         return this.addPolygon(id, name, points, attrs, info,justCreate);
     },
+
+    
+    addSelectionMarker:function(lonlat,dontPropagate) {
+	if(this.selectorMarker)
+	    this.removeMarker(this.selectorMarker);
+	this.selectorMarker = this.addMarker(MapUtils.POSITIONMARKERID, lonlat, this.params.markerIcon??"", "", "", 40, 20);
+	if(this.getProperty('addMarkerOnClick')) {
+	    if(!dontPropagate)
+		ramaddaMapShareState(this,{marker:lonlat});
+	}
+    },
+
+
+    addMarker:  function(id, location, iconUrl, markerName, text, parentId, size, yoffset, canSelect, attrs,polygon, justCreate) {
+        let marker = this.createMarker(id, location, iconUrl, markerName, text, parentId, size, 0, yoffset, canSelect,attrs);
+	marker.lonlat = location;
+	if(!justCreate) {
+            this.addMarkers([marker]);
+	}
+	if(polygon) {
+	    this.addPolygonString(polygon,{
+		fill: true,
+		fillColor: "#0000ff",
+		fillOpacity: 0.05,
+		strokeWidth:1,
+		strokeColor:"blue"},true,text);
+	}
+        return marker;
+    },
+
 
     addLines:  function(id, name, attrs, values, info,andZoom) {
 	attrs = attrs || {};
