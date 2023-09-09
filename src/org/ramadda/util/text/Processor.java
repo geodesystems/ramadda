@@ -2498,7 +2498,8 @@ public abstract class Processor extends SeesvOperator {
 
             for (String prop : new String[] {
                 "defaultView", "defaultOrder", "icon", "showEntryCreate",
-                "showFeedView", "showDateView", "showChartView"
+                "showFeedView", "showDateView", "showChartView",
+		"mapDotLimit","mapPolygonLimit"
             }) {
                 String v = getDbProp("table", prop, (String) null);
                 if (v != null) {
