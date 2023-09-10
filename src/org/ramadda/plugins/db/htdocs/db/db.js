@@ -76,6 +76,7 @@ var DB =  {
 	    });
 	    widget.value = newValue;
 	}
+	alert('Value has been set in search form');
 	return false;
     },
 
