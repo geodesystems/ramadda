@@ -612,8 +612,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 insertStmt.execute();
             }
         } finally {
-            getRepository().getDatabaseManager().closeAndReleaseConnection(
-                insertStmt);
+            getRepository().getDatabaseManager().closeAndReleaseConnection(insertStmt);
             dbChanged(entry);
         }
     }
@@ -673,10 +672,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 insertStmt.execute();
             }
         } finally {
-            getRepository().getDatabaseManager().closeAndReleaseConnection(
-                stmt);
-            getRepository().getDatabaseManager().closeAndReleaseConnection(
-                insertStmt);
+            getRepository().getDatabaseManager().closeAndReleaseConnection(stmt);
+            getRepository().getDatabaseManager().closeAndReleaseConnection(insertStmt);
             dbChanged(newEntry);
         }
     }
@@ -2759,7 +2756,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         } finally {
             getRepository().getDatabaseManager().closeAndReleaseConnection(
                 statement);
-            dbChanged(entry);
+            entryChanged(request, entry);
         }
     }
 
@@ -2793,11 +2790,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             } finally {
                 getRepository().getDatabaseManager()
                     .closeAndReleaseConnection(statement);
-                dbChanged(entry);
             }
         } else {
             deleteEntireDatabase(request, entry);
         }
+	entryChanged(request, entry);
 
         String url =
             HU.url(request.makeUrl(getRepository().URL_ENTRY_SHOW),
@@ -2815,9 +2812,16 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      *
      * @param entry _more_
      */
-    public void dbChanged(Entry entry) {
+    public void dbChanged(Entry entry) throws Exception {
         getStorageManager().clearCacheGroup(entry.getId());
     }
+
+    private void entryChanged(Request request, Entry entry) throws Exception {
+	dbChanged(entry);
+	entry.setChangeDate(new Date().getTime());
+	getEntryManager().updateEntry(request, entry);
+    }
+
 
 
     /**
@@ -3120,8 +3124,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         if ( !entry.hasAreaDefined() && !Double.isNaN(bounds.getNorth())) {
             entry.setBounds(bounds);
-            getEntryManager().updateEntry(request, entry);
         }
+	entryChanged(request, entry);
+
         //Remove these so any links that get made with the request don't point to the BULK upload
         request.remove(ARG_DB_NEWFORM);
         request.remove(ARG_DB_BULK_TEXT);
