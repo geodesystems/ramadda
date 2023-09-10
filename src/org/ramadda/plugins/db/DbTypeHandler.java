@@ -192,6 +192,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     /** _more_ */
     private String searchForLabel = "Search For";
 
+    private String htmlHeader = null;
+
     /** _more_ */
     private List<DbTemplate> templates = new ArrayList<DbTemplate>();
 
@@ -230,6 +232,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         String wikiTemplate  = XmlUtil.getGrandChildText(tableNode, "wiki",(String) null);
 	if(wikiTemplate!=null) setWikiTemplate(wikiTemplate);
 
+        htmlHeader  = XmlUtil.getGrandChildText(tableNode, "header",(String) null);
         searchForLabel = XmlUtil.getAttribute(tableNode, "searchForLabel",
                 XmlUtil.getGrandChildText(tableNode, "searchForLabel",
                                           searchForLabel));
@@ -1044,6 +1047,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             getPageHandler().entrySectionOpen(request, entry, sb, "", true);
         }
 
+
+
+
+        if (Utils.stringDefined(htmlHeader)) {
+	    sb.append(getWikiManager().wikifyEntry(request, entry,htmlHeader));
+        }
 
         if (Utils.stringDefined(entry.getDescription())) {
 	    //only include the description if it is just regular text and not the wiki text override
