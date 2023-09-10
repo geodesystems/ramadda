@@ -250,7 +250,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    showCrumbs:false,
 	    showHeader:dflt,
 	    showDate:dflt,
-	    showCreateDate:dflt,	    
+	    showCreateDate:dflt,
+	    showChangeDate:false,	    	    
 	    showSize:dflt,
 	    showType:dflt,
 	    showAttachments:false,
@@ -275,6 +276,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		cols.push({id:"fromdate",label:"Date",width:props.fromDateWidth??props.dateWidth??120});		    
 	    else if(c=='createdate' && props.showCreateDate)
 		cols.push({id:c,label:"Create Date",width:props.createDateWidth??props.dateWidth??120});
+	    else if(c=='changedate' && props.showChangeDate)
+		cols.push({id:c,label:"Change Date",width:props.changeDateWidth??props.dateWidth??120});	    
 	    else if(c=='size' && props.showSize)
 		cols.push({id:c,label:"Size",width:props.sizeWidth??100});
 	    else if(c=='type' && props.showType)
@@ -282,6 +285,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    else if(c=='attachments' && props.showAttachments)
 		cols.push({id:c,label:"Attachments",align:'left',paddingLeft:'10px',width:props.attachmentsWidth??240});
 	});
+
 	if(props.showHeader) {
 	    html+="<table cellspacing=0 cellpadding=0 width=100% class=entry-list-header><tr>";
 	    let hdrAttrs = ["class","entry-list-header-column ramadda-clickable"];

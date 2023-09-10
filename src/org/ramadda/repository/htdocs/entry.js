@@ -760,7 +760,8 @@ function Entry(props) {
         getProperty: function(what) {
 	    if(what=="name") return this.getName();
 	    if(what=="fromdate") return HU.span(['class','ramadda-datetime','title',this.startDate],this.startDateFormat);
-	    if(what=="createdate") return HU.span(['class','ramadda-datetime','title',this.createDate],this.createDateFormat);
+	    if(what=="createdate") return HU.span(['class','ramadda-datetime','title',this.createDate],this.createDateFormat?? this.startDateFormat);
+	    if(what=="changedate") return HU.span(['class','ramadda-datetime','title',this.changeDate],this.changeDateFormat?? this.startDateFormat);
 	    if(what=="size") return this.getFilesize()?this.getFormattedFilesize():"---";
 	    if(what=="type") return this.typeName;
 	    return "Unknown:" + what;
