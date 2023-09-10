@@ -186,7 +186,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     /** _more_ */
     private String mapLabelTemplatePrint;
     private int mapDotLimit=100;
-
+    private boolean mapMarkersShow = true;
+    private boolean mapPolygonsShow = true;    
 
     /** _more_ */
     private String searchForLabel = "Search For";
@@ -261,6 +262,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 "mapLabelTemplatePrint", null);
 
 	mapDotLimit = Utils.getAttributeOrTag(tableNode,"mapDotLimit",mapDotLimit);
+	mapMarkersShow = Utils.getAttributeOrTag(tableNode,"mapMarkersShow",mapMarkersShow);
+	mapPolygonsShow = Utils.getAttributeOrTag(tableNode,"mapPolygonsShow",mapPolygonsShow);		
         //Initialize this type handler with a string blob
         Element root = XmlUtil.getRoot("<type></type>");
         XmlUtil.create("action", root, new String[] {"name","dbsearchform","label","Search Form","icon","fas fa-search"});
@@ -5052,11 +5055,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 				      0,"#fff",
 				      "blue",mapInfo);
 		    } else {
-			map.addMarker(dbid, location.latitude, location.longitude, ((polygonColumn != null)
-                            ? polygonColumn.getString(values)
-                            : null), useDot
-                                     ? "dot"
-                                     : iconToUse, mapLabel, mapInfo, null);
+			if(mapPolygonsShow && polygonColumn!=null)
+			    map.addPolygon(dbid, polygonColumn.getString(values),mapInfo,null);
+			if(mapMarkersShow)
+			    map.addMarker(dbid, location.latitude, location.longitude, null,
+					  useDot ? "dot": iconToUse, mapLabel, mapInfo, null);
 		    }
                 } else if(location.hasBounds()) {
                     if ( !makeRectangles) {
