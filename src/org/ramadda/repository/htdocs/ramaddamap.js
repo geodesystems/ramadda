@@ -3,11 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
 var debugBounds = false;
 var getMapDebug = false;
 var debugPopup = false;
+var debugSelect= false;
 
 var RamaddaToFloat = v=>{
     if(v!=null) v=parseFloat(v);
@@ -86,6 +85,40 @@ var MapUtils =  {
 	}
 	return b2;
     },
+    intercept:function(lat1,lon1,lat2,lon2) {
+	// define the two points
+	let point1 = { lat: lat1, lng: lon1 }; 
+	let point2 = { lat: lat2, lng: lon2}; 
+
+	// calculate the difference in longitude
+	let lngDiff = Math.abs(point1.lng - point2.lng);
+
+	// if the difference is greater than 180 degrees, adjust it
+	if (lngDiff > 180) {
+	    lngDiff = 360 - lngDiff;
+	}
+	
+	// calculate the slope of the line connecting the two points
+	let latDiff = point2.lat - point1.lat;
+	let slope = latDiff / lngDiff;
+	
+	// calculate the latitude of the intercept point on the date line
+	return point1.lat + ((180 - point1.lng) * slope);
+    },
+
+    crossIDL:function(lon1,  lon2) {
+	// Determine if the two points are on opposite sides of the IDL
+	if ((lon1 > 0 && lon2 < 0) || (lon1 < 0 && lon2 > 0)) {
+	    // Calculate the longitude difference
+	    let lonDiff = Math.abs(lon1 - lon2);
+	    // If the longitude difference is greater than 180 degrees, the line segment crosses the IDL
+	    if (lonDiff > 180) {
+		return true;
+	    }
+	}
+	return false;
+    },
+
     addMapProperty:function(key,prop) {
 	this.properties[key] = prop;
     },
@@ -980,9 +1013,11 @@ function RepositoryMap(mapId, params) {
                 _this.handleFeatureout(e.feature);
             },
             nofeatureclick: function(e) {
+		if(debugSelect)    console.log('nofeatureclick');
                 _this.handleNofeatureclick(e,e.layer);
             },
             featureclick: function(e) {
+		if(debugSelect)    console.log('featureclick');
 		if(_this.featureClickHandler && !_this.featureClickHandler(e))  {
 		    return;
 		}
@@ -1735,11 +1770,11 @@ RepositoryMap.prototype = {
     },
     handleFeatureover: function(feature, skipText) {
 	if(this.doMouseOver || feature.highlightText || feature.highlightTextGetter) {
-	    var location = feature.location;
+	    let location = feature.location;
 	    if (location) {
 		if(this.highlightFeature != feature) {
 		    this.closeHighlightPopup();
-		    var projPoint = this.transformLLPoint(location);
+		    let projPoint = this.transformLLPoint(location);
 		    let text = feature.highlightTextGetter?feature.highlightTextGetter(feature):feature.highlightText;
 		    if (!Utils.stringDefined(text))  {text = feature.text;}
 		    if (Utils.stringDefined(text)) {
@@ -1760,33 +1795,32 @@ RepositoryMap.prototype = {
 	    }
 	}
 
-        var layer = feature.layer;
+        let layer = feature.layer;
         if (!(layer.isMapLayer === true)) {
             if (!skipText && feature.text) {
                 this.showFeatureText(feature);
             }
             return;
         }
-	if (layer.canSelect === false) return;
-	if (layer.noHighlight) return;
-
-        var _this = this;
+	if (layer.canSelect === false || layer.noHighlight) return;
         if (!feature.isSelected) {
 	    this.highlightFeature(feature);
             if (this.params.displayDiv) {
                 this.displayedFeature = feature;
-                var callback = function() {
-                    if (_this.displayedFeature == feature) {
-			let text = _this.getFeatureText(layer, feature);
-                        _this.showText(text);
-                        _this.dateFeatureOver(feature);
-                    }
-                }
                 if (!skipText) {
-                    setTimeout(callback, 500);
+		    if(this.pendingDisplayTextTimeout) {
+			clearTimeout(this.pendingDisplayTextTimeout);
+		    }
+                    let callback = () =>{
+			if (this.displayedFeature == feature) {
+			    let text = this.getFeatureText(layer, feature);
+                            this.showText(text);
+                            this.dateFeatureOver(feature);
+			}
+                    }
+                    this.pendingDisplayTextTimeout = setTimeout(callback, 500);
                 }
             }
-
         }
     },
 
@@ -1848,6 +1882,13 @@ RepositoryMap.prototype = {
 	}
     },
     handleFeatureout: function(feature, skipText) {
+        if(this.displayedFeature==feature) {
+	    this.displayedFeature=null;
+	    if(this.pendingDisplayTextTimeout)
+		clearTimeout(this.pendingDisplayTextTimeout);
+	    this.pendingDisplayTextTimeout=null;
+	}
+
 	this.closeHighlightPopup();
         let layer = feature.layer;
         if (layer && !(layer.isMapLayer === true)) {
@@ -2737,7 +2778,7 @@ RepositoryMap.prototype = {
 
         let style = feature.style || feature.originalStyle || layer.style;
         let p = feature.attributes;
-        let out = feature.popupText;
+        let out = feature.popupText ?? feature.text;
         if (!out) {
             if (style && (style["balloonStyle"] || style["popupText"])) {
                 out = style["balloonStyle"] || style["popupText"];
@@ -3479,7 +3520,6 @@ RepositoryMap.prototype = {
             for (let idx = 0; idx < list.length; idx++) {
                 marker = list[idx];
                 let visible = true;
-//xxxxx
                 let cbx = this.getVisibilityCheckbox(marker.ramaddaId);
                 let block = $('#' + "block_" + this.mapId + "_" + marker.ramaddaId);
                 let name = marker.name;
@@ -4556,7 +4596,7 @@ RepositoryMap.prototype = {
 
     onPopupClose:  function(evt) {
 	if(this.params.displayDiv) {
-	    $("#" + this.params.displayDiv).html("");
+	    this.showText("");
 	}
         if (this.currentPopup) {
             this.getMap().removePopup(this.currentPopup);
@@ -4689,6 +4729,16 @@ RepositoryMap.prototype = {
 		mymarker=this.imageLayers[id.replace(/_/g,'-')];
         }
 
+
+	//Check for polygon
+	if(!mymarker && this.polygonMap) {
+	    mymarker = this.polygonMap[id];
+	    //If it is a polygon then treat it as a click and return
+	    if(mymarker) {
+		this.handleFeatureclick(mymarker.layer,mymarker,false,{});
+		return;
+	    }
+	}
 
         if (!mymarker) {
             return;
@@ -4983,60 +5033,25 @@ RepositoryMap.prototype = {
 	return this.params.doPopup;
     },
 
-    createPolygonString:function(s,polygonProps,latlon,text) {
-	return this.createPolygonFromString(s,polygonProps,latlon,text);
-    },
-
-    createPolygonFromString:function(s,polygonProps,latlon,text,justPoints) {
+    createPolygonFromString:function(id,s,polygonProps,latlon,text,justPoints) {
 //	s = "35.6895;139.6917;37.7749;-122.4194";
 	let delimiter;
 	[";",","].forEach(d=>{
 	    if(s.indexOf(d)>=0) delimiter = d;
 	});
 
-
+	polygonProps = polygonProps??{
+	    fill: true,
+	    fillColor: "#0000ff",
+	    fillOpacity: 0.05,
+	    strokeWidth:1,
+	    strokeColor:"blue"};
 
 	let toks  = s.split(delimiter);
 	let points = [];
 	let p = [];
 	let segments = [p];
 	
-	function crossIDL(lon1,  lon2) {
-	    // Determine if the two points are on opposite sides of the IDL
-	    if ((lon1 > 0 && lon2 < 0) || (lon1 < 0 && lon2 > 0)) {
-		// Calculate the longitude difference
-		let lonDiff = Math.abs(lon1 - lon2);
-		// If the longitude difference is greater than 180 degrees, the line segment crosses the IDL
-		if (lonDiff > 180) {
-		    return true;
-		}
-	    }
-	    return false;
-	}
-
-	function intercept(lat1,lon1,lat2,lon2) {
-	    // define the two points
-	    let point1 = { lat: lat1, lng: lon1 }; 
-	    let point2 = { lat: lat2, lng: lon2}; 
-
-	    // calculate the difference in longitude
-	    let lngDiff = Math.abs(point1.lng - point2.lng);
-
-	    // if the difference is greater than 180 degrees, adjust it
-	    if (lngDiff > 180) {
-		lngDiff = 360 - lngDiff;
-	    }
-
-	    // calculate the slope of the line connecting the two points
-	    let latDiff = point2.lat - point1.lat;
-	    let slope = latDiff / lngDiff;
-	    
-	    // calculate the latitude of the intercept point on the date line
-	    return point1.lat + ((180 - point1.lng) * slope);
-	}
-
-
-
 	for(let pIdx=2;pIdx<toks.length;pIdx+=2) {
 	    let lat1 = parseFloat(toks[pIdx-2]);
 	    let lon1 = parseFloat(toks[pIdx-1]);
@@ -5050,8 +5065,8 @@ RepositoryMap.prototype = {
 		points.push(lon1,lat1,lon2,lat2);
 		continue;
 	    } 
-	    if(crossIDL(lon1,lon2)) {
-		let inter = intercept(lat1,lon1,lat2,lon2);
+	    if(MapUtils.crossIDL(lon1,lon2)) {
+		let inter = MapUtils.intercept(lat1,lon1,lat2,lon2);
 		p.push(MapUtils.createPoint(lon1,lat1));
 		p.push(MapUtils.createPoint(lon1<0?-180:180,inter));		
 		p=[];
@@ -5067,13 +5082,13 @@ RepositoryMap.prototype = {
 	let polys = [];
 	segments.forEach(p=>{
 	    if(p.length>0)
-		polys.push(this.createPolygon("polygon", "",p,polygonProps,text,false));
+		polys.push(this.createPolygon(id, "",p,polygonProps,text,false));
 	});
 	return polys;
     },
 
-    addPolygonString:function(s,polygonProps,latlon,text) {
-	let polys = this.createPolygonFromString(s,polygonProps,latlon,text);
+    addPolygonString:function(id,s,polygonProps,latlon,text) {
+	let polys = this.createPolygonFromString(id, s,polygonProps,latlon,text);
         this.getLinesLayer().addFeatures(polys);
 	return polys;
     },
@@ -5350,15 +5365,10 @@ RepositoryMap.prototype = {
         let marker = this.createMarker(id, location, iconUrl, markerName, text, parentId, size, 0, yoffset, canSelect,attrs);
 	marker.lonlat = location;
 	if(!justCreate) {
-            this.addMarkers([marker]);
+	    this.addMarkers([marker]);
 	}
 	if(polygon) {
-	    this.addPolygonString(polygon,{
-		fill: true,
-		fillColor: "#0000ff",
-		fillOpacity: 0.05,
-		strokeWidth:1,
-		strokeColor:"blue"},true,text);
+	    this.addPolygonString(id, polygon,null,true,text);
 	}
         return marker;
     },
@@ -5428,6 +5438,8 @@ RepositoryMap.prototype = {
         line.ramaddaId = id;
         line.location = location;
         line.name = name;
+	if(!this.polygonMap)this.polygonMap={};
+	this.polygonMap[id] = line;
         let visible = this.isLayerVisible(line.ramaddaId);
         if (visible) {
             line.style.display = 'inline';
@@ -5614,7 +5626,7 @@ RepositoryMap.prototype = {
 
 	let html = markerText;
 	if(this.params.displayDiv) {
-	    $("#" + this.params.displayDiv).html(markerText);
+	    this.showText(markerText);
 	    if(debugPopup) console.log("\thad displayDiv");
 	    return;
 	}

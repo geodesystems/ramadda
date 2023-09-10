@@ -4417,7 +4417,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    } else if(colorByColor) {
 			polygonProps.strokeColor=colorByColor;
 		    }
-		    let polys = this.map.createPolygonFromString(s, polygonProps,latlon,null);
+		    let polys = this.map.createPolygonFromString('',s, polygonProps,latlon,null);
 		    polys.forEach(poly=>{
 			poly.textGetter = textGetter;
 			poly.record = record;
