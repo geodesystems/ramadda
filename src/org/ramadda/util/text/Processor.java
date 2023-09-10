@@ -2523,6 +2523,12 @@ public abstract class Processor extends SeesvOperator {
                 }
             }
 
+            String header = (String) props.get("table.header");
+	    if(header!=null) {
+                writer.println("<header><![CDATA[");
+                writer.print(header.replace("\\n","\n"));
+                writer.println("]]></header>");
+	    }
             String formjs = (String) props.get("table.formjs");
             if (formjs != null) {
                 writer.println("<formjs><![CDATA[");
