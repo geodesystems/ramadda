@@ -4833,10 +4833,11 @@ public class WikiManager extends RepositoryManager
 	    actions.add(JsonUtil.mapAndQuote(Utils.makeList("id",selector.getId(),"label",selector.getLabel())));
 	}
 
-	for(String prop: new String[]{"maxHeight","details","simple","showHeader","showDate","showCreateDate","showSize",
+	for(String prop: new String[]{"maxHeight","details","simple","showHeader",
+				      "showDate","showCreateDate","showSize","showChangeDate",
 				      "columns",
 				      "showAttachments",
-				      "showType","showIcon","showThumbnails","showArrow","showForm","showCrumbs","dateWidth","sizeWidth","nameWidth","typeWidth","createDateWidth","fromDateWidth"}) {
+				      "showType","showIcon","showThumbnails","showArrow","showForm","showCrumbs","dateWidth","sizeWidth","nameWidth","typeWidth","createDateWidth","fromDateWidth","changeDateWidth"}) {
 	    String v =getProperty(wikiUtil, props, prop, (String)null);
 	    if(v!=null) {
 		argProps.add(prop);
