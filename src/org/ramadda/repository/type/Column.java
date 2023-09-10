@@ -2668,7 +2668,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         }
         String widget = getFormWidget(request, entry, values, formInfo);
         widget = sourceTypeHandler.getFormWidget(request, entry, this,
-                widget);
+						 widget);
         //        String rightSide = sourceTypeHandler.getFormHelp(request, entry, this);
         //        formBuffer.append(HtmlUtils.formEntry(getLabel() + ":",
         //                                             HtmlUtils.hbox(widget, rightSide)));
@@ -3718,12 +3718,14 @@ public class Column implements DataTypes, Constants, Cloneable {
             widget += HU.makeShowHideBlock("File...", file, visible);
         }
 
-        typeHandler.formEntry(formBuffer, request, getLabel() + ":",
-                              Utils.stringDefined(searchHelp)
-                              ? "<table cellspacing=0 cellpadding=0 border=0>"
-                                + HtmlUtils.row(HtmlUtils.cols(widget,
-                                    suffix)) + "</table>"
-                              : widget);
+	String help = searchHelp;
+	if(!Utils.stringDefined(help)) help = suffix;
+
+	if(Utils.stringDefined(help)) {
+	    widget  =HU.hbox(widget,help);
+	}
+
+        typeHandler.formEntry(formBuffer, request, getLabel() + ":",widget);
         formBuffer.append("\n");
 
     }
