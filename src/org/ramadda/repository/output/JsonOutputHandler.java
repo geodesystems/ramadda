@@ -592,6 +592,8 @@ public class JsonOutputHandler extends OutputHandler {
         JsonUtil.quoteAttr(items, "endDate", formatDate(entry.getEndDate()));
         JsonUtil.quoteAttr(items, "createDate",
                            formatDate(entry.getCreateDate()));
+        JsonUtil.quoteAttr(items, "changeDate",
+                           formatDate(entry.getChangeDate()));	
         JsonUtil.quoteAttr(items, "startDateFormat",
                            getDateHandler().formatDateShort(request, entry,
                                entry.getStartDate()));
@@ -601,7 +603,10 @@ public class JsonOutputHandler extends OutputHandler {
         JsonUtil.quoteAttr(items, "createDateFormat",
                            getDateHandler().formatDateShort(request, entry,
                                entry.getCreateDate()));
-
+        JsonUtil.quoteAttr(items, "changeDateFormat",
+                           getDateHandler().formatDateShort(request, entry,
+                               entry.getChangeDate()));
+	
 
 
         if (entry.getUser() != null) {
