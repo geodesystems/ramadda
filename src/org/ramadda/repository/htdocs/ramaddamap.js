@@ -1769,6 +1769,10 @@ RepositoryMap.prototype = {
 	});
     },
     handleFeatureover: function(feature, skipText) {
+        if (this.selectedFeature)  return;
+
+
+
 	if(this.doMouseOver || feature.highlightText || feature.highlightTextGetter) {
 	    let location = feature.location;
 	    if (location) {
@@ -1902,7 +1906,9 @@ RepositoryMap.prototype = {
         if (layer == null || layer.canSelect === false) {
 	    return;
 	}
-        feature.style = feature.originalStyle;
+
+	if(feature.originalStyle)
+            feature.style = feature.originalStyle;
         if (!feature.isSelected) {
             layer.drawFeature(feature, feature.style || "default");
         }
