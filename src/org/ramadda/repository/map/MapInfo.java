@@ -1194,6 +1194,13 @@ public class MapInfo {
 			       )+";\n");
     }
 
+    public void addPolygon(String id, String polygon, String info,  String parentId) {
+        getJS().append(HU.call(mapVarName + ".addPolygonString",
+			       HU.squote(Utils.makeID(id)),
+			       HU.squote(polygon),"null","true",HU.squote(info)));
+    }
+
+
 
     /**
      *
