@@ -3110,7 +3110,21 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 	for(NamedInputStream input: sources) {
 	    System.err.println("DbTypeHandler.bulkUpload: processing:" + input.getName());
-	    InputStream source = input.getInputStream();
+	    InputStream  source = input.getInputStream();
+	    if(input.getName().toLowerCase().endsWith(".zip")) {
+		ZipInputStream zin = new ZipInputStream(source);
+		ZipEntry       ze  = null;
+		while ((ze = zin.getNextEntry()) != null) {
+		    if (ze.isDirectory()) {
+			continue;
+		    }
+		    String p = ze.getName().toLowerCase();
+		    if (p.endsWith(".csv")) {
+			source = zin;
+			break;
+		    }
+		}
+	    }		
 	    valueList.clear();
 	    cnt[0]=0;
 	    TextReader                textReader = new TextReader();
