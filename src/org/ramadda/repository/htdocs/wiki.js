@@ -954,11 +954,11 @@ WikiEditor.prototype = {
 	    });
 	    let html = '';
 	    let controls =HU.hbox([
-		HU.span(['title','Start recording','class','ramadda-clickable','id',this.domId('transcribe_play')],HU.getIconImage('fa-solid fa-microphone fa-gray')),
-		HU.span(['title','Transcribe recording','class','ramadda-clickable','id',this.domId('transcribe_pen')],HU.getIconImage('fa-solid fa-pen fa-gray')),
+		HU.span(['title','Start recording','class',CLASS_CLICKABLE,'id',this.domId('transcribe_play')],HU.getIconImage('fa-solid fa-microphone fa-gray')),
+		HU.span(['title','Transcribe recording','class',CLASS_CLICKABLE,'id',this.domId('transcribe_pen')],HU.getIconImage('fa-solid fa-pen fa-gray')),
 		HU.b(' Time: ')+
 		    HU.div(['style',HU.css('display','inline-block','text-align','right','width','150px','xborder','var(--basic-border)'),'id',this.domId('transcribe_label')],'0 seconds'),
-		HU.span(['title','Delete recording','class','ramadda-clickable','id',this.domId('transcribe_delete')],HU.getIconImage('fa-solid fa-delete-left fa-gray')),
+		HU.span(['title','Delete recording','class',CLASS_CLICKABLE,'id',this.domId('transcribe_delete')],HU.getIconImage('fa-solid fa-delete-left fa-gray')),
 	    ],HU.css('margin-right','5px'));
 
 	    html+=HU.leftRightTable(controls,
@@ -1236,15 +1236,15 @@ WikiEditor.prototype = {
 		this.jq(this.ID_WIKI_PREVIEW_INNER).html(html);
 	    } else {
 		let left = Utils.join([
-		    HU.span([CLASS, 'ramadda-clickable',ID,this.domId(this.ID_WIKI_PREVIEW_OPEN)], HtmlUtils.getIconImage('fa-sync',['title','Preview Again'])),
+		    HU.span([CLASS, CLASS_CLICKABLE,ID,this.domId(this.ID_WIKI_PREVIEW_OPEN)], HtmlUtils.getIconImage('fa-sync',['title','Preview Again'])),
 		    HU.checkbox('',[TITLE,'Live Preview',ID,this.domId(this.ID_WIKI_PREVIEW_LIVE)],this.previewLive,'Live')+SPACE4,
-		    HU.span([CLASS, 'ramadda-clickable',TITLE,'Wordcount',ID,this.domId(this.ID_WIKI_PREVIEW_WORDCOUNT)], HtmlUtils.getIconImage('fa-calculator')),
+		    HU.span([CLASS, CLASS_CLICKABLE,TITLE,'Wordcount',ID,this.domId(this.ID_WIKI_PREVIEW_WORDCOUNT)], HtmlUtils.getIconImage('fa-calculator')),
 
-		    HU.span([CLASS, 'ramadda-clickable',TITLE,'Copy',ID,this.domId(this.ID_WIKI_PREVIEW_COPY)], HtmlUtils.getIconImage('fa-copy')),
-		    HU.span([CLASS, 'ramadda-clickable',TITLE,'Download',ID,this.domId(this.ID_WIKI_PREVIEW_DOWNLOAD)], HtmlUtils.getIconImage('fa-download')),		    
+		    HU.span([CLASS, CLASS_CLICKABLE,TITLE,'Copy',ID,this.domId(this.ID_WIKI_PREVIEW_COPY)], HtmlUtils.getIconImage('fa-copy')),
+		    HU.span([CLASS, CLASS_CLICKABLE,TITLE,'Download',ID,this.domId(this.ID_WIKI_PREVIEW_DOWNLOAD)], HtmlUtils.getIconImage('fa-download')),		    
 		],SPACE2);
 
-		let right  = HU.span([CLASS, 'ramadda-clickable',ID,this.domId(this.ID_WIKI_PREVIEW_CLOSE)], HtmlUtils.getIconImage('fa-window-close',['title','Close Preview']));
+		let right  = HU.span([CLASS, CLASS_CLICKABLE,ID,this.domId(this.ID_WIKI_PREVIEW_CLOSE)], HtmlUtils.getIconImage('fa-window-close',['title','Close Preview']));
 
 		let bar = HtmlUtils.div([CLASS,'ramadda-menubar','style','xtext-align:center;width:100%;border:1px solid #ccc'],
 					HU.leftRight(left,right));
@@ -1789,8 +1789,17 @@ WikiEditor.prototype = {
 	this.displaysText = menuTags;
 
 
-	menu = HU.center(HU.input('','',['placeholder','Search','id',this.domId('displaysearch'),'width','10'])) +menu;
-	menu = HU.div(['style','margin:10px;'], menu);
+	let expand = HU.span([ATTR_TITLE,"Expand",
+			      ATTR_CLASS,CLASS_CLICKABLE,
+			      ATTR_ID,this.domId('expandwikimenu')], 
+			     HU.getIconImage("fas fa-maximize"));
+	let header = HU.center(HU.input('','',['placeholder','Search','id',this.domId('displaysearch'),'width','10'])+
+			       HU.space(2) + expand);
+
+
+	let contents = HU.div(['style','margin:10px;'],
+			      header+ HU.div([ATTR_ID,this.domId('expandedwikimenu')]) +
+			      HU.div([ATTR_ID,this.domId('unexpandedwikimenu')],menu));
 
 	button.click(() =>{
 	    let init = ()=>{
@@ -1804,27 +1813,77 @@ WikiEditor.prototype = {
 		});
 	    };
 
-
-
-	    let popup = HU.makeDialog({content:menu,my:"left top",at:"left-200px bottom",title:"",anchor:button,draggable:true,header:true,initCall:init});
-	    if(wikiPopup) 
-		wikiPopup.hide();
+	    if(this.wikiDisplayPopup) this.wikiDisplayPopup.remove()
+	    let popup = this.wikiDisplayPopup = HU.makeDialog({content:contents,my:"left top",at:"left-200px bottom",title:"",anchor:button,draggable:true,header:true,initCall:init});
+	    if(wikiPopup) wikiPopup.hide();
 	    popup.tooltip();
+	    let expanded = false;
+	    let exDiv=null;
+
+	    this.jq('expandwikimenu').click(()=>{
+		if(!exDiv) {
+		    exDiv='';
+		    popup.find('.wiki-editor-display-category').each(function() {
+			let cat = $(this).attr('data-category');
+			let inner = '<table style=\' border-collapse:separate;border-spacing: 4px;\'><tr valign=top>';
+			let cnt = 0;
+			$(this).find('.display-link').each(function() {
+			    let click = $(this).attr('onclick');
+			    cnt++;
+			    if(cnt>3) {
+				cnt=1;
+				inner+='</tr><tr valign=top>';
+			    }
+			    let c = $(this).attr('title');
+			    let div=HU.div(['onclick',click,
+					    ATTR_CLASS,CLASS_CLICKABLE,
+					    ATTR_STYLE,HU.css('display','inline-block')],
+					   c);
+			    inner+=HU.td(['data-corpus',Utils.stringDefined(c)?c:'none',
+					  'data-category',cat,
+					  ATTR_CLASS,CLASS_HOVERABLE+' wiki-editor-popup-link',
+					  'width','33%',ATTR_STYLE,HU.css('border','var(--basic-border)','margin','6px','padding','4px')],div);
+			});
+			inner+='</tr></table>';
+			exDiv+=HU.center(HU.div([ATTR_CLASS,'wiki-editor-display-category',
+						 'data-category',cat,
+						 ATTR_STYLE,HU.css('font-weight','bold')], cat)) +inner;
+		    });
+		    exDiv=HU.div([ATTR_STYLE,HU.css('max-height','500px','overflow-y','auto','min-width','700px','max-width','700px','overflow-x','auto')],
+				 exDiv);
+		    let ex = $(exDiv).appendTo(_this.jq('expandedwikimenu'));
+		    ex.find('img').attr('width','200');
+		}
+		expanded = !expanded;
+		if(expanded) {
+		    _this.jq('expandwikimenu').html(HU.getIconImage("fas fa-minimize"));
+		    _this.jq('expandedwikimenu').show();
+		    _this.jq('unexpandedwikimenu').hide();
+		} else {
+		    _this.jq('expandwikimenu').html(HU.getIconImage("fas fa-maximize"));
+		    _this.jq('expandedwikimenu').hide();
+		    _this.jq('unexpandedwikimenu').show();
+		}
+	    });
 
 	    
-	    let headers = popup.find('.wiki-editor-display-category');
 	    let _this = this;
-	    let displayLinks = popup.find('.wiki-editor-popup-link');
 	    this.jq('displaysearch').focus();
 	    this.jq('displaysearch').keyup(function(event) {
 		let text = $(this).val().trim().toLowerCase();
 		let seen = {};
+		let displayLinks = popup.find('.wiki-editor-popup-link');
+		let headers = popup.find('.wiki-editor-display-category');
 		displayLinks.each(function() {
 		    if(text=='') {
 			$(this).show();
 		    } else {
 			let corpus = $(this).attr('data-corpus');
-			if(!corpus) return;
+			if(!corpus) corpus = $(this).attr('title');
+			if(!corpus) {
+			    console.log('nc',$(this).html());
+			    return;
+			}
 			corpus =  corpus.toLowerCase();
 			if(corpus.indexOf(text)>=0) {
 			    $(this).show();

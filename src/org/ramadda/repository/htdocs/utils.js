@@ -41,6 +41,7 @@ var UNIT_M='m';
 var UNIT_NM='nm';
 
 var CLASS_CLICKABLE = 'ramadda-clickable';
+var CLASS_HOVERABLE = 'ramadda-hoverable';
 
 function noop() {}
 

@@ -289,10 +289,10 @@ function makeDisplayTooltip(header,imgs,text) {
 	    return acc+"<td><img src="+ img +" width=250px></td>";
 	},"<table><tr valign=top>");
 	imgHtml+="</tr></table>";
-	if(h!="") h+="<br>";
-	h+=imgHtml;
+//	if(h!="") h+="<br>";
+	h+=HU.div([],imgHtml);
     }
-    if(text) h+="<br>"+text;
+    if(Utils.stringDefined(text)) h+=HU.div([],text);
     h  = h.replace(/"/g,"&quot;");
     return h;
 }
@@ -402,7 +402,7 @@ addGlobalDisplayType({
     requiresData: false,
     forUser: true,
     category: "Basic Charts",
-    tooltip: makeDisplayTooltip("Create a collection of displays",null,"This allows you to layout displays and share common attributes"),
+    tooltip: makeDisplayTooltip("Group",null,"This allows you to layout displays and share common attributes"),
     helpUrl:true
 
 },true);

@@ -26,7 +26,7 @@ addGlobalDisplayType({
     type: DISPLAY_MAP,
     label: "Map",
     category:CATEGORY_MAPS,
-    preview: ["map1.png","map2.png"],
+    preview: "map1.png",
     desc:"Lots of ways to show georeferenced data - dots, heatmaps, plots, etc",        
 });
 
