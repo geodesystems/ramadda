@@ -29,9 +29,10 @@ value  type double
 +section  title="{{name}}"
 {{description wikify="true"}}
 {{simple_add}}
-{{group showMenu="true" layoutType="table"   showTitle="false"}}
-{{display type="linechart" fields="#1,#2,#3,#4,#5" showTitle="false" layoutHere="true" }}
-{{display  type="table"  height="400"  #fields=""  layoutHere="true"  showMenu="true"  showTitle="true"  }} 
+{{group}}
+{{display_linechart fieldsNumeric=true fields="#1,#2,#3,#4,#5,#6,#7"}}
+{{display_download}}
+{{display_table  height="400"   }} 
 ]]>
 </wiki>
   </type>
