@@ -21,79 +21,59 @@ const DISPLAY_PLOTLY_PARCOORDS = "parcoords";
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_RADAR,
     label: "Radar",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_RADIAL_ETC
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_WINDROSE,
     label: "Wind Rose",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_RADIAL_ETC
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_SUNBURST,
     label: "Sunburst",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_RADIAL_ETC,
-    tooltip: makeDisplayTooltip(null,"sunburst.png")                            
+    preview: "sunburst.png"                            
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_DENSITY,
     label: "Density",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_RADIAL_ETC
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_COMBOCHART,
     label: "Combo Chart",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_CHARTS,
-    tooltip: makeDisplayTooltip(null,"combochart.png")                        
+    preview: "combochart.png"                        
 });
 
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_PARCOORDS,
     label: "Parallel Coords",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_RADIAL_ETC
 });
 
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_DOTPLOT,
     label: "Dot Plot",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_CHARTS,
-    tooltip: makeDisplayTooltip(null,"dotplot.png")                    
+    preview: "dotplot.png"                    
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_SPLOM,
     label: "Splom",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_RADIAL_ETC,
-    tooltip: makeDisplayTooltip("A scatterplot matrix","splom.png")    
+    preview: "splom.png"    
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_3DSCATTER,
     label: "3D Scatter",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_RADIAL_ETC
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_PROFILE,
     label: "Profile",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_CHARTS,
-    tooltip: makeDisplayTooltip(null,"profile.png")                    
+    preview: "profile.png"                    
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_3DMESH,
@@ -106,10 +86,9 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_TEXTCOUNT,
     label: "Text Count",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_TEXT,
-    tooltip: makeDisplayTooltip("Shows counts of certain patterns","textcount.png","Given a text field show the number of <br>times certain word patterns occur")                                    
+    preview: "textcount.png",
+    desc:"Given a text field show the number of <br>times certain word patterns occur"
 });
 
 //Ternary doesn't work

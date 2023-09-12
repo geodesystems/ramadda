@@ -107,86 +107,66 @@ function ramaddaLoadGoogleChart(what, callback) {
 addGlobalDisplayType({
     type: DISPLAY_TABLE,
     label: "Table",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_TABLE,
     desc:"Basic tabular display",
-    tooltip: makeDisplayTooltip("Tabular display of data","table.png")                        
-}, true);
+    preview: "table.png"}, true);
 addGlobalDisplayType({
     type: DISPLAY_LINECHART,
     label: "Line Chart",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_CHARTS,
-    tooltip: makeDisplayTooltip("Basic line chart","linechart.png","Show time series or other data"),
+    preview:"linechart.png",
+    desc:"Show time series or other data",
     helpurl:true
 });
 addGlobalDisplayType({
     type: DISPLAY_BARCHART,
     label: "Bar Chart",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_CHARTS,
-    tooltip: makeDisplayTooltip(null,"barchart.png")    
+    preview:'barchart.png'
 });
 addGlobalDisplayType({
     type: DISPLAY_BARSTACK,
     label: "Stacked Bar Chart",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_CHARTS,
-    tooltip: makeDisplayTooltip("Stacked bar chart","barstack.png"),
+    preview:'barstack.png',
     helpurl:true    
 });
 addGlobalDisplayType({
     type: DISPLAY_AREACHART,
     label: "Area Chart",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_CHARTS,
-    tooltip: makeDisplayTooltip(null,"areachart.png")    
+    preview:'areachart.png',
 });
 
 addGlobalDisplayType({
     type: DISPLAY_BARTABLE,
     label: "Bar Table",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_CHARTS,
-    tooltip: makeDisplayTooltip(null,"bartable.png")        
+    preview:'bartable.png'
 });
 addGlobalDisplayType({
     type: DISPLAY_SCATTERPLOT,
     label: "Scatter Plot",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_CHARTS,
-    tooltip: makeDisplayTooltip(null,"scatterplot.png")            
+    preview: 'scatterplot.png'
 });
 addGlobalDisplayType({
     type: DISPLAY_HISTOGRAM,
     label: "Histogram",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_CHARTS,
-    tooltip: makeDisplayTooltip(null,"histogram.png")                
+    preview: 'histogram.png'
 });
 addGlobalDisplayType({
     type: DISPLAY_BUBBLE,
     label: "Bubble Chart",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_CHARTS,
-    tooltip: makeDisplayTooltip(null,"bubblechart.png")    
+    preview: 'bubblechart.png'
 });
 addGlobalDisplayType({
     type: DISPLAY_PIECHART,
     label: "Pie Chart",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_CHARTS,
-    tooltip: makeDisplayTooltip(null,"piechart.png")                    
+    preview: 'piechart.png'                    
 });
 
 addGlobalDisplayType({
@@ -195,15 +175,16 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_MISC,
-    tooltip: makeDisplayTooltip("A gauge","gauge.png")
+    preview: "gauge.png"
 });
 addGlobalDisplayType({
     type: DISPLAY_TIMERANGECHART,
-    label: "Timerange",
+    label: "Time Range",
     requiresData: true,
     forUser: true,
     category: CATEGORY_MISC,
-    tooltip: makeDisplayTooltip("Time ranges","timerange.png","Show data with start/end times")    
+    preview: 'timerange.png',
+    desc:'Show data with start/end times'    
 });
 addGlobalDisplayType({
     type: DISPLAY_SANKEY,
@@ -211,7 +192,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_RADIAL_ETC,
-    tooltip: makeDisplayTooltip(null,"sankey.png")                                    
+    preview: "sankey.png"                                    
 });
 
 addGlobalDisplayType({
@@ -220,7 +201,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_MISC,
-    tooltip: makeDisplayTooltip("Show a calendar","calendar.png")
+    preview: "calendar.png"
 });
 addGlobalDisplayType({
     type: DISPLAY_WORDTREE,
@@ -228,7 +209,8 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_TEXT,
-    tooltip: makeDisplayTooltip("Displays data as a tree of words","wordtree.png","Specify a number of fields. Each field value is a level in the tree")    
+    preview: "wordtree.png",
+    desc:"Specify a number of fields. Each field value is a level in the tree"    
 });
 addGlobalDisplayType({
     type: DISPLAY_TREEMAP,
@@ -236,7 +218,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_RADIAL_ETC,
-    tooltip: makeDisplayTooltip("A tree map","treemap.png")    
+    preview: "treemap.png"    
 });
 
 addGlobalDisplayType({
@@ -245,7 +227,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_RADIAL_ETC,
-    tooltip: makeDisplayTooltip(null,"orgchart.png")                                
+    preview: "orgchart.png"                                
 });
 
 

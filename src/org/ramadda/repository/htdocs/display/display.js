@@ -195,6 +195,9 @@ function addGlobalDisplayType(type, front) {
 	window.globalDisplayTypesMap = {};
     }
 
+    if(type.preview && !type.tooltip) {
+	type.tooltip= makeDisplayTooltip(type.label,type.preview,type.desc);
+    }
     if(type.type) {
 	window.globalDisplayTypesMap[type.type] = type;
     }

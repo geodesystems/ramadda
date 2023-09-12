@@ -26,14 +26,16 @@ addGlobalDisplayType({
     type: DISPLAY_MAP,
     label: "Map",
     category:CATEGORY_MAPS,
-    tooltip: makeDisplayTooltip("Maps of many colors",["map1.png","map2.png"],"Lots of ways to show georeferenced data - dots, heatmaps, plots, etc"),        
+    preview: ["map1.png","map2.png"],
+    desc:"Lots of ways to show georeferenced data - dots, heatmaps, plots, etc",        
 });
 
 addGlobalDisplayType({
     type: DISPLAY_MAPGRID,
     label: "Map Grid",
     category:CATEGORY_MAPS,
-    tooltip: makeDisplayTooltip("Schematic map grid","mapgrid.png","Can display US States or World countries"),    
+    preview: "mapgrid.png",
+    desc:"Can display US States or World countries",    
 });
 
 addGlobalDisplayType({
@@ -41,7 +43,8 @@ addGlobalDisplayType({
     label: "Map Chart",
     requiresData: true,
     category:CATEGORY_MAPS,
-    tooltip: makeDisplayTooltip("2.5D display in a map","mapchart.png","Plot numeric data as heights. Can display US States, European countries or world countries"),        
+    preview:"mapchart.png",
+    desc:"Plot numeric data as heights. Can display US States, European countries or world countries",        
 });
 
 
