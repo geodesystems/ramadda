@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Sep 10 14:50:24 MDT 2023";
+var build_date="RAMADDA build date: Tue Sep 12 13:41:51 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -3975,6 +3975,9 @@ function addGlobalDisplayType(type, front) {
 	window.globalDisplayTypesMap = {};
     }
 
+    if(type.preview && !type.tooltip) {
+	type.tooltip= makeDisplayTooltip(type.label,type.preview,type.desc);
+    }
     if(type.type) {
 	window.globalDisplayTypesMap[type.type] = type;
     }
@@ -4066,10 +4069,10 @@ function makeDisplayTooltip(header,imgs,text) {
 	    return acc+"<td><img src="+ img +" width=250px></td>";
 	},"<table><tr valign=top>");
 	imgHtml+="</tr></table>";
-	if(h!="") h+="<br>";
-	h+=imgHtml;
+//	if(h!="") h+="<br>";
+	h+=HU.div([],imgHtml);
     }
-    if(text) h+="<br>"+text;
+    if(Utils.stringDefined(text)) h+=HU.div([],text);
     h  = h.replace(/"/g,"&quot;");
     return h;
 }
@@ -4179,7 +4182,7 @@ addGlobalDisplayType({
     requiresData: false,
     forUser: true,
     category: "Basic Charts",
-    tooltip: makeDisplayTooltip("Create a collection of displays",null,"This allows you to layout displays and share common attributes"),
+    tooltip: makeDisplayTooltip("Group",null,"This allows you to layout displays and share common attributes"),
     helpUrl:true
 
 },true);
@@ -18134,86 +18137,66 @@ function ramaddaLoadGoogleChart(what, callback) {
 addGlobalDisplayType({
     type: DISPLAY_TABLE,
     label: "Table",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_TABLE,
     desc:"Basic tabular display",
-    tooltip: makeDisplayTooltip("Tabular display of data","table.png")                        
-}, true);
+    preview: "table.png"}, true);
 addGlobalDisplayType({
     type: DISPLAY_LINECHART,
     label: "Line Chart",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_CHARTS,
-    tooltip: makeDisplayTooltip("Basic line chart","linechart.png","Show time series or other data"),
+    preview:"linechart.png",
+    desc:"Show time series or other data",
     helpurl:true
 });
 addGlobalDisplayType({
     type: DISPLAY_BARCHART,
     label: "Bar Chart",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_CHARTS,
-    tooltip: makeDisplayTooltip(null,"barchart.png")    
+    preview:'barchart.png'
 });
 addGlobalDisplayType({
     type: DISPLAY_BARSTACK,
     label: "Stacked Bar Chart",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_CHARTS,
-    tooltip: makeDisplayTooltip("Stacked bar chart","barstack.png"),
+    preview:'barstack.png',
     helpurl:true    
 });
 addGlobalDisplayType({
     type: DISPLAY_AREACHART,
     label: "Area Chart",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_CHARTS,
-    tooltip: makeDisplayTooltip(null,"areachart.png")    
+    preview:'areachart.png',
 });
 
 addGlobalDisplayType({
     type: DISPLAY_BARTABLE,
     label: "Bar Table",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_CHARTS,
-    tooltip: makeDisplayTooltip(null,"bartable.png")        
+    preview:'bartable.png'
 });
 addGlobalDisplayType({
     type: DISPLAY_SCATTERPLOT,
     label: "Scatter Plot",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_CHARTS,
-    tooltip: makeDisplayTooltip(null,"scatterplot.png")            
+    preview: 'scatterplot.png'
 });
 addGlobalDisplayType({
     type: DISPLAY_HISTOGRAM,
     label: "Histogram",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_CHARTS,
-    tooltip: makeDisplayTooltip(null,"histogram.png")                
+    preview: 'histogram.png'
 });
 addGlobalDisplayType({
     type: DISPLAY_BUBBLE,
     label: "Bubble Chart",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_CHARTS,
-    tooltip: makeDisplayTooltip(null,"bubblechart.png")    
+    preview: 'bubblechart.png'
 });
 addGlobalDisplayType({
     type: DISPLAY_PIECHART,
     label: "Pie Chart",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_CHARTS,
-    tooltip: makeDisplayTooltip(null,"piechart.png")                    
+    preview: 'piechart.png'                    
 });
 
 addGlobalDisplayType({
@@ -18222,15 +18205,16 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_MISC,
-    tooltip: makeDisplayTooltip("A gauge","gauge.png")
+    preview: "gauge.png"
 });
 addGlobalDisplayType({
     type: DISPLAY_TIMERANGECHART,
-    label: "Timerange",
+    label: "Time Range",
     requiresData: true,
     forUser: true,
     category: CATEGORY_MISC,
-    tooltip: makeDisplayTooltip("Time ranges","timerange.png","Show data with start/end times")    
+    preview: 'timerange.png',
+    desc:'Show data with start/end times'    
 });
 addGlobalDisplayType({
     type: DISPLAY_SANKEY,
@@ -18238,7 +18222,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_RADIAL_ETC,
-    tooltip: makeDisplayTooltip(null,"sankey.png")                                    
+    preview: "sankey.png"                                    
 });
 
 addGlobalDisplayType({
@@ -18247,7 +18231,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_MISC,
-    tooltip: makeDisplayTooltip("Show a calendar","calendar.png")
+    preview: "calendar.png"
 });
 addGlobalDisplayType({
     type: DISPLAY_WORDTREE,
@@ -18255,7 +18239,8 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_TEXT,
-    tooltip: makeDisplayTooltip("Displays data as a tree of words","wordtree.png","Specify a number of fields. Each field value is a level in the tree")    
+    preview: "wordtree.png",
+    desc:"Specify a number of fields. Each field value is a level in the tree"    
 });
 addGlobalDisplayType({
     type: DISPLAY_TREEMAP,
@@ -18263,7 +18248,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_RADIAL_ETC,
-    tooltip: makeDisplayTooltip("A tree map","treemap.png")    
+    preview: "treemap.png"    
 });
 
 addGlobalDisplayType({
@@ -18272,7 +18257,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_RADIAL_ETC,
-    tooltip: makeDisplayTooltip(null,"orgchart.png")                                
+    preview: "orgchart.png"                                
 });
 
 
@@ -35505,14 +35490,16 @@ addGlobalDisplayType({
     type: DISPLAY_MAP,
     label: "Map",
     category:CATEGORY_MAPS,
-    tooltip: makeDisplayTooltip("Maps of many colors",["map1.png","map2.png"],"Lots of ways to show georeferenced data - dots, heatmaps, plots, etc"),        
+    preview: "map1.png",
+    desc:"Lots of ways to show georeferenced data - dots, heatmaps, plots, etc",        
 });
 
 addGlobalDisplayType({
     type: DISPLAY_MAPGRID,
     label: "Map Grid",
     category:CATEGORY_MAPS,
-    tooltip: makeDisplayTooltip("Schematic map grid","mapgrid.png","Can display US States or World countries"),    
+    preview: "mapgrid.png",
+    desc:"Can display US States or World countries",    
 });
 
 addGlobalDisplayType({
@@ -35520,7 +35507,8 @@ addGlobalDisplayType({
     label: "Map Chart",
     requiresData: true,
     category:CATEGORY_MAPS,
-    tooltip: makeDisplayTooltip("2.5D display in a map","mapchart.png","Plot numeric data as heights. Can display US States, European countries or world countries"),        
+    preview:"mapchart.png",
+    desc:"Plot numeric data as heights. Can display US States, European countries or world countries",        
 });
 
 
@@ -59103,79 +59091,59 @@ const DISPLAY_PLOTLY_PARCOORDS = "parcoords";
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_RADAR,
     label: "Radar",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_RADIAL_ETC
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_WINDROSE,
     label: "Wind Rose",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_RADIAL_ETC
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_SUNBURST,
     label: "Sunburst",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_RADIAL_ETC,
-    tooltip: makeDisplayTooltip(null,"sunburst.png")                            
+    preview: "sunburst.png"                            
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_DENSITY,
     label: "Density",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_RADIAL_ETC
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_COMBOCHART,
     label: "Combo Chart",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_CHARTS,
-    tooltip: makeDisplayTooltip(null,"combochart.png")                        
+    preview: "combochart.png"                        
 });
 
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_PARCOORDS,
     label: "Parallel Coords",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_RADIAL_ETC
 });
 
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_DOTPLOT,
     label: "Dot Plot",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_CHARTS,
-    tooltip: makeDisplayTooltip(null,"dotplot.png")                    
+    preview: "dotplot.png"                    
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_SPLOM,
     label: "Splom",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_RADIAL_ETC,
-    tooltip: makeDisplayTooltip("A scatterplot matrix","splom.png")    
+    preview: "splom.png"    
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_3DSCATTER,
     label: "3D Scatter",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_RADIAL_ETC
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_PROFILE,
     label: "Profile",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_CHARTS,
-    tooltip: makeDisplayTooltip(null,"profile.png")                    
+    preview: "profile.png"                    
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_3DMESH,
@@ -59188,10 +59156,9 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_TEXTCOUNT,
     label: "Text Count",
-    requiresData: true,
-    forUser: true,
     category: CATEGORY_TEXT,
-    tooltip: makeDisplayTooltip("Shows counts of certain patterns","textcount.png","Given a text field show the number of <br>times certain word patterns occur")                                    
+    preview: "textcount.png",
+    desc:"Given a text field show the number of <br>times certain word patterns occur"
 });
 
 //Ternary doesn't work
