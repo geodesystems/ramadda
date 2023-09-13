@@ -381,7 +381,10 @@ OpenLayers.Console = {
      * Parameters:
      * object - {Object}
      */
-    error: function() {},
+    error: function(e) {
+	//jeffmc: add this
+	console.error(e);
+    },
     
     /**
      * APIFunction: userError
@@ -13123,8 +13126,12 @@ OpenLayers.Format.GeoJSON = OpenLayers.Class(OpenLayers.Format.JSON, {
                                 try {
                                     results.push(this.parseFeature(obj.features[i]));
                                 } catch(err) {
-                                    results = null;
+				    //jeffmc: don't error out here
+//                                    results = null;
+//				    throw err;
                                     OpenLayers.Console.error(err);
+//				    console.error(err);
+//				    console.dir(obj.features[i]);
                                 }
                             }
                             break;
