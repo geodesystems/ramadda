@@ -1354,7 +1354,12 @@ public class Utils extends IO {
      */
     public static SimpleDateFormat makeDateFormat(String format,
 						  String timezone) {
-        SimpleDateFormat sdf = new SimpleDateFormat(format);
+        SimpleDateFormat sdf = null;
+	if(format!=null && format.trim().equals("iso8601")) {
+	    sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+	} else {
+	    sdf = new SimpleDateFormat(format);
+	}
         if (timezone != null) {
             sdf.setTimeZone(TimeZone.getTimeZone(timezone));
         }
@@ -2504,80 +2509,94 @@ public class Utils extends IO {
         Date              currentDate = now;
         TimeZone          tz          = TimeZone.getTimeZone("UTC");
         g.setTime(currentDate);
+	SimpleDateFormat sdf = makeDateFormat("yyyy-MM-dd");
 
-        //Old macros
-        if (f.indexOf("${now") >= 0) {
-            f = f.replace("${now.year}", g.get(g.YEAR) + "");
-            f = f.replace("${now.month}",
-                          StringUtil.padZero(g.get(g.MONTH), 2));
-            f = f.replace("${now.day}",
-                          StringUtil.padZero(g.get(g.DAY_OF_MONTH), 2));
-            f = f.replace("${now.hour}",
-                          StringUtil.padZero(g.get(g.HOUR_OF_DAY), 2));
-            f = f.replace("${now.minute}",
-                          StringUtil.padZero(g.get(g.MINUTE), 2));
-        }
-
-        List<String> toks = StringUtil.splitMacros(f);
-        for (int i = 0; i < toks.size(); i++) {
-            String t = toks.get(i);
-            //System.err.println("T:" + t);
-            if (i / 2.0 == (int) i / 2) {
-                s.append(t);
-
-                //System.err.println("appending");
-                continue;
-            }
-            String d = null;
+	for(Macro macro:splitMacros(f)) {
+	    if(macro.isText) {
+		s.append(macro.macro);
+		continue;
+	    }
+	    String t = macro.macro;
             if (t.startsWith("z:")) {
                 tz = TimeZone.getTimeZone(t.substring(2));
-
-                continue;
-            }
-
-            if (t.startsWith("date:")) {
-                t = t.substring(5).trim();
-                Date newDate = null;
-                if (t.equals("now")) {
-                    newDate = now;
-                } else {
-                    newDate = DateUtil.getRelativeDate(now, t);
-                }
-                if (newDate != null) {
-                    currentDate = newDate;
-                    g.setTime(currentDate);
-                }
-
+                sdf.setTimeZone(tz);
                 continue;
             }
             if (t.startsWith("format:")) {
                 t = t.substring("format:".length()).trim();
-                SimpleDateFormat sdf = makeDateFormat(t);
-                sdf.setTimeZone(tz);
-                s.append(sdf.format(currentDate));
-
+                sdf = makeDateFormat(t);
                 continue;
             }
 
+	    if(t.equals("now.year")) {
+		s.append(g.get(g.YEAR) + "");
+		continue;
+	    }
+            if(t.equals("now.month")) {
+		s.append(StringUtil.padZero(g.get(g.MONTH), 2));
+		continue;
+	    }
+	    if(t.equals("now.day")) {
+		s.append(StringUtil.padZero(g.get(g.DAY_OF_MONTH), 2));
+		continue;
+	    }
+	    if(t.equals("now.hour")) {
+		s.append(StringUtil.padZero(g.get(g.HOUR_OF_DAY), 2));
+		continue;
+	    }
+	    if(t.equals("now.minute")) {
+		s.append(StringUtil.padZero(g.get(g.MINUTE), 2));
+		continue;
+	    }
 
-
-            if (t.startsWith("year")) {
-                d = g.get(g.YEAR) + "";
-            } else if (t.startsWith("month")) {
-                d = StringUtil.padZero(g.get(g.MONTH), 2);
-            } else if (t.startsWith("day")) {
-                d = StringUtil.padZero(g.get(g.DAY_OF_MONTH), 2);
-            } else if (t.startsWith("hour")) {
-                d = StringUtil.padZero(g.get(g.HOUR_OF_DAY), 2);
-            } else if (t.startsWith("minute")) {
-                d = StringUtil.padZero(g.get(g.MINUTE), 2);
-            } else {
-                //Put it back
-                d = "${" + t + "}";
-                //                System.err.println("Unknown macro:" + t);
-                //                continue;
+	    if (t.startsWith("year")) {
+		s.append(g.get(g.YEAR) + "");
+		continue;
+	    }
+	    if (t.startsWith("month")) {
+		s.append(StringUtil.padZero(g.get(g.MONTH), 2));
+		continue;
             }
-            s.append(d);
+	    if (t.startsWith("day")) {
+		s.append(StringUtil.padZero(g.get(g.DAY_OF_MONTH), 2));
+		continue;
+            }
+	    if (t.startsWith("hour")) {
+                s.append(StringUtil.padZero(g.get(g.HOUR_OF_DAY), 2));
+		continue;
+            }
+	    if (t.startsWith("minute")) {
+                s.append(StringUtil.padZero(g.get(g.MINUTE), 2));
+		continue;
+	    }
+
+            if (t.startsWith("date:") || t.equals("date")) {
+                Date newDate = null;
+		if(t.length()>4) {
+		    t = t.substring(5).trim();
+		    if (t.equals("now")) {
+			newDate = now;
+		    } else {
+			newDate = DateUtil.getRelativeDate(now, t);
+		    }
+		} else  {
+		    newDate = now;
+		}
+                if (newDate != null) {
+		    String fmt = (String)macro.getProperty("format");
+		    SimpleDateFormat thisSdf = sdf;	
+		    if(fmt!=null) {
+			thisSdf = makeDateFormat(fmt);
+			if(tz!=null)
+			    thisSdf.setTimeZone(tz);
+		    }
+                    s.append(thisSdf.format(newDate));
+                }
+                continue;
+            }
+
+	    //put it back
+	    s.append("${" + t + "}");
         }
 
         return s.toString();
@@ -4953,14 +4972,16 @@ public class Utils extends IO {
 
 	public Macro(boolean isText, String macro) {
 	    this.isText= isText;
-	    this.macro  =macro.trim();
+	    this.macro  =macro;
 	    if(!isText) {
 		//${macro name=value ...}
-		List<String> toks = splitUpTo(macro," ",2);
-		if(toks.size()>1) {
-		    this.macro = toks.get(0).trim();
-		    String s = toks.get(1).replace("_quote_","\"");
-		    this.properties = parseKeyValue(s);
+		if(!this.macro.matches("^[^ ]+:.*"))  {
+		    List<String> toks = splitUpTo(macro," ",2);
+		    if(toks.size()>1) {
+			this.macro = toks.get(0).trim();
+			String s = toks.get(1).replace("_quote_","\"");
+			this.properties = parseKeyValue(s);
+		    }
 		}
 		//		System.err.println("MACRO: is macro:" + macro +" props:" + properties );
 	    } else {
@@ -6244,6 +6265,13 @@ public class Utils extends IO {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+	if(true) {
+	    String s = "${xformat:iso8601} date: ${date format=\"yyyy\"} ${foo} -1 week: ${date:-1 week}  date:now ${date:now} xx";
+	    System.err.println(normalizeTemplateUrl(s));
+	    return;
+	}
+
+
 	if(true) {
 	    String s = "format=\"yyyy-MM-dd HH:mm\" link=true";
 	    System.err.println(parseKeyValue(s).get("format"));
