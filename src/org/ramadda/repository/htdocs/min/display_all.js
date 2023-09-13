@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Sep 12 13:41:51 MDT 2023";
+var build_date="RAMADDA build date: Wed Sep 13 09:08:15 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -18454,7 +18454,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             this.displayData(args.reload, debug);
         },
         getWikiAttributes: function(attrs) {
-            this.defineWikiAttributes(["vAxisMinValue", "vAxisMaxValue"]);
+            this.defineWikiAttributes(["vAxisMinValue", "vAxisMaxValue",'vAxisExplicit']);
             SUPER.getWikiAttributes.call(this, attrs);
             if (this.colorList.join(",") != "blue,red,green") {
                 attrs.push("colors");
@@ -19744,6 +19744,16 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    chartOptions.vAxis.minValue = this.getProperty("vAxisMinValue");
 	    chartOptions.vAxis.maxValue = this.getProperty("vAxisMaxValue");
 
+	    if(this.getProperty('vAxisExplicit')) {
+		chartOptions.vAxis.viewWindowMode='explicit';
+		chartOptions.vAxis.viewWindow  ={
+		    max:chartOptions.vAxis.maxValue,
+                    min:chartOptions.vAxis.minValue
+		}
+	    }
+
+
+
 
 	    chartOptions.vAxis.logScale = this.getProperty("vAxisLogScale",this.getProperty("logScale"));
 	    chartOptions.hAxis.logScale = this.getProperty("hAxisLogScale");
@@ -20132,6 +20142,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    }
 	},
 	drawChart:function(chart,dataTable,chartOptions) {
+
 	    chart.draw(dataTable, chartOptions);
 	},
 
@@ -20251,6 +20262,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
  	{p:'indexIsString',ex:'true',tt:'if index is a string set to true'},
 	{p:'vAxisMinValue',ex:''},
 	{p:'vAxisMaxValue',ex:''},
+	{p:'vAxisExplicit',ex:true,tt:'use the min/max values explicitly'},	
 	{p:'&lt;field&gt;.vAxisMinValue',ex:'',tt:'Min value for the field'},
 	{p:'&lt;field&gt;.vAxisMaxValue',ex:'',tt:'Max value for the field'},	
 	{p:'vAxisSharedRange',ex:'true',tt:'use the same max value across all time series'},
