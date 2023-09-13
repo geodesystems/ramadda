@@ -546,6 +546,7 @@ public class GeoJson extends JsonUtil {
         } catch (Exception ignore) {
             return bounds;
         }
+	if(coords1==null) return bounds;
         String type = readValue(feature, "geometry.type", "NULL");
 	if(type==null) return bounds;
         if (type.equals("Polygon") || type.equals("MultiLineString")) {
