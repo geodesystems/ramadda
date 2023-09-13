@@ -1788,6 +1788,8 @@ public class Seesv implements SeesvCommands {
         new Category("Input","Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XML, Shapefile, etc."),
         new Cmd(CMD_DELIMITER, "Specify the input delimiter",
                 new Arg("delimiter", "Use 'space' for space, 'tab' for tab",  ATTR_SIZE, "5")),
+	new Cmd(CMD_INPUTCOMMENT,"Input comment",
+		new Arg("comment")),
         new Cmd(CMD_TAB, "Use tabs. A shortcut for -delimiter tab"),
         new Cmd(CMD_WIDTHS, "Columns are fixed widths",
 		new Arg("widths", "w1,w2,...,wN")),
