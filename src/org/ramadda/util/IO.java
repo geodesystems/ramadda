@@ -470,7 +470,7 @@ public class IO {
 		    if(path.body!=null) {
 			huc.setDoOutput(true);
 			huc.setRequestProperty("Content-Length",
-						  Integer.toString(path.body.length()));
+					       Integer.toString(path.body.length()));
 			huc.getOutputStream().write(path.body.getBytes());
 		    }
 
@@ -1406,7 +1406,7 @@ public class IO {
     }
 
 
-   /**                                                                                             
+    /**                                                                                             
      * _more_                                                                                       
      *                                                                                              
      * @param outputStream _more_                                                                   
@@ -1913,7 +1913,7 @@ public class IO {
     /**
      *
      * @param fileOrUrl _more_
-a     * @param suffix _more_
+     a     * @param suffix _more_
      * @return _more_
      */
     public static boolean hasSuffix(String fileOrUrl, String suffix) {
@@ -1976,6 +1976,24 @@ a     * @param suffix _more_
             return new Result(error, connection.getResponseCode(), true, exc);
         }
     }
+
+
+    public static InputStream pipeIt(PipedThing runnable) throws Exception {
+	final PipedOutputStream pos = new PipedOutputStream();
+	final PipedInputStream  pis = new PipedInputStream(pos);
+	ucar.unidata.util.Misc.run(new Runnable() {
+		public void run() {
+		    runnable.run(pos);
+		    IO.close(pos);			
+		}
+	    });
+	return pis;
+    }
+
+    public static interface PipedThing {
+	public void run(OutputStream os);
+    }
+
 
 
 
@@ -2206,8 +2224,6 @@ a     * @param suffix _more_
 	public String[] getRequestArgs () {
 	    return requestArgs;
 	}
-
-
 
 
     }
