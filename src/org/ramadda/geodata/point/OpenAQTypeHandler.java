@@ -40,11 +40,7 @@ import java.util.List;
  */
 public class OpenAQTypeHandler extends PointTypeHandler {
 
-
-    /** _more_ */
-    private SimpleDateFormat dateSDF;
-
-    /** _more_ */
+        /** _more_ */
     private static int IDX = RecordTypeHandler.IDX_LAST + 1;
 
     /** _more_ */
@@ -64,7 +60,20 @@ public class OpenAQTypeHandler extends PointTypeHandler {
     private static int IDX_HOURS_OFFSET = IDX++;
 
 
+    /** _more_ */
+    private SimpleDateFormat dateSDF;
 
+    private static final String[]
+	SEESV_ARGS = new String[] {
+	"-columns", "utc,parameter,value,latitude,longitude",
+	"-unfurl", "parameter", "value", "utc",
+	"latitude,longitude",
+	"-indateformat", "yyyy-MM-dd'T'HH:mm:ss", "",
+	"-sortby","utc","up","date",
+	"-addheader",
+	"utc.id date date.type date date.format yyyy-MM-dd'T'HH:mm:ss date.label \"Date\" ",
+	"-print"
+    };
 
     /**
      * _more_
@@ -87,7 +96,8 @@ public class OpenAQTypeHandler extends PointTypeHandler {
         if (fromImport) {
             return;
         }
-	String url = "https://api.openaq.org/v2/locations/235827?limit=100&page=1&offset=0&sort=asc";
+	String id = (String)entry.getValue(IDX_LOCATION_ID);
+	String url = HU.url("https://api.openaq.org/v2/locations/" + id,"limit","100","page","1","offset","0");
 	IO.Result result = IO.doGetResult(new URL(url));
 	if(result.getError()) {
 	    getLogManager().logError("OpenAQTypeHandler: Error reading location:" +url+" error:" + result.getResult());
@@ -153,13 +163,14 @@ public class OpenAQTypeHandler extends PointTypeHandler {
         }
         Date now = new Date();
         Integer hoursOffset = (Integer) entry.getIntValue(IDX_HOURS_OFFSET,
-							  Integer.valueOf(24));
+							  Integer.valueOf(24*7));
 
         GregorianCalendar cal = new GregorianCalendar();
         cal.setTime(now);
         if (dateSDF == null) {
-            dateSDF = RepositoryUtil.makeDateFormat("yyyy-MM-dd'T'HH:mm");
+            dateSDF = Utils.makeDateFormat("yyyy-MM-dd'T'HH:mm");
         }
+        String endDate = dateSDF.format(cal.getTime());
         cal.add(cal.HOUR_OF_DAY, -hoursOffset.intValue());
         String startDate = dateSDF.format(cal.getTime());
 	String url  = HU.url("https://api.openaq.org/v2/measurements",
@@ -170,6 +181,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
 			     "sort","desc",
 			     "order_by","datetime",
 			     "date_from", startDate,
+			     "date_to", endDate,			     
 			     "location_id",location);
 
         return url;
@@ -209,25 +221,19 @@ public class OpenAQTypeHandler extends PointTypeHandler {
         @Override
         public InputStream doMakeInputStream(boolean buffered)
 	    throws Exception {
-	    //            PipedInputStream      in   = new PipedInputStream();
-	    //            PipedOutputStream     out  = new PipedOutputStream(in);
-
-            ByteArrayOutputStream bos  = new ByteArrayOutputStream();
-            String[]              args = new String[] {
-                "-columns", "location,utc,parameter,value,latitude,longitude",
-                "-unfurl", "parameter", "value", "utc",
-                "location,latitude,longitude", "-addheader",
-                "utc.id date date.type date date.format yyyy-MM-dd'T'HH:mm:ss.SSS date.label \"Date\" ",
-                "-print"
-            };
-            Seesv csvUtil = new Seesv(args,
-				      new BufferedOutputStream(bos),
-				      null);
-	    InputStream is = super.doMakeInputStream(buffered);
-            csvUtil.setInputStream(super.doMakeInputStream(buffered));
-            csvUtil.run(null);
-            return new BufferedInputStream(
-					   new ByteArrayInputStream(bos.toByteArray()));
-        }
+	    final InputStream is = super.doMakeInputStream(buffered);
+	    return IO.pipeIt(new IO.PipedThing(){
+		    public void run(OutputStream os)  {
+			try {
+			    Seesv csvUtil = new Seesv(SEESV_ARGS, new BufferedOutputStream(os),null);
+			    csvUtil.setInputStream(is);
+			    csvUtil.run(null);
+			} catch(Exception exc) {
+			    System.err.println("Error reading OpenAQ:" + getFilename()+"\nError:" + exc);
+			    exc.printStackTrace();
+			}
+			IO.close(is);
+		    }});
+	}
     }
 }

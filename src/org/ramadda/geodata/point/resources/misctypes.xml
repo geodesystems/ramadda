@@ -88,7 +88,7 @@ e.g. 270997 in <a href=https://explore.openaq.org/locations/270997>https://explo
      <column  name="city"  label="City" cansearch="true"/>
      <column  name="sensor"  label="Sensor" type="enumerationplus" default="" cansearch="true"/>
      <column  name="stationary"  label="Stationary" type="boolean" default="true" cansearch="true"/>
-     <column  name="hours_offset"  label="Offset Hours" type="int" default="24" cansearch="true"/>
+     <column  name="hours_offset"  label="Offset Hours" type="int" default="168" cansearch="true"/>
      <property name="record.properties">
    header.standard=true
  </property>
