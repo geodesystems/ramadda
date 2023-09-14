@@ -33,8 +33,8 @@ e.g. 270997 in <a href=https://explore.openaq.org/locations/270997>https://explo
 +row
 +col-md-9
 {{group showMenu="true"}}
-{{display_linechart fields=pm25 vAxisMinValue="0"}}
-{{display_linechart fields=temperature}}
+{{display_linechart fields="pm2_5|pm10_0|pm1_0" vAxisMinValue="0"}}
+{{display_linechart fields="temperature|o3|s03|co"}}
 {{display_download showMenu="false"}}
 {{display_table showMenu="false"}}
 -col
