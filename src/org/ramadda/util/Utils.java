@@ -1353,15 +1353,15 @@ public class Utils extends IO {
      *  @return _more_
      */
     public static SimpleDateFormat makeDateFormat(String format,
-						  String timezone) {
+						  String ...timezone) {
         SimpleDateFormat sdf = null;
-	if(format!=null && format.trim().equals("iso8601")) {
-	    sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+	if(format!=null && (format.trim().equals("iso8601") || format.trim().equals("iso"))) {
+	    sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 	} else {
 	    sdf = new SimpleDateFormat(format);
 	}
-        if (timezone != null) {
-            sdf.setTimeZone(TimeZone.getTimeZone(timezone));
+        if (timezone.length>0) {
+            sdf.setTimeZone(TimeZone.getTimeZone(timezone[0]));
         }
 
         return sdf;
