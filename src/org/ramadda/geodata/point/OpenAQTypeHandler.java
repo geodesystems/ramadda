@@ -65,13 +65,16 @@ public class OpenAQTypeHandler extends PointTypeHandler {
 
     private static final String[]
 	SEESV_ARGS = new String[] {
-	"-columns", "utc,parameter,value,latitude,longitude",
-	"-unfurl", "parameter", "value", "utc",
-	"latitude,longitude",
 	"-indateformat", "yyyy-MM-dd'T'HH:mm:ss", "",
-	"-sortby","utc","up","date",
-	"-addheader",
-	"utc.id date date.type date date.format yyyy-MM-dd'T'HH:mm:ss date.label \"Date\" ",
+	"-columns", "utc,parameter,value,latitude,longitude",
+	"-unfurl", "parameter", "value", "utc","latitude,longitude",
+	"-set","utc", "0","date",
+	//normalize the params
+	"-changerow","0","*","^pm10$","pm10.0",	
+	"-changerow","0","*","^pm1$","pm1.0",
+	"-changerow","0","*","^pm.*25$","pm2.5",
+	"-sortby","date","up","date",
+	"-addheader","date.format yyyy-MM-dd'T'HH:mm:ss",
 	"-print"
     };
 

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<types supercategory="Geoscience">
+
+  <type name="type_point_openaq"  description="Open AQ Air Quality" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.OpenAQTypeHandler">
+    <property name="icon" value="/point/openaq.png"/>
+    <property name="form.resource.show" value="false"/>
+    <property name="form.properties.show" value="false"/>
+    <property name="form.date.show" value="false"/>
+    <property name="form.area.show" value="false"/>
+    <property name="form.header.new">
+<![CDATA[
++note
+Just enter the Location ID. To find the ID view the map at
+<a target=_map href=https://explore.openaq.org/>https://explore.openaq.org/</a>, select the station then
+click on "Show Details". The ID is in the URL, 
+e.g. 270997 in <a href=https://explore.openaq.org/locations/270997>https://explore.openaq.org/locations/270997</a>
+-note]]></property>
+     <column name="location_id" label="Location ID" 	     showinformfirst="true"/>
+     <column  name="country"  label="Country" cansearch="true"/>
+     <column  name="city"  label="City" cansearch="true"/>
+     <column  name="sensor"  label="Sensor" type="enumerationplus" default="" cansearch="true"/>
+     <column  name="stationary"  label="Stationary" type="boolean" default="true" cansearch="true"/>
+     <column  name="hours_offset"  label="Offset Hours" type="int" default="168" cansearch="true"/>
+     <property name="record.properties">
+   header.standard=true
+ </property>
+
+<wiki>
+<![CDATA[
++section  title="Air Quality Station: {{name}}"
+{{description}}
+----
++row
++col-md-9
+{{group showMenu="true"}}
+{{display_linechart fields=pm25 vAxisMinValue="0"}}
+{{display_linechart fields=temperature}}
+{{display_download showMenu="false"}}
+{{display_table showMenu="false"}}
+-col
++col-md-3
+<a target=_openaq href="https://explore.openaq.org/locations/{{field name=location_id}}">View at OpenAQ</a>
+{{map showSearchLocation="false" }}
+<table class="formtable">
+     {{field name="location_id"  row.label="Location ID:"}}
+     {{field name="city"  row.label="City:"}}
+     {{field name="country"  row.label="Country:"}}
+     {{field name="sensor"  row.label="Sensor:"}}     
+     {{field name="stationary"  row.label="Is Stationary:"}}     
+</table>
+-col
+-row
+]]>
+
+</wiki>
+
+<property name="mapglyphs">
+  <![CDATA[
+props:fontSize:0px,iconSize:20,canvasWidth:100,canvasHeight:100,font:28px sans-serif,defaultField:pm25,
+circle,width:cw-10,height:ch,pos:c,dx:cw2,dy:-ch2,colorBy:${_field},colorTable:airquality,colorByMin:0,colorByMax:300
+label,pos:c,dx:cw2,dy:-ch2,label:${${_field} suffix=" ${unit}" decimals=2}
+]]></property>
+
+
+
+  </type>
+
+  <type name="type_point_purpleair"  description="Purple Air Sensor" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.PurpleAirTypeHandler">
+    <action name="gethistory" label="Download History" icon="fas fa-download"/>
+    <action name="clearfile" label="Clear File" icon="fas fa-rotate-right" canedit="true"/>
+    <property name="icon" value="/point/purpleair/icon.png"/>
+    <property name="form.resource.show" value="false"/>
+    <property name="form.date.show" value="false"/>
+    <property name="form.area.show" value="false"/>
+    <property name="form.location.show" value="true"/>
+    <property name="form.properties.show" value="false"/>
+    <property name="map.chart.fields" value="temperature,pm2.5"/>          
+    <column  name="sensor_id"  label="Sensor ID" type="string"
+	     showinformfirst="true"
+	     postfix="&lt;thin_hr&gt;" help="Enter the sensor ID:"/>
+     <column  name="private_key"  label="Private Key"  type="password"/>
+     <column  name="active"  label="Active"  type="boolean" default="true"/>     
+     <column  name="fields"  label="Fields"  type="enumeration" values="short:Short,all:All"
+	      default="short"
+	      suffix="What fields to gather. Note: if you change this then also clear the file from the File menu. &lt;a target=_help href=/repository/point/purpleair_index.html#fields&gt;More information&lt;/a&gt;"/>
+
+     <column  name="model"  label="Model" type="string" editable="false"/>
+     <column  name="hardware"  label="Hardware" type="string" editable="false"/>     
+     <column  name="location_type"  label="Location Type" type="enumeration" values="outside,inside" editable="false"/>     
+<property name="mapglyphs">
+  <![CDATA[
+props:fontSize:0px,iconSize:20,canvasWidth:100,canvasHeight:100,font:28px sans-serif,defaultField:pm2_5,
+circle,width:cw-10,height:ch,pos:c,dx:cw2,dy:-ch2,colorBy:${_field},colorTable:airquality,colorByMin:0,colorByMax:300
+label,pos:c,dx:cw2,dy:-ch2,label:${${_field} suffix=" ${unit}" decimals=2}
+]]></property>
+
+<property name="bubble">
+<![CDATA[
++section  title="Purple Air Station: {{name}}"
+{{property lastRecords="1000"}}
+{{group showMenu="true" }}
+{{display_linechart fields="pm2_5" }}
+{{display_linechart fields="temperature" }}
+]]></property>
+
+
+<property name="record.properties">
+skiplines=1
+fields=date[type=date format="yyyy-MM-dd'T'HH:mm:ssZ"],humidity[type=double unit="%"],temperature[type=double offset1="-32" scale="0.555555" unit="celsius" ],pressure[type=double unit=mb],voc[type=double ],ozone1[type=double unit=ppb],pm1_0[type=double ],pm2_5[type=double ],pm10_0[type=double ],0_3_um_count[type=double ],0_5_um_count[type=double ],1_0_um_count[type=double ],2_5_um_count[type=double ],5_0_um_count[type=double ],10_0_um_count[type=double ]
+</property>
+<wiki>
+<![CDATA[
++section  title="Purple Air Station: {{name}}"
+{{description}}
+----
++row
++col-md-8
+{{property lastRecords="20000"}}
+{{group showMenu="true" }}
+{{display_linechart fields="pm2_5" }}
+{{display_linechart fields="temperature" }}
+{{display_linechart fields="humidity" }}
+-col
++col-md-4
+{{resource  message="" title="Download Data"}}
+:p
+{{map showSearchLocation="false" }}
+<table class="formtable">
+     {{field name="numberofpoints"  row.label="#&nbsp;Records:"}}
+     {{field name="startdate"  format="yyyy-MM-dd HH:mm Z" row.label="Start:"}}
+     {{field name="enddate"  format="yyyy-MM-dd HH:mm Z" row.label="End:"}}
+     {{field name="altitude"  row.label="Altitude:"}}
+     {{field name="sensor_id"  row.label="Sensor ID:"}}
+     {{field name="active"  row.label="Active:"}}
+     {{field name="model"  row.label="Model:"}}
+     {{field name="hardware"  row.label="Hardware:"}}
+     {{field name="location_type"  row.label="Location:"}}
+</table>
+-col
+-row
+]]>
+</wiki>
+</type>
+
+
+
+
+</types>
