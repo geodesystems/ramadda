@@ -4654,7 +4654,8 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 			   isMultiEntry:true,
 			   icon:Ramadda.getUrl("/icons/folder.png")});
 
-	    new GlyphType(this,GLYPH_DATA,"Data", {},
+	    new GlyphType(this,GLYPH_DATA,"Data",
+ 			  {externalGraphic: externalGraphic},
 			  MyEntryPoint,
 			  {isData:true, tooltip:'Select a map data entry to display',
 			   icon:Ramadda.getUrl("/icons/chart.png")});
