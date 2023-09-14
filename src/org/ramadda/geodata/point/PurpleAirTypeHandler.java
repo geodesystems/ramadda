@@ -78,19 +78,18 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
     /**  */
     public static final int IDX_LOCATION_TYPE = IDX++;
 
+    /**  */
+    private static final String FIELDS_STRING_SHORT =
+        "humidity,temperature,pressure,voc,ozone1,pm1.0,pm2.5,pm10.0,0.3_um_count,0.5_um_count,1.0_um_count,2.5_um_count,5.0_um_count,10.0_um_count";
 
 
     private static final String FIELDS_DOWNLOAD_ALL = "humidity,humidity_a,humidity_b,temperature,temperature_a,temperature_b,pressure,pressure_a,pressure_b,voc,voc_a,voc_b,analog_input,pm1.0_atm,pm1.0_atm_a,pm1.0_atm_b,pm1.0_cf_1,pm1.0_cf_1_a,pm1.0_cf_1_b,pm2.5_alt,pm2.5_alt_a,pm2.5_alt_b,pm2.5_atm,pm2.5_atm_a,pm2.5_atm_b,pm2.5_cf_1,pm2.5_cf_1_a,pm2.5_cf_1_b,pm10.0_atm,pm10.0_atm_a,pm10.0_atm_b,pm10.0_cf_1,pm10.0_cf_1_a,pm10.0_cf_1_b,scattering_coefficient,scattering_coefficient_a,scattering_coefficient_b,deciviews,deciviews_a,deciviews_b,visual_range,visual_range_a,visual_range_b,0.3_um_count,0.3_um_count_a,0.3_um_count_b,0.5_um_count,0.5_um_count_a,0.5_um_count_b,1.0_um_count,1.0_um_count_a,1.0_um_count_b,2.5_um_count,2.5_um_count_a,2.5_um_count_b,5.0_um_count,5.0_um_count_a,5.0_um_count_b,10.0_um_count,10.0_um_count_a,10.0_um_count_b";
-
-    /**  */
-    private static final String FIELDS_STRING_SHORT =
-        "humidity,temperature,pressure,voc,ozone1,pm1_0,pm2_5,pm10_0,0_3_um_count,0_5_um_count,1_0_um_count,2_5_um_count,5_0_um_count,10_0_um_count";
 
 
 
     /**  */
     private static final String FIELDS_STRING_ALL =
-        "humidity,humidity_a,humidity_b,temperature,temperature_a,temperature_b,pressure,pressure_a,pressure_b,voc,voc_a,voc_b,ozone1,analog_input,pm1_0,pm1_0_a,pm1_0_b,pm1_0_atm,pm1_0_atm_a,pm1_0_atm_b,pm1_0_cf_1,pm1_0_cf_1_a,pm1_0_cf_1_b,pm2_5_alt,pm2_5_alt_a,pm2_5_alt_b,pm2_5,pm2_5_a,pm2_5_b,pm2_5_atm,pm2_5_atm_a,pm2_5_atm_b,pm2_5_cf_1,pm2_5_cf_1_a,pm2_5_cf_1_b,pm2_5_10minute,pm2_5_10minute_a,pm2_5_10minute_b,pm2_5_30minute,pm2_5_30minute_a,pm2_5_30minute_b,pm2_5_60minute,pm2_5_60minute_a,pm2_5_60minute_b,pm2_5_6hour,pm2_5_6hour_a,pm2_5_6hour_b,pm2_5_24hour,pm2_5_24hour_a,pm2_5_24hour_b,pm2_5_1week,pm2_5_1week_a,pm2_5_1week_b,pm10_0,pm10_0_a,pm10_0_b,pm10_0_atm,pm10_0_atm_a,pm10_0_atm_b,pm10_0_cf_1,pm10_0_cf_1_a,pm10_0_cf_1_b,scattering_coefficient,scattering_coefficient_a,scattering_coefficient_b,deciviews,deciviews_a,deciviews_b,visual_range,visual_range_a,visual_range_b,0_3_um_count,0_3_um_count_a,0_3_um_count_b,0_5_um_count,0_5_um_count_a,0_5_um_count_b,1_0_um_count,1_0_um_count_a,1_0_um_count_b,2_5_um_count,2_5_um_count_a,2_5_um_count_b,5_0_um_count,5_0_um_count_a,5_0_um_count_b,10_0_um_count,10_0_um_count_a,10_0_um_count_b";
+        "humidity,humidity_a,humidity_b,temperature,temperature_a,temperature_b,pressure,pressure_a,pressure_b,voc,voc_a,voc_b,ozone1,analog_input,pm1.0,pm1.0_a,pm1.0_b,pm1.0_atm,pm1.0_atm_a,pm1.0_atm_b,pm1.0_cf_1,pm1.0_cf_1_a,pm1.0_cf_1_b,pm2.5_alt,pm2.5_alt_a,pm2.5_alt_b,pm2.5,pm2.5_a,pm2.5_b,pm2.5_atm,pm2.5_atm_a,pm2.5_atm_b,pm2.5_cf_1,pm2.5_cf_1_a,pm2.5_cf_1_b,pm2.5_10minute,pm2.5_10minute_a,pm2.5_10minute_b,pm2.5_30minute,pm2.5_30minute_a,pm2.5_30minute_b,pm2.5_60minute,pm2.5_60minute_a,pm2.5_60minute_b,pm2.5_6hour,pm2.5_6hour_a,pm2.5_6hour_b,pm2.5_24hour,pm2.5_24hour_a,pm2.5_24hour_b,pm2.5_1week,pm2.5_1week_a,pm2.5_1week_b,pm10.0,pm10.0_a,pm10.0_b,pm10.0_atm,pm10.0_atm_a,pm10.0_atm_b,pm10.0_cf_1,pm10.0_cf_1_a,pm10.0_cf_1_b,scattering_coefficient,scattering_coefficient_a,scattering_coefficient_b,deciviews,deciviews_a,deciviews_b,visual_range,visual_range_a,visual_range_b,0.3_um_count,0.3_um_count_a,0.3_um_count_b,0.5_um_count,0.5_um_count_a,0.5_um_count_b,1.0_um_count,1.0_um_count_a,1.0_um_count_b,2.5_um_count,2.5_um_count_a,2.5_um_count_b,5.0_um_count,5.0_um_count_a,5.0_um_count_b,10.0_um_count,10.0_um_count_a,10.0_um_count_b";
 
     /**  */
     private static final List<String> FIELDS_LIST_SHORT =
@@ -146,6 +145,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 	StringBuilder sb = new StringBuilder();
 	sb.append("date[type=date format=\"yyyy-MM-dd'T'HH:mm:ssZ\"]");
 	for(String field: fields) {
+	    field = field.replace(".","_");
 	    sb.append(",");
 	    sb.append(field);	    
 	    sb.append("[type=double ");
