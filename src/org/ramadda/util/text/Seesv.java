@@ -2795,7 +2795,7 @@ public class Seesv implements SeesvCommands {
 		new Arg("commands", "Commands. Ends with -endapply", ATTR_ROWS, "6")),
         new Cmd(CMD_SORTBY, "", ARG_LABEL,"Sort",
                 new Arg(ARG_COLUMNS, "Column to sort on", ATTR_TYPE, TYPE_COLUMNS),
-                new Arg("direction", "Direction", ATTR_TYPE, "enumeration","values","up,down"),
+                new Arg("direction", "Direction - up or down", ATTR_TYPE, "enumeration","values","up,down"),
 		new Arg("how", "How to sort - string, length, date, extract (number)", ATTR_TYPE, "enumeration","values","string,number,length,extract")),
 
 	/*        new Cmd(CMD_SORT, "Sort",
@@ -4408,14 +4408,14 @@ public class Seesv implements SeesvCommands {
 		    if (date.equals("now")) {
 			dttm = new Date();
 		    } else if (sdf2.length() > 0) {
-			SimpleDateFormat sdf = new SimpleDateFormat(sdf2);
+			SimpleDateFormat sdf = Utils.makeDateFormat(sdf2);
 			dttm = sdf.parse(date);
 		    } else {
 			dttm = Utils.parseDate(date);
 		    }
 		    ctx.addProcessor(
 				     new DateOps.DateBefore(
-							    col, new SimpleDateFormat(sdf1), dttm));
+							    col, Utils.makeDateFormat(sdf1), dttm));
 
 		    return i;
 		} catch(Exception exc) {
@@ -4433,14 +4433,14 @@ public class Seesv implements SeesvCommands {
 		    if (date.equals("now")) {
 			dttm = new Date();
 		    } else if (sdf2.length() > 0) {
-			SimpleDateFormat sdf = new SimpleDateFormat(sdf2);
+			SimpleDateFormat sdf = Utils.makeDateFormat(sdf2);
 			dttm = sdf.parse(date);
 		    } else {
 			dttm = Utils.parseDate(date);
 		    }
 		    ctx.addProcessor(
 				     new DateOps.DateAfter(
-							   col, new SimpleDateFormat(sdf1), dttm));
+							   col, Utils.makeDateFormat(sdf1), dttm));
 
 		    return i;
 	       	} catch(Exception exc) {
@@ -4455,7 +4455,7 @@ public class Seesv implements SeesvCommands {
 		String       sdf  = args.get(++i);
 		ctx.addProcessor(
 				 new RowCollector.DateLatest(ctx,
-							     cols, col, new SimpleDateFormat(sdf)));
+							     cols, col, Utils.makeDateFormat(sdf)));
 
 		return i;
 	    });
@@ -5951,7 +5951,7 @@ public class Seesv implements SeesvCommands {
     public static class Dater {
 	private static String DFLT_DATEFORMAT = "yyyy-MM-dd HH:mm:ss";
 	private String sdfString = DFLT_DATEFORMAT;
-	private SimpleDateFormat sdf = new SimpleDateFormat(sdfString);
+	private SimpleDateFormat sdf = Utils.makeDateFormat(sdfString);
 	private String timezone="UTC";
 
 	public Dater() {
@@ -5964,7 +5964,7 @@ public class Seesv implements SeesvCommands {
 
 	public void setFormat(String fmt, String timezone) {
 	    if(!Utils.stringDefined(fmt)) fmt = DFLT_DATEFORMAT;
-	    sdf = new SimpleDateFormat(sdfString = fmt);
+	    sdf = Utils.makeDateFormat(sdfString = fmt);
 	    if(!Utils.stringDefined(timezone)) {
 		this.timezone = timezone;
 	    }
