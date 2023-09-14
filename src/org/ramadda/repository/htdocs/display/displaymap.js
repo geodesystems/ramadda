@@ -888,6 +888,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'mapCenter',ex:'lat,lon',tt:'initial position'},
 	{p:'zoomLevel',ex:4,tt:'initial zoom'},
 	{p:'zoomTimeout',ex:500,tt:'initial zoom timeout delay. set this if the map is in tabs, etc, and not going to the initial zoom'},
+
+
 	{p:'fixedPosition',ex:true,tt:'Keep the initial position'},
 	{p:'linked',ex:true,tt:'Link location with other maps'},
 	{p:'linkGroup',ex:'some_name',tt:'Map groups to link with'},
@@ -895,6 +897,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'defaultMapLayer',ex:'osm|google.roads|esri.street|google.hybrid|google.terrain|google.satellite|opentopo|esri.topo|usfs|usgs.topo|naip|usgs.imagery|esri.shaded|esri.lightgray|esri.darkgray|esri.terrain|shadedrelief|esri.aeronautical|historic|osm.toner|osm.toner.lite'},
 	{p:'extraLayers',tt:'comma separated list of layers to display',
 	 ex:'baselayer:goes-visible,baselayer:nexrad,geojson:US States:/resources/usmap.json:fillColor:transparent'},
+
+	{p:'skipZero',ex:'true',tt:'Skip locations that are at 0,0'},
 
 	{p:'doPopup', ex:'false',tt:'Do not show popups'},
 	{p:'doPopupSlider', ex:'true',tt:'Do the inline popup that slides down'},
@@ -2987,6 +2991,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 return;
             }
 
+
+
+	    if(this.getSkipZero()) {
+		records = records.filter(record=>{
+		    return !(record.getLatitude()==0 && record.getLongitude()==0);
+		});
+	    }
 
 
 	    if(this.getShowTableOfContents(false)) {
