@@ -3127,7 +3127,9 @@ public abstract class Converter extends Processor {
                     pattern = pattern.substring(4);
                     s       = s.replaceFirst(pattern, value);
                 } else {
-                    s = s.replaceAll(pattern, value);
+                    String tmp = s.replaceAll(pattern, value);
+		    //		    System.err.println("P:" + pattern +" V:" + value +" S:" + s +" R:" + tmp);
+		    s = tmp;
                 }
                 //              System.out.println("\tchange:" + s);
                 //              if(!os.equals(s)) break;
@@ -3579,7 +3581,6 @@ public abstract class Converter extends Processor {
 		//		html = html.replace("\n"," ").replace("\r"," ");
 		Matcher matcher = pattern.matcher(html);
 		if (!matcher.find()) {
-		    System.err.println("Not foudn");
 		    for(String name: names)
 			add(ctx, row, "");
 		    return row;
@@ -3638,7 +3639,6 @@ public abstract class Converter extends Processor {
 			cacheFile = new File(Seesv.getTmpCacheDir(),"cached_" + Utils.makeID(url.replace("http:","https:")));
 		    }
 		    if(cacheFile.exists()) {
-			//			System.err.println("from Cache:"+ cacheFile);
 			html = IO.readContents(cacheFile);
 			if(!url.startsWith("https:") && cacheFile.getName().startsWith("cached_https_")) {
 			    url = url.replace("http:","https:");
@@ -3647,7 +3647,6 @@ public abstract class Converter extends Processor {
 		}
 		if(html==null) {
 		    try {
-			System.err.println("url:" + url);
 			if(url.startsWith("http:")) {
 			    //Try https first
 			    try {
@@ -3745,18 +3744,13 @@ public abstract class Converter extends Processor {
 		String image = null;
 		while(linkMatcher.find()) {
 		    String link =  linkMatcher.group(1);
-		    //		    System.out.println(link);
-		    //		    System.err.println("LINK:" + link);
 		    Matcher relMatcher = relPattern.matcher(link);		    
 		    if(!relMatcher.find()) continue;
 		    String rel = relMatcher.group(1);
-		    if(url.indexOf("howard")>=0)
-			System.err.println("REL:" + rel);
 		    if(!rel.equals("icon") && !rel.equals("shortcut icon") &&  !rel.equals("apple-touch-icon")) continue;
 		    Matcher hrefMatcher = hrefPattern.matcher(link);		    
 		    if(!hrefMatcher.find()) continue;
 		    image = hrefMatcher.group(1);
-		    //		    System.err.println("IMAGE:" + image);
 		    Matcher sizesMatcher = sizesPattern.matcher(link);		    
 		    if(sizesMatcher.find()) {
 			String sizes = hrefMatcher.group(1);
@@ -4092,20 +4086,19 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
-            //Don't process the first row
             if ( !rows.contains(rowCnt++)) {
                 if ( !ctx.getAllData()) {
                     return row;
                 }
             }
             List<Integer> indices = getIndices(ctx);
-            for (Integer idx : indices) {
-                int    index = idx.intValue();
+            for (int index : indices) {
+		if(!row.indexOk(index)) continue;
                 String s     = row.getString(index);
-                s = change(ctx, row, s);
-                row.set(index, s);
+                String changed = change(ctx, row, s);
+                row.set(index, changed);
             }
-
+	    //	    System.err.println(row);
             return row;
         }
 
