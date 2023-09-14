@@ -71,13 +71,26 @@ height=400px isPath=true radius=6 strokeWidth=0 colorBy=# colorByFields="#" colo
 
   <type name="type_point_openaq"  description="Open AQ Air Quality" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.OpenAQTypeHandler">
      <property name="icon" value="/point/openaq.png"/>
-     <column  name="location"  label="Location" cansearch="true"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.properties.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.header.new">
+<![CDATA[
++note
+Just enter the Location ID. To find the ID view the map at
+<a target=_map href=https://explore.openaq.org/>https://explore.openaq.org/</a>, select the station then
+click on "Show Details". The ID is in the URL, 
+e.g. 270997 in <a href=https://explore.openaq.org/locations/270997>https://explore.openaq.org/locations/270997</a>
+-note]]></property>
+     <column name="location_id" label="Location ID" 	     showinformfirst="true"/>
      <column  name="country"  label="Country" cansearch="true"/>
      <column  name="city"  label="City" cansearch="true"/>
+     <column  name="sensor"  label="Sensor" type="enumerationplus" default="" cansearch="true"/>
+     <column  name="stationary"  label="Stationary" type="boolean" default="true" cansearch="true"/>
      <column  name="hours_offset"  label="Offset Hours" type="int" default="24" cansearch="true"/>
- <property name="record.properties">
+     <property name="record.properties">
    header.standard=true
-   xpoint.csvcommands=-skip, 10,-stop,.*&lt;PRE&gt;.*,-print
  </property>
 
 <wiki>
@@ -86,17 +99,22 @@ height=400px isPath=true radius=6 strokeWidth=0 colorBy=# colorByFields="#" colo
 {{description}}
 ----
 +row
-+col-md-8
-{{group showMenu="true" layoutType="table" layoutColumns="1" showTitle="false"}}
-{{display type="linechart" showTitle="false" layoutHere="false" vAxisMinValue="0"}}
-{{resource  message="" title="Download Data"}}
++col-md-9
+{{group showMenu="true"}}
+{{display_linechart fields=pm25 vAxisMinValue="0"}}
+{{display_linechart fields=temperature}}
+{{display_download showMenu="false"}}
+{{display_table showMenu="false"}}
 -col
-+col-md-4
++col-md-3
+<a target=_openaq href="https://explore.openaq.org/locations/{{field name=location_id}}">View at OpenAQ</a>
 {{map showSearchLocation="false" }}
 <table class="formtable">
-     {{field name="location"  row.label="Location:"}}
+     {{field name="location_id"  row.label="Location ID:"}}
      {{field name="city"  row.label="City:"}}
      {{field name="country"  row.label="Country:"}}
+     {{field name="sensor"  row.label="Sensor:"}}     
+     {{field name="stationary"  row.label="Is Stationary:"}}     
 </table>
 -col
 -row

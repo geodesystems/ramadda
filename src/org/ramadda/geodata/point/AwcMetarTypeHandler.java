@@ -1,14 +1,9 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2023 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.point;
-
-
-import org.json.*;
-
-
 
 import org.ramadda.data.services.*;
 import org.ramadda.repository.Entry;
@@ -55,7 +50,7 @@ public class AwcMetarTypeHandler extends NwsStationTypeHandler {
      * @throws Exception On badnes
      */
     public AwcMetarTypeHandler(Repository repository, Element node)
-            throws Exception {
+	throws Exception {
         super(repository, node);
     }
 
@@ -70,7 +65,7 @@ public class AwcMetarTypeHandler extends NwsStationTypeHandler {
      */
     public void initializeNewEntry(Request request, Entry entry,
                                    boolean fromImport)
-            throws Exception {
+	throws Exception {
         super.initializeNewEntry(request, entry, fromImport);
         if (fromImport) {
             return;
@@ -96,14 +91,14 @@ public class AwcMetarTypeHandler extends NwsStationTypeHandler {
     @Override
     public String getPathForEntry(Request request, Entry entry,
                                   boolean forRead)
-            throws Exception {
+	throws Exception {
         if (entry.isFile()) {
             return super.getPathForEntry(request, entry, forRead);
         }
         String siteId = entry.getStringValue(IDX_SITE_ID, "");
         int    offset = (int) entry.getIntValue(IDX_TIME_OFFSET, 24);
         String url = URL.replace("{station}", siteId).replace("{offset}",
-                                 "" + offset);
+							      "" + offset);
 
         return url;
     }
