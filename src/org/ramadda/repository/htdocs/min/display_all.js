@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Sep 14 17:33:36 MDT 2023";
+var build_date="RAMADDA build date: Thu Sep 14 17:45:20 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -44071,7 +44071,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let style = {};
 		if(mapGlyph.isData()) {
 		    let displayAttrs = this.parseDisplayAttrs(this.jq('displayattrs').val());
-		} else if(props) {
+		}
+		if(props) {
 		    props.forEach(prop=>{
 			let id = 'glyphedit_' + prop;
 			if(prop.toLowerCase().indexOf('externalgraphic')>=0 || prop=='childIcon')  {
@@ -44519,7 +44520,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		});
 		let textarea = HU.textarea("",attrs,[ID,this.domId('displayattrs'),"rows",10,"cols", 60]);
 		content.push({header:"Display Properties", contents: HU.hbox([textarea, menuBar])});
-	    } else {
+	    }// else {
 		let r =  this.makeStyleForm(style,mapGlyph);
 		let div =
 		    HU.checkbox(this.domId('styledialogactive'),[ATTR_ID,
@@ -44527,7 +44528,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				'Active') +r.html;
 		content.push({header:"Style",contents:HU.div([ATTR_ID,this.domId('styledialog')],div)});
 		props = r.props;
-	    }
+//	    }
 	    if(mapGlyph) {
 		mapGlyph.getPropertiesComponent(content);
 	    }
@@ -46358,7 +46359,8 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    new GlyphType(this,GLYPH_DATA,"Data",
  			  {externalGraphic: externalGraphic},
 			  MyEntryPoint,
-			  {isData:true, tooltip:'Select a map data entry to display',
+			  {isData:true,
+			   tooltip:'Select a map data entry to display',
 			   icon:Ramadda.getUrl("/icons/chart.png")});
 
 	},
