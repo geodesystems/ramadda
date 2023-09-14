@@ -2817,7 +2817,8 @@ public class Utils extends IO {
      * @return _more_
      */
     public static String makeLabel(String label) {
-	if(label==null || label.length()<=2) return label;
+	if(label==null) return label;
+	if(label.length()<=2) return label.toUpperCase();
 	String olabel = label;
 	label = label.replaceAll("\\."," ").replaceAll("_", " ").replaceAll("-"," ");
 	label = label.replaceAll("\\s\\s+"," ");
