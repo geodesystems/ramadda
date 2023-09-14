@@ -182,7 +182,6 @@ public class DaymetTypeHandler extends PointTypeHandler {
             File file = repository.getEntryManager().getCacheFile(entry,
                             filename);
             if ( !file.exists()) {
-                ByteArrayOutputStream bos    = new ByteArrayOutputStream();
                 FileOutputStream      fos    = new FileOutputStream(file);
                 int                   stride = entry.getIntValue(IDX_STRIDE, 7);
                 String[]              args   = new String[] {
