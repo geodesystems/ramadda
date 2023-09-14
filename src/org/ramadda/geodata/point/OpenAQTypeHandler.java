@@ -1,47 +1,31 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2023 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.point;
 
+import org.ramadda.repository.*;
+import org.ramadda.repository.type.*;
+
 
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
-import org.ramadda.data.record.*;
-
-
 import org.ramadda.data.services.PointTypeHandler;
 import org.ramadda.data.services.RecordTypeHandler;
 
 
-import org.ramadda.repository.*;
-import org.ramadda.repository.map.*;
-import org.ramadda.repository.metadata.*;
-import org.ramadda.repository.output.*;
-import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
-
 import org.ramadda.util.Utils;
 import org.ramadda.util.text.Seesv;
 
 
+import org.json.*;
 import org.w3c.dom.*;
-
-import ucar.unidata.geoloc.Bearing;
-
-import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.Misc;
-
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
-
-
 import java.io.*;
 
+import java.net.URL;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
@@ -64,13 +48,17 @@ public class OpenAQTypeHandler extends PointTypeHandler {
     private static int IDX = RecordTypeHandler.IDX_LAST + 1;
 
     /** _more_ */
-    private static int IDX_LOCATION = IDX++;
+    private static int IDX_LOCATION_ID = IDX++;
 
     /** _more_ */
     private static int IDX_COUNTRY = IDX++;
 
     /** _more_ */
     private static int IDX_CITY = IDX++;
+
+    private static int IDX_SENSOR = IDX++;    
+
+    private static int IDX_STATIONARY = IDX++;    
 
     /** _more_ */
     private static int IDX_HOURS_OFFSET = IDX++;
@@ -86,9 +74,42 @@ public class OpenAQTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     public OpenAQTypeHandler(Repository repository, Element node)
-            throws Exception {
+	throws Exception {
         super(repository, node);
     }
+
+
+    @Override
+    public void initializeNewEntry(Request request, Entry entry,
+                                   boolean fromImport)
+	throws Exception {
+        super.initializeNewEntry(request, entry, fromImport);
+        if (fromImport) {
+            return;
+        }
+	String url = "https://api.openaq.org/v2/locations/235827?limit=100&page=1&offset=0&sort=asc";
+	IO.Result result = IO.doGetResult(new URL(url));
+	if(result.getError()) {
+	    getLogManager().logError("OpenAQTypeHandler: Error reading location:" +url+" error:" + result.getResult());
+	    throw new IllegalArgumentException("Error reading location:" + result.getResult());
+	}
+	JSONObject obj           = new JSONObject(result.getResult());
+	JSONObject location = obj.getJSONArray("results").getJSONObject(0);
+	JSONObject coords = location.getJSONObject("coordinates");
+	
+	entry.setName(location.getString("name"));
+	entry.setValue(IDX_COUNTRY,location.optString("country",""));
+	entry.setValue(IDX_CITY,location.optString("city",""));	
+	entry.setValue(IDX_STATIONARY,new Boolean(!location.optBoolean("isMobile",false)));
+	entry.setLatitude(coords.getDouble("latitude"));
+	entry.setLongitude(coords.getDouble("longitude"));	
+
+	JSONArray manu = location.optJSONArray("manufacturers");	
+	if(manu!=null && manu.length()>0) {
+	    entry.setValue(IDX_SENSOR,manu.getJSONObject(0).optString("modelName",""));
+	}
+    }
+
 
 
     /**
@@ -107,8 +128,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
     public RecordFile doMakeRecordFile(Request request, Entry entry,
                                        Hashtable properties,
                                        Hashtable requestProperties)
-            throws Exception {
-	System.err.println(getPathForEntry(request, entry,true));
+	throws Exception {
         return new OpenAQRecordFile(new IO.Path(getPathForEntry(request, entry,true)));
     }
 
@@ -125,15 +145,15 @@ public class OpenAQTypeHandler extends PointTypeHandler {
      */
     @Override
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
-            throws Exception {
-        String location = entry.getStringValue(IDX_LOCATION, (String) null);
+	throws Exception {
+        String location = entry.getStringValue(IDX_LOCATION_ID, (String) null);
         if ( !Utils.stringDefined(location)) {
             System.err.println("no location");
             return null;
         }
         Date now = new Date();
         Integer hoursOffset = (Integer) entry.getIntValue(IDX_HOURS_OFFSET,
-                                  Integer.valueOf(24));
+							  Integer.valueOf(24));
 
         GregorianCalendar cal = new GregorianCalendar();
         cal.setTime(now);
@@ -142,27 +162,18 @@ public class OpenAQTypeHandler extends PointTypeHandler {
         }
         cal.add(cal.HOUR_OF_DAY, -hoursOffset.intValue());
         String startDate = dateSDF.format(cal.getTime());
-        String url = "https://api.openaq.org/v1/measurements?format=csv&"
-                     + HtmlUtils.arg("date_from", startDate) + "&"
-                     + HtmlUtils.arg("location", location);
+	String url  = HU.url("https://api.openaq.org/v2/measurements",
+			     "format","csv",
+			     "limit","1000",
+			     "page","1",
+			     "offset","0",
+			     "sort","desc",
+			     "order_by","datetime",
+			     "date_from", startDate,
+			     "location_id",location);
 
-        //      System.err.println(url);
         return url;
     }
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fromImport _more_
-     *
-     * @throws Exception _more_
-     */
-    @Override
-    public void initializeNewEntry(Request request, Entry entry,
-                                   boolean fromImport)
-            throws Exception {}
 
     /**
      * Class description
@@ -197,7 +208,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
          */
         @Override
         public InputStream doMakeInputStream(boolean buffered)
-                throws Exception {
+	    throws Exception {
 	    //            PipedInputStream      in   = new PipedInputStream();
 	    //            PipedOutputStream     out  = new PipedOutputStream(in);
 
@@ -210,19 +221,13 @@ public class OpenAQTypeHandler extends PointTypeHandler {
                 "-print"
             };
             Seesv csvUtil = new Seesv(args,
-                                          new BufferedOutputStream(bos),
-                                          null);
+				      new BufferedOutputStream(bos),
+				      null);
 	    InputStream is = super.doMakeInputStream(buffered);
-	    System.err.println("IS:" + IO.readInputStream(is));
-
-
             csvUtil.setInputStream(super.doMakeInputStream(buffered));
             csvUtil.run(null);
-
-
-	    System.err.println("B:" + new String(bos.toByteArray()));
             return new BufferedInputStream(
-                new ByteArrayInputStream(bos.toByteArray()));
+					   new ByteArrayInputStream(bos.toByteArray()));
         }
     }
 }
