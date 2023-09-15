@@ -1799,6 +1799,13 @@ public class TypeHandler extends RepositoryManager {
                                            + getClass().getName()+" names:" + entryNames);
     }
 
+    /*
+      What is the file cache  time
+     */
+    public int getCacheTime() {
+	return getTypeProperty("file.cache",60*60);
+    }
+
     /**
      * _more_
      *
