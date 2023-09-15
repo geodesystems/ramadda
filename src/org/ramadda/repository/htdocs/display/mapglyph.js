@@ -1547,7 +1547,7 @@ MapGlyph.prototype = {
 	}
 	if(andZoomIn) {
 	    //The -1 is a flag to use the singlePointZoom
-	    this.display.getMap().setZoom(-1);
+	    this.display.getMap().zoomTo(-1,true);
 	}
     },
     getBounds: function() {

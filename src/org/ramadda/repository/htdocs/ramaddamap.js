@@ -1398,8 +1398,13 @@ RepositoryMap.prototype = {
     setZoom: function(zoom) {
 	this.zoomTo(zoom);
     },
-    zoomTo:function(zoom) {
-	if(zoom<0) zoom = this.params.singlePointZoom;
+    zoomTo:function(zoom,onlyIfWeNeedToZoomIn) {
+	if(zoom<0) {
+	    zoom = this.params.singlePointZoom;
+	}
+	if(onlyIfWeNeedToZoomIn) {
+	    if(zoom<this.getZoom()) return;
+	}
 	if(debugBounds)
 	    console.log("zoomTo:",zoom);
 	this.getMap().zoomTo(parseInt(zoom));
