@@ -332,8 +332,7 @@ public class ZipOutputHandler extends OutputHandler {
                     getMimeType(OUTPUT_ZIP));
             } else {
                 if (tmpFile == null) {
-                    tmpFile = getRepository().getStorageManager().getTmpFile(
-                        request, ".zip");
+                    tmpFile = getRepository().getStorageManager().getTmpFile(".zip");
                 } else {
                     isInternal = true;
                 }

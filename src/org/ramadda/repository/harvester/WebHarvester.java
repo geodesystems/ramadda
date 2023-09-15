@@ -584,7 +584,7 @@ public class WebHarvester extends Harvester {
 
         String fileName = url;
         String tail     = IO.getFileTail(url);
-        File   tmpFile  = getStorageManager().getTmpFile(null, tail);
+        File   tmpFile  = getStorageManager().getTmpFile(tail);
         //System.err.println ("WebHarvester: " + getName() +" fetching URL: " + url);
 
         try {

@@ -482,9 +482,7 @@ public class TabularOutputHandler extends OutputHandler {
 
 
         if (doImage) {
-            File imageFile = getRepository().getStorageManager().getTmpFile(
-                                 request.getRequest(),
-                                 entry.getName() + "_table.png");
+            File imageFile = getRepository().getStorageManager().getTmpFile(entry.getName() + "_table.png");
 
             Font font = new Font("Dialog", Font.PLAIN, 12);
             Image image = ImageUtils.renderHtml(html.toString(), 1200, null,
@@ -500,9 +498,7 @@ public class TabularOutputHandler extends OutputHandler {
         }
 
         if (doFile) {
-            File csvFile = getRepository().getStorageManager().getTmpFile(
-                               request.getRequest(),
-                               IOUtil.stripExtension(entry.getName())
+            File csvFile = getRepository().getStorageManager().getTmpFile(IOUtil.stripExtension(entry.getName())
                                + ".csv");
             IOUtil.writeFile(csvFile.toString(), sb.toString());
             FileInfo fileInfo = new FileInfo(csvFile);

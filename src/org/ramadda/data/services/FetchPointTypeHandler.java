@@ -219,7 +219,7 @@ public class FetchPointTypeHandler extends PointTypeHandler {
 
             return;
         }
-        File tmpFile = getStorageManager().getTmpFile(request, "csv");
+        File tmpFile = getStorageManager().getTmpFile("csv");
         boolean          addDate  = (Boolean) entry.getValue(IDX_ADD_DATE);
         String           contents = readContents(entry);
         StringBuilder    sb       = new StringBuilder();

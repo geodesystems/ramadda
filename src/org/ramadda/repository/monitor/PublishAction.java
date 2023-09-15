@@ -204,8 +204,7 @@ public class PublishAction extends MonitorAction {
 
             Request request = monitor.getRepository().getAdminRequest();
             File file =
-                monitor.getRepository().getStorageManager().getTmpFile(
-								       request, ".zip");
+                monitor.getRepository().getStorageManager().getTmpFile(".zip");
 
             request.putExtraProperty("zipfile", file);
             List<Entry> entries = new ArrayList<Entry>();

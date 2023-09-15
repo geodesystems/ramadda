@@ -1510,7 +1510,7 @@ public class ImageOutputHandler extends OutputHandler {
             int tx = totalWidth / 2 - twidth / 2;
             g.drawString(bottomLabel, tx, collage.getHeight(null) - labelPad);
         }
-        File file = getStorageManager().getTmpFile(request, "collage.png");
+        File file = getStorageManager().getTmpFile("collage.png");
         ImageUtils.writeImageToFile(collage, file.toString());
         Result result = new Result(new FileInputStream(file), "image/png");
         result.setReturnFilename("collage.png");
@@ -1604,7 +1604,7 @@ public class ImageOutputHandler extends OutputHandler {
             g.drawString(label, iwidth / 2 - (int) (rect.getWidth() / 2),
                          (int) (iheight - fm.getDescent() - pad));
             String name = getStorageManager().getOriginalFilename(path);
-            File   file = getStorageManager().getTmpFile(request, name);
+            File   file = getStorageManager().getTmpFile(name);
             String ext =
                 IO.getFileExtension(path).toLowerCase().replace(".", "");
             if (ext.equals("jpg")) {
@@ -1753,7 +1753,7 @@ public class ImageOutputHandler extends OutputHandler {
                             String tail = IO.getFileTail(
                                               child.getResource().getPath());
                             File file =
-                                getStorageManager().getTmpFile(request, tail);
+                                getStorageManager().getTmpFile(tail);
                             InputStream is =
                                 IO.doMakeInputStream(
                                     child.getResource().getPath(), true);
@@ -1788,8 +1788,7 @@ public class ImageOutputHandler extends OutputHandler {
                                           + ".png";
                             }
                             File tmp =
-                                getStorageManager().getTmpFile(request,
-                                    newFile);
+                                getStorageManager().getTmpFile(newFile);
                             ImageUtils.writeImageToFile(newImage,
                                     tmp.toString());
                             imageFile = tmp.toString();
@@ -1813,8 +1812,7 @@ public class ImageOutputHandler extends OutputHandler {
                                           + ".png";
                             }
                             File tmp =
-                                getStorageManager().getTmpFile(request,
-                                    newFile);
+                                getStorageManager().getTmpFile(newFile);
                             ImageUtils.writeImageToFile(image,
                                     tmp.toString());
                             imageFile = tmp.toString();
@@ -1868,7 +1866,7 @@ public class ImageOutputHandler extends OutputHandler {
         }
 
         String       tail                  = entry.getName() + ".gif";
-        File         file = getStorageManager().getTmpFile(request, tail);
+        File         file = getStorageManager().getTmpFile(tail);
         boolean      useGlobalPaletteValue = true;
         double       endPause              = request.get("endpause", 1.0);
         int          delay                 = request.get("delay", 100);

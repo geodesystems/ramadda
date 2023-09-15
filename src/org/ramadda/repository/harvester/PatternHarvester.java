@@ -1814,7 +1814,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         if (moveToStorage) {
             File fromFile;
 	    if(fileWrapper.isRemoteFile()) {
-		File tmp = getStorageManager().getTmpFile(request,fileName);
+		File tmp = getStorageManager().getTmpFile(fileName);
 		System.err.println("copying:" +fileWrapper);
 		fileWrapper.copyFileTo(tmp);
 		System.err.println("done copying");

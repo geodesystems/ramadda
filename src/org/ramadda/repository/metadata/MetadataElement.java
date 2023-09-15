@@ -773,7 +773,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         String theFile  = null;
         if (url.length() > 0) {
             String        tail       = IO.getFileTail(url);
-            File tmpFile = getStorageManager().getTmpFile(request, tail);
+            File tmpFile = getStorageManager().getTmpFile(tail);
             InputStream   fromStream = getStorageManager().getInputStreamFromUrl(request,url);
             OutputStream toStream =
                 getStorageManager().getFileOutputStream(tmpFile);

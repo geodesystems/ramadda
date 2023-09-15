@@ -975,8 +975,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         String mimeType = handler.getRepository().getMimeTypeFromSuffix(f.toString());
 
         if (false && request.get(ARG_THUMBNAIL, false)) {
-            File thumb = getStorageManager().getTmpFile(request,
-                             IO.getFileTail(f.toString()));
+            File thumb = getStorageManager().getTmpFile(IO.getFileTail(f.toString()));
             if ( !thumb.exists()) {
                 try {
                     Image image = Utils.readImage(f.toString());

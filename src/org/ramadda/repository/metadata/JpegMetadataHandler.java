@@ -134,7 +134,7 @@ public class JpegMetadataHandler extends MetadataHandler {
 	    format =  "jpg";
         }
 	thumbFile += format;
-        File f = getStorageManager().getTmpFile(request, thumbFile);
+        File f = getStorageManager().getTmpFile(thumbFile);
         ImageIO.write(finalImage,format, f);
         String fileName = getStorageManager().moveToEntryDir(entry,
                               f).getName();

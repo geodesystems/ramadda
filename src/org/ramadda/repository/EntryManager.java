@@ -929,7 +929,7 @@ public class EntryManager extends RepositoryManager {
 	    if(!canAddTo(request, parent)) {
 		return makeSnapshotForm(request, entry,messageError("You do not have permission to add to the parent entry"));
 	    }
-	    File zipFile = getStorageManager().getTmpFile(request,"snapshortimport.zip");
+	    File zipFile = getStorageManager().getTmpFile("snapshortimport.zip");
 	    FileOutputStream fos  = new FileOutputStream(zipFile);
 	    FileWriter zipFileWriter= new FileWriter(new ZipOutputStream(fos));
 	    StringBuilder entriesXml = new StringBuilder("<entries>\n");
@@ -1783,7 +1783,7 @@ public class EntryManager extends RepositoryManager {
 		    return new Result("", new StringBuilder(JsonUtil.map("error",JsonUtil.quote("No vote file available"))), JsonUtil.MIMETYPE);	
 		}
 		json = "{}";
-		f = getStorageManager().getTmpFile(request, "votes.json");
+		f = getStorageManager().getTmpFile("votes.json");
 		IOUtil.writeFile(f, json);
 		f = new File(getStorageManager().moveToEntryDir(entry,
 								f).getName());
@@ -2253,7 +2253,7 @@ public class EntryManager extends RepositoryManager {
 	} else {
 	    oldFileName = entry.getTypeHandler().getDefaultFilename();
 	}
-	File tmpFile = getStorageManager().getTmpFile(request,oldFileName);
+	File tmpFile = getStorageManager().getTmpFile(oldFileName);
         OutputStream  toStream   = getStorageManager().getFileOutputStream(tmpFile);
         IOUtil.writeTo(new ByteArrayInputStream(contents.getBytes()), toStream);
         IO.close(toStream);
@@ -3200,8 +3200,7 @@ public class EntryManager extends RepositoryManager {
 			parent = group;
 		    }
 		}
-		File f = getStorageManager().getTmpFile(request,
-							name);
+		File f = getStorageManager().getTmpFile(name);
 		fos = getStorageManager().getFileOutputStream(f);
 		try {
 		    IOUtil.writeTo(zin, fos);
@@ -3288,7 +3287,7 @@ public class EntryManager extends RepositoryManager {
 	    if(stringDefined(filename))
 		tail = IO.cleanFileName(filename);
 	}
-        File          newFile = getStorageManager().getTmpFile(request, tail);
+        File          newFile = getStorageManager().getTmpFile(tail);
 
         InputStream   fromStream = connection.getInputStream();
         if (actionId != null) {
@@ -6001,8 +6000,7 @@ public class EntryManager extends RepositoryManager {
 							false));
                     } else {
                         String name = IO.getFileTail(ze.getName());
-                        File f = getStorageManager().getTmpFile(request,
-								name);
+                        File f = getStorageManager().getTmpFile(name);
                         OutputStream fos =
                             getStorageManager().getFileOutputStream(f);
                         IOUtil.writeTo(zin, fos);
@@ -6483,8 +6481,7 @@ public class EntryManager extends RepositoryManager {
 	    && XmlUtil.getAttribute(node, "download",
 				    "").equals("true")) {
             URL u = new URL(url);
-            File f = getStorageManager().getTmpFile(request,
-						    IO.getFileTail(u.getFile()));
+            File f = getStorageManager().getTmpFile(IO.getFileTail(u.getFile()));
             Utils.writeTo(u, f);
             if ( !f.exists()) {
                 throw new IllegalArgumentException("Failed to download URL:"

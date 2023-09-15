@@ -1602,7 +1602,7 @@ public class PointOutputHandler extends RecordOutputHandler {
 					     BaseRecord record)
 		    throws Exception {
 		    if (visitor == null) {
-			File tmpFile = getHandler().getStorageManager().getTmpFile(null, "tmp.nc");
+			File tmpFile = getHandler().getStorageManager().getTmpFile("tmp.nc");
 			visitor = new NetcdfVisitor(tmpFile,getTheDataOutputStream(),getFields(request, record.getFields()));
 		    }
 		    if ( !jobOK(jobId)) {
@@ -2056,8 +2056,7 @@ public class PointOutputHandler extends RecordOutputHandler {
             double threshold = request.get(ARG_THRESHOLD, Double.NaN);
             if (doImage) {
                 File imageFile =
-                    getRepository().getStorageManager().getTmpFile(request,
-								   "pointimage.png");
+                    getRepository().getStorageManager().getTmpFile("pointimage.png");
                 writeImage(request, imageFile, llg, grid, missingValue,
                            threshold);
                 InputStream imageInputStream =
@@ -2090,8 +2089,7 @@ public class PointOutputHandler extends RecordOutputHandler {
             //Only do hillshade for altitude values
             if (isAltitudeValue && (doHillshade || forceHillshade)) {
                 File imageFile =
-                    getRepository().getStorageManager().getTmpFile(request,
-								   "pointimage.png");
+                    getRepository().getStorageManager().getTmpFile("pointimage.png");
                 LatLonGrid hillshadeGrid =
                     org.ramadda.util.grid.Gridder.doHillShade(llg, grid,
 							      (float) request.get(ARG_HILLSHADE_AZIMUTH, 315.0f),

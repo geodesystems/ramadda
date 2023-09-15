@@ -228,7 +228,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
 	    throws Exception {
             File file = getCacheFile();
             if (!file.exists()) {
-		File tmp = entry.getTypeHandler().getStorageManager().getCacheFile("tmp.dat",false);
+		File tmp = entry.getTypeHandler().getStorageManager().getTmpFile("tmp.dat");
 		InputStream is = super.doMakeInputStream(buffered);
 		OutputStream os = new FileOutputStream(tmp);
 		/*

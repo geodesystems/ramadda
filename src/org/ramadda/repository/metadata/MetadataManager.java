@@ -584,8 +584,7 @@ public class MetadataManager extends RepositoryManager {
     public void addThumbnailUrl(Request request, Entry entry, InputStream is,
                                 String name) {
         try {	    
-            File f = getRepository().getStorageManager().getTmpFile(request,
-                         name);
+            File f = getRepository().getStorageManager().getTmpFile(name);
             OutputStream fos =
                 getRepository().getStorageManager().getFileOutputStream(f);
             try {

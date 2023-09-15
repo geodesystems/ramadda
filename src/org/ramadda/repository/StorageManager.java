@@ -960,6 +960,8 @@ public class StorageManager extends RepositoryManager implements PointFile
     }
 
 
+
+
     /**
      * Get a cache file
      *
@@ -1541,6 +1543,10 @@ public class StorageManager extends RepositoryManager implements PointFile
 
 
 
+    public File getTmpFile(Request request,String name) {
+	return getTmpFile(name);
+    }
+
     /**
      * Get a tmp file for the request
      *
@@ -1549,7 +1555,7 @@ public class StorageManager extends RepositoryManager implements PointFile
      *
      * @return  a unique file
      */
-    public File getTmpFile(Request request, String name) {
+    public File getTmpFile(String name) {
         return getTmpDirFile(getScratchDir(),
                              getRepository().getGUID() + FILE_SEPARATOR
                              + name);
@@ -1622,7 +1628,7 @@ public class StorageManager extends RepositoryManager implements PointFile
     public File decodeFileContents(Request request, String fileName,
                                    String fileContents)
             throws Exception {
-        File tmpFile = getTmpFile(request, fileName);
+        File tmpFile = getTmpFile(fileName);
         //data:image/png;...
         String  fileType = "text/plain";
         boolean isBase64 = false;
@@ -1701,7 +1707,7 @@ public class StorageManager extends RepositoryManager implements PointFile
     public File moveToStorage(Request request, InputStream inputStream,
                               String fileName)
             throws Exception {
-        File         f = getStorageManager().getTmpFile(request, fileName);
+        File         f = getStorageManager().getTmpFile(fileName);
         OutputStream outputStream =
             getStorageManager().getFileOutputStream(f);
         IOUtil.writeTo(inputStream, outputStream);
@@ -1936,7 +1942,7 @@ public class StorageManager extends RepositoryManager implements PointFile
         //        InputStream   fromStream = connection.getInputStream();
         InputStream  fromStream = IO.doMakeInputStream(path, true);
 
-        File         tmpFile    = getTmpFile(null, IO.getFileTail(path));
+        File         tmpFile    = getTmpFile(IO.getFileTail(path));
         OutputStream toStream   = getFileOutputStream(tmpFile);
         IOUtil.writeTo(fromStream, toStream);
         IO.close(fromStream);
@@ -2937,7 +2943,7 @@ public class StorageManager extends RepositoryManager implements PointFile
                 if (name.equals("MANIFEST.MF")) {
                     continue;
                 }
-                File f = getTmpFile(request, name);
+                File f = getTmpFile(name);
                 files.add(f);
                 fos = getStorageManager().getFileOutputStream(f);
                 try {
@@ -2967,8 +2973,7 @@ public class StorageManager extends RepositoryManager implements PointFile
     public File uncompressIfNeeded(Request request, File f) throws Exception {
         if (Utils.isCompressed(f.toString())) {
             File uncompressedFile =
-                getTmpFile(request,
-                           getFileTail(IO.stripExtension(f.toString())));
+                getTmpFile(getFileTail(IO.stripExtension(f.toString())));
             InputStream is = IO.doMakeInputStream(f.toString(), true);
             if (IOUtil.writeTo(is, new FileOutputStream(uncompressedFile))
                     == 0) {

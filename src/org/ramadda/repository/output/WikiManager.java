@@ -1810,7 +1810,7 @@ public class WikiManager extends RepositoryManager
         }
         String notebook = request.getString("notebook", "");
         if (metadata == null) {
-            File f = getStorageManager().getTmpFile(request, "notebook.json");
+            File f = getStorageManager().getTmpFile("notebook.json");
             IOUtil.writeFile(f, notebook);
             String theFile = getStorageManager().moveToEntryDir(entry,
 								f).getName();
@@ -3026,7 +3026,7 @@ public class WikiManager extends RepositoryManager
 		Hashtable<String,String> snapshotMap = (Hashtable<String,String>) request.getExtraProperty("snapshotmap");
 		String fileName = snapshotMap.get(jsonUrl);
 		if(fileName==null) {
-		    File tmpFile = getStorageManager().getTmpFile(request, "point.json");
+		    File tmpFile = getStorageManager().getTmpFile("point.json");
 		    Date now = new Date();
 		    fileName = jsonUrl.replaceAll("^/.*\\?","").replace("output=points.product&product=points.json&","").replaceAll("[&=\\?]+","_").replace("entryid_","");
 		    fileName += "_"+  now.getTime() +".json";

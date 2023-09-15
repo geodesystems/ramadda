@@ -612,7 +612,7 @@ public class RepositoryFtplet extends DefaultFtplet {
             return handleError(session, ftpRequest, "Bad file name");
         }
         File newFile =
-            getRepository().getStorageManager().getTmpFile(request, name);
+            getRepository().getStorageManager().getTmpFile(name);
         OutputStream fos =
             getRepository().getStorageManager().getFileOutputStream(newFile);
         try {

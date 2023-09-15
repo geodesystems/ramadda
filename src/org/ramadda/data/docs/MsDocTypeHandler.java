@@ -118,8 +118,7 @@ public class MsDocTypeHandler extends GenericTypeHandler {
                 //For now just extract the thumbnails, not all of the images
                 if (isThumbnail) {
                     String thumbFile = IOUtil.getFileTail(path);
-                    File   f = getStorageManager().getTmpFile(null,
-                                   thumbFile);
+                    File   f = getStorageManager().getTmpFile(thumbFile);
                     fos = getStorageManager().getFileOutputStream(f);
                     try {
                         IOUtil.writeTo(zin, fos);

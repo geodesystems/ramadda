@@ -179,7 +179,7 @@ public class DaymetTypeHandler extends PointTypeHandler {
                 throws Exception {
             File file = getCacheFile();
             if (!file.exists()) {
-		File tmp = repository.getStorageManager().getCacheFile("openaq.csv",false);
+		File tmp = repository.getStorageManager().getTmpFile("openaq.csv");
                 FileOutputStream      fos    = new FileOutputStream(tmp);
                 int                   stride = entry.getIntValue(IDX_STRIDE, 7);
                 String[]              args   = new String[] {
