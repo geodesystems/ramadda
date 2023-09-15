@@ -174,7 +174,6 @@ public class GithubTypeHandler extends PointTypeHandler {
         @Override
         public InputStream doMakeInputStream(boolean buffered)
                 throws Exception {
-	    //	    System.err.println("Github.doMakeInputStream");
 	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	    sdf.setTimeZone(Utils.TIMEZONE_DEFAULT);
 	    Hashtable props = Utils.makeHashtable(
