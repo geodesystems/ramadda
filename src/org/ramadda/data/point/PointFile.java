@@ -25,7 +25,6 @@ import ucar.unidata.util.Misc;
 
 import ucar.unidata.util.StringUtil;
 
-
 import java.awt.geom.*;
 
 import java.io.*;
@@ -166,17 +165,6 @@ public abstract class PointFile extends RecordFile implements Cloneable,
      */
     public PointFile() {}
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param properties _more_
-     */
-    public PointFile(Hashtable properties) {
-        super(properties);
-    }
 
 
     /**
@@ -774,20 +762,6 @@ public abstract class PointFile extends RecordFile implements Cloneable,
                                       Utils.decodeLatLon(toks.get(2)),
                                       Utils.decodeLatLon(toks.get(3)),
                                       Double.parseDouble(toks.get(4)));
-
-                /*
-                  System.out.println("<entry " +
-                  XmlUtil.attr("name", station.getName()) +
-                  XmlUtil.attr("type", "project_site") +
-                  XmlUtil.attr("latitude", ""+station.getLatitude()) +
-                  XmlUtil.attr("longitude", ""+station.getLongitude()) +
-                  ">");
-                  System.out.println("<short_name>" +"GCNET-" +  toks.get(0) + "</short_name>");
-                  System.out.println("<status>active</status>");
-                  System.out.println("<network>GCNET</network>");
-                  System.out.println("<location>Greenland</location>");
-                  System.out.println("</entry>");
-                */
                 stations.put(toks.get(0), station);
             }
 
