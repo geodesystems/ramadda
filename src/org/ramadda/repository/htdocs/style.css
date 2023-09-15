@@ -930,7 +930,8 @@ a.ramadda-menubar-button:hover {
     display:inline-block;
     width:100%;
     border:var(--basic-border);
-    border-left: 4px solid;
+    border-left: 4px solid #aaa;
+
     padding:8px;
     padding-top:0.75em;
     padding-bottom:0.75em;        
