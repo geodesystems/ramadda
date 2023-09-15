@@ -244,8 +244,8 @@ public class OpenAQTypeHandler extends PointTypeHandler {
 		IO.close(is);
 		IO.close(os);		
 		tmp.renameTo(file);
-		System.err.println("OpenAQ: renaming:" +tmp +" to:" +file);
-		System.err.println("exists:" + file.exists());
+		System.err.println("OpenAQ: renaming tmp:" +tmp +" to:" +file);
+		System.err.println("OpenAQ: file exists:" + file.exists());
 	    }
 	    return new FileInputStream(file);
 	}
