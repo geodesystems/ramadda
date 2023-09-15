@@ -34,14 +34,6 @@ public abstract class LidarFile extends PointFile {
     public LidarFile() {}
 
 
-    /**
-     * _more_
-     *
-     * @param properties _more_
-     */
-    public LidarFile(Hashtable properties) {
-        super(properties);
-    }
 
 
     /**
