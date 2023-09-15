@@ -5958,7 +5958,7 @@ h3 a:visited {
 .wikipedia-summary {
     display:inline-block;
     border:var(--basic-border);
-    padding:4px;
+    border-radius:var(--default-radius);
 }
 
 .wikipedia-header {
