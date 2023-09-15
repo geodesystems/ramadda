@@ -142,7 +142,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
                                        Hashtable properties,
                                        Hashtable requestProperties)
 	throws Exception {
-        return new OpenAQRecordFile(new IO.Path(getPathForEntry(request, entry,true)));
+        return new OpenAQRecordFile(entry, new IO.Path(getPathForEntry(request, entry,true)));
     }
 
 
@@ -199,16 +199,18 @@ public class OpenAQTypeHandler extends PointTypeHandler {
      */
     public static class OpenAQRecordFile extends CsvFile {
 
+	Entry entry;
+	
         /**
          * _more_
          *
          *
          * @throws IOException _more_
          */
-        public OpenAQRecordFile(IO.Path path) throws IOException {
+        public OpenAQRecordFile(Entry _entry, IO.Path path) throws IOException {
             super(path);
+	    this.entry  = _entry;
         }
-
 
 
         /**
@@ -224,19 +226,26 @@ public class OpenAQTypeHandler extends PointTypeHandler {
         @Override
         public InputStream doMakeInputStream(boolean buffered)
 	    throws Exception {
-	    final InputStream is = super.doMakeInputStream(buffered);
-	    return IO.pipeIt(new IO.PipedThing(){
-		    public void run(OutputStream os)  {
-			try {
-			    Seesv csvUtil = new Seesv(SEESV_ARGS, new BufferedOutputStream(os),null);
-			    csvUtil.setInputStream(is);
-			    csvUtil.run(null);
-			} catch(Exception exc) {
-			    System.err.println("Error reading OpenAQ:" + getFilename()+"\nError:" + exc);
-			    exc.printStackTrace();
+            File file = getCacheFile();
+            if (!file.exists()) {
+		File tmp = entry.getTypeHandler().getStorageManager().getCacheFile("tmp.dat",false);
+		InputStream is = super.doMakeInputStream(buffered);
+		OutputStream os = new FileOutputStream(tmp);
+		/*
+		return checkCache(entry, new FileMaker() {
+			public void makeFile(OutputStream os) {
 			}
-			IO.close(is);
-		    }});
+		    });
+		*/
+
+		Seesv csvUtil = new Seesv(SEESV_ARGS, os,null);
+		csvUtil.setInputStream(is);
+		csvUtil.run(null);
+		IO.close(is);
+		IO.close(os);		
+		tmp.renameTo(file);
+	    }
+	    return new FileInputStream(file);
 	}
     }
 }

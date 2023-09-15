@@ -140,7 +140,7 @@ public class IdvPointFile extends CsvFile {
         if (fieldString == null) {
             try {
                 VisitInfo visitInfo = new VisitInfo();
-                RecordIO  recordIO  = doMakeInputIO(visitInfo, true);
+                RecordIO  recordIO  = doMakeInputIO(visitInfo);
                 visitInfo.setRecordIO(recordIO);
                 visitInfo = prepareToVisit(visitInfo);
             } catch (Exception exc) {

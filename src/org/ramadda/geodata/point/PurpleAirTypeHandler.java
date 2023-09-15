@@ -723,7 +723,6 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 	}
 
 
-
         /**
          * _more_
          *

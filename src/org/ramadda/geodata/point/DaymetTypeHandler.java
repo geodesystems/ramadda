@@ -177,12 +177,10 @@ public class DaymetTypeHandler extends PointTypeHandler {
         @Override
         public InputStream doMakeInputStream(boolean buffered)
                 throws Exception {
-            String filename = "daymet_" + entry.getId() + "_"
-                              + entry.getChangeDate() + ".csv";
-            File file = repository.getEntryManager().getCacheFile(entry,
-                            filename);
-            if ( !file.exists()) {
-                FileOutputStream      fos    = new FileOutputStream(file);
+            File file = getCacheFile();
+            if (!file.exists()) {
+		File tmp = repository.getStorageManager().getCacheFile("openaq.csv",false);
+                FileOutputStream      fos    = new FileOutputStream(tmp);
                 int                   stride = entry.getIntValue(IDX_STRIDE, 7);
                 String[]              args   = new String[] {
                     "-skip", "8", "-decimate", "0", "" + stride, "-change",
@@ -192,9 +190,12 @@ public class DaymetTypeHandler extends PointTypeHandler {
                 };
                 Seesv csvUtil = new Seesv(args,
                                       new BufferedOutputStream(fos), null);
-                csvUtil.setInputStream(super.doMakeInputStream(buffered));
+		InputStream is = super.doMakeInputStream(buffered);
+                csvUtil.setInputStream(is);
                 csvUtil.run(null);
-                fos.close();
+                IO.close(is);
+		IO.close(fos);
+		tmp.renameTo(file);
             }
 
             return new BufferedInputStream(new FileInputStream(file));

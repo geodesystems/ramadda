@@ -457,27 +457,4 @@ fields="etr,etrn,ghi,dni,dhi,gh_illum,dn_illum,dh_illum,zenith_lum,totcld,opqcld
 </type>
 
 
-<!--
-
-  <type name="type_point_foursquare"  super="type_point" description="Foursquare Locations"  handler="org.ramadda.geodata.point.FourSquareTypeHandler">
-     <property name="form.file.show" value="false"/>
-     <property name="form.resource.show" value="false"/>
-     <property name="point.initialize" value="false"/>
-     <property name="form.properties.show" value="false"/>
-     <property name="form.area.show" value="false"/>
-     <property name="form.date.show" value="false"/>          
-     <property name="xxicon" value="/point/noaa.gif"/>
- <property name="record.properties">
-csvcommands1=-json,results,name_comma_geocodes.main,-addheader,
-</property>
-<wiki>
-<![CDATA[
-+section  title="Foursquare Locations  {{name}}"
-{{description}}
-{{group showMenu="true" layoutType="table" layoutColumns="1"}}
-{{display_map tooltip="${default}" }}
-]]>
-</wiki>
-</type>
--->
 </types>
