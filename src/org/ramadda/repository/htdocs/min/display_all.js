@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Sep 14 17:45:20 MDT 2023";
+var build_date="RAMADDA build date: Thu Sep 14 20:23:56 MDT 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -49246,7 +49246,7 @@ MapGlyph.prototype = {
 	}
 	if(andZoomIn) {
 	    //The -1 is a flag to use the singlePointZoom
-	    this.display.getMap().setZoom(-1);
+	    this.display.getMap().zoomTo(-1,true);
 	}
     },
     getBounds: function() {
