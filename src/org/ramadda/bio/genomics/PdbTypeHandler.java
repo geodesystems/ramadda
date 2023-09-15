@@ -20,6 +20,7 @@ package org.ramadda.bio.genomics;
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
 
@@ -91,7 +92,7 @@ public class PdbTypeHandler extends GenericTypeHandler {
         List<StringBuilder> sources   = new ArrayList<StringBuilder>();
         List<String>        authors   = new ArrayList<String>();
         InputStream is =
-            Utils.doMakeInputStream(entry.getResource().getPath(), true);
+            IO.doMakeInputStream(entry.getResource().getPath(), true);
         BufferedReader br  = new BufferedReader(new InputStreamReader(is));
         int            cnt = 0;
         while (true) {
