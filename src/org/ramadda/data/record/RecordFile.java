@@ -137,7 +137,10 @@ public abstract class RecordFile {
     /**
      * ctor
      */
-    public RecordFile() {}
+    public RecordFile() {
+	//Create a dummy path
+	path=new IO.Path("dummy"+ new Date().getTime());
+    }
 
     /**
      * _more_
