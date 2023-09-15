@@ -2969,7 +2969,7 @@ public class StorageManager extends RepositoryManager implements PointFile
             File uncompressedFile =
                 getTmpFile(request,
                            getFileTail(IO.stripExtension(f.toString())));
-            InputStream is = Utils.doMakeInputStream(f.toString(), true);
+            InputStream is = IO.doMakeInputStream(f.toString(), true);
             if (IOUtil.writeTo(is, new FileOutputStream(uncompressedFile))
                     == 0) {
                 IO.close(is);
