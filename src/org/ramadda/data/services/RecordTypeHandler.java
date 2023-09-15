@@ -501,15 +501,11 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
                                         Hashtable properties,
                                         RecordFile recordFile)
             throws Exception {
-        File file = null;
         if (okToCacheRecordFile(request, entry)) {
             String filename = getCacheFileName(request, entry);
-            //      System.err.println("cache file:" + filename);
-            file = getRepository().getEntryManager().getCacheFile(entry,
-                    filename);
+	    File file = getRepository().getEntryManager().getCacheFile(entry,filename);
             recordFile.setCacheFile(file);
         }
-
 
         //Explicitly set the properties to force a call to initProperties
 	//	System.err.println ("doMakeRecordFile.setProperties:" + properties);
