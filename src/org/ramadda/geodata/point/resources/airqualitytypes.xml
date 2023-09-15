@@ -56,7 +56,7 @@ e.g. 270997 in <a href=https://explore.openaq.org/locations/270997>https://explo
 
 <property name="mapglyphs">
   <![CDATA[
-props:fontSize:0px,iconSize:20,canvasWidth:100,canvasHeight:100,font:28px sans-serif,defaultField:pm25,
+props:fontSize:0px,iconSize:20,canvasWidth:100,canvasHeight:100,font:28px sans-serif,defaultField:pm2_5,
 circle,width:cw-10,height:ch,pos:c,dx:cw2,dy:-ch2,colorBy:${_field},colorTable:airquality,colorByMin:0,colorByMax:300
 label,pos:c,dx:cw2,dy:-ch2,label:${${_field} suffix=" ${unit}" decimals=2}
 ]]></property>
@@ -74,7 +74,7 @@ label,pos:c,dx:cw2,dy:-ch2,label:${${_field} suffix=" ${unit}" decimals=2}
     <property name="form.area.show" value="false"/>
     <property name="form.location.show" value="true"/>
     <property name="form.properties.show" value="false"/>
-    <property name="map.chart.fields" value="temperature,pm2.5"/>          
+    <property name="map.chart.fields" value="temperature,pm2_5"/>          
     <column  name="sensor_id"  label="Sensor ID" type="string"
 	     showinformfirst="true"
 	     postfix="&lt;thin_hr&gt;" help="Enter the sensor ID:"/>
