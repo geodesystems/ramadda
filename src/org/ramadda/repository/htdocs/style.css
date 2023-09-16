@@ -69,6 +69,11 @@ select, input, password, .fileinput, textarea {
     border  :var(--basic-border);
 }
 
+inlineblock {
+    display:inline-block;
+}
+
+
 .fileinput_wrapper {
     background:#fff;
     display:inline-block;

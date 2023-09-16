@@ -1777,6 +1777,11 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return tag(TAG_DIV, extra, content);
     }
 
+    public static Appendable inlineBlock(Appendable sb, String content, String extra) {
+        tag(sb,TAG_INLINE_BLOCK, extra, content);
+	return sb;
+    }    
+
 
 
     /**

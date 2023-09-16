@@ -185,6 +185,8 @@ public interface HtmlUtilsConstants {
     /** _more_ */
     public static final String TAG_DIV = "div";
 
+    public static final String TAG_INLINE_BLOCK = "inlineblock";    
+
     /** _more_ */
     public static final String TAG_EMBED = "embed";
 
