@@ -681,6 +681,35 @@ public class GeoJson extends JsonUtil {
 	System.out.println(obj.toString());
     }
 
+    public static void stride(String f,double step) throws Exception {
+        JSONObject            obj      =
+            new JSONObject(new JSONTokener(new FileInputStream(f)));
+        JSONArray             features = readArray(obj, "features");
+	List<Object> objects = new ArrayList<Object>();
+	double cnt = 0;
+	System.err.println("#features:" + features.length());
+	for (int idx1 = 0; idx1 < features.length(); idx1++) {
+	    if(step<1) {
+		double r = Math.random();
+		if(r <= step) {
+		    objects.add(features.getJSONObject(idx1));
+		}
+		continue;
+	    }
+	    cnt--;
+	    if(cnt<=0) {
+		cnt=step;
+		objects.add(features.getJSONObject(idx1));
+	    }
+	}
+	features.clear();
+	features.putAll(objects);
+	System.err.println("#new features:" + features.length());
+	System.out.println(obj.toString());
+    }
+
+
+
 
     /**
      * _more_
@@ -691,30 +720,61 @@ public class GeoJson extends JsonUtil {
      */
     public static void main(String[] args) throws Exception {
 
-	reverse(args[0]);
-	if(true) return;
+	boolean doReverse = false;
+	boolean doSplit = false;	
+	boolean doStride = false;	
+	boolean doCsv = true;	
+	double stride=2;
 
-        split(args[0]);
-	if(true) return;
+	for(int i=0;i<args.length;i++) {
+	    String arg  =args[i];
+	    if(arg.startsWith("-")) {
+		doReverse=false;
+		doStride = false;	
+		doSplit = false;
+		doCsv = false;
+	    }
+	    if(arg.equals("-reverse")) {
+		doReverse=true;
+		continue;
+	    }
+	    if(arg.equals("-stride")) {
+		stride = Double.parseDouble(args[++i]);
+		doStride= true;
+		continue;
+	    }
+	    if(arg.equals("-split")) {
+		doSplit = true;
+		continue;
+	    }	    
+	    if(arg.equals("-csv")) {
+		doCsv = true;
+		continue;
+	    }
+	    if(arg.startsWith("-")) {
+		System.err.println("Unknown arg:" +arg +" usage: -csv -split -reverse -stride 10 (if stride<0 then it is used to sample)");
+		continue;
+	    }
+	    if(doStride)
+		stride(arg,stride);
+	    if(doReverse)
+		reverse(arg);
+	    else if(doSplit)
+		split(arg);	    
+	    else if(doCsv)
+		geojsonFileToCsv(arg,System.out,null);
+	}
 
-        geojsonFileToCsv(args[0], System.out, (args.length > 1)
-                ? args[1]
-                : null);
         if (true) {
             return;
         }
+
 
         getFeatures(args[0]);
         //      System.err.println(getFeatures(args[0]));
         Utils.exitTest(0);
 
-
         geojsonSubsetByProperty(args[0], System.out, args[1], args[2]);
-        if (true) {
-            return;
-        }
-
-
         /*
           geojsonPolygon(args[0], System.out);
           if (true) {
