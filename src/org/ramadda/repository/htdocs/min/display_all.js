@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Sep 15 18:41:50 MDT 2023";
+var build_date="RAMADDA build date: Fri Sep 15 21:26:40 MDT 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -42073,6 +42073,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
     const ID_MAP_PROPERTIES = 'mapproperties';
     const ID_MAP_REGIONS = 'showregions';
     const ID_MAP_CHOOSE = 'chooselatlon';    
+    const ID_MAP_VIEWLAYERS = 'viewlayers';
     const ID_MAP_RESETMAPVIEW = 'resetmapview';
     const ID_MAP_MYLOCATION = 'mylocation';    
     const ID_DROP_BEGINNING = 'dropbeginning';
@@ -45516,8 +45517,10 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    };
 	    let html ="";
 	    let div = '<div class=ramadda-menu-divider></div>';
+	    html+= this.menuItem(this.domId(ID_MAP_VIEWLAYERS),"View Layers");
+
 	    if(this.initialLocation) {
-		html+= this.menuItem(this.domId(ID_MAP_RESETMAPVIEW),"Reset Map View");
+		html+= this.menuItem(this.domId(ID_MAP_RESETMAPVIEW),"Initial View");
 	    }
             if (navigator.geolocation) {
 		html+= this.menuItem(this.domId(ID_MAP_MYLOCATION),"Current Location");
@@ -45593,6 +45596,11 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		    dialog.remove();
 		});
 	    });
+	    this.jq(ID_MAP_VIEWLAYERS).click(()=>{
+		clear();
+		this.zoomToLayers();
+	    });
+
 	    this.jq(ID_MAP_RESETMAPVIEW).click(()=>{
 		clear();
 		if(this.initialLocation?.zoomLevel>=0 && Utils.isDefined(this.initialLocation?.zoomLevel)) {
@@ -45622,6 +45630,14 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 
 	},
 
+	zoomToLayers:function() {
+	    let bounds=null;
+            this.getGlyphs().forEach((mapGlyph,idx)=>{
+		bounds =  MapUtils.extendBounds(bounds,mapGlyph.getBounds());
+	    });
+	    if(bounds)
+		this.getMap().zoomToExtent(bounds);
+	},
 	handleEditEvent:function() {
 	    if(this.getSelected().length==1) {
 		this.doEdit(this.getSelected()[0]);
