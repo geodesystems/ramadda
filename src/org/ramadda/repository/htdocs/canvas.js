@@ -1,3 +1,7 @@
+/**
+   Copyright (c) 2008-2023 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
+*/
 
 function RamaddaCanvas(id,canEdit) {
     this.divId = id;

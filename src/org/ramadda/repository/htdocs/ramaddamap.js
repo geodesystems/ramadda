@@ -1,7 +1,8 @@
-/*
- * Copyright (c) 2008-2023 Geode Systems LLC
- * SPDX-License-Identifier: Apache-2.0
- */
+/**
+   Copyright (c) 2008-2023 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
+*/
+
 
 var debugBounds = false;
 var getMapDebug = false;

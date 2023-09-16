@@ -1,3 +1,8 @@
+/**
+   Copyright (c) 2008-2023 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
+*/
+
 RamaddaJsonUtil = {
     init:function(id) {
 	let brackets = jqid(id).find('.ramadda-json-openbracket');

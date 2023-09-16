@@ -1,6 +1,8 @@
-/*
- * Copyright (c) 2008-2023 Geode Systems LLC
- */
+/**
+   Copyright (c) 2008-2023 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
+*/
+
 
 function NasaRepository() {
     var baseUrl = "http://data.nasa.gov/api/get_search_results";

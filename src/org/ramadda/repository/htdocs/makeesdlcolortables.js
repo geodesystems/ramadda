@@ -1,4 +1,5 @@
 
+
 $.getJSON('https://api.earthsystemdatalab.net/api/colorbars', data=>{
     let cid = HU.getUniqueId("canvas_");
     let w = 256;
