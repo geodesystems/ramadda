@@ -197,9 +197,7 @@ public class DaymetTypeHandler extends PointTypeHandler {
 		IO.close(fos);
 		tmp.renameTo(file);
             }
-
             return new BufferedInputStream(new FileInputStream(file));
-
         }
 
         /**
