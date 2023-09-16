@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Sep 15 21:26:40 MDT 2023";
+var build_date="RAMADDA build date: Sat Sep 16 08:26:47 MDT 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -3559,17 +3559,25 @@ Glyph.prototype = {
 		if(props.debug) console.log('image glyph:' + src,{pos:props.pos,pt:pt,x:x,y:y,dx:props.dx,dy:props.dy,width:props.width,height:props.height});
 		let i = new Image();
 		i.src = src;
+		let drawImage = () =>{
+		    let a = ctx.globalAlpha;
+		    if(Utils.isDefined(this.properties.imageAlpha))		    
+			ctx.globalAlpha = this.properties.imageAlpha;		    
+		    ctx.drawImage(i,pt.x,pt.y,props.width,props.width);
+		    ctx.globalAlpha = a;		    
+		}
 		if(!i.complete) {
 		    let loaded = false;
 		    i.onload=()=>{
-			ctx.drawImage(i,pt.x,pt.y,props.width,props.width);
+			drawImage();
 			loaded=true;
 		    }
 		    return () =>{
 			return loaded;
 		    }
 		} else {
-		    ctx.drawImage(i,pt.x,pt.y,props.width,props.width);
+		    drawImage();
+
 		}
 	    } else {
 		console.log('No url defined for glyph image');
@@ -3900,6 +3908,7 @@ const HIGHLIGHT_COLOR = "#436EEE";
 const VALUE_NONE = "--none--";
 
 var CLASS_HEADER_SPAN = "display-header-span";
+var CLASS_HEADER_LABEL = "display-header-label";
 
 const DisplayEvent = {
 };
@@ -5530,6 +5539,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'request.&lt;field&gt;.urlarg',t:'url arg to use'},	
 
 	{label:'Filter Data'},
+	{p:'headerLabel',ex:''},
 	{p:'max',ex:'1000',tt:'Specify the max number of records to fetch from the server'},
 	{p:'lastRecords',ex:'1',tt:'Only get the last N records from the server'},	
 	{p:'fieldsNumeric',ex:true,tt:'Only get numeric fields'},
@@ -10094,6 +10104,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    //	    header2 +=HU.div([ID,this.getDomId("test")],"test");
 	    if(this.getShowProgress(false)) {
 		header2 += HU.div([ID,this.getDomId(ID_DISPLAY_PROGRESS), STYLE,HU.css("display","inline-block","margin-right","4px","min-width","20px")]);
+	    }
+	    let headerLabel  = this.getHeaderLabel();
+	    if(Utils.stringDefined(headerLabel)) {
+		header2 += HU.div([ATTR_CLASS,CLASS_HEADER_SPAN+' '+CLASS_HEADER_LABEL],headerLabel);
 	    }
 	    header2 += HU.div([ID,this.getDomId(ID_HEADER2_PREPREPREFIX),ATTR_CLASS,CLASS_HEADER_SPAN],"");
 	    header2 += HU.div([ID,this.getDomId(ID_HEADER2_PREPREFIX),ATTR_CLASS,CLASS_HEADER_SPAN],"");
