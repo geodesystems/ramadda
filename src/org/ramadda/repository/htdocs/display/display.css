@@ -223,6 +223,11 @@ a.display-container {
 }
 
 
+.display-header-label {
+    font-weight:600;
+    margin-right:4px;
+}
+
 .display-filter-label {
     max-width:300px;
     overflow-x:auto;
