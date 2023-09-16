@@ -1396,32 +1396,15 @@ public class IO {
      *
      * @param inputStream _more_
      */
-    public static void close(InputStream inputStream) {
-        if (inputStream == null) {
-            return;
-        }
-        try {
-            inputStream.close();
-        } catch (Exception ignore) {}
+    public static void close(Closeable ...streams) {
+	for(Closeable c: streams) {
+	    if (c!=null) {
+		try {
+		    c.close();
+		} catch (Exception ignore) {}
+	    }
+	}
     }
-
-
-    /**                                                                                             
-     * _more_                                                                                       
-     *                                                                                              
-     * @param outputStream _more_                                                                   
-     */
-    public static void close(OutputStream outputStream) {
-        if (outputStream == null) {
-            return;
-        }
-        try {
-            outputStream.close();
-        } catch (Exception ignore) {}
-    }
-
-
-
 
 
 
