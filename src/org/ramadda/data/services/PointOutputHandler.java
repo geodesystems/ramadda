@@ -2844,7 +2844,8 @@ public class PointOutputHandler extends RecordOutputHandler {
     @Override
     public boolean isEntryOk(Entry entry) {
         return entry.getTypeHandler().isType("type_point")
-	    || entry.getTypeHandler().isType("lidar");
+	    || entry.getTypeHandler().isType("lidar") ||
+	    entry.getTypeHandler().isType("type_document_csv");
     }
 
 
@@ -2878,6 +2879,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         if ( !isEntryOk(entry)) {
             return;
         }
+
 
         if (entry.getTypeHandler() instanceof RecordCollectionTypeHandler) {
             links.add(makeLink(request, state.getEntry(), OUTPUT_FORM_CSV));
