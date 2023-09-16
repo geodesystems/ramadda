@@ -1525,7 +1525,7 @@ public class RowCollector extends Processor {
      * @version        $version$, Tue, Nov 19, '19
      * @author         Enter your name here...
      */
-    public static class Furler extends RowCollector {
+    public static class Melter extends RowCollector {
 
         /** _more_ */
         private List<Integer> indices;
@@ -1550,7 +1550,7 @@ public class RowCollector extends Processor {
          * @param label1 _more_
          * @param label2 _more_
          */
-        public Furler(TextReader ctx, List<String> cols, String label1, String label2) {
+        public Melter(TextReader ctx, List<String> cols, String label1, String label2) {
             super(cols);
             this.label1 = label1;
             this.label2 = label2;

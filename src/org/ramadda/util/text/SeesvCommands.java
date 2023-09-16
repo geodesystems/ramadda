@@ -146,6 +146,7 @@ public interface SeesvCommands {
     public static final String CMD_FLIP="-flip";
     public static final String CMD_MAKEFIELDS="-makefields";
     public static final String CMD_FURL="-furl";
+    public static final String CMD_MELT="-melt";    
     public static final String CMD_EXPLODE="-explode";
     public static final String CMD_JOIN="-join";
     public static final String CMD_CROSS="-cross";

@@ -2239,7 +2239,7 @@ public class Seesv implements SeesvCommands {
 		new Arg("other columns",
 			"Other columns to include", ATTR_TYPE,
 			TYPE_COLUMNS)),
-        new Cmd(CMD_FURL, "Use values in header to make new row",
+        new Cmd(CMD_MELT, "Use values in header to make new row",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
 		new Arg("header label"),
                 new Arg("value label")),
@@ -3634,9 +3634,9 @@ public class Seesv implements SeesvCommands {
 	defineFunction("-unfurl",4,unfurlFunc);
 	defineFunction(CMD_MAKEFIELDS,4,unfurlFunc);	
 
-	defineFunction(CMD_FURL,3,(ctx,args,i) -> {
+	defineFunction(new String[]{CMD_MELT,CMD_FURL},3,(ctx,args,i) -> {
 		List<String> valueCols = getCols(args.get(++i));
-		ctx.addProcessor(new RowCollector.Furler(ctx,
+		ctx.addProcessor(new RowCollector.Melter(ctx,
 							 valueCols, args.get(++i), args.get(++i)));
 
 		return i;
