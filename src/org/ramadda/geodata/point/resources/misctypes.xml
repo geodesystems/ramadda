@@ -375,7 +375,7 @@ lineWrap=true
 
 
 
-  <type name="type_daymet"  description="Daymet Daily Weather" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.DaymetTypeHandler">
+<type name="type_daymet"  description="Daymet Daily Weather" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.DaymetTypeHandler">
      <property name="icon" value="/point/ornl.png"/>
      <property name="form.area.show" value="false"/>
      <property name="form.location.show" value="true"/>
@@ -389,9 +389,9 @@ lineWrap=true
 +row
 +col-md-8
 {{group showMenu="true" layoutType="table" layoutColumns="1" showTitle="false"}}
-{{display type="linechart" showTitle="false" layoutHere="false" fields="tmax,tmin" vAxisMinValue="-40" vAxisMaxValue="40"}}
-{{display type="linechart" showTitle="false" layoutHere="false" fields="swe"}}
-{{display type="barchart" showTitle="false" layoutHere="false" fields="precipitation"}}
+{{display_linechart showTitle="false" layoutHere="false" fields="tmax,tmin" vAxisMinValue="-40" vAxisMaxValue="40"}}
+{{display_linechart showTitle="false" layoutHere="false" fields="swe"}}
+{{display_barchart showTitle="false" layoutHere="false" fields="precipitation"}}
 -col
 +col-md-4
 <center>
@@ -401,18 +401,11 @@ Data courtesy of <a href="https://daymet.ornl.gov/">ORNL Daymet</a>
 {{map zoomLevel=5}}
 -col
 -row
-{{display  type="correlation"  fields="precipitation,tmax,tmin,vp,srad,swe"  layoutHere="true"  showMenu="true"  showTitle="false" 
+{{display_correlation  fields="precipitation,tmax,tmin,vp,srad,swe"  layoutHere="true"  showMenu="true"  showTitle="false" 
 }}
 ]]>
 </wiki>
-
-
-
-
   </type>
-
-
-
 
   <type name="type_tmy"  description="NREL TMY Data" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.TmyTypeHandler">
      <property name="icon" value="/point/nrel.png"/>
@@ -433,10 +426,10 @@ Note - dates are nominal and represent monthly data from 1996-2004
 +row
 +col-md-8
 {{group showMenu="true" layoutType="table" layoutColumns="1" showTitle="false" layoutHere="true"}}
-{{display type="linechart" showTitle="false"  fields="etr,ghi" vAxisMinValue="0" vAxisMaxValue="1200"}}
-{{display type="linechart" showTitle="false"  fields="zenith_lum"  vAxisMinValue="0" vAxisMaxValue="1200" padRight="true"}}
-{{display type="linechart" showTitle="false"  fields="totcld"  padRight="true"}}
-{{display type="linechart" showTitle="false"  fields="dry_bulb,pressure" }}
+{{display_linechart showTitle="false"  fields="etr,ghi" vAxisMinValue="0" vAxisMaxValue="1200"}}
+{{display_linechart showTitle="false"  fields="zenith_lum"  vAxisMinValue="0" vAxisMaxValue="1200" padRight="true"}}
+{{display_linechart showTitle="false"  fields="totcld"  padRight="true"}}
+{{display_linechart showTitle="false"  fields="dry_bulb,pressure" }}
 -col
 +col-md-4
 <center>
@@ -446,7 +439,7 @@ Data courtesy of <a href="https://rredc.nrel.gov/solar/old_data/nsrdb/1991-2005/
 {{map}}
 -col
 -row
-{{display type="correlation" width="100%" showTitle="true" title="Correlation" layoutHere="true" short="true"
+{{display_correlation width="100%" showTitle="true" title="Correlation" layoutHere="true" short="true"
 useIdTop="true" useIdSide="false"
 fields="etr,etrn,ghi,dni,dhi,gh_illum,dn_illum,dh_illum,zenith_lum,totcld,opqcld,dry_bulb,dew_point,rhum,pressure,hvis,ceilhgt,pwat,aod,alb"
 }}

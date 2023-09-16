@@ -177,27 +177,14 @@ public class DaymetTypeHandler extends PointTypeHandler {
         @Override
         public InputStream doMakeInputStream(boolean buffered)
                 throws Exception {
-            File file = getCacheFile();
-            if (!file.exists()) {
-		File tmp = repository.getStorageManager().getTmpFile("openaq.csv");
-                FileOutputStream      fos    = new FileOutputStream(tmp);
-                int                   stride = entry.getIntValue(IDX_STRIDE, 7);
-                String[]              args   = new String[] {
-                    "-skip", "8", "-decimate", "0", "" + stride, "-change",
-                    "0", "\\.0$", "", "-change", "1", "\\.0$", "", "-combine",
-                    "0,1", "-", "", "-scale", "3", "0", "0.0393700787", "0",
-                    "-format", "3", "#0.00", "-columns", "9,2-8", "-print"
-                };
-                Seesv csvUtil = new Seesv(args,
-                                      new BufferedOutputStream(fos), null);
-		InputStream is = super.doMakeInputStream(buffered);
-                csvUtil.setInputStream(is);
-                csvUtil.run(null);
-                IO.close(is);
-		IO.close(fos);
-		tmp.renameTo(file);
-            }
-            return new BufferedInputStream(new FileInputStream(file));
+	    int                   stride = entry.getIntValue(IDX_STRIDE, 7);
+	    String[]              args   = new String[] {
+		"-skip", "8", "-decimate", "0", "" + stride, "-change",
+		"0", "\\.0$", "", "-change", "1", "\\.0$", "", "-combine",
+		"0,1", "-", "", "-scale", "3", "0", "0.0393700787", "0",
+		"-format", "3", "#0.00", "-columns", "9,2-8", "-print"
+	    };
+	    return applySeesv(entry,args);
         }
 
         /**

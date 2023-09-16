@@ -40,7 +40,7 @@ import java.util.List;
  */
 public class OpenAQTypeHandler extends PointTypeHandler {
 
-        /** _more_ */
+    /** _more_ */
     private static int IDX = RecordTypeHandler.IDX_LAST + 1;
 
     /** _more_ */
@@ -226,28 +226,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
         @Override
         public InputStream doMakeInputStream(boolean buffered)
 	    throws Exception {
-            File file = getCacheFile();
-            if (!file.exists()) {
-		File tmp = entry.getTypeHandler().getStorageManager().getTmpFile("tmp.dat");
-		InputStream is = super.doMakeInputStream(buffered);
-		OutputStream os = new FileOutputStream(tmp);
-		/*
-		return checkCache(entry, new FileMaker() {
-			public void makeFile(OutputStream os) {
-			}
-		    });
-		*/
-
-		Seesv csvUtil = new Seesv(SEESV_ARGS, os,null);
-		csvUtil.setInputStream(is);
-		csvUtil.run(null);
-		IO.close(is);
-		IO.close(os);		
-		tmp.renameTo(file);
-		//		System.err.println("OpenAQ: renaming tmp:" +tmp +" to:" +file);
-		//		System.err.println("OpenAQ: file exists:" + file.exists());
-	    }
-	    return new FileInputStream(file);
+	    return applySeesv(entry,SEESV_ARGS);
 	}
     }
 }
