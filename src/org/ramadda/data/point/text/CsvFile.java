@@ -5,7 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.point.text;
 
-
+import org.ramadda.repository.Entry;
 import org.ramadda.data.point.*;
 import org.ramadda.data.record.*;
 import org.ramadda.util.IO;
@@ -208,6 +208,24 @@ public class CsvFile extends TextFile {
         fos.flush();
         fos.close();
     }
+
+
+    public InputStream applySeesv(Entry entry, String[] seesvArgs) throws Exception {
+	File file = getCacheFile();
+	synchronized(this) {
+	    if (file.exists())  return new FileInputStream(file);
+	}
+	File tmp = entry.getTypeHandler().getStorageManager().getTmpFile("tmp.csv");
+	InputStream is = makeInputStream(true);
+	OutputStream os = new FileOutputStream(tmp);
+	new Seesv(seesvArgs, os,null).setInputStream(is).run(null);
+	IO.close(is,os);
+	synchronized(this) {
+	    tmp.renameTo(file);
+	}
+	return new FileInputStream(file);
+    }
+
 
 
     /**
