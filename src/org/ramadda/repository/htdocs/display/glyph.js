@@ -305,17 +305,25 @@ Glyph.prototype = {
 		if(props.debug) console.log('image glyph:' + src,{pos:props.pos,pt:pt,x:x,y:y,dx:props.dx,dy:props.dy,width:props.width,height:props.height});
 		let i = new Image();
 		i.src = src;
+		let drawImage = () =>{
+		    let a = ctx.globalAlpha;
+		    if(Utils.isDefined(this.properties.imageAlpha))		    
+			ctx.globalAlpha = this.properties.imageAlpha;		    
+		    ctx.drawImage(i,pt.x,pt.y,props.width,props.width);
+		    ctx.globalAlpha = a;		    
+		}
 		if(!i.complete) {
 		    let loaded = false;
 		    i.onload=()=>{
-			ctx.drawImage(i,pt.x,pt.y,props.width,props.width);
+			drawImage();
 			loaded=true;
 		    }
 		    return () =>{
 			return loaded;
 		    }
 		} else {
-		    ctx.drawImage(i,pt.x,pt.y,props.width,props.width);
+		    drawImage();
+
 		}
 	    } else {
 		console.log('No url defined for glyph image');
