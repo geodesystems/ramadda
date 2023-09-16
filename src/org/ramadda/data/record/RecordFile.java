@@ -644,6 +644,10 @@ public abstract class RecordFile {
      * @throws Exception _more_
      */
     public InputStream doMakeInputStream(boolean buffered) throws Exception {
+	return makeInputStream(buffered);
+    }
+
+    public final InputStream makeInputStream(boolean buffered) throws Exception {	
         IO.Path  path = getNormalizedFilename();
         if (debug) {
             System.err.println("RecordFile.doMakeInputStream path:" + path);
