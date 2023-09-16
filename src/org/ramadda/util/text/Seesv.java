@@ -380,12 +380,14 @@ public class Seesv implements SeesvCommands {
      *
      * @param inputStream _more_
      */
-    public void setInputStream(InputStream inputStream) {
+    public Seesv setInputStream(InputStream inputStream) {
         this.inputStream = inputStream;
+	return this;
     }
 
-    public void setChannel(ReadableByteChannel channel)  {
+    public Seesv setChannel(ReadableByteChannel channel)  {
         this.channel = channel;
+	return this;
     }    
 
 
