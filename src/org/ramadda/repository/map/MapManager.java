@@ -922,14 +922,15 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             sb.append("\n");
         }
 
-        //        addGoogleMapsApi(request, sb);
         if (minified) {
-            HtmlUtils.importJS(
-			       sb, getPageHandler().getCdnPath("/min/ramaddamap.min.js"));
+            HtmlUtils.importJS(sb, getPageHandler().getCdnPath("/min/maputils.min.js"));
+            sb.append("\n");
+            HtmlUtils.importJS(sb, getPageHandler().getCdnPath("/min/ramaddamap.min.js"));
             sb.append("\n");
         } else {
-            HtmlUtils.importJS(sb,
-                               getPageHandler().getCdnPath("/ramaddamap.js"));
+            HtmlUtils.importJS(sb,getPageHandler().getCdnPath("/maputils.js"));
+            sb.append("\n");
+            HtmlUtils.importJS(sb,getPageHandler().getCdnPath("/ramaddamap.js"));
             sb.append("\n");
         }
 

@@ -35,6 +35,7 @@ ${jsminify} ${dest}/display_all.js > ${dest}/display_all.min.js
 echo "minifying the other files"
 #${jsminify} ${dir}/display/displayplotly.js > ${dest}/displayplotly.min.js
 ${jsminify} ${dir}/ramadda.js > ${dest}/ramadda.min.js
+${jsminify} ${dir}/maputils.js > ${dest}/maputils.min.js
 ${jsminify} ${dir}/ramaddamap.js > ${dest}/ramaddamap.min.js
 ${jsminify} ${dir}/utils.js > ${dest}/utils.min.js
 ${jsminify} ${dir}/wiki.js > ${dest}/wiki.min.js

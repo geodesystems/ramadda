@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Sep 15 18:06:59 MDT 2023";
+var build_date="RAMADDA build date: Fri Sep 15 18:40:41 MDT 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -47740,6 +47740,7 @@ var ID_DATAICON_PROPS='dataicon_props';
 //attr flags
 var ID_DATAICON_SHOWING = 'dataIconShowing';
 var ID_DATAICON_ORIGINAL = 'dataIconOriginal';
+var ID_LEGEND_TEXT = 'legendText';
 
 function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
     if(!type) {
@@ -48216,8 +48217,8 @@ MapGlyph.prototype = {
 	html+= HU.hbox([HU.textarea('',style.popupText??'',[ID,domId,'rows',4,'cols', 40]),HU.space(2),help]);
 
 	html+=HU.b('Legend Text:') +'<br>' +
-	    HU.textarea('',this.attrs.legendText??'',
-			[ID,this.domId('legendtext'),'rows',4,'cols', 40]);
+	    HU.textarea('',this.attrs[ID_LEGEND_TEXT]??'',
+			[ID,this.domId(ID_LEGEND_TEXT),'rows',4,'cols', 40]);
 	
 
 	content.push({header:'Properties',contents:html});
@@ -48340,7 +48341,7 @@ MapGlyph.prototype = {
 
 	//Make sure we do this after we set the above style properties
 	this.setName(this.jq("mapglyphname").val());
-	this.attrs.legendText = this.jq('legendtext').val();
+	this.attrs[ID_LEGEND_TEXT] = this.jq(ID_LEGEND_TEXT).val();
 	if(this.isEntry()) {
 	    this.setUseEntryName(this.jq("useentryname").is(":checked"));
 	    this.setUseEntryLabel(this.jq("useentrylabel").is(":checked"));
@@ -49716,8 +49717,8 @@ MapGlyph.prototype = {
 	if(buttons!='')
 	    body+=HU.div([ATTR_CLASS,CLASS_LEGEND_OFFSET],buttons);
 	//	    body+=HU.center(buttons);
-	if(Utils.stringDefined(this.attrs.legendText)) {
-	    let text = this.attrs.legendText.replace(/\n/g,'<br>');
+	if(Utils.stringDefined(this.attrs[ID_LEGEND_TEXT])) {
+	    let text = this.attrs[ID_LEGEND_TEXT].replace(/\n/g,'<br>');
 	    body += HU.div([ATTR_CLASS,HU.classes(CLASS_LEGEND_OFFSET,'imdv-legend-text')],text);
 	}
 
@@ -50386,7 +50387,14 @@ MapGlyph.prototype = {
 	if(Utils.stringDefined(predefined)) {
 	    if(!Utils.stringDefined(this.attrs.name)) {
 		let mapLayer = RAMADDA_MAP_LAYERS_MAP[predefined];
-		if(mapLayer) this.attrs.name = mapLayer.name;
+		if(mapLayer) {
+		    this.attrs.name = mapLayer.name;
+		    this.style.legendUrl = mapLayer.opts.legend;
+		    if(Utils.stringDefined(mapLayer.opts.attribution) &&
+		       !Utils.stringDefined(this.attrs[ID_LEGEND_TEXT])) {
+			this.attrs[ID_LEGEND_TEXT] = mapLayer.opts.attribution;
+		    }
+		}
 	    }
 	} else {
 	    if(!Utils.stringDefined(wmsLayer)) {
