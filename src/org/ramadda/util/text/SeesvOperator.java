@@ -640,6 +640,12 @@ public class SeesvOperator {
 	    debug("\tgetColumnIndex:" + tok);
         Integer iv = columnMap.get(tok);
         //      System.err.println("\t\tiv-a:" + iv);
+	if(tok.startsWith(">")) {
+	    int index = Integer.parseInt(tok.substring(1))+1;
+	    return columnNames.size()-index;
+
+
+	}
         if (iv == null) {
             String tmp = ctx.getFieldAlias(tok);
             if (tmp != null) {
