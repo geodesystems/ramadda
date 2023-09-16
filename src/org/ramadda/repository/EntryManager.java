@@ -4799,7 +4799,6 @@ public class EntryManager extends RepositoryManager {
 		long diff    = (now.getTime() - ftime) / 1000;
 		if (diff > seconds) {
 		    f.delete();
-		    f= null;
                 }
 	    }
 	}
