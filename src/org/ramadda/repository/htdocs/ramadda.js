@@ -308,9 +308,9 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		if(col.id==props.orderby) {
 		    if(Utils.isDefined(props.ascending)) {
 			if(props.ascending)
-			    v = HU.getIconImage('fas fa-arrow-up') + SPACE+v;
+			    v = HU.getIconImage('fas fa-arrow-up') + SPACE+HU.span([],v);
 			else
-			    v = HU.getIconImage('fas fa-arrow-down') +SPACE+v;
+			    v = HU.getIconImage('fas fa-arrow-down') +SPACE+HU.span([],v);
 		    }
 		}
 		html+=HU.td(attrs,v);

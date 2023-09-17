@@ -7,5 +7,6 @@ var ramaddaTreeSearchEnabled = ${ramadda.search.tree};
 var ramaddaState={};
 var ramaddaThisEntry = null;
 var ramaddaLanguage = ${ramadda.user.language};
+var ramaddaLanguages = ${ramadda.user.languages};
 
 ${ramadda.base.extra}

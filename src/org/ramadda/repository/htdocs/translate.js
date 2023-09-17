@@ -1,6 +1,26 @@
+var LANGUAGE_ENGLISH = 'en';
+var LANGUAGE_SPANISH = 'es';
+
 var Translate = {
     init: function() {
-//	$('.ramadda-links-extra').append('x');
+	this.switchPrefix = HU.getIconImage('fas fa-language') +HU.space(1)
+	ramaddaLanguages.forEach(lang=>{
+	    $('#ramadda_user_menu').append(HU.div(['data-language',lang.id,
+						   ATTR_TITLE,'Switch language',
+						   ATTR_CLASS,'ramadda-clickable ramadda-language-switch ramadda-user-link'],this.switchPrefix+lang.label));
+	});
+	this.switchLang = jqid('switchlang');
+	let _this = this;
+	$('.ramadda-language-switch').click(function() {
+	    let lang = $(this).attr('data-language');
+            HU.hidePopupObject();
+	    _this.setLanguage(lang);
+	    if(lang==LANGUAGE_ENGLISH) {
+		Translate.translateInner(null, LANGUAGE_ENGLISH,{},true);
+	    }   else {
+		Translate.translate(null,lang);
+	    }
+	});
 	Translate.translate();
     },
     packs:{},
@@ -38,31 +58,61 @@ var Translate = {
 	});
 	return pack;
     },
+    setLanguage: function(lang) {
+	this.language = ramaddaLanguage  =lang;
+//	console.log('language:'+this.language);
+    },
     translate: function(selector,lang) {
-	lang = lang || ramaddaLanguage || navigator.language 
-            || navigator.userLanguage;
+	if(!lang) {
+	    lang = this.language || ramaddaLanguage || navigator?.language 
+		|| navigator?.userLanguage;
+	}
 	if(!Utils.stringDefined(lang)) {
 	    console.log('no language:' + lang);
 	    return;
 	}
 	lang = lang.toLowerCase();
+	lang = lang.replace(/-.*/,'');
+	this.setLanguage(lang);
+	if(lang==LANGUAGE_ENGLISH) {
+	    Translate.translateInner(selector, lang,{},true);
+	    return;
+	}
+
 	Translate.loadPack(lang,(pack)=>{
 	    Translate.translateInner(selector, lang,pack);
 	    
 	});
     },
-    translateInner: function(selector,lang,pack) {
-	if(!pack) {
-	    lang = lang.replace(/-.*/,'');
+    haveDoneAnyTranslations:false,
+    translateInner: function(selector,lang,pack,useDflt) {
+	let all;
+	let blocks;
+	if(selector) {
+	    all = $(selector).find('*');	   
+	    blocks = $(selector).find('.ramadda-language-block');	    
+	} else {
+	    all = $('*');
+	    blocks = $('.ramadda-language-block');	    
+	}	    
+
+	blocks.each(function() {
+	    if($(this).attr('data-lang')==lang) {
+		$(this).show();
+	    } else {
+		$(this).hide();
+	    }
+	});
+
+	if(useDflt && !this.haveDoneAnyTranslations) {
+	    return
 	}
-	pack = this.packs[lang];
+//	console.log('translating to:' + lang +' use dflt:' + useDflt);
+	this.haveDoneAnyTranslations=true;
 	if(!pack) {
 	    console.log('no language pack:' + lang);
 	    return;
 	}
-	let all;
-	if(selector) all = $(selector).find('*');
-	else  all = $('*');
 	let langFlag = (suffix) =>{
 	    return 'lang-orig-' + (suffix??'');
 	}
@@ -72,31 +122,37 @@ var Translate = {
 		return false;
 	    }
 	    if(tag.attr(langFlag(suffix))) {
-		return false;
+//		return false;
 	    }
 	    if(!t || t.indexOf('<')>=0) {
 		return false;
 	    }
 	    return true;
 	}
-	let get = (a,t,suffix)=>{
+	let get = (a,t,suffix,debug)=>{
+
+
+	    if(useDflt) {
+		let orig = a.attr(langFlag(suffix));
+		if(orig) return orig;
+		return null;
+	    }
 	    if(!ok(a,t,suffix)) {
 		return;
 	    }
+
+
+	    let tag = a.prop('tagName');
 	    if(pack[t]) {
 		if(pack[t]=='<skip>') return null;
 		a.attr(langFlag(suffix),t);
+//		console.log(langFlag(suffix),a.attr(langFlag(suffix)));
 		return pack[t];
-	    }
-//	    console.log('missing',t);
-	    if(t=='type_datafile_json') {
-//		console.log(t,suffix,a.prop('tagName'));
 	    }
 	    Translate.missing[t] = true;
 	    return null;
 	}
-	let skip = {'SCRIPT':true,'BR':true,'HTML':true,'STYLE':true,'TEXTAREA':true};
-	let skip2 = {'SCRIPT':true,'BR':true,'HTML':true,'STYLE':true,'TEXTAREA':true};	
+	let skip = {'SCRIPT':true,'BR':true,'HTML':true,'STYLE':true,'TEXTAREA':true,'HEAD':true,'META':true,'LINK':true,'BODY':true};
 	let attrs = ['placeholder','title','value'];
 	all.each(function() {
 	    let v;
@@ -121,9 +177,9 @@ var Translate = {
 		    }
 		}});
 
-	    v = get(a,a.html());
+
+	    v = get(a,a.html(),null,false);
 	    if(v) {
-//		console.log(tag,a.html());
 		a.html(v);
 	    }
 	});
@@ -137,9 +193,6 @@ var Translate = {
 	Utils.makeDownloadFile('missing.txt',missing);
     }
 };
-
-
-
 
 $( document ).ready(function() {
     Translate.init();
