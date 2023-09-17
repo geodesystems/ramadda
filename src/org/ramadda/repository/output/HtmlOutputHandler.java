@@ -1839,7 +1839,7 @@ public class HtmlOutputHandler extends OutputHandler {
 		    headers.add(label);
 		}
 	    } else {
-		headers.add(Utils.getProperty(props,"nameLabel","Name"));
+		headers.add(msg(Utils.getProperty(props,"nameLabel","Name")));
 		if (showDate) {
 		    headers.add(Utils.getProperty(props,"dateLabel","Date"));
 		}

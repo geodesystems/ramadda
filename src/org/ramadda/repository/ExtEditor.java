@@ -828,7 +828,7 @@ public class ExtEditor extends RepositoryManager {
 	    } else if(form.equals(ARG_EXTEDIT_ADDALIAS)){
 		opener.accept("Add aliases to children entries");
 		sb.append("Use the macro \"${name}\" in the template to create the alias<br>");
-		sb.append(HU.b("Template: ") +
+		sb.append(HU.b("Template") +": "+
 			       HU.input(ARG_EXTEDIT_ADDALIAS_TEMPLATE,request.getString(ARG_EXTEDIT_ADDALIAS_TEMPLATE,"${name}"),
 					HU.attr("size","40")) +" e.g., somealias_${name}");
 		
@@ -860,7 +860,7 @@ public class ExtEditor extends RepositoryManager {
 
 		closer.accept(form, "Change type of this entry");
 	    }  else if(form.equals(ARG_EXTEDIT_CHANGETYPE_RECURSE)){
-		opener.accept("Change Descendents Entry Type");
+		opener.accept("Change Descendants Entry Type");
 		sb.append(HU.formTable());
 		HU.formEntry(sb, msgLabel("Old type"),
 			     HU.select(ARG_EXTEDIT_OLDTYPE,
@@ -877,9 +877,9 @@ public class ExtEditor extends RepositoryManager {
 			     HU.labeledCheckbox(ARG_EXTEDIT_CHANGETYPE_RECURSE_CONFIRM, "true",
 						false, "Yes, change them"));
 		sb.append(HU.formTableClose());
-		closer.accept(form,"Change the type of all descendent entries");
+		closer.accept(form,"Change the type of all descendant entries");
 	    }	else if(form.equals(ARG_EXTEDIT_URL_CHANGE)){		
-		opener.accept("Change Descendents URL Path");
+		opener.accept("Change Descendants URL Path");
 		sb.append(HU.formTable());
 		HU.formEntry(sb, msgLabel("Pattern"),
 			     HU.input(ARG_EXTEDIT_URL_PATTERN, request.getString(ARG_EXTEDIT_URL_PATTERN,"")));
@@ -890,7 +890,7 @@ public class ExtEditor extends RepositoryManager {
 		opener.accept("Process with Javascript");
 		closer.accept(form,"Apply Javascript");
 		sb.append(HU.formTable());
-		HU.formEntry(sb, HU.b("Only apply to entries of type: ")+
+		HU.formEntry(sb, HU.b("Only apply to entries of type")+":"+
 				    HU.select(ARG_EXTEDIT_TYPE, tfos,request.getString(ARG_EXTEDIT_TYPE,null)));
 
 		HU.formEntry(sb, HU.labeledCheckbox(ARG_EXTEDIT_THISONE, "true",
@@ -918,7 +918,7 @@ public class ExtEditor extends RepositoryManager {
 						     HU.pre(eg)))));
 		
 		sb.append(HU.formTableClose());
-		sb.append(HU.b("Exclude entries:") +"<br>"+
+		sb.append(HU.b("Exclude entries") +":<br>"+
 			  HU.textArea(ARG_EXTEDIT_EXCLUDE, request.getString(ARG_EXTEDIT_EXCLUDE,""),5,40,HU.attr("placeholder","entry ids, one per line")));
 
 

@@ -1839,7 +1839,7 @@ public class AccessManager extends RepositoryManager {
             }
             String select = HU.select(ARG_DATAPOLICY, items, selected,
                                       extraSelect, 100);
-            sb.append(HU.b("Data Policy:") + " " + select);
+            sb.append(HU.b("Data Policy") + ": " + select);
             sb.append(HU.href(getRepository().getUrlBase()
                               + "/access/datapolicies", "View Data Policies",
 			      HU.attr("target", "_datapolicies")));

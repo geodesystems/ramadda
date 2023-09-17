@@ -809,10 +809,10 @@ public class PageHandler extends RepositoryManager {
         allLinks.addAll(navLinks);
         allLinks.addAll(userLinks);
         String menuHtml = HU.div(StringUtil.join("", allLinks),
+				 HU.id("ramadda_user_menu")+
                                  HU.cssClass("ramadda-user-menu"));
 
 	List<String> pageLinks = new ArrayList<String>();
-	pageLinks.add(HU.span("",HU.attrs("class","ramadda-page-link ramadda-links-extra")));
 
         if (showSearch) {
 	    pageLinks.add(HU.mouseClickHref("Utils.searchPopup('searchlink','popupanchor');",
@@ -853,7 +853,7 @@ public class PageHandler extends RepositoryManager {
             pageTitle, MACRO_LINKS, menuHtml, MACRO_REPOSITORY_NAME,
             repository.getRepositoryName(), MACRO_FOOTER, theFooter,
             MACRO_FOOTER_ACKNOWLEDGEMENT, getAckMessage(), MACRO_TITLE,
-            result.getTitle(), MACRO_BOTTOM, bottom, MACRO_SEARCH_URL,
+            Utils.stripTags(result.getTitle()), MACRO_BOTTOM, bottom, MACRO_SEARCH_URL,
             getSearchManager().getSearchUrl(request), MACRO_CONTENT, content,
             MACRO_ENTRY_HEADER, entryHeader, MACRO_HEADER, header,
 	    MACRO_ENTRY_NAME,

@@ -1840,10 +1840,10 @@ public class EntryManager extends RepositoryManager {
         getPageHandler().entrySectionClose(request, entry, sb);
         if (entry == null) {
             return addEntryHeader(request, group,
-                                  new Result(msg("Add Entry"), sb));
+                                  new Result("Add Entry", sb));
         }
 
-        return makeEntryEditResult(request, entry, msg("Edit Entry"), sb);
+        return makeEntryEditResult(request, entry, "Edit Entry", sb);
     }
 
 
@@ -1953,8 +1953,8 @@ public class EntryManager extends RepositoryManager {
             sb.append(HU.hidden(ARG_GROUP, group.getId()));
         } else {
             title = ((entry == null)
-                     ? msg("Add Entry")
-                     : msg("Edit Entry"));
+                     ? "Add Entry"
+                     : "Edit Entry");
             String submitButton = HU.submit((entry == null)
 					    ? "Add " + typeHandler.getLabel()
 					    : "Save", ARG_SUBMIT,
@@ -5041,13 +5041,13 @@ public class EntryManager extends RepositoryManager {
                 left.append(HU.close(HU.TAG_DIV));
 		bottom.append("<div style='margin-left:20px;margin-bottom:20px;display:" + (isCopy?"block":"none")+";' id='" + extraId+"'>");
 		bottom.append(HU.formTable());
-		bottom.append(HU.formEntry("Size Limit:",
+		bottom.append(HU.formEntry(msgLabel("Size Limit"),
 					  HU.input(ARG_COPY_SIZE_LIMIT,
 						   request.getString(ARG_COPY_SIZE_LIMIT, ""), HU.SIZE_5)+" (MB)"));
 		bottom.append(HU.formEntry("",	
 					   HU.labeledCheckbox(ARG_COPY_DEEP,"true",
 							      request.get(ARG_COPY_DEEP, false), "Make deep copy (for synthetic entries)")));
-		bottom.append(HU.formEntryTop("Excludes:", 
+		bottom.append(HU.formEntryTop(msgLabel("Excludes"), 
 					      HU.textArea(ARG_EXCLUDES,request.getString(ARG_EXCLUDES),3,20) +" Patterns, one per line"));
 
 		bottom.append(HU.formEntry("",	

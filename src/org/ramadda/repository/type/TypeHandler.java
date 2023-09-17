@@ -5108,7 +5108,7 @@ public class TypeHandler extends RepositoryManager {
                             String icon = HU.img("fas fa-upload");
                             formContent += HU
                                 .div(HU.div(
-                                    icon + " Or drag files here",
+					    icon + " " + msg("Or drag files here"),
                                     HU.cssClass("ramadda-file-dnd-label")), HU
                                         .cssClass(
                                             "ramadda-file-dnd-target") + HU

@@ -6612,6 +6612,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 	js = js.replace("${ramadda.user.language}",
 			Utils.stringDefined(language)?"\"" + language+"\"":"null");
+	js = js.replace("${ramadda.user.languages}",
+			"[{id:'en',label:'English'},{id:'es',label:'Espanol'}]");
 
 	js = js.replace("${ramadda.base.extra}",extra);
 	return js;
