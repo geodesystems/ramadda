@@ -194,8 +194,10 @@ var Translate = {
     }
 };
 
-$( document ).ready(function() {
-    Translate.init();
-});
+if(ramaddaLanguagesEnabled) {
+    $( document ).ready(function() {
+	Translate.init();
+    });
+}
 	 
 

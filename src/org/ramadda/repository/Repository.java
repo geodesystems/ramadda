@@ -4656,7 +4656,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         repositoryName = getProperty(PROP_REPOSITORY_NAME, repositoryName);
         repositoryDescription = getProperty(PROP_REPOSITORY_DESCRIPTION, "");
         language              = getProperty(PROP_LANGUAGE, "");
-        languageDefault       = getProperty(PROP_LANGUAGE_DEFAULT, "default");
+        languageDefault       = getProperty(PROP_LANGUAGE_DEFAULT, "en");
         downloadOk            = getProperty(PROP_DOWNLOAD_OK, true);
         minifiedOk            = getProperty(PROP_MINIFIED, true);
         acceptRobots          = !getProperty(PROP_ACCESS_NOBOTS, false);
@@ -6608,12 +6608,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
 			request.getServerName());
 	js = js.replace("${ramadda.user}",
 			request.getUser().getId());
-	String language  = request.getUser().getLanguage();	
+	String language  = request.getLanguage();	
 
 	js = js.replace("${ramadda.user.language}",
 			Utils.stringDefined(language)?"\"" + language+"\"":"null");
-	js = js.replace("${ramadda.user.languages}",
+	js = js.replace("${ramadda.languages}",
 			"[{id:'en',label:'English'},{id:'es',label:'Espanol'}]");
+	js = js.replace("${ramadda.languages.enabled}",
+			""+getProperty("ramadda.languages.enabled",false));
 
 	js = js.replace("${ramadda.base.extra}",extra);
 	return js;

@@ -2044,7 +2044,7 @@ public class WikiUtil implements HtmlUtilsConstants {
                 if (tline.startsWith("+lang")) {
                     List<String> toks = Utils.splitUpTo(tline, " ", 2);
 		    String lang = toks.size()>1?toks.get(1):"en";
-		    HU.open(buff,"div",HU.clazz("ramadda-language-block") +HU.attr("data-lang",lang));
+		    HU.open(buff,"div",HU.style(HU.css("display","none"))+HU.clazz("ramadda-language-block") +HU.attr("data-lang",lang));
 		    continue;
 		}
 

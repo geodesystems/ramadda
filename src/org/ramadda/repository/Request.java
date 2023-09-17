@@ -3182,7 +3182,7 @@ public class Request implements Constants, Cloneable {
         }
         User   user     = getUser();
         String language = user.getLanguage();
-
+	if(!Utils.stringDefined(language)) language = getRepository().getLanguageDefault();
         return language;
     }
 
