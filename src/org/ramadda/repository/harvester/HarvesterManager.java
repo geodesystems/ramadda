@@ -397,9 +397,9 @@ public class HarvesterManager extends RepositoryManager {
                                             harvesterTypes);
         sb.append(HtmlUtils.formEntry(msgLabel("Type"), typeInput));
         sb.append(HtmlUtils.formEntry("",
-                                      HtmlUtils.submit(msg("Create"))
+                                      HtmlUtils.submit("Create")
                                       + HtmlUtils.space(1)
-                                      + HtmlUtils.submit(msg("Cancel"),
+                                      + HtmlUtils.submit(LABEL_CANCEL,
                                           ARG_CANCEL)));
 
         sb.append(HtmlUtils.formClose());
@@ -417,9 +417,9 @@ public class HarvesterManager extends RepositoryManager {
                     ARG_HARVESTER_XMLFILE, HtmlUtils.SIZE_70)));
 
         sb.append(HtmlUtils.formEntry("",
-                                      HtmlUtils.submit(msg("Upload"))
+                                      HtmlUtils.submit("Upload")
                                       + HtmlUtils.space(1)
-                                      + HtmlUtils.submit(msg("Cancel"),
+                                      + HtmlUtils.submit(LABEL_CANCEL,
                                           ARG_CANCEL)));
         sb.append(HtmlUtils.formClose());
         sb.append(HtmlUtils.formTableClose());
@@ -484,11 +484,11 @@ public class HarvesterManager extends RepositoryManager {
                                      harvester.getId()), msg("Download"));
 
         String buttons =
-	    HtmlUtils.submit(msg("Change"), ARG_CHANGE)
+	    HtmlUtils.submit("Change", ARG_CHANGE)
 	    + space
-	    + HtmlUtils.submit(msg("Delete"), ARG_DELETE)
+	    + HtmlUtils.submit("Delete", ARG_DELETE)
 	    + space
-	    + HtmlUtils.submit(msg("Cancel"), ARG_CANCEL);
+	    + HtmlUtils.submit(LABEL_CANCEL, ARG_CANCEL);
 
 
 
@@ -558,8 +558,8 @@ public class HarvesterManager extends RepositoryManager {
                 getPageHandler().showDialogQuestion(
                     msg("Are you sure you want to delete the harvester"),
                     HtmlUtils.buttons(
-                        HtmlUtils.submit(msg("Yes"), ARG_DELETE_CONFIRM),
-                        HtmlUtils.submit(msg("Cancel"), ARG_CANCEL_DELETE))));
+                        HtmlUtils.submit("Yes", ARG_DELETE_CONFIRM),
+                        HtmlUtils.submit(LABEL_CANCEL, ARG_CANCEL_DELETE))));
             sb.append(HtmlUtils.formClose());
             sb.append(HtmlUtils.sectionClose());
 
@@ -664,7 +664,7 @@ public class HarvesterManager extends RepositoryManager {
 	    //        sb.append(msgHeader("Harvesters"));
 	    request.formPostWithAuthToken(sb, URL_HARVESTERS_NEW);
 	    sb.append(HtmlUtils.sectionOpen(null, false));
-	    sb.append(HtmlUtils.submit(msg("New Harvester")));
+	    sb.append(HtmlUtils.submit("New Harvester"));
 	    sb.append(HtmlUtils.formClose());
 
 	    if (request.hasMessage()) {

@@ -971,7 +971,7 @@ public abstract class ValueIterator implements DbConstants {
             }
             if ( !embedded && (actions.size() > 0)) {
                 if (doForm) {
-                    sb.append(HU.submit(db.msgLabel("Do"), ARG_DB_DO));
+                    sb.append(HU.submit("Do:", ARG_DB_DO));
                     sb.append(HU.select(ARG_DB_ACTION, actions));
                 }
             }

@@ -157,7 +157,7 @@ public class CatalogImporter extends OutputHandler {
                                    ARG_RESOURCE_DOWNLOAD, "true",
                                    false) + HtmlUtils.space(1)
                                           + msg("Download URLs")));
-            sb.append(HtmlUtils.formEntry("", HtmlUtils.submit(msg("Go"))));
+            sb.append(HtmlUtils.formEntry("", HtmlUtils.submit("Go")));
             sb.append(HtmlUtils.formTableClose());
             sb.append(HtmlUtils.formClose());
 
@@ -178,7 +178,7 @@ public class CatalogImporter extends OutputHandler {
         sb.append(HtmlUtils.hidden(ARG_GROUP, group.getId()));
         sb.append(HtmlUtils.hidden(ARG_OUTPUT,
                                    OUTPUT_CATALOG_IMPORT.getId()));
-        sb.append(HtmlUtils.submit(msgLabel("Import catalog")));
+        sb.append(HtmlUtils.submit("Import catalog:"));
         sb.append(HtmlUtils.space(1));
         sb.append(HtmlUtils.input(ARG_CATALOG, catalog, " size=\"75\""));
 

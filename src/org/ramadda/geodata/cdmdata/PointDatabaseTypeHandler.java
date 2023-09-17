@@ -2722,7 +2722,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 HtmlUtils.attr("name", "pointsearch")
                 + HtmlUtils.id("pointsearch")));
 
-        sb.append(HtmlUtils.submit(msg("Search"), ARG_POINT_SEARCH));
+        sb.append(HtmlUtils.submit(LABEL_SEARCH, ARG_POINT_SEARCH));
         sb.append(HtmlUtils.p());
 
         sb.append(
@@ -2750,7 +2750,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         sb.append(HtmlUtils.makeShowHideBlock(msg("Settings"),
                 advOutputSB.toString(), false));
         sb.append(HtmlUtils.p());
-        sb.append(HtmlUtils.submit(msg("Search"), ARG_POINT_SEARCH));
+        sb.append(HtmlUtils.submit(LABEL_SEARCH, ARG_POINT_SEARCH));
         sb.append(HtmlUtils.formClose());
 
 

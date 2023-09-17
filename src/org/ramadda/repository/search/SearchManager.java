@@ -1838,7 +1838,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         makeSearchForm(request, sb);
         sb.append(HU.sectionClose());
 
-        return makeResult(request, msg("Search Form"), sb);
+        return makeResult(request, "Search Form", sb);
     }
 
 
@@ -1856,7 +1856,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 	sb.append("</table>");
         sb.append(HU.sectionClose());
-        return makeResult(request, msg("Search Synonyms"), sb);
+        return makeResult(request, "Search Synonyms", sb);
     }
 
 
@@ -1908,7 +1908,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         String textField =
             HU.input(
 			    ARG_TEXT, value,
-			    HU.attr("placeholder", msg(" Search text"))
+			    HU.attr("placeholder", "Search text")
 			    + HU.id("searchinput") + HU.SIZE_50
 			    + " autocomplete='off' autofocus ") + "\n<div id=searchpopup class=ramadda-popup></div>";
 	//	textField+= HU.script("Utils.searchSuggestInit('searchinput');");
@@ -1926,7 +1926,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @throws Exception _more_
      */
     private String getSearchButtons(Request request) throws Exception {
-        return HU.submit(msg("Search"), ARG_SEARCH_SUBMIT);
+        return HU.submit("Search", ARG_SEARCH_SUBMIT);
     }
 
 
@@ -1944,7 +1944,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	String id = HU.getUniqueId("searchform_");
         sb.append(HU.formPost(getSearchUrl(request),
 			      ""
-			      //			      makeFormSubmitDialog(sb, msg("Searching..."))
 			      + HU.attr("id",id)
 			      + HU.attr("name","searchform")));
 
@@ -2006,7 +2005,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    String input = HU.disabledInput(ARG_ANCESTOR, ancestorEntry!=null?ancestorEntry.getName():"",
 					    HU.clazz("disabledinput ramadda-entry-popup-select") + HU.attr("placeholder","Search under") + HU.attr("onClick", event) + HU.SIZE_40 + HU.id(ARG_ANCESTOR));
 
-	    sb.append(inset.apply(HU.b("Under Entry:<br>")+
+	    sb.append(inset.apply(HU.b("Under Entry")+":<br>"+
 				  select + HU.space(1) +input ));
 	}
 
@@ -2053,18 +2052,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         }
         long t2 = System.currentTimeMillis();
         addSearchProviders(request, contents, titles);
-        //            System.err.println("metadata form:" + (t2-t1));
-
-        /*            StringBuffer outputForm = new StringBuffer(HU.formTable());
-		      String output = makeOutputSettings(request);
-		      outputForm.append(output);
-		      outputForm.append(HU.formTableClose());
-		      contents.add(outputForm.toString());
-		      titles.add(msg("Output"));
-        */
-
-
-
         //Pad the contents
         List<String> tmp = new ArrayList<String>();
         for (String c : contents) {
@@ -2122,10 +2109,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 								      "true",
 								      request.get(ARG_ASCENDING,false),
 								      msg("ascending"));
-        return HU.b("Output:") +" " +
+        return HU.b("Output") +": " +
 	    HU.select(ARG_OUTPUT, getOutputHandlerSelectList(),
 		      request.getString(ARG_OUTPUT, "")) +
-	    " " + HU.b("Order By:")+ " " +orderBy;
+	    " " + HU.b("Order By")+ ": " +orderBy;
     }
 
 
@@ -2299,7 +2286,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             }
         }
 
-        return makeResult(request, msg("Search by Type"), sb);
+        return makeResult(request, "Search by Type", sb);
     }
 
 
@@ -2463,7 +2450,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
         getPageHandler().sectionClose(request, sb);
 
-        return makeResult(request, msg("Search Metadata"), sb);
+        return makeResult(request, "Search Metadata", sb);
     }
 
 
@@ -2488,7 +2475,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         sb.append("</ul>");
         getPageHandler().sectionClose(request, sb);
 
-        return makeResult(request, msg("Search Providers"), sb);
+        return makeResult(request, "Search Providers", sb);
     }
 
     /**
@@ -2540,13 +2527,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 						   type.getName())));
         }
         sb.append(HU.formTableClose());
-
-
-
-
-
-
-        return makeResult(request, msg("Search Metadata"), sb);
+        return makeResult(request, "Search Metadata", sb);
     }
 
 
@@ -2623,9 +2604,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             sb.append(HU.p());
         }
         sb.append(HU.p());
-        //        sb.append(header(msg("Search Results")));
-
-        return makeResult(request, msg("Remote Form"), sb);
+        return makeResult(request, "Remote Form", sb);
 
     }
 
@@ -2646,7 +2625,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         getMetadataManager().addToBrowseSearchForm(request, sb);
         HU.close(sb, "div");
 
-        return makeResult(request, msg("Search Form"), sb);
+        return makeResult(request, "Search Form", sb);
     }
 
     /**

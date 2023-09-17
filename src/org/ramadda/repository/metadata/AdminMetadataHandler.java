@@ -137,11 +137,11 @@ public class AdminMetadataHandler extends MetadataHandler {
         }
         String submit = (forEdit
                          ? ""
-                         : HtmlUtils.submit(msg("Add") + HtmlUtils.space(1)
+                         : HtmlUtils.submit("Add" + HtmlUtils.space(1)
                                             + lbl));
         String cancel  = (forEdit
                           ? ""
-                          : HtmlUtils.submit(msg("Cancel"), ARG_CANCEL));
+                          : HtmlUtils.submit(LABEL_CANCEL, ARG_CANCEL));
         String arg1    = ARG_ATTR1 + suffix;
         String content = "";
         if (type.isType(TYPE_TEMPLATE)) {

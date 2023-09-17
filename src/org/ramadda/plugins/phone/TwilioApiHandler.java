@@ -272,8 +272,8 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
             sb.append(
                 HtmlUtils.formEntry(
                     "",
-                    HtmlUtils.submit(msg("Login")) + " "
-                    + HtmlUtils.submit(msg("Resend Code"))));
+                    HtmlUtils.submit(LABEL_LOGIN) + " "
+                    + HtmlUtils.submit("Resend Code")));
             sb.append(HtmlUtils.formClose());
             sb.append(HtmlUtils.formTableClose());
         }

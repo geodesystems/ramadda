@@ -2806,8 +2806,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         } else {
             //try it as a java resource
             String contents = null;
-            contents = IOUtil.readContents(path + "/files.txt", c,
-                                           (String) null);
+            contents = IOUtil.readContents(path + "/files.txt", c,  (String) null);
             if (contents == null) {
                 contents = IOUtil.readContents(path, c, (String) null);
                 //                getLogManager().logInfoAndPrint("RAMADDA: resourceList (2):" + (contents == null?"NULL":contents.replaceAll("\n"," ")));
@@ -6609,6 +6608,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
 			request.getServerName());
 	js = js.replace("${ramadda.user}",
 			request.getUser().getId());
+	String language  = request.getUser().getLanguage();	
+
+	js = js.replace("${ramadda.user.language}",
+			Utils.stringDefined(language)?"\"" + language+"\"":"null");
 
 	js = js.replace("${ramadda.base.extra}",extra);
 	return js;

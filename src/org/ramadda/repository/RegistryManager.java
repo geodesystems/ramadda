@@ -187,7 +187,7 @@ public class RegistryManager extends RepositoryManager {
                         HU.SIZE_60)));
             sb.append(HU.formTableClose());
             sb.append(HU.submit("Add New Server", ARG_REGISTRY_ADD));
-            sb.append(HU.submit("Cancel", ARG_CANCEL));
+            sb.append(HU.submit(LABEL_CANCEL, ARG_CANCEL));
             sb.append(HU.formClose());
 
             return getAdmin().makeResult(request, "RAMADDA-Admin-Remote Servers", sb);
@@ -244,12 +244,10 @@ public class RegistryManager extends RepositoryManager {
         sb.append(request.formPost(URL_REGISTRY_REMOTESERVERS, ""));
         sb.append(
             HU.buttons(
-                HU.submit(msg("Change"), ARG_CHANGE),
-                HU.submit(msg("Delete Selected"), ARG_DELETE),
-                HU.submit(msg("Add New Server"), ARG_REGISTRY_ADD),
-                HU.submit(
-                    msg("Reload from Registry Servers"),
-                    ARG_REGISTRY_RELOAD)));
+                HU.submit("Change", ARG_CHANGE),
+                HU.submit("Delete Selected", ARG_DELETE),
+                HU.submit("Add New Server", ARG_REGISTRY_ADD),
+                HU.submit("Reload from Registry Servers", ARG_REGISTRY_RELOAD)));
         sb.append(HU.open(HU.TAG_UL));
         List<ServerInfo> remoteServers = getRemoteServers();
         sb.append(HU.br());

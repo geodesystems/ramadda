@@ -259,9 +259,9 @@ public class LdmOutputHandler extends OutputHandler {
 
             sb.append(HtmlUtils.formTableClose());
             if (fileEntries.size() > 1) {
-                sb.append(HtmlUtils.submit(msg("Insert files into LDM")));
+                sb.append(HtmlUtils.submit("Insert files into LDM"));
             } else {
-                sb.append(HtmlUtils.submit(msg("Insert file into LDM")));
+                sb.append(HtmlUtils.submit("Insert file into LDM"));
             }
         } else {
             String queue =

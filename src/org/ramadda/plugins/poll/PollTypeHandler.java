@@ -348,7 +348,7 @@ public class PollTypeHandler extends BlobTypeHandler {
                                    HtmlUtils.attr("name", "entryform")));
 
             sb.append(HtmlUtils.p());
-            sb.append(HtmlUtils.submit(msg("Add Response"), ""));
+            sb.append(HtmlUtils.submit("Add Response", ""));
             sb.append(HtmlUtils.p());
             sb.append(HtmlUtils.hidden(ACTION_ADDRESPONSE, ""));
             sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
@@ -442,7 +442,7 @@ public class PollTypeHandler extends BlobTypeHandler {
 
         if (canAdd) {
             sb.append(HtmlUtils.br());
-            sb.append(HtmlUtils.submit(msg("Add Response"), ""));
+            sb.append(HtmlUtils.submit("Add Response", ""));
             sb.append("</form>");
         }
 

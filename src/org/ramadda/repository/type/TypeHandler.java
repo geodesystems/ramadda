@@ -3272,8 +3272,8 @@ public class TypeHandler extends RepositoryManager {
                     request.makeUrl(
                         getRepository().URL_ENTRY_FORM, ARG_GROUP,
                         entry.getId(), ARG_TYPE, type), icon,
-                            "New " + typeHandler.getDescription(),
-                            OutputType.TYPE_FILE));
+		    msg("New") +HU.SPACE + typeHandler.getDescription(),
+		    OutputType.TYPE_FILE));
         }
 
         return didone;

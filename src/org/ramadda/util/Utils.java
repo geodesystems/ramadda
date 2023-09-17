@@ -3763,7 +3763,6 @@ public class Utils extends IO {
             int idx = html.indexOf("<");
             if (idx < 0) {
                 stripped.append(html.trim());
-
                 break;
             }
             String text = html.substring(0, idx);

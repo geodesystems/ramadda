@@ -2146,11 +2146,9 @@ public class MetadataManager extends RepositoryManager {
             sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
             sb.append("\n");
             String buttons = HU.buttons(
-                                 HU.submit(msg("Change")),
-                                 HU.submit(
-                                     msg("Delete selected"),
-                                     ARG_METADATA_DELETE), HU.submit(
-                                         msg("Copy selected to clipboard"),
+                                 HU.submit("Change"),
+                                 HU.submit("Delete selected",
+                                     ARG_METADATA_DELETE), HU.submit("Copy selected to clipboard",
                                          ARG_METADATA_CLIPBOARD_COPY));
 	    String allId = HU.getUniqueId("all_");
 	    String toggle  = HU.labeledCheckbox("all","",false,HU.attrs("id",allId),"Toggle all");
@@ -2320,7 +2318,7 @@ public class MetadataManager extends RepositoryManager {
             request.uploadFormWithAuthToken(sb, URL_METADATA_ADDFORM);
             sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
             sb.append(HU.hidden(ARG_METADATA_CLIPBOARD_PASTE, "true"));
-            sb.append(HU.submit(msg("Copy from Clipboard")));
+            sb.append(HU.submit("Copy from Clipboard"));
             sb.append(HU.formClose());
             sb.append(HU.makeShowHideBlock("Clipboard",
                     clipboardSB.toString(), false));
@@ -2347,7 +2345,7 @@ public class MetadataManager extends RepositoryManager {
             groupSB.append(request.form(URL_METADATA_ADDFORM));
             groupSB.append(HU.hidden(ARG_ENTRYID, entry.getId()));
             groupSB.append(HU.hidden(ARG_METADATA_TYPE, type.getId()));
-            groupSB.append(HU.submit(msg("Add") + HU.space(1)
+            groupSB.append(HU.submit("Add" + HU.space(1)
                                             + type.getLabel()));
             if (Utils.stringDefined(type.getHelp())) {
                 groupSB.append(HU.space(2));

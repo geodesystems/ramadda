@@ -2733,7 +2733,7 @@ var Utils =  {
         form += HU.open('input',['value', value, 'placeholder','Search text', 'autocomplete','off','autofocus','true','id','popup_search_input','class', 'ramadda-search-input',
                                  STYLE,HU.css('margin-left','4px', 'padding','2px','width','250px','border','0px'),'name','text']);
         if(ramaddaThisEntry) {
-            form+=HU.checkbox("popup_search_here",['name','ancestor', 'value',ramaddaThisEntry, TITLE,"Search under this entry"],false) +HU.tag("label",[CLASS,CLASS_CLICKABLE, "for","popup_search_here"]," here" + SPACE);
+            form+=HU.checkbox("popup_search_here",['name','ancestor', 'value',ramaddaThisEntry, TITLE,"Search under this entry"],false) +HU.tag("label",[CLASS,CLASS_CLICKABLE, "for","popup_search_here"],SPACE +HU.span([],"here") + SPACE);
         }
         form +="</form>";
 
@@ -4420,6 +4420,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	if(opts.toggleid) {
 	    this.toggleDialogs[opts.toggleid] = popup;
 	}
+	Translate.translate(popup);
         return popup;
     },
     //If value==null then remove the param

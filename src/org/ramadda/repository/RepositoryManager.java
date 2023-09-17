@@ -473,8 +473,12 @@ public class RepositoryManager implements RepositorySource, Constants,
      * @return _more_
      */
     public static String msg(String msg) {
-        return Repository.msg(msg);
+        return PageHandler.msg(msg);
     }
+
+    public static String noMsg(String msg) {
+        return PageHandler.noMsg(msg);
+    }    
 
     /**
      * _more_

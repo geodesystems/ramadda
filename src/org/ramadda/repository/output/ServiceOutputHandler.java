@@ -751,7 +751,7 @@ public class ServiceOutputHandler extends OutputHandler {
 
         StringBuilder buttons = new StringBuilder();
 
-        buttons.append(HtmlUtils.submit(msg("Execute"), ARG_EXECUTE,
+        buttons.append(HtmlUtils.submit("Execute", ARG_EXECUTE,
                                         makeButtonSubmitDialog(sb,
                                             "Processing request...")));
         StringBuffer etc = new StringBuffer();

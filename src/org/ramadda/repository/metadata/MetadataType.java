@@ -1267,9 +1267,9 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         if (lbl == null) {
             lbl = msgLabel(getName());
         }
-        String submit = HU.submit(msg("Add") + HU.space(1)
+        String submit = HU.submit("Add" + HU.space(1)
                                          + getName());
-        String        cancel = HU.submit(msg("Cancel"), ARG_CANCEL);
+        String        cancel = HU.submit(LABEL_CANCEL, ARG_CANCEL);
         StringBuilder sb     = new StringBuilder();
         if (Utils.stringDefined(help)) {
             sb.append(HU.row(HU.colspan(HU.note(help),

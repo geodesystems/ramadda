@@ -2442,6 +2442,11 @@ public interface Constants {
         new RequestArgument("ramadda.arg.longitude");
 
 
-
-
+    public static final String LABEL_CANCEL = "Cancel";
+    public static final String LABEL_OK = "OK";    
+    public static final String LABEL_YES = "Yes";
+    public static final String LABEL_NO = "No";    
+    public static final String LABEL_SUBMIT = "Submit";
+    public static final String LABEL_SEARCH="Search";
+    public static final String LABEL_LOGIN = "Login";
 }

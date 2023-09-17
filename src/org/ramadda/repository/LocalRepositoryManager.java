@@ -513,10 +513,10 @@ public class LocalRepositoryManager extends RepositoryManager {
 
 
             if (local.status.equals(STATUS_ACTIVE)) {
-                statusSB.append(HtmlUtils.submit(msg("Stop Repository"),
+                statusSB.append(HtmlUtils.submit("Stop Repository",
                         ARG_LOCAL_STOP));
             } else if (local.status.equals(STATUS_STOPPED)) {
-                statusSB.append(HtmlUtils.submit(msg("Start Repository"),
+                statusSB.append(HtmlUtils.submit("Start Repository",
                         ARG_LOCAL_START));
             }
 
@@ -524,7 +524,7 @@ public class LocalRepositoryManager extends RepositoryManager {
             if (local.status.equals(STATUS_STOPPED)) {
                 statusSB.append(HtmlUtils.space(1));
                 statusSB.append(HtmlUtils.hidden(ARG_LOCAL_ID, local.id));
-                statusSB.append(HtmlUtils.submit(msg("Remove Repository"),
+                statusSB.append(HtmlUtils.submit("Remove Repository",
                         ARG_LOCAL_DELETE));
                 statusSB.append(HtmlUtils.checkbox(ARG_LOCAL_SURE, "true",
                         false) + " " + msg("Yes, remove this repository"));
@@ -583,8 +583,7 @@ public class LocalRepositoryManager extends RepositoryManager {
         sb.append(
             HtmlUtils.formEntry(
                 "",
-                HtmlUtils.submit(
-                    msg("Create new repository"), ARG_LOCAL_NEW)));
+                HtmlUtils.submit("Create new repository", ARG_LOCAL_NEW)));
 
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.formClose());

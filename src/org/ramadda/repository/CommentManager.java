@@ -273,8 +273,8 @@ public class CommentManager extends RepositoryManager {
             HtmlUtils.formEntry(
                 BLANK,
                 HtmlUtils.buttons(
-                    HtmlUtils.submit(msg("Add Comment")),
-                    HtmlUtils.submit(msg("Cancel"), ARG_CANCEL))));
+                    HtmlUtils.submit("Add Comment"),
+                    HtmlUtils.submit(LABEL_CANCEL, ARG_CANCEL))));
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.formClose());
 

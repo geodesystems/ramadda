@@ -767,7 +767,7 @@ public class ExtEditor extends RepositoryManager {
 	    HU.div(sb,"",HU.attrs("class","ramadda-action-results", "id",actionId.toString()));
 	    if(canCancel) {
 		String cancelUrl = getRepository().getUrlBase() +"/status?actionid=" + actionId +"&" + ARG_CANCEL+"=true";
-		sb.append(HU.button(HU.href(cancelUrl,"Cancel")));
+		sb.append(HU.button(HU.href(cancelUrl,LABEL_CANCEL)));
 	    }
 	    HU.script(sb,"Utils.handleActionResults('" + actionId +"','" + url+"',"+ canCancel+");\n");
 	}
@@ -1176,7 +1176,7 @@ public class ExtEditor extends RepositoryManager {
                     HU.submit(
                         msg("Yes, change the entry types"),
                         ARG_CONFIRM), HU.submit(
-                            msg("Cancel"), ARG_CANCEL))));
+                            msg(LABEL_CANCEL), ARG_CANCEL))));
         sb.append(HU.formClose());
         sb.append("<table>");
         sb.append("<tr><td><b>Entry</b></td><td><b>Type</b></td></tr>");

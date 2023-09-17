@@ -427,8 +427,8 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
             StringBuffer fb = new StringBuffer();
             fb.append(
                 HtmlUtils.buttons(
-                    HtmlUtils.submit(msg("OK"), ARG_MONITOR_DELETE_CONFIRM),
-                    HtmlUtils.submit(msg("Cancel"), ARG_CANCEL)));
+                    HtmlUtils.submit("OK", ARG_MONITOR_DELETE_CONFIRM),
+                    HtmlUtils.submit(LABEL_CANCEL, ARG_CANCEL)));
             sb.append(
                 getPageHandler().showDialogQuestion(
                     msg("Are you sure you want to delete the monitor?"),
@@ -443,9 +443,9 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
 
 
         StringBuffer buttons = new StringBuffer();
-        buttons.append(HtmlUtils.submit(msg("Save"), ARG_MONITOR_CHANGE));
+        buttons.append(HtmlUtils.submit("Save", ARG_MONITOR_CHANGE));
         buttons.append(HtmlUtils.space(1));
-        buttons.append(HtmlUtils.submit(msg("Delete"), ARG_MONITOR_DELETE));
+        buttons.append(HtmlUtils.submit("Delete", ARG_MONITOR_DELETE));
         sb.append(buttons);
         sb.append(HtmlUtils.br());
         monitor.addToEditForm(request, sb);

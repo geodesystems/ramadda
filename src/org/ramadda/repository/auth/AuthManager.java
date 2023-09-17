@@ -195,7 +195,7 @@ public class AuthManager extends RepositoryManager {
 	    String password = request.getString(ARG_EXTRA_PASSWORD,"");
 	    request.remove(ARG_EXTRA_PASSWORD);
             if ( !getUserManager().isPasswordValid(request.getUser(), password)) {
-		sb.append(getPageHandler().showDialogError("Incorrect verification password.<br>Please enter your password."));
+		sb.append(getPageHandler().showDialogError(msg("Incorrect verification password")+"<br>"+msg("Please enter your password")));
 		return false;
 	    }
 	    ensureAuthToken(request);
@@ -435,6 +435,7 @@ public class AuthManager extends RepositoryManager {
 	}
 	public String getHtml(Request request, String msg,boolean forcePassword) {
 	    if(msg==null) msg = DEFAULT_MESSAGE;
+	    msg = msg(msg);
 	    StringBuilder sb = new StringBuilder();
 	    if(authManager.doPassword||forcePassword) {
 		authManager.addAuthToken(request, sb);

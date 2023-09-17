@@ -406,7 +406,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         String formUrl = getEntryManager().getFullEntryShowUrl(request);
         sb.append(HtmlUtils.form(formUrl, ""));
         sb.append(entry.getDescription());
-        sb.append(HtmlUtils.submit(msg("Make Movie"), ARG_SUBMIT));
+        sb.append(HtmlUtils.submit("Make Movie", ARG_SUBMIT));
         sb.append(HtmlUtils.p());
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_IDV_BUNDLE_MOVIE));
@@ -441,7 +441,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             } catch (Exception e) {}
         }
         sb.append(HtmlUtils.formTableClose());
-        sb.append(HtmlUtils.submit(msg("Make Movie"), ARG_SUBMIT));
+        sb.append(HtmlUtils.submit("Make Movie", ARG_SUBMIT));
         sb.append(HtmlUtils.formClose());
 
         return new Result("Bundle As Movie", sb);
@@ -485,7 +485,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         String formUrl = getEntryManager().getFullEntryShowUrl(request);
         sb.append(HtmlUtils.form(formUrl, ""));
         sb.append(entry.getDescription());
-        sb.append(HtmlUtils.submit(msg("Make Image"), ARG_SUBMIT));
+        sb.append(HtmlUtils.submit("Make Image", ARG_SUBMIT));
         sb.append(HtmlUtils.p());
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_IDV_BUNDLE_IMAGE));
@@ -517,7 +517,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             } catch (Exception e) {}
         }
         sb.append(HtmlUtils.formTableClose());
-        sb.append(HtmlUtils.submit(msg("Make Image"), ARG_SUBMIT));
+        sb.append(HtmlUtils.submit("Make Image", ARG_SUBMIT));
         sb.append(HtmlUtils.formClose());
 
         getPageHandler().entrySectionClose(request, entry, sb);
@@ -690,7 +690,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
         String formUrl = getEntryManager().getFullEntryShowUrl(request);
         sb.append(HtmlUtils.form(formUrl, ""));
-        sb.append(HtmlUtils.submit(msg("Make Image"), ARG_SUBMIT));
+        sb.append(HtmlUtils.submit("Make Image", ARG_SUBMIT));
         sb.append(HtmlUtils.p());
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_IDV_GRID));
@@ -1361,7 +1361,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 request, entry, publishSB,
                 msg("Select a folder to publish the product to"));
             publishSB.append(HtmlUtils.formEntry("",
-                    HtmlUtils.submit(msg("Publish image"),
+                    HtmlUtils.submit("Publish image",
                                      ARG_SUBMIT_PUBLISH)));
 
             if (getAccessManager().canDoEdit(request, entry)) {
@@ -1379,7 +1379,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 publishSB.append(HtmlUtils.formEntry(msg("Attach image"),
                         HtmlUtils.checkbox(ARG_SAVE_ATTACH, "true", false)));
                 publishSB.append(HtmlUtils.formEntry("",
-                        HtmlUtils.submit(msg("Save settings"),
+                        HtmlUtils.submit("Save settings",
                                          ARG_SUBMIT_SAVE)));
 
             }
@@ -1394,7 +1394,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         sb.append(OutputHandler.makeTabs(tabLabels, tabContents, true));
 
         sb.append(HtmlUtils.p());
-        sb.append(HtmlUtils.submit(msg("Make Image"), ARG_SUBMIT));
+        sb.append(HtmlUtils.submit("Make Image", ARG_SUBMIT));
         sb.append(HtmlUtils.formClose());
     }
 
@@ -1471,7 +1471,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         fields.append(HtmlUtils.p());
 
         sb.append(HtmlUtils.insetLeft(fields.toString(), 10));
-        sb.append(HtmlUtils.submit(msg("Select Fields"), ARG_SUBMIT));
+        sb.append(HtmlUtils.submit("Select Fields", ARG_SUBMIT));
         sb.append(HtmlUtils.formClose());
 
 
@@ -2389,7 +2389,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         StringBuffer formSB  = new StringBuffer();
 
         formSB.append(HtmlUtils.form(formUrl, ""));
-        formSB.append(HtmlUtils.submit(msg("Make Image"), ARG_SUBMIT));
+        formSB.append(HtmlUtils.submit("Make Image", ARG_SUBMIT));
         formSB.append(HtmlUtils.p());
         formSB.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         formSB.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_IDV_POINT));

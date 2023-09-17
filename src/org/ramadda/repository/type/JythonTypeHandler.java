@@ -245,7 +245,7 @@ public class JythonTypeHandler extends GenericTypeHandler {
             }
             formSB.append(formInfo.sb);
             formSB.append(HtmlUtils.formTableClose());
-            formSB.append(HtmlUtils.submit(msg("Submit"), ARG_SUBMIT));
+            formSB.append(HtmlUtils.submit("Submit", ARG_SUBMIT));
             formSB.append(HtmlUtils.formClose());
         }
         Result result = new Result((formInfo.title != null)

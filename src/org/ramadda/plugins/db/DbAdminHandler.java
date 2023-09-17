@@ -405,7 +405,7 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
         HU.formEntry(sb, msgLabel("Database Entry"),
                      HU.select(ARG_ENTRYID, items));
         sb.append(HtmlUtils.formTableClose());
-        sb.append(HU.submit(msg("Search"), ARG_OK));
+        sb.append(HU.submit(LABEL_SEARCH, ARG_OK));
         sb.append(HtmlUtils.formClose());
         getPageHandler().sectionClose(request, sb);
 

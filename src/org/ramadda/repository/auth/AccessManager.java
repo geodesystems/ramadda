@@ -1919,7 +1919,7 @@ public class AccessManager extends RepositoryManager {
         //        sb.append("All Roles:<br>");
         //        sb.append(StringUtil.join("<br>",getUserManager().getStandardRoles()));
         //        sb.append("</td></tr></table>");
-        sb.append(HtmlUtils.submit(msg("Change Access")));
+        sb.append(HtmlUtils.submit("Change Access"));
         sb.append(HtmlUtils.formClose());
 
         getPageHandler().entrySectionClose(request, entry, sb);

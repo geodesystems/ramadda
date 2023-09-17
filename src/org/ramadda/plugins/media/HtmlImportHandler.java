@@ -135,11 +135,11 @@ public class HtmlImportHandler extends ImportHandler {
         }
 
         String html = Utils.readUrl(url.toString());
-        final List<HtmlUtils.Link> links = HtmlUtils.extractLinks(url, html,
+        final List<HtmlUtils.Link> links = HU.extractLinks(url, html,
                                                pattern);
         List<HtmlUtils.Link> pageLinks = null;
         if (recursePattern != null) {
-            pageLinks = HtmlUtils.extractLinks(url, html, recursePattern);
+            pageLinks = HU.extractLinks(url, html, recursePattern);
             for (HtmlUtils.Link link : pageLinks) {
                 if (links.contains(link)) {
                     continue;
@@ -162,7 +162,7 @@ public class HtmlImportHandler extends ImportHandler {
                 }
                 sb.append("<li>");
                 sb.append(
-                    HtmlUtils.href(
+                    HU.href(
                         request.entryUrl(
                             getRepository().URL_ENTRY_SHOW,
                             child), child.getName()));
@@ -284,11 +284,11 @@ public class HtmlImportHandler extends ImportHandler {
 
                 sb.append("<li> ");
                 sb.append(
-                    HtmlUtils.href(
+                    HU.href(
                         request.entryUrl(
                             getRepository().URL_ENTRY_SHOW,
                             entry), entry.getName()));
-                sb.append(HtmlUtils.br());
+                sb.append(HU.br());
 
             } catch (Exception exc) {
                 sb.append("<li> ");
@@ -399,104 +399,104 @@ public class HtmlImportHandler extends ImportHandler {
                               : null, pattern);
         }
         if (recurse) {
-            pageLinks = HtmlUtils.extractLinks(rootUrl, recursePattern);
+            pageLinks = HU.extractLinks(rootUrl, recursePattern);
             if ((pageLinks.size() > 0) && !doit) {
-                links = HtmlUtils.extractLinks(pageLinks.get(0).getUrl(),
+                links = HU.extractLinks(pageLinks.get(0).getUrl(),
                         pattern);
             }
         } else {
-            links = HtmlUtils.extractLinks(rootUrl, pattern);
+            links = HU.extractLinks(rootUrl, pattern);
         }
 
         TypeHandler typeHandler = getRepository().getTypeHandler(request);
 
 
         String buttons =
-            HtmlUtils.buttons(HtmlUtils.submit(msg("Test it out")),
-                              HtmlUtils.submit("Create entries",
+            HU.buttons(HU.submit("Test it out"),
+                              HU.submit("Create entries",
                                   ARG_IMPORT_DOIT));
         sb.append(msgHeader("HTML Import"));
         request.uploadFormWithAuthToken(sb,
                                         getRepository().URL_ENTRY_XMLCREATE,
                                         makeFormSubmitDialog(sb,
                                             msg("Importing HTML")));
-        sb.append(HtmlUtils.hidden(ARG_GROUP, parentEntry.getId()));
-        sb.append(HtmlUtils.hidden(ARG_IMPORT_TYPE, TYPE_HTML));
-        sb.append(HtmlUtils.formTable());
-        sb.append(HtmlUtils.formEntry(msgLabel("URL"),
-                                      HtmlUtils.input(ARG_URL, url,
-                                          HtmlUtils.SIZE_70)));
+        sb.append(HU.hidden(ARG_GROUP, parentEntry.getId()));
+        sb.append(HU.hidden(ARG_IMPORT_TYPE, TYPE_HTML));
+        sb.append(HU.formTable());
+        sb.append(HU.formEntry(msgLabel("URL"),
+                                      HU.input(ARG_URL, url,
+                                          HU.SIZE_70)));
 
-        sb.append(HtmlUtils.formEntry(msgLabel(""),
-                                      HtmlUtils.checkbox(ARG_IMPORT_RECURSE,
+        sb.append(HU.formEntry(msgLabel(""),
+                                      HU.checkbox(ARG_IMPORT_RECURSE,
                                           "true", recurse) + " Recurse"));
 
-        sb.append(HtmlUtils.formEntry(msgLabel("Recurse Pattern"),
-                HtmlUtils.input(ARG_IMPORT_RECURSE_PATTERN, recursePattern,
-                    HtmlUtils.SIZE_50) + " "
+        sb.append(HU.formEntry(msgLabel("Recurse Pattern"),
+                HU.input(ARG_IMPORT_RECURSE_PATTERN, recursePattern,
+                    HU.SIZE_50) + " "
                         + "Regular expression pattern to match on links to other pages."));
         sb.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 msgLabel("Recurse Depth"),
-                HtmlUtils.input(
+                HU.input(
                     ARG_IMPORT_RECURSE_DEPTH,
                     request.getString(ARG_IMPORT_RECURSE_DEPTH, "1"),
-                    HtmlUtils.SIZE_5)));
+                    HU.SIZE_5)));
 
 
         sb.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 msgLabel("Entry Pattern"),
-                HtmlUtils.input(
-                    ARG_IMPORT_PATTERN, pattern, HtmlUtils.SIZE_50) + " "
+                HU.input(
+                    ARG_IMPORT_PATTERN, pattern, HU.SIZE_50) + " "
                         + msg("regular expression - add .*")));
 
         boolean addFile = request.getString(ARG_IMPORT_HANDLE,
                                             "").equals("file");
         sb.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 msgLabel("What to do"),
-                HtmlUtils.radio(ARG_IMPORT_HANDLE, "file", addFile)
-                + HtmlUtils.space(1) + msg("Download the file")
-                + HtmlUtils.space(3)
-                + HtmlUtils.radio(ARG_IMPORT_HANDLE, "url", !addFile)
-                + HtmlUtils.space(1) + msg("Add the link")));
+                HU.radio(ARG_IMPORT_HANDLE, "file", addFile)
+                + HU.space(1) + msg("Download the file")
+                + HU.space(3)
+                + HU.radio(ARG_IMPORT_HANDLE, "url", !addFile)
+                + HU.space(1) + msg("Add the link")));
 
 
-        sb.append(HtmlUtils.formEntry(msgLabel(""),
-                                      HtmlUtils.checkbox("useurl", "true",
+        sb.append(HU.formEntry(msgLabel(""),
+                                      HU.checkbox("useurl", "true",
                                           request.get("useurl",
-                                              false)) + HtmlUtils.space(1)
+                                              false)) + HU.space(1)
                                                   + msg("Use URL for name")));
 
 
 
         sb.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 msgLabel("Entry type"),
                 getPageHandler().makeFileTypeSelector(
                     request, typeHandler, true)));
 
         sb.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 "",
-                HtmlUtils.checkbox(
+                HU.checkbox(
                     ARG_IMPORT_PROVENANCE, "true",
                     request.get(ARG_IMPORT_PROVENANCE, false)) + " "
                         + msg("Add the source URL as provenance metadata")));
 
         sb.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 "",
-                HtmlUtils.checkbox(
+                HU.checkbox(
                     ARG_IMPORT_UNCOMPRESS, "true",
                     request.get(ARG_IMPORT_UNCOMPRESS, false)) + " "
                         + msg("Uncompress file")));
 
-        sb.append(HtmlUtils.formEntry("", buttons));
-        sb.append(HtmlUtils.formTableClose());
+        sb.append(HU.formEntry("", buttons));
+        sb.append(HU.formTableClose());
 
-        sb.append(HtmlUtils.p());
+        sb.append(HU.p());
 
         if (pageLinks != null) {
             if (pageLinks.size() > 0) {
@@ -514,7 +514,7 @@ public class HtmlImportHandler extends ImportHandler {
                     }
                     sb.append("  --  ");
                     sb.append(link.getUrl());
-                    sb.append(HtmlUtils.br());
+                    sb.append(HU.br());
                 }
                 sb.append("</ul>");
             } else {
@@ -547,7 +547,7 @@ public class HtmlImportHandler extends ImportHandler {
                     }
                     sb.append("  --  ");
                     sb.append(link.getUrl());
-                    sb.append(HtmlUtils.br());
+                    sb.append(HU.br());
                 }
                 sb.append("</ul>");
 
@@ -558,7 +558,7 @@ public class HtmlImportHandler extends ImportHandler {
                         "No links found. Maybe add \".*\" before and after pattern"));
             }
         }
-        sb.append(HtmlUtils.formClose());
+        sb.append(HU.formClose());
 
         getPageHandler().entrySectionClose(request, parentEntry, sb);
 
@@ -581,7 +581,7 @@ public class HtmlImportHandler extends ImportHandler {
         url = args[0];
         url = "ftp://n5eil01u.ecs.nsidc.org/SAN2/ICEBRIDGE/ILATM1B.002/2013.03.21";
         System.out.println(IOUtil.readContents(url, HtmlUtils.class));
-        //        List<HtmlUtils.Link> links = HtmlUtils.extractLinks(new URL(url), args.length>1?args[1]:null);
+        //        List<HU.Link> links = HU.extractLinks(new URL(url), args.length>1?args[1]:null);
         //        System.err.println ("Links:"  + links);
     }
 

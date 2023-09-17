@@ -5,10 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.geodata.gps;
 
-
-
-
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.job.JobManager;
@@ -854,7 +850,7 @@ public class GpsOutputHandler extends OutputHandler {
         sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_GPS_TORINEX.getId()));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, mainEntry.getId()));
         sb.append(HtmlUtils.hidden(ARG_RINEX_DOWNLOAD, uniqueId));
-        sb.append(HtmlUtils.submit(msg("Download Results")));
+        sb.append(HtmlUtils.submit("Download Results"));
         sb.append(HtmlUtils.formClose());
 
         return new Result("", sb);

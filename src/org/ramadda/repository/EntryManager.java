@@ -832,9 +832,9 @@ public class EntryManager extends RepositoryManager {
 	String base = request.getAbsoluteUrl("");
 	HU.formEntry(sb, msgLabel("URL Base"), HU.input("snapshotbase",base));
 	HU.formTableClose(sb);
-	sb.append(HU.submit(msg("Create snapshot"), ARG_OK));
+	sb.append(HU.submit("Create snapshot", ARG_OK));
 	sb.append(HU.SPACE);
-	sb.append(HU.submit(msg("Cancel"), ARG_CANCEL));
+	sb.append(HU.submit(LABEL_CANCEL, ARG_CANCEL));
 	sb.append(HU.formClose());
 	getPageHandler().entrySectionClose(request, entry, sb);
 	return makeEntryEditResult(request,  entry,"Snapshot", sb);
@@ -1273,7 +1273,7 @@ public class EntryManager extends RepositoryManager {
 		sb.append(HU.hidden(ARG_DELETE,request.getString(ARG_DELETE,"")));
 		sb.append(getPageHandler().showDialogQuestion("Are you sure you want to clear the " + request.getString(ARG_DELETE,"")+" activity?",
 							      HU.submit("Yes",  ARG_CONFIRM) +" " +
-							      HU.submit("Cancel", ARG_CANCEL)));
+							      HU.submit(LABEL_CANCEL, ARG_CANCEL)));
 	    }
 	}
 
@@ -1949,7 +1949,7 @@ public class EntryManager extends RepositoryManager {
 			 msgLabel("Type"),
 			 getRepository().makeTypeSelect(
 							request, false, "", true, null));
-	    HU.formEntry(sb, BLANK, HU.submit(msg("Select Type to Add")));
+	    HU.formEntry(sb, BLANK, HU.submit("Select Type to Add"));
             sb.append(HU.hidden(ARG_GROUP, group.getId()));
         } else {
             title = ((entry == null)
@@ -1957,7 +1957,7 @@ public class EntryManager extends RepositoryManager {
                      : msg("Edit Entry"));
             String submitButton = HU.submit((entry == null)
 					    ? "Add " + typeHandler.getLabel()
-					    : msg("Save"), ARG_SUBMIT,
+					    : "Save", ARG_SUBMIT,
 					    makeButtonSubmitDialog(sb, ((entry == null)
 									? msg("Creating Entry...")
 									: msg("Changing Entry..."))));
@@ -1970,14 +1970,14 @@ public class EntryManager extends RepositoryManager {
 
             String deleteButton = (((entry != null) && isTopEntry(entry))
                                    ? ""
-                                   : HU.submit(msg("Delete"),
+                                   : HU.submit("Delete",
 					       ARG_DELETE,
 					       makeButtonSubmitDialog(sb,
 								      "Deleting Entry...")));
 
 
 
-            String cancelButton = HU.submit(msg("Cancel"), ARG_CANCEL);
+            String cancelButton = HU.submit(LABEL_CANCEL, ARG_CANCEL);
             String buttons      = ((entry != null)
                                    ? HU.buttons(submitButton, cancelButton)
                                    : HU.buttons(submitButton,cancelButton));
@@ -2364,7 +2364,7 @@ public class EntryManager extends RepositoryManager {
             }
 	    if(theEntry!=null)
 		getPageHandler().entrySectionClose(request, theEntry, sb);
-            Result result = new Result(msg("Error"), sb);
+            Result result = new Result("Error", sb);
 	    result.setResponseCode(Result.RESPONSE_INTERNALERROR);
 	    return result;
 	}
@@ -2476,7 +2476,7 @@ public class EntryManager extends RepositoryManager {
                     getPageHandler().entrySectionClose(request, entry, sb);
 
                     return addEntryHeader(request, entry,
-                                          new Result(msg("Entry Edit Error"),
+                                          new Result("Entry Edit Error",
 						     sb));
                 }
             }
@@ -3737,8 +3737,8 @@ public class EntryManager extends RepositoryManager {
         fb.append(request.form(getRepository().URL_ENTRY_DELETE, BLANK));
 
         getAuthManager().addAuthToken(request, fb);
-        fb.append(HU.buttons(HU.submit(msg("OK"),
-				       ARG_DELETE_CONFIRM), HU.submit(msg("Cancel"),
+        fb.append(HU.buttons(HU.submit("OK",
+				       ARG_DELETE_CONFIRM), HU.submit(LABEL_CANCEL,
 								      ARG_CANCEL)));
         fb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
         fb.append(HU.formClose());
@@ -3749,7 +3749,7 @@ public class EntryManager extends RepositoryManager {
         getPageHandler().entrySectionClose(request, entry, sb);
 
         return makeEntryEditResult(request, entry,
-                                   msg("Entry delete confirm"), sb);
+                                   "Entry delete confirm", sb);
     }
 
 
@@ -3907,7 +3907,7 @@ public class EntryManager extends RepositoryManager {
 						 getPageHandler().showDialogQuestion(msgSB.toString(),  form)));
 
 
-        return new Result(msg("Delete Confirm"), sb);
+        return new Result("Delete Confirm", sb);
     }
 
 
@@ -4370,20 +4370,20 @@ public class EntryManager extends RepositoryManager {
             sb.append(request.uploadForm(getRepository().URL_ENTRY_UPLOAD,
                                          HU.attr("name",
 						 "entryform")));
-            sb.append(HU.submit(msg("Upload")));
+            sb.append(HU.submit("Upload"));
             sb.append(HU.formTable());
             sb.append(HU.hidden(ARG_GROUP, group.getId()));
             typeHandler.addToEntryForm(request, sb, group, null,
                                        new FormInfo(""));
             HU.formTableClose(sb);
-            sb.append(HU.submit(msg("Upload")));
+            sb.append(HU.submit("Upload"));
             sb.append(HU.formClose());
             getPageHandler().entrySectionClose(request, group, sb);
         } else {
             return doProcessEntryChange(request, true, null);
         }
 
-        return makeEntryEditResult(request, group, msg("Upload"), sb);
+        return makeEntryEditResult(request, group, "Upload", sb);
     }
 
 
@@ -4592,7 +4592,7 @@ public class EntryManager extends RepositoryManager {
         getPageHandler().entrySectionClose(request, entry, sb);
 
         return addEntryHeader(request, entry,
-                              new Result(msg("Entry Actions"), sb));
+                              new Result("Entry Actions", sb));
     }
 
     public Result processEntryMenu(Request request) throws Exception {
@@ -4926,7 +4926,7 @@ public class EntryManager extends RepositoryManager {
 			  getPageHandler().showDialogNote(
 							  msg("Cannot copy top-level folder")));
 
-                return new Result(msg("Entry Delete"), sb);
+                return new Result("Entry Delete", sb);
             }
             entries.add(entry);
         }
@@ -5011,7 +5011,6 @@ public class EntryManager extends RepositoryManager {
 		getPageHandler().entrySectionOpen(request, toEntry,sb,msg(label),false);
 	    } else {
 		getPageHandler().sectionOpen(request, sb,msg(label),false);
-		//		HU.sectionOpen(sb,msg(label),false);
 	    }
 	    HU.div(sb, msg("The entries"), HU.cssClass("entry-confirm-header"));
             sb.append(fromDiv);
@@ -5094,9 +5093,8 @@ public class EntryManager extends RepositoryManager {
 		      HU.open(
 			      HU.TAG_DIV,
 			      HU.cssClass("entry-confirm-list")));
-            sb.append(HU.buttons(HU.submit(msg("Yes, do it"),
-					   ARG_CONFIRM), HU.submit(msg("Cancel"),
-								   ARG_CANCEL)));
+            sb.append(HU.buttons(HU.submit("Yes, do it",
+					   ARG_CONFIRM), HU.submit(LABEL_CANCEL, ARG_CANCEL)));
 
             sb.append(HU.close(HU.TAG_DIV));
 
@@ -5108,7 +5106,7 @@ public class EntryManager extends RepositoryManager {
 						   sb);
             }
             return addEntryHeader(request, parent!=null?parent:entries.get(0),
-                                  new Result(msg("Entry Move/Copy"), sb));
+                                  new Result("Entry Move/Copy", sb));
         }
 
 
@@ -5187,7 +5185,7 @@ public class EntryManager extends RepositoryManager {
         }
 
 
-        Result result = new Result(msg(label), new StringBuilder());
+        Result result = new Result(label, new StringBuilder());
 
         return addEntryHeader(request, toEntry, result);
 
@@ -5730,8 +5728,8 @@ public class EntryManager extends RepositoryManager {
 		  HU.formEntry(
 			       "",
 			       HU.buttons(
-					  HU.submit(msg("Publish"), ARG_CONFIRM),
-					  HU.submit(msg("Cancel"), ARG_CANCEL))));
+					  HU.submit("Publish", ARG_CONFIRM),
+					  HU.submit(LABEL_CANCEL, ARG_CANCEL))));
 
         sb.append(HU.formEntry(msgLabel("Name"),
 			       HU.input(ARG_NAME,
@@ -7317,10 +7315,9 @@ public class EntryManager extends RepositoryManager {
                 StringBuilder childrenSB = new StringBuilder();
 		for (Entry child : getEntryUtil().sortEntriesOnName(children,false)) {
                     String url       = getEntryUrl(request, child);
-                    String linkLabel = child.getName();
+                    String linkLabel = noMsg(child.getName());
                     linkLabel =
-                        HU.img(getPageHandler().getIconUrl(request,
-							   child)) + HU.space(1) + linkLabel;
+                        HU.img(getPageHandler().getIconUrl(request, child)) + HU.space(1) + linkLabel;
                     String href = HU.href(url, linkLabel,HU.attrs("title",getPageHandler().getEntryTooltip(child)));
 		    HU.div(childrenSB,href,HU.attrs("class","ramadda-menu-item"));
                 }

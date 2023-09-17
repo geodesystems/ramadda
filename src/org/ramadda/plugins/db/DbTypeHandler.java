@@ -2163,7 +2163,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         sb.append("\n");
         sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
         HU.open(sb, "div", HU.cssClass("ramadda-form-block"));
-        String buttons = HU.submit(msg("Search"), ARG_DB_SEARCH);
+        String buttons = HU.submit("Search", ARG_DB_SEARCH);
         sb.append(buttons);
         getSearchFormInner(request, entry, sb, true,formId);
         if (formJS != null) {
@@ -2876,9 +2876,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
             addViewHeader(request, entry, sb, "", null);
             sb.append(getPageHandler().showDialogQuestion(msg(msg),
-                    HU.submit(msg("Yes"), ARG_DB_DELETECONFIRM)
+                    HU.submit(LABEL_YES, ARG_DB_DELETECONFIRM)
                     + HU.space(2)
-                    + HU.submit(msg("Cancel"), ARG_DB_LIST)));
+                    + HU.submit(LABEL_CANCEL, ARG_DB_LIST)));
             addViewFooter(request, entry, sb);
         }
 
@@ -3534,9 +3534,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         StringBuilder sb = new StringBuilder();
         makeForm(request, entry, sb);
         sb.append(HU.hidden(ARG_DB_ACTION, ACTION_EMAIL));
-        sb.append(HU.submit(msg("Send Message")));
+        sb.append(HU.submit(("Send Message")));
         sb.append(HU.space(2));
-        sb.append(HU.submit(msg("Cancel"), ARG_DB_LIST));
+        sb.append(HU.submit(LABEL_CANCEL, ARG_DB_LIST));
         sb.append(HU.formTable());
 
         for (Object[] values : valueList) {
@@ -3567,7 +3567,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 msgLabel("Message"),
                 HU.textArea(ARG_EMAIL_MESSAGE, "", 30, 60)));
         sb.append(HU.formTableClose());
-        sb.append(HU.submit(msg("Send Message")));
+        sb.append(HU.submit("Send Message"));
         sb.append(HU.formTableClose());
         sb.append(HU.formClose());
 
@@ -3816,7 +3816,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
             if ( !isEmbedded(request) && (actions.size() > 0)) {
                 if (doForm) {
-                    hb.append(HU.submit(msgLabel("Do"), ARG_DB_DO));
+                    hb.append(HU.submit("Do:", ARG_DB_DO));
                     hb.append(HU.select(ARG_DB_ACTION, actions));
                 }
             }
@@ -6265,24 +6265,24 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         StringBuilder buttons = new StringBuilder();
         if (doAnonForm) {
-            buttons.append(HU.submit(msg("Submit"), ARG_DB_CREATE));
+            buttons.append(HU.submit(LABEL_SUBMIT, ARG_DB_CREATE));
         } else if (forEdit) {
             if (dbid == null) {
-                buttons.append(HU.submit(msg("Create entry"),
+                buttons.append(HU.submit("Create entry",
                         ARG_DB_CREATE));
                 buttons.append(HU.buttonSpace());
             } else {
-                buttons.append(HU.submit(msg("Edit entry"),
+                buttons.append(HU.submit("Edit entry",
                         ARG_DB_EDIT));
                 buttons.append(HU.buttonSpace());
-                buttons.append(HU.submit(msg("Copy entry"),
+                buttons.append(HU.submit("Copy entry",
                         ARG_DB_COPY));
                 buttons.append(HU.buttonSpace());
-                buttons.append(HU.submit(msg("Delete entry"),
+                buttons.append(HU.submit("Delete entry",
                         ARG_DB_DELETE));
                 buttons.append(HU.buttonSpace());
             }
-            buttons.append(HU.submit(msg("Cancel"), ARG_DB_LIST));
+            buttons.append(HU.submit("Cancel", ARG_DB_LIST));
             buttons.append(HU.buttonSpace());
         }
 
@@ -6413,9 +6413,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     sb.append(
                         getPageHandler().showDialogQuestion(
                             "Are you sure you want to apply the update?",
-                            HU.submit(msg("Yes"), ARG_DB_CONFIRM)
+                            HU.submit(LABEL_YES, ARG_DB_CONFIRM)
                             + " "
-                            + HU.submit(msg("Cancel"), ARG_CANCEL)));
+                            + HU.submit(LABEL_CANCEL, ARG_CANCEL)));
                     showApply = false;
                 }
                 try {
@@ -6443,8 +6443,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             sb.append(
                 HU.formEntry(
                     "",
-                    HU.submit(msg("Apply"), ARG_DB_APPLY) + " "
-                    + HU.submit(msg("Test"), ARG_DB_TEST)));
+                    HU.submit("Apply", ARG_DB_APPLY) + " "
+                    + HU.submit("Test", ARG_DB_TEST)));
         }
         sb.append(
             HU.formEntry(
@@ -6518,9 +6518,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         StringBuilder bulkSB = new StringBuilder();
         makeForm(request, entry, bulkSB);
         StringBuilder bulkButtons = new StringBuilder();
-        bulkButtons.append(HU.submit(msg("Create entries"),
-                                            ARG_DB_CREATE));
-        bulkButtons.append(HU.submit(msg("Cancel"), ARG_DB_LIST));
+        bulkButtons.append(HU.submit("Create entries",ARG_DB_CREATE));
+        bulkButtons.append(HU.submit(LABEL_CANCEL, ARG_DB_LIST));
         bulkSB.append(bulkButtons);
         bulkSB.append(HU.p());
         bulkSB.append(msgLabel("Upload a file"));

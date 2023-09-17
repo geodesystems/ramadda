@@ -147,7 +147,7 @@ public class AssociationManager extends RepositoryManager {
         sb.append(HU.hidden(ARG_FROM, fromEntry.getId()));
         sb.append(HU.hidden(ARG_TO, toEntry.getId()));
         sb.append(HU.space(1));
-        sb.append(HU.submit(msg("Add Link")));
+        sb.append(HU.submit("Add Link"));
         sb.append(HU.formClose());
 
         getPageHandler().entrySectionClose(request, fromEntry, sb);
@@ -976,7 +976,7 @@ public class AssociationManager extends RepositoryManager {
         sb.append(HU.formTableClose());
 
         OutputType output  = request.getOutput(BLANK);
-        String     buttons = HU.submit(msg("Search"), "submit");
+        String     buttons = HU.submit("Search", "submit");
         sb.append(HU.p());
         sb.append(buttons);
         sb.append(HU.p());

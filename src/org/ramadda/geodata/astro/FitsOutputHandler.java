@@ -361,7 +361,7 @@ public class FitsOutputHandler extends OutputHandler {
 
         StringBuffer sb = new StringBuffer();
         sb.append(request.form(getRepository().URL_ENTRY_SHOW));
-        sb.append(HtmlUtils.submit(msg("Subset"), ARG_FITS_SUBSET));
+        sb.append(HtmlUtils.submit("Subset", ARG_FITS_SUBSET));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_INFO.getId()));
 

@@ -606,8 +606,8 @@ public class PageHandler extends RepositoryManager {
       * @return _more_
      */
     public String getEntryTooltip(Entry entry) {
-        return entry.getName() + HU.NL + " - "
-               + entry.getTypeHandler().getLabel();
+        return noMsg(entry.getName()) + HU.NL + " - "
+	    + msg(entry.getTypeHandler().getLabel());
     }
 
 
@@ -812,6 +812,8 @@ public class PageHandler extends RepositoryManager {
                                  HU.cssClass("ramadda-user-menu"));
 
 	List<String> pageLinks = new ArrayList<String>();
+	pageLinks.add(HU.span("",HU.attrs("class","ramadda-page-link ramadda-links-extra")));
+
         if (showSearch) {
 	    pageLinks.add(HU.mouseClickHref("Utils.searchPopup('searchlink','popupanchor');",
 					    searchImg, "")+
@@ -1586,12 +1588,12 @@ public class PageHandler extends RepositoryManager {
         //        getLogManager().logInfoAndPrint("RAMADDA: loadLanguagePacks");
         List sourcePaths =
             Misc.newList(
-                getStorageManager().getSystemResourcePath() + "/languages",
-                getStorageManager().getPluginsDir().toString());
+			 "/org/ramadda/repository/htdocs/languages",
+			 getStorageManager().getHtdocsDir() + "/languages",
+			 getStorageManager().getPluginsDir().toString());
         for (int i = 0; i < sourcePaths.size(); i++) {
             String       dir     = (String) sourcePaths.get(i);
-            List<String> listing = getRepository().getListing(dir,
-                                       getClass());
+            List<String> listing = getRepository().getListing(dir,getClass());
             for (String path : listing) {
                 if ( !path.endsWith(".pack")) {
                     if (i == 0) {
@@ -1916,6 +1918,12 @@ public class PageHandler extends RepositoryManager {
 
 
 
+    public static String noMsg(String msg) {
+	String s =  HU.span(msg,HU.clazz("ramadda-notranslate"));
+	return s;
+    }
+
+
     /**
      * _more_
      *
@@ -1926,7 +1934,7 @@ public class PageHandler extends RepositoryManager {
     public static String msg(String msg) {
         //for now no translation
         if (true) {
-            return msg;
+            return HU.span(msg,"");
         }
 
         if (msg == null) {
@@ -1992,7 +2000,7 @@ public class PageHandler extends RepositoryManager {
         fb.append(request.form(url));
         fb.append(extra);
         String okButton     = HU.submit("OK", okArg);
-        String cancelButton = HU.submit("Cancel", Constants.ARG_CANCEL);
+        String cancelButton = HU.submit(LABEL_CANCEL, Constants.ARG_CANCEL);
         String buttons      = HU.buttons(okButton, cancelButton);
         fb.append(buttons);
         fb.append(HU.formClose());
@@ -2058,9 +2066,9 @@ public class PageHandler extends RepositoryManager {
             labels.add(HU.faIcon("fa-sign-out-alt") + " " + msg("Logout"));
             tips.add(msg("Logout"));
             String label = user.getLabel().replace(" ", "&nbsp;");
-	    String avatar = getUserManager().getUserAvatar(request, request.getUser(),true,25," class='ramadda-user-menu-image' title='Settings for " + label+"'");
+	    String avatar = getUserManager().getUserAvatar(request, request.getUser(),true,25," class='ramadda-user-menu-image' title='User Settings'");
             String userIcon = avatar!=null?avatar:HU.faIcon("fa-user", "title",
-							    "Settings for " + label, "class",
+							    "User Settings", "class",
 							    "ramadda-user-menu-image");
 
             String settingsUrl =
@@ -2170,7 +2178,7 @@ public class PageHandler extends RepositoryManager {
         String       onLabel = null;
         for (RequestUrl requestUrl : urls) {
             String label = requestUrl.getLabel();
-            if (label != null) label = label.replaceAll(" ","&nbsp;");
+            if (label != null) label = HU.span(label,HU.clazz("ramadda-nowrap"));
             label = msg(label);
             if (label == null) {
                 label = requestUrl.toString();
@@ -2312,7 +2320,10 @@ public class PageHandler extends RepositoryManager {
      */
     public static String getDialogString(String s) {
 	//Remove url args
+
 	s = s.replaceAll("\\?[^ \"]+","---");
+        s = s.replaceAll("<span *>", "SPANOPEN");
+        s = s.replaceAll("</span>", "SPANCLOSE");	
         s = s.replaceAll("<pre>", "PREOPEN");
         s = s.replaceAll("</pre>", "PRECLOSE");
         s = HU.entityEncode(s);
@@ -2322,6 +2333,8 @@ public class PageHandler extends RepositoryManager {
         s = s.replace("&#60;p&#62;", "<p>");
         s = s.replace("&#60;br&#62;", "<br>");
         s = s.replace("&#38;nbsp&#59;", "&nbsp;");
+        s = s.replaceAll("SPANOPEN", "<span>");
+        s = s.replaceAll("SPANCLOSE", "</span>");	
         s = s.replaceAll("PREOPEN", "<pre>");
         s = s.replaceAll("PRECLOSE", "</pre>");
 

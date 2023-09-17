@@ -1031,7 +1031,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         sb.append("</table>");
         sb.append("</ul>");
         sb.append(HU.br());
-        sb.append(HU.submit(msg("Subset Grid")));
+        sb.append(HU.submit("Subset Grid"));
         addUrlShowingForm(sb, null, formId,
                           "[\".*OpenLayers_Control.*\",\".*original.*\"]",
                           null, "includeCopyArgs","true");

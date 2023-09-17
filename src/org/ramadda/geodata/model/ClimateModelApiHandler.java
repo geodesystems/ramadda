@@ -1168,7 +1168,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             if (type.equals(ARG_ACTION_COMPARE)
                     || type.equals(ARG_ACTION_TEST)
                     || type.equals(ARG_ACTION_CORRELATION)) {
-                plotButton = HtmlUtils.submit(msg("Make Plot"), type,
+                plotButton = HtmlUtils.submit("Make Plot", type,
                         HtmlUtils.id(formId + "_submit"));
                 /*
                         HtmlUtils.id(formId + "_submit")
@@ -1178,7 +1178,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             } else if (type.equals(ARG_ACTION_MULTI_COMPARE)
                        || type.equals(ARG_ACTION_ENS_COMPARE)
                        || type.equals(ARG_ACTION_CORRELATION)) {
-                plotButton = HtmlUtils.submit(msg("Make Plot"), type,
+                plotButton = HtmlUtils.submit("Make Plot", type,
                         HtmlUtils.id(formId + "_submit"));
                 /*
                         HtmlUtils.id(formId + "_submit")
@@ -1186,7 +1186,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                                 msg("Making Plot, Please Wait") + "..."));
                 */
             } else {
-                plotButton = HtmlUtils.submit(msg("Make Time Series"), type,
+                plotButton = HtmlUtils.submit("Make Time Series", type,
                         HtmlUtils.id(formId + "_submit"));
                 /*
         HtmlUtils.id(formId + "_submit")
