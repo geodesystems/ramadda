@@ -2069,7 +2069,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 		    continue;
 		}		
 
-                if (tline.startsWith("+div")) {
+                if (tline.startsWith("+div") || tline.startsWith("+span") || tline.startsWith("+inlineblock")) {
                     String       style = "";
                     String       clazz = "";
 		    Hashtable props = getProps.apply(tline);
@@ -2102,7 +2102,8 @@ public class WikiUtil implements HtmlUtilsConstants {
 		    if (bg != null) {
 			style += " background: " + bg + "; ";
 		    }
-		    buff.append(HU.open(HU.TAG_DIV,
+		    buff.append(HU.open(tline.startsWith("+div")?HU.TAG_DIV:
+					tline.startsWith("+span")?HU.TAG_SPAN:"inlineblock",
 					(id!=null?HU.id(id):"") +
 					HU.cssClass(clazz)
 					+ HU.style(style)));
@@ -2112,10 +2113,18 @@ public class WikiUtil implements HtmlUtilsConstants {
 
                 if (tline.startsWith("-div")) {
                     buff.append(HU.close(HU.TAG_DIV));
-
                     continue;
                 }
+                if (tline.startsWith("-span")) {
+                    buff.append(HU.close(HU.TAG_SPAN));
+                    continue;
+                }		
 
+                if (tline.startsWith("-inlineblock")) {
+                    buff.append(HU.close("inineblock"));
+                    continue;
+                }		
+		
                 if (tline.equals(":filler")) {
 		    buff.append("<div style='flex:1;'></div>");
 		    continue;
