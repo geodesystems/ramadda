@@ -3657,6 +3657,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    if (blacklistList.size()>0) {
 		for(String prefix: blacklistList) {
 		    if(ip.startsWith(prefix)) {
+			System.err.println("blocked:" +ip);
 			return makeBlockedResult(request);
 		    }
 		}
