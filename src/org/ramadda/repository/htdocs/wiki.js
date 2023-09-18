@@ -971,9 +971,9 @@ WikiEditor.prototype = {
 				HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),['style','width:100px;'])));
 
 
-	    html+=HU.buttons([HU.span(['class','ramadda-dialog-button','append','true'],"Append"),
-			      HU.span(['class','ramadda-dialog-button',ID,this.domId("cancel")],"Cancel")]);
-	    html = HU.div(['class','ramadda-dialog'],html);
+	    html+=HU.buttons([HU.span(['class',CLASS_DIALOG_BUTTON,'append','true'],"Append"),
+			      HU.span(['class',CLASS_DIALOG_BUTTON,ID,this.domId("cancel")],"Cancel")]);
+	    html = HU.div(['class',CLASS_DIALOG],html);
 	    let closeCallback =()=>{
 		this.transcribeClear();
 	    };
@@ -1082,10 +1082,10 @@ WikiEditor.prototype = {
 
 
 
-	html += HU.buttons([HU.span(['class','ramadda-dialog-button','replace','true'],"Replace"),
-			HU.span(['class','ramadda-dialog-button','append','true'],"Append"),
-			HU.span(['class','ramadda-dialog-button',ID,this.domId("cancel")],"Cancel")]);
-			 html = HU.div(['class','ramadda-dialog'],html);
+	html += HU.buttons([HU.span(['class',CLASS_DIALOG_BUTTON,'replace','true'],"Replace"),
+			HU.span(['class',CLASS_DIALOG_BUTTON,'append','true'],"Append"),
+			HU.span(['class',CLASS_DIALOG_BUTTON,ID,this.domId("cancel")],"Cancel")]);
+			 html = HU.div(['class',CLASS_DIALOG],html);
 
 			 let dialog = this.llmDialog = HU.makeDialog({content:html,anchor:this.getScroller(),
 				    my: "left bottom",     
@@ -1176,7 +1176,7 @@ WikiEditor.prototype = {
 		      HU.span([ID,this.domId("color_ok")],"Ok") + SPACE1 +
 		      HU.span([ID,this.domId("color_cancel")],"Cancel"));
 
-	html = HU.div(['class','ramadda-dialog'],html);
+	html = HU.div(['class',CLASS_DIALOG],html);
 	if(this.colorDialog) {
 	    this.colorDialog.remove();
 	}

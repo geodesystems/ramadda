@@ -42,6 +42,8 @@ var UNIT_KM='km';
 var UNIT_M='m';
 var UNIT_NM='nm';
 
+var CLASS_DIALOG = 'ramadda-dialog';
+var CLASS_DIALOG_BUTTON = 'ramadda-dialog-button';
 var CLASS_CLICKABLE = 'ramadda-clickable';
 var CLASS_HOVERABLE = 'ramadda-hoverable';
 

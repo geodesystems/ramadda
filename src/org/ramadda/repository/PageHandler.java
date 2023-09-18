@@ -814,6 +814,7 @@ public class PageHandler extends RepositoryManager {
 
 	List<String> pageLinks = new ArrayList<String>();
 
+
         if (showSearch) {
 	    pageLinks.add(HU.mouseClickHref("Utils.searchPopup('searchlink','popupanchor');",
 					    searchImg, "")+
@@ -822,6 +823,7 @@ public class PageHandler extends RepositoryManager {
 					   "position:relative;")));
         }
 
+	pageLinks.add(HU.span("",HU.id("ramadda_links_prefix")));
         String theFooter = footer;
 	if(extraFooter!=null) theFooter+=extraFooter;
 
@@ -836,12 +838,14 @@ public class PageHandler extends RepositoryManager {
             theFooter += HU.script(footerScript);
         }
 
+
 	pageLinks.add(HU.makePopup(null, popupImage, menuHtml,
 				   arg("my", "right top"),
 				   arg("at", "left bottom"),
 				   arg("animate", false)));
 	if(extra.length()>0)
 	    pageLinks.add(extra.toString());
+	pageLinks.add(HU.span("",HU.id("ramadda_links_suffix")));
         menuHtml = HU.span(Utils.wrap(pageLinks, "<span class=ramadda-page-link>", "</span>"),
 			   HU.clazz("ramadda-user-menu"));
 
@@ -1463,6 +1467,7 @@ public class PageHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     protected void loadLanguagePacks() throws Exception {
+	languageMap = new Hashtable<String,StringBuilder>();
 	HashSet<String> seenPack = new HashSet<String>();
         List sourcePaths =
 	    Misc.newList(
@@ -1515,8 +1520,8 @@ public class PageHandler extends RepositoryManager {
     }
 
     public StringBuilder getLanguage(String lang)  {
+	//	try {loadLanguagePacks();}catch(Exception exc) {}
 	return 	languageMap.get(lang);
-	
     }
 
     

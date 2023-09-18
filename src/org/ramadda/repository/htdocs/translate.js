@@ -5,21 +5,32 @@ var Translate = {
     packs:{},
     missing:{},
     init: function() {
-	this.switchPrefix = HU.getIconImage('fas fa-language') +HU.space(1)
-	$('#ramadda_user_menu').append(HU.div([ATTR_TITLE,'Clear language',
-						   ATTR_TITLE,'Switch language',
-						   ATTR_CLASS,'ramadda-clickable ramadda-language-switch ramadda-menu-language-switch ramadda-user-link'],this.switchPrefix+'Clear'));
+	this.switchPrefix = HU.getIconImage('fas fa-language') +HU.space(1);
+	let menu = HU.span([ATTR_TITLE,'Change language',
+			    ATTR_CLASS,CLASS_CLICKABLE,ATTR_ID,'ramadda_language_menu'],HU.getIconImage('fas fa-language'));
+	menu = $(menu).appendTo(jqid('ramadda_links_prefix'));
+	
+	menu.click(()=>{
+	    let html = '';
+	    html+= HU.div([ATTR_TITLE,'Clear language',
+			   ATTR_CLASS,'ramadda-clickable ramadda-language-switch ramadda-menu-language-switch ramadda-user-link'],this.switchPrefix+'Clear');
 
-	ramaddaLanguages.forEach(lang=>{
-	    $('#ramadda_user_menu').append(HU.div(['data-language',lang.id,
-						   ATTR_TITLE,'Switch language',
-						   ATTR_CLASS,'ramadda-clickable ramadda-language-switch ramadda-menu-language-switch ramadda-user-link'],this.switchPrefix+lang.label));
+	    ramaddaLanguages.forEach(lang=>{
+		html+= HU.div(['data-language',lang.id,
+			       ATTR_TITLE,'Switch language',
+			       ATTR_CLASS,'ramadda-clickable ramadda-language-switch ramadda-menu-language-switch ramadda-user-link'],this.switchPrefix+lang.label);
+	    });
+	    html = HU.div([],html);
+	    if(this.menuPopup)
+		this.menuPopup.remove();
+	    
+	    this.menuPopup = HU.makeDialog({content:html,anchor:menu,my:'right top',at:'right bottom'});
+	    let _this = this;
+	    this.menuPopup.find('.ramadda-menu-language-switch').click(function() {
+		_this.switcherClicked($(this));
+	    });
 	});
 	this.switchLang = jqid('switchlang');
-	let _this = this;
-	$('.ramadda-menu-language-switch').click(function() {
-	    _this.switcherClicked($(this));
-	});
 	Translate.translate();
     },
     switcherClicked:function(link) {
@@ -179,11 +190,9 @@ var Translate = {
 		return;
 	    }
 
-	    let tag = a.prop('tagName');
 	    if(pack[text]) {
 		if(pack[text]=='<skip>') return null;
 		a.attr(langFlag(suffix),text);
-//		console.log('saving',langFlag(suffix),text);
 		return pack[text];
 	    }
 	    Translate.missing[text] = true;
