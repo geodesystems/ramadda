@@ -39,6 +39,7 @@ ${jsminify} ${dir}/maputils.js > ${dest}/maputils.min.js
 ${jsminify} ${dir}/ramaddamap.js > ${dest}/ramaddamap.min.js
 ${jsminify} ${dir}/utils.js > ${dest}/utils.min.js
 ${jsminify} ${dir}/wiki.js > ${dest}/wiki.min.js
+${jsminify} ${dir}/translate.js > ${dest}/translate.min.js
 ${jsminify} ${dir}/repositories.js > ${dest}/repositories.min.js
 ${jsminify} ${dir}/selectform.js > ${dest}/selectform.min.js
 ${jsminify} ${dir}/entry.js > ${dest}/entry.min.js
@@ -56,7 +57,7 @@ cssminify ${dir}/display/display.css  ${dest}/display.min.css
 
 echo "minifying ramadda_all"
 # ${dir}/wiki.js
-cat ${dir}/now.txt ${dir}/utils.js ${dir}/ramadda.js ${dir}/entry.js > ${dir}/tmp.js
+cat ${dir}/now.txt ${dir}/utils.js ${dir}/translate.js ${dir}/ramadda.js ${dir}/entry.js > ${dir}/tmp.js
 ${jsminify} ${dir}/tmp.js > ${dest}/ramadda_all.min.js
 rm ${dir}/tmp.js
 
