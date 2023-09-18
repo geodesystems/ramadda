@@ -17,6 +17,13 @@ Kind
 Link
 Help
 File
+RSS Feed
+RSS Feed - Full
+ATOM Feed
+Zip and Download Tree
+CSV Listing
+Bulk Download Script
+File Listing
 Edit
 View
 here
