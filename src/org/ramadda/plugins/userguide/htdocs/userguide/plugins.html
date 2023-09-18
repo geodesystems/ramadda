@@ -57,10 +57,49 @@ Any &quot;.properties&quot; files are loaded as  system properties.
 
 <a name="languages"></a>
 <li><i>.pack</i><br> 
-RAMADDA supports multiple language translations. Any plugin file that 
+RAMADDA supports multiple language translations.
+To enable this set the property:
+<pre>
+ramadda.languages.enabled = true
+</pre>
+
+Once enabled there should be a number of languages listed in the settings menu:
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/languagemenu.png?version=433"><img  src="images/languagemenu.png?version=433"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/languagemenu.png?version=433" ></a></div></div>
+
+Any plugin file that 
 ends with ".pack" (e.g., sp.pack) is loaded as a language pack.
 See an example.pack file
-at the <a href="https://github.com/geodesystems/ramadda/tree/master/src/org/ramadda/repository/resources/languages">Github</a> site. There is documentation in the file.
+at the <a href="https://github.com/geodesystems/ramadda/tree/master/src/org/ramadda/repository/htdocs/languages">Github</a> site. There is documentation in the file.
+The .pack files can also be added to your RAMADDA home directory under the directory:
+<pre>
+/htdocs/languages
+</pre>
+
+The language ID should be unhyphenated, e.g.: "es", "fr", etc.
+If the language  already exists in the set of predefined languages then the additional file
+will be appended to the predefined file.
+:p
+There are a number of wiki tags that can be used
+This sets the language for the page:
+<pre>
+:setlanguage es
+</pre>
+
+This is a block of text that is only shown for the respective language:
+<pre>
++lang one of es en fr etc.
+...
+-lang
+</pre>
+
+Show  language switching  buttons in the page:
+<pre>
+:langswitcher &lt;comma separated list of ids or none for all&gt;
+e.g.:
+:langswitcher en,es,fr
+</pre>
+
+
 
 <a name="templates"></a>
 <li><i>template.html</i><br> 
