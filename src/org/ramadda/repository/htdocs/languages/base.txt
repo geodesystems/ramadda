@@ -1,0 +1,277 @@
+As
+ID
+To
+Top
+New
+Add
+Map
+Etc
+Tag
+SQL
+URL
+All
+Save
+Date
+Size
+Kind
+Link
+Help
+File
+Edit
+View
+here
+Text
+None
+User
+Name
+Stop
+Type
+Move
+Copy
+Name
+Maps
+Tags
+Email
+Close
+Table
+Entry
+Graph
+Group
+Admin
+Roles
+Title
+Types
+State
+Start
+Alias
+Order
+Cancel
+Cancel Action
+Continue
+Avatar
+Delete
+Folder
+Search
+Export
+Import
+Frames
+Search
+Groups
+Custom
+Logout
+Footer
+Access
+Output
+Admin?
+Remove
+Active
+By Type
+To Date
+message
+Entries
+Get all
+Keyword
+Cleanup
+Display
+Stopped
+Execute
+Pattern
+Project
+Recurse
+Order By
+New File
+Calendar
+Children
+Timeline
+RSS Feed
+Zip File
+Last day
+Advanced
+Metadata
+Download
+Password
+Settings
+Database
+New User
+Template
+New type
+Old type
+Excludes
+Selected
+Location
+Field ID
+Displays
+Favorites
+-default-
+From Date
+ascending
+Add Entry
+Use GPT 4
+Data Cart
+Last hour
+TDS Paths
+Community
+Documents
+Inherited
+Add Alias
+Page Style
+Entry menu
+Edit Entry
+Entry Page
+New Folder
+Create new
+Entry name
+Date Range
+Statistics
+Harvesters
+Admin only
+Select one
+Size Limit
+Formatting
+Description
+Create Date
+All Actions
+Information
+Search text
+Date format
+Entries XML
+Add to cart
+Change URLs
+Data Policy
+The entries
+Attachments
+Embed Entry
+Search Form
+Last 7 days
+Search under
+File Listing
+Set metadata
+Test aliases
+Apply action
+Delete Entry
+Add Property
+Get selected
+Last 3 hours
+Last 6 hours
+Please login
+Associations
+New Password
+Make Snapshot
+Extended Edit
+Unzip archive
+Extract title
+Miscellaneous
+Type, date, space
+Yes, change them
+Yes, do it
+Login, user settings, help
+Show OK files
+Are you sure?
+View Children
+Change Access
+Search Subset
+Last 12 hours
+Documentation
+User Settings
+Require login
+Total entries
+Start cleanup
+Search Options
+View selection
+Pick a Type...
+Move/Copy/Link
+Zip thumbnails
+Extract sheets
+Add properties
+OpenAI GPT API
+Regexp Pattern
+Exclude groups
+Password Again
+Browse Metadata
+Clear selection
+Add as Favorite
+Edit Properties
+Add Property...
+Extract authors
+Files on Server
+Upload Settings
+Exclude entries
+Thredds Catalog
+Search metadata
+Change Settings
+Change Password
+Site Information
+Extract keywords
+Apply Javascript
+Extract metadata
+Current settings
+Basic Properties
+Search subgroups
+No entries found
+Create Identifier
+Go to search form
+Creating Entry...
+File or directory
+Change Entry Type
+Add/View Comments
+You are logged in
+Or drag files here
+Set other metadata
+Show missing files
+View Data Policies
+New Password Again
+Search Associations
+Apply to this entry
+Repository Settings
+Wget Download Script
+Please select a file
+Set spatial metadata
+Add image thumbnails
+Select a destination
+Define Access Rights
+GCMD Science Keyword
+Set temporal metadata
+Generate File Listing
+Repository Statistics
+Zip and Download Files
+Click to select a file
+Search under this entry
+Make name from filename
+Process with Javascript
+What do you want to do?
+Apply changes to entries
+Make folders from archive
+Change type of this entry
+Please enter your password
+Change Descendants URL Path
+Spatial and Temporal Metadata
+Change Descendants Entry Type
+Only apply to entries of type
+Your password has been changed
+Incorrect verification password
+Extract summary with the prompt
+Add aliases to children entries
+Show search form with this type
+Incorrect user name or password
+Just spatial/temporal properties
+Change the type of all descendant entries
+Note: If a directory then all files will be added
+For verification please enter your current password
+Only change type for entries that match this pattern
+Are you sure you want to delete the following folder?
+Note: This will also delete everything contained by this folder
+Click to show entry form
+Sort by Name
+Sort by Date
+Sort by Create Date
+Sort by Size
+Sort by Type
+Toggle all
+Apply action
+Move/Copy/Link
+Export Entries
+Delete Entry
+Make Snapshot
+Change Type
+Right-click to see entry menu. Shift-drag to copy/move
+Click to show contents
