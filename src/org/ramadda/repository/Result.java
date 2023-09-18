@@ -41,7 +41,7 @@ public class Result {
     public static final int RESPONSE_INTERNALERROR = 500;
 
     /** _more_ */
-    public static final int RESPONSE_BLOCKED = 777;
+    public static final int RESPONSE_BLOCKED = 403;
 
     public static final int RESPONSE_BADRREQUEST = 400;    
 
