@@ -347,12 +347,11 @@ public class HtmlOutputHandler extends OutputHandler {
             if (wikiTemplate != null) {
                 String wiki = getWikiManager().wikifyEntry(request, entry,
                                   wikiTemplate);
-                html = getRepository().translate(request, wiki);
+                html = wiki;
             } else {
                 html = getMapManager().makeInfoBubble(request, entry);
             }
         }
-        html = getRepository().translate(request, html);
 
         if (asXml) {
             StringBuffer xml = new StringBuffer(XmlUtil.XML_HEADER);
@@ -399,8 +398,7 @@ public class HtmlOutputHandler extends OutputHandler {
             contents = sb.toString();
         }
         StringBuffer xml = new StringBuffer("<content>\n");
-        XmlUtil.appendCdata(xml,
-                            getRepository().translate(request, contents));
+        XmlUtil.appendCdata(xml,contents);
         xml.append("\n</content>");
 
         return new Result("", xml, "text/xml");
@@ -503,7 +501,6 @@ public class HtmlOutputHandler extends OutputHandler {
             request.setCORSHeaderOnResponse();
             String inline = typeHandler.getInlineHtml(request, entry);
             if (inline != null) {
-                inline = getRepository().translate(request, inline);
                 StringBuffer xml = new StringBuffer("<content>\n");
                 XmlUtil.appendCdata(xml,
                                     "<div class=inline>" + inline + "</div>");
@@ -881,9 +878,7 @@ public class HtmlOutputHandler extends OutputHandler {
                 OutputType.TYPE_ALL));
 
         StringBuffer xml = new StringBuffer("<content>\n");
-        XmlUtil.appendCdata(xml,
-                            getRepository().translate(request,
-                                sb.toString()));
+        XmlUtil.appendCdata(xml,sb.toString());
         xml.append("\n</content>");
 
         return new Result("", xml, "text/xml");
@@ -951,15 +946,11 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
         StringBuffer xml = new StringBuffer("<response><content>\n");
-        XmlUtil.appendCdata(xml,
-                            getRepository().translate(request,
-                                sb.toString()));
+        XmlUtil.appendCdata(xml, sb.toString());
         xml.append("\n</content>");
 
         xml.append("<javascript>");
-        XmlUtil.appendCdata(xml,
-                            getRepository().translate(request,
-                                jsSB.toString()));
+        XmlUtil.appendCdata(xml, jsSB.toString());
         xml.append("</javascript>");
         xml.append("\n</response>");
 
@@ -1212,7 +1203,7 @@ public class HtmlOutputHandler extends OutputHandler {
         String s = sb.toString();
         s = HU.div(s, HU.cssClass("ramadda-select-popup"));
 
-        return makeAjaxResult(request, getRepository().translate(request, s));
+        return makeAjaxResult(request,s);
     }
 
 

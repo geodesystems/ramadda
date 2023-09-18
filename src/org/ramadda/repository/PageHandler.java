@@ -208,8 +208,8 @@ public class PageHandler extends RepositoryManager {
 
 
     /** _more_ */
-    private Hashtable<String, Properties> languageMap = new Hashtable<String,
-                                                            Properties>();
+    private Hashtable<String, StringBuilder> languageMap = new Hashtable<String,StringBuilder>();
+
 
     /** _more_ */
     private List<TwoFacedObject> languages = new ArrayList<TwoFacedObject>();
@@ -906,15 +906,7 @@ public class PageHandler extends RepositoryManager {
         if ((extraMessage != null) && !hasContents && prefix) {
             sb.append(extraMessage);
         }
-
-
-        //
-        //Todo: don't support multiple languages for now
-        //        html = sb.toString();
-        //        html = translate(request, html);
-        //        return html;
         return true;
-
     }
 
 
@@ -1018,133 +1010,6 @@ public class PageHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param s _more_
-     *
-     * @return _more_
-     */
-    public String translate(Request request, String s) {
-
-        //Don't translate for now
-        if (true) {
-            return s;
-        }
-
-        if (s == null) {
-            return "";
-        }
-
-        String     language = request.getLanguage();
-        Properties tmpMap;
-        Properties map = (Properties) languageMap.get(
-                             getRepository().getLanguageDefault());
-
-        if (map == null) {
-            map = new Properties();
-        }
-        tmpMap = (Properties) languageMap.get(getRepository().getLanguage());
-        if (tmpMap != null) {
-            map.putAll(tmpMap);
-        }
-        tmpMap = (Properties) languageMap.get(language);
-
-        if (tmpMap != null) {
-            map.putAll(tmpMap);
-        }
-
-        Properties tmpPhraseMap = phraseMap;
-        if (tmpPhraseMap == null) {
-            String phrases = getRepository().getProperty(PROP_ADMIN_PHRASES,
-                                 (String) null);
-            if (phrases != null) {
-                Object[] result = parsePhrases("", phrases);
-                tmpPhraseMap = (Properties) result[2];
-                phraseMap    = tmpPhraseMap;
-            }
-        }
-
-        if (tmpPhraseMap != null) {
-            map.putAll(tmpPhraseMap);
-        }
-
-
-        return replaceMsgNew(s.toString(), map);
-
-
-        /**
-         * StringBuilder stripped     = new StringBuilder();
-         * int           prefixLength = MSG_PREFIX.length();
-         * int           suffixLength = MSG_PREFIX.length();
-         * //        System.out.println(s);
-         * int transCnt = 0;
-         * while (s.length() > 0) {
-         *   String tmp  = s;
-         *   int    idx1 = s.indexOf(MSG_PREFIX);
-         *   if (idx1 < 0) {
-         *       stripped.append(s);
-         *       break;
-         *   }
-         *   String text = s.substring(0, idx1);
-         *   if (text.length() > 0) {
-         *       stripped.append(text);
-         *   }
-         *   s = s.substring(idx1 + 1);
-         *
-         *   int idx2 = s.indexOf(MSG_SUFFIX);
-         *   if (idx2 < 0) {
-         *       //Should never happen
-         *       throw new IllegalArgumentException(
-         *           "No closing message suffix:" + s);
-         *   }
-         *   String key   = s.substring(prefixLength - 1, idx2);
-         *   String value = null;
-         *   if (map != null) {
-         *       value = (String) map.get(key);
-         *   }
-         *   if (debugMsg) {
-         *       try {
-         *           if (allMsgOutput == null) {
-         *               allMsgOutput = new PrintWriter(
-         *                   new FileOutputStream("allmessages.pack"));
-         *               missingMsgOutput = new PrintWriter(
-         *                   new FileOutputStream("missingmessages.pack"));
-         *           }
-         *           if ( !seenMsg.contains(key)) {
-         *               allMsgOutput.println(key + "=");
-         *               allMsgOutput.flush();
-         *               System.err.println(key);
-         *               if (value == null) {
-         *                   missingMsgOutput.println(key + "=");
-         *                   missingMsgOutput.flush();
-         *               }
-         *               seenMsg.add(key);
-         *           }
-         *       } catch (Exception exc) {
-         *           throw new RuntimeException(exc);
-         *       }
-         *   }
-         *
-         *
-         *   if (value == null) {
-         *       value = key;
-         *       if (debugMsg) {
-         *           value = "NA:" + key;
-         *       }
-         *   }
-         *   stripped.append(value);
-         *   s = s.substring(idx2 + suffixLength);
-         *   transCnt++;
-         * }
-         * return stripped.toString();
-         */
-
-
-
-
-    }
 
 
     /**
@@ -1237,7 +1102,7 @@ public class PageHandler extends RepositoryManager {
      */
     private Object[] parsePhrases(String file, String content) {
         List<String> lines   = Utils.split(content, "\n", true, true);
-        Properties   phrases = new Properties();
+        StringBuilder   phrases = new StringBuilder();
         String       type    =
             IO.stripExtension(IO.getFileTail(file));
         String       name    = type;
@@ -1271,9 +1136,8 @@ public class PageHandler extends RepositoryManager {
                         continue;
                     }
                 }
-
-
-                phrases.put(key, value);
+                phrases.append(key+"="+value);
+		phrases.append("\n");
             }
         }
 
@@ -1290,6 +1154,21 @@ public class PageHandler extends RepositoryManager {
         return languages;
     }
 
+    private String languagesJson;
+    public String  getLanguagesJson() {
+	if(languagesJson==null) {
+	    List<String> l =new ArrayList<String>();
+	    l.add(JsonUtil.map("id",JsonUtil.quote("en"),
+			       "label",JsonUtil.quote("English")));
+		
+	    for(TwoFacedObject tfo: getLanguages()) {
+		l.add(JsonUtil.map("id",JsonUtil.quote(tfo.getId()),
+				   "label",JsonUtil.quote(tfo.getLabel())));
+	    }
+	    languagesJson = JsonUtil.list(l);
+	}
+	return languagesJson;
+    }
 
     /**
      * _more_
@@ -1576,8 +1455,7 @@ public class PageHandler extends RepositoryManager {
 
 
 
-    /** _more_ */
-    private HashSet<String> seenPack = new HashSet<String>();
+
 
     /**
      * _more_
@@ -1585,9 +1463,9 @@ public class PageHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     protected void loadLanguagePacks() throws Exception {
-        //        getLogManager().logInfoAndPrint("RAMADDA: loadLanguagePacks");
+	HashSet<String> seenPack = new HashSet<String>();
         List sourcePaths =
-            Misc.newList(
+	    Misc.newList(
 			 "/org/ramadda/repository/htdocs/languages",
 			 getStorageManager().getHtdocsDir() + "/languages",
 			 getStorageManager().getPluginsDir().toString());
@@ -1600,7 +1478,6 @@ public class PageHandler extends RepositoryManager {
                         getLogManager().logInfoAndPrint(
                             "RAMADDA: not ends with .pack:" + path);
                     }
-
                     continue;
                 }
                 if (seenPack.contains(path)) {
@@ -1611,27 +1488,38 @@ public class PageHandler extends RepositoryManager {
                     getStorageManager().readUncheckedSystemResource(path,
                         (String) null);
                 if (content == null) {
-                    getLogManager().logInfoAndPrint(
-                        "RAMADDA: could not read:" + path);
-
+                    getLogManager().logInfoAndPrint("RAMADDA: could not read:" + path);
                     continue;
                 }
                 Object[]   result     = parsePhrases(path, content);
                 String     type       = (String) result[0];
                 String     name       = (String) result[1];
-                Properties properties = (Properties) result[2];
+                StringBuilder phrases = (StringBuilder) result[2];
                 if (type != null) {
                     if (name == null) {
                         name = type;
                     }
-                    languages.add(new TwoFacedObject(name, type));
-                    languageMap.put(type, properties);
+		    StringBuilder existing = languageMap.get(type);
+		    if(existing ==null) {
+			languages.add(new TwoFacedObject(name, type));
+			existing = new StringBuilder();
+			languageMap.put(type,existing);
+		    }
+		    existing.append("\n");
+		    existing.append(phrases);
                 } else {
                     getLogManager().logError("No _type_ found in: " + path);
                 }
             }
         }
     }
+
+    public StringBuilder getLanguage(String lang)  {
+	return 	languageMap.get(lang);
+	
+    }
+
+    
 
     /**
      * _more_

@@ -1755,8 +1755,7 @@ public class MetadataManager extends RepositoryManager {
                     return new Result(request.makeUrl(URL_METADATA_FORM,
                             ARG_ENTRYID, parent.getId(), ARG_MESSAGE,
                             cnt + " "
-                            + getRepository().translate(request,
-                                "metadata items added")));
+                            +  "metadata items added"));
 
                 }
 

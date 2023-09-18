@@ -1539,7 +1539,7 @@ public class UserManager extends RepositoryManager {
                                     : "");
                 if (findUser(id) != null) {
                     ok = false;
-                    sb.append(messageError(getRepository().translate(request, "User already exists") + " " + id));
+                    sb.append(messageError("User already exists:" + id));
                     break;
                 }
                 User user = new User(id, name, email, "", "",
@@ -2188,7 +2188,7 @@ public class UserManager extends RepositoryManager {
             Entry entry = getEntryManager().getEntry(request, entryId);
             if (entry == null) {
                 return addHeader(
-				 request, new StringBuffer(messageError(getRepository().translate(request, "Cannot find or access entry"))), 																		 "Favorites");
+				 request, new StringBuffer(messageError("Cannot find or access entry")), 																		 "Favorites");
             }
 
             addFavorites(request, user, (List<Entry>) Misc.newList(entry));
@@ -2209,9 +2209,7 @@ public class UserManager extends RepositoryManager {
 
         String redirect = getRepositoryBase().URL_USER_HOME.toString();
 
-        return new Result(HU.url(redirect, ARG_MESSAGE,
-				 getRepository().translate(request,
-							   message)));
+        return new Result(HU.url(redirect, ARG_MESSAGE, message));
 
     }
 
@@ -2457,13 +2455,9 @@ public class UserManager extends RepositoryManager {
 
                 return new Result(
 				  request.makeUrl(
-						  getRepositoryBase().URL_USER_LOGIN, ARG_MESSAGE,
-						  getRepository().translate(request, message)));
+						  getRepositoryBase().URL_USER_LOGIN, ARG_MESSAGE, message));
             }
-            sb.append(messageError(
-				   getRepository().translate(
-							     request,
-							     "No user is registered with the given email address")));
+            sb.append(messageError("No user is registered with the given email address"));
         }
 
         sb.append(messageNote(
@@ -2511,21 +2505,13 @@ public class UserManager extends RepositoryManager {
             resetInfo = passwordResets.get(key);
             if (resetInfo != null) {
                 if (new Date().getTime() > resetInfo.dttm.getTime()) {
-                    sb.append(messageError(
-					   getRepository().translate(
-								     request,
-								     "Password reset has timed out") + "<br>"
-					   + getRepository().translate(
-								       request, "Please try again")));
+                    sb.append(messageError("Password reset has timed out" + "<br>"
+					   +  "Please try again"));
                     resetInfo = null;
                     passwordResets.remove(key);
                 }
             } else {
-                sb.append(messageError(
-				       getRepository().translate(
-								 request, "Password reset has timed out") + "<br>"
-				       + getRepository().translate(
-								   request, "Please try again")));
+                sb.append(messageError("Password reset has timed out" + "<br>"  + "Please try again"));
             }
         }
 
@@ -2575,9 +2561,7 @@ public class UserManager extends RepositoryManager {
         }
         if (user == null) {
             if (request.exists(ARG_USER_NAME)) {
-                sb.append(messageError(
-				       getRepository().translate(
-								 request, "Not a registered user")));
+                sb.append(messageError("Not a registered user"));
                 sb.append(HU.vspace());
             }
             addPasswordResetForm(request, sb,
@@ -3358,9 +3342,7 @@ public class UserManager extends RepositoryManager {
 		    String redirect =
 			getRepositoryBase().URL_USER_HOME.toString();
 
-		    return new Result(HU.url(redirect, ARG_MESSAGE,
-					     getRepository().translate(request,
-								       "Favorites Added")));
+		    return new Result(HU.url(redirect, ARG_MESSAGE, "Favorites Added"));
 		}
 	    };
 
@@ -3450,7 +3432,7 @@ public class UserManager extends RepositoryManager {
         User         user = findUser(request.getString(ARG_USER_ID, ""));
 
         if (user == null) {
-            sb.append(messageError(getRepository().translate(request, "Could not find user")));
+            sb.append(messageError("Could not find user"));
         } else {
             sb.append(getUserActivities(request, user));
         }

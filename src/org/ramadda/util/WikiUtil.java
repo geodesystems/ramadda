@@ -2041,6 +2041,22 @@ public class WikiUtil implements HtmlUtilsConstants {
                 }
 
 
+                if (tline.startsWith(":setlang")) {
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
+                    HU.script(buff, HU.call("Translate.setDefaultLanguage",
+					    toks.size()>1?HU.squote(toks.get(1)):"null"));
+		    continue;
+		}
+
+                if (tline.startsWith(":langswitcher")) {
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
+		    String guid = HU.getUniqueId("langs");
+                    HU.span(buff,"",HU.id(guid));
+                    HU.script(buff, HU.call("Translate.addSwitcher",HU.squote(guid),
+					    toks.size()>1?HU.squote(toks.get(1)):"null"));
+		    continue;
+		}
+
                 if (tline.startsWith("+lang")) {
                     List<String> toks = Utils.splitUpTo(tline, " ", 2);
 		    String lang = toks.size()>1?toks.get(1):"en";

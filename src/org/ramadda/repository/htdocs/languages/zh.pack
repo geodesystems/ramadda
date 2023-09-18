@@ -3,8 +3,8 @@
 #Meteorological Agency of Si_Chuan Province ,China
 #########################################################################
 
-language.type=zh-cn
-language.id=zh-cn
+language.type=zh
+language.id=zh
 language.name= 中文
 
 Go= 进入

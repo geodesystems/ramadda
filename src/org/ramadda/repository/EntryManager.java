@@ -1644,9 +1644,7 @@ public class EntryManager extends RepositoryManager {
 		getChildrenEntries(request,outputHandler,group, children);
 	    } catch (Exception exc) {
 		exc.printStackTrace();
-		request.put(ARG_MESSAGE,
-			    getRepository().translate(request,
-						      "Error finding children") + ":"
+		request.put(ARG_MESSAGE, "Error finding children" + ":"
 			    + exc.getMessage());
 	    }
 	}
@@ -2408,8 +2406,7 @@ public class EntryManager extends RepositoryManager {
                 return new Result(
 				  request.entryUrl(
 						   getRepository().URL_ENTRY_SHOW, entry, ARG_MESSAGE,
-						   getRepository().translate(
-									     request, "Cannot edit local files")));
+						   "Cannot edit local files"));
 
             }
 
@@ -2618,8 +2615,7 @@ public class EntryManager extends RepositoryManager {
 					  request.entryUrl(
 							   getRepository().URL_ENTRY_SHOW, parentEntry,
 							   ARG_MESSAGE,
-							   getRepository().translate(
-										     request, "Error downloading URL")));
+							   "Error downloading URL"));
                     }
                     resourceName =
                         getStorageManager().getFileTail(newFile.toString());
@@ -2892,8 +2888,7 @@ public class EntryManager extends RepositoryManager {
 					  request.entryUrl(
 							   getRepository().URL_ENTRY_SHOW, entry,
 							   ARG_MESSAGE,
-							   getRepository().translate(
-										     request, "Error downloading URL")));
+							   "Error downloading URL"));
 
                     }
 		    if(!testNew) {
@@ -3058,8 +3053,7 @@ public class EntryManager extends RepositoryManager {
 			      request.entryUrl(
 					       getRepository().URL_ENTRY_SHOW, entry.getParentEntry(),
 					       ARG_MESSAGE,
-					       getRepository().translate(
-									 request, "File has been uploaded")));
+					       "File has been uploaded"));
         }
 
 	if(request.responseAsJson()) {
@@ -3093,9 +3087,7 @@ public class EntryManager extends RepositoryManager {
 					       getRepository().URL_ENTRY_SHOW, entry.getParentEntry(),
 					       ARG_MESSAGE,
 					       entries.size()
-					       + HU.pad(
-							getRepository().translate(
-										  request, "files uploaded"))));
+					       + HU.pad("files uploaded")));
         } else {
 	    StringBuilder sb = new StringBuilder();
 	    if(parentEntry!=null)
@@ -9569,12 +9561,9 @@ public class EntryManager extends RepositoryManager {
         List<Entry> changedEntries = addInitialMetadata(request, entries,
 							false, shortForm);
         if (changedEntries.size() == 0) {
-            sb.append(getRepository().translate(request,
-						"No metadata added"));
+            sb.append("No metadata added");
         } else {
-            sb.append(changedEntries.size() + " "
-                      + getRepository().translate(request,
-						  "entries changed"));
+            sb.append(changedEntries.size() + " "+ "entries changed");
             updateEntries(request, changedEntries);
         }
         if (entries.size() > 0) {

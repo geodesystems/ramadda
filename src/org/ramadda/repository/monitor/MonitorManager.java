@@ -399,7 +399,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
             return new Result(
                 request.makeUrl(
                     getAdmin().URL_ADMIN_MONITORS, ARG_MESSAGE,
-                    getRepository().translate(request, "Monitor deleted")));
+                    "Monitor deleted"));
         }
 
         if (request.exists(ARG_MONITOR_CHANGE)) {

@@ -138,7 +138,8 @@ var Utils =  {
     },
     getLocalStorage: function(key, toJson) {
         try {
-            let v = localStorage.getItem(ramaddaBaseEntry+"." + key);
+	    key = ramaddaBaseEntry+"." + key;
+            let v = localStorage.getItem(key);
             if(v!==null && toJson) {
                 return JSON.parse(v);
             }
@@ -149,9 +150,18 @@ var Utils =  {
         }
     },
     setLocalStorage: function(key, value, fromJson) {
-        if(value && fromJson) value = JSON.stringify(value);
-        localStorage.setItem(ramaddaBaseEntry+"." + key, value);
-        console.log("writing" +value);
+	if(!localStorage) return;
+	try {
+	    key = ramaddaBaseEntry+"." + key;
+	    if(value===null) {
+		localStorage.removeItem(key);
+		return;
+	    }
+            if(value && fromJson) value = JSON.stringify(value);
+            localStorage.setItem(key, value);
+        } catch(err) {
+            console.log("Error setting local storage. key=" + key);
+	}
     },
 
     getFileTail:function(url) {

@@ -122,6 +122,7 @@
   <group handler="repository">
     <api request="/message"                method="processMessage"     />
     <api request="/test"                   method="processTest"     />
+    <api request="/getlanguage"            method="processGetLanguage"     />
     <api request="/sslredirect"            method="processSslRedirect"    needs_ssl="true" checkauthmethod="true"/>
     <api request="/dummy"                  method="processDummy"/>
     <api request="/install"                method="processDummyInstall" needs_ssl="true"/>

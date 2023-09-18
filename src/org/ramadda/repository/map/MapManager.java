@@ -1527,7 +1527,6 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 							 fromEntry, false,  
 							 Utils.makeHashSet(WikiConstants.WIKI_TAG_MAPENTRY,
 									   WikiConstants.WIKI_TAG_MAP));
-                fromEntry = getRepository().translate(request, fromEntry);
             }
             return fromEntry;
         }
@@ -1633,7 +1632,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 								    WikiConstants.WIKI_TAG_MAP));
 
 
-            return getRepository().translate(request, bubble);
+            return  bubble;
         }
 
         String wikiTemplate = null;
@@ -1674,10 +1673,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             }
             info.append("</table>\n");
         }
-        String s = getRepository().translate(request, info.toString());
-
-        return s;
-
+        return info.toString();
     }
 
 
@@ -2186,8 +2182,6 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         infoHtml = infoHtml.replace("\n", " ");
         infoHtml = infoHtml.replace("\"", "\\\"");
         infoHtml = infoHtml.replace("'", "\\'");
-        infoHtml = getRepository().translate(request, infoHtml);
-
         return infoHtml;
     }
 

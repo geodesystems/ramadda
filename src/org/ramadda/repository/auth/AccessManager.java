@@ -1973,9 +1973,7 @@ public class AccessManager extends RepositoryManager {
         }
 
         return new Result(request.makeUrl(URL_ACCESS_FORM, ARG_ENTRYID,
-                                          entry.getId(), ARG_MESSAGE,
-                                          getRepository().translate(request,
-								    MSG_ACCESS_CHANGED)));
+                                          entry.getId(), ARG_MESSAGE,MSG_ACCESS_CHANGED));
 
     }
 

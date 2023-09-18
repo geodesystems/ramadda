@@ -1363,7 +1363,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		html+=header2;
 	    }
 	    html+="</thead><tbody>\n";	    
-	    this.savedState = Utils.getLocalStorage(this.getProperty("storageKey",this.type), true) || {};
+	    this.savedState = Utils.getLocalStorage(this.getProperty("storageKey",this.type),
+						    true) || {};
 	    this.recordMap = {};
 	    this.fieldMap = {};
 	    fields.forEach(f=>{this.fieldMap[f.getId()] = f;})

@@ -270,19 +270,22 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let html = "";
 	let cols = [];
 	let colList = Utils.split(props.columns??'name,date,createdate,size,type,attachments',',',true,true);
+	let dateWidth = 130;
+	let typeWidth = 100;	
+	let sizeWidth  =80;
 	colList.forEach(c=>{
 	    if(c=='name' && props.showName)
 		cols.push({id:"name",label:"Name",width:props.nameWidth});
 	    else if(c=='date' && props.showDate)
-		cols.push({id:"fromdate",label:"Date",width:props.fromDateWidth??props.dateWidth??120});		    
+		cols.push({id:"fromdate",label:"Date",width:props.fromDateWidth??props.dateWidth??dateWidth});		    
 	    else if(c=='createdate' && props.showCreateDate)
-		cols.push({id:c,label:"Create Date",width:props.createDateWidth??props.dateWidth??120});
+		cols.push({id:c,label:"Create Date",width:props.createDateWidth??props.dateWidth??dateWidth});
 	    else if(c=='changedate' && props.showChangeDate)
-		cols.push({id:c,label:"Change Date",width:props.changeDateWidth??props.dateWidth??120});	    
+		cols.push({id:c,label:"Change Date",width:props.changeDateWidth??props.dateWidth??dateWidth});	    
 	    else if(c=='size' && props.showSize)
-		cols.push({id:c,label:"Size",width:props.sizeWidth??100});
+		cols.push({id:c,label:"Size",width:props.sizeWidth??sizeWidth});
 	    else if(c=='type' && props.showType)
-		cols.push({id:c,label:"Type",align:'left',paddingLeft:'10px',width:props.typeWidth??120});
+		cols.push({id:c,label:"Type",align:'left',paddingLeft:'10px',width:props.typeWidth??typeWidth});
 	    else if(c=='attachments' && props.showAttachments)
 		cols.push({id:c,label:"Attachments",align:'left',paddingLeft:'10px',width:props.attachmentsWidth??240});
 	});

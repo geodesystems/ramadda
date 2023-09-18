@@ -2,37 +2,68 @@ var LANGUAGE_ENGLISH = 'en';
 var LANGUAGE_SPANISH = 'es';
 
 var Translate = {
+    packs:{},
+    missing:{},
     init: function() {
 	this.switchPrefix = HU.getIconImage('fas fa-language') +HU.space(1)
+	$('#ramadda_user_menu').append(HU.div([ATTR_TITLE,'Clear language',
+						   ATTR_TITLE,'Switch language',
+						   ATTR_CLASS,'ramadda-clickable ramadda-language-switch ramadda-menu-language-switch ramadda-user-link'],this.switchPrefix+'Clear'));
+
 	ramaddaLanguages.forEach(lang=>{
 	    $('#ramadda_user_menu').append(HU.div(['data-language',lang.id,
 						   ATTR_TITLE,'Switch language',
-						   ATTR_CLASS,'ramadda-clickable ramadda-language-switch ramadda-user-link'],this.switchPrefix+lang.label));
+						   ATTR_CLASS,'ramadda-clickable ramadda-language-switch ramadda-menu-language-switch ramadda-user-link'],this.switchPrefix+lang.label));
 	});
 	this.switchLang = jqid('switchlang');
 	let _this = this;
-	$('.ramadda-language-switch').click(function() {
-	    let lang = $(this).attr('data-language');
-            HU.hidePopupObject();
-	    _this.setLanguage(lang);
-	    if(lang==LANGUAGE_ENGLISH) {
-		Translate.translateInner(null, LANGUAGE_ENGLISH,{},true);
-	    }   else {
-		Translate.translate(null,lang);
-	    }
+	$('.ramadda-menu-language-switch').click(function() {
+	    _this.switcherClicked($(this));
 	});
 	Translate.translate();
     },
-    packs:{},
-    missing:{},
+    switcherClicked:function(link) {
+	let lang = link.attr('data-language');
+        HU.hidePopupObject();
+	this.setLanguage(lang);
+//	Utils.setLocalStorage('ramadda-language', lang==LANGUAGE_ENGLISH?null:lang);
+	Utils.setLocalStorage('ramadda-language', lang);
+	if(lang==LANGUAGE_ENGLISH) {
+	    Translate.translateInner(null, LANGUAGE_ENGLISH,{},true);
+	}   else {
+	    Translate.translate(null,lang);
+	}
+    },
+
+    setDefaultLanguage:function(lang) {
+	this.defaultLanguage = lang?lang:LANGUAGE_ENGLISH;
+    },
+    addSwitcher:function(id,langs) {
+	if(langs) langs=Utils.split(langs,",",true,true);
+	let html = '<div>';
+	ramaddaLanguages.forEach(lang=>{
+	    if(langs && langs.length && !langs.includes(lang.id)) return;
+	    html+= HU.span(['data-language',lang.id,
+			    ATTR_TITLE,'Switch language',
+			    ATTR_CLASS,'ramadda-clickable ramadda-language-switch'],lang.label);
+	});
+	html+='</html>';
+	let block = $(html);
+	block.appendTo(jqid(id));
+	let _this = this;
+	block.find('.ramadda-language-switch').click(function() {
+	    _this.switcherClicked($(this));
+	});
+
+    },
     loadPack: function(lang, callback) {
 	if(Translate.packs[lang]) {
 	    callback(Translate.packs[lang]);
 	    return;
 	}
 
-	let url  = RamaddaUtil.getUrl('/languages/' + lang+'.pack');
-//	console.dir(url);
+	let url  = RamaddaUtil.getUrl('/getlanguage?language=' + lang);
+	console.dir(url);
         $.ajax({
             url: url,
             dataType: 'text',
@@ -60,15 +91,18 @@ var Translate = {
     },
     setLanguage: function(lang) {
 	this.language = ramaddaLanguage  =lang;
-//	console.log('language:'+this.language);
     },
     translate: function(selector,lang) {
+	if(!lang) lang = this.defaultLanguage;
 	if(!lang) {
-	    lang = this.language || ramaddaLanguage || navigator?.language 
-		|| navigator?.userLanguage;
+	    lang = this.language ?? Utils.getLocalStorage('ramadda-language');
+	    //For problems with local storage
+	    if(lang==='undefined' || lang==='null') lang= null;
+	    lang = lang ??   ramaddaLanguage ?? navigator?.language ?? navigator?.userLanguage;
 	}
+
 	if(!Utils.stringDefined(lang)) {
-	    console.log('no language:' + lang);
+	    lang = LANGUAGE_ENGLISH;
 	    return;
 	}
 	lang = lang.toLowerCase();
@@ -104,6 +138,15 @@ var Translate = {
 	    }
 	});
 
+	$('.ramadda-language-switch').each(function() {
+	    if($(this).attr('data-language')==lang) {
+		$(this).addClass('ramadda-language-switch-active');
+	    } else {
+		$(this).removeClass('ramadda-language-switch-active');
+	    }
+	});
+
+
 	if(useDflt && !this.haveDoneAnyTranslations) {
 	    return
 	}
@@ -117,39 +160,34 @@ var Translate = {
 	    return 'lang-orig-' + (suffix??'');
 	}
 
-	let ok = (tag,t,suffix)=>{
+	let canTranslate = (tag,t,suffix)=>{
 	    if(tag.hasClass('ramadda-notranslate')) {
 		return false;
-	    }
-	    if(tag.attr(langFlag(suffix))) {
-//		return false;
 	    }
 	    if(!t || t.indexOf('<')>=0) {
 		return false;
 	    }
 	    return true;
 	}
-	let get = (a,t,suffix,debug)=>{
-
-
+	let translate = (a,text,suffix)=>{
 	    if(useDflt) {
 		let orig = a.attr(langFlag(suffix));
 		if(orig) return orig;
 		return null;
 	    }
-	    if(!ok(a,t,suffix)) {
+	    if(!canTranslate(a,text,suffix)) {
 		return;
 	    }
 
-
 	    let tag = a.prop('tagName');
-	    if(pack[t]) {
-		if(pack[t]=='<skip>') return null;
-		a.attr(langFlag(suffix),t);
-//		console.log(langFlag(suffix),a.attr(langFlag(suffix)));
-		return pack[t];
+	    if(pack[text]) {
+		if(pack[text]=='<skip>') return null;
+		a.attr(langFlag(suffix),text);
+//		console.log('saving',langFlag(suffix),text);
+		return pack[text];
 	    }
-	    Translate.missing[t] = true;
+	    Translate.missing[text] = true;
+	    return  a.attr(langFlag(suffix));
 	    return null;
 	}
 	let skip = {'SCRIPT':true,'BR':true,'HTML':true,'STYLE':true,'TEXTAREA':true,'HEAD':true,'META':true,'LINK':true,'BODY':true};
@@ -169,18 +207,21 @@ var Translate = {
 			return;
 		    }
 		}
-
 		if(a.attr(attr)) {
-		    v = get(a,a.attr(attr),attr);
+		    v =translate(a,a.attr(langFlag(attr))??a.attr(attr),attr);
 		    if(v) {
 			a.attr(attr,v);
 		    }
 		}});
 
 
-	    v = get(a,a.html(),null,false);
-	    if(v) {
-		a.html(v);
+	    let flag = langFlag()
+	    let html = a.attr(flag)??a.html();
+	    if(canTranslate(a,html)) {
+		v = translate(a,html);
+		if(v) {
+		    a.html(v);
+		}
 	    }
 	});
     },

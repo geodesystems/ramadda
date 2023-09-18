@@ -113,8 +113,7 @@ public class AssociationManager extends RepositoryManager {
                 request.entryUrl(
                     getRepositoryBase().URL_ENTRY_SHOW, fromEntry,
                     ARG_MESSAGE,
-                    getRepository().translate(
-                        request, MSG_ASSOCIATION_ADDED)));
+		    MSG_ASSOCIATION_ADDED));
         }
 
 

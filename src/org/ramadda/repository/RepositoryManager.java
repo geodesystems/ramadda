@@ -491,18 +491,6 @@ public class RepositoryManager implements RepositorySource, Constants,
         return HtmlUtils.b(msg(msg));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param s _more_
-     *
-     * @return _more_
-     */
-    public String translateMsg(Request request, String s) {
-        return getRepository().translate(request, msg(s));
-    }
-
 
     /**
      * _more_

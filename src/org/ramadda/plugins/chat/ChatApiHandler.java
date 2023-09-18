@@ -173,7 +173,6 @@ public class ChatApiHandler extends RepositoryManager implements RequestHandler 
             Date dttm = getDateHandler().parseDate(message.optString("date"));
             String     m       = message.optString("message");
             m = getWikiManager().wikifyEntry(request, entry, m);
-            m = getPageHandler().translate(request, m);
             room.addMessage(new ChatMessage(m, message.optString("user"),
                                             dttm));
         }
@@ -238,7 +237,6 @@ public class ChatApiHandler extends RepositoryManager implements RequestHandler 
             String message = obj.getString("message");
             String output = getWikiManager().wikifyEntry(request, entry,
                                 message);
-            output = getPageHandler().translate(request, output);
             ChatRoom room = getRoom(entry);
             room.addMessage(new ChatMessage(message,
                                             getUserName(request.getUser())));

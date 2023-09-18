@@ -3860,6 +3860,14 @@ img.ramadda-user-menu-image:hover {
 }
 
 
+.ramadda-language-switch {
+    padding:6px;
+}
+.ramadda-language-switch-active {
+    background:var(--highlight-background);
+}
+
+
 .ramadda-user-link {
     min-width: 100px;
     padding-top:4px;

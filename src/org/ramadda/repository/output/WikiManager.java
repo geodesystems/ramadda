@@ -1592,7 +1592,6 @@ public class WikiManager extends RepositoryManager
 						 request.getString(ARG_ENTRYID, ""));
         String handlerId = request.getString("handler", "");
         String toolbar   = makeWikiEditBar(request, entry, handlerId);
-        toolbar = getPageHandler().translate(request, toolbar);
         Result result = new Result("", new StringBuilder(toolbar));
         result.setShouldDecorate(false);
 
@@ -1676,7 +1675,6 @@ public class WikiManager extends RepositoryManager
         } else {
             wiki = wikify(request, wiki);
         }
-        wiki = getPageHandler().translate(request, wiki);
         Result result = new Result("", new StringBuilder(wiki));
         result.setShouldDecorate(false);
 
@@ -7100,6 +7098,9 @@ public class WikiManager extends RepositoryManager
 				"@(youtube, wikipedia, etc, URL)",""),
 			l.call("Horizontal line", "\\n----\\n", ""),
 			l2.call("Button", "Add a button with a URL",":button url label", ""),
+			l2.call("Language Block", "Show/hide block based on user's language preference","+lang one of es en fr etc.\\n", "-lang"),
+			l2.call("Language Switcher", "Add a widget to switch languages",":langswitcher en,es,fr, etc.\\n", ""),
+			l2.call("Set Language", "Set the language of the page",":setlanguage es\\n", ""),
 			l2.call("Draft", "Show a 'Draft' background","+draft\\n", "-draft"),
 			l2.call("Remark", "One line comment","\\n:rem ", ""),
 			l2.call( "Skip", "Skip a section of wiki text",

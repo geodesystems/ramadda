@@ -1,4 +1,4 @@
-fr.pack
 es.pack
-ar.pack
-zh-cn.pack
+fr.pack
+#ar.pack
+#zh.pack

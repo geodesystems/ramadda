@@ -197,8 +197,7 @@ public class CommentManager extends RepositoryManager {
         return new Result(request.makeUrl(getRepository().URL_COMMENTS_SHOW,
                                           ARG_ENTRYID, entry.getId(),
                                           ARG_MESSAGE,
-                                          getRepository().translate(request,
-                                              "Comment deleted")));
+					  "Comment deleted"));
     }
 
 
@@ -251,8 +250,7 @@ public class CommentManager extends RepositoryManager {
                     request.makeUrl(
                         getRepository().URL_COMMENTS_SHOW, ARG_ENTRYID,
                         entry.getId(), ARG_MESSAGE,
-                        getRepository().translate(
-                            request, "Comment added"))));
+			"Comment added")));
         }
 
 

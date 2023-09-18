@@ -2817,6 +2817,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             if (contents != null) {
                 List<String> lines = Utils.split(contents, "\n", true, true);
                 for (String file : lines) {
+		    if(file.startsWith("#")) continue;
                     listing.add(path + "/" + file);
                 }
             }
@@ -3928,8 +3929,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         Throwable inner = LogUtil.getInnerException(exc);
         String    msg;
         if (inner instanceof RepositoryUtil.MissingEntryException) {
-            msg = translate(request, msgLabel("Entry not found"))
-		+ inner.getMessage();
+            msg = msgLabel("Entry not found")+ inner.getMessage();
         } else {
             msg = "Error:" + inner.getMessage();
         }
@@ -3946,6 +3946,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public Result makeErrorResult(Request request, String msg) {
 	return makeErrorResult(request, msg, true);
+    }
+
+    public Result processGetLanguage(Request request) throws Exception {
+	StringBuilder sb = getPageHandler().getLanguage(request.getString("language",""));
+	if(sb==null) sb  = new StringBuilder();
+	return new Result("", sb, MIME_TEXT);
     }
 
     public Result makeErrorResult(Request request, String msg,boolean decorate) {	
@@ -4025,7 +4031,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public String makeErrorResponse(Request request, String msg) {
 	msg = HU.strictSanitizeString(msg);
-        msg = translate(request, msg);
         if (request.responseAsJson()) {
             return JsonUtil.mapAndQuote(Utils.makeList("error", msg));
         } else if (request.responseAsXml()) {
@@ -4037,11 +4042,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    //true->remove URL args
             msg = HU.sanitizeString(msg,true);
             StringBuilder sb = new StringBuilder();
-            sb.append(
-		      getPageHandler().showDialogError(
-						       getPageHandler().translate(
-										  request, "An error has occurred") + ":"
-						       + HU.p() + msg));
+            sb.append(getPageHandler().showDialogError("An error has occurred") + ":"
+		      + HU.p() + msg);
 
             return sb.toString();
         }
@@ -4057,7 +4059,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public String makeOkResponse(Request request, String msg) {
-        msg = translate(request, msg);
         if (request.responseAsJson()) {
             return JsonUtil.mapAndQuote(Utils.makeList("ok", msg));
         } else if (request.responseAsXml()) {
@@ -4067,12 +4068,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             return msg;
         } else {
             StringBuilder sb = new StringBuilder();
-            sb.append(
-		      getPageHandler().showDialogNote(
-						      getPageHandler().translate(
-										 request, "An error has occurred") + ":"
-						      + HU.p() + msg));
-
+            sb.append(getPageHandler().showDialogNote("An error has occurred") + ":" + HU.p() + msg);
             return sb.toString();
         }
     }
@@ -6613,7 +6609,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	js = js.replace("${ramadda.user.language}",
 			Utils.stringDefined(language)?"\"" + language+"\"":"null");
 	js = js.replace("${ramadda.languages}",
-			"[{id:'en',label:'English'},{id:'es',label:'Espanol'}]");
+			getPageHandler().getLanguagesJson());
 	js = js.replace("${ramadda.languages.enabled}",
 			""+getProperty("ramadda.languages.enabled",false));
 
@@ -7159,21 +7155,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public static String msgHeader(String h) {
         return PageHandler.msgHeader(h);
     }
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param s _more_
-     *
-     * @return _more_
-     */
-    public String translate(Request request, String s) {
-        return getPageHandler().translate(request, s);
-    }
-
-
-
 
 
     /**
