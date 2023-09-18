@@ -51,14 +51,17 @@ var Translate = {
     },
     addSwitcher:function(id,langs) {
 	if(langs) langs=Utils.split(langs,",",true,true);
-	let html = '<div>';
+	let html = '<inlineblock style="border-radius:var(--default-radius);border:var(--basic-border);padding:0px;padding-top:4px;padding-bottom:4px;">';
+	let cnt = 0;
 	ramaddaLanguages.forEach(lang=>{
 	    if(langs && langs.length && !langs.includes(lang.id)) return;
 	    html+= HU.span(['data-language',lang.id,
 			    ATTR_TITLE,'Switch language',
+			    ATTR_STYLE,cnt>0?HU.css('border-left','var(--basic-border)'):'',
 			    ATTR_CLASS,'ramadda-clickable ramadda-language-switch'],lang.label);
+	    cnt++;
 	});
-	html+='</html>';
+	html+='</inlineblock>';
 	let block = $(html);
 	block.appendTo(jqid(id));
 	let _this = this;
