@@ -2069,6 +2069,18 @@ public class WikiUtil implements HtmlUtilsConstants {
 		    continue;
 		}		
 
+		if(tline.startsWith("+dict")) {
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
+		    buff.append(HU.open("div",HU.attrs("class","ramadda-dict",
+						       "lang" ,toks.size()>1?toks.get(1):"")));
+		    continue;
+		}
+
+		if(tline.startsWith("-dict")) {
+	            buff.append("</div>\n");
+		    continue;
+		}
+
                 if (tline.startsWith("+div") || tline.startsWith("+span") || tline.startsWith("+inlineblock")) {
                     String       style = "";
                     String       clazz = "";
