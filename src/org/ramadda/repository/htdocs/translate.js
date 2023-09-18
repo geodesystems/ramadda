@@ -82,7 +82,12 @@ var Translate = {
             url: url,
             dataType: 'text',
             success: function(data) {
-		Translate.packs[lang] =Translate.makePack(data);
+		let pack = Translate.makePack(data);
+		$('.ramadda-dict[lang="' + lang+'"]').each(function() {
+		    let  p = Translate.makePack($(this).text());
+		    pack=   $.extend(pack,p);
+		});
+		Translate.packs[lang]=pack;
 		callback(Translate.packs[lang]);
             }}).fail(function() {
 		console.log("Failed to load url: " + url);

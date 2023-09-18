@@ -444,6 +444,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		let attrs = [];
 		let v = entry.getProperty(col.id);
 		let title = null;
+		v  = HU.span([],v);
 		if(col.id=="name") {
 		    if(props.showIcon) {
 			v = entry.getIconImage()+SPACE +v;
@@ -534,7 +535,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	html+=HU.close('div');
 
 	let container = $('#'+id);
-	container.html(html);
+	html = $(html).appendTo(container);
+	Translate.translate(html);
 	container.find('.ramadda-breadcrumb-toggle').click(function() {
 	    let id = $(this).attr('breadcrumbid');
 	    let crumbs = $('#'+ id);

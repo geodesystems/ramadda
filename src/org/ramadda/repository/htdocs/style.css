@@ -98,6 +98,11 @@ inlineblock {
     color:#ccc;
 }
 
+.ramadda-dict {
+    display:none;
+}
+
+
 input:focus, textarea:focus, .ramadda-search-input:focus {
     border:var(--highlight-border);
     outline:none;
