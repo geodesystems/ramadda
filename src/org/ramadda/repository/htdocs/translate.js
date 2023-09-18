@@ -51,7 +51,7 @@ var Translate = {
     },
     addSwitcher:function(id,langs) {
 	if(langs) langs=Utils.split(langs,",",true,true);
-	let html = '<inlineblock style="border-radius:var(--default-radius);border:var(--basic-border);padding:0px;padding-top:4px;padding-bottom:4px;">';
+	let html = HU.open("div",[ATTR_CLASS,'ramadda-link-bar']);
 	let cnt = 0;
 	ramaddaLanguages.forEach(lang=>{
 	    if(langs && langs.length && !langs.includes(lang.id)) return;
@@ -61,7 +61,7 @@ var Translate = {
 			    ATTR_CLASS,'ramadda-clickable ramadda-language-switch'],lang.label);
 	    cnt++;
 	});
-	html+='</inlineblock>';
+	html+=HU.close('div');
 	let block = $(html);
 	block.appendTo(jqid(id));
 	let _this = this;

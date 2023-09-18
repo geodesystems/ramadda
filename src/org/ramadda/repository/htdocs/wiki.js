@@ -1054,7 +1054,11 @@ WikiEditor.prototype = {
 	     {label:'Translate to Spanish',
 	      prompt:'I want you to act as an Spanish translator, spelling corrector and improver. I will speak to you in English and you will  translate it to Spanish and answer in the corrected and improved version of my text, in Spanish. I want you to only reply the correction, the improvements and nothing else, do not write explanations.'},
 	     
-];
+
+	     {label:'Translate to French',
+	      prompt:'I want you to act as an French translator, spelling corrector and improver. I will speak to you in English and you will  translate it to French and answer in the corrected and improved version of my text, in French. I want you to only reply the correction, the improvements and nothing else, do not write explanations.'},
+	     
+	    ];
 	prompts.forEach((prompt,idx)=>{
 	    if(prompt.label) {
 		options.push({value:idx,label:prompt.label});

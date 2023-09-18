@@ -325,6 +325,19 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
     background:var(--highlight-background);
 }
 
+.ramadda-link-bar {
+    display:inline-block;
+    border-radius:var(--default-radius);
+    border:var(--basic-border);
+    padding:0px;
+    padding-top:4px;
+    padding-bottom:4px;
+}
+
+.ramadda-link-bar:hover {
+    border:1px solid #888;
+}
+
 .ramadda-button-bar {
     text-align:center;
     padding-top:0.5em;
