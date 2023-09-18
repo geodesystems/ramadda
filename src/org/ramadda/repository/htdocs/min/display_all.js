@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Sep 17 09:23:15 MDT 2023";
+var build_date="RAMADDA build date: Mon Sep 18 07:18:45 MDT 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -54863,7 +54863,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		html+=header2;
 	    }
 	    html+="</thead><tbody>\n";	    
-	    this.savedState = Utils.getLocalStorage(this.getProperty("storageKey",this.type), true) || {};
+	    this.savedState = Utils.getLocalStorage(this.getProperty("storageKey",this.type),
+						    true) || {};
 	    this.recordMap = {};
 	    this.fieldMap = {};
 	    fields.forEach(f=>{this.fieldMap[f.getId()] = f;})
