@@ -68,6 +68,26 @@ curl -v "http://localhost:8080" &gt; foo
 
 
 
+<faqitem cat="Administration" id="blacklist" q="I want to blacklist certain IP address" >
+  If you add a file "ipblacklist.txt" into your RAMADDA home directory the the IP addresses
+  in the file will be blacklisted.
+  The file is if the form:
+<pre>
+ipaddress1
+ipadddres2
+ipaddres.with.wild.card*
+e.g.:
+190.2.132.128
+89.187.164.247
+78.46.9*
+123.46.9*
+</pre>
+
+If a request comes in at one of the blacklisted IPs then the request is paused for a bit
+and then  a 403 Forbidden  result is returned;
+</faqitem>
+
+
 <faqitem cat="Administration" id="lucene" q="How do I use Lucene for searching?" >
 RAMADDA has had the ability to uses Lucene for search indexing though up until 2021 this
 had been disabled by default.  Lucene provides a much better search experience as it indexes the
