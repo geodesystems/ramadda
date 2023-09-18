@@ -414,6 +414,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     /** _more_ */
     private HashSet blacklist;
+    private List<String> blacklistList;    
 
     /** _more_ */
     private Hashtable<String, TypeHandler> typeHandlersMap =
@@ -1131,11 +1132,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (blacklistFile.exists()) {
             try {
                 blacklist = new HashSet();
+                blacklistList = new ArrayList<String>();		
                 for (String ip :
 			 Utils.split(IOUtil.readContents(blacklistFile), "\n",
 				     true, true)) {
-		    //                    getLogManager().logInfoAndPrint("RAMADDA: Add blacklist ip:" + ip);
-                    blacklist.add(ip);
+		    if(ip.endsWith("*")) {
+			blacklistList.add(ip.replace("*",""));
+		    } else {			 
+			blacklist.add(ip);
+		    }
                 }
             } catch (Exception exc) {
                 System.err.println("Error reading blacklist file:" + exc);
@@ -3649,6 +3654,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         if (blacklist != null) {
             String ip = request.getIpRaw();
+	    if (blacklistList.size()>0) {
+		for(String prefix: blacklistList) {
+		    if(ip.startsWith(prefix)) {
+			return makeBlockedResult(request);
+		    }
+		}
+	    } 
+
             if ((ip != null) && blacklist.contains(ip)) {
                 return makeBlockedResult(request);
             }
@@ -3832,6 +3845,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
         return result;
     }
+
 
 
     public void handleRequestCookie(Request request, Result result) {
