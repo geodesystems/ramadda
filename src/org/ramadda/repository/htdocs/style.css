@@ -4227,10 +4227,14 @@ a.ramadda-menuitem-link:hover {
 
 .ramadda-menugroup  {
     white-space:nowrap;
-    max-height: 150px; 
+    max-height: 200px; 
     overflow-y: auto;
     overflow-x:hidden;
     max-width:200px;
+}
+
+.ramadda-entry-tools .ramadda-menugroup  {
+    max-width:400px;
 }
 
 .ramadda-entry-actions .ramadda-menugroup,.ramadda-menugroup-ext   {
