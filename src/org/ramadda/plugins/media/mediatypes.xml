@@ -155,9 +155,9 @@
     <column   name="proxy" type="boolean" label="Proxy Image if URL"  showinhtml="false" default="false"/>
     <column   name="filename" label="Alternate filename"  showinhtml="false" />
     <wikis tag="simple">
-       <![CDATA[{{description wikify=true}}
+       <![CDATA[<div class=ramadda-description>{{description wikify=true}}</div>
 +inset left=10px right=10px
-{{image width=100%}}
+{{image width=100% border=""}}
 -inset
 ]]>
 </wikis>

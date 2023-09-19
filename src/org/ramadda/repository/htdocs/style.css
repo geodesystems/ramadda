@@ -2232,6 +2232,10 @@ ul {
     border:var(--basic-border) !important;
 }
 
+.slide .ramadda-description {
+    padding:8px;
+}
+
 .ramadda-slides {
     margin-left:25px;
     margin-right:25px;    
