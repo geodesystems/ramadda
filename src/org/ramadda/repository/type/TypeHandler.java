@@ -3632,7 +3632,7 @@ public class TypeHandler extends RepositoryManager {
                                 getEntryResourceUrl(request, entry, false),
                                 HtmlUtils.img(
                                     getIconUrl(ICON_DOWNLOAD),
-                                    msg("Download"), ""));
+                                    "Download", ""));
 
                     } else {
                         resourceLink = resourceLink + HtmlUtils.space(2)
