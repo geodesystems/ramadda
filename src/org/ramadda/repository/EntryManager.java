@@ -4596,9 +4596,8 @@ public class EntryManager extends RepositoryManager {
 					       + request);
         }
         StringBuilder sb = new StringBuilder();
-        List<Link> linkList = getEntryLinks(request, entry);
         String links = getEntryActionsTable(request, entry,
-					    OutputType.TYPE_MENU, linkList, false, null);
+					    OutputType.TYPE_MENU, null, false, null);
 
 	Result result = new Result("",new StringBuilder(links));
 	result.setShouldDecorate(false);
@@ -7135,8 +7134,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public String getEntryActionsTable(Request request, Entry entry,
-                                       int typeMask)
+    public String getEntryActionsTable(Request request, Entry entry, int typeMask)
 	throws Exception {
         List<Link> links = getEntryLinks(request, entry);
         return getEntryActionsTable(request, entry, typeMask, links);
@@ -7179,8 +7177,12 @@ public class EntryManager extends RepositoryManager {
     public String getEntryActionsTable(Request request, Entry entry,
                                        int typeMask, List<Link> links,
                                        boolean returnNullIfNoneMatch,
-                                       String header)
+                                       Hashtable props)
 	throws Exception {
+	if(links==null)
+	    links = getEntryLinks(request, entry);	    
+	final boolean showLabel = props==null?true:Utils.getProperty(props,"showLabel",true);
+	String header = props==null?null:Utils.getProperty(props,"header",null);
 	Hashtable<Object,Integer> count  =new Hashtable<Object,Integer>();
         StringBuilder
             viewSB          = null,
@@ -7292,9 +7294,10 @@ public class EntryManager extends RepositoryManager {
 	    if(c.intValue()<12) {
 		s = s.replaceAll("ramadda-menugroup","ramadda-menugroup ramadda-menugroup-ext");
 	    }
-            menu.append(HU.tag(HU.TAG_TD, "",
-			       HU.b(msg(label)) + "<br>"
-			       + s));
+	    if(!showLabel) label="";
+	    else label =  HU.b(msg(label)) + "<br>";
+			       
+            menu.append(HU.tag(HU.TAG_TD, "", label + s));
 	};
 
 	finisher.accept(fileSB,"File");
