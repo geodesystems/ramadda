@@ -348,7 +348,6 @@ public class ServiceArg extends ServiceElement {
         Service.attr(attrs, "first", first);
         Service.attr(attrs, "multipleJoin", multipleJoin);
         Service.attr(attrs, "sameRow", sameRow);
-        Service.attr(attrs, "size", size);
         if (values.size() > 0) {
             List<String> valueAttrs = new ArrayList<String>();
             for (TwoFacedObject tfo : values) {
