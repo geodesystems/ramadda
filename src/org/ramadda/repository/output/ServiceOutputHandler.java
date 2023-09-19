@@ -505,7 +505,6 @@ public class ServiceOutputHandler extends OutputHandler {
             service.toXml(xml, (serviceInputs.size() > 0)
                                ? serviceInputs.get(0)
                                : null);
-            System.err.println(xml);
             request.setReturnFilename(service.getLabel() + "services.xml");
 
             return new Result("", xml, "text/xml");
@@ -765,7 +764,7 @@ public class ServiceOutputHandler extends OutputHandler {
 
 
 
-        etc.append(StringUtil.join("&nbsp; <p> ", extraSubmit));
+        etc.append(StringUtil.join("&nbsp; <br> ", extraSubmit));
         etc.append(HtmlUtils.p());
 
 
