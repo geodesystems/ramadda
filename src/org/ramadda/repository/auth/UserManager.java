@@ -2164,9 +2164,7 @@ public class UserManager extends RepositoryManager {
         String mimeType = getRepository().getMimeTypeFromSuffix(
 								IO.getFileExtension(file));
         Result      result      = new Result(inputStream, mimeType);
-        result.setCacheOk(false);
         return result;
-
     }
 
 
