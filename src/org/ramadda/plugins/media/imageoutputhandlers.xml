@@ -1,20 +1,22 @@
-<outputhandlers class="org.ramadda.repository.output.ServiceOutputHandler" icon="fa-image"  xxxentryType="type_image" entryPattern="(.*\.png|.*\.gif|.*\.jpg|.*\.jpeg|.*\.tiff)" category="Documents and Images">
+<outputhandlers class="org.ramadda.repository.output.ServiceOutputHandler" icon="fa-image"
+		xxxentryType="type_image" entryPattern="(.*\.png|.*\.gif|.*\.jpg|.*\.jpeg|.*\.tiff)"
+		category="Documents and Images">
 
   <outputhandler>
-   <service id="imagemagick_convert" label="Convert Image" command="${service.imagemagick}/convert">
-<description><![CDATA[Runs ImageMagick convert]]></description>
-          <arg value="${entry.file}" type="entry"  label="Input Image" primary="true"></arg>
-          <arg type="int" prefix="-resize" name="resize" label="Resize" help=" percent" value="${value}%"  />
-          <arg type="string" prefix="-bordercolor" default="" name="bordercolor" label="Border Color"  help="e.g., white, red, blue, ..."/>
-          <arg type="int" prefix="-border" name="border" label="Border Size" />
-          <arg type="enumeration" name="newtype" label="Convert to" values="png,gif,jpg,tiff" value="${file}"  file="${entry.file.base}.${value}" />
-          <output type="type_image" pattern=".*"/>
-<process_description><![CDATA[<wiki>
-{{description}}
-{{gallery}}
-----
-{{tree}}
-]]></process_description>
+    <service id="imagemagick_convert" label="Convert Image" command="${service.imagemagick}/convert">
+      <description><![CDATA[Runs ImageMagick convert]]></description>
+      <arg value="${entry.file}" type="entry"  label="Input Image" primary="true"></arg>
+      <arg type="int" prefix="-resize" name="resize" label="Resize" help=" percent" value="${value}%"  />
+      <arg type="string" prefix="-bordercolor" default="" name="bordercolor" label="Border Color"  help="e.g., white, red, blue, ..."/>
+      <arg type="int" prefix="-border" name="border" label="Border Size" />
+      <arg type="enumeration" name="newtype" label="Convert to" values="png,gif,jpg,tiff" value="${file}"  file="${entry.file.base}.${value}" />
+      <output type="type_image" pattern=".*"/>
+      <process_description><![CDATA[<wiki>
+      {{description}}
+      {{gallery}}
+      ----
+      {{tree}}
+      ]]></process_description>
 
     </service>
   </outputhandler>
@@ -22,85 +24,76 @@
 
 
   <outputhandler>
-   <service id="imagemagick_animate" label="Make animated GIF" command="${service.imagemagick}/convert">
-   <description><![CDATA[Makes animated GIF using ImageMagick]]></description>
-   <process_description><![CDATA[<wiki>{{description}}{{gallery}}
-----
-{{tree}}
-]]></process_description>
+    <service id="imagemagick_animate" label="Make animated GIF" command="${service.imagemagick}/convert">
+      <description><![CDATA[Makes animated GIF using ImageMagick]]></description>
+      <process_description><![CDATA[<wiki>{{description}}{{gallery}}
+      ----
+      {{tree}}
+      ]]></process_description>
 
-   <arg type="int" label="Delay" help="Ticks" default="50" prefix="-delay"/>
-   <arg type="enumeration" label="Loop" values="0:no loop,1:loop"  prefix="-loop"/>
-   <arg value="${entry.file}" multiple="true" type="entry"   label="Input Image" primary="true"></arg>
-<!--
+      <arg type="int" label="Delay" help="Ticks" default="50" prefix="-delay"/>
+      <arg type="enumeration" label="Loop" values="0:no loop,1:loop"  prefix="-loop"/>
+      <arg value="${entry.file}" multiple="true" type="entry"   label="Input Image" primary="true"></arg>
+      <!--
           <arg type="string" label="Filename" name="filename" default="animation"  prefix="-loop"/>
--->
-   <arg value="${file}" file="animated.gif"  />
-   <output type="type_image" pattern=".*"/>
-  </service>
-  </outputhandler>
-
-
-  <outputhandler>
-   <service id="imagemagick_strip" label="Strip EXIF Metadata" command="${service.imagemagick}/convert">
-     <description><![CDATA[Strips out EXIF metadata from image using ImageMagick -strip]]></description>
-     <process_description><![CDATA[<wiki>
-{{description}}{{gallery}}
-----
-{{tree}}
-]]></process_description>
-          <arg value="-strip"/>
-          <arg value="${entry.file}" type="entry"   label="Input Image" primary="true"></arg>
-          <arg value="${file}" file="${entry.file.base}_stripped.${entry.file.suffix}"  />
-          <output type="type_image" pattern=".*"/>
+      -->
+      <arg value="${file}" file="animated.gif"  />
+      <output type="type_image" pattern=".*"/>
     </service>
   </outputhandler>
 
 
   <outputhandler>
-   <service id="imagemagick_polaroid" label="Polaroid image" command="${service.imagemagick}/convert">
-<description><![CDATA[Runs ImageMagick polaroid conversion]]></description>
-   <process_description><![CDATA[
-<wiki>{{description}} {{gallery}}
-----
-{{tree}}
-]]></process_description>
-          <arg value="${entry.file}" type="entry"   label="Input Image" primary="true"></arg>
-
-          <arg name="bordercolor" prefix="-bordercolor" label="Border color" />
-          <arg name="background" prefix="-background" label="Background color" />
-
-          <arg value="+polaroid"/>
-          <arg value="${file}" file="${entry.file.base}_polaroid.png"  />
-          <output type="type_image" pattern=".*_polaroid.png"/>
+    <service id="imagemagick_strip" label="Strip EXIF Metadata" command="${service.imagemagick}/convert">
+      <description><![CDATA[Strips out EXIF metadata from image using ImageMagick -strip]]></description>
+      <process_description><![CDATA[<wiki>
+      {{description}}{{gallery}}
+      ----
+      {{tree}}
+      ]]></process_description>
+      <arg value="-strip"/>
+      <arg value="${entry.file}" type="entry"   label="Input Image" primary="true"></arg>
+      <arg value="${file}" file="${entry.file.base}_stripped.${entry.file.suffix}"  />
+      <output type="type_image" pattern=".*"/>
     </service>
   </outputhandler>
-
-
-
-
-
 
 
   <outputhandler>
-   <service id="imagemagick_identify" label="Identify image" command="${service.imagemagick}/identify">
-<description><![CDATA[Runs ImageMagick identify]]></description>
-          <arg value="${entry.file}" type="entry"  label="Input Image" primary="true"></arg>
-          <output showResults="true" stdout="true"/>
+    <service id="imagemagick_polaroid" label="Polaroid image" command="${service.imagemagick}/convert">
+      <description><![CDATA[Runs ImageMagick polaroid conversion]]></description>
+      <process_description><![CDATA[
+      <wiki>{{description}} {{gallery}}
+      ----
+      {{tree}}
+      ]]></process_description>
+      <arg value="${entry.file}" type="entry"   label="Input Image" primary="true"></arg>
+
+      <arg name="bordercolor" prefix="-bordercolor" label="Border color" />
+      <arg name="background" prefix="-background" label="Background color" />
+
+      <arg value="+polaroid"/>
+      <arg value="${file}" file="${entry.file.base}_polaroid.png"  />
+      <output type="type_image" pattern=".*_polaroid.png"/>
     </service>
   </outputhandler>
 
-
-
-
-<!--
   <outputhandler>
-   <service id="imagemagick_convert_test" label="Test Convert Image" command="${service.imagemagick}/convert">
-       <service link="imagemagick_convert"><param name="newtype">png</param><param name="resize">50</param></service>
-       <service link="imagemagick_polaroid"><param name="bordercolor">red</param><param name="background">green</param></service>
-       <output type="type_image" pattern=".*"/>
+    <service id="imagemagick_identify" label="Identify image" command="${service.imagemagick}/identify">
+      <description><![CDATA[Runs ImageMagick identify]]></description>
+      <arg value="${entry.file}" type="entry"  label="Input Image" primary="true"></arg>
+      <output showResults="true" stdout="true"/>
     </service>
   </outputhandler>
 
--->
+  <!--
+      <outputhandler>
+      <service id="imagemagick_convert_test" label="Test Convert Image" command="${service.imagemagick}/convert">
+      <service link="imagemagick_convert"><param name="newtype">png</param><param name="resize">50</param></service>
+      <service link="imagemagick_polaroid"><param name="bordercolor">red</param><param name="background">green</param></service>
+      <output type="type_image" pattern=".*"/>
+      </service>
+      </outputhandler>
+
+  -->
 </outputhandlers>
