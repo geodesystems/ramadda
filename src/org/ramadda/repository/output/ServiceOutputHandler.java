@@ -153,7 +153,7 @@ public class ServiceOutputHandler extends OutputHandler {
         outputType = new OutputType(
             XmlUtil.getAttribute(element, ATTR_LABEL, service.getLabel()),
             XmlUtil.getAttribute(element, ATTR_ID, service.getId()),
-            OutputType.TYPE_OTHER | OutputType.TYPE_IMPORTANT, "",
+            OutputType.TYPE_SERVICE|OutputType.TYPE_OTHER | OutputType.TYPE_IMPORTANT, "",
             XmlUtil.getAttribute(element, ATTR_ICON, service.getIcon()));
         addType(outputType);
         groupOutputType = new OutputType(XmlUtil
