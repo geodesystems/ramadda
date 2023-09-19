@@ -47,6 +47,7 @@ import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.BufferMapList;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.LabeledObject;
 import org.ramadda.util.IO;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.JsonUtil;
@@ -1903,8 +1904,13 @@ public class WikiManager extends RepositoryManager
 							      entry, false, showResource, props).toString();
             }
 
-            return getRepository().getHtmlOutputHandler().getInformationTabs(
-									     myRequest, entry, false);
+	    String menus = getProperty(wikiUtil,props,"menus",null);
+	    List<LabeledObject> extras = new ArrayList<LabeledObject>();
+	    if(menus!=null) {
+		extras.add(new LabeledObject(getProperty(wikiUtil,props,"menusTitle","Tools"),
+					     wikifyEntry(request, entry,"<div class=ramadda-entry-tools>\n{{menu  showLabel=false title=\"\"  popup=false   menus=\""+ menus+"\"}}\n</div>"))); 
+	    }
+            return getHtmlOutputHandler().getInformationTabs(myRequest, entry, false,extras);
         } else if (theTag.equals(WIKI_TAG_FA)) {
 	    String icon=
 		getProperty(wikiUtil, props, "icon", "");
@@ -3129,8 +3135,7 @@ public class WikiManager extends RepositoryManager
             int type = OutputType.getTypeMask(Utils.split(menus, ",",
 							  true, true));
 
-            String links = getEntryManager().getEntryActionsTable(request,
-								  entry, type);
+            String links = getEntryManager().getEntryActionsTable(request,entry, type,null,false,props);
 	    String title = getProperty(wikiUtil, props, "title",null);
             if (getProperty(wikiUtil, props, "popup", true)) {
                 StringBuilder popup  = new StringBuilder();
@@ -3155,7 +3160,7 @@ public class WikiManager extends RepositoryManager
 		String menuLink = HU.makePopup(popup, menuLinkImg, links);
                 popup.append(menuLink);
                 return popup.toString();
-            }
+	    }
 
 	    if(Utils.stringDefined(title)) links = title +"<br>" + links;
             return links;
