@@ -3970,10 +3970,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
     public Result makeErrorResult(Request request, String msg,boolean decorate) {	
-        StringBuilder sb = new StringBuilder(decorate?makeErrorResponse(request, msg):msg);
+	StringBuilder sb = new StringBuilder(decorate?makeErrorResponse(request, msg):HU.strictSanitizeString(msg));
         Result        result = null;
-	msg = HU.strictSanitizeString(msg);
-
         if (request.responseAsJson()) {
             result = new Result("", sb, JsonUtil.MIMETYPE);
             result.setShouldDecorate(false);
@@ -4055,10 +4053,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
             return msg;
         } else {
 	    //true->remove URL args
-            msg = HU.sanitizeString(msg,true);
+	    //            msg = HU.sanitizeString(msg,true);
             StringBuilder sb = new StringBuilder();
-            sb.append(getPageHandler().showDialogError("An error has occurred") + ":"
-		      + HU.p() + msg);
+            sb.append(getPageHandler().showDialogError("An error has occurred") 
+		      + HU.br() + msg);
 
             return sb.toString();
         }

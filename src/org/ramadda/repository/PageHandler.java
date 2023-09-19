@@ -2213,15 +2213,12 @@ public class PageHandler extends RepositoryManager {
      */
     public static String getDialogString(String s) {
 	//Remove url args
-
 	s = s.replaceAll("\\?[^ \"]+","---");
-        s = s.replaceAll("<span *>", "SPANOPEN");
-        s = s.replaceAll("</span>", "SPANCLOSE");	
-        s = s.replaceAll("<pre>", "PREOPEN");
-        s = s.replaceAll("</pre>", "PRECLOSE");
+        s = s.replaceAll("(?i)<span *>", "SPANOPEN");
+        s = s.replaceAll("(?i)</span *>", "SPANCLOSE");	
+        s = s.replaceAll("(?i)<pre *>", "PREOPEN");
+        s = s.replaceAll("(?i)</pre *>", "PRECLOSE");
         s = HU.entityEncode(s);
-        s = s.replace("&#60;msg&#32;", "<msg ");
-        s = s.replace("&#32;msg&#62;", " msg>");
         s = s.replace("&#32;", " ");
         s = s.replace("&#60;p&#62;", "<p>");
         s = s.replace("&#60;br&#62;", "<br>");
@@ -2230,7 +2227,6 @@ public class PageHandler extends RepositoryManager {
         s = s.replaceAll("SPANCLOSE", "</span>");	
         s = s.replaceAll("PREOPEN", "<pre>");
         s = s.replaceAll("PRECLOSE", "</pre>");
-
         return s;
     }
 

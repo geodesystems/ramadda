@@ -6291,9 +6291,12 @@ public class HtmlUtils implements HtmlUtilsConstants {
     }
 
 
+    /**
+       remove all tags, etc except for empty span-s and pre-s
+     */
     public static String strictSanitizeString(String s) {    
 	if(s==null) return s;
-        s = s.replaceAll("<", "___").replaceAll(">", "___");
+	s = sanitizeString(s);
         s = s.replaceAll("(?i)(script)", "_$1_");
         s = s.replaceAll("(?i)(src)(" + Utils.WHITESPACE_CHARCLASS + "*=)",
                          "_$1_$2");
@@ -6322,7 +6325,17 @@ public class HtmlUtils implements HtmlUtilsConstants {
         if (s == null) {
             return null;
         }
+        s = s.replaceAll("(?i)<span *>", "SPANOPEN");
+        s = s.replaceAll("(?i)</span *>", "SPANCLOSE");	
+        s = s.replaceAll("(?i)<pre *>", "PREOPEN");
+        s = s.replaceAll("(?i)</pre *>", "PRECLOSE");
+
         s = s.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+
+        s = s.replaceAll("SPANOPEN", "<span>");
+        s = s.replaceAll("SPANCLOSE", "</span>");	
+        s = s.replaceAll("PREOPEN", "<pre>");
+        s = s.replaceAll("PRECLOSE", "</pre>");
 
 	if(removeUrlArgs) {
 	    s = s.replaceAll("\\?[^ \"]+","---");
