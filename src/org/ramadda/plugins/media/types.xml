@@ -22,7 +22,7 @@
 {{description wikify="true"}}
 +accordion decorate=false collapsible=true activeSegment=-1
 +segment Document Information
-{{information  details="true"  showTitle="false"  }} 
+{{information  details="true"  showTitle="false"  includeTools=true menus="service" menusTitle="Services"}} 
 -segment
 -accordion
 -section
