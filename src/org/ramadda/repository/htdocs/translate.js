@@ -57,8 +57,7 @@ var Translate = {
 	    if(langs && langs.length && !langs.includes(lang.id)) return;
 	    html+= HU.span(['data-language',lang.id,
 			    ATTR_TITLE,'Switch language',
-			    ATTR_STYLE,cnt>0?HU.css('border-left','var(--basic-border)'):'',
-			    ATTR_CLASS,'ramadda-clickable ramadda-language-switch'],lang.label);
+			    ATTR_CLASS,'ramadda-clickable ramadda-link-bar-item ramadda-language-switch'],lang.label);
 	    cnt++;
 	});
 	html+=HU.close('div');
@@ -159,9 +158,9 @@ var Translate = {
 
 	$('.ramadda-language-switch').each(function() {
 	    if($(this).attr('data-language')==lang) {
-		$(this).addClass('ramadda-language-switch-active');
+		$(this).addClass('ramadda-link-bar-item-active');
 	    } else {
-		$(this).removeClass('ramadda-language-switch-active');
+		$(this).removeClass('ramadda-link-bar-item-active');
 	    }
 	});
 

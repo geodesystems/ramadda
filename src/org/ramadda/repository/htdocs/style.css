@@ -338,6 +338,19 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
     border:1px solid #888;
 }
 
+.ramadda-link-bar-item {
+    border-right:var(--basic-border);
+    padding:6px;
+}
+
+.ramadda-link-bar-item:last-child {
+    border-right:0px;
+}
+
+.ramadda-link-bar-item-active {
+    background:var(--highlight-background);
+}
+
 .ramadda-button-bar {
     text-align:center;
     padding-top:0.5em;
@@ -3883,13 +3896,6 @@ img.ramadda-user-menu-image:hover {
 }
 
 
-.ramadda-language-switch {
-    padding:6px;
-}
-.ramadda-language-switch-active {
-    background:var(--highlight-background);
-}
-
 
 .ramadda-user-link {
     min-width: 100px;
@@ -4227,8 +4233,8 @@ a.ramadda-menuitem-link:hover {
     max-width:200px;
 }
 
-.ramadda-menugroup-ext {
-    max-height: 300px; 
+.ramadda-entry-actions .ramadda-menugroup,.ramadda-menugroup-ext   {
+    max-height: 400px; 
 }
 
 
