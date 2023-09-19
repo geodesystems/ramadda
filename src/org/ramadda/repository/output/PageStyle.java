@@ -36,6 +36,8 @@ public class PageStyle {
     /** _more_ */
     public static final String MENU_OTHER = "other";
 
+    /** _more_ */
+    public static final String MENU_SERVICE = "service";
 
     /** _more_ */
     private String wikiTemplate;
