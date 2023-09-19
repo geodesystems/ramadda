@@ -2120,12 +2120,18 @@ public class UserManager extends RepositoryManager {
     public String  getUserAvatar(Request request, User user, boolean checkIfExists,
 				 int width, String imageArgs) {
 	if(width<0) width=40;
-	if(checkIfExists && (user==null || getUserAvatarFile(user) == null)) return null;
+	File avatarFile = user==null?null:getUserAvatarFile(user);
+	if(checkIfExists && (user==null || avatarFile == null)) return null;
 	if(imageArgs == null) imageArgs = "";
 	if(imageArgs.indexOf("width=")<0) imageArgs+=" width=" + width+"px ";
 	imageArgs+=HU.cssClass("ramadda-user-avatar");
 
-	String url = getRepository().getUrlBase()+"/user/avatar?ts=" + System.currentTimeMillis();
+	String url = getRepository().getUrlBase()+"/user/avatar";
+	if(avatarFile!=null) {
+	    url+="?ts=" +avatarFile.lastModified();
+	}
+
+
 	if(user!=null) url+="&user="+ user.getId();
 	return HU.img(url,null,imageArgs);
     }
