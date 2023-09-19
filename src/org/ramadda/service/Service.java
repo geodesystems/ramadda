@@ -2408,11 +2408,15 @@ public class Service extends RepositoryManager {
             commandMethod.invoke(commandObject, new Object[] { request, this,
                     input, commands });
         } else {
-
-            JobManager.CommandResults results =
-                getRepository().getJobManager().executeCommand(commands,
-                    null, input.getProcessDir(), -1,
-                    new PrintWriter(stdoutFile), new PrintWriter(stderrFile));
+	    try {
+		JobManager.CommandResults results =
+		    getRepository().getJobManager().executeCommand(commands,
+								   null, input.getProcessDir(), -1,
+								   new PrintWriter(stdoutFile), new PrintWriter(stderrFile));
+	    } catch(Exception exc) {
+		System.err.println("Error evaluating service:" + commands);
+		throw exc;
+	    }
         }
         if (stderrFile.exists()) {
             errMsg = IOUtil.readContents(stderrFile);
