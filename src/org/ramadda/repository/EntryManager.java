@@ -4580,8 +4580,10 @@ public class EntryManager extends RepositoryManager {
         getPageHandler().entrySectionOpen(request, entry, sb,
                                           "Entry Actions");
 
+	HU.open(sb,"div",HU.clazz("ramadda-entry-actions"));
         sb.append(getEntryActionsTable(request, entry, OutputType.TYPE_ALL));
         getPageHandler().entrySectionClose(request, entry, sb);
+	HU.close(sb,"div");
 
         return addEntryHeader(request, entry,
                               new Result("Entry Actions", sb));
