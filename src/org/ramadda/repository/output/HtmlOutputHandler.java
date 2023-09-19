@@ -10,6 +10,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.LabeledObject;
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
@@ -569,7 +570,7 @@ public class HtmlOutputHandler extends OutputHandler {
             StringBuilder suffix = new StringBuilder();
             addDescription(request, entry, sb, true, suffix);
             String informationBlock = getInformationTabs(request, entry,
-                                          false);
+							 false,null);
             sb.append(informationBlock);
             sb.append(suffix);
             getPageHandler().entrySectionClose(request, entry, sb);
@@ -1260,7 +1261,7 @@ public class HtmlOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public String getInformationTabs(Request request, Entry entry,
-                                     boolean includeSnippet)
+                                     boolean includeSnippet, List<LabeledObject>extras)
             throws Exception {
         List         tabTitles   = new ArrayList<String>();
         List         tabContents = new ArrayList<String>();
@@ -1314,6 +1315,13 @@ public class HtmlOutputHandler extends OutputHandler {
                 tabContents.add(associationBlock);
             }
         }
+
+	if(extras!=null) {
+	    for(LabeledObject labeledObject :extras) {
+		tabTitles.add(labeledObject.getLabel());
+		tabContents.add(labeledObject.getObject().toString());
+	    }
+	}
 
 
         if (tabContents.size() == 1) {
@@ -2209,7 +2217,7 @@ public class HtmlOutputHandler extends OutputHandler {
                         "Entry Information", true);
                 addDescription(request, group, sb, true, suffix);
                 if ( !doSimpleListing) {
-                    sb.append(getInformationTabs(request, group, false));
+                    sb.append(getInformationTabs(request, group, false,null));
                 }
 
                 StringBuffer metadataSB = new StringBuffer();
