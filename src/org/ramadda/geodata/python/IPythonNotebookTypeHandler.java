@@ -104,9 +104,7 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
      */
     private String getHtmlDisplayInner(Request request, Entry entry)
             throws Exception {
-        String jupyterPath =
-            getRepository().getLocalProperty("ramadda.jupyter.path",
-					     (String) null);
+        String jupyterPath =  getRepository().getScriptPath("ramadda.jupyter.path");
         if (jupyterPath != null) {
             //            System.err.println(jupyterPath);
             return renderNotebookWithJupyter(request, entry, jupyterPath);
