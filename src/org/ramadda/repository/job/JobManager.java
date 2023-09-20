@@ -569,29 +569,30 @@ public class JobManager extends RepositoryManager {
     public void invokeAndWait(Request request,
                               List<Callable<Boolean>> callables)
             throws Throwable {
-        checkNewJobOK();
+	if(callables.size()==1) {
+	    callables.get(0).call();
+	    return;
+	}
 
-        long t1 = System.currentTimeMillis();
+
+        checkNewJobOK();
         try {
             synchronized (MUTEX) {
                 currentJobs++;
-                //                System.err.println("RAMADDA: job queued: " + this);
             }
-            List<Future<Boolean>> results =
-                getExecutor().invokeAll(callables);
-            for (Future future : results) {
-                try {
-                    future.get();
-                } catch (ExecutionException ex) {
-                    throw ex.getCause();
-                }
+	    List<Future<Boolean>> results =
+		getExecutor().invokeAll(callables);
+	    for (Future future : results) {
+		try {
+		    future.get();
+		} catch (ExecutionException ex) {
+		    throw ex.getCause();
+		}
             }
         } finally {
             synchronized (MUTEX) {
-                long t2 = System.currentTimeMillis();
                 currentJobs--;
                 totalJobs++;
-                //                System.err.println("RAMADDA: job end time:" + (t2 - t1)+ ": " + this);
             }
         }
     }
