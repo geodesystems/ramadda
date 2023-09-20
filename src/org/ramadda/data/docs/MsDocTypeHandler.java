@@ -10,6 +10,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 
 import org.w3c.dom.*;
 
@@ -69,6 +70,7 @@ public class MsDocTypeHandler extends GenericTypeHandler {
                                    boolean fromImport)
             throws Exception {
         super.initializeNewEntry(request, entry, fromImport);
+	if(fromImport) return;
         initializeDocEntry(request, entry);
     }
 
@@ -81,7 +83,7 @@ public class MsDocTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
-    public void initializeDocEntry(Request request, Entry entry)
+    private void initializeDocEntry(Request request, Entry entry)
             throws Exception {
         File file = entry.getFile();
         if ( !file.exists()) {
@@ -89,53 +91,55 @@ public class MsDocTypeHandler extends GenericTypeHandler {
         }
         String filename = file.toString().toLowerCase();
         if ( !(filename.endsWith(".pptx") || filename.endsWith(".docx")
-                || filename.endsWith(".xlsx"))) {
+	       || filename.endsWith(".xlsx"))) {
             return;
         }
+	if(entry.getTransientProperty("msinit")!=null) return;
+	entry.putTransientProperty("msinit","true");
         try {
-            InputStream    fis = getStorageManager().getFileInputStream(file);
-            OutputStream   fos = null;
-            ZipInputStream zin = new ZipInputStream(fis);
-            ZipEntry       ze  = null;
-            while ((ze = zin.getNextEntry()) != null) {
-                if (ze.isDirectory()) {
-                    continue;
-                }
-                String  path        = ze.getName();
-                String  lcpath      = path.toLowerCase();
-                boolean isImage     = false;
-                boolean isThumbnail = false;
+            try(InputStream    fis = getStorageManager().getFileInputStream(file)) {
+		ZipInputStream zin = new ZipInputStream(fis);
+		ZipEntry       ze  = null;
+		while ((ze = zin.getNextEntry()) != null) {
+		    if (ze.isDirectory()) {
+			continue;
+		    }
+		    String  path        = ze.getName();
+		    String  lcpath      = path.toLowerCase();
+		    boolean isImage     = false;
+		    boolean isThumbnail = false;
+		    if (lcpath.endsWith("thumbnail.jpeg")) {
+			isThumbnail = isImage = true;
+		    } else if (lcpath.endsWith(".jpeg")
+			       || lcpath.endsWith(".jpg")
+			       || lcpath.endsWith(".png")
+			       || lcpath.endsWith(".gif")) {
+			isImage = true;
+		    }
 
-                if (lcpath.endsWith("thumbnail.jpeg")) {
-                    isThumbnail = isImage = true;
-                } else if (lcpath.endsWith(".jpeg")
-                           || lcpath.endsWith(".jpg")
-                           || lcpath.endsWith(".png")
-                           || lcpath.endsWith(".gif")) {
-                    isImage = true;
-                }
+		    //For now just extract the thumbnails, not all of the images
+		    if (isThumbnail) {
+			String thumbFile = IOUtil.getFileTail(path);
+			File   f = getStorageManager().getTmpFile(thumbFile);
+			OutputStream   fos = getStorageManager().getFileOutputStream(f);
+			try {
+			    IOUtil.writeTo(zin, fos);
+			} finally {
+			    IO.close(fos);
+			}
+			String fileName =
+			    getStorageManager().copyToEntryDir(entry,
+							       f).getName();
+			Metadata metadata =
+			    new Metadata(getRepository().getGUID(),
+					 entry.getId(), (isThumbnail
+							 ? ContentMetadataHandler.TYPE_THUMBNAIL
+							 : ContentMetadataHandler.TYPE_ATTACHMENT), false,
+					 fileName, null, null, null, null);
 
-                //For now just extract the thumbnails, not all of the images
-                if (isThumbnail) {
-                    String thumbFile = IOUtil.getFileTail(path);
-                    File   f = getStorageManager().getTmpFile(thumbFile);
-                    fos = getStorageManager().getFileOutputStream(f);
-                    try {
-                        IOUtil.writeTo(zin, fos);
-                    } finally {
-                        IOUtil.close(fos);
-                    }
-                    String fileName =
-                        getStorageManager().copyToEntryDir(entry,
-                            f).getName();
-                    Metadata metadata =
-                        new Metadata(getRepository().getGUID(),
-                                     entry.getId(), (isThumbnail
-                            ? ContentMetadataHandler.TYPE_THUMBNAIL
-                            : ContentMetadataHandler.TYPE_ATTACHMENT), false,
-                                fileName, null, null, null, null);
-
-                    getMetadataManager().addMetadata(request,entry, metadata);
+			getMetadataManager().addMetadata(request,entry, metadata);
+			break;
+		    }
                 }
             }
         } catch (Exception exc) {
