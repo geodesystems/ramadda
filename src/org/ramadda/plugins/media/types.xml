@@ -44,24 +44,32 @@
 
 </type>
 
-<type name="type_document_doc"  description="Word File" pattern="(.*\.doc|.*\.docx)"   includeInSearch="true"
-      super="type_document_tika"
-      handler="org.ramadda.data.docs.MsDocTypeHandler"
+<type name="type_document_msfile"  foruser="false"       super="type_document_tika"
+      handler="org.ramadda.data.docs.MsDocTypeHandler"      >
+  <column name="display_inline" type="boolean" default="false" label="Display Inline"  showinhtml="false"
+	  help="If display inline set to true then the document is passed to officeapps.live.com and displayed in an embedded frame"/>
+</type>
+
+
+
+<type name="type_document_doc"  super="type_document_msfile" description="Word File" pattern="(.*\.doc|.*\.docx)"   includeInSearch="true"
       priority="10" >
      <property name="icon" value="/icons/doc.png"/>
      <property name="file.accept" value=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"/>
-     <column name="display_inline" type="boolean" default="false" label="Display Inline"  showinhtml="false"
-	     help="If display inline set to true then the document is passed to officeapps.live.com and displayed in an embedded frame"/>
 </type>
 
-  <type name="type_document_ppt"  description="Powerpoint File" pattern="(.*\.ppt|.*\.pptx)"   includeInSearch="true" super="type_document_tika"    priority="10" >
-     <service link="media_soffice_thumbnail" target="attachment"/>
+<type name="type_document_ppt"    super="type_document_msfile" description="Powerpoint File" pattern="(.*\.ppt|.*\.pptx)"
+      includeInSearch="true"   priority="10" >
+<!--
+    <service link="media_soffice_thumbnail" target="attachment"/>
+    -->
      <property name="icon" value="/icons/ppt.png"/>
      <property name="file.accept" value=".ppt,.pptx"/>
 </type>
 
 
-  <type name="type_document_html"  description="HTML File" pattern="(.*\.html|.*\.htm)" super="type_document" handler="org.ramadda.plugins.media.HtmlDocTypeHandler">
+<type name="type_document_html"  description="HTML File" pattern="(.*\.html|.*\.htm)"
+      super="type_document" handler="org.ramadda.plugins.media.HtmlDocTypeHandler">
      <property name="icon" value="/icons/html.png"/>
      <property name="convertidsinfile" value="true"/>
      <column name="embed_type" type="enumeration" default="frame" values="frame,none,embed"  label="Embed style"  showinhtml="false"/>
