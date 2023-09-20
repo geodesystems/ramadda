@@ -713,8 +713,11 @@ new MapLayer('federallands','Federal Lands',['//gis.blm.gov/arcgis/rest/services
 new MapLayer('seafloor','Seafloor',['//tiles.arcgis.com/tiles/C8EMgrsFcRFL6LrL/arcgis/rest/services/GEBCO_basemap_NCEI/MapServer/tile/${z}/${y}/${x}']);
 new MapLayer('historic','Historic','https://caltopo.com/tile/1900/${z}/${x}/${y}.png',{attribution:'Map courtesy of Caltopo',isOverlay:true});
 new MapLayer('esri.aeronautical','ESRI Aeronautical','https://wms.chartbundle.com/mp/service',{type:'wms',layer:'sec',attribution:'Map courtesy of ESRI'});
+//https://docs.stadiamaps.com/guides/migrating-from-stamen-map-tiles/
+/*
 new MapLayer('osm.toner','OSM-Toner','https://tiles.stadiamaps.com/tiles/stamen_toner/${z}/${x}/${y}.png',{attribution:'Map courtesy of OSM'});
 new MapLayer('osm.toner.lite','OSM-Toner Lite','https://tiles.stadiamaps.com/tiles/stamen_toner_lite/${z}/${x}/${y}.png',{attribution:'Map courtesy of OSM'});
+*/
 new MapLayer('cartolight','Carto-Light','https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/${z}/${x}/${y}.png');
 //new MapLayer('watercolor','Watercolor','https://stamen-tiles.a.ssl.fastly.net/watercolor/${z}/${x}/${y}.png');
 new MapLayer('moon','Moon','https://cartocdn-gusc.global.ssl.fastly.net/opmbuilder/api/v1/map/named/opm-moon-basemap-v0-1/all/${z}/${x}/${y}.png');
