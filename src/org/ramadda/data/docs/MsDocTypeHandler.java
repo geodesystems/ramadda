@@ -143,4 +143,27 @@ public class MsDocTypeHandler extends GenericTypeHandler {
         }
     }
 
+    @Override
+    public Result getHtmlDisplay(Request request, Entry entry)
+	throws Exception {
+        Column c = getColumn("display_inline");
+        Boolean b = (Boolean) entry.getValue(c.getOffset());
+	if(b==null || !b) return super.getHtmlDisplay(request,entry);
+	StringBuffer sb = new StringBuffer();
+	getPageHandler().entrySectionOpen(request,  entry,sb, "");
+	String wiki = "{{description wikify=true}}\n+toggle Document Information\n{{information details=true showTitle=false}}\n-toggle\n";
+	sb.append(getWikiManager().wikifyEntry(request, entry, wiki));
+	String url = request.getAbsoluteUrl(getEntryManager().getEntryResourceUrl(request, entry));
+	url = url.replace("?","%3F");
+	//	System.err.println(url);
+	sb.append("\n<center>\n<iframe style='border:var(--basic-border);' src='https://view.officeapps.live.com/op/embed.aspx?src="+ url+"' width='90%' height='800px' frameborder='1'></iframe>\n</center>\n");
+	getPageHandler().entrySectionClose(request,  entry, sb);
+	return getEntryManager().addHeaderToAncillaryPage(request,
+							  new Result(BLANK, sb));
+    }
+
+
+
+
+
 }

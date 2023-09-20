@@ -44,9 +44,14 @@
 
 </type>
 
-  <type name="type_document_doc"  description="Word File" pattern="(.*\.doc|.*\.docx)"   includeInSearch="true" super="type_document_tika"         handler="org.ramadda.data.docs.MsDocTypeHandler" priority="10" >
+<type name="type_document_doc"  description="Word File" pattern="(.*\.doc|.*\.docx)"   includeInSearch="true"
+      super="type_document_tika"
+      handler="org.ramadda.data.docs.MsDocTypeHandler"
+      priority="10" >
      <property name="icon" value="/icons/doc.png"/>
      <property name="file.accept" value=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"/>
+     <column name="display_inline" type="boolean" default="false" label="Display Inline"  showinhtml="false"
+	     help="If display inline set to true then the document is passed to officeapps.live.com and displayed in an embedded frame"/>
 </type>
 
   <type name="type_document_ppt"  description="Powerpoint File" pattern="(.*\.ppt|.*\.pptx)"   includeInSearch="true" super="type_document_tika"    priority="10" >
