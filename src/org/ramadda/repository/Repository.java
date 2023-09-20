@@ -8,20 +8,8 @@
 package org.ramadda.repository;
 
 
-import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.Credentials;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
 
 import org.ramadda.util.HttpFormEntry;
-
-import org.json.*;
-
-
 
 import org.ramadda.repository.admin.Admin;
 import org.ramadda.repository.admin.AdminHandler;
@@ -54,14 +42,8 @@ import org.ramadda.repository.output.XmlOutputHandler;
 import org.ramadda.repository.output.ZipOutputHandler;
 import org.ramadda.repository.search.SearchManager;
 
-import java.awt.Image;
 
-import java.awt.Toolkit;
-import java.awt.image.*;
-import java.awt.image.BufferedImage;
-import javax.imageio.*;
 import org.ramadda.repository.server.RepositoryServlet;
-
 import org.ramadda.repository.type.Column;
 import org.ramadda.repository.type.GroupTypeHandler;
 import org.ramadda.repository.type.ProcessFileTypeHandler;
@@ -104,9 +86,26 @@ import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlEncoder;
 import ucar.unidata.xml.XmlUtil;
 
+
+import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+
+
+import org.json.*;
+
+import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.image.*;
+import java.awt.image.BufferedImage;
+import javax.imageio.*;
 
 import java.io.*;
+import java.util.zip.*;
 import java.nio.charset.Charset;
 import java.lang.reflect.Constructor;
 
@@ -116,6 +115,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import java.security.cert.X509Certificate;
+import javax.net.ssl.*;
 
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -133,17 +133,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import java.util.TimeZone;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-
-import java.util.zip.*;
-
-import javax.net.ssl.*;
-
-
-
-
 /**
  * The main RAMADDA class.
  *
@@ -151,9 +140,6 @@ import javax.net.ssl.*;
 @SuppressWarnings("unchecked")
 public class Repository extends RepositoryBase implements RequestHandler,
 							  PropertyProvider {
-
-
-
 
     public static final boolean debugInit = false;
 
@@ -4163,9 +4149,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
         if ( !getUserManager().isRequestOk(request)) {
-            throw new AccessException(
-				      msg("You do not have permission to access this page"),
-				      request);
+            throw new AccessException(msg("You do not have permission to access this page"),request);
         }
 
         if ( !apiMethod.isRequestOk(request, this)) {
@@ -4173,26 +4157,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
         Result result = null;
         try {
-	    /*
-	      String path = request.toString();
-	      boolean isOpendap = 	   path.indexOf("entry.das")>=0;
-	      long t1 = System.currentTimeMillis();
-	      if(path.indexOf("entry.das")>=0) {
-	      javax.servlet.http.HttpServletRequest r = request.getHttpServletRequest();
-	      dodsCnt++;
-	      String u = path;
-	      String q = r.getQueryString();
-	      if(q!=null) u= u +"?"+HU.urlDecode(q);
-	      System.err.println("#"+dodsCnt +" url:" + u);
-	      }
-	    */
 	    result = (Result) apiMethod.invoke(request);
-	    /*
-	      if(isOpendap) {
-	      long t2 = System.currentTimeMillis();
-	      Utils.printTimes("Repository.opendap",t1,t2);
-	      }
-	    */
         } catch (Exception exc) {
             Throwable inner = LogUtil.getInnerException(exc);
             if (inner instanceof RepositoryUtil.MissingEntryException) {
@@ -4204,8 +4169,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
         getLogManager().writeTestLog(request);
-
-
         return result;
     }
 
