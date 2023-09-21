@@ -9501,7 +9501,8 @@ public class EntryManager extends RepositoryManager {
 	    //Check the children cache when there is a clause
 	    ids   = childrenCache.get(group.getId());
 	    if(ids!=null) {
-		return ids;
+		//Clone the list to keep it thread safe
+		return new ArrayList<String>(ids);
 	    }
 	}
 
