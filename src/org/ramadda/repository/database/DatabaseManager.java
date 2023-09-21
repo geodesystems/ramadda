@@ -946,8 +946,10 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 	    Exception lastException=null;
 	    while(true) {
 		synchronized (CONNECTION_MUTEX) {
+		    connection = tmpDataSource.getConnection();
+		    return connection;
+		    /*
 		    try {
-			connection = tmpDataSource.getConnection();
 			if(connection!=null) return connection;
 		    } catch(Exception exc) {
 			lastException = exc;
@@ -956,11 +958,12 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 			System.err.println("DatabaseManager.getConnection: had error and backing off:"+ exc);
 		    }
 		    if(tries--<=0) break;
+		    */
 		}
 	    }
-	    if(lastException==null)
-		lastException = new IllegalStateException("Unable to get database connection");
-	    throw lastException;
+
+	    //	    if(lastException==null)	lastException = new IllegalStateException("Unable to get database connection");
+	    //	    throw lastException;
         } catch (Exception exc) {
             System.err.println("DatabaseManager: Error in getConnection.\n"+exc);
             StringBuffer sb = new StringBuffer();
