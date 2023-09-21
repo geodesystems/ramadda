@@ -328,11 +328,13 @@ MapGlyph.prototype = {
 		this.checkLayersAnimation(true);
 		this.animationTimeout = setTimeout(stepAnimation,pause);
 		return;
+
 //		this.jq(PROP_LAYERS_ANIMATION_PLAY).html(HU.getIconImage(icon_stop,null,[ATTR_STYLE,'color:blue;']));
+		/*
 		setTimeout(()=>{
 		    this.jq(PROP_LAYERS_ANIMATION_PLAY).html(HU.getIconImage(icon_stop));
 		},300);
-
+*/
 	    }
 	    stepAnimation();
 	}

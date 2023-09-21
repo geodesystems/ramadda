@@ -204,7 +204,6 @@ var Translate = {
 	    }
 	    Translate.missing[text] = true;
 	    return  a.attr(langFlag(suffix));
-	    return null;
 	}
 	let skip = {'SCRIPT':true,'BR':true,'HTML':true,'STYLE':true,'TEXTAREA':true,'HEAD':true,'META':true,'LINK':true,'BODY':true};
 	let attrs = ['placeholder','title','value'];
