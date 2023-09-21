@@ -3828,7 +3828,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    variableWidth:true
         };
         if(args) $.extend(opts,args);
-	console.dir(opts);
         $("#" + id).slick(opts);
         HU.swapHtml("#" + id +"_headercontents", "#" + id +"_header");
         //Do this later because of the swapHtml
