@@ -8,11 +8,13 @@ import java.io.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
 
 import java.net.URL;
 import ucar.unidata.util.Misc;
 
 public class Test {
+    private static Date startTime;
     private static Object MUTEX=new Object();
     private static int numThreads = 50;
     private static int totalRead =0;
@@ -33,7 +35,9 @@ public class Test {
 			return;
 		    }
 		    synchronized(MUTEX) {totalRead++;}
-		    System.out.println("read:" + (totalRead));
+		    long diff = (new Date().getTime()-startTime.getTime())/1000;
+		    int callsPer = diff<=0?0:(int)(totalRead/(double)diff);
+		    System.out.println("read:" + totalRead + " calls/s:" + callsPer);
 		}
 	    }
 	} catch(Exception exc) {
@@ -50,8 +54,14 @@ public class Test {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+	startTime = new Date();
 	final List<String> urls=new ArrayList<String>();
 	for(int i=0;i<args.length;i++) {
+	    if(args[i].equals("-help")) {
+		System.err.println("usage: -threads <# threads> -loops <#loops> <file> or <url>");
+		System.exit(0);
+	    }
+
 	    if(args[i].equals("-threads")) {
 		numThreads = Integer.parseInt(args[++i]);
 		continue;
