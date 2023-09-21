@@ -606,6 +606,15 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
 
 
+    public String getStatusMessage() {
+	BasicDataSource bds    = (BasicDataSource) dataSource;
+	if(bds!=null) {
+	    return " db pool size: " + bds.getMaxTotal();
+	}
+	return "";
+
+    }
+
     /**
      * _more_
      *
@@ -623,7 +632,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         BasicDataSource bds    = (BasicDataSource) dataSource;
         StringBuffer    poolSB = new StringBuffer();
 	if(!decorated) {
-	    poolSB.append("db stats: #active:" + bds.getNumActive() + " #idle:" + bds.getNumIdle()
+	    poolSB.append("RAMADDA: database pool #active:" + bds.getNumActive() + " #idle:" + bds.getNumIdle()
 			  + "  max active: " + bds.getMaxTotal()+"\n");
 
 	    poolSB.append("# of open selects:" + numberOfSelects.getCount()+"\n");

@@ -1150,11 +1150,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
                          + getProperty(PROP_BUILD_DATE, "N/A"));
         statusMsg.append("  java version: "
                          + getProperty(PROP_JAVA_VERSION, "N/A"));
+	statusMsg.append(getDatabaseManager().getStatusMessage());
 	statusMsg.append("\n");
         statusMsg.append("RAMADDA: running on port:" + getPort() + " "
                          + (isSSLEnabled(null)
                             ? "SSL port:" + getHttpsPort()
                             : " SSL not enabled"));
+
+
 
 	if(!getAdmin().getInstallationComplete()) {
 	    statusMsg.append("\n");
