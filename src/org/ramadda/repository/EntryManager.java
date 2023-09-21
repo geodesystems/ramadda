@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2023 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.repository;
@@ -163,6 +163,13 @@ public class EntryManager extends RepositoryManager {
     /** Caches sites */
     private TTLCache<String, Entry> entryCache;
 
+    private TTLCache<String, Entry> aliasCache =
+	new TTLCache<String,Entry>(5*60*1000);
+
+    private TTLCache<String, List<String>> childrenCache =
+	new TTLCache<String,List<String>>(5*60*1000);    
+
+
     /** _more_ */
     private TTLCache<String, Entry> synthEntryCache;
 
@@ -235,12 +242,11 @@ public class EntryManager extends RepositoryManager {
 
             if (getRepository().getEnableHostnameMapping()
 		&& (request != null)) {
-                Entry fromHostname = getEntryFromAlias(request,
-						       "http://"
-						       + request.getRequestHostname());
-
-
-                if (fromHostname != null) {
+		String key =  "http://"   + request.getRequestHostname();
+                Entry fromHostname = getEntryFromAlias(request,key);
+		if(fromHostname==null) {
+		    aliasCache.put(key, topEntry);
+		} else {
                     return fromHostname;
                 }
             }
@@ -412,8 +418,14 @@ public class EntryManager extends RepositoryManager {
      */
     public Entry getEntryFromAlias(Request request, String alias)
 	throws Exception {
+	Entry entry = aliasCache.get(alias);
+	if(entry!=null) return entry;
 	List<Entry> entries =  getEntriesFromAlias(request, alias);
-	if(entries.size()>0) return entries.get(0);
+	if(entries.size()>0) {
+	    entry =  entries.get(0);
+	    aliasCache.put(alias,entry);
+	    return entry;
+	}
 	return null;
     }
 
@@ -466,7 +478,7 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public List<Entry> getEntriesFromMetadata(Request request, String metadataType,
-                                      String value, int attrIndex)
+					      String value, int attrIndex)
 	throws Exception {
 	List<Entry> entries = new ArrayList<Entry>();
         String column = ((attrIndex == 1)
@@ -1632,8 +1644,8 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     private Result processGroupShow(Request request,
-                                   OutputHandler outputHandler,
-                                   OutputType outputType, Entry group)
+				    OutputHandler outputHandler,
+				    OutputType outputType, Entry group)
 	throws Exception {
         printRequest(request, group);
         boolean      doLatest    = request.get(ARG_LATEST, false);
@@ -2295,6 +2307,19 @@ public class EntryManager extends RepositoryManager {
 
 
 
+    private void initEntry(Entry entry,
+			   String name, String description, Entry parentEntry,
+			   User user, Resource resource, String category,
+			   int entryOrder, long createDate, long changeDate,
+			   long startDate, long endDate, Object[] values) {
+	entry.initEntry(name, description, parentEntry,user,resource,category,entryOrder,createDate,
+			changeDate, startDate, endDate, values);
+	parentageChanged(parentEntry);
+
+    }
+
+
+
     /**
      * _more_
      *
@@ -2356,9 +2381,9 @@ public class EntryManager extends RepositoryManager {
 	    sb.append(getPageHandler().showDialogError(inner.getMessage()));
             if ((request.getUser() != null) && request.getUser().getAdmin()) {
                 sb.append(
-                    HtmlUtils.pre(
-                        HtmlUtils.entityEncode(
-                            LogUtil.getStackTrace(inner))));
+			  HtmlUtils.pre(
+					HtmlUtils.entityEncode(
+							       LogUtil.getStackTrace(inner))));
             }
 	    if(theEntry!=null)
 		getPageHandler().entrySectionClose(request, theEntry, sb);
@@ -2849,14 +2874,13 @@ public class EntryManager extends RepositoryManager {
 		if(noName)
 		    entry.putTransientProperty("noname","true");
 		    
-                entry.initEntry(name, description, info.parent, request.getUser(),
-                                new Resource(theResource, resourceType),
-                                category, entryOrder,
-				createDate.getTime(),
-                                createDate.getTime(),
-                                theDateRange[0].getTime(),
-                                theDateRange[1].getTime(), null);
-		//		System.err.println("init entry:" + name +" " + theDateRange[0]);
+                initEntry(entry, name, description, info.parent, request.getUser(),
+			  new Resource(theResource, resourceType),
+			  category, entryOrder,
+			  createDate.getTime(),
+			  createDate.getTime(),
+			  theDateRange[0].getTime(),
+			  theDateRange[1].getTime(), null);
                 if (forUpload) {
                     initUploadedEntry(request, entry, info.parent);
                 }
@@ -2994,7 +3018,7 @@ public class EntryManager extends RepositoryManager {
 		    getMetadataManager().addMetadata(request,
 						     e,
 						     new Metadata(getRepository().getGUID(), e.getId(),
-							      "enum_tag", false, tag, "", "", "", ""),true);
+								  "enum_tag", false, tag, "", "", "", ""),true);
 		}
 	    }
 
@@ -3768,7 +3792,7 @@ public class EntryManager extends RepositoryManager {
             }
             if (isTopEntry(entry)) {
 		return new Result("Entry Delete", getPageHandler().makeEntryPage(request, entry, "Entry delete",
-								     getPageHandler().showDialogError("Cannot delete top-level folder")));
+										 getPageHandler().showDialogError("Cannot delete top-level folder")));
             }
             entries.add(entry);
         }
@@ -3873,9 +3897,7 @@ public class EntryManager extends RepositoryManager {
 			     "Are you sure you want to delete all of the following entries?"));
         }
         if (anyFolders) {
-            msgSB.append(
-			 HU.div(
-				HU.b(
+            msgSB.append(HU.div(HU.b(
 				     msg(
 					 "Note: This will also delete everything contained by the below "
 					 + ((entries.size() == 1)
@@ -3928,9 +3950,9 @@ public class EntryManager extends RepositoryManager {
         String href = (group == null)
 	    ? ""
 	    : HtmlUtils.button(HU.href(
-		      request.entryUrl(
-				       getRepository().URL_ENTRY_SHOW,
-				       group), "Continue"));
+				       request.entryUrl(
+							getRepository().URL_ENTRY_SHOW,
+							group), "Continue"));
 
         return getActionManager().doAction(request, action, "Deleting entry",
                                            href, group);
@@ -4038,8 +4060,10 @@ public class EntryManager extends RepositoryManager {
             okEntries.add(entry);
         }
         entries = okEntries;
+	parentageChanged(entries);
+
         List<Descendent> found = getDescendents(request, entries, connection,
-					      null, true, true, actionId);
+						null, true, true, actionId);
 
 	boolean anyCantBeDeleted = false;
 	StringBuilder errMsg = new StringBuilder();
@@ -4107,9 +4131,9 @@ public class EntryManager extends RepositoryManager {
             for (int i = found.size() - 1; i >= 0; i--) {
 		Descendent descendent = found.get(i);
 		/*                Object[] tuple  = found.get(i);
-                String   id     = (String) tuple[0];
-                Object[] values = (Object[]) tuple[4];
-                Entry    parent = (Entry) tuple[5];
+				  String   id     = (String) tuple[0];
+				  Object[] values = (Object[]) tuple[4];
+				  Entry    parent = (Entry) tuple[5];
 		*/
                 String   id     = descendent.id;
                 Object[] values = descendent.values;
@@ -4915,10 +4939,7 @@ public class EntryManager extends RepositoryManager {
             }
             if (isTopEntry(entry)) {
                 StringBuilder sb = new StringBuilder();
-                sb.append(
-			  getPageHandler().showDialogNote(
-							  msg("Cannot copy top-level folder")));
-
+                sb.append(messageNote(msg("Cannot copy top-level folder")));
                 return new Result("Entry Delete", sb);
             }
             entries.add(entry);
@@ -4938,8 +4959,7 @@ public class EntryManager extends RepositoryManager {
 
         StringBuilder fromList = new StringBuilder();
         for (Entry fromEntry : entries) {
-            fromList.append(getPageHandler().getBreadCrumbs(request,
-							    fromEntry));
+            fromList.append(getPageHandler().getBreadCrumbs(request, fromEntry));
             fromList.append(HU.br());
         }
         String fromDiv =
@@ -5035,8 +5055,8 @@ public class EntryManager extends RepositoryManager {
 		bottom.append("<div style='margin-left:20px;margin-bottom:20px;display:" + (isCopy?"block":"none")+";' id='" + extraId+"'>");
 		bottom.append(HU.formTable());
 		bottom.append(HU.formEntry(msgLabel("Size Limit"),
-					  HU.input(ARG_COPY_SIZE_LIMIT,
-						   request.getString(ARG_COPY_SIZE_LIMIT, ""), HU.SIZE_5)+" (MB)"));
+					   HU.input(ARG_COPY_SIZE_LIMIT,
+						    request.getString(ARG_COPY_SIZE_LIMIT, ""), HU.SIZE_5)+" (MB)"));
 		bottom.append(HU.formEntry("",	
 					   HU.labeledCheckbox(ARG_COPY_DEEP,"true",
 							      request.get(ARG_COPY_DEEP, false), "Make deep copy (for synthetic entries)")));
@@ -5234,9 +5254,9 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public List<Entry> processEntryCopyAsynch(final Request request,
-					       final Entry toGroup, final String pathTemplate,
-					       final List<Entry> entries, Object actionId,
-					       String link)
+					      final Entry toGroup, final String pathTemplate,
+					      final List<Entry> entries, Object actionId,
+					      String link)
 	throws Exception {
 	boolean deepCopy  = request.get(ARG_COPY_DEEP,false);
 	boolean doMetadata= request.get(ARG_COPY_DO_METADATA,false);
@@ -5248,8 +5268,8 @@ public class EntryManager extends RepositoryManager {
             Connection connection = getDatabaseManager().getConnection();
             connection.setAutoCommit(false);
             List<Descendent> ids = getDescendents(request, entries, connection,
-						excluder,
-						true, !deepCopy, actionId);
+						  excluder,
+						  true, !deepCopy, actionId);
             getDatabaseManager().closeConnection(connection);
             Hashtable<String, Entry> oldIdToNewEntry = new Hashtable<String,
 		Entry>();
@@ -5295,7 +5315,7 @@ public class EntryManager extends RepositoryManager {
             if (newEntries.size() > 0) {
                 link = links.toString();
             }
-
+	    parentageChanged(toGroup);
             getActionManager().setContinueHtml(actionId,
 					       count + " entries copied" + HU.br() + link);
         } catch (Exception exc) {
@@ -5329,18 +5349,19 @@ public class EntryManager extends RepositoryManager {
 	Resource newResource =
 	    oldTypeHandler.getResourceForCopy(request, oldEntry,
 					      newEntry);
-	newEntry.initEntry(oldEntry.getName(),
-			   oldEntry.getDescription(),
-			   (Entry) newParent, request.getUser(),
-			   newResource, oldEntry.getCategory(),
-			   oldEntry.getEntryOrder(),
-			   oldEntry.getCreateDate(),
-			   new Date().getTime(),
-			   oldEntry.getStartDate(),
-			   oldEntry.getEndDate(),
-			   oldEntry.getValues());
+	initEntry(newEntry, oldEntry.getName(),
+		  oldEntry.getDescription(),
+		  newParent, request.getUser(),
+		  newResource, oldEntry.getCategory(),
+		  oldEntry.getEntryOrder(),
+		  oldEntry.getCreateDate(),
+		  new Date().getTime(),
+		  oldEntry.getStartDate(),
+		  oldEntry.getEndDate(),
+		  oldEntry.getValues());
 
 	newEntry.setParentEntry(getPathEntry(request,newParent,newEntry,pathTemplate));
+	parentageChanged(newEntry);
 	newEntry.setLocation(oldEntry);
 	newTypeHandler.initializeCopiedEntry(newEntry, oldEntry);
 
@@ -5378,6 +5399,7 @@ public class EntryManager extends RepositoryManager {
     private Result processEntryMove(Request request, Entry toGroup,
                                     List<Entry> entries)
 	throws Exception {
+	parentageChanged(entries);
         Connection connection = getDatabaseManager().getConnection();
         connection.setAutoCommit(false);
         Statement statement = connection.createStatement();
@@ -5400,6 +5422,7 @@ public class EntryManager extends RepositoryManager {
             connection.setAutoCommit(true);
 
 	    getRepository().checkMovedEntries(entries);
+	    parentageChanged(entries);
 
             return new Result(request.makeUrl(getRepository().URL_ENTRY_SHOW,
 					      ARG_ENTRYID, entries.get(0).getId()));
@@ -5672,10 +5695,10 @@ public class EntryManager extends RepositoryManager {
                     desc = textFromUser;
                 }
 
-                entry.initEntry(name, desc, parent, request.getUser(),
-                                new Resource(), "", 999,date.getTime(),
-                                date.getTime(), date.getTime(),
-                                date.getTime(), values);
+                initEntry(entry, name, desc, parent, request.getUser(),
+			  new Resource(), "", 999,date.getTime(),
+			  date.getTime(), date.getTime(),
+			  date.getTime(), values);
 
                 addNewEntry(request, entry);
                 //TODO - check for extra desc here
@@ -6638,11 +6661,11 @@ public class EntryManager extends RepositoryManager {
 		continue;
 	    }
 
-            entry.initEntry(entryName, description, parentEntry,
-                            request.getUser(), resource, category,
-			    entryOrder,
-                            createDate.getTime(), changeDate.getTime(),
-                            fromDate.getTime(), toDate.getTime(), null);
+            initEntry(entry, entryName, description, parentEntry,
+		      request.getUser(), resource, category,
+		      entryOrder,
+		      createDate.getTime(), changeDate.getTime(),
+		      fromDate.getTime(), toDate.getTime(), null);
 
 	    Element permissions  =XmlUtil.findChild(node,AccessManager.TAG_PERMISSIONS);
 	    if(permissions!=null) {
@@ -7800,7 +7823,7 @@ public class EntryManager extends RepositoryManager {
 
     /**
        This gets the search clauses in the request
-     */
+    */
     private List<Clause> getClauses(Request request) throws Exception {
         TypeHandler typeHandler = getRepository().getTypeHandler(request);
         List<Clause> clauses = typeHandler.assembleWhereClause(request);
@@ -7850,7 +7873,7 @@ public class EntryManager extends RepositoryManager {
 
     /**
        This bypasses the lucene search and does a search directly in the database
-     */
+    */
     public List<Entry> getEntriesFromDb(Request request) 
 	throws Exception {
 	return getEntriesFromDb(request, getClauses(request), (TypeHandler)null);
@@ -7865,7 +7888,7 @@ public class EntryManager extends RepositoryManager {
 
 
     private List<Entry> getEntries(Request request, List<Clause> clauses,
-				  TypeHandler typeHandler,boolean luceneOk)
+				   TypeHandler typeHandler,boolean luceneOk)
 	throws Exception {	
         List<Entry> allEntries    = new ArrayList<Entry>();
 	boolean didSearch = false;
@@ -8122,7 +8145,7 @@ public class EntryManager extends RepositoryManager {
 
         //Is it a ramadda managed file?
         if (IO.isADescendent(getStorageManager().getRepositoryDir(),
-                                 newFile)) {
+			     newFile)) {
             resourceType = Resource.TYPE_STOREDFILE;
         } else {
             resourceType = Resource.TYPE_LOCAL_FILE;
@@ -8180,10 +8203,9 @@ public class EntryManager extends RepositoryManager {
 
 
         Date  dttm  = new Date();
-        entry.initEntry(name, description, group, request.getUser(), resource,
-                        "", Entry.DEFAULT_ORDER, dttm.getTime(), dttm.getTime(),
-                        dttm.getTime(), dttm.getTime(), null);
-
+        initEntry(entry, name, description, group, request.getUser(), resource,
+		  "", Entry.DEFAULT_ORDER, dttm.getTime(), dttm.getTime(),
+		  dttm.getTime(), dttm.getTime(), null);
         if (initializer != null) {
             initializer.initEntry(entry);
         }
@@ -8521,7 +8543,7 @@ public class EntryManager extends RepositoryManager {
                 }
 
             }
-    }
+	}
 
 
 
@@ -8996,7 +9018,7 @@ public class EntryManager extends RepositoryManager {
      * @param orNot _more_
      */
     public void orNot(List<Entry> entries, Entry entry, boolean flag,
-                       boolean orNot) {
+		      boolean orNot) {
         if (orNot) {
             if ( !flag) {
                 entries.add(entry);
@@ -9306,7 +9328,7 @@ public class EntryManager extends RepositoryManager {
        Get the children entries. If there is an error then log it and return an empty list
        We have this because the getChildren call can throw an error (e.g., Bad
        AWS S3 credentials) and this can block critical user things (menus, etc);
-     */
+    */
     public List<Entry> getChildrenSafe(Request request, Entry parentEntry) {
 	try {
 	    return getChildren(request, parentEntry);
@@ -9445,6 +9467,16 @@ public class EntryManager extends RepositoryManager {
 
 
 
+    private void parentageChanged(List<Entry> entries) {
+	for(Entry entry: entries) parentageChanged(entry.getParentEntry());
+    }
+
+    private void parentageChanged(Entry parent) {
+	if(parent!=null) {
+	    childrenCache.remove(parent.getId());
+	}
+    }
+
     /**
      * _more_
      *
@@ -9462,7 +9494,20 @@ public class EntryManager extends RepositoryManager {
         List<Clause> where = ((select == null)
                               ? null
                               : select.getWhere());
-        List<String> ids   = new ArrayList<String>();
+
+	boolean haveWhere = where!=null && where.size()>0;
+        List<String> ids   = null;
+	if(!haveWhere) {
+	    //Check the children cache when there is a clause
+	    ids   = childrenCache.get(group.getId());
+	    if(ids!=null) {
+		return ids;
+	    }
+	}
+
+
+	if(ids==null)
+	    ids   = new ArrayList<String>();
         if (where != null) {
             where = new ArrayList<Clause>(where);
         } else {
@@ -9487,6 +9532,11 @@ public class EntryManager extends RepositoryManager {
             }
             ids.add(id);
         }
+
+	if(!haveWhere) {
+	    //cache the results
+	    childrenCache.put(group.getId(), ids);
+	}
 
         return ids;
     }
@@ -10033,9 +10083,14 @@ public class EntryManager extends RepositoryManager {
         }
 
 
+	//Check if the name is an ID
+	Entry entry =   getEntry(request, name);
+	if(entry!=null) return entry;
+
         String fullPath = ((parent == null)
                            ? ""
                            : parent.getFullName()) + Entry.IDDELIMITER + name;
+
         Entry  group    = getGroupFromCache(fullPath, false);
         if (group != null) {
             return group;
@@ -10734,13 +10789,13 @@ public class EntryManager extends RepositoryManager {
             if (firstCall) {
                 children.add(new Descendent(entry));
 		/*
-                children.add(new Object[] {
-			entry.getId(), entry.getTypeHandler().getType(),
-			entry.getResource().getPath(),
-			entry.getResource().getType(),
-			entry.getTypeHandler().getEntryValues(entry),
-			entry.getParentEntry()
-		    });
+		  children.add(new Object[] {
+		  entry.getId(), entry.getTypeHandler().getType(),
+		  entry.getResource().getPath(),
+		  entry.getResource().getType(),
+		  entry.getTypeHandler().getEntryValues(entry),
+		  entry.getParentEntry()
+		  });
 		*/
             }
             if ( !entry.isGroup()) {
@@ -10768,13 +10823,13 @@ public class EntryManager extends RepositoryManager {
 			continue;
                     children.add(new Descendent(childEntry));
 		    /*
-                    children.add(new Object[] {
-			    childId, childEntry.getType(),
-			    childEntry.getResource().getPath(),
-			    childEntry.getResource().getType(),
-			    entry.getTypeHandler().getEntryValues(entry),
-			    entry.getParentEntry()
-			});
+		      children.add(new Object[] {
+		      childId, childEntry.getType(),
+		      childEntry.getResource().getPath(),
+		      childEntry.getResource().getType(),
+		      entry.getTypeHandler().getEntryValues(entry),
+		      entry.getParentEntry()
+		      });
 		    */
                     if (childEntry.isGroup()) {
                         children.addAll(getDescendents(request,
@@ -10826,11 +10881,11 @@ public class EntryManager extends RepositoryManager {
                 children.add(new Descendent(childEntry));
 		/*
 
-                children.add(new Object[] {
-			childId, childType, resource, resourceType,
-			childEntry.getTypeHandler().getEntryValues(childEntry),
-			childEntry.getParentEntry()
-		    });
+		  children.add(new Object[] {
+		  childId, childType, resource, resourceType,
+		  childEntry.getTypeHandler().getEntryValues(childEntry),
+		  childEntry.getParentEntry()
+		  });
 		*/
                 children.addAll(getDescendents(request,
 					       (List<Entry>) Misc.newList(childEntry), connection,
@@ -11313,18 +11368,25 @@ public class EntryManager extends RepositoryManager {
      * @return _more_
      */
     public String getEntryUrl(Request request, Entry entry) {
+	return getEntryUrl(request, entry, true);
+    }
+
+    public String getEntryUrl(Request request, Entry entry, boolean aliasOk) {
         try {
-            List<Metadata> metadataList =
-                getMetadataManager().findMetadata(request, entry,
-						  new String[]{ContentMetadataHandler.TYPE_ALIAS}, false);
-            if ((metadataList != null) && (metadataList.size() > 0)) {
-                for (Metadata metadata : metadataList) {
-                    String alias = metadata.getAttr1();
-                    if ( !alias.startsWith("http:")) {
-                        return getRepository().getUrlBase() + "/a/" + alias;
-                    }
-                }
-            }
+	    if(aliasOk) {
+		//		System.err.println("getEntryUrl:" + entry.getName());
+		List<Metadata> metadataList =  getMetadataManager().findMetadata(request, entry,
+										 new String[]{ContentMetadataHandler.TYPE_ALIAS}, false);
+		if ((metadataList != null) && (metadataList.size() > 0)) {
+		    for (Metadata metadata : metadataList) {
+			if(!metadata.isType(ContentMetadataHandler.TYPE_ALIAS)) continue;
+			String alias = metadata.getAttr1();
+			if ( !alias.startsWith("http:")) {
+			    return getRepository().getUrlBase() + "/a/" + alias;
+			}
+		    }
+		}
+	    }
 
             if (request == null) {
                 request = getRepository().getTmpRequest();
