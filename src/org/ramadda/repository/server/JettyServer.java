@@ -5,6 +5,8 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.server;
 
+import org.ramadda.repository.Constants;
+import org.ramadda.repository.Repository;
 
 
 
@@ -24,18 +26,16 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.security.Constraint;
 
-import org.ramadda.repository.Constants;
-import org.ramadda.repository.Repository;
 
 import ucar.unidata.util.LogUtil;
 
 import java.io.File;
-
 import java.util.Hashtable;
 import java.util.Properties;
 
@@ -85,8 +85,6 @@ public class JettyServer implements Constants {
             if (args[i].equals("-port")) {
                 hadPort = true;
                 port    = Integer.parseInt(args[i + 1]);
-                //              System.err.println("port args:" + port);
-                //Keep looping so we get the last -port in the arg list
             }
         }
 
@@ -111,10 +109,6 @@ public class JettyServer implements Constants {
         mappingEnableEverythingButTrace.setConstraint(constraintEnabledEverythingButTrace);
         constraintSecurityHandler.addConstraintMapping(mappingEnableEverythingButTrace);
 
-
-
-
-
         GzipHandler gzipHandler = new GzipHandler();
         //        gzipHandler.addIncludedMimeTypes("application/vnd.google-earth.kml+xml","application/vnd.google-earth.kmz");
         gzipHandler.addIncludedMethods("GET", "POST");
@@ -128,7 +122,17 @@ public class JettyServer implements Constants {
         }
         baseRepository.setPort(port);
         sslPort = baseRepository.getHttpsPort();
-        server  = new Server(port);
+	QueuedThreadPool threadPool = new QueuedThreadPool();
+	int threads = baseRepository.getProperty("ramadda.server.threadcount",-1);
+	if(threads>0) {
+	    System.err.println("RAMADDA: #threads:" + threads);
+	    threadPool.setMaxThreads(threads);
+	}
+        server  = new Server(threadPool);
+        HttpConfiguration httpConfig = new HttpConfiguration();
+	ServerConnector http = new ServerConnector(server, new HttpConnectionFactory(httpConfig));
+	http.setPort(port);
+	server.addConnector(http);
         server.setHandler(context);
 
         context.addServlet(new ServletHolder(baseServlet), "/");
@@ -136,7 +140,7 @@ public class JettyServer implements Constants {
             initSsl(server, baseServlet.getRepository());
         } catch (Throwable exc) {
             baseServlet.getRepository().getLogManager().logError(
-                "SSL: error opening ssl connection", exc);
+								 "SSL: error opening ssl connection", exc);
         }
         server.start();
         server.join();
@@ -164,7 +168,7 @@ public class JettyServer implements Constants {
         String[]   cmdLineArgs = args;
 
         return addServlet(new RepositoryServlet(this, cmdLineArgs, port,
-                properties));
+						properties));
     }
 
 
@@ -178,7 +182,7 @@ public class JettyServer implements Constants {
      * @throws Exception _more_
      */
     public RepositoryServlet addServlet(RepositoryServlet servlet)
-            throws Exception {
+	throws Exception {
         Repository    repository = servlet.getRepository();
         String        path       = repository.getUrlBase();
         ServletHolder holder     = new ServletHolder(servlet);
@@ -211,18 +215,18 @@ public class JettyServer implements Constants {
      * @throws Throwable _more_
      */
     protected void initSsl(Server server, Repository repository)
-            throws Throwable {
+	throws Throwable {
 
         File keystore =
             new File(repository.getPropertyValue(PROP_SSL_KEYSTORE,
-                repository.getStorageManager().getRepositoryDir()
-                + "/keystore.jks", false));
+						 repository.getStorageManager().getRepositoryDir()
+						 + "/keystore.jks", false));
 
         if ( !keystore.exists()) {
             keystore =
                 new File(repository.getPropertyValue(PROP_SSL_KEYSTORE,
-                    repository.getStorageManager().getRepositoryDir()
-                    + "/keystore", false));
+						     repository.getStorageManager().getRepositoryDir()
+						     + "/keystore", false));
         }
 
 
@@ -239,23 +243,23 @@ public class JettyServer implements Constants {
         //        repository.getLogManager().logInfo("SSL: using keystore: " + keystore);
 
         String password = repository.getPropertyValue(PROP_SSL_PASSWORD,
-                              (String) null, false);
+						      (String) null, false);
         String keyPassword = repository.getPropertyValue(PROP_SSL_PASSWORD,
-                                 password, false);
+							 password, false);
         if (password == null) {
             repository.getLogManager().logInfo(
-                "SSL: no password and keypassword property defined");
+					       "SSL: no password and keypassword property defined");
 
             /*
-            repository.getLogManager().logInfoAndPrint(
-                "SSL: define the properties:\n\t" + PROP_SSL_PASSWORD
-                + "=<the ssl password>\n" + "\t" + PROP_SSL_KEYPASSWORD
-                + "=<the key password>\n"
-                + "in some .properties file (e.g., \"ssl.properties\") in the RAMADDA directory:"
-                + repository.getStorageManager().getRepositoryDir()
-                + "\nor as a System property on the java command line:"
-                + "-D" + PROP_SSL_PASSWORD + "=<the ssl password>  " + "-D"
-                + PROP_SSL_KEYPASSWORD + "=<the key password>");
+	      repository.getLogManager().logInfoAndPrint(
+	      "SSL: define the properties:\n\t" + PROP_SSL_PASSWORD
+	      + "=<the ssl password>\n" + "\t" + PROP_SSL_KEYPASSWORD
+	      + "=<the key password>\n"
+	      + "in some .properties file (e.g., \"ssl.properties\") in the RAMADDA directory:"
+	      + repository.getStorageManager().getRepositoryDir()
+	      + "\nor as a System property on the java command line:"
+	      + "-D" + PROP_SSL_PASSWORD + "=<the ssl password>  " + "-D"
+	      + PROP_SSL_KEYPASSWORD + "=<the key password>");
             */
             return;
         }
@@ -264,20 +268,20 @@ public class JettyServer implements Constants {
 
         if (sslPort < 0) {
             repository.getLogManager().logInfoAndPrint(
-                "SSL: no ssl port defined. not creating ssl connection");
+						       "SSL: no ssl port defined. not creating ssl connection");
             repository.getLogManager().logInfoAndPrint(
-                "SSL: define the property:\n\t" + PROP_SSL_PORT
-                + "=<the ssl port>\n"
-                + "in some .properties file (e.g., \"ssl.properties\") in the RAMADDA directory:"
-                + repository.getStorageManager().getRepositoryDir()
-                + "\nor as a System property on the java command line:"
-                + "-D" + PROP_SSL_PORT + "=<the ssl port>");
+						       "SSL: define the property:\n\t" + PROP_SSL_PORT
+						       + "=<the ssl port>\n"
+						       + "in some .properties file (e.g., \"ssl.properties\") in the RAMADDA directory:"
+						       + repository.getStorageManager().getRepositoryDir()
+						       + "\nor as a System property on the java command line:"
+						       + "-D" + PROP_SSL_PORT + "=<the ssl port>");
 
             return;
         }
 
         repository.getLogManager().logInfo(
-            "SSL: creating ssl connection on port:" + sslPort);
+					   "SSL: creating ssl connection on port:" + sslPort);
         HttpConfiguration httpConfig = new HttpConfiguration();
         httpConfig.setSecureScheme("https");
         httpConfig.setSecurePort(sslPort);
@@ -290,78 +294,77 @@ public class JettyServer implements Constants {
         sslContextFactory.setKeyManagerPassword(keyPassword);
 
         String certAlias = repository.getPropertyValue(PROP_SSL_CERTALIAS,
-                               (String) null, false);
+						       (String) null, false);
         if (certAlias != null) {
             sslContextFactory.setCertAlias(certAlias);
         }
 
 
         sslContextFactory.setIncludeCipherSuites(
-            "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
-            "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
-            "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
-            "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
-            "TLS_DHE_RSA_WITH_AES_128_GCM_SHA256",
-            "TLS_DHE_DSS_WITH_AES_128_GCM_SHA256",
-            "TLS_DHE_DSS_WITH_AES_256_GCM_SHA384",
-            "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384",
-            "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
-            "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256",
-            "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
-            "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA",
-            "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384",
-            "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384",
-            "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA",
-            "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA",
-            "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256",
-            "TLS_DHE_RSA_WITH_AES_128_CBC_SHA",
-            "TLS_DHE_DSS_WITH_AES_128_CBC_SHA256",
-            "TLS_DHE_RSA_WITH_AES_256_CBC_SHA256",
-            "TLS_DHE_DSS_WITH_AES_256_CBC_SHA",
-            "TLS_DHE_RSA_WITH_AES_256_CBC_SHA",
-            "TLS_RSA_WITH_AES_128_GCM_SHA256",
-            "TLS_RSA_WITH_AES_256_GCM_SHA384",
-            "TLS_RSA_WITH_AES_128_CBC_SHA256",
-            "TLS_RSA_WITH_AES_256_CBC_SHA256",
-            "TLS_RSA_WITH_AES_128_CBC_SHA", "TLS_RSA_WITH_AES_256_CBC_SHA",
-            "TLS_SRP_SHA_DSS_WITH_AES_256_CBC_SHA",
-            "TLS_SRP_SHA_RSA_WITH_AES_256_CBC_SHA",
-            "TLS_SRP_SHA_WITH_AES_256_CBC_SHA",
-            "TLS_DHE_DSS_WITH_AES_256_CBC_SHA256",
-            "TLS_SRP_SHA_DSS_WITH_AES_128_CBC_SHA",
-            "TLS_SRP_SHA_RSA_WITH_AES_128_CBC_SHA",
-            "TLS_SRP_SHA_WITH_AES_128_CBC_SHA",
-            "TLS_DHE_DSS_WITH_AES_128_CBC_SHA",
-            "TLS_DHE_RSA_WITH_CAMELLIA_256_CBC_SHA",
-            "TLS_DHE_DSS_WITH_CAMELLIA_256_CBC_SHA",
-            "TLS_RSA_WITH_CAMELLIA_256_CBC_SHA",
-            "TLS_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA",
-            "TLS_DHE_DSS_WITH_CAMELLIA_128_CBC_SHA",
-            "TLS_RSA_WITH_CAMELLIA_128_CBC_SHA");
+						 "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+						 "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+						 "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+						 "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+						 "TLS_DHE_RSA_WITH_AES_128_GCM_SHA256",
+						 "TLS_DHE_DSS_WITH_AES_128_GCM_SHA256",
+						 "TLS_DHE_DSS_WITH_AES_256_GCM_SHA384",
+						 "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384",
+						 "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+						 "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256",
+						 "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
+						 "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA",
+						 "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384",
+						 "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384",
+						 "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA",
+						 "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA",
+						 "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256",
+						 "TLS_DHE_RSA_WITH_AES_128_CBC_SHA",
+						 "TLS_DHE_DSS_WITH_AES_128_CBC_SHA256",
+						 "TLS_DHE_RSA_WITH_AES_256_CBC_SHA256",
+						 "TLS_DHE_DSS_WITH_AES_256_CBC_SHA",
+						 "TLS_DHE_RSA_WITH_AES_256_CBC_SHA",
+						 "TLS_RSA_WITH_AES_128_GCM_SHA256",
+						 "TLS_RSA_WITH_AES_256_GCM_SHA384",
+						 "TLS_RSA_WITH_AES_128_CBC_SHA256",
+						 "TLS_RSA_WITH_AES_256_CBC_SHA256",
+						 "TLS_RSA_WITH_AES_128_CBC_SHA", "TLS_RSA_WITH_AES_256_CBC_SHA",
+						 "TLS_SRP_SHA_DSS_WITH_AES_256_CBC_SHA",
+						 "TLS_SRP_SHA_RSA_WITH_AES_256_CBC_SHA",
+						 "TLS_SRP_SHA_WITH_AES_256_CBC_SHA",
+						 "TLS_DHE_DSS_WITH_AES_256_CBC_SHA256",
+						 "TLS_SRP_SHA_DSS_WITH_AES_128_CBC_SHA",
+						 "TLS_SRP_SHA_RSA_WITH_AES_128_CBC_SHA",
+						 "TLS_SRP_SHA_WITH_AES_128_CBC_SHA",
+						 "TLS_DHE_DSS_WITH_AES_128_CBC_SHA",
+						 "TLS_DHE_RSA_WITH_CAMELLIA_256_CBC_SHA",
+						 "TLS_DHE_DSS_WITH_CAMELLIA_256_CBC_SHA",
+						 "TLS_RSA_WITH_CAMELLIA_256_CBC_SHA",
+						 "TLS_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA",
+						 "TLS_DHE_DSS_WITH_CAMELLIA_128_CBC_SHA",
+						 "TLS_RSA_WITH_CAMELLIA_128_CBC_SHA");
 
         sslContextFactory.setExcludeCipherSuites(
-            "SSL_RSA_WITH_3DES_EDE_CBC_SHA", "SSL_DHE_RSA_WITH_DES_CBC_SHA",
-            "SSL_DHE_DSS_WITH_DES_CBC_SHA", "EXP-RC4-MD5",
-            "EDH-RSA-DES-CBC-SHA", "EXP-EDH-RSA-DESCBC-SHA", "DES-CBC-SHA",
-            "EXP-DES-CBC-SHA", "TLS_DHE_RSA_WITH_AES_128_CBC_SHA",
-            "TLS_DHE_RSA_WITH_AES_256_CBC_SHA");
+						 "SSL_RSA_WITH_3DES_EDE_CBC_SHA", "SSL_DHE_RSA_WITH_DES_CBC_SHA",
+						 "SSL_DHE_DSS_WITH_DES_CBC_SHA", "EXP-RC4-MD5",
+						 "EDH-RSA-DES-CBC-SHA", "EXP-EDH-RSA-DESCBC-SHA", "DES-CBC-SHA",
+						 "EXP-DES-CBC-SHA", "TLS_DHE_RSA_WITH_AES_128_CBC_SHA",
+						 "TLS_DHE_RSA_WITH_AES_256_CBC_SHA");
 
         sslContextFactory.setExcludeProtocols("SSLv3");
 
 
         sslContextFactory.setRenegotiationAllowed(false);
 
-
         HttpConfiguration httpsConfig = new HttpConfiguration(httpConfig);
         httpsConfig.addCustomizer(new SecureRequestCustomizer());
 
         ServerConnector httpsConnector =
             new ServerConnector(
-                server,
-                new SslConnectionFactory(
-                    sslContextFactory,
-                    HttpVersion.HTTP_1_1
-                        .asString()), new HttpConnectionFactory(httpsConfig));
+				server,
+				new SslConnectionFactory(
+							 sslContextFactory,
+							 HttpVersion.HTTP_1_1
+							 .asString()), new HttpConnectionFactory(httpsConfig));
         httpsConnector.setPort(sslPort);
         httpsConnector.setIdleTimeout(500000);
         server.addConnector(httpsConnector);
@@ -380,12 +383,9 @@ public class JettyServer implements Constants {
         try {
             JettyServer mds = new JettyServer(args);
         } catch (Exception exc) {
-            LogUtil.printExceptionNoGui(null, "Error in main",
-                                        LogUtil.getInnerException(exc));
+            LogUtil.printExceptionNoGui(null, "Error in main",  LogUtil.getInnerException(exc));
             System.exit(1);
         }
     }
-
-
 
 }
