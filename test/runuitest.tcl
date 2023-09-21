@@ -4,6 +4,15 @@ set ::mydir [file dirname [file normalize [info script]]]
 set ::root https://ramadda.org/repository
 source $::mydir/uitest.tcl
 
+set ::urlsfp [open testurls.txt w]
+
+proc writeUrl {url {desc ""}} {
+    if {$desc!=""} {
+	puts $::urlsfp "#$desc"
+    }
+    puts $::urlsfp $url
+    flush $::urlsfp
+}
 
 proc runGroup {group id {groupLimit 10000}} {
     write "</div>\n"
@@ -14,6 +23,7 @@ proc runGroup {group id {groupLimit 10000}} {
 	set url "$::root/entry/show?ascending=true&orderby=name&entryid=${id}&output=default.csv&fields=name,id&showheader=false&showheader=false"
     }
     puts stderr "group: $group $url"
+    writeUrl $url CSV
     set csv [getUrl $url]
     regsub -all { } $group _ _group
     foreach line2 [split $csv "\n"] {
@@ -21,6 +31,7 @@ proc runGroup {group id {groupLimit 10000}} {
 	if {$line2==""} continue;
 	foreach     {name id} [split $line2 ,] break
 	set url "$::root/entry/show?entryid=$id#fortest"
+	writeUrl $url $name
 	capture $_group $name $url
     }
 }
@@ -103,6 +114,7 @@ if {[llength $urls]} {
 } else {
 #Run with the default ramadda.org entries
     runGroup "Data List" 5ec45056-fe82-4d98-a9c4-4f1da94be8b0
+    runGroup "Earth Science" 624d4236-ac54-4566-ad5c-f46acdb26ee1
     runGroup "IMDV" aa5c104c-0c85-4937-86b1-7daf5e7dda28
     runGroup "Charts" 3ebcb4f4-fa4d-4fb3-9ede-d42ec7e0aa9d
     runGroup "Maps" 1d0fa3f5-407e-4a39-a3da-9a5ed7e1e687
