@@ -102,6 +102,11 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
 
     /** _more_ */
+    public static int openCnt = 0;
+
+
+
+    /** _more_ */
     private long myTime = System.currentTimeMillis();
 
     /** _more_ */
@@ -929,17 +934,33 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     private Connection getConnection(String msg) throws Exception {
         try {
 	    //	    System.err.println("get connection:" + Utils.getStack(5,null,true));
-            Connection connection;
-            synchronized (CONNECTION_MUTEX) {
-                BasicDataSource tmpDataSource = dataSource;
-                if (tmpDataSource == null) {
-                    throw new IllegalStateException(
-						    "DatabaseManager: dataSource is null");
-                }
-                openCnt--;
-                connection = tmpDataSource.getConnection();
-            }
-            return connection;
+            Connection connection = null;
+	    BasicDataSource tmpDataSource = dataSource;
+	    if (tmpDataSource == null) {
+		throw new IllegalStateException(
+						"DatabaseManager: dataSource is null");
+	    }
+
+	    int tries = 10;
+	    int sleep = 50;
+	    Exception lastException=null;
+	    while(true) {
+		synchronized (CONNECTION_MUTEX) {
+		    try {
+			connection = tmpDataSource.getConnection();
+			if(connection!=null) return connection;
+		    } catch(Exception exc) {
+			lastException = exc;
+			Misc.sleep(sleep);
+			sleep+=50;
+			System.err.println("DatabaseManager.getConnection: had error and backing off:"+ exc);
+		    }
+		    if(tries--<=0) break;
+		}
+	    }
+	    if(lastException==null)
+		lastException = new IllegalStateException("Unable to get database connection");
+	    throw lastException;
         } catch (Exception exc) {
             System.err.println("DatabaseManager: Error in getConnection.\n"+exc);
             StringBuffer sb = new StringBuffer();
@@ -955,7 +976,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     public void printIt() {
         System.err.println("active:" + dataSource.getNumActive());
         System.err.println("idle:" + dataSource.getNumIdle());
-        //        System.err.println ("Open cnt:" + openCnt);
         for (ConnectionInfo info : getConnectionInfos()) {
             System.out.println("*******************");
             System.out.println(info);
@@ -995,8 +1015,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
             try {
                 synchronized (CONNECTION_MUTEX) {
-                    openCnt--;
-                    //                    System.err.println("close:" + (openCnt)); 
                     connection.close();
                 }
             } catch (Exception ignore) {}
@@ -1005,9 +1023,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             getLogManager().logError("Closing connections", exc);
         }
     }
-
-    /** _more_ */
-    public static int openCnt = 0;
 
 
     /**
