@@ -79,11 +79,10 @@ public class CensusApiHandler extends RepositoryManager implements RequestHandle
      * @throws Exception on badness
      */
     public Result processVariableApi(Request request) throws Exception {
-        boolean asJson = request.getString(ARG_OUTPUT, "").equals("json");
-
-        String               text    = request.getString(NAME_TEXT, "");
+        boolean asJson = request.getSanitizedString(ARG_OUTPUT, "").equals("json");
+        String               text    = request.getSanitizedString(NAME_TEXT, "");
         List<CensusVariable> matches = new ArrayList<CensusVariable>();
-	String  ignore = request.getString(NAME_IGNORE,"margin of error");
+	String  ignore = request.getSanitizedString(NAME_IGNORE,"margin of error");
         if (Utils.stringDefined(text)) {
             matches = processSearch(request, text,ignore);
         }
@@ -173,7 +172,7 @@ public class CensusApiHandler extends RepositoryManager implements RequestHandle
      * @throws Exception _more_
      */
     public Result processStatesApi(Request request) throws Exception {
-        String        stateId = request.getString("state", (String) null);
+        String        stateId = request.getSanitizedString("state", null);
         StringBuilder sb      = new StringBuilder();
 
         List<Place>   places  = null;
@@ -181,7 +180,7 @@ public class CensusApiHandler extends RepositoryManager implements RequestHandle
             Place state = GeoResource.RESOURCE_STATES.getPlace(stateId);
             if (state == null) {
 		getPageHandler().sectionOpen(request, sb, "Census Counties List",false);
-                sb.append("Unknown state:" + stateId);
+                sb.append(getPageHandler().showDialogError("Unknown state:" + stateId));
             } else {
 		getPageHandler().sectionOpen(request, sb, "Census Counties List for "+ state.getName(),false);
                 places = new ArrayList<Place>();
