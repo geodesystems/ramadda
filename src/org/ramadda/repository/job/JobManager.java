@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2023 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.repository.job;
@@ -36,6 +36,7 @@ import org.ramadda.util.sql.SqlUtil;
 
 import org.w3c.dom.*;
 
+import ucar.unidata.util.Misc;
 import ucar.unidata.util.Trace;
 import ucar.unidata.xml.XmlUtil;
 
@@ -69,12 +70,13 @@ public class JobManager extends RepositoryManager {
 
     /** _more_ */
     public final RequestUrl URL_SERVICES_LIST = new RequestUrl(this,
-                                                    "/services/list");
+							       "/services/list");
 
     /** _more_ */
     public final RequestUrl URL_SERVICES_VIEW = new RequestUrl(this,
-                                                    "/services/view");
+							       "/services/view");
 
+    private int jobLimit;
 
     /** _more_ */
     private long myTime = System.currentTimeMillis();
@@ -129,7 +131,7 @@ public class JobManager extends RepositoryManager {
 
     /** _more_ */
     private Hashtable<String, Service> serviceMap = new Hashtable<String,
-                                                        Service>();
+	Service>();
 
     /** _more_ */
     private List<Service> services = new ArrayList<Service>();
@@ -146,12 +148,12 @@ public class JobManager extends RepositoryManager {
 
     /** _more_ */
     private TTLCache<Object, JobInfo> jobCache = new TTLCache<Object,
-                                                     JobInfo>(60 * 24 * 60
-                                                         * 1000);
+	JobInfo>(60 * 24 * 60
+		 * 1000);
 
     /** _more_ */
     private Hashtable<Object, JobInfo> runningJobs = new Hashtable<Object,
-                                                         JobInfo>();
+	JobInfo>();
 
 
     /**
@@ -162,6 +164,7 @@ public class JobManager extends RepositoryManager {
      */
     public JobManager(Repository repository) {
         super(repository);
+	jobLimit = repository.getProperty("ramadda.job.limit",100);
     }
 
 
@@ -217,8 +220,8 @@ public class JobManager extends RepositoryManager {
         Request request      = getRepository().getTmpRequest();
         Entry   serviceEntry = getEntryManager().getEntry(request, id);
         if ((serviceEntry != null)
-                && (serviceEntry.getTypeHandler()
-                    instanceof ServiceTypeHandler)) {
+	    && (serviceEntry.getTypeHandler()
+		instanceof ServiceTypeHandler)) {
             ServiceTypeHandler serviceType =
                 (ServiceTypeHandler) serviceEntry.getTypeHandler();
 
@@ -263,13 +266,13 @@ public class JobManager extends RepositoryManager {
                 }
                 int numThreads =
                     Math.max(1, getRepository().getProperty(PROP_NUMTHREADS,
-                        6));
+							    6));
                 //Runtime.getRuntime().availableProcessors() / 2));
 
                 System.err.println(
-                    "RAMADDA JobManager: #threads: " + numThreads
-                    + " available cores:"
-                    + Runtime.getRuntime().availableProcessors());
+				   "RAMADDA JobManager: #threads: " + numThreads
+				   + " available cores:"
+				   + Runtime.getRuntime().availableProcessors());
                 executor = Executors.newFixedThreadPool(numThreads);
             }
         }
@@ -318,8 +321,8 @@ public class JobManager extends RepositoryManager {
         JobInfo jobInfo = (JobInfo) getRepository().decodeObject(blob);
         if (jobInfo != null) {
             jobInfo.setTheEntry(
-                getEntryManager().getEntry(
-                    getRepository().getTmpRequest(), jobInfo.getEntryId()));
+				getEntryManager().getEntry(
+							   getRepository().getTmpRequest(), jobInfo.getEntryId()));
         }
 
         return jobInfo;
@@ -387,17 +390,17 @@ public class JobManager extends RepositoryManager {
                 getRepository().getRepository().encodeObject(jobInfo);
             if (newOne) {
                 String insert = SqlUtil.makeInsert(JobInfo.DB_TABLE,
-                                    JobInfo.DB_COLUMNS);
+						   JobInfo.DB_COLUMNS);
                 getDatabaseManager().executeInsert(insert, new Object[] {
-                    jobInfo.getJobId(), jobInfo.getEntryId(), new Date(),
-                    jobInfo.getUser(), jobInfo.getType(), blob
-                });
+			jobInfo.getJobId(), jobInfo.getEntryId(), new Date(),
+			jobInfo.getUser(), jobInfo.getType(), blob
+		    });
             } else {
                 getDatabaseManager().update(
-                    JobInfo.DB_TABLE, JobInfo.DB_COL_ID,
-                    jobInfo.getJobId().toString(),
-                    new String[] { JobInfo.DB_COL_JOB_INFO_BLOB },
-                    new Object[] { blob });
+					    JobInfo.DB_TABLE, JobInfo.DB_COL_ID,
+					    jobInfo.getJobId().toString(),
+					    new String[] { JobInfo.DB_COL_JOB_INFO_BLOB },
+					    new Object[] { blob });
             }
         } catch (Exception exc) {
             throw new RuntimeException(exc);
@@ -520,7 +523,7 @@ public class JobManager extends RepositoryManager {
      * @throws Throwable _more_
      */
     public void invokeAndWait(Request request, Callable<Boolean> callable)
-            throws Throwable {
+	throws Throwable {
         List<Callable<Boolean>> callables =
             new ArrayList<Callable<Boolean>>();
         callables.add(callable);
@@ -541,19 +544,26 @@ public class JobManager extends RepositoryManager {
      *
      * @return _more_
      */
-    public boolean canAcceptJob() {
-        return currentJobs <= 10;
+    private boolean canAcceptJob() {
+        return currentJobs <= jobLimit;
     }
 
     /**
-     * _more_
+     * If more than jobLimit # of jobs is running then this pauses at most 10 seconds
+     * Then it throws an error if still can't run the job
      */
     public void checkNewJobOK() {
-        if ( !canAcceptJob()) {
-            throw new IllegalStateException(
-                "RAMADDA: Too many outstanding processing jobs");
+	int tries = 1000;
+	while(!canAcceptJob() && tries-->0) {
+	    Misc.sleep(10);
+	}
+
+	if(tries<=0) {
+            throw new IllegalStateException("JobManager: Too many outstanding processing jobs");
         }
     }
+
+    private long callCnt=0;
 
     /**
      * execute the list of callables in the executor thread pool
@@ -568,32 +578,32 @@ public class JobManager extends RepositoryManager {
      */
     public void invokeAndWait(Request request,
                               List<Callable<Boolean>> callables)
-            throws Throwable {
-	if(callables.size()==1) {
-	    callables.get(0).call();
-	    return;
-	}
-
-
+	throws Throwable {
         checkNewJobOK();
         try {
             synchronized (MUTEX) {
+		callCnt++;
                 currentJobs++;
             }
-	    List<Future<Boolean>> results =
-		getExecutor().invokeAll(callables);
-	    for (Future future : results) {
-		try {
-		    future.get();
-		} catch (ExecutionException ex) {
-		    throw ex.getCause();
+	    //If only 1 job then run in this thread
+	    if(callables.size()==1) {
+		callables.get(0).call();
+	    } else {
+		List<Future<Boolean>> results =	getExecutor().invokeAll(callables);
+		for (Future future : results) {
+		    try {
+			future.get();
+		    } catch (ExecutionException ex) {
+			throw ex.getCause();
+		    }
 		}
-            }
-        } finally {
-            synchronized (MUTEX) {
+	    }
+	} finally {
+	    synchronized (MUTEX) {
                 currentJobs--;
                 totalJobs++;
             }
+	    //	    if((callCnt%100)==0)System.err.println("JobManager:" + (callCnt++) +" " + currentJobs);
         }
     }
 
@@ -605,7 +615,7 @@ public class JobManager extends RepositoryManager {
      * @throws Throwable _more_
      */
     public void invokeAllAndWait(List<Callable<Boolean>> callables)
-            throws Throwable {
+	throws Throwable {
         ExecutorService executor =
             Executors.newFixedThreadPool(callables.size());
         List<Future<Boolean>> results = executor.invokeAll(callables);
@@ -630,7 +640,7 @@ public class JobManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result handleJobStatusRequest(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         String jobId = request.getString(JobInfo.ARG_JOB_ID, (String) null);
         StringBuffer sb      = new StringBuffer();
         StringBuffer xml     = new StringBuffer();
@@ -644,8 +654,8 @@ public class JobManager extends RepositoryManager {
             if (request.responseAsXml()) {
                 xml.append(XmlUtil.tag(TAG_JOB,
                                        XmlUtil.attrs(new String[] {
-                                           JobManager.ATTR_STATUS,
-                                           STATUS_CANCELLED })));
+					       JobManager.ATTR_STATUS,
+					       STATUS_CANCELLED })));
 
                 return makeRequestOKResult(request, jobInfo, xml.toString());
             }
@@ -707,26 +717,26 @@ public class JobManager extends RepositoryManager {
             StringBuffer serviceSB = new StringBuffer();
 
             serviceSB.append(
-                HtmlUtils.open(
-                    HtmlUtils.TAG_DIV,
-                    HtmlUtils.cssClass("service-list-service")));
+			     HtmlUtils.open(
+					    HtmlUtils.TAG_DIV,
+					    HtmlUtils.cssClass("service-list-service")));
             serviceSB.append(img);
             serviceSB.append(" ");
             serviceSB.append(
-                HtmlUtils.href(
-                    HtmlUtils.url(
-                        urlBase + "/services/view", ARG_SERVICEID,
-                        service.getId()), service.getLabel()));
+			     HtmlUtils.href(
+					    HtmlUtils.url(
+							  urlBase + "/services/view", ARG_SERVICEID,
+							  service.getId()), service.getLabel()));
 
             /*
-            String xmlUrl = HtmlUtils.href(HtmlUtils.url(
-                                                         urlBase +"/services/view",ARG_SERVICEID, service.getId(),ARG_OUTPUT,"xml"),HtmlUtils.img(getIconUrl(ICON_XML)));
+	      String xmlUrl = HtmlUtils.href(HtmlUtils.url(
+	      urlBase +"/services/view",ARG_SERVICEID, service.getId(),ARG_OUTPUT,"xml"),HtmlUtils.img(getIconUrl(ICON_XML)));
 
-            serviceSB.append(xmlUrl);
+	      serviceSB.append(xmlUrl);
             */
             if (Utils.stringDefined(service.getDescription())) {
                 serviceSB.append(HtmlUtils.div(service.getDescription(),
-                        HtmlUtils.cssClass("service-list-description")));
+					       HtmlUtils.cssClass("service-list-description")));
             }
             serviceSB.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
             serviceSB.append("\n");
@@ -736,12 +746,12 @@ public class JobManager extends RepositoryManager {
 
         for (String category : cb.getCategories()) {
             sb.append(
-                HtmlUtils.div(
-                    category, HtmlUtils.cssClass("service-list-header")));
+		      HtmlUtils.div(
+				    category, HtmlUtils.cssClass("service-list-header")));
             sb.append(
-                HtmlUtils.open(
-                    HtmlUtils.TAG_DIV,
-                    HtmlUtils.cssClass("service-list-category")));
+		      HtmlUtils.open(
+				     HtmlUtils.TAG_DIV,
+				     HtmlUtils.cssClass("service-list-category")));
             sb.append(cb.get(category).toString());
             sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
         }
@@ -779,28 +789,28 @@ public class JobManager extends RepositoryManager {
         Service service  = getService(request.getString(ARG_SERVICEID, ""));
         if (service == null) {
             sb.append(getPageHandler().showDialogError("No service found:"
-                    + request.getString(ARG_SERVICEID, "")));
+						       + request.getString(ARG_SERVICEID, "")));
 
             return new Result(msg("Services"), sb);
         }
 
         /*
-        if(request.getString(ARG_OUTPUT,"").equals("xml")) {
-            service.toXml(sb);
-            request.setReturnFilename(service.getLabel()+"services.xml");
-            return new Result("",sb,"text/xml");
-            }*/
+	  if(request.getString(ARG_OUTPUT,"").equals("xml")) {
+	  service.toXml(sb);
+	  request.setReturnFilename(service.getLabel()+"services.xml");
+	  return new Result("",sb,"text/xml");
+	  }*/
 
 
         if ( !service.isEnabled()) {
             sb.append(
-                getPageHandler().showDialogError("Service not enabled"));
+		      getPageHandler().showDialogError("Service not enabled"));
 
             return new Result(msg("Services"), sb);
         }
 
         ServiceOutputHandler soh = new ServiceOutputHandler(getRepository(),
-                                       service);
+							    service);
         String extra = HtmlUtils.hidden(ARG_SERVICEID, service.getId());
         if ( !soh.doExecute(request)) {
             getPageHandler().sectionOpen(request, sb, "Services", false);
@@ -828,7 +838,7 @@ public class JobManager extends RepositoryManager {
      */
     public Result makeRequestErrorResult(Request request, JobInfo jobInfo,
                                          String message)
-            throws Exception {
+	throws Exception {
         if (request.responseAsXml()) {
             //TODO            return makeRequestErrorResult(request, null, message);
         }
@@ -838,7 +848,7 @@ public class JobManager extends RepositoryManager {
         if (jobInfo.getReturnUrl() != null) {
             sb.append("<p>");
             sb.append(HtmlUtils.div(HtmlUtils.href(jobInfo.getReturnUrl(),
-                    "Return to form"), HtmlUtils.cssClass("ramadda-button")));
+						   "Return to form"), HtmlUtils.cssClass("ramadda-button")));
         }
         closeHtmlHeader(request, jobInfo, sb);
 
@@ -860,7 +870,7 @@ public class JobManager extends RepositoryManager {
      */
     public Result makeRequestOKResult(Request request, JobInfo jobInfo,
                                       String message)
-            throws Exception {
+	throws Exception {
         if (request.responseAsXml()) {
             return new Result(XmlUtil.tag(TAG_RESPONSE,
                                           XmlUtil.attr(ATTR_CODE, CODE_OK),
@@ -877,7 +887,7 @@ public class JobManager extends RepositoryManager {
         sb.append("<p>");
         if (jobInfo.getReturnUrl() != null) {
             sb.append(HtmlUtils.div(HtmlUtils.href(jobInfo.getReturnUrl(),
-                    "Return to form"), HtmlUtils.cssClass("ramadda-button")));
+						   "Return to form"), HtmlUtils.cssClass("ramadda-button")));
         }
         closeHtmlHeader(request, jobInfo, sb);
 
@@ -901,10 +911,10 @@ public class JobManager extends RepositoryManager {
      */
     public void openHtmlHeader(Request request, JobInfo jobInfo,
                                Appendable sb)
-            throws Exception {
+	throws Exception {
         if ((jobInfo != null) && (jobInfo.getEntry() != null)) {
             getPageHandler().entrySectionOpen(request, jobInfo.getEntry(),
-                    sb, jobInfo.getJobLabel());
+					      sb, jobInfo.getJobLabel());
         }
     }
 
@@ -919,10 +929,10 @@ public class JobManager extends RepositoryManager {
      */
     public void closeHtmlHeader(Request request, JobInfo jobInfo,
                                 Appendable sb)
-            throws Exception {
+	throws Exception {
         if ((jobInfo != null) && (jobInfo.getEntry() != null)) {
             getPageHandler().entrySectionClose(request, jobInfo.getEntry(),
-                    sb);
+					       sb);
         }
     }
 
@@ -939,7 +949,7 @@ public class JobManager extends RepositoryManager {
      * @throws Exception  problem with execution
      */
     public CommandResults executeCommand(List<String> commands, File dir)
-            throws Exception {
+	throws Exception {
         return executeCommand(commands, null, dir);
     }
 
@@ -957,7 +967,7 @@ public class JobManager extends RepositoryManager {
     public CommandResults executeCommand(List<String> commands,
                                          Map<String, String> envVars,
                                          File workingDir)
-            throws Exception {
+	throws Exception {
         return executeCommand(commands, envVars, workingDir,
                               -1 /* don't timeout*/);
     }
@@ -979,7 +989,7 @@ public class JobManager extends RepositoryManager {
                                          Map<String, String> envVars,
                                          File workingDir,
                                          int timeOutInSeconds)
-            throws Exception {
+	throws Exception {
 
         return executeCommand(commands, envVars, workingDir,
                               timeOutInSeconds, null, null);
@@ -1005,7 +1015,7 @@ public class JobManager extends RepositoryManager {
                                          int timeOutInSeconds,
                                          PrintWriter stdOutPrintWriter,
                                          PrintWriter stdErrPrintWriter)
-            throws Exception {
+	throws Exception {
         //        Trace.startTrace();
         //        Trace.call1("JobManager.executeCommand",  "timeout:" + timeOutInSeconds + " Commands:" + commands);
         StringWriter outBuf   = new StringWriter();
@@ -1026,7 +1036,7 @@ public class JobManager extends RepositoryManager {
         pb.directory(workingDir);
 
         ProcessRunner runner = new ProcessRunner(pb, timeOutInSeconds,
-                                   stdOutPrintWriter, stdErrPrintWriter);
+						 stdOutPrintWriter, stdErrPrintWriter);
         int exitCode = runner.runProcess();
         if (runner.getProcessTimedOut()) {
             throw new InterruptedException("Process timed out");
@@ -1053,7 +1063,7 @@ public class JobManager extends RepositoryManager {
      */
     public CommandResults executeCommand(String command, File workingDir,
                                          int timeOutInSeconds)
-            throws Exception {
+	throws Exception {
         StringWriter outBuf   = new StringWriter();
         StringWriter errorBuf = new StringWriter();
 
@@ -1063,8 +1073,8 @@ public class JobManager extends RepositoryManager {
         pb.directory(workingDir);
 
         ProcessRunner runner = new ProcessRunner(pb, timeOutInSeconds,
-                                   new PrintWriter(outBuf),
-                                   new PrintWriter(errorBuf));
+						 new PrintWriter(outBuf),
+						 new PrintWriter(errorBuf));
         int exitCode = runner.runProcess();
         if (runner.getProcessTimedOut()) {
             throw new InterruptedException("Process timed out");
