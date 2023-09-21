@@ -582,11 +582,6 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         List<PointEntry> pointEntries =
             PointEntry.toPointEntryList(recordEntries);
-        if ( !getRecordJobManager().canAcceptJob()) {
-            return getRepository().makeErrorResult(request,
-						   "Too many processing requests");
-        }
-
         //Get the product formats
         HashSet<String> formats = getProductFormats(request);
 
