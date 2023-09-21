@@ -4472,7 +4472,7 @@ public class WikiManager extends RepositoryManager
 								 child);
 	    } else {
 		if (output == null) {
-		    url = getEntryManager().getEntryUrl(request, child);
+		    url = getEntryManager().getEntryUrl(request, child,false);
 		    //                        url = request.entryUrl(getRepository().URL_ENTRY_SHOW, child);
 		} else {
 		    url = request.entryUrl(
