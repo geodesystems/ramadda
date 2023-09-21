@@ -62,7 +62,7 @@ public class EiaFile extends CsvFile {
 
                 InputStream source = super.doMakeInputStream(buffered);
 		String json = new String(IO.readBytes(source,10_000_000));
-		source.close();
+		IO.close(source);
 		JSONObject obj = new JSONObject(json);
 
 		JSONObject response = obj.getJSONObject("response");
@@ -109,7 +109,7 @@ public class EiaFile extends CsvFile {
 		    }
 
 
-                    double value = datum.getDouble(valueField);
+                    double value = datum.optDouble(valueField, Double.NaN);
 		    //                    if (value.equals("") || value.equals(".")) {
 		    //                        value = "-999999.99";
 		    //                    }
