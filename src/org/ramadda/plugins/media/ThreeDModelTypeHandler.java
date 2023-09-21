@@ -206,8 +206,9 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 
         StringBuilder sb = new StringBuilder();
         if (request.getExtraProperty("3dmodeljs") == null) {
+	    HU.script(sb,"//dummy var for the fflate to work\nvar exports={};\n");
             for (String js : new String[] {
-                "//unpkg.com/fflate",
+		    //                "//unpkg.com/fflate",
                 "//cdn.jsdelivr.net/npm/fflate/umd/index.js",
                 "//unpkg.com/three@0.126.0",
                 getRepository().getHtdocsUrl("/lib/three/controls/OrbitControls.js")
