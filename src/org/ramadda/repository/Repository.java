@@ -4103,7 +4103,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
     }
 
-    int dodsCnt=0;
+    private long callCnt=0;
 
     /**
      * _more_
@@ -4130,14 +4130,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    return result;
         }
 
-
         Result sslRedirect = checkForSslRedirect(request, apiMethod);
         if (sslRedirect != null) {
             debugSession(request, "redirecting to ssl:" + request.getUrl());
             return sslRedirect;
         }
 
-
+	callCnt++;
+	/*
+	if((callCnt%10)==0) {
+	    System.err.println("cnt:" +callCnt);
+	}
+	*/
         request.setApiMethod(apiMethod);
         apiMethod.incrNumberOfCalls();
 
@@ -7497,7 +7501,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @param entries _more_
      */
     public void checkMovedEntries(final List<Entry> entries) {
-        Misc.run(new Runnable() {
+	Misc.run(new Runnable() {
 		public void run() {
 		    for (EntryChecker entryMonitor : getEntryCheckers()) {
 			entryMonitor.entriesMoved(entries);
