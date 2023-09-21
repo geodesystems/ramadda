@@ -2083,7 +2083,7 @@ public class Admin extends RepositoryManager {
 
         StringBuffer dbSB = new StringBuffer();
 
-        getDatabaseManager().addStatistics(request, dbSB);
+        getDatabaseManager().addStatistics(request, dbSB,true);
 
 
         StringBuffer sb = new StringBuffer();
