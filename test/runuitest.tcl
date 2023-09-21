@@ -102,9 +102,9 @@ if {[llength $urls]} {
     }
 } else {
 #Run with the default ramadda.org entries
-    runGroup "Charts" 3ebcb4f4-fa4d-4fb3-9ede-d42ec7e0aa9d
     runGroup "Data List" 5ec45056-fe82-4d98-a9c4-4f1da94be8b0
     runGroup "IMDV" aa5c104c-0c85-4937-86b1-7daf5e7dda28
+    runGroup "Charts" 3ebcb4f4-fa4d-4fb3-9ede-d42ec7e0aa9d
     runGroup "Maps" 1d0fa3f5-407e-4a39-a3da-9a5ed7e1e687
     runGroup "Data tables" b36bb6fc-b2c4-4d12-8c31-1f4dcff6881e
     runGroup "Science Data" 1012d4bb-5e57-460a-95f5-07c997bd04e8
