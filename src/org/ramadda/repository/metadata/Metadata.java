@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2023 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.repository.metadata;
@@ -369,7 +369,7 @@ public class Metadata implements Constants {
         public int compare(Metadata o1, Metadata o2) {
 
             if ((o1.priority != PRIORITY_UNDEFINED)
-                    || (o2.priority != PRIORITY_UNDEFINED)) {
+		|| (o2.priority != PRIORITY_UNDEFINED)) {
                 if (o1.priority > o2.priority) {
                     return -1;
                 }
@@ -470,6 +470,10 @@ public class Metadata implements Constants {
     public String getType() {
         return type;
     }
+
+    public boolean isType(String t) {
+        return type.equals(t);
+    }    
 
 
 
@@ -608,7 +612,7 @@ public class Metadata implements Constants {
      */
     public String toString() {
         return "entry:" + entryId + " type:" + type + " attr1:" + attr1
-               + " attr2:" + attr2 + " attr3:" + attr3 + " attr4:" + attr4;
+	    + " attr2:" + attr2 + " attr3:" + attr3 + " attr4:" + attr4;
     }
 
 
@@ -626,7 +630,7 @@ public class Metadata implements Constants {
         }
         index--;
         if ((index > 0) && (index < values.length)
-                && (values[index] != null)) {
+	    && (values[index] != null)) {
             return values[index].toString();
         }
 
@@ -976,20 +980,20 @@ public class Metadata implements Constants {
         }
         Metadata that = (Metadata) o;
         /*
-//        System.err.println(Misc.equals(this.type,  that.type) + " " +
-            Misc.equals(this.attr1, that.attr1) + " " +
-            Misc.equals(this.attr2, that.attr2) + " " +
-            Misc.equals(this.attr3, that.attr3) + " " +
-            Misc.equals(this.attr4, that.attr4) + " " +
-            Misc.equals(this.entryId, that.entryId));*/
+	//        System.err.println(Misc.equals(this.type,  that.type) + " " +
+	Misc.equals(this.attr1, that.attr1) + " " +
+	Misc.equals(this.attr2, that.attr2) + " " +
+	Misc.equals(this.attr3, that.attr3) + " " +
+	Misc.equals(this.attr4, that.attr4) + " " +
+	Misc.equals(this.entryId, that.entryId));*/
 
         return Misc.equals(this.type, that.type)
-               && Misc.equals(this.attr1, that.attr1)
-               && Misc.equals(this.attr2, that.attr2)
-               && Misc.equals(this.attr3, that.attr3)
-               && Misc.equals(this.attr4, that.attr4)
-               && Misc.equals(this.extra, that.extra)
-               && Misc.equals(this.entryId, that.entryId);
+	    && Misc.equals(this.attr1, that.attr1)
+	    && Misc.equals(this.attr2, that.attr2)
+	    && Misc.equals(this.attr3, that.attr3)
+	    && Misc.equals(this.attr4, that.attr4)
+	    && Misc.equals(this.extra, that.extra)
+	    && Misc.equals(this.entryId, that.entryId);
     }
 
 
@@ -1080,7 +1084,7 @@ public class Metadata implements Constants {
                     for (int j = 0; j < elements.size(); j++) {
                         Element extraNode = (Element) elements.get(j);
                         int index = XmlUtil.getAttribute(extraNode,
-                                        ATTR_INDEX, -1);
+							 ATTR_INDEX, -1);
                         String text = XmlUtil.getChildText(extraNode);
                         if (text == null) {
                             text = "";
@@ -1116,7 +1120,7 @@ public class Metadata implements Constants {
                 String  extra = map.get(index);
                 XmlUtil.create(doc, TAG_EXTRA, root, extra,
                                new String[] { ATTR_INDEX,
-                        index.toString() });
+					      index.toString() });
             }
 
             return XmlUtil.toString(root, false);
