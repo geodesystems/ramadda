@@ -125,7 +125,7 @@ public class JettyServer implements Constants {
 	QueuedThreadPool threadPool = new QueuedThreadPool();
 	int threads = baseRepository.getProperty("ramadda.server.threadcount",-1);
 	if(threads>0) {
-	    System.err.println("RAMADDA: #threads:" + threads);
+	    System.err.println("RAMADDA: #http threads:" + threads);
 	    threadPool.setMaxThreads(threads);
 	}
         server  = new Server(threadPool);
