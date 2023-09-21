@@ -5982,12 +5982,12 @@ public class Utils extends IO {
             }
             cnt++;
             //skip the first 3 lines so we don't get this method, etc
-            if (cnt <= 3) {
+            if (cnt <= 5) {
                 continue;
             }
             if (stripPackage) {
-                line = line.replaceAll(".*?\\.([^\\.]+\\.[^\\.]+\\()",
-                                       "\t$1");
+		//                line = line.replaceAll(".*?\\.([^\\.]+\\.[^\\.]+\\()", "\t$1");
+                line = line.replaceAll(".*?\\.([^\\.]+\\.[^\\.]+\\()", "\t$1");		
             }
             lines.add(line);
             if (lines.size() >= howMany) {
@@ -6256,7 +6256,7 @@ public class Utils extends IO {
 	System.exit(v);
     }
 
-
+    
     /**
      * _more_
      *
