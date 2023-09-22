@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Sep 22 07:46:52 MDT 2023";
+var build_date="RAMADDA build date: Fri Sep 22 08:04:01 MDT 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -41767,8 +41767,9 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'filter.zoomonchange.show=false',
 			  'filter.toggle.show=false',
 			  'legendTooltip=',
-			  'showLabel=true',
-			  'showLabelWhenVisible=true',			  
+			  'showLabelInMap=true',
+			  'showLabelInMapWhenVisible=true',
+			  'inMapLabel=',			  			  
 			  'showButtons=false',
 			  'showMeasures=false',
 			  'showTextSearch=true'];
@@ -49636,7 +49637,7 @@ MapGlyph.prototype = {
 
     checkInMapLabel:function() {
 	let label= this.jq(ID_INMAP_LABEL);
-	if(this.getProperty('showLabelWhenVisible',false)) {
+	if(this.getProperty('showLabelInMapWhenVisible',false)) {
 	    if(this.getVisible()) label.show();
 	    else label.hide();	    
 	}
@@ -49648,11 +49649,12 @@ MapGlyph.prototype = {
     addInMapLabel:function() {
 	let label= this.jq(ID_INMAP_LABEL);
 	label.remove();
-	let showLabel = this.getProperty('showLabel',false);
-	if(showLabel || this.getProperty('showLabelWhenVisible',false)) {
+	let showLabel = this.getProperty('showLabelInMap',false);
+	if(showLabel || this.getProperty('showLabelInMapWhenVisible',false)) {
 	    let clazz = (showLabel?CLASS_CLICKABLE:'')+' imdv-inmap-label';
 	    this.display.getLabels().append(HU.div([ATTR_ID,this.domId(ID_INMAP_LABEL),
-						    ATTR_CLASS,clazz],this.getName()));
+						    ATTR_CLASS,clazz],
+						   this.getProperty('inMapLabel')??this.getName()));
 	    if(showLabel) {
 		this.jq(ID_INMAP_LABEL).click(()=>{
 		    this.setVisible(!this.getVisible(),true);
