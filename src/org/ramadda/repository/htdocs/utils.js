@@ -2752,7 +2752,9 @@ var Utils =  {
         let linksId = HU.getUniqueId();
 	let searchLink = 
 	    HU.link(RamaddaUtil.getUrl('/search/form'),
-		    'Search Form', [TITLE, 'Go to search form', STYLE,HU.css('color','#888','font-size','13px')]);
+		    HU.span([ATTR_CLASS,CLASS_CLICKABLE],
+			    HU.getIconImage('fas fa-circle-arrow-right') +HU.space(1)+
+			    HU.span('Go to search form')), [TITLE, 'Go to search form', STYLE,HU.css('color','#888','font-size','13px')]);
         let links =  HU.div(["id", linksId,STYLE,HU.css('text-align','right','color','#888','font-size','13px')],
 			    searchLink);
 //  +
@@ -4220,6 +4222,62 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    dialog.remove();
 	});
     },
+
+    initSideToggle:function(btn,box,opts) {
+	opts = opts??{};
+	btn = jqid(btn);
+	box = jqid(box);
+	let width = opts.width??opts.boxWidth??'200px';
+	if(opts.buttonWidth) {
+	    btn.css('width',opts.buttonWidth);
+	}
+	if(opts.fontSize) {
+	    btn.css('font-size',opts.fontSize);
+	}	
+	if(opts.buttonColor||opts.color) {
+	    btn.css('color',opts.buttonColor??opts.color);
+	}
+	if(opts.buttonBackground||opts.background) {
+	    btn.css('background',opts.buttonBackground??opts.background);	    
+	}		
+	if(opts.boxBackground||opts.background) {
+	    box.css('background',opts.boxBackground??opts.background);	    
+	}		
+
+
+	if(opts.boxHeight) {
+	    box.css('height',opts.boxHeight);
+	}
+	if(opts.buttonTop??opts.top) {
+	    btn.css('top',opts.buttonTop??opts.top);
+	}
+	if(opts.boxHeight) {
+	    box.css('height',opts.boxHeight);
+	}
+	if(opts.boxTop??opts.top) {
+	    box.css('top',opts.boxTop??opts.top);
+	}	
+	box.css('width',width);
+	box.css('left','-'+width);
+	let anim = (e,v)=>{
+	    e.animate({
+		left: v
+	    }, Utils.isDefined(opts.speed)?parseInt(opts.speed):500);
+	}
+	btn.click(function() {
+	    let flag = 'toggle-open';
+	    if(btn.attr(flag)==='true') {
+		btn.attr(flag,'false');
+		anim(btn,'0px');
+		anim(box,'-'+width);
+	    } else {
+		btn.attr(flag,'true');
+		anim(btn,width);
+		anim(box,'0px');
+	    }
+	});
+    },
+
 
     makeDialog: function(args) {
         HtmlUtils.hidePopupObject(null,true);
