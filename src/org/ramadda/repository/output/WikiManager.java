@@ -7012,6 +7012,12 @@ public class WikiManager extends RepositoryManager
 			l2.call("Inset", "top/left/bottom/right spacing","+inset #space=10 top=0 bottom=0 left=0 right=0 _newline_", "-inset"),
 			l2.call("Popup", "Popup link\nimg:popup.png","+popup link=_qt_Link_qt_ icon=_qt_fa-solid fa-arrow-right-from-bracket_qt_ title=_qt_Title_qt_ header=true draggable=true decorate=true sticky=true my=_qt__qt_ at=_qt__qt_ animate=false_nl__nl_", "-popup_nl_"),
 			l.call("Menu", "+menu_nl_    :menuheader Header_nl_    :menuitem Item 1_nl_    +menu Menu 1_nl_        :menuitem Item 2_nl_        +menuitem style=_qt_width:300px; _qt_ _nl_        Menu contents_nl_        -menuitem_nl_    -menu_nl_    +menu Menu 2_nl_        :menuitem Item 3_nl_    -menu_nl_-menu", ""),
+
+			l2.call("Toggle","Show a closed toggle box","+toggle Toggle Label\\n","-toggle"),
+			l2.call("Open Toggle","Show a open toggle box","+toggleopen Toggle Label\\n","-toggleopen"),			
+			l2.call("Side Toggle",
+				"Side Toggle","+sidetoggle label=\"Click me\" boxBackground=\"#fff\" boxWidth=\"200px\" fontSize=16px buttonWidth=\"24px\" buttonBackground=\"#fff\" buttonColor=\"#000\" boxTop=\"100px\" buttonTop=\"100px\"\\n",
+				"-sidetoggle"),
 			l2.call("Enlarge/Shrink",
 				"Enlarge/Shrink Toggle\nimg:enlarge.png\nShow content in an expandable block","+enlarge height=\"200\" enlargeLabel=\"Show more\" shrinkLabel=\"Show less\"\\n",
 				"-enlarge"),

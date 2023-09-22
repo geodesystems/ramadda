@@ -964,6 +964,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 	    int avatarCount=0;
 	    String balloonAfter = null;
 	    Hashtable enlargeProps = null;
+	    Hashtable context = new Hashtable();
 
             for (String line : text.split("\n")) {
                 if ((line.indexOf("${") >= 0)
@@ -1879,6 +1880,43 @@ public class WikiUtil implements HtmlUtilsConstants {
 
 
                 }
+
+                if (tline.startsWith("+sidetoggle")) {
+		    Hashtable props = getProps.apply(tline);
+		    String guid = HU.getUniqueId("toggle");
+		    props.put("id",guid);
+		    context.put("sidetoggleprops",props);
+		    String label = Utils.getProperty(props,"label","Click");
+		    HU.div(buff,label,HU.attrs("class","ramadda-clickable ramadda-side-toggle-button",
+					       "id",guid+"-button"));
+		    buff.append(HU.open("div",HU.attrs("class","ramadda-side-toggle",
+						       "id",guid)));
+		    continue;
+		}
+
+                if (tline.startsWith("-sidetoggle")) {
+		    Hashtable props=  (Hashtable)context.get("sidetoggleprops");
+		    if(props==null) {
+                        wikiError(buff, "Error: unopened sidetoggle");
+			continue;
+		    }
+		    context.remove("sidetoggleprops");
+		    String id = Utils.getProperty(props,"id","");
+		    buff.append("</div>");
+		    List<String> attrs =new ArrayList<String>();
+		    for (java.util.Enumeration keys = props.keys();
+			 keys.hasMoreElements(); ) {
+			String key   = (String)keys.nextElement();
+			if(key.equals("id")) continue;
+			attrs.add(key);
+			attrs.add(JsonUtil.quote((String)props.get(key)));
+		    }
+		    String opts = JsonUtil.map(attrs);
+                    HU.script(buff, HU.call("HtmlUtils.initSideToggle",
+					    HU.squote(id+"-button"),
+					    HU.squote(id),opts));
+		    continue;
+		}
 
                 if (tline.startsWith("+accordian")
                         || tline.startsWith("+accordion")||
