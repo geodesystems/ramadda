@@ -1892,7 +1892,7 @@ MapGlyph.prototype = {
 
     checkInMapLabel:function() {
 	let label= this.jq(ID_INMAP_LABEL);
-	if(this.getProperty('showLabelWhenVisible',false)) {
+	if(this.getProperty('showLabelInMapWhenVisible',false)) {
 	    if(this.getVisible()) label.show();
 	    else label.hide();	    
 	}
@@ -1904,11 +1904,12 @@ MapGlyph.prototype = {
     addInMapLabel:function() {
 	let label= this.jq(ID_INMAP_LABEL);
 	label.remove();
-	let showLabel = this.getProperty('showLabel',false);
-	if(showLabel || this.getProperty('showLabelWhenVisible',false)) {
+	let showLabel = this.getProperty('showLabelInMap',false);
+	if(showLabel || this.getProperty('showLabelInMapWhenVisible',false)) {
 	    let clazz = (showLabel?CLASS_CLICKABLE:'')+' imdv-inmap-label';
 	    this.display.getLabels().append(HU.div([ATTR_ID,this.domId(ID_INMAP_LABEL),
-						    ATTR_CLASS,clazz],this.getName()));
+						    ATTR_CLASS,clazz],
+						   this.getProperty('inMapLabel')??this.getName()));
 	    if(showLabel) {
 		this.jq(ID_INMAP_LABEL).click(()=>{
 		    this.setVisible(!this.getVisible(),true);
