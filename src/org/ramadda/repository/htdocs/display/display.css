@@ -3086,7 +3086,7 @@ table.dataTable tfoot td {
 }
 
 .imdv-legend-label-invisible {
-    background:#eee;
+    background:#eee !important;
 }
 
 .imdv-legend-label-highlight {
@@ -3176,6 +3176,27 @@ table.dataTable tfoot td {
     z-index:1000;
 }
 
+.imdv-inmap-labels {
+    position: absolute;
+    left:10px;
+    bottom:5px;
+    z-index:1000;
+}
+
+.imdv-inmap-label {
+    font-size:8pt;
+    margin-right:8px;
+    padding:2px;
+    padding-left:4px;
+    padding-right:4px;        
+    display:inline-block;
+    background:#eee;
+    background:rgba(255,255,255,0.9);
+}    
+
+.imdv-inmap-label-invisible {
+    background:rgba(255,255,255,0.4);
+}
 
 .imdv-feature {
 }

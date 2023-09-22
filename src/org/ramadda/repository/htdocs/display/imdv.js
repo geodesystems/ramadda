@@ -51,8 +51,11 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'filter.zoomonchange.show=false',
 			  'filter.toggle.show=false',
 			  'legendTooltip=',
+			  'showLabel=true',
+			  'showLabelWhenVisible=true',			  
 			  'showButtons=false',
-			  'showMeasures=false','showTextSearch=true'];
+			  'showMeasures=false',
+			  'showTextSearch=true'];
 
 var PROP_LAYERS_STEP_SHOW= "showLayersStep";
 var PROP_LAYERS_ANIMATION_SHOW = "showLayersAnimation";
@@ -321,6 +324,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
     const ID_MESSAGE  ='message';
     const ID_MESSAGE2  ='message2';    
     const ID_MESSAGE3  ='message3';
+    const ID_GLYPH_LABELS  ='glyphlabels';
     const ID_ADDRESS  ='address';
     const ID_ADDRESS_INPUT  ='address_input';
     const ID_ADDRESS_WAIT  ='address_wait';
@@ -368,6 +372,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
     const ID_LEGEND_RIGHT = 'legend_right';    
     const ID_LEGEND_MAP_WRAPPER = 'legend_map_wrapper';
     const ID_LEGEND_MAP = 'legend_map';            
+    const ID_MAP_LABEL = 'map_label';
     const ID_MAP_PROPERTIES = 'mapproperties';
     const ID_MAP_REGIONS = 'showregions';
     const ID_MAP_CHOOSE = 'chooselatlon';    
@@ -5241,6 +5246,11 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		this.jq(ID_MAP_CONTAINER).append(message3);
 	    }
 
+	    let labels = HU.div([ID,this.domId(ID_GLYPH_LABELS),ATTR_CLASS,'imdv-inmap-labels'],'');
+	    this.jq(ID_MAP_CONTAINER).append(labels);
+
+
+
 	    this.makeMenuBar();
 	    this.makeControls();
 
@@ -5267,6 +5277,10 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    if(this.getProperty('thisEntryType')=='geo_editable_json' || this.getProperty('thisEntryType')=='geo_imdv') {
 		this.loadMap();
 	    }
+	},
+
+	getLabels:function() {
+	    return this.jq(ID_GLYPH_LABELS);
 	},
 
 	appendHeader:function(html) {

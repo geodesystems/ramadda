@@ -22,6 +22,10 @@ var LINETYPE_STEPPED='stepped';
 
 
 
+
+
+var ID_INMAP_LABEL='inmaplabel';
+
 var ID_ADDDOTS = 'adddots';
 var ID_LINETYPE = 'linetype';
 var ID_SHOWDATAICONS = 'showdataicons';
@@ -1886,7 +1890,35 @@ MapGlyph.prototype = {
     },
     
 
+    checkInMapLabel:function() {
+	let label= this.jq(ID_INMAP_LABEL);
+	if(this.getProperty('showLabelWhenVisible',false)) {
+	    if(this.getVisible()) label.show();
+	    else label.hide();	    
+	}
+
+	if(this.getVisible()) label.removeClass('imdv-inmap-label-invisible');
+	else  label.addClass('imdv-inmap-label-invisible');	
+    },
+
+    addInMapLabel:function() {
+	let label= this.jq(ID_INMAP_LABEL);
+	label.remove();
+	let showLabel = this.getProperty('showLabel',false);
+	if(showLabel || this.getProperty('showLabelWhenVisible',false)) {
+	    let clazz = (showLabel?CLASS_CLICKABLE:'')+' imdv-inmap-label';
+	    this.display.getLabels().append(HU.div([ATTR_ID,this.domId(ID_INMAP_LABEL),
+						    ATTR_CLASS,clazz],this.getName()));
+	    if(showLabel) {
+		this.jq(ID_INMAP_LABEL).click(()=>{
+		    this.setVisible(!this.getVisible(),true);
+		});
+	    }
+	    this.checkInMapLabel();
+	}
+    },
     makeLegend:function(opts) {
+	this.addInMapLabel();
 	opts = opts??{};
 	let html = '';
 	if(!this.display.getShowLegendShapes() && this.isShape()) {
@@ -4970,6 +5002,7 @@ MapGlyph.prototype = {
 	}
 
 	this.attrs.visible = visible;
+	this.checkInMapLabel();
 	if(!skipChildren) {
     	    this.applyChildren(child=>{child.setVisible(visible, callCheck);});
 	}
