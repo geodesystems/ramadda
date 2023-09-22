@@ -629,6 +629,42 @@ i.fa, i.fas,i.fab {
     color:#4774CC;
 }
 
+.ramadda-side-toggle  {
+    z-index: 1000;
+    position:fixed;
+    height:400px;
+    border:var(--basic-border);
+    background:#fff;
+    top:58px;
+    top:0px;    
+    left:-200px;
+    width:200px;
+}
+
+.ramadda-side-toggle-button  {
+    position: absolute;
+    z-index: 1000;
+    width:26px;
+    font-size:11pt;
+    top: 100px;
+    left: 0px;
+    writing-mode: vertical-rl; /* Vertical text orientation for modern browsers */
+    transform: rotate(180deg); /* Rotate the text to make it readable */
+    white-space: nowrap; /* Prevent the text from wrapping */
+    border:var(--basic-border);
+    border-right:0px;
+    background:#fff;
+    padding-top:10px;
+    padding-bottom:10px;    
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;    
+}
+
+.ramadda-side-toggle-click:hover  {
+    background: var(--highlight-background);
+}
+
+
 .ramadda-nav-left-toggle  {
     position:absolute;
     left:5px;
