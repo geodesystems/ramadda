@@ -412,11 +412,12 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         BasicDataSource ds              = new BasicDataSource();
 
 
-	//        ds.setMaxActive(getRepository().getProperty(PROP_DB_POOL_MAXACTIVE, 100));
+	//ds.setMaxActive(getRepository().getProperty(PROP_DB_POOL_MAXACTIVE, 100));
         //ds.setMaxIdle(getRepository().getProperty(PROP_DB_POOL_MAXIDLE,100));
 	ds.setMaxTotal(getRepository().getProperty(PROP_DB_POOL_MAXACTIVE, 200));
-        //30 second time out
-        ds.setMaxWaitMillis(1000 * 30);
+        //60 second time out
+	ds.setMaxWaitMillis(1000 * 60);
+	//        ds.setMaxWaitMillis(-1);
         //60 seconds
         ds.setRemoveAbandonedTimeout(60);
         //ds.setRemoveAbandoned(true);
