@@ -149,6 +149,7 @@ The entries
 Attachments
 Embed Entry
 Search Form
+Go to search form
 Last 7 days
 Search under
 File Listing
