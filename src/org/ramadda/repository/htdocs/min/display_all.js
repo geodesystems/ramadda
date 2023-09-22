@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Sep 22 06:03:54 MDT 2023";
+var build_date="RAMADDA build date: Fri Sep 22 07:46:52 MDT 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -41767,8 +41767,11 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'filter.zoomonchange.show=false',
 			  'filter.toggle.show=false',
 			  'legendTooltip=',
+			  'showLabel=true',
+			  'showLabelWhenVisible=true',			  
 			  'showButtons=false',
-			  'showMeasures=false','showTextSearch=true'];
+			  'showMeasures=false',
+			  'showTextSearch=true'];
 
 var PROP_LAYERS_STEP_SHOW= "showLayersStep";
 var PROP_LAYERS_ANIMATION_SHOW = "showLayersAnimation";
@@ -42037,6 +42040,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
     const ID_MESSAGE  ='message';
     const ID_MESSAGE2  ='message2';    
     const ID_MESSAGE3  ='message3';
+    const ID_GLYPH_LABELS  ='glyphlabels';
     const ID_ADDRESS  ='address';
     const ID_ADDRESS_INPUT  ='address_input';
     const ID_ADDRESS_WAIT  ='address_wait';
@@ -42084,6 +42088,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
     const ID_LEGEND_RIGHT = 'legend_right';    
     const ID_LEGEND_MAP_WRAPPER = 'legend_map_wrapper';
     const ID_LEGEND_MAP = 'legend_map';            
+    const ID_MAP_LABEL = 'map_label';
     const ID_MAP_PROPERTIES = 'mapproperties';
     const ID_MAP_REGIONS = 'showregions';
     const ID_MAP_CHOOSE = 'chooselatlon';    
@@ -46957,6 +46962,11 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		this.jq(ID_MAP_CONTAINER).append(message3);
 	    }
 
+	    let labels = HU.div([ID,this.domId(ID_GLYPH_LABELS),ATTR_CLASS,'imdv-inmap-labels'],'');
+	    this.jq(ID_MAP_CONTAINER).append(labels);
+
+
+
 	    this.makeMenuBar();
 	    this.makeControls();
 
@@ -46983,6 +46993,10 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    if(this.getProperty('thisEntryType')=='geo_editable_json' || this.getProperty('thisEntryType')=='geo_imdv') {
 		this.loadMap();
 	    }
+	},
+
+	getLabels:function() {
+	    return this.jq(ID_GLYPH_LABELS);
 	},
 
 	appendHeader:function(html) {
@@ -47751,6 +47765,10 @@ var LINETYPE_STEPPED='stepped';
 
 
 
+
+
+
+var ID_INMAP_LABEL='inmaplabel';
 
 var ID_ADDDOTS = 'adddots';
 var ID_LINETYPE = 'linetype';
@@ -49616,7 +49634,35 @@ MapGlyph.prototype = {
     },
     
 
+    checkInMapLabel:function() {
+	let label= this.jq(ID_INMAP_LABEL);
+	if(this.getProperty('showLabelWhenVisible',false)) {
+	    if(this.getVisible()) label.show();
+	    else label.hide();	    
+	}
+
+	if(this.getVisible()) label.removeClass('imdv-inmap-label-invisible');
+	else  label.addClass('imdv-inmap-label-invisible');	
+    },
+
+    addInMapLabel:function() {
+	let label= this.jq(ID_INMAP_LABEL);
+	label.remove();
+	let showLabel = this.getProperty('showLabel',false);
+	if(showLabel || this.getProperty('showLabelWhenVisible',false)) {
+	    let clazz = (showLabel?CLASS_CLICKABLE:'')+' imdv-inmap-label';
+	    this.display.getLabels().append(HU.div([ATTR_ID,this.domId(ID_INMAP_LABEL),
+						    ATTR_CLASS,clazz],this.getName()));
+	    if(showLabel) {
+		this.jq(ID_INMAP_LABEL).click(()=>{
+		    this.setVisible(!this.getVisible(),true);
+		});
+	    }
+	    this.checkInMapLabel();
+	}
+    },
     makeLegend:function(opts) {
+	this.addInMapLabel();
 	opts = opts??{};
 	let html = '';
 	if(!this.display.getShowLegendShapes() && this.isShape()) {
@@ -52700,6 +52746,7 @@ MapGlyph.prototype = {
 	}
 
 	this.attrs.visible = visible;
+	this.checkInMapLabel();
 	if(!skipChildren) {
     	    this.applyChildren(child=>{child.setVisible(visible, callCheck);});
 	}
