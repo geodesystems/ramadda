@@ -108,8 +108,11 @@ public class DaymetTypeHandler extends PointTypeHandler {
         String startDate = "1980-01-01";
         String endDate   = dateSDF.format(cal.getTime());
         if (entry.getStartDate() < entry.getEndDate()) {
-            startDate = dateSDF.format(new Date(entry.getStartDate()));
-            endDate   = dateSDF.format(new Date(entry.getEndDate()));
+	    //not thread safe
+	    synchronized(dateSDF) {
+		startDate = dateSDF.format(new Date(entry.getStartDate()));
+		endDate   = dateSDF.format(new Date(entry.getEndDate()));
+	    }		
         }
         url = url.replace("${start}", startDate);
         url = url.replace("${end}", endDate);
