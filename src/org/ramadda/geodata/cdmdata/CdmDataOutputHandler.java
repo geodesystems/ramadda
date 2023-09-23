@@ -1688,7 +1688,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
     public Result outputGridJson(final Request request, final Entry entry)
             throws Exception {
 
-        final boolean debug = true;
+        final boolean debug = false;
         String        path  = getPath(request, entry);
         if (debug) {
             System.err.println("outputGridJson path:" + path);
