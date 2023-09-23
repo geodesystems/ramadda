@@ -19,6 +19,7 @@ public class Test {
     private static int numThreads = 50;
     private static int totalRead =0;
     private static int loops = 1000;
+    private static int sleep=0;
 
     public static void runTest(List<String> urls) {
 	try {
@@ -38,6 +39,7 @@ public class Test {
 		    long diff = (new Date().getTime()-startTime.getTime())/1000;
 		    int callsPer = diff<=0?0:(int)(totalRead/(double)diff);
 		    System.out.println("read:" + totalRead + " calls/s:" + callsPer);
+		    if(sleep>0) Misc.sleep(sleep);
 		}
 	    }
 	} catch(Exception exc) {
@@ -58,7 +60,7 @@ public class Test {
 	final List<String> urls=new ArrayList<String>();
 	for(int i=0;i<args.length;i++) {
 	    if(args[i].equals("-help")) {
-		System.err.println("usage: -threads <# threads> -loops <#loops> <file> or <url>");
+		System.err.println("usage: -threads <# threads> -loops <#loops> -sleep <pause after each call (ms)> <file> or <url>");
 		System.exit(0);
 	    }
 
@@ -69,7 +71,11 @@ public class Test {
 	    if(args[i].equals("-loops")) {
 		loops = Integer.parseInt(args[++i]);
 		continue;
-	    }	    
+	    }
+	    if(args[i].equals("-sleep")) {
+		sleep = Integer.parseInt(args[++i]);
+		continue;
+	    }	    	    
 	    File f = new File(args[i]);
 
 	    if(f.exists()) {
