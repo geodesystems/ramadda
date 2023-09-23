@@ -210,6 +210,7 @@ public class Oembed {
             if (json.startsWith("<")) {
                 return oembed.getFromXml(url, json);
             } else {
+		System.err.println("url:" +url + " " + json+"\n");
                 return oembed.getFromJson(url, json);
             }
         } catch (Exception exc) {
