@@ -29,6 +29,11 @@ public class Test {
 		    url = url.trim();
 		    if(url.startsWith("#")) continue;
 		    if(url.startsWith("stop")) break;
+		    if(url.startsWith("sleep ")) {
+			int s = Integer.parseInt(url.substring("sleep ".length()).trim());
+			Misc.sleep(s);
+			continue;
+		    }
 		    
 		    IO.Result result = IO.doGetResult(new URL(url));
 		    if(result.getError()) {
