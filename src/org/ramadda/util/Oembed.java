@@ -198,13 +198,12 @@ public class Oembed {
         if (fixed != null) {
             return fixed;
         }
-        try {
-
-            String eurl = HtmlUtils.urlEncode(url);
-            String rurl = HtmlUtils.url(oembed.url, new String[] {
+	String eurl = HtmlUtils.urlEncode(url);
+	String rurl = HtmlUtils.url(oembed.url, new String[] {
                 "url", eurl, "format", "json", "maxwidth", width, "maxheight",
                 height
             }, false);
+        try {
             URL    req  = new URL(rurl);
             String json = IO.readUrl(req);
             if (json.startsWith("<")) {
@@ -214,8 +213,7 @@ public class Oembed {
                 return oembed.getFromJson(url, json);
             }
         } catch (Exception exc) {
-            System.err.println("Error fetching embed for:" + url + " " + exc);
-
+            System.err.println("Error fetching embed for:" + url + " request url:" + rurl+" exception:" +exc);
             return null;
         }
     }
