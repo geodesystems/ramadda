@@ -4000,7 +4000,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         viewUrl,
                         HU.img(
                             getRepository().getUrlBase()
-                            + "/db/database_go.png", msg("View entry"))));
+                            + "/db/database_go.png","View entry")));
                 HU.close(hb, "div", "td");
             }
 
@@ -5056,7 +5056,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 }
                 String viewUrl = getViewUrl(request, entry, dbid);
                 if ( !forPrint) {
-                    theSB.append(HU.href(viewUrl,HU.img(iconToUse, msg("View entry"), "width=16")));
+                    theSB.append(HU.href(viewUrl,HU.img(iconToUse, "View entry", "width=16")));
                 }
                 theSB.append(" ");
                 String label = getMapLabel(request, entry, values, sdf,
@@ -5680,8 +5680,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         boolean canEdit      = getAccessManager().canDoEdit(request,
                                    entry);
         StringBuilder sb     = new StringBuilder();
-        String        links  = getHref(request, entry, VIEW_ICAL,
-                                       msg("ICAL"));
+        String        links  = getHref(request, entry, VIEW_ICAL, "ICAL");
         addViewHeader(request, entry, sb, VIEW_CALENDAR, valueList.size(),
                       fromSearch, links);
 
@@ -6067,8 +6066,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     max);
             SqlUtil.debug = false;
             long t2 = System.currentTimeMillis();
-            //      Utils.printTimes("DbTypeHandler select: "+ clause,t1,t2);
-
+	    Utils.printTimes("DbTypeHandler select: "+ clause + " extra:" + extra,t1,t2);
         } catch (Exception exc) {
             System.err.println("Error in select:");
             System.err.println("table:" + tableHandler.getTableName());
@@ -6082,6 +6080,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         HashSet seenValue = new HashSet();
         try {
+            long t1 = System.currentTimeMillis();
             SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
             ResultSet        results;
             Object[]         values = null;
@@ -6168,6 +6167,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     }
                 }
             }
+            long t2 = System.currentTimeMillis();
+	    Utils.printTimes("DbTypeHandler processing:",t1,t2);
         } finally {
             getRepository().getDatabaseManager().closeAndReleaseConnection(
                 stmt);
