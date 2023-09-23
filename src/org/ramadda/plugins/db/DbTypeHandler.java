@@ -2402,7 +2402,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
                 order += HU.select(
                     ARG_DB_SORTBY + i, sorttfos,
-                    request.getString(ARG_DB_SORTBY + i, dfltCol),
+                    request.getString(ARG_DB_SORTBY + i, i==1?dfltCol:""),
                     HU.cssClass("search-select")) + HU.select(
                         ARG_DB_SORTDIR + i, getOrderTfos(),
                         request.getString(ARG_DB_SORTDIR + i, dfltDir),
