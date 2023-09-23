@@ -174,7 +174,7 @@ public class EiaCategoryTypeHandler extends ExtensibleGroupTypeHandler {
             args.add(categoryId);
         }
 
-        Element root     = call(Eia.URL_CATEGORY, args);
+        Element root     = call(mainEntry, Eia.URL_CATEGORY, args);
         Element catNode  = XmlUtil.findChild(root, Eia.TAG_CATEGORY);
         Element catsNode = XmlUtil.findChild(catNode,
                                              Eia.TAG_CHILDCATEGORIES);
@@ -245,7 +245,7 @@ public class EiaCategoryTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    public Element call(String url, List<String> args) throws Exception {
+    public Element call(Entry entry,String url, List<String> args) throws Exception {
         long t1 = System.currentTimeMillis();
         url = makeUrl(url, args,"xml");
         if (seenUrls.contains(url)) {
@@ -256,6 +256,7 @@ public class EiaCategoryTypeHandler extends ExtensibleGroupTypeHandler {
         }
 	IO.Result result = IO.doGetResult(new URL(url));
 	if(result.getError()) {
+	    System.err.println("Error making EIA call:" + entry.getName() +" " + entry.getId());
 	    throw new RuntimeException("An error has occurred:" + result.getResult());
 	}
 
