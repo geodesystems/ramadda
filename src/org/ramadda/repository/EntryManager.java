@@ -7745,6 +7745,22 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+    Object TESTMUTEX=new Object();
+    int testCnt=0;
+    public Result processEntryTest(Request request) throws Exception{
+	synchronized(TESTMUTEX) {testCnt++;}
+	Entry entry = createEntryFromDatabase(request.getString(ARG_ENTRYID,""),false);
+	synchronized(TESTMUTEX) {testCnt--;}
+	if(entry==null) {
+	    System.err.println("no entry: testCnt:" + testCnt);
+	    return new Result("no entry", MIME_TEXT);
+	} else {
+	    System.err.println("entry:"+ entry.getName() +" testCnt:" + testCnt);
+	    return new Result("entry:" + entry.getName(), MIME_TEXT);
+	}
+    }
+
+
 
     /**
      * _more_
