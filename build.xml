@@ -111,8 +111,10 @@
   </target>
 
   <target name="quick" depends="init">
+    <echo message="compiling RAMADDA"/>
     <ant antfile="${src_dir}/org/ramadda/repository/build.xml" target="compile"
 	 inheritAll="false"/>
+    <echo message="making server release"/>
     <ant antfile="${src_dir}/org/ramadda/repository/build.xml" target="ramadda.zip"
 	 inheritAll="false"/>     
   </target>
