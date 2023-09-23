@@ -15,6 +15,8 @@
   </target>
 
 
+
+
   <target name="version" depends="init">
     <property name="ramadda_dir" value="${src_dir}/org/ramadda/repository" />
     <property name="propdest" value="${ramadda_dir}/resources/version.properties"/>
@@ -107,6 +109,14 @@
     <echo message="Building RAMADDA"/>
     <ant antfile="${src_dir}/org/ramadda/repository/build.xml" inheritAll="false"/>
   </target>
+
+  <target name="quick" depends="init">
+    <ant antfile="${src_dir}/org/ramadda/repository/build.xml" target="compile"
+	 inheritAll="false"/>
+    <ant antfile="${src_dir}/org/ramadda/repository/build.xml" target="ramadda.zip"
+	 inheritAll="false"/>     
+  </target>
+
 
   <target name="plugins" depends="init,purgeplugins">
     <ant antfile="${src_dir}/org/ramadda/plugins/build.xml" inheritAll="false"/>
