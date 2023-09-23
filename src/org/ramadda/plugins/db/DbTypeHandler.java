@@ -5876,7 +5876,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             throws Exception {
 
 	boolean myDebug = isType("campaign_donors");
-	//myDebug = false;
+	myDebug = false;
 
 
         //For now don't check for isPostgres which is used below for making unique requests
