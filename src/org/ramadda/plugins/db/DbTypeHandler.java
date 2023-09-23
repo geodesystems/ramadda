@@ -5875,8 +5875,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                       PrintWriter pw, ValueIterator iterator)
             throws Exception {
 
-	boolean myDebug = isType("campaign_donors");
-	System.err.println(myDebug);
+	//	boolean myDebug = isType("campaign_donors");
+	boolean myDebug = false;
+
 
         //For now don't check for isPostgres which is used below for making unique requests
         boolean isPostgres = getDatabaseManager().isDatabasePostgres();
