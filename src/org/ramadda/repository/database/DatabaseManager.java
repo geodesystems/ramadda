@@ -888,14 +888,19 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 			    connectionInfos.add(new ConnectionInfo(connection,""));
 			}
 			//		    if(xcnt++>10) {
-		    int numActive = tmpDataSource.getNumActive();
-		    if(numActive>10)
-			System.err.println("connects:" + numActive);
-		    return connection;
+			int numActive = tmpDataSource.getNumActive();
+			if(numActive==80) {
+			    if(!havePrinted)
+				printIt();
+			    havePrinted = true;
+			}
+			if(numActive>10)
+			    System.err.println("connects:" + numActive);
+			return connection;
 		    } catch(Exception exc) {
-			if(!havePrinted)
-			    printIt();
-			havePrinted = true;
+			//			if(!havePrinted)
+			printIt();
+			//			havePrinted = true;
 			throw exc;
 		    }
 		}
