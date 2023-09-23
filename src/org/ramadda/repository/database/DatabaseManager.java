@@ -739,7 +739,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             this.connection = connection;
             this.time       = System.currentTimeMillis();
             this.msg        = msg;
-            where           = Misc.getStackTrace();
+            where           = Utils.getStack(20,null,true);
         }
 
         /**
@@ -933,6 +933,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      *
      * @throws Exception _more_
      */
+    int xcnt=0;
     private Connection getConnection(String msg) throws Exception {
         try {
 	    //	    System.err.println("get connection:" + Utils.getStack(5,null,true));
@@ -949,10 +950,13 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 	    while(true) {
 		synchronized (CONNECTION_MUTEX) {
 		    connection = tmpDataSource.getConnection();
-		    
+		    synchronized(connectionInfos) {
+			connectionInfos.add(new ConnectionInfo(connection,""));
+		    }
+		    //		    if(xcnt++>10) {
 		    int numActive = tmpDataSource.getNumActive();
 		    if(numActive>50) {
-			System.err.println("connects:" + numActive);
+			//	System.err.println("connects:" + numActive);
 			printIt();
 			System.exit(0);
 		    }
