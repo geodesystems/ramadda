@@ -5062,6 +5062,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 String label = getMapLabel(request, entry, values, sdf,
                                            forPrint,numberEntries?"#" +(++cnt)+" ":"");
 
+
 		theSB.append(map.getHiliteHref(dbid, label));
                 theSB.append("</div>");
                 String info = getHtml(request, entry, dbid, getDbColumns(),
@@ -5075,6 +5076,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     mapLabel = "";
 		    mapInfo="";
                 }
+
 
 
                 if (location.hasPoint()) {
@@ -6704,7 +6706,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             lbl = "---";
         }
 
-	if(prefix.length>0 && prefix[0]!=null) lbl = prefix+lbl;
+
+	if(prefix.length>0 && prefix[0]!=null) 
+	    lbl = prefix[0]+lbl;
         return lbl;
     }
 
@@ -6812,6 +6816,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
         StringBuilder sb = new StringBuilder();
 
+
         if (dbInfo.getLabelColumns() != null) {
             for (Column labelColumn : dbInfo.getLabelColumns()) {
                 labelColumn.formatValue(request, entry, sb,
@@ -6819,7 +6824,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                         false);
                 sb.append(" ");
             }
-
             return sb.toString().trim();
         }
         for (Column column : getDbColumns()) {
