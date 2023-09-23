@@ -414,7 +414,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
 	//ds.setMaxActive(getRepository().getProperty(PROP_DB_POOL_MAXACTIVE, 100));
         //ds.setMaxIdle(getRepository().getProperty(PROP_DB_POOL_MAXIDLE,100));
-	ds.setMaxTotal(getRepository().getProperty(PROP_DB_POOL_MAXACTIVE, 200));
+	ds.setMaxTotal(getRepository().getProperty(PROP_DB_POOL_MAXACTIVE, 80));
         //60 second time out
 	ds.setMaxWaitMillis(1000 * 60);
 	//        ds.setMaxWaitMillis(-1);
@@ -949,17 +949,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 		synchronized (CONNECTION_MUTEX) {
 		    connection = tmpDataSource.getConnection();
 		    return connection;
-		    /*
-		    try {
-			if(connection!=null) return connection;
-		    } catch(Exception exc) {
-			lastException = exc;
-			Misc.sleep(sleep);
-			sleep+=50;
-			System.err.println("DatabaseManager.getConnection: had error and backing off:"+ exc);
-		    }
-		    if(tries--<=0) break;
-		    */
 		}
 	    }
 
