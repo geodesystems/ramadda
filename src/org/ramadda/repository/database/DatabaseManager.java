@@ -700,62 +700,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
 
 
-    /**
-     * Class ConnectionWrapper _more_
-     *
-     *
-     * @author RAMADDA Development Team
-     * @version $Revision: 1.3 $
-     */
-    private static class ConnectionInfo {
-
-        /** _more_ */
-        static int cnt = 0;
-
-        /** _more_ */
-        int myCnt = cnt++;
-
-
-        /** _more_ */
-        Connection connection;
-
-        /** _more_ */
-        long time;
-
-        /** _more_ */
-        String where;
-
-        /** _more_ */
-        String msg;
-
-        /**
-         * _more_
-         *
-         * @param connection _more_
-         *
-         * @param msg _more_
-         */
-        ConnectionInfo(Connection connection, String msg) {
-            this.connection = connection;
-            this.time       = System.currentTimeMillis();
-            this.msg        = msg;
-            where           = Utils.getStack(10,null,true);
-        }
-
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
-        public String toString() {
-            //            return "info:" + connection + " ";
-            //            return "info:" + msg +"\n" + where + " ";
-            return where;
-        }
-
-
-    }
-
 
     /**
      * _more_
@@ -975,6 +919,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         System.err.println("active:" + dataSource.getNumActive());
         System.err.println("idle:" + dataSource.getNumIdle());
         for (ConnectionInfo info : getConnectionInfos()) {
+	    if(info.where.indexOf("reateEntryFromDatabase")>=0) continue;
             System.out.println("*******************");
             System.out.println(info);
         }
@@ -3686,5 +3631,61 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     }
 
 
+
+    /**
+     * Class ConnectionWrapper _more_
+     *
+     *
+     * @author RAMADDA Development Team
+     * @version $Revision: 1.3 $
+     */
+    private static class ConnectionInfo {
+
+        /** _more_ */
+        static int cnt = 0;
+
+        /** _more_ */
+        int myCnt = cnt++;
+
+
+        /** _more_ */
+        Connection connection;
+
+        /** _more_ */
+        long time;
+
+        /** _more_ */
+        String where;
+
+        /** _more_ */
+        String msg;
+
+        /**
+         * _more_
+         *
+         * @param connection _more_
+         *
+         * @param msg _more_
+         */
+        ConnectionInfo(Connection connection, String msg) {
+            this.connection = connection;
+            this.time       = System.currentTimeMillis();
+            this.msg        = msg;
+            where           = Utils.getStack(10,null,true);
+        }
+
+        /**
+         * _more_
+         *
+         * @return _more_
+         */
+        public String toString() {
+            //            return "info:" + connection + " ";
+            //            return "info:" + msg +"\n" + where + " ";
+            return where;
+        }
+
+
+    }
 
 }
