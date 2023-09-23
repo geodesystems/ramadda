@@ -21,6 +21,7 @@ public class Test {
     private static int totalRead =0;
     private static int loops = 1000;
     private static int sleep=0;
+    private static int timeThreshold = 1500;
 
     public static void runTest(List<String> urls) {
 	try {
@@ -48,7 +49,7 @@ public class Test {
 			Date after = new Date();
 			long time = after.getTime()-before.getTime();
 			String title = StringUtil.findPattern(result.result,"<title>(.*?)</title>");
-			if(time>1000) {
+			if(timeThreshold>=0 && time>timeThreshold) {
 			    System.out.println("#" + urlCnt +" " + title+ " long time:" + (time) +" url:" +url);
 			}
 			long diff = (after.getTime()-startTime.getTime())/1000;
@@ -77,9 +78,15 @@ public class Test {
 	final List<String> urls=new ArrayList<String>();
 	for(int i=0;i<args.length;i++) {
 	    if(args[i].equals("-help")) {
-		System.out.println("usage: -threads <# threads> -loops <#loops> -sleep <pause after each call (ms)> <file> or <url>");
+		System.out.println("usage: -threads <# threads> -loops <#loops> -t <time threshold> -sleep <pause after each call (ms)> <file> or <url>");
 		System.exit(0);
 	    }
+
+	    if(args[i].equals("-t")) {
+		timeThreshold= Integer.parseInt(args[++i]);
+		continue;
+	    }
+
 
 	    if(args[i].equals("-threads")) {
 		numThreads = Integer.parseInt(args[++i]);
