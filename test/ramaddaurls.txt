@@ -29,7 +29,7 @@ https://ramadda.org/repository/entry/show?entryid=ec56b75b-30e8-450b-a4c0-dab2f0
 #Ensemble Time Series
 https://ramadda.org/repository/entry/show?entryid=98634143-1d70-4242-a6e2-110b7dea873c#fortest
 #GFS CONUS 80km
-https://ramadda.org/repository/entry/show?entryid=88947ad7-a654-4522-bf41-2f2ed0d07d4e#fortest
+##https://ramadda.org/repository/entry/show?entryid=88947ad7-a654-4522-bf41-2f2ed0d07d4e#fortest
 #gil201206q3h.txt
 https://ramadda.org/repository/entry/show?entryid=6f02933a-0c7d-4abe-a68a-25d047fc0260#fortest
 #Global Forecast Data
@@ -287,7 +287,8 @@ https://ramadda.org/repository/entry/show?entryid=3e3b9283-995a-41b9-86bb-33d421
 #2016 Election Map Vectors
 https://ramadda.org/repository/entry/show?entryid=2e712ca5-226b-4a7a-bca8-e16a5c52b911#fortest
 #2019 Campaign Donations Map
-https://ramadda.org/repository/entry/show?entryid=be32bbe0-0ce0-4749-85f6-4f12a97c612a#fortest
+##Skip this
+##https://ramadda.org/repository/entry/show?entryid=be32bbe0-0ce0-4749-85f6-4f12a97c612a#fortest
 #2019 Congressional Districts
 https://ramadda.org/repository/entry/show?entryid=890feacf-56e4-4032-9d9b-b93bc1357d12#fortest
 #Adult Obesity Rates
@@ -313,7 +314,8 @@ https://ramadda.org/repository/entry/show?entryid=d0946a57-1de5-49b1-a7e8-a2a927
 #Births over Time Map
 https://ramadda.org/repository/entry/show?entryid=869812ea-94f0-4658-a83c-44fb04724d15#fortest
 #Boston Crime Database
-https://ramadda.org/repository/entry/show?entryid=8d8e5375-515e-4030-8bee-e808825a7d02#fortest
+##https://ramadda.org/repository/entry/show?entryid=8d8e5375-515e-4030-8bee-e808825a7d02#fortest
+
 #Boulder Tree Inventory
 https://ramadda.org/repository/entry/show?entryid=72fd422b-98b6-480c-a41f-ca55b73e6bac#fortest
 #Capitol Insurrection
@@ -548,8 +550,10 @@ https://ramadda.org/repository/entry/show?entryid=9b9b3131-c98a-45d7-8647-01d014
 https://ramadda.org/repository/entry/show?entryid=28a824bc-a2a5-4824-ac00-f912aeda0cb7#fortest
 #External Database
 #https://ramadda.org/repository/entry/show?entryid=bedbaa6f-d82d-4226-91e2-c2d26ec7c459#fortest
+
 #FEC Election Data
-https://ramadda.org/repository/entry/show?entryid=396f3053-ce11-4452-b11b-235238d821be#fortest
+##https://ramadda.org/repository/entry/show?entryid=396f3053-ce11-4452-b11b-235238d821be#fortest
+
 #Police Traffic Stops
 https://ramadda.org/repository/entry/show?entryid=b957d3e3-b2b6-408e-b47f-11a1bd5bb8bf#fortest
 #PPP Summary
@@ -558,10 +562,13 @@ https://ramadda.org/repository/entry/show?entryid=4b816a92-f615-44a4-a40f-f92a13
 https://ramadda.org/repository/entry/show?entryid=8cfbad39-2791-4799-8c75-b151777214dc#fortest
 #The Details
 https://ramadda.org/repository/entry/show?entryid=74aa67f2-b706-4a34-9cd0-dcb5675cee86#fortest
+
 #UFO Sitings
-https://ramadda.org/repository/entry/show?entryid=7df13bbc-86f4-4dd4-b67b-221336a5b4f8#fortest
+##https://ramadda.org/repository/entry/show?entryid=7df13bbc-86f4-4dd4-b67b-221336a5b4f8#fortest
+
 #USGS Places
-https://ramadda.org/repository/entry/show?entryid=8c8dd21c-1053-4e92-81fb-0cbbc03f0cf4#fortest
+##https://ramadda.org/repository/entry/show?entryid=8c8dd21c-1053-4e92-81fb-0cbbc03f0cf4#fortest
+
 #CSV
 https://ramadda.org/repository/entry/show?ascending=true&orderby=name&entryid=1012d4bb-5e57-460a-95f5-07c997bd04e8&output=default.csv&fields=name,id&showheader=false&showheader=false
 #Airborne Data
