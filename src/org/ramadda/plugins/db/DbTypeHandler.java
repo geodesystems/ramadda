@@ -5875,8 +5875,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                       PrintWriter pw, ValueIterator iterator)
             throws Exception {
 
-	//	boolean myDebug = isType("campaign_donors");
-	boolean myDebug = false;
+	boolean myDebug = isType("campaign_donors");
+	//myDebug = false;
 
 
         //For now don't check for isPostgres which is used below for making unique requests
@@ -6099,7 +6099,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 int valueIdx = 1;
                 //                int valueIdx = 2;
 		cnt++;
-		if(myDebug) continue;
+		//		if(myDebug) continue;
                 if (doGroupBy) {
                     values =
                         new Object[aggColumns.size() + groupByColumns.size()];
