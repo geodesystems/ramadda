@@ -360,8 +360,6 @@ public class Oembed {
             this.type        = type;
             this.title       = title;
             this.author      = author;
-	    //A hack for random Youtube problems
-	    if(width!=null) width = width.replace("ti","");
             this.width       = width;
             this.height      = height;
             this.url         = url;

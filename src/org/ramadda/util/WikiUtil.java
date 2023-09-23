@@ -3990,7 +3990,11 @@ public class WikiUtil implements HtmlUtilsConstants {
         String label = (String) getWikiProperty(props, "label", "embedLabel",
                            null);
         String width = (String) getWikiProperty(props, ATTR_WIDTH, "embedWidth",
-                           "640");
+						"640");
+
+
+
+
         String height = (String) getWikiProperty(props, ATTR_HEIGHT,   "embedHeight", "390");
         String style = (String)getWikiProperty(props, ATTR_STYLE, "embedStyle",getWikiProperty(props, ATTR_STYLE, ATTR_STYLE,null));
         StringBuilder sb = new StringBuilder();
@@ -4036,6 +4040,8 @@ public class WikiUtil implements HtmlUtilsConstants {
 	    String title = obj.getString(ATTR_TITLE);
 	    String wurl = JsonUtil.readValue(obj, "content_urls.desktop.page","");
             width = Utils.getProperty(props, ATTR_WIDTH,null);
+
+
             height = Utils.getProperty(props, ATTR_HEIGHT,"200px");	    
 	    String extract = obj.optString("extract_html","").trim();
 	    extract=extract.replaceAll("^(<p>)+","").replaceAll("(</p>)+$","");
@@ -4064,7 +4070,7 @@ public class WikiUtil implements HtmlUtilsConstants {
         } else if(url.equals("github")) {
 	    embedGithub(sb,props);
 	} else {
-            Oembed.Response response = Oembed.get(url, width, height);
+	    Oembed.Response response = Oembed.get(url, width, height);
             if (response != null) {
                 sb.append(response.getHtml());
             } else {
