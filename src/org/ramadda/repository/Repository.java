@@ -5330,7 +5330,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    return props;
         } catch (Exception exc) {
             getLogManager().logError("Error reading globals", exc);
-	    return null;
+	    return dbPropertiesDummy;
         }
     }
 
