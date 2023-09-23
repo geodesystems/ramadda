@@ -46,7 +46,7 @@ public class Test {
 			totalRead++;
 			Date after = new Date();
 			long time = after.getTime()-before.getTime();
-			if(time>500) {
+			if(time>1000) {
 			    System.err.println("#" + urlCnt +" long time:" + (time) +" url:" +url);
 			}
 			long diff = (after.getTime()-startTime.getTime())/1000;
