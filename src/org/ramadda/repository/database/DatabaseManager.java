@@ -934,6 +934,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      * @throws Exception _more_
      */
     int xcnt=0;
+    boolean havePrinted = false;
     private Connection getConnection(String msg) throws Exception {
         try {
 	    //	    System.err.println("get connection:" + Utils.getStack(5,null,true));
@@ -955,10 +956,11 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 		    }
 		    //		    if(xcnt++>10) {
 		    int numActive = tmpDataSource.getNumActive();
+		    System.err.println("connects:" + numActive);
 		    if(numActive>50) {
-			//	System.err.println("connects:" + numActive);
-			printIt();
-			System.exit(0);
+			if(!havePrinted)
+			    printIt();
+			havePrinted = true;
 		    }
 		    return connection;
 		}
