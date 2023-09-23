@@ -612,6 +612,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
 
 
+
     public String getStatusMessage() {
 	BasicDataSource bds    = (BasicDataSource) dataSource;
 	if(bds!=null) {
@@ -948,6 +949,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 	    while(true) {
 		synchronized (CONNECTION_MUTEX) {
 		    connection = tmpDataSource.getConnection();
+		    System.err.println("connects:" + tmpDataSource.getNumActive());
 		    return connection;
 		}
 	    }
