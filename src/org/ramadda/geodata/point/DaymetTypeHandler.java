@@ -106,13 +106,10 @@ public class DaymetTypeHandler extends PointTypeHandler {
             dateSDF = RepositoryUtil.makeDateFormat("yyyy-MM-dd");
         }
         String startDate = "1980-01-01";
-        String endDate   = dateSDF.format(cal.getTime());
+        String endDate   = Utils.format(dateSDF,cal.getTime());
         if (entry.getStartDate() < entry.getEndDate()) {
-	    //not thread safe
-	    synchronized(dateSDF) {
-		startDate = dateSDF.format(new Date(entry.getStartDate()));
-		endDate   = dateSDF.format(new Date(entry.getEndDate()));
-	    }		
+	    startDate = Utils.format(dateSDF,new Date(entry.getStartDate()));
+	    endDate   = Utils.format(dateSDF,new Date(entry.getEndDate()));
         }
         url = url.replace("${start}", startDate);
         url = url.replace("${end}", endDate);
@@ -234,24 +231,6 @@ public class DaymetTypeHandler extends PointTypeHandler {
 
 
 
-    }
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
-    public static void main(String[] args) throws Exception {
-        //        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-        SimpleDateFormat sdf =
-            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-        SimpleDateFormat sdf2 =
-            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-        //        String value = "2018-11-01T04:45:00.000Z";
-        String value = "2018-11-01T04:45:00.000Z";
-        System.err.println("date:" + sdf2.format(sdf.parse(value)));
     }
 
 

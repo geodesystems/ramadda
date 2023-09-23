@@ -566,13 +566,14 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 		url=HU.url(url, "read_key",privateKey);
 	    }
 
-	    if(startTimestamp!=null) url=HU.url(url,
-						ARG_START_TIMESTAMP,sdf.format(startTimestamp.getTime())+"T00:00:00Z");
+	    
+	    if(startTimestamp!=null) 
+		url=HU.url(url,ARG_START_TIMESTAMP,Utils.format(sdf,startTimestamp.getTime())+"T00:00:00Z");
 	    //Always have an end time
 	    Date endTime = endTimestamp!=null?endTimestamp:new Date();;
 	    if(endTime!=null) url=HU.url(url,
-					 ARG_END_TIMESTAMP,sdf.format(endTime.getTime())+"T23:59:59Z");
-	    try {
+					 ARG_END_TIMESTAMP,Utils.format(sdf,endTime.getTime())+"T23:59:59Z");
+		try {
 		IO.Result result  = IO.getInputStreamFromGet(new URL(url),"X-API-Key",apiKey);
 		if(result.getError()) {
 		    String message = result.getResult();

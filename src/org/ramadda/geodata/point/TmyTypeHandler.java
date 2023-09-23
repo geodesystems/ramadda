@@ -157,24 +157,6 @@ public class TmyTypeHandler extends PointTypeHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
-    public static void main(String[] args) throws Exception {
-        //        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-        SimpleDateFormat sdf =
-            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-        SimpleDateFormat sdf2 =
-            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-        //        String value = "2018-11-01T04:45:00.000Z";
-        String value = "2018-11-01T04:45:00.000Z";
-        System.err.println("date:" + sdf2.format(sdf.parse(value)));
-    }
-
 
 
 

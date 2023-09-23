@@ -173,9 +173,9 @@ public class OpenAQTypeHandler extends PointTypeHandler {
         if (dateSDF == null) {
             dateSDF = Utils.makeDateFormat("yyyy-MM-dd'T'HH:mm");
         }
-        String endDate = dateSDF.format(cal.getTime());
+        String endDate = Utils.format(dateSDF,cal.getTime());
         cal.add(cal.HOUR_OF_DAY, -hoursOffset.intValue());
-        String startDate = dateSDF.format(cal.getTime());
+        String startDate = Utils.format(dateSDF,cal.getTime());
 	String url  = HU.url("https://api.openaq.org/v2/measurements",
 			     "format","csv",
 			     "limit","1000",
