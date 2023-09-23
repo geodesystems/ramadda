@@ -246,12 +246,26 @@ public class Utils extends IO {
      * @return _more_
      */
     public static String format(Date date) {
-        synchronized (sdf) {
-            //The sdf produces a time zone that isn't RFC3399 compatible so we just tack on the "Z"
-            return sdf.format(date) + "Z";
-        }
+	//The sdf produces a time zone that isn't RFC3399 compatible so we just tack on the "Z"
+	return format(sdf, date)+"Z";
     }
 
+
+    //Formats in a synchronized block
+    public static String format(SimpleDateFormat sdf,Date date) {
+        synchronized (sdf) {
+            return sdf.format(date);
+        }
+    }    
+
+
+    //Formats in a synchronized block
+    public static String format(SimpleDateFormat sdf,long date) {
+        synchronized (sdf) {
+            return sdf.format(date);
+        }
+    }    
+    
 
     /**
      * _more_
