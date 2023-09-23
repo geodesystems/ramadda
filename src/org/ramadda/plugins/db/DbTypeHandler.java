@@ -5875,6 +5875,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                       PrintWriter pw, ValueIterator iterator)
             throws Exception {
 
+	boolean myDebug = isType("campaign_donors");
+	System.err.println(myDebug);
+
         //For now don't check for isPostgres which is used below for making unique requests
         boolean isPostgres = getDatabaseManager().isDatabasePostgres();
         isPostgres = false;
@@ -6066,7 +6069,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     max);
             SqlUtil.debug = false;
             long t2 = System.currentTimeMillis();
-	    Utils.printTimes("DbTypeHandler select: "+ clause + " extra:" + extra,t1,t2);
+	    if(myDebug)
+		Utils.printTimes("DbTypeHandler select: "+ clause + " extra:" + extra +" time:" ,t1,t2);
         } catch (Exception exc) {
             System.err.println("Error in select:");
             System.err.println("table:" + tableHandler.getTableName());
@@ -6078,6 +6082,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             SqlUtil.debug = false;
         }
 
+
         HashSet seenValue = new HashSet();
         try {
             long t1 = System.currentTimeMillis();
@@ -6088,9 +6093,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    if(samplePercent>0) {
 		samplePercent = Math.min(samplePercent,100)/100;
 	    }
+	    int cnt=0;
             while ((results = iter.getNext()) != null) {
                 int valueIdx = 1;
                 //                int valueIdx = 2;
+		cnt++;
+		if(myDebug) continue;
                 if (doGroupBy) {
                     values =
                         new Object[aggColumns.size() + groupByColumns.size()];
@@ -6124,7 +6132,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         result.add(values);
                     }
                 } else {
-                    //              Object[] values = Column.makeValueArray(selectedColumns);
                     if (values == null) {
                         values = tableHandler.makeEntryValueArray();
                     }
@@ -6166,9 +6173,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         values = null;
                     }
                 }
-            }
+	    }
             long t2 = System.currentTimeMillis();
-	    Utils.printTimes("DbTypeHandler processing:",t1,t2);
+	    if(myDebug)
+		Utils.printTimes("DbTypeHandler processing: #" + cnt+" time: ",t1,t2);
         } finally {
             getRepository().getDatabaseManager().closeAndReleaseConnection(
                 stmt);
