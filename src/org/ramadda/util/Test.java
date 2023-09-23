@@ -12,6 +12,7 @@ import java.util.Date;
 
 import java.net.URL;
 import ucar.unidata.util.Misc;
+import ucar.unidata.util.StringUtil;
 
 public class Test {
     private static Date startTime;
@@ -46,8 +47,9 @@ public class Test {
 			totalRead++;
 			Date after = new Date();
 			long time = after.getTime()-before.getTime();
+			String title = StringUtil.findPattern(result.result,"<title>(.*?)</title>");
 			if(time>1000) {
-			    System.err.println("#" + urlCnt +" long time:" + (time) +" url:" +url);
+			    System.err.println("#" + urlCnt +" " + title+ " long time:" + (time) +" url:" +url);
 			}
 			long diff = (after.getTime()-startTime.getTime())/1000;
 			int callsPer = diff<=0?0:(int)(totalRead/(double)diff);
