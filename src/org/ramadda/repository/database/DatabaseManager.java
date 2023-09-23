@@ -949,7 +949,13 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 	    while(true) {
 		synchronized (CONNECTION_MUTEX) {
 		    connection = tmpDataSource.getConnection();
-		    System.err.println("connects:" + tmpDataSource.getNumActive());
+		    
+		    int numActive = tmpDataSource.getNumActive();
+		    if(numActive>50) {
+			System.err.println("connects:" + numActive);
+			printIt();
+			System.exit(0);
+		    }
 		    return connection;
 		}
 	    }
