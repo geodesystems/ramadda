@@ -40,7 +40,7 @@ public class Test {
 		    Date before = new Date();
 		    IO.Result result = IO.doGetResult(new URL(url));
 		    if(result.getError()) {
-			System.err.println("read error:" + result.getResult());
+			System.out.println("read error:" + result.getResult());
 			return;
 		    }
 		    synchronized(MUTEX) {
@@ -49,7 +49,7 @@ public class Test {
 			long time = after.getTime()-before.getTime();
 			String title = StringUtil.findPattern(result.result,"<title>(.*?)</title>");
 			if(time>1000) {
-			    System.err.println("#" + urlCnt +" " + title+ " long time:" + (time) +" url:" +url);
+			    System.out.println("#" + urlCnt +" " + title+ " long time:" + (time) +" url:" +url);
 			}
 			long diff = (after.getTime()-startTime.getTime())/1000;
 			int callsPer = diff<=0?0:(int)(totalRead/(double)diff);
@@ -60,7 +60,7 @@ public class Test {
 		}
 	    }
 	} catch(Exception exc) {
-	    System.err.println("error:" + exc);
+	    System.out.println("error:" + exc);
 	    return;
 	}
     }
@@ -77,7 +77,7 @@ public class Test {
 	final List<String> urls=new ArrayList<String>();
 	for(int i=0;i<args.length;i++) {
 	    if(args[i].equals("-help")) {
-		System.err.println("usage: -threads <# threads> -loops <#loops> -sleep <pause after each call (ms)> <file> or <url>");
+		System.out.println("usage: -threads <# threads> -loops <#loops> -sleep <pause after each call (ms)> <file> or <url>");
 		System.exit(0);
 	    }
 
@@ -101,7 +101,7 @@ public class Test {
 	    }
 	    urls.add(args[i]);
 	}
-	System.err.println("num threads:" + numThreads);
+	System.out.println("num threads:" + numThreads);
 	int threads = numThreads;
 	for(int i=0;i<threads;i++) {
 	    Misc.runInABit(1000,new Runnable() {
@@ -109,7 +109,7 @@ public class Test {
 			runTest(urls);
 			synchronized(MUTEX) {
 			    numThreads--;
-			    System.err.println("DONE:" + numThreads);
+			    System.out.println("DONE:" + numThreads);
 			}
 		    }
 		});
@@ -121,7 +121,7 @@ public class Test {
 	    }
 	    Misc.sleep(500);
 	}
-	System.err.println("Finished");
+	System.out.println("Finished");
 	System.exit(0);
     }
 
