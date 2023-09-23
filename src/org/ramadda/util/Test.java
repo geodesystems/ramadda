@@ -25,6 +25,7 @@ public class Test {
 	try {
 	    int cnt=0;
 	    while(cnt++<loops) {
+		int urlCnt=0;
 		for(String url:urls) {
 		    url = url.trim();
 		    if(url.startsWith("#")) continue;
@@ -35,15 +36,24 @@ public class Test {
 			continue;
 		    }
 		    
+		    Date before = new Date();
 		    IO.Result result = IO.doGetResult(new URL(url));
 		    if(result.getError()) {
 			System.err.println("read error:" + result.getResult());
 			return;
 		    }
-		    synchronized(MUTEX) {totalRead++;}
-		    long diff = (new Date().getTime()-startTime.getTime())/1000;
-		    int callsPer = diff<=0?0:(int)(totalRead/(double)diff);
-		    System.out.println("read:" + totalRead + " calls/s:" + callsPer);
+		    synchronized(MUTEX) {
+			totalRead++;
+			Date after = new Date();
+			long time = after.getTime()-before.getTime();
+			if(time>500) {
+			    System.err.println("#" + urlCnt +" long time:" + (time) +" url:" +url);
+			}
+			long diff = (after.getTime()-startTime.getTime())/1000;
+			int callsPer = diff<=0?0:(int)(totalRead/(double)diff);
+			System.out.println("#" + (urlCnt++)+" total read:" + totalRead + " calls/s:" + callsPer +" time:" + time);
+
+		    }
 		    if(sleep>0) Misc.sleep(sleep);
 		}
 	    }
