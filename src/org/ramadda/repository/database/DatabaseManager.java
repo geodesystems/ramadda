@@ -887,15 +887,15 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 			synchronized(connectionInfos) {
 			    connectionInfos.add(new ConnectionInfo(connection,""));
 			}
-			//		    if(xcnt++>10) {
+			/*
 			int numActive = tmpDataSource.getNumActive();
-			if(numActive==80) {
-			    if(!havePrinted)
-				printIt();
+			if(numActive==20) {
+			    if(!havePrinted)printIt();
 			    havePrinted = true;
 			}
-			if(numActive>10)
-			    System.err.println("connects:" + numActive);
+			*/
+			//			if(numActive>10)
+			//			System.err.println("connects:" + numActive + " infos:" +  getConnectionInfos().size());
 			return connection;
 		    } catch(Exception exc) {
 			//			if(!havePrinted)
@@ -923,8 +923,9 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     public void printIt() {
         System.err.println("active:" + dataSource.getNumActive());
         System.err.println("idle:" + dataSource.getNumIdle());
+        System.err.println("connections:" + getConnectionInfos().size());
         for (ConnectionInfo info : getConnectionInfos()) {
-	    if(info.where.indexOf("reateEntryFromDatabase")>=0) continue;
+	    //	    if(info.where.indexOf("reateEntryFromDatabase")>=0) continue;
             System.out.println("*******************");
             System.out.println(info);
         }
@@ -946,7 +947,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 			|| info.connection.equals(connection)) {
                         connectionInfos.remove(info);
                         gotOne = true;
-
                         break;
                     }
                 }
