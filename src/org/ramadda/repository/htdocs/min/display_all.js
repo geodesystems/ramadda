@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Sep 22 08:04:01 MDT 2023";
+var build_date="RAMADDA build date: Sun Sep 24 17:47:31 MDT 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -10072,7 +10072,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(this.filters) {
 		for(let i=0;i<this.filters.length;i++) {
 		    let filter = this.filters[i];
-		    if(filter.field && filter.field.getId() == fieldId) return this.filters[i];
+		    if(filter.field && filter.field.getId() == fieldId) return filter;
+		    if(filter.id == fieldId) return filter;		    
 		}
 	    }
 	    return null;
@@ -17092,9 +17093,10 @@ function RecordFilter(display,filterFieldId, properties) {
 	prepareToFilter: function() {
 //	    console.log(this+" prepareToFilter");
 	    this.mySearch = null;
-	    if(this.depend) {
+	    if(this.filterIDependOn) {
 		this.checkDependency();
 	    }
+
 	    if(!this.isEnabled()) {
 		return;
 	    }
@@ -17159,6 +17161,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    if(!anyValues && values) {
 		values.forEach(v=>{if(v.length>0 && v!= FILTER_ALL)anyValues = true});
 	    }
+	    //console.log("\t",this+" any values:" + anyValues);
 	    if(anyValues) {
 		this.mySearch =  {
 		    value:value,
@@ -17446,23 +17449,30 @@ function RecordFilter(display,filterFieldId, properties) {
 	    }
 	},
 	checkDependency: function() {
-	    if(!this.depend || !this.records || !this.dependMySearch || !this.depend.mySearch || !this.dependMySearch.values || !this.depend.mySearch.values) {
-		console.log("no depend:" + this.depend +" " + (this.records!=null) + " " + this.dependMySearch);
+	    if(!this.filterIDependOn || !this.records) {
+		return;
+	    }
+
+
+	    /*
+	    if(!this.dependMySearch || !this.filterIDependOn.mySearch || !this.dependMySearch.values || !this.filterIDependOn.mySearch.values) {
+		console.log("checkDependency: not ready:" +  " my search:" + this.dependMySearch);
 		return;
 	    }
 
 	    let v1 = this.dependMySearch.values;
-	    let v2 = this.depend.mySearch.values;
+	    let v2 = this.filterIDependOn.mySearch.values;
 	    if(v1.length == v2.length) {
 		let equals = true;
 		for(let i=0;i<v1.length && equals;i++)
 		    equals = v1[i] == v2[i];
 		if(equals) return;
 	    }
+*/
             let enums = this.getEnums(this.records);
 	    let widgetId = this.getFilterId(this.getId());
 	    let tmp = [];
-	    enums.map(e=>tmp.push(e.value));
+	    enums.forEach(e=>tmp.push(e.value));
 	    this.display.ignoreFilterChange = true;
 	    let widget = $("#" + widgetId);
 	    let val = widget.val();
@@ -17921,10 +17931,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		})
 	    }
 	    if(enums == null) {
-		let depend = this.getProperty(this.getId() +".depends");
-		if(depend) {
-		    depend=this.depend = this.display.getRecordFilter(depend);
-		}
+		let depends = this.getProperty(this.getId() +".depends");
+		this.filterIDependOn = !depends?null:this.display.getRecordFilter(depends);
 		let allName = this.getProperty(this.getId() +".allName",!showLabel?this.getLabel():"All");
 		enums = [];
 		let includeAll = this.getIncludeAll();
@@ -17944,15 +17952,14 @@ function RecordFilter(display,filterFieldId, properties) {
 		let imageField=this.display.getFieldByType(null, "image");
 		let valuesAreNumbers = true;
 
-		if(depend) {
-		    depend.prepareToFilter();
-		    this.dependMySearch = depend.mySearch;
+		if(this.filterIDependOn) {
+		    this.filterIDependOn.prepareToFilter();
+//		    console.log('getEnums: dependencys search info:',this.filterIDependOn.mySearch)
 		}
 
-
 		records.forEach((record,idx)=>{
-		    if(depend) {
-			if(!depend.isRecordOk(record,idx<5)) return;
+		    if(this.filterIDependOn) {
+			if(!this.filterIDependOn.isRecordOk(record)) return;
 		    }
 		    let value =this.getValue(record);
 		    let values;
@@ -17989,7 +17996,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		    });
 		});
 		if(this.getProperty(this.getId() +".filterSort",this.getProperty('filterSort',true))) {
-		    let sortCount = this.getProperty(this.getId() +".filterSortCount",true);
+		    let sort = this.getProperty(this.getId() +".filterSort",this.getProperty('filterSort',false));
+		    let sortCount = this.getProperty(this.getId() +".filterSortCount",!sort);
 		    enumValues.sort((a,b)  =>{
 			if(sortCount && a.count && b.count) {
 			    if(b.count!=a.count)
