@@ -38,6 +38,8 @@ import java.io.*;
 
 import java.lang.reflect.*;
 
+import java.util.function.Consumer;
+
 import java.net.*;
 
 import java.sql.ResultSet;
@@ -563,6 +565,42 @@ public class MetadataManager extends RepositoryManager {
 
     }
 
+
+    public String getTwitterCard(Request request, Entry entry) throws Exception {
+	List<String[]> thumbnails = new ArrayList<String[]>();
+	getFullThumbnailUrls(request, entry, thumbnails);
+	String type = thumbnails.size()>0?"summary_large_image":"summary";
+        StringBuilder sb =  new StringBuilder();
+	String end = "\">\n";
+        String snippet = getWikiManager().getRawSnippet(request, entry,
+                             false);
+	Utils.BiConsumer<String,String> m = (t,v) -> {
+	    sb.append("<meta name=\"" + t+"\" content=\"" + XmlUtil.encodeString(v) +end);
+	};
+
+	m.accept("twitter:title",entry.getName());
+	if(snippet!=null) {
+	    m.accept("twitter:description",snippet);
+	}
+	if(thumbnails.size()>0) {
+	    m.accept("twitter:image",      request.getAbsoluteUrl(thumbnails.get(0)[0]));
+	    if(stringDefined(thumbnails.get(0)[1])) {
+		m.accept("twitter:image:alt",thumbnails.get(0)[1]);
+	    }
+	}
+        List<Metadata> author =
+            findMetadata(request, entry,
+			 new String[]{"metadata_author"},true);
+
+	if(author!=null && author.size()>0) {
+	    String id = author.get(0).getAttr(4);
+	    if(stringDefined(id))
+		m.accept("twitter:creator",id);
+
+	}
+        return sb.toString();
+    }
+    
     /**
      *
      * @param request _more_

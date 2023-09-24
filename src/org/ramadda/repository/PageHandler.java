@@ -254,8 +254,9 @@ public class PageHandler extends RepositoryManager {
     private boolean showCreateDate;
 
     /** _more_ */
-    private boolean showJsonLd;
+    private boolean showJsonLd;    
 
+    private boolean showTwitterCard;
     /** _more_ */
     private boolean showSearch;
 
@@ -341,6 +342,7 @@ public class PageHandler extends RepositoryManager {
                                         false);
 
         showJsonLd = getRepository().getProperty("ramadda.showjsonld", false);
+        showTwitterCard = getRepository().getProperty("ramadda.showtwittercard", false);	
         showSearch = getRepository().getProperty("ramadda.showsearch", true);
         createdDisplayMode =
             getRepository().getProperty(PROP_CREATED_DISPLAY_MODE,
@@ -755,7 +757,6 @@ public class PageHandler extends RepositoryManager {
         }
 
         //make the request to base.js be unique every time so the browser does not cache it
-
         HU.script(head, getRepository().getBaseJs(request));
         head.append(webImports);
         String head2 = request.getHead();
@@ -763,10 +764,15 @@ public class PageHandler extends RepositoryManager {
             head.append(head2);
             request.clearHead();
         }
-        if (request.get("ramadda.showjsonld", true) && showJsonLd
-                && (currentEntry != null)) {
-            head.append(getMetadataManager().getJsonLD(request,
-                    currentEntry));
+	if(prefix && currentEntry!=null) {
+	    if (request.get("ramadda.showjsonld", true) && showJsonLd) {
+		head.append(getMetadataManager().getJsonLD(request,
+							   currentEntry));
+	    }
+	    if (request.get("ramadda.showtwittercard", true) && showTwitterCard) {
+		head.append(getMetadataManager().getTwitterCard(request,
+								currentEntry));
+	    }	    
         }
         String imports   = head.toString();
         String logoImage = getLogoImage(result);

@@ -100,6 +100,7 @@
       <element name="Name"/>
       <element name="Email"/>
       <element name="Organization"/>
+      <element name="Twitter handle" suffix="Optional @handle"/>      
     </type>
 
     <type
