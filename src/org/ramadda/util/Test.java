@@ -111,7 +111,7 @@ public class Test {
 	System.out.println("num threads:" + numThreads);
 	int threads = numThreads;
 	for(int i=0;i<threads;i++) {
-	    Misc.runInABit(1000,new Runnable() {
+	    Misc.runInABit(100,new Runnable() {
 		    public void run() {
 			runTest(urls);
 			synchronized(MUTEX) {
@@ -120,6 +120,8 @@ public class Test {
 			}
 		    }
 		});
+	    //Stagger the threads
+	    Misc.sleep(10);
 	}
 	
 	while(true) {
