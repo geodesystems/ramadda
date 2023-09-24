@@ -6283,7 +6283,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(this.filters) {
 		for(let i=0;i<this.filters.length;i++) {
 		    let filter = this.filters[i];
-		    if(filter.field && filter.field.getId() == fieldId) return this.filters[i];
+		    if(filter.field && filter.field.getId() == fieldId) return filter;
+		    if(filter.id == fieldId) return filter;		    
 		}
 	    }
 	    return null;
