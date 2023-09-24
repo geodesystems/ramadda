@@ -65,18 +65,20 @@ sudo cp ${DIST}/plugins/devplugins/* ${RAMADDA_HOME}/plugins
 sudo cp ${DIST}/plugins/projectplugins/* ${RAMADDA_HOME}/plugins
 
 #Copy the environment
-echo "Saving the .env"
-cp -f ${SERVER_DIR}/ramaddaenv.sh ${RUNTIME_DIR}
-mv ${SERVER_DIR} ${SERVER_DIR}_BAK
+RUNTIME_ENV="${RUNTIME_DIR}/ramaddaenv.sh"
+if [ ! -f "${RUNTIME_ENV}" ]; then
+    echo "Copying a local ramaddaenv.sh"
+    cp -f ${SERVER_DIR}/ramaddaenv.sh ${RUNTIME_ENV}
+fi
 
+mv ${SERVER_DIR} ${SERVER_DIR}_BAK
 cp -r ${DIST}/ramaddaserver ${RUNTIME_DIR}
 chmod 755 ${SERVER_DIR}/*.sh
-cp ${RUNTIME_DIR}/ramaddaenv.sh ${SERVER_DIR}
+#cp ${RUNTIME_DIR}/ramaddaenv.sh ${SERVER_DIR}
 
 echo "Starting RAMADDA"
 sudo service ramadda start
 
 rm -r ${SERVER_DIR}_BAK
-
 popd
 
