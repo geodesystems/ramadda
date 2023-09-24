@@ -7752,10 +7752,10 @@ public class EntryManager extends RepositoryManager {
 	Entry entry = createEntryFromDatabase(request.getString(ARG_ENTRYID,""),false);
 	synchronized(TESTMUTEX) {testCnt--;}
 	if(entry==null) {
-	    System.err.println("no entry: testCnt:" + testCnt);
+	    //	    System.err.println("no entry: testCnt:" + testCnt);
 	    return new Result("no entry", MIME_TEXT);
 	} else {
-	    System.err.println("entry:"+ entry.getName() +" testCnt:" + testCnt);
+	    //	    System.err.println("entry:"+ entry.getName() +" testCnt:" + testCnt);
 	    return new Result("entry:" + entry.getName(), MIME_TEXT);
 	}
     }
