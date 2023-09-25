@@ -578,6 +578,7 @@ public class MetadataManager extends RepositoryManager {
 	    sb.append("<meta name=\"" + t+"\" content=\"" + XmlUtil.encodeString(v) +end);
 	};
 
+	m.accept("twitter:card",type);
 	m.accept("twitter:title",entry.getName());
 	if(snippet!=null) {
 	    m.accept("twitter:description",snippet);

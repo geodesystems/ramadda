@@ -2738,6 +2738,11 @@ public class Request implements Constants, Cloneable {
         if (userAgent.indexOf("slack.com") >= 0) {
             return false;
         }
+	//Let twitterbot through
+	if(userAgent.indexOf("Twitterbot") >= 0) {
+	    return false;
+	}
+
 	//Let google through
 	if(userAgent.indexOf("googlebot") >= 0) {
 	    //not now	    return false;
