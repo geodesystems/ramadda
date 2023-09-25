@@ -3508,9 +3508,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     public Result handleRequest(Request request) throws Exception {
-	System.err.println("handleRequest:" + request);
-
-
 	//Add in any default http headers
 	for(String[]pair: httpHeaders) {
 	    request.setHeader(pair[0],pair[1]);
@@ -3525,19 +3522,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             return result;
         }
 
-        long t1 = System.currentTimeMillis();
-        propcnt = 0;
-	//	propdebug = true;
         Result result = handleRequestInner(request);
-
-
-
-
-
-        long   t2     = System.currentTimeMillis();
-	String path       = request.getRequestPath();
-	//	if(path.indexOf("/entry/show")>=0) System.err.println((t2-t1) +" " +path +" " + propcnt);
-	propdebug = false;
         return result;
     }
 
@@ -3629,8 +3614,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
             debugSession(request,
                          "RAMADDA.handleRequest:" + request.getRequestPath());
         }
+	//TODO
+	System.err.println("handleRequest:" + request);
         if (request.getIsRobot()) {
+	    //TODO
+	    System.err.println("is bot");
             if ( !acceptRobots()) {
+		//TODO
+		System.err.println("not accepting robots");
                 return getNoRobotsResult(request);
             }
             //Sleep a second to slow the google bot down
@@ -3640,7 +3631,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 Misc.sleepSeconds(60);
             } else {
                 //Slow other bots down
-                Misc.sleepSeconds(1);
+		//                Misc.sleepSeconds(1);
             }
         }
 
@@ -3649,12 +3640,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    if (blacklistList.size()>0) {
 		for(String prefix: blacklistList) {
 		    if(ip.startsWith(prefix)) {
+			//TODO
+			System.err.println("is blacklist:" + ip);
 			return makeBlockedResult(request);
 		    }
 		}
 	    } 
 
             if ((ip != null) && blacklist.contains(ip)) {
+		//TODO
+		System.err.println("is blacklist:" + ip);
                 return makeBlockedResult(request);
             }
         }
@@ -3664,6 +3659,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (userAgent != null) {
             if ((userAgent.indexOf("OpenVAS") >= 0)
 		|| (userAgent.indexOf("GBN") >= 0)) {
+		//TODO
+		System.err.println("is bad UA:" + userAgent);
                 return makeBlockedResult(request);
             }
         }
@@ -3671,6 +3668,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         String requestPath = request.getRequestPath();
         //Check for scanners
         if (requestPath.endsWith(".php")) {
+	    System.err.println("is php");
             return makeBlockedResult(request);
         }
 
@@ -3707,8 +3705,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
             if (result == null) {
                 result = getResult(request);
+		System.err.println("got result");
             }
         } catch (Throwable exc) {  //getResult error
+	    System.err.println("error:" + exc);
+
             //In case the session checking didn't set the user
             if (request.getUser() == null) {
                 request.setUser(getUserManager().getAnonymousUser());
@@ -3774,10 +3775,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
             if (!request.responseAsJson() && (request.getUser() != null) && request.getUser().getAdmin()) {
-                sb.append(
-			  HU.pre(
-				 HU.strictSanitizeString(
-							 LogUtil.getStackTrace(inner))));
+                sb.append(HU.pre(HU.strictSanitizeString(LogUtil.getStackTrace(inner))));
             }
 
             result = new Result(msg("Error"), sb);
@@ -4126,6 +4124,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    long t1 = System.currentTimeMillis();
 	    Result result =  getHtdocsFile(request);
 	    if(result==null) {
+		//TODO
+		System.err.println("got 404");
 		return make404(request);
 	    }
 	    //Don't do this for now
@@ -4133,12 +4133,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    long t2 = System.currentTimeMillis();
 	    //	    String path       = request.getRequestPath();
 	    //	    System.err.println("time: " + (t2-t1) +"ms  " +path);
+	    //TODO
+	    System.err.println("got htdocs");
 	    return result;
         }
 
         Result sslRedirect = checkForSslRedirect(request, apiMethod);
         if (sslRedirect != null) {
             debugSession(request, "redirecting to ssl:" + request.getUrl());
+	    //TODO
+	    System.err.println("sslredirect");
             return sslRedirect;
         }
 
@@ -4159,15 +4163,21 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
         if ( !getUserManager().isRequestOk(request)) {
+		//TODO
+		System.err.println("not ok-1");
             throw new AccessException(msg("You do not have permission to access this page"),request);
         }
 
         if ( !apiMethod.isRequestOk(request, this)) {
+		//TODO
+		System.err.println("not ok-2");
             throw new AccessException(msg("Incorrect access"), request);
         }
         Result result = null;
         try {
 	    result = (Result) apiMethod.invoke(request);
+	    //TODO
+	    System.err.println("got result");
         } catch (Exception exc) {
             Throwable inner = LogUtil.getInnerException(exc);
             if (inner instanceof RepositoryUtil.MissingEntryException) {
