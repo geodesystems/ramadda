@@ -580,8 +580,8 @@ public class MetadataManager extends RepositoryManager {
 
 	m.accept("twitter:card",type);
 	m.accept("twitter:title",entry.getName());
-	if(snippet!=null) {
-	    m.accept("twitter:description",snippet);
+	if(stringDefined(snippet)) {
+	    m.accept("twitter:description",snippet.replace("\n"," ").trim());
 	}
 	if(thumbnails.size()>0) {
 	    m.accept("twitter:image",      request.getAbsoluteUrl(thumbnails.get(0)[0]));
