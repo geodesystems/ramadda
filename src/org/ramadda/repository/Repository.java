@@ -3508,6 +3508,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     public Result handleRequest(Request request) throws Exception {
+	System.err.println("handleRequest:" + request);
+
+
 	//Add in any default http headers
 	for(String[]pair: httpHeaders) {
 	    request.setHeader(pair[0],pair[1]);
