@@ -1877,7 +1877,6 @@ public class Admin extends RepositoryManager {
                                         false));
         getRepository().writeGlobal(PROP_ACCESS_NOBOTS,
                                     request.get(PROP_ACCESS_NOBOTS, false));
-	System.err.println("set " + request.get(PROP_ACCESS_NOGOOGLEBOT, false));
         getRepository().writeGlobal(PROP_ACCESS_NOGOOGLEBOT,
                                     request.get(PROP_ACCESS_NOGOOGLEBOT, false));	
 

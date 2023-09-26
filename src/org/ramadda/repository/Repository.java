@@ -4628,8 +4628,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         minifiedOk            = getProperty(PROP_MINIFIED, true);
         acceptRobots          = !getProperty(PROP_ACCESS_NOBOTS, false);
         acceptGoogleBot       = !getProperty(PROP_ACCESS_NOGOOGLEBOT, false);	
-	System.err.println("Repository.acceptRobots=" +acceptRobots);
-	System.err.println("Repository.acceptGoogleBot=" +acceptGoogleBot);
         commentsEnabled       =  getProperty("ramadda.enable_comments", false);
 	useFixedHostName      =  getProperty(PROP_USE_FIXED_HOSTNAME, false);
         corsOk                = getProperty(PROP_CORS_OK, false);
