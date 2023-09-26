@@ -864,7 +864,8 @@ RepositoryMap.prototype = {
 	latlon.bottom = r(latlon.bottom);
 	latlon.right = r(latlon.right);
 
-	HU.addToDocumentUrl("map_bounds",latlon.top + "," + latlon.left + "," + latlon.bottom + "," + latlon.right);
+	//Don't include the bounds
+//	HU.addToDocumentUrl("map_bounds",latlon.top + "," + latlon.left + "," + latlon.bottom + "," + latlon.right);
 	if(debugBounds)
 	    console.log("locationChanged: setting url args:",this.getMap().getZoom());
 	HU.addToDocumentUrl(ARG_ZOOMLEVEL , this.getMap().getZoom());
