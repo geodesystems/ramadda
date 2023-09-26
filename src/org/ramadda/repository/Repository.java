@@ -530,7 +530,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private boolean minifiedOk = true;
 
-    private boolean acceptRobots = true;    
+    private boolean acceptRobots = true;
+
+    private boolean acceptGoogleBot = true;        
 
     private boolean commentsEnabled  =false;
 
@@ -3538,6 +3540,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private boolean acceptRobots() {
         return acceptRobots;
     }
+    
+    private boolean acceptGoogleBot() {
+        return  acceptGoogleBot;
+    }
 
     /**
      * _more_
@@ -3556,7 +3562,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public Result getNoRobotsResult(Request request) {
+    public Result getNoRobotsResult(Request request) throws Exception {
+	if(request.getRequestPath().indexOf("robots.txt")>=0) {
+	    return processRobotsTxt(request);
+	}
+	
         Result result = new Result("", new StringBuilder("no bots"));
         result.setResponseCode(Result.RESPONSE_UNAUTHORIZED);
         return result;
@@ -3613,12 +3623,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
                          "RAMADDA.handleRequest:" + request.getRequestPath());
         }
         if (request.getIsRobot()) {
-            if ( !acceptRobots()) {
-                return getNoRobotsResult(request);
-            }
+            if (!acceptRobots()) {
+		return getNoRobotsResult(request);
+	    }
+	}
+	if(request.getIsGoogleBot()) {
+	    if(!acceptGoogleBot()) {
+		return getNoRobotsResult(request);
+	    }
             //Sleep a bit to slow the  bot down
 	    //	    Misc.sleepSeconds(1);
-        }
+	}
+	
 
         if (blacklist != null) {
             String ip = request.getIpRaw();
@@ -4611,6 +4627,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         downloadOk            = getProperty(PROP_DOWNLOAD_OK, true);
         minifiedOk            = getProperty(PROP_MINIFIED, true);
         acceptRobots          = !getProperty(PROP_ACCESS_NOBOTS, false);
+        acceptGoogleBot       = !getProperty(PROP_ACCESS_NOGOOGLEBOT, false);	
+	System.err.println("Repository.acceptRobots=" +acceptRobots);
+	System.err.println("Repository.acceptGoogleBot=" +acceptGoogleBot);
         commentsEnabled       =  getProperty("ramadda.enable_comments", false);
 	useFixedHostName      =  getProperty(PROP_USE_FIXED_HOSTNAME, false);
         corsOk                = getProperty(PROP_CORS_OK, false);
@@ -6508,15 +6527,26 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     public Result processRobotsTxt(Request request) throws Exception {
-        StringBuilder sb = new StringBuilder("User-agent: *\n");
-        if ( !acceptRobots() && request.getIsRobot()) {
-            sb.append("Disallow: /\n");
-        } else {
-            sb.append("Allow: /\n");
-        }
-        Result result = new Result("", sb);
-        result.setShouldDecorate(false);
+        StringBuilder sb = new StringBuilder("");
+	sb.append("User-agent: Twitterbot\nAllow: /\n\nUser-agent: facebookexternalhit\nAllow: /\n\n");
+	if(acceptGoogleBot()) {
+	    sb.append("User-agent: Googlebot\nAllow: /\n\n");
+	} else {
+	    sb.append("User-agent: Googlebot\nDisallow: /\n\n");
+	}
 
+	
+	if(acceptRobots()) {
+	    sb.append("User-agent: *\nAllow: /\n\n");
+	} else {
+	    sb.append("User-agent: *\nDisallow: /\n\n");
+	}
+	
+	sb.append("Sitemap: "+ request.getAbsoluteUrl(getUrlBase()+"/sitemap.xml")+"\n");
+	
+
+        Result result = new Result("", sb,MIME_TEXT);
+        result.setShouldDecorate(false);
         return result;
     }
 

@@ -1611,6 +1611,8 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_ACCESS_NOBOTS = "ramadda.access.nobots";
 
+    public static final String PROP_ACCESS_NOGOOGLEBOT = "ramadda.access.nogooglebot";    
+
     /** _more_ */
 
     public static final String PROP_ACCESS_REQUIRELOGIN =

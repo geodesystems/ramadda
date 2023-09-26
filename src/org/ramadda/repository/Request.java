@@ -137,6 +137,9 @@ public class Request implements Constants, Cloneable {
     /** _more_ */
     private boolean isRobot = false;
 
+    private boolean isGoogleBot = false;
+    
+
     /** _more_ */
     private boolean makeAbsoluteUrls = false;
 
@@ -206,6 +209,7 @@ public class Request implements Constants, Cloneable {
         this.printWriter         = that.printWriter;
         this.isMobile            = that.isMobile;
         this.isRobot             = that.isRobot;
+        this.isGoogleBot         = that.isGoogleBot;	
         this.ip                  = that.ip;
         this.httpServletRequest  = that.httpServletRequest;
         this.httpServletResponse = that.httpServletResponse;
@@ -2735,6 +2739,10 @@ public class Request implements Constants, Cloneable {
         return isRobot;
     }
 
+    public boolean getIsGoogleBot() {
+        return isGoogleBot;
+    }    
+
     /**
      * _more_
      *
@@ -2757,31 +2765,22 @@ public class Request implements Constants, Cloneable {
         }
         userAgent = userAgent.toLowerCase();
 
-        //hack - Special case for Slack
-        if (userAgent.indexOf("slack.com") >= 0) {
+        //Special cases
+        if (Utils.indexOf(userAgent,"slack.com","twitterbot")>=0) {
             return false;
         }
-	//Let twitterbot through
-	if(userAgent.indexOf("twitterbot") >= 0) {
-	    return false;
-	}
 
-	/*
-	//Let google through
 	if(userAgent.indexOf("googlebot") >= 0) {
+	    isGoogleBot = true;
 	    return false;
 	}
-	*/
-        boolean isBot =
-	    (userAgent.indexOf("yandex.com/bots") >= 0) ||
-	    (userAgent.indexOf("mj12bot") >= 0) ||
-	    (userAgent.indexOf("crawler") >= 0)  ||
-	    (userAgent.indexOf("bot") >= 0)  ||
-	    (userAgent.indexOf("slurp") >= 0)||
-	    (userAgent.indexOf("spider") >= 0);
-	//	System.err.println("UA:" + userAgent +" is bot:" + isBot);
-	return isBot;
 
+	return Utils.indexOf(userAgent,"yandex.com/bots",
+			     "mj12bot",
+			     "crawler",
+			     "bot",
+			     "slurp",
+			     "spider")>=0;
     }
 
 

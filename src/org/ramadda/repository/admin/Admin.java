@@ -1530,8 +1530,16 @@ public class Admin extends RepositoryManager {
                 HU.labeledCheckbox(
                     PROP_ACCESS_NOBOTS, "true",
                     formPropValue(request,PROP_ACCESS_NOBOTS, false),
-		    "Disallow robots")));
+		    "Disallow robots (except for Google)")));
 
+        asb.append(
+            HU.formEntry(
+                "",
+                HU.labeledCheckbox(
+                    PROP_ACCESS_NOGOOGLEBOT, "true",
+                    formPropValue(request,PROP_ACCESS_NOGOOGLEBOT, false),
+		    "Disallow Googlebot")));
+	
 
 
         asb.append(HU.colspan(msgHeader("Anonymous Uploads"), 2));
@@ -1839,13 +1847,7 @@ public class Admin extends RepositoryManager {
                                         ""));
 
         getRepository().writeGlobal(request, PROP_REGISTER_KEY);
-        /*
-        checkRegistration();
-        */
 
-        getRepository().setLocalFilePaths();
-        getRepository().initAttributes();
-        getRepository().clearCache();
 
 
         List<OutputHandler> outputHandlers =
@@ -1875,21 +1877,28 @@ public class Admin extends RepositoryManager {
                                         false));
         getRepository().writeGlobal(PROP_ACCESS_NOBOTS,
                                     request.get(PROP_ACCESS_NOBOTS, false));
-
+	System.err.println("set " + request.get(PROP_ACCESS_NOGOOGLEBOT, false));
+        getRepository().writeGlobal(PROP_ACCESS_NOGOOGLEBOT,
+                                    request.get(PROP_ACCESS_NOGOOGLEBOT, false));	
 
         for (AdminHandler adminHandler : adminHandlers) {
             adminHandler.applyAdminSettingsForm(request);
         }
 
+
         //Now re-read all of the globals so we pick up any deletes
         getRepository().readDatabaseProperties();
+
+        getRepository().setLocalFilePaths();
+        getRepository().initAttributes();
+        getRepository().clearCache();
+
 
         //Tell the other repositoryManagers that the settings changed
         for (RepositoryManager repositoryManager :
                 getRepository().getRepositoryManagers()) {
             repositoryManager.adminSettingsChanged();
         }
-
 
 	return adminSettings(request, getPageHandler().showDialogNote("Settings have changed"));
 
