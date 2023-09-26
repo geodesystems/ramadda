@@ -1,0 +1,241 @@
+<html>
+<head>
+<title>Miscellany</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<div class="ramadda-doc-header">
+<div style='padding-top:12px;margin-bottom:4px;'><a href="toc.html#misc.html"><span title="Table of contents"><i  style='font-size:16pt;'  class="fa fa-list "></i></span></a> &nbsp; <a href="index.html">RAMADDA User Guide</a>  > <a href="page_installationandsiteadministration.html">Installation and Site Administration</a> </div>
+<table width=100% cellspacing=0 cellpadding=0 >
+<tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="database.html"><table><td valign=center><td><span title="Previous: Configuring the RAMADDA Database"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Configuring the RAMADDA Database</td></tr></table></a></div></div></td>
+<td width=50% align=center>
+<div class="ramadda-page-title"><a href="#">Section 9.4: Miscellany</a></div>
+</td>
+<td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="gpt.html"><table><tr valign=center><td>Integration with OpenAI GPT</td><td><span title="Next: Integration with OpenAI GPT"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+</tr></table>
+</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+.ramadda-lheading {
+    margin-top:15px;
+}
+</style>
+
+<div class="ramadda-doc-contents" style="margin-left:20px;">
+
+
+<div  class="childlist" ><table  width="100%" ></table></div>
+:navtop
+
+<a name="cdn"></a>
+:heading Using a CDN
+By default RAMADDA serves up all of its HTML resources (javascript, css, images etc) 
+from its own server. However, for performance, RAMADDA can be configured to use
+external content delivery networks (CDN) by setting this property:
+<pre>
+ramadda.cdnok=true
+</pre>
+
+For the core resources RAMADDA uses cdn.jsdeliver.net using the latest Github version tag, e.g.:
+<pre>
+https://cdn.jsdelivr.net/gh/geodesystems/ramadda@6.60.0/...
+</pre>
+
+For other resources RAMADDA uses the standard CDN for the resource, e.g.:
+<pre>
+https://code.jquery.com/jquery-3.3.1.min.js
+</pre>
+
+
+<a name=twittercard></a>
+:heading Twitter Integration
+RAMADDA can support the <a href="https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/abouts-cards">Twitter Card</a> metadata standard. This embeds metadata in an entry page like:
+<pre>
+&lt;meta name=&quot;twitter:card&quot; content=&quot;summary_large_image&quot;&gt;
+&lt;meta name=&quot;twitter:title&quot; content=&quot;Salton Sea&quot;&gt;
+&lt;meta name=&quot;twitter:description&quot; content=&quot;This is an example...&quot;&gt;
+&lt;meta name=&quot;twitter:image&quot; content=&quot;https://ramadda.org/repository/metadata/view/Screenshot_2023-09-25_at_08-12-53_Salton_Sea_Map.png?element=1&amp;entryid=0e3af72d-8be7-4f9d-933d-983fad440bba&amp;metadata_id=b96d579f-d914-4d8a-bb04-78c5896a8243&quot;&gt;
+&lt;meta name=&quot;twitter:creator&quot; content=&quot;@jeffmcwh&quot;&gt;
+</pre>
+
+By default the name of the entry is used for the title. 
+If the entry has a Thumbnail image property attached to it then the Twitter Card will be an
+image, else it will just be a summary.
+The entry's <a href=#snippet>snippet</a> is used for the description.
+:p
+There is also a Twitter Card property type that can be used to specify the title, creator, description and image.
+Under Add Property-&gt;Miscellaneous add the Twitter Card property:
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard1.png?version=506"><img  src="images/twittercard1.png?version=506"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard1.png?version=506" ></a></div></div>
+
+Enter any of the values. If defined in the property these will override the defaults of the entry's name,
+snippet, etc.
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard2.png?version=506"><img  src="images/twittercard2.png?version=506"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard2.png?version=506" ></a></div></div>
+
+These properties can be inherited. For example, you can add an inherited Twitter Card property at the top-level
+of your repository with just the Twitter handle specified. Then for any descendent entry you can specify a title, thumbnail, etc.
+:p
+
+To disable this set the following property in one of the .properties files in your RAMADDA
+home directory:
+<pre>
+ramadda.showtwittercard=false
+</pre>
+
+
+
+<a name=snippet></a>
+:heading Snippets
+A snippet is a substring of an entry's description and is used to show a tooltip in the grid view and 
+also used by the <a href=#twittercard>Twitter card</a> functionality.
+A snippet is specified in a number of ways-
+<ul>
+  <li> Using the "+note ... -note" or "+callout ... -callout" wiki tags:
+<pre>
++note
+This is the snippet
+-note
+
+or:
++callout-info
+This is the snippet
+-callout
+...
+</pre>
+
+<li> By the snippet tag:
+<pre>
+...
+&lt;snippet&gt;
+This is the snippetn
+&lt;/snippet&gt;
+...
+</pre>
+
+<li>  If you want to include a snippet but not have it show up in the RAMADDA page then use snippet-hide:
+<pre>
+...
+&lt;snippet-hide&gt;
+The snippet
+&lt;/snippet&gt;
+...
+</pre>
+
+
+
+
+
+
+<a name="github"></a>
+:heading Embedding Github checkins
+RAMADDA supports embedding Github checkins into wiki text with the form:
+<pre>
+@(github user=some_user_name)  
+or:
+@(github owner=repository_owner repository=repository)
+</pre>
+
+The access to the Github API is rate limited. To increase the request rate create a personal access
+token through Github and set the following RAMADDA property:  
+<pre>
+github.token=your token
+</pre>
+
+<a name="pdf"></a>
+:heading Generating thumbnails of PDFs
+Install the <a href="https://www.ghostscript.com/doc/current/Install.htm">Ghostscript</a>
+package to automatically generate a thumbnail image of the the page of a PDF file by
+setting the property:
+
+<pre>
+service.gs=/path/to/bin/gs
+</pre>
+
+
+
+<a name="jupyter"></a>
+:heading Rendering Jupyter Notebooks
+RAMADDA supports a Jupyter Notebook entry type. It will do its own custom rendering
+of the notebook. You can also configure RAMADDA to use jupyter to do the rendering
+by setting the following property value:
+<pre>
+ramadda.jupyter.path=/path/to/anaconda/bin/jupyter
+</pre>
+
+
+<a name="otherapis"></a>
+:heading Other API keys
+
+There are a number of other services that access external APIs and require
+an API key. Here are some of them.
+
+<pre>
+#show google streetview images
+google.streetview.key=
+
+#for google geocoding
+google.key=
+
+#For route generation in the editable maps using here.com routing API
+#from https://www.here.com/
+here.key=
+
+#For geocoding from https://www.geocod.io/
+geocodeio.key=
+
+
+#For accessing purple air sensor data
+#https://www2.purpleair.com/
+purpleair.api.key=
+
+#for enabling sms access
+twilio.accountsid=
+twilio.authtoken=
+twilio.phone=
+
+#for census data access
+census.api.key=
+
+#bureau of labor statistics
+bls.api.key=
+
+#fec
+fec.api.key=
+
+
+#used in the GTFS displays
+ramadda.uber.token=
+ramadda.lyft.clientid=
+ramadda.lyft.secret=
+
+#other...
+quandl.api.key=
+webhose.api.key=
+enigma.api.key=
+wolfram.api.key=
+
+</pre>  
+
+
+</div>
+<p>
+
+<p>&nbsp;<p>
+
+<div class="ramadda-doc-footer">
+<table width=100% cellspacing=0 cellpadding=0 >
+<tr><td width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="database.html"><table><td valign=center><td><span title="Previous: Configuring the RAMADDA Database"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Configuring the RAMADDA Database</td></tr></table></a></div></div></td>
+<td align=right width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="gpt.html"><table><tr valign=center><td>Integration with OpenAI GPT</td><td><span title="Next: Integration with OpenAI GPT"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+</tr></table>
+</div>
+<p>
+</div>
+</body>
+</html>
+
