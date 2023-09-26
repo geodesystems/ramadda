@@ -62,6 +62,9 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
     public static final String ARG_THUMBNAIL_WIDTH =
         "metadata_thumbnail_width";
 
+    public static final String ARG_THUMBNAIL_DELETE =
+        "metadata_thumbnail_delete";    
+
     /** _more_ */
     public static final String ATTR_REQUIRED = "required";
 
@@ -460,21 +463,21 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 }
             }
             if (haveSubEntries) {
-                String[]     toggle = HtmlUtils.getToggle("", true);
+                String[]     toggle = HU.getToggle("", true);
                 String       id     = toggle[0];
                 String       link   = toggle[1];
                 String       initJS = toggle[2];
                 StringBuffer tmp    = new StringBuffer();
-                tmp.append(HtmlUtils.formTable());
+                tmp.append(HU.formTable());
                 tmp.append(
                     "<tr valign=top><td width=1%>" + link + "</td><td>"
-                    + HtmlUtils.div(
+                    + HU.div(
                         entriesSB.toString(),
-                        HtmlUtils.id(id)
-                        + HtmlUtils.cssClass("ramadda-metadata-html")) + "</td></tr>");
-                tmp.append(HtmlUtils.formTableClose());
+                        HU.id(id)
+                        + HU.cssClass("ramadda-metadata-html")) + "</td></tr>");
+                tmp.append(HU.formTableClose());
                 if (initJS.length() > 0) {
-                    tmp.append(HtmlUtils.script(initJS));
+                    tmp.append(HU.script(initJS));
                 }
                 html = tmp.toString();
                 html = entriesSB.toString();
@@ -496,10 +499,10 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 }
             }
         } else if (dataType.equals(DATATYPE_EMAIL)) {
-            html = HtmlUtils.href("mailto:" + value, value);
+            html = HU.href("mailto:" + value, value);
         } else if (dataType.equals(DATATYPE_URL)) {
             if (Utils.stringDefined(value)) {
-                html = HtmlUtils.href(value, value);
+                html = HU.href(value, value);
             } else {
                 html = "";
             }
@@ -524,10 +527,10 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             if (name.length() > 0) {
                 name = msgLabel(name);
             } else {
-                name = HtmlUtils.space(1);
+                name = HU.space(1);
             }
 
-            //            sb.append(HtmlUtils.formEntry(name, html));
+            //            sb.append(HU.formEntry(name, html));
             return new MetadataHtml(name, html);
         }
 
@@ -769,6 +772,18 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                            : oldMetadata.getAttr(getIndex()));
 
 
+	System.err.println(oldValue);
+	if(request.get(ARG_THUMBNAIL_DELETE,false)) {
+	    File f = getFile(entry,oldMetadata,oldValue);
+	    if(f!=null && f.exists()) {
+		f.delete();
+	    }
+	    return null;
+	}		
+
+
+
+
         String url      = request.getString(arg + "_url", "");
         String theFile  = null;
         if (url.length() > 0) {
@@ -814,7 +829,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
 
         theFile = getStorageManager().moveToEntryDir(entry,
-                new File(theFile)).getName();
+						     new File(theFile)).getName();
 
         return theFile;
     }
@@ -898,10 +913,10 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 /*
                 String buttons =
                     getRepository().getWikiManager().makeWikiEditBar(request,
-                        entry, arg) + HtmlUtils.br();
+                        entry, arg) + HU.br();
                 return buttons
-                       + HtmlUtils.textArea(arg, value, rows, columns,
-                                            HtmlUtils.id(arg));
+                       + HU.textArea(arg, value, rows, columns,
+                                            HU.id(arg));
                 */
                 StringBuilder sb = new StringBuilder();
 
@@ -912,11 +927,11 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 //                      wikiText, null, false, 256000);
             } else {
                 if (rows > 1) {
-                    return HtmlUtils.textArea(arg, value, rows, columns);
+                    return HU.textArea(arg, value, rows, columns);
                 }
 
-                return HtmlUtils.input(arg, value,
-                                       HtmlUtils.attr(HtmlUtils.ATTR_SIZE,
+                return HU.input(arg, value,
+                                       HU.attr(HU.ATTR_SIZE,
                                            "" + columns));
             }
         } else if (dataType.equals(DATATYPE_LATLON)) {
@@ -936,12 +951,12 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 Utils.split(
                     "blues,blue_green_red,white_blue,blue_red,red_white_blue,blue_white_red,grayscale,inversegrayscale,rainbow,nice,blues,gray_scale,inverse_gray_shade,light_gray_scale,blue_green,blue_purple,green_blue,orange_red,purple_blue,purple_blue_green,purple_red,red_purple,yellow_green,yellow_green_blue,yellow_orange_brown,yellow_orange_red,oranges,purples,reds,greens,map_grays,bright38,precipitation,humidity,temperature,visad,inverse_visad,wind_comps,windspeed,dbz,dbz_nws,topographic", ",");
             names.add(0, new TwoFacedObject("--none--", ""));
-            return HtmlUtils.select(arg, names, value) + " "
-                   + HtmlUtils.href(getRepository().getUrlBase()
+            return HU.select(arg, names, value) + " "
+                   + HU.href(getRepository().getUrlBase()
                                     + "/colortables", "View",
                                         "target=_colortables");
         } else if (dataType.equals(DATATYPE_BOOLEAN)) {
-            return HtmlUtils.checkbox(arg, "true",
+            return HU.checkbox(arg, "true",
                                       Misc.equals(value, "true"));
         } else if (dataType.equals(DATATYPE_ENTRY)) {
             return getRepository().getEntryManager().getEntryFormSelect(
@@ -949,13 +964,13 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         } else if (dataType.equals(DATATYPE_API_KEY)) {
 	    String uid = HU.getUniqueId("apikey");
 	    if(!Utils.stringDefined(value)) value=Utils.getGuid();
-	    String regen =  HtmlUtils.labeledCheckbox(arg+"_regenerate", "true",false,"Regenerate");
+	    String regen =  HU.labeledCheckbox(arg+"_regenerate", "true",false,"Regenerate");
             return regen +HU.space(3) + HU.b("Key: ") +"<i>" + value+"</i>" +
-		HtmlUtils.hidden(arg, value);
+		HU.hidden(arg, value);
         } else if (dataType.equals(DATATYPE_INT)) {
-            return HtmlUtils.input(arg, value, HtmlUtils.SIZE_10);
+            return HU.input(arg, value, HU.SIZE_10);
         } else if (dataType.equals(DATATYPE_DOUBLE)) {
-            return HtmlUtils.input(arg, value, HtmlUtils.SIZE_10);
+            return HU.input(arg, value, HU.SIZE_10);
         } else if (dataType.equals(DATATYPE_DATETIME)) {
             Date date;
             if (value != null) {
@@ -976,14 +991,14 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             return getDateHandler().makeDateInput(request, arg, "", date,
                     null, false);
         } else if (dataType.equals(DATATYPE_ENUMERATION)) {
-            return HtmlUtils.select(arg, values, value);
+            return HU.select(arg, values, value);
         } else if (dataType.equals(DATATYPE_ENUMERATIONPLUS)) {
             boolean contains = HtmlUtils.Selector.contains(values, value);
-            return HtmlUtils.select(arg, values, value) + HtmlUtils.space(2)
+            return HU.select(arg, values, value) + HU.space(2)
                    + msgLabel("Or")
-                   + HtmlUtils.input(arg + "_input", (contains
+                   + HU.input(arg + "_input", (contains
                     ? ""
-                    : value), HtmlUtils.SIZE_20);
+                    : value), HU.SIZE_20);
         } else if (dataType.equals(DATATYPE_FILE)) {
             String image = (forEdit
                             ? getFileHtml(request, entry, metadata, this,
@@ -997,14 +1012,14 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             String extra = "";
             if (getThumbnail()) {
                 extra = "<br>"
-                        + HtmlUtils.checkbox(
+                        + HU.checkbox(
                             ARG_THUMBNAIL_SCALEDOWN, "true",
-                            true) + HtmlUtils.space(1)
+                            true) + HU.space(1)
                                   + msg("Scale down image")
-                                  + HtmlUtils.space(2) + "Width: "
-                                  + HtmlUtils.input(
+                                  + HU.space(2) + "Width: "
+                                  + HU.input(
                                       ARG_THUMBNAIL_WIDTH, THUMBNAIL_WIDTH,
-                                      HtmlUtils.SIZE_5);
+                                      HU.SIZE_5);
             }
 
             StringBuilder sb      = new StringBuilder();
@@ -1012,10 +1027,12 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             sb.append(image);
 	    String space = HU.div("",HU.style("margin-bottom:0.5em;"));
 	    if(Utils.stringDefined(image)) sb.append(space);
-	    sb.append(HU.fileInput(arg, HU.SIZE_70 + HtmlUtils.id(inputId)) 
+	    sb.append(HU.fileInput(arg, HU.SIZE_70 + HU.id(inputId)) 
 		      +space +
 		      HU.input(arg + "_url", "", HU.attrs("style","width:430px;","placeholder","Or download URL")) + extra);
-            HtmlUtils.script(sb,
+	    sb.append(HU.br());
+	    sb.append(HU.labeledCheckbox(ARG_THUMBNAIL_DELETE, "true",false,"Delete file"));
+            HU.script(sb,
                              "Ramadda.initFormUpload("
                              + HU.comma(HU.squote(inputId)) + ");");
 
@@ -1031,18 +1048,18 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             StringBuffer entriesSB = new StringBuffer();
             for (Metadata subMetadata : groupMetadata) {
                 StringBuffer groupSB = new StringBuffer();
-                groupSB.append(HtmlUtils.formTable());
+                groupSB.append(HU.formTable());
                 String subArg = arg + "_group" + groupCnt + "_";
                 boolean lastOne = ((groupMetadata.size() > 1)
                                    && (groupCnt == groupMetadata.size() - 1));
                 if (lastOne) {
                     String newCbx =
-                        HtmlUtils.checkbox(subArg + "_new", "true", false)
+                        HU.checkbox(subArg + "_new", "true", false)
                         + " " + msg("Click here to add a new record")
-                        + HtmlUtils.hidden(subArg + "_lastone", "true");
-                    //                    groupSB.append(HtmlUtils.formEntry("",newCbx));
+                        + HU.hidden(subArg + "_lastone", "true");
+                    //                    groupSB.append(HU.formEntry("",newCbx));
                 } else if (hadAny) {
-                    //                    groupSB.append(HtmlUtils.formEntry(msgLabel("Delete"),HtmlUtils.checkbox(subArg+"_delete","true",false)));
+                    //                    groupSB.append(HU.formEntry(msgLabel("Delete"),HU.checkbox(subArg+"_delete","true",false)));
                 }
 
                 for (MetadataElement element : getChildren()) {
@@ -1050,8 +1067,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                             && !Misc.equals(element.getGroup(), lastGroup)) {
                         lastGroup = element.getGroup();
                         groupSB.append(
-                            HtmlUtils.row(
-                                HtmlUtils.colspan(header(lastGroup), 2)));
+                            HU.row(
+                                HU.colspan(header(lastGroup), 2)));
                     }
 
                     String elementLbl = element.getName();
@@ -1067,43 +1084,43 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                     if ((widget == null) || (widget.length() == 0)) {
                         continue;
                     }
-                    groupSB.append(HtmlUtils.formEntry(elementLbl, widget));
-                    groupSB.append(HtmlUtils.hidden(subArg + "_group",
+                    groupSB.append(HU.formEntry(elementLbl, widget));
+                    groupSB.append(HU.hidden(subArg + "_group",
                             "true"));
                 }
 
 
-                groupSB.append(HtmlUtils.formTableClose());
+                groupSB.append(HU.formTableClose());
 
                 if (lastOne) {
-                    String newCbx = HtmlUtils.checkbox(subArg + "_new",
+                    String newCbx = HU.checkbox(subArg + "_new",
                                         "true",
-                                        false) + HtmlUtils.hidden(subArg
+                                        false) + HU.hidden(subArg
                                         + "_lastone", "true");
 
-                    entriesSB.append(HtmlUtils.makeShowHideBlock(newCbx
+                    entriesSB.append(HU.makeShowHideBlock(newCbx
                             + " Add New " + subName, groupSB.toString(),
                                 false));
                 } else {
                     String deleteCbx = ( !hadAny
                                          ? ""
                                          : " - "
-                                           + HtmlUtils.checkbox(subArg
+                                           + HU.checkbox(subArg
                                                + "_delete", "true",
                                                    false) + " "
                                                        + msg("delete"));
-                    entriesSB.append(HtmlUtils.makeShowHideBlock((groupCnt
+                    entriesSB.append(HU.makeShowHideBlock((groupCnt
                             + 1) + ") " + subName
                                  + deleteCbx, groupSB.toString(), true));
                 }
                 groupCnt++;
             }
             sb.append(
-                HtmlUtils.makeToggleInline(
+                HU.makeToggleInline(
                     "",
-                    HtmlUtils.div(
+                    HU.div(
                         entriesSB.toString(),
-                        HtmlUtils.cssClass("ramadda-metadata-form")), true));
+                        HU.cssClass("ramadda-metadata-form")), true));
 
             return sb.toString();
         } else {
