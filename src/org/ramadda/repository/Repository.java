@@ -3612,10 +3612,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
             debugSession(request,
                          "RAMADDA.handleRequest:" + request.getRequestPath());
         }
+	System.err.println("handleRequest:"+ request);
         if (request.getIsRobot()) {
             if ( !acceptRobots()) {
+		System.err.println("\tno robots");
                 return getNoRobotsResult(request);
             }
+	    System.err.println("\tis robot");
             //Sleep a second to slow the  bot down
             if (request.getUserAgent().indexOf("www.majestic12.co.uk") >= 0) {
                 System.err.println("Sleeping for the bad bot:" + request
