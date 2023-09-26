@@ -87,10 +87,11 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
         if ( !entry.isFile()) {
             return;
         }
-        String slicer = getRepository().getLocalProperty("ramadda.image.slicer",null);
+        String slicer = getRepository().getScriptPath("ramadda.image.slicer");
         if (slicer == null) {
             return;
         }
+	getRepository().addScriptPath("sh");
         File entryDir  = getStorageManager().getEntryDir(entry.getId(), true);
         File imagesDir = new File(entryDir, "images");
         imagesDir.mkdir();
