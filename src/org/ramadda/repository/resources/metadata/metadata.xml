@@ -100,8 +100,10 @@
       <element name="Name"/>
       <element name="Email"/>
       <element name="Organization"/>
-      <element name="Twitter handle" suffix="Optional @handle"/>      
     </type>
+
+
+
 
     <type
        name="Publisher"
@@ -389,11 +391,27 @@ Add an output that shows up in the list of tools/services for an entry
 
   <handler class="org.ramadda.repository.metadata.MetadataHandler"
 	   category="Miscellaneous">
+
     <type name="Contact" id="content.contact">
       <element name="Name" />
       <element name="Email" datatype="email"/>
       <element name="Phone" />
     </type>
+
+    <type
+       name="Twitter Card"
+       searchable="true"
+       browsable="true"
+       id="twitter_card"
+       >
+      <element name="Twitter handle" suffix="Optional @handle"/>
+      <element name="Title" suffix="Optional Title. Default is to use the entry name"/>      
+      <element name="Description" rows="5" suffix="This is used or the entry's snippet"/>
+      <element name="Thumbnail File" datatype="file"/>    
+      <element name="Alt text" />            
+    </type>
+
+
 
 <!--
     <type
