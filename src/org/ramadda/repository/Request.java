@@ -2762,14 +2762,16 @@ public class Request implements Constants, Cloneable {
             return false;
         }
 	//Let twitterbot through
-	if(userAgent.indexOf("Twitterbot") >= 0) {
+	if(userAgent.indexOf("twitterbot") >= 0) {
 	    return false;
 	}
 
+	/*
 	//Let google through
 	if(userAgent.indexOf("googlebot") >= 0) {
-	    //not now	    return false;
+	    return false;
 	}
+	*/
         boolean isBot =
 	    (userAgent.indexOf("yandex.com/bots") >= 0) ||
 	    (userAgent.indexOf("mj12bot") >= 0) ||
