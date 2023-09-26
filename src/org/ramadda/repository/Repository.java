@@ -3615,7 +3615,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	System.err.println("handleRequest:"+ request);
         if (request.getIsRobot()) {
             if ( !acceptRobots()) {
-		System.err.println("\tno robots");
+		System.err.println("\tno robots:" + request.getUserAgent());
                 return getNoRobotsResult(request);
             }
 	    System.err.println("\tis robot");
