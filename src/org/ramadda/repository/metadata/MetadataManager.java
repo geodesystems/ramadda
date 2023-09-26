@@ -567,38 +567,87 @@ public class MetadataManager extends RepositoryManager {
 
 
     public String getTwitterCard(Request request, Entry entry) throws Exception {
-	List<String[]> thumbnails = new ArrayList<String[]>();
-	getFullThumbnailUrls(request, entry, thumbnails);
-	String type = thumbnails.size()>0?"summary_large_image":"summary";
-        StringBuilder sb =  new StringBuilder();
-	String end = "\">\n";
-        String snippet = getWikiManager().getRawSnippet(request, entry,
-                             false);
-	Utils.BiConsumer<String,String> m = (t,v) -> {
-	    sb.append("<meta name=\"" + t+"\" content=\"" + XmlUtil.encodeString(v) +end);
-	};
+	List<String[]> thumbs = new ArrayList<String[]>();
+	String title = null;
+	String image = null;
+	String alt = null;
+	String creator = null;		
+	String snippet = null;
 
-	m.accept("twitter:card",type);
-	m.accept("twitter:title",entry.getName());
-	if(stringDefined(snippet)) {
-	    m.accept("twitter:description",snippet.replace("\n"," ").trim());
-	}
-	if(thumbnails.size()>0) {
-	    m.accept("twitter:image",      request.getAbsoluteUrl(thumbnails.get(0)[0]));
-	    if(stringDefined(thumbnails.get(0)[1])) {
-		m.accept("twitter:image:alt",thumbnails.get(0)[1]);
+        List<Metadata> mtd =
+            findMetadata(request, entry,
+			 new String[]{"twitter_card"},true);
+
+	if(mtd!=null) {
+	    for(Metadata m: mtd) {
+		if(!stringDefined(creator)) 
+		    creator = m.getAttr1();
+		if(!stringDefined(title)) 
+		    title = m.getAttr2();
+		if(!stringDefined(alt)) 
+		    alt = m.getAttr(5);    
+		if(!stringDefined(snippet))
+		    snippet = m.getAttr(3);
+		if(thumbs.size()==0) {
+		    String url  = getType(m).getImageUrl(request, entry,m,null);
+		    if(url!=null) {
+			thumbs.add(new String[]{url,null});
+		    }
+		}
 	    }
 	}
-        List<Metadata> author =
-            findMetadata(request, entry,
-			 new String[]{"metadata_author"},true);
 
-	if(author!=null && author.size()>0) {
-	    String id = author.get(0).getAttr(4);
-	    if(stringDefined(id))
-		m.accept("twitter:creator",id);
 
+	if(!stringDefined(snippet))
+	    snippet = getWikiManager().getRawSnippet(request, entry, false);
+	    
+
+	//If an image isn't defined in the metadata  then use the thumbnail of the entry
+	if(thumbs.size()==0) {
+	    getFullThumbnailUrls(request, entry, thumbs);
 	}
+
+	if(thumbs.size()==0 && entry.isImage()) {
+	    thumbs.add(new String[]{getEntryManager().getEntryResourceUrl(request, entry),null});
+	}
+
+
+	if(thumbs.size()>0) {
+	    image = request.getAbsoluteUrl(thumbs.get(0)[0]);
+	    if(!stringDefined(alt))
+		alt = thumbs.get(0)[1];
+	}
+
+	//If not defined in the metadata then use the entry's name
+	if(!stringDefined(title)) 
+	    title = entry.getName();
+
+
+
+	String type = stringDefined(image)?"summary_large_image":"summary";
+        StringBuilder sb =  new StringBuilder();
+
+
+	Utils.BiConsumer<String,String> w = (t,v) -> {
+	    sb.append("<meta name=\"" + t+"\" content=\"" + XmlUtil.encodeString(v) +"\">\n");
+	};
+
+	w.accept("twitter:card",type);
+	if(stringDefined(creator))
+	    w.accept("twitter:creator",creator);
+	if(stringDefined(image)) {
+	    w.accept("twitter:image", image);
+	    if(stringDefined(alt)) {
+		w.accept("twitter:image:alt",alt);
+	    }
+	}
+
+
+	w.accept("twitter:title",title);
+	if(stringDefined(snippet)) {
+	    w.accept("twitter:description",snippet.replace("\n"," ").trim());
+	}
+	//	System.err.println(sb);
         return sb.toString();
     }
     

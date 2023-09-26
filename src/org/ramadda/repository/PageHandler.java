@@ -342,7 +342,7 @@ public class PageHandler extends RepositoryManager {
                                         false);
 
         showJsonLd = getRepository().getProperty("ramadda.showjsonld", false);
-        showTwitterCard = getRepository().getProperty("ramadda.showtwittercard", false);	
+        showTwitterCard = getRepository().getProperty("ramadda.showtwittercard", true);	
         showSearch = getRepository().getProperty("ramadda.showsearch", true);
         createdDisplayMode =
             getRepository().getProperty(PROP_CREATED_DISPLAY_MODE,
@@ -764,7 +764,7 @@ public class PageHandler extends RepositoryManager {
             head.append(head2);
             request.clearHead();
         }
-	if(prefix && currentEntry!=null) {
+	if(prefix && currentEntry!=null && request.getRequestPath().indexOf("/entry/show")>=0) {
 	    if (request.get("ramadda.showjsonld", true) && showJsonLd) {
 		head.append(getMetadataManager().getJsonLD(request,
 							   currentEntry));
