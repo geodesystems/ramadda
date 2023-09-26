@@ -554,6 +554,19 @@ public class Utils extends IO {
     }
 
     /**
+       This returns the first non null index of with the given values
+     */
+    public static int indexOf(String s,String ...values) {
+	for(String v: values) {
+	    int index = s.indexOf(v);
+	    if(index>=0) return index;
+	}
+	return -1;
+    }
+
+
+
+    /**
      * _more_
      *
      * @param args _more_
