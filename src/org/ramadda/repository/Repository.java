@@ -3624,13 +3624,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
         if (request.getIsRobot()) {
             if (!acceptRobots()) {
+		System.err.println("robot not ok");
 		return getNoRobotsResult(request);
 	    }
+	    System.err.println("robot ok");
 	}
 	if(request.getIsGoogleBot()) {
 	    if(!acceptGoogleBot()) {
+		System.err.println("googlebot not ok");
 		return getNoRobotsResult(request);
 	    }
+	    System.err.println("googlebot ok");
             //Sleep a bit to slow the  bot down
 	    //	    Misc.sleepSeconds(1);
 	}
