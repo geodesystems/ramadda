@@ -1068,6 +1068,9 @@ public class EntryManager extends RepositoryManager {
             return new Result(handler.getAuthorizationMethod(request));
         }
 
+	request.setIsEntryShow(true);
+
+
         Entry entry = null;
         if (request.exists("parentof")) {
             Entry sibling = getEntry(request,

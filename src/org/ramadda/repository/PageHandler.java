@@ -764,12 +764,12 @@ public class PageHandler extends RepositoryManager {
             head.append(head2);
             request.clearHead();
         }
-	if(prefix && currentEntry!=null && request.getRequestPath().indexOf("/entry/show")>=0) {
+	if(request.getIsEntryShow() && prefix && currentEntry!=null) {
 	    if (request.get("ramadda.showjsonld", true) && showJsonLd) {
 		head.append(getMetadataManager().getJsonLD(request,
 							   currentEntry));
 	    }
-	    if (request.get("ramadda.showtwittercard", true) && showTwitterCard) {
+	    if (showTwitterCard) {
 		head.append(getMetadataManager().getTwitterCard(request,
 								currentEntry));
 	    }	    

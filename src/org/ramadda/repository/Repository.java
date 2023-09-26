@@ -4506,7 +4506,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     Entry entry =(entries.size()>0?entries.get(0):null);
                     if ((toks.size() == 2) && (entry != null)) {
 			//we have a child entry path under the alias
-			System.err.println("Alias:"+alias +" rest:" + toks.get(1));
                         entry = getEntryManager().findEntryFromName(request, entry, toks.get(1));
                     }
                     if (entry == null) {

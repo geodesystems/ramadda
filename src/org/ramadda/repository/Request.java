@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2023 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.repository;
@@ -56,7 +56,7 @@ public class Request implements Constants, Cloneable {
 
     /** _more_ */
     public static final RequestArgument[] AREA_NWSE = { REQUESTARG_NORTH,
-            REQUESTARG_WEST, REQUESTARG_SOUTH, REQUESTARG_EAST };
+							REQUESTARG_WEST, REQUESTARG_SOUTH, REQUESTARG_EAST };
 
     /** _more_ */
     private static int COUNTER = 0;
@@ -125,6 +125,8 @@ public class Request implements Constants, Cloneable {
 
     /** _more_ */
     private boolean checkingAuthMethod = false;
+
+    private boolean isEntryShow = false;    
 
     /** _more_ */
     private ApiMethod apiMethod;
@@ -352,6 +354,27 @@ public class Request implements Constants, Cloneable {
         getRepository().getSessionManager().putSessionProperty(this, key,
 							       value);
     }
+
+    /**
+       Set the IsEntryShow property.
+
+       @param value The new value for IsEntryShow
+    **/
+    public void setIsEntryShow (boolean value) {
+	isEntryShow = value;
+    }
+
+    /**
+       Get the IsEntryShow property.
+
+       @return The IsEntryShow
+    **/
+    public boolean getIsEntryShow () {
+	return isEntryShow;
+    }
+
+
+
 
     public boolean hasMessage() {
 	return exists(ARG_MESSAGE);
