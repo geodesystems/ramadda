@@ -55,7 +55,9 @@ https://code.jquery.com/jquery-3.3.1.min.js
 
 <a name=twittercard></a>
 :heading Twitter Integration
-RAMADDA can support the <a href="https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/abouts-cards">Twitter Card</a> metadata standard. This embeds metadata in an entry page like:
+RAMADDA can support the <a href="https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/abouts-cards">Twitter Card</a> metadata standard. This embeds metadata in an entry page like the below. When a URL to a RAMADDA
+page is pasted into a post then Twitter will harvest the metadata to provide a display in the post.
+
 <pre>
 &lt;meta name=&quot;twitter:card&quot; content=&quot;summary_large_image&quot;&gt;
 &lt;meta name=&quot;twitter:title&quot; content=&quot;Salton Sea&quot;&gt;
@@ -66,17 +68,17 @@ RAMADDA can support the <a href="https://developer.twitter.com/en/docs/twitter-f
 
 By default the name of the entry is used for the title. 
 If the entry has a Thumbnail image property attached to it then the Twitter Card will be an
-image, else it will just be a summary.
+image. If the entry is an Image then the image will be used. Else it will just be a text summary.
 The entry's <a href=#snippet>snippet</a> is used for the description.
 :p
 There is also a Twitter Card property type that can be used to specify the title, creator, description and image.
 Under Add Property-&gt;Miscellaneous add the Twitter Card property:
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard1.png?version=506"><img  src="images/twittercard1.png?version=506"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard1.png?version=506" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard1.png?version=305"><img  src="images/twittercard1.png?version=305"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard1.png?version=305" ></a></div></div>
 
 Enter any of the values. If defined in the property these will override the defaults of the entry's name,
 snippet, etc.
 
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard2.png?version=506"><img  src="images/twittercard2.png?version=506"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard2.png?version=506" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard2.png?version=305"><img  src="images/twittercard2.png?version=305"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard2.png?version=305" ></a></div></div>
 
 These properties can be inherited. For example, you can add an inherited Twitter Card property at the top-level
 of your repository with just the Twitter handle specified. Then for any descendent entry you can specify a title, thumbnail, etc.
@@ -113,7 +115,7 @@ This is the snippet
 <pre>
 ...
 &lt;snippet&gt;
-This is the snippetn
+This is the snippet
 &lt;/snippet&gt;
 ...
 </pre>
