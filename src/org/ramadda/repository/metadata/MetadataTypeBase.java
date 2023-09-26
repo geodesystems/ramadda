@@ -760,7 +760,10 @@ public class MetadataTypeBase extends RepositoryManager {
      * @return _more_
      */
     public File getFile(Entry entry, Metadata metadata, int attr) {
-        String filename = metadata.getAttr(attr);
+	return getFile(entry,metadata,metadata.getAttr(attr));
+    }
+
+    public File getFile(Entry entry, Metadata metadata, String filename) {	
         if ((filename == null) || (filename.trim().length() == 0)) {
             return null;
         }
