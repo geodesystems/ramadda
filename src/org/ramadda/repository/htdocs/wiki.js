@@ -1349,11 +1349,15 @@ WikiEditor.prototype = {
 
     handleEntriesPopup:function(ids,id,prefix) {
 	this.getEntryNames(ids,(data)=>{
+	    if(data.length==0) {
+		jqid(id).html('No entries found');
+		return;
+	    }
 	    if(data.length) {
 		let html = prefix??'';
 		data.forEach(d=>{
 		    html+=(d.icon?HU.getIconImage(d.icon)+HU.space(1):'')+
-			HU.href(ramaddaBaseUrl+"/entry/show?entryid=" + d.id,
+			HU.href(RamaddaUtil.getUrl("/entry/show")+"?entryid=" + d.id,
 				d.name,['title',d.id,'target','_entries'])+"<br>";
 		});
 		jqid(id).html(html);
@@ -1392,7 +1396,7 @@ WikiEditor.prototype = {
 	let ids = this.extractEntryIds(tagInfo.chunk);
 	if(ids.length) {
 	    let id = Utils.getUniqueId('entrieslist');
-	    menu +=HU.toggleBlock('Entries', HU.div([ID,id,CLASS,'wiki-editor-popup-items'],'Loading...'));
+	    menu +=HU.toggleBlock('Entries', HU.div([ID,id,CLASS,'wiki-editor-popup-items'],'Loading ...'));
 	    this.handleEntriesPopup(ids,id);
 	}	
 

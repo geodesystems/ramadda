@@ -2882,6 +2882,7 @@ public class WikiManager extends RepositoryManager
 	    }
 
             String jsonUrl = null;
+	    String remote = getProperty(wikiUtil,props,"remote",null);
 	    ServerInfo serverInfo = getServer(request, entry, wikiUtil, props);
             boolean doEntries = getProperty(wikiUtil, props, "doEntries",false);
             boolean doEntry = getProperty(wikiUtil, props, "doEntry", false);
@@ -2977,6 +2978,36 @@ public class WikiManager extends RepositoryManager
                 theTag = theTag.substring(0, 7);
             }
             List<String> displayProps = new ArrayList<String>();
+	    if(jsonUrl==null && stringDefined(remote)) {
+		URL url = new URL(remote);
+		String path = url.getPath();
+		if(path.endsWith("/entry/data")) {
+		    jsonUrl = remote;
+		}  else {
+		    String entryId =  StringUtil.findPattern(remote, "entryid=([^&]+)(\\?|$)");
+		    //https://localhost:8430/repository/entry/show?entryid=6ad1f1fb-8b6f-4fe8-a759-3027f512977e
+		    if(!stringDefined(entryId)) {
+			//check for alias
+			//https://ramadda.org/repository/a/test_alias
+			entryId =  StringUtil.findPattern(remote, "/a/([^&]+)(\\?|$)");
+		    }
+		    //TODO: handle ramaddas that have a different root path
+		    if(stringDefined(entryId)) {
+			String prefix = StringUtil.findPattern(path,"^(.+)/entry/show");
+			if(prefix==null)
+			    prefix = StringUtil.findPattern(path,"^(.+)/a/");
+			if(prefix==null)
+			    prefix = "/repository";			   
+
+			jsonUrl = url.getProtocol()+"://" + url.getHost()+(url.getPort()>0?":" + url.getPort():"");
+			jsonUrl +=prefix+"/entry/data?entryid=" + entryId;
+			//			System.err.println(jsonUrl);
+		    }		    
+		}
+	    }
+
+
+
             if (jsonUrl == null) {
 		//Push the props
 		for(String prop:new String[]{"max","lastRecords"}) {
