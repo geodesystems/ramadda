@@ -29,17 +29,22 @@ Otherwise it is displayed in place.
 
 
 [ug::wikiheading {Data} thedata]
-The data that is displayed takes the form of a number of records where each record is composed of the same number of fields.
-Optionally, records can also have a latitude/longitude position and a date associated with them.
-You can think of the data as a structured representation of a CSV file. 
-<pre>
-name(type=string),occupation(type=enumeration),value1(type=double),value2(type=int)
-Joe,bartender,1.3,17
-Jill,ceo,39,54
-Jane,pilot,39,54
-...
-</pre>
+The data comes from some entry on RAMADDA.  This entry can be specified with the <i>entry</i> attribute:
+[wiki::text {{<noop>{display_linechart entry="some other entry id"}}}]
 
+The data can also come form an entry on a different RAMADDA using the  <i>remote</i> attribute:
+[wiki::text {{<noop>{display_linechart remote="https://ramadda.org/repository/entry/show?entryid=0c4338b6-1469-48ec-88b4-406f61621420"}}}]    
+
+The data that is displayed takes the form of a number of records where each record is composed of the same number
+of fields.  Optionally, records can also have a latitude/longitude position and a date associated with them.
+
+
+The data for an entry is a JSON format and is accessed via the URL, e.g.:
+:br
+<a href=https://ramadda.org/repository/entry/data?entryid=0c4338b6-1469-48ec-88b4-406f61621420>
+https://ramadda.org/repository/entry/data?entryid=0c4338b6-1469-48ec-88b4-406f61621420
+</a>
+:p
 
 The total number of records fetched from the server
 can be set with the "max" attribute. This will only retrieve the first N records.
@@ -100,6 +105,7 @@ The field ids for a point data entry can be viewed with the  Metadata view, e.g.
 
 
 [wiki::text {{<noop>{display_linechart fields="#5,#6,#7,#8,#9,#10" }}}]
+
 
 [ug::wikiheading {Filtering Data} filters]
 A display can present a set of widgets that allow the user to filter the data being shown. For example, in the image below (See <a href="https://ramadda.org/repository/alias/14ers">here<a>) the data has a set of fields - elev, elev_gain, distance, range and class. 

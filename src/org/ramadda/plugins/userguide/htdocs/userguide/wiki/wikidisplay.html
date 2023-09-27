@@ -64,17 +64,22 @@ Otherwise it is displayed in place.
 <a name='thedata'></a>
 :lheading Data
 
-The data that is displayed takes the form of a number of records where each record is composed of the same number of fields.
-Optionally, records can also have a latitude/longitude position and a date associated with them.
-You can think of the data as a structured representation of a CSV file. 
-<pre>
-name(type=string),occupation(type=enumeration),value1(type=double),value2(type=int)
-Joe,bartender,1.3,17
-Jill,ceo,39,54
-Jane,pilot,39,54
-...
-</pre>
+The data comes from some entry on RAMADDA.  This entry can be specified with the <i>entry</i> attribute:
+<pre>{<noop>{display_linechart entry="some other entry id"}}</pre>
 
+The data can also come form an entry on a different RAMADDA using the  <i>remote</i> attribute:
+<pre>{<noop>{display_linechart remote="https://ramadda.org/repository/entry/show?entryid=0c4338b6-1469-48ec-88b4-406f61621420"}}</pre>    
+
+The data that is displayed takes the form of a number of records where each record is composed of the same number
+of fields.  Optionally, records can also have a latitude/longitude position and a date associated with them.
+
+
+The data for an entry is a JSON format and is accessed via the URL, e.g.:
+:br
+<a href=https://ramadda.org/repository/entry/data?entryid=0c4338b6-1469-48ec-88b4-406f61621420>
+https://ramadda.org/repository/entry/data?entryid=0c4338b6-1469-48ec-88b4-406f61621420
+</a>
+:p
 
 The total number of records fetched from the server
 can be set with the "max" attribute. This will only retrieve the first N records.
@@ -138,12 +143,13 @@ The field ids for a point data entry can be viewed with the  Metadata view, e.g.
 
 <pre>{<noop>{display_linechart fields="#5,#6,#7,#8,#9,#10" }}</pre>
 
+
 <a name='filters'></a>
 :lheading Filtering Data
 
 A display can present a set of widgets that allow the user to filter the data being shown. For example, in the image below (See <a href="https://ramadda.org/repository/alias/14ers">here<a>) the data has a set of fields - elev, elev_gain, distance, range and class. 
 
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image1"></a><div><a href="images/filters.png?version=305"><img  src="images/filters.png?version=305"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="Filtering Data" ></a><br><span class="caption">Image 1: Filtering Data</span></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image1"></a><div><a href="images/filters.png?version=931"><img  src="images/filters.png?version=931"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="Filtering Data" ></a><br><span class="caption">Image 1: Filtering Data</span></div></div>
 
 Below is the wiki text that creates the above display. The map display defines which fields should be used with the filterFields="..." attribute. The ranking display specifies the same set of filter fields but also has a hideFilterWidget=true which specifies to actually not show the widgets. The filter values the user enters in the map display are then applied to the ranking display.
 <pre>+row
@@ -321,12 +327,12 @@ If <i>showMenu</i> is set to true for a group then the below menu is displayed.
 This supports the interactive creation of new charts and displays. The layout of these
 displays can be changed interactively, their state can be changed and they can be deleted. 
 
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image2"></a><div><a href="images/groupmenu.png?version=305"><img  src="images/groupmenu.png?version=305"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="Group menu" ></a><br><span class="caption">Image 2: Group menu</span></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image2"></a><div><a href="images/groupmenu.png?version=931"><img  src="images/groupmenu.png?version=931"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="Group menu" ></a><br><span class="caption">Image 2: Group menu</span></div></div>
 
 If the user is logged in then the set of dynamically created displays can
 be saved (e.g., as a wiki page) 
 through the group menu as seen below:
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image3"></a><div><a href="images/groupmenu2.png?version=305"><img  src="images/groupmenu2.png?version=305"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="File save menu" ></a><br><span class="caption">Image 3: File save menu</span></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image3"></a><div><a href="images/groupmenu2.png?version=931"><img  src="images/groupmenu2.png?version=931"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="File save menu" ></a><br><span class="caption">Image 3: File save menu</span></div></div>
 
 <div class="ramadda-help-subsubheading">Display Layout</div> 
 Each child display may be located in a fixed location (using <i>layoutHere=false</i>) in the web page 
@@ -395,7 +401,7 @@ and allow the user to select which entry to display.
 <a href="https://ramadda.org/repository/a/swe">Here</a> is an example
 that shows a time series plot of one of a set of data files:
 
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/changeentries.png?version=305"><img  src="images/changeentries.png?version=305"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/changeentries.png?version=305" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/changeentries.png?version=931"><img  src="images/changeentries.png?version=931"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/changeentries.png?version=931" ></a></div></div>
 
 
 Below is the relevant wiki text for the above display. You can also view the
