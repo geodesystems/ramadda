@@ -1648,6 +1648,9 @@ public class WikiManager extends RepositoryManager
         return result;
     }
 
+
+
+
     /**
      * _more_
      *
@@ -2873,188 +2876,15 @@ public class WikiManager extends RepositoryManager
                 }
 	    }
 
-            String tooltip = getProperty(wikiUtil, props, "tooltip",
-					 null);
+            String tooltip = getProperty(wikiUtil, props, "tooltip",null);
 	    if(tooltip!=null) {
 		tooltip = tooltip.replace("${entryid}",entry.getId()).replace("${entryname}",entry.getName());
 		tooltip = tooltip.replace("${mainentryid}",originalEntry.getId()).replace("${mainentryname}",originalEntry.getName());		
 		props.put("tooltip",tooltip);
 	    }
 
-            String jsonUrl = null;
-	    String remote = getProperty(wikiUtil,props,"remote",null);
-	    ServerInfo serverInfo = getServer(request, entry, wikiUtil, props);
-            boolean doEntries = getProperty(wikiUtil, props, "doEntries",false);
-            boolean doEntry = getProperty(wikiUtil, props, "doEntry", false);
-
-            if (doEntries || doEntry) {
-		String extra ="";
-		String orderBy = getProperty(wikiUtil, props,"orderby",null);
-		if(orderBy!=null)
-		    extra+="&orderby=" + orderBy;
-		String sortBy = getProperty(wikiUtil, props,"sortby",null);
-		if(sortBy!=null)
-		    extra+="&orderby=" + sortBy;		    
-		String ascending = getProperty(wikiUtil, props,"ascending",null);
-		if(ascending!=null)
-		    extra+="&ascending=" + ascending;
-		String sortDir = getProperty(wikiUtil, props,"sortdir",null);
-		if(sortDir!=null)
-		    extra+="&ascending=" + sortDir.equals("up");
-
-		if(serverInfo!=null) {
-		    jsonUrl = HtmlUtils.url(serverInfo.getUrl()+  "/entry/show",
-					    ARG_ENTRYID,entry.getId(), ARG_OUTPUT,
-					    JsonOutputHandler.OUTPUT_JSON_POINT.getId(),"remoteRequest","true");
-		} else {
-		    String entries = getProperty(wikiUtil,props,ATTR_ENTRIES,null);
-		    jsonUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT,
-					       JsonOutputHandler.OUTPUT_JSON_POINT.getId());
-		    if(entries!=null) jsonUrl = HU.url(jsonUrl,ATTR_ENTRIES,entries);
-		}
-		//If there is an ancestor specified then we use the /search/do url
-		boolean doSearch = getProperty(wikiUtil, props, "doSearch",false);
-		ancestor = getProperty(wikiUtil, props, "ancestor",(String)null);
-		
-                if (ancestor!=null || doSearch) {
-		    //		    String orderBy = ORDERBY_FROMDATE;
-		    //		    boolean ascending =false;
-		    jsonUrl = HU.url(getRepository().getUrlBase()+"/search/do", ARG_OUTPUT,
-				     JsonOutputHandler.OUTPUT_JSON_POINT.getId()
-				     /*,ARG_ORDERBY,orderBy+(ascending?"_ascending":"_descending")*/);
-
-		}
-		if(extra.length()>0) jsonUrl+=extra;
-		if(doSearch) {
-		    String type = getProperty(wikiUtil, props, "type",(String) null);
-		    if(type!=null)
-			jsonUrl += "&type=" + type;
-		}
-
-		//		System.err.println("JSON:" + jsonUrl +"  "+ doSearch);
-
-                if (ancestor!=null) {
-		    if(ancestor.equals(ID_THIS)) ancestor = entry.getId();
-                    jsonUrl += "&ancestor=" + ancestor;
-                }
-                if (doEntry) {
-                    jsonUrl += "&onlyentry=true";
-                }
-                if (getProperty(wikiUtil, props, "addAttributes", false)) {
-                    jsonUrl += "&addAttributes=true";
-                }
-		if(getProperty(wikiUtil, props, "imagesOnly", false)) {
-                    jsonUrl += "&imagesOnly=true";
-		}
-
-
-		String entryTypes = getProperty(wikiUtil, props, "entryTypes",(String)null);
-                if (entryTypes!=null) {
-                    jsonUrl += "&entryTypes=" + entryTypes;
-                }
-		String notentryTypes = getProperty(wikiUtil, props, "notEntryTypes",(String)null);
-                if (notentryTypes!=null) {
-                    jsonUrl += "&notEntryTypes=" + notentryTypes;
-                }		
-                if (getProperty(wikiUtil, props, "addPointUrl", false)) {
-                    jsonUrl += "&addPointUrl=true";
-                }		
-                if (getProperty(wikiUtil, props, "addThumbnails", false)) {
-                    jsonUrl += "&addThumbnails=true";
-                }
-                if (getProperty(wikiUtil, props, "addImages", false)) {
-                    jsonUrl += "&addImages=true";
-                }
-                if (getProperty(wikiUtil, props, "addMediaUrl", false)) {
-                    jsonUrl += "&addMediaUrl=true";
-                }		
-                if (getProperty(wikiUtil, props, "addSnippets", false)) {
-                    jsonUrl += "&addSnippets=true";
-                }
-            }
-            if (theTag.startsWith("display_")) {
-                String newType = theTag.substring(8);
-                props.put(ATTR_TYPE, newType);
-                theTag = theTag.substring(0, 7);
-            }
             List<String> displayProps = new ArrayList<String>();
-	    if(jsonUrl==null && stringDefined(remote)) {
-		URL url = new URL(remote);
-		String path = url.getPath();
-		if(path.endsWith("/entry/data")) {
-		    jsonUrl = remote;
-		}  else {
-		    String entryId =  StringUtil.findPattern(remote, "entryid=([^&]+)(\\?|$)");
-		    //https://localhost:8430/repository/entry/show?entryid=6ad1f1fb-8b6f-4fe8-a759-3027f512977e
-		    if(!stringDefined(entryId)) {
-			//check for alias
-			//https://ramadda.org/repository/a/test_alias
-			entryId =  StringUtil.findPattern(remote, "/a/([^&]+)(\\?|$)");
-		    }
-		    //TODO: handle ramaddas that have a different root path
-		    if(stringDefined(entryId)) {
-			String prefix = StringUtil.findPattern(path,"^(.+)/entry/show");
-			if(prefix==null)
-			    prefix = StringUtil.findPattern(path,"^(.+)/a/");
-			if(prefix==null)
-			    prefix = "/repository";			   
-
-			jsonUrl = url.getProtocol()+"://" + url.getHost()+(url.getPort()>0?":" + url.getPort():"");
-			jsonUrl +=prefix+"/entry/data?entryid=" + entryId;
-			//			System.err.println(jsonUrl);
-		    }		    
-		}
-	    }
-
-
-
-            if (jsonUrl == null) {
-		//Push the props
-		for(String prop:new String[]{"max","lastRecords"}) {
-		    if (props.get(prop) == null) {
-			String value = getProperty(wikiUtil, props, prop, null);
-			if (value != null) {
-			    props.put(prop,value);
-			}
-                    }
-                }
-
-		if(serverInfo!=null) {
-		    String max = Utils.getProperty(props,"max",null);
-		    String url = serverInfo.getUrl() +"/entry/wikiurl?entryid=" + entry.getId() +(max!=null?"&max=" + max:"");
-		    String json = IO.readContents(url);
-		    JSONObject obj      = new JSONObject(json);
-		    String error = obj.optString("error");
-		    if(Utils.stringDefined(error)) throw new RuntimeException("Error getting remote URL:" + error);
-		    jsonUrl = obj.optString("url");		    
-		} else {
-		    //Do this here since the startdate might be in a property tag
-		    String startDate = getProperty(wikiUtil, props, "request.startdate", (String) null);
-		    if(startDate!=null) props.put("request.startdate", startDate);
-		    String endDate = getProperty(wikiUtil, props, "request.enddate", (String) null);
-		    if(endDate!=null) props.put("request.enddate", endDate);		    
-                    jsonUrl += "&addSnippets=true";
-		    jsonUrl = entry.getTypeHandler().getUrlForWiki(request,
-								   entry, theTag, props, displayProps);
-		}
-            }
-	    //	    System.err.println("tag:" + theTag+ " jsonurl:" +jsonUrl);
-            //Gack - handle the files that are gridded netcdf
-            //This is awful to have this here but I just don't know how to 
-            //handle these entries
-            if ((jsonUrl == null)
-		&&
-		(entry.getTypeHandler().isType(Constants.TYPE_FILE) ||
-		 entry.getResource().isS3())
-		&& entry.getResource().getPath().toLowerCase().endsWith(
-									".nc")) {
-		TypeHandler gridType =
-                    getRepository().getTypeHandler("cdm_grid");
-                if (gridType != null) {
-                    jsonUrl = gridType.getUrlForWiki(request, entry, theTag,
-						     props, displayProps);
-                }
-            }
+	    String jsonUrl = getDataUrl(request, entry,  wikiUtil, theTag, props,displayProps);
 	    if(Misc.equals("true",request.getExtraProperty(PROP_MAKESNAPSHOT))) {
 		if(request.isAnonymous()) throw new RuntimeException("Anonymous users cannot make snapshots");
 		List<String[]> snapshotFiles = (List<String[]>) request.getExtraProperty("snapshotfiles");
@@ -4792,6 +4622,219 @@ public class WikiManager extends RepositoryManager
 	}
 	return HU.div(contents,compAttrs);
     }
+
+
+    public Result processGetDataUrl(Request request) throws Exception {
+        Entry entry = getEntryManager().getEntry(request, request.getString(ARG_ENTRYID, ""));
+	if(entry==null) {
+	    throw new RuntimeException("could not find entry:" + request.getString(ARG_ENTRYID, ""));
+	}
+	//Dummy tag
+	String tag = "display_linechart";
+	Hashtable props = request.getArgs();
+	props.remove(ARG_REMOTE);
+	List<String> displayProps = new ArrayList<String>();
+	WikiUtil  wikiUtil = new WikiUtil();
+	String jsonUrl = request.getAbsoluteUrl(getDataUrl(request, entry,wikiUtil,tag,props,displayProps));
+        Result result = new Result("", new StringBuilder(jsonUrl),IO.MIME_TEXT);
+        result.setShouldDecorate(false);
+        return result;
+    }
+
+
+
+    public String getDataUrl(Request request, Entry entry, WikiUtil wikiUtil, String theTag, Hashtable props, List<String> displayProps) throws Exception {
+	String jsonUrl = null;
+	String remote = getProperty(wikiUtil,props,ARG_REMOTE,null);
+	ServerInfo serverInfo = getServer(request, entry, wikiUtil, props);
+	boolean doEntries = getProperty(wikiUtil, props, "doEntries",false);
+	boolean doEntry = getProperty(wikiUtil, props, "doEntry", false);
+	String ancestor = getProperty(wikiUtil, props, ARG_ANCESTOR,
+				      null);
+	if (doEntries || doEntry) {
+	    String extra ="";
+	    String orderBy = getProperty(wikiUtil, props,"orderby",null);
+	    if(orderBy!=null)
+		extra+="&orderby=" + orderBy;
+	    String sortBy = getProperty(wikiUtil, props,"sortby",null);
+	    if(sortBy!=null)
+		extra+="&orderby=" + sortBy;		    
+	    String ascending = getProperty(wikiUtil, props,"ascending",null);
+	    if(ascending!=null)
+		extra+="&ascending=" + ascending;
+	    String sortDir = getProperty(wikiUtil, props,"sortdir",null);
+	    if(sortDir!=null)
+		extra+="&ascending=" + sortDir.equals("up");
+
+	    if(serverInfo!=null) {
+		jsonUrl = HtmlUtils.url(serverInfo.getUrl()+  "/entry/show",
+					ARG_ENTRYID,entry.getId(), ARG_OUTPUT,
+					JsonOutputHandler.OUTPUT_JSON_POINT.getId(),"remoteRequest","true");
+	    } else {
+		String entries = getProperty(wikiUtil,props,ATTR_ENTRIES,null);
+		jsonUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT,
+					   JsonOutputHandler.OUTPUT_JSON_POINT.getId());
+		if(entries!=null) jsonUrl = HU.url(jsonUrl,ATTR_ENTRIES,entries);
+	    }
+	    //If there is an ancestor specified then we use the /search/do url
+	    boolean doSearch = getProperty(wikiUtil, props, "doSearch",false);
+	    ancestor = getProperty(wikiUtil, props, "ancestor",(String)null);
+		
+	    if (ancestor!=null || doSearch) {
+		//		    String orderBy = ORDERBY_FROMDATE;
+		//		    boolean ascending =false;
+		jsonUrl = HU.url(getRepository().getUrlBase()+"/search/do", ARG_OUTPUT,
+				 JsonOutputHandler.OUTPUT_JSON_POINT.getId()
+				 /*,ARG_ORDERBY,orderBy+(ascending?"_ascending":"_descending")*/);
+
+	    }
+	    if(extra.length()>0) jsonUrl+=extra;
+	    if(doSearch) {
+		String type = getProperty(wikiUtil, props, "type",(String) null);
+		if(type!=null)
+		    jsonUrl += "&type=" + type;
+	    }
+
+	    //		System.err.println("JSON:" + jsonUrl +"  "+ doSearch);
+
+	    if (ancestor!=null) {
+		if(ancestor.equals(ID_THIS)) ancestor = entry.getId();
+		jsonUrl += "&ancestor=" + ancestor;
+	    }
+	    if (doEntry) {
+		jsonUrl += "&onlyentry=true";
+	    }
+	    if (getProperty(wikiUtil, props, "addAttributes", false)) {
+		jsonUrl += "&addAttributes=true";
+	    }
+	    if(getProperty(wikiUtil, props, "imagesOnly", false)) {
+		jsonUrl += "&imagesOnly=true";
+	    }
+
+
+	    String entryTypes = getProperty(wikiUtil, props, "entryTypes",(String)null);
+	    if (entryTypes!=null) {
+		jsonUrl += "&entryTypes=" + entryTypes;
+	    }
+	    String notentryTypes = getProperty(wikiUtil, props, "notEntryTypes",(String)null);
+	    if (notentryTypes!=null) {
+		jsonUrl += "&notEntryTypes=" + notentryTypes;
+	    }		
+	    if (getProperty(wikiUtil, props, "addPointUrl", false)) {
+		jsonUrl += "&addPointUrl=true";
+	    }		
+	    if (getProperty(wikiUtil, props, "addThumbnails", false)) {
+		jsonUrl += "&addThumbnails=true";
+	    }
+	    if (getProperty(wikiUtil, props, "addImages", false)) {
+		jsonUrl += "&addImages=true";
+	    }
+	    if (getProperty(wikiUtil, props, "addMediaUrl", false)) {
+		jsonUrl += "&addMediaUrl=true";
+	    }		
+	    if (getProperty(wikiUtil, props, "addSnippets", false)) {
+		jsonUrl += "&addSnippets=true";
+	    }
+	}
+	if (theTag.startsWith("display_")) {
+	    String newType = theTag.substring(8);
+	    props.put(ATTR_TYPE, newType);
+	    theTag = theTag.substring(0, 7);
+	}
+
+	if (jsonUrl == null) {
+	    //Push the props
+	    for(String prop:new String[]{"max","lastRecords"}) {
+		if (props.get(prop) == null) {
+		    String value = getProperty(wikiUtil, props, prop, null);
+		    if (value != null) {
+			props.put(prop,value);
+		    }
+		}
+	    }
+
+	    if(serverInfo!=null) {
+		String max = Utils.getProperty(props,"max",null);
+		String url = serverInfo.getUrl() +"/entry/wikiurl?entryid=" + entry.getId() +(max!=null?"&max=" + max:"");
+		String json = IO.readContents(url);
+		JSONObject obj      = new JSONObject(json);
+		String error = obj.optString("error");
+		if(Utils.stringDefined(error)) throw new RuntimeException("Error getting remote URL:" + error);
+		jsonUrl = obj.optString("url");		    
+	    } else {
+		//Do this here since the startdate might be in a property tag
+		String startDate = getProperty(wikiUtil, props, "request.startdate", (String) null);
+		if(startDate!=null) props.put("request.startdate", startDate);
+		String endDate = getProperty(wikiUtil, props, "request.enddate", (String) null);
+		if(endDate!=null) props.put("request.enddate", endDate);		    
+		jsonUrl += "&addSnippets=true";
+		if(stringDefined(remote)) {
+		    URL url = new URL(remote);
+		    String path = url.getPath();
+		    if(path.endsWith("/entry/data")) {
+			jsonUrl = remote;
+		    }  else {
+			String entryId =  StringUtil.findPattern(remote, "entryid=([^&]+)(\\?|$)");
+			//https://localhost:8430/repository/entry/show?entryid=6ad1f1fb-8b6f-4fe8-a759-3027f512977e
+			if(!stringDefined(entryId)) {
+			    //check for alias - https://ramadda.org/repository/a/test_alias
+			    entryId =  StringUtil.findPattern(remote, "/a/([^&]+)(\\?|$)");
+			}
+			if(!stringDefined(entryId)) {
+			    throw new IllegalArgumentException("Could not find entry id in remote URL: "+ remote);
+			}
+			String prefix = StringUtil.findPattern(path,"^(.+)/entry/show");
+			if(prefix==null)
+			    prefix = StringUtil.findPattern(path,"^(.+)/a/");
+			if(prefix==null)
+			    prefix = "/repository";			   
+			jsonUrl = url.getProtocol()+"://" + url.getHost()+(url.getPort()>0?":" + url.getPort():"");
+			jsonUrl +=prefix+"/entry/data?entryid=" + entryId;
+
+
+
+			String getUrlUrl = HU.url(
+						  url.getProtocol()+"://" + url.getHost()+(url.getPort()>0?":" + url.getPort():"")+
+						  "/getdataurl",
+						  ARG_ENTRYID,entryId);
+			for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
+			    String arg = (String) keys.nextElement();
+			    String v = (String) props.get(arg);
+			    getUrlUrl=HU.url(getUrlUrl,arg,v);
+			    if(arg.equals("max")||arg.equals("lastRecords")) {
+				jsonUrl=HU.url(jsonUrl,arg,v);
+			    }
+			}
+			System.err.println("remote url:" +jsonUrl);
+			//			System.err.println(getUrlUrl);			
+		    }
+		} else {
+		    jsonUrl = entry.getTypeHandler().getUrlForWiki(request,
+								   entry, theTag, props, displayProps);
+		}
+	    }
+	}
+	//	    System.err.println("tag:" + theTag+ " jsonurl:" +jsonUrl);
+	//Gack - handle the files that are gridded netcdf
+	//This is awful to have this here but I just don't know how to 
+	//handle these entries
+	if ((jsonUrl == null)
+	    &&
+	    (entry.getTypeHandler().isType(Constants.TYPE_FILE) ||
+	     entry.getResource().isS3())
+	    && entry.getResource().getPath().toLowerCase().endsWith(
+								    ".nc")) {
+	    TypeHandler gridType =
+		getRepository().getTypeHandler("cdm_grid");
+	    if (gridType != null) {
+		jsonUrl = gridType.getUrlForWiki(request, entry, theTag,
+						 props, displayProps);
+	    }
+	}
+	return jsonUrl;
+    }	
+
+
 
 
     public String makeTableTree(Request request, WikiUtil wikiUtil, Hashtable props, List<Entry> children) throws Exception {

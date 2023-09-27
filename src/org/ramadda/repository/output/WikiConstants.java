@@ -13,6 +13,8 @@ import org.ramadda.repository.Constants;
  */
 public interface WikiConstants {
 
+    public static final String ARG_REMOTE = "remote";
+
 
 
     /** _more_ */
@@ -119,6 +121,7 @@ public interface WikiConstants {
 
     /** _more_ */
     public static final String ATTR_PADDING = "padding";
+
 
     /** _more_ */
     public static final String ATTR_MARGIN = "margin";
