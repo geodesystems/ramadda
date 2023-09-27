@@ -74,6 +74,7 @@
 
   <group handler="wikimanager">
     <api request="/wikify"             method="processWikify" />
+    <api request="/getdataurl"         method="processGetDataUrl" />    
     <api request="/getwiki"             method="processGetWiki" />
     <api request="/wikitoolbar"        method="processGetWikiToolbar" />
     <api request="/getnotebook"        method="processGetNotebook" />
