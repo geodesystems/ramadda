@@ -6613,6 +6613,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
     
 
+    public Result processPrintDb(Request request) throws Exception {
+	getDatabaseManager().printIt();
+	return new Result("",new StringBuilder());
+    }
+
+
     public Result processTestAction(Request request) throws Exception {
 	//Make the action
 	ActionManager.Action action = new ActionManager.Action() {
