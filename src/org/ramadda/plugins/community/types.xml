@@ -174,7 +174,7 @@
 {{properties  message="" metadata.types="content.alias" includeTitle="false"}}
 {{image src="::*" message="" width="300"}}
 <p>
-{{mapentry width="300" message="" geojson="/repository/resources/fips/${community_snapshot.1}.geojson"}}
+{{mapentry zoomLevel=default width="300" message="" geojson="/repository/resources/fips/${community_snapshot.1}.geojson"}}
 <p>
 {{properties   message="" metadata.types="!content.alias,!content.logo,!content.timezone"}}
 -col
