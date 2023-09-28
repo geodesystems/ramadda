@@ -3712,9 +3712,7 @@ public class TypeHandler extends RepositoryManager {
 			  .getLabel(), "title=\"View user profile\"");
 
 
-		String linkMsg =
-		    msg(
-                        "Search for entries of this type created by the user");
+		String linkMsg = "Search for entries of this type created by the user";
 		String userLinkId = HtmlUtils.getUniqueId("userlink_");
 		userSearchLink = HtmlUtils
 		    .href(getSearchManager().URL_SEARCH_TYPE + "/"
@@ -7323,10 +7321,9 @@ public class TypeHandler extends RepositoryManager {
                             HtmlUtils.cssClass("entry-type-search")
                             + HtmlUtils.attr(
                                 HtmlUtils.ATTR_ALT,
-                                msg(
-                                "Search for entries of this type")) + HtmlUtils.attr(
+                                "Search for entries of this type") + HtmlUtils.attr(
                                     HtmlUtils.ATTR_TITLE,
-                                    msg("Search for entries of this type")));
+                                    "Search for entries of this type"));
 
                 return searchUrl;
             }
