@@ -13,10 +13,12 @@ import java.util.Date;
 import java.net.URL;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
+import java.util.Random;
 
 public class Test {
     private static Date startTime;
     private static Object MUTEX=new Object();
+    private static int activeThreads = 0;
     private static int numThreads = 50;
     private static int totalRead =0;
     private static int loops = 1000;
@@ -54,7 +56,7 @@ public class Test {
 			}
 			long diff = (after.getTime()-startTime.getTime())/1000;
 			int callsPer = diff<=0?0:(int)(totalRead/(double)diff);
-			System.out.println("#" + (urlCnt++)+" total read:" + totalRead + " calls/s:" + callsPer +" time:" + time);
+			System.out.println("#" + (urlCnt++)+" total read:" + totalRead + " calls/s:" + callsPer +" time:" + time +" #threads:"+ activeThreads);
 
 		    }
 		    if(sleep>0) Misc.sleep(sleep);
@@ -108,20 +110,25 @@ public class Test {
 	    }
 	    urls.add(args[i]);
 	}
+	Random random = new Random();
 	System.out.println("num threads:" + numThreads);
 	int threads = numThreads;
 	for(int i=0;i<threads;i++) {
 	    Misc.runInABit(100,new Runnable() {
 		    public void run() {
+			synchronized(MUTEX) {
+			    activeThreads++;
+			}
 			runTest(urls);
 			synchronized(MUTEX) {
 			    numThreads--;
+			    activeThreads--;
 			    System.out.println("DONE:" + numThreads);
 			}
 		    }
 		});
 	    //Stagger the threads
-	    Misc.sleep(10);
+	    Misc.sleep(random.nextInt(50) + 1);
 	}
 	
 	while(true) {
