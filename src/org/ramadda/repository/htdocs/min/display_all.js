@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Sep 26 08:30:21 MDT 2023";
+var build_date="RAMADDA build date: Thu Sep 28 09:28:05 MDT 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -5489,7 +5489,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'tooltipPositionAt',ex:'left bottom+2'},		
 	{p:'tooltipCollision'},
 	{p:'tooltipFields',canCache:true},
-	{p:'tooltipNotFields',canCache:true,d:''},
+	{p:'tooltipNotFields',d:''},
 	{p:'selectPopup',ex:'${default}',tt:'Template to use to make a popup when a record is selected'},
 	{p:'selectPopupTitle'},
 	{p:'headerText',ex:'blah blah ${command labels=\"log scale,linear scale\" xAxisType=log,linear} blah',
@@ -5511,6 +5511,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'nanValue',d:'--',canCache:true},
 	{p:'&lt;field_id&gt;.&lt;format&gt;',ex:'...'},
 	{label:'Data Requests'},
+	{p:'remote',tt:'URL to an external RAMADDA entry',ex:''},
 	{p:'request.startdate',tt:'Start date of data',ex:'yyyy-MM-dd or relative:-1 week|-6 months|-2 years|etc'},
 	{p:'request.enddate',tt:'End date of data',ex:'yyyy-MM-dd or relative:-1 week|-6 months|-2 years|etc'},
 	{p:'requestFields',tt:'Comma separated list of fields for querying server side data'},
