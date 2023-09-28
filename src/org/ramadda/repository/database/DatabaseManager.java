@@ -104,7 +104,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     /** _more_ */
     public static int openCnt = 0;
 
-
+    public static int getConnectCnt=0;
 
     /** _more_ */
     private long myTime = System.currentTimeMillis();
@@ -292,8 +292,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         Connection connection = null;
         try {
 	    connection = getConnection();
-
-
         } finally {
 	    if(connection!=null)
 		closeConnection(connection);
@@ -844,17 +842,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     }
 
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public Connection getConnection() throws Exception {
-        return getConnection("");
-    }
+    boolean havePrinted = false;
 
     /**
      * _more_
@@ -865,49 +853,32 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      *
      * @throws Exception _more_
      */
-    int xcnt=0;
-    boolean havePrinted = false;
-    private Connection getConnection(String msg) throws Exception {
+    public Connection getConnection() throws Exception {
         try {
-	    //	    System.err.println("get connection:" + Utils.getStack(5,null,true));
+	    //	    System.err.println("get connection:" + Utils.getStack(5,null,true).replace("\n"," "));
+
             Connection connection = null;
 	    BasicDataSource tmpDataSource = dataSource;
 	    if (tmpDataSource == null) {
-		throw new IllegalStateException(
-						"DatabaseManager: dataSource is null");
+		throw new IllegalStateException("DatabaseManager: dataSource is null");
 	    }
 
-	    int tries = 10;
-	    int sleep = 50;
-	    Exception lastException=null;
-	    while(true) {
-		synchronized (CONNECTION_MUTEX) {
-		    try {
-			connection = tmpDataSource.getConnection();
-			synchronized(connectionInfos) {
-			    connectionInfos.add(new ConnectionInfo(connection,""));
-			}
-			/*
-			int numActive = tmpDataSource.getNumActive();
-			if(numActive==20) {
-			    if(!havePrinted)printIt();
-			    havePrinted = true;
-			}
-			*/
-			//			if(numActive>10)
-			//			System.err.println("connects:" + numActive + " infos:" +  getConnectionInfos().size());
-			return connection;
-		    } catch(Exception exc) {
-			//			if(!havePrinted)
-			printIt();
-			//			havePrinted = true;
-			throw exc;
-		    }
+	    try {
+		connection = tmpDataSource.getConnection();
+		synchronized(connectionInfos) {connectionInfos.add(new ConnectionInfo(connection,""));}
+		synchronized(CONNECTION_MUTEX) {
+		    getConnectCnt++;
+		    openCnt++;
+		    System.err.print("\r                                            ");
+		    System.err.print("\rget connection:" + getConnectCnt +"  #open:" + openCnt);
 		}
-	    }
 
-	    //	    if(lastException==null)	lastException = new IllegalStateException("Unable to get database connection");
-	    //	    throw lastException;
+		return connection;
+	    } catch(Exception exc) {
+		printIt();
+		throw exc;
+	    }
+		//	    }
         } catch (Exception exc) {
             System.err.println("DatabaseManager: Error in getConnection.\n"+exc);
             StringBuffer sb = new StringBuffer();
@@ -939,10 +910,12 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      */
     public void closeConnection(Connection connection) {
         try {
+	    synchronized(CONNECTION_MUTEX) {
+		openCnt--;
+	    }
             synchronized (connectionInfos) {
                 boolean gotOne = false;
                 for (ConnectionInfo info : connectionInfos) {
-                    //                    if(info.connection == connection) {
                     if ((info.connection == connection)
 			|| info.connection.equals(connection)) {
                         connectionInfos.remove(info);
@@ -950,23 +923,15 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                         break;
                     }
                 }
-                if ( !gotOne) {
-                    //                    System.err.println("     failed to find connection infos.size:" + connectionInfos.size());
-                    //                    System.err.println("     connection:" + connection);
-                    //                    System.err.println("     infos:" + connectionInfos);
-                }
-                //                connectionMap.remove(connection);
             }
             try {
                 connection.setAutoCommit(true);
             } catch (Throwable ignore) {}
-
             try {
-                synchronized (CONNECTION_MUTEX) {
+		//                synchronized (CONNECTION_MUTEX) {
                     connection.close();
-                }
+		    //                }
             } catch (Exception ignore) {}
-
         } catch (Exception exc) {
             getLogManager().logError("Closing connections", exc);
         }
@@ -1022,7 +987,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             if (debug) {
                 System.err.println("CONNECTION: statement is null");
             }
-
             return;
         }
         Connection connection = null;
@@ -1046,14 +1010,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             }
         } else {
             if (debug) {
-                System.err.println(
-				   "CONNECTION: statement with no connection");
+                System.err.println("CONNECTION: statement with no connection");
             }
-            //          Misc.printStack("CONNECTION: statement with no connection");
-            //                new IllegalArgumentException());
-            //            getLogManager().logError(
-            //                "CONNECTION: Tried to close a statement with no connection",
-            //                new IllegalArgumentException());
         }
     }
 
@@ -1906,9 +1864,11 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         if (date == null) {
             statement.setTimestamp(col, null);
         } else {
-            statement.setTimestamp(col,
-                                   new java.sql.Timestamp(date.getTime()),
-                                   Repository.calendar);
+	    synchronized(Repository.calendar) {
+		statement.setTimestamp(col,
+				       new java.sql.Timestamp(date.getTime()),
+				       Repository.calendar);
+	    }
         }
     }
 
@@ -1941,10 +1901,12 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      */
     public Date getTimestamp(ResultSet results, int col, boolean makeDflt)
 	throws Exception {
-        Date date = results.getTimestamp(col, Repository.calendar);
-        if (date != null) {
-            return date;
-        }
+	synchronized(Repository.calendar) {
+	    Date date = results.getTimestamp(col, Repository.calendar);
+	    if (date != null) {
+		return date;
+	    }
+	}
         if (makeDflt) {
             return new Date();
         }
@@ -1966,10 +1928,12 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      */
     public Date getTimestamp(ResultSet results, String col, boolean makeDflt)
 	throws Exception {
-        Date date = results.getTimestamp(col, Repository.calendar);
-        if (date != null) {
-            return date;
-        }
+	synchronized(Repository.calendar) {
+	    Date date = results.getTimestamp(col, Repository.calendar);
+	    if (date != null) {
+		return date;
+	    }
+	}
         if (makeDflt) {
             return new Date();
         }
@@ -2012,8 +1976,10 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             if (date == null) {
                 statement.setTime(col, null);
             } else {
-                statement.setTime(col, new java.sql.Time(date.getTime()),
-                                  Repository.calendar);
+		synchronized(Repository.calendar) {
+		    statement.setTime(col, new java.sql.Time(date.getTime()),
+				      Repository.calendar);
+		}
             }
         }
     }
@@ -2108,10 +2074,12 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         if (true || !db.equals(SqlUtil.DB_MYSQL)) {
             return getTimestamp(results, col, makeDflt);
         }
-        Date date = results.getTime(col, Repository.calendar);
-        if (date != null) {
-            return date;
-        }
+	synchronized(Repository.calendar) {
+	    Date date = results.getTime(col, Repository.calendar);
+	    if (date != null) {
+		return date;
+	    }
+	}
         if (makeDflt) {
             return new Date();
         }
@@ -2137,10 +2105,12 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         if (true || !db.equals(SqlUtil.DB_MYSQL)) {
             return getTimestamp(results, col, makeDflt);
         }
-        Date date = results.getTime(col, Repository.calendar);
-        if (date != null) {
-            return date;
-        }
+	synchronized(Repository.calendar) {
+	    Date date = results.getTime(col, Repository.calendar);
+	    if (date != null) {
+		return date;
+	    }
+	}
         if (makeDflt) {
             return new Date();
         }
@@ -2694,41 +2664,20 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     public Statement select(final String what, final List tables,
                             final Clause clause, String extra, final int max)
 	throws Exception {
+        Connection connection = getConnection();
+	return select(connection, what,tables,clause,extra,max);
+    }
+
+    public Statement select(Connection connection, final String what, final List tables,
+                            final Clause clause, String extra, final int max)
+	throws Exception {	
+
         if (extra != null) {
             extra = escapeString(extra);
         }
-        DbQueryInfo queryInfo = new DbQueryInfo(what, tables, clause, extra,
-						max);
-        final boolean[] done = { false };
-        String msg = "Select what:" + what + "\ntables:" + tables
-	    + "\nclause:" + clause + "\nextra:" + extra + "\nmax:"
-	    + max;
-        /*
-          Misc.run(new Runnable() {
-          public void run() {
-          //Wait 20 seconds
-          Misc.sleep(1000*10);
-          if(!done[0]) {
-          System.err.println("Select is taking too long\nwhat:" + what + "\ntables:" +
-          tables +
-          "\nclause:" + clause +
-          "\nextra:" + extra+
-          "max:" + max);
-          Misc.printStack("select",20);
-          }
-          }
-          });
-        */
-
-        Connection connection = getConnection(msg);
         try {
             numberOfSelects.incr();
-            //            System.err.println ("clause:" + clause +" tables:" + tables);
-            Statement statement = SqlUtil.select(connection, what, tables,
-						 clause, extra, max, TIMEOUT);
-
-            done[0] = true;
-
+            Statement statement = SqlUtil.select(connection, what, tables, clause, extra, max, TIMEOUT);
             return statement;
         } catch (Exception exc) {
             logError("Error doing select \nwhat:" + what + "\ntables:"
@@ -2853,7 +2802,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
         return result;
     }
-
 
 
     /**
