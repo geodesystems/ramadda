@@ -708,6 +708,22 @@ public class GeoJson extends JsonUtil {
 	System.out.println(obj.toString());
     }
 
+    public static void first(String f,int n) throws Exception {
+        JSONObject            obj      =
+            new JSONObject(new JSONTokener(new FileInputStream(f)));
+        JSONArray             features = readArray(obj, "features");
+	List<Object> objects = new ArrayList<Object>();
+	double cnt = 0;
+	System.err.println("#features:" + features.length());
+	for (int idx1 = 0; idx1 < features.length() && idx1<n; idx1++) {
+	    objects.add(features.getJSONObject(idx1));
+	}
+	features.clear();
+	features.putAll(objects);
+	System.err.println("#new features:" + features.length());
+	System.out.println(obj.toString());
+    }
+    
 
 
 
@@ -722,7 +738,9 @@ public class GeoJson extends JsonUtil {
 
 	boolean doReverse = false;
 	boolean doSplit = false;	
-	boolean doStride = false;	
+	boolean doStride = false;
+	boolean doFirst = false;		
+	int first=0;
 	boolean doCsv = true;	
 	double stride=2;
 
@@ -743,6 +761,11 @@ public class GeoJson extends JsonUtil {
 		doStride= true;
 		continue;
 	    }
+	    if(arg.equals("-first")) {
+		first = Integer.parseInt(args[++i]);
+		doFirst= true;
+		continue;
+	    }	    
 	    if(arg.equals("-split")) {
 		doSplit = true;
 		continue;
@@ -757,6 +780,8 @@ public class GeoJson extends JsonUtil {
 	    }
 	    if(doStride)
 		stride(arg,stride);
+	    if(doFirst)
+		first(arg,first);	    
 	    if(doReverse)
 		reverse(arg);
 	    else if(doSplit)
