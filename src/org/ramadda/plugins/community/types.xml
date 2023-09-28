@@ -181,6 +181,7 @@
 -row
 -section
 :p
++skip
 +section title="Workbench"  class="ramadda-section-map" ----
 <div id=listdiv style="min-height:200px;" ></div>
 <div id=maindiv style="min-height:200px;"></div>
@@ -191,6 +192,7 @@ textRequired="true"
 height="300px"
 providers="this,fred,quandl,socrata,category:.*CKAN.*,category:.*Socrata.*,flickr,youtube,duckduckgo"
 }}
+-skip
 :vspace 100px
 -section
 ]]>
