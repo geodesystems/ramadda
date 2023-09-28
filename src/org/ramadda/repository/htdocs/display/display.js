@@ -1700,7 +1700,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'tooltipPositionAt',ex:'left bottom+2'},		
 	{p:'tooltipCollision'},
 	{p:'tooltipFields',canCache:true},
-	{p:'tooltipNotFields',canCache:true,d:''},
+	{p:'tooltipNotFields',d:''},
 	{p:'selectPopup',ex:'${default}',tt:'Template to use to make a popup when a record is selected'},
 	{p:'selectPopupTitle'},
 	{p:'headerText',ex:'blah blah ${command labels=\"log scale,linear scale\" xAxisType=log,linear} blah',
