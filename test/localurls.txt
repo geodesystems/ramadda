@@ -1,17 +1,17 @@
-#http://localhost:8080/repository/search/type/group
+http://localhost:8080/repository/entry/show?entryid=f794f936-d91c-4491-8efb-4ff38fa7fbe8
+http://localhost:8080/repository/entry/show?entryid=6ad1f1fb-8b6f-4fe8-a759-3027f512977e
+http://localhost:8080/repository/search/type/group
 http://localhost:8080/repository/entry/data?entryid=6ad1f1fb-8b6f-4fe8-a759-3027f512977e&max=5000
 http://localhost:8080/repository/entry/show?entryid=6ad1f1fb-8b6f-4fe8-a759-3027f512977e
 http://localhost:8080/repository/images/logo.png
 http://localhost:8080/repository
-stop
-http://localhost:8080/repository/entry/show?entryid=6ad1f1fb-8b6f-4fe8-a759-3027f512977e
 http://localhost:8080/repository/entry/show?entryid=9cdb1a47-2488-437a-aa3d-7e79c6c511d4
 http://localhost:8080/repository/entry/show?entryid=2bced028-dd60-4767-ad11-9566d1c0b84f
 http://localhost:8080/repository/entry/show?entryid=d667b1c2-a4b4-43a1-99d0-c498f8eac980
 http://localhost:8080/repository/entry/data?entryid=ada8025b-7160-4da6-91ee-038b55132a72&max=5000
 http://localhost:8080/repository/entry/data?entryid=567267a6-3998-4f5c-b0a1-22266a379990&max=5000
 
-
+stop
 http://localhost:8080/repository/entry/data?record.last=1&max=1&entryid=7f23a0ba-32f3-4ffc-bffe-7235e90f0358
 http://localhost:8080/repository/entry/data?record.last=1&max=1&entryid=56a65384-fb1e-41a1-adbc-80200ef8da9c
 http://localhost:8080/repository/entry/data?record.last=1&max=1&entryid=6dbc45cc-62bf-4925-859b-5378c9d40f7c
