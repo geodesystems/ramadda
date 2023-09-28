@@ -2284,10 +2284,12 @@ public class Admin extends RepositoryManager {
                     colcnt++;
                     if (rsmd.getColumnType(colcnt)
                             == java.sql.Types.TIMESTAMP) {
-                        Date dttm = results.getTimestamp(colcnt,
-                                        Repository.calendar);
-                        table.append(HU.col(formatDate(request,
-                                dttm)));
+			synchronized(Repository.calendar) {
+			    Date dttm = results.getTimestamp(colcnt,
+							     Repository.calendar);
+			    table.append(HU.col(formatDate(request,
+							   dttm)));
+			}
                     } else {
                         String s = results.getString(colcnt);
                         if (s == null) {
