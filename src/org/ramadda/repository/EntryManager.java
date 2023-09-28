@@ -658,6 +658,7 @@ public class EntryManager extends RepositoryManager {
      * @return _more_
      */
     public Entry getEntryFromCache(String entryId, boolean isId) {
+	//	if(true) return null;
         synchronized (MUTEX_ENTRY) {
             Entry entry = getEntryCache().get(entryId);
             if (entry == null) {
@@ -665,35 +666,6 @@ public class EntryManager extends RepositoryManager {
             }
             return entry;
         }
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param groupId _more_
-     *
-     * @return _more_
-     */
-    protected Entry getGroupFromCache(String groupId) {
-        return getGroupFromCache(groupId, true);
-    }
-
-    /**
-     * _more_
-     *
-     * @param groupId _more_
-     * @param isId _more_
-     *
-     * @return _more_
-     */
-    protected Entry getGroupFromCache(String groupId, boolean isId) {
-        Entry entry = getEntryFromCache(groupId, isId);
-        if (entry == null) {
-            return null;
-        }
-
-        return entry;
     }
 
 
@@ -7680,7 +7652,6 @@ public class EntryManager extends RepositoryManager {
                 }
             } else {
                 entry = createEntryFromDatabase(entryId, abbreviated);
-                debug("getEntry: from database:" + entry);
             }
         } catch (Exception exc) {
             logError("creating entry:" + entryId, exc);
@@ -7778,23 +7749,25 @@ public class EntryManager extends RepositoryManager {
     private Entry createEntryFromDatabase(String entryId, boolean abbreviated)
 	throws Exception {
         Entry entry = null;
-        Statement entryStmt =
-            getDatabaseManager().select(Tables.ENTRIES.COLUMNS,
-                                        Tables.ENTRIES.NAME,
-                                        Clause.eq(Tables.ENTRIES.COL_ID,
-						  entryId));
+	Statement entryStmt =null;
         try {
-            ResultSet results = entryStmt.getResultSet();
+	    entryStmt =	getDatabaseManager().select(Tables.ENTRIES.COLUMNS,
+						    Tables.ENTRIES.NAME,
+						    Clause.eq(Tables.ENTRIES.COL_ID,
+							      entryId));
+	    ResultSet results = entryStmt.getResultSet();
             if ( !results.next()) {
+		getDatabaseManager().closeAndReleaseConnection(entryStmt);
                 return null;
             }
             String entryType = results.getString(Tables.ENTRIES.COL_NODOT_TYPE);
             TypeHandler typeHandler =
                 getRepository().getTypeHandler(entryType, true);
-            entry = typeHandler.createEntryFromDatabase(results, abbreviated);
+            entry = typeHandler.createEntryFromDatabase(entryStmt.getConnection(), results, abbreviated);
             checkEntryFileTime(entry);
         } finally {
-            getDatabaseManager().closeAndReleaseConnection(entryStmt);
+	    //getDatabaseManager().closeAndReleaseConnection(entryStmt);
+	    getDatabaseManager().closeStatement(entryStmt);
         }
 
         return entry;
@@ -7971,7 +7944,7 @@ public class EntryManager extends RepositoryManager {
 			TypeHandler localTypeHandler =
 			    getRepository().getTypeHandler(results.getString(2),
 							   true);
-			entry = localTypeHandler.createEntryFromDatabase(results);
+			entry = localTypeHandler.createEntryFromDatabase(null,results);
 			cacheEntry(entry);
 		    }
 		    if (seen.get(entry.getId()) != null) {
@@ -9956,7 +9929,7 @@ public class EntryManager extends RepositoryManager {
         if ((id == null) || (id.length() == 0)) {
             return null;
         }
-        Entry group = getGroupFromCache(id);
+        Entry group = getEntryFromCache(id);
         if (group != null) {
             return group;
         }
@@ -9964,6 +9937,9 @@ public class EntryManager extends RepositoryManager {
         if (isSynthEntry(id) || id.startsWith("catalog:")) {
             return (Entry) getEntry(request, id);
         }
+
+	if(true)
+	    return getEntry(request, id);
 
 
         Statement statement =
@@ -10111,7 +10087,7 @@ public class EntryManager extends RepositoryManager {
                            ? ""
                            : parent.getFullName()) + Entry.IDDELIMITER + name;
 
-        Entry  group    = getGroupFromCache(fullPath, false);
+        Entry  group    = getEntryFromCache(fullPath, false);
         if (group != null) {
             return group;
         }
@@ -10147,7 +10123,7 @@ public class EntryManager extends RepositoryManager {
 
 
 
-        Entry       group    = getGroupFromCache(fullPath, false);
+        Entry       group    = getEntryFromCache(fullPath, false);
         if (group != null) {
             entries.add(group);
 
@@ -10697,7 +10673,7 @@ public class EntryManager extends RepositoryManager {
                 TypeHandler typeHandler =
                     getRepository().getTypeHandler(entryType, true);
                 Entry entry =
-                    (Entry) typeHandler.createEntryFromDatabase(results);
+                    (Entry) typeHandler.createEntryFromDatabase(null, results);
                 entries.add(entry);
                 cacheEntry(entry);
             }
