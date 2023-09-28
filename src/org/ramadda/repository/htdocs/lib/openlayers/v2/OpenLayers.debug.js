@@ -2527,6 +2527,12 @@ OpenLayers.Util.isArray = function(a) {
     return (Object.prototype.toString.call(a) === '[object Array]');
 };
 
+//jeffmc: added 
+OpenLayers.Util.latLonOk = function(lat,lon) {
+    return lat>=-90 && lat<=90 && lon>=-360 && lon <=360;
+};
+
+
 /** 
  * Function: removeItem
  * Remove an object from an array. Iterates through the array
@@ -13258,6 +13264,8 @@ OpenLayers.Format.GeoJSON = OpenLayers.Class(OpenLayers.Format.JSON, {
                 geometry = this.parseCoords[obj.type.toLowerCase()].apply(
                     this, [obj.coordinates]
                 );
+		//jeffmc: added this check
+		if(geometry==null) return null;
             } catch(err) {
                 // deal with bad coordinates
                 throw err;
@@ -13290,6 +13298,11 @@ OpenLayers.Format.GeoJSON = OpenLayers.Class(OpenLayers.Format.JSON, {
          * {<OpenLayers.Geometry>} A geometry.
          */
         "point": function(array) {
+	    //jeffmc:
+	    if(!OpenLayers.Util.latLonOk(array[1],array[0])) {
+		return null;
+	    }
+
             if (this.ignoreExtraDims == false && 
                   array.length != 2) {
                     throw "Only 2D points are supported: " + array;
@@ -13314,6 +13327,8 @@ OpenLayers.Format.GeoJSON = OpenLayers.Class(OpenLayers.Format.JSON, {
             for(var i=0, len=array.length; i<len; ++i) {
                 try {
                     p = this.parseCoords["point"].apply(this, [array[i]]);
+		    //jeffmc:
+		    if(p==null) continue;
                 } catch(err) {
                     throw err;
                 }
@@ -13339,6 +13354,8 @@ OpenLayers.Format.GeoJSON = OpenLayers.Class(OpenLayers.Format.JSON, {
             for(var i=0, len=array.length; i<len; ++i) {
                 try {
                     p = this.parseCoords["point"].apply(this, [array[i]]);
+		    //jeffmc:
+		    if(p==null) continue;
                 } catch(err) {
                     throw err;
                 }
@@ -13364,6 +13381,8 @@ OpenLayers.Format.GeoJSON = OpenLayers.Class(OpenLayers.Format.JSON, {
             for(var i=0, len=array.length; i<len; ++i) {
                 try {
                     l = this.parseCoords["linestring"].apply(this, [array[i]]);
+		    //jeffmc:
+		    if(l==null) continue;
                 } catch(err) {
                     throw err;
                 }
@@ -13386,6 +13405,8 @@ OpenLayers.Format.GeoJSON = OpenLayers.Class(OpenLayers.Format.JSON, {
             for(var i=0, len=array.length; i<len; ++i) {
                 try {
                     l = this.parseCoords["linestring"].apply(this, [array[i]]);
+		    //jeffmc:
+		    if(l==null) continue;
                 } catch(err) {
                     throw err;
                 }
@@ -13412,6 +13433,8 @@ OpenLayers.Format.GeoJSON = OpenLayers.Class(OpenLayers.Format.JSON, {
             for(var i=0, len=array.length; i<len; ++i) {
                 try {
                     p = this.parseCoords["polygon"].apply(this, [array[i]]);
+		    //jeffmc:
+		    if(p==null) continue;
                 } catch(err) {
                     throw err;
                 }
