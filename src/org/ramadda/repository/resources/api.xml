@@ -14,7 +14,8 @@
     <api request="/colortables"      method="processColorTables"/>
     <api request="/favicon.ico"      method="processFavIcon"/>
     <api request="/base.js"          method="processBaseJs"/>
-    <api request="/testaction"       method="processTestAction"/>               
+    <api request="/testaction"       method="processTestAction"/>
+    <api request="/printdb"       method="processPrintDb"/>                   
   </group>
 
 
