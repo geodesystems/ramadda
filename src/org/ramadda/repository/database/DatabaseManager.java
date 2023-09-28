@@ -106,6 +106,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
     public static int getConnectCnt=0;
 
+    public static boolean debugConnections=false;
+
     /** _more_ */
     private long myTime = System.currentTimeMillis();
 
@@ -869,8 +871,10 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 		synchronized(CONNECTION_MUTEX) {
 		    getConnectCnt++;
 		    openCnt++;
-		    System.err.print("\r                                            ");
-		    System.err.print("\rget connection:" + getConnectCnt +"  #open:" + openCnt);
+		    if(debugConnections) {
+			System.err.print("\r                                            ");
+			System.err.print("\rget connection:" + getConnectCnt +"  #open:" + openCnt);
+		    }
 		}
 
 		return connection;

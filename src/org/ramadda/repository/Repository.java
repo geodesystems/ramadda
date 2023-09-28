@@ -6614,6 +6614,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
     
 
     public Result processPrintDb(Request request) throws Exception {
+	if(request.defined("debug"))
+	    DatabaseManager.debugConnections = request.get("debug",true);
+
 	getDatabaseManager().printIt();
 	return new Result("",new StringBuilder());
     }
