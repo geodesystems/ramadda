@@ -41,7 +41,7 @@ import org.ramadda.util.WikiUtil;
 import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.SqlUtil;
 
-
+import java.sql.Connection;
 
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Element;
@@ -2363,9 +2363,9 @@ public class TypeHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public final Entry createEntryFromDatabase(ResultSet results)
+    public final Entry createEntryFromDatabase(Connection connection,ResultSet results)
             throws Exception {
-        return createEntryFromDatabase(results, false);
+        return createEntryFromDatabase(connection,results, false);
     }
 
     /**
@@ -2618,10 +2618,9 @@ public class TypeHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public final Entry createEntryFromDatabase(ResultSet results,
-            boolean abbreviated)
+    public final Entry createEntryFromDatabase(Connection connection,
+					       ResultSet results, boolean abbreviated)
             throws Exception {
-        if (parent != null) {}
         DatabaseManager dbm   = getDatabaseManager();
         String entryId        =
             results.getString(Tables.ENTRIES.COL_NODOT_ID);
@@ -2630,7 +2629,6 @@ public class TypeHandler extends RepositoryManager {
                                       Tables.ENTRIES.COL_NODOT_CREATEDATE);
         String parentId =
             results.getString(Tables.ENTRIES.COL_NODOT_PARENT_GROUP_ID);
-        Entry parent = getEntryManager().findGroup(null, parentId);
         Resource resource =
             new Resource(getStorageManager()
                 .resourceFromDB(results
@@ -2651,7 +2649,7 @@ public class TypeHandler extends RepositoryManager {
         entry.initEntry(results
             .getString(Tables.ENTRIES.COL_NODOT_NAME), results
             .getString(Tables.ENTRIES
-                .COL_NODOT_DESCRIPTION), parent, user, resource, results
+		       .COL_NODOT_DESCRIPTION), null/*parent*/, user, resource, results
                     .getString(Tables.ENTRIES
                         .COL_NODOT_DATATYPE), order, createDate.getTime(), dbm
                             .getDate(results, Tables.ENTRIES
@@ -2672,6 +2670,16 @@ public class TypeHandler extends RepositoryManager {
         entry.setAltitudeBottom(
             results.getDouble(Tables.ENTRIES.COL_NODOT_ALTITUDEBOTTOM));
 
+	//Close the connection that gave us the above results because we don't want to
+	//call findGroup below and potentially have to get another connection with this
+	//one open
+	if(connection!=null) {
+	    getDatabaseManager().closeConnection(connection);
+	}
+
+
+        Entry parent = getEntryManager().findGroup(null, parentId);	
+	entry.setParentEntry(parent);
         if ( !abbreviated) {
             initializeEntryFromDatabase(entry);
         }
