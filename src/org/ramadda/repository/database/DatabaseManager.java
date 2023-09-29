@@ -30,18 +30,9 @@ import ucar.unidata.util.Misc;
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlEncoder;
-import ucar.unidata.xml.XmlUtil;
-
 
 import java.io.*;
-
-
-import java.io.File;
-
 import java.lang.reflect.*;
-
-
-
 import java.net.*;
 
 import java.sql.Connection;
@@ -55,17 +46,13 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 
-import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
-import java.util.TimeZone;
 
 import javax.sql.DataSource;
 
@@ -108,13 +95,10 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
     public static boolean debugConnections=false;
 
-    /** _more_ */
-    private long myTime = System.currentTimeMillis();
 
     /** _more_ */
     private final LogManager.LogId LOGID =
-        new LogManager.LogId(
-			     "org.ramadda.repository.database.DatabaseManager");
+        new LogManager.LogId("org.ramadda.repository.database.DatabaseManager");
 
     /** _more_ */
     private static final DbObject dummyToCompile = null;
@@ -122,9 +106,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     /** _more_ */
     //NOTE: When we had a non-zero timeout we got a memory leak
     private static final int TIMEOUT = 0;
-
-    /** _more_ */
-    private Counter numberOfSelects = new Counter();
 
     /** _more_ */
     private static final int DUMPTAG_TABLE = 1;
@@ -139,7 +120,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     /** _more_ */
     private String db;
 
-
     /** _more_ */
     private String connectionURL;
 
@@ -151,26 +131,11 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         new Hashtable<String, BasicDataSource>();
 
 
-    /** Keeps track of active connections */
-    //    private Hashtable<Connection, ConnectionInfo> connectionMap =
-    //        new Hashtable<Connection, ConnectionInfo>();
-
     private final Object CONNECTION_MUTEX = new Object();
 
     /** _more_ */
     private List<ConnectionInfo> connectionInfos =
         new ArrayList<ConnectionInfo>();
-
-
-
-    /** _more_ */
-    private List<String> scourMessages = new ArrayList<String>();
-
-    /** _more_ */
-    private int totalScours = 0;
-
-    /** _more_ */
-    private boolean runningCheckConnections = false;
 
     /** _more_ */
     private boolean haveInitialized = false;
@@ -190,10 +155,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         }
         db = db.trim();
     }
-
-
-
-
 
     /**
      * _more_
@@ -223,7 +184,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 	    closeAndReleaseConnection(statement);
         }
 
-        //        Misc.run(this, "checkConnections", null);
 
         try {
             //To generate the Tables.java uncomment this and
@@ -233,7 +193,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             System.err.println("Error:" + exc);
             exc.printStackTrace();
         }
-
 
     }
 
@@ -335,9 +294,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      */
     private BasicDataSource doMakeDataSource() throws Exception {
         try {
-            scourMessages = new ArrayList<String>();
-            totalScours   = 0;
-
             String userName = (String) getRepository().getProperty(
 								   PROP_DB_USER.replace("${db}", db));
             String password = (String) getRepository().getProperty(
@@ -544,71 +500,9 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         synchronized (connectionInfos) {
             return new ArrayList<ConnectionInfo>(connectionInfos);
         }
-
-        /*
-          Hashtable<Connection, ConnectionInfo> tmp = new Hashtable<Connection,
-          ConnectionInfo>();
-          synchronized (connectionMap) {
-          tmp.putAll(connectionMap);
-          }
-          List<ConnectionInfo> infos = new ArrayList<ConnectionInfo>();
-          for (Enumeration keys = tmp.keys(); keys.hasMoreElements(); ) {
-          Connection     connection = (Connection) keys.nextElement();
-          ConnectionInfo info       = tmp.get(connection);
-          infos.add(info);
-          }
-          return infos;
-        */
     }
 
 
-
-
-    /**
-     * _more_
-     */
-    public void checkConnections() {
-        if (runningCheckConnections) {
-            return;
-        }
-        runningCheckConnections = true;
-        while (true) {
-            try {
-                Misc.sleep(5000);
-                long now = System.currentTimeMillis();
-                //Scour after 5 minutes
-                int seconds =
-                    getRepository().getProperty(PROP_DB_POOL_TIMEUNTILCLOSED,
-						300);
-                for (ConnectionInfo info : getConnectionInfos()) {
-                    //If a connection has been out for more than seconds then close it
-                    if (now - info.time > seconds * 1000) {
-                        getLogManager().logError("SCOURED @" + new Date()
-						 + " info.date: " + new Date(info.time)
-						 + " info.id: " + info.myCnt + "<stack>"
-						 + "  msg:" + info.msg + "<br>  Where:"
-						 + info.where + "</stack>");
-
-                        synchronized (scourMessages) {
-                            while (scourMessages.size() > 100) {
-                                scourMessages.remove(0);
-                            }
-                            totalScours++;
-                            scourMessages.add("SCOURED @" + new Date()
-					      + " info.date: " + new Date(info.time)
-					      + " info.id: " + info.myCnt + "<br>"
-					      + "  msg:" + info.msg + "  Where:"
-					      + info.where);
-                        }
-                        closeConnection(info.connection);
-                    }
-                }
-            } catch (Exception exc) {
-                getLogManager().logError(
-					 "CONNECTION: Error checking connection", exc);
-            }
-        }
-    }
 
 
 
@@ -642,7 +536,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 	    poolSB.append("RAMADDA: database pool #active:" + bds.getNumActive() + " #idle:" + bds.getNumIdle()
 			  + "  max active: " + bds.getMaxTotal()+"\n");
 
-	    poolSB.append("# of open selects:" + numberOfSelects.getCount()+"\n");
 	    dbSB.append(poolSB);
 	    return;
 	}
@@ -652,7 +545,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 		      //                      + "<br>&nbsp;&nbsp;max idle:" + bds.getMaxIdle());
 		      + "<br>&nbsp;&nbsp;max active: " + bds.getMaxTotal());
 
-        poolSB.append("<br># of open selects:" + numberOfSelects.getCount());
         poolSB.append("<br>");
 
         long                 time            = System.currentTimeMillis();
@@ -669,26 +561,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             poolSB.append(msgLabel("Open connections"));
             poolSB.append(openConnections);
         }
-
-
-        StringBuffer msgb = new StringBuffer();
-        synchronized (scourMessages) {
-            if (totalScours > 0) {
-                msgb.append("Total scours:" + totalScours + HU.p());
-            }
-            for (String msg : scourMessages) {
-                msgb.append("<pre>" + msg + "</pre>");
-                msgb.append("<hr>");
-            }
-            if (scourMessages.size() > 0) {
-                poolSB.append(
-			      HU.insetLeft(
-					   HU.makeShowHideBlock(
-								msg("Scoured Connections"), msgb.toString(),
-								false), 20));
-            }
-        }
-
 
         dbSB.append(
 		    HU.insetLeft(
@@ -2680,7 +2552,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             extra = escapeString(extra);
         }
         try {
-            numberOfSelects.incr();
             Statement statement = SqlUtil.select(connection, what, tables, clause, extra, max, TIMEOUT);
             return statement;
         } catch (Exception exc) {
@@ -2688,12 +2559,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                      + tables + "\nclause:" + clause + "\nextra:" + extra
                      + "max:" + max, exc);
             closeConnection(connection);
-
             throw exc;
-        } finally {
-            numberOfSelects.decr();
-        }
-
+        } 
     }
 
 
