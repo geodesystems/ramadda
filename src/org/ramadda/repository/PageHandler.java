@@ -80,6 +80,7 @@ public class PageHandler extends RepositoryManager {
     /** _more_ */
     private static boolean debugTemplates = false;
 
+
     /** _more_ */
     public static final String DEFAULT_TEMPLATE = "fixedmapheader";
 
@@ -190,21 +191,13 @@ public class PageHandler extends RepositoryManager {
     /** _more_ */
     private List<HtmlTemplate> htmlTemplates;
 
+
     /** _more_ */
     private Hashtable<String, HtmlTemplate> templateMap;
 
-    /** _more_ */
-    private HtmlTemplate mobileTemplate;
-
-    /** _more_ */
-    private HtmlTemplate defaultTemplate;
 
     /** _more_ */
     private HtmlTemplate mapTemplate;
-
-
-    /** _more_ */
-    private Properties phraseMap;
 
 
     /** _more_ */
@@ -244,10 +237,13 @@ public class PageHandler extends RepositoryManager {
         new Hashtable<String, String>();
 
     /** _more_ */
-    public static final String TEMPLATE_DEFAULT = "default";
+    public static final String ID_TEMPLATE_DEFAULT = "_DEFAULT_";
+
+    public static final String ID_TEMPLATE_MOBILE = "_MOBILE_";    
 
     /** _more_ */
     public static final String TEMPLATE_CONTENT = "content";
+    public static final String TEMPLATE_DEFAULT = "default";    
 
 
     /** _more_ */
@@ -615,14 +611,6 @@ public class PageHandler extends RepositoryManager {
 
     /**
      * _more_
-     */
-    public void adminSettingsChanged() {
-        super.adminSettingsChanged();
-        phraseMap = null;
-    }
-
-    /**
-     * _more_
      *
      *
      * @param request The request
@@ -689,11 +677,17 @@ public class PageHandler extends RepositoryManager {
         Repository   repository     = getRepository();
         Entry        currentEntry = getSessionManager().getLastEntry(request);
         HtmlTemplate parentTemplate = getTemplate(request, currentEntry);
+	if(parentTemplate==null) {
+	    System.err.println("GACK: "+request);
+	    System.exit(0);
+	}
         if (request.isMobile() && !request.defined(ARG_TEMPLATE)) {
             if ( !parentTemplate.getTemplateProperty("mobile", false)) {
                 parentTemplate = getMobileTemplate();
             }
         }
+
+
         HtmlTemplate htmlTemplate = parentTemplate;
 
         if ( !fullTemplate) {
@@ -1186,8 +1180,7 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public HtmlTemplate getMobileTemplate() {
-        getTemplates();
-        return mobileTemplate;
+        return getTemplateMap().get(ID_TEMPLATE_MOBILE);
     }
 
 
@@ -1233,14 +1226,29 @@ public class PageHandler extends RepositoryManager {
 
 
 
+    private Hashtable<String, HtmlTemplate> getTemplateMap() {
+	try {
+	    return  checkTemplates();
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
+    }
+
     /**
      * _more_
      *
      * @return _more_
      */
-    public synchronized List<HtmlTemplate> getTemplates() {
+    public List<HtmlTemplate> getTemplates() {
         try {
-            return getTemplatesInner();
+	    checkTemplates();
+	    List<HtmlTemplate> tmp_theTemplates =  htmlTemplates;
+	    while(tmp_theTemplates==null) {
+		Misc.sleep(10);
+		checkTemplates();
+		tmp_theTemplates=  htmlTemplates;
+	    }
+	    return tmp_theTemplates;
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
@@ -1253,172 +1261,164 @@ public class PageHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    private synchronized List<HtmlTemplate> getTemplatesInner()
+    private synchronized Hashtable<String, HtmlTemplate> checkTemplates()
             throws Exception {
-        List<HtmlTemplate> theTemplates = htmlTemplates;
-        if ( !cacheTemplates || (theTemplates == null)) {
-            String mobileId =
-                getRepository().getProperty("ramadda.template.mobile",
-                                            (String) null);
-            HtmlTemplate theMobileTemplate = null;
-            //use locals here in case of race conditions
-            HtmlTemplate _defaultTemplate = null;
-            HtmlTemplate _mobileTemplate  = null;
-            List<HtmlTemplate> tmp_theTemplates = new ArrayList<HtmlTemplate>();
-            Hashtable<String,HtmlTemplate> tmp_templateMap  = new Hashtable<String, HtmlTemplate>();
+	Hashtable<String,HtmlTemplate> tmp_templateMap  = templateMap;
+	if(!cacheTemplates) tmp_templateMap  =null;
+	if(tmp_templateMap!=null) return tmp_templateMap;
+	String mobileId =
+	    getRepository().getProperty("ramadda.template.mobile",
+					(String) null);
+	HtmlTemplate theMobileTemplate = null;
+	//use locals here in case of race conditions
+	HtmlTemplate _defaultTemplate = null;
+	HtmlTemplate _mobileTemplate  = null;
+	List<HtmlTemplate> tmp_theTemplates =   new ArrayList<HtmlTemplate>();
+	tmp_templateMap  = new Hashtable<String, HtmlTemplate>();
+
+	String defaultId =
+	    getRepository().getProperty(PROP_HTML_TEMPLATE_DEFAULT,
+					DEFAULT_TEMPLATE);
+	if (debugTemplates) {
+	    System.err.println("getTemplates defaultId=" + defaultId);
+	}
+	List<String> templatePaths =
+	    new ArrayList<String>(
+				  getRepository().getPluginManager().getTemplateFiles());
+	for (String path :
+		 Utils.split(
+			     getRepository().getProperty(
+							 PROP_HTML_TEMPLATES,
+							 "%resourcedir%/template.html"), ";", true,
+			     true)) {
+	    path = getStorageManager().localizePath(path);
+	    templatePaths.add(path);
+	}
 
 
-            String defaultId =
-                getRepository().getProperty(PROP_HTML_TEMPLATE_DEFAULT,
-                                            DEFAULT_TEMPLATE);
-            if (debugTemplates) {
-                System.err.println("getTemplates defaultId=" + defaultId);
-            }
-            List<String> templatePaths =
-                new ArrayList<String>(
-                    getRepository().getPluginManager().getTemplateFiles());
-            for (String path :
-                    Utils.split(
-                        getRepository().getProperty(
-                            PROP_HTML_TEMPLATES,
-                            "%resourcedir%/template.html"), ";", true,
-                                true)) {
-                path = getStorageManager().localizePath(path);
-                templatePaths.add(path);
-            }
+
+	for (String path : templatePaths) {
+	    try {
+		//Skip resources called template.html that might be for other things
+		if (IO.getFileTail(path).equals("template.html")) {
+		    continue;
+		}
+		String resource =
+		    getStorageManager().readSystemResource(path);
+		try {
+		    resource = processTemplate(resource);
+		} catch (Exception exc) {
+		    getLogManager().logError(
+					     "failed to process template:" + path, exc);
+		    continue;
+		}
+		String[] changes = { "userlink", MACRO_USERLINK,
+				     "html.imports", "imports", };
+		for (int i = 0; i < changes.length; i += 2) {
+		    resource = resource.replace("${" + changes[i] + "}",
+						"${" + changes[i + 1] + "}");
+		}
+		//                    resource = resource.replace("${imports}", webImports);
+		HtmlTemplate template = new HtmlTemplate(getRepository(),
+							 path, resource);
+
+		int idx = template.getTemplate().indexOf("${content}");
+		if (idx >= 0) {
+		    template.setPrefix(new HtmlTemplate(template,
+							template.getTemplate().substring(0, idx)));
+		    template.setSuffix(new HtmlTemplate(template,
+							template.getTemplate().substring(idx
+											 + "${content}".length())));
+		}
 
 
-
-            for (String path : templatePaths) {
-                try {
-                    //Skip resources called template.html that might be for other things
-                    if (IO.getFileTail(path).equals("template.html")) {
-                        continue;
-                    }
-                    String resource =
-                        getStorageManager().readSystemResource(path);
-                    try {
-                        resource = processTemplate(resource);
-                    } catch (Exception exc) {
-                        getLogManager().logError(
-                            "failed to process template:" + path, exc);
-                        continue;
-                    }
-                    String[] changes = { "userlink", MACRO_USERLINK,
-                                         "html.imports", "imports", };
-                    for (int i = 0; i < changes.length; i += 2) {
-                        resource = resource.replace("${" + changes[i] + "}",
-                                "${" + changes[i + 1] + "}");
-                    }
-                    //                    resource = resource.replace("${imports}", webImports);
-                    HtmlTemplate template = new HtmlTemplate(getRepository(),
-                                                path, resource);
-
-                    int idx = template.getTemplate().indexOf("${content}");
-                    if (idx >= 0) {
-                        template.setPrefix(new HtmlTemplate(template,
-                                template.getTemplate().substring(0, idx)));
-                        template.setSuffix(new HtmlTemplate(template,
-                                template.getTemplate().substring(idx
-                                    + "${content}".length())));
-                    }
+		template.setTemplate(
+				     applyBaseMacros(template.getTemplate()));
+		if (template.getPrefix() != null) {
+		    template.getPrefix().setTemplate(
+						     applyBaseMacros(
+								     template.getPrefix().getTemplate()));
+		}
+		if (template.getSuffix() != null) {
+		    template.getSuffix().setTemplate(
+						     applyBaseMacros(
+								     template.getSuffix().getTemplate()));
+		}
 
 
-                    template.setTemplate(
-                        applyBaseMacros(template.getTemplate()));
-                    if (template.getPrefix() != null) {
-                        template.getPrefix().setTemplate(
-                            applyBaseMacros(
-                                template.getPrefix().getTemplate()));
-                    }
-                    if (template.getSuffix() != null) {
-                        template.getSuffix().setTemplate(
-                            applyBaseMacros(
-                                template.getSuffix().getTemplate()));
-                    }
+		//Check if we got some other ...template.html file from a plugin
+		if (template.getId() == null) {
+		    System.err.println("template: no id in " + path);
 
+		    continue;
+		}
+		tmp_templateMap.put(template.getId(), template);
+		tmp_theTemplates.add(template);
 
-                    //Check if we got some other ...template.html file from a plugin
-                    if (template.getId() == null) {
-                        System.err.println("template: no id in " + path);
+		if ((mapTemplate == null)
+		    && template.getId().equals("mapheader")) {
+		    mapTemplate = template;
+		}
 
-                        continue;
-                    }
-                    tmp_templateMap.put(template.getId(), template);
-                    tmp_theTemplates.add(template);
-
-                    if ((mapTemplate == null)
-                            && template.getId().equals("mapheader")) {
-                        mapTemplate = template;
-                    }
-
-                    if (_mobileTemplate == null) {
-                        if (mobileId != null) {
-                            if (template.getId().equals(mobileId)) {
-                                _mobileTemplate = template;
-                            }
-                        } else if (template.getTemplateProperty("mobile",
-                                false)) {
-                            //Don't do this for now
-                            //                      _mobileTemplate = template;
-                        }
-                    }
-                    if ((theMobileTemplate == null)
-                            && template.getId().equals("mobile")) {
-                        theMobileTemplate = template;
-                    }
-                    if (_defaultTemplate == null) {
-                        if (defaultId == null) {
-                            _defaultTemplate = template;
-                            if (debugTemplates) {
-                                System.err.println("\tset-1:"
-                                        + _defaultTemplate);
-                            }
-                        } else {
-                            if (Misc.equals(defaultId, template.getId())) {
-                                _defaultTemplate = template;
-                                if (debugTemplates) {
-                                    System.err.println("\tset-2:"
-                                            + _defaultTemplate);
-                                }
-                            }
-                        }
-                        if (mobileId == null) {
-                            if (template.getTemplateProperty("mobile",
-                                    false)) {
-                                _mobileTemplate = template;
-                            }
-                        }
-                    }
-                } catch (Exception exc) {
-                    getLogManager().logError("loading template" + path, exc);
-                    //noop
-                }
-            }
-            if (_mobileTemplate == null) {
-                _mobileTemplate = theMobileTemplate;
-            }
-            if (_defaultTemplate == null) {
-                _defaultTemplate = tmp_theTemplates.get(0);
-                if (debugTemplates) {
-                    System.err.println("\tset-3:" + _defaultTemplate);
-                }
-            }
-            if (_mobileTemplate == null) {
-                _mobileTemplate = _defaultTemplate;
-            }
-            //            if (getRepository().getCacheResources()) {
-            defaultTemplate = _defaultTemplate;
-            mobileTemplate  = _mobileTemplate;
-            htmlTemplates   = tmp_theTemplates;
-            //            }
-
-            theTemplates = tmp_theTemplates;
-            templateMap  = tmp_templateMap;
-
-        }
-
-        return theTemplates;
+		if (_mobileTemplate == null) {
+		    if (mobileId != null) {
+			if (template.getId().equals(mobileId)) {
+			    _mobileTemplate = template;
+			}
+		    } else if (template.getTemplateProperty("mobile",
+							    false)) {
+			//Don't do this for now
+			//                      _mobileTemplate = template;
+		    }
+		}
+		if ((theMobileTemplate == null)
+		    && template.getId().equals("mobile")) {
+		    theMobileTemplate = template;
+		}
+		if (_defaultTemplate == null) {
+		    if (defaultId == null) {
+			_defaultTemplate = template;
+			if (debugTemplates) {
+			    System.err.println("\tset-1:"+ _defaultTemplate);
+			}
+		    } else {
+			if (Misc.equals(defaultId, template.getId())) {
+			    _defaultTemplate = template;
+			    if (debugTemplates) {
+				System.err.println("\tset-2:"
+						   + _defaultTemplate);
+			    }
+			}
+		    }
+		    if (mobileId == null) {
+			if (template.getTemplateProperty("mobile",
+							 false)) {
+			    _mobileTemplate = template;
+			}
+		    }
+		}
+	    } catch (Exception exc) {
+		getLogManager().logError("loading template" + path, exc);
+		//noop
+	    }
+	}
+	if (_mobileTemplate == null) {
+	    _mobileTemplate = theMobileTemplate;
+	}
+	if (_defaultTemplate == null) {
+	    _defaultTemplate = tmp_theTemplates.get(0);
+	    if (debugTemplates) {
+		System.err.println("\tset-3:" + _defaultTemplate);
+	    }
+	}
+	if (_mobileTemplate == null) {
+	    _mobileTemplate = _defaultTemplate;
+	}
+	tmp_templateMap.put(ID_TEMPLATE_DEFAULT, _defaultTemplate);
+	tmp_templateMap.put(ID_TEMPLATE_MOBILE, _mobileTemplate);	    
+	htmlTemplates   = tmp_theTemplates;
+	templateMap  = tmp_templateMap;
+	return tmp_templateMap;
     }
 
 
@@ -1721,14 +1721,12 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public HtmlTemplate getTemplate(Request request, Entry entry) {
-        //this forces the possible reload of the templates
-        getTemplates();
+	Hashtable<String, HtmlTemplate> templateMap = getTemplateMap();    
+	//	debugTemplates = true;
+	if (debugTemplates) 	    System.err.println("getTemplate");
         if (request == null) {
-            if (debugTemplates) {
-                System.err.println("getTemplate-1:" + defaultTemplate);
-            }
-
-            return defaultTemplate;
+	    if (debugTemplates) 	    System.err.println("\tgetTemplate:no request");
+            return templateMap.get(TEMPLATE_DEFAULT);
         }
         boolean isMobile = request.isMobile();
         //Check for template=... url arg
@@ -1785,13 +1783,15 @@ public class PageHandler extends RepositoryManager {
             }
         }
 
-        if (isMobile && (mobileTemplate != null)) {
-            request.put(ARG_TEMPLATE, mobileTemplate.getId());
-            if (debugTemplates) {
-                System.err.println("getTemplate mobile:" + mobileTemplate);
-            }
-
-            return mobileTemplate;
+	if(isMobile) {
+	    HtmlTemplate mobileTemplate=getMobileTemplate();
+	    if (mobileTemplate != null) {
+		request.put(ARG_TEMPLATE, mobileTemplate.getId());
+		if (debugTemplates) {
+		    System.err.println("getTemplate mobile:" + mobileTemplate);
+		}
+		return mobileTemplate;
+	    }
         }
 
         User user = request.getUser();
@@ -1806,15 +1806,19 @@ public class PageHandler extends RepositoryManager {
 
         if (templateId != null) {
             HtmlTemplate template = templateMap.get(templateId);
+	    if (debugTemplates)
+		System.err.println("\tgetTemplate: template id:" + templateId +" template:" + template);
+
             if (template != null) {
                 return template;
             }
         }
-        if (debugTemplates) {
-            System.err.println("getTemplate default:" + defaultTemplate);
-        }
-
-        return defaultTemplate;
+	HtmlTemplate template = templateMap.get(ID_TEMPLATE_DEFAULT);
+	if(template==null) {
+	    //	    System.err.println("\tgetTemplate: using default:" + templateMap);
+	}
+	if (debugTemplates) 	 System.err.println("\tgetTemplate: using default:" + template);
+	return template;
     }
 
 
@@ -3175,8 +3179,6 @@ public class PageHandler extends RepositoryManager {
         super.clearCache();
         templateJavascriptContent = null;
         htmlTemplates             = null;
-        mobileTemplate            = null;
-        defaultTemplate           = null;
         typeToWikiTemplate        = new Hashtable<String, String>();
     }
 
