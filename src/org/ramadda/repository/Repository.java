@@ -977,7 +977,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
             if ( !isActive) {
                 return;
             }
-            println("RAMADDA: shutting down");
             isActive = false;
             //Call this one first so it recurses if needed
             if (localRepositoryManager != null) {
@@ -4107,7 +4106,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     protected Result getResult(Request request) throws Exception {
         ApiMethod apiMethod = getApiManager().findApiMethod(request);
-	System.err.println(request.getAbsoluteUrl(request.toString()));
+	//	System.err.println(request.getAbsoluteUrl(request.toString()));
         if (apiMethod == null) {
 	    long t1 = System.currentTimeMillis();
 	    Result result =  getHtdocsFile(request);
