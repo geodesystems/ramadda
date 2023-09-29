@@ -853,7 +853,7 @@ RepositoryMap.prototype = {
 	},500);
 	
     },
-    locationChangedInner: function() {
+    locationChangedInner: function(toConsole) {
 	let latlon = this.getBounds();
 	let bits = 100000;
 	let r = (v=>{
@@ -863,14 +863,20 @@ RepositoryMap.prototype = {
 	latlon.left = r(latlon.left);
 	latlon.bottom = r(latlon.bottom);
 	latlon.right = r(latlon.right);
+	let center =   this.transformProjPoint(this.getMap().getCenter())
 
+	if(toConsole) {
+	    console.log(latlon.top, latlon.left,latlon.bottom,latlon.right);
+	    console.log(this.getMap().getZoom());
+	    console.log(r(center.lat),r(center.lon));
+	    return
+	} 
 	//Don't include the bounds
-//	HU.addToDocumentUrl("map_bounds",latlon.top + "," + latlon.left + "," + latlon.bottom + "," + latlon.right);
+	HU.addToDocumentUrl("map_bounds",latlon.top + "," + latlon.left + "," + latlon.bottom + "," + latlon.right);
 	if(debugBounds)
 	    console.log("locationChanged: setting url args:",this.getMap().getZoom());
 	HU.addToDocumentUrl(ARG_ZOOMLEVEL , this.getMap().getZoom());
 
-	let center =   this.transformProjPoint(this.getMap().getCenter())
         HU.addToDocumentUrl(ARG_MAPCENTER, r(center.lat)+","+ r(center.lon));
     },
     baseLayerChanged: function() {
@@ -3027,7 +3033,12 @@ RepositoryMap.prototype = {
 	    if(this.keyDownListener(evt)) return;
 	}
 
-	if(event.ctrlKey) return;
+	if(event.ctrlKey) {
+	    if(evt.key=='b') {
+		this.locationChangedInner(true);
+	    }
+	    return;
+	}
         if (evt.keyCode == 79 || evt.key=='Shift') {
             if (!this.imageLayersList) return;
 	    if(this.ignoreKeyEvents) return;
