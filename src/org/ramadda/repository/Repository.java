@@ -3672,12 +3672,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
         boolean debugMemory = false;
-	/*
-	  String theUrl = request.toString();
-	  debugMemory =         !theUrl.matches(".*(images|icons|htdocs|/metadata/view).*")
-	  && !theUrl.matches(".*(\\.js|\\.png|\\.gif|favicon.ico)$");
-	*/
-
         if (debugMemory) {
             Runtime.getRuntime().gc();
         }
@@ -4113,6 +4107,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     protected Result getResult(Request request) throws Exception {
         ApiMethod apiMethod = getApiManager().findApiMethod(request);
+	System.err.println(request.getAbsoluteUrl(request.toString()));
         if (apiMethod == null) {
 	    long t1 = System.currentTimeMillis();
 	    Result result =  getHtdocsFile(request);
