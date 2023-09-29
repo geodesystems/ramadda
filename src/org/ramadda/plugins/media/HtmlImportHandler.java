@@ -427,74 +427,71 @@ public class HtmlImportHandler extends ImportHandler {
                                       HU.input(ARG_URL, url,
                                           HU.SIZE_70)));
 
-        sb.append(HU.formEntry(msgLabel(""),
-                                      HU.checkbox(ARG_IMPORT_RECURSE,
-                                          "true", recurse) + " Recurse"));
+        HU.formEntry(sb, "",
+		     HU.labeledCheckbox(ARG_IMPORT_RECURSE,
+					"true", recurse,"Recurse"));
 
-        sb.append(HU.formEntry(msgLabel("Recurse Pattern"),
-                HU.input(ARG_IMPORT_RECURSE_PATTERN, recursePattern,
-                    HU.SIZE_50) + " "
-                        + "Regular expression pattern to match on links to other pages."));
-        sb.append(
-            HU.formEntry(
-                msgLabel("Recurse Depth"),
-                HU.input(
-                    ARG_IMPORT_RECURSE_DEPTH,
-                    request.getString(ARG_IMPORT_RECURSE_DEPTH, "1"),
-                    HU.SIZE_5)));
+        HU.formEntry(sb,msgLabel("Recurse Pattern"),
+		     HU.input(ARG_IMPORT_RECURSE_PATTERN, recursePattern,
+			      HU.SIZE_50) + " "
+		     + "Regular expression pattern to match on links to other pages.");
+
+	HU.formEntry(sb, msgLabel("Recurse Depth"),
+		     HU.input(ARG_IMPORT_RECURSE_DEPTH,
+			      request.getString(ARG_IMPORT_RECURSE_DEPTH, "1"),
+			      HU.SIZE_5));
 
 
-        sb.append(
-            HU.formEntry(
-                msgLabel("Entry Pattern"),
-                HU.input(
-                    ARG_IMPORT_PATTERN, pattern, HU.SIZE_50) + " "
-                        + msg("regular expression - add .*")));
+	HU.formEntry(sb, msgLabel("Entry Pattern"),
+		     HU.input(ARG_IMPORT_PATTERN, pattern, HU.SIZE_50) + " "
+		     + msg("regular expression - add .*"));
 
         boolean addFile = request.getString(ARG_IMPORT_HANDLE,
                                             "").equals("file");
-        sb.append(
-            HU.formEntry(
-                msgLabel("What to do"),
-                HU.radio(ARG_IMPORT_HANDLE, "file", addFile)
-                + HU.space(1) + msg("Download the file")
-                + HU.space(3)
-                + HU.radio(ARG_IMPORT_HANDLE, "url", !addFile)
-                + HU.space(1) + msg("Add the link")));
+	HU.formEntry(sb,
+		     msgLabel("What to do"),
+		     HU.labeledRadio(ARG_IMPORT_HANDLE, "file", addFile,
+				     msg("Download the file"))
+		     + HU.space(3)
+		     + HU.labeledRadio(ARG_IMPORT_HANDLE, "url", !addFile,
+				       msg("Add the link")));
 
 
-        sb.append(HU.formEntry(msgLabel(""),
-                                      HU.checkbox("useurl", "true",
-                                          request.get("useurl",
-                                              false)) + HU.space(1)
-                                                  + msg("Use URL for name")));
+	HU.formEntry(sb,"",
+                HU.labeledCheckbox(ARG_IMPORT_UNCOMPRESS, "true",
+				   request.get(ARG_IMPORT_UNCOMPRESS, false),
+				   msg("Uncompress file")));
+
+        HU.formEntry(sb,"",
+		     HU.labeledCheckbox("useurl", "true",
+					request.get("useurl",false),
+					"Use URL for name"));
 
 
 
-        sb.append(
-            HU.formEntry(
-                msgLabel("Entry type"),
-                getPageHandler().makeFileTypeSelector(
-                    request, typeHandler, true)));
+	HU.formEntry(sb, msgLabel("Entry type"),
+		     getPageHandler().makeFileTypeSelector(request, typeHandler, true));
 
-        sb.append(
-            HU.formEntry(
-                "",
-                HU.checkbox(
-                    ARG_IMPORT_PROVENANCE, "true",
-                    request.get(ARG_IMPORT_PROVENANCE, false)) + " "
-                        + msg("Add the source URL as provenance metadata")));
-
-        sb.append(
-            HU.formEntry(
-                "",
-                HU.checkbox(
-                    ARG_IMPORT_UNCOMPRESS, "true",
-                    request.get(ARG_IMPORT_UNCOMPRESS, false)) + " "
-                        + msg("Uncompress file")));
-
-        sb.append(HU.formEntry("", buttons));
         sb.append(HU.formTableClose());
+	StringBuilder mtdSb = new StringBuilder();
+	mtdSb.append(HU.labeledCheckbox(ARG_IMPORT_PROVENANCE, "true",
+					request.get(ARG_IMPORT_PROVENANCE, false),
+					"Add the source URL as provenance metadata"));
+
+	mtdSb.append("<br>");
+
+	String extract = getSearchManager().getNewEntryExtract(request);
+	if(stringDefined(extract)) {
+	    mtdSb.append(extract);
+	    sb.append(HU.makeShowHideBlock("Metadata extraction",mtdSb.toString(),false));
+	} else {
+	    sb.append(mtdSb);
+	}
+	sb.append("<br>");
+
+	sb.append(buttons);
+	//        HU.formEntry(sb,"", buttons);
+
 
         sb.append(HU.p());
 
