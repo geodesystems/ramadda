@@ -6607,10 +6607,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
     
 
+    public Result processFlush(Request request) throws Exception {
+	clearAllCaches();
+	return new Result("",new StringBuilder("cleared"));
+    }
+
     public Result processPrintDb(Request request) throws Exception {
 	if(request.defined("debug"))
 	    DatabaseManager.debugConnections = request.get("debug",true);
-
 	getDatabaseManager().printIt();
 	return new Result("",new StringBuilder());
     }

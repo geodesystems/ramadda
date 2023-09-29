@@ -15,7 +15,8 @@
     <api request="/favicon.ico"      method="processFavIcon"/>
     <api request="/base.js"          method="processBaseJs"/>
     <api request="/testaction"       method="processTestAction"/>
-    <api request="/printdb"       method="processPrintDb"/>                   
+    <api request="/printdb"       method="processPrintDb"/>
+    <api request="/flush"       method="processFlush"/>                       
   </group>
 
 
