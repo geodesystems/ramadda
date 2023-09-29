@@ -75,10 +75,12 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
      *
      * @throws Exception _more_
      */
-    public void initializeEntryFromForm(Request request, Entry entry,
-                                        Entry parent, boolean newEntry)
+    @Override
+    public void initializeNewEntry(Request request, Entry entry,
+                                   boolean fromImport)
             throws Exception {
-        if ( !newEntry) {
+        super.initializeNewEntry(request, entry, fromImport);
+        if (fromImport) {
             return;
         }
         if ( !entry.isFile()) {
