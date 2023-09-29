@@ -658,7 +658,7 @@ public class EntryManager extends RepositoryManager {
      * @return _more_
      */
     public Entry getEntryFromCache(String entryId, boolean isId) {
-	//	if(true) return null;
+	if(true) return null;
         synchronized (MUTEX_ENTRY) {
             Entry entry = getEntryCache().get(entryId);
             if (entry == null) {
