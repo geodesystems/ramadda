@@ -2919,36 +2919,27 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
+    private static final Object CLEAR_CACHE_MUTEX =new Object();
     /**
      * _more_
      */
     public void clearAllCaches() {
-        synchronized (outputHandlers) {
-            for (OutputHandler outputHandler :
-		     new ArrayList<OutputHandler>(outputHandlers)) {
-                outputHandler.clearCache();
-            }
-        }
-        synchronized (allTypeHandlers) {
-            for (TypeHandler typeHandler :
-		     new ArrayList<TypeHandler>(allTypeHandlers)) {
-                typeHandler.clearCache();
-            }
-        }
-        synchronized (repositoryManagers) {
-            for (RepositoryManager manager :
-		     new ArrayList<RepositoryManager>(repositoryManagers)) {
-                manager.clearCache();
-            }
-        }
-        resources = new Hashtable();
-        try {
-            readDatabaseProperties();
-        } catch (Exception exc) {
-            getLogManager().logError("Error reading globals", exc);
-        }
-
-	TTLCache.clearCaches();
+	synchronized(CLEAR_CACHE_MUTEX) {
+	    List<RepositoryManager> managers = new ArrayList<RepositoryManager>();
+	    managers.addAll(outputHandlers);
+	    managers.addAll(allTypeHandlers);
+	    managers.addAll(repositoryManagers);
+	    for (RepositoryManager manager :managers) {
+		manager.clearCache();
+	    }
+	    resources = new Hashtable();
+	    try {
+		readDatabaseProperties();
+	    } catch (Exception exc) {
+		getLogManager().logError("Error reading globals", exc);
+	    }
+	    TTLCache.clearCaches();
+	}
 
     }
 
