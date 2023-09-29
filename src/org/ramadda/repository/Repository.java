@@ -6599,11 +6599,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
     
 
     public Result processFlush(Request request) throws Exception {
+	if(true) return new Result("",new StringBuilder("not implemented"));
 	clearAllCaches();
 	return new Result("",new StringBuilder("cleared"));
     }
 
     public Result processPrintDb(Request request) throws Exception {
+	if(true) return new Result("",new StringBuilder("not implemented"));
 	if(request.defined("debug"))
 	    DatabaseManager.debugConnections = request.get("debug",true);
 	getDatabaseManager().printIt();
