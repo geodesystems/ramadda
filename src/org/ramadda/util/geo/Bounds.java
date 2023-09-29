@@ -80,6 +80,14 @@ public class Bounds {
 
     }
 
+    public boolean contains(Bounds b) {
+        return contains(b.north,b.west) &&
+	    contains(b.north,b.east) &&
+	    contains(b.south,b.east) &&
+	    contains(b.south,b.west);
+    }
+
+
     /**
      *
      * @param point _more_

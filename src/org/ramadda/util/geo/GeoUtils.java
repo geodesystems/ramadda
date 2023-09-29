@@ -1662,6 +1662,12 @@ public class GeoUtils {
 
     }
 
+    public static boolean latLonOk(double lat, double lon) {
+	return lat>=-90 && lat<=90 &&
+	    lon>=-180 && lon<=360;
+    }
+
+
     /**
      * _more_
      *

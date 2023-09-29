@@ -452,6 +452,10 @@ public class GeoJson extends JsonUtil {
             JSONArray tuple = points.getJSONArray(j);
             double    lon   = tuple.getDouble(0);
             double    lat   = tuple.getDouble(1);
+	    
+	    if(!GeoUtils.latLonOk(lat,lon)) {
+		continue;
+	    }
             if (pts != null) {
                 pts.add(new Point(lat, lon));
             }
@@ -579,16 +583,18 @@ public class GeoJson extends JsonUtil {
         } else {
             double      lon = coords1.getDouble(0);
             double      lat = coords1.getDouble(1);
-            List<Point> p2  = new ArrayList<Point>();
-            p2.add(new Point(lat, lon));
-            if (pts != null) {
-                pts.add(p2);
-            }
-            if (bounds == null) {
-                bounds = new Bounds(lat, lon, lat, lon);
-            } else {
-                bounds.expand(lat, lon);
-            }
+	    if(GeoUtils.latLonOk(lat,lon)) {
+		List<Point> p2  = new ArrayList<Point>();
+		p2.add(new Point(lat, lon));
+		if (pts != null) {
+		    pts.add(p2);
+		}
+		if (bounds == null) {
+		    bounds = new Bounds(lat, lon, lat, lon);
+		} else {
+		    bounds.expand(lat, lon);
+		}
+	    }
         }
 
         return bounds;
@@ -668,9 +674,7 @@ public class GeoJson extends JsonUtil {
 
     }
 
-    public static void reverse(String f) throws Exception {
-        JSONObject            obj      =
-            new JSONObject(new JSONTokener(new FileInputStream(f)));
+    public static JSONObject reverse(JSONObject obj) throws Exception {
         JSONArray             features = readArray(obj, "features");
 	List<Object> objects = new ArrayList<Object>();
 	for (int idx1 = 0; idx1 < features.length(); idx1++) {
@@ -678,12 +682,14 @@ public class GeoJson extends JsonUtil {
 	}
 	features.clear();
 	features.putAll(objects);
-	System.out.println(obj.toString());
+	return obj;
     }
 
-    public static void stride(String f,double step) throws Exception {
-        JSONObject            obj      =
-            new JSONObject(new JSONTokener(new FileInputStream(f)));
+    public static JSONObject read(String f) throws Exception {
+        return  new JSONObject(new JSONTokener(new FileInputStream(f)));
+    }
+
+    public static JSONObject stride(JSONObject obj,double step) throws Exception {
         JSONArray             features = readArray(obj, "features");
 	List<Object> objects = new ArrayList<Object>();
 	double cnt = 0;
@@ -704,13 +710,27 @@ public class GeoJson extends JsonUtil {
 	}
 	features.clear();
 	features.putAll(objects);
-	System.err.println("#new features:" + features.length());
-	System.out.println(obj.toString());
+	//	System.err.println("#new features:" + features.length());
+	return obj;
     }
 
-    public static void first(String f,int n) throws Exception {
-        JSONObject            obj      =
-            new JSONObject(new JSONTokener(new FileInputStream(f)));
+    public static JSONObject in(JSONObject obj,Bounds bounds) throws Exception {
+        JSONArray             features = readArray(obj, "features");
+	List<Object> objects = new ArrayList<Object>();
+	double cnt = 0;
+	for (int idx1 = 0; idx1 < features.length(); idx1++) {
+	    JSONObject o = features.getJSONObject(idx1);
+            Bounds b = getFeatureBounds(o, null, null);
+	    if(bounds.contains(b)) {
+		objects.add(o);
+	    }
+	}
+	features.clear();
+	features.putAll(objects);
+	return obj;
+    }
+
+    public static JSONObject first(JSONObject obj,int n) throws Exception {
         JSONArray             features = readArray(obj, "features");
 	List<Object> objects = new ArrayList<Object>();
 	double cnt = 0;
@@ -721,7 +741,7 @@ public class GeoJson extends JsonUtil {
 	features.clear();
 	features.putAll(objects);
 	System.err.println("#new features:" + features.length());
-	System.out.println(obj.toString());
+	return obj;
     }
     
 
@@ -739,7 +759,9 @@ public class GeoJson extends JsonUtil {
 	boolean doReverse = false;
 	boolean doSplit = false;	
 	boolean doStride = false;
-	boolean doFirst = false;		
+	boolean doFirst = false;
+	boolean doIn = false;			
+	Bounds bounds  =null;
 	int first=0;
 	boolean doCsv = true;	
 	double stride=2;
@@ -751,6 +773,8 @@ public class GeoJson extends JsonUtil {
 		doStride = false;	
 		doSplit = false;
 		doCsv = false;
+		doFirst = false;		
+		doIn = false;
 	    }
 	    if(arg.equals("-reverse")) {
 		doReverse=true;
@@ -761,6 +785,15 @@ public class GeoJson extends JsonUtil {
 		doStride= true;
 		continue;
 	    }
+	    if(arg.equals("-in")) {
+		bounds = new Bounds(Double.parseDouble(args[++i]),
+				    Double.parseDouble(args[++i]),
+				    Double.parseDouble(args[++i]),
+				    Double.parseDouble(args[++i]));
+				    
+		doIn= true;
+		continue;
+	    }	    
 	    if(arg.equals("-first")) {
 		first = Integer.parseInt(args[++i]);
 		doFirst= true;
@@ -778,16 +811,27 @@ public class GeoJson extends JsonUtil {
 		System.err.println("Unknown arg:" +arg +" usage: -csv -split -reverse -stride 10 (if stride<0 then it is used to sample)");
 		continue;
 	    }
-	    if(doStride)
-		stride(arg,stride);
-	    if(doFirst)
-		first(arg,first);	    
-	    if(doReverse)
-		reverse(arg);
-	    else if(doSplit)
-		split(arg);	    
-	    else if(doCsv)
+
+
+	    if(doCsv) {
 		geojsonFileToCsv(arg,System.out,null);
+		continue;
+	    }
+	    if(doSplit) {
+		split(arg);
+		continue;
+	    }
+	    JSONObject            obj      = read(arg);
+	    if(doIn)
+		obj = in(obj,bounds);
+	    if(doStride)
+		obj = stride(obj,stride);
+	    if(doFirst)
+		obj = first(obj,first);	    
+	    if(doReverse)
+		obj = reverse(obj);
+	    System.out.println(obj.toString());
+
 	}
 
         if (true) {
