@@ -24,42 +24,44 @@ public class Test {
     private static int loops = 1000;
     private static int sleep=0;
     private static int timeThreshold = 1500;
+    private static boolean verbose = false;
+    private static List<String> randos = new ArrayList<String>();
+    int urlCnt=0;
 
-    public static void runTest(List<String> urls) {
+    public Test(List<String> urls) {
+	Misc.runInABit(100,new Runnable() {
+		public void run() {
+		    synchronized(MUTEX) {
+			activeThreads++;
+		    }
+		    runTest(urls);
+		    synchronized(MUTEX) {
+			numThreads--;
+			activeThreads--;
+			System.out.println("DONE:" + numThreads);
+		    }
+		}
+	    });
+    }
+
+    public  void runTest(List<String> urls) {
 	try {
 	    int cnt=0;
 	    while(cnt++<loops) {
-		int urlCnt=0;
+		//		System.err.println("cnt:" + cnt);
+		boolean didRando = false;
 		for(String url:urls) {
-		    url = url.trim();
-		    if(url.startsWith("#")) continue;
-		    if(url.startsWith("stop")) break;
-		    if(url.startsWith("sleep ")) {
-			int s = Integer.parseInt(url.substring("sleep ".length()).trim());
-			Misc.sleep(s);
-			continue;
-		    }
-		    
-		    Date before = new Date();
-		    IO.Result result = IO.doGetResult(new URL(url));
-		    if(result.getError()) {
-			System.out.println("read error:" + result.getResult());
-			return;
-		    }
-		    synchronized(MUTEX) {
-			totalRead++;
-			Date after = new Date();
-			long time = after.getTime()-before.getTime();
-			String title = StringUtil.findPattern(result.result,"<title>(.*?)</title>");
-			if(timeThreshold>=0 && time>timeThreshold) {
-			    System.out.println("#" + urlCnt +" " + title+ " long time:" + (time) +" url:" +url);
+		    if(verbose)
+			System.out.println("call:" + url);
+		    call(url);
+		    double r = Math.random();
+		    if(!didRando && randos.size()>0 && r<0.05) {
+			didRando = true;
+			for(String u: randos) {
+			    System.out.println("random:" + u);
+			    call(u);
 			}
-			long diff = (after.getTime()-startTime.getTime())/1000;
-			int callsPer = diff<=0?0:(int)(totalRead/(double)diff);
-			System.out.println("#" + (urlCnt++)+" total read:" + totalRead + " calls/s:" + callsPer +" time:" + time +" #threads:"+ activeThreads);
-
 		    }
-		    if(sleep>0) Misc.sleep(sleep);
 		}
 	    }
 	} catch(Exception exc) {
@@ -67,6 +69,41 @@ public class Test {
 	    return;
 	}
     }
+
+    public boolean call(String url) throws Exception {
+	url = url.trim();
+	if(url.startsWith("#")) return true;
+	if(url.startsWith("stop")) return false;
+	if(url.startsWith("sleep ")) {
+	    int s = Integer.parseInt(url.substring("sleep ".length()).trim());
+	    Misc.sleep(s);
+	    return true;
+	}
+
+
+	Date before = new Date();
+	IO.Result result = IO.doGetResult(new URL(url));
+	if(result.getError()) {
+	    System.out.println("read error:" + result.getResult());
+	    return true;
+	}
+	synchronized(MUTEX) {
+	    totalRead++;
+	    Date after = new Date();
+	    long time = after.getTime()-before.getTime();
+	    String title = StringUtil.findPattern(result.result,"<title>(.*?)</title>");
+	    if(timeThreshold>=0 && time>timeThreshold) {
+		System.out.println("#" + urlCnt +" " + title+ " long time:" + (time) +" url:" +url);
+	    }
+	    long diff = (after.getTime()-startTime.getTime())/1000;
+	    int callsPer = diff<=0?0:(int)(totalRead/(double)diff);
+	    System.out.println("#" + (urlCnt++)+" total read:" + totalRead + " calls/s:" + callsPer +" time:" + time +" #threads:"+ activeThreads);
+
+	}
+	if(sleep>0) Misc.sleep(sleep);
+	return true;
+    }
+
 
     /**
      * _more_
@@ -80,7 +117,7 @@ public class Test {
 	final List<String> urls=new ArrayList<String>();
 	for(int i=0;i<args.length;i++) {
 	    if(args[i].equals("-help")) {
-		System.out.println("usage: -threads <# threads> -loops <#loops> -t <time threshold> -sleep <pause after each call (ms)> <file> or <url>");
+		System.out.println("usage: -threads <# threads> -loops <#loops> -rando <some random URL> -t <time threshold> -verbose -sleep <pause after each call (ms)> <file> or <url>");
 		System.exit(0);
 	    }
 
@@ -96,6 +133,14 @@ public class Test {
 	    }
 	    if(args[i].equals("-loops")) {
 		loops = Integer.parseInt(args[++i]);
+		continue;
+	    }
+	    if(args[i].equals("-rando")) {
+		randos.add(args[++i]);
+		continue;
+	    }
+	    if(args[i].equals("-verbosep")) {
+		verbose = true;
 		continue;
 	    }
 	    if(args[i].equals("-sleep")) {
@@ -114,19 +159,7 @@ public class Test {
 	System.out.println("num threads:" + numThreads);
 	int threads = numThreads;
 	for(int i=0;i<threads;i++) {
-	    Misc.runInABit(100,new Runnable() {
-		    public void run() {
-			synchronized(MUTEX) {
-			    activeThreads++;
-			}
-			runTest(urls);
-			synchronized(MUTEX) {
-			    numThreads--;
-			    activeThreads--;
-			    System.out.println("DONE:" + numThreads);
-			}
-		    }
-		});
+	    new Test(urls);
 	    //Stagger the threads
 	    Misc.sleep(random.nextInt(50) + 1);
 	}
