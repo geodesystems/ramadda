@@ -1187,7 +1187,6 @@ public class PageHandler extends RepositoryManager {
      */
     public HtmlTemplate getMobileTemplate() {
         getTemplates();
-
         return mobileTemplate;
     }
 
@@ -1256,7 +1255,6 @@ public class PageHandler extends RepositoryManager {
      */
     private synchronized List<HtmlTemplate> getTemplatesInner()
             throws Exception {
-
         List<HtmlTemplate> theTemplates = htmlTemplates;
         if ( !cacheTemplates || (theTemplates == null)) {
             String mobileId =
@@ -1266,8 +1264,9 @@ public class PageHandler extends RepositoryManager {
             //use locals here in case of race conditions
             HtmlTemplate _defaultTemplate = null;
             HtmlTemplate _mobileTemplate  = null;
-            theTemplates = new ArrayList<HtmlTemplate>();
-            templateMap  = new Hashtable<String, HtmlTemplate>();
+            List<HtmlTemplate> tmp_theTemplates = new ArrayList<HtmlTemplate>();
+            Hashtable<String,HtmlTemplate> tmp_templateMap  = new Hashtable<String, HtmlTemplate>();
+
 
             String defaultId =
                 getRepository().getProperty(PROP_HTML_TEMPLATE_DEFAULT,
@@ -1345,8 +1344,8 @@ public class PageHandler extends RepositoryManager {
 
                         continue;
                     }
-                    templateMap.put(template.getId(), template);
-                    theTemplates.add(template);
+                    tmp_templateMap.put(template.getId(), template);
+                    tmp_theTemplates.add(template);
 
                     if ((mapTemplate == null)
                             && template.getId().equals("mapheader")) {
@@ -1400,7 +1399,7 @@ public class PageHandler extends RepositoryManager {
                 _mobileTemplate = theMobileTemplate;
             }
             if (_defaultTemplate == null) {
-                _defaultTemplate = theTemplates.get(0);
+                _defaultTemplate = tmp_theTemplates.get(0);
                 if (debugTemplates) {
                     System.err.println("\tset-3:" + _defaultTemplate);
                 }
@@ -1411,8 +1410,12 @@ public class PageHandler extends RepositoryManager {
             //            if (getRepository().getCacheResources()) {
             defaultTemplate = _defaultTemplate;
             mobileTemplate  = _mobileTemplate;
-            htmlTemplates   = theTemplates;
+            htmlTemplates   = tmp_theTemplates;
             //            }
+
+            theTemplates = tmp_theTemplates;
+            templateMap  = tmp_templateMap;
+
         }
 
         return theTemplates;
