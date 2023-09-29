@@ -739,7 +739,9 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
 	    try {
 		connection = tmpDataSource.getConnection();
-		synchronized(connectionInfos) {connectionInfos.add(new ConnectionInfo(connection,""));}
+		if(debugConnections) {
+		    synchronized(connectionInfos) {connectionInfos.add(new ConnectionInfo(connection,""));}
+		}
 		synchronized(CONNECTION_MUTEX) {
 		    getConnectCnt++;
 		    openCnt++;
@@ -790,12 +792,10 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 		openCnt--;
 	    }
             synchronized (connectionInfos) {
-                boolean gotOne = false;
                 for (ConnectionInfo info : connectionInfos) {
                     if ((info.connection == connection)
 			|| info.connection.equals(connection)) {
                         connectionInfos.remove(info);
-                        gotOne = true;
                         break;
                     }
                 }
@@ -804,9 +804,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                 connection.setAutoCommit(true);
             } catch (Throwable ignore) {}
             try {
-		//                synchronized (CONNECTION_MUTEX) {
-                    connection.close();
-		    //                }
+		connection.close();
             } catch (Exception ignore) {}
         } catch (Exception exc) {
             getLogManager().logError("Closing connections", exc);
