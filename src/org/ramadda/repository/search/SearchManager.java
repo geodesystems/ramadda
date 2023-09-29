@@ -370,6 +370,28 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	return getRepository().isLLMEnabled();
     }
 
+    public String getNewEntryExtract(Request request) {
+	if(!isSummaryExtractionEnabled())
+	    return "";
+	String space = HU.space(3);
+	String  extract = HU.b("Extract metadata using GPT") +":<br>";
+	if(getRepository().isGPT4Enabled()) {
+	    extract+=HU.labeledCheckbox(ARG_USEGPT4, "true", false,   "Use GPT 4") +"<br>";
+	}
+	extract+= HU.labeledCheckbox(ARG_EXTRACT_KEYWORDS, "true", false,
+				     "Extract keywords") +
+	    space + 
+	    HU.labeledCheckbox(ARG_EXTRACT_TITLE, "true", false,"Extract title") +
+	    space +
+	    HU.labeledCheckbox(ARG_EXTRACT_AUTHORS, "true", false,"Extract authors") +
+	    "<br>" +
+	    HU.labeledCheckbox(ARG_EXTRACT_SUMMARY, "true", false, "Extract summary with the prompt:") +
+	    "<br>" +
+	    HU.textArea(ARG_EXTRACT_SUMMARY_PROMPT, SUMMARY_PROMPT,3,50) +
+	    "<br>" +
+	    "Note: when extracting keywords, title, etc., the file text is sent to the <a href=https://openai.com/api/>OpenAI GPT API</a> for processing.<br>There will also be a delay before the results are shown for the new entry.";
+	return extract;
+    }
 
 
     /**
@@ -750,6 +772,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	doc.add(new SortedNumericDocValuesField(FIELD_DATE_CHANGED, entry.getChangeDate()));
 	doc.add(new SortedNumericDocValuesField(FIELD_DATE_START, entry.getStartDate()));
 	doc.add(new SortedNumericDocValuesField(FIELD_DATE_END, entry.getEndDate()));	
+
         if (entry.isFile()) {
 	    StringBuilder fileCorpus = new StringBuilder();
             addContentField(entry, doc, FIELD_CONTENTS, entry.getResource().getTheFile(), true, fileCorpus);
@@ -777,6 +800,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			entryChanged = true;
 		    }
 		}
+
 		if(isNew) {
 		    if(request.get(ARG_EXTRACT_SUMMARY,false)) {
 			if(debugLLM) System.err.println("SearchManager: callLLM: summary");
