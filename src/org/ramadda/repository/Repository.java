@@ -565,7 +565,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private boolean ignoreSSL = false;
 
-    private static boolean  debugLLM = true;
+    private static boolean  debugLLM = false;
     public static final int GPT3_TOKEN_LIMIT = 3000;
     public static final int GPT4_TOKEN_LIMIT = 6000;
 
