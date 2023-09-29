@@ -5327,28 +5327,8 @@ public class TypeHandler extends RepositoryManager {
 			       "Just spatial/temporal properties");
 
 
-	String extract = "";
+	String extract = getSearchManager().getNewEntryExtract(request);
 
-	if(getSearchManager().isSummaryExtractionEnabled()) {
-	    extract += "<p>";
-
-	    if(getRepository().isGPT4Enabled()) {
-		extract+=HU.labeledCheckbox(ARG_USEGPT4, "true", false,   "Use GPT 4") +"<br>";
-	    }
-
-	    extract+= HU.labeledCheckbox(ARG_EXTRACT_KEYWORDS, "true", false,
-					 "Extract keywords") +
-		space + 
-		HU.labeledCheckbox(ARG_EXTRACT_TITLE, "true", false,"Extract title") +
-		space +
-		HU.labeledCheckbox(ARG_EXTRACT_AUTHORS, "true", false,"Extract authors") +
-		"<br>" +
-		HU.labeledCheckbox(ARG_EXTRACT_SUMMARY, "true", false, "Extract summary with the prompt:") +
-		"<br>" +
-		HU.textArea(ARG_EXTRACT_SUMMARY_PROMPT, SUMMARY_PROMPT,3,50) +
-		"<br>" +
-		"Note: when extracting keywords, title, etc., the file text is sent to the <a href=https://openai.com/api/>OpenAI GPT API</a> for processing.<br>There will also be a delay before the results are shown for the new entry.";
-	}
 
         List datePatterns = new ArrayList();
         datePatterns.add(new TwoFacedObject("", BLANK));
