@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Sep 29 19:52:42 MDT 2023";
+var build_date="RAMADDA build date: Sat Sep 30 07:57:24 MDT 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -3104,6 +3104,7 @@ function SizeBy(display,records,fieldProperty) {
         id: this.display.getProperty(fieldProperty|| "sizeBy"),
         minValue: 0,
         maxValue: 0,
+	threshold:parseFloat(this.display.getProperty('sizeByThreshold',NaN)),
         field: null,
         index: -1,
         isString: false,
@@ -17222,12 +17223,16 @@ function RecordFilter(display,filterFieldId, properties) {
 		    }  else  {
 			let date1 = this.mySearch.value[0];
 			let date2 = this.mySearch.value[1];
-			let dttm = rowValue.getTime();
-			if(isNaN(dttm)) ok = false;
-			else if(date1 && dttm<date1.getTime())
+			if(!rowValue.getTime) {
 			    ok = false;
-			else if(date2 && dttm>date2.getTime())
-			    ok = false;
+			}  else {
+			    let dttm = rowValue.getTime();
+			    if(isNaN(dttm)) ok = false;
+			    else if(date1 && dttm<date1.getTime())
+				ok = false;
+			    else if(date2 && dttm>date2.getTime())
+				ok = false;
+			}
 		    }
 		}
 	    } else {
@@ -21255,7 +21260,7 @@ function TableDisplay(displayManager, id, properties) {
 		    if(field.getType()=="url") {
 			return {
 			    v:v,
-			    f:HU.href(v,v)
+			    f:HU.href(v,v,['target','_link'])
 			};
 		    }
 		    if(field.getType()=="image") {
@@ -39366,7 +39371,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
             let strokeWidth = +this.getPropertyStrokeWidth();
             let strokeColor = this.getPropertyStrokeColor();
-            let sizeByAttr = this.getDisplayProp(source, "sizeBy", null);
             let isTrajectory = this.getDisplayProp(source, "isTrajectory", false);
             if (isTrajectory) {
 		let tpoints = points.map(p=>{
@@ -39482,8 +39486,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 
 	    let sizeBy = new SizeBy(this, this.getProperty("sizeByAllRecords",true)?this.getData().getRecords():records);
-
-
 
             for (let i = 0; i < fields.length; i++) {
                 let field = fields[i];
