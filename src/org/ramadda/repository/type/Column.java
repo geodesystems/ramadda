@@ -20,6 +20,7 @@ import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
+import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.SqlUtil;
 
@@ -3140,10 +3141,10 @@ public class Column implements DataTypes, Constants, Cloneable {
                 double lat = Entry.NONGEO;
                 double lon = Entry.NONGEO;
                 if (Utils.stringDefined(latString)) {
-                    lat = Utils.decodeLatLon(latString);
+                    lat = GeoUtils.decodeLatLon(latString);
                 }
                 if (Utils.stringDefined(lonString)) {
-                    lon = Utils.decodeLatLon(lonString);
+                    lon = GeoUtils.decodeLatLon(lonString);
                 }
                 values[offset]     = lat;
                 values[offset + 1] = lon;

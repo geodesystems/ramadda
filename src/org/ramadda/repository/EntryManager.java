@@ -34,6 +34,8 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.NamedList;
+import org.ramadda.util.geo.GeoUtils;
+
 
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.TTLObject;
@@ -3574,9 +3576,8 @@ public class EntryManager extends RepositoryManager {
 	throws Exception {
         if (request.defined(ARG_LOCATION_LATITUDE)
 	    && request.defined(ARG_LOCATION_LONGITUDE)) {
-            entry.setLatitude(request.get(ARG_LOCATION_LATITUDE, 0.0));
-            entry.setLongitude(request.get(ARG_LOCATION_LONGITUDE, 0.0));
-
+            entry.setLatitude(GeoUtils.decodeLatLon(request.getString(ARG_LOCATION_LATITUDE,"")));
+            entry.setLongitude(GeoUtils.decodeLatLon(request.getString(ARG_LOCATION_LONGITUDE,"")));
 	    if(entry.hasLocationDefined()) {
 		getSessionManager().putSessionProperty(request,
 						       ARG_LOCATION_LATITUDE,
@@ -6674,18 +6675,18 @@ public class EntryManager extends RepositoryManager {
             String lon = Utils.getAttributeOrTag(node, ATTR_LONGITUDE, null);
 
             if ((lat != null) && (lon != null)) {
-                entry.setNorth(Utils.decodeLatLon(lat));
+                entry.setNorth(GeoUtils.decodeLatLon(lat));
                 entry.setSouth(entry.getNorth());
-                entry.setWest(Utils.decodeLatLon(lon));
+                entry.setWest(GeoUtils.decodeLatLon(lon));
                 entry.setEast(entry.getWest());
             } else {
-                entry.setNorth(Utils.decodeLatLon(XmlUtil.getAttribute(node,
+                entry.setNorth(GeoUtils.decodeLatLon(XmlUtil.getAttribute(node,
 								       ATTR_NORTH, entry.getNorth() + "")));
-                entry.setSouth(Utils.decodeLatLon(XmlUtil.getAttribute(node,
+                entry.setSouth(GeoUtils.decodeLatLon(XmlUtil.getAttribute(node,
 								       ATTR_SOUTH, entry.getSouth() + "")));
-                entry.setEast(Utils.decodeLatLon(XmlUtil.getAttribute(node,
+                entry.setEast(GeoUtils.decodeLatLon(XmlUtil.getAttribute(node,
 								      ATTR_EAST, entry.getEast() + "")));
-                entry.setWest(Utils.decodeLatLon(XmlUtil.getAttribute(node,
+                entry.setWest(GeoUtils.decodeLatLon(XmlUtil.getAttribute(node,
 								      ATTR_WEST, entry.getWest() + "")));
             }
 

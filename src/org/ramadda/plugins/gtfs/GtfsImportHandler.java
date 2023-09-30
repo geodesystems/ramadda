@@ -19,6 +19,7 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.Utils;
+import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.text.*;
 import org.ramadda.util.text.Seesv;
 import org.ramadda.util.text.DataProvider;
@@ -395,9 +396,9 @@ public class GtfsImportHandler extends ImportHandler {
                         name = "Stop: " + id;
                     }
                     String desc = getValue("stop_desc", map, toks, "");
-                    double lat = Utils.decodeLatLon(getValue("stop_lat", map,
+                    double lat = GeoUtils.decodeLatLon(getValue("stop_lat", map,
                                      toks, "40"));
-                    double lon = Utils.decodeLatLon(getValue("stop_lon", map,
+                    double lon =GeoUtils.decodeLatLon(getValue("stop_lon", map,
                                      toks, "-100"));
                     String url = getValue("stop_url", map, toks, "");
                     TypeHandler typeHandler =
@@ -543,10 +544,10 @@ public class GtfsImportHandler extends ImportHandler {
                     List<String> toks = row.getValues();
                     String       id   = getValue("shape_id", map, toks, "");
                     float lat =
-                        (float) Utils.decodeLatLon(getValue("shape_pt_lat",
+                        (float) GeoUtils.decodeLatLon(getValue("shape_pt_lat",
                             map, toks, "40"));
                     float lon =
-                        (float) Utils.decodeLatLon(getValue("shape_pt_lon",
+                        (float) GeoUtils.decodeLatLon(getValue("shape_pt_lon",
                             map, toks, "-100"));
                     int seq = Integer.parseInt(getValue("shape_pt_sequence",
                                   map, toks, "0"));

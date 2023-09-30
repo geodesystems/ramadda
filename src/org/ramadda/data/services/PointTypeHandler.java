@@ -30,6 +30,7 @@ import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
+import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.grid.LatLonGrid;
 
 import org.w3c.dom.*;
@@ -846,7 +847,7 @@ public class PointTypeHandler extends RecordTypeHandler {
         lls = lls.replace(":N", "N");
         lls = lls.replace(":E", "E");
         lls = lls.replace(":W", "W");
-        return Utils.decodeLatLon(lls);
+        return GeoUtils.decodeLatLon(lls);
     }
 
 

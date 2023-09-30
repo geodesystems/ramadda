@@ -11,6 +11,7 @@ import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.geo.GeoUtils;
 
 import org.ramadda.util.JQuery;
 import org.ramadda.util.Utils;
@@ -428,7 +429,7 @@ public class GtfsTripTypeHandler extends GenericTypeHandler {
         if (Utils.stringDefined(s)) {
             s = Utils.uncompress(s);
             List<double[]> points = new ArrayList<double[]>();
-            Utils.parsePointString(s, points);
+            GeoUtils.parsePointString(s, points);
             map.addLines(entry, entry.getId() + "_polygon", points, null);
         }
         List<Gtfs.StopTime> stops = Gtfs.getStopsForTrip(request, entry,

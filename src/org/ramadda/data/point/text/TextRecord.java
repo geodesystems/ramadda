@@ -16,6 +16,7 @@ import org.ramadda.data.record.*;
 import org.ramadda.util.NamedChannel;
 import org.ramadda.util.Station;
 import org.ramadda.util.Utils;
+import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.text.*;
 
 import ucar.unidata.util.DateUtil;
@@ -551,7 +552,7 @@ public class TextRecord extends DataRecord {
                 } else {
                     double dValue;
                     if ((idxX == fieldCnt) || (idxY == fieldCnt)) {
-                        dValue = Utils.decodeLatLon(tok);
+                        dValue = GeoUtils.decodeLatLon(tok);
                     } else {
                         try {
                             dValue = textFile.parseValue(this, field, tok);

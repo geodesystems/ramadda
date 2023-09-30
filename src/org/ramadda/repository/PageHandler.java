@@ -27,6 +27,7 @@ import org.ramadda.util.JsonUtil;
 import org.ramadda.util.MapRegion;
 import org.ramadda.util.NamedValue;
 import org.ramadda.util.Utils;
+import org.ramadda.util.geo.GeoUtils;
 
 
 import ucar.unidata.util.DateUtil;
@@ -1633,14 +1634,14 @@ public class PageHandler extends RepositoryManager {
                 seen.add(name);
                 if (toks.size() == 4) {
                     mapRegions.add(new MapRegion(toks.get(1), name, group,
-                            Utils.decodeLatLon(toks.get(2)),
-                            Utils.decodeLatLon(toks.get(3))));
+                            GeoUtils.decodeLatLon(toks.get(2)),
+                            GeoUtils.decodeLatLon(toks.get(3))));
                 } else {
                     mapRegions.add(new MapRegion(toks.get(1), name, group,
-                            Utils.decodeLatLon(toks.get(2)),
-                            Utils.decodeLatLon(toks.get(3)),
-                            Utils.decodeLatLon(toks.get(4)),
-                            Utils.decodeLatLon(toks.get(5))));
+                            GeoUtils.decodeLatLon(toks.get(2)),
+                            GeoUtils.decodeLatLon(toks.get(3)),
+                            GeoUtils.decodeLatLon(toks.get(4)),
+                            GeoUtils.decodeLatLon(toks.get(5))));
                 }
             }
 

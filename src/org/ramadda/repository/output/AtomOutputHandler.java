@@ -16,6 +16,7 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 
 import org.ramadda.util.Utils;
+import org.ramadda.util.geo.GeoUtils;
 
 import org.ramadda.util.sql.SqlUtil;
 
@@ -245,8 +246,8 @@ public class AtomOutputHandler extends OutputHandler {
                         if (toks.size() != 2) {
                             continue;
                         }
-                        double lat = Utils.decodeLatLon(toks.get(0));
-                        double lon = Utils.decodeLatLon(toks.get(1));
+                        double lat = GeoUtils.decodeLatLon(toks.get(0));
+                        double lon = GeoUtils.decodeLatLon(toks.get(1));
                         extra.append(lat);
                         extra.append(" ");
                         extra.append(lon);

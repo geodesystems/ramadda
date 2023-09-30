@@ -19,7 +19,7 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.MapRegion;
 import org.ramadda.util.Utils;
-
+import org.ramadda.util.geo.GeoUtils;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.Misc;
@@ -364,12 +364,12 @@ public class MapInfo {
                 if (metadata.getType().equals(
                         MetadataHandler.TYPE_SPATIAL_POLYGON)) {
                     List<double[]> points = new ArrayList<double[]>();
-                    Utils.parsePointString(metadata.getAttr1(), points);
-                    Utils.parsePointString(metadata.getAttr2(), points);
-                    Utils.parsePointString(metadata.getAttr3(), points);
-                    Utils.parsePointString(metadata.getAttr4(), points);
-                    Utils.parsePointString(metadata.getAttr(5), points);
-                    Utils.parsePointString(metadata.getAttr(6), points);
+                    GeoUtils.parsePointString(metadata.getAttr1(), points);
+                    GeoUtils.parsePointString(metadata.getAttr2(), points);
+                    GeoUtils.parsePointString(metadata.getAttr3(), points);
+                    GeoUtils.parsePointString(metadata.getAttr4(), points);
+                    GeoUtils.parsePointString(metadata.getAttr(5), points);
+                    GeoUtils.parsePointString(metadata.getAttr(6), points);
                     this.addLines(entry, MapManager.mapEntryId(entry) /* + "_polygon"*/,
                                   points, null);
                     didone = true;

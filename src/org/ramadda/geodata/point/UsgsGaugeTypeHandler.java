@@ -108,7 +108,6 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
         public UsgsGaugeRecordFile(IO.Path path, Hashtable properties)
                 throws IOException {
             super(path, properties);
-
         }
 
         /**
@@ -144,6 +143,9 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
     @Override
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
+	if(entry.isFile()) {
+	    return entry.getResource().getPath();
+	}
         String url = URL_TEMPLATE;
         url = url.replace("${station_id}",
                           "" + entry.getValue(IDX_STATION_ID));

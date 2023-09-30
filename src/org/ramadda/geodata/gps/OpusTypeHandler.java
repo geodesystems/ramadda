@@ -11,6 +11,7 @@ import org.ramadda.repository.auth.User;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.MailUtil;
 import org.ramadda.util.Utils;
+import org.ramadda.util.geo.GeoUtils;
 
 
 import org.w3c.dom.*;
@@ -284,9 +285,9 @@ Easting (X)  [meters]      379359.228           836346.070
 
             //            System.err.println ("lat:" + latString);
             //            System.err.println ("lon:" + lonString);
-            double lat = Utils.decodeLatLon(latString);
+            double lat = GeoUtils.decodeLatLon(latString);
             double lon =
-                Misc.normalizeLongitude(Utils.decodeLatLon(lonString));
+                Misc.normalizeLongitude(GeoUtils.decodeLatLon(lonString));
             //            System.err.println ("lat: " + lat + " " + lon +" alt:" + altitude);
             entry.setLocation(lat, lon, altitude);
         }

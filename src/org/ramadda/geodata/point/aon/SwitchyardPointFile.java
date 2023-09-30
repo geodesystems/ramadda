@@ -23,6 +23,7 @@ import org.ramadda.data.point.text.*;
 
 import org.ramadda.data.record.*;
 import org.ramadda.util.Utils;
+import org.ramadda.util.geo.GeoUtils;
 
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -133,8 +134,8 @@ public class SwitchyardPointFile extends SingleSiteTextFile {
                     "Could not read location from:" + hdr);
             }
 
-            double lat = Utils.decodeLatLon(latString);
-            double lon = Utils.decodeLatLon(lonString);
+            double lat = GeoUtils.decodeLatLon(latString);
+            double lon = GeoUtils.decodeLatLon(lonString);
             setLocation(lat, lon, 0);
 
             String cast = StringUtil.findPattern(hdr, "\\s+Cast\\s+(\\d+).*");

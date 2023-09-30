@@ -23,6 +23,8 @@ import org.ramadda.data.point.text.*;
 
 import org.ramadda.data.record.*;
 import org.ramadda.util.Utils;
+import org.ramadda.util.geo.GeoUtils;
+
 
 import ucar.unidata.util.IOUtil;
 
@@ -110,8 +112,8 @@ public class AmerifluxLevel2PointFile extends CsvFile {
         }
 
 
-        double lat       = Utils.decodeLatLon(latString);
-        double lon       = Utils.decodeLatLon(lonString);
+        double lat       = GeoUtils.decodeLatLon(latString);
+        double lon       = GeoUtils.decodeLatLon(lonString);
         double elevation = Double.parseDouble(elevationString);
         setLocation(lat, lon, elevation);
 

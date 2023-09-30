@@ -22,6 +22,7 @@ import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 import org.ramadda.util.Utils;
+import org.ramadda.util.geo.GeoUtils;
 
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -166,9 +167,9 @@ public class GgpPointFile extends CsvFile {
                     author = value;
                     author = author.replaceAll(",", " - ");
                 } else if (name.indexOf("Latitude") >= 0) {
-                    latitude = Utils.decodeLatLon(value);
+                    latitude = GeoUtils.decodeLatLon(value);
                 } else if (name.indexOf("Longitude") >= 0) {
-                    longitude = Utils.decodeLatLon(value);
+                    longitude = GeoUtils.decodeLatLon(value);
                 } else if (name.indexOf("Gravity Cal") >= 0) {
                     gravityCalibration = parseDouble(value);
                 } else if (name.indexOf("Pressure Cal") >= 0) {

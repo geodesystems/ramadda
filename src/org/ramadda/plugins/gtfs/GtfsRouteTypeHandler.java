@@ -18,7 +18,7 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
-
+import org.ramadda.util.geo.GeoUtils;
 
 import org.w3c.dom.*;
 
@@ -301,7 +301,7 @@ public class GtfsRouteTypeHandler extends ExtensibleGroupTypeHandler {
         if (Utils.stringDefined(s)) {
             s = Utils.uncompress(s);
             List<double[]> points = new ArrayList<double[]>();
-            Utils.parsePointString(s, points);
+            GeoUtils.parsePointString(s, points);
             map.addLines(entry, entry.getId() + "_polygon", points, null);
         }
 
@@ -395,7 +395,7 @@ public class GtfsRouteTypeHandler extends ExtensibleGroupTypeHandler {
         if (Utils.stringDefined(s)) {
             s = Utils.uncompress(s);
             List<double[]> points = new ArrayList<double[]>();
-            Utils.parsePointString(s, points);
+            GeoUtils.parsePointString(s, points);
             List<String> pts = new ArrayList<String>();
             for (double[] pt : points) {
                 pts.add(Double.toString(pt[0]));

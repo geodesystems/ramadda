@@ -16,6 +16,7 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.SelectionRectangle;
 import org.ramadda.util.Utils;
+import org.ramadda.util.geo.GeoUtils;
 
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
@@ -2140,7 +2141,7 @@ public class Request implements Constants, Cloneable {
 	    || (llString.startsWith("${"))) {
             return dflt;
         }
-        double result = Utils.decodeLatLon(llString);
+        double result = GeoUtils.decodeLatLon(llString);
 
         return result;
     }
@@ -2169,7 +2170,7 @@ public class Request implements Constants, Cloneable {
             return dflt;
         }
 
-        double result = Utils.decodeLatLon(llString);
+        double result = GeoUtils.decodeLatLon(llString);
 
         //        System.err.println("\tdecoded value:" + result);
         return result;

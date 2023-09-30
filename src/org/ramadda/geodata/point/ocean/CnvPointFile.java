@@ -12,6 +12,7 @@ import org.ramadda.data.record.*;
 
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
+import org.ramadda.util.geo.GeoUtils;
 
 import ucar.unidata.util.StringUtil;
 
@@ -191,7 +192,7 @@ public class CnvPointFile extends CsvFile {
         lls = lls.replace(":E", "E");
         lls = lls.replace(":W", "W");
 
-        return Utils.decodeLatLon(lls);
+        return GeoUtils.decodeLatLon(lls);
     }
 
 

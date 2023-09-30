@@ -9,6 +9,7 @@ package org.ramadda.data.tools;
 import org.apache.poi.hssf.usermodel.*;
 
 import org.ramadda.util.Utils;
+import org.ramadda.util.geo.GeoUtils;
 
 import ucar.unidata.util.*;
 import ucar.unidata.xml.XmlUtil;
@@ -183,7 +184,7 @@ public class ProcessXls {
         s = s.replaceAll("[^0-9:\\.NSEWnsew]", ":");
 
         //        System.out.println("s:" + s +" decoded:" + Utils.decodeLatLon(s));
-        return Utils.decodeLatLon(s);
+        return GeoUtils.decodeLatLon(s);
     }
 
 
