@@ -782,7 +782,7 @@ public class MapInfo {
                                 ? selectionLabel
                                 : HU.img("fas fa-globe",
             //                      repository.getIconUrl("/icons/map.png"),
-            msg("Show Map"));
+					 "Show Map");
             PageHandler ph  = repository.getPageHandler();
             String initCall = getVariableName() + ".selectionPopupInit();";
             String mapPopup = HtmlUtils.makePopup(null, popupLabel,
