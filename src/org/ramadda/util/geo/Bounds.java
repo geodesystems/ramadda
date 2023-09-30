@@ -75,8 +75,10 @@ public class Bounds {
      * @return _more_
      */
     public boolean contains(double lat, double lon) {
-        return (lat <= north) && (lat >= south) && (lon >= west)
-               && (lon <= east);
+        return (Double.isNaN(north) || lat <= north) &&
+	    (Double.isNaN(south)|| lat >= south) &&
+	    (Double.isNaN(west) || lon >= west) &&
+	    (Double.isNaN(east) || lon <= east);
 
     }
 
