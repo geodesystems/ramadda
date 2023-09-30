@@ -107,17 +107,21 @@ function  SeesvForm(inputId, entry,params) {
 	    }
 	    
 
-	    let topLeft = HU.div([ID,this.domId(ID_MENU),"style","display:inline-block;"],"");
-	    let topRight = [['Select file entry', ID_SELECTFILE,'fas fa-file-arrow-up'],
-			    ['All commands', ID_ALL,ICON_SEARCH],
+	    let makeToolbarLink = (v,style) =>{
+		return  HU.span(['title',v[0],ID,this.domId(v[1]),
+				 'style',style??'margin-right:10px;',
+				 'class','ramadda-clickable ramadda-highlightable'],
+				HU.getIconImage(v[2]));
+	    }
 
+	    let searchAll  = makeToolbarLink(['All commands', ID_ALL,ICON_SEARCH],"");
+
+
+	    let topLeft = searchAll+ HU.div([ID,this.domId(ID_MENU),"style","display:inline-block;"],"");
+	    let topRight = [['Select file entry', ID_SELECTFILE,'fas fa-file-arrow-up'],
 			    ['Settings',ID_SETTINGS,ICON_SETTINGS],
 			    ['Help',ID_HELP,ICON_HELP]].reduce((current,v)=>{
-				let link = HU.span(['title',v[0],ID,this.domId(v[1]),
-						    'style','margin-right:10px;',
-						    'class','ramadda-clickable ramadda-highlightable'],
-						   HU.getIconImage(v[2]));
-				return current +link;
+				return current +makeToolbarLink(v);
 			    },"");
 	    html += HU.div(["class","ramadda-menubar","style","width:100%;"],HU.leftRightTable(topLeft,topRight));
 
@@ -686,6 +690,7 @@ function  SeesvForm(inputId, entry,params) {
 	    return val.trim();
 	},
 	display:function(what, process,html,command) {
+//	    console.log('evaling:' + what);
 	    if(!command) {
 		command ="";
 		this.lastSavedInput = this.getInput();
@@ -903,6 +908,8 @@ function  SeesvForm(inputId, entry,params) {
 		    output.find(".ramadda-button").button();
 		    return;
 		} 
+
+
 
 
 		if(Utils.isDefined(data.result)) {
