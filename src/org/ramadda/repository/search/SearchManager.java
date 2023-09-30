@@ -374,20 +374,22 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	if(!isSummaryExtractionEnabled())
 	    return "";
 	String space = HU.space(3);
-	String  extract = HU.b("Extract metadata using GPT") +":<br>";
+	String  extract = "";
 	if(getRepository().isGPT4Enabled()) {
-	    extract+=HU.labeledCheckbox(ARG_USEGPT4, "true", false,   "Use GPT 4") +"<br>";
+	    extract+=HU.labeledCheckbox(ARG_USEGPT4, "true", request.get(ARG_USEGPT4,false),   "Use GPT 4") +"<br>";
 	}
-	extract+= HU.labeledCheckbox(ARG_EXTRACT_KEYWORDS, "true", false,
+	extract+= HU.labeledCheckbox(ARG_EXTRACT_KEYWORDS, "true", request.get(ARG_EXTRACT_KEYWORDS, false),
 				     "Extract keywords") +
 	    space + 
-	    HU.labeledCheckbox(ARG_EXTRACT_TITLE, "true", false,"Extract title") +
+	    HU.labeledCheckbox(ARG_EXTRACT_TITLE, "true", request.get(ARG_EXTRACT_TITLE,false),
+			       "Extract title") +
 	    space +
-	    HU.labeledCheckbox(ARG_EXTRACT_AUTHORS, "true", false,"Extract authors") +
+	    HU.labeledCheckbox(ARG_EXTRACT_AUTHORS, "true", request.get(ARG_EXTRACT_AUTHORS,false),"Extract authors") +
 	    "<br>" +
-	    HU.labeledCheckbox(ARG_EXTRACT_SUMMARY, "true", false, "Extract summary with the prompt:") +
+	    HU.labeledCheckbox(ARG_EXTRACT_SUMMARY, "true", request.get(ARG_EXTRACT_SUMMARY,false),
+			       "Extract summary with the prompt:") +
 	    "<br>" +
-	    HU.textArea(ARG_EXTRACT_SUMMARY_PROMPT, SUMMARY_PROMPT,3,50) +
+	    HU.textArea(ARG_EXTRACT_SUMMARY_PROMPT, request.getString(ARG_EXTRACT_SUMMARY_PROMPT,SUMMARY_PROMPT),3,50) +
 	    "<br>" +
 	    "Note: when extracting keywords, title, etc., the file text is sent to the <a href=https://openai.com/api/>OpenAI GPT API</a> for processing.<br>There will also be a delay before the results are shown for the new entry.";
 	return extract;
