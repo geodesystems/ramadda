@@ -63,6 +63,11 @@ public class GeoJsonOutputHandler extends OutputHandler {
                        OutputType.TYPE_VIEW, "", ICON_MAP);
 
     /**  */
+    public static final OutputType OUTPUT_GEOJSON_SUBSET =
+        new OutputType("Subset GeoJson", "geojsonsubset",
+                       OutputType.TYPE_VIEW, "", ICON_MAP);    
+
+    /**  */
     public static final OutputType OUTPUT_GEOJSON_FILTER =
         new OutputType("Filter GeoJson", "geojsonfilter",
                        OutputType.TYPE_VIEW, "", ICON_MAP);
@@ -86,6 +91,7 @@ public class GeoJsonOutputHandler extends OutputHandler {
         super(repository, element);
         addType(OUTPUT_GEOJSON_TABLE);
         addType(OUTPUT_GEOJSON_FILTER);
+        addType(OUTPUT_GEOJSON_SUBSET);	
         addType(OUTPUT_GEOJSON_REDUCE);
         addType(OUTPUT_GEOJSONCSV);
         addType(OUTPUT_EDITABLE_TOKML);
@@ -109,7 +115,9 @@ public class GeoJsonOutputHandler extends OutputHandler {
                 links.add(makeLink(request, state.getEntry(),
                                    OUTPUT_GEOJSON_TABLE));
                 links.add(makeLink(request, state.getEntry(),
-                                   OUTPUT_GEOJSON_FILTER));
+                                   OUTPUT_GEOJSON_SUBSET));
+                links.add(makeLink(request, state.getEntry(),
+                                   OUTPUT_GEOJSON_FILTER));		
                 links.add(makeLink(request, state.getEntry(),
                                    OUTPUT_GEOJSON_REDUCE));
                 links.add(makeLink(request, state.getEntry(),
@@ -167,7 +175,7 @@ public class GeoJsonOutputHandler extends OutputHandler {
 
 
         if (outputType.equals(OUTPUT_GEOJSON_FILTER)) {
-            if ( !request.exists("geojson_subset")) {
+            if ( !request.exists("geojson_filter")) {
                 StringBuilder sb = new StringBuilder();
                 getPageHandler().entrySectionOpen(request, entry, sb,
                         "Geojson Filter");
@@ -186,7 +194,7 @@ public class GeoJsonOutputHandler extends OutputHandler {
                                  request.getString("geojson_value", ""))));
                 StringBuffer buttons =
                     new StringBuffer(HtmlUtils.submit("Subset",
-                        "geojson_subset"));
+                        "geojson_filter"));
                 sb.append(HtmlUtils.formEntry("", buttons.toString()));
                 sb.append(HtmlUtils.formClose());
                 sb.append(HtmlUtils.formTableClose());
@@ -208,11 +216,50 @@ public class GeoJsonOutputHandler extends OutputHandler {
             request.setReturnFilename(
                 getStorageManager().getOriginalFilename(
                     entry.getResource().getPath()));
-            Result result = new Result("", sb, "application/json");
+            Result result = new Result("", sb, GeoJson.GEOJSON_MIMETYPE);
 
             return result;
 
         }
+
+
+        if (outputType.equals(OUTPUT_GEOJSON_SUBSET)) {
+            if ( !request.exists("geojson_subset")) {
+                StringBuilder sb = new StringBuilder();
+                getPageHandler().entrySectionOpen(request, entry, sb,
+                        "Geojson Subset");
+                sb.append(HtmlUtils.form(getRepository().URL_ENTRY_SHOW.toString()));
+                sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+                sb.append(HtmlUtils.hidden(ARG_OUTPUT,
+                                           OUTPUT_GEOJSON_SUBSET.toString()));
+                sb.append(HtmlUtils.formTable());
+		entry.getTypeHandler().addAreaWidget(request,  entry, sb, null);
+
+                StringBuffer buttons =
+                    new StringBuffer(HtmlUtils.submit("Subset",
+                        "geojson_subset"));
+                sb.append(HtmlUtils.formTableClose());
+                sb.append(buttons);
+                sb.append(HtmlUtils.formClose());
+                getPageHandler().entrySectionClose(request, entry, sb);
+
+                return new Result("", sb);
+            }
+
+	    Bounds bounds = new Bounds(GeoJson.parse(request.getString("area_north","")),
+				       GeoJson.parse(request.getString("area_west","")),
+				       GeoJson.parse(request.getString("area_south","")),
+				       GeoJson.parse(request.getString("area_east","")));
+	    JSONObject obj = GeoJson.read(entry.getResource().getPath());
+	    obj =GeoJson.in(obj,bounds);
+            request.setReturnFilename(
+                getStorageManager().getOriginalFilename(
+                    entry.getResource().getPath()));
+            Result result = new Result("", new StringBuilder(obj.toString()),
+				       GeoJson.GEOJSON_MIMETYPE);
+            return result;
+        }
+
 
 
         if (outputType.equals(OUTPUT_GEOJSON_REDUCE)) {
@@ -225,7 +272,7 @@ public class GeoJsonOutputHandler extends OutputHandler {
                     entry.getResource().getPath()));
 
             Result result = new Result("", new StringBuilder(geoJson),
-                                       "application/json");
+                                       GeoJson.GEOJSON_MIMETYPE);
 
             return result;
 
