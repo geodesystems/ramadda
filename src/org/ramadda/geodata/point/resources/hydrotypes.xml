@@ -145,7 +145,7 @@ Data courtesy of [https://waterdata.usgs.gov USGS]
      <property name="form.location.show" value="true"/>
  <property name="record.properties">
 csvcommands1=-inputcomment,#,-delimiter,tab,-cut
-csvcommands2=1,-addheader,peak_dt.type date
+csvcommands2=1,-addheader,peak_dt.type date peak_va.type double gage_ht.type double
      </property>
      <column  name="station_id"  label="Station ID" type="string" />
      <column  name="state"  label="State" type="enumeration" />
@@ -155,7 +155,7 @@ csvcommands2=1,-addheader,peak_dt.type date
 <![CDATA[
 +section title={{name}}
 {{description wikify=true}}
-{{display_linechart fields=gage_ht }} 
+{{display_linechart fields="gage_ht|peak_va" }} 
 {{display_download }} 
 {{display_table }} 
 -section
