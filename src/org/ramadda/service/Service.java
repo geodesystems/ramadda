@@ -1641,7 +1641,7 @@ public class Service extends RepositoryManager {
                                getRepository().getJobManager().getServiceUrl(
                                    request, this), HtmlUtils.img(
                                    getIconUrl("/icons/application_form.png"),
-                                   msg("View top-level form")));
+                                   "View top-level form"));
 
         rightSide =
             HtmlUtils.div(rightSide,
@@ -1802,7 +1802,7 @@ public class Service extends RepositoryManager {
             }
             String elementId = HtmlUtils.getUniqueId("select_");
             inputHtml.append(OutputHandler.getSelect(request, elementId,
-                    msg("Select"), true, null));
+						     msg("Select"), true, null));
 
             String entryLabel = "";
 
