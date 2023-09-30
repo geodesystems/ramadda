@@ -3866,7 +3866,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
             let strokeWidth = +this.getPropertyStrokeWidth();
             let strokeColor = this.getPropertyStrokeColor();
-            let sizeByAttr = this.getDisplayProp(source, "sizeBy", null);
             let isTrajectory = this.getDisplayProp(source, "isTrajectory", false);
             if (isTrajectory) {
 		let tpoints = points.map(p=>{
@@ -3982,8 +3981,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 
 	    let sizeBy = new SizeBy(this, this.getProperty("sizeByAllRecords",true)?this.getData().getRecords():records);
-
-
 
             for (let i = 0; i < fields.length; i++) {
                 let field = fields[i];

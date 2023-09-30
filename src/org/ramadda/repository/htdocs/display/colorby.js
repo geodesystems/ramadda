@@ -677,6 +677,7 @@ function SizeBy(display,records,fieldProperty) {
         id: this.display.getProperty(fieldProperty|| "sizeBy"),
         minValue: 0,
         maxValue: 0,
+	threshold:parseFloat(this.display.getProperty('sizeByThreshold',NaN)),
         field: null,
         index: -1,
         isString: false,
