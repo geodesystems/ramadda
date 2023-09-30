@@ -338,12 +338,16 @@ function RecordFilter(display,filterFieldId, properties) {
 		    }  else  {
 			let date1 = this.mySearch.value[0];
 			let date2 = this.mySearch.value[1];
-			let dttm = rowValue.getTime();
-			if(isNaN(dttm)) ok = false;
-			else if(date1 && dttm<date1.getTime())
+			if(!rowValue.getTime) {
 			    ok = false;
-			else if(date2 && dttm>date2.getTime())
-			    ok = false;
+			}  else {
+			    let dttm = rowValue.getTime();
+			    if(isNaN(dttm)) ok = false;
+			    else if(date1 && dttm<date1.getTime())
+				ok = false;
+			    else if(date2 && dttm>date2.getTime())
+				ok = false;
+			}
 		    }
 		}
 	    } else {
