@@ -482,6 +482,7 @@ public class HtmlImportHandler extends ImportHandler {
 
 	String extract = getSearchManager().getNewEntryExtract(request);
 	if(stringDefined(extract)) {
+	    mtdSb.append(HU.b("Extract metadata using GPT") +":<br>");
 	    mtdSb.append(extract);
 	    sb.append(HU.makeShowHideBlock("Metadata extraction",mtdSb.toString(),false));
 	} else {

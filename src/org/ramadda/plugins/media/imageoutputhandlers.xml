@@ -79,8 +79,9 @@
   </outputhandler>
 
   <outputhandler>
-    <service id="imagemagick_identify" label="Identify image" command="${service.imagemagick}/identify">
+    <service id="imagemagick_identify" label="Image Metadata" command="${service.imagemagick}/identify">
       <description><![CDATA[Runs ImageMagick identify]]></description>
+      <arg value="-verbose"/>
       <arg value="${entry.file}" type="entry"  label="Input Image" primary="true"></arg>
       <output showResults="true" stdout="true"/>
     </service>
