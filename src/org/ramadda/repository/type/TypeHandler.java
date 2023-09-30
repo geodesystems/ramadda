@@ -5324,7 +5324,12 @@ public class TypeHandler extends RepositoryManager {
 			       Misc.equals(getFormDefault(entry, ARG_METADATA_ADD, "false"),
 					   "false"), "Add properties") + space+
 	    HU.labeledCheckbox(ARG_METADATA_ADDSHORT, "true", false,
-			       "Just spatial/temporal properties");
+			       "Just spatial/temporal properties") +
+	    space + 
+	    HU.labeledCheckbox(ARG_STRIPEXIF, "true",
+			       request.get(ARG_STRIPEXIF,false),
+			       "Strip metadata from images");
+	    
 
 
 	String extract = getSearchManager().getNewEntryExtract(request);
@@ -5369,7 +5374,10 @@ public class TypeHandler extends RepositoryManager {
 
 	extra.accept("Entry type:",extraMore);
 	extra.accept("Zip Files:",unzipWidget);	
-	extra.accept("Metadata:",addMetadata+HU.br()+extract);
+	extra.accept("Metadata:",addMetadata);
+	if(stringDefined(extract)) 
+	    extra.accept("Use GPT:",extract);
+
 	extra.accept("Entry name:",makeNameWidget);
 	extra.accept("Date format:",dateFormatWidget);	
 	if(entry==null)
