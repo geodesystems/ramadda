@@ -27,49 +27,14 @@ end tell
 
 activate application theApp
 tell application "System Events" to tell process theProcess
-   set nbw to count windows
-   keystroke "p" using command down
-   
+   click menu item "Export as PDF…" of menu "File" of menu bar 1
    repeat
        if exists sheet 1 of window 1 then exit repeat
    end repeat
-   
    tell sheet 1 of window 1
-       set PDFButton to first menu button
-       click PDFButton
-       click menu item 2 of menu 1 of PDFButton
-       
-       repeat
-           if exists sheet 1 then exit repeat
-       end repeat
-       
-       
-       tell sheet 1
-           # Set the Desktop as destination folder
-           
-           set value of text field 1 to pdfFile
-           delay 2
-           keystroke "g" using {command down, shift down}
-           repeat until exists sheet 1
-               delay 2
-           end repeat
-           tell sheet 1
-               # CAUTION. before 10.11 the target field was a text field. Now it's a combo box
-               if class of UI elements contains combo box then
-                   --> {static text, combo box, button, button}
-                   set value of combo box 1 to posixFolderPath
-               else
-                   --> {static text, text field, button, button}
-                   set value of text field 1 to posixFolderPath
-               end if
-               get name of buttons
-               keystroke return
-           end tell
-           get name of buttons
-           
-           keystroke return
-       end tell
+       set value of text field 1 to pdfFile
+       delay 1
+       keystroke return
    end tell
 end tell
-
 end run
