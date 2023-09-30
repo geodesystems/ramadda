@@ -5476,18 +5476,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    autoWidth: false
         };
         if(args) $.extend(opts,args);
-	$( document ).ready(function() {
-            HtmlUtils.loadJqueryLib('selectBoxIt',[ramaddaCdn +"/lib/selectboxit/stylesheets/jquery.selectBoxIt.css"],
-                                    [ramaddaCdn +"/lib/selectboxit/javascripts/jquery.selectBoxIt.min.js"],
+	$(document).ready(function() {
+            HtmlUtils.loadJqueryLib('selectBoxIt',
+				    [RamaddaUtil.getCdnUrl("/lib/selectboxit/stylesheets/jquery.selectBoxIt.css")],
+                                    [RamaddaUtil.getCdnUrl("/lib/selectboxit/javascripts/jquery.selectBoxIt.min.js")],
                                     selector, ()=>{
 					//Call later. This somehow fixes a major performance problem with
 					//menus that are hidden
 					setTimeout(()=>{
-					    let cnt = 0;
-					    //					    console.log("before selectBoxIt call");
 					    $(selector).selectBoxIt(opts);
-					    //					    console.log("after selectBoxIt call");
-					},2);
+					},100);
 				    });
 	});
     },
