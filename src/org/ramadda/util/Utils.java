@@ -20,11 +20,9 @@ import ucar.unidata.xml.XmlUtil;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
-
 import java.awt.Toolkit;
-import java.awt.image.*;
-import java.awt.image.BufferedImage;
+
+
 
 import java.io.*;
 
@@ -65,7 +63,6 @@ import java.util.zip.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import javax.imageio.*;
 
 
 /**
@@ -1850,32 +1847,6 @@ public class Utils extends IO {
 	return Utils.encodeMD(md5.digest());
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param path _more_
-     *
-     * @return _more_
-     */
-    public static boolean isImage(String path) {
-        if (path == null) {
-            return false;
-        }
-        path = path.replaceAll("\\?.*?$", "").toLowerCase();
-        if (path.endsWith(".jpg") || path.endsWith(".jpeg")
-	    || path.endsWith(".gif") || path.endsWith(".png")
-	    || path.endsWith(".webp") || path.endsWith(".bmp")) {
-            return true;
-        }
-        //wms layer
-        if (path.startsWith("http") && (path.indexOf("format=image") >= 0)) {
-            return true;
-        }
-
-        return false;
-    }
 
 
 
@@ -4505,28 +4476,7 @@ public class Utils extends IO {
     public static final String NaN = "NaN";
 
 
-    /**
-     * _more_
-     *
-     * @param image _more_
-     * @param top _more_
-     * @param bottom _more_
-     * @param left _more_
-     * @param right _more_
-     *
-     * @return _more_
-     */
-    public static BufferedImage crop(BufferedImage image, int top, int left,
-                                     int bottom, int right) {
-        int imageWidth  = image.getWidth(null);
-        int imageHeight = image.getHeight(null);
-        int w           = imageWidth - right - left;
-        int h           = imageHeight - top - bottom;
 
-        //        System.err.println("iw:" + imageWidth +" w:"  + w + " " + left +" " + right);
-        //        System.err.println("ih:" + imageHeight +" h:"  + h + " " + top +" " + bottom);
-        return image.getSubimage(left, top, w, h);
-    }
 
     /**
      * Class description
@@ -6284,6 +6234,34 @@ public class Utils extends IO {
     }
 
     
+
+    /**
+     * _more_
+     *
+     * @param path _more_
+     *
+     * @return _more_
+     */
+    public static boolean isImage(String path) {
+        if (path == null) {
+            return false;
+        }
+        path = path.replaceAll("\\?.*?$", "").toLowerCase();
+        if (path.endsWith(".jpg") || path.endsWith(".jpeg")
+	    || path.endsWith(".gif") || path.endsWith(".png")
+	    || path.endsWith(".webp") || path.endsWith(".bmp")) {
+            return true;
+        }
+        //wms layer
+        if (path.startsWith("http") && (path.indexOf("format=image") >= 0)) {
+            return true;
+        }
+
+        return false;
+    }
+
+
+
     /**
      * _more_
      *
@@ -6325,22 +6303,6 @@ public class Utils extends IO {
 	}
 
 
-	if(true) {
-	    File file = new File(args[0]);
-	    BufferedImage image = ImageIO.read(file);
-	    int redd = 0;
-	    int greenn = 0;
-	    int bluee = 0;
-	    HashSet<String> seen = new HashSet<String>();
-	    System.err.println(image.getHeight());
-	    for (int i = 0; i < image.getHeight(); i++) {
-		//		try {
-		java.awt.Color c = new java.awt.Color(image.getRGB(0,i));
-		System.out.print("'rgb(" + c.getRed()+","+c.getGreen()+","+ c.getBlue()+")',");
-		//		} catch(Exception exc) {}
-	    }
-	    System.exit(0);
-	}
 
 
 	if(true) {

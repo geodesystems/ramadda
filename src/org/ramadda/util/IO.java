@@ -367,36 +367,6 @@ public class IO {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     *
-     * @return _more_
-     */
-    public static Image readImage(String file) {
-
-        if (file == null) {
-            return null;
-        }
-        try {
-            InputStream is = Utils.getInputStream(file, Utils.class);
-            if (is != null) {
-                //                byte[] bytes = IOUtil.readBytes(is);
-                //                return ImageIO.read(new ByteArrayInputStream(bytes));
-                return ImageIO.read(is);
-            }
-            System.err.println("Could not read image:" + file);
-        } catch (Exception exc) {
-            System.err.println(exc + " getting image:  " + file);
-
-            return null;
-        }
-
-        return null;
-    }
-
-
 
 
 

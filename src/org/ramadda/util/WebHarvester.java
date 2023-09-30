@@ -248,7 +248,7 @@ public class WebHarvester {
         }
 
         String surl = url.toString();
-        if (Utils.isImage(surl) || surl.toLowerCase().endsWith("pdf")) {
+        if (ImageUtils.isImage(surl) || surl.toLowerCase().endsWith("pdf")) {
             System.err.println(indent + "RESOURCE:" + url);
             page = new Page(url);
             if (parent != null) {
