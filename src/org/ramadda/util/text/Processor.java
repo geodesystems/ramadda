@@ -1971,7 +1971,8 @@ public abstract class Processor extends SeesvOperator {
 		    boolean addQuote = false;
 		    if (escapeColumns) {
 			addQuote = (sv.indexOf(columnDelimiter) >= 0)
-			    || (sv.indexOf("\n") >= 0);
+			    || sv.indexOf("\n") >= 0 
+			    || sv.indexOf("\r") >= 0;
 			if (sv.indexOf("\"") >= 0) {
 			    addQuote = true;
 			    sv       = sv.replaceAll("\"", "\"\"");

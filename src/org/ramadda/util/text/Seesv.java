@@ -1553,8 +1553,9 @@ public class Seesv implements SeesvCommands {
             if (i > 0) {
                 sb.append(delimiter);
             }
+
             boolean needToQuote = false;
-            if (s.indexOf("\n") >= 0) {
+            if (s.indexOf("\n") >= 0 || s.indexOf("\r") >= 0) {
                 needToQuote = true;
             } else if (s.indexOf(delimiter) >= 0) {
                 needToQuote = true;
