@@ -3201,7 +3201,7 @@ function TableDisplay(displayManager, id, properties) {
 		    if(field.getType()=="url") {
 			return {
 			    v:v,
-			    f:HU.href(v,v)
+			    f:HU.href(v,v,['target','_link'])
 			};
 		    }
 		    if(field.getType()=="image") {
