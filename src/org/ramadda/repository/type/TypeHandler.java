@@ -4667,11 +4667,11 @@ public class TypeHandler extends RepositoryManager {
             String locationWidget = msgLabel("Latitude") + " "
                                     + HtmlUtils.input(
                                         ARG_LOCATION_LATITUDE, lat,
-                                        HtmlUtils.SIZE_6) + "  "
+                                        HtmlUtils.SIZE_10) + "  "
                                             + msgLabel("Longitude") + " "
                                             + HtmlUtils.input(
                                                 ARG_LOCATION_LONGITUDE, lon,
-                                                HtmlUtils.SIZE_6);
+                                                HtmlUtils.SIZE_10);
 
             String[] nwse = new String[] { lat, lon };
             //            sb.append(formEntry(request, msgLabel("Location"),  locationWidget));

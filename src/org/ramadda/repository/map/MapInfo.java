@@ -914,12 +914,12 @@ public class MapInfo {
             widget.append(msgLabel("Latitude"));
             widget.append(" ");
             widget.append(HU.input(arg + ".latitude", nwse[0],
-                                   HU.SIZE_5 + " "
+                                   HU.SIZE_10 + " "
                                    + HU.id(arg + ".latitude")) + " "
                                        + msgLabel("Longitude") + " "
                                        + HU.input(arg + ".longitude",
                                            nwse[1],
-                                           HU.SIZE_5 + " "
+                                           HU.SIZE_10 + " "
                                            + HU.id(arg
                                                + ".longitude")) + " ");
 
