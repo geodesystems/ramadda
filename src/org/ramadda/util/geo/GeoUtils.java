@@ -22,6 +22,9 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
@@ -58,6 +61,8 @@ public class GeoUtils {
     public static final String PREFIX_ZCTA="zcta:";
     public static final String PREFIX_CONGRESS = "congress:";
     public static final String PREFIX_TRACT = "tract:";
+
+    public static final Pattern latLonPattern1 = Pattern.compile("(\\d+)°(\\d+)'(\\d+)\"");
 
     /**
      *  semimajor axis of Earth WGS 84 (m)
@@ -1781,6 +1786,127 @@ public class GeoUtils {
         return Misc.decodeLatLon(s);
     }
 
+    public static double getHMS(String hours, String minutes, String seconds) {
+	double value=
+	    (hours.equals(""))  ? 0 : Double.parseDouble(hours);
+	if ( !minutes.equals("")) {
+	    value += Double.parseDouble(minutes) / 60.;
+	}
+	if ( !seconds.equals("")) {
+	    value += Double.parseDouble(seconds) / 3600.;
+	}
+	//	System.err.println(hours +" " +minutes +" " + seconds  +" value=" + value);
+	return value;
+    }
+
+    /**
+     * This method is taken from Unidatas ucar.unidata.util.Misc method.
+     * I moved it here to not have it use the parseNumber because that would use
+     * a DecimalFormat which was picking up the Locale
+     *
+     * Decodes a string representation of a latitude or longitude and
+     * returns a double version (in degrees).  Acceptible formats are:
+     * <pre>
+     * +/-  ddd:mm, ddd:mm:, ddd:mm:ss, ddd::ss, ddd.fffff ===>   [+/-] ddd.fffff
+     * +/-  ddd, ddd:, ddd::                               ===>   [+/-] ddd
+     * +/-  :mm, :mm:, :mm:ss, ::ss, .fffff                ===>   [+/-] .fffff
+     * +/-  :, ::                                          ===>       0.0
+     * Any of the above with N,S,E,W appended
+     * </pre>
+     *
+     * @param latlon  string representation of lat or lon
+     * @return the decoded value in degrees
+     */
+    public static double decodeLatLon(String latlon) {
+        // first check to see if there is a N,S,E,or W on this
+	latlon = latlon.trim();
+        int    dirIndex    = -1;
+        int    southOrWest = 1;
+        double value       = Double.NaN;
+        if (latlon.indexOf("S") > 0) {
+            southOrWest = -1;
+            dirIndex    = latlon.indexOf("S");
+        } else if (latlon.indexOf("W") > 0) {
+            southOrWest = -1;
+            dirIndex    = latlon.indexOf("W");
+        } else if (latlon.indexOf("N") > 0) {
+            dirIndex = latlon.indexOf("N");
+        } else if (latlon.endsWith("E")) {  // account for 9E-3, 9E-3E, etc
+            dirIndex = latlon.lastIndexOf("E");
+        }
+
+        if (dirIndex > 0) {
+            latlon = latlon.substring(0, dirIndex).trim();
+        }
+
+        // now see if this is a negative value
+        if (latlon.indexOf("-") == 0) {
+            southOrWest *= -1;
+            latlon      = latlon.substring(latlon.indexOf("-") + 1).trim();
+        }
+
+        if (latlon.indexOf(":") >= 0) {  //have something like DD:MM:SS, DD::, DD:MM:, etc
+            int    firstIdx = latlon.indexOf(":");
+            String hours    = latlon.substring(0, firstIdx);
+            String minutes  = latlon.substring(firstIdx + 1);
+            String seconds  = "";
+            if (minutes.indexOf(":") >= 0) {
+                firstIdx = minutes.indexOf(":");
+                String temp = minutes.substring(0, firstIdx);
+                seconds = minutes.substring(firstIdx + 1);
+                minutes = temp;
+            }
+            try {
+		value = getHMS(hours,minutes,seconds);
+            } catch (NumberFormatException nfe) {
+                value = Double.NaN;
+            }
+        } else {  //have something like DD.ddd
+	    Matcher m = latLonPattern1.matcher(latlon);
+	    if (m.find()) {
+		value = getHMS(m.group(1),m.group(2),m.group(3));
+	    }
+
+	    if(Double.isNaN(value)) {
+		try {
+		    value = Double.parseDouble(latlon);
+		} catch (NumberFormatException nfe) {
+		    value = Double.NaN;
+		}
+	    }
+        }
+
+        return value * southOrWest;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param s _more_
+     * @param points _more_
+     *
+     * @return _more_
+     */
+    public static List<double[]> parsePointString(String s,
+						  List<double[]> points) {
+        if (s == null) {
+            return points;
+        }
+        for (String pair : Utils.split(s, ";", true, true)) {
+            List<String> toks = Utils.splitUpTo(pair, ",", 2);
+            if (toks.size() != 2) {
+                continue;
+            }
+            double lat = GeoUtils.decodeLatLon(toks.get(0));
+            double lon = GeoUtils.decodeLatLon(toks.get(1));
+            points.add(new double[] { lat, lon });
+        }
+
+        return points;
+    }
+
+
 
     /**
      * _more_
@@ -1790,6 +1916,14 @@ public class GeoUtils {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+	for(String s: args) {
+	    System.err.println(decodeLatLon(s));
+	}
+
+	if(true) return;
+
+
+
 	initKeys();
 	System.err.println(getAddress(39.9905392833907,-105.22957815436592));
 	//	System.err.println(getNeighborhood(39.9905392833907,-105.22957815436592));
