@@ -62,7 +62,7 @@ public class GeoUtils {
     public static final String PREFIX_CONGRESS = "congress:";
     public static final String PREFIX_TRACT = "tract:";
 
-    public static final Pattern latLonPattern1 = Pattern.compile("(\\d+)°(\\d+)'(\\d+)\"");
+    public static final Pattern latLonPattern1 = Pattern.compile("(\\d+)°(\\d+)'([\\d\\.]+)\"");
 
     /**
      *  semimajor axis of Earth WGS 84 (m)
