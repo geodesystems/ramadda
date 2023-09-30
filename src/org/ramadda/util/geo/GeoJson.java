@@ -68,6 +68,12 @@ public class GeoJson extends JsonUtil {
     }
 
 
+    public static void reduce(String file) throws Exception {
+        String contents = IOUtil.readContents(file, JsonUtil.class);
+	contents = contents.replaceAll("\\.(\\d\\d\\d\\d\\d\\d)[\\d]+",
+				       ".$1");
+	System.out.println(contents);
+    }
 
     /**
      *
@@ -721,6 +727,9 @@ public class GeoJson extends JsonUtil {
 	for (int idx1 = 0; idx1 < features.length(); idx1++) {
 	    JSONObject o = features.getJSONObject(idx1);
             Bounds b = getFeatureBounds(o, null, null);
+	    if(b==null) {
+		continue;
+	    }
 	    if(bounds.contains(b)) {
 		objects.add(o);
 	    }
@@ -745,6 +754,10 @@ public class GeoJson extends JsonUtil {
     }
     
 
+    public static double parse(String s) {
+	if(s==null || s.trim().length()==0) return Double.NaN;
+	return Double.parseDouble(s);
+    }
 
 
     /**
@@ -759,6 +772,7 @@ public class GeoJson extends JsonUtil {
 	boolean doReverse = false;
 	boolean doSplit = false;	
 	boolean doStride = false;
+	boolean doReduce = false;
 	boolean doFirst = false;
 	boolean doIn = false;			
 	Bounds bounds  =null;
@@ -770,6 +784,7 @@ public class GeoJson extends JsonUtil {
 	    String arg  =args[i];
 	    if(arg.startsWith("-")) {
 		doReverse=false;
+		doReduce = false;
 		doStride = false;	
 		doSplit = false;
 		doCsv = false;
@@ -780,16 +795,25 @@ public class GeoJson extends JsonUtil {
 		doReverse=true;
 		continue;
 	    }
+	    if(arg.equals("-reduce")) {
+		doReduce = true;
+		continue;
+	    }
+	    if(arg.equals("-bounds")) {
+		System.err.println(getBounds(args[++i]));
+		continue;
+	    }
+
 	    if(arg.equals("-stride")) {
 		stride = Double.parseDouble(args[++i]);
 		doStride= true;
 		continue;
 	    }
 	    if(arg.equals("-in")) {
-		bounds = new Bounds(Double.parseDouble(args[++i]),
-				    Double.parseDouble(args[++i]),
-				    Double.parseDouble(args[++i]),
-				    Double.parseDouble(args[++i]));
+		bounds = new Bounds(parse(args[++i]),
+				    parse(args[++i]),
+				    parse(args[++i]),
+				    parse(args[++i]));
 				    
 		doIn= true;
 		continue;
@@ -808,7 +832,7 @@ public class GeoJson extends JsonUtil {
 		continue;
 	    }
 	    if(arg.startsWith("-")) {
-		System.err.println("Unknown arg:" +arg +" usage: -csv -split -reverse -stride 10 (if stride<0 then it is used to sample)");
+		System.err.println("Unknown arg:" +arg +" usage: -csv -split -reverse -stride 10 (if stride<0 then it is used to sample) -in north west south east (subset)");
 		continue;
 	    }
 
@@ -817,6 +841,11 @@ public class GeoJson extends JsonUtil {
 		geojsonFileToCsv(arg,System.out,null);
 		continue;
 	    }
+	    if(doReduce) {
+		reduce(arg);
+		continue;
+	    }
+
 	    if(doSplit) {
 		split(arg);
 		continue;
