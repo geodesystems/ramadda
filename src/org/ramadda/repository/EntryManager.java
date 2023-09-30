@@ -37,6 +37,7 @@ import org.ramadda.util.NamedList;
 
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.TTLObject;
+import org.ramadda.util.ImageUtils;
 import org.ramadda.util.Utils;
 import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.SqlUtil;
@@ -44,7 +45,7 @@ import org.ramadda.util.sql.SqlUtil;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import ucar.unidata.ui.ImageUtils;
+
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -2564,6 +2565,7 @@ public class EntryManager extends RepositoryManager {
 								   BLANK);
             String  filename     = typeHandler.getUploadedFile(request);
             boolean unzipArchive = false;
+            boolean stripExif = request.get(ARG_STRIPEXIF,false);
 
             boolean isFile       = false;
             String  resourceName = request.getString(ARG_FILE, BLANK);
@@ -2723,6 +2725,10 @@ public class EntryManager extends RepositoryManager {
             File originalFile = null;
 	    for(NewEntryInfo info: infos) {
                 String theResource = info.resource;
+		if(stripExif && Utils.isImage(theResource) && new File(theResource).exists()) {
+		    theResource  = ImageUtils.stripImageMetadata(theResource);
+		}
+
                 if (!testNew && isFile && (serverFile == null)) {
                     if (forUpload) {
                         theResource =
@@ -3205,6 +3211,9 @@ public class EntryManager extends RepositoryManager {
 	    IO.close(zin);
 	}
     }	
+
+    
+
 
 
     private static class NewEntryInfo {
@@ -4679,7 +4688,7 @@ public class EntryManager extends RepositoryManager {
 							  + IOUtil.cleanFileName(entry.getId()) + "_"
 							  + width + IO.getFileExtension(path));
             if ( !thumb.exists()) {
-                Image image = Utils.readImage(entry.getResource().getPath());
+                Image image = ImageUtils.readImage(entry.getResource().getPath());
                 image = ImageUtils.resize(image, width, -1);
                 ImageUtils.waitOnImage(image);
                 ImageUtils.writeImageToFile(image, thumb);

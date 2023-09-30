@@ -16,6 +16,7 @@ import org.ramadda.util.IO;
 
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
+import org.ramadda.util.ImageUtils;
 
 import org.ramadda.util.sql.SqlUtil;
 
@@ -24,7 +25,7 @@ import org.w3c.dom.*;
 
 import ucar.unidata.ui.AnimatedGifEncoder;
 
-import ucar.unidata.ui.ImageUtils;
+
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -369,7 +370,7 @@ public class ImageOutputHandler extends OutputHandler {
     private Image getImage(Entry entry) {
         Image image = imageCache.get(entry.getId());
         if (image == null) {
-            image = Utils.readImage(entry.getResource().getPath());
+            image = ImageUtils.readImage(entry.getResource().getPath());
             //Keep the cache size low
             if (imageCache.size() > 5) {
                 imageCache = new Hashtable<String, Image>();
@@ -1267,7 +1268,7 @@ public class ImageOutputHandler extends OutputHandler {
                             if ((cropArray[0] != 0) || (cropArray[1] != 0)
                                     || (cropArray[2] != 0)
                                     || (cropArray[3] != 0)) {
-                                image = Utils.crop(
+                                image = ImageUtils.crop(
                                     ImageUtils.toBufferedImage(image),
                                     cropArray[0], cropArray[1], cropArray[2],
                                     cropArray[3]);
@@ -1275,7 +1276,7 @@ public class ImageOutputHandler extends OutputHandler {
 			    if(cropHeight>0) {
 				int imageHeight = image.getHeight(null);
 				if(imageHeight>cropHeight) {
-				    image = Utils.crop(
+				    image = ImageUtils.crop(
 						       ImageUtils.toBufferedImage(image),
 						       0,0,imageHeight-cropHeight,0);
 				} else {
@@ -1798,7 +1799,7 @@ public class ImageOutputHandler extends OutputHandler {
                         if ((maxHeight > 0)
                                 && (image.getHeight(null) > maxHeight)) {
                             image =
-                                Utils.crop(ImageUtils.toBufferedImage(image),
+                                ImageUtils.crop(ImageUtils.toBufferedImage(image),
                                            0, 0,
                                            image.getHeight(null) - maxHeight,
                                            0);

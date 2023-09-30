@@ -13,12 +13,13 @@ import org.ramadda.repository.type.DataTypes;
 import org.ramadda.util.ColorTable;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.ImageUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.ui.ImageUtils;
+
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -818,7 +819,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         }
 
         if (getThumbnail() && request.get(ARG_THUMBNAIL_SCALEDOWN, false)) {
-            Image image = Utils.readImage(theFile);
+            Image image = ImageUtils.readImage(theFile);
             int   width = request.get(ARG_THUMBNAIL_WIDTH, THUMBNAIL_WIDTH);
             if (image.getWidth(null) > width) {
                 image = ImageUtils.resize(image, width, -1);

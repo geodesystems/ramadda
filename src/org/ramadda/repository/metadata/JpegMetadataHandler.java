@@ -8,18 +8,19 @@ package org.ramadda.repository.metadata;
 
 import com.drew.imaging.jpeg.*;
 import com.drew.lang.*;
-
 import com.drew.metadata.*;
 import com.drew.metadata.exif.*;
 import com.drew.metadata.iptc.IptcDirectory;
+import com.drew.imaging.ImageMetadataReader;
 
 import org.ramadda.repository.*;
 
 
 import org.ramadda.util.Utils;
 import org.ramadda.util.IO;
+import org.ramadda.util.ImageUtils;
 
-import ucar.unidata.ui.ImageUtils;
+
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -28,11 +29,13 @@ import java.awt.Image;
 import java.awt.image.*;
 import javax.imageio.*;
 
-import java.io.File;
+import java.io.*;
 
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -76,7 +79,7 @@ public class JpegMetadataHandler extends MetadataHandler {
 
 	long t1= System.currentTimeMillis();
         String path  = entry.getResource().getPath();
-        Image  image = IO.readImage(path);
+        Image  image = ImageUtils.readImage(path);
 	long t2= System.currentTimeMillis();
         if (image == null) {
             System.err.print("JpegMetadataHandler: image is null:"
@@ -84,38 +87,8 @@ public class JpegMetadataHandler extends MetadataHandler {
             return null;
         }
 
-
-	com.drew.metadata.Metadata metadata = null;
-        if (path.toLowerCase().endsWith(".jpg")
-                || path.toLowerCase().endsWith(".jpeg")) {
-            File jpegFile = new File(path);
-            metadata =
-                JpegMetadataReader.readMetadata(jpegFile);
-	    if(mtd!=null)
-		mtd[0] = metadata;
-            if (metadata != null) {
-                ExifIFD0Directory exifIFD0 =
-                    metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
-                if (exifIFD0 != null) {
-                    int orientation =
-                        exifIFD0.getInt(ExifIFD0Directory.TAG_ORIENTATION);
-                    int rotation = 0;
-                    if (orientation == 6) {
-                        image = ImageUtils.rotate90(
-                            ImageUtils.toBufferedImage(
-                                image, BufferedImage.TYPE_INT_RGB), false);
-
-                    } else if (orientation == 3) {
-                        //todo
-                        rotation = 180;
-                    } else if (orientation == 8) {
-                        image = ImageUtils.rotate90(
-                            ImageUtils.toBufferedImage(
-                                image, BufferedImage.TYPE_INT_RGB), true);
-                    }
-                }
-            }
-        }
+	if(mtd==null) mtd = new com.drew.metadata.Metadata[]{null};
+	image = ImageUtils.orientImage(path,  image,mtd);
 
 	long t3= System.currentTimeMillis();
 	int newWidth = 300;
@@ -146,6 +119,8 @@ public class JpegMetadataHandler extends MetadataHandler {
                             ContentMetadataHandler.TYPE_THUMBNAIL, false,
                             fileName, null, null, null, null);
     }
+
+
 
 
     /**
@@ -349,7 +324,7 @@ public class JpegMetadataHandler extends MetadataHandler {
 
         int cnt = 0;
         for (String path : args) {
-            Image image = Utils.readImage(path);
+            Image image = ImageUtils.readImage(path);
             System.err.println("before:" + image.getWidth(null) + " "
                                + image.getHeight(null));
             Image newImage = ImageUtils.resize(image, 100, -1);

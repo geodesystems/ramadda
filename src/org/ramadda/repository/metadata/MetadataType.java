@@ -11,13 +11,14 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
+import org.ramadda.util.ImageUtils;
 import org.ramadda.util.sql.SqlUtil;
 
 
 import org.w3c.dom.*;
 
 
-import ucar.unidata.ui.ImageUtils;
+
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -978,7 +979,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
             File thumb = getStorageManager().getTmpFile(IO.getFileTail(f.toString()));
             if ( !thumb.exists()) {
                 try {
-                    Image image = Utils.readImage(f.toString());
+                    Image image = ImageUtils.readImage(f.toString());
                     image = ImageUtils.resize(image, 100, -1);
                     ImageUtils.waitOnImage(image);
                     ImageUtils.writeImageToFile(image, thumb.toString());
