@@ -357,9 +357,9 @@ public class NcssTypeHandler extends PointTypeHandler {
         url = url.replace("${endTimeOffset}",
                           (String) entry.getStringValue(IDX_END_TIME_OFFSET,
                               "+10 days"));
-        url = Utils.normalizeTemplateUrl(url);
         //subst the location
         url = super.convertPath(entry, url, requestProperties);
+        url = Utils.normalizeTemplateUrl(url);
         return new IO.Path(url);
     }
 
