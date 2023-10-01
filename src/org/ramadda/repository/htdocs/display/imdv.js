@@ -3821,16 +3821,24 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    };
 	    let html ="";
 	    let div = '<div class=ramadda-menu-divider></div>';
-	    html+= this.menuItem(this.domId(ID_MAP_VIEWLAYERS),"View Layers");
+	    let lbl = (l,i) =>{
+		return (i?HU.getIconImage(i):HU.div([ATTR_STYLE,'display:inline-block;width:20px;']))+HU.space(1)+
+		    HU.span([],l);
+	    }
+	    html+= this.menuItem(this.domId(ID_MAP_VIEWLAYERS),
+				 lbl("View All",'fas fa-globe'));
 
 	    if(this.initialLocation) {
-		html+= this.menuItem(this.domId(ID_MAP_RESETMAPVIEW),"Initial View");
+		html+= this.menuItem(this.domId(ID_MAP_RESETMAPVIEW),
+				     lbl("Initial View","fas fa-house"));
 	    }
             if (navigator.geolocation) {
-		html+= this.menuItem(this.domId(ID_MAP_MYLOCATION),"Current Location");
+		html+= this.menuItem(this.domId(ID_MAP_MYLOCATION),
+				     lbl("Current Location","fas fa-street-view"));
 	    }
-	    html+= this.menuItem(this.domId(ID_MAP_REGIONS),"Regions");
-	    html+= this.menuItem(this.domId(ID_MAP_CHOOSE),"Set Location/Zoom");	    
+
+	    html+= this.menuItem(this.domId(ID_MAP_REGIONS),lbl("Regions","fas fa-map"));
+	    html+= this.menuItem(this.domId(ID_MAP_CHOOSE),lbl("Set Location/Zoom","fas fa-magnifying-glass"));	    
 
 
 	    html  = this.makeMenu(html);
