@@ -4140,6 +4140,7 @@ function GaugeDisplay(displayManager, id, properties) {
         },
 
         makeDataTable: function(dataList, props, selectedFields) {
+	    if(dataList==null) return;
             dataList = this.makeDataArray(dataList);
             if (!Utils.isDefined(this.index)) this.index = dataList.length - 1;
             let index = this.index + 1;
