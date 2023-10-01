@@ -54,8 +54,8 @@ function DataCollection() {
             this.data.push(data);
         },
         handleEventMapClick: function(myDisplay, source, lon, lat) {
-            var anyHandled = false;
-            for (var i = 0; i < this.data.length; i++) {
+            let anyHandled = false;
+            for (let i = 0; i < this.data.length; i++) {
                 if (this.data[i].handleEventMapClick(myDisplay, source, lon, lat)) {
                     anyHandled = true;
                 }
@@ -249,6 +249,10 @@ function PointData(name, recordFields, records, url, properties) {
 	    return null;
 	},
         getCacheUrl: function() {
+	    if(!this.cacheUrl && this.display) {
+		this.cacheUrl = this.display.cacheUrl;
+	    }
+
 	    if(!this.cacheUrl) {
 		if(this.baseUrl) {
 		    this.cacheUrl = this.baseUrl;
@@ -259,7 +263,9 @@ function PointData(name, recordFields, records, url, properties) {
 		    if(this.display && this.display.displayManager) {
 			let props = {lat: this.lat,lon: this.lon};
 			this.cacheUrl = this.display.displayManager.getJsonUrl(this.cacheUrl, this.display, props);
-//			console.log('CACHE',this.cacheUrl)
+		    }
+		    if(this.display) {
+			this.display.cacheUrl = this.cacheUrl;
 		    }
 		}
 	    }
@@ -403,7 +409,6 @@ function PointData(name, recordFields, records, url, properties) {
 	    if(display.getProperty && !display.getProperty("pointDataCacheOK",true)) {
 		cacheId = HtmlUtils.getUniqueId();
 	    }
-
 
 
             let cacheObject = getPointDataCacheObject(cacheId);
