@@ -7632,6 +7632,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 
         pointDataLoaded: function(pointData, url, reload) {
+//	    this.logMsg("pointDataLoaded "+ this.cacheUrl);
+	    if(!this.cacheUrl && pointData.cacheUrl) {
+		this.cacheUrl = pointData.cacheUrl;
+		console.log("DISPLAY:" + this.cacheUrl);
+	    }
+
+
 	    this.dataLoadFailed  =false;
 	    let debug = displayDebug.pointDataLoaded;
 	    this.clearProgress();
