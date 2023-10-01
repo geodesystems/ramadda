@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Sep 30 14:26:42 MDT 2023";
+var build_date="RAMADDA build date: Sun Oct  1 09:03:16 MDT 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -5268,8 +5268,6 @@ function DisplayThing(argId, argProperties) {
 	    this.getPropertyCounts[key]++;
 
 	    if(this.getPropertyCounts[key]==100) {
-//		console.log("getProperty high count: " + key);
-//		console.trace();
 	    }
 //	    debug = this.getPropertyCounts[key]==1;
 //	    if(debug)
@@ -5471,6 +5469,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'sortHighlight',ex:true,tt:'Sort based on highlight from the filters'},
 	{p:'reverse',ex:'true',t:'Reverse the records'},
 	{p:'doEntries',ex:true,tt:'Make the children entries be data'},
+	{p:'propagateDataReload',ex:'true',tt:'Propagate to other displays when the data is reloaded'},
 	{p:'addAttributes',ex:true,tt:'Include the extra attributes of the children'},
 	{p:'orderby',ex:'date|fromdate|todate|name|number',tt:'When showing entries as data how to sort or order the entries'},
 	{p:'ascending',ex:'true',tt:'When showing entries as data how to sort or order the entries'},		
@@ -5860,7 +5859,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 	    if(displayDebug.notifyEvent) {
 		console.log(this.getLogLabel() +".notifyEvent calling function:" + func.name);
-		console.dir(data);
 	    }		
             func.apply(this, [source, data]);
         },
@@ -7341,7 +7339,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    console.log(fields.reduce((acc,f)=>{
 			return acc+' ' + f.getId();
 		    },''));
-		    //		console.trace();
 		}
 
 	    }
@@ -7352,8 +7349,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getFieldsByIds: function(fields, ids) {
 	    if (!fields) {
                 let pointData = this.getData();
-                if (pointData != null) 
+                if (pointData != null) {
                     fields = pointData.getRecordFields();
+
+		}
             }
 
 	    if(!fields) return [];
@@ -11423,6 +11422,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 
         pointDataLoaded: function(pointData, url, reload) {
+//	    this.logMsg("pointDataLoaded "+ this.cacheUrl);
+	    if(!this.cacheUrl && pointData.cacheUrl) {
+		this.cacheUrl = pointData.cacheUrl;
+		console.log("DISPLAY:" + this.cacheUrl);
+	    }
+
+
 	    this.dataLoadFailed  =false;
 	    let debug = displayDebug.pointDataLoaded;
 	    this.clearProgress();
@@ -11525,10 +11531,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.handleError("Error creating display:<br>" + err,err);
 		return;
 	    }
-
-
-            if (!reload) {
+	    if (!reload || this.getPropagateDataReload()) {
                 this.lastPointData = pointData;
+		if(debug) console.log("\tcalling propagateEvent");		
                 this.propagateEvent(DisplayEvent.pointDataLoaded, pointData);
             }
         },
@@ -13524,8 +13529,8 @@ function DataCollection() {
             this.data.push(data);
         },
         handleEventMapClick: function(myDisplay, source, lon, lat) {
-            var anyHandled = false;
-            for (var i = 0; i < this.data.length; i++) {
+            let anyHandled = false;
+            for (let i = 0; i < this.data.length; i++) {
                 if (this.data[i].handleEventMapClick(myDisplay, source, lon, lat)) {
                     anyHandled = true;
                 }
@@ -13719,6 +13724,14 @@ function PointData(name, recordFields, records, url, properties) {
 	    return null;
 	},
         getCacheUrl: function() {
+	    let debug = displayDebug.loadPointJson;
+	    if(!this.cacheUrl && this.display) {
+		this.cacheUrl = this.display.cacheUrl;
+		if(debug) {
+		    console.log("getCacheUrl from display: "+ this.display.type +" " + this.cacheUrl);
+		} 
+	    }
+
 	    if(!this.cacheUrl) {
 		if(this.baseUrl) {
 		    this.cacheUrl = this.baseUrl;
@@ -13727,9 +13740,13 @@ function PointData(name, recordFields, records, url, properties) {
 		}
 		if(this.cacheUrl) {
 		    if(this.display && this.display.displayManager) {
-			let props = {lat: this.lat,lon: this.lon};
-			this.cacheUrl = this.display.displayManager.getJsonUrl(this.cacheUrl, this.display, props);
-//			console.log('CACHE',this.cacheUrl)
+			//Don't do this. we really want (?) to keep the cacheUrl fixed so when the data json is change
+			//it is still applied to the original set of displays that share the original cache id
+			//			let props = {lat: this.lat,lon: this.lon};
+			//			this.cacheUrl = this.display.displayManager.getJsonUrl(this.cacheUrl, this.display, props);
+		    }
+		    if(this.display) {
+			this.display.cacheUrl = this.cacheUrl;
 		    }
 		}
 	    }
@@ -13873,8 +13890,6 @@ function PointData(name, recordFields, records, url, properties) {
 	    if(display.getProperty && !display.getProperty("pointDataCacheOK",true)) {
 		cacheId = HtmlUtils.getUniqueId();
 	    }
-
-
 
             let cacheObject = getPointDataCacheObject(cacheId);
             if (cacheObject == null) {
@@ -15558,7 +15573,7 @@ function CsvUtil() {
 		    let v = record.getValue(f.getIndex());
 		    let v2 = NaN;
 		    let lastDate = null;
-		    for (var j=rowIdx-1; j>=0; j--) {
+		    for (let j=rowIdx-1; j>=0; j--) {
 			if(keyFields.length>0) {
 			    let key2 = keys[j];
 			    if(key!=key2) continue;
@@ -22199,6 +22214,7 @@ function GaugeDisplay(displayManager, id, properties) {
         },
 
         makeDataTable: function(dataList, props, selectedFields) {
+	    if(dataList==null) return;
             dataList = this.makeDataArray(dataList);
             if (!Utils.isDefined(this.index)) this.index = dataList.length - 1;
             let index = this.index + 1;
@@ -45548,16 +45564,24 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    };
 	    let html ="";
 	    let div = '<div class=ramadda-menu-divider></div>';
-	    html+= this.menuItem(this.domId(ID_MAP_VIEWLAYERS),"View Layers");
+	    let lbl = (l,i) =>{
+		return (i?HU.getIconImage(i):HU.div([ATTR_STYLE,'display:inline-block;width:20px;']))+HU.space(1)+
+		    HU.span([],l);
+	    }
+	    html+= this.menuItem(this.domId(ID_MAP_VIEWLAYERS),
+				 lbl("View All",'fas fa-globe'));
 
 	    if(this.initialLocation) {
-		html+= this.menuItem(this.domId(ID_MAP_RESETMAPVIEW),"Initial View");
+		html+= this.menuItem(this.domId(ID_MAP_RESETMAPVIEW),
+				     lbl("Initial View","fas fa-house"));
 	    }
             if (navigator.geolocation) {
-		html+= this.menuItem(this.domId(ID_MAP_MYLOCATION),"Current Location");
+		html+= this.menuItem(this.domId(ID_MAP_MYLOCATION),
+				     lbl("Current Location","fas fa-street-view"));
 	    }
-	    html+= this.menuItem(this.domId(ID_MAP_REGIONS),"Regions");
-	    html+= this.menuItem(this.domId(ID_MAP_CHOOSE),"Set Location/Zoom");	    
+
+	    html+= this.menuItem(this.domId(ID_MAP_REGIONS),lbl("Regions","fas fa-map"));
+	    html+= this.menuItem(this.domId(ID_MAP_CHOOSE),lbl("Set Location/Zoom","fas fa-magnifying-glass"));	    
 
 
 	    html  = this.makeMenu(html);
