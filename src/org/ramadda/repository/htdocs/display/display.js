@@ -1478,8 +1478,6 @@ function DisplayThing(argId, argProperties) {
 	    this.getPropertyCounts[key]++;
 
 	    if(this.getPropertyCounts[key]==100) {
-//		console.log("getProperty high count: " + key);
-//		console.trace();
 	    }
 //	    debug = this.getPropertyCounts[key]==1;
 //	    if(debug)
@@ -1681,6 +1679,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'sortHighlight',ex:true,tt:'Sort based on highlight from the filters'},
 	{p:'reverse',ex:'true',t:'Reverse the records'},
 	{p:'doEntries',ex:true,tt:'Make the children entries be data'},
+	{p:'propagateDataReload',ex:'true',tt:'Propagate to other displays when the data is reloaded'},
 	{p:'addAttributes',ex:true,tt:'Include the extra attributes of the children'},
 	{p:'orderby',ex:'date|fromdate|todate|name|number',tt:'When showing entries as data how to sort or order the entries'},
 	{p:'ascending',ex:'true',tt:'When showing entries as data how to sort or order the entries'},		
@@ -2070,7 +2069,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 	    if(displayDebug.notifyEvent) {
 		console.log(this.getLogLabel() +".notifyEvent calling function:" + func.name);
-		console.dir(data);
 	    }		
             func.apply(this, [source, data]);
         },
@@ -3551,7 +3549,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    console.log(fields.reduce((acc,f)=>{
 			return acc+' ' + f.getId();
 		    },''));
-		    //		console.trace();
 		}
 
 	    }
@@ -3562,8 +3559,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getFieldsByIds: function(fields, ids) {
 	    if (!fields) {
                 let pointData = this.getData();
-                if (pointData != null) 
+                if (pointData != null) {
                     fields = pointData.getRecordFields();
+
+		}
             }
 
 	    if(!fields) return [];
@@ -7735,10 +7734,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.handleError("Error creating display:<br>" + err,err);
 		return;
 	    }
-
-
-            if (!reload) {
+	    if (!reload || this.getPropagateDataReload()) {
                 this.lastPointData = pointData;
+		if(debug) console.log("\tcalling propagateEvent");		
                 this.propagateEvent(DisplayEvent.pointDataLoaded, pointData);
             }
         },
