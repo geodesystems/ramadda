@@ -139,7 +139,8 @@
 -->
 
 
-  <type name="type_ncss"  description="NetCDF Point Subset" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.cdmdata.NcssTypeHandler">
+<type name="type_ncss"  description="NetCDF Point Subset" super="type_point"
+      category="Point Data" foruser="true" handler="org.ramadda.geodata.cdmdata.NcssTypeHandler">
      <property name="icon" value="/cdmdata/grid.gif"/>
      <property name="form.area.show" value="false"/>
      <property name="form.location.show" value="true"/>
@@ -158,9 +159,9 @@ ${charts}
 +col-md-4
 <center>
 </center>
-{{display type="map" showTitle="false" showMenu="false" justOneMarker=true}}
+{{display_map showTitle="false" showMenu="false" justOneMarker=true}}
 :p
-{{display type="text" showTitle="false" showMenu="false" labelWidth="100px"}}
+{{display_text showTitle="false" showMenu="false" labelWidth="100px"}}
 -col
 -row
 ]]>
