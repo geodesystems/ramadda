@@ -249,8 +249,12 @@ function PointData(name, recordFields, records, url, properties) {
 	    return null;
 	},
         getCacheUrl: function() {
+	    let debug = displayDebug.loadPointJson;
 	    if(!this.cacheUrl && this.display) {
 		this.cacheUrl = this.display.cacheUrl;
+		if(debug) {
+		    console.log("getCacheUrl from display: "+ this.display.type +" " + this.cacheUrl);
+		} 
 	    }
 
 	    if(!this.cacheUrl) {
@@ -261,8 +265,10 @@ function PointData(name, recordFields, records, url, properties) {
 		}
 		if(this.cacheUrl) {
 		    if(this.display && this.display.displayManager) {
-			let props = {lat: this.lat,lon: this.lon};
-			this.cacheUrl = this.display.displayManager.getJsonUrl(this.cacheUrl, this.display, props);
+			//Don't do this. we really want (?) to keep the cacheUrl fixed so when the data json is change
+			//it is still applied to the original set of displays that share the original cache id
+			//			let props = {lat: this.lat,lon: this.lon};
+			//			this.cacheUrl = this.display.displayManager.getJsonUrl(this.cacheUrl, this.display, props);
 		    }
 		    if(this.display) {
 			this.display.cacheUrl = this.cacheUrl;
@@ -409,7 +415,6 @@ function PointData(name, recordFields, records, url, properties) {
 	    if(display.getProperty && !display.getProperty("pointDataCacheOK",true)) {
 		cacheId = HtmlUtils.getUniqueId();
 	    }
-
 
             let cacheObject = getPointDataCacheObject(cacheId);
             if (cacheObject == null) {
@@ -2093,7 +2098,7 @@ function CsvUtil() {
 		    let v = record.getValue(f.getIndex());
 		    let v2 = NaN;
 		    let lastDate = null;
-		    for (var j=rowIdx-1; j>=0; j--) {
+		    for (let j=rowIdx-1; j>=0; j--) {
 			if(keyFields.length>0) {
 			    let key2 = keys[j];
 			    if(key!=key2) continue;
