@@ -2392,6 +2392,15 @@ public class Utils extends IO {
      * @return _more_
      */
     public static String normalizeTemplateUrl(String f) {
+	try {
+	    return normalizeTemplateUrlInner(f);
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
+
+    }
+
+    public static String normalizeTemplateUrlInner(String f) throws Exception {	
         StringBuilder     s           = new StringBuilder();
         Date              now         = new Date();
         GregorianCalendar g           = new GregorianCalendar();
@@ -2399,6 +2408,9 @@ public class Utils extends IO {
         TimeZone          tz          = TimeZone.getTimeZone("UTC");
         g.setTime(currentDate);
 	SimpleDateFormat sdf = makeDateFormat("yyyy-MM-dd");
+	SimpleDateFormat parseSdf = sdf;
+
+
 
 	for(Macro macro:splitMacros(f)) {
 	    if(macro.isText) {
@@ -2439,40 +2451,36 @@ public class Utils extends IO {
 	    }
 
 	    if (t.startsWith("year")) {
-		s.append(g.get(g.YEAR) + "");
+		s.append(getCal(parseMacroDate(macro, parseSdf,  now, currentDate)).get(g.YEAR) + "");
 		continue;
 	    }
 	    if (t.startsWith("month")) {
-		s.append(StringUtil.padZero(g.get(g.MONTH), 2));
+		s.append(StringUtil.padZero(getCal(parseMacroDate(macro, parseSdf,  now, currentDate)).get(g.MONTH), 2));
 		continue;
             }
 	    if (t.startsWith("day")) {
-		s.append(StringUtil.padZero(g.get(g.DAY_OF_MONTH), 2));
+		s.append(StringUtil.padZero(getCal(parseMacroDate(macro, parseSdf,  now, currentDate)).get(g.DAY_OF_MONTH), 2));
 		continue;
             }
 	    if (t.startsWith("hour")) {
-                s.append(StringUtil.padZero(g.get(g.HOUR_OF_DAY), 2));
+                s.append(StringUtil.padZero(getCal(parseMacroDate(macro, parseSdf,  now, currentDate)).get(g.HOUR_OF_DAY), 2));
 		continue;
             }
 	    if (t.startsWith("minute")) {
-                s.append(StringUtil.padZero(g.get(g.MINUTE), 2));
+                s.append(StringUtil.padZero(getCal(parseMacroDate(macro, parseSdf,  now, currentDate)).get(g.MINUTE), 2));
 		continue;
 	    }
 
-            if (t.startsWith("date:") || t.equals("date")) {
-                Date newDate = null;
-		if(t.length()>4) {
-		    t = t.substring(5).trim();
-		    if (t.equals("now")) {
-			newDate = now;
-		    } else {
-			newDate = DateUtil.getRelativeDate(now, t);
-		    }
-		} else  {
-		    newDate = now;
-		}
+            if (t.equals("setdate")) {
+                currentDate = parseMacroDate(macro, parseSdf,  now, currentDate);
+		g.setTime(currentDate);
+		continue;
+	    }
+
+            if (t.equals("date")) {
+                Date newDate = parseMacroDate(macro, parseSdf,  now, currentDate);
+		String fmt = (String)macro.getProperty("format");
                 if (newDate != null) {
-		    String fmt = (String)macro.getProperty("format");
 		    SimpleDateFormat thisSdf = sdf;	
 		    if(fmt!=null) {
 			thisSdf = makeDateFormat(fmt);
@@ -2484,6 +2492,7 @@ public class Utils extends IO {
                 continue;
             }
 
+	    System.err.println("Apply macros: unknown macro:" + t);
 	    //put it back
 	    s.append("${" + t + "}");
         }
@@ -2491,6 +2500,33 @@ public class Utils extends IO {
         return s.toString();
     }
 
+
+    private static GregorianCalendar getCal(Date d) {
+	GregorianCalendar cal = new GregorianCalendar();
+	cal.setTime(d);
+	return cal;
+    }
+
+    private static Date parseMacroDate(Macro macro,SimpleDateFormat parseSdf, Date now,Date currentDate) throws Exception {
+	Date newDate = currentDate;
+	String fmt = (String)macro.getProperty("format");
+	String parseFormat = (String)macro.getProperty("parseFormat");		
+	String date = (String)macro.getProperty("date");
+	String offset = (String)macro.getProperty("offset");
+	if(date!=null) {
+	    if(date.equals("now")) {
+		newDate = now;
+	    } else {
+		SimpleDateFormat psdf = parseSdf;
+		if(parseFormat!=null) psdf  = makeDateFormat(parseFormat);
+		newDate = psdf.parse(date);
+	    }
+	}
+	if(offset!=null) {
+	    newDate = DateUtil.getRelativeDate(newDate, offset);
+	}
+	return newDate;
+    }
 
     private final static Pattern LTRIM = Pattern.compile("^\\s+");
     public static String ltrim(String s) {
@@ -4842,16 +4878,13 @@ public class Utils extends IO {
 	    this.isText= isText;
 	    this.macro  =macro;
 	    if(!isText) {
-		//${macro name=value ...}
-		if(!this.macro.matches("^[^ ]+:.*"))  {
-		    List<String> toks = splitUpTo(macro," ",2);
-		    if(toks.size()>1) {
-			this.macro = toks.get(0).trim();
-			String s = toks.get(1).replace("_quote_","\"");
-			this.properties = parseKeyValue(s);
-		    }
+		List<String> toks = splitUpTo(this.macro," ",2);
+		if(toks.size()>1) {
+		    this.macro = toks.get(0).trim();
+		    String s = toks.get(1).replace("_quote_","\"");
+		    this.properties = parseKeyValue(s);
 		}
-		//		System.err.println("MACRO: is macro:" + macro +" props:" + properties );
+		//		System.err.println("MACRO: is macro:" + this.macro +" props:" + properties );
 	    } else {
 		//		System.err.println("MACRO: is text:" + macro);
 	    }
@@ -6162,7 +6195,8 @@ public class Utils extends IO {
      */
     public static void main(String[] args) throws Exception {
 	if(true) {
-	    String s = "${xformat:iso8601} date: ${date format=\"yyyy\"} ${foo} -1 week: ${date:-1 week}  date:now ${date:now} xx";
+	    String s = "date: ${setdate date=\"2000-01-04\"} ${date format=\"iso8601\"} ${foo} -1 week: ${date offset=\"-1 week\"}  date:now ${date date=\"20240201\" format=\"yyyyMMdd\" parseFormat=\"yyyyMMdd\"} xx";
+	    System.err.println(s);
 	    System.err.println(normalizeTemplateUrl(s));
 	    return;
 	}
