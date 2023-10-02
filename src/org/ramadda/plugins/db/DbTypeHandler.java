@@ -1010,15 +1010,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         boolean forPrint = request.get(ARG_FOR_PRINT, false);
         if (forPrint) {
             String name = request.getString(ARG_DB_SEARCHNAME, (String) null);
-            getPageHandler().entrySectionOpen(request, entry, name, sb, null,
-                    false);
-            //      sb.append(getWikiManager().wikifyEntry(request, entry, request.getString(ARG_DB_SEARCHDESC, "")));
+            getPageHandler().entrySectionOpen(request, entry, name, sb, null, false);
             addStyleSheet(request,sb);
             request.put(ARG_TEMPLATE, "empty");
-
             return;
         }
-
 
         if ( !request.get(ARG_DB_SHOWHEADER, true)) {
             return;
@@ -3937,8 +3933,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         boolean  even    = true;
         int      lineCnt = 0;
         for (int cnt = 0; cnt < valueList.size(); cnt++) {
-            lineCnt++;
-            if (forPrint && (lineCnt > entriesPerPage)) {
+            lineCnt++;  
+          if (forPrint && (lineCnt > entriesPerPage)) {
                 lineCnt = 0;
                 hb.append("</table>");
                 hb.append("<div class=pagebreak></div>");
@@ -3960,7 +3956,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     "Click to view details"));
 
 	    if(numberEntries) {
-                HU.td(hb, "#"+(cnt+1));
+                HU.td(hb, "#"+(cnt+1),HU.attr("width","10px"));
 	    }
 		
             even = !even;
@@ -4740,16 +4736,16 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      *
      * @throws Exception _more_
      */
-    public Result handleListMap(Request request, Entry entry,
-                                List<Object[]> valueList, boolean fromSearch)
+    public Result handleListMap(final Request request, Entry entry,
+                                final List<Object[]> valueList, boolean fromSearch)
             throws Exception {
 
-        boolean       forPrint   = request.get(ARG_FOR_PRINT, false);
+        final boolean       forPrint   = request.get(ARG_FOR_PRINT, false);
         boolean       doTile = request.get(ARG_TILE_ENTRIES,false);
         DbInfo        dbInfo     = getDbInfo();
         Hashtable     entryProps = getProperties(entry);
         boolean canEdit = getAccessManager().canDoEdit(request, entry);
-        StringBuilder sb         = new StringBuilder();
+        final StringBuilder sb         = new StringBuilder();
         sb.append(
             "<meta id='request-method' name='request-method' content='POST'></meta>");
 
@@ -4757,9 +4753,37 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                msg("Google Earth KML"));
         links = "";
         String formId = null;
+	StringBuilder header = new StringBuilder();
+	final int[]pageCnt = {0};
+
+	Utils.UniConsumer<Integer>  hdr =  (page)->{
+	    if(pageCnt[0]>0) {
+		getPageHandler().sectionClose(request, sb);
+                sb.append("<div class=pagebreak></div>");
+	    }
+	    String name = request.getString(ARG_DB_SEARCHNAME, (String) null);
+	    String h = "<table width=100%><tr valign=bottom>";
+	    h+=HU.col(pageCnt[0]==0?"Total: " + valueList.size():"", HU.attr("width","10%"));
+	    h+=HU.col(HU.div(name,HU.attr("class","ramadda-page-title")), HU.attr("width","80%"));
+	    h+=HU.col("Page #" + (page+1),HU.attr("width","10%"));
+	    h+="</tr></table>";
+	    getPageHandler().sectionOpen(request, sb,null,false);
+	    sb.append(h);
+	    pageCnt[0]++;
+	};
+
+
+
         if ( !isEmbedded(request)) {
-            formId = addViewHeader(request, entry, sb, VIEW_MAP,
-                                   valueList.size(), fromSearch, links);
+	    if(forPrint) {
+		addStyleSheet(request,sb);
+		request.put(ARG_TEMPLATE, "empty");
+		hdr.accept(0);
+	    } else {
+		formId = addViewHeader(request, entry, header, VIEW_MAP,
+				       valueList.size(), fromSearch, links);
+		sb.append(header);
+	    }
         }
 
         Column  theColumn        = null;
@@ -4923,10 +4947,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		    for(GeoUtils.TiledObject obj: tile.getObjects()) {
 			l.add(obj.getObject());
 		    }
-		    lists.addAll((List<List>) Utils.splitList(l, entriesPerPage+1));
+		    lists.addAll((List<List>) Utils.splitList(l, entriesPerPage));
 		}
 	    } else {
-		lists = (List<List>) Utils.splitList(valueList, entriesPerPage+1);
+		lists = (List<List>) Utils.splitList(valueList, entriesPerPage);
 	    }
         } else {
             lists = new ArrayList<List>();
@@ -4935,10 +4959,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         int cnt=0;
 	int listCnt = 0;
+	String pageTitle=request.getString("pagetitle","TITLE");
 	for (List listValues : lists) {
 	    if(forPrint && listCnt>0) {
-		sb.append("<div class=pagebreak></div>\n");
-		addViewHeader(request, entry, sb, VIEW_MAP,    valueList.size(), fromSearch, links);
+		hdr.accept(listCnt);
+		//		sb.append(header);
+		//		addViewHeader(request, entry, sb, VIEW_MAP,    valueList.size(), fromSearch, links);
 	    }
 	    listCnt++;
 	    
@@ -5002,7 +5028,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 Object[] values = (Object[]) obj;
                 String   dbid   = (String) values[IDX_DBID];
 		getLocation.accept(theColumn, values);
-		if(!location.hasLocation()) continue;
+		//		if(!location.hasLocation()) continue;
                 if (location.hasBounds()) {
                     map.addBox("", "", "",
                                new MapBoxProperties("red", false), location.north,
@@ -5076,8 +5102,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		    mapInfo="";
                 }
 
-
-
                 if (location.hasPoint()) {
 		    if(useDot) {
 			map.addCircle(dbid,  location.latitude,  location.longitude, radius,
@@ -5101,7 +5125,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                       / 2), mapLabel, icon, mapInfo);
                     }
                 }
-            }
+	    }
             if (catMap != null) {
                 boolean open = true;
                 for (String cat : cats) {

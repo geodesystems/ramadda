@@ -716,6 +716,7 @@ public abstract class ValueIterator implements DbConstants {
      */
     public abstract static class HtmlIterator extends ValueIterator {
 
+	String header;
 
         /**
          * _more_
@@ -751,8 +752,8 @@ public abstract class ValueIterator implements DbConstants {
 	    if(!embedded) {
 		db.getEntryManager().addEntryHeader(request, entry, result);
 		Appendable sb = getBuffer();
-		String header = db.getPageHandler().decorateResult(request,
-								   result, true, false);
+		header = db.getPageHandler().decorateResult(request,
+							    result, true, false);
 		if (header != null) {
 		    sb.append(header);
 		} else {
@@ -975,6 +976,11 @@ public abstract class ValueIterator implements DbConstants {
                     sb.append(HU.select(ARG_DB_ACTION, actions));
                 }
             }
+	    
+
+
+
+
             HU.open(tableHeader, "table", "entryid", entry.getId(),
                            "id", tableId, "class", "dbtable", "border", "1",
                            "cellspacing", "0", "cellpadding", "0", "width",
@@ -986,7 +992,7 @@ public abstract class ValueIterator implements DbConstants {
                 db.makeTableHeader(tableHeader, "&nbsp;");		
             } else {
 		if(numberEntries)
-		    db.makeTableHeader(tableHeader, "#");
+		    db.makeTableHeader(tableHeader, "#",HU.attr("width","30px"));
 	    }
             for (int i = 0; i < columns.size(); i++) {
                 Column column = columns.get(i);
