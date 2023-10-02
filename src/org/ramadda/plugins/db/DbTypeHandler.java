@@ -4754,37 +4754,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         links = "";
         String formId = null;
 	StringBuilder header = new StringBuilder();
-	final int[]pageCnt = {0};
-
-	Utils.UniConsumer<Integer>  hdr =  (page)->{
-	    if(pageCnt[0]>0) {
-		getPageHandler().sectionClose(request, sb);
-                sb.append("<div class=pagebreak></div>");
-	    }
-	    String name = request.getString(ARG_DB_SEARCHNAME, (String) null);
-	    String h = "<table width=100%><tr valign=bottom>";
-	    h+=HU.col(pageCnt[0]==0?"Total: " + valueList.size():"", HU.attr("width","10%"));
-	    h+=HU.col(HU.div(name,HU.attr("class","ramadda-page-title")), HU.attr("width","80%"));
-	    h+=HU.col("Page #" + (page+1),HU.attr("width","10%"));
-	    h+="</tr></table>";
-	    getPageHandler().sectionOpen(request, sb,null,false);
-	    sb.append(h);
-	    pageCnt[0]++;
-	};
-
-
-
-        if ( !isEmbedded(request)) {
-	    if(forPrint) {
-		addStyleSheet(request,sb);
-		request.put(ARG_TEMPLATE, "empty");
-		hdr.accept(0);
-	    } else {
-		formId = addViewHeader(request, entry, header, VIEW_MAP,
-				       valueList.size(), fromSearch, links);
-		sb.append(header);
-	    }
-        }
 
         Column  theColumn        = null;
         Column  searchColumn     = null;
@@ -4959,7 +4928,42 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         int cnt=0;
 	int listCnt = 0;
-	String pageTitle=request.getString("pagetitle","TITLE");
+	final int[]pageCnt = {0};
+	final int[]pages = {lists.size()};
+
+	Utils.UniConsumer<Integer>  hdr =  (page)->{
+	    if(pageCnt[0]>0) {
+		getPageHandler().sectionClose(request, sb);
+                sb.append("<div class=pagebreak></div>");
+	    }
+	    String name = request.getString(ARG_DB_SEARCHNAME, (String) null);
+	    String h = "<table width=100%><tr valign=bottom>";
+	    h+=HU.col(pageCnt[0]==0?"Total: " + valueList.size():"", HU.attr("width","10%"));
+	    h+=HU.col(HU.div(name,HU.attr("class","ramadda-page-title")), HU.attr("width","80%"));
+	    h+=HU.col("Page #" + (page+1)+"/" + (pages[0]),HU.attr("width","10%"));
+	    h+="</tr></table>";
+	    getPageHandler().sectionOpen(request, sb,null,false);
+	    sb.append(h);
+	    pageCnt[0]++;
+	};
+
+
+
+        if ( !isEmbedded(request)) {
+	    if(forPrint) {
+		addStyleSheet(request,sb);
+		request.put(ARG_TEMPLATE, "empty");
+		hdr.accept(0);
+	    } else {
+		formId = addViewHeader(request, entry, header, VIEW_MAP,
+				       valueList.size(), fromSearch, links);
+		sb.append(header);
+	    }
+        }
+	
+
+
+
 	for (List listValues : lists) {
 	    if(forPrint && listCnt>0) {
 		hdr.accept(listCnt);
