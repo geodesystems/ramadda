@@ -4938,9 +4938,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    }
 	    String name = request.getString(ARG_DB_SEARCHNAME, (String) null);
 	    String h = "<table width=100%><tr valign=bottom>";
-	    h+=HU.col(pageCnt[0]==0?"Total: " + valueList.size():"", HU.attr("width","10%"));
-	    h+=HU.col(HU.div(name,HU.attr("class","ramadda-page-title")), HU.attr("width","80%"));
-	    h+=HU.col("Page #" + (page+1)+"/" + (pages[0]),HU.attr("width","10%"));
+	    h+=HU.col(pageCnt[0]==0?"Total: " + valueList.size():"", HU.attr("width","15%"));
+	    h+=HU.col(HU.div(name,HU.attr("class","ramadda-page-title")), HU.attr("width","70%"));
+	    h+=HU.col("Page #" + (page+1)+"/" + (pages[0]),HU.attr("width","15%"));
 	    h+="</tr></table>";
 	    getPageHandler().sectionOpen(request, sb,null,false);
 	    sb.append(h);
