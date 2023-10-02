@@ -1,8 +1,11 @@
 on run arg
-   set pdfFile to arg
-   set thePDFPath to (path to home folder as string)
-   set posixFolderPath to POSIX path of thePDFPath
-
+--   set pdfFile to arg
+   set pdfFile to item 1 of arg
+   set thePDFPath to item 2 of arg
+--   set thePDFPath to (path to home folder as string)
+   set destDir to POSIX path of thePDFPath
+--   display dialog destDir
+--   delay 10
 
 tell application "System Events"
    set frontmostProcess to first process where it is frontmost -- this will be the script process
@@ -27,14 +30,49 @@ end tell
 
 activate application theApp
 tell application "System Events" to tell process theProcess
-   click menu item "Export as PDF…" of menu "File" of menu bar 1
+   keystroke "p" using command down
    repeat
        if exists sheet 1 of window 1 then exit repeat
    end repeat
+   delay 5
+   set PDFButton to first menu button of splitter group 1 of sheet 1 of window 1
    tell sheet 1 of window 1
-       set value of text field 1 to pdfFile
-       delay 1
-       keystroke return
+--       set PDFButton to first menu button of splitter group 1 of sheet 1 of window 1
+--       set PDFButton to first menu button
+       click PDFButton
+       click menu item 2 of menu 1 of PDFButton
+       
+       repeat
+           if exists sheet 1 then exit repeat
+       end repeat
+       
+       
+       tell sheet 1
+           # Set the Desktop as destination folder
+           
+           set value of text field 1 to pdfFile
+           delay 2
+           keystroke "g" using {command down, shift down}
+           repeat until exists sheet 1
+               delay 2
+           end repeat
+           tell sheet 1
+               # CAUTION. before 10.11 the target field was a text field. Now it's a combo box
+               if class of UI elements contains combo box then
+                   --> {static text, combo box, button, button}
+                   set value of combo box 1 to destDir
+               else
+                   --> {static text, text field, button, button}
+                   set value of text field 1 to destDir
+               end if
+               get name of buttons
+               keystroke return
+           end tell
+           get name of buttons
+           
+           keystroke return
+       end tell
    end tell
 end tell
+
 end run
