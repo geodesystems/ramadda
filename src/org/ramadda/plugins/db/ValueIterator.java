@@ -896,10 +896,10 @@ public abstract class ValueIterator implements DbConstants {
             entryProps      = db.getProperties(entry);
             editImg = HU.img(
                 getRepository().getUrlBase() + "/db/database_edit.png",
-                db.msg("View entry"));
+                "View entry");
             viewImg =
                 HU.img(getRepository().getUrlBase()
-                              + "/db/database_go.png", db.msg("View entry"));
+                              + "/db/database_go.png", "View entry");
         }
 
         /**
@@ -967,6 +967,10 @@ public abstract class ValueIterator implements DbConstants {
             if (canEdit) {
                 actions.add(new TwoFacedObject("Delete selected",
                         ACTION_DELETE));
+		if (dbInfo.getHasLocation()) {
+		    actions.add(new TwoFacedObject("Set lat/lon on selected",
+						   ACTION_SET_LATLON));
+		}
                 actions.add(new TwoFacedObject("Delete entire database",
                         ACTION_DELETEALL));
             }

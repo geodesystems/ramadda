@@ -306,7 +306,7 @@ public interface DbConstants extends Constants {
     public static final String ARG_DB_DELETE = "db.delete";
 
     /** _more_ */
-    public static final String ARG_DB_DELETECONFIRM = "db.delete.confirm";
+    public static final String ARG_DB_ACTION_CONFIRM = "db.action.confirm";
 
     /** _more_ */
     public static final String ARG_DB_ACTION = "db.action";
@@ -323,6 +323,9 @@ public interface DbConstants extends Constants {
 
     /** _more_ */
     public static final String ACTION_LIST = "db.list";
+
+    /** _more_ */
+    public static final String ACTION_SET_LATLON = "db.setlatlon";
 
 
     /** _more_ */

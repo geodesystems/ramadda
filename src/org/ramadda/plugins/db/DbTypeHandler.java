@@ -939,24 +939,23 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             action = request.getString(ARG_DB_ACTION, "");
         }
 
-
-        if (request.exists(ARG_DB_DELETECONFIRM)) {
+        if (request.exists(ARG_DB_ACTION_CONFIRM)) {
             if ( !canEdit) {
                 throw new AccessException("You cannot edit this database",
                                           request);
             }
-
-            return handleDeleteConfirm(request, entry);
+            return handleActionConfirm(request, entry);
         }
 
-        if (request.exists(ARG_DB_DELETE) || action.equals(ACTION_DELETE)
-                || action.equals(ACTION_DELETEALL)) {
+        if (request.exists(ARG_DB_DELETE)
+	    || action.equals(ACTION_DELETE)
+	    || action.equals(ACTION_SET_LATLON)
+	    || action.equals(ACTION_DELETEALL)) {
             if ( !canEdit) {
                 throw new AccessException("You cannot edit this database",
                                           request);
             }
-
-            return handleDeleteAsk(request, entry, action);
+            return handleActionAsk(request, entry, action);
         }
 
         if (request.defined(ARG_DB_VIEW)) {
@@ -2776,11 +2775,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      *
      * @throws Exception _more_
      */
-    public Result handleDeleteConfirm(Request request, Entry entry)
+    public Result handleActionConfirm(Request request, Entry entry)
             throws Exception {
         String  action = request.getString(ARG_DB_ACTION, ACTION_DELETE);
         boolean deleteSelected = action.equals(ACTION_DELETE);
+        boolean deleteAll = action.equals(ACTION_DELETEALL);
+        boolean setLatLon = action.equals(ACTION_SET_LATLON);	
         List    dbids = request.get(ARG_DBID_SELECTED, new ArrayList());
+	String msg = "Unknown action";
         if (deleteSelected) {
             Statement statement = getDatabaseManager().createStatement();
             try {
@@ -2795,16 +2797,46 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 getRepository().getDatabaseManager()
                     .closeAndReleaseConnection(statement);
             }
-        } else {
+	    msg = "Entries deleted";
+        } else if(deleteAll) {
             deleteEntireDatabase(request, entry);
-        }
+	    msg = "Entire database deleted";
+        } else if(setLatLon) {
+	    DbInfo              dbInfo     = getDbInfo();
+	    Column latColumn = dbInfo.getLatColumn();
+	    Column lonColumn = dbInfo.getLonColumn();
+	    Column latLonColumn = dbInfo.getLatLonColumn();	    	    
+	    if(latColumn==null || lonColumn == null) {
+		if(latLonColumn==null)
+		    throw new IllegalStateException("No lat/lon columns");
+	    }
+	    Connection        connection = getDatabaseManager().getConnection();
+	    String[] cols  =latLonColumn!=null?
+		new String[]{latLonColumn.getName()+"_lat", latLonColumn.getName()+"_lon"}:
+		new String[]{latColumn.getName(),lonColumn.getName()};
+
+	    try {
+		for (Object dbid : dbids) {
+		    Clause clause = makeClause(entry, dbid.toString());
+		    Object[]values = new Object[]{request.get(ARG_LOCATION+".latitude", Entry.NONGEO),
+						  request.get(ARG_LOCATION+".longitude", Entry.NONGEO)};
+		    System.err.println(values[0] +" " + values[1]);
+		    SqlUtil.update(connection,tableHandler.getTableName(),clause,cols,values);
+		}
+	    } finally {
+		getRepository().getDatabaseManager().closeConnection(connection);
+	    }
+	    msg = "Locations set";
+	} else {
+	    throw new IllegalArgumentException("Unknown action");
+	}
 	entryChanged(request, entry);
 
         String url =
             HU.url(request.makeUrl(getRepository().URL_ENTRY_SHOW),
                           new String[] { ARG_ENTRYID,
                                          entry.getId(), ARG_MESSAGE,
-                                         "Entries deleted" });
+                                         msg});
 
         return new Result(url);
     }
@@ -2839,7 +2871,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      *
      * @throws Exception _more_
      */
-    public Result handleDeleteAsk(Request request, Entry entry, String action)
+    public Result handleActionAsk(Request request, Entry entry, String action)
             throws Exception {
         StringBuilder sb    = new StringBuilder();
         List          dbids = request.get(ARG_DBID_SELECTED, new ArrayList());
@@ -2848,6 +2880,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             action = ACTION_DELETE;
         }
         boolean deleteSelected = action.equals(ACTION_DELETE);
+        boolean deleteAll = action.equals(ACTION_DELETEALL);
+        boolean setLatLon = action.equals(ACTION_SET_LATLON);		
         if (deleteSelected && (dbids.size() == 0)) {
             sb.append(
                 getPageHandler().showDialogWarning(
@@ -2857,23 +2891,33 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             sb.append(HU.formPost(formUrl));
             sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
             sb.append(HU.hidden(ARG_DB_ACTION, action));
-
-
             for (Object dbid : dbids) {
                 sb.append(HU.hidden(ARG_DBID_SELECTED,
                                            dbid.toString()));
             }
 
-            String msg =
-                "Are you sure you want to delete the selected entries?";
-            if ( !deleteSelected) {
-                msg = "Are you sure you want to delete the entire database?";
-            }
+            String msg ="Unknown action";
+	    String extra = "";
+	    if(deleteSelected)
+                msg  ="Are you sure you want to delete the selected entries?";
+            else if (deleteAll) 
+                msg = "Are you sure you want to delete the entire database? Like, the entire database!";
+            else if (setLatLon)  {
+                msg = "Are you sure you want to set the lat/lons to:<br>";
+		String[] nwse = new String[] { "",""};
+		MapInfo map = getMapManager().createMap(request, entry, true,
+							getMapManager().getMapProps(request, entry, null));
+		extra = map.makeSelector(ARG_LOCATION, true, nwse,
+					 "", "");
+
+	    }
+
             addViewHeader(request, entry, sb, "", null);
             sb.append(getPageHandler().showDialogQuestion(msg(msg),
-                    HU.submit(LABEL_YES, ARG_DB_DELETECONFIRM)
+                    HU.submit(LABEL_YES, ARG_DB_ACTION_CONFIRM)
                     + HU.space(2)
                     + HU.submit(LABEL_CANCEL, ARG_DB_LIST)));
+	    sb.append(extra);
             addViewFooter(request, entry, sb);
         }
 
@@ -3493,7 +3537,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     tableHandler.getColumnNames().size()));
         } else {
             Clause clause = makeClause(entry, dbid);
-
             return SqlUtil.makeUpdate(tableHandler.getTableName(), clause,
                                       namesArray);
 
@@ -3805,9 +3848,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         ACTION_DELETE));
                 actions.add(new TwoFacedObject("Delete entire database",
                         ACTION_DELETEALL));
+                actions.add(new TwoFacedObject("Set lat/lon",
+                        ACTION_SET_LATLON));		
             }
-
-
 
             if ( !isEmbedded(request) && (actions.size() > 0)) {
                 if (doForm) {
