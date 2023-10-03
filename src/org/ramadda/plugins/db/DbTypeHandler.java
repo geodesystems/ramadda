@@ -2469,13 +2469,18 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     HU.textArea(
                         ARG_EXTRA_COLUMNS,
                         request.getString(ARG_EXTRA_COLUMNS, ""), 5, 40)));
-            buffer.append(
-                formEntry(
-                    request, msgLabel("Search Name"),
-                    HU.input(
-                        ARG_DB_SEARCHNAME,
-                        request.getString(ARG_DB_SEARCHNAME, ""),
-                        HU.SIZE_50) + suffix));
+	    buffer.append(formEntry(request, msgLabel("Search Name"),
+		      HU.input(
+			       ARG_DB_SEARCHNAME,
+			       request.getString(ARG_DB_SEARCHNAME, ""),
+			       HU.SIZE_50) + suffix));
+
+	    buffer.append(formEntry(request, msgLabel("Subtitle"),
+		      HU.input(
+			       ARG_DB_SUBTITLE,
+			       request.getString(ARG_DB_SUBTITLE, ""),
+			       HU.SIZE_50) ));
+	
             buffer.append(formEntry(request, msgLabel("Description"),
                                     HU.textArea(ARG_DB_SEARCHDESC,
                                         request.getString(ARG_DB_SEARCHDESC,
@@ -4975,8 +4980,16 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	final int[]pageCnt = {0};
 	final int[]pages = {lists.size()};
 
+	Date now = new Date();
+	String dttm = getDateFormat(request, entry).format(now);
+
+	Utils.UniConsumer<Integer>  footer =  (page)->{
+	    sb.append(HU.center("Page #" + (page)+"/" + (pages[0])));
+	};
+
 	Utils.UniConsumer<Integer>  hdr =  (page)->{
 	    if(pageCnt[0]>0) {
+		footer.accept(page);
 		getPageHandler().sectionClose(request, sb);
                 sb.append("<div class=pagebreak></div>");
 	    }
@@ -4984,8 +4997,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    String h = "<table width=100%><tr valign=bottom>";
 	    h+=HU.col(pageCnt[0]==0?"Total: " + valueList.size():"", HU.attr("width","15%"));
 	    h+=HU.col(HU.div(name,HU.attr("class","ramadda-page-title")), HU.attr("width","70%"));
-	    h+=HU.col("Page #" + (page+1)+"/" + (pages[0]),HU.attr("width","15%"));
+	    h+=HU.col(dttm);
+	    //	    h+=HU.col("Page #" + (page+1)+"/" + (pages[0]),HU.attr("width","15%"));
 	    h+="</tr></table>";
+	    String subTitle = request.getString(ARG_DB_SUBTITLE,null);
+	    if(subTitle!=null) h+=HU.center(subTitle);
 	    getPageHandler().sectionOpen(request, sb,null,false);
 	    sb.append(h);
 	    pageCnt[0]++;
@@ -5135,8 +5151,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 String label = getMapLabel(request, entry, values, sdf,
                                            forPrint,numberEntries?"#" +(++cnt)+" ":"");
 
-
-		theSB.append(map.getHiliteHref(dbid, label));
+		if(!forPrint) 
+		    theSB.append(map.getHiliteHref(dbid, label));
+		else
+		    theSB.append(label);
                 theSB.append("</div>");
                 String info = getHtml(request, entry, dbid, getDbColumns(),
                                       values, sdf,dateTimeSdf);
@@ -5226,6 +5244,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    String js =	map.getVariableName()+  ".highlightMarkers( '#" + listId+"  .db-map-list-entry');";
 	    sb.append(HU.script(JQuery.ready(js)));
 	}
+	footer.accept(listCnt);
 	
 
         if ( !isEmbedded(request) && !forPrint) {

@@ -200,6 +200,8 @@ public interface DbConstants extends Constants {
     /** _more_ */
     public static final String ARG_DB_SEARCHNAME = "searchname";
 
+    public static final String ARG_DB_SUBTITLE = "subtitle";    
+
     /** _more_ */
     public static final String ARG_DB_SEARCHDESC = "searchdesc";
 
