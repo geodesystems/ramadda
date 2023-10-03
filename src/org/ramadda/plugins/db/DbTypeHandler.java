@@ -5001,18 +5001,19 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		h+="<table width=100%><tr valign=bottom>";
 		h+=HU.col(pageCnt[0]==0?"Total: " + valueList.size():"", HU.attr("width","15%"));
 		h+=HU.col(title, HU.attr("width","70%"));
-		h+=HU.col(dttm);
+		h+=HU.col(dttm,HU.attrs("align","right","width","15%"));
 		h+="</tr></table>";
 	    } else {
 		h+=HU.center(title);
 		h+="<table width=100%><tr valign=bottom>";
 		h+=HU.col(pageCnt[0]==0?"Total: " + valueList.size():"", HU.attr("width","15%"));
 		h+=HU.col(subTitle, HU.attrs("align","center","width","70%"));
-		h+=HU.col(dttm);
+		h+=HU.col(dttm,HU.attrs("align","right","width","15%"));
 		h+="</tr></table>";
 	    }
 	    getPageHandler().sectionOpen(request, sb,null,false);
 	    sb.append(h);
+	    sb.append("<div style='border-bottom:1px solid #ccc;margin-bottom:8px;'></div>\n");
 	    pageCnt[0]++;
 	};
 
