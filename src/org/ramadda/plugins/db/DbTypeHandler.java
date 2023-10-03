@@ -4919,6 +4919,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
 
+	props.put("singlePointZoom", "14");
         boolean makeRectangles = valueList.size() <= 20;
         String  leftWidth      = "300px";
         String  mapAttrs       = "";
