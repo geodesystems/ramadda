@@ -4994,14 +4994,23 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 sb.append("<div class=pagebreak></div>");
 	    }
 	    String name = request.getString(ARG_DB_SEARCHNAME, (String) null);
-	    String h = "<table width=100%><tr valign=bottom>";
-	    h+=HU.col(pageCnt[0]==0?"Total: " + valueList.size():"", HU.attr("width","15%"));
-	    h+=HU.col(HU.div(name,HU.attr("class","ramadda-page-title")), HU.attr("width","70%"));
-	    h+=HU.col(dttm);
-	    //	    h+=HU.col("Page #" + (page+1)+"/" + (pages[0]),HU.attr("width","15%"));
-	    h+="</tr></table>";
 	    String subTitle = request.getString(ARG_DB_SUBTITLE,null);
-	    if(subTitle!=null) h+=HU.center(subTitle);
+	    String title = HU.div(name,HU.attr("style","text-align:center;font-weight:bold;font-size:150%;"));
+	    String h = "";
+	    if(!stringDefined(subTitle)) {
+		h+="<table width=100%><tr valign=bottom>";
+		h+=HU.col(pageCnt[0]==0?"Total: " + valueList.size():"", HU.attr("width","15%"));
+		h+=HU.col(title, HU.attr("width","70%"));
+		h+=HU.col(dttm);
+		h+="</tr></table>";
+	    } else {
+		h+=HU.center(title);
+		h+="<table width=100%><tr valign=bottom>";
+		h+=HU.col(pageCnt[0]==0?"Total: " + valueList.size():"", HU.attr("width","15%"));
+		h+=HU.col(subTitle, HU.attrs("align","center","width","70%"));
+		h+=HU.col(dttm);
+		h+="</tr></table>";
+	    }
 	    getPageHandler().sectionOpen(request, sb,null,false);
 	    sb.append(h);
 	    pageCnt[0]++;
