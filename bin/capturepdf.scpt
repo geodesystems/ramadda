@@ -5,7 +5,6 @@ on run arg
 --   set thePDFPath to (path to home folder as string)
    set destDir to POSIX path of thePDFPath
 --   display dialog destDir
---   delay 10
 
 tell application "System Events"
    set frontmostProcess to first process where it is frontmost -- this will be the script process
