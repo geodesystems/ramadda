@@ -1573,6 +1573,9 @@ var Utils =  {
         s =  this.camelCase(s);
 	return s;
     },
+    makeID:function(s) {
+	return Utils.makeId(s);
+    },
     makeId: function(s) {
         s  = String(s);
         s = s.replace(/[^\x00-\x7F]/g, "_");
@@ -5147,6 +5150,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    else url+="&";
 	    let name = args[i];
 	    let value=args[i+1];
+	    console.log(name,value);
 	    url += encodeURIComponent(name) + "=" + encodeURIComponent(value);
 	}	
 	return url;
