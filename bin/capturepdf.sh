@@ -16,6 +16,7 @@ echo  "capturing $url"
 pdf="capture${RANDOM}.pdf"
 osascript -e "activate application \"Safari\""
 osascript -e "tell application \"Safari\" to set the URL of the front document to \"$url\""    
+sleep 20
 #echo "Saving PDF: ${pdf} to ${pdfs}"
 osascript ${mydir}/capturepdf.scpt $pdf "${pdfs}"
 echo "waiting on file"
