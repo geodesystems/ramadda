@@ -8500,7 +8500,6 @@ public class WikiManager extends RepositoryManager
 	    }
 	}
 
-
         String mainDivId = getProperty(wikiUtil, props, "divid");
         if (mainDivId == null) {
             mainDivId = HU.getUniqueId("displaydiv");
@@ -8513,7 +8512,11 @@ public class WikiManager extends RepositoryManager
                 topProps.add(key.toString());
                 topProps.add(JsonUtil.quote(value.toString()));
             }
-            HU.div(sb, "", HU.id(mainDivId));
+	    String style="";
+	    if(getProperty(wikiUtil, props, "displayInline",false)) {
+		style+="display:inline-block;";
+	    }
+            HU.div(sb, "", HU.id(mainDivId) +HU.clazz("display-group") +HU.style(style));
 	    String groupVar = getGroupVar(request);
             topProps.addAll(propList);
             js.append("\nvar " + groupVar +" = getOrCreateDisplayManager("
