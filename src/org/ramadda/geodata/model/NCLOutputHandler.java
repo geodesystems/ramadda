@@ -15,7 +15,7 @@ import org.ramadda.repository.Request;
 import org.ramadda.repository.Result;
 import org.ramadda.repository.StorageManager;
 import org.ramadda.repository.job.JobManager;
-import org.ramadda.repository.map.MapBoxProperties;
+import org.ramadda.repository.map.MapProperties;
 import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
@@ -450,7 +450,7 @@ sb.append(HtmlUtils.form(formUrl,
 
             map.setMapRegions(getPageHandler().getMapRegions(mapRegionGroup));
             map.addBox("", "", "", llr,
-                       new MapBoxProperties("blue", false, true));
+                       new MapProperties("blue", false, true));
             String[] points = new String[] { "" + llr.getLatMax(),
                                              "" + llr.getLonMin(),
                                              "" + llr.getLatMin(),

@@ -1159,7 +1159,7 @@ public class TestDataService extends Service {
         map.setDefaultMapRegion(request.getSanitizedString("mapregion",
                 null));
 
-        //map.addBox("", "", llr, new MapBoxProperties("blue", false, true));
+        //map.addBox("", "", llr, new MapProperties("blue", false, true));
         String[] points = new String[] { "" + llr.getLatMax(),
                                          "" + llr.getLonMin(),
                                          "" + llr.getLatMin(),

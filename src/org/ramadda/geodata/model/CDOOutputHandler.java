@@ -1106,7 +1106,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         map.setDefaultMapRegion(request.getSanitizedString("mapregion",
                 null));
 
-        //map.addBox("", "", llr, new MapBoxProperties("blue", false, true));
+        //map.addBox("", "", llr, new MapProperties("blue", false, true));
         String[] points = new String[] { "" + llr.getLatMax(),
                                          "" + llr.getLonMin(),
                                          "" + llr.getLatMin(),
