@@ -896,7 +896,7 @@ public class PointFormHandler extends RecordFormHandler {
         boolean didMetadata = map.addSpatialMetadata(entry, metadataList);
         if ( !didMetadata) {
             map.addBox(entry,
-                       new MapBoxProperties(MapInfo.DFLT_BOX_COLOR, false,
+                       new MapProperties(MapInfo.DFLT_BOX_COLOR, false,
                                             true));
         } else {
             map.centerOn(entry);
