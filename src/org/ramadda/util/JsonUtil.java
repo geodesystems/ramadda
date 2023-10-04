@@ -235,6 +235,18 @@ public class JsonUtil {
         return quoted;
     }
 
+    public static List quoteTypeList(List values) {
+        List quoted = new ArrayList();
+        for (int i = 0; i < values.size(); i += 2) {
+            quoted.add(values.get(i));
+            String value = values.get(i + 1).toString();
+            quoted.add(quoteType(value));
+        }
+
+        return quoted;
+    }
+
+
     public static List quoteAll(List values) {
         List quoted = new ArrayList();
         for (int i = 0; i < values.size(); i ++) {
@@ -594,8 +606,9 @@ public class JsonUtil {
         return attr(name, value, DFLT_QUOTE);
     }
 
+
     public static String quoteType(Object v) {
-	String s = v.toString();
+	String s = v.toString().trim();
         if (s.equals("true") || s.equals("false")) {
 	    return s;
         }
@@ -613,15 +626,7 @@ public class JsonUtil {
      * @return _more_
      */
     public static String attrGuessType(String name, String v) {
-        if (v.equals("true") || v.equals("false")) {
-            return attr(name, v);
-        }
-        try {
-            double d = Double.parseDouble(v);
-            return attr(name, d);
-        } catch (Exception ignore) {}
-
-        return attr(name, v, true);
+	return attr(name,quoteType(v));
     }
 
 
