@@ -9,17 +9,26 @@
 mydir=$(dirname "$0")
 cwd=$(pwd)
 pdfs="${cwd}/pdfs"
-mkdir  "${pdfs}"
+
+if [ !  -d "${pdfs}" ]
+then
+    mkdir  "${pdfs}"
+fi
+
 url=$1
-file=$2
-echo  "capturing $url"
+file="${pdfs}/$2"
+if [ -f "${file}" ]
+then
+   echo  "file exists ${file}"
+   exit
+fi
+echo  "capturing ${2}"
 pdf="capture${RANDOM}.pdf"
 osascript -e "activate application \"Safari\""
 osascript -e "tell application \"Safari\" to set the URL of the front document to \"$url\""    
 sleep 20
 #echo "Saving PDF: ${pdf} to ${pdfs}"
 osascript ${mydir}/capturepdf.scpt $pdf "${pdfs}"
-echo "waiting on file"
 #look for files  haven't been changed in the last 2 seconds
 files=`find ${pdfs}/${pdf} -type f -mtime -2s 2> /dev/null`
 while [ -z "$files" ]
@@ -28,6 +37,6 @@ do
     files=`find ${pdfs}/${pdf} -type f -mtime -2s 2> /dev/null`
 done
 sleep 1
-echo "moving ${pdfs}/${pdf} to ${pdfs}/$file"
-mv "${pdfs}/${pdf}" "${pdfs}/$file"
+echo "done  ${file}"
+mv "${pdfs}/${pdf}" "${file}"
 
