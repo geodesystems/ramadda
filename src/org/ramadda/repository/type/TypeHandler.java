@@ -290,7 +290,8 @@ public class TypeHandler extends RepositoryManager {
     private String description="";
 
     /** _more_ */
-    private String editHelp = "";
+    private String editHelp = null;
+    private String newHelp = null;
 
     /**  */
     private String help = "";
@@ -495,8 +496,9 @@ public class TypeHandler extends RepositoryManager {
             filePattern = Utils.getAttributeOrTag(node, ATTR_PATTERN, filePattern);
 	    //	    if(stringDefined(filePattern))System.err.println(filePattern);
             fileNotPattern = Utils.getAttributeOrTag(node, ATTR_NOTPATTERN, null);	    
-            editHelp = Utils.getAttributeOrTag(node, "edithelp", editHelp);
             help     = Utils.getAttributeOrTag(node, "help", help);
+            editHelp = Utils.getAttributeOrTag(node, "edithelp", editHelp);
+            newHelp = Utils.getAttributeOrTag(node, "newhelp", editHelp);	    
             mimeType     = XmlUtil.getAttributeFromTree(node, "mimetype", mimeType);	    
 
 
@@ -4489,18 +4491,28 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    public void addToEntryFormHeader(Request request, Appendable sb,boolean newEntry) {
-	String header = getTypeProperty(newEntry?"form.header.new":"form.header", (String) null);
+    public void addToEntryFormHeader(Request request, Appendable sb,Entry entry) throws Exception {
+	String header = getTypeProperty(entry==null?"form.header.new":"form.header", (String) null);
 	if(header==null) header = getTypeProperty("form.header", (String) null);
 	if(header!=null) {
 	    header = header.replace("\\n","\n");
-	    try {
-		sb.append(getWikiManager().wikify(request, header));
-	    } catch(Exception exc) {
-		throw new RuntimeException(exc);
-	    }
+	    sb.append(getWikiManager().wikify(request, header));
 	}
+	if(stringDefined(editHelp)) {
+	    sb.append(HU.note(editHelp));
+	}
+	if(entry==null && stringDefined(newHelp)) {
+	    sb.append(getWikiManager().wikify(request, newHelp));
+	}	
+
+
+
     }
+
+
+
+
+
 
     /**
      * _more_
@@ -4911,6 +4923,8 @@ public class TypeHandler extends RepositoryManager {
         }
 
 
+
+
         String[] whatList = (entry == null)
                             ? FIELDS_NOENTRY
                             : FIELDS_ENTRY;
@@ -5128,7 +5142,8 @@ public class TypeHandler extends RepositoryManager {
                                                  (entry != null)
                                 ? "null"
                                 : HU.squote(inputId + "_dnd")) + ");");
-                        tabContent.add(HtmlUtils.inset(formContent, 8));
+			//                        tabContent.add(HtmlUtils.inset(formContent, 8));
+                        tabContent.add(formContent);
                     }
                     if (showUrl) {
                         String url = "";
@@ -5145,7 +5160,8 @@ public class TypeHandler extends RepositoryManager {
                         String formContent = HtmlUtils.input(ARG_URL, url,
                                                  size) + "&nbsp;" + download;
                         tabTitles.add(urlLabel);
-                        tabContent.add(HtmlUtils.inset(formContent, 8));
+			//                        tabContent.add(HtmlUtils.inset(formContent, 8));
+                        tabContent.add(formContent);
                     }
 
                     if (showLocalFile) {
@@ -5166,8 +5182,8 @@ public class TypeHandler extends RepositoryManager {
                         localFilesSB.append(HtmlUtils.formTableClose());
                         if (okToShowInForm(entry, "filesonserver", true)) {
                             tabTitles.add(msg("Files on Server"));
-                            tabContent.add(
-                                HtmlUtils.inset(localFilesSB.toString(), 8));
+			    //                            tabContent.add(HtmlUtils.inset(localFilesSB.toString(), 8));
+                            tabContent.add(localFilesSB.toString());
                         }
                     }
 
@@ -5191,8 +5207,12 @@ public class TypeHandler extends RepositoryManager {
                                          OutputHandler.makeTabs(tabTitles,
                                              tabContent, true) + extra);
                         } else if (tabTitles.size() == 1) {
-                            HU.formEntry(sb, tabTitles.get(0) + ":",
-                                         tabContent.get(0) + extra);
+			    //HU.formEntry(sb, tabTitles.get(0) + ":",tabContent.get(0) + extra);
+			    sb.append("<tr><td colspan=2>");
+			    sb.append(HU.b(msgLabel(tabTitles.get(0))) + HU.space(1) +
+				      tabContent.get(0) + extra);
+			    sb.append("</td></tr>");
+			    
                         }
                     } else {
                         if (showFile
