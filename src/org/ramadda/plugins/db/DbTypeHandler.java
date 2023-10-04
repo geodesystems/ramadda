@@ -2518,12 +2518,17 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 	    if (dbInfo.getHasLocation()) {
 		String simpleMap = HU.labeledCheckbox(
-							     "simpleMap", "true",
-							     request.get("simpleMap", false),
+						      ARG_DB_SIMPLEMAP, "true",
+							     request.get(ARG_DB_SIMPLEMAP, false),
 							     "Simple");
 
 		buffer.append(formEntry(request, "Map:",simpleMap+HU.space(2)+"Height:" +
 					HU.input("mapheight",request.getString("mapheight","500"),HU.SIZE_5)));
+		buffer.append(formEntry(request, "Map Properties:",
+					HU.hbox(
+						HU.textArea(ARG_DB_MAPPROPS, request.getString(ARG_DB_MAPPROPS,""), 5, 20),
+						"e.g.:<pre>strokeColor=red\nstrokeWidth=4\nfillColor=transparent\n</pre>")));
+
 	    }
 	}
 
@@ -4789,6 +4794,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             throws Exception {
 
         final boolean       forPrint   = request.get(ARG_FOR_PRINT, false);
+	final boolean simpleMap = request.get(ARG_DB_SIMPLEMAP, false);
         boolean       doTile = request.get(ARG_TILE_ENTRIES,false);
         DbInfo        dbInfo     = getDbInfo();
         Hashtable     entryProps = getProperties(entry);
@@ -4905,7 +4911,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         String width  = "";
         String height = request.getString("mapheight","500");
-        if (forPrint) {
+	if(simpleMap) {
+            width  = "90%";
+	} else if (forPrint) {
             width  = "300";
             height = "300";
         }
@@ -4988,25 +4996,30 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	};
 
 	Utils.UniConsumer<Integer>  hdr =  (page)->{
+	    String name = request.getString(ARG_DB_SEARCHNAME, (String) null);
+	    String subTitle = request.getString(ARG_DB_SUBTITLE,null);
+	    String title = HU.div(name,HU.attr("style","text-align:center;font-weight:bold;font-size:150%;"));
 	    if(pageCnt[0]>0) {
 		footer.accept(page);
 		getPageHandler().sectionClose(request, sb);
                 sb.append("<div class=pagebreak></div>");
 	    }
-	    String name = request.getString(ARG_DB_SEARCHNAME, (String) null);
-	    String subTitle = request.getString(ARG_DB_SUBTITLE,null);
-	    String title = HU.div(name,HU.attr("style","text-align:center;font-weight:bold;font-size:150%;"));
 	    String h = "";
-	    if(!stringDefined(subTitle)) {
+	    if(simpleMap) {
+		h+=HU.center(title);
+		if(stringDefined(subTitle)) {
+		    h+=HU.div(subTitle, HU.style("text-align:center"));
+		}
+	    } else  if(!stringDefined(subTitle)) {
 		h+="<table width=100%><tr valign=bottom>";
-		h+=HU.col(pageCnt[0]==0?"Total: " + valueList.size():"", HU.attr("width","15%"));
+		h+=HU.col(!simpleMap && pageCnt[0]==0?"Total: " + valueList.size():"", HU.attr("width","15%"));
 		h+=HU.col(title, HU.attr("width","70%"));
 		h+=HU.col(dttm,HU.attrs("align","right","width","15%"));
 		h+="</tr></table>";
 	    } else {
 		h+=HU.center(title);
 		h+="<table width=100%><tr valign=bottom>";
-		h+=HU.col(pageCnt[0]==0?"Total: " + valueList.size():"", HU.attr("width","15%"));
+		h+=HU.col(!simpleMap && pageCnt[0]==0?"Total: " + valueList.size():"", HU.attr("width","15%"));
 		h+=HU.col(subTitle, HU.attrs("align","center","width","70%"));
 		h+=HU.col(dttm,HU.attrs("align","right","width","15%"));
 		h+="</tr></table>";
@@ -5031,9 +5044,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    }
         }
 	
-
-
-
+	MapProperties mapProperties =   new MapProperties(request.getString(ARG_DB_MAPPROPS,""));
 	for (List listValues : lists) {
 	    if(forPrint && listCnt>0) {
 		hdr.accept(listCnt);
@@ -5047,7 +5058,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             MapInfo map = getRepository().getMapManager().createMap(request,
 								    entry, width, height, false, props);
 
-            boolean simpleMap = request.get("simpleMap", false);
             StringBuilder entryList = new StringBuilder();
 	    String listId = HU.getUniqueId("list_");
 	    //Add the search bounding box if defined
@@ -5059,7 +5069,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		       request.defined(searchArg+"_south") &&
 		       request.defined(searchArg+"_east")) {
 			map.addBox("", "", "",
-				   new MapBoxProperties("red", false), 
+				   new MapProperties("red", false), 
 				   request.get(searchArg+"_north",90.0),
 				   request.get(searchArg+"_west",-180.0),
 				   request.get(searchArg+"_south",-90.0),
@@ -5090,6 +5100,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 	    boolean useDot = forPrint || listValues.size()>mapDotLimit;
 	    int radius = 6;
+	    if(simpleMap) {
+		useDot = false;
+	    }
 	    if(listValues.size()>1000) {
 		radius = 2;
 	    } else  if(listValues.size()>500) {
@@ -5105,7 +5118,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		//		if(!location.hasLocation()) continue;
                 if (location.hasBounds()) {
                     map.addBox("", "", "",
-                               new MapBoxProperties("red", false), location.north,
+                               new MapProperties("red", false), location.north,
                                location.west, location.south, location.east);
                 }
                 if (getDbInfo().getMapCategoryColumn() != null) {
@@ -5184,8 +5197,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 				      0,"#fff",
 				      "blue",mapInfo);
 		    } else {
-			if(mapPolygonsShow && polygonColumn!=null)
-			    map.addPolygon(dbid, polygonColumn.getString(values),mapInfo,null);
+			if(mapPolygonsShow && polygonColumn!=null) {
+			    map.addPolygon(dbid, polygonColumn.getString(values),mapInfo,null,mapProperties);
+			}
 			if(mapMarkersShow)
 			    map.addMarker(dbid, location.latitude, location.longitude, null,
 					  useDot ? "dot": iconToUse, mapLabel, mapInfo, null);
@@ -5219,7 +5233,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    entryList.append("\n");
 	    map.center();
             if (simpleMap) {
-                sb.append(map.getHtml());
+                sb.append(HU.center(map.getHtml()));
 	    } else {
                 HU.open(sb, "table", "class",
                                " db-map-table " + (forPrint
@@ -5255,7 +5269,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    sb.append(HU.script(JQuery.ready(js)));
 	}
 
-	if(forPrint) 
+	if(forPrint && !simpleMap) 
 	    footer.accept(listCnt);
 
         if ( !isEmbedded(request) && !forPrint) {

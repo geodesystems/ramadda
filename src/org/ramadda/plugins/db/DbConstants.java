@@ -129,6 +129,10 @@ public interface DbConstants extends Constants {
     /** _more_ */
     public static final String ARG_FOR_PRINT = "forprint";
 
+    public static final String  ARG_DB_SIMPLEMAP = "simplemap";
+
+    public static final String  ARG_DB_MAPPROPS = "mapprops";
+
     /** _more_ */
     public static final String ARG_ENTRIES_PER_PAGE = "entriesperpage";
     public static final String ARG_NUMBER_ENTRIES = "numberentries";
