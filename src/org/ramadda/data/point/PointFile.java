@@ -926,15 +926,10 @@ public abstract class PointFile extends RecordFile implements Cloneable,
      * @return _more_
      */
     public List<RecordField> doMakeFields(String fieldString) {
-
-        //        System.err.println ("fields:" + fieldString);
-        //x[unit="m"],y[unit="m"],z[unit="m"],red[],green[],blue[],amplitude[]
-        //        System.err.println ("fields:" + fieldString);
         String defaultMissing = getProperty(ATTR_MISSING, (String) null);
         //      entity[label="Entity"  type="string"] ,code[label="Code"  type="string"] ,year[label="Year"  type="date" format="yyyy" ] ,plastic_waste_generation[label="Plastic Waste Generation" unit="tonnes, total"  type="integer" chartable="true" ] 
         List<String> toks = tokenizeFields(fieldString);
 
-        //        String[]          toks    = fieldString.split(",");
         List<RecordField> fields  = new ArrayList<RecordField>();
         int               paramId = 1;
         for (String tok : toks) {
@@ -954,14 +949,8 @@ public abstract class PointFile extends RecordFile implements Cloneable,
                 attrs = attrs.substring(0, attrs.length() - 1);
             }
             Hashtable properties = parseAttributes(attrs);
-            /*
-            if(name.equals("latitude")) {
-                System.err.println ("attrs:" + attrs);
-                System.err.println ("props:" + properties);
-            }
-            */
             RecordField field = new RecordField(name, name, "", paramId++,
-                                    getProperty(properties, ATTR_UNIT, ""));
+						getProperty(properties, ATTR_UNIT, ""));
 
             String canEdit = getProperty(properties, "canedit", null);
             if (canEdit != null) {
@@ -970,8 +959,7 @@ public abstract class PointFile extends RecordFile implements Cloneable,
 
 
 
-            if (getProperty(properties, "isDateOffset",
-                            "false").equals("true")) {
+            if (getProperty(properties, "isDateOffset","false").equals("true")) {
                 field.setIsDateOffset(true);
             }
             String values    = (String) properties.get("enumeratedValues");
@@ -1073,8 +1061,8 @@ public abstract class PointFile extends RecordFile implements Cloneable,
             if (fmt == null) {
                 fmt = getProperty(field, properties, PROP_FORMAT,
                                   (String) null);
-            }
 
+            }
             if (fmt != null) {
                 fmt = fmt.replaceAll("_comma_", ",");
                 String timezone = getProperty(field, properties, "timezone",
@@ -1184,11 +1172,7 @@ public abstract class PointFile extends RecordFile implements Cloneable,
             DataRecord.initField(field);
             fields.add(field);
         }
-
         return fields;
-
-
-
     }
 
 
