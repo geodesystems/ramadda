@@ -581,7 +581,7 @@ RepositoryMap.prototype = {
 	let singlePoint = bounds.left==bounds.right;
         let projBounds = this.transformLLBounds(bounds);
         if (projBounds.getWidth() == 0) {
-	    if(debugBounds) console.log("setViewToBounds center max zoom:" + this.params.maxZoom);
+	    if(debugBounds) console.log("setViewToBounds single point max zoom:" + this.params.singlePointZoom);
 	    //Set the center then zoom then set the center again
 	    this.getMap().setCenter(projBounds.getCenterLonLat());
             this.zoomTo(this.params.singlePointZoom);
