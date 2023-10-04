@@ -1913,7 +1913,7 @@ public class EntryManager extends RepositoryManager {
         }
 
 	if(typeHandler!=null) {
-	    typeHandler.addToEntryFormHeader(request, sb,entry==null);
+	    typeHandler.addToEntryFormHeader(request, sb,entry);
 	}
 
 
@@ -2030,7 +2030,6 @@ public class EntryManager extends RepositoryManager {
                 sb.append(HU.hidden(ARG_TYPE, type));
                 sb.append(HU.hidden(ARG_GROUP, group.getId()));
             }
-
 
             typeHandler.addToEntryForm(request, sb, group, entry, formInfo);
             formInfo.addToForm(sb);
@@ -4374,8 +4373,7 @@ public class EntryManager extends RepositoryManager {
             sb.append(HU.submit("Upload"));
             sb.append(HU.formTable());
             sb.append(HU.hidden(ARG_GROUP, group.getId()));
-            typeHandler.addToEntryForm(request, sb, group, null,
-                                       new FormInfo(""));
+            typeHandler.addToEntryForm(request, sb, group, null, new FormInfo(""));
             HU.formTableClose(sb);
             sb.append(HU.submit("Upload"));
             sb.append(HU.formClose());
@@ -4494,7 +4492,7 @@ public class EntryManager extends RepositoryManager {
 		    
 		    String help = typeHandler.getHelp();
 		    String title = typeHandler.getLabel();
-		    if(help!=null) title+= " - " + help;
+		    if(stringDefined(help)) title+= " - " + help;
 		    HU.div(sb,href,HU.attrs("class","type-list-item","title",title));
 		}
 		if(didSub) {
