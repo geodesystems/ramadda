@@ -8552,6 +8552,10 @@ public class WikiManager extends RepositoryManager
         anotherDivId = anotherDivId.replace("$entryid", entry.getId());
 
 	String style = "position:relative;" + getProperty(wikiUtil, props, "outerDisplayStyle","");
+	if(getProperty(wikiUtil, props, "displayInline",false)) {
+	    style+="display:inline-block;";
+	}
+
         HU.div(sb, "",
                HU.clazz("display-container") + HU.id(anotherDivId)
                + HU.style(style));
