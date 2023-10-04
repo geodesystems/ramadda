@@ -466,10 +466,11 @@ public class MetadataManager extends RepositoryManager {
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, entry)));
         String snippet = getWikiManager().getRawSnippet(request, entry,
                              false);
-        if ((snippet != null) && (snippet.length() > 0)) {
-            top.add("description");
-            top.add(JsonUtil.quote(JsonUtil.cleanString(snippet)));
-        }
+	if(!stringDefined(snippet)) {
+	    snippet = "RAMADDA page: " + entry.getName();
+	}
+	top.add("description");
+	top.add(JsonUtil.quote(JsonUtil.cleanString(snippet)));
         if (entry.hasDate()) {
             top.add("temporalCoverage");
             if (entry.getStartDate() == entry.getEndDate()) {
@@ -527,6 +528,12 @@ public class MetadataManager extends RepositoryManager {
                     ids = new ArrayList<String>();
                 }
                 ids.add(md.getAttr2());
+            } else if (type.equals("metadata_author")) {
+                List<String> ctor = new ArrayList<String>();
+		ctor.add(JsonUtil.quote("@type"));
+		ctor.add(JsonUtil.quote(md.getAttr1()));
+                top.add("author");
+                top.add(JsonUtil.map(ctor));
             } else if (type.equals("thredds.creator")) {
                 List<String> ctor = new ArrayList<String>();
                 ctor.add("@type");
@@ -549,7 +556,10 @@ public class MetadataManager extends RepositoryManager {
                 }
                 keywords.add(md.getAttr1());
             }
-        }
+	}
+	//	top.add("datePublished");
+	//	top.add(JsonUtil.quote(xxx
+
         if (ids != null) {
             top.add("identifier");
             top.add(JsonUtil.list(ids, true));
