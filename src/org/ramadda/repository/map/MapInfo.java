@@ -937,7 +937,7 @@ public class MapInfo {
      *
      * @throws Exception _more_
      */
-    public void addBox(Entry entry, MapBoxProperties properties)
+    public void addBox(Entry entry, MapProperties properties)
             throws Exception {
         addBox(MapManager.mapEntryId(entry), entry.getName(),
                repository.getMapManager().makeInfoBubble(request, entry,
@@ -955,7 +955,7 @@ public class MapInfo {
      * @param properties the box properties
      */
     public void addBox(String id, String boxName, String text,
-                       LatLonRect llr, MapBoxProperties properties) {
+                       LatLonRect llr, MapProperties properties) {
         addBox(id, boxName, text, properties, llr.getLatMax(),
                llr.getLonMin(), llr.getLatMin(), llr.getLonMax());
     }
@@ -974,15 +974,9 @@ public class MapInfo {
      * @param east   east value
      */
     public void addBox(String id, String boxName, String text,
-                       MapBoxProperties properties, double north,
+                       MapProperties properties, double north,
                        double west, double south, double east) {
-        String color = properties.getColor();
-        String attrs = JsonUtil.map(Utils.makeList("color", (color == null)
-                ? "null"
-                : JsonUtil.quote(color), "selectable",
-                                         "" + properties.getSelectable(),
-                                         "zoomToExtent",
-                                         "" + properties.getZoomToExtent()));
+        String attrs = properties==null?"null": properties.getJson();
         getJS().append("var mapBoxAttributes = " + attrs + ";\n");
         getJS().append(mapVarName + ".createBox("
                        + HU.comma(HU.squote(id),
@@ -1194,10 +1188,11 @@ public class MapInfo {
 			       )+";\n");
     }
 
-    public void addPolygon(String id, String polygon, String info,  String parentId) {
+    public void addPolygon(String id, String polygon, String info,  String parentId,MapProperties properties) {
+	String props = properties==null?"null": properties.getJson();
         getJS().append(HU.call(mapVarName + ".addPolygonString",
 			       HU.squote(Utils.makeID(id)),
-			       HU.squote(polygon),"null","true",HU.squote(info)));
+			       HU.squote(polygon),props,"true",HU.squote(info)));
     }
 
 
