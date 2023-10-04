@@ -6518,8 +6518,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	sb.append("User-agent: Twitterbot\nAllow: /\n\nUser-agent: facebookexternalhit\nAllow: /\n\n");
 	if(acceptGoogleBot()) {
 	    sb.append("User-agent: Googlebot\nAllow: /\n\n");
+	    sb.append("User-agent: Googlebot-image\nAllow: /\n\n");
+	    sb.append("User-agent: Googlebot-Mobile\nAllow: /\n\n");	    	    
 	} else {
 	    sb.append("User-agent: Googlebot\nDisallow: /\n\n");
+	    sb.append("User-agent: Googlebot-image\nDisallow: /\n\n");	    
+	    sb.append("User-agent: Googlebot-Mobile\nDisallow: /\n\n");	    	    
 	}
 
 	
