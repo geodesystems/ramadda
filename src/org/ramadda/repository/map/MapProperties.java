@@ -16,6 +16,7 @@ import java.util.List;
  *
  * @author   RAMADDA development team
  */
+@SuppressWarnings("unchecked")
 public class MapProperties {
 
     List<String> props = new ArrayList<String>();
