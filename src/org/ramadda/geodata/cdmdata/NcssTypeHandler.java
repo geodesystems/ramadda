@@ -156,17 +156,16 @@ public class NcssTypeHandler extends PointTypeHandler {
 
 
         //time_start=2019-01-07T00%3A00%3A00Z&time_end=2019-02-22T06%3A00%3A00Z&vertCoord=&accept=csv";
-        //${date:now}time_start=${format:yyyy-MM-dd}&${date:+10 days}time_end=${format:yyyy-MM-dd}
-
+	//latitude=${latitude}&longitude=${longitude}&time_start=${date  format=yyyy-MM-dd}&time_end=${date date=now offset="${endTimeOffset}" format=yyyy-MM-dd}&vertCoord=&accept=csv
         String timeStartPattern = "time_start=([^&]+)&";
         String timeEndPattern   = "time_end=([^&]+)&";
         toks = Utils.findPatterns(url, timeStartPattern);
         if (toks != null) {
             //            throw new IllegalArgumentException("Could not find time_start:"  + url);
             String timeStart = toks[0];
-            url = url.replaceAll(
+           url = url.replaceAll(
                 timeStartPattern,
-                "\\${date:now}time_start=\\${format:yyyy-MM-dd}&");
+                "time_start=\\${date format=yyyy-MM-dd}&");
 
             toks = Utils.findPatterns(url, timeEndPattern);
             if (toks == null) {
@@ -176,7 +175,7 @@ public class NcssTypeHandler extends PointTypeHandler {
             String timeEnd = toks[0];
             url = url.replaceAll(
                 timeEndPattern,
-                "\\${date:+\\${endTimeOffset}}time_end=\\${format:yyyy-MM-dd}&");
+                "\\time_end=\\${date offset=\"\\${endTimeOffset}\"}&");
 
             timeStart = timeStart.replace("%3A", ":");
             timeEnd   = timeEnd.replace("%3A", ":");
@@ -184,7 +183,6 @@ public class NcssTypeHandler extends PointTypeHandler {
 
         //        System.err.println("lat:" + lat +" lon:" + lon);
         //        System.err.println("vars:" + vars);
-        //        System.err.println("url:" + url);
         return url;
     }
 
@@ -220,10 +218,12 @@ public class NcssTypeHandler extends PointTypeHandler {
      *
      * @throws Exception _more_
      */
+    @Override
     public void initializeNewEntry(Request request, Entry entry,
                                    boolean fromImport)
             throws Exception {
 
+	//Now call super to add initial metadata
         super.initializeNewEntry(request, entry, fromImport);
         if (fromImport) {
             return;
@@ -334,7 +334,6 @@ public class NcssTypeHandler extends PointTypeHandler {
         properties.append("\n");
         entry.setLocation(loc[0], loc[1]);
         entry.setValue(IDX_PROPERTIES, properties.toString());
-
     }
 
 
@@ -360,7 +359,8 @@ public class NcssTypeHandler extends PointTypeHandler {
         //subst the location
         url = super.convertPath(entry, url, requestProperties);
         url = Utils.normalizeTemplateUrl(url);
-        return new IO.Path(url);
+	System.err.println("URL:" + url);
+	return new IO.Path(url);
     }
 
     /**

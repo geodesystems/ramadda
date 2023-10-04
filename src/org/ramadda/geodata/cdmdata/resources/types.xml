@@ -145,6 +145,11 @@
      <property name="form.area.show" value="false"/>
      <property name="form.location.show" value="true"/>
      <property name="form.file.show" value="false"/>
+     <property name="record.properties">
+       time.format=yyyy-MM-dd'T'HH:mm:ss
+       field.time.type=date
+       field.station.type=string
+     </property>
      <column name="end_date_offset" label="End date offset" type="string" cansearch="false" default="+10 days" suffix=""/>
      <column name="default_fields" label="Default fields" type="list" cansearch="false"  size="1000" rows="4" suffix="One or more fields to display in linecharts in the default wiki"/>
 <wiki>

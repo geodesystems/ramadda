@@ -24,7 +24,7 @@ import org.ramadda.repository.Result;
 import org.ramadda.repository.ServiceInfo;
 import org.ramadda.repository.auth.AccessException;
 import org.ramadda.repository.auth.AuthorizationMethod;
-import org.ramadda.repository.map.MapBoxProperties;
+import org.ramadda.repository.map.MapProperties;
 import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
@@ -984,7 +984,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             MapInfo map = getRepository().getMapManager().createMap(request,
                               entry, true, null);
             map.addBox("", "", "", llr,
-                       new MapBoxProperties("blue", false, true));
+                       new MapProperties("blue", false, true));
             String[] points = new String[] { "" + llr.getLatMax(),
                                              "" + llr.getLonMin(),
                                              "" + llr.getLatMin(),
@@ -2393,7 +2393,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
         MapInfo map = getRepository().getMapManager().createMap(request,
                           entry, true, null);
-        map.addBox(entry, new MapBoxProperties("blue", false, true));
+        map.addBox(entry, new MapProperties("blue", false, true));
         map.centerOn(entry);
         String llb = map.makeSelector(ARG_POINT_BBOX, true, null);
         sb.append(HU.formEntryTop(msgLabel("Location"), llb));

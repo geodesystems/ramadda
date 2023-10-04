@@ -18,7 +18,7 @@ import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.Result;
 import org.ramadda.repository.auth.AccessException;
-import org.ramadda.repository.map.MapBoxProperties;
+import org.ramadda.repository.map.MapProperties;
 import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
@@ -763,7 +763,7 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
         MapInfo map = getRepository().getMapManager().createMap(request,
                           entry, true, null);
         map.addBox("", "", "", llr,
-                   new MapBoxProperties("blue", false, true));
+                   new MapProperties("blue", false, true));
         String llb = map.makeSelector(ARG_LOCATION, true, new String[] { lat,
                 lon });
         sb.append(HtmlUtils.formEntryTop(msgLabel("Location"), llb));
