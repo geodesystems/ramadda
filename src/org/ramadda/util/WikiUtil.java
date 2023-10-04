@@ -605,6 +605,8 @@ public class WikiUtil implements HtmlUtilsConstants {
             text = text.substring("<wiki>".length());
             text = text.replaceFirst("\\s*\\R?", "");
         }
+	String wikiId  = HU.getUniqueId("wiki_");
+	text =text.replace("${wikiid}",wikiId);
         List<Chunk> chunks = Chunk.splitText(text);
         String      s      = wikifyInner(chunks, handler, notTags);
         mainBuffer.append(s);
