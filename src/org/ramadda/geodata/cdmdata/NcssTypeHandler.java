@@ -16,7 +16,6 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
-import org.ramadda.util.text.Seesv;
 
 import org.w3c.dom.*;
 
@@ -268,27 +267,10 @@ public class NcssTypeHandler extends PointTypeHandler {
         url = parseUrl(url, loc, vars);
         entry.getResource().setPath(url);
 
-        if ( !Utils.stringDefined(entry.getDescription())) {
-            StringBuilder sb = new StringBuilder();
-            for (String var : vars) {
-                if (sb.length() == 0) {
-                    sb.append("Fields: ");
-                } else {
-                    sb.append(", ");
-                }
-                String label = Utils.makeLabel(var);
-                sb.append(HtmlUtils.span(label,
-                                         HtmlUtils.attr("title",
-                                             "id:" + var)));
-            }
-            sb.append("\n----\n");
-            entry.setDescription(sb.toString());
-        }
-
 
         StringBuilder properties = new StringBuilder("skiplines=1\n");
         properties.append(
-            "fields=time[type=date format=\"yyyy-MM-dd'T'HH:mm:ss\"],latitude[unit=\"degrees_north\"],longitude[unit=\"degrees_east\"]");
+            "fields=time[type=date format=\"yyyy-MM-dd'T'HH:mm:ss\"],station[type=string],latitude[unit=\"degrees_north\"],longitude[unit=\"degrees_east\"]");
         if (addVertCoord) {
             vars.add(0, "vertCoord");
             units.put("vertCoord", vertCoordUnit);
@@ -301,6 +283,9 @@ public class NcssTypeHandler extends PointTypeHandler {
             String origVar = vars.get(i);
             String unit    = units.get(origVar);
             String var     = GridPointOutputHandler.getAlias(origVar);
+	    if(origVar.equals("station")) {
+		extra += " type=string ";
+	    }
             String label   = Utils.makeLabel(origVar);
             label = GridPointOutputHandler.getProperty(origVar + ".label",
                     GridPointOutputHandler.getProperty(origVar + ".label",
@@ -359,7 +344,6 @@ public class NcssTypeHandler extends PointTypeHandler {
         //subst the location
         url = super.convertPath(entry, url, requestProperties);
         url = Utils.normalizeTemplateUrl(url);
-	System.err.println("URL:" + url);
 	return new IO.Path(url);
     }
 

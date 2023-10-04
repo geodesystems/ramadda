@@ -141,6 +141,16 @@
 
 <type name="type_ncss"  description="NetCDF Point Subset" super="type_point"
       category="Point Data" foruser="true" handler="org.ramadda.geodata.cdmdata.NcssTypeHandler">
+  <newhelp>
+<![CDATA[
+Add a URL from a THREDDS NetCDF Subset Service:
++callout-info
+* Go to the Subset Service page, e.g. <a target=_other href="https://thredds.ucar.edu/thredds/ncss/grid/grib/NCEP/GFS/CONUS_20km/Best/pointDataset.html">GFS CONUS 20km</a>
+* Select your parameters
+* At the bottom of the page copy the NCSS request URL
+-callout
+]]>
+  </newhelp>
      <property name="icon" value="/cdmdata/grid.gif"/>
      <property name="form.area.show" value="false"/>
      <property name="form.location.show" value="true"/>
@@ -155,15 +165,22 @@
 <wiki>
 <![CDATA[
 +section  title="{{name}}"
++toggle Information
 {{description wikify="true"}}
+{{information  details="true"  showTitle="false"  }}
+-toggle
 +row
 +col-md-8
-{{group showMenu="true" layoutType="table" layoutColumns="1" showTitle="false"}}
+<table><tr><td width=20px>{{group showMenu="true" layoutType="table" layoutColumns="1" showTitle="false" groupDiv="charts${wikiid}" displayInline=true}}
+</td><td>{{display_download showMenu=false layoutHere=true displayInline=true}}
+</td></tr></table>
+<div id="charts${wikiid}"></div>
 ${charts}
 -col
 +col-md-4
 <center>
 </center>
+:center <i>Displays the model grid point</i><br>
 {{display_map showTitle="false" showMenu="false" justOneMarker=true}}
 :p
 {{display_text showTitle="false" showMenu="false" labelWidth="100px"}}
