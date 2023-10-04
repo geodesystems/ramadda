@@ -123,6 +123,7 @@ public class Request implements Constants, Cloneable {
     /** _more_ */
     private StringBuilder suffixHtml = new StringBuilder();
 
+    private StringBuilder headContent = null;
 
     /** _more_ */
     private boolean checkingAuthMethod = false;
@@ -3492,6 +3493,15 @@ public class Request implements Constants, Cloneable {
      */
     public List<String> getArgs(RequestArgument arg) {
         return arg.getArgs(getRepository());
+    }
+
+    public void addHeadContent(String s) {
+	if(headContent == null) headContent = new StringBuilder();
+	headContent.append(s);
+    }
+
+    public String getHeadContent() {
+	return headContent==null?null:headContent.toString();
     }
 
     /**

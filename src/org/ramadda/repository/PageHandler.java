@@ -712,6 +712,14 @@ public class PageHandler extends RepositoryManager {
                                         (String) null);
         String     header        = entryHeader;
 
+	String headFinal = "";
+	if(prefix) {
+	    String  headContent = request.getHeadContent();
+	    if(headContent!=null) {
+		headFinal = headContent;
+	    }
+	}
+
         Appendable contents      = new StringBuilder();
 
         String     systemMessage = getRepository().getSystemMessage(request);
@@ -866,7 +874,7 @@ public class PageHandler extends RepositoryManager {
 	    MACRO_ENTRY_URL,  
 	    (String) result.getProperty(PROP_ENTRY_URL,  getRepository().getUrlBase()),
             MACRO_ENTRY_FOOTER, entryFooter, MACRO_ENTRY_BREADCRUMBS,
-            entryBreadcrumbs, MACRO_IMPORTS, imports, MACRO_HEADFINAL, "",
+            entryBreadcrumbs, MACRO_IMPORTS, imports, MACRO_HEADFINAL, headFinal,
             MACRO_ROOT, repository.getUrlBase(),
         };
 

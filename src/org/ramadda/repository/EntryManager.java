@@ -1585,6 +1585,11 @@ public class EntryManager extends RepositoryManager {
         outputType.incrNumberOfCalls();
         boolean handleAsGroup = handleEntryAsGroup(entry);
 
+	//Add the canonical link for google crawl
+	String full = HU.url(getFullEntryShowUrl(request),ARG_ENTRYID,entry.getId());
+	request.addHeadContent("<link rel=\"canonical\" href=\"" + full +"\" />");
+
+
         try {
             if (handleAsGroup) {
                 result = processGroupShow(request, outputHandler, outputType,
