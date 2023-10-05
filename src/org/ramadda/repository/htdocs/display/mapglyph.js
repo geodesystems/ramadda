@@ -5365,6 +5365,8 @@ MapGlyph.prototype = {
 	if(this.displayInfo.display) {
 	    this.displayInfo.display.setVisible(visible);
 	}
+	//For now don't toggle the class because if there isn't any thing shown we have a grey bar
+	return
 	let div = jqid(this.displayInfo.divId);
 	let outerDiv = jqid(this.displayInfo.outerDivId);	
 	if(visible) {
