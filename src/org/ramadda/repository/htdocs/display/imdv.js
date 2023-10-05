@@ -4235,6 +4235,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    } else {
 		url = Ramadda.getUrl("/entry/get?entryid="+opts.entryId);
 	    }
+	    url = url.replace(/\${root}/,ramaddaBaseUrl);
 	    mapGlyph.setDownloadUrl(url);
 	    let selectCallback = (feature,layer,event)=>{
 		//Don't handle the feature selected if we have a drawing command
