@@ -39,7 +39,7 @@
       <ant antfile="${src_dir}/org/ramadda/plugins/feed/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/gadgets/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/gtfs/build.xml" inheritAll="false"/>
-      <ant antfile="${src_dir}/org/ramadda/plugins/glossary/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/plugins/words/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/incident/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/ldap/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/mail/build.xml" inheritAll="false"/>

@@ -3,7 +3,7 @@ Copyright (c) 2008-2023 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
-package org.ramadda.plugins.glossary;
+package org.ramadda.plugins.words;
 
 
 import org.ramadda.repository.*;
