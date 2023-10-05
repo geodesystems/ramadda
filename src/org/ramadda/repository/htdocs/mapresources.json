@@ -41,14 +41,59 @@
 
   {"name":"US Railroads",
   "type":"geo_geojson",
-   "url":"https://ramadda.org/repository/entry/get/us_railroads.geojson?entryid=2487827b-4a0d-4532-9ae3-92c6202bf934"} 
+   "url":"https://ramadda.org/repository/entry/get/us_railroads.geojson?entryid=2487827b-4a0d-4532-9ae3-92c6202bf934"}, 
 
 
- 
-
-
-
-
-
- 
+{"name":"Alabama Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/alabama.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Alaska Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/alaska.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Arizona Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/arizona.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Arkansas Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/arkansas.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"California Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/california.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Colorado Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/colorado.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Connecticut Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/connecticut.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Delaware Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/delaware.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"District of Columbia Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/district_of_columbia.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Florida Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/florida.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Georgia Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/georgia.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Hawaii Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/hawaii.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Idaho Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/idaho.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Illinois Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/illinois.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Indiana Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/indiana.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Iowa Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/iowa.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Kansas Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/kansas.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Kentucky Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/kentucky.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Louisiana Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/louisiana.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Maine Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/maine.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Maryland Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/maryland.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Massachusetts Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/massachusetts.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Michigan Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/michigan.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Minnesota Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/minnesota.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Mississippi Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/mississippi.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Missouri Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/missouri.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Montana Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/montana.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Nebraska Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/nebraska.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Nevada Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/nevada.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"New Hampshire Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/new_hampshire.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"New Jersey Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/new_jersey.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"New Mexico Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/new_mexico.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"New York Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/new_york.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"North Carolina Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/north_carolina.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"North Dakota Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/north_dakota.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Ohio Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/ohio.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Oklahoma Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/oklahoma.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Oregon Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/oregon.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Pennsylvania Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/pennsylvania.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Puerto Rico Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/puerto_rico.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Rhode Island Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/rhode_island.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"South Carolina Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/south_carolina.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"South Ddakota Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/south_dakota.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Tennessee Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/tennessee.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Texas Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/texas.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Utah Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/utah.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Vermont Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/vermont.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Virginia Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/virginia.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Washington Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/washington.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"West Virginia Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/west_virginia.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Wisconsin Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/wisconsin.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+{"name":"Wyoming Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/wyoming.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}}
 ]
