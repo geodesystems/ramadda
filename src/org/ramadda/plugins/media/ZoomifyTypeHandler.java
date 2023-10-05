@@ -254,10 +254,12 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
     }
 
 
+    @Override
     public void getWikiTags(List<String[]> tags, Entry entry) {
 	tags.add(new String[]{"zoomify_collection","zoomify_collection"});
     }
 
+    @Override
     public void initTags(Hashtable<String, WikiTagHandler> tagHandlers) {
 	tagHandlers.put("zoomify_collection",this);
     }
@@ -273,6 +275,7 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
 	    return "No zoomable images";
 	}
         StringBuilder sb     = new StringBuilder();
+	initImports(request,sb);
 	String id = makeLayout(request, children.get(0),sb,props);
 	List<String> jsonProps =  getProperties(request, children.get(0),props);	
         Utils.add(jsonProps, "id", JsonUtil.quote(id));

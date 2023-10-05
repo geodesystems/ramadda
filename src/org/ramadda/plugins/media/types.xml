@@ -1,5 +1,6 @@
 <types>
-  <type name="type_document_tika"  foruser="false"  description="PDF, Word, PPT, etc"  super="type_document" handler="org.ramadda.plugins.media.TikaTypeHandler"  metadata="enum_tag,metadata_author,metadata_publisher">
+  <type name="type_document_tika"  foruser="false"  description="PDF, Word, PPT, etc"  super="type_document"
+	handler="org.ramadda.plugins.media.TikaTypeHandler"  metadata="enum_tag,metadata_author,metadata_publisher">
      <property name="icon" value="/icons/page.png"/>
      <service link="tika_extractmetadata"/>
     <wiki><![CDATA[
