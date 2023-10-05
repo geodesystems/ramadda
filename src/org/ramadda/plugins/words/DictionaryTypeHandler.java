@@ -7,12 +7,10 @@ package org.ramadda.plugins.words;
 
 
 import org.ramadda.repository.*;
-import org.ramadda.repository.auth.*;
-import org.ramadda.repository.database.*;
+import org.ramadda.repository.database.Tables;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
-import org.ramadda.repository.util.SelectInfo;
 import org.ramadda.util.HtmlUtils;
 
 
@@ -43,8 +41,6 @@ public class DictionaryTypeHandler extends ExtensibleGroupTypeHandler {
     /** _more_ */
     public static final String ARG_LETTER = "letter";
 
-    /** _more_ */
-    public static String TYPE_GLOSSARY = "glossary";
 
     /** _more_ */
     public static String ALL = "all";
@@ -96,7 +92,7 @@ public class DictionaryTypeHandler extends ExtensibleGroupTypeHandler {
                                             Appendable searchCriteria)
             throws Exception {
         List<Clause> where = super.assembleWhereClause(request,
-                                 searchCriteria);
+						       searchCriteria);
         if ( !isDefaultHtmlOutput(request)) {
             return where;
         }
@@ -150,7 +146,6 @@ public class DictionaryTypeHandler extends ExtensibleGroupTypeHandler {
         sb.append(getWikiManager().wikifyEntry(request, group,
                 group.getDescription()));
         sb.append(HtmlUtils.p());
-
         boolean canAdd = getAccessManager().canDoNew(request, group);
 
         List<String> letters = new ArrayList<String>();
@@ -182,12 +177,12 @@ public class DictionaryTypeHandler extends ExtensibleGroupTypeHandler {
         if ((entries.size() == 0) && request.defined(ARG_LETTER)) {
             sb.append(
                 getPageHandler().showDialogNote(
-                    msg("No glossary entries found")));
+                    msg("No dictionary words found")));
         }
         sb.append(
-            "<style type=\"text/css\">.glossary_entry {margin:0px;margin-bottom:5px;}\n");
+            "<style type=\"text/css\">.dictionary_word {margin:0px;margin-bottom:5px;}\n");
         sb.append(
-            ".glossary_entries {margin:0px;margin-bottom:5px;}\n</style>");
+            ".dictionary_words {margin:0px;margin-bottom:5px;}\n</style>");
         for (Entry entry : entries) {
             String name   = entry.getName();
             String letter = "-";
@@ -198,11 +193,11 @@ public class DictionaryTypeHandler extends ExtensibleGroupTypeHandler {
             if (letterBuffer == null) {
                 letterToBuffer.put(letter, letterBuffer = new StringBuffer());
                 letters.add(letter);
-                letterBuffer.append("<ul class=\"glossary_entries\">");
+                letterBuffer.append("<ul class=\"dictionary_words\">");
             }
             String href = getEntryManager().getAjaxLink(request, entry, name).toString();
             letterBuffer.append(
-                HtmlUtils.li(href, HtmlUtils.cssClass("glossary_entry")));
+                HtmlUtils.li(href, HtmlUtils.cssClass("dictionary_word")));
         }
 
         letters = (List<String>) Misc.sort(letters);

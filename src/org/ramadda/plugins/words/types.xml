@@ -48,9 +48,8 @@
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
      <property name="form.resource.show" value="false"/>
-<!--
-     <column name="category" iscategory="true"  type="string" label="Category" cansearch="true" showinhtml="true"/>
--->
+     <column name="translated_word"  type="string" label="Other Word" cansearch="true" showinhtml="true"/>
+     <column name="part_of_speech"  type="enumerationplus" label="Part of Speech" cansearch="true" showinhtml="true"/>
 </type>
 
 </types>
