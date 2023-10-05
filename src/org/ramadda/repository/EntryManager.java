@@ -1606,6 +1606,9 @@ public class EntryManager extends RepositoryManager {
                 result = outputHandler.outputEntry(request, outputType,
 						   entry);
             }
+	} catch(Exception exc) {
+	    getLogManager().logError("Error showing:" + entry.getName() +" id:" + entry.getId());
+	    throw exc;
         } finally {
             outputHandler.decrNumberOfConnections();
         }
