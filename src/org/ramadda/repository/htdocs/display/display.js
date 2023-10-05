@@ -2096,7 +2096,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getLogLabel: function() {
 	    let label = this.type + ("#"+this.myDisplayCount);
 	    let name = this.getProperty("name");
-	    if(name) label+="[" + name+"]";
+	    if(name) label+=" [" + name+"]";
 	    return label;
 	},
 	getColorTableHorizontal: function() {
@@ -7472,7 +7472,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 msg = data.error;
 		msg  = String(msg).replace(/</g,"&lt;").replace(/>/g,"&gt;");
             } else {
-                msg = "<b>An error has occurred:</b>";
+                msg = HU.b("An error has occurred:");
+		msg+='<br>'+this.getLogLabel()+'<br>';
                 if (!data) data = this.getNoDataMessage();
                 let error = data.error ? data.error : data;
                 error = error.replace(/<[^>]*>/g, "");
