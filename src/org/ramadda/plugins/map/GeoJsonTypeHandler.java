@@ -107,6 +107,7 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
                                        Element node,
                                        Hashtable<String, File> files)
             throws Exception {
+	super.initializeEntryFromXml(request, entry, node, files);
         initializeEntryFromForm(request, entry, null, true);
     }
 
