@@ -4,12 +4,17 @@
      <property name="icon" value="/icons/jpeg.png"/>
      <property name="form.description.rows" value="5"/>
      <property name="form.resource.show" value="false"/>
+     <property name="wiki.edit.links"><![CDATA[Image Overlay
+{{imagepair_default showLinks=true #imageWidth=800}}
+]]></property>
      <column name="display_type" type="enumeration"  values="beforeafter,imageoverlay,leftright" label="Display Type" />
      <column name="image_width" type="string" label="Optional image width" columns="5" default=""/>
      <wiki><![CDATA[
 +section title={{name}} 
 {{description wikify="true"}}
++centerdiv
 {{imagepair_default showLinks=true}}
+-centerdiv
 ----
 {{links message="" prefix="Images"}}
 -section
@@ -22,7 +27,9 @@
      <wiki><![CDATA[
 +section title={{name}} 
 {{description wikify="true"}}
++centerdiv
 {{beforeafter showLinks=true}}
+-centerdiv
 ----
 {{links message="" prefix="Images"}}
 -section
@@ -35,7 +42,9 @@
      <wiki><![CDATA[
 +section title={{name}} 
 {{description wikify="true"}}
++centerdiv
 {{imageoverlay showLinks=true}}
+-centerdiv
 ----
 {{links message="" prefix="Images"}}
 -section
@@ -52,7 +61,7 @@
 {{links message="" prefix="Images"}}
 -section
 ]]>
-     </wiki>     
+</wiki>     
 </type>
 
 
