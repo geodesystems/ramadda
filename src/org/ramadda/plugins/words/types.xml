@@ -1,7 +1,7 @@
 <types>
 
   <type name="glossary"  description="Glossary" handler="org.ramadda.plugins.words.GlossaryTypeHandler" category="Information" childtypes="glossaryentry">
-     <property name="icon" value="/glossary/glossary.png"/>
+     <property name="icon" value="/words/glossary.png"/>
      <property name="form.name.label" value="Glossary Name"/>
      <property name="form.description.rows" value="5"/>
      <property name="form.area.show" value="false"/>
@@ -12,7 +12,7 @@
 
 
   <type name="glossaryentry"  description="Glossary Entry" handler="org.ramadda.plugins.words.GlossaryEntryTypeHandler" category="Information" foruser="true">
-     <property name="icon" value="/glossary/glossaryentry.gif"/>
+     <property name="icon" value="/words/glossaryentry.gif"/>
      <property name="form.name.label" value="Topic"/>
      <property name="form.description.label" value="Descripton"/>
      <property name="form.description.rows" value="5"/>
