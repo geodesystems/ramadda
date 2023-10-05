@@ -25,5 +25,32 @@
 -->
 </type>
 
+<type name="type_dictionary"
+      description="Dictionary" handler="org.ramadda.plugins.words.DictionaryTypeHandler"
+      category="Information" childtypes="type_dictionary_word">
+     <property name="icon" value="/words/dictionary.png"/>
+     <property name="form.name.label" value="Dictionary Name"/>
+     <property name="form.description.rows" value="5"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
+</type>
+
+
+
+<type name="type_dictionary_word"  description="Dictionary Word"
+      handler="org.ramadda.plugins.words.DictionaryWordTypeHandler"
+      category="Information" foruser="true">
+     <property name="icon" value="/words/letter.png"/>
+     <property name="form.name.label" value="Topic"/>
+     <property name="form.description.label" value="Descripton"/>
+     <property name="form.description.rows" value="5"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
+<!--
+     <column name="category" iscategory="true"  type="string" label="Category" cansearch="true" showinhtml="true"/>
+-->
+</type>
 
 </types>
