@@ -4729,7 +4729,8 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	},
 	//Override base class method
 	setErrorMessage: function(msg) {
-	    this.showMessage(msg);
+	    //8 second time
+	    this.showMessage(msg,8000);
 	},
 	getCurrentLevel: function() {
 	    return this.getMap().getZoom();
