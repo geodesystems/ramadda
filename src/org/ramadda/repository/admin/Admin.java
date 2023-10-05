@@ -309,7 +309,7 @@ public class Admin extends RepositoryManager {
         //create the install password
         getInstallPassword();
 
-        if (getRepository().getProperty(PROP_ADMIN_INCLUDESQL, false)) {
+        if (getRepository().getLocalProperty(PROP_ADMIN_INCLUDESQL, false)) {
             adminUrls.add(URL_ADMIN_SQL);
         }
 
@@ -2175,7 +2175,7 @@ public class Admin extends RepositoryManager {
      */
     public Result adminSql(Request request) throws Exception {
 
-        if ( !getRepository().getProperty(PROP_ADMIN_INCLUDESQL, false)) {
+        if ( !getRepository().getLocalProperty(PROP_ADMIN_INCLUDESQL, false)) {
             return new Result("", new StringBuffer("Not enabled"));
         }
 
