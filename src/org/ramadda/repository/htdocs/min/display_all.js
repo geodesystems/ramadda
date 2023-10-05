@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Oct  5 07:23:02 MDT 2023";
+var build_date="RAMADDA build date: Thu Oct  5 07:54:22 MDT 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -9548,7 +9548,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    table+=HU.close('table');
 	    let message= HU.div([ID,this.domId(ID_DISPLAY_MESSAGE),CLASS,"display-output-message", STYLE,HU.css("display","none","position","absolute","top","10px","left","50%",
-									"-webkit-transform","translateX(-50%)","transform","translateX(-50%)")],"message");
+									"-webkit-transform","translateX(-50%)","transform","translateX(-50%)")],"");
             let html =  HU.div([ATTR_CLASS, 'ramadda-popup', STYLE,"display:none;", ATTR_ID, this.getDomId(ID_MENU_OUTER)], '');
             let style = this.getProperty('displayStyle', '');
             html += HU.div(['id',this.domId(ID_DISPLAY_CONTAINER),'spellcheck', 'false',CLASS, 'display-contents display-' + this.type +'-contents', STYLE, HU.css('position','relative') + style],table + message);
@@ -53148,6 +53148,8 @@ MapGlyph.prototype = {
 	if(this.displayInfo.display) {
 	    this.displayInfo.display.setVisible(visible);
 	}
+	//For now don't toggle the class because if there isn't any thing shown we have a grey bar
+	return
 	let div = jqid(this.displayInfo.divId);
 	let outerDiv = jqid(this.displayInfo.outerDivId);	
 	if(visible) {
