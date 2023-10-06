@@ -6,19 +6,19 @@ var wikiPopup = null;
 if(!window.WikiUtil) {
     window.WikiUtil = {
 	initWikiEditor(entry, wikiId, textId,cbxId) {
-            var textBlock = textId +"_block";
-            var wikiBlock = wikiId +"_block";
+            let textBlock = textId +"_block";
+            let wikiBlock = wikiId +"_block";
             $("#" + cbxId).click(() => {
-		var editor = WikiUtil.getWikiEditor(wikiId);
-		var on  = $("#" + cbxId).is(':checked');
+		let editor = WikiUtil.getWikiEditor(wikiId);
+		let on  = $("#" + cbxId).is(':checked');
 		if(on) {
                     $("#" + textBlock).css("display","none");
                     $("#" + wikiBlock).css("display","block");
-                    var val = $("#" + textId).val();
+                    let val = $("#" + textId).val();
                     editor.getEditor().setValue(val,8);
                     $("#" + wikiId).focus();
 		} else {
-                    var val = editor.getEditor().getValue();
+                    let val = editor.getEditor().getValue();
                     $("#" + textId).val(val);
                     $("#" + textBlock).css("display","block");
                     $("#" + wikiBlock).css("display","none");
@@ -64,20 +64,20 @@ if(!window.WikiUtil) {
 
 	insertText:function(id, value) {
 	    HtmlUtils.hidePopupObject();
-	    var popup = HtmlUtils.getTooltip();
+	    let popup = HtmlUtils.getTooltip();
 	    if(popup)
 		popup.hide();
-	    var handler = getHandler(id);
+	    let handler = getHandler(id);
 	    if (handler) {
-		handler.insertText(value);
+	    	handler.insertText(value);
 		return;
 	    }
-	    var editor = WikiUtil.getWikiEditor(id);
+	    let editor = WikiUtil.getWikiEditor(id);
 	    if (editor) {
 		editor.insertAtCursor(value);
 		return;
 	    }
-	    var textComp = GuiUtils.getDomObject(id);
+	    let textComp = GuiUtils.getDomObject(id);
 	    if (textComp) {
 		WikiUtil.insertAtCursor(id, textComp.obj, value);
 	    }
@@ -86,7 +86,7 @@ if(!window.WikiUtil) {
 
 
 	insertAtCursor:function(id, myField, value) {
-	    var editor = WikiUtil.getWikiEditor(id);
+	    let editor = WikiUtil.getWikiEditor(id);
 	    if(value.entryId && editor) {
 		editor.handleEntryLink(value.entryId, value.name,null,false,value);
 		return;
@@ -127,11 +127,11 @@ if(!window.WikiUtil) {
 	    let selText, isSample = false;
 	    tagOpen = Utils.decodeText(tagOpen);
 	    tagClose = Utils.decodeText(tagClose);    
-	    var editor = WikiUtil.getWikiEditor(id);
+	    let editor = WikiUtil.getWikiEditor(id);
 	    if (editor) {
 		editor=editor.getEditor();
-		var text = tagOpen + tagClose + " ";
-		var cursor = editor.getCursorPosition();
+		let text = tagOpen + tagClose + " ";
+		let cursor = editor.getCursorPosition();
 		editor.insert(text);
 		if (tagOpen.endsWith("\n")) {
 		    cursor.row++;
@@ -147,11 +147,11 @@ if(!window.WikiUtil) {
 
 	    if (txtarea.selectionStart || txtarea.selectionStart == '0') { // Mozilla
 		//save textarea scroll position
-		var textScroll = txtarea.scrollTop;
+		let textScroll = txtarea.scrollTop;
 		//get current selection
 		txtarea.focus();
-		var startPos = txtarea.selectionStart;
-		var endPos = txtarea.selectionEnd;
+		let startPos = txtarea.selectionStart;
+		let endPos = txtarea.selectionEnd;
 		selText = txtarea.value.substring(startPos, endPos);
 		//insert tags
 		txtarea.value = txtarea.value.substring(0, startPos) +
@@ -172,13 +172,14 @@ if(!window.WikiUtil) {
 
 	    if (document.selection && document.selection.createRange) { // IE/Opera
 		//save window scroll position
+		let winScroll;
 		if (document.documentElement && document.documentElement.scrollTop)
-		    var winScroll = document.documentElement.scrollTop
+		    winScroll = document.documentElement.scrollTop
 		else if (document.body)
-		    var winScroll = document.body.scrollTop;
+		    winScroll = document.body.scrollTop;
 		//get current selection  
 		txtarea.focus();
-		var range = document.selection.createRange();
+		let range = document.selection.createRange();
 		selText = range.text;
 		//insert tags
 		range.text = tagOpen + selText + tagClose;
@@ -237,7 +238,7 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
     this.ID_LLM_INPUT = "llm-input";
 
     this.initAttributes();
-    var options = {
+    let options = {
         autoScrollEditorIntoView: true,
         copyWithEmptySelection: true,
         //            theme:'ace/theme/solarized_light',
@@ -516,6 +517,9 @@ WikiEditor.prototype = {
     },
     insertAtCursor:function(value) {
 	value = Utils.decodeText(value);    
+	let sel = this.getEditor().getSelectedText();
+	if(sel) value = value+'\n' + sel;
+
 	if(this.popupShowing) {
 	    let popup = this.jq(this.ID_WIKI_POPUP_EDITOR)[0];
 	    if(popup) {
@@ -539,14 +543,8 @@ WikiEditor.prototype = {
 	let selText, isSample = false;
 	tagOpen = Utils.decodeText(tagOpen);
 	tagClose = Utils.decodeText(tagClose);    
-	/*
-	if(sampleText) {
-	    sampleText = Utils.decodeText(sampleText)+'\n';
-	    if(tagOpen) tagOpen = tagOpen.trim()+'\n';
-	}
-        let text = (tagOpen??'') + (sampleText??'')+(tagClose??'') + " ";
-	*/
-        let text = (tagOpen??'') + (tagClose??'') + " ";
+	let sel = this.getEditor().getSelectedText();
+        let text = (tagOpen??'') + (sel?sel+'\n':'') + (tagClose??'') + " ";
         let cursor = this.getEditor().getCursorPosition();
         this.getEditor().insert(text);
         if (tagOpen.endsWith("\n")) {
@@ -697,7 +695,7 @@ WikiEditor.prototype = {
 		let range = {start: {row:startRow,column:startCol},
 			     end: {row:endRow,column:endCol}
 			    }
-		var Range = ace.require('ace/range').Range;
+		let Range = ace.require('ace/range').Range;
 		range  = new Range(startRow, startCol, endRow, endCol)
 		
 		return {
