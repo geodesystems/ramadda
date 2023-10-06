@@ -42,7 +42,7 @@ var GLYPH_TYPES_LINES_OPEN = [GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_ROU
 var GLYPH_TYPES_LINES = [GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED,GLYPH_ROUTE];
 var GLYPH_TYPES_LINES_STRAIGHT = [GLYPH_LINE,GLYPH_POLYLINE];
 var GLYPH_TYPES_CLOSED = [GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED,GLYPH_BOX,GLYPH_TRIANGLE,GLYPH_HEXAGON];
-var MAP_TYPES = ['geo_geojson','geo_gpx','geo_shapefile','geo_kml'];
+var MAP_TYPES = ['geo_geojson','geo_gpx','geo_shapefile','geo_kml','geo_imdv'];
 var LEGEND_IMAGE_ATTRS = [ATTR_STYLE,'color:#ccc;font-size:9pt;'];
 var BUTTON_IMAGE_ATTRS = [ATTR_STYLE,'color:#ccc;'];
 var CLASS_IMDV_STYLEGROUP= 'imdv-stylegroup';
@@ -3319,6 +3319,10 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    formdata.append("entryid",this.getProperty("entryId"));
 	    formdata.append("authtoken",this.getProperty("authToken"));	    
 	    formdata.append("file",json);
+	    let bounds = this.getFullBounds(true);
+	    if(bounds) {
+		formdata.append("bounds",bounds.top+"," + bounds.left+","+bounds.bottom+","+bounds.right);
+	    }
 	    $.ajax({
 		url: url,
 		cache:false,
@@ -3339,6 +3343,23 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		_this.showMessage("failed to save map:" + textStatus +" " + error);
 	    });
 	},
+	loadIMDVUrl:function(url, finish,parentGlyph) {
+	    $.ajax({
+                url: url,
+		cache:false,
+                dataType: 'text',
+                success: (data) => {
+		    if(data=="") data="[]";
+		    let json = JSON.parse(data);
+		    this.loadIMDVJson(json,this.map,parentGlyph);
+		    if(finish) finish();
+		}
+	    }).fail(err=>{
+		if(finish)
+		    finish();
+		this.handleError(err);
+	    });		    
+	},
 	doImport: function() {
 	    let callback = (entryId) =>{
 		let url = Ramadda.getUrl("/entry/get?entryid=" + entryId);
@@ -3346,22 +3367,9 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		let finish = ()=>{
 		    this.display.clearMessage2();
 		    this.getMap().clearAllProgress();
+		    this.featureChanged(true);
 		}
-		$.ajax({
-                    url: url,
-		cache:false,
-                    dataType: 'text',
-                    success: (data) => {
-			finish();
-			if(data=="") data="[]";
-			let json = JSON.parse(data);
-			this.loadAnnotationJson(json,this.map);
-			this.featureChanged(true);
-		    }
-		}).fail(err=>{
-		    finish();
-		    this.handleError(err);
-		});		    
+		this.loadIMDVUrl(url,finish);
 	    };
 	    let props = {title:'Select IMDV entry to import',
 			 callback:callback,
@@ -3403,11 +3411,14 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    return  JSON.stringify(json);
 	},
 
-	loadAnnotationJson: function(mapJson,map) {
+	loadIMDVJson: function(mapJson,map,parentGlyph) {
 	    let glyphs = mapJson.glyphs||[];
 	    glyphs.forEach((jsonObject,idx)=>{
 		let mapGlyph = this.makeGlyphFromJson(jsonObject);
-		if(mapGlyph) this.addGlyph(mapGlyph,true);
+		if(mapGlyph) {
+		    if(parentGlyph) parentGlyph.addChildGlyph(mapGlyph);
+		    else this.addGlyph(mapGlyph,true);
+		}
 	    });
 	    if(this.getMapProperty('mapLegendPosition')) {
 		this.createMapLegendWrapper();
@@ -3825,16 +3836,17 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		return (i?HU.getIconImage(i):HU.div([ATTR_STYLE,'display:inline-block;width:20px;']))+HU.space(1)+
 		    HU.span([],l);
 	    }
-	    html+= this.menuItem(this.domId(ID_MAP_VIEWLAYERS),
-				 lbl("View All",'fas fa-globe'));
-
 	    if(this.initialLocation) {
 		html+= this.menuItem(this.domId(ID_MAP_RESETMAPVIEW),
 				     lbl("Initial View","fas fa-house"));
 	    }
+
+	    html+= this.menuItem(this.domId(ID_MAP_VIEWLAYERS),
+				 lbl("Set View to All",'fas fa-globe'));
+
             if (navigator.geolocation) {
 		html+= this.menuItem(this.domId(ID_MAP_MYLOCATION),
-				     lbl("Current Location","fas fa-street-view"));
+				     lbl("Your Location","fas fa-street-view"));
 	    }
 
 	    html+= this.menuItem(this.domId(ID_MAP_REGIONS),lbl("Regions","fas fa-map"));
@@ -3942,11 +3954,19 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 
 	},
 
-	zoomToLayers:function() {
+	getFullBounds:function(toLatLon) {
 	    let bounds=null;
             this.getGlyphs().forEach((mapGlyph,idx)=>{
 		bounds =  MapUtils.extendBounds(bounds,mapGlyph.getBounds());
 	    });
+	    if(bounds && toLatLon) {
+		bounds = this.getMap().transformProjBounds(bounds);
+	    }
+	    return bounds;
+	},
+
+	zoomToLayers:function() {
+	    let bounds=this.getFullBounds();
 	    if(bounds)
 		this.getMap().zoomToExtent(bounds);
 	},
@@ -4317,7 +4337,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		let layer =  this.getMap().addKMLLayer(opts.name,url,true, selectCallback, unselectCallback,style,loadCallback2,andZoom,errorCallback);
 		return layer;
 	    default:
-		this.handleError('Unknown map type:' + opts.entryType);
+		this.showMessage('Unknown map type:' + opts.entryType,4000);
 		return null;
 	    }
 	},
@@ -4410,7 +4430,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 			    _this.map.getMap().setCenter(bounds.getCenterLonLat());
 			}
 			try {
-			    this.loadAnnotationJson(json,_this.map);
+			    this.loadIMDVJson(json,_this.map);
 			} catch(err) {
 			    this.handleError(err);
 			}
@@ -4714,12 +4734,15 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	showMessage:function(msg,clearTime)  {
 	    if(msg!='')
 		msg = HU.div([ATTR_CLASS,'imdv-message-inner'],msg);
+	    else if(this.messageIsTimed) return;
 	    this.jq(ID_MESSAGE).html(msg);
 	    this.jq(ID_MESSAGE).show();
 	    if(this.messageErase) clearTimeout(this.messageErase);
 	    this.messageErase = null;
 	    if(clearTime>0 || !Utils.isDefined(clearTime)) {
+		this.messageIsTimed = true;
 		this.messageErase = setTimeout(()=>{
+		    this.messageIsTimed = false;
 		    this.jq(ID_MESSAGE).hide();
 		    this.jq(ID_MESSAGE).html('');
 		},clearTime??3000);
