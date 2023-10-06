@@ -2255,6 +2255,18 @@ public class EntryManager extends RepositoryManager {
 	File newFile = getStorageManager().moveToStorage(request,
 							 tmpFile);
 	entry.getResource().setFile(newFile,Resource.TYPE_STOREDFILE);
+	//Check for bounds
+	if(request.exists("bounds")) {
+	    List<String> pts   = Utils.split(request.getString("bounds",""),",",true,true);
+	    if(pts.size()==4) {
+		entry.setNorth(Double.parseDouble(pts.get(0)));
+		entry.setWest(Double.parseDouble(pts.get(1)));
+		entry.setSouth(Double.parseDouble(pts.get(2)));
+		entry.setEast(Double.parseDouble(pts.get(3)));		
+	    }
+	}
+
+
 	updateEntry(request, entry);
 	sb.append(JsonUtil.mapAndQuote(Utils.makeList("message", "OK, file has been saved")));
 	return new Result("", sb, JsonUtil.MIMETYPE);
