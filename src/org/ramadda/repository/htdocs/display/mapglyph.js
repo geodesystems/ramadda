@@ -295,7 +295,7 @@ MapGlyph.prototype = {
 		}
 	    });
 	}
-	if(this.haveChildren()) {
+	if(!this.dontSaveChildren && this.haveChildren()) {
 	    let childrenJson=[];
 	    this.getChildren().forEach(child=>{
 		if(child.isEphemeral) return;
@@ -2791,6 +2791,17 @@ MapGlyph.prototype = {
 	    if(!Utils.isDefined(andZoom)) {
 		//Not sure why we do this
 		//		andZoom = true;
+	    }
+	    if(this.attrs.entryType=='geo_imdv') {
+		this.dontSaveChildren=true;
+		if(this.mapLoaded) return;
+		let url =Ramadda.getUrl("/entry/get?entryid=" + this.attrs.entryId+"&fileinline=true");
+		let finish = (data)=>{
+		    this.mapLoaded = true;
+		    this.makeLegend();
+		};
+		this.display.loadIMDVUrl(url,finish,this);
+		return
 	    }
 	    this.setMapLayer(this.display.createMapLayer(this,this.attrs,this.style,andZoom));
 	    this.applyMapStyle();
