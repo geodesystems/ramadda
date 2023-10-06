@@ -1,2 +1,3 @@
 {"type":"FeatureCollection","features":[
-]}
+{ "type": "Feature", "properties": {"Name":"Washington city","State":"District of Columbia","State_Abbrev":"DC"},
+"geometry":{ "type": "Point", "coordinates": [-77.016517,38.904247]}}]}
