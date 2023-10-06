@@ -3158,6 +3158,25 @@ public class WikiUtil implements HtmlUtilsConstants {
                     continue;
                 }
 
+                if (tline.startsWith("+hbox")) {
+		    Hashtable props = getProps.apply(tline);
+		    String innerStyle = "";
+		    String style = Utils.getProperty(props,"style","");
+		    String space = Utils.getProperty(props,"space",null);
+		    if(space!=null) innerStyle+=HU.css("margin-left",HU.makeDim(space,"px"));
+		    buff.append(HU.open(HU.TAG_DIV,
+					HU.style("display:table-cell;vertical-align:top;"+style)));
+		    buff.append(HU.open(HU.TAG_DIV,
+					HU.style(innerStyle)));
+
+                    continue;
+                }
+
+                if (tline.startsWith("-hbox")) {
+                    HU.close(buff, HU.TAG_DIV,HU.TAG_DIV);
+                    continue;
+                }		
+
                 if (tline.startsWith("+mini") || tline.startsWith("+block")
                         || tline.startsWith("+note")
                         || tline.startsWith("+box")
