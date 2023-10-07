@@ -3581,7 +3581,9 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 			 });
 
 	    let props = this.getMapProperty('otherProperties','');
-	    let lines = ['legendLabel=Some label',...IMDV_PROPERTY_HINTS,
+	    let lines = ['legendLabel=Some label',
+			 'showViewInLegend=true',
+			 ...IMDV_PROPERTY_HINTS,
 			 'dragPanEnabled=false',
 			 'zoomPanEnabled=false',			 
 			 'addCurrentLocationMarker=true',
@@ -3824,46 +3826,55 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	getZoomImage:function(level) {
 	    return RamaddaUtil.getCdnUrl('/map/zoom/zoom' + level+'.png')
 	},
-	showViewMenu: function(button) {
+	makeViewMenu:function(addLabel,suffix,makeHtml) {
+	    let html = '';
+	    if(!makeHtml) {
+		makeHtml = (id,label)=>{
+		    return this.menuItem(id,label);
+		}
+	    }
+	    let lbl = (l,i) =>{
+		if(!addLabel) 
+		    return (HU.getIconImage(i));
+		return (i?HU.getIconImage(i):HU.div([ATTR_STYLE,'display:inline-block;width:20px;']))+HU.space(1)+
+		    HU.span([],l);
+	    }
+
+	    let make = (id,label,icon)=>{
+		return HU.span([ATTR_TITLE,label], makeHtml(id,lbl(label,icon)));
+	    }
+	    suffix = suffix??'';
+	    if(this.initialLocation) {
+		html+= make(this.domId(ID_MAP_RESETMAPVIEW+suffix),"Initial View","fas fa-house");
+	    }
+
+	    html+= make(this.domId(ID_MAP_VIEWLAYERS+suffix),'Set View to All','fas fa-globe');
+
+            if (navigator.geolocation) {
+		html+= make(this.domId(ID_MAP_MYLOCATION+suffix),"Your Location","fas fa-street-view");
+	    }
+
+	    html+= make(this.domId(ID_MAP_REGIONS+suffix),"Regions","fas fa-map");
+	    html+= make(this.domId(ID_MAP_CHOOSE+suffix),"Set Location/Zoom","fas fa-compass");	    
+	    return html;
+	},
+	initViewMenu:function(suffix,anchor) {
 	    let _this = this;
+	    suffix = suffix??'';
 	    let clear = () =>{
 		this.clearCommands();
 		HU.hidePopupObject(null,true);
 	    };
-	    let html ="";
-	    let div = '<div class=ramadda-menu-divider></div>';
-	    let lbl = (l,i) =>{
-		return (i?HU.getIconImage(i):HU.div([ATTR_STYLE,'display:inline-block;width:20px;']))+HU.space(1)+
-		    HU.span([],l);
-	    }
-	    if(this.initialLocation) {
-		html+= this.menuItem(this.domId(ID_MAP_RESETMAPVIEW),
-				     lbl("Initial View","fas fa-house"));
-	    }
 
-	    html+= this.menuItem(this.domId(ID_MAP_VIEWLAYERS),
-				 lbl("Set View to All",'fas fa-globe'));
-
-            if (navigator.geolocation) {
-		html+= this.menuItem(this.domId(ID_MAP_MYLOCATION),
-				     lbl("Your Location","fas fa-street-view"));
-	    }
-
-	    html+= this.menuItem(this.domId(ID_MAP_REGIONS),lbl("Regions","fas fa-map"));
-	    html+= this.menuItem(this.domId(ID_MAP_CHOOSE),lbl("Set Location/Zoom","fas fa-magnifying-glass"));	    
-
-
-	    html  = this.makeMenu(html);
-	    this.dialog = HU.makeDialog({content:html,anchor:button});
-	    this.jq(ID_MAP_CHOOSE).click(()=>{
+	    this.jq(ID_MAP_CHOOSE+suffix).click(function(){
 		clear();
 		let html = HU.formTable();
-		html+=HU.formEntry('Latitude:',HU.input('','',[ATTR_ID,this.domId('choose_latitude')]));
-		html+=HU.formEntry('Longitude:',HU.input('','',[ATTR_ID,this.domId('choose_longitude')]));		
+		html+=HU.formEntry('Latitude:',HU.input('','',[ATTR_ID,_this.domId('choose_latitude')]));
+		html+=HU.formEntry('Longitude:',HU.input('','',[ATTR_ID,_this.domId('choose_longitude')]));		
 
 		let opts = [2,3,4,5,6,7,8,9,10,11,13,14,15,16,17,18].map(v=>{
 		    return {label:v,value:v,
-			    image:this.getZoomImage(v)
+			    image:_this.getZoomImage(v)
 			   };
 		});
 		let zoomPopup  = '';
@@ -3877,11 +3888,11 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		});
 		zoomPopup=HU.div([ATTR_STYLE,'text-align:center;max-height:300px;overflow-y:auto;'], zoomPopup);
 		html+= HU.hidden('',_this.getCurrentLevel(),
-				 [ATTR_ID,this.domId('choose_zoom_value')]);
-		let zoomButton = HU.div([ATTR_ID,this.domId('choose_zoom_button')],
-					HU.image(this.getZoomImage(_this.getCurrentLevel()),
+				 [ATTR_ID,_this.domId('choose_zoom_value')]);
+		let zoomButton = HU.div([ATTR_ID,_this.domId('choose_zoom_button')],
+					HU.image(_this.getZoomImage(_this.getCurrentLevel()),
 						 [ATTR_TITLE,'Click to select level',
-						  ATTR_ID,this.domId('choose_zoom_image'),
+						  ATTR_ID,_this.domId('choose_zoom_image'),
 					  
 						  'width','100px',ATTR_CLASS,'ramadda-clickable']));
 		html+=HU.formEntry('Zoom Level:',zoomButton);
@@ -3891,10 +3902,10 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		    HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel');	    
 		html+=HU.center(buttons);
 		html = HU.div([ATTR_CLASS, 'ramadda-dialog'],html);
-		let dialog = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_VIEW),draggable:true,
+		let dialog = HU.makeDialog({content:html,anchor:anchor??$(this),draggable:true,
 					    title:'Set Location/Zoom',header:true});
 		let zoomDialog;
-		this.jq('choose_zoom_button').click(function(){
+		_this.jq('choose_zoom_button').click(function(){
 		    if(zoomDialog) zoomDialog.remove();
 		    zoomDialog =HU.makeDialog({content:zoomPopup,anchor:$(this),header:true,title:'&nbsp;&nbsp;Select Zoom Level'});
 		    zoomDialog.find('.ramadda-clickable').click(function() {
@@ -3920,12 +3931,12 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		    dialog.remove();
 		});
 	    });
-	    this.jq(ID_MAP_VIEWLAYERS).click(()=>{
+	    this.jq(ID_MAP_VIEWLAYERS+suffix).click(()=>{
 		clear();
 		this.zoomToLayers();
 	    });
 
-	    this.jq(ID_MAP_RESETMAPVIEW).click(()=>{
+	    this.jq(ID_MAP_RESETMAPVIEW+suffix).click(()=>{
 		clear();
 		if(this.initialLocation?.zoomLevel>=0 && Utils.isDefined(this.initialLocation?.zoomLevel)) {
 		    this.getMap().setZoom(this.initialLocation?.zoomLevel);
@@ -3934,7 +3945,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		    this.map.getMap().setCenter(this.initialLocation?.bounds.getCenterLonLat());
 		}
 	    });
-	    this.jq(ID_MAP_MYLOCATION).click(()=>{
+	    this.jq(ID_MAP_MYLOCATION+suffix).click(()=>{
 		clear();
 		navigator.geolocation.getCurrentPosition(position=> {
 		    let lat = position.coords.latitude;
@@ -3946,12 +3957,20 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		    console.error(error);
 		},this.geoOptions);
 	    });
-	    this.jq(ID_MAP_REGIONS).click(()=>{
+	    this.jq(ID_MAP_REGIONS+suffix).click(()=>{
 		clear();
 		this.initRegionsSelector(this.jq(ID_MENU_VIEW));
 	    });
+	},
 
 
+	showViewMenu: function(button) {
+	    let html ="";
+	    let div = '<div class=ramadda-menu-divider></div>';
+	    html+=this.makeViewMenu(true);
+	    html  = this.makeMenu(html);
+	    this.dialog = HU.makeDialog({content:html,anchor:button});
+	    this.initViewMenu(null,this.jq(ID_MENU_VIEW));
 	},
 
 	getFullBounds:function(toLatLon) {
@@ -4918,6 +4937,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    let legendWidth=this.getMapProperty("legendWidth",'200px');
 	    if(!Utils.stringDefined(legendWidth)) legendWidth='200px';
 	    let legendLabel= this.getMapProperty("legendLabel","");
+	    let showViewInLegend= this.getMapProperty("showViewInLegend",false);
 	    let idToGlyph={};
 	    let glyphs = this.getGlyphs();
 	    let html = '';
@@ -4943,10 +4963,16 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    if(glyphs.length)
 		html+=HU.div([ATTR_ID,this.domId(ID_DROP_END),ATTR_CLASS,CLASS_LEGEND_ITEM,ATTR_STYLE,'width:100%;height:1em;'],'');
 
+	    let top = '';
 	    if(Utils.stringDefined(legendLabel)) {
 		legendLabel=legendLabel.replace(/\\n/,'<br>');
-		html = HU.div([],legendLabel)+html;
+		top = HU.div([],legendLabel);
 	    }
+	    if(showViewInLegend) {
+		top +=HU.center(this.makeViewMenu(false,'_legend',(id,lbl)=>{return HU.span([ATTR_STYLE,'margin-right:6px;',ATTR_ID,id,ATTR_CLASS,CLASS_CLICKABLE], lbl);}));
+	    }
+	    html=top+html;
+
 	    let inMap  =(legendPosition=='map');
 	    if(html!="") {
 		let height= this.getProperty('height');
@@ -4999,8 +5025,11 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		this.jq(ID_LEGEND).html(html);
 	    }
 
+	    this.initViewMenu('_legend');
+
 	    this.makeLegendDroppable(null,this.jq(ID_DROP_BEGINNING),null);
 	    this.makeLegendDroppable(null,this.jq(ID_DROP_END),null);
+
 
 	    HU.initToggleBlock(this.jq(ID_LEGEND),(id,visible,element)=>{
 		let mapGlyph = idToGlyph[element.attr('map-glyph-id')];
