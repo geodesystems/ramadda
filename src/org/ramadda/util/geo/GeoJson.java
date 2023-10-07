@@ -390,9 +390,11 @@ public class GeoJson extends JsonUtil {
         JSONObject crs  = readObject(obj, "crs");
         String     type = obj.optString("type", "");
         pw.println("{");
-        pw.print("\"crs\":");
-        pw.print(crs.toString());
-        pw.println(",");
+	if(crs!=null) {
+	    pw.print("\"crs\":");
+	    pw.print(crs.toString());
+	    pw.println(",");
+	}
         pw.print("\"type\":");
         pw.print(quote(type));
         pw.println(",");
@@ -414,6 +416,7 @@ public class GeoJson extends JsonUtil {
                     String v = jsonProps.optString(names[j], "");
                     if (isRegexp) {
                         haveIt = v.matches(value);
+			System.err.println(v+" " + value);
                     } else {
                         haveIt = v.equals(value);
                     }
