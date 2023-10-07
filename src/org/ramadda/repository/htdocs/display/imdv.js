@@ -3957,9 +3957,9 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		    console.error(error);
 		},this.geoOptions);
 	    });
-	    this.jq(ID_MAP_REGIONS+suffix).click(()=>{
+	    this.jq(ID_MAP_REGIONS+suffix).click(function(){
 		clear();
-		this.initRegionsSelector(this.jq(ID_MENU_VIEW));
+		_this.initRegionsSelector(anchor??$(this));
 	    });
 	},
 
