@@ -11,7 +11,7 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
-
+import org.ramadda.util.WikiUtil;
 
 import org.w3c.dom.*;
 
@@ -28,6 +28,12 @@ import java.util.Properties;
  *
  */
 public class DictionaryWordTypeHandler extends GenericTypeHandler {
+    private static int IDX=0;
+    public static final int IDX_OTHER_WORD  =IDX++;
+    public static final int IDX_PART_OF_SPEECH = IDX++;
+    public static final int IDX_DIALECT  =IDX++;
+    public static final int IDX_SOURCE = IDX++;    
+
 
     /**
      * _more_
@@ -42,28 +48,100 @@ public class DictionaryWordTypeHandler extends GenericTypeHandler {
         super(repository, entryNode);
     }
 
+    private String getFromLabel(Entry parentEntry) {
+	if(parentEntry.getTypeHandler().isType("type_dictionary")) {
+	    DictionaryTypeHandler dth  = (DictionaryTypeHandler) parentEntry.getTypeHandler();
+	    String target = dth.getTargetLabel(parentEntry);
+	    return target +" " + msg("Word");
+	}
+	return null;
+    }
+
+    private String getToLabel(Entry parentEntry) {
+	if(parentEntry.getTypeHandler().isType("type_dictionary")) {
+	    DictionaryTypeHandler dth  = (DictionaryTypeHandler) parentEntry.getTypeHandler();
+	    String target = dth.getTargetLabel(parentEntry);
+	    return target +" " + msg("Word");
+	}
+	return null;
+    }
+
     @Override
     public String getFormLabel(Entry parentEntry, Entry entry, String arg, String dflt) {
-	if(arg.equals("other_word")) {
-	    if(parentEntry.getTypeHandler().isType("type_dictionary")) {
-		DictionaryTypeHandler dth  = (DictionaryTypeHandler) parentEntry.getTypeHandler();
-		String target = dth.getTargetLabel(parentEntry);
-		return target +" " + msg("Word");
-	    }
-	}
 	if(arg.equals(FIELD_NAME)) {
-	    if(parentEntry.getTypeHandler().isType("type_dictionary")) {
-		DictionaryTypeHandler dth  = (DictionaryTypeHandler) parentEntry.getTypeHandler();
-		String language = (String) parentEntry.getValue(DictionaryTypeHandler.IDX_LANGUAGE);
-		if(stringDefined(language)) 
-		    return language +" " + msg("Word");
-	    }
+	    String from = getFromLabel(parentEntry);
+	    if(from!=null) return from;
+	}
+
+	if(arg.equals("other_word")) {
+	    String to= getToLabel(parentEntry);
+	    if(to!=null) return to;
 	}
 
 
         return super.getFormLabel(parentEntry,entry,arg,dflt);
     }
 
+
+    @Override
+    public String getInlineHtml(Request request, Entry entry)
+            throws Exception {
+	return getInfo(request, entry,false,true);
+    }
+
+    public String getInfo(Request request, Entry entry, boolean includeWord, boolean includeDetails)
+            throws Exception {	
+
+	StringBuilder sb = new StringBuilder();
+	sb.append(HU.formTable());
+	if(includeWord) {
+	    String to= getToLabel(entry.getParentEntry());
+	    if(to==null)  to = "Word";
+	    HU.formEntry(sb,to+":", (String) entry.getValue(IDX_OTHER_WORD));
+	}
+	String s;
+	s = (String) entry.getValue(IDX_PART_OF_SPEECH);
+	if(stringDefined(s))
+	    HU.formEntry(sb,msgLabel("Part of speech"), s);
+	s = (String) entry.getValue(IDX_DIALECT);
+	if(stringDefined(s))
+	    HU.formEntry(sb,msgLabel("Dialect"), s);
+	s = (String) entry.getValue(IDX_SOURCE);
+	if(stringDefined(s))
+	    HU.formEntry(sb,msgLabel("Source"), s);		
+
+	if(includeDetails) {
+	    addUserSearchLink(request, entry, sb);
+	}
+	sb.append(HU.formTableClose());
+	return sb.toString();
+    }
+
+
+    /**
+     *
+     * @param wikiUtil _more_
+     * @param request _more_
+     * @param originalEntry _more_
+     * @param entry _more_
+     * @param tag _more_
+     * @param props _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    @Override
+    public String getWikiInclude(WikiUtil wikiUtil, Request request,
+                                 Entry originalEntry, Entry entry,
+                                 String tag, Hashtable props)
+            throws Exception {
+        if ( !tag.equals("dictionary.word")) {
+            return super.getWikiInclude(wikiUtil, request, originalEntry,
+                                        entry, tag, props);
+        }
+	return getInfo(request, entry,true,true);
+
+    }
 
 
 }

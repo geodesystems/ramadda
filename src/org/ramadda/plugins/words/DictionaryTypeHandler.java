@@ -180,7 +180,7 @@ public class DictionaryTypeHandler extends ExtensibleGroupTypeHandler {
         String[]     ltrs      = {
             "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
             "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
-            "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ALL
+            "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "-",ALL
         };
         String url = request.getUrl(ARG_LETTER);
         for (String letter : ltrs) {
@@ -195,11 +195,6 @@ public class DictionaryTypeHandler extends ExtensibleGroupTypeHandler {
         sb.append("</center>");
 
 	List<Entry> entries = children.get();
-        if ((entries.size() == 0) && request.defined(ARG_LETTER)) {
-            sb.append(
-                getPageHandler().showDialogNote(
-                    msg("No dictionary words found")));
-        }
         sb.append(
             "<style type=\"text/css\">.dictionary_word {margin:0px;margin-bottom:5px;}\n");
         sb.append(
@@ -207,10 +202,17 @@ public class DictionaryTypeHandler extends ExtensibleGroupTypeHandler {
         sb.append(getWikiManager().wikifyEntry(request, group,
 					       ":vspace 0.5em\n+center\n{{display_simplesearch  ancestor=this }}\n-center\n")); 
 
-
+        if ((entries.size() == 0) && request.defined(ARG_LETTER)) {
+            sb.append(
+                getPageHandler().showDialogNote(
+                    msg("No dictionary words found")));
+        }
 
         for (Entry entry : entries) {
             String name   = entry.getName();
+	    if(entry.getTypeHandler().isType("type_dictionary_word")) {
+		name += HU.space(1) +"-&gt;" + HU.space(1) +entry.getValue(DictionaryWordTypeHandler.IDX_OTHER_WORD);
+	    }
             String letter = "-";
             if (name.length() > 0) {
                 letter = name.substring(0, 1).toUpperCase();

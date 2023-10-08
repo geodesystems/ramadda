@@ -47,6 +47,7 @@
 
 
 <type name="type_dictionary_word"  description="Dictionary Word"
+      isgroup="true"
       handler="org.ramadda.plugins.words.DictionaryWordTypeHandler"
       category="Information" foruser="true"
       editfields="name,other_word,part_of_speech,_hr,description,_hr,_label:Metadata,_columns,tags,order"
@@ -66,6 +67,16 @@
 	     />
      <column name="dialect"  type="enumerationplus" label="Dialect" cansearch="true" showinhtml="true"/>
      <column name="source"  type="enumerationplus" label="Source" cansearch="true" showinhtml="true"/>          
+    <wiki><![CDATA[
++section # title="{{name}}"
+{{dictionary.word}}
+{{description wikify="true"}}
+{{grid message="" prefix="----\n:heading Media"}}
+-section
+]]>
+</wiki>
+
+
 </type>
 
 </types>
