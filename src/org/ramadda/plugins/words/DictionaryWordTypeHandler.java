@@ -100,16 +100,10 @@ public class DictionaryWordTypeHandler extends GenericTypeHandler {
 	    HU.formEntry(sb,to+":", (String) entry.getValue(IDX_OTHER_WORD));
 	}
 	String s;
-	s = (String) entry.getValue(IDX_PART_OF_SPEECH);
-	if(stringDefined(s))
-	    HU.formEntry(sb,msgLabel("Part of speech"), s);
-	s = (String) entry.getValue(IDX_DIALECT);
-	if(stringDefined(s))
-	    HU.formEntry(sb,msgLabel("Dialect"), s);
-	s = (String) entry.getValue(IDX_SOURCE);
-	if(stringDefined(s))
-	    HU.formEntry(sb,msgLabel("Source"), s);		
-
+	//Add the fields to the table and include the search under the parent
+	addColumnToTable(request, entry,findColumn("part_of_speech"),sb,ARG_ANCESTOR,entry.getParentEntry().getId());
+	addColumnToTable(request, entry,findColumn("dialect"),sb,ARG_ANCESTOR,entry.getParentEntry().getId());
+	addColumnToTable(request, entry,findColumn("source"),sb,ARG_ANCESTOR,entry.getParentEntry().getId());		
 	if(includeDetails) {
 	    addUserSearchLink(request, entry, sb);
 	}
