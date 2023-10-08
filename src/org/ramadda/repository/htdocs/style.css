@@ -2090,15 +2090,24 @@ thin_hr,.ramadda-thin-hr {
     display:block;
 }
 
+.ramadda-hr {
+    margin-top:0px;
+    margin-bottom:0px;
+    border-top:2px solid #ccc;
+    height:1px;
+    display:block;
+    margin-top:5px;
+    margin-bottom:5px;
+}
+
 
 .ramadda-section-line  {
     border-bottom:var(--basic-border);
 }
 
-.ramadda-hr {
-    margin-top:5px;
-    margin-bottom:5px;
-}
+
+
+
 
 
 
