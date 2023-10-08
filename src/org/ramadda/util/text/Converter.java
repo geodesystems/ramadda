@@ -16,6 +16,7 @@ import org.ramadda.util.Propper;
 import org.ramadda.util.Utils;
 
 
+import ucar.unidata.xml.XmlUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -3949,6 +3950,42 @@ public abstract class Converter extends Processor {
             return row;
         }
     }
+
+
+    public static class XmlEncode extends Converter {
+
+
+
+        /**
+         * @param name _more_
+         */
+        public XmlEncode(List<String> cols) {
+            super(cols);
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+		return row;
+            }
+	    for(int idx:getIndices(ctx)) {
+		try {
+		    if(!row.indexOk(idx)) continue;
+		    String v  =row.getString(idx);
+		    row.set(idx,XmlUtil.encodeString(v).replace("\n","\\n"));
+		} catch(Exception exc) {
+		    throw new RuntimeException(exc);
+		}
+	    }
+            return row;
+        }
+    }
+
 
 
     /**

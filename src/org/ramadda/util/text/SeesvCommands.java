@@ -160,6 +160,7 @@ public interface SeesvCommands {
     public static final String CMD_BETWEEN_INDICES="-between_indices";
     public static final String CMD_FROMHEADING="-fromheading";
     public static final String CMD_CHANGE="-change";
+    public static final String CMD_XMLENCODE="-xmlencode";    
     public static final String CMD_CHANGEROW="-changerow";
     public static final String CMD_CLEANWHITESPACE="-cleanwhitespace";
     public static final String CMD_MAKENUMBER="-makenumber";

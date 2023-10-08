@@ -2454,6 +2454,9 @@ public class Seesv implements SeesvCommands {
 		ARG_LABEL,"Check Missing URL",
                 new Arg(ARG_COLUMN, "URL Column", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("replace_with", "Replace with")),
+        new Cmd(CMD_XMLENCODE,
+		"Encode the value for XML",
+		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),	
         new Cmd(CMD_URLENCODE, "URL encode the columns",
 		ARG_LABEL,"URL Encode",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
@@ -4321,6 +4324,12 @@ public class Seesv implements SeesvCommands {
 				 new Converter.UrlEncode(getCols(args.get(++i))));
 		return i;
 	    });
+
+	defineFunction(CMD_XMLENCODE,1,(ctx,args,i) -> {
+		ctx.addProcessor(
+				 new Converter.XmlEncode(getCols(args.get(++i))));
+		return i;
+	    });	
 	defineFunction(CMD_URLDECODE,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.UrlDecode(getCols(args.get(++i))));
 		return i;
