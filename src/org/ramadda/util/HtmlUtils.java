@@ -507,7 +507,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @return _more_
      */
     public static String hr() {
-        return open(TAG_HR);
+        return open(TAG_HR,clazz("ramadda-hr"));
     }
 
     /**
