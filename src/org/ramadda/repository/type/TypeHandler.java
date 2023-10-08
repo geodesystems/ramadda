@@ -3713,42 +3713,10 @@ public class TypeHandler extends RepositoryManager {
                 }
 
 	    }
-
-	    if (showCreated
-		&& typeHandler.okToShowInHtml(entry, "owner", true)) {
-		String userSearchLink =
-		    HtmlUtils
-		    .href(HtmlUtils
-			  .url(request
-			       .makeUrl(getRepository()
-                                        .URL_USER_PROFILE), ARG_USER_ID,
-			       entry.getUser().getId()), entry
-			  .getUser()
-			  .getLabel(), "title=\"View user profile\"");
-
-
-		String linkMsg = "Search for entries of this type created by the user";
-		String userLinkId = HU.getUniqueId("userlink_");
-		userSearchLink = HtmlUtils
-		    .href(getSearchManager().URL_SEARCH_TYPE + "/"
-			  + entry.getTypeHandler().getType() + "?"
-			  + ARG_USER_ID + "=" + entry.getUser().getId()
-			  + "&" + SearchManager.ARG_SEARCH_SUBMIT
-			  + "=true", entry.getUser().getLabel(), HtmlUtils
-			  .id(userLinkId) + HtmlUtils
-			  .cssClass("entry-type-search") + HtmlUtils
-			  .attr(HtmlUtils
-				.ATTR_ALT, msg(linkMsg)) + HtmlUtils
-			  .attr(HtmlUtils
-				.ATTR_TITLE, linkMsg));
-		String overview = getUserManager().getUserAvatar(request,entry.getUser(),true,40,null);
-		if(overview!=null) {
-		    userSearchLink+="<br>" + overview;
-
-		}
-		sb.append(formEntry(request, msgLabel("Created by"),
-				    userSearchLink));
+	    if (showCreated) {
+		typeHandler.addUserSearchLink(request, entry, sb);
 	    }
+
 
             boolean hasDataDate = false;
 
@@ -3850,6 +3818,42 @@ public class TypeHandler extends RepositoryManager {
         return sb;
 
     }
+
+    public void addUserSearchLink(Request request, Entry entry, Appendable sb) throws Exception  {
+	if (!okToShowInHtml(entry, "owner", true)) return;
+	String userSearchLink =
+	    HtmlUtils
+	    .href(HtmlUtils
+		  .url(request
+		       .makeUrl(getRepository()
+				.URL_USER_PROFILE), ARG_USER_ID,
+		       entry.getUser().getId()), entry
+		  .getUser()
+		  .getLabel(), "title=\"View user profile\"");
+	
+	String linkMsg = "Search for entries of this type created by the user";
+	String userLinkId = HU.getUniqueId("userlink_");
+	userSearchLink = HtmlUtils
+	    .href(getSearchManager().URL_SEARCH_TYPE + "/"
+		  + entry.getTypeHandler().getType() + "?"
+		  + ARG_USER_ID + "=" + entry.getUser().getId()
+		  + "&" + SearchManager.ARG_SEARCH_SUBMIT
+		  + "=true", entry.getUser().getLabel(), HtmlUtils
+		  .id(userLinkId) + HtmlUtils
+		  .cssClass("entry-type-search") + HtmlUtils
+		  .attr(HtmlUtils
+			.ATTR_ALT, msg(linkMsg)) + HtmlUtils
+		  .attr(HtmlUtils
+			.ATTR_TITLE, linkMsg));
+	String overview = getUserManager().getUserAvatar(request,entry.getUser(),true,40,null);
+	if(overview!=null) {
+	    userSearchLink+="<br>" + overview;
+	    
+	}
+	sb.append(formEntry(request, msgLabel("Created by"),
+			    userSearchLink));
+    }
+
 
     /**
      * _more_
