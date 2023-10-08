@@ -29,10 +29,6 @@ import java.util.Properties;
  */
 public class DictionaryWordTypeHandler extends GenericTypeHandler {
 
-
-
-
-
     /**
      * _more_
      *
@@ -45,6 +41,29 @@ public class DictionaryWordTypeHandler extends GenericTypeHandler {
             throws Exception {
         super(repository, entryNode);
     }
+
+    @Override
+    public String getFormLabel(Entry parentEntry, Entry entry, String arg, String dflt) {
+	if(arg.equals("other_word")) {
+	    if(parentEntry.getTypeHandler().isType("type_dictionary")) {
+		DictionaryTypeHandler dth  = (DictionaryTypeHandler) parentEntry.getTypeHandler();
+		String target = dth.getTargetLabel(parentEntry);
+		return target +" " + msg("Word");
+	    }
+	}
+	if(arg.equals(FIELD_NAME)) {
+	    if(parentEntry.getTypeHandler().isType("type_dictionary")) {
+		DictionaryTypeHandler dth  = (DictionaryTypeHandler) parentEntry.getTypeHandler();
+		String language = (String) parentEntry.getValue(DictionaryTypeHandler.IDX_LANGUAGE);
+		if(stringDefined(language)) 
+		    return language +" " + msg("Word");
+	    }
+	}
+
+
+        return super.getFormLabel(parentEntry,entry,arg,dflt);
+    }
+
 
 
 }

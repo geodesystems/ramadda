@@ -92,7 +92,7 @@ public class MTTFTypeHandler extends GenericTypeHandler {
      */
     @Override
     public void addColumnToEntryForm(Request request, Column column,
-                                     Appendable formBuffer, Entry entry,
+                                     Appendable formBuffer, Entry parentEntry, Entry entry,
                                      Object[] values, Hashtable state,
                                      FormInfo formInfo,
                                      TypeHandler sourceTypeHandler)
@@ -132,7 +132,7 @@ public class MTTFTypeHandler extends GenericTypeHandler {
                 return;
             }
         }
-        super.addColumnToEntryForm(request, column, formBuffer, entry,
+        super.addColumnToEntryForm(request, column, formBuffer, parentEntry, entry,
                                    values, state, formInfo,
                                    sourceTypeHandler);
     }

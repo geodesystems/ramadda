@@ -37,6 +37,9 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class DictionaryTypeHandler extends ExtensibleGroupTypeHandler {
 
+    private  static  int IDX=0;
+    public static final int IDX_LANGUAGE = IDX++;
+    public static final int IDX_TARGET_LANGUAGE = IDX++;    
 
     /** _more_ */
     public static final String ARG_LETTER = "letter";
@@ -122,6 +125,14 @@ public class DictionaryTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
+    public String getTargetLabel(Entry entry)  {
+	Column column = findColumn("target_language");
+	String target = (String) entry.getValue(DictionaryTypeHandler.IDX_TARGET_LANGUAGE);
+	String label = stringDefined(target)?column.getEnumLabel(target):"";
+	if(!stringDefined(label)) label = target;
+	return label;
+    }
+
     /**
      * _more_
      *
@@ -142,17 +153,27 @@ public class DictionaryTypeHandler extends ExtensibleGroupTypeHandler {
 
         StringBuffer sb = new StringBuffer();
         getPageHandler().entrySectionOpen(request, group, sb, null);
+	String headerLabel = (String)group.getValue(IDX_LANGUAGE);
+	String to  =getTargetLabel(group);
+	if(stringDefined(to))  headerLabel += HU.space(1) +"-&gt;"+ HU.space(1) + to;
+	sb.append(HU.center(headerLabel));
 
         sb.append(getWikiManager().wikifyEntry(request, group,
                 group.getDescription()));
-        sb.append(HtmlUtils.p());
         boolean canAdd = getAccessManager().canDoNew(request, group);
+	if(canAdd) {
+	    sb.append(HU.center(HU.href(
+					HU.url(getRepository().getUrl("/entry/form"),
+					       ARG_GROUP,      group.getId(),
+					       ARG_TYPE, "type_dictionary_word"),
+					msg("Add Word"),HU.clazz("ramadda-button"))));
+	}
 
         List<String> letters = new ArrayList<String>();
         Hashtable<String, StringBuffer> letterToBuffer =
             new Hashtable<String, StringBuffer>();
 
-        sb.append(HtmlUtils.p());
+        sb.append(HU.hr());
         sb.append("<center>");
         List<String> header    = new ArrayList<String>();
         String       theLetter = request.getString(ARG_LETTER, "");
@@ -164,9 +185,9 @@ public class DictionaryTypeHandler extends ExtensibleGroupTypeHandler {
         String url = request.getUrl(ARG_LETTER);
         for (String letter : ltrs) {
             if (letter.equals(theLetter)) {
-                header.add(HtmlUtils.b(letter));
+                header.add(HU.b(letter));
             } else {
-                header.add(HtmlUtils.href(url + "&" + ARG_LETTER + "="
+                header.add(HU.href(url + "&" + ARG_LETTER + "="
                                           + letter, letter));
             }
         }
@@ -183,6 +204,11 @@ public class DictionaryTypeHandler extends ExtensibleGroupTypeHandler {
             "<style type=\"text/css\">.dictionary_word {margin:0px;margin-bottom:5px;}\n");
         sb.append(
             ".dictionary_words {margin:0px;margin-bottom:5px;}\n</style>");
+        sb.append(getWikiManager().wikifyEntry(request, group,
+					       ":vspace 0.5em\n+center\n{{display_simplesearch  ancestor=this }}\n-center\n")); 
+
+
+
         for (Entry entry : entries) {
             String name   = entry.getName();
             String letter = "-";
@@ -197,7 +223,7 @@ public class DictionaryTypeHandler extends ExtensibleGroupTypeHandler {
             }
             String href = getEntryManager().getAjaxLink(request, entry, name).toString();
             letterBuffer.append(
-                HtmlUtils.li(href, HtmlUtils.cssClass("dictionary_word")));
+                HU.li(href, HU.cssClass("dictionary_word")));
         }
 
         letters = (List<String>) Misc.sort(letters);
@@ -206,7 +232,7 @@ public class DictionaryTypeHandler extends ExtensibleGroupTypeHandler {
             StringBuffer letterBuffer = letterToBuffer.get(letter);
             letterBuffer.append("</ul>");
             sb.append("<a name=\"letter_" + letter + "\"></a>");
-            sb.append(HtmlUtils.h2(letter));
+            sb.append(HU.h2(letter));
             sb.append(letterBuffer);
         }
 

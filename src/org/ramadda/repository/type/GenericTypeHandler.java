@@ -1301,14 +1301,14 @@ public class GenericTypeHandler extends TypeHandler {
      */
     @Override
     public void addSpecialToEntryForm(Request request, Appendable formBuffer,
-                                      Entry parentEntry, Entry entry,
+                                      Entry parentEntry,Entry entry,
                                       FormInfo formInfo,
-                                      TypeHandler sourceTypeHandler,boolean firstCall)
+                                      TypeHandler sourceTypeHandler,HashSet seen)
             throws Exception {
-        super.addSpecialToEntryForm(request, formBuffer, parentEntry, entry,
-                                    formInfo, sourceTypeHandler,firstCall);
-        addColumnsToEntryForm(request, formBuffer, entry, formInfo,
-                              sourceTypeHandler, firstCall);
+        super.addSpecialToEntryForm(request, formBuffer, parentEntry,entry,
+                                    formInfo, sourceTypeHandler,seen);
+	addColumnsToEntryForm(request, formBuffer, parentEntry,entry, formInfo,
+                              sourceTypeHandler, seen);
     }
 
 
@@ -1324,27 +1324,15 @@ public class GenericTypeHandler extends TypeHandler {
      * @throws Exception on badness
      */
     public void addColumnsToEntryForm(Request request, Appendable formBuffer,
-                                      Entry entry, FormInfo formInfo,
-                                      TypeHandler sourceTypeHandler, boolean first)
+                                      Entry parentEntry, Entry entry, FormInfo formInfo,
+                                      TypeHandler sourceTypeHandler, HashSet seen)
             throws Exception {
-        addColumnsToEntryForm(request, formBuffer, entry, ((entry == null)
+        addColumnsToEntryForm(request, formBuffer, parentEntry,entry, ((entry == null)
                 ? null
-							   : getEntryValues(entry)), formInfo, sourceTypeHandler,first);
+							   : getEntryValues(entry)), formInfo, sourceTypeHandler,seen);
     }
 
 
-
-
-    public void addColumnsToEntryForm(Request request, Appendable formBuffer,
-                                      Entry entry, Object[] values,
-                                      FormInfo formInfo,
-                                      TypeHandler sourceTypeHandler)
-            throws Exception {
-	//Call in the first
-        addColumnsToEntryForm(request, formBuffer, entry, values,formInfo, sourceTypeHandler,true);
-	//Call in the second
-        addColumnsToEntryForm(request, formBuffer, entry, values,formInfo, sourceTypeHandler,false);	
-    }
 
     /**
      * _more_
@@ -1359,91 +1347,20 @@ public class GenericTypeHandler extends TypeHandler {
      * @throws Exception on badness
      */
     public void addColumnsToEntryForm(Request request, Appendable formBuffer,
-                                      Entry entry, Object[] values,
+                                      Entry parentEntry, Entry entry, Object[] values,
                                       FormInfo formInfo,
-                                      TypeHandler sourceTypeHandler, boolean firstCall)
+                                      TypeHandler sourceTypeHandler, HashSet seen)
             throws Exception {
         Hashtable state = new Hashtable();
         for (Column column : getMyColumns()) {
-	    if(!firstCall && column.getShowInFormFirst()) continue;
-	    if(firstCall && !column.getShowInFormFirst()) continue;	    
-            addColumnToEntryForm(request, column, formBuffer, entry, values,
+	    if(seen.contains(column.getName())) continue;
+	    seen.add(column.getName());
+            addColumnToEntryForm(request, column, formBuffer, parentEntry, entry, values,
                                  state, formInfo, sourceTypeHandler);
 
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param column _more_
-     * @param formBuffer _more_
-     * @param entry _more_
-     * @param values _more_
-     * @param state _more_
-     * @param formInfo _more_
-     * @param sourceTypeHandler _more_
-     *
-     * @throws Exception on badness
-     */
-    public void addColumnToEntryForm(Request request, Column column,
-                                     Appendable formBuffer, Entry entry,
-                                     Object[] values, Hashtable state,
-                                     FormInfo formInfo,
-                                     TypeHandler sourceTypeHandler)
-            throws Exception {
-        boolean hasValue = column.getString(values) != null;
-
-        if ( !column.getShowInForm()) {
-            return;
-        }
-
-        if ( !sourceTypeHandler.okToShowInForm(entry, column.getName(),
-                true)) {
-            return;
-        }
-
-        boolean canEdit    = sourceTypeHandler.getEditable(column);
-        boolean canDisplay = sourceTypeHandler.getCanDisplay(column);
-        if ((entry != null) && hasValue && !canEdit) {
-            if (canDisplay) {
-                StringBuilder tmpSb = new StringBuilder();
-                column.formatValue(request, entry, tmpSb, Column.OUTPUT_HTML,
-                                   values, false);
-                formBuffer.append(HtmlUtils.formEntry(column.getLabel()
-                        + ":", tmpSb.toString()));
-            }
-        } else if (canEdit) {
-            addColumnToEntryForm(request, entry, column, formBuffer, values,
-                                 state, formInfo, sourceTypeHandler);
-        }
-    }
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param column _more_
-     * @param formBuffer _more_
-     * @param values _more_
-     * @param state _more_
-     * @param formInfo _more_
-     * @param sourceTypeHandler _more_
-     *
-     * @throws Exception _more_
-     */
-    public void addColumnToEntryForm(Request request, Entry entry,
-                                     Column column, Appendable formBuffer,
-                                     Object[] values, Hashtable state,
-                                     FormInfo formInfo,
-                                     TypeHandler sourceTypeHandler)
-            throws Exception {
-        column.addToEntryForm(request, entry, formBuffer, values, state,
-                              formInfo, sourceTypeHandler);
-    }
 
 
     /**

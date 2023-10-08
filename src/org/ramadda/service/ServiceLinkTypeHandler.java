@@ -91,13 +91,13 @@ public class ServiceLinkTypeHandler extends ServiceTypeHandler {
      */
     @Override
     public void addColumnToEntryForm(Request request, Column column,
-                                     Appendable formBuffer, Entry entry,
+                                     Appendable formBuffer, Entry parentEntry,Entry entry,
                                      Object[] values, Hashtable state,
                                      FormInfo formInfo,
                                      TypeHandler baseHandler)
             throws Exception {
         if ( !column.getName().equals("service_id")) {
-            super.addColumnToEntryForm(request, column, formBuffer, entry,
+            super.addColumnToEntryForm(request, column, formBuffer, parentEntry, entry,
                                        values, state, formInfo, baseHandler);
 
             return;

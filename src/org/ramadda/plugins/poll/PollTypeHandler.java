@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
@@ -115,10 +116,9 @@ public class PollTypeHandler extends BlobTypeHandler {
      */
     @Override
     public void addColumnsToEntryForm(Request request, Appendable formBuffer,
-                                      Entry entry, FormInfo formInfo,
-                                      TypeHandler baseTypeHandler, boolean firstCall) {
+                                      Entry parentEntry, Entry entry, FormInfo formInfo,
+                                      TypeHandler baseTypeHandler, HashSet seen) {
         try {
-	    if(firstCall) return;
             Hashtable    props   = getProperties(entry);
             List<String> choices = (List<String>) props.get(ATTR_CHOICES);
             if (choices == null) {

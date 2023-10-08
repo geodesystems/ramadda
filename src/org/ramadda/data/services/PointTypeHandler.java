@@ -497,12 +497,12 @@ public class PointTypeHandler extends RecordTypeHandler {
      */
     @Override
     public void addColumnToEntryForm(Request request, Column column,
-                                     Appendable formBuffer, Entry entry,
+                                     Appendable formBuffer, Entry parentEntry,Entry entry,
                                      Object[] values, Hashtable state,
                                      FormInfo formInfo,
                                      TypeHandler baseTypeHandler)
             throws Exception {
-        super.addColumnToEntryForm(request, column, formBuffer, entry,
+        super.addColumnToEntryForm(request, column, formBuffer, parentEntry,entry,
                                    values, state, formInfo, baseTypeHandler);
 
 

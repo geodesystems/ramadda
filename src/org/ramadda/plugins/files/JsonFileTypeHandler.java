@@ -30,6 +30,7 @@ import ucar.unidata.util.IOUtil;
 import java.io.*;
 
 import java.util.Hashtable;
+import java.util.HashSet;
 
 
 /**
@@ -68,13 +69,12 @@ public class JsonFileTypeHandler extends ConvertibleTypeHandler {
     public void addSpecialToEntryForm(Request request, Appendable sb,
                                       Entry parentEntry, Entry entry,
                                       FormInfo formInfo,
-                                      TypeHandler baseTypeHandler, boolean firstCall)
+                                      TypeHandler baseTypeHandler, HashSet seen)
             throws Exception {
         super.addSpecialToEntryForm(request, sb, parentEntry, entry,
-                                    formInfo, baseTypeHandler, firstCall);
-	if(!firstCall)
-	    sb.append(formEntryTop(request, msgLabel("Json text"),
-				   HtmlUtils.textArea(ARG_TEXT, "", 50, 60)));
+                                    formInfo, baseTypeHandler, seen);
+	sb.append(formEntryTop(request, msgLabel("Json text"),
+			       HtmlUtils.textArea(ARG_TEXT, "", 50, 60)));
     }
 
     /**

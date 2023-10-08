@@ -591,6 +591,11 @@ public class RepositoryBase implements Constants, RepositorySource {
         return Utils.concatString(urlBase, f);
     }
 
+    public String getUrl(String f) {
+        return Utils.concatString(urlBase, f);
+    }
+
+
     /**
      * _more_
      *

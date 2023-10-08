@@ -880,7 +880,8 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public void addColumnToEntryForm(Request request, Entry entry,
+    public void addColumnToEntryForm(Request request, Entry parentEntry,
+				     Entry entry,
                                      Column column, Appendable formBuffer,
                                      Object[] values, Hashtable state,
                                      FormInfo formInfo,
@@ -920,7 +921,7 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
                 return;
             }
         }
-        super.addColumnToEntryForm(request, entry, column, formBuffer,
+        super.addColumnToEntryForm(request, parentEntry, entry, column, formBuffer,
                                    values, state, formInfo, baseTypeHandler);
     }
 

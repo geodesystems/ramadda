@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <types supercategory="Geoscience">
 
-  <type name="type_point_openaq"  description="Open AQ Air Quality" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.OpenAQTypeHandler">
+  <type name="type_point_openaq"  description="Open AQ Air Quality" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.OpenAQTypeHandler"
+      editfields="location_id,_default"
+	
+>
     <property name="icon" value="/point/openaq.png"/>
     <property name="form.resource.show" value="false"/>
     <property name="form.properties.show" value="false"/>
@@ -15,7 +18,7 @@ Just enter the Location ID. To find the ID view the map at
 click on "Show Details". The ID is in the URL, 
 e.g. 270997 in <a href=https://explore.openaq.org/locations/270997>https://explore.openaq.org/locations/270997</a>
 -note]]></property>
-     <column name="location_id" label="Location ID" 	     showinformfirst="true"/>
+     <column name="location_id" label="Location ID"/>
      <column  name="country"  label="Country" cansearch="true"/>
      <column  name="city"  label="City" cansearch="true"/>
      <column  name="sensor"  label="Sensor" type="enumerationplus" default="" cansearch="true"/>
@@ -66,7 +69,8 @@ label,pos:c,dx:cw2,dy:-ch2,label:${${_field} suffix=" ${unit}" decimals=2}
 
   </type>
 
-  <type name="type_point_purpleair"  description="Purple Air Sensor" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.PurpleAirTypeHandler">
+  <type name="type_point_purpleair"  description="Purple Air Sensor" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.PurpleAirTypeHandler"
+      editfields="sensor_id,_default"	>
     <action name="gethistory" label="Download History" icon="fas fa-download"/>
     <action name="clearfile" label="Clear File" icon="fas fa-rotate-right" canedit="true"/>
     <property name="icon" value="/point/purpleair/icon.png"/>
@@ -77,7 +81,6 @@ label,pos:c,dx:cw2,dy:-ch2,label:${${_field} suffix=" ${unit}" decimals=2}
     <property name="form.properties.show" value="false"/>
     <property name="map.chart.fields" value="temperature,pm2_5"/>          
     <column  name="sensor_id"  label="Sensor ID" type="string"
-	     showinformfirst="true"
 	     postfix="&lt;thin_hr&gt;" help="Enter the sensor ID:"/>
      <column  name="private_key"  label="Private Key"  type="password"/>
      <column  name="active"  label="Active"  type="boolean" default="true"/>     

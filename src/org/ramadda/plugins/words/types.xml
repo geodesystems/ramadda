@@ -27,29 +27,45 @@
 
 <type name="type_dictionary"
       description="Dictionary" handler="org.ramadda.plugins.words.DictionaryTypeHandler"
-      category="Information" childtypes="type_dictionary_word">
+      category="Information" childtypes="type_dictionary_word"
+      editfields="name,language,_columns,_hr,description,_label:Metadata,tags,order" 
+>
      <property name="icon" value="/words/dictionary.png"/>
      <property name="form.name.label" value="Dictionary Name"/>
      <property name="form.description.rows" value="5"/>
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
      <property name="form.resource.show" value="false"/>
+
+     <column name="language" label="Language" type="enumerationplus"
+	     cansearch="true" showinhtml="true"/>
+     <column name="target_language" label="Target Language" type="enumerationplus"
+	     cansearch="true" showinhtml="true"
+	     values="en:English,es:Spanish,fr:French"/>     
 </type>
 
 
 
 <type name="type_dictionary_word"  description="Dictionary Word"
       handler="org.ramadda.plugins.words.DictionaryWordTypeHandler"
-      category="Information" foruser="true">
+      category="Information" foruser="true"
+      editfields="name,other_word,part_of_speech,_hr,description,_hr,_label:Metadata,_columns,tags,order"
+      >
      <property name="icon" value="/words/letter.png"/>
-     <property name="form.name.label" value="Topic"/>
+     <property name="form.name.label" value="Word"/>
+     <property name="form.name.showlabel" value="true"/>     
      <property name="form.description.label" value="Descripton"/>
      <property name="form.description.rows" value="5"/>
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
      <property name="form.resource.show" value="false"/>
-     <column name="translated_word"  type="string" label="Other Word" cansearch="true" showinhtml="true"/>
-     <column name="part_of_speech"  type="enumerationplus" label="Part of Speech" cansearch="true" showinhtml="true"/>
+
+     <column name="other_word"  type="string" label="Other Word" cansearch="true" showinhtml="true" columns="70"/>
+     <column name="part_of_speech"  type="enumerationplus" label="Part of Speech" cansearch="true" showinhtml="true"
+	     values="noun,pronoun,verb,adjective,adverb,preposition,conjunction,interjection"
+	     />
+     <column name="dialect"  type="enumerationplus" label="Dialect" cansearch="true" showinhtml="true"/>
+     <column name="source"  type="enumerationplus" label="Source" cansearch="true" showinhtml="true"/>          
 </type>
 
 </types>

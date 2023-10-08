@@ -1,10 +1,11 @@
 <types supercategory="Miscellaneous" category="Integration" >
 
-  <type name="type_s3_root"  description="AWS S3"   handler="org.ramadda.plugins.aws.S3RootTypeHandler" metadata="entry_type_patterns,convert_file">
+  <type name="type_s3_root"  description="AWS S3"   handler="org.ramadda.plugins.aws.S3RootTypeHandler" metadata="entry_type_patterns,convert_file"
+      editfields="root_id,_default"	>
     <property name="icon" value="/aws/aws.png"/>
     <property name="form.description.iswiki" value="true"/>
     <property name="form.resource.show" value="false"/>
-    <column name="root_id" showinformfirst="true" type="string"  label="Main S3 Bucket ID" columns="80" size="1000"/>
+    <column name="root_id" type="string"  label="Main S3 Bucket ID" columns="80" size="1000"/>
     <column name="aws_access_key"  type="password"  label="AWS Key" size="1000"
 	    help="Optional. Either &quot;access_key:private_key&quot; or &quot;environment_variable&quot;"/>
 

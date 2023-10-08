@@ -6418,8 +6418,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         formBuffer.append(buttons);
         formBuffer.append(HU.formTable());
         FormInfo formInfo = new FormInfo(formId);
-        tableHandler.addColumnsToEntryForm(request, formBuffer, entry,
-                                           values, formInfo, this);
+        tableHandler.addColumnsToEntryForm(request, formBuffer, entry.getParentEntry(),entry,
+                                           values, formInfo, this, new HashSet());
 
         formBuffer.append(HU.formTableClose());
         formBuffer.append(buttons);

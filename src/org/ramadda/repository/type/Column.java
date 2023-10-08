@@ -2659,7 +2659,8 @@ public class Column implements DataTypes, Constants, Cloneable {
      *
      * @throws Exception _more_
      */
-    public void addToEntryForm(Request request, Entry entry,
+    public void addToEntryForm(Request request, Entry parentEntry,
+			       Entry entry,
                                Appendable formBuffer, Object[] values,
                                Hashtable state, FormInfo formInfo,
                                TypeHandler sourceTypeHandler)
@@ -2694,12 +2695,13 @@ public class Column implements DataTypes, Constants, Cloneable {
 	if(Utils.stringDefined(suffix)) {
 	    widget = HU.hbox(widget, suffix);
 	}
+	String label = sourceTypeHandler.getFormLabel(parentEntry, entry, getName(),getLabel());
         if (rows > 1) {
             formBuffer.append(typeHandler.formEntryTop(request,
-                    getLabel() + ":", widget));
+						       label + ":", widget));
         } else {
             formBuffer.append(typeHandler.formEntry(request,
-                    getLabel() + ":", widget));
+						    label + ":", widget));
         }
 	if(Utils.stringDefined(postFix)) {
 	    formBuffer.append("<tr><td colspan=2>" + postFix+"</td></tr>");

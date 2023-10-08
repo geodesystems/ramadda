@@ -20,7 +20,7 @@ import org.w3c.dom.*;
 import ucar.unidata.util.IOUtil;
 
 import java.io.*;
-
+import java.util.HashSet;
 
 /**
  *
@@ -60,11 +60,10 @@ public class PasteitEntryTypeHandler extends GenericTypeHandler {
     public void addSpecialToEntryForm(Request request, Appendable sb,
                                       Entry parentEntry, Entry entry,
                                       FormInfo formInfo,
-                                      TypeHandler baseTypeHandler, boolean firstCall)
+                                      TypeHandler baseTypeHandler, HashSet seen)
             throws Exception {
         super.addSpecialToEntryForm(request, sb, parentEntry, entry,
-                                    formInfo, baseTypeHandler, firstCall);
-	if(!firstCall) return;
+                                    formInfo, baseTypeHandler, seen);
         //Only on a new entry
         if (entry != null) {
             return;
