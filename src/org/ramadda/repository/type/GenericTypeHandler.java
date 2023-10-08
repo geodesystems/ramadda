@@ -1136,7 +1136,6 @@ public class GenericTypeHandler extends TypeHandler {
                     if ((column.getGroup() != null)
                             && !Misc.equals(lastGroup, column.getGroup())) {
                         lastGroup = column.getGroup();
-
                         myBuff.append(
                             HtmlUtils.row(
                                 HtmlUtils.col(
@@ -1144,25 +1143,8 @@ public class GenericTypeHandler extends TypeHandler {
                                         lastGroup,
                                         " class=\"formgroupheader\" "), " colspan=2 ")));
                     }
-                    StringBuilder tmpSb = new StringBuilder();
-                    if (values != null) {
-                        formatColumnHtmlValue(request, entry, column, tmpSb,
-                                values);
-                    }
-                    if ( !column.getShowEmpty() && (tmpSb.length() == 0)) {
-                        continue;
-                    }
-
-                    if (column.getShowLabel()) {
-                        myBuff.append(formEntry(request,
-                                column.getLabel() + ":", tmpSb.toString()));
-                    } else {
-                        myBuff.append(
-                            HtmlUtils.row(
-                                HtmlUtils.col(
-                                    tmpSb.toString(), " colspan=2 ")));
-                    }
-                }
+		    addColumnToTable(request, entry,column,myBuff);
+		}
             }
 
             if (getMeFirst()) {
@@ -1178,6 +1160,44 @@ public class GenericTypeHandler extends TypeHandler {
 
         return parentBuff;
     }
+
+    public void addColumnToTable(Request request, Entry entry,Column column,Appendable myBuff,String...searchArgs) throws Exception {
+	if(column==null) return;
+	StringBuilder tmpSb = new StringBuilder();
+	Object[]      values = getEntryValues(entry);
+	if (values != null) {
+	    formatColumnHtmlValue(request, entry, column, tmpSb, values);
+	}
+	if ( !column.getShowEmpty() && (tmpSb.length() == 0)) {
+	    return;
+	}
+
+	if (column.getShowLabel()) {
+	    String label = tmpSb.toString();
+	    if(column.getCanSearch() && column.isEnumeration() && values!=null) {
+		String s = column.getString(values);
+		if(stringDefined(s)) {
+		    String searchUrl = getSearchManager().URL_SEARCH_TYPE + "/"
+			+ entry.getTypeHandler().getType();
+		    searchUrl = HU.url(searchUrl,"search." +entry.getTypeHandler().getType() +"."+ column.getName(),s);
+		    for(int i=0;i<searchArgs.length;i+=2) {
+			searchUrl = HU.url(searchUrl,searchArgs[i],searchArgs[i+1]);
+		    }
+
+		    label  =HU.href(searchUrl,label);
+		}
+	    }
+	    myBuff.append(formEntry(request,
+				    column.getLabel() + ":", label));
+	} else {
+	    myBuff.append(
+			  HtmlUtils.row(
+					HtmlUtils.col(
+						      tmpSb.toString(), " colspan=2 ")));
+	}
+    }
+
+
 
     /**
      * _more_
