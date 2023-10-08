@@ -1524,7 +1524,7 @@ public class WikiManager extends RepositoryManager
 
         if (prefix != null) {
             //Convert ant _nl_, _qt_, etc
-            prefix = Utils.convertPattern(prefix);
+            prefix = Utils.convertPattern(prefix).replace("\\n","\n");;
             prefix = wikifyEntry(request, entry, wikiUtil, prefix, false,
                                  wikiUtil.getNotTags(), true);
             sb.append(prefix);
