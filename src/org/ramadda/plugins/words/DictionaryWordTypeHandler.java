@@ -86,7 +86,6 @@ public class DictionaryWordTypeHandler extends GenericTypeHandler {
     @Override
     public String getInlineHtml(Request request, Entry entry)
             throws Exception {
-	System.err.println("getInline");
 	return getInfo(request, entry,false,true);
     }
 
@@ -115,7 +114,6 @@ public class DictionaryWordTypeHandler extends GenericTypeHandler {
 	    addUserSearchLink(request, entry, sb);
 	}
 	sb.append(HU.formTableClose());
-	System.err.println("info " + sb);
 	return sb.toString();
     }
 

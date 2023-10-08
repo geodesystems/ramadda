@@ -498,7 +498,6 @@ public class HtmlOutputHandler extends OutputHandler {
             return getMapInfo(request, entry);
         }
         if (outputType.equals(OUTPUT_INLINE)) {
-            //      if(true) throw new IllegalArgumentException("output inline called");
             request.setCORSHeaderOnResponse();
             String inline = typeHandler.getInlineHtml(request, entry);
             if (inline != null) {
@@ -912,6 +911,14 @@ public class HtmlOutputHandler extends OutputHandler {
         String       cbxId;
         String       cbxWrapperId;
 
+	//See if we include the
+	boolean showInfo =parent.getTypeHandler().getTypeProperty("inline.includeinformation",false);
+	if(showInfo) {
+            String inline = parent.getTypeHandler().getInlineHtml(request, parent) ;
+	    if(inline!=null) sb.append(inline);
+	}
+
+
         if ( !showingAll(request, children)) {
             sb.append(msgLabel("Showing") + " 1.." + (children.size()));
             sb.append(HU.space(2));
@@ -933,8 +940,9 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
 
-        if (cnt == 0) {
-            parent.getTypeHandler().handleNoEntriesHtml(request, parent, sb);
+	//Only add the info when there are no children and we haven't included the info above
+        if (cnt == 0 && !showInfo) {
+	    parent.getTypeHandler().handleNoEntriesHtml(request, parent, sb);
             String snippet = getWikiManager().getSnippet(request, parent,
                                  true, null);
             if (Utils.stringDefined(snippet)) {
@@ -2139,7 +2147,6 @@ public class HtmlOutputHandler extends OutputHandler {
 
         if (outputType.equals(OUTPUT_INLINE)) {
             request.setCORSHeaderOnResponse();
-
             return getChildrenXml(request, group, getChildren.get());
         }
 

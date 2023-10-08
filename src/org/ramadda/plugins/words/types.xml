@@ -60,6 +60,7 @@
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
      <property name="form.resource.show" value="false"/>
+     <property name="inline.includeinformation" value="true"/>     
 
      <column name="other_word"  type="string" label="Other Word" cansearch="true" showinhtml="true" columns="70"/>
      <column name="part_of_speech"  type="enumerationplus" label="Part of Speech" cansearch="true" showinhtml="true"
