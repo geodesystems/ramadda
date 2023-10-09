@@ -4133,6 +4133,7 @@ public class WikiManager extends RepositoryManager
 		tds.add(makeTableTree(request, wikiUtil,props,(List<Entry>)entries));
 	    }
 
+	    
 	    return makeChunks(request, wikiUtil, props, tds);
         } else if (theTag.equals(WIKI_TAG_TREEVIEW)
                    || theTag.equals(WIKI_TAG_FRAMES)) {
@@ -4569,7 +4570,7 @@ public class WikiManager extends RepositoryManager
 	    int cnt = 0;
 	    StringBuilder sb = new StringBuilder();
 	    for(int i=0;i<tds.size();i++) {
-		sb.append(HU.div(tds.get(i).toString(),HU.style("vertical-align:top;display:inline-block;")));
+		sb.append(HU.div(tds.get(i).toString(),HU.style("vertical-align:top;display:table-cell;")));
 		if(++cnt>=columns)  {
 		    cnt=0;
 		    sb.append("<br>");
