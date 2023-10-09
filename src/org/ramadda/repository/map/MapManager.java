@@ -1263,7 +1263,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 			 HtmlUtils.href(
 					getEntryManager().getEntryURL(request, entry),
 					HtmlUtils.img(
-						      getIconUrl, msg("Click to view entry details"))));
+						      getIconUrl, "Click to view entry details")));
             catSB.append("&nbsp;");
             catSB.append(HtmlUtils.href(navUrl, getEntryDisplayName(entry)));
             //            catSB.append("</td>");
@@ -1916,7 +1916,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 			 HtmlUtils.href(
 					getEntryManager().getEntryURL(request, entry),
 					HtmlUtils.img(
-						      getIconUrl, msg("Click to view entry details"))));
+						      getIconUrl,"Click to view entry details")));
             catSB.append("&nbsp;");
             String label = getEntryDisplayName(entry);
             catSB.append(HtmlUtils.href(navUrl, label,
