@@ -1056,6 +1056,13 @@ public class EntryManager extends RepositoryManager {
         }
 
         if (entry == null) {
+	    String id = request.getString(ARG_ENTRYID,null);
+	    if(id!=null &&
+	       isSynthEntry(id) && (request.getIsRobot() || 
+				    request.getIsGoogleBot())) {
+		System.err.println("skipping synth entry from bot request:" + id);
+		return getRepository().getNoRobotsResult(request);
+	    }	       
             entry = getEntryFromRequest(request, ARG_ENTRYID,
                                         getRepository().URL_ENTRY_SHOW,false);
         }
@@ -1063,6 +1070,8 @@ public class EntryManager extends RepositoryManager {
         if (entry == null) {
             fatalError(request, "No entry specified");
         }
+
+
 
 	if(getRepository().getLogActivity()) {
 	    if(request.getString("product","").equals("points.json")) {
