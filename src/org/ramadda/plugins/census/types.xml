@@ -81,9 +81,10 @@ This allows you to do a subsequent selection, e.g. set this to "county" and the 
 +section title={{name}} #
 {{displayProperty name="fieldAliases" value="B06011_001E:B19113_001E"}}
 {{description wikify="true" }}
-{{group showMenu="true" layoutColumns="2"  layoutType="htable" showTitle="false" tooltip="${default}" }}
-{{display type="table" layoutHere="false" skipFields="latitude,longitude" chartHeight="600"}}
-{{display_map layoutHere="false"  width="100%" height="600" showTitle="true" 
+{{display_download}}
+{{group showMenu="false" layoutColumns="2"  layoutType="htable" showTitle="false" tooltip="${default}" }}
+{{display_table layoutHere="false" skipFields="latitude,longitude" height="450" chartHeight="450"}}
+{{display_map layoutHere="false"  width="100%" height="600" showTitle="true"  height="450"
 titleId="census.age.label"
 title="Colored by median age from blue (younger), to white (middle) to red (older)"
 colorBy="B01002_001E"
@@ -255,9 +256,10 @@ Median income
 <wiki><![CDATA[+section title={{name}} #
 {{displayProperty name="fieldAliases" value="B06011_001E:B19113_001E"}}
 {{description wikify="true" }}
-{{group showMenu="true" layoutColumns="2"  layoutType="htable" showTitle="false" tooltip="${default}" }}
-{{display type="table" layoutHere="false" skipFields="latitude,longitude" chartHeight="600" }}
-{{display_map  layoutHere="false"  height="600" showTitle="true" title="Colored by poverty levels from blue (lower) to white (middle) to red (higher)"
+{{display_download}}
+{{group showMenu="false" layoutColumns="2"  layoutType="htable" showTitle="false" tooltip="${default}" }}
+{{display_table showMenu=false  layoutHere="false" skipFields="latitude,longitude" height="450" chartHeight="450" }}
+{{display_map  showMenu=false layoutHere="false"  height="450" showTitle="true" title="Colored by poverty levels from blue (lower) to white (middle) to red (higher)"
 colorBy="B07012_002E"
 colorBar="blue_white_red"
 strokeColor="black"
