@@ -680,12 +680,16 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                         HtmlUtils.SIZE_15 + " autofocus ")));
         }
 
+        boolean showDate = this.showDate && typeHandler.okToShowInForm(null, ARG_DATE, true);
         if (showDefault && showDate) {
             TypeHandler.addDateSearch(getRepository(), request, formSB,
                                       DateArgument.ARG_DATA, false);
 
         }
 
+	boolean showArea = this.showArea && (
+					     typeHandler.okToShowInForm(null, ARG_LOCATION, false) ||
+					     typeHandler.okToShowInForm(null, ARG_AREA, false));
         if (showDefault && showArea) {
             String[] nwse = new String[] {
                                 request.getSanitizedString(ARG_AREA_NORTH,
