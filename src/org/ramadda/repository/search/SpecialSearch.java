@@ -202,7 +202,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         showArea = typeHandler.getTypeProperty("search.form.area.show",
                 "true").equals("true");
         showDate = typeHandler.getTypeProperty("search.form.date.show",
-                "true").equals("true");
+					       "true").equals("true");
         searchUrl = "/search/type/" + typeHandler.getType();
         label     = typeHandler.getTypeProperty("search.label", null);
         if (label == null) {
@@ -680,16 +680,12 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                         HtmlUtils.SIZE_15 + " autofocus ")));
         }
 
-        boolean showDate = this.showDate && typeHandler.okToShowInForm(null, ARG_DATE, true);
         if (showDefault && showDate) {
             TypeHandler.addDateSearch(getRepository(), request, formSB,
                                       DateArgument.ARG_DATA, false);
 
         }
 
-	boolean showArea = this.showArea && (
-					     typeHandler.okToShowInForm(null, ARG_LOCATION, false) ||
-					     typeHandler.okToShowInForm(null, ARG_AREA, false));
         if (showDefault && showArea) {
             String[] nwse = new String[] {
                                 request.getSanitizedString(ARG_AREA_NORTH,
@@ -800,8 +796,13 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     public void makeEntryList(Request request, Appendable sb,
                               List<Entry> entries)
             throws Exception {
+
+	Hashtable props = new Hashtable();
+	props.put("showChangeDate","false");	
+	if(!showDate) 
+	    props.put("showDate","false");
         getRepository().getHtmlOutputHandler().makeTable(request, entries,
-                sb, null);
+							 sb, props);
     }
 
     /**

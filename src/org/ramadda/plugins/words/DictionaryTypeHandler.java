@@ -171,7 +171,9 @@ public class DictionaryTypeHandler extends LetterTypeHandler {
         sb.append(
             ".dictionary_words {margin:0px;margin-bottom:5px;}\n</style>");
         sb.append(getWikiManager().wikifyEntry(request, group,
-					       ":vspace 0.5em\n+center\n{{display_simplesearch  ancestor=this }}\n-center\n")); 
+					       ":vspace 0.5em\n+center\n+hbox\n{{display_simplesearch  inputSize=200 width=200 ancestor=this }}\n-hbox\n"
+					       +
+					       "+hbox\n&nbsp;&nbsp;<a href='{{root}}/search/type/type_dictionary_word?ancestor={{this}}' title='Go to search form'><i class='fas fa-magnifying-glass-arrow-right'></i></a>\n-hbox\n-center\n")); 
 
         if ((entries.size() == 0) && request.defined(ARG_LETTER)) {
             sb.append(
