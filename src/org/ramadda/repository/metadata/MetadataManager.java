@@ -509,8 +509,11 @@ public class MetadataManager extends RepositoryManager {
 
         if (entry.isFile()) {
             top.add("distribution");
-            top.add(JsonUtil.mapAndQuote(Utils.makeList("@type",
-                    "DataDownload", "contentUrl",
+	    String mimeType = getRepository().getMimeTypeFromSuffix(
+								    IO.getFileExtension(entry.getResource().getPath()));
+            top.add(JsonUtil.mapAndQuote(Utils.makeList("@type","DataDownload",
+							"encodingFormat",mimeType,
+							"contentUrl",
                     getEntryManager().getEntryResourceUrl(request, entry,
                         EntryManager.ARG_INLINE_DFLT, true, false))));
         }
