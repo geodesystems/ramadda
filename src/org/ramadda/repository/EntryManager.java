@@ -9494,6 +9494,7 @@ public class EntryManager extends RepositoryManager {
     private void parentageChanged(Entry parent) {
 	if(parent!=null) {
 	    childrenCache.remove(parent.getId());
+	    parent.getTypeHandler().childrenChanged(parent);
 	}
     }
 

@@ -654,6 +654,9 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+    public void childrenChanged(Entry entry) {
+    }
+
     /**
      *
      * @param type _more_
