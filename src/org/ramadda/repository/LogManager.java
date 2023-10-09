@@ -214,6 +214,9 @@ public class LogManager extends RepositoryManager {
 
         String ip        = request.getIp();
         String uri       = request.getRequestPath();
+	String id = request.getString(ARG_ENTRYID,null);
+	if(id!=null) uri = uri +"?" + ARG_ENTRYID +"="+id;
+
         String method    = request.getHttpServletRequest().getMethod();
         String userAgent = request.getUserAgent("none");
         String time      = sdf.format(new Date());
