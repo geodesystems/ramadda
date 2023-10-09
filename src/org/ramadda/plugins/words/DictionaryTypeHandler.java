@@ -12,9 +12,14 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
+
+import org.ramadda.util.sql.SqlUtil;
 
 
 import org.ramadda.util.sql.Clause;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 
 import org.w3c.dom.*;
@@ -26,7 +31,10 @@ import ucar.unidata.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.List;
+
+import org.ramadda.util.TTLCache;
 
 
 
@@ -35,18 +43,16 @@ import java.util.List;
  *
  */
 @SuppressWarnings("unchecked")
-public class DictionaryTypeHandler extends ExtensibleGroupTypeHandler {
+public class DictionaryTypeHandler extends LetterTypeHandler {
+
+
 
     private  static  int IDX=0;
     public static final int IDX_LANGUAGE = IDX++;
     public static final int IDX_TARGET_LANGUAGE = IDX++;    
 
-    /** _more_ */
-    public static final String ARG_LETTER = "letter";
 
 
-    /** _more_ */
-    public static String ALL = "all";
 
     /**
      * _more_
@@ -62,22 +68,6 @@ public class DictionaryTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
-    public int getDefaultQueryLimit(Request request, Entry entry) {
-        if (request.defined(ARG_OUTPUT)) {
-            return super.getDefaultQueryLimit(request, entry);
-        }
-
-        return 1000;
-    }
 
 
     /**
@@ -150,7 +140,6 @@ public class DictionaryTypeHandler extends ExtensibleGroupTypeHandler {
             return null;
         }
 
-
         StringBuffer sb = new StringBuffer();
         getPageHandler().entrySectionOpen(request, group, sb, null);
 	String headerLabel = (String)group.getValue(IDX_LANGUAGE);
@@ -174,25 +163,7 @@ public class DictionaryTypeHandler extends ExtensibleGroupTypeHandler {
             new Hashtable<String, StringBuffer>();
 
         sb.append(HU.hr());
-        sb.append("<center>");
-        List<String> header    = new ArrayList<String>();
-        String       theLetter = request.getString(ARG_LETTER, "");
-        String[]     ltrs      = {
-            "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
-            "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
-            "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "-",ALL
-        };
-        String url = request.getUrl(ARG_LETTER);
-        for (String letter : ltrs) {
-            if (letter.equals(theLetter)) {
-                header.add(HU.b(letter));
-            } else {
-                header.add(HU.href(url + "&" + ARG_LETTER + "="
-                                          + letter, letter));
-            }
-        }
-        sb.append(StringUtil.join("&nbsp;|&nbsp;", header));
-        sb.append("</center>");
+	sb.append(makeHeader(request,group));
 
 	List<Entry> entries = children.get();
         sb.append(

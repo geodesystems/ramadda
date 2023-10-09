@@ -50,9 +50,8 @@ public class DictionaryWordTypeHandler extends GenericTypeHandler {
 
     private String getFromLabel(Entry parentEntry) {
 	if(parentEntry.getTypeHandler().isType("type_dictionary")) {
-	    DictionaryTypeHandler dth  = (DictionaryTypeHandler) parentEntry.getTypeHandler();
-	    String target = dth.getTargetLabel(parentEntry);
-	    return target +" " + msg("Word");
+	    String from  = (String) parentEntry.getValue(DictionaryTypeHandler.IDX_LANGUAGE);
+	    return from +" " + msg("Word");
 	}
 	return null;
     }
@@ -86,7 +85,8 @@ public class DictionaryWordTypeHandler extends GenericTypeHandler {
     @Override
     public String getInlineHtml(Request request, Entry entry)
             throws Exception {
-	return getInfo(request, entry,false,true);
+	String wiki  = getWikiManager().wikifyEntry(request, entry, entry.getDescription());
+	return getInfo(request, entry,false,true)+wiki;
     }
 
     public String getInfo(Request request, Entry entry, boolean includeWord, boolean includeDetails)

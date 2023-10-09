@@ -37,7 +37,7 @@ import java.util.List;
  *
  */
 @SuppressWarnings("unchecked")
-public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
+public class GlossaryTypeHandler extends LetterTypeHandler {
 
 
     /** _more_ */
@@ -173,26 +173,7 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
             new Hashtable<String, StringBuffer>();
 
         sb.append(HtmlUtils.p());
-        sb.append("<center>");
-        List<String> header    = new ArrayList<String>();
-        String       theLetter = request.getString(ARG_LETTER, "");
-        String[]     ltrs      = {
-            "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
-            "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
-            "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ALL
-        };
-        String url = request.getUrl(ARG_LETTER);
-        for (String letter : ltrs) {
-            if (letter.equals(theLetter)) {
-                header.add(HtmlUtils.b(letter));
-            } else {
-                header.add(HtmlUtils.href(url + "&" + ARG_LETTER + "="
-                                          + letter, letter));
-            }
-        }
-        sb.append(StringUtil.join("&nbsp;|&nbsp;", header));
-        sb.append("</center>");
-
+	sb.append(makeHeader(request,group));
 	List<Entry> entries = children.get();
         if ((entries.size() == 0) && request.defined(ARG_LETTER)) {
             sb.append(
