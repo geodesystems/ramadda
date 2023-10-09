@@ -44,6 +44,7 @@ import java.util.List;
  * @author jeff mcwhirter
  * @version $Revision: 1.3 $
  */
+@SuppressWarnings("unchecked")
 public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
     /** _more_ */
