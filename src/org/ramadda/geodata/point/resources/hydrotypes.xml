@@ -13,7 +13,8 @@
 
 
   <type name="type_hydro_colorado"  super="type_point_hydro" description="Colorado DNR Stream Gage"  handler="org.ramadda.data.services.PointTypeHandler">
-    <property name="fixed_url" value="https://dwr.state.co.us/Rest/GET/api/v2/telemetrystations/telemetrytimeseriesday/?format=csv&amp;abbrev=${site_id}&amp;endDate=${date:now}${format:MM/dd/yy}&amp;parameter=GAGE_HT%2CDISCHRG&amp;startDate=${date:-1 week}${z:MST}START=${format:MM/dd/yy}"/>
+    <property name="fbxxxixed_url" value="https://dwr.state.co.us/Rest/GET/api/v2/telemetrystations/telemetrytimeseriesday/?format=csv&amp;abbrev=${site_id}&amp;endDate=${date format=MM/dd/yy}&amp;parameter=GAGE_HT%2CDISCHRG&amp;startDate=${date offset=&quot;-1 week&quot; z=MST}&amp;START=${date format=MM/dd/yy}"/>
+    <property name="fixed_url" value="https://dwr.state.co.us/Rest/GET/api/v2/telemetrystations/telemetrytimeseriesday/?format=csv&amp;abbrev=${site_id}&amp;endDate=${date format=MM/dd/yy}&amp;parameter=GAGE_HT%2CDISCHRG&amp;startDate=${date offset=&quot;-1 week&quot; z=MST}"/>    
      <property name="icon" value="/point/co.png"/>
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
      <property name="map.chart.field" value="discharge"/>
