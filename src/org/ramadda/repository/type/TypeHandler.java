@@ -5255,7 +5255,7 @@ public class TypeHandler extends RepositoryManager {
 								 "true",false,
 								 "Download");
                         String formContent = HU.input(ARG_URL, url,
-                                                 size) + "&nbsp;" + download;
+                                                  HU.SIZE_90) + "&nbsp;" + download;
                         tabTitles.add(urlLabel);
 			//                        tabContent.add(HU.inset(formContent, 8));
                         tabContent.add(formContent);
