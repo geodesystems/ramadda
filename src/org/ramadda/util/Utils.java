@@ -2493,6 +2493,7 @@ public class Utils extends IO {
             }
 
 	    System.err.println("Apply macros: unknown macro:" + t);
+	    if(true) throw new IllegalArgumentException("Apply macros: unknown macro:" + t);
 	    //put it back
 	    s.append("${" + t + "}");
         }
