@@ -122,7 +122,8 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	 ex:'geojson:name:Some Name:url:resources/usmap.json:fillColor:transparent'},		
 
 	{p:'linkField',tt:'The field in the data to match with the map field, e.g., geoid'},
-	{p:'linkFeature',tt:'The field in the map to match with the data field, e.g., geoid'},	
+	{p:'linkFeature',tt:'The field in the map to match with the data field, e.g., geoid'},
+	{p:'polygonField',tt:'Field that contains a polygon'},		
 
 	{p:'annotationLayerTop',ex:'true',tt:'If showing the extra annotation layer put it on top'},
 
@@ -3800,7 +3801,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let colorBy = this.getColorByInfo(records,null,null,null,null,this.lastColorBy);
 	    this.lastColorBy = colorBy;
 	    let cidx=0
-	    let polygonField = this.getFieldById(fields, this.getProperty("polygonField"));
+	    let polygonField = this.getFieldById(fields, this.getPolygonField());
 	    let polygonColorTable = this.getColorTable(true, "polygonColorTable",null);
 	    let latlon = this.getProperty("latlon",true);
             let source = this;
@@ -4420,6 +4421,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    let polygonProps ={};
 		    $.extend(polygonProps,props);
 		    polygonProps.fillColor = "transparent";
+		    polygonProps.fillColor = props.fillColor;
 		    if(polygonProps.strokeWidth==0)
 			polygonProps.strokeWidth=1;
 		    if(polygonColorTable) {
