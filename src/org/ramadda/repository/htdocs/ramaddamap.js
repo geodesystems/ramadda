@@ -4285,18 +4285,18 @@ RepositoryMap.prototype = {
 	let p = [];
 	let segments = [p];
 	
-	for(let pIdx=2;pIdx<toks.length;pIdx+=2) {
-	    let lat1 = parseFloat(toks[pIdx-2]);
-	    let lon1 = parseFloat(toks[pIdx-1]);
-	    let lat2 = parseFloat(toks[pIdx]);
-	    let lon2 = parseFloat(toks[pIdx+1]);
+
+	let handlePoints = (lat1,lon1,lat2,lon2) =>{
 	    if(!latlon) {
 		let tmp =lat1;lat1=lon1;lon1=tmp;tmp =lat2;lat2=lon2;lon2=tmp;
 	    }
-	    if(isNaN(lat1) || isNaN(lat2) || isNaN(lon1) || isNaN(lon2)) continue;
+	    if(isNaN(lat1) || isNaN(lat2) || isNaN(lon1) || isNaN(lon2)) {
+		return;
+	    }
+
 	    if(justPoints) {
 		points.push(lon1,lat1,lon2,lat2);
-		continue;
+		return;
 	    } 
 	    if(MapUtils.crossIDL(lon1,lon2)) {
 		let inter = MapUtils.intercept(lat1,lon1,lat2,lon2);
@@ -4309,6 +4309,33 @@ RepositoryMap.prototype = {
 	    } else {
 		p.push(MapUtils.createPoint(lon1,lat1));
 		p.push(MapUtils.createPoint(lon2,lat2));
+	    }
+	}
+
+	//check for spaces
+	if(toks.length>0 && toks[0].trim().indexOf(' ')>0) {
+	    latlon = false;
+	    let tmp = [];
+	    toks.forEach(tok=>{
+		let subtoks = Utils.split(tok.trim(),' ',true,true);
+		if(subtoks.length==2) {
+		    tmp.push(parseFloat(subtoks[0]),parseFloat(subtoks[1]));
+		}
+	    });
+	    for(let pIdx=2;pIdx<tmp.length;pIdx+=2) {
+		let lat1 = tmp[pIdx-2];
+		let lon1 = tmp[pIdx-1];
+		let lat2 = tmp[pIdx];
+		let lon2 = tmp[pIdx+1];
+		handlePoints(lat1,lon1,lat2,lon2);
+	    }
+	} else {
+	    for(let pIdx=2;pIdx<toks.length;pIdx+=2) {
+		let lat1 = parseFloat(toks[pIdx-2]);
+		let lon1 = parseFloat(toks[pIdx-1]);
+		let lat2 = parseFloat(toks[pIdx]);
+		let lon2 = parseFloat(toks[pIdx+1]);
+		handlePoints(lat1,lon1,lat2,lon2);
 	    }
 	}
 	if(justPoints) return points;
