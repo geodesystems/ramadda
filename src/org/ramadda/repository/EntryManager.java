@@ -854,7 +854,6 @@ public class EntryManager extends RepositoryManager {
 	Hashtable<String,String> snapshotMap = new Hashtable<String,String>();
 	request.putExtraProperty("snapshotmap", snapshotMap);
 	request.put(ARG_OUTPUT,OutputHandler.OUTPUT_HTML.getId());
-	request.put("ramadda.showjsonld", "false");
 	getRepository().getHtmlOutputHandler().handleDefaultWiki(request, entry,sb);
 	Result tmpResult = new Result("",sb);
 	tmpResult.setTitle(entry.getName());
