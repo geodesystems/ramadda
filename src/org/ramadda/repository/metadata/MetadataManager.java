@@ -437,6 +437,48 @@ public class MetadataManager extends RepositoryManager {
     }
 
 
+    private void addMetadataTag(Appendable sb, String tag, String v) throws Exception {
+	sb.append("<meta name=\"" + tag+"\" content=\"" + XmlUtil.encodeString(v) +"\">\n");
+	//	System.err.println("meta tag:" + tag + " " + v);
+    }
+
+
+    public void addHtmlMetadata(Request request, Entry entry, Appendable sb,
+				boolean showJsonLd, boolean showTwitterCard) throws Exception {
+	//This is always a new list
+	List<Metadata> inherited = getInheritedMetadata(request,  entry);
+        List<Metadata> metadataList = getMetadata(request,entry);
+	inherited.addAll(metadataList);
+        List<String> keywords = null;
+        for (Metadata md : inherited) {
+            String type = md.getType();
+	    //	    System.err.println("mtd:" + type +" " + md.getAttr1());
+	    if (type.equals("enum_gcmdkeyword")
+		|| type.equals("content.keyword")
+		|| type.equals("enum_tag")
+		|| type.equals("thredds.keyword")) {
+                if (keywords == null) {
+                    keywords = new ArrayList<String>();
+                }
+                keywords.add(md.getAttr1());
+            }
+	}
+        String snippet = getWikiManager().getRawSnippet(request, entry,true);
+	if(snippet!=null) snippet = Utils.stripTags(snippet).replace("\n"," ").replace("\"","&quot;").trim();
+        if (keywords != null) {
+	    addMetadataTag(sb,"keywords",Utils.join(keywords,","));
+        }
+	if(stringDefined(snippet)) {
+	    addMetadataTag(sb,"description",snippet);
+	}
+
+
+	if(showJsonLd) addJsonLD(request, entry, sb,inherited,keywords,snippet);
+	if(showTwitterCard) addTwitterCard(request, entry, sb,snippet);	
+    }
+
+    private SimpleDateFormat jsonLdSdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+
     /**
      * _more_
      *
@@ -447,12 +489,8 @@ public class MetadataManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public String getJsonLD(Request request, Entry entry) throws Exception {
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        StringBuilder sb =
-            new StringBuilder("\n<script type=\"application/ld+json\">\n");
-        List<Metadata> metadataList = getMetadata(request,entry);
+    public void addJsonLD(Request request, Entry entry,Appendable sb,List<Metadata> metadataList,  List<String> keywords, String snippet) throws Exception {
+        sb.append("\n<script type=\"application/ld+json\">\n");
         List<String>   top          = new ArrayList<String>();
         top.add("@context");
         top.add(JsonUtil.quote("https://schema.org/"));
@@ -464,8 +502,6 @@ public class MetadataManager extends RepositoryManager {
         top.add(
             JsonUtil.quote(
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, entry)));
-        String snippet = getWikiManager().getRawSnippet(request, entry,
-                             false);
 	if(!stringDefined(snippet)) {
 	    snippet = "RAMADDA page: " + entry.getName();
 	}
@@ -473,16 +509,18 @@ public class MetadataManager extends RepositoryManager {
 	top.add(JsonUtil.quote(JsonUtil.cleanString(snippet)));
         if (entry.hasDate()) {
             top.add("temporalCoverage");
-            if (entry.getStartDate() == entry.getEndDate()) {
-                top.add(
-                    JsonUtil.quote(
-                        sdf.format(new Date(entry.getStartDate()))));
-            } else {
-                top.add(
-                    JsonUtil.quote(
-                        sdf.format(new Date(entry.getStartDate())) + "/"
-                        + sdf.format(new Date(entry.getEndDate()))));
-            }
+	    synchronized(jsonLdSdf) {
+		if (entry.getStartDate() == entry.getEndDate()) {
+		    top.add(
+			    JsonUtil.quote(
+					   jsonLdSdf.format(new Date(entry.getStartDate()))));
+		} else {
+		    top.add(
+			    JsonUtil.quote(
+					   jsonLdSdf.format(new Date(entry.getStartDate())) + "/"
+					   + jsonLdSdf.format(new Date(entry.getEndDate()))));
+		}
+	    }
 
         }
         if (entry.isGeoreferenced()) {
@@ -519,7 +557,7 @@ public class MetadataManager extends RepositoryManager {
         }
 
 
-        List<String> keywords = null;
+
         List<String> ids      = null;
         for (Metadata md : metadataList) {
             String type = md.getType();
@@ -550,14 +588,6 @@ public class MetadataManager extends RepositoryManager {
                         "ContactPoint", "email", md.getAttr3())));
                 top.add("creator");
                 top.add(JsonUtil.map(ctor));
-            } else if (type.equals("enum_gcmdkeyword")
-                       || type.equals("content.keyword")
-                       || type.equals("enum_tag")
-                       || type.equals("thredds.keyword")) {
-                if (keywords == null) {
-                    keywords = new ArrayList<String>();
-                }
-                keywords.add(md.getAttr1());
             }
 	}
 	//	top.add("datePublished");
@@ -573,19 +603,16 @@ public class MetadataManager extends RepositoryManager {
         }
         JsonUtil.map(sb, top);
         sb.append("\n</script>\n");
-
-        return sb.toString();
-
     }
 
 
-    public String getTwitterCard(Request request, Entry entry) throws Exception {
+    public void  addTwitterCard(Request request, Entry entry, Appendable sb,String snippet) throws Exception {
 	List<String[]> thumbs = new ArrayList<String[]>();
 	String title = null;
 	String image = null;
 	String alt = null;
 	String creator = null;		
-	String snippet = null;
+	String mtdSnippet = null;
 
         List<Metadata> mtd =
             findMetadata(request, entry,
@@ -599,8 +626,8 @@ public class MetadataManager extends RepositoryManager {
 		    title = m.getAttr2();
 		if(!stringDefined(alt)) 
 		    alt = m.getAttr(5);    
-		if(!stringDefined(snippet))
-		    snippet = m.getAttr(3);
+		if(!stringDefined(mtdSnippet))
+		    mtdSnippet = m.getAttr(3);
 		if(thumbs.size()==0) {
 		    String url  = getType(m).getImageUrl(request, entry,m,null);
 		    if(url!=null) {
@@ -611,8 +638,9 @@ public class MetadataManager extends RepositoryManager {
 	}
 
 
-	if(!stringDefined(snippet))
-	    snippet = getWikiManager().getRawSnippet(request, entry, false);
+	if(stringDefined(mtdSnippet)) {
+	    snippet = mtdSnippet.replace("\n"," ").trim();
+	}
 	    
 
 	//If an image isn't defined in the metadata  then use the thumbnail of the entry
@@ -638,30 +666,21 @@ public class MetadataManager extends RepositoryManager {
 
 
 	String type = stringDefined(image)?"summary_large_image":"summary";
-        StringBuilder sb =  new StringBuilder();
-
-
-	Utils.BiConsumer<String,String> w = (t,v) -> {
-	    sb.append("<meta name=\"" + t+"\" content=\"" + XmlUtil.encodeString(v) +"\">\n");
-	};
-
-	w.accept("twitter:card",type);
+	addMetadataTag(sb,"twitter:card",type);
 	if(stringDefined(creator))
-	    w.accept("twitter:creator",creator);
+	    addMetadataTag(sb,"twitter:creator",creator);
 	if(stringDefined(image)) {
-	    w.accept("twitter:image", image);
+	    addMetadataTag(sb,"twitter:image", image);
 	    if(stringDefined(alt)) {
-		w.accept("twitter:image:alt",alt);
+		addMetadataTag(sb,"twitter:image:alt",alt);
 	    }
 	}
 
 
-	w.accept("twitter:title",title);
+	addMetadataTag(sb,"twitter:title",title);
 	if(stringDefined(snippet)) {
-	    w.accept("twitter:description",snippet.replace("\n"," ").trim());
+	    addMetadataTag(sb,"twitter:description",snippet);
 	}
-	//	System.err.println(sb);
-        return sb.toString();
     }
     
     /**
