@@ -768,14 +768,7 @@ public class PageHandler extends RepositoryManager {
             request.clearHead();
         }
 	if(request.getIsEntryShow() && prefix && currentEntry!=null) {
-	    if (request.get("ramadda.showjsonld", true) && showJsonLd) {
-		head.append(getMetadataManager().getJsonLD(request,
-							   currentEntry));
-	    }
-	    if (showTwitterCard) {
-		head.append(getMetadataManager().getTwitterCard(request,
-								currentEntry));
-	    }	    
+	    getMetadataManager().addHtmlMetadata(request, currentEntry, head, showJsonLd, showTwitterCard);
         }
         String imports   = head.toString();
         String logoImage = getLogoImage(result);
