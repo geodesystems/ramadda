@@ -2109,7 +2109,12 @@ public class StorageManager extends RepositoryManager implements PointFile
     public File copyToStorage(Request request, InputStream original,
                               String newName)
             throws Exception {
+	
         String targetName = newName;
+	//check if it has a separator already. If not then add it so we have a unique file
+	if(targetName.indexOf(FILE_SEPARATOR)<0) {
+	    targetName = getStorageFileName(targetName);
+	}
         String storageDir = getStorageDir();
 
         GregorianCalendar cal =
