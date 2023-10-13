@@ -211,13 +211,14 @@ public class GeoJsonOutputHandler extends OutputHandler {
                 request.getString("geojson_value", ""));
 
             pw.close();
-            StringBuilder sb =
-                new StringBuilder(new String(bos.toByteArray()));
             request.setReturnFilename(
                 getStorageManager().getOriginalFilename(
                     entry.getResource().getPath()));
-            Result result = new Result("", sb, GeoJson.GEOJSON_MIMETYPE);
 
+            StringBuilder sb =
+                new StringBuilder(new String(bos.toByteArray()));
+	    //            Result result = new Result("", sb, GeoJson.GEOJSON_MIMETYPE);
+            Result result = new Result("", sb, "application/forcedownload");	    
             return result;
 
         }
@@ -235,6 +236,8 @@ public class GeoJsonOutputHandler extends OutputHandler {
                 sb.append(HtmlUtils.formTable());
 		entry.getTypeHandler().addAreaWidget(request,  entry, sb, null);
 
+		sb.append(HU.labeledCheckbox("intersects","true",false,"Intersects"));
+
                 StringBuffer buttons =
                     new StringBuffer(HtmlUtils.submit("Subset",
                         "geojson_subset"));
@@ -246,12 +249,13 @@ public class GeoJsonOutputHandler extends OutputHandler {
                 return new Result("", sb);
             }
 
+	    boolean intersects = request.get("intersects",false);
 	    Bounds bounds = new Bounds(GeoJson.parse(request.getString("area_north","")),
 				       GeoJson.parse(request.getString("area_west","")),
 				       GeoJson.parse(request.getString("area_south","")),
 				       GeoJson.parse(request.getString("area_east","")));
 	    JSONObject obj = GeoJson.read(entry.getResource().getPath());
-	    obj =GeoJson.in(obj,bounds);
+	    obj =GeoJson.subset(obj,bounds,intersects);
             request.setReturnFilename(
                 getStorageManager().getOriginalFilename(
                     entry.getResource().getPath()));
