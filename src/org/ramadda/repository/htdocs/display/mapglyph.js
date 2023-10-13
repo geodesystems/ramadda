@@ -52,6 +52,7 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
 	console.trace();
 	return
     }
+
     style = style??{};
     if(style.mapOptions) {
 	delete style.mapOptions;
