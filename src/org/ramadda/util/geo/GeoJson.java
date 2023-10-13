@@ -631,13 +631,14 @@ public class GeoJson extends JsonUtil {
 	    boolean debug = false;
 	    JSONObject o = features.getJSONObject(idx1);
 	    JSONObject            properties = o.optJSONObject("properties");	
+	    /*
 	    if(properties!=null) {
 		double area = properties.getDouble("area");
 		if(area==455050000.) {
 		    debug=true;
 		    System.err.println("props:" + properties);
 		}
-	    }
+		}*/
 
 
             Bounds b = getFeatureBounds(o, null, null);
