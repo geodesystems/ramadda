@@ -239,7 +239,7 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
 	    ByteArrayOutputStream bos = new ByteArrayOutputStream();
 	    PrintStream           pw  = new PrintStream(bos);
 	    InputStream source = super.doMakeInputStream(buffered);
-	    GeoJson.geojsonToCsv(source, pw, (String) null,false);
+	    GeoJson.toCsv(source, pw, (String) null,false);
 	    pw.close();
 	    InputStream is = new BufferedInputStream(new  ByteArrayInputStream(bos.toByteArray()));
 	    source.close();
