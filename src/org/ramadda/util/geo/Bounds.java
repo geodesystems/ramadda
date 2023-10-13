@@ -5,6 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util.geo;
 
+import java.awt.geom.Rectangle2D;
 
 /**
  *
@@ -22,6 +23,8 @@ public class Bounds {
 
     /** _more_ */
     private double east = Double.NaN;
+
+    private Rectangle2D.Double rect2D;
 
     /**
      * _more_
@@ -87,6 +90,25 @@ public class Bounds {
 	    contains(b.north,b.east) &&
 	    contains(b.south,b.east) &&
 	    contains(b.south,b.west);
+    }
+
+
+    public Rectangle2D.Double getRectangle2D() {
+	if(rect2D==null) {
+	    rect2D  =  new Rectangle2D.Double(getWest(), getSouth(),
+					      getEast() - getWest(),
+					      getNorth()
+					      - getSouth());
+	}
+	return rect2D;
+    }
+
+    public boolean intersects(Bounds other) {
+	Rectangle2D.Double entryRect = other.getRectangle2D();
+	Rectangle2D.Double queryRect = this.getRectangle2D();	
+	return  (entryRect.intersects(queryRect)
+		 || entryRect.contains(queryRect)
+		 || queryRect.contains(entryRect));
     }
 
 
