@@ -38,6 +38,9 @@ public class GeoJson extends JsonUtil {
 
     public static final String GEOJSON_MIMETYPE = "application/geo+json";
 
+    public static final String DOWNLOAD_MIMETYPE = "application/forcedownload";
+
+
     public static JSONObject read(String f) throws Exception {
         return  new JSONObject(new JSONTokener(new FileInputStream(f)));
     }
