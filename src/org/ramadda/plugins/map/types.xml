@@ -227,6 +227,8 @@ mapVar="gpxMap${entryid}" }}
 <div id="mapDisplay" style="max-height:450px; overflow-y:auto;"></div>
 -col
 -row
+----
+{{information}}
 -section
 ]]>
 </wiki>
