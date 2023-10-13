@@ -54,28 +54,28 @@ public class GeoJsonOutputHandler extends OutputHandler {
 
     /** Map output type */
     public static final OutputType OUTPUT_GEOJSONCSV =
-        new OutputType("GeoJson CSV", "geojsoncsv", OutputType.TYPE_FILE, "",
+        new OutputType("GeoJson CSV", "geojsoncsv", OutputType.TYPE_VIEW|OutputType.TYPE_SERVICE, "",
                        ICON_CSV);
 
     /**  */
     public static final OutputType OUTPUT_GEOJSON_REDUCE =
         new OutputType("Reduce GeoJson", "geojsonreduce",
-                       OutputType.TYPE_VIEW, "", ICON_MAP);
+                       OutputType.TYPE_VIEW|OutputType.TYPE_SERVICE, "", ICON_MAP);
 
     /**  */
     public static final OutputType OUTPUT_GEOJSON_SUBSET =
         new OutputType("Subset GeoJson", "geojsonsubset",
-                       OutputType.TYPE_VIEW, "", ICON_MAP);    
+                       OutputType.TYPE_VIEW|OutputType.TYPE_SERVICE, "", ICON_MAP);    
 
     /**  */
     public static final OutputType OUTPUT_GEOJSON_FILTER =
         new OutputType("Filter GeoJson", "geojsonfilter",
-                       OutputType.TYPE_VIEW, "", ICON_MAP);
+                       OutputType.TYPE_VIEW|OutputType.TYPE_SERVICE, "", ICON_MAP);
 
     /**  */
     public static final OutputType OUTPUT_EDITABLE_TOKML =
         new OutputType("Convert to KML", "editable.kml",
-                       OutputType.TYPE_VIEW, "", ICON_KML);
+                       OutputType.TYPE_VIEW|OutputType.TYPE_SERVICE, "", ICON_KML);
 
 
     /**

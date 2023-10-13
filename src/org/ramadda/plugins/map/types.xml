@@ -227,8 +227,10 @@ mapVar="gpxMap${entryid}" }}
 <div id="mapDisplay" style="max-height:450px; overflow-y:auto;"></div>
 -col
 -row
+:vspace 0.5em
 ----
-{{information}}
+:vspace 0.5em
+{{information  details="true"  showTitle="false"  includeTools=true menus="service" menusTitle="Services"}} 
 -section
 ]]>
 </wiki>
