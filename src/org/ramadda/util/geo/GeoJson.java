@@ -1,36 +1,26 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2023 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util.geo;
-
 
 import org.json.*;
 
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
-
-
 import org.ramadda.util.geo.Bounds;
-
 import org.ramadda.util.text.Seesv;
+
+import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.StringUtil;
+
 
 import org.w3c.dom.*;
 
-
-import ucar.unidata.util.IOUtil;
-
-import ucar.unidata.util.Misc;
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
-
 import java.awt.geom.*;
-
 import java.io.*;
 
-import java.text.StringCharacterIterator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,8 +36,50 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class GeoJson extends JsonUtil {
 
-    /**  */
     public static final String GEOJSON_MIMETYPE = "application/geo+json";
+
+    public static JSONObject read(String f) throws Exception {
+        return  new JSONObject(new JSONTokener(new FileInputStream(f)));
+    }
+
+
+    public static void reduce(String file) throws Exception {
+        String contents = IOUtil.readContents(file, JsonUtil.class);
+	contents = contents.replaceAll("\\.(\\d\\d\\d\\d\\d\\d)[\\d]+",
+				       ".$1");
+	System.out.println(contents);
+    }
+
+    public static JSONObject reduce(JSONObject obj) throws Exception {
+        String contents = obj.toString();
+	contents = contents.replaceAll("\\.(\\d\\d\\d\\d\\d\\d)[\\d]+",
+				       ".$1");
+	return new JSONObject(contents);
+    }    
+
+    /**
+     *
+     * @param json _more_
+     * @param pw _more_
+     * @param colString _more_
+     * @param addPolygons _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void toCsv(InputStream json, PrintStream pw,
+                                    String colString, boolean addPolygons)
+	throws Exception {
+        Iterator     iterator = makeIterator(json, colString, addPolygons);
+	toCsv(iterator,pw);
+    }
+
+    public static void toCsv(Iterator iterator, PrintStream pw)
+	throws Exception {	
+        List<String> values;
+        while ((values = iterator.next()) != null) {
+            pw.append(Seesv.columnsToString(values, ",", true));
+        }
+    }
 
 
     /**
@@ -60,41 +92,14 @@ public class GeoJson extends JsonUtil {
      * @throws Exception _more_
      */
     public static void geojsonFileToCsv(String file, PrintStream pw, String colString)
-            throws Exception {
+	throws Exception {
         String contents = IOUtil.readContents(file, JsonUtil.class);
         //        InputStream    is   = IOUtil.getInputStream(file, JsonUtil.class);
         InputStream is = new ByteArrayInputStream(contents.getBytes());
-        geojsonToCsv(is, pw, colString, false);
+        toCsv(is, pw, colString, false);
     }
 
 
-    public static void reduce(String file) throws Exception {
-        String contents = IOUtil.readContents(file, JsonUtil.class);
-	contents = contents.replaceAll("\\.(\\d\\d\\d\\d\\d\\d)[\\d]+",
-				       ".$1");
-	System.out.println(contents);
-    }
-
-    /**
-     *
-     * @param json _more_
-     * @param pw _more_
-     * @param colString _more_
-     * @param addPolygons _more_
-     *
-     * @throws Exception _more_
-     */
-    public static void geojsonToCsv(InputStream json, PrintStream pw,
-                                    String colString, boolean addPolygons)
-            throws Exception {
-        Iterator     iterator = makeIterator(json, colString, addPolygons);
-        List<String> values;
-        while ((values = iterator.next()) != null) {
-            pw.append(Seesv.columnsToString(values, ",", true));
-        }
-
-
-    }
 
     /**
      *
@@ -107,7 +112,12 @@ public class GeoJson extends JsonUtil {
      */
     public static Iterator makeIterator(InputStream json, String colString,
                                         boolean addPolygons)
-            throws Exception {
+	throws Exception {
+	return makeIterator(new JSONObject(new JSONTokener(json)),colString, addPolygons);
+    }
+
+    public static Iterator makeIterator(JSONObject obj, String colString, boolean addPolygons)
+	throws Exception {	
         HashSet cols = null;
         if (colString != null) {
             cols = new HashSet();
@@ -116,8 +126,6 @@ public class GeoJson extends JsonUtil {
             }
         }
 
-        JSONObject            obj      =
-            new JSONObject(new JSONTokener(json));
         JSONArray             features = readArray(obj, "features");
         LinkedHashSet<String> names    = new LinkedHashSet<String>();
         for (int i = 0; i < features.length(); i++) {
@@ -146,117 +154,7 @@ public class GeoJson extends JsonUtil {
     }
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Sep 6, '22
-     * @author         Enter your name here...
-     */
-    public static class Iterator {
 
-        /**  */
-        JSONObject obj;
-
-        /**  */
-        int featureIdx = -1;
-
-        /**  */
-        JSONArray features;
-
-        /**  */
-        List<String> names;
-
-        /**  */
-        boolean addPolygon;
-
-
-        /**
-         *
-         *
-         * @param features _more_
-         * @param names _more_
-         * @param addPolygon _more_
-         */
-        public Iterator(JSONArray features, List<String> names,
-                        boolean addPolygon) {
-            this.features   = features;
-            this.names      = names;
-            this.addPolygon = addPolygon;
-        }
-
-        /**
-         *  @return _more_
-         */
-        private List<String> makeHeader() {
-            List<String> header = new ArrayList<String>();
-            for (String name : names) {
-                header.add(name.toLowerCase());
-            }
-            header.add("latitude");
-            header.add("longitude");
-            if (addPolygon) {
-                header.add("polygon");
-            }
-            return header;
-        }
-
-        /**
-         *  @return _more_
-         *
-         * @throws Exception _more_
-         */
-        public List<String> next() throws Exception {
-            if (featureIdx++ < 0) {
-                return makeHeader();
-            }
-            if (featureIdx >= features.length()) {
-                return null;
-            }
-            List<String>      values  = new ArrayList<String>();
-            JSONObject        feature = features.getJSONObject(featureIdx);
-            JSONObject        props   = feature.getJSONObject("properties");
-            List<List<Point>> pts     = null;
-            if (addPolygon) {
-                pts = new ArrayList<List<Point>>();
-            }
-            Bounds    bounds   = getFeatureBounds(feature, null, pts);
-	    for (String name : names) {
-                String value = props.optString(name, "");
-                value = value.replaceAll("\n", " ");
-                if (value.indexOf(",") >= 0) {
-                    value = "\"" + value + "\"";
-                }
-                values.add(value);
-            }
-	    if(bounds!=null) {
-		//		JSONArray geom     = readArray(feature, "geometry.coordinates");
-		//		String    type     = readValue(feature, "geometry.type", "NULL");
-
-		Point     centroid = bounds.getCenter();
-		Utils.add(values, "" + dec(centroid.getLatitude()),
-			  "" + dec(centroid.getLongitude()));
-	    } else {
-		Utils.add(values,"NaN","NaN");
-	    }
-	    
-            if (addPolygon) {
-                StringBuilder poly = new StringBuilder();
-                for (List<Point> p2 : pts) {
-                    for (Point tuple : p2) {
-                        poly.append("" + dec(tuple.getLatitude()));
-                        poly.append(";");
-                        poly.append("" + dec(tuple.getLongitude()));
-                        poly.append(";");
-                    }
-                }
-                values.add(poly.toString());
-            }
-            return values;
-        }
-
-
-    }
 
 
 
@@ -325,7 +223,7 @@ public class GeoJson extends JsonUtil {
      * @throws Exception _more_
      */
     public static void geojsonPolygon(String file, PrintStream pw)
-            throws Exception {
+	throws Exception {
         InputStream    is   = IOUtil.getInputStream(file, JsonUtil.class);
         BufferedReader br   = new BufferedReader(new InputStreamReader(is));
         StringBuilder  json = new StringBuilder();
@@ -373,8 +271,8 @@ public class GeoJson extends JsonUtil {
      * @throws Exception _more_
      */
     public static void geojsonSubsetByProperty(String file, PrintStream pw,
-            String prop, String value)
-            throws Exception {
+					       String prop, String value)
+	throws Exception {
         //      System.err.println("prop:" + prop);
         //      System.err.println("value:" + value);   
         InputStream    is   = IOUtil.getInputStream(file, JsonUtil.class);
@@ -425,7 +323,7 @@ public class GeoJson extends JsonUtil {
 
             if ( !gotName) {
                 throw new IllegalArgumentException("Could not find property:"
-                        + prop + " properties:" + Arrays.asList(names));
+						   + prop + " properties:" + Arrays.asList(names));
             }
             if ( !haveIt) {
                 continue;
@@ -515,11 +413,10 @@ public class GeoJson extends JsonUtil {
      * @throws Exception _more_
      */
     public static Bounds getBounds(String file) throws Exception {
-        Bounds bounds = null;
         BufferedReader br = new BufferedReader(
-                                new InputStreamReader(
-                                    IOUtil.getInputStream(
-                                        file, JsonUtil.class)));
+					       new InputStreamReader(
+								     IOUtil.getInputStream(
+											   file, JsonUtil.class)));
         StringBuilder json = new StringBuilder();
         String        input;
         while ((input = br.readLine()) != null) {
@@ -527,10 +424,14 @@ public class GeoJson extends JsonUtil {
             json.append("\n");
         }
         JSONObject   obj      = new JSONObject(json.toString());
+	return getBounds(obj);
+    }
+
+    public static Bounds getBounds(JSONObject obj) throws Exception {
+        Bounds bounds = null;
         JSONArray    features = readArray(obj, "features");
         List<String> names    = null;
         for (int i = 0; i < features.length(); i++) {
-            //            if((i%100)==0) System.err.println("cnt:" + i);
             JSONObject feature = features.getJSONObject(i);
             bounds = getFeatureBounds(feature, bounds, null);
         }
@@ -551,7 +452,7 @@ public class GeoJson extends JsonUtil {
      */
     public static Bounds getFeatureBounds(JSONObject feature, Bounds bounds,
                                           List<List<Point>> pts)
-            throws Exception {
+	throws Exception {
         JSONArray coords1;
         //Catch and ignore null coordinates
         try {
@@ -618,7 +519,7 @@ public class GeoJson extends JsonUtil {
      * @throws Exception _more_
      */
     public static String getFeaturePolygon(JSONObject feature)
-            throws Exception {
+	throws Exception {
         StringBuilder sb      = new StringBuilder();
         JSONArray     coords1 = readArray(feature, "geometry.coordinates");
         String        type    = readValue(feature, "geometry.type", "NULL");
@@ -661,14 +562,16 @@ public class GeoJson extends JsonUtil {
 
 
 
-    public static void split(String f) throws Exception {
-        JSONObject            obj      =
-            new JSONObject(new JSONTokener(new FileInputStream(f)));
+    public static void split(String f, String prop) throws Exception {
+	split(read(f),prop);
+    }
+
+    public static void split(JSONObject obj, String prop) throws Exception {
         JSONArray             features = readArray(obj, "features");
 	for (int idx1 = 0; idx1 < features.length(); idx1++) {
 	    JSONObject feature = features.getJSONObject(idx1);
 	    JSONObject properties= feature.getJSONObject("properties");
-	    String id = properties.getString("GEO_ID");
+	    String id = properties.getString(prop);
 	    System.err.println(id);
 	    id = id.replaceAll(".*US","");
 	    StringBuilder sb = new StringBuilder("{\n\"type\": \"FeatureCollection\",\"features\": [");
@@ -694,15 +597,12 @@ public class GeoJson extends JsonUtil {
 	return obj;
     }
 
-    public static JSONObject read(String f) throws Exception {
-        return  new JSONObject(new JSONTokener(new FileInputStream(f)));
-    }
+
 
     public static JSONObject stride(JSONObject obj,double step) throws Exception {
         JSONArray             features = readArray(obj, "features");
 	List<Object> objects = new ArrayList<Object>();
 	double cnt = 0;
-	System.err.println("#features:" + features.length());
 	for (int idx1 = 0; idx1 < features.length(); idx1++) {
 	    if(step<1) {
 		double r = Math.random();
@@ -723,18 +623,40 @@ public class GeoJson extends JsonUtil {
 	return obj;
     }
 
-    public static JSONObject in(JSONObject obj,Bounds bounds) throws Exception {
+    public static JSONObject subset(JSONObject obj,Bounds bounds,boolean intersect) throws Exception {
         JSONArray             features = readArray(obj, "features");
 	List<Object> objects = new ArrayList<Object>();
 	double cnt = 0;
 	for (int idx1 = 0; idx1 < features.length(); idx1++) {
+	    boolean debug = false;
 	    JSONObject o = features.getJSONObject(idx1);
+	    JSONObject            properties = o.optJSONObject("properties");	
+	    if(properties!=null) {
+		double area = properties.getDouble("area");
+		if(area==455050000.) {
+		    debug=true;
+		    System.err.println("props:" + properties);
+		}
+	    }
+
+
             Bounds b = getFeatureBounds(o, null, null);
+	    if(debug) System.err.println("bounds:\n\t" + b+"\n\t" + bounds);
 	    if(b==null) {
 		continue;
 	    }
-	    if(bounds.contains(b)) {
-		objects.add(o);
+	    if(intersect) {
+		if(bounds.intersects(b)) {
+		    objects.add(o);
+		    if(debug) System.err.println("intersects - adding to object");
+		} else {
+		    if(debug) System.err.println("no intersect");
+		}
+
+	    } else {
+		if(bounds.contains(b)) {
+		    objects.add(o);
+		}
 	    }
 	}
 	features.clear();
@@ -746,13 +668,11 @@ public class GeoJson extends JsonUtil {
         JSONArray             features = readArray(obj, "features");
 	List<Object> objects = new ArrayList<Object>();
 	double cnt = 0;
-	System.err.println("#features:" + features.length());
 	for (int idx1 = 0; idx1 < features.length() && idx1<n; idx1++) {
 	    objects.add(features.getJSONObject(idx1));
 	}
 	features.clear();
 	features.putAll(objects);
-	System.err.println("#new features:" + features.length());
 	return obj;
     }
     
@@ -771,152 +691,190 @@ public class GeoJson extends JsonUtil {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-
-	boolean doReverse = false;
-	boolean doSplit = false;	
-	boolean doStride = false;
-	boolean doReduce = false;
-	boolean doFirst = false;
-	boolean doIn = false;			
-	Bounds bounds  =null;
-	int first=0;
-	boolean doCsv = true;	
-	double stride=2;
-
+	List<Command> commands = new ArrayList<Command>();
 	for(int i=0;i<args.length;i++) {
 	    String arg  =args[i];
-	    if(arg.startsWith("-")) {
-		doReverse=false;
-		doReduce = false;
-		doStride = false;	
-		doSplit = false;
-		doCsv = false;
-		doFirst = false;		
-		doIn = false;
-	    }
-	    if(arg.equals("-reverse")) {
-		doReverse=true;
-		continue;
-	    }
-	    if(arg.equals("-reduce")) {
-		doReduce = true;
-		continue;
-	    }
 	    if(arg.equals("-bounds")) {
 		System.err.println(getBounds(args[++i]));
 		continue;
 	    }
-
-	    if(arg.equals("-stride")) {
-		stride = Double.parseDouble(args[++i]);
-		doStride= true;
+	    if(arg.equals("-reverse")) {
+		commands.add(new Command() {public JSONObject apply(JSONObject obj) throws Exception {return  reverse(obj);}});
 		continue;
 	    }
-	    if(arg.equals("-in")) {
-		bounds = new Bounds(parse(args[++i]),
-				    parse(args[++i]),
-				    parse(args[++i]),
-				    parse(args[++i]));
-				    
-		doIn= true;
+	    if(arg.equals("-reduce")) {
+		commands.add(new Command() {public JSONObject apply(JSONObject obj) throws Exception {return  reduce(obj);}});
 		continue;
-	    }	    
+	    }
+	    if(arg.equals("-stride")) {
+		final double stride = Double.parseDouble(args[++i]);
+		commands.add(new Command() {public JSONObject apply(JSONObject obj) throws Exception {return  stride(obj,stride);}});
+		continue;
+	    }
+	    if(arg.equals("-contained")) {
+		final Bounds b = new Bounds(parse(args[++i]),
+					    parse(args[++i]),
+					    parse(args[++i]),
+					    parse(args[++i]));
+				    
+		commands.add(new Command() {public JSONObject apply(JSONObject obj) throws Exception {return  subset(obj,b,false);}});
+		continue;
+	    }
+	    if(arg.equals("-intersect")) {
+		final Bounds b = new Bounds(parse(args[++i]),
+					    parse(args[++i]),
+					    parse(args[++i]),
+					    parse(args[++i]));
+				    
+		commands.add(new Command() {public JSONObject apply(JSONObject obj) throws Exception {return  subset(obj,b,true);}});
+		continue;
+	    }	    	    
 	    if(arg.equals("-first")) {
-		first = Integer.parseInt(args[++i]);
-		doFirst= true;
+		final int first = Integer.parseInt(args[++i]);
+		commands.add(new Command() {public JSONObject apply(JSONObject obj) throws Exception {return  first(obj,first);}});
 		continue;
 	    }	    
 	    if(arg.equals("-split")) {
-		doSplit = true;
+		final String prop = args[++i];
+		commands.add(new Command() {public JSONObject apply(JSONObject obj) throws Exception {split(obj,prop); return obj;}});
 		continue;
 	    }	    
 	    if(arg.equals("-csv")) {
-		doCsv = true;
+		commands.add(new Command() {public JSONObject apply(JSONObject obj) throws Exception {
+		    Iterator     iterator = makeIterator(obj, null,true);
+		    toCsv(iterator,System.out);		    
+		    return obj;}});
 		continue;
 	    }
+	    if(arg.equals("-print")) {
+		commands.add(new Command() {public JSONObject apply(JSONObject obj) throws Exception {System.out.println(obj.toString());return obj;}});
+		continue;
+	    }	    
+
 	    if(arg.startsWith("-")) {
-		System.err.println("Unknown arg:" +arg +" usage: -csv -split -reverse -stride 10 (if stride<0 then it is used to sample) -in north west south east (subset)");
+		System.err.println("Unknown arg:" +arg +" usage commands may be chained together: \n\t-print (Print the GeoJson to stdout)\n\t-csv (write out the GeoJson as CSV)\n\t-split <property, e.g, GEOID> Split the file to individual features based on property value\n\t-reverse (reverse the feature order)\n\t-first <count> (print out the first count features)\n\t-stride 10 (if stride<0 then it is used to sample) \n\t-intersects north west south east (subset)  \n\t-contained north west south east (subset)");
 		continue;
 	    }
 
 
-	    if(doCsv) {
-		geojsonFileToCsv(arg,System.out,null);
-		continue;
-	    }
-	    if(doReduce) {
-		reduce(arg);
-		continue;
-	    }
-
-	    if(doSplit) {
-		split(arg);
-		continue;
-	    }
 	    JSONObject            obj      = read(arg);
-	    if(doIn)
-		obj = in(obj,bounds);
-	    if(doStride)
-		obj = stride(obj,stride);
-	    if(doFirst)
-		obj = first(obj,first);	    
-	    if(doReverse)
-		obj = reverse(obj);
-	    System.out.println(obj.toString());
-
+	    for(Command command: commands) {
+		obj = command.apply(obj);
+	    }
+	    System.exit(0);
 	}
+    }
 
-        if (true) {
-            return;
+
+    public interface Command {
+	public JSONObject apply(JSONObject obj) throws Exception;
+    }
+
+    public static class Iterator {
+
+        /**  */
+        JSONObject obj;
+
+        /**  */
+        int featureIdx = -1;
+
+        /**  */
+        JSONArray features;
+
+        /**  */
+        List<String> names;
+
+        /**  */
+        boolean addPolygon;
+
+
+        /**
+         *
+         *
+         * @param features _more_
+         * @param names _more_
+         * @param addPolygon _more_
+         */
+        public Iterator(JSONArray features, List<String> names,
+                        boolean addPolygon) {
+            this.features   = features;
+            this.names      = names;
+            this.addPolygon = addPolygon;
+        }
+
+        /**
+         *  @return _more_
+         */
+        private List<String> makeHeader() {
+            List<String> header = new ArrayList<String>();
+            for (String name : names) {
+                header.add(name.toLowerCase());
+            }
+            header.add("latitude");
+            header.add("longitude");
+            if (addPolygon) {
+                header.add("polygon");
+            }
+            return header;
+        }
+
+        /**
+         *  @return _more_
+         *
+         * @throws Exception _more_
+         */
+        public List<String> next() throws Exception {
+            if (featureIdx < 0) {
+		featureIdx=0;
+                return makeHeader();
+            }
+            if (featureIdx >= features.length()) {
+                return null;
+            }
+            List<String>      values  = new ArrayList<String>();
+            JSONObject        feature = features.getJSONObject(featureIdx++);
+            JSONObject        props   = feature.getJSONObject("properties");
+            List<List<Point>> pts     = null;
+            if (addPolygon) {
+                pts = new ArrayList<List<Point>>();
+            }
+            Bounds    bounds   = getFeatureBounds(feature, null, pts);
+	    for (String name : names) {
+                String value = props.optString(name, "");
+                value = value.replaceAll("\n", " ");
+                if (value.indexOf(",") >= 0) {
+                    value = "\"" + value + "\"";
+                }
+                values.add(value);
+            }
+	    if(bounds!=null) {
+		//		JSONArray geom     = readArray(feature, "geometry.coordinates");
+		//		String    type     = readValue(feature, "geometry.type", "NULL");
+
+		Point     centroid = bounds.getCenter();
+		Utils.add(values, "" + dec(centroid.getLatitude()),
+			  "" + dec(centroid.getLongitude()));
+	    } else {
+		Utils.add(values,"NaN","NaN");
+	    }
+	    
+            if (addPolygon) {
+                StringBuilder poly = new StringBuilder();
+                for (List<Point> p2 : pts) {
+                    for (Point tuple : p2) {
+                        poly.append("" + dec(tuple.getLatitude()));
+                        poly.append(";");
+                        poly.append("" + dec(tuple.getLongitude()));
+                        poly.append(";");
+                    }
+                }
+                values.add(poly.toString());
+            }
+            return values;
         }
 
 
-        getFeatures(args[0]);
-        //      System.err.println(getFeatures(args[0]));
-        Utils.exitTest(0);
-
-        geojsonSubsetByProperty(args[0], System.out, args[1], args[2]);
-        /*
-          geojsonPolygon(args[0], System.out);
-          if (true) {
-          return;
-          }
-
-
-
-          geojsonSubsetByProperty(args[0], System.out, args[1], args[2]);
-          if (true) {
-          return;
-          }
-
-
-
-          String  file = args[0];
-          boolean html = true;
-          if (file.equals("-plain")) {
-          html = false;
-          file = args[1];
-          }
-          String s = format(file, html);
-          if (s != null) {
-          System.out.println(s);
-          }
-          if (true) {
-          return;
-          }
-
-          System.err.println(getBounds(args[0]));
-          if (true) {
-          return;
-          }
-
-
-        */
-
-
-        //        convertCameras(args);
     }
-
 
 
 
