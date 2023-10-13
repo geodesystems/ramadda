@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Oct  8 07:51:52 MDT 2023";
+var build_date="RAMADDA build date: Fri Oct 13 05:05:56 MDT 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -35644,7 +35644,8 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	 ex:'geojson:name:Some Name:url:resources/usmap.json:fillColor:transparent'},		
 
 	{p:'linkField',tt:'The field in the data to match with the map field, e.g., geoid'},
-	{p:'linkFeature',tt:'The field in the map to match with the data field, e.g., geoid'},	
+	{p:'linkFeature',tt:'The field in the map to match with the data field, e.g., geoid'},
+	{p:'polygonField',tt:'Field that contains a polygon'},		
 
 	{p:'annotationLayerTop',ex:'true',tt:'If showing the extra annotation layer put it on top'},
 
@@ -39322,7 +39323,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let colorBy = this.getColorByInfo(records,null,null,null,null,this.lastColorBy);
 	    this.lastColorBy = colorBy;
 	    let cidx=0
-	    let polygonField = this.getFieldById(fields, this.getProperty("polygonField"));
+	    let polygonField = this.getFieldById(fields, this.getPolygonField());
 	    let polygonColorTable = this.getColorTable(true, "polygonColorTable",null);
 	    let latlon = this.getProperty("latlon",true);
             let source = this;
@@ -39942,6 +39943,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    let polygonProps ={};
 		    $.extend(polygonProps,props);
 		    polygonProps.fillColor = "transparent";
+		    polygonProps.fillColor = props.fillColor;
 		    if(polygonProps.strokeWidth==0)
 			polygonProps.strokeWidth=1;
 		    if(polygonColorTable) {
@@ -43276,6 +43278,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		return
 	    }
 
+	    this.showCommandMessage('New ' + glyphType.getName() +(glyphType.getNewHelp()?
+								   ' - '+ glyphType.getNewHelp():''));
 	    cmd.activate();	    
 
 
@@ -45155,8 +45159,57 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    return  JSON.stringify(json);
 	},
 
+	makeBox: function(type) {
+	    type = type??GLYPH_BOX;
+	    let html = '';
+	    let style = HU.css('margin','1px');
+	    let r = this.dialogRectangle??{
+	    };
+	    html+=HU.center(HU.input('',r.n,[ATTR_STYLE, style,ATTR_ID,this.domId('_north'),'size','6','placeholder','North']));
+	    html+=HU.input('',r.w,[ATTR_STYLE, style,ATTR_ID,this.domId('_west'),'size','6','placeholder','West']);
+	    html+=HU.input('',r.e,[ATTR_STYLE, style,ATTR_ID,this.domId('_east'),'size','6','placeholder','East']);
+	    html+=HU.center(HU.input('',r.s,[ATTR_STYLE, style,ATTR_ID,this.domId('_south'),'size','6','placeholder','South']));
+	    
+	    let buttons = HU.buttons([HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK'),
+				      HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
+	    html+=buttons;
+	    html = HU.div([ATTR_CLASS, 'ramadda-dialog'],html);
+	    let dialog = HU.makeDialog({content:html,anchor:this.domId(ID_MENU_NEW),draggable:true,
+					title:'Make box',header:true});
+	    dialog.find('.ramadda-button-ok').button().click(()=>{
+		let r = this.dialogRectangle = {
+		    n:this.jq('_north').val(),
+		    w:this.jq('_west').val(),		    		    
+		    s:this.jq('_south').val(),		    
+		    e:this.jq('_east').val(),		    
+		};
+
+		this.createBox(r.n,r.w,r.s,r.e,type);
+		dialog.remove();
+	    });
+	    dialog.find('.ramadda-button-cancel').button().click(()=>{
+		dialog.remove();
+	    });	    
+	},
+
+	createBox: function(n,w,s,e,type,style) {
+	    let props = {
+		geometryType:'OpenLayers.Geometry.Polygon',
+		points:[n,w,n,e,s,e,s,w]
+	    }
+	    let _style = Utils.clone(this.boxStyle);
+	    if(style) {
+		_style = Utils.clone(_style, style);
+	    }
+	    console.log(type);
+	    let attrs = {
+		type:type,
+	    }
+	    this.addGlyph(new MapGlyph(this,type??GLYPH_BOX,attrs,null,_style,true,props));
+	},
 	loadIMDVJson: function(mapJson,map,parentGlyph) {
 	    let glyphs = mapJson.glyphs||[];
+//	    this.createBox(40,-107,30,-100,{fillColor:'red'});
 	    glyphs.forEach((jsonObject,idx)=>{
 		let mapGlyph = this.makeGlyphFromJson(jsonObject);
 		if(mapGlyph) {
@@ -45178,9 +45231,6 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	},
 
 	makeGlyphFromJson:function(jsonObject) {
-
-	    //For backwards compat
-//	    console.dir(jsonObject);
 	    let mapOptions = jsonObject.mapOptions;
 	    if(!mapOptions) {
 		mapOptions = {
@@ -45201,7 +45251,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    }
 	    let glyphType = this.getGlyphType(type);
 	    if(!glyphType) {
-		console.log("no type:" + type);
+		console.log("no type:" + type,jsonObject);
 		return null;
 	    }
 	    let style = $.extend({},glyphType.getStyle());
@@ -46272,6 +46322,10 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 			     strokeDashstyle:'solid',
 			     strokeLinecap: 'butt'};
 	    
+	    let boxStyle = this.boxStyle =  Utils.clone(lineStyle,{
+		fillColor:"transparent",
+		fillOpacity:1.0,fillPattern:''});
+
 	    let dotStyle = {dotSize:3,
 			    dotStrokeColor:'blue',
 			    dotStrokeWidth:1,			   
@@ -46339,43 +46393,52 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 			  Utils.clone(lineStyle, dotStyle),
 			  MyPath,
 			  {maxVertices:2,
+			   newHelp:'Click and drag to create a new line',
 			   icon:Ramadda.getUrl("/icons/line.png")});		
 	    new GlyphType(this,GLYPH_POLYLINE, "Polyline",
 			  Utils.clone(lineStyle,dotStyle),
 			  MyPath,
-			  {icon:Ramadda.getUrl("/icons/polyline.png")});
+			  {
+			      newHelp:'Click and drag to create a new polyline',
+			      icon:Ramadda.getUrl("/icons/polyline.png")});
 	    new GlyphType(this,GLYPH_POLYGON, "Polygon",
 			  Utils.clone(lineStyle,
 				      {fillColor:"transparent",
 				       fillOpacity:1.0,
 				       fillPattern:''}),
 			  MyPolygon,
-			  {icon:Ramadda.getUrl("/icons/polygon.png")});
+			  {
+			      newHelp:'Click and drag to create a new polygon',
+			      icon:Ramadda.getUrl("/icons/polygon.png")});
 
 	    new GlyphType(this,GLYPH_FREEHAND,"Freehand",
 			  Utils.clone(lineStyle),			  
 			  MyPath,
-			  {freehand:true,icon:Ramadda.getUrl("/icons/freehand.png")});
+			  {freehand:true,
+			   newHelp:'Click and drag to create a freehand line',			   
+			   icon:Ramadda.getUrl("/icons/freehand.png")});
 	    new GlyphType(this,GLYPH_FREEHAND_CLOSED,"Closed",
 			  Utils.clone(lineStyle,
 				      {fillColor:"transparent",
 				       fillOpacity:1.0,fillPattern:''}),
 			  MyPolygon,
-			  {freehand:true,icon:Ramadda.getUrl("/icons/freehandclosed.png")});
+			  {freehand:true,
+			   newHelp:'Click and drag to create a new closed freehand line',
+			   icon:Ramadda.getUrl("/icons/freehandclosed.png")});
 
 	    new GlyphType(this,GLYPH_BOX, "Box",
-			  Utils.clone(lineStyle,{
-			      fillColor:"transparent",
-			      fillOpacity:1.0,fillPattern:''}),
+			  Utils.clone(this.boxStyle),
 			  MyRegularPolygon,
 			  {snapAngle:90,sides:4,irregular:true,
+			   tooltip:'Create box; ctrl-b: to manually enter bounds',
+			   newHelp:'Click and drag to create a new box',
 			   icon:Ramadda.getUrl("/icons/rectangle.png")});
 	    new GlyphType(this,GLYPH_CIRCLE, "Circle",
-			  Utils.clone(lineStyle,{
-			      fillColor:"transparent",
-			      fillOpacity:1.0,fillPattern:''}),
+			  Utils.clone(this.boxStyle),
 			  MyRegularPolygon,
-			  {snapAngle:45,sides:40,icon:Ramadda.getUrl("/icons/ellipse.png")});
+			  {snapAngle:45,sides:40,
+			   newHelp:'Click and drag to create a new circle',			   
+			   icon:Ramadda.getUrl("/icons/ellipse.png")});
 
 	    new GlyphType(this,GLYPH_TRIANGLE, "Triangle",
 			  Utils.clone(lineStyle,{
@@ -46383,6 +46446,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 			      fillOpacity:1.0,fillPattern:''}),
 			  MyRegularPolygon,
 			  {snapAngle:10,sides:3,
+			   newHelp:'Click and drag to create a new triangle',			   
 			   icon:Ramadda.getUrl("/icons/triangle_blue.png")});				
 	    new GlyphType(this,GLYPH_HEXAGON, "Hexagon",
 			  Utils.clone(lineStyle,{
@@ -46390,6 +46454,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 			      fillOpacity:1.0,fillPattern:''}),
 			  MyRegularPolygon,
 			  {snapAngle:90,sides:6,
+			   newHelp:'Click and drag to create a new hexagon',			   
 			   icon:Ramadda.getUrl("/icons/hexagon_blue.png")});		
 	    new GlyphType(this,GLYPH_RINGS,"Range Rings",
 			  Utils.clone(lineStyle,
@@ -46399,7 +46464,9 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 				      textStyle,
 				      textBackgroundStyle),
 			  MyPoint,
-			  {icon:Ramadda.getUrl("/icons/rangerings.png")});
+			  {
+			      newHelp:'Click to create a new range ring',
+			      icon:Ramadda.getUrl("/icons/rangerings.png")});
 
 
 
@@ -47280,6 +47347,9 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		    case 'x': 
 			_this.doCut();
 			break;
+		    case 'b':
+			_this.makeBox(GLYPH_BOX);
+			break;
 		    case 'v': 
 			if(!_this.clipboard ||  _this.clipboard.length==0) {
 			    return;
@@ -47543,6 +47613,9 @@ GlyphType.prototype = {
     getTooltip: function() {
 	return this.options.tooltip;
     },
+    getNewHelp: function() {
+	return this.options.newHelp;
+    },    
     getIcon:function() {
 	return this.options.icon;
     },
@@ -47887,6 +47960,7 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
 	console.trace();
 	return
     }
+
     style = style??{};
     if(style.mapOptions) {
 	delete style.mapOptions;
