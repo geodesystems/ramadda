@@ -1066,6 +1066,15 @@ public class JsonUtil {
 	return null;
     }
 
+    public static List<String> getKeys(JSONObject obj)  {
+	List<String> list = new ArrayList<String>();
+	for(Iterator<String> keys=obj.keys();keys.hasNext();) {
+	    list.add(keys.next());
+	}
+	return list;
+    }
+
+
     public static JSONArray readArrayFromTok(JSONObject obj, String tok)  {
 	if(StringUtil.containsRegExp(tok)) {
 	    for(Iterator<String> keys=obj.keys();keys.hasNext();) {
