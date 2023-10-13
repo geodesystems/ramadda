@@ -3033,8 +3033,9 @@ RepositoryMap.prototype = {
 	    if(this.keyDownListener(evt)) return;
 	}
 
-	if(event.ctrlKey) {
-	    if(evt.key=='b') {
+
+	if(evt.ctrlKey && evt.shiftKey) {
+	    if(evt.key=='B') {
 		this.locationChangedInner(true);
 	    }
 	    return;
