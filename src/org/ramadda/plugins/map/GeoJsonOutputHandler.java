@@ -215,12 +215,8 @@ public class GeoJsonOutputHandler extends OutputHandler {
                 getStorageManager().getOriginalFilename(
                     entry.getResource().getPath()));
 
-            StringBuilder sb =
-                new StringBuilder(new String(bos.toByteArray()));
-	    //            Result result = new Result("", sb, GeoJson.GEOJSON_MIMETYPE);
-            Result result = new Result("", sb, "application/forcedownload");	    
-            return result;
-
+            StringBuilder sb = new StringBuilder(new String(bos.toByteArray()));
+            return new Result("", sb, GeoJson.DOWNLOAD_MIMETYPE);	    
         }
 
 
@@ -260,7 +256,7 @@ public class GeoJsonOutputHandler extends OutputHandler {
                 getStorageManager().getOriginalFilename(
                     entry.getResource().getPath()));
             Result result = new Result("", new StringBuilder(obj.toString()),
-				       GeoJson.GEOJSON_MIMETYPE);
+				       GeoJson.DOWNLOAD_MIMETYPE);
             return result;
         }
 
@@ -276,7 +272,7 @@ public class GeoJsonOutputHandler extends OutputHandler {
                     entry.getResource().getPath()));
 
             Result result = new Result("", new StringBuilder(geoJson),
-                                       GeoJson.GEOJSON_MIMETYPE);
+                                       GeoJson.DOWNLOAD_MIMETYPE);
 
             return result;
 
