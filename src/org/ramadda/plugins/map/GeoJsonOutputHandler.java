@@ -13,6 +13,7 @@ import org.json.*;
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 
 import org.ramadda.util.Utils;
@@ -46,6 +47,8 @@ import java.util.List;
  */
 public class GeoJsonOutputHandler extends OutputHandler {
 
+
+    private static final GeoJson GJ = null;
 
     /** Map output type */
     public static final OutputType OUTPUT_GEOJSON_TABLE =
@@ -156,6 +159,10 @@ public class GeoJsonOutputHandler extends OutputHandler {
         return null;
     }
 
+    private Result makeStream(Request request, Entry entry, InputStream is) throws Exception {
+	return request.returnStream(getStorageManager().getOriginalFilename(entry.getResource().getPath()),
+				    GJ.DOWNLOAD_MIMETYPE,is);	    
+    }
 
     /**
      * Output the entry
@@ -169,7 +176,8 @@ public class GeoJsonOutputHandler extends OutputHandler {
      * @throws Exception  problem outputting entry
      */
     @Override
-    public Result outputEntry(Request request, OutputType outputType,
+    public Result outputEntry(final Request request,
+			      OutputType outputType,
                               Entry entry)
             throws Exception {
 
@@ -186,9 +194,15 @@ public class GeoJsonOutputHandler extends OutputHandler {
                 sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
                 sb.append(HtmlUtils.hidden(ARG_OUTPUT,
                                            OUTPUT_GEOJSON_FILTER.toString()));
+		List<String> properties = (List<String>) entry.getTransientProperty("geojsonproperties");
+		if(properties==null) {
+		    properties = GJ.getProperties(entry.getResource().getPath());
+		    entry.putTransientProperty("geojsonproperties",properties);
+		}
+
                 sb.append(HtmlUtils.formEntry(msgLabel("Property"),
-                        HU.input("geojson_property",
-                                 request.getString("geojson_property", ""))));
+					      HU.select("geojson_property",properties,
+							request.getString("geojson_property", ""))));
                 sb.append(HtmlUtils.formEntry(msgLabel("Value"),
                         HU.input("geojson_value",
                                  request.getString("geojson_value", ""))));
@@ -203,20 +217,21 @@ public class GeoJsonOutputHandler extends OutputHandler {
                 return new Result("", sb);
             }
 
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            PrintStream           pw  = new PrintStream(bos);
-            GeoJson.geojsonSubsetByProperty(
-                entry.getResource().getPath(), pw,
-                request.getString("geojson_property", ""),
-                request.getString("geojson_value", ""));
-
-            pw.close();
-            request.setReturnFilename(
-                getStorageManager().getOriginalFilename(
-                    entry.getResource().getPath()));
-
-            StringBuilder sb = new StringBuilder(new String(bos.toByteArray()));
-            return new Result("", sb, GeoJson.DOWNLOAD_MIMETYPE);	    
+	    InputStream is =IO.pipeIt(new IO.PipedThing(){
+		    public void run(OutputStream os) {
+			PrintStream           pw  = new PrintStream(os);
+			try {
+			    GJ.geojsonSubsetByProperty(entry.getResource().getPath(), pw,
+						       request.getString("geojson_property", ""),
+						       request.getString("geojson_value", ""));
+			} catch(Exception exc) {
+			    getLogManager().logError("Filtering geojson:" + entry,exc);
+			    pw.println("Filtering geojson:" + exc);
+			    return;
+			    //			    throw new RuntimeException(exc);
+			}
+		    }});
+            return makeStream(request, entry,is);	    
         }
 
 
@@ -245,19 +260,17 @@ public class GeoJsonOutputHandler extends OutputHandler {
                 return new Result("", sb);
             }
 
-	    boolean intersects = request.get("intersects",false);
-	    Bounds bounds = new Bounds(GeoJson.parse(request.getString("area_north","")),
-				       GeoJson.parse(request.getString("area_west","")),
-				       GeoJson.parse(request.getString("area_south","")),
-				       GeoJson.parse(request.getString("area_east","")));
-	    JSONObject obj = GeoJson.read(entry.getResource().getPath());
-	    obj =GeoJson.subset(obj,bounds,intersects);
+	    final boolean intersects = request.get("intersects",false);
+	    final Bounds bounds = new Bounds(GJ.parse(request.getString("area_north","")),
+				       GJ.parse(request.getString("area_west","")),
+				       GJ.parse(request.getString("area_south","")),
+				       GJ.parse(request.getString("area_east","")));
+	    JSONObject obj = GJ.read(entry.getResource().getPath());
+	    obj =GJ.subset(obj,bounds,intersects);
             request.setReturnFilename(
                 getStorageManager().getOriginalFilename(
                     entry.getResource().getPath()));
-            Result result = new Result("", new StringBuilder(obj.toString()),
-				       GeoJson.DOWNLOAD_MIMETYPE);
-            return result;
+            return new Result("", new StringBuilder(obj.toString()), GJ.DOWNLOAD_MIMETYPE);
         }
 
 
@@ -272,7 +285,7 @@ public class GeoJsonOutputHandler extends OutputHandler {
                     entry.getResource().getPath()));
 
             Result result = new Result("", new StringBuilder(geoJson),
-                                       GeoJson.DOWNLOAD_MIMETYPE);
+                                       GJ.DOWNLOAD_MIMETYPE);
 
             return result;
 
@@ -281,13 +294,9 @@ public class GeoJsonOutputHandler extends OutputHandler {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         PrintStream           pw  = new PrintStream(bos);
-        GeoJson.geojsonFileToCsv(entry.getResource().getPath(), pw, null);
+        GJ.geojsonFileToCsv(entry.getResource().getPath(), pw, null);
         pw.close();
         StringBuilder sb = new StringBuilder(new String(bos.toByteArray()));
-
-
-
-
         if (outputType.equals(OUTPUT_GEOJSONCSV)) {
             Result result = new Result("", sb, "text/csv");
             result.setReturnFilename(IOUtil.stripExtension(entry.getName())
