@@ -187,31 +187,30 @@ public class GeoJsonOutputHandler extends OutputHandler {
                 StringBuilder sb = new StringBuilder();
                 getPageHandler().entrySectionOpen(request, entry, sb,
                         "Geojson Filter");
-                sb.append(HtmlUtils.formTable());
-                sb.append(
-                    HtmlUtils.form(
-                        getRepository().URL_ENTRY_SHOW.toString()));
-                sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
-                sb.append(HtmlUtils.hidden(ARG_OUTPUT,
-                                           OUTPUT_GEOJSON_FILTER.toString()));
-		List<String> properties = (List<String>) entry.getTransientProperty("geojsonproperties");
+                sb.append(HU.formTable());
+		HU.form(sb, getRepository().URL_ENTRY_SHOW.toString());
+                sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
+                sb.append(HU.hidden(ARG_OUTPUT, OUTPUT_GEOJSON_FILTER.toString()));
+		String names = (String) entry.getValue(GeoJsonTypeHandler.IDX_COLUMNS);
+		List<String> properties = null;
+		if(stringDefined(names)) properties = Utils.split(names,",",true,true);
 		if(properties==null) {
-		    properties = GJ.getProperties(entry.getResource().getPath());
-		    entry.putTransientProperty("geojsonproperties",properties);
+		    properties = (List<String>) entry.getTransientProperty("geojsonproperties");
+		    if(properties==null) {
+			properties = GJ.getProperties(entry.getResource().getPath());
+			entry.putTransientProperty("geojsonproperties",properties);
+		    }
 		}
 
-                sb.append(HtmlUtils.formEntry(msgLabel("Property"),
-					      HU.select("geojson_property",properties,
-							request.getString("geojson_property", ""))));
-                sb.append(HtmlUtils.formEntry(msgLabel("Value"),
-                        HU.input("geojson_value",
-                                 request.getString("geojson_value", ""))));
-                StringBuffer buttons =
-                    new StringBuffer(HtmlUtils.submit("Subset",
-                        "geojson_filter"));
-                sb.append(HtmlUtils.formEntry("", buttons.toString()));
-                sb.append(HtmlUtils.formClose());
-                sb.append(HtmlUtils.formTableClose());
+                HU.formEntry(sb, msgLabel("Property"),
+				     HU.select("geojson_property",properties,
+					       request.getString("geojson_property", "")));
+                HU.formEntry(sb,msgLabel("Value"),
+				    HU.input("geojson_value",
+					     request.getString("geojson_value", "")) +HU.space(1) +msg("Can be regular expression"));
+		HU.formEntry(sb, "", HU.submit("Subset","geojson_filter"));
+                sb.append(HU.formClose());
+                sb.append(HU.formTableClose());
                 getPageHandler().entrySectionClose(request, entry, sb);
 
                 return new Result("", sb);
@@ -240,21 +239,21 @@ public class GeoJsonOutputHandler extends OutputHandler {
                 StringBuilder sb = new StringBuilder();
                 getPageHandler().entrySectionOpen(request, entry, sb,
                         "Geojson Subset");
-                sb.append(HtmlUtils.form(getRepository().URL_ENTRY_SHOW.toString()));
-                sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
-                sb.append(HtmlUtils.hidden(ARG_OUTPUT,
+                sb.append(HU.form(getRepository().URL_ENTRY_SHOW.toString()));
+                sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
+                sb.append(HU.hidden(ARG_OUTPUT,
                                            OUTPUT_GEOJSON_SUBSET.toString()));
-                sb.append(HtmlUtils.formTable());
+                sb.append(HU.formTable());
 		entry.getTypeHandler().addAreaWidget(request,  entry, sb, null);
 
 		sb.append(HU.labeledCheckbox("intersects","true",false,"Intersects"));
 
                 StringBuffer buttons =
-                    new StringBuffer(HtmlUtils.submit("Subset",
+                    new StringBuffer(HU.submit("Subset",
                         "geojson_subset"));
-                sb.append(HtmlUtils.formTableClose());
+                sb.append(HU.formTableClose());
                 sb.append(buttons);
-                sb.append(HtmlUtils.formClose());
+                sb.append(HU.formClose());
                 getPageHandler().entrySectionClose(request, entry, sb);
 
                 return new Result("", sb);

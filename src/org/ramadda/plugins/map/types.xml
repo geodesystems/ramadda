@@ -209,10 +209,10 @@ mapVar="gpxMap${entryid}" }}
 	       firstLineDefinesFields=true
       ]]>
     </property>
+    <column name="names" type="string" label="Properties" canedit="false"  showinhtml="true"/>
 <!--
     <column name="convert_commands" type="string" label="Convert Commands" showinhtml="false" showinform="false"/>
     -->
-
 
 <wiki>
 <![CDATA[
@@ -220,7 +220,7 @@ mapVar="gpxMap${entryid}" }}
 {{description wikify="true"}}
 +row
 +col-md-8
-{{map width="100%" height="450" viewBounds="<bounds>" details="true" displayDiv="mapDisplay" showSearch="true" }}
+{{map width="100%" height="450" viewBounds="<bounds>" details="true" displayDiv="mapDisplay" }}
 -col
 +col-md-4
 <div style="padding-top:20px;"></div>
@@ -230,7 +230,7 @@ mapVar="gpxMap${entryid}" }}
 :vspace 0.5em
 ----
 :vspace 0.5em
-{{information  details="true"  showTitle="false"  includeTools=true menus="service" menusTitle="Services"}} 
+{{information  details="true"  showTitle="false"   menus="service" menusTitle="Services"}} `
 -section
 ]]>
 </wiki>

@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2023 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.map;
@@ -20,24 +20,18 @@ import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.map.MapInfo;
-import org.ramadda.repository.output.KmlOutputHandler;
-
 import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.type.GenericTypeHandler;
+
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.util.geo.Bounds;
-
 import org.ramadda.util.geo.GeoJson;
 
 
 import org.w3c.dom.Element;
-
-import ucar.unidata.util.IOUtil;
-
-import java.awt.geom.Rectangle2D;
 
 
 import java.io.*;
@@ -51,6 +45,16 @@ import java.util.List;
  */
 public class GeoJsonTypeHandler extends ConvertibleTypeHandler
     implements WikiConstants {
+    private static final GeoJson GJ = null;
+
+
+    /** _more_ */
+    private static int IDX = IDX_LAST+1;
+
+    /** _more_ */
+    public static final int IDX_COLUMNS = IDX++;
+
+
 
     /**
      * _more_
@@ -60,7 +64,7 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
      * @throws Exception _more_
      */
     public GeoJsonTypeHandler(Repository repository, Element node)
-            throws Exception {
+	throws Exception {
         super(repository, node);
     }
 
@@ -78,7 +82,7 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
     @Override
     public void initializeNewEntry(Request request, Entry entry,
                                    boolean fromImport)
-            throws Exception {
+	throws Exception {
         super.initializeNewEntry(request, entry, fromImport);
         if (fromImport) {
             return;
@@ -86,10 +90,12 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
         if ( !entry.isFile()) {
             return;
         }
-        Bounds bounds = GeoJson.getBounds(entry.getResource().toString());
+	List<String> names = new ArrayList<String>();
+        Bounds bounds = GeoJson.getBounds(entry.getResource().toString(),names);
         if (bounds != null) {
             entry.setBounds(bounds);
         }
+	entry.setValue(IDX_COLUMNS,Utils.join(names,","));
     }
 
     /**
@@ -106,7 +112,7 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
     public void initializeEntryFromXml(Request request, Entry entry,
                                        Element node,
                                        Hashtable<String, File> files)
-            throws Exception {
+	throws Exception {
 	super.initializeEntryFromXml(request, entry, node, files);
         initializeEntryFromForm(request, entry, null, true);
     }
@@ -124,7 +130,7 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
     @Override
     public void initializeEntryFromHarvester(Request request, Entry entry,
                                              boolean firstCall)
-            throws Exception {
+	throws Exception {
         super.initializeEntryFromHarvester(request, entry, firstCall);
         if (firstCall) {
             initializeEntryFromForm(request, entry, null, true);
@@ -142,7 +148,7 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
      */
     @Override
     public void metadataChanged(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         super.metadataChanged(request, entry);
         getEntryManager().updateEntry(request, entry);
     }
@@ -159,7 +165,7 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
      */
     @Override
     public boolean addToMap(Request request, Entry entry, MapInfo map)
-            throws Exception {
+	throws Exception {
 	//        String url = getEntryManager().getEntryResourceUrl(request, entry);
 	String url = getEntryManager().getEntryResourceUrl(request, entry,ARG_INLINE_DFLT,ARG_FULL_DFLT,ARG_ADDPATH_TRUE,true);
 
@@ -176,7 +182,7 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
     public RecordFile doMakeRecordFile(Request request, Entry entry,
                                        Hashtable properties,
                                        Hashtable requestProperties)
-            throws Exception {
+	throws Exception {
 	
 	List<String> args = getCsvCommands(request, entry);
         return new GeoJsonRecordFile(request, getRepository(), this, entry,args,new IO.Path(getPathForEntry(request, entry,true)));
@@ -213,12 +219,28 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
          * @throws IOException _more_
          */
         public GeoJsonRecordFile(Request request, Repository repository, GeoJsonTypeHandler ctx, Entry entry,List<String> args, IO.Path path)
-                throws IOException {
+	    throws IOException {
             super(request,  ctx, entry, args, path);
 	    typeHandler = ctx;
             this.repository = repository;
             this.entry      = entry;
         }
+
+
+	/*
+	@Override
+	public List<RecordField> doMakeFields(boolean failureOk) {
+	    String names = (String) entry.getValue(GeoJsonTypeHandler.IDX_COLUMNS);
+	    if(!stringDefined(names)) return super.doMakeFields(failureOk);
+	    StringBuilder fields = new StringBuilder();
+	    for(String field:Utils.split(names,",",true,true)) {
+		if(fields.length()>0) fields.append(",");
+
+	    }
+	    return super.doMakeFields(failureOk);
+	}
+	*/
+
 
 
         /**
@@ -231,24 +253,12 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
          */
         @Override
         public InputStream doMakeInputStream(boolean buffered)
-                throws Exception {
+	    throws Exception {
 	    List<String> commands =getCsvCommands();
-	    if(commands.size()>0) {
-		return super.doMakeInputStream(buffered);
+	    if(commands.size()==0) {
+		Utils.add(commands, "-geojson","true");
 	    }
-	    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-	    PrintStream           pw  = new PrintStream(bos);
-	    InputStream source = super.doMakeInputStream(buffered);
-	    GeoJson.toCsv(source, pw, (String) null,false);
-	    pw.close();
-	    InputStream is = new BufferedInputStream(new  ByteArrayInputStream(bos.toByteArray()));
-	    source.close();
-	    bos.close();
-	    return is;
-        }
-
-
+	    return super.doMakeInputStream(buffered);
+	}
     }
-
-
 }
