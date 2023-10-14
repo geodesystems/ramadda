@@ -61,12 +61,15 @@ public class GeoJson extends JsonUtil {
     }    
 
     public static List<String> getProperties(String file) throws Exception {
-	
 	List<String> names = new ArrayList<String>();
 	JSONObject obj  =read(file);
         JSONArray             features = readArray(obj, "features");
 	if(features.length()==0) return names;
-	JSONObject feature = features.getJSONObject(0);
+	getProperties(features.getJSONObject(0), names);
+	return names;
+    }
+    
+    private  static void getProperties(JSONObject feature, List<String> names) throws Exception {	
 	JSONObject props   = feature.getJSONObject("properties");
 	String[] nameList = JSONObject.getNames(props);
 	if(nameList!=null) {
@@ -74,7 +77,6 @@ public class GeoJson extends JsonUtil {
 		names.add(name);
 	    }
         }
-	return names;
     }
 
     /**
@@ -432,27 +434,24 @@ public class GeoJson extends JsonUtil {
      * @throws Exception _more_
      */
     public static Bounds getBounds(String file) throws Exception {
-        BufferedReader br = new BufferedReader(
-					       new InputStreamReader(
-								     IOUtil.getInputStream(
-											   file, JsonUtil.class)));
-        StringBuilder json = new StringBuilder();
-        String        input;
-        while ((input = br.readLine()) != null) {
-            json.append(input);
-            json.append("\n");
-        }
-        JSONObject   obj      = new JSONObject(json.toString());
-	return getBounds(obj);
+	return getBounds(file,null);
     }
 
-    public static Bounds getBounds(JSONObject obj) throws Exception {
+    public static Bounds getBounds(String file,List<String> names) throws Exception {
+        JSONObject   obj      = read(file);
+	return getBounds(obj,names);
+    }
+
+    public static Bounds getBounds(JSONObject obj,List<String> names) throws Exception {
         Bounds bounds = null;
         JSONArray    features = readArray(obj, "features");
-        List<String> names    = null;
+	
         for (int i = 0; i < features.length(); i++) {
             JSONObject feature = features.getJSONObject(i);
             bounds = getFeatureBounds(feature, bounds, null);
+	    if(i==0 && names!=null) {
+		getProperties(feature, names);
+	    }
         }
 
         return bounds;
