@@ -60,6 +60,23 @@ public class GeoJson extends JsonUtil {
 	return new JSONObject(contents);
     }    
 
+    public static List<String> getProperties(String file) throws Exception {
+	
+	List<String> names = new ArrayList<String>();
+	JSONObject obj  =read(file);
+        JSONArray             features = readArray(obj, "features");
+	if(features.length()==0) return names;
+	JSONObject feature = features.getJSONObject(0);
+	JSONObject props   = feature.getJSONObject("properties");
+	String[] nameList = JSONObject.getNames(props);
+	if(nameList!=null) {
+	    for (String name : nameList) {
+		names.add(name);
+	    }
+        }
+	return names;
+    }
+
     /**
      *
      * @param json _more_
@@ -317,7 +334,6 @@ public class GeoJson extends JsonUtil {
                     String v = jsonProps.optString(names[j], "");
                     if (isRegexp) {
                         haveIt = v.matches(value);
-			System.err.println(v+" " + value);
                     } else {
                         haveIt = v.equals(value);
                     }
