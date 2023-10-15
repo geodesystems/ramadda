@@ -502,12 +502,13 @@ public class MetadataManager extends RepositoryManager {
         top.add(
             JsonUtil.quote(
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, entry)));
-	if(!stringDefined(snippet)) {
-	    snippet = "RAMADDA page: " + entry.getName();
+
+
+	//50-5000
+	if(stringDefined(snippet)&& snippet.length()>50) {
+	    top.add("description");
+	    top.add(JsonUtil.quote(JsonUtil.cleanString(snippet)));
 	}
-	top.add("description");
-	if(snippet.length()>150) snippet = snippet.substring(0,145)+"...";
-	top.add(JsonUtil.quote(JsonUtil.cleanString(snippet)));
         if (entry.hasDate()) {
             top.add("temporalCoverage");
 	    synchronized(jsonLdSdf) {
