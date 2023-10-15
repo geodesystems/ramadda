@@ -506,6 +506,7 @@ public class MetadataManager extends RepositoryManager {
 	    snippet = "RAMADDA page: " + entry.getName();
 	}
 	top.add("description");
+	if(snippet.length()>150) snippet = snippet.substring(0,145)+"...";
 	top.add(JsonUtil.quote(JsonUtil.cleanString(snippet)));
         if (entry.hasDate()) {
             top.add("temporalCoverage");
