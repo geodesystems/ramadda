@@ -21,8 +21,8 @@ import org.ramadda.util.ColorTable;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
-
 import org.ramadda.util.TTLCache;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.geo.*;
 import org.ramadda.util.geo.KmlUtil;
@@ -527,7 +527,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             IOUtil.stripExtension(getStorageManager().getFileTail(entry))
             + ".geojson";
         Result result = request.getOutputStreamResult(filename,
-                            JsonUtil.GEOJSON_MIMETYPE);
+						      IO.MIME_DOWNLOAD);
         OutputStreamWriter sb =
             new OutputStreamWriter(request.getOutputStream());
         FeatureCollection fc = makeFeatureCollection(request, entry, null);
@@ -594,7 +594,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             IOUtil.stripExtension(getStorageManager().getFileTail(entry))
             + ".csv";
         Result result = request.getOutputStreamResult(filename,
-                            Result.TYPE_CSV);
+						      Result.TYPE_CSV);
         getCsvBuffer(request, request.getOutputStream(), entry, null, false,
                      false, false);
 
