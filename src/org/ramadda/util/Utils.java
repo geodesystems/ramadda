@@ -63,6 +63,8 @@ import java.util.zip.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 
 /**
@@ -6184,6 +6186,48 @@ public class Utils extends IO {
 
         return false;
     }
+
+
+
+    public static String removeInvalidUtf8Bytes(String input,boolean removeZeroByte) {
+        byte[] utf8Bytes = input.getBytes(StandardCharsets.UTF_8);
+        StringBuilder validUtf8String = new StringBuilder();
+        int i = 0;
+        while (i < utf8Bytes.length) {
+            byte currentByte = utf8Bytes[i];
+            int bytesToRead = bytesToReadForUtf8(currentByte);
+	    if(currentByte==0x00 && removeZeroByte) {
+		i++;
+		continue;
+	    }
+            if (i + bytesToRead > utf8Bytes.length) {
+                // If there are not enough bytes left for a complete character, skip them
+                i++;
+            } else {
+                // Append the valid bytes to the output
+                for (int j = 0; j < bytesToRead; j++) {
+                    validUtf8String.append((char) utf8Bytes[i + j]);
+                }
+                i += bytesToRead;
+            }
+        }
+
+        return validUtf8String.toString();
+    }
+
+    private static int bytesToReadForUtf8(byte leadingByte) {
+        if ((leadingByte & 0b10000000) == 0) {
+            return 1; // ASCII character
+        } else if ((leadingByte & 0b11100000) == 0b11000000) {
+            return 2; // 2-byte character
+        } else if ((leadingByte & 0b11110000) == 0b11100000) {
+            return 3; // 3-byte character
+        } else if ((leadingByte & 0b11111000) == 0b11110000) {
+            return 4; // 4-byte character
+        }
+        return 1; // Default to skip invalid byte
+    }
+
 
 
 
