@@ -354,11 +354,13 @@ var MapUtils =  {
 	$.extend(feature.style,{display:feature.style.display});
     },
 
-    gridFilter:function(map,features,args) {
+    declutter:function(map,features,args) {
 	let opts = {
 	    fontSize:'12px',
-	    padding:2
+	    padding:1,
+	    granularity:1
 	}
+	let orig = features;
 	if(args) $.extend(opts,args);
 	opts.padding = Math.min(10,opts.padding);
 	let ptMap={4:{x:1.75,y:5.99},
@@ -439,64 +441,112 @@ var MapUtils =  {
 	}
 
 
+	let mapBounds = map.transformLLBounds(map.getBounds());
 	let dim;
-	features.forEach(feature=>{
-	    feature.labelInfo=null;
+//	console.log('map',mapBounds,'#features',features.length);
+	let goodFeatures=[];
+	features.forEach((feature,idx)=>{
+	    feature.gridSpacingInfo=null;
 	    if(!feature.geometry) return;
-	    if(feature.style && feature.style.label) {
+	    if(!feature.style) return;
+	    let bounds = feature.geometry.getBounds();
+	    if(!mapBounds.contains(bounds) && !mapBounds.intersectsBounds(bounds))  {
+//		console.log('not in bounds',bounds);
+		MapUtils.setFeatureVisible(feature,false);
+		return;
+	    }
+	    MapUtils.setFeatureVisible(feature,true);
+	    goodFeatures.push(feature);
+	    let center = bounds.getCenterLonLat();
+	    let screen = map.getMap().getViewPortPxFromLonLat(center);
+	    let cx = screen.x;
+	    let cy = screen.y;
+	    let left = cx;
+	    let right = cx;
+	    let top=cy;
+	    let bottom = cy;
+	    let height=1;
+	    let width=1;
+	    if(!feature.style.label) {
+		if(feature.style.pointRadius) {
+		    let r = (+feature.style.pointRadius);
+		    width=r*2;
+		    height=r*2;
+		    if(left==right) {
+			left = cx-r;
+			right = cx+r;
+		    }
+		    if(top==bottom) {
+			top = cy-r;
+			bottom = cy+r;
+		    }		    
+		} else {
+		    height=opts.padding*(top-bottom);
+		    width=opts.padding*(right-left);
+		}
+	    } else {
 		let lines = feature.style.label.split('\n');
 		let maxWidth=0;
 		lines.forEach(line=>{
 		    maxWidth=Math.max(maxWidth,line.length);
 		});
-		let bounds = feature.geometry.getBounds();
-		let center = bounds.getCenterLonLat();
-		let screen = map.getMap().getViewPortPxFromLonLat(center);
-		let charWidth = opts.pixelsPerCharacter*maxWidth;
-		let charHeight=opts.pixelsPerLine*lines.length;
-		let left = screen.x-charWidth/2;
-		let right = screen.x+charWidth/2;		
-		let top=screen.y;
-		let bottom = screen.y+charHeight;
-		if(!dim) {
-		    dim={
-			minx:left,
-			maxx:right,
-			miny:top,
-			maxy:bottom						
-		    }
-		} else {
-		    dim.minx = Math.min(dim.minx,left);
-		    dim.maxx = Math.max(dim.maxx,right);
-		    dim.miny = Math.min(dim.miny,top);
-		    dim.maxy = Math.max(dim.maxy,bottom);		    		    
+		let charWidth = width = opts.pixelsPerCharacter*maxWidth;
+		let charHeight= height = opts.pixelsPerLine*lines.length;
+		left = screen.x-charWidth/2;
+		right = screen.x+charWidth/2;		
+		top=screen.y;
+		bottom = screen.y+charHeight;
+	    }
+
+	    if(!dim) {
+		dim={
+		    minx:left,
+		    maxx:right,
+		    miny:top,
+		    maxy:bottom						
 		}
-		feature.labelInfo={
-		    height:charHeight,
-		    width:charWidth,
-		    center:center,
-		    left:left,
-		    right:right,
-		    top:top,
-		    bottom:bottom
-		}
+	    } else {
+		dim.minx = Math.min(dim.minx,left);
+		dim.maxx = Math.max(dim.maxx,right);
+		dim.miny = Math.min(dim.miny,top);
+		dim.maxy = Math.max(dim.maxy,bottom);		    		    
+	    }
+
+	    feature.gridSpacingInfo={
+		height:Math.ceil(height),
+		width:Math.ceil(width),
+		left:Math.floor(left),
+		right:Math.ceil(right),
+		top:Math.floor(top),
+		bottom:Math.ceil(bottom)
 	    }
 	});
 	if(!dim) return;
+	dim= {
+	    minx:Math.floor(dim.minx),
+	    maxx:Math.ceil(dim.maxx),
+	    miny:Math.floor(dim.miny),
+	    maxy:Math.ceil(dim.maxy),
+	};
+	features = goodFeatures;
 	let offsetX = -dim.minx;
 	let offsetY = -dim.miny;	
 	let gridW = parseInt(dim.maxx+offsetX);
 	let gridH = parseInt(dim.maxy+offsetY);	
 	let grid={};
+	let hideCnt =0, showCnt=0;
 	features.forEach((feature,idx)=>{
 	    let debug = false;
-	    if(!this.isFeatureVisible(feature)) return
-	    let info = feature.labelInfo;
+	    if(!this.isFeatureVisible(feature)) {
+		console.log('not viz');
+		return
+	    }
+	    let info = feature.gridSpacingInfo;
 	    let indexX = parseInt(offsetX+info.left);
 	    let indexY = parseInt(offsetY+info.top);	    
 	    let clear = true;
-	    if(indexX+feature.labelInfo.width<0
-	       || indexY+feature.labelInfo.height<0) {
+	    if(indexX+feature.gridSpacingInfo.width<0
+	       || indexY+feature.gridSpacingInfo.height<0) {
 		//This should never happen
 		clear=false;
 		console.log('skipping:',indexX,indexY);
@@ -504,11 +554,10 @@ var MapUtils =  {
 		let coords =[];
 		indexX = Math.max(0,indexX);
 		indexY = Math.max(0,indexY);		
-		for(let x=indexX;clear && x<indexX+feature.labelInfo.width;x++) {
+		for(let x=indexX;clear && x<indexX+feature.gridSpacingInfo.width;x+=opts.granularity) {
 		    if(x>=gridW) break;
-		    for(let y=indexY;clear && y<indexY+feature.labelInfo.height;y++) {
+		    for(let y=indexY;clear && y<indexY+feature.gridSpacingInfo.height;y+=opts.granularity) {
 			if(y>=gridH) break;
-
 			let key  = x+'_'+y;
 			if(grid[key]) {
 			    clear = false;
@@ -528,11 +577,14 @@ var MapUtils =  {
 	    }
 	    if(this.testSize.active) clear =debug;
 	    if(!clear) {
+		hideCnt++;
 		MapUtils.setFeatureVisible(feature,false);
 	    } else {
+		showCnt++;
 		MapUtils.setFeatureVisible(feature,true);		    
 	    }
 	});
+//	console.log("#orig:" + orig.length,"#features:",features.length,"hide:" + hideCnt +" show:" + showCnt);
     },
     makeDefaultFeatureText:function (attrs,columns,valueFormatter,labelGetter) {
 	if(!columns) columns  = Object.keys(attrs);
