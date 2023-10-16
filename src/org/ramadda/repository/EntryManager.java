@@ -2796,6 +2796,7 @@ public class EntryManager extends RepositoryManager {
                             for (String tok :
 				     Utils.split(name, " ", true, true)) {
                                 tok = StringUtil.camelCase(tok);
+				if(tok.length()==2) tok = tok.toUpperCase();
                                 tmp.append(tok);
                                 tmp.append(" ");
                             }
