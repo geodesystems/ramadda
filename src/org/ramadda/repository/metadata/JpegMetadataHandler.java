@@ -207,6 +207,8 @@ public class JpegMetadataHandler extends MetadataHandler {
                         iptcDir.getString(IptcDirectory.TAG_CAPTION);
                     if ((caption != null)
                             && entry.getDescription().isEmpty()) {
+			//Strip out bad utf8. true->remove 0x00 byte
+			caption  = Utils.removeInvalidUtf8Bytes(caption,true);
                         entry.setDescription(caption);
                         //This tells ramadda that something was added
                         extra.put("1", "");
