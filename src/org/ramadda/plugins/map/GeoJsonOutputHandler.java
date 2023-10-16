@@ -5,17 +5,10 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.map;
 
-
-import org.json.*;
-
-
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
-import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
-
 import org.ramadda.util.Utils;
 import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.geo.GeoJson;
@@ -23,13 +16,11 @@ import org.ramadda.util.geo.KmlUtil;
 import org.ramadda.util.geo.Point;
 import org.ramadda.util.text.Seesv;
 
-import org.w3c.dom.*;
-
-import ucar.unidata.gis.shapefile.EsriShapefile;
-import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
-
 import ucar.unidata.xml.XmlUtil;
+
+import org.json.*;
+import org.w3c.dom.*;
 
 
 import java.awt.Color;
@@ -37,7 +28,6 @@ import java.awt.Color;
 import java.io.*;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 
@@ -45,6 +35,7 @@ import java.util.List;
  *
  *
  */
+@SuppressWarnings("unchecked")
 public class GeoJsonOutputHandler extends OutputHandler {
 
 
