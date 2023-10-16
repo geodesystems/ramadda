@@ -4844,7 +4844,6 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    return this.getMap().getZoom();
 	},
 	checkVisible:function() {
-	    let features =[];
 	    this.getGlyphs().forEach(mapGlyph=>{
 		mapGlyph.checkVisible();
 	    });
@@ -5216,10 +5215,12 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 
 	    setTimeout(()=>{
 		this.getMap().getMap().events.register('zoomend', '', () =>{
-		    this.checkVisible();
+		    Utils.bufferedCall(this.getId()+'_checkvisible', ()=>{this.checkVisible();});
 		    this.setLevelRangeTick();
 		    $('.imdv-currentlevellabel').html('(current level: ' + this.getCurrentLevel()+')');
-
+		},true);
+		this.getMap().getMap().events.register('moveend', '', () =>{
+		    Utils.bufferedCall(this.getId()+'_checkvisible', ()=>{this.checkVisible();});
 		},true);
 	    },500);
 	    this.getMap().featureClickHandler = e=>{

@@ -537,10 +537,13 @@ MapGlyph.prototype = {
 	    miscLines.push(...IMDV_GROUP_PROPERTY_HINTS);
 	}
 	if(this.isMap()) {
-	    miscLines.push('map.label.maxlength=100','map.label.maxlinelength=15',
-			   'map.label.pixelsperline=10',
-			   'map.label.pixelspercharacter=4',
-			   'map.label.padding=2');
+	    miscLines.push('declutter.features=true',
+			   'declutter.labels=true',
+			   'declutter.maxlength=100',
+			   'declutter.maxlinelength=15',
+			   'declutter.pixelsperline=10',
+			   'declutter.pixelspercharacter=4',
+			   'declutter.padding=2');
 	}
 
 	this.getFeatureInfoList().forEach((info,idx)=>{
@@ -4195,23 +4198,22 @@ MapGlyph.prototype = {
 	    mapGlyph.checkImage(feature,true);
 	});
     },
+    getMapFeaturesToGrid: function() {
+	if(!this.mapLayer || !this.mapLoaded) {
+	    return null;
+	}
+	let features= this.mapLayer.features;
+	return features;
+    },
 
     applyMapStyle:function(skipLegendUI) {
 	let debug = false;
 	if(debug)   console.log("applyMapStyle:" + this.getName());
     	this.applyChildren(child=>{child.applyMapStyle(skipLegendUI);});
 	let _this = this;
-	//If its a map then set the style on the map features
-	if(!this.mapLayer || !this.mapLoaded) {
-	    if(debug)
-		console.log("\tnot loaded")
-	    return;
-	}
-
-	let features= this.mapLayer.features;
+	let features = this.getMapFeatures();
 	if(!features) {
-	    if(debug) console.log("\tno features");
-	    return
+	    return;
 	}
 	if(!this.originalFeatures) this.originalFeatures = features;
 	else features = this.originalFeatures;
@@ -4307,19 +4309,12 @@ MapGlyph.prototype = {
 	    });
 	}
 
-
-
-
-
-
 	if(this.mapLabels) {
 	    this.display.removeFeatures(this.mapLabels);
 	    this.mapLabels = null;
 	}
 
-
 	//Apply the base style here
-	
 	let fillProperty = this.getProperty('map.property.fillColor');
 	let fillOpacityProperty = this.getProperty('map.property.fillOpacity');
 	let strokeProperty = this.getProperty('map.property.strokeColor');
@@ -5026,10 +5021,10 @@ MapGlyph.prototype = {
 	    this.checkLayersAnimationButton();
 	}
 
-
 	if(callCheck)
 	    this.checkVisible();
 	this.checkMapLayer();
+
 	let legend = this.getLegendDiv();
 	legend.removeClass(CLASS_LEGEND_LABEL_INVISIBLE);
 	legend.removeClass(CLASS_LEGEND_LABEL_HIGHLIGHT);
@@ -5073,11 +5068,10 @@ MapGlyph.prototype = {
 	    range = displayRange;
 	    showMarker  = this.display.getMapProperty('showMarkerWhenNotVisible');
 	}
-	let visible=true;
 	let level = this.display.getCurrentLevel();
 	let min = Utils.stringDefined(range.min)?+range.min:-1;
 	let max = Utils.stringDefined(range.max)?+range.max:10000;
-	visible =  this.getVisible() && (level>=min && level<=max);
+	let visible=  this.getVisible() && (level>=min && level<=max);
 //	console.log(this.getName(),range,level,visible);
 	if(this.getVisible() && showMarker && !visible && !this.showMarkerMarker) {
 	    let featuresToUse = this.features;
@@ -5095,14 +5089,12 @@ MapGlyph.prototype = {
 	    }
 	}
 
-	let setVis = (feature,vis)=>{
-	    if(!Utils.isDefined(vis))  vis=visible;
-	    MapUtils.setFeatureVisible(feature, vis);
-	};
-
 	if(this.features) {
-	    this.features.forEach(f=>{setVis(f);});
+	    this.features.forEach(f=>{
+		MapUtils.setFeatureVisible(f, visible);
+	    });
 	}
+
 
 	if(this.showMarkerMarker) {
 	    if(!this.getVisible() || visible) {
@@ -5144,33 +5136,13 @@ MapGlyph.prototype = {
 	    this.checkDataDisplayVisibility();
 	}
 
-	if(this.mapLabels && this.mapLoaded) {
-	    if(!visible) {
-		this.mapLabels.forEach(mapLabel=>{setVis(mapLabel,false);});
-	    } else if(Utils.stringDefined(this.getMapPointsRange())) {
-		if(level<parseInt(this.getMapPointsRange())) {
-		    visible=false;
-		    this.mapLabels.forEach(mapLabel=>{setVis(mapLabel,false);});
-		}
-	    } else {
-		//If the label wasn't filtered then turn them all on
-		this.mapLabels.forEach(mapLabel=>{
-		    if(!mapLabel.isFiltered)
-			setVis(mapLabel,true);
-		});
-		let args ={};
-		args.fontSize = this.style.fontSize??'12px';
-		if(this.getProperty('map.label.padding'))
-		    args.padding = +this.getProperty('map.label.padding');
-		if(this.getProperty('map.label.pixelsperline'))
-		    args.pixelsPerLine = +this.getProperty('map.label.pixelsperline');
-		if(this.getProperty('map.label.pixelspercharacter'))
-		    args.pixelsPerCharacter = +this.getProperty('map.label.pixelspercharacter');
-		MapUtils.gridFilter(this.getMap(), this.mapLabels,args);
-	    }
+	this.checkGridding(this.mapLabels,visible,true);
+	let features = this.getMapFeaturesToGrid();
+	if(features) {
+	    this.checkGridding(features,visible,false);
+	    ImdvUtils.scheduleRedraw(this.mapLayer);
 	}
-
-	this.applyChildren(child=>{child.checkVisible();});
+    	this.applyChildren(child=>{child.checkVisible();});
 	ImdvUtils.scheduleRedraw(this.display.myLayer);
 	if(visible && this.isMultiEntry() && !this.haveAddedEntries) {
 	    setTimeout(()=>{
@@ -5179,6 +5151,54 @@ MapGlyph.prototype = {
 	}
 	return visible;
     },    
+    checkGridding:function(features, visible,isLabels) {
+	if(!features || !this.mapLoaded) return;
+	if(!visible) {
+	    features.forEach(feature=>{MapUtils.setFeatureVisible(feature,false);});
+	    return;
+	} 
+	let featuresToGrid = [];
+	//If the label wasn't filtered then turn them all on
+	features.forEach(feature=>{
+	    if(!feature.isFiltered) {
+		featuresToGrid.push(feature);
+		MapUtils.setFeatureVisible(feature,true);
+	    }
+	});
+	if(Utils.stringDefined(this.getMapPointsRange())) {
+	    let level = this.display.getCurrentLevel();
+	    if(level<parseInt(this.getMapPointsRange())) {
+		visible=false;
+		features.forEach(feature=>{MapUtils.setFeatureVisible(feature,false);});
+	    }
+	    return;
+	} 
+	if(isLabels) {
+	    if(!this.getProperty('declutter.labels',false)) {
+		return;
+	    }
+	} else {
+	    if(!this.getProperty('declutter.features',false)) {
+		return;
+	    }
+	}
+	let t1 = new Date();
+	MapUtils.declutter(this.getMap(), featuresToGrid,this.getDeclutterArgs());
+	//	Utils.displayTimes("gridding #" + features.length,[t1,new Date()],true);
+    },
+    getDeclutterArgs:function() {
+	let args ={};
+	args.fontSize = this.style.fontSize??'12px';
+	if(Utils.stringDefined(this.getProperty('declutter.padding')))
+	    args.padding = +this.getProperty('declutter.padding');
+	if(this.getProperty('declutter.granularity'))
+	    args.granularity = +this.getProperty('declutter.granularity');
+	if(this.getProperty('declutter.pixelsperline'))
+	    args.pixelsPerLine = +this.getProperty('declutter.pixelsperline');
+	if(this.getProperty('declutter.pixelspercharacter'))
+	    args.pixelsPerCharacter = +this.getProperty('declutter.pixelspercharacter');
+	return args;
+    },
     setImageLayerVisible:function(obj,visible) {
 	this.isImageLayerVisible(obj,true,visible);
 	if(obj.layer) obj.layer.setVisibility(visible);
