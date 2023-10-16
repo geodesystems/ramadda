@@ -79,6 +79,8 @@ public class IO {
 
     public static final String MIME_CSV = "text/csv";
     public static final String MIME_TEXT = "text/plain";
+    public static final String MIME_DOWNLOAD = "application/forcedownload";
+
 
     /**
      * Set the cache location. This is used by PhoneUtils for ismobile lookup
