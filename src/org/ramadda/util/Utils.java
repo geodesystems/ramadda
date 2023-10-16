@@ -2755,6 +2755,7 @@ public class Utils extends IO {
         boolean       lastCharUpperCase = false;
         for (String tok : Utils.split(label, " ", true, true)) {
 	    if(tok.length()<4) {
+		if(tok.length()==2) tok  = tok.toUpperCase();
 		sb.append(tok);
 		sb.append(" ");
 		continue;
