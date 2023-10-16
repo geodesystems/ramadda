@@ -8362,6 +8362,7 @@ public class EntryManager extends RepositoryManager {
         statement.setString(col++, entry.getId());
         statement.setString(col++, typeHandler.getType());
         statement.setString(col++, entry.getName());
+	System.err.println("DESCRIPTION:"+ description);
         statement.setString(col++, description);
         statement.setString(col++, entry.getParentEntryId());
         //        statement.setString(col++, entry.getCollectionGroupId());
