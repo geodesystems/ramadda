@@ -102,6 +102,16 @@ var Utils =  {
 	return true;
     },
 
+    bufferedCalls:{},
+    bufferedCall:function(id, func,timeout) {
+	timeout= Utils.isDefined(timeout)?timeout:1;
+	if(this.bufferedCalls[id]) {
+	    clearTimeout(this.bufferedCalls[id]);
+	}
+	this.bufferedCalls[id]=setTimeout(()=>{
+	    func();
+	},timeout);
+    },
     throttle:function(f, delay) {
 	let timer = 0;
 	return function(...args) {
