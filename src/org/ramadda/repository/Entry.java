@@ -2011,9 +2011,9 @@ public class Entry implements Cloneable {
      * @param value The new value for Description
      */
     public void setDescription(String value) {
-        if (description == null) {
-            return;
-        }
+	//        if (description == null) {
+	//            return;
+	//        }
         description = value;
         if (description.length() > MAX_DESCRIPTION_LENGTH) {
             description = description.substring(0,
