@@ -738,12 +738,15 @@ public class MapInfo {
         }
         widget.append(getSelectorWidget(arg, nwseValues));
         StringBuilder sb        = new StringBuilder();
-        String        clearLink = getSelectorClearLink(msg("Clear"));
+        String        clearLink = getSelectorClearLink(HU.span("Clear",HU.clazz("ramadda-button")));
         if (doRegion) {
-            String msg1 = HU.italics(msg("Shift-drag to select region"));
-            String msg2 = HU.italics(msg("Command-drag to move region"));
-            sb.append(HU.leftRight(HU.SPACE + msg1 + HU.SPACE + msg2,
-                                   clearLink + HU.SPACE));
+            String msg1 = HU.italics(msg("Shift-drag: select region"));
+            String msg2 = HU.italics(msg("Cmd-drag: move region"));
+            String msg3 = HU.italics(msg("Alt-click: select point"));	    
+	    String delim =  ";" +HU.SPACE;
+            HU.div(sb,
+		   HU.leftRight(HU.SPACE + msg1 + delim + msg2 + delim + msg3,
+				clearLink + HU.SPACE),HU.style("margin:5px;"));
             //            sb.append(HU.leftRight(msg2, clearLink));
         } else {
             sb.append(HU.leftRight(HU.italics(msg("Click to select point")),
