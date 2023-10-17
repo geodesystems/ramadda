@@ -85,6 +85,10 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
     }
 
 
+    public static boolean defined(String s) {
+	return  (Utils.stringDefined(s) && !s.equals("NA"));
+    }
+
     /**
      * _more_
      *
@@ -464,10 +468,10 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
 	    hboxes.add(HU.img(time.icon, time.words));
 	}
 	String s = "";
-	if (time.weather != null) {
+	if (defined(time.weather)) { 
 	    s+=HU.div(time.weather, "");
 	}
-	if (time.apparent != null) {
+	if (defined(time.apparent)) {
 	    s+=HU.div(time.apparent + "&deg;&nbsp;F",
 		      HU.style("font-size:30px; font-weight: bold;"));
 	}
@@ -1020,19 +1024,19 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
             }
 
 
+
 	    public String getFieldsTable() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(HU.formTable());
 		if (this.humidity != null) {
 		    HU.formEntry(sb,"Humidity:", this.humidity + "%");
 		}
-		if (this.sustained != null) {
+		if (defined(this.sustained)) {
 		    String gust = "";
-		    if (Utils.stringDefined(this.gust)
-                        && !this.gust.equals("NA")) {
+		    if (defined(this.gust)) {
 			gust = "&nbsp;G&nbsp;" + this.gust;
 		    }
-		    HU.formEntry(sb,"Wind&nbsp;Speed:",  this.sustained + gust + "&nbsp;MPH");
+		    HU.formEntry(sb,"Wind&nbsp;Speed:",  this.sustained + gust + "&nbsp;" + msg("MPH"));
 		}
 
 		if (this.pressure != null) {
