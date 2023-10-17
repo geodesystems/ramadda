@@ -286,11 +286,12 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             'click': this.trigger
         }, this.handlerOptions);
     },
-    setLatLonZoomFld: function(lonFld, latFld, zoomFld, listener) {
+    setLatLonZoomFld: function(lonFld, latFld, zoomFld, listener,onAlt) {
         this.lonFldId = lonFld;
         this.latFldId = latFld;
         this.zoomFldId = zoomFld;
         this.clickListener = listener;
+	this.onAlt = onAlt;
     },
 
     setTheMap: function(map) {
@@ -298,6 +299,19 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
     },
 
     trigger: function(e) {
+	if(this.onAlt) {
+	    if(!e.altKey) return;
+	    let map = this.theMap;
+	    if(!map) return;
+	    if(map.fldSouth?.id)
+		jqid(map.fldSouth.id).val('');
+	    if(map.fldEast?.id)
+		jqid(map.fldEast.id).val('');	    
+            if (this.theMap.selectorBox && this.theMap.boxes) {
+		this.theMap.boxes.removeMarker(this.theMap.selectorBox);
+		this.theMap.selectorBox = null;
+	    }
+	}
         let xy = this.theMap.getMap().getLonLatFromViewPortPx(e.xy);
         let lonlat = this.theMap.transformProjPoint(xy)
         if (this.listeners != null) {
@@ -3304,11 +3318,10 @@ RepositoryMap.prototype = {
         // alert(feature);
     },
 
-    addClickHandler:  function(lonfld, latfld, zoomfld, object) {
+    addClickHandler:  function(lonfld, latfld, zoomfld, object,onAlt) {
 	this.handleClickSelection = true;
         this.lonFldId = lonfld;
         this.latFldId = latfld;
-
         if (this.clickHandler) {
             return;
 	}
@@ -3318,7 +3331,7 @@ RepositoryMap.prototype = {
 	}
 
         this.clickHandler = new OpenLayers.Control.Click();
-        this.clickHandler.setLatLonZoomFld(lonfld, latfld, zoomfld, object);
+        this.clickHandler.setLatLonZoomFld(lonfld, latfld, zoomfld, object,onAlt);
         this.clickHandler.setTheMap(this);
         this.getMap().addControl(this.clickHandler);
         this.clickHandler.activate();
@@ -3331,51 +3344,38 @@ RepositoryMap.prototype = {
         if (!GuiUtils) {
             return;
         }
-        this.fldNorth = GuiUtils.getDomObject(this.argBase + "_north");
-        if (this.fldNorth == null)
-            this.fldNorth = GuiUtils.getDomObject(this.argBase + ".north");
-        if (this.fldNorth == null)
-            this.fldNorth = GuiUtils.getDomObject(this.mapId + "_north");
+        this.fldNorth = GuiUtils.getDomObject(this.argBase + "_north") ??
+            GuiUtils.getDomObject(this.argBase + ".north") ??
+            GuiUtils.getDomObject(this.mapId + "_north");
 
+        this.fldSouth = GuiUtils.getDomObject(this.argBase + "_south") ??
+            GuiUtils.getDomObject(this.argBase + ".south") ??
+            GuiUtils.getDomObject(this.mapId + "_south");
 
-        this.fldSouth = GuiUtils.getDomObject(this.argBase + "_south");
-        if (!this.fldSouth)
-            this.fldSouth = GuiUtils.getDomObject(this.argBase + ".south");
-        if (this.fldSouth == null)
-            this.fldSouth = GuiUtils.getDomObject(this.mapId + "_south");
+        this.fldEast = GuiUtils.getDomObject(this.argBase + "_east") ??
+            GuiUtils.getDomObject(this.argBase + ".east")??
+            GuiUtils.getDomObject(this.mapId + "_east");
 
-        this.fldEast = GuiUtils.getDomObject(this.argBase + "_east");
-        if (!this.fldEast)
-            this.fldEast = GuiUtils.getDomObject(this.argBase + ".east");
-        if (this.fldEast == null)
-            this.fldEast = GuiUtils.getDomObject(this.mapId + "_east");
+        this.fldWest = GuiUtils.getDomObject(this.argBase + "_west") ??
+            GuiUtils.getDomObject(this.argBase + ".west") ??
+            GuiUtils.getDomObject(this.mapId + "_west");
 
-        this.fldWest = GuiUtils.getDomObject(this.argBase + "_west");
-        if (!this.fldWest)
-            this.fldWest = GuiUtils.getDomObject(this.argBase + ".west");
+        this.fldLat = GuiUtils.getDomObject(this.argBase + "_latitude") ??
+            GuiUtils.getDomObject(this.argBase + ".latitude") ??
+            GuiUtils.getDomObject(this.mapId + "_latitude");
 
-        if (this.fldWest == null)
-            this.fldWest = GuiUtils.getDomObject(this.mapId + "_west");
-
-        this.fldLat = GuiUtils.getDomObject(this.argBase + "_latitude");
-        if (!this.fldLat)
-            this.fldLat = GuiUtils.getDomObject(this.argBase + ".latitude");
-
-        if (this.fldLat == null)
-            this.fldLat = GuiUtils.getDomObject(this.mapId + "_latitude");
-
-        this.fldLon = GuiUtils.getDomObject(this.argBase + "_longitude");
-        if (this.fldLon == null)
-            this.fldLon = GuiUtils.getDomObject(this.argBase + ".longitude");
-        if (this.fldLon == null)
-            this.fldLon = GuiUtils.getDomObject(this.mapId + "_longitude");
+        this.fldLon = GuiUtils.getDomObject(this.argBase + "_longitude") ??
+            GuiUtils.getDomObject(this.argBase + ".longitude") ??
+            GuiUtils.getDomObject(this.mapId + "_longitude");
 
 
         if (this.fldLon || this.params.addMarkerOnClick) {
             this.addClickHandler(this?.fldLon?.id, this?.fldLat?.id);
 	    if(this.fldLon)
 		this.setSelectionMarker(this.fldLon.obj.value, this.fldLat.obj.value);
-        }
+        } else if(this.fldWest && this.fldNorth) {
+            this.addClickHandler(this?.fldNorth?.id, this?.fldWest?.id,null,null,true);
+	}
     },
 
     selectionPopupInit:  function() {
@@ -3394,7 +3394,7 @@ RepositoryMap.prototype = {
             if (this.fldLon) {
                 this.addClickHandler(this.fldLon.id, this.fldLat.id);
                 this.setSelectionMarker(this.fldLon.obj.value, this.fldLat.obj.value);
-            }
+	    }
         }
 	this.map.updateSize();
     },
@@ -3403,7 +3403,8 @@ RepositoryMap.prototype = {
         if (this.fldNorth) {
             // alert("north = " + this.fldNorth.obj.value);
             this.setSelectionBox(this.fldNorth.obj.value,
-				 this.fldWest.obj.value, this.fldSouth.obj.value,
+				 this.fldWest.obj.value,
+				 this.fldSouth.obj.value,
 				 this.fldEast.obj.value, true);
             if (this.selectorBox) {
                 let boxBounds = this.selectorBox.bounds
@@ -3436,8 +3437,6 @@ RepositoryMap.prototype = {
     // Assume that north, south, east, and west are in degrees or
     // some variant thereof
     setSelectionBox:  function(north, west, south, east, centerView) {
-
-
         if (north == "" || west == "" || south == "" || east == "")
             return;
         let bounds = MapUtils.createBounds(west, Math.max(south,
@@ -3690,6 +3689,7 @@ RepositoryMap.prototype = {
             },
 
             notice: function(bounds) {
+		if(!Utils.isDefined(bounds.left)) return;
                 let ll = _this.getMap().getLonLatFromPixel(MapUtils.createPixel(
                     bounds.left, bounds.bottom));
                 let ur = _this.getMap().getLonLatFromPixel(MapUtils.createPixel(
