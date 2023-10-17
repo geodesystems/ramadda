@@ -739,20 +739,17 @@ public class MapInfo {
         widget.append(getSelectorWidget(arg, nwseValues));
         StringBuilder sb        = new StringBuilder();
         String        clearLink = getSelectorClearLink(HU.span("Clear",HU.clazz("ramadda-button")));
+	String header;
         if (doRegion) {
             String msg1 = HU.italics(msg("Shift-drag: select region"));
             String msg2 = HU.italics(msg("Cmd-drag: move region"));
             String msg3 = HU.italics(msg("Alt-click: select point"));	    
 	    String delim =  ";" +HU.SPACE;
-            HU.div(sb,
-		   HU.leftRight(HU.SPACE + msg1 + delim + msg2 + delim + msg3,
-				clearLink + HU.SPACE),HU.style("margin:5px;"));
-            //            sb.append(HU.leftRight(msg2, clearLink));
+	    header =  HU.leftRightBottom(msg1 + delim + msg2 + delim + msg3,  clearLink,"");
         } else {
-            sb.append(HU.leftRight(HU.italics(msg("Click to select point")),
-                                   clearLink));
+	    header = HU.leftRightBottom(HU.italics(msg("Click to select point")), clearLink,"");
         }
-
+	HU.div(sb, header,HU.style("margin:5px;"));
         sb.append(getMapDiv(""));
         if ((extraLeft != null) && (extraLeft.length() > 0)) {
             widget.append(HU.br() + extraLeft);
@@ -794,6 +791,7 @@ public class MapInfo {
                                   ph.arg("animate", false),
                                   ph.arg("inPlace", true),
                                   ph.arg("header", true),
+						  ph.arg("draggable", true),
                                   ph.arg("sticky", true),
                                   ph.arg("initCall", initCall));
 
