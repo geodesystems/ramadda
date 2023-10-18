@@ -683,6 +683,24 @@ public class GeoJson extends JsonUtil {
 	return obj;
     }
 
+    public static JSONObject keep(JSONObject obj,List<String> keepers) throws Exception {
+        JSONArray             features = readArray(obj, "features");
+	double cnt = 0;
+	for (int idx1 = 0; idx1 < features.length(); idx1++) {
+	    JSONObject o = features.getJSONObject(idx1);
+	    JSONObject            properties = o.optJSONObject("properties");	
+	    if(properties==null) continue;
+	    String[] nameList = JSONObject.getNames(properties);
+	    for(String name: nameList) {
+		if(keepers.contains(name) || keepers.contains(name.toLowerCase())) continue;
+		properties.remove(name);
+	    }
+	}
+	return obj;
+    }
+
+
+
     public static JSONObject first(JSONObject obj,int n) throws Exception {
         JSONArray             features = readArray(obj, "features");
 	List<Object> objects = new ArrayList<Object>();
@@ -739,13 +757,18 @@ public class GeoJson extends JsonUtil {
 		commands.add(new Command() {public JSONObject apply(JSONObject obj) throws Exception {return  subset(obj,b,false);}});
 		continue;
 	    }
-	    if(arg.equals("-intersect")) {
+	    if(arg.equals("-intersects")) {
 		final Bounds b = new Bounds(parse(args[++i]),
 					    parse(args[++i]),
 					    parse(args[++i]),
 					    parse(args[++i]));
 				    
 		commands.add(new Command() {public JSONObject apply(JSONObject obj) throws Exception {return  subset(obj,b,true);}});
+		continue;
+	    }	    	    
+	    if(arg.equals("-keep")) {
+		List<String> keepers = Utils.split(args[++i],",",true,true);
+		commands.add(new Command() {public JSONObject apply(JSONObject obj) throws Exception {return  keep(obj,keepers);}});
 		continue;
 	    }	    	    
 	    if(arg.equals("-first")) {
