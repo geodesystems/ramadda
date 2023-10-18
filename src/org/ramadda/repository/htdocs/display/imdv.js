@@ -2382,6 +2382,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 		if(props) {
 		    props.forEach(prop=>{
+			//Remove the extra _cleared props added from a past bug
+			if(prop.endsWith('_cleared')) return;
 			let id = 'glyphedit_' + prop;
 			if(prop.toLowerCase().indexOf('externalgraphic')>=0 || prop=='childIcon')  {
 			    if(Utils.isTrue(this.jq(prop).attr('clearpressed'))) {
@@ -3541,6 +3543,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		return mapGlyph;
 	    }
 	    if(glyphType.isMap()) { 
+		
 		let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,style);
 		mapGlyph.checkMapLayer(false);
 		return mapGlyph;
