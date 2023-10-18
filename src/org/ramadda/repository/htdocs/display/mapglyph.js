@@ -4324,8 +4324,8 @@ MapGlyph.prototype = {
 	let labelProperty = this.getProperty('map.property.label');	
 
 	if(debug)   console.dir(style);
-	this.mapLayer.style = style;
-//	style.externalGraphic = null;
+	if(this.mapLayer)
+	    this.mapLayer.style = style;
 
 	if(features) {
 	    features.forEach((f,idx)=>{
