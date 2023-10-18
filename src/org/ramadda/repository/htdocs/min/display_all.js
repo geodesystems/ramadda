@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Oct 18 05:22:32 MDT 2023";
+var build_date="RAMADDA build date: Wed Oct 18 05:29:31 MDT 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -52236,8 +52236,8 @@ MapGlyph.prototype = {
 	let labelProperty = this.getProperty('map.property.label');	
 
 	if(debug)   console.dir(style);
-	this.mapLayer.style = style;
-//	style.externalGraphic = null;
+	if(this.mapLayer)
+	    this.mapLayer.style = style;
 
 	if(features) {
 	    features.forEach((f,idx)=>{
