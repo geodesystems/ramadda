@@ -209,7 +209,7 @@ mapVar="gpxMap${entryid}" }}
 	       firstLineDefinesFields=true
       ]]>
     </property>
-    <column name="names" type="string" label="Properties" canedit="false"  showinhtml="true"/>
+    <column name="names" type="string" changetype="true" size="2000" label="Properties" canedit="false"  showinhtml="true"/>
 <!--
     <column name="convert_commands" type="string" label="Convert Commands" showinhtml="false" showinform="false"/>
     -->
