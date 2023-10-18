@@ -4558,8 +4558,6 @@ MapGlyph.prototype = {
 	this.applyFeatureFilters(features);
 
 
-
-
 	if(this.attrs.fillColors) {
 	    //	let ct = Utils.getColorTable('googlecharts',true);
 	    let ct = Utils.getColorTable('d3_schemeCategory20',true);	
@@ -4649,7 +4647,7 @@ MapGlyph.prototype = {
 		if(Utils.isDefined(value)) {
 		    max = Math.max(max,value);
 		    visible = value>=filter.min && value<=filter.max;
-		    if(debug && idx<5) console.log("\trange:",filter,value);
+		    if(debug && idx<5) console.log("\trange:",filter,value,visible);
 		    //		    if(value>1000) console.log(filter.property,value,visible,filter.min,filter.max);
 		}
 		return visible;
@@ -4660,7 +4658,7 @@ MapGlyph.prototype = {
 		    if(Utils.isDefined(value)) {
 			value= String(value).toLowerCase();
 			visible = value.indexOf(filter.stringValue)>=0;
-			if(debug && idx<5) console.log("\tstring:",filter,value);
+			if(debug && idx<5) console.log("\tstring:",filter,value,visible);
 		    }
 		    return visible;
 		});
@@ -4696,11 +4694,11 @@ MapGlyph.prototype = {
 		});
 	    }		
 
-
-
+	    
 
 	    if(visible) this.visibleFeatures++;
 	    f.isVisible  = visible;
+	    f.isFiltered=!visible;
 	    MapUtils.setFeatureVisible(f,visible);
 	    if(f.mapLabel) {
 		redrawFeatures = true;
@@ -4717,7 +4715,6 @@ MapGlyph.prototype = {
 	if(redrawFeatures) {
 	    this.display.redraw();
 	}
-
     },
     
     checkRings:function(points) {
@@ -5146,10 +5143,10 @@ MapGlyph.prototype = {
 	    this.checkDataDisplayVisibility();
 	}
 
-	this.checkGridding(this.mapLabels,visible,true);
+	this.checkDeclutter(this.mapLabels,visible,true);
 	let features = this.getMapFeaturesToGrid();
 	if(features) {
-	    this.checkGridding(features,visible,false);
+	    this.checkDeclutter(features,visible,false);
 	    ImdvUtils.scheduleRedraw(this.mapLayer);
 	}
     	this.applyChildren(child=>{child.checkVisible();});
@@ -5161,7 +5158,7 @@ MapGlyph.prototype = {
 	}
 	return visible;
     },    
-    checkGridding:function(features, visible,isLabels) {
+    checkDeclutter:function(features, visible,isLabels) {
 	if(!features || !this.mapLoaded) return;
 	if(!visible) {
 	    features.forEach(feature=>{MapUtils.setFeatureVisible(feature,false);});
