@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Oct 18 05:29:31 MDT 2023";
+var build_date="RAMADDA build date: Wed Oct 18 05:42:44 MDT 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -51523,13 +51523,17 @@ MapGlyph.prototype = {
     },
 
     getMapFeatures: function() {
-	if(this.mapLayer) return this.mapLayer.features;
+	if(this.mapLayer) {
+	    return this.mapLayer.features;
+	}
 	let children = 	this.getChildren();
-	if(!children) return null;
-	let features = [];
+	if(!children) {
+	    return null;
+	}
+	let features = null;
 	for(let i=0;i<children.length;i++) {
 	    let childFeatures = children[i].getMapFeatures();
-	    if(childFeatures) features = Utils.mergeLists(features,childFeatures);
+	    if(childFeatures) features = Utils.mergeLists(features??[],childFeatures);
 	}
 	return features;
     },
@@ -52129,6 +52133,7 @@ MapGlyph.prototype = {
 	if(!this.originalFeatures) this.originalFeatures = features;
 	else features = this.originalFeatures;
 
+	if(!this.mapLayer) return;
 	let changedFeaturesList = false;
 	if(this.attrs.subsetSimplify) {
 	    this.haveChangedGeometry=true;
