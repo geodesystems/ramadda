@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Oct 17 11:37:27 MDT 2023";
+var build_date="RAMADDA build date: Wed Oct 18 05:22:32 MDT 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -44128,6 +44128,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 		if(props) {
 		    props.forEach(prop=>{
+			//Remove the extra _cleared props added from a past bug
+			if(prop.endsWith('_cleared')) return;
 			let id = 'glyphedit_' + prop;
 			if(prop.toLowerCase().indexOf('externalgraphic')>=0 || prop=='childIcon')  {
 			    if(Utils.isTrue(this.jq(prop).attr('clearpressed'))) {
@@ -45287,6 +45289,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		return mapGlyph;
 	    }
 	    if(glyphType.isMap()) { 
+		
 		let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,style);
 		mapGlyph.checkMapLayer(false);
 		return mapGlyph;
@@ -50884,15 +50887,14 @@ MapGlyph.prototype = {
 	let getColorBy=(prefix)=>{
 	    return  {
 		property:this.jq(prefix +'colorby_property').val(),
-		min:this.jq(prefix +'colorby_min').val(),
-		max:this.jq(prefix +'colorby_max').val(),
+		min:parseFloat(this.jq(prefix +'colorby_min').val()),
+		max:parseFloat(this.jq(prefix +'colorby_max').val()),		
 		colorTable:this.jq(prefix +'colorby_colortable').val()};		
 	};
 
 
 	this.attrs.fillColorBy =  getColorBy('fill');
 	this.attrs.strokeColorBy =  getColorBy('stroke');	
-
 	let rules = [];
 	for(let i=0;i<20;i++) {
 	    if(!Utils.stringDefined(jqid('mapproperty_' + i).val()) &&
@@ -52194,11 +52196,15 @@ MapGlyph.prototype = {
 	    this.addFillImage(features);
 	}
 	let style = this.style;
-	if(Utils.isTrue(style.externalGraphic_cleared)) {
-	    features.forEach(f=>{
-		if(f.style)
-		    f.style.externalGraphic = null;
-	    });
+	
+	if(Utils.isDefined(style.externalGraphic_cleared)) {
+	    if(Utils.isTrue(style.externalGraphic_cleared)) {
+		features.forEach(f=>{
+		    if(f.style)
+			f.style.externalGraphic = null;
+		});
+	    }
+	    delete style['externalGraphic_cleared'];	    
 	}
 	let rules = this.getMapStyleRules();
 //	if(debug) console.dir("\tmapStyleRules",rules);
@@ -52297,9 +52303,12 @@ MapGlyph.prototype = {
 
 	let applyColors = (obj,attr,stringList,debug)=>{
 	    if(!obj || !Utils.stringDefined(obj?.property))  return;
+	    //make a copy becausewe can change it later
+	    obj  =$.extend({},obj);
 	    if(debug)
 		console.log('applyColors',attr);
 	    let strings  =[]
+
 	    let prop =obj.property;
 	    let min =Number.MAX_VALUE;
 	    let max =Number.MIN_VALUE;
@@ -52318,7 +52327,6 @@ MapGlyph.prototype = {
 		}
 	    });
 	    
-
 	    if(!anyNumber) {
 		obj.min =min = 0;
 		obj.max = max= strings.length-1;
