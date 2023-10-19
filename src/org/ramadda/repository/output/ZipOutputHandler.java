@@ -52,6 +52,8 @@ public class ZipOutputHandler extends OutputHandler {
 
     private boolean debug = false;
 
+    private static final boolean isSynthOk = true;
+
     /** _more_ */
     private static final String ARG_WRITETODISK = "writetodisk";
 
@@ -279,8 +281,6 @@ public class ZipOutputHandler extends OutputHandler {
     public Result toZip(Request request, String prefix, List<Entry> entries,
                         boolean recurse, boolean forExport,boolean thumbnails)
             throws Exception {
-
-
         OutputStream os         = null;
         boolean      doingFile  = false;
         File         tmpFile    = null;
@@ -429,20 +429,26 @@ public class ZipOutputHandler extends OutputHandler {
                             8000);
         }
 	if(debug)
-	    System.err.println("toZip:");
+	    System.err.println("toZip: recurse:" + recurse +" entries: " + entries);
         for (Entry entry : entries) {
 	    if(debug)
-		System.err.println("entry:" + entry);
+		System.err.println("\tentry:" + entry +" is Group:" + entry.isGroup());
             //Check for access
             if (forExport) {
                 if ( !getAccessManager().canDoExport(request, entry)) {
                     continue;
                 }
             }
-	    //Don't export synthetic entries beyond the top most level
-	    if(getEntryManager().isSynthEntry(entry.getId())) {
-		if(level>0) continue;
+	    //Check for synthetic entries beyond the top most level
+	    if(!isSynthOk) {
+		if(getEntryManager().isSynthEntry(entry.getId())) {
+		    if(level>0) {
+			if(debug)System.err.println("\tskipping synth entry:" + entry);
+			continue;
+		    }
+		}
 	    }
+
             counter[0]++;
             //Don't get big files
 	    
@@ -464,11 +470,10 @@ public class ZipOutputHandler extends OutputHandler {
             }
 
             if (entry.isGroup() && recurse) {
-                Entry group = (Entry) entry;
-		SelectInfo info = new SelectInfo(request, entry,false);
+		SelectInfo info = new SelectInfo(request, entry,isSynthOk);
                 List<Entry> children = getEntryManager().getChildren(request,
-								     group,info);
-                String path = group.getName();
+								     entry,info);
+                String path = entry.getName();
                 if (prefix.length() > 0) {
                     path = prefix + "/" + path;
                 }
@@ -479,7 +484,7 @@ public class ZipOutputHandler extends OutputHandler {
             }
 
 
-            if (!thumbnails &&  !getAccessManager().canDownload(request, entry)) {
+            if (!thumbnails &&  !getAccessManager().canDownload(request, entry,debug)) {
 		if(debug)
 		    System.err.println("No download:" + entry);
                 continue;
