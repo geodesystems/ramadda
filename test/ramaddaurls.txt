@@ -1,6 +1,12 @@
-#CSV
+echo:Server side files
+https://ramadda.org/repository/entry/show?entryid=882ba673-72b0-4d26-80de-e10f34721d72
+https://ramadda.org/repository/entry/show/Home/RAMADDA+/Development/Test/Server+Side+Test?entryid=882ba673-72b0-4d26-80de-e10f34721d72&output=zip.tree
+
+
+echo: CSV
 https://ramadda.org/repository/entry/show?ascending=true&orderby=name&entryid=5ec45056-fe82-4d98-a9c4-4f1da94be8b0&output=default.csv&fields=name,id&showheader=false&showheader=false
-#Airborne Data
+
+echo: Airborne Data
 https://ramadda.org/repository/entry/show?entryid=a287e475-b3a1-48b9-b51a-909abe6e1b9a#fortest
 #Annapolis Weather
 https://ramadda.org/repository/entry/show?entryid=4cc66d50-a755-4619-b789-cc9cf8310e43#fortest
