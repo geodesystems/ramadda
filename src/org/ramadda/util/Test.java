@@ -24,6 +24,7 @@ public class Test {
     private static int loops = 1000;
     private static int sleep=0;
     private static int timeThreshold = 1500;
+    private static boolean showSize = true;
     private static boolean verbose = false;
     private static boolean noecho = false;    
     private static List<String> randos = new ArrayList<String>();
@@ -48,19 +49,22 @@ public class Test {
     public  void runTest(List<String> urls) {
 	try {
 	    int cnt=0;
-	    while(cnt++<loops) {
+	    boolean ok = true;
+	    while(cnt++<loops && ok) {
 		//		System.err.println("cnt:" + cnt);
 		boolean didRando = false;
 		for(String url:urls) {
 		    if(verbose)
 			System.out.println("call:" + url);
-		    call(url);
+		    ok=call(url);
+		    if(!ok) break;
 		    double r = Math.random();
 		    if(!didRando && randos.size()>0 && r<0.05) {
 			didRando = true;
 			for(String u: randos) {
 			    System.out.println("random:" + u);
-			    call(u);
+			    ok = call(u);
+			    if(!ok) break;
 			}
 		    }
 		}
@@ -78,13 +82,22 @@ public class Test {
 	    if(!noecho)	    System.out.println(url.substring("echo:".length()));
 	    return true;
 	}
-	if(url.startsWith("stop")) return false;
+	if(url.startsWith("stop")) {
+	    return false;
+	}
+	    
 	if(url.startsWith("sleep ")) {
 	    int s = Integer.parseInt(url.substring("sleep ".length()).trim());
 	    Misc.sleep(s);
 	    return true;
 	}
-
+	long expectedSize = -1;
+	if(url.startsWith("size:")) {
+	    url  =url.substring("size:".length()).trim();
+	    int index = url.indexOf(" ");
+	    expectedSize = Long.parseLong(url.substring(0,index).trim());
+	    url = url.substring(index).trim();
+	}
 
 	Date before = new Date();
 	IO.Result result = IO.doGetResult(new URL(url));
@@ -99,6 +112,9 @@ public class Test {
 	    System.out.println("read error:" + err);
 	    return true;
 	}
+	if(expectedSize>=0 && result.getResult().length() != expectedSize) {
+	    throw new IllegalStateException("Incorrect size for URL:" + url +" expected size:" + expectedSize +" actual size:" + result.getResult().length());
+	}
 	synchronized(MUTEX) {
 	    totalRead++;
 	    Date after = new Date();
@@ -109,7 +125,7 @@ public class Test {
 	    }
 	    long diff = (after.getTime()-startTime.getTime())/1000;
 	    int callsPer = diff<=0?0:(int)(totalRead/(double)diff);
-	    System.out.println("#" + (urlCnt++)+" total read:" + totalRead + " calls/s:" + callsPer +" time:" + time +" #threads:"+ activeThreads);
+	    System.out.println("#" + (urlCnt++)+" total read:" + totalRead + " calls/s:" + callsPer +" time:" + time +" #threads:"+ activeThreads+(!showSize?"":" size:"+result.getResult().length()));
 
 	}
 	if(sleep>0) Misc.sleep(sleep);
