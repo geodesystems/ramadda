@@ -25,6 +25,7 @@ public class Test {
     private static int sleep=0;
     private static int timeThreshold = 1500;
     private static boolean verbose = false;
+    private static boolean noecho = false;    
     private static List<String> randos = new ArrayList<String>();
     int urlCnt=0;
 
@@ -73,6 +74,10 @@ public class Test {
     public boolean call(String url) throws Exception {
 	url = url.trim();
 	if(url.startsWith("#")) return true;
+	if(url.startsWith("echo:")) {
+	    if(!noecho)	    System.out.println(url.substring("echo:".length()));
+	    return true;
+	}
 	if(url.startsWith("stop")) return false;
 	if(url.startsWith("sleep ")) {
 	    int s = Integer.parseInt(url.substring("sleep ".length()).trim());
@@ -84,7 +89,14 @@ public class Test {
 	Date before = new Date();
 	IO.Result result = IO.doGetResult(new URL(url));
 	if(result.getError()) {
-	    System.out.println("read error:" + result.getResult());
+	    String err= result.getResult();
+	    String inner = StringUtil.findPattern(err.replace("\n"," "),"<!-- content begin-->(.*)<!-- content end-->");
+
+	    if(inner!=null) {
+		inner = Utils.stripTags(inner);
+		err  = inner;
+	    }
+	    System.out.println("read error:" + err);
 	    return true;
 	}
 	synchronized(MUTEX) {
@@ -117,7 +129,7 @@ public class Test {
 	final List<String> urls=new ArrayList<String>();
 	for(int i=0;i<args.length;i++) {
 	    if(args[i].equals("-help")) {
-		System.out.println("usage: -threads <# threads> -loops <#loops> -rando <some random URL> -t <time threshold> -verbose -sleep <pause after each call (ms)> <file> or <url>");
+		System.out.println("usage: -threads <# threads> -loops <#loops> -rando <some random URL> -t <time threshold> -verbose -noecho -sleep <pause after each call (ms)> <file> or <url>");
 		System.exit(0);
 	    }
 
@@ -139,10 +151,14 @@ public class Test {
 		randos.add(args[++i]);
 		continue;
 	    }
-	    if(args[i].equals("-verbosep")) {
+	    if(args[i].equals("-verbose")) {
 		verbose = true;
 		continue;
 	    }
+	    if(args[i].equals("-noecho")) {
+		noecho = true;
+		continue;
+	    }	    
 	    if(args[i].equals("-sleep")) {
 		sleep = Integer.parseInt(args[++i]);
 		continue;
