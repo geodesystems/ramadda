@@ -986,25 +986,32 @@ public class AccessManager extends RepositoryManager {
 
     public boolean canDownload(Request request, Entry entry,boolean debug)
 	throws Exception {	
+	if(debug) System.err.println("canDownload:" + entry); 
         if ( !getRepository().getDownloadOk()) {
+	    if(debug) System.err.println("\tcanDownload: repository disallows");
             return false;
         }
         entry = filterEntry(request, entry);
         if (entry == null) {
+	    if(debug) System.err.println("\tcanDownload: filterEntry=null");
             return false;
         }
 
 
         //        System.err.println ("type: " + entry.getTypeHandler().getClass().getName());
         if ( !entry.getTypeHandler().canDownload(request, entry)) {
+	    if(debug) System.err.println("\tcanDownload: typeHandler disallows:" +
+					 entry.getTypeHandler());
             return false;
         }
 
         if ( !canDoAction(request, entry, Permission.ACTION_FILE)) {
+	    if(debug) System.err.println("\tcanDownload: no file permission");
             return false;
         }
 
         boolean can =  getStorageManager().canDownload(request, entry,debug);
+	if(debug) System.err.println("\tcanDownload: storage manager:" + can);
 	return can;
     }
 
