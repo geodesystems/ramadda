@@ -2216,7 +2216,7 @@ public class StorageManager extends RepositoryManager implements PointFile
     public boolean canDownload(Request request, Entry entry, boolean debug)
 	throws Exception {	
         Resource resource = entry.getResource();
-	if(debug) System.err.println("StorageManager.can download");
+	if(debug) System.err.println("StorageManager.canDownload");
 
         if ( !resource.isFile()) {
 	    if(debug) System.err.println("\tnot a file");
