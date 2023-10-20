@@ -287,6 +287,9 @@ See the [ug::link templates.html documentation].
 </faqitem>
 
 
+
+
+
 <faqitem cat="Administration" id="template" q="Changing the initial welcome text and entries" >
 When RAMADDA is first installed it populates your repository with some initial folders and sets the description
 of the root entry with some initial text. You can override what entries are created and what the text is (for example, if
@@ -334,6 +337,17 @@ If you are running mysql there are some <a href="https://www.google.com/search?h
 <p>
 
 Your Java runtime should also have the system property -Dfile.encoding=utf-8  defined.
+
+</faqitem>
+
+
+<faqitem cat="Administration" id="formopen" q="How do I configure the entry table to always show the Apply action form?" >
+  The entry table has an &quot;Apply action&quot; header form that is normally toggled off. To change this
+  default behavior set the RAMADDA property (either in a repository.properties file or through the
+  Admin interface)
+<pre>
+ramadda.wiki.table.formopen=true
+</pre>
 
 </faqitem>
 
