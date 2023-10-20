@@ -129,6 +129,8 @@ public class WikiManager extends RepositoryManager
     private Hashtable<String,WikiTagHandler> tagHandlers =  new Hashtable<String,WikiTagHandler>();
 
 
+    private boolean defaultTableFormOpen = false;
+
     /**
      * ctor
      *
@@ -139,12 +141,16 @@ public class WikiManager extends RepositoryManager
     }
 
 
+
+
     /**
      * _more_
      */
     @Override
     public void initAttributes() {
         super.initAttributes();
+	defaultTableFormOpen =  getRepository().getProperty("ramadda.wiki.table.formopen",false);
+
         wikiMacros     = new Hashtable<String, String>();
         for (String macro :
 		 Utils.split(
@@ -4244,6 +4250,7 @@ public class WikiManager extends RepositoryManager
 
             }
 
+
             //Check for the wiki.<tag> property
             String fromProperty = getRepository().getProperty("wiki."
 							      + theTag, (String) null);
@@ -4923,6 +4930,11 @@ public class WikiManager extends RepositoryManager
 	    }
 	}
 
+	boolean formOpen =getProperty(wikiUtil, props, "formOpen", defaultTableFormOpen);
+	if(formOpen) {
+	    argProps.add("formOpen");
+	    argProps.add(""+formOpen);
+	}
 	if(children.size()>0) {
 	    //Sample for access
 	    Entry entry = children.get(0);

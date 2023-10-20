@@ -259,7 +259,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    showIcon:dflt,
 	    showThumbnails:dflt,
 	    showArrow:dflt,	    
-	    showForm:dflt,	    
+	    showForm:dflt,
+	    formOpen:false
 	}
 	$.extend(props,opts);
 	let entries = json.map((j,idx)=>{
@@ -397,21 +398,19 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	//Don't do this as it screws up the width of the menu sometimes
 	//	    HU.initSelect($("#"+id+"_form_action"));
 
-	let formOpen = false;
 	$('#'+ id+'_form_cbx').click(function() {
             let on = $(this).is(':checked');
 	    jqid(id).find('.entry-form-select').prop('checked',on);
 	});
 	    
 	let initFunc = (id)=>{
-	    if(formOpen) {
+	    if(props.formOpen) {
 		jqid(id).find('.entry-form-select').show();
 	    }
 	}
 
-	$('#' + id+'_formarrow').click(function() {
-	    formOpen = !formOpen;
-	    if(formOpen) {
+	let checkForm = ()=>{
+	    if(props.formOpen) {
 		jqid(id+'_form').show();
 		jqid(id).find('.entry-form-select').show();
 		$(this).html(HU.getIconImage("fas fa-caret-down"));
@@ -420,8 +419,16 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		jqid(id).find('.entry-form-select').hide();
 		$(this).html(HU.getIconImage("fas fa-caret-right"));
 	    }
+
+	}
+	$('#' + id+'_formarrow').click(function() {
+	    props.formOpen = !props.formOpen;
+	    checkForm();
 	});
 
+	if(props.formOpen) {
+	    checkForm();
+	}
 	RamaddaUtil.showEntryTable(tableId,props,cols,id,entryMap,initFunc,entries);	
     },
 

@@ -1999,6 +1999,7 @@ WikiEditor.prototype = {
 	    {p:"showThumbnails",ex:false},
 	    {p:"showArrow",ex:false},
 	    {p:"showForm",ex:false},
+	    {p:"formOpen",ex:true,tt:'Show the Apply action form by default'},	    
 	    {p:"showCrumbs",ex:true},
 	    {p:'nameWidth',ex:'120'},
 	    {p:'dateWidth',ex:'120'},		
