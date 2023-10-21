@@ -219,7 +219,7 @@ var MapUtils =  {
 	    strategies: [new OpenLayers.Strategy.Fixed()],
 	    protocol: new OpenLayers.Protocol.HTTP({
                 url: url,
-                format: new OpenLayers.Format.GeoJSON({})
+                format: new OpenLayers.Format.GeoJSON({ignoreExtraDims:true})
 	    }),
         });
     },	
