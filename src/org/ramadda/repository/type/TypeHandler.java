@@ -1300,10 +1300,11 @@ public class TypeHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public boolean addToMapSelector(Request request, Entry entry, MapInfo map)
+    public boolean addToMapSelector(Request request, Entry entry, Entry forEntry, MapInfo map)
             throws Exception {
         return true;
     }
+
 
     /**
      * _more_
@@ -4749,12 +4750,15 @@ public class TypeHandler extends RepositoryManager {
             MapInfo map = getMapManager().createMap(request, entry, true,
                               getMapManager().getMapProps(request, entry,
                                   null));
+	    getMapManager().initMapSelector(request, this,parentEntry, entry, map);
+
+
             String mapSelector = map.makeSelector(ARG_LOCATION, true, nwse,
                                      "", "");
             sb.append(formEntry(request, msgLabel("Location"), mapSelector));
 
         } else if (okToShowInForm(entry, ARG_AREA)) {
-            addAreaWidget(request, entry, sb, formInfo);
+            addAreaWidget(request, parentEntry, entry, sb, formInfo);
         }
 
 
@@ -4804,7 +4808,8 @@ public class TypeHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public void addAreaWidget(Request request, Entry entry, Appendable sb,
+    public void addAreaWidget(Request request, Entry parentEntry,
+			      Entry entry, Appendable sb,
                               FormInfo formInfo)
             throws Exception {
         String[]                  nwse  = null;
@@ -4841,7 +4846,7 @@ public class TypeHandler extends RepositoryManager {
         String extraMapStuff = "";
         MapInfo map = getRepository().getMapManager().createMap(request,
                           entry, "600", "300", true, props);
-        addToMapSelector(request, entry, map);
+	getMapManager().initMapSelector(request, this,parentEntry, entry, map);
         String mapSelector = map.makeSelector(ARG_AREA, true, nwse, "", "")
                              + extraMapStuff;
         sb.append(formEntry(request, msgLabel("Location"), mapSelector));
