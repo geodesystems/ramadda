@@ -238,6 +238,11 @@ mapVar="gpxMap${entryid}" }}
 
    <type name="geo_imdv"  description="Integrated Map Data"  isgroup="true"
 	 pattern="(?i).*imdvmap\.json$">
+     <property name="wiki.edit.links.label" value="IMDV Tags"/>
+     <property name="wiki.edit.links">
+       <![CDATA[IMDV Map
+{{display_imdv height="calc(100vh - 150px)"  legendHeight="calc(100vh - 200px)" showBounds=false}}
+]]></property>
    <property name="form.description.iswiki" value="true"/>
    <property name="defaultFilename" value="imdvmap.json"/>
    <property name="convertidsinfile" value="true"/>
