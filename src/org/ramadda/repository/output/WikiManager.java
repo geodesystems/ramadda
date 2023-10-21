@@ -7210,9 +7210,9 @@ public class WikiManager extends RepositoryManager
 			l2.call("Odometer", "Show a spinning counter","{{odometer initCount=0 count=100 immediate=true pause=1000}}", ""));
 	
 
-        wikiMenuTagsButton = makeButton.apply("Tags",
-					      HU.span(HU.hbox(misc1, misc2,misc3),
-						      HU.attrs("data-title","Tags","class","wiki-menubar-tags")));
+        wikiMenuTagsButton = makeMenuButton("Tags",
+					    HU.span(HU.hbox(misc1, misc2,misc3),
+						    HU.attrs("data-title","Tags","class","wiki-menubar-tags")));
 
 
 
@@ -7291,15 +7291,24 @@ public class WikiManager extends RepositoryManager
         makeHelp.accept("/search/info#metadatatypes", "Metadata Types");
         makeHelp.accept("/colortables", "Color Tables");
 
-        wikiMenuEtcButton = makeButton.apply("Etc", etc.toString());
-        wikiMenuHelpButton = makeButton.apply("Help", help.toString());
-        wikiMenuFormattingButton = makeButton.apply("Formatting",
-						    HU.span(HU.hbox(tags1, tags2,tags3,tags4),
-							    HU.attrs("data-title","Formatting","class","wiki-menubar-tags")));
+        wikiMenuEtcButton = makeMenuButton("Etc", etc.toString());
+        wikiMenuHelpButton = makeMenuButton("Help", help.toString());
+        wikiMenuFormattingButton = makeMenuButton("Formatting",
+						  HU.span(HU.hbox(tags1, tags2,tags3,tags4),
+							  HU.attrs("data-title","Formatting","class","wiki-menubar-tags")));
 
 
 
     }
+
+
+    private static final String BUTTONCLASS = HU.clazz("ramadda-menubar-button");
+    public String makeMenuButton(final String title, final String contents) {
+	return HU.makePopup(null,HU.div(title,HU.cssClass("ramadda-menubar-button")),
+			    HU.div(contents, "class='wiki-editor-popup'"),
+			    new NamedValue("linkAttributes", BUTTONCLASS));
+    }
+
 
 
     /**
@@ -7357,15 +7366,8 @@ public class WikiManager extends RepositoryManager
 
 
 
-        String        buttonClass = HU.clazz("ramadda-menubar-button");
-	BiFunction<String,String,String> makeButton = (title,contents)->{
-	    return HU.makePopup(null,HU.div(title,HU.cssClass("ramadda-menubar-button")),
-				HU.div(contents, "class='wiki-editor-popup'"),
-				new NamedValue("linkAttributes", buttonClass));
-	};
 
-
-        String entriesButton = makeButton.apply("Entries",
+        String entriesButton = makeMenuButton("Entries",
 						HU.span(makeTagsMenu(entry,textAreaId),
 							HU.attrs("data-title","Entries","class","wiki-menubar-tags")));
 	
@@ -7377,17 +7379,17 @@ public class WikiManager extends RepositoryManager
 
         String addEntry = OutputHandler.getSelect(request, textAreaId,
 						  "Entry ID", true, "entryid", entry, false, false,
-						  buttonClass);
+						  BUTTONCLASS);
 
 
 
         String importEntry = OutputHandler.getSelect(request, textAreaId,
 						     "Embed Entry", true, "wikilink", entry, false, false,
-						     buttonClass);
+						     BUTTONCLASS);
 
         String fieldLink = OutputHandler.getSelect(request, textAreaId,
 						   "Field ID", true, "fieldname", entry, false, false,
-						   buttonClass);
+						   BUTTONCLASS);
 
         HU.open(buttons, "div",
                 HU.cssClass("ramadda-menubar")
@@ -7396,9 +7398,11 @@ public class WikiManager extends RepositoryManager
         Utils.appendAll(buttons, HU.span("", HU.id(textAreaId + "_prefix")),
                         wikiMenuFormattingButton, wikiMenuTagsButton, entriesButton);
         if (fromTypeBuff != null) {
-	    buttons.append(HU.makePopup(null,entry.getTypeHandler().getLabel() + " tags",
+	    String label = entry==null?"Wiki Tags":entry.getTypeHandler().getTypeProperty("wiki.edit.links.label",entry.getTypeHandler().getLabel() + " tags");
+	    String popup = HU.makePopup(null,HU.div(label,BUTTONCLASS),
 					HU.div(fromTypeBuff.toString(), "class='wiki-editor-popup'"),
-					new NamedValue("linkAttributes", buttonClass)));
+					new NamedValue("linkAttributes", BUTTONCLASS));
+	    buttons.append(popup);
         }
 
         Utils.appendAll(buttons, importEntry, /*addEntry,*/ displaysButton,  
