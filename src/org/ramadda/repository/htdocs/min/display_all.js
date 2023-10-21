@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Oct 20 08:26:16 MDT 2023";
+var build_date="RAMADDA build date: Sat Oct 21 15:19:05 MDT 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -47965,13 +47965,17 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
 	return
     }
 
+    this.display = display;
+    this.type = type;
+
+
     style = style??{};
     if(style.mapOptions) {
 	delete style.mapOptions;
     }
     this.transientProperties = {};
 
-    let glyphType = display.getGlyphType(type);
+    let glyphType = this.getGlyphType();
     if(attrs.routeProvider)
 	this.name = "Route: " + attrs.routeProvider +" - " + attrs.routeType;
     else 
@@ -47982,8 +47986,6 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
 //	mapGlyphs = mapGlyphs.replace(/\\n/g,"\n");
 	this.putTransientProperty("mapglyphs", mapGlyphs);
     }
-    this.display = display;
-    this.type = type;
     this.features = [];
     this.attrs = attrs;
     this.style = style;
@@ -48018,28 +48020,7 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
 
 	//If its an entry then fetch the entry info from the repository and use the updated lat/lon and name
 	if(this.isEntry()) {
-	    let callback = (entry)=>{
-		//the mapglyphs are defined by the type
-		this.putTransientProperty("mapglyphs", entry.mapglyphs);
-		if(this.getUseEntryName()) 
-		    this.setName(entry.getName());
-		if(this.getUseEntryLabel())
-		    this.style.label= entry.getName();
-		if(this.getUseEntryLocation() && entry.hasLocation()) {
-		    let feature = this.display.makeFeature(this.getMap(),"OpenLayers.Geometry.Point", this.style,
-						   [entry.getLatitude(), entry.getLongitude()]);
-		    feature.style = this.style;
-		    this.addFeature(feature,true,true);
-		}
-
-		this.applyDataIcon();
-		this.applyMapStyle();
-		this.display.redraw(this);
-		this.display.makeLegend();
-		//And call getBounds so the bounds object gets cached for later use on reload
-		this.getBounds();
-	    };
-	    getRamadda().getEntry(this.attrs.entryId, callback);
+	    this.loadEntry();
 	}
 
 	//And call getBounds so the bounds object gets cached for later use on reload
@@ -48146,7 +48127,10 @@ MapGlyph.prototype = {
 	if(this.attrs[ID_DATAICON_ORIGINAL] && Utils.stringDefined(this.attrs[ID_DATAICON_ORIGINAL].externalGraphic)) {
 	    return this.attrs[ID_DATAICON_ORIGINAL].externalGraphic;
 	}
-	return this.style.externalGraphic ??this.display.getGlyphType(this.getType()).getIcon();
+	return this.style.externalGraphic ??this.getGlyphType().getIcon();
+    },
+    getGlyphType:function() {
+	return  this.display.getGlyphType(this.getType());
     },
     putTransientProperty(name,value) {
 	this.transientProperties[name] = value;
@@ -49503,7 +49487,7 @@ MapGlyph.prototype = {
 		this.imageLayers.forEach(obj=>{
 		    if(!obj.layer || !obj.layer.getVisibility()) return;
 		    bounds = MapUtils.extendBounds(bounds,
-						   this.getMap().getLayerVisbileExtent(obj.layer)||obj.layer.extent);
+						   this.getMap().getLayerVisibleExtent(obj.layer)||obj.layer.extent);
 		});
 	    }
 	} else	if(this.displayInfo?.display) {
@@ -49627,7 +49611,7 @@ MapGlyph.prototype = {
 	}
 	label = theLabel;
 	let url = null;
-	let glyphType = this.display.getGlyphType(this.getType());
+	let glyphType = this.getGlyphType();
 	let right = '';
 	if(args.addDecorator) {
 	    //For now don't add the decoration (the graphic indicator)
@@ -49673,7 +49657,16 @@ MapGlyph.prototype = {
 	if(args.forLegend) {
 	    let extra = this.getProperty('legendTooltip',null);
 	    if(extra) extra = HU.div([],extra);
+	    let typeLabel =this.getGlyphType().getName();
+	    if(this.entry) {
+		let type = this.entry.getType();
+		if(type) {
+		    typeLabel+=HU.div([],"Type:" + type.name);
+		}
+	    }
+	    
 	    let title = HU.b(HU.center(theLabel))+
+		HU.div([],typeLabel) +
 		(extra??'') +
 		'Click to toggle visibility<br>Shift-click to select';
 	    label = HU.div([ATTR_TITLE,title,ATTR_STYLE,HU.css('overflow-x','hidden','white-space','nowrap')], label);	    
@@ -49897,7 +49890,8 @@ MapGlyph.prototype = {
 
 	html+=HU.open('div',[ATTR_ID,this.domId(ID_GLYPH_LEGEND),'glyphid',this.getId(),
 			     ATTR_CLASS,HU.classes(CLASS_LEGEND_ITEM,clazz)]);
-	html+=HU.div([ATTR_STYLE,'display: flex;'],HU.div([ATTR_STYLE,'margin-right:4px;'],block.header)+
+	html+=HU.div([ATTR_STYLE,'display: flex;'],
+		     HU.div([ATTR_STYLE,'margin-right:4px;'],block.header)+
 		     HU.div([ATTR_STYLE,'width:80%;'], label[0])+
 		     HU.div([],label[1]));
 
@@ -50591,6 +50585,37 @@ MapGlyph.prototype = {
     },
     isEntry:function() {
 	return this.getType() ==GLYPH_ENTRY;
+    },
+    loadEntry: function() {
+	if(!this.attrs.entryId) return;
+	let callback = (entry)=>{
+	    this.setEntry(entry);
+	};
+	getRamadda().getEntry(this.attrs.entryId, callback);
+    },
+
+    setEntry:function(entry) {		
+	this.entry = entry;
+	if(!this.isEntry()) return;
+	//the mapglyphs are defined by the type
+	this.putTransientProperty("mapglyphs", entry.mapglyphs);
+	if(this.getUseEntryName()) 
+	    this.setName(entry.getName());
+	if(this.getUseEntryLabel())
+	    this.style.label= entry.getName();
+	if(this.getUseEntryLocation() && entry.hasLocation()) {
+	    let feature = this.display.makeFeature(this.getMap(),"OpenLayers.Geometry.Point", this.style,
+						   [entry.getLatitude(), entry.getLongitude()]);
+	    feature.style = this.style;
+	    this.addFeature(feature,true,true);
+	}
+
+	this.applyDataIcon();
+	this.applyMapStyle();
+	this.display.redraw(this);
+	this.display.makeLegend();
+	//And call getBounds so the bounds object gets cached for later use on reload
+	this.getBounds();
     },
     isImage:function() {
 	return this.getType() ==GLYPH_IMAGE;
