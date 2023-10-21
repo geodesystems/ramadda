@@ -2160,10 +2160,34 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             }
         }
 
+    }
+
+
+
+    public void initMapSelector(Request request, TypeHandler typeHandler,
+				Entry parentEntry,Entry entry, MapInfo map)
+	throws Exception {
+	if(entry!=null) {
+	    typeHandler.addToMapSelector(request, entry, entry, map);
+	}
+	List<Metadata> metadataList =
+	    getMetadataManager().findMetadata(request,
+					      entry!=null?entry:parentEntry, "map_selector_layer", true);
+	if ((metadataList != null) && (metadataList.size() > 0)) {
+	    for (Metadata metadata : metadataList) {
+		if (!Utils.stringDefined(metadata.getAttr1())) continue;
+		Entry mapEntry =
+		    (Entry) getEntryManager().getEntry(request,
+						       metadata.getAttr1());
+		if (mapEntry == null) continue;
+		mapEntry.getTypeHandler().addToMapSelector(request, mapEntry, entry, map);
+            }
+        }
 
 
 
     }
+
 
 
 
