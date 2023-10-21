@@ -2100,6 +2100,12 @@ var Utils =  {
 
 
 
+                        if(t.attrs['maxLength'] && value.length>+t.attrs['maxLength']) {
+                            value = value.substring(0,+t.attrs['maxLength']);
+			    if(t.attrs['maxLengthSuffix'])
+				value  =value+t.attrs['maxLengthSuffix'];
+			}
+
                         if(t.attrs['cropLength'] && value.length>+t.attrs['cropLength']) {
                             let idx = +t.attrs['cropLength'];
                             while(idx>=0) {
