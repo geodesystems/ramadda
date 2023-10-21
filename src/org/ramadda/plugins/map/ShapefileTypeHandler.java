@@ -328,6 +328,23 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
     }
 
 
+    @Override
+    public boolean addToMapSelector(Request request, Entry entry, Entry forEntry, MapInfo map)
+            throws Exception {
+        if (entry != null) {
+	    String url =
+		request.entryUrl(getRepository()
+				 .URL_ENTRY_SHOW, entry, ARG_OUTPUT,
+				 ShapefileOutputHandler.OUTPUT_GEOJSON
+				 .toString(), "formap", "true");
+	    map.addGeoJsonUrl(entry.getName(), url, true,
+			      ShapefileOutputHandler.makeMapStyle(request, entry),true);
+	}
+        return super.addToMapSelector(request, entry, forEntry, map);
+    }
+
+
+
     /**
      * _more_
      *

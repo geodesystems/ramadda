@@ -267,7 +267,7 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public boolean addToMapSelector(Request request, Entry entry, MapInfo map)
+    public boolean addToMapSelector(Request request, Entry entry, Entry forEntry, MapInfo map)
             throws Exception {
         if (entry == null) {
             return false;
@@ -276,6 +276,7 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
             String url =
                 getRepository().getHtmlOutputHandler().getImageUrl(request,
                     entry);
+	    boolean mine = (entry!=null && forEntry!=null && entry.getId().equals(forEntry.getId()));
             map.addJS(HtmlUtils.call("theMap.addImageLayer",
                                      HtmlUtils.jsMakeArgs(false,
                                          HtmlUtils.squote(entry.getId()),
@@ -286,12 +287,12 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
                                          "" + entry.getWest(),
                                          "" + entry.getSouth(),
                                          "" + entry.getEast(), "400", "400",
-                                         "{forSelect:true}")));
+							  "{forSelect:" + mine+"}")));
 
             map.addJS("\n");
         }
 
-        return super.addToMapSelector(request, entry, map);
+        return super.addToMapSelector(request, entry, forEntry, map);
     }
 
 }

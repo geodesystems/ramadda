@@ -153,6 +153,20 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
         getEntryManager().updateEntry(request, entry);
     }
 
+    @Override
+    public boolean addToMapSelector(Request request, Entry entry, Entry forEntry, MapInfo map)
+            throws Exception {
+        if (entry != null) {
+	    String url =
+		request.entryUrl(getRepository().URL_ENTRY_GET, entry).toString();
+	    map.addGeoJsonUrl(
+			      entry.getName(), url, true,"",true);
+	}
+        return super.addToMapSelector(request, entry, forEntry, map);
+    }
+
+
+
     /**
      *
      * @param request _more_

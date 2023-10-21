@@ -235,7 +235,7 @@ public class GeoJsonOutputHandler extends OutputHandler {
                 sb.append(HU.hidden(ARG_OUTPUT,
                                            OUTPUT_GEOJSON_SUBSET.toString()));
                 sb.append(HU.formTable());
-		entry.getTypeHandler().addAreaWidget(request,  entry, sb, null);
+		entry.getTypeHandler().addAreaWidget(request,  entry.getParentEntry(),entry, sb, null);
 
 		sb.append(HU.labeledCheckbox("intersects","true",false,"Intersects"));
 
