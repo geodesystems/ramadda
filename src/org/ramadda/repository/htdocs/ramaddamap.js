@@ -120,7 +120,8 @@ function RepositoryMap(mapId, params) {
         displayProjection: MapUtils.defaults.displayProjection,
         projectionUnits: MapUtils.defaults.units,
         mapDivId: this.mapId,
-        defaultLocation: MapUtils.defaults.location,
+//        defaultLocation: MapUtils.defaults.location,
+        defaultLocation: null,
         latlonReadout: null,
 
 	haveAddedDefaultLayer: false,
@@ -636,7 +637,7 @@ RepositoryMap.prototype = {
 
     },
     zoomToLayer:  function(layer,scale)  {
-        let dataBounds = this.getLayerVisbileExtent(layer);
+        let dataBounds = this.getLayerVisibleExtent(layer);
 	if(!dataBounds)
 	    dataBounds = layer.extent;
 	if(debugBounds)  console.log("zoomToLayer:",dataBounds);
@@ -2522,6 +2523,7 @@ RepositoryMap.prototype = {
 
 
     addKMLLayer:  function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent,errorCallback) {
+	console.log('addKmlLayer');
 	if(url.match(".kmz")) {
 	    let div = $("<div  class=ramadda-map-message>Note: KMZ files are not supported</div>")[0];
             this.getMap().viewPortDiv.appendChild(div);
@@ -3128,7 +3130,22 @@ RepositoryMap.prototype = {
 	    }
             this.defaultBounds = null;
         } else {
-            this.getMap().zoomToMaxExtent();
+	    let layers =this.allLayers.filter(layer=>{
+		return !layer.isBaseLayer && this.isLayerVisible(layer.ramaddaId) && layer.initialVisibility;
+	    });
+	    let bounds = null;
+	    if(layers.length) {
+		layers.forEach(layer=>{
+		    let b =this.getLayerVisibleExtent(layer); 
+		    if(b) bounds = MapUtils.extendBounds(bounds,b);
+		});
+	    }
+	    console.dir(layers.length,bounds);
+	    if(bounds) {
+		this.zoomToExtent(bounds, false);
+	    } else {
+		this.getMap().zoomToMaxExtent();
+	    }
         }
 
 	if(this.params.initialZoom>=0) {
@@ -4045,21 +4062,23 @@ RepositoryMap.prototype = {
 	}
     },
 
-    getLayerVisbileExtent: function(layer) {
+    getLayerVisibleExtent: function(layer) {
         let maxExtent = null;
         let features = layer.features;
-	if(!features) return layer.getDataExtent();
-        if(features.length > 0) {
-            let geometry = null;
-            for(let i=0, len=features.length; i<len; i++) {
-		if(!features[i].getVisibility()) continue;
-                geometry = features[i].geometry;
-                if (geometry) {
-                    if (maxExtent === null) {
-                        maxExtent = MapUtils.createBounds();
-                    }
-                    maxExtent.extend(geometry.getBounds());
+	if(!features || features.length==0) {
+	    maxExtent =  layer.getDataExtent();
+	    if(maxExtent) return maxExtent;
+	    return layer.maxExtent;
+	}
+        let geometry = null;
+        for(let i=0, len=features.length; i<len; i++) {
+	    if(!features[i].getVisibility()) continue;
+            geometry = features[i].geometry;
+            if (geometry) {
+                if (maxExtent === null) {
+                    maxExtent = MapUtils.createBounds();
                 }
+                maxExtent.extend(geometry.getBounds());
             }
         }
         return maxExtent;
