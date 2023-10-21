@@ -3140,7 +3140,6 @@ RepositoryMap.prototype = {
 		    if(b) bounds = MapUtils.extendBounds(bounds,b);
 		});
 	    }
-	    console.dir(layers.length,bounds);
 	    if(bounds) {
 		this.zoomToExtent(bounds, false);
 	    } else {
