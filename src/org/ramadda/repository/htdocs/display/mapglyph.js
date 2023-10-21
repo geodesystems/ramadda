@@ -1591,7 +1591,7 @@ MapGlyph.prototype = {
 		this.imageLayers.forEach(obj=>{
 		    if(!obj.layer || !obj.layer.getVisibility()) return;
 		    bounds = MapUtils.extendBounds(bounds,
-						   this.getMap().getLayerVisbileExtent(obj.layer)||obj.layer.extent);
+						   this.getMap().getLayerVisibleExtent(obj.layer)||obj.layer.extent);
 		});
 	    }
 	} else	if(this.displayInfo?.display) {
