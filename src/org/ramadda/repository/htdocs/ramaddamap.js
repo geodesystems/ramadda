@@ -2523,7 +2523,6 @@ RepositoryMap.prototype = {
 
 
     addKMLLayer:  function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent,errorCallback) {
-	console.log('addKmlLayer');
 	if(url.match(".kmz")) {
 	    let div = $("<div  class=ramadda-map-message>Note: KMZ files are not supported</div>")[0];
             this.getMap().viewPortDiv.appendChild(div);
