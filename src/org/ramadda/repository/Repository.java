@@ -4174,7 +4174,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     private Result checkForSslRedirect(Request request, ApiMethod apiMethod) {
-        boolean debug      = false;
+        boolean debug      = true;
 
         boolean sslEnabled = isSSLEnabled(request);
 
@@ -4602,7 +4602,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private void initRepositoryAttributes() {
         adminOnly             = getProperty(PROP_ACCESS_ADMINONLY, false);
         requireLogin          = getProperty(PROP_ACCESS_REQUIRELOGIN, false);
-	alwaysHttps           =  getProperty(PROP_ALWAYS_HTTPS, false);
+	alwaysHttps           = getProperty(PROP_ALWAYS_HTTPS, false);
         allSsl                = getProperty(PROP_ACCESS_ALLSSL, false);
         sslIgnore             = getProperty(PROP_SSL_IGNORE, false);
         cacheResources        = getProperty(PROP_CACHE_RESOURCES, false);
