@@ -4184,7 +4184,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
         if (debug) {
             System.err.println("checkForSslRedirect allSsl:" + allSsl
-                               + " request secure:" + request.getSecure());
+                               + " request secure:" + request.getSecure() +
+			       " port:" + request.getServerPort());
         }
         if (sslEnabled) {
             if (allSsl && !request.getSecure()) {
