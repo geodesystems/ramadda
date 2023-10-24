@@ -450,6 +450,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		let last = idx==cols.length-1;
 		let attrs = [];
 		let v = entry.getProperty(col.id);
+		let _v = v;
 		let title = null;
 		v  = HU.span([],v);
 		if(col.id=="name") {
@@ -515,7 +516,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 							     HU.getDimension(col.width),'overflow-x','auto')], v);
 
 		    } else  if(col.id=="type") {
-			v = HU.href(RamaddaUtil.getUrl("/search/type/" + entry.getType().id),v,["title","Search for entries of type " + v]);
+			v = HU.href(RamaddaUtil.getUrl("/search/type/" + entry.getType().id),v,["title","Search for entries of type " + _v]);
 		    }
 		    let maxWidth = col.width-20;
 		    maxWidth = col.width;		    
