@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Oct 25 12:25:46 MDT 2023";
+var build_date="RAMADDA build date: Wed Oct 25 14:22:13 MDT 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -41800,6 +41800,7 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'showLabelInMap=true',
 			  'showLabelInMapWhenVisible=true',
 			  'showViewInLegend=true',
+			  'showLayerSelectInLegend=true',			  
 			  'inMapLabel=',			  			  
 			  'showButtons=false',
 			  'showMeasures=false',
@@ -46779,6 +46780,11 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    if(Utils.stringDefined(legendLabel)) {
 		legendLabel=legendLabel.replace(/\\n/,'<br>');
 		top = HU.div([],legendLabel);
+	    }
+	    
+	    if(this.getMapProperty("showLayerSelectInLegend",false)) {
+		top+=HU.div([ATTR_STYLE,'text-align:center;margin-bottom:2px;'],
+			    this.getBaseLayersSelect());
 	    }
 	    if(showViewInLegend) {
 		top +=HU.center(this.makeViewMenu(false,'_legend',(id,lbl)=>{return HU.span([ATTR_STYLE,'margin-right:6px;',ATTR_ID,id,ATTR_CLASS,CLASS_CLICKABLE], lbl);}));
