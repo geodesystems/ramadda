@@ -13,11 +13,18 @@
 </type>
 
 
-<type name="type_document_pdf"  description="PDF File" pattern=".*\.pdf" includeInSearch="true"  super="type_document_tika" isgroup="true">
+<type name="type_document_pdf"  description="PDF File" pattern=".*\.pdf" includeInSearch="true"  super="type_document_tika" isgroup="true"
+      handler="org.ramadda.plugins.media.PdfTypeHandler"      
+      >
      <service link="media_gs_thumbnail" target="attachment"/>
      <property name="icon" value="/icons/pdf.png"/>
      <property name="form.description.iswiki" value="true"/>
      <property name="file.accept" value="application/pdf"/>    
+     <property name="wiki.edit.links.label" value="PDF Tags"/>
+     <property name="wiki.edit.links">
+       <![CDATA[Embed PDF
+{{pdf page="1" style="border:1px solid #ccc;" height="1000px"  width="90%"}}
+]]></property>
      <wiki><![CDATA[
 +section title={{name}}
 {{description wikify="true"}}
@@ -30,12 +37,7 @@
 +section
 +center
 <div style='margin-bottom:4px;'>{{tags}}</div>
-<iframe src="{{resource url=true inline=true}}" 
-    type="application/pdf"
-    frameBorder="0"
-    scrolling="auto"
-    width="90%" height="1000px"
-></iframe>
+{{pdf}}
 -center
 :p
 {{gallery message=""}}

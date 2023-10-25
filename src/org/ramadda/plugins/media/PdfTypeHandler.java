@@ -6,6 +6,8 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.plugins.media;
 
 
+import org.ramadda.util.WikiUtil;
+
 import org.apache.tika.metadata.Office;
 
 import org.apache.tika.metadata.TikaCoreProperties;
@@ -25,22 +27,16 @@ import org.ramadda.util.Utils;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
-
 import ucar.unidata.util.IOUtil;
-
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import java.util.ArrayList;
 import java.util.Date;
-
-import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
+
 
 
 /**
@@ -175,6 +171,55 @@ public class PdfTypeHandler extends GenericTypeHandler {
 
         return s;
     }
+
+    /**
+     *
+     * @param wikiUtil _more_
+     * @param request _more_
+     * @param originalEntry _more_
+     * @param entry _more_
+     * @param tag _more_
+     * @param props _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    @Override
+    public String getWikiInclude(WikiUtil wikiUtil, Request request,
+                                 Entry originalEntry, Entry entry,
+                                 String tag, Hashtable props)
+            throws Exception {
+        if ( !tag.equals("pdf")) {
+            return super.getWikiInclude(wikiUtil, request, originalEntry,
+                                        entry, tag, props);
+        }
+
+        StringBuilder sb = new StringBuilder();
+	String url = HU.url(getEntryManager().getEntryResourceUrl(request, entry),"fileinline","true");
+	String page  = Utils.getProperty(props,"page",null);
+	if(page!=null) {
+	    url+="#";
+	    url+="page=" + page;
+	}
+	sb.append(HU.open("iframe",HU.attrs("src",url,
+					   "type","application/pdf",
+					    "style",
+					    Utils.getProperty(props,"style","border:1px solid #ccc;"),
+					   "frameborder",
+					    Utils.getProperty(props,"frameBorder","0"),
+					    "scrolling",
+					    Utils.getProperty(props,"scrolling","auto"),
+					    "width",
+					    Utils.getProperty(props,"width","90%"),
+					    "height",
+					    Utils.getProperty(props,"height","1000px")
+					    )));
+
+	sb.append(HU.close("iframe"));
+        return sb.toString();
+    }
+
+
 
 
 }
