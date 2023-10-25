@@ -53,6 +53,7 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'legendTooltip=',
 			  'showLabelInMap=true',
 			  'showLabelInMapWhenVisible=true',
+			  'showViewInLegend=true',
 			  'inMapLabel=',			  			  
 			  'showButtons=false',
 			  'showMeasures=false',
@@ -4875,8 +4876,6 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	propertyCache:{
 	},
 	getMapProperty: function(name,dflt,debug) {
-//	    debug = name=='showOpacitySlider';
-//	    if(debug)	console.dir(this.properties);
 	    if(debug)
 		console.log("getProperty:" + name);
 
