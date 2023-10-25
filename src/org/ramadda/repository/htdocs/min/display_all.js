@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Oct 21 15:19:05 MDT 2023";
+var build_date="RAMADDA build date: Wed Oct 25 10:31:58 MDT 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -41799,6 +41799,7 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'legendTooltip=',
 			  'showLabelInMap=true',
 			  'showLabelInMapWhenVisible=true',
+			  'showViewInLegend=true',
 			  'inMapLabel=',			  			  
 			  'showButtons=false',
 			  'showMeasures=false',
@@ -46621,8 +46622,6 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	propertyCache:{
 	},
 	getMapProperty: function(name,dflt,debug) {
-//	    debug = name=='showOpacitySlider';
-//	    if(debug)	console.dir(this.properties);
 	    if(debug)
 		console.log("getProperty:" + name);
 
