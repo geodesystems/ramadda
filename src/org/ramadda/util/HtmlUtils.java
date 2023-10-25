@@ -4901,9 +4901,11 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @param sb _more_
      * @param jsUrl _more_
      */
-    public static void importJS(Appendable sb, String jsUrl) {
-        tag(sb, TAG_SCRIPT,
-            attrs(ATTR_SRC, jsUrl, ATTR_TYPE, "text/JavaScript"), "");
+    public static void importJS(Appendable sb, String ...urls) {
+	for(String jsUrl: urls) {
+	    tag(sb, TAG_SCRIPT,
+		attrs(ATTR_SRC, jsUrl, ATTR_TYPE, "text/JavaScript"), "");
+	}
     }
 
     /**
@@ -4947,10 +4949,12 @@ public class HtmlUtils implements HtmlUtilsConstants {
      *
      * @throws IOException _more_
      */
-    public static void cssLink(Appendable sb, String url) throws IOException {
-        tag(sb, TAG_LINK,
-            attrs(ATTR_HREF, url, ATTR_REL, "stylesheet", ATTR_TYPE,
-                  "text/css"));
+    public static void cssLink(Appendable sb, String ...urls) throws IOException {
+	for(String url:urls) {
+	    tag(sb, TAG_LINK,
+		attrs(ATTR_HREF, url, ATTR_REL, "stylesheet", ATTR_TYPE,
+		      "text/css"));
+	}
     }
 
 
