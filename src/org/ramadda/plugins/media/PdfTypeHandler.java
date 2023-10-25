@@ -201,7 +201,9 @@ public class PdfTypeHandler extends GenericTypeHandler {
 	    url+="#";
 	    url+="page=" + page;
 	}
+
 	sb.append(HU.open("iframe",HU.attrs("src",url,
+					    "class","ramadda-iframe-pdf",
 					   "type","application/pdf",
 					    "style",
 					    Utils.getProperty(props,"style","border:1px solid #ccc;"),
