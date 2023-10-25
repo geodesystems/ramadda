@@ -4174,10 +4174,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     private Result checkForSslRedirect(Request request, ApiMethod apiMethod) {
-        boolean debug      = true;
-
+        boolean debug      = false;
         boolean sslEnabled = isSSLEnabled(request);
-
         //check for the sub-repositories
         if (apiMethod.getRequest().startsWith("/repos/")) {
             return null;
