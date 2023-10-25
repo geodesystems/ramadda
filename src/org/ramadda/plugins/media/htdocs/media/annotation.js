@@ -70,7 +70,7 @@ RamaddaAnnotation.prototype = {
     },
     showAnnotations: function(annotations) {
 	let html = "";
-	annotations = annotations ||this.getAnno().getAnnotations();
+	annotations = annotations ??this.getAnno().getAnnotations();
 	let width = "100%";
 	if(annotations.length>0) width = Math.floor(100/annotations.length) +"%";
 	annotations.forEach((annotation,aidx)=>{
@@ -117,6 +117,13 @@ RamaddaAnnotation.prototype = {
 	else
 	    html = HU.div(['class','ramadda-annotation-bar'], html);
 	this.div.html(html);
+	if(annotations.length>0) {
+	    this.div.show();
+	    this.div.parent().attr('width','150px');
+	} else {
+	    this.div.parent().attr('width','1px');
+	    this.div.hide();
+	}
 	let _this = this;
 	this.div.find('.ramadda-annotation').click(function(event) {
 	    let annotation = 	annotations[$(this).attr('index')];

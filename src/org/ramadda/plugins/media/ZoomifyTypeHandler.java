@@ -116,13 +116,13 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
 
     private void initImports(Request request, StringBuilder sb) throws Exception {
         if (request.getExtraProperty("seadragon_added") == null) {
-            HU.importJS(sb,getHtdocsPath(OSD_PATH+"/openseadragon.min.js"));
-            HU.importJS(sb,getHtdocsPath(OSD_PATH+"/openseadragon-bookmark-url.js"));
-	    HU.cssLink(sb, getHtdocsPath(ANN_PATH+"/annotorious.min.css"));
-	    HU.importJS(sb,getHtdocsPath(ANN_PATH+"/openseadragon-annotorious.min.js"));
-	    HU.importJS(sb,getHtdocsPath(ANN_PATH+"/annotorious-toolbar.min.js"));
-	    HU.cssLink(sb,getHtdocsPath("/src/org/ramadda/plugins/media/htdocs/media/annotation.css","/media/annotation.css"));
-            HU.importJS(sb,getHtdocsPath("/src/org/ramadda/plugins/media/htdocs/media/annotation.js", "/media/annotation.js"));
+	    HU.cssLink(sb, getHtdocsPath(ANN_PATH+"/annotorious.min.css"),
+		       getHtdocsPath("/src/org/ramadda/plugins/media/htdocs/media/annotation.css","/media/annotation.css"));
+            HU.importJS(sb,getHtdocsPath(OSD_PATH+"/openseadragon.min.js"),
+			getHtdocsPath(OSD_PATH+"/openseadragon-bookmark-url.js"),
+			getHtdocsPath(ANN_PATH+"/openseadragon-annotorious.min.js"),
+			getHtdocsPath(ANN_PATH+"/annotorious-toolbar.min.js"),
+			getHtdocsPath("/src/org/ramadda/plugins/media/htdocs/media/annotation.js", "/media/annotation.js"));
             request.putExtraProperty("seadragon_added", "true");
         }
     }	
@@ -182,7 +182,8 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
     private String makeLayout(Request request, Entry entry,StringBuilder sb,Hashtable props)
 	throws Exception {
 	initImports(request,sb);
-        String        width  = Utils.getProperty(props, "width", "800px");
+	sb.append("\n");
+        String        width  = Utils.getProperty(props, "width", "100%");
         String        height = Utils.getProperty(props, "height", "600px");
         String mainStyle = HU.css("width", HU.makeDim(width, null), "height",
 				  HU.makeDim(height, null),
@@ -203,21 +204,21 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
 	String top = HU.div("", HU.attrs("id", id+"_top"));
 	String bar = HU.div("", HU.attrs("id", id+"_annotations"));
 	HU.open(sb,"center");
+	sb.append("\n");
 	main = HU.div(main,HU.attrs("style",HU.css("text-align","left","display","inline-block","width",width)));
-	//        sb.append(HU.div(top + HU.div(bar+main,HU.attrs("class","ramadda-annotation-wrapper","style", style)),""));
 	String cols = "";
 	if(Utils.getProperty(props,"showLeftColumn",true))  {
-	    cols+=HU.col(bar,HU.attr("width","150px"));
+	    //The width gets set from annotation.js if there are annotations
+	    cols+=HU.col(bar,HU.attr("width","1px"));
 	}
 	cols+=
 	    HU.col(HU.div(main,HU.attrs("class","ramadda-annotation-wrapper","style", style)),"");
-	if(Utils.getProperty(props,"showRightColumn",true))  {
-	    cols +=HU.col("",HU.attr("width","150px"));
-	}
-	String table = HU.table(HU.row(cols,HU.attr("valign","top")), HU.attr("width",width));
-        sb.append(HU.div(top +table));
-	//        sb.append("\n</div>\n");
+	String table = HU.table(HU.row(cols,HU.attr("valign","top")), HU.attr("width","100%"));
+	sb.append(top);
+	sb.append(table);	
+	sb.append("\n");
 	HU.close(sb,"center");
+	sb.append("\n");
 	return id;
     }
     

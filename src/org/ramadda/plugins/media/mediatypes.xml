@@ -287,14 +287,14 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
      <column name="style" type="string" label="Style" rows="5"/>
      <column name="annotations_json" type="clob" label="Annotations" showinhtml="false"   candisplay="false" editable="false"/>     
      <property name="wiki.edit.links"><![CDATA[Zoomable Image
-{{zoomable doBookmark=true width=95% showLeftColumn=true showRightColumn=true}}
+{{zoomable doBookmark=true width=100% showLeftColumn=true}}
 ]]></property>
 
 
      <wiki><![CDATA[
 +section title={{name}}
 {{description wikify=true}}
-{{zoomable doBookmark=true width=95%}}
+{{zoomable doBookmark=true width=100%}}
 ]]>
 </wiki>
 </type>
