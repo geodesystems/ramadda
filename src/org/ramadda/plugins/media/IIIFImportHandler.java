@@ -240,7 +240,6 @@ public class IIIFImportHandler extends ImportHandler {
 			v1=null;
 		    } else  if(mlabel.equals("Date")) {
 			Date dttm = Utils.parseDate(v2);
-			System.err.println(v2 +" " + dttm);
 			if(dttm!=null)
 			    entry.setStartAndEndDate(dttm.getTime());
 			v1=null;

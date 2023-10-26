@@ -74,6 +74,7 @@ public class IIIFDocumentTypeHandler extends ExtensibleGroupTypeHandler {
     public void initializeNewEntry(Request request, Entry entry,
                                    boolean fromImport)
             throws Exception {
+	System.err.println("INIT NEW");
         super.initializeNewEntry(request, entry, fromImport);
 	if(fromImport) return;
 	String url = getPathForEntry(request, entry,true);
@@ -95,7 +96,6 @@ public class IIIFDocumentTypeHandler extends ExtensibleGroupTypeHandler {
 	    if(thumbnail!=null) {
 		getRepository().getMetadataManager().addThumbnailUrl(request, entry,thumbnail,Utils.getFileTail(thumbnail))
 ;
-		System.err.println(thumbnail);
 
 	    }
 	} catch(Exception exc) {
