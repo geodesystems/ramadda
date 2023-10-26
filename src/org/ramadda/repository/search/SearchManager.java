@@ -717,8 +717,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    doc.add(new DoublePoint(FIELD_EAST, entry.getLongitude()));
 	}
 
-
-
         String path = entry.getResource().getPath();
         if ((path != null) && (path.length() > 0)) {
 	    if(entry.getResource().isFile()) {
@@ -737,7 +735,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	doc.add(new SortedDocValuesField(FIELD_NAME_SORT, new BytesRef(entry.getName())));
 
 	StringBuilder desc = new StringBuilder();
-        entry.getTypeHandler().getTextCorpus(entry, desc);
+	//false=>don't add columns
+	//true=> add metadata
+        entry.getTypeHandler().getTextCorpus(entry, desc,false,true);
 	String _desc = desc.toString().toLowerCase();
 	corpus.append(_desc);
 	corpus.append(" ");
@@ -888,13 +888,13 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		}
 	    }
 	    if(type.getSearchable()) {
-		corpus.append(metadata.getAttr1().toLowerCase());
-		corpus.append(" ");
+		//Don't add to corpus as the TypeHandler.getTextCorpus above does that for us
+		//		System.err.println("MTD:" + metadata.getAttr1().toLowerCase());
+		//		corpus.append(metadata.getAttr1().toLowerCase());
+		//		corpus.append(" ");
 		doc.add(new StringField(getMetadataField(type.getId()), metadata.getAttr1(),Field.Store.NO));
 	    }
 	}
-
-
 
         doc.add(new TextField(FIELD_CORPUS, corpus.toString(),Field.Store.NO));
         writer.addDocument(doc);
