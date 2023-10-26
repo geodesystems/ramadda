@@ -26,8 +26,11 @@ import java.util.Hashtable;
 public class AwcMetarTypeHandler extends NwsStationTypeHandler {
 
     /** _more_ */
-    public static final String URL =
+    public static final String OLDURL =
         "https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=csv&stationString={station}&hoursBeforeNow={offset}";
+
+
+    public static final String URL = "https://aviationweather.gov/api/data/metar?ids={station}&hours={offset}";
 
 
     /** _more_ */
@@ -100,6 +103,7 @@ public class AwcMetarTypeHandler extends NwsStationTypeHandler {
         String url = URL.replace("{station}", siteId).replace("{offset}",
 							      "" + offset);
 
+	System.err.println(url);
         return url;
     }
 
