@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Oct 25 14:22:13 MDT 2023";
+var build_date="RAMADDA build date: Fri Oct 27 11:12:15 MDT 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -4077,9 +4077,8 @@ function makeDisplayTooltip(header,imgs,text) {
 	    if(!img.startsWith("/")) {
 		img = RamaddaUtil.getUrl("/help/display/" + img);
 	    }
-	    return acc+"<td><img src="+ img +" width=250px></td>";
-	},"<table><tr valign=top>");
-	imgHtml+="</tr></table>";
+	    return acc+"<img src="+ img +" width=250px><br>";
+	},'');
 //	if(h!="") h+="<br>";
 	h+=HU.div([],imgHtml);
     }
@@ -27555,7 +27554,8 @@ addGlobalDisplayType({
     forUser: true,
     label: "D3 Plot",
     requiresData: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_MISC,
+    tooltip: makeDisplayTooltip("D3 Plot",null,'In development. Uses D3.Plot')        
 });
 
 
@@ -29254,7 +29254,7 @@ addGlobalDisplayType({
     label: "Blocks",
     requiresData: true,
     category: CATEGORY_MISC,
-    tooltip: makeDisplayTooltip("Blocks","blocks.png","Shows a certain number of small blocks or<br> icons color coded from the data"),        
+    tooltip: makeDisplayTooltip("Blocks","blocks.png","Shows a certain number of small blocks or icons color coded from the data"),        
 });
 
 addGlobalDisplayType({
@@ -53846,7 +53846,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_TABLE,
-    tooltip: makeDisplayTooltip(null,"correlation.png")                            
+    tooltip: makeDisplayTooltip('Correlation','correlation.png')                            
 });
 addGlobalDisplayType({
     type: DISPLAY_CROSSTAB,
@@ -53894,7 +53894,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_MISC,
-    tooltip: makeDisplayTooltip("Table showing colored fields"),    
+    tooltip: makeDisplayTooltip('Waffle Chart','waffle.png')
 });
 addGlobalDisplayType({
     type: DISPLAY_GRAPH,
@@ -53946,7 +53946,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_TABLE,
-    tooltip: makeDisplayTooltip(null,"fieldtable.png"),
+    tooltip: makeDisplayTooltip('Field Table',"fieldtable.png"),
 });
 addGlobalDisplayType({
     type: DISPLAY_SELECTEDRECORDS,
@@ -53962,7 +53962,7 @@ addGlobalDisplayType({
     label: "Tree",
     requiresData: false,
     category: CATEGORY_RADIAL_ETC,
-    tooltip: makeDisplayTooltip(null,"tree.png")                                    
+    tooltip: makeDisplayTooltip('Tree','tree.png')                                    
 });
 
 addGlobalDisplayType({
@@ -59447,74 +59447,80 @@ const DISPLAY_PLOTLY_PARCOORDS = "parcoords";
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_RADAR,
     label: "Radar",
-    category: CATEGORY_RADIAL_ETC
+    category: CATEGORY_RADIAL_ETC,
+    tooltip: makeDisplayTooltip('Radar Plot','radar.png')
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_WINDROSE,
     label: "Wind Rose",
-    category: CATEGORY_RADIAL_ETC
+    category: CATEGORY_RADIAL_ETC,
+    tooltip: makeDisplayTooltip('Wind Rose Plot','windrose.png')
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_SUNBURST,
     label: "Sunburst",
     category: CATEGORY_RADIAL_ETC,
-    preview: "sunburst.png"                            
+    tooltip: makeDisplayTooltip('Sunburst Plot','sunburst.png')                            
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_DENSITY,
     label: "Density",
-    category: CATEGORY_RADIAL_ETC
+    category: CATEGORY_RADIAL_ETC,
+    tooltip: makeDisplayTooltip('Density Plot','density.png',null)                                    
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_COMBOCHART,
     label: "Combo Chart",
     category: CATEGORY_CHARTS,
-    preview: "combochart.png"                        
+    tooltip: makeDisplayTooltip('Combo Chart','combochart.png','Display line and bar chart')
 });
 
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_PARCOORDS,
     label: "Parallel Coords",
-    category: CATEGORY_RADIAL_ETC
+    category: CATEGORY_RADIAL_ETC,
+    tooltip: makeDisplayTooltip('Parallel Coordinates','parallel.png',null)
 });
 
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_DOTPLOT,
     label: "Dot Plot",
     category: CATEGORY_CHARTS,
-    preview: "dotplot.png"                    
+    tooltip: makeDisplayTooltip('Dot Plot', 'dotplot.png')
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_SPLOM,
     label: "Splom",
     category: CATEGORY_RADIAL_ETC,
-    preview: "splom.png"    
+    tooltip: makeDisplayTooltip('Splom','splom.png')    
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_3DSCATTER,
     label: "3D Scatter",
-    category: CATEGORY_RADIAL_ETC
+    category: CATEGORY_RADIAL_ETC,
+    tooltip: makeDisplayTooltip('3D Scatter','3dscatter.png')    
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_PROFILE,
     label: "Profile",
     category: CATEGORY_CHARTS,
-    preview: "profile.png"                    
+    tooltip: makeDisplayTooltip('Profile','profile.png')                    
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_3DMESH,
     label: "3D Mesh",
     requiresData: false,
     forUser: false,
-    category: CATEGORY_RADIAL_ETC
+    category: CATEGORY_RADIAL_ETC,
+    tooltip: makeDisplayTooltip('3D Mesh','3dmesh.png')
 });
 
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_TEXTCOUNT,
     label: "Text Count",
     category: CATEGORY_TEXT,
-    preview: "textcount.png",
-    desc:"Given a text field show the number of <br>times certain word patterns occur"
+    tooltip: makeDisplayTooltip('Text Count','textcount.png',
+				'Given a text field show the number of <br>times certain word patterns occur')
 });
 
 //Ternary doesn't work
@@ -61305,10 +61311,11 @@ addGlobalDisplayType({
 const DISPLAY_THREE_GRID = "three_grid";
 addGlobalDisplayType({
     type: DISPLAY_THREE_GRID,
-    forUser: true,
+    forUser: false,
     label: "3D Grid",
     requiresData: true,
     category: CATEGORY_CHARTS,
+    tooltip: makeDisplayTooltip('3D Grid',null,'In development'),        
 });
 
 var ramaddaLoadedThree=false;
