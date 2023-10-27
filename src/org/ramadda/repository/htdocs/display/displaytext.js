@@ -90,7 +90,7 @@ addGlobalDisplayType({
     label: "Blocks",
     requiresData: true,
     category: CATEGORY_MISC,
-    tooltip: makeDisplayTooltip("Blocks","blocks.png","Shows a certain number of small blocks or<br> icons color coded from the data"),        
+    tooltip: makeDisplayTooltip("Blocks","blocks.png","Shows a certain number of small blocks or icons color coded from the data"),        
 });
 
 addGlobalDisplayType({

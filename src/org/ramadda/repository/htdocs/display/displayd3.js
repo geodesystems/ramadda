@@ -20,7 +20,8 @@ addGlobalDisplayType({
     forUser: true,
     label: "D3 Plot",
     requiresData: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_MISC,
+    tooltip: makeDisplayTooltip("D3 Plot",null,'In development. Uses D3.Plot')        
 });
 
 

@@ -56,7 +56,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_TABLE,
-    tooltip: makeDisplayTooltip(null,"correlation.png")                            
+    tooltip: makeDisplayTooltip('Correlation','correlation.png')                            
 });
 addGlobalDisplayType({
     type: DISPLAY_CROSSTAB,
@@ -104,7 +104,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_MISC,
-    tooltip: makeDisplayTooltip("Table showing colored fields"),    
+    tooltip: makeDisplayTooltip('Waffle Chart','waffle.png')
 });
 addGlobalDisplayType({
     type: DISPLAY_GRAPH,
@@ -156,7 +156,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_TABLE,
-    tooltip: makeDisplayTooltip(null,"fieldtable.png"),
+    tooltip: makeDisplayTooltip('Field Table',"fieldtable.png"),
 });
 addGlobalDisplayType({
     type: DISPLAY_SELECTEDRECORDS,
@@ -172,7 +172,7 @@ addGlobalDisplayType({
     label: "Tree",
     requiresData: false,
     category: CATEGORY_RADIAL_ETC,
-    tooltip: makeDisplayTooltip(null,"tree.png")                                    
+    tooltip: makeDisplayTooltip('Tree','tree.png')                                    
 });
 
 addGlobalDisplayType({

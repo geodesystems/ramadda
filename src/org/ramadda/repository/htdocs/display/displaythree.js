@@ -17,10 +17,11 @@ addGlobalDisplayType({
 const DISPLAY_THREE_GRID = "three_grid";
 addGlobalDisplayType({
     type: DISPLAY_THREE_GRID,
-    forUser: true,
+    forUser: false,
     label: "3D Grid",
     requiresData: true,
     category: CATEGORY_CHARTS,
+    tooltip: makeDisplayTooltip('3D Grid',null,'In development'),        
 });
 
 var ramaddaLoadedThree=false;

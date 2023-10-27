@@ -1780,7 +1780,7 @@ WikiEditor.prototype = {
                 links[category] = [];
                 cats.push(category);
 	    }
-	    let tooltip = type.tooltip||"";
+	    let tooltip = type.tooltip??(type.label?HU.b(type.label):'');
 	    tooltip = tooltip.replace(/"/g,"&quot;");
 	    let click = "WikiUtil.insertDisplayText('" + id + "','" + type.type+"')";
 	    let link = HU.div(['data-category',category,'data-corpus',type.label+' ' + tooltip,CLASS,"wiki-editor-popup-link"],HU.href("#",type.label,[CLASS,"display-link ",TITLE,tooltip,"onclick", click]));
@@ -1857,8 +1857,11 @@ WikiEditor.prototype = {
 			inner+='</tr></table>';
 			exDiv+=HU.center(HU.div([ATTR_CLASS,'wiki-editor-display-category',
 						 'data-category',cat,
-						 ATTR_STYLE,HU.css('font-weight','bold')], cat)) +inner;
+						 ATTR_STYLE,HU.css('text-align','center','margin-top','10px','font-weight','bold')], cat)) +inner;
 		    });
+		    exDiv=HU.div([ATTR_STYLE,HU.css('margin','50px','width','500px')],exDiv);
+//		    $('body').html(exDiv);
+//		    return
 		    exDiv=HU.div([ATTR_STYLE,HU.css('max-height','500px','overflow-y','auto','min-width','700px','max-width','700px','overflow-x','auto')],
 				 exDiv);
 		    let ex = $(exDiv).appendTo(_this.jq('expandedwikimenu'));

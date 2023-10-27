@@ -287,9 +287,8 @@ function makeDisplayTooltip(header,imgs,text) {
 	    if(!img.startsWith("/")) {
 		img = RamaddaUtil.getUrl("/help/display/" + img);
 	    }
-	    return acc+"<td><img src="+ img +" width=250px></td>";
-	},"<table><tr valign=top>");
-	imgHtml+="</tr></table>";
+	    return acc+"<img src="+ img +" width=250px><br>";
+	},'');
 //	if(h!="") h+="<br>";
 	h+=HU.div([],imgHtml);
     }
