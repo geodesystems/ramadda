@@ -5579,7 +5579,8 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 				  },
 				  (file)=>{
 				      if(file.type.match('image.*')) return true;
-				      if(file.name.match('.*\.(json|geojson|gpx|zip|kml|kmz)')) return true;
+				      let _name = file.name.toLowerCase();
+				      if(_name.match('.*\.(json|geojson|gpx|shz|zip|kml|kmz)')) return true;
 				      return false;
 				  }
 				 );
