@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Oct 27 11:12:15 MDT 2023";
+var build_date="RAMADDA build date: Sat Oct 28 13:58:03 MDT 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -47325,7 +47325,8 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 				  },
 				  (file)=>{
 				      if(file.type.match('image.*')) return true;
-				      if(file.name.match('.*\.(json|geojson|gpx|zip|kml|kmz)')) return true;
+				      let _name = file.name.toLowerCase();
+				      if(_name.match('.*\.(json|geojson|gpx|shz|zip|kml|kmz)')) return true;
 				      return false;
 				  }
 				 );
