@@ -1,6 +1,6 @@
 echo:Server side files
 https://ramadda.org/repository/entry/show?entryid=882ba673-72b0-4d26-80de-e10f34721d72
-size:1393 https://ramadda.org/repository/entry/show/Home/RAMADDA+/Development/Test/Server+Side+Test?entryid=882ba673-72b0-4d26-80de-e10f34721d72&output=zip.tree
+https://ramadda.org/repository/entry/show/Home/RAMADDA+/Development/Test/Server+Side+Test?entryid=882ba673-72b0-4d26-80de-e10f34721d72&output=zip.tree
 
 #stop
 
