@@ -7755,19 +7755,23 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    Object TESTMUTEX=new Object();
-    int testCnt=0;
+
     public Result processEntryTest(Request request) throws Exception{
-	synchronized(TESTMUTEX) {testCnt++;}
-	Entry entry = createEntryFromDatabase(request.getString(ARG_ENTRYID,""),false);
-	synchronized(TESTMUTEX) {testCnt--;}
-	if(entry==null) {
-	    //	    System.err.println("no entry: testCnt:" + testCnt);
-	    return new Result("no entry", MIME_TEXT);
-	} else {
-	    //	    System.err.println("entry:"+ entry.getName() +" testCnt:" + testCnt);
-	    return new Result("entry:" + entry.getName(), MIME_TEXT);
+	if(true)
+	    return new Result("", MIME_TEXT);
+	List<Entry> entries = new ArrayList<Entry>();
+	for(String id: Utils.split(request.getString("ids",""), ",",true,true)) {
+	    Entry entry = createEntryFromDatabase(id,false);
+	    if(entry==null) {
+		//	    System.err.println("no entry: testCnt:" + testCnt);
+		throw new IllegalArgumentException("No entry:" + id);
+	    } 
+	    entries.add(entry);
+	    if(request.get("addchildren",false)) 
+		entries.addAll(getChildren(request, entry));
 	}
+	getSearchManager().entriesModified(request, entries);
+	return new Result("reindexed #" + entries.size(), MIME_TEXT);
     }
 
 
