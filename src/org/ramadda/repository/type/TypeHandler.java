@@ -506,7 +506,11 @@ public class TypeHandler extends RepositoryManager {
             fileNotPattern = Utils.getAttributeOrTag(node, ATTR_NOTPATTERN, null);	    
             help     = Utils.getAttributeOrTag(node, "help", help);
             editHelp = Utils.getAttributeOrTag(node, "edithelp", editHelp);
+	    if(editHelp!=null)
+		editHelp = editHelp.replace("\\n","\n");
             newHelp = Utils.getAttributeOrTag(node, "newhelp", editHelp);	    
+	    if(newHelp!=null)
+		newHelp = newHelp.replace("\\n","\n");
             mimeType     = XmlUtil.getAttributeFromTree(node, "mimetype", mimeType);	    
 
 	    String fields = XmlUtil.getAttributeFromTree(node, "editfields", null);	    
@@ -4520,7 +4524,7 @@ public class TypeHandler extends RepositoryManager {
 	    sb.append(getWikiManager().wikify(request, header));
 	}
 	if(stringDefined(editHelp)) {
-	    sb.append(HU.note(editHelp));
+	    sb.append(getWikiManager().wikify(request, editHelp));
 	}
 	if(entry==null && stringDefined(newHelp)) {
 	    sb.append(getWikiManager().wikify(request, newHelp));
