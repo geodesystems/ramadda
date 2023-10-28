@@ -1,0 +1,47 @@
+http://localhost:8080/repository/search/do?text=rmnp
+print: http://localhost:8080/repository/entry/test?ids=da31b5f1-d18d-4b7a-a331-17c2ea2659fe
+http://localhost:8080/repository/search/do?text=folder
+print: http://localhost:8080/repository/entry/test?ids=5f2234d6-6332-441f-8bab-0076a8cc4d95
+http://localhost:8080/repository/search/do?text=data
+print:http://localhost:8080/repository/entry/test?ids=280948f9-84cc-4989-8236-f3687cefaab0
+http://localhost:8080/repository/search/do?text=rmnp
+http://localhost:8080/repository/entry/test?ids=3eb1231c-bc25-4e2f-957e-33700b6b8004
+http://localhost:8080/repository/search/do?text=kden
+http://localhost:8080/repository/search/do?text=sites
+
+echo: Reindexing all top level
+print: http://localhost:8080/repository/entry/test?addchildren=true&ids=ff29d75c-8baf-4b17-b121-6c0e10eb9c60
+echo: Done Reindexing all top level
+
+
+http://localhost:8080/repository/search/do?text=knowledge
+http://localhost:8080/repository/search/do?text=thredds
+http://localhost:8080/repository/search/do?text=voting
+http://localhost:8080/repository/search/do?text=rmnp
+http://localhost:8080/repository/search/do?text=kden
+http://localhost:8080/repository/search/do?text=sites
+
+print: http://localhost:8080/repository/entry/test?ids=0862b341-369c-49e1-9326-68d9b6839de2
+
+
+http://localhost:8080/repository/search/do?text=knowledge
+http://localhost:8080/repository/search/do?text=thredds
+http://localhost:8080/repository/search/do?text=voting
+http://localhost:8080/repository/search/do?text=rmnp
+http://localhost:8080/repository/search/do?text=kden
+http://localhost:8080/repository/search/do?text=sites
+http://localhost:8080/repository/search/do?text=knowledge
+http://localhost:8080/repository/search/do?text=thredds
+http://localhost:8080/repository/search/do?text=voting
+http://localhost:8080/repository/search/do?text=rmnp
+http://localhost:8080/repository/search/do?text=kden
+http://localhost:8080/repository/search/do?text=sites
+http://localhost:8080/repository/search/do?text=knowledge
+http://localhost:8080/repository/search/do?text=thredds
+http://localhost:8080/repository/search/do?text=voting
+http://localhost:8080/repository/search/do?text=rmnp
+http://localhost:8080/repository/search/do?text=kden
+http://localhost:8080/repository/search/do?text=sites
+http://localhost:8080/repository/search/do?text=knowledge
+http://localhost:8080/repository/search/do?text=thredds
+http://localhost:8080/repository/search/do?text=voting
