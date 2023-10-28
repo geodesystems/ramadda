@@ -1,0 +1,16 @@
+<services category="Maps">
+
+  <service label="Convert a Shapefile to GeoJson" id="map_shp2geojson" command="${service.gdal.ogr2ogr}" outputToStderr="true">
+    <description>
+      Run ogr2ogr to convert a shapefile to geojson. Note: the shapefile needs to have the .shz or .shp.zip suffix
+    </description>
+    <arg value="-f"/>
+    <arg value="geojson"/>
+    <arg value="-t_srs"/>    
+    <arg value="EPSG:4326"/>
+    <arg value="${file}" file="${entry.file.base}.geojson"></arg>
+    <arg value="${entry.file}"   type="entry" primary="true" entryType="geo_shapefile" ></arg>
+    <output pattern=".*\.geojson" type="geo_geojson"/>
+  </service>
+
+</services>

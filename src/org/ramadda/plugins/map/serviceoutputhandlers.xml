@@ -1,0 +1,3 @@
+<outputhandlers>
+  <outputhandler serviceId="map_shp2geojson" class="org.ramadda.repository.output.ServiceOutputHandler"/>
+</outputhandlers>

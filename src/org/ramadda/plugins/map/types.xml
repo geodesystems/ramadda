@@ -101,7 +101,10 @@ mapVar="gpxMap${entryid}" }}
 </type>
 
 
-  <type name="geo_shapefile"  description="Shapefile"   super="type_point" handler="org.ramadda.plugins.map.ShapefileTypeHandler" pattern="(.*\.shp$|.*shp.*\.zip)" metadata="shapefile_display,shapefile_color,map_displaymap">
+<type name="geo_shapefile"  description="Shapefile"   super="type_point"
+      handler="org.ramadda.plugins.map.ShapefileTypeHandler"
+      pattern="(.*\.shp$|.*shp.*\.zip|.*\.shz)"
+      metadata="shapefile_display,shapefile_color,map_displaymap">
      <property name="icon" value="/icons/mapfile.png"/>
      <property name="upload.zip" value="true"/>
      <property name="mimetype" value="application/zipped-shapefile"/>
