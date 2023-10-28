@@ -462,6 +462,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    //	    if(ids.size()>10000) break;
 	}
 
+	getDatabaseManager().closeAndReleaseConnection(statement);
+
 	//	System.err.println("ids:" + ids.size());
 
 	if(all) {
@@ -498,37 +500,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	getActionManager().actionComplete(actionId);
     }
 
-    /* Not implemented yet
-    public void reindexLuceneTreeFields(Object actionId, Entry root)  throws Throwable {	
-	IndexWriter writer = getLuceneWriter();
-	getActionManager().setActionMessage(actionId,
-					    "indexing:" + root);
-
-	Misc.sleepSeconds(5);
-	reindexLuceneTreeFields(writer, actionId, root);
-	writer.commit();
-	getActionManager().actionComplete(actionId);
-    }
-
-
-    private void reindexLuceneTreeFields(IndexWriter writer, Object actionId, Entry root)  throws Throwable {	
-	IndexReader reader =  DirectoryReader.open(writer);
-	IndexSearcher searcher = new IndexSearcher(reader);
-	Query query = new TermQuery(new Term(FIELD_ENTRYID, root.getId()));
-	TopDocs       hits     = searcher.search(query, 1);
-	ScoreDoc[]    docs     = hits.scoreDocs;
-	if(docs.length==0) {
-	    System.err.println("not found:"  + root);
-	    return;
-	}
-	org.apache.lucene.document.Document doc =
-	    searcher.doc(docs[0].doc);
-	System.err.println("got:" + root);
-
-
-    }
-    */
-
     private Callable<Boolean> makeReindexer(final List<String> ids, final IndexWriter writer,final int total, final int[] cnt, final Object actionId, final Object mutex, final boolean[]ok) throws Exception {
         return  new Callable<Boolean>() {
             public Boolean call() {
@@ -541,18 +512,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			    cnt[0]++;
 			    System.err.println("#" + cnt[0] +"/"+ total +" entry:" + entry.getName());
 			}
-			/*
-			  if(entry.getParentEntry()==null) {
-			  if(entry.getId().equals("2e485e95-eb29-44fc-8987-76e6ac74365a")) {
-			  System.err.println("*************** top:" + entry +"  "+ entry.getId());
-			  } else {
-			  cnt[0]++;
-			  System.err.println(cnt[0]+" missing:" + entry +"  "+ entry.getId());
-			  }
-			  }*/
 			indexEntry(writer, entry, null, false);
 			getEntryManager().removeFromCache(entry);
-			//			if(true) continue;
 			if(!ok[0]) break;
 			if(actionId!=null) {
 			    if(!getActionManager().getActionOk(actionId)) {
@@ -648,7 +609,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      */
     private  void indexEntries(List<Entry> entries, Request request, boolean isNew)
 	throws Exception {
-	synchronized(LUCENE_MUTEX) {
+	//	synchronized(LUCENE_MUTEX) {
 	    IndexWriter writer = getLuceneWriter();
 	    try {
 		for (Entry entry : entries) {
@@ -662,7 +623,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    } finally {
 		//	    writer.close();
 	    }
-	}
+	    //	}
     }
 
 
@@ -1128,6 +1089,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
+    private IndexSearcher luceneSearcher;
+
     /**
      * _more_
      *
@@ -1136,7 +1099,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @throws Exception _more_
      */
     private IndexSearcher getLuceneSearcher() throws Exception {
-	return new IndexSearcher(DirectoryReader.open(getLuceneWriter()));
+	if(luceneSearcher==null) {
+	    luceneSearcher = new IndexSearcher(DirectoryReader.open(getLuceneWriter()));
+	    //return new IndexSearcher(DirectoryReader.open(getLuceneWriter()));
+	}
+	return luceneSearcher;
     }
 
 
@@ -1770,13 +1737,13 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             return;
         }
         try {
-	    synchronized(LUCENE_MUTEX) {
+	    //	    synchronized(LUCENE_MUTEX) {
 		IndexWriter writer = getLuceneWriter();
 		for (String id : ids) {
 		    writer.deleteDocuments(new Term(FIELD_ENTRYID, id));
 		}
 		writer.commit();
-	    }
+		//	    }
         } catch (Exception exc) {
             logError("Error deleting entries from Lucene index", exc);
         }
@@ -2878,6 +2845,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @throws Exception _more_
      */
     public Result processEntrySearch(Request request) throws Exception {
+	//	System.err.println(request);
 
         if (request.get(ARG_WAIT, false)) {
             return getRepository().getMonitorManager().processEntryListen(
