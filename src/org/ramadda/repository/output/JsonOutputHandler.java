@@ -613,9 +613,13 @@ public class JsonOutputHandler extends OutputHandler {
             JsonUtil.quoteAttr(items, "creator", entry.getUser().getId());
         }
         if (entry.getResource().isUrl()) {
-            JsonUtil.quoteAttr(
-                items, "url",
-                entry.getTypeHandler().getPathForEntry(request, entry,false));
+	    //Catch errors 
+	    try {
+		String jsonUrl = entry.getTypeHandler().getPathForEntry(request, entry,false);
+		JsonUtil.quoteAttr(items, "url",jsonUrl);
+	    } catch(Exception exc) {
+		getLogManager().logError("Error reading path for entry:"+ entry + " " + entry.getId(),exc);
+	    }
         }
 
 
