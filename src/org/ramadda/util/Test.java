@@ -78,6 +78,11 @@ public class Test {
     public boolean call(String url) throws Exception {
 	url = url.trim();
 	if(url.startsWith("#")) return true;
+	boolean print = false;
+	if(url.startsWith("print:")) {
+	    print=true;
+	    url = url.substring("print:".length()).trim();
+	}
 	if(url.startsWith("echo:")) {
 	    if(!noecho)	    System.out.println(url.substring("echo:".length()));
 	    return true;
@@ -111,6 +116,8 @@ public class Test {
 	    }
 	    System.out.println("read error:" + err);
 	    return true;
+	} else if(print) {
+	    System.out.println(result.getResult().trim());
 	}
 	if(expectedSize>=0 && result.getResult().length() != expectedSize) {
 	    throw new IllegalStateException("Incorrect size for URL:" + url +" expected size:" + expectedSize +" actual size:" + result.getResult().length());
@@ -120,6 +127,7 @@ public class Test {
 	    Date after = new Date();
 	    long time = after.getTime()-before.getTime();
 	    String title = StringUtil.findPattern(result.result,"<title>(.*?)</title>");
+	    if(title==null) title="";
 	    if(timeThreshold>=0 && time>timeThreshold) {
 		System.out.println("#" + urlCnt +" " + title+ " long time:" + (time) +" url:" +url);
 	    }
