@@ -669,7 +669,7 @@ public class Seesv implements SeesvCommands {
 			argsBuff.append(",");
 		    }
 		}
-		arg = arg.replaceAll(",", "\\\\,");
+		arg = arg.replaceAll(",", "\\\\,").replace("\n"," ");
 		//		System.err.println("arg:" + arg);
 		argsBuff.append(arg);
 		continue;
@@ -2108,6 +2108,9 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_FIRSTCOLUMNS, "Move columns to beginning",
 		ARG_LABEL,"Move Columns First",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
+        new Cmd(CMD_LASTCOLUMNS, "Move columns to end",
+		ARG_LABEL,"Move Columns Last",
+                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),	
         new Cmd(CMD_COLUMNSBEFORE, "Move columns before the given column",
 		ARG_LABEL,"Move Columns Before",
                 new Arg(ARG_COLUMN, "Column to move before", ATTR_TYPE, TYPE_COLUMN),
@@ -2923,7 +2926,7 @@ public class Seesv implements SeesvCommands {
 
         new Cmd(CMD_ADDHEADER, "Add the RAMADDA point properties",
 		ARG_LABEL,"Add Point Header",
-                new Arg("properties", "name1 value1 ... nameN valueN", ATTR_ROWS, "6")),
+                new Arg("properties", "name1 value1 ... nameN valueN<br>Set default: default.type double", ATTR_ROWS, "6")),
         new Cmd(CMD_DB, "Generate the RAMADDA db xml from the header",
 		ARG_LABEL,"RAMADDA Database XML",
 		new Arg("properties",
@@ -3448,6 +3451,10 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Converter.ColumnFirst(ctx, getCols(args.get(++i))));
 		return i;
 	    });
+	defineFunction(CMD_LASTCOLUMNS,1,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.ColumnLast(ctx, getCols(args.get(++i))));
+		return i;
+	    });	
 
 	defineFunction(CMD_NOTCOLUMNS,1,(ctx,args,i) -> {
 		List<String> cols = getCols(args.get(++i));

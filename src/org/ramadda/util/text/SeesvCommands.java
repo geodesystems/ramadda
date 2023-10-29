@@ -115,6 +115,7 @@ public interface SeesvCommands {
     public static final String CMD_COLUMNS="-columns";
     public static final String CMD_NOTCOLUMNS="-notcolumns";
     public static final String CMD_FIRSTCOLUMNS="-firstcolumns";
+    public static final String CMD_LASTCOLUMNS="-lastcolumns";    
     public static final String CMD_COLUMNSBEFORE="-columnsbefore";
     public static final String CMD_COLUMNSAFTER="-columnsafter";
     public static final String CMD_DELETE="-delete";

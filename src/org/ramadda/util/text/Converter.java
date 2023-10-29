@@ -858,6 +858,56 @@ public abstract class Converter extends Processor {
         }
     }
 
+    public static class ColumnLast extends Converter {
+
+        /**  */
+        private HashSet<Integer> firstSeen;
+
+
+        /**
+         *
+         * @param ctx _more_
+         * @param cols _more_
+         */
+        public ColumnLast(TextReader ctx, List<String> cols) {
+            super(cols);
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+	    //	    debug = rowCnt++==0;
+            List<Integer> indices = getIndices(ctx);
+            if (indices.size() == 0) {
+                return row;
+            }
+            List<String> result = new ArrayList<String>();
+            if (firstSeen == null) {
+                firstSeen = new HashSet<Integer>();
+                for (Integer idx : indices) {
+                    firstSeen.add(idx);
+                }
+            }
+            for (int i = 0; i < row.size(); i++) {
+                if (!firstSeen.contains(i)) {
+                    result.add(row.getString(i));
+                }
+            }
+            for (Integer idx : indices) {
+		if(!row.indexOk(idx)) continue;
+                String s = row.getString(idx);
+                result.add(s);
+            }
+
+
+            return new Row(result);
+        }
+    }
+
 
     /**
      * Class description
