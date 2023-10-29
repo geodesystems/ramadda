@@ -25,12 +25,8 @@ import java.util.Hashtable;
  */
 public class AwcMetarTypeHandler extends NwsStationTypeHandler {
 
-    /** _more_ */
-    public static final String OLDURL =
-        "https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=csv&stationString={station}&hoursBeforeNow={offset}";
 
-
-    public static final String URL = "https://aviationweather.gov/api/data/metar?ids={station}&hours={offset}";
+    public static final String URL = "https://aviationweather.gov/api/data/metar?format=json&ids={station}&hours={offset}";
 
 
     /** _more_ */
@@ -58,14 +54,7 @@ public class AwcMetarTypeHandler extends NwsStationTypeHandler {
     }
 
 
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fromImport _more_
-     *
-     * @throws Exception _more_
-     */
+    @Override
     public void initializeNewEntry(Request request, Entry entry,
                                    boolean fromImport)
 	throws Exception {
@@ -77,20 +66,6 @@ public class AwcMetarTypeHandler extends NwsStationTypeHandler {
     }
 
 
-
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param forRead _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badnes
-     */
     @Override
     public String getPathForEntry(Request request, Entry entry,
                                   boolean forRead)
@@ -100,10 +75,8 @@ public class AwcMetarTypeHandler extends NwsStationTypeHandler {
         }
         String siteId = entry.getStringValue(IDX_SITE_ID, "");
         int    offset = (int) entry.getIntValue(IDX_TIME_OFFSET, 24);
-        String url = URL.replace("{station}", siteId).replace("{offset}",
-							      "" + offset);
-
-	System.err.println(url);
+        String url = URL.replace("{station}", siteId).replace("{offset}", "" + offset);
+	System.err.println("AWC URL:" +url);
         return url;
     }
 

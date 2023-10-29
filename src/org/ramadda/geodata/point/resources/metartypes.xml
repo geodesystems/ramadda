@@ -20,10 +20,12 @@
 	  -->
 
  <property name="record.properties">
-csvcommands1=-skiplines,5,-sortby,observation_time,up,string
-skiplines=1
-fields=raw_text[chartable=true type=string],station_id[type=string],observation_time[chartable=true type=date format="yyyy-MM-dd'T'HH:mm:ss"],latitude[chartable=true isLatitude=true],longitude[chartable=true isLongitude=true],temp_c[chartable=true unit=celsius],dewpoint_c[chartable=true unit=celsius],wind_dir_degrees[chartable=true unit=degrees],wind_speed_kt[chartable=true unit=knots],wind_gust_kt[chartable=true unit=knots],visibility_statute_mi[chartable=true],altim_in_hg[chartable=true],sea_level_pressure_mb[chartable=true],corrected[type=string],auto[type=string],auto_station[type="string"],maintenance_indicator_on[type=string],no_signal[type=string],lightning_sensor_off[type=string],freezing_rain_sensor_off[type=string],present_weather_sensor_off[type=string],wx_string[type=string],sky_cover1[type=string],cloud_base_ft_agl1[chartable=true],sky_cover2[type=string],cloud_base_ft_agl2[chartable=true],sky_cover3[type=string],cloud_base_ft_agl3[chartable=true],sky_cover4[type=string],cloud_base_ft_agl4[chartable=true],flight_category[type=string],three_hr_pressure_tendency_mb[chartable=true],maxT_c[chartable=true],minT_c[chartable=true],maxT24hr_c[chartable=true],minT24hr_c[chartable=true],precip_in[chartable=true],pcp3hr_in[chartable=true],pcp6hr_in[chartable=true],pcp24hr_in[chartable=true],snow_in[chartable=true],vert_vis_ft[chartable=true],metar_type[type=string],elevation_m[isElevation=true unit=m]
-     </property>
+<![CDATA[
+csvcommands1=-json,,,-columnsafter,name
+csvcommands2=lat\,lon,-firstcolumns,reporttime\,icaoid\,name\,temp\,mint\,maxt\,maxt24\,mint24\,dewp\,slp\,wspd\,wdir\,wgst\,visib\,precip\,pcp3hr\,pcp6hr\,pcp24hr\,snow,-lastcolumns,obstime\,receipttime\,metar_id\,rawob
+csvcommands3=-addheader, default.type double reporttime.type date reporttime.format {yyyy-MM-DD HH:mm} receipttime.type date receipttime.format {yyyy-MM-DD HH:mm} wxstring.type string   obstime.type string   rawob.type string   icaoid.type string   qcfield.type string   metar_id.type string   metartype.type string   name.type string wdir.type enumeration dewp.label Dewpoint precip.label Precipitation wspd.label {Wind Speed} wdir.label {Wind Direction} pcp6hr.label {6hr Precipitation} wgst.label {Wind Gust} maxt24.label {Max 24 Temperature} temp.label {Temperature} mint24.label {Min 24 Temperature} maxt.label {Max Temperature} mint.label {Min Temperature} pcp24hr.label {24hr Precipitation} pcp3hr.label {3hr Precipitation} slp.label {Pressure}  visib.label {Visibility}
+]]>
+ </property>
      <column  name="site_id"  type="enumerationplus" label="Site ID" cansearch="true" values="file:/org/ramadda/geodata/point/resources/weatherstations.txt"/>
      <column  name="time_offset"  type="int" label="Time Offset" default="168" suffix="Hours before now"/>
 <wiki>
@@ -31,20 +33,30 @@ fields=raw_text[chartable=true type=string],station_id[type=string],observation_
 +section  title="Station: {{field name=site_id raw=true}} -- {{name}}"
 {{description}}
 +row
-+col-md-8
-{{group showMenu="true" layoutType="table" layoutColumns="1"}}
-{{display_linechart showMenu="true" showTitle="false" layoutHere="false" fields=temp_c}}
-{{display_linechart showMenu="true" showTitle="false" layoutHere="false" fields=sea_level_pressure_mb}}
-{{display_linechart showMenu="true" showTitle="false" layoutHere="false" fields=wind_speed_kt}}
-
++col-md-9
+{{group layoutType="table" layoutColumns="1"}}
+{{display_linechart showMenu="true" showTitle="false" layoutHere="false" fields=temp}}
+{{display_linechart showMenu="true" showTitle="false" layoutHere="false" fields=slp}}
+{{display_linechart showMenu="true" showTitle="false" layoutHere="false" fields=wspd}}
 -col
-+col-md-4
-{{map  zoomLevel=3 height="350"  layoutHere="true" }}
++col-md-3
+:vspace 2em
+{{map  zoomLevel=9 height="300"}}
 -col
 -row
+:vspace 1em
 ----
 :heading Text
-{{display_text showMenu=false recordTemplate="${default itemsPerColumn=20}" }}
+{{display_text recordTemplate="${default itemsPerColumn=20 maxWidth=200}" }}
+:vspace 1em
+----
+:heading Table
+{{display_download}}
+{{display_table}}
+:vspace 1em
+----
+:heading Information
+{{information}}
 ]]>
 
 </wiki>
