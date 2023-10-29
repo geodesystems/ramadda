@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Oct 28 13:58:03 MDT 2023";
+var build_date="RAMADDA build date: Sun Oct 29 08:17:47 MDT 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -4914,6 +4914,7 @@ function DisplayThing(argId, argProperties) {
 		attrs = Utils.tokenizeMacros(template,{hook:(token,value)=>{return this.macroHook(record, token,value)},dateFormat:this.getDateFormat()}).getAttributes("default")||{};
 	    }
 	    itemsPerColumn = attrs["itemsPerColumn"] || itemsPerColumn;
+	    let maxWidth = attrs["maxWidth"];
 	    let values = "";
 	    if(dflt.titleField || dflt.titleTemplate) {
 		let title="";
@@ -5053,8 +5054,13 @@ function DisplayThing(argId, argProperties) {
                     let row = HU.open(TR,['valign','top']);
 		    let labelAttrs = [CLASS,"display-record-table-label"]
 		    if(props.labelStyle) labelAttrs.push('style',props.labelStyle);
+		    let displayValue = value;
+		    let valueStyle = HU.css('margin-left','5px');
+		    if(maxWidth) {
+			valueStyle+=HU.css('max-width',HU.getDimension(maxWidth,'px'));
+		    }
 		    row += HU.td(labelColAttrs,HU.div(labelAttrs, label));
-		    row += HU.td(["field-id",field.getId(),"field-value",fieldValue, "align","left"], HU.div([STYLE,HU.css('margin-left','5px')], value));
+		    row += HU.td(["field-id",field.getId(),"field-value",fieldValue, "align","left"], HU.div([ATTR_STYLE,valueStyle], displayValue));
 		    if(includeDesc) {
 			row +=HU.td([],field.getDescription()??"");
 		    }
