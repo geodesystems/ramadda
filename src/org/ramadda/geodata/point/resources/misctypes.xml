@@ -405,6 +405,17 @@ Data courtesy of <a href="https://daymet.ornl.gov/">ORNL Daymet</a>
 }}
 ]]>
 </wiki>
+<property name="bubble">
+<![CDATA[
++section  title="{{name}}"
+{{group showMenu="true" layoutType="table" layoutColumns="1" showTitle="false"}}
+{{display_linechart showTitle="false" layoutHere="false" fields="tmax,tmin" vAxisMinValue="-40" vAxisMaxValue="40"}}
+{{display_linechart showTitle="false" layoutHere="false" fields="swe"}}
+{{display_barchart showTitle="false" layoutHere="false" fields="precipitation"}}
+-section
+]]></property>
+
+
   </type>
 
   <type name="type_tmy"  description="NREL TMY Data" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.TmyTypeHandler">
