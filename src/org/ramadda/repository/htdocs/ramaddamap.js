@@ -3130,6 +3130,7 @@ RepositoryMap.prototype = {
             this.defaultBounds = null;
         } else {
 	    let layers =this.allLayers.filter(layer=>{
+		if(!layer.ramaddaId) return false;
 		return !layer.isBaseLayer && this.isLayerVisible(layer.ramaddaId) && layer.initialVisibility;
 	    });
 	    let bounds = null;
@@ -3311,6 +3312,7 @@ RepositoryMap.prototype = {
     },
 
     isLayerVisible:  function(id, parentId) {
+	if(!id) return true;
         //        let cbx =   $(':input[id*=\"' + "visible_" + this.mapId +"_" + id+'\"]');
         let cbx = this.getVisibilityCheckbox(id);
         if (cbx.length == 0 && parentId != null) cbx = $('#' + "visible_" + this.mapId + "_" + parentId);
