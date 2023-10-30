@@ -44,12 +44,16 @@ function RamaddaAnnotation(annotorius,divId,topDivId,attrs,entryAttribute) {
     this.top = Utils.isDefined(attrs.top)?attrs.top:true;
     if(this.canEdit) {
 	if(attrs.showToolbar) {
-	    Annotorious.Toolbar(annotorius, document.getElementById(topDivId));
+	    let uid = HU.getUniqueId('toolbar_');
+	    let toolbar = HU.div([ATTR_ID,uid]);
+	    let tt = 'Special tags:&#013;width:line width (or w:)&#013;color:line color (or c:)&#013;label:Some label&#013;bg:label background color&#013;border:label border, e.g. 1px solid red&#013;default:Make this color the default';
+	    jqid(topDivId).html(HU.hbox([toolbar,HU.space(1),
+					 HU.div([ATTR_TITLE,tt],
+						HU.getIconImage('fas fa-question-circle'))]));
+	    Annotorious.Toolbar(annotorius, document.getElementById(uid));
 	}
 	let changed = (a) =>{
-	    this.annotations = this.getAnno().getAnnotations();
-	    this.doSave();
-	    this.showAnnotations();
+	    this.handleChange();
 	};
 	annotorius.on('createAnnotation', changed);
 	annotorius.on('updateAnnotation', changed);
@@ -64,6 +68,12 @@ function RamaddaAnnotation(annotorius,divId,topDivId,attrs,entryAttribute) {
 }
 
 RamaddaAnnotation.prototype = {
+    handleChange: function() {
+	console.log('changed');
+	this.annotations = this.getAnno().getAnnotations();
+	this.doSave();
+	this.showAnnotations();
+    },
     getAnnotations:function() {
 	if(this.annotations) return this.annotations;
 	return this.getAnno().getAnnotations();
@@ -106,10 +116,13 @@ RamaddaAnnotation.prototype = {
 	    if(contents.length>0) {
 		body += HU.div(['class','ramadda-annotation-body'],Utils.join(contents,"<br>"));
 	    }
+	    body = HU.div(['tabindex','1'],body);
+	    let tt = 'Click to view&#013;Shift-click to zoom to';
+	    if(this.canEdit) tt+='&#013;Control-e:edit&#013;Control-d:delete';
 	    if(this.top) 
-		html+=HU.td(['title','Click to view&#013;Shift-click to zoom to','width',width,'class','ramadda-clickable ramadda-hoverable ramadda-annotation','index',aidx], body);
+		html+=HU.td(['title',tt,'width',width,'class','ramadda-clickable ramadda-hoverable ramadda-annotation','index',aidx], body);
 	    else
-		html+=HU.div(['title','Click to view&#013;Shift-click to zoom to','width',width,'class','ramadda-clickable ramadda-hoverable ramadda-annotation','index',aidx], body);
+		html+=HU.div(['title',tt,'width',width,'class','ramadda-clickable ramadda-hoverable ramadda-annotation','index',aidx], body);
 	});
 
 	if(this.top)
@@ -125,6 +138,18 @@ RamaddaAnnotation.prototype = {
 	    this.div.hide();
 	}
 	let _this = this;
+	this.div.find('.ramadda-annotation').keydown(function(event) {
+	    if(!event.ctrlKey)
+		return;
+	    let annotation = 	annotations[$(this).attr('index')];
+	    if(!annotation) return;
+	    if(event.key=='e')  {
+		_this.annotorius.selectAnnotation(annotation);
+	    } else if(event.key=='d')  {
+		_this.annotorius.removeAnnotation(annotation);
+		_this.handleChange();
+	    }
+	});
 	this.div.find('.ramadda-annotation').click(function(event) {
 	    let annotation = 	annotations[$(this).attr('index')];
 	    if(!annotation) return;
@@ -203,8 +228,12 @@ RamaddaAnnotationFormatter.prototype = {
 			state.bg = v.replace("bg:","");		    
 		    } else if(v.startsWith("b:")) {
 			state.border = v.replace("b:","");
+		    } else if(v.startsWith("border:")) {
+			state.border = v.replace("border:","");			
 		    } else if(v.startsWith("c:")) {
 			state.color = v.replace("c:","");
+		    } else if(v.startsWith("color:")) {
+			state.color = v.replace("color:","");			
 		    } else if(v.startsWith("w:")) {
 			state.width = v.replace("w:","");
 		    }
@@ -219,6 +248,8 @@ RamaddaAnnotationFormatter.prototype = {
 		    state.bg = v.replace("bg:","");		    
 		} else if(v.startsWith("b:")) {
 		    state.border = v.replace("b:","");
+		} else if(v.startsWith("border:")) {
+		    state.border = v.replace("border:","");		    
 		}
 	    });
 
@@ -227,8 +258,12 @@ RamaddaAnnotationFormatter.prototype = {
 		let v = b.value;
 		if(v.startsWith("c:")) {
 		    state.color = v.replace("c:","");
+		} else 	if(v.startsWith("color:")) {
+		    state.color = v.replace("color:","");		    
 		} else if(v.startsWith("w:")) {
 		    state.width = v.replace("w:","");
+		} else if(v.startsWith("width:")) {
+		    state.width = v.replace("width:","");		    
 		} else if(v.startsWith("label:")) {
 		    let label =  v.replace("label:","");
 		    //original from the shapelabel plugin
@@ -240,10 +275,11 @@ RamaddaAnnotationFormatter.prototype = {
 		    foreignObject.setAttribute('width', '1px');
 		    foreignObject.setAttribute('height', '1px');
 		    let html = '<div xmlns="http://www.w3.org/1999/xhtml" class="a9s-shape-label-wrapper">';
-		    let style="";
+		    let style='';
 		    if(state.bg) style+=HU.css('background',state.bg);
 		    if(state.border) style+=HU.css('border',state.border);		    
-		    html +=HU.div(['style',style,'class','a9s-shape-label'],label);
+		    html +=HU.div(['style',style,'class','a9s-shape-label'],HU.div([ATTR_STYLE,HU.css('padding','2px')],label));
+		    console.log(style);
 		    html+="</div>";
 		    foreignObject.innerHTML = html;
 		    result.element= foreignObject;
