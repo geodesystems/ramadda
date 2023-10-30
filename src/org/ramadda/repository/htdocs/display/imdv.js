@@ -3901,7 +3901,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		html+= make(this.domId(ID_MAP_RESETMAPVIEW+suffix),"Initial View","fas fa-house");
 	    }
 
-	    html+= make(this.domId(ID_MAP_VIEWLAYERS+suffix),'Set View to All','fas fa-globe');
+	    html+= make(this.domId(ID_MAP_VIEWLAYERS+suffix),'Set View to All','fas fa-eye');
 
             if (navigator.geolocation) {
 		html+= make(this.domId(ID_MAP_MYLOCATION+suffix),"Your Location","fas fa-street-view");

@@ -1736,7 +1736,8 @@ MapGlyph.prototype = {
 		    HU.span([ATTR_CLASS,HU.classes(CLASS_CLICKABLE, CLASS_LEGEND_ITEM_VIEW),
 			     'glyphid',this.getId(),
 			     TITLE,'Click:Move to; Shift-click:Zoom in',],
-			    HU.getIconImage('fas fa-magnifying-glass',[],LEGEND_IMAGE_ATTRS));
+//<i class="fa-regular fa-eye"></i>
+			    HU.getIconImage('fas fa-eye',[],LEGEND_IMAGE_ATTRS));
 	    }
 	    if(args.addIcon)
 		label = HU.span([ATTR_STYLE,'margin-right:5px;'], icon)  + label;
