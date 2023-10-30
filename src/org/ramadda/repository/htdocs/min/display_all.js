@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Oct 29 08:17:47 MDT 2023";
+var build_date="RAMADDA build date: Mon Oct 30 07:44:25 MDT 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -45653,7 +45653,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		html+= make(this.domId(ID_MAP_RESETMAPVIEW+suffix),"Initial View","fas fa-house");
 	    }
 
-	    html+= make(this.domId(ID_MAP_VIEWLAYERS+suffix),'Set View to All','fas fa-globe');
+	    html+= make(this.domId(ID_MAP_VIEWLAYERS+suffix),'Set View to All','fas fa-eye');
 
             if (navigator.geolocation) {
 		html+= make(this.domId(ID_MAP_MYLOCATION+suffix),"Your Location","fas fa-street-view");
@@ -49660,7 +49660,8 @@ MapGlyph.prototype = {
 		    HU.span([ATTR_CLASS,HU.classes(CLASS_CLICKABLE, CLASS_LEGEND_ITEM_VIEW),
 			     'glyphid',this.getId(),
 			     TITLE,'Click:Move to; Shift-click:Zoom in',],
-			    HU.getIconImage('fas fa-magnifying-glass',[],LEGEND_IMAGE_ATTRS));
+//<i class="fa-regular fa-eye"></i>
+			    HU.getIconImage('fas fa-eye',[],LEGEND_IMAGE_ATTRS));
 	    }
 	    if(args.addIcon)
 		label = HU.span([ATTR_STYLE,'margin-right:5px;'], icon)  + label;
