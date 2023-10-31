@@ -498,6 +498,7 @@ public class PageHandler extends RepositoryManager {
 					    "/display/displaymanager.js",
 					    "/display/displayentry.js",
 					    "/display/displaymap.js",
+					    "/display/othermaps.js",					    
 					    "/display/imdv.js",
 					    "/display/mapglyph.js",
 					    "/display/displayimages.js",
