@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Oct 30 12:54:32 MDT 2023";
+var build_date="RAMADDA build date: Tue Oct 31 08:31:58 MDT 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -35532,11 +35532,6 @@ function RamaddaExampleDisplay(displayManager, id, properties) {
 
 
 const DISPLAY_MAP = "map";
-const DISPLAY_MAPGRID = "mapgrid";
-const DISPLAY_MAPCHART = "mapchart";
-const DISPLAY_MAPARRAY = "maparray";
-const DISPLAY_MAPSHRINK = "mapshrink";
-const DISPLAY_MAPIMAGES = "mapimages";
 
 let displayMapMarkers = ["marker.png", "marker-blue.png", "marker-gold.png", "marker-green.png"];
 let displayMapCurrentMarker = -1;
@@ -35556,48 +35551,6 @@ addGlobalDisplayType({
     category:CATEGORY_MAPS,
     preview: "map1.png",
     desc:"Lots of ways to show georeferenced data - dots, heatmaps, plots, etc",        
-});
-
-addGlobalDisplayType({
-    type: DISPLAY_MAPGRID,
-    label: "Map Grid",
-    category:CATEGORY_MAPS,
-    preview: "mapgrid.png",
-    desc:"Can display US States or World countries",    
-});
-
-addGlobalDisplayType({
-    type: DISPLAY_MAPCHART,
-    label: "Map Chart",
-    requiresData: true,
-    category:CATEGORY_MAPS,
-    preview:"mapchart.png",
-    desc:"Plot numeric data as heights. Can display US States, European countries or world countries",        
-});
-
-
-addGlobalDisplayType({
-    type: DISPLAY_MAPSHRINK,
-    label: "Map Shrink",
-    requiresData: true,
-    category:CATEGORY_MAPS,
-    tooltip: makeDisplayTooltip("Show values as relative size of map regions","mapshrink.png","Can display US States, European countries or world countries"),            
-});
-
-
-addGlobalDisplayType({
-    type: DISPLAY_MAPARRAY,
-    label: "Map Array",
-    requiresData: true,
-    category:CATEGORY_MAPS,
-    tooltip: makeDisplayTooltip("Colored map regions displayed separately","maparray.png","Can display US States, European countries or world countries"),                
-});
-addGlobalDisplayType({
-    type: DISPLAY_MAPIMAGES,
-    label: "Map Images",
-    requiresData: true,
-    category:CATEGORY_MAPS,
-    tooltip: makeDisplayTooltip("Display images in map regions","mapimage.png","Can display US States, European countries or world countries"),                    
 });
 
 
@@ -36479,15 +36432,21 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	{label:'Map Collisions'},
 	{p:'handleCollisions',ex:'true',tt:'Handle point collisions'},
-	{p:'collisionFixed',canCache:true,d:false,ex:'false',tt:'Always show markers',canCache:true},
-	{p:'collisionMinPixels',d:16,ex:'16',tt:'How spread out',canCache:true},
-	{p:'collisionDotColor',d:'blue',tt:'Color of dot drawn at center',canCache:true},
-	{p:'collisionDotColorOn',canCache:true},
-	{p:'collisionDotColorOff',canCache:true},		
-	{p:'collisionDotRadius',d:6,tt:'Radius of dot drawn at center',canCache:true},
-	{p:'collisionScaleDots',ex:'false',d:true,tt:'Scale the group dots',canCache:true},
-				
-	{p:'collisionLineColor',ex:'red',tt:'Color of line drawn at center',canCache:true},
+	{p:'collisionFixed',d:false,ex:'true',tt:'If fixed, don\'t show the grouped markers on a click'},
+	{p:'collisionMinPixels',d:16,tt:'How spread out'},
+	{p:'collisionDotColor',d:'blue',tt:'Color of dot drawn at center'},
+	{p:'collisionRingColor',d:'red',tt:'Color of ring'},
+	{p:'collisionRingWidth',d:3,tt:'Color of ring'},	
+	{p:'collisionDotColorOn'},
+	{p:'collisionDotColorOff'},		
+	{p:'collisionDotRadius',d:12,tt:'Radius of dot drawn at center'},
+	{p:'collisionScaleDots',ex:'false',d:true,tt:'Scale the group dots'},
+	{p:'collisionLineColor',ex:'red',tt:'Color of line drawn at center'},
+	{p:'collisionLabelTemplate',d:'${count}'},
+	{p:'collisionLabelColor',d:'white'},
+	{p:'collisionLabelFontSize',d:'10'},	
+
+
 	{p:'collisionIcon',ex:'/icons/...',tt:'Use an icon for collisions',canCache:true},
 	{p:'collisionIconSize',d:16,ex:'16',canCache:true},
 	{p:'collisionTooltip',ex:'${default}',tt:'Tooltip to use for collision dot',canCache:true},
@@ -36940,8 +36899,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let record = feature.record;
 		if(feature.collisionInfo)  {
 		    if(debugPopup) console.log("has collisioninfo");
-		    feature.collisionInfo.dotSelected(feature);
-		    return true;
+		    return feature.collisionInfo.dotSelected(feature);
 		}
 		if(record) {
 		    this.propagateEventRecordSelection({record:record});
@@ -39638,6 +39596,35 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 	    if(this.getHandleCollisions()) {
+		let collisionTooltip = this.getCollisionTooltip('${default}');
+		let collisionTextGetter = tooltip==null?null:(records)=>{
+		    let html = "#" + records.length+" records<hr class=ramadda-thin-hr>";
+		    records.forEach(record=>{
+			html+=HU.div([STYLE,HU.css("border-bottom","1px solid #ccc")], this.getRecordHtml(record, null,collisionTooltip));
+		    });
+		    return html;
+		};
+
+
+		let collisionArgs = {
+		    textGetter: collisionTextGetter,
+		    fixed:this.getCollisionFixed(),
+		    visible: this.getCollisionFixed(),
+		    icon:this.getCollisionIcon(),
+		    iconSize:this.getCollisionIconSize(),	
+		    dotColor:this.getCollisionDotColor(),
+		    ringColor:this.getCollisionRingColor(),
+		    ringWidth:this.getCollisionRingWidth(),		    		    
+		    dotColorOn:this.getCollisionDotColorOn(),
+		    dotColorOff:this.getCollisionDotColorOff(),	
+		    dotRadius:this.getCollisionDotRadius(),
+		    scaleDots:this.getPropertyCollisionScaleDots(false),
+		    labelTemplate:this.getCollisionLabelTemplate(),
+		    labelColor:this.getCollisionLabelColor(),
+		    labelFontSize:this.getCollisionLabelFontSize(),
+		}
+
+
 		//TODO: labels
 		let doLabels = this.getProperty("collisionLabels",false);
 		if(doLabels &!this.map.collisionLabelsLayer) {
@@ -39658,7 +39645,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let baseOffset = mapW*0.025;
 		let offset = 0;
 		let cnt = 0;
-		let minPixels = this.getProperty("collisionMinPixels",16);
+		let minPixels = this.getCollisionMinPixels();
 		//figure out the offset but use cnt so we don't go crazy
 		while(pixelsPer*offset<minPixels && cnt<100) {
 		    offset+=baseOffset;
@@ -39719,8 +39706,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			lineOffset*=delta;
 		    let info = collisionState[rpoint];
 		    if(!info) {
-			info = collisionState[rpoint]= new CollisionInfo(this, seen1[rpoint], rpoint);
-                        featuresToAdd.push(info.createDot(idx));
+			info = collisionState[rpoint]= new CollisionInfo(this.getMap(),this, seen1[rpoint], rpoint,collisionArgs);
 		    }
 		    recordLayout.collisionInfo = info;
 		    recordLayout.visible = info.visible;
@@ -39737,6 +39723,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    point.x=ep.x;
 		    point.y=ep.y;
 		});
+		Object.keys(collisionState).forEach((key,idx)=>{
+		    let info = collisionState[key];
+                    featuresToAdd.push(...info.createDots(idx));
+		});
+
 	    }
 
 	    let i=0;
@@ -40539,6 +40530,222 @@ function MapEntryInfo(entry) {
 
     });
 }
+
+		
+function CollisionInfo(map, display,numRecords, roundPoint,args) {
+    $.extend(this,{
+	fixed:false,
+	visible: false,
+	icon:null,
+	iconSize:16,
+	dotColor:'blue',
+	dotColorOn:null,
+	dotColorOff:null,
+	dotRadius:12,
+	ringColor:'red',
+	ringWidth:3,
+	scaleDots:false,
+	labelTemplate:'${count}',
+	labelColor:"#fff",
+	labelFontSize:10,
+
+	map:map,
+	display:display,
+
+	dots: null,
+	roundPoint:roundPoint,
+	dot:null,
+	numRecords:numRecords,
+	records:[],
+	addLines:false,
+	lines:[],
+	points:[],
+    });
+
+
+    if(args) {
+	$.extend(this,args);
+	if(this.textGetter) {
+	    this.myTextGetter = (feature)=>{
+		return  this.textGetter(this.records);
+	    }
+	}
+    }
+
+    if(!Utils.stringDefined(this.labelTemplate)) this.labelTemplate = null;
+    if(this.visible) {
+	this.checkLines();
+    }    
+}
+
+
+CollisionInfo.prototype = {
+    addRecord: function(record) {
+	this.records.push(record);
+    },
+    addLine:function(line) {
+	this.lines.push(line);
+    },
+    checkLines: function() {
+	if(!this.addedLines) {
+	    this.addedLines = true;
+	    this.display.addFeatures(this.lines,true);
+	    this.display.addFeatures(this.points,false);
+	}
+    },
+    createDots: function(idx) {
+	this.dots = [];
+	if(this.icon) {
+	    this.dots.push(this.map.createMarker("dot-" + idx, [this.roundPoint.x,this.roundPoint.y], this.icon, "", "",null,this.iconSize,null,null,null,null,false));
+
+	} else {
+	    let style = this.getCollisionDotStyle(this);
+	    let dot = this.map.createPoint("dot-" + idx, this.roundPoint, style,null,this.myTextGetter);
+	    this.dots.push(dot);
+	    style = $.extend({},style);
+	    style.label=null;
+	    style.fillColor='transparent';
+	    style.strokeColor=this.ringColor;
+	    style.strokeWidth=this.ringWidth;
+	    dot = this.map.createPoint("dot2-" + idx, this.roundPoint, style,null,this.myTextGetter);
+	    this.dots.push(dot);		
+	}
+	this.dots.forEach(dot=>{
+	    dot.collisionInfo  = this;
+	});
+	return this.dots;
+    },
+    dotSelected:function(dot) {
+	if(this.fixed) return false;
+	this.setVisible(!this.visible);
+	return true;
+    },
+    styleCollisionDot:function(dot) {
+	$.extend(dot.style, this.getCollisionDotStyle(dot.collisionInfo));
+    },
+    addPoints:function(points) {
+	points.forEach(p=>this.points.push(p));
+    },
+    getCollisionDotStyle:function(collisionInfo) {
+	let dotColor= this.dotColor;
+	let dotRadius = this.dotRadius;
+	if(!this.fixed) {
+	    if(this.scaleDots) {
+		let extra = collisionInfo.numRecords;
+		if(extra>1)
+		    dotRadius = Math.min(Math.ceil(dotRadius+extra/2),28);
+//		console.log("scaling dots " + dotRadius +" " +collisionInfo.numRecords);
+	    } 
+
+	    if(collisionInfo.visible)  {
+		dotColor = this.dotColorOn??dotColor;
+	    } else {
+		dotColor = this.dotColorOff??dotColor;
+	    }
+	}
+	let style = {
+	    fillColor:dotColor,
+	    pointRadius:dotRadius
+	}
+	if(this.labelTemplate) {
+	    style =
+		$.extend(style,{
+		    label:this.labelTemplate.replace('${count}',this.records.length),
+		    fontColor:this.labelColor,
+		    fontSize:this.labelFontSize,
+		    labelOutlineColor:'transparent',
+
+		});
+	}		    
+
+	return style;
+
+    },
+
+
+    setVisible:function(visible) {
+	this.visible = visible;
+	this.dots.forEach(dot=>{
+	    this.styleCollisionDot(dot);
+	    dot.layer.drawFeature(dot, dot.style);
+	});
+
+	this.checkLines();
+	//These are the spokes
+	this.lines.forEach(f=>{
+	    f.featureVisible = this.visible;
+	    this.map.checkFeatureVisible(f,true);
+	});
+
+	this.records.forEach(record=>{
+	    let layoutThis = this.display.displayInfo[record.getId()];
+	    if(!layoutThis) {
+		return;
+	    }
+	    layoutThis.features.forEach(f=>{
+		f.featureVisible = this.visible;
+		this.map.checkFeatureVisible(f,true);
+	    });
+	});
+    }
+}
+
+
+
+
+
+
+
+
+
+const DISPLAY_MAPGRID = "mapgrid";
+const DISPLAY_MAPCHART = "mapchart";
+const DISPLAY_MAPARRAY = "maparray";
+const DISPLAY_MAPSHRINK = "mapshrink";
+const DISPLAY_MAPIMAGES = "mapimages";
+
+addGlobalDisplayType({
+    type: DISPLAY_MAPGRID,
+    label: "Map Grid",
+    category:CATEGORY_MAPS,
+    preview: "mapgrid.png",
+    desc:"Can display US States or World countries",    
+});
+
+addGlobalDisplayType({
+    type: DISPLAY_MAPCHART,
+    label: "Map Chart",
+    requiresData: true,
+    category:CATEGORY_MAPS,
+    preview:"mapchart.png",
+    desc:"Plot numeric data as heights. Can display US States, European countries or world countries",        
+});
+
+
+addGlobalDisplayType({
+    type: DISPLAY_MAPSHRINK,
+    label: "Map Shrink",
+    requiresData: true,
+    category:CATEGORY_MAPS,
+    tooltip: makeDisplayTooltip("Show values as relative size of map regions","mapshrink.png","Can display US States, European countries or world countries"),            
+});
+
+
+addGlobalDisplayType({
+    type: DISPLAY_MAPARRAY,
+    label: "Map Array",
+    requiresData: true,
+    category:CATEGORY_MAPS,
+    tooltip: makeDisplayTooltip("Colored map regions displayed separately","maparray.png","Can display US States, European countries or world countries"),                
+});
+addGlobalDisplayType({
+    type: DISPLAY_MAPIMAGES,
+    label: "Map Images",
+    requiresData: true,
+    category:CATEGORY_MAPS,
+    tooltip: makeDisplayTooltip("Display images in map regions","mapimage.png","Can display US States, European countries or world countries"),                    
+});
+
 
 
 let ramaddaGridState = {
@@ -41634,121 +41841,6 @@ function RamaddaMapimagesDisplay(displayManager, id, properties) {
 	}
     });
 }
-
-
-
-		
-function CollisionInfo(display,numRecords, roundPoint) {
-    $.extend(this,{
-	dot: null,
-	display:display,
-	roundPoint:roundPoint,
-	visible: display.getCollisionFixed(),
-	dot:null,
-	numRecords:numRecords,
-	records:[],
-	addLines:false,
-	lines:[],
-	points:[],
-	addRecord: function(record) {
-	    this.records.push(record);
-	},
-	addLine:function(line) {
-	    this.lines.push(line);
-	},
-	checkLines: function() {
-	    if(!this.addedLines) {
-		this.addedLines = true;
-		this.display.addFeatures(this.lines,true);
-		this.display.addFeatures(this.points,false);
-	    }
-	},
-	createDot: function(idx) {
-	    let tooltip = this.display.getCollisionTooltip();
-	    let textGetter = tooltip==null?null:dot=>{
-		let html = "";
-		this.records.forEach(record=>{
-		    html+=HU.div([STYLE,HU.css("border-bottom","1px solid #ccc")], this.display.getRecordHtml(record, null,tooltip));
-		});
-		return html;
-	    };
-	    let collisionIcon=this.display.getCollisionIcon();
-	    let collisionIconSize=this.display.getCollisionIconSize();		
-	    if(collisionIcon)
-		this.dot = this.display.map.createMarker("dot-" + idx, [this.roundPoint.x,this.roundPoint.y], collisionIcon, "", "",null,collisionIconSize,null,null,null,null,false);
-	    else {
-		let style = this.getCollisionDotStyle(this);
-		this.dot = this.display.map.createPoint("dot-" + idx, this.roundPoint, style,null,textGetter);
-	    }
-	    this.dot.collisionInfo  = this;
-	    return this.dot;
-	},
-	dotSelected:function(dot) {
-	    if(this.display.getCollisionFixed()) return;
-	    this.setVisible(!this.visible);
-	},
-	styleCollisionDot:function(dot) {
-	    $.extend(dot.style, this.getCollisionDotStyle(dot.collisionInfo));
-	},
-	addPoints:function(points) {
-	    points.forEach(p=>this.points.push(p));
-	},
-	getCollisionDotStyle:function(collisionInfo) {
-	    let collisionFixed = this.display.getCollisionFixed();
-	    let dotColor = this.display.getCollisionDotColor();
-	    let dotRadius = this.display.getCollisionDotRadius();
-	    if(!collisionFixed) {
-		if(this.display.getPropertyCollisionScaleDots(false)) {
-		    let scale = collisionInfo.numRecords/16;
-		    if(scale>1)
-			dotRadius = Math.min(dotRadius*scale,32);
-//		    console.log("scaling dots " + dotRadius +" " +collisionInfo.numRecords);
-		} 
-
-		if(collisionInfo.visible)  {
-		    dotColor = this.display.getCollisionDotColorOn()??dotColor;
-		} else {
-		    dotColor = this.display.getCollisionDotColorOff()??dotColor;
-		}
-	    }
-	    return {
-		fillColor:dotColor,
-		pointRadius:dotRadius
-	    }
-	},
-
-
-	setVisible:function(visible) {
-	    this.visible = visible;
-	    this.styleCollisionDot(this.dot);
-	    this.dot.layer.drawFeature(this.dot, this.dot.style);
-	    this.checkLines();
-	    //These are the spokes
-	    this.lines.forEach(f=>{
-		f.featureVisible = this.visible;
-		this.display.map.checkFeatureVisible(f,true);
-	    });
-
-	    this.records.forEach(record=>{
-		let layoutThis = this.display.displayInfo[record.getId()];
-		if(!layoutThis) {
-		    return;
-		}
-		layoutThis.features.forEach(f=>{
-		    f.featureVisible = this.visible;
-		    this.display.map.checkFeatureVisible(f,true);
-		});
-	    });
-	},
-    });
-    if(this.visible) {
-	this.checkLines();
-    }
-}
-
-
-
-
 
 /**
    Copyright 2008-2023 Geode Systems LLC
