@@ -62,6 +62,8 @@ public class HtmlUtils implements HtmlUtilsConstants {
     /** _more_ */
     public static final String SPACE3 = "&nbsp;&nbsp;&nbsp;";
 
+    public static final String AUDIO_HEIGHT = "40";
+
     /** _more_ */
     public static final String ICON_CLOSE = "fas fa-window-close";
 
@@ -6130,6 +6132,92 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
         return html;
     }
+
+
+    public static String getMediaEmbed(String mediaUrl, String width, String height) {
+	String _mediaUrl = mediaUrl.toLowerCase();
+	String mediaId = HtmlUtils.getUniqueId("media_");
+	String _path=_mediaUrl;
+	if(_path.indexOf("?")>=0) {
+	    _path = _path.substring(0,_path.indexOf("?"));
+	}
+	String player = null;
+	//	Utils.add(attrs, "mediaId", JU.quote(mediaId));
+	if (_path.endsWith(".mp3") ||
+	    _path.endsWith(".m4a") ||
+	    _path.endsWith(".webm") ||
+	    _path.endsWith("ogg") ||
+	    _path.endsWith("wav")) {
+	    player = tag("audio", attrs(new String[] {
+			"controls", "", "id", mediaId, "style",
+			css("height", makeDim(AUDIO_HEIGHT, "px"), "width",
+			       makeDim(width, "px"))
+		    }), tag("source", attrs(new String[] { "src", mediaUrl,
+								 "type",
+								 "audio/mpeg" }), "Your browser does not support the audio tag."));
+	    //Utils.add(attrs, "media", JU.quote("media"));
+	} else if (_path.endsWith(".m4v") ||
+		   _path.endsWith(".mp4")) {
+	    player = tag("video", attrs(new String[] {
+			"id", mediaId, "controls", "", "preload", "metadata",
+			"height", height, "width", width
+		    }), tag("source", attrs(new String[] { "src", mediaUrl,
+								 "type", "video/mp4" })));
+	    //	    Utils.add(attrs, "media", JU.quote("media"));
+	} else if (_mediaUrl.endsWith(".mov")
+		   || _path.endsWith(".mov")) {
+	    /*
+	      player = tag("embed",  attrs("src",mediaUrl,
+	      "width", width,
+	      "height", height,
+	      "controller","true",
+	      "autoplay","false",
+	      "loop","false"));
+	    */
+	    player = HtmlUtils.tag("video", HtmlUtils.attrs(new String[] {
+			"id", mediaId, HtmlUtils.ATTR_SRC, mediaUrl,
+			HtmlUtils.ATTR_CLASS, "ramadda-video-embed",
+			HtmlUtils.ATTR_WIDTH, width, HtmlUtils.ATTR_HEIGHT,
+			height,
+		    }) + " controls ", HtmlUtils.tag("source",
+						     HtmlUtils.attrs(new String[] { HtmlUtils.ATTR_SRC,
+										    mediaUrl })));
+	    //	    Utils.add(attrs, "media", JU.quote("media"));
+	} else {
+	    return null;
+	}
+	return player;
+    }				       
+
+
+    public static String getPdfEmbed(String url,Hashtable props) {
+
+        StringBuilder sb = new StringBuilder();
+	String page  = Utils.getProperty(props,"page",null);
+	if(page!=null) {
+	    url+="#";
+	    url+="page=" + page;
+	}
+
+	sb.append(open("iframe",attrs("src",url,
+					    "class","ramadda-iframe-pdf",
+					    "type","application/pdf",
+					    "style",
+					    Utils.getProperty(props,"style","border:1px solid #ccc;"),
+					    "frameborder",
+					    Utils.getProperty(props,"frameBorder","0"),
+					    "scrolling",
+					    Utils.getProperty(props,"scrolling","auto"),
+					    "width",
+					    Utils.getProperty(props,"width","90%"),
+					    "height",
+					    Utils.getProperty(props,"height","1000px")
+					    )));
+
+	sb.append(close("iframe"));
+        return sb.toString();
+    }
+
 
 
     //unescape
