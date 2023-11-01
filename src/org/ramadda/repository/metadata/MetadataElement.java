@@ -995,7 +995,21 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             return HU.select(arg, values, value);
         } else if (dataType.equals(DATATYPE_ENUMERATIONPLUS)) {
             boolean contains = HtmlUtils.Selector.contains(values, value);
-            return HU.select(arg, values, value) + HU.space(2)
+	    MetadataType mtdType = getMetadataManager().findType(metadata.getType());
+            String[] va = getMetadataManager().getDistinctValues(request,
+								 mtdType.getHandler(), mtdType,index);
+	    
+	    //Check for any values in the database
+	    List<HtmlUtils.Selector> valuesToUse = values;    
+	    if(va.length>0) {
+		valuesToUse = new ArrayList<HtmlUtils.Selector>(values);
+		for(String a: va) {
+		    if(!HtmlUtils.Selector.contains(values,a)) {
+			valuesToUse.add(new HtmlUtils.Selector(a,a));
+		    }
+		}
+	    }
+            return HU.select(arg, valuesToUse, value) + HU.space(2)
                    + msgLabel("Or")
                    + HU.input(arg + "_input", (contains
                     ? ""
