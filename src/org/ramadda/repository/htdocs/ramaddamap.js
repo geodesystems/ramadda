@@ -3348,7 +3348,7 @@ RepositoryMap.prototype = {
 	}
 
         this.clickHandler = new OpenLayers.Control.Click();
-        this.clickHandler.setLatLonZoomFld(lonfld, latfld, zoomfld, object,onAlt);
+        this.clickHandler.setLatLonZoomFld(latfld, lonfld, zoomfld, object,onAlt);
         this.clickHandler.setTheMap(this);
         this.getMap().addControl(this.clickHandler);
         this.clickHandler.activate();
