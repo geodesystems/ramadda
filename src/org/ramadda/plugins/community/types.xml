@@ -158,6 +158,9 @@
 +section title="{{icon}} {{name}}"
 +row
 +col-md-8
++center
+{{media width=100%}}
+-center
 {{description wikify="true"}}
 -col
 +col-md-4
