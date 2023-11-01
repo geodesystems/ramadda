@@ -135,6 +135,47 @@
   </type>
 
 
+
+
+
+
+  <type name="type_cultural_site"  description="Cultural Site"
+	handler="org.ramadda.plugins.community.CulturalSite"
+	editfields="name,site_type,_default"
+	metadata="cultural_presenter,cultural_biome" >
+     <property name="icon" value="/community/cultural/archaeological.png"/>
+     <property name="form.description.iswiki" value="true"/>
+     <property name="search.metadatatypes" value="cultural_biome"/>
+     <column name="site_type" type="enumerationplus" label="Site Type"
+	values="file:/org/ramadda/plugins/community/resources/culturalsites.txt"
+	showinhtml="true" cansearch="true"/>
+<property name="xxxbubble"><![CDATA[
+:heading {{link}}
+{{tree message="" details="false"}}
+]]>
+</property>
+<wiki><![CDATA[
++section title="{{icon}} {{name}}"
++row
++col-md-8
+{{description wikify="true"}}
+-col
++col-md-4
+{{properties   message="" metadata.types="cultural_presenter"}}
+{{image src="::*" message="" width="300"}}
+<p>
+{{mapentry zoomLevel=default width="300" message=""}}
+<p>
+{{properties   message="" metadata.types="!content.alias,!cultural_presenter,!content.logo,!content.timezone"}}
+-col
+-row
+-section
+]]>
+</wiki>
+</type>
+
+
+
   <type name="community_datahub"  super="community_thing" description="Data Hub" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"    metadata="" >
      <property name="icon" value="/community/hub.png"/>
      <property name="form.description.iswiki" value="true"/>

@@ -1,0 +1,10 @@
+archaeological:Archaeological
+spring:Spring
+food:Food Source
+story:Story
+historical:Historical
+battle:Battle
+mining:Mining
+rockart:Rock Art
+sacred:Sacred/Traditional
+travel:Travel
