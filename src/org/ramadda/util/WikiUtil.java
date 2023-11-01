@@ -4004,6 +4004,11 @@ public class WikiUtil implements HtmlUtilsConstants {
             tline = tline.substring(0, index);
         }
         String url = tline;
+	embedMedia(buff,url,props);
+    }
+
+    public void embedMedia(Appendable buff, String url, Hashtable props)
+            throws Exception {	
         boolean link = Misc.equals("true",
                                    getWikiProperty(props, "link",
                                        "embedLink", "false"));
@@ -4013,9 +4018,9 @@ public class WikiUtil implements HtmlUtilsConstants {
         String width = (String) getWikiProperty(props, ATTR_WIDTH, "embedWidth",
 						"640");
 
-
-
-
+	if(width.endsWith("%")) {
+	    width = "640";
+	}
         String height = (String) getWikiProperty(props, ATTR_HEIGHT,   "embedHeight", "390");
         String style = (String)getWikiProperty(props, ATTR_STYLE, "embedStyle",getWikiProperty(props, ATTR_STYLE, ATTR_STYLE,null));
         StringBuilder sb = new StringBuilder();
