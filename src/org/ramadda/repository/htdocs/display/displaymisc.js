@@ -4590,6 +4590,8 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 	    let args =$.extend({colorBy:colorBy, w:w, h:h,cell3D:this.getProperty("cell3D"),bounds:bounds},
 			       this.getDefaultGridByArgs());
 
+	    //The default gridby args sets operator=count
+	    args.operator = this.getProperty('hm.operator',this.getProperty('hmOperator','max')),
 	    args.doHeatmap=true;
 	    let fields = this.getFields();
 	    let img = Gfx.gridData(this.getId(),fields, records,args);
