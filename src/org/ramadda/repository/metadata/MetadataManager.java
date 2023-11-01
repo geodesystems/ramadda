@@ -2542,14 +2542,27 @@ public class MetadataManager extends RepositoryManager {
                                       MetadataHandler handler,
                                       MetadataType type)
             throws Exception {
+	return getDistinctValues(request, handler,type,1);
+    }
+
+    public String[] getDistinctValues(Request request,
+                                      MetadataHandler handler,
+                                      MetadataType type,int attr)
+            throws Exception {	
         Hashtable myDistinctMap = distinctMap;
+	String key = type.getId()+"_"+attr;
         String[]  values        = (String[]) ((myDistinctMap == null)
                 ? null
-                : myDistinctMap.get(type.getId()));
+                : myDistinctMap.get(key));
 
         if (values == null) {
+	    String col = attr==1?Tables.METADATA.COL_ATTR1:
+		attr==2?Tables.METADATA.COL_ATTR2:
+		attr==3?Tables.METADATA.COL_ATTR3:
+		attr==4?Tables.METADATA.COL_ATTR4:
+		Tables.METADATA.COL_ATTR1;		
             Statement stmt = getDatabaseManager().select(
-                                 SqlUtil.distinct(Tables.METADATA.COL_ATTR1),
+                                 SqlUtil.distinct(col),
                                  Tables.METADATA.NAME,
                                  Clause.eq(
                                      Tables.METADATA.COL_TYPE, type.getId()));
@@ -2557,7 +2570,7 @@ public class MetadataManager extends RepositoryManager {
                 SqlUtil.readString(getDatabaseManager().getIterator(stmt), 1);
 
             if (myDistinctMap != null) {
-                myDistinctMap.put(type.getId(), values);
+                myDistinctMap.put(key, values);
             }
         }
 
