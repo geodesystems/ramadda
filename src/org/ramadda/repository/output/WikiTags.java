@@ -27,6 +27,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
         new WikiTagCategory("General",
                             new WikiTag(WIKI_TAG_NAME,null,"tt","Entry name","link","true"), 
                             new WikiTag(WIKI_TAG_DESCRIPTION,null,"tt","Entry description","wikify","true"),
+                            new WikiTag(WIKI_TAG_ICON,null,"tt","Entry Icon","#width","16px"), 
                             new WikiTag(WIKI_TAG_INFORMATION, null, "tt","General entry information",
 					ATTR_DETAILS, "false",ATTR_SHOWTITLE,"false","#menus","file,edit,view,feeds,other,service","#menusTitle","Services"),
                             new WikiTag(WIKI_TAG_RESOURCE, null, "tt","Link to entry file",ATTR_TITLE,"",ATTR_SHOWICON,"true"),

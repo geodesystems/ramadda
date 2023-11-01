@@ -2406,6 +2406,10 @@ public class WikiManager extends RepositoryManager
 		parent = parent.getParentEntry();
 	    }
 	    return "null";
+        } else if (theTag.equals(WIKI_TAG_ICON)) {
+	    String width = getProperty(wikiUtil, props, "width", "16px");
+	    String url = entry.getTypeHandler().getEntryIconUrl(request,  entry);
+	    return HU.img(url, "", HU.attr("width", width));
         } else if (theTag.equals(WIKI_TAG_NAME)) {
             String name = entry==null?"NULL ENTRY":getEntryDisplayName(entry);
             if (getProperty(wikiUtil, props, "link", false)) {
