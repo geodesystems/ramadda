@@ -194,31 +194,9 @@ public class PdfTypeHandler extends GenericTypeHandler {
                                         entry, tag, props);
         }
 
-        StringBuilder sb = new StringBuilder();
 	String url = HU.url(getEntryManager().getEntryResourceUrl(request, entry),"fileinline","true");
-	String page  = Utils.getProperty(props,"page",null);
-	if(page!=null) {
-	    url+="#";
-	    url+="page=" + page;
-	}
+	return HU.getPdfEmbed(url,props);
 
-	sb.append(HU.open("iframe",HU.attrs("src",url,
-					    "class","ramadda-iframe-pdf",
-					   "type","application/pdf",
-					    "style",
-					    Utils.getProperty(props,"style","border:1px solid #ccc;"),
-					   "frameborder",
-					    Utils.getProperty(props,"frameBorder","0"),
-					    "scrolling",
-					    Utils.getProperty(props,"scrolling","auto"),
-					    "width",
-					    Utils.getProperty(props,"width","90%"),
-					    "height",
-					    Utils.getProperty(props,"height","1000px")
-					    )));
-
-	sb.append(HU.close("iframe"));
-        return sb.toString();
     }
 
 

@@ -272,9 +272,9 @@ public class MediaTypeHandler extends GenericTypeHandler {
 
         String pointsDiv = HU.div("", HU.attrs("id", pointsDivId));
 	String bottom = HU.div(searchDiv + pointsDiv,HU.style("margin-top","5px","width",HU.makeDim(width,"px")));
-        String playerDiv = "<div style='width:100%;display:flex;justify-content:center;'>" +
-	    HU.div(player, HU.attrs("id", id,"style","width:" + HU.makeDim(width,"px")+";display:flex;justify-content:center;")) +
-	    "</div>" +
+        String playerDiv = "<div style='width:100%;display:flex;justify-content:center;'>\n" +
+	    HU.div("\n"+player+"\n", HU.attrs("id", id,"style","width:" + HU.makeDim(width,"px")+";display:flex;justify-content:center;")) +
+	    "\n</div>\n" +
 	    "<div style='display:flex;justify-content:center;'>" +
 	    bottom    +"</div>";
         sb.append(playerDiv);
@@ -464,7 +464,8 @@ public class MediaTypeHandler extends GenericTypeHandler {
                         "type",
                         "audio/mpeg" }), "Your browser does not support the audio tag."));
                 Utils.add(attrs, "media", JU.quote("media"));
-            } else if (_mediaUrl.endsWith(".m4v")
+            } else if (_mediaUrl.endsWith(".m4v") ||
+		       _mediaUrl.endsWith(".mp4")
                        || _path.endsWith(".m4v")) {
                 player = HU.tag("video", HU.attrs(new String[] {
                     "id", mediaId, "controls", "", "preload", "metadata",
@@ -474,6 +475,14 @@ public class MediaTypeHandler extends GenericTypeHandler {
                 Utils.add(attrs, "media", JU.quote("media"));
             } else if (_mediaUrl.endsWith(".mov")
                        || _path.endsWith(".mov")) {
+		/*
+		player = HU.tag("embed", HU.attrs("src",mediaUrl,
+						  "width", width,
+						  "height", height,
+						  "controller","true",
+						  "autoplay","false",
+						  "loop","false"));
+		*/
                 player = HtmlUtils.tag("video", HtmlUtils.attrs(new String[] {
                     "id", mediaId, HtmlUtils.ATTR_SRC, mediaUrl,
                     HtmlUtils.ATTR_CLASS, "ramadda-video-embed",
