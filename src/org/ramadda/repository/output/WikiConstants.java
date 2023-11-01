@@ -404,6 +404,8 @@ public interface WikiConstants {
     /** _more_ */
     public static final String WIKI_TAG_EMBED = "embed";
 
+    public static final String WIKI_TAG_MEDIA = "media";
+
     /** _more_ */
     public static final String WIKI_TAG_ODOMETER = "odometer";
 

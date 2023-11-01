@@ -2228,6 +2228,37 @@ public class WikiManager extends RepositoryManager
 	    return RepositoryUtil.getVersion();
         } else if (theTag.equals(WIKI_TAG_MAKELABEL)) {
 	    return Utils.makeLabel(remainder);
+        } else if (theTag.equals(WIKI_TAG_MEDIA)) {
+            if ( !entry.getResource().isDefined()) {
+                return  getProperty(wikiUtil, props, ATTR_MESSAGE,"");
+	    }
+	    String width = getProperty(wikiUtil, props,"width", "100%");
+	    String height = getProperty(wikiUtil, props,"height", (String) null);
+	    String path   = entry.getResource().getPath();
+	    String _path   = path.toLowerCase();
+	    if(entry.isImage()) {
+		String imgUrl = entry.getTypeHandler().getEntryResourceUrl(request, entry);
+		return HU.img(imgUrl, "", HU.attr("width", width));
+	    }
+	    if(entry.getResource().isUrl()) {
+		StringBuilder buff =new StringBuilder();
+		wikiUtil.embedMedia(buff,entry.getResource().getPath(), props);
+		return buff.toString();
+	    }
+	    if(entry.getResource().isFile()) {
+		String mediaUrl = entry.getTypeHandler().getEntryResourceUrl(request, entry);
+		String embed = HU.getMediaEmbed(mediaUrl,width,height);
+		if(embed!=null) return embed;
+	    }
+
+	    if(_path.indexOf(".pdf")>=0) {
+		String pdfUrl = entry.getTypeHandler().getEntryResourceUrl(request, entry);
+		return HU.getPdfEmbed(pdfUrl,props);
+	    }		
+
+
+
+	    return  getProperty(wikiUtil, props, ATTR_MESSAGE,"");
         } else if (theTag.equals(WIKI_TAG_RESOURCE)) {
             String url = null;
             boolean inline = getProperty(wikiUtil, props,
