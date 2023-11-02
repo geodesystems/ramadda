@@ -164,7 +164,7 @@ public interface WikiConstants {
     public static final String ATTR_LINKRESOURCE = "linkresource";
 
     /** listentries attribute */
-    public static final String ATTR_LISTENTRIES = "listentries";
+    public static final String ATTR_LISTENTRIES = "listEntries";
 
     /** _more_ */
     public static final String ATTR_LAYER = "layer";
@@ -649,6 +649,8 @@ public interface WikiConstants {
 
     /** wiki import */
     public static final String WIKI_TAG_DESCRIPTION = "description";
+
+    public static final String WIKI_TAG_SNIPPET = "snippet";    
 
     /** _more_ */
     public static final String WIKI_TAG_SIMPLE = "simple";
