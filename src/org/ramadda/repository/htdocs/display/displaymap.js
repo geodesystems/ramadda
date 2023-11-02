@@ -88,6 +88,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'showOpacitySlider',ex:'false'},
 	{p:'showLocationSearch',ex:'true'},
 	{p:'showLatLonPosition',ex:'false',d:true},
+	{p:'singlePointZoom',ex:'12'},
 	{p:'showOverviewMap',ex:true},
 	{p:'overviewMapWidth',d:180},
 	{p:'overviewMapHeight',d:90},
@@ -429,6 +430,9 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
         },
 
         initMapParams: function(params) {
+	    if(this.getSinglePointZoom()) {
+		params.singlePointZoom = this.getSinglePointZoom();
+	    }
 	    if(this.getShowOpacitySlider()) {
 		params.showOpacitySlider=true;
 	    }
