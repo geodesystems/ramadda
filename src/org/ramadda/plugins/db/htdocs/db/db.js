@@ -100,6 +100,10 @@ var DB =  {
 		    let widgets = container.find('select');
 		    let anyBlank = false;
 		    let widget;
+		    if(widgets.length>0) {
+			//check for multiples
+			if(widgets.attr("rows")>0) return;
+		    }
 		    widgets.each(function() {
 			widget = $(this);
 			let value = widget.val();
