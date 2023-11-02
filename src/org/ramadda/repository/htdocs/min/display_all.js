@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Oct 31 08:31:58 MDT 2023";
+var build_date="RAMADDA build date: Wed Nov  1 21:17:11 MDT 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -35616,6 +35616,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'showOpacitySlider',ex:'false'},
 	{p:'showLocationSearch',ex:'true'},
 	{p:'showLatLonPosition',ex:'false',d:true},
+	{p:'singlePointZoom',ex:'12'},
 	{p:'showOverviewMap',ex:true},
 	{p:'overviewMapWidth',d:180},
 	{p:'overviewMapHeight',d:90},
@@ -35957,6 +35958,9 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
         },
 
         initMapParams: function(params) {
+	    if(this.getSinglePointZoom()) {
+		params.singlePointZoom = this.getSinglePointZoom();
+	    }
 	    if(this.getShowOpacitySlider()) {
 		params.showOpacitySlider=true;
 	    }
@@ -58480,6 +58484,8 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 	    let args =$.extend({colorBy:colorBy, w:w, h:h,cell3D:this.getProperty("cell3D"),bounds:bounds},
 			       this.getDefaultGridByArgs());
 
+	    //The default gridby args sets operator=count
+	    args.operator = this.getProperty('hm.operator',this.getProperty('hmOperator','max')),
 	    args.doHeatmap=true;
 	    let fields = this.getFields();
 	    let img = Gfx.gridData(this.getId(),fields, records,args);
