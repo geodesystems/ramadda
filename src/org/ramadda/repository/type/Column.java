@@ -3564,12 +3564,12 @@ public class Column implements DataTypes, Constants, Cloneable {
 						: "")));
                 tmpb.append(" ");
 		i++;
+		if(!enumerationShowMultiples) break;
             }
 	    widget = tmpb.toString();
 	    if(enumerationShowMultiples) {
 		widget = HU.div(widget, HU.cssClass("ramadda-widgets-enumeration"));
 	    }
-            //      System.err.println("widget:" + widget.length() +" " + tmpValues.size());
         } else if (isNumeric()) {
             String toId = Utils.makeID(searchArg + "_to");
             String expr = HtmlUtils.select(
