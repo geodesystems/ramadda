@@ -199,6 +199,12 @@ public class Oembed {
             return fixed;
         }
 	String eurl = HtmlUtils.urlEncode(url);
+	if(width.endsWith("%")) {
+	    width = "640";
+	}
+	if(width.endsWith("px")) {
+	    width = width.replace("px","");
+	}
 	String rurl = HtmlUtils.url(oembed.url, new String[] {
                 "url", eurl, "format", "json", "maxwidth", width, "maxheight",
                 height
@@ -214,6 +220,7 @@ public class Oembed {
             }
         } catch (Exception exc) {
             System.err.println("Error fetching embed for:" + url + " request url:" + rurl+" exception:" +exc);
+	    exc.printStackTrace();
             return null;
         }
     }
