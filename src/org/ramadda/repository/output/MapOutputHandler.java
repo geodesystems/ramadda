@@ -35,10 +35,7 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_MAP);
 
-    /** GoogleEarth output type */
-    public static final OutputType OUTPUT_GEMAP =
-        new OutputType("Google Earth", "map.gemap", OutputType.TYPE_VIEW, "",
-                       ICON_GOOGLEEARTH);
+
 
 
     /**
@@ -53,7 +50,6 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
             throws Exception {
         super(repository, element);
         addType(OUTPUT_MAP);
-        addType(OUTPUT_GEMAP);
     }
 
 
@@ -85,12 +81,6 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
         }
         if (ok) {
             links.add(makeLink(request, state.getEntry(), OUTPUT_MAP));
-            /*
-            if (getMapManager().isGoogleEarthEnabled(request)) {
-                links.add(makeLink(request, state.getEntry(), OUTPUT_GEMAP));
-            }
-            */
-
         }
     }
 
@@ -119,17 +109,6 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
         String prefix = request.getPrefixHtml();
         if (prefix != null) {
             sb.append(prefix);
-        }
-
-        if (outputType.equals(OUTPUT_GEMAP)) {
-            getMapManager().getGoogleEarth(request, entriesToUse, sb, "", "",
-                                           true, false);
-
-            getPageHandler().entrySectionClose(request, entry, sb);
-
-            return makeLinksResult(request,
-                                   msg("Google Earth") + " - "
-                                   + entry.getName(), sb, new State(entry));
         }
 
         Hashtable props = new Hashtable();
@@ -185,20 +164,6 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
         }
 
         showNext(request, children, sb);
-        if (outputType.equals(OUTPUT_GEMAP)) {
-            getMapManager().getGoogleEarth(request, children, sb, "", "",
-                                           true, false);
-
-            if (prefix == null) {
-                getPageHandler().entrySectionClose(request, group, sb);
-            }
-
-            return makeLinksResult(request,
-                                   msg("Google Earth") + " - "
-                                   + group.getName(), sb, new State(group));
-        }
-
-
         Hashtable props = new Hashtable();
         props.put(ATTR_DETAILS, "false");
         props.put(ATTR_LISTENTRIES, "true");

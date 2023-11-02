@@ -62,8 +62,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     /** _more_ */
     public static final String TAB_MAP = "map";
 
-    /** _more_ */
-    public static final String TAB_EARTH = "earth";
 
     /** _more_ */
     public static final String TAB_TIMELINE = "timeline";
@@ -234,7 +232,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         } else {
             tabs.add(TAB_LIST);
             tabs.add(TAB_MAP);
-            tabs.add(TAB_EARTH);
             tabs.add(TAB_TIMELINE);
         }
 
@@ -458,8 +455,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             tabsToUse = Utils.split(tabsProp, ",", true, true);
         }
 
-        boolean georeferencedResults = tabsToUse.contains(TAB_MAP)
-                                       || tabsToUse.contains(TAB_EARTH);
+        boolean georeferencedResults = tabsToUse.contains(TAB_MAP);
 
 
         List<String> tabContents = new ArrayList<String>();
@@ -520,21 +516,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                         tabTitles.add(
                             HtmlUtils.img(getIconUrl(ICON_TIMELINE)) + " "
                             + msg("Timeline"));
-                    } else if (tab.equals(TAB_EARTH)
-                               && getMapManager().isGoogleEarthEnabled(
-                                   request)) {
-                        StringBuffer earthSB = new StringBuffer();
-                        getMapManager().getGoogleEarth(
-                            request, allEntries, earthSB, ""
-                            + (contentsWidth
-                               - MapManager.EARTH_ENTRIES_WIDTH), ""
-                                   + contentsHeight, true, false);
-                        tabContents.add(HtmlUtils.div(earthSB.toString(),
-                                HtmlUtils.style("min-width:" + minWidth
-                                    + "px")));
-                        tabTitles.add(
-                            HtmlUtils.img(getIconUrl(ICON_GOOGLEEARTH)) + " "
-                            + msg("Earth"));
                     }
                 }
             }

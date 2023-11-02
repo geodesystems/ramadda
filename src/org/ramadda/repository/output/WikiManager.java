@@ -2375,6 +2375,8 @@ public class WikiManager extends RepositoryManager
 			       group.getId(), EntryManager.ARG_TYPE,
 			       typeHandler.getType()), img + " " + msg(label));
 
+        } else if (theTag.equals(WIKI_TAG_SNIPPET)) {
+	    return getSnippet(request, entry, true,"");
         } else if (theTag.equals(WIKI_TAG_DESCRIPTION)) {
             String prefix = getProperty(wikiUtil, props, "prefix",
                                         (String) null);
@@ -3538,6 +3540,16 @@ public class WikiManager extends RepositoryManager
             String       dfltTag  = WIKI_TAG_SIMPLE;
             boolean flipCards = theTag.equals(WIKI_TAG_FLIPCARDS);
 
+	    boolean showSnippet = getProperty(wikiUtil, props, "showSnippet",
+					      false);
+
+	    boolean showDescription = getProperty(wikiUtil, props,
+						  "showDescription", false);
+
+	    boolean showTextTop = getProperty(wikiUtil, props,
+					      "showTextTop", false);
+	    
+
             if (getProperty(wikiUtil, props, ATTR_USEDESCRIPTION) != null) {
                 boolean useDescription = getProperty(wikiUtil, props,
 						     ATTR_USEDESCRIPTION, true);
@@ -3559,6 +3571,8 @@ public class WikiManager extends RepositoryManager
             SimpleDateFormat sdf2 =         new SimpleDateFormat(getProperty(wikiUtil,props,"dateFormat","yyyy-MM-dd HH:mm"));	    
             boolean showicon = getShowIcon(wikiUtil, props, false);
 
+	    String titleTemplate = getProperty(wikiUtil, props, "titleTemplate",null);
+	    boolean addTags = getProperty(wikiUtil, props, "addTags", false);
             if (doingGrid) {
 		//                showicon = false;
                 if (props.get("showLink") == null) {
@@ -3634,12 +3648,26 @@ public class WikiManager extends RepositoryManager
             }
 
 
+
 	    boolean  linkTop = getProperty(wikiUtil, props, "linkTop",false);
             for (Entry child : children) {
+		String text = "";
+		if (showSnippet || showDescription) {
+		    String snippet = showDescription? child.getDescription():getSnippet(request, entry, false,null);
+		    if (stringDefined(snippet)) {
+			text = wikifyEntry(request, child, snippet, false, 
+					   wikiUtil.getNotTags());
+		    }
+		}
+
+
                 String title = getEntryDisplayName(child);
                 if (showicon) {
-		    //                    title = HU.img(getPageHandler().getIconUrl(request,  child)) + " " + title;
+		    title = HU.img(getPageHandler().getIconUrl(request,  child)) + " " + title;
                 }
+		if(titleTemplate!=null) {
+		    title = titleTemplate.replace("${title}",title);
+		}
                 titles.add(title);
                 //                urls.add(request.entryUrl(getRepository().URL_ENTRY_SHOW, child));
                 urls.add(getEntryManager().getEntryUrl(request, child));
@@ -3648,7 +3676,9 @@ public class WikiManager extends RepositoryManager
 		String inner = my_getWikiInclude(wikiUtil, newRequest,
 						 originalEntry, child, tag, tmpProps, "", true);
                 StringBuilder content =   new StringBuilder();
-		content.append(inner);
+		if(showTextTop && stringDefined(text)) content.append(text);
+		content.append(HU.center(inner));
+		if(!showTextTop && stringDefined(text)) content.append(text);
                 if (showLink) {
                     String url;
                     if (linkResource
@@ -4319,9 +4349,9 @@ public class WikiManager extends RepositoryManager
 					 false);
 	boolean decorate = getProperty(wikiUtil, props, "decorate",
 				       false);
-	boolean includeSnippet = getProperty(wikiUtil, props,
+	boolean showSnippet = getProperty(wikiUtil, props,
 					     "showSnippet", getProperty(wikiUtil,props,"includeSnippet",false));
-	boolean includeDescription = getProperty(wikiUtil, props,
+	boolean showDescription = getProperty(wikiUtil, props,
 						 "showDescription", false);	
 	boolean showicon = getShowIcon(wikiUtil, props, false);
 
@@ -4397,7 +4427,7 @@ public class WikiManager extends RepositoryManager
 	    }
 
 
-	    String snippet =  includeSnippet?getSnippet(request,  child, true,""):includeDescription?child.getDescription():null;
+	    String snippet =  showSnippet?getSnippet(request,  child, true,""):showDescription?child.getDescription():null;
 
 	    String href = HU.href(url, linkLabel,
 				  HU.cssClass("ramadda-link " + cssClass)
@@ -5112,15 +5142,12 @@ public class WikiManager extends RepositoryManager
         boolean justPoints = getProperty(wikiUtil, props, "justpoints",
                                          false);
         boolean listEntries = getProperty(wikiUtil, props, ATTR_LISTENTRIES,
-                                          false);
+					  getProperty(wikiUtil, props, "listentries", false));
         boolean showCheckbox = getProperty(wikiUtil, props, "showCheckbox",
                                            false);
         boolean showSearch = getProperty(wikiUtil, props, "showSearch",
                                          false);
         boolean checkboxOn = getProperty(wikiUtil, props, "checkboxOn", true);
-        boolean googleEarth =
-            theTag.equals(WIKI_TAG_EARTH)
-            && getMapManager().isGoogleEarthEnabled(request);
 
         List<Entry> children;
         if (theTag.equals(WIKI_TAG_MAPENTRY)) {
@@ -5176,79 +5203,64 @@ public class WikiManager extends RepositoryManager
 
         checkHeading(request, wikiUtil, props, sb);
         Request newRequest = makeRequest(request, props);
-        if (googleEarth) {
-            getMapManager().getGoogleEarth(newRequest, children, sb,
-                                           getProperty(wikiUtil, props,
-						       ATTR_WIDTH,
-						       ""), getProperty(wikiUtil,
-									props, ATTR_HEIGHT,
-									""), listEntries,
-					   justPoints);
-        } else {
-            MapOutputHandler mapOutputHandler =
-                (MapOutputHandler) getRepository().getOutputHandler(
-								    MapOutputHandler.OUTPUT_MAP);
-            if (mapOutputHandler == null) {
-                sb.append("No maps");
+	MapOutputHandler mapOutputHandler =
+	    (MapOutputHandler) getRepository().getOutputHandler(
+								MapOutputHandler.OUTPUT_MAP);
+	if (mapOutputHandler == null) {
+	    sb.append("No maps");
+	    return null;
+	}
 
-                return null;
-            }
+	String icon = getProperty(wikiUtil, props, ATTR_ICON);
+	if ((icon != null) && icon.startsWith("#")) {
+	    icon = null;
+	}
+	if (icon != null) {
+	    newRequest.put(ARG_ICON, icon);
+	}
+	if (getProperty(wikiUtil, props, ARG_MAP_ICONSONLY, false)) {
+	    newRequest.put(ARG_MAP_ICONSONLY, "true");
+	}
 
-            String icon = getProperty(wikiUtil, props, ATTR_ICON);
-            if ((icon != null) && icon.startsWith("#")) {
-                icon = null;
-            }
-            if (icon != null) {
-                newRequest.put(ARG_ICON, icon);
-            }
-            if (getProperty(wikiUtil, props, ARG_MAP_ICONSONLY, false)) {
-                newRequest.put(ARG_MAP_ICONSONLY, "true");
-            }
+	Hashtable mapProps = new Hashtable();
+	String[]  mapArgs  = {
+	    "zoomLevel",
+	    "strokeColor", "strokeWidth", "fillColor", "fillOpacity",
+	    "scrollToZoom", "boxColor", "shareSelected", "doPopup",
+	    "fill", "selectOnHover", "onSelect", "showDetailsLink",
+	    "initialZoom:zoom", "defaultMapLayer:layer", "kmlLayer",
+	    "kmlLayerName", "displayDiv", "initialBounds:bounds",
+	    "showLatLonPosition"
+	};
+	for (String mapArg : mapArgs) {
+	    String key = mapArg;
+	    if (mapArg.indexOf(":") >= 0) {
+		List<String> toks = Utils.splitUpTo(mapArg, ":", 2);
+		mapArg = toks.get(0);
+		key    = toks.get(1);
+	    }
+	    String v = getProperty(wikiUtil, props, key);
+	    if (v != null) {
+		v = v.replace("${entryid}", entry.getId());
+		mapProps.put(mapArg, JsonUtil.quote(v));
+	    }
+	}
 
-            Hashtable mapProps = new Hashtable();
-            String[]  mapArgs  = {
-		"zoomLevel",
-                "strokeColor", "strokeWidth", "fillColor", "fillOpacity",
-                "scrollToZoom", "boxColor", "shareSelected", "doPopup",
-                "fill", "selectOnHover", "onSelect", "showDetailsLink",
-                "initialZoom:zoom", "defaultMapLayer:layer", "kmlLayer",
-                "kmlLayerName", "displayDiv", "initialBounds:bounds",
-                "showLatLonPosition"
-            };
-            for (String mapArg : mapArgs) {
-                String key = mapArg;
-                if (mapArg.indexOf(":") >= 0) {
-                    List<String> toks = Utils.splitUpTo(mapArg, ":", 2);
-                    mapArg = toks.get(0);
-                    key    = toks.get(1);
-                }
-                String v = getProperty(wikiUtil, props, key);
-                if (v != null) {
-                    v = v.replace("${entryid}", entry.getId());
-                    mapProps.put(mapArg, JsonUtil.quote(v));
-                }
-            }
-
-            String mapSet = getProperty(wikiUtil, props, "mapSettings",
-                                        (String) null);
-            if (mapSet != null) {
-                List<String> msets = Utils.split(mapSet, ",");
-                for (int i = 0; i < msets.size() - 1; i += 2) {
-                    mapProps.put(msets.get(i), JsonUtil.quote(msets.get(i + 1)));
-                }
-            }
-            MapInfo map = getMapManager().getMap(newRequest, entry, children,
-						 sb, width, height, mapProps, props);
-            if (icon != null) {
-                newRequest.remove(ARG_ICON);
-            }
-            newRequest.remove(ARG_MAP_ICONSONLY);
-
-            return map;
-        }
-
-        return null;
-
+	String mapSet = getProperty(wikiUtil, props, "mapSettings",
+				    (String) null);
+	if (mapSet != null) {
+	    List<String> msets = Utils.split(mapSet, ",");
+	    for (int i = 0; i < msets.size() - 1; i += 2) {
+		mapProps.put(msets.get(i), JsonUtil.quote(msets.get(i + 1)));
+	    }
+	}
+	MapInfo map = getMapManager().getMap(newRequest, entry, children,
+					     sb, width, height, mapProps, props);
+	if (icon != null) {
+	    newRequest.remove(ARG_ICON);
+	}
+	newRequest.remove(ARG_MAP_ICONSONLY);
+	return map;
     }
 
     /**
@@ -5463,6 +5475,9 @@ public class WikiManager extends RepositoryManager
         HU.open(card, HU.TAG_DIV, HU.cssClass("ramadda-card"));
         String entryUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                            entry);
+        String wikiText = getProperty(wikiUtil, props, "wikiText", null);
+
+
         boolean showHeading = getProperty(wikiUtil, props, "showHeading",
                                           true);
         boolean includeChildren = getProperty(wikiUtil, props, "includeChildren",
@@ -5481,8 +5496,11 @@ public class WikiManager extends RepositoryManager
         boolean showSnippetHover = getProperty(wikiUtil, props,
 					       "showSnippetHover", false);
 
-        if (showSnippet || showSnippetHover) {
-            String snippet = getSnippet(request, entry, false,null);
+	boolean showDescription = getProperty(wikiUtil, props,
+						 "showDescription", false)	;
+
+        if (showSnippet || showSnippetHover || showDescription) {
+            String snippet = showDescription? entry.getDescription():getSnippet(request, entry, false,null);
             if (Utils.stringDefined(snippet)) {
                 snippet = wikifyEntry(request, entry, snippet, false, 
                                       wikiUtil.getNotTags());
@@ -5556,7 +5574,9 @@ public class WikiManager extends RepositoryManager
 
 
 
-        if (imageUrl != null) {
+	if(wikiText!=null) {
+            card.append(wikifyEntry(request, entry, wikiText.replace("\\n","\n")));
+	} else if (imageUrl != null) {
             String img = HU.img(imageUrl, "",
 				HU.cssClass("ramadda-card-image") 
                                 +HU.attr("loading", "lazy")
