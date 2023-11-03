@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <types supercategory="Miscellaneous" category="Community">
 
   <type foruser="false" name="type_resilience_project"  description="Resiliency Project" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"      metadata="resilience_risk" >
@@ -143,7 +144,7 @@
 	handler="org.ramadda.plugins.community.CulturalSite"
 	editfields="name,site_type,_default"
 	metadata="cultural_presenter,cultural_biome" >
-     <property name="icon" value="/community/cultural/archaeological.png"/>
+     <property name="icon" value="/cultural/archaeological.png"/>
      <property name="form.description.iswiki" value="true"/>
      <property name="search.metadatatypes" value="cultural_biome"/>
      <column name="site_type" type="enumerationplus" label="Site Type"
@@ -152,8 +153,11 @@
 <property name="bubble"><![CDATA[
 +center
 <b><a style="font-size:120%" class=ramadda-nodecor href="{{root}}/entry/show?entryid={{this}}">{{icon}} {{field name=site_type}}: {{name}}</a>
+-center
 ----
 :vspace 0.5em
+{{tags  decorate="true"  message="" types="cultural_presenter,cultural_biome,!content.alias,!content.logo,!content.timezone"}}
++center
 {{media width="300"}}
 -center
 ]]>
