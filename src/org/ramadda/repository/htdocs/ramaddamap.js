@@ -3019,6 +3019,12 @@ RepositoryMap.prototype = {
 	this.mousePositionReadout  =null;
     },
 
+    finishMarkers:function() {
+	if(!this.markers) return;
+	console.log('finish');
+
+    },
+
     initMousePositionReadout:function() {
 	if(this.mousePositionReadout) return;
         if (!this.latlonReadout)

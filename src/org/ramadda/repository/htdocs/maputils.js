@@ -847,3 +847,74 @@ function ramaddaMapShareState(source, state) {
     }
 }
 
+
+
+function CollisionHandler(map,opts) {
+    $.extend(this, {
+	map:map,
+	countAtPoint:{},
+	offset: 0,
+	state:{},
+	collisionArgs:opts.collisionArgs??{},
+	collisionInfos:[]
+    })
+    let mapBounds= this.map.getBounds();
+    let mapW= mapBounds.right-mapBounds.left;
+    let divW =  $("#" + this.map.mapDivId).width();
+    let baseOffset= mapW*0.025;
+
+    let minPixels= opts?.minPixels??16;
+    let pixelsPer= divW/mapW;
+    let scaleFactor= 360/pixelsPer;
+    let cnt= 0;
+    //figure out the offset but use cnt so we don't go crazy
+    while(pixelsPer*this.offset<minPixels && cnt<100) {
+	this.offset+=baseOffset;
+	cnt++;
+    }
+
+    let decimals = -1;
+    let pixels = [6,12,24,48,96,192];
+    for(let i=0;i<pixels.length;i++) {
+	if(pixelsPer<pixels[i]) break;
+	decimals++;
+    }
+    let rnd = (v)=>{
+	if(decimals>0) {
+	    let v0 = Utils.roundDecimals(v,decimals);
+	    return v0;
+	}
+	v= Math.round(v);
+	if(decimals<0)
+	    if (v%2 != 0)
+		v--;
+	return v;
+    };
+    this.getPoint = p=>{
+	let lat = rnd(p.y);
+	let lon = rnd(p.x);
+	let point= MapUtils.createPoint(lon,lat);
+	if(this.countAtPoint[point]) {
+	    this.countAtPoint[point]++;
+	} else {
+	    this.countAtPoint[point]=1;
+	}
+	return point;
+    };
+}
+
+
+CollisionHandler.prototype = {
+    getCollisionInfo:function(display,rpoint) {
+	let info = this.state[rpoint];
+	if(!info) {
+	    info = this.state[rpoint]= new CollisionInfo(this.map,display, this.countAtPoint[rpoint], rpoint,this.collisionArgs);
+	    this.collisionInfos.push(info);
+	}
+	return info;
+    },
+    getCollisionInfos:function() {
+	return this.collisionInfos;
+    }
+
+}
