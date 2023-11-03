@@ -149,13 +149,17 @@
      <column name="site_type" type="enumerationplus" label="Site Type"
 	values="file:/org/ramadda/plugins/community/resources/culturalsites.txt"
 	showinhtml="true" cansearch="true"/>
-<property name="xxxbubble"><![CDATA[
-:heading {{link}}
-{{tree message="" details="false"}}
+<property name="bubble"><![CDATA[
++center
+<b><a style="font-size:120%" class=ramadda-nodecor href="{{root}}/entry/show?entryid={{this}}">{{icon}} {{field name=site_type}}: {{name}}</a>
+----
+:vspace 0.5em
+{{media width="300"}}
+-center
 ]]>
 </property>
 <wiki><![CDATA[
-+section title="{{icon}} {{name}}"
++section title="{{icon}} {{field name=site_type}}: {{name}}"
 +row
 +col-md-8
 +center
@@ -165,9 +169,10 @@
 -col
 +col-md-4
 {{properties   message="" metadata.types="cultural_presenter"}}
-{{image src="::*" message="" width="300"}}
 <p>
-{{mapentry zoomLevel=default width="300" message=""}}
++center
+{{mapentry zoomLevel=default width="90%" message=""}}
+-center
 <p>
 {{properties   message="" metadata.types="!content.alias,!cultural_presenter,!content.logo,!content.timezone"}}
 -col

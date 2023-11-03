@@ -1,4 +1,5 @@
 archaeological:Archaeological
+place:Place
 spring:Spring
 food:Food Source
 story:Story
