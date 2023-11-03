@@ -3572,7 +3572,6 @@ public class WikiManager extends RepositoryManager
             boolean showicon = getShowIcon(wikiUtil, props, false);
 
 	    String titleTemplate = getProperty(wikiUtil, props, "titleTemplate",null);
-	    boolean addTags = getProperty(wikiUtil, props, "addTags", false);
             if (doingGrid) {
 		//                showicon = false;
                 if (props.get("showLink") == null) {
