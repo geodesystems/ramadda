@@ -3852,7 +3852,7 @@ public class WikiManager extends RepositoryManager
 			if (showicon) {
 			    label = HU.img(getPageHandler().getIconUrl(request,  child)) + " " + label;
 			}
-                        HU.div(comp, HU.href(urls.get(i), label),  HU.title(title) + headingClass);
+                        HU.div(comp, HU.href(urls.get(i), label),  HU.title(Utils.stripTags(title)) + headingClass);
                     }
                     String displayHtml = contents.get(i);
                     HU.div(comp, displayHtml,
