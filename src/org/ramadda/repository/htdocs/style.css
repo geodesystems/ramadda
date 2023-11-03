@@ -246,6 +246,10 @@ a {
     text-decoration: var(--href-decoration);
 }
 
+.ramadda-nodecor {
+    text-decoration: none;
+}
+
 a:hover {
     color:var(--highlight-color);
     cursor:pointer;
@@ -1474,6 +1478,15 @@ a.ramadda-menubar-button:hover {
     z-index:var(--ol-popup-z-index)  !important;
 }
 
+div.olControlZoom a {
+    background: #aaa !important;
+}
+
+div.olControlZoom {
+    background: transparent !important;
+}
+
+
 .olPopup {
     padding:5px;
     border:1px solid #aaa !important;
@@ -1529,6 +1542,33 @@ mapheader {
     font-weight:bold;
     font-size:130%;
 }
+
+.ramadda-map-toc-outer {
+    overflow-y:auto;
+    border:1px solid #aaa;
+    position:absolute;
+    left:50px;
+    top:10px;
+    background:#fff;
+}
+
+.ramadda-map-toc-inner {
+    padding:5px;
+    margin-right:5px;
+    max-width:200px;
+    overflow-x:auto;
+    white-space:nowrap;
+}
+
+.ramadda-map-toc-header {
+    min-width:200px;
+    padding:5px;
+    font-weight:bold;
+    background:lightcyan;
+    background:var(--header-background);
+    border-bottom: var(--basic-border);
+}
+
 .ramadda-map-header {
     text-align:center;
 }
@@ -4989,6 +5029,13 @@ wiki {
     margin:0px;
     padding:0px;   
 }
+
+
+
+.ramadda-toggle-link i {
+    color:#bbb;
+}
+
 
 a.toggleblocklabellink {
     color:black;
