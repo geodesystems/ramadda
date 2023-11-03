@@ -3021,8 +3021,6 @@ RepositoryMap.prototype = {
 
     finishMarkers:function() {
 	if(!this.markers) return;
-	console.log('finish');
-
     },
 
     initMousePositionReadout:function() {
