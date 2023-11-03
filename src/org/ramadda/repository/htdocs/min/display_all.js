@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Nov  1 21:46:25 MDT 2023";
+var build_date="RAMADDA build date: Fri Nov  3 06:10:11 MDT 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -39641,83 +39641,43 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     this.map.collisionLabelsLayer.setZIndex(100);
 		}
 
-		let mapBounds = this.map.getBounds();
-		let mapW = mapBounds.right-mapBounds.left;
-		let divW  = $("#" + this.getProperty(PROP_DIVID)).width();
-		let pixelsPer = divW/mapW;
-		let scaleFactor = 360/pixelsPer;
-		let baseOffset = mapW*0.025;
-		let offset = 0;
-		let cnt = 0;
-		let minPixels = this.getCollisionMinPixels();
-		//figure out the offset but use cnt so we don't go crazy
-		while(pixelsPer*offset<minPixels && cnt<100) {
-		    offset+=baseOffset;
-		    cnt++;
-		}
-		let lineWidth = this.getProperty("collisionLineWidth","2");				
-		let lineColor = this.getProperty("collisionLineColor","#000");
-		//		console.log("checking collisions:" + mapBounds +" offset:" + offset);
-		let seen1={};
-//		let decimals =  parseFloat(this.getProperty("collisionRound",1));
-		let decimals = -1;
-		let pixels = [6,12,24,48,96,192];
-		for(let i=0;i<pixels.length;i++) {
-		    if(pixelsPer<pixels[i]) break;
-		    decimals++;
-		}
-		let rnd = (v)=>{
-		    if(decimals>0) {
-			let v0 = Utils.roundDecimals(v,decimals);
-			return v0;
-		    }
-		    v= Math.round(v);
-		    if(decimals<0)
-			if (v%2 != 0)
-			    v--;
-		    return v;
-		};
-		let getPoint = (p=>{
-		    let lat = rnd(p.y);
-		    let lon = rnd(p.x);
-		    return MapUtils.createPoint(lon,lat);
-		});
+		let CI = new CollisionHandler(this.map,
+					      {
+						  minPixels:this.getCollisionMinPixels(),
+						  collisionArgs:collisionArgs,
+						  lineWidth: this.getProperty("collisionLineWidth","2"),			
+						  lineColor: this.getProperty("collisionLineColor","#000")
+					      });
+
 		let recordInfo = {};
 		records.forEach(record=>{
 		    let recordLayout = displayInfo[record.getId()];
 		    if(recordLayout.x===null || recordLayout.y===null) return;
-		    recordLayout.rpoint = getPoint(recordLayout);
-		    if(seen1[recordLayout.rpoint]) {
-			seen1[recordLayout.rpoint]++;
-		    } else {
-			seen1[recordLayout.rpoint]=1;
-		    }
+		    recordLayout.rpoint = CI.getPoint(recordLayout);
 		});
-		let collisionState= this.collisionState = {};
 		records.forEach((record,idx)=>{
 		    let recordLayout = displayInfo[record.getId()];
 		    let point = recordLayout;
 		    let rpoint = recordLayout.rpoint;
 		    if(rpoint ==null) return;
-		    if(seen1[rpoint]==1) {
+
+		    if(CI.countAtPoint[rpoint]==1) {
 			return;
 		    } 
-		    let cntAtPoint = seen1[rpoint];
+		    let cntAtPoint = CI.countAtPoint[rpoint];
 		    let anglePer = 360/cntAtPoint;
-		    let lineOffset = offset;
+		    let lineOffset = CI.offset;
 		    let delta = cntAtPoint/8;
 		    if(delta>1)
 			lineOffset*=delta;
-		    let info = collisionState[rpoint];
-		    if(!info) {
-			info = collisionState[rpoint]= new CollisionInfo(this.getMap(),this, seen1[rpoint], rpoint,collisionArgs);
-		    }
+
+		    let info = CI.getCollisionInfo(this,rpoint);
 		    recordLayout.collisionInfo = info;
 		    recordLayout.visible = info.visible;
 		    info.addRecord(record);
 		    let cnt = info.records.length;
 		    let ep = Utils.rotate(rpoint.x,rpoint.y,rpoint.x,rpoint.y-lineOffset,cnt*anglePer-180,true);
-		    let line = this.map.createLine("line-" + idx, "", rpoint.y,rpoint.x, ep.y,ep.x, {strokeColor:lineColor,strokeWidth:lineWidth});
+		    let line = this.getMap().createLine("line-" + idx, "", rpoint.y,rpoint.x, ep.y,ep.x, {strokeColor:CI.lineColor,strokeWidth:CI.lineWidth});
 		    if(!info.visible) {
 			line.featureVisible = false;
 			this.map.checkFeatureVisible(line,true);
@@ -39727,8 +39687,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    point.x=ep.x;
 		    point.y=ep.y;
 		});
-		Object.keys(collisionState).forEach((key,idx)=>{
-		    let info = collisionState[key];
+		CI.getCollisionInfos().forEach((info,idx)=>{
                     featuresToAdd.push(...info.createDots(idx));
 		});
 
