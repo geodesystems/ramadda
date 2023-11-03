@@ -1,9 +1,9 @@
-archaeological:Archaeological
+archeological:Archeological
 place:Place
 spring:Spring
 food:Food Source
 story:Story
-historical:Historical
+historic:Historic
 battle:Battle
 mining:Mining
 rockart:Rock Art

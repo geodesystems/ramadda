@@ -50,8 +50,8 @@ public class CulturalSite extends ExtensibleGroupTypeHandler {
     public String getEntryIconUrl(Request request, Entry entry)
             throws Exception {
         String type = entry.getStringValue(0, "");
-	if(type.equals("archaeological"))
-	    return "/cultural/archaeological.png";
+	if(type.equals("archeological"))
+	    return "/cultural/archeological.png";
 	if(type.equals("place"))
 	    return "/cultural/place.png";
 	if(type.equals("spring"))
@@ -60,8 +60,10 @@ public class CulturalSite extends ExtensibleGroupTypeHandler {
 	    return "/cultural/food.png";
 	if(type.equals("story"))
 	    return "/cultural/story.png";
+	if(type.equals("historic"))
+	    return "/cultural/historic.png";
 	if(type.equals("historical"))
-	    return "/cultural/historical.png";
+	    return "/cultural/historic.png";	
 	if(type.equals("battle"))
 	    return "/cultural/battle.png";
 	if(type.equals("mining"))
