@@ -5054,8 +5054,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
      *
      * @return _more_
      */
-    public static String makeShowHideBlock(String label, String content,
-                                           boolean visible) {
+    public static String makeShowHideBlock(String label, String content, boolean visible) {
         return makeShowHideBlock(
             label, content, visible,
             cssClass("toggleblocklabel ramadda-clickable"));
@@ -5144,39 +5143,53 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static String makeShowHideBlock(String label, String content,
                                            boolean visible,
                                            String headerExtra,
-                                           String blockExtra, String hideImg,
+                                           String blockExtra,
+					   String hideImg,
                                            String showImg) {
+	StringBuilder sb = new StringBuilder();
+	String link = makeShowHideBlock(sb, label, content, visible, headerExtra,
+					blockExtra, hideImg, showImg);
+	return link+sb;
+    }
+
+    public static String makeShowHideBlock(StringBuilder sb,
+					   String label,
+					   String content,
+                                           boolean visible,
+                                           String headerExtra,
+                                           String blockExtra,
+					   String hideImg,
+                                           String showImg) {	
+
+	if(hideImg==null) hideImg = blockHideImageUrl;
+	if(showImg==null) showImg = blockShowImageUrl;	
         String        id  = "block_" + (blockCnt++);
-        StringBuilder sb  = new StringBuilder();
         String        img = "";
-        //        System.err.println ("show image:" + showImg);
-        if ((showImg != null) && (showImg.length() > 0)) {
-            img = span(HtmlUtils.img(visible
-                                     ? hideImg
-                                     : showImg, "",
-                                     " align=bottom"), HtmlUtils.id(id
-                                     + "img"));
+        if (Utils.stringDefined(showImg)) {
+            img = span(img(visible
+			   ? hideImg
+			   : showImg, "",
+			   attrs("align","bottom")), 
+		       id(id + "img"));
+	    img =span(img,attrs("class","ramadda-clickable ramadda-toggle-link"));
         }
-        String mouseEvent = HtmlUtils.onMouseClick("toggleBlockVisibility('"
-                                + id + "','" + id + "img','" + hideImg
-                                + "','" + showImg + "')");
+        String mouseEvent = onMouseClick("toggleBlockVisibility('"
+					 + id + "','" + id + "img','" + hideImg
+					 + "','" + showImg + "')");
         String link = img + space(1) + label;
-        sb.append("<div  " + blockExtra + ">");
-        sb.append(HtmlUtils.div(link, headerExtra + mouseEvent));
-        sb.append("<div " + HtmlUtils.cssClass("hideshowblock")
-                  + HtmlUtils.id(id)
-                  + HtmlUtils.style("display:block;visibility:visible")
+        sb.append(open("div",blockExtra));
+        sb.append("<div " + clazz("hideshowblock")
+                  + id(id)
+                  + style("display:block;visibility:visible")
                   + ">");
         if ( !visible) {
-            HtmlUtils.script(sb,
-                             HtmlUtils.call("hide", HtmlUtils.squote(id)));
+            script(sb, call("hide", HtmlUtils.squote(id)));
         }
 
         sb.append(content.toString());
         sb.append(close(TAG_DIV));
         sb.append(close(TAG_DIV));
-
-        return sb.toString();
+        return div(link, headerExtra + mouseEvent);
     }
 
 
@@ -5269,11 +5282,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return js;
     }
 
-
-
-
-
-    /**
+    /*
      * _more_
      *
      * @param label _more_
@@ -5361,26 +5370,31 @@ public class HtmlUtils implements HtmlUtilsConstants {
      */
     public static String makeShowHideBlock(String clickHtml, String label,
                                            String content, boolean visible) {
-        String        id = "block_" + (blockCnt++);
-        StringBuilder sb = new StringBuilder();
-        String mouseEvent = HtmlUtils.onMouseClick("toggleBlockVisibility('"
+	StringBuilder contents = new StringBuilder();
+	String link = makeShowHideBlock(contents,clickHtml, label, content,visible);
+	return link+contents;
+    }
+
+    public static String makeShowHideBlock(StringBuilder contents,
+					   String clickHtml, String label,
+					   String content, boolean visible) {	
+	String        id = "block_" + (blockCnt++);
+        String mouseEvent = onMouseClick("toggleBlockVisibility('"
                                 + id + "','" + id + "img','" + "" + "','"
                                 + "" + "')");
         String link = HtmlUtils.jsLink(
                           mouseEvent, clickHtml,
-                          HtmlUtils.cssClass("toggleblocklabellink")) + label;
-        sb.append(link);
-        open(sb, TAG_SPAN, "class", "hideshowblock", "id", id, "style",
+                          clazz("toggleblocklabellink")) + label;
+        open(contents, TAG_SPAN, "class", "hideshowblock", "id", id, "style",
              "display:block;visibility:visible");
         if ( !visible) {
-            HtmlUtils.script(sb,
-                             HtmlUtils.call("hide", HtmlUtils.squote(id)));
+            HtmlUtils.script(contents,call("hide", HtmlUtils.squote(id)));
         }
 
-        sb.append(content.toString());
-        sb.append(close(TAG_SPAN));
+        contents.append(content.toString());
+        contents.append(close(TAG_SPAN));
 
-        return sb.toString();
+        return link;
     }
 
 
