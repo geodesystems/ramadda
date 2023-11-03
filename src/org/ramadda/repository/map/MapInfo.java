@@ -577,7 +577,7 @@ public class MapInfo {
                 Utils.append(js, "theMap.initMap(", forSelection, ");\n");
             }
             js.append(getJS());
-
+	    js.append("theMap.finishMarkers();\n");
             return js.toString();
         } catch (Exception exc) {
             throw new IllegalArgumentException(exc);
