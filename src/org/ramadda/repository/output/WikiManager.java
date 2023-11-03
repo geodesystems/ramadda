@@ -2232,13 +2232,34 @@ public class WikiManager extends RepositoryManager
             if ( !entry.getResource().isDefined()) {
                 return  getProperty(wikiUtil, props, ATTR_MESSAGE,"");
 	    }
+	    boolean popup   = getProperty(wikiUtil, props, ATTR_POPUP, true);
+	    String popupCaption = getProperty(wikiUtil, props, "popupCaption","");
+	    if (popup) {
+		addImagePopupJS(request, wikiUtil, sb, props);
+	    }
 	    String width = getProperty(wikiUtil, props,"width", "100%");
 	    String height = getProperty(wikiUtil, props,"height", (String) null);
 	    String path   = entry.getResource().getPath();
 	    String _path   = path.toLowerCase();
 	    if(entry.isImage()) {
 		String imgUrl = entry.getTypeHandler().getEntryResourceUrl(request, entry);
-		return HU.img(imgUrl, "", HU.attr("width", width));
+		String image =  HU.img(imgUrl, "", HU.attr("width", width));
+		if (popup) {
+		    String entryUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW,
+						       entry);
+		    String popupExtras = HU.cssClass("popup_image")
+			+ HU.attr("width", "100%");
+		    String dataCaption = HU.href(entryUrl,entry.getName()).replace("\"","'");
+		    String idPrefix = "gallery";
+		    popupExtras += HU.attr("data-fancybox", idPrefix) +
+			HU.attr("data-caption", dataCaption);			
+		    String popupUrl = imgUrl;
+		    image =  HU.href(popupUrl, HU.div(image,
+						      HU.attr(
+							      "id", idPrefix + "div5")), popupExtras);
+
+		}
+		return image;
 	    }
 	    if(entry.getResource().isUrl()) {
 		StringBuilder buff =new StringBuilder();
