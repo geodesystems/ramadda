@@ -2129,7 +2129,9 @@ WikiEditor.prototype = {
 		{p:'icon',ex:'#/icons/dots/green.png' },
  		{p:'width',ex:'100%'},
 		{p:'height',ex:'400'},
-		{p:'listentries',ex:'true'},
+		{p:'listEntries',ex:'true'},
+		{p:'entriesListInMap',ex:'true'},
+		{p:'entriesListHeader'},
 		{p:'hideIfNoLocations',tt:"Don't show map if no georeferenced data"},
 		{p:'details',ex:'false'},
 
