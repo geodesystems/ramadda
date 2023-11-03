@@ -1063,14 +1063,33 @@ public class MapManager extends RepositoryManager implements WikiConstants,
      *
      * @throws Exception _more_
      */
-    private void layoutMap(Request request, Appendable sb, MapInfo map,
-                           boolean showList, boolean entriesListInMap, int numEntries,
-                           String listwidth, String height,
+    private void layoutMap(Request request, Appendable sb, MapInfo map,Hashtable props,
+                           boolean showList,  int numEntries,
+                           String height,
                            List<String> categories,
                            Hashtable<String, StringBuilder> catMap,
                            String mapHtml, String navTop, String extraNav)
 	throws Exception {
-
+	//        String listwidth = request.getString(WikiManager.ATTR_LISTWIDTH, "250");
+        boolean entriesListInMap = Utils.getProperty(props, "entriesListInMap",false);
+	height = HU.makeDim(height, "px");
+	StringBuilder toc = new StringBuilder();
+	if(showList || entriesListInMap) {
+	    toc.append(navTop);
+	    boolean doToggle = (numEntries > 5) && (categories.size() > 1);
+	    for (int catIdx = 0; catIdx < categories.size(); catIdx++) {
+		String        category = categories.get(catIdx);
+		StringBuilder catSB    = catMap.get(category);
+		String content = HU.div(catSB.toString(),HU.style("margin-left:10px;"));
+		if (doToggle) {
+		    toc.append(HU.makeShowHideBlock(category, content, catIdx == 0 || numEntries<30));
+		} else {
+		    toc.append(HU.b(category));
+		    toc.append(content);
+		}
+	    }
+	}
+	if(entriesListInMap) showList = false;
         getPageHandler().addDisplayImports(request, sb);
         int weight = 12;
         if (showList ||stringDefined(extraNav)) {
@@ -1083,28 +1102,11 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 			   HU.cssClass(CSS_CLASS_EARTH_ENTRIES + ((map == null)
 								  ? ""
 								  : " " + map.getVariableName())) +
-		    HU.style(HU.css("max-height", HU.makeDim(height, "px"),"overflow-y","auto")));
+		    HU.style(HU.css("max-height", height,"overflow-y","auto")));
             if (!showList) {
                 sb.append(extraNav);
             } else {
-                sb.append(navTop);
-                boolean doToggle = (numEntries > 5)
-		    && (categories.size() > 1);
-                for (int catIdx = 0; catIdx < categories.size(); catIdx++) {
-                    String        category = categories.get(catIdx);
-                    StringBuilder catSB    = catMap.get(category);
-		    String content = HU.div(catSB.toString(),HU.style("margin-left:10px;"));
-                    if (doToggle) {
-                        sb.append(HU.makeShowHideBlock(category,
-							      content, catIdx == 0 || numEntries<30));
-                    } else {
-			//                        if (categories.size() > 1) {
-                            sb.append(HU.b(category));
-			    //                            sb.append(HU.br());
-			    //                        }
-			    sb.append(content);
-                    }
-                }
+		sb.append(toc);
             }
             sb.append(HU.close(HU.TAG_DIV));
             sb.append(HU.close(HU.TAG_DIV));
@@ -1115,13 +1117,27 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                            HU.cssClass("col-md-" + weight));
         }
 
-        sb.append(mapHtml);
+
+	HU.open(sb,"div",HU.style("position:relative;"));
+	sb.append(mapHtml);
+	if(entriesListInMap) {	
+	    StringBuilder tocOuter = new StringBuilder();
+	    String uid =HU.getUniqueId("toc_");
+	    StringBuilder contents = new StringBuilder();
+	    String listHeader = Utils.getProperty(props, "entriesListHeader","Entries");
+	    String link = HU.makeShowHideBlock(contents,listHeader,toc.toString(), true,"","",null,null);
+	    HU.open(tocOuter,"div",HU.attrs("class", "ramadda-map-toc-outer","id",uid, "style",HU.css("max-height",height)));
+
+	    HU.div(tocOuter,link,HU.clazz("ramadda-clickable ramadda-map-toc-header"));
+	    HU.open(tocOuter,"div",HU.clazz("ramadda-map-toc-inner"));
+	    tocOuter.append(contents);
+	    HU.close(tocOuter,HU.TAG_DIV,HU.TAG_DIV);
+	    sb.append(tocOuter);
+	    HU.script(sb,"$(\"#" + uid+"\").draggable();");
+	}
+	HU.close(sb,HU.TAG_DIV);
         if (weight != 12) {
-            sb.append(HU.close(HU.TAG_DIV));
-            sb.append(HU.close(HU.TAG_DIV));
-        }
-        if (showList) {
-            //            sb.append("</td></tr></table>");
+            HU.close(sb,HU.TAG_DIV,HU.TAG_DIV);
         }
     }
 
@@ -1351,7 +1367,6 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         boolean listEntries = Utils.getProperty(props, ATTR_LISTENTRIES,
 						Utils.getProperty(props,"listentries",
 								  false));
-        boolean entriesListInMap = Utils.getProperty(props, "entriesListInMap",false);
 
         boolean cbx = Utils.getProperty(props, "showCheckbox", false);
         boolean searchMarkers = Utils.getProperty(props, "showMarkersSearch",
@@ -1570,8 +1585,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             catSB.append(HU.close(HU.TAG_DIV));
             numEntries++;
         }
-        String listwidth = request.getString(WikiManager.ATTR_LISTWIDTH,
-                                             "250");
+
         String navTop   = "";
         String searchId = "";
         if (searchMarkers) {
@@ -1605,7 +1619,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             listEntries = false;
         }
         String extra = showExtra?map.getExtraNav():"";
-        layoutMap(request, sb, map, listEntries, entriesListInMap,numEntries, listwidth,
+        layoutMap(request, sb, map, props,listEntries, numEntries, 
                   height, categories, catMap, mapHtml, navTop, extra);
 
         String js = map.getVariableName() + ".highlightMarkers('."
