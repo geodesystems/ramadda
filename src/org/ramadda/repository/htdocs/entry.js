@@ -932,7 +932,7 @@ function Entry(props) {
         },
         getIconImage: function(attrs) {
 	    attrs = attrs??[];
-	    if(!attrs.includes("width"))attrs.push("width","16px");
+	    if(!attrs.includes("width"))attrs.push("width",ramaddaGlobals.iconWidth);
 	    if(this.iconRelative)
 		return HtmlUtils.image(this.iconRelative, attrs);
             return HtmlUtils.image(this.getIconUrl(), attrs);

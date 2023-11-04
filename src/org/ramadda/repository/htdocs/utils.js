@@ -6,8 +6,12 @@
 
 
 
+var ramaddaGlobals = {
+    iconWidth:'18px'
+}
 var root = ramaddaBaseUrl;
 var urlroot = ramaddaBaseUrl;
+//Used in entry.js
 var icon_close = "fas fa-window-close";
 var icon_stop='fas fa-stop';
 var icon_play='fas fa-play';
