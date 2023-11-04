@@ -533,7 +533,7 @@ public class MapInfo {
         }
         */
 
-	//	HU.script(sb, getFinalJS());
+	HU.script(sb, getFinalJS());
         sb.append("\n");
 
         return sb.toString();
