@@ -456,10 +456,7 @@ public class MetadataManager extends RepositoryManager {
 	if(thumbs.size()==0 && entry.isImage()) {
 	    thumbs.add(new String[]{getEntryManager().getEntryResourceUrl(request, entry),null});
 	}
-	if(thumbs.size()>0) {
-	    String image = request.getAbsoluteUrl(thumbs.get(0)[0]);
-	    addMetadataTag(sb, "og:image",image);
-	}
+
 
 
         for (Metadata md : inherited) {
@@ -475,9 +472,17 @@ public class MetadataManager extends RepositoryManager {
                 keywords.add(md.getAttr1());
             }
 	}
+
+	addMetadataTag(sb,"og:title",entry.getName());
+	if(thumbs.size()>0) {
+	    String image = request.getAbsoluteUrl(thumbs.get(0)[0]);
+	    addMetadataTag(sb, "og:image",image);
+	}
+
+
         String snippet = getWikiManager().getRawSnippet(request, entry,true);
 	if(snippet!=null) snippet = Utils.stripTags(snippet).replace("\n"," ").replace("\"","&quot;").trim();
-        if (keywords != null) {
+	if (keywords != null) {
 	    addMetadataTag(sb,"keywords",Utils.join(keywords,","));
         }
 	if(stringDefined(snippet)) {
