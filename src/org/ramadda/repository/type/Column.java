@@ -3720,7 +3720,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             file +=
                 HU.fileInput(searchArg + "_file", "")
                 + " File contains search values, one per line. Must be exact match.";
-            widget += HU.makeShowHideBlock("File...", file, visible);
+            widget += HU.div(HU.makeShowHideBlock("File...", file, visible));
         }
 
 	String help = searchHelp;
