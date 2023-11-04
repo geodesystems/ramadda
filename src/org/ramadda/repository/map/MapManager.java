@@ -1621,7 +1621,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 	    map.addProperty("marker" + (i+1),markers.get(i+1));
 	}
 
-        String mapHtml = map.getHtml();
+        String mapHtml = map.getHtml(false);
         if ((mapHtml.length() == 0) && (catMap.size() == 0)) {
             listEntries = false;
         }
@@ -1629,7 +1629,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         layoutMap(request, sb, map, props,listEntries, numEntries, 
                   height, categories, catMap, mapHtml, navTop, extra);
 
-	//	sb.append(HU.script(map.getFinalJS().toString()));
+	sb.append(HU.script(map.getFinalJS().toString()));
 
         String js = map.getVariableName() + ".highlightMarkers('."
 	    + map.getVariableName() + " .ramadda-earth-nav');";

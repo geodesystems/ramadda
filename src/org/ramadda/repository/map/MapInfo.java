@@ -500,6 +500,10 @@ public class MapInfo {
      * @return  the HTML
      */
     public String getHtml() {
+	return getHtml(true);
+    }
+
+    public String getHtml(boolean doJs) {	
         repository.getPageHandler().addToMap(request, this);
         for (PageDecorator pageDecorator :
                 repository.getPluginManager().getPageDecorators()) {
@@ -533,8 +537,10 @@ public class MapInfo {
         }
         */
 
-	HU.script(sb, getFinalJS());
-        sb.append("\n");
+	if(doJs) {
+	    HU.script(sb, getFinalJS());
+	    sb.append("\n");
+	}
 
         return sb.toString();
     }
