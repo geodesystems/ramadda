@@ -1071,12 +1071,12 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                            String mapHtml, String navTop, String extraNav)
 	throws Exception {
 	//        String listwidth = request.getString(WikiManager.ATTR_LISTWIDTH, "250");
-        boolean entriesListInMap = Utils.getProperty(props, "entriesListInMap",false);
+        boolean entriesListInMap = Utils.getProperty(props, "listInMap",false);
 	height = HU.makeDim(height, "px");
 	StringBuilder toc = new StringBuilder();
 	if(showList || entriesListInMap) {
 	    toc.append(navTop);
-	    boolean doToggle = (numEntries > 5) && (categories.size() > 1);
+	    boolean doToggle = /*(numEntries > 5) &&*/ (categories.size() > 1);
 	    for (int catIdx = 0; catIdx < categories.size(); catIdx++) {
 		String        category = categories.get(catIdx);
 		StringBuilder catSB    = catMap.get(category);
@@ -1121,15 +1121,21 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 	HU.open(sb,"div",HU.style("position:relative;"));
 	sb.append(mapHtml);
 	if(entriesListInMap) {	
+	    String tocStyle="";
+	    String w;
+	    if((w=Utils.getProperty(props,"listWidth",null))!=null) {
+		tocStyle+=HU.css("width",HU.makeDim(w, "px"),
+				 "max-width",HU.makeDim(w, "px"));				 
+	    }
 	    StringBuilder tocOuter = new StringBuilder();
 	    String uid =HU.getUniqueId("toc_");
 	    StringBuilder contents = new StringBuilder();
-	    String listHeader = Utils.getProperty(props, "entriesListHeader","Entries");
+	    String listHeader = Utils.getProperty(props, "listHeader","Entries");
 	    String link = HU.makeShowHideBlock(contents,listHeader,toc.toString(), true,"","",null,null);
 	    HU.open(tocOuter,"div",HU.attrs("class", "ramadda-map-toc-outer","id",uid, "style",HU.css("max-height",height)));
 
 	    HU.div(tocOuter,link,HU.clazz("ramadda-clickable ramadda-map-toc-header"));
-	    HU.open(tocOuter,"div",HU.clazz("ramadda-map-toc-inner"));
+	    HU.open(tocOuter,"div",HU.attrs("class","ramadda-map-toc-inner","style",tocStyle));
 	    tocOuter.append(contents);
 	    HU.close(tocOuter,HU.TAG_DIV,HU.TAG_DIV);
 	    sb.append(tocOuter);
@@ -1533,7 +1539,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         String categoryType = request.getString("category", "type");
         int    numEntries   = 0;
 	List<String> markers = new ArrayList<String>();
-	String iconWidth = Utils.getProperty(props,"listIconWidth",ICON_WIDTH);
+	String iconWidth = Utils.getProperty(props,"listIconSize",ICON_WIDTH);
         for (Entry entry : entriesToUse) {
 	    addMapMarkerMetadata(request, entry, markers);
             if ( !(entry.hasLocationDefined() || entry.hasAreaDefined())) {
