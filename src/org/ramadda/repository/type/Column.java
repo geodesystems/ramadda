@@ -865,12 +865,14 @@ public class Column implements DataTypes, Constants, Cloneable {
     private void setEnums(String valueString, String delimiter)
             throws Exception {
         List<String> tmp = typeHandler.getColumnEnumerationProperties(this,
-                               valueString, delimiter);
+								      valueString, delimiter);
         enumValues = new ArrayList<TwoFacedObject>();
         for (String tok : tmp) {
-            if (tok.startsWith("#")) {
+	    tok  =tok.trim();
+            if (tok.startsWith("#") || tok.equals("")) {
                 continue;
             }
+
             String label = tok;
             String value = tok;
             if (tok.indexOf(":") >= 0) {
