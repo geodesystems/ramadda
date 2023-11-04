@@ -2530,6 +2530,8 @@ public class Column implements DataTypes, Constants, Cloneable {
             }
             if (trimmed.equals("<blank>") || trimmed.equals("_blank_")) {
                 subClauses.add(Clause.eq(getFullName(), "", doNegate));
+	    } else if (trimmed.equals("_notblank_")) {
+                subClauses.add(Clause.eq(getFullName(), "", true));
             } else if (trimmed.startsWith("!")) {
                 value = trimmed.substring(1);
                 if (value.length() == 0) {
@@ -2564,7 +2566,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                 clauses.add(Clause.or(subClauses));
             }
         }
-        //      System.err.println(this+" CLAUSES:" + clauses);
+	//	System.err.println(this+" CLAUSES:" + clauses);
         if (clauses.size() > 0) {
             where.add(Clause.or(clauses));
         }
