@@ -1629,6 +1629,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         layoutMap(request, sb, map, props,listEntries, numEntries, 
                   height, categories, catMap, mapHtml, navTop, extra);
 
+	sb.append(HU.script(map.getFinalJS().toString()));
+
         String js = map.getVariableName() + ".highlightMarkers('."
 	    + map.getVariableName() + " .ramadda-earth-nav');";
         if (searchMarkers) {

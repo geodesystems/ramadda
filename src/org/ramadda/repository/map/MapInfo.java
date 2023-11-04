@@ -533,7 +533,7 @@ public class MapInfo {
         }
         */
 
-	HU.script(sb, getFinalJS());
+	//	HU.script(sb, getFinalJS());
         sb.append("\n");
 
         return sb.toString();
@@ -576,7 +576,7 @@ public class MapInfo {
      *
      * @return _more_
      */
-    private String getFinalJS() {
+    protected String getFinalJS() {
         try {
             Appendable js = Utils.makeAppendable();
             js.append("\n//map javascript\n");
@@ -589,7 +589,7 @@ public class MapInfo {
                 Utils.append(js, "theMap.initMap(", forSelection, ");\n");
             }
             js.append(getJS());
-	    js.append("theMap.finishMarkers();\n");
+	    js.append("theMap.finishInit();\n");
             return js.toString();
         } catch (Exception exc) {
             throw new IllegalArgumentException(exc);
@@ -848,8 +848,7 @@ public class MapInfo {
             }
         }
         retBuf.append(html);
-        retBuf.append(HU.script(getFinalJS().toString()));
-
+	retBuf.append(HU.script(getFinalJS().toString()));
         return retBuf.toString();
 
     }

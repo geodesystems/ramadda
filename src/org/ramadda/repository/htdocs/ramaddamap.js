@@ -2987,22 +2987,18 @@ RepositoryMap.prototype = {
         }
 
         let cbx = $(':input[id*=\"' + "visible_" + this.mapId + '\"]');
-        cbx.change(function(event) {
-            _this.checkImageLayerVisibility();
-            _this.checkMarkerVisibility();
-            _this.checkLinesVisibility();
-            _this.checkBoxesVisibility();
-        });
-
+	let toggle = ()=>{
+            this.checkImageLayerVisibility();
+            this.checkMarkerVisibility();
+            this.checkLinesVisibility();
+            this.checkBoxesVisibility();
+	    this.centerOnMarkerLayer();
+	};
+        cbx.change(event =>{toggle();});
         let cbxall = $(':input[id*=\"' + "visibleall_" + this.mapId + '\"]');
-        cbxall.change(function(event) {
+        cbxall.change(event=> {
             cbx.prop("checked", cbxall.is(':checked'));
-            _this.checkImageLayerVisibility();
-            _this.checkMarkerVisibility();
-            _this.checkLinesVisibility();
-            _this.checkBoxesVisibility();
-
-            //                cbx.prop("checked", cbxall.is(':checked')).trigger("change");
+	    toggle();
         });
 
 	for(let markerIdx=1;true;markerIdx++) {
@@ -3011,6 +3007,10 @@ RepositoryMap.prototype = {
 	    this.addMarkerEmbed(marker);
 	}	
     },
+
+    finishInit:function() {
+    },
+
 
     destroyMousePositionReadout:function() {
 	if(this.mousePositionReadout) {

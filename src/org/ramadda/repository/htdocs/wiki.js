@@ -2130,7 +2130,9 @@ WikiEditor.prototype = {
  		{p:'width',ex:'100%'},
 		{p:'height',ex:'400'},
 		{p:'listEntries',ex:'true'},
+
 		{p:'listInMap',ex:'true'},
+		{p:'showCheckbox',ex:'true'},
 		{p:'listHeader'},
 		{p:'listWidth',ex:'300px'},
 		{p:'listIconSize',ex:'24px'},				
@@ -2143,7 +2145,6 @@ WikiEditor.prototype = {
 		{p:'showMarkers',ex:'false'},
 		{p:'showCameraDirection',ex:'false'},		
 		{p:'showLocationSearch',ex:'true'},
-		{p:'showCheckbox',ex:'true'},
 		{p:'showSearch',ex:'false'},
 		{p:'showLayerToggle',ex:'true'},
 		{p:'showLatLonLines',ex:'true'},
