@@ -314,6 +314,8 @@ public interface Constants {
     /** _more_ */
     public static final String ICON_DIALOG_WARNING = "fas fa-exclamation";
 
+    public static final String ICON_WIDTH = "16px";
+
     /** _more_ */
     public static final String ICON_WIKI = "/icons/wiki.png";
 
