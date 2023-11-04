@@ -378,6 +378,15 @@ public class PhoneUtils {
 
         return phone;
     }
+
+    public static String formatPhone(String phone) {
+        phone = phone.replaceAll("[^0-9]+", "");
+	phone = phone.replaceAll("^(\\d\\d\\d)(\\d\\d\\d)(\\d\\d\\d\\d)$", "$1-$2-$3");
+        return phone;
+    }
+
+
+
     private static boolean printedMessage = false;
 
 

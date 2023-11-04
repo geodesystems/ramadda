@@ -2414,6 +2414,9 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_CLEANPHONE, "Clean the phone number",
 		ARG_LABEL,"Clean Phone",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
+        new Cmd(CMD_FORMATPHONE, "Format the phone number",
+		ARG_LABEL,"Format Phone #",
+                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),	
         new Cmd(CMD_ISMOBILE, "Add a true/false if the string is a mobile phone",
 		ARG_LABEL,"Is Mobile",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
@@ -4262,6 +4265,26 @@ public class Seesv implements SeesvCommands {
 				    if(v.length()!=12) {
 					v = "";
 				    }
+				    row.set(idx,v);
+				}
+			    }
+			    return row;
+			}
+		    });
+		return i;
+	    });
+
+	defineFunction(CMD_FORMATPHONE,1,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter(getCols(args.get(++i))) {
+			@Override
+			public Row processRow(TextReader ctx, Row row) {
+			    if(rowCnt++==0) {
+				return row;
+			    }
+			    for(int idx: getIndices(ctx)) {
+				if(idx<row.size()) {
+				    String v = row.getString(idx).trim();
+				    v = PhoneUtils.formatPhone(v);
 				    row.set(idx,v);
 				}
 			    }

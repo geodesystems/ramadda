@@ -188,6 +188,7 @@ public interface SeesvCommands {
     public static final String CMD_SUBST="-subst";
     public static final String CMD_ASCII="-ascii";
     public static final String CMD_CLEANPHONE="-cleanphone";
+    public static final String CMD_FORMATPHONE="-formatphone";    
     public static final String CMD_SMS="-sms";    
     public static final String CMD_ISMOBILE="-ismobile";
     public static final String CMD_JS="-js";
