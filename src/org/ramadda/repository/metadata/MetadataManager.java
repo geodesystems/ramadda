@@ -450,6 +450,18 @@ public class MetadataManager extends RepositoryManager {
         List<Metadata> metadataList = getMetadata(request,entry);
 	inherited.addAll(metadataList);
         List<String> keywords = null;
+
+	List<String[]> thumbs = new ArrayList<String[]>();
+	getFullThumbnailUrls(request, entry, thumbs);
+	if(thumbs.size()==0 && entry.isImage()) {
+	    thumbs.add(new String[]{getEntryManager().getEntryResourceUrl(request, entry),null});
+	}
+	if(thumbs.size()>0) {
+	    String image = request.getAbsoluteUrl(thumbs.get(0)[0]);
+	    addMetadataTag(sb, "og:image",image);
+	}
+
+
         for (Metadata md : inherited) {
             String type = md.getType();
 	    //	    System.err.println("mtd:" + type +" " + md.getAttr1());
@@ -474,7 +486,7 @@ public class MetadataManager extends RepositoryManager {
 
 
 	if(showJsonLd) addJsonLD(request, entry, sb,inherited,keywords,snippet);
-	if(showTwitterCard) addTwitterCard(request, entry, sb,snippet);	
+	if(showTwitterCard) addTwitterCard(request, entry, sb,snippet,thumbs);	
     }
 
     private SimpleDateFormat jsonLdSdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -608,7 +620,8 @@ public class MetadataManager extends RepositoryManager {
     }
 
 
-    public void  addTwitterCard(Request request, Entry entry, Appendable sb,String snippet) throws Exception {
+    public void  addTwitterCard(Request request, Entry entry, Appendable sb,String snippet
+				,List<String[]> mtdThumbs) throws Exception {
 	List<String[]> thumbs = new ArrayList<String[]>();
 	String title = null;
 	String image = null;
@@ -643,15 +656,10 @@ public class MetadataManager extends RepositoryManager {
 	if(stringDefined(mtdSnippet)) {
 	    snippet = mtdSnippet.replace("\n"," ").trim();
 	}
+
 	    
-
-	//If an image isn't defined in the metadata  then use the thumbnail of the entry
 	if(thumbs.size()==0) {
-	    getFullThumbnailUrls(request, entry, thumbs);
-	}
-
-	if(thumbs.size()==0 && entry.isImage()) {
-	    thumbs.add(new String[]{getEntryManager().getEntryResourceUrl(request, entry),null});
+	    thumbs = mtdThumbs;
 	}
 
 
