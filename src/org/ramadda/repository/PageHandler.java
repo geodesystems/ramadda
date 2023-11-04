@@ -2469,8 +2469,8 @@ public class PageHandler extends RepositoryManager {
      */
     public String getConfirmBreadCrumbs(Request request, Entry entry)
             throws Exception {
-        return HU.img(getIconUrl(request, entry)) + " "
-               + getBreadCrumbs(request, entry);
+	
+        return getEntryIconImage(request,entry)+ " "  + getBreadCrumbs(request, entry);
     }
 
 
@@ -2644,7 +2644,8 @@ public class PageHandler extends RepositoryManager {
         HtmlTemplate htmlTemplate = getPageHandler().getTemplate(request);
         String headerLabel =
             HU.href(getEntryManager().getEntryUrl(request, entry),
-                    HU.img(getIconUrl(request, entry)) + " "
+                    getEntryIconImage(request,entry)
+		    + " "
                     + getEntryDisplayName(entry));
 
 
@@ -3012,6 +3013,11 @@ public class PageHandler extends RepositoryManager {
 
         return iconPath;
     }
+
+    public String getEntryIconImage(Request request, Entry entry) throws Exception {
+	return HU.img(getIconUrl(request, entry),"",HU.attr("width",ICON_WIDTH));
+    }
+
 
     /**
      * Function to get share button, ratings and also Numbers of Comments and comments icon getComments(request, entry);

@@ -24,7 +24,7 @@ import java.util.List;
  * @author RAMADDA Development Team
  * @version $Revision: 1.30 $
  */
-public class Link {
+public class Link implements Constants {
 
     /** _more_ */
     String url;
@@ -195,7 +195,7 @@ public class Link {
             return HtmlUtils.href(url, label);
         }
 
-        return HtmlUtils.href(url, HtmlUtils.img(icon, label));
+        return HtmlUtils.href(url, HtmlUtils.img(icon, label,HtmlUtils.attr("width",ICON_WIDTH)));
     }
 
 

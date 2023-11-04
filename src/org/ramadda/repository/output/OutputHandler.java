@@ -1217,7 +1217,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         StringBuilder sb         = new StringBuilder();
         HU.open(sb, "span", HU.cssClass("ramadda-highlightable"));
         String entryId = entry.getId();
-        String icon    = getPageHandler().getIconUrl(request, entry);
+        String entryIconImage    = getPageHandler().getEntryIconImage(request, entry);
         String event;
         String uid = "link_" + HU.blockCnt++;
         String folderClickUrl =
@@ -1254,7 +1254,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                              + HU.cssClass("ramadda-clickable"));
         }
 
-        String img = prefix + HU.space(1) + HU.img(icon);
+        String img = prefix + HU.space(1) + entryIconImage;
 
         sb.append(img);
         sb.append(HU.space(1));
@@ -1424,7 +1424,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                                  boolean showDetails, boolean showIcon)
             throws Exception {
         String label = (showIcon
-                        ? HU.img(getPageHandler().getIconUrl(request, entry))
+                        ? getPageHandler().getEntryIconImage(request, entry)
                           + " "
                         : "") + getEntryManager().getEntryDisplayName(entry);
         String link = HU.href(getEntryManager().getEntryURL(request, entry),

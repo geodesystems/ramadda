@@ -197,6 +197,15 @@ public class WikiManager extends RepositoryManager
 			    getProperty(wikiUtil, props,"showicon",dflt));
     }
 
+    public String applyTemplate(Request request,  Entry entry, String template,String...args) throws Exception {
+	template = template.replace("${icon}",getPageHandler().getEntryIconImage(request, entry));
+	for(int i=0;i<args.length;i+=2) {
+	    template = template.replace(args[i],args[i+1]);
+	}
+
+
+	return template;
+    }
 
     /**
      * _more_
@@ -2311,7 +2320,6 @@ public class WikiManager extends RepositoryManager
 
 
             boolean simple = getProperty(wikiUtil, props, "simple", false);
-
             boolean showicon = getShowIcon(wikiUtil, props, false);
             if (showicon) {
                 label = HU.img(getIconUrl("fas fa-download"))
@@ -2381,9 +2389,9 @@ public class WikiManager extends RepositoryManager
                 if (icon == null) {
                     icon = ICON_BLANK;
                     img = HU.img(typeHandler.getIconUrl(icon), "",
-                                 HU.attr(HU.ATTR_WIDTH, "16"));
+                                 HU.attr(HU.ATTR_WIDTH, ICON_WIDTH));
                 } else {
-                    img = HU.img(typeHandler.getIconUrl(icon));
+                    img = HU.img(typeHandler.getIconUrl(icon),"", HU.attr(HU.ATTR_WIDTH, ICON_WIDTH));
                 }
             }
 
@@ -2461,7 +2469,7 @@ public class WikiManager extends RepositoryManager
 	    }
 	    return "null";
         } else if (theTag.equals(WIKI_TAG_ICON)) {
-	    String width = getProperty(wikiUtil, props, "width", "16px");
+	    String width = getProperty(wikiUtil, props, "width", ICON_WIDTH);
 	    String url = entry.getTypeHandler().getEntryIconUrl(request,  entry);
 	    return HU.img(url, "", HU.attr("width", width));
         } else if (theTag.equals(WIKI_TAG_NAME)) {
@@ -3275,7 +3283,7 @@ public class WikiManager extends RepositoryManager
                     buff.append(header);
                 } else if(headerTemplate != null) {
 		    String url = getEntryManager().getEntryUrl(request, theEntry);
-		    header = headerTemplate.replace("${name}",theEntry.getName()).replace("${entryid}", theEntry.getId()).replace("${entryurl}",url);
+		    header = headerTemplate.replace("${name}",theEntry.getName()).replace("${entryid}", theEntry.getId()).replace("${entryurl}",url).replace("${icon}",getPageHandler().getEntryIconImage(request, theEntry));
 
 		    header =  wikifyEntry(request, theEntry, header, false);
                     buff.append(header);
@@ -3430,8 +3438,7 @@ public class WikiManager extends RepositoryManager
                 String suffix   = suffixTemplate;
                 String urlLabel = getEntryDisplayName(child);
                 if (showicon) {
-                    urlLabel = HU.img(getPageHandler().getIconUrl(request,
-								  child)) + " " + urlLabel;
+                    urlLabel = getPageHandler().getEntryIconImage(request,child) + " " + urlLabel;
                 }
 
                 String childUrl =
@@ -3447,8 +3454,7 @@ public class WikiManager extends RepositoryManager
 									   "${description}", child.getDescription()));
                 prefix = prefix.replace("${url}", childUrl);
                 suffix = suffix.replace("${url}", childUrl);
-                String icon = HU.img(getPageHandler().getIconUrl(request,
-								 child));
+                String icon = getPageHandler().getEntryIconImage(request,child);
                 prefix = prefix.replace("${icon}", icon);
                 suffix = suffix.replace("${icon}", icon);
 
@@ -3481,8 +3487,7 @@ public class WikiManager extends RepositoryManager
                     String title = getEntryDisplayName(child);
                     contents.add(title);
                     if (showicon) {
-                        title = HU.img(getPageHandler().getIconUrl(request,
-								   child)) + " " + title;
+                        title = getPageHandler().getEntryIconImage(request, child) + " " + title;
                     }
                     titles.add(title);
                 }
@@ -3683,10 +3688,10 @@ public class WikiManager extends RepositoryManager
 
                 String title = getEntryDisplayName(child);
                 if (showicon) {
-		    title = HU.img(getPageHandler().getIconUrl(request,  child)) + " " + title;
+		    title = getPageHandler().getEntryIconImage(request,  child) + " " + title;
                 }
 		if(titleTemplate!=null) {
-		    title = titleTemplate.replace("${title}",title);
+		    title = applyTemplate(request, child,titleTemplate, "${title}",title);
 		}
                 titles.add(title);
                 //                urls.add(request.entryUrl(getRepository().URL_ENTRY_SHOW, child));
@@ -3870,7 +3875,7 @@ public class WikiManager extends RepositoryManager
 			String title  = titles.get(i);
 			String label = title;
 			if (showicon) {
-			    label = HU.img(getPageHandler().getIconUrl(request,  child)) + " " + label;
+			    label = getPageHandler().getEntryIconImage(request,  child) + " " + label;
 			}
                         HU.div(comp, HU.href(urls.get(i), label),  HU.title(Utils.stripTags(title)) + headingClass);
                     }
@@ -4441,8 +4446,7 @@ public class WikiManager extends RepositoryManager
 	    } else {
 		linkLabel = getEntryDisplayName(child);
 		if (showicon) {
-		    linkLabel = HU.img(getPageHandler().getIconUrl(request,
-								   child)) +HU.space(1) + linkLabel;
+		    linkLabel = getPageHandler().getEntryIconImage(request,child) +HU.space(1) + linkLabel;
 		}
 	    }
 
@@ -4560,7 +4564,7 @@ public class WikiManager extends RepositoryManager
 	    } else {
 		String v=null;
 		if(macro.getId().equals(TypeHandler.FIELD_ICON)) {
-		    v =HU.img(getPageHandler().getIconUrl(request, child));
+		    v =getPageHandler().getEntryIconImage(request, child);
 		} else if(macro.getId().equals(TypeHandler.FIELD_NAME)) {
 		    v = getEntryDisplayName(child);
 		} else if(macro.getId().equals(TypeHandler.FIELD_SNIPPET)) {
@@ -4625,7 +4629,7 @@ public class WikiManager extends RepositoryManager
 		}
 		if(v!=null) {
 		    if(macro.getProperty("includeIcon",false)) {
-			v = HU.img(getPageHandler().getIconUrl(request, child)) +" " + v;
+			v = getPageHandler().getEntryIconImage(request, child) +" " + v;
 		    }
 		    if(macro.getProperty("link",false)) {
 			if(macro.getProperty("noline",true)) {
@@ -5414,7 +5418,7 @@ public class WikiManager extends RepositoryManager
 	    HU.open(sb, "li");
             String label = Utils.clipTo(getEntryManager().getEntryDisplayName(entry),labelWidth,"...");
 	    if(showIcon)
-		label = HtmlUtils.img(getPageHandler().getIconUrl(request, entry)) + HU.SPACE + label;
+		label = getPageHandler().getEntryIconImage(request, entry) + HU.SPACE + label;
             String link =  HtmlUtils.href(getEntryManager().getEntryURL(request, entry), label, HU.attrs("class","ramadda-tree-link"));
 	    if(addPrefix) link = prefix +" " + link;
 	    if(asMenu) link = HU.div(link);

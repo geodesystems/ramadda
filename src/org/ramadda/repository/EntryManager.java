@@ -4506,12 +4506,8 @@ public class EntryManager extends RepositoryManager {
 		    String img;
 		    if (icon == null) {
 			icon = ICON_BLANK;
-			img = HU.img(typeHandler.getIconUrl(icon), "",
-				     HU.attr(HU.ATTR_WIDTH,
-					     "16"));
-		    } else {
-			img = HU.img(typeHandler.getIconUrl(icon));
 		    }
+		    img = HU.img(typeHandler.getIconUrl(icon),"",  HU.attr(HU.ATTR_WIDTH,ICON_WIDTH));
 		    String href = HU
 			.href(request
 			      .makeUrl(getRepository().URL_ENTRY_FORM, ARG_GROUP, group
@@ -5319,7 +5315,7 @@ public class EntryManager extends RepositoryManager {
 				     request.entryUrl(
 						      getRepository().URL_ENTRY_SHOW,
 						      newEntry),
-				     HU.image(getPageHandler().getIconUrl(request, newEntry)) +" "+
+				     getPageHandler().getEntryIconImage(request, newEntry) +" "+
 				     newEntry.getName()));
                 links.append("<br>");
             }
@@ -6810,9 +6806,7 @@ public class EntryManager extends RepositoryManager {
                                String... args) {
         try {
             String label = (addIcon
-                            ? HU.img(
-				     getPageHandler().getIconUrl(
-								 request, entry)) + " "
+                            ?   getPageHandler().getEntryIconImage(request, entry) + " "
                             : "") + getEntryDisplayName(entry);
 
             return HU.href(getEntryURL(request, entry, args), label, hrefAttrs);
@@ -6844,7 +6838,7 @@ public class EntryManager extends RepositoryManager {
     public String getPopupLink(Request request, Entry entry,
 			       String linkText) throws Exception {
 	
-        String        entryIcon = HU.getIconImage(getPageHandler().getIconUrl(request, entry));
+        String        entryIcon = getPageHandler().getEntryIconImage(request, entry);
 	String link = entryIcon+HU.SPACE+linkText;
 	StringBuilder inner = new StringBuilder();
 	String snippet = getWikiManager().getSnippet(request, entry, true,null);
@@ -6860,9 +6854,7 @@ public class EntryManager extends RepositoryManager {
 	for (Entry child : getEntryUtil().sortEntriesOnName(children,false)) {
 	    String url       = getEntryUrl(request, child);
 	    String linkLabel = child.getName();
-	    linkLabel =
-		HU.img(getPageHandler().getIconUrl(request,
-						   child)) + HU.space(1) + linkLabel;
+	    linkLabel =getPageHandler().getEntryIconImage(request,child) + HU.space(1) + linkLabel;
 	    String href = HU.href(url, linkLabel,HU.attrs("title",getPageHandler().getEntryTooltip(child)));
 	    inner.append(HU.div(href,HU.attrs("class","ramadda-menu-item")));
 	}
@@ -7019,6 +7011,7 @@ public class EntryManager extends RepositoryManager {
         }
 
         String img = HU.img(entryIcon, imgText.toString(),
+			    HU.attr("width",ICON_WIDTH) +
 			    Utils.concatString(HU.id(iconId),
 					       sourceEvent.toString()));
 
@@ -7294,7 +7287,7 @@ public class EntryManager extends RepositoryManager {
                 sb.append(HU.SPACE);
             } else {
                 HU.href(sb, link.getUrl(),
-			getIconImage(link.getIcon()));
+			getIconImage(link.getIcon(),"width",ICON_WIDTH));
             }
 	    sb.append(HU.SPACE);
 	    String tooltip = link.getTooltip();
@@ -7348,7 +7341,7 @@ public class EntryManager extends RepositoryManager {
                     String url       = getEntryUrl(request, child);
                     String linkLabel = noMsg(child.getName());
                     linkLabel =
-                        HU.img(getPageHandler().getIconUrl(request, child)) + HU.space(1) + linkLabel;
+                        getPageHandler().getEntryIconImage(request, child) + HU.space(1) + linkLabel;
                     String href = HU.href(url, linkLabel,HU.attrs("title",getPageHandler().getEntryTooltip(child)));
 		    HU.div(childrenSB,href,HU.attrs("class","ramadda-menu-item"));
                 }

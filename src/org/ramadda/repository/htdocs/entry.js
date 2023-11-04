@@ -931,6 +931,8 @@ function Entry(props) {
             return url;
         },
         getIconImage: function(attrs) {
+	    attrs = attrs??[];
+	    if(!attrs.includes("width"))attrs.push("width","16px");
 	    if(this.iconRelative)
 		return HtmlUtils.image(this.iconRelative, attrs);
             return HtmlUtils.image(this.getIconUrl(), attrs);

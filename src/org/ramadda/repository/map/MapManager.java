@@ -1533,6 +1533,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         String categoryType = request.getString("category", "type");
         int    numEntries   = 0;
 	List<String> markers = new ArrayList<String>();
+	String iconWidth = Utils.getProperty(props,"listIconWidth",ICON_WIDTH);
         for (Entry entry : entriesToUse) {
 	    addMapMarkerMetadata(request, entry, markers);
             if ( !(entry.hasLocationDefined() || entry.hasAreaDefined())) {
@@ -1562,7 +1563,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 					HU.id("block_" + suffix) + "data-mapid=\""
 					+ mapEntryId(entry) + "\" "
 					+ HU.cssClass(CSS_CLASS_EARTH_NAV)));
-            String getIconUrl = getPageHandler().getIconUrl(request, entry);
+	    String iconUrl = getPageHandler().getIconUrl(request,entry);
+	    String entryIconImage = HU.img(iconUrl,"Click to view entry details",HU.attr("width",iconWidth));
 
             String navUrl = "javascript:" + map.getVariableName()
 		+ ".hiliteMarker(" + sqt(Utils.makeID(mapEntryId(entry))) + ");";
@@ -1575,8 +1577,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             catSB.append(
 			 HU.href(
 					getEntryManager().getEntryURL(request, entry),
-					HU.img(
-						      getIconUrl,"Click to view entry details")));
+					entryIconImage));
             catSB.append("&nbsp;");
             String label = getEntryDisplayName(entry);
             catSB.append(HU.href(navUrl, label,

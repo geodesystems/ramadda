@@ -1590,8 +1590,8 @@ public class HtmlOutputHandler extends OutputHandler {
                 sb.append(HU.br());
             }
 
-            String icon = getPageHandler().getIconUrl(request, entry);
-            sb.append(HU.href(url, HU.img(icon)));
+            String img = getPageHandler().getEntryIconImage(request, entry);
+            sb.append(HU.href(url, img));
             sb.append(HU.space(1));
             sb.append(getEntryManager().getTooltipLink(request, entry,
                     getEntryDisplayName(entry), url));
@@ -1638,7 +1638,7 @@ public class HtmlOutputHandler extends OutputHandler {
             String entryIcon = getPageHandler().getIconUrl(request, child);
 	    if(icon!=null) entryIcon = getPageHandler().getIconUrl(icon);
             String label = getEntryManager().getEntryListName(request, child);
-            String leftLabel = showIcon?HU.img(entryIcon) + " " + label:label;
+            String leftLabel = showIcon?HU.img(entryIcon,"",HU.attr("width",ICON_WIDTH)) + " " + label:label;
             label = label.replace("'", "\\'");
             String url = HU.url(entryShowUrl, ARG_ENTRYID, child.getId());
             if (firstLink == null) {
@@ -1933,9 +1933,9 @@ public class HtmlOutputHandler extends OutputHandler {
 		    for(String col: displayColumns) {
 			String value=null;
 			if(col.equals(TypeHandler.FIELD_NAME)) {
-			    String entryIcon = getPageHandler().getIconUrl(request, entry);
+			    String entryIcon = getPageHandler().getEntryIconImage(request, entry);
 			    String url = getEntryManager().getEntryUrl(request, entry);
-			    HU.col(tableSB,toggle+HU.href(url,HU.image(entryIcon))+HU.space(1) +HU.href(url,name),
+			    HU.col(tableSB,toggle+HU.href(url,entryIcon)+HU.space(1) +HU.href(url,name),
 				   HU.attr("data-sort",name)+
 				   " nowrap "
 				   + HU.cssClass("entry-table-name"));
@@ -1982,9 +1982,9 @@ public class HtmlOutputHandler extends OutputHandler {
 			}
 		    }
 		}  else {
-		    String entryIcon = getPageHandler().getIconUrl(request, entry);
+		    String entryIcon = getPageHandler().getEntryIconImage(request, entry);
 		    String url = getEntryManager().getEntryUrl(request, entry);
-		    String label = HU.href(url,HU.image(entryIcon)) + HU.space(1) +HU.href(url,name);
+		    String label = HU.href(url,entryIcon) + HU.space(1) +HU.href(url,name);
 		    if(toggle!=null) {
 			label = toggle+label;
 		    } 
