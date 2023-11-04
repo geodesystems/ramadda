@@ -1612,6 +1612,19 @@ mapheader {
 .ramadda-map-animation {
 }
 
+.ramadda-map-credits  {
+    z-index: 1000;
+    position:absolute;
+    bottom:2px;
+    left:50%;
+    transform: translateX(50%, -10px);
+    border:1px solid #aaa;
+    background:rgba(255,255,255,0.8);
+    font-size:8pt;
+    padding-left:2px;
+    padding-right:2px;    
+}
+
 .ramadda-map-features {
 }
 

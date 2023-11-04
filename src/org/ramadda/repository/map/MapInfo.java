@@ -80,6 +80,8 @@ public class MapInfo {
 
     private boolean showFooter = true;
     
+    private String credits = "CREDITS";
+    
     /** _more_ */
     private boolean mapHidden = false;
 
@@ -142,7 +144,7 @@ public class MapInfo {
      */
     public MapInfo(Request request, Repository repository, String width,
                    String height) {
-        this(request, repository, width, height, false);
+        this(request, repository, null,width, height, false);
     }
 
     /**
@@ -155,8 +157,11 @@ public class MapInfo {
      * @param height  the height of the map
      * @param forSelection  true if for selecting something
      */
-    public MapInfo(Request request, Repository repository, String width,
+    public MapInfo(Request request, Repository repository, Hashtable props, String width,
                    String height, boolean forSelection) {
+	if(props!=null) {
+	    credits = Utils.getProperty(props,"credits",null);
+	}
         this.request      = request;
         this.repository   = repository;
 
@@ -432,6 +437,13 @@ public class MapInfo {
         String footer = HU.div("",
                                HU.cssClass("ramadda-map-footer")
                                + HU.id(mapDivId + "_footer"));
+
+	String extra="";
+	if(Utils.stringDefined(credits)) {
+	    extra+= HU.div(credits,
+			      HU.cssClass("ramadda-map-credits")
+			      + HU.id(mapDivId + "_credits"));
+	}
         HU.div(result, "",
                HU.cssClass("ramadda-map-search")
                + HU.id(mapDivId + "_search"));
@@ -446,7 +458,7 @@ public class MapInfo {
                                   + HU.id(mapDivId + "_slider"));
 
 
-        HU.div(result, mapHeader + mapDiv + mapSlider,
+        HU.div(result, mapHeader + mapDiv + mapSlider+extra,
                HU.cssClass("ramadda-map-container"));
 
 

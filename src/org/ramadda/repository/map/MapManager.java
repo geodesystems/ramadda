@@ -785,7 +785,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         }
         String style = props.get("style");
         props.remove("style");
-        MapInfo mapInfo = new MapInfo(request, getRepository(), width,
+        MapInfo mapInfo = new MapInfo(request, getRepository(), props, width,
                                       height, forSelection);
 
         if (style != null) {
@@ -1402,7 +1402,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         boolean showExtra = Utils.getProperty(props,"showExtra",true);
         boolean hidden = Misc.equals(props.get("mapHidden"), "true");
         MapInfo map = createMap(request, mainEntry, width, height, false,
-                                hidden, null);
+                                hidden, props);
         if (map == null) {
             return null;
         }
