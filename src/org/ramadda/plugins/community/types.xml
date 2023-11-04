@@ -142,8 +142,8 @@
 
   <type name="type_cultural_site"  description="Cultural Site"
 	handler="org.ramadda.plugins.community.CulturalSite"
-	editfields="name,site_type,_default"
-	metadata="cultural_presenter,cultural_biome" >
+	editfields="name,site_type,resource,_default"
+	metadata="cultural_presenter,cultural_biome,cultural_plant_use" >
      <property name="icon" value="/cultural/archeological.png"/>
      <property name="form.description.iswiki" value="true"/>
      <property name="search.metadatatypes" value="cultural_biome"/>
@@ -172,6 +172,7 @@
 {{description wikify="true"}}
 -col
 +col-md-4
+{{resource  title="Link"  showIcon="false"  simple="true" }}
 {{properties   message="" metadata.types="cultural_presenter"}}
 <p>
 +center
@@ -181,6 +182,8 @@
 {{properties   message="" metadata.types="!content.alias,!cultural_presenter,!content.logo,!content.timezone"}}
 -col
 -row
+:vspace 1em
+{{tabletree message="" prefix="----"}}
 -section
 ]]>
 </wiki>

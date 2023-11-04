@@ -9,6 +9,8 @@ package org.ramadda.plugins.community;
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.StringUtil;
 
 import org.w3c.dom.*;
 
@@ -34,6 +36,31 @@ public class CulturalSite extends ExtensibleGroupTypeHandler {
     public CulturalSite(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
+    }
+
+
+    @Override
+    public void initializeNewEntry(Request request, Entry entry,
+                                   boolean fromImport)
+            throws Exception {
+        super.initializeNewEntry(request, entry, fromImport);
+	if(stringDefined(entry.getName())) return;
+        String url = entry.getResource().getPath();
+	if(!url.startsWith("http")) return;
+	try {
+	    String html  = IOUtil.readContents(url, "");
+	    String title = StringUtil.findPattern(html, "<title>(.*)</title>");
+	    if (title == null) {
+		title = StringUtil.findPattern(html, "<TITLE>(.*)</TITLE>");
+	    }
+	    if (title != null) {
+		//In case it is YT
+		title = title.replace("- YouTube", "");
+		entry.setName(title);
+	    }
+	} catch(Exception exc) {
+	    System.err.println("Error reading URL:" + url+" " +exc);
+	}
     }
 
     /**
