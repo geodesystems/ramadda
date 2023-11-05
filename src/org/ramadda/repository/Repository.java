@@ -566,8 +566,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private boolean ignoreSSL = false;
 
     private static boolean  debugLLM = false;
-    public static final int GPT3_TOKEN_LIMIT = 3000;
-    public static final int GPT4_TOKEN_LIMIT = 6000;
+    public static final int GPT3_TOKEN_LIMIT = 2000;
+    public static final int GPT4_TOKEN_LIMIT = 4000;
 
 
 
@@ -6131,7 +6131,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 						"Rewrite the following text as college level material:");
 	String promptSuffix = request.getString("promptsuffix", "");
 	//	text = callGpt("Rewrite the following text:","",new StringBuilder(text),1000,false);		    
-	text = callLLM(request, promptPrefix,promptSuffix,new StringBuilder(text),1000,false,null);		    
+	text = callLLM(request, promptPrefix,promptSuffix,new StringBuilder(text),1000,false,null,0);		    
 	String json = JsonUtil.map(Utils.makeList("result", JsonUtil.quote(text)));
 	return new Result("", new StringBuilder(json), "text/json");
 	
@@ -6197,7 +6197,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    public String callLLM(Request request, String prompt1,String prompt2,StringBuilder corpus,int maxReturnTokens,boolean tokenize,int[]initTokenLimit)
+    public String callLLM(Request request, String prompt1,String prompt2,StringBuilder corpus,int maxReturnTokens,boolean tokenize,int[]initTokenLimit,int callCnt)
 	throws Exception {
 	String text = corpus.toString();
 	String gptKey = getRepository().getProperty("gpt.api.key");
@@ -6223,6 +6223,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	} 
 
 
+	debugLLM = true;
 	int tokenLimit = initTokenLimit[0];
 	while(tokenLimit>=500) {
 	    initTokenLimit[0] = tokenLimit;
@@ -6231,7 +6232,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    if(!tokenize) {
 		gptCorpus.append(text);
 	    } else {
-		//	    debugLLM = true;
 		if(debugLLM) System.err.println("Repository.callGpt tokenizing " + text.length());
 		text = Utils.removeNonAscii(text," ").replaceAll("[,-\\.\n]+"," ").replaceAll("  +"," ");
 		if(text.trim().length()==0) {
@@ -6278,10 +6278,30 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		try {
 		    JSONObject json = new JSONObject(result.getResult());
 		    JSONObject error = json.optJSONObject("error");
-		    if(error == null || !error.optString("code","").equals("context_length_exceeded")) {
-			System.err.println("NO CODE:" + result.getResult());
+		    if(error == null) {
+			System.err.println("Error calling OpenAI. No error in result:" + result.getResult());
 			return null;
-			//			throw new RuntimeException("Unable to process GPT request:" + result.getResult());
+		    }
+
+		    String code = error.optString("code",null);
+		    if(code == null) {
+			System.err.println("Error calling OpenAI. No code in result:" + result.getResult());
+			return null;
+		    }
+
+		    if(code.equals("rate_limit_exceeded")) {
+			System.err.println("Calling OpenAI: rate limit exceeded");
+			System.err.println(result.getResult());
+			callCnt++;
+			if(callCnt>3) return null;
+			Misc.sleepSeconds(callCnt*60);
+			tokenLimit-=1000;
+			continue;
+		    }
+
+		    if(!code.equals("context_length_exceeded")) {
+			System.err.println("Error calling OpenAI. Unknown error code:" + result.getResult());
+			return null;
 		    }
 		    tokenLimit-=1000;
 		    if(debugLLM)
