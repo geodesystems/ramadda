@@ -183,6 +183,8 @@ public class ServiceArg extends ServiceElement {
     /** _more_ */
     private String entryPattern;
 
+    private String matchPattern;    
+
     /** _more_ */
     private boolean isPrimaryEntry = false;
 
@@ -240,6 +242,8 @@ public class ServiceArg extends ServiceElement {
         }
         entryPattern = XmlUtil.getAttributeFromTree(node,
                 Service.ATTR_ENTRY_PATTERN, (String) null);
+        matchPattern = XmlUtil.getAttributeFromTree(node,
+						      "matchPattern", (String) null);	
 
         placeHolder = XmlUtil.getAttribute(node, "placeHolder",
                                            (String) null);
@@ -274,7 +278,7 @@ public class ServiceArg extends ServiceElement {
         copy     = XmlUtil.getAttribute(node, "copy", false);
         valuesProperty = XmlUtil.getAttribute(node, "valuesProperty",
                 (String) null);
-        label    = XmlUtil.getAttribute(node, Service.ATTR_LABEL, name);
+        label    = XmlUtil.getAttribute(node, Service.ATTR_LABEL, name);	
         help     = Utils.getAttributeOrTag(node, "help", "");
         fileName = XmlUtil.getAttribute(node, "filename", "${src}");
         if (isInt()) {
@@ -326,6 +330,7 @@ public class ServiceArg extends ServiceElement {
         Service.attr(attrs, "addNone", addNone);
         Service.attr(attrs, Service.ATTR_ENTRY_TYPE, entryType);
         Service.attr(attrs, Service.ATTR_ENTRY_PATTERN, entryPattern);
+        Service.attr(attrs, "matchPattern", matchPattern);	
         Service.attr(attrs, "placeHolder", placeHolder);
         Service.attr(attrs, Service.ATTR_PRIMARY, isPrimaryEntry);
         Service.attr(attrs, "prefix", prefix);
@@ -372,10 +377,18 @@ public class ServiceArg extends ServiceElement {
 	//	debug  = entryType.equals("media_gs_thumbnail");
 
         if (debug) {
-            System.err.println("Service.Arg.isApplicable:" + getName()
-                               + " entry type:" + entryType + " pattern:"
+            System.err.println("Service.Arg.isApplicable:" + getName() +" " +getLabel() +
+			       " entry type:" + entryType + " pattern:"
                                + entryPattern);
         }
+        if (matchPattern != null) {
+            if (entry.getResource().getPath().toLowerCase().matches(
+                    matchPattern)) {
+                return true;
+            }
+        }
+
+
         if (entryTypes != null) {
 	    if(debug) System.err.println("entryTypes:" + entryTypes);
             boolean isType = false;
@@ -400,7 +413,7 @@ public class ServiceArg extends ServiceElement {
 
                 return true;
             }
-        }
+	}
         if (entryPattern != null) {
             if (entry.getResource().getPath().toLowerCase().matches(
                     entryPattern)) {
