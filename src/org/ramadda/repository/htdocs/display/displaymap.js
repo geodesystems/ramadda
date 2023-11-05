@@ -4055,9 +4055,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		return null;
 	    };	    
 	    this.haveAddPoints = true;
-	    let displayInfo = this.displayInfo = {};
+	    let recordFeatures = this.recordFeatures = {};
 	    records.forEach(record=>{
-		let recordLayout = displayInfo[record.getId()] = {
+		let recordLayout = recordFeatures[record.getId()] = {
 		    features:[],
 		    visible:true
 		}
@@ -4073,7 +4073,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    if(this.getHandleCollisions()) {
 		let collisionTooltip = this.getCollisionTooltip('${default}');
-		let collisionTextGetter = tooltip==null?null:(records)=>{
+		let collisionTextGetter = collisionTooltip==null?null:(records)=>{
 		    let html = "#" + records.length+" records<hr class=ramadda-thin-hr>";
 		    records.forEach(record=>{
 			html+=HU.div([STYLE,HU.css("border-bottom","1px solid #ccc")], this.getRecordHtml(record, null,collisionTooltip));
@@ -4100,56 +4100,41 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    labelFontSize:this.getCollisionLabelFontSize(),
 		}
 
-
-		//TODO: labels
-		let doLabels = this.getProperty("collisionLabels",false);
-		if(doLabels &!this.map.collisionLabelsLayer) {
-		    this.map.collisionLabelsLayer = MapUtils.createLayerVector("Collision Labels", {
-			styleMap: MapUtils.createStyleMap({'default':{
-                            label : "${label}"
-			}}),
-                    });
-		    this.map.addVectorLayer(this.map.collisionLabelsLayer, true);
-                    this.map.collisionLabelsLayer.setZIndex(100);
-		}
-
-		let CI = new CollisionHandler(this.map,
-					      {
-						  minPixels:this.getCollisionMinPixels(),
-						  collisionArgs:collisionArgs,
-						  lineWidth: this.getProperty("collisionLineWidth","2"),			
-						  lineColor: this.getProperty("collisionLineColor","#000")
-					      });
+		let CH = new CollisionHandler(this.map, {
+		    minPixels:this.getCollisionMinPixels(),
+		    collisionArgs:collisionArgs,
+		    lineWidth: this.getProperty("collisionLineWidth","2"),			
+		    lineColor: this.getProperty("collisionLineColor","#000")
+		});
 
 		let recordInfo = {};
-		records.forEach(record=>{
-		    let recordLayout = displayInfo[record.getId()];
+		records.forEach((record,idx)=>{
+		    let recordLayout = recordFeatures[record.getId()];
 		    if(recordLayout.x===null || recordLayout.y===null) return;
-		    recordLayout.rpoint = CI.getPoint(recordLayout);
+		    recordLayout.collisionPoint = CH.getPoint(recordLayout);
 		});
 		records.forEach((record,idx)=>{
-		    let recordLayout = displayInfo[record.getId()];
+		    let recordLayout = recordFeatures[record.getId()];
 		    let point = recordLayout;
-		    let rpoint = recordLayout.rpoint;
-		    if(rpoint ==null) return;
-
-		    if(CI.countAtPoint[rpoint]==1) {
+		    let collisionPoint = recordLayout.collisionPoint;
+		    if(collisionPoint ==null) return;
+		    if(CH.countAtPoint[collisionPoint]==1) {
 			return;
 		    } 
-		    let cntAtPoint = CI.countAtPoint[rpoint];
+		    let cntAtPoint = CH.countAtPoint[collisionPoint];
 		    let anglePer = 360/cntAtPoint;
-		    let lineOffset = CI.offset;
+		    let lineOffset = CH.offset;
 		    let delta = cntAtPoint/8;
 		    if(delta>1)
 			lineOffset*=delta;
 
-		    let info = CI.getCollisionInfo(this,rpoint);
+		    let info = CH.getCollisionInfo(this,collisionPoint);
 		    recordLayout.collisionInfo = info;
 		    recordLayout.visible = info.visible;
 		    info.addRecord(record);
 		    let cnt = info.records.length;
-		    let ep = Utils.rotate(rpoint.x,rpoint.y,rpoint.x,rpoint.y-lineOffset,cnt*anglePer-180,true);
-		    let line = this.getMap().createLine("line-" + idx, "", rpoint.y,rpoint.x, ep.y,ep.x, {strokeColor:CI.lineColor,strokeWidth:CI.lineWidth});
+		    let ep = Utils.rotate(collisionPoint.x,collisionPoint.y,collisionPoint.x,collisionPoint.y-lineOffset,cnt*anglePer-180,true);
+		    let line = this.getMap().createLine("line-" + idx, "", collisionPoint.y,collisionPoint.x, ep.y,ep.x, {strokeColor:CH.lineColor,strokeWidth:CH.lineWidth});
 		    if(!info.visible) {
 			line.featureVisible = false;
 			this.map.checkFeatureVisible(line,true);
@@ -4159,7 +4144,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    point.x=ep.x;
 		    point.y=ep.y;
 		});
-		CI.getCollisionInfos().forEach((info,idx)=>{
+		CH.getCollisionInfos().forEach((info,idx)=>{
                     featuresToAdd.push(...info.createDots(idx));
 		});
 
@@ -4241,7 +4226,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let times=[new Date()];
 	    records.forEach((record,idx)=>{
 		i++;
-		let recordLayout = displayInfo[record.getId()];
+		let recordLayout = recordFeatures[record.getId()];
 		if(!recordLayout) return;
 		let point  = recordLayout;
 		if(!point) {
@@ -4967,165 +4952,6 @@ function MapEntryInfo(entry) {
 }
 
 		
-function CollisionInfo(map, display,numRecords, roundPoint,args) {
-    $.extend(this,{
-	fixed:false,
-	visible: false,
-	icon:null,
-	iconSize:16,
-	dotColor:'blue',
-	dotColorOn:null,
-	dotColorOff:null,
-	dotRadius:12,
-	ringColor:'red',
-	ringWidth:3,
-	scaleDots:false,
-	labelTemplate:'${count}',
-	labelColor:"#fff",
-	labelFontSize:10,
-
-	map:map,
-	display:display,
-
-	dots: null,
-	roundPoint:roundPoint,
-	dot:null,
-	numRecords:numRecords,
-	records:[],
-	addLines:false,
-	lines:[],
-	points:[],
-    });
-
-
-    if(args) {
-	$.extend(this,args);
-	if(this.textGetter) {
-	    this.myTextGetter = (feature)=>{
-		return  this.textGetter(this.records);
-	    }
-	}
-    }
-
-    if(!Utils.stringDefined(this.labelTemplate)) this.labelTemplate = null;
-    if(this.visible) {
-	this.checkLines();
-    }    
-}
-
-
-CollisionInfo.prototype = {
-    addRecord: function(record) {
-	this.records.push(record);
-    },
-    addLine:function(line) {
-	this.lines.push(line);
-    },
-    checkLines: function() {
-	if(!this.addedLines) {
-	    this.addedLines = true;
-	    this.display.addFeatures(this.lines,true);
-	    this.display.addFeatures(this.points,false);
-	}
-    },
-    createDots: function(idx) {
-	this.dots = [];
-	if(this.icon) {
-	    this.dots.push(this.map.createMarker("dot-" + idx, [this.roundPoint.x,this.roundPoint.y], this.icon, "", "",null,this.iconSize,null,null,null,null,false));
-
-	} else {
-	    let style = this.getCollisionDotStyle(this);
-	    let dot = this.map.createPoint("dot-" + idx, this.roundPoint, style,null,this.myTextGetter);
-	    this.dots.push(dot);
-	    style = $.extend({},style);
-	    style.label=null;
-	    style.fillColor='transparent';
-	    style.strokeColor=this.ringColor;
-	    style.strokeWidth=this.ringWidth;
-	    dot = this.map.createPoint("dot2-" + idx, this.roundPoint, style,null,this.myTextGetter);
-	    this.dots.push(dot);		
-	}
-	this.dots.forEach(dot=>{
-	    dot.collisionInfo  = this;
-	});
-	return this.dots;
-    },
-    dotSelected:function(dot) {
-	if(this.fixed) return false;
-	this.setVisible(!this.visible);
-	return true;
-    },
-    styleCollisionDot:function(dot) {
-	$.extend(dot.style, this.getCollisionDotStyle(dot.collisionInfo));
-    },
-    addPoints:function(points) {
-	points.forEach(p=>this.points.push(p));
-    },
-    getCollisionDotStyle:function(collisionInfo) {
-	let dotColor= this.dotColor;
-	let dotRadius = this.dotRadius;
-	if(!this.fixed) {
-	    if(this.scaleDots) {
-		let extra = collisionInfo.numRecords;
-		if(extra>1)
-		    dotRadius = Math.min(Math.ceil(dotRadius+extra/2),28);
-//		console.log("scaling dots " + dotRadius +" " +collisionInfo.numRecords);
-	    } 
-
-	    if(collisionInfo.visible)  {
-		dotColor = this.dotColorOn??dotColor;
-	    } else {
-		dotColor = this.dotColorOff??dotColor;
-	    }
-	}
-	let style = {
-	    fillColor:dotColor,
-	    pointRadius:dotRadius
-	}
-	if(this.labelTemplate) {
-	    style =
-		$.extend(style,{
-		    label:this.labelTemplate.replace('${count}',this.records.length),
-		    fontColor:this.labelColor,
-		    fontSize:this.labelFontSize,
-		    labelOutlineColor:'transparent',
-
-		});
-	}		    
-
-	return style;
-
-    },
-
-
-    setVisible:function(visible) {
-	this.visible = visible;
-	this.dots.forEach(dot=>{
-	    this.styleCollisionDot(dot);
-	    dot.layer.drawFeature(dot, dot.style);
-	});
-
-	this.checkLines();
-	//These are the spokes
-	this.lines.forEach(f=>{
-	    f.featureVisible = this.visible;
-	    this.map.checkFeatureVisible(f,true);
-	});
-
-	this.records.forEach(record=>{
-	    let layoutThis = this.display.displayInfo[record.getId()];
-	    if(!layoutThis) {
-		return;
-	    }
-	    layoutThis.features.forEach(f=>{
-		f.featureVisible = this.visible;
-		this.map.checkFeatureVisible(f,true);
-	    });
-	});
-    }
-}
-
-
 
 
 

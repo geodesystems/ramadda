@@ -918,3 +918,164 @@ CollisionHandler.prototype = {
     }
 
 }
+
+
+function CollisionInfo(map, display,numRecords, collisionPoint,args) {
+    $.extend(this,{
+	fixed:false,
+	visible: false,
+	icon:null,
+	iconSize:16,
+	dotColor:'blue',
+	dotColorOn:null,
+	dotColorOff:null,
+	dotRadius:12,
+	ringColor:'red',
+	ringWidth:3,
+	scaleDots:false,
+	labelTemplate:'${count}',
+	labelColor:"#fff",
+	labelFontSize:10,
+
+	map:map,
+	display:display,
+
+	dots: null,
+	collisionPoint:collisionPoint,
+	dot:null,
+	numRecords:numRecords,
+	records:[],
+	addLines:false,
+	lines:[],
+	points:[],
+    });
+
+
+    if(args) {
+	$.extend(this,args);
+	if(this.textGetter) {
+	    this.myTextGetter = (feature)=>{
+		return  this.textGetter(this.records);
+	    }
+	}
+    }
+
+    if(!Utils.stringDefined(this.labelTemplate)) this.labelTemplate = null;
+    if(this.visible) {
+	this.checkLines();
+    }    
+}
+
+
+CollisionInfo.prototype = {
+    addRecord: function(record) {
+	this.records.push(record);
+    },
+    addLine:function(line) {
+	this.lines.push(line);
+    },
+    checkLines: function() {
+	if(!this.addedLines) {
+	    this.addedLines = true;
+	    this.display.addFeatures(this.lines,true);
+	    this.display.addFeatures(this.points,false);
+	}
+    },
+    createDots: function(idx) {
+	this.dots = [];
+	if(this.icon) {
+	    this.dots.push(this.map.createMarker("dot-" + idx, [this.collisionPoint.x,this.collisionPoint.y], this.icon, "", "",null,this.iconSize,null,null,null,null,false));
+
+	} else {
+	    let style = this.getCollisionDotStyle(this);
+	    let dot = this.map.createPoint("dot-" + idx, this.collisionPoint, style,null,this.myTextGetter);
+	    this.dots.push(dot);
+	    style = $.extend({},style);
+	    style.label=null;
+	    style.fillColor='transparent';
+	    style.strokeColor=this.ringColor;
+	    style.strokeWidth=this.ringWidth;
+	    dot = this.map.createPoint("dot2-" + idx, this.collisionPoint, style,null,this.myTextGetter);
+	    this.dots.push(dot);		
+	}
+	this.dots.forEach(dot=>{
+	    dot.collisionInfo  = this;
+	});
+	return this.dots;
+    },
+    dotSelected:function(dot) {
+	if(this.fixed) return false;
+	this.setVisible(!this.visible);
+	return true;
+    },
+    styleCollisionDot:function(dot) {
+	$.extend(dot.style, this.getCollisionDotStyle(dot.collisionInfo));
+    },
+    addPoints:function(points) {
+	points.forEach(p=>this.points.push(p));
+    },
+    getCollisionDotStyle:function(collisionInfo) {
+	let dotColor= this.dotColor;
+	let dotRadius = this.dotRadius;
+	if(!this.fixed) {
+	    if(this.scaleDots) {
+		let extra = collisionInfo.numRecords;
+		if(extra>1)
+		    dotRadius = Math.min(Math.ceil(dotRadius+extra/2),28);
+//		console.log("scaling dots " + dotRadius +" " +collisionInfo.numRecords);
+	    } 
+
+	    if(collisionInfo.visible)  {
+		dotColor = this.dotColorOn??dotColor;
+	    } else {
+		dotColor = this.dotColorOff??dotColor;
+	    }
+	}
+	let style = {
+	    fillColor:dotColor,
+	    pointRadius:dotRadius
+	}
+	if(this.labelTemplate) {
+	    style =
+		$.extend(style,{
+		    label:this.labelTemplate.replace('${count}',this.records.length),
+		    fontColor:this.labelColor,
+		    fontSize:this.labelFontSize,
+		    labelOutlineColor:'transparent',
+
+		});
+	}		    
+
+	return style;
+
+    },
+
+
+    setVisible:function(visible) {
+	this.visible = visible;
+	this.dots.forEach(dot=>{
+	    this.styleCollisionDot(dot);
+	    dot.layer.drawFeature(dot, dot.style);
+	});
+
+	this.checkLines();
+	//These are the spokes
+	this.lines.forEach(f=>{
+	    f.featureVisible = this.visible;
+	    this.map.checkFeatureVisible(f,true);
+	});
+
+	this.records.forEach(record=>{
+	    let recordLayout = this.display.recordFeatures[record.getId()];
+	    if(!recordLayout) {
+		return;
+	    }
+	    recordLayout.features.forEach(f=>{
+		f.featureVisible = this.visible;
+		this.map.checkFeatureVisible(f,true);
+	    });
+	});
+    }
+}
+
+
