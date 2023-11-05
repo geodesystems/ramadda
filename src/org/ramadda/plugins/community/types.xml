@@ -144,6 +144,8 @@
 	handler="org.ramadda.plugins.community.CulturalSite"
 	editfields="name,site_type,resource,_default"
 	metadata="cultural_presenter,cultural_biome,cultural_plant_use" >
+    <!-- we have the optional=true because this might not be a pdf -->
+     <service link="media_gs_thumbnail" target="attachment" optional="true"/>
      <property name="icon" value="/cultural/archeological.png"/>
      <property name="form.description.iswiki" value="true"/>
      <property name="search.metadatatypes" value="cultural_biome"/>
@@ -158,7 +160,7 @@
 :vspace 0.5em
 {{tags  decorate="true"  message="" types="cultural_presenter,cultural_biome,!content.alias,!content.logo,!content.timezone"}}
 +center
-{{media width="300"}}
+{{media width="300" full=true}}
 -center
 ]]>
 </property>
@@ -167,7 +169,7 @@
 +row
 +col-md-8
 +center
-{{media width=100%}}
+{{media width=100% full=true}}
 -center
 {{description wikify="true"}}
 -col
