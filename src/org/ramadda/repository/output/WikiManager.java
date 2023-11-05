@@ -2241,6 +2241,7 @@ public class WikiManager extends RepositoryManager
             if ( !entry.getResource().isDefined()) {
                 return  getProperty(wikiUtil, props, ATTR_MESSAGE,"");
 	    }
+	    boolean full   = getProperty(wikiUtil, props, "full",false);
 	    boolean popup   = getProperty(wikiUtil, props, ATTR_POPUP, true);
 	    String popupCaption = getProperty(wikiUtil, props, "popupCaption","");
 	    if (popup) {
@@ -2250,9 +2251,22 @@ public class WikiManager extends RepositoryManager
 	    String height = getProperty(wikiUtil, props,"height", (String) null);
 	    String path   = entry.getResource().getPath();
 	    String _path   = path.toLowerCase();
+	    String imageUrl = null;
 	    if(entry.isImage()) {
-		String imgUrl = entry.getTypeHandler().getEntryResourceUrl(request, entry);
-		String image =  HU.img(imgUrl, "", HU.attr("width", width));
+		imageUrl = entry.getTypeHandler().getEntryResourceUrl(request, entry);
+	    }
+
+	    if(_path.indexOf(".pdf")>=0) {
+		imageUrl = getMetadataManager().getThumbnailUrl(request, entry);
+		if(full || imageUrl==null) {
+		    String pdfUrl = entry.getTypeHandler().getEntryResourceUrl(request, entry);
+		    return HU.getPdfEmbed(pdfUrl,props);
+		}
+	    }		
+
+
+	    if(imageUrl!=null) {
+		String image =  HU.img(imageUrl, "", HU.attr("width", width));
 		if (popup) {
 		    String entryUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW,
 						       entry);
@@ -2262,7 +2276,7 @@ public class WikiManager extends RepositoryManager
 		    String idPrefix = "gallery";
 		    popupExtras += HU.attr("data-fancybox", idPrefix) +
 			HU.attr("data-caption", dataCaption);			
-		    String popupUrl = imgUrl;
+		    String popupUrl = imageUrl;
 		    image =  HU.href(popupUrl, HU.div(image,
 						      HU.attr(
 							      "id", idPrefix + "div5")), popupExtras);
@@ -2270,6 +2284,9 @@ public class WikiManager extends RepositoryManager
 		}
 		return image;
 	    }
+
+
+
 	    if(entry.getResource().isUrl()) {
 		StringBuilder buff =new StringBuilder();
 		wikiUtil.embedMedia(buff,entry.getResource().getPath(), props);
@@ -2281,10 +2298,6 @@ public class WikiManager extends RepositoryManager
 		if(embed!=null) return embed;
 	    }
 
-	    if(_path.indexOf(".pdf")>=0) {
-		String pdfUrl = entry.getTypeHandler().getEntryResourceUrl(request, entry);
-		return HU.getPdfEmbed(pdfUrl,props);
-	    }		
 
 
 
