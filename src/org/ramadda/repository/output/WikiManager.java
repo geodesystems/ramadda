@@ -2038,6 +2038,7 @@ public class WikiManager extends RepositoryManager
 	    }
 	    return sb.toString(); 
         } else if (theTag.equals("share")) {
+	    //from: https://viima.github.io/jquery-social-share-bar/
 	    String css = ".js-share > .fab, .js-share > .fas, .js-share > .fa {color:white; font-size:16px;} .sharing-providers > li > a, .sharing-providers > li {width:30px; height:30px; font-size:16px;} .sharing-providers > li > a {line-height:24px;}";
 	    css+= "\n.ramadda-share {margin-left:5px;margin-right:5px;}";
 	    sb.append(HU.importJS(getRepository().getHtdocsUrl("/lib/share/jquery-social-share-bar.js")));
