@@ -4107,12 +4107,14 @@ public class TypeHandler extends RepositoryManager {
                 }
                 try {
                     File workDir = getStorageManager().createProcessDir();
-                    ServiceInput serviceInput = new ServiceInput(workDir,
-                                                    entry);
-                    //                    System.err.println("TypeHandler execing service: "  + service);
+                    ServiceInput serviceInput = new ServiceInput(workDir, entry);
                     ServiceOutput output =
                         service.evaluate(getRepository().getTmpRequest(),
                                          serviceInput, null);
+		    if(output==null) {
+			System.err.println("no service output:" + service);
+			continue;
+		    }
                     if ( !output.isOk()) {
                         System.err.println("service output not ok");
                         continue;
