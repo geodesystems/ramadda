@@ -2037,6 +2037,28 @@ public class WikiManager extends RepositoryManager
 		sb.append(delimiter);
 	    }
 	    return sb.toString(); 
+        } else if (theTag.equals("share")) {
+	    String css = ".js-share > .fab, .js-share > .fas, .js-share > .fa {color:white; font-size:16px;} .sharing-providers > li > a, .sharing-providers > li {width:30px; height:30px; font-size:16px;} .sharing-providers > li > a {line-height:24px;}";
+	    css+= "\n.ramadda-share {margin-left:5px;margin-right:5px;}";
+	    sb.append(HU.importJS(getRepository().getHtdocsUrl("/lib/share/jquery-social-share-bar.js")));
+	    sb.append(HU.cssLink(getRepository().getHtdocsUrl("/lib/share/jquery-social-share-bar.css")));	    
+	    sb.append(HU.importCss(css));
+	    String style = getProperty(wikiUtil, props, "style", "");
+	    List<String> args  = new ArrayList<String>();
+
+	    Utils.add(args,"position",JsonUtil.quote(getProperty(wikiUtil, props, "position", "right")));
+	    Utils.add(args,"theme",JsonUtil.quote(getProperty(wikiUtil, props, "theme", "circle")));
+	    Utils.add(args,"animate",""+getProperty(wikiUtil, props, "animate",true));
+	    String channels = "facebook,twitter,reddit,linkedin,pinterest,email";
+
+	    Utils.add(args,"channels",JsonUtil.list(JsonUtil.quote(Utils.split(
+									       getProperty(wikiUtil, props, "channels", channels),",",true,true))));
+	    String id = HU.getUniqueId("share_");
+	    HU.div(sb,"",HU.attrs("id",id,"class","ramadda-share share-bar","style",style));
+	    StringBuilder js = new StringBuilder();
+	    js.append("$('#" + id +"').share(" +JsonUtil.map(args)+");\n");
+	    HU.script(sb,js.toString());
+	    return sb.toString();
         } else if (theTag.equals(WIKI_TAG_COMMENTS)) {
             return getHtmlOutputHandler().getCommentBlock(request, entry,
 							  false).toString();
