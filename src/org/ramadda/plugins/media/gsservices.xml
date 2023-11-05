@@ -15,7 +15,9 @@ Runs GS to make an image from a PDF
           <arg value="-dLastPage=1"/>
 	  <arg value="-o"/>
           <arg value="thumb.jpg"  xfile="${entry.file.base}.jpg" xfilePattern=".*${unique}${entry.file.base}[0-9]+.jpg"/>
-          <arg value="${entry.file}" type="entry" entryType="type_document_pdf" primary="true" copy="true" label="Input PDF File"></arg>
+          <arg value="${entry.file}" type="entry" entryType="type_document_pdf"
+	       matchPattern=".*\.pdf"
+	       primary="true" copy="true" label="Input PDF File"></arg>
           <output type="file" pattern=".*\.jpg"/>
     </service>
 
