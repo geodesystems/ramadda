@@ -250,6 +250,8 @@ public class Service extends RepositoryManager {
     /** _more_ */
     private String linkId;
 
+    private boolean optional = false;
+    
     /** _more_ */
     private Service link;
 
@@ -411,6 +413,9 @@ public class Service extends RepositoryManager {
         cleanup = XmlUtil.getAttributeFromTree(element, ATTR_CLEANUP, true);
         category = XmlUtil.getAttributeFromTree(element, "category",
                 (String) null);
+	
+        optional = XmlUtil.getAttribute(element, "optional",false);
+
         linkId = XmlUtil.getAttribute(element, ATTR_LINK, (String) null);
         description = XmlUtil.getGrandChildText(element, ATTR_DESCRIPTION,
                 XmlUtil.getGrandChildText(element, ATTR_HELP, ""));
@@ -957,16 +962,16 @@ public class Service extends RepositoryManager {
      * @return _more_
      * @throws Exception _more_
      */
-    public HashSet<String> addArgs(Request request, String argPrefix,
+    private HashSet<String> addArgs(Request request, String argPrefix,
                                    ServiceInput input, List<String> commands,
                                    List<File> filesToDelete,
                                    List<Entry> allEntries,
-                                   Hashtable<String, String> valueMap)
+				    Hashtable<String, String> valueMap, boolean optional)
             throws Exception {
 
         if (haveLink()) {
             return link.addArgs(request, argPrefix, input, commands,
-                                filesToDelete, allEntries, valueMap);
+                                filesToDelete, allEntries, valueMap,optional);
         }
 
         HashSet<String> seenGroup   = new HashSet<String>();
@@ -1026,8 +1031,6 @@ public class Service extends RepositoryManager {
                     for (Entry entry : input.getEntries()) {
                         if (arg.isApplicable(entry, false)) {
                             entries.add(entry);
-                        } else {
-			    System.err.println("not applicable");
 			}
                     }
                 }
@@ -1113,9 +1116,9 @@ public class Service extends RepositoryManager {
                         "Too many entries specified for arg:"
                         + arg.getLabel() + " entries:" + entries);
                 } else if ( !arg.isRequired() && (entries.size() == 0)) {
-                    System.err.println("arg:" + arg.getName());
-                    System.err.println("entryMap:" + entryMap);
-
+		    if(optional) return null;
+                    System.err.println("service arg:" + arg.getName());
+                    System.err.println("service entryMap:" + entryMap);
                     throw new IllegalArgumentException(
                         "No entry specified for arg:" + arg.getLabel());
                 }
@@ -2286,6 +2289,12 @@ public class Service extends RepositoryManager {
     public ServiceOutput evaluate(Request request, ServiceInput input,
                                   String argPrefix)
             throws Exception {
+	return evaluate(request, input,argPrefix,optional);
+    }
+
+    public ServiceOutput evaluate(Request request, ServiceInput input,
+                                  String argPrefix,boolean optional)
+            throws Exception {	
 
         String  myPrefix       = getPrefix(argPrefix);
 
@@ -2296,7 +2305,7 @@ public class Service extends RepositoryManager {
         }
 
         if (haveLink()) {
-            return link.evaluate(request, input, myPrefix);
+            return link.evaluate(request, input, myPrefix,optional);
         }
 
 
@@ -2376,8 +2385,11 @@ public class Service extends RepositoryManager {
                                                    String>();
         HashSet<String> definedArgs = this.addArgs(request, myPrefix, input,
                                           commands, filesToDelete,
-                                          allEntries, valueMap);
+						   allEntries, valueMap,optional);
 
+	if(definedArgs==null) {
+	    return null;
+	}
         if (entries.size() == 0) {
             entries = allEntries;
         }
@@ -2981,5 +2993,10 @@ public class Service extends RepositoryManager {
     public double getMaxFileSize() {
         return maxFileSize;
     }
+
+    public boolean getOptional() {
+	return optional;
+    }
+
 
 }
