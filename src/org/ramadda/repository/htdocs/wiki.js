@@ -2136,7 +2136,7 @@ WikiEditor.prototype = {
 		{p:'listHeader'},
 		{p:'listWidth',ex:'300px'},
 		{p:'listIconSize',ex:'24px'},				
-		{p:'credits'},
+		{p:'credits',tt:'Text to show at the bottom of the map'},
 		{p:'hideIfNoLocations',tt:"Don't show map if no georeferenced data"},
 		{p:'details',ex:'false'},
 
