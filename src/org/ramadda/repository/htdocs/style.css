@@ -1544,7 +1544,6 @@ mapheader {
 }
 
 .ramadda-map-toc-outer {
-    overflow-y:auto;
     border:1px solid #aaa;
     position:absolute;
     left:50px;
@@ -1557,6 +1556,8 @@ mapheader {
     margin-right:5px;
     max-width:200px;
     overflow-x:auto;
+    max-height:500px;
+    overflow-y:auto;
     white-space:nowrap;
 }
 
