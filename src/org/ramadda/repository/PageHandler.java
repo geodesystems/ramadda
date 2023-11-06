@@ -839,6 +839,13 @@ public class PageHandler extends RepositoryManager {
 				      HU.squote(getAuthManager().getAuthToken(request.getSessionId())));
 	    }
             theFooter += HU.script(footerScript);
+	    List<Metadata> footerMtd = 
+                    getMetadataManager().findMetadata(request, thisEntry,
+						      "content.footer",true);
+	    if(footerMtd!=null && footerMtd.size()>0) {
+		String w= getWikiManager().wikifyEntry(request, thisEntry, footerMtd.get(0).getAttr1());
+		theFooter+=w;
+	    }
         }
 
 
