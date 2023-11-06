@@ -6,13 +6,13 @@ ${innercontent}
 +col-md-3
 <div class="entry-page-info">
 {{tools includeicon="true" title="Links" message=""}}
-<p>
+:vspace 0.5em
 {{information details="false"  block.show="true" block.title="Information" block.open="true" box.maxheight="300"  box.class="entry-sidebox" }}
-<p>
+:vspace 0.5em
 {{map message="" width="250" height="250"  box.maxheight="300" block.show="true" block.title="Locations" block.open="true"}}
-<p>
+:vspace 0.5em
 {{properties block.show="true" block.title="Properties" block.open="false"  message="" box.maxheight="300" box.class="entry-sidebox" display="small"}}
-<p>
+:vspace 0.5em
 {{list includeicon="true" details="false" entries="siblings,links"  message="" box.maxheight="200" box.class="entry-sidebox" block.show="true" block.title="Related" block.open="false"}}
 </div>
 -col
