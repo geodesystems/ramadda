@@ -815,12 +815,14 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                                 Utils.split(mapLayers, ";", true, true));
         }
 
+	/** for now don't do this since it adds all of the props to the map
         for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
             String key   = (String) keys.nextElement();
             String value = props.get(key);
-            mapInfo.addProperty(key, JsonUtil.quote(value));
+	    if(key.indexOf(".")>=0) continue;
+	    mapInfo.addProperty(key, JsonUtil.quote(value));
         }
-
+	*/
 
         String mapLayer = null;
         if (entry != null) {
