@@ -2500,6 +2500,17 @@ public class WikiManager extends RepositoryManager
             return getHtmlOutputHandler().makeHtmlHeader(request, entry,
 							 getProperty(wikiUtil, props, ATTR_TITLE, "Layout"));
         } else if (theTag.equals("license")) {
+	    String prefix = getProperty(wikiUtil,props,"textBefore","");
+	    if(stringDefined(prefix))
+		prefix=  prefix+HU.space(1);
+	    String text = getProperty(wikiUtil,props,"textAfter","");
+	    if(stringDefined(text))
+		text= HU.space(1) + text;
+	    String style=HU.css("text-align","left","display","inline-block","padding","5px");
+	    style+=getProperty(wikiUtil,props,"style","");
+	    if(getProperty(wikiUtil,props,"decorate",false))
+		style+=HU.css("border","var(--basic-border)");
+
 	    String l = getProperty(wikiUtil,props,"license","CC-BY").trim();
 	    License license = getMetadataManager().getLicense(l);
 	    if(license==null)
@@ -2508,7 +2519,7 @@ public class WikiManager extends RepositoryManager
 		//a hack  for the cc licenses
 		license = getMetadataManager().getLicense(l+"-4.0");
 	    if(license==null) {
-		return l;
+		return HU.div(prefix+l+text,HU.style(style));
 	    }
 	    String result= "";
 	    String icon = license.getIcon();
@@ -2523,7 +2534,7 @@ public class WikiManager extends RepositoryManager
 	    }
 	    String url = license.getUrl();
             if(url!=null) result =  HU.href(url, result, HU.attrs("target","_other","style","text-decoration:none;"));
-	    return result;
+	    return HU.div(prefix+result + text,HU.style(style));
         } else if (theTag.equals(WIKI_TAG_THIS)) {
 	    return entry.getId();
         } else if (theTag.equals(WIKI_TAG_ANCESTOR)) {
