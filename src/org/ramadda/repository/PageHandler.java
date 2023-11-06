@@ -827,24 +827,27 @@ public class PageHandler extends RepositoryManager {
         }
 
 	pageLinks.add(HU.span("",HU.id("ramadda_links_prefix")));
-        String theFooter = footer;
-	if(extraFooter!=null) theFooter+=extraFooter;
+        StringBuilder theFooter = new StringBuilder(footer);
+	if(extraFooter!=null) theFooter.append(extraFooter);
 
         Entry  thisEntry = request.getCurrentEntry();
-        if (thisEntry != null) {
+	
+        if (suffix && thisEntry != null) {
 	    String footerScript = "ramaddaThisEntry='" + thisEntry.getId() + "';\n";
 	    if(thisEntry.isGroup() && getAccessManager().canDoNew(request, thisEntry)) {
 		footerScript+=HU.call("RamaddaUtil.initDragAndDropOnHeader",
 				      HU.squote(thisEntry.getId())+"," +
 				      HU.squote(getAuthManager().getAuthToken(request.getSessionId())));
 	    }
-            theFooter += HU.script(footerScript);
+            theFooter.append(HU.script(footerScript));
 	    List<Metadata> footerMtd = 
                     getMetadataManager().findMetadata(request, thisEntry,
 						      "content.footer",true);
 	    if(footerMtd!=null && footerMtd.size()>0) {
-		String w= getWikiManager().wikifyEntry(request, thisEntry, footerMtd.get(0).getAttr1());
-		theFooter+=w;
+		for(Metadata mtd:footerMtd) {
+		    String w= getWikiManager().wikifyEntry(request, thisEntry, mtd.getAttr1());
+		    theFooter.append(w);
+		}
 	    }
         }
 
@@ -865,7 +868,7 @@ public class PageHandler extends RepositoryManager {
             MACRO_LOGO_URL, logoUrl, MACRO_LOGO_IMAGE, logoImage,
             MACRO_HEADER_IMAGE, getHeaderIcon(), MACRO_HEADER_TITLE,
             pageTitle, MACRO_LINKS, menuHtml, MACRO_REPOSITORY_NAME,
-            repository.getRepositoryName(), MACRO_FOOTER, theFooter,
+            repository.getRepositoryName(), MACRO_FOOTER, theFooter.toString(),
             MACRO_FOOTER_ACKNOWLEDGEMENT, getAckMessage(), MACRO_TITLE,
             Utils.stripTags(result.getTitle()), MACRO_BOTTOM, bottom, MACRO_SEARCH_URL,
             getSearchManager().getSearchUrl(request), MACRO_CONTENT, content,
