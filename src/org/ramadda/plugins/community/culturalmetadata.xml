@@ -13,7 +13,7 @@
     </type>
     <type id="cultural_plant_use" name="Plant Use"
 	  displaygroup="Plant Uses" searchable="true">
-      <element id="use" name="Plant Uss" datatype="enumerationplus"
+      <element id="use" name="Plant Uses" datatype="enumerationplus"
 	       values="file:/org/ramadda/plugins/community/resources/foodtypes.txt"/>
     </type>    
 
