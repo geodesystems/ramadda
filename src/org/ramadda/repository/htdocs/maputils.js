@@ -905,10 +905,11 @@ function CollisionHandler(map,opts) {
 
 
 CollisionHandler.prototype = {
-    getCollisionInfo:function(display,rpoint) {
-	let info = this.state[rpoint];
+    getCollisionInfo:function(display,collisionPoint) {
+	let info = this.state[collisionPoint];
 	if(!info) {
-	    info = this.state[rpoint]= new CollisionInfo(this.map,display, this.countAtPoint[rpoint], rpoint,this.collisionArgs);
+	    info = this.state[collisionPoint]=
+		new CollisionInfo(this.map,display, this.countAtPoint[collisionPoint], collisionPoint,this.collisionArgs);
 	    this.collisionInfos.push(info);
 	}
 	return info;
@@ -922,6 +923,8 @@ CollisionHandler.prototype = {
 
 function CollisionInfo(map, display,numRecords, collisionPoint,args) {
     $.extend(this,{
+	map:map,
+	display:display,
 	fixed:false,
 	visible: false,
 	icon:null,
@@ -937,8 +940,7 @@ function CollisionInfo(map, display,numRecords, collisionPoint,args) {
 	labelColor:"#fff",
 	labelFontSize:10,
 
-	map:map,
-	display:display,
+
 
 	dots: null,
 	collisionPoint:collisionPoint,
@@ -947,7 +949,7 @@ function CollisionInfo(map, display,numRecords, collisionPoint,args) {
 	records:[],
 	addLines:false,
 	lines:[],
-	points:[],
+	features:[],
     });
 
 
@@ -978,7 +980,7 @@ CollisionInfo.prototype = {
 	if(!this.addedLines) {
 	    this.addedLines = true;
 	    this.display.addFeatures(this.lines,true);
-	    this.display.addFeatures(this.points,false);
+//	    this.display.addFeatures(this.features,false);
 	}
     },
     createDots: function(idx) {
@@ -1011,8 +1013,9 @@ CollisionInfo.prototype = {
     styleCollisionDot:function(dot) {
 	$.extend(dot.style, this.getCollisionDotStyle(dot.collisionInfo));
     },
-    addPoints:function(points) {
-	points.forEach(p=>this.points.push(p));
+    addFeatures:function(features) {
+	this.features.push(...features);
+//	points.forEach(p=>this.points.push(p));
     },
     getCollisionDotStyle:function(collisionInfo) {
 	let dotColor= this.dotColor;
@@ -1066,11 +1069,11 @@ CollisionInfo.prototype = {
 	});
 
 	this.records.forEach(record=>{
-	    let recordLayout = this.display.recordFeatures[record.getId()];
-	    if(!recordLayout) {
+	    let recordInfo = this.display.recordToInfo[record.getId()];
+	    if(!recordInfo) {
 		return;
 	    }
-	    recordLayout.features.forEach(f=>{
+	    recordInfo.features.forEach(f=>{
 		f.featureVisible = this.visible;
 		this.map.checkFeatureVisible(f,true);
 	    });
