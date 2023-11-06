@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Nov  5 09:00:05 MST 2023";
+var build_date="RAMADDA build date: Sun Nov  5 21:35:39 MST 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -39375,7 +39375,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			featuresToAdd.push(this.map.createMarker("startpoint", tpoints[0],RamaddaUtil.getCdnUrl("/icons/map/marker-green.png")));
 			featuresToAdd.push(this.map.createMarker("endpoint", tpoints[tpoints.length-1],RamaddaUtil.getCdnUrl("/icons/map/marker-blue.png")));
 		    }
-		    let poly = this.map.createPolygon(ID, "", tpoints, attrs, null);
+		    let poly = this.map.createPolygon(ID, "", tpoints, attrs, null,true);
 		    poly.noSelect = true;
 		    featuresToAdd.push(poly);
 		}
@@ -39583,19 +39583,24 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		return null;
 	    };	    
 	    this.haveAddPoints = true;
-	    let recordFeatures = this.recordFeatures = {};
+	    let recordInfos = [];
+	    this.recordToInfo = {};
 	    records.forEach(record=>{
-		let recordLayout = recordFeatures[record.getId()] = {
+
+		let recordInfo =  {
+		    record:record,
 		    features:[],
 		    visible:true
 		}
 		if(!record.point) {
-		    recordLayout.x = record.getLongitude();
-		    recordLayout.y = record.getLatitude();
+		    recordInfo.x = record.getLongitude();
+		    recordInfo.y = record.getLatitude();
 		} else {
-		    recordLayout.x = record.point.x;
-		    recordLayout.y = record.point.y;
+		    recordInfo.x = record.point.x;
+		    recordInfo.y = record.point.y;
 		}
+		recordInfos.push(recordInfo);
+		this.recordToInfo[record.getId()]  =recordInfo;
 	    });
 
 
@@ -39635,34 +39640,35 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    lineColor: this.getProperty("collisionLineColor","#000")
 		});
 
-		let recordInfo = {};
-		records.forEach((record,idx)=>{
-		    let recordLayout = recordFeatures[record.getId()];
-		    if(recordLayout.x===null || recordLayout.y===null) return;
-		    recordLayout.collisionPoint = CH.getPoint(recordLayout);
+		recordInfos.forEach(recordInfo=>{
+		    if(recordInfo.x===null || recordInfo.y===null) return;
+		    recordInfo.collisionPoint = CH.getPoint(recordInfo);
 		});
-		records.forEach((record,idx)=>{
-		    let recordLayout = recordFeatures[record.getId()];
-		    let point = recordLayout;
-		    let collisionPoint = recordLayout.collisionPoint;
+		recordInfos.forEach((recordInfo,idx)=>{
+		    let record = recordInfo.record;
+		    let point = recordInfo;
+		    let collisionPoint = recordInfo.collisionPoint;
 		    if(collisionPoint ==null) return;
-		    if(CH.countAtPoint[collisionPoint]==1) {
+		    let cntAtPoint = CH.countAtPoint[collisionPoint];
+		    if(cntAtPoint==1) {
 			return;
 		    } 
-		    let cntAtPoint = CH.countAtPoint[collisionPoint];
+
+		    let info = CH.getCollisionInfo(this,collisionPoint);
+		    info.addRecord(record);
+		    recordInfo.collisionInfo = info;
+		    recordInfo.visible = info.visible;		    
+
+
 		    let anglePer = 360/cntAtPoint;
 		    let lineOffset = CH.offset;
 		    let delta = cntAtPoint/8;
 		    if(delta>1)
 			lineOffset*=delta;
-
-		    let info = CH.getCollisionInfo(this,collisionPoint);
-		    recordLayout.collisionInfo = info;
-		    recordLayout.visible = info.visible;
-		    info.addRecord(record);
-		    let cnt = info.records.length;
-		    let ep = Utils.rotate(collisionPoint.x,collisionPoint.y,collisionPoint.x,collisionPoint.y-lineOffset,cnt*anglePer-180,true);
+		    let ep = Utils.rotate(collisionPoint.x,collisionPoint.y,collisionPoint.x,collisionPoint.y-lineOffset,
+					  info.records.length*anglePer-180,true);
 		    let line = this.getMap().createLine("line-" + idx, "", collisionPoint.y,collisionPoint.x, ep.y,ep.x, {strokeColor:CH.lineColor,strokeWidth:CH.lineWidth});
+
 		    if(!info.visible) {
 			line.featureVisible = false;
 			this.map.checkFeatureVisible(line,true);
@@ -39678,7 +39684,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    }
 
-	    let i=0;
+	    let featureCnt=0;
 	    let sizeByFunc = function(percent, size) {
                 if (sizeEndPoints &&!isNaN(percent)) {
 		    endPointSize = dfltEndPointSize + parseInt(10 * percent);
@@ -39702,7 +39708,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    let secondRecord = null;		    
 		    groups.map[value].forEach(record=>{
 			if(!firstRecord) firstRecord=record;
-			i++;
+			featureCnt++;
 			if(lastRecord) {
 			    pathAttrs.strokeColor = colorBy.getColorFromRecord(record, pathAttrs.strokeColor,true);
 			    let line = this.map.createLine("line-" + i, "", lastRecord.getLatitude(), lastRecord.getLongitude(), record.getLatitude(),record.getLongitude(),pathAttrs);
@@ -39752,11 +39758,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    let didMarker = false;
 	    let times=[new Date()];
-	    records.forEach((record,idx)=>{
-		i++;
-		let recordLayout = recordFeatures[record.getId()];
-		if(!recordLayout) return;
-		let point  = recordLayout;
+	    recordInfos.forEach((recordInfo,idx)=>{
+		featureCnt++;
+		let record = recordInfo.record;
+		let point  = recordInfo;
 		if(!point) {
                     point = MapUtils.createPoint(record.getLongitude(), record.getLatitude());
 		} else {
@@ -39986,7 +39991,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 
 		let mapPoint=null;
-		let mapPoints =recordLayout.features;
+		let recordFeatures =recordInfo.features;
 		if(usingIcon) {
 		    if(iconField) {
 			let tuple = record.getData();
@@ -40001,7 +40006,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			}
 			mapPoint = this.map.createMarker("pt-" + i, point, icon, "pt-" + i,null,null,size);
 			mapPoint.isMarker = true;
-			mapPoints.push(mapPoint);
+			recordFeatures.push(mapPoint);
 			this.markers[record.getId()] = mapPoint;
 			pointsToAdd.push(mapPoint);
 		    } else  {
@@ -40010,12 +40015,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			if(rotateField) {
 			    attrs.rotation = rotateScale*record.getValue(rotateField.getIndex());
 			}
-			mapPoint = this.map.createMarker("pt-" + i, point, markerIcon, "pt-" + i,null,null,iconSize,null,null,attrs);
+			mapPoint = this.map.createMarker("pt-" + featureCnt, point, markerIcon, "pt-" + featureCnt,null,null,
+							 iconSize,null,null,attrs);
 			mapPoint.levelRange = this.pointLevelRange;
 			mapPoint.textGetter= textGetter;
 			pointsToAdd.push(mapPoint);
 			mapPoint.isMarker = true;
-			mapPoints.push(mapPoint);
+			recordFeatures.push(mapPoint);
 			this.markers[record.getId()] = mapPoint;
 		    }
 		}
@@ -40051,7 +40057,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    mapPoint = this.map.createMarker("pt-" + i, point, img, "pt-" + i,null,null,size);
 		    mapPoint.levelRange=this.glyphLevelRange;
 		    mapPoint.isMarker = true;
-		    mapPoints.push(mapPoint);
+		    recordFeatures.push(mapPoint);
 		    this.markers[record.getId()] = mapPoint;
 		    pointsToAdd.push(mapPoint);
 		}
@@ -40074,7 +40080,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			mapPoint.levelRange = this.pointLevelRange;
 			pointsToAdd.push(mapPoint);
 			this.markers[record.getId()] = mapPoint;
-			mapPoints.push(mapPoint);
+			recordFeatures.push(mapPoint);
 		    }
 		}
 
@@ -40086,11 +40092,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 		lastPoint = point;
 		if(features) {
-		    mapPoints.forEach(f=>{features.push(f);});
+		    recordFeatures.forEach(f=>{features.push(f);});
 		}
                 let date = record.getDate();
 
-		mapPoints.forEach(mapPoint=>{
+		recordFeatures.forEach(mapPoint=>{
 		    if(highlight) {
 			mapPoint.highlightTextGetter = highlightGetter;
 			mapPoint.highlightSize = highlightSize;
@@ -40103,14 +40109,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if (date) {
 			mapPoint.date = date.getTime();
 		    }
-		    if(!recordLayout.visible) {
+		    if(!recordInfo.visible) {
 			mapPoint.featureVisible = false;
 			this.map.checkFeatureVisible(mapPoint,true,records.length<20);
 		    }
 		});
 
-		if(recordLayout.collisionInfo) {
-		    recordLayout.collisionInfo.addPoints(mapPoints);
+		if(recordInfo.collisionInfo) {
+		    recordInfo.collisionInfo.addFeatures(recordFeatures);
 		}
 	    });
 	    
