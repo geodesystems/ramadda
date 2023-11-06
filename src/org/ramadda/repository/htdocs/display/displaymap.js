@@ -4526,7 +4526,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(sizeBy.index>=0) {
 			size = props.pointRadius;
 		    }
-		    mapPoint = this.map.createMarker("pt-" + i, point, img, "pt-" + i,null,null,size);
+		    mapPoint = this.map.createMarker("pt-" + featureCnt, point, img, "pt-" + featureCnt,null,null,size);
 		    mapPoint.levelRange=this.glyphLevelRange;
 		    mapPoint.isMarker = true;
 		    recordFeatures.push(mapPoint);
@@ -4548,7 +4548,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    props.cursor = 'pointer';
 			}
 
-			mapPoint = this.map.createPoint("pt-" + i, point, props, null);
+			mapPoint = this.map.createPoint("pt-" + featureCnt, point, props, null);
 			mapPoint.levelRange = this.pointLevelRange;
 			pointsToAdd.push(mapPoint);
 			this.markers[record.getId()] = mapPoint;
@@ -4559,7 +4559,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 		if(isPath && !groups && lastPoint) {
 		    pathAttrs.strokeColor = colorBy.getColorFromRecord(record, pathAttrs.strokeColor);
-		    let line = this.map.createLine("line-" + i, "", lastPoint.y, lastPoint.x, point.y,point.x,pathAttrs);
+		    let line = this.map.createLine("line-" + featureCnt, "", lastPoint.y, lastPoint.x, point.y,point.x,pathAttrs);
 		    pointsToAdd.push(line);
 		}
 		lastPoint = point;
