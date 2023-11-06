@@ -1687,7 +1687,7 @@ public class AccessManager extends RepositoryManager {
                 didLicenses = true;
                 lbuff.append(
 			     HU.div(getMetadataManager().getLicenseHtml(
-									license, null)));
+									license, null,false)));
             }
             if (didLicenses) {
                 String tmp = HU.div(lbuff.toString(),
