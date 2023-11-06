@@ -756,6 +756,10 @@ public class HtmlOutputHandler extends OutputHandler {
                 continue;
             }
 
+	    if(!type.getCanDisplay()) {
+		continue;
+	    }
+	    
 
             MetadataHandler metadataHandler = type.getHandler();
             String[] html = metadataHandler.getHtml(request, entry, metadata);
