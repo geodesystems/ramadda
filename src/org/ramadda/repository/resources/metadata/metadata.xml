@@ -74,9 +74,9 @@
 
 
     <type
+       id="content.url"
        name="URL"
        searchable="false"
-       id="content.url"
        displaygroup="Links" >
       <element datatype="url" name="URL"/>
       <element name="Name"/>
@@ -95,7 +95,7 @@
        browsable="true"
        displaygroup="Authors" 
        id="metadata_author"
-	priority="10"
+       priority="10"
        >
       <element name="Name"/>
       <element name="Email"/>
@@ -224,6 +224,17 @@ Override the logo icon and URL used in the default page templates.
       <element name="Logo URL"/>
       <element name="Page Title"/>
     </type>
+
+    <type
+       name="Footer"
+       id="content.footer"
+       candisplay="false">
+      <help>
+<![CDATA[Add a footer to any page]]>
+</help>
+      <element name="Footer" datatype="wiki" rows="20"/>
+    </type>
+
 
     <type name="Display Timezone" id="content.timezone">
       <element
