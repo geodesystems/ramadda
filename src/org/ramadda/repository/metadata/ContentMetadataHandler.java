@@ -136,7 +136,7 @@ public class ContentMetadataHandler extends MetadataHandler {
             String          searchLink = getSearchLink(request, metadata,"");
 
             String contents = getMetadataManager().getLicenseHtml(license,
-                                  label);
+								  label,false);
 
             return new String[] { "License:&nbsp;",
                                   searchLink + " " + contents };

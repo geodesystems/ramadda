@@ -313,13 +313,13 @@ public class MetadataManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public String getLicenseHtml(String id, String label) throws Exception {
+    public String getLicenseHtml(String id, String label,boolean includeId) throws Exception {
         License license = licenseMap.get(id);
         if (license == null) {
             return "NA:" + id;
         }
 
-        return getLicenseHtml(license, label);
+        return getLicenseHtml(license, label,includeId);
     }
 
 
@@ -345,7 +345,7 @@ public class MetadataManager extends RepositoryManager {
                 sb.append(HU.h2(from));
                 sb.append(HU.open("div", "class", "ramadda-licenses-box"));
             }
-            sb.append(getLicenseHtml(license, null));
+            sb.append(getLicenseHtml(license, null,true));
             sb.append("<br>");
             cnt++;
         }
@@ -365,7 +365,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public String getLicenseHtml(License license, String label)
+    public String getLicenseHtml(License license, String label,boolean includeId)
             throws Exception {
         if (label == null) {
             label = license.getName();
@@ -374,6 +374,9 @@ public class MetadataManager extends RepositoryManager {
         if (Utils.stringDefined(license.getUrl())) {
             contents = HU.href(license.getUrl(), contents, "target=_other");
         }
+	if(includeId)
+	    contents+=HU.br() + "ID: " + license.getId();
+
         String icon = license.getIcon();
         String text = license.getText();
         if (icon != null) {

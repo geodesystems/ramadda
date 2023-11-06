@@ -2039,16 +2039,43 @@ public class WikiManager extends RepositoryManager
 	    return sb.toString(); 
         } else if (theTag.equals("share")) {
 	    //from: https://viima.github.io/jquery-social-share-bar/
-	    String css = ".js-share > .fab, .js-share > .fas, .js-share > .fa {color:white; font-size:16px;} .sharing-providers > li > a, .sharing-providers > li {width:30px; height:30px; font-size:16px;} .sharing-providers > li > a {line-height:24px;}";
-	    css+= "\n.ramadda-share {margin-left:5px;margin-right:5px;}";
+	    StringBuilder css = new StringBuilder(".js-share > .fab, .js-share > .fas, .js-share > .fa {color:white; font-size:16px;}\n");
+	    css.append(".sharing-providers > li > a, .sharing-providers > li {width:30px; height:30px; font-size:16px;}\n");
+	    css.append(".sharing-providers > li > a {line-height:24px;}\n");
+	    css.append(".ramadda-share {margin-left:5px;margin-right:5px;}\n");
+	    if(getProperty(wikiUtil,props,"horizontal",false)) {
+		css.append(".sharing-providers > li {display:inline-block;}\n");
+		css.append(".share-bar {top:initial;bottom:10px; left: 50%; transform: translateX(-50%);}\n");
+		css.append(".share-bar.right {right: initial;}\n");
+		css.append(".share-bar.left {left:50%;}\n");
+	    }
+	    if(getProperty(wikiUtil,props,"here",false)) {
+		css.append(".share-bar {transform:initial;left:initial;bottom:initial;top:initial;display:inline-block;position:relative;}\n");
+		css.append(".share-bar.left {left:initial;}\n");
+	    }
+	    //	    System.err.println(css);
 	    sb.append(HU.importJS(getRepository().getHtdocsUrl("/lib/share/jquery-social-share-bar.js")));
 	    sb.append(HU.cssLink(getRepository().getHtdocsUrl("/lib/share/jquery-social-share-bar.css")));	    
-	    sb.append(HU.importCss(css));
+	    sb.append(HU.importCss(css.toString()));
 	    String style = getProperty(wikiUtil, props, "style", "");
 	    List<String> args  = new ArrayList<String>();
 
+	    String tmp;
+	    if((tmp=getProperty(wikiUtil,props,"title",null))!=null) {
+		Utils.add(args,"pageTitle",JsonUtil.quote(tmp));
+	    }
+	    if((tmp=getProperty(wikiUtil,props,"url",null))!=null) {
+		Utils.add(args,"pageUrl",JsonUtil.quote(tmp));
+	    }
+	    if((tmp=getProperty(wikiUtil,props,"desc",null))!=null) {
+		Utils.add(args,"pageDesc",JsonUtil.quote(tmp));
+	    }
+	    if((tmp=getProperty(wikiUtil,props,"animate",null))!=null) {
+		Utils.add(args,"animate",tmp);
+	    }	    	    
+	    
 	    Utils.add(args,"position",JsonUtil.quote(getProperty(wikiUtil, props, "position", "right")));
-	    Utils.add(args,"theme",JsonUtil.quote(getProperty(wikiUtil, props, "theme", "circle")));
+	    Utils.add(args,"theme",JsonUtil.quote(getProperty(wikiUtil, props, "theme", "square")));
 	    Utils.add(args,"animate",""+getProperty(wikiUtil, props, "animate",true));
 	    String channels = "facebook,twitter,reddit,linkedin,pinterest,email";
 
@@ -2473,24 +2500,29 @@ public class WikiManager extends RepositoryManager
             return getHtmlOutputHandler().makeHtmlHeader(request, entry,
 							 getProperty(wikiUtil, props, ATTR_TITLE, "Layout"));
         } else if (theTag.equals("license")) {
-	    License license = getMetadataManager().getLicense(remainder.trim());
-	    if(license==null) {
+	    String l = getProperty(wikiUtil,props,"license","CC-BY").trim();
+	    License license = getMetadataManager().getLicense(l);
+	    if(license==null)
+		license = getMetadataManager().getLicense(l.toUpperCase());
+	    if(license==null) 
 		//a hack  for the cc licenses
-		license = getMetadataManager().getLicense(remainder.trim()+"-4.0");
-	    }
+		license = getMetadataManager().getLicense(l+"-4.0");
 	    if(license==null) {
-		return remainder;
+		return l;
 	    }
 	    String result= "";
 	    String icon = license.getIcon();
 	    if(icon!=null) {
 		result =   HU.image(icon,
                                     HU.attrs("title",license.getName(),"width", "60", "border", "0"));
+		if(getProperty(wikiUtil,props,"includeName",false)) {
+		    result+=HU.space(1)+license.getName();
+		}
 	    } else {
 		result = license.getName();
 	    }
 	    String url = license.getUrl();
-            if(url!=null) result =  HU.href(url, result, "target=_other");
+            if(url!=null) result =  HU.href(url, result, HU.attrs("target","_other","style","text-decoration:none;"));
 	    return result;
         } else if (theTag.equals(WIKI_TAG_THIS)) {
 	    return entry.getId();
