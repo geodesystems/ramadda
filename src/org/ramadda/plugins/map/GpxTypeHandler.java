@@ -183,8 +183,6 @@ public class GpxTypeHandler extends PointTypeHandler {
             throws Exception {
 
         if (tag.equals("gpx.stats")) {
-            //            initializeNewEntry(request, entry,false);
-            //            getEntryManager().updateEntry(request, entry);
             double distance = (Double) entry.getDoubleValue(IDX_DISTANCE,
                                   Double.valueOf(0));
             double totalTime = (Double) entry.getDoubleValue(IDX_TOTAL_TIME,
@@ -230,7 +228,7 @@ public class GpxTypeHandler extends PointTypeHandler {
             sb.append(HtmlUtils.row(HtmlUtils.cols(distance + " miles",
                     gain + " ft", speed + " mph", totalFmt,
                     movingFmt), "class=gpx-stats-data"));
-            sb.append(HtmlUtils.row(HtmlUtils.cols("Distance", "Elevation",
+            sb.append(HtmlUtils.row(HtmlUtils.cols("Distance", "Elevation Gain",
                     "Avg. Speed", "Total Time",
                     "Moving Time"), "class=gpx-stats-labels"));
             sb.append("</table>");
@@ -264,6 +262,16 @@ public class GpxTypeHandler extends PointTypeHandler {
 	    extractInfo(request, entry, true);
 	}
     }
+
+    private static double readElevation(Element trackPoint) {
+	String v = XmlUtil.getGrandChildText(trackPoint, "ele",null);
+	if(v==null)
+	    v =  XmlUtil.getAttribute(trackPoint,"ele","0");
+	return Double.parseDouble(v);
+    }
+
+	
+
 
     /**
      * _more_
@@ -512,7 +520,7 @@ public class GpxTypeHandler extends PointTypeHandler {
             double lastLat       = 0;
             double lastLon       = 0;
             long   lastTime      = 0;
-            double lastElevation = 0;
+            double lastElevation = -9999;
             for (Element trackSeg :
                     ((List<Element>) XmlUtil.findChildren(track,
                         GpxUtil.TAG_TRKSEG))) {
@@ -523,27 +531,26 @@ public class GpxTypeHandler extends PointTypeHandler {
                                      GpxUtil.ATTR_LAT, 0.0);
                     double lon = XmlUtil.getAttribute(trackPoint,
                                      GpxUtil.ATTR_LON, 0.0);
-                    String ele = XmlUtil.getGrandChildText(trackPoint, "ele",
-                                     "0");
-                    double elevation = Double.parseDouble(ele);
-                    if (lastElevation == 0) {
+                    double elevation = readElevation(trackPoint);
+                    if (lastElevation == -9999) {
                         lastElevation = elevation;
                     } else {
                         double delta = Math.abs(lastElevation - elevation);
                         if (delta > 5) {
                             if (elevation > lastElevation) {
-                                elevationGain += (elevation - lastElevation);
+                                elevationGain += delta;
                             } else {
-                                elevationLoss += (lastElevation - elevation);
+                                elevationLoss += delta;
                             }
+			    //			    System.out.println(elevation+" " + lastElevation +" " + delta+" " + elevationGain);
                             lastElevation = elevation;
                         }
                     }
 
                     double speed = 0;
-                    if (ele != null) {
-                        ele = "" + (Double.parseDouble(ele) * 3.28084);
-                    }
+		    //                    if (ele != null) {
+		    //                        ele = "" + (Double.parseDouble(ele) * 3.28084);
+		    //                    }
                     String time = XmlUtil.getGrandChildText(trackPoint,
                                       "time", (String) null);
                     long thisTime = 0;
@@ -806,7 +813,8 @@ public class GpxTypeHandler extends PointTypeHandler {
                 double lon = XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,
                                  0.0);
 
-                String elev = XmlUtil.getGrandChildText(child, "ele", null);
+                double elev = readElevation(child);
+
                 StringBuilder info = new StringBuilder();
                 info.append(header);
                 info.append("<br>");
@@ -823,11 +831,11 @@ public class GpxTypeHandler extends PointTypeHandler {
                     info.append("Longitude: ");
                     info.append("" + lon);
                 }
-                if (elev != null) {
+		//                if (elev != null) {
                     info.append("<br>");
                     info.append("Elevation: ");
                     info.append(elev);
-                }
+		    //                }
                 String sinfo = info.toString();
                 sinfo = sinfo.replaceAll("\n", "<br>");
                 sinfo = sinfo.replaceAll("'", "\\'");
@@ -1021,7 +1029,7 @@ public class GpxTypeHandler extends PointTypeHandler {
                     for (Element pt :
                             ((List<Element>) XmlUtil.findChildren(trackSeg,
                                 GpxUtil.TAG_TRKPT))) {
-                        if (extraTags.size() > 0) {
+			if (extraTags.size() > 0) {
                             extra.clear();
                             Element extensions = XmlUtil.findChild(pt,
                                                      "extensions");
@@ -1059,9 +1067,7 @@ public class GpxTypeHandler extends PointTypeHandler {
                                          GpxUtil.ATTR_LAT, 0.0);
                         double lon = XmlUtil.getAttribute(pt,
                                          GpxUtil.ATTR_LON, 0.0);
-                        double elevation =
-                            Double.parseDouble(XmlUtil.getGrandChildText(pt,
-                                "ele", "0"));
+                        double elevation =readElevation(pt);
                         String time = XmlUtil.getGrandChildText(pt, "time",
                                           (String) null);
                         Date dttm = ((time == null)
@@ -1085,9 +1091,7 @@ public class GpxTypeHandler extends PointTypeHandler {
                                          GpxUtil.ATTR_LAT, 0.0);
                         double lon = XmlUtil.getAttribute(pt,
                                          GpxUtil.ATTR_LON, 0.0);
-                        double elevation =
-                            Double.parseDouble(XmlUtil.getGrandChildText(pt,
-                                "ele", "0"));
+                        double elevation =readElevation(pt);
                         String time = XmlUtil.getGrandChildText(pt, "time",
                                           (String) null);
                         Date dttm = ((time == null)
@@ -1112,9 +1116,7 @@ public class GpxTypeHandler extends PointTypeHandler {
                         double lon = XmlUtil.getAttribute(child,
                                          GpxUtil.ATTR_LON, 0.0);
 
-                        double elevation = Double.parseDouble(
-                                               XmlUtil.getGrandChildText(
-                                                   child, "ele", "0"));
+                        double elevation = readElevation(child);
                         Date dttm = ((time == null)
                                      ? null
                                      : sdf.parse(time));
@@ -1373,6 +1375,7 @@ public class GpxTypeHandler extends PointTypeHandler {
             lastTime      = ((dttm == null)
                              ? 0
                              : dttm.getTime());
+
 
             s.append((time != null)
                      ? time
