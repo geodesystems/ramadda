@@ -77,31 +77,34 @@ public class CulturalSite extends ExtensibleGroupTypeHandler {
     public String getEntryIconUrl(Request request, Entry entry)
             throws Exception {
         String type = entry.getStringValue(0, "");
-	if(type.equals("archeological"))
+	switch (type) {
+	case "archeological":
 	    return "/cultural/archeological.png";
-	if(type.equals("place"))
+	case "place":
 	    return "/cultural/place.png";
-	if(type.equals("spring"))
+	case "spring":
 	    return "/cultural/spring.png";
-	if(type.equals("food"))
+	case "food":
 	    return "/cultural/food.png";
-	if(type.equals("story"))
+	case "story":
 	    return "/cultural/story.png";
-	if(type.equals("historic"))
+	case "historic":
 	    return "/cultural/historic.png";
-	if(type.equals("historical"))
+	case "historical":
 	    return "/cultural/historic.png";	
-	if(type.equals("battle"))
+	case "battle":
 	    return "/cultural/battle.png";
-	if(type.equals("mining"))
+	case "mining":
 	    return "/cultural/mining.png";
-	if(type.equals("rockart"))
+	case "rockart":
 	    return "/cultural/rockart.png";
-	if(type.equals("sacred"))
+	case "sacred":
 	    return "/cultural/sacred.png";
-	if(type.equals("travel"))
+	case "travel":
 	    return "/cultural/travel.png";
-        return super.getIconUrl(request, entry);
+	default:
+	    return "/cultural/archeological.png";
+	}
     }
 
 }

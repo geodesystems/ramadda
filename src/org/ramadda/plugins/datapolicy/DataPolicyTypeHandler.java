@@ -146,7 +146,7 @@ public class DataPolicyTypeHandler extends GenericTypeHandler {
             String license = (String) entry.getValue(column.getOffset());
 	    if(Utils.stringDefined(license) && !license.equals("none")) {
 		String label = column.getEnumLabel(license);
-		tmpSb.append(getMetadataManager().getLicenseHtml(license, label));
+		tmpSb.append(getMetadataManager().getLicenseHtml(license, label,false));
 	    }
             return;
         }
