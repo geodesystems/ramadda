@@ -921,8 +921,12 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 */
                 StringBuilder sb = new StringBuilder();
 
+		String wikiHeight="400px";
+		if(rows>1){
+		    wikiHeight = ((int)(1.3*rows))+"em";
+		}
                 entry.getTypeHandler().addWikiEditor(request, entry, sb,
-                        formInfo, arg, value, null, false, 25000, true);
+						     formInfo, arg, value, null, false, 25000, true,"height",wikiHeight);
 
                 return sb.toString();
                 //                      wikiText, null, false, 256000);
