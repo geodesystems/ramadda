@@ -849,6 +849,20 @@ public class PageHandler extends RepositoryManager {
 		    theFooter.append(w);
 		}
 	    }
+
+	    List<Metadata> headerMtd = 
+                    getMetadataManager().findMetadata(request, thisEntry,
+						      "content.header",true);
+	    if(headerMtd!=null && headerMtd.size()>0) {
+		StringBuilder headerSB = new StringBuilder();
+		for(Metadata mtd:headerMtd) {
+		    String w= getWikiManager().wikifyEntry(request, thisEntry, mtd.getAttr1());
+		    headerSB.append(w);
+		}
+		HU.div(theFooter,headerSB.toString(),HU.clazz("ramadda-header-floating"));
+	    }
+
+
         }
 
 
