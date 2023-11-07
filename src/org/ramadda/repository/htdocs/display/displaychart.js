@@ -1788,13 +1788,28 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let prop;
 	    prop = this.getProperty("hAxis.ticks");
 	    if(prop || prop=="")  {
-		chartOptions.hAxis.ticks  = Utils.split(this.getProperty("hAxis.ticks"),",",true,true);
+		let fmt = this.getProperty("hAxis.tickTemplate","${value}");
+		let ticks = Utils.split(this.getProperty("hAxis.ticks"),",",true,true);
+		ticks=ticks.map(t=> {
+		    return {
+			v:t,
+			f:fmt.replace("${value}",t)
+		    }
+		});
+		chartOptions.hAxis.ticks  = ticks;
 	    }
 	    prop = this.getProperty("vAxis.ticks");
 	    if(prop || prop=="")  {
-		chartOptions.vAxis.ticks  = Utils.split(this.getProperty("vAxis.ticks"),",",true,true);
+		let fmt = this.getProperty("vAxis.tickTemplate","${value}");
+		let ticks = Utils.split(this.getProperty("vAxis.ticks"),",",true,true);
+		ticks=ticks.map(t=> {
+		    return {
+			v:t,
+			f:fmt.replace("${value}",t)
+		    }
+		});
+		chartOptions.vAxis.ticks  = ticks;
 	    }
-//	    console.log("ticks:" + chartOptions.vAxis.ticks);
 
 
             if (this.fontSize > 0) {
@@ -2313,10 +2328,11 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 
 	{p:'legend.position',ex:'top|bottom|none'},
 	{p:'legend.text.color',ex:'#000'},
-	{p:'hAxis.ticks',ex:''},
-	{p:'hAxis.ticks',ex:''},
-	{p:'vAxis.ticks',ex:''},
-	{p:'vAxis.ticks',ex:''},
+	{p:'hAxis.ticks',tt:'Comma separated list of tick marks',ex:''},
+	{p:'hAxis.tickTemplate',ex:'${value}'},
+	{p:'vAxis.ticks',tt:'Comma separated list of tick marks',ex:''},
+	{p:'vAxis.tickTemplate',ex:'${value}'},	
+
 	{p:'useMultipleAxes',ex:'true'},
     ];
 
