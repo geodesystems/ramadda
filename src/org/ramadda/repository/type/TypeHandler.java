@@ -5628,7 +5628,7 @@ public class TypeHandler extends RepositoryManager {
     public String addWikiEditor(Request request, Entry entry, Appendable sb,
                                 FormInfo formInfo, String hiddenId,
                                 String text, String label, boolean readOnly,
-                                int length, boolean visible)
+                                int length, boolean visible,String...args)
             throws Exception {
         String editorId = hiddenId + "_editor";
         if (text.startsWith(WIKI_PREFIX)) {
@@ -5664,6 +5664,11 @@ public class TypeHandler extends RepositoryManager {
 	    int cnt = Utils.split(text,"\n").size();
 	    if(cnt<20)
 		height=(cnt+3)+"em";
+	}
+	for(int i=0;i<args.length;i+=2) {
+	    String key = args[i];
+	    String value = args[i+1];
+	    if(key.equals("height")) height=value;
 	}
         String textWidget = HU.div(text,
                                           HU.id(editorId)
