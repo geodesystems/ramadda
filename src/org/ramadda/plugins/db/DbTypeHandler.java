@@ -3206,10 +3206,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         request.remove(ARG_DB_BULK_LOCALFILE);
         tableHandler.clearCache();
         StringBuilder sb = new StringBuilder();
-        getPageHandler().entrySectionOpen(request, entry, sb, "Upload", true);
-        sb.append("Added " + totalCnt[0] + " entries");
+	addViewHeader(request, entry, sb,"","");
+        sb.append(getPageHandler().showDialogNote("Added " + totalCnt[0] + " entries"));
         getPageHandler().entrySectionClose(request, entry, sb);
-
         return new Result("", sb);
     }
 
@@ -6645,8 +6644,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         StringBuilder bulkSB = new StringBuilder();
         makeForm(request, entry, bulkSB);
         StringBuilder bulkButtons = new StringBuilder();
-        bulkButtons.append(HU.submit("Create entries",ARG_DB_CREATE));
-        bulkButtons.append(HU.submit(LABEL_CANCEL, ARG_DB_LIST));
+        bulkButtons.append(HU.buttons(
+				      HU.submit("Create entries",ARG_DB_CREATE),
+				      HU.submit(LABEL_CANCEL, ARG_DB_LIST)));
         bulkSB.append(bulkButtons);
         bulkSB.append(HU.p());
         bulkSB.append(msgLabel("Upload a file"));
