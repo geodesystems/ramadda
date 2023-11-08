@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Nov  7 05:29:04 MST 2023";
+var build_date="RAMADDA build date: Wed Nov  8 08:04:31 PST 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -39727,7 +39727,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			featureCnt++;
 			if(lastRecord) {
 			    pathAttrs.strokeColor = colorBy.getColorFromRecord(record, pathAttrs.strokeColor,true);
-			    let line = this.map.createLine("line-" + i, "", lastRecord.getLatitude(), lastRecord.getLongitude(), record.getLatitude(),record.getLongitude(),pathAttrs);
+			    let line = this.map.createLine("line-" + featureCnt, "", lastRecord.getLatitude(), lastRecord.getLongitude(), record.getLatitude(),record.getLongitude(),pathAttrs);
 			    featuresToAdd.push(line);
 			    line.record=record;
 			    line.textGetter=textGetter;
