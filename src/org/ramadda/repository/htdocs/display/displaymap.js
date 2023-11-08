@@ -4183,7 +4183,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			featureCnt++;
 			if(lastRecord) {
 			    pathAttrs.strokeColor = colorBy.getColorFromRecord(record, pathAttrs.strokeColor,true);
-			    let line = this.map.createLine("line-" + i, "", lastRecord.getLatitude(), lastRecord.getLongitude(), record.getLatitude(),record.getLongitude(),pathAttrs);
+			    let line = this.map.createLine("line-" + featureCnt, "", lastRecord.getLatitude(), lastRecord.getLongitude(), record.getLatitude(),record.getLongitude(),pathAttrs);
 			    featuresToAdd.push(line);
 			    line.record=record;
 			    line.textGetter=textGetter;
