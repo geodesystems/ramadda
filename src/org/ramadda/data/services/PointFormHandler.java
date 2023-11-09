@@ -901,8 +901,9 @@ public class PointFormHandler extends RecordFormHandler {
         } else {
             map.centerOn(entry);
         }
-        SessionManager sm = getRepository().getSessionManager();
-	
+	getMapManager().initMapSelector(request, entry.getTypeHandler(),entry.getParentEntry(), entry, map);
+	String mapSelector = map.makeSelector(ARG_AREA, true, null,   "", "");
+	HU.formEntry(subsetSB,msgLabel("Subset"),  mapSelector);
         if (recordEntry != null) {
             String help = "Probablity a point will be included 0 - 1.0";
             String probHelpImg =HU.space(1) +
