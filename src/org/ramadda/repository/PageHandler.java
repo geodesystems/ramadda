@@ -1980,9 +1980,7 @@ public class PageHandler extends RepositoryManager {
                     url = request.makeUrl(getRepositoryBase().URL_USER_LOGIN);
                 } else {
                     //The request.getUrlArgs will always exclude the passwords
-                    request.remove(ARG_MESSAGE);
-                    request.remove(ARG_REDIRECT);
-                    request.remove(ARG_USER_ID);
+                    request.remove(ARG_MESSAGE,ARG_REDIRECT,ARG_USER_ID);
                     String redirect = Utils.encodeBase64(request.getUrl());
                     url = request.makeUrl(getRepositoryBase().URL_USER_LOGIN,
                                           ARG_REDIRECT, redirect);

@@ -932,13 +932,7 @@ public class CalendarOutputHandler extends OutputHandler {
             request.put(ARG_DAY, "" + (nextnext[IDX_DAY]));
         }
         navUrls.add(request.getUrl());
-
-
-        request.remove(ARG_DAY);
-        request.remove(ARG_MONTH);
-        request.remove(ARG_YEAR);
-
-
+        request.remove(ARG_DAY,ARG_MONTH,ARG_YEAR);
         List navList = new ArrayList();
 
         for (int i = 0; i < navLabels.length; i++) {

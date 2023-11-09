@@ -1368,10 +1368,12 @@ public class Request implements Constants, Cloneable {
      *
      * @return _more_
      */
-    public Object remove(Object key) {
-        Object v = parameters.get(key);
-        parameters.remove(key);
-
+    public Object remove(Object ...keys) {
+	Object v =null;
+	for(Object key: keys) {
+	    v = parameters.get(key);
+	    parameters.remove(key);
+	}
         return v;
     }
 

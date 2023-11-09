@@ -1124,8 +1124,7 @@ public class EntryManager extends RepositoryManager {
             //Do a redirect
             if (nextId != null) {
                 request.put(ARG_ENTRYID, nextId);
-                request.remove(ARG_NEXT);
-                request.remove(ARG_PREVIOUS);
+                request.remove(ARG_NEXT, ARG_PREVIOUS);
 
                 return new Result(request.getUrl());
             }

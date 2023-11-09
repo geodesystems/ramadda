@@ -3200,10 +3200,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	entryChanged(request, entry);
 
         //Remove these so any links that get made with the request don't point to the BULK upload
-        request.remove(ARG_DB_NEWFORM);
-        request.remove(ARG_DB_BULK_TEXT);
-        request.remove(ARG_DB_BULK_FILE);
-        request.remove(ARG_DB_BULK_LOCALFILE);
+        request.remove(ARG_DB_NEWFORM, ARG_DB_BULK_TEXT,
+		       ARG_DB_BULK_FILE,
+		       ARG_DB_BULK_LOCALFILE);
         tableHandler.clearCache();
         StringBuilder sb = new StringBuilder();
 	addViewHeader(request, entry, sb,"","");
