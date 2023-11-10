@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Nov  8 08:04:31 PST 2023";
+var build_date="RAMADDA build date: Fri Nov 10 06:05:56 PST 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -36451,16 +36451,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'unhighlightRadius',d:-1,ex:'1',tt:'Radius for when records are highlighted with the filters'},
 
 	{label:'Map Collisions'},
-	{p:'handleCollisions',ex:'true',tt:'Handle point collisions'},
-	{p:'collisionFixed',d:false,ex:'true',tt:'If fixed, don\'t show the grouped markers on a click'},
-	{p:'collisionMinPixels',d:16,tt:'How spread out'},
+	{p:'handleCollisions',ex:true,tt:'Handle point collisions'},
+	{p:'collisionFixed',d:false,ex:true,tt:'If true, don\'t show the grouped markers on a click'},
+	{p:'collisionPointSize',d:16,tt:'Size of each point. Higher # is more spread out'},
 	{p:'collisionDotColor',d:'blue',tt:'Color of dot drawn at center'},
 	{p:'collisionRingColor',d:'red',tt:'Color of ring'},
 	{p:'collisionRingWidth',d:3,tt:'Color of ring'},	
-	{p:'collisionDotColorOn'},
-	{p:'collisionDotColorOff'},		
+	{p:'collisionDotColorOn',d:'green',tt:'color to use when the collision marker is selected'},
 	{p:'collisionDotRadius',d:12,tt:'Radius of dot drawn at center'},
-	{p:'collisionScaleDots',ex:'false',d:true,tt:'Scale the group dots'},
+	{p:'collisionScaleDots',ex:true,d:false,tt:'Scale the group dots'},
 	{p:'collisionLineColor',ex:'red',tt:'Color of line drawn at center'},
 	{p:'collisionLabelTemplate',d:'${count}'},
 	{p:'collisionLabelColor',d:'white'},
@@ -39299,6 +39298,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
         createPoints: function(records, fields, points,bounds, debug) {
 	    debug = debug ||displayDebug.displayMapAddPoints;
+	    let _this = this;
 	    let debugTimes  = false;
 	    let features = [];
 	    let featuresToAdd = [];
@@ -39599,10 +39599,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		return null;
 	    };	    
 	    this.haveAddPoints = true;
-	    let recordInfos = [];
 	    this.recordToInfo = {};
-	    records.forEach(record=>{
-
+	    let recordInfos = records.map(record=>{
 		let recordInfo =  {
 		    record:record,
 		    features:[],
@@ -39615,8 +39613,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    recordInfo.x = record.point.x;
 		    recordInfo.y = record.point.y;
 		}
-		recordInfos.push(recordInfo);
 		this.recordToInfo[record.getId()]  =recordInfo;
+		return recordInfo;
 	    });
 
 
@@ -39634,48 +39632,56 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let collisionArgs = {
 		    textGetter: collisionTextGetter,
 		    fixed:this.getCollisionFixed(),
-		    visible: this.getCollisionFixed(),
+		    visible: false,
 		    icon:this.getCollisionIcon(),
 		    iconSize:this.getCollisionIconSize(),	
 		    dotColor:this.getCollisionDotColor(),
 		    ringColor:this.getCollisionRingColor(),
 		    ringWidth:this.getCollisionRingWidth(),		    		    
 		    dotColorOn:this.getCollisionDotColorOn(),
-		    dotColorOff:this.getCollisionDotColorOff(),	
 		    dotRadius:this.getCollisionDotRadius(),
-		    scaleDots:this.getPropertyCollisionScaleDots(false),
+		    scaleDots:this.getPropertyCollisionScaleDots(),
 		    labelTemplate:this.getCollisionLabelTemplate(),
 		    labelColor:this.getCollisionLabelColor(),
 		    labelFontSize:this.getCollisionLabelFontSize(),
 		}
 
 		let CH = new CollisionHandler(this.map, {
-		    minPixels:this.getCollisionMinPixels(),
+		    pointSize:this.getCollisionPointSize(),
 		    collisionArgs:collisionArgs,
 		    lineWidth: this.getProperty("collisionLineWidth","2"),			
-		    lineColor: this.getProperty("collisionLineColor","#000")
+		    lineColor: this.getProperty("collisionLineColor","#000"),
+		    addCollisionLines:function(info,lines) {
+			_this.addFeatures(lines,true);
+		    },
+		    setCollisionVisible: function(info,visible) {
+			info.records.forEach(record=>{
+			    let recordInfo = _this.recordToInfo[record.getId()];
+			    if(!recordInfo) {
+				return;
+			    }
+			    recordInfo.features.forEach(f=>{
+				f.featureVisible = info.visible;
+				_this.map.checkFeatureVisible(f,true);
+			    });
+			});
+		    }
 		});
 
-		recordInfos.forEach(recordInfo=>{
-		    if(recordInfo.x===null || recordInfo.y===null) return;
-		    recordInfo.collisionPoint = CH.getPoint(recordInfo);
-		});
+		//First get the rounded point for each RecordInfo
+		CH.initPoints(recordInfos);
 		recordInfos.forEach((recordInfo,idx)=>{
-		    let record = recordInfo.record;
-		    let point = recordInfo;
 		    let collisionPoint = recordInfo.collisionPoint;
 		    if(collisionPoint ==null) return;
 		    let cntAtPoint = CH.countAtPoint[collisionPoint];
 		    if(cntAtPoint==1) {
 			return;
 		    } 
-
-		    let info = CH.getCollisionInfo(this,collisionPoint);
+		    let record = recordInfo.record;
+		    let info = CH.getCollisionInfo(collisionPoint);
 		    info.addRecord(record);
 		    recordInfo.collisionInfo = info;
 		    recordInfo.visible = info.visible;		    
-
-
 		    let anglePer = 360/cntAtPoint;
 		    let lineOffset = CH.offset;
 		    let delta = cntAtPoint/8;
@@ -39690,14 +39696,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			this.map.checkFeatureVisible(line,true);
 		    }
 		    info.addLine(line);
-		    featuresToAdd.push(line);
-		    point.x=ep.x;
-		    point.y=ep.y;
+		    //set the rotated location of the point to use later
+		    recordInfo.x=ep.x;
+		    recordInfo.y=ep.y;
 		});
 		CH.getCollisionInfos().forEach((info,idx)=>{
                     featuresToAdd.push(...info.createDots(idx));
 		});
-
 	    }
 
 	    let featureCnt=0;
