@@ -850,6 +850,7 @@ function ramaddaMapShareState(source, state) {
 
 
 function CollisionHandler(map,opts) {
+    opts = opts??{};
     $.extend(this, {
 	map:map,
 	countAtPoint:{},
@@ -858,42 +859,29 @@ function CollisionHandler(map,opts) {
 	collisionArgs:opts.collisionArgs??{},
 	collisionInfos:[]
     })
+    this.opts = opts;
     let mapBounds= this.map.getBounds();
     let mapW= mapBounds.right-mapBounds.left;
     let divW =  $("#" + this.map.mapDivId).width();
     let baseOffset= mapW*0.025;
-
-    let minPixels= opts?.minPixels??16;
+    let pointSize= opts.pointSize??16;
     let pixelsPer= divW/mapW;
     let scaleFactor= 360/pixelsPer;
     let cnt= 0;
     //figure out the offset but use cnt so we don't go crazy
-    while(pixelsPer*this.offset<minPixels && cnt<100) {
+    while(pixelsPer*this.offset<pointSize && cnt<100) {
 	this.offset+=baseOffset;
 	cnt++;
     }
 
-    let decimals = -1;
-    let pixels = [6,12,24,48,96,192];
-    for(let i=0;i<pixels.length;i++) {
-	if(pixelsPer<pixels[i]) break;
-	decimals++;
-    }
-    let rnd = (v)=>{
-	if(decimals>0) {
-	    let v0 = Utils.roundDecimals(v,decimals);
-	    return v0;
-	}
-	v= Math.round(v);
-	if(decimals<0)
-	    if (v%2 != 0)
-		v--;
-	return v;
-    };
-    this.getPoint = p=>{
-	let lat = rnd(p.y);
-	let lon = rnd(p.x);
-	let point= MapUtils.createPoint(lon,lat);
+    this.getCollisionPoint = p=>{
+        let pt = MapUtils.createLonLat(p.x,p.y);
+        pt = this.map.transformLLPoint(pt);
+	pt = this.map.getMap().getViewPortPxFromLonLat(pt);
+	const x = Math.round(pt.x / pointSize) * pointSize;
+	const y = Math.round(pt.y / pointSize) * pointSize;
+	let location = this.map.transformProjPoint(this.map.getMap().getLonLatFromPixel({x:x,y:y}));
+	let point= MapUtils.createPoint(location.lon,location.lat);
 	if(this.countAtPoint[point]) {
 	    this.countAtPoint[point]++;
 	} else {
@@ -905,26 +893,41 @@ function CollisionHandler(map,opts) {
 
 
 CollisionHandler.prototype = {
-    getCollisionInfo:function(display,collisionPoint) {
+    initPoints:function(points) {
+	return points.map(point=>{
+	    if(point.x===null || point.y===null) return;
+	    point.collisionPoint = this.getCollisionPoint(point);
+	});
+    },
+    getCollisionInfo:function(collisionPoint,hook) {
 	let info = this.state[collisionPoint];
 	if(!info) {
 	    info = this.state[collisionPoint]=
-		new CollisionInfo(this.map,display, this.countAtPoint[collisionPoint], collisionPoint,this.collisionArgs);
+		new CollisionInfo(this, this.countAtPoint[collisionPoint], collisionPoint,this.collisionArgs);
 	    this.collisionInfos.push(info);
 	}
 	return info;
     },
     getCollisionInfos:function() {
 	return this.collisionInfos;
+    },
+    addCollisionLines:function(info,lines) {
+	if(this.opts.addCollisionLines)
+	    this.opts.addCollisionLines(info,lines);
+	else
+	    this.map.getLinesLayer().addFeatures(lines);
+    },
+    setCollisionVisible:function(info,visible) {
+	if(this.opts.setCollisionVisible)
+	    this.opts.setCollisionVisible(info,visible);
     }
 
 }
 
 
-function CollisionInfo(map, display,numRecords, collisionPoint,args) {
+function CollisionInfo(handler,numRecords, collisionPoint,args) {
     $.extend(this,{
-	map:map,
-	display:display,
+	handler:handler,
 	fixed:false,
 	visible: false,
 	icon:null,
@@ -979,25 +982,24 @@ CollisionInfo.prototype = {
     checkLines: function() {
 	if(!this.addedLines) {
 	    this.addedLines = true;
-	    this.display.addFeatures(this.lines,true);
-//	    this.display.addFeatures(this.features,false);
+	    this.handler.addCollisionLines(this,this.lines);
 	}
     },
     createDots: function(idx) {
 	this.dots = [];
 	if(this.icon) {
-	    this.dots.push(this.map.createMarker("dot-" + idx, [this.collisionPoint.x,this.collisionPoint.y], this.icon, "", "",null,this.iconSize,null,null,null,null,false));
+	    this.dots.push(this.handler.map.createMarker("dot-" + idx, [this.collisionPoint.x,this.collisionPoint.y], this.icon, "", "",null,this.iconSize,null,null,null,null,false));
 
 	} else {
 	    let style = this.getCollisionDotStyle(this);
-	    let dot = this.map.createPoint("dot-" + idx, this.collisionPoint, style,null,this.myTextGetter);
+	    let dot = this.handler.map.createPoint("dot-" + idx, this.collisionPoint, style,null,this.myTextGetter);
 	    this.dots.push(dot);
 	    style = $.extend({},style);
 	    style.label=null;
 	    style.fillColor='transparent';
 	    style.strokeColor=this.ringColor;
 	    style.strokeWidth=this.ringWidth;
-	    dot = this.map.createPoint("dot2-" + idx, this.collisionPoint, style,null,this.myTextGetter);
+	    dot = this.handler.map.createPoint("dot2-" + idx, this.collisionPoint, style,null,this.myTextGetter);
 	    this.dots.push(dot);		
 	}
 	this.dots.forEach(dot=>{
@@ -1065,19 +1067,9 @@ CollisionInfo.prototype = {
 	//These are the spokes
 	this.lines.forEach(f=>{
 	    f.featureVisible = this.visible;
-	    this.map.checkFeatureVisible(f,true);
+	    this.handler.map.checkFeatureVisible(f,true);
 	});
-
-	this.records.forEach(record=>{
-	    let recordInfo = this.display.recordToInfo[record.getId()];
-	    if(!recordInfo) {
-		return;
-	    }
-	    recordInfo.features.forEach(f=>{
-		f.featureVisible = this.visible;
-		this.map.checkFeatureVisible(f,true);
-	    });
-	});
+	this.handler.setCollisionVisible(this,visible);
     }
 }
 
