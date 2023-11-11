@@ -55,6 +55,22 @@ var MapUtils =  {
 	rows:2,
 	seen:{}
     },
+    MAP_RESOURCES:null,
+    MAP_RESOURCES_MAP:null,
+    initMapResources:function() {
+	if(!this.MAP_RESOURCES) {
+            $.getJSON(Ramadda.getUrl('/mapresources.json'), data=>{
+		this.MAP_RESOURCES_MAP={};
+		this.MAP_RESOURCES = data;
+		this.MAP_RESOURCES.forEach((r,idx)=>{this.MAP_RESOURCES_MAP[idx] = r;});
+	    }).fail(err=>{
+		console.error('Failed loading mapresources.json:' + err);
+	    });
+	}
+    },
+
+
+
     handleSize:function(bbox) {
 	if(!this.testSize.active) return;
 	if(!this.testSize.out) {
