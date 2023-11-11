@@ -397,6 +397,8 @@ function RamaddaRepository(repositoryRoot) {
             let id;
             if ((typeof entry) == "string") id = entry;
             else id = entry.id;
+	    //Check for a URL
+	    if(id.startsWith('http')) return id;
             let url = this.getRoot() + "/entry/get?entryid=" + id;
             if (extraArgs != null) {
                 if (!StringUtil.startsWith(extraArgs, "&")) {
