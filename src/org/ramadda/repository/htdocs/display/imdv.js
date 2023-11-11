@@ -11,8 +11,7 @@ addGlobalDisplayType({
     tooltip: makeDisplayTooltip('Integrated Map Data','imdv.png','Create interactive maps with points, routes, data, etc'),        
 });
 
-var MAP_RESOURCES;
-var MAP_RESOURCES_MAP; 
+
 var GLYPH_FIXED = 'fixed';
 var GLYPH_GROUP = 'group';
 var GLYPH_MARKER = 'marker';
@@ -157,16 +156,7 @@ let ImdvUtils = {
 function RamaddaImdvDisplay(displayManager, id, properties) {
     this.mapProperties = {};
     Utils.importJS(ramaddaBaseHtdocs+'/wiki.js');
-    if(!MAP_RESOURCES) {
-        $.getJSON(Ramadda.getUrl('/mapresources.json'), data=>{
-	    MAP_RESOURCES_MAP={};
-	    MAP_RESOURCES = data;
-	    MAP_RESOURCES.forEach((r,idx)=>{MAP_RESOURCES_MAP[idx] = r;});
-	}).fail(err=>{
-	    console.error('Failed loading mapresources.json:' + err);
-	});
-    }
-
+    MapUtils.initMapResources();
     ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPolygon, {
 	CLASS_NAME:'IMDV Image Handler',
 	initialize: function(control, callbacks, options) {
@@ -1298,7 +1288,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    delete attrs.entryName;
 		    if(glyphType.isMap()) {
 			if(resourceId) {
-			    let resource  =MAP_RESOURCES_MAP[resourceId];
+			    let resource  =MapUtils.MAP_RESOURCES_MAP[resourceId];
 			    attrs.name = Utils.makeLabel(resource.name);
 			    attrs.entryType = resource.type;
 			    attrs.resourceUrl = resource.url;
@@ -1429,8 +1419,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let extra = null;
 		if(glyphType.isImage()) {
 		    extra = HU.b('Enter Image URL: ') + HU.input('',this.lastImageUrl??'',[ATTR_ID,this.getDomId('imageurl'),'size','40']);
-		} else if(glyphType.isMap() && MAP_RESOURCES) {
-		    let ids = MAP_RESOURCES.map((r,idx)=>{
+		} else if(glyphType.isMap() && MapUtils.MAP_RESOURCES) {
+		    let ids = MapUtils.MAP_RESOURCES.map((r,idx)=>{
 			return [idx,r.name];
 		    });
 		    ids = Utils.mergeLists([['','Select Resource']],ids);
