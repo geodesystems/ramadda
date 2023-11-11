@@ -617,7 +617,6 @@ MapGlyph.prototype = {
 		let pt = feature.geometry.getCentroid();
 		pts.push(this.display.getMap().transformProjPoint(pt))
 	    });
-	    console.dir(pts);
 	} else {
 	    pts = this.display.getLatLonPoints(this.getGeometry());
 	}
@@ -1297,16 +1296,16 @@ MapGlyph.prototype = {
     changeOrder:function(toFront) {
 	if(this.mapServerLayer) {
 	    if(toFront)
-		this.display.getMap().toFrontLayer(this.mapServerLayer);
+		this.getMap().toFrontLayer(this.mapServerLayer);
 	    else
-		this.display.getMap().toBackLayer(this.mapServerLayer);		    
+		this.getMap().toBackLayer(this.mapServerLayer);		    
 	    return;		
 	}
 	if(this.getImage()) {
 	    if(toFront)
-		this.display.getMap().toFrontLayer(this.getImage());
+		this.getMap().toFrontLayer(this.getImage());
 	    else
-		this.display.getMap().toBackLayer(this.getImage());		    
+		this.getMap().toBackLayer(this.getImage());		    
 	    return;		
 	}
 	if(this.features.length) {
@@ -1537,25 +1536,27 @@ MapGlyph.prototype = {
 	    bounds = this.getBounds();
 	}
 	if(bounds) {
-	    this.display.getMap().zoomToExtent(bounds);
+	    this.getMap().zoomToExtent(bounds);
 	    if(bounds.getWidth()==0) andZoomIn = true;
 	}
 	if(andZoomIn) {
 	    //The -1 is a flag to use the singlePointZoom
-	    this.display.getMap().zoomTo(-1,true);
+	    this.getMap().zoomTo(-1,true);
 	}
     },
     getBounds: function() {
 	let bounds = null;
 	if(this.haveChildren()) {
 	    this.applyChildren(child=>{bounds =  MapUtils.extendBounds(bounds,child.getBounds());});
-	} else 	if(this.features && this.features.length) {
-	    bounds = this.display.getMap().getFeaturesBounds(this.features);
-	    if(this.rings) {
-		bounds = MapUtils.extendBounds(bounds,
-					       this.display.getMap().getFeaturesBounds(this.rings));
-	    }
-	} else if(this.isMapServer()) {
+	}
+	if(this.features && this.features.length) {
+	    bounds = MapUtils.extendBounds(bounds,this.getMap().getFeaturesBounds(this.features));
+	}
+	if(this.extraFeatures) {
+	    bounds = MapUtils.extendBounds(bounds, this.getMap().getFeaturesBounds(this.extraFeatures));
+	}
+
+	if(this.isMapServer()) {
 	    if(this.getDatacubeVariable() && Utils.isDefined(this.getDatacubeAttr('geospatial_lat_min'))) {
 		let attrs = this.getDatacubeAttrs();
 		bounds= MapUtils.createBounds(attrs.geospatial_lon_min, attrs.geospatial_lat_min, attrs.geospatial_lon_max, attrs.geospatial_lat_max);
@@ -3399,6 +3400,11 @@ MapGlyph.prototype = {
 	if(this.features && this.features.length) {
 	    return  this.features[0].geometry.getCentroid(true);
 	}
+	if(this.extraFeatures && this.extraFeatures.length) {
+	    return  this.extraFeatures[0].geometry.getCentroid(true);
+	}
+
+	return null;
     },
     makeGroupRoute: function() {
 	let mode = this.display.jq('routetype').val()??'car';
@@ -4756,7 +4762,7 @@ MapGlyph.prototype = {
 	let pt = this.features[0].geometry.getCentroid();
 	let center = this.display.getMap().transformProjPoint(pt)
 
-	if(this.rings) this.display.removeFeatures(this.rings);
+	if(this.extraFeatures) this.display.removeFeatures(this.extraFeatures);
 	let ringStyle = {};
 	if(this.attrs.rangeRingStyle) {
 	    //0,fillColor:red,strokeColor:blue
@@ -4772,13 +4778,16 @@ MapGlyph.prototype = {
 	let labels = [];
 	if(Utils.stringDefined(this.attrs.rangeRingLabels))
 	    labels = Utils.split(this.attrs.rangeRingLabels);
-	this.rings = this.display.makeRangeRings(center,this.getRadii(),this.style,this.attrs.rangeRingAngle,ringStyle,labels);
-	if(this.rings) {
-	    this.rings.forEach(ring=>{
-		ring.mapGlyph=this;
-		MapUtils.setFeatureVisible(ring,this.isVisible());
+	this.setExtraFeatures(this.display.makeRangeRings(center,this.getRadii(),this.style,this.attrs.rangeRingAngle,ringStyle,labels));
+    },
+    setExtraFeatures:function(features) {
+	this.extraFeatures = features;
+	if(this.extraFeatures) {
+	    this.extraFeatures.forEach(f=>{
+		f.mapGlyph=this;
+		MapUtils.setFeatureVisible(f,this.isVisible());
 	    });
-	    this.display.addFeatures(this.rings);
+	    this.display.addFeatures(this.extraFeatures);
 	}		
     },
     applyStyle:function(style,skipChangeNotification,isForDataIcon) {
@@ -4839,8 +4848,8 @@ MapGlyph.prototype = {
 	if(this.getUseEntryLocation()) {
 	    this.setUseEntryLocation(false);
 	}
-	if(this.rings){
-	    this.rings.forEach(feature=>{
+	if(this.extraFeatures){
+	    this.extraFeatures.forEach(feature=>{
 		feature.geometry.move(dx,dy);
 		feature.layer.drawFeature(feature);
 	    });
@@ -5047,7 +5056,7 @@ MapGlyph.prototype = {
 	if(!skipChildren) {
     	    this.applyChildren(child=>{child.setVisible(visible, callCheck);});
 	}
-	Utils.forEach(this.rings,f=>{MapUtils.setFeatureVisible(f,visible);});
+	Utils.forEach(this.extraFeatures,f=>{MapUtils.setFeatureVisible(f,visible);});
 
 	if(this.canHaveChildren()) {
 	    if(!visible) this.attrs[PROP_LAYERS_ANIMATION_ON]=false;
@@ -5700,8 +5709,8 @@ MapGlyph.prototype = {
 	if(this.features) {
 	    this.display.removeFeatures(this.features);
 	}
-	if(this.rings) {
-	    this.display.removeFeatures(this.rings);
+	if(this.extraFeatures) {
+	    this.display.removeFeatures(this.extraFeatures);
 	}
 	if(this.showMarkerMarker) {
 	    this.display.removeFeatures([this.showMarkerMarker]);
