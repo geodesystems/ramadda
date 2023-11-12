@@ -398,7 +398,12 @@ function RamaddaRepository(repositoryRoot) {
             if ((typeof entry) == "string") id = entry;
             else id = entry.id;
 	    //Check for a URL
-	    if(id.startsWith('http')) return id;
+	    if(id.startsWith('http')) {
+		//If the remote URL us ramadda.org then use the proxy so we don't have the SAME_ORIGIN problem
+		if(id.indexOf('ramadda.org')>=0)
+		    return  Ramadda.getUrl('/proxy?url=' + encodeURIComponent(id));
+		return id;
+	    }
             let url = this.getRoot() + "/entry/get?entryid=" + id;
             if (extraArgs != null) {
                 if (!StringUtil.startsWith(extraArgs, "&")) {
