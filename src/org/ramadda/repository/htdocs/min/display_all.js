@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Nov 10 06:05:56 PST 2023";
+var build_date="RAMADDA build date: Sun Nov 12 06:49:20 PST 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -41671,8 +41671,7 @@ addGlobalDisplayType({
     tooltip: makeDisplayTooltip('Integrated Map Data','imdv.png','Create interactive maps with points, routes, data, etc'),        
 });
 
-var MAP_RESOURCES;
-var MAP_RESOURCES_MAP; 
+
 var GLYPH_FIXED = 'fixed';
 var GLYPH_GROUP = 'group';
 var GLYPH_MARKER = 'marker';
@@ -41817,16 +41816,7 @@ let ImdvUtils = {
 function RamaddaImdvDisplay(displayManager, id, properties) {
     this.mapProperties = {};
     Utils.importJS(ramaddaBaseHtdocs+'/wiki.js');
-    if(!MAP_RESOURCES) {
-        $.getJSON(Ramadda.getUrl('/mapresources.json'), data=>{
-	    MAP_RESOURCES_MAP={};
-	    MAP_RESOURCES = data;
-	    MAP_RESOURCES.forEach((r,idx)=>{MAP_RESOURCES_MAP[idx] = r;});
-	}).fail(err=>{
-	    console.error('Failed loading mapresources.json:' + err);
-	});
-    }
-
+    MapUtils.initMapResources();
     ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPolygon, {
 	CLASS_NAME:'IMDV Image Handler',
 	initialize: function(control, callbacks, options) {
@@ -42467,11 +42457,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.addGlyph(mapGlyph);
 	    mapGlyph.glyphCreated();
 	    this.clearMessage2(1000);
+	    /*
+	      not now...
 	    if(mapGlyph.isMap()) {
-		setTimeout(()=>{
-		    mapGlyph.panMapTo();
-		},100);
+	    setTimeout(()=>{mapGlyph.panMapTo();},100);
 	    }
+	    */
 	    return mapGlyph;
 	},
 	handleGlyphsChanged: function (){
@@ -42958,7 +42949,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    delete attrs.entryName;
 		    if(glyphType.isMap()) {
 			if(resourceId) {
-			    let resource  =MAP_RESOURCES_MAP[resourceId];
+			    let resource  =MapUtils.MAP_RESOURCES_MAP[resourceId];
 			    attrs.name = Utils.makeLabel(resource.name);
 			    attrs.entryType = resource.type;
 			    attrs.resourceUrl = resource.url;
@@ -42968,7 +42959,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			$.extend(mapOptions,attrs);
 			let mapGlyph = this.handleNewFeature(null,style,mapOptions);
 			mapGlyph.checkMapLayer(true);
-			this.clearCommands();
+//			this.clearCommands();
 			return;
 		    } 
 
@@ -43089,8 +43080,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let extra = null;
 		if(glyphType.isImage()) {
 		    extra = HU.b('Enter Image URL: ') + HU.input('',this.lastImageUrl??'',[ATTR_ID,this.getDomId('imageurl'),'size','40']);
-		} else if(glyphType.isMap() && MAP_RESOURCES) {
-		    let ids = MAP_RESOURCES.map((r,idx)=>{
+		} else if(glyphType.isMap() && MapUtils.MAP_RESOURCES) {
+		    let ids = MapUtils.MAP_RESOURCES.map((r,idx)=>{
 			return [idx,r.name];
 		    });
 		    ids = Utils.mergeLists([['','Select Resource']],ids);
@@ -46049,12 +46040,6 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		return this.getMap().addGeoJsonLayer(opts.name,url,true, selectCallback, unselectCallback,style,loadCallback,andZoom,errorCallback);
 		break;		
 
-		/*
-		  case 'geo_shapefile_fips': 
-		  case 'geo_shapefile': 
-		  url = Ramadda.getUrl('/entry/show?entryid=' + opts.entryId+'&output=shapefile.kml&formap=true'0;
-		*/
-
 	    case 'geo_kml': 
 		let loadCallback2 = (map,layer)=>{
 		    if(layer.features) {
@@ -47831,6 +47816,8 @@ function olCheckLabelBackground(renderer,   style,label,featureId,bbox) {
 }
 
 
+
+
 var debugDataIcons = false;
 
 var DATAICON_PROPERTIES = ['externalGraphic','pointRadius','label'];
@@ -48319,7 +48306,15 @@ MapGlyph.prototype = {
 	    nameWidget+='<br>' +HU.checkbox(this.domId('useentryname'),[],this.getUseEntryName(),'Use name from entry');
 	    nameWidget+=HU.space(3) +HU.checkbox(this.domId('useentrylocation'),[],this.getUseEntryLocation(),'Use location from entry');
 	}
-	html+=HU.b('Name: ') +nameWidget+'<br>';
+	html+=HU.formTable();
+	html+=HU.formEntry('Name:',nameWidget);
+	if(this.isMap() && this.attrs.resourceUrl) {
+	    html+=HU.formEntry('Map URL:',HU.input('',this.attrs.resourceUrl,[ATTR_ID,this.domId('resourceurl'),'size','60']));
+//	    opts.resourceUrl
+	}	    
+	html+=HU.formTableClose();
+
+
 	let level = this.getVisibleLevelRange(true)??{};
 	html+= HU.checkbox(this.domId('visible'),[],this.getVisible(),'Visible')
 	if(this.getMapLayer()) {
@@ -48449,7 +48444,6 @@ MapGlyph.prototype = {
 		let pt = feature.geometry.getCentroid();
 		pts.push(this.display.getMap().transformProjPoint(pt))
 	    });
-	    console.dir(pts);
 	} else {
 	    pts = this.display.getLatLonPoints(this.getGeometry());
 	}
@@ -48467,6 +48461,13 @@ MapGlyph.prototype = {
 
 	//Make sure we do this after we set the above style properties
 	this.setName(this.jq("mapglyphname").val());
+	if(this.isMap()) {
+	    let newUrl = this.jq('resourceurl').val();
+	    if(newUrl!=this.attrs.resourceUrl) {
+		this.attrs.resourceUrl = newUrl;
+		setTimeout(()=>{this.checkMapLayer(false,true);},10);
+	    }
+	}
 	this.attrs[ID_LEGEND_TEXT] = this.jq(ID_LEGEND_TEXT).val();
 	if(this.isEntry()) {
 	    this.setUseEntryName(this.jq("useentryname").is(":checked"));
@@ -49129,16 +49130,16 @@ MapGlyph.prototype = {
     changeOrder:function(toFront) {
 	if(this.mapServerLayer) {
 	    if(toFront)
-		this.display.getMap().toFrontLayer(this.mapServerLayer);
+		this.getMap().toFrontLayer(this.mapServerLayer);
 	    else
-		this.display.getMap().toBackLayer(this.mapServerLayer);		    
+		this.getMap().toBackLayer(this.mapServerLayer);		    
 	    return;		
 	}
 	if(this.getImage()) {
 	    if(toFront)
-		this.display.getMap().toFrontLayer(this.getImage());
+		this.getMap().toFrontLayer(this.getImage());
 	    else
-		this.display.getMap().toBackLayer(this.getImage());		    
+		this.getMap().toBackLayer(this.getImage());		    
 	    return;		
 	}
 	if(this.features.length) {
@@ -49369,25 +49370,27 @@ MapGlyph.prototype = {
 	    bounds = this.getBounds();
 	}
 	if(bounds) {
-	    this.display.getMap().zoomToExtent(bounds);
+	    this.getMap().zoomToExtent(bounds);
 	    if(bounds.getWidth()==0) andZoomIn = true;
 	}
 	if(andZoomIn) {
 	    //The -1 is a flag to use the singlePointZoom
-	    this.display.getMap().zoomTo(-1,true);
+	    this.getMap().zoomTo(-1,true);
 	}
     },
     getBounds: function() {
 	let bounds = null;
 	if(this.haveChildren()) {
 	    this.applyChildren(child=>{bounds =  MapUtils.extendBounds(bounds,child.getBounds());});
-	} else 	if(this.features && this.features.length) {
-	    bounds = this.display.getMap().getFeaturesBounds(this.features);
-	    if(this.rings) {
-		bounds = MapUtils.extendBounds(bounds,
-					       this.display.getMap().getFeaturesBounds(this.rings));
-	    }
-	} else if(this.isMapServer()) {
+	}
+	if(this.features && this.features.length) {
+	    bounds = MapUtils.extendBounds(bounds,this.getMap().getFeaturesBounds(this.features));
+	}
+	if(this.extraFeatures) {
+	    bounds = MapUtils.extendBounds(bounds, this.getMap().getFeaturesBounds(this.extraFeatures));
+	}
+
+	if(this.isMapServer()) {
 	    if(this.getDatacubeVariable() && Utils.isDefined(this.getDatacubeAttr('geospatial_lat_min'))) {
 		let attrs = this.getDatacubeAttrs();
 		bounds= MapUtils.createBounds(attrs.geospatial_lon_min, attrs.geospatial_lat_min, attrs.geospatial_lon_max, attrs.geospatial_lat_max);
@@ -50646,9 +50649,15 @@ MapGlyph.prototype = {
     getMapServerLayer: function() {
 	return this.mapServerLayer;
     },    
-    checkMapLayer:function(andZoom) {
+    checkMapLayer:function(andZoom,force) {
 	//Only create the map if we're visible
 	if(!this.isMap() || !this.isVisible()) return;
+	if(this.mapLayer!=null && force) {
+	    this.display.getMap().removeLayer(this.mapLayer);
+	    this.mapLayer = null;
+	}
+
+
 	if(this.mapLayer==null) {
 	    if(!Utils.isDefined(andZoom)) {
 		//Not sure why we do this
@@ -51231,6 +51240,11 @@ MapGlyph.prototype = {
 	if(this.features && this.features.length) {
 	    return  this.features[0].geometry.getCentroid(true);
 	}
+	if(this.extraFeatures && this.extraFeatures.length) {
+	    return  this.extraFeatures[0].geometry.getCentroid(true);
+	}
+
+	return null;
     },
     makeGroupRoute: function() {
 	let mode = this.display.jq('routetype').val()??'car';
@@ -52588,7 +52602,7 @@ MapGlyph.prototype = {
 	let pt = this.features[0].geometry.getCentroid();
 	let center = this.display.getMap().transformProjPoint(pt)
 
-	if(this.rings) this.display.removeFeatures(this.rings);
+	if(this.extraFeatures) this.display.removeFeatures(this.extraFeatures);
 	let ringStyle = {};
 	if(this.attrs.rangeRingStyle) {
 	    //0,fillColor:red,strokeColor:blue
@@ -52604,13 +52618,16 @@ MapGlyph.prototype = {
 	let labels = [];
 	if(Utils.stringDefined(this.attrs.rangeRingLabels))
 	    labels = Utils.split(this.attrs.rangeRingLabels);
-	this.rings = this.display.makeRangeRings(center,this.getRadii(),this.style,this.attrs.rangeRingAngle,ringStyle,labels);
-	if(this.rings) {
-	    this.rings.forEach(ring=>{
-		ring.mapGlyph=this;
-		MapUtils.setFeatureVisible(ring,this.isVisible());
+	this.setExtraFeatures(this.display.makeRangeRings(center,this.getRadii(),this.style,this.attrs.rangeRingAngle,ringStyle,labels));
+    },
+    setExtraFeatures:function(features) {
+	this.extraFeatures = features;
+	if(this.extraFeatures) {
+	    this.extraFeatures.forEach(f=>{
+		f.mapGlyph=this;
+		MapUtils.setFeatureVisible(f,this.isVisible());
 	    });
-	    this.display.addFeatures(this.rings);
+	    this.display.addFeatures(this.extraFeatures);
 	}		
     },
     applyStyle:function(style,skipChangeNotification,isForDataIcon) {
@@ -52671,8 +52688,8 @@ MapGlyph.prototype = {
 	if(this.getUseEntryLocation()) {
 	    this.setUseEntryLocation(false);
 	}
-	if(this.rings){
-	    this.rings.forEach(feature=>{
+	if(this.extraFeatures){
+	    this.extraFeatures.forEach(feature=>{
 		feature.geometry.move(dx,dy);
 		feature.layer.drawFeature(feature);
 	    });
@@ -52879,7 +52896,7 @@ MapGlyph.prototype = {
 	if(!skipChildren) {
     	    this.applyChildren(child=>{child.setVisible(visible, callCheck);});
 	}
-	Utils.forEach(this.rings,f=>{MapUtils.setFeatureVisible(f,visible);});
+	Utils.forEach(this.extraFeatures,f=>{MapUtils.setFeatureVisible(f,visible);});
 
 	if(this.canHaveChildren()) {
 	    if(!visible) this.attrs[PROP_LAYERS_ANIMATION_ON]=false;
@@ -53532,8 +53549,8 @@ MapGlyph.prototype = {
 	if(this.features) {
 	    this.display.removeFeatures(this.features);
 	}
-	if(this.rings) {
-	    this.display.removeFeatures(this.rings);
+	if(this.extraFeatures) {
+	    this.display.removeFeatures(this.extraFeatures);
 	}
 	if(this.showMarkerMarker) {
 	    this.display.removeFeatures([this.showMarkerMarker]);
