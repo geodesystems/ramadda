@@ -487,7 +487,15 @@ MapGlyph.prototype = {
 	    nameWidget+='<br>' +HU.checkbox(this.domId('useentryname'),[],this.getUseEntryName(),'Use name from entry');
 	    nameWidget+=HU.space(3) +HU.checkbox(this.domId('useentrylocation'),[],this.getUseEntryLocation(),'Use location from entry');
 	}
-	html+=HU.b('Name: ') +nameWidget+'<br>';
+	html+=HU.formTable();
+	html+=HU.formEntry('Name:',nameWidget);
+	if(this.isMap() && this.attrs.resourceUrl) {
+	    html+=HU.formEntry('Map URL:',HU.input('',this.attrs.resourceUrl,[ATTR_ID,this.domId('resourceurl'),'size','60']));
+//	    opts.resourceUrl
+	}	    
+	html+=HU.formTableClose();
+
+
 	let level = this.getVisibleLevelRange(true)??{};
 	html+= HU.checkbox(this.domId('visible'),[],this.getVisible(),'Visible')
 	if(this.getMapLayer()) {
@@ -634,6 +642,13 @@ MapGlyph.prototype = {
 
 	//Make sure we do this after we set the above style properties
 	this.setName(this.jq("mapglyphname").val());
+	if(this.isMap()) {
+	    let newUrl = this.jq('resourceurl').val();
+	    if(newUrl!=this.attrs.resourceUrl) {
+		this.attrs.resourceUrl = newUrl;
+		setTimeout(()=>{this.checkMapLayer(false,true);},10);
+	    }
+	}
 	this.attrs[ID_LEGEND_TEXT] = this.jq(ID_LEGEND_TEXT).val();
 	if(this.isEntry()) {
 	    this.setUseEntryName(this.jq("useentryname").is(":checked"));
@@ -2815,9 +2830,15 @@ MapGlyph.prototype = {
     getMapServerLayer: function() {
 	return this.mapServerLayer;
     },    
-    checkMapLayer:function(andZoom) {
+    checkMapLayer:function(andZoom,force) {
 	//Only create the map if we're visible
 	if(!this.isMap() || !this.isVisible()) return;
+	if(this.mapLayer!=null && force) {
+	    this.display.getMap().removeLayer(this.mapLayer);
+	    this.mapLayer = null;
+	}
+
+
 	if(this.mapLayer==null) {
 	    if(!Utils.isDefined(andZoom)) {
 		//Not sure why we do this
