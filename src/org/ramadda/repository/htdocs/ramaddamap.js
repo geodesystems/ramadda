@@ -631,8 +631,9 @@ RepositoryMap.prototype = {
 	if(onlyIfWeNeedToZoomIn) {
 	    if(zoom<this.getZoom()) return;
 	}
-	if(debugBounds)
+	if(debugBounds) {
 	    console.log("zoomTo:",zoom);
+	}
 	this.getMap().zoomTo(parseInt(zoom));
 
     },
@@ -666,7 +667,7 @@ RepositoryMap.prototype = {
 	   !ok(bounds.top) ||
 	   !ok(bounds.bottom)) {
 	    if(debugBounds)
-		console.error("zoomToExtent: bounds are bad:" + bounds);
+		console.error("zoomToExtent: bounds are bad:", bounds);
 	    return
 	}
 	if(bounds.left == bounds.right || bounds.top == bounds.bottom) {
@@ -2421,13 +2422,13 @@ RepositoryMap.prototype = {
 
     initMapVectorLayer:  function(layer, url, canSelect, selectCallback, unselectCallback, loadCallback, zoomToExtent,errorCallback) {
         let _this = this;
-        this.showLoadingImage();
+        this.showLoadingImage(true);
         layer.isMapLayer = true;
         layer.canSelect = canSelect;
         this.loadedLayers.push(layer);
         layer.events.on({
             "loadend": function(e) {
-                _this.hideLoadingImage();
+                _this.hideLoadingImage(true);
                 if (e.response && Utils.isDefined(e.response.code) && e.response.code == OpenLayers.Protocol.Response.FAILURE) {
 		    if(errorCallback) {
 			errorCallback(url,e.response);
@@ -4028,7 +4029,12 @@ RepositoryMap.prototype = {
     setCursor:  function(cursor) {
 	jqid(this.mapDivId+"_themap").css('cursor',cursor??'default');
     },
-    hideLoadingImage:  function() {
+    loadingImageCnt:0,
+    hideLoadingImage:  function(checkCnt) {
+	if(checkCnt) {
+	    this.loadingImageCnt = Math.max(0,this.loadingImageCnt-1);
+	    if(this.loadingImageCnt>0) return;
+	}
 	this.setCursor();
 	jqid(this.mapDivId+"_themap").css('cursor','default');
         if (this.loadingImage) {
@@ -4037,7 +4043,11 @@ RepositoryMap.prototype = {
     },
 
 
-    showLoadingImage:  function() {
+    showLoadingImage:  function(checkCnt) {
+	if(checkCnt) {
+	    this.loadingImageCnt++;
+	    if(this.loadingImageCnt>1) return;
+	}
 	this.setCursor('progress');
         if (this.loadingImage) {
             this.loadingImage.style.visibility = "visible";
