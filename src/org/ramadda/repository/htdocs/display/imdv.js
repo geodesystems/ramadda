@@ -797,11 +797,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.addGlyph(mapGlyph);
 	    mapGlyph.glyphCreated();
 	    this.clearMessage2(1000);
+	    /*
+	      not now...
 	    if(mapGlyph.isMap()) {
-		setTimeout(()=>{
-		    mapGlyph.panMapTo();
-		},100);
+	    setTimeout(()=>{mapGlyph.panMapTo();},100);
 	    }
+	    */
 	    return mapGlyph;
 	},
 	handleGlyphsChanged: function (){
@@ -1298,7 +1299,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			$.extend(mapOptions,attrs);
 			let mapGlyph = this.handleNewFeature(null,style,mapOptions);
 			mapGlyph.checkMapLayer(true);
-			this.clearCommands();
+//			this.clearCommands();
 			return;
 		    } 
 
@@ -4379,12 +4380,6 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		return this.getMap().addGeoJsonLayer(opts.name,url,true, selectCallback, unselectCallback,style,loadCallback,andZoom,errorCallback);
 		break;		
 
-		/*
-		  case 'geo_shapefile_fips': 
-		  case 'geo_shapefile': 
-		  url = Ramadda.getUrl('/entry/show?entryid=' + opts.entryId+'&output=shapefile.kml&formap=true'0;
-		*/
-
 	    case 'geo_kml': 
 		let loadCallback2 = (map,layer)=>{
 		    if(layer.features) {
@@ -6159,4 +6154,6 @@ function olCheckLabelBackground(renderer,   style,label,featureId,bbox) {
     }
     return false;
 }
+
+
 
