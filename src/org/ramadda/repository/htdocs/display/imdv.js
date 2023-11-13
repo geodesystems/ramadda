@@ -2879,7 +2879,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let close = ()=>{
 		this.map.ignoreKeyEvents = false;
 		dialog.hide();
-		dialog.remove();
+		//Do this in another thread because these dialogs are big and the remove call takes a little while
+		setTimeout(()=>{dialog.remove();},0);
 	    }
 
 	    let applying =false;
