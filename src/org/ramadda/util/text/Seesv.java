@@ -2254,7 +2254,7 @@ public class Seesv implements SeesvCommands {
                 new Arg("value_columns", "value columns"),
                 new Arg("file", "File to join with", ATTR_TYPE, "file"),
                 new Arg("source_columns", "source key columns"),
-		new Arg("default_value", "default value")),
+		new Arg("default_value", "default value - can be a comma separated list of defaults")),
         new Cmd(CMD_FUZZYJOIN, "Join the 2 files together using fuzzy matching logic",
 		ARG_LABEL,"Fuzzy Join",
                 new Arg("threshold", "Score threshold 0-100. Default:85. Higher number better match"),

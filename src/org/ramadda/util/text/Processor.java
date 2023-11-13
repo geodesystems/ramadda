@@ -3434,6 +3434,7 @@ public abstract class Processor extends SeesvOperator {
 
         /**  */
         private String dflt;
+        private List<String> dflts;	
 
         /**
          * _more_
@@ -3455,6 +3456,7 @@ public abstract class Processor extends SeesvOperator {
             this.keys2   = keys2;
             this.file    = file;
             this.dflt    = dflt;
+	    this.dflts = Utils.split(this.dflt,",",false,false);
             try {
                 init(ctx);
             } catch (Exception exc) {
@@ -3567,8 +3569,12 @@ public abstract class Processor extends SeesvOperator {
 	    //	    if(ycnt++<10)System.err.println("value:" + key);
             Row other = map.get(key);
             if (other == null) {
-                for (int j : values1Indices) {
-                    row.add(dflt);
+                for (int j=0;j<values1Indices.size();j++)  {
+		    if(j<dflts.size()) {
+			row.add(dflts.get(j));
+		    } else {
+			row.add(dflts.get(dflts.size()-1));
+		    }
                 }
 
                 return row;
