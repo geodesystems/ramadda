@@ -3159,7 +3159,7 @@ RepositoryMap.prototype = {
 	    this.params.initialZoom=-1;
 	    this.zoomTo(zoom);
 	    //In case we are in tabs then set the zoom level later
-	    if(true || this.initialZoomTimeout) {
+	    if(this.initialZoomTimeout) {
 		setTimeout(()=>{
 		    if(debugBounds)console.log("initial zoom time out:" + zoom);
 		    this.zoomTo(zoom);
