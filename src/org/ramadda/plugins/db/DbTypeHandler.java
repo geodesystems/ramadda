@@ -3715,10 +3715,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             throws Exception {
         List<String> links    = new ArrayList<String>();
         boolean      embedded = isEmbedded(request);
-        //      System.err.println("#values: "+ valueList.size());
-        //      for(Object o: valueList.get(0)) {
-        //          System.err.println("\tvalue: "+ o);
-        //      }
         if ( !embedded) {
             addViewHeader(request, entry, sb, VIEW_TABLE, valueList.size(),
                           fromSearch, null);
@@ -3866,6 +3862,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     hb.append(HU.select(ARG_DB_ACTION, actions));
                 }
             }
+
             HU.open(tableHeader, "table", "class", "dbtable",
                            "border", "1", "cellspacing", "0", "cellpadding",
                            "0", "width", "100%");
@@ -6113,7 +6110,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 }
                 labels.add(label);
             }
-            result.add(labels.toArray());
+	    if(iterator!=null) {
+		iterator.setLabels(labels);
+	    }
+	    result.add(labels.toArray());
             if (cols.size() > 0) {
                 extra += SqlUtil.groupBy(StringUtil.join(",", cols));
             }
@@ -6169,7 +6169,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         Statement stmt = null;
         extra += limitString;
         try {
-            //SqlUtil.debug = true;
+	    //            SqlUtil.debug = true;
             if (SqlUtil.debug) {
                 System.err.println("table:" + tableHandler.getTableName());
                 System.err.println("clause:" + clause);
@@ -6198,7 +6198,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             SqlUtil.debug = false;
         }
 
-
         HashSet seenValue = new HashSet();
         try {
             long t1 = System.currentTimeMillis();
@@ -6214,15 +6213,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 int valueIdx = 1;
                 //                int valueIdx = 2;
 		cnt++;
-		//		if(myDebug) continue;
                 if (doGroupBy) {
-                    values =
-                        new Object[aggColumns.size() + groupByColumns.size()];
+                    values = new Object[aggColumns.size() + groupByColumns.size()];
                     for (int i = 0; i < groupByColumns.size(); i++) {
                         Column column = groupByColumns.get(i);
                         String v      = results.getString(i + 1);
                         if (forTable && column.isEnumeration()) {
-                            //xxxxx
                             v = column.getEnumLabel(v);
                         }
                         values[i] = v;
@@ -6245,12 +6241,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                             iterator.processRow(request, values);
                         }
                         //Add the values when we are doing groupBy so the caching works
-                        result.add(values);
+			result.add(values);
                     }
                 } else {
                     if (values == null) {
-                        values = tableHandler.makeEntryValueArray();
+			values = tableHandler.makeEntryValueArray();
                     }
+
                     /**
 		       if (isPostgres && (uniqueCols != null)) {
                         //If we are running on postgres and one or more unique columns was selected
@@ -6301,12 +6298,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         if (iterator != null) {
             iterator.finish(request);
         }
-
-        //      System.err.println("#:" + result.size());
-
         return result;
-
-
     }
 
 

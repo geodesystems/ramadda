@@ -154,6 +154,9 @@ public abstract class ValueIterator implements DbConstants {
 
     }
 
+    public void setLabels(List<String> labels) throws Exception  {
+    }
+
     private String viewHeaderId;
     public void addViewHeader(Request request, Entry entry, String view,  String extraLinks, boolean nothingFound) throws Exception {
 	addedHeader = true;
@@ -345,9 +348,20 @@ public abstract class ValueIterator implements DbConstants {
                 List<Column> groupByColumns = db.getGroupByColumns(request,
                                                   false);
                 List<Column> aggColumns = db.getAggColumns(request);
+		//		System.err.println("GB:" + groupByColumns);
+		//		System.err.println("agg:" + aggColumns);		
                 groupByColumns.addAll(aggColumns);
             }
         }
+
+	
+	@Override
+	public void setLabels(List<String> labels) throws Exception {
+	    Appendable sb = getBuffer();
+	    sb.append(Seesv.columnsToString(labels,","));
+	    sb.append("\n");
+	}
+
 
         /**
          * _more_
@@ -365,7 +379,8 @@ public abstract class ValueIterator implements DbConstants {
                     if (i > 0) {
                         sb.append(",");
                     }
-                    String s = values[i].toString();
+		    Object o = values[i];
+                    String s = o==null?"":values[i].toString();
                     s = s.replaceAll("\"", "\"\"\"");
                     if (s.indexOf(",") >= 0) {
                         s = "\"" + s + "\"";
@@ -373,7 +388,6 @@ public abstract class ValueIterator implements DbConstants {
                     sb.append(s);
                 }
                 sb.append("\n");
-
                 return;
             }
 
@@ -981,10 +995,6 @@ public abstract class ValueIterator implements DbConstants {
                 }
             }
 	    
-
-
-
-
             HU.open(tableHeader, "table", "entryid", entry.getId(),
                            "id", tableId, "class", "dbtable", "border", "1",
                            "cellspacing", "0", "cellpadding", "0", "width",
