@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Nov 12 06:49:20 PST 2023";
+var build_date="RAMADDA build date: Tue Nov 14 11:13:19 MST 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -24346,7 +24346,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
     const ID_CANCEL = "cancel";    
     let myProps =[
 	{label:'Download'},
-	{p:'csvLabel',ex:'Download'},
+	{p:'downloadLabel',ex:'Download'},
 	{p:'useIcon',d:'false',ex:'false'},
 	{p:'iconSize',ex:'',d:'16pt'},	
 	{p:'fileName',d:'download',ex:'download'},
@@ -24363,9 +24363,9 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
             return true;
 	},
 	updateUI: function() {
-	    let label = this.getCsvLabel("Download Data");
+	    let label = this.getDownloadLabel(this.getProperty("csvLabel","Download Data"));
 	    label = label.replace("${title}",this.getProperty("title",""));
-	    let useIcon = this.getPropertyUseIcon(true);
+	    let useIcon = this.getUseIcon(true);
 	    let iconSize = this.getIconSize();
 	    label = HU.div(['style','display:inline-block;',ID,this.getDomId("csv")], useIcon?HU.getIconImage("fa-download",['style','line-height:0px;display:block;'],[STYLE,"cursor:pointer;font-size:" + iconSize+";",TITLE,label]):label);
 	    this.setContents(HU.div([],label));
@@ -44539,7 +44539,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let close = ()=>{
 		this.map.ignoreKeyEvents = false;
 		dialog.hide();
-		dialog.remove();
+		//Do this in another thread because these dialogs are big and the remove call takes a little while
+		setTimeout(()=>{dialog.remove();},0);
 	    }
 
 	    let applying =false;
@@ -54841,6 +54842,13 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
         {p:'&lt;field&gt;.barMin',ex:'0',tt:'Min value'},
         {p:'&lt;field&gt;.barMax',ex:'100',tt:'Max value'},
 	
+
+	{p:'showSummary',ex:'true'},
+	{p:'showSummaryTotal',ex:'true'},
+	{p:'showSummaryAverage',ex:'true'},
+	{p:'showSummaryMinMax',ex:'true'},
+	{p:'showGrandSummary',ex:'true'},		
+
 	{p:'barLabelInside',ex:'false'},
         {p:'barStyle',ex:'background:red;',tt:'Bar style'},			
 	{p:'tableHeaderStyle'},
@@ -55022,6 +55030,10 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    if(includeDate) {
 		header1+=HU.th([],HU.div(headerAttrs,"Date"));
 		header2+=HU.th([],HU.div(headerAttrs,"Date"));
+	    } else {
+		fields = fields.filter(f=>{
+		    return !f.isRecordDate();
+		});
 	    }
 
 	    //Add the place holder for the colored rows
@@ -55125,8 +55137,25 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    });
 
 //	    console.time('loop');	    
+	    let summary=[];
+	    let columns;
+	    let recordCnt = 0;
+	    let addColumn = (td,v)=>{
+		if(recordCnt==1) {
+		    summary.push({total:0,cnt:0,min:NaN,max:NaN});
+		}
+		columns.push(td);
+		if(!isNaN(v)) {
+		    let s = summary[columns.length-1];
+		    s.total+=v;
+		    s.cnt++;
+		    s.min = isNaN(s.min)?v:Math.min(s.min,v);
+		    s.max = isNaN(s.max)?v:Math.max(s.max,v);		    
+		} 
+	    }
 	    records.every((record,recordIdx)=>{
 		if(numRecords>-1 && recordIdx>numRecords) return false;
+		recordCnt++;
 		let d = record.getData();
 		d = d.map(v=>{
 		    if(!v) return v;
@@ -55142,7 +55171,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		}
 
 		let clazz =  "display-htmltable-row  search-component";
-		let columns = [];
+		columns = [];
 		//Add the place holder for the colored rows
 		if(colorRowBy && !colorFullRow) {
 		    colorRowBy.forEach(c=>{
@@ -55154,15 +55183,15 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 			    label = this.getRecordHtml(record, null, template);
 			    label = HU.div(['style',colorHeaderStyle], label);
 			}
-			columns.push(HU.td(['class','display-td display-htmltable-td','style','width:16px;max-width:16px;border-right:1px solid #444;background:' + color+';width:10px;'],label));
+			addColumn(HU.td(['class','display-td display-htmltable-td','style','width:16px;max-width:16px;border-right:1px solid #444;background:' + color+';width:10px;'],label));
 		    });
 		}
 
 		if(includeIdx) {
-		    columns.push(HU.td(['width','5px'],HU.div([],"#" +(recordIdx+1))));
+		    addColumn(HU.td(['width','5px'],HU.div([],"#" +(recordIdx+1))));
 		}
 		if(includeDate) {
-		    columns.push(HU.td([],this.formatDate(record.getDate())));
+		    addColumn(HU.td([],this.formatDate(record.getDate())));
 		}
 		this.recordMap[record.rowIndex] = record;
 		this.recordMap[record.getId()] = record;
@@ -55208,7 +55237,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		    if(colorBy) {
 			let color =  colorBy.getColorFromRecord(record);
 			let fg =  Utils.getForegroundColor(color);
-			columns.push(HU.td(Utils.mergeLists(tdAttrs, [STYLE,HU.css('background', color,'color',fg+" !important")]),sv));
+			addColumn(HU.td(Utils.mergeLists(tdAttrs, [STYLE,HU.css('background', color,'color',fg+" !important")]),sv));
 		    } else if(props.showBar) {
 			let percent = 1-(value-props.barMin)/(props.barMax-props.barMin);
 			percent = (percent*100)+"%";
@@ -55224,15 +55253,15 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 					    (width?HU.css("width",HU.getDimension(width)):"")+
 					    HU.css("min-width","100px")+(props.barLabelInside?HU.css("height","1.5em"):"")],bar);
 			if(props.barLabelInside) {
-			    columns.push(HU.td([],outer));
+			    addColumn(HU.td([],outer));
 			} else {
-			    columns.push(HU.td([],HU.row([["align","right"],sv],outer)));
+			    addColumn(HU.td([],HU.row([["align","right"],sv],outer)));
 			}
 		    } else if(props.isNumeric) {
 			let td = this.handleColumn(fields,aggByField,f,record,this.formatNumber(value,f.getId()), tdAttrs);
-			columns.push(td);
+			addColumn(td,value);
 		    } else {
-			columns.push(this.handleColumn(fields,aggByField,f,record,sv,tdAttrs));
+			addColumn(this.handleColumn(fields,aggByField,f,record,sv,tdAttrs));
 		    }
 		    prefix="";
 		});
@@ -55282,7 +55311,40 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 
 
 	    html+="</tbody>\n";
+
+	    html+="<tfoot>";
+	    html+="<tr>";
+	    let total = NaN;
+	    if(summary && (this.getShowSummaryTotal() || this.getShowSummaryAverage()  ||
+			   this.getShowSummaryMinMax())) {
+		total=0;
+		summary.forEach(s=>{
+		    html+="<td align=right style='padding:0px;'>";
+		    if(s.cnt) {
+			let v = [];
+			if(this.getShowSummaryTotal())
+			    v.push('Total: '+s.total);
+			if(this.getShowSummaryAverage()) {
+			    let avg = s.total/s.cnt;
+			    avg = Utils.formatNumberComma(avg,2);
+			    v.push('Avg: '+ avg);
+			}
+			if(this.getShowSummaryMinMax()) {
+			    v.push('Min: '+s.min);
+			    v.push('Max: '+s.max);
+			}
+			html+=HU.div(['style','text-align:right;'],Utils.join(v,'<br>'));
+			total+=s.total;
+		    }
+		    html+="</td>";
+		});
+	    }
+	    html+="</tr>";
+	    html+="</tfoot>";	    
 	    html+="</table>\n";
+	    if(!isNaN(total) && this.getShowGrandSummary()) {
+		html+='Total: ' + total;
+	    }
 	    if(this.getShowAddRow()) {
 		html+=HU.div([ID,this.domId("addrow"),CLASS,"ramadda-clickable"], HU.getIconImage("fas fa-plus"));
 	    }	
