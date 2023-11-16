@@ -468,7 +468,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	if(all) {
 	    writer.deleteAll();
-	    writer.commit();
+	    commit(writer);
 	}
 
 	Object mutex = new Object();
@@ -493,7 +493,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	//	System.err.println("time:" + (t2-t1));
 	if(ok[0]) {
 	    System.err.println("committing");
-	    writer.commit();
+	    commit(writer);
 	}
 	//	System.err.println("closing");
 	//        writer.close();
@@ -619,7 +619,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    //		    System.err.println("indexEntry:" + entry +" time:" + (t2-t1));
 		}
 		//        writer.optimize();
-		writer.commit();
+		commit(writer);
 	    } finally {
 		//	    writer.close();
 	    }
@@ -649,7 +649,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    parentType = parentType.getParent();
 	}
 
-	//	System.err.println("index:" + entry.getName());
 	if(entry.getParentEntryId()!=null) {
 	    doc.add(new StringField(FIELD_PARENT, entry.getParentEntryId(), Field.Store.YES));	
 	    Entry parent = entry;
@@ -694,7 +693,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	corpus.append(" ");
         doc.add(new TextField(FIELD_NAME,  name,Field.Store.YES));
 	doc.add(new SortedDocValuesField(FIELD_NAME_SORT, new BytesRef(entry.getName())));
-
 	StringBuilder desc = new StringBuilder();
 	//false=>don't add columns
 	//true=> add metadata
@@ -1101,7 +1099,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     private IndexSearcher getLuceneSearcher() throws Exception {
 	if(luceneSearcher==null) {
 	    luceneSearcher = new IndexSearcher(DirectoryReader.open(getLuceneWriter()));
-	    //return new IndexSearcher(DirectoryReader.open(getLuceneWriter()));
+	    //	    return new IndexSearcher(DirectoryReader.open(getLuceneWriter()));
 	}
 	return luceneSearcher;
     }
@@ -1726,6 +1724,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	indexEntries(entries, request, false);
     }
 
+    private void commit(IndexWriter writer) throws Exception {
+	luceneSearcher = null;
+	writer.commit();
+    }
+
+
 
     /**
      * _more_
@@ -1742,7 +1746,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		for (String id : ids) {
 		    writer.deleteDocuments(new Term(FIELD_ENTRYID, id));
 		}
-		writer.commit();
+		commit(writer);
 		//	    }
         } catch (Exception exc) {
             logError("Error deleting entries from Lucene index", exc);
