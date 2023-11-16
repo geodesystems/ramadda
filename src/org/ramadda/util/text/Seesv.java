@@ -2845,6 +2845,8 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_PROP, "Set a property",
                 new Arg("property", "", "values", "position"),
                 new Arg("value", "start, end, etc")),
+
+        new Cmd(CMD_GOEASY, "Go easy on missing columns"),
 	//        new Cmd(CMD_COMMENT, "",new Arg("comment")),
         new Cmd(CMD_VERIFY,
                 "Verify that all of the rows have the same # of columns"),
@@ -3922,6 +3924,12 @@ public class Seesv implements SeesvCommands {
 
 
 	
+	defineFunction(CMD_GOEASY,0,(ctx,args,i) -> {
+		ctx.putProperty("goeasy",true);
+		return i;
+	    });
+
+
 	defineFunction(CMD_PROP,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Propper(args.get(++i), args.get(++i)));
 		return i;

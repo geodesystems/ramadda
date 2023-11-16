@@ -656,8 +656,7 @@ public class SeesvOperator {
             String colId = Utils.makeID(tok, false);
             iv = columnMap.get(colId);
         }
-        if (iv == null) {
-	    //	    System.out.println("C:" + columnMap +" " + columnMap.get("code"));
+        if (iv == null && !Utils.equals("true",ctx.getProperty("goeasy")+"")) {
             throw new SeesvException(this, "Could not find column:"
 				     + tok + "\npossible columns: " + Utils.getKeys(columnMap));
         }

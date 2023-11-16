@@ -296,6 +296,7 @@ public interface SeesvCommands {
     public static final String CMD_FLAG="-flag";
     public static final String CMD_VERIFY="-verify";
     public static final String CMD_PROP="-prop";
+    public static final String CMD_GOEASY="-goeasy";
     public static final String CMD_COMMENT="-comment";
     public static final String CMD_EXT="-ext";
     public static final String CMD_EXEC="-exec";
