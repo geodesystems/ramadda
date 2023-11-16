@@ -95,10 +95,9 @@ href=https://ramadda.org/repository/point/purpleair_index.html#creating_purple_a
 
 
 
-    <column  name="sensor_id"  label="Sensor ID" type="string"
-	     postfix="&lt;thin_hr&gt;"/>
+    <column  name="sensor_id"  label="Sensor ID" type="string" />
      <column  name="private_key"  label="Private Key"  type="password"/>
-     <column  name="active"  label="Active"  type="boolean" default="true"
+     <column  name="active"  label="Active"  type="boolean" default="true" cansearch="true"
 	      suffix="If active then the real-time data is collected and appended to this file.&lt;br&gt;This has to be enabled for the repository. See &lt;a href=https://ramadda.org/repository/point/purpleair_index.html target=_help&gt;here&lt;/a&gt; for more information"/>     
      <column  name="fields"  label="Fields"  type="enumeration" values="default:Default,short:Short,all:All"
 	      default="default"
