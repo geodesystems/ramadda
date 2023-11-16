@@ -582,7 +582,6 @@ public class ConvertibleOutputHandler extends OutputHandler {
             return new Result(s, "application/json");
 
         } catch (Exception exc) {
-            System.err.println("Error");
             Throwable inner = LogUtil.getInnerException(exc);
             String    s     = inner.getMessage();
             //Better messaging
