@@ -3513,7 +3513,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         } else if (isType(DATATYPE_BOOLEAN)) {
             widget = HtmlUtils.select(
                 searchArg,
-                Misc.newList(TypeHandler.ALL_OBJECT, "True", "False"),
+                Misc.newList(TypeHandler.ALL_OBJECT, "true", "false"),
                 request.getSanitizedString(searchArg, ""),
                 HtmlUtils.cssClass("search-select"));
         } else if (isType(DATATYPE_ENUMERATIONPLUS)
@@ -3728,9 +3728,10 @@ public class Column implements DataTypes, Constants, Cloneable {
 	String help = searchHelp;
 	if(!Utils.stringDefined(help)) help = suffix;
 
+	/*not in the search form
 	if(Utils.stringDefined(help)) {
 	    widget  =HU.hbox(widget,help);
-	}
+	    }*/
 
         typeHandler.formEntry(formBuffer, request, getLabel() + ":",widget);
         formBuffer.append("\n");
