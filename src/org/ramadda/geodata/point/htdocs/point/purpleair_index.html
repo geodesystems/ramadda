@@ -20,6 +20,20 @@ margin-right: auto;
 
 :navtop
 
+:heading Purple Air Costs
+PurpleAir has recently enacted billing for accessing data. The costs are calculated on a points based per call. The point costs are available at 
+<a href=https://community.purpleair.com/t/api-pricing/4523>https://community.purpleair.com/t/api-pricing/4523</a>. 
+If you are accessing your own sensors contact them at <a href="mailto:contact@purpleair.com">contact@purpleair.com</a> to enable no cost access.
+:p
+The points per call breakdown is available at <a href=https://develop.purpleair.com/pricing>https://develop.purpleair.com/pricing</a>. Your cost depends on the frequency (as described below) of the calls
+and what is being accessed. Each Purple Air entry can be configured to access either the 
+<a href=#fields>default fields, short fields or all fields</a>.
+So roughly speaking,  for the short fields this is
+8 fields @ 2 points/field plus 1 point for the call = 17 points.
+if you collect the data every 15 minutes that is ~490000 points per month. From
+the <a href=https://community.purpleair.com/t/api-pricing/4523>Purple Air pricing</a> this is
+of 100,000 points/$1 USD this is 50 cents per sensor per month.
+
 :p
 :lheading Configuring the API
 Sensor data from Purple Air sensors can be read and displayed in RAMADDA.
@@ -81,7 +95,7 @@ If you want to stop fetching then, go the Edit page for the entry  and set Activ
 :lheading Select Fields
 The <a href="https://api.purpleair.com/#api-sensors-get-sensor-data">Purple Air API</a>
 provides a large number of sensor fields. The Purple Air RAMADDA entry allows you to select
-one of two sets of fields - Short or All.
+one of two sets of fields - Default, Short or All.
 :p
 +callout-warning
 Note: if you change which fields are being collected than the data file that is created
@@ -89,20 +103,22 @@ needs to be reset so that the file contains all of the same fields. To do this g
 RAMADDA entry and select "Clear File" from the entry menu. This will delete the existing file
 and create a new one with the new set of field identifiers.
 -callout
-:p
 
-The Short list is the basic set of environmental fields:
+<a name=fields></a>
+:p
+The default fields are:
 <pre>
-humidity
-temperature
-pressure
-voc
-ozone1
-pm1.0,pm2.5,pm10.0
-0.3_um_count,0.5_um_count,1.0_um_count,2.5_um_count,5.0_um_count,10.0_um_count
+humidity,temperature,pressure,voc,ozone1,pm1.0,pm2.5,pm10.0
 </pre>
 
-The All list includes all of the available fields:
+
+The short fields are:
+<pre>
+  humidity,temperature,pressure,voc,ozone1,pm1.0,pm2.5,pm10.0
+  0.3_um_count,0.5_um_count,1.0_um_count,2.5_um_count,5.0_um_count,10.0_um_count
+</pre>
+
+and the all fields include all of the available fields:
 <pre>
 humidity, humidity_a, humidity_b
 temperature, temperature_a, temperature_b

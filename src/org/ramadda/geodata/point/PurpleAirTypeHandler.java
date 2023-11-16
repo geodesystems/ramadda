@@ -40,6 +40,11 @@ import java.util.List;
  */
 public class PurpleAirTypeHandler extends PointTypeHandler {
 
+
+    private static String FIELDS_DEFAULT="default";
+    private static String FIELDS_SHORT="short";
+    private static String FIELDS_ALL="all";
+
     /**  */
     private static boolean testMode = false;
 
@@ -79,6 +84,12 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
     public static final int IDX_LOCATION_TYPE = IDX++;
 
     /**  */
+    private static final String FIELDS_STRING_DEFAULT =
+        "humidity,temperature,pressure,voc,ozone1,pm1.0,pm2.5,pm10.0";
+
+
+
+    /**  */
     private static final String FIELDS_STRING_SHORT =
         "humidity,temperature,pressure,voc,ozone1,pm1.0,pm2.5,pm10.0,0.3_um_count,0.5_um_count,1.0_um_count,2.5_um_count,5.0_um_count,10.0_um_count";
 
@@ -91,6 +102,10 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
     private static final String FIELDS_STRING_ALL =
         "humidity,humidity_a,humidity_b,temperature,temperature_a,temperature_b,pressure,pressure_a,pressure_b,voc,voc_a,voc_b,ozone1,analog_input,pm1.0,pm1.0_a,pm1.0_b,pm1.0_atm,pm1.0_atm_a,pm1.0_atm_b,pm1.0_cf_1,pm1.0_cf_1_a,pm1.0_cf_1_b,pm2.5_alt,pm2.5_alt_a,pm2.5_alt_b,pm2.5,pm2.5_a,pm2.5_b,pm2.5_atm,pm2.5_atm_a,pm2.5_atm_b,pm2.5_cf_1,pm2.5_cf_1_a,pm2.5_cf_1_b,pm2.5_10minute,pm2.5_10minute_a,pm2.5_10minute_b,pm2.5_30minute,pm2.5_30minute_a,pm2.5_30minute_b,pm2.5_60minute,pm2.5_60minute_a,pm2.5_60minute_b,pm2.5_6hour,pm2.5_6hour_a,pm2.5_6hour_b,pm2.5_24hour,pm2.5_24hour_a,pm2.5_24hour_b,pm2.5_1week,pm2.5_1week_a,pm2.5_1week_b,pm10.0,pm10.0_a,pm10.0_b,pm10.0_atm,pm10.0_atm_a,pm10.0_atm_b,pm10.0_cf_1,pm10.0_cf_1_a,pm10.0_cf_1_b,scattering_coefficient,scattering_coefficient_a,scattering_coefficient_b,deciviews,deciviews_a,deciviews_b,visual_range,visual_range_a,visual_range_b,0.3_um_count,0.3_um_count_a,0.3_um_count_b,0.5_um_count,0.5_um_count_a,0.5_um_count_b,1.0_um_count,1.0_um_count_a,1.0_um_count_b,2.5_um_count,2.5_um_count_a,2.5_um_count_b,5.0_um_count,5.0_um_count_a,5.0_um_count_b,10.0_um_count,10.0_um_count_a,10.0_um_count_b";
 
+    private static final List<String> FIELDS_LIST_DEFAULT =
+        Utils.split(FIELDS_STRING_DEFAULT, ",");
+
+
     /**  */
     private static final List<String> FIELDS_LIST_SHORT =
         Utils.split(FIELDS_STRING_SHORT, ",");
@@ -100,6 +115,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
         Utils.split(FIELDS_STRING_ALL, ",");
 
 
+    private static String FIELDS_PROPERTY_DEFAULT;
     private static String FIELDS_PROPERTY_SHORT;
     private static String FIELDS_PROPERTY_ALL;    
 
@@ -136,10 +152,12 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
     }
 
 
-    private boolean isAllFields(Entry entry) {
-	//The all is defined in resources/misctypes.xml
-	return Utils.equals(entry.getValue(IDX_FIELDS),"all");
+    private String getFieldsType(Entry entry) {
+	return (String)entry.getValue(IDX_FIELDS);
     }
+
+
+
 
     private String makeFieldsProperty(Entry entry,List<String>fields) {
 	StringBuilder sb = new StringBuilder();
@@ -160,10 +178,14 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 
     private String getFieldsProperty(Entry entry) {
 	if(FIELDS_PROPERTY_SHORT==null) {
+	    FIELDS_PROPERTY_DEFAULT = makeFieldsProperty(entry,FIELDS_LIST_DEFAULT);
 	    FIELDS_PROPERTY_SHORT = makeFieldsProperty(entry,FIELDS_LIST_SHORT);
 	    FIELDS_PROPERTY_ALL = makeFieldsProperty(entry,FIELDS_LIST_ALL);	    
 	}
-	if(isAllFields(entry)) return FIELDS_PROPERTY_ALL;
+	if(Utils.equals(FIELDS_DEFAULT, getFieldsType(entry)))
+	    return FIELDS_PROPERTY_DEFAULT;
+	if(Utils.equals(FIELDS_ALL, getFieldsType(entry)))
+	    return FIELDS_PROPERTY_ALL;
 	return FIELDS_PROPERTY_SHORT;	
     }
 
@@ -173,7 +195,10 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
      * @return _more_
      */
     private String getDataFields(Entry entry) {
-	if(isAllFields(entry)) return FIELDS_STRING_ALL;
+	if(Utils.equals(FIELDS_DEFAULT, getFieldsType(entry)))
+	    return FIELDS_STRING_ALL;
+	if(Utils.equals(FIELDS_ALL, getFieldsType(entry)))
+	    return FIELDS_STRING_ALL;
 	return FIELDS_STRING_SHORT;
     }
 
@@ -183,7 +208,12 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
      * @return _more_
      */
     private List<String> getFieldsList(Entry entry) {
-	if(isAllFields(entry)) return FIELDS_LIST_ALL;
+	if(Utils.equals(FIELDS_DEFAULT, getFieldsType(entry)))
+	    return FIELDS_LIST_DEFAULT;
+
+	if(Utils.equals(FIELDS_ALL, getFieldsType(entry)))
+	    return FIELDS_LIST_ALL;
+
         return FIELDS_LIST_SHORT;
     }
 
@@ -525,12 +555,12 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
     public Result processGetHistory(Request request, Entry entry)
             throws Exception {
         StringBuilder sb      = new StringBuilder();
-        if (apiKey == null) {
+        if (apiKey == null || request.isAnonymous() ) {
 	    getPageHandler().entrySectionOpen(request, entry, sb, DOWNLOAD_TITLE);
-            sb.append(getPageHandler().showDialogWarning("No API Key"));
+            sb.append(getPageHandler().showDialogWarning(request.isAnonymous() ?
+							 "Purple Air download is only available to logged in users":"No API Key"));
 	    getPageHandler().entrySectionClose(request, entry, sb);
-	    return getEntryManager().addEntryHeader(request, entry,
-						    new Result(DOWNLOAD_TITLE, sb));
+	    return getEntryManager().addEntryHeader(request, entry, new Result(DOWNLOAD_TITLE, sb));
 	}
 
 	Date startTimestamp=null;

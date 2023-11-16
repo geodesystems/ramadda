@@ -10,6 +10,9 @@
     <property name="form.properties.show" value="false"/>
     <property name="form.date.show" value="false"/>
     <property name="form.area.show" value="false"/>
+
+
+
     <property name="form.header.new">
 <![CDATA[
 +note
@@ -80,12 +83,25 @@ label,pos:c,dx:cw2,dy:-ch2,label:${${_field} suffix=" ${unit}" decimals=2}
     <property name="form.location.show" value="true"/>
     <property name="form.properties.show" value="false"/>
     <property name="map.chart.fields" value="temperature,pm2_5"/>          
+    
+    <property name="form.header">
+<![CDATA[
++note
+All you need to do is specify the Sensor ID.
+To find a Sensor ID see the 
+<a target=_help
+href=https://ramadda.org/repository/point/purpleair_index.html#creating_purple_air_entries>documentation</a>.
+-note]]></property>
+
+
+
     <column  name="sensor_id"  label="Sensor ID" type="string"
-	     postfix="&lt;thin_hr&gt;" help="Enter the sensor ID:"/>
+	     postfix="&lt;thin_hr&gt;"/>
      <column  name="private_key"  label="Private Key"  type="password"/>
-     <column  name="active"  label="Active"  type="boolean" default="true"/>     
-     <column  name="fields"  label="Fields"  type="enumeration" values="short:Short,all:All"
-	      default="short"
+     <column  name="active"  label="Active"  type="boolean" default="true"
+	      suffix="If active then the real-time data is collected and appended to this file.&lt;br&gt;This has to be enabled for the repository. See &lt;a href=https://ramadda.org/repository/point/purpleair_index.html target=_help&gt;here&lt;/a&gt; for more information"/>     
+     <column  name="fields"  label="Fields"  type="enumeration" values="default:Default,short:Short,all:All"
+	      default="default"
 	      suffix="What fields to gather. Note: if you change this then also clear the file from the File menu. &lt;a target=_help href=/repository/point/purpleair_index.html#fields&gt;More information&lt;/a&gt;"/>
 
      <column  name="model"  label="Model" type="string" editable="false"/>
