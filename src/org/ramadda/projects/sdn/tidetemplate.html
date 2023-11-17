@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head><title>${title}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" type="image/png" href="${cdnpath}/favicon.png"/>
+<properties>
+name=TIDE Page Template
+id=tide
+</properties>
+${imports}
+<style type="text/css">
+.ramadda-logo-image {height:55px;}
+.ramadda-header {padding: 1px;padding-left: 6px;padding-right: 6px;}
+.ramadda-breadcrumbs {border-bottom : 0px transparent solid;}
+.ramadda-user-menu i {color:#888;}
+</style>
+${headfinal}
+</head>
+<body>
+<div class="ramadda-header">
+<table border="0" width="100%" cellspacing="0" cellpadding="0"><tr valign="bottom">
+<td width="1%"><a href="${logo.url}"><img valign="bottom" class="ramadda-logo-image"  src="${root}/tide/tide.png" ></a></td>
+<td width="60%" align="left" style="padding-left:10px;"><a href="${logo.url}" style="text-decoration:none;font-size:130%">TIDE Data Repository</a></td>
+<td align="right">${links}</td></tr></table>
+</div>
+<div style="border-bottom:1px solid #ccc;">${entry.header}</div>
+<div class="ramadda-outercontents">
+<div class="ramadda-innercontent">
+${content}
+</div>
+</div> 
+<div class="ramadda-footer">
+${footer}
+${footer.acknowledgement}
+<div class="ramadda-acknowledgement">
+Developed with support from
+<a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2131301&HistoricalAwards=false">
+NSF Award #2131301:  A Sovereign Network System for Environmental Monitoring,
+Data and Information Exchange, and Collaboration among Tribal Colleges and Universities
+</a>
+</div>
+</div>
+${bottom}
+</body>
+</html>
