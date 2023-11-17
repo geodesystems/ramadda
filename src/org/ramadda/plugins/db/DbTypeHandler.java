@@ -6108,6 +6108,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 if ( !label.equals("Count")) {
                     label = label + " of " + aggLabels.get(i);
                 }
+		label = request.getString("agglabel" + i,label);
                 labels.add(label);
             }
 	    if(iterator!=null) {
