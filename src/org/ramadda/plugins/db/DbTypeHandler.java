@@ -93,6 +93,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
     private static boolean debugQuery  = false;
 
+    /** _more_ */
+    public static final boolean debugTimes = false;
+
+
+
     public static final String ARG_SAMPLE = "sample";
 
     public static final String ATTR_SHOWSUMMARY = "search_showsummary";    
@@ -100,8 +105,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
     private static final String ORDER_DESC = "desc";
     private static final String ORDER_ASC = "asc";    
-    /** _more_ */
-    public static final boolean debugTimes = false;
 
     /** _more_ */
     private Element tableNode;
@@ -6171,7 +6174,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         extra += limitString;
         try {
 	    //            SqlUtil.debug = true;
-            if (SqlUtil.debug) {
+            if (SqlUtil.debug || debugQuery) {
                 System.err.println("table:" + tableHandler.getTableName());
                 System.err.println("clause:" + clause);
                 System.err.println("cols:" + SqlUtil.comma(colNames));
