@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Nov 14 11:13:19 MST 2023";
+var build_date="RAMADDA build date: Sat Nov 18 07:46:33 MST 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -55140,9 +55140,9 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    let summary=[];
 	    let columns;
 	    let recordCnt = 0;
-	    let addColumn = (td,v)=>{
+	    let addColumn = (td,v,field)=>{
 		if(recordCnt==1) {
-		    summary.push({total:0,cnt:0,min:NaN,max:NaN});
+		    summary.push({field:field,total:0,cnt:0,min:NaN,max:NaN});
 		}
 		columns.push(td);
 		if(!isNaN(v)) {
@@ -55237,7 +55237,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		    if(colorBy) {
 			let color =  colorBy.getColorFromRecord(record);
 			let fg =  Utils.getForegroundColor(color);
-			addColumn(HU.td(Utils.mergeLists(tdAttrs, [STYLE,HU.css('background', color,'color',fg+" !important")]),sv));
+			addColumn(HU.td(Utils.mergeLists(tdAttrs, [STYLE,HU.css('background', color,'color',fg+" !important")]),sv),null,f);
 		    } else if(props.showBar) {
 			let percent = 1-(value-props.barMin)/(props.barMax-props.barMin);
 			percent = (percent*100)+"%";
@@ -55253,15 +55253,15 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 					    (width?HU.css("width",HU.getDimension(width)):"")+
 					    HU.css("min-width","100px")+(props.barLabelInside?HU.css("height","1.5em"):"")],bar);
 			if(props.barLabelInside) {
-			    addColumn(HU.td([],outer));
+			    addColumn(HU.td([],outer),null,f);
 			} else {
-			    addColumn(HU.td([],HU.row([["align","right"],sv],outer)));
+			    addColumn(HU.td([],HU.row([["align","right"],sv],outer)),null,f);
 			}
 		    } else if(props.isNumeric) {
 			let td = this.handleColumn(fields,aggByField,f,record,this.formatNumber(value,f.getId()), tdAttrs);
-			addColumn(td,value);
+			addColumn(td,value,f);
 		    } else {
-			addColumn(this.handleColumn(fields,aggByField,f,record,sv,tdAttrs));
+			addColumn(this.handleColumn(fields,aggByField,f,record,sv,tdAttrs),null,f);
 		    }
 		    prefix="";
 		});
@@ -55320,16 +55320,25 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		total=0;
 		summary.forEach(s=>{
 		    html+="<td align=right style='padding:0px;'>";
+		    let ok  = (main,what)=>{
+			if(s.field) {
+			    if(s.field.isFieldString()) return false;
+			    return this.getProperty(s.field.getId()+'.'+what,main);
+			}
+			return main;
+		    }
+
 		    if(s.cnt) {
 			let v = [];
-			if(this.getShowSummaryTotal())
+			if(ok(this.getShowSummaryTotal(),'showSummaryTotal')) {
 			    v.push('Total: '+s.total);
-			if(this.getShowSummaryAverage()) {
+			}
+			if(ok(this.getShowSummaryAverage(),'showSummaryAverage')) {
 			    let avg = s.total/s.cnt;
 			    avg = Utils.formatNumberComma(avg,2);
 			    v.push('Avg: '+ avg);
 			}
-			if(this.getShowSummaryMinMax()) {
+			if(ok(this.getShowSummaryMinMax(),'showSummaryMinMax')) {
 			    v.push('Min: '+s.min);
 			    v.push('Max: '+s.max);
 			}
