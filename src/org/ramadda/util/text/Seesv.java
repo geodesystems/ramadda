@@ -2579,9 +2579,8 @@ public class Seesv implements SeesvCommands {
 			"era,year,month,day_of_month,day_of_week,week_of_month,\nday_of_week_in_month,am_pm,hour,hour_of_day,\nminute,second,millisecond")),
 
         new Cmd(CMD_FORMATDATE, "Format date",
-		ARG_LABEL,"Format Date",
-                new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS),
-		new Arg("target date format")),
+		ARG_LABEL,"Format Date - use -outdateformat to set the date format",
+                new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS)),
 
         new Cmd(CMD_ELAPSED, "Calculate elapsed time (ms) between rows",
                 new Arg(ARG_COLUMN,"",ATTR_TYPE,TYPE_COLUMN)),
@@ -4414,7 +4413,15 @@ public class Seesv implements SeesvCommands {
 	    });	
 
 
-	defineFunction(new String[]{CMD_INDATEFORMAT,"-dateformat"}, 2,(ctx,args,i) -> {
+	defineFunction(CMD_DATEFORMAT, 2,(ctx,args,i) -> {
+		outDater = inDater = new Dater(args.get(++i),args.get(++i));
+		ctx.addProcessor(new DateOps.DateFormatSetter(true, inDater));
+		ctx.addProcessor(new DateOps.DateFormatSetter(false, outDater));
+		return i;
+	    });
+
+
+	defineFunction(new String[]{CMD_INDATEFORMAT}, 2,(ctx,args,i) -> {
 		inDater = new Dater(args.get(++i),args.get(++i));
 		ctx.addProcessor(new DateOps.DateFormatSetter(true, inDater));
 		return i;

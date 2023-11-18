@@ -2376,7 +2376,7 @@ public class RowCollector extends Processor {
 			//                        return fmtSdf.format(date);
                     }
 
-                    return "bad date:" + v;
+                    return "bad date(3):" + v;
                 } else if (type.equals("image")) {
                     String url = v.toString().trim();
                     if (url.length() != 0) {

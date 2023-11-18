@@ -397,14 +397,14 @@ public class Row {
 			    try {
 				r1.dateForSort = d1 = ctx.parseDate(s1);
 			    } catch(Exception exc) {
-				System.err.println("bad date: " + s1);
+				System.err.println("bad date(1): " + s1);
 			    }
 			}
 			if(d2==null) {
 			    try {
 				r2.dateForSort = d2 = ctx.parseDate(s2);
 			    } catch(Exception exc) {
-				System.err.println("bad date: " + s2);
+				System.err.println("bad date(2): " + s2);
 			    }
 			}
 			if(d1==null && d2==null) dir = 0;
