@@ -1,7 +1,7 @@
 <wiki>
 +section title={{name}}
 +note
-Welcome to your TIDE RAMADDA
+Welcome to your Sovereign Data Network RAMADDA
 -note
 
 {{tabletree}}
