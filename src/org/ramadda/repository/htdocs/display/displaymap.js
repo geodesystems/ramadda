@@ -76,6 +76,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 
 	{p:'linkField',tt:'The field in the data to match with the map field, e.g., geoid'},
 	{p:'linkFeature',tt:'The field in the map to match with the data field, e.g., geoid'},
+	{p:'pruneFeatures',ex:true,tt:'Hide any features in the map that don\'t have a corresponding record'},
 	{p:'polygonField',tt:'Field that contains a polygon'},		
 
 	{p:'annotationLayerTop',ex:'true',tt:'If showing the extra annotation layer put it on top'},
@@ -2194,10 +2195,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let linkField=this.getFieldById(null,this.getProperty("linkField"));
 	    let linkFeature=this.getLinkFeature();
             let features = this.vectorLayer.features.slice();
-
-
             let allFeatures = features.slice();
 	    this.recordToFeature = {};
+//	    debug=true
 	    if(debug) console.log("\t#features:" + features.length);
 	    points.forEach(point=>{
 		let record = point.record;
@@ -2209,7 +2209,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(linkFeature && linkField) {
 		linkFeature = linkFeature.toLowerCase();
 		let recordMap = {};
-
 		points.forEach(p=>{
 		    let record = p.record;
 		    if(record) {
@@ -2245,7 +2244,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 				    this.recordToFeature[record.getId()] = feature;
 				} else {
 				    if(debugFeatureLinking) {
-					if(errorCnt++<20) {
+					if(errorCnt++<10) {
 					    console.log("\tCould not find record with map value:" + value.replace(/ /g,"X") +":");
 					    console.dir(attrs);
 					}
@@ -2285,8 +2284,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let seen = {};
 	    let maxCnt = -1;
 	    let minCnt = -1;
-
-
 
 	    points.forEach((point,idx)=>{
                 if (point.style && point.style.display == "none") {
@@ -2355,7 +2352,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 
-	    let prune = this.getProperty("pruneFeatures", false);
+	    let prune = this.getPruneFeatures();
 	    if(doCount) {
 		let colors = this.getColorTable(true);
 		if (colors == null) {
