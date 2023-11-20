@@ -51,6 +51,65 @@ var CLASS_DIALOG_BUTTON = 'ramadda-dialog-button';
 var CLASS_CLICKABLE = 'ramadda-clickable';
 var CLASS_HOVERABLE = 'ramadda-hoverable';
 
+
+var ID = "id";
+var BACKGROUND = "background";
+var CLASS = "class";
+var DIV = "div";
+var POSITION = "position";
+var WIDTH = "width";
+var ALIGN = "align";
+var VALIGN = "valign";
+var HEIGHT = "height";
+var SRC = "src";
+var STYLE = "style";
+var TABLE = "table";
+var TITLE = "title";
+var THEAD = "thead";
+var TBODY = "tbody";
+var TFOOT = "tfoot";
+var TR = 'tr';
+var TD= 'td';
+var BR= 'br';
+var PRE = "pre";
+var TAG_A = "a";
+var TAG_B = "b";
+var TAG_DIV = "div";
+var SELECT = "select";
+var OPTION = "option";
+var VALUE = "value";
+var TAG_IMG = "img";
+var TAG_INPUT = "input";
+var TAG_LI = "li";
+var TAG_SELECT = "select";
+var TAG_OPTION = "option";
+var TAG_TABLE = "table";
+var TAG_TR = "tr";
+var TAG_TD = "td";
+var TAG_UL = "ul";
+var TAG_OL = "ol";
+var ATTR_SRC = "src";
+var ATTR_WIDTH = "width";
+var ATTR_HREF = "href";
+var ATTR_PLACEHOLDER = "placeholder";
+var ATTR_BORDER = "border";
+var ATTR_VALUE = "value";
+var ATTR_TITLE = "title";
+var ATTR_ALT = "alt";
+var ATTR_ID = "id";
+var ATTR_CLASS = "class";
+var ATTR_SIZE = "size";
+var ATTR_STYLE = "style";
+var ATTR_ALIGN = "align";
+var ATTR_VALIGN = "valign";
+var SPACE = "&nbsp;";
+var SPACE1 = "&nbsp;";
+var SPACE2 = "&nbsp;&nbsp;";
+var SPACE3 = "&nbsp;&nbsp;&nbsp;";
+var SPACE4 = "&nbsp;&nbsp;&nbsp;&nbsp;";
+
+
+
 function noop() {}
 
 function addHandler(obj, id) {
@@ -2771,7 +2830,8 @@ var Utils =  {
 	let right = '';
         if(ramaddaThisEntry) {
             right=HU.span([ATTR_STYLE,HU.css('margin-right','5px'),ATTR_TITLE,"Search under this entry"],
-			  HU.checkbox("popup_search_here",['name','ancestor', 'value',ramaddaThisEntry],false) +HU.tag("label",[CLASS,CLASS_CLICKABLE, "for","popup_search_here"],HU.span([],"here")));
+			  HU.checkbox("popup_search_here",['name','ancestor', 'value',ramaddaThisEntry],false) +HU.tag("label",[CLASS,CLASS_CLICKABLE, "for","popup_search_here"],HU.div([ATTR_STYLE,'margin-left:5px;'], HU.getIconImage('fas fa-folder-tree'))));
+	    console.log(right);
         }
 	form+=HU.leftCenterRight(searchInput,'',right);
         form +="</form>";
@@ -3330,62 +3390,6 @@ var GuiUtils = {
     }
 };
 
-
-var ID = "id";
-var BACKGROUND = "background";
-var CLASS = "class";
-var DIV = "div";
-var POSITION = "position";
-var WIDTH = "width";
-var ALIGN = "align";
-var VALIGN = "valign";
-var HEIGHT = "height";
-var SRC = "src";
-var STYLE = "style";
-var TABLE = "table";
-var TITLE = "title";
-var THEAD = "thead";
-var TBODY = "tbody";
-var TFOOT = "tfoot";
-var TR = 'tr';
-var TD= 'td';
-var BR= 'br';
-var PRE = "pre";
-var TAG_A = "a";
-var TAG_B = "b";
-var TAG_DIV = "div";
-var SELECT = "select";
-var OPTION = "option";
-var VALUE = "value";
-var TAG_IMG = "img";
-var TAG_INPUT = "input";
-var TAG_LI = "li";
-var TAG_SELECT = "select";
-var TAG_OPTION = "option";
-var TAG_TABLE = "table";
-var TAG_TR = "tr";
-var TAG_TD = "td";
-var TAG_UL = "ul";
-var TAG_OL = "ol";
-var ATTR_SRC = "src";
-var ATTR_WIDTH = "width";
-var ATTR_HREF = "href";
-var ATTR_PLACEHOLDER = "placeholder";
-var ATTR_BORDER = "border";
-var ATTR_VALUE = "value";
-var ATTR_TITLE = "title";
-var ATTR_ALT = "alt";
-var ATTR_ID = "id";
-var ATTR_CLASS = "class";
-var ATTR_SIZE = "size";
-var ATTR_STYLE = "style";
-var ATTR_ALIGN = "align";
-var ATTR_VALIGN = "valign";
-var SPACE = "&nbsp;";
-var SPACE1 = "&nbsp;";
-var SPACE2 = "&nbsp;&nbsp;";
-var SPACE3 = "&nbsp;&nbsp;&nbsp;";
-var SPACE4 = "&nbsp;&nbsp;&nbsp;&nbsp;";
 
 
 
