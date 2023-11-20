@@ -2719,7 +2719,8 @@ var Utils =  {
                 let name = value.name;
                 let id = value.id;
                 let v = name.replace(/\"/g, "_quote_");
-                let entryLink =  HU.href(RamaddaUtil.getUrl("/entry/show?entryid=" + id),HU.getIconImage(value.icon||icon_blank16) + SPACE+name,[TITLE,"View entry",STYLE,HU.css("display","inline-block","width","100%"), CLASS,"ramadda-highlightable"]);
+                let entryLink =  HU.href(RamaddaUtil.getUrl("/entry/show?entryid=" + id),
+					 HU.getIconImage(value.icon||icon_blank16,["width",ramaddaGlobals.iconWidth]) + SPACE+name,[TITLE,"View entry",STYLE,HU.css("display","inline-block","width","100%"), CLASS,"ramadda-highlightable"]);
                 let searchLink;
                 if(submitForm) {
                     searchLink =  HU.span([CLASS,"ramadda-highlightable ramadda-search-input","index",i,TITLE,"Search for"],HtmlUtils.getIconImage("fa-search"));
@@ -2765,11 +2766,14 @@ var Utils =  {
 	//      anchor = anchor || id;
         let value = Utils.searchLastInput||"";
         let form = "<form action='" + RamaddaUtil.getUrl('/search/do')+"'>";
-        form += HU.open('input',['value', value, 'placeholder','Search text', 'autocomplete','off','autofocus','true','id','popup_search_input','class', 'ramadda-search-input',
-                                 STYLE,HU.css('margin-left','4px', 'padding','2px','width','250px','border','0px'),'name','text']);
+        let searchInput = HU.tag('input',['value', value, 'placeholder','Search text', 'autocomplete','off','autofocus','true','id','popup_search_input','class', 'ramadda-search-input',
+                                    STYLE,HU.css('margin-left','4px', 'padding','2px','width','250px','border','0px'),'name','text']);
+	let right = '';
         if(ramaddaThisEntry) {
-            form+=HU.checkbox("popup_search_here",['name','ancestor', 'value',ramaddaThisEntry, TITLE,"Search under this entry"],false) +HU.tag("label",[CLASS,CLASS_CLICKABLE, "for","popup_search_here"],SPACE +HU.span([],"here") + SPACE);
+            right=HU.span([ATTR_STYLE,HU.css('margin-right','5px'),ATTR_TITLE,"Search under this entry"],
+			  HU.checkbox("popup_search_here",['name','ancestor', 'value',ramaddaThisEntry],false) +HU.tag("label",[CLASS,CLASS_CLICKABLE, "for","popup_search_here"],HU.span([],"here")));
         }
+	form+=HU.leftCenterRight(searchInput,'',right);
         form +="</form>";
 
         let linksId = HU.getUniqueId();
