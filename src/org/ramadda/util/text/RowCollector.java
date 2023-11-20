@@ -2255,6 +2255,8 @@ public class RowCollector extends Processor {
             /** _more_ */
             String sampleError;
 
+            double total = 0;
+
             /** _more_ */
             double min = Double.NaN;
 
@@ -2417,6 +2419,7 @@ public class RowCollector extends Processor {
                 if (type.equals("numeric")) {
                     try {
                         double d = Double.parseDouble(v);
+			total+=d;
                         min = Utils.min(min, d);
                         max = Utils.max(max, d);
                         if (Double.isNaN(d)) {
@@ -2456,6 +2459,7 @@ public class RowCollector extends Processor {
                 writer.print("sample:" + sample + "  ");
                 if (type.equals("numeric")) {
                     writer.print("min:" + min + "  max:" + max);
+                    writer.print(" total:" + total);
                     writer.print("  #missing:" + numMissing + "  #errors:"
                                  + numErrors);
                     if (sampleError != null) {
