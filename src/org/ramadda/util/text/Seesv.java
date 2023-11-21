@@ -1809,6 +1809,9 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_HELP+":<topic search string>",
                 "print help that matches topic"),
         new Cmd(CMD_HELPFORMAT, "print formatted  help"),
+        new Cmd(CMD_COMMANDS, "file of commands",
+		new Arg("file", "The file of commands. Any # of lines",
+			ATTR_TYPE, "file")),			
 
         /** * Input   * */
         new Category("Input","Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XML, Shapefile, etc."),
@@ -5582,6 +5585,18 @@ public class Seesv implements SeesvCommands {
 
 		continue;
 	    }
+	    if(arg.equals("-commands")) {
+		String file = args.get(++i);
+		checkOkToRead(file);
+		String contents =  IO.readContents(file);
+		List<List<String>> llines  =  tokenizeCommands(contents,false);
+		for(List<String>lines:llines) {
+		    for(String s:lines) {
+			newArgs.add(s.toString());
+		    }
+		}
+		continue;
+	    }
 	    newArgs.add(arg);
 	}
 
@@ -5923,7 +5938,6 @@ public class Seesv implements SeesvCommands {
 
 
     public static List<List<String>> tokenizeCommands(String commandString, boolean keepLineSeparation) {
-
 	List<StringBuilder> toks =
 	    Seesv.tokenizeCommands(commandString);
 
