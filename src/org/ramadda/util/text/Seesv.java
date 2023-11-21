@@ -691,7 +691,7 @@ public class Seesv implements SeesvCommands {
                 }
             }
             if (arg.equals(CMD_HELP)) {
-                usage("", null);
+                usage("", false,null);
                 return;
             }
             if (arg.equals("-genhelp")) {
@@ -699,17 +699,27 @@ public class Seesv implements SeesvCommands {
                 return;
             }
             if (arg.equals("-helpraw")) {
-                usage("", null, CMD_RAW, "true");
+                usage("", false,null, CMD_RAW, "true");
                 return;
             }
             if (arg.equals("-helpjson")) {
-                usage("", null, CMD_JSON, "true");
+                usage("", false,null, CMD_JSON, "true");
                 return;
             }
             if (arg.startsWith("-help:")) {
-                usage("", arg.substring("-help:".length()));
+                usage("", false,arg.substring("-help:".length()));
                 return;
             }
+            if (arg.startsWith("-helpformat:")) {
+                usage("", true,arg.substring("-helpformat:".length()));
+                return;
+            }
+            if (arg.equals("-helpformat")) {
+                usage("", true,null);
+                return;
+            }
+
+	    
             if (arg.equals("-alldata")) {
                 myTextReader.setAllData(true);
                 continue;
@@ -1744,20 +1754,32 @@ public class Seesv implements SeesvCommands {
          *
          * @return _more_
          */
-        public String getLine() {
+        public String getLine(boolean decorate,boolean format) {
+	    String prefix1 = (decorate?Utils.ANSI_BLUE:"");
+	    String prefix2 = (decorate?Utils.ANSI_GREEN:"");
+	    String prefix3 = (decorate?Utils.ANSI_CYAN:"");	    	    
+	    String suffix = (decorate?Utils.ANSI_RESET:"");
             StringBuilder sb = new StringBuilder();
 	    //	    if(true)
 	    //		return cmd +  " " +desc;
 		
             if (args != null) {
                 for (Arg arg : args) {
-                    sb.append("<" + arg.id + ((arg.desc.length() > 0)
+		    if(format) sb.append("\n\t");
+                    sb.append("<" + prefix2+arg.id +suffix+ ((arg.desc.length() > 0)
 					      ? " " + arg.desc
 					      : "") + "> ");
                 }
             }
 
-            return cmd + " " + sb + " (" + desc + ")";
+	    String d = Utils.stringDefined(desc)?" (" + prefix3+desc+suffix + ")":"";
+	    String s =  prefix1+cmd+suffix+" ";
+	    if(format) {
+		s = s+d+sb;
+	    } else {
+		s = s+sb+d;
+	    }
+	    return s;
         }
     }
 
@@ -1783,9 +1805,10 @@ public class Seesv implements SeesvCommands {
 
     /** _more_ */
     private static final Cmd[] commands = {
-        new Cmd(CMD_HELP, "print this help)"),
+        new Cmd(CMD_HELP, "print this help"),
         new Cmd(CMD_HELP+":<topic search string>",
                 "print help that matches topic"),
+        new Cmd(CMD_HELPFORMAT, "print formatted  help"),
 
         /** * Input   * */
         new Category("Input","Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XML, Shapefile, etc."),
@@ -2164,12 +2187,12 @@ public class Seesv implements SeesvCommands {
                 new Arg("num_rows", "Number of rows", ATTR_TYPE, TYPE_NUMBER)), 
         new Cmd(CMD_COMBINE,
                 "Combine columns with the delimiter. deleting columns",
-                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS),
+                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
 		new Arg("delimiter"),
                 new Arg("column name","New column name")),
         new Cmd(CMD_COMBINEINPLACE, "Combine columns with the delimiter",
 		ARG_LABEL,"Combine in place",
-                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS), 
+                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS), 
 		new Arg("delimiter"),
                 new Arg("column name","New column name")),
         new Cmd(CMD_MERGE,
@@ -2438,7 +2461,7 @@ public class Seesv implements SeesvCommands {
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
 		new Arg("string")),
         new Cmd(CMD_TRUNCATE, "",
-		new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS),
+		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("max length"),
 		new Arg("suffix")),
         new Cmd(CMD_EXTRACT, "Extract text from column and make a new column",
@@ -2527,11 +2550,11 @@ public class Seesv implements SeesvCommands {
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
         new Cmd(CMD_WIKIDESC, "Add a description from Wikipedia",
 		ARG_LABEL,"Add Wikipedia Desc.",
-                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS), 
-		new Arg("suffix")),
-        new Cmd(CMD_IMAGE, "Search for an image",
-                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS),
-		new Arg("suffix")),
+                new Arg(ARG_COLUMNS, "Search string columns", ATTR_TYPE, TYPE_COLUMNS), 
+		new Arg("suffix","Text to add after")),
+        new Cmd(CMD_IMAGE, "Do a Bing image Search for an image",
+                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
+		new Arg("suffix","Text to add after")),
         new Cmd(CMD_EMBED, "Download the URL and embed the image contents",
                 new Arg("url column")),
         new Cmd(CMD_FETCH, "Fetch the URL and embed the contents",
@@ -2548,7 +2571,7 @@ public class Seesv implements SeesvCommands {
                 new Arg(ARG_COLUMN, "Column that holds the URL", ATTR_TYPE, TYPE_COLUMN),
 		new Arg("suffix", "File suffix")),
         new Cmd(CMD_GENDER, "Figure out the gender of the name in the column",
-                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS)),
+                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
 
 
         /** *  Dates * */
@@ -2564,7 +2587,7 @@ public class Seesv implements SeesvCommands {
 
         new Cmd(CMD_CONVERTDATE, "Convert date", 
 		ARG_LABEL,"Convert Date",
-                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS)),
+                new Arg(ARG_COLUMNS, "Columns to convert", ATTR_TYPE, TYPE_COLUMNS)),
 
         new Cmd(CMD_ADDDATE, "Add date", 
 		ARG_LABEL,"Add to Date",
@@ -2618,11 +2641,11 @@ public class Seesv implements SeesvCommands {
 		new Arg("start","",ATTR_TYPE,TYPE_NUMBER),
 		new Arg("step","",ATTR_TYPE,TYPE_NUMBER)),
         new Cmd(CMD_DECIMALS, "Round decimals",
-		new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS),
+		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("num_decimals","how many decimals to round to",
 			ATTR_TYPE,TYPE_NUMBER)),
         new Cmd(CMD_FUZZ, "fuzz the number. if num_places less than zero than that is the # of decimals. else that is the lower digits to fuzz out",
-		new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS),
+		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("num_places","how many places to round to. use <=0 for decimals",ATTR_TYPE,TYPE_NUMBER),
 		new Arg("num_random_digits","how many random digits",ATTR_TYPE,TYPE_NUMBER)),	
         new Cmd(CMD_CEIL, "Set the max value",
@@ -2692,24 +2715,24 @@ public class Seesv implements SeesvCommands {
 		new Arg(ARG_COLUMNS,"Columns to add",ATTR_TYPE,"columns")),
         new Cmd(CMD_INCREASE, "Calculate percent increase",
 		ARG_LABEL,"% Increase",
-                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS), 
+                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS), 
 		new Arg("how far back","",ATTR_TYPE,TYPE_NUMBER)),
         new Cmd(CMD_DIFF, "Difference from previous value",
 		ARG_LABEL,"Difference",
-                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS), 
+                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS), 
 		new Arg("how far back (default 1)","",ATTR_TYPE,TYPE_NUMBER)),	
         new Cmd(CMD_AVERAGE, "Calculate a moving average", 
 		new Arg(ARG_COLUMNS,"Columns",ATTR_TYPE,"columns"),
                 new Arg("period","",ATTR_TYPE,TYPE_NUMBER),
 		new Arg("label")),
         new Cmd(CMD_RANGES, "Create a new column with the (string) ranges where the value falls in",
-                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS),
+                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
 		new Arg(ARG_NAME, "New column name"),		
 		new Arg("start", "Numeric start of range"),
 		new Arg("size", "Numeric size of range")),		
         new Cmd(CMD_BYTES, "Convert suffixed values (e.g., 2 MB) into the number",
                 new Arg("unit", "", ATTR_TYPE, "enumeration","values","binary,metric"),
-                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS)),
+                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
         new Cmd(CMD_COLUMN_AND, "And values", ARG_LABEL,"Logical And",
 		new Arg(ARG_NAME,"New column name"),
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
@@ -2979,7 +3002,7 @@ public class Seesv implements SeesvCommands {
      * @param args _more_
      * @throws Exception _more_
      */
-    public void usage(String msg, String match, String... args)
+    public void usage(String msg, boolean format, String match, String... args)
 	throws Exception {
         boolean exact = false;
         boolean raw   = false;
@@ -3005,8 +3028,8 @@ public class Seesv implements SeesvCommands {
         int     cnt             = 0;
         String  pad             = "    ";
         boolean matchedCategory = false;
-        for (Cmd c : commands) {
-            String cmd = c.getLine();
+	for (Cmd c : commands) {
+            String cmd = c.getLine(format,format);
             if (match != null) {
                 String text  = c.cmd;
                 String desc  = null;
@@ -3098,7 +3121,12 @@ public class Seesv implements SeesvCommands {
                 }
             } else {
                 if (c.category) {
-                    pw.println(c.desc);
+		    if(format)
+			pw.print(Utils.ANSI_GREEN_BACKGROUND);
+                    pw.print(c.cmd +": " +c.desc);
+		    if(format)
+			pw.print(Utils.ANSI_RESET);
+		    pw.println("");
                 } else {
 		    cmd = cmd.replaceAll("<br>","\n");
                     pw.println(pad + cmd);
@@ -3310,7 +3338,7 @@ public class Seesv implements SeesvCommands {
     private boolean ensureArg(List args, int i, int cnt) throws Exception {
         if (args.size() <= (i + cnt)) {
             String arg = (String) args.get(i);
-            usage("Bad argument count for:" + arg, arg, "-exact", "true");
+            usage("Bad argument count for:" + arg, false, arg, "-exact", "true");
             return false;
         }
         return true;
@@ -5942,8 +5970,6 @@ public class Seesv implements SeesvCommands {
      * @throws Exception On badness
      */
     public static void main(String[] args) throws Exception {
-
-
 	if(args.length>0 && args[0].equals("-s3")) {
 	    S3File.main(args);
 	    return;

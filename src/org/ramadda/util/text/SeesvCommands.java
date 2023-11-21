@@ -32,6 +32,7 @@ public interface SeesvCommands {
 
 
     public static final String CMD_HELP="-help";
+    public static final String CMD_HELPFORMAT="-helpformat";    
     public static final String CMD_DELIMITER="-delimiter";
     public static final String CMD_INPUTCOMMENT="-inputcomment";
     public static final String CMD_TAB="-tab";
@@ -111,7 +112,7 @@ public interface SeesvCommands {
     public static final String CMD_IFMATCHESFILE="-ifmatchesfile";
     public static final String CMD_IFNOTMATCHESFILE="-ifnotmatchesfile";
     public static final String CMD_SKIPPATTERN="-skippattern";
-    public static final String CMD_SKIPROWS="-skipROWS";
+    public static final String CMD_SKIPROWS="-skiprows";
     public static final String CMD_COLUMNS="-columns";
     public static final String CMD_NOTCOLUMNS="-notcolumns";
     public static final String CMD_FIRSTCOLUMNS="-firstcolumns";
