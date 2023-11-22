@@ -710,12 +710,16 @@ public class Seesv implements SeesvCommands {
                 usage("", false,arg.substring("-help:".length()));
                 return;
             }
-            if (arg.startsWith("-helpformat:")) {
-                usage("", true,arg.substring("-helpformat:".length()));
+            if (arg.startsWith("-helppretty:")) {
+                usage("", true,arg.substring("-helppretty:".length()));
                 return;
             }
-            if (arg.equals("-helpformat")) {
+            if (arg.equals("-helppretty")) {
                 usage("", true,null);
+                return;
+            }
+            if (arg.equals(CMD_HELP)) {
+                usage("", false,null);
                 return;
             }
 
@@ -1808,7 +1812,7 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_HELP, "print this help"),
         new Cmd(CMD_HELP+":<topic search string>",
                 "print help that matches topic"),
-        new Cmd(CMD_HELPFORMAT, "print formatted  help"),
+        new Cmd(CMD_HELP_PRETTY, "pretty print help"),
         new Cmd(CMD_COMMANDS, "file of commands",
 		new Arg("file", "The file of commands. Any # of lines",
 			ATTR_TYPE, "file")),			

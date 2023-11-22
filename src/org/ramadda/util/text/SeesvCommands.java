@@ -32,7 +32,7 @@ public interface SeesvCommands {
 
 
     public static final String CMD_HELP="-help";
-    public static final String CMD_HELPFORMAT="-helpformat";    
+    public static final String CMD_HELP_PRETTY="-helppretty";    
     public static final String CMD_DELIMITER="-delimiter";
     public static final String CMD_COMMANDS="-commands";
     public static final String CMD_INPUTCOMMENT="-inputcomment";
