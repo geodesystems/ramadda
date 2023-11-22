@@ -5206,8 +5206,17 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
 
     checkbox: function(id, attrs, checked,label) {
+
 	attrs = attrs||[];
-        attrs.push("id");
+	if(!Utils.stringDefined(id)) {
+	    for(let i=0;i<attrs.length;i+=2) {
+		if(attrs[i]==ATTR_ID) {
+		    id  = attrs[i+1];
+		    break;
+		}
+	    }
+	}
+        attrs.push(ATTR_ID);
         attrs.push(id);
         attrs.push("type");
         attrs.push("checkbox");
