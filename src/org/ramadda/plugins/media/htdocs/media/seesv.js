@@ -12,6 +12,9 @@ function  SeesvForm(inputId, entry,params) {
     const ID_MENU = "menu";
     const ID_INPUT = "input";
     const ID_OUTPUTS = "outputs";
+    const ID_DO_COMMANDS  = "docommands";
+    const ID_SAVE="save";
+    const ID_APPLY_TO_SIBLINGS = "ID_APPLY_TO_SIBLINGS";
     const ID_TABLE = "table";
     const ID_PROCESS = "process";
     const ID_CLEAR = "clear";
@@ -109,21 +112,19 @@ function  SeesvForm(inputId, entry,params) {
 
 	    let makeToolbarLink = (v,style) =>{
 		return  HU.span(['title',v[0],ID,this.domId(v[1]),
-				 'style',style??'margin-right:10px;',
+				 ATTR_STYLE,style??'margin-right:10px;',
 				 'class','ramadda-clickable ramadda-highlightable'],
 				HU.getIconImage(v[2]));
 	    }
 
 	    let searchAll  = makeToolbarLink(['All commands', ID_ALL,ICON_SEARCH],"");
-
-
-	    let topLeft = searchAll+ HU.div([ID,this.domId(ID_MENU),"style","display:inline-block;"],"");
+	    let topLeft = SPACE1+searchAll+ HU.div([ID,this.domId(ID_MENU),ATTR_STYLE,"display:inline-block;"],"");
 	    let topRight = [['Select file entry', ID_SELECTFILE,'fas fa-file-arrow-up'],
 			    ['Settings',ID_SETTINGS,ICON_SETTINGS],
 			    ['Help',ID_HELP,ICON_HELP]].reduce((current,v)=>{
 				return current +makeToolbarLink(v);
 			    },"");
-	    html += HU.div(["class","ramadda-menubar","style","width:100%;"],HU.leftRightTable(topLeft,topRight));
+	    html += HU.div(["class","ramadda-menubar",ATTR_STYLE,"width:100%;"],HU.leftRightTable(topLeft,topRight));
 
 	    let input = HtmlUtil.div([STYLE,"height:100%;top:0px;right:0px;left:0px;bottom:0px;position:absolute;width:100%;", ID,this.domId(ID_INPUT), "rows", "5"], text);	    
 
@@ -199,7 +200,7 @@ function  SeesvForm(inputId, entry,params) {
 		    acc+=HU.div([CLASS,"ramadda-clickable","command",cmd.command,TITLE,cmd.command],cmd.description);
 		    return acc;
 		},"");
-		html = HU.div(["style",HU.css("margin","10px")],html);
+		html = HU.div([ATTR_STYLE,HU.css("margin","10px")],html);
 		let dialog = HU.makeDialog({content:html,anchor:$(this)});
 		dialog.find(".ramadda-clickable").click(function(){
 		    let command = $(this).attr("command");
@@ -224,10 +225,13 @@ function  SeesvForm(inputId, entry,params) {
 	    this.jq(ID_SETTINGS).click(function(e){
 		let html ="";
 		html += "Rows: " + HtmlUtil.input("",_this.maxRows,["size","2", ID,_this.domId("maxrows")]) +"<br>";
-		html += HtmlUtil.checkbox("",[ID,_this.domId("applytosiblings")], _this.applyToSiblings) + " Apply to siblings" +"<br>";
-		html +=  HtmlUtil.checkbox("",[ID,_this.domId("save")],_this.save) +" Save" +"<br>";
-		html += HtmlUtil.checkbox("",[ID,_this.domId("docommands")],_this.doCommands) +" Do commands";
-		html = HU.div(["style",HU.css("margin","10px")],html);
+		html +=  HtmlUtil.checkbox("",[ATTR_TITLE,"Save the commands every time the table is displayed",
+					       ATTR_ID,_this.domId(ID_SAVE)],_this.save,"Auto save") +"<br>";
+		html += HtmlUtil.checkbox("",[ATTR_TITLE,"Enabled/Disable the commands",
+					      ATTR_ID,_this.domId(ID_DO_COMMANDS)],_this.doCommands,"Do commands") +"<br>";
+		html += HtmlUtil.checkbox("",[ATTR_TITLE,"Apply this set of commands to all of the siblings of this entry",
+					      ATTR_ID,_this.domId(ID_APPLY_TO_SIBLINGS)], _this.applyToSiblings, "Apply to siblings");
+		html = HU.div([ATTR_STYLE,HU.css("margin","10px")],html);
 
 		let dialog = HU.makeDialog({content:html,my:"right top",at:"right bottom",xtitle:"",anchor:$(this),draggable:true,header:true,inPlace:false});
 		HU.onReturnEvent("#" + _this.domId("maxrows"),input=>{
@@ -235,13 +239,13 @@ function  SeesvForm(inputId, entry,params) {
 		    dialog.remove();
 		});
 
-		_this.jq("save").click(function() {
+		_this.jq(ID_SAVE).click(function() {
 		    _this.save =  $(this).is(':checked');
 		});
-		_this.jq("applytosiblings").click(function() {
+		_this.jq(ID_APPLY_TO_SIBLINGS).click(function() {
 		    _this.applyToSiblings =  $(this).is(':checked');
 		});
-		_this.jq("docommands").click(function() {
+		_this.jq(ID_DO_COMMANDS).click(function() {
 		    _this.doCommands =  $(this).is(':checked');
 		    if(_this.editor) {
 			if(_this.doCommands) {
@@ -280,6 +284,7 @@ function  SeesvForm(inputId, entry,params) {
 		    this.commandsMap = {}
 		    let menus = [];
 		    let menuCategories = {};
+		    let menuItems =[];
 		    let category="";
 		    this.allMenuItems = [];
 		    this.outputCommands = [];
@@ -313,7 +318,7 @@ function  SeesvForm(inputId, entry,params) {
 			corpus = corpus.replace(/[\n\"\']/g," ");
 			let label = cmd.label ||  Utils.camelCase(cmd.command.replace("-",""));
 			this.commandsMap[command] = cmd;
-			let menuItem = HU.div(['data-corpus',corpus,TITLE,(desc||"")+"<br>"+cmd.command,'style',HU.css('margin','1px','border','1px solid transparent'),CLASS, "ramadda-hoverable ramadda-clickable","command",command],label);
+			let menuItem = HU.div(['data-corpus',corpus,TITLE,(desc||"")+"<br>"+cmd.command,ATTR_STYLE,HU.css('margin','1px','border','1px solid transparent'),CLASS, "ramadda-hoverable ramadda-clickable","command",command],label);
 			menuItems.push(menuItem);
 			this.allMenuItems.push(menuItem);
 		    });
@@ -342,10 +347,10 @@ function  SeesvForm(inputId, entry,params) {
 	    if(all) menu =  Utils.wrap(items,"<div style='border:1px solid #ececec;vertical-align:top;margin:2px;display:inline-block;'>","</div>");
 	    else menu = Utils.wrap(items,"<div style='vertical-align:top;margin:5px;display:inline-block;'>","</div>");
 	    let menuAttrs = ['id',menuId];
-	    if(all)  menuAttrs.push('style',HU.css('margin','10px','overflow-y','auto','max-height','300px','min-height','200px','max-width','800px','min-width','600px'));
+	    if(all)  menuAttrs.push(ATTR_STYLE,HU.css('margin','10px','overflow-y','auto','max-height','300px','min-height','200px','max-width','800px','min-width','600px'));
 	    menu = HU.div(menuAttrs,menu);
 	    let inputId = HU.getUniqueId("input_");
-	    let input = HU.div(['style','font-size:80%;text-align:center;margin:5px;'],
+	    let input = HU.div([ATTR_STYLE,'font-size:80%;text-align:center;margin:5px;'],
 			       HU.input("","",['autofocus',null,STYLE,HU.css("width","150px"), 'placeholder','Search Commands',ID,inputId]));
 	    menu = input+menu;
 	    
@@ -1360,7 +1365,7 @@ function  SeesvForm(inputId, entry,params) {
 	    });
 	    inner+=HU.formTableClose();
 	    let help = ramaddaBaseUrl +'/userguide/seesv.html#' + cmd.command;
-	    help = HU.div(['style',HU.css('display','inline-block'),'id',this.domId('showhelp')], HU.href(help,"Help",['title','Command Help','target','_help']));
+	    help = HU.div([ATTR_STYLE,HU.css('display','inline-block'),'id',this.domId('showhelp')], HU.href(help,"Help",['title','Command Help','target','_help']));
 
 	    let buttons = HU.buttons([HU.div([ID,this.domId(ID_ADDCOMMAND)],opts.add?"Add Command":"Change Command"),
 				      HU.div([ID,this.domId(ID_CANCELCOMMAND)],"Cancel"),help]);

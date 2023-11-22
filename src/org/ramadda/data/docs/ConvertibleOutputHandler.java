@@ -215,7 +215,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
 	sb.append(getRepository().getMapManager().getHtmlImports(request));
         HtmlUtils.importJS(sb,
                            getRepository().getUrlBase()
-                           + "/media/convertcsv.js");
+                           + "/media/seesv.js");
 
 
 	if (getAccessManager().canDoEdit(request, entry)) {
