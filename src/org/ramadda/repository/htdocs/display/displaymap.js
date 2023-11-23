@@ -1813,7 +1813,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 };
 		if(this.getProperty("recordHighlightUseMarker",false)) {
 		    let size = +this.getProperty("recordHighlightRadius", +this.getRadius(24));
-		    this.highlightMarker = this.getMap().createMarker("pt-" + i, point, null, "pt-" + i,null,null,size);
+		    this.highlightMarker = this.getMap().createMarker("pt-" + featureCnt, point, null, "pt-" + featureCnt,null,null,size);
 		} else 	if(this.getProperty("recordHighlightVerticalLine",false)) {
 		    let points = [];
                     points.push(MapUtils.createPoint(lon,0));
@@ -4413,7 +4413,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			let type = 'OpenLayers.Geometry.LineString';
 			line =this.makeFeature(this.getMap(),type,attrs,points);		    
 		    } else {
-			line= this.map.createLine("line-" + i, "", lat1, lon1, lat2, lon2, attrs);
+			line= this.map.createLine("line-" + featureCnt, "", lat1, lon1, lat2, lon2, attrs);
 		    }
 		    featuresToAdd.push(line);
 		    line.record = record;
@@ -4435,7 +4435,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         let p2 = MapUtils.createLonLat(lon2, lat2);
                         if (!Utils.isDefined(seen[p1])) {
                             seen[p1] = true;
-			    let pt1 =this.map.createPoint("endpt-" + i, p1, pointProps);
+			    let pt1 =this.map.createPoint("endpt-" + featureCnt, p1, pointProps);
 			    featuresToAdd.push(pt1);
 			    pt1.record = record;
 			    pt1.textGetter = textGetter;
@@ -4443,7 +4443,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         }
                         if (!Utils.isDefined(seen[p2])) {
                             seen[p2] = true;
-                            let pt2 = this.map.createPoint("endpt2-" + i, p2, pointProps);
+                            let pt2 = this.map.createPoint("endpt2-" + featureCnt, p2, pointProps);
 			    featuresToAdd.push(pt2);
 			    pt2.record = record;
 			    pt2.textGetter = textGetter;
@@ -4478,7 +4478,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			if(sizeBy.index>=0) {
 			    size = props.pointRadius;
 			}
-			mapPoint = this.map.createMarker("pt-" + i, point, icon, "pt-" + i,null,null,size);
+			mapPoint = this.map.createMarker("pt-" + featureCnt, point, icon, "pt-" + featureCnt,null,null,size);
 			mapPoint.isMarker = true;
 			recordFeatures.push(mapPoint);
 			this.markers[record.getId()] = mapPoint;
