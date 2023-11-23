@@ -80,7 +80,7 @@ pre {
 </style>
 
 <h2>RAMADDA SeeSV</h2>
-<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Values'>Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric'>Numeric</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc'>Misc</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 294 commands for manipulating CSV and other types of files</center>
+<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Values'>Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric'>Numeric</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc'>Misc</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 300 commands for manipulating CSV and other types of files</center>
 
 :pagesearch selector=.seesv-item hideAll=.seesv-hide
 
@@ -216,7 +216,13 @@ seesv -columns column1 -unique 0 -sort column1 -p test.csv > newtest.csv
 </pre>
 </div>
 
-<div class=seesv-hide><hr><a name='Input'></a><b style='font-size:120%;'>Input</b><br>
+<div class=seesv-item>
+<a name='-commands'></a><div class=command> <i><a href='#-commands'>-commands</a></i>  &lt;file&gt; </div><div class=command-block>file of commands<br class=seesv-hide>
+<ul>
+<li> <i>file</i>:
+The file of commands. Any # of lines<br>
+</ul>
+</div></div><div class=seesv-hide><hr><a name='Input'></a><b style='font-size:120%;'>Input</b><br>
 Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XML, Shapefile, etc.</div><div class=seesv-hide> The default input type is CSV. To print out a CSV file just do:
 <seesv>seesv -p test.csv</seesv>
 The SeeSV package can also handle  zipped or gzipped input files:
@@ -784,7 +790,7 @@ Pattern to match<br>
 Comma separated list of column names<br>
 </ul>
 </div></div></ul><br class=seesv-hide><div class=seesv-hide><hr><a name='Filter'></a><b style='font-size:120%;'>Filter</b><br>
-</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-skiplines'><i>-skiplines</i>: Skip number of raw lines.</a><li> <a href='#-maxrows'><i>-maxrows</i>: Set max rows to process</a><li> <a href='#-find'><i>-find</i>: Pass through rows that the columns each match the pattern</a><li> <a href='#-notpattern'><i>-notpattern</i>: Pass through rows that don't match the pattern</a><li> <a href='#-if'><i>-if</i>: Next N args specify a filter command followed by any change commands followed by an -endif.</a><li> <a href='#-start'><i>-start</i>: Start at pattern in source file</a><li> <a href='#-stop'><i>-stop</i>: End at pattern in source file</a><li> <a href='#-rawlines'><i>-rawlines</i>: </a><li> <a href='#-inputnotcontains'><i>-inputnotcontains</i>: Filter out input lines that contain any of the strings</a><li> <a href='#-min'><i>-min</i>: Only pass thorough lines that have at least this number of columns. Specify blank to use the number of columns in the header</a><li> <a href='#-max'><i>-max</i>: Only pass through lines that have no more than this number of columns. Specify blank to use the number of columns in the header</a><li> <a href='#-numcolumns'><i>-numcolumns</i>: Remove or add values so each row has the number of columns</a><li> <a href='#-has'><i>-has</i>: Only pass through anything if the data has the given columns</a><li> <a href='#-fuzzypattern'><i>-fuzzypattern</i>: Pass through rows that the columns each fuzzily match the pattern</a><li> <a href='#-lengthgreater'><i>-lengthgreater</i>: Pass through rows that the length of the columns is greater than</a><li> <a href='#-same'><i>-same</i>: Pass through where the 2 columns have the same value</a><li> <a href='#-notsame'><i>-notsame</i>: Pass through where the 2 columns don't have the same value</a><li> <a href='#-unique'><i>-unique</i>: Pass through unique values</a><li> <a href='#-dups'><i>-dups</i>: Pass through duplicate values</a><li> <a href='#-sample'><i>-sample</i>: Pass through rows based on probablity</a><li> <a href='#-minvalue'><i>-minvalue</i>: Pass through the row that has the min value in the group of columns defined by the key column</a><li> <a href='#-maxvalue'><i>-maxvalue</i>: Pass through the row that has the max value in the group of columns defined by the key column</a><li> <a href='#-eq'><i>-eq</i>: Pass through rows that the column value equals the given value</a><li> <a href='#-ne'><i>-ne</i>: Pass through rows that the column value does not equal the given value</a><li> <a href='#-gt'><i>-gt</i>: Pass through rows that the column value is greater than the given value</a><li> <a href='#-ge'><i>-ge</i>: Pass through rows that the column value is greater than or equals the given value</a><li> <a href='#-lt'><i>-lt</i>: Pass through rows that the column value is less than the given value</a><li> <a href='#-le'><i>-le</i>: Pass through rows that the column value is less than or equals the given value</a><li> <a href='#-between'><i>-between</i>: Extract rows that are within the range</a><li> <a href='#-notbetween'><i>-notbetween</i>: Extract rows that are not within the range</a><li> <a href='#-betweenstring'><i>-betweenstring</i>: Extract rows that are between the given strings</a><li> <a href='#-notbetweenstring'><i>-notbetweenstring</i>: Extract rows that are between the given strings</a><li> <a href='#-groupfilter'><i>-groupfilter</i>: One row in each group has to match</a><li> <a href='#-before'><i>-before</i>: Pass through rows whose date is before the given date</a><li> <a href='#-after'><i>-after</i>: Pass through rows whose date is after the given date</a><li> <a href='#-countvalue'><i>-countvalue</i>: No more than count unique values</a><li> <a href='#-decimate'><i>-decimate</i>: only include every <skip factor> row</a><li> <a href='#-ifin'><i>-ifin</i>: Pass through rows that the columns with ID is in given file</a><li> <a href='#-ifnotin'><i>-ifnotin</i>: Pass through rows that the columns with ID is not in given file</a><li> <a href='#-ifmatchesfile'><i>-ifmatchesfile</i>: Pass through rows that the columns with ID begins with something in the given file</a><li> <a href='#-ifnotmatchesfile'><i>-ifnotmatchesfile</i>: Pass through rows that the columns with ID does not begin with something in the given file</a><li> <a href='#-skippattern'><i>-skippattern</i>: Skip any line that matches the pattern</a><li> <a href='#-skipROWS'><i>-skipROWS</i>: Skip number of processed rows.</a><li> <a href='#-ensurenumeric'><i>-ensurenumeric</i>: Throw error if non-numeric</a></ul></div></div><div class=seesv-item>
+</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-skiplines'><i>-skiplines</i>: Skip number of raw lines.</a><li> <a href='#-maxrows'><i>-maxrows</i>: Set max rows to process</a><li> <a href='#-find'><i>-find</i>: Pass through rows that the columns each match the pattern</a><li> <a href='#-notpattern'><i>-notpattern</i>: Pass through rows that don't match the pattern</a><li> <a href='#-if'><i>-if</i>: Next N args specify a filter command followed by any change commands followed by an -endif.</a><li> <a href='#-start'><i>-start</i>: Start at pattern in source file</a><li> <a href='#-stop'><i>-stop</i>: End at pattern in source file</a><li> <a href='#-rawlines'><i>-rawlines</i>: </a><li> <a href='#-inputnotcontains'><i>-inputnotcontains</i>: Filter out input lines that contain any of the strings</a><li> <a href='#-min'><i>-min</i>: Only pass thorough lines that have at least this number of columns. Specify blank to use the number of columns in the header</a><li> <a href='#-max'><i>-max</i>: Only pass through lines that have no more than this number of columns. Specify blank to use the number of columns in the header</a><li> <a href='#-numcolumns'><i>-numcolumns</i>: Remove or add values so each row has the number of columns</a><li> <a href='#-has'><i>-has</i>: Only pass through anything if the data has the given columns</a><li> <a href='#-fuzzypattern'><i>-fuzzypattern</i>: Pass through rows that the columns each fuzzily match the pattern</a><li> <a href='#-lengthgreater'><i>-lengthgreater</i>: Pass through rows that the length of the columns is greater than</a><li> <a href='#-same'><i>-same</i>: Pass through where the 2 columns have the same value</a><li> <a href='#-notsame'><i>-notsame</i>: Pass through where the 2 columns don't have the same value</a><li> <a href='#-unique'><i>-unique</i>: Pass through unique values</a><li> <a href='#-dups'><i>-dups</i>: Pass through duplicate values</a><li> <a href='#-sample'><i>-sample</i>: Pass through rows based on probablity</a><li> <a href='#-minvalue'><i>-minvalue</i>: Pass through the row that has the min value in the group of columns defined by the key column</a><li> <a href='#-maxvalue'><i>-maxvalue</i>: Pass through the row that has the max value in the group of columns defined by the key column</a><li> <a href='#-eq'><i>-eq</i>: Pass through rows that the column value equals the given value</a><li> <a href='#-ne'><i>-ne</i>: Pass through rows that the column value does not equal the given value</a><li> <a href='#-gt'><i>-gt</i>: Pass through rows that the column value is greater than the given value</a><li> <a href='#-ge'><i>-ge</i>: Pass through rows that the column value is greater than or equals the given value</a><li> <a href='#-lt'><i>-lt</i>: Pass through rows that the column value is less than the given value</a><li> <a href='#-le'><i>-le</i>: Pass through rows that the column value is less than or equals the given value</a><li> <a href='#-between'><i>-between</i>: Extract rows that are within the range</a><li> <a href='#-notbetween'><i>-notbetween</i>: Extract rows that are not within the range</a><li> <a href='#-betweenstring'><i>-betweenstring</i>: Extract rows that are between the given strings</a><li> <a href='#-notbetweenstring'><i>-notbetweenstring</i>: Extract rows that are between the given strings</a><li> <a href='#-groupfilter'><i>-groupfilter</i>: One row in each group has to match</a><li> <a href='#-before'><i>-before</i>: Pass through rows whose date is before the given date</a><li> <a href='#-after'><i>-after</i>: Pass through rows whose date is after the given date</a><li> <a href='#-countvalue'><i>-countvalue</i>: No more than count unique values</a><li> <a href='#-decimate'><i>-decimate</i>: only include every <skip factor> row</a><li> <a href='#-ifin'><i>-ifin</i>: Pass through rows that the columns with ID is in given file</a><li> <a href='#-ifnotin'><i>-ifnotin</i>: Pass through rows that the columns with ID is not in given file</a><li> <a href='#-ifmatchesfile'><i>-ifmatchesfile</i>: Pass through rows that the columns with ID begins with something in the given file</a><li> <a href='#-ifnotmatchesfile'><i>-ifnotmatchesfile</i>: Pass through rows that the columns with ID does not begin with something in the given file</a><li> <a href='#-skippattern'><i>-skippattern</i>: Skip any line that matches the pattern</a><li> <a href='#-skiprows'><i>-skiprows</i>: Skip number of processed rows.</a><li> <a href='#-ensurenumeric'><i>-ensurenumeric</i>: Throw error if non-numeric</a></ul></div></div><div class=seesv-item>
 <a name='-skiplines'></a><div class=command> <i><a href='#-skiplines'>-skiplines</a></i>  &lt;lines&gt; </div><div class=command-block>Skip number of raw lines.<br class=seesv-hide>
 <ul>
 <li> <i>lines</i>:
@@ -1249,7 +1255,7 @@ Column in main file<br>
 <br>
 </ul>
 </div></div><div class=seesv-item>
-<a name='-skipROWS'></a><div class=command> <i><a href='#-skipROWS'>-skipROWS</a></i>  &lt;rows&gt; </div><div class=command-block>Skip number of processed rows.<br class=seesv-hide>
+<a name='-skiprows'></a><div class=command> <i><a href='#-skiprows'>-skiprows</a></i>  &lt;rows&gt; </div><div class=command-block>Skip number of processed rows.<br class=seesv-hide>
 <ul>
 <li> <i>rows</i>:
 How many rows to skip<br>
@@ -1261,7 +1267,7 @@ How many rows to skip<br>
 Column indices. Can include ranges, e.g. 0-5<br>
 </ul>
 </div></div></ul><br class=seesv-hide><div class=seesv-hide><hr><a name='Slice and Dice'></a><b style='font-size:120%;'>Slice and Dice</b><br>
-Add/remove columns, rows, restructure, etc</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-columns'><i>-columns</i>: Only include the given columns</a><li> <a href='#-notcolumns'><i>-notcolumns</i>: Don't include given columns</a><li> <a href='#-firstcolumns'><i>-firstcolumns</i>: Move columns to beginning</a><li> <a href='#-columnsbefore'><i>-columnsbefore</i>: Move columns before the given column</a><li> <a href='#-columnsafter'><i>-columnsafter</i>: Move columns after given column</a><li> <a href='#-delete'><i>-delete</i>: Remove the columns</a><li> <a href='#-cut'><i>-cut</i>: Drop rows</a><li> <a href='#-include'><i>-include</i>: Only include specified rows</a><li> <a href='#-rows_first'><i>-rows_first</i>: Move rows to the top that match the pattern</a><li> <a href='#-rows_last'><i>-rows_last</i>: Move rows to the end of list that match the pattern</a><li> <a href='#-copy'><i>-copy</i>: Copy column</a><li> <a href='#-add'><i>-add</i>: Add new columns</a><li> <a href='#-insert'><i>-insert</i>: Insert new column values</a><li> <a href='#-concat'><i>-concat</i>: Create a new column from the given columns</a><li> <a href='#-concatrows'><i>-concatrows</i>: Concatenate multiple rows into a single row</a><li> <a href='#-combine'><i>-combine</i>: Combine columns with the delimiter. deleting columns</a><li> <a href='#-combineinplace'><i>-combineinplace</i>: Combine columns with the delimiter</a><li> <a href='#-merge'><i>-merge</i>: Apply operators to columns</a><li> <a href='#-split'><i>-split</i>: Split the column</a><li> <a href='#-splat'><i>-splat</i>: Create a new column from the values in the given column</a><li> <a href='#-roll'><i>-roll</i>: Roll columns down into rows</a><li> <a href='#-shift'><i>-shift</i>: Shift columns over by count for given rows</a><li> <a href='#-slice'><i>-slice</i>: Slide columns down and over to append new rows to the bottom</a><li> <a href='#-addcell'><i>-addcell</i>: Add a new cell at row/column</a><li> <a href='#-deletecell'><i>-deletecell</i>: Delete cell at row/column</a><li> <a href='#-clone'><i>-clone</i>: Clone each row N times</a><li> <a href='#-appendrows'><i>-appendrows</i>: Only include specified rows</a><li> <a href='#-mergerows'><i>-mergerows</i>: Merge rows</a><li> <a href='#-rowop'><i>-rowop</i>: Apply an operator to columns and merge rows</a><li> <a href='#-rotate'><i>-rotate</i>: Rotate the data</a><li> <a href='#-flip'><i>-flip</i>: Reverse the order of the rows except the header</a><li> <a href='#-makefields'><i>-makefields</i>: Make new columns from data values</a><li> <a href='#-melt'><i>-melt</i>: Use values in header to make new row</a><li> <a href='#-explode'><i>-explode</i>: Make separate files based on value of column</a><li> <a href='#-join'><i>-join</i>: Join the 2 files together</a><li> <a href='#-fuzzyjoin'><i>-fuzzyjoin</i>: Join the 2 files together using fuzzy matching logic</a><li> <a href='#-cross'><i>-cross</i>: Make a cross product of 2 data files</a><li> <a href='#-normal'><i>-normal</i>: Normalize the strings</a><li> <a href='#-countunique'><i>-countunique</i>: Count number of unique values</a><li> <a href='#-dissect'><i>-dissect</i>: Make fields based on patterns</a><li> <a href='#-keyvalue'><i>-keyvalue</i>: Make fields from key/value pairs, e.g. name1=value1 name2=value2 ...</a><li> <a href='#-firstchars'><i>-firstchars</i>: Extract first N characters and create new column</a><li> <a href='#-lastchars'><i>-lastchars</i>: Extract last N characters and create new column</a><li> <a href='#-between_indices'><i>-between_indices</i>: Extract characters between the 2 indices</a><li> <a href='#-fromheading'><i>-fromheading</i>: Extract column values from headings</a></ul></div></div><div class=seesv-item>
+Add/remove columns, rows, restructure, etc</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-columns'><i>-columns</i>: Only include the given columns</a><li> <a href='#-notcolumns'><i>-notcolumns</i>: Don't include given columns</a><li> <a href='#-firstcolumns'><i>-firstcolumns</i>: Move columns to beginning</a><li> <a href='#-lastcolumns'><i>-lastcolumns</i>: Move columns to end</a><li> <a href='#-columnsbefore'><i>-columnsbefore</i>: Move columns before the given column</a><li> <a href='#-columnsafter'><i>-columnsafter</i>: Move columns after given column</a><li> <a href='#-delete'><i>-delete</i>: Remove the columns</a><li> <a href='#-cut'><i>-cut</i>: Drop rows</a><li> <a href='#-include'><i>-include</i>: Only include specified rows</a><li> <a href='#-rows_first'><i>-rows_first</i>: Move rows to the top that match the pattern</a><li> <a href='#-rows_last'><i>-rows_last</i>: Move rows to the end of list that match the pattern</a><li> <a href='#-copy'><i>-copy</i>: Copy column</a><li> <a href='#-add'><i>-add</i>: Add new columns</a><li> <a href='#-insert'><i>-insert</i>: Insert new column values</a><li> <a href='#-concat'><i>-concat</i>: Create a new column from the given columns</a><li> <a href='#-concatrows'><i>-concatrows</i>: Concatenate multiple rows into a single row</a><li> <a href='#-combine'><i>-combine</i>: Combine columns with the delimiter. deleting columns</a><li> <a href='#-combineinplace'><i>-combineinplace</i>: Combine columns with the delimiter</a><li> <a href='#-merge'><i>-merge</i>: Apply operators to columns</a><li> <a href='#-split'><i>-split</i>: Split the column</a><li> <a href='#-splat'><i>-splat</i>: Create a new column from the values in the given column</a><li> <a href='#-roll'><i>-roll</i>: Roll columns down into rows</a><li> <a href='#-shift'><i>-shift</i>: Shift columns over by count for given rows</a><li> <a href='#-slice'><i>-slice</i>: Slide columns down and over to append new rows to the bottom</a><li> <a href='#-addcell'><i>-addcell</i>: Add a new cell at row/column</a><li> <a href='#-deletecell'><i>-deletecell</i>: Delete cell at row/column</a><li> <a href='#-clone'><i>-clone</i>: Clone each row N times</a><li> <a href='#-appendrows'><i>-appendrows</i>: Only include specified rows</a><li> <a href='#-mergerows'><i>-mergerows</i>: Merge rows</a><li> <a href='#-rowop'><i>-rowop</i>: Apply an operator to columns and merge rows</a><li> <a href='#-rotate'><i>-rotate</i>: Rotate the data</a><li> <a href='#-flip'><i>-flip</i>: Reverse the order of the rows except the header</a><li> <a href='#-makefields'><i>-makefields</i>: Make new columns from data values</a><li> <a href='#-melt'><i>-melt</i>: Use values in header to make new row</a><li> <a href='#-explode'><i>-explode</i>: Make separate files based on value of column</a><li> <a href='#-join'><i>-join</i>: Join the 2 files together</a><li> <a href='#-fuzzyjoin'><i>-fuzzyjoin</i>: Join the 2 files together using fuzzy matching logic</a><li> <a href='#-cross'><i>-cross</i>: Make a cross product of 2 data files</a><li> <a href='#-normal'><i>-normal</i>: Normalize the strings</a><li> <a href='#-countunique'><i>-countunique</i>: Count number of unique values</a><li> <a href='#-dissect'><i>-dissect</i>: Make fields based on patterns</a><li> <a href='#-keyvalue'><i>-keyvalue</i>: Make fields from key/value pairs, e.g. name1=value1 name2=value2 ...</a><li> <a href='#-firstchars'><i>-firstchars</i>: Extract first N characters and create new column</a><li> <a href='#-lastchars'><i>-lastchars</i>: Extract last N characters and create new column</a><li> <a href='#-between_indices'><i>-between_indices</i>: Extract characters between the 2 indices</a><li> <a href='#-fromheading'><i>-fromheading</i>: Extract column values from headings</a></ul></div></div><div class=seesv-item>
 <a name='-columns'></a><div class=command> <i><a href='#-columns'>-columns</a></i>  &lt;columns&gt; </div><div class=command-block>Only include the given columns<br class=seesv-hide>
 <ul>
 <li> <i>columns</i>:
@@ -1275,6 +1281,12 @@ Column indices. Can include ranges, e.g. 0-5<br>
 </ul>
 </div></div><div class=seesv-item>
 <a name='-firstcolumns'></a><div class=command> <i><a href='#-firstcolumns'>-firstcolumns</a></i>  &lt;columns&gt; </div><div class=command-block>Move columns to beginning<br class=seesv-hide>
+<ul>
+<li> <i>columns</i>:
+Column indices. Can include ranges, e.g. 0-5<br>
+</ul>
+</div></div><div class=seesv-item>
+<a name='-lastcolumns'></a><div class=command> <i><a href='#-lastcolumns'>-lastcolumns</a></i>  &lt;columns&gt; </div><div class=command-block>Move columns to end<br class=seesv-hide>
 <ul>
 <li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
@@ -1387,20 +1399,20 @@ Would give:
 <tr><td style='padding:4px;border:1px solid #ccc;' >jack</td><td style='padding:4px;border:1px solid #ccc;' >1</td><td style='padding:4px;border:1px solid #ccc;' >jim</td><td style='padding:4px;border:1px solid #ccc;' >7</td></tr>
 </table><br>
 <p></div></div><div class=seesv-item>
-<a name='-combine'></a><div class=command> <i><a href='#-combine'>-combine</a></i>  &lt;column&gt;  &lt;delimiter&gt;  &lt;column name&gt; </div><div class=command-block>Combine columns with the delimiter. deleting columns<br class=seesv-hide>
+<a name='-combine'></a><div class=command> <i><a href='#-combine'>-combine</a></i>  &lt;columns&gt;  &lt;delimiter&gt;  &lt;column name&gt; </div><div class=command-block>Combine columns with the delimiter. deleting columns<br class=seesv-hide>
 <ul>
-<li> <i>column</i>:
-<br>
+<li> <i>columns</i>:
+Column indices. Can include ranges, e.g. 0-5<br>
 <li> <i>delimiter</i>:
 <br>
 <li> <i>column name</i>:
 New column name<br>
 </ul>
 </div></div><div class=seesv-item>
-<a name='-combineinplace'></a><div class=command> <i><a href='#-combineinplace'>-combineinplace</a></i>  &lt;column&gt;  &lt;delimiter&gt;  &lt;column name&gt; </div><div class=command-block>Combine columns with the delimiter<br class=seesv-hide>
+<a name='-combineinplace'></a><div class=command> <i><a href='#-combineinplace'>-combineinplace</a></i>  &lt;columns&gt;  &lt;delimiter&gt;  &lt;column name&gt; </div><div class=command-block>Combine columns with the delimiter<br class=seesv-hide>
 <ul>
-<li> <i>column</i>:
-<br>
+<li> <i>columns</i>:
+Column indices. Can include ranges, e.g. 0-5<br>
 <li> <i>delimiter</i>:
 <br>
 <li> <i>column name</i>:
@@ -1575,7 +1587,7 @@ File to join with<br>
 <li> <i>source_columns</i>:
 source key columns<br>
 <li> <i>default_value</i>:
-default value<br>
+default value - can be a comma separated list of defaults<br>
 </ul>
 </div></div><div class=seesv-item>
 <a name='-fuzzyjoin'></a><div class=command> <i><a href='#-fuzzyjoin'>-fuzzyjoin</a></i>  &lt;threshold&gt;  &lt;key columns&gt;  &lt;value_columns&gt;  &lt;file&gt;  &lt;source_columns&gt;  &lt;default_value&gt; </div><div class=command-block>Join the 2 files together using fuzzy matching logic<br class=seesv-hide>
@@ -1699,7 +1711,7 @@ Comma separated list of new column names<br>
 Regexp to apply to header with () defining column values<br>
 </ul>
 </div></div></ul><br class=seesv-hide><div class=seesv-hide><hr><a name='Change'></a><b style='font-size:120%;'>Change</b><br>
-</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-change'><i>-change</i>: Change columns</a><li> <a href='#-changerow'><i>-changerow</i>: Change the values in the row/cols</a><li> <a href='#-replace'><i>-replace</i>: Replace</a><li> <a href='#-set'><i>-set</i>: Write the value into the cells</a><li> <a href='#-cleanwhitespace'><i>-cleanwhitespace</i>: Clean whitespace</a><li> <a href='#-macro'><i>-macro</i>: Look for the pattern in the header and apply the template to make a new column, template: '{1} {2} ...', use 'none' for column name for no header</a><li> <a href='#-setcol'><i>-setcol</i>: Write the value into the write col for rows that match the pattern</a><li> <a href='#-copyif'><i>-copyif</i>: Copy column 2 to column 3 if all of the columns match the pattern</a><li> <a href='#-copycolumns'><i>-copycolumns</i>: Copy columns 1  to columns 2</a><li> <a href='#-filldown'><i>-filldown</i>: Fill down with last non-null value</a><li> <a href='#-fillacross'><i>-fillacross</i>: Fill across with last non-null value</a><li> <a href='#-unfill'><i>-unfill</i>: Set following cells to blank if the same as previous cell</a><li> <a href='#-priorprefix'><i>-priorprefix</i>: Append prefix from the previous element to rows that match pattern</a><li> <a href='#-case'><i>-case</i>: Change case of column - type:lower,upper,proper,capitalize</a><li> <a href='#-toid'><i>-toid</i>: Convert the column(s) into IDS (lowercase, no space, a-z0-9_)</a><li> <a href='#-padleft'><i>-padleft</i>: Pad left with given character</a><li> <a href='#-padright'><i>-padright</i>: Pad right with given character</a><li> <a href='#-trim'><i>-trim</i>: Trim leading and trailing white space</a><li> <a href='#-trimquotes'><i>-trimquotes</i>: Trim leading and trailing quotes</a><li> <a href='#-width'><i>-width</i>: Limit the string size of the columns</a><li> <a href='#-prepend'><i>-prepend</i>: Add the text to the beginning of the file. use _nl_ to insert newlines</a><li> <a href='#-pad'><i>-pad</i>: Add or remove columns to achieve the count</a><li> <a href='#-prefix'><i>-prefix</i>: Add prefix to column</a><li> <a href='#-suffix'><i>-suffix</i>: Add suffix to column</a><li> <a href='#-subst'><i>-subst</i>: Create a new column with the template</a><li> <a href='#-ascii'><i>-ascii</i>: Convert non ascii characters</a><li> <a href='#-cleanphone'><i>-cleanphone</i>: Clean the phone number</a><li> <a href='#-ismobile'><i>-ismobile</i>: Add a true/false if the string is a mobile phone</a><li> <a href='#-sms'><i>-sms</i>: Send a text message - only for command line</a><li> <a href='#-js'><i>-js</i>: Define Javascript (e.g., functions) to use later in the -func call</a><li> <a href='#-func'><i>-func</i>: Apply the javascript function. Use _colname or _col#</a><li> <a href='#-endswith'><i>-endswith</i>: Ensure that each column ends with the string</a><li> <a href='#-truncate'><i>-truncate</i>: </a><li> <a href='#-extract'><i>-extract</i>: Extract text from column and make a new column</a><li> <a href='#-urlarg'><i>-urlarg</i>: Extract URL argument and make a new column</a><li> <a href='#-extracthtml'><i>-extracthtml</i>: Extract text from HTML</a><li> <a href='#-htmlinfo'><i>-htmlinfo</i>: Extract icon and description from input URL</a><li> <a href='#-checkmissing'><i>-checkmissing</i>: Check for missing URL</a><li> <a href='#-urlencode'><i>-urlencode</i>: URL encode the columns</a><li> <a href='#-urldecode'><i>-urldecode</i>: URL decode the columns</a><li> <a href='#-map'><i>-map</i>: Change values in column to new values</a><li> <a href='#-format'><i>-format</i>: Apply decimal format to the columns (see https://docs.oracle.com/javase/7/docs/api/java/text/DecimalFormat.html)</a><li> <a href='#-denormalize'><i>-denormalize</i>: Read the id,value from file and substitute the value in the dest file col idx</a><li> <a href='#-break'><i>-break</i>: Break apart column values and make new rows</a><li> <a href='#-makeids'><i>-makeids</i>: Turn the header row into IDs (lowercase, no space, a-z0-9_)</a><li> <a href='#-faker'><i>-faker</i>: Fake up data. See the docs at https://ramadda.org/repository/userguide/seesv.html#-faker</a><li> <a href='#-edit'><i>-edit</i>: Hand edit a column (command line only). ESC-stop, BLANK-skip</a></ul></div></div><div class=seesv-item>
+</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-change'><i>-change</i>: Change columns</a><li> <a href='#-changerow'><i>-changerow</i>: Change the values in the row/cols</a><li> <a href='#-replace'><i>-replace</i>: Replace</a><li> <a href='#-set'><i>-set</i>: Write the value into the cells</a><li> <a href='#-cleanwhitespace'><i>-cleanwhitespace</i>: Clean whitespace</a><li> <a href='#-macro'><i>-macro</i>: Look for the pattern in the header and apply the template to make a new column, template: '{1} {2} ...', use 'none' for column name for no header</a><li> <a href='#-setcol'><i>-setcol</i>: Write the value into the write col for rows that match the pattern</a><li> <a href='#-copyif'><i>-copyif</i>: Copy column 2 to column 3 if all of the columns match the pattern</a><li> <a href='#-copycolumns'><i>-copycolumns</i>: Copy columns 1  to columns 2</a><li> <a href='#-filldown'><i>-filldown</i>: Fill down with last non-null value</a><li> <a href='#-fillacross'><i>-fillacross</i>: Fill across with last non-null value</a><li> <a href='#-unfill'><i>-unfill</i>: Set following cells to blank if the same as previous cell</a><li> <a href='#-priorprefix'><i>-priorprefix</i>: Append prefix from the previous element to rows that match pattern</a><li> <a href='#-case'><i>-case</i>: Change case of column - type:lower,upper,proper,capitalize</a><li> <a href='#-toid'><i>-toid</i>: Convert the column(s) into IDS (lowercase, no space, a-z0-9_)</a><li> <a href='#-padleft'><i>-padleft</i>: Pad left with given character</a><li> <a href='#-padright'><i>-padright</i>: Pad right with given character</a><li> <a href='#-trim'><i>-trim</i>: Trim leading and trailing white space</a><li> <a href='#-trimquotes'><i>-trimquotes</i>: Trim leading and trailing quotes</a><li> <a href='#-width'><i>-width</i>: Limit the string size of the columns</a><li> <a href='#-prepend'><i>-prepend</i>: Add the text to the beginning of the file. use _nl_ to insert newlines</a><li> <a href='#-pad'><i>-pad</i>: Add or remove columns to achieve the count</a><li> <a href='#-prefix'><i>-prefix</i>: Add prefix to column</a><li> <a href='#-suffix'><i>-suffix</i>: Add suffix to column</a><li> <a href='#-subst'><i>-subst</i>: Create a new column with the template</a><li> <a href='#-ascii'><i>-ascii</i>: Convert non ascii characters</a><li> <a href='#-cleanphone'><i>-cleanphone</i>: Clean the phone number</a><li> <a href='#-formatphone'><i>-formatphone</i>: Format the phone number</a><li> <a href='#-ismobile'><i>-ismobile</i>: Add a true/false if the string is a mobile phone</a><li> <a href='#-sms'><i>-sms</i>: Send a text message - only for command line</a><li> <a href='#-js'><i>-js</i>: Define Javascript (e.g., functions) to use later in the -func call</a><li> <a href='#-func'><i>-func</i>: Apply the javascript function. Use _colname or _col#</a><li> <a href='#-endswith'><i>-endswith</i>: Ensure that each column ends with the string</a><li> <a href='#-truncate'><i>-truncate</i>: </a><li> <a href='#-extract'><i>-extract</i>: Extract text from column and make a new column</a><li> <a href='#-urlarg'><i>-urlarg</i>: Extract URL argument and make a new column</a><li> <a href='#-extracthtml'><i>-extracthtml</i>: Extract text from HTML</a><li> <a href='#-htmlinfo'><i>-htmlinfo</i>: Extract icon and description from input URL</a><li> <a href='#-checkmissing'><i>-checkmissing</i>: Check for missing URL</a><li> <a href='#-xmlencode'><i>-xmlencode</i>: Encode the value for XML</a><li> <a href='#-urlencode'><i>-urlencode</i>: URL encode the columns</a><li> <a href='#-urldecode'><i>-urldecode</i>: URL decode the columns</a><li> <a href='#-map'><i>-map</i>: Change values in column to new values</a><li> <a href='#-format'><i>-format</i>: Apply decimal format to the columns (see https://docs.oracle.com/javase/7/docs/api/java/text/DecimalFormat.html)</a><li> <a href='#-denormalize'><i>-denormalize</i>: Read the id,value from file and substitute the value in the dest file col idx</a><li> <a href='#-break'><i>-break</i>: Break apart column values and make new rows</a><li> <a href='#-makeids'><i>-makeids</i>: Turn the header row into IDs (lowercase, no space, a-z0-9_)</a><li> <a href='#-faker'><i>-faker</i>: Fake up data. See the docs at https://ramadda.org/repository/userguide/seesv.html#-faker</a><li> <a href='#-edit'><i>-edit</i>: Hand edit a column (command line only). ESC-stop, BLANK-skip</a></ul></div></div><div class=seesv-item>
 <a name='-change'></a><div class=command> <i><a href='#-change'>-change</a></i>  &lt;columns&gt;  &lt;pattern&gt;  &lt;substitution string&gt; </div><div class=command-block>Change columns<br class=seesv-hide>
 <ul>
 <li> <i>columns</i>:
@@ -1971,6 +1983,12 @@ use $1, $2, etc for pattern (...) matches<br>
 Column indices. Can include ranges, e.g. 0-5<br>
 </ul>
 </div></div><div class=seesv-item>
+<a name='-formatphone'></a><div class=command> <i><a href='#-formatphone'>-formatphone</a></i>  &lt;columns&gt; </div><div class=command-block>Format the phone number<br class=seesv-hide>
+<ul>
+<li> <i>columns</i>:
+Column indices. Can include ranges, e.g. 0-5<br>
+</ul>
+</div></div><div class=seesv-item>
 <a name='-ismobile'></a><div class=command> <i><a href='#-ismobile'>-ismobile</a></i>  &lt;columns&gt; </div><div class=command-block>Add a true/false if the string is a mobile phone<br class=seesv-hide>
 <ul>
 <li> <i>columns</i>:
@@ -2050,9 +2068,9 @@ javascript expression<br>
 <br>
 </ul>
 </div></div><div class=seesv-item>
-<a name='-truncate'></a><div class=command> <i><a href='#-truncate'>-truncate</a></i>  &lt;column&gt;  &lt;max length&gt;  &lt;suffix&gt; </div><div class=command-block><ul>
-<li> <i>column</i>:
-<br>
+<a name='-truncate'></a><div class=command> <i><a href='#-truncate'>-truncate</a></i>  &lt;columns&gt;  &lt;max length&gt;  &lt;suffix&gt; </div><div class=command-block><ul>
+<li> <i>columns</i>:
+Column indices. Can include ranges, e.g. 0-5<br>
 <li> <i>max length</i>:
 <br>
 <li> <i>suffix</i>:
@@ -2101,6 +2119,12 @@ URL Column<br>
 URL Column<br>
 <li> <i>replace_with</i>:
 Replace with<br>
+</ul>
+</div></div><div class=seesv-item>
+<a name='-xmlencode'></a><div class=command> <i><a href='#-xmlencode'>-xmlencode</a></i>  &lt;columns&gt; </div><div class=command-block>Encode the value for XML<br class=seesv-hide>
+<ul>
+<li> <i>columns</i>:
+Column indices. Can include ranges, e.g. 0-5<br>
 </ul>
 </div></div><div class=seesv-item>
 <a name='-urlencode'></a><div class=command> <i><a href='#-urlencode'>-urlencode</a></i>  &lt;columns&gt; </div><div class=command-block>URL encode the columns<br class=seesv-hide>
@@ -2254,7 +2278,7 @@ is used. Enter &lt;blank&gt; to skip the given row. Enter ESCAPE to stop prompti
 for new values.
 
 <p></div></div></ul><br class=seesv-hide><div class=seesv-hide><hr><a name='Values'></a><b style='font-size:120%;'>Values</b><br>
-</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-md'><i>-md</i>: Make a message digest of the column values</a><li> <a href='#-tob64'><i>-tob64</i>: Base 64 Encode</a><li> <a href='#-fromb64'><i>-fromb64</i>: Base 64 Decode</a><li> <a href='#-rot13'><i>-rot13</i>: Rot 13</a><li> <a href='#-encrypt'><i>-encrypt</i>: Encrypt using AES with SHA-256 key</a><li> <a href='#-decrypt'><i>-decrypt</i>: Encrypt using AES with SHA-256 key</a><li> <a href='#-uuid'><i>-uuid</i>: Add a UUID field</a><li> <a href='#-number'><i>-number</i>: Add 1,2,3... as column</a><li> <a href='#-letter'><i>-letter</i>: Add 'A','B', ... as column</a><li> <a href='#-soundex'><i>-soundex</i>: Generate a soundex code</a><li> <a href='#-wikidesc'><i>-wikidesc</i>: Add a description from Wikipedia</a><li> <a href='#-image'><i>-image</i>: Search for an image</a><li> <a href='#-embed'><i>-embed</i>: Download the URL and embed the image contents</a><li> <a href='#-fetch'><i>-fetch</i>: Fetch the URL and embed the contents</a><li> <a href='#-imagefill'><i>-imagefill</i>: Search for an image with the query column text if the given image column is blank. Add the given suffix to the search. </a><li> <a href='#-download'><i>-download</i>: Download the URL</a><li> <a href='#-gender'><i>-gender</i>: Figure out the gender of the name in the column</a></ul></div></div><div class=seesv-item>
+</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-md'><i>-md</i>: Make a message digest of the column values</a><li> <a href='#-tob64'><i>-tob64</i>: Base 64 Encode</a><li> <a href='#-fromb64'><i>-fromb64</i>: Base 64 Decode</a><li> <a href='#-rot13'><i>-rot13</i>: Rot 13</a><li> <a href='#-encrypt'><i>-encrypt</i>: Encrypt using AES with SHA-256 key</a><li> <a href='#-decrypt'><i>-decrypt</i>: Encrypt using AES with SHA-256 key</a><li> <a href='#-uuid'><i>-uuid</i>: Add a UUID field</a><li> <a href='#-number'><i>-number</i>: Add 1,2,3... as column</a><li> <a href='#-letter'><i>-letter</i>: Add 'A','B', ... as column</a><li> <a href='#-soundex'><i>-soundex</i>: Generate a soundex code</a><li> <a href='#-wikidesc'><i>-wikidesc</i>: Add a description from Wikipedia</a><li> <a href='#-image'><i>-image</i>: Do a Bing image Search for an image</a><li> <a href='#-embed'><i>-embed</i>: Download the URL and embed the image contents</a><li> <a href='#-fetch'><i>-fetch</i>: Fetch the URL and embed the contents</a><li> <a href='#-imagefill'><i>-imagefill</i>: Search for an image with the query column text if the given image column is blank. Add the given suffix to the search. </a><li> <a href='#-download'><i>-download</i>: Download the URL</a><li> <a href='#-gender'><i>-gender</i>: Figure out the gender of the name in the column</a></ul></div></div><div class=seesv-item>
 <a name='-md'></a><div class=command> <i><a href='#-md'>-md</a></i>  &lt;columns&gt;  &lt;type&gt; </div><div class=command-block>Make a message digest of the column values<br class=seesv-hide>
 <ul>
 <li> <i>columns</i>:
@@ -2309,24 +2333,24 @@ Column indices. Can include ranges, e.g. 0-5<br>
 Column indices. Can include ranges, e.g. 0-5<br>
 </ul>
 </div></div><div class=seesv-item>
-<a name='-wikidesc'></a><div class=command> <i><a href='#-wikidesc'>-wikidesc</a></i>  &lt;column&gt;  &lt;suffix&gt; </div><div class=command-block>Add a description from Wikipedia<br class=seesv-hide>
+<a name='-wikidesc'></a><div class=command> <i><a href='#-wikidesc'>-wikidesc</a></i>  &lt;columns&gt;  &lt;suffix&gt; </div><div class=command-block>Add a description from Wikipedia<br class=seesv-hide>
 <ul>
-<li> <i>column</i>:
-<br>
+<li> <i>columns</i>:
+Search string columns<br>
 <li> <i>suffix</i>:
-<br>
+Text to add after<br>
 </ul>
 This uses the API at https://en.wikipedia.org/w/api.php to get the description of a wikipedia page that
 matches the string provided by the given columns.
 
 
 <p></div></div><div class=seesv-item>
-<a name='-image'></a><div class=command> <i><a href='#-image'>-image</a></i>  &lt;column&gt;  &lt;suffix&gt; </div><div class=command-block>Search for an image<br class=seesv-hide>
+<a name='-image'></a><div class=command> <i><a href='#-image'>-image</a></i>  &lt;columns&gt;  &lt;suffix&gt; </div><div class=command-block>Do a Bing image Search for an image<br class=seesv-hide>
 <ul>
-<li> <i>column</i>:
-<br>
+<li> <i>columns</i>:
+Column indices. Can include ranges, e.g. 0-5<br>
 <li> <i>suffix</i>:
-<br>
+Text to add after<br>
 </ul>
 </div></div><div class=seesv-item>
 <a name='-embed'></a><div class=command> <i><a href='#-embed'>-embed</a></i>  &lt;url column&gt; </div><div class=command-block>Download the URL and embed the image contents<br class=seesv-hide>
@@ -2363,10 +2387,10 @@ Column that holds the URL<br>
 File suffix<br>
 </ul>
 </div></div><div class=seesv-item>
-<a name='-gender'></a><div class=command> <i><a href='#-gender'>-gender</a></i>  &lt;column&gt; </div><div class=command-block>Figure out the gender of the name in the column<br class=seesv-hide>
+<a name='-gender'></a><div class=command> <i><a href='#-gender'>-gender</a></i>  &lt;columns&gt; </div><div class=command-block>Figure out the gender of the name in the column<br class=seesv-hide>
 <ul>
-<li> <i>column</i>:
-<br>
+<li> <i>columns</i>:
+Column indices. Can include ranges, e.g. 0-5<br>
 </ul>
 </div></div></ul><br class=seesv-hide><div class=seesv-hide><hr><a name='Dates'></a><b style='font-size:120%;'>Dates</b><br>
 </div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-indateformat'><i>-indateformat</i>: Specify date format for parsing</a><li> <a href='#-outdateformat'><i>-outdateformat</i>: Specify date format for formatting</a><li> <a href='#-convertdate'><i>-convertdate</i>: Convert date</a><li> <a href='#-adddate'><i>-adddate</i>: Add date</a><li> <a href='#-extractdate'><i>-extractdate</i>: Extract date</a><li> <a href='#-formatdate'><i>-formatdate</i>: Format date</a><li> <a href='#-elapsed'><i>-elapsed</i>: Calculate elapsed time (ms) between rows</a><li> <a href='#-latest'><i>-latest</i>: Pass through rows whose date is the latest in the group of rows defined by the key column</a><li> <a href='#-datediff'><i>-datediff</i>: Calculate elapsed time between columns column1-column2</a><li> <a href='#-datecompare'><i>-datecompare</i>: add a true/false column comparing the date values</a></ul></div></div><div class=seesv-item>
@@ -2386,10 +2410,10 @@ e.g. yyyy-MM-dd HH:mm:ss<br>
 <br>
 </ul>
 </div></div><div class=seesv-item>
-<a name='-convertdate'></a><div class=command> <i><a href='#-convertdate'>-convertdate</a></i>  &lt;column&gt; </div><div class=command-block>Convert date<br class=seesv-hide>
+<a name='-convertdate'></a><div class=command> <i><a href='#-convertdate'>-convertdate</a></i>  &lt;columns&gt; </div><div class=command-block>Convert date<br class=seesv-hide>
 <ul>
-<li> <i>column</i>:
-<br>
+<li> <i>columns</i>:
+Columns to convert<br>
 </ul>
 </div></div><div class=seesv-item>
 <a name='-adddate'></a><div class=command> <i><a href='#-adddate'>-adddate</a></i>  &lt;date_column&gt;  &lt;value&gt;  &lt;value_type&gt; </div><div class=command-block>Add date<br class=seesv-hide>
@@ -2412,12 +2436,10 @@ day_of_week_in_month,am_pm,hour,hour_of_day,
 minute,second,millisecond <br>
 </ul>
 </div></div><div class=seesv-item>
-<a name='-formatdate'></a><div class=command> <i><a href='#-formatdate'>-formatdate</a></i>  &lt;columns&gt;  &lt;target date format&gt; </div><div class=command-block>Format date<br class=seesv-hide>
+<a name='-formatdate'></a><div class=command> <i><a href='#-formatdate'>-formatdate</a></i>  &lt;columns&gt; </div><div class=command-block>Format date<br class=seesv-hide>
 <ul>
 <li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<li> <i>target date format</i>:
-<br>
 </ul>
 </div></div><div class=seesv-item>
 <a name='-elapsed'></a><div class=command> <i><a href='#-elapsed'>-elapsed</a></i>  &lt;column&gt; </div><div class=command-block>Calculate elapsed time (ms) between rows<br class=seesv-hide>
@@ -2485,18 +2507,18 @@ Column indices. Can include ranges, e.g. 0-5<br>
 <br>
 </ul>
 </div></div><div class=seesv-item>
-<a name='-decimals'></a><div class=command> <i><a href='#-decimals'>-decimals</a></i>  &lt;column&gt;  &lt;num_decimals&gt; </div><div class=command-block>Round decimals<br class=seesv-hide>
+<a name='-decimals'></a><div class=command> <i><a href='#-decimals'>-decimals</a></i>  &lt;columns&gt;  &lt;num_decimals&gt; </div><div class=command-block>Round decimals<br class=seesv-hide>
 <ul>
-<li> <i>column</i>:
-<br>
+<li> <i>columns</i>:
+Column indices. Can include ranges, e.g. 0-5<br>
 <li> <i>num_decimals</i>:
 how many decimals to round to<br>
 </ul>
 </div></div><div class=seesv-item>
-<a name='-fuzz'></a><div class=command> <i><a href='#-fuzz'>-fuzz</a></i>  &lt;column&gt;  &lt;num_places&gt;  &lt;num_random_digits&gt; </div><div class=command-block>fuzz the number. if num_places less than zero than that is the # of decimals. else that is the lower digits to fuzz out<br class=seesv-hide>
+<a name='-fuzz'></a><div class=command> <i><a href='#-fuzz'>-fuzz</a></i>  &lt;columns&gt;  &lt;num_places&gt;  &lt;num_random_digits&gt; </div><div class=command-block>fuzz the number. if num_places less than zero than that is the # of decimals. else that is the lower digits to fuzz out<br class=seesv-hide>
 <ul>
-<li> <i>column</i>:
-<br>
+<li> <i>columns</i>:
+Column indices. Can include ranges, e.g. 0-5<br>
 <li> <i>num_places</i>:
 how many places to round to. use <=0 for decimals<br>
 <li> <i>num_random_digits</i>:
@@ -2791,18 +2813,18 @@ Will give you the bins:
 Columns to add<br>
 </ul>
 </div></div><div class=seesv-item>
-<a name='-increase'></a><div class=command> <i><a href='#-increase'>-increase</a></i>  &lt;column&gt;  &lt;how far back&gt; </div><div class=command-block>Calculate percent increase<br class=seesv-hide>
+<a name='-increase'></a><div class=command> <i><a href='#-increase'>-increase</a></i>  &lt;columns&gt;  &lt;how far back&gt; </div><div class=command-block>Calculate percent increase<br class=seesv-hide>
 <ul>
-<li> <i>column</i>:
-<br>
+<li> <i>columns</i>:
+Column indices. Can include ranges, e.g. 0-5<br>
 <li> <i>how far back</i>:
 <br>
 </ul>
 </div></div><div class=seesv-item>
-<a name='-diff'></a><div class=command> <i><a href='#-diff'>-diff</a></i>  &lt;column&gt;  &lt;how far back (default 1)&gt; </div><div class=command-block>Difference from previous value<br class=seesv-hide>
+<a name='-diff'></a><div class=command> <i><a href='#-diff'>-diff</a></i>  &lt;columns&gt;  &lt;how far back (default 1)&gt; </div><div class=command-block>Difference from previous value<br class=seesv-hide>
 <ul>
-<li> <i>column</i>:
-<br>
+<li> <i>columns</i>:
+Column indices. Can include ranges, e.g. 0-5<br>
 <li> <i>how far back (default 1)</i>:
 <br>
 </ul>
@@ -2817,10 +2839,10 @@ Columns<br>
 <br>
 </ul>
 </div></div><div class=seesv-item>
-<a name='-ranges'></a><div class=command> <i><a href='#-ranges'>-ranges</a></i>  &lt;column&gt;  &lt;name&gt;  &lt;start&gt;  &lt;size&gt; </div><div class=command-block>Create a new column with the (string) ranges where the value falls in<br class=seesv-hide>
+<a name='-ranges'></a><div class=command> <i><a href='#-ranges'>-ranges</a></i>  &lt;columns&gt;  &lt;name&gt;  &lt;start&gt;  &lt;size&gt; </div><div class=command-block>Create a new column with the (string) ranges where the value falls in<br class=seesv-hide>
 <ul>
-<li> <i>column</i>:
-<br>
+<li> <i>columns</i>:
+Column indices. Can include ranges, e.g. 0-5<br>
 <li> <i>name</i>:
 New column name<br>
 <li> <i>start</i>:
@@ -2829,12 +2851,12 @@ Numeric start of range<br>
 Numeric size of range<br>
 </ul>
 </div></div><div class=seesv-item>
-<a name='-bytes'></a><div class=command> <i><a href='#-bytes'>-bytes</a></i>  &lt;unit&gt;  &lt;column&gt; </div><div class=command-block>Convert suffixed values (e.g., 2 MB) into the number<br class=seesv-hide>
+<a name='-bytes'></a><div class=command> <i><a href='#-bytes'>-bytes</a></i>  &lt;unit&gt;  &lt;columns&gt; </div><div class=command-block>Convert suffixed values (e.g., 2 MB) into the number<br class=seesv-hide>
 <ul>
 <li> <i>unit</i>:
  values:binary,metric <br>
-<li> <i>column</i>:
-<br>
+<li> <i>columns</i>:
+Column indices. Can include ranges, e.g. 0-5<br>
 </ul>
 </div></div><div class=seesv-item>
 <a name='-column_and'></a><div class=command> <i><a href='#-column_and'>-column_and</a></i>  &lt;name&gt;  &lt;columns&gt; </div><div class=command-block>And values<br class=seesv-hide>
@@ -3178,7 +3200,7 @@ Call:
 
 
 <p></div></div></ul><br class=seesv-hide><div class=seesv-hide><hr><a name='Misc'></a><b style='font-size:120%;'>Misc</b><br>
-</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-apply'><i>-apply</i>: Apply the commands to each of the columns</a><li> <a href='#-sortby'><i>-sortby</i>: </a><li> <a href='#-count'><i>-count</i>: Show count</a><li> <a href='#-alias'><i>-alias</i>: Set a field alias</a><li> <a href='#-value'><i>-value</i>: Define a macro value for later use</a><li> <a href='#-filepattern'><i>-filepattern</i>: Extract a macro value from a filename</a><li> <a href='#-changeline'><i>-changeline</i>: Change the line</a><li> <a href='#-changeraw'><i>-changeraw</i>: Change input text</a><li> <a href='#-crop'><i>-crop</i>: Crop last part of string after any of the patterns</a><li> <a href='#-strict'><i>-strict</i>: Be strict on columns. any rows that are not the size of the other rows are dropped</a><li> <a href='#-flag'><i>-flag</i>: Be strict on columns. any rows that are not the size of the other rows are shown</a><li> <a href='#-prop'><i>-prop</i>: Set a property</a><li> <a href='#-verify'><i>-verify</i>: Verify that all of the rows have the same # of columns</a><li> <a href='#-ext'><i>-ext</i>: Execute the external program</a><li> <a href='#-exec'><i>-exec</i>: Execute the external program for every line</a></ul></div></div><div class=seesv-item>
+</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-apply'><i>-apply</i>: Apply the commands to each of the columns</a><li> <a href='#-sortby'><i>-sortby</i>: </a><li> <a href='#-count'><i>-count</i>: Show count</a><li> <a href='#-alias'><i>-alias</i>: Set a field alias</a><li> <a href='#-value'><i>-value</i>: Define a macro value for later use</a><li> <a href='#-filepattern'><i>-filepattern</i>: Extract a macro value from a filename</a><li> <a href='#-changeline'><i>-changeline</i>: Change the line</a><li> <a href='#-changeraw'><i>-changeraw</i>: Change input text</a><li> <a href='#-crop'><i>-crop</i>: Crop last part of string after any of the patterns</a><li> <a href='#-strict'><i>-strict</i>: Be strict on columns. any rows that are not the size of the other rows are dropped</a><li> <a href='#-flag'><i>-flag</i>: Be strict on columns. any rows that are not the size of the other rows are shown</a><li> <a href='#-prop'><i>-prop</i>: Set a property</a><li> <a href='#-goeasy'><i>-goeasy</i>: Go easy on missing columns</a><li> <a href='#-verify'><i>-verify</i>: Verify that all of the rows have the same # of columns</a><li> <a href='#-ext'><i>-ext</i>: Execute the external program</a><li> <a href='#-exec'><i>-exec</i>: Execute the external program for every line</a></ul></div></div><div class=seesv-item>
 <a name='-apply'></a><div class=command> <i><a href='#-apply'>-apply</a></i>  &lt;columns&gt;  &lt;commands&gt; </div><div class=command-block>Apply the commands to each of the columns<br class=seesv-hide>
 <ul>
 <li> <i>columns</i>:
@@ -3265,6 +3287,8 @@ Comma separated list of patterns<br>
 <li> <i>value</i>:
 start, end, etc<br>
 </ul>
+</div></div><div class=seesv-item>
+<a name='-goeasy'></a><div class=command> <i><a href='#-goeasy'>-goeasy</a></i> </div><div class=command-block>Go easy on missing columns<br class=seesv-hide>
 </div></div><div class=seesv-item>
 <a name='-verify'></a><div class=command> <i><a href='#-verify'>-verify</a></i> </div><div class=command-block>Verify that all of the rows have the same # of columns<br class=seesv-hide>
 </div></div><div class=seesv-item>
@@ -3555,7 +3579,7 @@ Number of rows in each file<br>
 <a name='-addheader'></a><div class=command> <i><a href='#-addheader'>-addheader</a></i>  &lt;properties&gt; </div><div class=command-block>Add the RAMADDA point properties<br class=seesv-hide>
 <ul>
 <li> <i>properties</i>:
-name1 value1 ... nameN valueN<br>
+name1 value1 ... nameN valueN<br>Set default: default.type double<br>
 </ul>
 The -addheader command adds RAMADDA's point data header to the output file.
 The header specifies the canonical field ids and a set of properties for

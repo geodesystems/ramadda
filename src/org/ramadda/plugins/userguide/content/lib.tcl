@@ -5,7 +5,7 @@
 
 gen::setDoTclEvaluation 1
 gen::setTargetDir ../htdocs/userguide
-gen::defineMacro {<%ramadda.version%>} {15.52.0}
+gen::defineMacro {<%ramadda.version%>} {15.64.0}
 
 
 namespace eval wiki {}
