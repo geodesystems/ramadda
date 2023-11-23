@@ -24,7 +24,7 @@ import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import org.ramadda.util.sql.*;
-import org.ramadda.util.text.Row;
+import org.ramadda.util.seesv.Row;
 
 
 import org.w3c.dom.*;

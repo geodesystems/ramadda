@@ -16,9 +16,9 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
-import org.ramadda.util.text.SeesvContext;
-import org.ramadda.util.text.SeesvException;
-import org.ramadda.util.text.Seesv;
+import org.ramadda.util.seesv.SeesvContext;
+import org.ramadda.util.seesv.SeesvException;
+import org.ramadda.util.seesv.Seesv;
 
 import org.w3c.dom.*;
 

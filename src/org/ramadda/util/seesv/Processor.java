@@ -3,7 +3,7 @@ Copyright (c) 2008-2023 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
-package org.ramadda.util.text;
+package org.ramadda.util.seesv;
 
 
 import org.apache.commons.codec.language.Soundex;
@@ -1585,7 +1585,7 @@ public abstract class Processor extends SeesvOperator {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
-            String output = Seesv.columnsToString(row.getValues(), ",");
+            String output = Utils.columnsToString(row.getValues(), ",");
             pw.println(output);
             pw.flush();
             //      System.err.println("write:" + output);
@@ -3388,7 +3388,7 @@ public abstract class Processor extends SeesvOperator {
     public void toCsv(List<Row> rows, Appendable sb) throws Exception {
         for (int i = 0; i < rows.size(); i++) {
             Row row = rows.get(i);
-            sb.append(Seesv.columnsToString(row.getValues(), ","));
+            sb.append(Utils.columnsToString(row.getValues(), ","));
             sb.append("\n");
         }
     }

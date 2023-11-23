@@ -20,9 +20,9 @@ import org.ramadda.util.JsonUtil;
 import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.Utils;
 import org.ramadda.util.geo.GeoUtils;
-import org.ramadda.util.text.*;
-import org.ramadda.util.text.Seesv;
-import org.ramadda.util.text.DataProvider;
+import org.ramadda.util.seesv.*;
+import org.ramadda.util.seesv.Seesv;
+import org.ramadda.util.seesv.DataProvider;
 
 import org.w3c.dom.*;
 
@@ -382,8 +382,8 @@ public class GtfsImportHandler extends ImportHandler {
         textReader.addProcessor(new MyProcessor() {
             boolean googleOk = true;
             @Override
-            public org.ramadda.util.text.Row processRow(
-                    TextReader textReader, org.ramadda.util.text.Row row) {
+            public org.ramadda.util.seesv.Row processRow(
+                    TextReader textReader, org.ramadda.util.seesv.Row row) {
                 try {
                     if (checkMap(row)) {
                         return row;
@@ -535,8 +535,8 @@ public class GtfsImportHandler extends ImportHandler {
         textReader.setInput(is);
         textReader.addProcessor(new MyProcessor() {
             @Override
-            public org.ramadda.util.text.Row processRow(
-                    TextReader textReader, org.ramadda.util.text.Row row) {
+            public org.ramadda.util.seesv.Row processRow(
+                    TextReader textReader, org.ramadda.util.seesv.Row row) {
                 try {
                     if (checkMap(row)) {
                         return row;
@@ -627,8 +627,8 @@ public class GtfsImportHandler extends ImportHandler {
         textReader.setInput(is);
         textReader.addProcessor(new MyProcessor() {
             @Override
-            public org.ramadda.util.text.Row processRow(
-                    TextReader textReader, org.ramadda.util.text.Row row) {
+            public org.ramadda.util.seesv.Row processRow(
+                    TextReader textReader, org.ramadda.util.seesv.Row row) {
                 try {
                     if (checkMap(row)) {
                         return row;
@@ -693,8 +693,8 @@ public class GtfsImportHandler extends ImportHandler {
         textReader.setInput(is);
         textReader.addProcessor(new MyProcessor() {
             @Override
-            public org.ramadda.util.text.Row processRow(
-                    TextReader textReader, org.ramadda.util.text.Row row) {
+            public org.ramadda.util.seesv.Row processRow(
+                    TextReader textReader, org.ramadda.util.seesv.Row row) {
                 try {
                     if (checkMap(row)) {
                         return row;
@@ -762,8 +762,8 @@ public class GtfsImportHandler extends ImportHandler {
         textReader.setInput(is);
         textReader.addProcessor(new MyProcessor() {
             @Override
-            public org.ramadda.util.text.Row processRow(
-                    TextReader textReader, org.ramadda.util.text.Row row) {
+            public org.ramadda.util.seesv.Row processRow(
+                    TextReader textReader, org.ramadda.util.seesv.Row row) {
                 try {
                     if (checkMap(row)) {
                         return row;
@@ -899,8 +899,8 @@ public class GtfsImportHandler extends ImportHandler {
         textReader.addProcessor(new MyProcessor() {
 
             @Override
-            public org.ramadda.util.text.Row processRow(
-                    TextReader textReader, org.ramadda.util.text.Row row) {
+            public org.ramadda.util.seesv.Row processRow(
+                    TextReader textReader, org.ramadda.util.seesv.Row row) {
 
                 try {
 
@@ -1051,8 +1051,8 @@ public class GtfsImportHandler extends ImportHandler {
         TextReader textReader = new TextReader();
         textReader.setInput(is);
         textReader.addProcessor(new MyProcessor() {
-            public org.ramadda.util.text.Row processRow(
-                    TextReader textReader, org.ramadda.util.text.Row row) {
+            public org.ramadda.util.seesv.Row processRow(
+                    TextReader textReader, org.ramadda.util.seesv.Row row) {
                 try {
                     if (checkMap(row)) {
                         return row;
@@ -1100,8 +1100,8 @@ public class GtfsImportHandler extends ImportHandler {
         TextReader textReader = new TextReader();
         textReader.setInput(is);
         textReader.addProcessor(new MyProcessor() {
-            public org.ramadda.util.text.Row processRow(
-                    TextReader textReader, org.ramadda.util.text.Row row) {
+            public org.ramadda.util.seesv.Row processRow(
+                    TextReader textReader, org.ramadda.util.seesv.Row row) {
                 try {
                     if (checkMap(row)) {
                         return row;
@@ -1142,8 +1142,8 @@ public class GtfsImportHandler extends ImportHandler {
         TextReader textReader = new TextReader();
         textReader.setInput(is);
         textReader.addProcessor(new MyProcessor() {
-            public org.ramadda.util.text.Row processRow(
-                    TextReader textReader, org.ramadda.util.text.Row row) {
+            public org.ramadda.util.seesv.Row processRow(
+                    TextReader textReader, org.ramadda.util.seesv.Row row) {
                 try {
                     if (checkMap(row)) {
                         return row;
@@ -1203,8 +1203,8 @@ public class GtfsImportHandler extends ImportHandler {
 
             int maxStops = 0;
             @Override
-            public org.ramadda.util.text.Row processRow(
-                    TextReader textReader, org.ramadda.util.text.Row row) {
+            public org.ramadda.util.seesv.Row processRow(
+                    TextReader textReader, org.ramadda.util.seesv.Row row) {
 
                 try {
                     if (checkMap(row)) {

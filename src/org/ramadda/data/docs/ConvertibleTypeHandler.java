@@ -15,7 +15,7 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
-import org.ramadda.util.text.Seesv;
+import org.ramadda.util.seesv.Seesv;
 
 import ucar.unidata.util.StringUtil;
 import org.w3c.dom.*;

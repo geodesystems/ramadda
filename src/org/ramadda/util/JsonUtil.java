@@ -1209,7 +1209,7 @@ public class JsonUtil {
 		       Utils.split(args[2],",",true,true),null,null,
 		       "missing");
 	for(int i=0;i<results.size();i++) {
-	    System.out.print(org.ramadda.util.text.Seesv.columnsToString(results.get(i),",",true));
+	    System.out.print(Utils.columnsToString(results.get(i),",",true));
 	}
 	System.exit(0);
 	**/

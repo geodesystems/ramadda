@@ -27,12 +27,12 @@ import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.Utils;
-import org.ramadda.util.text.Seesv;
-import org.ramadda.util.text.DataProvider;
-import org.ramadda.util.text.Filter;
-import org.ramadda.util.text.Processor;
-import org.ramadda.util.text.SearchField;
-import org.ramadda.util.text.TextReader;
+import org.ramadda.util.seesv.Seesv;
+import org.ramadda.util.seesv.DataProvider;
+import org.ramadda.util.seesv.Filter;
+import org.ramadda.util.seesv.Processor;
+import org.ramadda.util.seesv.SearchField;
+import org.ramadda.util.seesv.TextReader;
 
 import org.w3c.dom.*;
 
@@ -683,8 +683,8 @@ public class TabularOutputHandler extends OutputHandler {
         textReader.setOutput(bos);
         textReader.addProcessor(new Processor() {
             @Override
-            public org.ramadda.util.text.Row processRow(
-                    TextReader textReader, org.ramadda.util.text.Row row)
+            public org.ramadda.util.seesv.Row processRow(
+                    TextReader textReader, org.ramadda.util.seesv.Row row)
                     throws Exception {
                 //                System.err.println("TabularOutputHandler.processRow:" + line);
                 List obj = new ArrayList();
@@ -838,7 +838,7 @@ public class TabularOutputHandler extends OutputHandler {
 
                 /**
                  * ** TODO
-                 * org.ramadda.util.text.Row row = new Row(cols);
+                 * org.ramadda.util.seesv.Row row = new Row(cols);
                  *
                  * if ( !visitInfo.rowOk(row)) {
                  *   if (rows.size() == 0) {

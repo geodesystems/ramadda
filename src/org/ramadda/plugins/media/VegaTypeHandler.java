@@ -24,7 +24,7 @@ import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
-import org.ramadda.util.text.Seesv;
+import org.ramadda.util.seesv.Seesv;
 
 import org.w3c.dom.Element;
 

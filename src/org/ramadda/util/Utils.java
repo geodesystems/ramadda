@@ -775,6 +775,74 @@ public class Utils extends IO {
         return toks;
     }
 
+
+    /**
+     * _more_
+     *
+     * @param cols _more_
+     * @param delimiter _more_
+     *
+     * @return _more_
+     */
+    public static String columnsToString(List cols, String delimiter) {
+        return columnsToString(cols, delimiter, false);
+    }
+
+    /**
+     * _more_
+     *
+     * @param cols _more_
+     * @param delimiter _more_
+     * @param addNewLine _more_
+     *
+     * @return _more_
+     */
+    public static String columnsToString(List cols, String delimiter,
+                                         boolean addNewLine) {
+        StringBuilder sb = new StringBuilder();
+	columnsToString(sb, cols, delimiter,addNewLine);
+	return sb.toString();
+    }
+
+    public static void columnsToString(StringBuilder sb, List cols, String delimiter,
+				       boolean addNewLine) {
+
+        for (int i = 0; i < cols.size(); i++) {
+            Object o = cols.get(i);
+            String s = ((o == null)
+                        ? ""
+                        : o.toString());
+            if (i > 0) {
+                sb.append(delimiter);
+            }
+
+            boolean needToQuote = false;
+            if (s.indexOf("\n") >= 0 || s.indexOf("\r") >= 0) {
+                needToQuote = true;
+            } else if (s.indexOf(delimiter) >= 0) {
+                needToQuote = true;
+            }
+
+            if (s.indexOf("\"") >= 0) {
+                s           = s.replaceAll("\"", "\"\"");
+                needToQuote = true;
+            }
+            if (needToQuote) {
+                sb.append('"');
+                sb.append(s);
+                sb.append('"');
+            } else {
+                sb.append(s);
+            }
+        }
+        if (addNewLine) {
+            sb.append("\n");
+        }
+    }
+
+
+
+
     /**
      * _more_
      *

@@ -14,7 +14,7 @@ import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.geo.GeoJson;
 import org.ramadda.util.geo.KmlUtil;
 import org.ramadda.util.geo.Point;
-import org.ramadda.util.text.Seesv;
+import org.ramadda.util.seesv.Seesv;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.xml.XmlUtil;

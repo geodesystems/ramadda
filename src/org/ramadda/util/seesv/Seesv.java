@@ -3,7 +3,7 @@
    SPDX-License-Identifier: Apache-2.0
 */
 
-package org.ramadda.util.text;
+package org.ramadda.util.seesv;
 
 import org.json.*;
 
@@ -679,7 +679,7 @@ public class Seesv implements SeesvCommands {
             //      System.out.println("ARG:" + arg);
             //      if(true) continue;
             if (arg.equals("-printargs")) {
-                System.out.print("java  org.ramadda.util.text.Seesv ");
+                System.out.print("java  org.ramadda.util.seesv.Seesv ");
                 printArgs = true;
                 continue;
             }
@@ -1526,71 +1526,6 @@ public class Seesv implements SeesvCommands {
     }
     
 
-
-
-    /**
-     * _more_
-     *
-     * @param cols _more_
-     * @param delimiter _more_
-     *
-     * @return _more_
-     */
-    public static String columnsToString(List cols, String delimiter) {
-        return columnsToString(cols, delimiter, false);
-    }
-
-    /**
-     * _more_
-     *
-     * @param cols _more_
-     * @param delimiter _more_
-     * @param addNewLine _more_
-     *
-     * @return _more_
-     */
-    public static String columnsToString(List cols, String delimiter,
-                                         boolean addNewLine) {
-        StringBuilder sb = new StringBuilder();
-	columnsToString(sb, cols, delimiter,addNewLine);
-	return sb.toString();
-    }
-
-    public static void columnsToString(StringBuilder sb, List cols, String delimiter,
-				       boolean addNewLine) {
-
-        for (int i = 0; i < cols.size(); i++) {
-            Object o = cols.get(i);
-            String s = ((o == null)
-                        ? ""
-                        : o.toString());
-            if (i > 0) {
-                sb.append(delimiter);
-            }
-
-            boolean needToQuote = false;
-            if (s.indexOf("\n") >= 0 || s.indexOf("\r") >= 0) {
-                needToQuote = true;
-            } else if (s.indexOf(delimiter) >= 0) {
-                needToQuote = true;
-            }
-
-            if (s.indexOf("\"") >= 0) {
-                s           = s.replaceAll("\"", "\"\"");
-                needToQuote = true;
-            }
-            if (needToQuote) {
-                sb.append('"');
-                sb.append(s);
-                sb.append('"');
-            } else {
-                sb.append(s);
-            }
-        }
-        if (addNewLine) {
-            sb.append("\n");
-        }
-    }
 
 
     /**
@@ -3170,7 +3105,7 @@ public class Seesv implements SeesvCommands {
 	    if(c.category) {
 		if(open) sb.append("</ul><br class=seesv-hide>");
 		open = true;
-		String extra = IO.readContents("/org/ramadda/util/text/help/category_" + Utils.makeID(c.cmd).toLowerCase()+".html",(String) null);
+		String extra = IO.readContents("/org/ramadda/util/seesvhelp/category_" + Utils.makeID(c.cmd).toLowerCase()+".html",(String) null);
 		if(header.length()>0) header.append(" | ");
 		header.append("<a href='#" + c.cmd +"'>" + c.cmd+"</a>");
 		sb.append("<div class=seesv-hide><hr>");
@@ -3194,7 +3129,7 @@ public class Seesv implements SeesvCommands {
 		continue;
 	    }
 	    cnt++;
-	    String path = "/org/ramadda/util/text/help/" + c.cmd.replace("-","")+".html";
+	    String path = "/org/ramadda/util/seesvhelp/" + c.cmd.replace("-","")+".html";
 	    String extra = IO.readContents(path,(String)null);
 	    if(c.cmd.startsWith(CMD_HELP)) continue;
 	    sb.append("<div class=seesv-item>\n");
@@ -3235,7 +3170,7 @@ public class Seesv implements SeesvCommands {
 	sb.append("</ul>\n");
 
         PrintWriter pw = new PrintWriter(getOutputStream());
-	String intro = IO.readContents("/org/ramadda/util/text/help/intro.html","");
+	String intro = IO.readContents("/org/ramadda/util/seesvhelp/intro.html","");
 	intro = intro.replace("${header}",header.toString()+"<br>The RAMADDA SeeSV package provides " + cnt +" commands for manipulating CSV and other types of files");
 	pw.println(intro);
 
@@ -3267,7 +3202,7 @@ public class Seesv implements SeesvCommands {
 	    if(line.startsWith("import:")) {
 		line = line.substring("import:".length()).trim();
 		if(!line.startsWith("/")) {
-		    line = "/org/ramadda/util/text/help/" + line;
+		    line = "/org/ramadda/util/seesvhelp/" + line;
 		}
 		String include = IO.readContents(line,(String)null);
 		if(include==null) throw new IllegalArgumentException("Bad import:" + line);
@@ -3278,7 +3213,7 @@ public class Seesv implements SeesvCommands {
 	    if(line.startsWith("data:")) {
 		line = line.substring("data:".length()).trim();
 		if(!line.startsWith("/")) {
-		    line = "/org/ramadda/util/text/test/" + line;
+		    line = "/org/ramadda/util/seesvtest/" + line;
 		}
 		String include = IO.readContents(line,(String)null);
 		if(include==null) throw new IllegalArgumentException("Bad import:" + line);

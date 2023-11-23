@@ -10,7 +10,6 @@ import org.json.*;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.util.geo.Bounds;
-import org.ramadda.util.text.Seesv;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
@@ -99,7 +98,7 @@ public class GeoJson extends JsonUtil {
 	throws Exception {	
         List<String> values;
         while ((values = iterator.next()) != null) {
-            pw.append(Seesv.columnsToString(values, ",", true));
+            pw.append(Utils.columnsToString(values, ",", true));
         }
     }
 

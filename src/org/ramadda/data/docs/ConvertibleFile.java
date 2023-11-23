@@ -14,7 +14,7 @@ import org.ramadda.data.record.*;
 
 
 import org.ramadda.repository.*;
-import org.ramadda.util.text.Seesv;
+import org.ramadda.util.seesv.Seesv;
 
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;

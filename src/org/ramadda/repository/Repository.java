@@ -58,7 +58,7 @@ import org.ramadda.util.S3File;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.MyTrace;
 import org.ramadda.util.TTLCache;
-import org.ramadda.util.text.Seesv;
+import org.ramadda.util.seesv.Seesv;
 
 
 import org.ramadda.util.PropertyProvider;
@@ -172,7 +172,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
     /** _more_ */
-    private static final org.ramadda.util.text.Seesv dummyField7ToForceCompile =
+    private static final org.ramadda.util.seesv.Seesv dummyField7ToForceCompile =
         null;
 
     /** Cache resoruces property */

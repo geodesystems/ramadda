@@ -3,7 +3,7 @@ Copyright (c) 2008-2023 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
-package org.ramadda.util.text;
+package org.ramadda.util.seesv;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -15,7 +15,7 @@ import java.util.Properties;
 /**
  * This is an example of the extended command.
  * Write a class like this and seet the environment variable:
- * export SEESV_CLASSES=org.ramadda.util.text.TestCommand1
+ * export SEESV_CLASSES=org.ramadda.util.seesv.TestCommand1
  *
  * @author Jeff McWhirter
  */

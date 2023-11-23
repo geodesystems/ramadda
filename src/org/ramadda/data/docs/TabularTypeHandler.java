@@ -10,7 +10,7 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.FileInfo;
 import org.ramadda.util.HtmlUtils;
 
-import org.ramadda.util.text.TextReader;
+import org.ramadda.util.seesv.TextReader;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.IOUtil;

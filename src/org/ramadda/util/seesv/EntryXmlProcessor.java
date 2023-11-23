@@ -3,13 +3,11 @@ Copyright (c) 2008-2023 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
-package org.ramadda.util.text;
+package org.ramadda.util.seesv;
 
 
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
-import org.ramadda.util.text.*;
-
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
@@ -60,7 +58,7 @@ public class EntryXmlProcessor extends RowCollector {
         if (new File("template.xml").exists()) {
             template = IO.readContents("template.xml");
         } else {
-            template = IO.readContents("/org/ramadda/util/text/template.xml",
+            template = IO.readContents("/org/ramadda/util/seesvtemplate.xml",
                                        EntryXmlProcessor.class);
         }
         List<Row>       rows = getRows();

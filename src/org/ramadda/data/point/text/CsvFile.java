@@ -10,7 +10,7 @@ import org.ramadda.data.point.*;
 import org.ramadda.data.record.*;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
-import org.ramadda.util.text.Seesv;
+import org.ramadda.util.seesv.Seesv;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;

@@ -18,7 +18,7 @@ import org.ramadda.util.MyTrace;
 import org.ramadda.util.TempDir;
 import org.ramadda.util.Utils;
 
-import org.ramadda.util.text.SeesvPlugin;
+import org.ramadda.util.seesv.SeesvPlugin;
 
 
 import org.w3c.dom.*;

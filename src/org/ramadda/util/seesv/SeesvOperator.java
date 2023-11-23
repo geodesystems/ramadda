@@ -3,7 +3,7 @@
    SPDX-License-Identifier: Apache-2.0
 */
 
-package org.ramadda.util.text;
+package org.ramadda.util.seesv;
 
 
 import org.apache.commons.codec.language.Soundex;
@@ -398,7 +398,7 @@ public class SeesvOperator {
     public String getDescription() {
         String className = getClass().getName();
 
-        return className.replace("org.ramadda.util.text.",
+        return className.replace("org.ramadda.util.seesv.",
                                  "").replaceAll("^[^\\$]+\\$", "");
     }
 

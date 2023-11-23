@@ -3,7 +3,7 @@ Copyright (c) 2008-2023 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
-package org.ramadda.util.text;
+package org.ramadda.util.seesv;
 
 import org.json.*;
 import org.ramadda.util.IO;
@@ -1050,7 +1050,7 @@ public abstract class Geo extends Processor {
             try {
                 InputStream inputStream =
                     Utils.getInputStream(
-                        "/org/ramadda/util/text/state_regions.properties",
+                        "/org/ramadda/util/seesvstate_regions.properties",
                         getClass());
                 props.load(inputStream);
             } catch (Exception exc) {

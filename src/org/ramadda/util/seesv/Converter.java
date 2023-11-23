@@ -3,7 +3,7 @@
    SPDX-License-Identifier: Apache-2.0
 */
 
-package org.ramadda.util.text;
+package org.ramadda.util.seesv;
 
 import org.apache.commons.codec.language.Soundex;
 
@@ -4805,7 +4805,7 @@ public abstract class Converter extends Processor {
                 try {
                     InputStream inputStream =
                         Utils.getInputStream(
-					     "/org/ramadda/util/text/gender.properties",
+					     "/org/ramadda/util/seesvgender.properties",
 					     getClass());
                     genderProperties.load(inputStream);
                 } catch (Exception exc) {

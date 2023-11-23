@@ -14,7 +14,6 @@ import org.ramadda.data.services.PointTypeHandler;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
-import org.ramadda.util.text.Seesv;
 import org.ramadda.util.Github;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
@@ -192,7 +191,7 @@ public class GithubTypeHandler extends PointTypeHandler {
 		cols.add(item.getUser().getAvatarUrl());
 		cols.add(item.getItemUrl());
 		cols.add(item.getMessage());
-		Seesv.columnsToString(sb,cols,",",true);
+		Utils.columnsToString(sb,cols,",",true);
 	    }
 	    return new ByteArrayInputStream(sb.toString().getBytes());
         }

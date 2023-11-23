@@ -25,7 +25,7 @@ import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 
 import org.ramadda.util.geo.*;
-import org.ramadda.util.text.Seesv;
+import org.ramadda.util.seesv.Seesv;
 
 import org.w3c.dom.Element;
 

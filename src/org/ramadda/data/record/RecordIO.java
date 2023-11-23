@@ -5,7 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.data.record;
 
-import org.ramadda.util.text.TextReader;
+import org.ramadda.util.seesv.TextReader;
 
 import java.io.*;
 

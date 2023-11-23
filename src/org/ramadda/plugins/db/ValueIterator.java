@@ -22,12 +22,7 @@ import org.ramadda.util.RssUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.util.XmlUtils;
 import org.ramadda.util.sql.*;
-import org.ramadda.util.text.Seesv;
-import org.ramadda.util.text.DataProvider;
-import org.ramadda.util.text.Filter;
-import org.ramadda.util.text.Processor;
-import org.ramadda.util.text.Row;
-import org.ramadda.util.text.TextReader;
+
 
 
 import org.w3c.dom.*;
@@ -358,7 +353,7 @@ public abstract class ValueIterator implements DbConstants {
 	@Override
 	public void setLabels(List<String> labels) throws Exception {
 	    Appendable sb = getBuffer();
-	    sb.append(Seesv.columnsToString(labels,","));
+	    sb.append(Utils.columnsToString(labels,","));
 	    sb.append("\n");
 	}
 

@@ -43,12 +43,12 @@ import org.ramadda.util.sql.Clause;
 
 import org.ramadda.util.sql.SqlUtil;
 
-import org.ramadda.util.text.Seesv;
-import org.ramadda.util.text.DataProvider;
-import org.ramadda.util.text.Filter;
-import org.ramadda.util.text.Processor;
-import org.ramadda.util.text.Row;
-import org.ramadda.util.text.TextReader;
+import org.ramadda.util.seesv.Seesv;
+import org.ramadda.util.seesv.DataProvider;
+import org.ramadda.util.seesv.Filter;
+import org.ramadda.util.seesv.Processor;
+import org.ramadda.util.seesv.Row;
+import org.ramadda.util.seesv.TextReader;
 
 import org.w3c.dom.*;
 
@@ -3066,8 +3066,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	Processor myProcessor = new Processor() {
 		int myCnt=0;
 		@Override
-		public org.ramadda.util.text.Row handleRow(TextReader textReader,
-							   org.ramadda.util.text.Row row) {
+		public org.ramadda.util.seesv.Row handleRow(TextReader textReader,
+							   org.ramadda.util.seesv.Row row) {
 		    try {
 			myCnt++;
 			if(myCnt%1000==0) System.err.println("count:" + myCnt);

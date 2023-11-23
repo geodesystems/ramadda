@@ -16,7 +16,7 @@
     </target>
 
     <target name="csv" depends="init,clean">
-      <echo message="BASE:${basedir}/src/org/ramadda/util/text/Seesv.java"/>
+      <echo message="BASE:${basedir}/src/org/ramadda/util/seesv/Seesv.java"/>
       <echo message="src: ${src_dir}"/>
        <javac
             verbose="false"
@@ -30,7 +30,7 @@
             source="${javac.version}"
             target="${javac.version}"
         >
-        <include name="org/ramadda/util/text/Seesv.java"/>
+        <include name="org/ramadda/util/seesv/Seesv.java"/>
         </javac>
         <mkdir dir="${tmpjar_dir}"/>
         <jar 
@@ -42,7 +42,7 @@
               <attribute name="Implementation-Title" value="Ramadda CSV"/>
               <attribute name="Implementation-Version" value="1.0"/>
               <attribute name="Implementation-Vendor" value="RAMADDA"/>
-              <attribute name="Main-class" value="org.ramadda.util.text.Seesv"/>
+              <attribute name="Main-class" value="org.ramadda.util.seesv.Seesv"/>
               <attribute name="Class-Path" value=""/>
             </manifest> 
             <include name="org/**/*.class"/>

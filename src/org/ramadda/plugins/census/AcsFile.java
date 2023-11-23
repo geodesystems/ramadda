@@ -22,7 +22,6 @@ import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.util.geo.Place;
-import org.ramadda.util.text.*;
 
 import org.w3c.dom.*;
 
