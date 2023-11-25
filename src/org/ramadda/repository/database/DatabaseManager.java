@@ -67,6 +67,9 @@ import javax.sql.DataSource;
 public class DatabaseManager extends RepositoryManager implements SqlUtil
 								  .ConnectionManager {
 
+    public static final int NOMAX= -1;
+
+
     //Try for something that won't ever be in a string
 
     /** _more_ */
@@ -3273,6 +3276,62 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         String[]  values = SqlUtil.readString(getIterator(stmt), 1);
 
         return (List<String>) Misc.toList(values);
+    }
+
+
+    public static List<Clause> addTypeClause(Repository repository,
+					     Request request, List<String> typeList,List<Clause>clauses) throws Exception {
+	if(clauses==null) clauses= new ArrayList<Clause>();
+	if(SqlUtil.debug) System.err.println("addTypeClause:" + request+"\n clauses:" + clauses);
+	typeList.remove(TYPE_ANY);
+	if (typeList.size() > 0) {
+	    List<String> types = new ArrayList<String>();
+	    for (String type : typeList) {
+		TypeHandler typeHandler =
+		    repository.getTypeHandler(type);
+		if (typeHandler == null) {
+		    //Force the bad type
+		    types.add(type);
+		    continue;
+		}
+		typeHandler.getChildTypes(types);
+	    }
+	    String typeString;
+	    if (request.get(ARG_TYPE_EXCLUDE, false)) {
+		typeString = "!" + StringUtil.join(",!", types);
+	    } else {
+		typeString = StringUtil.join(",", types);
+	    }
+	    if ( !Clause.isColumn(clauses, Tables.ENTRIES.COL_TYPE)) {
+		if(SqlUtil.debug) System.err.println("\taddClause typeString=" + typeString);
+		addOrClause(Tables.ENTRIES.COL_TYPE, typeString, clauses);
+	    }
+	}
+	if(SqlUtil.debug) System.err.println("\tafter clauses:" + clauses);
+	return clauses;
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param column _more_
+     * @param value _more_
+     * @param clauses _more_
+     *
+     * @return _more_
+     */
+    public static boolean addOrClause(String column, String value,
+				      List<Clause> clauses) {
+        if ((value != null) && (value.trim().length() > 0)
+                && !value.toLowerCase().equals("all")) {
+            clauses.add(Clause.makeOrSplit(column, value));
+
+            return true;
+        }
+
+        return false;
     }
 
 

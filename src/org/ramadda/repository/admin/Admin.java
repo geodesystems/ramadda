@@ -29,7 +29,7 @@ import org.ramadda.util.sql.SqlUtil;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.util.Counter;
+import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -1217,7 +1217,7 @@ public class Admin extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Result adminReindex(Request request, boolean all)
+    public Result adminReindex(final Request request, boolean all)
             throws Exception {
         //Only do one at a time
         if (amReindexing) {
@@ -1232,7 +1232,7 @@ public class Admin extends RepositoryManager {
         ActionManager.Action action = new ActionManager.Action() {
             public void run(Object actionId) throws Exception {
                 try {
-                    getSearchManager().reindexLucene(actionId, all);
+                    getSearchManager().reindexLucene(request,actionId, all,request.getString(ARG_TYPE,null));
                 } catch (Exception exc) {
                     System.err.println("Error reindexing:" + exc);
 
@@ -2690,10 +2690,17 @@ public class Admin extends RepositoryManager {
 
 	header.accept(topSB, "Reindex Lucene Index");
 	request.formPostWithAuthToken(topSB, URL_ADMIN_MAINTENANCE, "");
-	topSB.append(messageNote("Reindex all deletes entire index. Reindex partial only in indexes entries not already indexed")
-		  + HU.submit("Reindex all", ACTION_FULLINDEX)
-		  + HU.space(2)
-		  + HU.submit("Reindex partial", ACTION_PARTIALINDEX));
+	topSB.append(messageNote("Reindex all deletes entire index. Reindex partial only in indexes entries not already indexed"));
+        topSB.append(HU.formTable());
+	List types= Utils.makeList(new TwoFacedObject("None",""));
+	HU.formEntry(topSB,
+		     msgLabel("Type"),
+		     getRepository().makeTypeSelect(types, request, ARG_TYPE,"",false,null,false,null,false));
+	HU.formEntry(topSB,"",
+		     HU.submit("Reindex all", ACTION_FULLINDEX)
+		     + HU.space(2)
+		     + HU.submit("Reindex partial", ACTION_PARTIALINDEX));
+        topSB.append(HU.formTableClose());
 	topSB.append(HU.formClose());
 
 

@@ -4452,7 +4452,7 @@ public class TypeHandler extends RepositoryManager {
         if (didEntries) {
             List<String> typeList = (List<String>) request.get(ARG_TYPE,
                                         new ArrayList());
-	    addTypeClause(request, typeList,clauses);
+	    getDatabaseManager().addTypeClause(getRepository(),request, typeList,clauses);
         }
 
 
@@ -4488,34 +4488,6 @@ public class TypeHandler extends RepositoryManager {
     public void addWidgetHelp(Request request,Entry entry,Appendable formBuffer,Column column,Object[]values) throws Exception {
     }
 
-    public void addTypeClause(Request request, List<String> typeList,List<Clause>clauses) throws Exception {
-	if(SqlUtil.debug) System.err.println("addTypeClause:" + request+"\n clauses:" + clauses);
-	typeList.remove(TYPE_ANY);
-	if (typeList.size() > 0) {
-	    List<String> types = new ArrayList<String>();
-	    for (String type : typeList) {
-		TypeHandler typeHandler =
-		    getRepository().getTypeHandler(type);
-		if (typeHandler == null) {
-		    //Force the bad type
-		    types.add(type);
-		    continue;
-		}
-		typeHandler.getChildTypes(types);
-	    }
-	    String typeString;
-	    if (request.get(ARG_TYPE_EXCLUDE, false)) {
-		typeString = "!" + StringUtil.join(",!", types);
-	    } else {
-		typeString = StringUtil.join(",", types);
-	    }
-	    if ( !Clause.isColumn(clauses, Tables.ENTRIES.COL_TYPE)) {
-		if(SqlUtil.debug) System.err.println("\taddClause typeString=" + typeString);
-		addOrClause(Tables.ENTRIES.COL_TYPE, typeString, clauses);
-	    }
-	}
-	if(SqlUtil.debug) System.err.println("\tafter clauses:" + clauses);
-    }
 
 
     public void addToEntryFormHeader(Request request, Appendable sb,Entry entry) throws Exception {
@@ -6506,20 +6478,20 @@ public class TypeHandler extends RepositoryManager {
                         request.getString(ARG_RESOURCE, ""));
             String resource = request.getString(ARG_RESOURCE, "");
             resource = getStorageManager().resourceFromDB(resource);
-            addOrClause(Tables.ENTRIES.COL_RESOURCE, resource, where);
+            DatabaseManager.addOrClause(Tables.ENTRIES.COL_RESOURCE, resource, where);
         }
 
         if (request.defined(ARG_CATEGORY)) {
             addCriteria(request, searchCriteria, "Category=",
                         request.getString(ARG_CATEGORY, ""));
-            addOrClause(Tables.ENTRIES.COL_DATATYPE,
+            DatabaseManager.addOrClause(Tables.ENTRIES.COL_DATATYPE,
                         request.getString(ARG_CATEGORY, ""), where);
         }
 
         if (request.defined(ARG_USER_ID)) {
             addCriteria(request, searchCriteria, "User=",
                         request.getString(ARG_USER_ID, ""));
-            addOrClause(Tables.ENTRIES.COL_USER_ID,
+            DatabaseManager.addOrClause(Tables.ENTRIES.COL_USER_ID,
                         request.getString(ARG_USER_ID, ""), where);
         }
 
@@ -6534,7 +6506,7 @@ public class TypeHandler extends RepositoryManager {
          *   } else {
          *       addCriteria(request,searchCriteria, "Collection=", "Unknown");
          *   }
-         *   addOrClause(Tables.ENTRIES.COL_TOP_GROUP_ID,
+         *   DatabaseManager.addOrClause(Tables.ENTRIES.COL_TOP_GROUP_ID,
          *               request.getString(ARG_COLLECTION, ""), where);
          *               }
          */
@@ -7403,26 +7375,6 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param column _more_
-     * @param value _more_
-     * @param clauses _more_
-     *
-     * @return _more_
-     */
-    protected boolean addOrClause(String column, String value,
-                                  List<Clause> clauses) {
-        if ((value != null) && (value.trim().length() > 0)
-                && !value.toLowerCase().equals("all")) {
-            clauses.add(Clause.makeOrSplit(column, value));
-
-            return true;
-        }
-
-        return false;
-    }
 
 
 

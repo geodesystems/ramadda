@@ -22,6 +22,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.admin.*;
 
 import org.ramadda.repository.auth.*;
+import org.ramadda.repository.database.DatabaseManager;
 import org.ramadda.repository.database.Tables;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
@@ -418,11 +419,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
-    public void reindexLucene(Object actionId, boolean all)  {
+    public void reindexLucene(Request request,Object actionId, boolean all, String type)  {
 	try {
 	    IndexWriter writer = getLuceneWriter();
 	    try {
-		reindexLuceneInner(writer, actionId, all);
+		reindexLuceneInner(request,writer, actionId, all,type);
 	    } finally {
 		//		writer.close();
 	    }
@@ -431,11 +432,15 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
     }
 
-    private void reindexLuceneInner(final IndexWriter writer, Object actionId, boolean all)  throws Throwable {	
+    private void reindexLuceneInner(final Request request, final IndexWriter writer, Object actionId, boolean all, String type)  throws Throwable {	
+	Clause clause = null;
+	if(stringDefined(type)) {
+	    clause = Clause.or(getDatabaseManager().addTypeClause(getRepository(),request, Utils.split(type,",",true,true),null));
+	}
         Statement statement =
             getDatabaseManager().select(Tables.ENTRIES.COL_ID,
 					Misc.newList(Tables.ENTRIES.NAME),
-					null);
+					clause,null,DatabaseManager.NOMAX);
 
         SqlUtil.Iterator iter = getDatabaseManager().getIterator(statement);
         ResultSet        results;
