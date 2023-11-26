@@ -3238,6 +3238,7 @@ public class EntryManager extends RepositoryManager {
 	    IO.close(fis);
 	    IO.close(zin);
 	}
+	parentageChanged(parentEntry);
     }	
 
     
