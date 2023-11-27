@@ -151,12 +151,13 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
                                mainEntry, null);
 
         String idString = (String) mainEntry.getStringValue(0, "").replace(",",
-                              "_COMMA_");
+									   "_COMMA_");
         String  by         = request.getString(ARG_ORDERBY, (String) null);
         boolean descending = !request.get(ARG_ASCENDING, false);
 	//TODO:This doesn't work
 	//	if(by!=null)    idString += "by:" + by + " desc:" + descending;
         List<String> fromCache = cachedIds.get(idString);
+	System.err.println("id:" + idString +"  " + fromCache);
         if (fromCache == null) {
             fromCache = new ArrayList<String>();
             //Don't cache for now
