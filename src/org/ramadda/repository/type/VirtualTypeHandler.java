@@ -12,7 +12,6 @@ import org.ramadda.repository.util.SelectInfo;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
-
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 
@@ -93,9 +92,9 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
                 value = column.toString(values, column.getOffset());
             }
             String urlArg     = column.getEditArg();
-            String textAreaId = HtmlUtils.getUniqueId("input_");
-            String widget = HtmlUtils.textArea(urlArg, value, 10, 60,
-                                HtmlUtils.id(textAreaId));
+            String textAreaId = HU.getUniqueId("input_");
+            String widget = HU.textArea(urlArg, value, 10, 60,
+                                HU.id(textAreaId));
             formInfo.addMaxSizeValidation(column.getLabel(), textAreaId,
                                           5000);
             String suffix =
@@ -105,10 +104,10 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
 						     false,false);
 
             formBuffer.append(
-                HtmlUtils.formEntryTop(
+                HU.formEntryTop(
                     msgLabel(column.getLabel()),
                     buttons + "<table cellspacing=0 cellpadding=0 border=0>"
-                    + HtmlUtils.row(HtmlUtils.cols(widget, suffix))
+                    + HU.row(HU.cols(widget, suffix))
                     + "</table>"));
             formBuffer.append("\n");
         } else {
@@ -157,7 +156,8 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
 	//TODO:This doesn't work
 	//	if(by!=null)    idString += "by:" + by + " desc:" + descending;
         List<String> fromCache = cachedIds.get(idString);
-	System.err.println("id:" + idString +"  " + fromCache);
+	System.err.println("ID:" + idString.replace("\n"," -- "));
+	System.err.println("CACHE:" +  fromCache);	
         if (fromCache == null) {
             fromCache = new ArrayList<String>();
             //Don't cache for now
@@ -171,6 +171,7 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
                 lines.add(line);
             }
             idString = StringUtil.join(",", lines);
+	    System.err.println("\tid string:" + idString);
             List<Entry> entries = getWikiManager().getEntries(request, null,
                                       mainEntry, mainEntry, idString, null,
                                       false, "");
