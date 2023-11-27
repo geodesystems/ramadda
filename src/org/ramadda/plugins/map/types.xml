@@ -43,7 +43,7 @@ viewBounds="<bounds>" details="true" displayDiv="mapDisplay" showSearch="true" }
 
 
   <type name="geo_gpx"  mimetype="application/json" super="type_point" description="GPX GPS File"   handler="org.ramadda.plugins.map.GpxTypeHandler" pattern=".*\.gpx$">
-    <property name="icon" value="/map/tracks.png"/>
+    <property name="icon" value="/map/gpx.png"/>
      <xproperty name="point.initialize" value="false"/>
      <column name="distance" label="Distance" type="double" cansearch="true" showinhtml="true" databaseDefault="-1"/>
      <column name="total_time" label="Total Time" type="double" cansearch="true" showinhtml="true"  databaseDefault="-1"/>
@@ -251,7 +251,7 @@ propagateHighlightEvent=true showTitle="false" layoutHere="true" showMenu="true"
    <property name="form.description.iswiki" value="true"/>
    <property name="defaultFilename" value="imdvmap.json"/>
    <property name="convertidsinfile" value="true"/>
-   <property name="icon" value="/icons/globe-solid.png"/>
+   <property name="icon" value="/icons/imdv.png"/>
 <wiki>
 <![CDATA[
 +section title={{name}}

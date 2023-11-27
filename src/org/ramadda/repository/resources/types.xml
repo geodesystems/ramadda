@@ -127,7 +127,7 @@ message="" prefix="----_nl_:h3 Pages" showIcon=false details=false sort=entryord
   </type>
 
   <type name="type_convertible"  description="Convertible File" foruser="false"  super="type_document"  >
-     <property name="icon" value="/icons/document-excel-csv.png"/>
+     <property name="icon" value="/icons/csv.png"/>
 
      <!-- Have these here because these entries can be treated as point entries -->
      <column name="numberofpoints" type="int"  label="Number of points"  showinhtml="false" showinform="false"/>
@@ -154,7 +154,7 @@ message="" prefix="----_nl_:h3 Pages" showIcon=false details=false sort=entryord
 
 
  <type name="type_document_tabular"  description="Tabular File" foruser="false"  super="type_convertible"  >
-     <property name="icon" value="/icons/document-excel-csv.png"/>
+     <property name="icon" value="/icons/csv.png"/>
      <column name="showtable" type="boolean" label="Show table"  default="true" showinhtml="false"/>
      <column name="showchart" type="boolean" label="Show chart"  default="true" showinhtml="false"/>
 
