@@ -247,52 +247,37 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     private static final String FIELD_NAME_SORT = "namesort";    
 
-
     private static final String[] SEARCH_FIELDS ={FIELD_CORPUS, FIELD_NAME, FIELD_DESCRIPTION, FIELD_CONTENTS,FIELD_ATTACHMENT, FIELD_PATH};
+
+    private boolean isLuceneEnabled = true;
+
+    private Object LUCENE_MUTEX = new Object();
 
     public static final int LUCENE_MAX_LENGTH = 25_000_000;
 
     private IndexWriter luceneWriter;
 
-    /** _more_ */
-    private boolean isLuceneEnabled = true;
+    private IndexSearcher luceneSearcher;
 
     private String tesseractPath;
 
     private boolean indexImages = true;
 
-    /** _more_ */
     private SearchProvider thisSearchProvider;
 
-    /** _more_ */
     private List<SearchProvider> searchProviders;
 
-    /** _more_ */
     private List<SearchProvider> allProviders;
 
-    /** _more_ */
     private Hashtable<String, SearchProvider> searchProviderMap;
 
-
-    
-
-
-    /** _more_ */
     private List<SearchProvider> pluginSearchProviders =
         new ArrayList<SearchProvider>();
-
-    private Object LUCENE_MUTEX = new Object();
 
     private Hashtable<String,List<String>> synonyms;
 
     private boolean showMetadata= true;
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     */
     public SearchManager(Repository repository) {
         super(repository);
         repository.addEntryChecker(this);
@@ -309,16 +294,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         isLuceneEnabled = getRepository().getProperty(PROP_SEARCH_LUCENE_ENABLED, true);
     }
 
-
-
     public List<String> getSynonyms(String word) throws Exception {
 	word = word.toLowerCase().trim();
 	if(synonyms==null)synonyms = getSynonyms();
 	return synonyms.get(word);
     }
-
-
-
 
     public Hashtable<String,List<String>>getSynonyms() throws Exception {
 	if(synonyms==null) {
@@ -421,9 +401,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     public void reindexLucene(Request request,Object actionId, boolean all, String type)  {
 	try {
-	    IndexWriter writer = getLuceneWriter();
+	    IndexWriter indexWriter = getLuceneWriter();
 	    try {
-		reindexLuceneInner(request,writer, actionId, all,type);
+		reindexLuceneInner(request, indexWriter, actionId, all,type);
 	    } finally {
 		//		writer.close();
 	    }
@@ -432,7 +412,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
     }
 
-    private void reindexLuceneInner(final Request request, final IndexWriter writer, Object actionId, boolean all, String type)  throws Throwable {	
+    private void reindexLuceneInner(final Request request, final IndexWriter indexWriter, Object actionId, boolean all, String type)  throws Throwable {	
 	Clause clause = null;
 	if(stringDefined(type)) {
 	    clause = Clause.or(getDatabaseManager().addTypeClause(getRepository(),request, Utils.split(type,",",true,true),null));
@@ -450,7 +430,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             String id = results.getString(1);
 	    if(!all) {
 		if(searcher==null) {
-		    IndexReader reader =  DirectoryReader.open(writer);
+		    IndexReader reader =  DirectoryReader.open(indexWriter);
 		    searcher = new IndexSearcher(reader);
 		}
 		Query query = new TermQuery(new Term(FIELD_ENTRYID, id));
@@ -472,8 +452,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	//	System.err.println("ids:" + ids.size());
 
 	if(all) {
-	    writer.deleteAll();
-	    commit(writer);
+	    indexWriter.deleteAll();
+	    commit(indexWriter);
 	}
 
 	Object mutex = new Object();
@@ -490,7 +470,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	boolean[]ok = new boolean[]{true};
 	List<Callable<Boolean>> callables = new ArrayList<Callable<Boolean>>();
 	for(List idList:idLists) {
-	    callables.add(makeReindexer((List<String>)idList,writer,ids.size(),cnt,actionId,mutex,ok));
+	    callables.add(makeReindexer((List<String>)idList,indexWriter,ids.size(),cnt,actionId,mutex,ok));
 	}
 	long t1 = System.currentTimeMillis();
 	getRepository().getJobManager().invokeAllAndWait(callables);
@@ -498,14 +478,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	//	System.err.println("time:" + (t2-t1));
 	if(ok[0]) {
 	    System.err.println("committing");
-	    commit(writer);
+	    commit(indexWriter);
 	}
 	//	System.err.println("closing");
-	//        writer.close();
+	//        indexWriter.close();
 	getActionManager().actionComplete(actionId);
     }
 
-    private Callable<Boolean> makeReindexer(final List<String> ids, final IndexWriter writer,final int total, final int[] cnt, final Object actionId, final Object mutex, final boolean[]ok) throws Exception {
+    private Callable<Boolean> makeReindexer(final List<String> ids, final IndexWriter indexWriter,final int total, final int[] cnt, final Object actionId, final Object mutex, final boolean[]ok) throws Exception {
         return  new Callable<Boolean>() {
             public Boolean call() {
                 try {
@@ -517,7 +497,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			    cnt[0]++;
 			    System.err.println("#" + cnt[0] +"/"+ total +" entry:" + entry.getName());
 			}
-			indexEntry(writer, entry, null, false);
+			indexEntry(indexWriter, entry, null, false);
 			getEntryManager().removeFromCache(entry);
 			if(!ok[0]) break;
 			if(actionId!=null) {
@@ -609,18 +589,18 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     private  void indexEntries(List<Entry> entries, Request request, boolean isNew)
 	throws Exception {
 	//	synchronized(LUCENE_MUTEX) {
-	    IndexWriter writer = getLuceneWriter();
+	    IndexWriter indexWriter = getLuceneWriter();
 	    try {
 		for (Entry entry : entries) {
 		    long t1= System.currentTimeMillis();
-		    indexEntry(writer, entry, request,isNew);
+		    indexEntry(indexWriter, entry, request,isNew);
 		    long t2= System.currentTimeMillis();
 		    //		    System.err.println("indexEntry:" + entry +" time:" + (t2-t1));
 		}
-		//        writer.optimize();
-		commit(writer);
+		//        indexWriter.optimize();
+		commit(indexWriter);
 	    } finally {
-		//	    writer.close();
+		//	    indexWriter.close();
 	    }
 	    //	}
     }
@@ -629,12 +609,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     /**
      * _more_
      *
-     * @param writer _more_
+     * @param indexWriter _more_
      * @param entry _more_
      *
      * @throws Exception _more_
      */
-    private void indexEntry(IndexWriter writer, Entry entry, Request request, boolean isNew)
+    private void indexEntry(IndexWriter indexWriter, Entry entry, Request request, boolean isNew)
 	throws Exception {
         org.apache.lucene.document.Document doc =
             new org.apache.lucene.document.Document();
@@ -855,7 +835,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 
         doc.add(new TextField(FIELD_CORPUS, corpus.toString(),Field.Store.NO));
-        writer.addDocument(doc);
+        indexWriter.addDocument(doc);
     }
 
 
@@ -1086,7 +1066,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
-    private IndexSearcher luceneSearcher;
+
 
     /**
      * _more_
@@ -1718,9 +1698,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	indexEntries(entries, request, false);
     }
 
-    private void commit(IndexWriter writer) throws Exception {
+    private void commit(IndexWriter indexWriter) throws Exception {
 	luceneSearcher = null;
-	writer.commit();
+	indexWriter.commit();
     }
 
 
@@ -1736,11 +1716,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         }
         try {
 	    //	    synchronized(LUCENE_MUTEX) {
-		IndexWriter writer = getLuceneWriter();
+		IndexWriter indexWriter = getLuceneWriter();
 		for (String id : ids) {
-		    writer.deleteDocuments(new Term(FIELD_ENTRYID, id));
+		    indexWriter.deleteDocuments(new Term(FIELD_ENTRYID, id));
 		}
-		commit(writer);
+		commit(indexWriter);
 		//	    }
         } catch (Exception exc) {
             logError("Error deleting entries from Lucene index", exc);
