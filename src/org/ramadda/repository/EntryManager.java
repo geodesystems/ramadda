@@ -1059,7 +1059,7 @@ public class EntryManager extends RepositoryManager {
 	    if(id!=null &&
 	       isSynthEntry(id) && (request.getIsRobot() || 
 				    request.getIsGoogleBot())) {
-		//		System.err.println("skipping synth entry from bot request:" + id);
+		System.err.println("skipping synth entry from bot request:" + id);
 		return getRepository().getNoRobotsResult(request);
 	    }	       
             entry = getEntryFromRequest(request, ARG_ENTRYID,

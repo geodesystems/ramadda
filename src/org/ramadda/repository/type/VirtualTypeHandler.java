@@ -156,8 +156,7 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
 	//TODO:This doesn't work
 	//	if(by!=null)    idString += "by:" + by + " desc:" + descending;
         List<String> fromCache = cachedIds.get(idString);
-	System.err.println("ID:" + idString.replace("\n"," -- "));
-	System.err.println("CACHE:" +  fromCache);	
+
         if (fromCache == null) {
             fromCache = new ArrayList<String>();
             //Don't cache for now
@@ -171,7 +170,6 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
                 lines.add(line);
             }
             idString = StringUtil.join(",", lines);
-	    System.err.println("\tid string:" + idString);
             List<Entry> entries = getWikiManager().getEntries(request, null,
                                       mainEntry, mainEntry, idString, null,
                                       false, "");
@@ -190,12 +188,9 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
             }
 
 
-            //      System.err.println("by:" + by + " desc:" + descending);
             if (by.equals(ORDERBY_NAME)) {
                 entries = getEntryManager().getEntryUtil().sortEntriesOnName(
                     entries, descending);
-                //        } else if (by.equals(ORDERBY_SIZE)) {
-                //              System.err.println("by name:" + entries);
             } else {
                 entries = getEntryManager().getEntryUtil().sortEntriesOnDate(
                     entries, descending);
