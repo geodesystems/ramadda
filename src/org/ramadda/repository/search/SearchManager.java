@@ -2318,10 +2318,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                     String img;
                     if (icon == null) {
                         icon = ICON_BLANK;
-                        img = HU.img(typeHandler.getIconUrl(icon), "", HU.attr(HU.ATTR_WIDTH, "16"));
-                    } else {
-                        img = HU.img(typeHandler.getIconUrl(icon));
                     }
+		    img = HU.img(typeHandler.getIconUrl(icon), "", HU.attr(HU.ATTR_WIDTH, ICON_WIDTH));
                     String label = img + HU.SPACE
 			+ typeHandler.getDescription() + HU.SPACE
 			+ "(" + cnt + ")";
