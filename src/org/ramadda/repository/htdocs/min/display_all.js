@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Nov 25 05:50:15 EST 2023";
+var build_date="RAMADDA build date: Mon Nov 27 11:42:07 MST 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -13963,11 +13963,17 @@ function PointData(name, recordFields, records, url, properties) {
 		}
 
 		//Check if the response is json
-		if(jqxhr.responseText && jqxhr.responseText.startsWith("{")) {
+		if(jqxhr.responseText) {
 		    try {
 			let tmp = JSON.parse(jqxhr.responseText);
 			if(tmp.error) err = tmp.error;
 		    } catch(ignore) {
+			//The response might be malformed JSON so check for the error line
+			//"error":"..."}
+			let match = jqxhr.responseText.match(/"error":"([^"]+)"/);
+			if(match) {
+			    err = match[1];
+			}
 		    }
 		}
 		console.log("Point data load error:" + url+" " + (err?err:""));
