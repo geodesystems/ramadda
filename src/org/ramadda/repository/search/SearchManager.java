@@ -550,12 +550,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         return null;
     }
 
-    /**
-     * _more_
-     *
-     * @param block _more_
-     * @param asb _more_
-     */
     /**** Don't do this
     @Override
     public void addToAdminSettingsForm(String block, StringBuffer asb) {
@@ -1613,11 +1607,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	} else {
 	    sort = Sort.RELEVANCE;
 	}
-
-	//	System.err.println("sort:" + sort);
-	//	System.err.println("m:" + (max+skip));
-
-
         IndexSearcher searcher = getLuceneSearcher();
 	//	searcher.setDefaultFieldSortScoring(true, false);
 	TopDocs       hits     = searcher.search(query, max+skip,sort);
