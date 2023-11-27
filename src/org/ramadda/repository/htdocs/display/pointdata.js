@@ -482,11 +482,17 @@ function PointData(name, recordFields, records, url, properties) {
 		}
 
 		//Check if the response is json
-		if(jqxhr.responseText && jqxhr.responseText.startsWith("{")) {
+		if(jqxhr.responseText) {
 		    try {
 			let tmp = JSON.parse(jqxhr.responseText);
 			if(tmp.error) err = tmp.error;
 		    } catch(ignore) {
+			//The response might be malformed JSON so check for the error line
+			//"error":"..."}
+			let match = jqxhr.responseText.match(/"error":"([^"]+)"/);
+			if(match) {
+			    err = match[1];
+			}
 		    }
 		}
 		console.log("Point data load error:" + url+" " + (err?err:""));
