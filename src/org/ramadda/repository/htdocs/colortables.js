@@ -127,7 +127,7 @@ $.extend(Utils,{
 
     displayColorTable: function(ct, domId, min, max, args) {
         if (!ct) return;
-        var html = this.getColorTableDisplay(ct,min,max,args);
+        let html = this.getColorTableDisplay(ct,min,max,args);
         $("#" + domId).html(html);
     },
     getColorTableDisplay: function(ct,  min, max, args) {
@@ -136,14 +136,15 @@ $.extend(Utils,{
         //Handle d3
         if(ct.length && Array.isArray(ct[0]))
             ct = ct[ct.length-1];
-        var options = {
+        let options = {
             height: "15px",
             showRange: true,
             showColorTableDots:false,
             decimals:-1,
             horizontal:true,
             colorWidth:"20px",
-            stride:1
+            stride:1,
+	    dotWidth:null
         }
         if (args) $.extend(options, args);
         let colorToString = null;
@@ -166,9 +167,7 @@ $.extend(Utils,{
                 colorToString[v.color]+=HtmlUtils.div(["title",v.value,STYLE,style],value);
             });
         }
-//        min = parseFloat(min);
-//        max = parseFloat(max);
-	let clazz = " display-colortable " +(!options.tooltips && options.showColorTableDots?"display-colortable-dots":"");
+	let clazz = " display-colortable " +(!options.tooltips && options.showColorTableDots?"display-colortable-dots"+(options.horizontal?'-h':''):"");
         let divargs = [CLASS, clazz];
         if(Utils.isDefined(options.width)) {
             divargs.push(STYLE);
@@ -198,7 +197,7 @@ $.extend(Utils,{
             }   else {
             }
         }
-        var step = (max - min) / ct.length;
+        let step = (max - min) / ct.length;
         let nums = [];
 	let maxNums = ct.length;
 	if(options.tooltips && options.tooltips.length>0 && options.tooltips.length<ct.length)  {
@@ -212,43 +211,59 @@ $.extend(Utils,{
 	
         let tdw = (100 / nums.length) + "%";
         nums.forEach((i,idx)=>{
-            var extra = "";
+            let extra = "";
             let val = min + step * i;
-            var attrs = [];
+            let attrs = [];
             if(options.showColorTableDots) {
                 let val2 = min + step * (i+1);
                 let label = options.tooltips?options.tooltips[idx]:formatter(val)+ "-" + formatter(val2);
+		let color = ct[i];
+		if(options.stringValues)  {
+		    label = options.stringValues[idx]?.value;
+		    color = options.stringValues[idx]?.color??color;
+		}
+
                 let delim = SPACE;
-                if(!options.horizontal && !options.tooltips)
-                    delim="<br>";
+//		if(!options.horizontal && !options.tooltips)                    delim="<br>";
+		let dotStyle = HU.css("background", color);
+		if(options.dotWidth) dotStyle+=HU.css('width',HU.getDimension(options.dotWidth),
+						      'height',HU.getDimension(options.dotWidth));
 		if(options.tooltips) {
-                    html += HtmlUtils.div(['label',label,"data-value",val,'style','width:100%;display:inline-block;',CLASS,"display-colortable-dot-item",TITLE,label], HtmlUtils.div([ "data-value",val,"class", "display-colortable-dot", "style", HU.css("background", ct[i])]) + delim + label);
+                    html += HU.div(['label',label,"data-value",val,'style','width:100%;display:inline-block;',CLASS,"display-colortable-dot-item",TITLE,label], HU.div([ "data-value",val,"class", "display-colortable-dot", "style", dotStyle]) + delim + label);
 		} else {
-                    html += HtmlUtils.span([CLASS,"display-colortable-dot-item",TITLE,label], HtmlUtils.div([ "data-value",val,"class", "display-colortable-dot", "style", HU.css("background", ct[i])]) + delim + label);
+		    let dot = HU.span([ "data-value",val,"class", "display-colortable-dot", "style", dotStyle]);
+		    let item;
+		    
+		    if(!options.horizontal) {
+			item = HU.hbox([dot, SPACE, label]);
+		    } else {
+			item = dot + delim + label;
+		    }
+                    html += HU.span([CLASS,"display-colortable-dot-item",TITLE,label], item);
 		}
-                if(!options.horizontal)
-                    html +="<br>";
-            } else {
-                if (options.showRange) {
-                    attrs.push(TITLE);
-                    attrs.push(formatter(val));
-                } else if(options.tooltips) {
-		    let tt = options.tooltips[idx];
-		    if(tt)
-			attrs.push(TITLE,tt,'data-title',tt,'foo',tt);
-		}
-                attrs.push(STYLE);
-                attrs.push(HU.css("text-align","center", "background", ct[i], WIDTH,"100%","min-height", options.height,"min-width","1px"));
-                let label = options.labels?options.labels[idx]:"";
-                if(options.labelStyle) {
-                    label = HU.div([STYLE,options.labelStyle],label);
-                }
-                let fg = Utils.getForegroundColor(ct[i]);
-                if(options.horizontal) 
-                    html += HtmlUtils.td(["data-value",val,"class", "display-colortable-slice", "style", HU.css('background', ct[i],"color",fg), WIDTH, tdw], HtmlUtils.div(attrs, label||""));
-                else
-                    html += HU.div(["data-value",val,"class", "display-colortable-slice", STYLE, HU.css("background",ct[i],"color",fg, WIDTH, options.colorWidth)], HtmlUtils.div(attrs, label||""));
+                if(!options.horizontal) html +="<br>";
+		return;
+            } 
+            if (options.showRange) {
+                attrs.push(TITLE);
+                attrs.push(formatter(val));
+            } else if(options.tooltips) {
+		let tt = options.tooltips[idx];
+		if(tt)
+		    attrs.push(TITLE,tt,'data-title',tt,'foo',tt);
+	    }
+            attrs.push(STYLE);
+            attrs.push(HU.css("text-align","center", "background", ct[i], WIDTH,"100%","min-height", options.height,"min-width","1px"));
+            let label = options.labels?options.labels[idx]:"";
+            if(options.labelStyle) {
+                label = HU.div([STYLE,options.labelStyle],label);
             }
+            let fg = Utils.getForegroundColor(ct[i]);
+	    
+            if(options.horizontal) 
+                html += HtmlUtils.td(["data-value",val,"class", "display-colortable-slice", "style", HU.css('background', ct[i],"color",fg), WIDTH, tdw], HtmlUtils.div(attrs, label||""));
+            else
+                html += HU.div(["data-value",val,"class", "display-colortable-slice", STYLE, HU.css("background",ct[i],"color",fg, WIDTH, options.colorWidth)], HtmlUtils.div(attrs, label||""));
         });
         if(!options.showColorTableDots) {
             if (options.showRange) {
@@ -262,9 +277,7 @@ $.extend(Utils,{
         }
         html += HtmlUtils.close(DIV);
         html += HtmlUtils.open(DIV, [CLASS, "display-colortable-extra"]);
-
-
-        if (colorToString!=null) {
+        if (colorToString!=null && options.horizontal && !options.showColorTableDots) {
             let tdw = (100 / ct.length) + "%";
             html += "<div style='width:100%;vertical-align:top;text-align:center;'>"
             let colCnt =0;
@@ -277,6 +290,7 @@ $.extend(Utils,{
             html+="</div>"
         }
         html += HtmlUtils.close(DIV);
+
         return html;
     },
     addColorTables(tables) {

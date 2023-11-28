@@ -341,14 +341,15 @@ ColorByInfo.prototype = {
 	return this.colors;
     },    
     displayColorTable: function(width,force, domId) {
-	if(!this.getProperty("showColorTable",true)) return;
+	if(!this.getProperty('showColorTable',true)) return;
+	domId = domId??ID_COLORTABLE;
 	if(this.compareFields.length>0) {
-	    var legend = "";
+	    let legend = "";
 	    this.compareFields.forEach((f,idx)=>{
 		legend += HtmlUtils.div([STYLE,HU.css('display','inline-block','width','15px','height','15px','background', this.colors[idx])]) +" " +
 		    f.getLabel() +" ";
 	    });
-	    let dom = this.display.jq(domId || ID_COLORTABLE);
+	    let dom = this.display.jq(domId);
 	    dom.html(HtmlUtils.div([STYLE,HU.css('text-align','center','margin-top','5px')], legend));
 	}
 	if(!force && this.index<0) return;
@@ -360,7 +361,7 @@ ColorByInfo.prototype = {
 		this.colorByValues.push({value:i,color:color});
 		colors.push(color);
 	    }
-	    this.display.displayColorTable(colors, domId || ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
+	    this.display.displayColorTable(colors, domId, this.origMinValue, this.origMaxValue, {
 		field: this.field,
 		colorByInfo:this,
 		width:width,
@@ -381,7 +382,7 @@ ColorByInfo.prototype = {
 		if(this.doingDates) return new Date(v);
 		return v;
 	    }
-	    this.display.displayColorTable(colors, domId || ID_COLORTABLE, getValue(this.origMinValue),
+	    this.display.displayColorTable(colors, domId, getValue(this.origMinValue),
 					   getValue(this.origMaxValue), {
 		label:this.getDoCount()?'Count':null,
 		field: this.field,

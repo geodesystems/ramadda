@@ -1893,7 +1893,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'nullColor',ex:'transparent'},
 	{p:'showColorTable',ex:'false',tt:'Display the color table'},
 	{p:'colorTableLabel',ex:''},
-	{p:'showColorTableDots',ex:true},
+	{p:'colorTableDisplayId',tt:'Dom id to where to place the color table'},
+	{p:'colorTableDots',ex:true,tt:'Show as dots'},
+	{p:'colorTableDotsWidth',ex:'24px'},
 	{p:'colorTableDotsDecimals',ex:'0'},
 	{p:'colorTableSide',ex:'bottom|right|left|top'},
 	{p:'showColorTableStride',ex:1,tt:'How many colors should be shown'},
@@ -2108,11 +2110,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return this.getProperty("colorTableSide","bottom") == "bottom" || this.getProperty("colorTableSide","bottom") == "top";
 	},
         displayColorTable: function(ct, domId, min, max, args) {
+	    domId = this.getColorTableDisplayId()?? this.domId(domId);
 	    //Check if it is a date
 	    if(min && min.getTime)  {min  =this.formatDate(min);}
 	    if(max && max.getTime)  {max  =this.formatDate(max);}	    
 	    if(!args) args = {};
-	    args.showColorTableDots = this.getProperty('showColorTableDots');
+	    args.showColorTableDots = this.getColorTableDots(this.getProperty('showColorTableDots'));
+	    args.dotWidth = this.getProperty('colorTableDotsWidth');
 	    args.decimals = this.getProperty('colorTableDotsDecimals',-1);
 	    args.showRange = this.getProperty('colorTableShowRange');
 	    let labels = this.getProperty('colorTableLabels');
@@ -2120,22 +2124,23 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    args.labelStyle=this.getProperty('colorTableLabelStyle','font-size:12pt;');
 	    args.horizontal= this.getColorTableHorizontal();
 	    args.stride = this.getProperty('showColorTableStride',1);
-            Utils.displayColorTable(ct, this.getDomId(domId), min, max, args);
+            Utils.displayColorTable(ct, domId, min, max, args);
 	    let label = args.label ?? this.getProperty((args.field?args.field.getId():'')+'.colorTableLabel',this.getColorTableLabel());
+	    let dom = jqid(domId);
 	    if(label) {
 		if(args.field) label = label.replace('${field}', args.field.getLabel());
 		if(args.showColorTableDots)
-		    this.jq(domId).prepend(HU.center(label));
+		    dom.prepend(HU.center(label));
 		else
-		    this.jq(domId).append(HU.center(label));		
+		    dom.append(HU.center(label));		
 	    }
 	    if(!args || !args.colorByInfo) return;
-	    this.jq(domId).find('.display-colortable-slice').css('cursor','pointer');
+	    dom.find('.display-colortable-slice').css('cursor','pointer');
 	    let _this = this;
 	    if(!this.originalColorRange) {
 		this.originalColorRange = [min,max];
 	    }		
-	    this.jq(domId).find('.display-colortable-slice').click(function(e) {
+	    dom.find('.display-colortable-slice').click(function(e) {
 		let val = $(this).attr('data-value');
 		let html = '';
 		let items = [];

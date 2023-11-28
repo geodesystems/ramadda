@@ -1707,7 +1707,7 @@ svg > g > g:last-child { pointer-events: none }
    padding-left:0px !important;
 }
 
-.display-colortable-dots {
+.display-colortable-dots-h {
     text-align:center;
 }
 
@@ -1721,12 +1721,12 @@ svg > g > g:last-child { pointer-events: none }
 }
 
 .display-colortable-dot {
-    height: 16px;
-    width: 16px;
+    height: 18px;
+    width: 18px;
     background-color: #bbb;
     border-radius: 50%;
     display: inline-block;
-    border:1px solid #ccc;
+    border:1px solid #000;
 }
 
 .display-chart-legend {
