@@ -1705,13 +1705,13 @@ public class Seesv implements SeesvCommands {
             if (args != null) {
                 for (Arg arg : args) {
 		    if(format) sb.append("\n\t");
-                    sb.append("<" + prefix2+arg.id +suffix+ ((arg.desc.length() > 0)
-					      ? " " + arg.desc
-					      : "") + "> ");
+                    sb.append("<" + prefix2+arg.id +suffix.replace("\n","\\n")+ ((arg.desc.length() > 0)
+										 ? arg.desc.replace("\n","\\n")
+							     : "") + "> ");
                 }
             }
 
-	    String d = Utils.stringDefined(desc)?" (" + prefix3+desc+suffix + ")":"";
+	    String d = Utils.stringDefined(desc)?(decorate?" ":" (") + prefix3+desc+suffix + (decorate?"":")"):"";
 	    String s =  prefix1+cmd+suffix+" ";
 	    if(format) {
 		s = s+d+sb;
@@ -3017,7 +3017,7 @@ public class Seesv implements SeesvCommands {
                 }
             }
             if ( !raw) {
-                cmd = cmd.replaceAll("_nl_", "\n").replaceAll("_tab_", "\n");
+		//                cmd = cmd.replaceAll("_nl_", "\n").replaceAll("_tab_", "\n");
             }
             if (json) {
                 if (cnt > 0) {
