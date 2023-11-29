@@ -291,7 +291,7 @@ public abstract class Processor extends SeesvOperator {
      */
     public Row handleRow(TextReader ctx, Row row) throws Exception {
         setHeaderIfNeeded(row);
-        row = processRow(ctx, row);
+	row = processRow(ctx, row);
         if ((row != null) && (nextProcessor != null)) {
             row = nextProcessor.handleRow(ctx, row);
         }
@@ -444,6 +444,7 @@ public abstract class Processor extends SeesvOperator {
             for (String col : cols) {
                 List<String> cvrtedArgs = new ArrayList<String>();
                 for (String arg : args) {
+		    col = col.replace("-","_");
                     String id = Utils.makeID(col, false);
                     arg = arg.replace("${column}", id);
                     arg = arg.replace("${column_name}", col);

@@ -690,12 +690,12 @@ public class Seesv implements SeesvCommands {
                     System.out.print(arg + " ");
                 }
             }
-            if (arg.equals(CMD_HELP)) {
-                usage("", false,null);
-                return;
-            }
             if (arg.equals("-genhelp")) {
                 genHelp();
+                return;
+            }
+            if (arg.equals(CMD_HELP)) {
+                usage("", true,null);
                 return;
             }
             if (arg.equals("-helpraw")) {
@@ -707,11 +707,11 @@ public class Seesv implements SeesvCommands {
                 return;
             }
             if (arg.startsWith("-help:")) {
-                usage("", false,arg.substring("-help:".length()));
+                usage("", true,arg.substring("-help:".length()));
                 return;
             }
-            if (arg.startsWith("-helppretty:")) {
-                usage("", true,arg.substring("-helppretty:".length()));
+            if (arg.startsWith("-helpraw:")) {
+                usage("", false,arg.substring("-helpraw:".length()));
                 return;
             }
             if (arg.equals("-helppretty")) {
@@ -2768,7 +2768,7 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_APPLY, "Apply the commands to each of the columns",
 		ARG_LABEL,"Procedure",
 		new Arg(ARG_COLUMNS, "Columns to expand with", ATTR_TYPE, TYPE_COLUMNS),
-		new Arg("commands", "Commands. Ends with -endapply", ATTR_ROWS, "6")),
+		new Arg("commands", "Commands. Use the macro ${column}. End with -endapply", ATTR_ROWS, "6")),
         new Cmd(CMD_SORTBY, "", ARG_LABEL,"Sort",
                 new Arg(ARG_COLUMNS, "Column to sort on", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("direction", "Direction - up or down", ATTR_TYPE, "enumeration","values","up,down"),
