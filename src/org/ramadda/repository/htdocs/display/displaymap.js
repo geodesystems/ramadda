@@ -2446,7 +2446,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		*/
 
 
-	    if(!this.hadInitialPosition) {
+	    if(!this.hadInitialPosition && !this.applyMapVectorZoom) {
+		this.applyMapVectorZoom = true;
 		if(this.getProperty("doInitCenter",true)) {
 		    this.map.zoomToLayer(this.vectorLayer);
 		}
