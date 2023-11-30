@@ -7,7 +7,7 @@
 
 
 var ramaddaGlobals = {
-    iconWidth:'18px'
+    iconWidth:'20px'
 }
 var root = ramaddaBaseUrl;
 var urlroot = ramaddaBaseUrl;
