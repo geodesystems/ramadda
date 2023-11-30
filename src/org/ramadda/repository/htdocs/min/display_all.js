@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Nov 28 13:54:20 MST 2023";
+var build_date="RAMADDA build date: Wed Nov 29 22:45:48 MST 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -38016,6 +38016,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		*/
 
 
+	    if(!this.hadInitialPosition) {
+		if(this.getProperty("doInitCenter",true)) {
+		    this.map.zoomToLayer(this.vectorLayer);
+		}
+	    }
+
+
+
+
         },
 	findContainingFeature: function(features, center, info,debug) {
 //	    debug=true;
@@ -38623,14 +38632,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let points = RecordUtil.getPoints(records, pointBounds);
             let fields = pointData.getRecordFields();
             let showSegments = this.getShowSegments(false);
+	    let okToSetMapBounds = !showSegments && !this.hadInitialPosition && !args.dontSetBounds && 
+		(!args.dataFilterChanged || this.getCenterOnFilterChange(true));
 	    if(records.length!=0) {
 		if (!isNaN(pointBounds.north)) {
 		    this.pointBounds = pointBounds;
 		    this.initBounds = pointBounds;
-		    if(!showSegments && !this.hadInitialPosition && !args.dontSetBounds) {
-			if(!args.dataFilterChanged || this.getCenterOnFilterChange(true)) {
-			    this.setInitMapBounds(pointBounds.north, pointBounds.west, pointBounds.south, pointBounds.east);
-			}
+		    if(okToSetMapBounds) {
+			this.setInitMapBounds(pointBounds.north, pointBounds.west, pointBounds.south, pointBounds.east);
 		    }
 		}
 	    }
