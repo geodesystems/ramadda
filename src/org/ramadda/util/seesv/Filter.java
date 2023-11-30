@@ -548,6 +548,25 @@ public class Filter extends Processor {
 
     }
 
+    public static class IfNumColumns extends Filter {
+	int operator;
+	int num;
+
+        public IfNumColumns(TextReader ctx,  String op, int num) {
+	    this.operator = getOperator(op);
+	    this.num=num;
+        }
+
+        @Override
+        public boolean rowOk(TextReader ctx, Row row) {
+            if (cnt++ == 0) return true;
+	    boolean ok  = true;
+	    int cnt = row.size();
+	    return checkOperator(operator, cnt,num);
+	}
+
+    }
+    
     
 
     /**
@@ -1552,35 +1571,7 @@ public class Filter extends Processor {
                     if (Double.isNaN(value)) {
                         return false;
                     }
-                    if (op == OP_LT) {
-                        if ( !(value < this.value)) {
-                            return false;
-                        }
-                    } else if (op == OP_LE) {
-                        if ( !(value <= this.value)) {
-                            return false;
-                        }
-                    } else if (op == OP_GT) {
-                        if ( !(value > this.value)) {
-                            return false;
-                        }
-                    } else if (op == OP_GE) {
-                        if ( !(value >= this.value)) {
-                            return false;
-                        }
-                    } else if (op == OP_EQUALS) {
-                        if (value != this.value) {
-                            return false;
-                        }
-                    } else if (op == OP_NOTEQUALS) {
-                        if (value == this.value) {
-                            return false;
-                        }
-                    } else if (op == OP_DEFINED) {
-                        if (Double.isNaN(value)) {
-                            return false;
-                        }
-                    }
+		    if(!checkOperator(op, value,this.value)) return false;
                 } catch (Exception exc) {
                     return false;
                 }

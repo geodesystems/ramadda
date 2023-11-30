@@ -1928,6 +1928,9 @@ public class Seesv implements SeesvCommands {
 			ATTR_TYPE, TYPE_NUMBER)),
         new Cmd(CMD_HAS, "Only pass through anything if the data has the given columns",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
+        new Cmd(CMD_IFNUMCOLUMNS, "Only pass through rows with number of columns passing the operator",
+                new Arg("operator", "<,<=,>,>=,=,!="),	
+                new Arg("number", "Number of columns")),	
         new Cmd(CMD_FUZZYPATTERN, "Pass through rows that the columns each fuzzily match the pattern",
 		ARG_LABEL,"Fuzzy match",
                 new Arg("threshold", "Score threshold 0-100. Default:85. Higher number better match"),
@@ -5027,38 +5030,38 @@ public class Seesv implements SeesvCommands {
 
 
 	defineFunction(CMD_SAME, 2,(ctx,args,i) -> {
-		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.Same(ctx,args.get(++i), args.get(++i),false));
+		handleFilter(ctx, ctx.getFilterToAddTo(), new Filter.Same(ctx,args.get(++i), args.get(++i),false));
 		return i;
 	    });
 
 	defineFunction(CMD_NOTSAME, 2,(ctx,args,i) -> {
-		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.Same(ctx,args.get(++i), args.get(++i),true));
+		handleFilter(ctx, ctx.getFilterToAddTo(), new Filter.Same(ctx,args.get(++i), args.get(++i),true));
 		return i;
 	    });		
 
 	defineFunction(new String[]{CMD_FIND,CMD_PATTERN}, 2,(ctx,args,i) -> {
-		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.PatternFilter(ctx,getCols(args.get(++i)), args.get(++i)));
+		handleFilter(ctx, ctx.getFilterToAddTo(), new Filter.PatternFilter(ctx,getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });
 	defineFunction(CMD_NOTPATTERN, 2,(ctx,args,i) -> {
-		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.PatternFilter(ctx,getCols(args.get(++i)),args.get(++i), true));
+		handleFilter(ctx, ctx.getFilterToAddTo(), new Filter.PatternFilter(ctx,getCols(args.get(++i)),args.get(++i), true));
 		return i;
 	    });
 
 	defineFunction(CMD_FUZZYPATTERN, 3,(ctx,args,i) -> {
-		handlePattern(ctx, ctx.getFilterToAddTo(),
+		handleFilter(ctx, ctx.getFilterToAddTo(),
 			      new Filter.FuzzyFilter(ctx,parseInt(args.get(++i)), getCols(args.get(++i)), args.get(++i),false));
 		return i;
 	    });
 
 	defineFunction(CMD_LENGTHGREATER, 2,(ctx,args,i) -> {
-		handlePattern(ctx, ctx.getFilterToAddTo(), 
+		handleFilter(ctx, ctx.getFilterToAddTo(), 
 			      new Filter.Length(ctx,true,getCols(args.get(++i)),parseInt(args.get(++i))));
 		return i;
 	    });
 
 	defineFunction(CMD_COUNTVALUE, 2,(ctx,args,i) -> {
-		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.CountValue(ctx,args.get(++i), parseInt(args.get(++i))));
+		handleFilter(ctx, ctx.getFilterToAddTo(), new Filter.CountValue(ctx,args.get(++i), parseInt(args.get(++i))));
 		return i;
 	    });
 
@@ -5071,7 +5074,7 @@ public class Seesv implements SeesvCommands {
 
 
 	defineFunction(CMD_EQ, 2,(ctx,args,i) -> {
-		handlePattern(ctx, ctx.getFilterToAddTo(),
+		handleFilter(ctx, ctx.getFilterToAddTo(),
 			      new Filter.ValueFilter(ctx,getCols(args.get(++i)),
 						     Filter.ValueFilter.OP_EQUALS,
 						     parseDouble(args.get(++i))));
@@ -5079,7 +5082,7 @@ public class Seesv implements SeesvCommands {
 	    });
 
 	defineFunction(CMD_NE, 2,(ctx,args,i) -> {
-		handlePattern(ctx, ctx.getFilterToAddTo(),
+		handleFilter(ctx, ctx.getFilterToAddTo(),
 			      new Filter.ValueFilter(ctx,getCols(args.get(++i)),
 						     Filter.ValueFilter.OP_NOTEQUALS,
 						     parseDouble(args.get(++i))));
@@ -5088,7 +5091,7 @@ public class Seesv implements SeesvCommands {
 
 
 	defineFunction(CMD_LT, 2,(ctx,args,i) -> {
-		handlePattern(ctx, ctx.getFilterToAddTo(),
+		handleFilter(ctx, ctx.getFilterToAddTo(),
 			      new Filter.ValueFilter(ctx,
 						     getCols(args.get(++i)), Filter.ValueFilter.OP_LT,
 						     parseDouble(args.get(++i))));
@@ -5096,14 +5099,14 @@ public class Seesv implements SeesvCommands {
 	    });
 
 	defineFunction(CMD_GT, 2,(ctx,args,i) -> {
-		handlePattern(ctx, ctx.getFilterToAddTo(),
+		handleFilter(ctx, ctx.getFilterToAddTo(),
 			      new Filter.ValueFilter(ctx,
 						     getCols(args.get(++i)), Filter.ValueFilter.OP_GT,
 						     parseDouble(args.get(++i))));
 		return i;
 	    });
 	defineFunction(CMD_GE, 2,(ctx,args,i) -> {
-		handlePattern(ctx, ctx.getFilterToAddTo(),
+		handleFilter(ctx, ctx.getFilterToAddTo(),
 			      new Filter.ValueFilter(ctx,
 						     getCols(args.get(++i)), Filter.ValueFilter.OP_GE,
 						     parseDouble(args.get(++i))));
@@ -5111,15 +5114,20 @@ public class Seesv implements SeesvCommands {
 	    });	
 
 	defineFunction(CMD_HAS, 1,(ctx,args,i) -> {
-		handlePattern(ctx, ctx.getFilterToAddTo(),
+		handleFilter(ctx, ctx.getFilterToAddTo(),
 			      new Filter.Has(ctx,
 					     getCols(args.get(++i))));
 		return i;
-	    });	
+	    });
+	defineFunction(CMD_IFNUMCOLUMNS, 2,(ctx,args,i) -> {
+		handleFilter(ctx, ctx.getFilterToAddTo(),
+			     new Filter.IfNumColumns(ctx,args.get(++i), Integer.parseInt(args.get(++i))));
+		return i;
+	    });		
 
 
 	defineFunction(CMD_BETWEENSTRING, 3,(ctx,args,i) -> {
-		handlePattern(ctx, ctx.getFilterToAddTo(),
+		handleFilter(ctx, ctx.getFilterToAddTo(),
 			      new Filter.BetweenString(ctx,false,
 						       args.get(++i), 
 						       args.get(++i),
@@ -5128,7 +5136,7 @@ public class Seesv implements SeesvCommands {
 	    });
 
 	defineFunction(CMD_NOTBETWEENSTRING, 3,(ctx,args,i) -> {
-		handlePattern(ctx, ctx.getFilterToAddTo(),
+		handleFilter(ctx, ctx.getFilterToAddTo(),
 			      new Filter.BetweenString(ctx,true,
 						       args.get(++i), 
 						       args.get(++i),
@@ -5137,7 +5145,7 @@ public class Seesv implements SeesvCommands {
 	    });
 
 	defineFunction(CMD_BETWEEN, 3,(ctx,args,i) -> {
-		handlePattern(ctx, ctx.getFilterToAddTo(),
+		handleFilter(ctx, ctx.getFilterToAddTo(),
 			      new Filter.RangeFilter(ctx,true,
 						     getCols(args.get(++i)), 
 						     parseDouble(args.get(++i)),
@@ -5146,7 +5154,7 @@ public class Seesv implements SeesvCommands {
 	    });
 
 	defineFunction(CMD_NOTBETWEEN, 3,(ctx,args,i) -> {
-		handlePattern(ctx, ctx.getFilterToAddTo(),
+		handleFilter(ctx, ctx.getFilterToAddTo(),
 			      new Filter.RangeFilter(ctx,false,
 						     getCols(args.get(++i)), 
 						     parseDouble(args.get(++i)),
@@ -5157,7 +5165,7 @@ public class Seesv implements SeesvCommands {
 
 
 	defineFunction("-defined", 1,(ctx,args,i) -> {
-		handlePattern(ctx, ctx.getFilterToAddTo(),
+		handleFilter(ctx, ctx.getFilterToAddTo(),
 			      new Filter.ValueFilter(ctx,getCols(args.get(++i)),Filter.ValueFilter.OP_DEFINED, 0));
 		return i;
 	    });
@@ -5770,7 +5778,7 @@ public class Seesv implements SeesvCommands {
      * @param filterToAddTo _more_
      * @param converter _more_
      */
-    private void handlePattern(TextReader ctx,
+    private void handleFilter(TextReader ctx,
 			       Filter.FilterGroup filterToAddTo,
 			       Filter converter) {
 	if (filterToAddTo != null) {

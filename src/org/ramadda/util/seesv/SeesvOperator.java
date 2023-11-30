@@ -553,6 +553,30 @@ public class SeesvOperator {
     }
 
 
+    public boolean  checkOperator(int op, double v1,double v2) {
+	if (op == OP_LT) {
+	    return v1<v2;
+	}
+	if (op == OP_LE) {
+	    return v1<=v2;
+	}
+	if (op == OP_GT) {
+	    return v1>v2;
+	} 
+	if (op == OP_GE) {
+	    return v1>=v2;
+	}
+	if (op == OP_EQUALS) {
+	    return v1==v2;
+	}
+	if (op == OP_NOTEQUALS) {
+	    return v1!=v2;
+	} 
+	if (op == OP_DEFINED) {
+	    return !Double.isNaN(v2);
+	}
+	return true;
+    }
 
 
     /** _more_ */

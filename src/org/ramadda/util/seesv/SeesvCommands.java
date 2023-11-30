@@ -80,6 +80,7 @@ public interface SeesvCommands {
     public static final String CMD_MAX="-max";
     public static final String CMD_NUMCOLUMNS="-numcolumns";
     public static final String CMD_HAS="-has";
+    public static final String CMD_IFNUMCOLUMNS="-ifnumcolumns";    
     public static final String CMD_PATTERN="-pattern";
     public static final String CMD_FIND="-find";
     public static final String CMD_NOTPATTERN="-notpattern";
