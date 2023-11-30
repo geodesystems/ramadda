@@ -3953,9 +3953,9 @@ public class WikiManager extends RepositoryManager
                     if (showHeading) {
 			String title  = titles.get(i);
 			String label = title;
-			if (showicon) {
-			    label = getPageHandler().getEntryIconImage(request,  child) + " " + label;
-			}
+			//			if (showicon) {
+			//			    label = getPageHandler().getEntryIconImage(request,  child) + " " + label;
+			//			}
                         HU.div(comp, HU.href(urls.get(i), label),  HU.title(Utils.stripTags(title)) + headingClass);
                     }
                     String displayHtml = contents.get(i);
