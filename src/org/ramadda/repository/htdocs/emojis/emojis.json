@@ -48,6 +48,7 @@
 {"name":"convienancestore","image":"/map/convienancestore.png","category":"Map"},
 {"name":"cycling","image":"/map/cycling.png","category":"Map"},
 {"name":"dollar","image":"/map/dollar.png","category":"Map"},
+{"name":"spring water","image":"/map/spring.png","category":"Map"},
 {"name":"drinking_water","image":"/map/drinking_water.png","category":"Map"},
 {"name":"earthquake","image":"/map/earthquake.png","category":"Map"},
 {"name":"electronics","image":"/map/electronics.png","category":"Map"},
