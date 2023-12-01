@@ -55,9 +55,11 @@
       <ant antfile="${src_dir}/org/ramadda/plugins/slack/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/socrata/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/stac/build.xml" inheritAll="false"/>
-      <ant antfile="${src_dir}/org/ramadda/plugins/trip/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/userguide/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/wiki/build.xml" inheritAll="false"/>
+<!--
+      <ant antfile="${src_dir}/org/ramadda/plugins/trip/build.xml" inheritAll="false"/>
+-->
 <!--
     workshop is way out of date so don't include it
       <ant antfile="${src_dir}/org/ramadda/plugins/workshop/build.xml" inheritAll="false"/>

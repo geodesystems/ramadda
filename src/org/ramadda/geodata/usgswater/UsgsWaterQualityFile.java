@@ -8,10 +8,12 @@ package org.ramadda.geodata.usgswater;
 
 
 
+import org.ramadda.util.IO;
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 
 import org.ramadda.data.record.*;
+
 
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -121,8 +123,8 @@ public class UsgsWaterQualityFile extends CsvFile {
      * @param filename file
      * @throws IOException On badness
      */
-    public UsgsWaterQualityFile(String filename) throws IOException {
-        super(filename);
+    public UsgsWaterQualityFile(IO.Path path) throws IOException {
+        super(path);
     }
 
     /**

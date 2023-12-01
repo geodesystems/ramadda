@@ -2538,7 +2538,7 @@ a.noline {
     margin-left: 10px;
     margin-right: 10px;
     padding:2px;
-    max-height: 200px; 
+    max-height: 300px; 
     overflow-y: auto;
     max-width:200px;
 }

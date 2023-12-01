@@ -47,40 +47,6 @@
 </type>
 
 
-<type name="type_file_javascript"  description="Javascript File" pattern=".*\.js"  category="Documents">
-    <property name="icon" value="/icons/js.png"/>
-</type>
-
-<type name="type_file_java"  description="Java File" pattern=".*\.java"  category="Documents">
-    <property name="icon" value="/files/java.png"/>
-</type>
-
-
-<type name="type_file_matlab"  description="Matlab File" pattern=".*\.(mat|m)"  category="Documents">
-     <property name="icon" value="/files/matlab.png"/>
-     <property name="form.area.show" value="false"/>
-     <property name="form.date.show" value="false"/>
-</type>
-
-<type name="type_json"  super="type_convertible" description="Json File"
-      notpattern="(?i).*imdvmap\.json$"
-      pattern="(?i).*\.(json|json.gz)" handler="org.ramadda.plugins.files.JsonFileTypeHandler" category="Data">
-     <property name="icon" value="/icons/json.png"/>
-     <property name="form.area.show" value="false"/>
-     <property name="form.date.show" value="false"/>
-     <property name="form.datatype.show" value="false"/>
-     <wiki_inner><![CDATA[
-+section title={{name}}
-{{description wikify="true"}}
-{{json.view wikify="false"}}
--section
-]]>
-</wiki_inner>
-</type>
-  
-
-
-
 
 
 </types>

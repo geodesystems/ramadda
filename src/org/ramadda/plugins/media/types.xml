@@ -1,4 +1,4 @@
-<types>
+<types 	priority="1">
   <type name="type_document_tika"  foruser="false"  description="PDF, Word, PPT, etc"  super="type_document"
 	handler="org.ramadda.plugins.media.TikaTypeHandler"  metadata="enum_tag,metadata_author,metadata_publisher">
      <property name="icon" value="/icons/page.png"/>
@@ -72,6 +72,7 @@
 
 
 <type name="type_document_html"  description="HTML File" pattern="(.*\.html|.*\.htm)"
+      priority="1"
       super="type_document" handler="org.ramadda.plugins.media.HtmlDocTypeHandler">
      <property name="icon" value="/icons/html.png"/>
      <property name="convertidsinfile" value="true"/>

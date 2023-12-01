@@ -36,7 +36,9 @@
 
       <ant antfile="${src_dir}/org/ramadda/geodata/point/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/geodata/python/build.xml" inheritAll="false"/>
-      <ant antfile="${src_dir}/org/ramadda/geodata/astro/build.xml" inheritAll="false"/>
+<!--
+    <ant antfile="${src_dir}/org/ramadda/geodata/astro/build.xml" inheritAll="false"/>
+    -->
     </target>
 
 </project>

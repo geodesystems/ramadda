@@ -497,9 +497,8 @@ public class TypeHandler extends RepositoryManager {
             displayTemplatePath = Utils.getAttributeOrTag(node,
                     "displaytemplate", displayTemplatePath);
 	    
-            iconPath = XmlUtil.getAttributeFromTree(node, "icon",
-						    iconPath);
-            priority    = Utils.getAttributeOrTag(node, "priority", priority);
+            iconPath = XmlUtil.getAttributeFromTree(node, "icon",  iconPath);
+            priority    = XmlUtil.getAttributeFromTree(node, "priority", priority);
             description = Utils.getAttributeOrTag(node, "description", description);
             filePattern = Utils.getAttributeOrTag(node, ATTR_PATTERN, filePattern);
 	    //	    if(stringDefined(filePattern))System.err.println(filePattern);
@@ -8150,6 +8149,10 @@ public class TypeHandler extends RepositoryManager {
     public int getPriority() {
         return priority;
     }
+
+    public void  setPriority(int p) {
+        priority = p;
+    }    
 
     /**
      *

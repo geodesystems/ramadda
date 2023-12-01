@@ -65,8 +65,8 @@ public class UsgsWaterQualitySite extends PointTypeHandler {
     @Override
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
-        String siteId = entry.getValue(IDX_SITE_ID, "");
-        String param  = entry.getValue(IDX_PARAMETER, "");
+        String siteId = (String)entry.getValue(IDX_SITE_ID);
+        String param  = (String)entry.getValue(IDX_PARAMETER);
 
         String url = URL.replace("{siteid}", siteId).replace("{parameter}",
                                  param);

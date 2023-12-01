@@ -5829,10 +5829,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
         groupTypeHandler.putProperty("form.resource.show", "false");
         groupTypeHandler.putProperty("icon", ICON_FOLDER);
         groupTypeHandler.setHelp("A group of entries");
+	groupTypeHandler.setPriority(0);
         TypeHandler typeHandler;
         addTypeHandler(TypeHandler.TYPE_FILE,
                        fileTypeHandler =typeHandler = new TypeHandler(this, "file", "File",
 								      "Documents"));
+	fileTypeHandler.setPriority(0);
         typeHandler.setHelp(
 			    "The entry type is figured out by the file extension");
         typeHandler.putProperty("icon", ICON_FILE);

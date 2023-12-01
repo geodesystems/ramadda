@@ -7,7 +7,8 @@
 
 
 
-  <type name="type_documentation"  description="Documentation"  childtypes="type_documentation" priority="1"
+  <type name="type_documentation"  description="Documentation"  childtypes="type_documentation"
+	priority="2"
 	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"
 	help="A collection of documentation pages"	>
     <property name="form.description.iswiki" value="true"/>
@@ -59,7 +60,8 @@ message="" prefix="----_nl_:h3 Pages" showIcon=false details=false sort=entryord
    </type>
 
 
-  <type name="type_virtual"  description="Virtual Group" handler="org.ramadda.repository.type.VirtualTypeHandler" >
+  <type name="type_virtual"  description="Virtual Group" handler="org.ramadda.repository.type.VirtualTypeHandler" priority="2"
+>
      <property name="icon" value="/icons/chart_organisation.png"/>
 
      <property name="form.area.show" value="false"/>
@@ -72,7 +74,8 @@ message="" prefix="----_nl_:h3 Pages" showIcon=false details=false sort=entryord
 
 
 
-  <type name="localfiles"  description="Server Side Files" handler="org.ramadda.repository.type.LocalFileTypeHandler">
+ <type name="localfiles"  description="Server Side Files" handler="org.ramadda.repository.type.LocalFileTypeHandler"
+priority="2"       >
      <property name="icon" value="/icons/folder_page.png"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.area.show" value="false"/>
@@ -139,7 +142,9 @@ message="" prefix="----_nl_:h3 Pages" showIcon=false details=false sort=entryord
 
 
 
-  <type name="point_text_csv"  description="CSV Data"  super="type_convertible" priority="1"
+ <type name="point_text_csv"  description="CSV Data"  super="type_convertible"
+       category="Data"
+       priority="2"
 	handler="org.ramadda.data.docs.ConvertibleTypeHandler" 
 	help="A structured CSV data file"> 
     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
@@ -260,7 +265,8 @@ showHeading=true
 </wiki>
 </type>
 
-<type name="type_display_children"  description="Children Display"   isgroup="true">
+<type name="type_display_children"  description="Children Display"   isgroup="true"
+      priority="2">
   <property name="form.description.iswiki" value="true"/>
   <property name="icon" value="/point/sitemap_color.png"/>
   <property name="form.resource.show" value="false"/>

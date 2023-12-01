@@ -5,7 +5,7 @@
 
 
 
-  <type name="type_point_usgswater"  super="type_point" description="USGS Water Quality Site"  handler="org.ramadda.geodata.usgswater.UsgsWaterQualitySite">
+  <type name="type_point_usgswater"  super="type_point" description="USGS Water Quality Site"  handler="org.ramadda.geodata.usgswater.UsgsWaterQualitySite" category="Ocean and Water Data">
      <property name="icon" value="/point/waterml.png"/>
      <property name="record.file.class" value="org.ramadda.geodata.usgswater.UsgsWaterQualityFile"/>
      <column  name="site_id"   label="Site ID" />
