@@ -760,7 +760,7 @@ new MapLayer('esri.street','ESRI Streets','https://server.arcgisonline.com/ArcGI
 new MapLayer('opentopo','OpenTopo','//a.tile.opentopomap.org/${z}/${x}/${y}.png}',
 	    {attribution:'Map courtesy of OpenTopo'});
 
-//new MapLayer('usfs','Forest Service','https://caltopo.com/tile/f16a/${z}/${x}/${y}.png',{attribution:'Map courtesy of Caltopo'});
+new MapLayer('usfs','Forest Service','https://caltopo.com/tile/f16a/${z}/${x}/${y}.png',{attribution:'Map courtesy of Caltopo'});
 
 new MapLayer('caltopo.mapbuilder','MapBuilder Topo','https://img.caltopo.com/tile/mbt/${z}/${x}/${y}.png',{attribution:'Map courtesy of Caltopo'});
 
