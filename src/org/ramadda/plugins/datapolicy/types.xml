@@ -1,7 +1,7 @@
 <types supercategory="Science and Education" adminonly="true">
 <type  name="type_datapolicy_source"  
 description="Data Policy Source"  
-category="Software and Services" >
+category="Services" >
   <property name="icon" value="/datapolicy/fair.png"/>
   <property name="form.file.show" value="false"/>
   <property name="form.area.show" value="false"/>     
@@ -12,7 +12,7 @@ category="Software and Services" >
 <type  name="type_datapolicy"  
 handler="org.ramadda.plugins.datapolicy.DataPolicyTypeHandler"
 description="Data Policy"  
-category="Software and Services" >
+category="Services" >
      <property name="icon" value="/datapolicy/fair.png"/>
      <property name="form.tags.show" value="false"/>
      <property name="form.description.label" value="Data Policy Description:"/>

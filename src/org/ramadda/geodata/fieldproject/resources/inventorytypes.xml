@@ -1,5 +1,5 @@
 <types  supercategory="Science and Education">
-  <type name="project_tool"  category="Software and Services" foruser="false"/>
+  <type name="project_tool"  category="Services" foruser="false"/>
 
 
   <type name="project_softwarepackage"  description="Software Tool" super="project_tool" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">
@@ -75,7 +75,7 @@
 
 
 
-  <type name="project_vocabulary"  description="Vocabulary" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Software and Services" childtypes="project_term,project_standard_name">
+  <type name="project_vocabulary"  description="Vocabulary" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Services" childtypes="project_term,project_standard_name">
      <property name="icon" value="/fieldproject/book-open-text.png"/>
      <property name="form.file.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
@@ -106,7 +106,7 @@ showSearchSettings="false"
    </type>
 
 
-  <type name="project_term"  description="Vocabulary Term" category="Software and Services" mefirst="true">
+  <type name="project_term"  description="Vocabulary Term" category="Services" mefirst="true">
      <property name="form.name.label" value="Term"/>
      <property name="form.description.label" value="Definition"/>
      <property name="icon" value="/fieldproject/textfield.png"/>
@@ -119,7 +119,7 @@ showSearchSettings="false"
 
 
 
-  <type name="project_standard_name"  description="Standard Parameter Name" category="Software and Services">
+  <type name="project_standard_name"  description="Standard Parameter Name" category="Services">
      <property name="icon" value="/fieldproject/pencil-ruler.png"/>
       <property name="form.name.label" value="Standard Name"/>
      <property name="form.resource.show" value="false"/>
@@ -150,7 +150,7 @@ showSearchSettings="false"
 
 
 
-  <type name="project_dataformat"  description="Data Format" category="Software and Services"  handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">
+  <type name="project_dataformat"  description="Data Format" category="Services"  handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">
      <property name="icon" value="/fieldproject/database_gear.png"/>
      <property name="form.file.show" value="false"/>
      <property name="form.datatype.show" value="false"/>

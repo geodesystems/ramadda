@@ -1,5 +1,5 @@
 <types supercategory="Science and Education">
-  <type  name="type_metameta_collection"  description="Metadata Collection"  handler="org.ramadda.plugins.metameta.MetametaCollectionTypeHandler" category="Software and Services" >
+  <type  name="type_metameta_collection"  description="Metadata Collection"  handler="org.ramadda.plugins.metameta.MetametaCollectionTypeHandler" category="Services" >
     <property  name="form.date.show"  value="false" />
     <property  name="form.area.show"  value="false" />
     <property  name="form.resource.show"  value="false" />
@@ -7,7 +7,7 @@
     <property  name="icon"  value="/metameta/databases.png" />
   <property  name="category"  value="Admin" /></type>
 
-<type  name="type_metameta_dictionary"  category="Software and Services" description="Metadata Dictionary"  handler="org.ramadda.plugins.metameta.MetametaDictionaryTypeHandler" ><column  name="field_index"  label="Index"  type="int"  columns="4"  cansearch="true" ></column>
+<type  name="type_metameta_dictionary"  category="Services" description="Metadata Dictionary"  handler="org.ramadda.plugins.metameta.MetametaDictionaryTypeHandler" ><column  name="field_index"  label="Index"  type="int"  columns="4"  cansearch="true" ></column>
 <column  name="dictionary_type"  label="Type"  type="enumeration"  default="entry"  cansearch="true" >
 <values>
 <![CDATA[entry=Entry
@@ -42,7 +42,7 @@ e.g. icon=/path/to/icon.png<br>
 <property  name="icon"  value="/metameta/database_table.png" />
 <property  name="category"  value="Admin" />
 </type>
-<type  name="type_metameta_field"  category="Software and Services" description="Metadata Field"  handler="org.ramadda.plugins.metameta.MetametaFieldTypeHandler" ><column  name="field_index"  label="Index"  type="int"  columns="4"  cansearch="true" ></column>
+<type  name="type_metameta_field"  category="Services" description="Metadata Field"  handler="org.ramadda.plugins.metameta.MetametaFieldTypeHandler" ><column  name="field_index"  label="Index"  type="int"  columns="4"  cansearch="true" ></column>
 <column  name="field_id"  label="Field ID"  type="string"  columns="80"  cansearch="true"  size="200" ></column>
 <column  name="datatype"  label="Data Type"  type="enumeration"  cansearch="true" ><values><![CDATA[boolean=boolean
 clob=clob

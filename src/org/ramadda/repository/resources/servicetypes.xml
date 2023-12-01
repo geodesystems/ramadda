@@ -1,5 +1,5 @@
 <types supercategory="Science and Education">
-  <type name="type_service" foruser="false" description="Service"  category="Software and Services" childtypes="type_service_group,type_service_link,type_service_file">
+  <type name="type_service" foruser="false" description="Service"  category="Services" childtypes="type_service_group,type_service_link,type_service_file">
      <property name="icon" value="/icons/script.png"/>
      <property name="form.date.show" value="false"/>
      <property name="form.area.show" value="false"/>

@@ -1,7 +1,6 @@
-<types  supercategory="Science and Education" category="Software and Services">
+<types  supercategory="Science and Education" category="Code">
 
-  <type name="python_source"  description="Python source file"  pattern=".*\.py" handler="org.ramadda.geodata.python.PythonTypeHandler"
-	supercategory="General" category="Code">	
+  <type name="python_source"  description="Python source file"  pattern=".*\.py" handler="org.ramadda.geodata.python.PythonTypeHandler">	
      <property name="icon" value="/python/python.png"/>
      <property name="ingestLinks" value="true"/>
   </type>

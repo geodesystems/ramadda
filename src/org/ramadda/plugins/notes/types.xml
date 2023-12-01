@@ -38,18 +38,6 @@
  <type name="notes_jsonfile"  super="type_json" description="Json File" foruser="false"></type>
 
 
-<!--
-  <type name="pasteitcollection"  description="Paste It Collection" handler="org.ramadda.plugins.notes.PasteitCollectionTypeHandler" >
-     <property name="icon" value="/faq/faq.png"/>
-     <property name="form.description.rows" value="5"/>
-     <property name="form.area.show" value="false"/>
-     <property name="form.date.show" value="false"/>
-     <property name="form.resource.show" value="false"/>
-     <property name="form.datatype.show" value="false"/>
-</type>
--->
-
-
   <type name="pasteitentry"  description="Paste Text Entry" handler="org.ramadda.plugins.notes.PasteitEntryTypeHandler" >
      <property name="icon" value="/icons/txt.png"/>
      <property name="form.area.show" value="false"/>

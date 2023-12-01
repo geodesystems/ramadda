@@ -1,4 +1,4 @@
-<types category="Code">
+<types category="Code" supercategory="Science and Education">
 
 <type name="type_file_javascript"  description="Javascript File" pattern=".*\.js">
     <property name="icon" value="/icons/js.png"/>
@@ -18,9 +18,10 @@
      <property name="form.date.show" value="false"/>
 </type>
 
-<type name="type_json"  super="type_convertible" description="Json File"
+<type name="type_json"  super="type_convertible" description="JSON File as CSV"
       notpattern="(?i).*imdvmap\.json$"
       pattern="(?i).*\.(json|json.gz)" handler="org.ramadda.plugins.files.JsonFileTypeHandler"
+      supercategory="General"
       category="Data">
      <property name="icon" value="/icons/json.png"/>
      <property name="form.area.show" value="false"/>
