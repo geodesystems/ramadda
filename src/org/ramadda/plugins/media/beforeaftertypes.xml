@@ -1,7 +1,7 @@
 <types   category="Media">
 
   <type name="beforeafterbase"  foruser="true" description="Image Pair" handler="org.ramadda.plugins.media.BeforeAfterBase" >
-     <property name="icon" value="/icons/jpeg.png"/>
+     <property name="icon" value="/media/imagepair.png"/>
      <property name="form.description.rows" value="5"/>
      <property name="form.resource.show" value="false"/>
      <property name="wiki.edit.links"><![CDATA[Image Overlay

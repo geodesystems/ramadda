@@ -15,6 +15,7 @@
 </type>
 
 <type name="type_video"   foruser="true"      super="type_media"
+      description="Video File"
       pattern="(https://.*vimeo.com/[0-9]+|https://soundcloud.com.*)"
       handler="org.ramadda.plugins.media.MediaTypeHandler" 
       >
@@ -170,7 +171,7 @@
 
 <type name="type_annotated_image"  super="type_image" description="Annotated Image" 
       handler="org.ramadda.plugins.media.AnnotatedImageTypeHandler" >
-    <property name="icon" value="/icons/image.png"/>
+    <property name="icon" value="/media/annotatedimage.png"/>
     <property name="file.accept" value="image/*"/>
      <property name="wiki.edit.links"><![CDATA[Annotated Image
 {{annotated_image #width=500px}}
@@ -262,6 +263,7 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 
 
   <type name="type_image_webcam"  description="Webcam" super="type_image" foruser="true"  metadata="enum_tag,camera.direction">
+     <property name="icon" value="/media/webcam.png"/>
      <property name="form.file.show" value="false"/>
      <property name="form.area.show" value="false"/>
      <property name="form.location.show" value="true"/>
@@ -273,7 +275,7 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
         description="Zoomable Image" 
         handler="org.ramadda.plugins.media.ZoomifyTypeHandler" 
         >
-     <property name="icon" value="/icons/image.png"/>
+     <property name="icon" value="/media/zoomable.png"/>
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
