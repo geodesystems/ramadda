@@ -205,7 +205,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    return v;
 	},
 	getPropertyFromUrl: function(key, dflt) {
-	    return this.display.getPropertyFromUrl(key, dflt);
+	    return this.display.getPropertyFromUrl(key, dflt,true);
 	},	
 	prepareToFilter: function() {
 //	    console.log(this+" prepareToFilter");
@@ -717,7 +717,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		widget = HU.select("",attrs,enums,this.dflt);
 	    } else   if(this.isFieldEnumeration()) {
 		if(debug) console.log("\tis enumeration");
-		let dfltValue = this.defaultValue = this.getPropertyFromUrl(this.getId() +".filterValue",FILTER_ALL);
+		let dfltValue = this.defaultValue =
+		    this.getPropertyFromUrl(this.getId() +".filterValue",FILTER_ALL);
                 let enums = this.getEnums(records);
 		let attrs= ["style",widgetStyle, "id",widgetId,"fieldId",this.getId()];
 		if(this.getProperty(this.getId() +".filterMultiple",false)) {
