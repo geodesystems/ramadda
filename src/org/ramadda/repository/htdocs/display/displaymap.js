@@ -504,13 +504,15 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                 params.initialLocation = {lon:+this.getProperty("longitude", -105),
 					  lat:+this.getProperty("latitude", 40)};
 	    }
-	    if(!Utils.stringDefined(HU.getUrlArgument(ARG_MAPCENTER)) && this.getMapCenter()) {
+	    this.hadUrlArgumentMapCenter = Utils.stringDefined(HU.getUrlArgument(ARG_MAPCENTER));
+	    this.hadUrlArgumentZoom = Utils.stringDefined(HU.getUrlArgument(ARG_ZOOMLEVEL));
+	    if(!this.hadUrlArgumentMapCenter && this.getMapCenter()) {
 		this.hadInitialPosition = true;
 		[lat,lon] =  this.getMapCenter().replace("%2C",",").split(",");
                 params.initialLocation = {lon:lon,lat:lat};
 	    }
 
-	    if(!Utils.stringDefined(HU.getUrlArgument(ARG_ZOOMLEVEL)) && this.getZoomLevel()) {
+	    if(!this.hadUrlArgumentZoom && this.getZoomLevel()) {
 		this.hadInitialPosition = true;
                 params.initialZoom = +this.getZoomLevel();
 		params.initialZoomTimeout = this.getZoomTimeout();
@@ -2448,7 +2450,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    if(!this.hadInitialPosition && !this.applyMapVectorZoom) {
 		this.applyMapVectorZoom = true;
-		if(this.getProperty("doInitCenter",true)) {
+		if(!this.hadUrlArgumentMapCenter && !this.hadUrlArgumentZoom &&
+		   this.getProperty("doInitCenter",true)) {
 		    this.map.zoomToLayer(this.vectorLayer);
 		}
 	    }
