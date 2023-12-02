@@ -111,7 +111,7 @@
 
 <type name="media_photoalbum"  description="Photo Album" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
       help="A collection of images displayed as a photo album"      >
-     <property name="icon" value="/media/pictures.png"/>
+     <property name="icon" value="/media/album.png"/>
      <property name="form.resource.show" value="false"/>
      <wiki><![CDATA[
 +section title="{{name}}" #
@@ -125,7 +125,7 @@
 
 <type name="media_slideshow"  description="Slide Show" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
       help="A collection of images displayed as a photo album"      >
-     <property name="icon" value="/media/pictures.png"/>
+     <property name="icon" value="/media/slideshow.png"/>
      <property name="form.resource.show" value="false"/>
      <wiki><![CDATA[
 +section title="{{name}}" #
