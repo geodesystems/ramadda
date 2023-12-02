@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Dec  1 21:26:12 MST 2023";
+var build_date="RAMADDA build date: Sat Dec  2 06:59:01 MST 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -5222,9 +5222,13 @@ function DisplayThing(argId, argProperties) {
 	    }
 	    return null;
         },
-        getPropertyFromUrl: function(key, dflt) {
+        getPropertyFromUrl: function(key, dflt,checkKey) {
 	    let fromUrl = HU.getUrlArgument("display"+ this.displayCount+"." + key);
 	    if(fromUrl) return fromUrl;
+	    if(checkKey) {
+		fromUrl = HU.getUrlArgument(key);
+		if(fromUrl) return fromUrl;
+	    }
 	    return this.getProperty(key,dflt);
 	},
 	getPropertyFields: function(dflt) {
@@ -5568,6 +5572,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'filterFieldsToPropagate'},
 	{p:'hideFilterWidget',ex:true},
 	{p:'filterHighlight',d:false,ex:true,tt:'Highlight the records'},
+	{p:'isMasterFilter',ex:true,tt:'Does this display provide filters for all the other displays'},
         {p:'showFilterTags',d: false,canCache:true},
         {p:'tagDiv',tt:'Div id to show tags in'},		
 	{p:'showFilterHighlight',ex:false,tt:'show/hide the filter highlight widget'},
@@ -5813,8 +5818,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getLayoutManager: function() {
             return this.getDisplayManager().getLayoutManager();
         },
-        addToDocumentUrl: function(key, value) {
-	    HU.addToDocumentUrl("display"+ this.displayCount+"." + key,value);
+        addToDocumentUrl: function(key, value,skipPrefix) {
+	    HU.addToDocumentUrl(
+		(skipPrefix?'':"display"+ this.displayCount+".") + key,value);
 	},
 
 	createTagDialog: function(cbxs,  anchor,cbxChange, type,label) { 
@@ -10555,7 +10561,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    return true;
 		});
 
-		this.addToDocumentUrl(fieldId+".filterValue",value);
+		if(this.getIsMasterFilter()) {
+		    //true=>don't add the display id prefix
+		    this.addToDocumentUrl(fieldId+".filterValue",value,true);
+		} else {
+		    this.addToDocumentUrl(fieldId+".filterValue",value);
+		}
 		let args = {
 		    id:id,
 		    fieldId: fieldId,
@@ -17137,7 +17148,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    return v;
 	},
 	getPropertyFromUrl: function(key, dflt) {
-	    return this.display.getPropertyFromUrl(key, dflt);
+	    return this.display.getPropertyFromUrl(key, dflt,true);
 	},	
 	prepareToFilter: function() {
 //	    console.log(this+" prepareToFilter");
@@ -17649,7 +17660,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		widget = HU.select("",attrs,enums,this.dflt);
 	    } else   if(this.isFieldEnumeration()) {
 		if(debug) console.log("\tis enumeration");
-		let dfltValue = this.defaultValue = this.getPropertyFromUrl(this.getId() +".filterValue",FILTER_ALL);
+		let dfltValue = this.defaultValue =
+		    this.getPropertyFromUrl(this.getId() +".filterValue",FILTER_ALL);
                 let enums = this.getEnums(records);
 		let attrs= ["style",widgetStyle, "id",widgetId,"fieldId",this.getId()];
 		if(this.getProperty(this.getId() +".filterMultiple",false)) {
@@ -36074,13 +36086,15 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                 params.initialLocation = {lon:+this.getProperty("longitude", -105),
 					  lat:+this.getProperty("latitude", 40)};
 	    }
-	    if(!Utils.stringDefined(HU.getUrlArgument(ARG_MAPCENTER)) && this.getMapCenter()) {
+	    this.hadUrlArgumentMapCenter = Utils.stringDefined(HU.getUrlArgument(ARG_MAPCENTER));
+	    this.hadUrlArgumentZoom = Utils.stringDefined(HU.getUrlArgument(ARG_ZOOMLEVEL));
+	    if(!this.hadUrlArgumentMapCenter && this.getMapCenter()) {
 		this.hadInitialPosition = true;
 		[lat,lon] =  this.getMapCenter().replace("%2C",",").split(",");
                 params.initialLocation = {lon:lon,lat:lat};
 	    }
 
-	    if(!Utils.stringDefined(HU.getUrlArgument(ARG_ZOOMLEVEL)) && this.getZoomLevel()) {
+	    if(!this.hadUrlArgumentZoom && this.getZoomLevel()) {
 		this.hadInitialPosition = true;
                 params.initialZoom = +this.getZoomLevel();
 		params.initialZoomTimeout = this.getZoomTimeout();
@@ -38018,7 +38032,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    if(!this.hadInitialPosition && !this.applyMapVectorZoom) {
 		this.applyMapVectorZoom = true;
-		if(this.getProperty("doInitCenter",true)) {
+		if(!this.hadUrlArgumentMapCenter && !this.hadUrlArgumentZoom &&
+		   this.getProperty("doInitCenter",true)) {
 		    this.map.zoomToLayer(this.vectorLayer);
 		}
 	    }
