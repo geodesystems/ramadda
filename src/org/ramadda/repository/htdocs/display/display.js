@@ -1417,9 +1417,13 @@ function DisplayThing(argId, argProperties) {
 	    }
 	    return null;
         },
-        getPropertyFromUrl: function(key, dflt) {
+        getPropertyFromUrl: function(key, dflt,checkKey) {
 	    let fromUrl = HU.getUrlArgument("display"+ this.displayCount+"." + key);
 	    if(fromUrl) return fromUrl;
+	    if(checkKey) {
+		fromUrl = HU.getUrlArgument(key);
+		if(fromUrl) return fromUrl;
+	    }
 	    return this.getProperty(key,dflt);
 	},
 	getPropertyFields: function(dflt) {
@@ -1763,6 +1767,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'filterFieldsToPropagate'},
 	{p:'hideFilterWidget',ex:true},
 	{p:'filterHighlight',d:false,ex:true,tt:'Highlight the records'},
+	{p:'isMasterFilter',ex:true,tt:'Does this display provide filters for all the other displays'},
         {p:'showFilterTags',d: false,canCache:true},
         {p:'tagDiv',tt:'Div id to show tags in'},		
 	{p:'showFilterHighlight',ex:false,tt:'show/hide the filter highlight widget'},
@@ -2008,8 +2013,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getLayoutManager: function() {
             return this.getDisplayManager().getLayoutManager();
         },
-        addToDocumentUrl: function(key, value) {
-	    HU.addToDocumentUrl("display"+ this.displayCount+"." + key,value);
+        addToDocumentUrl: function(key, value,skipPrefix) {
+	    HU.addToDocumentUrl(
+		(skipPrefix?'':"display"+ this.displayCount+".") + key,value);
 	},
 
 	createTagDialog: function(cbxs,  anchor,cbxChange, type,label) { 
@@ -6750,7 +6756,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    return true;
 		});
 
-		this.addToDocumentUrl(fieldId+".filterValue",value);
+		if(this.getIsMasterFilter()) {
+		    //true=>don't add the display id prefix
+		    this.addToDocumentUrl(fieldId+".filterValue",value,true);
+		} else {
+		    this.addToDocumentUrl(fieldId+".filterValue",value);
+		}
 		let args = {
 		    id:id,
 		    fieldId: fieldId,
