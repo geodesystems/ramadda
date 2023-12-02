@@ -256,21 +256,6 @@ Thumbnails, Page Style, Etc.) menu for the entry or entries.
 </faqitem>
 
 
-
-<faqitem cat="Administration" id="not_for_server" q="I have a root .ramadda home dir that I don't want to run in" >
-
-If you build from source then the build process will create a ~user/.ramadda/plugins directory and copy all of the plugins to that directory. The problem that can occur is if you are running your server and the RAMADDA home directory property goes missing then RAMADDA will default to use the ~user/.ramadda as the home dir if it exists. Now, if you are running the build say as root then the home dir will exist.
-
-If this occurs then <b>anyone can hit your site and go through the installation process</b>. To not allow this to happen create a file called <i>not_for_server.txt</i> and place it in the ~user/.ramadda directory that is getting created as part of the build but should not be used as the home directory.
-
-
-See the [ug::link templates.html documentation].
-</faqitem>
-
-
-
-
-
 <faqitem cat="Administration" id="github" q="Enable github embeds" >
 The wiki facility supports embedding github commit history. github rate limites requests so your
 repository can only make a few requests at a time. You can increase this rate limit by creating a github
