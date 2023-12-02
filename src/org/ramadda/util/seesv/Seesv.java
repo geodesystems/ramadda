@@ -1705,7 +1705,7 @@ public class Seesv implements SeesvCommands {
             if (args != null) {
                 for (Arg arg : args) {
 		    if(format) sb.append("\n\t");
-                    sb.append("<" + prefix2+arg.id +suffix.replace("\n","\\n")+ ((arg.desc.length() > 0)
+                    sb.append("<" + prefix2+arg.id +" " + suffix.replace("\n","\\n")+ ((arg.desc.length() > 0)
 										 ? arg.desc.replace("\n","\\n")
 							     : "") + "> ");
                 }
