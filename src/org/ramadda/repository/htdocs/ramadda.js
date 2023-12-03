@@ -468,17 +468,28 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    tds.push(HU.div(['style',HU.css('min-width','10px'),'innerid',innerId,'entryid',entry.getId(),'title','Click to show contents','class','entry-arrow ramadda-clickable' ], HU.getIconImage("fas fa-caret-right")));
 
 
+/*
 		    if(props.showThumbnails) {
 			let thumbnail = entry.getThumbnail();
 			if(thumbnail)
 			    tds.push(HU.div(['class','ramadda-thumbnail','style',HU.css('max-height','100px','overflow-y','auto')], HU.image(thumbnail,['loading','lazy','class','ramadda-clickable ramadda-thumbnail-image','title','Click to enlarge',
 															'style',HU.css('width','100px')])));
-		    }
+															}
+															*/
+
 		    if(props.showCrumbs && entry.breadcrumbs) {
 			let crumbId = Utils.getUniqueId();
 			v = HU.span(['id','breadcrumbtoggle_' + crumbId, 'breadcrumbid',crumbId, 'title','Show breadcrumbs','class','ramadda-clickable ramadda-breadcrumb-toggle' ], HU.getIconImage("fas fa-plus-square")) +SPACE2
 			    + HU.span(['style',HU.css('display','none'),'id',crumbId], entry.breadcrumbs+"&nbsp;&raquo;&nbsp;") +v;
 		    }
+
+		    if(props.showThumbnails) {
+			let thumbnail = entry.getThumbnail();
+			if(thumbnail)
+			    v+= '<br>'+HU.div(['class','ramadda-thumbnail',ATTR_STYLE,HU.css('max-height','100px','overflow-y','auto')], HU.image(thumbnail,['loading','lazy','class','ramadda-clickable ramadda-thumbnail-image','title','Click to enlarge',
+															ATTR_STYLE,HU.css('width','100px')]));
+		    }
+
 
 		    tds.push(v);
 		    if(!props.simple)
