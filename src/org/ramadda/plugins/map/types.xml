@@ -62,8 +62,9 @@ viewBounds="<bounds>" details="true" displayDiv="mapDisplay" showSearch="true" }
 +row
 :col-2
 +col-8
-+fullscreen
++expandable
 {{display_map  
+height=60vh width="100%"
 addEntryMarkers=true
 recordHighlightStrokeWidth=1 
 recordHighlightStrokeColor=#000 
@@ -74,13 +75,14 @@ layoutHere="true"
 doPopup=false 
 showBounds="false" 
 isTrajectory="true" showPathEndPoint=true
-width="100%" height="400" details="true" defaultMapLayer="esri.topo" 
+details="true" defaultMapLayer="esri.topo" 
 mapVar="gpxMap${entryid}" }}
--fullscreen
+-expandable
 -col
 -row
 {{display_linechart tooltip="${default}"
 propagateHighlightEvent=true showTitle="false" layoutHere="true" showMenu="true" fields="point_altitude,speed"  errorMessage=" "  chartRight=75}}
+
 
 ----
 {{gallery message=""}}
