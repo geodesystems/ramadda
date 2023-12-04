@@ -211,9 +211,10 @@ var Utils =  {
     addLoadFunction: function(f) {
         Utils.loadFunctions.push(f);
     },
-    getLocalStorage: function(key, toJson) {
+    getLocalStorage: function(key, toJson,addPrefix) {
         try {
-	    key = ramaddaBaseEntry+"." + key;
+	    if(addPrefix)
+		key = ramaddaBaseEntry+"." + key;
             let v = localStorage.getItem(key);
             if(v!==null && toJson) {
                 return JSON.parse(v);
@@ -224,10 +225,11 @@ var Utils =  {
             return null;
         }
     },
-    setLocalStorage: function(key, value, fromJson) {
+    setLocalStorage: function(key, value, fromJson,addPrefix) {
 	if(!localStorage) return;
 	try {
-	    key = ramaddaBaseEntry+"." + key;
+	    if(addPrefix)
+		key = ramaddaBaseEntry+"." + key;
 	    if(value===null) {
 		localStorage.removeItem(key);
 		return;

@@ -1375,7 +1375,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    }
 	    html+="</thead><tbody>\n";	    
 	    this.savedState = Utils.getLocalStorage(this.getProperty("storageKey",this.type),
-						    true) || {};
+						    true,true) || {};
 	    this.recordMap = {};
 	    this.fieldMap = {};
 	    fields.forEach(f=>{this.fieldMap[f.getId()] = f;})
@@ -1722,7 +1722,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		let recordIndex = dom.attr(RECORD_INDEX); 
 		map[recordIndex] = val;
 		_this.savedState[fieldId]  = map;
- 		Utils.setLocalStorage(_this.getProperty("storageKey",_this.type), _this.savedState, true);
+ 		Utils.setLocalStorage(_this.getProperty("storageKey",_this.type), _this.savedState, true,true);
 		let row = _this.recordMap[recordIndex];
 		let field = _this.fieldMap[fieldId];		
 		row.data[field.getIndex()] = val;
