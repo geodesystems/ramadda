@@ -3632,17 +3632,24 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         if (blacklist != null) {
             String ip = request.getIpRaw();
-	    if (blacklistList.size()>0) {
-		for(String prefix: blacklistList) {
-		    if(ip.startsWith(prefix)) {
-			return makeBlockedResult(request);
-		    }
+	    if(ip!=null) {
+		boolean debug = ip.startsWith("47");
+		if(debug) System.err.println("check:" + ip);
+		    
+		if (blacklist.contains(ip)) {
+		    if(debug) System.err.println("\tblocked-1");
+		    return makeBlockedResult(request);
 		}
-	    } 
-
-            if ((ip != null) && blacklist.contains(ip)) {
-                return makeBlockedResult(request);
-            }
+		if (blacklistList.size()>0) {
+		    for(String prefix: blacklistList) {
+			if(debug) System.err.println("\tprefix:" + prefix);
+			if(ip.startsWith(prefix)) {
+			    if(debug) System.err.println("\tblocked-2");
+			    return makeBlockedResult(request);
+			}
+		    }
+		} 
+	    }
         }
 
         //A hack  - should put this in a user-agent blacklist file sometime
