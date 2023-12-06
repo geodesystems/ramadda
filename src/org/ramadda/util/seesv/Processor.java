@@ -2741,6 +2741,11 @@ public abstract class Processor extends SeesvOperator {
                     "type", type, "label", label, "cansearch", "" + canSearch,
                     "canlist", "" + canList
                 }));
+                String preamble = getDbProp(colId, "preamble", (String) null);
+		if(preamble!=null) {
+                    writer.println(preamble);
+		}
+
                 String group = getDbProp(colId, "group", (String) null);
                 if (group != null) {
                     attrs.append(XmlUtil.attrs(new String[] { "group",
