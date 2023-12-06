@@ -14,6 +14,8 @@ package org.ramadda.repository.type;
  */
 public interface DataTypes {
 
+    public static final String DATATYPE_SYNTHETIC= "synthetic";
+
     /** _more_ */
     public static final String DATATYPE_STRING = "string";
 

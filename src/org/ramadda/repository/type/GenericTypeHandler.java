@@ -208,6 +208,8 @@ public class GenericTypeHandler extends TypeHandler {
         boolean showColumns  = false;
         //        showColumns =getType().indexOf("_metadata_")>=0;
 
+	boolean debug = false;
+	//	debug = getType().equals("db_boulder_county_voters");
         for (int colIdx = 0; colIdx < columnNodes.size(); colIdx++) {
             Element columnNode = (Element) columnNodes.get(colIdx);
             String className = XmlUtil.getAttribute(columnNode, ATTR_CLASS,
@@ -221,6 +223,7 @@ public class GenericTypeHandler extends TypeHandler {
                     Integer.valueOf(valuesOffset + colNames.size() - 1) });
             myColumns.add(column);
             column.setColumnIndex(myColumns.size() - 1);
+	    if(debug) System.err.println("column:" +column+" offset:"+ column.getOffset());
             if ((categoryColumn == null) && column.getIsCategory()) {
                 categoryColumn = column;
             }
@@ -1066,6 +1069,9 @@ public class GenericTypeHandler extends TypeHandler {
         Object[] values = getEntryValues(entry);
         if (values != null) {
             for (Column column : getColumns()) {
+		if(column.isSynthetic()) {
+		    continue;
+		}
                 if (column.isField(name)) {
                     if (column.isPrivate()) {
                         return null;

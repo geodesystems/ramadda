@@ -342,6 +342,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     private String searchHelp;
 
+
     /** _more_ */
     private String placeholder;
 
@@ -484,6 +485,8 @@ public class Column implements DataTypes, Constants, Cloneable {
     private Hashtable<String, String> properties = new Hashtable<String,
                                                        String>();
 
+    private List<Column> groupedColumns;
+
     /**
      * _more_
      *
@@ -529,6 +532,8 @@ public class Column implements DataTypes, Constants, Cloneable {
         help = Utils.getAttributeOrTag(element, ATTR_HELP, (String) null);
         postFix = Utils.getAttributeOrTag(element, ATTR_POSTFIX, (String) null);	
         searchHelp = Utils.getAttributeOrTag(element, "searchhelp", (String) null);	
+
+
 
 	//	if(Utils.stringDefined(suffix))
 	//	    System.err.println(typeHandler +" " +name + " suffix:" + Utils.clip(suffix,20,"...").replaceAll("\n"," "));	
@@ -622,18 +627,14 @@ public class Column implements DataTypes, Constants, Cloneable {
         canSearch  = getAttributeOrTag(element, ATTR_CANSEARCH, false);
         canSort    = getAttributeOrTag(element, ATTR_CANSORT, false);
         searchRows = getAttributeOrTag(element, ATTR_SEARCHROWS, 1);
-        canSearchText = getAttributeOrTag(element, ATTR_CANSEARCHTEXT,
-                                          canSearch);
+        canSearchText = getAttributeOrTag(element, ATTR_CANSEARCHTEXT,canSearch);
 	enumerationShowMultiples = getAttributeOrTag(element,"enumeration_multiples",true);
         advancedSearch = getAttributeOrTag(element, ATTR_ADVANCED, false);
         editable       = getAttributeOrTag(element, ATTR_EDITABLE, true);
         showInForm = getAttributeOrTag(element, ATTR_SHOWINFORM, showInForm);
         canShow        = getAttributeOrTag(element, ATTR_SHOWINHTML, canShow);
-        showLabel      = getAttributeOrTag(element, ATTR_SHOWLABEL,
-                                           showLabel);
-
-        canExport      = getAttributeOrTag(element, ATTR_CANEXPORT,
-                                           canExport);
+        showLabel      = getAttributeOrTag(element, ATTR_SHOWLABEL, showLabel);
+        canExport      = getAttributeOrTag(element, ATTR_CANEXPORT, canExport);
         canList        = getAttributeOrTag(element, ATTR_CANLIST, true);
         canDisplay     = getAttributeOrTag(element, ATTR_CANDISPLAY, true);
 	size           = getAttributeOrTag(element, ATTR_SIZE, isType(DATATYPE_CLOB)?1000000:size);
@@ -676,6 +677,9 @@ public class Column implements DataTypes, Constants, Cloneable {
             dfltDouble = Double.parseDouble(dflt);
         }
 
+	if(isSynthetic()) {
+	    showInForm= false;
+	}
         dateTimeFormat.setTimeZone(RepositoryBase.TIMEZONE_UTC);
     }
 
@@ -779,7 +783,6 @@ public class Column implements DataTypes, Constants, Cloneable {
      */
     public Column cloneColumn() throws CloneNotSupportedException {
         Column column = (Column) this.clone();
-
         return column;
     }
 
@@ -810,7 +813,9 @@ public class Column implements DataTypes, Constants, Cloneable {
     public static Object[] makeValueArray(List<Column> columns) {
         int size = 0;
         for (Column c : columns) {
-            if (c.isType(DATATYPE_LATLON)) {
+            if (c.isSynthetic()) {
+		//noop
+	    } else if (c.isType(DATATYPE_LATLON)) {
                 size += 2;
             } else if (c.isType(DATATYPE_LATLONBBOX)) {
                 size += 4;
@@ -1070,14 +1075,14 @@ public class Column implements DataTypes, Constants, Cloneable {
         return isInteger() || isDouble();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+
     public boolean isInteger() {
         return isType(DATATYPE_INT);
     }
+
+    public boolean isSynthetic() {
+        return isType(DATATYPE_SYNTHETIC);
+    }    
 
     /**
      * _more_
@@ -1360,7 +1365,9 @@ public class Column implements DataTypes, Constants, Cloneable {
         delimiter = ",";
         //      System.err.println("COL:" + this+" " + getType());
 
-        if (isType(DATATYPE_LATLON)) {
+	if(isSynthetic()) {
+	    //noop
+	} else if (isType(DATATYPE_LATLON)) {
             sb.append(toLatLonString(values, offset, raw));
             sb.append(delimiter);
             sb.append(toLatLonString(values, offset + 1, raw));
@@ -1711,7 +1718,9 @@ public class Column implements DataTypes, Constants, Cloneable {
         if (offset >= values.length) {
             return 0;
         }
-        if (isType(DATATYPE_INT)) {
+	if(isSynthetic()) {
+	    //noop
+	} else if (isType(DATATYPE_INT)) {
             if (values[offset] != null) {
                 statement.setInt(statementIdx,
                                  ((Integer) values[offset]).intValue());
@@ -1857,7 +1866,9 @@ public class Column implements DataTypes, Constants, Cloneable {
         if (isType(DATATYPE_PASSWORD)) {
             return;
         }
-        if (isType(DATATYPE_LATLON)) {
+	if(isSynthetic()) {
+	    //noop
+	} else if (isType(DATATYPE_LATLON)) {
             stringValue = values[offset] + ";" + values[offset + 1];
         } else if (isType(DATATYPE_LATLONBBOX)) {
             stringValue = values[offset] + ";" + values[offset + 1] + ";"
@@ -1893,7 +1904,9 @@ public class Column implements DataTypes, Constants, Cloneable {
     public int readValues(Entry entry, ResultSet results, Object[] values,
                           int valueIdx)
             throws Exception {
-        if (isType(DATATYPE_INT)) {
+	if(isSynthetic()) {
+	    //noop
+	} else  if (isType(DATATYPE_INT)) {
             int value = results.getInt(valueIdx);
             if (results.wasNull()) {
                 if (databaseDflt != null) {
@@ -2033,7 +2046,9 @@ public class Column implements DataTypes, Constants, Cloneable {
      */
     public void createTable(Statement statement, boolean ignoreErrors)
             throws Exception {
-        if (isType(DATATYPE_STRING) || isType(DATATYPE_PASSWORD)
+	if (isSynthetic()) {
+	    return;
+	} else  if (isType(DATATYPE_STRING) || isType(DATATYPE_PASSWORD)
                 || isType(DATATYPE_EMAIL) || isType(DATATYPE_URL)
                 || isType(DATATYPE_JSONLIST) || isType(DATATYPE_FILE)
                 || isType(DATATYPE_ENTRY)) {
@@ -2121,7 +2136,9 @@ public class Column implements DataTypes, Constants, Cloneable {
      * @return _more_
      */
     public Object convert(String value) {
-        if (isType(DATATYPE_INT)) {
+	if(isSynthetic()) {
+	    //noop
+	} else  if (isType(DATATYPE_INT)) {
             return Integer.parseInt(value);
         } else if (isDouble()) {
             return Double.parseDouble(value);
@@ -2208,11 +2225,26 @@ public class Column implements DataTypes, Constants, Cloneable {
      *
      * @throws Exception _more_
      */
-    public void assembleWhereClause(Request request, List<Clause> where,
-                                    Appendable searchCriteria)
+    public void assembleWhereClause(Request request, List<Clause> where,  Appendable searchCriteria)
             throws Exception {
+	assembleWhereClause(request, where, searchCriteria,getSearchArg());
+    }
+
+    private void assembleWhereClause(Request request, List<Clause> where,  Appendable searchCriteria,String searchArg)
+            throws Exception {	
+
+	if(isSynthetic()) {
+	    List<Clause> ors = new ArrayList<Clause>();
+	    for(Column c: getGroupedColumns()) {
+		String arg= c.getSearchArg()+"." +this.getName();
+		c.assembleWhereClause(request, ors,searchCriteria, arg);
+	    }
+	    if(ors.size()>0) where.add(Clause.or(ors));
+	    return;
+	}
+
+
         boolean[] fromFile  = { false };
-        String    searchArg = getSearchArg();
         boolean   doNegate  = false;
         if (request.defined(searchArg + "_not")) {
             doNegate = request.get(searchArg + "_not", false);
@@ -2434,7 +2466,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             }
         } else if (isEnumeration()) {
             if (values == null) {
-                values = getSearchValues(request);
+                values = getSearchValues(request,searchArg);
             }
             if ((values != null) && (values.size() > 0)) {
                 List<Clause> subClauses = new ArrayList<Clause>();
@@ -2461,7 +2493,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             //            String value = getSearchValue(request);
             if (values == null) {
 		List<Clause> ors = new ArrayList<Clause>();
-		for(String value: getSearchValues(request)) {
+		for(String value: getSearchValues(request,searchArg)) {
 		    if (Utils.stringDefined(value)) {
 			if (value.equals("_blank_")) {
 			    value = "";
@@ -2602,8 +2634,7 @@ public class Column implements DataTypes, Constants, Cloneable {
      *
      * @throws Exception _more_
      */
-    private List<String> getSearchValues(Request request) throws Exception {
-        String       searchArg = getSearchArg();
+    private List<String> getSearchValues(Request request, String searchArg) throws Exception {
         List<String> result    = new ArrayList<String>();
 	for (Object arg : request.get(searchArg,  new ArrayList())) {
 	    result.add(arg.toString());
@@ -2676,13 +2707,13 @@ public class Column implements DataTypes, Constants, Cloneable {
         widget = sourceTypeHandler.getFormWidget(request, entry, this,
 						 widget);
         //        String rightSide = sourceTypeHandler.getFormHelp(request, entry, this);
-        //        formBuffer.append(HtmlUtils.formEntry(getLabel() + ":",
-        //                                             HtmlUtils.hbox(widget, rightSide)));
+        //        formBuffer.append(HU.formEntry(getLabel() + ":",
+        //                                             HU.hbox(widget, rightSide)));
         if ((group != null) && (state.get(group) == null)) {
             formBuffer.append(
-                HtmlUtils.row(
-                    HtmlUtils.colspan(
-                        HtmlUtils.div(group, " class=\"formgroupheader\" "),
+                HU.row(
+                    HU.colspan(
+                        HU.div(group, " class=\"formgroupheader\" "),
                         2)));
             state.put(group, group);
         }
@@ -2774,6 +2805,9 @@ public class Column implements DataTypes, Constants, Cloneable {
 
         String urlArg = getEditArg();
 
+	if(isSynthetic()) {
+	    return "";
+	} 
         if (isType(DATATYPE_LATLON)) {
             double lat = 0;
             double lon = 0;
@@ -2816,13 +2850,13 @@ public class Column implements DataTypes, Constants, Cloneable {
             } else {
                 value = Misc.equals(dflt, "true");
             }
-            //            widget = HtmlUtils.checkbox(urlArg, "true", value);
+            //            widget = HU.checkbox(urlArg, "true", value);
             List<TwoFacedObject> items = new ArrayList<TwoFacedObject>();
             items.add(new TwoFacedObject("Yes", "true"));
             items.add(new TwoFacedObject("No", "false"));
-            widget = HtmlUtils.select(urlArg, items, value
+            widget = HU.select(urlArg, items, value
                     ? "true"
-                    : "false", HtmlUtils.cssClass("search-select"));
+                    : "false", HU.cssClass("search-select"));
         } else if (isType(DATATYPE_DATETIME)) {
             Date date;
             if (values != null) {
@@ -2848,8 +2882,8 @@ public class Column implements DataTypes, Constants, Cloneable {
             value = request.getString(urlArg, ((values != null)
                     ? (String) toString(values, offset)
                     : ""));
-            widget = HtmlUtils.select(urlArg, enumValues, value,
-                                      HtmlUtils.cssClass("column-select"));
+            widget = HU.select(urlArg, enumValues, value,
+                                      HU.cssClass("column-select"));
         } else if (isType(DATATYPE_ENUMERATIONPLUS)) {
             String value = ((dflt != null)
                             ? dflt
@@ -2858,11 +2892,11 @@ public class Column implements DataTypes, Constants, Cloneable {
                     ? (String) toString(values, offset)
                     : ""));
             List enums = getEnumPlusValues(request, entry);
-            widget = HtmlUtils.select(
+            widget = HU.select(
                 urlArg, enums, value,
-                HtmlUtils.cssClass("column-select")) + "  or:  "
-                    + HtmlUtils.input(
-                        urlArg + "_plus", "", HtmlUtils.SIZE_20);
+                HU.cssClass("column-select")) + "  or:  "
+                    + HU.input(
+                        urlArg + "_plus", "", HU.SIZE_20);
         } else if (isType(DATATYPE_INT)) {
             String value = ((dflt != null)
                             ? dflt
@@ -2870,9 +2904,9 @@ public class Column implements DataTypes, Constants, Cloneable {
             if (values != null) {
                 value = "" + toString(values, offset);
             }
-            widget = HtmlUtils.input(urlArg, value, HtmlUtils.SIZE_10);
+            widget = HU.input(urlArg, value, HU.SIZE_10);
         } else if (isType(DATATYPE_DOUBLE)) {
-            String domId = HtmlUtils.getUniqueId("input_");
+            String domId = HU.getUniqueId("input_");
             if ( !Double.isNaN(max)) {
                 formInfo.addMaxValidation(getLabel(), domId, max);
             }
@@ -2886,8 +2920,8 @@ public class Column implements DataTypes, Constants, Cloneable {
             if (values != null) {
                 value = "" + toString(values, offset);
             }
-            widget = HtmlUtils.input(urlArg, value,
-                                     HtmlUtils.SIZE_10 + HtmlUtils.id(domId));
+            widget = HU.input(urlArg, value,
+                                     HU.SIZE_10 + HU.id(domId));
         } else if (isType(DATATYPE_PERCENTAGE)) {
             String value = ((dflt != null)
                             ? dflt
@@ -2901,8 +2935,8 @@ public class Column implements DataTypes, Constants, Cloneable {
             }
             double d          = Double.parseDouble(value);
             int    percentage = (int) (d * 100);
-            widget = HtmlUtils.input(urlArg, percentage + "",
-                                     HtmlUtils.SIZE_5) + "%";
+            widget = HU.input(urlArg, percentage + "",
+                                     HU.SIZE_5) + "%";
         } else if (isType(DATATYPE_PASSWORD)) {
             String value = ((dflt != null)
                             ? dflt
@@ -2910,8 +2944,8 @@ public class Column implements DataTypes, Constants, Cloneable {
             if (values != null) {
                 value = "" + toString(values, offset);
             }
-            widget = HtmlUtils.password(urlArg, value,
-                                        HtmlUtils.attr("size", ((columns > 0)
+            widget = HU.password(urlArg, value,
+                                        HU.attr("size", ((columns > 0)
                     ? "" + columns
                     : "10")));
         } else if (isType(DATATYPE_FILE)) {
@@ -2921,7 +2955,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             if (values != null) {
                 value = "" + toString(values, offset);
             }
-            widget = HtmlUtils.fileInput(urlArg, "");
+            widget = HU.fileInput(urlArg, "");
         } else if (isType(DATATYPE_ENTRY)) {
             String value = "";
             if (values != null) {
@@ -2957,12 +2991,12 @@ public class Column implements DataTypes, Constants, Cloneable {
 
                 tfos = (List<TwoFacedObject>) Misc.sort(tfos);
                 if (tfos.size() == 0) {
-                    widget = HtmlUtils.input(urlArg, value, " size=10 ");
+                    widget = HU.input(urlArg, value, " size=10 ");
                 } else {
-                    widget = HtmlUtils.select(urlArg, tfos, value);
+                    widget = HU.select(urlArg, tfos, value);
                 }
             } else {
-                String domId = HtmlUtils.getUniqueId("input_");
+                String domId = HU.getUniqueId("input_");
                 if ((rows > 1) || isWiki) {
                     if (isType(DATATYPE_LIST)) {
                         value = StringUtil.join("\n",
@@ -2976,12 +3010,12 @@ public class Column implements DataTypes, Constants, Cloneable {
                         widget = tmp.toString();
                     } else {
                         int areaRows = rows;
-                        widget = HtmlUtils.textArea(urlArg, value, areaRows,
-                                columns, HtmlUtils.id(domId));
+                        widget = HU.textArea(urlArg, value, areaRows,
+                                columns, HU.id(domId));
                     }
                 } else {
-                    widget = HtmlUtils.input(urlArg, value,
-                                             HtmlUtils.id(domId) + " size=\""
+                    widget = HU.input(urlArg, value,
+                                             HU.id(domId) + " size=\""
                                              + columns + "\"");
                 }
                 if (size > 0) {
@@ -2995,9 +3029,9 @@ public class Column implements DataTypes, Constants, Cloneable {
 
         if (required) {
             widget = widget + " "
-                     + HtmlUtils.span(
+                     + HU.span(
                          "* " + msg("required"),
-                         HtmlUtils.cssClass("ramadda-required-field"));
+                         HU.cssClass("ramadda-required-field"));
         }
 
         return widget;
@@ -3133,7 +3167,10 @@ public class Column implements DataTypes, Constants, Cloneable {
         }
 
         String urlArg = getEditArg();
-        if (isType(DATATYPE_LATLON)) {
+	if (isSynthetic()) {
+	    return;
+	} 
+	if (isType(DATATYPE_LATLON)) {
             if (request.exists(urlArg + "_latitude")) {
                 values[offset] = Double.parseDouble(request.getString(urlArg
                         + "_latitude", "0").trim());
@@ -3295,6 +3332,10 @@ public class Column implements DataTypes, Constants, Cloneable {
     public void setValue(Entry entry, Object[] values, String value)
             throws Exception {
 
+	if (isSynthetic()) {
+	    return;
+	}
+
         if (isType(DATATYPE_LATLON)) {
             List<String> toks = Utils.split(value, ";", true, true);
             if (toks.size() == 2) {
@@ -3446,8 +3487,15 @@ public class Column implements DataTypes, Constants, Cloneable {
         if ( !getCanSearch()) {
             return;
         }
-
         String       searchArg  = getSearchArg();
+	addToSearchForm(request, formBuffer, where, entry, searchArg);
+    }
+
+    private void addToSearchForm(Request request, Appendable formBuffer,
+				 List<Clause> where, Entry entry, String searchArg)
+            throws Exception {	
+
+
         String       columnName = getFullName();
 
         List<Clause> tmp        = (where != null)
@@ -3455,7 +3503,17 @@ public class Column implements DataTypes, Constants, Cloneable {
                                   : null;
         String       widget     = "";
         String       widgetId   = searchArg.replaceAll("\\.", "_");
-        if (isType(DATATYPE_LATLON)) {
+	if (isSynthetic()) {
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(HU.formTable());
+	    for(Column c: getGroupedColumns()) {
+		c.addToSearchForm(request, sb,where,entry,c.getSearchArg()+"." +
+				  this.getName());
+	    }
+	    sb.append(HU.formTableClose());
+	    widget = HU.makeToggleInline(searchHelp!=null?searchHelp:"", sb.toString(),false);
+	    //	    widget=sb.toString();
+	} else if (isType(DATATYPE_LATLON)) {
             String[] nwseValues = getNWSE(request, null, searchArg, false);
             String[] nwseView   = getNWSE(request, entry, searchArg, true);
             MapInfo map = getRepository().getMapManager().createMap(request,
@@ -3496,26 +3554,26 @@ public class Column implements DataTypes, Constants, Cloneable {
                 dateSelectValue = "none";
             }
             String dateSelectInput =
-                HtmlUtils.select(searchArg + "_relative", dateSelect,
+                HU.select(searchArg + "_relative", dateSelect,
                                  dateSelectValue,
-                                 HtmlUtils.cssClass("search-select"));
+                                 HU.cssClass("search-select"));
 
             widget = getRepository().getDateHandler().makeDateInput(
                 request, searchArg + "_fromdate", "searchform", null, null,
-                isType(DATATYPE_DATETIME)) + HtmlUtils.space(1)
-                    + HtmlUtils.img(getRepository().getIconUrl(ICON_RANGE))
-                    + HtmlUtils.space(1)
+                isType(DATATYPE_DATETIME)) + HU.space(1)
+                    + HU.img(getRepository().getIconUrl(ICON_RANGE))
+                    + HU.space(1)
                     + getRepository().getDateHandler().makeDateInput(
                         request, searchArg + "_todate", "searchform", null,
                             null, isType(
-                                DATATYPE_DATETIME)) + HtmlUtils.space(4)
+                                DATATYPE_DATETIME)) + HU.space(4)
                                     + msgLabel("Or") + dateSelectInput;
         } else if (isType(DATATYPE_BOOLEAN)) {
-            widget = HtmlUtils.select(
+            widget = HU.select(
                 searchArg,
                 Misc.newList(TypeHandler.ALL_OBJECT, "true", "false"),
                 request.getSanitizedString(searchArg, ""),
-                HtmlUtils.cssClass("search-select"));
+                HU.cssClass("search-select"));
         } else if (isType(DATATYPE_ENUMERATIONPLUS)
                    || isType(DATATYPE_ENUMERATION)) {
             List tmpValues;
@@ -3540,19 +3598,19 @@ public class Column implements DataTypes, Constants, Cloneable {
                 }
             }
 
-            //            String selectExtra = HtmlUtils.id(searchArg + "_id");
+            //            String selectExtra = HU.id(searchArg + "_id");
             String selectExtra = "";
             if (searchRows > 1) {
                 selectExtra += " multiple rows=\"" + searchRows + "\" ";
             } else {
-                selectExtra += HtmlUtils.cssClass("search-select");
+                selectExtra += HU.cssClass("search-select");
             }
 
             //      if(true) return;
             //            System.err.println(getName() + " values=" + tmpValues);
             StringBuilder tmpb = new StringBuilder();
 	    List<String> selectedValues = new ArrayList<String>();
-	    for(String v: getSearchValues(request)) {
+	    for(String v: getSearchValues(request,searchArg)) {
 		if(Utils.stringDefined(v) && !TypeHandler.ALL.equals(v)) {
 		    selectedValues.add(v);
 		}
@@ -3576,19 +3634,19 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    }
         } else if (isNumeric()) {
             String toId = Utils.makeID(searchArg + "_to");
-            String expr = HtmlUtils.select(
+            String expr = HU.select(
                               searchArg + "_expr", EXPR_ITEMS,
                               request.getString(searchArg + "_expr", ""),
                               HU.attr("to-id", toId)
-                              + HtmlUtils.cssClass(
+                              + HU.cssClass(
                                   "search-select ramadda-range-select"));
             widget = expr
-                     + HtmlUtils.input(searchArg + "_from",
+                     + HU.input(searchArg + "_from",
                                        request.getSanitizedString(searchArg + "_from",
                                            ""), ((placeholderMin != null)
                     ? HU.attr("placeholder", placeholderMin)
                     : "") + HU.attr("size", "10")) + " "
-                    + HtmlUtils.input(searchArg + "_to",
+                    + HU.input(searchArg + "_to",
                                       request.getSanitizedString(searchArg + "_to",
                                           ""), ((placeholderMax != null)
                     ? HU.attr("placeholder", placeholderMax)
@@ -3610,12 +3668,12 @@ public class Column implements DataTypes, Constants, Cloneable {
                 getRepository().getHtmlOutputHandler().getSelect(request,
                     searchArg, "Select", true, null, entry);
             StringBuffer sb = new StringBuffer();
-            sb.append(HtmlUtils.hidden(searchArg + "_hidden", entryId,
-                                       HtmlUtils.id(searchArg + "_hidden")));
-            sb.append(HtmlUtils.disabledInput(searchArg, ((theEntry != null)
+            sb.append(HU.hidden(searchArg + "_hidden", entryId,
+                                       HU.id(searchArg + "_hidden")));
+            sb.append(HU.disabledInput(searchArg, ((theEntry != null)
                     ? theEntry.getFullName()
-                    : ""), HtmlUtils.id(searchArg)
-                           + HtmlUtils.SIZE_60) + select);
+                    : ""), HU.id(searchArg)
+                           + HU.SIZE_60) + select);
 
             widget = sb.toString();
         } else {
@@ -3644,15 +3702,15 @@ public class Column implements DataTypes, Constants, Cloneable {
                 list = new ArrayList<TwoFacedObject>();
                 list.addAll(sorted);
                 if (list.size() == 1) {
-                    widget = HtmlUtils.hidden(searchArg,
+                    widget = HU.hidden(searchArg,
                             (String) list.get(0).getId()) + " "
                                 + list.get(0).toString();
                 } else {
                     list.add(0, TypeHandler.ALL_OBJECT);
-                    widget = HtmlUtils.select(searchArg, list);
+                    widget = HU.select(searchArg, list);
                 }
                 //            } else if (rows > 1) {
-                //                widget = HtmlUtils.textArea(searchArg, request.getString(searchArg, ""),
+                //                widget = HU.textArea(searchArg, request.getString(searchArg, ""),
                 //                                           rows, columns);
             } else {
                 String text = request.getSanitizedString(searchArg, "");
@@ -3665,12 +3723,12 @@ public class Column implements DataTypes, Constants, Cloneable {
                     attrs += HU.attr("placeholder", placeholder);
                 }
                 if (isList) {
-                    widget = HtmlUtils.textArea(searchArg, text, 5, 20,
+                    widget = HU.textArea(searchArg, text, 5, 20,
                             attrs);
                 } else {
 		    StringBuilder tmpSB = new StringBuilder();
 		    List<String> searchValues = new ArrayList<String>();
-		    for(String value:getSearchValues(request)) {
+		    for(String value:getSearchValues(request,searchArg)) {
 			if(!Utils.stringDefined(value)) continue;
 			searchValues.add(value);
 		    }
@@ -3678,9 +3736,9 @@ public class Column implements DataTypes, Constants, Cloneable {
 		    for(String s:searchValues) {
 			s = s.trim();
 			s = s.replaceAll("\"", "&quot;");
-			s = HtmlUtils.sanitizeString(s);
-			tmpSB.append(HtmlUtils.input(searchArg, s,
-						     HtmlUtils.SIZE_20 + attrs));
+			s = HU.sanitizeString(s);
+			tmpSB.append(HU.input(searchArg, s,
+						     HU.SIZE_20 + attrs));
 			tmpSB.append("&nbsp;");
 		    }
 		    widget = HU.div(tmpSB.toString(), HU.cssClass("ramadda-widgets-text"));
@@ -3725,19 +3783,28 @@ public class Column implements DataTypes, Constants, Cloneable {
             widget += HU.div(HU.makeShowHideBlock("File...", file, visible));
         }
 
-	String help = searchHelp;
-	if(!Utils.stringDefined(help)) help = suffix;
-
-	/*not in the search form
-	if(Utils.stringDefined(help)) {
-	    widget  =HU.hbox(widget,help);
-	    }*/
 
         typeHandler.formEntry(formBuffer, request, getLabel() + ":",widget);
         formBuffer.append("\n");
 
     }
 
+
+    private List<Column> getGroupedColumns() throws Exception {
+	if(groupedColumns==null) {
+	    List<Column> tmp = new ArrayList<Column>();
+	    for(String c:Utils.split(Utils.getAttributeOrTag(xmlElement, "groupedcolumns", ""))) {
+		Column column = typeHandler.findColumn(c);
+		if(column==null) {
+		    System.err.println("Could not find column:" + this +" column:" + c);
+		    continue;
+		}
+		tmp.add(column);
+	    }
+	    groupedColumns = tmp;
+	}
+	return groupedColumns;
+    }
 
     /**
      * _more_
@@ -3795,7 +3862,9 @@ public class Column implements DataTypes, Constants, Cloneable {
         List<String> names = null;
         if (names == null) {
             names = new ArrayList<String>();
-            if (isType(DATATYPE_LATLON)) {
+            if (isSynthetic()) {
+		//noop
+	    } else if (isType(DATATYPE_LATLON)) {
                 names.add(name + "_lat");
                 names.add(name + "_lon");
             } else if (isType(DATATYPE_LATLONBBOX)) {
@@ -4537,7 +4606,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
             if (style.length() > 0) {
-                v = HtmlUtils.div(v, HtmlUtils.style(style));
+                v = HU.div(v, HU.style(style));
             }
             if (template != null) {
                 v = template.replace("${value}", v);

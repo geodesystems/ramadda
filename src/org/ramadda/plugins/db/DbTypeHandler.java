@@ -2232,6 +2232,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         DbNamedBuffer buffer = new DbNamedBuffer(searchForLabel, formHeader,
                                    Utils.makeID(searchForLabel));
         buffers.add(buffer);
+	String currentGroup = null;
         for (Column column : getDbColumns(true)) {
             if ( !normalForm && column.isType(column.DATATYPE_LATLON)) {
                 continue;
@@ -2240,7 +2241,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 continue;
             }
             String group = column.getGroup();
-            if (group != null) {
+            if (group != null && !Utils.equals(currentGroup,group)) {
+		currentGroup = group;
                 buffers.add(buffer = new DbNamedBuffer(group, formHeader,
                         Utils.makeID(group)));
             }
@@ -5763,6 +5765,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      * @return _more_
      */
     private boolean isDataColumn(Column column) {
+	if(column.isSynthetic())  {
+	    return false;
+	}
+
         if (column.getName().equals(COL_DBID)
                 || column.getName().equals(COL_DBUSER)
                 || column.getName().equals(COL_DBCREATEDATE)
@@ -6778,6 +6784,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         SimpleDateFormat sdf = getDateFormat(request,entry);
         SimpleDateFormat dateTimeSdf = getDateTimeFormat(request,entry);	
         for (Column column : getDbColumns(true)) {
+	    if(column.isSynthetic()){
+		continue;
+	    }
             if ( !isDataColumn(column)) {
                 continue;
             }

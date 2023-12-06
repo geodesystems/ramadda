@@ -1005,6 +1005,9 @@ public abstract class ValueIterator implements DbConstants {
 	    }
             for (int i = 0; i < columns.size(); i++) {
                 Column column = columns.get(i);
+		if(column.isSynthetic()) {
+		    continue;
+		}
                 String type;
                 if (column.isNumeric()) {
                     type = "number";
@@ -1179,6 +1182,9 @@ public abstract class ValueIterator implements DbConstants {
             for (int i = 0; i < columns.size(); i++) {
                 //              if(true) continue;
                 Column column = columns.get(i);
+		if(column.isSynthetic()) {
+		    continue;
+		}
                 if (column.isNumeric()) {
                     Object o = values[column.getOffset()];
                     if (o != null) {
