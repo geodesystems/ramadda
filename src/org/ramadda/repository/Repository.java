@@ -3633,19 +3633,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (blacklist != null) {
             String ip = request.getIpRaw();
 	    if(ip!=null) {
-		boolean debug = ip.startsWith("47");
-		if(debug) System.err.println("check:" + ip);
-		    
 		if (blacklist.contains(ip)) {
-		    if(debug) System.err.println("\tblocked-1");
-		    return makeBlockedResult(request);
+		    return makeBlockedResult(request,true);
 		}
 		if (blacklistList.size()>0) {
 		    for(String prefix: blacklistList) {
-			if(debug) System.err.println("\tprefix:" + prefix);
 			if(ip.startsWith(prefix)) {
-			    if(debug) System.err.println("\tblocked-2");
-			    return makeBlockedResult(request);
+			    return makeBlockedResult(request,true);
 			}
 		    }
 		} 
@@ -3657,14 +3651,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (userAgent != null) {
             if ((userAgent.indexOf("OpenVAS") >= 0)
 		|| (userAgent.indexOf("GBN") >= 0)) {
-                return makeBlockedResult(request);
+                return makeBlockedResult(request,true);
             }
         }
 
         String requestPath = request.getRequestPath();
         //Check for scanners
         if (requestPath.endsWith(".php")) {
-            return makeBlockedResult(request);
+            return makeBlockedResult(request,true);
         }
 
 
@@ -3895,12 +3889,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public Result makeBlockedResult(Request request) {
+    public Result makeBlockedResult(Request request, boolean sleep) {
         getLogManager().logRequest(request, Result.RESPONSE_BLOCKED);
-        Misc.sleepSeconds(20);
+	if(sleep)
+	    Misc.sleepSeconds(10);
         Result r = new Result("", new StringBuilder());
         r.setResponseCode(Result.RESPONSE_NOTFOUND);
-
         return r;
     }
 
