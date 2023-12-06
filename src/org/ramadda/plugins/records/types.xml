@@ -1,6 +1,6 @@
 <types >
   <type name="type_point_simple_records"  description="Simple Records" super="type_point" supercategory="" category="Information" foruser="true" handler="org.ramadda.plugins.records.SimpleRecordsTypeHandler" priority="2">
-     <property name="icon" value="/icons/list.png"/>
+     <property name="icon" value="/icons/records.png"/>
      <property name="form.properties.show" value="false"/>
      <property name="form.date.show" value="false"/>
      <property name="form.area.show" value="false"/>

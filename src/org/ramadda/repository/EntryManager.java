@@ -4516,7 +4516,9 @@ public class EntryManager extends RepositoryManager {
 		    
 		    String help = typeHandler.getHelp();
 		    String title = typeHandler.getLabel();
+		    String ttimg = HU.img(typeHandler.getIconUrl(icon),"",  HU.attr(HU.ATTR_WIDTH,"32px")).replace("\"","'");
 		    if(stringDefined(help)) title+= " - " + help;
+		    title = ttimg + HU.space(1) +title;
 		    HU.div(sb,href,HU.attrs("class","type-list-item","title",title));
 		}
 		if(didSub) {
@@ -4527,6 +4529,7 @@ public class EntryManager extends RepositoryManager {
 		sb.append("</div></div>");
 	    }
 	}
+	HU.script(sb,"HtmlUtils.initTooltip('.type-list-item')");
 
         getPageHandler().entrySectionClose(request, group, sb);
         return makeEntryEditResult(request, group, "Create Entry", sb);

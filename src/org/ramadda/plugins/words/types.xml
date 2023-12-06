@@ -52,7 +52,7 @@
       category="Information" foruser="true"
       editfields="name,other_word,part_of_speech,_hr,description,_hr,_label:Metadata,_columns,tags,order"
       >
-     <property name="icon" value="/words/letter.png"/>
+     <property name="icon" value="/words/translation.png"/>
      <property name="form.name.label" value="Word"/>
      <property name="form.name.showlabel" value="true"/>     
      <property name="form.description.label" value="Descripton"/>

@@ -3402,6 +3402,18 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     getTitleBr:function() {
 	return "&#10;";
     },
+    initTooltip:function(select) {
+	$(select).tooltip({
+	    show: {
+		delay: 1000
+	    },
+	    content: function() {
+		return HU.div(['style','margin:5px;'],$(this).attr('title'));
+	    }}
+	);
+
+    },
+
     initPageSearch:function(select,parentSelect,label,hideAll,args) {
 	args = args??{};
 	let id = HU.getUniqueId('search_');

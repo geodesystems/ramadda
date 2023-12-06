@@ -76,7 +76,7 @@ message="" prefix="----_nl_:h3 Pages" showIcon=false details=false sort=entryord
 
  <type name="localfiles"  description="Server Side Files" handler="org.ramadda.repository.type.LocalFileTypeHandler"
 priority="2"       >
-     <property name="icon" value="/icons/folder_page.png"/>
+     <property name="icon" value="/icons/servers.png"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
