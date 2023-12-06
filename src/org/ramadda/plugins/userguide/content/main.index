@@ -9,7 +9,6 @@ index.html
 >>editing.html
 >>extendededit.html
 >>access.html
->>configuration.html
 >faq.html
 
 >wiki/main.index
@@ -43,9 +42,9 @@ index.html
 >title:Installation and Site Administration:These pages are intended for Site Administrators
 >>installing.html
 >>aws.html
+>>configuration.html
 >>build.html
 >>database.html
->>misc.html
 >>gpt.html
 >>readonly.html
 >>plugins.html

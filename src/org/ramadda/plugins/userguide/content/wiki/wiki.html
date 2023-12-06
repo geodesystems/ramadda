@@ -86,6 +86,46 @@ click on the <img src="{{root}}/icons/wiki.png"> checkbox. This enables the wiki
 
 
 
+<a name=snippet></a>
+:heading Snippets
+A snippet is a substring of an entry's description and is used to show a tooltip in the grid view and 
+also used by the <a href=#twittercard>Twitter card</a> functionality.
+A snippet is specified in a number of ways-
+<ul>
+  <li> Using the "+note ... -note" or "+callout ... -callout" wiki tags:
+[ht::pre {
++note
+This is the snippet
+-note
+
+or:
++callout-info
+This is the snippet
+-callout
+...
+}]
+
+<li> By the snippet tag:
+[ht::pre {
+...
+<snippet>
+This is the snippet
+</snippet>
+...
+}]
+
+<li>  If you want to include a snippet but not have it show up in the RAMADDA page then use snippet-hide:
+[ht::pre {
+...
+<snippet-hide>
+The snippet
+</snippet>
+...
+}]
+
+
+
+
 
 
 
