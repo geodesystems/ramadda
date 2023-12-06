@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Dec  3 12:08:21 MST 2023";
+var build_date="RAMADDA build date: Wed Dec  6 07:41:50 MST 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -55147,7 +55147,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    }
 	    html+="</thead><tbody>\n";	    
 	    this.savedState = Utils.getLocalStorage(this.getProperty("storageKey",this.type),
-						    true) || {};
+						    true,true) || {};
 	    this.recordMap = {};
 	    this.fieldMap = {};
 	    fields.forEach(f=>{this.fieldMap[f.getId()] = f;})
@@ -55494,7 +55494,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		let recordIndex = dom.attr(RECORD_INDEX); 
 		map[recordIndex] = val;
 		_this.savedState[fieldId]  = map;
- 		Utils.setLocalStorage(_this.getProperty("storageKey",_this.type), _this.savedState, true);
+ 		Utils.setLocalStorage(_this.getProperty("storageKey",_this.type), _this.savedState, true,true);
 		let row = _this.recordMap[recordIndex];
 		let field = _this.fieldMap[fieldId];		
 		row.data[field.getIndex()] = val;
