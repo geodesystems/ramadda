@@ -599,7 +599,7 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
             }
             url = url.replace("xls_json", "media_tabular_extractsheet");
             url += "&execute=true";
-            var img = HtmlUtils.image(ramaddaBaseUrl + "/icons/xls.png", ["title", "Download XLSX"]);
+            let img = HU.span(['title','Download'],HU.getIconImage("fa-download"));
             this.jq(ID_DOWNLOADURL).html(HtmlUtils.href(url, img));
         },
         loadTableData: function(url, message) {

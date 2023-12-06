@@ -161,7 +161,7 @@ priority="2"       >
  <type name="type_document_tabular"  description="Tabular File" foruser="false"  super="type_convertible"  >
      <property name="icon" value="/icons/csv.png"/>
      <column name="showtable" type="boolean" label="Show table"  default="true" showinhtml="false"/>
-     <column name="showchart" type="boolean" label="Show chart"  default="true" showinhtml="false"/>
+     <column name="showchart" type="boolean" label="Show chart"  default="false" showinhtml="false"/>
 
      <column name="sheets" type="string"  size="500" label="Sheets"  showinhtml="false" suffix="Comma separated list of sheet numbers to show (zeroty based)" group="Data"/>
      <column name="skiprows" type="int" label="Skip Rows"  default="0" showinhtml="false" suffix="How many rows to remove from the data"/>
