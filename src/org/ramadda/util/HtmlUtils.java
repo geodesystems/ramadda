@@ -4906,7 +4906,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static void importJS(Appendable sb, String ...urls) {
 	for(String jsUrl: urls) {
 	    tag(sb, TAG_SCRIPT,
-		attrs(ATTR_SRC, jsUrl, ATTR_TYPE, "text/JavaScript"), "");
+		attrs(ATTR_SRC, jsUrl, ATTR_TYPE, "text/JavaScript",ATTR_REL,"nofollow"), "");
 	}
     }
 
