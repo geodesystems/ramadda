@@ -1177,6 +1177,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         boolean forPrint = request.get(ARG_FOR_PRINT, false);
 	if(forPrint) return "";
 
+	//For now don't add the next/prev links if it is a bot
+	if(request.getIsRobot() || request.getIsGoogleBot()) return "";
+
         String formId     = HU.getUniqueId("form_");
         String searchForm = getSearchForm(request, entry, formId).toString();
 	if(inToggle) {
@@ -1204,6 +1207,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             throws Exception {
         boolean forPrint = request.get(ARG_FOR_PRINT, false);
 	if(forPrint) return;
+
+	//For now don't add the next/prev links if it is a bot
+	if(request.getIsRobot() || request.getIsGoogleBot()) return;
+
 
         if (numValues > 0) {
             if (isGroupBy(request)) {
@@ -3919,7 +3926,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                              + "=" + sortColumn + "&"
                                              + ARG_DB_SORTDIR1 + (asc
                         ? "=asc"
-                        : "=desc"), label) + extra;
+								  : "=desc"), label,HU.attrs(HU.ATTR_REL,"nofollow")) + extra;
                 makeTableHeader(tableHeader, link);
             }
             for (String col : extraCols) {
@@ -4494,7 +4501,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                             }
                             s = HU.href(
                                 url, s,
-                                HU.attr("title", "Click to search")
+                                HU.attrs("title", "Click to search",HU.ATTR_REL,"nofollow")
                                 + HU.cssClass("ramadda-db-link"));
                         }
                         cb.append(s);
@@ -4620,7 +4627,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 if (addLink) {
                     html = HU.href(
                         url, html,
-                        HU.attr("title", "Click to search")
+                        HU.attrs("title", "Click to search",HU.ATTR_REL,"nofollow")
                         + HU.cssClass("ramadda-db-link"));
                 }
             }

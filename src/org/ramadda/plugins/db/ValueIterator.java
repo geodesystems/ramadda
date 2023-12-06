@@ -1047,7 +1047,7 @@ public abstract class ValueIterator implements DbConstants {
                                              + "=" + sortColumn + "&"
                                              + ARG_DB_SORTDIR1 + (asc
                         ? "=asc"
-                        : "=desc"), label) + extra;
+								  : "=desc"), label,HU.attrs(HU.ATTR_REL,"nofollow")) + extra;
                 db.makeTableHeader(tableHeader, link);
             }
 
