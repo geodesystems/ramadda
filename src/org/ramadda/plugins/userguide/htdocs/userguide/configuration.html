@@ -46,6 +46,7 @@ external content delivery networks (CDN) by setting this property:
 ramadda.cdnok=true
 </pre>
 
+
 For the core resources RAMADDA uses cdn.jsdeliver.net using the latest Github version tag, e.g.:
 <pre>
 https://cdn.jsdelivr.net/gh/geodesystems/ramadda@6.60.0/...
@@ -55,6 +56,23 @@ For other resources RAMADDA uses the standard CDN for the resource, e.g.:
 <pre>
 https://code.jquery.com/jquery-3.3.1.min.js
 </pre>
+
+There are also a number of other flags
+<pre>
+#Chunk all of the css together
+ramadda.css.all=true
+
+#Serve the javascript minified and chunked 
+ramadda.minified=true
+
+#When displaying an entry serve up the beginning of the page before
+#any processing of the contents of the page
+ramadda.streamoutput=true
+
+#cache the web resources in memory
+ramadda.cachehtdocs=true
+</pre>
+
 
 
 <a name=twittercard></a>
@@ -77,12 +95,12 @@ The entry's <a href=#snippet>snippet</a> is used for the description.
 :p
 There is also a Twitter Card property type that can be used to specify the title, creator, description and image.
 Under Add Property-&gt;Miscellaneous add the Twitter Card property:
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard1.png?version=68"><img  src="images/twittercard1.png?version=68"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard1.png?version=68" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard1.png?version=453"><img  src="images/twittercard1.png?version=453"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard1.png?version=453" ></a></div></div>
 
 Enter any of the values. If defined in the property these will override the defaults of the entry's name,
 snippet, etc.
 
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard2.png?version=68"><img  src="images/twittercard2.png?version=68"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard2.png?version=68" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard2.png?version=453"><img  src="images/twittercard2.png?version=453"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard2.png?version=453" ></a></div></div>
 
 These properties can be inherited. For example, you can add an inherited Twitter Card property at the top-level
 of your repository with just the Twitter handle specified. Then for any descendent entry you can specify a title, thumbnail, etc.
@@ -154,7 +172,6 @@ here.key=
 
 #For geocoding from https://www.geocod.io/
 geocodeio.key=
-
 
 #For accessing purple air sensor data
 #https://www2.purpleair.com/

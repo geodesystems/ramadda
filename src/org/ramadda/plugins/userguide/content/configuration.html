@@ -15,6 +15,7 @@ external content delivery networks (CDN) by setting this property:
 ramadda.cdnok=true
 </pre>
 
+
 For the core resources RAMADDA uses cdn.jsdeliver.net using the latest Github version tag, e.g.:
 <pre>
 https://cdn.jsdelivr.net/gh/geodesystems/ramadda@6.60.0/...
@@ -24,6 +25,23 @@ For other resources RAMADDA uses the standard CDN for the resource, e.g.:
 <pre>
 https://code.jquery.com/jquery-3.3.1.min.js
 </pre>
+
+There are also a number of other flags
+<pre>
+#Chunk all of the css together
+ramadda.css.all=true
+
+#Serve the javascript minified and chunked 
+ramadda.minified=true
+
+#When displaying an entry serve up the beginning of the page before
+#any processing of the contents of the page
+ramadda.streamoutput=true
+
+#cache the web resources in memory
+ramadda.cachehtdocs=true
+</pre>
+
 
 
 <a name=twittercard></a>
@@ -123,7 +141,6 @@ here.key=
 
 #For geocoding from https://www.geocod.io/
 geocodeio.key=
-
 
 #For accessing purple air sensor data
 #https://www2.purpleair.com/
