@@ -1,0 +1,25 @@
+[ht::head {Virtual Group}]
+
+:heading Virtual Group Entry
+The Virtual Group entry type can have a list of other entries and/or search criteria.
+For example, on the Examples page on ramadda.org this entry type is used to list
+the <a href=https://ramadda.org/repository/entry/show?entryid=a86d071a-f098-4354-839f-1f58e2656854>latest examples </a>.
+:p
+When editing a Virtual Group there is a list of Entry IDs. This can hold individual entry IDs
+or it can have a set of search specifications. For example, below we are searching
+under two entries for the children of the entries, sorting the list of entries and only
+using the first 42 entries. The entries with IDs some_entry_id and some_other_entry_id
+are being excluded.
+
+<pre>
+search.group=2705cd9a-3d51-41be-86eb-c624506093ea|\
+5f2234d6-6332-441f-8bab-0076a8cc4d95
+search.max=42
+search.orderby=createdate
+search.ascending=false
+search
+not:some_entry_id
+not:some_other_entry_id
+</pre>
+
+</body>
