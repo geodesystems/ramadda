@@ -3678,7 +3678,6 @@ public class WikiManager extends RepositoryManager
 
 	    String titleTemplate = getProperty(wikiUtil, props, "titleTemplate",null);
             if (doingGrid) {
-		//                showicon = false;
                 if (props.get("showLink") == null) {
                     props.put("showLink", "false");
                 }
@@ -3862,30 +3861,20 @@ public class WikiManager extends RepositoryManager
 		HU.script(sb, "Ramadda.Components.init(" + HU.squote(id)+",{});");
 		return sb.toString();
             } else if (doingGrid) {
-
-
-                boolean addHeader = getProperty(wikiUtil, props, "showDisplayHeader",
-
-						false);
-
-                List<String> weights = null;
+                boolean addHeader = getProperty(wikiUtil, props, "showDisplayHeader",false);
                 boolean showLine = getProperty(wikiUtil, props, "showLine",
 					       getProperty(wikiUtil, props, "doline",
 							   false));
-                String ws = getProperty(wikiUtil, props, "weights",
-                                        (String) null);
+                List<String> weights = null;
+                String ws = getProperty(wikiUtil, props, "weights", (String) null);
                 if (ws != null) {
                     weights = Utils.split(ws, ",", true, true);
+		    if(weights.size()==0) weights=null;
                 }
 
-                int columns = getProperty(wikiUtil, props, "columns", 3);
-                int innerHeight = getProperty(wikiUtil, props,
-					      "inner-height", 200);
-                int minHeight = getProperty(wikiUtil, props,
-                                            "inner-minheight", -1);
-                int maxHeight = getProperty(wikiUtil, props,
-                                            "inner-maxheight", 300);
-
+                int innerHeight = getProperty(wikiUtil, props, "inner-height", 200);
+                int minHeight = getProperty(wikiUtil, props,  "inner-minheight", -1);
+                int maxHeight = getProperty(wikiUtil, props, "inner-maxheight", 300);
                 StringBuilder innerStyle = new StringBuilder();
                 if (innerHeight > 0) {
                     Utils.concatBuff(innerStyle, "height:",
@@ -3893,13 +3882,11 @@ public class WikiManager extends RepositoryManager
                     innerStyle.append("overflow-y: auto;");
                 }
                 if (minHeight > 0) {
-                    Utils.concatBuff(innerStyle, "min-height:",
-                                     minHeight + "px;");
+                    Utils.concatBuff(innerStyle, "min-height:", minHeight + "px;");
                     innerStyle.append("overflow-y: auto;");
                 }
                 if (maxHeight > 0) {
-                    Utils.concatBuff(innerStyle, "max-height:",
-                                     maxHeight + "px;");
+                    Utils.concatBuff(innerStyle, "max-height:", maxHeight + "px;");
                     innerStyle.append("overflow-y: auto;");
                 }
 		String id = Utils.getGuid();
@@ -3908,15 +3895,14 @@ public class WikiManager extends RepositoryManager
 		}
                 sb.append(HU.open(HU.TAG_DIV, HU.id(id)));
 		sb.append(HU.div("",HU.id(id+"_header")));		
-                sb.append(HU.open(HU.TAG_DIV, HU.cssClass("ramadda-grid")+HU.id(id)));
+		sb.append(HU.open(HU.TAG_DIV, (weights==null?HU.cssClass("ramadda-grid"):"")+HU.id(id)));
                 sb.append("\n");
 		StringBuilder buff = new StringBuilder();
 
                 int    rowCnt   = 0;
                 int    colCnt   = 10000;
-                int    weight   = 12 / columns;
-
                 String boxClass = HU.cssClass("ramadda-gridbox ramadda-gridbox-decorated search-component");
+		if(weights!=null) boxClass="";
                 String boxStyle = "";
                 width = getProperty(wikiUtil, props, ATTR_WIDTH,"200");
                 if (width != null) {
@@ -3924,38 +3910,27 @@ public class WikiManager extends RepositoryManager
                 }
                 for (int i = 0; i < titles.size(); i++) {
                     Entry child = children.get(i);
-                    if (width == null) {
+                    if (weights!=null) {
                         colCnt++;
-                        if (colCnt >= columns) {
+                        if (colCnt >= weights.size()) {
                             if (rowCnt > 0) {
                                 buff.append(HU.close(HU.TAG_DIV));
                                 if (showLine) {
                                     buff.append("<hr>");
-                                } else {
-                                    //                                buff.append(HU.br());
                                 }
                             }
                             rowCnt++;
                             HU.open(buff, HU.TAG_DIV, HU.cssClass("row"));
                             colCnt = 0;
                         }
-                        String weightString = "" + weight;
-                        if ((weights != null) && (i < weights.size())) {
-                            weightString = weights.get(i);
-                        }
-                        HU.open(buff, HU.TAG_DIV,
-                                HU.cssClass("col-md-" + weightString
-                                            + " ramadda-col"));
+                        HU.open(buff, HU.TAG_DIV,  HU.cssClass("col-md-" + weights.get(colCnt)
+							       + " ramadda-col"));
                     }
 		    StringBuilder comp = new StringBuilder();
-
                     HU.open(comp, HU.TAG_DIV, boxClass + boxStyle);
                     if (showHeading) {
 			String title  = titles.get(i);
 			String label = title;
-			//			if (showicon) {
-			//			    label = getPageHandler().getEntryIconImage(request,  child) + " " + label;
-			//			}
                         HU.div(comp, HU.href(urls.get(i), label),  HU.title(Utils.stripTags(title)) + headingClass);
                     }
                     String displayHtml = contents.get(i);
@@ -3967,21 +3942,15 @@ public class WikiManager extends RepositoryManager
 			buff.append(makeComponent(request, wikiUtil, child, comp.toString(),sdf2));
 		    else
 			buff.append(comp.toString());
-                    if (width == null) {
+                    if (weights!=null) {
                         HU.close(buff, HU.TAG_DIV);
                     }
                     buff.append("\n");
+		}
+		if (rowCnt > 0) {
+		    HU.close(buff, HU.TAG_DIV);
                 }
-
-                //Close the div if there was anything
-                if (width == null) {
-                    if (rowCnt > 0) {
-                        HU.close(buff, HU.TAG_DIV);
-                    }
-                }
-
-                //Close the grid div
-                HU.close(buff, HU.TAG_DIV);
+		HU.close(buff, HU.TAG_DIV,HU.TAG_DIV);
 		sb.append(buff);
 		if(addHeader) {
 		    getMapManager().addMapImports(request, sb);
@@ -3990,15 +3959,10 @@ public class WikiManager extends RepositoryManager
 		HU.close(sb,"div");
                 return sb.toString();
             } else if (doingSlideshow) {
-                // for slideshow
-                boolean shownav = getProperty(wikiUtil, props, "shownav",
-					      false);
-                boolean autoplay = getProperty(wikiUtil, props, "autoplay",
-					       false);
+                boolean shownav = getProperty(wikiUtil, props, "shownav", false);
+                boolean autoplay = getProperty(wikiUtil, props, "autoplay", false);
                 int    playSpeed = getProperty(wikiUtil, props, "speed", 5);
-
                 String slideId   = HU.getUniqueId("slides_");
-
                 HU.open(sb, "style", HU.attr("type", "text/css"));
                 // need to set the height of the div to include the nav bar
                 Utils.concatBuff(sb, "#", slideId, " { width: ",
