@@ -2,48 +2,9 @@
 Copyright (c) 2008-2023 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
-// Copyright (c) 2008-2023 Geode Systems LLC
-// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
-
-
-import org.apache.commons.net.ftp.*;
-
-import ucar.unidata.util.IOUtil;
-
-
-import ucar.unidata.util.Misc;
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.TwoFacedObject;
-
-
-import ucar.unidata.xml.XmlUtil;
-
 import java.awt.Color;
-
-import java.io.IOException;
-import java.io.StringWriter;
-
-import java.lang.reflect.*;
-
-import java.net.URL;
-
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-
-
-import java.util.regex.*;
-
-
-
-
-/**
- */
 
 public interface HtmlUtilsConstants {
 
