@@ -8,61 +8,39 @@ package org.ramadda.repository;
 
 import org.ramadda.repository.admin.*;
 import org.ramadda.repository.auth.*;
-import org.ramadda.repository.database.*;
-import org.ramadda.repository.harvester.*;
-import org.ramadda.repository.map.*;
-import org.ramadda.repository.metadata.*;
-import org.ramadda.repository.output.JsonOutputHandler;
-
+import org.ramadda.repository.database.DatabaseManager;
+import org.ramadda.repository.harvester.HarvesterManager;
+import org.ramadda.repository.map.MapManager;
+import org.ramadda.repository.metadata.MetadataManager;
 import org.ramadda.repository.output.WikiManager;
-import org.ramadda.repository.search.*;
+import org.ramadda.repository.search.SearchManager;
 
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.HtmlUtilsConstants;
 import org.ramadda.util.IO;
 import org.ramadda.util.NamedValue;
 import org.ramadda.util.Utils;
 
-import org.w3c.dom.*;
-import java.io.*;
-import java.io.File;
-import java.io.InputStream;
-import java.lang.reflect.*;
-import java.net.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
-
-
 
 /**
  *
- *
- *
  * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
  */
 @SuppressWarnings("unchecked")
-public class RepositoryManager implements RepositorySource, Constants,
-                                          RequestHandler {
+public class RepositoryManager implements RepositorySource, Constants, RequestHandler {
 
+    public static final String HELP_ROOT =    "https://ramadda.org/repository";
 
-
-    /** _more_ */
-    public static final String HELP_ROOT =
-        "https://geodesystems.com/repository";
-
-
-    /** _more_ */
     protected Repository repository;
 
 
-
-    /** _more_ */
     public static final HtmlUtils HU = null;
 
     public static final JsonUtil JU = null;    
