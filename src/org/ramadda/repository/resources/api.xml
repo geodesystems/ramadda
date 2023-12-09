@@ -131,15 +131,19 @@
     <api request="/dummy"                  method="processDummy"/>
     <api request="/install"                method="processDummyInstall" needs_ssl="true"/>
     <api request="/tifftopng"              method="processTiffToPng"/>
-    <api request="/llm/rewrite"            method="processLLM" name="Rewrite"/>
-    <api request="/llm/transcribe"         method="processTranscribe" name="Rewrite"/>      
-    
+ 
     
     <api request="/proxy/*"                method="processProxy"/>
     <api request="/blank"                  method="processBlank"/>
     <api request="/gettmpfile"             method="processGetTmpFile"/>
     <api request="/xss"                    method="processXss"/>
   </group>
+
+  <group handler="llmmanager">
+    <api request="/llm/rewrite"            method="processLLM" name="Rewrite"/>
+    <api request="/llm/transcribe"         method="processTranscribe" name="Rewrite"/>      
+  </group>
+
 
   <group handler="accessmanager">
     <api request="/access/form"       method="processAccessForm"      actions="edit"/>

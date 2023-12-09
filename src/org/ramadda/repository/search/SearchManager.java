@@ -1,18 +1,7 @@
-/*
- * Copyright (c) 2008-2023 Geode Systems LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *     http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+/**
+   Copyright (c) 2008-2023 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
+*/
 
 package org.ramadda.repository.search;
 
@@ -348,7 +337,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
     public boolean isSummaryExtractionEnabled() {
-	return getRepository().isLLMEnabled();
+	return getLLMManager().isLLMEnabled();
     }
 
     public String getNewEntryExtract(Request request) {
@@ -356,7 +345,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    return "";
 	String space = HU.space(3);
 	String  extract = "";
-	if(getRepository().isGPT4Enabled()) {
+	if(getLLMManager().isGPT4Enabled()) {
 	    extract+=HU.labeledCheckbox(ARG_USEGPT4, "true", request.get(ARG_USEGPT4,false),   "Use GPT 4") +"<br>";
 	}
 	extract+= HU.labeledCheckbox(ARG_EXTRACT_KEYWORDS, "true", request.get(ARG_EXTRACT_KEYWORDS, false),
@@ -747,7 +736,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			String prompt = request.getString(ARG_EXTRACT_SUMMARY_PROMPT,"");
 			if(!stringDefined(prompt))
 			    prompt = SUMMARY_PROMPT;
-			String summary = getRepository().callLLM(request, prompt,"",fileCorpus,200,true,tokenLimit,0);
+			String summary = getLLMManager().callLLM(request, prompt,"",fileCorpus,200,true,tokenLimit,0);
 			if(debugLLM) System.err.println("got summary:" + summary);
 			if(stringDefined(summary)) {
 			    summary = Utils.stripTags(summary).trim().replaceAll("^:+","");
@@ -759,7 +748,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 		    if(request.get(ARG_EXTRACT_TITLE,false)) {
 			if(debugLLM) System.err.println("SearchManager: callLLM: title");
-			String title = getRepository().callLLM(request, "Extract the title from the following document:","",fileCorpus,200,true,tokenLimit,0);
+			String title = getLLMManager().callLLM(request, "Extract the title from the following document:","",fileCorpus,200,true,tokenLimit,0);
 			if(debugLLM) System.err.println("got title:" + title);
 			if(stringDefined(title)) {
 			    title = title.trim().replaceAll("\"","").replaceAll("\"","");
@@ -772,9 +761,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 		    if(request.get(ARG_EXTRACT_AUTHORS,false)) {
 			if(debugLLM) System.err.println("SearchManager: callLLM: authors");
-			String authors = getRepository().callLLM(request, "Extract the author's names and only the author's names from the first few pages in the following text and separate the names with a comma:","",fileCorpus,200,true,tokenLimit,0);		    
+			String authors = getLLMManager().callLLM(request, "Extract the author's names and only the author's names from the first few pages in the following text and separate the names with a comma:","",fileCorpus,200,true,tokenLimit,0);		    
 			if(debugLLM) System.err.println("got authors:" + authors);
-			if(stringDefined(authors)) {
+			if(stringDefined(authors) && authors.indexOf("does not provide")<0) {
 			    entryChanged = true;
 			    for(String author:Utils.split(authors,",",true,true)) {
 				//This gets rid of some false positives
@@ -872,7 +861,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	List<String> keywords = new ArrayList<String>();
 	if(debugLLM) System.err.println("SearchManager: callLLM: keywords");
-	String result = getRepository().callLLM(request, "Extract keywords from the following text. Limit your response to no more than 10 keywords:","Keywords:",fileCorpus,60,true,tokenLimit,0);
+	String result = getLLMManager().callLLM(request, "Extract keywords from the following text. Limit your response to no more than 10 keywords:","Keywords:",fileCorpus,60,true,tokenLimit,0);
 	if(debugLLM) System.err.println("got:" + result);
 	if(result!=null) {
 	    for(String tok:Utils.split(result,",",true,true)) {

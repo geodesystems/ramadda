@@ -753,6 +753,12 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         return repository.getSearchManager();
     }
 
+    public LLMManager getLLMManager() {
+        return repository.getLLMManager();
+    }
+					
+
+
     /**
      * _more_
      *

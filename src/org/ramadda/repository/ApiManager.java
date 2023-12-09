@@ -197,6 +197,8 @@ public class ApiManager extends RepositoryManager {
                             .GraphOutputHandler.OUTPUT_GRAPH);
             } else if (handlerName.equals("accessmanager")) {
                 handler = getRepository().getAccessManager();
+            } else if (handlerName.equals("llmmanager")) {
+                handler = getRepository().getLLMManager();		
             } else if (handlerName.equals("searchmanager")) {
                 handler = getRepository().getSearchManager();
             } else if (handlerName.equals("entrymanager")) {
