@@ -213,6 +213,7 @@ priority="2"       >
 
   <type name="type_zipfile"  description="ZIP File" pattern="(.*\.zip|.*\.jar)" >
      <property name="icon" value="/icons/zip.png"/>
+     <property name="upload.zip" value="true"/>
      <wiki><![CDATA[
 +section title={{name}}
 {{description wikify="true"}}
