@@ -311,10 +311,10 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
         }
         long numRecords = recordEntry.getNumRecords();
         if (numRecords > 0) {
-            sb.append(HtmlUtils.b(msgLabel("Number of points")));
+            sb.append(HtmlUtils.b(msgLabel("Number of rows")));
             sb.append(" " + numRecords);
         } else {
-            //            sb.append(HtmlUtils.b(msgLabel("Number of points")));
+            //            sb.append(HtmlUtils.b(msgLabel("Number of rows")));
             //            sb.append(" " + msg("unknown"));
         }
         StringBuilder forDisplay =
