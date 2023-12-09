@@ -3901,8 +3901,7 @@ public class WikiManager extends RepositoryManager
 
                 int    rowCnt   = 0;
                 int    colCnt   = 10000;
-                String boxClass = HU.cssClass("ramadda-gridbox ramadda-gridbox-decorated search-component");
-		if(weights!=null) boxClass="";
+                String boxClass = HU.cssClass((weights==null?"ramadda-gridbox ramadda-gridbox-decorated":"")+" search-component");
                 String boxStyle = "";
                 width = getProperty(wikiUtil, props, ATTR_WIDTH,"200");
                 if (width != null) {
