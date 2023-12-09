@@ -310,7 +310,7 @@ public class ZipFileOutputHandler extends OutputHandler {
             }
             String div = HU.div(sb2.toString(),
                                 HU.attrs("style",
-                                         "margin-left:" + ((level + 1) * 5)
+                                         "margin-left:" + ((level + 1) * 8)
                                          + "px"));
             sb.append(HU.makeShowHideBlock(name, div, true));
         }
