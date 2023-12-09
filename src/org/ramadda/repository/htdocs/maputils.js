@@ -287,8 +287,8 @@ var MapUtils =  {
     createLayerBoxes:function(name,attrs) {
 	return new OpenLayers.Layer.Boxes(name,attrs);
     },    
-    createLayerVector:function(name,attrs) {
-	return new OpenLayers.Layer.Vector(name,attrs);
+    createLayerVector:function(name,attrs,style) {
+	return new OpenLayers.Layer.Vector(name,attrs,style);
     },    
     createProjection: function(name) {
 	return new OpenLayers.Projection(name);
