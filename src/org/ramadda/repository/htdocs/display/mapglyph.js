@@ -1355,9 +1355,7 @@ MapGlyph.prototype = {
     },
     checkLineType:function(points) {
 	if(this.attrs.lineType==LINETYPE_GREATCIRCLE || this.attrs.lineType==LINETYPE_CURVE) {
-	    if(!MapUtils.loadTurf(()=>{
-		this.checkLineType(points);
-	    })) {
+	    if(!MapUtils.loadTurf(()=>{this.checkLineType(points);})) {
 		return;
 	    }
 	}
@@ -1417,7 +1415,7 @@ MapGlyph.prototype = {
 	    for(let i=0;i<pts.length;i+=2) {
 		tmp.push([pts[i+1],pts[i]]);
 	    }
-	    var line = turf.lineString(tmp);
+	    let line = turf.lineString(tmp);	
 	    newPts = getPoints(turf.bezierSpline(line));
 	} else  {
 	    newPts = pts;
@@ -4148,6 +4146,49 @@ MapGlyph.prototype = {
 	this.mapLoaded = true;
 	this.makeFeatureFilters();
 	this.applyMapStyle();
+
+	if(this.mapLayer) {
+	    //Not now
+	    //
+	    //	    this.addBuffer(this.mapLayer.features);
+	}
+    },
+    addBuffer:function(features) {
+	if(!features) return;
+	if(!MapUtils.loadTurf(()=>{this.addBuffer(features);})) {
+	    return;
+	}
+	let polygons = [];
+	features.forEach((f,idx)=>{
+	    if(idx>50) return;
+	    let points = [];
+	    let obj;
+	    let geom = f.geometry;
+	    if(false && geom.CLASS_NAME=='OpenLayers.Geometry.LineString') {
+//		console.dir(geom);
+		geom.components.forEach(point=>{
+		    let p = this.getMap().transformProjPoint(point);
+		    points.push([p.x,p.y]);
+		});
+		obj = turf.multiPoint(points);
+	    } else {
+		let centroid = geom.getCentroid();
+		let p = this.getMap().transformProjPoint(centroid);
+		obj = turf.point([p.x,p.y]);
+	    }
+	    if(obj) {
+//		console.dir(obj)
+		let buffered = turf.buffer(obj, 10, {units: 'meters'});
+		polygons.push(buffered);
+	    }
+	});
+	if(polygons.length>0) {
+	    let collection = turf.featureCollection(polygons);
+	    console.log(collection);
+	    this.display.createGeoJsonLayer('Buffer',collection,null,{color:'red'});
+	} else {
+	    console.log('Could not find features to buffer');
+	}
     },
     applyMacros:function(template, attributes, macros) {
 	if(!macros) macros =  Utils.tokenizeMacros(template);
