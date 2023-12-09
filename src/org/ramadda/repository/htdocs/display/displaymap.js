@@ -295,12 +295,13 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    return  map.createPoint("",point,style);
 	},
 
-	createGeoJsonLayer:function(name,geojson,layer) {
+	createGeoJsonLayer:function(name,geojson,layer,style) {
 	    if(layer) {
 		layer.removeFeatures(layer.features);
 	    } else {
 		layer = MapUtils.createLayerVector(name,
-						   {projection: this.getMap().getMap().displayProjection});
+						   {projection: this.getMap().getMap().displayProjection},
+						  style);
 		this.getMap().addLayer(layer);
 		layer.ramaddaLayerIndex = 100;
 		if(Utils.isDefined(this.layerVisible) && !this.layerVisible)
