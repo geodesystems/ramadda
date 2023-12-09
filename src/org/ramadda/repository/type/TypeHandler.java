@@ -3644,7 +3644,7 @@ public class TypeHandler extends RepositoryManager {
                         resourceLink = typeHandler.getPathForEntry(request,
 								   entry,false);
                         resourceLink = HU.href(resourceLink,
-                                resourceLink);
+					       resourceLink);
                     } catch (Exception exc) {
                         sb.append("Error:" + exc);
                     }
@@ -3656,14 +3656,10 @@ public class TypeHandler extends RepositoryManager {
                     //                        HU.urlEncodeExceptSpace(resourceLink);
                     resourceLabel = msgLabel("File");
                     if (getAccessManager().canDownload(request, entry)) {
-                        resourceLink =
-                            resourceLink + HU.space(2)
-                            + HU.href(
-                                getEntryResourceUrl(request, entry, false),
-                                HU.img(
-                                    getIconUrl(ICON_DOWNLOAD),
-                                    "Download", ""));
-
+			String url = getEntryResourceUrl(request, entry, false);
+                        resourceLink =    HU.href(url,resourceLink) +
+			    HU.space(1)+
+			    HU.href(url,HU.img(getIconUrl(ICON_DOWNLOAD),"Download", ""));
                     } else {
                         resourceLink = resourceLink + HU.space(2)
                                        + "(" + msg("restricted") + ")";
@@ -3674,23 +3670,6 @@ public class TypeHandler extends RepositoryManager {
                         resourceLink + HU.space(2)
                         + formatFileLength(entry.getResource().getFileSize());
                 }
-                if (showImage) {
-                    /*                    String nextPrev = HU.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
-                                                                     entry, ARG_PREVIOUS,
-                                                                     "true"), getIconUrl(ICON_LEFT),
-                                                    msg("View Previous")) +
-                        HU.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
-                                                       entry, ARG_NEXT,
-                                                       "true"), getIconUrl(ICON_LEFT),
-                                                       msg("View Next"));*/
-                    /* remove the nextPrev buttons - who uses them?
-                resourceLink = nextPrev + HU.space(1)
-                               + resourceLink;
-                */
-
-                }
-
-
                 sb.append(formEntry(request, resourceLabel, resourceLink));
 
             }
