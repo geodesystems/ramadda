@@ -165,6 +165,7 @@ public class ZipFileOutputHandler extends OutputHandler {
         ZipFile zipFile = new ZipFile(entry.getResource().getPath());
         //        ZipInputStream zin     = new ZipInputStream(fis);
         //        InputStream fis = getStorageManager().getFileInputStream(entry.getResource().getPath());
+	List<Node> dirs  = new ArrayList<Node>();
         Node root    = null;
         Node current = null;
         root    = new Node("Zip File Contents", true, -1);
@@ -173,7 +174,6 @@ public class ZipFileOutputHandler extends OutputHandler {
             Enumeration zipEnum = zipFile.entries();
             while (zipEnum.hasMoreElements()) {
                 ZipEntry ze = (ZipEntry) zipEnum.nextElement();
-                //            while ((ze = zin.getNextEntry()) != null) {
                 String path = ze.getName();
                 if (root == null) {
                     if (ze.isDirectory()) {
@@ -184,20 +184,26 @@ public class ZipFileOutputHandler extends OutputHandler {
                 Node node = new Node(path, ze.isDirectory(), ze.isDirectory()
                         ? -1
                         : size);
-                Node parent = null;
-                while ( !path.startsWith(current.path) && (current != root)) {
-                    current = current.parent;
-                }
-                current.addChild(node);
+		Node parent=root;
+		for(Node tmp: dirs) {
+		    if(path.startsWith(tmp.path)) {
+			parent = tmp;
+			break;
+		    }
+		}
+
+		if(ze.isDirectory()) {
+		    //Add at beginning so we get the closest dir
+		    dirs.add(0,node);
+		}
+                parent.addChild(node);
                 if (ze.isDirectory()) {
                     current = node;
                 }
-            }
+	    }
             root.walk(getRepository(), entry, sb, 0);
         } finally {
             zipFile.close();
-            //            IO.close(zin);
-            //            IO.close(fis);
         }
     }
 
@@ -250,6 +256,18 @@ public class ZipFileOutputHandler extends OutputHandler {
             node.parent = this;
         }
 
+	public List<Node> sortChildren() {
+	    if(children==null) return null;
+	    List<Node> tmp = new ArrayList<Node>();
+	    for(Node child:children) {
+		if(child.isDir) tmp.add(child);
+	    }
+	    for(Node child:children) {
+		if(!child.isDir) tmp.add(child);
+	    }
+	    return tmp;
+	}
+
         /**
          *
          * @param repository _more_
@@ -276,9 +294,7 @@ public class ZipFileOutputHandler extends OutputHandler {
                 String suffix = IO.getFileExtension(name).toLowerCase();
 
                 String icon   = repository.getProperty("file.icon" + suffix);
-                sb.append(repository.getIconImage((icon != null)
-                        ? icon
-                        : "fa-file"));
+		sb.append(repository.getIconImage((icon != null? icon:"fa-file"),"width",ICON_WIDTH));
                 sb.append(" ");
                 sb.append(HtmlUtils.href(url, name));
                 sb.append(RepositoryManager.formatFileLength(size, true));
@@ -288,13 +304,13 @@ public class ZipFileOutputHandler extends OutputHandler {
             }
             StringBuilder sb2 = new StringBuilder();
             if (children != null) {
-                for (Node child : children) {
+                for (Node child : sortChildren()) {
                     child.walk(repository, entry, sb2, level + 1);
                 }
             }
             String div = HU.div(sb2.toString(),
                                 HU.attrs("style",
-                                         "margin-left:" + ((level + 1) * 20)
+                                         "margin-left:" + ((level + 1) * 5)
                                          + "px"));
             sb.append(HU.makeShowHideBlock(name, div, true));
         }
