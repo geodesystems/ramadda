@@ -3104,7 +3104,7 @@ public class WikiManager extends RepositoryManager
                 }
 		if(seen.contains(link.getUrl())) continue;
 		seen.add(link.getUrl());
-                String label = getIconImage(link.getIcon()) + HU.space(1)
+                String label = getIconImage(link.getIcon(),"width",ICON_WIDTH) + HU.space(1)
 		    + link.getLabel();
                 HU.href(links, link.getUrl(), label);
                 links.append(HU.br());
@@ -3120,7 +3120,7 @@ public class WikiManager extends RepositoryManager
 		    Link link =getHtmlOutputHandler().makeLink(request, entry, type);
 		    if(seen.contains(link.getUrl())) continue;
 		    seen.add(link.getUrl());
-		    String label = getIconImage(link.getIcon()) + HU.space(1)
+		    String label = getIconImage(link.getIcon(),"width",ICON_WIDTH) + HU.space(1)
 			+ link.getLabel();
 		    HU.href(links, link.getUrl(), label);
 		    links.append(HU.br());

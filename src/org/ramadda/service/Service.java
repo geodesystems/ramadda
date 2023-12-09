@@ -1404,6 +1404,7 @@ public class Service extends RepositoryManager {
 
 
 
+
     /**
      * _more_
      *
@@ -1548,7 +1549,7 @@ public class Service extends RepositoryManager {
                 StringBuilder tmpSB = new StringBuilder();
                 child.addToForm(request, input, tmpSB, myPrefix, label);
                 if (tmpSB.length() > 0) {
-                    sb.append(HtmlUtils.p());
+                    sb.append(HU.p());
                     sb.append(tmpSB);
                 }
                 input.setSourceService(child);
@@ -1636,31 +1637,31 @@ public class Service extends RepositoryManager {
         }
 
 
-        sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                                 HtmlUtils.cssClass("service-form")));
+        sb.append(HU.open(HU.TAG_DIV,
+                                 HU.cssClass("service-form")));
 
 
-        String rightSide = HtmlUtils.href(
+        String rightSide = HU.href(
                                getRepository().getJobManager().getServiceUrl(
-                                   request, this), HtmlUtils.img(
+                                   request, this), HU.img(
                                    getIconUrl("/icons/application_form.png"),
                                    "View top-level form"));
 
         rightSide =
-            HtmlUtils.div(rightSide,
-                          HtmlUtils.cssClass("service-form-header-links"));
+            HU.div(rightSide,
+                          HU.cssClass("service-form-header-links"));
         sb.append(
-            HtmlUtils.div(
-                HtmlUtils.leftRight(
-				    HtmlUtils.img(getIconUrl(getIcon())) + " " + label,
-				    rightSide), HtmlUtils.cssClass("service-form-header")));
+            HU.div(
+                HU.leftRight(
+			     HU.img(getIconUrl(getIcon()),"",HU.attr(HU.ATTR_WIDTH,ICON_WIDTH)) + " " + label,
+				    rightSide), HU.cssClass("service-form-header")));
 
 
         if (Utils.stringDefined(getDescription())) {
             sb.append(
-                HtmlUtils.div(
+                HU.div(
                     getDescription(),
-                    HtmlUtils.cssClass("service-form-description")));
+                    HU.cssClass("service-form-description")));
         }
         List<Entry> entries = input.getEntries();
         if (false && (entries.size() > 1)) {
@@ -1670,25 +1671,25 @@ public class Service extends RepositoryManager {
                     continue;
                 }
                 entriesSB.append(
-                    HtmlUtils.href(
+                    HU.href(
                         getEntryManager().getEntryURL(request, entry),
                         entry.getName(), " target=\"_help\" "));
-                entriesSB.append(HtmlUtils.br());
+                entriesSB.append(HU.br());
             }
             sb.append(
-                HtmlUtils.div(
+                HU.div(
                     entriesSB.toString(),
-                    HtmlUtils.cssClass("service-form-entries")));
+                    HU.cssClass("service-form-entries")));
         }
 
 
         if (formSB.length() > 0) {
             sb.append(
-                HtmlUtils.div(
+                HU.div(
                     formSB.toString(),
-                    HtmlUtils.cssClass("service-form-contents")));
+                    HU.cssClass("service-form-contents")));
         }
-        sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+        sb.append(HU.close(HU.TAG_DIV));
 
     }
 
@@ -1747,22 +1748,22 @@ public class Service extends RepositoryManager {
             //            System.err.println("argUrlName:" + argUrlName);
             //            System.err.println("selected:" + selected);
             //            System.err.println("request:" + request);
-            inputHtml.append(HtmlUtils.select(argUrlName, values, selected,
+            inputHtml.append(HU.select(argUrlName, values, selected,
                     extra, 100));
         } else if (arg.isFlag()) {
             if (arg.getGroup() != null) {
                 boolean selected =
                     getRequestValue(request, argPrefix, arg.getGroup(),
                                     arg.getDefault()).equals(arg.getValue());
-                inputHtml.append(HtmlUtils.radio(getUrlArg(argPrefix,
+                inputHtml.append(HU.radio(getUrlArg(argPrefix,
                         arg.getGroup()), arg.getValue(), selected));
             } else {
-                inputHtml.append(HtmlUtils.checkbox(argUrlName, "true",
+                inputHtml.append(HU.checkbox(argUrlName, "true",
                         getRequestValue(request, argPrefix, arg.getName(),
                                         arg.getDefault().equals("true"))));
             }
 
-            inputHtml.append(HtmlUtils.space(2));
+            inputHtml.append(HU.space(2));
             inputHtml.append(arg.getHelp());
             if (arg.getSameRow()) {
                 catBuff.appendToCurrentRow(inputHtml.toString());
@@ -1803,7 +1804,7 @@ public class Service extends RepositoryManager {
             if (arg.getEntryType() != null) {
                 request.put(ARG_ENTRYTYPE, arg.getEntryType());
             }
-            String elementId = HtmlUtils.getUniqueId("select_");
+            String elementId = HU.getUniqueId("select_");
             inputHtml.append(OutputHandler.getSelect(request, elementId,
 						     msg("Select"), true, null));
 
@@ -1818,24 +1819,24 @@ public class Service extends RepositoryManager {
                 entryId    = entryArg.getId();
             }
 
-            inputHtml.append(HtmlUtils.hidden(getUrlArg(argPrefix, argName),
-                    entryId, HtmlUtils.id(elementId + "_hidden")));
-            inputHtml.append(HtmlUtils.space(1));
-            inputHtml.append(HtmlUtils.disabledInput(argUrlName, entryLabel,
-                    HtmlUtils.SIZE_60 + HtmlUtils.id(elementId)));
-            //                inputHtml.append(HtmlUtils.disabledInput(argUrlName,
+            inputHtml.append(HU.hidden(getUrlArg(argPrefix, argName),
+                    entryId, HU.id(elementId + "_hidden")));
+            inputHtml.append(HU.space(1));
+            inputHtml.append(HU.disabledInput(argUrlName, entryLabel,
+                    HU.SIZE_60 + HU.id(elementId)));
+            //                inputHtml.append(HU.disabledInput(argUrlName,
             //                                                         getRequestValue(request, argPrefix, arg.getName(), ""),
-            //                                                         HtmlUtils.SIZE_60 + HtmlUtils.id(elementId)));
+            //                                                         HU.SIZE_60 + HU.id(elementId)));
             request.remove(ARG_ENTRYTYPE);
 
         } else {
-            String extra = HtmlUtils.attr(HtmlUtils.ATTR_SIZE,
+            String extra = HU.attr(HU.ATTR_SIZE,
                                           "" + arg.getSize());
             if (arg.getPlaceHolder() != null) {
-                extra += HtmlUtils.attr("placeholder", arg.getPlaceHolder());
+                extra += HU.attr("placeholder", arg.getPlaceHolder());
             }
             inputHtml.append(
-                HtmlUtils.input(
+                HU.input(
                     argUrlName,
                     getRequestValue(
                         request, argPrefix, arg.getName(),
@@ -1845,11 +1846,11 @@ public class Service extends RepositoryManager {
             return;
         }
         if (arg.isRequired()) {
-            inputHtml.append(HtmlUtils.space(1));
+            inputHtml.append(HU.space(1));
             inputHtml.append("<span class=ramadda-required-label>*</span>");
         }
         if (Utils.stringDefined(arg.getHelp())) {
-            inputHtml.append(HtmlUtils.space(2));
+            inputHtml.append(HU.space(2));
             inputHtml.append(arg.getHelp());
         }
 
@@ -1901,14 +1902,14 @@ public class Service extends RepositoryManager {
                                String help)
             throws Exception {
         if (help != null) {
-            help = HtmlUtils.div(help,
-                                 HtmlUtils.cssClass("service-form-help"));
-            sb.append(HtmlUtils.formEntryTop(Utils.stringDefined(label)
+            help = HU.div(help,
+                                 HU.cssClass("service-form-help"));
+            sb.append(HU.formEntryTop(Utils.stringDefined(label)
                                              ? msgLabel(label)
                                              : "", col1, help));
 
         } else {
-            sb.append(HtmlUtils.formEntryTop(Utils.stringDefined(label)
+            sb.append(HU.formEntryTop(Utils.stringDefined(label)
                                              ? msgLabel(label)
                                              : "", col1, 2));
         }
@@ -1937,18 +1938,18 @@ public class Service extends RepositoryManager {
             String desc = catArg.getValue();
             if (Utils.stringDefined(desc)) {
                 html += desc;
-                html += HtmlUtils.br();
+                html += HU.br();
             }
             */
             sb.append(html);
         }
-        StringBuilder formSB = new StringBuilder(HtmlUtils.formTable());
+        StringBuilder formSB = new StringBuilder(HU.formTable());
         catBuff.addToForm(formSB);
-        formSB.append(HtmlUtils.formTableClose());
+        formSB.append(HU.formTableClose());
         if (true || (blockCnt == 1)) {
             sb.append(formSB);
         } else {
-            sb.append(HtmlUtils.makeShowHideBlock("", formSB.toString(),
+            sb.append(HU.makeShowHideBlock("", formSB.toString(),
                     true || (blockCnt == 1)));
         }
     }
@@ -2652,17 +2653,17 @@ public class Service extends RepositoryManager {
         for (Entry entry : input.getEntries()) {
             if (cnt++ == 0) {
                 sb.append(
-                    HtmlUtils.open(
-                        HtmlUtils.TAG_DIV,
-                        HtmlUtils.cssClass("service-output-header")));
+                    HU.open(
+                        HU.TAG_DIV,
+                        HU.cssClass("service-output-header")));
             } else {
-                sb.append(HtmlUtils.br());
+                sb.append(HU.br());
             }
-            sb.append(HtmlUtils.href(getEntryManager().getEntryURL(request,
+            sb.append(HU.href(getEntryManager().getEntryURL(request,
                     entry), entry.getName()));
         }
         if (cnt > 0) {
-            sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+            sb.append(HU.close(HU.TAG_DIV));
         }
         sb.append("<div class=service-output>");
         sb.append("<pre>");

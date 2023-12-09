@@ -710,9 +710,9 @@ public class JobManager extends RepositoryManager {
 
             String img = "";
             if (service.getIcon() != null) {
-                img = HtmlUtils.img(getIconUrl(service.getIcon()));
+                img = HtmlUtils.img(getIconUrl(service.getIcon()),"",HU.attr(HU.ATTR_WIDTH,ICON_WIDTH));
             } else {
-                img = HtmlUtils.img(getIconUrl("/icons/cog.png"));
+                img = HtmlUtils.img(getIconUrl("/icons/cog.png"),"",HU.attr(HU.ATTR_WIDTH,ICON_WIDTH));
             }
             StringBuffer serviceSB = new StringBuffer();
 
