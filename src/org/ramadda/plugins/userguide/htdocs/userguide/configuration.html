@@ -31,10 +31,14 @@ pre {
 
 
 
-:navtop
+:navleft
+
+
 
 +callout-info
 There are lots of ways  of configuring your RAMADDA server.
+Along with these configuration options there are a number of other
+services that can be configured. See <a href=services.html>here</a> for more information.
 -callout
 
 <a name="cdn"></a>
@@ -75,61 +79,34 @@ ramadda.cachehtdocs=true
 
 
 
-<a name=twittercard></a>
-:heading Twitter Integration
-RAMADDA can support the <a href="https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/abouts-cards">Twitter Card</a> metadata standard. This embeds metadata in an entry page like the below. When a URL to a RAMADDA
-page is pasted into a post then Twitter will harvest the metadata to provide a display in the post.
 
+
+<a name="zoomable"></a>
+:heading Zoomable Images
+The Zoomable Image entry type uses an external script, magick-slicer.sh,
+that is available on <a href=https://github.com/geodesystems/ramadda/blob/master/bin/magick-slicer.sh>Github</a>. This script requires <a href=https://imagemagick.org/index.php>ImageMagic</a> to be installed. Once installed add the below property to your repository.properties file:
 <pre>
-&lt;meta name=&quot;twitter:card&quot; content=&quot;summary_large_image&quot;&gt;
-&lt;meta name=&quot;twitter:title&quot; content=&quot;Salton Sea&quot;&gt;
-&lt;meta name=&quot;twitter:description&quot; content=&quot;This is an example...&quot;&gt;
-&lt;meta name=&quot;twitter:image&quot; content=&quot;https://ramadda.org/repository/metadata/view/Screenshot_2023-09-25_at_08-12-53_Salton_Sea_Map.png?element=1&amp;entryid=0e3af72d-8be7-4f9d-933d-983fad440bba&amp;metadata_id=b96d579f-d914-4d8a-bb04-78c5896a8243&quot;&gt;
-&lt;meta name=&quot;twitter:creator&quot; content=&quot;@jeffmcwh&quot;&gt;
-</pre>
-
-By default the name of the entry is used for the title. 
-If the entry has a Thumbnail image property attached to it then the Twitter Card will be an
-image. If the entry is an Image then the image will be used. Else it will just be a text summary.
-The entry's <a href=#snippet>snippet</a> is used for the description.
-:p
-There is also a Twitter Card property type that can be used to specify the title, creator, description and image.
-Under Add Property-&gt;Miscellaneous add the Twitter Card property:
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard1.png?version=610"><img  src="images/twittercard1.png?version=610"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard1.png?version=610" ></a></div></div>
-
-Enter any of the values. If defined in the property these will override the defaults of the entry's name,
-snippet, etc.
-
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard2.png?version=610"><img  src="images/twittercard2.png?version=610"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard2.png?version=610" ></a></div></div>
-
-These properties can be inherited. For example, you can add an inherited Twitter Card property at the top-level
-of your repository with just the Twitter handle specified. Then for any descendent entry you can specify a title, thumbnail, etc.
-:p
-
-To disable this set the following property in one of the .properties files in your RAMADDA
-home directory:
-<pre>
-ramadda.showtwittercard=false
+ramadda.image.slicer=/path/to/magick-slicer.sh
 </pre>
 
 
+<a name="tesseract"></a>
+:heading Tesseract OCR
+When ingesting images RAMADDA can extract text from the image using the Tesserarct OCR package.
+This text can then be used for searching. To configure this first install
+<a href=https://github.com/tesseract-ocr/tesseract>https://github.com/tesseract-ocr/tesseract</a>.
+Once installed add the below property to your repository.properties file:
 
-
-
-<a name="github"></a>
-:heading Embedding Github checkins
-RAMADDA supports embedding Github checkins into wiki text with the form:
 <pre>
-@(github user=some_user_name)  
-or:
-@(github owner=repository_owner repository=repository)
+ramadda.tesseract=/path/to/tesseract
 </pre>
 
-The access to the Github API is rate limited. To increase the request rate create a personal access
-token through Github and set the following RAMADDA property:  
-<pre>
-github.token=your token
-</pre>
+:heading Using ChatGPT
+See <a href=gpt.html>gpt.html</a>
+
+:heading PurpleAir
+See <a href=/repository/point/purpleair_index.html>purpleair_index.html</a>
+
 
 <a name="pdf"></a>
 :heading Generating thumbnails of PDFs
@@ -151,6 +128,13 @@ by setting the following property value:
 <pre>
 ramadda.jupyter.path=/path/to/anaconda/bin/jupyter
 </pre>
+
+:heading FRED, EIA, Quandl, Census data
+For Federal Reserve, Energy Information Agency, Quandl integration 
+see <a href=/repository/biz/index.html>/repository/biz/index.html</a>
+:p
+For configuring Census data see
+<a href=/repository/census/index.html>/repository/census/index.html</a>
 
 
 <a name="otherapis"></a>
@@ -206,6 +190,61 @@ wolfram.api.key=
 </pre>  
 
 
+
+<a name=twittercard></a>
+:heading Twitter Integration
+RAMADDA can support the <a href="https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/abouts-cards">Twitter Card</a> metadata standard. This embeds metadata in an entry page like the below. When a URL to a RAMADDA
+page is pasted into a post then Twitter will harvest the metadata to provide a display in the post.
+
+<pre>
+&lt;meta name=&quot;twitter:card&quot; content=&quot;summary_large_image&quot;&gt;
+&lt;meta name=&quot;twitter:title&quot; content=&quot;Salton Sea&quot;&gt;
+&lt;meta name=&quot;twitter:description&quot; content=&quot;This is an example...&quot;&gt;
+&lt;meta name=&quot;twitter:image&quot; content=&quot;https://ramadda.org/repository/metadata/view/Screenshot_2023-09-25_at_08-12-53_Salton_Sea_Map.png?element=1&amp;entryid=0e3af72d-8be7-4f9d-933d-983fad440bba&amp;metadata_id=b96d579f-d914-4d8a-bb04-78c5896a8243&quot;&gt;
+&lt;meta name=&quot;twitter:creator&quot; content=&quot;@jeffmcwh&quot;&gt;
+</pre>
+
+By default the name of the entry is used for the title. 
+If the entry has a Thumbnail image property attached to it then the Twitter Card will be an
+image. If the entry is an Image then the image will be used. Else it will just be a text summary.
+The entry's <a href=#snippet>snippet</a> is used for the description.
+:p
+There is also a Twitter Card property type that can be used to specify the title, creator, description and image.
+Under Add Property-&gt;Miscellaneous add the Twitter Card property:
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard1.png?version=984"><img  src="images/twittercard1.png?version=984"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard1.png?version=984" ></a></div></div>
+
+Enter any of the values. If defined in the property these will override the defaults of the entry's name,
+snippet, etc.
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard2.png?version=984"><img  src="images/twittercard2.png?version=984"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard2.png?version=984" ></a></div></div>
+
+These properties can be inherited. For example, you can add an inherited Twitter Card property at the top-level
+of your repository with just the Twitter handle specified. Then for any descendent entry you can specify a title, thumbnail, etc.
+:p
+
+To disable this set the following property in one of the .properties files in your RAMADDA
+home directory:
+<pre>
+ramadda.showtwittercard=false
+</pre>
+
+
+
+
+<a name="github"></a>
+:heading Embedding Github checkins
+RAMADDA supports embedding Github checkins into wiki text with the form:
+<pre>
+@(github user=some_user_name)  
+or:
+@(github owner=repository_owner repository=repository)
+</pre>
+
+The access to the Github API is rate limited. To increase the request rate create a personal access
+token through Github and set the following RAMADDA property:  
+<pre>
+github.token=your token
+</pre>
 
 
 
