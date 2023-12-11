@@ -1092,10 +1092,10 @@ public class IO {
                 sb.append("\n");
             }
 
-            return new Result(sb.toString());
+            return new Result(connection,sb.toString());
         } catch (Throwable exc) {
             String error = readError(connection);
-            return new Result(error, connection.getResponseCode(), true, exc);
+            return new Result(connection,error, connection.getResponseCode(), true, exc);
         }
     }
 
@@ -1124,6 +1124,8 @@ public class IO {
      */
     public static class Result {
 
+	URLConnection connection;
+	
         /**  */
         int code;
 
@@ -1139,12 +1141,17 @@ public class IO {
         /**  */
         InputStream inputStream;
 
+        Result(URLConnection connection) {
+	    this.connection = connection;
+	}
+
         /**
          
          *
          * @param result _more_
          */
-        Result(String result) {
+        Result(URLConnection connection,String result) {
+	    this(connection);
             this.result = result;
         }
 
@@ -1156,7 +1163,8 @@ public class IO {
          * @param error _more_
          * @param exc _more_
          */
-        Result(String result, int code, boolean error, Throwable exc) {
+        Result(URLConnection connection,String result, int code, boolean error, Throwable exc) {
+	    this(connection);
             this.result = result;
             this.code   = code;
             this.error  = error;
@@ -1168,9 +1176,26 @@ public class IO {
          *
          * @param inputStream _more_
          */
-        Result(InputStream inputStream) {
+        Result(URLConnection connection,InputStream inputStream) {
+	    this(connection);
             this.inputStream = inputStream;
         }
+
+	public String getHeader(String key) {
+	    return connection.getHeaderField(key);
+	}
+
+
+	public String getHeaders() {
+	    StringBuilder sb = new StringBuilder();
+	    for(int i=0;true;i++) {
+		String v = connection.getHeaderField(i);
+		if(v==null) break;
+		sb.append(connection.getHeaderFieldKey(i)+":" +v+"\n");
+	    }
+
+	    return sb.toString();
+	}
 
 	public String toString() {
 	    return result;
@@ -1279,7 +1304,7 @@ public class IO {
                 connection.setRequestProperty(args[i], args[i + 1]);
             }
 
-            return new Result(connection.getInputStream());
+            return new Result(connection,connection.getInputStream());
         } catch (Throwable exc) {
             String error = readError(connection);
             System.err.println("Error reading URL:" + url + "\ncode:"
@@ -1287,7 +1312,7 @@ public class IO {
             System.err.println("Error:" + error);
             System.err.println("Fields:" + connection.getHeaderFields());
 
-            return new Result(error, connection.getResponseCode(), true, exc);
+            return new Result(connection,error, connection.getResponseCode(), true, exc);
             //            System.err.println(connection.getContent());
         }
     }
@@ -1925,10 +1950,10 @@ public class IO {
 
         try {
 	    InputStream is = connection.getInputStream();
-            return new Result(readInputStream(is));
+            return new Result(connection,readInputStream(is));
         } catch (Throwable exc) {
             String error = readError(connection);
-            return new Result(error, connection.getResponseCode(), true, exc);
+            return new Result(connection,error, connection.getResponseCode(), true, exc);
         }
     }
 
