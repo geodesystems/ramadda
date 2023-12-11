@@ -3893,9 +3893,9 @@ public class WikiManager extends RepositoryManager
 		if(getProperty(wikiUtil, props, "addPageSearch",false)) {
 		    HU.addPageSearch(sb,"#" + id +" .ramadda-gridbox",null,"Find");
 		}
-                sb.append(HU.open(HU.TAG_DIV, HU.id(id)));
-		sb.append(HU.div("",HU.id(id+"_header")));		
-		sb.append(HU.open(HU.TAG_DIV, (weights==null?HU.cssClass("ramadda-grid"):"")+HU.id(id)));
+		//                HU.open(sb,HU.TAG_DIV, HU.id(id));
+		HU.div(sb, "",HU.id(id+"_header"));		
+		HU.open(sb, HU.TAG_DIV, (weights==null?HU.cssClass("ramadda-grid"):"")+HU.id(id));
                 sb.append("\n");
 		StringBuilder buff = new StringBuilder();
 
@@ -3907,13 +3907,13 @@ public class WikiManager extends RepositoryManager
                 if (width != null) {
                     boxStyle = HU.style(HU.css("width", HU.makeDim(width,"px"), "display","inline-block","margin","6px"));
                 }
-                for (int i = 0; i < titles.size(); i++) {
-                    Entry child = children.get(i);
+                for (int idx = 0; idx < titles.size(); idx++) {
+                    Entry child = children.get(idx);
                     if (weights!=null) {
                         colCnt++;
                         if (colCnt >= weights.size()) {
                             if (rowCnt > 0) {
-                                buff.append(HU.close(HU.TAG_DIV));
+                                HU.close(buff,HU.TAG_DIV);
                                 if (showLine) {
                                     buff.append("<hr>");
                                 }
@@ -3928,11 +3928,11 @@ public class WikiManager extends RepositoryManager
 		    StringBuilder comp = new StringBuilder();
                     HU.open(comp, HU.TAG_DIV, boxClass + boxStyle);
                     if (showHeading) {
-			String title  = titles.get(i);
+			String title  = titles.get(idx);
 			String label = title;
-                        HU.div(comp, HU.href(urls.get(i), label),  HU.title(Utils.stripTags(title)) + headingClass);
+                        HU.div(comp, HU.href(urls.get(idx), label),  HU.title(Utils.stripTags(title)) + headingClass);
                     }
-                    String displayHtml = contents.get(i);
+                    String displayHtml = contents.get(idx);
                     HU.div(comp, displayHtml,
                            HU.cssClass("bs-inner")
                            + HU.attr("style", innerStyle.toString()));
@@ -3949,13 +3949,13 @@ public class WikiManager extends RepositoryManager
 		if (rowCnt > 0) {
 		    HU.close(buff, HU.TAG_DIV);
                 }
-		HU.close(buff, HU.TAG_DIV,HU.TAG_DIV);
+		//		HU.close(buff, HU.TAG_DIV,HU.TAG_DIV);
 		sb.append(buff);
 		if(addHeader) {
 		    getMapManager().addMapImports(request, sb);
 		    HU.script(sb, "Ramadda.Components.init(" + HU.squote(id)+");");
 		}
-		HU.close(sb,"div");
+		HU.close(sb,HU.TAG_DIV);
                 return sb.toString();
             } else if (doingSlideshow) {
                 boolean shownav = getProperty(wikiUtil, props, "shownav", false);
