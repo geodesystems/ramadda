@@ -73,6 +73,9 @@ import java.util.zip.*;
 @SuppressWarnings("unchecked")
 public class MetadataManager extends RepositoryManager {
 
+    public static final boolean CHECK_UNIQUE_FALSE = false;
+    public static final boolean CHECK_UNIQUE_TRUE = false;
+
     /** _more_ */
     private static final String SUFFIX_SELECT = ".select.";
 
@@ -1369,7 +1372,7 @@ public class MetadataManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public void addMetadataAlias(Request request,Entry entry, String value) throws Exception {
-        addMetadata(request,entry, ContentMetadataHandler.TYPE_ALIAS, value);
+        addMetadata(request,entry, ContentMetadataHandler.TYPE_ALIAS,CHECK_UNIQUE_FALSE, value);
     }
 
     /**
@@ -1380,7 +1383,7 @@ public class MetadataManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public void addKeyword(Request request, Entry entry, String value) throws Exception {
-        addMetadata(request,entry, ContentMetadataHandler.TYPE_KEYWORD, value);
+        addMetadata(request,entry, ContentMetadataHandler.TYPE_KEYWORD, CHECK_UNIQUE_TRUE, value);
     }
 
     /**
@@ -1391,7 +1394,7 @@ public class MetadataManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public void addMetadataTag(Request request,Entry entry, String value) throws Exception {
-        addMetadata(request,entry, ContentMetadataHandler.TYPE_TAG, value);
+        addMetadata(request,entry, ContentMetadataHandler.TYPE_TAG, CHECK_UNIQUE_FALSE, value);
     }
 
     /**
@@ -1402,7 +1405,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public void addMetadata(Request request,Entry entry, String type, String ...values)
+    public void addMetadata(Request request,Entry entry, String type, boolean checkUnique, String ...values)
             throws Exception {
         addMetadata(request,entry,
                     new Metadata(getRepository().getGUID(), entry.getId(),
@@ -1410,7 +1413,7 @@ public class MetadataManager extends RepositoryManager {
 				 values.length>1 && values[1]!=null?values[1]:Metadata.DFLT_ATTR,
 				 values.length>2 &&values[2]!=null?values[2]:Metadata.DFLT_ATTR,
 				 values.length>3 && values[3]!=null?values[3]:Metadata.DFLT_ATTR,
-                                 Metadata.DFLT_EXTRA));
+                                 Metadata.DFLT_EXTRA),checkUnique);
     }
 
 
@@ -1425,7 +1428,7 @@ public class MetadataManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public boolean addMetadata(Request request,Entry entry, Metadata value) throws Exception {
-        return addMetadata(request,entry, value, false);
+        return addMetadata(request,entry, value, CHECK_UNIQUE_FALSE);
     }
 
 
