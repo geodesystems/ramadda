@@ -7,7 +7,7 @@
     <property name="form.resource.show" value="false"/>
     <column name="root_id" type="string"  label="Main S3 Bucket ID" columns="80" size="1000"/>
     <column name="aws_access_key"  type="password"  label="AWS Key" size="1000"
-	    help="Optional. Either &quot;access_key:private_key&quot; or &quot;environment_variable&quot;"/>
+	    help="Optional. Either &quot;access_key:private_key&quot; or &quot;environment_variable&quot; where the value of the environment_variable is of the form &quot;access_key:private_key&quot;"/>
 
 
     <column name="do_cache" type="boolean" default="true"  label="Enable caching" suffix="Turn caching  off if you are working on configuring this entries. Cache is flushed after 90 seconds"/>

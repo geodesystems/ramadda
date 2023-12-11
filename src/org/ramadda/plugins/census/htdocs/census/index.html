@@ -4,6 +4,15 @@
 <body>
 <div class="ramadda-section">
 <h2>Census Data</h2>
+This uses the <a href=https://www.census.gov/data/developers.html>American Community Survey API</a>. 
+An API key may be required to access this data. You can obtain a key from
+<a href=https://api.census.gov/data/key_signup.html>api.census.gov</a>.
+Once you have a key add the following to your repository.properties file:
+<pre>
+census.api.key=your  key
+</pre>
+
+
 
 <h3>Indicators</h3>
 There are 45000 indicators that can be selected. A <a href="${root}/census/variables">top-level search form</a> is provided. 
@@ -31,7 +40,7 @@ The data is selected based on a geography specification - e.g., state, county, t
 <ul>
 <li> <a href="http://www.census.gov/data/developers/data-sets/acs-survey-5-year-data.html">Census.gov API help</a>
 <li> <a href="${root}/census/states">RAMADDA state and county list</a>
-<li> <a href="https://geodesystems.com/repository/alias/gazeteer_counties">County FIPS search</a>
+<li> <a href="https://ramadda.org/repository/alias/gazeteer_counties">County FIPS search</a>
 </ul>
 
 
