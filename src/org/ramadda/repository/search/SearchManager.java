@@ -121,7 +121,7 @@ import org.apache.tika.parser.Parser;
 public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     private static boolean debugCorpus = false;
-    private static boolean debugLLM = true;
+
 
     /** _more_ */
     public static final String ARG_SEARCH_SUBMIT = "search.submit";
@@ -706,12 +706,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    StringBuilder fileCorpus = new StringBuilder();
             addContentField(entry, doc, FIELD_CONTENTS, entry.getResource().getTheFile(), true, fileCorpus);
 	    corpus.append(fileCorpus);
-	    int[]tokenLimit = new int[]{-1};
+
 	    if(/*isNew && */request!=null) {
+		int[]tokenLimit = new int[]{-1};
+		String llmCorpus = fileCorpus.toString();
 		boolean entryChanged = false;
 		if(request.get(ARG_EXTRACT_KEYWORDS,false)) {
-		    List<String> keywords = getKeywords(request, entry, fileCorpus,tokenLimit);
-		    if(keywords!=null && keywords.size()>0) {
+		    List<String> keywords = getLLMManager().getKeywords(request, entry, llmCorpus,tokenLimit);
+		    if(Utils.notEmpty(keywords)) {
 			int cnt = 0;
 			for(String word:keywords) {
 			    //Only do 6
@@ -719,12 +721,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			    word = word.replace("."," ").replaceAll("  +"," ");
 			    word = word.trim();
 			    if(word.length()<=3) continue;
-
-			    getMetadataManager().addMetadata(request,
-							     entry,
-							     new Metadata(
-									  getRepository().getGUID(), entry.getId(),
-									  "content.keyword", false, word, "", "", "", ""),true);
+			    getMetadataManager().addKeyword(request, entry, word);
 			}
 			entryChanged = true;
 		    }
@@ -732,12 +729,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 		if(isNew) {
 		    if(request.get(ARG_EXTRACT_SUMMARY,false)) {
-			if(debugLLM) System.err.println("SearchManager: callLLM: summary");
+			if(LLMManager.debug) System.err.println("SearchManager: callLLM: summary");
 			String prompt = request.getString(ARG_EXTRACT_SUMMARY_PROMPT,"");
 			if(!stringDefined(prompt))
 			    prompt = SUMMARY_PROMPT;
-			String summary = getLLMManager().callLLM(request, prompt,"",fileCorpus,200,true,tokenLimit,0);
-			if(debugLLM) System.err.println("got summary:" + summary);
+			String summary = getLLMManager().callLLM(request, prompt,"",llmCorpus,200,true,tokenLimit,0);
+			//			if(LLMManager.debug) System.err.println("got summary:" + Utils.clip(summary,50,"..."));
 			if(stringDefined(summary)) {
 			    summary = Utils.stripTags(summary).trim().replaceAll("^:+","");
 			    summary = "+toggleopen Summary\n+callout-info\n<snippet>\n" + summary+"\n</snippet>\n-callout-info\n-toggle\n";
@@ -747,9 +744,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    }
 
 		    if(request.get(ARG_EXTRACT_TITLE,false)) {
-			if(debugLLM) System.err.println("SearchManager: callLLM: title");
-			String title = getLLMManager().callLLM(request, "Extract the title from the following document:","",fileCorpus,200,true,tokenLimit,0);
-			if(debugLLM) System.err.println("got title:" + title);
+			String title = getLLMManager().extractTitle(request, llmCorpus,tokenLimit);
 			if(stringDefined(title)) {
 			    title = title.trim().replaceAll("\"","").replaceAll("\"","");
 			    entry.setName(title);
@@ -760,20 +755,20 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
 		    if(request.get(ARG_EXTRACT_AUTHORS,false)) {
-			if(debugLLM) System.err.println("SearchManager: callLLM: authors");
-			String authors = getLLMManager().callLLM(request, "Extract the author's names and only the author's names from the first few pages in the following text and separate the names with a comma:","",fileCorpus,200,true,tokenLimit,0);		    
-			if(debugLLM) System.err.println("got authors:" + authors);
+			if(LLMManager.debug) System.err.println("SearchManager: callLLM: authors");
+			String authors = getLLMManager().callLLM(request,
+								 "Extract the author's names and only the author's names from the first few pages in the following text and separate the names with a comma:","",
+								 Utils.clip(llmCorpus,1000,""),
+								 200,true,tokenLimit,0);		    
+			if(LLMManager.debug) System.err.println("got authors:" + Utils.clip(authors,50,"..."));
 			if(stringDefined(authors) && authors.indexOf("does not provide")<0) {
 			    entryChanged = true;
 			    for(String author:Utils.split(authors,",",true,true)) {
 				//This gets rid of some false positives
 				if(author.indexOf(" ")<0) continue;
 				if(author.indexOf("No author")>=0) continue;
-				getMetadataManager().addMetadata(request,
-								 entry,
-								 new Metadata(
-									      getRepository().getGUID(), entry.getId(),
-									      "metadata_author", false, author, "", "", "", ""),true);
+				getMetadataManager().addMetadata(request, entry,
+								 "metadata_author", MetadataManager.CHECK_UNIQUE_TRUE,author);
 			    }
 			}
 		    }
@@ -831,7 +826,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     /**
        is the file a pdf, doc, ppt, etc
      */
-    private boolean isDocument(String path) {
+    public boolean isDocument(String path) {
 	path = path.toLowerCase();	
 	//Only do documents
 	if(!(path.endsWith("pdf") ||
@@ -849,81 +844,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 	return true;
     }
-
-    private List<String>  getKeywords(Request request, Entry entry, StringBuilder fileCorpus, int[]tokenLimit)
-	throws Exception {
-	String path = entry.getResource().getPath();
-	if(path==null) return null;
-	if(!isDocument(path)) {
-	    //	    System.err.println("not doc:" + path);
-	    return null;
-	}
-
-	List<String> keywords = new ArrayList<String>();
-	if(debugLLM) System.err.println("SearchManager: callLLM: keywords");
-	String result = getLLMManager().callLLM(request, "Extract keywords from the following text. Limit your response to no more than 10 keywords:","Keywords:",fileCorpus,60,true,tokenLimit,0);
-	if(debugLLM) System.err.println("got:" + result);
-	if(result!=null) {
-	    for(String tok:Utils.split(result,",",true,true)) {
-		if(keywords.size()>15) break;
-		if(!keywords.contains(tok)) {
-		    keywords.add(tok);
-		}
-	    }
-	}
-							  
-	if(keywords.size()==0) {
-	    String text = fileCorpus.toString();
-	    text = Utils.removeNonAscii(text," ").replaceAll("[,-\\.\n]+"," ").replaceAll("  +"," ");
-	    Hashtable<String,WordCount> cnt = new Hashtable<String,WordCount>();
-	    List<WordCount> words = new ArrayList<WordCount>();
-	    HashSet stopWords = Utils.getStopWords();
-	    for(String tok: Utils.split(text," ",true,true)) {
-		tok = tok.toLowerCase();
-		if(tok.length()<=2) continue;
-		if(stopWords.contains(tok)) continue;
-		//		System.out.println("TOK:" + tok);
-		WordCount word = cnt.get(tok);
-		if(word==null) {
-		    word = new WordCount(tok);
-		    words.add(word);
-		    cnt.put(tok,word);
-		}
-		word.count++;
-	    }
-	    Collections.sort(words, new Comparator() {
-		    public int compare(Object o1, Object o2) {
-			WordCount w1 = (WordCount) o1;
-			WordCount w2 = (WordCount) o2;			
-			if(w2.count==w1.count) {
-			    return w2.word.length()-w1.word.length();
-			}
-			return w2.count - w1.count;
-		    }
-		});
-
-	    for(int i=0;i<words.size()&& i<3;i++) {
-		WordCount word = words.get(i);
-		if(word.count>2) {
-		    keywords.add(word.word);
-		}
-	    }
-	}
-	return keywords;
-    }	
-
-
-    private static class WordCount {
-	int count=0;
-	String word;
-	WordCount(String word) {
-	    this.word = word;
-	}
-	public String toString() {
-	    return word+" #:" + count +" ";
-	}
-    }
-
 
 
     public TikaConfig getTikaConfig() throws Exception {
