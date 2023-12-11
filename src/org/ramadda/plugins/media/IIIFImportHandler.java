@@ -246,7 +246,7 @@ public class IIIFImportHandler extends ImportHandler {
 		    }
 		    if(v1!=null) {
 			repository.getMetadataManager().addMetadata(request,entry,
-								    mtype,
+								    mtype,true,
 								    v1,v2);
 		    }
 		}

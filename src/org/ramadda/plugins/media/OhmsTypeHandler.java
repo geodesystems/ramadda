@@ -329,7 +329,7 @@ public class OhmsTypeHandler extends MediaTypeHandler {
      * @throws Exception _more_
      */
     private void addProperties(Request request,Entry entry, Element root, String prop,
-                               String metadata)
+                               String metadataType)
             throws Exception {
         HashSet<String> seen     = new HashSet<String>();
         List            keywords = XmlUtil.findDescendants(root, prop);
@@ -341,7 +341,7 @@ public class OhmsTypeHandler extends MediaTypeHandler {
                     continue;
                 }
                 seen.add(word);
-                getMetadataManager().addMetadata(request,entry, metadata, word);
+                getMetadataManager().addMetadata(request,entry, metadataType, true, word);
             }
         }
     }
