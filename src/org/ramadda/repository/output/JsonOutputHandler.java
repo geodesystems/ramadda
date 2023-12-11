@@ -286,8 +286,9 @@ public class JsonOutputHandler extends OutputHandler {
             }
         }
 	if(sort) {
-	    entries = EntryUtil.sortEntriesOnDate(entries, false);
+	    entries = EntryUtil.sortEntriesOnDate(entries, true);
 	}
+	//	System.err.println("Json: sort:" + sort +" entries:" + entries);
         List<String> fields     = new ArrayList<String>();
         boolean      remote     = request.get("remoteRequest", false);
         boolean      imagesOnly = request.get("imagesOnly", false);
