@@ -2037,6 +2037,10 @@ public class Utils extends IO {
         return list.get(index);
     }
 
+    public static boolean notEmpty(List list) {
+	return list!=null && list.size()>0;
+    }
+
     /**
      * _more_
      *
