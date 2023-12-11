@@ -20,14 +20,15 @@
 	       showArrows=true
 	       menuLabel="Select File:"
 	       noun=File
-	       template="${name}"
+	       labelTemplate="${name}"
 	       }}
-	       {{display_entrytitle setEntry.acceptGroup=file entry="child:type:type_point"}}
+	       {{display_entrytitle setEntry.acceptGroup=file entry="child:orderby:date:ascending:false:type:type_point"}}
 	       -center
 	       <table width=100% border=0 cellpadding=10>
 	       <tr valign=top>
 	       <td width=1%>
-	       {{display_fieldslist setEntry.acceptGroup=file entry="child:type:type_point"
+	       {{display_fieldslist setEntry.acceptGroup=file
+	       entry="child:orderby:date:ascending:false:type:type_point"
 	       width=185px height=65vh
 	       loadingMessage="" 
 	       fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
@@ -35,7 +36,7 @@
 	       showPopup=false decorate=true
 	       }}
 	       </td><td>
-	       {{display_linechart setEntry.acceptGroup=file entry="child:type:type_point"
+	       {{display_linechart setEntry.acceptGroup=file entry="child:orderby:date:ascending:false:type:type_point"
 	       fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
 	       height=60vh padRight=true chartLeft="80" chartRight="80"
 	       addTooltip=false useMultipleAxes=true
@@ -70,11 +71,11 @@
 	       showArrows=true
 	       menuLabel="Select Collection:"
 	       noun=Collection
-	       template="${name}"
+	       labelTemplate="${name}"
 	       }}
 	       {{display_menu 
 	       entryTypes=type_point
-	       entry="child:orderby:date;ascending:true;"
+	       entry="child:orderby:date:ascending:false:type:type_point"
 	       doEntries=true
 	       setEntry.acceptGroup=collection
 	       setEntry.shareGroup=file
