@@ -7660,7 +7660,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 
         pointDataLoaded: function(pointData, url, reload) {
-	    this.logMsg("pointDataLoaded: "+ url);
+//	    this.logMsg("pointDataLoaded: "+ url);
 	    if(!this.cacheUrl && pointData.cacheUrl) {
 		this.cacheUrl = pointData.cacheUrl;
 	    }

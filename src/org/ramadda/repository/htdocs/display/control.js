@@ -337,6 +337,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 		this.fieldsToMap[key] = this.selectedMap;
 	    }
 	    this.selectedMap=null;
+	    this.fields =null;
 	    SUPER.setEntry.call(this, entry);
 	},
 	updateUI: function() {
@@ -398,6 +399,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	    this.fields.forEach(f=>{
 		this.fieldsMap[f.getId()] = f;
 	    });
+
 //	    html += HU.center("#" + records.length +" records");
 	    let fs = [];
 	    let clazz = " ramadda-clickable display-fields-field ";
