@@ -254,6 +254,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    showCreateDate:dflt,
 	    showChangeDate:false,	    	    
 	    showSize:dflt,
+	    showEntryOrder:false,
 	    showType:dflt,
 	    showAttachments:false,
 	    showIcon:dflt,
@@ -270,7 +271,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	});
 	let html = "";
 	let cols = [];
-	let colList = Utils.split(props.columns??'name,date,createdate,size,type,attachments',',',true,true);
+	let colList = Utils.split(props.columns??'entryorder,name,date,createdate,size,type,attachments',',',true,true);
 	let dateWidth = 130;
 	let typeWidth = 100;	
 	let sizeWidth  =80;
@@ -281,6 +282,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		cols.push({id:"fromdate",label:"Date",width:props.fromDateWidth??props.dateWidth??dateWidth});		    
 	    else if(c=='createdate' && props.showCreateDate)
 		cols.push({id:c,label:"Create Date",width:props.createDateWidth??props.dateWidth??dateWidth});
+
+	    else if(c=='entryorder' && props.showEntryOrder)
+		cols.push({id:c,label:"Order",width:75});
+
 	    else if(c=='changedate' && props.showChangeDate)
 		cols.push({id:c,label:"Change Date",width:props.changeDateWidth??props.dateWidth??dateWidth});	    
 	    else if(c=='size' && props.showSize)
@@ -449,7 +454,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    cols.forEach((col,idx)=> {
 		let last = idx==cols.length-1;
 		let attrs = [];
-		let v = entry.getProperty(col.id);
+		let v = entry.getProperty(col.id)??'';
 		let _v = v;
 		let title = null;
 		v  = HU.span([],v);
