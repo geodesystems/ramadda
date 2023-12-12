@@ -3673,15 +3673,16 @@ public class TypeHandler extends RepositoryManager {
                 sb.append(formEntry(request, resourceLabel, resourceLink));
 
             }
-            //Only show the created by and type when the user is logged in
             if ( !showImage) {
                 if (typeHandler.okToShowInHtml(entry, ARG_TYPE, true)) {
+		    String icon = getPageHandler().getEntryIconImage(request,entry);
                     sb.append(formEntry(request, msgLabel("Kind"),
-                                        getFileTypeDescription(request,
-                                            entry)));
+                                        icon + HU.space(1)+getFileTypeDescription(request,
+										  entry)));
                 }
             }
 
+            //Only show the created by and type when the user is logged in
             if ( !request.isAnonymous()) {
                 if (showCreateDate) {
                     sb.append(formEntry(request, msgLabel("Created"),
