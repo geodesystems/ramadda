@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Dec  9 12:10:07 MST 2023";
+var build_date="RAMADDA build date: Tue Dec 12 07:14:15 MST 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -6293,6 +6293,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.entryId = entry.getId();
             this.clearCachedData();
             if (this.properties.theData) {
+		//Clear this out
+		this.cacheUrl = null;
                 this.dataCollection = new DataCollection();
                 let attrs = {
                     entryId: this.entryId,
@@ -6308,6 +6310,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
                 this.properties.theData = this.data = new PointData(entry.getName(), null, null, oldUrl, attrs);
 		this.startProgress();
+		if(displayDebug.setEntry)
+		    this.logMsg("setEntry: calling loadData:" + oldUrl);
                 this.data.loadData(this);
             } else {
 		this.callUpdateUI();
@@ -6522,6 +6526,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	},
         handleEventSetEntry: function(source, args) {
+//	    this.logMsg("handleEventSetEntry ");
+//	    console.dir(args);
 	    if(this.acceptEvent(DisplayEvent.setEntry,this.getProperty(DisplayEvent.setEntry.acceptGroup,this.getProperty("acceptShareSelectedEntry",false)))) {
 		if(displayDebug.setEntry)
 		    console.log(this.type+".handleEventSetEntry calling setEntry:" + args.entry);
@@ -11459,10 +11465,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 
         pointDataLoaded: function(pointData, url, reload) {
-//	    this.logMsg("pointDataLoaded "+ this.cacheUrl);
+//	    this.logMsg("pointDataLoaded: "+ url);
 	    if(!this.cacheUrl && pointData.cacheUrl) {
 		this.cacheUrl = pointData.cacheUrl;
-		console.log("DISPLAY:" + this.cacheUrl);
 	    }
 
 
@@ -24005,6 +24010,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 		this.fieldsToMap[key] = this.selectedMap;
 	    }
 	    this.selectedMap=null;
+	    this.fields =null;
 	    SUPER.setEntry.call(this, entry);
 	},
 	updateUI: function() {
@@ -24066,6 +24072,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	    this.fields.forEach(f=>{
 		this.fieldsMap[f.getId()] = f;
 	    });
+
 //	    html += HU.center("#" + records.length +" records");
 	    let fs = [];
 	    let clazz = " ramadda-clickable display-fields-field ";
