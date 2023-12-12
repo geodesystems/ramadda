@@ -93,7 +93,9 @@ Ramadda3DDisplayManager.prototype = {
 	    let prefix ="";
 	    if(model.entryid) {
 		prefix = HU.div(['style',HU.css('margin-right','4px')],
-				HU.href(ramaddaBaseUrl + '/entry/show?entryid=' + model.entryid,HU.getIconImage(ramaddaBaseUrl+'/media/3dmodel.png'),
+				HU.href(ramaddaBaseUrl + '/entry/show?entryid=' + model.entryid,
+					HU.getIconImage(ramaddaBaseUrl+'/media/3dmodel.png',
+							["width",ramaddaGlobals.iconWidth]),
 					['title','View entry:' + model.name,'target','_entry']));
 	    }
 	    let label = model.name;
