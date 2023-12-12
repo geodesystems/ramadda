@@ -199,7 +199,7 @@
 
 <type name="type_animatedgif"  super="type_image" description="Animated GIF" foruser="true" 
 handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
-     <property name="icon" value="/icons/image.png"/>
+     <property name="icon" value="/media/animatedgif.png"/>
      <column   name="showcontrols" label="Show Controls" type="boolean" default="true"/>
      <column   name="addbuttons" label="Add Buttons" type="boolean" default="true"/>
      <column   name="autoplay" label="Auto Play" type="boolean" default="true"/>
