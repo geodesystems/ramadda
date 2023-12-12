@@ -2253,6 +2253,7 @@ public class HtmlOutputHandler extends OutputHandler {
                 Hashtable props = new Hashtable();
                 props.put(ARG_SHOWCRUMBS, "" + group.isDummy());
 		HU.addPageSearch(sb,".entry-list-row-data",null,"Find");
+		props.put("showEntryOrder","true");
                 sb.append(getWikiManager().makeTableTree(request, null,
                         props, myChildren));
             }

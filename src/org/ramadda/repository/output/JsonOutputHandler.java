@@ -658,7 +658,7 @@ public class JsonOutputHandler extends OutputHandler {
                           "" + entry.getAltitudeBottom());
         }
 
-
+	JsonUtil.attr(items, "order",    ""+entry.getEntryOrder());
 
 
         if (request.get("includeservices", true)) {
