@@ -1628,8 +1628,11 @@ public class HtmlOutputHandler extends OutputHandler {
             throws Exception {
         request.put(ARG_TREEVIEW, "true");
 	if(props == null) props = new Hashtable();
-        String        wtr    = "9";
-        String        wtl    = "3";
+	String wtr = Utils.getProperty(props,"rightWidth","9");
+	String wtl = Utils.getProperty(props,"leftWidth","3");
+
+
+
         StringBuilder listSB = new StringBuilder();
         String entryShowUrl  =
             request.makeUrl(getRepository().URL_ENTRY_SHOW);
