@@ -122,7 +122,9 @@
 
 
 
-  <type name="point_text"  description="RAMADDA CSV Data"  super="type_point" priority="1"
+  <type name="point_text"  description="RAMADDA CSV Data"
+	super="type_convertible" priority="1"
+	handler="org.ramadda.data.docs.ConvertibleTypeHandler" 
 	help="RAMADDA's CSV format"> 
     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
     <property name="record.properties">
