@@ -1802,6 +1802,12 @@ var Utils =  {
                     //              if(debug) console.log("macro:" + JSON.stringify(source,null,2));
                     let cnt = 0;
                     let tokenFunc = t=>{
+			let has = (key) =>{
+			    return Utils.isDefined(t.attrs[key]) || Utils.isDefined(t.attrs[key.toLowerCase()]);
+			}
+			let get = (key) =>{
+			    return t.attrs[key]?? t.attrs[key.toLowerCase()];
+			}			
                         let value = source[t.tag];
 			//The tag might be a regexp or a '|' delimited list
 			if(!value) {
@@ -2165,9 +2171,10 @@ var Utils =  {
 
 
 
-                        if(t.attrs['maxLength'] && value.length>+t.attrs['maxLength']) {
-                            value = value.substring(0,+t.attrs['maxLength']);
-			    if(t.attrs['maxLengthSuffix'])
+                        let maxLength = t.attrs['maxLength'] ??t.attrs['maxlength'];
+                        if(maxLength && value.length>+maxLength) {
+                            value = value.substring(0,+maxLength);
+			    if(t.attrs['maxLengthSuffix']??t.attrs['maxlengthsuffix'])
 				value  =value+t.attrs['maxLengthSuffix'];
 			}
 
@@ -2199,20 +2206,20 @@ var Utils =  {
 			    value = "<tr><td align=right>" + t.attrs['label']+":</td><td>" + value +"</td></tr>";
 			}			    
 
-			if(t.attrs['prefixLabel']) {
-			    value = t.attrs['label']+': ' + value;
+			if(has('prefixLabel')) {
+			    value = get('prefixLabel')+': ' + value;
 			}
 
-                        if(t.attrs["maxheight"]) {
-                            let h = t.attrs["maxheight"];
+                        if(has('maxHeight')) {
                             value =  HU.div([STYLE,HU.css("display","inline-block",
-							  "max-height",HU.getDimension(h),
+							  "max-height",HU.getDimension(get('maxHeight')),
 							  "overflow-y","auto")],value);
                         }
 
-                        if(t.attrs["maxwidth"]) {
-                            let width = t.attrs["maxwidth"];
-                            value =  HU.div([STYLE,HU.css("display","inline-block","white-space","nowrap","max-width",HU.getDimension(width),"overflow-x","auto")],value);
+                        if(has("maxWidth")) {
+                            value =  HU.div([STYLE,HU.css("display","inline-block","white-space","nowrap",
+							  "max-width",HU.getDimension(get('maxWidth')),
+							  "overflow-x","auto")],value);
                         }
                         s+=value;
                         return s;
