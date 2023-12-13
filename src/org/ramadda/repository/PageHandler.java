@@ -1831,6 +1831,11 @@ public class PageHandler extends RepositoryManager {
             }
         }
 
+	if(!stringDefined(templateId)) {
+	    templateId = getRepository().getProperty(request.getRequestHostname()+".template");
+	    System.err.println("Template:" + templateId);
+	}
+
         if (templateId != null) {
             HtmlTemplate template = templateMap.get(templateId);
 	    if (debugTemplates)
@@ -1840,6 +1845,9 @@ public class PageHandler extends RepositoryManager {
                 return template;
             }
         }
+
+
+
 	HtmlTemplate template = templateMap.get(ID_TEMPLATE_DEFAULT);
 	if(template==null) {
 	    //	    System.err.println("\tgetTemplate: using default:" + templateMap);
