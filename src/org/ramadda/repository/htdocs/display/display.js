@@ -1124,7 +1124,7 @@ function DisplayThing(argId, argProperties) {
 		attrs = Utils.tokenizeMacros(template,{hook:(token,value)=>{return this.macroHook(record, token,value)},dateFormat:this.getDateFormat()}).getAttributes("default")||{};
 	    }
 	    itemsPerColumn = attrs["itemsPerColumn"] || itemsPerColumn;
-	    let maxWidth = attrs["maxWidth"];
+	    let maxWidth = attrs["maxWidth"]?? attrs["maxwidth"];
 	    let values = "";
 	    if(dflt.titleField || dflt.titleTemplate) {
 		let title="";
@@ -1240,8 +1240,7 @@ function DisplayThing(argId, argProperties) {
 			movieAttrs.push("200");
 			value = HU.movie(value,movieAttrs);
 		    }		    
-		    console.log(value);
-		    if(field.getType() == "url" || svalue.match(/^http/)) {
+		    if(field.getType() == "url" || svalue.match(/^http[^ ]+$/)) {
 			value = this.getRecordUrlHtml(attrs, field, record);
 		    }
 		    let labelValue = field.getLabel();
@@ -1252,9 +1251,9 @@ function DisplayThing(argId, argProperties) {
 			if(tt) tt+=HU.getTitleBr();
 		    }
 		    tt = tt??"";
-		    tt+=labelValue+"=" + initValue;
+		    tt+=labelValue+"=" + svalue;
 		    tt = tt.replace(/"/g,"'");
-		    if(initValue.indexOf("\"")>=0) tt="";
+		    if(svalue.indexOf("\"")>=0) tt="";
 		    if(value.length>100) {
 			//Only if its not an image
 			if(!String(value).match('<img')) {
