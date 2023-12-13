@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Dec 12 08:05:50 MST 2023";
+var build_date="RAMADDA build date: Wed Dec 13 07:18:59 MST 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -5014,7 +5014,10 @@ function DisplayThing(argId, argProperties) {
 		    }
                     let initValue = record.getValue(field.getIndex());
                     let value = initValue;
+                    let svalue = String(initValue);		    
 		    let fieldValue = value;
+		    if(fieldValue)
+			fieldValue = svalue.replace(/"/g,"'");
                     if (typeof value == "number") {
 			value = this.formatNumber(value, field.getId());
 		    } 
@@ -5042,7 +5045,8 @@ function DisplayThing(argId, argProperties) {
 			movieAttrs.push("200");
 			value = HU.movie(value,movieAttrs);
 		    }		    
-		    if(field.getType() == "url") {
+		    console.log(value);
+		    if(field.getType() == "url" || svalue.match(/^http/)) {
 			value = this.getRecordUrlHtml(attrs, field, record);
 		    }
 		    let labelValue = field.getLabel();
@@ -5054,7 +5058,8 @@ function DisplayThing(argId, argProperties) {
 		    }
 		    tt = tt??"";
 		    tt+=labelValue+"=" + initValue;
-		    
+		    tt = tt.replace(/"/g,"'");
+		    if(initValue.indexOf("\"")>=0) tt="";
 		    if(value.length>100) {
 			//Only if its not an image
 			if(!String(value).match('<img')) {
@@ -5074,11 +5079,16 @@ function DisplayThing(argId, argProperties) {
 		    if(maxWidth) {
 			valueStyle+=HU.css('max-width',HU.getDimension(maxWidth,'px'));
 		    }
+
+
+
 		    row += HU.td(labelColAttrs,HU.div(labelAttrs, label));
+		    row+='\n';
 		    row += HU.td(["field-id",field.getId(),"field-value",fieldValue, "align","left"], HU.div([ATTR_STYLE,valueStyle], displayValue));
 		    if(includeDesc) {
 			row +=HU.td([],field.getDescription()??"");
 		    }
+
 		    rows.push(row);
                 }
             }
@@ -5504,7 +5514,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'displayHeaderSide',ex:'left'},
 	{p:'leftSideWidth',ex:'150px'},		
 	{label:'Tooltips'},
-	{p:'tooltip',doGetter:false,d:'${default}'},
+	{p:'tooltip',doGetter:false,d:'\"${default}\"'},
 	{p:'tooltipDelay',d:1000},
 	{p:'tooltipEffect',d:'fadeIn'},
 	{p:'tooltipDuration',d:500},	
@@ -5581,6 +5591,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'headerOrientation',ex:'vertical'},
 	{p:'filterSliderImmediate',ex:true,tt:'Apply the change while sliding'},
 	{p:'filterLogic',ex:'and|or',tt:'Specify logic to apply filters'},		
+	{p:'&lt;field&gt;.type',ex:'enumeration|string|boolean'},
 	{p:'&lt;field&gt;.filterShow',ex:'false'},
 	{p:'&lt;field&gt;.filterValue'},
 	{p:'&lt;field&gt;.filterValueMin'},
