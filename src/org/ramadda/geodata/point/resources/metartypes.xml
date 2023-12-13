@@ -33,13 +33,14 @@ csvcommands3=-addheader, default.type double reporttime.type date reporttime.for
 <wiki>
 <![CDATA[
 +section  title="Station: {{field name=site_id raw=true}} -- {{name}}"
+:rem If you use this for a custom wiki then remove the description tag
 {{description}}
 +row
 +col-md-9
-{{group layoutType="table" layoutColumns="1"}}
-{{display_linechart showMenu="true" showTitle="false" layoutHere="false" fields=temp}}
-{{display_linechart showMenu="true" showTitle="false" layoutHere="false" fields=slp}}
-{{display_linechart showMenu="true" showTitle="false" layoutHere="false" fields=wspd}}
+{{group}}
+{{display_linechart showMenu="true" fields=temp}}
+{{display_linechart showMenu="true" fields=slp}}
+{{display_linechart showMenu="true" fields=wspd}}
 -col
 +col-md-3
 :vspace 2em
