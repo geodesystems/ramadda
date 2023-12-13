@@ -2203,6 +2203,13 @@ var Utils =  {
 			    value = t.attrs['label']+': ' + value;
 			}
 
+                        if(t.attrs["maxheight"]) {
+                            let h = t.attrs["maxheight"];
+                            value =  HU.div([STYLE,HU.css("display","inline-block",
+							  "max-height",HU.getDimension(h),
+							  "overflow-y","auto")],value);
+                        }
+
                         if(t.attrs["maxwidth"]) {
                             let width = t.attrs["maxwidth"];
                             value =  HU.div([STYLE,HU.css("display","inline-block","white-space","nowrap","max-width",HU.getDimension(width),"overflow-x","auto")],value);
