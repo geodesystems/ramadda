@@ -5,9 +5,10 @@
 :navtop
 
 :lheading Templates
-A templating mechanism is a number of places within the displays to display the records. For example, as a
-tooltip="..." or in the display_template. The template consists of arbitrary text and any number of macros
-of the form:
+A templating mechanism is used in a
+number of places within the displays to display the records. For example, as a
+tooltip="..." or in the display_template. The template consists of
+arbitrary text and any number of macros of the form:
 <pre>
   ${&lt;field name&gt; &lt;modifiers&gt; }
 </pre>
@@ -51,6 +52,8 @@ Other modifiers include:
   <li>   ${field images=true delimiter=";"} - Value is a list of images separated by the delimiter. If value starts with "\[" then it is assumed to be a JSON list.
   <li>   ${field template=" xxx {value} yyy"} -  Substitute {value} in the given template with the value
   <li>   ${field maxwidth=100px} - Wrap value in a div with the maxwidth
+  <li>   ${field maxheight=100px} - Wrap value in a div with the maxheight
+</ul>
 
 
 
