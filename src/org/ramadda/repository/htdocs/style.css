@@ -5758,8 +5758,7 @@ a.wiki-link-noexist {
 
 
 .ace_wiki-editor-comment {
-    border-bottom: 1px solid #999;
-    background:#eee;
+    //border-bottom: 1px solid #ccc;
     background: var(--color-mellow-yellow);
     border-radius: 2px;
     padding-right:4px;

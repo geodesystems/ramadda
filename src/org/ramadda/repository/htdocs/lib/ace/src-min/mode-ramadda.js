@@ -1568,6 +1568,9 @@ var tagMap = lang.createMap({
                     token : ["","display_type",""],
  		    regex: "(type *= *\")([^ \"]+)(\")",
 		}, {
+                    token : ["wiki-editor-comment"],
+		    regex: "(^:rem.*$)"		    
+		}, {
                     token : ["bracket","keyword"],
 		    regex: "({{ *)([^ }]+)"
 		}, {
@@ -1579,9 +1582,6 @@ var tagMap = lang.createMap({
 		}, {
                     token : ["wiki-editor-entryid"],
 		    regex: "([a-z0-9]+-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]+)"
-		}, {
-                    token : ["wiki-editor-comment"],
-		    regex: "(^:rem.*$)"		    
 		},
 		{token : "keyword",
                     regex : "\\:(br ?|p ?|note(-[^ ]+)*|blurb(-[^ ]+)*|heading(-[^ ]+)*)"
