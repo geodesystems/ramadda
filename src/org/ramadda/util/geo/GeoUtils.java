@@ -1265,16 +1265,20 @@ public class GeoUtils {
         }
         if ((place == null) && (geocodeioKey != null)) {
             String url = HtmlUtils.url("https://api.geocod.io/v1.6/geocode","q", address, "api_key", geocodeioKey);
-            String result = IO.readContents(url, GeoUtils.class);
-            //"lat":39.988424,"lng":-105.226083
-            latString = StringUtil.findPattern(result,
-					       "\"lat\"\\s*:\\s*([-\\d\\.]+),");
-            lonString = StringUtil.findPattern(result,
-					       "\"lng\"\\s*:\\s*([-\\d\\.]+)\\s*");
-            if ((latString != null) && (lonString != null)) {
-                place = new Place(name, latString, lonString);
-            }
-            if (debug) {
+	    try {
+		String result = IO.readContents(url, GeoUtils.class);
+		//"lat":39.988424,"lng":-105.226083
+		latString = StringUtil.findPattern(result,
+						   "\"lat\"\\s*:\\s*([-\\d\\.]+),");
+		lonString = StringUtil.findPattern(result,
+						   "\"lng\"\\s*:\\s*([-\\d\\.]+)\\s*");
+		if ((latString != null) && (lonString != null)) {
+		    place = new Place(name, latString, lonString);
+		}
+	    } catch(Exception exc) {
+		throw new IllegalArgumentException("Error geocoding address:" + address+" error:" + exc);
+	    }
+		if (debug) {
                 System.err.println("\tgeocodeio:" + place);
             }
         }
