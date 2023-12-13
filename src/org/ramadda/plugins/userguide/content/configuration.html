@@ -50,6 +50,76 @@ ramadda.cachehtdocs=true
 
 
 
+:heading Page Templates
+See <a href=templates.html>templates.html</a>
+
+:heading RAMADDA version, contact and security.txt
+To see the server info go to the <a href="${root}/info">${root}/info</a> link.
+:p
+If you want to add a contact for your site then set the property in a
+.properties file in your RAMADDA home directory:
+<pre>
+ramadda.contact=...
+</pre>
+
+You can add any other information for this page with:
+<pre>
+ramadda.information=This  is my server...
+</pre>
+
+
+RAMADDA also provides a security.txt file that follows the specification
+from <a href=https://securitytxt.org/>https://securitytxt.org/</a>. The URL is:
+<a href="${root}/well-known/security.txt">${root}/well-known/security.txt</a>.
+<br>
+You can change the contact with the following property:
+<pre>
+ramadda.security.contact=mailto:youremail@foo.com
+</pre>
+
+:heading Custom HTTP headers
+You can specify one or more properties in a .properties file in your RAMADDA home directory.
+
+<pre>
+ramadda.httpheader1=&lt;header name&gt;:&lt;header value&gt;
+ramadda.httpheader2=&lt;header name&gt;:&lt;header value&gt;  
+...
+</pre>
+
+e.g: For specifying <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security">HSTS</a> Strict-Transport-Security header you would do:
+
+<pre>
+ramadda.httpheader1=Strict-Transport-Security:max-age=86400; includeSubDomains
+</pre>
+
+Once you restart your RAMADDA it is a good idea to check the headers, e.g. with curl:
+<pre>
+curl -v "http://localhost:8080" &gt; foo
+</pre>
+
+
+
+:heading Embed JSON-LD Metadata
+<a href="https://json-ld.org/">JSON-LD</a> is the JSON for Linking Data  metadata standard and
+is used by Google and others to extract structured metadata from a web page.
+To enable this embedding in entry pages in RAMADDA set the following property in one of the .properties
+files in your RAMADDA home directory:
+<pre>
+ramadda.showjsonld=true
+</pre>
+
+:heading Tracking Entry access
+You can enable logging of entry activities by setting the property:
+<pre>
+ramadda.logging.logactivityfile=true
+</pre>
+When set various entry activities - view, file, data (providing data to a display) - are logged
+to a file:<br>
+&lt;ramadda home&gt;/logs/entryactivity.log
+
+
+
+
 <a name="zoomable"></a>
 :heading Zoomable Images
 The Zoomable Image entry type uses an external script, magick-slicer.sh,

@@ -91,7 +91,8 @@ they can be referenced in the html as:<pre>
 
 <a name="default"></a><p><div class="ramadda-help-heading">9.10.1 <a href="#default">Specifying a Default Template</a></div> 
 
-You can specify a default template for your site in 2 ways. First, go to the Admin->Users list
+You can specify a default template for your site in a number of ways.
+First, go to the Admin->Users list
 and edit the anonynmous user. Select the desired template from the list.
 You can also specify the default template for the site via a property:
 <pre>
@@ -100,6 +101,17 @@ ramadda.html.template.default=&lt;your template id&gt;
 You can set this in a plugin .properties file or you can specify this property 
 (and other properties as well)
 in the Admin-&gt;Settings-&gt;Site and Contact Information-&gt;Extra Properties field.
+:p
+If you have a site that has different hostnames that resolve to it (e.g, asdi.ramadda.org, ditchproject.org, etc)
+you can specify a default page template for each host with the properties:
+<pre>
+&lt;hostname&gt;.template=template id
+e.g.:
+ditchproject.org.template=ditchproject
+www.ditchproject.org.template=ditchproject
+sdn.ramadda.org.template=sdn
+</pre>
+
 
 
 <a name="mobile"></a><p><div class="ramadda-help-heading">9.10.2 <a href="#mobile">Mobile Template</a></div> 

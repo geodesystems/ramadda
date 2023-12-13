@@ -11,60 +11,12 @@ then on the Login page you should see &quot;Forget your User ID?&quot; and
 &quot;Forget your Password?&quot; links. 
 </faqitem>
 
-<faqitem q="RAMADDA version, contact and security.txt" >
-Just go to the <a href="${root}/info">${root}/info</a> link.
-
-If you want to add a contact for your site then set the property in a
-.properties file in your RAMADDA home directory:
-<pre>
-ramadda.contact=...
-</pre>
-
-You can add any other information for this page with:
-<pre>
-ramadda.information=This  is my server...
-</pre>
-
-
-RAMADDA also provides a security.txt file that follows the specification
-from <a href=https://securitytxt.org/>https://securitytxt.org/</a>. The URL is:
-<a href="${root}/well-known/security.txt">${root}/well-known/security.txt</a>.
-<br>
-You can change the contact with the following property:
-<pre>
-ramadda.security.contact=mailto:youremail@foo.com
-</pre>
-
-</faqitem>
-
 
 <faqitem cat="Administration" id="ssl" q="How do I configure SSL access to RAMADDA?" >
 To configure SSL access see [ug::link installing.html#ssl here] if you are running under Tomcat.
 See [ug::link installing.html#ssljetty here] if you are running stand-alone.
 </faqitem>
 
-
-<faqitem cat="Administration" id="httpheaders" q="How do I add custom HTTP headers?" >
-You can specify one or more properties in a .properties file in your RAMADDA home directory.
-
-<pre>
-ramadda.httpheader1=&lt;header name&gt;:&lt;header value&gt;
-ramadda.httpheader2=&lt;header name&gt;:&lt;header value&gt;  
-...
-</pre>
-
-e.g: For specifying <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security">HSTS</a> Strict-Transport-Security header you would do:
-
-<pre>
-ramadda.httpheader1=Strict-Transport-Security:max-age=86400; includeSubDomains
-</pre>
-
-Once you restart your RAMADDA it is a good idea to check the headers, e.g. with curl:
-<pre>
-curl -v "http://localhost:8080" &gt; foo
-</pre>
-
-</faqitem>
 
 
 
@@ -106,24 +58,6 @@ go.
 </faqitem>
 
 
-<faqitem cat="Administration" id="cdn" q="How do I improve the page loading performance?" >
-By default RAMADDA serves up all of its CSS and Javascript files as individual files. You can improve
-page loading performance in by setting the following properties:
-  
-<pre>
-#This caches the HTML resources in memory
-ramadda.cachehtdocs = false
-
-#This serves up the JS and CSS files as aggregated minified files
-ramadda.minified=true
-
-#This uses the cdn.jsdelivr.net CDN network to deiver most of the CSS and Javascript files
-ramadda.cdnok=true
-
-</pre>
-
-</faqitem>
-
 
 <faqitem cat="Administration" id="allowedlogin" q="I want to restrict where users can login from" >
 For security reasons you can configure what IP addresses users are allowed to login from.
@@ -149,9 +83,6 @@ ramadda.user.agree= Some terms
 ramadda.user.agree= I have read and agree to the terms of service
 </pre>
 </faqitem>
-
-
-
 
 
 
@@ -186,8 +117,6 @@ that are processed by RAMADDA.
 </pre>
 
 </faqitem>
-
-
 
 
 
@@ -358,26 +287,6 @@ Be careful with this. I (jeffmc) have seen remote file systems go down momentari
 
 </faqitem>
 
-
-<faqitem cat="Administration" id="logging" q="How do I track views or downloads of entries?" >
-You can enable logging of entry activities by setting the property:
-<pre>
-ramadda.logging.logactivityfile=true
-</pre>
-When set various entry activities - view, file, data (providing data to a display) - are logged
-to a file:<br>
-&lt;ramadda home&gt;/logs/entryactivity.log
-</faqitem>
-
-
-<faqitem id="jsonld" q="Embed JSON-LD Metadata">
-<a href="https://json-ld.org/">JSON-LD</a> is the JSON for Linking Data  metadata standard and
-is used by Google and others to extract structured metadata from a web page.
-To enable this embedding in entry pages in RAMADDA set the following property in one of the .properties
-files in your RAMADDA home directory:
-<pre>
-ramadda.showjsonld=true
-</pre>
 
 
 
