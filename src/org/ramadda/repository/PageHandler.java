@@ -775,6 +775,10 @@ public class PageHandler extends RepositoryManager {
         String logoImage = getLogoImage(result);
         String logoUrl   = (String) result.getProperty(PROP_LOGO_URL);
         if ( !Utils.stringDefined(logoUrl)) {
+	    logoUrl = getRepository().getProperty(request.getRequestHostname()+".logourl");
+	}
+
+        if ( !Utils.stringDefined(logoUrl)) {
             logoUrl = this.logoUrl;
         }
         if ( !Utils.stringDefined(logoUrl)) {
@@ -1833,7 +1837,6 @@ public class PageHandler extends RepositoryManager {
 
 	if(!stringDefined(templateId)) {
 	    templateId = getRepository().getProperty(request.getRequestHostname()+".template");
-	    System.err.println("Template:" + templateId);
 	}
 
         if (templateId != null) {
