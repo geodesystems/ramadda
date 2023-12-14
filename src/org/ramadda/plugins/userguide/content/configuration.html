@@ -77,6 +77,24 @@ You can change the contact with the following property:
 ramadda.security.contact=mailto:youremail@foo.com
 </pre>
 
+:heading Multiple Languages
+RAMADDA supports multiple languages. To enable this set the following property:
+<pre>
+ramadda.languages.enabled = true
+
+##Set this to define the default language 
+##ramadda.language.default=es                                                                      
+</pre>
+
+If enabled then logged in users can set their default language. Also there will be a link shown in
+the upper
+right  of every page to change the displayed language.
+The translations for each language are defined in a ".pack" file.
+There are language packs defined in the RAMADDA source (on 
+<a href=https://github.com/geodesystems/ramadda/tree/master/src/org/ramadda/repository/htdocs/languages>Github</a>) for Spanish, French and Chinese. You can define your own language packs and place them
+in the htdocs/languages directory under your RAMADDA home directory.
+
+
 :heading Custom HTTP headers
 You can specify one or more properties in a .properties file in your RAMADDA home directory.
 
