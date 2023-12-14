@@ -7372,9 +7372,9 @@ public class WikiManager extends RepositoryManager
 	List<String> etcLinks = new ArrayList<String>();
 	Utils.add(etcLinks, findButton, previewButton,tidyButton);
 	if(getLLMManager().isLLMEnabled()) {
-	    etcLinks.add(HU.href("#", "GPT",
+	    etcLinks.add(HU.href("#", "LLM Convert",
 				 HU.attrs("id", textAreaId+"_rewrite")));
-	    etcLinks.add(HU.href("#", "Transcribe",
+	    etcLinks.add(HU.href("#", "Voice Transcribe",
 				 HU.attrs("id", textAreaId+"_transcribe")));	    
 	}
 	Utils.add(etcLinks,colorButton, wcButton);

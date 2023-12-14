@@ -43,6 +43,7 @@ public class LLMManager extends  AdminHandlerImpl {
     public static final int TOKEN_LIMIT_GPT3 = 2000;    
     public static final int TOKEN_LIMIT_GPT4 = 4000;
 
+    public static final String MODEL_WHISPER_1 = "whisper-1";
     public static final String MODEL_GPT_3_5="gpt-3.5-turbo-1106";
     public static final String MODEL_GPT_4="gpt-4";
     public static final String MODEL_GEMINI = "gemini";
@@ -59,6 +60,7 @@ public class LLMManager extends  AdminHandlerImpl {
 
 
 
+    public static final String URL_OPENAI_TRANSCRIPTION = "https://api.openai.com/v1/audio/transcriptions";
     public static final String URL_OPENAI_COMPLETION =  "https://api.openai.com/v1/chat/completions";
     public static final String URL_GEMINI="https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent";
 
@@ -77,6 +79,23 @@ public class LLMManager extends  AdminHandlerImpl {
     public String getId() {
         return "llmmanager";
     }
+
+    private List<String> openAIKeys;
+    private int openAIKeyIdx=0;
+    private synchronized String getOpenAIKey() {
+	if(openAIKeys==null) {
+	    String openAIKey = getRepository().getProperty(PROP_OPENAI_KEY);
+	    if(openAIKey!=null) openAIKeys = Utils.split(openAIKey,",",true,true);
+	    else openAIKeys = new ArrayList<String>();
+	}
+	if(openAIKeys.size()==0) {
+	    return null;
+	}	    
+	openAIKeyIdx++;
+	if(openAIKeyIdx>=openAIKeys.size()) openAIKeyIdx=0;
+	return openAIKeys.get(openAIKeyIdx);
+    }
+
 
     private boolean isGeminiEnabled() {
 	return  Utils.stringDefined(getRepository().getProperty(PROP_GEMINI_KEY));
@@ -160,76 +179,6 @@ public class LLMManager extends  AdminHandlerImpl {
 	return new Result("", new StringBuilder(json), "text/json");
     }
 
-    public Result processTranscribe(Request request)  throws Exception {
-	try {
-	    return processTranscribeInner(request);
-	} catch(Exception exc) {
-	    getLogManager().logError("Error calling transcribe",exc);
-	    return makeJsonErrorResult("An error has occurred:" + exc);
-	}
-    }
-
-    private List<String> openAIKeys;
-    private int openAIKeyIdx=0;
-    private synchronized String getGptKey() {
-	if(openAIKeys==null) {
-	    String openAIKey = getRepository().getProperty(PROP_OPENAI_KEY);
-	    if(openAIKey!=null) openAIKeys = Utils.split(openAIKey,",",true,true);
-	    else openAIKeys = new ArrayList<String>();
-	}
-	if(openAIKeys.size()==0) {
-	    return null;
-	}	    
-	openAIKeyIdx++;
-	if(openAIKeyIdx>=openAIKeys.size()) openAIKeyIdx=0;
-	return openAIKeys.get(openAIKeyIdx);
-    }
-
-    private Result processTranscribeInner(Request request)  throws Exception {	
-	if(request.isAnonymous()) {
-	    return makeJsonErrorResult("You must be logged in to use the rewrite service");
-	}
-
-
-	String openAIKey = getGptKey();
-	if(openAIKey==null) {
-	    if(debug) System.err.println("\tno LLM keys");
-	    return makeJsonErrorResult("LLM processing is not enabled");
-	}
-
-	File file = new File(request.getUploadedFile("audio-file"));
-	String[]args = new String[]{"Authorization","Bearer " +openAIKey};
-	System.err.println("key:" + args[0]+":");
-	String mime = request.getString("mimetype","audio/webm");
-
-	String fileName = "audio" + mime.replaceAll(".*/",".");
-	//	fileName = "test.mp4";
-	//	file = new File("/Users/jeffmc/test.mp4");
-	//	mime = "audio/mp4";
-
-	List postArgs   =Utils.add(new ArrayList(),
-				   "model","whisper-1","file", new IO.FileWrapper(file,fileName,mime));
-	System.err.println(postArgs);
-	URL url =  new URL("https://api.openai.com/v1/audio/transcriptions");
-	IO.Result result =  IO.doMultipartPost(url, args,postArgs);
-	System.err.println("transcribe:" + result);
-	String results = result.getResult();
-	JSONObject json = new JSONObject(results);
-	if(json.has("text")) {
-	    String text = json.getString("text");
-	    if(request.get("addfile",false)) {
-		getEntryManager().processEntryAddFile(request, file,fileName,text);
-	    }
-
-	    StringBuilder sb = new StringBuilder(JsonUtil.map(Utils.makeList("results", JsonUtil.quote(text))));
-	    return new Result("", sb, "text/json");
-	}
-	if(json.has("error")) {
-	    JSONObject error = json.getJSONObject("error");
-	    return makeJsonErrorResult(error.getString("message"));
-	}
-	return makeJsonErrorResult("An error occurred:" + results);
-    }
 
 
     public synchronized String callLLM(Request request,
@@ -242,14 +191,14 @@ public class LLMManager extends  AdminHandlerImpl {
 				       int callCnt)
 	throws Exception {
 	String text = corpus.toString();
-	String openAIKey = getGptKey();
+	String openAIKey = getOpenAIKey();
 	String geminiKey = getRepository().getProperty(PROP_GEMINI_KEY);	
 	if(openAIKey==null && geminiKey==null) {
 	    if(debug) System.err.println("\tno LLM key");
 	    return null;
 	}
 
-	String model = request.getString(ARG_MODEL,"");
+	String model = request.getString(ARG_MODEL,MODEL_GPT_3_5);
 	boolean useGPT4 = false;
 	if(isGPT4Enabled()) {
 	    useGPT4 = request.get(ARG_USEGPT4,false);
@@ -268,7 +217,6 @@ public class LLMManager extends  AdminHandlerImpl {
 	} 
 
 
-	debug = true;
 	int tokenLimit = initTokenLimit[0];
 	while(tokenLimit>=500) {
 	    initTokenLimit[0] = tokenLimit;
@@ -369,12 +317,10 @@ public class LLMManager extends  AdminHandlerImpl {
 			String delay = StringUtil.findPattern(result.getResult(),"Please try again in ([\\d\\.]+)s");
 			if(delay!=null) {
 			    try {ms = (int)(1000*1.5*Double.parseDouble(delay));} catch(Exception ignore){}
-			    //			    System.err.println("\tseconds delay:" + delay +" ms:" + ms);
 			} else {
 			    delay = StringUtil.findPattern(result.getResult(),"Please try again in ([\\d\\.]+)ms");
 			    if(delay!=null) {
 				try {ms = (int)(1.5*Double.parseDouble(delay));} catch(Exception ignore){}
-				//				System.err.println("\tms delay:" + delay +" ms:" + ms);
 			    }
 			}
 			
@@ -451,6 +397,61 @@ public class LLMManager extends  AdminHandlerImpl {
 	}
 	return null;
     }
+
+    public Result processTranscribe(Request request)  throws Exception {
+	try {
+	    return processTranscribeInner(request);
+	} catch(Exception exc) {
+	    getLogManager().logError("Error calling transcribe",exc);
+	    return makeJsonErrorResult("An error has occurred:" + exc);
+	}
+    }
+
+
+    private Result processTranscribeInner(Request request)  throws Exception {	
+	if(request.isAnonymous()) {
+	    return makeJsonErrorResult("You must be logged in to use the rewrite service");
+	}
+
+	String openAIKey = getOpenAIKey();
+	if(openAIKey==null) {
+	    if(debug) System.err.println("\tno OpenAI key");
+	    return makeJsonErrorResult("Transcription processing is not enabled");
+	}
+
+	File file = new File(request.getUploadedFile("audio-file"));
+	String[]args = new String[]{"Authorization","Bearer " +openAIKey};
+	String mime = request.getString("mimetype","audio/webm");
+
+	String fileName = "audio" + mime.replaceAll(".*/",".");
+	//	fileName = "test.mp4";
+	//	file = new File("/Users/jeffmc/test.mp4");
+	//	mime = "audio/mp4";
+
+	List postArgs   =Utils.add(new ArrayList(),
+				   "model",MODEL_WHISPER_1,"file", new IO.FileWrapper(file,fileName,mime));
+
+	URL url =  new URL(URL_OPENAI_TRANSCRIPTION);
+	IO.Result result =  IO.doMultipartPost(url, args,postArgs);
+	if(debug) System.err.println("LLMManager.transcribe:" + result);
+	String results = result.getResult();
+	JSONObject json = new JSONObject(results);
+	if(json.has("text")) {
+	    String text = json.getString("text");
+	    if(request.get("addfile",false)) {
+		getEntryManager().processEntryAddFile(request, file,fileName,text);
+	    }
+
+	    StringBuilder sb = new StringBuilder(JsonUtil.map(Utils.makeList("results", JsonUtil.quote(text))));
+	    return new Result("", sb, "text/json");
+	}
+	if(json.has("error")) {
+	    JSONObject error = json.getJSONObject("error");
+	    return makeJsonErrorResult(error.getString("message"));
+	}
+	return makeJsonErrorResult("An error occurred:" + results);
+    }
+
 
     public String extractTitle(Request request, String corpus,int[]tokenLimit) throws Exception {
 	if(debug) System.err.println("LLMManager: extractTitle");
