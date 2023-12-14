@@ -264,7 +264,6 @@ public class LLMManager extends  AdminHandlerImpl {
 		  "contents": [{
 		  "parts":[{"text": "Write a story about a magic backpack."}]}]}'
 		*/
-		//?key=AIzaSyDN4QURKe1z4V3lMzb4ZYBQhqpnK9pU4VY \	    
 		String contents = JU.list(JU.map("parts",JU.list(JU.map("text",JU.quote(gptText)))));
 		String body = JU.map("contents",contents);
 		//		System.err.println(body);
