@@ -590,6 +590,7 @@ public class WikiManager extends RepositoryManager
 	    alreadyDoingIt.put(entry.getId(),contentList = new ArrayList());
 	}
 	if(contentList.contains(wikiContent)) {
+	    System.err.println("LOOP");
 	    return "";
 	}
 	contentList.add(wikiContent);
@@ -602,9 +603,12 @@ public class WikiManager extends RepositoryManager
 	if(isPrimaryRequest) {
 	    wikiUtil.putProperty("primaryEntry", entry);
 	}
-        return wikifyEntry(request, entry, wikiUtil, wikiContent, wrapInDiv,
+        String s = wikifyEntry(request, entry, wikiUtil, wikiContent, wrapInDiv,
                            notTags, true);
+	contentList.remove(wikiContent);
+	return s;
     }
+
 
 
     /**
@@ -1467,6 +1471,8 @@ public class WikiManager extends RepositoryManager
         String result = getWikiIncludeInner(wikiUtil, request, originalEntry,
                                             entry, tag, props,remainder);
 
+
+
         if (result == null) {
             result = getMessage(wikiUtil, props,
                                 HU.span("Could not process tag: " + tag,HU.cssClass("ramadda-wiki-error")));
@@ -1870,7 +1876,9 @@ public class WikiManager extends RepositoryManager
                                        Entry originalEntry, Entry entry,
                                        String theTag, Hashtable props,String remainder)
 	throws Exception {
-	if(!checkIf(wikiUtil,request,entry,props)) return "";
+	if(!checkIf(wikiUtil,request,entry,props)) {
+	    return "";
+	}
         boolean wikify  = getProperty(wikiUtil, props, ATTR_WIKIFY, true);
         String criteria = getProperty(wikiUtil, props, ATTR_IF,
                                       (String) null);
@@ -2975,8 +2983,7 @@ public class WikiManager extends RepositoryManager
 	    if(!getProperty(wikiUtil,props,"showTitle",true)) {
 		myRequest.put(PROP_SHOW_TITLE,"false");
 	    }
-            Result result = getEntryManager().processEntryShow(myRequest,
-							       entry);
+            Result result = getEntryManager().processEntryShow(myRequest,  entry);
             //            Result result = getHtmlOutputHandler().getHtmlResult(newRequest,
             //                                OutputHandler.OUTPUT_HTML, entry);
             return new String(result.getContent());
@@ -3780,7 +3787,8 @@ public class WikiManager extends RepositoryManager
 						 originalEntry, child, tag, tmpProps, "", true);
                 StringBuilder content =   new StringBuilder();
 		if(showTextTop && stringDefined(text)) content.append(text);
-		content.append(HU.center(inner));
+		//		content.append(HU.center(inner));
+		content.append(inner);		
 		if(!showTextTop && stringDefined(text)) content.append(text);
                 if (showLink) {
                     String url;
@@ -4071,6 +4079,7 @@ public class WikiManager extends RepositoryManager
                     divClass = "ramadda-tabs-min ramadda-tabs-minarrow";
                 }
                 sb.append(HU.open("div", HU.cssClass(divClass)));
+
                 sb.append(OutputHandler.makeTabs(titles, contents, true,
 						 useCookies));
 
