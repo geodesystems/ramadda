@@ -2691,6 +2691,15 @@ public class HtmlUtils implements HtmlUtilsConstants {
     }
 
 
+    public static String labeledCheckbox(String name, String value,
+                                         boolean checked, String attrs,
+                                         String label) {
+	StringBuilder sb = new StringBuilder();
+	labeledCheckbox(sb,name,value,checked,attrs,label);
+	return sb.toString();
+    }
+
+
     /**
      * _more_
      *
@@ -2702,9 +2711,9 @@ public class HtmlUtils implements HtmlUtilsConstants {
      *
      * @return _more_
      */
-    public static String labeledCheckbox(String name, String value,
-                                         boolean checked, String attrs,
-                                         String label) {
+    public static void labeledCheckbox(StringBuilder sb, String name, String value,
+				       boolean checked, String attrs,
+				       String label) {
         String id = null;
         if (attrs == null) {
             attrs = "";
@@ -2721,11 +2730,11 @@ public class HtmlUtils implements HtmlUtilsConstants {
             attrs += " " + HtmlUtils.id(id);
         }
 
-        return checkbox(name, value, checked, attrs)
-               + /*space(1) +*/ tag("label",
-				    style("margin-left:5px;")+
-                                    cssClass("ramadda-clickable")
-                                    + attr("for", id), label);
+        sb.append(checkbox(name, value, checked, attrs));
+	tag(sb, "label",
+	    style("margin-left:5px;")+
+	    cssClass("ramadda-clickable")
+	    + attr("for", id), label);
     }
 
     /**
