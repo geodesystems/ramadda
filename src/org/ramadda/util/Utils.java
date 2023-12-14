@@ -4925,22 +4925,30 @@ public class Utils extends IO {
 
 
 
+    public static final String CASE_LOWER ="lower";
+    public static final String CASE_UPPER ="upper";
+    public static final String CASE_CAMEL ="camel";
+    public static final String CASE_PROPER ="proper";    
+    public static final String CASE_CAPITALIZE ="capitalize";            
+
     public static String applyCase(String caseType, String s) {
-	if (caseType.equals("lower")) {
+	if (caseType.equals(CASE_LOWER)) {
 	    return s.toLowerCase();
-	} else if (caseType.equals("upper")) {
+	} else if (caseType.equals(CASE_UPPER)) {
 	    return s.toUpperCase();
-	} else if (caseType.equals("proper")) {
+	} else if (caseType.equals(CASE_PROPER)) {
 	    return  Utils.nameCase(s);
-	} else if (caseType.equals("camel")) {
+	} else if (caseType.equals(CASE_CAMEL)) {
 	    return  Utils.upperCaseFirst(s);
-	} else if (caseType.equals("capitalize")) {
+	} else if (caseType.equals(CASE_CAPITALIZE)) {
 	    if (s.length() == 1) {
 		return s.toUpperCase();
 	    } else if (s.length() > 1) {
 		return  s.substring(0, 1).toUpperCase()
 		    + s.substring(1).toLowerCase();
 	    }
+	} else {
+	    System.err.println("Unknown case:" + caseType);
 	}
 	return s;
     }
