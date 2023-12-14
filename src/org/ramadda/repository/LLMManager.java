@@ -6,7 +6,9 @@
 
 package org.ramadda.repository;
 import org.ramadda.repository.admin.*;
+import org.ramadda.repository.metadata.MetadataManager;
 
+import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.JsonUtil;
@@ -32,12 +34,37 @@ import org.json.*;
 @SuppressWarnings("unchecked")
 public class LLMManager extends  AdminHandlerImpl {
 
-    public static boolean  debug = false;
-    public static final int GPT3_TOKEN_LIMIT = 2000;
-    public static final int GPT4_TOKEN_LIMIT = 4000;
+    public static boolean  debug = true;
 
-    public static final String GPT_MODEL_3_5="gpt-3.5-turbo-1106";
-    public static final String GPT_MODEL_4="gpt-4";
+    public static final String PROP_OPENAI_KEY = "openai.api.key";
+    public static final String PROP_GEMINI_KEY = "gemini.api.key";	
+
+    public static final int TOKEN_LIMIT_GEMINI = 4000;
+    public static final int TOKEN_LIMIT_GPT3 = 2000;    
+    public static final int TOKEN_LIMIT_GPT4 = 4000;
+
+    public static final String MODEL_GPT_3_5="gpt-3.5-turbo-1106";
+    public static final String MODEL_GPT_4="gpt-4";
+    public static final String MODEL_GEMINI = "gemini";
+
+    public static final String ARG_USEGPT4  = "usegpt4";
+    public static final String ARG_MODEL = "model";
+    public static final String ARG_EXTRACT_SUMMARY_PROMPT = "extract_summary_prompt";    
+
+    public static final String ARG_EXTRACT_KEYWORDS = "extract_keywords";
+    public static final String ARG_EXTRACT_SUMMARY = "extract_summary";    
+
+    public static final String ARG_EXTRACT_AUTHORS = "extract_authors";
+    public static final String ARG_EXTRACT_TITLE = "extract_title";	        
+
+
+
+    public static final String URL_OPENAI_COMPLETION =  "https://api.openai.com/v1/chat/completions";
+    public static final String URL_GEMINI="https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent";
+
+    public static final String PROMPT_TITLE="Extract the title from the following document. Your result should be in proper case form. The document text is:";
+    public static final String PROMPT_KEYWORDS= "Extract keywords from the following text. The return format should be comma delimited keywords. Limit your response to no more than 10 keywords:";
+    public static final String PROMPT_SUMMARY = "Summarize the following text. \nAssume the reader has a college education. \nLimit the summary to no more than 4 sentences.";
 
     public LLMManager(Repository repository) {
         super(repository);
@@ -51,15 +78,63 @@ public class LLMManager extends  AdminHandlerImpl {
         return "llmmanager";
     }
 
-    public boolean isLLMEnabled() {
-	return Utils.stringDefined(getRepository().getProperty("gpt.api.key")) ||
-	    Utils.stringDefined(getRepository().getProperty("palm.api.key"));
+    private boolean isGeminiEnabled() {
+	return  Utils.stringDefined(getRepository().getProperty(PROP_GEMINI_KEY));
     }
 
+
+    private boolean isOpenAIEnabled() {
+	return Utils.stringDefined(getRepository().getProperty(PROP_OPENAI_KEY));
+    }
+
+
     public boolean isGPT4Enabled() {
-	return getRepository().getProperty("gpt.gpt4.enabled",false);
+	return getRepository().getProperty("openai.gpt4.enabled",false);
     }    
 
+    
+    public boolean isLLMEnabled() {
+	return isGeminiEnabled() || isOpenAIEnabled();
+    }
+
+
+    public String getNewEntryExtract(Request request) {
+	if(!isLLMEnabled()) return "";
+	String space = HU.space(3);
+	StringBuilder sb = new StringBuilder();
+	List<HtmlUtils.Selector> models = new ArrayList<HtmlUtils.Selector>();
+	if(isOpenAIEnabled()) {
+	    models.add(new HtmlUtils.Selector("OpenAI-GPT3.5",MODEL_GPT_3_5));
+	    if(isGPT4Enabled()) {
+		models.add(new HtmlUtils.Selector("OpenAI-GPT4.0",MODEL_GPT_4));
+	    }
+	}
+	if(isGeminiEnabled()) {
+	    models.add(new HtmlUtils.Selector("Google Gemini",MODEL_GEMINI));
+	}
+	if(models.size()==0) return "";
+	if(models.size()==1) {
+	    sb.append(HU.hidden(ARG_MODEL,models.get(0).getId()));
+	} else {
+	    sb.append(msgLabel("Model"));
+	    sb.append(HU.space(1));
+	    sb.append(HU.select(ARG_MODEL,models,""));
+	    sb.append("<br>");
+	}
+
+	HU.labeledCheckbox(sb, ARG_EXTRACT_KEYWORDS, "true", request.get(ARG_EXTRACT_KEYWORDS, false),  "","Extract keywords");
+	sb.append(space);
+	HU.labeledCheckbox(sb,ARG_EXTRACT_TITLE, "true", request.get(ARG_EXTRACT_TITLE,false),  "","Extract title");
+	sb.append(space);
+	HU.labeledCheckbox(sb, ARG_EXTRACT_AUTHORS, "true", request.get(ARG_EXTRACT_AUTHORS,false),"","Extract authors");
+	sb.append("<br>");
+	HU.labeledCheckbox(sb, ARG_EXTRACT_SUMMARY, "true", request.get(ARG_EXTRACT_SUMMARY,false), "","Extract summary with the prompt:");
+	sb.append("<br>");
+	sb.append(HU.textArea(ARG_EXTRACT_SUMMARY_PROMPT, request.getString(ARG_EXTRACT_SUMMARY_PROMPT,PROMPT_SUMMARY),3,50));
+	sb.append("<br>");
+	sb.append("Note: when extracting keywords, title, etc., the file text is sent to the <a href=https://openai.com/api/>OpenAI GPT API</a> for processing.<br>There will also be a delay before the results are shown for the new entry.");
+	return sb.toString();
+    }
 
 
 
@@ -94,20 +169,20 @@ public class LLMManager extends  AdminHandlerImpl {
 	}
     }
 
-    private List<String> gptKeys;
-    private int gptKeyIdx=0;
+    private List<String> openAIKeys;
+    private int openAIKeyIdx=0;
     private synchronized String getGptKey() {
-	if(gptKeys==null) {
-	    String gptKey = getRepository().getProperty("gpt.api.key");
-	    if(gptKey!=null) gptKeys = Utils.split(gptKey,",",true,true);
-	    else gptKeys = new ArrayList<String>();
+	if(openAIKeys==null) {
+	    String openAIKey = getRepository().getProperty(PROP_OPENAI_KEY);
+	    if(openAIKey!=null) openAIKeys = Utils.split(openAIKey,",",true,true);
+	    else openAIKeys = new ArrayList<String>();
 	}
-	if(gptKeys.size()==0) {
+	if(openAIKeys.size()==0) {
 	    return null;
 	}	    
-	gptKeyIdx++;
-	if(gptKeyIdx>=gptKeys.size()) gptKeyIdx=0;
-	return gptKeys.get(gptKeyIdx);
+	openAIKeyIdx++;
+	if(openAIKeyIdx>=openAIKeys.size()) openAIKeyIdx=0;
+	return openAIKeys.get(openAIKeyIdx);
     }
 
     private Result processTranscribeInner(Request request)  throws Exception {	
@@ -115,15 +190,15 @@ public class LLMManager extends  AdminHandlerImpl {
 	    return makeJsonErrorResult("You must be logged in to use the rewrite service");
 	}
 
-	String palmKey = getRepository().getProperty("palm.api.key");
-	String gptKey = getGptKey();
-	if(gptKey==null && palmKey==null) {
+
+	String openAIKey = getGptKey();
+	if(openAIKey==null) {
 	    if(debug) System.err.println("\tno LLM keys");
 	    return makeJsonErrorResult("LLM processing is not enabled");
 	}
 
 	File file = new File(request.getUploadedFile("audio-file"));
-	String[]args = new String[]{"Authorization","Bearer " +gptKey};
+	String[]args = new String[]{"Authorization","Bearer " +openAIKey};
 	System.err.println("key:" + args[0]+":");
 	String mime = request.getString("mimetype","audio/webm");
 
@@ -167,13 +242,14 @@ public class LLMManager extends  AdminHandlerImpl {
 				       int callCnt)
 	throws Exception {
 	String text = corpus.toString();
-	String gptKey = getGptKey();
-	String palmKey = getRepository().getProperty("palm.api.key");	
-	if(gptKey==null && palmKey==null) {
+	String openAIKey = getGptKey();
+	String geminiKey = getRepository().getProperty(PROP_GEMINI_KEY);	
+	if(openAIKey==null && geminiKey==null) {
 	    if(debug) System.err.println("\tno LLM key");
 	    return null;
 	}
 
+	String model = request.getString(ARG_MODEL,"");
 	boolean useGPT4 = false;
 	if(isGPT4Enabled()) {
 	    useGPT4 = request.get(ARG_USEGPT4,false);
@@ -183,10 +259,12 @@ public class LLMManager extends  AdminHandlerImpl {
 	    initTokenLimit = new int[]{-1};
 
 	if(initTokenLimit[0]<=0) {
-	    if(useGPT4)
-		initTokenLimit[0] = GPT4_TOKEN_LIMIT;
+	    if(model.equals(MODEL_GEMINI)) 
+		initTokenLimit[0] = TOKEN_LIMIT_GEMINI;
+	    else if(model.equals(MODEL_GPT_4)) 
+		initTokenLimit[0] = TOKEN_LIMIT_GPT4;
 	    else
-		initTokenLimit[0] = GPT3_TOKEN_LIMIT;
+		initTokenLimit[0] = TOKEN_LIMIT_GPT3;
 	} 
 
 
@@ -225,28 +303,51 @@ public class LLMManager extends  AdminHandlerImpl {
 	    gptCorpus.append("\n\n");
 	    gptCorpus.append(prompt2);
 	    String gptText =  gptCorpus.toString();
-	    if(debug) System.err.println("\tuse gpt4:" + useGPT4 +
+
+	    if(debug) System.err.println("\tmodel:" + model +
 					 " text length:" + gptText.length() +
 					 " token limit:" + initTokenLimit[0]);
 
-	    List<String> args = Utils.makeList("temperature", "0",
-					       "max_tokens" ,""+ maxReturnTokens,
-					       "top_p", "1.0");
 
-	    if(useGPT4) 
-		Utils.add(args,"model",JsonUtil.quote(GPT_MODEL_4));
-	    else
-		Utils.add(args,"model",JsonUtil.quote(GPT_MODEL_3_5));
-	    Utils.add(args,"messages",JsonUtil.list(JsonUtil.map(
-								 "role",JsonUtil.quote("user"),
-								 "content",JsonUtil.quote(gptText))));
+	    IO.Result  result=null; 
+	    if(model.equals(MODEL_GEMINI)) {
+		if(!isGeminiEnabled()) return null;
+		/*{
+		  "contents": [{
+		  "parts":[{"text": "Write a story about a magic backpack."}]}]}'
+		*/
+		//?key=AIzaSyDN4QURKe1z4V3lMzb4ZYBQhqpnK9pU4VY \	    
+		String contents = JU.list(JU.map("parts",JU.list(JU.map("text",JU.quote(gptText)))));
+		String body = JU.map("contents",contents);
+		//		System.err.println(body);
+		result= IO.getHttpResult(IO.HTTP_METHOD_POST
+					 , new URL(URL_GEMINI+"?key=" + geminiKey), body,
+					 "Content-Type","application/json");
+	    } else if(Utils.equalsOne(model,MODEL_GPT_4,MODEL_GPT_3_5)) {
+		if(!isOpenAIEnabled()) return null;
+		boolean useGpt4 = model.equals(MODEL_GPT_4);
+		if(useGpt4 && !isGPT4Enabled()) return null;
+		List<String> args =  Utils.makeList("temperature", "0",
+						    "max_tokens" ,""+ maxReturnTokens,
+						    "top_p", "1.0");
 
-	    String body = JsonUtil.map(args);
-	    String url = "https://api.openai.com/v1/chat/completions";
-	    IO.Result  result = IO.getHttpResult(IO.HTTP_METHOD_POST
-						 , new URL(url), body,
-						 "Content-Type","application/json",
-						 "Authorization","Bearer " +gptKey);
+		Utils.add(args,"model",JsonUtil.quote(model));
+		Utils.add(args,"messages",JsonUtil.list(JsonUtil.map(
+								     "role",JsonUtil.quote("user"),
+								     "content",JsonUtil.quote(gptText))));
+		String body = JsonUtil.map(args);
+		result= IO.getHttpResult(IO.HTTP_METHOD_POST
+					 , new URL(URL_OPENAI_COMPLETION), body,
+					 "Content-Type","application/json",
+					 "Authorization","Bearer " +openAIKey);
+	    }
+	    if(result==null) {
+		if(debug)
+		    System.err.println("\tno result for model:" + model);
+		return null;
+	    }
+
+	    //	    System.err.println("result:" + Utils.clip(result.getResult().replaceAll("  +"," "),500,"..."));
 	    if(result.getError()) {
 		try {
 		    JSONObject json = new JSONObject(result.getResult());
@@ -309,14 +410,29 @@ public class LLMManager extends  AdminHandlerImpl {
 		    System.err.println("\tresult: prompt tokens:" + tokens+
 				       " completion tokens:" + JsonUtil.readValue(json,"usage.completion_tokens","NA"));
 		} else {
-		    System.err.println("\tLLMManager: json: "  +Utils.clip(result.getResult(),200,"..."));
+		    System.err.println("\tLLMManager: json: "  +Utils.clip(result.getResult().replace("\n"," ").replaceAll("  +"," "),200,"..."));
 		}
 	    }
 	    //Google PALM
 	    if(json.has("candidates")) {
+		/*{
+		  "candidates": [
+		  {
+		  "content": {
+		  "parts": [
+		  {
+		  "text": "AN ANCIENT ROCKY MOUNTAIN CAVER"
+		  }
+		  ],
+		  "role": "model"
+		  },
+		*/
 		JSONArray candidates = json.getJSONArray("candidates");
+		if(candidates.length()==0) return null;
 		JSONObject candidate= candidates.getJSONObject(0);
-		return candidate.optString("output",null);
+		JSONArray parts = candidate.getJSONObject("content").getJSONArray("parts");
+		String t = parts.getJSONObject(0).optString("text",null);
+		return t;
 	    }
 
 	    if(json.has("choices")) {
@@ -338,9 +454,8 @@ public class LLMManager extends  AdminHandlerImpl {
 
     public String extractTitle(Request request, String corpus,int[]tokenLimit) throws Exception {
 	if(debug) System.err.println("LLMManager: extractTitle");
-	String title = callLLM(request, "Extract the title from the following document:","",
-					       corpus,200,true,tokenLimit,0);
-	//	if(debug) System.err.println("\ttitle=" + title);
+	String title = callLLM(request, PROMPT_TITLE,"",
+			       corpus,200,true,tokenLimit,0);
 	return title;
     }
 
@@ -356,13 +471,16 @@ public class LLMManager extends  AdminHandlerImpl {
 	List<String> keywords = new ArrayList<String>();
 	if(LLMManager.debug) System.err.println("LLMManager.getKeywords");
 	String result = callLLM(request,
-				"Extract keywords from the following text. Limit your response to no more than 10 keywords:",
+				PROMPT_KEYWORDS,
 				"Keywords:",
 				llmCorpus,
 				60,true,tokenLimit,0);
 	if(result!=null) {
-	    for(String tok:Utils.split(result,",",true,true)) {
+	    String r = result.replace("\n",",");
+	    System.err.println("keywords:" + r);
+	    for(String tok:Utils.split(r,",",true,true)) {
 		if(keywords.size()>15) break;
+		tok = tok.replaceAll("^-","").trim();
 		if(!keywords.contains(tok)) {
 		    keywords.add(tok);
 		}
@@ -423,6 +541,77 @@ public class LLMManager extends  AdminHandlerImpl {
 
 
 
+    public boolean applyEntryExtract(Request request, Entry entry, String llmCorpus) throws Exception {
+	boolean entryChanged = false;
+	int[]tokenLimit = new int[]{-1};
+	if(request.get(LLMManager.ARG_EXTRACT_KEYWORDS,false)) {
+	    List<String> keywords = getLLMManager().getKeywords(request, entry, llmCorpus,tokenLimit);
+	    if(Utils.notEmpty(keywords)) {
+		int cnt = 0;
+		for(String word:keywords) {
+		    //Only do 6
+		    if(cnt++>6) break;
+		    word = word.replace("."," ").replaceAll("  +"," ");
+		    word = word.trim();
+		    if(word.length()<=3) continue;
+		    getMetadataManager().addKeyword(request, entry, word);
+		}
+		entryChanged = true;
+	    }
+	}
+
+	if(request.get(ARG_EXTRACT_SUMMARY,false)) {
+	    if(debug) System.err.println("LLMManager: callLLM: summary");
+	    String prompt = request.getString(LLMManager.ARG_EXTRACT_SUMMARY_PROMPT,"");
+	    if(!stringDefined(prompt))
+		prompt = PROMPT_SUMMARY;
+	    String summary = callLLM(request, prompt,"",llmCorpus,200,true,tokenLimit,0);
+	    if(stringDefined(summary)) {
+		summary = Utils.stripTags(summary).trim().replaceAll("^:+","");
+		StringBuilder sb = new StringBuilder();
+		for(String line:Utils.split(summary,"\n",true,true)) {
+		    line = line.replaceAll("^-","");
+		    sb.append(line);
+		    sb.append("\n");
+		}
+		summary = "+toggleopen Summary\n+callout-info\n<snippet>\n" + sb+"\n</snippet>\n-callout-info\n-toggle\n";
+		entryChanged = true;
+		entry.setDescription(summary+"\n"+entry.getDescription());
+	    }
+	}
+
+	if(request.get(LLMManager.ARG_EXTRACT_TITLE,false)) {
+	    String title = extractTitle(request, llmCorpus,tokenLimit);
+	    if(stringDefined(title)) {
+		title = title.trim().replaceAll("\"","").replaceAll("\"","");
+		entry.setName(title);
+		entryChanged = true;
+	    }
+	}
+
+
+
+	if(request.get(LLMManager.ARG_EXTRACT_AUTHORS,false)) {
+	    if(LLMManager.debug) System.err.println("SearchManager: callLLM: authors");
+	    String authors = callLLM(request,
+				     "Extract the author's names and only the author's names from the first few pages in the following text and separate the names with a comma:","",
+				     Utils.clip(llmCorpus,1000,""),
+				     200,true,tokenLimit,0);		    
+	    if(LLMManager.debug) System.err.println("got authors:" + Utils.clip(authors,50,"..."));
+	    if(stringDefined(authors) && authors.indexOf("does not provide")<0) {
+		entryChanged = true;
+		for(String author:Utils.split(authors,",",true,true)) {
+		    //This gets rid of some false positives
+		    if(author.indexOf(" ")<0) continue;
+		    if(author.indexOf("No author")>=0) continue;
+		    getMetadataManager().addMetadata(request, entry,
+						     "metadata_author", MetadataManager.CHECK_UNIQUE_TRUE,author);
+		}
+	    }
+	}
+
+	return entryChanged;
+    }
 
 
 }

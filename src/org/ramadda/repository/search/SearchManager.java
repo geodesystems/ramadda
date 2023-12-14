@@ -336,35 +336,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
-    public boolean isSummaryExtractionEnabled() {
-	return getLLMManager().isLLMEnabled();
-    }
-
-    public String getNewEntryExtract(Request request) {
-	if(!isSummaryExtractionEnabled())
-	    return "";
-	String space = HU.space(3);
-	String  extract = "";
-	if(getLLMManager().isGPT4Enabled()) {
-	    extract+=HU.labeledCheckbox(ARG_USEGPT4, "true", request.get(ARG_USEGPT4,false),   "Use GPT 4") +"<br>";
-	}
-	extract+= HU.labeledCheckbox(ARG_EXTRACT_KEYWORDS, "true", request.get(ARG_EXTRACT_KEYWORDS, false),
-				     "Extract keywords") +
-	    space + 
-	    HU.labeledCheckbox(ARG_EXTRACT_TITLE, "true", request.get(ARG_EXTRACT_TITLE,false),
-			       "Extract title") +
-	    space +
-	    HU.labeledCheckbox(ARG_EXTRACT_AUTHORS, "true", request.get(ARG_EXTRACT_AUTHORS,false),"Extract authors") +
-	    "<br>" +
-	    HU.labeledCheckbox(ARG_EXTRACT_SUMMARY, "true", request.get(ARG_EXTRACT_SUMMARY,false),
-			       "Extract summary with the prompt:") +
-	    "<br>" +
-	    HU.textArea(ARG_EXTRACT_SUMMARY_PROMPT, request.getString(ARG_EXTRACT_SUMMARY_PROMPT,SUMMARY_PROMPT),3,50) +
-	    "<br>" +
-	    "Note: when extracting keywords, title, etc., the file text is sent to the <a href=https://openai.com/api/>OpenAI GPT API</a> for processing.<br>There will also be a delay before the results are shown for the new entry.";
-	return extract;
-    }
-
 
     /**
      * _more_
@@ -708,71 +679,13 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    corpus.append(fileCorpus);
 
 	    if(/*isNew && */request!=null) {
-		int[]tokenLimit = new int[]{-1};
 		String llmCorpus = fileCorpus.toString();
+
 		boolean entryChanged = false;
-		if(request.get(ARG_EXTRACT_KEYWORDS,false)) {
-		    List<String> keywords = getLLMManager().getKeywords(request, entry, llmCorpus,tokenLimit);
-		    if(Utils.notEmpty(keywords)) {
-			int cnt = 0;
-			for(String word:keywords) {
-			    //Only do 6
-			    if(cnt++>6) break;
-			    word = word.replace("."," ").replaceAll("  +"," ");
-			    word = word.trim();
-			    if(word.length()<=3) continue;
-			    getMetadataManager().addKeyword(request, entry, word);
-			}
-			entryChanged = true;
-		    }
-		}
-
 		if(isNew) {
-		    if(request.get(ARG_EXTRACT_SUMMARY,false)) {
-			if(LLMManager.debug) System.err.println("SearchManager: callLLM: summary");
-			String prompt = request.getString(ARG_EXTRACT_SUMMARY_PROMPT,"");
-			if(!stringDefined(prompt))
-			    prompt = SUMMARY_PROMPT;
-			String summary = getLLMManager().callLLM(request, prompt,"",llmCorpus,200,true,tokenLimit,0);
-			//			if(LLMManager.debug) System.err.println("got summary:" + Utils.clip(summary,50,"..."));
-			if(stringDefined(summary)) {
-			    summary = Utils.stripTags(summary).trim().replaceAll("^:+","");
-			    summary = "+toggleopen Summary\n+callout-info\n<snippet>\n" + summary+"\n</snippet>\n-callout-info\n-toggle\n";
-			    entryChanged = true;
-			    entry.setDescription(summary+"\n"+entry.getDescription());
-			}
-		    }
-
-		    if(request.get(ARG_EXTRACT_TITLE,false)) {
-			String title = getLLMManager().extractTitle(request, llmCorpus,tokenLimit);
-			if(stringDefined(title)) {
-			    title = title.trim().replaceAll("\"","").replaceAll("\"","");
-			    entry.setName(title);
-			    entryChanged = true;
-			}
-		    }
-
-
-
-		    if(request.get(ARG_EXTRACT_AUTHORS,false)) {
-			if(LLMManager.debug) System.err.println("SearchManager: callLLM: authors");
-			String authors = getLLMManager().callLLM(request,
-								 "Extract the author's names and only the author's names from the first few pages in the following text and separate the names with a comma:","",
-								 Utils.clip(llmCorpus,1000,""),
-								 200,true,tokenLimit,0);		    
-			if(LLMManager.debug) System.err.println("got authors:" + Utils.clip(authors,50,"..."));
-			if(stringDefined(authors) && authors.indexOf("does not provide")<0) {
-			    entryChanged = true;
-			    for(String author:Utils.split(authors,",",true,true)) {
-				//This gets rid of some false positives
-				if(author.indexOf(" ")<0) continue;
-				if(author.indexOf("No author")>=0) continue;
-				getMetadataManager().addMetadata(request, entry,
-								 "metadata_author", MetadataManager.CHECK_UNIQUE_TRUE,author);
-			    }
-			}
-		    }
+		    entryChanged |= getLLMManager().applyEntryExtract(request, entry, llmCorpus);
 		}
+
 
 		if(entryChanged) {
 		    List<Entry> tmp = new ArrayList<Entry>();

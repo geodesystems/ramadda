@@ -5420,7 +5420,7 @@ public class TypeHandler extends RepositoryManager {
 	    
 
 
-	String extract = getSearchManager().getNewEntryExtract(request);
+	String extract = getLLMManager().getNewEntryExtract(request);
 
 
         List datePatterns = new ArrayList();
