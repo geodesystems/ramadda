@@ -299,6 +299,7 @@ public class TypeHandler extends RepositoryManager {
     private String newHelp = null;
 
     private String[] editFields;
+    private String[] newFields;    
 
 
     /**  */
@@ -517,6 +518,12 @@ public class TypeHandler extends RepositoryManager {
 		fields = fields.replace("_default",DEFAULT_EDIT_FIELDS);
 		editFields = Utils.toStringArray(Utils.split(fields,",",true,true));
 	    }
+	    fields = XmlUtil.getAttributeFromTree(node, "newfields", null);	    
+	    if(fields!=null) {
+		fields = fields.replace("_default",DEFAULT_EDIT_FIELDS);
+		newFields = Utils.toStringArray(Utils.split(fields,",",true,true));
+	    }
+	    
 	    superCategory = XmlUtil.getAttributeFromTree(node,
 							 ATTR_SUPERCATEGORY, superCategory);
 
@@ -4948,9 +4955,15 @@ public class TypeHandler extends RepositoryManager {
 
 
         Object[] values = entry==null?null:entry.getValues();
-        String[] whatList = editFields!=null?editFields:entry == null  ? FIELDS_NOENTRY: FIELDS_ENTRY;
+        String[] whatList = entry==null?newFields:editFields;
+	if(whatList==null) whatList = editFields;
+	if(whatList==null) whatList = entry == null  ? FIELDS_NOENTRY: FIELDS_ENTRY;
         String   domId;
         for (String what : whatList) {
+            if (what.equals("quit")) {
+		seen.add(FIELD_COLUMNS);
+		break;
+	    }
             if (what.equals(FIELD_HR)) {
 		sb.append("<tr><td colspan=2><hr class=ramadda-hr></td></tr>");
 		continue;
