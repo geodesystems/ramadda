@@ -67,7 +67,7 @@ import java.util.TimeZone;
 @SuppressWarnings("unchecked")
 public class PageHandler extends RepositoryManager {
 
-    private static  boolean debugTemplates = true;
+    private static  boolean debugTemplates = false;
 
     /**  */
     public static final String IMPORTS_BEGIN = "<!--imports-->";
