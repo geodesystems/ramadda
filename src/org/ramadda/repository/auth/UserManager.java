@@ -1364,12 +1364,14 @@ public class UserManager extends RepositoryManager {
 					    request.getString(ARG_USER_DESCRIPTION,user.getDescription()), 5, 30)));
         }
         if (includeAdmin) {
-            sb.append(formEntry(request, msgLabel("Admin"),
-                                HU.checkbox(ARG_USER_ADMIN, "true",
-					    user.getAdmin())));
-            sb.append(formEntry(request, msgLabel("Guest"),
-                                HU.checkbox(ARG_USER_ISGUEST, "true",
-					    request.get(ARG_USER_ISGUEST,user.getIsGuest()))));
+            sb.append(formEntry(request, "",
+                                HU.labeledCheckbox(ARG_USER_ADMIN, "true",
+						   request.get(ARG_USER_ADMIN,user.getAdmin()),
+						   "Is Administrator")));
+            sb.append(formEntry(request, "",
+                                HU.labeledCheckbox(ARG_USER_ISGUEST, "true",
+						   request.get(ARG_USER_ISGUEST,user.getIsGuest()),
+						   "Is Guest User")));
             String       userRoles = user.getRolesAsString("\n");
             StringBuffer allRoles  = new StringBuffer();
             List<Role>   roles     = getStandardRoles();
@@ -1565,7 +1567,7 @@ public class UserManager extends RepositoryManager {
             String  password1 = "";
             String  password2 = "";
             boolean admin     = false;
-
+            boolean guest     = false;	    
             if (request.defined(ARG_USER_ID)) {
                 id        = cleanUserId(request.getString(ARG_USER_ID, ""));
                 name      = request.getString(ARG_USER_NAME, name).trim();
@@ -1574,6 +1576,7 @@ public class UserManager extends RepositoryManager {
                 password1 = request.getString(ARG_USER_PASSWORD1, "").trim();
                 password2 = request.getString(ARG_USER_PASSWORD2, "").trim();
                 admin     = request.get(ARG_USER_ADMIN, false);
+                guest     = request.get(ARG_USER_ISGUEST, false);		
 
                 boolean okToAdd = true;
                 if (id.length() == 0) {
@@ -1604,6 +1607,7 @@ public class UserManager extends RepositoryManager {
                     User newUser = new User(id, name, email, "", "",
                                             hashPassword(password1), desc,
                                             admin, "", "", false, null);
+		    newUser.setIsGuest(guest);
                     users.add(newUser);
                 }
             }
@@ -1782,6 +1786,7 @@ public class UserManager extends RepositoryManager {
         String       desc = request.getString(ARG_USER_DESCRIPTION, "").trim();
         String       email  = request.getString(ARG_USER_EMAIL, "").trim();
         boolean      admin  = request.get(ARG_USER_ADMIN, false);
+        boolean      guest  = request.get(ARG_USER_ISGUEST, false);	
 
         formSB.append(msgHeader("Create a single user"));
         formSB.append(HU.formTable());
@@ -1796,9 +1801,14 @@ public class UserManager extends RepositoryManager {
                                 HU.textArea(ARG_USER_DESCRIPTION,
 					    desc, 5, cols)));
 
-        formSB.append(formEntry(request, msgLabel("Admin"),
-                                HU.checkbox(ARG_USER_ADMIN, "true",
-					    admin)));
+	HU.formEntry(formSB, "",
+		  HU.labeledCheckbox(ARG_USER_ADMIN, "true",
+				     admin,"Is Administrator"));
+
+	HU.formEntry(formSB,"",
+		     HU.labeledCheckbox(ARG_USER_ISGUEST, "true",
+					guest,
+					"Is Guest User"));
 
         formSB.append(formEntry(request, msgLabel("Email"),
                                 HU.input(ARG_USER_EMAIL, email,
