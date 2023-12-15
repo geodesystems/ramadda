@@ -550,6 +550,8 @@ function DisplayManager(argId, argProperties) {
     let targetDiv = this.getProperty("target",this.getProperty("targetDiv"));
     let _this = this;
     if (targetDiv != null) {
+	targetDiv = targetDiv.replace("${entryid}",this.getProperty("entryId"));
+	console.log(targetDiv);
 	if($("#" + targetDiv).length==0) {
 	    console.log("Error: display group could not find targetDiv:" + targetDiv);
 	    targetDiv=null;

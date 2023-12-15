@@ -8454,6 +8454,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
 	{label:'Group Properties'},
 	{p:PROP_LAYOUT_TYPE,ex:Utils.join([LAYOUT_TABLE,LAYOUT_HTABLE,LAYOUT_TABS,LAYOUT_COLUMNS,LAYOUT_ROWS],",")},
 	{p:PROP_LAYOUT_COLUMNS,d:1},
+	{p:'targetDiv',tt:'Div id to put the displays in for this group'},
 	]
 
     displayDefineMembers(this, myProps, {
