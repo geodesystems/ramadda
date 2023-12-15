@@ -3236,7 +3236,6 @@ public class PageHandler extends RepositoryManager {
     public void clearCache() {
         super.clearCache();
         templateJavascriptContent = null;
-	System.err.println("PageHandler.clearCache");
         htmlTemplates             = null;
 	templateMap = null;
         typeToWikiTemplate        = new Hashtable<String, String>();
