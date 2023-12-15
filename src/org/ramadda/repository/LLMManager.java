@@ -46,6 +46,7 @@ public class LLMManager extends  AdminHandlerImpl {
     public static final String MODEL_WHISPER_1 = "whisper-1";
     public static final String MODEL_GPT_3_5="gpt-3.5-turbo-1106";
     public static final String MODEL_GPT_4="gpt-4";
+    public static final String MODEL_GPT_VISION  = "gpt-4-vision-preview";
     public static final String MODEL_GEMINI = "gemini";
 
     public static final String ARG_USEGPT4  = "usegpt4";
