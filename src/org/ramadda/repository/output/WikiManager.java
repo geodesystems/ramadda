@@ -8640,6 +8640,9 @@ public class WikiManager extends RepositoryManager
 	    topProps.add(HU.quote(entry.getParentEntry().getId()));
 	}
 
+	topProps.add("entryId");
+	topProps.add(HU.quote(entry.getId()));
+	
         if ( !request.isAnonymous()) {
 	    String sessionId = request.getSessionId();
 	    if(sessionId!=null) {
