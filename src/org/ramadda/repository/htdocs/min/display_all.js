@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Dec 14 21:44:49 MST 2023";
+var build_date="RAMADDA build date: Fri Dec 15 07:52:10 MST 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -44189,7 +44189,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 
 	makeColorBar:function(domId) {
-	    let colors = Utils.split("transparent,red,orange,yellow,#fffeec,green,blue,indigo,violet,white,black,IndianRed,LightCoral,Salmon,DarkSalmon,LightSalmon,Crimson,Red,FireBrick,DarkRed,Pink,LightPink,HotPink,DeepPink,MediumVioletRed,PaleVioletRed,LightSalmon,Coral,Tomato,OrangeRed,DarkOrange,Orange,Gold,Yellow,LightYellow,LemonChiffon,LightGoldenrodYellow,PapayaWhip,Moccasin,PeachPuff,PaleGoldenrod,Khaki,DarkKhaki,Lavender,Thistle,Plum,Violet,Orchid,Fuchsia,Magenta,MediumOrchid,MediumPurple,RebeccaPurple,BlueViolet,DarkViolet,DarkOrchid,DarkMagenta,Purple,Indigo,SlateBlue,DarkSlateBlue,MediumSlateBlue,GreenYellow,Chartreuse,LawnGreen,Lime,LimeGreen,PaleGreen,LightGreen,MediumSpringGreen,SpringGreen,MediumSeaGreen,SeaGreen,ForestGreen,Green,DarkGreen,YellowGreen,OliveDrab,Olive,DarkOliveGreen,MediumAquamarine,DarkSeaGreen,LightSeaGreen,DarkCyan,Teal,Aqua,Cyan,LightCyan,PaleTurquoise,Aquamarine,Turquoise,MediumTurquoise,DarkTurquoise,CadetBlue,SteelBlue,LightSteelBlue,PowderBlue,LightBlue,SkyBlue,LightSkyBlue,DeepSkyBlue,DodgerBlue,CornflowerBlue,MediumSlateBlue,RoyalBlue,Blue,MediumBlue,DarkBlue,Navy,MidnightBlue,Cornsilk,BlanchedAlmond,Bisque,NavajoWhite,Wheat,BurlyWood,Tan,RosyBrown,SandyBrown,Goldenrod,DarkGoldenrod,Peru,Chocolate,SaddleBrown,Sienna,Brown,Maroon,White,Snow,HoneyDew,MintCream,Azure,AliceBlue,GhostWhite,WhiteSmoke,SeaShell,Beige,OldLace,FloralWhite,Ivory,AntiqueWhite,Linen,LavenderBlush,MistyRose,Gainsboro,LightGray,Silver,DarkGray,Gray,DimGray,LightSlateGray,SlateGray,DarkSlateGray",",");
+	    let colors = Utils.split('transparent,#ff0000,#ffa500,#ffff00,#fffeec,#008000,#0000ff,#4b0082,#ee82ee,#ffffff,#000000,#cd5c5c,#f08080,#fa8072,#e9967a,#ffa07a,#dc143c,#ff0000,#b22222,#8b0000,#ffc0cb,#ffb6c1,#ff69b4,#ff1493,#c71585,#db7093,#ff7f50,#ff6347,#ff4500,#ff8c00,#ffa500,#ffd700,#ffff00,#ffffe0,#fffacd,#fafad2,#ffefd5,#ffe4b5,#ffdab9,#eee8aa,#f0e68c,#bdb76b,#e6e6fa,#d8bfd8,#dda0dd,#ee82ee,#da70d6,#ff00ff,#ff00ff,#ba55d3,#9370db,#663399,#8a2be2,#9400d3,#9932cc,#8b008b,#800080,#4b0082,#6a5acd,#483d8b,#7b68ee,#adff2f,#7fff00,#7cfc00,#00ff00,#32cd32,#98fb98,#90ee90,#00fa9a,#00ff7f,#3cb371,#2e8b57,#228b22,#006400,#9acd32,#6b8e23,#808000,#556b2f,#66cdaa,#8fbc8f,#20b2aa,#008b8b,#008080,#00ffff,#00ffff,#e0ffff,#afeeee,#7fffd4,#40e0d0,#48d1cc,#00ced1,#5f9ea0,#4682b4,#b0c4de,#b0e0e6,#add8e6,#87ceeb,#87cefa,#00bfff,#1e90ff,#6495ed,#7b68ee,#4169e1,#0000ff,#0000cd,#00008b,#000080,#191970,#fff8dc,#ffebcd,#ffe4c4,#ffdead,#f5deb3,#deb887,#d2b48c,#bc8f8f,#f4a460,#daa520,#b8860b,#cd853f,#d2691e,#8b4513,#a0522d,#a52a2a,#800000,#fffafa,#f0fff0,#f5fffa,#f0ffff,#f0f8ff,#f8f8ff,#f5f5f5,#fff5ee,#f5f5dc,#fdf5e6,#fffaf0,#fffff0,#faebd7,#faf0e6,#fff0f5,#ffe4e1,#dcdcdc,#d3d3d3,#c0c0c0,#a9a9a9,#808080,#696969,#778899,#708090,#2f4f4f',',');
+
 	    let bar = "";
 	    let cnt = 0;
 	    colors.forEach(color=>{
@@ -44378,9 +44379,20 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			}
 			if(prop.indexOf("Color")>=0) {
 			    widget =  HU.input("",v,[ATTR_CLASS,'ramadda-imdv-color',ID,domId,"size",8]);
-			    widget =  HU.div([ATTR_ID,domId+'_display',ATTR_CLASS,'ramadda-dot', ATTR_STYLE,HU.css('background',Utils.stringDefined(v)?v:'transparent')]) +
+			    widget+=SPACE1;
+			    widget +=  HU.input("",v,[ATTR_STYLE,HU.css('border-radius','var(--default-radius)'),
+						      'type','color','baseid',domId,ATTR_CLASS,'ramadda-imdv-color-hidden',ID,domId+'colorinput',"size",8]);
+
+/*
+			    widget +=  HU.span([ATTR_TITLE,'Show color chooser',
+						ATTR_CLASS,'ramadda-clickable ramadda-imdv-color-select','baseid',domId,
+						ID,domId+'_select'],HU.getIconImage('fas fa-palette'));
+						*/
+			    
+/*			    widget =  HU.div([ATTR_ID,domId+'_display',ATTR_CLASS,'ramadda-dot', ATTR_STYLE,HU.css('background',Utils.stringDefined(v)?v:'transparent')]) +
 				HU.space(2)+widget;
 			    //			    widget  = HU.table(['cellpadding','0','cellspacing','0'],HU.tr(['valign','top'],HU.tds([],[widget,bar])));
+*/
 			} else if(prop=="labelAlign") {
 			    html +=HU.formTableClose();
 			    html +=HU.formTable();			    
@@ -44843,6 +44855,17 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		    }});
 	    });
 
+	    dialog.find('.ramadda-imdv-color-hidden').on('input',function() {
+		let id = $(this).attr('baseid');
+		let val = $(this).val();
+		$("#"+ id).val(val);
+		$("#"+ id+'_display').css('background',val);
+		ifApply();
+	    });
+	    dialog.find('.ramadda-imdv-color-select').click(function() {
+		let base = $(this).attr('baseid');
+		jqid(base+'colorinput').click();
+	    });
 	    dialog.find('.ramadda-imdv-color').focus(function() {
 		let id = $(this).attr(ATTR_ID);
 		let bar = _this.makeColorBar(id);
@@ -44850,8 +44873,9 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		dialog.find('.ramadda-color-select').click(function(){
 		    let c = $(this).attr('color');
 		    let id = $(this).attr('widget-id');
-		    $("#"+ id).val(c);
-		    $("#"+ id+'_display').css('background',c);
+		    jqid(id).val(c);
+		    jqid(id+'_display').css('background',c);
+		    jqid(id+'colorinput').val(c);
 		    dialog.remove();
 		    ifApply();
 		});
