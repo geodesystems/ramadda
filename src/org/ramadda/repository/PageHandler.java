@@ -67,6 +67,7 @@ import java.util.TimeZone;
 @SuppressWarnings("unchecked")
 public class PageHandler extends RepositoryManager {
 
+    private static  boolean debugTemplates = true;
 
     /**  */
     public static final String IMPORTS_BEGIN = "<!--imports-->";
@@ -78,8 +79,6 @@ public class PageHandler extends RepositoryManager {
     /**  */
     public static final String PREFIX_NOPRELOAD = "nopreload:";
 
-    /** _more_ */
-    private static boolean debugTemplates = false;
 
 
     /** _more_ */
@@ -1272,17 +1271,20 @@ public class PageHandler extends RepositoryManager {
      */
     public List<HtmlTemplate> getTemplates() {
         try {
-	    System.err.println("PageHandler.getTemplats");
+	    if(debugTemplates)
+		System.err.println("PageHandler.getTemplates");
 	    checkTemplates();
-
 	    List<HtmlTemplate> tmp_theTemplates =  htmlTemplates;
-	    System.err.println("\tPageHandler.tmp_theTemplates:" + (tmp_theTemplates!=null));
+	    if(debugTemplates)
+		System.err.println("\tPageHandler.tmp_theTemplates:" + (tmp_theTemplates!=null));
 	    while(tmp_theTemplates==null) {
-		System.err.println("\tsleeping");
+		if(debugTemplates)
+		    System.err.println("\tsleeping");
 		Misc.sleep(10);
 		checkTemplates();
 		tmp_theTemplates=  htmlTemplates;
-		System.err.println("\tPageHandler.tmp_theTemplates:" + (tmp_theTemplates!=null));
+		if(debugTemplates)
+		    System.err.println("\tPageHandler.tmp_theTemplates:" + (tmp_theTemplates!=null));
 	    }
 	    return tmp_theTemplates;
         } catch (Exception exc) {
@@ -1301,11 +1303,13 @@ public class PageHandler extends RepositoryManager {
             throws Exception {
 	Hashtable<String,HtmlTemplate> tmp_templateMap  = templateMap;
 	if(!cacheTemplates) {
-	    System.err.println("PageHandler.checkTemplates: not cached");
+	    if(debugTemplates)
+		System.err.println("PageHandler.checkTemplates: not cached");
 	    tmp_templateMap  =null;
 	}
-	if(tmp_templateMap!=null) {
-	    System.err.println("PageHandler.checkTemplates: template map not null");
+	if(tmp_templateMap!=null && htmlTemplates!=null) {
+	    if(debugTemplates)
+		System.err.println("PageHandler.checkTemplates: template map not null");
 	    return tmp_templateMap;
 	}
 	String mobileId =
@@ -1458,7 +1462,8 @@ public class PageHandler extends RepositoryManager {
 	tmp_templateMap.put(ID_TEMPLATE_DEFAULT, _defaultTemplate);
 	tmp_templateMap.put(ID_TEMPLATE_MOBILE, _mobileTemplate);	    
 	htmlTemplates   = tmp_theTemplates;
-	System.err.println("PageHandler.checkTemplates: done htmlTemplates: " + (htmlTemplates!=null));
+	if(debugTemplates)
+	    System.err.println("PageHandler.checkTemplates: done htmlTemplates: " + (htmlTemplates!=null));
 	templateMap  = tmp_templateMap;
 	return tmp_templateMap;
     }
@@ -3233,6 +3238,7 @@ public class PageHandler extends RepositoryManager {
         templateJavascriptContent = null;
 	System.err.println("PageHandler.clearCache");
         htmlTemplates             = null;
+	templateMap = null;
         typeToWikiTemplate        = new Hashtable<String, String>();
     }
 
