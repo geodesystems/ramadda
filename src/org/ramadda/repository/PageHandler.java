@@ -1272,12 +1272,17 @@ public class PageHandler extends RepositoryManager {
      */
     public List<HtmlTemplate> getTemplates() {
         try {
+	    System.err.println("PageHandler.getTemplats");
 	    checkTemplates();
+
 	    List<HtmlTemplate> tmp_theTemplates =  htmlTemplates;
+	    System.err.println("\tPageHandler.tmp_theTemplates:" + (tmp_theTemplates!=null));
 	    while(tmp_theTemplates==null) {
+		System.err.println("\tsleeping");
 		Misc.sleep(10);
 		checkTemplates();
 		tmp_theTemplates=  htmlTemplates;
+		System.err.println("\tPageHandler.tmp_theTemplates:" + (tmp_theTemplates!=null));
 	    }
 	    return tmp_theTemplates;
         } catch (Exception exc) {
@@ -1295,8 +1300,14 @@ public class PageHandler extends RepositoryManager {
     private synchronized Hashtable<String, HtmlTemplate> checkTemplates()
             throws Exception {
 	Hashtable<String,HtmlTemplate> tmp_templateMap  = templateMap;
-	if(!cacheTemplates) tmp_templateMap  =null;
-	if(tmp_templateMap!=null) return tmp_templateMap;
+	if(!cacheTemplates) {
+	    System.err.println("PageHandler.checkTemplates: not cached");
+	    tmp_templateMap  =null;
+	}
+	if(tmp_templateMap!=null) {
+	    System.err.println("PageHandler.checkTemplates: template map not null");
+	    return tmp_templateMap;
+	}
 	String mobileId =
 	    getRepository().getProperty("ramadda.template.mobile",
 					(String) null);
@@ -1363,8 +1374,7 @@ public class PageHandler extends RepositoryManager {
 		}
 
 
-		template.setTemplate(
-				     applyBaseMacros(template.getTemplate()));
+		template.setTemplate(applyBaseMacros(template.getTemplate()));
 		if (template.getPrefix() != null) {
 		    template.getPrefix().setTemplate(
 						     applyBaseMacros(
@@ -1448,6 +1458,7 @@ public class PageHandler extends RepositoryManager {
 	tmp_templateMap.put(ID_TEMPLATE_DEFAULT, _defaultTemplate);
 	tmp_templateMap.put(ID_TEMPLATE_MOBILE, _mobileTemplate);	    
 	htmlTemplates   = tmp_theTemplates;
+	System.err.println("PageHandler.checkTemplates: done htmlTemplates: " + (htmlTemplates!=null));
 	templateMap  = tmp_templateMap;
 	return tmp_templateMap;
     }
@@ -3220,6 +3231,7 @@ public class PageHandler extends RepositoryManager {
     public void clearCache() {
         super.clearCache();
         templateJavascriptContent = null;
+	System.err.println("PageHandler.clearCache");
         htmlTemplates             = null;
         typeToWikiTemplate        = new Hashtable<String, String>();
     }
