@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Dec 14 14:25:31 MST 2023";
+var build_date="RAMADDA build date: Thu Dec 14 20:27:27 MST 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -12259,6 +12259,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
 	{label:'Group Properties'},
 	{p:PROP_LAYOUT_TYPE,ex:Utils.join([LAYOUT_TABLE,LAYOUT_HTABLE,LAYOUT_TABS,LAYOUT_COLUMNS,LAYOUT_ROWS],",")},
 	{p:PROP_LAYOUT_COLUMNS,d:1},
+	{p:'targetDiv',tt:'Div id to put the displays in for this group'},
 	]
 
     displayDefineMembers(this, myProps, {
@@ -13349,6 +13350,8 @@ function DisplayManager(argId, argProperties) {
     let targetDiv = this.getProperty("target",this.getProperty("targetDiv"));
     let _this = this;
     if (targetDiv != null) {
+	targetDiv = targetDiv.replace("${entryid}",this.getProperty("entryId"));
+	console.log(targetDiv);
 	if($("#" + targetDiv).length==0) {
 	    console.log("Error: display group could not find targetDiv:" + targetDiv);
 	    targetDiv=null;
