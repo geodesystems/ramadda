@@ -26,9 +26,9 @@
     <api request="/entry/test"             method="processEntryTest"/>
     <api request="/entry/data"             method="processEntryData"/>
     <api request="/entry/names"             method="processEntryNames"/>      
-    <api request="/entry/form"             method="processEntryForm"       actions="edit"/>
-    <api request="/entry/access/*"         method="processEntryAccess"     actions=""/>
-    <api request="/entry/change"           method="processEntryChange"     actions="edit"/>
+    <api request="/entry/form"             method="processEntryForm"       />
+    <api request="/entry/access/*"         method="processEntryAccess"     />
+    <api request="/entry/change"           method="processEntryChange"     />
     <api request="/entry/setfile"          method="processEntrySetFile"   />      
     <api request="/entry/delete"           method="processEntryDelete"     actions="edit"/>
     <api request="/entry/deletelist"       method="processEntryListDelete" actions="edit"/>

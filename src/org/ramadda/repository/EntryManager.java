@@ -1838,10 +1838,14 @@ public class EntryManager extends RepositoryManager {
         }
         StringBuilder sb    = new StringBuilder();
         Entry         group = addEntryForm(request, entry, sb);
-
-
         getPageHandler().entrySectionClose(request, entry, sb);
         if (entry == null) {
+	    if(group!=null && !canAddTo(request, group)) {
+		sb    = new StringBuilder();
+		getPageHandler().entrySectionOpen(request, group, sb,"Entry Add");
+		sb.append(getPageHandler().showDialogError("You do not have permission to add a new entry"));
+		getPageHandler().entrySectionClose(request, entry, sb);
+	    }
             return addEntryHeader(request, group,
                                   new Result("Add Entry", sb));
         }
@@ -2583,7 +2587,7 @@ public class EntryManager extends RepositoryManager {
                 logInfo("Upload:is ok to create:" + okToCreateNewEntry);
             }
             if ( !okToCreateNewEntry) {
-                throw new AccessException("Cannot add:" + entry.getLabel(),
+                throw new AccessException(msgLabel("You do not have permission to add entries to") +  parentEntry.getLabel(),
                                           request);
             }
 
