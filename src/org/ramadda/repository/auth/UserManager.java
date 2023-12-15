@@ -1303,7 +1303,8 @@ public class UserManager extends RepositoryManager {
 
 
 	sb.append(sb2);
-        sb.append(request.formPost(getRepositoryBase().URL_USER_EDIT));
+        sb.append(request.uploadForm(getRepositoryBase().URL_USER_EDIT));
+	//        sb.append(request.formPost(getRepositoryBase().URL_USER_EDIT));
         sb.append(HU.hidden(ARG_USER_ID, user.getId()));
         if (doDelete) {
             sb.append(messageQuestion( msg("Are you sure you want to delete the user?"),
@@ -1395,7 +1396,7 @@ public class UserManager extends RepositoryManager {
             sb.append(formEntryTop(request, msgLabel("Roles"), roleEntry));
         }
 
-        if (user.canChangeNameAndEmail()) {
+        if (includeAdmin || user.canChangeNameAndEmail()) {
             sb.append(formEntry(request, msgLabel("Email"),
                                 HU.input(ARG_USER_EMAIL,
 					 request.getString(ARG_USER_EMAIL,user.getEmail()), size)));
