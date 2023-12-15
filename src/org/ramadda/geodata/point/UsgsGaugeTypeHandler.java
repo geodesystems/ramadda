@@ -14,9 +14,13 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
+import org.ramadda.util.geo.GeoUtils;
+
+import ucar.unidata.util.StringUtil;
 
 import org.w3c.dom.*;
 
+import java.net.URL;
 import java.io.*;
 
 import java.text.SimpleDateFormat;
@@ -40,6 +44,9 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 
     /** _more_ */
     private static int IDX_PERIOD = IDX++;
+    /** _more_ */
+    private static int IDX_COUNTY = IDX++;
+
 
     /** _more_ */
     private static int IDX_STATE = IDX++;
@@ -166,7 +173,76 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
     @Override
     public void initializeNewEntry(Request request, Entry entry,
                                    boolean fromImport)
-            throws Exception {}
+	throws Exception {
+	if(fromImport) return;
+	String id =   (String) entry.getStringValue(IDX_STATION_ID, "");
+	if(!stringDefined(id)) return;
+	String url = "https://waterdata.usgs.gov/nwis/inventory?site_no="+id;
+	IO.Result result = IO.doGetResult(new URL(url));
+	if(result.getError()) {
+	    System.err.println("Failed to read USGS station:" + url);
+	    return;
+	}	    
+
+	String html = result.getResult();
+	String title = StringUtil.findPattern(html,"<title>(.*?)</title>");
+	if(title!=null) {
+	    title = title.replaceAll("^USGS ","").replace(id,"").trim();
+	    entry.setName(Utils.nameCase(title));
+	}
+
+	String block = StringUtil.findPattern(html,"(?s)<div +id=\"stationTable\">(.*?)<table");
+	if(block==null) {
+	    System.err.println("Failed to read text block from:" + url);
+	    return;
+	}
+	String ll = StringUtil.findPattern(block,"(?s)<dd>(.*?)</dd");
+	if(ll!=null) {
+	    //Latitude  38&#176;47'50", &nbsp; Longitude 109&#176;11'40" &nbsp; NAD27<br /></dd>
+	    String lat = StringUtil.findPattern(ll,"Latitude ([^,]+),");
+	    String lon = StringUtil.findPattern(ll,"Longitude ([^, ]+) ");	    
+	    if(lat!=null && lon!=null) {
+		lat = lat.replace("&#176;",":").replace("'",":").replace("\"","").trim();
+		lon = "-"+lon.replace("&#176;",":").replace("'",":").replace("\"","").trim();		
+		try {
+		    entry.setLatitude(GeoUtils.decodeLatLon(lat));
+		    entry.setLongitude(GeoUtils.decodeLatLon(lon));
+		} catch(Exception exc) {
+		    getLogManager().logError("USGS reading lat/lon:" + url, exc);
+		}
+	    }		
+	}
+
+
+
+	//<dd>Grand County, Utah,  Hydrologic Unit 14030004</dd>
+	String line = StringUtil.findPattern(block,"<dd>(.*?Hydrologic +Unit.*?)</dd>");
+	String huc = StringUtil.findPattern(line,"Hydrologic +Unit +([^ <]+)$");
+	if(huc!=null) entry.setValue(IDX_HUC,huc);
+	String county = StringUtil.findPattern(line,"(.*?),");
+	if(county!=null) entry.setValue(IDX_COUNTY,county);
+	String state = StringUtil.findPattern(line,".*?,([^,]+),");
+	if(state!=null) entry.setValue(IDX_STATE,state);
+	entry.setValue(IDX_HOMEPAGE,url);
+
+	//	    Datum of gage: 4,168.32 feet above   NAVD88.
+	//<dd>Drainage area: 16,100 square miles</dd><dd>Contributing drainage area: 13,160 square miles,</dd><dd>Datum of gage:  5,115.73 feet above &nbsp; NGVD29.</dd></dl><dl><dt>AVAILABLE DATA:</dt><dd>
+
+
+	String elev = StringUtil.findPattern(block,"(?s)Datum of gage: +([^ ]+) ");
+	if(stringDefined(elev)) {
+	    elev = elev.replace(",","").trim();
+	    try {
+		entry.setAltitude(Double.parseDouble(elev));
+	    } catch(Exception exc) {
+		getLogManager().logError("USGS reading elevation:" + url, exc);
+	    }
+	}
+
+
+
+
+    }
 
 
 }

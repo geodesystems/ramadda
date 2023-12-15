@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <types supercategory="Geoscience">
 
   <type name="type_point_hydro"  description="" super="type_point" category="Point Data" foruser="false">
@@ -94,41 +95,66 @@ csvcommands8=$1,-sort,datetime,-addheader,default.type double datetime.type date
 -row
 ]]>
 </wiki>
-  </type>
+</type>
 
 
 
-  <type name="type_usgs_gauge"  description="USGS Stream Gauge" super="type_point_hydro" handler="org.ramadda.geodata.point.UsgsGaugeTypeHandler">
+  <type name="type_usgs_gauge"  description="USGS Stream Gauge" super="type_point_hydro"
+	newfields="station_id,tags,quit"
+	handler="org.ramadda.geodata.point.UsgsGaugeTypeHandler">
 <!--
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 -->
+
+     <property name="form.header.new">
+       <![CDATA[
+		+note
+		Just need to specify the Station  ID.
+		See the maps at [https://maps.waterdata.usgs.gov/mapper/index.html USGS]
+		-note
+       ]]>
+     </property>    
      <property name="icon" value="/point/usgs.png"/>
      <property name="record.file.cacheok" value="true"/>
+     <property name="form.properties.show" value="false"/>
      <property name="form.area.show" value="false"/>
      <property name="form.location.show" value="true"/>
+     <property name="form.altitude.show" value="true"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
  <property name="record.properties">
 fields=agency[label="Agency" type=string],station_id[label="Station ID" type=string],date[type=date format="yyyy-MM-dd HH:mm" label="Date"],timezone[label="Timezone" type=string],discharge[unit="cfs" label="Discharge" type=double],skip[type=string],gauge_height[unit="feet" label="Gauge Height" type=double],skip[type=string]
 point.csvcommands=-delimiter,tab,-skip,2,-print
      </property>
-     <column  name="station_id"  label="Station ID" type="string" />
+     <column  name="station_id"  label="Station ID" type="enumerationplus" cansearch="true"/>
      <column  name="period"  label="Period" type="int"  default="30"/>
-     <column  name="state"  label="State" type="enumeration" />
-     <column  name="huc"  type="enumeration" label="HUC"/>
+     <column  name="county"  label="County" type="enumerationplus" cansearch="true"/>
+     <column  name="state"  label="State" type="enumerationplus" cansearch="true"/>
+     <column  name="huc"  type="enumerationplus" label="HUC" cansearch="true"/>
      <column  name="homepage"  label="USGS page" type="url"/>
 <wiki>
 <![CDATA[
 +section title={{name}}
+:rem If you use this as the description then remove the description tag below
 {{description wikify=true}}
-{{display type=linechart layoutHere=true showMenu=true showTitle=false fields=discharge}}
-{{display type=linechart layoutHere=true showMenu=true showTitle=false fields=gauge_height}}
-:br
+{{group showMenu=true  targetDiv="${entryid}_group" }}
+<div id="{{entryid}}_group"></div> 
+{{display type=linechart showMenu=true fields=discharge}}
+{{display type=linechart showMenu=true fields=gauge_height}}
+{{display_download showMenu=false}}
+{{display_table showMenu=false}}
+:vspace 1em
+----
 +row
-+col-md-9
++col-md-6
 {{information  details="true"  showTitle="false"  }} 
 -col
-+col-3
++col-6
 Data courtesy of [https://waterdata.usgs.gov USGS]
 {{map}}
+<table class="formtable">
+{{field name="altitude"  row.label="Altitude:"}}
+</table>
 -col
 -row
 -section
