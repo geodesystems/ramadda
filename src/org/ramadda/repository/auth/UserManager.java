@@ -764,17 +764,18 @@ public class UserManager extends RepositoryManager {
         StringBuilder sb = new StringBuilder();
 	sb.append("<center>");
         request.appendMessage(sb);
+	makeLoginForm(sb,request, extra,includeForget,"");
 	sb.append("</center>");
 	return sb.toString();
     }
 
-    public void  makeLoginForm(StringBuilder sb, Request request, String extra,boolean includeForget) {
+    public void  makeLoginForm(StringBuilder sb, Request request, String extra,boolean includeForget,String user) {
         if ( !canDoLogin(request)) {
             sb.append(getPageHandler().showDialogWarning(msg("Login is not allowed")));
             return;
         }
 
-        String id = request.getString(ARG_USER_ID, "");
+        String id = request.getString(ARG_USER_ID, user);
         sb.append(HU.formPost(getRepository().getUrlPath(request,
 							 getRepositoryBase().URL_USER_LOGIN)));
 

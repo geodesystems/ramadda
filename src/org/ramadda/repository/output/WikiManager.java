@@ -2512,6 +2512,7 @@ public class WikiManager extends RepositoryManager
             boolean showUserLink = getProperty(wikiUtil, props, "showUserLink",   true);
             String loggedInMessage = getProperty(wikiUtil, props, "loggedInMessage",  "");
             String formPrefix = getProperty(wikiUtil, props, "formPrefix",  "");	        	    
+            String userId = getProperty(wikiUtil, props, "userId",  "");	        	    
 	    if(onlyIfLoggedOut && !request.isAnonymous()) {
 		if(!showUserLink) return HU.span(loggedInMessage,"");
 		User user = request.getUser(); 
@@ -2525,7 +2526,7 @@ public class WikiManager extends RepositoryManager
 		return loggedInMessage+HU.href(settingsUrl,userIcon+HU.space(1) +label);
 	    }
 	    sb.append(formPrefix);
-	    getUserManager().makeLoginForm(sb,request,"",false);
+	    getUserManager().makeLoginForm(sb,request,"",false,userId);
 	    return sb.toString();
         } else if (theTag.equals("license")) {
 	    String prefix = getProperty(wikiUtil,props,"textBefore","");

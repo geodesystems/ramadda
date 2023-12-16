@@ -160,6 +160,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					"tt","Add a login form",
 					"onlyIfLoggedOut",   "true",
 					"showUserLink",   "true",					
+					"#userId","",
 					"#formPrefix","Please login:",
 					"#loggedInMessage",  ""), 			    
                             new WikiTag("license", "Content License",
