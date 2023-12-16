@@ -7279,7 +7279,8 @@ public class WikiManager extends RepositoryManager
 			l.call("Prev arrow", "{{prev position=relative|fixed decorate=false iconSize=32 sort=name,entryorder sortAscending=true style=_qt_left:250px;_qt_  showName=false}}", ""),
 			l.call("Next arrow", "{{next position=relative|fixed decorate=false iconSize=32 sort=name,entryorder sortAscending=true style=_dq_  showName=false}}", ""),
 			l.call("Absolute", "\\n+absolute top= bottom= left= right=\\n","-absolute"),
-			l.call("Relative", "\\n+relative\\n","-relative"));
+			l.call("Relative", "\\n+relative\\n","-relative"),
+			l.call("If block", "\\n+if #admin=true #anonymous=true #users=id1,id2 #notusers=id1,id2\\n","-if"));			
 
 
         Utils.appendAll(tags3, l2.call( "Note", "A centered text note\nimg:note.png","+note\\n\\n", "-note"));
@@ -7777,10 +7778,36 @@ public class WikiManager extends RepositoryManager
     */
     public boolean ifBlockOk(WikiUtil wikiUtil, String attrs, StringBuilder ifBuffer)  {
 	try {
-	    Entry   entry   = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
-	    if(entry==null) return true;
 	    Request request    = (Request) wikiUtil.getProperty(ATTR_REQUEST);
 	    Hashtable props = HU.parseHtmlProperties(attrs);
+	    User user = request.getUser();
+	    if(user==null) user = getUserManager().getAnonymousUser();
+	    if(props.get("anonymous")!=null) {
+		if(request.isAnonymous() !=Utils.getProperty(props,"anonymous",true)) {
+		    return false;
+		}
+	    }
+
+	    if(props.get("admin")!=null) {
+		if(request.isAdmin() !=Utils.getProperty(props,"admin",true)) {
+		    return false;
+		}
+	    }	    
+
+	    if(props.get("users")!=null) {
+		if(!Utils.split(Utils.getProperty(props,"users",""),",",true,true).contains(user.getId()))
+		    return false;
+	    }
+
+	    if(props.get("notusers")!=null) {
+		if(Utils.split(Utils.getProperty(props,"notusers",""),",",true,true).contains(user.getId()))
+		    return false;
+	    }
+	    
+	    Entry   entry   = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
+	    if(entry==null) return true;
+
+
 	    String ofType = Utils.getProperty(props,"hasChildrenOfType",null);
 	    if(ofType!=null) {
 		List<String> types = Utils.split(ofType,",",true,true);
