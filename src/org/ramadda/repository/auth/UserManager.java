@@ -783,8 +783,7 @@ public class UserManager extends RepositoryManager {
             String redirect = request.getBase64String(ARG_REDIRECT, "");
             //Um, a bit of a hack
             if (redirect.indexOf("logout") < 0) {
-                sb.append(HU.hidden(ARG_REDIRECT,
-				    Utils.encodeBase64(redirect)));
+                sb.append(HU.hidden(ARG_REDIRECT, Utils.encodeBase64(redirect)));
             }
         }
 
@@ -1142,10 +1141,8 @@ public class UserManager extends RepositoryManager {
             if (password1.equals(password2)) {
                 user.setPassword(hashPassword(password1));
                 addActivity(request, user, ACTIVITY_PASSWORD_CHANGE, "");
-
                 return true;
             }
-
             return false;
         }
 
@@ -1293,9 +1290,16 @@ public class UserManager extends RepositoryManager {
 	HU.titleSectionOpen(sb, (doDelete?"Delete User: ":"Edit User: ") + getUserTitle(user));
 
         if (verified && request.defined(ARG_USER_CHANGE)) {
-	    sb.append(messageNote(msg("User settings have been changed")));
-	    applyUserProperties(request, user, true);
-	    updateUser(user);
+	    boolean havePassword =stringDefined(request.getString(ARG_USER_PASSWORD1, "").trim());
+            if(havePassword && !checkAndSetNewPassword(request, user)) {
+		sb.append(messageError(msg("Incorrect new passwords given for user")));
+	    } else {
+		String message = havePassword?"User settings and password have been changed":
+		    "User settings have been changed";
+		sb.append(messageNote(msg(message)));
+		applyUserProperties(request, user, true);
+		updateUser(user);
+	    }
         }
 
 
@@ -2543,7 +2547,7 @@ public class UserManager extends RepositoryManager {
 
                     return addHeader(request, sb, "Password Reset");
                 }
-                sb.append(messageWarning("Incorrect passwords"));
+                sb.append(messageError("Incorrect passwords"));
             }
 
             sb.append(request.formPost(getRepositoryBase().URL_USER_RESETPASSWORD));
@@ -3716,7 +3720,7 @@ public class UserManager extends RepositoryManager {
             settingsOk = checkAndSetNewPassword(request, user);
             if ( !settingsOk) {
 		//		sb.append("Incorrect passwords");
-		sb.append(messageWarning(msg("Incorrect passwords")));
+		sb.append(messageError(msg("Incorrect passwords")));
             } else {
 		//                sb.append(messageNote("Your password has been changed"));
                 sb.append(messageNote("Your password has been changed"));		
