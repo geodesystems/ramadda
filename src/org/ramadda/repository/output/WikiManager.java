@@ -2509,12 +2509,22 @@ public class WikiManager extends RepositoryManager
 							 getProperty(wikiUtil, props, ATTR_TITLE, "Layout"));
         } else if (theTag.equals("loginform")) {
             boolean onlyIfLoggedOut = getProperty(wikiUtil, props, "onlyIfLoggedOut",   true);
-            String loggedInMessage = getProperty(wikiUtil, props, "loggedInMessage",  null);
-            String prefixMessage = getProperty(wikiUtil, props, "prefixMessage",  "");
+            boolean showUserLink = getProperty(wikiUtil, props, "showUserLink",   true);
+            String loggedInMessage = getProperty(wikiUtil, props, "loggedInMessage",  "");
+            String formPrefix = getProperty(wikiUtil, props, "formPrefix",  "");	        	    
 	    if(onlyIfLoggedOut && !request.isAnonymous()) {
-		return HU.span((String)Utils.getNonNull(loggedInMessage,""),"");
+		if(!showUserLink) return HU.span(loggedInMessage,"");
+		User user = request.getUser(); 
+		String label = user.getLabel().replace(" ", "&nbsp;");
+		String avatar = getUserManager().getUserAvatar(request, request.getUser(),true,25," class='ramadda-user-menu-image' title='User Settings'");
+		String userIcon = avatar!=null?avatar:HU.faIcon("fa-user", "title",
+								"User Settings", "class",
+								"ramadda-user-menu-image");
+
+		String settingsUrl = request.makeUrl(getRepositoryBase().URL_USER_SETTINGS);
+		return loggedInMessage+HU.href(settingsUrl,userIcon+HU.space(1) +label);
 	    }
-	    sb.append(prefixMessage);
+	    sb.append(formPrefix);
 	    getUserManager().makeLoginForm(sb,request,"",false);
 	    return sb.toString();
         } else if (theTag.equals("license")) {
