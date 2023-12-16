@@ -757,14 +757,22 @@ public class UserManager extends RepositoryManager {
      * @return _more_
      */
     public String makeLoginForm(Request request, String extra) {
-        StringBuffer sb = new StringBuffer();
+	return makeLoginForm(request, extra, true);
+    }
+
+    public String makeLoginForm(Request request, String extra,boolean includeForget) {	
+        StringBuilder sb = new StringBuilder();
+	sb.append("<center>");
         request.appendMessage(sb);
+	sb.append("</center>");
+	return sb.toString();
+    }
+
+    public void  makeLoginForm(StringBuilder sb, Request request, String extra,boolean includeForget) {
         if ( !canDoLogin(request)) {
             sb.append(getPageHandler().showDialogWarning(msg("Login is not allowed")));
-
-            return sb.toString();
+            return;
         }
-
 
         String id = request.getString(ARG_USER_ID, "");
         sb.append(HU.formPost(getRepository().getUrlPath(request,
@@ -779,8 +787,6 @@ public class UserManager extends RepositoryManager {
             }
         }
 
-
-	sb.append("<center>");
         sb.append(HU.formTable());
         sb.append(
 		  formEntry(
@@ -803,28 +809,18 @@ public class UserManager extends RepositoryManager {
         sb.append(formEntry(request, "", HU.submit(LABEL_LOGIN)));
         sb.append(HU.formClose());
 
-        if (getMailManager().isEmailEnabled()) {
+        if (includeForget && getMailManager().isEmailEnabled()) {
             sb.append(HU.formEntry("<p>", ""));
-            sb.append(
-		      HU.formEntry(
-				   "",
-				   HU.button(
-					     HU.href(
-						     request.makeUrl(
-								     getRepositoryBase().URL_USER_FINDUSERID), msg(
-														   "Forget your user ID?"))) + HU.space(
-																			2) + HU.formEntry(
-																					  "",
-																					  HU.button(
-																						    HU.href(
-																							    request.makeUrl(
-																									    getRepositoryBase().URL_USER_RESETPASSWORD), msg(
-																															     "Forget your password?"))))));
-        }
-
+	    HU.formEntry(sb,  "",
+			 HU.button(HU.href( request.makeUrl(
+							    getRepositoryBase().URL_USER_FINDUSERID), msg(
+													  "Forget your user ID?"))));
+	    sb.append(HU.space(2));
+	    HU.formEntry(sb, "",
+			 HU.button(HU.href(request.makeUrl(getRepositoryBase().URL_USER_RESETPASSWORD),
+					   msg("Forget your password?"))));
+	}
         sb.append(HU.formTableClose());
-	sb.append("</center>");
-        return sb.toString();
     }
 
 
