@@ -2526,6 +2526,11 @@ public class WikiManager extends RepositoryManager
 		return loggedInMessage+HU.href(settingsUrl,userIcon+HU.space(1) +label);
 	    }
 	    sb.append(formPrefix);
+	    request=request.cloneMe();
+	    String redirect = getProperty(wikiUtil,props,"redirect",request.getUrl());
+	    if(stringDefined(redirect)) {
+		request.put(ARG_REDIRECT,Utils.encodeBase64(redirect));
+	    }
 	    getUserManager().makeLoginForm(sb,request,"",false,userId);
 	    return sb.toString();
         } else if (theTag.equals("license")) {
