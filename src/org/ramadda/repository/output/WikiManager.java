@@ -2507,6 +2507,16 @@ public class WikiManager extends RepositoryManager
         } else if (theTag.equals(WIKI_TAG_LAYOUT)) {
             return getHtmlOutputHandler().makeHtmlHeader(request, entry,
 							 getProperty(wikiUtil, props, ATTR_TITLE, "Layout"));
+        } else if (theTag.equals("loginform")) {
+            boolean onlyIfLoggedOut = getProperty(wikiUtil, props, "onlyIfLoggedOut",   true);
+            String loggedInMessage = getProperty(wikiUtil, props, "loggedInMessage",  null);
+            String prefixMessage = getProperty(wikiUtil, props, "prefixMessage",  "");
+	    if(onlyIfLoggedOut && !request.isAnonymous()) {
+		return HU.span((String)Utils.getNonNull(loggedInMessage,""),"");
+	    }
+	    sb.append(prefixMessage);
+	    getUserManager().makeLoginForm(sb,request,"",false);
+	    return sb.toString();
         } else if (theTag.equals("license")) {
 	    String prefix = getProperty(wikiUtil,props,"textBefore","");
 	    if(stringDefined(prefix))
