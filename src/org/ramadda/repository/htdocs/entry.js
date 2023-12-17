@@ -771,6 +771,13 @@ function Entry(props) {
 	    if(what=="fromdate") return HU.span(['class','ramadda-datetime','title',this.startDate],this.startDateFormat);
 	    
 	    if(what=="entryorder") return this.order;
+	    if(what=="creator") {
+		let searchUrl = RamaddaUtil.getUrl('/search/do?user_id='+ this.creator+'&search.submit=true');
+		let created = HU.href(searchUrl,
+				      Utils.stringDefined(this.creatorName)?this.creatorName:this.creator,
+				      [ATTR_TITLE,'Search for entries of this type created by this user']);
+		return created;
+	    }
 	    if(what=="createdate") return HU.span(['class','ramadda-datetime','title',this.createDate],this.createDateFormat);
 	    if(what=="changedate") return HU.span(['class','ramadda-datetime','title',this.changeDate],this.changeDateFormat);
 	    if(what=="size") return this.getFilesize()?this.getFormattedFilesize():"---";

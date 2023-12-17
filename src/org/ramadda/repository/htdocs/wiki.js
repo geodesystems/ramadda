@@ -1996,6 +1996,7 @@ WikiEditor.prototype = {
 	    {p:"showDate",ex:false},
 	    {p:"showCreateDate",ex:false},
 	    {p:"showSize",ex:false},
+	    {p:"showCreator",ex:true},
 	    {p:"showType",ex:false},
 	    {p:'showAttachments',ex:'true'},				
 	    {p:"showIcon",ex:false},
