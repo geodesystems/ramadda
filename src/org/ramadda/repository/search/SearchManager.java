@@ -1163,7 +1163,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	String user = request.getString(ARG_USER_ID,null);
 	if(Utils.stringDefined(user)) {
-	    System.err.println("CREATOR:" + user);
 	    queries.add(new TermQuery(new Term(FIELD_CREATOR, user)));
 	}
 
