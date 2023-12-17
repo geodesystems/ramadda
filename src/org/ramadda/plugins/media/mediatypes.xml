@@ -117,7 +117,7 @@
 +section title="{{name}}" #
 {{noheading}}
 {{description wikify=true}}
-{{gallery columns="3"}}
+{{gallery columns="3" thumbnail="true"}}
 -section
 ]]>
 </wiki>
