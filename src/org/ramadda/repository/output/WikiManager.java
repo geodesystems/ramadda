@@ -5086,6 +5086,7 @@ public class WikiManager extends RepositoryManager
 
 	for(String prop: new String[]{"maxHeight","details","simple","showHeader",
 				      "showEntryOrder",
+				      "showCreator",
 				      "showDate","showCreateDate","showSize","showChangeDate",
 				      "columns",
 				      "showAttachments",
