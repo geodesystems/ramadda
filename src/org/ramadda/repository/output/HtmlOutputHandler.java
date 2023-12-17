@@ -564,12 +564,10 @@ public class HtmlOutputHandler extends OutputHandler {
         Appendable sb        = resultHandler.getAppendable();
         boolean    doingInfo = outputType.equals(OUTPUT_INFO);
         if (doingInfo) {
-            getPageHandler().entrySectionOpen(request, entry, sb,
-                    "Entry Information");
+            getPageHandler().entrySectionOpen(request, entry, sb, "Entry Information");
             StringBuilder suffix = new StringBuilder();
             addDescription(request, entry, sb, true, suffix);
-            String informationBlock = getInformationTabs(request, entry,
-							 false,null);
+            String informationBlock = getInformationTabs(request, entry, false,null);
             sb.append(informationBlock);
             sb.append(suffix);
             getPageHandler().entrySectionClose(request, entry, sb);
@@ -1669,7 +1667,7 @@ public class HtmlOutputHandler extends OutputHandler {
             HU.href(listSB, url, leftLabel,
                     HU.style("display:inline-block;width:100%;")+HU.attr("title", "Click to view " + label));
             HU.close(listSB, HU.TAG_DIV);
-            listSB.append("\n");
+	    listSB.append("\n");
         }
 
         String left = HU.div(listSB.toString(),
@@ -2256,7 +2254,8 @@ public class HtmlOutputHandler extends OutputHandler {
                 Hashtable props = new Hashtable();
                 props.put(ARG_SHOWCRUMBS, "" + group.isDummy());
 		HU.addPageSearch(sb,".entry-list-row-data",null,"Find");
-		props.put("showEntryOrder","true");
+		if(doingInfo)
+		    props.put("showEntryOrder","true");
                 sb.append(getWikiManager().makeTableTree(request, null,
                         props, myChildren));
             }
