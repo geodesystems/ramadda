@@ -127,7 +127,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     public static final String ARG_SEARCH_SUBMIT = "search.submit";
 
 
-
     /** _more_ */
     public static final String ARG_PROVIDER = "provider";
 
@@ -234,9 +233,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     /** _more_ */
     private static final String FIELD_NAME = "name";
 
+    private static final String FIELD_CREATOR = "creator";    
+
     private static final String FIELD_NAME_SORT = "namesort";    
 
-    private static final String[] SEARCH_FIELDS ={FIELD_CORPUS, FIELD_NAME, FIELD_DESCRIPTION, FIELD_CONTENTS,FIELD_ATTACHMENT, FIELD_PATH};
+    private static final String[] SEARCH_FIELDS ={FIELD_CORPUS, FIELD_NAME, FIELD_CREATOR,FIELD_DESCRIPTION, FIELD_CONTENTS,FIELD_ATTACHMENT, FIELD_PATH};
 
     private boolean isLuceneEnabled = true;
 
@@ -601,8 +602,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
         doc.add(new SortedNumericDocValuesField(FIELD_SIZE, entry.getResource().getFileSize()));
 	doc.add(new LongPoint(FIELD_SIZE, entry.getResource().getFileSize()));
-
-  
 	doc.add(new SortedNumericDocValuesField(FIELD_ENTRYORDER, entry.getEntryOrder()));
 	if(entry.hasAreaDefined()) {
 	    doc.add(new DoublePoint(FIELD_NORTH, entry.getNorth()));
@@ -632,6 +631,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	corpus.append(" ");
         doc.add(new TextField(FIELD_NAME,  name,Field.Store.YES));
 	doc.add(new SortedDocValuesField(FIELD_NAME_SORT, new BytesRef(entry.getName())));
+	doc.add(new StringField(FIELD_CREATOR,  entry.getUserId(),Field.Store.YES));	
 	StringBuilder desc = new StringBuilder();
 	//false=>don't add columns
 	//true=> add metadata
@@ -1158,6 +1158,13 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	int sizeMax =  request.get(ARG_SIZE_MAX,-1);	
 	if(sizeMin>=0|| sizeMax>=0) {
 	    queries.add(LongPoint.newRangeQuery(FIELD_SIZE,sizeMin>=0?sizeMin:Integer.MIN_VALUE,sizeMax>=0?sizeMax:Integer.MAX_VALUE));
+	}
+
+
+	String user = request.getString(ARG_USER_ID,null);
+	if(Utils.stringDefined(user)) {
+	    System.err.println("CREATOR:" + user);
+	    queries.add(new TermQuery(new Term(FIELD_CREATOR, user)));
 	}
 
 

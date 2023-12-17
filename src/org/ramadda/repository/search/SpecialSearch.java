@@ -731,7 +731,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             }) {
                 if (outputType.getIcon() != null) {
                     links.append(
-                        HtmlUtils.img(getIconUrl(outputType.getIcon())));
+				 HtmlUtils.img(getIconUrl(outputType.getIcon()),"",
+					       HU.attr(HU.ATTR_WIDTH, ICON_WIDTH)));
                     links.append(" ");
                 }
 
