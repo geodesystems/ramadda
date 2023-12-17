@@ -612,6 +612,7 @@ public class JsonOutputHandler extends OutputHandler {
 
         if (entry.getUser() != null) {
             JsonUtil.quoteAttr(items, "creator", entry.getUser().getId());
+            JsonUtil.quoteAttr(items, "creatorName", entry.getUser().getName());	    
         }
         if (entry.getResource().isUrl()) {
 	    //Catch errors 
