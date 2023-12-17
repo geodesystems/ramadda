@@ -100,7 +100,7 @@ function RecordFilter(display,filterFieldId, properties) {
     };
     let label = "";
     if(this.isText)  {
-	label = getAttr("filterLabel","Text");
+	label = getAttr("filterLabel","Search");
     } else  {
 	label = getAttr("filterLabel",fields.length>0?fields[0].getLabel():"");
     }

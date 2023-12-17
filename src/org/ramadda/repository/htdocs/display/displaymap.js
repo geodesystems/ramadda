@@ -58,6 +58,8 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'zoomLevel',ex:4,tt:"initial zoom"},
 	{p:'zoomTimeout',ex:500,
 	 tt:"initial zoom timeout delay. set this if the map is in tabs, etc, and not going to the initial zoom"},
+	{p:'popupWidth',d:400},
+	{p:'popupHeight',d:200},	
 	{p:'linked',ex:true,tt:"Link location with other maps"},
 	{p:'linkGroup',ex:'some_name',tt:"Map groups to link with"},
 	{p:'initialLocation', ex:'lat,lon',tt:"initial location"},
@@ -477,8 +479,8 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		selectStrokeOpacity: this.getSelectStrokeOpacity(),				
 
 		showLatLonLines:this.getProperty("showLatLonLines"),
-		popupWidth: this.getProperty("popupWidth",400),
-		popupHeight: this.getProperty("popupHeight",200),		
+		popupWidth: this.getPopupWidth(),
+		popupHeight: this.getPopupHeight(),
 
             };
 	    this.mapParams = params;
@@ -869,7 +871,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'labelField',ex:'',tt:'field to show in TOC'},
 	{p:'showRegionSelector',ex:true},
 	{p:'regionSelectorLabel'},	
-	{p:'centerOnFilterChange',ex:true,tt:'Center map when the data filters change'},
+	{p:'centerOnFilterChange',d:true,ex:true,tt:'Center map when the data filters change'},
 	{p:'centerOnHighlight',ex:true,tt:'Center map when a record is highlighted'},
 	{p:'centerOnMarkersAfterUpdate',ex:true,tt:'Always center on the markers'},	
 	{p:'zoomLevelOnHighlight',ex:16,tt:'Set the zoom level'},
@@ -898,7 +900,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'recordHighlightShape',ex:shapes},
 	{p:'recordHighlightRadius',ex:'20',tt:'Radius to use to show other displays highlighted record'},
 	{p:'recordHighlightStrokeWidth',ex:'2',tt:'Stroke to use to show other displays highlighted record'},
-	{p:'recordHighlightStrokeColor',ex:'red',tt:'Color to use to show other displays highlighted record'},
+	{p:'recordHighlightStrokeColor',d:'red',tt:'Color to use to show other displays highlighted record'},
 	{p:'recordHighlightFillColor',ex:'rgba(0,0,0,0)',tt:'Fill color to use to show other displays highlighted record'},
 	{p:'recordHighlightFillOpacity',ex:'0.5',tt:'Fill opacity to use to show other displays highlighted record'},
 	{p:'recordHighlightVerticalLine',tt:'Draw a vertical line at the location of the selected record'},
@@ -1809,7 +1811,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 let attrs = {
                     pointRadius: parseFloat(this.getProperty("recordHighlightRadius", +this.getPropertyRadius(6)+8)),
                     stroke: true,
-                    strokeColor: this.getProperty("recordHighlightStrokeColor", "#000"),
+                    strokeColor: this.getRecordHighlightStrokeColor(),
                     strokeWidth: parseFloat(this.getProperty("recordHighlightStrokeWidth", 2)),
 		    fillColor: this.getProperty("recordHighlightFillColor", "#ccc"),
 		    fillOpacity: parseFloat(this.getProperty("recordHighlightFillOpacity", 0.5)),
@@ -2605,7 +2607,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.vectorMapApplied  = false;
 	    this.updateUI({source:args.source, dataFilterChanged:true, dontSetBounds:true,  reload:true,callback: (records)=>{
 		if(args.source=="animation") return;
-		if(!this.getCenterOnFilterChange(false)) return;
+		if(!this.getCenterOnFilterChange()) return;
 		if(this.getShowPoints() && records && records.length) {
 		    //If we have our own features then just zoom to that layer and return
 		    if(this.myFeatureLayer?.features?.length) {
@@ -3068,7 +3070,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let fields = pointData.getRecordFields();
             let showSegments = this.getShowSegments(false);
 	    let okToSetMapBounds = !showSegments && !this.hadInitialPosition && !args.dontSetBounds && 
-		(!args.dataFilterChanged || this.getCenterOnFilterChange(true));
+		(!args.dataFilterChanged || this.getCenterOnFilterChange());
 	    if(records.length!=0) {
 		if (!isNaN(pointBounds.north)) {
 		    this.pointBounds = pointBounds;
@@ -4905,7 +4907,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			let style = {};
 			if(feature.style) style = $.extend(style,feature.style);
 			style = $.extend(style,{
-			    strokeColor: this.getRecordHighlightStrokeColor('red'),
+			    strokeColor: this.getRecordHighlightStrokeColor(),
 			    strokeWidth: this.getRecordHighlightStrokeWidth(3)}
 					);
 			this.getMap().highlightFeature(feature,style);
