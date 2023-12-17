@@ -6118,12 +6118,7 @@ public class TypeHandler extends RepositoryManager {
         if (showText) {
             addTextSearch(request, basicSB, type);
         }
-        if (request.defined(ARG_USER_ID)) {
-            basicSB.append(formEntry(request, msgLabel("User"),
-                                     HU.input(ARG_USER_ID,
-                                         request.getString(ARG_USER_ID,
-                                             ""))));
-        }
+
 
         List<TypeHandler> typeHandlers = getRepository().getTypeHandlers();
         if (true || (typeHandlers.size() > 1)) {
@@ -6168,6 +6163,13 @@ public class TypeHandler extends RepositoryManager {
                     request, msgLabel("Kind"),
                     msg(typeHandlers.get(0).getDescription())));
         }
+
+
+	basicSB.append(formEntry(request, msgLabel("Creator"),
+				 HU.input(ARG_USER_ID,
+					  request.getString(ARG_USER_ID,
+							    ""))));
+
 
         for (DateArgument arg : DateArgument.SEARCH_ARGS) {
             addDateSearch(getRepository(), request, basicSB, arg, false);
