@@ -138,6 +138,23 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
     }
 
 
+    public void linkJS(Request request, StringBuilder sb, String js) {
+        if (request.getExtraProperty(js) == null) {
+            request.putExtraProperty(js, "true");
+	    HU.importJS(sb, js);
+	}
+    }
+
+
+    public void linkCSS(Request request, StringBuilder sb, String css) {
+        if (request.getExtraProperty(css) == null) {
+            request.putExtraProperty(css, "true");
+	    sb.append(HU.cssLink(css));
+	}
+    }
+    
+
+
     /**
      *
      * @param snippet _more_
