@@ -7553,7 +7553,13 @@ public class WikiManager extends RepositoryManager
         HU.open(buttons, "div",
                 HU.cssClass("ramadda-menubar")
                 + HU.attrs("id", textAreaId + "_toolbar"));
-	buttons.append(HU.span(HU.img(getIconUrl("fas fa-binoculars")),HU.attrs("style","margin-left:4px;","title","Search for tags", "class","ramadda-clickable","id", textAreaId + "_toolbar_search")));
+	buttons.append(HU.span(HU.img(getIconUrl("fas fa-binoculars")),
+			       HU.attrs("style","margin-left:4px;","title","Search for tags", "class","ramadda-clickable","id", textAreaId + "_toolbar_search")));
+	buttons.append(HU.span(HU.img(getIconUrl("fas fa-pen-to-square")),
+			       HU.attrs("style","margin-left:6px;","title","Edit mode - click in tag to show editor", "class","ramadda-clickable","id", textAreaId + "_toolbar_edit")));
+			       
+
+
         Utils.appendAll(buttons, HU.span("", HU.id(textAreaId + "_prefix")),
                         wikiMenuFormattingButton, wikiMenuTagsButton, entriesButton);
         if (fromTypeBuff != null) {

@@ -1,4 +1,7 @@
-/**                                                                                                   Copyright (c) 2008-2023 Geode Systems LLC                                                          SPDX-License-Identifier: Apache-2.0                                                             */
+/**
+   Copyright (c) 2008-2023 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
+*/
 
 
 
@@ -1433,14 +1436,16 @@ WikiEditor.prototype = {
 
     },
 
-
-    handleMouseUp:function(e,result,doubleClick) {
+    handleMouseUp:function(e,result,doubleClick,doPopup) {
 	let _this = this;
 	let position = this.getEditor().renderer.screenToTextCoordinates(e.x, e.y);
 	if(!position) return;
 	let tagInfo = this.getTagInfo(position);
 	if(!tagInfo) return;
-	if(!e.metaKey && !doubleClick)  {
+	doPopup = doPopup || this.editMode || e.metaKey || doubleClick;
+	this.setEditMode(false);
+
+	if(!doPopup) {
 	    if(tagInfo.entryId) {
 		if(e.shiftKey)  {
 		    let url = RamaddaUtils.getEntryUrl(tagInfo.entryId);
@@ -1454,7 +1459,7 @@ WikiEditor.prototype = {
 
 	if(!result) {
 	    this.getAttributeBlocks(tagInfo,false, r=>{
-		this.handleMouseUp(e,r,doubleClick);
+		this.handleMouseUp(e,r,doubleClick,true);
 	    });
 	    return
 	}
@@ -1667,8 +1672,7 @@ WikiEditor.prototype = {
 	if(c) {
 	    scroller.css("cursor","context-menu");
 	    let message= "Right-click to show property menu";
-	    if(type!="plus")
-		message+="<br>Double click to edit";
+//	    if(type!="plus")message+="<br>Double click to edit";
 	    this.showMessage(message);
 	} else {
 	    scroller.css("cursor","text");
@@ -1923,6 +1927,17 @@ WikiEditor.prototype = {
 	
     },
 
+    setEditMode:function(mode) {
+	let btn = $('#'+this.id+'_toolbar_edit');
+	this.editMode = mode;
+	if(!this.editMode) {
+	    btn.find('i').css('color','#aaa');
+	    btn.css('background','transparent');
+	    return
+	}
+	btn.find('i').css('color','blue');
+	btn.css('background','#aaa');
+    },
     initTagSearch:function() {
 	let popup = '';
 	if(!this.formId) return;
@@ -1941,6 +1956,11 @@ WikiEditor.prototype = {
 					  'max-height','300px','overflow-y','auto')],popup);
 
 	let _this = this;
+	this.toolbarEditButton = $('#'+this.id+'_toolbar_edit');
+	this.toolbarEditButton.click(()=>{
+	    this.setEditMode(!this.editMode);
+	});
+
 	$('#'+this.id+'_toolbar_search').click(function(){
 	    if(this.tagSelectDialog) this.tagSelectDialog.remove();
 	    this.tagSelectDialog =
