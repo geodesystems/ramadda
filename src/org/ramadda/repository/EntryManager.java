@@ -1380,9 +1380,12 @@ public class EntryManager extends RepositoryManager {
 	    //	    System.err.println("newFile:" + tmpFile +" " + tmpFile.exists());
 	    String name = request.getString(ARG_NAME,null);
 	    if(name == null) {
-		name = fileName.replaceAll("_", " ");
-		name = IO.stripExtension(name);
-		name = StringUtil.camelCase(name);
+		name = fileName;
+		if(typeHandler.okToSetNewNameDefault()) {
+		    name = fileName.replaceAll("_", " ");
+		    name = IO.stripExtension(name);
+		    name = StringUtil.camelCase(name);
+		}
 	    }
 	    Entry newEntry = addFileEntry(request, tmpFile,
 					  group, null, name, description, request.getUser(),
@@ -2776,38 +2779,6 @@ public class EntryManager extends RepositoryManager {
 		}
 
 
-                //If its an anon upload  or we're unzipping an archive then don't set the name
-                String name = ((forUpload || hasZip)
-                               ? ""
-                               : request.getAnonymousEncodedString(ARG_NAME,
-								   BLANK));
-
-		boolean noName = false;
-                if (name.indexOf("${") >= 0) {}
-                if ((name.trim().length() == 0)
-		    && typeHandler.okToSetNewNameDefault()) {
-		    noName =true;
-                    String nameTemplate =
-                        typeHandler.getTypeProperty("nameTemplate",
-						    (String) null);
-                    if (nameTemplate == null) {
-                        name = IO.getFileTail(info.name);
-                        if (request.get(ARG_MAKENAME, false)) {
-                            name = name.replaceAll("_", " ");
-                            name = IO.stripExtension(name);
-                            StringBuilder tmp = new StringBuilder();
-                            for (String tok :
-				     Utils.split(name, " ", true, true)) {
-                                tok = StringUtil.camelCase(tok);
-                                tmp.append(tok);
-                                tmp.append(" ");
-                            }
-                            name = tmp.toString().trim();
-                        }
-                    }
-                }
-
-
 
                 String id           = getRepository().getGUID();
                 String resourceType = Resource.TYPE_UNKNOWN;
@@ -2836,8 +2807,6 @@ public class EntryManager extends RepositoryManager {
 		}
 
 
-
-
                 TypeHandler typeHandlerToUse = typeHandler;
                 //See if we can figure out the type 
                 if (figureOutType) {
@@ -2852,13 +2821,50 @@ public class EntryManager extends RepositoryManager {
                                "Cannot create an entry of type "
                                + typeHandlerToUse.getDescription());
                 }
+
+
+		
+
+
+                //If its an anon upload  or we're unzipping an archive then don't set the name
+                String name = ((forUpload || hasZip)
+                               ? ""
+                               : request.getAnonymousEncodedString(ARG_NAME,
+								   BLANK));
+
+		boolean noName = false;
+                if (name.indexOf("${") >= 0) {}
+                if ((name.trim().length() == 0)
+		    && typeHandlerToUse.okToSetNewNameDefault()) {
+		    noName =true;
+                    String nameTemplate =
+                        typeHandlerToUse.getTypeProperty("nameTemplate",
+						    (String) null);
+                    if (nameTemplate == null) {
+                        name = IO.getFileTail(info.name);
+                        if (request.get(ARG_MAKENAME, false)) {
+                            name = name.replaceAll("_", " ");
+                            name = IO.stripExtension(name);
+                            StringBuilder tmp = new StringBuilder();
+                            for (String tok :
+				     Utils.split(name, " ", true, true)) {
+                                tok = StringUtil.camelCase(tok);
+                                tmp.append(tok);
+                                tmp.append(" ");
+                            }
+                            name = tmp.toString().trim();
+                        }
+                    }
+                }
+
+
+
                 if (name.trim().length() == 0) {
                     String nameTemplate =
                         typeHandlerToUse.getTypeProperty("nameTemplate",
 							 (String) null);
                     if (nameTemplate == null) {
-                        name = typeHandlerToUse.getDefaultEntryName(
-								    info.name);
+                        name = typeHandlerToUse.getDefaultEntryName(info.name);
                     }
                 }
                 entry = typeHandlerToUse.createEntry(id);
