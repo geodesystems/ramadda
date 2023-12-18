@@ -182,13 +182,6 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
     }
 
 
-    private void importJS(Request request, StringBuilder sb, String js) {
-        if (request.getExtraProperty(js) == null) {
-            request.putExtraProperty(js, "true");
-	    HU.importJS(sb, js);
-	}
-    }
-
     public String get3DModelWiki(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, List<Entry> entries,
                                  Hashtable props)
@@ -231,7 +224,7 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 	    }
 	    for(int i=0;i<jsImports.length;i+=2) {
 		if(file.indexOf(jsImports[i])>=0) {
-		    importJS(request, sb, jsImports[i+1]);
+		    linkJS(request, sb, jsImports[i+1]);
 		    sb.append("\n");
 		    break;
 		}
@@ -239,7 +232,7 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 	}	
 
 	//Now the model.js
-	importJS(request, sb, getRepository().getHtdocsUrl("/lib/three/model.js"));
+	linkJS(request, sb, getRepository().getHtdocsUrl("/lib/three/model.js"));
 
 	int cnt = 0;
 	for(Entry entry: entries) {

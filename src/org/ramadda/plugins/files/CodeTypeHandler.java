@@ -88,8 +88,10 @@ public class CodeTypeHandler extends TypeHandler {
 	    return "";
 	}
 
+
         StringBuilder sb = new StringBuilder();
-	sb.append("<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css\">\n<script src=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js\"></script>\n");
+	linkCSS(request, sb, getRepository().getHtdocsUrl("/lib/highlight/default.min.css"));
+	linkJS(request, sb, getRepository().getHtdocsUrl("/lib/highlight/highlight.min.js"));
 	//<script src=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js\"></script>
 
         try {
