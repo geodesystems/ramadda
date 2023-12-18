@@ -3969,7 +3969,7 @@ public class TypeHandler extends RepositoryManager {
      * @return _more_
      */
     public boolean okToSetNewNameDefault() {
-        return true;
+        return !getTypeProperty("name.raw",false);
     }
 
     /**
@@ -5955,6 +5955,11 @@ public class TypeHandler extends RepositoryManager {
 
         return getTypeProperty("file.label", (String) null);
     }
+
+
+
+
+
 
     /**
      * _more_
