@@ -340,7 +340,8 @@ Ramadda3DDisplay.prototype = {
 	let buttons = [];
 	if(this.models.length==1 && this.models[0].entryid) {
 	    buttons.push(HU.href(ramaddaBaseUrl + '/entry/show?entryid=' + this.models[0].entryid,
-				 HU.getIconImage(ramaddaBaseUrl+'/media/3dmodel.png') +" " + "View entry",
+				 HU.getIconImage(ramaddaBaseUrl+'/media/3dmodel.png',
+						["width",ramaddaGlobals.iconWidth]) +" " + "View entry",
 				 ['target','_entry','title','View entry','class','ramadda-clickable']));
 
 
