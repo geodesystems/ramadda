@@ -5,8 +5,11 @@
     <property name="name.raw" value="true"/>
      <wiki><![CDATA[
 +section title={{name}}
+{{resource}}
 {{description wikify="true"}}
 {{code.view wikify=false}}
+:br
+{{information}}
 -section
 ]]>
 </wiki>
