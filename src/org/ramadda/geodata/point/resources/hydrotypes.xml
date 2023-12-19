@@ -123,6 +123,7 @@ csvcommands8=$1,-sort,datetime,-addheader,default.type double datetime.type date
      <property name="form.date.show" value="false"/>
      <property name="form.resource.show" value="false"/>
  <property name="record.properties">
+picky=false
 fields=agency[label="Agency" type=string],station_id[label="Station ID" type=string],date[type=date format="yyyy-MM-dd HH:mm" label="Date"],timezone[label="Timezone" type=string],discharge[unit="cfs" label="Discharge" type=double],skip[type=string],gauge_height[unit="feet" label="Gauge Height" type=double],skip[type=string]
 point.csvcommands=-delimiter,tab,-skip,2,-print
      </property>
