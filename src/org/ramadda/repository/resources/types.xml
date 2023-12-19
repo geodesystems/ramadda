@@ -230,7 +230,7 @@ priority="2"       >
 <type name="type_document_collection"  isgroup="true" description="Document Collection"
       handler="org.ramadda.repository.type.TypeHandler" category="Documents"
       help="A collection of documents"      >
-     <property name="icon" value="/icons/folder_page.png"/>
+     <property name="icon" value="/icons/documents.png"/>
      <property name="form.resource.show" value="false"/>
      <wiki><![CDATA[
 +section title={{name}}
