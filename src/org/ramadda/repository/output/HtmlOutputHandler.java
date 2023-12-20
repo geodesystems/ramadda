@@ -1386,7 +1386,7 @@ public class HtmlOutputHandler extends OutputHandler {
             throws Exception {
         StringBuffer sb = new StringBuffer();
         getPageHandler().entrySectionOpen(request, group, sb, "Tree View");
-        makeTreeView(request, children, sb, 750, 500, true,null);
+        makeTreeView(request, children, sb, 750, "500px", true,null);
         getPageHandler().entrySectionClose(request, group, sb);
 
         return makeLinksResult(request, group.getName(), sb,
@@ -1620,7 +1620,7 @@ public class HtmlOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public void makeTreeView(Request request, List<Entry> children,
-                             Appendable sb, int width, int height,
+                             Appendable sb, int width, String height,
                              boolean noTemplate,
 			     Hashtable props)
             throws Exception {
@@ -1628,12 +1628,8 @@ public class HtmlOutputHandler extends OutputHandler {
 	if(props == null) props = new Hashtable();
 	String wtr = Utils.getProperty(props,"rightWidth","9");
 	String wtl = Utils.getProperty(props,"leftWidth","3");
-
-
-
         StringBuilder listSB = new StringBuilder();
-        String entryShowUrl  =
-            request.makeUrl(getRepository().URL_ENTRY_SHOW);
+        String entryShowUrl  = request.makeUrl(getRepository().URL_ENTRY_SHOW);
         listSB.append("\n");
         String firstLink = null;
         String viewId    = HU.getUniqueId("treeview_");
@@ -1671,28 +1667,24 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
         String left = HU.div(listSB.toString(),
-                             HU.cssClass("ramadda-treeview-entries")
-                             + HU.style("max-height:" + height
-                                        + "px; overflow-y: auto;"));
+                             HU.cssClass("ramadda-treeview-entries")+
+			     HU.style(HU.css("height", HU.makeDim(height, "px"))));
+	sb.append(HU.comment("begin treeview"));
         sb.append("<div class=\"row\" style=\"margin:0px; \">");
         sb.append("<div class=\"col-md-" + wtl
                   + "  \"  style=\"margin:0px; padding:0px;   \" >");
         sb.append("</div>");
-        sb.append("<div class=\"col-md-" + wtr
-                  + " ramadda-treeview-header \"  >");
+        sb.append("<div class=\"col-md-" + wtr + " ramadda-treeview-header \"  >");
         HU.div(sb, firstLink, HU.id(viewId + "_header"));
-        sb.append("</div>");
-        sb.append("</div>");
-        sb.append("<div class=\"ramadda-treeview\">");
-        sb.append("<div class=\"row\" style=\"margin:0px; \">");
-        sb.append("<div class=\"col-md-" + wtl
-                  + " ramadda-treeview-left \" >");
+        HU.close(sb,"div","div");
+	sb.append("\n");
+        sb.append("<div class=\"ramadda-treeview\">\n");
+        sb.append("<div class=\"row\" style=\"margin:0px; \">\n");
+        sb.append("<div class=\"col-md-" + wtl + " ramadda-treeview-left \" >\n");
         sb.append(left);
-        sb.append("</div>");
-
+        HU.close(sb,"div");
+	sb.append("\n");
         String initUrl = getRepository().getUrlBase() + "/blank";
-
-
         if (children.size() > 0) {
             Entry  initEntry = children.get(0);
             String initId    = request.getString("initEntry", (String) null);
@@ -1710,17 +1702,15 @@ public class HtmlOutputHandler extends OutputHandler {
                     ? "template"
                     : "dummy"), "empty");
         }
-        sb.append("<div class=\"col-md-" + wtr
-                  + " ramadda-treeview-right \"  \"  >");
+	HU.open(sb,"div",HU.cssClass("col-md-" + wtr     + " ramadda-treeview-right") +
+		   HU.style(HU.css("height", HU.makeDim(height, "px"))));
         String attrs = HU.attrs("id", viewId, "src", initUrl, "width",
                                 "" + ((width < 0)
                                       ? (-width + "%")
-                                      : width), "height", "" + height);
+                                      : width), "height", "100%");
         HU.tag(sb, "iframe", attrs, "");
-        sb.append("</div>");
-        sb.append("</div>");
-        sb.append("</div>");
-
+        HU.close(sb,"div","div","div");
+	sb.append(HU.comment("end treeview"));
         request.remove(ARG_TREEVIEW);
     }
 

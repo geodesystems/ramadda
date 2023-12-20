@@ -4322,8 +4322,7 @@ public class WikiManager extends RepositoryManager
         } else if (theTag.equals(WIKI_TAG_TREEVIEW)
                    || theTag.equals(WIKI_TAG_FRAMES)) {
             int width = getDimension(wikiUtil, props, ATTR_WIDTH, -100);
-            int height = getDimension(wikiUtil, props, ATTR_HEIGHT, 500);
-
+	    String height = getProperty(wikiUtil, props, "height","500px");
             List<Entry> children = getEntries(request, wikiUtil,
 					      originalEntry, entry, props);
             if (children.size() == 0) {
