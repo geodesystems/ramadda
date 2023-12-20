@@ -2997,13 +2997,7 @@ var Utils =  {
         jqid(viewId+'_header').html(href);
         if (template)
             url = url + "&template=" + template;
-        $.ajax({
-            url: url,
-            dataType: 'text',
-            success: (data) => {
-		jqid(viewId).attr("src", url);
-	    },
-	});
+	jqid(viewId).attr("src", url);
     },
     copyText: function(str) {
         const el = document.createElement('textarea');
