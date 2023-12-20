@@ -5265,14 +5265,13 @@ public class TypeHandler extends RepositoryManager {
                     String extra =
                         HU.makeShowHideBlock(msg("Upload Settings"), extras,
                             false);
-                    if (forUpload || !showDownload) {
+                    if (forUpload/* || !showDownload*/) {
                         extra = "";
                     }
 
                     if ( !okToShowInForm(entry, "resource.extra")) {
                         extra = "";
                     }
-
                     if (entry == null) {
                         if (tabTitles.size() > 1) {
                             HU.formEntry(sb,
@@ -5282,7 +5281,7 @@ public class TypeHandler extends RepositoryManager {
 			    //HU.formEntry(sb, tabTitles.get(0) + ":",tabContent.get(0) + extra);
 			    sb.append("<tr><td colspan=2>");
 			    sb.append(HU.b(msgLabel(tabTitles.get(0))) + HU.space(1) +
-				      tabContent.get(0) + extra);
+				      tabContent.get(0) + HU.div(extra,""));
 			    sb.append("</td></tr>");
 			    
                         }
