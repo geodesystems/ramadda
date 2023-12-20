@@ -30,7 +30,7 @@
   </type>
 
 
-  <type name="opendaplink"  suoer="cdm_grid" description="OPeNDAP Link" handler="org.ramadda.geodata.cdmdata.OpendapLinkTypeHandler" category="Geoscience Data">
+  <type name="opendaplink"  super="cdm_grid" description="OPeNDAP Link" handler="org.ramadda.geodata.cdmdata.OpendapLinkTypeHandler" category="Geoscience Data">
      <property name="icon" value="/cdmdata/opendap.gif"/>
      <property name="form.date.show" value="true"/>
      <property name="form.file.show" value="false"/>

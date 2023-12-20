@@ -139,13 +139,13 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
     /** OPeNDAP Output Type */
     public static final OutputType OUTPUT_OPENDAP =
         new OutputType("OPeNDAP", "data.opendap",
-                       OutputType.TYPE_FEEDS | OutputType.TYPE_IMPORTANT,
+                       OutputType.TYPE_FEEDS | OutputType.TYPE_IMPORTANT|OutputType.TYPE_SERVICE,
                        OutputType.SUFFIX_NONE, ICON_OPENDAP, GROUP_DATA);
 
     /** CDL Output Type */
     public static final OutputType OUTPUT_CDL =
         new OutputType("File Metadata", "data.cdl",
-		       OutputType.TYPE_OTHER|OutputType.TYPE_IMPORTANT,
+		       OutputType.TYPE_OTHER|OutputType.TYPE_IMPORTANT|OutputType.TYPE_SERVICE,
                        OutputType.SUFFIX_NONE,
                        "/cdmdata/page_white_text.png", GROUP_DATA);
 
@@ -184,7 +184,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
     /** Grid subset form Output Type */
     public static final OutputType OUTPUT_GRIDSUBSET_FORM =
         new OutputType("Subset Grid", "data.gridsubset.form",
-                       OutputType.TYPE_OTHER | OutputType.TYPE_IMPORTANT,
+                       OutputType.TYPE_OTHER | OutputType.TYPE_IMPORTANT|OutputType.TYPE_SERVICE,
                        OutputType.SUFFIX_NONE, "/cdmdata/subsetgrid.png",
                        GROUP_DATA);
 
