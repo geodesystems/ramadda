@@ -3129,16 +3129,28 @@ public class WikiManager extends RepositoryManager
             StringBuilder links = new StringBuilder();
             int           cnt   = 0;
 	    HashSet<String> seen = new HashSet<String>();
+	    String pattern = getProperty(wikiUtil, props, "pattern",null);
+	    boolean includeIcon = getProperty(wikiUtil, props, "includeIcon",
+					      getProperty(wikiUtil, props, "includeicon",true));
+
+	    int outputType =    OutputType.getTypeMask(Utils.split(getProperty(wikiUtil,props,"types",
+									       PageStyle.MENU_SERVICE),",",true,true));
+
 
             for (Link link :
 		     getEntryManager().getEntryLinks(request, entry)) {
-                if ( !link.isType(OutputType.TYPE_IMPORTANT)) {
+                if ( !link.isType(outputType)) {
                     continue;
                 }
 		if(seen.contains(link.getUrl())) continue;
 		seen.add(link.getUrl());
-                String label = getIconImage(link.getIcon(),"width",ICON_WIDTH) + HU.space(1)
-		    + link.getLabel();
+		String label  =link.getLabel();
+		if(!stringDefined(label)) continue;
+		if(pattern!=null) {
+		    if(!label.matches(pattern)) continue;
+		}
+		if(includeIcon)
+		    label = getIconImage(link.getIcon(),"width",ICON_WIDTH) + HU.space(1)+label;
                 HU.href(links, link.getUrl(), label);
                 links.append(HU.br());
                 cnt++;
@@ -3164,8 +3176,7 @@ public class WikiManager extends RepositoryManager
             if (cnt == 0) {
                 return "";
             }
-            String title = getProperty(wikiUtil, props, ATTR_TITLE,
-                                       "Services");
+            String title = getProperty(wikiUtil, props, ATTR_TITLE, "Services");
             HU.div(sb, title, HU.cssClass("wiki-h4"));
             HU.div(sb, links.toString(), HU.cssClass("entry-tools-box"));
 

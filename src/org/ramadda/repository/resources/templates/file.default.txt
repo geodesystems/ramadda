@@ -4,10 +4,10 @@ ${innercontent}
 -col
 +col-md-3
 <div class="entry-page-info">
-{{tools includeicon="true" title="Services" message=""}}
+{{tools includeIcon="true" title="Services" message=""}}
 {{map width="250" height="250"  box.maxheight="300" message="" prefix="====Location===="}}
 <br>
-{{list includeicon="true" details="false" entries="siblings,links"  message="" box.maxheight="200" box.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.title="Related" xblock.open="false"}}
+{{list includeIcon="true" details="false" entries="siblings,links"  message="" box.maxheight="200" box.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.title="Related" xblock.open="false"}}
 </div>
 -col
 -row
