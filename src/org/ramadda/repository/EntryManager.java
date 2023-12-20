@@ -2823,14 +2823,12 @@ public class EntryManager extends RepositoryManager {
                 }
 
 
-		
-
-
                 //If its an anon upload  or we're unzipping an archive then don't set the name
                 String name = ((forUpload || hasZip)
                                ? ""
                                : request.getAnonymousEncodedString(ARG_NAME,
 								   BLANK));
+
 
 		boolean noName = false;
                 if (name.indexOf("${") >= 0) {}
@@ -2841,7 +2839,7 @@ public class EntryManager extends RepositoryManager {
                         typeHandlerToUse.getTypeProperty("nameTemplate",
 						    (String) null);
                     if (nameTemplate == null) {
-                        name = IO.getFileTail(info.name);
+                        name = IO.getFileTail(Utils.getDefined("",info.name,info.resource));
                         if (request.get(ARG_MAKENAME, false)) {
                             name = name.replaceAll("_", " ");
                             name = IO.stripExtension(name);
