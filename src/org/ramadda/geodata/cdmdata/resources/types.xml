@@ -151,7 +151,7 @@ Add a URL from a THREDDS NetCDF Subset Service:
 -callout
 ]]>
   </newhelp>
-     <property name="icon" value="/cdmdata/grid.gif"/>
+     <property name="icon" value="/cdmdata/pointsubset.png"/>
      <property name="form.area.show" value="false"/>
      <property name="form.location.show" value="true"/>
      <property name="form.file.show" value="false"/>
