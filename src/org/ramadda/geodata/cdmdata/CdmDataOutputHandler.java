@@ -949,6 +949,15 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                              entry.getParentEntry());
 
         String       path    = getPath(request, entry);
+        GridDataset dataset      = getCdmManager().getGridDataset(entry, path);
+	if(dataset==null) {
+	    sb.append(getPageHandler().showDialogWarning("No grids found"));
+	    return;
+	}
+
+
+
+
         String       formUrl =
             request.makeUrl(getRepository().URL_ENTRY_SHOW);
         String fileName = IOUtil.stripExtension(entry.getName())
@@ -973,9 +982,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                                       HU.select(ARG_HSTRIDE,strides,
 						       request.getString(ARG_HSTRIDE,
 									 "1"))));
-
-        GridDataset dataset      = getCdmManager().getGridDataset(entry,
-                                       path);
         List<CalendarDate> dates = getGridDates(dataset);
         StringBuffer       varSB = getVariableForm(dataset, true, true,
                                        false);

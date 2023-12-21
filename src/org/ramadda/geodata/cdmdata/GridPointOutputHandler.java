@@ -1025,7 +1025,13 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
 
         GridDataset  gds    = getCdmManager().getGridDataset(entry, path);
 	if(gds==null) {
-	    throw new IllegalStateException("Unable to open the file as a grid");
+            getPageHandler().entrySectionOpen(request, entry, sb,
+					      "Extract Time Series", true);
+	    sb.append(getPageHandler().showDialogWarning("No grids found"));
+            getPageHandler().entrySectionClose(request, entry, sb);
+            return new Result("Extract Time Series",sb);
+
+	    //	    throw new IllegalStateException("Unable to open the file as a grid");
 	}
         OutputType   output = request.getOutput();
         try {
