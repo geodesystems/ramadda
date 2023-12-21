@@ -447,16 +447,12 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let rowClass  = props.simple?'entry-list-simple-row':'entry-list-row entry-list-row-data';
 
 	entries.forEach((entry,entryIdx)=>{
+	    let line = '';
 	    let rowId = Utils.getUniqueId("row_");
-	    let row =  HU.open('div',['entryid',entry.getId(),'id',rowId]);
-	    row +=  HU.open('div',['entryid',entry.getId(),'id',rowId,'class',rowClass]);
 	    let innerId = Utils.getUniqueId();
-	    row+= HU.open('table',['cellspacing','0','cellpadding','border','width','100%','class',
-				   'entry-row-table','entryid',entry.getId()]);
-	    row+='<tr valign=top>';
 	    cols.forEach((col,idx)=> {
 		let last = idx==cols.length-1;
-		let attrs = [];
+		let attrs = [ATTR_CLASS,'entry-row'];
 		let v = entry.getProperty(col.id)??'';
 		let _v = v;
 		let title = null;
@@ -493,8 +489,6 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
 
 		    tds.push(v);
-		    if(!props.simple)
-			title = 'Right-click to see entry menu. Shift-drag to copy/move';
 		    v =  HU.table([],HU.tr(['valign','top'],HU.tds([],tds)));
 		} else {
 		    if(col.id=="attachments") {
@@ -539,13 +533,30 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    attrs.push("width",HU.getDimension(col.width));
 		}
 		if(title) {
-		    attrs.push('title',title);
-
+//		    attrs.push('title',title);
 		}
 //		v = HU.div(['class','entry-row-label'], v);
-
-		row+=HU.td(attrs,v);
+		line+=HU.td(attrs,v);
 	    });		
+
+
+
+	    let row =  HU.open('div',['entryid',entry.getId(),'id',rowId]);
+	    row +=  HU.open('div',['entryid',entry.getId(),'id',rowId,'class',rowClass]);
+	    row+= HU.open('table',['cellspacing','0','cellpadding','border','width','100%','class',
+				   'entry-row-table','entryid',entry.getId()]);
+	    let title='';
+	    let rowAttrs = [ATTR_CLASS,'entry-row','valign','top'];
+	    if(!props.simple) {
+		let img = entry.getIconImage(['width','32px']).replace(/"/g,"'");
+//			attrs.push('data-icon',entry.getIconUrl());
+		title = entry.getName();
+		let type = entry.getType();
+		if(type) rowAttrs.push('data-type', type.name);
+		rowAttrs.push(ATTR_TITLE,title,'data-icon',entry.getIconUrl());
+	    }
+	    row+=HU.open('tr',rowAttrs);
+	    row+=line;
 	    row+="</tr></table>";
 	    row+="</div>"
 	    row+=HU.div(['id',innerId,'style',HU.css('margin-left','20px')]);
@@ -557,6 +568,25 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let container = $('#'+id);
 	html = $(html).appendTo(container);
 	Translate.translate(html);
+
+	html.find('.entry-row').tooltip({
+	    show: { effect: 'slideDown', delay: 1000, duration: 500 },
+	    content: function () {
+		let title = $(this).attr('title');
+		let icon = $(this).attr('data-icon');		
+		if(icon) {
+		    icon = HtmlUtils.image(icon,[ATTR_WIDTH,'32px']);
+		    title = icon+HU.space(1) +title;
+		}
+		title = HU.div([],HU.b(title));
+		let type = $(this).attr('data-type');		
+		if(type) title=title+ 'Type: ' + type+'<br>';
+		return HU.div([ATTR_STYLE,HU.css('margin','5px')],
+			      title+
+			      HU.div([],'Right-click to see entry menu') +
+			      HU.div([],'Shift-drag to copy/move'));
+	    }});	    
+
 	container.find('.ramadda-breadcrumb-toggle').click(function() {
 	    let id = $(this).attr('breadcrumbid');
 	    let crumbs = $('#'+ id);
