@@ -553,6 +553,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		title = entry.getName();
 		let type = entry.getType();
 		if(type) rowAttrs.push('data-type', type.name);
+		let thumb =entry.getThumbnail()
+		if(thumb)
+		    rowAttrs.push('data-thumbnail', thumb);
+
 		rowAttrs.push(ATTR_TITLE,title,'data-icon',entry.getIconUrl());
 	    }
 	    row+=HU.open('tr',rowAttrs);
@@ -574,6 +578,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    content: function () {
 		let title = $(this).attr('title');
 		let icon = $(this).attr('data-icon');		
+		let thumb = $(this).attr('data-thumbnail');		
 		if(icon) {
 		    icon = HtmlUtils.image(icon,[ATTR_WIDTH,'32px']);
 		    title = icon+HU.space(1) +title;
@@ -581,10 +586,16 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		title = HU.div([],HU.b(title));
 		let type = $(this).attr('data-type');		
 		if(type) title=title+ 'Type: ' + type+'<br>';
-		return HU.div([ATTR_STYLE,HU.css('margin','5px')],
-			      title+
-			      HU.div([],'Right-click to see entry menu') +
-			      HU.div([],'Shift-drag to copy/move'));
+		title = title+
+		    HU.div([],'Right-click to see entry menu') +
+		    HU.div([],'Shift-drag to copy/move');
+
+		if(thumb) {
+		    thumb = HtmlUtils.image(thumb,[ATTR_WIDTH,'250px']);
+		    title = title +  HU.div([ATTR_STYLE,'max-height:200px;overflow-y:hidden;'],thumb);
+		}
+
+		return HU.div([ATTR_STYLE,HU.css('margin','5px')],title);
 	    }});	    
 
 	container.find('.ramadda-breadcrumb-toggle').click(function() {
