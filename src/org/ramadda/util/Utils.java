@@ -2566,7 +2566,7 @@ public class Utils extends IO {
                 continue;
             }
 
-	    System.err.println("Apply macros: unknown macro:" + t+"\n" +Utils.getStack(10));
+	    //	    System.err.println("Apply macros: unknown macro:" + t+"\n" +Utils.getStack(10));
 	    if(t.indexOf("date")>=0) throw new IllegalArgumentException("Apply macros: unknown macro:" + t);
 	    //put it back
 	    s.append("${" + t + "}");
