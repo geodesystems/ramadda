@@ -79,8 +79,10 @@ public class ConvertibleFile extends CsvFile {
      * @return _more_
      */
     @Override
-    public List<String> getCsvCommands() {
-        return commands;
+    public List<String> getCsvCommands() throws Exception {
+	if(commands!=null && commands.size()>0) 
+	    return commands;
+	return super.getCsvCommands();
     }
 
     @Override
