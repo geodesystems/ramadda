@@ -111,14 +111,14 @@ csvcommands8=$1,-sort,datetime,-addheader,default.type double datetime.type date
 +center
 :b {{name link=true}}
 -center
-{{display_linechart fields="discharge,gauge_height"}}
+{{group}}
+{{display_linechart fields="discharge,gauge_height" tooltip="${default}" }}
  ]]>
 </property>
      <property name="form.header.new">
        <![CDATA[
 		+note
 		Just need to specify the Station  ID.
-		See the maps at [https://maps.waterdata.usgs.gov/mapper/index.html USGS]
 		-note
        ]]>
      </property>    
@@ -135,7 +135,8 @@ picky=false
 fields=agency[label="Agency" type=string],station_id[label="Station ID" type=string],date[type=date format="yyyy-MM-dd HH:mm" label="Date"],timezone[label="Timezone" type=string],discharge[unit="cfs" label="Discharge" type=double],skip[type=string],gauge_height[unit="feet" label="Gauge Height" type=double],skip[type=string]
 point.csvcommands=-delimiter,tab,-skip,2,-print
      </property>
-     <column  name="station_id"  label="Station ID" type="enumerationplus" cansearch="true"/>
+     <column  name="station_id"  label="Site Number" type="enumerationplus" cansearch="true"
+	      suffix="Find a site at the &lt;a href=https://maps.waterdata.usgs.gov/mapper/index.html target=_map&gt;USGS&lt;/a&gt; and copy its Site Number"/>
      <column  name="period"  label="Period" type="int"  default="30"/>
      <column  name="county"  label="County" type="enumerationplus" cansearch="true"/>
      <column  name="state"  label="State" type="enumerationplus" cansearch="true"/>
