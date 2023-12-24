@@ -106,6 +106,14 @@ csvcommands8=$1,-sort,datetime,-addheader,default.type double datetime.type date
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 -->
 
+<property name="map.popup">
+  <![CDATA[
++center
+:b {{name link=true}}
+-center
+{{display_linechart fields="discharge,gauge_height"}}
+ ]]>
+</property>
      <property name="form.header.new">
        <![CDATA[
 		+note
