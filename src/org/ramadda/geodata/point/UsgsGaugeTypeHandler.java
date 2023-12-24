@@ -155,8 +155,8 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	}
         String url = URL_TEMPLATE;
         url = url.replace("${station_id}",
-                          "" + entry.getValue(IDX_STATION_ID));
-        url = url.replace("${period}", "" + entry.getValue(IDX_PERIOD));
+                          ("" + entry.getValue(IDX_STATION_ID)).trim());
+        url = url.replace("${period}", ("" + entry.getValue(IDX_PERIOD)).trim());
 
         return url;
     }
