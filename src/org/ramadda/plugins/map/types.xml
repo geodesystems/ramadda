@@ -3,6 +3,29 @@
 
   <type name="type_map"  foruser="false"/>
 
+  <type name="type_map_folder"  super="type_map"
+	priority="10"
+	isgroup="true"
+	description="Map Folder">
+     <property name="icon" value="/icons/mapfolder.png"/>
+     <wiki><![CDATA[
++section title={{name}}
+{{description wikify="true"}}
+:navtop
+:heading Map
+{{map  width="100%"  height="80vh"  listEntries="true"  #entriesListInMap="true"  entriesListHeader=""  }} 
+
+:heading List
+{{tabletree  message="No entries"}}
+
+-section
+]]>
+</wiki>
+   </type>
+
+
+
+
   <type name="geo_kml"  super="type_map"
 	mimetype="application/vnd.google-earth.kml+xml"
 	description="KML/KMZ File"   handler="org.ramadda.plugins.map.KmlTypeHandler" pattern="(.*\.kml$|.*\.kmz$)">
