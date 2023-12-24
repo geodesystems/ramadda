@@ -1013,6 +1013,12 @@ public class PointTypeHandler extends RecordTypeHandler {
 
         //        String fromParent = super.getMapInfoBubble(request,  entry);
         //        if(fromParent!=null) return fromParent;
+	String popup = getTypeProperty("map.popup",null);
+	if(popup!=null) {
+	    return  getWikiManager().wikifyEntry(request,entry,popup);
+	}
+
+
         try {
             String chartType = getTypeProperty("map.chart.type", "linechart");
             String chartArgs = getTypeProperty("map.chart.args", "");
@@ -1035,7 +1041,6 @@ public class PointTypeHandler extends RecordTypeHandler {
 
             String id = HtmlUtils.getUniqueId("divid_");
             sb.append(HtmlUtils.div("", HtmlUtils.id(id)));
-
             return JsonUtil.mapAndQuote(Utils.makeList("entryId", entry.getId(), "chartType",
                                     chartType, "chartArgs", chartArgs,
                                     "fields", chartField, "divId", id,
