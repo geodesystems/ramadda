@@ -945,8 +945,7 @@ public class Utils extends IO {
                 return s;
             }
         }
-
-        return null;
+        return dflt;
     }
 
 
