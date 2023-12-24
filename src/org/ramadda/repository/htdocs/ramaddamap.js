@@ -4123,7 +4123,8 @@ RepositoryMap.prototype = {
     getPopupText:  function(text, marker) {
         if (text == null) return null;
         if (text.indexOf("base64:") == 0) {
-            text = window.atob(text.substring(7));
+            text = window.atob(text.substring(7)).trim();
+//	    console.log(text);
             if (text.indexOf("{") == 0) {
                 props = JSON.parse(text);
                 text = props.text;
