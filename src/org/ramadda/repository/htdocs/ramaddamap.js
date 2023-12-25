@@ -2422,8 +2422,10 @@ RepositoryMap.prototype = {
 
     initMapVectorLayer:  function(layer, url, canSelect, selectCallback, unselectCallback, loadCallback, zoomToExtent,errorCallback) {
         let _this = this;
-        this.showLoadingImage(true);
-        layer.isMapLayer = true;
+	if(layer.visibility) {
+            this.showLoadingImage(true);
+	}
+       layer.isMapLayer = true;
         layer.canSelect = canSelect;
         this.loadedLayers.push(layer);
         layer.events.on({
@@ -2495,6 +2497,7 @@ RepositoryMap.prototype = {
 
 	args = args||{};
 	$.extend(opts, args);
+
         layer.styleMap = this.getVectorLayerStyleMap(layer, opts);
 	this.checkLayerToggle(name,layer,idx,opts);
         this.initMapVectorLayer(layer, url, canSelect, selectCallback, unselectCallback, loadCallback, zoomToExtent,errorCallback);
