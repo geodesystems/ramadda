@@ -1938,6 +1938,8 @@ mapheader {
     margin-right: 20px;
 }
 
+
+
 .ramadda-image-centered {
     text-align:center;
     margin-top: 20px;
@@ -3752,7 +3754,10 @@ label {
 .ramadda-logo-image {
 }
 
-.ramadda-image-loading {
+
+/*jsgif class is for the animated gif*/
+
+.jsgif, .ramadda-image-loading {
   background: url('icons/progressbig.gif') no-repeat;
   background-size: 100px 100px;
   background-position: center; 
