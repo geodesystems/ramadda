@@ -86,15 +86,12 @@ public class AnimatedGifTypeHandler extends ImageTypeHandler {
             sb.append("\n\n");
             request.putExtraProperty("libgif", "true");
             HU.importJS(sb,
-                        getRepository().getUrlBase()
-                        + "/lib/libgif/libgif.js");
+			getPageHandler().getCdnPath("/lib/libgif/libgif.js"));
             HU.importJS(sb,
-                        getRepository().getUrlBase()
-                        + "/lib/libgif/rubbable.js");
+                        getPageHandler().getCdnPath("/lib/libgif/rubbable.js"));
 
             HU.importJS(sb,
-                        getRepository().getUrlBase()
-                        + "/media/animatedgif.js");
+                        getPageHandler().getCdnPath("/media/animatedgif.js"));
             String imgUrl =
                 entry.getTypeHandler().getEntryResourceUrl(request, entry);
             String id = HU.getUniqueId("image");
