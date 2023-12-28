@@ -3362,10 +3362,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.heatmapVisible= cbx.length==0 ||cbx.is(':checked');
 
 		this.writeHeader(ID_HEADER2_PREFIX,
-				 reload + HU.checkbox("",[ID,this.domId(ID_HEATMAP_TOGGLE)],this.heatmapVisible) +SPACE +
-				 this.getHmToggleLabel(this.getProperty("hm.toggleLabel","Toggle Heatmap")) +SPACE2);
+				 reload +
+				 HU.checkbox("",[ID,this.domId(ID_HEATMAP_TOGGLE)],this.heatmapVisible,
+					     this.getHmToggleLabel(this.getProperty('hm.toggleLabel','Toggle Heatmap'))));
 		let _this = this;
-		this.jq("heatmapreload").click(()=> {
+		this.jq('heatmapreload').click(()=> {
 		    this.reloadHeatmap = true;
 		    this.removeExtraLayers();
 		    this.haveCalledUpdateUI = false;
@@ -3732,7 +3733,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(!this.getShowPoints())
 		    return;
 	    }	    
-
 
 
 	    if(this.getDoGridPoints()|| this.getDoHeatmap(false)) {
