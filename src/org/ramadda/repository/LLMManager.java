@@ -51,7 +51,6 @@ public class LLMManager extends  AdminHandlerImpl {
 
     public static final String ARG_USEGPT4  = "usegpt4";
     public static final String ARG_MODEL = "model";
-    public static final String ARG_EXTRACT_SUMMARY_PROMPT = "extract_summary_prompt";    
 
     public static final String ARG_EXTRACT_KEYWORDS = "extract_keywords";
     public static final String ARG_EXTRACT_SUMMARY = "extract_summary";    
@@ -142,16 +141,15 @@ public class LLMManager extends  AdminHandlerImpl {
 	    sb.append("<br>");
 	}
 
-	HU.labeledCheckbox(sb, ARG_EXTRACT_KEYWORDS, "true", request.get(ARG_EXTRACT_KEYWORDS, false),  "","Extract keywords");
-	sb.append(space);
 	HU.labeledCheckbox(sb,ARG_EXTRACT_TITLE, "true", request.get(ARG_EXTRACT_TITLE,false),  "","Extract title");
+	sb.append(space);
+	HU.labeledCheckbox(sb, ARG_EXTRACT_SUMMARY, "true", request.get(ARG_EXTRACT_SUMMARY,false), "","Extract summary");
+	sb.append(space);
+	HU.labeledCheckbox(sb, ARG_EXTRACT_KEYWORDS, "true", request.get(ARG_EXTRACT_KEYWORDS, false),  "","Extract keywords");
 	sb.append(space);
 	HU.labeledCheckbox(sb, ARG_EXTRACT_AUTHORS, "true", request.get(ARG_EXTRACT_AUTHORS,false),"","Extract authors");
 	sb.append("<br>");
-	HU.labeledCheckbox(sb, ARG_EXTRACT_SUMMARY, "true", request.get(ARG_EXTRACT_SUMMARY,false), "","Extract summary with the prompt:");
-	sb.append("<br>");
-	sb.append(HU.textArea(ARG_EXTRACT_SUMMARY_PROMPT, request.getString(ARG_EXTRACT_SUMMARY_PROMPT,PROMPT_SUMMARY),3,50));
-	sb.append("<br>");
+
 	sb.append("Note: when extracting keywords, title, etc., the file text is sent to the <a href=https://openai.com/api/>OpenAI GPT API</a> for processing.<br>There will also be a delay before the results are shown for the new entry.");
 	return sb.toString();
     }
@@ -189,7 +187,8 @@ public class LLMManager extends  AdminHandlerImpl {
 				       int maxReturnTokens,
 				       boolean tokenize,
 				       int[]initTokenLimit,
-				       int callCnt)
+				       int callCnt,
+				       String...extraArgs)
 	throws Exception {
 	String text = corpus.toString();
 	String openAIKey = getOpenAIKey();
@@ -279,6 +278,10 @@ public class LLMManager extends  AdminHandlerImpl {
 						    "max_tokens" ,""+ maxReturnTokens,
 						    "top_p", "1.0");
 
+		for(int i=0;i<extraArgs.length;i+=2) {
+		    args.add(extraArgs[i]);
+		    args.add(extraArgs[i+1]);
+		}
 		Utils.add(args,"model",JsonUtil.quote(model));
 		Utils.add(args,"messages",JsonUtil.list(JsonUtil.map(
 								     "role",JsonUtil.quote("user"),
@@ -542,11 +545,94 @@ public class LLMManager extends  AdminHandlerImpl {
 
 
 
+    public static final String PROMPT_JSON = "Summarize the below text, extracting out the title, a summary to be no longer than four sentences, a list of keywords (limited to no more than 6 keywords), and if you can a list of authors. Your result must be valid JSON following the form:\n{\"title\":<the title>,\"authors\":<the authors>,\"summary\":<the summary>,\"keywords\":<the keywords>\n}\n";
+
     public boolean applyEntryExtract(Request request, Entry entry, String llmCorpus) throws Exception {
 	boolean entryChanged = false;
 	int[]tokenLimit = new int[]{-1};
-	if(request.get(LLMManager.ARG_EXTRACT_KEYWORDS,false)) {
-	    List<String> keywords = getLLMManager().getKeywords(request, entry, llmCorpus,tokenLimit);
+
+	boolean extractKeywords = request.get(ARG_EXTRACT_KEYWORDS,false);
+	boolean extractSummary = request.get(ARG_EXTRACT_SUMMARY,false);	
+	boolean extractTitle = request.get(ARG_EXTRACT_TITLE,false);	
+	boolean extractAuthors = request.get(ARG_EXTRACT_AUTHORS,false);	
+
+	if(!(extractKeywords || extractSummary || extractTitle || extractAuthors)) return false;
+	String jsonPrompt= "You are a skilled document editor and I want you to extract the following information from the given text. The text is a document. Assume the reader has a college education. The response must be in valid JSON format and only JSON.";
+	List<String> schema =new ArrayList<String>();
+	if(extractTitle) {
+	    jsonPrompt+="You should include a title. ";
+	    schema.add("\"title\":\"<the title>\"");
+	}
+	if(extractSummary) {
+	    jsonPrompt+="You should include a paragraph summary of the text. The summary should be around four lines. The result in the JSON should be a JSON string. ";
+	    schema.add("\"summary\":\"<the summary>\"");
+	}
+	if(extractKeywords) {
+	    jsonPrompt+="You should include a list of keywords. The keywords should be a valid JSON list of strings. ";
+	    schema.add("\"keywords\":[<keywords>]");
+	}
+	if(extractAuthors) {
+	    jsonPrompt+="You should include a list of authords of the text. The authors should be a valid JSON list of strings. ";
+	    schema.add("\"authors\":[<authors>]");
+	}
+	jsonPrompt +="\nThe result JSON must adhere to the following schema: \n{" + Utils.join(schema,",")+"}\n";
+	//	System.err.println("Prompt:" + jsonPrompt);
+	String json = callLLM(request, jsonPrompt+"\nThe text:\n","",llmCorpus,200,true,tokenLimit,0);
+	if(stringDefined(json)) {
+	    json = json.replaceAll("^```json","").replaceAll("```$","").trim();
+	    //	    System.err.println("JSON:" + json);
+	    try {
+		JSONObject obj = new JSONObject(json);
+		if(extractTitle) {
+		    String title = obj.optString("title",null);
+		    title = title.trim().replaceAll("\"","").replaceAll("\"","");
+		    entry.setName(title);
+		}
+		if(extractSummary) {
+		    String summary = obj.optString("summary",null);
+		    if(summary!=null) {
+			summary = Utils.stripTags(summary).trim().replaceAll("^:+","");
+			StringBuilder sb = new StringBuilder();
+			for(String line:Utils.split(summary,"\n",true,true)) {
+			    line = line.replaceAll("^-","");
+			    sb.append(line);
+			    sb.append("\n");
+			}
+			summary = "+toggleopen Summary\n+callout-info\n<snippet>\n" + sb+"\n</snippet>\n-callout-info\n-toggle\n";
+			entryChanged = true;
+			entry.setDescription(summary+"\n"+entry.getDescription());
+		    }
+		}
+		if(extractKeywords) {
+		    JSONArray array = obj.optJSONArray("keywords");
+		    if(array!=null) {
+			for (int i = 0; i < array.length(); i++) {
+			    if(i>6) break;
+			    getMetadataManager().addKeyword(request, entry, array.getString(i));
+			}
+		    }
+		}
+		if(extractAuthors) {
+		    JSONArray array = obj.optJSONArray("authors");
+		    if(array!=null) {
+			for (int i = 0; i < array.length(); i++) {
+
+			    if(i>6) break;
+			    getMetadataManager().addMetadata(request, entry,
+							     "metadata_author", MetadataManager.CHECK_UNIQUE_TRUE,
+							     array.getString(i));
+			}
+		    }
+		}
+		return true;
+	    } catch(Exception exc) {
+		System.err.println("LLMManager:Error parsing JSON:" + exc+" json:" + json);
+		exc.printStackTrace();
+	    }
+	}
+
+	if(extractKeywords) {
+	    List<String> keywords = getKeywords(request, entry, llmCorpus,tokenLimit);
 	    if(Utils.notEmpty(keywords)) {
 		int cnt = 0;
 		for(String word:keywords) {
@@ -561,11 +647,9 @@ public class LLMManager extends  AdminHandlerImpl {
 	    }
 	}
 
-	if(request.get(ARG_EXTRACT_SUMMARY,false)) {
+	if(extractSummary) {
 	    if(debug) System.err.println("LLMManager: callLLM: summary");
-	    String prompt = request.getString(LLMManager.ARG_EXTRACT_SUMMARY_PROMPT,"");
-	    if(!stringDefined(prompt))
-		prompt = PROMPT_SUMMARY;
+	    String prompt = PROMPT_SUMMARY;
 	    String summary = callLLM(request, prompt,"",llmCorpus,200,true,tokenLimit,0);
 	    if(stringDefined(summary)) {
 		summary = Utils.stripTags(summary).trim().replaceAll("^:+","");
@@ -581,7 +665,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	    }
 	}
 
-	if(request.get(LLMManager.ARG_EXTRACT_TITLE,false)) {
+	if(extractTitle) {
 	    String title = extractTitle(request, llmCorpus,tokenLimit);
 	    if(stringDefined(title)) {
 		title = title.trim().replaceAll("\"","").replaceAll("\"","");
@@ -592,7 +676,7 @@ public class LLMManager extends  AdminHandlerImpl {
 
 
 
-	if(request.get(LLMManager.ARG_EXTRACT_AUTHORS,false)) {
+	if(extractAuthors) {
 	    if(LLMManager.debug) System.err.println("SearchManager: callLLM: authors");
 	    String authors = callLLM(request,
 				     "Extract the author's names and only the author's names from the first few pages in the following text and separate the names with a comma:","",
