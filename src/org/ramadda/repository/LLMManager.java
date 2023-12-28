@@ -607,7 +607,7 @@ public class LLMManager extends  AdminHandlerImpl {
 		    JSONArray array = obj.optJSONArray("keywords");
 		    if(array!=null) {
 			for (int i = 0; i < array.length(); i++) {
-			    if(i>6) break;
+			    if(i>=6) break;
 			    getMetadataManager().addKeyword(request, entry, array.getString(i));
 			}
 		    }
@@ -616,8 +616,7 @@ public class LLMManager extends  AdminHandlerImpl {
 		    JSONArray array = obj.optJSONArray("authors");
 		    if(array!=null) {
 			for (int i = 0; i < array.length(); i++) {
-
-			    if(i>6) break;
+			    if(i>=10) break;
 			    getMetadataManager().addMetadata(request, entry,
 							     "metadata_author", MetadataManager.CHECK_UNIQUE_TRUE,
 							     array.getString(i));
