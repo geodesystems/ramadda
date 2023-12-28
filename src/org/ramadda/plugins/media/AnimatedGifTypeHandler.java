@@ -12,41 +12,30 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
-import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.util.IOUtil;
+
 
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
 
-/**
- *
- *
- */
 public class AnimatedGifTypeHandler extends ImageTypeHandler {
 
 
-    /**  */
     public static int IDX = ImageTypeHandler.IDX_LAST + 1;
 
-    /**  */
     public static final int IDX_SHOWCONTROLS = IDX++;
 
-    /**  */
     public static final int IDX_ADDBUTTONS = IDX++;
 
-    /**  */
     public static final int IDX_AUTOPLAY = IDX++;
 
-    /**  */
     public static final int IDX_MAXWIDTH = IDX++;
 
-    /**  */
     public static final int IDX_LOOPDELAY = IDX++;
 
 
@@ -85,15 +74,11 @@ public class AnimatedGifTypeHandler extends ImageTypeHandler {
             StringBuilder sb = new StringBuilder();
             sb.append("\n\n");
             request.putExtraProperty("libgif", "true");
-            HU.importJS(sb,
-			getPageHandler().getCdnPath("/lib/libgif/libgif.js"));
-            HU.importJS(sb,
-                        getPageHandler().getCdnPath("/lib/libgif/rubbable.js"));
 
-            HU.importJS(sb,
-                        getPageHandler().getCdnPath("/media/animatedgif.js"));
-            String imgUrl =
-                entry.getTypeHandler().getEntryResourceUrl(request, entry);
+            HU.importJS(sb,getPageHandler().getCdnPath("/lib/libgif/libgif.js"));
+            HU.importJS(sb,getPageHandler().getCdnPath("/lib/libgif/rubbable.js"));
+            HU.importJS(sb,getHtdocsPath("/media/animatedgif.js"));
+            String imgUrl = entry.getTypeHandler().getEntryResourceUrl(request, entry);
             String id = HU.getUniqueId("image");
             boolean showControls =
                 "true".equals(Utils.getString(props.get("showControls"),
