@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Dec 21 07:37:43 MST 2023";
+var build_date="RAMADDA build date: Thu Dec 28 05:33:14 MST 2023";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -13351,7 +13351,6 @@ function DisplayManager(argId, argProperties) {
     let _this = this;
     if (targetDiv != null) {
 	targetDiv = targetDiv.replace("${entryid}",this.getProperty("entryId"));
-	console.log(targetDiv);
 	if($("#" + targetDiv).length==0) {
 	    console.log("Error: display group could not find targetDiv:" + targetDiv);
 	    targetDiv=null;
@@ -38964,10 +38963,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.heatmapVisible= cbx.length==0 ||cbx.is(':checked');
 
 		this.writeHeader(ID_HEADER2_PREFIX,
-				 reload + HU.checkbox("",[ID,this.domId(ID_HEATMAP_TOGGLE)],this.heatmapVisible) +SPACE +
-				 this.getHmToggleLabel(this.getProperty("hm.toggleLabel","Toggle Heatmap")) +SPACE2);
+				 reload +
+				 HU.checkbox("",[ID,this.domId(ID_HEATMAP_TOGGLE)],this.heatmapVisible,
+					     this.getHmToggleLabel(this.getProperty('hm.toggleLabel','Toggle Heatmap'))));
 		let _this = this;
-		this.jq("heatmapreload").click(()=> {
+		this.jq('heatmapreload').click(()=> {
 		    this.reloadHeatmap = true;
 		    this.removeExtraLayers();
 		    this.haveCalledUpdateUI = false;
@@ -39334,7 +39334,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(!this.getShowPoints())
 		    return;
 	    }	    
-
 
 
 	    if(this.getDoGridPoints()|| this.getDoHeatmap(false)) {
