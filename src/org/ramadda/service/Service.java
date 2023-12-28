@@ -2530,7 +2530,10 @@ public class Service extends RepositoryManager {
                 setResultsFromStdout = false;
                 myOutput.setResultsShownAsText(true);
                 if (output.getUseStdout() && stdoutFile.exists()) {
-                    myOutput.append(IOUtil.readContents(stdoutFile));
+		    String results = IOUtil.readContents(stdoutFile);
+		    //Strip out any files paths, etc.
+		    results = results.replaceAll(getStorageManager().getStorageDir(),"...");
+                    myOutput.append(results);
                 } else {}
 
                 continue;
