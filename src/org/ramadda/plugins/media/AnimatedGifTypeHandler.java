@@ -77,7 +77,7 @@ public class AnimatedGifTypeHandler extends ImageTypeHandler {
 
             HU.importJS(sb,getPageHandler().getCdnPath("/lib/libgif/libgif.js"));
             HU.importJS(sb,getPageHandler().getCdnPath("/lib/libgif/rubbable.js"));
-            HU.importJS(sb,getHtdocsPath("/media/animatedgif.js"));
+            HU.importJS(sb,getHtdocsPath("/src/org/ramadda/plugins/media/htdocs/media/animatedgif.js","/media/animatedgif.js"));
             String imgUrl = entry.getTypeHandler().getEntryResourceUrl(request, entry);
             String id = HU.getUniqueId("image");
             boolean showControls =
