@@ -5476,7 +5476,7 @@ public class TypeHandler extends RepositoryManager {
 	extra.accept("Zip Files:",unzipWidget);	
 	extra.accept("Metadata:",addMetadata);
 	if(stringDefined(extract)) 
-	    extra.accept("Use GPT:",extract);
+	    extra.accept("Use LLM:",extract);
 
 	extra.accept("Entry name:",makeNameWidget);
 	extra.accept("Date format:",dateFormatWidget);	
