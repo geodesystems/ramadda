@@ -2138,7 +2138,7 @@ public class UserManager extends RepositoryManager {
 	if(imageArgs == null) imageArgs = "";
 	if(imageArgs.indexOf("width=")<0) imageArgs+=" width=" + width+"px ";
 	imageArgs+=HU.cssClass("ramadda-user-avatar");
-
+	imageArgs+=" loading=lazy ";
 	String url = getRepository().getUrlBase()+"/user/avatar";
 	if(avatarFile!=null) {
 	    url+="?ts=" +avatarFile.lastModified();
