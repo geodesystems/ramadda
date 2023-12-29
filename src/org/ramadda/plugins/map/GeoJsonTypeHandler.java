@@ -197,7 +197,6 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
                                        Hashtable properties,
                                        Hashtable requestProperties)
 	throws Exception {
-	
 	List<String> args = getCsvCommands(request, entry);
         return new GeoJsonRecordFile(request, getRepository(), this, entry,args,new IO.Path(getPathForEntry(request, entry,true)));
     }
@@ -214,6 +213,8 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
         /** _more_ */
         private Repository repository;
 
+	private List<String> csvCommands;
+	    
         /** _more_ */
         private String dataUrl;
 
@@ -235,6 +236,7 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
         public GeoJsonRecordFile(Request request, Repository repository, GeoJsonTypeHandler ctx, Entry entry,List<String> args, IO.Path path)
 	    throws IOException {
             super(request,  ctx, entry, args, path);
+	    csvCommands = args;
 	    typeHandler = ctx;
             this.repository = repository;
             this.entry      = entry;
@@ -256,23 +258,15 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
 	*/
 
 
-
-        /**
-         * @param buffered _more_
-         *
-         * @return _more_
-         *
-         *
-         * @throws Exception _more_
-         */
         @Override
-        public InputStream doMakeInputStream(boolean buffered)
-	    throws Exception {
-	    List<String> commands =getCsvCommands();
+	public List<String> getCsvCommands() throws Exception {
+	    List<String> commands =super.getCsvCommands();
 	    if(commands.size()==0) {
 		Utils.add(commands, "-geojson","true");
 	    }
-	    return super.doMakeInputStream(buffered);
+	    return commands;
 	}
+
+
     }
 }
