@@ -20,6 +20,11 @@
 <wiki><![CDATA[
 +section title={{name}}
 {{description wikify="true"}}
++accordion decorate=false collapsible=true activeSegment=-1
++segment Document Information
+{{information  details="true"  showTitle="false"  includeTools=false}} 
+-segment
+-accordion
 {{embed as=file   maxheight="600" maxSize="10000" }}
 -section
 ]]>
