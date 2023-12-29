@@ -319,6 +319,7 @@ public class Admin extends RepositoryManager {
             adminUrls.add(idx + 1, URL_ADMIN_LOCAL);
         }
 
+	/*
         Misc.run(new Runnable() {
             public void run() {
                 while (true) {
@@ -327,6 +328,7 @@ public class Admin extends RepositoryManager {
                 }
             }
         });
+	*/
     }
 
     /**
