@@ -1,7 +1,8 @@
 #!/bin/sh
-#download the pdfbox-app-3.0.1.jar from
-#https://pdfbox.apache.org/download.html
-#and copy it into the same directory as this shell script
+
+#Download pdfbox-app-2.0.27.jar from https://pdfbox.apache.org/download.html
+#and copy it to the same dir as this script
+
 
 dir=`dirname $0`
-java -jar ${dir}/pdfbox-app-3.0.1.jar "$@"
+java -jar ${dir}/pdfbox-app-2.0.27.jar "$@"
