@@ -132,6 +132,8 @@
 	       isRAMADDAPointData=true
       ]]>
     </property>
+    <!-- IMPORTANT: this name has to be the same as in type_point -->
+    <column name="convert_commands" type="clob"   rows="5" columns="60" label="Convert Text"  showinhtml="false" group="Convert"/>
   </type>
 
   
