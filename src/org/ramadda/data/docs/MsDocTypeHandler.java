@@ -155,12 +155,12 @@ public class MsDocTypeHandler extends GenericTypeHandler {
 	if(b==null || !b) return super.getHtmlDisplay(request,entry);
 	StringBuffer sb = new StringBuffer();
 	getPageHandler().entrySectionOpen(request,  entry,sb, "");
-	String wiki = "{{description wikify=true}}\n+toggle Document Information\n{{information details=true showTitle=false}}\n-toggle\n";
-	sb.append(getWikiManager().wikifyEntry(request, entry, wiki));
+	StringBuilder wiki = new StringBuilder("{{description wikify=true}}\n+toggle Document Information\n{{information details=true showTitle=false}}\n-toggle\n");
 	String url = request.getAbsoluteUrl(getEntryManager().getEntryResourceUrl(request, entry));
 	url = url.replace("?","%3F");
 	//	System.err.println(url);
-	sb.append("\n<center>\n<iframe style='border:var(--basic-border);' src='https://view.officeapps.live.com/op/embed.aspx?src="+ url+"' width='90%' height='800px' frameborder='1'></iframe>\n</center>\n");
+	wiki.append("\n<center>\n+fullscreen\n<div style='height:100vh;'><iframe style='border:var(--basic-border);' src='https://view.officeapps.live.com/op/embed.aspx?src="+ url+"' width='95%' height='100%' frameborder='1'></iframe>\n</div>\n-fullscreen\n</center>\n");
+	sb.append(getWikiManager().wikifyEntry(request, entry, wiki.toString()));
 	getPageHandler().entrySectionClose(request,  entry, sb);
 	return getEntryManager().addHeaderToAncillaryPage(request,
 							  new Result(BLANK, sb));
