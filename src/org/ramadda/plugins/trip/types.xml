@@ -49,6 +49,8 @@
 
 
 
+<!--
+
   <type name="trip_trip"  description="Trip" handler="org.ramadda.plugins.trip.TripTypeHandler" category="Travel">
      <property name="icon" value="/trip/trip.png"/>
      <property name="form.area.show" value="true"/>
@@ -65,7 +67,6 @@
 {{newheader}}
 {{description}}
 {{calendar entries="children:type:trip_item"}}
-----
 {{tree}}
 
 -section
@@ -133,6 +134,6 @@
      <column name="email" type="email" label="Email" rows="1" showinhtml="true"/>
    </type>
 
-
+-->
 
 </types>
