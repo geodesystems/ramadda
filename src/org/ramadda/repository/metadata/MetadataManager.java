@@ -1175,13 +1175,8 @@ public class MetadataManager extends RepositoryManager {
 	if(metadata.size()==0) return metadata;
 	List<Metadata> result =new ArrayList<Metadata>();
 	Boolean canEdit = null;
-	if(entry.getName().equals("Agenda items")) {
-	    System.err.println("entry:" + entry.getName());
-	    System.err.println(Utils.getStack(10));
-	}
 	for(Metadata mtd: metadata) {
 	    MetadataType type = getType(mtd);
-	    //	    System.err.println("\ttype:" + type + " mtd:" + mtd.getAttr1());
 	    if(type==null) continue;
 	    if(!type.getCanView()) {
 		if(canEdit==null) {
@@ -1841,9 +1836,10 @@ public class MetadataManager extends RepositoryManager {
                     if ( !arg.startsWith(ARG_METADATA_ID + SUFFIX_SELECT)) {
                         continue;
                     }
-                    getDatabaseManager().delete(Tables.METADATA.NAME,
-                            Clause.eq(Tables.METADATA.COL_ID,
-                                      request.getString(arg, BLANK)));
+		    String id =       request.getString(arg, BLANK);
+		    if(!stringDefined(id)) continue;
+		    Metadata metadata = findMetadata(request, entry,id);
+		    if(metadata!=null) deleteMetadata(metadata);
                 }
             } else {
                 List<Metadata> newMetadataList  = new ArrayList<Metadata>();
@@ -1903,8 +1899,7 @@ public class MetadataManager extends RepositoryManager {
 
                 for (Metadata metadata : newMetadataList) {
                     getDatabaseManager().delete(Tables.METADATA.NAME,
-                            Clause.eq(Tables.METADATA.COL_ID,
-                                      metadata.getId()));
+						getClause(metadata));
                     insertMetadata(metadata);
                 }
             }
@@ -2295,6 +2290,7 @@ public class MetadataManager extends RepositoryManager {
             sb.append(HU.leftRight(buttons,HU.inset(toggle,0,0,0,110)));
             List<String> titles   = new ArrayList<String>();
             List<String> contents = new ArrayList<String>();
+	    
             for (Metadata metadata : metadataList) {
                 metadata.setEntry(entry);
                 MetadataHandler metadataHandler =
@@ -2623,6 +2619,16 @@ public class MetadataManager extends RepositoryManager {
         });
     }
 
+    private Clause getClause(Metadata metadata) {
+	Clause clause = Clause.eq(Tables.METADATA.COL_ID,
+				  metadata.getId());
+	if(metadata.getEntry()!=null) clause=Clause.and(clause,
+							Clause.eq(Tables.METADATA.COL_ENTRY_ID,
+								  metadata.getEntry().getId()));
+
+	return clause;
+    }
+
     /**
      * _more_
      *
@@ -2631,9 +2637,7 @@ public class MetadataManager extends RepositoryManager {
      * @throws Exception On badness
      */
     public void deleteMetadata(Metadata metadata) throws Exception {
-        getDatabaseManager().delete(Tables.METADATA.NAME,
-                                    Clause.eq(Tables.METADATA.COL_ID,
-                                        metadata.getId()));
+        getDatabaseManager().delete(Tables.METADATA.NAME,getClause(metadata));
     }
 
 

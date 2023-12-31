@@ -611,7 +611,7 @@ public class Metadata implements Constants {
      * @return _more_
      */
     public String toString() {
-        return "entry:" + entryId + " type:" + type + " attr1:" + attr1
+        return "id:"+ id +" entry:" + entryId + " type:" + type + " attr1:" + attr1
 	    + " attr2:" + attr2 + " attr3:" + attr3 + " attr4:" + attr4;
     }
 
