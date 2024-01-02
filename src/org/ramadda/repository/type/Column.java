@@ -874,9 +874,14 @@ public class Column implements DataTypes, Constants, Cloneable {
         enumValues = new ArrayList<TwoFacedObject>();
         for (String tok : tmp) {
 	    tok  =tok.trim();
-            if (tok.startsWith("#") || tok.equals("")) {
+            if (tok.startsWith("#")) {
                 continue;
             }
+	    //Only pass through the blank if it is the first in the list
+	    if(tok.equals("") && enumValues.size()>0) {
+                continue;
+            }
+            if (tok.equals("_blank_")) tok = "";
 
             String label = tok;
             String value = tok;

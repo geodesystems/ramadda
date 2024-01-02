@@ -5791,7 +5791,7 @@ public class TypeHandler extends RepositoryManager {
             throws Exception {
         if (propertyValue.startsWith("resource:")) {
             return getMetadataManager().getTypeResource(
-                propertyValue.substring("resource:".length()));
+							propertyValue.substring("resource:".length()));
         }
 
         if (propertyValue.startsWith("file:")) {
