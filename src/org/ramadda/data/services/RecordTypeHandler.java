@@ -240,6 +240,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
      * @param tabTitles _more_
      * @param tabContents _more_
      */
+    @Override
     public void addToInformationTabs(Request request, Entry entry,
                                      List<String> tabTitles,
                                      List<String> tabContents) {
