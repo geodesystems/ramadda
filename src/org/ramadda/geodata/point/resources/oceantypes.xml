@@ -271,7 +271,9 @@ fields=date[type="string" isdate="true"] time[type="string" istime="true"],LATIT
 <type name="type_ndbc_buoy" 
 description="NDBC Buoy Data" 
 super="type_point" 
-handler="org.ramadda.geodata.point.NdbcBuoyTypeHandler">
+handler="org.ramadda.geodata.point.NdbcBuoyTypeHandler"
+editfields="station,data_type,_default"	>
+
   <property name="icon" value="/point/noaa.gif"/>
   <property name="form.area.show" value="false"/>
   <property name="form.location.show" value="true"/>
