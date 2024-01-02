@@ -3395,7 +3395,7 @@ RepositoryMap.prototype = {
 
 
         if (this.fldLon || this.params.addMarkerOnClick) {
-            this.addClickHandler(this?.fldLon?.id, this?.fldLat?.id);
+            this.addClickHandler(this?.fldLat?.id, this?.fldLon?.id);
 	    if(this.fldLon)
 		this.setSelectionMarker(this.fldLon.obj.value, this.fldLat.obj.value);
         } else if(this.fldWest && this.fldNorth) {
