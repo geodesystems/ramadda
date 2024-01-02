@@ -145,16 +145,21 @@ point.csvcommands=-delimiter,tab,-skip,2,-print
 <wiki>
 <![CDATA[
 +section title={{name}}
+:navtop
 :rem If you use this as the description then remove the description tag below
 {{description wikify=true}}
+:heading Charts
 {{group showMenu=true  targetDiv="${entryid}_group" }}
 <div id="{{entryid}}_group"></div> 
 {{display type=linechart showMenu=true fields=discharge}}
 {{display type=linechart showMenu=true fields=gauge_height}}
+:vspace 0.5em
+:heading Table
 {{display_download showMenu=false}}
 {{display_table showMenu=false}}
 :vspace 1em
 ----
+:heading Information
 +row
 +col-md-6
 {{information  details="true"  showTitle="false"  }} 

@@ -154,10 +154,9 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	    return entry.getResource().getPath();
 	}
         String url = URL_TEMPLATE;
-        url = url.replace("${station_id}",
-                          ("" + entry.getValue(IDX_STATION_ID)).trim());
+	String id = ("" + entry.getValue(IDX_STATION_ID)).trim();
+	url = url.replace("${station_id}",id);
         url = url.replace("${period}", ("" + entry.getValue(IDX_PERIOD)).trim());
-
         return url;
     }
 
@@ -175,7 +174,7 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
                                    boolean fromImport)
 	throws Exception {
 	if(fromImport) return;
-	String id =   (String) entry.getStringValue(IDX_STATION_ID, "");
+	String id = ("" + entry.getValue(IDX_STATION_ID)).trim();
 	if(!stringDefined(id)) return;
 	String url = "https://waterdata.usgs.gov/nwis/inventory?site_no="+id;
 	IO.Result result = IO.doGetResult(new URL(url));
