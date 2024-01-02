@@ -11,6 +11,7 @@
   </type>
 
   <type name="nwsfeed"   super="type_point" description="NWS Forecast Feed"
+	priority="20"
 	supercategory="Geoscience" category="Geoscience Data" 
 	handler="org.ramadda.plugins.feed.DwmlFeedTypeHandler" foruser="true" >  
      <property name="icon" value="/feed/nws3.png"/>

@@ -4,7 +4,7 @@
   <type name="type_map"  foruser="false"/>
 
   <type name="type_map_folder"  super="type_map"
-	priority="10"
+	priority="11"
 	isgroup="true"
 	description="Map Folder">
      <property name="icon" value="/icons/mapfolder.png"/>
@@ -65,7 +65,9 @@ viewBounds="<bounds>" details="true" displayDiv="mapDisplay" showSearch="true" }
   </type>
 
 
-  <type name="geo_gpx"  mimetype="application/json" super="type_point" description="GPX GPS File"   handler="org.ramadda.plugins.map.GpxTypeHandler" pattern=".*\.gpx$">
+  <type name="geo_gpx"  mimetype="application/json" super="type_point"
+	priority="12"
+	description="GPX GPS File"   handler="org.ramadda.plugins.map.GpxTypeHandler" pattern=".*\.gpx$">
     <property name="icon" value="/map/gpx.png"/>
      <xproperty name="point.initialize" value="false"/>
      <column name="distance" label="Distance" type="double" cansearch="true" showinhtml="true" databaseDefault="-1"/>
@@ -130,6 +132,7 @@ propagateHighlightEvent=true showTitle="false" layoutHere="true" showMenu="true"
 
 
 <type name="geo_shapefile"  description="Shapefile"   super="type_point"
+	priority="12"
       handler="org.ramadda.plugins.map.ShapefileTypeHandler"
       pattern="(.*\.shp$|.*shp.*\.zip|.*\.shz)"
       metadata="shapefile_display,shapefile_color,map_displaymap">
@@ -214,6 +217,7 @@ propagateHighlightEvent=true showTitle="false" layoutHere="true" showMenu="true"
      <column name="fips" label="FIPS Code" canedit="true" showinhtml="true"/>
 </type>
 
+<!--
   <type name="map_googlemap"  
         description="Google Map URL" 
         handler="org.ramadda.plugins.map.GoogleMapsTypeHandler" 
@@ -228,9 +232,11 @@ propagateHighlightEvent=true showTitle="false" layoutHere="true" showMenu="true"
      <column name="height" type="int" label="Height"  default="390" showinhtml="false"/>
      <column name="display" type="boolean" label="Display" default="true"  showinhtml="false"/>
 </type>
+-->
 
-
-<type name="geo_geojson"  super="type_convertible" mimetype="application/json" description="GeoJson File"
+<type name="geo_geojson"  super="type_convertible"
+	priority="12"      
+	mimetype="application/json" description="GeoJson File"
       handler="org.ramadda.plugins.map.GeoJsonTypeHandler"
       pattern="(.*\.geojson$)" metadata="map_style">
     <property name="icon" value="/icons/mapfile.png"/>
@@ -269,6 +275,7 @@ propagateHighlightEvent=true showTitle="false" layoutHere="true" showMenu="true"
    </type>
 
    <type name="geo_imdv"  description="Integrated Map Data"  isgroup="true"
+	 priority="10"
 	 pattern="(?i).*imdvmap\.json$">
      <property name="wiki.edit.links.label" value="IMDV Tags"/>
      <property name="wiki.edit.links">
