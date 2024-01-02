@@ -3,8 +3,10 @@
 	editfields="site_id,_default"
 	handler="org.ramadda.geodata.point.AwcMetarTypeHandler">
 
+
      <property name="form.file.show" value="false"/>
      <property name="form.resource.show" value="false"/>
+     <property name="record.processresource" value="true"/>
      <property name="point.initialize" value="false"/>
      <property name="form.properties.show" value="false"/>
      <property name="form.area.show" value="false"/>
@@ -34,7 +36,9 @@ csvcommands3=-addheader, default.type double reporttime.type date reporttime.for
 <![CDATA[
 +section  title="Station: {{field name=site_id raw=true}} -- {{name}}"
 :rem If you use this for a custom wiki then remove the description tag
+:navtop
 {{description}}
+:heading Charts
 +row
 +col-md-9
 {{group}}
@@ -59,7 +63,7 @@ csvcommands3=-addheader, default.type double reporttime.type date reporttime.for
 :vspace 1em
 ----
 :heading Information
-{{information}}
+{{information details=true}}
 ]]>
 
 </wiki>
