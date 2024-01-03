@@ -154,8 +154,7 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	    return entry.getResource().getPath();
 	}
         String url = URL_TEMPLATE;
-	String id = ("" + entry.getValue(IDX_STATION_ID)).trim();
-	url = url.replace("${station_id}",id);
+	url = url.replace("${station_id}",("" + entry.getValue(IDX_STATION_ID)).trim());
         url = url.replace("${period}", ("" + entry.getValue(IDX_PERIOD)).trim());
         return url;
     }

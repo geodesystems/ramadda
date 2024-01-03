@@ -102,8 +102,6 @@ csvcommands8=$1,-sort,datetime,-addheader,default.type double datetime.type date
 </wiki>
 </type>
 
-
-
 <type name="type_usgs_gauge"  description="USGS Stream Gauge" super="type_point_hydro"
       newfields="station_id,tags,quit"
       handler="org.ramadda.geodata.point.UsgsGaugeTypeHandler">
@@ -121,11 +119,9 @@ csvcommands8=$1,-sort,datetime,-addheader,default.type double datetime.type date
  ]]>
 </property>
      <property name="form.header.new">
-       <![CDATA[
-		+note
-		Just need to specify the Station  ID.
-		-note
-       ]]>
+       <![CDATA[+callout-info
+You just need to specify the Site Number. The name and other metadata will be looked up from the USGS site.
+-callout]]>
      </property>    
      <property name="icon" value="/point/usgs.png"/>
      <property name="record.file.cacheok" value="true"/>
