@@ -2,8 +2,7 @@
 <types supercategory="Geoscience">
 
   <type name="type_point_openaq"  description="Open AQ Air Quality" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.OpenAQTypeHandler"
-      editfields="location_id,_default"
-	
+	newfields="location_id,name,description,hours_offset,quit"
 >
     <property name="icon" value="/point/openaq.png"/>
     <property name="form.resource.show" value="false"/>
@@ -13,20 +12,23 @@
 
 
 
+
     <property name="form.header.new">
 <![CDATA[
-+note
-Just enter the Location ID. To find the ID view the map at
++callout-info
+You just need to enter the Location ID. 
+To find the ID view the map at
 <a target=_map href=https://explore.openaq.org/>https://explore.openaq.org/</a>, select the station then
 click on "Show Details". The ID is in the URL, 
-e.g. 270997 in <a href=https://explore.openaq.org/locations/270997>https://explore.openaq.org/locations/270997</a>
--note]]></property>
+e.g. 232797 in <a href=https://explore.openaq.org/locations/270997>https://explore.openaq.org/locations/232797</a>
+-callout]]></property>
      <column name="location_id" label="Location ID"/>
      <column  name="country"  label="Country" cansearch="true"/>
      <column  name="city"  label="City" cansearch="true"/>
      <column  name="sensor"  label="Sensor" type="enumerationplus" default="" cansearch="true"/>
      <column  name="stationary"  label="Stationary" type="boolean" default="true" cansearch="true"/>
-     <column  name="hours_offset"  label="Offset Hours" type="int" default="168" cansearch="true"/>
+     <column  name="hours_offset"  label="Offset Hours" type="int" default="168" cansearch="true"
+	      suffix="How many hours back in time"/>
      <property name="record.properties">
    header.standard=true
  </property>
@@ -72,8 +74,9 @@ label,pos:c,dx:cw2,dy:-ch2,label:${${_field} suffix=" ${unit}" decimals=2}
 
   </type>
 
-  <type name="type_point_purpleair"  description="Purple Air Sensor" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.PurpleAirTypeHandler"
-      editfields="sensor_id,_default"	>
+  <type name="type_point_purpleair"  description="Purple Air Sensor" super="type_point" category="Point Data"
+	handler="org.ramadda.geodata.point.PurpleAirTypeHandler"
+	newfields="sensor_id,_default"	>
     <action name="gethistory" label="Download History" icon="fas fa-download"/>
     <action name="clearfile" label="Clear File" icon="fas fa-rotate-right" canedit="true"/>
     <property name="icon" value="/point/purpleair/icon.png"/>
@@ -86,26 +89,26 @@ label,pos:c,dx:cw2,dy:-ch2,label:${${_field} suffix=" ${unit}" decimals=2}
     
     <property name="form.header">
 <![CDATA[
-+note
++callout-info
 All you need to do is specify the Sensor ID.
 To find a Sensor ID see the 
 <a target=_help
 href=https://ramadda.org/repository/point/purpleair_index.html#creating_purple_air_entries>documentation</a>.
--note]]></property>
+-callout]]></property>
 
 
 
     <column  name="sensor_id"  label="Sensor ID" type="string" />
-     <column  name="private_key"  label="Private Key"  type="password"/>
-     <column  name="active"  label="Active"  type="boolean" default="true" cansearch="true"
-	      suffix="If active then the real-time data is collected and appended to this file.&lt;br&gt;This has to be enabled for the repository. See &lt;a href=https://ramadda.org/repository/point/purpleair_index.html target=_help&gt;here&lt;/a&gt; for more information"/>     
-     <column  name="fields"  label="Fields"  type="enumeration" values="default:Default,short:Short,all:All"
-	      default="default"
-	      suffix="What fields to gather. Note: if you change this then also clear the file from the File menu. &lt;a target=_help href=/repository/point/purpleair_index.html#fields&gt;More information&lt;/a&gt;"/>
+    <column  name="private_key"  label="Private Key"  type="password"/>
+    <column  name="active"  label="Active"  type="boolean" default="true" cansearch="true"
+	     suffix="If active then the real-time data is collected and appended to this file.&lt;br&gt;This has to be enabled for the repository. See &lt;a href=https://ramadda.org/repository/point/purpleair_index.html target=_help&gt;here&lt;/a&gt; for more information"/>     
+    <column  name="fields"  label="Fields"  type="enumeration" values="default:Default,short:Short,all:All"
+	     default="default"
+	     suffix="What fields to gather. Note: if you change this then also clear the file from the File menu. &lt;a target=_help href=/repository/point/purpleair_index.html#fields&gt;More information&lt;/a&gt;"/>
 
-     <column  name="model"  label="Model" type="string" editable="false"/>
-     <column  name="hardware"  label="Hardware" type="string" editable="false"/>     
-     <column  name="location_type"  label="Location Type" type="enumeration" values="outside,inside" editable="false"/>     
+    <column  name="model"  label="Model" type="string" editable="false"/>
+    <column  name="hardware"  label="Hardware" type="string" editable="false"/>     
+    <column  name="location_type"  label="Location Type" type="enumeration" values="outside,inside" editable="false"/>     
 <property name="mapglyphs">
   <![CDATA[
 props:fontSize:0px,iconSize:20,canvasWidth:100,canvasHeight:100,font:28px sans-serif,defaultField:pm2_5,

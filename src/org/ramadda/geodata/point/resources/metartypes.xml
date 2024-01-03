@@ -1,6 +1,6 @@
 <types supercategory="Geoscience" category="Point Data">
   <type name="type_awc_metar"  super="type_point" description="AWC Weather Observations"
-	editfields="site_id,_default"
+	newfields="site_id,name,quit,_default"
 	handler="org.ramadda.geodata.point.AwcMetarTypeHandler">
 
 
