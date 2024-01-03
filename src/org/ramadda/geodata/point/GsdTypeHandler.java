@@ -143,21 +143,4 @@ public class GsdTypeHandler extends PointTypeHandler {
         return getPathForRecordEntry(entry, request.getDefinedProperties()).getPath();
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fromImport _more_
-     *
-     * @throws Exception _more_
-     */
-    @Override
-    public void initializeNewEntry(Request request, Entry entry,
-                                   boolean fromImport)
-            throws Exception {}
-
 }
