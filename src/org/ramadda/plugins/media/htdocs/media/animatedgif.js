@@ -7,6 +7,15 @@ var AnimatedGif =  {
 	control.load((gif)=>{
 	    if(addButtons) {
 		AnimatedGif.addButtons(control,div);
+		//Listen for left/right arrow
+		jqid(div).attr('tabindex','1');
+		jqid(div).keydown((evt)=>{
+		    if(evt.keyCode==39) {
+			control.move_relative(1);
+		    } else if(evt.keyCode==37) {
+			control.move_relative(-1);
+		    }
+		});
 	    }
 	});
     },
