@@ -62,6 +62,7 @@ public class RiseTypeHandler extends PointTypeHandler {
         if ( !Utils.stringDefined(id)) {
             return;
         }
+	id =id.trim();
         String url  = "https://data.usbr.gov/rise/api/location/" + id;
         String json = null;
         try {

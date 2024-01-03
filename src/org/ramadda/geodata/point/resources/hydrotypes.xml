@@ -45,20 +45,25 @@ csvcommands2=measDate,,-addheader, measdate.type date   measdate.format {yyyy-MM
 </wiki>
   </type>
 
-  <!--
-      Look for data at
-      https://data.usbr.gov/time-series/search?v=1
-      Look at the location details, e.g
-      https://data.usbr.gov/location/3540
-      The 3540 is the RISE ID entry attribute
-      If specified the location and other metadata are extracted
-  -->
   <type name="type_hydro_usbr_rise"  super="type_point_hydro" description="USBR RISE Hyrdo"
-	handler="org.ramadda.geodata.point.RiseTypeHandler">
+	handler="org.ramadda.geodata.point.RiseTypeHandler"
+	editfields="rise_id,_default">
+    <property name="form.header.new">
+    <![CDATA[+callout-info\n
+* Find sites at <a href=https://data.usbr.gov/rise-map/ target=_usbr>USBR Map</a>
+* From the map popup click on the link <i>Send location to RISE time series query page</i>
+* Note the location ID from the URL, e.g. "3511" - https://data.usbr.gov/time-series/selection?lo=3511
+* Enter the location ID below. This will extract location and metadata
+* Select and download the desired data and upload the CSV file here
+\n-callout]]></property>    
+
      <property name="icon" value="/point/rise.png"/>
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
      <property name="form.date.show" value="false"/>
+     <property name="form.url.show" value="false"/>
      <property name="form.properties.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="true"/>
      <column  name="rise_id"  label="RISE ID" type="string"/>
      <column  name="location_type"  label="Location Type" type="enumerationplus"/>     
 <property name="record.properties">
@@ -88,8 +93,8 @@ csvcommands8=$1,-sort,datetime,-addheader,default.type double datetime.type date
 {{map}}
 {{properties message="" decorate=true metadata.types="enum_tag"  includeTitle="false"}}
 <table class="formtable">
-     {{field name="altitude"  row.label="Altitude:"}}
-     {{field name="location_type"  row.label="Type:"}}
+{{field name="altitude"  row.label="Altitude:"}}
+{{field name="location_type"  row.label="Type:"}}
 </table>
 -col
 -row
@@ -99,10 +104,10 @@ csvcommands8=$1,-sort,datetime,-addheader,default.type double datetime.type date
 
 
 
-  <type name="type_usgs_gauge"  description="USGS Stream Gauge" super="type_point_hydro"
-	newfields="station_id,tags,quit"
-	handler="org.ramadda.geodata.point.UsgsGaugeTypeHandler">
-<!--
+<type name="type_usgs_gauge"  description="USGS Stream Gauge" super="type_point_hydro"
+      newfields="station_id,tags,quit"
+      handler="org.ramadda.geodata.point.UsgsGaugeTypeHandler">
+  <!--
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 -->
 
