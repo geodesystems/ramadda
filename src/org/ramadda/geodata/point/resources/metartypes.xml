@@ -14,7 +14,9 @@
      <property name="icon" value="/point/noaa.gif"/>
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
      <property name="form.header.new">
-       <![CDATA[+note\nJust need to specify the Site  ID. See the maps on [https://ramadda.org/repository/a/awc_metars RAMADDA]\n-note]]>
+       <![CDATA[+callout-info
+You just need to specify the Site  ID. See the maps on [https://ramadda.org/repository/a/awc_metars RAMADDA]
+-callout]]>
      </property>    
 
      <!-- We use the csvcommands to sort the records because the data is coming in in reverse chrono order
