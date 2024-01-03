@@ -82,15 +82,6 @@ public class HtmlOutputHandler extends OutputHandler {
                        ICON_INFORMATION);
 
 
-
-    /*
-    public static final OutputType OUTPUT_LISTING =
-        new OutputType("Tree View", "html.listing",
-                       OutputType.TYPE_VIEW , "",
-                       "/icons/application_side_tree.png");
-    */
-
-
     /** _more_ */
     public static final OutputType OUTPUT_GRAPH = new OutputType("Graph",
                                                       "default.graph",
@@ -1385,7 +1376,7 @@ public class HtmlOutputHandler extends OutputHandler {
                                  List<Entry> children)
             throws Exception {
         StringBuffer sb = new StringBuffer();
-        getPageHandler().entrySectionOpen(request, group, sb, "Tree View");
+        getPageHandler().entrySectionOpen(request, group, sb, "Frames");
         makeTreeView(request, children, sb, 750, "500px", true,null);
         getPageHandler().entrySectionClose(request, group, sb);
 
@@ -1632,12 +1623,16 @@ public class HtmlOutputHandler extends OutputHandler {
         String entryShowUrl  = request.makeUrl(getRepository().URL_ENTRY_SHOW);
         listSB.append("\n");
         String firstLink = null;
+        String containerId    = HU.getUniqueId("treeview_container");
         String viewId    = HU.getUniqueId("treeview_");
 	boolean showIcon  = Utils.getProperty(props,"showIcon",true);
 	String icon  = Utils.getProperty(props,"icon",null);
+	int cnt= 0;
         for (Entry child : children) {
+	    cnt++;
             String entryIcon = getPageHandler().getIconUrl(request, child);
 	    if(icon!=null) entryIcon = getPageHandler().getIconUrl(icon);
+	    String labelId    = HU.getUniqueId("treeview_label_");
             String label = getEntryManager().getEntryListName(request, child);
             String leftLabel = showIcon?HU.img(entryIcon,"",HU.attr("width",ICON_WIDTH)) + " " + label:label;
             label = label.replace("'", "\\'");
@@ -1654,12 +1649,15 @@ public class HtmlOutputHandler extends OutputHandler {
                 HU.call(
                     "Utils.treeViewClick",
                     HU.jsMakeArgs(
-                        false, HU.squote(viewId), HU.squote(child.getId()),
+				  false, HU.squote(containerId),
+				  HU.squote(viewId), HU.squote(labelId),
+				  HU.squote(child.getId()),
                         HU.squote(url), HU.squote(label), noTemplate
                     ? "'empty'"
-                    : "null")));
-            HU.open(listSB, HU.TAG_DIV, HU.attrs(new String[] { "class",
-                    "ramadda-treeview-entry" }));
+			: "null",HU.squote(entryIcon))));
+            HU.open(listSB, HU.TAG_DIV, HU.attrs(new String[] {"id",labelId,
+			"class",
+			"ramadda-treeview-entry " + (cnt==1?"ramadda-treeview-entry-active":"") }));
             HU.href(listSB, url, leftLabel,
                     HU.style("display:inline-block;width:100%;")+HU.attr("title", "Click to view " + label));
             HU.close(listSB, HU.TAG_DIV);
@@ -1667,6 +1665,7 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
         String left = HU.div(listSB.toString(),
+			     HU.id(containerId)+
                              HU.cssClass("ramadda-treeview-entries")+
 			     HU.style(HU.css("height", HU.makeDim(height, "px"))));
 	sb.append(HU.comment("begin treeview"));

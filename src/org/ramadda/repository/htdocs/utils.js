@@ -2990,7 +2990,9 @@ var Utils =  {
             obj.css("top",y).css("left",x+10);
         }
     },
-    treeViewClick:function(viewId,entryId, url, label, template) {
+    treeViewClick:function(containerId,viewId,labelId,entryId, url, label, template,icon) {
+	jqid(containerId).find('.ramadda-treeview-entry').removeClass('ramadda-treeview-entry-active');
+	jqid(labelId).addClass('ramadda-treeview-entry-active');
 	let href = HU.href(url,
 			   HU.getIconImage('fa-solid fa-link') +  " " +  label,
 			   ['class',CLASS_CLICKABLE]);

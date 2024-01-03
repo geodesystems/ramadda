@@ -5439,6 +5439,11 @@ a.wiki-link-noexist {
     border-bottom:1px solid #efefef;
 }
 
+.ramadda-treeview-entry-active {
+    background:var(--highlight-background);
+}
+
+
 .ramadda-treeview-entry:hover {
     background: #efefef;
 }
