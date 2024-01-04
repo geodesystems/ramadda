@@ -18,6 +18,7 @@ import org.ramadda.repository.RepositoryUtil;
 
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
@@ -162,6 +163,14 @@ public class AcsFile extends CsvFile {
      */
     private CensusVariable getVariable(String value) throws Exception {
         CensusVariable var = null;
+        for (int i=0;i<vars.size();i++) {
+	    var = vars.get(i);
+	    if(var.getId().equals(value)) {
+		vars.remove(i);
+		return var;
+	    }
+	}
+
         if (varMap != null) {
             var = varMap.get(value);
         }
@@ -206,6 +215,7 @@ public class AcsFile extends CsvFile {
                 int[]         depends    = new int[headerJson.length()];
                 boolean[]     name       = new boolean[headerJson.length()];
                 boolean[]     special    = new boolean[headerJson.length()];
+                boolean[]     isState    = new boolean[headerJson.length()];		
                 boolean[]     skip       = new boolean[headerJson.length()];
                 String[]      rowValues  = new String[headerJson.length()];
                 //            System.err.println(" labels:" + labels);
@@ -218,8 +228,7 @@ public class AcsFile extends CsvFile {
                     depends[i] = -1;
                     name[i]    = false;
                     special[i] = isNameSpecial(value);
-                    //                System.err.println("n:" + value +" special:"+ isSpecial);
-
+		    isState[i] = value.equals("state");
                     if (special[i]) {
                         if ( !includeSpecial) {
                             skip[i] = true;
@@ -254,6 +263,7 @@ public class AcsFile extends CsvFile {
                         }
                         if (depends[i] >= 0) {
                             label = "% " + label;
+			    value+="_percentage";
                         }
                     }
                     if ((labels != null) && (i < labels.size())) {
@@ -263,12 +273,16 @@ public class AcsFile extends CsvFile {
                         }
                     }
                     label = cleanUpLabel(label);
-
-
                     header.append(makeField(value, attrType(type),
                                             attrLabel(label), numeric[i]
                             ? attrChartable()
                             : ""));
+		    if(value.equals("state")) {
+			header.append(", ");
+			header.append(makeField("state_name", attrType("string"),
+						attrLabel("State Name"), ""));
+		    }
+			
                 }
                 header.append(", ");
                 header.append(makeField("latitude",
@@ -282,14 +296,15 @@ public class AcsFile extends CsvFile {
                         attrLabel("Longitude")));
 
 
-                //            System.err.println(header);
+
+		//		System.err.println("header:" + header);
                 writer.println(header);
                 long   t5  = System.currentTimeMillis();
                 String lat = "NaN";
                 String lon = "NaN";
                 long   tt1 = System.currentTimeMillis();
-                for (int i = 1; i < obj.length(); i++) {
-                    JSONArray     row         = obj.getJSONArray(i);
+                for (int rowIdx = 1; rowIdx < obj.length(); rowIdx++) {
+                    JSONArray     row         = obj.getJSONArray(rowIdx);
                     int           colIdx      = 0;
                     int           len         = row.length();
                     List<String>  specialOnes = new ArrayList<String>();
@@ -328,7 +343,7 @@ public class AcsFile extends CsvFile {
                             double v1 = Double.parseDouble(value);
                             double v2 = Double.parseDouble(
                                             rowValues[depends[allColIdx]]);
-                            //System.err.println("col:" + colIdx +" on:" + depends[allColIdx] + " v1:" + v1 +" v2:" + v2);
+			    //			    if(rowIdx<100)System.err.println("col:" + colIdx +" on:" + depends[allColIdx] + " v1:" + v1 +" v2:" + v2);
                             value = "" + ((int) (1000 * v1 / v2)) / 10.0;
                         }
 
@@ -349,11 +364,19 @@ public class AcsFile extends CsvFile {
                         if (quote) {
                             rowBuff.append("\"");
                         }
+                        if (isState[allColIdx]) {
+			    String stateName = GeoUtils.getStatesMap().get(value);
+			    if(stateName==null) stateName = "";
+                            rowBuff.append(",");
+			    rowBuff.append(stateName);
+                        }
+
                         colIdx++;
                     }
                     if ( !rowOk) {
                         continue;
                     }
+		    //		    if(rowIdx<10)System.err.println("row:" + rowBuff);
                     writer.print(rowBuff.toString());
 
                     Place place = null;

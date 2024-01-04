@@ -84,6 +84,9 @@ public class CensusVariable implements Comparable, Cloneable {
         this.label     = label;
     }
 
+    public String toString() {
+	return "id:" + id+" label:" + label+" depends:" + dependsIndex;
+    }
     /**
      *  @return _more_
      */
