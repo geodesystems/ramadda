@@ -14,7 +14,6 @@ var ID_REGION_SELECTOR = "regionselector";
 
 
 var debugit = false;
-var debugFeatureLinking = false;
 var debugMapTime = false;
 
 addGlobalDisplayType({
@@ -76,8 +75,9 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'extraLayer1',label:'KML Layer',
 	 ex:'geojson:name:Some Name:url:resources/usmap.json:fillColor:transparent'},		
 
-	{p:'linkField',tt:'The field in the data to match with the map field, e.g., geoid'},
+	{p:'linkFields',tt:'Comma separated list of fields in the data to match with the map field, e.g., geoid'},	
 	{p:'linkFeature',tt:'The field in the map to match with the data field, e.g., geoid'},
+	{p:'debugFeatureLinking',tt:'Debug feature linking',ex:true},
 	{p:'pruneFeatures',ex:true,tt:'Hide any features in the map that don\'t have a corresponding record'},
 	{p:'polygonField',tt:'Field that contains a polygon'},		
 
@@ -2197,11 +2197,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(debug) this.logMsg("applyVectorMap");
 	    if(!textGetter) textGetter  = this.textGetter;
 
-	    let linkField=this.getFieldById(null,this.getProperty("linkField"));
+	    let tmpLinkField=this.getFieldById(null,this.getProperty("linkField"));
+	    let linkFields=this.getFieldsByIds(null,this.getProperty("linkFields"));	    
+	    if(linkFields.length==0 && tmpLinkField!=null) linkFields=[tmpLinkField];
+	    if(linkFields.length==0) linkFields=null;
 	    let linkFeature=this.getLinkFeature();
             let features = this.vectorLayer.features.slice();
             let allFeatures = features.slice();
 	    this.recordToFeature = {};
+	    let debugFeatureLinking = this.getDebugFeatureLinking();
+
 //	    debug=true
 	    if(debug) console.log("\t#features:" + features.length);
 	    points.forEach(point=>{
@@ -2211,21 +2216,24 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(feature)  this.recordToFeature[record.getId()] = feature;
 	    });
 
-	    if(linkFeature && linkField) {
+	    if(linkFeature && linkFields) {
 		linkFeature = linkFeature.toLowerCase();
 		let recordMap = {};
 		points.forEach(p=>{
 		    let record = p.record;
 		    if(record) {
 			let tuple = record.getData();
-			let value = tuple[linkField.getIndex()];
+			let value='';
+			linkFields.forEach(linkField=>{
+			    value+= tuple[linkField.getIndex()];
+			});
 			value  = value.toString().trim();
 			record.linkValue = value;
 			recordMap[value] = record;
 		    }
 		});
 		if(debugFeatureLinking)
-		    console.log("Map data/feature linking: data field:" + linkField.getId() +" looking for map feature:" + linkFeature);
+		    console.log("Map data/feature linking: data field:" + linkFields +" looking for map feature:" + linkFeature);
 
 		let errorCnt = 0;
 		features.forEach((feature,idx)=>{
@@ -2249,7 +2257,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 				    this.recordToFeature[record.getId()] = feature;
 				} else {
 				    if(debugFeatureLinking) {
-					if(errorCnt++<10) {
+					if(errorCnt++<2) {
 					    console.log("\tCould not find record with map value:" + value.replace(/ /g,"X") +":");
 					    console.dir(attrs);
 					}
@@ -2261,7 +2269,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    
 			}
 		    }
-		    if(!ok) console.log("No map feature found:" + linkFeature);
+		    if(!ok && idx==0) console.log("No map feature found:" + linkFeature,'attrs:',attrs);
 		});
 	    }
 
@@ -2630,7 +2638,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 	requiresGeoLocation: function() {
 	    if(this.shapesField && this.shapesTypeField) return false;
-	    if(this.getLinkField() && this.getLinkFeature()) return false;
+	    if((this.getLinkFields()||this.getProperty("linkField")) && this.getLinkFeature()) return false;
 	    return true;
 	},
 	addFilters: function(filters) {
