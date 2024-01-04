@@ -87,17 +87,34 @@ picky=false
   </type>
 
 
-  <type name="type_point_snotel"  super="type_point" description="SNOTEL Snow Data"  handler="org.ramadda.data.services.PointTypeHandler">
+  <type name="type_point_snotel"  super="type_point" description="SNOTEL Snow Data"
+	newfields="site_number,name,quit,_default"
+	handler="org.ramadda.geodata.point.SnotelTypeHandler">
+    <property name="form.header.new">
+       <![CDATA[+callout-info
+You just need to specify the Site  number.
+* View the SNOTEL sites at [https://nwcc-apps.sc.egov.usda.gov/imap/#version=169&elements=&networks=!&states=!&counties=!&hucs=&minElevation=&maxElevation=&elementSelectType=any&activeOnly=true&activeForecastPointsOnly=false&hucLabels=false&hucIdLabels=false&hucParameterLabels=true&stationLabels=&overlays=&hucOverlays=2&basinOpacity=75&basinNoDataOpacity=25&basemapOpacity=100&maskOpacity=0&mode=data&openSections=dataElement,parameter,date,basin,options,elements,location,networks&controlsOpen=true&popup=&popupMulti=&popupBasin=&base=esriNgwm&displayType=station&basinType=6&dataElement=WTEQ&depth=-8&parameter=PCTMED&frequency=DAILY&duration=I&customDuration=&dayPart=E&monthPart=E&forecastPubDay=1&forecastExceedance=50&useMixedPast=true&seqColor=1&divColor=7&scaleType=D&scaleMin=&scaleMax=&referencePeriodType=POR&referenceBegin=1991&referenceEnd=2020&minimumYears=20&hucAssociations=true&relativeDate=-1&lat=42.300&lon=-114.300&zoom=4.5 usda.gov].		
+* Select a site and view the Site Page under Data Reports
+* Get the Site ID from the URL, e.g. "1061" - https://wcc.sc.egov.usda.gov/nwcc/site?sitenum=1061
+-callout]]>
+     </property>    
+
      <property name="icon" value="/point/snotel.png"/>
      <property name="map.chart.type" value="barchart"/>
      <property name="map.chart.fields" value="snow_depth"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.properties.show" value="false"/>
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-     <column  name="site_id"  label="Site ID" cansearch="true"/>
      <column  name="site_number"  label="Site Number" cansearch="true"/>
+     <column  name="site_id"  label="Site ID" cansearch="true"/>
      <column  name="state"  type="enumerationplus" label="State" cansearch="true"/>
+     <column  name="county"  type="enumerationplus" label="County" cansearch="true"/>     
+
      <column  name="network"  label="Network" type="enumerationplus" cansearch="true"/>
      <column  name="huc_name"   label="HUC Name" cansearch="true"/>
      <column  name="huc_id"   label="HUC ID" cansearch="true"/>
+
  <property name="record.properties">
 <![CDATA[
 pathReplace=http_semicolon_//www.wcc.nrcs.usda.gov:https_semicolon_//wcc.sc.egov.usda.gov
@@ -109,7 +126,7 @@ commentLineStart=#
 <wiki>
 <![CDATA[
 +section # title="Snotel Site: {{field name=site_id}} - {{name}}"
-{{description}}
+{{description wikify=true}}
 ----
 +row
 +col-md-8
@@ -125,6 +142,12 @@ commentLineStart=#
 <br>
 {{image src="::*" message="" width="300"}}
 {{map zoomLevel=3}}
+<table class="formtable">
+{{field name="altitude"  row.label="Altitude:"}}
+{{field name="state"  row.label="State:"}}
+{{field name="county"  row.label="County:"}}
+{{field name="huc_id"  row.label="HUC:"}}
+</table>
 -col
 -row
 -section
