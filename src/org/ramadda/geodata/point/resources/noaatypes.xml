@@ -142,14 +142,10 @@ commentLineStart=#
 <br>
 {{image src="::*" message="" width="300"}}
 {{map zoomLevel=3}}
-<table class="formtable">
-{{field name="altitude"  row.label="Altitude:"}}
-{{field name="state"  row.label="State:"}}
-{{field name="county"  row.label="County:"}}
-{{field name="huc_id"  row.label="HUC:"}}
-</table>
 -col
 -row
+:heading Information
+{{information details=true}}
 -section
 ]]>
 </wiki>
