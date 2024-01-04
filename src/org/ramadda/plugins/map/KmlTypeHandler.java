@@ -381,8 +381,19 @@ public class KmlTypeHandler extends GenericTypeHandler {
     public boolean addToMap(Request request, Entry entry, MapInfo map)
             throws Exception {
         String file = entry.getResource().getPath();
+	String url;
+	if(file.toLowerCase().indexOf(".kmz")>=0) {
+	    url =  getRepository().getUrlBase()+"/entry/show?entryid=" + entry.getId() +"&output=kml.doc&converthref=true";
+	} else {
+	    url = getMapManager().getMapResourceUrl(request, entry);
+	}
+
+
+
+
+
         map.addKmlUrl(entry.getName(),
-                      getMapManager().getMapResourceUrl(request, entry),
+		      url,
                       true, null);
 
         return false;
