@@ -144,6 +144,8 @@ commentLineStart=#
 {{map zoomLevel=3}}
 -col
 -row
+:vspace 1em
+----
 :heading Information
 {{information details=true}}
 -section
