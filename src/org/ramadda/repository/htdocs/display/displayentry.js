@@ -2061,13 +2061,13 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		    let tag = obj.tag;
 		    let ele = obj.elements[0];
 		    if(ele.attr('data-image-url')) {
-			let title = $(this).attr('title')+HU.getTitleBr()??'';
+			let title = ele.attr('title')+HU.getTitleBr()??'';
 			title+='Click to filter';
-			contents+=HU.image($(this).attr('data-image-url'),[CLASS,'metadata-tag ramadda-clickable','metadata-tag',tag,'title',title]);
+			contents+=HU.image(ele.attr('data-image-url'),[CLASS,'metadata-tag ramadda-clickable','metadata-tag',tag,'title',title]);
 		    } else {
 			let label = '#'+obj.count+': ' + tag.replace(/^[^:]+:/,'');
-			style = $(this).attr('style');
-			contents+=HU.div(['data-background',$(this).attr('data-background'),'style',style??'',CLASS,'metadata-tag ramadda-clickable','metadata-tag',tag],label);
+			style = ele.attr('style');
+			contents+=HU.div(['data-background',ele.attr('data-background'),'style',style??'',CLASS,'metadata-tag ramadda-clickable','metadata-tag',tag],label);
 		    }
 		});
 		contents+='<div>';
