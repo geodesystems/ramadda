@@ -5603,6 +5603,7 @@ public class WikiManager extends RepositoryManager
 
 	boolean addTags = getProperty(wikiUtil, props, "addTags", false);
 	if(addTags) {
+	    boolean addTagSearchLink = getProperty(wikiUtil, props, "addTagSearchLink", true);
 	    String[] tagTypes;
 	    String  tagType = getProperty(wikiUtil, props, "tagTypes",null);
 	    if(tagType!=null) {
@@ -5618,7 +5619,10 @@ public class WikiManager extends RepositoryManager
 		for(Metadata metadata: tagList) {
 		    MetadataHandler mtdh = getMetadataManager().findHandler(metadata.getType());
 		    String searchUrl = mtdh.getSearchUrl(request, metadata);
-		    tags.append(HU.href(searchUrl,mtdh.getTag(request, metadata)));
+		    if(addTagSearchLink)
+			tags.append(HU.href(searchUrl,mtdh.getTag(request, metadata)));
+		    else
+			tags.append(mtdh.getTag(request, metadata));		    
 		}
 		tags.append("</div>");
 		card.append(HU.makeShowHideBlock("",tags.toString(),false,
