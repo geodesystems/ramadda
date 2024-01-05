@@ -234,16 +234,19 @@ ancestor=this
 placeholder="Search in documents"
  orderBy=createdate_ascending 
 }}
++toggle <i class="fas fa-tags"></i>
 {{display_simplesearch width=800px 
 ancestor=this
+toggle=true
 inputSize=20 doPageSearch=false doTagSearch=true
 placeholder="Search in page"
 orderBy=createdate_ascending 
 }}
+-toggle
 -center
 {{grid tag=card
 addTags=true
- sortby=name
+sortby=name
 inner-height=200
 width=300px
 columns=3
