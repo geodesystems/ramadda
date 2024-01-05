@@ -295,29 +295,6 @@ template="${name}"
 </type>
 
 
-<type name="type_document_grid"  description="Document Grid"
-      isgroup="true"      priority="2">
-  <property name="form.description.iswiki" value="true"/>
-  <property name="icon" value="/icons/grid.png"/>
-  <property name="form.resource.show" value="false"/>
-  <property name="form.area.show" value="false"/>
-  <property name="form.datatype.show" value="false"/>
-  <property name="form.date.show" value="false"/>
-  <property name="form.altitude.show" value="false"/>
-  <wiki>
-    <![CDATA[
-+section title={{name}}
-{{description wikify=true}}
-+center
-{{display_simplesearch width=200px  inputSize=100% ancestor=this
-placeholder="Search in documents" orderBy=createdate_ascending}}
--center
-{{grid tag=card sortby=name inner-height=300 width=300px showIcon=true showSnippetHover=true}}
--section
--section         
-]]>
-</wiki>
-</type>
 
 
 </types>
