@@ -76,7 +76,6 @@ public class AwcMetarTypeHandler extends NwsStationTypeHandler {
         String siteId = entry.getStringValue(IDX_SITE_ID, "");
         int    offset = (int) entry.getIntValue(IDX_TIME_OFFSET, 24);
         String url = URL.replace("{station}", siteId).replace("{offset}", "" + offset);
-	System.err.println("AWC URL:" +url);
         return url;
     }
 
