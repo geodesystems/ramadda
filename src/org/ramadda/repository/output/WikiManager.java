@@ -5600,32 +5600,6 @@ public class WikiManager extends RepositoryManager
                    HU.title(entry.getName())
                    + HU.cssClass("ramadda-subheading"));
         }
-	boolean showPlaceholder = getProperty(wikiUtil, props, "showPlaceholder", false);
-        boolean useThumbnail = getProperty(wikiUtil, props, "useThumbnail",
-                                           true);
-        boolean showSnippet = getProperty(wikiUtil, props, "showSnippet",
-                                          false);
-
-        boolean showSnippetHover = getProperty(wikiUtil, props,
-					       "showSnippetHover", false);
-
-	boolean showDescription = getProperty(wikiUtil, props,
-						 "showDescription", false)	;
-
-        if (showSnippet || showSnippetHover || showDescription) {
-            String snippet = showDescription? entry.getDescription():getSnippet(request, entry, false,null);
-            if (Utils.stringDefined(snippet)) {
-                snippet = wikifyEntry(request, entry, snippet, false, 
-                                      wikiUtil.getNotTags());
-                if (showSnippet) {
-                    HU.div(card, snippet,"");
-                } else if (showSnippetHover) {
-		    String clazz = "ramadda-snippet-hover";
-                    HU.div(card, snippet, HU.cssClass(clazz));
-
-                }
-            }
-        }
 
 	boolean addTags = getProperty(wikiUtil, props, "addTags", false);
 	if(addTags) {
@@ -5639,15 +5613,39 @@ public class WikiManager extends RepositoryManager
 	    List<Metadata> tagList =getMetadataManager().findMetadata(request, entry,
 						  tagTypes, false);
 	    if(tagList!=null && tagList.size()>0) {
-		card.append("<div class=metadata-tags>");
+		StringBuilder tags = new StringBuilder();
+		tags.append("<div class=metadata-tags>");
 		for(Metadata metadata: tagList) {
 		    MetadataHandler mtdh = getMetadataManager().findHandler(metadata.getType());
 		    String searchUrl = mtdh.getSearchUrl(request, metadata);
-		    card.append(HU.href(searchUrl,mtdh.getTag(request, metadata)));
+		    tags.append(HU.href(searchUrl,mtdh.getTag(request, metadata)));
 		}
-		card.append("</div>");
+		tags.append("</div>");
+		card.append(HU.makeShowHideBlock("",tags.toString(),false,
+						 HU.attr("title","Show tags"),"","fas fa-tags", "fas fa-tags"));
 	    }
 	}
+
+	String cardId= HU.getUniqueId("card");
+        HU.open(card, HU.TAG_DIV, HU.id(cardId));
+	
+	boolean showPlaceholder = getProperty(wikiUtil, props, "showPlaceholder", false);
+        boolean useThumbnail = getProperty(wikiUtil, props, "useThumbnail", true);
+        boolean showSnippet = getProperty(wikiUtil, props, "showSnippet", false);
+        boolean showSnippetHover = getProperty(wikiUtil, props, "showSnippetHover", false);
+	boolean showDescription = getProperty(wikiUtil, props,"showDescription", false)	;
+        if (showSnippet || showSnippetHover || showDescription) {
+            String snippet = showDescription? entry.getDescription():getSnippet(request, entry, false,null);
+            if (Utils.stringDefined(snippet)) {
+                snippet = wikifyEntry(request, entry, snippet, false, 
+                                      wikiUtil.getNotTags());
+                if (showSnippet) {
+                    HU.div(card, snippet,"");
+                } else if (showSnippetHover) {
+                    HU.div(card, snippet, HU.cssClass("ramadda-snippet-hover")+HU.attr("hover-target",cardId));
+                }
+            }
+        }
 
 
 
@@ -5734,8 +5732,7 @@ public class WikiManager extends RepositoryManager
             }
         }
 
-        HU.close(card, HU.TAG_DIV);
-
+        HU.close(card, HU.TAG_DIV,HU.TAG_DIV);
         return card.toString();
 
 
