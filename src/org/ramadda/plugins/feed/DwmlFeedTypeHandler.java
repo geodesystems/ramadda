@@ -934,9 +934,12 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
                     try {
                         dttm = sdf.parse(XmlUtil.getChildText(timeNode));
                     } catch (Exception exc) {
-                        dttm = sdf2.parse(XmlUtil.getChildText(timeNode));
+			try {
+			    dttm = sdf2.parse(XmlUtil.getChildText(timeNode));
+			} catch (Exception exc2) {
+			}
                     }
-                    Time time = timeMap.get(dttm);
+                    Time time = dttm==null?null:timeMap.get(dttm);
                     if (time == null) {
                         time = new Time(dttm,
                                         XmlUtil.getAttribute(timeNode,
