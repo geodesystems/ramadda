@@ -2035,27 +2035,42 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    let contents = "";
 	    if(this.getDoTagSearch()) {
 		let sel = this.getPageSearchSelectors();
-		let tags = [];
-		contents += "<div class=metadata-tags>";
-		sel.find(".metadata-tag").each(function() {
-		    $(this).addClass("ramadda-clickable").click(function(){
-			_this.selectTag($(this).attr("metadata-tag"));
+		contents += '<div class=metadata-tags>';
+		let tags ={};
+		let list = [];
+		sel.find('.metadata-tag').each(function() {
+		    $(this).addClass('ramadda-clickable').click(function(){
+			_this.selectTag($(this).attr('metadata-tag'));
 		    });
-		    let tag = $(this).attr("metadata-tag");
-		    if(tags.indexOf(tag)<0) {
-			if($(this).attr('data-image-url')) {
-			    let title = $(this).attr('title')+HU.getTitleBr()??'';
-			    title+="Click to filter";
-			    contents+=HU.image($(this).attr('data-image-url'),[CLASS,"metadata-tag ramadda-clickable","metadata-tag",tag,'title',title]);
-			} else {
-			    let label = tag.replace(/^[^:]+:/,"");
-			    style = $(this).attr('style');
-			    contents+=HU.div(['data-background',$(this).attr('data-background'),'style',style??'',CLASS,"metadata-tag ramadda-clickable","metadata-tag",tag],label);
+		    let tag = $(this).attr('metadata-tag');
+		    if(!tags[tag]) {
+			tags[tag] = {
+			    tag:tag,
+			    count:0,
+			    elements:[]
 			}
-			tags.push(tag);
+			list.push(tags[tag]);
+		    }
+		    tags[tag].count++;
+		    tags[tag].elements.push($(this));
+		});
+		list = list.sort((a,b)=>{
+		    return b.count-a.count;
+		});
+		list.forEach(obj=>{
+		    let tag = obj.tag;
+		    let ele = obj.elements[0];
+		    if(ele.attr('data-image-url')) {
+			let title = $(this).attr('title')+HU.getTitleBr()??'';
+			title+='Click to filter';
+			contents+=HU.image($(this).attr('data-image-url'),[CLASS,'metadata-tag ramadda-clickable','metadata-tag',tag,'title',title]);
+		    } else {
+			let label = '#'+obj.count+': ' + tag.replace(/^[^:]+:/,'');
+			style = $(this).attr('style');
+			contents+=HU.div(['data-background',$(this).attr('data-background'),'style',style??'',CLASS,'metadata-tag ramadda-clickable','metadata-tag',tag],label);
 		    }
 		});
-		contents+="<div>";
+		contents+='<div>';
 		if(this.getDoPageSearch()) {
 		    contents = HU.center(this.getDefaultHtml() + contents);
 		} 
