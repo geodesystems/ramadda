@@ -2631,8 +2631,9 @@ var Utils =  {
 	    if(html.length>200) {
 		clazz += ' ramadda-snippet-popup-large';
 	    }
-            snippet.parent().attr('title','');
-	    snippet.parent().tooltip({
+	    let target = $(this).attr('hover-target')?jqid($(this).attr('hover-target')):snippet.parent();
+            target.parent().attr('title','');
+	    target.tooltip({
 		content:()=>{return html;},
 		position: { my: "left+15 top", at: "left bottom-50" },
 		classes: {
