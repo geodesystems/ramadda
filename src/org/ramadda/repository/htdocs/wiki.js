@@ -392,14 +392,15 @@ WikiEditor.prototype = {
 	const what_import = "Import";	    
 	const what_children_ids = "Children IDS";
 	const what_children_links = "Children Links";
+	const what_nothing="nothing";
 
 
 	if(isNew) {
-	    if(opts.isImage) what.push(what_Image);
-	    what.push(what_ID);
-	    what.push(what_entry=ID);
-	    what.push(what_Link);
-	    what.push(what_Nothing);
+	    if(opts.isImage) what.push(what_image);
+	    what.push(what_id);
+	    what.push(what_entry_id);
+	    what.push(what_link);
+	    what.push(what_nothing);
 	} else {
 	    what.push(what_id);
 	    what.push(what_entry_id);	    
