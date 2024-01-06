@@ -172,7 +172,7 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
             idString = StringUtil.join(",", lines);
             List<Entry> entries = getWikiManager().getEntries(request, null,
                                       mainEntry, mainEntry, idString, null,
-                                      false, "");
+							      false, "",true);
 
             if (by == null) {
                 Metadata sortMetadata =
