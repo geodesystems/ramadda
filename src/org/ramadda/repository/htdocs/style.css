@@ -540,22 +540,22 @@ i.fa, i.fas,i.fab {
 }
 
 .ramadda-nav-left {
-    padding:20px;
-    padding-top:40px;
+    padding:5px;
+    padding-top:10px;
     width:250px;
     border-right:var(--basic-border);
     background:#FAFAFA;
     min-height:100vh;
     height:100vh;
     position:fixed;
-    top:0px;
+    top:50px;
     left:0px;
     z-index: var(--nav-left-z-index);
 }
 
 .ramadda-nav-left-links {
    width:100%;
-/*   max-height:40vh;*/
+   max-height:100vh;
    overflow-y:auto;
    white-space:nowrap;
    margin-bottom:10px;
