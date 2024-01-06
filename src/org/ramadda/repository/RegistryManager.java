@@ -954,6 +954,9 @@ public class RegistryManager extends RepositoryManager {
                     RESPONSE_XML, ARG_REGISTRY_SERVER,
                     getRepository().getServerInfo().getUrl() });
 
+        if (serverUrl.indexOf("/localhost:") >= 0) {
+	    return false;
+	}
         if (serverUrl.indexOf("pws.scqx.gov.cn") >= 0) {
             return false;
         }
