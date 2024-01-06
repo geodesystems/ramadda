@@ -21,6 +21,7 @@
     --cal-background:#C5E5F5;
     --cal-background:#eaeaea;
     --nav-left-z-index: 50;
+    --header-height:50px;
     --nav-page-fixed-z-index:200; 
     --block-z-index:1;
     --draggable-z-index:1000;
@@ -545,17 +546,19 @@ i.fa, i.fas,i.fab {
     width:250px;
     border-right:var(--basic-border);
     background:#FAFAFA;
-    min-height:100vh;
-    height:100vh;
+    min-height:calc(100vh - var(--header-height));
+    max-height:calc(100vh - var(--header-height));
+    height:calc(100vh - var(--header-height));
     position:fixed;
-    top:50px;
+    top:var(--header-height);
     left:0px;
     z-index: var(--nav-left-z-index);
 }
 
 .ramadda-nav-left-links {
    width:100%;
-   max-height:100vh;
+   height:calc(100vh - var(--header-height));
+   max-height:calc(100vh - var(--header-height));
    overflow-y:auto;
    white-space:nowrap;
    margin-bottom:10px;

@@ -38,6 +38,6 @@
 
 /* this is for the left side navigation */
 .ramadda-nav-left {
-    top:50px;
+    top:var(--header-height);
 }
 
