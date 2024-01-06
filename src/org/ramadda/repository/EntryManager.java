@@ -1009,11 +1009,29 @@ public class EntryManager extends RepositoryManager {
 	StringBuilder sb = new StringBuilder();
 	Entry entry = getEntryFromRequest(request, ARG_ENTRYID,
 					  getRepository().URL_ENTRY_SHOW,false);
+	String what = request.getString("what","");
 	if(entry!=null) {
 	    String text = "";
-	    if(request.get("usedescription",false))
+	    if(what.equals("description"))
 		text = entry.getDescription();
-	    else
+	    else if(what.equals("children_ids")) {
+		StringBuilder buff = new StringBuilder();
+		for(Entry child: getChildren(request, entry)) {
+		    if(buff.length()>0) buff.append(",");
+		    buff.append(child.getId());
+		}
+		text = buff.toString();
+	    } else if(what.equals("children_links")) {
+		StringBuilder buff = new StringBuilder();
+		for(Entry child: getChildren(request, entry)) {
+		    buff.append("[[");
+		    buff.append(child.getId());
+		    buff.append("|");
+		    buff.append(child.getName());
+		    buff.append("]]\n");
+		}
+		text = buff.toString();
+	    }  else
 		text = entry.getTypeHandler().getWikiTemplate(request, entry);
 	    if(text!=null)
 		sb.append(text.trim());
@@ -6268,6 +6286,9 @@ public class EntryManager extends RepositoryManager {
 
     public List<Entry> createRemoteEntries(Request request, ServerInfo serverInfo, String entriesXml) throws Exception {
 	String serverUrl = serverInfo.getUrl();
+	System.err.println("**********");
+	System.err.println(entriesXml);
+
 	final Entry parentEntry =
 	    new Entry(getRepository().getGroupTypeHandler(), true);
 	parentEntry.setId(getEntryManager().getRemoteEntryId(serverUrl,
@@ -6303,6 +6324,8 @@ public class EntryManager extends RepositoryManager {
 					       + XmlUtil.getAttribute(
 								      node, ATTR_RESOURCE,
 								      ""), Resource.TYPE_REMOTE_FILE));
+		//		System.err.println("**********");
+		//		System.err.println(XmlUtil.toString(node));
 		String id = XmlUtil.getAttribute(node, ATTR_ID);
 		entry.setId(getEntryManager().getRemoteEntryId(serverUrl,
 							       id));
