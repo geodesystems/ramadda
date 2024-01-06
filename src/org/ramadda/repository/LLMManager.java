@@ -34,7 +34,7 @@ import org.json.*;
 @SuppressWarnings("unchecked")
 public class LLMManager extends  AdminHandlerImpl {
 
-    public static boolean  debug = true;
+    public static boolean  debug = false;
 
     public static final String PROP_OPENAI_KEY = "openai.api.key";
     public static final String PROP_GEMINI_KEY = "gemini.api.key";	
@@ -356,10 +356,10 @@ public class LLMManager extends  AdminHandlerImpl {
 	    if(debug)	{
 		String tokens = JsonUtil.readValue(json,"usage.prompt_tokens",null);
 		if(tokens!=null) {
-		    System.err.println("\tresult: prompt tokens:" + tokens+
-				       " completion tokens:" + JsonUtil.readValue(json,"usage.completion_tokens","NA"));
+		    //		    System.err.println("\tresult: prompt tokens:" + tokens+
+		    //				       " completion tokens:" + JsonUtil.readValue(json,"usage.completion_tokens","NA"));
 		} else {
-		    System.err.println("\tLLMManager: json: "  +Utils.clip(result.getResult().replace("\n"," ").replaceAll("  +"," "),200,"..."));
+		    //		    System.err.println("\tLLMManager: json: "  +Utils.clip(result.getResult().replace("\n"," ").replaceAll("  +"," "),200,"..."));
 		}
 	    }
 	    //Google PALM
@@ -568,11 +568,11 @@ public class LLMManager extends  AdminHandlerImpl {
 	    schema.add("\"summary\":\"<the summary>\"");
 	}
 	if(extractKeywords) {
-	    jsonPrompt+="You should include a list of keywords. The keywords should be a valid JSON list of strings. ";
+	    jsonPrompt+="You must include a list of keywords extracted from the document. The keywords should not include anyone's name and should accurately capture the important details of the document. Furthermore, each keyword should not contain more than 3 separate words. The keywords must be returned as a valid JSON list of strings. There should be no more than 8 keywords in the list. ";
 	    schema.add("\"keywords\":[<keywords>]");
 	}
 	if(extractAuthors) {
-	    jsonPrompt+="You should include a list of authords of the text. The authors should be a valid JSON list of strings. ";
+	    jsonPrompt+="You should include a list of authors of the text. The authors should be a valid JSON list of strings. ";
 	    schema.add("\"authors\":[<authors>]");
 	}
 	jsonPrompt +="\nThe result JSON must adhere to the following schema: \n{" + Utils.join(schema,",")+"}\n";
@@ -605,9 +605,10 @@ public class LLMManager extends  AdminHandlerImpl {
 		}
 		if(extractKeywords) {
 		    JSONArray array = obj.optJSONArray("keywords");
+		    //		    System.err.println("model:" +request.getString(ARG_MODEL,MODEL_GPT_3_5)+" keywords:" + array);
 		    if(array!=null) {
 			for (int i = 0; i < array.length(); i++) {
-			    if(i>=6) break;
+			    if(i>=8) break;
 			    getMetadataManager().addKeyword(request, entry, array.getString(i));
 			}
 		    }
