@@ -92,6 +92,8 @@ import java.util.function.*;
 public class WikiManager extends RepositoryManager
     implements OutputConstants,WikiConstants, WikiPageHandler, SystemContext {
 
+    private static boolean debugGetEntries = false;
+
 
     /** output type */
     public static final OutputType OUTPUT_WIKI = new OutputType("Wiki",
@@ -6112,7 +6114,8 @@ public class WikiManager extends RepositoryManager
     public List<Entry> getEntries(Request request, WikiUtil wikiUtil,
                                   Entry originalEntry, Entry entry,
                                   String userDefinedEntries, Hashtable props,
-                                  boolean onlyImages, String attrPrefix)
+                                  boolean onlyImages, String attrPrefix,
+				  boolean...debug)
 	throws Exception {
 
         if (props == null) {
@@ -6134,8 +6137,12 @@ public class WikiManager extends RepositoryManager
 	    request.put(ARG_MAX, "" + max);
         }
 
+
+	debugGetEntries = debug.length>0 && debug[0];
         List<Entry> entries = getEntries(request, wikiUtil, entry,
                                          userDefinedEntries, props);
+
+	debugGetEntries = false;
 
         String filter = getProperty(wikiUtil, props,
                                     attrPrefix + ATTR_ENTRIES + ".filter",
@@ -6442,6 +6449,9 @@ public class WikiManager extends RepositoryManager
 	Utils.TriFunction<SelectInfo,String,String,String> matches =
 	    getIdMatcher(request, baseEntry,wikiUtil,props);
 
+	if(debugGetEntries)
+	    System.err.println("Ids:" + ids);
+
         for (String entryId : Utils.split(ids, ",", true, true)) {
             if (entryId.startsWith("#")) {
                 continue;
@@ -6465,6 +6475,25 @@ public class WikiManager extends RepositoryManager
             }
 
             entryId = entryId.replace("_COMMA_", ",").replace("_comma_",",");
+
+	    //https://sdn.ramadda.org/repository/entry/show?entryid=19937bb1-ecdc-4407-aa4f-68e7be2f91b7
+
+	    if (entryId.startsWith(ID_REMOTE)) {
+		entryId = entryId.substring((ID_REMOTE).length());
+		System.err.println("REMOTE:" + entryId);
+		String url = entryId+"&"  + ARG_OUTPUT+"="+ XmlOutputHandler.OUTPUT_XML;
+		System.err.println(url);
+		String entriesXml = getStorageManager().readSystemResource(
+									   new URL(url));
+		System.err.println(entriesXml);
+		ServerInfo serverInfo =    new ServerInfo(new URL(url),"","");
+		List<Entry> remoteEntries =  getEntryManager().createRemoteEntries(request, serverInfo,
+										   entriesXml);
+		System.err.println(remoteEntries);
+		entries.addAll(remoteEntries);
+		
+		continue;
+	    }
 
 	    if (entryId.startsWith(ID_SEARCH + ".")) {
                 List<String> tokens = Utils.splitUpTo(entryId, "=", 2);
