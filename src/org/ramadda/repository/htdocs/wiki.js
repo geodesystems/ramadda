@@ -378,33 +378,51 @@ WikiEditor.prototype = {
 	    html +="What do you want to insert into the document?<br>";
 	}
 	let what = [];
+	const what_id = "ID";
+	const what_entry_id = "entry=ID" ;	    
+	const what_link = "Link";
+	const what_wiki_text = "Wiki Text";	    
+	const what_description = "Description";
+	const what_image = "Image";
+    	const what_map = "Map";
+	const what_editable_map = "Editable map";
+	const what_tree = "Tree";
+	const what_grid = "Grid";
+	const what_gallery = "Gallery";	    
+	const what_import = "Import";	    
+	const what_children_ids = "Children IDS";
+	const what_children_links = "Children Links";
+
+
 	if(isNew) {
-	    if(opts.isImage) what.push("Image");
-	    what.push("ID");
-	    what.push("entry=ID");
-	    what.push("Link");
-	    what.push("Nothing");
+	    if(opts.isImage) what.push(what_Image);
+	    what.push(what_ID);
+	    what.push(what_entry=ID);
+	    what.push(what_Link);
+	    what.push(what_Nothing);
 	} else {
-	    what.push("ID");
-	    what.push("entry=ID");	    
-	    what.push("Link");
-	    what.push("Wiki Text");	    
-	    what.push("Description");
+	    what.push(what_id);
+	    what.push(what_entry_id);	    
+	    what.push(what_link);
+	    what.push(what_wiki_text);	    
+	    what.push(what_description);
 	    if(opts.isImage) {
-		what.push("Image");
+		what.push(what_image);
 	    }
 	    if(opts.isGeo) 
-		what.push("Map");
+		what.push(what_map);
 	    if(opts.entryType=="geo_editable_json") 
-		what.push("Editable map");
+		what.push(what_editable_map);
 
 	    if(opts.isGroup) {
-		what.push("Tree");
-		what.push("Grid");
-		what.push("Gallery");	    
+		what.push(what_tree);
+		what.push(what_grid);
+		what.push(what_gallery);	    
 	    }
 
-	    what.push("Import");	    
+	    what.push(what_import);	    
+	    what.push(what_children_ids);
+	    what.push(what_children_links);
 	}
 
 	html += HU.select("",[ATTR_ID, this.domId("addtype")],what,this.lastWhat);
@@ -433,27 +451,30 @@ WikiEditor.prototype = {
 		}
 	    }
 		
-	    if(what=="Image") {
+	    if(what==what_image) {
 		text = "{{image entry=" + entryId+" #caption=\"" + name+"\" bordercolor=\"#ccc\" align=center width=75% }} ";
-	    } else  if(what=="Map") {
+	    } else  if(what==what_map) {
 		text = "{{map entry=" + entryId+" details=true}}";
-	    } else  if(what=="Editable map") {
+	    } else  if(what==what_editable_map) {
 		text = "{{editable_map entry=" + entryId+" }}";
-	    } else  if(what=="Tree") {
+	    } else  if(what==what_tree) {
 		text = "{{tabletree entry=" + entryId+" }}";
-	    } else  if(what=="ID") {
+	    } else  if(what==what_id) {
 		text = entryId;
-	    } else  if(what=="entry=ID") {
+	    } else  if(what==what_entry_id) {
 		text = " entry=" +entryId+" ";		
-	    } else  if(what=="Gallery") {
+	    } else  if(what==what_gallery) {
 		text = "{{gallery entry=" + entryId+" }}";
-	    } else  if(what=="Import") {
+	    } else  if(what==what_import) {
 		text = "{{import entry=" + entryId+" }}";		
-	    } else  if(what=="Grid") {
+	    } else  if(what==what_grid) {
 		text = "{{grid entry=" + entryId+" }}";			
-	    } else if(what=="Wiki Text" || what=="Description") {
+	    } else if(what==what_wiki_text || what==what_description || what==what_children_ids ||
+		     what=="Children Links") {
 		let url = RamaddaUtils.getUrl("/entry/wikitext?entryid="+ entryId);
-		if(what=="Description") url+="&usedescription=true";
+		if(what==what_description) url+="&what=description";
+		else if(what==what_children_links) url+="&what=children_links";
+		else if(what==what_children_ids) url+="&what=children_ids";				
 		console.log(url);
 		$.get(url, (data) =>{
 		    data = String(data).replace(/^ *<wiki>\s/,'');
@@ -462,9 +483,9 @@ WikiEditor.prototype = {
 		    alert("An error occurred:" + error);
 		});
 		return;
-	    } else if(what=="Link") {
+	    } else if(what==what_link) {
 		text = "[[" + entryId +"|" + name+"]] ";
-	    } else if(what=="Nothing") {
+	    } else if(what==what_nothing) {
 		return;
 	    } else {
 		text = " {{" + what.toLowerCase() +" entry=" + entryId+" }}";				
