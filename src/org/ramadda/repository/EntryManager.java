@@ -1016,14 +1016,19 @@ public class EntryManager extends RepositoryManager {
 		text = entry.getDescription();
 	    else if(what.equals("children_ids")) {
 		StringBuilder buff = new StringBuilder();
-		for(Entry child: getChildren(request, entry)) {
+		for(Entry child: getEntryUtil().sortEntriesOn(getChildren(request, entry),
+							      ORDERBY_ENTRYORDER+","+
+							      ORDERBY_NAME,false)) {
+							      
 		    if(buff.length()>0) buff.append(",");
 		    buff.append(child.getId());
 		}
 		text = buff.toString();
 	    } else if(what.equals("children_links")) {
 		StringBuilder buff = new StringBuilder();
-		for(Entry child: getChildren(request, entry)) {
+		for(Entry child: getEntryUtil().sortEntriesOn(getChildren(request, entry),
+							      ORDERBY_ENTRYORDER+","+
+							      ORDERBY_NAME,false)) {
 		    buff.append("[[");
 		    buff.append(child.getId());
 		    buff.append("|");
