@@ -5411,6 +5411,7 @@ a.wiki-link-noexist {
 }
 
 .ramadda-treeview-entries {
+    border-top:0px solid transparent;
     padding: 0px;
     float: left; 
     white-space: nowrap;
@@ -5454,9 +5455,10 @@ a.wiki-link-noexist {
 .ramadda-treeview-entry-header {
     font-weight: bold;
     border-top:1px solid #666;
-    border-bottom:1px solid #666;
-    
 
+}
+
+.ramadda-treeview-entry-header:first-child {
 }
 
 .ramadda-treeview-entry-header:hover {
