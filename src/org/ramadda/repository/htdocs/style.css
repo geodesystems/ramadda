@@ -5451,6 +5451,20 @@ a.wiki-link-noexist {
     background: #efefef;
 }
 
+.ramadda-treeview-entry-header {
+    font-weight: bold;
+    border-top:1px solid #666;
+    border-bottom:1px solid #666;
+    
+
+}
+
+.ramadda-treeview-entry-header:hover {
+    background: #fff;
+}
+
+
+
 #treeview_view {
     border:0px solid #ccc;
 }

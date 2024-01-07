@@ -1628,7 +1628,15 @@ public class HtmlOutputHandler extends OutputHandler {
 	boolean showIcon  = Utils.getProperty(props,"showIcon",true);
 	String icon  = Utils.getProperty(props,"icon",null);
 	int cnt= 0;
+	boolean havePrefix = false;
         for (Entry child : children) {
+	    String prefix = (String)props.get("prefix." +child.getId());
+	    if(prefix!=null)  {
+		havePrefix = true;
+		HU.div(listSB,  prefix,
+		       HU.attrs(new String[] {"class",
+			       "ramadda-treeview-entry ramadda-treeview-entry-header"}));
+	    }
 	    cnt++;
             String entryIcon = getPageHandler().getIconUrl(request, child);
 	    if(icon!=null) entryIcon = getPageHandler().getIconUrl(icon);
@@ -1658,7 +1666,7 @@ public class HtmlOutputHandler extends OutputHandler {
             HU.open(listSB, HU.TAG_DIV, HU.attrs(new String[] {"id",labelId,
 			"class",
 			"ramadda-treeview-entry " + (cnt==1?"ramadda-treeview-entry-active":"") }));
-            HU.href(listSB, url, leftLabel,
+            HU.href(listSB, url, (havePrefix?"&nbsp;&nbsp;":"")+leftLabel,
                     HU.style("display:inline-block;width:100%;")+HU.attr("title", "Click to view " + label));
             HU.close(listSB, HU.TAG_DIV);
 	    listSB.append("\n");
