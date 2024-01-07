@@ -1,43 +1,46 @@
 <types category="Media">
-<type name="type_media"   foruser="false"         handler="org.ramadda.plugins.media.MediaTypeHandler" >
+  <type name="type_media"   foruser="false"
+	handler="org.ramadda.plugins.media.MediaTypeHandler" >
    <column name="media_width" type="string" label="Width"  default="640" showinhtml="false"/>
    <column name="media_height" type="string" label="Height"  default="380" showinhtml="false"/>
-   <column name="transcriptions_json" type="clob" label="Transcriptions" xshowinhtml="false"   xcandisplay="false" xeditable="false"/>     
+   <column name="transcriptions_json" type="clob" label="Transcriptions" showinhtml="false"
+	   candisplay="false" xeditable="false"/>     
      <wiki><![CDATA[
 +section title="{{name}}" 
 {{noheading}}
 {{description wikify=true}}
 {{tags}}
-{{media}}
+{{annotated_media}}
 -section
 ]]>
 </wiki>
 </type>
 
-<type name="type_video"   foruser="true"      super="type_media"
+<type name="type_video"
+      foruser="true"
+      super="type_media"
       description="Video File"
       pattern="(https://.*vimeo.com/[0-9]+|https://soundcloud.com.*)"
-      handler="org.ramadda.plugins.media.MediaTypeHandler" 
-      >
-       <property name="icon" value="/media/video.png"/>
+      handler="org.ramadda.plugins.media.MediaTypeHandler">
+  <property name="icon" value="/media/video.png"/>
 </type>
 
-  <type name="media_youtubevideo"  
-	super="type_video"
-        description="YouTube Video" 
-        handler="org.ramadda.plugins.media.YouTubeVideoTypeHandler" 
-        pattern="^(http|https)://www.youtube.com/(watch\?v=|v/).*">
-     <property name="icon" value="/media/youtube-new.png"/>
-     <property name="form.area.show" value="false"/>
-     <property name="form.date.show" value="false"/>
-     <property name="form.datatype.show" value="false"/>
-     <property name="form.file.show" value="false"/>
-     <property name="form.url.label" value="YouTube Video URL"/>
-     <column name="video_id" type="string" label="Video ID" showinhtml="false" editable="false"/>
-     <column name="video_start" type="double" label="Start"  suffix="(minutes)" default="0" showinhtml="false"/>
-     <column name="video_end" type="double" label="End"  suffix="(minutes)" default="-1" showinhtml="false"/>
-     <column name="display" type="boolean" label="Display" default="true"  showinhtml="false"/>
-     <column name="autoplay" type="boolean" label="Auto play" default="false"  showinhtml="false"/>
+<type name="media_youtubevideo"  
+      super="type_video"
+      description="YouTube Video" 
+      handler="org.ramadda.plugins.media.YouTubeVideoTypeHandler" 
+      pattern="^(http|https)://www.youtube.com/(watch\?v=|v/).*">
+  <property name="icon" value="/media/youtube-new.png"/>
+  <property name="form.area.show" value="false"/>
+  <property name="form.date.show" value="false"/>
+  <property name="form.datatype.show" value="false"/>
+  <property name="form.file.show" value="false"/>
+  <property name="form.url.label" value="YouTube Video URL"/>
+  <column name="video_id" type="string" label="Video ID" showinhtml="false" editable="false"/>
+  <column name="video_start" type="double" label="Start"  suffix="(minutes)" default="0" showinhtml="false"/>
+  <column name="video_end" type="double" label="End"  suffix="(minutes)" default="-1" showinhtml="false"/>
+  <column name="display" type="boolean" label="Display" default="true"  showinhtml="false"/>
+  <column name="autoplay" type="boolean" label="Auto play" default="false"  showinhtml="false"/>
 </type>
 
   <type name="media_tiktok"  
@@ -84,7 +87,7 @@
 +section title="{{name}}" #
 {{description wikify="true"}}
 :br
-{{media}}
+{{annotated_media}}
 -section
 ]]>
 </wiki>

@@ -93,7 +93,7 @@ public class MediaTypeHandler extends GenericTypeHandler {
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
             throws Exception {
-        if ( !tag.equals("video") && !tag.equals("media")) {
+        if ( !tag.equals("video") && !tag.equals("annotated_media")) {
             return super.getWikiInclude(wikiUtil, request, originalEntry,
                                         entry, tag, props);
         }
@@ -147,7 +147,7 @@ public class MediaTypeHandler extends GenericTypeHandler {
             height = "390";
         }
         if (entry.getResource().isFile()) {
-            url = getEntryManager().getEntryResourceUrl(request, entry);
+           url = getEntryManager().getEntryResourceUrl(request, entry);
         }
         String embed = addMedia(request, entry, props,
                                 getMediaType(request, entry), null, url,
