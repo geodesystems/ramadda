@@ -57,11 +57,7 @@ import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlNodeList;
 import ucar.unidata.xml.XmlUtil;
 
-
-
 import java.awt.Image;
-import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
 
 import org.json.*;
 
@@ -6289,11 +6285,9 @@ public class EntryManager extends RepositoryManager {
         return newEntries;
     }
 
-    public List<Entry> createRemoteEntries(Request request, ServerInfo serverInfo, String entriesXml) throws Exception {
+    public List<Entry> createRemoteEntries(Request request, ServerInfo serverInfo, String entriesXml)
+	throws Exception {
 	String serverUrl = serverInfo.getUrl();
-	System.err.println("**********");
-	System.err.println(entriesXml);
-
 	final Entry parentEntry =
 	    new Entry(getRepository().getGroupTypeHandler(), true);
 	parentEntry.setId(getEntryManager().getRemoteEntryId(serverUrl,
@@ -6310,33 +6304,50 @@ public class EntryManager extends RepositoryManager {
 	//            System.err.println("Remote URL:" + remoteSearchUrl);
 	try {
 	    Element  root     = XmlUtil.getRoot(entriesXml);
-	    NodeList children = XmlUtil.getElements(root);
-	    for (int i = 0; i < children.getLength(); i++) {
-		Element node = (Element) children.item(i);
-		//                    if (!node.getTagName().equals(TAG_ENTRY)) {continue;}
-		List<Entry> entryList =
-		    getEntryManager().createEntryFromXml(request, node,
-							 parentEntry, new Hashtable(),
-							 new Hashtable<String,Entry>(),
-							 false, false,msg);
+	    List<Element> elements = new ArrayList<Element>();
 
+	    //Is this a search result
+	    if(XmlUtil.getAttribute(root,ATTR_TYPE,"").equals("type_dummy")) {
+		NodeList children = XmlUtil.getElements(root,TAG_ENTRY);
+		for (int i = 0; i < children.getLength(); i++) {
+		    elements.add((Element) children.item(i));
+		}
+	    } else if(root.getTagName().equals(TAG_ENTRY)) {
+		elements.add(root);
+	    } else {
+		System.err.println("Unknown remote entry xml:"+entriesXml);
+	    }
+
+	    for (Element node:elements) {
+		List<Entry> entryList =
+		    createEntryFromXml(request, node,
+				       parentEntry, new Hashtable(),
+				       new Hashtable<String,Entry>(),
+				       false, false,msg);
+
+		if(entryList.size()==0) continue;
 		Entry entry = entryList.get(0);
-		//                            entry.setName("remote:" + entry.getName());
+		entry.setName("remote:" + entry.getName());
 		entry.setRemoteServer(serverInfo);
-		entry.setResource(
-				  new Resource(
-					       "remote:"
-					       + XmlUtil.getAttribute(
-								      node, ATTR_RESOURCE,
-								      ""), Resource.TYPE_REMOTE_FILE));
-		//		System.err.println("**********");
-		//		System.err.println(XmlUtil.toString(node));
+		Resource resource =  new Resource(
+						  "remote:"
+						  + XmlUtil.getAttribute(
+									 node, ATTR_RESOURCE,
+									 ""), Resource.TYPE_REMOTE_FILE);
+		String fileSize = XmlUtil.getAttribute(node,ATTR_FILESIZE,(String)null);
+		if(stringDefined(fileSize)) resource.setFileSize(Long.parseLong(fileSize));
+		entry.setResource(resource);
+		Date createDate = (XmlUtil.hasAttribute(node, ATTR_CREATEDATE)
+				   ? getDateHandler().parseDate(
+								XmlUtil.getAttribute(
+										     node, ATTR_CREATEDATE))
+				   : null);
+		if(createDate!=null) entry.setCreateDate(createDate.getTime());
 		String id = XmlUtil.getAttribute(node, ATTR_ID);
-		entry.setId(getEntryManager().getRemoteEntryId(serverUrl,
-							       id));
+		entry.setId(getEntryManager().getRemoteEntryId(serverUrl, id));
 		entry.setRemoteServer(serverInfo);
-		entry.setRemoteUrl(serverUrl + "/entry/show?entryid="
-				   + id);
+		entry.setRemoteUrl(serverUrl + "/entry/show?entryid=" + id);
+		//		System.err.println("Remote entry:" + entry.getRemoteUrl());
 		getEntryManager().cacheEntry(entry);
 		entries.add((Entry) entry);
 	    }
@@ -9011,7 +9022,7 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Entry getDummyGroup(String name) throws Exception {
-        Entry dummyGroup = new Entry(getRepository().getGroupTypeHandler(),
+        Entry dummyGroup = new Entry(getRepository().getTypeHandler("type_dummy"),
                                      true, name);
         dummyGroup.setId(getRepository().getGUID());
         dummyGroup.setUser(getUserManager().getAnonymousUser());
@@ -9564,7 +9575,7 @@ public class EntryManager extends RepositoryManager {
 	boolean haveWhere = where!=null && where.size()>0;
         List<String> ids   = null;
 	if(!haveWhere) {
-	    //Check the children cache when there is a clause
+	    //Check the children cache when there is no clause
 	    ids   = childrenCache.get(group.getId());
 	    if(ids!=null) {
 		//Clone the list to keep it thread safe
@@ -9572,9 +9583,7 @@ public class EntryManager extends RepositoryManager {
 	    }
 	}
 
-
-	if(ids==null)
-	    ids   = new ArrayList<String>();
+	ids   = new ArrayList<String>();
         if (where != null) {
             where = new ArrayList<Clause>(where);
         } else {
@@ -9602,7 +9611,7 @@ public class EntryManager extends RepositoryManager {
 
 	if(!haveWhere) {
 	    //cache the results
-	    childrenCache.put(group.getId(), ids);
+	    childrenCache.put(group.getId(), new ArrayList<String>(ids));
 	}
 
         return ids;
@@ -11264,8 +11273,7 @@ public class EntryManager extends RepositoryManager {
             if (tok.matches("\\d+")) {
                 int index =  Integer.parseInt(tok);
                 index--;
-                List<Entry> children = getEntryManager().getChildren(request,
-								     cwd);
+                List<Entry> children = getChildren(request,   cwd);
                 if ((index < 0) || (index >= children.size())) {
                     System.err.println("Did not get #child:" + dir
                                        + " index:" + index + " cwd:"
