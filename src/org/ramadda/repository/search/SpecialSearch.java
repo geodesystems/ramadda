@@ -713,6 +713,12 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 
 
+        formSB.append(formEntry(request, "Order By:",
+				getSearchManager().makeOrderBy(request,true)));
+
+	formSB.append(formEntry(request, "Max:",
+				HU.input(ARG_MAX,request.getString(ARG_MAX,"50"),
+					 HtmlUtils.SIZE_5)));
         StringBuffer buttons = new StringBuffer();
         buttons.append(HtmlUtils.submit("Search", ARG_SEARCH_SUBMIT));
         boolean doSearch = true;
@@ -721,14 +727,13 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             String baseUrl = request.getUrl();
             buttons.append(HtmlUtils.br());
             StringBuffer links = new StringBuffer();
-
-
             for (OutputType outputType : new OutputType[] {
-                KmlOutputHandler.OUTPUT_KML, ZipOutputHandler.OUTPUT_ZIPTREE,
-                AtomOutputHandler.OUTPUT_ATOM, JsonOutputHandler.OUTPUT_JSON,
-                CsvOutputHandler.OUTPUT_CSV, ZipOutputHandler.OUTPUT_EXPORT,
-                BulkDownloadOutputHandler.OUTPUT_CURL
-            }) {
+		    XmlOutputHandler.OUTPUT_XML,
+		    KmlOutputHandler.OUTPUT_KML, ZipOutputHandler.OUTPUT_ZIPTREE,
+		    AtomOutputHandler.OUTPUT_ATOM, JsonOutputHandler.OUTPUT_JSON,
+		    CsvOutputHandler.OUTPUT_CSV, ZipOutputHandler.OUTPUT_EXPORT,
+		    BulkDownloadOutputHandler.OUTPUT_CURL
+		}) {
                 if (outputType.getIcon() != null) {
                     links.append(
 				 HtmlUtils.img(getIconUrl(outputType.getIcon()),"",

@@ -1888,6 +1888,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @throws Exception _more_
      */
     public String makeOutputSettings(Request request) throws Exception {
+        String orderBy =makeOrderBy(request,false);
+        return HU.b("Output") +": " +
+	    HU.select(ARG_OUTPUT, getOutputHandlerSelectList(),
+		      request.getString(ARG_OUTPUT, "")) +
+	    " " + HU.b("Order By")+ ": " +orderBy;
+    }
+
+    public String makeOrderBy(Request request, boolean vertical) throws Exception {
         List       orderByList = new ArrayList();
         orderByList.add(new TwoFacedObject(msg("None"), "none"));
         orderByList.add(new TwoFacedObject(msg("Relevant"), ORDERBY_RELEVANT));
@@ -1899,18 +1907,15 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         orderByList.add(new TwoFacedObject(msg("Name"), ORDERBY_NAME));
         orderByList.add(new TwoFacedObject(msg("Size"), ORDERBY_SIZE));
 
-        String orderBy =
+        return 
             HU.select(ARG_ORDERBY, orderByList,
 		      request.getString(ARG_ORDERBY,
-					"none")) + HU.labeledCheckbox(ARG_ASCENDING,
-								      "true",
-								      request.get(ARG_ASCENDING,false),
-								      msg("ascending"));
-        return HU.b("Output") +": " +
-	    HU.select(ARG_OUTPUT, getOutputHandlerSelectList(),
-		      request.getString(ARG_OUTPUT, "")) +
-	    " " + HU.b("Order By")+ ": " +orderBy;
+					"none")) + (vertical?"<br>":"")+
+	    HU.labeledCheckbox(ARG_ASCENDING,     "true",
+			       request.get(ARG_ASCENDING,false),
+			       msg("ascending"));
     }
+
 
 
     /**
