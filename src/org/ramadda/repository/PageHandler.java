@@ -36,10 +36,6 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 
 
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
@@ -2997,9 +2993,6 @@ public class PageHandler extends RepositoryManager {
         sb.append("</ul></div></div></div>");
         HU.script(sb, "HU.makeBreadcrumbsInit('" + id + "');");
     }
-
-    /** _more_ */
-    private Image remoteImage;
 
 
     /**
