@@ -4778,6 +4778,7 @@ public class WikiManager extends RepositoryManager
     private String findBaseUrl(String remote) {
 	remote = remote.replaceAll("/entry/show.*","");
 	remote = remote.replaceAll("/a/.*","");
+	remote = remote.replaceAll("/search/.*","");	
 	return remote;
     }
     
@@ -4954,7 +4955,7 @@ public class WikiManager extends RepositoryManager
 
 	    if(serverInfo!=null) {
 		String max = Utils.getProperty(props,"max",null);
-		String url = serverInfo.getUrl() +"/entry/wikiurl?entryid=" + entry.getId() +(max!=null?"&max=" + max:"");
+		String url = serverInfo.getUrl() +"/entry/wikiurl?entryid=" + entry.getRemoteId() +(max!=null?"&max=" + max:"");
 		String json = IO.readContents(url);
 		JSONObject obj      = new JSONObject(json);
 		String error = obj.optString("error");
@@ -5016,8 +5017,7 @@ public class WikiManager extends RepositoryManager
 	    &&
 	    (entry.getTypeHandler().isType(Constants.TYPE_FILE) ||
 	     entry.getResource().isS3())
-	    && entry.getResource().getPath().toLowerCase().endsWith(
-								    ".nc")) {
+	    && entry.getResource().getPath().toLowerCase().endsWith(".nc")) {
 	    TypeHandler gridType =
 		getRepository().getTypeHandler("cdm_grid");
 	    if (gridType != null) {
@@ -6486,20 +6486,27 @@ public class WikiManager extends RepositoryManager
 
 	    //https://sdn.ramadda.org/repository/entry/show?entryid=19937bb1-ecdc-4407-aa4f-68e7be2f91b7
 
-	    //https://localhost:8430/repository/search/do?search.submit=Search&search.submit=search.submit&output=default.html&orderby=none&type=type_point_cr1000&datadate.mode=overlaps&datadate.relative=none&createdate.relative=none&changedate.relative=none&areamode=overlaps&provider=https%3A%2F%2Fgeodesystems.com%2Frepository
+	    //https://localhost:8430/repository/search/type/type_point_cr1000?max=50&type=type_point_cr1000&output=xml.xml
 	    //remote:https://sdn.ramadda.org/repository/entry/show?entryid=2f7211e9-e5a9-4a73-8a47-fb079764be26
 	    if (entryId.startsWith(ID_REMOTE)) {
 		String chunk = entryId.substring((ID_REMOTE).length());
-		String baseUrl = findBaseUrl(chunk);
-		entryId = findEntryIdFromUrl(chunk);
-		if(!stringDefined(entryId)) {
-		    throw new IllegalArgumentException("Could not find entry id in remote URL: "+ chunk);
+		String xmlUrl=null;
+		if(chunk.startsWith("search:")) {
+		    chunk = chunk.substring("search:".length());
+		    xmlUrl  = chunk;
 		}
 
+		String baseUrl = findBaseUrl(chunk);
 
-		String xmlUrl = HU.url(baseUrl+"/entry/show",
-				       ARG_OUTPUT, XmlOutputHandler.OUTPUT_XMLENTRY.toString(),
-				       ARG_ENTRYID,entryId);
+		if(xmlUrl==null) {
+		    entryId = findEntryIdFromUrl(chunk);
+		    if(!stringDefined(entryId)) {
+			throw new IllegalArgumentException("Could not find entry id in remote URL: "+ chunk);
+		    }
+		    xmlUrl = HU.url(baseUrl+"/entry/show",
+				    ARG_OUTPUT, XmlOutputHandler.OUTPUT_XMLENTRY.toString(),
+				    ARG_ENTRYID,entryId);
+		}
 
 		/*
 		System.err.println("REMOTE:" + chunk);
