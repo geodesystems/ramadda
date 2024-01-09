@@ -82,6 +82,7 @@
     <api request="/getnotebook"        method="processGetNotebook" />
     <api request="/savenotebook"       method="processSaveNotebook" />
     <api request="/wikitags"           method="processWikiTags" />
+    <api request="/entry/wikiurl"             method="processWikiUrl"/>
     <api request="/wiki/wikiurl"             method="processWikiUrl"/>
     <api request="/wiki/findentryfromid"             method="processFindEntryFromId"/>
     <api request="/wiki/getentries"             method="processGetEntries"/>                  
