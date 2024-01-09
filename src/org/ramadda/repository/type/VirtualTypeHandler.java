@@ -93,10 +93,10 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
             }
             String urlArg     = column.getEditArg();
             String textAreaId = HU.getUniqueId("input_");
-            String widget = HU.textArea(urlArg, value, 10, 60,
+            String widget = HU.textArea(urlArg, value, 10, 90,
                                 HU.id(textAreaId));
             formInfo.addMaxSizeValidation(column.getLabel(), textAreaId,
-                                          5000);
+                                          10000);
             String suffix =
                 "entry ids - one per row<br>Or use the  <a target=_help href=\"/repository/userguide/virtualgroup.html\">entry search</a> services";
             String buttons = OutputHandler.getSelect(request, textAreaId,
@@ -145,9 +145,8 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
     public List<String> getSynthIds(Request request, SelectInfo select, Entry mainEntry,
                                     Entry parentEntry, String synthId)
             throws Exception {
-
         List<String> ids = getEntryManager().getChildIdsFromDatabase(request,
-                               mainEntry, null);
+								     mainEntry, null);
 
         String idString = (String) mainEntry.getStringValue(0, "").replace(",",
 									   "_COMMA_");
@@ -202,7 +201,6 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
         }
         ids.addAll(fromCache);
         mainEntry.setChildIds(ids);
-
         return ids;
     }
 
