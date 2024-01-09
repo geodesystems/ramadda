@@ -170,6 +170,7 @@ public class Entry implements Cloneable {
     /** _more_ */
     private String remoteUrl;
 
+    private String remoteId;    
 
 
 
@@ -1639,6 +1640,27 @@ public class Entry implements Cloneable {
     public String getRemoteUrl() {
         return remoteUrl;
     }
+
+    /**
+     * Set the RemoteId property.
+     *
+     * @param value The new value for RemoteId
+     */
+    public void setRemoteId(String value) {
+        remoteId = value;
+    }
+
+    /**
+     * Get the RemoteId property.
+     *
+     * @return The RemoteId
+     */
+    public String getRemoteId() {
+        return remoteId;
+    }
+
+
+
 
     /**
      * _more_
