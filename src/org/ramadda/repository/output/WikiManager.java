@@ -698,7 +698,8 @@ public class WikiManager extends RepositoryManager
 
 
     private Entry findEntryFromId(ServerInfo server, Entry entry,
-				  WikiUtil wikiUtil, Hashtable props, String entryId) throws Exception {
+				  WikiUtil wikiUtil, Hashtable props,
+				  String entryId) throws Exception {
 
 
 	String url = HtmlUtils.url(server.getUrl() +"/wiki/findentryfromid");
@@ -2367,28 +2368,22 @@ public class WikiManager extends RepositoryManager
             boolean inline = getProperty(wikiUtil, props,
 					 "inline", false);
             String label;
+	    String dflt= "Download";
             if ( !entry.getResource().isDefined()) {
-                url   = entry.getTypeHandler().getPathForEntry(request,
+                dflt = url   = entry.getTypeHandler().getPathForEntry(request,
 							       entry,false);
-                label = getProperty(wikiUtil, props, ATTR_TITLE, url);
             } else if (entry.getResource().isFile()) {
                 url = entry.getTypeHandler().getEntryResourceUrl(request, entry,inline);
-                label = getProperty(wikiUtil, props, ATTR_TITLE, "Download");
             } else {
-                url   = entry.getResource().getPath();
-                label = getProperty(wikiUtil, props, ATTR_TITLE, url);
+               dflt = url   = entry.getResource().getPath();
             }
+	    label = getProperty(wikiUtil, props, ATTR_TITLE,
+				getProperty(wikiUtil, props, ATTR_LABEL, dflt));
             if (getProperty(wikiUtil, props, "url", false)) {
                 return url;
             }
-            if ( !Utils.stringDefined(url)) {
-                String message = getProperty(wikiUtil, props, ATTR_MESSAGE,
-                                             (String) null);
-                if (message != null) {
-                    return message;
-                }
-
-                return "";
+            if (!Utils.stringDefined(url)) {
+                return  getProperty(wikiUtil, props, ATTR_MESSAGE,"");
             }
 
 
@@ -4770,6 +4765,24 @@ public class WikiManager extends RepositoryManager
     }
 
 
+    private String findEntryIdFromUrl(String remote) {
+	String entryId =  StringUtil.findPattern(remote, "entryid=([^&]+)(\\?|$)");
+	//https://localhost:8430/repository/entry/show?entryid=6ad1f1fb-8b6f-4fe8-a759-3027f512977e
+	if(!stringDefined(entryId)) {
+	    //check for alias - https://ramadda.org/repository/a/test_alias
+	    entryId =  StringUtil.findPattern(remote, "/a/([^&]+)(\\?|$)");
+	}
+	return entryId;
+    }
+
+    private String findBaseUrl(String remote) {
+	remote = remote.replaceAll("/entry/show.*","");
+	remote = remote.replaceAll("/a/.*","");
+	return remote;
+    }
+    
+
+
     private  String makeComponent(Request request, WikiUtil wikiUtil,Entry child, String contents, SimpleDateFormat sdf2) throws Exception {
 	String author = Utils.getDefined(child.getUser().getName(),child.getUserId());
 	String compAttrs = 
@@ -4960,12 +4973,7 @@ public class WikiManager extends RepositoryManager
 		    if(path.endsWith("/entry/data")) {
 			jsonUrl = remote;
 		    }  else {
-			String entryId =  StringUtil.findPattern(remote, "entryid=([^&]+)(\\?|$)");
-			//https://localhost:8430/repository/entry/show?entryid=6ad1f1fb-8b6f-4fe8-a759-3027f512977e
-			if(!stringDefined(entryId)) {
-			    //check for alias - https://ramadda.org/repository/a/test_alias
-			    entryId =  StringUtil.findPattern(remote, "/a/([^&]+)(\\?|$)");
-			}
+			String entryId =  findEntryIdFromUrl(remote);
 			if(!stringDefined(entryId)) {
 			    throw new IllegalArgumentException("Could not find entry id in remote URL: "+ remote);
 			}
@@ -6478,20 +6486,34 @@ public class WikiManager extends RepositoryManager
 
 	    //https://sdn.ramadda.org/repository/entry/show?entryid=19937bb1-ecdc-4407-aa4f-68e7be2f91b7
 
+	    //https://localhost:8430/repository/search/do?search.submit=Search&search.submit=search.submit&output=default.html&orderby=none&type=type_point_cr1000&datadate.mode=overlaps&datadate.relative=none&createdate.relative=none&changedate.relative=none&areamode=overlaps&provider=https%3A%2F%2Fgeodesystems.com%2Frepository
+	    //remote:https://sdn.ramadda.org/repository/entry/show?entryid=2f7211e9-e5a9-4a73-8a47-fb079764be26
 	    if (entryId.startsWith(ID_REMOTE)) {
-		entryId = entryId.substring((ID_REMOTE).length());
-		System.err.println("REMOTE:" + entryId);
-		String url = entryId+"&"  + ARG_OUTPUT+"="+ XmlOutputHandler.OUTPUT_XML;
-		System.err.println(url);
-		String entriesXml = getStorageManager().readSystemResource(
-									   new URL(url));
-		System.err.println(entriesXml);
-		ServerInfo serverInfo =    new ServerInfo(new URL(url),"","");
+		String chunk = entryId.substring((ID_REMOTE).length());
+		String baseUrl = findBaseUrl(chunk);
+		entryId = findEntryIdFromUrl(chunk);
+		if(!stringDefined(entryId)) {
+		    throw new IllegalArgumentException("Could not find entry id in remote URL: "+ chunk);
+		}
+
+
+		String xmlUrl = HU.url(baseUrl+"/entry/show",
+				       ARG_OUTPUT, XmlOutputHandler.OUTPUT_XMLENTRY.toString(),
+				       ARG_ENTRYID,entryId);
+
+		/*
+		System.err.println("REMOTE:" + chunk);
+		System.err.println("BASE:" + baseUrl);
+		System.err.println("ENTRYID:" + entryId);
+		System.err.println("XML URL:" + xmlUrl);
+		*/
+		String entriesXml = IO.readUrl(new URL(xmlUrl));
+		System.err.println(Utils.clip(entriesXml,200,"").trim().replace("\n"," "));
+		//		System.err.println(entriesXml);
+		ServerInfo serverInfo =    new ServerInfo(new URL(baseUrl),"","");
 		List<Entry> remoteEntries =  getEntryManager().createRemoteEntries(request, serverInfo,
 										   entriesXml);
-		System.err.println(remoteEntries);
 		entries.addAll(remoteEntries);
-		
 		continue;
 	    }
 
