@@ -36,7 +36,7 @@ import java.util.zip.ZipOutputStream;
 public class XmlOutputHandler extends OutputHandler {
 
     /** XML Output type */
-    public static final OutputType OUTPUT_XML = new OutputType("XML",
+    public static final OutputType OUTPUT_XML = new OutputType("RAMADDA XML Export",
                                                     "xml.xml",
                                                     OutputType.TYPE_FEEDS,
                                                     "", ICON_XML);
@@ -44,7 +44,7 @@ public class XmlOutputHandler extends OutputHandler {
 
     /** XML Entry output type */
     public static final OutputType OUTPUT_XMLENTRY =
-        new OutputType("XML Entry", "xml.xmlentry", OutputType.TYPE_FEEDS,
+        new OutputType("RAMADDA XML Entry Export", "xml.xmlentry", OutputType.TYPE_FEEDS,
                        "", ICON_XML);
 
 
@@ -135,7 +135,7 @@ public class XmlOutputHandler extends OutputHandler {
                               Entry group, List<Entry> children)
             throws Exception {
 
-        if (outputType.equals(OUTPUT_XMLENTRY)) {
+        if (outputType!=null && outputType.equals(OUTPUT_XMLENTRY)) {
             return outputEntry(request, outputType, group);
         }
 
