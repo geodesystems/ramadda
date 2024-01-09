@@ -551,6 +551,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		let img = entry.getIconImage(['width','32px']).replace(/"/g,"'");
 //			attrs.push('data-icon',entry.getIconUrl());
 		title = entry.getName();
+		if(entry.remoteRepository) rowAttrs.push('remote-repository', entry.remoteRepository.name);
+
 		let type = entry.getType();
 		if(type) rowAttrs.push('data-type', type.name);
 		let thumb =entry.getThumbnail()
@@ -584,8 +586,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    title = icon+HU.space(1) +title;
 		}
 		title = HU.div([],HU.b(title));
+
 		let type = $(this).attr('data-type');		
 		if(type) title=title+ 'Type: ' + type+'<br>';
+		let remote = $(this).attr('remote-repository');		
+		if(remote) title=title+ 'Remote: ' + remote+'<br>';
 		title = title+
 		    HU.div([],'Right-click to see entry menu') +
 		    HU.div([],'Shift-drag to copy/move');
