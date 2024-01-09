@@ -667,8 +667,6 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    if(entry.startDate && entry.startDate.getTime()!=entry.createDate.getTime())
 			table+=HU.formEntry('Date:',entry.startDateFormat);
 		    if(entry.startDate && entry.endDate && entry.startDate.getTime()!=entry.endDate.getTime()) {
-			console.log(entry.startDate);
-			console.log(entry.endDate);
 			table+=HU.formEntry('To Date:',entry.endDateFormat);
 		    }
 		    table+='</table>';
