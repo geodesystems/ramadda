@@ -188,6 +188,11 @@ public abstract class SearchProvider extends GenericTypeHandler {
         id = s;
     }
 
+    public String getFormSuffix() {
+	return "";
+    }
+
+
     /**
      * _more_
      *
@@ -454,11 +459,24 @@ public abstract class SearchProvider extends GenericTypeHandler {
          */
         @Override
         public String getFormLabel(boolean includeId) {
+	    if(true)
+		return  getName() + (includeId
+				     ? " Id:" + getId()
+				     : "");
+
+
             return HtmlUtils.href(serverInfo.getUrl(), getName(),
                                   " class=black_href ") + (includeId
                     ? " Id:" + getId()
                     : "");
         }
+
+        public String getFormSuffix() {
+            return HtmlUtils.href(serverInfo.getUrl(),
+				  HU.faIcon("fa-solid fa-link","target","_other",
+					    "class","ramadda-clickable","title",
+					    "Go to repository: " + serverInfo.getUrl()));
+        }	
 
 
 
@@ -485,8 +503,7 @@ public abstract class SearchProvider extends GenericTypeHandler {
             String entriesXml = getStorageManager().readSystemResource(
                                     new URL(remoteSearchUrl));
 
-            return getEntryManager().createRemoteEntries(request, serverInfo,
-                    entriesXml);
+            return getEntryManager().createRemoteEntries(request, serverInfo, entriesXml);
         }
     }
 
