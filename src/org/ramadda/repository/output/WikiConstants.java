@@ -88,6 +88,8 @@ public interface WikiConstants {
     /** _more_ */
     public static final String ATTR_ALIGN = "align";
 
+    public static final String ATTR_LABEL = "label";
+
     /** _more_ */
     public static final String ATTR_COLLAPSE = "collapse";
 
