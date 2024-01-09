@@ -3,7 +3,7 @@
 */
 
 
-const DISPLAY_FILTER = "filter";
+
 const DISPLAY_ANIMATION = "animation";
 const DISPLAY_LABEL = "label";
 const DISPLAY_DOWNLOAD = "download";
@@ -32,13 +32,6 @@ addGlobalDisplayType({
     forUser: true,
     category: CATEGORY_CONTROLS,
     tooltip: makeDisplayTooltip("Reload the displays",null,"Automatically reloads the displays on a set frequency")                                            
-});
-addGlobalDisplayType({
-    type: DISPLAY_FILTER,
-    label: "Filter",
-    requiresData: false,
-    category: CATEGORY_CONTROLS,
-    tooltip: makeDisplayTooltip("No data, just provides data filtering")
 });
 addGlobalDisplayType({
     type: DISPLAY_ANIMATION,
@@ -97,17 +90,6 @@ addGlobalDisplayType({
     tooltip: makeDisplayTooltip("Shows records as ticks in a timeline","ticks.png")
 });
 
-function RamaddaFilterDisplay(displayManager, id, properties) {
-    let SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_FILTER, properties);
-    let myProps =[];
-    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
-        html: "<p>&nbsp;&nbsp;&nbsp;Nothing selected&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p>",
-        initDisplay: function() {
-            this.createUI();
-            this.setContents(this.html);
-        },
-    });
-}
 
 
 function RamaddaAnimationDisplay(displayManager, id, properties) {

@@ -8,6 +8,7 @@ const DISPLAY_TREE = "tree";
 const DISPLAY_TIMELINE = "timeline";
 const DISPLAY_HOURS = "hours";
 const DISPLAY_BLANK = "blank";
+const DISPLAY_FILTER = "filter";
 const DISPLAY_HOOK = "hook";
 const DISPLAY_PRE = "pre";
 const DISPLAY_HTMLTABLE = "htmltable";
@@ -199,6 +200,15 @@ addGlobalDisplayType({
     category: CATEGORY_CONTROLS,
     tooltip: makeDisplayTooltip("Shows no data",null,"Useful for just showing filters, etc")                                                
 });
+addGlobalDisplayType({
+    type: DISPLAY_FILTER,
+    label: "Filter",
+    requiresData: false,
+    category: CATEGORY_CONTROLS,
+    tooltip: makeDisplayTooltip("No data, just provides data filtering")
+});
+
+
 addGlobalDisplayType({
     type: DISPLAY_HOOK,
     label: "Hook",
@@ -954,12 +964,12 @@ function RamaddaHoursDisplay(displayManager, id, properties) {
 
 
 
-function RamaddaBlankDisplay(displayManager, id, properties) {
+function RamaddaBlankDisplay(displayManager, id, properties,type) {
     if(!properties.width) properties.width='100%';
     properties.showMenu = false;
     properties.showTitle = false;
-    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_BLANK, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, type??DISPLAY_BLANK, properties);
+    defineDisplay(type!=null?this:addRamaddaDisplay(this), SUPER, [], {
         needsData: function() {
             return true;
         },
@@ -1002,6 +1012,16 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
 	    }
 	}});
 }
+
+
+function RamaddaFilterDisplay(displayManager, id, properties) {
+    properties.hideFilterWidget=false;
+    let SUPER =  new RamaddaBlankDisplay(displayManager, id,  properties,DISPLAY_FILTER);
+    let myProps =[];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+    });
+}
+
 
 
 
