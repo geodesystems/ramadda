@@ -1,5 +1,8 @@
 <types category="Information">
 
+  <type name="type_dummy"  foruser="false" isgroup="true" ></type>
+
+
   <type name="link"  description="Link"  priority="1" help="A web page link">
      <property name="icon" value="/icons/link.png"/>
      <property name="form.file.show" value="false"/>
@@ -117,6 +120,9 @@ priority="2"       >
     <column name="dateformat" group="FTP Information" type="string" suffix="Date format to use with date pattern"   label="Date Format" showinhtml="false"/>
 -->
  </type>
+
+
+
 
 
   <type name="type_document"  foruser="false" category="Documents" >
