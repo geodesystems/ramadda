@@ -1984,7 +1984,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 						   searchProvider.getFormLabel(false)
 						   + (showProviders
 						      ? " -- " + searchProvider.getId()
-						      : ""));
+						      : "")) +" " + searchProvider.getFormSuffix();
+
             cbx += anchor;
             cats.get(searchProvider.getCategory()).append(cbx);
             cats.get(searchProvider.getCategory()).append(HU.br());
