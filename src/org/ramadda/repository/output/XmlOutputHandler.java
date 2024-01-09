@@ -48,7 +48,6 @@ public class XmlOutputHandler extends OutputHandler {
                        "", ICON_XML);
 
 
-
     /**
      * Create an XML output handler
      *
@@ -94,11 +93,7 @@ public class XmlOutputHandler extends OutputHandler {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
-        Document doc = XmlUtil.makeDocument();
-        Element root = getEntryTag(request, entry, null, doc, null, false,
-                                   true);
         StringBuffer sb = new StringBuffer(getEntryXml(request, entry));
-
         return new Result("", sb, repository.getMimeTypeFromSuffix(".xml"));
     }
 
