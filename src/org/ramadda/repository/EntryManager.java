@@ -6347,6 +6347,7 @@ public class EntryManager extends RepositoryManager {
 		entry.setId(getEntryManager().getRemoteEntryId(serverUrl, id));
 		entry.setRemoteServer(serverInfo);
 		entry.setRemoteUrl(serverUrl + "/entry/show?entryid=" + id);
+		entry.setRemoteId(id);
 		//		System.err.println("Remote entry:" + entry.getRemoteUrl());
 		getEntryManager().cacheEntry(entry);
 		entries.add((Entry) entry);
