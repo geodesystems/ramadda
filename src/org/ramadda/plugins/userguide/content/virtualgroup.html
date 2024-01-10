@@ -1,25 +1,136 @@
 [ht::head {Virtual Group}]
 
-:heading Virtual Group Entry
-The Virtual Group entry type can have a list of other entries and/or search criteria.
+:navtop
+
+The Virtual Group entry type acts like a group. This entry type
+can have any number of its own children entries but also can have other entries
+virtually. These entries can be specified explicitly, can be 
+defined with search criteria or even can reference entries in other external RAMADDA servers.
 For example, on the Examples page on ramadda.org this entry type is used to list
-the <a href=https://ramadda.org/repository/entry/show?entryid=a86d071a-f098-4354-839f-1f58e2656854>latest examples </a>.
-:p
-When editing a Virtual Group there is a list of Entry IDs. This can hold individual entry IDs
-or it can have a set of search specifications. For example, below we are searching
+the \[https://ramadda.org/repository/entry/show?entryid=a86d071a-f098-4354-839f-1f58e2656854 latest examples\].
+
+
+:heading The Basics
+When editing a Virtual Group there is a list of Entry IDs. This can hold individual entry IDs or aliases, one per line.
+Comment out a line with "#".
+[ht::screenshot images/virtual1.png]
+
+
+:heading Specifying Search Criteria
+The Entry IDs can also contain search criteria.
+The parameters of the search are specified one per line and the search is evaluated when seeing the term "search" on
+a single line.
+
+For example, below is the specification  to search for any entry with the text "foobar":
+
++pre
+search.text=foobar
+search
+-pre
+
+Here we are doing the same search but only using 3 entries:
++pre
+search.text=foobar
+search.max=3
+search
+-pre
+
+To order the search, e.g., getting the most recent 5 entries do:
+
++pre
+search.text=foobar
+search.orderby=createdate
+search.ascending=false
+search.max=5
+search
+-pre
+
+Multiple searches can be done:
++pre
+search.text=foo
+search.max=3
+search
+
+search.text=bar
+search.max=10
+search
+-pre
+
+
+
+
+
+Here we are searching for entries with the text "foobar" in the name:
++pre
+search.text=name:foobar
+search
+-pre
+
+
+
+For example, below specified to search for the entry type "type_point_snotel" within the given NWSE bounding box:
+
++pre
+search.type=type_point_snotel
+search.bbox=46.218091,-113.484429,42.218091,-109.484429
+search
+-pre
+
+Below we are searching
 under two entries for the children of the entries, sorting the list of entries and only
 using the first 42 entries. The entries with IDs some_entry_id and some_other_entry_id
 are being excluded.
 
-<pre>
++pre
 search.group=2705cd9a-3d51-41be-86eb-c624506093ea|\
 5f2234d6-6332-441f-8bab-0076a8cc4d95
 search.max=42
 search.orderby=createdate
 search.ascending=false
 search
+-pre
+
+
+Any entries can be excluded with:
++pre
 not:some_entry_id
 not:some_other_entry_id
-</pre>
+-pre
+
+
+
+:heading Referencing Remote Entries
+Entries on other external RAMADDAs can also be incorporated by prefacing the line with "remote:"
+
++pre
+#This references a single entry
+remote:https://ramadda.org/repository/entry/show?entryid=2f7211e9-e5a9-4a73-8a47-fb079764be26
+
+#This references a single entry with its alias
+remote:https://sdn.ramadda.org/repository/a/aihec
+
+-pre
+
+
+To do a search for a particular type on a remote RAMADDA go to that RAMADDA and do the entry type based search,
+e.g. for "CR1000 Data Logger" entries. Specify any search criteria, e.g. order by Create Data and get at most 5.
+Then open up the More... and copy the RAMADDA XML Export link:
+[ht::screenshot images/virtual2.png]
+
+Now go to your Virtual Group entry and enter the link on a line with the prefix "remote:search:", e.g.:
++pre
+remote:search:https://ramadda.org/repository/search/type/type_point_cr1000?datadate.mode=overlaps&datadate.relative=none&max=5&orderby=createdate&search.submit=Search&type=type_point_cr1000&output=xml.xml
+-pre
+
+If you want to do a regular search (i.e., through the default Search form) go to that remote RAMADDA and enter your search, e.g. for "foobar":
+[ht::screenshot images/virtual3.png]
+
+Now, at the bottom of the form you can copy the full search link with the <i class="fas fa-clipboard"></i> link
+or view the full search link in your browser then copy the URL with the <i class="fas fa-link"></i> link.
+Then go to your own RAMADDA and under the Entry Ids add the search link, e.g.:
++pre
+remote:search:https://ramadda.org/repository/search/do?text=foobar&search.submit=Search&search.submit=search.submit&output=default.html&orderby=none&datadate.mode=overlaps&datadate.relative=none&createdate.relative=none&changedate.relative=none&areamode=overlaps&provider=this
+-pre
+
 
 </body>
