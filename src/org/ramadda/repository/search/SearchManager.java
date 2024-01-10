@@ -1832,7 +1832,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             request.put(ARG_RELATIVEDATE, oldValue);
         }
 
-        sb.append(getSearchManager().makeOutputSettings(request));
+        sb.append(makeOutputSettings(request,true));
 
 
         typeHandler.addToSearchForm(request, titles, contents, where, true,
@@ -1887,12 +1887,16 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      *
      * @throws Exception _more_
      */
-    public String makeOutputSettings(Request request) throws Exception {
+    public String makeOutputSettings(Request request, boolean addMax) throws Exception {
         String orderBy =makeOrderBy(request,false);
-        return HU.b("Output") +": " +
+        String s = HU.b("Output") +": " +
 	    HU.select(ARG_OUTPUT, getOutputHandlerSelectList(),
 		      request.getString(ARG_OUTPUT, "")) +
-	    " " + HU.b("Order By")+ ": " +orderBy;
+	    HU.space(2) + HU.b("Order By")+ ": " +orderBy;
+	if(addMax) s+=HU.space(2) +HU.b("Max")+": " +
+		       HU.input(ARG_MAX,request.getString(ARG_MAX,"50"),
+				HtmlUtils.SIZE_5);
+	return s;
     }
 
     public String makeOrderBy(Request request, boolean vertical) throws Exception {
