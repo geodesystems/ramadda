@@ -6462,7 +6462,6 @@ public class WikiManager extends RepositoryManager
 	    System.err.println("Ids:" + ids);
 
         for (String entryId : Utils.split(ids, ",", true, true)) {
-	    System.err.println("entry id:" + entryId);
             if (entryId.startsWith("quit")) {
 		break;
 	    }
@@ -6578,7 +6577,8 @@ public class WikiManager extends RepositoryManager
 		    getEntriesFromEmbeddedSearch(myRequest, wikiUtil,  props, baseEntry,  entryId,-1);
 		if(foundEntries!=null) {
 		    foundEntries=getEntryManager().applyFilter(myRequest,  foundEntries,filter);
-		    System.err.println("Search:" + foundEntries+"\n");
+		    if(debugGetEntries)
+			System.err.println("Search:" + foundEntries+"\n");
 		    entries.addAll(foundEntries);
 		}
 		//clear out the search props
