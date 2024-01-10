@@ -4849,8 +4849,7 @@ public class WikiManager extends RepositoryManager
 	ServerInfo serverInfo = getServer(request, entry, wikiUtil, props);
 	boolean doEntries = getProperty(wikiUtil, props, "doEntries",false);
 	boolean doEntry = getProperty(wikiUtil, props, "doEntry", false);
-	String ancestor = getProperty(wikiUtil, props, ARG_ANCESTOR,
-				      null);
+	String ancestor = getProperty(wikiUtil, props, ARG_ANCESTOR, null);
 	if (doEntries || doEntry) {
 	    String extra ="";
 	    String orderBy = getProperty(wikiUtil, props,"orderby",null);
@@ -4866,7 +4865,8 @@ public class WikiManager extends RepositoryManager
 	    if(sortDir!=null)
 		extra+="&ascending=" + sortDir.equals("up");
 
-	    if(serverInfo!=null) {
+	    //For now don't do this to avoid the numerous calls out to the other RAMADDA
+	    if(false && serverInfo!=null) {
 		jsonUrl = HtmlUtils.url(serverInfo.getUrl()+  "/entry/show",
 					ARG_ENTRYID,entry.getId(), ARG_OUTPUT,
 					JsonOutputHandler.OUTPUT_JSON_POINT.getId(),"remoteRequest","true");
@@ -6405,10 +6405,11 @@ public class WikiManager extends RepositoryManager
      *
      * @throws Exception problem getting entries
      */
-    public List<Entry> getEntries(Request request, WikiUtil wikiUtil,
+    public List<Entry> getEntries(Request initRequest, WikiUtil wikiUtil,
                                   Entry baseEntry, String ids,
                                   Hashtable theProps)
 	throws Exception {
+
 
         if (theProps == null) {
             theProps = new Hashtable();
@@ -6417,8 +6418,8 @@ public class WikiManager extends RepositoryManager
 
         Hashtable   searchProps = null;
         List<Entry> entries     = new ArrayList<Entry>();
-        Request myRequest = request.cloneMe();
-        request = myRequest;
+        Request myRequest = initRequest.cloneMe();
+	//        initRequest = myRequest;
 	String prefix = getProperty(wikiUtil,props,"argPrefix","");
         int         max         =   getProperty(wikiUtil, props, ARG_MAX, -1);
         String      orderBy     =  getProperty(wikiUtil, props, "sort");
@@ -6455,12 +6456,17 @@ public class WikiManager extends RepositoryManager
         HashSet     nots        = new HashSet();
 	SelectInfo select=null;
 	Utils.TriFunction<SelectInfo,String,String,String> matches =
-	    getIdMatcher(request, baseEntry,wikiUtil,props);
+	    getIdMatcher(initRequest, baseEntry,wikiUtil,props);
 
 	if(debugGetEntries)
 	    System.err.println("Ids:" + ids);
 
         for (String entryId : Utils.split(ids, ",", true, true)) {
+	    System.err.println("entry id:" + entryId);
+            if (entryId.startsWith("quit")) {
+		break;
+	    }
+
             if (entryId.startsWith("#")) {
                 continue;
             }
@@ -6495,6 +6501,10 @@ public class WikiManager extends RepositoryManager
 		if(chunk.startsWith("search:")) {
 		    chunk = chunk.substring("search:".length());
 		    xmlUrl  = chunk;
+		    //Tack on the xml.xml output
+		    if(xmlUrl.indexOf("output=")<0) {
+			xmlUrl = HU.url(xmlUrl,ARG_OUTPUT,XmlOutputHandler.OUTPUT_XMLENTRY.toString());
+		    }
 		} else if(chunk.startsWith("children:")) {
 		    chunk = chunk.substring("children:".length());
 		    doChildren = true;
@@ -6529,7 +6539,7 @@ public class WikiManager extends RepositoryManager
 		System.err.println(Utils.clip(entriesXml,200,"").trim().replace("\n"," "));
 		//		System.err.println(entriesXml);
 		ServerInfo serverInfo =    new ServerInfo(new URL(baseUrl),"","");
-		List<Entry> remoteEntries =  getEntryManager().createRemoteEntries(request, serverInfo,
+		List<Entry> remoteEntries =  getEntryManager().createRemoteEntries(initRequest, serverInfo,
 										   entriesXml);
 		entries.addAll(remoteEntries);
 		continue;
@@ -6549,8 +6559,6 @@ public class WikiManager extends RepositoryManager
             }
 
 
-
-
             Entry  theBaseEntry = baseEntry;
             String filter = null;
 
@@ -6561,16 +6569,21 @@ public class WikiManager extends RepositoryManager
 	    
 
             if (entryId.equals(ID_ROOT)) {
-                entries.addAll(getEntryManager().applyFilter(request, request.getRootEntry(), filter));
+                entries.addAll(getEntryManager().applyFilter(initRequest, initRequest.getRootEntry(), filter));
                 continue;
             }
 
 	    if(entryId.equals(ID_SEARCH) || entryId.startsWith(PREFIX_SEARCH)) {
 		List<Entry> foundEntries =
-		    getEntriesFromEmbeddedSearch(request, wikiUtil,  props, baseEntry,  entryId,-1);
+		    getEntriesFromEmbeddedSearch(myRequest, wikiUtil,  props, baseEntry,  entryId,-1);
 		if(foundEntries!=null) {
-		    entries.addAll(getEntryManager().applyFilter(request,  foundEntries,filter));
+		    foundEntries=getEntryManager().applyFilter(myRequest,  foundEntries,filter);
+		    System.err.println("Search:" + foundEntries+"\n");
+		    entries.addAll(foundEntries);
 		}
+		//clear out the search props
+		myRequest = initRequest.cloneMe();
+		searchProps = new Hashtable();
 		continue;
 	    }
 
@@ -6585,10 +6598,10 @@ public class WikiManager extends RepositoryManager
 
 
 	    if((select = matches.call(entryId,ID_GRANDPARENT,PREFIX_GRANDPARENT))!=null) { 
-                Entry parent = getEntryManager().getEntry(request,
+                Entry parent = getEntryManager().getEntry(initRequest,
 							  select.getEntry().getParentEntryId());
                 if (parent != null) {
-                    Entry grandparent = getEntryManager().getEntry(request,
+                    Entry grandparent = getEntryManager().getEntry(initRequest,
 								   parent.getParentEntryId());
                     if (grandparent != null) {
                         entries.addAll(getEntryManager().applyFilter(select.getRequest(), grandparent, select));
@@ -6605,30 +6618,29 @@ public class WikiManager extends RepositoryManager
                     tmp.add(0, parent);
                     parent = parent.getParentEntry();
                 }
-                entries.addAll(getEntryManager().applyFilter(request, tmp, select));
+                entries.addAll(getEntryManager().applyFilter(initRequest, tmp, select));
                 continue;
             }
 
 	    if((select = matches.call(entryId,ID_SIBLINGS,PREFIX_SIBLINGS))!=null) { 
-                Entry parent = getEntryManager().getEntry(request,
+                Entry parent = getEntryManager().getEntry(initRequest,
 							  select.getEntry().getParentEntryId());
                 if (parent != null) {
                     for (Entry sibling :
-			     getEntryManager().getChildren(request, parent)) {
+			     getEntryManager().getChildren(initRequest, parent)) {
                         if ( !sibling.getId().equals(select.getEntry().getId())) {
                             entries.add(sibling);
                         }
                     }
                 }
-		entries = getEntryManager().applyFilter(request, entries, select);
+		entries = getEntryManager().applyFilter(initRequest, entries, select);
                 continue;
             }
 
 
 	    if((select = matches.call(entryId,ID_LINKS,PREFIX_LINKS))!=null) { 
                 List<Association> associations =
-                    getRepository().getAssociationManager().getAssociations(
-									    request, select.getEntry().getId());
+                    getRepository().getAssociationManager().getAssociations(initRequest, select.getEntry().getId());
                 for (Association association : associations) {
                     String id = null;
                     if ( !association.getFromId().equals(
@@ -6640,21 +6652,19 @@ public class WikiManager extends RepositoryManager
                     } else {
                         continue;
                     }
-		    Entry e = getEntryManager().getEntry(request, id);
+		    Entry e = getEntryManager().getEntry(initRequest, id);
 		    if(e!=null)
 			entries.add(e);
 		    
                 }
-		entries = getEntryManager().applyFilter(request, entries, select);
+		entries = getEntryManager().applyFilter(initRequest, entries, select);
                 continue;
             }
 
 
 	    if((select = matches.call(entryId,ID_PARENT,PREFIX_PARENT))!=null) { 		
-                entries.addAll(getEntryManager().applyFilter(
-							     request, 
-							     getEntryManager().getEntry(
-											request,
+                entries.addAll(getEntryManager().applyFilter(initRequest, 
+							     getEntryManager().getEntry(initRequest,
 											select.getEntry().getParentEntryId()), select));
 
                 continue;
@@ -6662,7 +6672,7 @@ public class WikiManager extends RepositoryManager
 
 	    if((select = matches.call(entryId,ID_GRANDCHILDREN,PREFIX_GRANDCHILDREN))!=null ||
 	       (select = matches.call(entryId,ID_GREATGRANDCHILDREN,PREFIX_GREATGRANDCHILDREN))!=null) {
-                List<Entry> children = getEntryManager().getChildren(request,
+                List<Entry> children = getEntryManager().getChildren(initRequest,
 								     select.getEntry());
                 List<Entry> grandChildren = new ArrayList<Entry>();
                 for (Entry child : children) {
@@ -6670,7 +6680,7 @@ public class WikiManager extends RepositoryManager
                     if (!child.isGroup()) {
                         grandChildren.add(child);
                     } else {
-                        grandChildren.addAll(getEntryManager().getChildren(request, child));
+                        grandChildren.addAll(getEntryManager().getChildren(initRequest, child));
                     }
                 }
 
@@ -6682,53 +6692,21 @@ public class WikiManager extends RepositoryManager
                         } else {
                             greatgrandChildren.addAll(
 						      getEntryManager().getChildren(
-										    request, child));
+										    initRequest, child));
 
                         }
                     }
                     grandChildren = greatgrandChildren;
                 }
 
-		entries.addAll(getEntryManager().applyFilter(request, grandChildren, select));
+		entries.addAll(getEntryManager().applyFilter(initRequest, grandChildren, select));
                 continue;
             }
 
-            if (entryId.startsWith(ATTR_SEARCH_URL)) {
-                if (searchProps == null) {
-                    searchProps = props;
-                }
 
-                myRequest.put(ARG_AREA_MODE,
-                              getProperty(wikiUtil, searchProps,
-                                          ARG_AREA_MODE,
-                                          VALUE_AREA_CONTAINS));
-                myRequest.put(ARG_MAX,
-                              getProperty(wikiUtil, searchProps,
-                                          "search." + ARG_MAX, "100"));
-                addSearchTerms(myRequest, wikiUtil, searchProps,
-                               theBaseEntry);
-
-		List<String> tokens = (entryId.indexOf("=") >= 0)
-		    ? Utils.splitUpTo(entryId,
-				      "=", 2)
-		    : Utils.splitUpTo(entryId,
-				      ":", 2);
-		ServerInfo serverInfo =
-		    new ServerInfo(new URL(tokens.get(1)),
-				   "remote server", "");
-
-		List<ServerInfo> servers = new ArrayList<ServerInfo>();
-		servers.add(serverInfo);
-		getSearchManager().doDistributedSearch(myRequest,
-						       servers, theBaseEntry, entries);
-		
-		continue;
-            }
-
-
-            Entry entry = getEntryManager().getEntry(request, entryId);
+            Entry entry = getEntryManager().getEntry(initRequest, entryId);
             if (entry != null) {
-		entries.addAll(getEntryManager().applyFilter(request, entry, filter));
+		entries.addAll(getEntryManager().applyFilter(initRequest, entry, filter));
             }
 
 
@@ -6786,7 +6764,7 @@ public class WikiManager extends RepositoryManager
             }
         }
 
-	max = request.get(ARG_MAX,max);
+	max = initRequest.get(ARG_MAX,max);
         if (max > 0) {
             List<Entry> l = new ArrayList<Entry>();
             for (int i = 0; (i < max) && (i < entries.size()); i++) {

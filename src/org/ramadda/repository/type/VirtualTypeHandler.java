@@ -98,7 +98,7 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
             formInfo.addMaxSizeValidation(column.getLabel(), textAreaId,
                                           10000);
             String suffix =
-                "entry ids - one per row<br>Or use the  <a target=_help href=\"/repository/userguide/virtualgroup.html\">entry search</a> services";
+                "entry ids - one per row<br>#use &quot;#&quot; to comment a line<br><a target=_help href=\"/repository/userguide/virtualgroup.html\">View help</a>";
             String buttons = OutputHandler.getSelect(request, textAreaId,
                                  "Add entry id", true, "entryid", entry,
 						     false,false);
@@ -107,7 +107,7 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
                 HU.formEntryTop(
                     msgLabel(column.getLabel()),
                     buttons + "<table cellspacing=0 cellpadding=0 border=0>"
-                    + HU.row(HU.cols(widget, suffix))
+                    + HU.row(HU.cols(widget, suffix),"valign=top")
                     + "</table>"));
             formBuffer.append("\n");
         } else {
