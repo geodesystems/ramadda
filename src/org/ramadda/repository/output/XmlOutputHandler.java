@@ -135,12 +135,18 @@ public class XmlOutputHandler extends OutputHandler {
                               Entry group, List<Entry> children)
             throws Exception {
 
-        if (outputType!=null && outputType.equals(OUTPUT_XMLENTRY)) {
+	boolean doChildren = request.get(ARG_DO_CHILDREN,false);
+        if (!doChildren && outputType!=null && outputType.equals(OUTPUT_XMLENTRY)) {
             return outputEntry(request, outputType, group);
         }
 
         Document doc  = XmlUtil.makeDocument();
-        Element  root = getGroupTag(request, group, doc, null);
+        Element  root;
+	if(doChildren) {
+	    root = getGroupTag(request, getEntryManager().getDummyGroup("parent"), doc, null);
+	} else {
+	    root = getGroupTag(request, group, doc, null);
+	}
         for (Entry child : children) {
             if (getEntryManager().handleEntryAsGroup(child)) {
                 getGroupTag(request, child, doc, root);

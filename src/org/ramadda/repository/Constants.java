@@ -718,6 +718,9 @@ public interface Constants {
     public static final String ARG_CANCEL_DELETE = "canceldelete";
 
 
+    public static final String ARG_DO_CHILDREN = "dochildren";
+
+
     /** _more_ */
     public static final String ARG_CHANGE = "change";
 

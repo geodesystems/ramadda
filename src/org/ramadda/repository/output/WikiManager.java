@@ -6491,9 +6491,13 @@ public class WikiManager extends RepositoryManager
 	    if (entryId.startsWith(ID_REMOTE)) {
 		String chunk = entryId.substring((ID_REMOTE).length());
 		String xmlUrl=null;
+		boolean doChildren = false;
 		if(chunk.startsWith("search:")) {
 		    chunk = chunk.substring("search:".length());
 		    xmlUrl  = chunk;
+		} else if(chunk.startsWith("children:")) {
+		    chunk = chunk.substring("children:".length());
+		    doChildren = true;
 		}
 
 		String baseUrl = findBaseUrl(chunk);
@@ -6503,9 +6507,16 @@ public class WikiManager extends RepositoryManager
 		    if(!stringDefined(entryId)) {
 			throw new IllegalArgumentException("Could not find entry id in remote URL: "+ chunk);
 		    }
-		    xmlUrl = HU.url(baseUrl+"/entry/show",
-				    ARG_OUTPUT, XmlOutputHandler.OUTPUT_XMLENTRY.toString(),
-				    ARG_ENTRYID,entryId);
+		    if(doChildren) {
+			xmlUrl = HU.url(baseUrl+"/entry/show",
+					ARG_OUTPUT, XmlOutputHandler.OUTPUT_XMLENTRY.toString(),
+					ARG_ENTRYID,entryId,
+					ARG_DO_CHILDREN,"true");
+		    } else {
+			xmlUrl = HU.url(baseUrl+"/entry/show",
+					ARG_OUTPUT, XmlOutputHandler.OUTPUT_XMLENTRY.toString(),
+					ARG_ENTRYID,entryId);
+		    }
 		}
 
 		/*
