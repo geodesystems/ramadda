@@ -6327,7 +6327,9 @@ public class EntryManager extends RepositoryManager {
 
 		if(entryList.size()==0) continue;
 		Entry entry = entryList.get(0);
-		entry.setName("&#8599;" + entry.getName());
+		//		entry.setName("&#8599;" + entry.getName());
+		entry.setName("&#10548;" + entry.getName());		
+
 		entry.setRemoteServer(serverInfo);
 		Resource resource =  new Resource(
 						  "remote:"
