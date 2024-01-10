@@ -93,7 +93,7 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
             }
             String urlArg     = column.getEditArg();
             String textAreaId = HU.getUniqueId("input_");
-            String widget = HU.textArea(urlArg, value, 10, 90,
+            String widget = HU.textArea(urlArg, value, 10, 120,
                                 HU.id(textAreaId));
             formInfo.addMaxSizeValidation(column.getLabel(), textAreaId,
                                           10000);
@@ -103,13 +103,12 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
                                  "Add entry id", true, "entryid", entry,
 						     false,false);
 
-            formBuffer.append(
-                HU.formEntryTop(
-                    msgLabel(column.getLabel()),
-                    buttons + "<table cellspacing=0 cellpadding=0 border=0>"
-                    + HU.row(HU.cols(widget, suffix),"valign=top")
-                    + "</table>"));
-            formBuffer.append("\n");
+	    HU.formEntry(formBuffer,
+			 HU.b(msgLabel(column.getLabel()))+" " +
+			 HU.span(buttons,HU.cssClass("ramadda-button ramadda-clickable")) +
+			 "<br><table cellspacing=0 cellpadding=0 border=0>"
+			 + HU.row(HU.cols(widget, suffix),"valign=top")
+			 + "</table>");
         } else {
             super.addColumnToEntryForm(request, column, formBuffer, parentEntry, entry,
                                        values, state, formInfo,

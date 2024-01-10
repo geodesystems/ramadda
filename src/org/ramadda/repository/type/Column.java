@@ -2736,7 +2736,9 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    widget = HU.hbox(widget, suffix);
 	}
 	String label = sourceTypeHandler.getFormLabel(parentEntry, entry, getName(),getLabel());
-        if (rows > 1) {
+	if(sourceTypeHandler.getTypeProperty("form." + getName() + ".vertical",false)) {
+            HU.formEntry(formBuffer,HU.b(label) + ":<br>"+ widget);
+	} else  if (rows > 1) {
             formBuffer.append(typeHandler.formEntryTop(request,
 						       label + ":", widget));
         } else {
