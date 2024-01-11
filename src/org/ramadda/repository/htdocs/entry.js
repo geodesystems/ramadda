@@ -770,6 +770,13 @@ function Entry(props) {
 	    if(what=="name") return this.getName();
 	    if(what=="fromdate") return HU.span(['class','ramadda-datetime','title',this.startDate],this.startDateFormat);
 	    
+	    if(what=="download") {
+		if(!this.getIsFile()) return  "";
+		let url = this.getResourceUrl();
+		let href=  HU.href(url,HU.getIconImage('fas fa-download'));
+		if(this.getFilesize()) href+=" " + this.getFormattedFilesize();
+		return href;
+	    }
 	    if(what=="entryorder") return this.order;
 	    if(what=="creator") {
 		let searchUrl = RamaddaUtil.getUrl('/search/do?user_id='+ this.creator+'&search.submit=true');

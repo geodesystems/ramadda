@@ -2033,11 +2033,12 @@ WikiEditor.prototype = {
 	let treeAttrs = Utils.mergeLists([
 	    {label:'Table Tree'},
 	    {p:"simple",ex:true},
-	    {p:'columns',ex:'name,date,createdate,size,type,attachments'},
+	    {p:'columns',ex:'name,date,createdate,download,size,type,attachments'},
 	    {p:"showHeader",ex:false},
 	    {p:"showDate",ex:false},
 	    {p:"showCreateDate",ex:false},
 	    {p:"showSize",ex:false},
+	    {p:"showDownload",ex:false},	    
 	    {p:"showCreator",ex:true},
 	    {p:"showType",ex:false},
 	    {p:'showAttachments',ex:'true'},				
