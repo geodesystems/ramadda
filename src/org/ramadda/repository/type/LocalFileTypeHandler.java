@@ -240,7 +240,7 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         boolean descending = !select.getAscending();
         String  by         = select.getOrderBy();
         if (by.equals(ORDERBY_NAME)) {
-            files = IOUtil.sortFilesOnName(files, descending);
+            files = IO.sortFilesOnName(files, descending);
         } else if (by.equals(ORDERBY_SIZE)) {
             files = Utils.sortFilesOnSize(files, descending);
         } else if (by.equals(ORDERBY_NUMBER)) {
