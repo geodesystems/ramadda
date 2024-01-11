@@ -34,7 +34,7 @@ import org.json.*;
 @SuppressWarnings("unchecked")
 public class LLMManager extends  AdminHandlerImpl {
 
-    public static boolean  debug = false;
+    public static boolean  debug = true;
 
     public static final String PROP_OPENAI_KEY = "openai.api.key";
     public static final String PROP_GEMINI_KEY = "gemini.api.key";	
@@ -180,28 +180,70 @@ public class LLMManager extends  AdminHandlerImpl {
 
 
 
-    public synchronized String callLLM(Request request,
-				       String prompt1,
-				       String prompt2,
-				       String corpus,
-				       int maxReturnTokens,
-				       boolean tokenize,
-				       int[]initTokenLimit,
-				       int callCnt,
-				       String...extraArgs)
+    private static final Object MUTEX_GEMINI = new Object();
+    private static final Object MUTEX_OPENAI = new Object();    
+
+    public IO.Result  callGemini(String model, String gptText) throws Exception {
+	synchronized(MUTEX_GEMINI) {
+	    if(!isGeminiEnabled()) return null;
+	    /*{
+	      "contents": [{
+	      "parts":[{"text": "Write a story about a magic backpack."}]}]}'
+	    */
+	    String geminiKey = getRepository().getProperty(PROP_GEMINI_KEY);	
+	    String contents = JU.list(JU.map("parts",JU.list(JU.map("text",JU.quote(gptText)))));
+	    String body = JU.map("contents",contents);
+	    //		System.err.println(body);
+	    return  IO.getHttpResult(IO.HTTP_METHOD_POST
+				     , new URL(URL_GEMINI+"?key=" + geminiKey), body,
+				     "Content-Type","application/json");
+	}
+    }	
+
+    public IO.Result  callOpenai(String model, int maxReturnTokens,String gptText,String[]extraArgs) throws Exception {
+	synchronized(MUTEX_OPENAI) {
+	    if(!isOpenAIEnabled()) return null;
+	    boolean useGpt4 = model.equals(MODEL_GPT_4);
+	    if(useGpt4 && !isGPT4Enabled()) return null;
+	    List<String> args =  Utils.makeList("temperature", "0",
+						"max_tokens" ,""+ maxReturnTokens,
+						"top_p", "1.0");
+	    for(int i=0;i<extraArgs.length;i+=2) {
+		args.add(extraArgs[i]);
+		args.add(extraArgs[i+1]);
+	    }
+	    Utils.add(args,"model",JsonUtil.quote(model));
+	    Utils.add(args,"messages",JsonUtil.list(JsonUtil.map(
+								 "role",JsonUtil.quote("user"),
+								 "content",JsonUtil.quote(gptText))));
+	    String body = JsonUtil.map(args);
+	    String openAIKey = getOpenAIKey();
+	    return  IO.getHttpResult(IO.HTTP_METHOD_POST
+				     , new URL(URL_OPENAI_COMPLETION), body,
+				     "Content-Type","application/json",
+				     "Authorization","Bearer " +openAIKey);
+	}
+    }
+
+
+
+    public String callLLM(Request request,
+			  String prompt1,
+			  String prompt2,
+			  String corpus,
+			  int maxReturnTokens,
+			  boolean tokenize,
+			  int[]initTokenLimit,
+			  int callCnt,
+			  String...extraArgs)
 	throws Exception {
 	String text = corpus.toString();
+	String model = request.getString(ARG_MODEL,MODEL_GPT_3_5);
 	String openAIKey = getOpenAIKey();
 	String geminiKey = getRepository().getProperty(PROP_GEMINI_KEY);	
 	if(openAIKey==null && geminiKey==null) {
 	    if(debug) System.err.println("\tno LLM key");
 	    return null;
-	}
-
-	String model = request.getString(ARG_MODEL,MODEL_GPT_3_5);
-	boolean useGPT4 = false;
-	if(isGPT4Enabled()) {
-	    useGPT4 = request.get(ARG_USEGPT4,false);
 	}
 
 	if(initTokenLimit==null) 
@@ -256,41 +298,15 @@ public class LLMManager extends  AdminHandlerImpl {
 					 " text length:" + gptText.length() +
 					 " token limit:" + initTokenLimit[0]);
 
-
 	    IO.Result  result=null; 
 	    if(model.equals(MODEL_GEMINI)) {
-		if(!isGeminiEnabled()) return null;
-		/*{
-		  "contents": [{
-		  "parts":[{"text": "Write a story about a magic backpack."}]}]}'
-		*/
-		String contents = JU.list(JU.map("parts",JU.list(JU.map("text",JU.quote(gptText)))));
-		String body = JU.map("contents",contents);
-		//		System.err.println(body);
-		result= IO.getHttpResult(IO.HTTP_METHOD_POST
-					 , new URL(URL_GEMINI+"?key=" + geminiKey), body,
-					 "Content-Type","application/json");
+		if(debug)System.err.println("LLMManager:calling Gemini");
+		result = callGemini(model,gptText);
+		if(debug)System.err.println("LLMManager:done calling Gemini");
 	    } else if(Utils.equalsOne(model,MODEL_GPT_4,MODEL_GPT_3_5)) {
-		if(!isOpenAIEnabled()) return null;
-		boolean useGpt4 = model.equals(MODEL_GPT_4);
-		if(useGpt4 && !isGPT4Enabled()) return null;
-		List<String> args =  Utils.makeList("temperature", "0",
-						    "max_tokens" ,""+ maxReturnTokens,
-						    "top_p", "1.0");
-
-		for(int i=0;i<extraArgs.length;i+=2) {
-		    args.add(extraArgs[i]);
-		    args.add(extraArgs[i+1]);
-		}
-		Utils.add(args,"model",JsonUtil.quote(model));
-		Utils.add(args,"messages",JsonUtil.list(JsonUtil.map(
-								     "role",JsonUtil.quote("user"),
-								     "content",JsonUtil.quote(gptText))));
-		String body = JsonUtil.map(args);
-		result= IO.getHttpResult(IO.HTTP_METHOD_POST
-					 , new URL(URL_OPENAI_COMPLETION), body,
-					 "Content-Type","application/json",
-					 "Authorization","Bearer " +openAIKey);
+		if(debug)System.err.println("LLMManager:calling OpenAI");
+		result = callOpenai(model,maxReturnTokens,gptText,extraArgs);
+		if(debug)System.err.println("LLMManager:done calling OpenAI");
 	    }
 	    if(result==null) {
 		if(debug)
