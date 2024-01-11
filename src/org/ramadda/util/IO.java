@@ -17,6 +17,7 @@ import org.apache.http.entity.ContentType;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 import java.awt.Image;
@@ -1751,6 +1752,33 @@ public class IO {
 		}
 	    });
     }
+
+
+    /**
+     * _more_
+     *
+     * @param files _more_
+     * @param descending _more_
+     *
+     * @return _more_
+     */
+    public static File[] sortFilesOnName(File[] files, boolean descending) {
+        List tuples = new ArrayList();
+        for (int i = 0; i < files.length; i++) {
+            tuples.add(new Object[] { files[i].getName().toLowerCase(),
+                                      files[i] });
+        }
+        tuples = Misc.sortTuples(tuples, !descending);
+
+        files  = new File[tuples.size()];
+        for (int i = 0; i < tuples.size(); i++) {
+            Object[] tuple = (Object[]) tuples.get(i);
+            files[i] = (File) tuple[1];
+        }
+        return files;
+    }
+
+
 
 
 
