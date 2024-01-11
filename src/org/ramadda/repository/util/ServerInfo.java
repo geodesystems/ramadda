@@ -344,7 +344,7 @@ public class ServerInfo implements Constants {
                             ? HtmlUtils.space(3) + getUrl()
                             : "");
         }
-        if (port != 80) {
+        if (port != 80 && port>0) {
             return hostname + ":" + port;
         }
 
