@@ -773,9 +773,9 @@ function Entry(props) {
 	    if(what=="download") {
 		if(!this.getIsFile()) return  "";
 		let url = this.getResourceUrl();
-		let href=  HU.href(url,HU.getIconImage('fas fa-download'));
-		if(this.getFilesize()) href+=" " + this.getFormattedFilesize();
-		return href;
+		let label = HU.getIconImage('fas fa-download');
+		if(this.getFilesize()) label+=" " + this.getFormattedFilesize();
+		return   HU.href(url,label);
 	    }
 	    if(what=="entryorder") return this.order;
 	    if(what=="creator") {
