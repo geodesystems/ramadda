@@ -1,0 +1,25 @@
+print:http://localhost:8080/repository/search/do?text=data&docount=true
+print:http://localhost:8080/repository/search/do?text=rmnp&docount=true
+print:http://localhost:8080/repository/search/do?text=data&docount=true
+print:http://localhost:8080/repository/search/do?text=folder&docount=true
+print:http://localhost:8080/repository/entry/test?ids=5f2234d6-6332-441f-8bab-0076a8cc4d95
+print:http://localhost:8080/repository/search/do?text=foo&docount=true
+print:http://localhost:8080/repository/entry/test?ids=280948f9-84cc-4989-8236-f3687cefaab0
+print:http://localhost:8080/repository/search/do?text=sites&docount=true
+print:http://localhost:8080/repository/search/do?text=data&docount=true
+print:http://localhost:8080/repository/search/do?text=docs&docount=true
+print:http://localhost:8080/repository/search/do?text=knowledge&docount=true
+print:http://localhost:8080/repository/entry/test?addchildren=true&ids=ff29d75c-8baf-4b17-b121-6c0e10eb9c60
+print:http://localhost:8080/repository/search/do?text=xxx&docount=true
+print:http://localhost:8080/repository/search/do?text=voting&docount=true
+print:http://localhost:8080/repository/entry/test?addchildren=true&ids=2a974918-022a-4d6a-bc74-f58b0003a3fc
+print:http://localhost:8080/repository/search/do?text=sites&docount=true
+print:http://localhost:8080/repository/entry/test?ids=0862b341-369c-49e1-9326-68d9b6839de2
+print:http://localhost:8080/repository/search/do?text=knowledge&docount=true
+print:http://localhost:8080/repository/search/do?text=thredds&docount=true
+print:http://localhost:8080/repository/search/do?text=rmnp&docount=true
+print:http://localhost:8080/repository/entry/test?addchildren=true&ids=51d56144-3492-4ca5-9afb-562603cf5122
+print:http://localhost:8080/repository/search/do?text=knowledge&docount=true
+print:http://localhost:8080/repository/search/do?text=thredds&docount=true
+print: http://localhost:8080/repository/entry/test?addchildren=true&ids=da59bec3-fecb-46eb-b63a-2bac1eb8d452
+print:http://localhost:8080/repository/search/do?text=bar&docount=true
