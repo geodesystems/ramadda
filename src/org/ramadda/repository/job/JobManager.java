@@ -75,6 +75,7 @@ public class JobManager extends RepositoryManager {
     /** _more_ */
     public final RequestUrl URL_SERVICES_VIEW = new RequestUrl(this,
 							       "/services/view");
+    protected boolean debug = false;
 
     private int jobLimit;
 
@@ -146,6 +147,9 @@ public class JobManager extends RepositoryManager {
     /** _more_ */
     protected int currentJobs = 0;
 
+    private long callCnt=0;
+
+
     /** _more_ */
     private TTLCache<Object, JobInfo> jobCache = new TTLCache<Object,
 	JobInfo>(60 * 24 * 60
@@ -155,6 +159,7 @@ public class JobManager extends RepositoryManager {
     private Hashtable<Object, JobInfo> runningJobs = new Hashtable<Object,
 	JobInfo>();
 
+    private int numThreads;
 
     /**
      * ctor
@@ -165,8 +170,19 @@ public class JobManager extends RepositoryManager {
     public JobManager(Repository repository) {
         super(repository);
 	jobLimit = repository.getProperty("ramadda.job.limit",100);
+	numThreads = Math.max(1, getRepository().getProperty(PROP_NUMTHREADS,  6));
     }
 
+    public JobManager(Repository repository,int numThreads) {
+        super(repository);
+	this.numThreads = numThreads;
+	jobLimit = repository.getProperty("ramadda.job.limit",100);
+    }    
+
+
+    public void setDebug(boolean v) {
+	debug =v;
+    }
 
     /**
      * _more_
@@ -264,9 +280,7 @@ public class JobManager extends RepositoryManager {
                 if (executor != null) {
                     return executor;
                 }
-                int numThreads =
-                    Math.max(1, getRepository().getProperty(PROP_NUMTHREADS,
-							    6));
+                int numThreads =getNumThreads();
                 //Runtime.getRuntime().availableProcessors() / 2));
 
                 System.err.println(
@@ -279,6 +293,12 @@ public class JobManager extends RepositoryManager {
 
         return executor;
     }
+
+
+    public int getNumThreads() {
+	return 	numThreads;
+    }
+
 
 
     /**
@@ -522,12 +542,12 @@ public class JobManager extends RepositoryManager {
      *
      * @throws Throwable _more_
      */
-    public void invokeAndWait(Request request, Callable<Boolean> callable)
+    public void invokeAndWait(Callable<Boolean> callable)
 	throws Throwable {
         List<Callable<Boolean>> callables =
             new ArrayList<Callable<Boolean>>();
         callables.add(callable);
-        invokeAndWait(request, callables);
+        invokeAndWait(callables);
     }
 
     /**
@@ -536,7 +556,7 @@ public class JobManager extends RepositoryManager {
      * @return _more_
      */
     public String toString() {
-        return "current jobs:" + currentJobs + " completed jobs:" + totalJobs;
+        return "# threads:" + getNumThreads() +" current jobs:" + currentJobs + " completed jobs:" + totalJobs;
     }
 
     /**
@@ -563,7 +583,6 @@ public class JobManager extends RepositoryManager {
         }
     }
 
-    private long callCnt=0;
 
     /**
      * execute the list of callables in the executor thread pool
@@ -576,8 +595,7 @@ public class JobManager extends RepositoryManager {
      *
      * @throws Throwable _more_
      */
-    public void invokeAndWait(Request request,
-                              List<Callable<Boolean>> callables)
+    public void invokeAndWait(List<Callable<Boolean>> callables)
 	throws Throwable {
         checkNewJobOK();
         try {
@@ -585,10 +603,12 @@ public class JobManager extends RepositoryManager {
 		callCnt++;
                 currentJobs++;
             }
+	    
 	    //If only 1 job then run in this thread
-	    if(callables.size()==1) {
-		callables.get(0).call();
-	    } else {
+	    /*	    if(false && callables.size()==1) {
+		    callables.get(0).call();
+		    } else {*/
+		if(debug) System.err.println("JobManager: calling " + this);
 		List<Future<Boolean>> results =	getExecutor().invokeAll(callables);
 		for (Future future : results) {
 		    try {
@@ -597,7 +617,8 @@ public class JobManager extends RepositoryManager {
 			throw ex.getCause();
 		    }
 		}
-	    }
+		if(debug) System.err.println("JobManager: done calling");
+		/*}*/
 	} finally {
 	    synchronized (MUTEX) {
                 currentJobs--;
