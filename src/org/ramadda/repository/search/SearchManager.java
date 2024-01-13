@@ -1340,11 +1340,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    query = builder.build();
 	}
 
-	//	System.err.println("QUERY:" + query);
-	int max = request.get(ARG_MAX,100);
-	int skip = request.get(ARG_SKIP,0);
-
-
+	int max = Math.max(0,request.get(ARG_MAX,100));
+	int skip = Math.max(0,request.get(ARG_SKIP,0));
 	Sort sort;
         if(request.exists(ARG_ORDERBY)) {
 	    boolean desc = true;
@@ -1411,28 +1408,30 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         ScoreDoc[]    docs     = hits.scoreDocs;
 	HashSet seen = new HashSet();
         for (int i = skip; i < docs.length; i++) {
-            org.apache.lucene.document.Document doc =
-                searcher.doc(docs[i].doc);
+	    //sanity check
+	    if(i<0 || i>=docs.length) continue;
+	    int  scoreDoc=docs[i].doc;
+            org.apache.lucene.document.Document doc = searcher.doc(scoreDoc);
             String id = doc.get(FIELD_ENTRYID);
             if (id == null) {
-		System.err.println("No ID");
+		getLogManager().logSpecial("luceneSearch: No ID in document");
                 continue;
             }
 	    if(seen.contains(id)) {
-		//		System.err.println("seen:"+ id);
 		continue;
 	    }
 	    seen.add(id);
             Entry entry = getEntryManager().getEntry(request, id);
             if (entry == null) {
-		System.err.println("SearchManager.processLuceneSearch - unable to find id:" + id);
+		getLogManager().logSpecial("SearchManager.processLuceneSearch - unable to find entry from id:" + id);
                 continue;
             }
-	    //	    System.err.println("entry:"+ entry +" id:" + entry.getId());
 	    entries.add(entry);
         }
+	/*
 	getLogManager().logInfo("org.ramadda.repository.search",
 				"lucene results:" + docs.length +" #entries:" + entries.size() +" query:" + query);
+	*/
     }
 
 
