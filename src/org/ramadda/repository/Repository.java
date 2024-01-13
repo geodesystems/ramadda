@@ -3764,7 +3764,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 }
             }
 
-
             if (!request.responseAsJson() && (request.getUser() != null) && request.getUser().getAdmin()) {
                 sb.append(HU.pre(HU.strictSanitizeString(LogUtil.getStackTrace(inner))));
             }
@@ -4032,8 +4031,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         } else if (request.responseAsText()) {
             return msg;
         } else {
-	    //true->remove URL args
-	    //            msg = HU.sanitizeString(msg,true);
             StringBuilder sb = new StringBuilder();
             sb.append(getPageHandler().showDialogError("An error has occurred") 
 		      + HU.br() + msg);
