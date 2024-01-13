@@ -26,6 +26,7 @@ public class Test {
     private static int timeThreshold = 1500;
     private static boolean showSize = true;
     private static boolean verbose = false;
+    private static boolean quiet = false;    
     private static boolean noecho = false;    
     private static List<String> randos = new ArrayList<String>();
     int urlCnt=0;
@@ -129,11 +130,13 @@ public class Test {
 	    String title = StringUtil.findPattern(result.result,"<title>(.*?)</title>");
 	    if(title==null) title="";
 	    if(timeThreshold>=0 && time>timeThreshold) {
-		System.out.println("#" + urlCnt +" " + title+ " long time:" + (time) +" url:" +url);
+		if(!quiet)
+		    System.out.println("#" + urlCnt +" " + title+ " long time:" + (time) +" url:" +url);
 	    }
 	    long diff = (after.getTime()-startTime.getTime())/1000;
 	    int callsPer = diff<=0?0:(int)(totalRead/(double)diff);
-	    System.out.println("#" + (urlCnt++)+" total read:" + totalRead + " calls/s:" + callsPer +" time:" + time +" #threads:"+ activeThreads+(!showSize?"":" size:"+result.getResult().length()));
+	    if(!quiet)
+		System.out.println("#" + (urlCnt++)+" total read:" + totalRead + " calls/s:" + callsPer +" time:" + time +" #threads:"+ activeThreads+(!showSize?"":" size:"+result.getResult().length()));
 
 	}
 	if(sleep>0) Misc.sleep(sleep);
@@ -153,7 +156,7 @@ public class Test {
 	final List<String> urls=new ArrayList<String>();
 	for(int i=0;i<args.length;i++) {
 	    if(args[i].equals("-help")) {
-		System.out.println("usage: -threads <# threads> -loops <#loops> -rando <some random URL> -t <time threshold> -verbose -noecho -sleep <pause after each call (ms)> <file> or <url>");
+		System.out.println("usage: -threads <# threads> -loops <#loops> -rando <some random URL> -t <time threshold> -verbose -quiet -noecho -sleep <pause after each call (ms)> <file> or <url>");
 		System.exit(0);
 	    }
 
@@ -179,6 +182,10 @@ public class Test {
 		verbose = true;
 		continue;
 	    }
+	    if(args[i].equals("-quiet")) {
+		quiet = true;
+		continue;
+	    }	    
 	    if(args[i].equals("-noecho")) {
 		noecho = true;
 		continue;
