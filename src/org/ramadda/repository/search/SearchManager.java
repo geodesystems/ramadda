@@ -301,7 +301,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		for(String tuple: Utils.split(toks.get(2),";",true,true)) {
 		    row.addAll(Utils.split(tuple,"|",true,true));
 		}
-		//		System.out.println("word:" + word +" row:" + row);
 		tmp.put(word,row);
 	    }
 
@@ -396,10 +395,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		TopDocs       hits     = searcher.search(query, 1);
 		ScoreDoc[]    docs     = hits.scoreDocs;
 		if(docs.length>0) {
-		    //		    System.err.println("skipping:" + id);
 		    continue;
 		} else {
-		    //		    System.err.println("not skipping:"  + id);
 		}
 	    }
 	    ids.add(id);
@@ -407,8 +404,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 
 	getDatabaseManager().closeAndReleaseConnection(statement);
-
-	//	System.err.println("ids:" + ids.size());
 
 	if(all) {
 	    indexWriter.deleteAll();
@@ -434,13 +429,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	long t1 = System.currentTimeMillis();
 	getRepository().getJobManager().invokeAllAndWait(callables);
 	long t2 = System.currentTimeMillis();
-	//	System.err.println("time:" + (t2-t1));
 	if(ok[0]) {
 	    System.err.println("committing");
 	    commit(indexWriter);
 	}
-	//	System.err.println("closing");
-	//        indexWriter.close();
 	getActionManager().actionComplete(actionId);
     }
 
