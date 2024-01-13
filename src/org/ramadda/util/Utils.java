@@ -5362,6 +5362,38 @@ public class Utils extends IO {
 	return s;
     }
 
+    public static String makeCacheKey(Object...list) {
+	StringBuilder sb = new StringBuilder();
+	for(Object o:list) {
+	    if(o!=null) {
+		String s = o.toString();
+		sb.append(s);
+	    } else {
+		sb.append("null");
+	    }
+	    sb.append("_"); 
+	}
+	return sb.toString();
+    }
+
+
+    public static List<String> clip(List<String> list) {
+	return clip(list,-1, 8,"...");
+    }
+
+    public static List<String> clip(List<String> list, int listLength,
+				    int length,String suffix) {
+	if(list==null) return null;
+	List<String> result=new ArrayList<String>();
+	for(int i=0;i<list.size();i++) {
+	    if(listLength>=0 && i>=listLength) {
+		break;
+	    }
+	    result.add(clip(list.get(i),length,suffix));
+	}
+	return result;
+    }    
+
 
     public static String X(String c) {
 	if(c==null) return c;
