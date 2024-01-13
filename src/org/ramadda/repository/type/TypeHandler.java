@@ -2706,7 +2706,8 @@ public class TypeHandler extends RepositoryManager {
 	}
 
 
-        Entry parent = getEntryManager().findGroup(null, parentId);	
+	
+        Entry parent = getEntryManager().findGroup(getRepository().getAdminRequest(), parentId);	
 	entry.setParentEntry(parent);
         if ( !abbreviated) {
             initializeEntryFromDatabase(entry);
