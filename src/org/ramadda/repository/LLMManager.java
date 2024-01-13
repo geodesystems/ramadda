@@ -5,6 +5,7 @@
 
 
 package org.ramadda.repository;
+import org.ramadda.repository.job.JobManager;
 import org.ramadda.repository.admin.*;
 import org.ramadda.repository.metadata.MetadataManager;
 
@@ -27,6 +28,8 @@ import java.net.URL;
 
 import org.json.*;
 
+import java.util.concurrent.*;
+
 /**
  * Handles LLM requests
  *
@@ -42,6 +45,9 @@ public class LLMManager extends  AdminHandlerImpl {
     public static final int TOKEN_LIMIT_GEMINI = 4000;
     public static final int TOKEN_LIMIT_GPT3 = 2000;    
     public static final int TOKEN_LIMIT_GPT4 = 4000;
+
+    private static final Object MUTEX_GEMINI = new Object();
+    private static final Object MUTEX_OPENAI = new Object();    
 
     public static final String MODEL_WHISPER_1 = "whisper-1";
     public static final String MODEL_GPT_3_5="gpt-3.5-turbo-1106";
@@ -68,8 +74,17 @@ public class LLMManager extends  AdminHandlerImpl {
     public static final String PROMPT_KEYWORDS= "Extract keywords from the following text. The return format should be comma delimited keywords. Limit your response to no more than 10 keywords:";
     public static final String PROMPT_SUMMARY = "Summarize the following text. \nAssume the reader has a college education. \nLimit the summary to no more than 4 sentences.";
 
+    private JobManager openAIJobManager;
+    private JobManager geminiJobManager;    
+
     public LLMManager(Repository repository) {
         super(repository);
+	openAIJobManager = new JobManager(repository,
+					  repository.getProperty("ramadda.llm.openai.threads",2));
+	openAIJobManager.setDebug(true);
+	geminiJobManager = new JobManager(repository,
+					  repository.getProperty("ramadda.llm.gemini.threads",2));
+	geminiJobManager.setDebug(true);	
     }
 
     public void debug(String msg) {
@@ -79,6 +94,7 @@ public class LLMManager extends  AdminHandlerImpl {
     public String getId() {
         return "llmmanager";
     }
+
 
     private List<String> openAIKeys;
     private int openAIKeyIdx=0;
@@ -156,7 +172,7 @@ public class LLMManager extends  AdminHandlerImpl {
 
 
 
-    public Result processLLM(Request request)  throws Exception {
+    public Result processLLM(Request request)  throws Throwable {
 	if(request.isAnonymous()) {
 	    String json = JsonUtil.map(Utils.makeList("error", JsonUtil.quote("You must be logged in to use the rewrite service")));
 	    return new Result("", new StringBuilder(json), "text/json");
@@ -180,8 +196,26 @@ public class LLMManager extends  AdminHandlerImpl {
 
 
 
-    private static final Object MUTEX_GEMINI = new Object();
-    private static final Object MUTEX_OPENAI = new Object();    
+    private IO.Result call(JobManager jobManager, final URL url, final String body, final String...args) 
+	throws Exception {
+	final IO.Result[] theResult={null};
+	Callable<Boolean> callable = new Callable<Boolean>() {
+		public Boolean call() {
+		    try {
+			theResult[0] = IO.getHttpResult(IO.HTTP_METHOD_POST,url,body,args);
+		    } catch (Exception exc) {
+			throw new RuntimeException(exc);
+		    }
+		    return Boolean.TRUE;
+		}};
+	try {
+	    jobManager.invokeAndWait(callable);
+	} catch(Throwable thr) {
+	    throw new RuntimeException(thr);
+	}
+	return theResult[0];
+    }
+
 
     public IO.Result  callGemini(String model, String gptText) throws Exception {
 	synchronized(MUTEX_GEMINI) {
@@ -194,50 +228,51 @@ public class LLMManager extends  AdminHandlerImpl {
 	    String contents = JU.list(JU.map("parts",JU.list(JU.map("text",JU.quote(gptText)))));
 	    String body = JU.map("contents",contents);
 	    //		System.err.println(body);
-	    return  IO.getHttpResult(IO.HTTP_METHOD_POST
-				     , new URL(URL_GEMINI+"?key=" + geminiKey), body,
-				     "Content-Type","application/json");
+	    return call(geminiJobManager,
+			new URL(URL_GEMINI+"?key=" + geminiKey), body,
+			"Content-Type","application/json");
 	}
     }	
 
-    public IO.Result  callOpenai(String model, int maxReturnTokens,String gptText,String[]extraArgs) throws Exception {
-	synchronized(MUTEX_OPENAI) {
-	    if(!isOpenAIEnabled()) return null;
-	    boolean useGpt4 = model.equals(MODEL_GPT_4);
-	    if(useGpt4 && !isGPT4Enabled()) return null;
-	    List<String> args =  Utils.makeList("temperature", "0",
-						"max_tokens" ,""+ maxReturnTokens,
-						"top_p", "1.0");
-	    for(int i=0;i<extraArgs.length;i+=2) {
-		args.add(extraArgs[i]);
-		args.add(extraArgs[i+1]);
-	    }
-	    Utils.add(args,"model",JsonUtil.quote(model));
-	    Utils.add(args,"messages",JsonUtil.list(JsonUtil.map(
-								 "role",JsonUtil.quote("user"),
-								 "content",JsonUtil.quote(gptText))));
-	    String body = JsonUtil.map(args);
-	    String openAIKey = getOpenAIKey();
-	    return  IO.getHttpResult(IO.HTTP_METHOD_POST
-				     , new URL(URL_OPENAI_COMPLETION), body,
-				     "Content-Type","application/json",
-				     "Authorization","Bearer " +openAIKey);
+
+
+    private  IO.Result  callOpenAI(Request request, String model, int maxReturnTokens,String gptText,String[]extraArgs)
+	throws Throwable {
+	if(!isOpenAIEnabled()) return null;
+	//	synchronized(MUTEX_OPENAI) {
+	boolean useGpt4 = model.equals(MODEL_GPT_4);
+	if(useGpt4 && !isGPT4Enabled()) return null;
+	List<String> args =  Utils.makeList("temperature", "0",
+					    "max_tokens" ,""+ maxReturnTokens,
+					    "top_p", "1.0");
+	for(int i=0;i<extraArgs.length;i+=2) {
+	    args.add(extraArgs[i]);
+	    args.add(extraArgs[i+1]);
 	}
+	Utils.add(args,"model",JsonUtil.quote(model));
+	Utils.add(args,"messages",JsonUtil.list(JsonUtil.map(
+							     "role",JsonUtil.quote("user"),
+							     "content",JsonUtil.quote(gptText))));
+	String body = JsonUtil.map(args);
+	String openAIKey = getOpenAIKey();
+	return call(openAIJobManager,new URL(URL_OPENAI_COMPLETION), body,
+		    "Content-Type","application/json",
+		    "Authorization","Bearer " +openAIKey);
     }
+
 
 
 
     public String callLLM(Request request,
 			  String prompt1,
 			  String prompt2,
-			  String corpus,
+			  String text,
 			  int maxReturnTokens,
 			  boolean tokenize,
 			  int[]initTokenLimit,
 			  int callCnt,
 			  String...extraArgs)
-	throws Exception {
-	String text = corpus.toString();
+	throws Throwable {
 	String model = request.getString(ARG_MODEL,MODEL_GPT_3_5);
 	String openAIKey = getOpenAIKey();
 	String geminiKey = getRepository().getProperty(PROP_GEMINI_KEY);	
@@ -284,29 +319,35 @@ public class LLMManager extends  AdminHandlerImpl {
 		    gptCorpus.append(tok);
 		    gptCorpus.append(" ");
 		}
-		if(debug) System.err.println("\ttokenizing init length=" + text.length()+
-					     " max return tokens:" + maxReturnTokens+
-					     " #toks=" + i +
-					     " extra cnt=" + extraCnt);
+		/*
+		if(debug) getLogManager().logSpecial("tokenizing init length:" + text.length()+
+						     " max return tokens:" + maxReturnTokens+
+						     " #toks:" + i);
+		*/
 
 	    }
 	    gptCorpus.append("\n\n");
 	    gptCorpus.append(prompt2);
 	    String gptText =  gptCorpus.toString();
-
-	    if(debug) System.err.println("\tmodel:" + model +
-					 " text length:" + gptText.length() +
-					 " token limit:" + initTokenLimit[0]);
+	    gptCorpus=null;
+	    if(debug) getLogManager().logSpecial("model:" + model +
+						 " init length:" + text.length() +
+						 " text length:" + gptText.length() +
+						 " max return tokens:" + maxReturnTokens +
+						 " token limit:" + initTokenLimit[0]);
 
 	    IO.Result  result=null; 
 	    if(model.equals(MODEL_GEMINI)) {
-		if(debug)System.err.println("LLMManager:calling Gemini");
+		long t1 = System.currentTimeMillis();
 		result = callGemini(model,gptText);
-		if(debug)System.err.println("LLMManager:done calling Gemini");
+		long t2 = System.currentTimeMillis();
+		if(debug)getLogManager().logSpecial("LLMManager:done calling Gemini:" + (t2-t1)+"ms");
 	    } else if(Utils.equalsOne(model,MODEL_GPT_4,MODEL_GPT_3_5)) {
-		if(debug)System.err.println("LLMManager:calling OpenAI");
-		result = callOpenai(model,maxReturnTokens,gptText,extraArgs);
-		if(debug)System.err.println("LLMManager:done calling OpenAI");
+		long t1 = System.currentTimeMillis();
+		result = callOpenAI(request,model,maxReturnTokens,gptText,extraArgs);
+		//		System.err.println(result.getResult());
+		long t2 = System.currentTimeMillis();
+		if(debug)getLogManager().logSpecial("LLMManager:done calling OpenAI:" + (t2-t1)+"ms");
 	    }
 	    if(result==null) {
 		if(debug)
@@ -472,98 +513,12 @@ public class LLMManager extends  AdminHandlerImpl {
     }
 
 
-    public String extractTitle(Request request, String corpus,int[]tokenLimit) throws Exception {
-	if(debug) System.err.println("LLMManager: extractTitle");
-	String title = callLLM(request, PROMPT_TITLE,"",
-			       corpus,200,true,tokenLimit,0);
-	return title;
-    }
-
-    public List<String>  getKeywords(Request request, Entry entry, String llmCorpus, int[]tokenLimit)
-	throws Exception {
-	String path = entry.getResource().getPath();
-	if(path==null) return null;
-	if(!getSearchManager().isDocument(path)) {
-	    //	    System.err.println("not doc:" + path);
-	    return null;
-	}
-
-	List<String> keywords = new ArrayList<String>();
-	if(LLMManager.debug) System.err.println("LLMManager.getKeywords");
-	String result = callLLM(request,
-				PROMPT_KEYWORDS,
-				"Keywords:",
-				llmCorpus,
-				60,true,tokenLimit,0);
-	if(result!=null) {
-	    String r = result.replace("\n",",");
-	    System.err.println("keywords:" + r);
-	    for(String tok:Utils.split(r,",",true,true)) {
-		if(keywords.size()>15) break;
-		tok = tok.replaceAll("^-","").trim();
-		if(!keywords.contains(tok)) {
-		    keywords.add(tok);
-		}
-	    }
-	}
-							  
-	if(keywords.size()==0) {
-	    llmCorpus = Utils.removeNonAscii(llmCorpus," ").replaceAll("[,-\\.\n]+"," ").replaceAll("  +"," ");
-	    Hashtable<String,WordCount> cnt = new Hashtable<String,WordCount>();
-	    List<WordCount> words = new ArrayList<WordCount>();
-	    HashSet stopWords = Utils.getStopWords();
-	    for(String tok: Utils.split(llmCorpus," ",true,true)) {
-		tok = tok.toLowerCase();
-		if(tok.length()<=2) continue;
-		if(stopWords.contains(tok)) continue;
-		//		System.out.println("TOK:" + tok);
-		WordCount word = cnt.get(tok);
-		if(word==null) {
-		    word = new WordCount(tok);
-		    words.add(word);
-		    cnt.put(tok,word);
-		}
-		word.count++;
-	    }
-	    Collections.sort(words, new Comparator() {
-		    public int compare(Object o1, Object o2) {
-			WordCount w1 = (WordCount) o1;
-			WordCount w2 = (WordCount) o2;			
-			if(w2.count==w1.count) {
-			    return w2.word.length()-w1.word.length();
-			}
-			return w2.count - w1.count;
-		    }
-		});
-
-	    for(int i=0;i<words.size()&& i<3;i++) {
-		WordCount word = words.get(i);
-		if(word.count>2) {
-		    keywords.add(word.word);
-		}
-	    }
-	}
-	return keywords;
-    }	
-
-
-    private static class WordCount {
-	int count=0;
-	String word;
-	WordCount(String word) {
-	    this.word = word;
-	}
-	public String toString() {
-	    return word+" #:" + count +" ";
-	}
-    }
-
 
 
 
     public static final String PROMPT_JSON = "Summarize the below text, extracting out the title, a summary to be no longer than four sentences, a list of keywords (limited to no more than 6 keywords), and if you can a list of authors. Your result must be valid JSON following the form:\n{\"title\":<the title>,\"authors\":<the authors>,\"summary\":<the summary>,\"keywords\":<the keywords>\n}\n";
 
-    public boolean applyEntryExtract(Request request, Entry entry, String llmCorpus) throws Exception {
+    public boolean applyEntryExtract(Request request, Entry entry, String llmCorpus) throws Throwable {
 	boolean entryChanged = false;
 	int[]tokenLimit = new int[]{-1};
 
@@ -714,6 +669,92 @@ public class LLMManager extends  AdminHandlerImpl {
 	return entryChanged;
     }
 
+
+    public String extractTitle(Request request, String corpus,int[]tokenLimit) throws Throwable {
+	if(debug) System.err.println("LLMManager: extractTitle");
+	String title = callLLM(request, PROMPT_TITLE,"",
+			       corpus,200,true,tokenLimit,0);
+	return title;
+    }
+
+    public List<String>  getKeywords(Request request, Entry entry, String llmCorpus, int[]tokenLimit)
+	throws Throwable {
+	String path = entry.getResource().getPath();
+	if(path==null) return null;
+	if(!getSearchManager().isDocument(path)) {
+	    //	    System.err.println("not doc:" + path);
+	    return null;
+	}
+
+	List<String> keywords = new ArrayList<String>();
+	if(LLMManager.debug) System.err.println("LLMManager.getKeywords");
+	String result = callLLM(request,
+				PROMPT_KEYWORDS,
+				"Keywords:",
+				llmCorpus,
+				60,true,tokenLimit,0);
+	if(result!=null) {
+	    String r = result.replace("\n",",");
+	    System.err.println("keywords:" + r);
+	    for(String tok:Utils.split(r,",",true,true)) {
+		if(keywords.size()>15) break;
+		tok = tok.replaceAll("^-","").trim();
+		if(!keywords.contains(tok)) {
+		    keywords.add(tok);
+		}
+	    }
+	}
+							  
+	if(keywords.size()==0) {
+	    llmCorpus = Utils.removeNonAscii(llmCorpus," ").replaceAll("[,-\\.\n]+"," ").replaceAll("  +"," ");
+	    Hashtable<String,WordCount> cnt = new Hashtable<String,WordCount>();
+	    List<WordCount> words = new ArrayList<WordCount>();
+	    HashSet stopWords = Utils.getStopWords();
+	    for(String tok: Utils.split(llmCorpus," ",true,true)) {
+		tok = tok.toLowerCase();
+		if(tok.length()<=2) continue;
+		if(stopWords.contains(tok)) continue;
+		//		System.out.println("TOK:" + tok);
+		WordCount word = cnt.get(tok);
+		if(word==null) {
+		    word = new WordCount(tok);
+		    words.add(word);
+		    cnt.put(tok,word);
+		}
+		word.count++;
+	    }
+	    Collections.sort(words, new Comparator() {
+		    public int compare(Object o1, Object o2) {
+			WordCount w1 = (WordCount) o1;
+			WordCount w2 = (WordCount) o2;			
+			if(w2.count==w1.count) {
+			    return w2.word.length()-w1.word.length();
+			}
+			return w2.count - w1.count;
+		    }
+		});
+
+	    for(int i=0;i<words.size()&& i<3;i++) {
+		WordCount word = words.get(i);
+		if(word.count>2) {
+		    keywords.add(word.word);
+		}
+	    }
+	}
+	return keywords;
+    }	
+
+
+    private static class WordCount {
+	int count=0;
+	String word;
+	WordCount(String word) {
+	    this.word = word;
+	}
+	public String toString() {
+	    return word+" #:" + count +" ";
+	}
+    }
 
 }
 
