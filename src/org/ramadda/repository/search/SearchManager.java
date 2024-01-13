@@ -993,8 +993,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	//        StandardAnalyzer analyzer =       new StandardAnalyzer();
 	//	QueryBuilder builder = new QueryBuilder(analyzer);
 
-	String text = request.getString(ARG_TEXT,"");
-	//	System.err.println("process search:" + text);
+	String text = request.getUnsafeString(ARG_TEXT,"");
 	String searchField = null;
 	for(String field: SEARCH_FIELDS) {
 	    if(text.indexOf(field+":")>=0) {
@@ -1102,7 +1101,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	    queries.add(LongPoint.newRangeQuery(FIELD_DATE_START, t1,t2));
 
-	    String dateSearchMode = request.getString(arg.getMode(), DATE_SEARCHMODE_DEFAULT);
+	    String dateSearchMode = request.getUnsafeString(arg.getMode(), DATE_SEARCHMODE_DEFAULT);
 	    queries.add(LongPoint.newRangeQuery(FIELD_DATE_START, t1,t2));
 	    queries.add(LongPoint.newRangeQuery(FIELD_DATE_END, t1,t2));	    
 	    if (dateSearchMode.equals(DATE_SEARCHMODE_OVERLAPS)) {
@@ -1211,7 +1210,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	if(request.defined(ARG_TYPE)) {
 	    List<Query> typeQueries = new ArrayList<Query>();
-	    for(String type: Utils.split(request.getString(ARG_TYPE),",",true,true)) {
+	    for(String type: Utils.split(request.getUnsafeString(ARG_TYPE),",",true,true)) {
 		TypeHandler typeHandler = getRepository().getTypeHandler(type);
 		if(typeHandler==null) continue;
 		//		queries.add(new TermQuery(new Term(FIELD_TYPE, typeHandler.getType())));
@@ -1228,7 +1227,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    Query term=null;
 		    String field = getPropertyField(typeHandler,column.getName());
 		    if(column.isEnumeration()) {
-			String v = request.getString(searchArg,null);
+			String v = request.getUnsafeString(searchArg,null);
 			if(!Utils.stringDefined(v)||v.equals(TypeHandler.ALL)) continue;
 			if(v.equals("--blank--")) v = "";
 			term = new TermQuery(new Term(field, v));
@@ -1317,7 +1316,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 							       + expr);
 			}
 		    } else {
-			String v = request.getString(searchArg,null);
+			String v = request.getUnsafeString(searchArg,null);
 			if(!Utils.stringDefined(v)||v.equals(TypeHandler.ALL)) continue;
 			term = new WildcardQuery(new Term(field, v));
 		    }

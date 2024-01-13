@@ -355,7 +355,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                         for (String columnName : field.fields) {
                             Column column = typeHandler.getColumn(columnName);
                             if (column != null) {
-                                column.addTextSearch(request.getString(id),
+                                column.addTextSearch(request.getUnsafeString(id),
                                         extra, false);
                             }
                         }
