@@ -19,6 +19,7 @@ import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
@@ -76,6 +77,8 @@ public class LLMManager extends  AdminHandlerImpl {
 
     private JobManager openAIJobManager;
     private JobManager geminiJobManager;    
+
+    private Object NEXT_MUTEX= new Object();
 
     public LLMManager(Repository repository) {
         super(repository);
@@ -183,7 +186,7 @@ public class LLMManager extends  AdminHandlerImpl {
 						"Rewrite the following text as college level material:");
 	String promptSuffix = request.getString("promptsuffix", "");
 	//	text = callGpt("Rewrite the following text:","",new StringBuilder(text),1000,false);		    
-	text = callLLM(request, promptPrefix,promptSuffix,text,1000,false,null,0);		    
+	text = callLLM(request, promptPrefix,promptSuffix,text,1000,false,null);		    
 	String json = JsonUtil.map(Utils.makeList("result", JsonUtil.quote(text)));
 	return new Result("", new StringBuilder(json), "text/json");
 	
@@ -255,9 +258,20 @@ public class LLMManager extends  AdminHandlerImpl {
 							     "content",JsonUtil.quote(gptText))));
 	String body = JsonUtil.map(args);
 	String openAIKey = getOpenAIKey();
-	return call(openAIJobManager,new URL(URL_OPENAI_COMPLETION), body,
+	IO.Result result=call(openAIJobManager,new URL(URL_OPENAI_COMPLETION), body,
 		    "Content-Type","application/json",
 		    "Authorization","Bearer " +openAIKey);
+	if(result!=null) {
+	    String remTokens = result.getHeader("x-ratelimit-remaining-tokens");
+	    String remRequests = result.getHeader("x-ratelimit-remaining-requests");	    
+	    String resetTokens = result.getHeader("x-ratelimit-reset-tokens");
+	    String resetRequests = result.getHeader("x-ratelimit-reset-requests");	    
+	    int tokens = remTokens!=null?Integer.parseInt(remTokens):1000000;
+	    int requests = remRequests!=null?Integer.parseInt(remRequests):1000000;
+	    //	    System.err.println("TOKENS:" + tokens +" REQUESTS:" + requests +" reset tokens:" + resetTokens +" reset requests:" + resetRequests);
+	}
+
+	return result;
     }
 
 
@@ -270,7 +284,6 @@ public class LLMManager extends  AdminHandlerImpl {
 			  int maxReturnTokens,
 			  boolean tokenize,
 			  int[]initTokenLimit,
-			  int callCnt,
 			  String...extraArgs)
 	throws Throwable {
 	String model = request.getString(ARG_MODEL,MODEL_GPT_3_5);
@@ -293,7 +306,7 @@ public class LLMManager extends  AdminHandlerImpl {
 		initTokenLimit[0] = TOKEN_LIMIT_GPT3;
 	} 
 
-
+	int callCnt = 0;
 	int tokenLimit = initTokenLimit[0];
 	while(tokenLimit>=500) {
 	    initTokenLimit[0] = tokenLimit;
@@ -319,18 +332,12 @@ public class LLMManager extends  AdminHandlerImpl {
 		    gptCorpus.append(tok);
 		    gptCorpus.append(" ");
 		}
-		/*
-		if(debug) getLogManager().logSpecial("tokenizing init length:" + text.length()+
-						     " max return tokens:" + maxReturnTokens+
-						     " #toks:" + i);
-		*/
-
 	    }
 	    gptCorpus.append("\n\n");
 	    gptCorpus.append(prompt2);
 	    String gptText =  gptCorpus.toString();
 	    gptCorpus=null;
-	    if(debug) getLogManager().logSpecial("model:" + model +
+	    if(debug) getLogManager().logSpecial("LLMManager: model:" + model +
 						 " init length:" + text.length() +
 						 " text length:" + gptText.length() +
 						 " max return tokens:" + maxReturnTokens +
@@ -341,39 +348,38 @@ public class LLMManager extends  AdminHandlerImpl {
 		long t1 = System.currentTimeMillis();
 		result = callGemini(model,gptText);
 		long t2 = System.currentTimeMillis();
-		if(debug)getLogManager().logSpecial("LLMManager:done calling Gemini:" + (t2-t1)+"ms");
+		//		if(debug)getLogManager().logSpecial("LLMManager:done calling Gemini:" + (t2-t1)+"ms");
 	    } else if(Utils.equalsOne(model,MODEL_GPT_4,MODEL_GPT_3_5)) {
 		long t1 = System.currentTimeMillis();
 		result = callOpenAI(request,model,maxReturnTokens,gptText,extraArgs);
 		//		System.err.println(result.getResult());
 		long t2 = System.currentTimeMillis();
-		if(debug)getLogManager().logSpecial("LLMManager:done calling OpenAI:" + (t2-t1)+"ms");
+		//		if(debug)getLogManager().logSpecial("LLMManager:done calling OpenAI:" + (t2-t1)+"ms");
 	    }
 	    if(result==null) {
 		if(debug)
-		    System.err.println("\tno result for model:" + model);
+		    getLogManager().logSpecial("\tno result for model:" + model);
 		return null;
 	    }
 
-	    //	    System.err.println("result:" + Utils.clip(result.getResult().replaceAll("  +"," "),500,"..."));
 	    if(result.getError()) {
 		try {
 		    JSONObject json = new JSONObject(result.getResult());
 		    JSONObject error = json.optJSONObject("error");
 		    if(error == null) {
-			System.err.println("Error calling OpenAI. No error in result:" + result.getResult());
+			System.err.println("Error calling LLM. No error in result:" + result.getResult());
 			return null;
 		    }
 
 		    String code = error.optString("code",null);
 		    if(code == null) {
-			System.err.println("\tLLMManager Error: No code in result:" + result.getResult());
+			System.err.println("LLMManager Error: No code in result:" + result.getResult());
 			return null;
 		    }
 
 		    if(code.equals("rate_limit_exceeded")) {
 			//https://platform.openai.com/docs/guides/rate-limits/usage-tiers?context=tier-two
-			long ms= 1000*callCnt*60;
+			long ms= 1000*60;
 			String delay = StringUtil.findPattern(result.getResult(),"Please try again in ([\\d\\.]+)s");
 			if(delay!=null) {
 			    try {ms = (int)(1000*1.5*Double.parseDouble(delay));} catch(Exception ignore){}
@@ -383,12 +389,12 @@ public class LLMManager extends  AdminHandlerImpl {
 				try {ms = (int)(1.5*Double.parseDouble(delay));} catch(Exception ignore){}
 			    }
 			}
-			
+			ms = (long)(ms*Math.pow(2, callCnt));
 			callCnt++;
-			if(callCnt>3) return null;
-			System.err.println("\tLLMManager: rate limit exceeded."+
-					   " sleeping for:" +  ms+" ms"  +
-					   " message:" +error.optString("message",""));
+			if(callCnt>10) return null;
+			getLogManager().logSpecial("LLMManager: rate limit exceeded."+
+						   " call cnt:"+ callCnt +
+						   " sleeping for:" +  ms+" ms");
 
 			Misc.sleep(ms);
 			tokenLimit-=1000;
@@ -396,7 +402,7 @@ public class LLMManager extends  AdminHandlerImpl {
 		    }
 
 		    if(!code.equals("context_length_exceeded")) {
-			System.err.println("\tLLMManager: Error calling OpenAI. Unknown error code:" + result.getResult());
+			System.err.println("\tLLMManager: Error calling LLM. Unknown error code:" + result.getResult());
 			return null;
 		    }
 		    tokenLimit-=1000;
@@ -413,10 +419,10 @@ public class LLMManager extends  AdminHandlerImpl {
 	    if(debug)	{
 		String tokens = JsonUtil.readValue(json,"usage.prompt_tokens",null);
 		if(tokens!=null) {
-		    getLogManager().logSpecial("\tOpenAI: prompt tokens:" + tokens+
-					       " completion tokens:" + JsonUtil.readValue(json,"usage.completion_tokens","NA"));
+		    //		    getLogManager().logSpecial("OpenAI: prompt tokens:" + tokens+
+		    //					       " completion tokens:" + JsonUtil.readValue(json,"usage.completion_tokens","NA"));
 		} else {
-		    //		    System.err.println("\tLLMManager: json: "  +Utils.clip(result.getResult().replace("\n"," ").replaceAll("  +"," "),200,"..."));
+		    //		    System.err.println("LLMManager: json: "  +Utils.clip(result.getResult().replace("\n"," ").replaceAll("  +"," "),200,"..."));
 		}
 	    }
 	    //Google PALM
@@ -518,7 +524,26 @@ public class LLMManager extends  AdminHandlerImpl {
 
     public static final String PROMPT_JSON = "Summarize the below text, extracting out the title, a summary to be no longer than four sentences, a list of keywords (limited to no more than 6 keywords), and if you can a list of authors. Your result must be valid JSON following the form:\n{\"title\":<the title>,\"authors\":<the authors>,\"summary\":<the summary>,\"keywords\":<the keywords>\n}\n";
 
-    public boolean applyEntryExtract(Request request, Entry entry, String llmCorpus) throws Throwable {
+    public boolean applyEntryExtract(final Request request, final Entry entry, final String llmCorpus) throws Throwable {
+	if(true) return applyEntryExtractInner(request, entry,llmCorpus);
+	//for testing:
+	for(int i=0;i<40;i++) {
+	    Misc.run(new Runnable(){
+		    public void run() {
+			try {
+			    applyEntryExtractInner(request, entry,llmCorpus);
+			}catch(Throwable thr) {
+			    System.err.println("ERROR:" + thr);
+			}
+		    }
+		});
+	}
+	return true;
+    }
+
+    public boolean applyEntryExtractInner(final Request request, final Entry entry, final String llmCorpus) throws Throwable {	
+
+
 	boolean entryChanged = false;
 	int[]tokenLimit = new int[]{-1};
 
@@ -548,201 +573,69 @@ public class LLMManager extends  AdminHandlerImpl {
 	}
 	jsonPrompt +="\nThe result JSON must adhere to the following schema: \n{" + Utils.join(schema,",")+"}\n";
 	//	System.err.println("Prompt:" + jsonPrompt);
-	String json = callLLM(request, jsonPrompt+"\nThe text:\n","",llmCorpus,200,true,tokenLimit,0);
-	if(stringDefined(json)) {
-	    json = json.replaceAll("^```json","").replaceAll("```$","").trim();
-	    //	    System.err.println("JSON:" + json);
-	    try {
-		JSONObject obj = new JSONObject(json);
-		if(extractTitle) {
-		    String title = obj.optString("title",null);
-		    title = title.trim().replaceAll("\"","").replaceAll("\"","");
-		    entry.setName(title);
-		}
-		if(extractSummary) {
-		    String summary = obj.optString("summary",null);
-		    if(summary!=null) {
-			summary = Utils.stripTags(summary).trim().replaceAll("^:+","");
-			StringBuilder sb = new StringBuilder();
-			for(String line:Utils.split(summary,"\n",true,true)) {
-			    line = line.replaceAll("^-","");
-			    sb.append(line);
-			    sb.append("\n");
-			}
-			summary = "+toggleopen Summary\n+callout-info\n<snippet>\n" + sb+"\n</snippet>\n-callout-info\n-toggle\n";
-			entryChanged = true;
-			entry.setDescription(summary+"\n"+entry.getDescription());
-		    }
-		}
-		if(extractKeywords) {
-		    JSONArray array = obj.optJSONArray("keywords");
-		    //		    System.err.println("model:" +request.getString(ARG_MODEL,MODEL_GPT_3_5)+" keywords:" + array);
-		    if(array!=null) {
-			for (int i = 0; i < array.length(); i++) {
-			    if(i>=8) break;
-			    getMetadataManager().addKeyword(request, entry, array.getString(i));
-			}
-		    }
-		}
-		if(extractAuthors) {
-		    JSONArray array = obj.optJSONArray("authors");
-		    if(array!=null) {
-			for (int i = 0; i < array.length(); i++) {
-			    if(i>=10) break;
-			    getMetadataManager().addMetadata(request, entry,
-							     "metadata_author", MetadataManager.CHECK_UNIQUE_TRUE,
-							     array.getString(i));
-			}
-		    }
-		}
-		return true;
-	    } catch(Exception exc) {
-		System.err.println("LLMManager:Error parsing JSON:" + exc+" json:" + json);
-		exc.printStackTrace();
-	    }
+	String json = callLLM(request, jsonPrompt+"\nThe text:\n","",llmCorpus,200,true,tokenLimit);
+	if(!stringDefined(json)) {
+	    getLogManager().logSpecial("LLMManager:Failed to extract information for entry:" + entry.getName());
+	    return false;
 	}
 
-	if(extractKeywords) {
-	    List<String> keywords = getKeywords(request, entry, llmCorpus,tokenLimit);
-	    if(Utils.notEmpty(keywords)) {
-		int cnt = 0;
-		for(String word:keywords) {
-		    //Only do 6
-		    if(cnt++>6) break;
-		    word = word.replace("."," ").replaceAll("  +"," ");
-		    word = word.trim();
-		    if(word.length()<=3) continue;
-		    getMetadataManager().addKeyword(request, entry, word);
-		}
-		entryChanged = true;
-	    }
-	}
-
-	if(extractSummary) {
-	    if(debug) System.err.println("LLMManager: callLLM: summary");
-	    String prompt = PROMPT_SUMMARY;
-	    String summary = callLLM(request, prompt,"",llmCorpus,200,true,tokenLimit,0);
-	    if(stringDefined(summary)) {
-		summary = Utils.stripTags(summary).trim().replaceAll("^:+","");
-		StringBuilder sb = new StringBuilder();
-		for(String line:Utils.split(summary,"\n",true,true)) {
-		    line = line.replaceAll("^-","");
-		    sb.append(line);
-		    sb.append("\n");
-		}
-		summary = "+toggleopen Summary\n+callout-info\n<snippet>\n" + sb+"\n</snippet>\n-callout-info\n-toggle\n";
-		entryChanged = true;
-		entry.setDescription(summary+"\n"+entry.getDescription());
-	    }
-	}
-
-	if(extractTitle) {
-	    String title = extractTitle(request, llmCorpus,tokenLimit);
-	    if(stringDefined(title)) {
+	//	    getLogManager().logSpecial("LLMManager:success:" + entry.getName());
+	json = json.replaceAll("^```json","").replaceAll("```$","").trim();
+	//	    System.err.println("JSON:" + json);
+	try {
+	    JSONObject obj = new JSONObject(json);
+	    if(extractTitle) {
+		String title = obj.optString("title",null);
 		title = title.trim().replaceAll("\"","").replaceAll("\"","");
 		entry.setName(title);
-		entryChanged = true;
 	    }
-	}
-
-
-
-	if(extractAuthors) {
-	    if(LLMManager.debug) System.err.println("SearchManager: callLLM: authors");
-	    String authors = callLLM(request,
-				     "Extract the author's names and only the author's names from the first few pages in the following text and separate the names with a comma:","",
-				     Utils.clip(llmCorpus,1000,""),
-				     200,true,tokenLimit,0);		    
-	    if(LLMManager.debug) System.err.println("got authors:" + Utils.clip(authors,50,"..."));
-	    if(stringDefined(authors) && authors.indexOf("does not provide")<0) {
-		entryChanged = true;
-		for(String author:Utils.split(authors,",",true,true)) {
-		    //This gets rid of some false positives
-		    if(author.indexOf(" ")<0) continue;
-		    if(author.indexOf("No author")>=0) continue;
-		    getMetadataManager().addMetadata(request, entry,
-						     "metadata_author", MetadataManager.CHECK_UNIQUE_TRUE,author);
-		}
-	    }
-	}
-
-	return entryChanged;
-    }
-
-
-    public String extractTitle(Request request, String corpus,int[]tokenLimit) throws Throwable {
-	if(debug) System.err.println("LLMManager: extractTitle");
-	String title = callLLM(request, PROMPT_TITLE,"",
-			       corpus,200,true,tokenLimit,0);
-	return title;
-    }
-
-    public List<String>  getKeywords(Request request, Entry entry, String llmCorpus, int[]tokenLimit)
-	throws Throwable {
-	String path = entry.getResource().getPath();
-	if(path==null) return null;
-	if(!getSearchManager().isDocument(path)) {
-	    //	    System.err.println("not doc:" + path);
-	    return null;
-	}
-
-	List<String> keywords = new ArrayList<String>();
-	if(LLMManager.debug) System.err.println("LLMManager.getKeywords");
-	String result = callLLM(request,
-				PROMPT_KEYWORDS,
-				"Keywords:",
-				llmCorpus,
-				60,true,tokenLimit,0);
-	if(result!=null) {
-	    String r = result.replace("\n",",");
-	    System.err.println("keywords:" + r);
-	    for(String tok:Utils.split(r,",",true,true)) {
-		if(keywords.size()>15) break;
-		tok = tok.replaceAll("^-","").trim();
-		if(!keywords.contains(tok)) {
-		    keywords.add(tok);
-		}
-	    }
-	}
-							  
-	if(keywords.size()==0) {
-	    llmCorpus = Utils.removeNonAscii(llmCorpus," ").replaceAll("[,-\\.\n]+"," ").replaceAll("  +"," ");
-	    Hashtable<String,WordCount> cnt = new Hashtable<String,WordCount>();
-	    List<WordCount> words = new ArrayList<WordCount>();
-	    HashSet stopWords = Utils.getStopWords();
-	    for(String tok: Utils.split(llmCorpus," ",true,true)) {
-		tok = tok.toLowerCase();
-		if(tok.length()<=2) continue;
-		if(stopWords.contains(tok)) continue;
-		//		System.out.println("TOK:" + tok);
-		WordCount word = cnt.get(tok);
-		if(word==null) {
-		    word = new WordCount(tok);
-		    words.add(word);
-		    cnt.put(tok,word);
-		}
-		word.count++;
-	    }
-	    Collections.sort(words, new Comparator() {
-		    public int compare(Object o1, Object o2) {
-			WordCount w1 = (WordCount) o1;
-			WordCount w2 = (WordCount) o2;			
-			if(w2.count==w1.count) {
-			    return w2.word.length()-w1.word.length();
-			}
-			return w2.count - w1.count;
+	    if(extractSummary) {
+		String summary = obj.optString("summary",null);
+		if(summary!=null) {
+		    summary = Utils.stripTags(summary).trim().replaceAll("^:+","");
+		    StringBuilder sb = new StringBuilder();
+		    for(String line:Utils.split(summary,"\n",true,true)) {
+			line = line.replaceAll("^-","");
+			sb.append(line);
+			sb.append("\n");
 		    }
-		});
-
-	    for(int i=0;i<words.size()&& i<3;i++) {
-		WordCount word = words.get(i);
-		if(word.count>2) {
-		    keywords.add(word.word);
+		    summary = "+toggleopen Summary\n+callout-info\n<snippet>\n" + sb+"\n</snippet>\n-callout-info\n-toggle\n";
+		    entryChanged = true;
+		    entry.setDescription(summary+"\n"+entry.getDescription());
 		}
 	    }
+	    if(extractKeywords) {
+		JSONArray array = obj.optJSONArray("keywords");
+		//		    System.err.println("model:" +request.getString(ARG_MODEL,MODEL_GPT_3_5)+" keywords:" + array);
+		if(array!=null) {
+		    for (int i = 0; i < array.length(); i++) {
+			if(i>=8) break;
+			getMetadataManager().addKeyword(request, entry, array.getString(i));
+		    }
+		}
+	    }
+	    if(extractAuthors) {
+		JSONArray array = obj.optJSONArray("authors");
+		if(array!=null) {
+		    for (int i = 0; i < array.length(); i++) {
+			if(i>=10) break;
+			getMetadataManager().addMetadata(request, entry,
+							 "metadata_author", MetadataManager.CHECK_UNIQUE_TRUE,
+							 array.getString(i));
+		    }
+		}
+	    }
+	    return true;
+	} catch(Exception exc) {
+	    getLogManager().logSpecial("LLMManager:Error parsing JSON:" + exc+" json:" + json);
+	    exc.printStackTrace();
 	}
-	return keywords;
-    }	
+	return false;
+
+
+    }
+
+
 
 
     private static class WordCount {
