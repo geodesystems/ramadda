@@ -120,8 +120,6 @@ public class EntryManager extends RepositoryManager {
 
     public static boolean debugGetEntries = false;    
 
-    //In sql
-
     /** How many entries to we keep in the cache */
     public static final int ENTRY_CACHE_LIMIT = 2000;
 
@@ -129,10 +127,10 @@ public class EntryManager extends RepositoryManager {
     public static final int SYNTHENTRY_CACHE_LIMIT = 10000;
 
     /** _more_ */
-    public static final int ENTRY_CACHE_TTL_MINUTES = 60;
+    public static final int ENTRY_CACHE_TTL_MINUTES = 10;
 
     /** _more_ */
-    public static final int SYNTHENTRY_CACHE_TTL_MINUTES = 24 * 60;
+    public static final int SYNTHENTRY_CACHE_TTL_MINUTES =  60;
 
 
     /** _more_ */
@@ -163,11 +161,11 @@ public class EntryManager extends RepositoryManager {
     private TTLCache<String, Entry> entryCache;
 
     private TTLCache<String, Entry> aliasCache =
-	new TTLCache<String,Entry>(5*60*1000);
+	new TTLCache<String,Entry>(Utils.minutesToMillis(5));
 
     /** 5 minute cache  - 2 levels with entry being the primary level then orderby/etc being secondary */
     private TTLCache<String, Hashtable<String,List<String>>> childrenCache =
-	new TTLCache<String,Hashtable<String,List<String>>>(5*60*1000);    
+	new TTLCache<String,Hashtable<String,List<String>>>(Utils.minutesToMillis(5));    
 
 
     /** _more_ */
@@ -175,7 +173,7 @@ public class EntryManager extends RepositoryManager {
 
     //Keep the history around for 10 minutes
     private TTLCache<String,List<Entry.EntryHistory>> entryHistories =
-	new TTLCache<String,List<Entry.EntryHistory>>(10*60*1000);
+	new TTLCache<String,List<Entry.EntryHistory>>(Utils.minutesToMillis(10));
 
 
     private boolean httpCacheFile = true;
@@ -309,7 +307,7 @@ public class EntryManager extends RepositoryManager {
         }
 
         if (rootCache == null) {
-            rootCache = new TTLObject<Entry>(60 * 60 * 1000,"Entry Root" );
+            rootCache = new TTLObject<Entry>(Utils.minutesToMillis(60),"Entry Root" );
         }
         rootCache.put(topEntry);
 
@@ -550,8 +548,7 @@ public class EntryManager extends RepositoryManager {
             int cacheTimeMinutes =
                 getRepository().getProperty(PROP_CACHE_TTL,
                                             ENTRY_CACHE_TTL_MINUTES);
-            //Convert to milliseconds
-            entryCache = theCache = new EntryCache(cacheTimeMinutes * 60 * 1000, ENTRY_CACHE_LIMIT,"Entry Cache");
+            entryCache = theCache = new EntryCache(Utils.minutesToMillis(cacheTimeMinutes), ENTRY_CACHE_LIMIT,"Entry Cache");
         }
         return theCache;
     }
@@ -564,7 +561,7 @@ public class EntryManager extends RepositoryManager {
     private TTLCache<String, Entry> getSynthEntryCache() {
         TTLCache<String, Entry> theCache = synthEntryCache;
         if (theCache == null) {
-            synthEntryCache = theCache = new EntryCache(SYNTHENTRY_CACHE_TTL_MINUTES * 60 * 1000,SYNTHENTRY_CACHE_LIMIT,"Synthetic Entry Cache");
+            synthEntryCache = theCache = new EntryCache(Utils.minutesToMillis(SYNTHENTRY_CACHE_TTL_MINUTES),SYNTHENTRY_CACHE_LIMIT,"Synthetic Entry Cache");
         }
         return theCache;
     }
