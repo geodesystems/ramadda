@@ -7806,8 +7806,7 @@ public class EntryManager extends RepositoryManager {
 
 
     public Result processEntryTest(Request request) throws Exception{
-	if(true)
-	    return new Result("", MIME_TEXT);
+	if(true)   return new Result("", MIME_TEXT);
 	List<Entry> entries = new ArrayList<Entry>();
 	for(String id: Utils.split(request.getString("ids",""), ",",true,true)) {
 	    Entry entry = createEntryFromDatabase(id,false);
