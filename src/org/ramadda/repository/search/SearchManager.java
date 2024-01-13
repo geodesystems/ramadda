@@ -565,8 +565,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      *
      * @throws Exception _more_
      */
+    int rcnt=0;
     private void indexEntry(IndexWriter indexWriter, Entry entry, Request request, boolean isNew)
 	throws Exception {
+	//	System.err.println("reindex: " +(rcnt++));
         org.apache.lucene.document.Document doc =
             new org.apache.lucene.document.Document();
 	StringBuilder corpus = new StringBuilder();
@@ -979,12 +981,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      *
      * @throws Exception _more_
      */
+    int scnt=0;
     public void processLuceneSearch(Request request, List<Entry> entries)
 	throws Exception {
         StringBuffer sb = new StringBuffer();
 	//        StandardAnalyzer analyzer =       new StandardAnalyzer();
 	//	QueryBuilder builder = new QueryBuilder(analyzer);
 
+	//	System.err.println("search:" + (scnt++));
 	String text = request.getUnsafeString(ARG_TEXT,"");
 	String searchField = null;
 	for(String field: SEARCH_FIELDS) {
@@ -2690,6 +2694,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         if (theGroup == null) {
             theGroup = getEntryManager().getDummyGroup();
         }
+
+
+	if(request.get("docount",false)) {
+	    return new Result("count:" + children.size(), MIME_TEXT);
+	}
 
 
         Result result =
