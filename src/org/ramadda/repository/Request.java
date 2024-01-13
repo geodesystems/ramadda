@@ -1783,6 +1783,10 @@ public class Request implements Constants, Cloneable {
         return getString(key, "");
     }
 
+    public String getUnsafeString(String key) {
+        return getUnsafeString(key, "");
+    }    
+
 
     /**
      * _more_
