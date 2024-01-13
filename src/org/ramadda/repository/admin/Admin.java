@@ -2564,7 +2564,7 @@ public class Admin extends RepositoryManager {
         while ((results = iter.getNext()) != null) {
             cnt++;
             if ((cnt % 1000) == 0) {
-                System.err.println("cnt:" + cnt);
+                System.err.println("check missing cnt:" + cnt);
             }
             int    col = 1;
             String id  = results.getString(col++);
@@ -2627,7 +2627,7 @@ public class Admin extends RepositoryManager {
         while ((results = iter.getNext()) != null) {
             cnt++;
             if ((cnt % 1000) == 0) {
-                System.err.println("cnt:" + cnt);
+                System.err.println("check orphan cnt:" + cnt);
             }
             int    col = 1;
             String id  = results.getString(col++);
