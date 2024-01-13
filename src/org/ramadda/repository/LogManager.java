@@ -116,6 +116,11 @@ public class LogManager extends RepositoryManager {
         new LogManager.LogId("org.ramadda.repository.entry.activity");
 
     /** _more_ */
+    private static final LogManager.LogId REPOSITORY_SPECIAL_LOG_ID =
+        new LogManager.LogId("org.ramadda.repository.special");
+
+
+    /** _more_ */
     private Hashtable<String, MyLogger> loggers = new Hashtable<String,
                                                       MyLogger>();
 
@@ -277,6 +282,14 @@ public class LogManager extends RepositoryManager {
     public MyLogger getEntryActivityLogger() {
         return getLogger(REPOSITORY_ACTIVITY_LOG_ID);
     }
+
+
+    /**
+     *  @return _more_
+     */
+    public MyLogger getSpecialLogger() {
+        return getLogger(REPOSITORY_SPECIAL_LOG_ID);
+    }    
 
 
     /**
@@ -501,6 +514,18 @@ public class LogManager extends RepositoryManager {
         }
     }
 
+
+    public void logSpecial(String message)
+            throws Exception {
+        MyLogger logger = getSpecialLogger();
+        if (logger != null) {
+            logger.info(message);
+	    System.err.println(message);
+        } else {
+            System.err.println("special:" + message);
+        }
+    }
+    
 
     /**
      * _more_
