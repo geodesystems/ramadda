@@ -672,10 +672,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	    if(/*isNew && */request!=null) {
 		String llmCorpus = fileCorpus.toString();
-
+		fileCorpus = null;
 		boolean entryChanged = false;
 		if(isNew) {
-		    entryChanged |= getLLMManager().applyEntryExtract(request, entry, llmCorpus);
+		    try {
+			entryChanged |= getLLMManager().applyEntryExtract(request, entry, llmCorpus);
+		    }catch(Throwable thr) {
+			throw new RuntimeException(thr);
+		    }
 		}
 
 
@@ -1450,7 +1454,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         }
         try {
             indexEntries(entries, request, true);
-        } catch (Exception exc) {
+        } catch (Throwable exc) {
             logError("Error indexing entries", exc);
         }
     }
