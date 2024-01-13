@@ -162,7 +162,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
             }
 
         };
-        invokeAndWait(request, callable);
+        invokeAndWait(callable);
     }
 
 
@@ -224,7 +224,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                     ? new VisitInfo(visitInfo)
                     : null);
         }
-        invokeAndWait(request, makeCallables(recordEntries));
+        invokeAndWait(makeCallables(recordEntries));
         visitor.close(visitInfo);
     }
 
