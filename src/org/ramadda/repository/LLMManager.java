@@ -81,10 +81,10 @@ public class LLMManager extends  AdminHandlerImpl {
         super(repository);
 	openAIJobManager = new JobManager(repository,
 					  repository.getProperty("ramadda.llm.openai.threads",2));
-	openAIJobManager.setDebug(true);
+	//	openAIJobManager.setDebug(true);
 	geminiJobManager = new JobManager(repository,
 					  repository.getProperty("ramadda.llm.gemini.threads",2));
-	geminiJobManager.setDebug(true);	
+	//	geminiJobManager.setDebug(true);	
     }
 
     public void debug(String msg) {
@@ -304,7 +304,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	    } else {
 		text = Utils.removeNonAscii(text," ").replaceAll("[,-\\.\n]+"," ").replaceAll("  +"," ");
 		if(text.trim().length()==0) {
-		    if(debug) System.err.println("LLMManager.callGpt no text");
+		    if(debug) getLogManager().logSpecial("LLMManager.callGpt no text");
 		    return null;
 		}
 		List<String> toks = Utils.split(text," ",true,true);
@@ -413,8 +413,8 @@ public class LLMManager extends  AdminHandlerImpl {
 	    if(debug)	{
 		String tokens = JsonUtil.readValue(json,"usage.prompt_tokens",null);
 		if(tokens!=null) {
-		    //		    System.err.println("\tresult: prompt tokens:" + tokens+
-		    //				       " completion tokens:" + JsonUtil.readValue(json,"usage.completion_tokens","NA"));
+		    getLogManager().logSpecial("\tOpenAI: prompt tokens:" + tokens+
+					       " completion tokens:" + JsonUtil.readValue(json,"usage.completion_tokens","NA"));
 		} else {
 		    //		    System.err.println("\tLLMManager: json: "  +Utils.clip(result.getResult().replace("\n"," ").replaceAll("  +"," "),200,"..."));
 		}
