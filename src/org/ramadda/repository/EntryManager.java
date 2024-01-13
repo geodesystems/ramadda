@@ -165,8 +165,9 @@ public class EntryManager extends RepositoryManager {
     private TTLCache<String, Entry> aliasCache =
 	new TTLCache<String,Entry>(5*60*1000);
 
-    private TTLCache<String, List<String>> childrenCache =
-	new TTLCache<String,List<String>>(5*60*1000);    
+    /** 5 minute cache  - 2 levels with entry being the primary level then orderby/etc being secondary */
+    private TTLCache<String, Hashtable<String,List<String>>> childrenCache =
+	new TTLCache<String,Hashtable<String,List<String>>>(5*60*1000);    
 
 
     /** _more_ */
@@ -9575,48 +9576,58 @@ public class EntryManager extends RepositoryManager {
                               ? null
                               : select.getWhere());
 
-	boolean haveWhere = where!=null && where.size()>0;
-        List<String> ids   = null;
-	if(!haveWhere) {
+	boolean debug = false;
+	String debugName = request.getString("debug",null);
+	if(debugName!=null && group.getName().indexOf(debugName)>=0) debug = true;
+	boolean canCache = where==null || where.size()==0;
+	boolean addToCache = false;
+	String orderBy = getQueryOrderAndLimit(request, true, group, select);
+	boolean canDoSelectOffset = getDatabaseManager().canDoSelectOffset();
+	int         skipCnt     = request.get(ARG_SKIP, 0);
+	List<String> allIds=null;
+	String cacheKey=null;
+	Hashtable<String,List<String>> cache = null;
+	if(canCache) {
+	    //2 level cache
+	    cache = childrenCache.get(group.getId());
+	    if(cache==null) {
+		cache= new Hashtable<String,List<String>>();
+		childrenCache.put(group.getId(), cache);
+	    }
+	    cacheKey = Utils.makeCacheKey(group.getChangeDate(),orderBy);
+	    //	    if(debug)getLogManager().logSpecial("getChildIds: cacheKey:" + cacheKey);
 	    //Check the children cache when there is no clause
-	    ids   = childrenCache.get(group.getId());
-	    if(ids!=null) {
-		//Clone the list to keep it thread safe
-		return new ArrayList<String>(ids);
+	    allIds   = cache.get(cacheKey);
+	    if(allIds!=null && debug)
+		getLogManager().logSpecial("getChildIds:" + group.getName()+" from cache:" + Utils.clip(allIds,10,5,"..."));
+	}
+	if(allIds==null)  {
+	    where = where!=null?where = new ArrayList<Clause>(where):new ArrayList<Clause>();
+	    where.add(Clause.eq(Tables.ENTRIES.COL_PARENT_GROUP_ID,group.getId()));
+	    TypeHandler typeHandler = getRepository().getTypeHandler(request);
+	    Statement statement = typeHandler.select(request,
+						     Tables.ENTRIES.COL_ID, where, orderBy);
+	    SqlUtil.Iterator iter = getDatabaseManager().getIterator(statement);
+	    ResultSet        results;
+	    allIds   = new ArrayList<String>();
+	    while ((results = iter.getNext()) != null) {
+		allIds.add(results.getString(1));
+	    }
+	    if(cacheKey!=null && cache!=null) {
+		if(debug)
+		    getLogManager().logSpecial("getChildIds:" + group.getName() +" caching ids:" + Utils.clip(allIds,10,5,"..."));
+		cache.put(cacheKey, allIds);
+	    } else {
+		if(debug) getLogManager().logSpecial("getChildIds:" + group.getName() +" not caching:" + Utils.clip(allIds,10,5,"..."));
 	    }
 	}
-
-	ids   = new ArrayList<String>();
-        if (where != null) {
-            where = new ArrayList<Clause>(where);
-        } else {
-            where = new ArrayList<Clause>();
-        }
-        where.add(Clause.eq(Tables.ENTRIES.COL_PARENT_GROUP_ID,
-                            group.getId()));
-
-        String orderBy = getQueryOrderAndLimit(request, true, group, select);
-        TypeHandler typeHandler = getRepository().getTypeHandler(request);
-        int         skipCnt     = request.get(ARG_SKIP, 0);
-        Statement statement = typeHandler.select(request,
-						 Tables.ENTRIES.COL_ID, where, orderBy);
-        SqlUtil.Iterator iter = getDatabaseManager().getIterator(statement);
-        ResultSet        results;
-        boolean canDoSelectOffset = getDatabaseManager().canDoSelectOffset();
-
-        while ((results = iter.getNext()) != null) {
-            String id = results.getString(1);
+	List<String>  ids   = new ArrayList<String>();
+	for(String id: allIds) {
             if ( !canDoSelectOffset && (skipCnt-- > 0)) {
                 continue;
             }
             ids.add(id);
         }
-
-	if(!haveWhere) {
-	    //cache the results
-	    childrenCache.put(group.getId(), new ArrayList<String>(ids));
-	}
-
         return ids;
     }
 
