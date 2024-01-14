@@ -132,6 +132,8 @@ public class MetadataTypeBase extends RepositoryManager {
     List<MetadataElement> children = new ArrayList<MetadataElement>();
 
 
+    private Hashtable<String,MetadataElement> map;
+
     /** _more_ */
     MetadataHandler handler;
 
@@ -246,7 +248,6 @@ public class MetadataTypeBase extends RepositoryManager {
                                 Element parent)
             throws Exception {
         checkFileXml(request, templateType, entry, metadata, parent);
-
         String template = getTemplate(templateType);
         if ((template == null) || (template.length() == 0)) {
             return null;
@@ -268,6 +269,35 @@ public class MetadataTypeBase extends RepositoryManager {
         template = template.replace("${entry.changedate}",
                                     formatDate(entry.getChangeDate()));
 
+
+	StringBuilder sb = new StringBuilder();
+	for(Utils.Macro macro: Utils.splitMacros(template)) {
+	    if(macro.isText()) {
+		sb.append(macro.getText());
+		continue;
+	    } 
+	    MetadataElement element = getElement(macro.getId());
+	    if(element==null) {
+		System.err.println("Unknown metadata element id:" + macro.getId() +" in template:" + template);
+		continue;
+	    }
+	    String value = metadata.getAttr(element.getIndex());
+	    if(macro.getProperty("uselabel",false)) value = element.getLabel();
+	    if(macro.getProperty("skipempty",false) && !stringDefined(value)) continue;
+	    if(value==null) value="";
+	    value = getRepository().getPageHandler().applyBaseMacros(value);		
+	    value = value.replaceAll("[\\r\\n]+", " ").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll("\"", "&quot;");
+	    
+	    if(macro.getProperty("encoded", false)) value = XmlUtil.encodeString(value);
+	    if(macro.getProperty("cdata", false)) value = wrapCdata(value);
+	    String prefix = macro.getProperty("prefix","");
+	    String suffix = macro.getProperty("suffix","");		
+	    if(prefix!=null) sb.append(prefix);
+	    sb.append(value);
+	    if(suffix!=null) sb.append(suffix);		
+	}
+	return sb.toString();
+	/*
         for (MetadataElement element : getChildren()) {
             String value = element.getValueForXml(request, templateType,
                                entry, metadata,
@@ -278,6 +308,7 @@ public class MetadataTypeBase extends RepositoryManager {
         }
 
         return template;
+	*/
     }
 
 
@@ -491,6 +522,32 @@ public class MetadataTypeBase extends RepositoryManager {
     public List<MetadataElement> getChildren() {
         return children;
     }
+
+
+
+    public MetadataElement getElement(String id) {
+	if(id==null) return null;
+	if(map==null) {
+	    Hashtable<String,MetadataElement> tmp = new Hashtable<String,MetadataElement>();
+	    for(MetadataElement element: getChildren()) {
+		String _id =element.getId();
+		if(_id!=null) {
+		    tmp.put(_id,element);
+		    tmp.put(_id.toLowerCase(),element);
+		}
+		String name =element.getName();		
+
+		tmp.put(name,element);
+		tmp.put(name.toLowerCase(),element);
+		tmp.put(name.replace(" ","_"),element);
+		tmp.put(name.toLowerCase().replace(" ","_"),element);
+		tmp.put("attr" + element.getIndex(), element);
+	    }
+	    map = tmp;
+	}
+
+        return map.get(id);
+    }    
 
     /**
      * _more_

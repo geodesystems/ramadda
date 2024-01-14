@@ -1149,21 +1149,9 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                               : msgLabel(nameString);
 
 	boolean makeSearchLink =  !smallDisplay && getSearchable();
-
-
-
         String htmlTemplate = getTemplate(TEMPLATETYPE_HTML);
-        if (htmlTemplate != null) {
-            String html = getRepository().getPageHandler().applyBaseMacros(
-                              htmlTemplate);
-            for (MetadataElement element : getChildren()) {
-                String value = metadata.getAttr(element.getIndex());
-                if (value == null) {
-                    value = "";
-                }
-                value = value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\"", "&quot;");
-                html  = applyMacros(html, element, value);
-            }
+	String html = applyTemplate(request, TEMPLATETYPE_HTML,entry,metadata,null);
+        if (html!=null) {
 	    if(makeSearchLink) {
 		html= handler.getSearchLink(request, metadata,html);
 	    }
