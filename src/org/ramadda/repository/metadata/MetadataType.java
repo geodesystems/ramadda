@@ -1165,9 +1165,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                 html  = applyMacros(html, element, value);
             }
 	    if(makeSearchLink) {
-		searchLink = handler.getSearchLink(request, metadata,"")
-		    + HU.space(1);
-		content.append(searchLink);
+		html= handler.getSearchLink(request, metadata,html);
 	    }
             content.append(html);
         } else {
