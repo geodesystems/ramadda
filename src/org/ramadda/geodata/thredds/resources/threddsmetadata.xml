@@ -102,10 +102,9 @@
        name="Variable"
        id="thredds.variable" searchable="true"   browsable="true">
       <template type="html"><![CDATA[${Variable} (${Units}) ${Long_Name}]]></template>
-      <element name="Variable" />
+      <element name="Variable" searchable="true"/>
       <element name="Long Name" />
-      <element         columns="10"         name="Units"/>
-
+      <element name="Units" columns="10"/>
       <template type="dif"><![CDATA[
 <Parameters>
 <Category></Category>
@@ -117,8 +116,6 @@
 <Detailed_Variable>${Long_Name} Units:${Units}</Detailed_Variable>
 </Parameters> 
 ]]></template>
-
-
     </type>
 
 
