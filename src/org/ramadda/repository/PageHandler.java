@@ -15,6 +15,8 @@ import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.output.CalendarOutputHandler;
 import org.ramadda.repository.output.HtmlOutputHandler;
 import org.ramadda.repository.output.OutputHandler;
+import org.ramadda.repository.output.RssOutputHandler;
+import org.ramadda.repository.output.AtomOutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.output.PageStyle;
 import org.ramadda.repository.type.TypeHandler;
@@ -765,7 +767,28 @@ public class PageHandler extends RepositoryManager {
         }
 	if(request.getIsEntryShow() && prefix && currentEntry!=null) {
 	    getMetadataManager().addHtmlMetadata(request, currentEntry, head, showJsonLd, showTwitterCard);
+
+            String rssUrl =
+		HU.url(request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW+"/" + IO.stripExtension(currentEntry.getName()) + ".rss"),
+		       ARG_ENTRYID, currentEntry.getId(),
+		       ARG_OUTPUT, RssOutputHandler.OUTPUT_RSS_FULL.toString());
+	    head.append("<link rel='alternate' type='application/rss+xml' ");
+	    HU.attrs(head,"title",currentEntry.getName(),"href",   rssUrl);
+	    head.append("/>\n");
+            String atomUrl =
+		HU.url(request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW+"/" + IO.stripExtension(currentEntry.getName()) + ".xml"),
+		       ARG_ENTRYID, currentEntry.getId(),
+		       ARG_OUTPUT, AtomOutputHandler.OUTPUT_ATOM.toString());
+	    head.append("<link rel='alternate' type='application/atom+xml' ");
+	    HU.attrs(head,"title",currentEntry.getName(),"href",   atomUrl);
+	    head.append("/>\n");
+
         }
+
+
+
+
+
         String imports   = head.toString();
         String logoImage = getLogoImage(result);
         String logoUrl   = (String) result.getProperty(PROP_LOGO_URL);
