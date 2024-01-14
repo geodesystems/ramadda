@@ -30,7 +30,7 @@
       <element name="Tag Value" />
       <template type="thredds"><![CDATA[<keyword>${attr1}</keyword>]]></template>
       <template type="dif"><![CDATA[<Keyword>${attr1}</Keyword>]]></template>
-      <template type="oaidc"><![CDATA[<dc:subject>${attr1.cdata}</dc:subject>]]></template>
+      <template type="oaidc"><![CDATA[<dc:subject>${attr1 cdata=true}</dc:subject>]]></template>
     </type>
 
 
@@ -38,7 +38,7 @@
       <element name="Keyword" />
       <template type="thredds"><![CDATA[<keyword>${attr1}</keyword>]]></template>
       <template type="dif"><![CDATA[<Keyword>${attr1}</Keyword>]]></template>
-      <template type="oaidc"><![CDATA[<dc:subject>${attr1.cdata}</dc:subject>]]></template>
+      <template type="oaidc"><![CDATA[<dc:subject>${attr1 cdata=true}</dc:subject>]]></template>
     </type>
 
     <type name="Subject" id="content.subject" searchable="true" browsable="true" xdisplaygroup="Tags and Keywords"  >
@@ -55,7 +55,7 @@
 <!-- todo -->
       <template type="thredds"><![CDATA[<keyword>${attr1}</keyword>]]></template>
       <template type="dif"><![CDATA[<Keyword>${attr1}</Keyword>]]></template>
-      <template type="oaidc"><![CDATA[<dc:subject>${attr1.cdata}</dc:subject>]]></template>
+      <template type="oaidc"><![CDATA[<dc:subject>${attr1 cdata=true}</dc:subject>]]></template>
     </type>
 
     <handler class="org.ramadda.repository.metadata.ContentMetadataHandler"        category="Basic Properties">

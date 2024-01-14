@@ -12,7 +12,6 @@
       <element name="Location"  searchable="false"/>
       <element name="Comment"  searchable="false" rows="5"/>
       <element name="Screen shot" datatype="file" thumbnail="false"/>
-      <template type="xxxhtml"><![CDATA[<b>${attr1}</b><br>${attr2}]]></template>
     </type>
     <type name="3D Label" id="3d_label"  searchable="false" browsable="true">
       <element name="Label" />

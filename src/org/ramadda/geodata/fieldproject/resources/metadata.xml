@@ -20,7 +20,7 @@
       <element id="institution" name="Institution"/>
       <element id="email" name="Email" datatype="email"/>
 
-      <template type="html"><![CDATA[<a href="mailto:${email}">${name}</a> - ${type.label} - ${institution}]]></template>
+      <template type="html"><![CDATA[<a href="mailto:${email}">${name}</a> - ${type uselabel=true} - ${institution}]]></template>
 
     </type>
 

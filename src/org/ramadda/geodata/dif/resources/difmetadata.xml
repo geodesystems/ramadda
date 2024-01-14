@@ -76,7 +76,7 @@
           <element datatype="enumerationplus"           
                    name="Role"
                    values="investigator:Investigator,technicalcontact:Technical Contact,difauthor:DIF Author"/>
-         <template type="dif"><![CDATA[<Role>${Role.label}</Role>]]></template>
+         <template type="dif"><![CDATA[<Role>${Role uselabel=true}</Role>]]></template>
       </element>
       <element name="First Name" dif.tag="First_Name"/>
       <element name="Middle Name" dif.tag="Middle_Name"/>
@@ -148,17 +148,17 @@ ${Personnel}
       <element name="Online Resource"/>
       <template type="dif"><![CDATA[
     <Data_Set_Citation>
-        <Dataset_Creator>${Dataset_Creator.cdata}</Dataset_Creator>
-        <Dataset_Title>${Dataset_Title.cdata}</Dataset_Title>
-        <Dataset_Series_Name>${Dataset_Series_Name.cdata}</Dataset_Series_Name>
-        <Dataset_Release_Date>${Dataset_Release_Date.cdata}</Dataset_Release_Date>
-        <Dataset_Release_Place>${Dataset_Release_Place.cdata}</Dataset_Release_Place>
-        <Dataset_Publisher>${Dataset_Publisher.cdata}</Dataset_Publisher>
-        <Version>${Version.cdata}</Version>
-        <Issue_Identification>${Issue_Identification.cdata}</Issue_Identification>
-        <Data_Presentation_Form>${Data_Presentation_Form.cdata}</Data_Presentation_Form>
-        <Other_Citation_Details>${Other_Citation_Details.cdata}</Other_Citation_Details>
-        <Online_Resource>${Online_Resource.cdata}</Online_Resource>    
+        <Dataset_Creator>${Dataset_Creator cdata=true}</Dataset_Creator>
+        <Dataset_Title>${Dataset_Title cdata=true}</Dataset_Title>
+        <Dataset_Series_Name>${Dataset_Series_Name cdata=true}</Dataset_Series_Name>
+        <Dataset_Release_Date>${Dataset_Release_Date cdata=true}</Dataset_Release_Date>
+        <Dataset_Release_Place>${Dataset_Release_Place cdata=true}</Dataset_Release_Place>
+        <Dataset_Publisher>${Dataset_Publisher cdata=true}</Dataset_Publisher>
+        <Version>${Version cdata=true}</Version>
+        <Issue_Identification>${Issue_Identification cdata=true}</Issue_Identification>
+        <Data_Presentation_Form>${Data_Presentation_Form cdata=true}</Data_Presentation_Form>
+        <Other_Citation_Details>${Other_Citation_Details cdata=true}</Other_Citation_Details>
+        <Online_Resource>${Online_Resource cdata=true}</Online_Resource>    
     </Data_Set_Citation>
 ]]></template>
     </type>
@@ -167,7 +167,7 @@ ${Personnel}
       <element  datatype="group"         name="Roles"         subname="">
         <element datatype="enumerationplus"           name="Role"
            values="investigator:Investigator,technicalcontact:Technical Contact,difauthor:DIF Author"/>
-      <template type="dif"><![CDATA[<Role>${Role.label}</Role>]]></template>
+      <template type="dif"><![CDATA[<Role>${Role uselabel=true}</Role>]]></template>
       </element>
       <element name="First Name"/>
       <element name="Middle Name"/>
@@ -325,7 +325,7 @@ ${Chronostratigraphic_Unit}
        id="dif.accesscontraints">
       <element name="Constraints" rows="5"/>
       <template type="dif"><![CDATA[
-<Access_Constraints>${Constraints.cdata}</Access_Constraints>
+<Access_Constraints>${Constraints cdata=true}</Access_Constraints>
 ]]></template>
     </type>
 
@@ -335,7 +335,7 @@ ${Chronostratigraphic_Unit}
        id="dif.usecontraints">
       <element name="Constraints" rows="5"/>
       <template type="dif"><![CDATA[
-<Use_Constraints>${Constraints.cdata}</Use_Constraints>
+<Use_Constraints>${Constraints cdata=true}</Use_Constraints>
 ]]></template>
     </type>
 
@@ -355,10 +355,10 @@ ${Chronostratigraphic_Unit}
       <element name="Fees"/>
       <template type="dif"><![CDATA[
 <Distribution>
-    <Distribution_Media>${Media.cdata}</Distribution_Media>
+    <Distribution_Media>${Media cdata=true}</Distribution_Media>
     <Distribution_Size>${Size}</Distribution_Size>
-    <Distribution_Format>${Format.cdata}</Distribution_Format>
-    <Fees>${Fees.cdata}</Fees>
+    <Distribution_Format>${Format cdata=true}</Distribution_Format>
+    <Fees>${Fees cdata=true}</Fees>
 </Distribution> 
 ]]></template>
     </type>
@@ -385,7 +385,7 @@ ${Chronostratigraphic_Unit}
          name="Progress"
          values="planned:Planned,inwork:In Work,complete:Complete"/>
       <template type="dif"><![CDATA[
-<Data_Set_Progress>${Progress.label}</Data_Set_Progress>
+<Data_Set_Progress>${Progress uselabel=true}</Data_Set_Progress>
 ]]></template>
     </type>
 
@@ -403,8 +403,8 @@ ${Chronostratigraphic_Unit}
 <Type>${Type}</Type>
 <Subtype>${Sub_Type}</Subtype>
 </URL_Content_Type>
-<URL>${URL.cdata}</URL>
-<Description>${Description.cdata}</Description>
+<URL>${URL cdata=true}</URL>
+<Description>${Description cdata=true}</Description>
 </Related_URL>
 ]]></template>
 
@@ -413,7 +413,7 @@ ${Chronostratigraphic_Unit}
     <type name="Revision History" id="dif.revision_history">
       <element name="History"/>
       <template type="dif"><![CDATA[
-<DIF_Revision_History>${History.cdata}</DIF_Revision_History>
+<DIF_Revision_History>${History cdata=true}</DIF_Revision_History>
 ]]></template>
     </type>
 
@@ -431,7 +431,7 @@ ${Chronostratigraphic_Unit}
        searchable="false"
        id="dif.originating_center">
       <element name="Center"/>
-      <template type="dif"><![CDATA[<Originating_Center>${Center.cdata}</Originating_Center>]]></template>
+      <template type="dif"><![CDATA[<Originating_Center>${Center cdata=true}</Originating_Center>]]></template>
     </type>
 
     <type name="Multimedia Sample" id="dif.multimedia_sample">
@@ -445,15 +445,15 @@ ${Chronostratigraphic_Unit}
    <File>${File}</File>
    <URL>${URL}</URL>
    <Format>${Format}</Format>
-   <Caption>${Caption.cdata}</Caption>
-   <Description>{$Description.cdata}</Description>
+   <Caption>${Caption cdata=true}</Caption>
+   <Description>{$Description cdata=true}</Description>
 </Multimedia_Sample>
 ]]></template>
     </type>
 
     <type name="Reference" id="dif.reference">
       <element name="Reference" rows="4"/>
-      <template type="dif"><![CDATA[<Reference>${Reference.cdata}</Reference>]]></template>
+      <template type="dif"><![CDATA[<Reference>${Reference cdata=true}</Reference>]]></template>
     </type>
 
     <type name="Parent DIF" id="dif.parent_dif">
