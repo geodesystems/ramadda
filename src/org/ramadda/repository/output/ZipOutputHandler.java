@@ -440,7 +440,7 @@ public class ZipOutputHandler extends OutputHandler {
                 }
             }
 	    //Check for synthetic entries beyond the top most level
-	    if(!isSynthOk) {
+	    if(!isSynthOk || forExport) {
 		if(getEntryManager().isSynthEntry(entry.getId())) {
 		    if(level>0) {
 			if(debug)System.err.println("\tskipping synth entry:" + entry);
@@ -470,7 +470,7 @@ public class ZipOutputHandler extends OutputHandler {
             }
 
             if (entry.isGroup() && recurse) {
-		SelectInfo info = new SelectInfo(request, entry,isSynthOk);
+		SelectInfo info = new SelectInfo(request, entry,isSynthOk&&!forExport);
                 List<Entry> children = getEntryManager().getChildren(request,
 								     entry,info);
                 String path = entry.getName();
