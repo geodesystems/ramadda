@@ -158,7 +158,8 @@ public class MsDocTypeHandler extends GenericTypeHandler {
 	StringBuilder wiki = new StringBuilder("{{description wikify=true}}\n+toggle Document Information\n{{information details=true showTitle=false}}\n-toggle\n");
 	String url = request.getAbsoluteUrl(getEntryManager().getEntryResourceUrl(request, entry));
 	url = url.replace("?","%3F");
-	//	System.err.println(url);
+	url +=HU.url(url,"timestamp",""+entry.getChangeDate());
+	System.err.println(url);
 	wiki.append("\n<center>\n+fullscreen\n<div style='height:100vh;'><iframe style='border:var(--basic-border);' src='https://view.officeapps.live.com/op/embed.aspx?src="+ url+"' width='95%' height='100%' frameborder='1'></iframe>\n</div>\n-fullscreen\n</center>\n");
 	sb.append(getWikiManager().wikifyEntry(request, entry, wiki.toString()));
 	getPageHandler().entrySectionClose(request,  entry, sb);
