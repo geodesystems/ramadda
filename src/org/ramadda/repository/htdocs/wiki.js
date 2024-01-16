@@ -2281,7 +2281,7 @@ WikiEditor.prototype = {
 		{p:'showHeading',ex:'true'},
 		{p:'showLine',ex:'true'},
 		{p:'showSnippetHover',ex:'true'},		
-		{p:'showPlaceholder',ex:'true',tt:'Show placeholder image'},
+		{p:'showPlaceholderImage',ex:'true',tt:'Show placeholder image'},
 		{p:'addTags',ex:'true'},
 		{p:'tagTypes',ex:'content.keyword'},
 		{p:'addPageSearch',d:true,tt:'Add the page search form'},

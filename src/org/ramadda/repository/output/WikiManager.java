@@ -5644,7 +5644,8 @@ public class WikiManager extends RepositoryManager
 	String cardId= HU.getUniqueId("card");
         HU.open(card, HU.TAG_DIV, HU.id(cardId));
 	
-	boolean showPlaceholder = getProperty(wikiUtil, props, "showPlaceholder", false);
+	boolean showPlaceholder = getProperty(wikiUtil, props, "showPlaceholderImage",
+					      getProperty(wikiUtil, props, "showPlaceholder", false));
         boolean useThumbnail = getProperty(wikiUtil, props, "useThumbnail", true);
         boolean showSnippet = getProperty(wikiUtil, props, "showSnippet", false);
         boolean showSnippetHover = getProperty(wikiUtil, props, "showSnippetHover", false);
