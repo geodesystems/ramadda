@@ -325,6 +325,7 @@ public interface SeesvCommands {
     public static final String CMD_OUTPUT="-o";
     public static final String CMD_SUBD="-subd";
     public static final String CMD_CHUNK="-chunk";
+    public static final String CMD_PARSEEMAIL="-parseemail";
     public static final String CMD_MAPTILES="-maptiles";
     public static final String CMD_ADDHEADER="-addheader";
     public static final String CMD_DB="-db";

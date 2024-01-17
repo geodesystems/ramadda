@@ -7741,6 +7741,63 @@ public abstract class Converter extends Processor {
 
     }
 
+    public static class ParseEmail extends Converter {
+
+
+        /**
+         *
+         * @param ctx _more_
+         * @param cols _more_
+         */
+        public ParseEmail(TextReader ctx, List<String> cols) {
+            super(cols);
+        }
+
+        /**
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *  @return _more_
+         */
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+                for (int i : getIndices(ctx)) {
+                    row.add("Name");
+		    row.add("Email");
+                }
+            } else {
+                for (int i : getIndices(ctx)) {
+		    String s = row.getString(i);
+		    String email=StringUtil.findPattern(s,"<(.*)>");
+		    if(email==null) email= StringUtil.findPattern(s,"([^\\s]+@[^\\s]+)");
+		    if(email==null) email=s;
+		    String name=StringUtil.findPattern(s,"(.*)<(.*)>");
+		    if(name==null) {
+			name = StringUtil.findPattern(email,"(.*)@");
+			if(name!=null && name.indexOf(".")>=0) {
+			    String tmp="";
+			    for(String tok:Utils.split(name,".",true,true)) {
+				tmp+=Utils.applyCase(Utils.CASE_PROPER,tok);
+				tmp+=" ";
+			    }
+			    name=tmp.trim(); 
+			} else name=null;
+		    }
+		    if(name==null) name=s;
+		    name = name.replaceAll("\\([^\\)]*\\)","");
+                    row.add(name.trim());
+		    row.add(email.trim());
+                }
+            }
+
+            return row;
+        }
+
+
+    }
+
+
+
 
     /**
      * Class description

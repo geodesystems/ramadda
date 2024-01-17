@@ -2458,6 +2458,10 @@ public class Seesv implements SeesvCommands {
 		new Arg("label2"),
 		new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS)),
 
+        new Cmd(CMD_PARSEEMAIL, "Parse out name and email",
+		ARG_LABEL,"Parse Email",
+		new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS)),
+		
         new Cmd(CMD_MAKEIDS, "Turn the header row into IDs (lowercase, no space, a-z0-9_)",
 		ARG_LABEL,"Make IDs"),
 
@@ -3459,6 +3463,12 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Converter.B64Decode(ctx,getCols(args.get(++i))));
 		return i;
 	    });
+
+	defineFunction(CMD_PARSEEMAIL,1,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.ParseEmail(ctx,getCols(args.get(++i))));
+		return i;
+	    });
+
 
 	defineFunction(CMD_TOB64,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.B64Encode(ctx,getCols(args.get(++i))));
