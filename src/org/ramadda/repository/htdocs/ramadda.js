@@ -302,8 +302,12 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		cols.push({id:c,label:"Attachments",align:'left',paddingLeft:'10px',width:props.attachmentsWidth??240});
 	});
 
+	let tableWidth=props.tableWidth??'100%';
 	if(props.showHeader) {
-	    html+="<table cellspacing=0 cellpadding=0 width=100% class=entry-list-header><tr>";
+	    html+=HU.open('table',['cellspacing','0',
+				   'cellpadding','0',
+				   'class','entry-list-header',
+				   'width',tableWidth]);
 	    let hdrAttrs = ["class","entry-list-header-column ramadda-clickable"];
 	    cols.forEach((col,idx)=> {
 
@@ -339,6 +343,9 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let classPrefix  = simple?'entry-list-simple':'entry-list';
 
 	let attrs = ['id',innerId,'class',classPrefix];
+	if(props.showHeader && props.tableWidth) {
+	    attrs.push('style',HU.css('width',props.tableWidth));
+	}
 	html+=HU.open("div",attrs);
 	let formId;
 	if(props.showForm) {
@@ -443,7 +450,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	RamaddaUtil.showEntryTable(tableId,props,cols,id,entryMap,initFunc,entries);	
     },
 
-    showEntryTable:function(id,props,cols,mainId,entryMap,initFunc,entries) {
+    showEntryTable:function(id,props,cols,mainId,entryMap,initFunc,entries,secondTime) {
 	let main = $('#'+ mainId);
 	let html = "";
 	let space = "";
@@ -574,7 +581,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	});
 	html+=HU.close('div');
 
-	let container = $('#'+id);
+	let container = jqid(id);
+	if(!secondTime && props.tableWidth) {
+	    container.css('width',props.tableWidth);
+	}
+
 	html = $(html).appendTo(container);
 	Translate.translate(html);
 
@@ -654,7 +665,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    return entry;
 		});
 		if(entries.length>0) {
-		    RamaddaUtil.showEntryTable(innerId,props,cols,mainId, entryMap,initFunc,entries);	
+		    RamaddaUtil.showEntryTable(innerId,props,cols,mainId, entryMap,initFunc,entries,true);	
 		} else {
 		    let table = HU.open('table',['class','formtable']);
 		    if(entry.getIsUrl()) {
