@@ -39,6 +39,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 
+import java.util.TimeZone;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
@@ -685,17 +686,27 @@ public class CalendarOutputHandler extends OutputHandler {
     public List<CalendarEntry> makeCalendarEntries(Request request,
             List<Entry> entries)
             throws Exception {
+	entries = getEntryUtil().sortEntriesOnDate(entries, false);
         List<CalendarEntry> calEntries = new ArrayList<CalendarEntry>();
+	SimpleDateFormat sdf = new SimpleDateFormat("HH:mm z");
+	String tz = entries.size()>0?getEntryUtil().getTimezone(request,entries.get(0)):null;
+	if(tz!=null) {
+	    sdf.setTimeZone(TimeZone.getTimeZone(tz));
+	}
         for (Entry entry : entries) {
             Date   entryDate = new Date(entry.getStartDate());
             String label     = entry.getLabel();
             if (label.length() > 20) {
                 label = label.substring(0, 19) + "...";
             }
+	    label = sdf.format(new Date(entry.getStartDate())) +" - " + label;
             String url =
-                HtmlUtils.nobr(getEntryManager().getAjaxLink(request, entry,
-                    label, null, false, true).toString());
-            url = getEntryManager().getPopupLink(request, entry, label);
+                HU.nobr(getEntryManager().getAjaxLink(request, entry,
+						      label, null, false, false).toString());
+	    url = getEntryManager().getPopupLink(request, entry, label);
+
+	    
+
             calEntries.add(new CalendarEntry(entryDate, url, entry));
         }
 
@@ -947,8 +958,10 @@ public class CalendarOutputHandler extends OutputHandler {
             String       link = "";
             if (dayItems.size() > 0) {
                 if (dayItems.get(0) instanceof Entry) {
+		    Hashtable props = Utils.makeMap("columns","name,time","showTime","true","showForm","false");
+		    
                     link = getWikiManager().makeTableTree(request, null,
-                            null, dayItems);
+							  props, dayItems);
                 } else {
                     link = StringUtil.join(" ", dayItems);
                 }
