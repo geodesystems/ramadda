@@ -252,6 +252,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    showCrumbs:false,
 	    showHeader:dflt,
 	    showDownload:false,
+	    showTime:false,	    
 	    showDate:dflt,
 	    showCreateDate:dflt,
 	    showChangeDate:false,	    	    
@@ -273,7 +274,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	});
 	let html = "";
 	let cols = [];
-	let colList = Utils.split(props.columns??'entryorder,name,creator,date,createdate,download,size,type,attachments',',',true,true);
+	let colList = Utils.split(props.columns??'entryorder,name,creator,date,time,createdate,download,size,type,attachments',',',true,true);
 	let dateWidth = 130;
 	let typeWidth = 100;	
 	let sizeWidth  =80;
@@ -285,7 +286,9 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    else if(c=='createdate' && props.showCreateDate)
 		cols.push({id:c,label:"Create Date",width:props.createDateWidth??props.dateWidth??dateWidth});
 	    else if(c=='download' && props.showDownload)
-		cols.push({id:c,label:"&nbsp;Download&nbsp;",width:100,align:'left'});	    
+		cols.push({id:c,label:"&nbsp;Download&nbsp;",width:100,align:'left'});
+	    else if(c=='time' && props.showTime)
+		cols.push({id:c,label:"&nbsp;Time&nbsp;",width:100,align:'right'});	    	    
 	    else if(c=='creator' && props.showCreator)
 		cols.push({id:c,label:"Creator",width:props.creatorWidth??200});	    
 

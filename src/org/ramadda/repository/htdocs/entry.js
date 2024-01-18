@@ -766,10 +766,17 @@ function Entry(props) {
         getIsGroup: function() {
             return this.isGroup;
         },
-        getProperty: function(what) {
+        getProperty: function(what,props) {
+	    props = props??{};
 	    if(what=="name") return this.getName();
-	    if(what=="fromdate") return HU.span(['class','ramadda-datetime','title',this.startDate],this.startDateFormat);
+	    if(what=="fromdate") {
+		return HU.span(['class','ramadda-datetime','title',this.startDate],this.startDateFormat);
+	    }
 	    
+	    if(what=="time") {
+		return HU.span(['class','ramadda-datetime','title',this.startDate],this.hhmm);
+	    }
+
 	    if(what=="download") {
 		if(!this.getIsFile()) return  "";
 		let url = this.getResourceUrl();

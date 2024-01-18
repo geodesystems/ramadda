@@ -18,7 +18,7 @@
     --default-radius:4px;
     --nav-hover-color:var(--highlight-color);
     --cal-font-size:10pt;
-    --cal-background:#C5E5F5;
+    --cal-background-on:#C5E5F5;
     --cal-background:#eaeaea;
     --nav-left-z-index: 50;
     --header-height:50px;
@@ -6084,7 +6084,8 @@ a.wiki-link-noexist {
 .calnavtheday {
     text-align:right;
     font-size: var(--cal-font-size);
-    background-color:var(--cal-background);
+    background-color:var(--cal-background-on);
+    border:1px solid #000;
     padding-left:20px;
     padding-top:5px;
     padding-right:1px;

@@ -2036,6 +2036,7 @@ WikiEditor.prototype = {
 	    {p:'columns',ex:'name,date,createdate,download,size,type,attachments'},
 	    {p:"showHeader",ex:false},
 	    {p:"showDate",ex:false},
+	    {p:"showTime",ex:true},	    
 	    {p:"showCreateDate",ex:false},
 	    {p:"showSize",ex:false},
 	    {p:"showDownload",ex:false},	    
