@@ -10,7 +10,9 @@
 </type>
 
 
-  <type name="calendarentry"  description="Calendar Entry" handler="org.ramadda.plugins.calendar.CalendarEntryTypeHandler"  foruser="true">
+<type name="calendarentry"  description="Calendar Entry"
+      isgroup="true"
+handler="org.ramadda.plugins.calendar.CalendarEntryTypeHandler"  foruser="true">
      <property name="icon" value="/icons/calendar.png"/>
      <property name="form.description.rows" value="5"/>
      <property name="form.area.show" value="false"/>
