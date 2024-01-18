@@ -1,6 +1,6 @@
 <types supercategory="" category="Data">
   <type name="type_point_collection"  description="Point Data Collection" handler="org.ramadda.data.services.PointCollectionTypeHandler" >
-    <property name="icon" value="/point/sitemap_color.png"/>
+    <property name="icon" value="/icons/diagram.png"/>
     <property name="form.resource.show" value="false"/>
     <property name="form.area.show" value="true"/>
     <property name="form.datatype.show" value="false"/>
@@ -53,7 +53,7 @@
 
 
   <type name="type_point_collection_collection"  description="Point Collection Collection" handler="org.ramadda.data.services.PointCollectionTypeHandler" >
-    <property name="icon" value="/point/sitemap_color.png"/>
+    <property name="icon" value="/icons/diagram.png"/>
     <property name="form.resource.show" value="false"/>
     <property name="form.area.show" value="true"/>
     <property name="form.datatype.show" value="false"/>
