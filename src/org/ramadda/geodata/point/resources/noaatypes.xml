@@ -112,7 +112,7 @@ You just need to specify the Site  number.
      <column  name="county"  type="enumerationplus" label="County" cansearch="true"/>     
 
      <column  name="network"  label="Network" type="enumerationplus" cansearch="true"/>
-     <column  name="huc_name"   label="HUC Name" cansearch="true"/>
+     <column  name="huc_name"   label="HUC Name" type="enumerationplus" cansearch="true"/>
      <column  name="huc_id"   label="HUC ID" cansearch="true"/>
 
  <property name="record.properties">
