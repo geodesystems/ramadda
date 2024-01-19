@@ -7062,13 +7062,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @throws Exception _more_
      */
-    public String makeTypeSelect(List items, Request request,
+    public String makeTypeSelect(List initItems, Request request,
 				 String arg, String attrs,
                                  boolean includeAny, String selected,
                                  boolean checkAddOk, HashSet<String> exclude,boolean groupOnly)
 	throws Exception {
-	if(items==null) items = new ArrayList();
-
+	List items =  new ArrayList();
         for (TypeHandler typeHandler : getTypeHandlers()) {
 	    if(groupOnly && !typeHandler.isGroup()) continue;
 
@@ -7092,6 +7091,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                          typeHandler.getType()));
         }
 
+	TwoFacedObject.sort(items);
+	if(initItems!=null)  {
+	    List tmp = new ArrayList();
+	    tmp.addAll(initItems);
+	    tmp.addAll(items);
+	    items = tmp;
+	}
         return HU.select(arg, items, selected,attrs);
     }
 
