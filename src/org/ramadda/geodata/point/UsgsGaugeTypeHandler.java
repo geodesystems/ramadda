@@ -211,16 +211,14 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	    }		
 	}
 
-
-
 	//<dd>Grand County, Utah,  Hydrologic Unit 14030004</dd>
 	String line = StringUtil.findPattern(block,"<dd>(.*?Hydrologic +Unit.*?)</dd>");
 	String huc = StringUtil.findPattern(line,"Hydrologic +Unit +([^ <]+)$");
-	if(huc!=null) entry.setValue(IDX_HUC,huc);
+	if(huc!=null) entry.setValue(IDX_HUC,huc.trim());
 	String county = StringUtil.findPattern(line,"(.*?),");
-	if(county!=null) entry.setValue(IDX_COUNTY,county);
+	if(county!=null) entry.setValue(IDX_COUNTY,county.trim());
 	String state = StringUtil.findPattern(line,".*?,([^,]+),");
-	if(state!=null) entry.setValue(IDX_STATE,state);
+	if(state!=null) entry.setValue(IDX_STATE,state.trim());
 	entry.setValue(IDX_HOMEPAGE,url);
 
 	//	    Datum of gage: 4,168.32 feet above   NAVD88.
