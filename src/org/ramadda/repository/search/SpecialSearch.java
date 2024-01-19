@@ -529,6 +529,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             tabs = OutputHandler.makeTabs(tabTitles, tabContents, true);
         }
         if (request.get(ARG_SEARCH_SHOWHEADER, true)) {
+	    String label = HU.href(request.getRequestPath(),this.label,HU.cssClass("ramadda-nodecor ramadda-clickable"));
             sb.append(HtmlUtils.h2(label));
         }
 

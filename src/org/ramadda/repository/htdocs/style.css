@@ -10,8 +10,8 @@
     --highlight-border:1px #aaa solid;
     --highlight-background: #f4f4f4;
     --header-background:  #eaeaea;
-    --href-decoration:none;   
     --href-color: var(--highlight-color);
+    --href-decoration:none;   
     --href-decoration:underline;
     --href-color: #000;
     --color-mellow-yellow:#fffeec;
@@ -3257,11 +3257,6 @@ img.metadata-tag-selected {
     background:var(--color-mellow-yellow);
 }
 
-.disabledinput, .disabledinput:focus {
-    border : 0px #888888 solid;
-    background: #eee;
-    cursor:default;
-}
 
 
 .ramadda-entry-popup-select  {
@@ -6109,14 +6104,6 @@ a.wiki-link-noexist {
     color: var(--hover-color) !important;    
 }
 
-input.ramadda-clickable:hover {
-    border:1px solid var(--hover-color);
-}
-
-input.ramadda-clickable {
-    border:1px solid transparent;
-}
-
 
 
 img.ramadda-clickable {
@@ -6129,6 +6116,21 @@ img.ramadda-clickable {
 .ramadda-clickable-span:hover {
     background: var(--highlight-background) !important;    
 }
+
+
+input.ramadda-clickable:hover {
+    border:1px solid var(--hover-color);
+}
+
+input.ramadda-clickable {
+}
+
+.disabledinput, .disabledinput:focus {
+    border : 1px solid #ccc;
+    background: #eee;
+    cursor:default;
+}
+
 
 
 a span i:hover, a:hover span i {
