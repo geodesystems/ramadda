@@ -74,7 +74,11 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
     public UsgsGaugeTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
-	Misc.runInABit(5000,new Runnable() {public void run() {doCleanup();}});
+	/*
+	  Don't do this all the time. This is just here to fix the extra spaces in the
+	  fields on ramadda.org
+	  Misc.runInABit(5000,new Runnable() {public void run() {doCleanup();}});
+	*/
     }
 
 
