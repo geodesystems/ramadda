@@ -2692,7 +2692,7 @@ public class Admin extends RepositoryManager {
 
 	header.accept(topSB, "Reindex Lucene Index");
 	request.formPostWithAuthToken(topSB, URL_ADMIN_MAINTENANCE, "");
-	topSB.append(messageNote("Reindex all deletes entire index. Reindex partial only in indexes entries not already indexed"));
+	topSB.append(messageNote("Reindex all deletes entire index. Reindex partial only indexes entries not already indexed"));
         topSB.append(HU.formTable());
 	List types= Utils.makeList(new TwoFacedObject("None",""));
 	HU.formEntry(topSB,
