@@ -16,7 +16,12 @@ import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.geo.GeoUtils;
 
+import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
+
+import java.sql.ResultSet;
+import java.sql.Statement;
+
 
 import org.w3c.dom.*;
 
@@ -67,8 +72,47 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
     public UsgsGaugeTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
+	Misc.runInABit(5000,new Runnable() {public void run() {doCleanup();}});
     }
 
+
+    private void doCleanup() {
+	System.err.println("USGS: cleanup");
+	/*
+	TYPE_USGS_GAUGE
+    ID (VARCHAR 200)
+    STATION_ID (VARCHAR 200)
+    PERIOD (INTEGER 10)
+    STATE (VARCHAR 200)
+    HUC (VARCHAR 200)
+    HOMEPAGE (VARCHAR 200)
+    COUNTY (VARCHAR 200)
+	*/
+
+	try {
+	    String table = "TYPE_USGS_GAUGE";
+            Statement statement =
+                getDatabaseManager().select("ID,STATE,HUC,COUNTY",
+					    table,
+                                            new org.ramadda.util.sql.Clause[] {});
+            ResultSet  results = statement.getResultSet();
+            while (results.next()) {
+                String id  = results.getString(1);
+                String state = results.getString(2);
+                String huc = results.getString(3);		
+                String county = results.getString(4);
+		getDatabaseManager().update(table, "ID",id, new String[]{"STATE","HUC","COUNTY"},
+					    new Object[]{state!=null?state.trim():"",
+							 huc!=null?huc.trim():"",
+							 county!=null?county.trim():""});
+		System.err.println("usgs:" + id +" state:" + state +" huc:" + huc +" county:" + county);
+            }
+            getDatabaseManager().closeAndReleaseConnection(statement);
+	}catch(Exception exc) {
+	    exc.printStackTrace();
+	}
+	    
+    }
 
     /** _more_ */
     private static final String URL_TEMPLATE =
