@@ -6109,6 +6109,16 @@ a.wiki-link-noexist {
     color: var(--hover-color) !important;    
 }
 
+input.ramadda-clickable:hover {
+    border:1px solid var(--hover-color);
+}
+
+input.ramadda-clickable {
+    border:1px solid transparent;
+}
+
+
+
 img.ramadda-clickable {
     border:1px solid transparent;
 }
