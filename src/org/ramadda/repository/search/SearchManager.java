@@ -374,6 +374,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	Clause clause = null;
 	if(stringDefined(type)) {
 	    clause = Clause.or(getDatabaseManager().addTypeClause(getRepository(),request, Utils.split(type,",",true,true),null));
+	    //If we are doing a type then don't do all as this deletes the index
+	    all=false;
 	}
         Statement statement =
             getDatabaseManager().select(Tables.ENTRIES.COL_ID,
