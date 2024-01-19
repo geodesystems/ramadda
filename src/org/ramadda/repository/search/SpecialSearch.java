@@ -604,23 +604,12 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
             Entry ancestorEntry = (ancestor == null)
                                   ? null
-                                  : getEntryManager().getEntry(request,
-                                      ancestor);
+                                  : getEntryManager().getEntry(request, ancestor);
             String select =
                 getRepository().getHtmlOutputHandler().getSelect(request,
-                    ARG_ANCESTOR, "Search under", true, "", ancestorEntry,
-								 true,true);
-
-            formSB.append(HU.hidden(ARG_ANCESTOR + "_hidden",
-                                    (ancestor != null)
-                                    ? ancestor
-                                    : "", HU.id(ARG_ANCESTOR + "_hidden")));
-            formSB.append(select + "<br>"
-                          + HU.disabledInput(ARG_ANCESTOR,
-                                             (ancestorEntry != null)
-                                             ? ancestorEntry.getName()
-                                             : "", HU.SIZE_30
-                                             + HU.id(ARG_ANCESTOR)));
+								 ARG_ANCESTOR, "Search under", true, "", ancestorEntry,
+								 true,true,"",true);
+	    formSB.append(select);
         }
 
 

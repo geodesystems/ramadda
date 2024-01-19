@@ -7600,17 +7600,17 @@ public class WikiManager extends RepositoryManager
 
         String addEntry = OutputHandler.getSelect(request, textAreaId,
 						  "Entry ID", true, "entryid", entry, false, false,
-						  BUTTONCLASS);
+						  BUTTONCLASS,false);
 
 
 
         String importEntry = OutputHandler.getSelect(request, textAreaId,
 						     "Embed Entry", true, "wikilink", entry, false, false,
-						     BUTTONCLASS);
+						     BUTTONCLASS,false);
 
         String fieldLink = OutputHandler.getSelect(request, textAreaId,
 						   "Field ID", true, "fieldname", entry, false, false,
-						   BUTTONCLASS);
+						   BUTTONCLASS,false);
 
         HU.open(buttons, "div",
                 HU.cssClass("ramadda-menubar")

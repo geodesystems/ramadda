@@ -1059,7 +1059,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                                    String type, Entry entry, boolean addView, boolean addClear)
             throws Exception {
         return getSelect(request, elementId, label, allEntries, type, entry,
-                         addView, addClear, "");
+                         addView, addClear, "",false);
     }
 
     /**
@@ -1081,7 +1081,8 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
     public static String getSelect(Request request, String elementId,
                                    String label, boolean allEntries,
                                    String type, Entry entry,
-                                   boolean addView, boolean addClear, String linkExtra)
+                                   boolean addView, boolean addClear, String linkExtra,
+				   boolean addField)
             throws Exception {
 
         boolean hasType    = Utils.stringDefined(type);
@@ -1094,6 +1095,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                       ? ""
                       : HU.mouseClickHref(event, label,
                                           linkExtra
+					  + HU.cssClass("ramadda-clickable")
                                           + HU.id(selectorId
                                               + "_selectlink"));
         if (addView) {
@@ -1116,6 +1118,21 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                                        + HU.id(selectorId + "_selectlink"));
         }
 
+	if(addField) {
+            link+= HU.hidden(elementId + "_hidden",
+			     (entry != null)
+			     ? entry.getId()
+			     : "", HU.id(elementId + "_hidden"));
+	    link += "<br>";
+	    link+= HU.disabledInput(elementId,
+				    (entry!= null)
+				    ? entry.getName()
+				    : "",
+				    HU.cssClass(HU.CLASS_DISABLEDINPUT+" ramadda-clickable")+
+				    HU.attr("title","Click to select entry")+
+				    HU.attr("onclick",event)+
+				    HU.SIZE_25 + HU.id(elementId));
+	}
         return link;
     }
 
