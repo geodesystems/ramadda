@@ -30,7 +30,9 @@ import java.io.*;
 
 import java.text.SimpleDateFormat;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 
@@ -90,12 +92,14 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	*/
 
 	try {
+	    Request request = getRepository().getAdminRequest();
 	    String table = "TYPE_USGS_GAUGE";
             Statement statement =
                 getDatabaseManager().select("ID,STATE,HUC,COUNTY",
 					    table,
                                             new org.ramadda.util.sql.Clause[] {});
             ResultSet  results = statement.getResultSet();
+
             while (results.next()) {
                 String id  = results.getString(1);
                 String state = results.getString(2);
@@ -106,6 +110,15 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 							 huc!=null?huc.trim():"",
 							 county!=null?county.trim():""});
 		System.err.println("usgs:" + id +" state:" + state +" huc:" + huc +" county:" + county);
+		Entry entry = getEntryManager().getEntry(request,id);
+		if(entry==null) {
+		    System.err.println("usgs: could not find entry:" + id);
+		    continue;
+		}
+		//Force the reindex
+		List<Entry> entries = new ArrayList<Entry>();
+		entries.add(entry);
+		getSearchManager().entriesModified(request,  entries);
             }
             getDatabaseManager().closeAndReleaseConnection(statement);
 	}catch(Exception exc) {
