@@ -284,7 +284,7 @@ editfields="station,data_type,_default"	>
 <![CDATA[+note\nJust need to specify the Station ID. See the map at <a target=_map href=https://www.ndbc.noaa.gov/>nbdc.noaa.gov</a>\n-note]]></property>    
   <column  name="station"  label="Station ID" type="string" cansearch="true"/>
   <column  name="data_type"  label="Data Type" type="enumeration" cansearch="true"
-	   values="txt:standard meteorological data,drift:meteorological data from drifting buoys,cwind:continuous winds data,adcp:acoustic doppler current profiler,ocean:oceanographic data, tide:tide data"/>  
+	   values="txt:standard meteorological data,drift:meteorological data from drifting buoys,cwind:continuous winds data,adcp:acoustic doppler current profiler,ocean:oceanographic data, tide:tide data,spec:spectral wave summary"/>  
 
 
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
@@ -297,7 +297,7 @@ csvcommands4=yy\,month\,dd\,hh\,mm,-,date,-firstcolumns,date
 csvcommands5=-indateformat,yyyy-MM-dd-HH-mm,,-convertdate,date
 csvcommands6=-notcolumns,yy\,month\,dd\,hh\,mm,-change,1-50,MM,NaN
 #convert kts to m/s use the .* pattern since this is a wildcard and the field might not exist
-csvcommands7=-addheader,wdir.unit degT wspd.unit m/s gst.unit m/s  wvht.unit m   dpd.unit sec   apd.unit  sec mwd.unit degT   pres.unit hPa  atmp.unit C  wtmp.unit  C dewp.unit  C vis.unit  nmi ptdy.unit   hPa tide.unit ft date.format_csvcommandspace_{yyyy-MM-dd_csvcommandspace_hh:mm:ss},-print
+csvcommands7=-addheader,steepness.type enumeration wwd.type enumeration swd.type enumeration wdir.unit degT wspd.unit m/s gst.unit m/s  wvht.unit m   dpd.unit sec   apd.unit  sec mwd.unit degT   pres.unit hPa  atmp.unit C  wtmp.unit  C dewp.unit  C vis.unit  nmi ptdy.unit   hPa tide.unit ft date.format_csvcommandspace_{yyyy-MM-dd_csvcommandspace_hh:mm:ss},-print
 </property>
 <property name="mapglyphs">
 props:fontSize:0px,iconSize:75,canvasWidth:500,canvasHeight:100,fill:#efefef,borderWidth:2,borderColor:#000,font:bold 36px sans-serif
