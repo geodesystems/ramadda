@@ -2991,14 +2991,14 @@ var Utils =  {
             obj.css("top",y).css("left",x+10);
         }
     },
-    treeViewClick:function(containerId,viewId,labelId,entryId, url, label, template,icon) {
-	jqid(containerId).find('.ramadda-treeview-entry').removeClass('ramadda-treeview-entry-active');
-	jqid(labelId).addClass('ramadda-treeview-entry-active');
+    framesClick:function(containerId,viewId,labelId,entryId, url, label, template,icon) {
+	jqid(containerId).find('.ramadda-frames-entry').removeClass('ramadda-frames-entry-active');
+	jqid(labelId).addClass('ramadda-frames-entry-active');
 	let href = HU.href(url,
 			   HU.getIconImage('fa-solid fa-link') +  " " +  label,
 			   ['class',CLASS_CLICKABLE]);
         jqid(viewId+'_header').html(href);
-        if (template)
+        if (template && template!='default')
             url = url + "&template=" + template;
 	jqid(viewId).attr("src", url);
     },

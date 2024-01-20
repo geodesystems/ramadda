@@ -83,6 +83,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
                             new WikiTag(WIKI_TAG_FRAMES, null, ATTR_WIDTH,"100%", ATTR_HEIGHT,"500","showIcon","true",
 					"#leftWidth","2",
 					"#rightWidth","10",
+					"#template","page template",
 					"#category.<entry id>","",
 					"#icon","/icons/dots/blue.png"), 
                             new WikiTag(WIKI_TAG_ACCORDION, null, ATTR_TAG, WIKI_TAG_HTML, ATTR_COLLAPSE, "false", "border", "0", ATTR_SHOWLINK, "true", ATTR_SHOWICON, "false",ATTR_TEXTPOSITION, POS_LEFT), 

@@ -3346,7 +3346,7 @@ img.metadata-tag-selected {
     color:black;
 }
 
-.entry-confirm-list a, .ramadda-subheading a, .ramadda-page-heading a, .dbtableheader a, .dbheader a, .db-map-list-outer a, .selectboxit-options a, .entry-tools-box a, .childlist-link, .ramadda-help-heading a, .ramadda-message a, .ramadda-search-provider-list a, .entry-list-row a, .entry-list-simple a, .ramadda-treeview-entries a, .ramadda-links a, .ramadda-heading a, .harvester-row a, .display-contents a, .ramadda-linksheader a, .ramadda-breadcrumbs-list a, .ramadda-page-title a, .entry-list-header a, .ramadda-selectdiv  a, .ramadda-popup  a {
+.entry-confirm-list a, .ramadda-subheading a, .ramadda-page-heading a, .dbtableheader a, .dbheader a, .db-map-list-outer a, .selectboxit-options a, .entry-tools-box a, .childlist-link, .ramadda-help-heading a, .ramadda-message a, .ramadda-search-provider-list a, .entry-list-row a, .entry-list-simple a, .ramadda-frames-entries a, .ramadda-links a, .ramadda-heading a, .harvester-row a, .display-contents a, .ramadda-linksheader a, .ramadda-breadcrumbs-list a, .ramadda-page-title a, .entry-list-header a, .ramadda-selectdiv  a, .ramadda-popup  a {
     text-decoration:none;
 }
 
@@ -5387,25 +5387,25 @@ a.wiki-link-noexist {
 }
 
 
-.ramadda-treeview {
+.ramadda-frames {
     border-top-right-radius: 0px;
     border:1px solid #ccc;
 }
 
-.ramadda-treeview-left {
+.ramadda-frames-left {
     background:#fff;
     padding: 0px;
     margin:0px;
 }
 
 
-.ramadda-treeview-right {
+.ramadda-frames-right {
     margin:0px;
     padding:0px;
     border-left:1px solid #eee;
 }
 
-.ramadda-treeview-entries {
+.ramadda-frames-entries {
     border-top:0px solid transparent;
     padding: 0px;
     float: left; 
@@ -5418,7 +5418,7 @@ a.wiki-link-noexist {
 
 
 
-.ramadda-treeview-header  {
+.ramadda-frames-header  {
     border-top-left-radius: var(--default-radius);
     border-top-right-radius: var(--default-radius);
     margin:0px;
@@ -5428,45 +5428,45 @@ a.wiki-link-noexist {
     background: #fafafa;
 }
 
-.ramadda-treeview-header a {
+.ramadda-frames-header a {
     color: #000;
 }
 
-.ramadda-treeview-entry {
+.ramadda-frames-entry {
     margin: 0px;
     padding:5px;
     border-bottom:1px solid #efefef;
 }
 
-.ramadda-treeview-entry-active {
+.ramadda-frames-entry-active {
     background:var(--highlight-background);
 }
 
 
-.ramadda-treeview-entry:hover {
+.ramadda-frames-entry:hover {
     background: #efefef;
 }
 
-.ramadda-treeview-entry-header {
+.ramadda-frames-entry-header {
     font-weight: bold;
     border-top:1px solid #666;
 
 }
 
-.ramadda-treeview-entry-header:first-child {
+.ramadda-frames-entry-header:first-child {
 }
 
-.ramadda-treeview-entry-header:hover {
+.ramadda-frames-entry-header:hover {
     background: #fff;
 }
 
 
 
-#treeview_view {
+#frames_view {
     border:0px solid #ccc;
 }
 
-#treeview_header {
+#frames_header {
 }
 
 

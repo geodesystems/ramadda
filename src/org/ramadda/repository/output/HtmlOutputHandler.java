@@ -72,8 +72,8 @@ public class HtmlOutputHandler extends OutputHandler {
                        ICON_DATA);
 
     /** _more_ */
-    public static final OutputType OUTPUT_TREEVIEW =
-        new OutputType("Frames", "html.treeview", OutputType.TYPE_VIEW, "",
+    public static final OutputType OUTPUT_FRAMES =
+        new OutputType("Frames", "html.frames", OutputType.TYPE_VIEW, "",
                        "fa-newspaper");
 
     /** _more_ */
@@ -149,7 +149,7 @@ public class HtmlOutputHandler extends OutputHandler {
         addType(OUTPUT_INFO);
         addType(OUTPUT_TABLE);
         addType(OUTPUT_GRID);
-        addType(OUTPUT_TREEVIEW);
+        addType(OUTPUT_FRAMES);
         addType(OUTPUT_GRAPH);
         addType(OUTPUT_INLINE);
         addType(OUTPUT_MAPINFO);
@@ -236,7 +236,7 @@ public class HtmlOutputHandler extends OutputHandler {
             throws Exception {
         OutputType[] types = new OutputType[] { OUTPUT_INFO, OUTPUT_TABLE,
         /*OUTPUT_GRID,*/
-        OUTPUT_TREEVIEW, CalendarOutputHandler.OUTPUT_TIMELINE,
+        OUTPUT_FRAMES, CalendarOutputHandler.OUTPUT_TIMELINE,
                 CalendarOutputHandler.OUTPUT_CALENDAR };
         Appendable sb =
             new StringBuilder(
@@ -287,7 +287,7 @@ public class HtmlOutputHandler extends OutputHandler {
             if (entries.size() > 1) {
                 links.add(makeLink(request, state.getEntry(), OUTPUT_TABLE));
                 links.add(makeLink(request, state.getEntry(),
-                                   OUTPUT_TREEVIEW));
+                                   OUTPUT_FRAMES));
                 //                links.add(makeLink(request, state.getEntry(), OUTPUT_TEST));
                 //                links.add(makeLink(request, state.getEntry(), OUTPUT_GRID));
             }
@@ -666,7 +666,7 @@ public class HtmlOutputHandler extends OutputHandler {
      * @return _more_
      */
     public String getMimeType(OutputType output) {
-        if (output.equals(OUTPUT_GRID) || output.equals(OUTPUT_TREEVIEW)
+        if (output.equals(OUTPUT_GRID) || output.equals(OUTPUT_FRAMES)
                 || output.equals(OUTPUT_TABLE)) {
             return getRepository().getMimeTypeFromSuffix(".html");
         } else if (output.equals(OUTPUT_GRAPH)) {
@@ -1372,12 +1372,12 @@ public class HtmlOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    public Result outputTreeView(Request request, Entry group,
+    public Result outputFrames(Request request, Entry group,
                                  List<Entry> children)
             throws Exception {
         StringBuffer sb = new StringBuffer();
         getPageHandler().entrySectionOpen(request, group, sb, "Frames");
-        makeTreeView(request, children, sb, 750, "500px", true,null);
+        makeFrames(request, children, sb, 750, "500px", null,null);
         getPageHandler().entrySectionClose(request, group, sb);
 
         return makeLinksResult(request, group.getName(), sb,
@@ -1606,16 +1606,15 @@ public class HtmlOutputHandler extends OutputHandler {
      * @param sb _more_
      * @param width _more_
      * @param height _more_
-     * @param noTemplate _more_
+     * @param template _more_
      *
      * @throws Exception _more_
      */
-    public void makeTreeView(Request request, List<Entry> children,
-                             Appendable sb, int width, String height,
-                             boolean noTemplate,
-			     Hashtable props)
+    public void makeFrames(Request request, List<Entry> children,
+			   Appendable sb, int width, String height,
+			   String template,
+			   Hashtable props)
             throws Exception {
-        request.put(ARG_TREEVIEW, "true");
 	if(props == null) props = new Hashtable();
 	String wtr = Utils.getProperty(props,"rightWidth","9");
 	String wtl = Utils.getProperty(props,"leftWidth","3");
@@ -1623,8 +1622,8 @@ public class HtmlOutputHandler extends OutputHandler {
         String entryShowUrl  = request.makeUrl(getRepository().URL_ENTRY_SHOW);
         listSB.append("\n");
         String firstLink = null;
-        String containerId    = HU.getUniqueId("treeview_container");
-        String viewId    = HU.getUniqueId("treeview_");
+        String containerId    = HU.getUniqueId("frames_container");
+        String viewId    = HU.getUniqueId("frames_");
 	boolean showIcon  = Utils.getProperty(props,"showIcon",true);
 	String icon  = Utils.getProperty(props,"icon",null);
 	int cnt= 0;
@@ -1635,12 +1634,12 @@ public class HtmlOutputHandler extends OutputHandler {
 		havePrefix = true;
 		HU.div(listSB,  prefix,
 		       HU.attrs(new String[] {"class",
-			       "ramadda-treeview-entry ramadda-treeview-entry-header"}));
+			       "ramadda-frames-entry ramadda-frames-entry-header"}));
 	    }
 	    cnt++;
             String entryIcon = getPageHandler().getIconUrl(request, child);
 	    if(icon!=null) entryIcon = getPageHandler().getIconUrl(icon);
-	    String labelId    = HU.getUniqueId("treeview_label_");
+	    String labelId    = HU.getUniqueId("frames_label_");
             String label = getEntryManager().getEntryListName(request, child);
             String leftLabel = showIcon?HU.img(entryIcon,"",HU.attr("width",ICON_WIDTH)) + " " + label:label;
             label = label.replace("'", "\\'");
@@ -1655,17 +1654,17 @@ public class HtmlOutputHandler extends OutputHandler {
             url = Utils.concatString(
                 "javascript:",
                 HU.call(
-                    "Utils.treeViewClick",
+                    "Utils.framesClick",
                     HU.jsMakeArgs(
 				  false, HU.squote(containerId),
 				  HU.squote(viewId), HU.squote(labelId),
 				  HU.squote(child.getId()),
-                        HU.squote(url), HU.squote(label), noTemplate
-                    ? "'empty'"
-			: "null",HU.squote(entryIcon))));
+                        HU.squote(url), HU.squote(label),
+				  template==null? HU.squote("empty"):HU.squote(template),
+				  HU.squote(entryIcon))));
             HU.open(listSB, HU.TAG_DIV, HU.attrs(new String[] {"id",labelId,
 			"class",
-			"ramadda-treeview-entry " + (cnt==1?"ramadda-treeview-entry-active":"") }));
+			"ramadda-frames-entry " + (cnt==1?"ramadda-frames-entry-active":"") }));
             HU.href(listSB, url, (havePrefix?"&nbsp;&nbsp;":"")+leftLabel,
                     HU.style("display:inline-block;width:100%;")+HU.attr("title", "Click to view " + label));
             HU.close(listSB, HU.TAG_DIV);
@@ -1674,20 +1673,19 @@ public class HtmlOutputHandler extends OutputHandler {
 
         String left = HU.div(listSB.toString(),
 			     HU.id(containerId)+
-                             HU.cssClass("ramadda-treeview-entries")+
+                             HU.cssClass("ramadda-frames-entries")+
 			     HU.style(HU.css("height", HU.makeDim(height, "px"))));
-	sb.append(HU.comment("begin treeview"));
         sb.append("<div class=\"row\" style=\"margin:0px; \">");
         sb.append("<div class=\"col-md-" + wtl
                   + "  \"  style=\"margin:0px; padding:0px;   \" >");
         sb.append("</div>");
-        sb.append("<div class=\"col-md-" + wtr + " ramadda-treeview-header \"  >");
+        sb.append("<div class=\"col-md-" + wtr + " ramadda-frames-header \"  >");
         HU.div(sb, firstLink, HU.id(viewId + "_header"));
         HU.close(sb,"div","div");
 	sb.append("\n");
-        sb.append("<div class=\"ramadda-treeview\">\n");
+        sb.append("<div class=\"ramadda-frames\">\n");
         sb.append("<div class=\"row\" style=\"margin:0px; \">\n");
-        sb.append("<div class=\"col-md-" + wtl + " ramadda-treeview-left \" >\n");
+        sb.append("<div class=\"col-md-" + wtl + " ramadda-frames-left \" >\n");
         sb.append(left);
         HU.close(sb,"div");
 	sb.append("\n");
@@ -1705,11 +1703,15 @@ public class HtmlOutputHandler extends OutputHandler {
                 }
             }
             initUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW,
-                                       initEntry, (noTemplate
-                    ? "template"
-                    : "dummy"), "empty");
+                                       initEntry);
+	    if(template!=null) {
+		if(!template.equals("default"))
+		    initUrl = HU.url(initUrl, "template",template);
+	    }  else {
+		initUrl = HU.url(initUrl, "template","empty");
+	    }
         }
-	HU.open(sb,"div",HU.cssClass("col-md-" + wtr     + " ramadda-treeview-right") +
+	HU.open(sb,"div",HU.cssClass("col-md-" + wtr     + " ramadda-frames-right") +
 		   HU.style(HU.css("height", HU.makeDim(height, "px"))));
         String attrs = HU.attrs("id", viewId, "src", initUrl, "width",
                                 "" + ((width < 0)
@@ -1717,8 +1719,6 @@ public class HtmlOutputHandler extends OutputHandler {
                                       : width), "height", "100%");
         HU.tag(sb, "iframe", attrs, "");
         HU.close(sb,"div","div","div");
-	sb.append(HU.comment("end treeview"));
-        request.remove(ARG_TREEVIEW);
     }
 
 
@@ -2183,8 +2183,8 @@ public class HtmlOutputHandler extends OutputHandler {
         if (outputType.equals(OUTPUT_GRID)) {
             return outputGrid(request, group, getChildren.get());
         }
-        if (outputType.equals(OUTPUT_TREEVIEW)) {
-            return outputTreeView(request, group, getChildren.get());
+        if (outputType.equals(OUTPUT_FRAMES)) {
+            return outputFrames(request, group, getChildren.get());
         }
 
         if (outputType.equals(OUTPUT_TEST)) {

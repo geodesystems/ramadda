@@ -4325,10 +4325,9 @@ public class WikiManager extends RepositoryManager
             if (children.size() == 0) {
 		return  makeErrorMessage(request,wikiUtil,props,theTag, "No entries available");
             }
-            boolean noTemplate = getProperty(wikiUtil, props, "noTemplate",
-                                             true);
-            getHtmlOutputHandler().makeTreeView(request, children, sb, width,
-						height, noTemplate,props);
+            String template = getProperty(wikiUtil, props, "template", null);
+            getHtmlOutputHandler().makeFrames(request, children, sb, width,
+						height, template,props);
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_ENTRIES_TEMPLATE)) {

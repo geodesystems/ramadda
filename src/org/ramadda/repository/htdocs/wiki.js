@@ -2294,6 +2294,7 @@ WikiEditor.prototype = {
 		{p:'height',ex:'400'},
 		{p:'showIcon',ex:'false'},
 		{p:'leftWidth',ex:'2'},
+		{p:'template',ex:'page template or default'},
 		{p:'rightWidth',ex:'10'},		
 		{p:'noTemplate',ex:'true',tt:'Don\'t use the page template in the frame'}],
 				     this.groupAttributes),
