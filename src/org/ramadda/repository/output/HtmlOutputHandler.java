@@ -1630,7 +1630,7 @@ public class HtmlOutputHandler extends OutputHandler {
 	int cnt= 0;
 	boolean havePrefix = false;
         for (Entry child : children) {
-	    String prefix = (String)props.get("prefix." +child.getId());
+	    String prefix = (String)props.get("category." +child.getId());
 	    if(prefix!=null)  {
 		havePrefix = true;
 		HU.div(listSB,  prefix,
