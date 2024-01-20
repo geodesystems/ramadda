@@ -3011,21 +3011,25 @@ var Utils =  {
 	});
 	let header = jqid(viewId+'_header');
 	header.append(HU.div(['class','ramadda-frames-nav'],
-			     HU.span(['title','View previous','class','ramadda-clickable ramadda-frames-nav-link','data-nav','prev'],
+			     HU.span(['title','View previous','class','ramadda-clickable ramadda-frames-nav-link ramadda-frames-nav-link-prev','data-nav','prev'],
 				     HU.getIconImage('fas fa-caret-left',null,
 						     ['style','font-size:130%']))+
 			     HU.space(1) +
-			     HU.span(['title','View next','class','ramadda-clickable ramadda-frames-nav-link','data-nav','next'],
+			     HU.span(['title','View next','class','ramadda-clickable ramadda-frames-nav-link ramadda-frames-nav-link-next','data-nav','next'],
 				     HU.getIconImage('fas fa-caret-right',null,
 						     ['style','font-size:130%']))));			     
-	header.find('.ramadda-frames-nav-link').click(function() {
-	    let dir = $(this).attr('data-nav');
+	let navClick=nav=>{
+//	    nav.focus();
+	    let dir = nav.attr('data-nav');
 	    let active = list.find('.ramadda-frames-entry-active');
 	    let next;
 	    if(dir=='next') next=active.nextAll('.ramadda-frames-entry');
 	    else next=active.prevAll('.ramadda-frames-entry');	    
 	    if(next.length>0)
 		Utils.framesClick(listId,viewId,next.first(),template);
+	};
+	header.find('.ramadda-frames-nav-link').click(function() {
+	    navClick($(this));
 	});
     },
     copyText: function(str) {
