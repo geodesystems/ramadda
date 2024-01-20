@@ -667,11 +667,24 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	doc.add(new SortedNumericDocValuesField(FIELD_DATE_START, entry.getStartDate()));
 	doc.add(new SortedNumericDocValuesField(FIELD_DATE_END, entry.getEndDate()));	
 
+	StringBuilder fileCorpus = null;
         if (entry.isFile()) {
-	    StringBuilder fileCorpus = new StringBuilder();
+	    fileCorpus = new StringBuilder();
             addContentField(entry, doc, FIELD_CONTENTS, entry.getResource().getTheFile(), true, fileCorpus);
+	} else if(request.get("harvesthtml",false)) {
+	    if(entry.getResource().isUrl()) {
+		String url = entry.getResource().getPath();
+		IO.Result result = IO.getHttpResult(IO.HTTP_METHOD_GET,new URL(url),"");
+		if(!result.getError()) {
+		    fileCorpus=new StringBuilder(result.getResult());
+		} else {
+		    getLogManager().logSpecial("Error reading URL:" + url+ " code:" + result.getCode());
+		    //+     " error:" + result.getResult());
+		}
+	    }
+	}
+        if (fileCorpus!=null) {
 	    corpus.append(fileCorpus);
-
 	    if(/*isNew && */request!=null) {
 		String llmCorpus = fileCorpus.toString();
 		fileCorpus = null;
@@ -679,7 +692,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		if(isNew) {
 		    try {
 			entryChanged |= getLLMManager().applyEntryExtract(request, entry, llmCorpus);
-		    }catch(Throwable thr) {
+		    } catch(Throwable thr) {
 			throw new RuntimeException(thr);
 		    }
 		}
