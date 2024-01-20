@@ -5,6 +5,7 @@
 
   <type name="link"  description="Link"  priority="1" help="A web page link">
      <property name="icon" value="/icons/link.png"/>
+     <property name="upload.flags" value="harvesthtml:Harvest HTML"/>
      <property name="form.file.show" value="false"/>
   </type>
 
