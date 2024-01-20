@@ -1632,9 +1632,7 @@ public class HtmlOutputHandler extends OutputHandler {
 	    String prefix = (String)props.get("category." +child.getId());
 	    if(prefix!=null)  {
 		havePrefix = true;
-		HU.div(listSB,  prefix,
-		       HU.attrs(new String[] {"class",
-			       "ramadda-frames-entry ramadda-frames-entry-header"}));
+		HU.div(listSB,  prefix, HU.attrs(new String[] {"class", "ramadda-frames-category"}));
 	    }
 	    cnt++;
             String entryIcon = getPageHandler().getIconUrl(request, child);
@@ -1651,7 +1649,7 @@ public class HtmlOutputHandler extends OutputHandler {
                     + " " + label, HU.cssClass("ramadda-clickable"));
             }
 
-            url = Utils.concatString(
+            String call = Utils.concatString(
                 "javascript:",
                 HU.call(
                     "Utils.framesClick",
@@ -1659,14 +1657,16 @@ public class HtmlOutputHandler extends OutputHandler {
 				  false, HU.squote(containerId),
 				  HU.squote(viewId), HU.squote(labelId),
 				  HU.squote(child.getId()),
-                        HU.squote(url), HU.squote(label),
+				  HU.squote(url), HU.squote(label),
 				  template==null? HU.squote("empty"):HU.squote(template),
 				  HU.squote(entryIcon))));
             HU.open(listSB, HU.TAG_DIV, HU.attrs(new String[] {"id",labelId,
-			"class",
-			"ramadda-frames-entry " + (cnt==1?"ramadda-frames-entry-active":"") }));
-            HU.href(listSB, url, (havePrefix?"&nbsp;&nbsp;":"")+leftLabel,
-                    HU.style("display:inline-block;width:100%;")+HU.attr("title", "Click to view " + label));
+			"data-template", template==null? HU.squote("empty"):HU.squote(template),
+			"data-url",url,
+			"data-label",label,
+			"class","ramadda-clickable ramadda-frames-entry " + (cnt==1?"ramadda-frames-entry-active":"") }));
+            HU.div(listSB, (havePrefix?"&nbsp;&nbsp;":"")+leftLabel,
+		   HU.style("display:inline-block;width:100%;")+HU.attr("title", "Click to view " + label));
             HU.close(listSB, HU.TAG_DIV);
 	    listSB.append("\n");
         }
@@ -1679,8 +1679,9 @@ public class HtmlOutputHandler extends OutputHandler {
         sb.append("<div class=\"col-md-" + wtl
                   + "  \"  style=\"margin:0px; padding:0px;   \" >");
         sb.append("</div>");
-        sb.append("<div class=\"col-md-" + wtr + " ramadda-frames-header \"  >");
-        HU.div(sb, firstLink, HU.id(viewId + "_header"));
+	HU.open(sb,"div",HU.attrs("class","col-md-" + wtr + " ramadda-frames-header",
+				  "id",viewId + "_header"));
+        HU.div(sb, firstLink, HU.id(viewId + "_header_link"));
         HU.close(sb,"div","div");
 	sb.append("\n");
         sb.append("<div class=\"ramadda-frames\">\n");
@@ -1719,6 +1720,11 @@ public class HtmlOutputHandler extends OutputHandler {
                                       : width), "height", "100%");
         HU.tag(sb, "iframe", attrs, "");
         HU.close(sb,"div","div","div");
+	HU.script(sb, HU.call("Utils.framesInit",
+			      HU.jsMakeArgs(true,containerId, viewId,
+					    template==null? "empty":template)));
+
+
     }
 
 

@@ -2991,16 +2991,42 @@ var Utils =  {
             obj.css("top",y).css("left",x+10);
         }
     },
-    framesClick:function(containerId,viewId,labelId,entryId, url, label, template,icon) {
-	jqid(containerId).find('.ramadda-frames-entry').removeClass('ramadda-frames-entry-active');
-	jqid(labelId).addClass('ramadda-frames-entry-active');
+    framesClick:function(listId,viewId,listEntry, template) {
+	let url = listEntry.attr('data-url');			      
+	let label = listEntry.attr('data-label');
+	jqid(listId).find('.ramadda-frames-entry').removeClass('ramadda-frames-entry-active');
+	listEntry.addClass('ramadda-frames-entry-active');
 	let href = HU.href(url,
 			   HU.getIconImage('fa-solid fa-link') +  " " +  label,
 			   ['class',CLASS_CLICKABLE]);
-        jqid(viewId+'_header').html(href);
+        jqid(viewId+'_header_link').html(href);
         if (template && template!='default')
             url = url + "&template=" + template;
 	jqid(viewId).attr("src", url);
+    },
+    framesInit:function(listId,viewId,template) {
+	let list = jqid(listId);
+	list.find('.ramadda-frames-entry').click(function() {
+	    Utils.framesClick(listId,viewId,$(this),template);
+	});
+	let header = jqid(viewId+'_header');
+	header.append(HU.div(['class','ramadda-frames-nav'],
+			     HU.span(['title','View previous','class','ramadda-clickable ramadda-frames-nav-link','data-nav','prev'],
+				     HU.getIconImage('fas fa-caret-left',null,
+						     ['style','font-size:130%']))+
+			     HU.space(1) +
+			     HU.span(['title','View next','class','ramadda-clickable ramadda-frames-nav-link','data-nav','next'],
+				     HU.getIconImage('fas fa-caret-right',null,
+						     ['style','font-size:130%']))));			     
+	header.find('.ramadda-frames-nav-link').click(function() {
+	    let dir = $(this).attr('data-nav');
+	    let active = list.find('.ramadda-frames-entry-active');
+	    let next;
+	    if(dir=='next') next=active.nextAll('.ramadda-frames-entry');
+	    else next=active.prevAll('.ramadda-frames-entry');	    
+	    if(next.length>0)
+		Utils.framesClick(listId,viewId,next.first(),template);
+	});
     },
     copyText: function(str) {
         const el = document.createElement('textarea');

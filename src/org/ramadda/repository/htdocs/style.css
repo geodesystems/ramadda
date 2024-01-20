@@ -5419,6 +5419,7 @@ a.wiki-link-noexist {
 
 
 .ramadda-frames-header  {
+    position:relative;
     border-top-left-radius: var(--default-radius);
     border-top-right-radius: var(--default-radius);
     margin:0px;
@@ -5432,7 +5433,14 @@ a.wiki-link-noexist {
     color: #000;
 }
 
-.ramadda-frames-entry {
+.ramadda-frames-nav  {
+    position:absolute;
+    right:10px;
+    top:4px;
+}
+
+
+.ramadda-frames-category,.ramadda-frames-entry {
     margin: 0px;
     padding:5px;
     border-bottom:1px solid #efefef;
@@ -5447,7 +5455,7 @@ a.wiki-link-noexist {
     background: #efefef;
 }
 
-.ramadda-frames-entry-header {
+.ramadda-frames-category {
     font-weight: bold;
     border-top:1px solid #666;
 
