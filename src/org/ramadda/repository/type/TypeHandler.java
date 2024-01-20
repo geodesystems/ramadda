@@ -5413,7 +5413,18 @@ public class TypeHandler extends RepositoryManager {
      */
     public String getFileExtras(Request request, Entry entry)
             throws Exception {
+	StringBuilder extras = new StringBuilder();
 	String space = HU.space(3);
+	String uploadFlags = getTypeProperty("upload.flags",null);
+	if(uploadFlags!=null) {
+	    for(String pair:Utils.split(uploadFlags,",",true,true)) {
+		List<String> toks = Utils.splitUpTo(pair,":",3);
+		extras.append(HU.labeledCheckbox(toks.get(0), "true", toks.size()==3?toks.get(2).equals("true"):false, toks.size()>=2?toks.get(1):toks.get(0)));
+		extras.append("<br>");
+	    }
+	}
+
+
         String unzipWidget =
             HU.labeledCheckbox(ARG_FILE_UNZIP, "true", true, "Unzip archive")+
 	    space +
@@ -5431,7 +5442,6 @@ public class TypeHandler extends RepositoryManager {
 			       request.get(ARG_STRIPEXIF,false),
 			       "Strip metadata from images");
 	    
-
 
 	String extract = getLLMManager().getNewEntryExtract(request);
 
@@ -5463,7 +5473,7 @@ public class TypeHandler extends RepositoryManager {
         }
 
 
-	StringBuilder extras = new StringBuilder();
+
 
 	BiConsumer<String,String> extra = (label,contents)->{
 	    if(contents.length()==0) return;
