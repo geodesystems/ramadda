@@ -2242,6 +2242,40 @@ public class EntryManager extends RepositoryManager {
 
 
 
+    public Result processEntryChangeField(Request request) throws Exception {
+	StringBuilder sb = new StringBuilder();
+	Entry entry = null;
+	try {
+	    entry = getEntry(request);
+	} catch(Exception exc) {
+	    getLogManager().logError("Processing entryChangeField",exc);
+	}
+	if(entry==null) {
+	    sb.append(JsonUtil.mapAndQuote(Utils.makeList("error", "Could not find entry")));
+	    return new Result("", sb, JsonUtil.MIMETYPE);
+	}
+	if ( !getAccessManager().canDoEdit(request, entry)) {
+	    sb.append(JsonUtil.mapAndQuote(Utils.makeList("error", "No permission to edit entry")));
+	    return new Result("", sb, JsonUtil.MIMETYPE);
+	}
+
+	String what = request.getString("what","");
+	try {
+	    if(what.equals("entryorder")) {
+		entry.setEntryOrder(request.get("value",999));
+	    }   else {
+		sb.append(JsonUtil.mapAndQuote(Utils.makeList("error", "Unknown field:" +what)));
+		return new Result("", sb, JsonUtil.MIMETYPE);
+	    }
+	} catch(Exception exc) {
+	    sb.append(JsonUtil.mapAndQuote(Utils.makeList("error", "An error has occurred:" + exc)));
+	    return new Result("", sb, JsonUtil.MIMETYPE);
+	}
+	updateEntry(request, entry);
+	sb.append(JsonUtil.mapAndQuote(Utils.makeList("message", "OK, field has changed")));
+	return new Result("", sb, JsonUtil.MIMETYPE);
+    }
+
     public Result processEntrySetFile(final Request request) throws Exception {
 	getAuthManager().ensureAuthToken(request);
 	StringBuilder sb = new StringBuilder();
