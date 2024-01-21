@@ -416,6 +416,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
             window.location = url;
 	});
 
+
+
 	//Don't do this as it screws up the width of the menu sometimes
 	//	    HU.initSelect($("#"+id+"_form_action"));
 
@@ -451,6 +453,9 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    checkForm();
 	}
 	RamaddaUtil.showEntryTable(tableId,props,cols,id,entryMap,initFunc,entries);	
+
+
+
     },
 
     showEntryTable:function(id,props,cols,mainId,entryMap,initFunc,entries,secondTime) {
@@ -592,9 +597,41 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	html = $(html).appendTo(container);
 	Translate.translate(html);
 
+	main.find('.ramadda-edit-entryorder').keypress(function(event) {
+	    if(event.which!=13) {
+		return;
+	    }
+	    let entryId = $(this).attr('entryid');
+	    let order = $(this).val().trim();
+            let url = ramaddaBaseUrl + "/entry/changefield?entryid=" + entryId+'&what=entryorder&value='+ order;
+            $.getJSON(url, function(data) {
+		if(data.error) {
+		    alert('An error has occurred: '+data.error);
+		    return;
+		}
+            }).fail(data=>{
+		console.dir(data);
+		alert('An error occurred:' + data);
+	    });
+
+	    if (event.preventDefault) {
+		event.preventDefault();
+	    } else {
+		event.returnValue = false;
+		return false;
+	    }
+	    $(this).css('background','yellow');
+	    setTimeout(()=>{
+		$(this).css('background','#fff');
+	    },4000);
+	});
+
+
+
 	html.find('.entry-row').tooltip({
-	    show: { effect: 'slideDown', delay: 1000, duration: 500 },
+	    show: { effect: 'slideDown', delay: 1500, duration: 300 },
 	    content: function () {
+		if($(this).hasClass('ramadda-edit-input')) return null;
 		let title = $(this).attr('title');
 		let icon = $(this).attr('data-icon');		
 		let thumb = $(this).attr('data-thumbnail');		

@@ -784,7 +784,12 @@ function Entry(props) {
 		if(this.getFilesize()) label+=" " + this.getFormattedFilesize();
 		return   HU.href(url,label);
 	    }
-	    if(what=="entryorder") return this.order;
+	    if(what=="entryorder") {
+		if(!this.canEdit()) {
+		    return this.order;
+		}
+		return HU.input(null,this.order,['size','3','entryid',this.getId(),'title','Edit order','class',' ramadda-edit-entryorder']);
+	    }
 	    if(what=="creator") {
 		let searchUrl = RamaddaUtil.getUrl('/search/do?user_id='+ this.creator+'&search.submit=true');
 		let created = HU.href(searchUrl,
