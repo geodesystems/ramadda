@@ -5564,7 +5564,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         });
     },
     input: function(name, value, attrs) {
-        return "<input " + HtmlUtils.attrs(attrs) + HtmlUtils.attrs(["name", name, "value", value]) + ">";
+        return "<input " + HtmlUtils.attrs(attrs) + HtmlUtils.attrs(["value", value]) +(name==null?'':HtmlUtils.attrs("name", name))  + ">";
     },
     hidden: function(name, value, attrs) {
         return "<input type=hidden " + HtmlUtils.attrs(attrs) + HtmlUtils.attrs(["name", name, "value", value]) + ">";
