@@ -1384,6 +1384,7 @@ public class TypeHandler extends RepositoryManager {
      * @return _more_
      */
     public String getTypePermissionName(String type) {
+	if(true) return null;
         if (type.equals(Permission.ACTION_TYPE1)) {
             return "Type specific 1";
         }

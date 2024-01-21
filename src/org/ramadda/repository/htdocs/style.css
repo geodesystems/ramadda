@@ -3951,7 +3951,6 @@ td .ramadda-role {
 
 .ramadda-access-summary-header  {
     border-bottom: 2px #000 solid;
-    font-size:9pt;
 }
 
 .ramadda-access-summary-header td {
@@ -3965,7 +3964,6 @@ td .ramadda-role {
 
 .ramadda-access-summary td {
     border: 1px #efefef solid;
-    font-size:9pt;
 }
 
 .ramadda-user-activity  {

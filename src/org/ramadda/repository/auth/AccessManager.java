@@ -1884,12 +1884,11 @@ public class AccessManager extends RepositoryManager {
             String actionName = Permission.ACTION_NAMES[i];
             String action     = Permission.ACTIONS[i];
             if (action.equals(Permission.ACTION_TYPE1)) {
-                actionName = entry.getTypeHandler().getTypePermissionName(
-									  Permission.ACTION_TYPE1);
+                actionName = entry.getTypeHandler().getTypePermissionName(Permission.ACTION_TYPE1);
             } else if (action.equals(Permission.ACTION_TYPE2)) {
-                actionName = entry.getTypeHandler().getTypePermissionName(
-									  Permission.ACTION_TYPE2);
+                actionName = entry.getTypeHandler().getTypePermissionName(Permission.ACTION_TYPE2);
             }
+	    if(actionName==null) continue;
             String label =
                 HtmlUtils.href(
 			       getRepository().getUrlBase() + "/userguide/access.html#"

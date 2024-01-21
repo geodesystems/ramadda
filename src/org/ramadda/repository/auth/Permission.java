@@ -59,14 +59,16 @@ public class Permission {
         ACTION_VIEW, ACTION_FILE, ACTION_EXPORT, ACTION_EDIT, ACTION_NEW,
         ACTION_DELETE, ACTION_UPLOAD,
         //ACTION_COMMENT,
-        ACTION_VIEWCHILDREN, ACTION_TYPE1, ACTION_TYPE2
+	//        ACTION_VIEWCHILDREN, 
+	//	ACTION_TYPE1, ACTION_TYPE2
     };
 
     /** _more_ */
     public static final String[] ACTION_NAMES = {
         "View", "File", "Export", "Edit", "New", "Delete", "Anon. Upload",
         //      "Comment",
-        "View Children", "Type specific 1", "Type specific 2"
+        //"View Children", 
+	//	"Type specific 1", "Type specific 2"
     };
 
 
