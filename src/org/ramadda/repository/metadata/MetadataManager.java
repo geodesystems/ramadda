@@ -354,6 +354,8 @@ public class MetadataManager extends RepositoryManager {
         }
         sb.append("</div>");
         getPageHandler().sectionClose(request, sb);
+	HU.script(sb,"Utils.initCopyable('.ramadda-copyable');");
+
 
         return new Result("Licenses", sb);
     }
@@ -378,7 +380,8 @@ public class MetadataManager extends RepositoryManager {
             contents = HU.href(license.getUrl(), contents, "target=_other");
         }
 	if(includeId)
-	    contents+=HU.br() + "ID: " + license.getId();
+	    contents+=HU.br() + "ID: " + HU.span(license.getId(),
+						 HU.attrs("class","ramadda-copyable","copy-message","License ID copied to clipboard"));
 
         String icon = license.getIcon();
         String text = license.getText();
@@ -400,7 +403,6 @@ public class MetadataManager extends RepositoryManager {
         if (license.getUrl() != null) {
             contents = HU.href(license.getUrl(), contents, "target=_other");
         }
-
         return contents;
     }
 
