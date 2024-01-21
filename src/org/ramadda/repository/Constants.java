@@ -1754,6 +1754,9 @@ public interface Constants {
     public static final String PROP_ENTRY_BREADCRUMBS =
         "ramadda.entry.breadcrumbs";
 
+    public static final String PROP_ENTRY_POPUP =
+        "ramadda.entry.popup";    
+
     /** _more_ */
     public static final String PROP_FACEBOOK_CONNECT_KEY =
         "ramadda.facebook.connect.key";

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head><title>${title}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" type="image/png" href="${cdnpath}/favicon.png"/>
+<properties>
+name=Just Popup
+id=justpopup
+</properties>
+${imports}
+<style type="text/css">
+.ramadda-header {padding: 0px;padding-left: 6px;padding-right: 6px;}
+.ramadda-breadcrumbs-menu-button{display:block; line-height:0.5em;line-height: 10px; width: 18px;}
+</style>
+${headfinal}
+</head>
+<body>
+${entry.popup}
+<div class="ramadda-outercontents">
+<div class="ramadda-innercontent">
+${content}
+</div>
+</div> 
+<div class="ramadda-footer">
+${footer}
+${footer.acknowledgement}  
+</div>
+${bottom}
+</body>
+</html>

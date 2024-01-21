@@ -1,3 +1,4 @@
+
 /**
 Copyright (c) 2008-2023 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
@@ -135,6 +136,7 @@ public class PageHandler extends RepositoryManager {
     /** html template macro */
     public static final String MACRO_ENTRY_BREADCRUMBS = "entry.breadcrumbs";
 
+    public static final String MACRO_ENTRY_POPUP = "entry.popup";
     /** html template macro */
     public static final String MACRO_HEADER_IMAGE = "header.image";
 
@@ -708,6 +710,9 @@ public class PageHandler extends RepositoryManager {
         String entryBreadcrumbs =
             (String) result.getProperty(PROP_ENTRY_BREADCRUMBS,
                                         (String) null);
+        String entryPopup =
+            (String) result.getProperty(PROP_ENTRY_POPUP,
+                                        (String) null);	
         String     header        = entryHeader;
 
 	String headFinal = "";
@@ -913,11 +918,11 @@ public class PageHandler extends RepositoryManager {
 	    (String) result.getProperty(PROP_ENTRY_NAME,  "RAMADDA"),
 	    MACRO_ENTRY_URL,  
 	    (String) result.getProperty(PROP_ENTRY_URL,  getRepository().getUrlBase()),
-            MACRO_ENTRY_FOOTER, entryFooter, MACRO_ENTRY_BREADCRUMBS,
+            MACRO_ENTRY_FOOTER, entryFooter, MACRO_ENTRY_POPUP,entryPopup,
+	    MACRO_ENTRY_BREADCRUMBS,
             entryBreadcrumbs, MACRO_IMPORTS, imports, MACRO_HEADFINAL, headFinal,
             MACRO_ROOT, repository.getUrlBase(),
         };
-
 
         long                      t2     = System.currentTimeMillis();
         String                    html   = template;
@@ -2694,7 +2699,7 @@ public class PageHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public String getEntryHeader(Request request, Entry entry,
-                                 Appendable title)
+                                 Appendable title,Appendable entryMenu)
             throws Exception {
 
         if (entry == null) {
@@ -2719,19 +2724,21 @@ public class PageHandler extends RepositoryManager {
 
 
         String        menuId = HU.getUniqueId("menulink");
-        String menuLinkImg =
-            HU.span(HU.img("fas fa-caret-down"),
-                   HU.attr("id", menuId) + HU.attr("title", "Entry menu")
-                   + HU.cssClass(
-                       "ramadda-breadcrumbs-menu-button ramadda-clickable"));
+        String menuLinkImg =      HU.img("fas fa-caret-down");
+	//                   + HU.cssClass(
+	//                       "ramadda-breadcrumbs-menu-button ramadda-clickable"));
 
         String menuLink =
             HU.span(menuLinkImg,
+                   HU.attr("id", menuId) + HU.attr("title", "Entry menu")+
+		     HU.cssClass(
+                       "ramadda-breadcrumbs-menu-button ramadda-clickable") +
                     HU.onMouseClick(HU.call("RamaddaUtils.showEntryPopup",
                                             HU.squote(menuId),
                                             HU.squote(entry.getId()),
                                             HU.squote(headerLabel))));
 
+	entryMenu.append(menuLink);
         List<Entry>  parents = getEntryManager().getParents(request, entry);
         List<String> titleList = new ArrayList();
         List<String> breadcrumbs = makeBreadcrumbList(request, parents,
