@@ -182,6 +182,16 @@ var Utils =  {
             timer = setTimeout(() => {f.apply(this, args)}, delay);
 	}
     },
+    initCopyable: function(selector) {
+	$(selector).each(function(){
+	    $(this).addClass('ramadda-clickable');
+	    $(this).attr('title','Click to copy');
+	    $(this).click(()=>{
+		Utils.copyToClipboard($(this).html());
+		alert($(this).attr('copy-message')??'Text copied to clipboard');
+	    });
+	});
+    },
     initPage: function() {
         this.initContent();
         this.pageLoaded = true;
