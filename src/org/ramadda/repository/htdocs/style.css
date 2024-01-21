@@ -3417,10 +3417,14 @@ a.btn-primary:link, a.btn-primary  {
   background-color: rgba(0,0,0,0.4); 
 }
 
+.ramadda-modal-strict {
+    background-color: rgba(180,180,180,0.98); 
+}
+
 .ramadda-modal-contents {
     background:#fff;
     position:absolute;
-    left:5px;
+    left:100px;
     top:100px;
 }
 
@@ -3907,6 +3911,12 @@ label {
 .ramadda-user-row td {
     padding: 5px;
 }
+
+.ramadda-license-dialog {
+    width: 500px;
+    margin:8px;
+}
+
 
 .ramadda-licenses-box {
     margin-left:20px;

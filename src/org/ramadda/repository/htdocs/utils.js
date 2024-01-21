@@ -145,8 +145,49 @@ var Utils =  {
 	    window[id] = what;
 	}
     },
+    checkLicense:function(domId,licenseId,args) {
+	let opts = {
+	    message:"To access this content do you agree with the following license?",
+	    showLicense:true,
+	    suffix:'',
+	    onlyAnonymous:false,
+	    redirect:ramaddaBaseUrl
+	}
+	if(args) $.extend(opts,args);
+	let text = jqid(domId).html();
+	let key = 'licenseagree_' + licenseId;
+	let agreed = Utils.getLocalStorage(key);
+	if(opts.onlyAnonymous && !Utils.isAnonymous()) return;
+	if(!agreed) {
+	    let buttonList = [HU.div(['action','ok','class','ramadda-button ' + CLASS_CLICKABLE],
+				     "Yes"),
+			      HU.div(['action','no','class','ramadda-button ' + CLASS_CLICKABLE],"No")]
+
+	    let buttons = HU.buttons(buttonList);
+	    let html = HU.div([ATTR_CLASS,'ramadda-license-dialog'], opts.message+
+			      (opts.showLicense?HU.div([],text):'<br>')+
+			      opts.suffix+
+			      buttons);
+
+	    let dialog =  HU.makeDialog({anchor:$(window),
+					 at:'left+100 top+100',
+					 my:'left top',
+					 content:html,
+					 remove:false,modalStrict:true,sticky:true});
+
+	    dialog.find('.ramadda-button').click(function() {
+		if($(this).attr('action')!='ok') {
+		    window.location.href=opts.redirect;
+		    return;
+		}
+		Utils.setLocalStorage(key, true);
+		dialog.remove();
+	    });
+	}
+    },
+
     /**
-       make and return a clopy copy of any objects given as arguments
+       make and return a copy of any objects given as arguments
        this can handle null args
      */
     clone:function() {
@@ -4379,6 +4420,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         HtmlUtils.hidePopupObject(null,true);
         let opts  = {
             modal:false,
+	    modalStrict:false,
             modalContentsCss:"",
             sticky:false,
             content:null,
@@ -4474,9 +4516,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
 
         let innerId = HU.getUniqueId("model_inner");
-        if(opts.modal) {
+        if(opts.modal || opts.modalStrict) {
             html  = HU.div([ID, innerId, STYLE,opts.modalContentsCss,CLASS,"ramadda-modal-contents"],html);
-            html = HU.div([CLASS,"ramadda-modal"],html);
+            html = HU.div([CLASS,'ramadda-modal ' + (opts.modalStrict?'ramadda-modal-strict':'')],html);
         }
 
         let popup=   $(html).appendTo("body");

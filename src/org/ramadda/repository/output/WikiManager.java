@@ -2530,8 +2530,9 @@ public class WikiManager extends RepositoryManager
 	    }
 	    getUserManager().makeLoginForm(sb,request,"",false,userId);
 	    return sb.toString();
-        } else if (theTag.equals("license")) {
+        } else if (theTag.equals(WIKI_TAG_LICENSE)) {
 	    String prefix = getProperty(wikiUtil,props,"textBefore","");
+	    String requireId = getProperty(wikiUtil,props,"requireId",null);
 	    if(stringDefined(prefix))
 		prefix=  prefix+HU.space(1);
 	    String text = getProperty(wikiUtil,props,"textAfter","");
@@ -2565,7 +2566,26 @@ public class WikiManager extends RepositoryManager
 	    }
 	    String url = license.getUrl();
             if(url!=null) result =  HU.href(url, result, HU.attrs("target","_other","style","text-decoration:none;"));
-	    return HU.div(prefix+result + text,HU.style(style));
+
+	    String id = HU.getUniqueId("license_");
+	    String contents = HU.div(HU.div(prefix+result + text,HU.style(style)),
+				     HU.id(id));
+	    if(stringDefined(requireId)) {
+		List<String> opts = new ArrayList<String>();
+		String message = getProperty(wikiUtil, props, "requireMessage", null);
+		if(message!=null) Utils.add(opts,"message",JsonUtil.quote(message));
+		String suffix = getProperty(wikiUtil, props, "requireSuffix", null);
+		if(suffix!=null) Utils.add(opts,"suffix",JsonUtil.quote(suffix));
+		String redirect = getProperty(wikiUtil, props, "requireRedirect", null);
+		if(redirect!=null) Utils.add(opts,"redirect",JsonUtil.quote(redirect));		
+		String showLicense = getProperty(wikiUtil, props, "requireShowLicense", null);
+		if(showLicense!=null) Utils.add(opts,"showLicense",showLicense);				
+		String onlyAnonymous = getProperty(wikiUtil, props, "requireOnlyAnonymous", null);
+		if(onlyAnonymous!=null) Utils.add(opts,"onlyAnonymous",onlyAnonymous);				
+                contents+=HU.script(HU.call("Utils.checkLicense",HU.squote(id),HU.squote(requireId),
+					    JsonUtil.map(opts)));
+	    }
+	    return  contents;
         } else if (theTag.equals(WIKI_TAG_THIS)) {
 	    return entry.getId();
         } else if (theTag.equals(WIKI_TAG_ANCESTOR)) {
