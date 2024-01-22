@@ -1,6 +1,6 @@
 {"name":"Licenses from Local Contexts - <a href=https://localcontexts.org/>https://localcontexts.org/</a>",
 "priority":10,
-"ignorelicenses":[{"id":"localcontexts-label-tk-a",
+"licenses":[{"id":"localcontexts-label-tk-a",
 "name":"Local Contexts Label TK Attribution",
 "icon":"/licenses/localcontexts/label_tk_a.png",
 	     "url":"https://localcontexts.org/label/tk-attribution/",
