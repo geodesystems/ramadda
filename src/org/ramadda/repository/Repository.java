@@ -356,6 +356,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private Properties mimeTypes;
 
+    /**  */
+    private String installPassword;
+
+
     /** _more_ */
     private Properties localProperties = new Properties();
 
@@ -678,6 +682,61 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
     }
+
+    /**
+     *  @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public synchronized String getInstallPassword() throws Exception {
+        if ( !Utils.stringDefined(installPassword)) {
+            installPassword =
+                getRepository().getProperty(PROP_INSTALL_PASSWORD,
+                                            (String) null);
+        }
+        if ( !Utils.stringDefined(installPassword)) {
+            //Generate an install password
+            File install = new File(
+                               IOUtil.joinDir(
+                                   getStorageManager().getRepositoryDir(),
+                                   "install.properties"));
+            if ( !install.exists()) {
+                installPassword = Utils.generatePassword(6);
+                System.err.println("RAMADDA: install password created in: " + install);
+                System.err.println("RAMADDA: install password: "
+                                   + installPassword);
+                StringBuilder sb = new StringBuilder();
+                sb.append(
+                    "#This is a generated password used in the install process\n");
+                sb.append(PROP_INSTALL_PASSWORD + "=" + installPassword
+                          + "\n\n");
+                try (FileOutputStream fos = new FileOutputStream(install)) {
+                    IOUtil.write(fos, sb.toString());
+                }
+            }
+
+            File initPropertiesFile = new File(
+                               IOUtil.joinDir(
+                                   getStorageManager().getRepositoryDir(),
+                                   "repository.properties"));
+            if ( !initPropertiesFile.exists()) {
+		String properties = getStorageManager().readUncheckedSystemResource("/org/ramadda/repository/resources/init.repository.properties");
+
+                try (FileOutputStream fos = new FileOutputStream(initPropertiesFile)) {
+                    IOUtil.write(fos, properties);
+                }
+            }
+
+
+
+        }
+
+        return installPassword;
+    }
+
+
+
+
 
 
 
@@ -1292,6 +1351,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
             } else if (arg.equals("-dump")) {
                 dumpFile = args[i + 1];
                 i++;
+            } else if (arg.equals("-installpassword")) {
+                installPassword = args[i + 1];
+                i++;		
             } else if (arg.equals("-startup")) {
                 startupScript = args[i + 1];
                 i++;
@@ -2857,7 +2919,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     /** _more_ */
     private static final String USAGE_MESSAGE =
-        "\nUsage: repository\n\t-admin <admin name> <admin password>\n\t-port <http port>\n\t-Dname=value (e.g., -Dramadda_home=/path/to/home/dir)";
+        "\nUsage: repository\n\t-installpassword <password>\n\t-admin <admin name> <admin password>\n\t-port <http port>\n\t-Dname=value (e.g., -Dramadda_home=/path/to/home/dir)";
 
     /**
      * _more_
@@ -6868,13 +6930,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @throws Exception _more_
      */
-    public Request getAdminRequest() throws Exception {
-        User    user    = getUserManager().getAdminUser();
-        Request request = new Request(getRepository(), "", new Hashtable());
-        request.setUser(user);
-        request.setSessionId(getGUID());
-
-        return request;
+    public Request getAdminRequest()  {
+	try {
+	    User    user    = getUserManager().getAdminUser();
+	    Request request = new Request(getRepository(), "", new Hashtable());
+	    request.setUser(user);
+	    request.setSessionId(getGUID());
+	    return request;
+	}catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
     }
 
     /**
@@ -7352,8 +7417,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public void checkModifiedEntries(final Request request, final List<Entry> entries) {
         Misc.run(new Runnable() {
 		public void run() {
+		    Request theRequest = request;
+		    if(theRequest==null) theRequest=getAdminRequest();
+
 		    for (EntryChecker entryMonitor : getEntryCheckers()) {
-			entryMonitor.entriesModified(request, entries);
+			entryMonitor.entriesModified(theRequest, entries);
 		    }
 		}
 	    });

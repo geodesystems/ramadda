@@ -286,9 +286,6 @@ public class Admin extends RepositoryManager {
     /** _more_ */
     private String regId = "";
 
-    /**  */
-    private String installPassword;
-
 
     /**
      * _more_
@@ -306,8 +303,7 @@ public class Admin extends RepositoryManager {
      * @throws Exception _more_
      */
     public void doFinalInitialization() throws Exception {
-        //create the install password
-        getInstallPassword();
+        getRepository().getInstallPassword();
 
         if (getRepository().getLocalProperty(PROP_ADMIN_INCLUDESQL, false)) {
             adminUrls.add(URL_ADMIN_SQL);
@@ -573,57 +569,6 @@ public class Admin extends RepositoryManager {
     }
 
 
-    /**
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
-    private synchronized String getInstallPassword() throws Exception {
-        if ( !Utils.stringDefined(installPassword)) {
-            installPassword =
-                getRepository().getProperty(PROP_INSTALL_PASSWORD,
-                                            (String) null);
-        }
-        if ( !Utils.stringDefined(installPassword)) {
-            //Generate an install password
-            File install = new File(
-                               IOUtil.joinDir(
-                                   getStorageManager().getRepositoryDir(),
-                                   "install.properties"));
-            if ( !install.exists()) {
-                installPassword = Utils.generatePassword(6);
-                System.err.println("RAMADDA: install password created in: " + install);
-                System.err.println("RAMADDA: install password: "
-                                   + installPassword);
-                StringBuilder sb = new StringBuilder();
-                sb.append(
-                    "#This is a generated password used in the install process\n");
-                sb.append(PROP_INSTALL_PASSWORD + "=" + installPassword
-                          + "\n\n");
-                try (FileOutputStream fos = new FileOutputStream(install)) {
-                    IOUtil.write(fos, sb.toString());
-                }
-            }
-
-            File initPropertiesFile = new File(
-                               IOUtil.joinDir(
-                                   getStorageManager().getRepositoryDir(),
-                                   "repository.properties"));
-            if ( !initPropertiesFile.exists()) {
-		String properties = getStorageManager().readUncheckedSystemResource("/org/ramadda/repository/resources/init.repository.properties");
-
-                try (FileOutputStream fos = new FileOutputStream(initPropertiesFile)) {
-                    IOUtil.write(fos, properties);
-                }
-            }
-
-
-
-        }
-
-        return installPassword;
-    }
-
 
 
     /**
@@ -652,7 +597,7 @@ public class Admin extends RepositoryManager {
     public synchronized Result doInstall(Request request) throws Exception {
 
         debugInit("doInitialization");
-        String installPassword = getInstallPassword();
+        String installPassword = getRepository().getInstallPassword();
         if ( !Utils.stringDefined(installPassword)) {
             return new Result(
                 "Install Error",
