@@ -387,7 +387,7 @@ public class MetadataManager extends RepositoryManager {
         String text = license.getText();
         if (icon != null) {
             String extra = HU.image(icon,
-                                    HU.attrs("width", "120", "border", "0"));
+                                    HU.attrs("width", "40", "border", "0"));
             if (Utils.stringDefined(license.getUrl())) {
                 extra = HU.href(license.getUrl(), extra, "target=_other");
             }

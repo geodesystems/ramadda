@@ -41,7 +41,7 @@
    --wikieditor-preview-z-index:1000;
    --wikieditor-preview-handle-z-index:1001;
    --popup-z-index:  3000;
-   --modal-z-index:4000;
+   --modal-z-index:15000;
    --header-z-index:100;
    --image-edit-z-index:1000;
 }
@@ -3920,18 +3920,29 @@ label {
 
 .ramadda-licenses-box {
     margin-left:20px;
-    max-height:300px;
+    max-height:600px;
     overflow-y:auto;
 }
 
 .ramadda-license-text {
     display:inline-block;
-    max-width:200px;
+    max-width:400px;
     overflow-x:auto;
     max-height:100px;    
     overflow-y:auto;    
     margin-left:10px;
 }
+.ramadda-license-description {
+    font-style:italic;
+    max-width:400px;
+    overflow-x:auto;
+    max-height:100px;    
+    overflow-y:auto;    
+    margin-left:10px;
+}
+
+
+
 .ramadda-datapolicy-description {
 }
 .ramadda-datapolicy-citation {

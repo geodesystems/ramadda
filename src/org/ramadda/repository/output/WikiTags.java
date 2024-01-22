@@ -183,6 +183,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					"includeName","true",
 					"#textBefore","extra text",
 					"#textAfter","extra text",					
+					"showDescription","false",
 					"decorate","true",
 					"#style","",
 					"#see_licenses_at","https://ramadda.org/repository/licenses",
