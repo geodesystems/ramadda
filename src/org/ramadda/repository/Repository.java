@@ -2919,7 +2919,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     /** _more_ */
     private static final String USAGE_MESSAGE =
-        "\nUsage: repository\n\t-installpassword <password>\n\t-admin <admin name> <admin password>\n\t-port <http port>\n\t-Dname=value (e.g., -Dramadda_home=/path/to/home/dir)";
+        "\nUsage: repository\n\t-installpassword <password>\n\n-home /path/to/ramadda/home\n\t-admin <admin name> <admin password>\n\t-port <http port>\n\t-Dname=value";
 
     /**
      * _more_
