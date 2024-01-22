@@ -599,7 +599,7 @@ public class LLMManager extends  AdminHandlerImpl {
 			sb.append(line);
 			sb.append("\n");
 		    }
-		    summary = "+toggleopen Summary\n+callout-info\n<snippet>\n" + sb+"\n</snippet>\n-callout-info\n-toggle\n";
+		    summary = "+toggleopen Summary\n+callout-info\n" + sb+"\n-callout-info\n-toggle\n";
 		    entryChanged = true;
 		    entry.setDescription(summary+"\n"+entry.getDescription());
 		}
