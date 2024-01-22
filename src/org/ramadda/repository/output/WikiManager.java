@@ -2572,7 +2572,8 @@ public class WikiManager extends RepositoryManager
 	    }
 
 	    String id = HU.getUniqueId("license_");
-	    String contents = HU.div(HU.div(prefix+result + text,HU.style(style)),
+	    String contents = HU.div(HU.div(prefix+result + text,HU.cssClass("ramadda-license")+
+					    HU.style(style)),
 				     HU.id(id));
 	    if(stringDefined(requireId)) {
 		List<String> opts = new ArrayList<String>();
