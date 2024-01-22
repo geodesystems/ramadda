@@ -693,28 +693,28 @@ public class Repository extends RepositoryBase implements RequestHandler,
             installPassword =
                 getRepository().getProperty(PROP_INSTALL_PASSWORD,
                                             (String) null);
-        }
-        if ( !Utils.stringDefined(installPassword)) {
-            //Generate an install password
-            File install = new File(
-                               IOUtil.joinDir(
-                                   getStorageManager().getRepositoryDir(),
-                                   "install.properties"));
-            if ( !install.exists()) {
+	    if ( !Utils.stringDefined(installPassword)) {
                 installPassword = Utils.generatePassword(6);
-                System.err.println("RAMADDA: install password created in: " + install);
-                System.err.println("RAMADDA: install password: "
-                                   + installPassword);
-                StringBuilder sb = new StringBuilder();
-                sb.append(
-                    "#This is a generated password used in the install process\n");
-                sb.append(PROP_INSTALL_PASSWORD + "=" + installPassword
-                          + "\n\n");
-                try (FileOutputStream fos = new FileOutputStream(install)) {
-                    IOUtil.write(fos, sb.toString());
-                }
+	    }
+        }
+	//Generate an install password
+	File install = new File(
+				IOUtil.joinDir(
+					       getStorageManager().getRepositoryDir(),
+					       "install.properties"));
+	if ( !install.exists()) {
+	    System.err.println("RAMADDA: install password created in: " + install);
+	    System.err.println("RAMADDA: install password: "
+			       + installPassword);
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(
+		      "#This is a generated password used in the install process\n");
+	    sb.append(PROP_INSTALL_PASSWORD + "=" + installPassword
+		      + "\n\n");
+	    try (FileOutputStream fos = new FileOutputStream(install)) {
+		IOUtil.write(fos, sb.toString());
             }
-
+	    
             File initPropertiesFile = new File(
                                IOUtil.joinDir(
                                    getStorageManager().getRepositoryDir(),
@@ -725,10 +725,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 try (FileOutputStream fos = new FileOutputStream(initPropertiesFile)) {
                     IOUtil.write(fos, properties);
                 }
-            }
-
-
-
+	    }
         }
 
         return installPassword;
