@@ -1305,7 +1305,7 @@ public class AccessManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public void listAccess(Request request, Entry entry, StringBuffer sb)
+    public void listAccess(Request request, Entry entry, StringBuffer sb,boolean even)
 	throws Exception {
         if (entry == null) {
             return;
@@ -1365,10 +1365,10 @@ public class AccessManager extends RepositoryManager {
 		  HtmlUtils.row(
 				cols.toString(),
 				HU.attr("valign", "top")
-				+ HtmlUtils.cssClass("ramadda-access-summary")));
+				+ HtmlUtils.cssClass("ramadda-access-summary "+(even?"ramadda-row-even":"ramadda-row-odd"))));
         listAccess(request,
                    getEntryManager().getEntry(request,
-					      entry.getParentEntryId()), sb);
+					      entry.getParentEntryId()), sb,!even);
     }
 
 
@@ -1779,7 +1779,7 @@ public class AccessManager extends RepositoryManager {
 					   HU.attr("valign", "top")
 					   + HtmlUtils.cssClass("ramadda-access-summary-header")));
 
-        listAccess(request, entry, currentAccess);
+        listAccess(request, entry, currentAccess,true);
         currentAccess.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
         Hashtable        map         = new Hashtable();
         List<Permission> permissions = getPermissions(entry);

@@ -3983,9 +3983,13 @@ td .ramadda-role {
 }
 
 .ramadda-access-summary {
-    border-bottom: 1px #efefef solid;
+   border-bottom: 1px solid #aaa !important;    
 }
 
+.ramadda-access-summary td {
+    padding-left:4px;
+    padding-right:4px;    
+}
 
 .ramadda-access-summary td {
     border: 1px #efefef solid;
@@ -4057,7 +4061,7 @@ img.ramadda-user-menu-image:hover {
 
 
 .ramadda-user-link:hover, .ramadda-user-link:hover span i, .ramadda-user-link span i:hover {
-    color: var(--hover-color) !important;    
+    color: var(--hover-color) 
 }
 
 .ramadda-user-link:last-child {
