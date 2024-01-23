@@ -249,6 +249,7 @@ public class MetadataManager extends RepositoryManager {
             int        priority  = obj.optInt("priority", 100);
             for (int i = 0; i < jlicenses.length(); i++) {
                 JSONObject jlicense = jlicenses.getJSONObject(i);
+		if(jlicense.optBoolean("skip",false)) continue;
                 License license = new License(getRepository(),
                                       obj.optString("name", "Licenses"),
                                       jlicense.optString("url",
@@ -348,8 +349,7 @@ public class MetadataManager extends RepositoryManager {
                 sb.append(HU.h2(from));
                 sb.append(HU.open("div", "class", "ramadda-licenses-box"));
             }
-            sb.append(getLicenseHtml(license, null,true));
-            sb.append("<br>");
+            HU.div(sb,getLicenseHtml(license, null,true),HU.cssClass("ramadda-licenses-license"));
             cnt++;
         }
         sb.append("</div>");
@@ -380,7 +380,8 @@ public class MetadataManager extends RepositoryManager {
             contents = HU.href(license.getUrl(), contents, "target=_other");
         }
 	if(includeId)
-	    contents+=HU.br() + "ID: " + HU.span(license.getId(),
+	    contents+=HU.space(2)
+		+ "ID: " + HU.span(license.getId(),
 						 HU.attrs("class","ramadda-copyable","copy-message","License ID copied to clipboard"));
 
         String icon = license.getIcon();
