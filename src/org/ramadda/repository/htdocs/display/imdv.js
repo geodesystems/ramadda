@@ -2009,13 +2009,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 		if(command=='toback') _this.changeOrder(false,mapGlyph);
 		else if(command==PROP_LAYERS_STEP_SHOW) mapGlyph.toggleLayersVisibility(event);
-		else if(command==PROP_LAYERS_ANIMATION_PLAY) mapGlyph.toggleLayersAnimation(event);				
+		else if(command==PROP_LAYERS_ANIMATION_PLAY) mapGlyph.toggleLayersAnimation(event);
 		else if(command=='tofront') _this.changeOrder(true,mapGlyph);		
-		else if(command=='edit') {
-		    _this.editFeatureProperties(mapGlyph);
-		} else if(command=="addisoline") {
-		    _this.addIsolineForMarker(mapGlyph);
-		} else if(command==ID_SELECT) {
+		else if(command=='popup')   _this.handleMapGlyphClick(mapGlyph);
+		else if(command=='edit')  _this.editFeatureProperties(mapGlyph);
+		else if(command=="addisoline")  _this.addIsolineForMarker(mapGlyph);
+		else if(command==ID_SELECT) {
 		    if(mapGlyph.isSelected()) 
 			_this.unselectGlyph(mapGlyph);
 		    else
@@ -2035,12 +2034,16 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	
 	makeGlyphButtons:function(mapGlyph,includeEdit,debug) {
-	    if(!this.canChange()) return '';
 	    let buttons = [];
 	    let icon = i=>{
 		return HU.getIconImage(i,[],BUTTON_IMAGE_ATTRS);
 	    };
-	    if(includeEdit) {
+	    let showPopup =(mapGlyph.isEntry() ||  Utils.stringDefined(mapGlyph.getPopupText()));
+	    if(showPopup) {
+		buttons.push(HU.span([ATTR_CLASS,CLASS_CLICKABLE,TITLE,'Map Popup','glyphid',mapGlyph.getId(),'buttoncommand','popup'],
+				     icon('fas fa-arrow-up-from-bracket')));
+	    }
+	    if(this.canChange() && includeEdit) {
 		buttons.push(HU.span([ATTR_CLASS,CLASS_CLICKABLE,TITLE,'Settings','glyphid',mapGlyph.getId(),'buttoncommand','edit'],
 				     icon('fas fa-cog')));
 		buttons.push(
@@ -2053,6 +2056,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					  'glyphid',mapGlyph.getId(),'buttoncommand',"addisoline"],icon('fa-regular fa-circle-dot')));
 		}
 	    }
+	    if(buttons.length==0) return '';
 	    let attrs = [ATTR_STYLE,HU.css('margin-right','8px')];
 	    let bar =  Utils.wrap(buttons,HU.open('span',attrs),'</span>');
 	    return bar;
@@ -5252,121 +5256,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
  		    if(debug)console.log('\tno mapGlyph');
 		    return true;
 		}
-		if(mapGlyph.isMap()) {
- 		    if(debug)console.log('\tis map');
-		    return true;
-		}
-		if(this.command==ID_EDIT) {
- 		    if(debug)console.log('\tdoing edit');
-		    this.doEdit(feature.layer.mapGlyph);
-		    return false;
-		}
-
-		if(this.command!=null) {
- 		    if(debug)console.log('\tdoing command:' + this.command);
-		    return false;
-		}
-		let showPopup = (html,props)=>{
-		    this.getMap().lastClickTime  = new Date().getTime();
-		    let id = HU.getUniqueId('div');
-		    let div = HU.div([ATTR_ID,id]);
-		    let location = e.feature.geometry.getBounds().getCenterLonLat();
-		    if(this.getMap().currentPopup) {
-			this.getMap().onPopupClose();
-		    }
-		    if(e.event && e.event.xy)
-			location = this.getMap().getMap().getLonLatFromViewPortPx(e.event.xy);
-		    let popup =this.getMap().makePopup(location,div,props);
-		    this.getMap().currentPopup = popup;
-		    this.getMap().getMap().addPopup(popup);
-		    if(this.isIsolineEnabled()) {
-			let latlon =   this.getMap().transformProjPoint(location);
-			html+='<p>'+
-			    HU.onClick('ImdvUtils.getImdv(\'' + this.getId() +'\').addIsolineAt('+ latlon.lat+',' + latlon.lon+')',
-				       HU.getIconImage('fa-regular fa-circle-dot')+' ' +'Add Isoline');
-		    }
-		    jqid(id).html(html);
-		    //For some reason the links don't work in the popup
-		    //so we do this and handle the clicks here
-		    jqid(id).find('a').each(function() {
-			$(this).click(function(){
-			    let url = $(this).attr('href');
-			    if(url) {
-				window.open(url,'_blank');
-			    }
-			});
-		    });
-
-		}
-
-
-		let doPopup = (html,props)=>{
- 		    if(debug)console.log('\tdoPopup:'+ html)
-		    let js =[];
-		    //Parse out any script tags 
-		    let regexp = /<script *src=("|')?([^ "']+)("|')?.*?<\/script>/g;
-		    let array = [...html.matchAll(regexp)];
-		    array.forEach(tuple=>{
-			html = html.replace(tuple[0],'');
-			let url = tuple[2];
-			url = url.replace(/'/g,'');
-			js.push(url);
-		    });
-
-
-		    //Run through any script tags and load them
-		    //once done show the popup
-		    let cb = ()=>{
-			if(js.length==0 && js[0]==null) {
- 			    if(debug)console.log('\tshowPopup:'+ html)
-			    showPopup(html,props);
-
-			    return;
-			}
-			let url = js[0];
-			js.splice(0,1);
-			Utils.loadScript(url,cb);
-		    };
-		    cb();
-		};
-		let text= mapGlyph.getPopupText()??'';
-		if(mapGlyph.isEntry() || mapGlyph.isMultiEntry() || text.startsWith('<wiki>')) {
- 		    if(debug)console.log('\twikifying')
-		    let wiki = (text.startsWith('<wiki>')?text:mapGlyph.getWikiText())??'';
-		    let width = '400';
-		    let height='300';
-		    let widthRegexp = /popupWidth *= *(\d+)/;
-		    let widthMatch = wiki.match(widthRegexp);
-		    if(widthMatch) {
-			width=widthMatch[1];
-			wiki = wiki.replace(widthRegexp,'');
-		    }
-		    let heightRegexp = /popupHeight *= *(\d+)/;		    
-		    let heightMatch = wiki.match(heightRegexp);
-		    if(heightMatch) {
-			height=heightMatch[1];
-			wiki = wiki.replace(heightRegexp,'');
-		    }		    
-
-		    if(!Utils.stringDefined(wiki))
-			wiki = '{{mappopup}}';
-		    let wikiCallback = html=>{
-			html = mapGlyph.convertPopupText(html);
-			html = HU.div([ATTR_STYLE,'max-height:300px;overflow-y:auto;'],html);
-			doPopup(html,{width:this.getProperty('popupWidth',width),
-				      height:this.getProperty('popupHeight',height)});
-		    };
-		    this.wikify(wiki,feature.entryId ?? mapGlyph.getEntryId(),wikiCallback);
-		    return false;
-		}
-
-		if(!Utils.stringDefined(text)) {
- 		    if(debug)console.log('\tno text')
-		    return false;
-		}
-		text = mapGlyph.convertPopupText(text).replace(/\n/g,'<br>');
-		doPopup(text);
-		return false;
+		return this.handleMapGlyphClick(mapGlyph,e.event? e.event.xy:null);
 	    };
 
 	    /*
@@ -5426,6 +5316,129 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    }
 	},
 
+	handleMapGlyphClick:function(mapGlyph,xy) {	
+	    if(mapGlyph==null) return false;
+	    let debug = false;
+	    if(mapGlyph.isMap()) {
+ 		if(debug)console.log('\tis map');
+		return true;
+	    }
+	    if(this.command==ID_EDIT) {
+ 		if(debug)console.log('\tdoing edit');
+		this.doEdit(mapGlyph);
+		return false;
+	    }
+
+	    if(this.command!=null) {
+ 		if(debug)console.log('\tdoing command:' + this.command);
+		return false;
+	    }
+	    let showPopup = (html,props)=>{
+		this.getMap().lastClickTime  = new Date().getTime();
+		let id = HU.getUniqueId('div');
+		let div = HU.div([ATTR_ID,id]);
+//		let location = e.feature.geometry.getBounds().getCenterLonLat();
+		let location = mapGlyph.getCentroid();
+		if(this.getMap().currentPopup) {
+		    this.getMap().onPopupClose();
+		}
+		if(location!=null) 
+		    location = MapUtils.createLonLat(location.x, location.y);
+		else
+		    location = this.getMap().getMap().getLonLatFromViewPortPx({x:50,y:10});
+		if(xy)    location = this.getMap().getMap().getLonLatFromViewPortPx(xy);
+		let popup =this.getMap().makePopup(location,div,props);
+		this.getMap().currentPopup = popup;
+		this.getMap().getMap().addPopup(popup);
+		if(this.isIsolineEnabled()) {
+		    let latlon =   this.getMap().transformProjPoint(location);
+		    html+='<p>'+
+			HU.onClick('ImdvUtils.getImdv(\'' + this.getId() +'\').addIsolineAt('+ latlon.lat+',' + latlon.lon+')',
+				   HU.getIconImage('fa-regular fa-circle-dot')+' ' +'Add Isoline');
+		}
+		jqid(id).html(html);
+		//For some reason the links don't work in the popup
+		//so we do this and handle the clicks here
+		jqid(id).find('a').each(function() {
+		    $(this).click(function(){
+			let url = $(this).attr('href');
+			if(url) {
+			    window.open(url,'_blank');
+			}
+		    });
+		});
+
+	    }
+
+
+	    let doPopup = (html,props)=>{
+ 		if(debug)console.log('\tdoPopup:'+ html)
+		let js =[];
+		//Parse out any script tags 
+		let regexp = /<script *src=("|')?([^ "']+)("|')?.*?<\/script>/g;
+		let array = [...html.matchAll(regexp)];
+		array.forEach(tuple=>{
+		    html = html.replace(tuple[0],'');
+		    let url = tuple[2];
+		    url = url.replace(/'/g,'');
+		    js.push(url);
+		});
+
+
+		//Run through any script tags and load them
+		//once done show the popup
+		let cb = ()=>{
+		    if(js.length==0 && js[0]==null) {
+ 			if(debug)console.log('\tshowPopup:'+ html)
+			showPopup(html,props);
+
+			return;
+		    }
+		    let url = js[0];
+		    js.splice(0,1);
+		    Utils.loadScript(url,cb);
+		};
+		cb();
+	    };
+	    let text= mapGlyph.getPopupText()??'';
+	    if(mapGlyph.isEntry() || mapGlyph.isMultiEntry() || text.startsWith('<wiki>')) {
+ 		if(debug)console.log('\twikifying')
+		let wiki = (text.startsWith('<wiki>')?text:mapGlyph.getWikiText())??'';
+		let width = '400';
+		let height='300';
+		let widthRegexp = /popupWidth *= *(\d+)/;
+		let widthMatch = wiki.match(widthRegexp);
+		if(widthMatch) {
+		    width=widthMatch[1];
+		    wiki = wiki.replace(widthRegexp,'');
+		}
+		let heightRegexp = /popupHeight *= *(\d+)/;		    
+		let heightMatch = wiki.match(heightRegexp);
+		if(heightMatch) {
+		    height=heightMatch[1];
+		    wiki = wiki.replace(heightRegexp,'');
+		}		    
+
+		if(!Utils.stringDefined(wiki))
+		    wiki = '{{mappopup}}';
+		let wikiCallback = html=>{
+		    html = mapGlyph.convertPopupText(html);
+		    html = HU.div([ATTR_STYLE,'max-height:300px;overflow-y:auto;'],html);
+		    doPopup(html,{width:this.getProperty('popupWidth',width),
+				  height:this.getProperty('popupHeight',height)});
+		};
+		this.wikify(wiki, mapGlyph.getEntryId(),wikiCallback);
+		return false;
+	    }
+
+	    if(!Utils.stringDefined(text)) {
+ 		if(debug)console.log('\tno text')
+		return false;
+	    }
+	    text = mapGlyph.convertPopupText(text).replace(/\n/g,'<br>');
+	    doPopup(text);
+	    return false;
+	},
 	getLabels:function() {
 	    return this.jq(ID_GLYPH_LABELS);
 	},
