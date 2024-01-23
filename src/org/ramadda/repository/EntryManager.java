@@ -4276,6 +4276,11 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
+
+	//clear out the type count
+	getEntryUtil().clearCache();
+
+
     }
 
 
@@ -8669,6 +8674,14 @@ public class EntryManager extends RepositoryManager {
         } finally {
             getDatabaseManager().closeConnection(connection);
         }
+
+	//clear out the type count
+	if(isNew)  {
+	    getEntryUtil().clearCache();
+	}
+
+
+
     }
 
 
