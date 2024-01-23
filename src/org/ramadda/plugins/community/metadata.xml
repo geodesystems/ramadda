@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <metadata>
+<!--
   <handler category="Resilience" >
-
-
     <type id="resilience_risk" name="Risk" entrytype="type_resilience_project" values="">
       <element id="risk" name="Risk" datatype="enumerationplus"/>
     </type>
-
-
     <type id="assessment_purpose" name="Assessment Purpose" entrytype="type_resilience_assessment" >
       <element id="purpose" name="Purpose" datatype="enumerationplus" values="Response/Recovery,Inform social change for adaptation/transformation,Community development,Resource management,Monitoring,Risk assessment"/>
     </type>
@@ -43,6 +40,7 @@
 
   </handler>
 
+-->
 
   <handler category="Community">
     <type name="Service" id="community_service" searchable="true" browsable="true" >
