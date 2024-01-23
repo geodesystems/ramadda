@@ -1676,9 +1676,9 @@ public class HtmlOutputHandler extends OutputHandler {
                              HU.cssClass("ramadda-frames-entries")+
 			     HU.style(HU.css("height", HU.makeDim(height, "px"))));
         sb.append("<div class=\"row\" style=\"margin:0px; \">");
-        sb.append("<div class=\"col-md-" + wtl
-                  + "  \"  style=\"margin:0px; padding:0px;   \" >");
-        sb.append("</div>");
+	HU.div(sb,"",HU.attrs("class","col-md-" + wtl+" ramadda-frames-leftheader",
+			      "id",viewId + "_leftheader",
+			      "style","margin:0px; padding:0px;"));
 	HU.open(sb,"div",HU.attrs("class","col-md-" + wtr + " ramadda-frames-header",
 				  "id",viewId + "_header"));
         HU.div(sb, firstLink, HU.id(viewId + "_header_link"));

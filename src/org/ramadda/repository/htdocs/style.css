@@ -5452,6 +5452,10 @@ a.wiki-link-noexist {
 
 
 
+.ramadda-frames-leftheader  {
+    position:relative;
+}
+
 .ramadda-frames-header  {
     position:relative;
     border-top-left-radius: var(--default-radius);
@@ -5469,8 +5473,8 @@ a.wiki-link-noexist {
 
 .ramadda-frames-nav  {
     position:absolute;
-    right:20px;
-    top:4px;
+    left:40%;
+    top:8px;
 }
 
 

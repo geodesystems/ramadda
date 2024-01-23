@@ -3060,7 +3060,9 @@ var Utils =  {
 	list.find('.ramadda-frames-entry').click(function() {
 	    Utils.framesClick(listId,viewId,$(this),template);
 	});
-	let header = jqid(viewId+'_header');
+
+	let header = jqid(viewId+'_leftheader');
+	console.log(header.length,viewId+'_leftheader');
 	header.append(HU.div(['class','ramadda-frames-nav'],
 			     HU.span(['title','View previous','class','ramadda-clickable ramadda-frames-nav-link ramadda-frames-nav-link-prev','data-nav','prev'],
 				     HU.getIconImage('fas fa-caret-left',null,
