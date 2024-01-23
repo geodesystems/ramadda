@@ -3928,9 +3928,16 @@ label {
     max-width:600px;
 }
 
+.ramadda-licenses-license {
+    padding:5px;
+    border:1px solid #ccc;
+    margin-bottom:10px;
+}
+
 .ramadda-license-text {
     display:inline-block;
-    max-width:400px;
+    display:inline;
+    max-width:90%;
     overflow-x:auto;
     max-height:100px;    
     overflow-y:auto;    
