@@ -91,6 +91,7 @@ public class EntryUtil extends RepositoryManager {
         }
     }
 
+
     /**
      *
      * @param entries _more_
@@ -988,7 +989,6 @@ public class EntryUtil extends RepositoryManager {
         Hashtable<String, Integer> typesWeHave = typeCache.get();
         if (typesWeHave == null) {
             typesWeHave = new Hashtable<String, Integer>();
-	    long t1  =System.currentTimeMillis();
             for (String type :
                     getRepository().getDatabaseManager().selectDistinct(
                         Tables.ENTRIES.NAME, Tables.ENTRIES.COL_TYPE, null)) {
@@ -997,30 +997,7 @@ public class EntryUtil extends RepositoryManager {
 
                 typesWeHave.put(type, Integer.valueOf(cnt));
             }
-	    long t2  =System.currentTimeMillis();
-	    Statement statement =
-		getDatabaseManager().select(Tables.ENTRIES.COL_TYPE,
-					Misc.newList(Tables.ENTRIES.NAME),
-					    null,null,DatabaseManager.NOMAX);
-
-	    SqlUtil.Iterator iter = getDatabaseManager().getIterator(statement);
-	    ResultSet        results;
-	    TTLObject<Hashtable<String, Integer>> countMap =
-		new TTLObject<Hashtable<String, Integer>>(60 * 60 * 1000,
-							  "Entry Type Count Cache");
-
-            typesWeHave = new Hashtable<String, Integer>();
-	    while ((results = iter.getNext()) != null) {
-		String type = results.getString(1);
-		Integer i = typesWeHave.get(type);
-		if(i==null) {
-		    typesWeHave.put(type,i=new Integer(0));
-		}
-		typesWeHave.put(type,i=new Integer(i+1));
-	    }
-	    getDatabaseManager().closeAndReleaseConnection(statement);
             typeCache.put(typesWeHave);
-	    Utils.printTimes("time 1:",t1,t2,System.currentTimeMillis());
         }
         Integer cnt = typesWeHave.get(typeHandler.getType());
         if (cnt == null) {
