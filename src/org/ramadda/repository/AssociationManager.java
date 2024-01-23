@@ -828,13 +828,12 @@ public class AssociationManager extends RepositoryManager {
 
             lastFromIsMe = fromIsMe;
             lastToIsMe   = toIsMe;
-            cols.add(HU.img(getPageHandler().getIconUrl(request, fromEntry))
+            cols.add(getPageHandler().getEntryIconImage(request, fromEntry)
                      + HU.pad(fromLabel));
             cols.add("&nbsp;&nbsp;" + association.getType() + "&nbsp;&nbsp;");
             //            cols.add(association.getLabel());
             cols.add(HU.img(getRepository().getIconUrl(ICON_ARROW)));
-            cols.add(HU.img(getPageHandler().getIconUrl(request, toEntry))
-                     + HU.pad(toLabel));
+            cols.add(getPageHandler().getEntryIconImage(request, toEntry) + HU.pad(toLabel));
         }
 
         List cols = Misc.toList(new Object[] { "&nbsp;", HU.bold(msg("From")),
