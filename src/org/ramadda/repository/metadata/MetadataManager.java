@@ -164,6 +164,19 @@ public class MetadataManager extends RepositoryManager {
     MetadataHandler dfltMetadataHandler;
 
 
+
+    private void initializeState() {
+	metadataTypeToTemplate =  new Hashtable<String, Hashtable<String, String>>();
+	distinctMap = new Hashtable();
+	metadataHandlers =    new ArrayList<MetadataHandler>();
+	metadataHandlerMap =    new Hashtable<Class, MetadataHandler>();
+	typeMap = new Hashtable<String, MetadataType>();
+	handlerMap =  new Hashtable<String, MetadataHandler>();
+	metadataTypes = new ArrayList<MetadataType>();
+	tableNames = new ArrayList<String>();
+    }
+
+
     /**
      * _more_
      *
@@ -1587,6 +1600,8 @@ public class MetadataManager extends RepositoryManager {
      */
     public void loadMetadataHandlers(PluginManager pluginManager)
             throws Exception {
+	initializeState();
+
         HashSet seen = new HashSet();
         List<String> metadataDefFiles =
             getRepository().getPluginManager().getMetadataDefFiles();

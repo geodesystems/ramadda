@@ -787,6 +787,9 @@ public class Admin extends RepositoryManager {
                         getRepository().loadPluginResources();
                     }
 
+		    //Load the metadata
+		    getMetadataManager().loadMetadataHandlers(getPluginManager());
+
                     if (description == null) {
 			String resourcePath = "/org/ramadda/repository/resources/install/initdescription.txt";
 			resourcePath = getRepository().getProperty("ramadda.install.initdescription",resourcePath);
