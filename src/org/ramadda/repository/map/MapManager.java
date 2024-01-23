@@ -1198,7 +1198,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             return fromEntry;
         }
         StringBuilder info    = new StringBuilder();
-
+	HU.open(info,"div",HU.cssClass("ramadda-map-bubble"));
         boolean       isImage = entry.isImage();
         if (isImage) {
             int width = Utils.getDimension(request.getString(ATTR_WIDTH,
@@ -1239,14 +1239,14 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             }
 
 
-            String position = request.getString(ATTR_TEXTPOSITION, POS_LEFT);
-            String content  = entry.getDescription();
+            String position = request.getString(ATTR_TEXTPOSITION, POS_BOTTOM);
+            String content =  getWikiManager().getSnippet(request, entry, true,"");
             if (position.equals(POS_NONE)) {
                 content = image;
             } else if (position.equals(POS_BOTTOM)) {
-                content = image + HU.br() + content;
+                content = HU.div(image,"") + content;
             } else if (position.equals(POS_TOP)) {
-                content = content + HU.br() + image;
+                content = content +  HU.div(image,"");
             } else if (position.equals(POS_RIGHT)) {
                 content = HU.table(
 					  HU.row(
@@ -1271,10 +1271,9 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 						      request.makeUrl(getRepository().URL_ENTRY_SHOW),
 						      ARG_ENTRYID, entry.getId()), nameString);
 
-            info.append(nameString);
-            info.append(HU.br());
+	    HU.div(info,nameString,HU.cssClass("ramadda-map-header"));
             info.append(content);
-
+	    HU.close(info,"div");
             return info.toString();
         }
 
