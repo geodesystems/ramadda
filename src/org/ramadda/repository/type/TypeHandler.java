@@ -3611,7 +3611,7 @@ public class TypeHandler extends RepositoryManager {
                 String imgUrl = null;
                 if (entry.getResource().isFile()
                         && getAccessManager().canDownload(request, entry)) {
-                    imgUrl = getEntryResourceUrl(request, entry);
+                    imgUrl = getEntryResourceUrl(request, entry,false,true);
                     img    = HU.img(imgUrl, "", "width=" + width);
                 } else if (entry.getResource().isUrl()) {
                     try {
@@ -3633,7 +3633,6 @@ public class TypeHandler extends RepositoryManager {
                             new Hashtable());
                 }
             }
-
 
             Resource resource      = entry.getResource();
             String   resourceLink  = resource.getPath();
@@ -3945,7 +3944,7 @@ public class TypeHandler extends RepositoryManager {
     public String getEntryResourceUrl(Request request, Entry entry)
             throws Exception {
         return getEntryResourceUrl(request, entry,
-                                   EntryManager.ARG_INLINE_FALSE);
+                                   EntryManager.ARG_INLINE_FALSE,false);
     }
 
     /**
@@ -3960,8 +3959,17 @@ public class TypeHandler extends RepositoryManager {
     public String getEntryResourceUrl(Request request, Entry entry,
                                       boolean inline)
             throws Exception {
-        return getEntryManager().getEntryResourceUrl(request, entry, inline,
-                EntryManager.ARG_FULL_DFLT, EntryManager.ARG_ADDPATH_DFLT);
+	return getEntryResourceUrl(request, entry,inline,false);
+    }
+
+    public String getEntryResourceUrl(Request request, Entry entry,
+                                      boolean inline,boolean addTimestamp)
+            throws Exception {
+	String url  = getEntryManager().getEntryResourceUrl(request, entry, inline,
+							    EntryManager.ARG_FULL_DFLT, EntryManager.ARG_ADDPATH_DFLT);
+	if(addTimestamp)
+	    url = HU.url(url,"timestamp",""+entry.getChangeDate());
+	return url;
     }
 
 
@@ -5262,11 +5270,12 @@ public class TypeHandler extends RepositoryManager {
                     }
 
 
-
-                    String extras = getFileExtras(request, entry);
-                    String extra =
-                        HU.makeShowHideBlock(msg("Upload Settings"), extras,
-                            false);
+		    StringBuilder extras = new StringBuilder();
+                    getFileExtras(request, entry,extras);
+		    String extra =
+                        HU.makeShowHideBlock(msg("Upload Settings"),
+					     HU.insetLeft(extras.toString(),30),
+					     false);
                     if (forUpload/* || !showDownload*/) {
                         extra = "";
                     }
@@ -5412,9 +5421,8 @@ public class TypeHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public String getFileExtras(Request request, Entry entry)
+    public void getFileExtras(Request request, Entry entry, StringBuilder extras)
             throws Exception {
-	StringBuilder extras = new StringBuilder();
 	String space = HU.space(3);
 	String uploadFlags = getTypeProperty("upload.flags",null);
 	if(uploadFlags!=null) {
@@ -5495,7 +5503,6 @@ public class TypeHandler extends RepositoryManager {
 	if(entry==null)
 	    extra.accept("",HU.labeledCheckbox(ARG_TESTNEW,"true", request.get(ARG_TESTNEW,false),"Test the upload"));
 	extras.append(deleteFileWidget);
-        return HU.insetLeft(extras.toString(),30);
     }
 
 
