@@ -178,14 +178,15 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public String getFileExtras(Request request, Entry entry)
+    public void getFileExtras(Request request, Entry entry, StringBuilder sb)
             throws Exception {
-        String extra = super.getFileExtras(request, entry);
+        super.getFileExtras(request, entry,sb);
         String mine = "If data then:<br>"
                       + HtmlUtils.checkbox("makehillshade", "true", false)
                       + " Make hillshade<br>";
 
-        return mine + extra;
+        sb.append(mine);
+	sb.append("<br>");
     }
 
     /**
