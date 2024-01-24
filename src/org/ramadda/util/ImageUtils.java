@@ -69,6 +69,17 @@ public class ImageUtils extends ucar.unidata.ui.ImageUtils {
 	return dest.toString();
     }
 
+    public static Image grayscaleImage(Image image) throws Exception {
+	BufferedImage gimage = new BufferedImage(image.getWidth(null), image.getHeight(null),  
+						 BufferedImage.TYPE_BYTE_GRAY);  
+	Graphics g = gimage.getGraphics();  
+	g.drawImage(image, 0, 0, null);  
+	g.dispose(); 
+	ImageUtils.waitOnImage(gimage);
+	return gimage;
+    }
+
+
 
     /**
      * _more_
