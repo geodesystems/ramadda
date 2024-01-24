@@ -2528,6 +2528,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(!props.includes("wikiText") && !props.includes("text") && !props.includes("popupText")) {
 		props.push("popupText");
 	    }
+	    if(mapGlyph && mapGlyph.isGroup() &&  !props.includes("popupText")) {
+		props.push("popupText");
+	    }
+
+
 	    let notProps = ['mapOptions','labelSelect','cursor','display']
 	    let strip=null;
 	    let headers = {
