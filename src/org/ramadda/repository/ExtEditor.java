@@ -1387,16 +1387,23 @@ public class ExtEditor extends RepositoryManager {
 	    return  entry.isImage();
 	}
 
+	public long getFileSize() {
+	    if(!entry.isFile()) return -1;
+	    return entry.getResource().getTheFile().length();
+	}
+
 	public void resizeImage(int width) throws Exception {
 	    if(!isImage()) throw new IllegalArgumentException("Not an image:" + entry.getName());
 	    String theFile = entry.getResource().getPath();
+	    long size = getFileSize();
 	    Image image = ImageUtils.readImage(theFile);
 	    image = ImageUtils.resize(image, width, -1);
 	    ImageUtils.waitOnImage(image);
 	    ImageUtils.writeImageToFile(image, theFile);
 	    entry.setChangeDate(System.currentTimeMillis());
 	    repository.getEntryManager().updateEntry(request, entry);
-	    ctx.print("Image resize:" + entry.getName());
+	    ctx.print("Image resize:" + entry.getName() +" orig size:"+
+		      size +" new size:" +  getFileSize());
 	}
 
 	public Object getValue(String col) {
