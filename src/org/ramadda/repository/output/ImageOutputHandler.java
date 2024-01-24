@@ -598,6 +598,7 @@ public class ImageOutputHandler extends OutputHandler {
                     if (versionFile != null) {
                         IOUtil.copyFile(versionFile, f);
                         versionFile.delete();
+			getEntryManager().updateEntry(request, entry);
                     }
                 }
 
@@ -645,6 +646,7 @@ public class ImageOutputHandler extends OutputHandler {
                     }
                     IOUtil.copyFile(f, versionFile);
                     IOUtil.writeBytes(f, bytes);
+		    getEntryManager().updateEntry(request, entry);
                 }
 
                 return new Result(
