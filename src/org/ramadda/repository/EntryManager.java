@@ -8507,6 +8507,14 @@ public class EntryManager extends RepositoryManager {
         }
     }
 
+    public void entryFileChanged(Request request, Entry entry) throws Exception {
+	entry.setChangeDate(System.currentTimeMillis());
+	File f = new File(entry.getResource().getPath());
+	entry.getResource().setFileSize(f.length());
+	updateEntry(request, entry);
+    }
+
+
     /**
      * _more_
      *
