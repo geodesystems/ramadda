@@ -25,6 +25,8 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
+import org.ramadda.util.ImageUtils;
+import java.awt.Image;
 
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.Misc;
@@ -534,7 +536,7 @@ public class ExtEditor extends RepositoryManager {
 
 				try {
 				    cnt[0]++;
-				    EntryWrapper wrapper = new EntryWrapper(request,getRepository(),entry);
+				    EntryWrapper wrapper = new EntryWrapper(request,getRepository(),holder[0],entry);
 				    wrappers.add(wrapper);
 				    scope.put("entry", scope, wrapper);
 				    script.exec(ctx, scope);
@@ -899,9 +901,11 @@ public class ExtEditor extends RepositoryManager {
 
 		String eg =   "entry.getName() entry.setName()\n" +
 		    "entry.getType()\n"+
-		    "entry.getDescription()  entry.setDescription(String)\n" +
-		    "entry.getStartDate() entry.getEndDate()\n" +
-		    "entry.setStartDate(String) entry.setEndDate(String)\n" +
+		    "entry.getDescription();  entry.setDescription(String)\n" +
+		    "entry.getStartDate(); entry.getEndDate()\n" +
+		    "entry.setStartDate(String); entry.setEndDate(String)\n" +
+		    "entry.getChildren();\n" +
+		    "entry.isImage(); entry.resizeImage(400);\n" +
 		    "entry.getValue('column_name');\n" +
 		    "//ctx is the context object\n" +
 		    "ctx.print() prints output\n" +
@@ -1358,11 +1362,41 @@ public class ExtEditor extends RepositoryManager {
 	Date startDate;
 	Date endDate;
 	String url;
+	List<EntryWrapper> children;
+	JsContext ctx;
 
-	public EntryWrapper(Request request, Repository repository, Entry entry) {
+
+	public EntryWrapper(Request request, Repository repository, JsContext ctx, Entry entry) {
 	    this.repository = repository;
 	    this.request= request;
 	    this.entry = entry;
+	    this.ctx=ctx;
+	}
+
+	public List<EntryWrapper> getChildren() throws Exception {
+	    if(children==null) {
+		children  = new ArrayList<EntryWrapper>();
+		for(Entry e:repository.getEntryManager().getChildren(request, entry)) {
+		    children.add(new EntryWrapper(request, repository, ctx,entry));
+		}
+	    }
+	    return children;
+	}
+
+	public boolean isImage() {
+	    return  entry.isImage();
+	}
+
+	public void resizeImage(int width) throws Exception {
+	    if(!isImage()) throw new IllegalArgumentException("Not an image:" + entry.getName());
+	    String theFile = entry.getResource().getPath();
+	    Image image = ImageUtils.readImage(theFile);
+	    image = ImageUtils.resize(image, width, -1);
+	    ImageUtils.waitOnImage(image);
+	    ImageUtils.writeImageToFile(image, theFile);
+	    entry.setChangeDate(System.currentTimeMillis());
+	    repository.getEntryManager().updateEntry(request, entry);
+	    ctx.print("Image resize:" + entry.getName());
 	}
 
 	public Object getValue(String col) {
