@@ -764,6 +764,25 @@ public class MetadataManager extends RepositoryManager {
     }
 
 
+    public void addThumbnail(Request request, Entry entry, boolean deleteExisting) throws Exception {
+	if(deleteExisting) {
+	    List<Metadata> thumbs = findMetadata(request,entry,ContentMetadataHandler.TYPE_THUMBNAIL,false);
+	    if(thumbs!=null) {
+		for(Metadata thumb: thumbs) {
+		    deleteMetadata(entry,thumb);
+		}
+	    }
+	}
+	JpegMetadataHandler jpegMetadataHandler = (JpegMetadataHandler) getHandler(JpegMetadataHandler.class);
+	Metadata thumb = jpegMetadataHandler.getThumbnail(request, entry,null);
+	if(thumb!=null) {
+	    addMetadata(request,entry,thumb,false);
+	}
+	getEntryManager().updateEntry(request, entry);
+    }
+
+
+
     /**
      * _more_
      *
@@ -1857,7 +1876,7 @@ public class MetadataManager extends RepositoryManager {
 		    String id =       request.getString(arg, BLANK);
 		    if(!stringDefined(id)) continue;
 		    Metadata metadata = findMetadata(request, entry,id);
-		    if(metadata!=null) deleteMetadata(metadata);
+		    if(metadata!=null) deleteMetadata(entry,metadata);
                 }
             } else {
                 List<Metadata> newMetadataList  = new ArrayList<Metadata>();
@@ -2654,8 +2673,19 @@ public class MetadataManager extends RepositoryManager {
      *
      * @throws Exception On badness
      */
-    public void deleteMetadata(Metadata metadata) throws Exception {
+    public void deleteMetadata(Entry entry,Metadata metadata) throws Exception {
+	MetadataType type = getType(metadata);
+	if(type!=null) {
+	    List<String> files = type.getFiles(entry,metadata);
+	    for(String filename: files) {
+		File f = new File(IOUtil.joinDir(getStorageManager().getEntryDir(metadata.getEntryId(), false), filename));
+		//		System.err.println("deleting metadata file:" + f +" " + f.exists());
+		if(f.exists())f.delete();
+	    }
+	}
+
         getDatabaseManager().delete(Tables.METADATA.NAME,getClause(metadata));
+        entry.clearMetadata();
     }
 
 
