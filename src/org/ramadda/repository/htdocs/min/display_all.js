@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Jan 23 16:08:39 MST 2024";
+var build_date="RAMADDA build date: Wed Jan 24 04:41:52 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -44263,6 +44263,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(!props.includes("wikiText") && !props.includes("text") && !props.includes("popupText")) {
 		props.push("popupText");
 	    }
+	    if(mapGlyph && mapGlyph.isGroup() &&  !props.includes("popupText")) {
+		props.push("popupText");
+	    }
+
+
 	    let notProps = ['mapOptions','labelSelect','cursor','display']
 	    let strip=null;
 	    let headers = {
@@ -48436,17 +48441,19 @@ MapGlyph.prototype = {
 	html+='<br>';	
 	html+=this.display.getLevelRangeWidget(level,this.getShowMarkerWhenNotVisible());
 
-	let domId = this.display.domId('glyphedit_popupText');
 	let featureInfo = this.getFeatureInfoList();
-	let lines = ['${default}'];
-	lines = Utils.mergeLists(['default'],featureInfo.map(info=>{return info.id;}));
+	let 	lines = Utils.mergeLists(['name','default'],featureInfo.map(info=>{return info.id;}));
 
-	let propsHelp =this.display.makeSideHelp(lines,domId,{prefix:'${',suffix:'}'});
-	html+=HU.leftRightTable(HU.b('Popup Text:'),
-				this.getHelp('#popuptext'));
-	let help = 'Add macro:'+ HU.div([ATTR_CLASS,'imdv-side-help'],propsHelp);
-	html+= HU.hbox([HU.textarea('',style.popupText??'',[ID,domId,'rows',4,'cols', 40]),HU.space(2),help]);
-
+	let makePopup = (id,label)=> {
+	    let domId = this.display.domId('glyphedit_' +id);
+	    let propsHelp =this.display.makeSideHelp(lines,domId,{prefix:'${',suffix:'}'});
+	    let h = HU.leftRightTable(HU.b(label),
+				    this.getHelp('#popuptext'));
+	    let help = 'Add macro:'+ HU.div([ATTR_CLASS,'imdv-side-help'],propsHelp);
+	    h+=  HU.hbox([HU.textarea('',style[id]??'',[ID,domId,'rows',4,'cols', 40]),HU.space(2),help]);
+	    return h;
+	}
+	html+=makePopup('popupText','Popup Text:');
 	html+=HU.b('Legend Text:') +'<br>' +
 	    HU.textarea('',this.attrs[ID_LEGEND_TEXT]??'',
 			[ID,this.domId(ID_LEGEND_TEXT),'rows',4,'cols', 40]);
@@ -49604,7 +49611,14 @@ MapGlyph.prototype = {
     },
 
     getPopupText: function() {
-	return this.style.popupText;
+	let text = this.getPopupTextInner();
+	if(text) text = text.replace(/\${name}/g,this.getName());
+	return text;
+    },
+    getPopupTextInner: function() {	
+	if(Utils.stringDefined(this.style.popupText)) return this.style.popupText;
+	if(this.getParentGlyph()) return  this.getParentGlyph().getPopupTextInner();
+	return null;
     },
     getEntryId: function() {
 	return this.attrs.entryId;
