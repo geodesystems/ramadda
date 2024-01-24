@@ -1407,8 +1407,7 @@ public class ExtEditor extends RepositoryManager {
 	    image = ImageUtils.resize(image, width, -1);
 	    ImageUtils.waitOnImage(image);
 	    ImageUtils.writeImageToFile(image, theFile);
-	    entry.setChangeDate(System.currentTimeMillis());
-	    repository.getEntryManager().updateEntry(request, entry);
+	    repository.getEntryManager().entryFileChanged(request, entry);
 	    ctx.print("Image resize:" + entry.getName() +" orig size:"+
 		      size +" new size:" +  getFileSize());
 	}

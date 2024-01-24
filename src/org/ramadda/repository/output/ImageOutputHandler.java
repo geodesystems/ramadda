@@ -497,8 +497,7 @@ public class ImageOutputHandler extends OutputHandler {
 	    image = ImageUtils.resize(image, width, -1);
 	    ImageUtils.waitOnImage(image);
 	    ImageUtils.writeImageToFile(image, theFile);
-	    entry.setChangeDate(System.currentTimeMillis());
-	    getEntryManager().updateEntry(request, entry);
+	    getEntryManager().entryFileChanged(request, entry);
 	} else {
 	    sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
 	    sb.append(HU.formTable());

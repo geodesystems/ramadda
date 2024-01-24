@@ -88,6 +88,8 @@ public class ImageTypeHandler extends GenericTypeHandler {
 	    image = ImageUtils.resize(image, width, -1);
 	    ImageUtils.waitOnImage(image);
 	    ImageUtils.writeImageToFile(image, theFile);
+	    File f = new File(theFile);
+	    entry.getResource().setFileSize(f.length());
 	}
     }
     
