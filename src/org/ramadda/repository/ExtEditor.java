@@ -905,7 +905,8 @@ public class ExtEditor extends RepositoryManager {
 		    "entry.getStartDate(); entry.getEndDate()\n" +
 		    "entry.setStartDate(String); entry.setEndDate(String)\n" +
 		    "entry.getChildren();\n" +
-		    "entry.isImage(); entry.resizeImage(400);\n" +
+		    "entry.isImage(); entry.resizeImage(400); entry.grayscaleImage();\n" +
+		    "entry.makeThumbnail(deleteExisting:boolean);\n" +
 		    "entry.getValue('column_name');\n" +
 		    "//ctx is the context object\n" +
 		    "ctx.print() prints output\n" +
@@ -1391,6 +1392,25 @@ public class ExtEditor extends RepositoryManager {
 	    if(!entry.isFile()) return -1;
 	    return entry.getResource().getTheFile().length();
 	}
+
+	public void makeThumbnail(boolean deleteExisting) throws Exception {
+	    if(!isImage()) return;
+	    repository.getMetadataManager().addThumbnail(request,entry,deleteExisting);
+	    ctx.print("Thumnbail added:" + entry.getName());
+	}
+
+	public void grayscaleImage() throws Exception {
+	    if(!isImage()) throw new IllegalArgumentException("Not an image:" + entry.getName());
+	    String theFile = entry.getResource().getPath();
+	    Image image = ImageUtils.readImage(theFile);
+	    Image gimage = ImageUtils.grayscaleImage(image);
+	    ImageUtils.writeImageToFile(gimage, theFile);
+	    repository.getEntryManager().entryFileChanged(request, entry);
+	    ctx.print("Image changed:" + entry.getName());
+	}
+
+
+
 
 	public void resizeImage(int width) throws Exception {
 	    if(!isImage()) throw new IllegalArgumentException("Not an image:" + entry.getName());

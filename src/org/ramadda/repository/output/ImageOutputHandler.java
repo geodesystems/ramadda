@@ -7,6 +7,7 @@ package org.ramadda.repository.output;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.job.JobManager;
 import org.ramadda.repository.type.*;
@@ -35,6 +36,7 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
 import java.awt.Color;
+import java.awt.Graphics;
 
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -169,6 +171,11 @@ public class ImageOutputHandler extends OutputHandler {
     public static final String ARG_IMAGE_EDIT_ROTATE_RIGHT_Y =
         "image.edit.rotate.right.y";
 
+    public static final String CHANGE_RESIZE = "resize";
+    public static final String CHANGE_GRAYSCALE = "grayscale";
+    public static final String CHANGE_THUMBNAIL = "thumbnail";		
+
+
     /** _more_ */
     public static final OutputType OUTPUT_GALLERY = new OutputType("Gallery",
                                                         "image.gallery",
@@ -231,8 +238,8 @@ public class ImageOutputHandler extends OutputHandler {
                                                      "", ICON_IMAGES);
 
     /** _more_ */
-    public static final OutputType OUTPUT_RESIZE = new OutputType("Resize Image",
-                                                     "image.resize",
+    public static final OutputType OUTPUT_CHANGE = new OutputType("Change Image",
+                                                     "image.change",
                                                      OutputType.TYPE_EDIT,
                                                      "", ICON_IMAGES);    
 
@@ -270,7 +277,7 @@ public class ImageOutputHandler extends OutputHandler {
         //        addType(OUTPUT_SLIDESHOW);
         addType(OUTPUT_CAPTION);
         addType(OUTPUT_EDIT);
-        addType(OUTPUT_RESIZE);	
+        addType(OUTPUT_CHANGE);	
         addType(OUTPUT_VIDEO);
         addType(OUTPUT_COLLAGE);
         addType(OUTPUT_LABELER);
@@ -321,7 +328,7 @@ public class ImageOutputHandler extends OutputHandler {
                     links.add(link);
 
                     links.add(makeLink(request, state.getEntry(),
-                                       OUTPUT_RESIZE));
+                                       OUTPUT_CHANGE));
                 }
             }
         }
@@ -464,8 +471,8 @@ public class ImageOutputHandler extends OutputHandler {
             return new Result("Video", sb);
         }
 
-        if (outputType.equals(OUTPUT_RESIZE)) {
-            return processResize(request, entry);
+        if (outputType.equals(OUTPUT_CHANGE)) {
+            return processChange(request, entry);
         }
 
 
@@ -480,8 +487,7 @@ public class ImageOutputHandler extends OutputHandler {
         //        return new Result("", new StringBuilder("NA"));
     }
 
-
-    public Result processResize(Request request, Entry entry) throws Exception {
+    public Result processChange(Request request, Entry entry) throws Exception {
         if ( !getAccessManager().canDoEdit(request, entry)) {
             throw new AccessException("Cannot edit image", null);
         }
@@ -491,24 +497,52 @@ public class ImageOutputHandler extends OutputHandler {
 	String theFile = entry.getResource().getPath();
 	Image image = ImageUtils.readImage(theFile);
 
-	if(request.exists("resize")) {
+
+
+	if(request.exists(CHANGE_RESIZE)) {
 	    sb.append(messageNote("Image resized"));
 	    int width = request.get("imagewidth",600);
 	    image = ImageUtils.resize(image, width, -1);
 	    ImageUtils.waitOnImage(image);
 	    ImageUtils.writeImageToFile(image, theFile);
 	    getEntryManager().entryFileChanged(request, entry);
+	} else if(request.exists(CHANGE_GRAYSCALE)) {
+	    sb.append(messageNote("Image gray scaled"));
+	    Image gimage = ImageUtils.grayscaleImage(image);
+	    ImageUtils.writeImageToFile(gimage, theFile);
+	    getEntryManager().entryFileChanged(request, entry);
+	} else if(request.exists(CHANGE_THUMBNAIL)) {
+	    sb.append(messageNote("Thumbnail made"));
+	    getMetadataManager().addThumbnail(request,entry,request.get("deletethumbnail",false));
 	} else {
 	    sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
 	    sb.append(HU.formTable());
 	    sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
-	    sb.append(HU.hidden(ARG_OUTPUT, OUTPUT_RESIZE));
+	    sb.append(HU.hidden(ARG_OUTPUT, OUTPUT_CHANGE));
 	    sb.append(HU.formEntry(msgLabel("Width"),
 					  HU.input("imagewidth","600",HU.SIZE_5) +
 					  HU.space(2) +
-				   HU.submit("Resize","resize")));
+				   HU.submit("Resize",CHANGE_RESIZE)));
 	    sb.append(HU.formTableClose());
 	    sb.append(HtmlUtils.formClose());
+	    sb.append("<p>");
+	    sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
+	    sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
+	    sb.append(HU.hidden(ARG_OUTPUT, OUTPUT_CHANGE));
+	    sb.append(HU.submit("Convert to gray scale",CHANGE_GRAYSCALE));
+	    sb.append(HtmlUtils.formClose());
+	    sb.append("<p>");
+	    sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
+	    sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
+	    sb.append(HU.hidden(ARG_OUTPUT, OUTPUT_CHANGE));
+
+	    sb.append(HU.submit("Make Thumbnail",CHANGE_THUMBNAIL));
+	    sb.append(HU.space(1));
+	    sb.append(HU.labeledCheckbox("deletethumbnail","true",true,
+					 "Delete any existing thumbnails"));
+	    sb.append(HtmlUtils.formClose());
+
+
 	}
 
 	sb.append("<br>");
