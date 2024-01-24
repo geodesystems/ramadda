@@ -1344,6 +1344,18 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
 
 
+    public List<String> getFiles(Entry entry, Metadata metadata)
+            throws Exception {
+	List<String> files = new ArrayList<String>();
+        for (MetadataElement element : getChildren()) {
+	    if(element.isFileType())
+		files.add(metadata.getAttr(element.getIndex()));
+	}
+	return files;
+    }
+
+    
+
 
 
 
