@@ -309,7 +309,8 @@ public class ImageOutputHandler extends OutputHandler {
                                        OUTPUT_VIDEO));
                 }
             }
-            if (state.entry.getResource().isEditableImage()) {
+	    if (state.entry.getResource().isEditableImage() &&
+		getAccessManager().canDoEdit(request, state.entry)) {		
                 File f = state.entry.getFile();
                 if ((f != null) && f.canWrite()) {
                     Link link = new Link(repository.getUrlBase()
