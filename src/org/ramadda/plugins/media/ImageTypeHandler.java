@@ -18,6 +18,8 @@ import org.w3c.dom.*;
 import ucar.unidata.util.IOUtil;
 
 import java.util.Hashtable;
+import org.ramadda.util.ImageUtils;
+import java.awt.Image;
 
 import java.io.*;
 import java.util.List;
@@ -55,6 +57,40 @@ public class ImageTypeHandler extends GenericTypeHandler {
             throws Exception {
         super(repository, entryNode);
     }
+
+    @Override
+    public void getFileExtras(Request request, Entry entry, StringBuilder sb)
+            throws Exception {
+        sb.append(HU.labeledCheckbox("imageresize", "true", false,"Resize image"));
+	sb.append(HU.space(2));
+	sb.append(HU.b("Width:"));
+	sb.append(HU.space(1));
+	sb.append(HU.input("imagewidth","600",HU.SIZE_5));
+	sb.append("<br>");
+        super.getFileExtras(request, entry,sb);
+
+    }
+
+
+    @Override
+    public void initializeNewEntry(Request request, Entry entry,
+                                   boolean fromImport)
+            throws Exception {
+        super.initializeNewEntry(request, entry, fromImport);
+	if(fromImport) return;
+	if(!request.get("imageresize",false)) return;
+	if(!entry.getResource().isStoredFile()) return;
+
+	String theFile = entry.getResource().getPath();
+	Image image = ImageUtils.readImage(theFile);
+	int width = request.get("imagewidth",600);
+	if (image.getWidth(null) > width) {
+	    image = ImageUtils.resize(image, width, -1);
+	    ImageUtils.waitOnImage(image);
+	    ImageUtils.writeImageToFile(image, theFile);
+	}
+    }
+    
 
 
     /**
