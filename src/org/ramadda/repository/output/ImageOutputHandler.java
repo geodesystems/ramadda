@@ -94,6 +94,8 @@ public class ImageOutputHandler extends OutputHandler {
     /** _more_ */
     public static final String ARG_IMAGE_EDIT = "image.edit";
 
+    public static final String ARG_IMAGE_RESIZE = "image.resize";    
+
     /** _more_ */
     public static final String ARG_CAPTION = "caption";
 
@@ -229,6 +231,12 @@ public class ImageOutputHandler extends OutputHandler {
                                                      "", ICON_IMAGES);
 
     /** _more_ */
+    public static final OutputType OUTPUT_RESIZE = new OutputType("Resize Image",
+                                                     "image.resize",
+                                                     OutputType.TYPE_EDIT,
+                                                     "", ICON_IMAGES);    
+
+    /** _more_ */
     public static final OutputType OUTPUT_CAPTION =
         new OutputType("Caption Image", "image.caption",
                        OutputType.TYPE_VIEW, "", ICON_IMAGES);
@@ -262,6 +270,7 @@ public class ImageOutputHandler extends OutputHandler {
         //        addType(OUTPUT_SLIDESHOW);
         addType(OUTPUT_CAPTION);
         addType(OUTPUT_EDIT);
+        addType(OUTPUT_RESIZE);	
         addType(OUTPUT_VIDEO);
         addType(OUTPUT_COLLAGE);
         addType(OUTPUT_LABELER);
@@ -286,7 +295,6 @@ public class ImageOutputHandler extends OutputHandler {
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
 
-
         if (state.entry != null) {
             if (state.entry.isFile()) {
                 //                if (state.entry.isImage()) {
@@ -310,6 +318,9 @@ public class ImageOutputHandler extends OutputHandler {
                                              "Edit Image");
                     link.setLinkType(OutputType.TYPE_EDIT);
                     links.add(link);
+
+                    links.add(makeLink(request, state.getEntry(),
+                                       OUTPUT_RESIZE));
                 }
             }
         }
@@ -437,7 +448,7 @@ public class ImageOutputHandler extends OutputHandler {
             if (link == null) {
                 sb.append("Not available");
             } else {
-                sb.append(HtmlUtils.p());
+                sb.append(HU.p());
                 String html =
                     "<OBJECT CLASSID=\"clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B\" CODEBASE=\"http://www.apple.com/qtactivex/qtplugin.cab\"  > <PARAM NAME=\"src\" VALUE=\""
                     + link.getUrl()
@@ -452,6 +463,11 @@ public class ImageOutputHandler extends OutputHandler {
             return new Result("Video", sb);
         }
 
+        if (outputType.equals(OUTPUT_RESIZE)) {
+            return processResize(request, entry);
+        }
+
+
         //        if (true || output.equals(OUTPUT_GALLERY)) {
         List<Entry> entries = new ArrayList<Entry>();
         entries.add(entry);
@@ -463,6 +479,49 @@ public class ImageOutputHandler extends OutputHandler {
         //        return new Result("", new StringBuilder("NA"));
     }
 
+
+    public Result processResize(Request request, Entry entry) throws Exception {
+        if ( !getAccessManager().canDoEdit(request, entry)) {
+            throw new AccessException("Cannot edit image", null);
+        }
+        StringBuilder sb = new StringBuilder();
+        getPageHandler().entrySectionOpen(request, entry, sb, "Image Resize");
+
+	String theFile = entry.getResource().getPath();
+	Image image = ImageUtils.readImage(theFile);
+
+	if(request.exists("resize")) {
+	    sb.append(messageNote("Image resized"));
+	    int width = request.get("imagewidth",600);
+	    image = ImageUtils.resize(image, width, -1);
+	    ImageUtils.waitOnImage(image);
+	    ImageUtils.writeImageToFile(image, theFile);
+	    entry.setChangeDate(System.currentTimeMillis());
+	    getEntryManager().updateEntry(request, entry);
+	} else {
+	    sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
+	    sb.append(HU.formTable());
+	    sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
+	    sb.append(HU.hidden(ARG_OUTPUT, OUTPUT_RESIZE));
+	    sb.append(HU.formEntry(msgLabel("Width"),
+					  HU.input("imagewidth","600",HU.SIZE_5) +
+					  HU.space(2) +
+				   HU.submit("Resize","resize")));
+	    sb.append(HU.formTableClose());
+	    sb.append(HtmlUtils.formClose());
+	}
+
+	sb.append("<br>");
+	sb.append("Image width: ");
+	sb.append(image.getWidth(null));
+	sb.append("<br>");
+	String imgUrl = entry.getTypeHandler().getEntryResourceUrl(request, entry,false,true);
+	sb.append(HU.img(imgUrl, "", ""));
+        getPageHandler().entrySectionClose(request, entry, sb);
+        Result result = new Result("", sb);
+        getEntryManager().addEntryHeader(request, entry, result);
+	return result;
+    }
 
     /**
      * _more_
@@ -919,6 +978,7 @@ public class ImageOutputHandler extends OutputHandler {
         if (output.equals(OUTPUT_ANIMATEDGIF)) {
             return makeAnimatedGif(request, group, entries);
         }
+
 
         String playerVar    = "";
         int    col          = 0;
