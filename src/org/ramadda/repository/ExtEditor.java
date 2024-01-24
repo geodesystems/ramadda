@@ -1397,6 +1397,13 @@ public class ExtEditor extends RepositoryManager {
 	    String theFile = entry.getResource().getPath();
 	    long size = getFileSize();
 	    Image image = ImageUtils.readImage(theFile);
+	    if(image.getWidth(null)<width) {
+		ctx.print("Skipping image resize:" + entry.getName() +" width:" + 
+			  image.getWidth(null));
+		return;
+	    }
+
+
 	    image = ImageUtils.resize(image, width, -1);
 	    ImageUtils.waitOnImage(image);
 	    ImageUtils.writeImageToFile(image, theFile);
