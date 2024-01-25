@@ -304,6 +304,7 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 +section title={{name}}
 {{description wikify=true}}
 {{zoomable doBookmark=true width=100%}}
+-section
 ]]>
 </wiki>
 </type>
