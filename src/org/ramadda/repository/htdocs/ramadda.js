@@ -487,7 +487,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 			tds.push(HU.hidden("allentry",entry.getId()) +
 				 HU.checkbox(cbxId,['rowid',rowId,'name','selentry','value', entry.getId(),'class','entry-form-select','style',HU.css('margin-right','2px','display','none')],false));
 
-		    tds.push(HU.div(['style',HU.css('min-width','10px'),'innerid',innerId,'entryid',entry.getId(),'title','Click to show contents','class','entry-arrow ramadda-clickable' ], HU.getIconImage("fas fa-caret-right")));
+		    tds.push(HU.div(['style',HU.css('margin-right','2px','min-width','10px'),'innerid',innerId,'entryid',entry.getId(),'title','Click to show contents','class','entry-arrow ramadda-clickable' ], HU.getIconImage("fas fa-caret-right")));
 
 		    if(props.showCrumbs && entry.breadcrumbs) {
 			let crumbId = Utils.getUniqueId();
