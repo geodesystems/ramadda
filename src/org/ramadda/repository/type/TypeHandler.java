@@ -3612,17 +3612,15 @@ public class TypeHandler extends RepositoryManager {
                 if (entry.getResource().isFile()
                         && getAccessManager().canDownload(request, entry)) {
                     imgUrl = getEntryResourceUrl(request, entry,false,true);
-                    img    = HU.img(imgUrl, "", "width=" + width);
+                    img    = HU.img(imgUrl, "", HU.attrs("width", width,"style","max-width:100%;","align","center"));
                 } else if (entry.getResource().isUrl()) {
                     try {
                         imgUrl = typeHandler.getPathForEntry(request, entry,false);
-                        img    = HU.img(imgUrl, "", "width=" + width);
+			img    = HU.img(imgUrl, "", HU.attrs("width", width,"style","max-width:100%;","align","center"));
                     } catch (Exception exc) {
                         sb.append("Error getting path:" + entry.getResource()
                                   + " " + exc);
                     }
-                    //                    imgUrl = entry.getResource().getPath();
-
                 }
                 if (img != null) {
                     String outer = HU.href(imgUrl, img,
