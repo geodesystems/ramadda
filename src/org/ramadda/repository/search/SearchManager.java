@@ -2184,7 +2184,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			+ typeHandler.getDescription() + " - "
 			+ cnt + " entries";
                     HU.div(sb, href,
-                           HU.attrs("class", "type-list-item", "title",
+                           HU.attrs("class", "type-list-item",
+				    "data-category",
+				    typeList.getName(),
+				    "title",
                                     help));
                 }
                 if (didSub) {

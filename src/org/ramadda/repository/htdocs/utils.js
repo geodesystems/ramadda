@@ -3539,6 +3539,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		value = value.toLowerCase();
 		textOk = false;
 		let html = $(this).html();
+		let category = $(this).attr('data-category');
+		if(category) html+=' ' +category;
 		//check for title
 		let match = html.match(/title *= *(\"|')([^(\"|')]+)/);
 		if(match) {
