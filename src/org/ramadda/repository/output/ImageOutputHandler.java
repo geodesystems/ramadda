@@ -514,38 +514,34 @@ public class ImageOutputHandler extends OutputHandler {
 	} else if(request.exists(CHANGE_THUMBNAIL)) {
 	    sb.append(messageNote("Thumbnail made"));
 	    getMetadataManager().addThumbnail(request,entry,request.get("deletethumbnail",false));
-	} else {
-	    sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
-	    sb.append(HU.formTable());
-	    sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
-	    sb.append(HU.hidden(ARG_OUTPUT, OUTPUT_CHANGE));
-	    sb.append(HU.formEntry(msgLabel("Width"),
-					  HU.input("imagewidth","600",HU.SIZE_5) +
-					  HU.space(2) +
-				   HU.submit("Resize",CHANGE_RESIZE)));
-	    sb.append(HU.formTableClose());
-	    sb.append(HtmlUtils.formClose());
-	    sb.append("<p>");
-	    sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
-	    sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
-	    sb.append(HU.hidden(ARG_OUTPUT, OUTPUT_CHANGE));
-	    sb.append(HU.submit("Convert to gray scale",CHANGE_GRAYSCALE));
-	    sb.append(HtmlUtils.formClose());
-	    sb.append("<p>");
-	    sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
-	    sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
-	    sb.append(HU.hidden(ARG_OUTPUT, OUTPUT_CHANGE));
+	} 
+	sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
+	sb.append(HU.formTable());
+	sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
+	sb.append(HU.hidden(ARG_OUTPUT, OUTPUT_CHANGE));
+	sb.append(HU.formEntry(msgLabel("Width"),
+			       HU.input("imagewidth","600",HU.SIZE_5) +
+			       HU.space(2) +
+			       HU.submit("Resize",CHANGE_RESIZE)));
+	sb.append(HU.formTableClose());
+	sb.append(HtmlUtils.formClose());
+	sb.append("<p>");
+	sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
+	sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
+	sb.append(HU.hidden(ARG_OUTPUT, OUTPUT_CHANGE));
+	sb.append(HU.submit("Convert to gray scale",CHANGE_GRAYSCALE));
+	sb.append(HtmlUtils.formClose());
+	sb.append("<p>");
+	sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
+	sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
+	sb.append(HU.hidden(ARG_OUTPUT, OUTPUT_CHANGE));
 
-	    sb.append(HU.submit("Make Thumbnail",CHANGE_THUMBNAIL));
-	    sb.append(HU.space(1));
-	    sb.append(HU.labeledCheckbox("deletethumbnail","true",true,
-					 "Delete any existing thumbnails"));
-	    sb.append(HtmlUtils.formClose());
-
-
-	}
-
-	sb.append("<br>");
+	sb.append(HU.submit("Make Thumbnail",CHANGE_THUMBNAIL));
+	sb.append(HU.space(1));
+	sb.append(HU.labeledCheckbox("deletethumbnail","true",true,
+				     "Delete any existing thumbnails"));
+	sb.append(HtmlUtils.formClose());
+	sb.append("<hr>");
 	sb.append("Image width: ");
 	sb.append(image.getWidth(null));
 	sb.append("<br>");
