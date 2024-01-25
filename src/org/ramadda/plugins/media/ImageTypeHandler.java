@@ -61,12 +61,21 @@ public class ImageTypeHandler extends GenericTypeHandler {
     @Override
     public void getFileExtras(Request request, Entry entry, StringBuilder sb)
             throws Exception {
+	sb.append(HU.b("Image:"));
+	sb.append("<div style='margin-left:30px;'>");
         sb.append(HU.labeledCheckbox("imageresize", "true", false,"Resize image"));
 	sb.append(HU.space(2));
-	sb.append(HU.b("Width:"));
+	sb.append("Width:");
 	sb.append(HU.space(1));
 	sb.append(HU.input("imagewidth","600",HU.SIZE_5));
 	sb.append("<br>");
+	if(getRepository().getSearchManager().isImageIndexingEnabled()) {
+	    sb.append(HU.labeledCheckbox(ARG_INDEX_IMAGE, "true", false,"Extract text from image"));
+	}
+	sb.append("</div>");
+
+
+
         super.getFileExtras(request, entry,sb);
 
     }

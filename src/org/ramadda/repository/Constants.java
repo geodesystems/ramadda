@@ -375,6 +375,8 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_SHOWNEXT = "showNext";
 
+    public static final String ARG_INDEX_IMAGE = "indeximage";
+
     /** _more_ */
     public static final String ARG_RETURNFILENAME = "returnfilename";
 

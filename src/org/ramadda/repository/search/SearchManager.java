@@ -313,6 +313,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
 
+    public boolean isImageIndexingEnabled() {
+	return stringDefined(tesseractPath);
+    }
+
     /**
      * _more_
      *
@@ -670,7 +674,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	StringBuilder fileCorpus = null;
         if (entry.isFile()) {
 	    fileCorpus = new StringBuilder();
-            addContentField(entry, doc, FIELD_CONTENTS, entry.getResource().getTheFile(), true, fileCorpus);
+            addContentField(request, entry, doc, FIELD_CONTENTS, entry.getResource().getTheFile(), true, fileCorpus);
 	} else if(request.get("harvesthtml",false)) {
 	    if(entry.getResource().isUrl()) {
 		String url = entry.getResource().getPath();
@@ -729,7 +733,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		File f = element.getFile(entry, metadata, element);
 		if(f!=null && f.exists()) {
 		    if(!Utils.isImage(f.toString())) {
-			addContentField(entry, doc, FIELD_ATTACHMENT, f, false, corpus);
+			addContentField(request,entry, doc, FIELD_ATTACHMENT, f, false, corpus);
 		    }
 		}
 	    }
@@ -775,43 +779,15 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
-    private String readContents(File f,List<org.apache.tika.metadata.Metadata> metadataList) throws Exception {
-	if(!isDocument(f.getName())) {
-	    if(debugCorpus)
-		System.err.println("SearchManager.readContents: Not a document:" + f.getName());
-	    return null;
-	}
-
-	//Don't do really big files 
-	if(f.length()>LUCENE_MAX_LENGTH) {
-	    //Don't do this since the max size should be capped by tika below
-	    //	    if(debugCorpus)System.err.println("SearchManager.readContents file too big: " + f.getName() +" " +f.length());
-	    //	    return null;
-	}
-	//	System.err.println(f.getName() +" length:" + f.length() +" max:" +LUCENE_MAX_LENGTH);
-	//	if(Utils.isImage(f.toString())) return null;
-	if(f.length()==0) {
-	    if(debugCorpus)
-		System.err.println("SearchManager.readContents: empty file: " + f.getName());
-	    return null;
-	}
-	File corpusFile = TikaUtil.getTextCorpusCacheFile(f);
-	if(corpusFile.exists()) {
-	    if(debugCorpus)
-		System.err.println("SearchManager.readContents: corpus file exists:" + f.getName());
-	    return  IO.readContents(corpusFile.toString(), SearchManager.class);
-	} 
-	//	System.err.println("no corpus for file:" + f);
-
-	//Note: because we check for isDocument above we never have images here
+    private String readContents(Request request,
+				File f,List<org.apache.tika.metadata.Metadata> metadataList) throws Exception {
 	boolean isImage = Utils.isImage(f.getName());
-	if(isImage && !indexImages) {
-	    if(debugCorpus)
-		System.err.println("SearchManager.readContents: is image:" +f.getName());
-	    return null;
-	}
-
-	if(isImage && tesseractPath!=null) {
+	if(isImage) {
+	    if(!request.get(ARG_INDEX_IMAGE,false) || tesseractPath==null) {
+		if(debugCorpus)
+		    System.err.println("SearchManager.readContents: Not indexing images:" + f.getName());
+		return null;
+	    }
 	    try {
 		long t1= System.currentTimeMillis();
 		File tmp  =getStorageManager().getUniqueScratchFile("output");
@@ -824,6 +800,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		String      result  = new String(IOUtil.readBytes(is));
 		String imageText = IO.readContents(tmp.toString()+".txt", getClass());
 		long t2= System.currentTimeMillis();
+		if(debugCorpus)
+		    System.err.println("SearchManager.readContents: from image:" + f.getName());
 		System.err.println("tesseract:" + f.getName() +" time:" + (t2-t1));
 		return imageText;
 	    } catch(Exception exc) {
@@ -831,6 +809,33 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		return null;
 	    }
 	}
+
+
+	if(!isDocument(f.getName())) {
+	    if(debugCorpus)
+		System.err.println("SearchManager.readContents: Not a document:" + f.getName());
+	    return null;
+	}
+
+	//Don't do really big files 
+	if(f.length()>LUCENE_MAX_LENGTH) {
+	    //Don't do this since the max size should be capped by tika below
+	    if(debugCorpus)System.err.println("SearchManager.readContents file too big: " + f.getName() +" " +f.length());
+	    //	    return null;
+	}
+
+	if(f.length()==0) {
+	    if(debugCorpus)
+		System.err.println("SearchManager.readContents: empty file: " + f.getName());
+	    return null;
+	}
+	File corpusFile = TikaUtil.getTextCorpusCacheFile(f);
+	if(corpusFile.exists()) {
+	    if(debugCorpus)
+		System.err.println("SearchManager.readContents: corpus file exists:" + f.getName());
+	    return  IO.readContents(corpusFile.toString(), SearchManager.class);
+	} 
+
 
 	try(InputStream stream = getStorageManager().getFileInputStream(f)) {
 	    BufferedInputStream bis = new BufferedInputStream(stream);
@@ -864,7 +869,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      *
      * @throws Exception _more_
      */
-    private void addContentField(Entry entry,
+    private void addContentField(Request request, Entry entry,
                                  org.apache.lucene.document.Document doc,
 				 String field,
                                  File f, boolean mainEntryFile,
@@ -876,7 +881,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	    List<org.apache.tika.metadata.Metadata> metadata = new ArrayList<org.apache.tika.metadata.Metadata>();
 	    long t1 = System.currentTimeMillis();
-	    String contents = readContents(f,metadata);
+	    String contents = readContents(request, f,metadata);
 	    long t2= System.currentTimeMillis();
             if ((contents != null) && (contents.length() > 0)) {
                 doc.add(new TextField(field, contents, Field.Store.NO));
