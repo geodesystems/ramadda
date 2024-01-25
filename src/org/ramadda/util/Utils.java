@@ -2317,6 +2317,15 @@ public class Utils extends IO {
         return Integer.parseInt(s);
     }
 
+    public static double getProperty(Dictionary props, String key, double dflt) {
+        String s = Utils.getProperty(props, key, (String) null);
+        if ( !stringDefined(s)) {
+            return dflt;
+        }
+
+        return Double.parseDouble(s);
+    }    
+
 
     /**
      * _more_
