@@ -2183,8 +2183,7 @@ WikiEditor.prototype = {
 		{p:'credits',tt:'Text to show at the bottom of the map'},
 		{p:'hideIfNoLocations',tt:"Don't show map if no georeferenced data"},
 		{p:'details',ex:'false'},
-		{p:'azimuthLength',tt:'km','1.0'},
-
+		{p:'azimuthLength',tt:'km',d:'1.0'},
 		{p:'showLines',ex:'true'},
 		{p:'showBounds',ex:'false'},
 		{p:'showMarkers',ex:'false'},
