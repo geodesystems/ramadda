@@ -1690,6 +1690,9 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
 
         boolean showLines    = Utils.getProperty(props, "showLines", false);
+
+        double azimuthLength    = Utils.getProperty(props, "azimuthLength", 1.0);	
+
         //            map.addLines(entry, "", polyLine, null);
 
         if ((entriesToUse.size() == 1) && detailed) {
@@ -1801,14 +1804,14 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 						      JpegMetadataHandler.TYPE_CAMERA_DIRECTION)) {
                             double dir =
                                 Double.parseDouble(metadata.getAttr1());
-                            double km  = 1.0;
+                            double km  = azimuthLength;
                             String kms = metadata.getAttr2();
                             if (Utils.stringDefined(kms)) {
                                 km = Double.parseDouble(kms);
                             }
                             LatLonPointImpl fromPt =
-                                new LatLonPointImpl(location[0], location[1]);
-                            LatLonPointImpl pt = Bearing.findPoint(fromPt,
+                                new LatLonPointImpl(location[0], location[1]); 
+                           LatLonPointImpl pt = Bearing.findPoint(fromPt,
 								   dir, km, null);
                             map.addLine(entry, mapEntryId(entry), fromPt, pt,
                                         null);

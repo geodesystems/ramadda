@@ -2175,7 +2175,6 @@ WikiEditor.prototype = {
  		{p:'width',ex:'100%'},
 		{p:'height',ex:'400'},
 		{p:'listEntries',ex:'true'},
-
 		{p:'listInMap',ex:'true'},
 		{p:'showCheckbox',ex:'true'},
 		{p:'listHeader'},
@@ -2184,6 +2183,7 @@ WikiEditor.prototype = {
 		{p:'credits',tt:'Text to show at the bottom of the map'},
 		{p:'hideIfNoLocations',tt:"Don't show map if no georeferenced data"},
 		{p:'details',ex:'false'},
+		{p:'azimuthLength',tt:'km','1.0'},
 
 		{p:'showLines',ex:'true'},
 		{p:'showBounds',ex:'false'},
