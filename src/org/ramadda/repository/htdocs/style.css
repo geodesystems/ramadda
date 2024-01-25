@@ -1300,7 +1300,7 @@ a.ramadda-menubar-button:hover {
     color:#ddd;
 }
 .ramadda-expandable-link span i:hover {
-    color: var(--hover-color);
+    color: var(--hover-color) !important;
 }
 
 

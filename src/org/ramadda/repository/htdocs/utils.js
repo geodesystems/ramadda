@@ -5163,7 +5163,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	});
     },
     makeExpandable:function(selector,fullScreen) {
-        let icon =HtmlUtils.getIconImage("fas fa-expand-arrows-alt",['class',CLASS_CLICKABLE],[]);
+        let icon =HtmlUtils.getIconImage("fa-solid fa-maximize",['class',CLASS_CLICKABLE],['style','color:#aaa;']);
         let id = HtmlUtils.getUniqueId();
         let html= HtmlUtils.div(["id",id,"title","Expand", "class","ramadda-expandable-link", "style","display:none;cursor:pointer;text-align:right;position:absolute;right:0px;top:0px;margin-top:0px;"],icon);
         $(selector).append(html);
