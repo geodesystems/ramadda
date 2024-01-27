@@ -14,7 +14,7 @@ function DocumentChat(id,entryId) {
 
 
 //    div.append(HU.input('','',['placeholder','Document chat input',ATTR_STYLE,HU.css('width','100%'),ATTR_ID,id+'_input','class','ramadda-documentchat-input']));
-    let text= HU.textarea('','',['placeholder','Document chat input','rows','3',ATTR_STYLE,HU.css('width','100%'),ATTR_ID,id+'_input','class','ramadda-documentchat-input']);    
+    let text= HU.textarea('','',['placeholder','Document chat input, e.g. - List the 5 main points','rows','3',ATTR_STYLE,HU.css('width','100%'),ATTR_ID,id+'_input','class','ramadda-documentchat-input']);    
     chat +=HU.div([ATTR_STYLE,HU.css('position','relative')],
 		  text+
 		  HU.div([ATTR_ID,id+'_progress',
