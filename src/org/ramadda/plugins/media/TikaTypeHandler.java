@@ -20,6 +20,7 @@ import org.ramadda.repository.type.*;
 import org.ramadda.service.*;
 
 
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
@@ -41,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 
 
@@ -63,6 +65,13 @@ public class TikaTypeHandler extends GenericTypeHandler {
     public TikaTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
+    }
+
+    @Override
+    public void addAction(Action action) {
+	if(getRepository().getLLMManager().isLLMEnabled()) {
+	    super.addAction(action);
+	}
     }
 
     /**
@@ -232,6 +241,69 @@ public class TikaTypeHandler extends GenericTypeHandler {
         }
 
     }
+
+
+    public Result processEntryAction(Request request, Entry entry)
+            throws Exception {
+        String action = request.getString("action", "");
+        if (!action.equals("documentchat")) {
+            return super.processEntryAction(request, entry);
+	}
+        StringBuilder sb      = new StringBuilder();
+        if (request.isAnonymous()) {
+	    if(request.exists("question")) {
+		String s =  JsonUtil.mapAndQuote(Utils.makeList("error", "You must be logged in to use the document chat"));
+		return  new Result("", new StringBuilder(s), JsonUtil.MIMETYPE);
+	    } 
+
+
+	    getPageHandler().entrySectionOpen(request, entry, sb, "Document Chat");
+            sb.append(
+                getPageHandler().showDialogError(
+						 "You must be logged in to do document chat"));
+	    getPageHandler().entrySectionClose(request, entry, sb);
+	    return getEntryManager().addEntryHeader(request, entry,
+						    new Result("Document Chat", sb));
+	}
+
+	System.err.println(request);
+	if(request.exists("question")) {
+	    String r = getLLMManager().applyPromptToDocument(request, entry.getResource().getTheFile(),request.getString("question",""),
+							     request.get("offset",0));
+            String s;
+	    if(r==null) {
+		s =  JsonUtil.mapAndQuote(Utils.makeList("error", "Could not process request"));
+	    } else {
+		s =  JsonUtil.mapAndQuote(Utils.makeList("response", r));
+	    }
+            return  new Result("", new StringBuilder(s), JsonUtil.MIMETYPE);
+	} 
+
+	getPageHandler().entrySectionOpen(request, entry, sb, "Document Chat");
+	sb.append("<table width=100%><tr valign=top><td width=50%>");
+	if(entry.getTypeHandler().isType("type_document_pdf")) {
+	    String url = HU.url(getEntryManager().getEntryResourceUrl(request, entry),"fileinline","true");
+	    sb.append(HU.getPdfEmbed(url,Utils.makeMap("width","100%")));
+	} else {
+	    String url = request.getAbsoluteUrl(getEntryManager().getEntryResourceUrl(request, entry));
+	    url =HU.url(url,"timestamp",""+entry.getChangeDate());
+	    url = url.replace("?","%3F").replace("&","%26");
+
+	    sb.append("<iframe style='border:var(--basic-border);' src='https://view.officeapps.live.com/op/embed.aspx?src="+ url+"' width='100%' height='100%' frameborder='1'></iframe>\n");
+	}
+	sb.append("</td><td>");
+        String id = HU.getUniqueId("chat_div");
+	HU.div(sb,"",HU.attrs("style","width:100%;","id", id));
+	sb.append("</td><tr></table>");
+	HU.importJS(sb,getHtdocsPath("/src/org/ramadda/plugins/media/htdocs/media/documentchat.js","/media/documentchat.js"));
+	HU.script(sb, HU.call("new DocumentChat", HU.squote(id),HU.squote(entry.getId())));
+
+
+        getPageHandler().entrySectionClose(request, entry, sb);
+        return getEntryManager().addEntryHeader(request, entry,
+                new Result("Document Chat", sb));
+    }
+
 
 
     /**
