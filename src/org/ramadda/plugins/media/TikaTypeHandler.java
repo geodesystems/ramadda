@@ -26,6 +26,7 @@ import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
 
+import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.DateUtil;
 
 import ucar.unidata.util.IOUtil;
@@ -243,6 +244,11 @@ public class TikaTypeHandler extends GenericTypeHandler {
     }
 
 
+    private Result makeJsonError(String msg) {
+	String s =  JsonUtil.mapAndQuote(Utils.makeList("error", msg));
+	return  new Result("", new StringBuilder(s), JsonUtil.MIMETYPE);
+    }
+
     public Result processEntryAction(Request request, Entry entry)
             throws Exception {
         String action = request.getString("action", "");
@@ -252,8 +258,7 @@ public class TikaTypeHandler extends GenericTypeHandler {
         StringBuilder sb      = new StringBuilder();
         if (request.isAnonymous()) {
 	    if(request.exists("question")) {
-		String s =  JsonUtil.mapAndQuote(Utils.makeList("error", "You must be logged in to use the document chat"));
-		return  new Result("", new StringBuilder(s), JsonUtil.MIMETYPE);
+		return makeJsonError("You must be logged in to use the document chat");
 	    } 
 
 
@@ -266,17 +271,22 @@ public class TikaTypeHandler extends GenericTypeHandler {
 						    new Result("Document Chat", sb));
 	}
 
-	System.err.println(request);
 	if(request.exists("question")) {
-	    String r = getLLMManager().applyPromptToDocument(request, entry.getResource().getTheFile(),request.getString("question",""),
-							     request.get("offset",0));
-            String s;
-	    if(r==null) {
-		s =  JsonUtil.mapAndQuote(Utils.makeList("error", "Could not process request"));
-	    } else {
-		s =  JsonUtil.mapAndQuote(Utils.makeList("response", r));
+	    try {
+		String r = getLLMManager().applyPromptToDocument(request, entry.getResource().getTheFile(),request.getString("question",""),
+								 request.get("offset",0));
+		String s;
+		if(r==null) {
+		    return makeJsonError("Could not process request");
+		} else {
+		    s =  JsonUtil.mapAndQuote(Utils.makeList("response", r));
+		}
+		return  new Result("", new StringBuilder(s), JsonUtil.MIMETYPE);
+	    } catch(Exception exc) {
+		Throwable     inner     = LogUtil.getInnerException(exc);
+		getLogManager().logError("Error running document chat:" + entry.getName(),exc);
+		return makeJsonError("An error has occurred:" + inner);
 	    }
-            return  new Result("", new StringBuilder(s), JsonUtil.MIMETYPE);
 	} 
 
 	getPageHandler().entrySectionOpen(request, entry, sb, "Document Chat");
