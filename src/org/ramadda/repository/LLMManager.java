@@ -175,22 +175,41 @@ public class LLMManager extends  AdminHandlerImpl {
 
 
 
-    public Result processLLM(Request request)  throws Throwable {
-	if(request.isAnonymous()) {
-	    String json = JsonUtil.map(Utils.makeList("error", JsonUtil.quote("You must be logged in to use the rewrite service")));
-	    return new Result("", new StringBuilder(json), "text/json");
-	}
+    public Result processLLM(Request request)  throws Exception {
+	try {
+	    if(request.isAnonymous()) {
+		String json = JsonUtil.map(Utils.makeList("error", JsonUtil.quote("You must be logged in to use the rewrite service")));
+		return new Result("", new StringBuilder(json), "text/json");
+	    }
 
-	String text =request.getString("text","");
-	String promptPrefix = request.getString("promptprefix",
-						"Rewrite the following text as college level material:");
-	String promptSuffix = request.getString("promptsuffix", "");
-	//	text = callGpt("Rewrite the following text:","",new StringBuilder(text),1000,false);		    
-	text = callLLM(request, promptPrefix,promptSuffix,text,1000,false,null);		    
-	String json = JsonUtil.map(Utils.makeList("result", JsonUtil.quote(text)));
-	return new Result("", new StringBuilder(json), "text/json");
+	    String text =request.getString("text","");
+	    String promptPrefix = request.getString("promptprefix",
+						    "Rewrite the following text as college level material:");
+	    String promptSuffix = request.getString("promptsuffix", "");
+	    //	text = callGpt("Rewrite the following text:","",new StringBuilder(text),1000,false);		    
+	    text = callLLM(request, promptPrefix,promptSuffix,text,1000,false,null);		    
+	    String json = JsonUtil.map(Utils.makeList("result", JsonUtil.quote(text)));
+	    return new Result("", new StringBuilder(json), "text/json");
+	} catch(Throwable exc) {
+	    throw new RuntimeException(exc);
+	}
 	
     }
+
+    public String applyPromptToDocument(Request request, File file, String prompt,int offset) throws Exception {
+	try {
+	    String corpus = getSearchManager().extractCorpus(request, file, null);
+	    if(corpus==null) return null;
+	    if(offset>0 && offset<corpus.length()) {
+		corpus = corpus.substring(offset);
+	    }
+	    return callLLM(request, prompt,"",corpus,1000,true, new int[]{TOKEN_LIMIT_GPT3});
+	} catch(Throwable exc) {
+	    throw new RuntimeException(exc);
+	}
+
+    }
+
 
     private Result makeJsonErrorResult(String error) {
 	String json = JsonUtil.map(Utils.makeList("error", JsonUtil.quote(error)));

@@ -829,19 +829,29 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		System.err.println("SearchManager.readContents: empty file: " + f.getName());
 	    return null;
 	}
+
+
+	return extractCorpus(request, f,metadataList);
+
+    }	
+
+
+    public String extractCorpus(Request request,
+				File f,List<org.apache.tika.metadata.Metadata> metadataList) throws Exception {
+
 	File corpusFile = TikaUtil.getTextCorpusCacheFile(f);
 	if(corpusFile.exists()) {
 	    if(debugCorpus)
 		System.err.println("SearchManager.readContents: corpus file exists:" + f.getName());
 	    return  IO.readContents(corpusFile.toString(), SearchManager.class);
 	} 
-
-
+	
 	try(InputStream stream = getStorageManager().getFileInputStream(f)) {
 	    BufferedInputStream bis = new BufferedInputStream(stream);
             org.apache.tika.metadata.Metadata metadata =
                 new org.apache.tika.metadata.Metadata();
-	    metadataList.add(metadata);
+	    if(metadataList!=null)
+		metadataList.add(metadata);
 	    Parser parser = new AutoDetectParser(getTikaConfig());
             BodyContentHandler handler =  new BodyContentHandler(LUCENE_MAX_LENGTH);	
 	    long t1 = System.currentTimeMillis();
@@ -856,9 +866,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    exc.printStackTrace();
 	    return null;
 	}
-    }	
-
-
+    }
     
     /**
      * _more_
