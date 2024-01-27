@@ -280,6 +280,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	IO.Result result=call(openAIJobManager,new URL(URL_OPENAI_COMPLETION), body,
 		    "Content-Type","application/json",
 		    "Authorization","Bearer " +openAIKey);
+	//	System.err.println(result.getResult());
 	if(result!=null) {
 	    String remTokens = result.getHeader("x-ratelimit-remaining-tokens");
 	    String remRequests = result.getHeader("x-ratelimit-remaining-requests");	    
