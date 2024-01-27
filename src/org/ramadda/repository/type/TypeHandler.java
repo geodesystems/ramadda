@@ -562,14 +562,15 @@ public class TypeHandler extends RepositoryManager {
             List actionNodes = XmlUtil.findChildren(node, "action");
             for (int i = 0; i < actionNodes.size(); i++) {
                 Element actionNode = (Element) actionNodes.get(i);
-                actions.add(new Action(
-				       XmlUtil.getAttribute(actionNode, "name"),
-				       XmlUtil.getAttribute(actionNode, "label"),
-				       XmlUtil.getAttribute(actionNode, "icon",ICON_EDIT),
-				       XmlUtil.getAttribute(actionNode, "foruser","false").equals("true"),
-				       XmlUtil.getAttribute(actionNode, "canedit","false").equals("true")));
+		addAction(new Action(
+				     XmlUtil.getAttribute(actionNode, "name"),
+				     XmlUtil.getAttribute(actionNode, "label"),
+				     XmlUtil.getAttribute(actionNode, "icon",ICON_EDIT),
+				     XmlUtil.getAttribute(actionNode, "foruser","false").equals("true"),
+				     XmlUtil.getAttribute(actionNode, "canedit","false").equals("true"),
+				     XmlUtil.getAttribute(actionNode, "category","file")));
             }
-
+	    
 
             List metadataNodes = XmlUtil.findChildren(node, TAG_METADATA);
             for (int i = 0; i < metadataNodes.size(); i++) {
@@ -655,6 +656,10 @@ public class TypeHandler extends RepositoryManager {
         }
 
 
+    }
+
+    public void addAction(Action action) {
+	actions.add(action);
     }
 
     public void getWikiTags(List<String[]> tags, Entry entry) {
@@ -2958,9 +2963,13 @@ public class TypeHandler extends RepositoryManager {
 		    continue;
 		}
 	    }
+	    int type = OutputType.TYPE_FILE;			
+	    if(action.category.equals("view")) type = OutputType.TYPE_VIEW;
+	    else if(action.category.equals("edit")) type = OutputType.TYPE_EDIT;
+	    else if(action.category.equals("feeds")) type = OutputType.TYPE_FEEDS;	    	    
 	    links.add(new Link(getEntryActionUrl(request, entry,
 						 action.id), action.icon, action.label,
-			       OutputType.TYPE_FILE));
+			       type));
 	}
 
         if (parent != null) {
@@ -8229,12 +8238,14 @@ public class TypeHandler extends RepositoryManager {
 	private String icon;
 	private boolean forUser;
 	private boolean canEdit;
-	Action(String id, String label, String icon,boolean forUser,boolean canEdit) {
+	private String category;
+	Action(String id, String label, String icon,boolean forUser,boolean canEdit,String category) {
 	    this.id = id;
 	    this.label = label;
 	    this.icon = icon;
 	    this.forUser = forUser;
 	    this.canEdit = canEdit;
+	    this.category=category;
 	}
     }
 
