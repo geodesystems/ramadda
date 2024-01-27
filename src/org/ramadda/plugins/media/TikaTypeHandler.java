@@ -289,7 +289,7 @@ public class TikaTypeHandler extends GenericTypeHandler {
 	    url =HU.url(url,"timestamp",""+entry.getChangeDate());
 	    url = url.replace("?","%3F").replace("&","%26");
 
-	    sb.append("<iframe style='border:var(--basic-border);' src='https://view.officeapps.live.com/op/embed.aspx?src="+ url+"' width='100%' height='100%' frameborder='1'></iframe>\n");
+	    sb.append("<iframe style='border:var(--basic-border);' src='https://view.officeapps.live.com/op/embed.aspx?src="+ url+"' width='100%' height='700px' frameborder='1'></iframe>\n");
 	}
 	sb.append("</td><td>");
         String id = HU.getUniqueId("chat_div");
