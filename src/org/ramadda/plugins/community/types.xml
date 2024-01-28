@@ -146,6 +146,7 @@
 	metadata="cultural_presenter,cultural_biome,cultural_plant_use" >
     <!-- we have the optional=true because this might not be a pdf -->
      <service link="media_gs_thumbnail" target="attachment" optional="true"/>
+     <property name="search.tabs" value="list,map"/>
      <property name="icon" value="/cultural/archeological.png"/>
      <property name="form.description.iswiki" value="true"/>
      <property name="search.metadatatypes" value="cultural_biome"/>

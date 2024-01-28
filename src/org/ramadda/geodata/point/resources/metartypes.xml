@@ -4,6 +4,7 @@
 	handler="org.ramadda.geodata.point.AwcMetarTypeHandler">
 
 
+    <property name="search.tabs" value="map,list"/>
      <property name="form.file.show" value="false"/>
      <property name="form.resource.show" value="false"/>
      <property name="record.processresource" value="true"/>

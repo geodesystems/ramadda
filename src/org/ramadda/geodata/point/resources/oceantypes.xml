@@ -274,6 +274,7 @@ super="type_point"
 handler="org.ramadda.geodata.point.NdbcBuoyTypeHandler"
 editfields="station,data_type,_default"	>
 
+  <property name="search.tabs" value="map,list"/>
   <property name="icon" value="/point/noaa.gif"/>
   <property name="form.area.show" value="false"/>
   <property name="form.location.show" value="true"/>
@@ -462,6 +463,7 @@ indexField="depth" fields="salinity,density"
       description="SOFAR Buoy Data from API" 
       super="type_point" 
       handler="org.ramadda.data.services.PointTypeHandler">
+  <property name="search.tabs" value="map,list"/>
   <property name="icon" value="/point/sofar.png"/>
   <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
   <property name="record.processresource" value="true"/>
@@ -550,6 +552,7 @@ radius=4 colorBy=degrees strokeWidth=0 pathStrokeWidth=0.5 colorTable=plotly_blu
 description="Castaway CTD Data" 
 super="type_point" 
 handler="org.ramadda.data.services.PointTypeHandler">
+  <property name="search.tabs" value="map,list"/>
   <property name="icon" value="/point/sontek.png"/>
   <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
   <property name="form.area.show" value="false"/>
@@ -628,6 +631,7 @@ indexField="depth" fields="salinity,density"
 description="NORTEK ADCP Buoy" 
 super="type_point" 
 handler="org.ramadda.data.services.PointTypeHandler">
+  <property name="search.tabs" value="map,list"/>
   <property name="icon" value="/point/nortek.png"/>
   <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
   <property name="form.area.show" value="false"/>
