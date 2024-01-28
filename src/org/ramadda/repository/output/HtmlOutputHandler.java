@@ -558,7 +558,7 @@ public class HtmlOutputHandler extends OutputHandler {
             getPageHandler().entrySectionOpen(request, entry, sb, "Entry Information");
             StringBuilder suffix = new StringBuilder();
             addDescription(request, entry, sb, true, suffix);
-            String informationBlock = getInformationTabs(request, entry, false,null);
+            String informationBlock = getInformationTabs(request, entry, false,null,true);
             sb.append(informationBlock);
             sb.append(suffix);
             getPageHandler().entrySectionClose(request, entry, sb);
@@ -1262,7 +1262,7 @@ public class HtmlOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public String getInformationTabs(Request request, Entry entry,
-                                     boolean includeSnippet, List<LabeledObject>extras)
+                                     boolean includeSnippet, List<LabeledObject>extras,boolean showResource)
             throws Exception {
         List         tabTitles   = new ArrayList<String>();
         List         tabContents = new ArrayList<String>();
@@ -1277,7 +1277,7 @@ public class HtmlOutputHandler extends OutputHandler {
         }
         request.put(WikiConstants.ATTR_SHOWTITLE, "false");
         basicSB.append(entry.getTypeHandler().getEntryContent(request, entry,
-                false, true, null));
+                false, showResource, null));
 
         tabTitles.add("Information");
         tabContents.add(basicSB.toString());
@@ -2232,7 +2232,7 @@ public class HtmlOutputHandler extends OutputHandler {
                         "Entry Information", true);
                 addDescription(request, group, sb, true, suffix);
                 if ( !doSimpleListing) {
-                    sb.append(getInformationTabs(request, group, false,null));
+                    sb.append(getInformationTabs(request, group, false,null,true));
                 }
 
                 StringBuffer metadataSB = new StringBuffer();
