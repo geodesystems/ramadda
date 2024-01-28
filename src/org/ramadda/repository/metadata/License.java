@@ -68,6 +68,7 @@ public class License implements Comparable {
      */
     public License(String id, String name, String url, String icon,
                    String text) {
+	this.from="";
         this.id   = id;
         this.name = name;
         this.url  = url;

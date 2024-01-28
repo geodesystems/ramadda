@@ -1,4 +1,25 @@
 <types supercategory="Science and Education" adminonly="true">
+
+<type  name="type_license"  
+description="License"  
+category="Services" >
+  <property name="icon" value="/datapolicy/fair.png"/>
+  <property name="form.file.show" value="true"/>
+  <property name="form.description.showwiki" value="false"/>     
+  <property name="form.area.show" value="false"/>     
+  <property name="form.date.show" value="false"/>
+  <property name="form.tags.show" value="false"/>  
+  <property name="form.url.show" value="false"/>
+  <property name="form.resource.extra.show" value="false"/>  
+  <property name="form.filesonserver.show" value="false"/>  
+  <property name="form.file.label" value="License Icon"/>  
+  <property name="form.description.label" value="License Description:"/>  
+  <column  name="license_id"  label="ID" cansearch="false" suffix="No spaces, unique, e.g., &lt;i&gt;my-license-1&lt;/i&gt;"/>
+  <column  name="external_url"  label="External URL"  cansearch="false" suffix="Optional URL to site that describes this license"/>    
+</type>  
+  
+
+
 <type  name="type_datapolicy_source"  
 description="Data Policy Source"  
 category="Services" >

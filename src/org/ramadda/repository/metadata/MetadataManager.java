@@ -264,10 +264,10 @@ public class MetadataManager extends RepositoryManager {
                 JSONObject jlicense = jlicenses.getJSONObject(i);
 		if(jlicense.optBoolean("skip",false)) continue;
                 License license = new License(getRepository(),
-                                      obj.optString("name", "Licenses"),
-                                      jlicense.optString("url",
-                                          obj.optString("url",
-                                              null)), jlicense, priority);
+					      obj.optString("name", "Licenses"),
+					      jlicense.optString("url",
+								 obj.optString("url",
+									       null)), jlicense, priority);
                 licenses.add(license);
                 licenseMap.put(license.getId(), license);
                 licenseMap.put(license.getId().toLowerCase(), license);		
@@ -283,16 +283,53 @@ public class MetadataManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public synchronized License getLicense(String license) {
-        return licenseMap.get(license);
+    public synchronized License getLicense(String licenseId) {
+        License license=licenseMap.get(licenseId);
+	if(license==null) {
+	    for(License l:getLocalLicenses()) {
+		if(l.getId().equals(licenseId)) return l;
+	    }
+	}
+	return license;
     }
 
     /**
       * @return _more_
      */
     public synchronized List<License> getLicenses() {
+	List<License> extra = getLocalLicenses();
+	if(extra.size()>0) {
+	    extra.addAll(licenses);
+	    return extra;
+	}
         return licenses;
     }
+
+    /**
+      * @return _more_
+     */
+    private synchronized List<License> getLocalLicenses() {
+	try {
+	    Request request =getRepository().getAdminRequest();
+	    List<License> licenses= new ArrayList<License>();
+	    for(Entry entry:getEntryManager().getEntriesWithType(request,
+								 "type_license")) {
+		String icon =  "";
+		if(entry.isFile())  {
+		    icon = getEntryManager().getEntryResourceUrl(request, entry) ;
+		}
+		License license = new License((String) entry.getValue("license_id"),
+					      entry.getName(),
+					      (String)entry.getValue("external_url"),
+					      icon,
+					      entry.getDescription());
+		licenses.add(license);
+	    }
+	    return licenses;
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
+    }    
 
 
     /**

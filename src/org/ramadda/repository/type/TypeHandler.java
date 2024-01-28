@@ -121,16 +121,16 @@ public class TypeHandler extends RepositoryManager {
 
 
     private String DEFAULT_EDIT_FIELDS  =
-        ARG_NAME+"," +  ARG_DESCRIPTION+"," +  ARG_RESOURCE+"," +  ARG_TAGS+"," +  ARG_DATE+"," +  ARG_LOCATION+"," + FIELD_COLUMNS+"," + FIELD_ORDER;
+        ARG_NAME+"," +  ARG_DESCRIPTION+"," +  ARG_RESOURCE+"," +  ARG_TAGS+"," +  ARG_DATE+"," +  ARG_LOCATION+"," + FIELD_COLUMNS+"," + FIELD_HR+","+FIELD_ORDER;
 
     /** _more_ */
     private String[] FIELDS_ENTRY = {
-        ARG_NAME, ARG_DESCRIPTION, ARG_RESOURCE,FIELD_HR,/* FIELD_LABEL+":" +HU.span("Metadata",""),*/ ARG_TAGS, ARG_DATE, ARG_LOCATION,FIELD_COLUMNS,FIELD_ORDER
+        ARG_NAME, ARG_DESCRIPTION, ARG_RESOURCE,FIELD_HR,/* FIELD_LABEL+":" +HU.span("Metadata",""),*/ ARG_TAGS, ARG_DATE, ARG_LOCATION,FIELD_COLUMNS,FIELD_HR,FIELD_ORDER
     };
 
     /** _more_ */
     private String[] FIELDS_NOENTRY = {
-        ARG_NAME, ARG_RESOURCE, ARG_DESCRIPTION, FIELD_HR, /*ARG_LABEL+":" +HU.span("Metadata",""),*/ARG_TAGS, ARG_DATE, ARG_LOCATION,FIELD_COLUMNS,FIELD_ORDER
+        ARG_NAME, ARG_RESOURCE, ARG_DESCRIPTION, FIELD_HR, /*ARG_LABEL+":" +HU.span("Metadata",""),*/ARG_TAGS, ARG_DATE, ARG_LOCATION,FIELD_COLUMNS,FIELD_HR,FIELD_ORDER
     };
 
 
@@ -4973,6 +4973,7 @@ public class TypeHandler extends RepositoryManager {
         String[] whatList = entry==null?newFields:editFields;
 	if(whatList==null) whatList = editFields;
 	if(whatList==null) whatList = entry == null  ? FIELDS_NOENTRY: FIELDS_ENTRY;
+
         String   domId;
         for (String what : whatList) {
             if (what.equals("quit")) {
@@ -5011,7 +5012,7 @@ public class TypeHandler extends RepositoryManager {
 
             if (what.equals(ARG_TAGS)) {
                 if ( !getTypeProperty("form.tags.show", true)) {
-                    return;
+                    continue;
                 }
                 StringBuilder tags = new StringBuilder();
                 for (int i = 0; i < 3; i++) {
