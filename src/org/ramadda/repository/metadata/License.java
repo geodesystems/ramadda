@@ -190,6 +190,10 @@ public class License implements Comparable {
 	return from;
     }
 
+    public void setFrom (String s) {
+	from =s;
+    }
+    
 
     /**
      *  @return _more_

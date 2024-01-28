@@ -323,6 +323,7 @@ public class MetadataManager extends RepositoryManager {
 					      (String)entry.getValue("external_url"),
 					      icon,
 					      entry.getDescription());
+		license.setFrom("Local RAMADDA Licenses");
 		licenses.add(license);
 	    }
 	    return licenses;
@@ -388,6 +389,8 @@ public class MetadataManager extends RepositoryManager {
         StringBuffer sb = new StringBuffer();
         getPageHandler().sectionOpen(request, sb, "Available Licenses",
                                      false);
+	HU.addPageSearch(sb,".ramadda-licenses-license",null,"Find");
+
         String from = "";
         int    cnt  = 0;
         for (License license : getLicenses()) {
