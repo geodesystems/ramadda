@@ -249,16 +249,6 @@ public class TikaTypeHandler extends GenericTypeHandler {
 	return  new Result("", new StringBuilder(s), JsonUtil.MIMETYPE);
     }
 
-    public Result processEntryAction(Request request, Entry entry)
-	throws Exception {
-        String action = request.getString("action", "");
-        if (!action.equals("documentchat")) {
-            return super.processEntryAction(request, entry);
-	}
-	return getLLMManager().processDocumentChat(request,entry);
-    }
-
-
 
     /**
      * _more_

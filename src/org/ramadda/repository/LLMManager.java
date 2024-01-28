@@ -718,10 +718,8 @@ public class LLMManager extends  AdminHandlerImpl {
         String id = HU.getUniqueId("chat_div");
 	HU.div(sb,"",HU.attrs("style","width:100%;","id", id));
 	sb.append("</td><tr></table>");
-	HU.importJS(sb,getHtdocsPath("/src/org/ramadda/plugins/media/htdocs/media/documentchat.js","/media/documentchat.js"));
+	HU.importJS(sb,getPageHandler().makeHtdocsUrl("/documentchat.js"));
 	HU.script(sb, HU.call("new DocumentChat", HU.squote(id),HU.squote(entry.getId())));
-
-
         getPageHandler().entrySectionClose(request, entry, sb);
         return getEntryManager().addEntryHeader(request, entry,
 						new Result("Document Chat", sb));
