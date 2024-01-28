@@ -2,7 +2,7 @@
 function DocumentChat(id,entryId) {
     let cnt = 0;
     let div  =jqid(id);
-    let chat = HU.open('div',[ATTR_STYLE,'margin-left:5px;']);
+    let chat = HU.open('div',[ATTR_STYLE,'margin-left:5px;max-width:100%;overflow-x:auto;']);
     let left = HU.div([],
 		      HU.span([ATTR_ID,id+'_button_clear',ATTR_TITLE,'Clear output',ATTR_CLASS,'ramadda-clickable'],HU.getIconImage('fas fa-eraser')) +
 		      HU.space(2) +
@@ -75,8 +75,10 @@ function DocumentChat(id,entryId) {
                 r="Error: " + result.error;
             } else {
 		r = result.response??'';
+		r = r.replace(/(https?:\/\/[^\s]+)/g,'<a href=\'$1\'>$1</a>');
 		r = r.replace(/^-/gm,'&#x2022;').replace(/\n/g,'<br>');
 	    }
+	    
 	    let qid = id+'_id_' + (cnt++);
 	    let out = HU.div([ATTR_STYLE,'font-weight:bold;',ATTR_ID,qid,ATTR_CLASS,'ramadda-clickable',ATTR_TITLE,
 			      'Use question'],
