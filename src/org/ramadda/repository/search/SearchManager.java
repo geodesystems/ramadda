@@ -831,14 +831,16 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 
 
-	return extractCorpus(request, f,metadataList);
+	return extractCorpus(request, f.toString(),metadataList);
 
     }	
 
 
     public String extractCorpus(Request request,
-				File f,List<org.apache.tika.metadata.Metadata> metadataList) throws Exception {
+				String path,
+				List<org.apache.tika.metadata.Metadata> metadataList) throws Exception {
 
+	File f = new File(path);
 	File corpusFile = TikaUtil.getTextCorpusCacheFile(f);
 	if(corpusFile.exists()) {
 	    if(debugCorpus)
@@ -846,6 +848,15 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    return  IO.readContents(corpusFile.toString(), SearchManager.class);
 	} 
 	
+	if(!f.exists() && path.startsWith("http")) {
+	    String url = path;
+	    System.err.println("URL:"  + url);
+	    IO.Result result = IO.getHttpResult(IO.HTTP_METHOD_GET,new URL(url),"");
+	    if(result.getError()) return null;
+	    return result.getResult();
+	}
+
+
 	try(InputStream stream = getStorageManager().getFileInputStream(f)) {
 	    BufferedInputStream bis = new BufferedInputStream(stream);
             org.apache.tika.metadata.Metadata metadata =

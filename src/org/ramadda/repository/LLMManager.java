@@ -9,11 +9,13 @@ import org.ramadda.repository.job.JobManager;
 import org.ramadda.repository.admin.*;
 import org.ramadda.repository.metadata.MetadataManager;
 
+
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.JsonUtil;
 
+import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
@@ -196,10 +198,14 @@ public class LLMManager extends  AdminHandlerImpl {
 	
     }
 
-    public String applyPromptToDocument(Request request, File file, String prompt,int offset) throws Exception {
+    public String applyPromptToDocument(Request request, String path, String prompt,int offset) throws Exception {
 	try {
-	    String corpus = getSearchManager().extractCorpus(request, file, null);
+	    String corpus = getSearchManager().extractCorpus(request, path, null);
 	    if(corpus==null) return null;
+	    if(path.startsWith("http")) {
+		//		corpus = Utils.stripTags(corpus);
+		//		System.err.println("CORPUS:" + corpus.replace("\n", " "));
+	    }
 	    if(offset>0 && offset<corpus.length()) {
 		corpus = corpus.substring(offset);
 	    }
@@ -655,6 +661,77 @@ public class LLMManager extends  AdminHandlerImpl {
 
     }
 
+
+
+    public Result processDocumentChat(Request request, Entry entry)
+	throws Exception {
+	String pageUrl =request.toString();
+	String subLabel = HU.href(pageUrl,"Document Chat",HU.cssClass("ramadda-clickable"));
+        StringBuilder sb      = new StringBuilder();
+        if (request.isAnonymous()) {
+	    if(request.exists("question")) {
+		return makeJsonError("You must be logged in to use the document chat");
+	    } 
+
+	    getPageHandler().entrySectionOpen(request, entry, sb, subLabel);
+            sb.append(
+		      getPageHandler().showDialogError(
+						       "You must be logged in to do document chat"));
+	    getPageHandler().entrySectionClose(request, entry, sb);
+	    return getEntryManager().addEntryHeader(request, entry,
+						    new Result("Document Chat", sb));
+	}
+
+	if(request.exists("question")) {
+	    try {
+		String r = applyPromptToDocument(request, entry.getResource().getPath(),request.getString("question",""),
+								 request.get("offset",0));
+		String s;
+		if(r==null) {
+		    return makeJsonError("Could not process request");
+		} else {
+		    s =  JsonUtil.mapAndQuote(Utils.makeList("response", r));
+		}
+		return  new Result("", new StringBuilder(s), JsonUtil.MIMETYPE);
+	    } catch(Exception exc) {
+		Throwable     inner     = LogUtil.getInnerException(exc);
+		getLogManager().logError("Error running document chat:" + entry.getName(),exc);
+		return makeJsonError("An error has occurred:" + inner);
+	    }
+	} 
+
+	getPageHandler().entrySectionOpen(request, entry, sb, subLabel);
+	sb.append("<table width=100%><tr valign=top><td width=50%>");
+	if(entry.getTypeHandler().isType("type_document_pdf")) {
+	    String url = HU.url(getEntryManager().getEntryResourceUrl(request, entry),"fileinline","true");
+	    sb.append(HU.getPdfEmbed(url,Utils.makeMap("width","100%")));
+	}   else if(entry.getTypeHandler().isType("link")) {
+	    String url = entry.getResource().getPath();
+	    sb.append("<iframe style='border:var(--basic-border);' src='"+ url+"' width='100%' height='700px' frameborder='1'></iframe>\n");
+	} else {
+	    String url = request.getAbsoluteUrl(getEntryManager().getEntryResourceUrl(request, entry));
+	    url =HU.url(url,"timestamp",""+entry.getChangeDate());
+	    url = url.replace("?","%3F").replace("&","%26");
+	    sb.append("<iframe style='border:var(--basic-border);' src='https://view.officeapps.live.com/op/embed.aspx?src="+ url+"' width='100%' height='700px' frameborder='1'></iframe>\n");
+	}
+	sb.append("</td><td>");
+        String id = HU.getUniqueId("chat_div");
+	HU.div(sb,"",HU.attrs("style","width:100%;","id", id));
+	sb.append("</td><tr></table>");
+	HU.importJS(sb,getHtdocsPath("/src/org/ramadda/plugins/media/htdocs/media/documentchat.js","/media/documentchat.js"));
+	HU.script(sb, HU.call("new DocumentChat", HU.squote(id),HU.squote(entry.getId())));
+
+
+        getPageHandler().entrySectionClose(request, entry, sb);
+        return getEntryManager().addEntryHeader(request, entry,
+						new Result("Document Chat", sb));
+    }
+
+
+    private Result makeJsonError(String msg) {
+	String s =  JsonUtil.mapAndQuote(Utils.makeList("error", msg));
+	return  new Result("", new StringBuilder(s), JsonUtil.MIMETYPE);
+    }
 
 
 

@@ -1544,6 +1544,14 @@ public class TypeHandler extends RepositoryManager {
         if (parent != null) {
             return parent.processEntryAction(request, entry);
         }
+
+        String action = request.getString("action", "");
+        if (action.equals("documentchat")) {
+	    return getLLMManager().processDocumentChat(request,entry);
+	}
+	
+
+
         StringBuilder sb = new StringBuilder();
         getPageHandler().entrySectionOpen(request, entry, sb, "");
         sb.append(getPageHandler().showDialogError("Unknown entry action"));
@@ -3416,16 +3424,6 @@ public class TypeHandler extends RepositoryManager {
         return path;
     }
 
-
-    /*
-      If just one arg then return the PageHandler.getCdnPath
-      If 2 args then the first arg is the full /src/org/ramadda/... path and the
-      second arg is the short path, e.g., /media/annotation.js
-     */
-    public String getHtdocsPath(String ...path) {
-	return getPageHandler().getCdnPath(path[0],path.length>1?path[1]:path[0]);
-	//	return getPageHandler().makeHtdocsUrl(path);
-    }
 
 
     /**

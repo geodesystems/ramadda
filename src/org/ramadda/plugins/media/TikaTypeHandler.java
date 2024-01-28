@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2023 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.media;
@@ -64,7 +64,7 @@ public class TikaTypeHandler extends GenericTypeHandler {
      * @throws Exception _more_
      */
     public TikaTypeHandler(Repository repository, Element entryNode)
-            throws Exception {
+	throws Exception {
         super(repository, entryNode);
     }
 
@@ -89,23 +89,23 @@ public class TikaTypeHandler extends GenericTypeHandler {
     @Override
     public void handleServiceResults(Request request, Entry entry,
                                      Service service, ServiceOutput output)
-            throws Exception {
+	throws Exception {
 
         super.handleServiceResults(request, entry, service, output);
         if ((request != null) && !request.get(ARG_FROMHARVESTER, false)
-                && !request.get(ARG_METADATA_ADD, false)) {
+	    && !request.get(ARG_METADATA_ADD, false)) {
             return;
         }
 
         String created = (String) entry.getAndRemoveTransientProperty(
-                             Office.CREATION_DATE.getName());
+								      Office.CREATION_DATE.getName());
         if (created == null) {
             created = (String) entry.getAndRemoveTransientProperty(
-                TikaCoreProperties.CREATED.getName());
+								   TikaCoreProperties.CREATED.getName());
         }
         if (created == null) {
             created = (String) entry.getAndRemoveTransientProperty(
-                TikaCoreProperties.CREATED.getName());
+								   TikaCoreProperties.CREATED.getName());
         }
 
 
@@ -116,7 +116,7 @@ public class TikaTypeHandler extends GenericTypeHandler {
         }
 
         String saved = (String) entry.getAndRemoveTransientProperty(
-                           Office.SAVE_DATE.getName());
+								    Office.SAVE_DATE.getName());
         if (saved != null) {
             Date dttm = Utils.parseDate(saved);
             entry.setEndDate(dttm.getTime());
@@ -124,74 +124,74 @@ public class TikaTypeHandler extends GenericTypeHandler {
 
         HashSet seen = new HashSet();
         String slideCount = (String) entry.getAndRemoveTransientProperty(
-                                Office.SLIDE_COUNT.getName());
+									 Office.SLIDE_COUNT.getName());
         if (Utils.stringDefined(slideCount)) {
             getMetadataManager().addMetadata(request,
-                entry,
-                new Metadata(
-                    getRepository().getGUID(), entry.getId(), "property",
-                    false, "slide_count", slideCount, null, null, null));
+					     entry,
+					     new Metadata(
+							  getRepository().getGUID(), entry.getId(), "property",
+							  false, "slide_count", slideCount, null, null, null));
         }
 
         String wordCount = (String) entry.getAndRemoveTransientProperty(
-                               Office.WORD_COUNT.getName());
+									Office.WORD_COUNT.getName());
         if (Utils.stringDefined(wordCount)) {
             getMetadataManager().addMetadata(request,
-                entry,
-                new Metadata(
-                    getRepository().getGUID(), entry.getId(), "property",
-                    false, "word_count", wordCount, null, null, null));
+					     entry,
+					     new Metadata(
+							  getRepository().getGUID(), entry.getId(), "property",
+							  false, "word_count", wordCount, null, null, null));
         }
 
         String pageCount = (String) entry.getAndRemoveTransientProperty(
-                               Office.PAGE_COUNT.getName());
+									Office.PAGE_COUNT.getName());
         if (Utils.stringDefined(pageCount)) {
             getMetadataManager().addMetadata(request,
-                entry,
-                new Metadata(
-                    getRepository().getGUID(), entry.getId(), "property",
-                    false, "page_count", pageCount, null, null, null));
+					     entry,
+					     new Metadata(
+							  getRepository().getGUID(), entry.getId(), "property",
+							  false, "page_count", pageCount, null, null, null));
         }
 
 
 
         String author = (String) entry.getAndRemoveTransientProperty(
-                            Office.AUTHOR.getName());
+								     Office.AUTHOR.getName());
         if (Utils.stringDefined(author)) {
             seen.add(author);
             getMetadataManager().addMetadata(request,
-                entry,
-                new Metadata(
-                    getRepository().getGUID(), entry.getId(),
-                    "metadata_author", false, author, null, null, null,
-                    null));
+					     entry,
+					     new Metadata(
+							  getRepository().getGUID(), entry.getId(),
+							  "metadata_author", false, author, null, null, null,
+							  null));
         }
 
         String lastAuthor = (String) entry.getAndRemoveTransientProperty(
-                                Office.LAST_AUTHOR.getName());
+									 Office.LAST_AUTHOR.getName());
         if (Utils.stringDefined(lastAuthor) && !seen.contains(lastAuthor)) {
             seen.add(lastAuthor);
             getMetadataManager().addMetadata(request,
-                entry,
-                new Metadata(
-                    getRepository().getGUID(), entry.getId(),
-                    "metadata_author", false, lastAuthor, null, null, null,
-                    null));
+					     entry,
+					     new Metadata(
+							  getRepository().getGUID(), entry.getId(),
+							  "metadata_author", false, lastAuthor, null, null, null,
+							  null));
         }
 
         String publisher = (String) entry.getAndRemoveTransientProperty(
-                               TikaCoreProperties.PUBLISHER.getName());
+									TikaCoreProperties.PUBLISHER.getName());
         if (publisher == null) {
             publisher = (String) entry.getAndRemoveTransientProperty(
-                DublinCore.PUBLISHER.getName());
+								     DublinCore.PUBLISHER.getName());
         }
         if (Utils.stringDefined(publisher)) {
             getMetadataManager().addMetadata(request,
-                entry,
-                new Metadata(
-                    getRepository().getGUID(), entry.getId(),
-                    "metadata_publisher", false, publisher, null, null, null,
-                    null));
+					     entry,
+					     new Metadata(
+							  getRepository().getGUID(), entry.getId(),
+							  "metadata_publisher", false, publisher, null, null, null,
+							  null));
         }
 
 
@@ -235,9 +235,9 @@ public class TikaTypeHandler extends GenericTypeHandler {
 
 
         if ((headerLines.size() > 0)
-                && !Utils.stringDefined(entry.getDescription())) {
+	    && !Utils.stringDefined(entry.getDescription())) {
             String desc = "<pre class=\"ramadda-pre\">"
-                          + StringUtil.join("\n", headerLines);
+		+ StringUtil.join("\n", headerLines);
             entry.setDescription(desc + "</pre>");
         }
 
@@ -250,68 +250,12 @@ public class TikaTypeHandler extends GenericTypeHandler {
     }
 
     public Result processEntryAction(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         String action = request.getString("action", "");
         if (!action.equals("documentchat")) {
             return super.processEntryAction(request, entry);
 	}
-        StringBuilder sb      = new StringBuilder();
-        if (request.isAnonymous()) {
-	    if(request.exists("question")) {
-		return makeJsonError("You must be logged in to use the document chat");
-	    } 
-
-
-	    getPageHandler().entrySectionOpen(request, entry, sb, "Document Chat");
-            sb.append(
-                getPageHandler().showDialogError(
-						 "You must be logged in to do document chat"));
-	    getPageHandler().entrySectionClose(request, entry, sb);
-	    return getEntryManager().addEntryHeader(request, entry,
-						    new Result("Document Chat", sb));
-	}
-
-	if(request.exists("question")) {
-	    try {
-		String r = getLLMManager().applyPromptToDocument(request, entry.getResource().getTheFile(),request.getString("question",""),
-								 request.get("offset",0));
-		String s;
-		if(r==null) {
-		    return makeJsonError("Could not process request");
-		} else {
-		    s =  JsonUtil.mapAndQuote(Utils.makeList("response", r));
-		}
-		return  new Result("", new StringBuilder(s), JsonUtil.MIMETYPE);
-	    } catch(Exception exc) {
-		Throwable     inner     = LogUtil.getInnerException(exc);
-		getLogManager().logError("Error running document chat:" + entry.getName(),exc);
-		return makeJsonError("An error has occurred:" + inner);
-	    }
-	} 
-
-	getPageHandler().entrySectionOpen(request, entry, sb, "Document Chat");
-	sb.append("<table width=100%><tr valign=top><td width=50%>");
-	if(entry.getTypeHandler().isType("type_document_pdf")) {
-	    String url = HU.url(getEntryManager().getEntryResourceUrl(request, entry),"fileinline","true");
-	    sb.append(HU.getPdfEmbed(url,Utils.makeMap("width","100%")));
-	} else {
-	    String url = request.getAbsoluteUrl(getEntryManager().getEntryResourceUrl(request, entry));
-	    url =HU.url(url,"timestamp",""+entry.getChangeDate());
-	    url = url.replace("?","%3F").replace("&","%26");
-
-	    sb.append("<iframe style='border:var(--basic-border);' src='https://view.officeapps.live.com/op/embed.aspx?src="+ url+"' width='100%' height='700px' frameborder='1'></iframe>\n");
-	}
-	sb.append("</td><td>");
-        String id = HU.getUniqueId("chat_div");
-	HU.div(sb,"",HU.attrs("style","width:100%;","id", id));
-	sb.append("</td><tr></table>");
-	HU.importJS(sb,getHtdocsPath("/src/org/ramadda/plugins/media/htdocs/media/documentchat.js","/media/documentchat.js"));
-	HU.script(sb, HU.call("new DocumentChat", HU.squote(id),HU.squote(entry.getId())));
-
-
-        getPageHandler().entrySectionClose(request, entry, sb);
-        return getEntryManager().addEntryHeader(request, entry,
-                new Result("Document Chat", sb));
+	return getLLMManager().processDocumentChat(request,entry);
     }
 
 
