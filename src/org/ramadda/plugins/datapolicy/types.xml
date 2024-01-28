@@ -1,9 +1,8 @@
 <types supercategory="Science and Education" adminonly="true">
 
-<type  name="type_license"  
-description="License"  
-category="Services" >
-  <property name="icon" value="/datapolicy/fair.png"/>
+  <type  name="type_license"  description="License"  category="Services"
+	 handler="org.ramadda.plugins.datapolicy.LicenseTypeHandler">
+  <property name="icon" value="/datapolicy/cc.png"/>
   <property name="form.file.show" value="true"/>
   <property name="form.description.showwiki" value="false"/>     
   <property name="form.area.show" value="false"/>     
@@ -16,6 +15,17 @@ category="Services" >
   <property name="form.description.label" value="License Description:"/>  
   <column  name="license_id"  label="ID" cansearch="false" suffix="No spaces, unique, e.g., &lt;i&gt;my-license-1&lt;/i&gt;"/>
   <column  name="external_url"  label="External URL"  cansearch="false" suffix="Optional URL to site that describes this license"/>    
+
+<wiki>
+<![CDATA[
++section  title="{{name}}"
+{{type_license}}
+----
+{{information showResource=false}}
+]]>
+</wiki>
+  
+
 </type>  
   
 
