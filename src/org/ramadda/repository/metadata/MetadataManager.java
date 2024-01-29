@@ -389,7 +389,7 @@ public class MetadataManager extends RepositoryManager {
         StringBuffer sb = new StringBuffer();
         getPageHandler().sectionOpen(request, sb, "Available Licenses",
                                      false);
-	HU.addPageSearch(sb,".ramadda-licenses-license",null,"Find");
+	HU.addPageSearch(sb,".ramadda-licenses-license",null,"Find Licenses");
 
         String from = "";
         int    cnt  = 0;
