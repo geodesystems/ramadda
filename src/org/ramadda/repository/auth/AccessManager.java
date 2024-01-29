@@ -825,6 +825,13 @@ public class AccessManager extends RepositoryManager {
                 if (debug) {
 		    //                    System.err.println("\tROLE:" + role.getBaseRole() + " negated:" + negated);
                 }
+		if(role.isDate()) {
+		    if(!role.dateOk()) {
+			return negated;
+		    } else {
+			return !negated;
+		    }
+		}
                 if (role.getIsIp()) {
                     if (requestIp != null) {
                         if (requestIp.startsWith(role.getBaseRole())) {
@@ -1866,7 +1873,9 @@ public class AccessManager extends RepositoryManager {
 				     "Anonymous users",
 				     Role.ROLE_ANONYMOUS.getRole()), Role.ROLE_ANY.getRole(),
 		  new TwoFacedObject(
-				     "Guest user", Role.ROLE_GUEST.getRole()));
+				     "Guest user", Role.ROLE_GUEST.getRole()),
+		  new TwoFacedObject("Date","date:yyyy-MM-dd"));
+
         opts.addAll(getUserManager().getUserRoles());
 
         sb.append("<tr valign=top>");

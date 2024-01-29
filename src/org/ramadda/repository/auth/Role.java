@@ -4,10 +4,14 @@ SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.repository.auth;
+import org.ramadda.repository.Repository;
 
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +44,7 @@ public class Role {
     public static final Role ROLE_INHERIT = new Role("inherit");
 
 
+    
     /**  */
     boolean negated = false;
 
@@ -52,13 +57,29 @@ public class Role {
     /**  */
     String baseRole;
 
+    Date date;
+
+
+    private static final SimpleDateFormat sdf1;
+    private static final SimpleDateFormat sdf2;
+    private static final SimpleDateFormat sdf3;
+
+    static {
+	sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm Z");    
+	sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm");    
+	sdf3 = new SimpleDateFormat("yyyy-MM-dd");
+        sdf1.setTimeZone(Utils.TIMEZONE_DEFAULT);
+        sdf2.setTimeZone(Utils.TIMEZONE_DEFAULT);
+        sdf3.setTimeZone(Utils.TIMEZONE_DEFAULT);		
+    }
+
     /**
      *
      *
      * @param role _more_
      */
     public Role(String role) {
-        this.role = role;
+        this.role = role.trim();
         negated   = role.startsWith("!");
         if (negated) {
             baseRole = role.substring(1);
@@ -69,7 +90,46 @@ public class Role {
         if (isIp) {
             baseRole = baseRole.substring(3);
         }
+	if(baseRole.startsWith("date:")) {
+	    String dttm  =baseRole.substring("date:".length()).trim();
+	    try {
+		synchronized(sdf1) {
+		    date = sdf1.parse(dttm);
+		    //System.err.println("SDF1:" + date);
+		}
+	    } catch(Exception exc1) {}
+	    if(date==null) {
+		synchronized(sdf2) {
+		    try {
+			date = sdf2.parse(dttm);
+			//System.err.println("SDF2:" + date);
+		    } catch(Exception exc1) {}
+		}
+	    }
+
+	    if(date==null) {
+		synchronized(sdf3) {
+		    try {
+			date = sdf3.parse(dttm);
+			//			System.err.println("SDF3:" + date);
+		    } catch(Exception exc1) {}
+		}
+	    }
+	    if(date==null) {
+		System.err.println("Error parsing role date:" + baseRole);
+	    } 
+	}
     }
+
+    public boolean isDate() {
+
+	return date!=null;
+    }
+
+    public boolean dateOk() {
+	Date now=new Date();
+	return now.getTime()>date.getTime();
+    }    
 
     /**
      *
