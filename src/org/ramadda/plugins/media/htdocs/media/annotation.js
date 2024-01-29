@@ -69,7 +69,6 @@ function RamaddaAnnotation(annotorius,divId,topDivId,attrs,entryAttribute) {
 
 RamaddaAnnotation.prototype = {
     handleChange: function() {
-	console.log('changed');
 	this.annotations = this.getAnno().getAnnotations();
 	this.doSave();
 	this.showAnnotations();
@@ -118,7 +117,7 @@ RamaddaAnnotation.prototype = {
 	    }
 	    body = HU.div(['tabindex','1'],body);
 	    let tt = 'Click to view&#013;Shift-click to zoom to';
-	    if(this.canEdit) tt+='&#013;Control-e:edit&#013;Control-d:delete';
+	    if(this.canEdit) tt+='&#013;Control-e:edit&#013;Control-d:delete&#013;Control-f:move forward&#013;Control-b:move back';
 	    if(this.top) 
 		html+=HU.td(['title',tt,'width',width,'class','ramadda-clickable ramadda-hoverable ramadda-annotation','index',aidx], body);
 	    else
@@ -141,10 +140,34 @@ RamaddaAnnotation.prototype = {
 	this.div.find('.ramadda-annotation').keydown(function(event) {
 	    if(!event.ctrlKey)
 		return;
-	    let annotation = 	annotations[$(this).attr('index')];
+	    let annotation = 	_this.annotations[$(this).attr('index')];
 	    if(!annotation) return;
 	    if(event.key=='e')  {
 		_this.annotorius.selectAnnotation(annotation);
+	    } else if(event.key=='f' || event.key=='b')  {
+		let list = [..._this.getAnno().getAnnotations()];
+		let index = -1;
+		list.every((a,idx)=>{
+		    if(a.id==annotation.id) {
+			index=idx;
+			return false;
+		    }
+		    return true;
+		});
+		if(event.key=='b' && index>=1) {
+		    let o=list[index-1];
+		    list[index-1]=annotation;
+		    list[index] = o;
+		} else 	if(event.key=='f' && index<list.length-1) {
+		    let o=list[index+1];
+		    list[index+1]=annotation;
+		    list[index] = o;
+		} else {
+		    return;
+		}
+		_this.getAnno().setAnnotations(list);
+		_this.handleChange();
+
 	    } else if(event.key=='d')  {
 		_this.annotorius.removeAnnotation(annotation);
 		_this.handleChange();
