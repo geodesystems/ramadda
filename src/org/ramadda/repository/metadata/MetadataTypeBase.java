@@ -122,6 +122,9 @@ public class MetadataTypeBase extends RepositoryManager {
 
     private boolean isTitle = false;
 
+    protected boolean hasFile = false;
+
+
     /** _more_ */
     private Hashtable<String, String> templates = new Hashtable<String,
                                                       String>();
@@ -556,6 +559,7 @@ public class MetadataTypeBase extends RepositoryManager {
      */
     public void addElement(MetadataElement element) {
         getChildren().add(element);
+	if(element.isFileType()) hasFile = true;
     }
 
 

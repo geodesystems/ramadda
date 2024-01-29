@@ -150,7 +150,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
     private boolean canDisplay = true;            
    
-    
 
 
     /** _more_ */
@@ -208,7 +207,9 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         return getHandler().isForEntry(entry);
     }
 
-
+    public boolean hasFile() {
+	return hasFile;
+    }
 
     /**
      * _more_
@@ -738,9 +739,9 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
      * @throws Exception _more_
      */
     public void decorateEntry(Request request, Entry entry, Appendable sb,
-                              Metadata metadata, boolean forLink)
+                              Metadata metadata, boolean forLink,boolean fileOk)
             throws Exception {
-        decorateEntry(request, entry, sb, metadata, forLink, false);
+        decorateEntry(request, entry, sb, metadata, forLink, false,fileOk);
     }
 
     /**
@@ -757,7 +758,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
      */
     public void decorateEntry(Request request, Entry entry, Appendable sb,
                               Metadata metadata, boolean forLink,
-                              boolean isThumbnail)
+                              boolean isThumbnail,boolean fileOk)
             throws Exception {
         for (MetadataElement element : getChildren()) {
             if ( !element.getDataType().equals(element.DATATYPE_FILE)) {
@@ -767,6 +768,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                 continue;
             }
             if (element.getThumbnail() || isThumbnail) {
+		if(!fileOk) continue;
                 String html = getFileHtml(request, entry, metadata, element,
                                           forLink);
                 if (html != null) {

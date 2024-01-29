@@ -793,6 +793,7 @@ public class JsonOutputHandler extends OutputHandler {
             List<Metadata> metadataList =
                 getMetadataManager().getMetadata(request,entry);
             if (metadataList != null) {
+		boolean fileOk = getAccessManager().canDoFile(request, entry);
                 for (Metadata metadata : metadataList) {
                     MetadataType metadataType =
                         getMetadataManager().findType(metadata.getType());
@@ -800,6 +801,9 @@ public class JsonOutputHandler extends OutputHandler {
                         continue;
                     }
 		    if(!metadataType.getCanView()) {
+			continue;
+		    }
+		    if(!fileOk && metadataType.hasFile()) {
 			continue;
 		    }
                     List<String> mapItems   = new ArrayList<String>();

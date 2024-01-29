@@ -262,13 +262,13 @@ public class MetadataHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public void decorateEntry(Request request, Entry entry, Appendable sb,
-                              Metadata metadata, boolean forLink)
+                              Metadata metadata, boolean forLink, boolean fileOk)
             throws Exception {
         MetadataType type = getType(metadata.getType());
         if (type == null) {
             return;
         }
-        type.decorateEntry(request, entry, sb, metadata, forLink);
+        type.decorateEntry(request, entry, sb, metadata, forLink,fileOk);
     }
 
 

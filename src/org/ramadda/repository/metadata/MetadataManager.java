@@ -836,10 +836,11 @@ public class MetadataManager extends RepositoryManager {
     public void decorateEntry(Request request, Entry entry, Appendable sb,
                               boolean forLink)
             throws Exception {
+	boolean fileOk = getAccessManager().canDoFile(request, entry);
         StringBuilder mine = new StringBuilder();
         for (Metadata metadata : getMetadata(request,entry)) {
             MetadataHandler handler = findMetadataHandler(metadata.getType());
-            handler.decorateEntry(request, entry, mine, metadata, forLink);
+            handler.decorateEntry(request, entry, mine, metadata, forLink,fileOk);
             if (forLink) {
                 //Only do the first one so we don't get multiple thumbnails
                 if (mine.length() > 0) {
@@ -2255,12 +2256,15 @@ public class MetadataManager extends RepositoryManager {
         long  t1    = System.currentTimeMillis();
         Entry entry = getEntryManager().getEntry(request);
         if (entry == null) {
-            Result result = getRepository().makeErrorResult(request,
-                                "No entry");
+            Result result = getRepository().makeErrorResult(request,"No entry");
             result.setResponseCode(Result.RESPONSE_NOTFOUND);
-
             return result;
         }
+	if(!getAccessManager().canDoFile(request, entry)) {
+            Result result = getRepository().makeErrorResult(request,"No access");
+            return result;
+	}
+
         List<Metadata> metadataList = getMetadata(request,entry);
         Metadata metadata = findMetadata(request, entry,
                                          request.getString(ARG_METADATA_ID,

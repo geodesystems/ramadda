@@ -721,6 +721,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
         boolean canEdit = getAccessManager().canDoEdit(request, entry);
 
+
         boolean smallDisplay = request.getString(ARG_DISPLAY,
                                    "").equals(DISPLAY_SMALL);
         boolean                    didone  = false;
@@ -1299,6 +1300,7 @@ public class HtmlOutputHandler extends OutputHandler {
             tabContents.add(comments);
         }
 
+	
         String attachments = getAttachmentsHtml(request, entry);
         if (attachments.length() > 0) {
             tabTitles.add(msg("Attachments"));
@@ -2236,14 +2238,14 @@ public class HtmlOutputHandler extends OutputHandler {
                 }
 
                 StringBuffer metadataSB = new StringBuffer();
-                getMetadataManager().decorateEntry(request, group,
-                        metadataSB, false);
-                String metataDataHtml = metadataSB.toString();
-                if (metataDataHtml.length() > 0) {
-                    sb.append(HU.makeShowHideBlock(msg("Attachments"),
-                            "<div class=\"description\">" + metadataSB
-                            + "</div>", false));
-                }
+		getMetadataManager().decorateEntry(request, group,
+						   metadataSB, false);
+		String metataDataHtml = metadataSB.toString();
+		if (metataDataHtml.length() > 0) {
+		    sb.append(HU.makeShowHideBlock(msg("Attachments"),
+						   "<div class=\"description\">" + metadataSB
+						   + "</div>", false));
+		}
             }
 
             List<Entry> myChildren = getChildren.get();
