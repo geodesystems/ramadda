@@ -3412,7 +3412,7 @@ public class WikiUtil implements HtmlUtilsConstants {
                             ulCnt--;
                         }
                     }
-                    buff.append("<li> ");
+                    buff.append("<li class='ramadda-bullet'> ");
                     buff.append(tline);
                     buff.append("</li> ");
                     buff.append("\n");
