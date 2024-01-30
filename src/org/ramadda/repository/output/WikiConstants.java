@@ -664,6 +664,8 @@ public interface WikiConstants {
 
     public static final String WIKI_TAG_LICENSE = "license";
 
+    public static final String WIKI_TAG_COPYABLE = "copyable";    
+
     /**  */
     public static final String WIKI_TAG_DATAPOLICIES = "datapolicies";
 

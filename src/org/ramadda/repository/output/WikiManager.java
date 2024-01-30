@@ -2531,6 +2531,17 @@ public class WikiManager extends RepositoryManager
 	    }
 	    getUserManager().makeLoginForm(sb,request,"",false,userId);
 	    return sb.toString();
+        } else if (theTag.equals(WIKI_TAG_COPYABLE)) {
+	    String id = HU.getUniqueId("copy_");
+	    String text = HU.span(getProperty(wikiUtil,props,"text",""),
+				  HU.id(id));
+
+	    if(getProperty(wikiUtil,props,"addIcon",false)) {
+		text = getIconImage("fas fa-copy") +" " + text;
+	    }
+	    HU.span(sb,text,HU.cssClass("ramadda-copyable"));
+	    sb.append(HU.script(HU.call("Utils.initCopyable",HU.squote("#"+id))));
+	    return sb.toString();
         } else if (theTag.equals(WIKI_TAG_LICENSE)) {
 	    String prefix = getProperty(wikiUtil,props,"textBefore","");
 	    String requireId = getProperty(wikiUtil,props,"requireId",null);

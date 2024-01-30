@@ -6163,6 +6163,10 @@ img.ramadda-clickable {
     border:1px solid var(--hover-color) !important;
 }
 
+.ramadda-copyable {
+    text-decoration: underline;
+}
+
 .ramadda-clickable-span:hover {
     background: var(--highlight-background) !important;    
 }

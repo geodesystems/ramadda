@@ -166,6 +166,8 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					"#userId","",
 					"#formPrefix","Please login:",
 					"#loggedInMessage",  ""), 			    
+                            new WikiTag(WIKI_TAG_COPYABLE, null,
+					"tt","Add a copyable item","text","","addIcon","true"),
                             new WikiTag("counter", null, "key", "key"),
                             new WikiTag("caption", null, "label", "","prefix","Image #:"),
                             new WikiTag(WIKI_TAG_QRCODE, null, "#url","","#width", "128","#height","128","#darkColor","red",
