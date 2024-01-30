@@ -2,7 +2,9 @@
   <type name="type_document_tika"  foruser="false"  description="PDF, Word, PPT, etc"  super="type_document"
 	handler="org.ramadda.plugins.media.TikaTypeHandler"  metadata="enum_tag,metadata_author,metadata_publisher">
      <property name="icon" value="/icons/page.png"/>
-     <action name="documentchat" label="Document Chat" icon="fa-regular fa-comments" foruser="true" category="view"/>
+     <action name="applyllm" label="Apply LLM" canedit="true"
+	     icon="fas fa-font" foruser="true" category="edit"/>
+     <action name="documentchat" label="Document Chat" icon="fas fa-comments" foruser="true" category="view"/>
      <service link="tika_extractmetadata"/>
     <wiki><![CDATA[
 +section # title="{{name}}"

@@ -70,10 +70,19 @@ public class TikaTypeHandler extends GenericTypeHandler {
 
     @Override
     public void addAction(Action action) {
-	if(getRepository().getLLMManager().isLLMEnabled()) {
-	    super.addAction(action);
+	if(action.getId().equals("documentchat") ||
+	   action.getId().equals("applyllm")) {
+	    if(!getRepository().getLLMManager().isLLMEnabled()) {
+		return;
+	    }
 	}
+	super.addAction(action);
     }
+
+
+
+
+
 
     /**
      * _more_
