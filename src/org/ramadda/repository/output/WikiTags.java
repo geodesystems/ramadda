@@ -183,6 +183,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					"includeName","true",
 					"showDescription","true",
 					"decorate","true",
+					"#iconWidth","60px",
 					"#textBefore","extra text",
 					"#textAfter","extra text",					
 					"#style","",
