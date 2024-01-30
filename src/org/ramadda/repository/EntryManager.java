@@ -4588,7 +4588,8 @@ public class EntryManager extends RepositoryManager {
 		    String ttimg = HU.img(typeHandler.getIconUrl(icon),"",  HU.attr(HU.ATTR_WIDTH,"32px")).replace("\"","'");
 		    if(stringDefined(help)) title+= " - " + help;
 		    title = ttimg + HU.space(1) +title;
-		    HU.div(sb,href,HU.attrs("class","type-list-item","title",title));
+		    HU.div(sb,href,HU.attrs("class","type-list-item","title",title,
+					    "data-category",typeHandler.getCategory()));
 		}
 		if(didSub) {
 		    sb.append("</div></div>");
