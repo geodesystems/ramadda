@@ -2557,10 +2557,12 @@ public class WikiManager extends RepositoryManager
 	    String result= "";
 	    String icon = license.getIcon();
 	    if(icon!=null) {
+		String width = getProperty(wikiUtil,props,"iconWidth","60px");
 		result =   HU.image(icon,
-                                    HU.attrs("title",license.getName(),"width", "60", "border", "0"));
+                                    HU.attrs("title",license.getName(),"width", width,
+					     "border", "0"));
 		if(getProperty(wikiUtil,props,"includeName",false)) {
-		    result+=HU.space(1)+license.getName();
+		    result+=HU.space(1)+HU.b(license.getName());
 		}
 	    } else {
 		result = license.getName();
