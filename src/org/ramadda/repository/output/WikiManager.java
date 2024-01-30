@@ -5889,9 +5889,14 @@ public class WikiManager extends RepositoryManager
         return makeWikiUtil(request, false).wikify(wiki, this);
     }
 
-    public void  makeCallout(Appendable sb,Request request,String contents) throws Exception {
-	sb.append(wikify(request, "+callout-info\n" +
-			 contents +"\n-calloutinfo\n:p\n"));
+    public void  makeCallout(Appendable sb,Request request,String contents)  {
+	try {
+	    sb.append(wikify(request, "+callout-info\n" +
+			     contents +"\n-calloutinfo\n"));
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+
+	}
     }
 
 	

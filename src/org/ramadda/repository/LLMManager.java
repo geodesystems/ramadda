@@ -138,6 +138,40 @@ public class LLMManager extends  AdminHandlerImpl {
     }
 
 
+    public Result applyLLM(Request request, Entry entry) throws Exception  {
+        StringBuilder sb      = new StringBuilder();
+	String pageUrl =request.toString();
+	String subLabel = HU.href(pageUrl,"Apply LLM",HU.cssClass("ramadda-clickable"));
+	getPageHandler().entrySectionOpen(request, entry, sb, subLabel);
+	if(!getAccessManager().canDoEdit(request, entry)) {
+            sb.append(getPageHandler().showDialogError(
+						       "You are not allowed to edit the document"));
+	    getPageHandler().entrySectionClose(request, entry, sb);
+	    return new Result("Error",sb);
+	}
+
+	if(request.exists(ARG_OK)) {
+	    String corpus = getSearchManager().extractCorpus(request, entry.getResource().getPath(), null);
+	    if(corpus==null) {
+		sb.append(getPageHandler().showDialogError("No file available."));
+	    } else {
+		applyEntryExtract(request, entry, corpus);
+		getEntryManager().updateEntry(request, entry);
+		sb.append(getPageHandler().showDialogNote("LLM has been applied."));
+	    }
+	} else {
+	    sb.append(HU.formPost(pageUrl,""));
+	    sb.append(getNewEntryExtract(request));
+	    sb.append("<br>");
+	    sb.append(HU.submit("Apply LLM", ARG_OK));
+	    sb.append(HU.formClose());
+	}
+	getPageHandler().entrySectionClose(request, entry, sb);
+	return getEntryManager().addEntryHeader(request, entry,
+						new Result("Apply LLM", sb));
+    }
+
+
     public String getNewEntryExtract(Request request) {
 	if(!isLLMEnabled()) return "";
 	String space = HU.space(3);
@@ -171,7 +205,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	HU.labeledCheckbox(sb, ARG_EXTRACT_AUTHORS, "true", request.get(ARG_EXTRACT_AUTHORS,false),"","Extract authors");
 	sb.append("<br>");
 
-	sb.append("Note: when extracting keywords, title, etc., the file text is sent to the <a href=https://openai.com/api/>OpenAI GPT API</a> for processing.<br>There will also be a delay before the results are shown for the new entry.");
+	getWikiManager().makeCallout(sb,request,"When extracting keywords, title, etc., the file text is sent to the <a href=https://openai.com/api/>OpenAI GPT API</a> for processing.<br>There will also be a delay before the results are shown for the new entry.");
 	return sb.toString();
     }
 
@@ -550,8 +584,16 @@ public class LLMManager extends  AdminHandlerImpl {
 
     public static final String PROMPT_JSON = "Summarize the below text, extracting out the title, a summary to be no longer than four sentences, a list of keywords (limited to no more than 6 keywords), and if you can a list of authors. Your result must be valid JSON following the form:\n{\"title\":<the title>,\"authors\":<the authors>,\"summary\":<the summary>,\"keywords\":<the keywords>\n}\n";
 
-    public boolean applyEntryExtract(final Request request, final Entry entry, final String llmCorpus) throws Throwable {
-	if(true) return applyEntryExtractInner(request, entry,llmCorpus);
+    public boolean applyEntryExtract(final Request request, final Entry entry, final String llmCorpus)
+	throws Exception {
+	if(true) {
+	    try {
+		return applyEntryExtractInner(request, entry,llmCorpus);
+	    } catch(Throwable thr) {
+		throw new RuntimeException(thr);
+	    }
+	}
+	    
 	//for testing:
 	for(int i=0;i<40;i++) {
 	    Misc.run(new Runnable(){

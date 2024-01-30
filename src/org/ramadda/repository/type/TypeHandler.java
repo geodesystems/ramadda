@@ -1541,16 +1541,21 @@ public class TypeHandler extends RepositoryManager {
      */
     public Result processEntryAction(Request request, Entry entry)
             throws Exception {
-        if (parent != null) {
-            return parent.processEntryAction(request, entry);
-        }
 
         String action = request.getString("action", "");
         if (action.equals("documentchat")) {
 	    return getLLMManager().processDocumentChat(request,entry);
 	}
-	
 
+
+        if (action.equals("applyllm")) {
+	    return getLLMManager().applyLLM(request,entry);
+	}	
+
+
+        if (parent != null) {
+            return parent.processEntryAction(request, entry);
+        }
 
         StringBuilder sb = new StringBuilder();
         getPageHandler().entrySectionOpen(request, entry, sb, "");
@@ -2946,19 +2951,8 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param request The request
-     * @param links _more_
-     *
-     *
-     * @throws Exception _more_
-     */
-    public void getEntryLinks(Request request, Entry entry, OutputHandler.State state, List<Link> links)
+    private  void addActionLinks(Request request, Entry entry, OutputHandler.State state, List<Link> links)
 	throws Exception {
-
 	for (Action action : actions) {
 	    if(action.canEdit) {
 		if(!getAccessManager().canDoEdit(request, entry)) {
@@ -2979,9 +2973,26 @@ public class TypeHandler extends RepositoryManager {
 						 action.id), action.icon, action.label,
 			       type));
 	}
+				
+    }
+
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param request The request
+     * @param links _more_
+     *
+     *
+     * @throws Exception _more_
+     */
+    public void getEntryLinks(Request request, Entry entry, OutputHandler.State state, List<Link> links)
+	throws Exception {
+
 
         if (parent != null) {
             parent.getEntryLinks(request, entry, state, links);
+	    addActionLinks(request, entry,state, links);
             return;
         }
 
@@ -3233,6 +3244,10 @@ public class TypeHandler extends RepositoryManager {
                                     OutputType.TYPE_TOOLBAR));
             }
         }
+
+	addActionLinks(request, entry,state, links);	
+
+
     }
 
 
@@ -8246,6 +8261,10 @@ public class TypeHandler extends RepositoryManager {
 	    this.canEdit = canEdit;
 	    this.category=category;
 	}
+	public String getId() {
+	    return id;
+	}
+
     }
 
 
