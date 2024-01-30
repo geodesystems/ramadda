@@ -2536,7 +2536,7 @@ public class WikiManager extends RepositoryManager
 	    String text = HU.span(getProperty(wikiUtil,props,"text",""),
 				  HU.id(id));
 
-	    if(getProperty(wikiUtil,props,"addIcon",false)) {
+	    if(getProperty(wikiUtil,props,"addIcon",true)) {
 		text = getIconImage("fas fa-copy") +" " + text;
 	    }
 	    HU.span(sb,text,HU.cssClass("ramadda-copyable"));
