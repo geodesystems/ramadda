@@ -2252,9 +2252,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         }
         sb.append(HU.formTableClose());
         sb.append(HU.close("div"));
-
-
-        sb.append(HU.close("<p>"));
+        sb.append(HU.close("p"));
         sb.append("<a name=outputtypes></a>");
         sb.append(HU.b("Output Types"));
         sb.append(
@@ -2273,7 +2271,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         sb.append(HU.close("div"));
 
 
-        sb.append(HU.close("<p>"));
+        sb.append(HU.close("p"));
         sb.append("<a name=metadatatypes></a>");
         sb.append(HU.b("Metadata Types"));
         sb.append(
