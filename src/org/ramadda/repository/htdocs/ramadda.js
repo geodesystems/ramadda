@@ -239,26 +239,28 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
 
     initEntryTable:function(id,opts,json) {
+	opts = opts||{};
 	let entryMap = {};
 	if(Utils.isDefined(opts.details) && opts.details==false) {
 	    opts.simple = true;
 	}
 	let simple =opts.simple;
 	let dflt = !simple;
+	let dfltShow = opts.columns!=null;
 	let props =  {
 	    actions:[],
 	    showName:true,
-	    showCreator:false,
 	    showCrumbs:false,
+	    showCreator:dfltShow,
 	    showHeader:dflt,
-	    showDownload:false,
-	    showTime:false,	    
-	    showDate:dflt,
-	    showCreateDate:dflt,
-	    showChangeDate:false,	    	    
-	    showSize:dflt,
-	    showEntryOrder:false,
-	    showType:dflt,
+	    showDownload:dfltShow,
+	    showTime:dfltShow,	    
+	    showDate:dfltShow||dflt,
+	    showCreateDate:dfltShow||dflt,
+	    showChangeDate:dfltShow,	    	    
+	    showSize:dfltShow||dflt,
+	    showEntryOrder:dfltShow,
+	    showType:dfltShow||dflt,
 	    showAttachments:false,
 	    showIcon:dflt,
 	    showThumbnails:dflt,
