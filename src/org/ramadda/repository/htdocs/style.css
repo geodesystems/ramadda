@@ -900,6 +900,10 @@ a.ramadda-menubar-button:hover {
     border-left:var(--basic-border);
 }
 
+.ramadda-popup-link .ramadda-menubar-button-last {
+    border-right:0px solid #fff;
+}
+
 
 .ramadda-page-title  {
     font-size:175%;
