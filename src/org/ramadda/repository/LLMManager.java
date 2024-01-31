@@ -172,20 +172,26 @@ public class LLMManager extends  AdminHandlerImpl {
     }
 
 
-    public String getNewEntryExtract(Request request) {
-	if(!isLLMEnabled()) return "";
-	String space = HU.space(3);
-	StringBuilder sb = new StringBuilder();
+    private List<HtmlUtils.Selector> getAvailableModels() {
 	List<HtmlUtils.Selector> models = new ArrayList<HtmlUtils.Selector>();
 	if(isOpenAIEnabled()) {
-	    models.add(new HtmlUtils.Selector("OpenAI-GPT3.5",MODEL_GPT_3_5));
+	    models.add(new HtmlUtils.Selector("OpenAI GPT3.5",MODEL_GPT_3_5));
 	    if(isGPT4Enabled()) {
-		models.add(new HtmlUtils.Selector("OpenAI-GPT4.0",MODEL_GPT_4));
+		models.add(new HtmlUtils.Selector("OpenAI GPT4.0",MODEL_GPT_4));
 	    }
 	}
 	if(isGeminiEnabled()) {
 	    models.add(new HtmlUtils.Selector("Google Gemini",MODEL_GEMINI));
 	}
+	return models;
+    }
+
+
+    public String getNewEntryExtract(Request request) {
+	if(!isLLMEnabled()) return "";
+	String space = HU.space(3);
+	StringBuilder sb = new StringBuilder();
+	List<HtmlUtils.Selector> models = getAvailableModels();
 	if(models.size()==0) return "";
 	if(models.size()==1) {
 	    sb.append(HU.hidden(ARG_MODEL,models.get(0).getId()));
@@ -347,6 +353,7 @@ public class LLMManager extends  AdminHandlerImpl {
 			  String...extraArgs)
 	throws Throwable {
 	String model = request.getString(ARG_MODEL,MODEL_GPT_3_5);
+
 	String openAIKey = getOpenAIKey();
 	String geminiKey = getRepository().getProperty(PROP_GEMINI_KEY);	
 	if(openAIKey==null && geminiKey==null) {
@@ -761,7 +768,14 @@ public class LLMManager extends  AdminHandlerImpl {
 	HU.div(sb,"",HU.attrs("style","width:100%;","id", id));
 	sb.append("</td><tr></table>");
 	HU.importJS(sb,getPageHandler().makeHtdocsUrl("/documentchat.js"));
-	HU.script(sb, HU.call("new DocumentChat", HU.squote(id),HU.squote(entry.getId())));
+	List<String> models = new ArrayList<String>();
+	for(HtmlUtils.Selector sel:getAvailableModels()) {
+	    models.add(JsonUtil.map("value",JsonUtil.quote(sel.getId()),"label",JsonUtil.quote(sel.getLabel())));
+	}
+	
+
+	HU.script(sb, HU.call("new DocumentChat", HU.squote(id),HU.squote(entry.getId()),
+			      JsonUtil.list(models,false)));
         getPageHandler().entrySectionClose(request, entry, sb);
         return getEntryManager().addEntryHeader(request, entry,
 						new Result("Document Chat", sb));

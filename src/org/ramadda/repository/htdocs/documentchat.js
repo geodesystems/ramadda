@@ -1,5 +1,5 @@
 
-function DocumentChat(id,entryId) {
+function DocumentChat(id,entryId,models) {
     let cnt = 0;
     let div  =jqid(id);
     let chat = HU.open('div',[ATTR_STYLE,'margin-left:5px;max-width:100%;overflow-x:auto;']);
@@ -8,8 +8,15 @@ function DocumentChat(id,entryId) {
 		      HU.space(2) +
 		      HU.checkbox(id+'_button_clearalways',[ATTR_TITLE,'Always clear output'],
 				  true,'Clear'));
-    let right = HU.b('Offset: ') +HU.input('','0',
+    let right = '';
+    if(models.length>1) {
+	right+=HU.b('Model: ') +HU.select('',['id',id+'_chatmodel'],models);
+	right+=SPACE;
+    }
+    right+=HU.b('Offset: ') +HU.input('','0',
 			 [ATTR_ID,id+'_chatoffset',ATTR_TITLE,'Offset into document','size','3']);
+
+
     chat+=HU.div([ATTR_STYLE,'margin:4px;'],HU.leftRightTable(left,right));
 
 
@@ -61,8 +68,12 @@ function DocumentChat(id,entryId) {
 	    action:'documentchat',
             entryid: entryId,
 	    question:q,
-	    offset:jqid(id+'_chatoffset').val().trim()
+	    offset:jqid(id+'_chatoffset').val().trim(),
         };
+	let model = jqid(id+'_chatmodel').val()
+	if(model) {
+	    args.model = model;
+	}
 	let myStep = ++step;
         $.post(url, args, (result) => {
 	    if(step!=myStep) {
