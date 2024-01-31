@@ -766,9 +766,17 @@ function Entry(props) {
         getIsGroup: function() {
             return this.isGroup;
         },
-        getProperty: function(what,props) {
+        getProperty: function(what,props,inlineEdit) {
 	    props = props??{};
-	    if(what=="name") return this.getName();
+	    if(what=="name") {
+		if(this.canEdit() && inlineEdit) {
+		    return HU.input(null,this.getName(),['size','20',
+							 'entryid',this.getId(),
+							 'title','Edit name',
+							 'class','ramadda-entry-inlineedit','data-field','name']);
+		}
+		return this.getName();
+	    }
 	    if(what=="fromdate") {
 		return HU.span(['class','ramadda-datetime','title',this.startDate],this.startDateFormat);
 	    }
@@ -785,10 +793,10 @@ function Entry(props) {
 		return   HU.href(url,label);
 	    }
 	    if(what=="entryorder") {
-		if(!this.canEdit()) {
+		if(!this.canEdit() || !inlineEdit) {
 		    return this.order;
 		}
-		return HU.input(null,this.order,['size','3','entryid',this.getId(),'title','Edit order','class',' ramadda-edit-entryorder']);
+		return HU.input(null,this.order,['size','3','entryid',this.getId(),'title','Edit order','class','ramadda-entry-inlineedit','data-field','entryorder']);
 	    }
 	    if(what=="creator") {
 		let searchUrl = RamaddaUtil.getUrl('/search/do?user_id='+ this.creator+'&search.submit=true');

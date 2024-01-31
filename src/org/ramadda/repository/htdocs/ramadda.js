@@ -264,7 +264,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    showThumbnails:dflt,
 	    showArrow:dflt,	    
 	    showForm:dflt,
-	    formOpen:false
+	    formOpen:false,
+	    inlineEdit:false
 	}
 	$.extend(props,opts);
 	let entries = json.map((j,idx)=>{
@@ -463,7 +464,6 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let html = "";
 	let space = "";
 	let rowClass  = props.simple?'entry-list-simple-row':'entry-list-row entry-list-row-data';
-
 	entries.forEach((entry,entryIdx)=>{
 	    let line = '';
 	    let rowId = Utils.getUniqueId("row_");
@@ -471,15 +471,24 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    cols.forEach((col,idx)=> {
 		let last = idx==cols.length-1;
 		let attrs = [ATTR_CLASS,'entry-row'];
-		let v = entry.getProperty(col.id)??'';
+		let v = entry.getProperty(col.id,{},props.inlineEdit)??'';
 		let _v = v;
 		let title = null;
 		v  = HU.span([],v);
 		if(col.id=="name") {
+		    let icon = '';
 		    if(props.showIcon) {
-			v = entry.getIconImage()+SPACE +v;
+			if(!props.inlineEdit) {
+			    v = entry.getLink(v);
+			}
+			icon = entry.getLink(entry.getIconImage());
 		    }
-		    v = entry.getLink(v);
+		    
+		    if(props.showIcon)
+			v =  icon + SPACE +v;
+		    
+
+
 		    let tds = [];
 		    //[cbx,space,arrow,icon,thumbnail,v]
 		    let cbxId = Utils.getUniqueId('entry_');
@@ -596,14 +605,14 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
 	html = $(html).appendTo(container);
 	Translate.translate(html);
-
-	main.find('.ramadda-edit-entryorder').keypress(function(event) {
+	main.find('.ramadda-entry-inlineedit').keypress(function(event) {
 	    if(event.which!=13) {
 		return;
 	    }
 	    let entryId = $(this).attr('entryid');
-	    let order = $(this).val().trim();
-            let url = ramaddaBaseUrl + "/entry/changefield?entryid=" + entryId+'&what=entryorder&value='+ order;
+	    let value = $(this).val().trim();
+	    let what = $(this).attr('data-field');
+            let url = ramaddaBaseUrl + "/entry/changefield?entryid=" + entryId+'&what=' + what+'&value='+ value;
             $.getJSON(url, function(data) {
 		if(data.error) {
 		    alert('An error has occurred: '+data.error);
@@ -628,35 +637,36 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
 
 
-	html.find('.entry-row').tooltip({
-	    show: { effect: 'slideDown', delay: 1500, duration: 300 },
-	    content: function () {
-		if($(this).hasClass('ramadda-edit-input')) return null;
-		let title = $(this).attr('title');
-		let icon = $(this).attr('data-icon');		
-		let thumb = $(this).attr('data-thumbnail');		
-		if(icon) {
-		    icon = HtmlUtils.image(icon,[ATTR_WIDTH,'32px']);
-		    title = icon+HU.space(1) +title;
-		}
-		title = HU.div([],HU.b(title));
+	if(!props.inlineEdit) {
+	    html.find('.entry-row').tooltip({
+		show: { effect: 'slideDown', delay: 1500, duration: 300 },
+		content: function () {
+		    if($(this).hasClass('ramadda-edit-input')) return null;
+		    let title = $(this).attr('title');
+		    let icon = $(this).attr('data-icon');		
+		    let thumb = $(this).attr('data-thumbnail');		
+		    if(icon) {
+			icon = HtmlUtils.image(icon,[ATTR_WIDTH,'32px']);
+			title = icon+HU.space(1) +title;
+		    }
+		    title = HU.div([],HU.b(title));
 
-		let type = $(this).attr('data-type');		
-		if(type) title=title+ 'Type: ' + type+'<br>';
-		let remote = $(this).attr('remote-repository');		
-		if(remote) title=title+ 'Remote: ' + remote+'<br>';
-		title = title+
-		    HU.div([],'Right-click to see entry menu') +
-		    HU.div([],'Shift-drag to copy/move');
+		    let type = $(this).attr('data-type');		
+		    if(type) title=title+ 'Type: ' + type+'<br>';
+		    let remote = $(this).attr('remote-repository');		
+		    if(remote) title=title+ 'Remote: ' + remote+'<br>';
+		    title = title+
+			HU.div([],'Right-click to see entry menu') +
+			HU.div([],'Shift-drag to copy/move');
 
-		if(thumb) {
-		    thumb = HtmlUtils.image(thumb,[ATTR_WIDTH,'250px']);
-		    title = title +  HU.div([ATTR_STYLE,'max-height:200px;overflow-y:hidden;'],thumb);
-		}
+		    if(thumb) {
+			thumb = HtmlUtils.image(thumb,[ATTR_WIDTH,'250px']);
+			title = title +  HU.div([ATTR_STYLE,'max-height:200px;overflow-y:hidden;'],thumb);
+		    }
 
-		return HU.div([ATTR_STYLE,HU.css('margin','5px')],title);
-	    }});	    
-
+		    return HU.div([ATTR_STYLE,HU.css('margin','5px')],title);
+		}});	    
+	}
 	container.find('.ramadda-breadcrumb-toggle').click(function() {
 	    let id = $(this).attr('breadcrumbid');
 	    let crumbs = $('#'+ id);
