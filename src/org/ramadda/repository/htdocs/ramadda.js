@@ -478,16 +478,15 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		if(col.id=="name") {
 		    let icon = '';
 		    if(props.showIcon) {
-			if(!props.inlineEdit) {
-			    v = entry.getLink(v);
-			}
 			icon = entry.getLink(entry.getIconImage());
+		    }
+		    if(!props.inlineEdit) {
+			v = entry.getLink(v);
 		    }
 		    
 		    if(props.showIcon)
 			v =  icon + SPACE +v;
 		    
-
 
 		    let tds = [];
 		    //[cbx,space,arrow,icon,thumbnail,v]
