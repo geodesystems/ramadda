@@ -328,7 +328,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    attrs = Utils.mergeLists(attrs,["width",col.width]);
 		}
 		attrs.push('style',HU.css('padding-left',col.paddingLeft??'0px'))
-		attrs = Utils.mergeLists(attrs,['orderby',col.id,'title','Sort by '+ col.label]);
+		attrs = Utils.mergeLists(attrs,['orderby',col.id=='download'?'size':col.id,'title','Sort by '+ (col.id=='download'?'Size':col.label)]);
 		let v = col.label;
 		if(col.id==props.orderby) {
 		    if(Utils.isDefined(props.ascending)) {
