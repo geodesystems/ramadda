@@ -1017,9 +1017,9 @@ public class MapInfo {
      * @param info _more_
      */
     public void addLine(Entry entry, String id, LatLonPointImpl fromPt,
-                        LatLonPointImpl toPt, String info) {
+                        LatLonPointImpl toPt, String info,String...extra) {
         addLine(entry, id, fromPt.getLatitude(), fromPt.getLongitude(),
-                toPt.getLatitude(), toPt.getLongitude(), info);
+                toPt.getLatitude(), toPt.getLongitude(), info,extra);
     }
 
     /**
@@ -1119,11 +1119,16 @@ public class MapInfo {
      */
     public void addLine(Entry entry, String id, double fromLat,
                         double fromLon, double toLat, double toLon,
-                        String info)  {
+                        String info,String...extraProps)  {
         StringBuilder attrs = new StringBuilder("{");
 	JsonUtil.attr(attrs,"strokeWidth","2");
 	attrs.append(",");
 	JsonUtil.attr(attrs,"strokeColor",JsonUtil.quote("red"));	
+	attrs.append(",");
+	for(int i=0;i<extraProps.length;i+=2) {
+	    JsonUtil.attr(attrs,extraProps[i],JsonUtil.quote(extraProps[i+1]));	
+	    attrs.append(",");
+	}
         entry.getTypeHandler().initMapAttrs(entry, this, attrs);
         attrs.append("}");
         String name = entry.getName().replaceAll("'", "\\\\'");

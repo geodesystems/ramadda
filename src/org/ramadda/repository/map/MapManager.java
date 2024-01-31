@@ -1693,6 +1693,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
         double azimuthLength    = Utils.getProperty(props, "azimuthLength", 1.0);	
 
+	String azimuthColor = Utils.getProperty(props, "azimuthColor", "red");
+	String azimuthWidth = Utils.getProperty(props, "azimuthWidth", "2");	
         //            map.addLines(entry, "", polyLine, null);
 
         if ((entriesToUse.size() == 1) && detailed) {
@@ -1814,7 +1816,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                            LatLonPointImpl pt = Bearing.findPoint(fromPt,
 								   dir, km, null);
                             map.addLine(entry, mapEntryId(entry), fromPt, pt,
-                                        null);
+                                        null,"strokeColor",azimuthColor,"strokeWidth",azimuthWidth);
 
                             break;
                         }
