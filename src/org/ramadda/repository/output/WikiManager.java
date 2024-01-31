@@ -7560,7 +7560,7 @@ public class WikiManager extends RepositoryManager
         wikiMenuHelpButton = makeMenuButton("Help", help.toString());
         wikiMenuFormattingButton = makeMenuButton("Formatting",
 						  HU.span(HU.hbox(tags1, tags2,tags3,tags4),
-							  HU.attrs("data-title","Formatting","class","wiki-menubar-tags")));
+							  HU.attrs("data-title","Formatting","class","wiki-menubar-tags")),true);
 
 
 
@@ -7568,8 +7568,8 @@ public class WikiManager extends RepositoryManager
 
 
     private static final String BUTTONCLASS = HU.clazz("ramadda-menubar-button");
-    public String makeMenuButton(final String title, final String contents) {
-	return HU.makePopup(null,HU.div(title,HU.cssClass("ramadda-menubar-button")),
+    public String makeMenuButton(final String title, final String contents,boolean...first) {
+	return HU.makePopup(null,HU.div(title,HU.cssClass("ramadda-menubar-button " + (first.length>0?"ramadda-menubar-button-first":""))),
 			    HU.div(contents, "class='wiki-editor-popup'"),
 			    new NamedValue("linkAttributes", BUTTONCLASS));
     }
@@ -7660,10 +7660,12 @@ public class WikiManager extends RepositoryManager
                 HU.cssClass("ramadda-menubar")
                 + HU.attrs("id", textAreaId + "_toolbar"));
 	buttons.append(HU.span(HU.img(getIconUrl("fas fa-binoculars")),
-			       HU.attrs("style","margin-left:4px;","title","Search for tags", "class","ramadda-clickable","id", textAreaId + "_toolbar_search")));
+			       HU.attrs("style","margin-left:6px;margin-right:2px;","title","Search for tags", "class","ramadda-clickable","id", textAreaId + "_toolbar_search")));
 	buttons.append(HU.span(HU.img(getIconUrl("fas fa-pen-to-square")),
 			       HU.attrs("style","margin-left:6px;","title","Edit mode - click in tag to show editor", "class","ramadda-clickable","id", textAreaId + "_toolbar_edit")));
 			       
+
+
 
 
         Utils.appendAll(buttons, HU.span("", HU.id(textAreaId + "_prefix")),

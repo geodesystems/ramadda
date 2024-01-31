@@ -816,8 +816,8 @@ a.ramadda-entry-nav-page {
     overflow-x:scroll;
     vertical-align:bottom;
     display:inline-block;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;  
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;  
     border:1px solid #ccc;
     border-bottom:0px;
     background:#F0F0F0;
@@ -894,6 +894,12 @@ a.ramadda-menubar-button:hover {
     border:0px;
     border-right:var(--basic-border);
 }
+
+.ramadda-popup-link .ramadda-menubar-button-first {
+    margin-left:8px;
+    border-left:var(--basic-border);
+}
+
 
 .ramadda-page-title  {
     font-size:175%;

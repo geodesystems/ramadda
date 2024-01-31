@@ -275,7 +275,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	});
 	let html = "";
 	let cols = [];
-	let colList = Utils.split(props.columns??'entryorder,name,creator,date,time,createdate,download,size,type,attachments',',',true,true);
+	let colList = Utils.split(props.columns??'name,entryorder,creator,date,time,createdate,download,size,type,attachments',',',true,true);
 	let dateWidth = 130;
 	let typeWidth = 100;	
 	let sizeWidth  =80;
