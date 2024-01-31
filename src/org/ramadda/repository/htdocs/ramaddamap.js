@@ -823,6 +823,15 @@ RepositoryMap.prototype = {
 	    let observer = new ResizeObserver(Utils.throttle(()=>{
 		if(this.getMap()) {
 		    this.getMap().updateSize();
+		    let baseLayers = this.getMap().layers.filter(layer=>{
+			return layer.isBaseLayer;
+		    });	    
+		    //Sometimes the base layer doesn't redraw very well so force a redraw
+		    baseLayers.forEach(layer=>{
+			if(layer.visibility) {
+			    layer.redraw();
+			}
+		    });	    
 		}
 	    },1000));
 	    observer.observe(mapDiv);
