@@ -2266,6 +2266,8 @@ public class EntryManager extends RepositoryManager {
 	try {
 	    if(what.equals("entryorder")) {
 		entry.setEntryOrder(request.get("value",999));
+	    } else  if(what.equals("name")) {
+		entry.setName(request.getString("value",entry.getName()));		
 	    }   else {
 		sb.append(JsonUtil.mapAndQuote(Utils.makeList("error", "Unknown field:" +what)));
 		return new Result("", sb, JsonUtil.MIMETYPE);
