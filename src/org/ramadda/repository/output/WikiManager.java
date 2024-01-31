@@ -5149,10 +5149,15 @@ public class WikiManager extends RepositoryManager
 				      "showTime",
 				      "showDownload",
 				      "showCreator",
-				      "showDate","showCreateDate","showSize","showChangeDate",
+				      "showDate",
+				      "showCreateDate",
+				      "showSize",
+				      "showChangeDate",
 				      "columns",
 				      "showAttachments",
-				      "showType","showIcon","showThumbnails","showArrow","showForm","showCrumbs","dateWidth","sizeWidth","nameWidth","typeWidth","createDateWidth","fromDateWidth","changeDateWidth"}) {
+				      "showType",
+				      "showIcon",
+				      "showThumbnails","showArrow","showForm","showCrumbs","dateWidth","sizeWidth","nameWidth","typeWidth","createDateWidth","fromDateWidth","changeDateWidth"}) {
 	    String v =getProperty(wikiUtil, props, prop, (String)null);
 	    if(v!=null) {
 		argProps.add(prop);
@@ -7557,7 +7562,7 @@ public class WikiManager extends RepositoryManager
         makeHelp.accept("/colortables", "Color Tables");
 
         wikiMenuEtcButton = makeMenuButton("Etc", etc.toString());
-        wikiMenuHelpButton = makeMenuButton("Help", help.toString());
+        wikiMenuHelpButton = makeMenuButton("Help", help.toString(),false,true);
         wikiMenuFormattingButton = makeMenuButton("Formatting",
 						  HU.span(HU.hbox(tags1, tags2,tags3,tags4),
 							  HU.attrs("data-title","Formatting","class","wiki-menubar-tags")),true);
@@ -7569,7 +7574,9 @@ public class WikiManager extends RepositoryManager
 
     private static final String BUTTONCLASS = HU.clazz("ramadda-menubar-button");
     public String makeMenuButton(final String title, final String contents,boolean...first) {
-	return HU.makePopup(null,HU.div(title,HU.cssClass("ramadda-menubar-button " + (first.length>0?"ramadda-menubar-button-first":""))),
+	String clazz = "ramadda-menubar-button " + (first.length>0 && first[0]?"ramadda-menubar-button-first":"");
+	if(first.length>1 && first[1]) clazz+=" ramadda-menubar-button-last";
+	return HU.makePopup(null,HU.div(title,HU.cssClass(clazz)),
 			    HU.div(contents, "class='wiki-editor-popup'"),
 			    new NamedValue("linkAttributes", BUTTONCLASS));
     }
