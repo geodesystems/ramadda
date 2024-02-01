@@ -672,7 +672,7 @@ public class WikiUtil implements HtmlUtilsConstants {
                 name = name.substring(0, idx);
                 String ahref =
                     "<a title='" + name
-                    + "' class='wiki-link-external' target='_blank' href='"
+                    + "' class='wiki-link-external'  href='"
                     + name + "'>";
                 s = s.substring(0, start) + ahref + label + "</a>"
                     + s.substring(end);
@@ -680,7 +680,7 @@ public class WikiUtil implements HtmlUtilsConstants {
                 cnt++;
                 String ahref =
                     "<a title='" + name
-                    + "' class='wiki-link-external' target='_blank' href='"
+                    + "' class='wiki-link-external'  href='"
                     + name + "'>";
                 s = s.substring(0, start) + ahref + "_BRACKETOPEN_" + cnt
                     + "_BRACKETCLOSE_</a>" + s.substring(end);
