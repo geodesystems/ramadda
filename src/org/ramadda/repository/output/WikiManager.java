@@ -4890,12 +4890,9 @@ public class WikiManager extends RepositoryManager
 	String ancestor = getProperty(wikiUtil, props, ARG_ANCESTOR, null);
 	if (doEntries || doEntry) {
 	    String extra ="";
-	    String orderBy = getProperty(wikiUtil, props,"orderby",null);
+	    String orderBy = getProperty(wikiUtil, props,"orderby",getProperty(wikiUtil, props,"sortby",null));
 	    if(orderBy!=null)
 		extra+="&orderby=" + orderBy;
-	    String sortBy = getProperty(wikiUtil, props,"sortby",null);
-	    if(sortBy!=null)
-		extra+="&orderby=" + sortBy;		    
 	    String ascending = getProperty(wikiUtil, props,"ascending",null);
 	    if(ascending!=null)
 		extra+="&ascending=" + ascending;
@@ -5144,7 +5141,7 @@ public class WikiManager extends RepositoryManager
 
 
 	for(String prop: new String[]{"maxHeight","details","simple","showHeader",
-				      "sortby","sortdir",
+				      "sortby","sortdir","ascending","orderby",
 				      "inlineEdit",
 				      "showEntryOrder",
 				      "tableWidth",
@@ -6485,6 +6482,7 @@ public class WikiManager extends RepositoryManager
 	    orderBy = getProperty(wikiUtil, props, "orderby");
 	}	    
 
+
 	//xxxxx
 	String sortDir = getProperty(wikiUtil,props,ATTR_SORT_DIR,
 				     getProperty(wikiUtil,props,ATTR_SORT_ORDER,null));
@@ -6805,18 +6803,18 @@ public class WikiManager extends RepositoryManager
             return rtmp;
         }
 
-
         if (orderBy != null) {
             if (orderBy.equals(ORDERBY_DATE)) {
                 entries = getEntryUtil().sortEntriesOnDate(entries, descending);
             } else if (orderBy.equals(ORDERBY_CREATEDATE)) {
-                entries = getEntryUtil().sortEntriesOnCreateDate(entries,
-								 descending);
+                entries = getEntryUtil().sortEntriesOnCreateDate(entries,descending);
             } else if (orderBy.equals(ORDERBY_NUMBER)) {
                 entries = getEntryUtil().sortEntriesOnNumber(entries, descending);		
-            } else {
+            } else if (orderBy.equals(ORDERBY_NAME)) {
                 entries = getEntryUtil().sortEntriesOnName(entries, descending);
-            }
+            } else {
+                entries = getEntryUtil().sortEntriesOn(entries, orderBy,descending);
+	    }
         }
 
 	max = initRequest.get(ARG_MAX,max);

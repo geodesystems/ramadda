@@ -1939,14 +1939,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     public String makeOrderBy(Request request, boolean vertical) throws Exception {
         List       orderByList = new ArrayList();
         orderByList.add(new TwoFacedObject(msg("None"), "none"));
-        orderByList.add(new TwoFacedObject(msg("Relevant"), ORDERBY_RELEVANT));
-        orderByList.add(new TwoFacedObject(msg("From Date"),
-                                           ORDERBY_FROMDATE));
-        orderByList.add(new TwoFacedObject(msg("To Date"), ORDERBY_TODATE));
-        orderByList.add(new TwoFacedObject(msg("Create Date"),
-                                           ORDERBY_CREATEDATE));
         orderByList.add(new TwoFacedObject(msg("Name"), ORDERBY_NAME));
         orderByList.add(new TwoFacedObject(msg("Size"), ORDERBY_SIZE));
+        orderByList.add(new TwoFacedObject(msg("Create Date"), ORDERBY_CREATEDATE));
+        orderByList.add(new TwoFacedObject(msg("From Date"),  ORDERBY_FROMDATE));
+        orderByList.add(new TwoFacedObject(msg("To Date"), ORDERBY_TODATE));
+        orderByList.add(new TwoFacedObject(msg("Relevant"), ORDERBY_RELEVANT));
 
         return 
             HU.select(ARG_ORDERBY, orderByList,

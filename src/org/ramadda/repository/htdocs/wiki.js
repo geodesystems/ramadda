@@ -2018,8 +2018,12 @@ WikiEditor.prototype = {
     initAttributes:function() {
 	this.groupAttributes = [
 	    {label:'Collection Properties'},
-	    {p:'sortby',ex:'name,date,changedate,createdate,entryorder,size,number',tt:'sort type -name,date, change date, create date'},
-	    {p:'sortdir',ex:'up|down',tt:'direction of sort. use up for oldest to youngest'},
+	    {p:'orderby',ex:'name,date,changedate,createdate,entryorder,size,number',
+	     tt:'sort type: name, date, change date, create date, etc'},
+	    {p:'ascending',ex:'true',tt:'direction of sort.'},
+	    /*
+	      {p:'sortdir',ex:'up|down',tt:'direction of sort. use up for oldest to youngest'},
+	      */
 	    {label:'Specify entries',p:'entries',ex:'\"entryid1,entryid2,entryid3..\"',tt:'comma separated list of entry ids to use' },
 	    {label:'Specify entries by search',p:'entries',ex:'search:type:<some type>;orderby:date;ascending:false',tt:'comma separated list of entry ids to use' },	    
 	    {p:'entries.filter',ex:'file|folder|image|type:some type|geo|name:name pattern|suffix:file suffixes',tt:'allows you to select what entries to use'},

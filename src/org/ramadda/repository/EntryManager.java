@@ -11267,7 +11267,7 @@ public class EntryManager extends RepositoryManager {
 
 
 	if(select==null) select = new SelectInfo(request, forEntry);
-        String  by        =  select.getOrderBy();
+        String  selectOrderBy        =  select.getOrderBy();
 	boolean desc = !select.getAscending();
         boolean haveOrder = request.exists(ARG_ASCENDING) || select.hasAscending();
         String limitString =
@@ -11277,26 +11277,33 @@ public class EntryManager extends RepositoryManager {
         if (addOrderBy) {
             orderBy = SqlUtil.orderBy(Tables.ENTRIES.COL_FROMDATE,desc);
         }	
-        if (by != null) {
-            if (by.equals(ORDERBY_FROMDATE)) {
-                orderBy = SqlUtil.orderBy(Tables.ENTRIES.COL_FROMDATE,desc);
-            } else if (by.equals(ORDERBY_TODATE)) {
-                orderBy = SqlUtil.orderBy(Tables.ENTRIES.COL_TODATE, desc);
-            } else if (by.equals(ORDERBY_ENTRYORDER)) {
-                orderBy = SqlUtil.orderBy(Tables.ENTRIES.COL_ENTRYORDER, desc);		
-            } else if (by.equals(ORDERBY_TYPE)) {
-                orderBy = SqlUtil.orderBy(Tables.ENTRIES.COL_TYPE,desc);
-            } else if (by.equals(ORDERBY_SIZE)) {
-		//TODO: add a NULLS LAST for derby/postgres and something else for mysql and others?
-                orderBy = SqlUtil.orderBy(Tables.ENTRIES.COL_FILESIZE,desc);
-            } else if (by.equals(ORDERBY_CREATEDATE) || by.equals(ORDERBY_RELEVANT)) {
-                orderBy = SqlUtil.orderBy(Tables.ENTRIES.COL_CREATEDATE,desc);
-            } else if (by.equals(ORDERBY_NAME)) {
-                if ( !haveOrder) {
-                    desc = false;
-                }
-                orderBy = SqlUtil.orderBy("LOWER("+Tables.ENTRIES.COL_NAME+")",desc);
-            }
+        if (selectOrderBy != null) {
+	    StringBuilder sb = new StringBuilder();
+	    for(String by:Utils.split(selectOrderBy,",",true,true)) {
+		if(sb.length()>0) sb.append(",");
+		if (by.equals(ORDERBY_FROMDATE)) {
+		    sb.append(SqlUtil.orderBy(Tables.ENTRIES.COL_FROMDATE,desc,false));
+		} else if (by.equals(ORDERBY_TODATE)) {
+		    sb.append(SqlUtil.orderBy(Tables.ENTRIES.COL_TODATE, desc,false));
+		} else if (by.equals(ORDERBY_ENTRYORDER)) {
+		    sb.append(SqlUtil.orderBy(Tables.ENTRIES.COL_ENTRYORDER, desc,false));		
+		} else if (by.equals(ORDERBY_TYPE)) {
+		    sb.append(SqlUtil.orderBy(Tables.ENTRIES.COL_TYPE,desc,false));
+		} else if (by.equals(ORDERBY_SIZE)) {
+		    //TODO: add a NULLS LAST for derby/postgres and something else for mysql and others?
+		    sb.append(SqlUtil.orderBy(Tables.ENTRIES.COL_FILESIZE,desc,false));
+		} else if (by.equals(ORDERBY_CREATEDATE) || by.equals(ORDERBY_RELEVANT)) {
+		    sb.append(SqlUtil.orderBy(Tables.ENTRIES.COL_CREATEDATE,desc,false));
+		} else if (by.equals(ORDERBY_NAME)) {
+		    if ( !haveOrder) {
+			desc = false;
+		    }
+		    sb.append(SqlUtil.orderBy("LOWER("+Tables.ENTRIES.COL_NAME+")",desc,false));
+		}
+	    }
+	    if(sb.length()>0)
+		orderBy="ORDER BY " + sb.toString();
+	    else orderBy="";
         }
 	if(debugGetEntries)
 	    System.err.println("order:" + orderBy + " limit:" + limitString);

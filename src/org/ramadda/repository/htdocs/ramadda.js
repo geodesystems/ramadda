@@ -707,6 +707,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    $(this).attr('open',true);	    
 	    let url = RamaddaUtil.getUrl('/entry/show?output=json&includeproperties=false&includedescription=false&includeservices=false&children=true&entryid='+entryId);
 	    if(props.sortby) url=HU.url(url,['orderby',props.sortby]);
+	    if(props.orderby) url=HU.url(url,['orderby',props.orderby]);	    
+	    if(props.ascending) url=HU.url(url,['ascending',props.ascending]);	    
 	    if(props.sortdir) {
 		url=HU.url(url,['ascending',props.sortdir=='up']);
 	    }
