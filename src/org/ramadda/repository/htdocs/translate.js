@@ -185,9 +185,14 @@ var Translate = {
 	    if(!t || t.indexOf('<')>=0) {
 		return false;
 	    }
+	    if(t.match(/^[0-9]+/)) return;
+	    if(t.match(/ [0-9]+$/)) return;	    
+
+
 	    return true;
 	}
 	let translate = (a,text,suffix)=>{
+	    text = text.trim();
 	    if(useDflt) {
 		let orig = a.attr(langFlag(suffix));
 		if(orig) return orig;
@@ -197,11 +202,14 @@ var Translate = {
 		return;
 	    }
 
+
 	    if(pack[text]) {
 		if(pack[text]=='<skip>') return null;
 		a.attr(langFlag(suffix),text);
 		return pack[text];
 	    }
+	    
+//	    if(!Translate.missing[text])console.log('missing:'+text+':');
 	    Translate.missing[text] = true;
 	    return  a.attr(langFlag(suffix));
 	}
@@ -243,6 +251,8 @@ var Translate = {
     showMissing: function() {
 	let missing = '';
 	Object.keys(Translate.missing).forEach(key=>{
+	    if(key.match(/^[0-9]+/)) return;
+	    if(key.match(/ [0-9]+$/)) return;	    
 	    missing+=key+'\n';
 	});
 	console.log(missing);
