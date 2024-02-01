@@ -33,9 +33,11 @@ record.type.ptemp_tmx=date
 #You can define units for the fields with
 temp_c.unit=C
 depth_m.unit=M
-
-unit:(temp.*|.*temp)=C
-unit:(.*rh|.*humidity.*)=%
+winddir.unit=degrees
+rain_cm.unit=cm
+unit:.*_m_s$=m/s
+unit:(airtemp_c|temp.*|.*temp)=C
+unit:(^rh_.*|.*rh|.*humidity.*)=%
 
 ]]>
 </property>
