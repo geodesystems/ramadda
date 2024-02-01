@@ -664,8 +664,18 @@ public class WikiUtil implements HtmlUtilsConstants {
         Matcher matcher2 = pattern2.matcher(s);
         while (matcher2.find()) {
             String name  = matcher2.group(1).trim();
-	    boolean doTarget =name.startsWith(">");
-	    if(doTarget) name = name.substring(1);
+	    String target= null;
+	    if(name.startsWith("<")) {
+		int idx2 = name.indexOf(">");
+		if(idx2>=0) {
+		    target = name.substring(1,idx2);
+		    name = name.substring(idx2+1);
+		    System.err.println("target:" + target+" name:" + name);
+		} else {
+		    name = name.substring(1);
+		    target="_blank";
+		}
+	    }
             int    idx   = name.indexOf(" ");
             int    start = matcher2.start(0);
             int    end   = matcher2.end(0);
@@ -675,7 +685,7 @@ public class WikiUtil implements HtmlUtilsConstants {
                 name = name.substring(0, idx);
 		String attrs = HU.attrs("title",name,"class","wiki-link-external",
 						      "href",name);
-		if(doTarget) attrs+=HU.attr("target","_blank");
+		if(target!=null) attrs+=HU.attr("target",target);
                 String ahref =HU.open("a",attrs);
                 s = s.substring(0, start) + ahref + label + "</a>"
                     + s.substring(end);
@@ -683,7 +693,7 @@ public class WikiUtil implements HtmlUtilsConstants {
                 cnt++;
 		String attrs = HU.attrs("title",name,"class","wiki-link-external",
 						      "href",name);
-		if(doTarget) attrs+=HU.attr("target","_blank");
+		if(target!=null) attrs+=HU.attr("target",target);
                 String ahref =HU.open("a",attrs);
                 s = s.substring(0, start) + ahref + "_BRACKETOPEN_" + cnt
                     + "_BRACKETCLOSE_</a>" + s.substring(end);
