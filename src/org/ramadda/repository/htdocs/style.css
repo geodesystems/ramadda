@@ -15,7 +15,7 @@
     --href-decoration:underline;
     --href-color: #000;
     --color-mellow-yellow:#fffeec;
-    --default-radius:4px;
+    --default-radius:6px;
     --nav-hover-color:var(--highlight-color);
     --cal-font-size:10pt;
     --cal-background-on:#C5E5F5;
@@ -2731,7 +2731,9 @@ table.dataTable tbody td {
     padding-top: 0px;
     border-top-left-radius:var(--default-radius);
     border-top-right-radius:var(--default-radius);    
+    border-collapse:unset;
 }
+
 
 
 .entry-list-noheader {
@@ -2766,6 +2768,10 @@ table.dataTable tbody td {
 
 .entry-list-header-column {
     border-right : 1px #d8d8d8 solid;
+}
+
+.entry-list-header-column:last-child {
+    border-right : 0px #d8d8d8 solid;
 }
 
 .entry-list-header-column a, .entry-list-header-column-last a {
