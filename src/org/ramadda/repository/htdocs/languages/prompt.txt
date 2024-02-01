@@ -1,0 +1,1 @@
+Translate the below phrases to Spanish. The format should be <english word>=<spanish word>. Maintain capitalization
