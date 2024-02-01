@@ -5288,7 +5288,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    else url+="&";
 	    let name = args[i];
 	    let value=args[i+1];
-	    console.log(name,value);
 	    url += encodeURIComponent(name) + "=" + encodeURIComponent(value);
 	}	
 	return url;
