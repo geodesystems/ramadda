@@ -589,13 +589,18 @@ public class SqlUtil {
      * @return _more_
      */
     public static String orderBy(String what, boolean desc) {
+	return orderBy(what,desc,true);
+    }
+
+    public static String orderBy(String what, boolean desc, boolean includePrefix) {	
         if (what == null) {
             return null;
         }
 
-        return " ORDER BY " + sanitize(what) + " " + (desc
-                ? ORDER_DESC
-                : ORDER_ASC) + " ";
+        return (includePrefix?" ORDER BY ":"") +
+	    sanitize(what) + " " + (desc
+				    ? ORDER_DESC
+				    : ORDER_ASC) + " ";
     }
 
     /**
