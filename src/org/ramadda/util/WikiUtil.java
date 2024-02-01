@@ -664,24 +664,27 @@ public class WikiUtil implements HtmlUtilsConstants {
         Matcher matcher2 = pattern2.matcher(s);
         while (matcher2.find()) {
             String name  = matcher2.group(1).trim();
+	    boolean doTarget =name.startsWith(">");
+	    if(doTarget) name = name.substring(1);
             int    idx   = name.indexOf(" ");
             int    start = matcher2.start(0);
             int    end   = matcher2.end(0);
+	    
             if (idx > 0) {
                 String label = name.substring(idx);
                 name = name.substring(0, idx);
-                String ahref =
-                    "<a title='" + name
-                    + "' class='wiki-link-external'  href='"
-                    + name + "'>";
+		String attrs = HU.attrs("title",name,"class","wiki-link-external",
+						      "href",name);
+		if(doTarget) attrs+=HU.attr("target","_blank");
+                String ahref =HU.open("a",attrs);
                 s = s.substring(0, start) + ahref + label + "</a>"
                     + s.substring(end);
             } else {
                 cnt++;
-                String ahref =
-                    "<a title='" + name
-                    + "' class='wiki-link-external'  href='"
-                    + name + "'>";
+		String attrs = HU.attrs("title",name,"class","wiki-link-external",
+						      "href",name);
+		if(doTarget) attrs+=HU.attr("target","_blank");
+                String ahref =HU.open("a",attrs);
                 s = s.substring(0, start) + ahref + "_BRACKETOPEN_" + cnt
                     + "_BRACKETCLOSE_</a>" + s.substring(end);
             }
