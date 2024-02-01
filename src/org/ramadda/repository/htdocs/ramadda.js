@@ -706,6 +706,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    $(this).attr('filled',true);
 	    $(this).attr('open',true);	    
 	    let url = RamaddaUtil.getUrl('/entry/show?output=json&includeproperties=false&includedescription=false&includeservices=false&children=true&entryid='+entryId);
+	    if(props.sortby) url=HU.url(url,['orderby',props.sortby]);
+	    if(props.sortdir) {
+		url=HU.url(url,['ascending',props.sortdir=='up']);
+	    }
+	    console.log(url);
             $.getJSON(url, function(data, status, jqxhr) {
                 if (GuiUtils.isJsonError(data)) {
                     return;

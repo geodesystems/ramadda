@@ -5142,7 +5142,9 @@ public class WikiManager extends RepositoryManager
 	    actions.add(JsonUtil.mapAndQuote(Utils.makeList("id",selector.getId(),"label",selector.getLabel())));
 	}
 
+
 	for(String prop: new String[]{"maxHeight","details","simple","showHeader",
+				      "sortby","sortdir",
 				      "inlineEdit",
 				      "showEntryOrder",
 				      "tableWidth",
