@@ -812,6 +812,9 @@ function Entry(props) {
 	    return "Unknown:" + what;
 	},
 
+	getTypeName:function() {
+	    return this.typeName;
+	},
         getRoot: async function(callback, extraArgs) {
             let parent = this;
             while (true) {
