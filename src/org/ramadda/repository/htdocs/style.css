@@ -221,12 +221,15 @@ ramadda-heading, .ramadda-page-heading {
 
 
 
-.ramadda-wiki-error, .ramadda-error {
+
+
+
+.ramadda-wiki-error, .ramadda-error,.ramadda-session-error  {
+    text-align:left;
     display:inline-block;
-    font-weight: bold; 
     margin:4px;
     border:1px solid #000;
-    background:orangered;
+    background:yellow;    
     padding:4px;
 }
 

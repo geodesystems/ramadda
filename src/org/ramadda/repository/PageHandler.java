@@ -8,6 +8,7 @@ package org.ramadda.repository;
 
 
 import org.ramadda.repository.auth.User;
+import org.ramadda.repository.auth.SessionManager;
 
 import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.map.MapLayer;
@@ -891,6 +892,12 @@ public class PageHandler extends RepositoryManager {
 
 
         }
+
+	List<String> messages= (List<String>)getSessionManager().getSessionProperty(request, SessionManager.SESSION_PROPERTY_ERRORMESSAGES);
+	if(messages!=null) {
+	    getSessionManager().removeSessionProperty(request, SessionManager.SESSION_PROPERTY_ERRORMESSAGES);
+	    HU.div(theFooter,Utils.join(messages,"<br>"),HU.clazz("ramadda-header-floating ramadda-session-error"));
+	}
 
 
 	pageLinks.add(HU.makePopup(null, popupImage, menuHtml,

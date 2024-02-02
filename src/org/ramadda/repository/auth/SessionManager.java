@@ -64,6 +64,8 @@ public class SessionManager extends RepositoryManager {
 
 
 
+    public static final String SESSION_PROPERTY_ERRORMESSAGES = "errormessages";
+
     /** The number of days a session is active in the database */
     private static final double SESSION_DAYS = 2.0;
 
