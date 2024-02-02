@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Feb  1 06:05:30 MST 2024";
+var build_date="RAMADDA build date: Thu Feb  1 20:57:51 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -34248,30 +34248,26 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 //	    inner = HU.div([CLASS,"display-simplesearch-entries"],inner);
             this.writeEntries(inner, entries);
 	    let _this = this;
-	    this.jq(ID_ENTRIES).find(".display-simplesearch-entry img").tooltip({
+	    this.jq(ID_ENTRIES).find(".display-simplesearch-entry").tooltip({
+		show: {
+		    delay: 1000,
+		    duration: 300
+		},
 		content: function() {
-		    let thumb = $(this).attr("thumbnail");
 		    let entry = map[$(this).attr("entryid")];
-		    let active= true;
+		    if(!entry) return null;
+		    let thumb = $(this).attr("thumbnail");
 		    let parent;
-		    entry.getParentEntry(p=>{
-			parent = p;
-			if(!active) {
-			    _this.jq("parenttooltip").html(HU.b("Parent: ") +parent.getName());
-			}
-		    });
-		    active = false;
+		    let html =entry.getIconImage()+' '+ HU.b(entry.getName());
+		    html+=HU.div([],'Type: ' + entry.getTypeName());
 		    let snippet = entry.getSnippet();
-		    let html = HU.div([ID,_this.domId("parenttooltip")],parent?HU.b("Parent: ") + parent.getName():"")
 		    if(snippet)
-			html+=snippet;
-			
+			html+=HU.div([ATTR_STYLE,HU.css('border-top','var(--basic-border)')],snippet);
 		    if(thumb) {
 			html+=
-			    HU.div([STYLE,HU.css("max-height","100px","overflow-y","hidden")],
-				   HU.image(thumb,["width","300px"]));
+			    HU.div([STYLE,HU.css('max-height','100px','overflow-y','hidden','border-top','var(--basic-border)')],
+				   HU.image(thumb,['width','300px']));
 		    }
-
 		    return html;
 		}});
 
