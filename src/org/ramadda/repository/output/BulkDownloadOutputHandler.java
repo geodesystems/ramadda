@@ -588,7 +588,7 @@ public class BulkDownloadOutputHandler extends OutputHandler {
             sb.append(cmd("export ROOT=\"" + request.getAbsoluteUrl("")
                           + "\""));
             sb.append(
-                "makedir() {\nif ! test -e $1 ; then\n\tmkdir $1;\nfi\n}\n");
+                "makedir() {\nif ! test -e \"$1\" ; then\n\tmkdir \"$1\";\nfi\n}\n");
             String test =
                 "if [[ $? != 0 ]] ; then\n\techo \"download failed url:$3\"\n\texit $?\nfi\n";
             sb.append("download() {\necho \"$1\";\n");
