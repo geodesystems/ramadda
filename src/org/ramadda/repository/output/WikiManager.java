@@ -7189,6 +7189,12 @@ public class WikiManager extends RepositoryManager
                 myRequest.put(key, props.get(key));
             }
 
+	    String orderBy = request.getString(ARG_ORDERBY,null);
+	    if(orderBy!=null) myRequest.put(ARG_ORDERBY,orderBy);
+	    String asc = request.getString(ARG_ASCENDING,null);
+	    if(asc!=null) myRequest.put(ARG_ASCENDING,asc);	    
+
+
 	    if(!getProperty(wikiUtil,props,"showTitle",true)) {
 		myRequest.put(PROP_SHOW_TITLE,"false");
 	    }
