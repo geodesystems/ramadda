@@ -330,7 +330,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		attrs.push('style',HU.css('padding-left',col.paddingLeft??'0px'))
 		attrs = Utils.mergeLists(attrs,['orderby',col.id=='download'?'size':col.id,'title','Sort by '+ (col.id=='download'?'Size':col.label)]);
 		let v = col.label;
-		if(col.id==props.orderby) {
+		if(col.id==props.orderby || (props.orderby=='size' && col.id=='download')) {
 		    if(Utils.isDefined(props.ascending)) {
 			if(props.ascending)
 			    v = HU.getIconImage('fas fa-arrow-up') + SPACE+HU.span([],v);
