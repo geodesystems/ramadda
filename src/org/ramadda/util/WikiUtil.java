@@ -670,7 +670,6 @@ public class WikiUtil implements HtmlUtilsConstants {
 		if(idx2>=0) {
 		    target = name.substring(1,idx2);
 		    name = name.substring(idx2+1);
-		    System.err.println("target:" + target+" name:" + name);
 		} else {
 		    name = name.substring(1);
 		    target="_blank";
