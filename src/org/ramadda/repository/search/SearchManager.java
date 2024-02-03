@@ -2069,7 +2069,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         }
         String title = msg("Search providers");
         if (extra.length() > 0) {
-            title += HU.space(4) + extra;
+            title += HU.space(4) + HU.span(extra.toString(),HU.cssClass("ramadda-highlighted"));
         }
         titles.add(title);
         contents.add(HU.insetDiv(providerSB.toString(), 0, 20, 0, 0));
@@ -2562,14 +2562,16 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         if (searchProviders == null) {
             //            System.err.println("SearchManager.doSearch- making searchProviders");
 	    searchProviderMap =     new Hashtable<String, SearchProvider>();
-            List<SearchProvider> tmp = new ArrayList<SearchProvider>();
-            for (SearchProvider provider : pluginSearchProviders) {
-		searchProviderMap.put(provider.getType(), provider);
-		searchProviderMap.put(provider.getId(), provider);	
-                if (provider.isEnabled()) {
-                    tmp.add(provider);
-                }
-            }
+	    List<SearchProvider> tmp = new ArrayList<SearchProvider>();
+	    if(this.getRepository().getProperty("ramadda.search.providers.show",true)) {
+		for (SearchProvider provider : pluginSearchProviders) {
+		    searchProviderMap.put(provider.getType(), provider);
+		    searchProviderMap.put(provider.getId(), provider);	
+		    if (provider.isEnabled()) {
+			tmp.add(provider);
+		    }
+		}
+	    }
             searchProviders = tmp;
         }
 
@@ -2591,10 +2593,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		tmp.add(provider);
             }
 
-            for (SearchProvider provider : tmp) {
-                searchProviderMap.put(provider.getType(), provider);
-                searchProviderMap.put(provider.getId(), provider);		
-            }
+	    for (SearchProvider provider : tmp) {
+		searchProviderMap.put(provider.getType(), provider);
+		searchProviderMap.put(provider.getId(), provider);		
+	    }
             tmp.addAll(searchProviders);
             allProviders = tmp;
         }
