@@ -193,6 +193,9 @@ public class TabularTypeHandler extends ConvertibleTypeHandler {
     public String getSimpleDisplay(Request request, Hashtable requestProps,
                                    Entry entry)
             throws Exception {
+	if(isWikiText(entry.getDescription())) return null;
+
+
         boolean showTable = entry.getBooleanValue(IDX_SHOWTABLE, true);
         boolean showChart = entry.getBooleanValue(IDX_SHOWCHART, true);
 
