@@ -2258,7 +2258,7 @@ public class HtmlOutputHandler extends OutputHandler {
             if (myChildren.size() > 0) {
                 Hashtable props = new Hashtable();
                 props.put(ARG_SHOWCRUMBS, "" + group.isDummy());
-		HU.addPageSearch(sb,".entry-list-row-data",null,"Find");
+		HU.addPageSearch(sb,".entry-list-row-data",null,"Find in page");
 		if(doingInfo) {
 		    props.put("showEntryOrder","true");
 		    props.put("inlineEdit","true");		    
