@@ -968,6 +968,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    String obj = JsonUtil.map(Utils.makeList("name", JsonUtil.quote(entry.getName()), "id",
 						     JsonUtil.quote(entry.getId()),
 						     "type",JsonUtil.quote(entry.getTypeHandler().getType()),
+						     "typeName",JsonUtil.quote(entry.getTypeHandler().getLabel()),
 						     "icon",
 						     JsonUtil.quote(entry.getTypeHandler().getTypeIconUrl())));
 	    names.add(obj);

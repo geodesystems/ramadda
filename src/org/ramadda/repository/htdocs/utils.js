@@ -2846,13 +2846,15 @@ var Utils =  {
                 let name = value.name;
                 let id = value.id;
                 let v = name.replace(/\"/g, "_quote_");
+		
                 let entryLink =  HU.href(RamaddaUtil.getUrl("/entry/show?entryid=" + id),
-					 HU.getIconImage(value.icon||icon_blank16,["width",ramaddaGlobals.iconWidth]) + SPACE+name,[TITLE,"View entry",STYLE,HU.css("display","inline-block","width","100%"), CLASS,"ramadda-highlightable"]);
+					 HU.getIconImage(value.icon||icon_blank16,["width",ramaddaGlobals.iconWidth]) + SPACE+name,[TITLE,"View entry",'data-type',value.typeName,'data-name',value.name,'data-icon',value.icon,
+																    STYLE,HU.css("display","inline-block","width","100%"), CLASS,"ramadda-highlightable"]);
                 let searchLink;
                 if(submitForm) {
                     searchLink =  HU.span([CLASS,"ramadda-highlightable ramadda-search-input","index",i,TITLE,"Search for"],HtmlUtils.getIconImage("fa-search"));
                 } else {
-                    searchLink =  HU.href(RamaddaUtil.getUrl( "/search/do?text=" + encodeURIComponent(v)),HtmlUtils.getIconImage("fa-search"),[TITLE,"Search for"]);
+                    searchLink =  HU.href(RamaddaUtil.getUrl( "/search/do?text=" + encodeURIComponent(v)),HtmlUtils.getIconImage("fa-search"),[TITLE,"Search for text: " + value.name]);
                 }
                 let row =  searchLink +  SPACE + entryLink;
                 //                      html += HtmlUtils.div([CLASS, 'ramadda-search-suggestion ' + (even ? 'ramadda-row-even' : 'ramadda-row-odd')], row);
@@ -2861,6 +2863,19 @@ var Utils =  {
                 even = !even;
             });
             results.html(html);
+	    results.find('.ramadda-highlightable').tooltip({
+		show: {
+		    delay: 1000,
+		    duration: 300
+		},
+		content: function() {
+		    let name = $(this).attr('data-name');
+		    return 'Click to view entry<br>'+
+			HU.image($(this).attr('data-icon'),["width",ramaddaGlobals.iconWidth])+' ' +
+			HU.b(name)+
+			HU.div([],'Type: ' + $(this).attr('data-type'));
+		}});
+
             if(submitForm) {
                 let links = results.find(".ramadda-search-input");
                 links.css("cursor","pointer");
@@ -2899,7 +2914,6 @@ var Utils =  {
         if(ramaddaThisEntry) {
             right=HU.span([ATTR_STYLE,HU.css('margin-right','5px'),ATTR_TITLE,"Search under this entry"],
 			  HU.checkbox("popup_search_here",['name','ancestor', 'value',ramaddaThisEntry],false) +HU.tag("label",[CLASS,CLASS_CLICKABLE, "for","popup_search_here"],HU.div([ATTR_STYLE,'margin-left:5px;'], HU.getIconImage('fas fa-folder-tree'))));
-	    console.log(right);
         }
 	form+=HU.leftCenterRight(searchInput,'',right);
         form +="</form>";
