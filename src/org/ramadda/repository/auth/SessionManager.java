@@ -428,6 +428,22 @@ public class SessionManager extends RepositoryManager {
     }
 
 
+    public void addSessionErrorMessage(Request request, String message)  {
+	try {
+	    List<String> messages=(List<String>)
+		getSessionProperty(request,SessionManager.SESSION_PROPERTY_ERRORMESSAGES);
+	    if(messages==null) {
+		messages= new ArrayList<String>();
+		putSessionProperty(request,SessionManager.SESSION_PROPERTY_ERRORMESSAGES,
+				   messages);
+	    }
+	    messages.add(message);
+	} catch(Exception ignore) {
+	    getLogManager().logError("Error putting session error message:" + message,ignore);
+	}
+    }
+
+
 
     /**
      * _more_

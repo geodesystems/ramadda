@@ -699,15 +699,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			//			if(true) throw new RuntimeException("TEST ERROR");
 			entryChanged |= getLLMManager().applyEntryExtract(request, entry, llmCorpus);
 		    } catch(Throwable thr) {
-			List<String> messages=(List<String>)
-			    getSessionManager().getSessionProperty(request,SessionManager.SESSION_PROPERTY_ERRORMESSAGES);
-			if(messages==null) {
-			    messages= new ArrayList<String>();
-			    getSessionManager().putSessionProperty(request,SessionManager.SESSION_PROPERTY_ERRORMESSAGES,
-								   messages);
-			}
-			messages.add("An error occurred doing the LLM extraction for the entry: " + entry.getName()+
-				     "<br>Error: " + thr.getMessage());
+			getSessionManager().addSessionErrorMessage(request,
+								   "An error occurred doing the LLM extraction for the entry: " + entry.getName()+
+								   "<br>Error: " + thr.getMessage());
 			throw new RuntimeException(thr);
 		    }
 		}
@@ -3016,6 +3010,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			}
 		    } catch (Exception exc) {
 			logException("Error doing search:" + provider, exc);
+			getSessionManager().addSessionErrorMessage(request,"Error doing search at:" + provider+"<br>Error:" + exc.getMessage());
+
 		    } finally {
 			if (runnableCnt != null) {
 			    synchronized (runnableCnt) {
