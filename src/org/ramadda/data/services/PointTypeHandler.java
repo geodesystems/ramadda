@@ -206,7 +206,6 @@ public class PointTypeHandler extends RecordTypeHandler {
         PointMetadataHarvester metadataHarvester =
             ((PointTypeHandler) entry.getTypeHandler())
                 .doMakeMetadataHarvester(pointEntry);
-        //        System.err.println (getClass().getName()+"  - scanning file:" + metadataHarvester.getClass().getName());
         visitorGroup.addVisitor(metadataHarvester);
         final File quickScanFile = pointEntry.getQuickScanFile();
         DataOutputStream dos = new DataOutputStream(
@@ -222,8 +221,9 @@ public class PointTypeHandler extends RecordTypeHandler {
                         null);
         dos.close();
         log("initialize new entry: count=" + metadataHarvester.getCount());
-        ((PointTypeHandler) entry.getTypeHandler()).handleHarvestedMetadata(
-            pointEntry, metadataHarvester);
+        ((PointTypeHandler) entry.getTypeHandler()).handleHarvestedMetadata(request,
+									    pointEntry,
+									    metadataHarvester);
         log("initialize new entry: done");
 
 
@@ -601,7 +601,7 @@ public class PointTypeHandler extends RecordTypeHandler {
      *
      * @throws Exception _more_
      */
-    protected void handleHarvestedMetadata(RecordEntry recordEntry,
+    protected void handleHarvestedMetadata(Request request, RecordEntry recordEntry,
                                            PointMetadataHarvester metadata)
             throws Exception {
 

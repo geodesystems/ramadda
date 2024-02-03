@@ -126,10 +126,11 @@ public class NasaAmesTypeHandler extends PointTypeHandler {
      *
      * @throws Exception _more_
      */
-    protected void handleHarvestedMetadata(RecordEntry recordEntry,
+    @Override
+    protected void handleHarvestedMetadata(Request request,RecordEntry recordEntry,
                                            PointMetadataHarvester metadata)
             throws Exception {
-        super.handleHarvestedMetadata(recordEntry, metadata);
+        super.handleHarvestedMetadata(request,recordEntry, metadata);
         NasaAmesRecordFile f =
             (NasaAmesRecordFile) recordEntry.getRecordFile();
         Entry entry = recordEntry.getEntry();
