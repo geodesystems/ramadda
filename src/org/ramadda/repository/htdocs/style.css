@@ -6220,6 +6220,11 @@ a span i:hover, a:hover span i {
     background:var(--highlight-background);
 }
 
+.ramadda-highlighted {
+    background: var(--color-mellow-yellow);
+    border:var(--basic-border);
+    padding:4px;
+}
 
 .ramadda-link {
     text-decoration: none;
