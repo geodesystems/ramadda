@@ -617,11 +617,8 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                     URL testUrl = new URL(fileArg);
                     continue;
                 } catch (Exception ignore) {
-                    handler.getRepository().getLogManager().logError(
-                        "No attachment uploaded file:" + fileArg);
-                    handler.getRepository().getLogManager().logError(
-                        "available files: " + fileMap);
-
+		    //                    handler.getRepository().getLogManager().logError("No attachment uploaded file:" + fileArg);
+		    //                    handler.getRepository().getLogManager().logError("available files: " + fileMap);
                     return false;
                 }
             }
