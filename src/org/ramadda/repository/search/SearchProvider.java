@@ -14,6 +14,7 @@ import org.ramadda.repository.output.XmlOutputHandler;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.sql.Clause;
 
@@ -500,10 +501,14 @@ public abstract class SearchProvider extends GenericTypeHandler {
             String remoteSearchUrl =
                 serverUrl + getSearchManager().URL_ENTRY_SEARCH.getPath()
                 + "?" + linkUrl;
-            String entriesXml = getStorageManager().readSystemResource(
-                                    new URL(remoteSearchUrl));
+	    IO.Result result = IO.doGetResult(new URL(remoteSearchUrl));
+	    if(result.getError()) {
+		getLogManager().logSpecial("Error doing remote search:" + remoteSearchUrl+" " + result.getResult());
+		return new ArrayList<Entry>();
+	    }
 
-            return getEntryManager().createRemoteEntries(request, serverInfo, entriesXml);
+
+            return getEntryManager().createRemoteEntries(request, serverInfo, result.getResult());
         }
     }
 
