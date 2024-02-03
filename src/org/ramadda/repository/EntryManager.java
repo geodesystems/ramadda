@@ -6350,6 +6350,10 @@ public class EntryManager extends RepositoryManager {
 	try {
 	    Element  root     = XmlUtil.getRoot(entriesXml);
 	    List<Element> elements = new ArrayList<Element>();
+	    if(root==null || root.getTagName()==null) {
+		getLogManager().logSpecial("Empty XML creating remote entries:" + serverInfo);
+		return entries;
+	    }
 
 	    //Is this a search result
 	    if(XmlUtil.getAttribute(root,ATTR_TYPE,"").equals("type_dummy")) {
@@ -6357,7 +6361,7 @@ public class EntryManager extends RepositoryManager {
 		for (int i = 0; i < children.getLength(); i++) {
 		    elements.add((Element) children.item(i));
 		}
-	    } else if(root.getTagName().equals(TAG_ENTRY)) {
+	    } else if(root.getTagName().equals(TAG_ENTRY)) {	
 		elements.add(root);
 	    } else {
 		System.err.println("Unknown remote entry xml:"+entriesXml);
