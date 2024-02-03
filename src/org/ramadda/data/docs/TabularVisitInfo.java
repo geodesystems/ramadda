@@ -58,6 +58,7 @@ public class TabularVisitInfo {
      */
     public TabularVisitInfo(Request request, Entry entry) {
         if (TabularTypeHandler.isTabular(entry)) {
+	    /*
             searchFields = new ArrayList<TabularSearchField>();
             for (String line :
                     StringUtil.split(
@@ -85,6 +86,7 @@ public class TabularVisitInfo {
             if (searchFields.size() == 0) {
                 searchFields = null;
             }
+	    */
         }
     }
 

@@ -963,7 +963,8 @@ public class TabularOutputHandler extends OutputHandler {
                              ARG_OUTPUT,
                              TabularOutputHandler.OUTPUT_XLS_JSON.getId());
 
-        List<String> charts = new ArrayList<String>();
+	/*  
+      List<String> charts = new ArrayList<String>();
         for (String line :
                 StringUtil.split(
                     entry.getStringValue(TabularTypeHandler.IDX_CHARTS, ""), "\n",
@@ -990,7 +991,7 @@ public class TabularOutputHandler extends OutputHandler {
             propsList.add("defaultCharts");
             propsList.add(JsonUtil.list(charts));
         }
-
+*/
         propsList.add("url");
         propsList.add(JsonUtil.quote(jsonUrl));
         propsList.add("layoutHere");

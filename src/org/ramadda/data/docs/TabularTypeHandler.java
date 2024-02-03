@@ -77,16 +77,16 @@ public class TabularTypeHandler extends ConvertibleTypeHandler {
     public static final int IDX_WIDTHS = IDX++;
 
     /** _more_ */
-    public static final int IDX_CHARTS = IDX++;
+    //    public static final int IDX_CHARTS = IDX++;
 
     /** _more_ */
-    public static final int IDX_SEARCHINFO = IDX++;
+    //    public static final int IDX_SEARCHINFO = IDX++;
 
     /** _more_ */
-    public static final int IDX_CONVERT = IDX++;
+    //    public static final int IDX_CONVERT = IDX++;
 
     /** _more_ */
-    public static final int IDX_LAST = IDX_CONVERT;
+    public static final int IDX_LAST = IDX_WIDTHS;
 
 
 
@@ -200,6 +200,10 @@ public class TabularTypeHandler extends ConvertibleTypeHandler {
         if ( !showTable && !showChart) {
             return null;
         }
+
+	if(true) {
+	    return getWikiManager().wikifyEntry(request,entry,"+section title={{name}}\n{{display_htmltable}}\n-section");
+	}
 
         return getTabularOutputHandler().getHtmlDisplay(request,
                 requestProps, entry);

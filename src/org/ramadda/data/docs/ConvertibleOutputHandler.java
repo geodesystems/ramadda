@@ -183,11 +183,12 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 (String) entry.getValue(ConvertibleTypeHandler.IDX_COMMANDS);
 
 	}
+	/*
 	if (!Utils.stringDefined(lastInput)) {
 	    if (entry.getTypeHandler().isType(TabularTypeHandler.TYPE_TABULAR)) {
-		lastInput = (String) entry.getValue(TabularTypeHandler.IDX_CONVERT);
+		lastInput = (String) entry.getValue("TabularTypeHandler.IDX_CONVERT);
 	    }
-        }
+	    }*/
 	if (!Utils.stringDefined(lastInput)) {
 	    lastInput = (String) entry.getValue("convert_commands");
 	}

@@ -177,9 +177,13 @@ priority="2"       >
 
 
      <column name="widths" type="string"  size="500" label="Column widths"  showinhtml="false" suffix="Comma separated list of column widths" group="Display"/>
-     <column name="charts" type="string"  size="500" rows="5" columns="60" label="Default charts"  showinhtml="false" suffix="Specify 1 or more default charts:&lt;br&gt;type=linechart|barchart|scatterplot, xAxisIndex=0, yAxisIndex=1, sheet=0, ... &lt;br&gt;..."/>
+<!--
+    <column name="charts" type="string"  size="500" rows="5" columns="60" label="Default charts"  showinhtml="false" suffix="Specify 1 or more default charts:&lt;br&gt;type=linechart|barchart|scatterplot, xAxisIndex=0, yAxisIndex=1, sheet=0, ... &lt;br&gt;..."/>
      <column name="search_fields" type="string"  size="2000" rows="5" columns="60" label="Search fields"  showinhtml="false" suffix="Specify 1 or more search fields"/>
-     <column name="convert_text" type="string"  size="2000" rows="5" columns="60" label="Convert Text"  showinhtml="false" group="Convert" cansearch="true"/>
+-->
+<!--
+    <column name="convert_text" type="string"  size="2000" rows="5" columns="60" label="Convert Text"  showinhtml="false" group="Convert" cansearch="true"/>
+    -->
  </type>
 
 
