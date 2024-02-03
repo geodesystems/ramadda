@@ -395,6 +395,11 @@ public class IO {
     }    
 
 
+    private static InputStream doMakeInputStream(Path path, boolean buffered, int tries) throws IOException {
+	return doMakeInputStream(path, buffered, tries, null);
+    }
+
+
     /**
      * _more_
      *
@@ -406,7 +411,8 @@ public class IO {
      *
      * @throws IOException _more_
      */
-    private static InputStream doMakeInputStream(Path path, boolean buffered, int tries)
+    private static InputStream doMakeInputStream(Path path, boolean buffered, int tries,
+						 HttpURLConnection[] connectionBuff)
 	throws IOException {
         checkFile(path.getPath());
         int         size = 8000;
@@ -435,8 +441,10 @@ public class IO {
 		}
                 if (connection instanceof HttpURLConnection) {
                     HttpURLConnection huc = (HttpURLConnection) connection;
+		    if(connectionBuff!=null) connectionBuff[0] = huc;
 		    //System.err.println("IO.doMakeInputStream: path=" + path);
 		    if(path.isMethodPost())  {
+			connection.setDoOutput(true);
 			huc.setRequestMethod(HTTP_METHOD_POST);
 		    }
 
@@ -455,8 +463,8 @@ public class IO {
 					       .HTTP_MOVED_PERM) || (response == HttpURLConnection
 								     .HTTP_SEE_OTHER)) {
                         String newUrl = connection.getHeaderField("Location");
-                        System.err.println("redirect from:" + url);
-                        System.err.println("redirect to:" + newUrl);
+			//                        System.err.println("redirect from:" + url);
+			//                        System.err.println("redirect to:" + newUrl);
                         //Don't follow too many redirects
                         if (tries > 10) {
                             throw new IllegalArgumentException(
@@ -464,8 +472,7 @@ public class IO {
                         }
                         //call this method recursively with the new URL
                         handlingRedirect = true;
-
-                        return doMakeInputStream(new IO.Path(path,newUrl), buffered, tries + 1);
+                        return doMakeInputStream(new IO.Path(path,newUrl), buffered, tries + 1,connectionBuff);
                     }
                 }
                 //              System.err.println ("OK: " + url);
@@ -1054,12 +1061,10 @@ public class IO {
     }
 
 
-    public static Result getHttpResult(Path path)
-	throws Exception {	
+    public static Result getHttpResult(Path path) throws Exception {	
 	URL url = new URL(path.getPath());
-
         checkFile(url);
-        HttpURLConnection connection =
+/*        HttpURLConnection connection =
             (HttpURLConnection) url.openConnection();
 	if(path.method.equals(HTTP_METHOD_POST)) 
 	    connection.setDoOutput(true);
@@ -1080,11 +1085,18 @@ public class IO {
                                           Integer.toString(path.body.length()));
             connection.getOutputStream().write(path.body.getBytes("UTF-8"));
         }
+*/
+	HttpURLConnection[] connection=new HttpURLConnection[]{null};
         try {
+
+	    InputStream inputStream = doMakeInputStream(path, true, 0,connection);
+	    BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+	    /*
             BufferedReader in = new BufferedReader(
 						   new InputStreamReader(
 									 connection.getInputStream(),
 									 "UTF-8"));
+	    */
 
             StringBuilder sb = new StringBuilder();
             String        line;
@@ -1093,10 +1105,11 @@ public class IO {
                 sb.append("\n");
             }
 
-            return new Result(connection,sb.toString());
+	    IO.close(inputStream);
+            return new Result(connection[0],sb.toString());
         } catch (Throwable exc) {
-            String error = readError(connection);
-            return new Result(connection,error, connection.getResponseCode(), true, exc);
+            String error = readError(connection[0]);
+            return new Result(connection[0],error, connection[0].getResponseCode(), true, exc);
         }
     }
 
