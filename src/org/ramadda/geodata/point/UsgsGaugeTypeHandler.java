@@ -189,7 +189,8 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
          */
         public boolean isMissingValue(BaseRecord record, RecordField field,
                                       String s) {
-            if (s.equals("Ice") || s.equals("Ssn")) {
+	    s = s.toLowerCase();
+            if (s.equals("ice") || s.equals("ssn") || s.equals("eqp")) {
                 return true;
             }
 
