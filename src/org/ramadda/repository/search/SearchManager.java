@@ -2916,6 +2916,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			+ URL_ENTRY_SEARCH.getPath() + "?"
 			+ linkUrl;
 
+		    if(Utils.stringDefined(serverInfo.getSearchRoot())) {
+			remoteSearchUrl+="&ancestor=" +serverInfo.getSearchRoot();
+		    }
+
 		    System.err.println("Remote URL:" + remoteSearchUrl);
 		    try {
 			String entriesXml =

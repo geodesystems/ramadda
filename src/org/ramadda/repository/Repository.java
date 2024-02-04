@@ -1658,8 +1658,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	if(Repository.debugInit)   System.err.println("Repository.init-5");
         loadResources();
 	if(Repository.debugInit)   System.err.println("Repository.init-6");
-        MyTrace.call2("Repository.loadResources");
-        getRegistryManager().checkApi();
 
         //Load in any other sql files from the command line
         for (String sqlFile : (List<String>) sqlLoadFiles) {
@@ -1693,6 +1691,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
 				  getIconUrl(ICON_PLUS));
 
         getLogManager().logInfo("RAMADDA started");
+
+
+        MyTrace.call2("Repository.loadResources");
+	getRegistryManager().checkApi();
+
 
 
 	if(Repository.debugInit)   System.err.println("Repository:calling StorageManager.doFinalInitialization");
@@ -6359,7 +6362,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                               getRepositoryDescription(),
                               getRepositoryEmail(),
                               getRegistryManager().isEnabledAsServer(),
-                              false);
+                              false,"");
     }
 
 

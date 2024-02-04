@@ -501,14 +501,16 @@ public abstract class Tables {
         public static final String COL_NODOT_ISREGISTRY =   "isregistry";
         public static final String COL_SELECTED =  NAME + ".selected";
         public static final String COL_NODOT_SELECTED =   "selected";
+        public static final String COL_SEARCHROOT =  NAME + ".searchroot";
+        public static final String COL_NODOT_SEARCHROOT =   "searchroot";	
 
         public static final String[] ARRAY = new String[] {
-            COL_URL,COL_TITLE,COL_DESCRIPTION,COL_EMAIL,COL_ISREGISTRY,COL_SELECTED
+            COL_URL,COL_TITLE,COL_DESCRIPTION,COL_EMAIL,COL_ISREGISTRY,COL_SELECTED,COL_SEARCHROOT
         };
         public static final String COLUMNS = SqlUtil.comma(ARRAY);
         public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
         public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final REMOTESERVERS table  = new  REMOTESERVERS();
+	public static final REMOTESERVERS table  = new  REMOTESERVERS();
     }
 
 
@@ -535,7 +537,7 @@ public abstract class Tables {
         public static final String COLUMNS = SqlUtil.comma(ARRAY);
         public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
         public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final SERVERREGISTRY table  = new  SERVERREGISTRY();
+	public static final SERVERREGISTRY table  = new  SERVERREGISTRY();
     }
 
 

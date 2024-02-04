@@ -340,9 +340,10 @@ CREATE TABLE  remoteservers (
         description varchar(10000),
         email varchar(200),
 	isregistry int,
-        selected int);
+        selected int,
+	searchroot varchar(1000));
 
-
+ALTER table remoteservers add column  searchroot varchar(1000);
 
 
 CREATE TABLE  localrepositories (
