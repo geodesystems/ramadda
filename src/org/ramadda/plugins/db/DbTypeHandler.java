@@ -191,6 +191,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     private int mapDotLimit=100;
     private boolean mapMarkersShow = true;
     private boolean mapPolygonsShow = true;    
+    private  String defaultMapProperties;
 
     /** _more_ */
     private String searchForLabel = "Search For";
@@ -268,6 +269,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 "mapLabelTemplatePrint", null);
 
 	mapDotLimit = Utils.getAttributeOrTag(tableNode,"mapDotLimit",mapDotLimit);
+	defaultMapProperties = Utils.getAttributeOrTag(tableNode,"mapProperties","").replace("\\n","\n");
+
 	mapMarkersShow = Utils.getAttributeOrTag(tableNode,"mapMarkersShow",mapMarkersShow);
 	mapPolygonsShow = Utils.getAttributeOrTag(tableNode,"mapPolygonsShow",mapPolygonsShow);		
         //Initialize this type handler with a string blob
@@ -2538,7 +2541,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 					HU.input("mapheight",request.getString("mapheight","500"),HU.SIZE_5)));
 		buffer.append(formEntry(request, "Map Properties:",
 					HU.hbox(
-						HU.textArea(ARG_DB_MAPPROPS, request.getString(ARG_DB_MAPPROPS,""), 5, 20),
+						HU.textArea(ARG_DB_MAPPROPS, request.getString(ARG_DB_MAPPROPS,defaultMapProperties), 5, 20),
 						"e.g.:<pre>strokeColor=red\nstrokeWidth=4\nfillColor=transparent\n</pre>")));
 
 	    }
@@ -5052,7 +5055,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    }
         }
 	
-	MapProperties mapProperties =   new MapProperties(request.getString(ARG_DB_MAPPROPS,""));
+
+	MapProperties mapProperties =   new MapProperties(request.getString(ARG_DB_MAPPROPS,defaultMapProperties));
 	for (List listValues : lists) {
 	    if(forPrint && listCnt>0) {
 		hdr.accept(listCnt);
@@ -5206,7 +5210,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 				      "blue",mapInfo);
 		    } else {
 			if(mapPolygonsShow && polygonColumn!=null) {
-			    map.addPolygon(dbid, polygonColumn.getString(values),mapInfo,null,mapProperties);
+			    map.addPolygon(dbid,
+					   polygonColumn.getString(values),mapInfo,null,mapProperties);
 			}
 			if(mapMarkersShow)
 			    map.addMarker(dbid, location.latitude, location.longitude, null,
