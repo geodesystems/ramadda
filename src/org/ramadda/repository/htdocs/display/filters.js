@@ -488,6 +488,43 @@ function RecordFilter(display,filterFieldId, properties) {
 		}
 	    }
 
+	    if(!this.hideFilterWidget && this.getProperty(this.getId()+".filterSuggest",false)) {
+		let widgetId = this.getFilterId(this.getId());
+		let widget = $("#" + widgetId);
+		if(widget.length) {
+		    widget.keyup(function(e) {
+			if(_this.suggestDialog)
+			    _this.suggestDialog.remove();
+			let input = $(this);
+			let v = input.val().toLowerCase();
+			let html = '';
+			_this.records.forEach(r=>{
+			    let rv=r.getValueFromField(_this.getId());
+			    if(!rv) return;
+			    rv =String(rv);
+			    let _rv = rv.toLowerCase();
+			    if(_rv.indexOf(v)>0) {
+				html+=HU.div([ATTR_CLASS,'ramadda-clickable',
+					      ATTR_STYLE,HU.css('white-space','nowrap','max-width','400px','overflow-x','hidden')],
+					      rv);
+			    }
+			});
+			if(html!='') {
+			    html = HU.div([ATTR_STYLE,HU.css('max-height','300px','overflow-y','auto','padding','5px')], html);
+			    _this.suggestDialog =
+				HU.makeDialog({content:html,my:'left top',at:'left bottom',anchor:input});
+			    _this.suggestDialog.find('.ramadda-clickable').click(function() {
+				_this.suggestDialog.remove();
+				_this.suggestDialog=null;
+				input.val($(this).html());
+				input.focus();
+			    });
+			}			    
+
+		    });
+		}
+	    }	    
+
 	    this.initDateWidget(inputFunc);
 	    let processDateSelect = (v)=>{
 		let now=new Date();

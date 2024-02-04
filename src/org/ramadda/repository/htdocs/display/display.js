@@ -1809,6 +1809,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'&lt;field&gt;.filterLabelVertical',ex:true},
 	{p:'filterLabelVertical',ex:true},				
 	{p:'&lt;field&gt;.filterByStyle',ex:'background:white;'},
+	{p:'&lt;field&gt;.filterSuggest',tt:'For text input popup a list of matching records',ex:true},
 	{p:'&lt;field&gt;.includeAll',ex:false},
 	{p:'&lt;field&gt;.filterSort',ex:false},
 	{p:'&lt;field&gt;.filterSortCount',ex:false},		
