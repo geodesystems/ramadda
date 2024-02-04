@@ -2499,7 +2499,8 @@ public abstract class Processor extends SeesvOperator {
             }
 
             for (String prop : new String[] {
-                "defaultView", "defaultOrder", "icon", "showEntryCreate",
+		    "defaultView", "mapProperties",
+		    "defaultOrder", "icon", "showEntryCreate",
                 "showFeedView", "showDateView", "showChartView",
 		"mapMarkersShow","mapPolygonsShow","mapDotLimit"
             }) {
