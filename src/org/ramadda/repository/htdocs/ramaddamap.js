@@ -41,7 +41,7 @@ function RepositoryMap(mapId, params) {
 	layerFillColor:"#ccc",
 	layerFillOpacity:0.3,	
 
-	highlightStrokeColor:"red",
+	highlightStrokeColor:"blue",
 	highlightFillColor:"match",	
 	highlightStrokeWidth:2,
 	highlightFillOpacity:0.5,
@@ -1085,7 +1085,8 @@ RepositoryMap.prototype = {
     },
     highlightFeature:function(feature,highlightStyle) {
 	let fs = feature.style;
-        feature.originalStyle = feature.style;
+	if(!feature.originalStyle)
+            feature.originalStyle = feature.style;
         feature.style = null;
 	let layer = feature.layer;
 	let highlight = $.extend({},highlightStyle??this.getLayerHighlightStyle(layer));
@@ -1214,19 +1215,17 @@ RepositoryMap.prototype = {
 	let style = {};
 	if(layer.style) $.extend(style, layer.style);
 	$.extend({},feature.style);
-
+	let fstyle = feature.originalStyle??feature.style??{};
 	let highlightStyle = this.getLayerHighlightStyle(layer);
 	$.extend(style, {
-	    strokeColor:this.params.selectStrokeColor ?? highlightStyle.strokeColor,
-	    strokeWidth: this.params.selectStrokeWidth ?? highlightStyle.strokeWidth,
+	    strokeColor:fstyle.highlightStrokeColor??this.params.selectStrokeColor ?? highlightStyle.strokeColor,
+	    strokeWidth:fstyle.highlightStrokeWidth?? this.params.selectStrokeWidth ?? highlightStyle.strokeWidth,
 	    strokeOpacity: this.params.selectStrokeOpacity ?? 0.75,
-	    fillColor:this.params.selectFillColor ??highlightStyle.fillColor,
-	    fillOpacity: this.params.selectFillOpacity ??highlightStyle.fillOpacity,
-	    pointRadius: this.params.selectPointRadius ??highlightStyle.pointRadius??fs.pointRadius,	    
+	    fillColor:fstyle.highlightFillColor??this.params.selectFillColor ??highlightStyle.fillColor,
+	    fillOpacity: fstyle.highlightFillOpacity??this.params.selectFillOpacity ??highlightStyle.fillOpacity,
+	    pointRadius: fstyle.highlightPointRadius??this.params.selectPointRadius ??highlightStyle.pointRadius??fs.pointRadius,	    
 	    fill: true,
 	});
-
-//	console.log(fs.pointRadius,this.params.selectPointRadius,highlightStyle.pointRadius);	 
 
 	if(this.params.changeSizeOnSelect && Utils.isDefined(style.pointRadius)) {
 	    style.pointRadius = Math.round(style.pointRadius*1.5);
