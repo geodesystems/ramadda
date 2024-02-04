@@ -459,6 +459,15 @@ public abstract class TextFile extends PointFile {
                     visitInfo.getRecordIO().putBackLine(line);
                     break;
                 }
+
+		//Check for the #fields=...
+		if(line.startsWith("#fields=")) {
+		    String fieldsLine=line.replaceAll("^# *fields=","");
+                    putProperty(PROP_FIELDS, fieldsLine);
+		    continue;
+		}
+
+
                 if ( !haveReadHeader) {
                     headerLines.add(line);
                     line = line.substring(1);
@@ -540,9 +549,11 @@ public abstract class TextFile extends PointFile {
 		    continue;
 		}
 
+		System.err.println("LINE:" + line);
 		//Check for the #fields=...
 		if(line.startsWith("#fields=")) {
 		    fieldsLine = line;
+		    System.err.println("FIELDS LINE:" + fieldsLine);
 		}
 
 		//Not sure if this should be here for all files but skip over any comment lines 
@@ -628,8 +639,13 @@ public abstract class TextFile extends PointFile {
 			}
 
 			if(!isDate) {
+			    //A hack for zip codes
+			    if(id.matches("(.*code.*)")) {
+				type = RecordField.TYPE_STRING;
+			    }
 			    if(type==null) type=defaultType;
 			    if(type==null) {
+				System.err.println("sample:" + sample);
 				if (Utils.isNumber(sample)) {
 				    type =RecordField.TYPE_DOUBLE;
 				} else {
