@@ -388,6 +388,16 @@ public class DbInfo {
         return columnsToUse;
     }
 
+    public List<Column> getRealColumnsToUse() {	
+	List<Column> tmp = new ArrayList<Column>();
+	for(Column c: columnsToUse) {
+	    if(!c.isSynthetic()) {
+		tmp.add(c);
+	    }
+	}
+	return tmp;
+    }
+
     /**
      * _more_
      *

@@ -3060,7 +3060,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
         int                       skip = request.get(ARG_DB_BULK_SKIP, 1);
         final DbInfo              dbInfo     = getDbInfo();
-	final List<Column> columns = dbInfo.getColumnsToUse();
+	final List<Column> columns = dbInfo.getRealColumnsToUse();
+
         final int[]               totalCnt       = { 0 };
 	final int[]               cnt        = { 0 };
 	final ArrayList<Object[]> valueList  = new ArrayList<Object[]>();
@@ -3096,7 +3097,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 			    for(int i=0;i<Math.max(toks.size(),columns.size());i++) {
 				String column = i<columns.size()?columns.get(i).getName():"MISSING";
 				String value= i<toks.size()?toks.get(i):"MISSING";				
-				error+="\n\t" + column+"="+value;
+				error+="\n\t" + i+":"+  column+"="+value;
 			    }
 			    error+="\n";
 			    System.err.println(error);
