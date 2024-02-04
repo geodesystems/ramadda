@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Feb  2 06:22:45 MST 2024";
+var build_date="RAMADDA build date: Sun Feb  4 06:22:31 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -5614,6 +5614,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'&lt;field&gt;.filterLabelVertical',ex:true},
 	{p:'filterLabelVertical',ex:true},				
 	{p:'&lt;field&gt;.filterByStyle',ex:'background:white;'},
+	{p:'&lt;field&gt;.filterSuggest',tt:'For text input popup a list of matching records',ex:true},
 	{p:'&lt;field&gt;.includeAll',ex:false},
 	{p:'&lt;field&gt;.filterSort',ex:false},
 	{p:'&lt;field&gt;.filterSortCount',ex:false},		
@@ -17447,6 +17448,43 @@ function RecordFilter(display,filterFieldId, properties) {
 		    });
 		}
 	    }
+
+	    if(!this.hideFilterWidget && this.getProperty(this.getId()+".filterSuggest",false)) {
+		let widgetId = this.getFilterId(this.getId());
+		let widget = $("#" + widgetId);
+		if(widget.length) {
+		    widget.keyup(function(e) {
+			if(_this.suggestDialog)
+			    _this.suggestDialog.remove();
+			let input = $(this);
+			let v = input.val().toLowerCase();
+			let html = '';
+			_this.records.forEach(r=>{
+			    let rv=r.getValueFromField(_this.getId());
+			    if(!rv) return;
+			    rv =String(rv);
+			    let _rv = rv.toLowerCase();
+			    if(_rv.indexOf(v)>0) {
+				html+=HU.div([ATTR_CLASS,'ramadda-clickable',
+					      ATTR_STYLE,HU.css('white-space','nowrap','max-width','400px','overflow-x','hidden')],
+					      rv);
+			    }
+			});
+			if(html!='') {
+			    html = HU.div([ATTR_STYLE,HU.css('max-height','300px','overflow-y','auto','padding','5px')], html);
+			    _this.suggestDialog =
+				HU.makeDialog({content:html,my:'left top',at:'left bottom',anchor:input});
+			    _this.suggestDialog.find('.ramadda-clickable').click(function() {
+				_this.suggestDialog.remove();
+				_this.suggestDialog=null;
+				input.val($(this).html());
+				input.focus();
+			    });
+			}			    
+
+		    });
+		}
+	    }	    
 
 	    this.initDateWidget(inputFunc);
 	    let processDateSelect = (v)=>{
