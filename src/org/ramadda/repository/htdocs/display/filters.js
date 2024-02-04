@@ -498,10 +498,13 @@ function RecordFilter(display,filterFieldId, properties) {
 			let input = $(this);
 			let v = input.val().toLowerCase();
 			let html = '';
+			let seen = {};
 			_this.records.forEach(r=>{
 			    let rv=r.getValueFromField(_this.getId());
 			    if(!rv) return;
 			    rv =String(rv);
+			    if(seen[rv]) return;
+			    seen[rv] = true;
 			    let _rv = rv.toLowerCase();
 			    if(_rv.indexOf(v)>0) {
 				html+=HU.div([ATTR_CLASS,'ramadda-clickable',
