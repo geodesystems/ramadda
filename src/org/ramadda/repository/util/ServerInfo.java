@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2023 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.repository.util;
@@ -94,6 +94,8 @@ public class ServerInfo implements Constants {
     /** _more_ */
     private boolean enabled = false;
 
+    private String searchRoot;
+
     /**
      * _more_
      *
@@ -123,7 +125,7 @@ public class ServerInfo implements Constants {
     public ServerInfo(String url, String hostname, int port, String title,
                       String description) {
         this(url, hostname, port, -1, "/repository", title, description, "",
-             false, false);
+             false, false,"");
     }
 
 
@@ -141,12 +143,12 @@ public class ServerInfo implements Constants {
     public ServerInfo(Element element) {
         //        System.err.println("server:" + XmlUtil.toString(element));
         this.hostname = XmlUtil.getGrandChildText(element, TAG_INFO_HOSTNAME,
-                "");
+						  "");
         this.port = Integer.parseInt(XmlUtil.getGrandChildText(element,
-                TAG_INFO_PORT, "80"));
+							       TAG_INFO_PORT, "80"));
 
         String sslPortString = XmlUtil.getGrandChildText(element,
-                                   TAG_INFO_SSLPORT, null);
+							 TAG_INFO_SSLPORT, null);
 
         if (sslPortString != null) {
             this.sslPort = Integer.parseInt(sslPortString);
@@ -154,13 +156,13 @@ public class ServerInfo implements Constants {
             this.sslPort = -1;
         }
         this.basePath = XmlUtil.getGrandChildText(element, TAG_INFO_BASEPATH,
-                "/repository");
+						  "/repository");
         this.title = XmlUtil.getGrandChildText(element, TAG_INFO_TITLE, "");
         this.description = XmlUtil.getGrandChildText(element,
-                TAG_INFO_DESCRIPTION, "");
+						     TAG_INFO_DESCRIPTION, "");
         this.email = XmlUtil.getGrandChildText(element, TAG_INFO_EMAIL, "");
         String tmp = XmlUtil.getGrandChildText(element, TAG_INFO_ISREGISTRY,
-                         "false");
+					       "false");
         isRegistry = Misc.equals(tmp, "true");
     }
 
@@ -182,7 +184,7 @@ public class ServerInfo implements Constants {
      */
     public ServerInfo(String url, String hostname, int port, int sslPort,
                       String basePath, String title, String description,
-                      String email, boolean isRegistry, boolean enabled) {
+                      String email, boolean isRegistry, boolean enabled, String root) {
         this.url         = url;
         this.hostname    = hostname;
         this.port        = port;
@@ -193,6 +195,7 @@ public class ServerInfo implements Constants {
         this.email       = email;
         this.isRegistry  = isRegistry;
         this.enabled     = enabled;
+	this.searchRoot = root;
     }
 
 
@@ -246,7 +249,7 @@ public class ServerInfo implements Constants {
      * @throws Exception _more_
      */
     public Element toXml(RepositoryBase repository, Document doc)
-            throws Exception {
+	throws Exception {
         Element info = XmlUtil.create(doc, TAG_INFO_REPOSITORY, null,
                                       new String[] {});
         XmlUtil.create(doc, TAG_INFO_DESCRIPTION, info, description, null);
@@ -522,6 +525,25 @@ public class ServerInfo implements Constants {
     public String getArgBase() {
         return getId().replaceAll("[^a-zA-Z0-9]+", "");
     }
+    /**
+       Set the SearchRoot property.
+
+       @param value The new value for SearchRoot
+    **/
+    public void setSearchRoot (String value) {
+	searchRoot = value;
+    }
+
+    /**
+       Get the SearchRoot property.
+
+       @return The SearchRoot
+    **/
+    public String getSearchRoot () {
+	if(searchRoot==null) return "";
+	return searchRoot;
+    }
+
 
 
 }
