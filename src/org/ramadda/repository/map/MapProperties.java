@@ -58,6 +58,10 @@ public class MapProperties {
     }
 
 
+    public String toString() {
+	return "map props:" +props.toString();
+    }
+
     public String getJson() {
 	return JsonUtil.mapAndGuessType(props);
     }
