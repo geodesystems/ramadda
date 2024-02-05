@@ -7177,7 +7177,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(!this.getProperty("showTooltips",true)) {
 		return;
 	    }
-	    let tooltip = tooltipArg || this.getProperty("tooltip");
+	    let tooltip = tooltipArg || this.getTooltip();
 	    if(tooltip==null) {
 		return;
 	    }
