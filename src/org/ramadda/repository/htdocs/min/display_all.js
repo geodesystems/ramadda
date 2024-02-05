@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Feb  5 10:43:09 MST 2024";
+var build_date="RAMADDA build date: Mon Feb  5 14:19:40 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -10982,7 +10982,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(!this.getProperty("showTooltips",true)) {
 		return;
 	    }
-	    let tooltip = tooltipArg || this.getProperty("tooltip");
+	    let tooltip = tooltipArg || this.getTooltip();
 	    if(tooltip==null) {
 		return;
 	    }
