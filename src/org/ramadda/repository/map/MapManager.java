@@ -1580,7 +1580,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 	    String entryIconImage = HU.img(iconUrl,"Click to view entry details",HU.attr("width",iconWidth));
 
             String navUrl = "javascript:" + map.getVariableName()
-		+ ".hiliteMarker(" + sqt(Utils.makeID(mapEntryId(entry))) + ");";
+		+ ".hiliteMarker(" + sqt(Utils.makeID(mapEntryId(entry))) + ",event);";
 
             if (cbx) {
                 String cbxId = "visible_" + suffix;
@@ -1593,9 +1593,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 					entryIconImage));
             catSB.append("&nbsp;");
             String label = getEntryDisplayName(entry);
-            catSB.append(HU.href(navUrl, label,
-                                        HU.attr(HU.ATTR_TITLE,
-						       label)));
+            catSB.append(HU.span(label,HU.attrs("onclick",navUrl,"class","ramadda-clickable",
+						HU.ATTR_TITLE,  label+HU.NL+"Shift-click to zoom")));
             catSB.append(HU.close(HU.TAG_DIV));
             numEntries++;
         }

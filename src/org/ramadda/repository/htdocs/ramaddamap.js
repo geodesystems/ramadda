@@ -4028,7 +4028,7 @@ RepositoryMap.prototype = {
         });
     },
 
-    hiliteMarker:  function(id) {
+    hiliteMarker:  function(id,event) {
         let mymarker = this.findMarker(id);
         if (!mymarker) {
             mymarker = this.findFeature(id);
@@ -4065,6 +4065,11 @@ RepositoryMap.prototype = {
         }
 
         this.showMarkerPopup(mymarker);
+	if(event && event.shiftKey) {
+	    this.setZoom(12);
+	}
+
+
     },
 
 
