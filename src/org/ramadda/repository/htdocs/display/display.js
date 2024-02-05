@@ -1708,7 +1708,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'displayHeaderSide',ex:'left'},
 	{p:'leftSideWidth',ex:'150px'},		
 	{label:'Tooltips'},
-	{p:'tooltip',doGetter:false,d:'\"${default}\"'},
+	{p:'tooltip',doGetter:false,ex:'\"${default}\"'},
 	{p:'tooltipDelay',d:1000},
 	{p:'tooltipEffect',d:'fadeIn'},
 	{p:'tooltipDuration',d:500},	
@@ -7177,7 +7177,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(!this.getProperty("showTooltips",true)) {
 		return;
 	    }
-	    let tooltip = tooltipArg || this.getTooltip();
+	    let tooltip = tooltipArg ?? this.getProperty('tooltip');
 	    if(tooltip==null) {
 		return;
 	    }

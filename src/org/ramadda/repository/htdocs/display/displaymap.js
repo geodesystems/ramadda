@@ -44,6 +44,9 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
         theMap: null
     });
 
+    //Default to a tooltip
+    if(!properties.tooltip) properties.tooltip='${default}';
+
     this.myycnt = ++ycnt;
     this.myName = "map " + (this.myycnt);
     const SUPER = new RamaddaDisplay(displayManager, id, type,   properties);
