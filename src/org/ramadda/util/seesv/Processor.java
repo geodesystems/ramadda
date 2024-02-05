@@ -2728,6 +2728,10 @@ public abstract class Processor extends SeesvOperator {
                 }
 
 
+		boolean doPolygonSearch ="true".equals(getDbProp(colId, "dopolygonsearch","false"));
+		if(doPolygonSearch)
+		    attrs.append(XmlUtil.attrs(new String[] {"dopolygonsearch","true"}));
+
 		boolean showMultiples ="true".equals(getDbProp(colId, "show_multiples","true"));
 		if(!showMultiples)
 		    attrs.append(XmlUtil.attrs(new String[] {"enumeration_multiples","false"}));
