@@ -3844,7 +3844,8 @@ public class WikiManager extends RepositoryManager
 		}
 
 
-                String title = getEntryDisplayName(child);
+                String title = getProperty(wikiUtil, props, "title."+child.getId(),
+					   getEntryDisplayName(child));
                 if (showicon) {
 		    title = getPageHandler().getEntryIconImage(request,  child) + " " + title;
                 }
