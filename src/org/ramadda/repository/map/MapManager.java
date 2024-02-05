@@ -1420,7 +1420,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 		geojson = mainEntry.getTypeHandler().applyTemplate(mainEntry, geojson, true);
 		//Check for any macros not added
 		if(geojson.indexOf("${")<0)  {
-		    map.addGeoJsonUrl(IO.getFileTail(geojson), geojson, true, "",true);
+		    map.addGeoJsonUrl(IO.getFileTail(geojson), geojson, true, "");
 		}
 	    }
 	}
@@ -1720,13 +1720,14 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 						     ShapefileOutputHandler.OUTPUT_GEOJSON
 						     .toString(), "formap", "true");
 				map.addGeoJsonUrl(mapEntry.getName(), url, true,
-						  ShapefileOutputHandler.makeMapStyle(request, mapEntry),true);
+						  ShapefileOutputHandler.makeMapStyle(request, mapEntry));
+
 
 			    } else if(mapEntry.getTypeHandler().isType("geo_geojson")) {
 				String url =
 				    request.entryUrl(getRepository().URL_ENTRY_GET, mapEntry).toString();
 				map.addGeoJsonUrl(
-						  mapEntry.getName(), url, true,"",true);
+						  mapEntry.getName(), url, true,"");
 				
 			    }
                         }

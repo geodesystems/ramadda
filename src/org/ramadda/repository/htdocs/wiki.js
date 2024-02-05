@@ -2233,6 +2233,7 @@ WikiEditor.prototype = {
 		{p:'highlightStrokeWidth',ex:''},
 		{p:'highlightFillOpacity',ex:''},
 
+		{p:'zoomToLayer',tt:'Zoom to the layer extent on load',ex:'false'},
 
 		{p:'popupWidth',ex:'200'},
 		{p:'popupHeight',ex:'200'},				

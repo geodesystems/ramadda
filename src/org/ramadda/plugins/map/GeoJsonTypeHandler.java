@@ -160,7 +160,7 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
 	    String url =
 		request.entryUrl(getRepository().URL_ENTRY_GET, entry).toString();
 	    map.addGeoJsonUrl(
-			      entry.getName(), url, true,"",true);
+			      entry.getName(), url, true,"");
 	}
         return super.addToMapSelector(request, entry, forEntry, map);
     }
@@ -185,7 +185,7 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
 
         map.addGeoJsonUrl(entry.getName(), url, true,
                           ShapefileOutputHandler.makeMapStyle(request,
-							      entry),true);
+							      entry));
 
         return false;
     }

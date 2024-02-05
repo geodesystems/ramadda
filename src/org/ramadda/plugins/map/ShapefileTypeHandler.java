@@ -338,7 +338,7 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
 				 ShapefileOutputHandler.OUTPUT_GEOJSON
 				 .toString(), "formap", "true");
 	    map.addGeoJsonUrl(entry.getName(), url, true,
-			      ShapefileOutputHandler.makeMapStyle(request, entry),true);
+			      ShapefileOutputHandler.makeMapStyle(request, entry));
 	}
         return super.addToMapSelector(request, entry, forEntry, map);
     }

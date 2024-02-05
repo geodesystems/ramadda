@@ -1400,9 +1400,10 @@ public class MapInfo {
     public void addKmlUrl(String name, String url, boolean canSelect,
                           String args) {
         name = name.replaceAll("'", " ");
+	boolean zoomTo = mapProps==null?true:Utils.getProperty(mapProps,"zoomToLayer",true);
         getJS().append(mapVarName + ".addKMLLayer(" + HU.squote(name) + ","
                        + HU.squote(url) + "," + canSelect + ",null,null,"
-                       + args + ");\n");
+                       + args  +",null,"+zoomTo+");\n");
 
     }
 
@@ -1415,14 +1416,16 @@ public class MapInfo {
      * @param canSelect _more_
      * @param args _more_
      */
-    public void addGeoJsonUrl(String name, String url, boolean canSelect,
-                              String args,boolean zoomTo) {
+    public void addGeoJsonUrl(String name, String url, boolean canSelect,String args) {
+
+	boolean zoomTo = mapProps==null?true:Utils.getProperty(mapProps,"zoomToLayer",true);
 	if(!Utils.stringDefined(args)) args = "null";
         getJS().append(HU.call(mapVarName + ".addGeoJsonLayer",
 			       HU.squote(name),
 			       HU.squote(url),
 			       ""+canSelect,
 			       "null","null",args,"null",""+zoomTo));
+	getJS().append("\n");
     }
 
 
