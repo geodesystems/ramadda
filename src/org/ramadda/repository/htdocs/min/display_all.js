@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Feb  5 14:19:40 MST 2024";
+var build_date="RAMADDA build date: Mon Feb  5 14:27:37 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -5513,7 +5513,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'displayHeaderSide',ex:'left'},
 	{p:'leftSideWidth',ex:'150px'},		
 	{label:'Tooltips'},
-	{p:'tooltip',doGetter:false,d:'\"${default}\"'},
+	{p:'tooltip',doGetter:false,ex:'\"${default}\"'},
 	{p:'tooltipDelay',d:1000},
 	{p:'tooltipEffect',d:'fadeIn'},
 	{p:'tooltipDuration',d:500},	
@@ -10982,7 +10982,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(!this.getProperty("showTooltips",true)) {
 		return;
 	    }
-	    let tooltip = tooltipArg || this.getTooltip();
+	    let tooltip = tooltipArg ?? this.getProperty('tooltip');
 	    if(tooltip==null) {
 		return;
 	    }
@@ -35678,6 +35678,9 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
     $.extend(this, {
         theMap: null
     });
+
+    //Default to a tooltip
+    if(!properties.tooltip) properties.tooltip='${default}';
 
     this.myycnt = ++ycnt;
     this.myName = "map " + (this.myycnt);
