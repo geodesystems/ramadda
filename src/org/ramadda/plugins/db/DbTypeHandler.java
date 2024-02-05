@@ -6221,6 +6221,15 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             SqlUtil.debug = false;
         }
 
+	Column latLonColumn = dbInfo.getLatLonColumn();
+	java.awt.Polygon polygon=null;
+	if(request.defined(ARG_SEARCH_POLYGON)) {
+	    String poly = request.getString(ARG_SEARCH_POLYGON,"").trim();
+	    List<Double> d = Utils.getDoubles(poly);
+	    if(d.size()>2)
+		polygon= GeoUtils.makePolygon(d);
+	}
+
         HashSet seenValue = new HashSet();
         try {
             long t1 = System.currentTimeMillis();
@@ -6282,6 +6291,16 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         valueIdx = column.readValues(myEntry, results,
                                 values, valueIdx);
 		    }
+		    if(polygon!=null && latLonColumn!=null) {
+			Double lat = (Double)values[latLonColumn.getOffset()];
+			Double lon = (Double)values[latLonColumn.getOffset()+1];
+			if(lat==null || lon==null) continue;
+			if(!GeoUtils.polygonContains(polygon,  lat, lon)) {
+			    System.err.println("skipping:" + lat +"  " + lon);
+			    continue;
+			}
+		    }
+
 		    if ( !isPostgres && (uniqueCols != null)) {
 			String key = "";
 			for (Column c : uniqueCols) {

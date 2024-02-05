@@ -284,7 +284,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         this.handlerOptions = $.extend({}, this.defaultHandlerOptions);
         OpenLayers.Control.prototype.initialize.apply(this, arguments);
         this.handler = new OpenLayers.Handler.Click(this, {
-            'click': this.trigger
+            'click': this.handleMapClick
         }, this.handlerOptions);
     },
     setLatLonZoomFld: function(lonFld, latFld, zoomFld, listener,onAlt) {
@@ -299,7 +299,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         this.theMap = map;
     },
 
-    trigger: function(e) {
+    handleMapClick: function(e) {
 	if(this.onAlt) {
 	    if(!e.altKey) return;
 	    let map = this.theMap;
@@ -325,6 +325,13 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             this.latFldId = "latfld";
             this.zoomFldId = "zoomfld";
         }
+	let map  =this.theMap;
+	if(map.polygonSelectorId) {
+	    map.addPolygonSelectionPoint(lonlat);
+	    return
+	}
+	
+
 	let lonFld = GuiUtils.getDomObject(this.lonFldId);
         let latFld = GuiUtils.getDomObject(this.latFldId);
         let zoomFld = GuiUtils.getDomObject(this.zoomFldId);
@@ -3371,7 +3378,10 @@ RepositoryMap.prototype = {
 	return this.clickHandler;
     },
 
-    setSelection:  function(argBase, doRegion, absolute) {
+    setSelection:  function(argBase, doRegion, absolute,polygonId) {
+	if(polygonId) {
+	    this.polygonSelectorId =polygonId.replace(/\./g,'_');
+	}
         this.selectRegion = doRegion;
         this.argBase = argBase??'';
         if (!GuiUtils) {
@@ -3663,7 +3673,42 @@ RepositoryMap.prototype = {
         }
     },
 
+    removePolygonSelectionLines:  function() {
+	if(this.selectionLines) {
+	    this.selectionLines.forEach(line=>{
+		this.removePolygon(line);
+	    });
+	    this.selectionLines = [];
+	}
+	if(this.polygonSelectorId)
+	    jqid(this.polygonSelectorId).val('');
+    },
+    addPolygonSelectionPoint:function(lonlat) {
+	if(!this.polygonSelectionPoints) this.polygonSelectionPoints=[];
+	this.polygonSelectionPoints.push(lonlat);
+	this.applyPolygonSelectionPoints();
+    },
+    applyPolygonSelectionPoints:function() {
+	this.removePolygonSelectionLines();
+	if(!this.selectionLines) this.selectionLines = [];
+	for(let i=0;i<this.polygonSelectionPoints.length-1;i++) {
+	    let p1 = this.polygonSelectionPoints[i];
+	    let p2 = this.polygonSelectionPoints[i+1];	    
+	    let line = this.addLine('s','', p1.lat, p1.lon,
+				    p2.lat, p2.lon,{strokeColor:'red',strokeWidth:2});
+	    this.selectionLines.push(line);
+	}
+	let text='';
+	this.polygonSelectionPoints.forEach(p=>{
+	    if(text!='') text+=',';
+	    text+=Utils.trimDecimals(p.lat,5)+','+Utils.trimDecimals(p.lon,5);
+	});
+	jqid(this.polygonSelectorId).val(text);
+    },
+
     selectionClear:  function() {
+	this.removePolygonSelectionLines();
+	this.polygonSelectionPoints=[];
         this.findSelectionFields();
 	HU.addToDocumentUrl("map_bounds","");
 

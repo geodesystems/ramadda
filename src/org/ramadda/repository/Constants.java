@@ -1219,6 +1219,8 @@ public interface Constants {
         "setfromchildren.recurse";
 
 
+    public static final String ARG_SEARCH_POLYGON = "search_polygon";
+
     /** _more_ */
     public static final String ARG_NORTH = "north";
 

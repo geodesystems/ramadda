@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.repository.map;
 
 
+import org.ramadda.repository.Constants;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.PageDecorator;
 import org.ramadda.repository.PageHandler;
@@ -692,9 +693,9 @@ public class MapInfo {
      *
      * @throws Exception _more_
      */
-    public String makeSelector(String arg, boolean popup, String[] nwse)
+    public String makeSelector(String arg, boolean popup, String[] nwse,Object...polygonInfo)
             throws Exception {
-        return makeSelector(arg, popup, nwse, "", "");
+        return makeSelector(arg, popup, nwse, "", "",polygonInfo);
     }
 
     /**
@@ -712,10 +713,10 @@ public class MapInfo {
      */
     public String makeSelector(String arg, boolean popup,
                                String[] nwseValues, String extraLeft,
-                               String extraTop)
+                               String extraTop,Object...polygonInfo)
             throws Exception {
         return makeSelector(arg, popup, nwseValues, nwseValues, extraLeft,
-                            extraTop);
+                            extraTop,polygonInfo);
     }
 
 
@@ -735,7 +736,7 @@ public class MapInfo {
      */
     public String makeSelector(String arg, boolean popup,
                                String[] nwseValues, String[] nwseView,
-                               String extraLeft, String extraTop)
+                               String extraLeft, String extraTop, Object...polygonInfo)
             throws Exception {
 
         boolean doRegion = true;
@@ -754,7 +755,14 @@ public class MapInfo {
         if (doRegion) {
             regions = getRegionSelectorWidget(arg);
         }
+	boolean doPolygon  = polygonInfo.length>0?(Boolean)polygonInfo[0]:false;
+	String polygon  = polygonInfo.length>1?(String)polygonInfo[1]:"";
         widget.append(getSelectorWidget(arg, nwseValues));
+	if(doPolygon) {
+	    widget.append(HU.input(Constants.ARG_SEARCH_POLYGON,
+				   polygon,
+				   HU.id(Constants.ARG_SEARCH_POLYGON)+HU.attr("placeholder","Polygon selection")));
+	}
         StringBuilder sb        = new StringBuilder();
         String        clearLink = getSelectorClearLink(HU.span("Clear",HU.clazz("ramadda-button")));
 	String header;
@@ -778,6 +786,9 @@ public class MapInfo {
                 ? "1"
                 : "0");
 
+	if(doPolygon) {
+	    initParams+=","+HU.squote(Constants.ARG_SEARCH_POLYGON);
+	}
         Hashtable<String, String> sessionProps =
             repository.getMapManager().getMapProps(request, null, null);
 
@@ -818,7 +829,7 @@ public class MapInfo {
             rightSide = sb.toString();
         }
 
-        addJS(getVariableName() + ".setSelection(" + initParams + ");\n");
+        addJS(HU.call(getVariableName() + ".setSelection",initParams));
 
         String mapStuff = HU.table(new Object[] { widget.toString(),
                 rightSide });

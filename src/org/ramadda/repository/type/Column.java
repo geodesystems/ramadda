@@ -20,6 +20,7 @@ import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
+import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.SqlUtil;
@@ -325,6 +326,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     /** _more_ */
     private boolean addNot = false;
 
+    private boolean doPolygonSearch  = false;
 
     /** _more_ */
     private boolean addFileToSearch = false;
@@ -609,6 +611,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         showEmpty  = getAttributeOrTag(element, "showempty", true);
 	showInFormFirst  = getAttributeOrTag(element, "showinformfirst", showInFormFirst);
 
+        doPolygonSearch     = getAttributeOrTag(element, "dopolygonsearch", false);
 	//If it is a latlon then always do the negation
         addNot     = getAttributeOrTag(element, "addnot", isType(DATATYPE_LATLON));
         addFileToSearch = getAttributeOrTag(element, "addfiletosearch",
@@ -2290,6 +2293,20 @@ public class Column implements DataTypes, Constants, Cloneable {
                                               Double.NaN)));
 
 
+	    if(request.defined(ARG_SEARCH_POLYGON)) {
+		String poly = request.getString(ARG_SEARCH_POLYGON,"").trim();
+		List<Double> d = Utils.getDoubles(poly);
+		if(d.size()>2) {
+		    Bounds b= new Bounds();
+		    for(int i=0;i<d.size();i+=2)
+			b.expand(d.get(i),d.get(i+1));
+		    north=b.getNorth();
+		    west=b.getWest();
+		    south=b.getSouth();
+		    east=b.getEast();
+		}
+	    }
+
 	    List<Clause> ns = new ArrayList<Clause>();
 	    List<Clause> ew = new ArrayList<Clause>();	    
 	    Clause top=null,bottom=null,right=null,left=null;
@@ -2823,13 +2840,13 @@ public class Column implements DataTypes, Constants, Cloneable {
                 lon = ((Double) values[offset + 1]).doubleValue();
             }
             MapInfo map = getRepository().getMapManager().createMap(request,
-                              entry, true, null);
+								    entry, true, null);
             widget = map.makeSelector(urlArg, true,
                                       new String[] { latLonOk(lat)
                     ? lat + ""
                     : "", latLonOk(lon)
                           ? lon + ""
-                          : "" });
+		    : "" });
         } else if (isType(DATATYPE_LATLONBBOX)) {
             String[] nwse = null;
             if (values != null) {
@@ -3526,14 +3543,14 @@ public class Column implements DataTypes, Constants, Cloneable {
             MapInfo map = getRepository().getMapManager().createMap(request,
                               entry, true, null);
             widget = map.makeSelector(searchArg, true, nwseValues, nwseView,
-                                      "", "");
+                                      "", "",doPolygonSearch,request.getString(ARG_SEARCH_POLYGON,""));
         } else if (isType(DATATYPE_LATLONBBOX)) {
             String[] nwseValues = getNWSE(request, null, searchArg, false);
             String[] nwseView   = getNWSE(request, entry, searchArg, true);
             MapInfo map = getRepository().getMapManager().createMap(request,
                               entry, true, null);
             widget = map.makeSelector(searchArg, true, nwseValues, nwseView,
-                                      "", "");
+                                      "", "",doPolygonSearch,request.getString(ARG_SEARCH_POLYGON,""));
         } else if (isDate()) {
             List dateSelect = new ArrayList();
             dateSelect.add(new TwoFacedObject(msg("Relative Date"), ""));
