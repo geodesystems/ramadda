@@ -27,6 +27,8 @@ import java.util.regex.Pattern;
 
 import ucar.unidata.xml.XmlUtil;
 
+import java.awt.Polygon;
+
 import java.io.*;
 
 import java.net.URL;
@@ -1520,6 +1522,9 @@ public class GeoUtils {
 	return null;
     }
 
+
+
+
     private static String getNeighborhoodInner(double lat, double lon)
 	throws Exception {
 	initKeys();
@@ -1911,6 +1916,42 @@ public class GeoUtils {
     }
 
 
+    private static int POLYGON_SCALE = 1000;
+    
+    /*
+      Array of <latitude,longitude,latitude,longitude>
+      this applies the POLYGON_SCALE value to scale the points up to integer
+     */
+    public static Polygon makePolygon(double[]d) {
+	int[]x=new int[d.length/2];
+	int[]y=new int[d.length/2];	
+	for(int i=0;i<d.length;i+=2) {
+	    y[i/2] = (int)(d[i]*POLYGON_SCALE);
+	    x[i/2] = (int)(d[i+1]*POLYGON_SCALE);	    
+
+	}
+	return new Polygon(x,y,x.length);
+    }
+    /*
+      List of <latitude,longitude,latitude,longitude>
+      this applies the POLYGON_SCALE value to scale the points up to integer
+     */
+    public static Polygon makePolygon(List<Double>d) {
+	int[]x=new int[d.size()/2];
+	int[]y=new int[d.size()/2];	
+	for(int i=0;i<d.size();i+=2) {
+	    y[i/2] = (int)(d.get(i)*POLYGON_SCALE);
+	    x[i/2] = (int)(d.get(i+1)*POLYGON_SCALE);	    
+
+	}
+	return new Polygon(x,y,x.length);
+    }
+    
+    public static boolean polygonContains(Polygon polygon, double lat,double lon) {
+	return polygon.contains(POLYGON_SCALE*lon,POLYGON_SCALE*lat);
+
+    }
+	
 
     /**
      * _more_
@@ -1920,6 +1961,13 @@ public class GeoUtils {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+	int scale = 1000;
+	List<Double> d = Utils.getDoubles("44.992342,-110.65619,44.430205,-88.507752,32.875383,-87.980408,29.874414,-98.351502,33.537222,-110.65619,43.989213,-112.06244");
+	
+	Polygon poly = makePolygon(d);
+	System.err.println(polygonContains(poly,40,-104));
+	
+	if(true) return;
 	for(String s: args) {
 	    System.err.println(decodeLatLon(s));
 	}
