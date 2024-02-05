@@ -549,7 +549,6 @@ public abstract class TextFile extends PointFile {
 		    continue;
 		}
 
-		System.err.println("LINE:" + line);
 		//Check for the #fields=...
 		if(line.startsWith("#fields=")) {
 		    fieldsLine = line;
@@ -645,7 +644,6 @@ public abstract class TextFile extends PointFile {
 			    }
 			    if(type==null) type=defaultType;
 			    if(type==null) {
-				System.err.println("sample:" + sample);
 				if (Utils.isNumber(sample)) {
 				    type =RecordField.TYPE_DOUBLE;
 				} else {
