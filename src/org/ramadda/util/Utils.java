@@ -2750,7 +2750,7 @@ public class Utils extends IO {
 
     /** _more_ */
     private static final String[] DATE_PATTERNS = { "\\d\\d\\d\\d-\\d\\d-\\d\\d",
-	"(january|february|march|april|may|june|july|august|septembe|october|november|december).*" };
+	"(january|february|march\\s|april|may\\s|june|july|august|septembe|october|november|december).*" };
 
     /**
      * _more_
