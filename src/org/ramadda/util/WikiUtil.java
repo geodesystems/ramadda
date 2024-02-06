@@ -3415,7 +3415,10 @@ public class WikiUtil implements HtmlUtilsConstants {
                 if (starCnt > 0) {
                     if (starCnt > ulCnt) {
                         while (starCnt > ulCnt) {
-                            buff.append("<ul>\n");
+			    if(ulCnt==0)
+				buff.append("<ul class=ramadda-ul>\n");				
+			    else
+				buff.append("<ul>\n");
                             ulCnt++;
                         }
                     } else {
