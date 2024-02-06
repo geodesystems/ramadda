@@ -630,21 +630,26 @@ public abstract class TextFile extends PointFile {
 			if(type!=null) isDate = type.trim().equals("date");
 			else {
 			    isDate = id.matches(
-				       "^(timestamp|week_ended|date|month|year|as_of|end_date|per_end_date|obs_date|quarter)$");
-			//                    System.err.println("id:" + id +" isDate:" + isDate);
+						"^(week_ended|date|month|year|as_of|end_date|per_end_date|obs_date|quarter)$");
 			    if ( !isDate) {
 				isDate = Utils.isDate(sample);
 			    }
 			}
-
 			if(!isDate) {
 			    //A hack for zip codes
 			    if(id.matches("(.*code.*)")) {
 				type = RecordField.TYPE_STRING;
 			    }
+			    if(id.matches(".*timestamp.*")) {
+				type = RecordField.TYPE_STRING;
+			    }
+			    if(id.matches(".*phone.*")) {
+				type = RecordField.TYPE_STRING;
+			    }			    
 			    if(type==null) type=defaultType;
 			    if(type==null) {
 				if (Utils.isNumber(sample)) {
+				    System.err.println("is number:" + id +" sample:" + sample);
 				    type =RecordField.TYPE_DOUBLE;
 				} else {
 				    type  = RecordField.TYPE_STRING;
