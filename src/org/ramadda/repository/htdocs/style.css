@@ -343,8 +343,12 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
     background:var(--highlight-background);
 }
 
+.ramadda-ul {
+    padding-left:15px;
+}
+
 .ramadda-bullet {
-    margin-bottom:2px;
+    margin-bottom:4px;
 }
 
 .ramadda-link-bar {
@@ -3023,6 +3027,13 @@ td.entry-table-block {
     overflow-y: auto;
 }
 
+.ramadda-toggler  {
+    padding-left:4px; padding-right:4px; display: table-cell;
+}
+
+.ramadda-toggled {
+    padding-left:4px; padding-right:4px; display: table-cell;
+}
 
 .ramadda-flip-card {
   display:inline-block;
