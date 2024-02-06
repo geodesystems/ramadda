@@ -478,7 +478,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		fieldId:this.getFieldId()
 	    };
 
-	    if(!this.hideFilterWidget && this.getProperty(this.getId()+".filterLive",this.getProperty('fitlerLive',false))) {
+	    if(!this.hideFilterWidget && this.getProperty(this.getId()+".filterLive",this.getProperty('filterLive',false))) {
 		let widgetId = this.getFilterId(this.getId());
 		let widget = $("#" + widgetId);
 		if(widget.length) {
