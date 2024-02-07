@@ -496,7 +496,7 @@ indexField="depth" fields="salinity,density"
 
 
   <property name="record.properties">
-    csvcommands1=-indateformat,yyyy-MM-dd'T'HH:mm:ss,,-jsonjoin,data.surfaceTemp\,data.wind\,data.waves,timestamp,:...000Z,,NaN,-columnsbefore,0,timestamp_comma_degrees,-sortby,timestamp,up,date,-addheader,timestamp.format {yyyy-MM-dd'T'HH:mm:ss} degrees.unit C timestamp.type date peakperiod.label {Peak Period} meandirectionalspread.label {Mean Directional Spread} meandirection.label {Mean Direction} peakdirection.label {Peak Direction} timestamp.label {Timestamp} meanperiod.label {Mean Period}  significantwaveheight.label {Significant Wave Height} peakdirectionalspread.label {Peak Directional Spread} ,-print
+    csvcommands1=-goeasy,-indateformat,yyyy-MM-dd'T'HH:mm:ss,,-jsonjoin,data.surfaceTemp\,data.wind\,data.waves,timestamp,:...000Z,,NaN,-columnsbefore,0,timestamp_comma_degrees,-sortby,timestamp,up,date,-addheader,timestamp.format {yyyy-MM-dd'T'HH:mm:ss} degrees.unit C timestamp.type date peakperiod.label {Peak Period} meandirectionalspread.label {Mean Directional Spread} meandirection.label {Mean Direction} peakdirection.label {Peak Direction} timestamp.label {Timestamp} meanperiod.label {Mean Period}  significantwaveheight.label {Significant Wave Height} peakdirectionalspread.label {Peak Directional Spread} ,-print
   </property>
 
 
