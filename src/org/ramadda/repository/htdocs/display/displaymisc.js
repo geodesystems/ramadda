@@ -1149,8 +1149,9 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 
 	{p:'barLabelInside',ex:'false'},
         {p:'barStyle',ex:'background:red;',tt:'Bar style'},			
+	{p:'tableStyle',ex:'border:1px solid #ccc;'},
 	{p:'tableHeaderStyle'},
-	{p:'tableCellStyle'},	
+ 	{p:'tableCellStyle'},	
 	{p:'showAddRow',ex:'true'},
     ];
 
@@ -1304,7 +1305,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 				this.getProperty('tableCellStyle')+'}');
 	    }
 
-	    html +=HU.openTag('table',[CLASS,"ramadda-table stripe", 'width','100%',ID,this.domId(ID_TABLE)]);
+	    html +=HU.openTag('table',[CLASS,"ramadda-table stripe", 'width','100%',ID,this.domId(ID_TABLE),ATTR_STYLE,this.getTableStyle('')]);
 	    html+='\n';
 	    let headerAttrs = [STYLE,"white-space:nowrap;background:#efefef;padding:5px; font-weight:bold;"];
 	    headerAttrs = [];
