@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Feb  7 00:53:25 MST 2024";
+var build_date="RAMADDA build date: Wed Feb  7 00:58:26 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -29817,8 +29817,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TEMPLATE, properties);
     let myProps = [
 	{label:"Template"},
-	{p: "template",ex:' '
-},
+	{p: "template",d:'${default}'},
 	{p:"toggleTemplate",ex:"",tt:'Used as the toggle label for hiding/showing the main template'},
 	{p:"headerTemplate",ex:"... ${totalCount} ... ${selectedCount}"},
 	{p:"footerTemplate",ex:"... ${totalCount} ... ${selectedCount}"},
@@ -29904,7 +29903,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    }	    
 	    let uniqueFields  = this.getFieldsByIds(fields, this.getProperty("uniqueFields"));
 	    let uniqueMap ={};
-	    let template = this.getTemplate("");
+	    let template = this.getTemplate();
 	    let toggleTemplate = this.getToggleTemplate();
 	    let select = this.getProperty("select","all");
 	    let selected = [];
