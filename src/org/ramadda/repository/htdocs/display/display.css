@@ -46,6 +46,15 @@ a.display-container {
 }
 
 
+.display-htmltable-row {
+    border-bottom:var(--basic-border) !important;
+}
+
+table.dataTable {
+  border-collapse: unset !important;
+}
+
+
 .display-htmltable-category {
     font-weight:bold;
 }

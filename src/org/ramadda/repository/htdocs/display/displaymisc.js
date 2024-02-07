@@ -1476,7 +1476,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		    aggIds.push(aggId);
 		}
 
-		let clazz =  "display-htmltable-row  search-component";
+		let clazz =  "display-htmltable-row";
 		columns = [];
 		//Add the place holder for the colored rows
 		if(colorRowBy && !colorFullRow) {
