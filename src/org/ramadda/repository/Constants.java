@@ -244,10 +244,12 @@ public interface Constants {
     public static final String ICON_NEW = "fas fa-plus";
 
     /** _more_ */
-    public static final String ICON_PLUS = "fas fa-plus-square";
+    //    public static final String ICON_PLUS = "fas fa-plus-square";
+    public static final String ICON_PLUS = "fa-regular fa-square-plus" ;    
+
 
     /** _more_ */
-    public static final String ICON_MINUS = "fas fa-minus-square";
+    public static final String ICON_MINUS = "fa-regular fa-square-minus";
 
     /** _more_ */
     public static final String ICON_PROGRESS = "/icons/progress.gif";
