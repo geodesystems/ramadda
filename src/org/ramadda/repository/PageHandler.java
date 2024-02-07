@@ -2568,7 +2568,7 @@ public class PageHandler extends RepositoryManager {
      */
     public String getBreadCrumbs(Request request, Entry entry)
             throws Exception {
-        return getBreadCrumbs(request, entry, null, null, 80);
+        return getBreadCrumbs(request, entry, null, null, 80,-1);
     }
 
 
@@ -2585,7 +2585,7 @@ public class PageHandler extends RepositoryManager {
      */
     public String getBreadCrumbs(Request request, Entry entry, Entry stopAt)
             throws Exception {
-        return getBreadCrumbs(request, entry, stopAt, null, 80);
+        return getBreadCrumbs(request, entry, stopAt, null, 80,-1);
     }
 
 
@@ -2603,7 +2603,7 @@ public class PageHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public String getBreadCrumbs(Request request, Entry entry, Entry stopAt,
-                                 RequestUrl requestUrl, int lengthLimit)
+                                 RequestUrl requestUrl, int lengthLimit,int maxCount)
             throws Exception {
         if (entry == null) {
             return BLANK;
@@ -2619,6 +2619,9 @@ public class PageHandler extends RepositoryManager {
         List<Entry> parents         = new ArrayList<Entry>();
         int         totalNameLength = 0;
         while (parent != null) {
+	    if(maxCount>=0 && parents.size()>=maxCount-1) {
+		break;
+	    }
             parents.add(parent);
             String name = parent.getName();
             totalNameLength += name.length();

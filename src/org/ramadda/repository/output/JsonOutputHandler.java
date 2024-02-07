@@ -531,7 +531,7 @@ public class JsonOutputHandler extends OutputHandler {
                 JsonUtil.quoteAttr(items, "breadcrumbs",
                                    getPageHandler().getBreadCrumbs(request,
                                        entry.getParentEntry(), null, null,
-                                       60));
+								   60,-1));
             }
         }
 

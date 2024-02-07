@@ -1912,7 +1912,7 @@ public class Admin extends RepositoryManager {
                     HU.colspan(
                         getPageHandler().getBreadCrumbs(
                             request, entry, null,
-                            getRepository().URL_ACCESS_FORM, 80), 3)));
+                            getRepository().URL_ACCESS_FORM, 80,-1), 3)));
             List<Permission> permissions =
                 (List<Permission>) idToPermissions.get(id);
             for (Permission permission : permissions) {

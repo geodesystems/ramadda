@@ -1927,8 +1927,10 @@ public class HtmlOutputHandler extends OutputHandler {
 		Object[] values = entry.getValues();	
 		EntryLink entryLink = showEntryDetails?getEntryManager().getAjaxLink(request, entry, name):null;
 		StringBuilder toggle = new StringBuilder();
-		HU.makeToggleInline(toggle,"",getPageHandler().getBreadCrumbs(request,
-									      entry.getParentEntry())+HU.space(1),false,"title","Click to view ancestors");
+		//Limit to 4 ancestors
+		HU.makeToggleInline(toggle,"",
+				    getPageHandler().getBreadCrumbs(request, entry.getParentEntry(),null,null,80,4)+
+				    HU.space(1),false,"title","Click to view ancestors");
 
 		if(entryLink!=null) {
 		    HU.span(toggle,
