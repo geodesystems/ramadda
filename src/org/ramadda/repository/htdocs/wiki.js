@@ -2031,6 +2031,7 @@ WikiEditor.prototype = {
 	    {p:'first',ex:'entryid1,entryid2,entryid3..',tt:'comma separated list of entry ids to use first'},
 	    {p:'last',ex:'entryid1,entryid2,entryid3..',tt:'comma separated list of entry ids to use last'},
 	    {p:'max',ex:'number of entries to use',tt:'max number of entries to use'},
+	    {p:'ignoreRequestOrderBy',ex:'true',tt:'If showing multiple lists in one page this keeps one list sort from affecting this list sort'},	    
 	];
 
 	this.wikiAttributesFromServer = null;

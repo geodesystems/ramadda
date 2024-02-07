@@ -6291,7 +6291,9 @@ public class WikiManager extends RepositoryManager
         String sort = null;
 
         if (request.exists(ARG_ORDERBY)) {
-            sort = request.getString(ARG_ORDERBY, ORDERBY_NAME);
+	    if(!getProperty(wikiUtil,props,"ignoreRequestOrderBy",false)) {
+		sort = request.getString(ARG_ORDERBY, ORDERBY_NAME);
+	    }
         }
         if (sort == null) {
             sort = getProperty(wikiUtil, props, attrPrefix + ATTR_SORT_BY,
