@@ -1131,6 +1131,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	{p:'colorHeaderTemplate',tt:'Template to show in row color header'},
 	{p:'colorHeaderStyle',tt:'CSS for color header. defaults to rotated text'},	
         {p:'showBar',ex:'true',tt:'Default show bar'},
+        {p:'highlightFilterText',ex:'true',tt:'Highlight any filter text'},	
         {p:'&lt;field&gt;.nowrap',ex:'true',tt:"Don't wrap the column"},
         {p:'&lt;field&gt;.width',ex:'30%',tt:"Column width"},
         {p:'&lt;field&gt;.template',ex:'foo:${value}',tt:"Record template"},		
@@ -1159,7 +1160,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	makeColumn:function(record,field,attrs,v) {
 	    return HU.td(attrs,v);
 	},
-	handleColumn:function(fields,aggByField,field,record,v,tdAttrs) {
+	handleColumn:function(fields,aggByField,field,record,v,tdAttrs,matchers) {
 	    if(!this.columnTemplates) {
 		this.columnTemplates = {};
 		fields.forEach((f,idx)=>{
@@ -1174,7 +1175,14 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    if(!aggByField) {
 		let attrs=[...tdAttrs];
 		attrs.push('field-id',field.getId(),'record-id',record.getId(),'record-index',record.rowIndex);
-	
+		if(matchers) {
+		    let sv = String(v);
+		    matchers.forEach(h=>{
+			sv  = h.highlight(sv,field.getId());
+		    });
+		    v = sv;
+		}
+
 		return this.makeColumn(record,field,attrs,v);
 	    }
 	    if(field.getId() != aggByField.getId()) {
@@ -1491,6 +1499,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		}
 		this.recordMap[record.rowIndex] = record;
 		this.recordMap[record.getId()] = record;
+		let matchers = this.getHighlightFilterText()?this.getFilterTextMatchers():null;
+		
 		fields.forEach((f,idx)=>{
 		    let value = d[f.getIndex()];
 		    let svalue = String(value);
@@ -1557,7 +1567,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 			let td = this.handleColumn(fields,aggByField,f,record,this.formatNumber(value,f.getId()), tdAttrs);
 			addColumn(td,value,f);
 		    } else {
-			addColumn(this.handleColumn(fields,aggByField,f,record,sv,tdAttrs),null,f);
+			addColumn(this.handleColumn(fields,aggByField,f,record,sv,tdAttrs,matchers),null,f);
 		    }
 		    prefix="";
 		});

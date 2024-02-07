@@ -6000,46 +6000,6 @@ function Div(contents, clazz) {
 })(jQuery);
 
 
-function TextMatcher (pattern) {
-    this.regexps=[];
-    if(pattern) {
-        pattern = pattern.trim();
-    }
-    if(pattern&& pattern.length>0) {
-        pattern = pattern.replace(/\./g,"\\.");
-        if(pattern.startsWith('"') && pattern.endsWith('"')) {
-            pattern  = pattern.replace(/^"/,"");
-            pattern  = pattern.replace(/"$/,"");
-            this.regexps.push(new RegExp("(" + pattern + ")","ig"));
-        } else {
-            pattern.split(" ").map(p=>{
-                p = p.trim();
-                this.regexps.push(new RegExp("(" + p + ")","ig"));
-            });
-        }
-    }   
-    $.extend(this, {
-        pattern: pattern,
-        hasPattern: function() {
-            return this.regexps.length>0;
-        },
-        highlight: function(text) {
-            for(var i=0;i<this.regexps.length;i++) {
-                text  =  text.replace(this.regexps[i], "<span style=background:yellow;>$1</span>");
-            }
-            return text;
-        },
-        matches: function(text) {
-            if(this.regexps.length==0) return true;
-            text  = text.toLowerCase();
-            for(var i=0;i<this.regexps.length;i++) {
-                if(!text.match(this.regexps[i])) return false;
-            }
-            return true;
-        }
-    });
-
-}
 
 
 function number_format(number, decimals,debug) {

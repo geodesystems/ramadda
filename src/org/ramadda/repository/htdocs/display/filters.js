@@ -1008,7 +1008,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		}
 
 		attrs.push("istext",this.isText);
-                widget =HtmlUtils.input("",dfltValue,attrs);
+                widget =HU.input("",dfltValue,attrs);
 		let values=fieldMap[this.getId()].values;
 		let seen = {};
 		records.map(record=>{
@@ -1049,6 +1049,9 @@ function RecordFilter(display,filterFieldId, properties) {
 	    if(!show) widget=HU.div([ATTR_STYLE,'display:none;'], widget);
 
 	    return widget;
+	},
+	getWidgetId:function() {
+	    return this.widgetId;
 	},
 	getEnums: function(records) {
 	    let counts = {};
@@ -1213,3 +1216,46 @@ function MonthFilter(param) {
     });
 }
 
+
+function TextMatcher (pattern,myId) {
+    this.myId = myId;
+    this.regexps=[];
+    if(pattern) {
+        pattern = pattern.trim();
+    }
+    if(pattern&& pattern.length>0) {
+        pattern = pattern.replace(/\./g,"\\.");
+        if(pattern.startsWith('"') && pattern.endsWith('"')) {
+            pattern  = pattern.replace(/^"/,"");
+            pattern  = pattern.replace(/"$/,"");
+            this.regexps.push(new RegExp("(" + pattern + ")","ig"));
+        } else {
+            pattern.split(" ").map(p=>{
+                p = p.trim();
+                this.regexps.push(new RegExp("(" + p + ")","ig"));
+            });
+        }
+    }   
+    $.extend(this, {
+        pattern: pattern,
+        hasPattern: function() {
+            return this.regexps.length>0;
+        },
+        highlight: function(text,id) {
+	    if(id && this.myId && id!=this.myId) return text;
+            for(var i=0;i<this.regexps.length;i++) {
+                text  =  text.replace(this.regexps[i], "<span style=background:yellow;>$1</span>");
+            }
+            return text;
+        },
+        matches: function(text) {
+            if(this.regexps.length==0) return true;
+            text  = text.toLowerCase();
+            for(var i=0;i<this.regexps.length;i++) {
+                if(!text.match(this.regexps[i])) return false;
+            }
+            return true;
+        }
+    });
+
+}

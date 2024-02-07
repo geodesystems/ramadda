@@ -3857,12 +3857,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(this.filters) {
 		for(let filterIdx=0;filterIdx<this.filters.length;filterIdx++) {
 		    let filter = this.filters[filterIdx];
-		    if(!filter.field)continue;
-		    let widget =$("#" + this.getDomId("filterby_" + filter.field.getId())); 
-		    if(!widget.val || widget.val()==null) continue;
-		    let value = widget.val()||"";
-		    if(value.trim()=="") continue;
-		    highlight.push(new TextMatcher(value));
+		    let widget =jqid(filter.getWidgetId());
+		    if(widget.length==0 || !widget.val || widget.val()==null) continue;
+		    let value = widget.val()??"";
+		    if(!Utils.stringDefined(value)) continue;
+		    let id = filter.getId();
+		    if(id=='_text_') id=null;
+		    highlight.push(new TextMatcher(value,id));
 		}
 	    }
 	    return highlight;
