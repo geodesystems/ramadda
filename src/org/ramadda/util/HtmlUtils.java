@@ -5321,7 +5321,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @param visible _more_
      */
     public static void makeToggleInline(Appendable sb, String label,
-                                        String content, boolean visible) {
+                                        String content, boolean visible,String...extraAttrs) {
 
         try {
             String hideImg = inlineHideImageUrl;
@@ -5351,6 +5351,9 @@ public class HtmlUtils implements HtmlUtilsConstants {
                                               "toggleblocklabellink"));
 
             //        sb.append(RepositoryManager.tableSubHeader(link));
+	    if(extraAttrs.length>0) {
+		link = HtmlUtils.span(link,HtmlUtils.attrs(extraAttrs));
+	    }
             sb.append(link);
             open(sb, TAG_SPAN, "class", "hideshowblock", "id", id, "style",
                  "display:inline;visibility:visible");
