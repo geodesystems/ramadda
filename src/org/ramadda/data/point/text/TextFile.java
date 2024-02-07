@@ -552,7 +552,6 @@ public abstract class TextFile extends PointFile {
 		//Check for the #fields=...
 		if(line.startsWith("#fields=")) {
 		    fieldsLine = line;
-		    System.err.println("FIELDS LINE:" + fieldsLine);
 		}
 
 		//Not sure if this should be here for all files but skip over any comment lines 
@@ -649,7 +648,6 @@ public abstract class TextFile extends PointFile {
 			    if(type==null) type=defaultType;
 			    if(type==null) {
 				if (Utils.isNumber(sample)) {
-				    System.err.println("is number:" + id +" sample:" + sample);
 				    type =RecordField.TYPE_DOUBLE;
 				} else {
 				    type  = RecordField.TYPE_STRING;
@@ -729,7 +727,6 @@ public abstract class TextFile extends PointFile {
                 i++;
             }
             if (headerLines.size() != skipCnt) {
-		System.err.println(headerLines);
                 throw new IllegalArgumentException(
                     "Bad number of header lines:" + headerLines.size() +" expected:" + skipCnt);
 
