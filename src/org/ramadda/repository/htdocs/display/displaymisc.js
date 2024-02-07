@@ -1120,6 +1120,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	{p:'includeFieldDescription'},
 	{p:'includeUnits',d:true},
 	{p:'fancy',ex:'true',d:true},
+	{p:'maxCellHeight',ex:'200px', tt:'Max cell height',d:'200px'},	
 	{p:'maxLength',ex:'500',d:-1, tt:'If string is gt maxLength then scroll it'},
 	{p:'colorCells',ex:'field1,field2'},
 	{p:'iconField'},
@@ -1422,7 +1423,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    });
 
 	    let maxLength = this.getMaxLength();
-	    let maxHeight = this.getProperty("maxHeight","200px");
+	    let maxHeight = this.getMaxCellHeight();
 	    let category;
 	    let fieldProps = {};
 	    fields.forEach(f=>{
@@ -1507,7 +1508,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		    let sv =  this.formatFieldValue(f,record,svalue);
 		    if(maxLength>0 && sv.length>maxLength && f.isString()) {
 			if(!record.isAggregate) {
-			    sv = HU.div([STYLE,"max-height:" + maxHeight+";overflow-y:auto;"],sv);
+			    sv = HU.div([STYLE,maxHeight?HU.css('max-height',maxHeight,'overflow-y','auto'):''],sv);
 			}
 		    }
 		    if(f.getType()=="image") {
