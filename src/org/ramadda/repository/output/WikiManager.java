@@ -6303,7 +6303,7 @@ public class WikiManager extends RepositoryManager
 
         if (sort != null) {
             String dir = null;
-            if (request.exists(ARG_ASCENDING)) {
+	    if (request.exists(ARG_ASCENDING) && !getProperty(wikiUtil,props,"ignoreRequestOrderBy",false)) {
                 dir = request.get(ARG_ASCENDING, true)
 		    ? "up"
 		    : "down";
