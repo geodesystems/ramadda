@@ -400,6 +400,7 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
       description="3D Model" 
       handler="org.ramadda.plugins.media.ThreeDModelTypeHandler" 
       >
+  <property name="form.description.iswiki" value="true"/>
   <property name="wiki.edit.links">
     <![CDATA[
 3D Model
