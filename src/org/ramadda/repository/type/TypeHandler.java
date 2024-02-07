@@ -6329,14 +6329,16 @@ public class TypeHandler extends RepositoryManager {
         String dateSelectValue;
         List   dateSelect = new ArrayList();
         dateSelect.add(new TwoFacedObject("---", "none"));
-        dateSelect.add(new TwoFacedObject(msg("Last hour"), "-1 hour"));
-        dateSelect.add(new TwoFacedObject(msg("Last 3 hours"), "-3 hours"));
-        dateSelect.add(new TwoFacedObject(msg("Last 6 hours"), "-6 hours"));
-        dateSelect.add(new TwoFacedObject(msg("Last 12 hours"), "-12 hours"));
-        dateSelect.add(new TwoFacedObject(msg("Last day"), "-1 day"));
-        dateSelect.add(new TwoFacedObject(msg("Last week"), "-7 days"));
-        dateSelect.add(new TwoFacedObject(msg("Last 2 weeks"), "-14 days"));
-        dateSelect.add(new TwoFacedObject(msg("Last month"), "-1 month"));
+        dateSelect.add(new TwoFacedObject(msg("Past hour"), "-1 hour"));
+        dateSelect.add(new TwoFacedObject(msg("Past 3 hours"), "-3 hours"));
+        dateSelect.add(new TwoFacedObject(msg("Past 6 hours"), "-6 hours"));
+        dateSelect.add(new TwoFacedObject(msg("Past 12 hours"), "-12 hours"));
+        dateSelect.add(new TwoFacedObject(msg("Past day"), "-1 day"));
+        dateSelect.add(new TwoFacedObject(msg("Past week"), "-7 days"));
+        dateSelect.add(new TwoFacedObject(msg("Past 2 weeks"), "-14 days"));
+        dateSelect.add(new TwoFacedObject(msg("Past month"), "-1 month"));
+        dateSelect.add(new TwoFacedObject(msg("Past 6 months"), "-6 month"));	
+        dateSelect.add(new TwoFacedObject(msg("Past year"), "-1 year"));	
 
 
 
@@ -6363,7 +6365,7 @@ public class TypeHandler extends RepositoryManager {
 						       noDataMode.equals(VALUE_NODATAMODE_INCLUDE),
 						       "Include entries with no data times");
         String dateExtra;
-        if (arg.getHasRange()) {
+        if (false && arg.getHasRange()) {
             dateExtra = HU.makeToggleInline(msg("More..."),
                     HU.br() + HU.formTable(new String[] {
                 msgLabel("Search for data whose time is"), dateTypeInput,
@@ -6372,11 +6374,9 @@ public class TypeHandler extends RepositoryManager {
             }), false);
         } else {
             dateExtra = HU.makeToggleInline(msg("More..."),
-                    HU.br()
-                    + HU.formTable(new String[] {
-                        msgLabel("Or search relative"),
-                        dateSelectInput }), false);
-
+					    HU.br()+
+					    HU.b(msgLabel("Or search relative"))+HU.br()+
+					    dateSelectInput, false);
 
         }
 
@@ -6394,8 +6394,10 @@ public class TypeHandler extends RepositoryManager {
                                                       +  + dateExtra));
         */
 
+        HU.formEntry(basicSB, HU.b(msgLabel(arg.getLabel())));
+
         basicSB.append(RepositoryManager.formEntryTop(request,
-                msgLabel(arg.getLabel() + " - From"), fromField));
+                msgLabel("From"), fromField));
         basicSB.append(RepositoryManager.formEntryTop(request,
                 msgLabel("To"), toField));
         basicSB.append(RepositoryManager.formEntryTop(request, "",

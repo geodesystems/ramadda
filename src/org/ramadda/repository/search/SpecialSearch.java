@@ -617,12 +617,13 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
         formSB.append(HtmlUtils.formTable());
         if (showDefault && showText) {
-            formSB.append(HtmlUtils.formEntry(msgLabel("Text"),
-                    HtmlUtils.input(ARG_TEXT,
-                                    request.getSanitizedString(ARG_TEXT, ""),
-                                    HtmlUtils.id("searchinput")
-                                    + HtmlUtils.SIZE_15
-                                    + " autocomplete='off'   autofocus ")));
+	    HU.formEntry(formSB,
+			 HtmlUtils.input(ARG_TEXT,
+					 request.getSanitizedString(ARG_TEXT, ""),
+					 HU.attr("placeholder","Text")+
+					 HtmlUtils.id("searchinput")
+					 + HtmlUtils.SIZE_25
+					 + " autocomplete='off'   autofocus "));
             formSB.append("<div id=searchpopup xclass=ramadda-popup></div>");
             /*
             formSB.append(
@@ -656,6 +657,9 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             TypeHandler.addDateSearch(getRepository(), request, formSB,
                                       DateArgument.ARG_DATA, false);
 
+            TypeHandler.addDateSearch(getRepository(), request, formSB,
+                                      DateArgument.ARG_CREATE, false);
+
         }
 
         if (showDefault && showArea) {
@@ -672,8 +676,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                 getRepository().getMapManager().createMap(request, null,
                     true, null);
             String mapSelector = selectMap.makeSelector(ARG_AREA, true, nwse);
-            formSB.append(formEntry(request, msgLabel("Location"),
-                                    mapSelector));
+            HU.formEntry(formSB,HU.b(msgLabel("Location"))+ HU.br()+mapSelector);
         }
 
 
@@ -703,12 +706,12 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 
 
-        formSB.append(formEntry(request, "Order By:",
-				getSearchManager().makeOrderBy(request,true)));
+        HU.formEntry(formSB,HU.b("Order By:")+HU.br()+
+		     getSearchManager().makeOrderBy(request,false));
 
-	formSB.append(formEntry(request, "Max:",
-				HU.input(ARG_MAX,request.getString(ARG_MAX,"50"),
-					 HtmlUtils.SIZE_5)));
+	HU.formEntry(formSB, HU.b("Max:")+HU.space(1) +
+		     HU.input(ARG_MAX,request.getString(ARG_MAX,"50"),
+			      HtmlUtils.SIZE_5));
         StringBuffer buttons = new StringBuffer();
         buttons.append(HtmlUtils.submit("Search", ARG_SEARCH_SUBMIT));
         boolean doSearch = true;
@@ -751,9 +754,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                                         ""), HtmlUtils.SIZE_20)));
         }
 
-        formSB.append(HtmlUtils.formEntry("", buttons.toString()));
-
-
+	HU.formEntry(formSB, buttons.toString());
         formSB.append(HtmlUtils.formTableClose());
         formSB.append(HtmlUtils.formClose());
         formSB.append("</div>");

@@ -1137,28 +1137,26 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    long t1 = date1==null?min:date1.getTime();
 	    long t2 = date2==null?max:date2.getTime();	    
 	    if (date1 == null) {
-		date1 = date2;
+		//		date1 = date2;
 	    }
 	    if (date2 == null) {
-		date2 = date1;
+		//		date2 = date1;
 	    }
 
 
-	    queries.add(LongPoint.newRangeQuery(FIELD_DATE_START, t1,t2));
+	    //	    queries.add(LongPoint.newRangeQuery(FIELD_DATE_START, min,max));
+	    //	    queries.add(LongPoint.newRangeQuery(FIELD_DATE_START, t1,t2));
+	    //	    queries.add(LongPoint.newRangeQuery(FIELD_DATE_END, t1,t2));	    
+	    queries.add(SortedNumericDocValuesField.newSlowRangeQuery(FIELD_DATE_START,t1,t2));
+	    queries.add(SortedNumericDocValuesField.newSlowRangeQuery(FIELD_DATE_END,t1,t2));	    
 
+	    /*
+	      we dont do this now
 	    String dateSearchMode = request.getUnsafeString(arg.getMode(), DATE_SEARCHMODE_DEFAULT);
-	    queries.add(LongPoint.newRangeQuery(FIELD_DATE_START, t1,t2));
-	    queries.add(LongPoint.newRangeQuery(FIELD_DATE_END, t1,t2));	    
 	    if (dateSearchMode.equals(DATE_SEARCHMODE_OVERLAPS)) {
 	    } else if (dateSearchMode.equals(DATE_SEARCHMODE_CONTAINEDBY)) {
-		//TODO
-		//		queries.add(Clause.ge(FIELD_DATE_START, date1));
-		//		queries.add(Clause.le(FIELD_DATE_END,  date2));
-	    } else {
-		//DATE_SEARCHMODE_CONTAINS
-		//		queries.add(Clause.le(FIELD_DATE_START,  date1));
-		//		queries.add(Clause.ge(FIELD_DATE_END, date2));
-	    }
+	    } else {}
+	    */
 	}
 
 	boolean contains = !(request.getString(
