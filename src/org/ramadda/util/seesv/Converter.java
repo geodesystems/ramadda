@@ -3641,6 +3641,7 @@ public abstract class Converter extends Processor {
 		    add(ctx, row, matcher.group(i+1));
 		}
 	    } catch(Exception exc) {
+		System.err.println("error extracting html:" + url);
 		throw new RuntimeException(exc);
 	    }
 	    
