@@ -1744,6 +1744,7 @@ public class HtmlOutputHandler extends OutputHandler {
                           Appendable sb, Hashtable props)
             throws Exception {
 
+
 	String NA = "---";
 	
         if (props == null) {
@@ -1925,14 +1926,19 @@ public class HtmlOutputHandler extends OutputHandler {
 		String name = getEntryDisplayName(entry);
 		Object[] values = entry.getValues();	
 		EntryLink entryLink = showEntryDetails?getEntryManager().getAjaxLink(request, entry, name):null;
-		String toggle = "";
+		StringBuilder toggle = new StringBuilder();
+		HU.makeToggleInline(toggle,"",getPageHandler().getBreadCrumbs(request,
+									      entry.getParentEntry())+HU.space(1),false,"title","Click to view ancestors");
+
 		if(entryLink!=null) {
-		    toggle = HU.span(getIconImage("fas fa-caret-right"),
-				     HU.attrs("style","margin-right:4px;","class", "entry-arrow ramadda-clickable",
-					      "title","Click to view contents",
-					      "data-title",entry.getName(),
-					      "data-url",entryLink.getFolderClickUrl()));
+		    HU.span(toggle,
+			    getIconImage("fas fa-caret-right"),
+			    HU.attrs("style","margin-right:4px;","class", "entry-arrow ramadda-clickable",
+				     "title","Click to view contents",
+				     "data-title",entry.getName(),
+				     "data-url",entryLink.getFolderClickUrl()));
 		}
+
 
 
                 HU.open(tableSB, "tr",
