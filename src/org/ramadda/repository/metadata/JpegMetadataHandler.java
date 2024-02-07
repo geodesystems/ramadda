@@ -142,6 +142,14 @@ public class JpegMetadataHandler extends MetadataHandler {
         }
 
         String path = entry.getResource().getPath();
+	//check for really big images
+	File file = new File(path);
+	if(file.exists() && file.length()>10*1000*1000) {
+	    getLogManager().logSpecial("JpegMedataHandler:skipping metadata extraction for large image:" +entry.getName());
+	    return;
+	}
+
+
 	com.drew.metadata.Metadata []mtd ={null};
         try {
 	    if(request.get(ATTR_MAKETHUMBNAILS,true)) {

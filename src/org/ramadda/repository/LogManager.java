@@ -515,15 +515,19 @@ public class LogManager extends RepositoryManager {
     }
 
 
-    public void logSpecial(String message)
-            throws Exception {
-        MyLogger logger = getSpecialLogger();
-        if (logger != null) {
-            logger.info(message);
-	    System.err.println(message);
-        } else {
-            System.err.println("special:" + message);
-        }
+    public void logSpecial(String message) {
+	try {
+	    MyLogger logger = getSpecialLogger();
+	    if (logger != null) {
+		logger.info(message);
+		System.err.println(message);
+	    } else {
+		System.err.println("special:" + message);
+	    }
+	} catch(Exception exc) {
+	    System.err.println("LogManager: error in logSpecial:" + exc);
+	    exc.printStackTrace();
+	}
     }
     
 
