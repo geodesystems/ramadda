@@ -1640,7 +1640,7 @@ public class HtmlOutputHandler extends OutputHandler {
             String entryIcon = getPageHandler().getIconUrl(request, child);
 	    if(icon!=null) entryIcon = getPageHandler().getIconUrl(icon);
 	    String labelId    = HU.getUniqueId("frames_label_");
-            String label = getEntryManager().getEntryListName(request, child);
+            String label = Utils.getProperty(props,"title." +child.getId(),getEntryManager().getEntryListName(request, child));
             String leftLabel = showIcon?HU.img(entryIcon,"",HU.attr("width",ICON_WIDTH)) + " " + label:label;
             label = label.replace("'", "\\'");
             String url = HU.url(entryShowUrl, ARG_ENTRYID, child.getId());
