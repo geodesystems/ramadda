@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Feb  6 14:05:07 MST 2024";
+var build_date="RAMADDA build date: Tue Feb  6 21:04:36 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -7662,12 +7662,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(this.filters) {
 		for(let filterIdx=0;filterIdx<this.filters.length;filterIdx++) {
 		    let filter = this.filters[filterIdx];
-		    if(!filter.field)continue;
-		    let widget =$("#" + this.getDomId("filterby_" + filter.field.getId())); 
-		    if(!widget.val || widget.val()==null) continue;
-		    let value = widget.val()||"";
-		    if(value.trim()=="") continue;
-		    highlight.push(new TextMatcher(value));
+		    let widget =jqid(filter.getWidgetId());
+		    if(widget.length==0 || !widget.val || widget.val()==null) continue;
+		    let value = widget.val()??"";
+		    if(!Utils.stringDefined(value)) continue;
+		    let id = filter.getId();
+		    if(id=='_text_') id=null;
+		    highlight.push(new TextMatcher(value,id));
 		}
 	    }
 	    return highlight;
@@ -17969,7 +17970,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		}
 
 		attrs.push("istext",this.isText);
-                widget =HtmlUtils.input("",dfltValue,attrs);
+                widget =HU.input("",dfltValue,attrs);
 		let values=fieldMap[this.getId()].values;
 		let seen = {};
 		records.map(record=>{
@@ -18010,6 +18011,9 @@ function RecordFilter(display,filterFieldId, properties) {
 	    if(!show) widget=HU.div([ATTR_STYLE,'display:none;'], widget);
 
 	    return widget;
+	},
+	getWidgetId:function() {
+	    return this.widgetId;
 	},
 	getEnums: function(records) {
 	    let counts = {};
@@ -18174,6 +18178,49 @@ function MonthFilter(param) {
     });
 }
 
+
+function TextMatcher (pattern,myId) {
+    this.myId = myId;
+    this.regexps=[];
+    if(pattern) {
+        pattern = pattern.trim();
+    }
+    if(pattern&& pattern.length>0) {
+        pattern = pattern.replace(/\./g,"\\.");
+        if(pattern.startsWith('"') && pattern.endsWith('"')) {
+            pattern  = pattern.replace(/^"/,"");
+            pattern  = pattern.replace(/"$/,"");
+            this.regexps.push(new RegExp("(" + pattern + ")","ig"));
+        } else {
+            pattern.split(" ").map(p=>{
+                p = p.trim();
+                this.regexps.push(new RegExp("(" + p + ")","ig"));
+            });
+        }
+    }   
+    $.extend(this, {
+        pattern: pattern,
+        hasPattern: function() {
+            return this.regexps.length>0;
+        },
+        highlight: function(text,id) {
+	    if(id && this.myId && id!=this.myId) return text;
+            for(var i=0;i<this.regexps.length;i++) {
+                text  =  text.replace(this.regexps[i], "<span style=background:yellow;>$1</span>");
+            }
+            return text;
+        },
+        matches: function(text) {
+            if(this.regexps.length==0) return true;
+            text  = text.toLowerCase();
+            for(var i=0;i<this.regexps.length;i++) {
+                if(!text.match(this.regexps[i])) return false;
+            }
+            return true;
+        }
+    });
+
+}
 /**
    Copyright 2008-2023 Geode Systems LLC
 */
@@ -55062,6 +55109,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	{p:'colorHeaderTemplate',tt:'Template to show in row color header'},
 	{p:'colorHeaderStyle',tt:'CSS for color header. defaults to rotated text'},	
         {p:'showBar',ex:'true',tt:'Default show bar'},
+        {p:'highlightFilterText',ex:'true',tt:'Highlight any filter text'},	
         {p:'&lt;field&gt;.nowrap',ex:'true',tt:"Don't wrap the column"},
         {p:'&lt;field&gt;.width',ex:'30%',tt:"Column width"},
         {p:'&lt;field&gt;.template',ex:'foo:${value}',tt:"Record template"},		
@@ -55090,7 +55138,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	makeColumn:function(record,field,attrs,v) {
 	    return HU.td(attrs,v);
 	},
-	handleColumn:function(fields,aggByField,field,record,v,tdAttrs) {
+	handleColumn:function(fields,aggByField,field,record,v,tdAttrs,matchers) {
 	    if(!this.columnTemplates) {
 		this.columnTemplates = {};
 		fields.forEach((f,idx)=>{
@@ -55105,7 +55153,14 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    if(!aggByField) {
 		let attrs=[...tdAttrs];
 		attrs.push('field-id',field.getId(),'record-id',record.getId(),'record-index',record.rowIndex);
-	
+		if(matchers) {
+		    let sv = String(v);
+		    matchers.forEach(h=>{
+			sv  = h.highlight(sv,field.getId());
+		    });
+		    v = sv;
+		}
+
 		return this.makeColumn(record,field,attrs,v);
 	    }
 	    if(field.getId() != aggByField.getId()) {
@@ -55422,6 +55477,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		}
 		this.recordMap[record.rowIndex] = record;
 		this.recordMap[record.getId()] = record;
+		let matchers = this.getHighlightFilterText()?this.getFilterTextMatchers():null;
+		
 		fields.forEach((f,idx)=>{
 		    let value = d[f.getIndex()];
 		    let svalue = String(value);
@@ -55488,7 +55545,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 			let td = this.handleColumn(fields,aggByField,f,record,this.formatNumber(value,f.getId()), tdAttrs);
 			addColumn(td,value,f);
 		    } else {
-			addColumn(this.handleColumn(fields,aggByField,f,record,sv,tdAttrs),null,f);
+			addColumn(this.handleColumn(fields,aggByField,f,record,sv,tdAttrs,matchers),null,f);
 		    }
 		    prefix="";
 		});
