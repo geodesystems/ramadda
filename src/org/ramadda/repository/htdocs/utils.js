@@ -2919,19 +2919,19 @@ var Utils =  {
         form +="</form>";
 
         let linksId = HU.getUniqueId();
-	let searchLink = 
+	let formLink = 
 	    HU.link(RamaddaUtil.getUrl('/search/form'),
 		    HU.span([ATTR_CLASS,CLASS_CLICKABLE],
-			    HU.getIconImage('fas fa-circle-arrow-right') +HU.space(1)+
-			    HU.span('Go to search form')), [TITLE, 'Go to search form', STYLE,HU.css('color','#888','font-size','13px')]);
-        let links =  HU.div(["id", linksId,STYLE,HU.css('text-align','right','color','#888','font-size','13px')],
-			    searchLink);
-//  +
-//                            " | " +
-	//                            HU.link(RamaddaUtil.getUrl('/search/type'), 'By Type', [TITLE, 'Go to type form', STYLE,HU.css('color','#888','font-size','13px')]) +
-//                            " | " +
-	//                            HU.link(RamaddaUtil.getUrl('/search/browse'), 'By Metadata', [TITLE, 'Go to metadata form', STYLE,HU.css('color','#888','font-size','13px')]));
+			    /*HU.getIconImage('fa-solid fa-list-check') +HU.space(1) +*/HU.span([],'Search Form')),
+		    [TITLE, 'Go to search form', STYLE,HU.css('xcolor','#888','xfont-size','16px')]);
 
+	let typeLink = 
+	    HU.link(RamaddaUtil.getUrl('/search/type'),
+		    HU.span([TITLE, 'Go to type search form',
+			     ATTR_CLASS,CLASS_CLICKABLE],  /*HU.getIconImage('fa-solid fa-t')+' '+*/'Types'));
+
+        let links =  HU.div(["id", linksId,STYLE,HU.css('text-align','right','font-size','12px')],
+			    formLink+HU.space(1)+'|'+HU.space(1)+typeLink);
         let resultsId = HU.getUniqueId('searchresults');
         let results = HU.div([ID,resultsId,CLASS,'ramadda-search-popup-results']);
         let html = HU.div([CLASS,"ramadda-search-popup"],form+results);
