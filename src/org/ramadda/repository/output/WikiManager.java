@@ -2572,7 +2572,7 @@ public class WikiManager extends RepositoryManager
 		result =   HU.image(icon,
                                     HU.attrs("title",license.getName(),"width", width,
 					     "border", "0"));
-		if(getProperty(wikiUtil,props,"includeName",false)) {
+		if(getProperty(wikiUtil,props,"includeName",true)) {
 		    result+=HU.space(1)+HU.b(license.getName());
 		}
 	    } else {
@@ -2586,7 +2586,7 @@ public class WikiManager extends RepositoryManager
 	    }
 
 	    String id = HU.getUniqueId("license_");
-	    String contents = HU.div(HU.div(prefix+result + text,HU.cssClass("ramadda-license")+
+	    String contents = HU.span(HU.div(prefix+result + text,HU.cssClass("ramadda-license")+
 					    HU.style(style)),
 				     HU.id(id));
 	    if(stringDefined(requireId)) {
