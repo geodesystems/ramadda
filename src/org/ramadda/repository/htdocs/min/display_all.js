@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Feb  6 21:37:12 MST 2024";
+var build_date="RAMADDA build date: Wed Feb  7 00:51:45 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -24059,13 +24059,13 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
     let myProps =[
 	{label:"Metadata"},
 	{p:"decorate",ex:true},
-	{p:"asList",ex:true},
+	{p:"asList",d:true},
 	{p:"reverseFields",ex:true},
 	{p:"sortFields",d:true,ex:true},
 	{p:"includeLatLon",d:false,ex:true},				
 	{p:"selectable",ex:true},
 	{p:"showFieldDetails",ex:true},
-	{p:"showPopup",d:true,ex:false,tt:"Popup the selector"},	
+	{p:"showPopup",d:false,ex:true,tt:"Popup the selector"},	
 	{p:"numericOnly",ex:true},
 	{p: "selectLabel",tt:"Label to use for the button"},
 	{p: "filterSelect",ex:true,tt:"Use this display to select filter fields"},
