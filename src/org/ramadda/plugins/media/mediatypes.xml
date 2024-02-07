@@ -461,7 +461,7 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 -center
 :p
 :heading Model Files
-{{tabletree  simple="false"  message=""}} 
+{{tabletree  simple="false"  message="" sort="entryorder,name"}} 
 -section
 ]]>
 </wiki>
