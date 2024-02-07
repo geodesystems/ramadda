@@ -1700,13 +1700,14 @@ function toggleBlockVisibility(id, imgid, showimg, hideimg) {
 function toggleInlineVisibility(id, imgid, showimg, hideimg) {
     let img = GuiUtils.getDomObject(imgid);
     let icon;
-    if (toggleVisibility(id, 'inline')) {
+    toggleVisibility(id, 'inline');
+    if(jqid(id).is(':visible'))
         icon= showimg;
-    } else {
+    else
         icon = hideimg;
-    }
+
     if(StringUtil.startsWith(icon,"fa-")) {
-        $("#" + imgid).html(HtmlUtils.getIconImage(icon,[]));
+        $("#" + imgid).attr('class',icon);
     } else {
         if(img) img.obj.src = icon;
     }
