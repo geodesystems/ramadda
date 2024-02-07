@@ -462,6 +462,7 @@ indexField="depth" fields="salinity,density"
 <type name="type_buoy_sofar_api" 
       description="SOFAR Buoy Data from API" 
       super="type_point" 
+      newfields="name,spotter_id,_default"	
       handler="org.ramadda.data.services.PointTypeHandler">
   <property name="search.tabs" value="map,list"/>
   <property name="icon" value="/point/sofar.png"/>
