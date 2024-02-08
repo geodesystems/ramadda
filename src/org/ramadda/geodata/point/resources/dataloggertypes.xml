@@ -21,15 +21,13 @@ missing=-7999
 #total number of header rows to skip over. In the above example there are 4 total header lines. the 2nd line has the field names
 skiplines=4
 
-#This defines the date format for the timestamp field
-#If your data has a different field name for time then use that name
 #the data format follows Java's https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
-#If you don't have time then no worries
+record.type.timestamp=date
 timestamp.format=yyyy-MM-dd HH:mm:ss
+
 
 record.type.batt_volt_tmn=date
 record.type.ptemp_tmx=date
-
 #You can define units for the fields with
 temp_c.unit=C
 depth_m.unit=M
