@@ -2811,7 +2811,6 @@ public class TypeHandler extends RepositoryManager {
                                          boolean showResource,
                                          Hashtable props)
             throws Exception {
-
         StringBuilder sb     = new StringBuilder();
         OutputType    output = request.getOutput();
         if (displayTemplatePath != null) {
@@ -3566,6 +3565,10 @@ public class TypeHandler extends RepositoryManager {
             }
         }
 
+	if(props!=null && !Utils.getProperty(props,"showImage",true)) {
+	    showImage = false;
+	    entryIsImage = false;
+	}
 
         if (true || output.equals(OutputHandler.OUTPUT_HTML)) {
             OutputHandler outputHandler =
@@ -3701,14 +3704,14 @@ public class TypeHandler extends RepositoryManager {
                 sb.append(formEntry(request, resourceLabel, resourceLink));
 
             }
-            if ( !showImage) {
+	    //            if ( !showImage) {
                 if (typeHandler.okToShowInHtml(entry, ARG_TYPE, true)) {
 		    String icon = getPageHandler().getEntryIconImage(request,entry);
                     sb.append(formEntry(request, msgLabel("Kind"),
                                         icon + HU.space(1)+getFileTypeDescription(request,
 										  entry)));
                 }
-            }
+		//            }
 
             //Only show the created by and type when the user is logged in
             if ( !request.isAnonymous()) {
