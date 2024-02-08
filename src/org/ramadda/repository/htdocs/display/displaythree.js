@@ -209,7 +209,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		if(!ramaddaLoadedThree) {
                     ramaddaLoadedThree = true;
 //		    Utils.importJS(ramaddaBaseHtdocs+"/lib/three/three.min.js");
-		    Utils.importJS("//unpkg.com/three");		    
+		    Utils.importJS("//unpkg.com/three@0.160");		    
 		}
 		setTimeout(()=>{this.updateUI()},100);
 		return
