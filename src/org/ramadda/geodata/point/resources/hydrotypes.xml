@@ -145,7 +145,7 @@ point.csvcommands=-delimiter,tab,-skip,2,-print
      <column  name="county"  label="County" type="enumerationplus" cansearch="true"/>
      <column  name="state"  label="State" type="enumerationplus" cansearch="true"/>
      <column  name="huc"  type="enumerationplus" label="HUC" cansearch="true"/>
-     <column  name="homepage"  label="USGS page" type="url"/>
+     <column  name="homepage"  label="USGS page" type="url" canlist="false"/>
 <wiki>
 <![CDATA[
 +section title={{name}}

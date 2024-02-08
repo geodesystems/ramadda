@@ -303,9 +303,9 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 -->
      <column name="image_width" type="int" label="Image Width"/>
      <column name="image_height" type="int" label="Image Height"/>     
-     <column name="tiles_url" type="string" label="Tiles URL" />
-     <column name="style" type="string" label="Style" rows="5"/>
-     <column name="annotations_json" type="clob" label="Annotations" showinhtml="false"   candisplay="false" editable="false"/>     
+     <column name="tiles_url" type="string" label="Tiles URL" canlist="false"/>
+     <column name="style" type="string" label="Style" rows="5" canlist="false"/>
+     <column name="annotations_json" type="clob" label="Annotations" showinhtml="false"   candisplay="false" editable="false" canlist="false"/>     
      <property name="wiki.edit.links"><![CDATA[Zoomable Image
 {{zoomable doBookmark=true width=100% showLeftColumn=true}}
 ]]></property>
@@ -424,9 +424,9 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
      <property name="form.date.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
      <column name="model_file" type="string" label="Model File" showinform="false"/>
-     <column changetype="true" name="camera_position"  columns="60" size="500" type="string" label="Camera Position" help="posx,posy,poz;rotx,roty,rotz;targetx,targety,targetz"/>
-     <column name="ambient_light" type="string" label="Ambient Light" help="color,intensity -- e.g., #f0f0f0,1"/>
-     <column changetype="true" name="lights" type="string" label="Lights" rows="5" columns="60" size="1000" help="color1,x1,y1,z1 e.g., #f0f0f0,10,0,0"/>
+     <column changetype="true" name="camera_position"  canlist="false" columns="60" size="500" type="string" label="Camera Position" help="posx,posy,poz;rotx,roty,rotz;targetx,targety,targetz"/>
+     <column name="ambient_light" type="string" label="Ambient Light" canlist="false" help="color,intensity -- e.g., #f0f0f0,1"/>
+     <column changetype="true" name="lights" type="string" label="Lights" canlist="false" rows="5" columns="60" size="1000" help="color1,x1,y1,z1 e.g., #f0f0f0,10,0,0"/>
      <column name="properties" type="clob" rows="10" columns="90" xxxsize="10000" label="Properties" showinform="true"
 	     help="showPlanes=true planeColorX=#ff0000 planeSize=50 showCheckerboard=true showAxes=true showBbox=true showGrid=true gridColor=blue gridSize=50 gridDivisions=10 addLightHelper=true"/>
      <column name="annotations" type="clob" rows="10" columns="90" xxxsize="10000" label="Annotations" showinform="true"

@@ -5,14 +5,14 @@
 
 
     <property name="search.tabs" value="map,list"/>
-     <property name="form.file.show" value="false"/>
-     <property name="form.resource.show" value="false"/>
-     <property name="record.processresource" value="true"/>
-     <property name="point.initialize" value="false"/>
-     <property name="form.properties.show" value="false"/>
-     <property name="form.area.show" value="false"/>
-     <property name="form.date.show" value="false"/>          
-     <property name="icon" value="/point/noaa.gif"/>
+    <property name="form.file.show" value="false"/>
+    <property name="form.resource.show" value="false"/>
+    <property name="record.processresource" value="true"/>
+    <property name="point.initialize" value="false"/>
+    <property name="form.properties.show" value="false"/>
+    <property name="form.area.show" value="false"/>
+    <property name="form.date.show" value="false"/>          
+    <property name="icon" value="/point/noaa.gif"/>
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
      <property name="form.header.new">
        <![CDATA[+callout-info
@@ -78,6 +78,7 @@ csvcommands3=-addheader, default.type double reporttime.type date reporttime.for
 
   <type name="type_nws_obs"  super="type_point" description="NWS Current Observations"
 	handler="org.ramadda.geodata.point.NwsObsTypeHandler">
+    <property name="search.tabs" value="map,list"/>
      <property name="form.file.show" value="false"/>
      <property name="form.resource.show" value="false"/>
      <property name="point.initialize" value="false"/>

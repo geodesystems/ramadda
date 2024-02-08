@@ -4,6 +4,7 @@
   <type name="type_point_openaq"  description="Open AQ Air Quality" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.OpenAQTypeHandler"
 	newfields="location_id,name,description,hours_offset,quit"
 >
+    <property name="search.tabs" value="map,list"/>
     <property name="icon" value="/point/openaq.png"/>
     <property name="form.resource.show" value="false"/>
     <property name="form.properties.show" value="false"/>
@@ -79,6 +80,7 @@ label,pos:c,dx:cw2,dy:-ch2,label:${${_field} suffix=" ${unit}" decimals=2}
 	newfields="sensor_id,_default"	>
     <action name="gethistory" label="Download History" icon="fas fa-download"/>
     <action name="clearfile" label="Clear File" icon="fas fa-rotate-right" canedit="true"/>
+    <property name="search.tabs" value="map,list"/>
     <property name="icon" value="/point/purpleair/icon.png"/>
     <property name="form.resource.show" value="false"/>
     <property name="form.date.show" value="false"/>
@@ -102,12 +104,13 @@ href=https://ramadda.org/repository/point/purpleair_index.html#creating_purple_a
     <column  name="private_key"  label="Private Key"  type="password"/>
     <column  name="active"  label="Active"  type="boolean" default="true" cansearch="true"
 	     suffix="If active then the real-time data is collected and appended to this file.&lt;br&gt;This has to be enabled for the repository. See &lt;a href=https://ramadda.org/repository/point/purpleair_index.html target=_help&gt;here&lt;/a&gt; for more information"/>     
-    <column  name="fields"  label="Fields"  type="enumeration" values="default:Default,short:Short,all:All"
+    <column  name="fields"  label="Fields"  type="enumeration" canlist="false"
+	     values="default:Default,short:Short,all:All"
 	     default="default"
 	     suffix="What fields to gather. Note: if you change this then also clear the file from the File menu. &lt;a target=_help href=/repository/point/purpleair_index.html#fields&gt;More information&lt;/a&gt;"/>
 
     <column  name="model"  label="Model" type="string" editable="false"/>
-    <column  name="hardware"  label="Hardware" type="string" editable="false"/>     
+    <column  name="hardware"  label="Hardware" type="string" editable="false" canlist="false"/>     
     <column  name="location_type"  label="Location Type" type="enumeration" values="outside,inside" editable="false"/>     
 <property name="mapglyphs">
   <![CDATA[
