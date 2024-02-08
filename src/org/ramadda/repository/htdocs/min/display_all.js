@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Feb  8 05:18:02 MST 2024";
+var build_date="RAMADDA build date: Thu Feb  8 09:46:13 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -5280,6 +5280,11 @@ function DisplayThing(argId, argProperties) {
 	    return this.getProperty(prop,dflt);
 	},
 
+	getTooltip:function() {
+	    let tooltip = this.getProperty('tooltip');
+	    if(tooltip=='none') tooltip=null;
+	    return tooltip;
+	},
         getProperty: function(key, dflt, skipThis, skipParent) {
 	    let debug = displayDebug.getProperty;
 	    if(!this.getPropertyCounts[key]) {
@@ -10983,8 +10988,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(!this.getProperty("showTooltips",true)) {
 		return;
 	    }
-	    let tooltip = tooltipArg ?? this.getProperty('tooltip');
-	    if(tooltip==null) {
+	    let tooltip = tooltipArg ?? this.getTooltip();
+	    if(tooltip==null || tooltip=='none') {
 		return;
 	    }
 	    let _this = this;
@@ -35724,7 +35729,6 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 
     //Default to a tooltip
     if(!properties.tooltip) properties.tooltip='${default}';
-
     this.myycnt = ++ycnt;
     this.myName = "map " + (this.myycnt);
     const SUPER = new RamaddaDisplay(displayManager, id, type,   properties);
@@ -38516,7 +38520,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	    let textGetter = (f)=>{
 		if(f.record) {
-                    return  this.getRecordHtml(f.record, null, this.getProperty("tooltip"));
+                    return  this.getRecordHtml(f.record, null, this.getTooltip());
 		}
 		return "NONE";
 	    };
@@ -39735,7 +39739,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    
 
 
-	    let tooltip = this.getProperty("tooltip");
+	    let tooltip = this.getTooltip();
 	    let haveTooltip = Utils.stringDefined(tooltip);
 	    let highlight = this.getProperty("highlight");
 	    let highlightTemplate = this.getProperty("highlightTemplate");
@@ -40393,7 +40397,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         },
 
 	getTextGetter:function(fields) {
-	    let tooltip = this.getProperty("tooltip");
+	    let tooltip = this.getTooltip();
 	    return  this.textGetter = f=>{
 		if(!Utils.stringDefined(tooltip)) {
 		    if(debugPopup) console.log("No tooltip");
