@@ -1935,7 +1935,8 @@ public class HtmlOutputHandler extends OutputHandler {
 
 		if(entryLink!=null) {
 		    HU.span(toggle,
-			    getIconImage("fas fa-caret-right"),
+			    getIconImage("fas fa-circle-info"),
+			    //			    getIconImage("fa-solid fa-info"),
 			    HU.attrs("style","margin-right:4px;","class", "entry-arrow ramadda-clickable",
 				     "title","Click to view contents",
 				     "data-title",entry.getName(),
