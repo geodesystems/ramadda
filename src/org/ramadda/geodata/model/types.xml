@@ -30,10 +30,14 @@
 
   <type name="climate_modelfile"  description="Basic Climate Model File" handler="org.ramadda.geodata.model.ClimateModelFileTypeHandler" category="Climate Data" foruser="true" super="climate_granule">
      <column name="collection_id" type="string"  label="Collection ID" showinhtml="false" showinform="false"/>
-     <column name="model" type="enumerationplus"  label="Model"  showinhtml="true" xxxxvalues="file:/org/ramadda/data/model/models.txt"/>
-     <column name="experiment" type="enumerationplus"  label="Experiment" xxxxvalues="file:/org/ramadda/data/model/experiments.txt" showinhtml="true" />
-     <column name="ensemble" type="enumerationplus"  displayPatternFrom="ens(\d{2,3})" displayPatternTo="Member $1" label="Ensemble Member"/>
-     <column name="variable" type="enumerationplus"  label="Variable"  xxxxxvalues="file:/org/ramadda/data/model/vars.txt"/>
+     <column name="model" type="enumerationplus"  label="Model"  cansearch="true"
+	     showinhtml="true" xxxxvalues="file:/org/ramadda/data/model/models.txt"/>
+     <column name="experiment" type="enumerationplus"  label="Experiment" cansearch="true"
+	     xxxxvalues="file:/org/ramadda/data/model/experiments.txt" showinhtml="true" />
+     <column name="ensemble" type="enumerationplus"  cansearch="true"
+	     displayPatternFrom="ens(\d{2,3})" displayPatternTo="Member $1" label="Ensemble Member"/>
+     <column name="variable" type="enumerationplus"  cansearch="true"
+	     label="Variable"  xxxxxvalues="file:/org/ramadda/data/model/vars.txt"/>
    </type>
 
 
