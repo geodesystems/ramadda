@@ -962,7 +962,8 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
             let height = this.getHeightForStyle('400');
 	    let left = HU.div([ID, this.domId(ID_PREV), STYLE,HU.css('font-size','200%'),CLASS,'ramadda-clickable display-slides-arrow-left fas fa-angle-left']);
 	    let right = HU.div([ID, this.domId(ID_NEXT), STYLE,HU.css('font-size','200%'), CLASS,'ramadda-clickable  display-slides-arrow-right fas fa-angle-right']);
-	    let slide = HU.div([STYLE,HU.css('overflow-y','auto','max-height', height), ID, this.domId(ID_SLIDE), CLASS,'display-slides-slide']);
+	    let slide = HU.div([ATTR_CLASS,'display-slides-slide',
+				ATTR_STYLE,HU.css('overflow-y','auto','max-height', height), ID, this.domId(ID_SLIDE), CLASS,'display-slides-slide']);
 
 	    let top = "";
 	    this.showStrip = this.thumbnailField && this.getProperty("showStrip");
@@ -970,10 +971,8 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 		let stripStyle = HU.css('overflow-x','auto','max-width','100%') +this.getProperty('stripStyle','');
 		top = HU.div([ID,this.domId(ID_STRIP),CLASS,'display-slides-strip','tabindex','0','style',stripStyle]);
 	    }
-	    let navStyle = 'padding-top:20px;';
-	    let contents = top+'<table width=100%><tr valign=top><td width=25>' + HU.div([STYLE,navStyle], left) + '</td><td>' +
-					 slide + '</td>' +
-					 '<td width=25>' + HU.div([STYLE,navStyle],right) + '</td></tr></table>';
+	    let contents = top+HU.div([ATTR_STYLE,HU.css('position','relative')],
+				      slide + left + right);
 
 	    this.setContents(contents);
 
