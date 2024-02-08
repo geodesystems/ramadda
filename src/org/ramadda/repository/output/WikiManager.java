@@ -1940,7 +1940,7 @@ public class WikiManager extends RepositoryManager
 					     wikifyEntry(request, entry,"<div class=ramadda-entry-tools>\n{{menu  showLabel=false title=\"\"  popup=false   menus=\""+ menus+"\"}}\n</div>"))); 
 	    }
             return getHtmlOutputHandler().getInformationTabs(myRequest, entry, false,extras,
-							     getProperty(wikiUtil,props,"showResource",true));
+							     getProperty(wikiUtil,props,"showResource",true),props);
         } else if (theTag.equals(WIKI_TAG_FA)) {
 	    String icon=
 		getProperty(wikiUtil, props, "icon", "");

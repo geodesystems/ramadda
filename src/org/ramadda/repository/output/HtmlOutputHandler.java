@@ -558,7 +558,7 @@ public class HtmlOutputHandler extends OutputHandler {
             getPageHandler().entrySectionOpen(request, entry, sb, "Entry Information");
             StringBuilder suffix = new StringBuilder();
             addDescription(request, entry, sb, true, suffix);
-            String informationBlock = getInformationTabs(request, entry, false,null,true);
+            String informationBlock = getInformationTabs(request, entry, false,null,true,null);
             sb.append(informationBlock);
             sb.append(suffix);
             getPageHandler().entrySectionClose(request, entry, sb);
@@ -1263,7 +1263,8 @@ public class HtmlOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public String getInformationTabs(Request request, Entry entry,
-                                     boolean includeSnippet, List<LabeledObject>extras,boolean showResource)
+                                     boolean includeSnippet, List<LabeledObject>extras,
+				     boolean showResource,Hashtable props)
             throws Exception {
         List         tabTitles   = new ArrayList<String>();
         List         tabContents = new ArrayList<String>();
@@ -1278,7 +1279,7 @@ public class HtmlOutputHandler extends OutputHandler {
         }
         request.put(WikiConstants.ATTR_SHOWTITLE, "false");
         basicSB.append(entry.getTypeHandler().getEntryContent(request, entry,
-                false, showResource, null));
+                false, showResource, props));
 
         tabTitles.add("Information");
         tabContents.add(basicSB.toString());
@@ -2242,7 +2243,7 @@ public class HtmlOutputHandler extends OutputHandler {
                         "Entry Information", true);
                 addDescription(request, group, sb, true, suffix);
                 if ( !doSimpleListing) {
-                    sb.append(getInformationTabs(request, group, false,null,true));
+                    sb.append(getInformationTabs(request, group, false,null,true,null));
                 }
 
                 StringBuffer metadataSB = new StringBuffer();
