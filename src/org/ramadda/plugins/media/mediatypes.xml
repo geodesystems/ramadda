@@ -237,7 +237,12 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 <type name="type_360image"  super="type_image" description="360 Image" metadata="3d_label,content.alias" foruser="true" 
       help="Displays a 360 degree image"      >
      <property name="icon" value="/icons/image.png"/>
+     <property name="wiki.edit.links">
+       <![CDATA[360 Image
+{{360image width="100%" height="400px"}}
+]]></property>
      <column   name="rotation" label="Initial rotation" suffix="Pitch, rotation about the X-axis. Yaw, rotation about the Y-axis. Roll, rotation about the Z-axis."  showinhtml="false" />
+
      <wiki><![CDATA[
 {{noheading}}
 +section title={{name}}
@@ -245,8 +250,13 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 +inset top=10 left=10 bottom=10 right=10
 +center
 {{360image width="100%" height="400px"}}
-+center
+-center
 -inset
+:vspace 1em
+----
+:vspace 1em
+:heading Information
+{{information details=true showImage=false}}
 -section
 ]]>
 </wiki>

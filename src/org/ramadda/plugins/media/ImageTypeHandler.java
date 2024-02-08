@@ -155,7 +155,7 @@ public class ImageTypeHandler extends GenericTypeHandler {
             StringBuilder sb = new StringBuilder();
             sb.append("\n\n");
             request.putExtraProperty("aframejs", "true");
-            HU.importJS(sb, "https://aframe.io/releases/0.8.0/aframe.min.js");
+            HU.importJS(sb, "https://aframe.io/releases/0.9.0/aframe.min.js");
             String imgUrl =
                 entry.getTypeHandler().getEntryResourceUrl(request, entry);
             String width  = Utils.getProperty(props, "width", "600px");
@@ -182,6 +182,8 @@ public class ImageTypeHandler extends GenericTypeHandler {
                 sb.append(" rotation='" + rotation + "' ");
             }
             sb.append(" ></a-sky>\n ");
+	    sb.append("<a-entity camera look-controls position=\"0 1.6 0\" id=\"camera-id\"></a-entity>\n");
+
             sb.append("</a-scene>\n ");
 
             return sb.toString();
