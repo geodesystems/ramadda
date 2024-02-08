@@ -397,7 +397,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
         makeHeader(request, sb);
 
-        sb.append(HtmlUtils.sectionOpen());
+        sb.append(HU.sectionOpen());
 
         StringBuffer formSB = new StringBuffer();
         makeSearchForm(request, formSB);
@@ -428,7 +428,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                 && request.defined(ARG_AREA_SOUTH)
                 && request.defined(ARG_AREA_EAST)) {
             map.addJS(
-                HtmlUtils.call(
+                HU.call(
                     map.getVariableName() + ".setSelectionBox",
                     request.get(ARG_AREA_NORTH, 0.0) + ","
                     + request.get(ARG_AREA_WEST, 0.0) + ","
@@ -437,12 +437,11 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
         }
 
-
-
-        String initParams = HtmlUtils.squote(ARG_AREA) + "," + true + ","
-                            + "0";
-        map.addJS(map.getVariableName() + ".setSelection(" + initParams
-                  + ");\n");
+	//xxxx
+	String id = (String)request.getExtraProperty("mapselectorid");
+	if(id==null) id = ARG_AREA;
+        String initParams = HU.squote(id) + "," + true + "," + "0";
+        map.addJS(map.getVariableName() + ".setSelection(" + initParams  + ");\n");
         map.centerOn(bounds, true);
 
 
@@ -470,16 +469,16 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 
         StringBuffer mapSB = new StringBuffer(
-                                 HtmlUtils.italics(
+                                 HU.italics(
                                      msg("Shift-drag to select region")));
         mapSB.append(map.getHtml());
 
         if (refinement) {
             tabTitles.add(msg("Results"));
             tabContents.add(
-                HtmlUtils.div(
+                HU.div(
                     getPageHandler().showDialogNote(
-                        "Search criteria refined"), HtmlUtils.style(
+                        "Search criteria refined"), HU.style(
                         "min-width:" + minWidth + "px")));
         } else if ( !doSearch) {
             tabTitles.add(msg("Results"));
@@ -489,32 +488,32 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             if (allEntries.size() == 0) {
                 tabTitles.add(msg("Results"));
                 tabContents.add(
-                    HtmlUtils.div(
+                    HU.div(
                         getPageHandler().showDialogNote(
-                            LABEL_NO_ENTRIES_FOUND), HtmlUtils.style(
+                            LABEL_NO_ENTRIES_FOUND), HU.style(
                             "min-width:" + minWidth + "px")));
             } else {
                 for (String tab : tabsToUse) {
                     if (tab.equals(TAB_LIST)) {
                         StringBuffer listSB = new StringBuffer();
                         makeEntryList(request, listSB, allEntries);
-                        tabContents.add(HtmlUtils.div(listSB.toString(),
-                                HtmlUtils.style("min-width:" + minWidth
+                        tabContents.add(HU.div(listSB.toString(),
+                                HU.style("min-width:" + minWidth
                                     + "px")));
-                        tabTitles.add(HtmlUtils.img(getIconUrl(ICON_LIST))
+                        tabTitles.add(HU.img(getIconUrl(ICON_LIST))
                                       + " " + msg("List"));
                     } else if (tab.equals(TAB_MAP)) {
-                        tabContents.add(HtmlUtils.div(mapSB.toString(),
-                                HtmlUtils.style("min-width:" + minWidth
+                        tabContents.add(HU.div(mapSB.toString(),
+                                HU.style("min-width:" + minWidth
                                     + "px")));
-                        tabTitles.add(HtmlUtils.img(getIconUrl(ICON_MAP))
+                        tabTitles.add(HU.img(getIconUrl(ICON_MAP))
                                       + " " + msg("Map"));
                     } else if (tab.equals(TAB_TIMELINE)) {
-                        tabContents.add(HtmlUtils.div(timelineSB.toString(),
-                                HtmlUtils.style("min-width:" + minWidth
+                        tabContents.add(HU.div(timelineSB.toString(),
+                                HU.style("min-width:" + minWidth
                                     + "px")));
                         tabTitles.add(
-                            HtmlUtils.img(getIconUrl(ICON_TIMELINE)) + " "
+                            HU.img(getIconUrl(ICON_TIMELINE)) + " "
                             + msg("Timeline"));
                     }
                 }
@@ -523,14 +522,14 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         String tabs;
 
         if (tabContents.size() == 1) {
-            tabs = HtmlUtils.div(tabContents.get(0),
-                                 HtmlUtils.cssClass("search-list"));
+            tabs = HU.div(tabContents.get(0),
+                                 HU.cssClass("search-list"));
         } else {
             tabs = OutputHandler.makeTabs(tabTitles, tabContents, true);
         }
         if (request.get(ARG_SEARCH_SHOWHEADER, true)) {
 	    String label = HU.href(request.getRequestPath(),this.label,HU.cssClass("ramadda-nodecor ramadda-clickable"));
-            sb.append(HtmlUtils.h2(label));
+            sb.append(HU.h2(label));
         }
 
         StringBuffer rightSide = new StringBuffer();
@@ -542,20 +541,20 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         if (showForm) {
             sb.append(
                 "<table width=100% border=0 cellpadding=0 cellspacing=0><tr valign=top>");
-            sb.append(HtmlUtils.col(formSB.toString(), ""));
+            sb.append(HU.col(formSB.toString(), ""));
             sb.append(
-                HtmlUtils.col(
+                HU.col(
                     rightSide.toString(),
-                    HtmlUtils.style("min-width:" + minWidth + "px;")
-                    + HtmlUtils.attr(HtmlUtils.ATTR_ALIGN, "left")));
+                    HU.style("min-width:" + minWidth + "px;")
+                    + HU.attr(HU.ATTR_ALIGN, "left")));
             sb.append("</table>");
         } else {
             sb.append(rightSide);
         }
-        sb.append(HtmlUtils.sectionClose());
+        sb.append(HU.sectionClose());
 
 
-        sb.append(HtmlUtils.script(js.toString()));
+        sb.append(HU.script(js.toString()));
 
         return null;
 
@@ -574,6 +573,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
      */
     private void makeSearchForm(Request request, Appendable formSB)
             throws Exception {
+
+
 
         boolean      showDefault        = true;
         List<String> metadataTypesToUse = metadataTypes;
@@ -596,9 +597,11 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
         formSB.append("<div style=\"min-width:200px;\">");
         formSB.append(request.form(URL_SEARCH,
-                                   HtmlUtils.attr(HtmlUtils.ATTR_NAME,
+                                   HU.attr(HU.ATTR_NAME,
                                        "apisearchform")));
-        formSB.append(HtmlUtils.br());
+        formSB.append(HU.submit("Search", ARG_SEARCH_SUBMIT));
+        formSB.append(HU.br());
+
         if (getSearchManager().isLuceneEnabled()) {
             String ancestor = request.getString(ARG_ANCESTOR + "_hidden",
                                   request.getString(ARG_ANCESTOR, null));
@@ -613,45 +616,36 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 	    formSB.append(select);
         }
 
+	String vspace = "<div style='height:0.5em'></div>";
 
 
-        formSB.append(HtmlUtils.formTable());
         if (showDefault && showText) {
-	    HU.formEntry(formSB,
-			 HtmlUtils.input(ARG_TEXT,
-					 request.getSanitizedString(ARG_TEXT, ""),
-					 HU.attr("placeholder","Text")+
-					 HtmlUtils.id("searchinput")
-					 + HtmlUtils.SIZE_25
-					 + " autocomplete='off'   autofocus "));
-            formSB.append("<div id=searchpopup xclass=ramadda-popup></div>");
-            /*
-            formSB.append(
-                HtmlUtils.script(
-                    "Utils.searchSuggestInit('searchinput',"
-                    + ((theType == null)
-                       ? "null"
-                       : "'" + theType + "'") + ");"));
-            */
-
+	    formSB.append(vspace);
+	    formSB.append(HU.input(ARG_TEXT,  request.getSanitizedString(ARG_TEXT, ""),
+				  HU.attr("placeholder","Text")+
+				  HU.id("searchinput")
+				  + HU.SIZE_25
+				  + " autocomplete='off'   autofocus "));
         }
 
         if (showDefault && showName) {
-            formSB.append(HtmlUtils.formEntry(msgLabel("Name"),
-                    HtmlUtils.input(ARG_NAME,
-                                    request.getSanitizedString(ARG_NAME, ""),
-                                    HtmlUtils.SIZE_15 + " autofocus ")));
+	    formSB.append(vspace);
+            formSB.append(HU.input(ARG_NAME,
+				   request.getSanitizedString(ARG_NAME, ""),
+				   HU.SIZE_15 + " autofocus " + HU.attr("placeholder","Name")));
         }
 
         if (showDefault && showDesc) {
-            formSB.append(
-                HtmlUtils.formEntry(
-                    msgLabel("Description"),
-                    HtmlUtils.input(
+	    formSB.append(vspace);
+            formSB.append(HU.input(
                         ARG_DESCRIPTION,
                         request.getSanitizedString(ARG_DESCRIPTION, ""),
-                        HtmlUtils.SIZE_15 + " autofocus ")));
+                        HU.SIZE_15 + " autofocus "+
+			HU.attr("placeholder","Description")));
         }
+
+
+        formSB.append(HU.formTable());
 
         if (showDefault && showDate) {
             TypeHandler.addDateSearch(getRepository(), request, formSB,
@@ -673,9 +667,9 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                                     ""), };
 
             MapInfo selectMap =
-                getRepository().getMapManager().createMap(request, null,
-                    true, null);
+                getRepository().getMapManager().createMap(request, null, true, null);
             String mapSelector = selectMap.makeSelector(ARG_AREA, true, nwse);
+	    request.putExtraProperty("mapselectorid",selectMap.getMapId());
             HU.formEntry(formSB,HU.b(msgLabel("Location"))+ HU.br()+mapSelector);
         }
 
@@ -684,9 +678,9 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             for (SyntheticField field : syntheticFields) {
                 String id = field.id;
                 formSB.append(formEntry(request, msgLabel(field.label),
-                                        HtmlUtils.input(id,
+                                        HU.input(id,
                                             request.getSanitizedString(id,
-                                                ""), HtmlUtils.SIZE_20)));
+                                                ""), HU.SIZE_20)));
             }
         }
 
@@ -711,14 +705,14 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 	HU.formEntry(formSB, HU.b("Max:")+HU.space(1) +
 		     HU.input(ARG_MAX,request.getString(ARG_MAX,"50"),
-			      HtmlUtils.SIZE_5));
+			      HU.SIZE_5));
         StringBuffer buttons = new StringBuffer();
-        buttons.append(HtmlUtils.submit("Search", ARG_SEARCH_SUBMIT));
+        buttons.append(HU.submit("Search", ARG_SEARCH_SUBMIT));
         boolean doSearch = true;
         if (doSearch) {
             buttons.append(" ");
             String baseUrl = request.getUrl();
-            buttons.append(HtmlUtils.br());
+            buttons.append(HU.br());
             StringBuffer links = new StringBuffer();
             for (OutputType outputType : new OutputType[] {
 		    XmlOutputHandler.OUTPUT_XML,
@@ -729,34 +723,34 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 		}) {
                 if (outputType.getIcon() != null) {
                     links.append(
-				 HtmlUtils.img(getIconUrl(outputType.getIcon()),"",
+				 HU.img(getIconUrl(outputType.getIcon()),"",
 					       HU.attr(HU.ATTR_WIDTH, ICON_WIDTH)));
                     links.append(" ");
                 }
 
                 links.append(
-                    HtmlUtils.href(
+                    HU.href(
                         baseUrl + "&"
-                        + HtmlUtils.arg(
+                        + HU.arg(
                             ARG_OUTPUT,
                             outputType.toString()), outputType.getLabel()));
-                links.append(HtmlUtils.br());
+                links.append(HU.br());
             }
-            buttons.append(HtmlUtils.makeShowHideBlock(msg("More..."),
+            buttons.append(HU.makeShowHideBlock(msg("More..."),
                     links.toString(), false));
         }
 
 
         if (request.exists(ARG_USER_ID)) {
-            formSB.append(HtmlUtils.formEntry(msgLabel("User"),
-                    HtmlUtils.input(ARG_USER_ID,
+            formSB.append(HU.formEntry(msgLabel("User"),
+                    HU.input(ARG_USER_ID,
                                     request.getSanitizedString(ARG_USER_ID,
-                                        ""), HtmlUtils.SIZE_20)));
+                                        ""), HU.SIZE_20)));
         }
 
 	HU.formEntry(formSB, buttons.toString());
-        formSB.append(HtmlUtils.formTableClose());
-        formSB.append(HtmlUtils.formClose());
+        formSB.append(HU.formTableClose());
+        formSB.append(HU.formClose());
         formSB.append("</div>");
 
 
