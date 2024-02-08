@@ -492,7 +492,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                     getPageHandler().showDialogNote("Properties added"));
                 sb.append(
                     getRepository().getHtmlOutputHandler().getInformationTabs(
-									      request, entry, false,null,true));
+									      request, entry, false,null,true,null));
                 getPageHandler().entrySectionClose(request, entry, sb);
 
             } else {
