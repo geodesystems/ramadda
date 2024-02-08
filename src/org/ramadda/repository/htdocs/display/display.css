@@ -2262,20 +2262,20 @@ font-weight:bold;
 }
 
 .display-slides-slide {
-    margin-left:10px;
-    margin-right:10px;    
+    margin-left:20px;
+    margin-right:20px;    
 }
 
 .display-slides-arrow-left  {
     cursor:pointer;
     position:absolute;
-    left:10px;
+    left:5px;
     top:10px;
 }
 
 .display-slides-arrow-right  {
     position:absolute;
-    right:10px;
+    right:5px;
     top:10px;
     cursor:pointer;
 }

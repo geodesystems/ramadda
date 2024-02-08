@@ -960,8 +960,8 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    this.thumbnailField = this.getFieldById(null, this.getProperty("thumbnailField")) || this.mediaField;
 	    let slideWidth = this.getProperty('slideWidth','100%');
             let height = this.getHeightForStyle('400');
-	    let left = HU.div([ID, this.domId(ID_PREV), STYLE,HU.css('font-size','200%'),CLASS,'ramadda-clickable display-slides-arrow-left fas fa-angle-left']);
-	    let right = HU.div([ID, this.domId(ID_NEXT), STYLE,HU.css('font-size','200%'), CLASS,'ramadda-clickable  display-slides-arrow-right fas fa-angle-right']);
+	    let left = HU.div([ID, this.domId(ID_PREV), STYLE,HU.css('font-size','150%'),CLASS,'ramadda-clickable display-slides-arrow-left fas fa-angle-left']);
+	    let right = HU.div([ID, this.domId(ID_NEXT), STYLE,HU.css('font-size','150%'), CLASS,'ramadda-clickable  display-slides-arrow-right fas fa-angle-right']);
 	    let slide = HU.div([ATTR_CLASS,'display-slides-slide',
 				ATTR_STYLE,HU.css('overflow-y','auto','max-height', height), ID, this.domId(ID_SLIDE), CLASS,'display-slides-slide']);
 

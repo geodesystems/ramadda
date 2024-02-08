@@ -1062,22 +1062,21 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    } 
 	},
 	highlightElement: function(args) {
-
-	    var id = "#" + this.getId()+"-"+args.record.getId();
-	    var element = $(id);
+	    let id = "#" + this.getId()+"-"+args.record.getId();
+	    let element = $(id);
 	    this.highlightedElement = element;
 	    element.addClass("display-template-record-highlight");
-	    var css = this.getProperty("highlightOnCss","").split(";");
+	    let css = this.getProperty("highlightOnCss","").split(";");
 	    if(css.length>0) {
 		css.map(tok=>{
-		    var c = tok.split(":");
-		    var a = c[0];
-		    var v = c.length>1?c[1]:null;
+		    let c = tok.split(":");
+		    let a = c[0];
+		    let v = c.length>1?c[1]:null;
 		    if(!v || v=="") {
 			v = element.attr("prev-" + a);
 		    }
 		    if(v) {
-			var oldV = element.css(a);
+			let oldV = element.css(a);
 			if(oldV) {
 			    element.attr("prev-" + a,oldV);
 			}
@@ -1090,15 +1089,14 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		if(this.getScrollOnHighlight() && !args.skipScroll) {
 		    let eo = element.offset();
 		    if(eo==null) return;
-		    let container = this.getContents();
-		    container = this.jq(ID_DISPLAY_CONTAINER);
+		    let container =  element.parent();
 		    if(this.getProperty("orientation","vertical")== "vertical") {
 			let c = container.offset().top;
 			let s = container.scrollTop();
 			container.scrollTop(eo.top- c + s)
 		    } else {
-			var c = container.offset().left;
-			var s = container.scrollLeft();
+			let c = container.offset().left;
+			let s = container.scrollLeft();
 			container.scrollLeft(eo.left- c + s)
 		    }
 		}
