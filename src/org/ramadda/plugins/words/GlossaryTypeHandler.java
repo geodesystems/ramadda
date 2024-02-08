@@ -147,9 +147,13 @@ public class GlossaryTypeHandler extends LetterTypeHandler {
         StringBuffer sb = new StringBuffer();
         getPageHandler().entrySectionOpen(request, group, sb, null);
 
+        sb.append(getWikiManager().wikifyEntry(request, group, group.getDescription()));
         sb.append(getWikiManager().wikifyEntry(request, group,
-                group.getDescription()));
-        sb.append(HtmlUtils.p());
+					       ":vspace 0.5em\n+center\n+hbox\n{{display_simplesearch  inputSize=200 width=200 ancestor=this }}\n-hbox\n"
+					       +
+					       "+hbox\n&nbsp;&nbsp;<a href='{{root}}/search/type/glossaryentry?ancestor={{this}}' title='Go to search form'><i class='fas fa-magnifying-glass-arrow-right'></i></a>\n-hbox\n-center\n")); 
+
+
 
         boolean canAdd = getAccessManager().canDoNew(request, group);
 
@@ -196,9 +200,17 @@ public class GlossaryTypeHandler extends LetterTypeHandler {
                 letters.add(letter);
                 letterBuffer.append("<ul class=\"glossary_entries\">");
             }
-            String href = getEntryManager().getAjaxLink(request, entry, name).toString();
-            letterBuffer.append(
-                HtmlUtils.li(href, HtmlUtils.cssClass("glossary_entry")));
+	    //	    String href=getEntryManager().getEntryLink(request,entry,"");
+	    String href=entry.getName();
+	    String desc = HU.insetDiv(getWikiManager().wikifyEntry(request, entry,entry.getDescription()),
+				      0,30,0,0);
+	    //            String href = getEntryManager().getAjaxLink(request, entry, name).toString();
+	    letterBuffer.append(HU.makeShowHideBlock(href,  desc,false,
+						     HU.cssClass("entry-toggleblock-label ramadda-hoverable"), "",
+						     getIconUrl(ICON_TOGGLEARROWDOWN),
+						     getIconUrl(ICON_TOGGLEARROWRIGHT)));
+	    //            letterBuffer.append(HtmlUtils.li(href, HtmlUtils.cssClass("glossary_entry")));
+	    //            letterBuffer.append(HtmlUtils.li(href, HtmlUtils.cssClass("glossary_entry")));
         }
 
         letters = (List<String>) Misc.sort(letters);
