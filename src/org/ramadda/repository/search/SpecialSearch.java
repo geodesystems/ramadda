@@ -437,7 +437,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
         }
 
-	//xxxx
 	String id = (String)request.getExtraProperty("mapselectorid");
 	if(id==null) id = ARG_AREA;
         String initParams = HU.squote(id) + "," + true + "," + "0";
@@ -669,6 +668,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             MapInfo selectMap =
                 getRepository().getMapManager().createMap(request, null, true, null);
             String mapSelector = selectMap.makeSelector(ARG_AREA, true, nwse);
+	    mapSelector +=TypeHandler.getSpatialSearchTypeWidget(request);
 	    request.putExtraProperty("mapselectorid",selectMap.getMapId());
             HU.formEntry(formSB,HU.b(msgLabel("Location"))+ HU.br()+mapSelector);
         }
