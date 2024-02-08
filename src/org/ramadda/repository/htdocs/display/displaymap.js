@@ -162,7 +162,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
             let _this = this;
             let html = "";
             let extraStyle="";
-            let height = this.getProperty("height", this.getProperty("mapHeight", 300));
+            let height = this.getProperty("height", this.getProperty("mapHeight", '70vh'));
             if (height < 0) {
 		height = (-height)+"%";
 	    }
@@ -823,6 +823,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         theMap: null,
 	layerVisible:true
     });
+
+    
 
 
     const SUPER = new RamaddaBaseMapDisplay(displayManager, id, DISPLAY_MAP, properties);

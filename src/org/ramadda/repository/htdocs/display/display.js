@@ -1663,7 +1663,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'headerDiv',tt:'div id of an alternate place to display the header'},
 	{p:'footerDiv',tt:'div id of an alternate place to display the footer'},		
 	{p:'width',doGetter:false,ex:'100%'},
-	{p:'height',doGetter:false,ex:'400'},
+	{p:'height',doGetter:false,ex:'400px'},
 	{p:'noWrapper',ex:true,tt:'Don\'t make the header and footer. Just this core display'},
 	{p:'imageWidth',canCache:true},		
 	{p:'includeFieldDescriptionInTooltip',canCache:true,d:true},
