@@ -1129,8 +1129,8 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 				    ? entry.getName()
 				    : "",
 				    HU.cssClass(HU.CLASS_DISABLEDINPUT+" ramadda-clickable")+
-				    HU.attr("title","Click to select entry")+
-				    HU.attr("onclick",event)+
+				    HU.attrs("title","Click to select entry",
+					     "onclick",event)+
 				    HU.SIZE_25 + HU.id(elementId));
 	}
         return link;

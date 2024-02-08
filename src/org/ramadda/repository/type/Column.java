@@ -3808,7 +3808,9 @@ public class Column implements DataTypes, Constants, Cloneable {
         }
 
 
-        typeHandler.formEntry(formBuffer, request, getLabel() + ":",widget);
+	HU.formEntry(formBuffer,    HU.b(getLabel()) + ":<br>"+widget);
+	//        typeHandler.formEntry(formBuffer, request, getLabel() + ":",widget);
+
         formBuffer.append("\n");
 
     }
