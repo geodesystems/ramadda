@@ -6331,7 +6331,7 @@ public class TypeHandler extends RepositoryManager {
 
         String dateSelectValue;
         List   dateSelect = new ArrayList();
-        dateSelect.add(new TwoFacedObject("---", "none"));
+        dateSelect.add(new TwoFacedObject("Search Relative", "none"));
         dateSelect.add(new TwoFacedObject(msg("Past hour"), "-1 hour"));
         dateSelect.add(new TwoFacedObject(msg("Past 3 hours"), "-3 hours"));
         dateSelect.add(new TwoFacedObject(msg("Past 6 hours"), "-6 hours"));
@@ -6376,11 +6376,13 @@ public class TypeHandler extends RepositoryManager {
                 noDateInput
             }), false);
         } else {
+/*
             dateExtra = HU.makeToggleInline(msg("More..."),
 					    HU.br()+
 					    HU.b(msgLabel("Search relative"))+HU.br()+
 					    dateSelectInput, false);
-
+*/
+            dateExtra =dateSelectInput;
         }
 
         String fromField = repository.getDateHandler().makeDateInput(request,
