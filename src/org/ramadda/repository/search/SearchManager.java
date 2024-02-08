@@ -370,6 +370,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		//		writer.close();
 	    }
 	} catch(Throwable thr) {
+	    thr.printStackTrace();
 	    throw new RuntimeException(thr);
 	}
     }
@@ -446,6 +447,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         return  new Callable<Boolean>() {
             public Boolean call() {
                 try {
+		    final Request request =getRepository().getAdminRequest();
 		    for(String id: ids) {
 			if(!getRepository().getActive()) return true;
 			Entry entry = getEntryManager().getEntry(null, id,false);
@@ -454,7 +456,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			    cnt[0]++;
 			    System.err.println("#" + cnt[0] +"/"+ total +" entry:" + entry.getName());
 			}
-			indexEntry(indexWriter, entry, null, false);
+			indexEntry(indexWriter, entry, request, false);
 			getEntryManager().removeFromCache(entry);
 			if(!ok[0]) break;
 			if(actionId!=null) {
@@ -470,6 +472,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    }
                     return Boolean.TRUE;
                 } catch (Exception exc) {
+		    exc.printStackTrace();
                     throw new RuntimeException(exc);
                 }
             }
