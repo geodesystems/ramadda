@@ -46,7 +46,6 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 
     //Default to a tooltip
     if(!properties.tooltip) properties.tooltip='${default}';
-
     this.myycnt = ++ycnt;
     this.myName = "map " + (this.myycnt);
     const SUPER = new RamaddaDisplay(displayManager, id, type,   properties);
@@ -2838,7 +2837,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	    let textGetter = (f)=>{
 		if(f.record) {
-                    return  this.getRecordHtml(f.record, null, this.getProperty("tooltip"));
+                    return  this.getRecordHtml(f.record, null, this.getTooltip());
 		}
 		return "NONE";
 	    };
@@ -4057,7 +4056,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    
 
 
-	    let tooltip = this.getProperty("tooltip");
+	    let tooltip = this.getTooltip();
 	    let haveTooltip = Utils.stringDefined(tooltip);
 	    let highlight = this.getProperty("highlight");
 	    let highlightTemplate = this.getProperty("highlightTemplate");
@@ -4715,7 +4714,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         },
 
 	getTextGetter:function(fields) {
-	    let tooltip = this.getProperty("tooltip");
+	    let tooltip = this.getTooltip();
 	    return  this.textGetter = f=>{
 		if(!Utils.stringDefined(tooltip)) {
 		    if(debugPopup) console.log("No tooltip");

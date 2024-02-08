@@ -1475,6 +1475,11 @@ function DisplayThing(argId, argProperties) {
 	    return this.getProperty(prop,dflt);
 	},
 
+	getTooltip:function() {
+	    let tooltip = this.getProperty('tooltip');
+	    if(tooltip=='none') tooltip=null;
+	    return tooltip;
+	},
         getProperty: function(key, dflt, skipThis, skipParent) {
 	    let debug = displayDebug.getProperty;
 	    if(!this.getPropertyCounts[key]) {
@@ -7178,8 +7183,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(!this.getProperty("showTooltips",true)) {
 		return;
 	    }
-	    let tooltip = tooltipArg ?? this.getProperty('tooltip');
-	    if(tooltip==null) {
+	    let tooltip = tooltipArg ?? this.getTooltip();
+	    if(tooltip==null || tooltip=='none') {
 		return;
 	    }
 	    let _this = this;
