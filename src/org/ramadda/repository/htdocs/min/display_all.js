@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Feb  7 15:13:45 MST 2024";
+var build_date="RAMADDA build date: Wed Feb  7 19:08:59 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -5468,7 +5468,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'headerDiv',tt:'div id of an alternate place to display the header'},
 	{p:'footerDiv',tt:'div id of an alternate place to display the footer'},		
 	{p:'width',doGetter:false,ex:'100%'},
-	{p:'height',doGetter:false,ex:'400'},
+	{p:'height',doGetter:false,ex:'400px'},
 	{p:'noWrapper',ex:true,tt:'Don\'t make the header and footer. Just this core display'},
 	{p:'imageWidth',canCache:true},		
 	{p:'includeFieldDescriptionInTooltip',canCache:true,d:true},
@@ -35843,7 +35843,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
             let _this = this;
             let html = "";
             let extraStyle="";
-            let height = this.getProperty("height", this.getProperty("mapHeight", 300));
+            let height = this.getProperty("height", this.getProperty("mapHeight", '70vh'));
             if (height < 0) {
 		height = (-height)+"%";
 	    }
@@ -36504,6 +36504,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         theMap: null,
 	layerVisible:true
     });
+
+    
 
 
     const SUPER = new RamaddaBaseMapDisplay(displayManager, id, DISPLAY_MAP, properties);
