@@ -6369,13 +6369,13 @@ public class TypeHandler extends RepositoryManager {
             dateExtra = HU.makeToggleInline(msg("More..."),
                     HU.br() + HU.formTable(new String[] {
                 msgLabel("Search for data whose time is"), dateTypeInput,
-                msgLabel("Or search relative"), dateSelectInput, "",
+                msgLabel("Search relative"), dateSelectInput, "",
                 noDateInput
             }), false);
         } else {
             dateExtra = HU.makeToggleInline(msg("More..."),
 					    HU.br()+
-					    HU.b(msgLabel("Or search relative"))+HU.br()+
+					    HU.b(msgLabel("Search relative"))+HU.br()+
 					    dateSelectInput, false);
 
         }
