@@ -31,7 +31,7 @@ displayStyle="font-size:80%;"
 numericOnly=true  showPopup=true
 }}
 {{display_linechart fields=TEMPERATURE_REVERSE_FLOW_SENSOR}} 
-{{display_map  doAnimation=true
+{{display_map  doAnimation=true height="400px"
 animationMode=sliding
 animationStartShowAll=true   
 animationMode=cumulative 
