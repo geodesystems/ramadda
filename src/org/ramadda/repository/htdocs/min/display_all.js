@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Feb  7 22:15:55 MST 2024";
+var build_date="RAMADDA build date: Thu Feb  8 05:17:21 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -23600,9 +23600,10 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    this.thumbnailField = this.getFieldById(null, this.getProperty("thumbnailField")) || this.mediaField;
 	    let slideWidth = this.getProperty('slideWidth','100%');
             let height = this.getHeightForStyle('400');
-	    let left = HU.div([ID, this.domId(ID_PREV), STYLE,HU.css('font-size','200%'),CLASS,'ramadda-clickable display-slides-arrow-left fas fa-angle-left']);
-	    let right = HU.div([ID, this.domId(ID_NEXT), STYLE,HU.css('font-size','200%'), CLASS,'ramadda-clickable  display-slides-arrow-right fas fa-angle-right']);
-	    let slide = HU.div([STYLE,HU.css('overflow-y','auto','max-height', height), ID, this.domId(ID_SLIDE), CLASS,'display-slides-slide']);
+	    let left = HU.div([ID, this.domId(ID_PREV), STYLE,HU.css('font-size','150%'),CLASS,'ramadda-clickable display-slides-arrow-left fas fa-angle-left']);
+	    let right = HU.div([ID, this.domId(ID_NEXT), STYLE,HU.css('font-size','150%'), CLASS,'ramadda-clickable  display-slides-arrow-right fas fa-angle-right']);
+	    let slide = HU.div([ATTR_CLASS,'display-slides-slide',
+				ATTR_STYLE,HU.css('overflow-y','auto','max-height', height), ID, this.domId(ID_SLIDE), CLASS,'display-slides-slide']);
 
 	    let top = "";
 	    this.showStrip = this.thumbnailField && this.getProperty("showStrip");
@@ -23610,10 +23611,8 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 		let stripStyle = HU.css('overflow-x','auto','max-width','100%') +this.getProperty('stripStyle','');
 		top = HU.div([ID,this.domId(ID_STRIP),CLASS,'display-slides-strip','tabindex','0','style',stripStyle]);
 	    }
-	    let navStyle = 'padding-top:20px;';
-	    let contents = top+'<table width=100%><tr valign=top><td width=25>' + HU.div([STYLE,navStyle], left) + '</td><td>' +
-					 slide + '</td>' +
-					 '<td width=25>' + HU.div([STYLE,navStyle],right) + '</td></tr></table>';
+	    let contents = top+HU.div([ATTR_STYLE,HU.css('position','relative')],
+				      slide + left + right);
 
 	    this.setContents(contents);
 
@@ -30375,22 +30374,21 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    } 
 	},
 	highlightElement: function(args) {
-
-	    var id = "#" + this.getId()+"-"+args.record.getId();
-	    var element = $(id);
+	    let id = "#" + this.getId()+"-"+args.record.getId();
+	    let element = $(id);
 	    this.highlightedElement = element;
 	    element.addClass("display-template-record-highlight");
-	    var css = this.getProperty("highlightOnCss","").split(";");
+	    let css = this.getProperty("highlightOnCss","").split(";");
 	    if(css.length>0) {
 		css.map(tok=>{
-		    var c = tok.split(":");
-		    var a = c[0];
-		    var v = c.length>1?c[1]:null;
+		    let c = tok.split(":");
+		    let a = c[0];
+		    let v = c.length>1?c[1]:null;
 		    if(!v || v=="") {
 			v = element.attr("prev-" + a);
 		    }
 		    if(v) {
-			var oldV = element.css(a);
+			let oldV = element.css(a);
 			if(oldV) {
 			    element.attr("prev-" + a,oldV);
 			}
@@ -30403,15 +30401,14 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		if(this.getScrollOnHighlight() && !args.skipScroll) {
 		    let eo = element.offset();
 		    if(eo==null) return;
-		    let container = this.getContents();
-		    container = this.jq(ID_DISPLAY_CONTAINER);
+		    let container =  element.parent();
 		    if(this.getProperty("orientation","vertical")== "vertical") {
 			let c = container.offset().top;
 			let s = container.scrollTop();
 			container.scrollTop(eo.top- c + s)
 		    } else {
-			var c = container.offset().left;
-			var s = container.scrollLeft();
+			let c = container.offset().left;
+			let s = container.scrollLeft();
 			container.scrollLeft(eo.left- c + s)
 		    }
 		}
