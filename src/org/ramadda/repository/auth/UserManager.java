@@ -2540,6 +2540,7 @@ public class UserManager extends RepositoryManager {
             if (request.exists(ARG_USER_PASSWORD1)) {
                 if (checkAndSetNewPassword(request, user)) {
                     applyUserProperties(request, user, false);
+		    changePassword(user);
                     sb.append(messageNote(msg("Your password has been reset")));
                     sb.append(makeLoginForm(request));
                     addActivity(request, request.getUser(),
@@ -3723,6 +3724,7 @@ public class UserManager extends RepositoryManager {
 		sb.append(messageError(msg("Incorrect passwords")));
             } else {
 		//                sb.append(messageNote("Your password has been changed"));
+		changePassword(user);
                 sb.append(messageNote("Your password has been changed"));		
                 addActivity(request, request.getUser(), ACTIVITY_PASSWORD_CHANGE, "");
             }
