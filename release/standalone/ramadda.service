@@ -1,0 +1,30 @@
+#
+#This is a template file for definining a RAMADDA service on CentOS
+#
+
+#Replace the <INSTALL_DIR> paths below with where you have the standalone RAMADDA installed
+#and copy this file to /etc/systemd/system/
+
+#run this to load
+#systemctl daemon-reload
+
+#To start RAMADDA do:
+#systemctl start ramadda
+
+#To stop:
+#systemctl stop ramadda
+
+[Unit]
+Description=RAMADDA
+
+[Service]
+ExecStart=/bin/bash -c "<INSTALL_DIR>/ramaddaserver/ramaddaService.sh start"
+ExecStop=/bin/bash -c "<INSTALL_DIR>/ramaddaserver/ramaddaService.sh stop"
+Restart=no
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=ramadda
+User=root
+
+[Install]
+WantedBy=multi-user.target
