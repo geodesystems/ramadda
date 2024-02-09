@@ -30,11 +30,13 @@ start() {
     then
         echo "RAMADDA already started. PID: [$( cat $PID )]"
     else
-        echo "RAMADDA start"
+        echo "RAMADDA start. Running $COMMAND"
         touch $PID
+
         if nohup $COMMAND >>$LOG 2>&1 &
         then echo $! >$PID
              echo "$(date '+%Y-%m-%d %X'): START" >>$LOG
+	     wait $!
         else echo "Error... "
              /bin/rm $PID
         fi
