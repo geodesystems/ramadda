@@ -475,7 +475,7 @@ var Utils =  {
     },
     addCopyLink:function(id) {
 	let contents=jqid(id).html();
-	contents = contents.replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&amp;/g,"&");
+	contents = contents.replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&amp;/g,"&").trim();
 	let div = jqid(id);
 	div.css('position','relative');
 	let copyId = id+"_copy";
