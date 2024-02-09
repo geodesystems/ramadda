@@ -67,7 +67,7 @@ public class AuthManager extends RepositoryManager {
      */
     public AuthManager(Repository repository) {
         super(repository);
-	doPassword = repository.getLocalProperty("ramadda.auth.dopassword",true);	
+	doPassword = repository.getLocalProperty("ramadda.auth.dopassword",false);	
 	doCaptcha = repository.getLocalProperty("ramadda.auth.docaptcha",false);
 	defaultCaptcha = new Captcha(this,-1,"","");
 	if(doCaptcha && !doPassword) {
