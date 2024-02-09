@@ -100,42 +100,83 @@ service- [https://nssm.cc/ https://nssm.cc/]
 
 
 <a name="standalone"></a><p><div class="ramadda-help-heading">9.0.2 <a href="#standalone">Running Standalone</a></div> 
-You can run RAMADDA stand-alone from the command line. This requires  Java 1.8 or greater. 
+You can run RAMADDA stand-alone from the command line. This requires  Java 8 or greater. 
+First you should set up a ramaddainstall directory,  e.g.:
++pre addCopy=true
+mkdir  ramaddainstall
+-pre
 
-<ol>
-<li> Download the ramaddaserver.zip from the <a href="https://ramadda.org/repository/alias/release">Geode Systems</a> site.
-<li> Unzip the file and consult the README.
-<li> The minimal thing you have to do is to determine where you want the RAMADDA
-<a href="#home">home directory</a> to be. 
+Change directory into the  <i>ramaddainstall</i> directory and
+download the ramaddaserver.zip file from the ramadda.org
+<a target=_install href="https://ramadda.org/repository/entry/show?entryid=synth:498644e1-20e4-426a-838b-65cffe8bd66f:L3JhbWFkZGFzZXJ2ZXIuemlw">download area</a>
+
+The file download URL to use is:
++pre addCopy=true addDownload=true downloadFile=wget.sh
+wget  -O ramaddaserver.zip https://ramadda.org/repository/entry/get/ramaddaserver.zip?entryid=synth%3A498644e1-20e4-426a-838b-65cffe8bd66f%3AL3JhbWFkZGFzZXJ2ZXIuemlw
+-pre
+
+Once downloaded unzip the file:
++pre addCopy=true
+unzip ramaddaserver.zip
+-pre  
+
+This creates a <i>ramaddaserver</i> directory that has everything that is needed to run RAMADDA.
+You can consult the README.
+You shouldn't have to change anything in this directory so when updating RAMADDA simply shut down
+your RAMADDA server, delete the  <i>ramaddaserver</i> directory and repeat the download/unzip steps above.
+:p
+Copy the ramadda.env file from <i>ramaddaserver</i> into the parent directory (ramaddainstall).
+This file gets sourced by ramaddaserver/ramadda.sh and defines where your RAMADDA home is,
+what port RAMADDA should run on and where Java is found.
+
++pre addCopy=true
+cp ramaddaserver/ramadda.env .
+-pre
+
+Edit this file and set the following environment variables:
++pre addCopy=true
+export RAMADDA_HOME=/path/to/ramaddahome
+export RAMADDA_PORT=80
+export JAVA=/path/to/java  
+-pre
+
+
+The minimal thing you have to do is to determine where you want the RAMADDA <a href="#home">home directory</a> to be. 
 The default is <i>&lt;your home dir&gt;/.ramadda</i>. To run RAMADDA there must
 be a home directory already created. When RAMADDA first runs it writes an install.properties file
-in the home directory that contains an install password as below. This needs to be entered in your browser for the final configuration.
+in the home directory that contains an install password as below. This needs to be
+entered in your browser for the final configuration.
 <pre>
 ramadda.install.password=&lt;some password&gt; 
 </pre>
 
 
-Just run the script:
+To run RAMADDA just run the script:
 <pre>
-   sh ramaddaserver/ramadda.sh -home &lt;/your/ramadda/home/dir&gt;
+sh ramaddaserver/ramadda.sh
 </pre>
 
-This runs with the built-in Java Derby database which work just fine. If you want to use an external database (e.g., Postgres, MySQL)
+
+If not configured in ramadda.env you can specify the home directory and port as  command line arguments:
+<pre>
+sh ramaddaserver/ramadda.sh -home &lt;/your/ramadda/home/dir&gt; -port &lt;8080&gt;
+</pre>
+
+
+You can also specify the install password with
+<pre>
+sh ramaddaserver/ramadda.sh -home &lt;/your/ramadda/home/dir&gt; -installpassword &lt;password&gt;
+</pre>
+
+
+This runs with the built-in Java Derby database which work just fine.
+If you want to use an external database (e.g., Postgres, MySQL)
 then go and read the documentation.
 
-<p>
+:p
 
-
-<li> The rest of the RAMADDA configuration is done through the web at
+The rest of the RAMADDA configuration is done through the web at
 <a href="http://localhost:8080/repository">http://localhost:8080/repository</a>.
-<br>
-
-<li> By default the server is on port 8080.  To change the port do:<pre>
-    sh ramadda.sh -home &lt;/your/ramadda/home/dir&gt; -port &lt;some port&gt;
-</pre>
-
-</ol>
-
 
 
 <a name="tomcat"></a><p><div class="ramadda-help-heading">9.0.3 <a href="#tomcat">Running under Tomcat</a></div> 
@@ -174,18 +215,19 @@ more information.
 
 <a name="home"></a><p><div class="ramadda-help-heading">9.0.4 <a href="#home">RAMADDA Home Directory</a></div> 
 
-
 RAMADDA uses a local home directory on the server.
 This is where RAMADDA looks for properties files and other resources, where the 
 Java derby database is stored  (if its used) and where any uploaded data files are stored, etc. 
-<p>
-<b>
-Note: the home directory needs to be owned or writable by the process that the server is running under. So, if you are running Tomcat then the home directory should be owned by the Tomcat process.
-</b>
+
++callout-info
+Note: the home directory needs to be owned or writable by the process that the server is running under.
+If you are running Tomcat then the home directory should be owned by the Tomcat process.
+-callout
 
 <p>
-By default ramadda will use: <pre>
-   &lt;server process home directory&gt;/.ramadda</pre>
+By default ramadda will use: 
+<pre>
+&lt;server process home directory&gt;/.ramadda</pre>
 i.e., the home directory of the process that is running the server (.e.g., "~", "tomcat").
 <p>
 You can override this by setting a <i>ramadda_home</i> property. You can do this in a number of ways:
@@ -365,36 +407,67 @@ See the <a href='faq.html#fixssl'>FAQ</a> for how to fix this.
 <a name="ssljetty"></a>
 <h3>Configuring SSL when running standalone</h3>
 To configure secure SSL access to a stand-alone version of RAMADDA you need to
-generate a keystore. 
-
-Since you are running stand-alone you must already have Java installed on your machine. Java provides
-a command line tool - <i>keytool</i> for generating a keystore.
-There is more information <a href="http://docs.oracle.com/javase/tutorial/security/toolsign/step3.html">here</a>.
-
-From the command line run:
+generate a keystore file from a certificate or generate a self-signed certificate.
+If using a self-signed certificate browser when you first access your RAMADDA  via https
+your browser will alert you to a security warning which you need to accept.
+Both of these methods use Java's  <i>keytool</i> program which comes with the standard Java install.
+:p
+To generate a self-signed certificate from the command line run:
 <pre>
 keytool -genkey -keyalg RSA -keystore keystore.jks
 </pre>
 
+This will prompt you for some information and a password.
+There is more information <a href="http://docs.oracle.com/javase/tutorial/security/toolsign/step3.html">here</a>.
 
-Once you have your keystore file generated you can copy it to the RAMADDA home directory as 
-file &quot;keystore&quot;. You then need to specify some configuration options for RAMADDA 
-through a .properties file that you place in the RAMADDA home directory. e.g., ssl.properties:
+
+
+If you have an existing certificate  you need both the keytool and
+<a href=https://www.openssl.org/>openssl </a> installed.
+Consult <a href=https://stackoverflow.com/questions/11952274/how-can-i-create-keystore-from-an-existing-certificate-abc-crt-and-abc-key-fil>web documentation</a> on how to generate the keystore.jks file from your existing
+certificate.
+:p
+Once you have your keystore.jks file generated copy it to the RAMADDA home directory
+then specify the below configuration options 
+in a .properties file in your  RAMADDA home directory. e.g., ssl.properties:
 
 <pre>
 ramadda.ssl.password=&lt;the password&gt;
 ramadda.ssl.keypassword=&lt;the keystore password&gt;
-ramadda.ssl.port=&lt;the ssl port&gt;
+ramadda.ssl.port=443
 
 #You can override the location of the keystore. The default is:
-#&lt;repository dir&gt;/keystore
+#&lt;repository dir&gt;/keystore.jks
 #ramadda.ssl.keystore=alternative path to keystore
 
-#If you want to skip ssl for now set this to true
+#If you want to disable ssl set this to true
 #ramadda.ssl.ignore=true
 
 </pre>
 
+
+<a name="letsencrypt"></a>
+<h3>Using letsencrypt.org to create a certificate</h3>
+If you want to have a valid signed certificate you can use
+<a href=https://letsencrypt.org/>https://letsencrypt.org/</a> to create free self-signed certificate.
+This requires you to have a domain name for your server's IP address and the following packages installed:
+<ul>
+<li> certbot-auto:  <a href=https://certbot.eff.org/docs/install.html#certbot-auto>https://certbot.eff.org/docs/install.html#certbot-auto</a>
+<li> openssl: <a href=https://www.openssl.org/>https://www.openssl.org/</a>                                          <li> keytool - as described above
+</ul>
+
+Once you have a hostname and your RAMADDA running you can run a
+<a href=https://github.com/geodesystems/ramadda/blob/master/bin/makekeystore.sh>
+makekestore.sh</a> script provided by RAMADDA on your server to automate the
+certificate/keystore generation process and install the keystore on your RAMADDA.
+
+Copy the script to your server and run to see the command line options.
+<pre>
+sh  makekeystore.sh -help
+</pre>
+
+
+The only downside to using a certificate from letsencrypt is that you need to update it every 3 months.
 
 
 <a name="fromgit"></a><p><div class="ramadda-help-heading">9.0.8 <a href="#fromgit">Building RAMADDA from source</a></div> 
