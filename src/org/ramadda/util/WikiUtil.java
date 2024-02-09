@@ -939,17 +939,18 @@ public class WikiUtil implements HtmlUtilsConstants {
             if (chunk.type == chunk.TYPE_PRE || chunk.type==chunk.TYPE_XML) {
 		String id = HU.getUniqueId("block_");
 		String attrs = HU.attrs("id",id);
-		Hashtable props = null;
-		if(chunk.type==chunk.TYPE_XML) {
-		    props = HU.parseHtmlProperties(chunk.rest!=null?chunk.rest:"");
+		Hashtable props =  HU.parseHtmlProperties(chunk.rest!=null?chunk.rest:"");
+		boolean addLink  = false;
+		if(Utils.getProperty(props,"addCopy",false)) {
+		    attrs+=HU.attrs("add-copy","true");
+		    addLink=true;
 		}
-		if(props!=null) {
-		    if(Utils.getProperty(props,"addCopy",true)) attrs+=HU.attrs("add-copy","true");
-		    if(Utils.getProperty(props,"addDownload",true)) {
-			attrs+=HU.attrs("add-download","true");
-			attrs+=HU.attrs("download-file",Utils.getProperty(props,"downloadFile",Utils.getProperty(props,"downloadFileName","download.xml")));
-		    }
+		if(Utils.getProperty(props,"addDownload",false)) {
+		    addLink=true;
+		    attrs+=HU.attrs("add-download","true");
+		    attrs+=HU.attrs("download-file",Utils.getProperty(props,"downloadFile",Utils.getProperty(props,"downloadFileName",chunk.type == chunk.TYPE_PRE?"download.txt":"download.xml")));
 		}
+
 
 		buff.append("\n<pre ");
 		buff.append(attrs);
@@ -965,7 +966,8 @@ public class WikiUtil implements HtmlUtilsConstants {
 		}
                 buff.append(s);
                 buff.append("</pre>\n");
-		HU.script(buff,"Utils.addCopyLink('" +id+"');");
+		if(addLink)
+		    HU.script(buff,"Utils.addCopyLink('" +id+"');");
 
 		//                buff.append("</nowiki>");
                 continue;
