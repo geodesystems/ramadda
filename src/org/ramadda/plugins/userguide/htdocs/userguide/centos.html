@@ -101,9 +101,15 @@ ramaddaserver/ramadda.service
 
 Edit this file and change the two lines to point to where you have the  ramadda server directory:
 +pre 
-ExecStart=/bin/bash -c "&lt;INSTALL_DIR&gt;/ramaddaserver/ramaddaService.sh start"
+ExecStart=/bin/bash -c "&lt;INSTALL_DIR&gt;/ramaddaserver/ramaddaService.sh start wait"
 ExecStop=/bin/bash -c "&lt;INSTALL_DIR&gt;/ramaddaserver/ramaddaService.sh stop"
 -pre
+
+Note: the wait argument above is used to call wait in ramaddaSerice.sh because otherwise
+when the shell process exits it also kills the spawned ramadda.sh process. This is not
+the behavior on AWS Linux so the wait argument enables us to use this same ramaddaService script
+on both systems
+
       
 Copy this file to:
 +pre addCopy=true
@@ -111,10 +117,18 @@ Copy this file to:
 -pre
 
 
-To configure the service run:
+To load the service run:
 +pre addCopy=true
 systemctl daemon-reload
 -pre
+
+To enable the service to run on boot do:
++pre addCopy=true
+systemctl enable
+-pre
+
+
+
 
 To start or start ramadda:
 +pre
