@@ -140,6 +140,8 @@ public class AccessManager extends RepositoryManager {
     public static boolean debug = false;
     public static boolean debugAction = false;
 
+    public static boolean debugAll = false;
+
 
     /**
      * _more_
@@ -597,14 +599,16 @@ public class AccessManager extends RepositoryManager {
                                boolean log)
 	throws Exception {
 
-        boolean debug =debugAction;
+        boolean debug =debugAll;
+        boolean debugFail =debugAction || debug;
+
 	if(debug) System.err.println("canDoAction:" + action+" entry:" + entry);
         if (getRepository().isReadOnly()) {
             if ( !(action.equals(Permission.ACTION_VIEW)
 		   || action.equals(Permission.ACTION_EXPORT)
 		   || action.equals(Permission.ACTION_VIEWCHILDREN)
 		   || action.equals(Permission.ACTION_FILE))) {
-		if(debug) System.err.println("\tnot ok: isReadOnly");
+		if(debugFail) System.err.println("AccessManager: repository isReadOnly");
                 return false;
             }
         }
@@ -638,24 +642,25 @@ public class AccessManager extends RepositoryManager {
                                 boolean log, Entry entry, String action)
 	throws Exception {
 
-        boolean debug =debugAction;
+        boolean debug =debugAll;
+        boolean debugFail =debugAction || debug;
 	if(debug) System.err.println("canDoAction: user:" + user +" entry:" + entry +" action:" + action);
         if (entry == null) {
+	    if(debugFail) System.err.println("** AccessManager.canDoAction: no entry:" + entry);
             return false;
         }
 
         if (entry.getIsLocalFile()) {
             if (action.equals(Permission.ACTION_NEW)) {
-		if(debug) System.err.println("\tnot ok: newing a local file");
+		if(debugFail) System.err.println("** AccessManager.canDoAction: newing a local file:" + entry);
                 return false;
             }
             if (action.equals(Permission.ACTION_DELETE)) {
                 if (getStorageManager().isProcessFile(entry.getFile())) {
-		    if(debug) System.err.println("\tok:isLocalFile and action is delete");
                     return true;
                 }
 
-		if(debug) System.err.println("\tnot ok:isLocalFile");
+		if(debugFail) System.err.println("** AccessManager.canDoAction: isLocalFile and action is delete:" + entry);
                 return false;
             }
         }
@@ -672,7 +677,7 @@ public class AccessManager extends RepositoryManager {
                         + okToView);
             }
             if ( !okToView) {
-		if(debug) System.err.println("\tnot ok: cannot view");
+		if(debugFail) System.err.println("** AccessManager: cannot view:" + entry);
                 return false;
             }
         }
@@ -681,7 +686,7 @@ public class AccessManager extends RepositoryManager {
 
         if (user == null) {
             logInfo("Upload:canDoAction: user is null");
-	    if(debug) System.err.println("\tnot ok: not user");
+	    if(debugFail) System.err.println("** AccessManager: no user specified:" + entry);
             return false;
         }
 
@@ -691,12 +696,9 @@ public class AccessManager extends RepositoryManager {
             if (log) {
                 logInfo("Upload:user is admin");
             }
-
-            //            System.err.println("user is admin");
-	    if(debug) System.err.println("\tok: user is admin");
+	    if(debugFail) System.err.println("AccessManager: ok: user is admin");
             return true;
         }
-
 
 
         //If user is owner then they can do anything
@@ -705,7 +707,7 @@ public class AccessManager extends RepositoryManager {
                 logInfo("Upload:user is owner");
             }
 
-	    if(debug) System.err.println("\tok: user is owner of entry");
+	    if(debugFail) System.err.println("AccessManager: ok: user is owner of entry");
             return true;
         }
 
@@ -738,8 +740,7 @@ public class AccessManager extends RepositoryManager {
                                           entry, action);
 	if(!result) {
 	    debug = true;
-	    canDoActionInner(request, requestIp, user, log,
-			     entry, action);
+	    canDoActionInner(request, requestIp, user, log, entry, action);
 	    debug = false;
 	}
 
@@ -804,7 +805,7 @@ public class AccessManager extends RepositoryManager {
             return false;
         }
         List<Role> roles      = getRoles(entry, action);
-	boolean debug = false;
+        boolean debug =debugAll;
 	//	debug = action.equals(Permission.ACTION_VIEW) && entry.getId().equals("53e607ef-5593-4ca9-adc0-618425e0ea98");
 	if(debug)
 	    System.err.println("canDoActionInner:" + user +" entry:"+ entry +" id:" + entry +" action:" + action +" roles:" + roles);
@@ -969,6 +970,9 @@ public class AccessManager extends RepositoryManager {
 	throws Exception {
         //Check if its a crawler
         if ((request != null) && request.getIsRobot()) {
+	    if(debugAction) {
+		System.err.println("AccessManager: robots cannot view files:" + entry);
+	    }
             return false;
         }
 
@@ -1541,7 +1545,8 @@ public class AccessManager extends RepositoryManager {
     private List<Permission> getUpdatedPermissions(Entry entry,
 						   List<Permission> permissions) {
         boolean hasDataPolicy = false;
-        boolean debug         = false;
+        boolean debug =debugAll;
+
         if (debug) {
             System.err.println("getUpdatePermissions:" + entry);
         }
@@ -1758,7 +1763,7 @@ public class AccessManager extends RepositoryManager {
      */
     public Result processAccessForm(Request request) throws Exception {
 
-        boolean      debug = false;
+        boolean debug =debugAll;
         StringBuffer sb    = new StringBuffer();
         Entry        entry = getEntryManager().getEntry(request);
 

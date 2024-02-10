@@ -987,9 +987,13 @@ public class Service extends RepositoryManager {
         File        workDir      = input.getProcessDir();
 
         for (Entry testEntry : inputEntries) {
+	    AccessManager.debugAll = true;
             if ( !getAccessManager().canViewFile(request, testEntry)) {
+		AccessManager.debugAll = false;
+		getLogManager().logSpecial("Service: cannot access file: user:" + request.getUser() + " entry:" + testEntry.getResource());
                 throw new AccessException("Can't access file", request);
             }
+	    AccessManager.debugAll = false;
         }
 
 
