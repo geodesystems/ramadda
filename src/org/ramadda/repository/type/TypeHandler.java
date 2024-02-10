@@ -4128,7 +4128,7 @@ public class TypeHandler extends RepositoryManager {
                     File workDir = getStorageManager().createProcessDir();
                     ServiceInput serviceInput = new ServiceInput(workDir, entry);
                     ServiceOutput output =
-                        service.evaluate(getRepository().getTmpRequest(),
+                        service.evaluate(getRepository().getAdminRequest(),
                                          serviceInput, null);
 		    if(output==null) {
 			getSessionManager().addSessionErrorMessage(request, "Error processing service:" + service.getLabel()+" no service output"); 
@@ -4147,10 +4147,10 @@ public class TypeHandler extends RepositoryManager {
                     entry.getTypeHandler().handleServiceResults(request,
                             entry, service, output);
                 } catch (Exception exc) {
-		    getSessionManager().addSessionErrorMessage(request, "Error calling service:" + service + " "+ exc.getMessage());
+		    getSessionManager().addSessionErrorMessage(request, "Error calling service:" + service.getLabel() + " Error: "+ exc.getMessage());
 
                     getLogManager().logError(
-                        "ERROR: TypeHandler calling service:" + service
+					     "ERROR: TypeHandler calling service:" + service.getLabel()
                         + "\n", exc);
                 }
             }
@@ -4192,7 +4192,7 @@ public class TypeHandler extends RepositoryManager {
         }
 
 
-	getLogManager().logSpecial("handle service: " + service);
+	//	getLogManager().logSpecial("handle service: " + service);
 
         String descriptionPattern = service.getDescriptionPattern();
         if (descriptionPattern != null) {
@@ -4208,17 +4208,17 @@ public class TypeHandler extends RepositoryManager {
 
         List<Entry> entries = output.getEntries();
         if (entries.size() == 0) {
-	    getLogManager().logSpecial("handle service no entries ");
+	    //	    getLogManager().logSpecial("handle service no entries ");
             return;
         }
 
         String target = service.getTarget();
         if (target == null) {
             //            System.err.println("TypeHandler: No target for service:" + service);
-	    getLogManager().logSpecial("handle service no target");
+	    //	    getLogManager().logSpecial("handle service no target");
             return;
         }
-	getLogManager().logSpecial("Service: " + target);
+	//	getLogManager().logSpecial("Service: " + target);
         if (target.equals(TARGET_ATTACHMENT)) {
 
             for (Entry serviceEntry : entries) {
@@ -4232,7 +4232,7 @@ public class TypeHandler extends RepositoryManager {
                 Metadata metadata = new Metadata(getRepository().getGUID(),
                                         entry.getId(), mtype, false,
                                         fileName, null, null, null, null);
-		getLogManager().logSpecial("service: added attachment:" + metadata);
+		//		getLogManager().logSpecial("service: added attachment:" + metadata);
                 getMetadataManager().addMetadata(request,entry, metadata);
             }
         } else if (target.equals(TARGET_SIBLING)

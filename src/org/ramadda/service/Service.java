@@ -67,7 +67,7 @@ public class Service extends RepositoryManager {
     private static final String MACRO_OUTPUTDIR = "${outputdir}";
 
     /** _more_ */
-    public static boolean debug = true;
+    public static boolean debug = false;
 
     /** _more_ */
     private static ServiceUtil dummyToForceCompile;
@@ -969,6 +969,7 @@ public class Service extends RepositoryManager {
 				    Hashtable<String, String> valueMap, boolean optional)
             throws Exception {
 
+
         if (haveLink()) {
             return link.addArgs(request, argPrefix, input, commands,
                                 filesToDelete, allEntries, valueMap,optional);
@@ -989,11 +990,9 @@ public class Service extends RepositoryManager {
         for (Entry testEntry : inputEntries) {
 	    //	    AccessManager.debugAll = true;
             if ( !getAccessManager().canViewFile(request, testEntry)) {
-		AccessManager.debugAll = false;
 		getLogManager().logSpecial("Service: cannot access file: user:" + request.getUser() + " entry:" + testEntry.getResource());
                 throw new AccessException("Can't access file", request);
             }
-	    AccessManager.debugAll = false;
         }
 
 
@@ -2622,7 +2621,6 @@ public class Service extends RepositoryManager {
                                         input.getProcessDir().toString(),
                                         file));
                 }
-		System.err.println("Service: adding entry" + newEntry);
                 myOutput.addEntry(newEntry);
             }
         }
