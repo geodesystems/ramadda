@@ -504,9 +504,7 @@ public abstract class SearchProvider extends GenericTypeHandler {
 	    if(Utils.stringDefined(serverInfo.getSearchRoot())) {
 		remoteSearchUrl+="&ancestor=" +serverInfo.getSearchRoot();
 	    }
-	    System.err.println("remote search url:" + remoteSearchUrl);
-
-
+	    //	    System.err.println("remote search url:" + remoteSearchUrl);
 	    IO.Result result = IO.doGetResult(new URL(remoteSearchUrl));
 	    if(result.getError()) {
 		getLogManager().logSpecial("Error doing remote search:" + remoteSearchUrl+" " + result.getResult());

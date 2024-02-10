@@ -6347,6 +6347,7 @@ public class EntryManager extends RepositoryManager {
 	StringBuilder msg = new StringBuilder();
 	List<Entry> entries = new ArrayList<Entry>();
 	//            System.err.println("Remote URL:" + remoteSearchUrl);
+	//	System.out.println(entriesXml);
 	try {
 	    Element  root     = XmlUtil.getRoot(entriesXml);
 	    List<Element> elements = new ArrayList<Element>();
@@ -6356,7 +6357,9 @@ public class EntryManager extends RepositoryManager {
 	    }
 
 	    //Is this a search result
-	    if(XmlUtil.getAttribute(root,ATTR_TYPE,"").equals("type_dummy")) {
+	    if(XmlUtil.getAttribute(root,ATTR_TYPE,"").equals("type_dummy") ||
+	       (XmlUtil.getAttribute(root,"name","").equals("Results") &&
+		XmlUtil.getAttribute(root,"parent","").equals(""))) {
 		NodeList children = XmlUtil.getElements(root,TAG_ENTRY);
 		for (int i = 0; i < children.getLength(); i++) {
 		    elements.add((Element) children.item(i));
