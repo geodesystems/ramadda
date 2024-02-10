@@ -109,6 +109,14 @@ export RAMADDA_PORT=80
 export JAVA=/usr/bin/java
 -pre
 
++callout-info
+Note: Running with port 80 requires the RAMADDA process to be run as the root user.
+If you do not want to run it as root for security reasons you can set the port to
+a higher port (e.g., 8080).
+If you do this and also have SSL enabled (as described below) the SSL port should also
+be set to a high port, e.g. 8443
+-callout
+
 
 The minimal thing you have to do is to determine where you want the RAMADDA <a href="#home">home directory</a> to be. 
 The default is <i>&lt;your home dir&gt;/.ramadda</i>. To run RAMADDA there must

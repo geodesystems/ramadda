@@ -67,6 +67,13 @@ You can list the firewall settings with:
 firewall-cmd --list-all
 -pre
 
++callout-info
+Note: Running with port 80 requires the RAMADDA process to be run as the root user.
+If you do not want to run it as root for security reasons you can set the port to
+a higher port (e.g., 8080).
+If you do this and also have SSL enabled (as described below) the SSL port should also
+be set to a high port, e.g. 8443
+-callout
 
 
 
