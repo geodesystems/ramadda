@@ -7,7 +7,8 @@ var Translate = {
     init: function() {
 	this.switchPrefix = HU.getIconImage('fas fa-language') +HU.space(1);
 	let menu = HU.span([ATTR_TITLE,'Change language',
-			    ATTR_CLASS,CLASS_CLICKABLE,ATTR_ID,'ramadda_language_menu'],HU.getIconImage('fas fa-language'));
+			    ATTR_CLASS,CLASS_CLICKABLE+' ramadda-page-link',
+			    ATTR_ID,'ramadda_language_menu'],HU.getIconImage('fas fa-language'));
 	menu = $(menu).appendTo(jqid('ramadda_links_prefix'));
 	
 	menu.click(()=>{

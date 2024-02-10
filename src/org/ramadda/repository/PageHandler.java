@@ -651,6 +651,10 @@ public class PageHandler extends RepositoryManager {
         return sb.toString();
     }
 
+    private String wrapPageLink(String s) {
+        return  "<span class=ramadda-page-link>" + s + "</span>";
+    }
+
 
     /**
      *
@@ -845,16 +849,13 @@ public class PageHandler extends RepositoryManager {
 
 	List<String> pageLinks = new ArrayList<String>();
 
-
         if (showSearch) {
-	    pageLinks.add(HU.mouseClickHref("Utils.searchPopup('searchlink','popupanchor');",
-					    searchImg, "")+
-			  HU.span("",
-				  HU.attrs("id", "popupanchor", "style",
-					   "position:relative;")));
+	    pageLinks.add(wrapPageLink(
+				       HU.mouseClickHref("Utils.searchPopup('searchlink','popupanchor');", searchImg, "")+
+				       HU.span("", HU.attrs("id", "popupanchor", "style", "position:relative;"))));
         }
 
-	pageLinks.add(HU.span("",HU.id("ramadda_links_prefix")));
+	pageLinks.add(HU.span("",HU.attrs("style","display:block;","id","ramadda_links_prefix")));
         StringBuilder theFooter = new StringBuilder(footer);
 	if(extraFooter!=null) theFooter.append(extraFooter);
 
@@ -900,16 +901,14 @@ public class PageHandler extends RepositoryManager {
 	}
 
 
-	pageLinks.add(HU.makePopup(null, popupImage, menuHtml,
+	pageLinks.add(wrapPageLink(HU.makePopup(null, popupImage, menuHtml,
 				   arg("my", "right top"),
 				   arg("at", "left bottom"),
-				   arg("animate", false)));
+						arg("animate", false))));
 	if(extra.length()>0)
-	    pageLinks.add(extra.toString());
-	pageLinks.add(HU.span("",HU.id("ramadda_links_suffix")));
-        menuHtml = HU.span(Utils.wrap(pageLinks, "<span class=ramadda-page-link>", "</span>"),
-			   HU.clazz("ramadda-user-menu"));
-
+	    pageLinks.add(wrapPageLink(extra.toString()));
+	pageLinks.add(wrapPageLink(HU.span("",HU.id("ramadda_links_suffix"))));
+        menuHtml = HU.span(Utils.join(pageLinks,""),HU.clazz("ramadda-user-menu"));
 
 
         String[] macros = new String[] {
