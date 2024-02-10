@@ -187,6 +187,9 @@
 -row
 :vspace 1em
 {{tabletree message="" prefix="----"}}
+
+:heading Information
+{{information}}
 -section
 ]]>
 </wiki>
