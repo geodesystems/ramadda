@@ -707,11 +707,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    System.err.println("RAMADDA: install password: "
 			       + installPassword);
 	    StringBuilder sb = new StringBuilder();
-	    sb.append(
-		      "#This is a generated password used in the install process\n");
-	    sb.append(PROP_INSTALL_PASSWORD + "=" + installPassword
-		      + "\n\n");
-
+	    sb.append("#This is a generated password used in the install process\n");
+	    sb.append(PROP_INSTALL_PASSWORD + "=" + installPassword + "\n\n");
 	    sb.append("#If you have a certificate for https access installed uncomment and set these property values\n");
 	    sb.append("#ramadda.ssl.password=<the password>\n");
 	    sb.append("#ramadda.ssl.keypassword=<the keystore password>\n");
@@ -722,7 +719,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    sb.append("\n");	    
 	    sb.append("#If you want to disable ssl set this to true\n");
 	    sb.append("#ramadda.ssl.ignore=true\n");
-	    sb.append("\n");	    
+	    sb.append("\n\n");	    
+	    sb.append("#If you need to reset the admin password then uncomment the below\n");
+	    sb.append("#ramadda.admin=admin:some_password\n");
+	    sb.append("\n\n");	    
+
+
+
 	    try (FileOutputStream fos = new FileOutputStream(install)) {
 		IOUtil.write(fos, sb.toString());
             }
