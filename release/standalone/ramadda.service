@@ -18,8 +18,8 @@
 Description=RAMADDA
 
 [Service]
-ExecStart=/bin/bash -c "<INSTALL_DIR>/ramaddaserver/ramaddaService.sh start"
-ExecStop=/bin/bash -c "<INSTALL_DIR>/ramaddaserver/ramaddaService.sh stop"
+ExecStart=/usr/bin/sh <INSTALL DIR>/ramaddaserver/ramaddaService.sh start wait
+ExecStop=/user/bin/sh <INSTALL DIR>/ramaddaserver/ramaddaService.sh stop
 Restart=no
 StandardOutput=syslog
 StandardError=syslog

@@ -1,7 +1,6 @@
 #!/bin/bash
-#
-RAMADDA_DIR=`dirname $0`
 
+RAMADDA_DIR=`dirname $0`
 BASE=$RAMADDA_DIR
 PARENT=`dirname $BASE`
 
@@ -10,6 +9,12 @@ PID=$PARENT/ramadda.pid
 LOG=$PARENT/ramadda.log
 
 COMMAND="sh $RAMADDA_DIR/ramadda.sh"
+
+#check if we are on centos
+if [ "$#" -ge 2 ]; then
+    export WAITSET="true"
+fi
+
 
 status() {
     echo "ramadda.service: RAMADDA Status"
@@ -28,18 +33,21 @@ status() {
 start() {
     if [ -f $PID ]
     then
-        echo "ramadda.service: RAMADDA already started. PID: [$( cat $PID )]"
+        echo "ramadda.service: RAMADDA already started. PID: [$( cat $PID )]" >>$LOG
     else
-        echo "ramadda.service: RAMADDA start. Running $COMMAND"
+        echo "ramadda.service: START: Running $COMMAND" >>$LOG
         touch $PID
-
-        if nohup $COMMAND >>$LOG 2>&1 &
-        then echo $! >$PID
-             echo "ramadda.service: $(date '+%Y-%m-%d %X'): START" >>$LOG
-	     wait $!
-        else echo "ramadda.service: Error... "
-             /bin/rm $PID
-        fi
+        nohup $COMMAND >>$LOG 2>&1 &
+	RAMADDA_PID=$!
+	echo $RAMADDA_PID> $PID
+        echo "ramadda.service: START $(date '+%Y-%m-%d %X'):   RAMADDA_PID: $RAMADDA_PID" >>$LOG
+	if [ -z "${WAITSET}"]; then
+	    exit
+	fi
+	echo "ramadda.service: WAIT" >>$LOG
+	wait "$!"
+	echo "ramadda.service: EXIT" >>$LOG
+	exit
     fi
 }
 
@@ -67,7 +75,7 @@ kill_cmd() {
 }
 
 stop() {
-    echo "ramadda.service: stopping RAMADDA"
+    echo "ramadda.service: stopping RAMADDA" >> $LOG
 
     if [ -f $PID ]
     then
@@ -81,7 +89,8 @@ stop() {
 
 case "$1" in
     'start')
-            stop ;  sleep 1 ;
+            stop ;  
+	    sleep 1 ;
             start
             ;;
     'stop')
