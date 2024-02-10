@@ -491,9 +491,16 @@ var Utils =  {
 
 	    jqid(id).append(download);
 	}	
-	jqid(copyId).click(()=>{
+	jqid(copyId).click(function(){
 	    Utils.copyToClipboard(contents);
-	    alert("OK, result is copied");
+	    let html = HU.div([ATTR_STYLE,'background:var(--color-mellow-yellow);padding:5px;'],
+			      'Ok, result is copied');
+            let dialog = HU.makeDialog({content:html,anchor:$(this),
+					my:"right top",at:"right bottom"});
+	    setTimeout(()=>{
+		dialog.hide(1000);
+		setTimeout(()=>{dialog.remove();},1100);
+	    },1000)
 	});
 	jqid(downloadId).click(()=>{
 	    Utils.makeDownloadFile(div.attr('download-file')??'download.txt',contents);
