@@ -12,32 +12,32 @@ LOG=$PARENT/ramadda.log
 COMMAND="sh $RAMADDA_DIR/ramadda.sh"
 
 status() {
-    echo "RAMADDA Status"
+    echo "ramadda.service: RAMADDA Status"
     if [ -f $PID ]
     then
         echo
-        echo "Pid file: $( cat $PID ) [$PID]"
+        echo "ramadda.service: Pid file: $( cat $PID ) [$PID]"
         echo
         ps -ef | grep -v grep | grep $( cat $PID )
     else
         echo
-        echo "No Pid file"
+        echo "ramadda.service: No Pid file"
     fi
 }
 
 start() {
     if [ -f $PID ]
     then
-        echo "RAMADDA already started. PID: [$( cat $PID )]"
+        echo "ramadda.service: RAMADDA already started. PID: [$( cat $PID )]"
     else
-        echo "RAMADDA start. Running $COMMAND"
+        echo "ramadda.service: RAMADDA start. Running $COMMAND"
         touch $PID
 
         if nohup $COMMAND >>$LOG 2>&1 &
         then echo $! >$PID
-             echo "$(date '+%Y-%m-%d %X'): START" >>$LOG
+             echo "ramadda.service: $(date '+%Y-%m-%d %X'): START" >>$LOG
 	     wait $!
-        else echo "Error... "
+        else echo "ramadda.service: Error... "
              /bin/rm $PID
         fi
     fi
@@ -67,12 +67,12 @@ kill_cmd() {
 }
 
 stop() {
-    echo "Stopping RAMADDA"
+    echo "ramadda.service: stopping RAMADDA"
 
     if [ -f $PID ]
     then
         if kill $( cat $PID )
-        then echo "$(date '+%Y-%m-%d %X'): STOP" >>$LOG
+        then echo "ramadda.service: $(date '+%Y-%m-%d %X'): STOP" >>$LOG
         fi
         /bin/rm $PID
         kill_cmd
