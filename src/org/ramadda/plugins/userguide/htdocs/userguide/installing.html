@@ -125,12 +125,12 @@ You can consult the README.
 You shouldn't have to change anything in this directory so when updating RAMADDA simply shut down
 your RAMADDA server, delete the  <i>ramaddaserver</i> directory and repeat the download/unzip steps above.
 :p
-Copy the ramadda.env file from <i>ramaddaserver</i> into the parent directory (ramaddainstall).
+Copy the ramaddaenv.sh file from <i>ramaddaserver</i> into the parent directory (ramaddainstall).
 This file gets sourced by ramaddaserver/ramadda.sh and defines where your RAMADDA home is,
 what port RAMADDA should run on and where Java is found.
 
 +pre addCopy=true
-cp ramaddaserver/ramadda.env .
+cp ramaddaserver/ramaddaenv.sh .
 -pre
 
 Edit this file and set the following environment variables:
@@ -413,9 +413,9 @@ your browser will alert you to a security warning which you need to accept.
 Both of these methods use Java's  <i>keytool</i> program which comes with the standard Java install.
 :p
 To generate a self-signed certificate from the command line run:
-<pre>
++pre addCopy=true
 keytool -genkey -keyalg RSA -keystore keystore.jks
-</pre>
+-pre
 
 This will prompt you for some information and a password.
 There is more information <a href="http://docs.oracle.com/javase/tutorial/security/toolsign/step3.html">here</a>.
@@ -429,7 +429,7 @@ certificate.
 :p
 Once you have your keystore.jks file generated copy it to the RAMADDA home directory
 then specify the below configuration options 
-in a .properties file in your  RAMADDA home directory. e.g., ssl.properties:
+in a .properties file in your  RAMADDA home directory.
 
 <pre>
 ramadda.ssl.password=&lt;the password&gt;
