@@ -11,7 +11,7 @@
 
 
 #which java to use
-#export JAVA=java
+#export JAVA=/usr/bin/java
 
 
 
