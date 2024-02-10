@@ -4131,10 +4131,12 @@ public class TypeHandler extends RepositoryManager {
                         service.evaluate(getRepository().getTmpRequest(),
                                          serviceInput, null);
 		    if(output==null) {
+			getSessionManager().addSessionErrorMessage(request, "Error processing service:" + service.getLabel()+" no service output"); 
 			System.err.println("no service output:" + service);
 			continue;
 		    }
                     if ( !output.isOk()) {
+			getSessionManager().addSessionErrorMessage(request, "Error processing service:" + service.getLabel()+" service output is not ok"); 
                         System.err.println("service output not ok");
                         continue;
                     }
@@ -4145,6 +4147,8 @@ public class TypeHandler extends RepositoryManager {
                     entry.getTypeHandler().handleServiceResults(request,
                             entry, service, output);
                 } catch (Exception exc) {
+		    getSessionManager().addSessionErrorMessage(request, "Error calling service:" + service + " "+ exc.getMessage());
+
                     getLogManager().logError(
                         "ERROR: TypeHandler calling service:" + service
                         + "\n", exc);
@@ -4173,7 +4177,6 @@ public class TypeHandler extends RepositoryManager {
             throws Exception {
         if (parent != null) {
             parent.handleServiceResults(request, entry, service, output);
-
             return;
         }
 
@@ -4185,9 +4188,11 @@ public class TypeHandler extends RepositoryManager {
             if (name != null) {
                 entry.setName(name);
             }
-            System.err.println("name= " + name);
+	    //            System.err.println("name= " + name);
         }
 
+
+	getLogManager().logSpecial("handle service: " + service);
 
         String descriptionPattern = service.getDescriptionPattern();
         if (descriptionPattern != null) {
@@ -4197,21 +4202,25 @@ public class TypeHandler extends RepositoryManager {
             if (description != null) {
                 entry.setDescription(description);
             }
-            System.err.println("description= " + description);
+//            System.err.println("description= " + description);
         }
 
 
         List<Entry> entries = output.getEntries();
         if (entries.size() == 0) {
+	    getLogManager().logSpecial("handle service no entries ");
             return;
         }
 
         String target = service.getTarget();
         if (target == null) {
             //            System.err.println("TypeHandler: No target for service:" + service);
+	    getLogManager().logSpecial("handle service no target");
             return;
         }
+	getLogManager().logSpecial("Service: " + target);
         if (target.equals(TARGET_ATTACHMENT)) {
+
             for (Entry serviceEntry : entries) {
                 String fileName = getStorageManager().copyToEntryDir(entry,
                                       serviceEntry.getFile()).getName();
@@ -4223,6 +4232,7 @@ public class TypeHandler extends RepositoryManager {
                 Metadata metadata = new Metadata(getRepository().getGUID(),
                                         entry.getId(), mtype, false,
                                         fileName, null, null, null, null);
+		getLogManager().logSpecial("service: added attachment:" + metadata);
                 getMetadataManager().addMetadata(request,entry, metadata);
             }
         } else if (target.equals(TARGET_SIBLING)
