@@ -393,7 +393,7 @@ See the [ug::link faq.html#fixssl FAQ] for how to fix this.
 <h3>Configuring SSL when running standalone</h3>
 To configure secure SSL access to a stand-alone version of RAMADDA you need to
 generate a keystore file from a certificate or generate a self-signed certificate.
-If using a self-signed certificate browser when you first access your RAMADDA  via https
+If using a self-signed certificate when you first access your RAMADDA  via https
 your browser will alert you to a security warning which you need to accept.
 Both of these methods use Java's  <i>keytool</i> program which comes with the standard Java install.
 :p
@@ -414,7 +414,7 @@ certificate.
 :p
 Once you have your keystore.jks file generated copy it to the RAMADDA home directory
 then specify the below configuration options 
-in a .properties file in your  RAMADDA home directory.
+in the install.properties file in your  RAMADDA home directory.
 
 <pre>
 ramadda.ssl.password=&lt;the password&gt;
