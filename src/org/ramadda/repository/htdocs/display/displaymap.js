@@ -3783,9 +3783,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let debugTimes  = false;
 	    let features = [];
 	    let featuresToAdd = [];
-	    let pointsToAdd = [];	    
+	    let pointsToAdd = [];
+	    let linesToAdd = [];	    	    
 	    //getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable,propPrefix) {
             let colorBy = this.getColorByInfo(records,null,null,null,null,this.lastColorBy);
+
 	    this.lastColorBy = colorBy;
 	    let cidx=0
 	    let polygonField = this.getFieldById(fields, this.getPolygonField());
@@ -4590,7 +4592,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(isPath && !groups && lastPoint) {
 		    pathAttrs.strokeColor = colorBy.getColorFromRecord(record, pathAttrs.strokeColor);
 		    let line = this.map.createLine("line-" + featureCnt, "", lastPoint.y, lastPoint.x, point.y,point.x,pathAttrs);
-		    pointsToAdd.push(line);
+		    linesToAdd.push(line);
 		}
 		lastPoint = point;
 		if(features) {
@@ -4627,6 +4629,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(showPoints) {
 		this.addFeatures(pointsToAdd);
 	    }
+	    this.addFeatures(linesToAdd);
 	    this.myPoints = pointsToAdd;
 	    this.addFeatures(featuresToAdd);
 	    times.push(new Date());
