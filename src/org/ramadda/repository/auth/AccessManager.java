@@ -138,6 +138,7 @@ public class AccessManager extends RepositoryManager {
 
     /** _more_ */
     public static boolean debug = false;
+    public static boolean debugAction = false;    
 
 
 
@@ -597,7 +598,7 @@ public class AccessManager extends RepositoryManager {
                                boolean log)
 	throws Exception {
 
-        boolean debug =false;
+        boolean debug =debugAction;
 	if(debug) System.err.println("canDoAction:" + action+" entry:" + entry);
         if (getRepository().isReadOnly()) {
             if ( !(action.equals(Permission.ACTION_VIEW)
@@ -638,7 +639,7 @@ public class AccessManager extends RepositoryManager {
                                 boolean log, Entry entry, String action)
 	throws Exception {
 
-        boolean debug =false;
+        boolean debug =debugAction;
 	if(debug) System.err.println("canDoAction: user:" + user +" entry:" + entry +" action:" + action);
         if (entry == null) {
             return false;
