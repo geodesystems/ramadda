@@ -138,8 +138,7 @@ public class AccessManager extends RepositoryManager {
 
     /** _more_ */
     public static boolean debug = false;
-    public static boolean debugAction = false;    
-
+    public static boolean debugAction = false;
 
 
     /**
@@ -431,8 +430,8 @@ public class AccessManager extends RepositoryManager {
     @Override
     public void initAttributes() {
         super.initAttributes();
-        stopAtFirstRole = getRepository().getProperty(PROP_STOPATFIRSTROLE,
-						      true);
+        stopAtFirstRole = getRepository().getProperty(PROP_STOPATFIRSTROLE,  true);
+        debugAction = getRepository().getProperty("ramadda.debugaction",   false);
     }
 
 
