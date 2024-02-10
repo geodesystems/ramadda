@@ -711,6 +711,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		      "#This is a generated password used in the install process\n");
 	    sb.append(PROP_INSTALL_PASSWORD + "=" + installPassword
 		      + "\n\n");
+
+	    sb.append("#If you have a certificate for https access installed uncomment and set these property values\n");
+	    sb.append("#ramadda.ssl.password=<the password>\n");
+	    sb.append("#ramadda.ssl.keypassword=<the keystore password>\n");
+	    sb.append("#ramadda.ssl.port=443\n");
+	    sb.append("\n");	    
+	    sb.append("#You can override the location of the keystore. The default is: <this directory>/keystore.jks\n");
+	    sb.append("#ramadda.ssl.keystore=alternative path to keystore\n");
+	    sb.append("\n");	    
+	    sb.append("#If you want to disable ssl set this to true\n");
+	    sb.append("#ramadda.ssl.ignore=true\n");
+	    sb.append("\n");	    
 	    try (FileOutputStream fos = new FileOutputStream(install)) {
 		IOUtil.write(fos, sb.toString());
             }
