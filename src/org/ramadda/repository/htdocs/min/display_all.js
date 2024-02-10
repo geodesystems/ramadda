@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Feb  9 23:20:30 MST 2024";
+var build_date="RAMADDA build date: Sat Feb 10 00:42:16 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -39466,9 +39466,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let debugTimes  = false;
 	    let features = [];
 	    let featuresToAdd = [];
-	    let pointsToAdd = [];	    
+	    let pointsToAdd = [];
+	    let linesToAdd = [];	    	    
 	    //getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable,propPrefix) {
             let colorBy = this.getColorByInfo(records,null,null,null,null,this.lastColorBy);
+
 	    this.lastColorBy = colorBy;
 	    let cidx=0
 	    let polygonField = this.getFieldById(fields, this.getPolygonField());
@@ -40273,7 +40275,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(isPath && !groups && lastPoint) {
 		    pathAttrs.strokeColor = colorBy.getColorFromRecord(record, pathAttrs.strokeColor);
 		    let line = this.map.createLine("line-" + featureCnt, "", lastPoint.y, lastPoint.x, point.y,point.x,pathAttrs);
-		    pointsToAdd.push(line);
+		    linesToAdd.push(line);
 		}
 		lastPoint = point;
 		if(features) {
@@ -40310,6 +40312,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(showPoints) {
 		this.addFeatures(pointsToAdd);
 	    }
+	    this.addFeatures(linesToAdd);
 	    this.myPoints = pointsToAdd;
 	    this.addFeatures(featuresToAdd);
 	    times.push(new Date());
