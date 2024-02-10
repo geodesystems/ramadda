@@ -85,10 +85,35 @@ See <a href=installing.html#home>here</a> for more information on the RAMADDA ho
 See <a href=installing.html#standalone>here</a> for information on installing the stand-alone version
 of RAMADDA.
 
+:heading Reinstall RAMADDA
+To reinstall RAMADDA on Centos you can use the following script
+
++pre addDownload=true downloadFile=reinstall.sh addCopy=true
+#!/bin/sh
+
+#
+#This reinstalls RAMADDA on a centos. It assumes ramadda has been installed as a service
+#Run this from the ramaddainstall directory, i.e., the directory that holds the ramaddaserver directory
+#
+
+#get the latest release
+wget  -O ramaddaserver.zip https://ramadda.org/repository/entry/get/ramaddaserver.zip?entryid=synth%3A498644e1-20e4-426a-838b-65cffe8bd66f%3AL3JhbWFkZGFzZXJ2ZXIuemlw
+
+#stop ramadda
+systemctl stop ramadda
+
+#install the new ramadda
+rm -r -f ramaddaserver
+unzip ramaddaserver.zip
+
+#start ramadda
+systemctl start ramadda
+-pre
+
 
 :heading Running RAMADDA
 Now, as root you can  run RAMADDA using the ramadda.sh script in the ramaddaserver directory:
-+pre addCopy
++pre addCopy=true
 sh &lt;INSTALL_DIR&gt;/ramaddaserver/ramadda.sh
 -pre
 
