@@ -4176,7 +4176,8 @@ public class WikiManager extends RepositoryManager
 								entry, props);
             entry.getTypeHandler().addWikiEditor(request, entry, editor,
 						 null, HU.getUniqueId(""), text, null, !showToolbar,
-						 0,true);
+						 0,true,
+						 "height",getProperty(wikiUtil,props,"height","500px"));
 
             return editor.toString();
         } else if (theTag.equals(WIKI_TAG_RECENT)) {
