@@ -1545,7 +1545,7 @@ public class AccessManager extends RepositoryManager {
     private List<Permission> getUpdatedPermissions(Entry entry,
 						   List<Permission> permissions) {
         boolean hasDataPolicy = false;
-        boolean debug =debugAll;
+        boolean debug =false;
 
         if (debug) {
             System.err.println("getUpdatePermissions:" + entry);

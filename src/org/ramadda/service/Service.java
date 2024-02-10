@@ -67,7 +67,7 @@ public class Service extends RepositoryManager {
     private static final String MACRO_OUTPUTDIR = "${outputdir}";
 
     /** _more_ */
-    public static boolean debug = false;
+    public static boolean debug = true;
 
     /** _more_ */
     private static ServiceUtil dummyToForceCompile;
@@ -987,7 +987,7 @@ public class Service extends RepositoryManager {
         File        workDir      = input.getProcessDir();
 
         for (Entry testEntry : inputEntries) {
-	    AccessManager.debugAll = true;
+	    //	    AccessManager.debugAll = true;
             if ( !getAccessManager().canViewFile(request, testEntry)) {
 		AccessManager.debugAll = false;
 		getLogManager().logSpecial("Service: cannot access file: user:" + request.getUser() + " entry:" + testEntry.getResource());
@@ -2313,12 +2313,8 @@ public class Service extends RepositoryManager {
             return link.evaluate(request, input, myPrefix,optional);
         }
 
-
         ServiceOutput myOutput      = new ServiceOutput();
-
-
         List<File>    filesToDelete = new ArrayList<File>();
-
         HashSet<File> existingFiles = new HashSet<File>();
         for (File f : input.getProcessDir().listFiles()) {
             existingFiles.add(f);
@@ -2361,7 +2357,6 @@ public class Service extends RepositoryManager {
             for (Entry newEntry : myOutput.getEntries()) {
                 newFiles.add(newEntry.getFile());
             }
-
 
 
             if (cleanup) {
@@ -2564,9 +2559,11 @@ public class Service extends RepositoryManager {
 
 
             if (files == null) {
+		if(debug) System.err.println("Service:" + this +" process dir:" +input.getProcessDir());
                 files = input.getProcessDir().listFiles(new FileFilter() {
                     public boolean accept(File f) {
                         String name = f.getName();
+			if(debug) System.err.println("Service: file:" + f);
                         if (name.startsWith(".")) {
                             return false;
                         }
@@ -2586,8 +2583,9 @@ public class Service extends RepositoryManager {
 
             for (File file : files) {
 		if(debug)
-		    System.err.println("\tfile:" + file +" " + file.exists());
+		    System.err.println("Service: file:" + file +" " + file.exists());
                 if (input.haveSeenFile(file)) {
+		    System.err.println("Service: file seen it");
                     continue;
                 }
                 input.addSeenFile(file);
@@ -2611,19 +2609,20 @@ public class Service extends RepositoryManager {
                 newEntry.setResource(new Resource(file, Resource.TYPE_FILE));
                 if (input.getPublish()) {
 		    if(debug)
-			System.err.println("\tpublish:" + newEntry +" current:" + currentEntry);
+			System.err.println("publish:" + newEntry +" current:" + currentEntry);
                     getEntryManager().processEntryPublish(request, file,
                             newEntry, currentEntry, "derived from");
 
                 } else {
 		    if(debug)
-			System.err.println("\no publish:" + newEntry);
+			System.err.println("Service: no publish:" + newEntry);
                     newEntry
                         .setId(getEntryManager().getProcessFileTypeHandler()
                             .getSynthId(getEntryManager().getProcessEntry(),
                                         input.getProcessDir().toString(),
                                         file));
                 }
+		System.err.println("Service: adding entry" + newEntry);
                 myOutput.addEntry(newEntry);
             }
         }
