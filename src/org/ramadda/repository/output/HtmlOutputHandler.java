@@ -1511,7 +1511,7 @@ public class HtmlOutputHandler extends OutputHandler {
             throws Exception {
         StringBuffer sb     = new StringBuffer();
         String       prefix = request.getPrefixHtml();
-        if (prefix != null) {
+        if (stringDefined(prefix)) {
             sb.append(prefix);
         } else {
             getPageHandler().entrySectionOpen(request, group, sb, "Table");
