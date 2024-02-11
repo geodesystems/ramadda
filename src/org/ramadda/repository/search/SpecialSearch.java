@@ -596,7 +596,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             showDefault = false;
         }
 
-        formSB.append("<div style=\"min-width:200px;\">");
+        formSB.append("<div class='ramadda-search-special-form'>");
         formSB.append(request.form(URL_SEARCH,
                                    HU.attr(HU.ATTR_NAME,
                                        "apisearchform")));
@@ -711,6 +711,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 
 
+	HU.formEntry(formSB,"<div class=ramadda-thin-hr></div>");
         HU.formEntry(formSB,HU.b("Order By:")+HU.br()+
 		     getSearchManager().makeOrderBy(request,false));
 
