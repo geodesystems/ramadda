@@ -3016,13 +3016,19 @@ td.entry-table-block {
 }
 
 
+.ramadda-search-bytype .ramadda-search-provider {
+    white-space:nowrap;
+    max-width:200px;
+    overflow-x:auto;
+}
+
+
 .ramadda-search-provider-header {
     font-weight: bold; 
     margin-top: 8px;
 }
 
 .ramadda-search-provider-list {
-    margin-left: 10px;
     max-height: 200px; 
     overflow-y: auto;
 }

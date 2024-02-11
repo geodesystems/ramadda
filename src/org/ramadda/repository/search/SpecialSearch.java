@@ -18,6 +18,7 @@ import org.ramadda.repository.type.*;
 
 import org.ramadda.repository.util.DateArgument;
 
+import org.ramadda.repository.util.SelectInfo;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
@@ -344,7 +345,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             doSearch = true;
         }
 
-
+	allEntries = getSearchManager().doSearch(request, new SelectInfo(request));
+	/*
         if (doSearch) {
             List<Clause> extra      = null;
             if (syntheticFields.size() > 0) {
@@ -372,7 +374,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                 getRepository().getEntryManager().searchEntries(request,extra);
 
         }
-
+	*/
 
         if (request.isOutputDefined()) {
             OutputHandler outputHandler =
@@ -616,6 +618,15 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         }
 
 	String vspace = "<div style='height:0.5em'></div>";
+
+	List<String> contents = new ArrayList<String>();
+	List<String> titles = new ArrayList<String>();	
+	getSearchManager().addSearchProviders( request,  contents, titles,true,true);
+	if(contents.size()>0) {
+            formSB.append(HU.makeShowHideBlock("Search Providers",
+					       HU.div(contents.get(0),HU.cssClass("ramadda-search-bytype")),
+					       false));
+	}
 
 
         if (showDefault && showText) {

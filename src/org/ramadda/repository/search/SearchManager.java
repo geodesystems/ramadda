@@ -1892,7 +1892,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             contents.add(metadataSB.toString());
         }
         long t2 = System.currentTimeMillis();
-        addSearchProviders(request, contents, titles);
+        addSearchProviders(request, contents, titles,false,false);
         //Pad the contents
         List<String> tmp = new ArrayList<String>();
         for (String c : contents) {
@@ -1973,8 +1973,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      *
      * @throws Exception _more_
      */
-    private void addSearchProviders(Request request, List<String> contents,
-                                    List<String> titles)
+    public void addSearchProviders(Request request, List<String> contents,
+				   List<String> titles,boolean justRamadda,
+				   boolean skipIfNone)
 	throws Exception {
         boolean showProviders = request.get("show_providers", false);
         List<SearchProvider> searchProviders = getSearchProviders();
@@ -2000,9 +2001,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         CategoryBuffer cats  = new CategoryBuffer();
         StringBuilder  extra = new StringBuilder();
 	HashSet seen = new HashSet();
+	int cnt = 0;
         for (int i = 0; i < searchProviders.size(); i++) {
             SearchProvider searchProvider = searchProviders.get(i);
+	    if(justRamadda && !searchProvider.getType().equals("ramadda")) continue;
 	    if(seen.contains(searchProvider.getId())) continue;
+	    cnt++;
 	    seen.add(searchProvider.getId());
 
             boolean        selected       = false;
@@ -2038,19 +2042,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 						      : "")) +" " + searchProvider.getFormSuffix();
 
             cbx += anchor;
-            cats.get(searchProvider.getCategory()).append(cbx);
-            cats.get(searchProvider.getCategory()).append(HU.br());
-            cats.get(searchProvider.getCategory()).append("\n");
+            cats.get(searchProvider.getCategory()).append(
+							  HU.div(cbx,
+								 HU.cssClass("ramadda-search-provider")));
         }
 
         for (String cat : cats.getCategories()) {
             Appendable buff = cats.get(cat);
             if (cat.length() == 0) {
-                /*
-		  buff.append(HU.labeledCheckbox(ARG_PROVIDER,
-		  "all", selectedProviders.contains("all"),"",
-		  msg("All Search Providers")));
-                */
                 providerSB.append(buff.toString());
             } else {
                 providerSB.append(
@@ -2062,10 +2061,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 						HU.cssClass("ramadda-search-provider-list")));
             }
         }
-        String title = msg("Search providers");
+        String title =msg("Search providers");
         if (extra.length() > 0) {
             title += HU.space(4) + HU.span(extra.toString(),HU.cssClass("ramadda-highlighted"));
         }
+	if(cnt<=1 && skipIfNone) return;
         titles.add(title);
         contents.add(HU.insetDiv(providerSB.toString(), 0, 20, 0, 0));
     }
