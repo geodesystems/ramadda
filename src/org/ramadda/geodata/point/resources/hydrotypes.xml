@@ -139,8 +139,20 @@ picky=false
 fields=agency[label="Agency" type=string],station_id[label="Station ID" type=string],date[type=date format="yyyy-MM-dd HH:mm" label="Date"],timezone[label="Timezone" type=string],discharge[unit="cfs" label="Discharge" type=double],skip[type=string],gauge_height[unit="feet" label="Gauge Height" type=double],skip[type=string]
 point.csvcommands=-delimiter,tab,-skip,2,-print
      </property>
-     <column  name="station_id"  label="Site Number" type="enumerationplus" cansearch="true"
+     
+     <!--
+	 the showenumerationmenu="false" attribute is because we really want this to be a type string
+	 but if there were already gauge entries added they are  indexed by lucene based on the enumeration
+	 type. So, we keep the enumeration type in place but the attribute causes the UI to only show a text
+	 field
+     -->
+     <column  name="station_id"  label="Site Number" type="enumerationplus" cansearch="false"
+	      showenumerationmenu="false"
+	      columns="15"
+	      bulkuploadhelp="In addition you can upload a file of site ids. One per line"
+	      addbulkupload="true"
 	      suffix="Find a site at the &lt;a href=https://maps.waterdata.usgs.gov/mapper/index.html target=_map&gt;USGS&lt;/a&gt; and copy its Site Number"/>
+     <column  name="site_type"  label="Site Type" type="enumeration"  cansearch="true"/>
      <column  name="period"  label="Period" type="int"  default="30"/>
      <column  name="county"  label="County" type="enumerationplus" cansearch="true"/>
      <column  name="state"  label="State" type="enumerationplus" cansearch="true"/>

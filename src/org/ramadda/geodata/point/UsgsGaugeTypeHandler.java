@@ -35,6 +35,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
+import java.util.HashSet;
 
 
 /**
@@ -49,6 +50,7 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
     /** _more_ */
     private static int IDX_STATION_ID = IDX++;
 
+    private static int IDX_SITE_TYPE = IDX++;
     /** _more_ */
     private static int IDX_PERIOD = IDX++;
     /** _more_ */
@@ -235,16 +237,31 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
                                    boolean fromImport)
 	throws Exception {
 	if(fromImport) return;
+	initializeNewEntryInner(request, entry);
+	String id = ("" + entry.getValue(IDX_STATION_ID)).trim();
+	HashSet<String> seen = new HashSet<String>();
+	seen.add(id);
+	String  bulkFile = request.getUploadedFile(ARG_BULKUPLOAD);
+	if(!stringDefined(bulkFile) || !new File(bulkFile).exists()) return;
+	List<Entry> entries = handleBulkUpload(request, entry.getParentEntry(),bulkFile,IDX_STATION_ID,seen);
+	for(Entry newEntry: entries) {
+	    System.err.println("UsgsGaugeTypeHandler: bulk entry:" + newEntry.getValue(IDX_STATION_ID));
+	    initializeNewEntryInner(request,newEntry);
+	}
+	getEntryManager().insertEntriesIntoDatabase(request,  entries,true, true);
+    }
+
+    private    void initializeNewEntryInner(Request request, Entry entry)
+	throws Exception {
+
 	String id = ("" + entry.getValue(IDX_STATION_ID)).trim();
 	if(!stringDefined(id)) return;
 	String url = "https://waterdata.usgs.gov/nwis/inventory?site_no="+id;
 	IO.Result result = IO.doGetResult(new URL(url));
 	if(result.getError()) {
-	    System.err.println("Failed to read USGS station:" + url);
+	    getLogManager().logSpecial("Failed to read USGS station:" + url);
 	    return;
 	}	    
-
-	//	System.out.println(result.getResult());
 	String html = result.getResult();
 	String title = StringUtil.findPattern(html,"<title>(.*?)</title>");
 	if(title!=null) {
@@ -252,16 +269,24 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	    entry.setName(Utils.nameCase(title));
 	}
 
+	String siteType= StringUtil.findPattern(html,"<h3>(.*?)</h3>");
+	if(siteType!=null) {
+	    siteType=siteType.replace("&nbsp;","").trim();
+	    entry.setValue(IDX_SITE_TYPE,siteType);
+	} 
+
 	String block = StringUtil.findPattern(html,"(?s)<div +id=\"stationTable\">(.*?)<table");
 	if(block==null) {
 	    System.err.println("Failed to read text block from:" + url);
 	    return;
 	}
 	String ll = StringUtil.findPattern(block,"(?s)<dd>(.*?)</dd");
+	String lat = null;
+	String lon = null;
 	if(ll!=null) {
 	    //Latitude  38&#176;47'50", &nbsp; Longitude 109&#176;11'40" &nbsp; NAD27<br /></dd>
-	    String lat = StringUtil.findPattern(ll,"Latitude\\s+([^,]+),");
-	    String lon = StringUtil.findPattern(ll,"Longitude\\s+([^, ]+) ");	    
+	    lat = StringUtil.findPattern(ll,"Latitude\\s+([^,]+),");
+	    lon = StringUtil.findPattern(ll,"Longitude\\s+([^, ]+) ");	    
 	    if(lat!=null && lon!=null) {
 		lat = lat.replace("&#176;",":").replace("'",":").replace("\"","").trim();
 		lon = "-"+lon.replace("&#176;",":").replace("'",":").replace("\"","").trim();		
@@ -274,21 +299,29 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	    }		
 	}
 
-	//<dd>Grand County, Utah,  Hydrologic Unit 14030004</dd>
-	String line = StringUtil.findPattern(block,"<dd>(.*?Hydrologic +Unit.*?)</dd>");
-	String huc = StringUtil.findPattern(line,"Hydrologic +Unit +([^ <]+)$");
+
+	block = block.replace("\n", " ");
+	String huc = StringUtil.findPattern(block,"(?s)Hydrologic\\s+Unit\\s+([^<]+)(<|\n)");
 	if(huc!=null) entry.setValue(IDX_HUC,huc.trim());
-	String county = StringUtil.findPattern(line,"(.*?),");
+	String county = StringUtil.findPattern(block,"(?s)>([^,<>]+)\\s+County");
 	if(county!=null) entry.setValue(IDX_COUNTY,county.trim());
-	String state = StringUtil.findPattern(line,".*?,([^,]+),");
+	String state = StringUtil.findPattern(block,"(?s)County,([^,&]+)(,|&)");
 	if(state!=null) entry.setValue(IDX_STATE,state.trim());
 	entry.setValue(IDX_HOMEPAGE,url);
-
 	//	    Datum of gage: 4,168.32 feet above   NAVD88.
 	//<dd>Drainage area: 16,100 square miles</dd><dd>Contributing drainage area: 13,160 square miles,</dd><dd>Datum of gage:  5,115.73 feet above &nbsp; NGVD29.</dd></dl><dl><dt>AVAILABLE DATA:</dt><dd>
 
-
 	String elev = StringUtil.findPattern(block,"(?s)Datum of gage: +([^ ]+) ");
+	if(elev==null)
+	    elev = StringUtil.findPattern(block,"Land surface altitude:  (.*?) feet");
+
+
+	if(lat==null || lon == null ||huc==null || county==null || state==null || elev==null) {
+	    //	    System.err.println("huc:" + huc +" county:" + county + " state:" + state +" elev:"+ elev + " lat:" + lat+" lon:" + lon +" site type:" + siteType);
+	}
+
+
+
 	if(stringDefined(elev)) {
 	    elev = elev.replace(",","").trim();
 	    try {
