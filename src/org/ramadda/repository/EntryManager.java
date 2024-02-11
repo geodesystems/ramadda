@@ -2376,7 +2376,7 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    private void initEntry(Entry entry,
+    public void initEntry(Entry entry,
 			   String name, String description, Entry parentEntry,
 			   User user, Resource resource, String category,
 			   int entryOrder, long createDate, long changeDate,
@@ -8620,14 +8620,15 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    private void insertEntries(Request request, final List<Entry> entries,
+    public void insertEntries(Request request, final List<Entry> entries,
                                boolean isNew, boolean fromImport)
 	throws Exception {
 	insertEntries(request, entries, isNew, fromImport, true);
     }
 
     private void insertEntries(Request request, final List<Entry> entries,
-                               boolean isNew, boolean fromImport, boolean callCheckModified)
+                               boolean isNew, boolean fromImport,
+			       boolean callCheckModified)
 	throws Exception {
 
         if (entries.size() == 0) {
@@ -8685,6 +8686,12 @@ public class EntryManager extends RepositoryManager {
 
 
 
+	insertEntriesIntoDatabase(request,  entries,isNew,callCheckModified);
+
+    }
+
+    public void insertEntriesIntoDatabase(Request request, final List<Entry> entries,
+					  boolean isNew, boolean callCheckModified) throws Exception {
         //We have our own connection
         Connection connection = getDatabaseManager().getConnection();
         try {
@@ -8697,9 +8704,6 @@ public class EntryManager extends RepositoryManager {
 	if(isNew)  {
 	    getEntryUtil().clearCache();
 	}
-
-
-
     }
 
 
