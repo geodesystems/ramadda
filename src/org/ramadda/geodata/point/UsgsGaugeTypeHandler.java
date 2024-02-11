@@ -244,6 +244,7 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	    return;
 	}	    
 
+	//	System.out.println(result.getResult());
 	String html = result.getResult();
 	String title = StringUtil.findPattern(html,"<title>(.*?)</title>");
 	if(title!=null) {
@@ -259,8 +260,8 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	String ll = StringUtil.findPattern(block,"(?s)<dd>(.*?)</dd");
 	if(ll!=null) {
 	    //Latitude  38&#176;47'50", &nbsp; Longitude 109&#176;11'40" &nbsp; NAD27<br /></dd>
-	    String lat = StringUtil.findPattern(ll,"Latitude ([^,]+),");
-	    String lon = StringUtil.findPattern(ll,"Longitude ([^, ]+) ");	    
+	    String lat = StringUtil.findPattern(ll,"Latitude\\s+([^,]+),");
+	    String lon = StringUtil.findPattern(ll,"Longitude\\s+([^, ]+) ");	    
 	    if(lat!=null && lon!=null) {
 		lat = lat.replace("&#176;",":").replace("'",":").replace("\"","").trim();
 		lon = "-"+lon.replace("&#176;",":").replace("'",":").replace("\"","").trim();		
