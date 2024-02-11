@@ -201,26 +201,20 @@ public class CsvOutputHandler extends OutputHandler {
                 type = "double";
             } else if (field.equals("east")) {
                 type = "double";
-
             } else if (field.equals("west")) {
                 type = "double";
             } else if (field.equals("description")) {}
             else if (field.equals("size")) {
                 type = "integer";
             }
-
-            if (sb.length() > 0) {
-                sb.append(",");
-            }
             if (showHeader) {
-                addHeader(sb, field, label, type, escapeCommas,
-                          showFullHeader);
+		addHeader(header, field, label, type, escapeCommas,
+			  showFullHeader);
             }
         }
-        sb.append("\n");
+
 
         int[] maxStringSize = null;
-        //        String[] paddingmaxStringSize = null;
         for (Entry entry : entries) {
             List<Column> columns = entry.getTypeHandler().getColumns();
             if (columns == null) {
@@ -258,7 +252,7 @@ public class CsvOutputHandler extends OutputHandler {
 
         for (Entry entry : entries) {
             if (sb.length() == 0) {
-                String headerString = header.toString();
+		String headerString =header.toString();
                 if (fieldNames.contains("fields")) {
                     List<Column> columns =
                         entry.getTypeHandler().getColumns();
