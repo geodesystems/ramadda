@@ -6429,20 +6429,14 @@ public class TypeHandler extends RepositoryManager {
      * @return _more_
      */
     public static String getSpatialSearchTypeWidget(Request request) {
-        String radio = HU.labeledRadio(
-                           ARG_AREA_MODE, VALUE_AREA_OVERLAPS,
-                           request.getString(
-                               ARG_AREA_MODE, VALUE_AREA_OVERLAPS).equals(
-									  VALUE_AREA_OVERLAPS),"Overlaps")
-                                   + HU.space(3)
-	    + HU.labeledRadio(
-                                       ARG_AREA_MODE, VALUE_AREA_CONTAINS,
-                                       request.getString(
-                                           ARG_AREA_MODE,
-                                           VALUE_AREA_OVERLAPS).equals(
-								       VALUE_AREA_CONTAINS),
-				       "Contained by");
-
+	//	String dflt = VALUE_AREA_OVERLAPS
+	String value = request.getString(ARG_AREA_MODE,VALUE_AREA_CONTAINS);
+        String radio = HU.labeledRadio(ARG_AREA_MODE, VALUE_AREA_CONTAINS,
+                                       value.equals( VALUE_AREA_CONTAINS),
+				       "Contained by") 
+	    + HU.space(1) +
+	    HU.labeledRadio(ARG_AREA_MODE, VALUE_AREA_OVERLAPS,
+			    value.equals(VALUE_AREA_OVERLAPS),"Overlaps");
         return radio;
     }
 
