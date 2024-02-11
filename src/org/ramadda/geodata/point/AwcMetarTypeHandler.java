@@ -14,7 +14,11 @@ import org.ramadda.util.Utils;
 
 import org.w3c.dom.Element;
 
+import java.io.*;
 import java.util.Hashtable;
+import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -62,7 +66,21 @@ public class AwcMetarTypeHandler extends NwsStationTypeHandler {
         if (fromImport) {
             return;
         }
-	initializeNewEntry(request, entry,  (String) entry.getStringValue(IDX_SITE_ID, ""));
+	String id = (String) entry.getStringValue(IDX_SITE_ID, "");
+	initializeNewEntry(request, entry,  id);
+
+	String  bulkFile = request.getUploadedFile(ARG_BULKUPLOAD);
+	if(!stringDefined(bulkFile) || !new File(bulkFile).exists()) return;
+
+	HashSet<String> seen = new HashSet<String>();
+	List<Entry> entries = handleBulkUpload(request, entry.getParentEntry(),bulkFile,IDX_SITE_ID,seen,"^[^-]+$",null);
+	for(Entry newEntry: entries) {
+	    System.err.println("AwcMetarTypeHandler: bulk entry:" + newEntry.getValue(IDX_SITE_ID));
+	    initializeNewEntry(request,newEntry,(String)newEntry.getValue(IDX_SITE_ID));
+	}
+	getEntryManager().insertEntriesIntoDatabase(request,  entries,true, true);
+
+
     }
 
 
