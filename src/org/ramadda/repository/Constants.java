@@ -1168,6 +1168,7 @@ public interface Constants {
     public static final String ARG_NAME = "name";
 
 
+    public static final String ARG_BULKUPLOAD = "bulkupload";
 
     /** _more_ */
     public static final String ARG_NOREDIRECT = "noredirect";
