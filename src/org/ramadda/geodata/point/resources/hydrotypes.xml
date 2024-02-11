@@ -107,18 +107,14 @@ csvcommands8=$1,-sort,datetime,-addheader,default.type double datetime.type date
 <type name="type_usgs_gauge"  description="USGS Stream Gauge" super="type_point_hydro"
       newfields="station_id,tags,quit"
       handler="org.ramadda.geodata.point.UsgsGaugeTypeHandler">
-  <!--
-     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
--->
   <property name="search.tabs" value="map,list"/>
-
 <property name="map.popup">
-  <![CDATA[
+<![CDATA[
 +center
 :b {{name link=true}}
 -center
 {{group}}
-{{display_linechart fields="discharge,gauge_height" tooltip="${default}" }}
+{{display_linechart fields="discharge,gauge_height"}}
  ]]>
 </property>
      <property name="form.header.new">
@@ -149,7 +145,7 @@ point.csvcommands=-delimiter,tab,-skip,2,-print
      <column  name="station_id"  label="Site Number" type="enumerationplus" cansearch="false"
 	      showenumerationmenu="false"
 	      columns="15"
-	      bulkuploadhelp="In addition you can upload a file of site ids. One per line"
+	      bulkuploadhelp="Or upload a file of site ids. One per line"
 	      addbulkupload="true"
 	      suffix="Find a site at the &lt;a href=https://maps.waterdata.usgs.gov/mapper/index.html target=_map&gt;USGS&lt;/a&gt; and copy its Site Number"/>
      <column  name="site_type"  label="Site Type" type="enumeration"  cansearch="true"/>

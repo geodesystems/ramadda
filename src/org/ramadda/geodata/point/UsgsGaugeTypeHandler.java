@@ -243,7 +243,7 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	seen.add(id);
 	String  bulkFile = request.getUploadedFile(ARG_BULKUPLOAD);
 	if(!stringDefined(bulkFile) || !new File(bulkFile).exists()) return;
-	List<Entry> entries = handleBulkUpload(request, entry.getParentEntry(),bulkFile,IDX_STATION_ID,seen);
+	List<Entry> entries = handleBulkUpload(request, entry.getParentEntry(),bulkFile,IDX_STATION_ID,seen,"^\\d+$",null);
 	for(Entry newEntry: entries) {
 	    System.err.println("UsgsGaugeTypeHandler: bulk entry:" + newEntry.getValue(IDX_STATION_ID));
 	    initializeNewEntryInner(request,newEntry);
