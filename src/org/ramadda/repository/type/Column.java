@@ -334,8 +334,10 @@ public class Column implements DataTypes, Constants, Cloneable {
     /**  */
     private boolean isMediaUrl = false;
 
+    private boolean addBulkUpload = false;
+    private String bulkUploadHelp ="";
 
-
+    private boolean showEnumerationMenu = true;
     private String suffix;    
 
     /** _more_ */
@@ -624,6 +626,9 @@ public class Column implements DataTypes, Constants, Cloneable {
                                          (String) null);
         alias      = getAttributeOrTag(element, "alias", (String) null);
 
+        addBulkUpload    = getAttributeOrTag(element, "addbulkupload", false);
+        bulkUploadHelp    = getAttributeOrTag(element, "bulkuploadhelp", "Upload file");
+	showEnumerationMenu= getAttributeOrTag(element, "showenumerationmenu", true);
 
         isWiki     = getAttributeOrTag(element, "iswiki", false);
         isCategory = getAttributeOrTag(element, ATTR_ISCATEGORY, false);
@@ -2728,6 +2733,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         String widget = getFormWidget(request, entry, values, formInfo);
         widget = sourceTypeHandler.getFormWidget(request, entry, this,
 						 widget);
+
         //        String rightSide = sourceTypeHandler.getFormHelp(request, entry, this);
         //        formBuffer.append(HU.formEntry(getLabel() + ":",
         //                                             HU.hbox(widget, rightSide)));
@@ -2752,6 +2758,14 @@ public class Column implements DataTypes, Constants, Cloneable {
 	if(Utils.stringDefined(suffix)) {
 	    widget = HU.hbox(widget, suffix);
 	}
+
+	if(entry==null && addBulkUpload) {
+	    widget+= HU.makeShowHideBlock("Upload",
+					  bulkUploadHelp +":<br>"+HU.fileInput(ARG_BULKUPLOAD, ""),
+					  false);
+	}	
+
+
 	String label = sourceTypeHandler.getFormLabel(parentEntry, entry, getName(),getLabel());
 	if(sourceTypeHandler.getTypeProperty("form." + getName() + ".vertical",false)) {
             HU.formEntry(formBuffer,HU.b(label) + ":<br>"+ widget);
@@ -2915,12 +2929,18 @@ public class Column implements DataTypes, Constants, Cloneable {
             value = request.getString(urlArg, ((values != null)
                     ? (String) toString(values, offset)
                     : ""));
-            List enums = getEnumPlusValues(request, entry);
-            widget = HU.select(
-                urlArg, enums, value,
-                HU.cssClass("column-select")) + "  or:  "
+	    //This is a hack to fix a problem with changing from an enumeration to a string
+	    //If we do this then lucense has a problem with indexing this column
+	    if(showEnumerationMenu) {
+		List enums = getEnumPlusValues(request, entry);
+		widget = HU.select(
+				   urlArg, enums, value,
+				   HU.cssClass("column-select")) + "  or:  "
                     + HU.input(
-                        urlArg + "_plus", "", HU.SIZE_20);
+			       urlArg + "_plus", "", HU.SIZE_20);
+	    } else {
+		widget = HU.input(urlArg, value,HU.attr("size",""+ columns));
+	    }
         } else if (isType(DATATYPE_INT)) {
             String value = ((dflt != null)
                             ? dflt
