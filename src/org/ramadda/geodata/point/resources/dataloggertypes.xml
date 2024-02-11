@@ -96,7 +96,7 @@ fieldsPatterns="${wikiproperty.cr1000.field3 default=".*depth.*|.*pres.*|baro.*|
 lastRecords="${wikiproperty.cr1000.count default="5000"}"}}
 :br
 ----
-:heading Metadata
+:heading Information
 {{information details=true}}
 -section
 ]]>
