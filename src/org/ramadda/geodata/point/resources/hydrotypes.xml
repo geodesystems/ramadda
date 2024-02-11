@@ -145,7 +145,7 @@ point.csvcommands=-delimiter,tab,-skip,2,-print
      <column  name="station_id"  label="Site Number" type="enumerationplus" cansearch="false"
 	      showenumerationmenu="false"
 	      columns="15"
-	      bulkuploadhelp="Or upload a file of site ids. One per line"
+	      bulkuploadhelp="Or upload a file of site ids. One per line. See &lt;a href=/point/usgs.html target=_help&gt;here&lt;/a&gt; for information"
 	      addbulkupload="true"
 	      suffix="Find a site at the &lt;a href=https://maps.waterdata.usgs.gov/mapper/index.html target=_map&gt;USGS&lt;/a&gt; and copy its Site Number"/>
      <column  name="site_type"  label="Site Type" type="enumeration"  cansearch="true"/>
