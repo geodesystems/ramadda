@@ -297,7 +297,7 @@ public class CalendarOutputHandler extends OutputHandler {
             if (entry.getDescription().length() > 0) {
                 String infoHtml = getMapManager().cleanupInfo(request,
                                       getMapManager().makeInfoBubble(request,
-                                          entry, false));
+								     entry, null,false));
                 infoHtml = HtmlUtils.div(
                     infoHtml,
                     HtmlUtils.style(

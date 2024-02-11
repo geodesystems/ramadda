@@ -232,7 +232,7 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
 
             String desc =
                 getRepository().getMapManager().makeInfoBubble(request,
-                    entry, true);
+							       entry, null,true);
             map.addJS(HtmlUtils.call("theMap.addImageLayer",
                                      HtmlUtils.jsMakeArgs(false,
                                          HtmlUtils.squote(entry.getId()),

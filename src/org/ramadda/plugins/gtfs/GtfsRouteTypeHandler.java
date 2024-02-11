@@ -406,7 +406,7 @@ public class GtfsRouteTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
         items.add("bubble");
-        items.add(JsonUtil.quote(getMapManager().makeInfoBubble(request, entry,
+        items.add(JsonUtil.quote(getMapManager().makeInfoBubble(request, entry,null,
                 true)));
     }
 
