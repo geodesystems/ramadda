@@ -3023,6 +3023,12 @@ td.entry-table-block {
 }
 
 
+.ramadda-search-special-form {
+    min-width:200px;
+    padding-right:10px;
+
+}
+
 .ramadda-search-provider-header {
     font-weight: bold; 
     margin-top: 8px;
