@@ -1167,9 +1167,15 @@ public class MapManager extends RepositoryManager implements WikiConstants,
      * @throws Exception   problem getting the entry info
      */
     public String makeInfoBubble(Request request, Entry entry,
-                                 boolean encodeResults)
+                                 MapInfo mapInfo,boolean encodeResults)
 	throws Exception {
         String bubble = makeInfoBubble(request, entry);
+	//Check for the JSON based chart specification and add the display imports if needed
+	if(mapInfo!=null && bubble!=null && bubble.indexOf("chartType")>=0)  {
+	    repository.getPageHandler().addDisplayImports(request, mapInfo.getBuffer(),false);
+	}
+
+
         if (encodeResults) {
             return "base64:" + Utils.encodeBase64(bubble);
         }

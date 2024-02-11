@@ -494,6 +494,9 @@ public class MapInfo {
         return result.toString();
     }
 
+    public StringBuilder getBuffer() {
+	return html;
+    }
 
     /**
      * Get the HTML for this map
@@ -970,7 +973,7 @@ public class MapInfo {
             throws Exception {
         addBox(MapManager.mapEntryId(entry), entry.getName(),
                repository.getMapManager().makeInfoBubble(request, entry,
-                   true), properties, entry.getNorth(), entry.getWest(),
+							 this,true), properties, entry.getNorth(), entry.getWest(),
                           entry.getSouth(), entry.getEast());
     }
 
@@ -1268,7 +1271,9 @@ public class MapInfo {
         double[] location = entry.getCenter();
         String   id       = MapManager.mapEntryId(entry);
         String info = repository.getMapManager().makeInfoBubble(request,
-                          entry, true);
+								entry, this,true);
+
+
         String props = "null";
 
         String fillColor = entry.getTypeHandler().getDisplayAttribute(entry,
@@ -1342,7 +1347,7 @@ public class MapInfo {
 
         addCircle(MapManager.mapEntryId(entry), Math.max(-80, Math.min(80, location[0])),
                   location[1], radius, strokeWidth, strokeColor, fillColor,
-                  repository.getMapManager().makeInfoBubble(request, entry,
+                  repository.getMapManager().makeInfoBubble(request, entry,this,
                       true));
     }
 
