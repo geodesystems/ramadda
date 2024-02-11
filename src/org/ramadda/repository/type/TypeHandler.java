@@ -4005,12 +4005,15 @@ public class TypeHandler extends RepositoryManager {
         return !getTypeProperty("name.raw",false);
     }
 
-    public List<Entry> handleBulkUpload(Request request, Entry parent, String bulkFile,int index,HashSet<String> seen) throws Exception {
+    public List<Entry> handleBulkUpload(Request request, Entry parent, String bulkFile,int index,HashSet<String> seen,String pattern,String notPattern) throws Exception {
 	List<Entry> entries = new ArrayList<Entry>();
 	request.remove(ARG_NAME);
 	Date date = new Date();
 	for(String siteId:Utils.split(getStorageManager().readFile(bulkFile),"\n",true,true)) {
+	    if(siteId.startsWith("#")) continue;
 	    if(seen.contains(siteId)) continue;
+	    if(pattern!=null && !siteId.matches(pattern)) continue;
+	    if(notPattern!=null && siteId.matches(pattern)) continue;	    
 	    seen.add(siteId);
 	    String      newId          = getRepository().getGUID();
 	    Entry newEntry = createEntry(newId);
