@@ -4005,6 +4005,28 @@ public class TypeHandler extends RepositoryManager {
         return !getTypeProperty("name.raw",false);
     }
 
+    public List<Entry> handleBulkUpload(Request request, Entry parent, String bulkFile,int index,HashSet<String> seen) throws Exception {
+	List<Entry> entries = new ArrayList<Entry>();
+	request.remove(ARG_NAME);
+	Date date = new Date();
+	for(String siteId:Utils.split(getStorageManager().readFile(bulkFile),"\n",true,true)) {
+	    if(seen.contains(siteId)) continue;
+	    seen.add(siteId);
+	    String      newId          = getRepository().getGUID();
+	    Entry newEntry = createEntry(newId);
+	    Object[] values =makeEntryValues(new Hashtable());
+	    getEntryManager().initEntry(newEntry, "","",parent,
+					request.getUser(),					
+					new Resource(), "", 999,date.getTime(),
+					date.getTime(), date.getTime(),
+					date.getTime(), values);
+
+	    newEntry.setValue(index, siteId);
+	    entries.add(newEntry);
+	}
+	return entries;
+    }
+
     /**
      * _more_
      *
