@@ -3146,13 +3146,13 @@ public class EntryManager extends RepositoryManager {
 	    return new Result("",sb);
 	}
 
-        if (forUpload) {
+        if (forUpload|| request.exists(ARG_BULKUPLOAD)) {
             entry = (Entry) entries.get(0);
             return new Result(
 			      request.entryUrl(
 					       getRepository().URL_ENTRY_SHOW, entry.getParentEntry(),
 					       ARG_MESSAGE,
-					       "File has been uploaded"));
+					       "Entry has been uploaded"));
         }
 
 	if(request.responseAsJson()) {
@@ -8635,22 +8635,18 @@ public class EntryManager extends RepositoryManager {
             return;
         }
 
-
 	for (Entry entry : entries) {
 	    if(!entry.getTypeHandler().canCreate(request)) {
 		throw new IllegalArgumentException("User cannot create entry of type:" + entry.getTypeHandler());
 	    }
 	}
 	    
+	boolean okToInsert = true;
 
         if (isNew) {
+	    okToInsert= !request.exists(ARG_BULKUPLOAD);
             for (Entry theNewEntry : entries) {
-		//not sure how to handle the initialize new entry
-                //for xml imports. 
-                //                if ( !fromImport) {
-                theNewEntry.getTypeHandler().initializeNewEntry(request,
-								theNewEntry, fromImport);
-                //                }
+                theNewEntry.getTypeHandler().initializeNewEntry(request,theNewEntry, fromImport);
                 String name = theNewEntry.getName();
                 if (name.trim().length() == 0) {
                     String nameTemplate =
@@ -8684,9 +8680,8 @@ public class EntryManager extends RepositoryManager {
             }
 	}
 
-
-
-	insertEntriesIntoDatabase(request,  entries,isNew,callCheckModified);
+	if(okToInsert)
+	    insertEntriesIntoDatabase(request,  entries,isNew,callCheckModified);
 
     }
 
