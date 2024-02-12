@@ -687,7 +687,11 @@ MapGlyph.prototype = {
 	if(this.isMultiEntry()) {
 	    this.applyChildren(child=>{
 		let newStyle = $.extend({},style);
-		newStyle.label = child.style.label;
+		if(!style.showLabels) {
+		    newStyle.label=null;
+		} else {
+		    newStyle.label = child.style.label;
+		}
 		newStyle.externalGraphic = child.style.externalGraphic;		
 		child.applyStyle(newStyle);
 	    });
@@ -1829,7 +1833,9 @@ MapGlyph.prototype = {
 	return this.children;
     },
     haveChildren: function() {
-	if(this.children && this.children.length>0) return true;
+	if(this.children && this.children.length>0) {
+	    return true;
+	}    
 	return false;
     },
     findGlyph:function(id) {
