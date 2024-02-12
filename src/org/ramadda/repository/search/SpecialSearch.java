@@ -623,9 +623,9 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 	List<String> titles = new ArrayList<String>();	
 	getSearchManager().addSearchProviders( request,  contents, titles,true,true);
 	if(contents.size()>0) {
-            formSB.append(HU.makeShowHideBlock("Search Providers",
+            formSB.append(HU.div(HU.makeShowHideBlock("Search Providers",
 					       HU.div(contents.get(0),HU.cssClass("ramadda-search-bytype")),
-					       false));
+						      false),""));
 	}
 
 
