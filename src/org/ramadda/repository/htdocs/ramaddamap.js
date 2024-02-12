@@ -1025,9 +1025,6 @@ RepositoryMap.prototype = {
     },
     handleFeatureover: function(feature, skipText) {
         if (this.selectedFeature)  return;
-
-
-
 	if(this.doMouseOver || feature.highlightText || feature.highlightTextGetter) {
 	    let location = feature.location;
 	    if (location) {
@@ -1093,7 +1090,7 @@ RepositoryMap.prototype = {
     highlightFeature:function(feature,highlightStyle) {
 	let fs = feature.style;
 	if(!feature.originalStyle)
-            feature.originalStyle = feature.style;
+            feature.originalStyle = $.extend({},feature.style??{});
         feature.style = null;
 	let layer = feature.layer;
 	let highlight = $.extend({},highlightStyle??this.getLayerHighlightStyle(layer));

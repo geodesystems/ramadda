@@ -505,7 +505,7 @@ MapGlyph.prototype = {
 	html+=this.display.getLevelRangeWidget(level,this.getShowMarkerWhenNotVisible());
 
 	let featureInfo = this.getFeatureInfoList();
-	let 	lines = Utils.mergeLists(['name','default'],featureInfo.map(info=>{return info.id;}));
+	let 	lines = Utils.mergeLists(['_name','default'],featureInfo.map(info=>{return info.id;}));
 
 	let makePopup = (id,label)=> {
 	    let domId = this.display.domId('glyphedit_' +id);
@@ -1675,7 +1675,7 @@ MapGlyph.prototype = {
 
     getPopupText: function() {
 	let text = this.getPopupTextInner();
-	if(text) text = text.replace(/\${name}/g,this.getName());
+	if(text) text = text.replace(/\${_name}/g,this.getName());
 	return text;
     },
     getPopupTextInner: function() {	
@@ -4561,6 +4561,7 @@ MapGlyph.prototype = {
 		if(!f.style)
 		    f.style = $.extend({},style);
 		f.style[attr]=ct[index];
+		if(f.originalStyle) f.originalStyle[attr]=ct[index];		
 		if(debug && idx<3) {
 		    console.log('\t'+attr+'='+f.style[attr]);
 //		    console.dir(f.style);
@@ -4669,6 +4670,7 @@ MapGlyph.prototype = {
 		f.style = f.style??{};
 		cidx++;
 		if(cidx>=ct.length) cidx=0;
+		if(f.originalStyle) f.originalStyle.fillColor=ct[cidx];
 		f.style.fillColor=ct[cidx]
 	    });
 	}
@@ -4686,6 +4688,8 @@ MapGlyph.prototype = {
 	    if(group) {
 		f.style = $.extend({},f.style);
 		$.extend(f.style,group.style)
+		if(!f.originalStyle)f.originalStyle={};
+		$.extend(f.originalStyle,group.style)
 	    }
 	});
 
