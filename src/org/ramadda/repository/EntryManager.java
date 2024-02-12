@@ -8631,6 +8631,7 @@ public class EntryManager extends RepositoryManager {
 			       boolean callCheckModified)
 	throws Exception {
 
+	if(request==null) request=getRepository().getAdminRequest();
         if (entries.size() == 0) {
             return;
         }
