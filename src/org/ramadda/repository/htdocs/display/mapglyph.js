@@ -532,7 +532,6 @@ MapGlyph.prototype = {
 	}
 	if(this.isMap()) {
 	    miscLines.push('declutter.features=true',
-			   'declutter.labels=true',
 			   'declutter.maxlength=100',
 			   'declutter.maxlinelength=15',
 			   'declutter.pixelsperline=10',
@@ -2999,7 +2998,9 @@ MapGlyph.prototype = {
 	    this.attrs.subsetReverse = jqid(this.domId('subsetReverse')).is(':checked');
 	    this.attrs.subsetSimplify= jqid(this.domId('subsetSimplify')).is(':checked');
 	    this.setMapPointsRange(jqid('mappoints_range').val());
-	    this.setMapLabelsTemplate(jqid('mappoints_template').val());	    
+	    this.setMapLabelsTemplate(jqid('mappoints_template').val());
+	    this.attrs.declutter_labels=this.jq('declutter_labels').is(':checked');
+	    
 	    let styleGroups = this.getStyleGroups();
 	    let groups = [];
 	    for(let i=0;i<20;i++) {
@@ -3578,8 +3579,16 @@ MapGlyph.prototype = {
 	if(!this.isGroup()) {
 	    content.push({header:'Style Groups',contents:styleGroupsUI});
 	}
+
+
+	let cbx = HU.checkbox(this.domId('declutter_labels'),
+			      [ATTR_ID,this.domId('declutter_labels')],
+			      this.getDeclutterLabels(),'Declutter Labels');
+	let labelsHtml =mapPointsRange+  HU.b('Label Template:')+'<br>' +
+	    cbx+mapPoints;
+	    
 	content.push({header:'Labels',
-		      contents:mapPointsRange+  HU.b('Label Template:')+'<br>' +mapPoints});
+		      contents:labelsHtml});
 
 	if(this.isMap()) {
 	    let subset = HU.b('Feature Subset')+'<br>';
@@ -5081,6 +5090,11 @@ MapGlyph.prototype = {
     isVisible: function() {
 	return this.attrs.visible??true;
     },
+    getDeclutterLabels:function() {
+	if(Utils.isDefined(this.attrs.declutter_labels))
+	    return this.attrs.declutter_labels;
+	return this.getProperty('declutter.labels',true);
+    },
     setShowMarkerWhenNotVisible:function(v) {
 	this.attrs.showMarkerWhenNotVisible = v;
 	return this;
@@ -5291,7 +5305,7 @@ MapGlyph.prototype = {
 	    return;
 	} 
 	if(isLabels) {
-	    if(!this.getProperty('declutter.labels',false)) {
+	    if(!this.getDeclutterLabels()){
 		return;
 	    }
 	} else {
