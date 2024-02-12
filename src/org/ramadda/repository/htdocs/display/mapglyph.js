@@ -531,12 +531,7 @@ MapGlyph.prototype = {
 	    miscLines.push(...IMDV_GROUP_PROPERTY_HINTS);
 	}
 	if(this.isMap()) {
-	    miscLines.push('declutter.features=true',
-			   'declutter.maxlength=100',
-			   'declutter.maxlinelength=15',
-			   'declutter.pixelsperline=10',
-			   'declutter.pixelspercharacter=4',
-			   'declutter.padding=2');
+	    miscLines.push('declutter.features=true');
 	}
 
 	this.getFeatureInfoList().forEach((info,idx)=>{
@@ -3000,6 +2995,14 @@ MapGlyph.prototype = {
 	    this.setMapPointsRange(jqid('mappoints_range').val());
 	    this.setMapLabelsTemplate(jqid('mappoints_template').val());
 	    this.attrs.declutter_labels=this.jq('declutter_labels').is(':checked');
+	    ['declutter_maxlength','declutter_maxlinelength',
+	     'declutter_pixelsperline','declutter_pixelspercharacter','declutter_padding'].forEach(id=>{
+		 let v=this.jq(id).val();
+		 if(v) v=v.trim();
+		 this.attrs[id] = v;
+	     });
+
+
 	    
 	    let styleGroups = this.getStyleGroups();
 	    let groups = [];
@@ -3581,11 +3584,25 @@ MapGlyph.prototype = {
 	}
 
 
+	let input = (id,label,dflt) =>{
+	    return SPACE2 + HU.b(label+': ')+
+		HU.input('', this.attrs[id]??'', ['placeholder',dflt,ATTR_ID,this.domId(id),ATTR_SIZE,'5']);
+	}
 	let cbx = HU.checkbox(this.domId('declutter_labels'),
 			      [ATTR_ID,this.domId('declutter_labels')],
 			      this.getDeclutterLabels(),'Declutter Labels');
-	let labelsHtml =mapPointsRange+  HU.b('Label Template:')+'<br>' +
-	    cbx+mapPoints;
+	let inputs = HU.div([ATTR_STYLE,'margin-top:5px;']);
+	inputs+=input('declutter_maxlength','Max Length','100');
+	inputs+=input('declutter_maxlinelength','Max Line Length',15);
+	inputs+=input('declutter_pixelsperline','Pixels/Line',10);
+	inputs+=HU.div([ATTR_STYLE,'margin-top:5px;'],'');
+	inputs+=input('declutter_pixelspercharacter','Pixels/Character',4);
+	inputs+=input('declutter_padding','Padding',2);				
+	let labelsHtml =mapPointsRange+ 
+	    HU.div([ATTR_STYLE,'margin-top:5px;'],cbx)+
+	    HU.b('Label Template:')+ '<br>' +    
+	    mapPoints +
+	    inputs;
 	    
 	content.push({header:'Labels',
 		      contents:labelsHtml});
@@ -5320,14 +5337,14 @@ MapGlyph.prototype = {
     getDeclutterArgs:function() {
 	let args ={};
 	args.fontSize = this.style.fontSize??'12px';
-	if(Utils.stringDefined(this.getProperty('declutter.padding')))
-	    args.padding = +this.getProperty('declutter.padding');
-	if(this.getProperty('declutter.granularity'))
-	    args.granularity = +this.getProperty('declutter.granularity');
-	if(this.getProperty('declutter.pixelsperline'))
-	    args.pixelsPerLine = +this.getProperty('declutter.pixelsperline');
-	if(this.getProperty('declutter.pixelspercharacter'))
-	    args.pixelsPerCharacter = +this.getProperty('declutter.pixelspercharacter');
+	if(Utils.stringDefined(this.attrs.declutter_padding))
+	    args.padding = +this.attrs.declutter_padding;
+	if(this.attrs.declutter_granularity)
+	    args.granularity = +this.attrs.declutter_granularity;
+	if(this.attrs.declutter_pixelsperline)
+	    args.pixelsPerLine = +this.attrs.declutter_pixelsperline;
+	if(this.attrs.declutter_pixelspercharacter)
+	    args.pixelsPerCharacter = +this.attrs.declutter_pixelspercharacter;
 	return args;
     },
     setImageLayerVisible:function(obj,visible) {
