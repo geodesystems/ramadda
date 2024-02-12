@@ -1232,7 +1232,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                                     ? namePrefix
                                     : "") + getEntryDisplayName(entry);
         StringBuilder sb         = new StringBuilder();
-        HU.open(sb, "span", HU.cssClass("ramadda-highlightable"));
+        HU.open(sb, "span", HU.attrs("class","ramadda-highlightable","title","Type: " + entry.getTypeHandler().getLabel()));
         String entryId = entry.getId();
         String entryIconImage    = getPageHandler().getEntryIconImage(request, entry);
         String event;
