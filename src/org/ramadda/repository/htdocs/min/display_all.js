@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Feb 12 03:59:38 MST 2024";
+var build_date="RAMADDA build date: Mon Feb 12 04:21:54 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -41868,7 +41868,7 @@ var GLYPH_TYPES_LINES_OPEN = [GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_ROU
 var GLYPH_TYPES_LINES = [GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED,GLYPH_ROUTE];
 var GLYPH_TYPES_LINES_STRAIGHT = [GLYPH_LINE,GLYPH_POLYLINE];
 var GLYPH_TYPES_CLOSED = [GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED,GLYPH_BOX,GLYPH_TRIANGLE,GLYPH_HEXAGON];
-var MAP_TYPES = ['geo_geojson','geo_gpx','geo_shapefile','geo_kml','geo_imdv'];
+var MAP_TYPES = ['geo_geojson','geo_gpx','geo_shapefile','geo_kml'];
 var LEGEND_IMAGE_ATTRS = [ATTR_STYLE,'color:#ccc;font-size:9pt;'];
 var BUTTON_IMAGE_ATTRS = [ATTR_STYLE,'color:#ccc;'];
 var CLASS_IMDV_STYLEGROUP= 'imdv-stylegroup';
@@ -51031,7 +51031,7 @@ MapGlyph.prototype = {
 	    this.setMapPointsRange(jqid('mappoints_range').val());
 	    this.setMapLabelsTemplate(jqid('mappoints_template').val());
 	    this.attrs.declutter_labels=this.jq('declutter_labels').is(':checked');
-	    ['declutter_maxlength','declutter_maxlinelength',
+	    ['labels_maxlength','labels_maxlinelength',
 	     'declutter_pixelsperline','declutter_pixelspercharacter','declutter_padding'].forEach(id=>{
 		 let v=this.jq(id).val();
 		 if(v) v=v.trim();
@@ -51624,21 +51624,22 @@ MapGlyph.prototype = {
 	    return SPACE2 + HU.b(label+': ')+
 		HU.input('', this.attrs[id]??'', ['placeholder',dflt,ATTR_ID,this.domId(id),ATTR_SIZE,'5']);
 	}
-	let cbx = HU.checkbox(this.domId('declutter_labels'),
-			      [ATTR_ID,this.domId('declutter_labels')],
-			      this.getDeclutterLabels(),'Declutter Labels');
-	let inputs = HU.div([ATTR_STYLE,'margin-top:5px;']);
-	inputs+=input('declutter_maxlength','Max Length','100');
-	inputs+=input('declutter_maxlinelength','Max Line Length',15);
-	inputs+=input('declutter_pixelsperline','Pixels/Line',10);
-	inputs+=HU.div([ATTR_STYLE,'margin-top:5px;'],'');
-	inputs+=input('declutter_pixelspercharacter','Pixels/Character',4);
-	inputs+=input('declutter_padding','Padding',2);				
+	let space =  HU.div([ATTR_STYLE,'margin-top:5px;']);
+	let extra = '';
+	extra+=input('labels_maxlength','Max Length','100');
+	extra+=input('labels_maxlinelength','Max Line Length',15);
+	extra+=space;
+	extra+= HU.checkbox(this.domId('declutter_labels'),
+			    [ATTR_ID,this.domId('declutter_labels')],
+			    this.getDeclutterLabels(),'Declutter Labels');
+	extra+=space;
+	extra+=input('declutter_padding','Padding',2);				
+	extra+=input('declutter_pixelsperline','Pixels/Line',10);
+	extra+=input('declutter_pixelspercharacter','Pixels/Character',4);
 	let labelsHtml =mapPointsRange+ 
-	    HU.div([ATTR_STYLE,'margin-top:5px;'],cbx)+
 	    HU.b('Label Template:')+ '<br>' +    
 	    mapPoints +
-	    inputs;
+	    extra;
 	    
 	content.push({header:'Labels',
 		      contents:labelsHtml});
@@ -52680,8 +52681,8 @@ MapGlyph.prototype = {
 	//Add the map labels at the end after we call checkVisible
 	let needToAddMapLabels = false;
 	if(Utils.stringDefined(this.getMapLabelsTemplate())) {
-	    let maxLength = parseInt(this.getProperty("map.label.maxlength",1000));
-	    let maxLineLength = parseInt(this.getProperty("map.label.maxlinelength",1000));
+	    let maxLength = parseInt(this.attrs.labels_maxlength??1000);
+	    let maxLineLength = parseInt(this.attrs.labels_maxlinelength??1000);
 	    needToAddMapLabels = true;
 	    this.mapLabels = [];
 	    let markerStyle = 	$.extend({},this.style);
