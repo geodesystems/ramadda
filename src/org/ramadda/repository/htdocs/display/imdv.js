@@ -3484,11 +3484,12 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    if(style) {
 		_style = Utils.clone(_style, style);
 	    }
-	    console.log(type);
 	    let attrs = {
 		type:type,
 	    }
-	    this.addGlyph(new MapGlyph(this,type??GLYPH_BOX,attrs,null,_style,true,props));
+	    let glyph = new MapGlyph(this,type??GLYPH_BOX,attrs,null,_style,true,props);
+	    this.addGlyph(glyph);
+	    glyph.panMapTo();
 	},
 	loadIMDVJson: function(mapJson,map,parentGlyph) {
 	    let glyphs = mapJson.glyphs||[];
@@ -4808,7 +4809,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 			      {externalGraphic: externalGraphic},
 			      {childIcon:''},
 			      {showLabels:true, pointRadius:12},
-			      textStyle),
+			      textStyle,textBackgroundStyle),
 			  MyEntryPoint,
 			  {tooltip:"Display children entries of selected entry",
 			   isMultiEntry:true,
