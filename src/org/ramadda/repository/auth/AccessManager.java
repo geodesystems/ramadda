@@ -1870,19 +1870,18 @@ public class AccessManager extends RepositoryManager {
         List opts = new ArrayList();
         Utils.add(
 		  opts, new TwoFacedObject("Add role", ""),
-		  new TwoFacedObject("User ID", "user:&lt;user id&gt;"),
-		  new TwoFacedObject("Logged in user", Role.ROLE_USER.getRole()),
+		  new TwoFacedObject("Anyone",Role.ROLE_ANY.getRole()),
 		  new TwoFacedObject("No one", Role.ROLE_NONE.getRole()),
+		  new TwoFacedObject("Logged in user", Role.ROLE_USER.getRole()),
+		  new TwoFacedObject("Anonymous users", Role.ROLE_ANONYMOUS.getRole()),
+		  new TwoFacedObject("User ID", "user:&lt;user id&gt;"),
+		  new TwoFacedObject("Guest user", Role.ROLE_GUEST.getRole()),
 		  new TwoFacedObject("IP Address", "ip:&lt;ip address&gt;"),
-		  new TwoFacedObject(
-				     "Anonymous users",
-				     Role.ROLE_ANONYMOUS.getRole()), Role.ROLE_ANY.getRole(),
-		  new TwoFacedObject(
-				     "Guest user", Role.ROLE_GUEST.getRole()),
 		  new TwoFacedObject("Date","date:yyyy-MM-dd"));
 
-        opts.addAll(getUserManager().getUserRoles());
-
+	for(Role role:getUserManager().getUserRoles()) {
+	    opts.add(new TwoFacedObject("User Role:" + role,role));
+	}
         sb.append("<tr valign=top>");
         sb.append(HtmlUtils.cols(HtmlUtils.bold(msg("Action"))));
         sb.append("<td colspan=2>");
