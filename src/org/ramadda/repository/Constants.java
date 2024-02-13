@@ -1872,6 +1872,9 @@ public interface Constants {
     public static final String PROP_REPOSITORY_NAME =
         "ramadda.repository.name";
 
+    public static final String PROP_REPOSITORY_SLUG =
+        "ramadda.repository.slug";    
+
     /** _more_ */
     public static final String PROP_REPOSITORY_DESCRIPTION =
         "ramadda.repository.description";
