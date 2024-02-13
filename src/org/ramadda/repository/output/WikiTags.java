@@ -176,7 +176,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
                             new WikiTag(WIKI_TAG_USER, null, "users","user1,user2","delimiter"," ","style","","showAvatar","true","showEmail","true"),
                             new WikiTag(WIKI_TAG_COMMENTS),
                             new WikiTag(WIKI_TAG_TAGCLOUD, null, "#type", "", "threshold","0"), 
-                            new WikiTag(WIKI_TAG_PROPERTIES, null, "message","","metadata.types","",ATTR_METADATA_INCLUDE_TITLE,"true","separator","","decorate","false"),
+                            new WikiTag(WIKI_TAG_PROPERTIES, null, "message","","metadata.types","",ATTR_METADATA_INCLUDE_TITLE,"true","separator","","decorate","false","inherited","false"),
                             new WikiTag(WIKI_TAG_DISPLAYPROPERTIES, null, "displayType","null"),
 
 

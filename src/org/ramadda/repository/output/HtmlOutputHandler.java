@@ -701,13 +701,13 @@ public class HtmlOutputHandler extends OutputHandler {
     public List<TwoFacedObject> getMetadataHtml(Request request, Entry entry,
             List<String> onlyTheseTypes, List<String> notTheseTypes,
             boolean showTitle, String separator, boolean decorate,
-            boolean stripe)
+						boolean stripe,boolean inherited)
             throws Exception {
 
         List<TwoFacedObject> result = new ArrayList<TwoFacedObject>();
         boolean showMetadata        = request.get(ARG_SHOWMETADATA, false);
         boolean              tags   = request.get("tags", false);
-        List<Metadata> metadataList = getMetadataManager().getMetadata(request,entry);
+        List<Metadata> metadataList = getMetadataManager().findMetadata(request,entry,(String)null,inherited);
         if (metadataList.size() == 0) {
             return result;
         }
@@ -1286,7 +1286,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
         for (TwoFacedObject tfo :
                 getMetadataHtml(request, entry, null, null, true, null,
-                                false, true)) {
+                                false, true,false)) {
             tabTitles.add(tfo.toString());
             tabContents.add(tfo.getId());
         }

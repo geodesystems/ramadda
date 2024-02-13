@@ -6019,10 +6019,11 @@ public class WikiManager extends RepositoryManager
 				     "stripe", true);		
 
 
+	boolean inherited = getProperty(wikiUtil,props,"inherited",false);
         for (TwoFacedObject tfo :
 		 getRepository().getHtmlOutputHandler().getMetadataHtml(
 									request, entry, onlyTheseTypes, notTheseTypes,
-									includeTitle, separator, decorate,stripe)) {
+									includeTitle, separator, decorate,stripe,inherited)) {
             tabTitles.add(tfo.toString());
             tabContents.add(tfo.getId());
         }

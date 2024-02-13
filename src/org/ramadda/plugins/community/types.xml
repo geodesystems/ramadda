@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <types supercategory="Miscellaneous" category="Community">
 
   <type foruser="false" name="type_resilience_project"  description="Resiliency Project" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"      metadata="resilience_risk" >
@@ -143,7 +144,7 @@
   <type name="type_cultural_site"  description="Cultural Site"
 	handler="org.ramadda.plugins.community.CulturalSite"
 	editfields="name,site_type,resource,_default"
-	metadata="cultural_presenter,cultural_biome,cultural_plant_use" >
+	metadata="content.license,cultural_presenter,cultural_biome,cultural_plant_use" >
     <!-- we have the optional=true because this might not be a pdf -->
      <service link="media_gs_thumbnail" target="attachment" optional="true"/>
      <property name="search.tabs" value="list,map"/>
@@ -176,13 +177,14 @@
 -col
 +col-md-4
 {{resource  title="Link"  showIcon="false"  simple="true" }}
-{{properties   message="" metadata.types="cultural_presenter"}}
+{{properties   message="" inherited="true" metadata.types="content.license,cultural_presenter"}}
 <p>
 +center
 {{mapentry zoomLevel=default width="90%" message=""}}
 -center
 <p>
-{{properties   message="" metadata.types="!content.alias,!cultural_presenter,!content.logo,!content.timezone"}}
+PROPERTIES:
+{{properties   message="" metadata.types="!content.license,!content.alias,!cultural_presenter,!content.logo,!content.timezone"}}
 -col
 -row
 :vspace 1em
