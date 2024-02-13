@@ -2650,6 +2650,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         }
         String root = null;
 
+	boolean didMulti = false;
         if (doSearch) {
             List<SearchProvider> searchProviders =
                 new ArrayList<SearchProvider>();
@@ -2663,6 +2664,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                 searchProviders.add(searchProvider);
             }
 
+	    didMulti = searchProviders.size()>1;
             final int[]     runnableCnt = { 0 };
             final boolean[] running     = { true };
             List<Runnable>  runnables   = new ArrayList<Runnable>();
@@ -2690,6 +2692,13 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                 }
             }
         }
+	//Sort them if needed
+	String orderBy = request.getString(ARG_ORDERBY,null);
+	if(didMulti && stringDefined(orderBy) && !orderBy.equals("none")) {
+	    allEntries = getEntryUtil().sortEntriesOn(allEntries,request.getString(ARG_ORDERBY,""),
+						      !request.get(ARG_ASCENDING,false));
+	}
+
 	return allEntries;
     }
 
