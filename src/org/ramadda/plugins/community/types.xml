@@ -182,7 +182,6 @@
 {{mapentry zoomLevel=default width="90%" message=""}}
 -center
 <p>
-PROPERTIES:
 {{properties   message="" metadata.types="!content.license,!content.alias,!cultural_presenter,!content.logo,!content.timezone"}}
 -col
 -row
