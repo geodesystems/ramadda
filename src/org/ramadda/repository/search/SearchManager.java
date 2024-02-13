@@ -121,6 +121,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     private static boolean debugCorpus = false;
 
 
+
     /** _more_ */
     public static final String ARG_SEARCH_SUBMIT = "search.submit";
 
@@ -1879,6 +1880,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         sb.append(makeOutputSettings(request,true));
 
 
+        addSearchProviders(request, contents, titles,false,false);
         typeHandler.addToSearchForm(request, titles, contents, where, true,
                                     false);
 
@@ -1892,7 +1894,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             contents.add(metadataSB.toString());
         }
         long t2 = System.currentTimeMillis();
-        addSearchProviders(request, contents, titles,false,false);
         //Pad the contents
         List<String> tmp = new ArrayList<String>();
         for (String c : contents) {
@@ -1938,7 +1939,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		      request.getString(ARG_OUTPUT, "")) +
 	    HU.space(2) + HU.b("Order By")+ ": " +orderBy;
 	if(addMax) s+=HU.space(2) +HU.b("Max")+": " +
-		       HU.input(ARG_MAX,request.getString(ARG_MAX,"50"),
+		       HU.input(ARG_MAX,request.getString(ARG_MAX,DEFAULT_SEARCH_SIZE),
 				HtmlUtils.SIZE_5);
 	return s;
     }

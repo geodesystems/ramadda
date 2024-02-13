@@ -331,7 +331,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         List<Entry> allEntries = new ArrayList<Entry>();
         boolean     refinement = request.exists(ARG_SEARCH_REFINE);
         if ( !request.exists(ARG_MAX)) {
-            request.put(ARG_MAX, "50");
+            request.put(ARG_MAX, DEFAULT_SEARCH_SIZE);
         }
 
 
@@ -716,7 +716,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 		     getSearchManager().makeOrderBy(request,false));
 
 	HU.formEntry(formSB, HU.b("Max:")+HU.space(1) +
-		     HU.input(ARG_MAX,request.getString(ARG_MAX,"50"),
+		     HU.input(ARG_MAX,request.getString(ARG_MAX,DEFAULT_SEARCH_SIZE),
 			      HU.SIZE_5));
         StringBuffer buttons = new StringBuffer();
         buttons.append(HU.submit("Search", ARG_SEARCH_SUBMIT));

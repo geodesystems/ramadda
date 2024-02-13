@@ -2112,6 +2112,9 @@ public interface Constants {
     /** _more_ */
     public static final boolean DFLT_INHERITED = false;
 
+    public static final String DEFAULT_SEARCH_SIZE = "100";
+
+
     /** _more_ */
     public static final String ID_PREFIX_SYNTH = "synth:";
 
