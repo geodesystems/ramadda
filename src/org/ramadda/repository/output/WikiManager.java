@@ -2546,7 +2546,7 @@ public class WikiManager extends RepositoryManager
 	    String prefix = getProperty(wikiUtil,props,"textBefore","");
 	    String requireId = getProperty(wikiUtil,props,"requireId",null);
 	    if(stringDefined(prefix))
-		prefix=  prefix+HU.space(1);
+		prefix=  HU.div(prefix,"");
 	    String text = getProperty(wikiUtil,props,"textAfter","");
 	    if(stringDefined(text))
 		text= HU.space(1) + text;

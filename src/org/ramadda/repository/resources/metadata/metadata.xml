@@ -68,6 +68,8 @@
 	<element name="License" datatype="enumerationplus"
 		 values="resource:licenses"/>
 	<element name="Description" rows="3" />
+	<element name="Require ID"  />	
+	<element name="Require Message" />
       </type>
     </handler>
 

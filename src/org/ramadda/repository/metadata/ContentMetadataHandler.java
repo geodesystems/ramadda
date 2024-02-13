@@ -138,8 +138,25 @@ public class ContentMetadataHandler extends MetadataHandler {
             String contents = getMetadataManager().getLicenseHtml(license,
 								  label,false);
 
-            return new String[] { "License:&nbsp;",
-                                  searchLink + " " + contents };
+
+	    StringBuilder wiki = new StringBuilder();
+	    wiki.append("{{license license=\"" + license +"\" includeName=true decorate=true ");
+	    String desc = metadata.getAttr2();
+	    wiki.append("showDescription=true ");
+	    if(stringDefined(desc)) {
+		wiki.append("textBefore=\"" + desc.replace("\n","<br>")+"\" ");
+	    }
+	    String requireId = metadata.getAttr3();
+	    if(stringDefined(requireId)) {
+		wiki.append("requireId=\"" + requireId+"\" ");
+	    }
+	    String requireMessage = metadata.getAttr4();
+	    if(stringDefined(requireMessage)) {
+		wiki.append("requireMessage=\"" + requireMessage+"\" ");
+	    }	    
+	    wiki.append("}}");
+	    //            return new String[] { "License:&nbsp;", searchLink + " " + contents };
+            return new String[] { "License:&nbsp;",getWikiManager().wikifyEntry(request, entry, wiki.toString())};
         }
 
 
