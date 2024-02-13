@@ -1160,8 +1160,12 @@ RepositoryMap.prototype = {
 	    return;
 	}
 
-	if(feature.originalStyle)
+	//Only reset to the original style if there is something there
+	if(feature.originalStyle && feature.originalStyle.fillColor) {
             feature.style = feature.originalStyle;
+	}
+
+
         if (!feature.isSelected) {
             layer.drawFeature(feature, feature.style || "default");
         }
