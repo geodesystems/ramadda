@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml version="1.0" encoding="utf-8"?>
 <types supercategory="Miscellaneous" category="Community">
 
   <type foruser="false" name="type_resilience_project"  description="Resiliency Project" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"      metadata="resilience_risk" >
