@@ -2257,6 +2257,8 @@ thin_hr,.ramadda-thin-hr {
     font-size:80%;
 }
 
+
+
 .ui-selectmenu-menu {
     /* shadow popup */
     background-color : #FFF;
@@ -2270,6 +2272,10 @@ thin_hr,.ramadda-thin-hr {
 .ui-selectmenu-menu {
     max-height:200px;
     overflow-y:auto;
+}
+
+.ramadda-metadata-form .ui-selectmenu-button.ui-button {
+    width:25em;
 }
 
 .ui-tooltip {
