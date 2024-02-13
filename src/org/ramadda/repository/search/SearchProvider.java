@@ -244,6 +244,10 @@ public abstract class SearchProvider extends GenericTypeHandler {
         return null;
     }
 
+    public String getTooltip() {
+        return getName();
+    }    
+
 
     /**
      * _more_
@@ -427,6 +431,11 @@ public abstract class SearchProvider extends GenericTypeHandler {
             return "ramadda";
         }
 
+	@Override
+	public String getTooltip() {
+	    return getName()+HU.NL+serverInfo.getUrl();
+	}    
+
 
         /**
          * _more_
@@ -460,10 +469,13 @@ public abstract class SearchProvider extends GenericTypeHandler {
          */
         @Override
         public String getFormLabel(boolean includeId) {
-	    if(true)
-		return  getName() + (includeId
-				     ? " Id:" + getId()
-				     : "");
+	    if(true) {
+		String prefix = stringDefined(serverInfo.getSlug())?serverInfo.getSlug()+"- ":"";
+		return  prefix+
+		    getName() + (includeId
+				 ? " Id:" + getId()
+				 : "");
+	    }
 
 
             return HtmlUtils.href(serverInfo.getUrl(), getName(),

@@ -8,6 +8,7 @@ package org.ramadda.repository.util;
 
 import org.ramadda.repository.Constants;
 import org.ramadda.repository.RepositoryBase;
+import org.ramadda.util.Utils;
 import org.ramadda.util.HtmlUtils;
 
 
@@ -54,6 +55,8 @@ public class ServerInfo implements Constants {
 
     /** _more_ */
     public static final String TAG_INFO_TITLE = "title";
+    /** _more_ */
+    public static final String TAG_INFO_SLUG = "slug";    
 
     /** _more_ */
     public static final String TAG_INFO_EMAIL = "email";
@@ -70,6 +73,7 @@ public class ServerInfo implements Constants {
     /** _more_ */
     private String hostname;
 
+
     /** _more_ */
     private int port;
 
@@ -85,6 +89,7 @@ public class ServerInfo implements Constants {
     /** _more_ */
     private String description;
 
+
     /** _more_ */
     private String email;
 
@@ -96,6 +101,7 @@ public class ServerInfo implements Constants {
 
     private String searchRoot;
 
+    private String slug;
     /**
      * _more_
      *
@@ -125,7 +131,7 @@ public class ServerInfo implements Constants {
     public ServerInfo(String url, String hostname, int port, String title,
                       String description) {
         this(url, hostname, port, -1, "/repository", title, description, "",
-             false, false,"");
+             false, false,"","");
     }
 
 
@@ -142,8 +148,7 @@ public class ServerInfo implements Constants {
      */
     public ServerInfo(Element element) {
         //        System.err.println("server:" + XmlUtil.toString(element));
-        this.hostname = XmlUtil.getGrandChildText(element, TAG_INFO_HOSTNAME,
-						  "");
+        this.hostname = clean(XmlUtil.getGrandChildText(element, TAG_INFO_HOSTNAME,""));
         this.port = Integer.parseInt(XmlUtil.getGrandChildText(element,
 							       TAG_INFO_PORT, "80"));
 
@@ -155,15 +160,22 @@ public class ServerInfo implements Constants {
         } else {
             this.sslPort = -1;
         }
-        this.basePath = XmlUtil.getGrandChildText(element, TAG_INFO_BASEPATH,
-						  "/repository");
-        this.title = XmlUtil.getGrandChildText(element, TAG_INFO_TITLE, "");
-        this.description = XmlUtil.getGrandChildText(element,
-						     TAG_INFO_DESCRIPTION, "");
-        this.email = XmlUtil.getGrandChildText(element, TAG_INFO_EMAIL, "");
+        this.basePath = clean(XmlUtil.getGrandChildText(element, TAG_INFO_BASEPATH,
+							"/repository"));
+        this.title = clean(XmlUtil.getGrandChildText(element, TAG_INFO_TITLE, ""));
+        this.slug = clean(XmlUtil.getGrandChildText(element, TAG_INFO_SLUG, ""));	
+        this.description = clean(XmlUtil.getGrandChildText(element,
+							   TAG_INFO_DESCRIPTION, ""));
+        this.email = clean(XmlUtil.getGrandChildText(element, TAG_INFO_EMAIL, ""));
         String tmp = XmlUtil.getGrandChildText(element, TAG_INFO_ISREGISTRY,
 					       "false");
         isRegistry = Misc.equals(tmp, "true");
+    }
+
+
+    private String clean(String s) {
+	if(s!=null) return HtmlUtils.sanitizeString(Utils.stripTags(s));
+	return s;
     }
 
 
@@ -184,7 +196,7 @@ public class ServerInfo implements Constants {
      */
     public ServerInfo(String url, String hostname, int port, int sslPort,
                       String basePath, String title, String description,
-                      String email, boolean isRegistry, boolean enabled, String root) {
+                      String email, boolean isRegistry, boolean enabled, String root,String slug) {
         this.url         = url;
         this.hostname    = hostname;
         this.port        = port;
@@ -196,6 +208,7 @@ public class ServerInfo implements Constants {
         this.isRegistry  = isRegistry;
         this.enabled     = enabled;
 	this.searchRoot = root;
+	this.slug  =slug;
     }
 
 
@@ -255,6 +268,7 @@ public class ServerInfo implements Constants {
         XmlUtil.create(doc, TAG_INFO_DESCRIPTION, info, description, null);
 
         XmlUtil.create(doc, TAG_INFO_TITLE, info, title, null);
+        XmlUtil.create(doc, TAG_INFO_SLUG, info, slug!=null?slug:"", null);	
         XmlUtil.create(doc, TAG_INFO_HOSTNAME, info, hostname, null);
         XmlUtil.create(doc, TAG_INFO_BASEPATH, info, basePath, null);
         XmlUtil.create(doc, TAG_INFO_EMAIL, info,
@@ -544,6 +558,23 @@ public class ServerInfo implements Constants {
 	return searchRoot;
     }
 
+    /**
+       Set the Slug property.
+
+       @param value The new value for Slug
+    **/
+    public void setSlug (String value) {
+	slug = value;
+    }
+
+    /**
+       Get the Slug property.
+
+       @return The Slug
+    **/
+    public String getSlug () {
+	return slug;
+    }
 
 
 }

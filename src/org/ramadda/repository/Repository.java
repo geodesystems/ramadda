@@ -6377,7 +6377,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                               getRepositoryDescription(),
                               getRepositoryEmail(),
                               getRegistryManager().isEnabledAsServer(),
-                              false,"");
+                              false,"",getProperty(PROP_REPOSITORY_SLUG,""));
     }
 
 

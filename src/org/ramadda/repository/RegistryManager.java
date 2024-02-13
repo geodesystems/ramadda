@@ -97,6 +97,7 @@ public class RegistryManager extends RepositoryManager {
     /** _more_ */
     public static final String ARG_REGISTRY_SEARCHROOT = "registry.searchroot";    
 
+    public static final String ARG_REGISTRY_SLUG="slug";
 
     /** _more_ */
     public RequestUrl URL_REGISTRY_REMOTESERVERS =
@@ -202,17 +203,18 @@ public class RegistryManager extends RepositoryManager {
             }
             checkApi();
         } else if (request.exists(ARG_CHANGE)) {
-            System.err.println("change");
             for (ServerInfo serverInfo : getRemoteServers()) {
                 String argBase    = serverInfo.getArgBase();
                 String cbx2Id     = ARG_REGISTRY_ENABLED + argBase;
                 String labelFldId = ARG_REGISTRY_LABEL + argBase;
                 String urlFldId   = ARG_REGISTRY_URL + argBase;
-                String rootFldId   = ARG_REGISTRY_SEARCHROOT + argBase;		
+                String rootFldId   = ARG_REGISTRY_SEARCHROOT + argBase;
+                String slugFldId   = ARG_REGISTRY_SLUG + argBase;				
                 String label = request.getString(labelFldId,
                                    serverInfo.getLabel());
                 String url = request.getString(urlFldId, serverInfo.getUrl());
                 String root = request.getString(rootFldId, serverInfo.getSearchRoot());		
+                String slug = request.getString(slugFldId, serverInfo.getUrl());		
 		if(root==null) root="";
                 boolean isEnabled = request.get(cbx2Id, false);
                 getDatabaseManager().update(Tables.REMOTESERVERS.NAME,
@@ -222,9 +224,10 @@ public class RegistryManager extends RepositoryManager {
                                                 Tables.REMOTESERVERS.COL_URL,
 						Tables.REMOTESERVERS.COL_TITLE,
 						Tables.REMOTESERVERS.COL_SELECTED,
-						Tables.REMOTESERVERS.COL_SEARCHROOT}, new Object[] {
+						Tables.REMOTESERVERS.COL_SEARCHROOT,
+						Tables.REMOTESERVERS.COL_SLUG}, new Object[] {
                             url,
-                            label, Boolean.valueOf(isEnabled),root });
+                            label, Boolean.valueOf(isEnabled),root,slug });
             }
             clearRemoteServers();
             checkApi();
@@ -262,8 +265,8 @@ public class RegistryManager extends RepositoryManager {
 				 HU.b(msg("Enabled")) + HU.space(2),
 				 HU.space(2) + HU.b(msg("Repository"))+ HU.space(2),
 				 HU.space(2) + HU.b(msg("URL"))+ HU.space(2),
-				 HU.space(2) + HU.b(msg("Search Root"))+ HU.space(2)
-				 )));
+				 HU.space(2) + HU.b(msg("Search Root"))+ HU.space(2),
+				 HU.space(2) + HU.b(msg("Slug"))+ HU.space(2))));
 
 
         for (ServerInfo serverInfo : remoteServers) {
@@ -274,7 +277,8 @@ public class RegistryManager extends RepositoryManager {
             String cbx2Id     = ARG_REGISTRY_ENABLED + argBase;
             String labelFldId = ARG_REGISTRY_LABEL + argBase;
             String urlFldId   = ARG_REGISTRY_URL + argBase;
-            String rootFldId   = ARG_REGISTRY_SEARCHROOT + argBase;	    
+            String rootFldId   = ARG_REGISTRY_SEARCHROOT + argBase;
+            String slugFldId   = ARG_REGISTRY_SLUG+ argBase;	    	    
 
             String call1 =
                 HU.attr(
@@ -301,13 +305,12 @@ public class RegistryManager extends RepositoryManager {
                                              serverInfo.getEnabled(),
                                              HU.id(cbx2Id) + call2);
             sb.append(HU.row(HU.cols(cbx1, cbx2,
-				     HU.insetDiv(HU.input(labelFldId, serverInfo.getLabel(), HU.SIZE_25),
-						 5, 10, 5,10), 
-				     HU.insetDiv(HU.input(urlFldId,serverInfo.getUrl(), HU.SIZE_30),
-						 5,10, 5, 10),
-				     HU.insetDiv(HU.input(rootFldId,serverInfo.getSearchRoot(),HU.attr("title","Entry ID to search under") +
-												       HU.SIZE_20),
-						 5, 10, 5, 10))));				     
+				     HU.insetDiv(HU.input(labelFldId, serverInfo.getLabel(), HU.SIZE_25),5, 10, 5,10), 
+				     HU.insetDiv(HU.input(urlFldId,serverInfo.getUrl(), HU.SIZE_30),5,10, 5, 10),
+				     HU.insetDiv(HU.input(rootFldId,serverInfo.getSearchRoot(),HU.attr("title","Entry ID to search under") + HU.SIZE_20),5, 10, 5, 10),
+				     HU.insetDiv(HU.input(slugFldId,serverInfo.getSlug()!=null?serverInfo.getSlug():"",
+							  HU.attr("title","Short ID") + HU.SIZE_10),5,10,5,10))));
+
         }
 
         sb.append(HU.close(HU.TAG_TABLE));
@@ -522,9 +525,10 @@ public class RegistryManager extends RepositoryManager {
             boolean isRegistry = results.getInt(5) != 0;
 	    boolean isSelected = results.getInt(6) != 0;
             String  root      = results.getString(7);
+            String  slug      = results.getString(8);	    
             servers.add(new ServerInfo(id, url.getHost(), url.getPort(), -1,
                                        url.getPath(), title, desc, email,
-                                       isRegistry, false,root));
+                                       isRegistry, false,root,slug));
         }
         registeredServers = servers;
 
@@ -638,10 +642,11 @@ public class RegistryManager extends RepositoryManager {
         boolean isRegistry = results.getInt(5) != 0;
 	boolean isSelected = results.getInt(6) != 0;
         String  root      = results.getString(7);
+        String  slug      = results.getString(8);	
 
         ServerInfo serverInfo = new ServerInfo(id, url.getHost(),
                                     url.getPort(), -1, url.getPath(), title,
-					       desc, email, isRegistry, isSelected,root);
+					       desc, email, isRegistry, isSelected,root,slug);
 
         return serverInfo;
     }
@@ -941,7 +946,8 @@ public class RegistryManager extends RepositoryManager {
             serverInfo.getDescription(), serverInfo.getEmail(),
             Boolean.valueOf(serverInfo.getIsRegistry()),
             Boolean.valueOf(serverInfo.getEnabled()),
-            serverInfo.getSearchRoot()	    
+            serverInfo.getSearchRoot(),
+	    serverInfo.getSlug()	    
         });
         clearRemoteServers();
     }

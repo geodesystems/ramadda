@@ -1400,6 +1400,13 @@ public class Admin extends RepositoryManager {
                     PROP_REPOSITORY_NAME,
                     formPropValue(request, PROP_REPOSITORY_NAME, "RAMADDA Repository"), size)));
         dsb.append(
+            HU.formEntry(
+                msgLabel("Slug"),
+                HU.input(
+                    PROP_REPOSITORY_SLUG,
+                    formPropValue(request, PROP_REPOSITORY_SLUG, ""), HU.SIZE_10) +HU.space(1) +
+		msg("i.e., short name")));
+        dsb.append(
             HU.formEntryTop(
                 msgLabel("Description"),
                 HU.textArea(
@@ -1745,6 +1752,7 @@ public class Admin extends RepositoryManager {
         getRepository().writeGlobal(request, PROP_LOGO_URL, true);
         getRepository().writeGlobal(request, PROP_LOGO_IMAGE, true);
         getRepository().writeGlobal(request, PROP_REPOSITORY_NAME, true);
+        getRepository().writeGlobal(request, PROP_REPOSITORY_SLUG, true);
         getRepository().writeGlobal(request, PROP_REPOSITORY_DESCRIPTION,
                                     true);
         getRepository().writeGlobal(request, PROP_ADMIN_PHRASES);

@@ -341,9 +341,11 @@ CREATE TABLE  remoteservers (
         email varchar(200),
 	isregistry int,
         selected int,
-	searchroot varchar(1000));
+	searchroot varchar(1000),
+	slug varchar(200));
 
 ALTER table remoteservers add column  searchroot varchar(1000);
+ALTER table remoteservers add column  slug varchar(200);
 
 
 CREATE TABLE  localrepositories (

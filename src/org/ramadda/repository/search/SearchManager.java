@@ -2034,17 +2034,19 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
             String anchor = HU.anchorName(searchProvider.getId());
             String cbx = HU.labeledCheckbox(ARG_PROVIDER,
-						   searchProvider.getId(), selected,
-						   cbxCall + HU.id(cbxId),
-						   searchProvider.getFormLabel(false)
-						   + (showProviders
-						      ? " -- " + searchProvider.getId()
-						      : "")) +" " + searchProvider.getFormSuffix();
+					    searchProvider.getId(),
+					    selected,
+					    cbxCall + HU.id(cbxId),
+					    searchProvider.getFormLabel(false)
+					    + (showProviders
+					       ? " -- " + searchProvider.getId()
+					       : "")) +" " + searchProvider.getFormSuffix();
 
             cbx += anchor;
             cats.get(searchProvider.getCategory()).append(
 							  HU.div(cbx,
-								 HU.cssClass("ramadda-search-provider")));
+								 HU.attrs("title",searchProvider.getTooltip(),
+									  "class","ramadda-search-provider")));
         }
 
         for (String cat : cats.getCategories()) {

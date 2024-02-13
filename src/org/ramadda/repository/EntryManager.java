@@ -6379,8 +6379,11 @@ public class EntryManager extends RepositoryManager {
 
 		if(entryList.size()==0) continue;
 		Entry entry = entryList.get(0);
-		//		entry.setName("&#8599;" + entry.getName());
-		entry.setName("&#10548;" + entry.getName());		
+		//Add the little arrow and the server's slug as a name prefix
+		String prefix="&#10548;";
+		String slug = serverInfo.getSlug();
+		if(stringDefined(slug)) prefix+=slug+" - ";
+		entry.setName(prefix + entry.getName());		
 
 		entry.setRemoteServer(serverInfo);
 		Resource resource =  new Resource(
