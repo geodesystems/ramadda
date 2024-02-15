@@ -42,6 +42,16 @@
      <column name="target_language" label="Target Language" type="enumerationplus"
 	     cansearch="true" showinhtml="true"
 	     values="en:English,es:Spanish,fr:French"/>     
+    <wiki><![CDATA[
++section  title="{{name}}"
+{{description wikify="true"}}
+{{dictionary}}
+-section
+]]>
+</wiki>
+
+
+
 </type>
 
 

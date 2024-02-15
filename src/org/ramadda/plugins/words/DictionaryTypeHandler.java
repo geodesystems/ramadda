@@ -14,6 +14,7 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
+import org.ramadda.util.WikiUtil;
 import org.ramadda.util.sql.SqlUtil;
 
 
@@ -123,32 +124,13 @@ public class DictionaryTypeHandler extends LetterTypeHandler {
 	return label;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param group _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    @Override
-    public Result getHtmlDisplay(Request request, Entry group,  Entries children)
-            throws Exception {
-        if ( !isDefaultHtmlOutput(request)) {
-            return null;
-        }
 
+    public String getDictionary(Request request, Entry group,WikiUtil wikiUtil,Hashtable props) throws Exception {
         StringBuffer sb = new StringBuffer();
-        getPageHandler().entrySectionOpen(request, group, sb, null);
 	String headerLabel = (String)group.getValue(IDX_LANGUAGE);
 	String to  =getTargetLabel(group);
 	if(stringDefined(to))  headerLabel += HU.space(1) +"-&gt;"+ HU.space(1) + to;
 	sb.append(HU.center(headerLabel));
-
-        sb.append(getWikiManager().wikifyEntry(request, group,
-                group.getDescription()));
         boolean canAdd = getAccessManager().canDoNew(request, group);
 	if(canAdd) {
 	    sb.append(HU.center(HU.href(
@@ -165,7 +147,9 @@ public class DictionaryTypeHandler extends LetterTypeHandler {
         sb.append(HU.hr());
 	sb.append(makeHeader(request,group));
 
-	List<Entry> entries = children.get();
+
+	List<Entry> entries = new ArrayList<Entry>();
+	getEntryManager().getChildrenEntries(request, getRepository().getHtmlOutputHandler(), group, entries);
         sb.append(
             "<style type=\"text/css\">.dictionary_word {margin:0px;margin-bottom:5px;}\n");
         sb.append(
@@ -181,10 +165,10 @@ public class DictionaryTypeHandler extends LetterTypeHandler {
                     msg("No dictionary words found")));
         }
 
-        for (Entry entry : entries) {
-            String name   = entry.getName();
-	    if(entry.getTypeHandler().isType("type_dictionary_word")) {
-		name += HU.space(1) +"-&gt;" + HU.space(1) +entry.getValue(DictionaryWordTypeHandler.IDX_OTHER_WORD);
+        for (Entry child : entries) {
+            String name   = child.getName();
+	    if(child.getTypeHandler().isType("type_dictionary_word")) {
+		name += HU.space(1) +"-&gt;" + HU.space(1) +child.getValue(DictionaryWordTypeHandler.IDX_OTHER_WORD);
 	    }
             String letter = "-";
             if (name.length() > 0) {
@@ -196,7 +180,7 @@ public class DictionaryTypeHandler extends LetterTypeHandler {
                 letters.add(letter);
                 letterBuffer.append("<ul class=\"dictionary_words\">");
             }
-            String href = getEntryManager().getAjaxLink(request, entry, name).toString();
+            String href = getEntryManager().getAjaxLink(request, child, name).toString();
             letterBuffer.append(
                 HU.li(href, HU.cssClass("dictionary_word")));
         }
@@ -211,11 +195,34 @@ public class DictionaryTypeHandler extends LetterTypeHandler {
             sb.append(letterBuffer);
         }
 
-        getPageHandler().entrySectionClose(request, group, sb);
-
-        return new Result(msg("Dictionary"), sb);
+	return sb.toString();
     }
 
+
+    /**
+     *
+     * @param wikiUtil _more_
+     * @param request _more_
+     * @param originalEntry _more_
+     * @param entry _more_
+     * @param tag _more_
+     * @param props _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    @Override
+    public String getWikiInclude(WikiUtil wikiUtil, Request request,
+                                 Entry originalEntry, Entry entry,
+                                 String tag, Hashtable props)
+            throws Exception {
+        if ( !tag.equals("dictionary")) {
+            return super.getWikiInclude(wikiUtil, request, originalEntry,
+                                        entry, tag, props);
+        }
+	return getDictionary(request, entry,wikiUtil,props);
+
+    }
 
 
 
