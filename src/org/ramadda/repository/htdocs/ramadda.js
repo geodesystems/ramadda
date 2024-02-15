@@ -247,6 +247,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let simple =opts.simple;
 	let dflt = !simple;
 	let dfltShow = opts.columns!=null;
+
 	let props =  {
 	    actions:[],
 	    showName:true,
@@ -278,6 +279,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let html = "";
 	let cols = [];
 	let colList = Utils.split(props.columns??'name,entryorder,creator,date,time,createdate,download,size,type,attachments',',',true,true);
+
 	let dateWidth = 130;
 	let typeWidth = 100;	
 	let sizeWidth  =80;
@@ -587,6 +589,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		if(thumb)
 		    rowAttrs.push('data-thumbnail', thumb);
 
+		let file =entry.getFilename()
+		if(file)
+		    rowAttrs.push('data-filename', file);
+		
 		rowAttrs.push(ATTR_TITLE,title,'data-icon',entry.getIconUrl());
 	    }
 	    row+=HU.open('tr',rowAttrs);
@@ -638,7 +644,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
 
 
-	if(!props.inlineEdit) {
+	if(true ||!props.inlineEdit) {
 	    html.find('.entry-row').tooltip({
 		show: { effect: 'slideDown', delay: 1500, duration: 300 },
 		content: function () {
@@ -654,6 +660,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
 		    let type = $(this).attr('data-type');		
 		    if(type) title=title+ 'Type: ' + type+'<br>';
+		    let filename = $(this).attr('data-filename');		
+		    if(filename) title=title+ 'File: ' + filename+'<br>';
 		    let remote = $(this).attr('remote-repository');		
 		    if(remote) title=title+ 'Remote: ' + remote+'<br>';
 		    title = title+
