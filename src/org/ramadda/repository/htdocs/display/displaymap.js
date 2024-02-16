@@ -332,7 +332,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		    items.push([a,layer.name]);
 		}
 		let prefix = this.getBaseLayerSelectLabel();
-		if(prefix) prefix=prefix+':'+SPACE;
+		if(prefix) prefix=HU.b(prefix)+':'+SPACE;
 		return  HU.span([TITLE,"Choose base layer", CLASS,"display-filter"],
 
 				(prefix??'') +
