@@ -1071,6 +1071,9 @@ PointRecord.prototype =  {
     getTime: function() {
         return this.recordTime;
     },
+    setTime: function(time) {
+        return this.recordTime=time;
+    },    
     getElevation: function() {
         return this.elevation;
     },
@@ -1491,23 +1494,24 @@ var ArrayUtil = {
 var RecordUtil = {
     groupBy:function(records, display, dateBin, field) {
 	let debug = displayDebug.groupBy;
-	if(debug) console.log("groupBy");
+	if(debug) console.log("groupBy",'date bin:',dateBin,' #records:', records.length);
+
 	let groups ={
 	    max:0,
 	    values:[],
 	    labels:[],
 	    map:{},
 	}
-	records.forEach((r,idx)=>{
+	records.forEach((record,idx)=>{
 	    let key;
 	    let label = null;
-	    let date = r.getDate();
+	    let date = record.getDate();
 	    //	    if(debug && idx>0 && (idx%10000)==0) console.log("\trecord:" + idx);
 	    if(field) {
 		if(field=="latlon") {
-		    key = label = r.getLatitude() +"/" + r.getLongitude(); 
+		    key = label = record.getLatitude() +"/" + record.getLongitude(); 
 		} else {
-		    key = label = r.getValue(field.getIndex());
+		    key = label = record.getValue(field.getIndex());
 		}
 	    } else {
 		if(!date) {
@@ -1543,8 +1547,11 @@ var RecordUtil = {
 		if(label==null)
 		    label = display.formatDate(date,null,true);
 		groups.labels.push(label);
+	    } else {
+//		if(debug) console.log("\tadded:" + key);
 	    }
-	    array.push(r);
+	    array.push(record);
+
 	    groups.max = Math.max(groups.max, array.length);
 	});
 	return groups;
@@ -1933,6 +1940,38 @@ function CsvUtil() {
 	    });
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
+	roundDate: function(pointData, args) {
+            let fields  = pointData.getRecordFields();
+	    let records = pointData.getRecords(); 
+            let header = this.display.getDataValues(records[0]);
+	    let newRecords  =[];
+	    let by = args.round??'day';
+	    records.forEach((record, rowIdx)=>{
+		let newRecord = record.clone();
+		newRecords.push(newRecord);
+		let date = new Date(newRecord.getTime());
+		if(by=='hour') {
+		    date.setMinutes(0, 0, 0);
+		} else 	if(by=='day') {
+		    date.setHours(0, 0, 0, 0);
+		} else if(by=='week') {
+		    date.setHours(0, 0, 0, 0);
+		    date.setDate(date.getDate() - date.getDay()); 
+		} else if(by=='month') {
+		    date.setHours(0, 0, 0, 0);
+		    date.setDate(1); 
+		} else if(by=='year') {
+		    date.setHours(0, 0, 0, 0);
+		    date.setMonth(0, 1);
+		    date.setFullYear(date.getFullYear() + 1);		    
+		} else {
+		    console.log('unknown round date value:' + by);
+		}
+		newRecord.setTime(date);
+	    });
+	    return   new  PointData("pointdata", fields, newRecords,null,{parent:pointData});
+	},
+
 	addFixed: function(pointData, args) {
 	    let records = pointData.getRecords(); 
             let header = this.display.getDataValues(records[0]);
