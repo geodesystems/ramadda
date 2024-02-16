@@ -2780,7 +2780,7 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_SORTBY, "", ARG_LABEL,"Sort",
                 new Arg(ARG_COLUMNS, "Column to sort on", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("direction", "Direction - up or down", ATTR_TYPE, "enumeration","values","up,down"),
-		new Arg("how", "How to sort - string, length, date, extract (number)", ATTR_TYPE, "enumeration","values","string,number,length,extract")),
+		new Arg("how", "How to sort - string, length, date, extract (number)", ATTR_TYPE, "enumeration","values","string,number,length,date,extract")),
 
 	/*        new Cmd(CMD_SORT, "Sort",
 		  new Arg(ARG_COLUMNS, "Column to sort on", ATTR_TYPE, TYPE_COLUMNS)),
