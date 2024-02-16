@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Feb 15 21:34:36 MST 2024";
+var build_date="RAMADDA build date: Fri Feb 16 06:01:32 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -5692,14 +5692,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'aggregateOperator',ex:'sum|percent',tt:'Operator to apply on the aggregated rows'},
 	{p:'aggregateOperator.fieldName',ex:'sum|percent',tt:'Operator to apply on the aggregated rows for the given field'},	
 	{p:'convertData', label:'derived data', ex:'derived(field=new_field_id, function=foo*bar);',tt:'Add derived field'},
+	{p:'convertData',label:'convert date',ex:'roundDate(round=hour|day|week|month|year);',tt:'Round the dates'},
 	{p:'convertData',label:'merge rows',ex:'mergeRows(keyFields=f1\\\\,f2, operator=count|sum|average, valueFields=);',tt:'Merge rows together'},
 	{p:'convertData',label:'percent increase',ex:'addPercentIncrease(replaceValues=false);',tt:'Add percent increase'},
 	{p:'convertData',label:'doubling rate',ex:'doublingRate(fields=f1\\\\,f2, keyFields=f3);',tt:'Calculate # days to double'},
 	{p:'convertData',label:'add fixed',ex:'addFixed(id=max_pool_elevation\\\\,value=3700,type=double);"',tt:'add fixed value'},	
-	{p:'convertData',label:'unfurl',ex:'unfurl(headerField=field to get header from,uniqueField=e.g. date,valueFields=);',tt:'Unfurl'},
 	{p:'convertData',label:'Accumulate data',ex:'accum(fields=);',tt:'Accumulate'},
 	{p:'convertData',label:'Add an average field',ex:'mean(fields=);',tt:'Mean'},
 	{p:'convertData',label:'Count uniques',ex:'count(field=,sort=true,label=Count);',tt:'Count uniques'},
+	{p:'convertData',label:'unfurl',ex:'unfurl(headerField=field to get header from,uniqueField=e.g. date,valueFields=);',tt:'Unfurl'},
 	{p:'convertData',label:'rotate data', ex:'rotateData(includeFields=true,includeDate=true,flipColumns=true);',tt:'Rotate data'},
 	{p:'convertData',label:'Prune where fields are all NaN',ex:'prune(fields=);',tt:'Prune'},		
 	{p:'convertData',label:'Scale and offset',ex:'accum(scale=1,offset1=0,offset2=0,unit=,fields=);',tt:'(d + offset1) * scale + offset2'},		
@@ -14607,6 +14608,9 @@ PointRecord.prototype =  {
     getTime: function() {
         return this.recordTime;
     },
+    setTime: function(time) {
+        return this.recordTime=time;
+    },    
     getElevation: function() {
         return this.elevation;
     },
@@ -15027,23 +15031,24 @@ var ArrayUtil = {
 var RecordUtil = {
     groupBy:function(records, display, dateBin, field) {
 	let debug = displayDebug.groupBy;
-	if(debug) console.log("groupBy");
+	if(debug) console.log("groupBy",'date bin:',dateBin,' #records:', records.length);
+
 	let groups ={
 	    max:0,
 	    values:[],
 	    labels:[],
 	    map:{},
 	}
-	records.forEach((r,idx)=>{
+	records.forEach((record,idx)=>{
 	    let key;
 	    let label = null;
-	    let date = r.getDate();
+	    let date = record.getDate();
 	    //	    if(debug && idx>0 && (idx%10000)==0) console.log("\trecord:" + idx);
 	    if(field) {
 		if(field=="latlon") {
-		    key = label = r.getLatitude() +"/" + r.getLongitude(); 
+		    key = label = record.getLatitude() +"/" + record.getLongitude(); 
 		} else {
-		    key = label = r.getValue(field.getIndex());
+		    key = label = record.getValue(field.getIndex());
 		}
 	    } else {
 		if(!date) {
@@ -15079,8 +15084,11 @@ var RecordUtil = {
 		if(label==null)
 		    label = display.formatDate(date,null,true);
 		groups.labels.push(label);
+	    } else {
+//		if(debug) console.log("\tadded:" + key);
 	    }
-	    array.push(r);
+	    array.push(record);
+
 	    groups.max = Math.max(groups.max, array.length);
 	});
 	return groups;
@@ -15469,6 +15477,38 @@ function CsvUtil() {
 	    });
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
+	roundDate: function(pointData, args) {
+            let fields  = pointData.getRecordFields();
+	    let records = pointData.getRecords(); 
+            let header = this.display.getDataValues(records[0]);
+	    let newRecords  =[];
+	    let by = args.round??'day';
+	    records.forEach((record, rowIdx)=>{
+		let newRecord = record.clone();
+		newRecords.push(newRecord);
+		let date = new Date(newRecord.getTime());
+		if(by=='hour') {
+		    date.setMinutes(0, 0, 0);
+		} else 	if(by=='day') {
+		    date.setHours(0, 0, 0, 0);
+		} else if(by=='week') {
+		    date.setHours(0, 0, 0, 0);
+		    date.setDate(date.getDate() - date.getDay()); 
+		} else if(by=='month') {
+		    date.setHours(0, 0, 0, 0);
+		    date.setDate(1); 
+		} else if(by=='year') {
+		    date.setHours(0, 0, 0, 0);
+		    date.setMonth(0, 1);
+		    date.setFullYear(date.getFullYear() + 1);		    
+		} else {
+		    console.log('unknown round date value:' + by);
+		}
+		newRecord.setTime(date);
+	    });
+	    return   new  PointData("pointdata", fields, newRecords,null,{parent:pointData});
+	},
+
 	addFixed: function(pointData, args) {
 	    let records = pointData.getRecords(); 
             let header = this.display.getDataValues(records[0]);
@@ -38655,7 +38695,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.shapesTypeField = this.getFieldById(null,this.getProperty("shapesTypeField"));
 	    this.trackUrlField  =  this.getFieldById(null,this.getProperty("trackUrlField"));
             let records = this.records =  this.filterData();
-
 	    if(this.shapesTypeField && this.shapesField) {
 		this.setProperty("tooltipNotFields",this.shapesTypeField.getId()+"," + this.shapesField);
 		this.loadShapes(records);
@@ -38867,7 +38906,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		layer.setVisibility(false);
 	    });
 	    this.setMapLabel(this.heatmapLayers[index].heatmapLabel);
-
 	},
 	stepHeatmapAnimation: function(delta){
 	    let index = this.jq(ID_HEATMAP_ANIM_LIST)[0].selectedIndex;
@@ -38881,7 +38919,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.applyHeatmapAnimation(index);
 	    if(this.heatmapPlayingAnimation) {
 		setTimeout(()=>{
-		    this.stepHeatmapAnimation();
+		    this.stepHeatmapAnimation(1);
 		},this.getHmAnimationSleep(1000));
 	    }
 	},
@@ -38956,7 +38994,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let h = Math.round(w/ratio);
 	    let groupByField = this.getFieldById(null,this.getHmGroupBy());
 	    let groupByDate = this.getHmGroupByDate();
-	    if(debug) console.log("\tcalling groupBy");
+	    if(debug) console.log('calling groupBy group by date:' + groupByDate +' group by field:' + groupByField);
 	    let t1 = new Date();
 	    let groups = (groupByField || groupByDate)?RecordUtil.groupBy(records, this, groupByDate, groupByField):null;
 	    let t2 = new Date();
@@ -38970,7 +39008,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    map:{none:records}
 		}
 	    }
-	    
+//	    if(debug)	console.dir('groups:',groups);
+
 	    //	    if(debug) console.log("\tdone calling groupBy count="+ groups.values.length);
 	    let recordCnt = groups.max;
  	    if(dfltArgs.cellSize==0) {
@@ -38989,7 +39028,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let labelPrefix = this.getHmLabelPrefix("${field}-");
 	    groups.values.forEach((value,idx)=>{
 		let recordsAtTime = groups.map[value];
-		if(debug)
+		if(debug && idx<5)
 		    console.log("group:" + value +" #:" + groups.map[value].length);
 
 		let img = Gfx.gridData(this.getId(),fields, recordsAtTime,args);
