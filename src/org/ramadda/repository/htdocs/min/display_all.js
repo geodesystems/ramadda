@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Feb 15 05:12:33 MST 2024";
+var build_date="RAMADDA build date: Thu Feb 15 21:20:34 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -35794,6 +35794,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'enableDragPan',ex:'false',d:true},
 	{p:'showLayers',d:true,ex:'false',tt:'Connect points with map vectors'},
 	{p:'showBaseLayersSelect',ex:true,d:false},
+	{p:'baseLayerSelectLabel',d:null},
 	{p:'locations',ex:'usairports.json,usstates.json'},
 	{p:'highlightColor',d:'blue',ex:'#ccc',tt:''},
 	{p:'highlightFillColor',ex:'#ccc',
@@ -36013,7 +36014,12 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		    if(layer.getVisibility()) on = a;
 		    items.push([a,layer.name]);
 		}
-		return  HU.span([TITLE,"Choose base layer", CLASS,"display-filter"],  HU.select("",[ID,this.domId("baselayers")],items,on));
+		let prefix = this.getBaseLayerSelectLabel();
+		if(prefix) prefix=prefix+':'+SPACE;
+		return  HU.span([TITLE,"Choose base layer", CLASS,"display-filter"],
+
+				(prefix??'') +
+				HU.select("",[ID,this.domId("baselayers")],items,on));
 	    }
 	    return '';
 	},
