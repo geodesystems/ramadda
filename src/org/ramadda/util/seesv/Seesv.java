@@ -1754,6 +1754,7 @@ public class Seesv implements SeesvCommands {
 
         /** * Input   * */
         new Category("Input","Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XML, Shapefile, etc."),
+        new Cmd(CMD_UTF16, "Open the file as UTF 16"),
         new Cmd(CMD_DELIMITER, "Specify the input delimiter",
                 new Arg("delimiter", "Use 'space' for space, 'tab' for tab",  ATTR_SIZE, "5")),
 	new Cmd(CMD_INPUTCOMMENT,"Input comment",
@@ -3852,6 +3853,10 @@ public class Seesv implements SeesvCommands {
 		ctx.setDelimiter(delimiter = args.get(++i));
 		return i;
 	    });
+	defineFunction(CMD_UTF16,0,(ctx,args,i) -> {
+		ctx.setUtf16(true);
+		return i;
+	    });	
 	defineFunction(CMD_INPUTCOMMENT,1,(ctx,args,i) -> {
 		ctx.setInputComment(args.get(++i));
 		return i;

@@ -114,6 +114,8 @@ public class TextReader implements Cloneable {
     /**  */
     private boolean hasInput = true;
 
+    private boolean utf16 = false;
+
     /** _more_ */
     private String delimiter = ",";
 
@@ -1582,6 +1584,7 @@ public class TextReader implements Cloneable {
 		//		System.err.println("UTF8");
                 isr = new InputStreamReader(
 					    input.getInputStream(),
+					    utf16?java.nio.charset.StandardCharsets.UTF_16:
 					    java.nio.charset.StandardCharsets.UTF_8);
 	    }
             reader = new BufferedReader(isr);
@@ -1982,6 +1985,25 @@ public class TextReader implements Cloneable {
     public Bounds getBounds() {
         return bounds;
     }
+
+    /**
+       Set the Utf16 property.
+
+       @param value The new value for Utf16
+    **/
+    public void setUtf16 (boolean value) {
+	utf16 = value;
+    }
+
+    /**
+       Get the Utf16 property.
+
+       @return The Utf16
+    **/
+    public boolean getUtf16 () {
+	return utf16;
+    }
+
 
 
     /**
