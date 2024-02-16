@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Feb 15 21:20:34 MST 2024";
+var build_date="RAMADDA build date: Thu Feb 15 21:34:36 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -36015,7 +36015,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		    items.push([a,layer.name]);
 		}
 		let prefix = this.getBaseLayerSelectLabel();
-		if(prefix) prefix=prefix+':'+SPACE;
+		if(prefix) prefix=HU.b(prefix)+':'+SPACE;
 		return  HU.span([TITLE,"Choose base layer", CLASS,"display-filter"],
 
 				(prefix??'') +
