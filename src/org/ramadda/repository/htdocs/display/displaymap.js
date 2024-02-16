@@ -2972,7 +2972,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.shapesTypeField = this.getFieldById(null,this.getProperty("shapesTypeField"));
 	    this.trackUrlField  =  this.getFieldById(null,this.getProperty("trackUrlField"));
             let records = this.records =  this.filterData();
-
 	    if(this.shapesTypeField && this.shapesField) {
 		this.setProperty("tooltipNotFields",this.shapesTypeField.getId()+"," + this.shapesField);
 		this.loadShapes(records);
@@ -3184,7 +3183,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		layer.setVisibility(false);
 	    });
 	    this.setMapLabel(this.heatmapLayers[index].heatmapLabel);
-
 	},
 	stepHeatmapAnimation: function(delta){
 	    let index = this.jq(ID_HEATMAP_ANIM_LIST)[0].selectedIndex;
@@ -3198,7 +3196,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.applyHeatmapAnimation(index);
 	    if(this.heatmapPlayingAnimation) {
 		setTimeout(()=>{
-		    this.stepHeatmapAnimation();
+		    this.stepHeatmapAnimation(1);
 		},this.getHmAnimationSleep(1000));
 	    }
 	},
@@ -3273,7 +3271,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let h = Math.round(w/ratio);
 	    let groupByField = this.getFieldById(null,this.getHmGroupBy());
 	    let groupByDate = this.getHmGroupByDate();
-	    if(debug) console.log("\tcalling groupBy");
+	    if(debug) console.log('calling groupBy group by date:' + groupByDate +' group by field:' + groupByField);
 	    let t1 = new Date();
 	    let groups = (groupByField || groupByDate)?RecordUtil.groupBy(records, this, groupByDate, groupByField):null;
 	    let t2 = new Date();
@@ -3287,7 +3285,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    map:{none:records}
 		}
 	    }
-	    
+//	    if(debug)	console.dir('groups:',groups);
+
 	    //	    if(debug) console.log("\tdone calling groupBy count="+ groups.values.length);
 	    let recordCnt = groups.max;
  	    if(dfltArgs.cellSize==0) {
@@ -3306,7 +3305,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let labelPrefix = this.getHmLabelPrefix("${field}-");
 	    groups.values.forEach((value,idx)=>{
 		let recordsAtTime = groups.map[value];
-		if(debug)
+		if(debug && idx<5)
 		    console.log("group:" + value +" #:" + groups.map[value].length);
 
 		let img = Gfx.gridData(this.getId(),fields, recordsAtTime,args);
