@@ -1,6 +1,8 @@
 #!/bin/sh
-export dest_ip=$1
-echo "scping $2 to $dest_ip"
-scp -i ${GEODESYSTEMS_PEM}  ec2-user@${dest_ip}:$2 .
+IP=$1
+PEM=$2
+SOURCE=$3
+echo "getting $SOURCE from $IP"
+scp -i ${PEM}  "ec2-user@${IP}:$SOURCE" .
 
 
