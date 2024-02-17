@@ -16,6 +16,6 @@ PEM=$3
 
 
 alias go$ID="ssh -i $PEM ec2-user@$IP"
-alias put$ID="sh ${MYDIR}/scpgeode.sh ${IP} ${PEM}"
-alias get$ID="sh ${MYDIR}/scpgeode2.sh ${IP} ${PEM}"
+alias put$ID="sh ${MYDIR}/scpaws.sh ${IP} ${PEM}"
+alias get$ID="sh ${MYDIR}/scpaws2.sh ${IP} ${PEM}"
 
