@@ -154,10 +154,12 @@ export PG_HBA=${PG_DIR}/data/pg_hba.conf
 export PG_REAL_DIR="${BASE_DIR}/pgsql"
 
 installPostgres() {
-    echo "Installing PostgreSQL 13 with:"
-    printf "\tamazon-linux-extras install postgresql13 vim epel\n\tyum install -y  ${PG_INSTALL}\n"
-    amazon-linux-extras install -y postgresql13 epel 
-    yum install -y  ${PG_INSTALL} 
+    echo "Installing PostgreSQL 15 with:"
+    printf "\tsudo dnf install postgresql15.x86_64 postgresql15-server -y"
+    sudo dnf install postgresql15.x86_64 postgresql15-server -y
+#    printf "\tamazon-linux-extras install postgresql13 vim epel\n\tyum install -y  ${PG_INSTALL}\n"
+#    amazon-linux-extras install -y postgresql13 epel 
+#    yum install -y  ${PG_INSTALL} 
     if  [ ! -f ${PG_HBA} ] ; then
 	echo "setting up postgres"
 	postgresql-setup --initdb
@@ -223,12 +225,14 @@ host    all             all             ::1/128                 ident
     chmod 644 /tmp/postgres.sql
     echo "Creating repository database, adding ramadda user and setting privileges and password"
     su -c "psql -f /tmp/postgres.sql"  - postgres > /dev/null
-    rm -f ${INSTALLER_DIR}/postgres.sql
+#    rm -f ${INSTALLER_DIR}/postgres.sql
     echo "writing properties to ${RAMADDA_HOME_DIR}/db.properties"
     printf "ramadda.db=postgres\nramadda.db.postgres.user=ramadda\nramadda.db.postgres.password=${PG_PASSWORD}"  > ${RAMADDA_HOME_DIR}/db.properties
 
     
 }
+
+
 
 download_installer() {
     rm -f ${INSTALLER_DIR}/ramaddaserver.zip
