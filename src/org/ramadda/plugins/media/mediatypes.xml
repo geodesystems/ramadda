@@ -120,11 +120,12 @@
       help="A collection of images displayed as a photo album"      >
      <property name="icon" value="/media/album.png"/>
      <property name="form.resource.show" value="false"/>
+     <column name="usethumbnail" type="boolean" label="Use Thumbnail"  default="true" showinhtml="false"/>
      <wiki><![CDATA[
 +section title="{{name}}" #
 {{noheading}}
 {{description wikify=true}}
-{{gallery columns="3" thumbnail="true"}}
+{{gallery columns="3" thumbnail="property:usethumbnail"}}
 -section
 ]]>
 </wiki>
