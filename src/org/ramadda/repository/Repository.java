@@ -6807,6 +6807,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return new Result(BLANK, new StringBuilder(BLANK));
     }
 
+    public Result processLogLicense(Request request) throws Exception {
+	String entryId = request.getString(ARG_ENTRYID,"").trim();
+	Entry entry = getEntryManager().getEntry(request,entryId);
+	String name = request.getStrictSanitizedString(ARG_NAME,"").trim();
+	String email = request.getStrictSanitizedString("email","").trim();
+	String id = request.getStrictSanitizedString("licenseid","").trim();	
+	getLogManager().logLicense(request.getIp()+","+entryId+","+(entry!=null?entry.getName():"NULL")+","+id+","+name+","+email);
+	return new Result(BLANK, new StringBuilder(BLANK));
+    }
+
+
+
     public Result processDummyInstall(Request request) throws Exception {
 	StringBuilder sb = new StringBuilder();
         getPageHandler().sectionOpen(request, sb, "Install", false);

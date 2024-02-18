@@ -2591,10 +2591,13 @@ public class WikiManager extends RepositoryManager
 				     HU.id(id));
 	    if(stringDefined(requireId)) {
 		List<String> opts = new ArrayList<String>();
+		Utils.add(opts,"entryid",JsonUtil.quote(entry.getId()));
 		String message = getProperty(wikiUtil, props, "requireMessage", null);
 		if(message!=null) Utils.add(opts,"message",JsonUtil.quote(message));
 		String suffix = getProperty(wikiUtil, props, "requireSuffix", null);
 		if(suffix!=null) Utils.add(opts,"suffix",JsonUtil.quote(suffix));
+		boolean logName = getProperty(wikiUtil, props, "logName",false);
+		if(logName) Utils.add(opts,"logName","true");
 		String redirect = getProperty(wikiUtil, props, "requireRedirect", null);
 		if(redirect!=null) Utils.add(opts,"redirect",JsonUtil.quote(redirect));		
 		String showLicense = getProperty(wikiUtil, props, "requireShowLicense", null);

@@ -133,6 +133,7 @@
     <api request="/dummy"                  method="processDummy"/>
     <api request="/install"                method="processDummyInstall" needs_ssl="true"/>
     <api request="/tifftopng"              method="processTiffToPng"/>
+    <api request="/loglicense"             method="processLogLicense"  />
  
     
     <api request="/proxy/*"                method="processProxy"/>

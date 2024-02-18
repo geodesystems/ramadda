@@ -151,7 +151,8 @@ var Utils =  {
 	    showLicense:true,
 	    suffix:'',
 	    onlyAnonymous:false,
-	    redirect:ramaddaBaseUrl
+	    redirect:ramaddaBaseUrl,
+	    logName:false
 	}
 	if(args) $.extend(opts,args);
 	let text = jqid(domId).html();
@@ -164,22 +165,50 @@ var Utils =  {
 			      HU.div(['action','no','class','ramadda-button ' + CLASS_CLICKABLE],"No")]
 
 	    let buttons = HU.buttons(buttonList);
-	    let html = HU.div([ATTR_CLASS,'ramadda-license-dialog'], opts.message+
-			      (opts.showLicense?HU.div([],text):'<br>')+
-			      opts.suffix+
-			      buttons);
+	    let html =  opts.message;
 
+
+	    html+=(opts.showLicense?HU.div([],text):'<br>')+opts.suffix;
+	    if(opts.logName) {
+		html+=HU.vspace('1em');
+		html+=HU.div([],'Please enter your contact information');
+		html+=HU.formTable();
+		html+=HU.formEntry("Name:",HU.input('','',['tabindex','1',ATTR_ID,'licenseagreename','size','30']));
+		html+=HU.formEntry("Email:",HU.input('','',['tabindex','2',ATTR_ID,'licenseagreeemail','size','30']));		
+		html+=HU.formTableClose();
+	    }
+
+
+	    html+=buttons;
+
+	    html = HU.div([ATTR_CLASS,'ramadda-license-dialog'], html);
 	    let dialog =  HU.makeDialog({anchor:$(window),
 					 at:'left+100 top+100',
 					 my:'left top',
 					 content:html,
 					 remove:false,modalStrict:true,sticky:true});
 
+
 	    dialog.find('.ramadda-button').click(function() {
 		if($(this).attr('action')!='ok') {
 		    window.location.href=opts.redirect;
 		    return;
 		}
+		let name = "";
+		let email="";
+		if(opts.logName) {
+		    name = jqid('licenseagreename').val().trim();
+		    email = jqid('licenseagreeemail').val().trim();		    
+		    if(!Utils.stringDefined(name) || !Utils.stringDefined(email)) {
+			alert('Please enter your contact information');
+			return;
+		    }
+		}
+		let url = HU.url(RamaddaUtil.getUrl('/loglicense'),
+				 ["licenseid",licenseId,
+				  "name",name,"email",email,
+				  "entryid",opts.entryid]);
+		$.getJSON(url, data=>{});
 		Utils.setLocalStorage(key, true);
 		dialog.remove();
 	    });
@@ -4278,7 +4307,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	return HU.div(['class',clazz??'ramadda-button-bar','style',style??''], buttons);
     },
     vspace:function(dim) {
-	return this.div(['style',this.css('margin-top:',dim??'0.5em')]);
+	return this.div(['style',this.css('margin-top',dim??'0.5em')]);
     },
     hbox: function(args,style) {
         let row = HtmlUtils.openTag("tr", ["valign", "top"]);

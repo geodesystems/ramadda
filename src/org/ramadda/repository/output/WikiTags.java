@@ -195,6 +195,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					"#requireSuffix","Message to show after license",
 					"#requireShowLicense", "false",
 					"#requireRedirect","https://example.com",
+					"#logName","true",
 					"#requireOnlyAnonymous", "true"					
 					),
 
