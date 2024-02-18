@@ -116,8 +116,13 @@ public class LogManager extends RepositoryManager {
         new LogManager.LogId("org.ramadda.repository.entry.activity");
 
     /** _more_ */
+    private final LogManager.LogId REPOSITORY_LICENSE_LOG_ID =
+        new LogManager.LogId("org.ramadda.repository.license");    
+
+
+    /** _more_ */
     private static final LogManager.LogId REPOSITORY_SPECIAL_LOG_ID =
-        new LogManager.LogId("org.ramadda.repository.special");
+        new LogManager.LogId("org.ramadda.repository.special");    
 
 
     /** _more_ */
@@ -291,6 +296,14 @@ public class LogManager extends RepositoryManager {
         return getLogger(REPOSITORY_SPECIAL_LOG_ID);
     }    
 
+
+    /**
+     *  @return _more_
+     */
+    public MyLogger getLicenseLogger() {
+        return getLogger(REPOSITORY_LICENSE_LOG_ID);
+    }    
+    
 
     /**
      * _more_
@@ -526,6 +539,20 @@ public class LogManager extends RepositoryManager {
 	    }
 	} catch(Exception exc) {
 	    System.err.println("LogManager: error in logSpecial:" + exc);
+	    exc.printStackTrace();
+	}
+    }
+
+    public void logLicense(String message) {
+	try {
+	    MyLogger logger = getLicenseLogger();
+	    if (logger != null) {
+		logger.info(message);
+	    } else {
+		System.err.println("license:" + message);
+	    }
+	} catch(Exception exc) {
+	    System.err.println("LogManager: error in logLicense:" + exc);
 	    exc.printStackTrace();
 	}
     }
@@ -865,7 +892,7 @@ public class LogManager extends RepositoryManager {
             header.add(
                 HtmlUtils.href(
                     HtmlUtils.url(
-                        request.makeUrl(getAdmin().URL_ADMIN_LOG), ARG_LOG,
+				  request.makeUrl(getAdmin().URL_ADMIN_LOG), ARG_LOG,
                         "access"), "Recent Access"));
         }
 
