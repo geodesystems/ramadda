@@ -250,6 +250,20 @@ public class WikiManager extends RepositoryManager
             return dflt;
         }
 
+	if(value.startsWith("property:")){
+            Entry   entry    = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
+	    Object o = null;
+	    if(entry!=null) {
+		o = entry.getValue(value.substring("property:".length()));
+	    } 
+	    if(o==null) {
+		getLogManager().logSpecial("Could not find property:" + value);
+		return dflt;
+	    }
+	    value = o.toString();
+	}
+
+
         return value;
     }
 
