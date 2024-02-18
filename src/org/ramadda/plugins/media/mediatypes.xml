@@ -15,6 +15,10 @@
 {{description wikify=true}}
 {{tags}}
 {{annotated_media}}
+:vspace 1em
+----
+:heading Information
+{{information details=true}}
 -section
 ]]>
 </wiki>
