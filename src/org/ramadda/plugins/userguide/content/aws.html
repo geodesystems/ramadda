@@ -84,15 +84,15 @@ sudo yum update -y
 </pre>
 
 <li> Fetch then unzip the RAMADDA installer:
-<pre>
++pre addCopy=true
 wget -O ramaddainstaller.zip https://ramadda.org/repository/release/latest/ramaddainstaller.zip
 unzip ramaddainstaller.zip
-</pre>
+-pre
 
 <li> Run the installer - make sure to give it the absolute path:
-<pre>
++pre addCopy=true
 sudo sh /home/ec2-user/ramaddainstaller/installer.sh
-</pre>
+-pre
 
 </ol>
 
@@ -112,10 +112,9 @@ from <i>/var/lib/pgsql</i>
 <li> Download and install RAMADDA. 
 
 <li> Configure RAMADDA with a (temporary) self-signed certificate for HTTPS access.
+
 <li> Install RAMADDA as a service. To start and stop RAMADDA do:
-<pre>
-sudo service ramadda start
-</pre>
+
 </ul>
 
 Once running you need to finish the configuration through the RAMADDA web interface:
