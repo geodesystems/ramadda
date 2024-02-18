@@ -425,13 +425,13 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
      <property name="form.date.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
      <column name="model_file" type="string" label="Model File" showinform="false"/>
-     <column changetype="true" name="camera_position"  canlist="false" columns="60" size="500" type="string" label="Camera Position" help="posx,posy,poz;rotx,roty,rotz;targetx,targety,targetz"/>
-     <column name="ambient_light" type="string" label="Ambient Light" canlist="false" help="color,intensity -- e.g., #f0f0f0,1"/>
-     <column changetype="true" name="lights" type="string" label="Lights" canlist="false" rows="5" columns="60" size="1000" help="color1,x1,y1,z1 e.g., #f0f0f0,10,0,0"/>
+     <column changetype="true" name="camera_position"  canlist="false" columns="60" size="500" type="string" label="Camera Position" help="posx,posy,poz;rotx,roty,rotz;targetx,targety,targetz" showinhtml="false"/>
+     <column name="ambient_light" type="string" label="Ambient Light" canlist="false" help="color,intensity -- e.g., #f0f0f0,1" showinhtml="false"/>
+     <column changetype="true" name="lights" type="string" label="Lights" canlist="false" rows="5" columns="60" size="1000" help="color1,x1,y1,z1 e.g., #f0f0f0,10,0,0" showinhtml="false"/>
      <column name="properties" type="clob" rows="10" columns="90" xxxsize="10000" label="Properties" showinform="true"
-	     help="showPlanes=true planeColorX=#ff0000 planeSize=50 showCheckerboard=true showAxes=true showBbox=true showGrid=true gridColor=blue gridSize=50 gridDivisions=10 addLightHelper=true"/>
+	     help="showPlanes=true planeColorX=#ff0000 planeSize=50 showCheckerboard=true showAxes=true showBbox=true showGrid=true gridColor=blue gridSize=50 gridDivisions=10 addLightHelper=true" showinhtml="false"/>
      <column name="annotations" type="clob" rows="10" columns="90" xxxsize="10000" label="Annotations" showinform="true"
-	     help="posx,posy,poz;rotx,roty,rotz;targetx,targety,targetz;note"/>
+	     help="posx,posy,poz;rotx,roty,rotz;targetx,targety,targetz;note" showinhtml="false"/>
 />     
 
 <wiki><![CDATA[
@@ -440,6 +440,11 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 +center
 {{3dmodel}}
 -center
+:vspace 1em
+----
+:vspace 1em
+:heading Information
+{{information details=true}}
 -section
 ]]>
 </wiki>
