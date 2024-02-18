@@ -17,6 +17,7 @@ import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.FileWrapper;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.ImageUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.S3File;
 import org.ramadda.util.TempDir;
@@ -1643,36 +1644,13 @@ public class StorageManager extends RepositoryManager implements PointFile
             fileType     = fileType.substring(fileType.indexOf(":") + 1);
             fileContents = fileContents.substring(idx + 1);
         }
-        //      System.err.println("type:" + fileType);
-
-        if (fileType.startsWith("image/")) {
-            byte[] imagedata =
-                DatatypeConverter.parseBase64Binary(fileContents);
-            BufferedImage bufferedImage =
-                ImageIO.read(new ByteArrayInputStream(imagedata));
-            String suffix = IO.getFileExtension(fileName).toLowerCase();
-            if (suffix.startsWith(".")) {
-                suffix = suffix.substring(1);
-            }
-            if (bufferedImage == null) {
-                throw new IllegalArgumentException(
-                    "Unable to create image -  file:" + fileName + " suffix:"
-                    + suffix);
-            }
-            ImageIO.write(bufferedImage, suffix, tmpFile);
-        } else {
-            byte[] b;
-            if (isBase64) {
-                b = Utils.decodeBase64(fileContents);
-            } else {
-                b = fileContents.getBytes("UTF-8");
-            }
-            IOUtil.writeBytes(tmpFile, b);
-            //      FileOutputStream fos = new FileOutputStream(tmpFile);
-            //      IOUtil.writeFile(tmpFile, fileContents);
-            //      fos.close();
-        }
-
+	byte[] b;
+	if (isBase64) {
+	    b = Utils.decodeBase64(fileContents);
+	} else {
+	    b = fileContents.getBytes("UTF-8");
+	}
+	IOUtil.writeBytes(tmpFile, b);
         return tmpFile;
     }
 
