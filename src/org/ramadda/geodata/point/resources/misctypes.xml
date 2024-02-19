@@ -495,8 +495,11 @@ fields="etr,etrn,ghi,dni,dhi,gh_illum,dn_illum,dh_illum,zenith_lum,totcld,opqcld
      <column  name="maxpoints"  label="Max Points" type="string"  default="20000" columns="10"/>
      <column  name="filepattern"  label="File Pattern" type="string"   columns="30" suffix="There can be multiple files for a site/product. The pattern can be used to pick the file"/>               
      <property name="record.properties">
+       record.type.default=double
        record.type.startdatetime=date
-record.format.startdatetime=iso8601
+       record.format.startdatetime=iso8601
+       record.type.enddatetime=date
+       record.format.enddatetime=iso8601
      </property>
 <wiki>
 <![CDATA[
