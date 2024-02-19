@@ -2756,6 +2756,8 @@ public class WikiManager extends RepositoryManager
             if (name != null) {
 		String  decimalFormat = getProperty(wikiUtil,props,"decimalFormat",null);
 		boolean raw = getProperty(wikiUtil, props, "raw",false);
+		boolean lowerCase = getProperty(wikiUtil, props, "lowerCase",false);
+		boolean upperCase = getProperty(wikiUtil, props, "upperCase",false);
                 String fieldValue =
                     entry.getTypeHandler().getFieldHtml(request, entry, props, name,raw);
                 if (fieldValue != null) {
@@ -2767,6 +2769,8 @@ public class WikiManager extends RepositoryManager
 			} catch(Exception exc) {
 			}
 		    }
+		    if(lowerCase) fieldValue = fieldValue.toLowerCase();
+		    if(upperCase) fieldValue = fieldValue.toUpperCase();		    
                     return fieldValue;
                 }
                 return "Could not find field: " + name;
