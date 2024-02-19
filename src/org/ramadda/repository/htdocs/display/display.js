@@ -2699,7 +2699,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    return;
 		}
 		if(macro.type=='date') return
-
 		if(!this.getProperty("request." + macro.name + ".acceptChangeEvent",true)) {
 		    return;
 		}
@@ -6118,12 +6117,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 
 		if(this.settingMacroValue) return;
+//		console.log('macro change-2',apply,live,macro.triggerReload);
 		let reloaded = false;
+
 		if((apply || live) && macro.triggerReload) {
 		    reloaded=true;
 		    applyRequest();
 		} else {
-		    applyButton.css('background','lightblue');
+		    applyButton.css('background','yellow');
 		    applyButton.css('border-color','#000');		    
 		}
 		if(!macro.name) return;

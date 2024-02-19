@@ -405,6 +405,7 @@ function PointData(name, recordFields, records, url, properties) {
         loadPointJson: function(url, display, reload,callback) {
 	    let debug =  displayDebug.loadPointJson;
 	    let debug2 = false;
+//	    debug = debug2 = true;
             let pointData = this;
             this.startLoading();
             let _this = this;
@@ -499,6 +500,7 @@ function PointData(name, recordFields, records, url, properties) {
 		cacheObject.pending.map(display=>{
                     display.pointDataLoadFailed(err);
 		});
+		cacheObject.pending=[];
 		delete getPointDataCache()[url];
                 pointData.stopLoading();
             }

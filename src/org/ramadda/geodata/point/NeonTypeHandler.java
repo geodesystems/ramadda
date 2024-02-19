@@ -87,13 +87,15 @@ public class NeonTypeHandler extends PointTypeHandler {
 	if(entry.isFile()) {
 	    return entry.getResource().getPath();
 	}
-        String url = URL_TEMPLATE;
-	url = url.replace("${site_code}",("" + entry.getValue(IDX_SITE_CODE)).trim());
-	url = url.replace("${product_code}",("" + entry.getValue(IDX_PRODUCT_CODE)).trim());
 	String year = ("" + entry.getValue(IDX_YEAR)).trim();
 	String month = ("" + entry.getValue(IDX_MONTH)).trim();	
 	GregorianCalendar cal=null;
 	boolean addOffset=true;
+	String siteCode = request.getString("sitecode","");
+	if(!stringDefined(siteCode)) siteCode = ""+entry.getValue(IDX_SITE_CODE);
+	String productCode =request.getString("productcode","");
+	if(!stringDefined(productCode)) productCode = ""+entry.getValue(IDX_PRODUCT_CODE);
+
 	if(request.defined("date")) {
 	    cal = new GregorianCalendar();
 	    cal.setTime(getRepository().getDateHandler().parseDate(request.getString("date")));
@@ -107,9 +109,12 @@ public class NeonTypeHandler extends PointTypeHandler {
 	    month=""+StringUtil.padZero(cal.get(cal.MONTH)+(addOffset?1:0), 2);
 	}
 
+        String url = URL_TEMPLATE;
+	url = url.replace("${site_code}",siteCode.trim());
+	url = url.replace("${product_code}",productCode.trim());
 	url = url.replace("${year}",year);
 	url = url.replace("${month}",month);
-	System.err.println(url);
+	System.err.println("neon url:" +url);
 	IO.Result result = IO.doGetResult(new URL(url));
 	if(result.getError()) {
 	    throw new RuntimeException("Error: reading NEON URL:" + url);
@@ -137,11 +142,12 @@ public class NeonTypeHandler extends PointTypeHandler {
 	    }
 	}
 	if(fileUrl==null) {
-	    String error = "Error: could not find data file:" + url;
+	    String error = "Error: could not find data file in manifest: " + url;
 	    if(names.length()>0)
 		error+="\nNames:\n" + names;
 	    throw new RuntimeException(error);
 	}
+	System.err.println("file url:" +fileUrl);
         return fileUrl;
     }
 
