@@ -668,6 +668,8 @@ public abstract class TextFile extends PointFile {
 				    } else {
 					format = "yyyy-MM-dd";
 				    }
+				} else {
+				    if(format.trim().equals("iso8601")) format="yyyy-MM-dd'T'HH:mm:ss";
 				}
 				attrs.append(attrType(RecordField.TYPE_DATE));
 				attrs.append(attrFormat(format));
