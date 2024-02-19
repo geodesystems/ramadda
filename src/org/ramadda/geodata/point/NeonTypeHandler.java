@@ -115,6 +115,9 @@ public class NeonTypeHandler extends PointTypeHandler {
 	url = url.replace("${year}",year);
 	url = url.replace("${month}",month);
 	System.err.println("neon url:" +url);
+	String key = getRepository().getProperty("neon.api.key",null);
+	if(key!=null) url=HU.url(url,"apiToken",key);
+
 	IO.Result result = IO.doGetResult(new URL(url));
 	if(result.getError()) {
 	    throw new RuntimeException("Error: reading NEON URL:" + url);
