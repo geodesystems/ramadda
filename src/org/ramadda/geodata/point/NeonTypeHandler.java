@@ -27,6 +27,8 @@ import java.util.Hashtable;
 
 public class NeonTypeHandler extends PointTypeHandler {
     private static JSONObject siteInfo;
+    private static final String URL_TEMPLATE ="https://data.neonscience.org/api/v0/data/${product_code}/${site_code}/${year}-${month}";
+
     private static int IDX = PointTypeHandler.IDX_LAST + 1;
     private static int IDX_SITE_CODE = IDX++;
     private static int IDX_PRODUCT_CODE = IDX++;
@@ -37,7 +39,6 @@ public class NeonTypeHandler extends PointTypeHandler {
     private static int IDX_SITE_TYPE = IDX++;
     private static int IDX_MAXPOINTS = IDX++;
     private static int IDX_FILEPATTERN = IDX++;            
-    private static final String URL_TEMPLATE ="https://data.neonscience.org/api/v0/data/${product_code}/${site_code}/${year}-${month}";
 
     public NeonTypeHandler(Repository repository, Element node)
             throws Exception {
@@ -76,7 +77,7 @@ public class NeonTypeHandler extends PointTypeHandler {
                                        Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
-        return new CsvFile(getPathForRecordEntry(entry,requestProperties), properties);
+        return new CsvFile(getPathForRecordEntry(request,entry,requestProperties), properties);
     }
 
 
@@ -91,15 +92,24 @@ public class NeonTypeHandler extends PointTypeHandler {
 	url = url.replace("${product_code}",("" + entry.getValue(IDX_PRODUCT_CODE)).trim());
 	String year = ("" + entry.getValue(IDX_YEAR)).trim();
 	String month = ("" + entry.getValue(IDX_MONTH)).trim();	
-	if(year.equals("latest") || month.equals("latest")) {
-	    GregorianCalendar cal = new GregorianCalendar();
+	GregorianCalendar cal=null;
+	boolean addOffset=true;
+	if(request.defined("date")) {
+	    cal = new GregorianCalendar();
+	    cal.setTime(getRepository().getDateHandler().parseDate(request.getString("date")));
+	} else 	if(year.equals("latest") || month.equals("latest")) {
+	    cal = new GregorianCalendar();
 	    cal.setTime(new Date());
-	    year = ""+cal.get(cal.YEAR);
-	    month=""+StringUtil.padZero(cal.get(cal.MONTH), 2);
+	    addOffset=false;
 	}
+	if(cal!=null) {
+	    year = ""+cal.get(cal.YEAR);
+	    month=""+StringUtil.padZero(cal.get(cal.MONTH)+(addOffset?1:0), 2);
+	}
+
 	url = url.replace("${year}",year);
 	url = url.replace("${month}",month);
-	//	System.err.println(url);
+	System.err.println(url);
 	IO.Result result = IO.doGetResult(new URL(url));
 	if(result.getError()) {
 	    throw new RuntimeException("Error: reading NEON URL:" + url);
@@ -134,5 +144,17 @@ public class NeonTypeHandler extends PointTypeHandler {
 	}
         return fileUrl;
     }
+
+    public Result processEntryAction(Request request, Entry entry)
+            throws Exception {
+        String action = request.getString("action", "");
+        if (!action.equals("getfile")) {
+            return super.processEntryAction(request, entry);
+	}
+	String url = getPathForEntry(request,  entry,true);
+	return new Result(url);
+    }
+
+
 
 }

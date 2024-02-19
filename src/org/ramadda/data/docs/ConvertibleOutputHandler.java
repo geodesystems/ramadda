@@ -648,7 +648,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
 
 	    if(entry.getTypeHandler() instanceof RecordTypeHandler) {
 		
-		files.add(((RecordTypeHandler)entry.getTypeHandler()).getPathForRecordEntry( entry,  new Hashtable()));
+		files.add(((RecordTypeHandler)entry.getTypeHandler()).getPathForRecordEntry(request, entry,  new Hashtable()));
 	    } else {
 		files.add(new IO.Path(path));
 	    }

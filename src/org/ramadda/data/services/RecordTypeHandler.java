@@ -529,9 +529,9 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
      *
      * @throws Exception _more_
      */
-    public IO.Path getPathForRecordEntry(Entry entry,  Hashtable requestProperties)
+    public IO.Path getPathForRecordEntry(Request request,Entry entry,  Hashtable requestProperties)
 	throws Exception {
-        String thePath = getPathForEntry(null, entry,true);
+        String thePath = getPathForEntry(request, entry,true);
         thePath  = convertPath(entry, thePath, requestProperties);
 	thePath = getRepository().applyPropertyMacros(thePath);
 	IO.Path path = new IO.Path(thePath);
@@ -733,7 +733,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         }
 
         return (RecordFile) getRecordFileFactory().doMakeRecordFile(
-								    getPathForRecordEntry(entry, requestProperties).getPath(), properties,
+								    getPathForRecordEntry(request, entry, requestProperties).getPath(), properties,
             requestProperties);
     }
 
@@ -754,7 +754,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
                                        Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
-        IO.Path path = getPathForRecordEntry(entry, requestProperties);
+        IO.Path path = getPathForRecordEntry(null,entry, requestProperties);
         if (path == null) {
             return null;
         }

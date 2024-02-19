@@ -4,13 +4,13 @@
 	handler="org.ramadda.data.services.PointTypeHandler"
 	pattern="(?i).*CR1000.*\.dat">
     <property name="search.tabs" value="list,map"/>
-     <property name="icon" value="/point/campbell.png"/>
-     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-     <property name="form.area.show" value="false"/>
-     <property name="form.location.show" value="true"/>
-     <property name="subset.area.show" value="false"/>
-     <property name="subset.date.show" value="true"/>     
- <property name="record.properties">
+    <property name="icon" value="/point/campbell.png"/>
+    <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+    <property name="form.area.show" value="false"/>
+    <property name="form.location.show" value="true"/>
+    <property name="subset.area.show" value="false"/>
+    <property name="subset.date.show" value="true"/>     
+<property name="record.properties">
 <![CDATA[
 #This is the row that defines the field names, i.e., the second row (like above) has a comma separated list of names
 fieldRow=2
@@ -72,7 +72,7 @@ headerStyle="text-align:left"
 :rem Put the blank here but have it be displayed in the targetDiv below
 :rem We do this because we want the download to show first but the blank
 :rem should actually run first so it gets the point data with the request fields
-{{display_blank targetDiv="datalogger_blank_div"
+{{display_filter targetDiv="datalogger_blank_div"
 requestFieldsDefault=true showMenu=false requestFieldsShow=true
 loadingMessage="icon_progress Loading data..."
 noDataMessage="No data available"}}

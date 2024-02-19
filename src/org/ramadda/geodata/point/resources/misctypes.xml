@@ -481,11 +481,12 @@ fields="etr,etrn,ghi,dni,dhi,gh_illum,dn_illum,dh_illum,zenith_lum,totcld,opqcld
 	newfields="name,sitecode,productcode,productyear,productmonth,maxpoints,filepattern,quit"
 	editfields="name,description,productyear,productmonth,maxpoints,filepattern,quit"      	
         handler="org.ramadda.geodata.point.NeonTypeHandler">
-     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-     <property name="icon" value="/point/neon.png"/>
-     <property name="form.location.show" value="false"/>
-     <property name="form.area.show" value="false"/>
-     <column  name="sitecode"  label="Site Code" type="enumeration"  cansearch="true" values="file:/org/ramadda/geodata/point/resources/neonsites.txt" canedit="false"/>
+    <action name="getfile" label="Download NEON file" icon="/point/neon.png"/>
+    <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+    <property name="icon" value="/point/neon.png"/>
+    <property name="form.location.show" value="false"/>
+    <property name="form.area.show" value="false"/>
+    <column  name="sitecode"  label="Site Code" type="enumeration"  cansearch="true" values="file:/org/ramadda/geodata/point/resources/neonsites.txt" canedit="false"/>
      <column  name="productcode"  label="Product Code" type="enumeration"  cansearch="true" values="file:/org/ramadda/geodata/point/resources/neonproducts.txt" canedit="false"/>
      <column  name="productyear"  label="Year" type="enumeration" values="latest:Latest,2020,2021,2022,2023,2024,2025"/>
      <column  name="productmonth"  label="Month" type="enumeration" values="latest:Latest,01:January,02:February,03:March,04:April,05:May,06:June,07:July,08:August,09:September,10:October,11:November,12:December"/>     
@@ -506,7 +507,15 @@ fields="etr,etrn,ghi,dni,dhi,gh_illum,dn_illum,dh_illum,zenith_lum,totcld,opqcld
 +section title={{name}}
 {{property max="property:maxpoints"}}
 {{description wikify=true}}
-{{group}}
+{{group requestFieldsDefault=true  requestFieldsShow=false
+requestFields="date,limit"
+request.fields="date"
+request.date.type=date
+request.date.label=Date
+}}
+<table><tr><td>
+{{display_filter requestFieldsDefault=true  requestFieldsShow=true}}
+</td></tr></table>
 {{display_linechart showMenu=true fields=#3}}
 {{display_linechart showMenu=true fields=#4}}
 {{display_download}}

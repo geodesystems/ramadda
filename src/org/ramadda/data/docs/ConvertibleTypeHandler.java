@@ -136,7 +136,7 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
         }
 
 
-        IO.Path          path = getPathForRecordEntry(entry,requestProperties);
+        IO.Path          path = getPathForRecordEntry(request,entry,requestProperties);
         ConvertibleFile file = new ConvertibleFile(request, this, entry, args, path);
 
         return file;

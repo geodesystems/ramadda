@@ -101,7 +101,7 @@ public class GsdTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public IO.Path getPathForRecordEntry(Entry entry,
+    public IO.Path getPathForRecordEntry(Request request,Entry entry,
 					 Hashtable requestProperties)
             throws Exception {
         String url   = URL_TEMPLATE;
@@ -140,7 +140,7 @@ public class GsdTypeHandler extends PointTypeHandler {
     @Override
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
-        return getPathForRecordEntry(entry, request.getDefinedProperties()).getPath();
+        return getPathForRecordEntry(request,entry, request.getDefinedProperties()).getPath();
     }
 
 }

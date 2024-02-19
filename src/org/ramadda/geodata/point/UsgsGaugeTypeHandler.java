@@ -156,7 +156,7 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
                                        Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
-        return new UsgsGaugeRecordFile(getPathForRecordEntry(entry,requestProperties), properties);
+        return new UsgsGaugeRecordFile(getPathForRecordEntry(request,entry,requestProperties), properties);
     }
 
     /**

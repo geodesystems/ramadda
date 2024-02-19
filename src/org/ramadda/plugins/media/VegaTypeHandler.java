@@ -79,7 +79,7 @@ public class VegaTypeHandler extends ConvertibleTypeHandler {
                                        Hashtable requestProperties)
             throws Exception {
         return new VegaRecordFile(getRepository(), this, entry,
-                                  getPathForRecordEntry(entry,  requestProperties));
+                                  getPathForRecordEntry(request,entry,  requestProperties));
     }
 
 
