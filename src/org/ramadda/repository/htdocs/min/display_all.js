@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Feb 19 04:15:38 MST 2024";
+var build_date="RAMADDA build date: Mon Feb 19 07:10:20 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -6504,7 +6504,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    return;
 		}
 		if(macro.type=='date') return
-
 		if(!this.getProperty("request." + macro.name + ".acceptChangeEvent",true)) {
 		    return;
 		}
@@ -9923,12 +9922,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 
 		if(this.settingMacroValue) return;
+//		console.log('macro change-2',apply,live,macro.triggerReload);
 		let reloaded = false;
+
 		if((apply || live) && macro.triggerReload) {
 		    reloaded=true;
 		    applyRequest();
 		} else {
-		    applyButton.css('background','lightblue');
+		    applyButton.css('background','yellow');
 		    applyButton.css('border-color','#000');		    
 		}
 		if(!macro.name) return;
@@ -13940,6 +13941,7 @@ function PointData(name, recordFields, records, url, properties) {
         loadPointJson: function(url, display, reload,callback) {
 	    let debug =  displayDebug.loadPointJson;
 	    let debug2 = false;
+//	    debug = debug2 = true;
             let pointData = this;
             this.startLoading();
             let _this = this;
@@ -14034,6 +14036,7 @@ function PointData(name, recordFields, records, url, properties) {
 		cacheObject.pending.map(display=>{
                     display.pointDataLoadFailed(err);
 		});
+		cacheObject.pending=[];
 		delete getPointDataCache()[url];
                 pointData.stopLoading();
             }
