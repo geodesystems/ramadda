@@ -2698,15 +2698,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(!macro) {
 		    return;
 		}
+		if(macro.type=='date') return
 
 		if(!this.getProperty("request." + macro.name + ".acceptChangeEvent",true)) {
 		    return;
 		}
 
 		macro.setValue(prop);
-
-
-
 		if(debug)
 		    console.log(this.getId() +" event-reloading");
 		this.reloadData();
@@ -6031,12 +6029,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.requestMacros = null;
 		[['requestFields','date,stride,limit'],
 		 ['requestFieldsToggleOpen',true],
-		 ['request.date.type','date'],
+		 ['request.date.type','daterange'],
 		 ['request.stride.title','Specify a skip factor'],
 		 ['request.stride.includeNone',false],
 		 ['request.stride.type','enumeration'],
 		 ['request.stride.values','0:None,1,2,3,4,5,6,7,8,9,10,15,20,30,40,50,75,100'],
 		 ['request.stride.default',0],
+		 ['request.limit.label','# Records'],
 		 ['request.limit.title','Limit how many records to return'],
 		 ['request.limit.default','20000'],
 		 ['requestFieldsLive',false]].forEach(pair=>{
@@ -6045,7 +6044,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		     }
 		 });
 	    }		
-
 
 
 	    let macros =[];

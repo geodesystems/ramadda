@@ -3238,7 +3238,7 @@ RequestMacro.prototype = {
 		' - ' +
 		HU.input('','',['title',title??'','data-max', this.dflt_max, STYLE, style, ID,maxId,'size',4,CLASS,'display-filter-input display-filter-range'],this.dflt_max)
 	    label = label+' range';
-	} else if(this.type=='date') {
+	} else if(this.type=='daterange') {
 	    let fromId = this.display.getDomId(this.getId()+'_from');
 	    let toId = this.display.getDomId(this.getId()+'_to');
 	    dateIds.push(fromId);
@@ -3247,6 +3247,10 @@ RequestMacro.prototype = {
 		' - ' +
 		HU.datePicker('',this.dflt_to,['title',title??'',CLASS,'display-filter-input',STYLE, style, 'name','',ID,toId])
 	    label = label+' range';
+	} else if(this.type=='date') {
+	    let fromId = this.display.getDomId(this.getId()+'_from');
+	    dateIds.push(fromId);
+	    widget = HU.datePicker('',this.dflt_from,['title',title??'',CLASS,'display-filter-input',STYLE, style, 'name','',ID,fromId]);
 	} else {
 	    let size = '10';
 	    if(this.type=='number')
@@ -3315,7 +3319,7 @@ RequestMacro.prototype = {
 		url = url +"&" + HU.urlArg(this.urlarg+"_to",max);
 	    this.display.setProperty("request." +this.name+"_min.default",min);
 	    this.display.setProperty("request." +this.name+"_max.default",max);
-	} else if(this.type=="date") {
+	} else if(this.type=="daterange") {
 	    let from = this.display.jq(this.getId()+"_from").val()||"";
 	    let to = this.display.jq(this.getId()+"_to").val()||"";
 	    this.dflt_from = from;
@@ -3327,6 +3331,12 @@ RequestMacro.prototype = {
 	    if(to!="")
 		url = url +"&" + HU.urlArg(this.urlarg+"_todate",to);
 	    //			    this.display.setProperty(this.name+".default",value);
+	} else if(this.type=="date") {
+	    let from = this.display.jq(this.getId()+"_from").val()||"";
+	    this.dflt_from = from;
+	    this.display.setProperty("request." +this.name+"_from.default",from);
+	    if(from!="")
+		url = url +"&" + HU.urlArg(this.urlarg,from);
 	} else if(this.type=="enumeration") {
 	    let value = this.getValue();
 	    if(!Array.isArray(value)) {value=[value];}
