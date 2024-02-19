@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Feb 18 08:33:35 MST 2024";
+var build_date="RAMADDA build date: Mon Feb 19 04:15:38 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -6503,15 +6503,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(!macro) {
 		    return;
 		}
+		if(macro.type=='date') return
 
 		if(!this.getProperty("request." + macro.name + ".acceptChangeEvent",true)) {
 		    return;
 		}
 
 		macro.setValue(prop);
-
-
-
 		if(debug)
 		    console.log(this.getId() +" event-reloading");
 		this.reloadData();
@@ -9836,12 +9834,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.requestMacros = null;
 		[['requestFields','date,stride,limit'],
 		 ['requestFieldsToggleOpen',true],
-		 ['request.date.type','date'],
+		 ['request.date.type','daterange'],
 		 ['request.stride.title','Specify a skip factor'],
 		 ['request.stride.includeNone',false],
 		 ['request.stride.type','enumeration'],
 		 ['request.stride.values','0:None,1,2,3,4,5,6,7,8,9,10,15,20,30,40,50,75,100'],
 		 ['request.stride.default',0],
+		 ['request.limit.label','# Records'],
 		 ['request.limit.title','Limit how many records to return'],
 		 ['request.limit.default','20000'],
 		 ['requestFieldsLive',false]].forEach(pair=>{
@@ -9850,7 +9849,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		     }
 		 });
 	    }		
-
 
 
 	    let macros =[];
@@ -16775,7 +16773,7 @@ RequestMacro.prototype = {
 		' - ' +
 		HU.input('','',['title',title??'','data-max', this.dflt_max, STYLE, style, ID,maxId,'size',4,CLASS,'display-filter-input display-filter-range'],this.dflt_max)
 	    label = label+' range';
-	} else if(this.type=='date') {
+	} else if(this.type=='daterange') {
 	    let fromId = this.display.getDomId(this.getId()+'_from');
 	    let toId = this.display.getDomId(this.getId()+'_to');
 	    dateIds.push(fromId);
@@ -16784,6 +16782,10 @@ RequestMacro.prototype = {
 		' - ' +
 		HU.datePicker('',this.dflt_to,['title',title??'',CLASS,'display-filter-input',STYLE, style, 'name','',ID,toId])
 	    label = label+' range';
+	} else if(this.type=='date') {
+	    let fromId = this.display.getDomId(this.getId()+'_from');
+	    dateIds.push(fromId);
+	    widget = HU.datePicker('',this.dflt_from,['title',title??'',CLASS,'display-filter-input',STYLE, style, 'name','',ID,fromId]);
 	} else {
 	    let size = '10';
 	    if(this.type=='number')
@@ -16852,7 +16854,7 @@ RequestMacro.prototype = {
 		url = url +"&" + HU.urlArg(this.urlarg+"_to",max);
 	    this.display.setProperty("request." +this.name+"_min.default",min);
 	    this.display.setProperty("request." +this.name+"_max.default",max);
-	} else if(this.type=="date") {
+	} else if(this.type=="daterange") {
 	    let from = this.display.jq(this.getId()+"_from").val()||"";
 	    let to = this.display.jq(this.getId()+"_to").val()||"";
 	    this.dflt_from = from;
@@ -16864,6 +16866,12 @@ RequestMacro.prototype = {
 	    if(to!="")
 		url = url +"&" + HU.urlArg(this.urlarg+"_todate",to);
 	    //			    this.display.setProperty(this.name+".default",value);
+	} else if(this.type=="date") {
+	    let from = this.display.jq(this.getId()+"_from").val()||"";
+	    this.dflt_from = from;
+	    this.display.setProperty("request." +this.name+"_from.default",from);
+	    if(from!="")
+		url = url +"&" + HU.urlArg(this.urlarg,from);
 	} else if(this.type=="enumeration") {
 	    let value = this.getValue();
 	    if(!Array.isArray(value)) {value=[value];}
