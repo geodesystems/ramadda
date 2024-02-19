@@ -1,0 +1,81 @@
+ABBY:Abby Road 
+ARIK:Arikaree River 
+BARC:Lake Barco 
+BARR:Utqiaġvik 
+BART:Bartlett Experimental Forest 
+BIGC:Upper Big Creek 
+BLAN:Blandy Experimental Farm 
+BLDE:Blacktail Deer Creek 
+BLUE:Blue River 
+BLWA:Black Warrior River 
+BONA:Caribou-Poker Creeks Research Watershed 
+CARI:Caribou Creek 
+CLBJ:Lyndon B. Johnson National Grassland 
+COMO:Como Creek 
+CPER:Central Plains Experimental Range 
+CRAM:Crampton Lake 
+CUPE:Rio Cupeyes 
+DCFS:Dakota Coteau Field Site 
+DEJU:Delta Junction 
+DELA:Dead Lake 
+DSNY:Disney Wilderness Preserve 
+FLNT:Flint River 
+GRSM:Great Smoky Mountains National Park 
+GUAN:Guanica Forest 
+GUIL:Rio Yahuecas 
+HARV:Harvard Forest & Quabbin Watershed 
+HEAL:Healy 
+HOPB:Lower Hop Brook 
+JERC:The Jones Center At Ichauway 
+JORN:Jornada Experimental Range 
+KING:Kings Creek 
+KONA:Konza Prairie Agroecosystem 
+KONZ:Konza Prairie Biological Station 
+LAJA:Lajas Experimental Station 
+LECO:LeConte Creek 
+LENO:Lenoir Landing 
+LEWI:Lewis Run 
+LIRO:Little Rock Lake 
+MART:Martha Creek 
+MAYF:Mayfield Creek 
+MCDI:McDiffett Creek 
+MCRA:McRae Creek 
+MLBS:Mountain Lake Biological Station 
+MOAB:Moab 
+NIWO:Niwot Ridge 
+NOGP:Northern Great Plains Research Laboratory 
+OAES:Marvin Klemme Range Research Station 
+OKSR:Oksrukuyik Creek 
+ONAQ:Onaqui 
+ORNL:Oak Ridge 
+OSBS:Ordway-Swisher Biological Station 
+POSE:Posey Creek 
+PRIN:Pringle Creek 
+PRLA:Prairie Lake 
+PRPO:Prairie Pothole 
+PUUM:Puu Makaala Natural Area Reserve 
+REDB:Red Butte Creek 
+RMNP:Rocky Mountains 
+SCBI:Smithsonian Conservation Biology Institute 
+SERC:Smithsonian Environmental Research Center 
+SJER:San Joaquin Experimental Range 
+SOAP:Soaproot Saddle 
+SRER:Santa Rita Experimental Range 
+STEI:Steigerwaldt-Chequamegon 
+STER:North Sterling 
+SUGG:Lake Suggs 
+SYCA:Sycamore Creek 
+TALL:Talladega National Forest 
+TEAK:Lower Teakettle 
+TECR:Teakettle Creek - Watershed 2 
+TOMB:Lower Tombigbee River 
+TOOK:Toolik Lake 
+TOOL:Toolik Field Station 
+TREE:Treehaven 
+UKFS:KU Field Station 
+UNDE:University of Notre Dame Environmental Research Center 
+WALK:Walker Branch 
+WLOU:West St Louis Creek 
+WOOD:Chase Lake National Wildlife Refuge 
+WREF:Wind River Experimental Forest 
+YELL:Yellowstone National Park 
