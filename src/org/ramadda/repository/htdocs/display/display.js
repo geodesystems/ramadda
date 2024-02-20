@@ -7517,7 +7517,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		msg  = String(msg).replace(/</g,"&lt;").replace(/>/g,"&gt;");
             } else {
                 msg = HU.b("An error has occurred:");
-		msg+='<br>'+this.getLogLabel()+'<br>';
+		msg+=' '+this.getLogLabel()+'<br>';
                 if (!data) data = this.getNoDataMessage();
                 let error = data.error ? data.error : data;
                 error = error.replace(/<[^>]*>/g, "");
@@ -7531,8 +7531,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     seen[line] = true;
                     tmp += line + "\n";
                 }
+		tmp = tmp.replace('Error:java.lang.RuntimeException:','');
+		tmp = tmp.replace(/\\n/g,'<br>');
                 error = tmp;
-                error = HU.tag("pre", [STYLE, HU.css("max-height","300px","overflow-y","auto","max-width","100%","overflow-x","auto")], error);
+                error = HU.tag("pre", [STYLE, HU.css("white-space","nowrap","max-height","300px","overflow-y","auto","max-width","600px","overflow-x","auto")], error);
                 msg += error;
             }
 	    
