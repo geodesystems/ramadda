@@ -662,6 +662,10 @@ public class TypeHandler extends RepositoryManager {
 	actions.add(action);
     }
 
+    public Object getWikiProperty(Entry entry, String id)  {
+	return  entry.getValue(id);
+    }
+
     public void getWikiTags(List<String[]> tags, Entry entry) {
         if(this.parent!=null) {
 	    this.parent.getWikiTags(tags, entry);
