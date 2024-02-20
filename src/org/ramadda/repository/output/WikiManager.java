@@ -251,10 +251,11 @@ public class WikiManager extends RepositoryManager
         }
 
 	if(value.startsWith("property:")){
+	    String id = value.substring("property:".length());
             Entry   entry    = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
 	    Object o = null;
 	    if(entry!=null) {
-		o = entry.getValue(value.substring("property:".length()));
+		o = entry.getTypeHandler().getWikiProperty(entry,id);
 	    } 
 	    if(o==null) {
 		getLogManager().logSpecial("Could not find property:" + value);
@@ -1469,6 +1470,7 @@ public class WikiManager extends RepositoryManager
                                      String tag, Hashtable props, String remainder,
                                      boolean doingApply)
 	throws Exception {
+
 
         String attrPrefix = "";
         if (doingApply) {
@@ -3120,9 +3122,10 @@ public class WikiManager extends RepositoryManager
             String tooltip = getProperty(wikiUtil, props, "tooltip",null);
 	    if(tooltip!=null) {
 		tooltip = tooltip.replace("${entryid}",entry.getId()).replace("${entryname}",entry.getName());
-		tooltip = tooltip.replace("${mainentryid}",originalEntry.getId()).replace("${mainentryname}",originalEntry.getName());		
+		tooltip = tooltip.replace("${mainentryid}",originalEntry.getId()).replace("${mainentryname}",originalEntry.getName());	
 		props.put("tooltip",tooltip);
 	    }
+
 
             List<String> displayProps = new ArrayList<String>();
 	    String jsonUrl = getDataUrl(request, entry,  wikiUtil, theTag, props,displayProps);
@@ -8475,6 +8478,19 @@ public class WikiManager extends RepositoryManager
     }
 
 
+    private void checkProperties(Entry entry, Hashtable props) {
+	for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
+	    Object key   = keys.nextElement();
+	    Object value = props.get(key);
+	    if(value!=null && value.toString().startsWith("property:")) {
+		Object o = entry.getTypeHandler().getWikiProperty(entry,value.toString().substring("property:".length()));
+		if(o==null) o="Could not find property:" + key;
+		props.put(key,o);
+	    }
+	}
+   }
+
+
     /**
      * _more_
      *
@@ -8498,6 +8514,9 @@ public class WikiManager extends RepositoryManager
                                  Hashtable props, List<String> propList)
 	throws Exception {
 
+	checkProperties(entry,props);
+
+	
         String displayType = getProperty(wikiUtil, props, "type",
                                          "linechart");
 
