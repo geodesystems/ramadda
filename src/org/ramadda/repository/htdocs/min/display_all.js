@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Feb 19 07:10:20 MST 2024";
+var build_date="RAMADDA build date: Tue Feb 20 02:53:56 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -11322,7 +11322,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		msg  = String(msg).replace(/</g,"&lt;").replace(/>/g,"&gt;");
             } else {
                 msg = HU.b("An error has occurred:");
-		msg+='<br>'+this.getLogLabel()+'<br>';
+		msg+=' '+this.getLogLabel()+'<br>';
                 if (!data) data = this.getNoDataMessage();
                 let error = data.error ? data.error : data;
                 error = error.replace(/<[^>]*>/g, "");
@@ -11336,8 +11336,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     seen[line] = true;
                     tmp += line + "\n";
                 }
+		tmp = tmp.replace('Error:java.lang.RuntimeException:','');
+		tmp = tmp.replace(/\\n/g,'<br>');
                 error = tmp;
-                error = HU.tag("pre", [STYLE, HU.css("max-height","300px","overflow-y","auto","max-width","100%","overflow-x","auto")], error);
+                error = HU.tag("pre", [STYLE, HU.css("white-space","nowrap","max-height","300px","overflow-y","auto","max-width","600px","overflow-x","auto")], error);
                 msg += error;
             }
 	    
@@ -16674,7 +16676,7 @@ function RequestMacro(display, macro) {
 	Utils.split(enums,",").forEach(tok=>{
 	    let toks = tok.split(":");
 	    let id = toks[0];
-	    let label = toks[1];
+	    let label = Utils.join(toks,' ',1);
 	    if(!includeAll && id=="_all_") return;
 	    values.push([id,label||id]);
 	});
