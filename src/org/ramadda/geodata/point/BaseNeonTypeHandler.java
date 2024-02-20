@@ -44,25 +44,40 @@ public class BaseNeonTypeHandler extends PointTypeHandler {
     }
 
 
+    private static String siteCodes;
     private static String productCodes;
 
     @Override
     public Object getWikiProperty(Entry entry, String id)  {
-	if(!id.equals("neon.productcodes")) return super.getWikiProperty(entry,id);
-	if(productCodes==null) {
-	    StringBuilder sb = new StringBuilder();
-	    try {
-		for(String line:Utils.split(getStorageManager().readUncheckedSystemResource("/org/ramadda/geodata/point/resources/neonproducts.txt"),"\n",true,true)) {
-		    if(line.startsWith("#")) continue;
-		    if(sb.length()>0) sb.append(",");
-		    sb.append(line);
+	try {
+	    if(id.equals("neon.productcodes")) {
+		if(productCodes==null) {
+		    StringBuilder sb = new StringBuilder();
+		    for(String line:Utils.split(getStorageManager().readUncheckedSystemResource("/org/ramadda/geodata/point/resources/neonproducts.txt"),"\n",true,true)) {
+			if(line.startsWith("#")) continue;
+			if(sb.length()>0) sb.append(",");
+			sb.append(line);
+		    }
+		    productCodes = sb.toString();
 		}
-		productCodes = sb.toString();
-	    } catch(Exception exc) {
-		throw new RuntimeException(exc);
+		return productCodes;
+	    } else if(id.equals("neon.sitecodes")) {
+		if(siteCodes==null) {
+		    StringBuilder sb = new StringBuilder();
+		    for(String line:Utils.split(getStorageManager().readUncheckedSystemResource("/org/ramadda/geodata/point/resources/neonsites.txt"),"\n",true,true)) {
+			if(line.startsWith("#")) continue;
+			if(sb.length()>0) sb.append(",");
+			sb.append(line);
+		    }
+		    siteCodes = sb.toString();
+		}
+		return siteCodes;
+	    } else {
+		return super.getWikiProperty(entry, id);
 	    }
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
 	}
-	return productCodes;
     }
 
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
