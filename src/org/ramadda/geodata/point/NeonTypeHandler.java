@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 
-public class NeonTypeHandler extends PointTypeHandler {
+public class NeonTypeHandler extends BaseNeonTypeHandler {
     private static JSONObject siteInfo;
     private static final String URL_TEMPLATE ="https://data.neonscience.org/api/v0/data/${product_code}/${site_code}/${year}-${month}";
 
@@ -87,71 +87,12 @@ public class NeonTypeHandler extends PointTypeHandler {
 	if(entry.isFile()) {
 	    return entry.getResource().getPath();
 	}
-	String year = ("" + entry.getValue(IDX_YEAR)).trim();
-	String month = ("" + entry.getValue(IDX_MONTH)).trim();	
-	GregorianCalendar cal=null;
-	boolean addOffset=true;
-	String siteCode = request.getString("sitecode","");
-	if(!stringDefined(siteCode)) siteCode = ""+entry.getValue(IDX_SITE_CODE);
-	String productCode =request.getString("productcode","");
-	if(!stringDefined(productCode)) productCode = ""+entry.getValue(IDX_PRODUCT_CODE);
-
-	if(request.defined("date")) {
-	    cal = new GregorianCalendar();
-	    cal.setTime(getRepository().getDateHandler().parseDate(request.getString("date")));
-	} else 	if(year.equals("latest") || month.equals("latest")) {
-	    cal = new GregorianCalendar();
-	    cal.setTime(new Date());
-	    addOffset=false;
-	}
-	if(cal!=null) {
-	    year = ""+cal.get(cal.YEAR);
-	    month=""+StringUtil.padZero(cal.get(cal.MONTH)+(addOffset?1:0), 2);
-	}
-
-        String url = URL_TEMPLATE;
-	url = url.replace("${site_code}",siteCode.trim());
-	url = url.replace("${product_code}",productCode.trim());
-	url = url.replace("${year}",year);
-	url = url.replace("${month}",month);
-	System.err.println("neon url:" +url);
-	String key = getRepository().getProperty("neon.api.key",null);
-	if(key!=null) url=HU.url(url,"apiToken",key);
-
-	IO.Result result = IO.doGetResult(new URL(url));
-	if(result.getError()) {
-	    throw new RuntimeException("Error: reading NEON URL:" + url);
-	}
-	JSONObject obj = new JSONObject(result.getResult());
-	JSONObject data = obj.getJSONObject("data");
-	JSONArray files = data.getJSONArray("files");
-	String fileUrl = null;
-	String pattern = (String)entry.getValue(IDX_FILEPATTERN);
-	if(!stringDefined(pattern)) pattern=null;
-	StringBuilder names = new StringBuilder();
-	for (int i = 0; fileUrl==null && i < files.length(); i++) {
-	    JSONObject file = files.getJSONObject(i);
-	    String name = file.getString("name");
-	    if(name.indexOf("basic")>=0  || name.indexOf("expanded")>=0) {
-		names.append(name);
-		names.append("\n");
-		if(pattern!=null) {
-		    if(name.indexOf(pattern)>=0 || name.matches(pattern)) {
-			fileUrl = file.getString("url");	    
-		    }
-		} else  if(name.indexOf("basic")>=0) {		
-		    fileUrl = file.getString("url");	    
-		}
-	    }
-	}
-	if(fileUrl==null) {
-	    String error = "Error: could not find data file in manifest: " + url;
-	    if(names.length()>0)
-		error+="\nNames:\n" + names;
-	    throw new RuntimeException(error);
-	}
-	System.err.println("file url:" +fileUrl);
-        return fileUrl;
+	return  getPathForEntry(request, entry,
+				(String)entry.getValue(IDX_SITE_CODE),
+				(String)entry.getValue(IDX_PRODUCT_CODE),
+				(String)entry.getValue(IDX_YEAR),
+				(String)entry.getValue(IDX_MONTH),
+				(String)entry.getValue(IDX_FILEPATTERN));				
     }
 
     public Result processEntryAction(Request request, Entry entry)

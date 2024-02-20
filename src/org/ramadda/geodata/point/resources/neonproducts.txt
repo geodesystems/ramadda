@@ -1,9 +1,10 @@
 DP1.00001.001:2D wind speed and direction
+DP1.00098.001:Relative humidity
+DP1.00004.001:Barometric pressure
+DP1.00006.001:Precipitation
 DP1.00002.001:Single aspirated air temperature
 DP1.00003.001:Triple aspirated air temperature
-DP1.00004.001:Barometric pressure
 DP1.00005.001:IR biological temperature
-DP1.00006.001:Precipitation
 DP1.00007.001:3D wind speed: direction and sonic temperature
 DP1.00010.001:3D wind attitude and motion reference
 DP1.00013.001:Wet deposition chemical analysis
@@ -13,7 +14,6 @@ DP1.00022.001:Shortwave radiation (primary pyranometer)
 DP1.00023.001:Shortwave and longwave radiation (net radiometer)
 DP1.00024.001:Photosynthetically active radiation (PAR)
 DP1.00030.001:CH4 Concentration
-DP1.00033.001:Phenology images
 DP1.00034.001:CO2 concentration - turbulent
 DP1.00035.001:H2O concentration - turbulent
 DP1.00036.001:Atmospheric CO2 isotopes
@@ -21,14 +21,10 @@ DP1.00037.001:Atmospheric H2O isotopes
 DP1.00038.001:Stable isotopes in precipitation
 DP1.00040.001:Soil heat flux plate
 DP1.00041.001:Soil temperature
-DP1.00042.001:Snow depth and understory phenology images
-DP1.00043.001:Spectral sun photometer - calibrated sky radiances
-DP1.00066.001:Photosynthetically active radiation (quantum line)
 DP1.00094.001:Soil water content and water salinity
 DP1.00095.001:Soil CO2 concentration
 DP1.00096.001:Soil physical and chemical properties: Megapit
 DP1.00097.001:Soil chemical properties (Megapit)
-DP1.00098.001:Relative humidity
 DP1.00099.001:CO2 concentration - storage
 DP1.00100.001:H2O concentration - storage
 DP1.00101.001:Particulate mass
@@ -37,13 +33,11 @@ DP1.10008.001:Soil chemical properties: distributed initial characterization
 DP1.10010.001:Coarse downed wood log survey
 DP1.10014.001:Coarse downed wood bulk density sampling
 DP1.10017.001:Digital hemispheric photos of plot vegetation
-DP1.10020.001:Ground beetle sequences DNA barcode
 DP1.10022.001:Ground beetles sampled from pitfall traps
 DP1.10023.001:Herbaceous clip harvest
 DP1.10026.001:Plant foliar traits
 DP1.10031.001:Litter chemical properties
 DP1.10033.001:Litterfall and fine woody debris production and chemistry
-DP1.10038.001:Mosquito sequences DNA barcode
 DP1.10041.001:Mosquito pathogen status
 DP1.10043.001:Mosquitoes sampled from CO2 traps
 DP1.10045.001:Non-herbaceous perennial vegetation structure
@@ -56,7 +50,6 @@ DP1.10064.002:Rodent pathogen status: tick-borne
 DP1.10066.001:Root biomass and chemistry: Megapit
 DP1.10067.001:Root biomass and chemistry: periodic
 DP1.10072.001:Small mammal box trapping
-DP1.10076.001:Small mammal sequences DNA barcode
 DP1.10078.001:Soil chemical properties: periodic
 DP1.10080.001:Soil inorganic nitrogen pools and transformations
 DP1.10081.001:Soil microbe community composition
@@ -73,7 +66,6 @@ DP1.10107.001:Soil microbe metagenome sequences
 DP1.10108.001:Soil microbe marker gene sequences
 DP1.10109.001:Soil microbe group abundances
 DP1.10111.001:Site management and event reporting
-DP1.20002.001:Land-water interface images
 DP1.20004.001:Barometric pressure above water on-buoy
 DP1.20008.001:Specific conductivity of surface water
 DP1.20015.001:Specific conductivity in groundwater
@@ -96,7 +88,6 @@ DP1.20093.001:Chemical properties of surface water
 DP1.20097.001:Dissolved gases in surface water
 DP1.20099.001:Groundwater and active layer measurements at permafrost sites
 DP1.20100.001:Elevation of groundwater
-DP1.20105.001:Fish sequences DNA barcode
 DP1.20107.001:Fish electrofishing: gill netting: and fyke netting counts
 DP1.20120.001:Macroinvertebrate collection
 DP1.20126.001:Macroinvertebrate metabarcoding
@@ -128,12 +119,6 @@ DP1.20280.001:Benthic microbe marker gene sequences
 DP1.20281.001:Surface water microbe metagenome sequences
 DP1.20282.001:Surface water microbe marker gene sequences
 DP1.20288.001:Water quality
-DP1.30001.001:LiDAR slant range waveform
-DP1.30003.001:Discrete return LiDAR point cloud
-DP1.30006.001:Spectrometer orthorectified surface directional reflectance - flightline
-DP1.30008.001:Spectrometer orthrorectified at-sensor radiance - flightline
-DP1.30010.001:High-resolution orthorectified camera imagery
-DP1.30012.001:Field spectral data
 DP2.00004.001:Temporally interpolated biological temperature
 DP2.00005.001:Temporally interpolated photosynthetically active radiation
 DP2.00006.001:Temporally interpolated soil temperature
@@ -143,32 +128,10 @@ DP2.00016.001:Temporally interpolated PAR-line
 DP2.00020.001:Temporally interpolated shortwave and longwave radiation (net radiometer)
 DP2.00023.001:Temporally interpolated triple aspirated tower temperature
 DP2.00024.001:Temperature rate of change
-DP2.30011.001:Albedo - spectrometer - flightline
-DP2.30012.001:LAI - spectrometer - flightline
-DP2.30014.001:fPAR - spectrometer - flightline
-DP2.30016.001:Total biomass map - spectrometer - flightline SUSPENDED
-DP2.30018.001:Canopy nitrogen - flightline SUSPENDED
-DP2.30019.001:Canopy water indices - flightline
-DP2.30020.001:Canopy xanthophyll cycle - flightline SUSPENDED
-DP2.30022.001:Canopy lignin - flightline SUSPENDED
-DP2.30026.001:Vegetation indices - spectrometer - flightline
 DP3.00008.001:Temperature rate of change profile
 DP3.00009.001:CO2 concentration rate of change profile
 DP3.00010.001:H2O concentration rate of change profile
-DP3.30006.001:Spectrometer orthorectified surface directional reflectance - mosaic
-DP3.30010.001:High-resolution orthorectified camera imagery mosaic
-DP3.30011.001:Albedo - spectrometer - mosaic
-DP3.30012.001:LAI - spectrometer - mosaic
-DP3.30014.001:fPAR - spectrometer - mosaic
-DP3.30015.001:Ecosystem structure
-DP3.30016.001:Total biomass map - spectrometer - mosaic SUSPENDED
-DP3.30018.001:Canopy nitrogen - mosaic SUSPENDED
 DP3.30019.001:Canopy water indices - mosaic
-DP3.30020.001:Canopy xanthophyll cycle - mosaic SUSPENDED
-DP3.30022.001:Canopy lignin - mosaic SUSPENDED
-DP3.30024.001:Elevation - LiDAR
-DP3.30025.001:Slope and Aspect - LiDAR
-DP3.30026.001:Vegetation indices - spectrometer - mosaic
 DP4.00001.001:Summary weather statistics
 DP4.00002.001:Sensible heat flux
 DP4.00007.001:Momentum flux
@@ -180,3 +143,43 @@ DP4.00133.001:Stage-discharge rating curves
 DP4.00137.001:Latent heat flux
 DP4.00200.001:Bundled data products - eddy covariance
 DP4.00201.001:Flux footprint characteristics
+
+
+## skipping these
+#DP3.30015.001:Ecosystem structure
+#DP1.10020.001:Ground beetle sequences DNA barcode
+#DP1.10038.001:Mosquito sequences DNA barcode
+#DP1.10076.001:Small mammal sequences DNA barcode
+#DP1.20105.001:Fish sequences DNA barcode
+#DP1.00033.001:Phenology images
+#DP1.00042.001:Snow depth and understory phenology images
+#DP1.20002.001:Land-water interface images
+#DP1.30010.001:High-resolution orthorectified camera imagery
+#DP3.30010.001:High-resolution orthorectified camera imagery mosaic
+#DP1.30001.001:LiDAR slant range waveform
+#DP1.30003.001:Discrete return LiDAR point cloud
+#DP3.30024.001:Elevation - LiDAR
+#DP3.30025.001:Slope and Aspect - LiDAR
+#DP3.30018.001:Canopy nitrogen - mosaic SUSPENDED
+#DP3.30020.001:Canopy xanthophyll cycle - mosaic SUSPENDED
+#DP3.30022.001:Canopy lignin - mosaic SUSPENDED
+#DP3.30026.001:Vegetation indices - spectrometer - mosaic
+#DP3.30016.001:Total biomass map - spectrometer - mosaic SUSPENDED
+#DP3.30006.001:Spectrometer orthorectified surface directional reflectance - mosaic
+#DP2.30018.001:Canopy nitrogen - flightline SUSPENDED
+#DP2.30019.001:Canopy water indices - flightline
+#DP2.30020.001:Canopy xanthophyll cycle - flightline SUSPENDED
+#DP2.30022.001:Canopy lignin - flightline SUSPENDED
+#DP1.00043.001:Spectral sun photometer - calibrated sky radiances
+#DP1.00066.001:Photosynthetically active radiation (quantum line)
+#DP1.30006.001:Spectrometer orthorectified surface directional reflectance - flightline
+#DP1.30008.001:Spectrometer orthrorectified at-sensor radiance - flightline
+#DP1.30012.001:Field spectral data
+#DP2.30011.001:Albedo - spectrometer - flightline
+#DP2.30012.001:LAI - spectrometer - flightline
+#DP2.30014.001:fPAR - spectrometer - flightline
+#DP2.30016.001:Total biomass map - spectrometer - flightline SUSPENDED
+#DP2.30026.001:Vegetation indices - spectrometer - flightline
+#DP3.30011.001:Albedo - spectrometer - mosaic
+#DP3.30012.001:LAI - spectrometer - mosaic
+#DP3.30014.001:fPAR - spectrometer - mosaic
