@@ -3138,7 +3138,7 @@ function RequestMacro(display, macro) {
 	Utils.split(enums,",").forEach(tok=>{
 	    let toks = tok.split(":");
 	    let id = toks[0];
-	    let label = toks[1];
+	    let label = Utils.join(toks,' ',1);
 	    if(!includeAll && id=="_all_") return;
 	    values.push([id,label||id]);
 	});
