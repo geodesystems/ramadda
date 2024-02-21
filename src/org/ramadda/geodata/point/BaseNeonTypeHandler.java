@@ -14,6 +14,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
+import org.ramadda.util.TTLCache;
 import ucar.unidata.util.StringUtil;
 import org.json.*;
 import org.w3c.dom.*;
@@ -27,6 +28,9 @@ import java.util.Hashtable;
 
 public class BaseNeonTypeHandler extends PointTypeHandler {
     private static final String URL_TEMPLATE ="https://data.neonscience.org/api/v0/data/${product_code}/${site_code}/${year}-${month}";
+
+    private TTLCache<String, String> fileUrlCache =
+	new TTLCache<String,String>(Utils.minutesToMillis(5),100);
 
     public BaseNeonTypeHandler(Repository repository, Element node)
             throws Exception {
@@ -118,9 +122,22 @@ public class BaseNeonTypeHandler extends PointTypeHandler {
 	url = url.replace("${year}",year);
 	url = url.replace("${month}",month);
 	String baseUrl = url;
-	System.err.println("neon url:" +url);
+
 	String key = getRepository().getProperty("neon.api.key",null);
 	if(key!=null) url=HU.url(url,"apiToken",key);
+
+	String cacheKey = baseUrl;
+	if(!stringDefined(pattern)) pattern=null;
+	else cacheKey+="_"+ pattern;
+
+	String fileUrl = fileUrlCache.get(cacheKey);	
+	if(fileUrl!=null) {
+	    System.err.println("NeonTypeHandler: have cached file url:" + fileUrl);
+	    return fileUrl;
+	}
+
+	System.err.println("NeonTypeHandler:manifest url:" +baseUrl);
+
 
 	long t1 = System.currentTimeMillis();
 	IO.Result result = IO.doGetResult(new URL(url));
@@ -132,8 +149,6 @@ public class BaseNeonTypeHandler extends PointTypeHandler {
 	JSONObject obj = new JSONObject(result.getResult());
 	JSONObject data = obj.getJSONObject("data");
 	JSONArray files = data.getJSONArray("files");
-	String fileUrl = null;
-	if(!stringDefined(pattern)) pattern=null;
 	StringBuilder names = new StringBuilder();
 	for (int i = 0; fileUrl==null && i < files.length(); i++) {
 	    JSONObject file = files.getJSONObject(i);
@@ -156,15 +171,7 @@ public class BaseNeonTypeHandler extends PointTypeHandler {
 		error+="\nNames:\n" + names;
 	    throw new RuntimeException(error);
 	}
-	/*
-	System.err.println("file url:" +fileUrl);
-	long tt1 = System.currentTimeMillis();
-	IO.doGetResult(new URL(fileUrl));
-	long tt2 = System.currentTimeMillis();
-	Utils.printTimes("getting data",tt1,tt2);
-	*/
-
-
+	fileUrlCache.put(cacheKey, fileUrl);
         return fileUrl;
     }
 
