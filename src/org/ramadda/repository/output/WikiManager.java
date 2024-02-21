@@ -2560,7 +2560,7 @@ public class WikiManager extends RepositoryManager
 	    return sb.toString();
         } else if (theTag.equals(WIKI_TAG_LICENSE)) {
 	    String prefix = getProperty(wikiUtil,props,"textBefore","");
-	    String requireId = getProperty(wikiUtil,props,"requireId",null);
+	    String required = getProperty(wikiUtil,props,"required",null);
 	    if(stringDefined(prefix))
 		prefix=  HU.div(prefix,"");
 	    String text = getProperty(wikiUtil,props,"textAfter","");
@@ -2605,7 +2605,7 @@ public class WikiManager extends RepositoryManager
 	    String contents = HU.span(HU.div(prefix+result + text,HU.cssClass("ramadda-license")+
 					    HU.style(style)),
 				     HU.id(id));
-	    if(stringDefined(requireId)) {
+	    if(stringDefined(required)) {
 		List<String> opts = new ArrayList<String>();
 		Utils.add(opts,"entryid",JsonUtil.quote(entry.getId()));
 		String message = getProperty(wikiUtil, props, "requireMessage", null);
@@ -2620,7 +2620,7 @@ public class WikiManager extends RepositoryManager
 		if(showLicense!=null) Utils.add(opts,"showLicense",showLicense);				
 		String onlyAnonymous = getProperty(wikiUtil, props, "requireOnlyAnonymous", null);
 		if(onlyAnonymous!=null) Utils.add(opts,"onlyAnonymous",onlyAnonymous);				
-                contents+=HU.script(HU.call("Utils.checkLicense",HU.squote(id),HU.squote(requireId),
+                contents+=HU.script(HU.call("Utils.checkLicense",HU.squote(id),HU.squote(required),
 					    JsonUtil.map(opts)));
 	    }
 	    return  contents;

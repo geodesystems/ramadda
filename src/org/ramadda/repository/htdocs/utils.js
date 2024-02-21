@@ -145,7 +145,7 @@ var Utils =  {
 	    window[id] = what;
 	}
     },
-    checkLicense:function(domId,licenseId,args) {
+    checkLicense:function(domId,required,args) {
 	let opts = {
 	    message:"To access this content do you agree with the following license?",
 	    showLicense:true,
@@ -156,7 +156,7 @@ var Utils =  {
 	}
 	if(args) $.extend(opts,args);
 	let text = jqid(domId).html();
-	let key = 'licenseagree_' + licenseId;
+	let key = 'licenseagree_' + required;
 	let agreed = Utils.getLocalStorage(key);
 	if(opts.onlyAnonymous && !Utils.isAnonymous()) return;
 	if(!agreed) {
@@ -205,7 +205,7 @@ var Utils =  {
 		    }
 		}
 		let url = HU.url(RamaddaUtil.getUrl('/loglicense'),
-				 ["licenseid",licenseId,
+				 ["licenseid",required,
 				  "name",name,"email",email,
 				  "entryid",opts.entryid]);
 		$.getJSON(url, data=>{});
