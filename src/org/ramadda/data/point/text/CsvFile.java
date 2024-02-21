@@ -91,9 +91,6 @@ public class CsvFile extends TextFile {
         super(path, context, properties);
     }
 
-    /** _more_ */
-    private static Hashtable filesBeingWritten = new Hashtable();
-
 
     /**
      * _more_
@@ -140,31 +137,6 @@ public class CsvFile extends TextFile {
     }
 
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public File checkCachedFile() throws Exception {
-        File file = getCacheFile();
-        if (file != null) {
-            if (file != null) {
-                int cnt = 0;
-                //Wait at most 10 seconds
-                while (cnt++ < 100) {
-                    if (filesBeingWritten.get(file) == null) {
-                        break;
-                    }
-                    Misc.sleep(100);
-                }
-            }
-        }
-
-        return file;
-    }
 
 
 
