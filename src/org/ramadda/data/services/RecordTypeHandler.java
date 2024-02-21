@@ -38,6 +38,7 @@ import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.List;
 
 
@@ -458,7 +459,14 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
             }
         }
 
-        return "record_" + entry.getChangeDate() + suffix.toLowerCase() + ".csv";
+	String md5="";
+	HashSet<String> exceptArgs = Utils.makeHashSet(ARG_MAX,ARG_LIMIT,ARG_OUTPUT,ARG_PRODUCT,ARG_ENTRYID);
+	String args = request.getUrlArgs(exceptArgs);
+	if(args.length()>0) {
+	    md5 = Utils.makeMD5(args)+"_";
+	}
+
+        return "record_" + entry.getChangeDate() + md5 + suffix.toLowerCase() + ".csv";
     }
 
 
@@ -503,7 +511,6 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
                                         RecordFile recordFile)
             throws Exception {
         if (okToCacheRecordFile(request, entry)) {
-	    //	    System.err.println("initRecordFile: set cache file:" + entry);
             String filename = getCacheFileName(request, entry);
 	    File file = getRepository().getEntryManager().getCacheFile(entry,filename);
             recordFile.setCacheFile(file);
