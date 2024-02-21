@@ -193,6 +193,38 @@ public abstract class RecordFile {
         return context;
     }
 
+    /** _more_ */
+    protected static Hashtable filesBeingWritten = new Hashtable();
+
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public File checkCachedFile() throws Exception {
+        File file = getCacheFile();
+        if (file != null) {
+            if (file != null) {
+                int cnt = 0;
+                //Wait at most 10 seconds
+                while (cnt++ < 100) {
+                    if (filesBeingWritten.get(file) == null) {
+                        break;
+                    }
+                    Misc.sleep(100);
+                }
+            }
+        }
+
+        return file;
+    }
+
+
+
     /**
      * Set the CacheFile property.
      *
@@ -649,6 +681,22 @@ public abstract class RecordFile {
 
     public final InputStream makeInputStream(boolean buffered) throws Exception {	
         IO.Path  path = getNormalizedFilename();
+        File file = checkCachedFile();
+	if(file!=null) {
+	    //Only cache if it is a URL
+	    if(file.exists()) {
+		System.err.println("RecordFile.makeInputStream: have cache file:"+ file);
+	    } else  if(path.getPath().startsWith("http")) {
+		InputStream inputStream = IO.doMakeInputStream(path, buffered);
+		System.err.println("RecordFile.makeInputStream: writing URL to cache file:"+ file);
+		IOUtil.copyFile(inputStream,file);
+	    }
+	    if(file.exists()) {
+		return new BufferedInputStream(new FileInputStream(file));
+	    }
+	}
+
+
         if (debug) {
             System.err.println("RecordFile.doMakeInputStream path:" + path);
         }
