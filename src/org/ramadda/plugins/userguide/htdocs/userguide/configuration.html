@@ -1,6 +1,6 @@
 <html>
 <head>
-<title></title>
+<title>Configuration Options</title>
   <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
 
 </head>
@@ -12,7 +12,7 @@
 <table width=100% cellspacing=0 cellpadding=0 >
 <tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="centos.html"><table><td valign=center><td><span title="Previous: Installing RAMADDA on CentOS"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Installing RAMADDA on CentOS</td></tr></table></a></div></div></td>
 <td width=50% align=center>
-<div class="ramadda-page-title"><a href="#">Section 9.3: </a></div>
+<div class="ramadda-page-title"><a href="#">Section 9.3: Configuration Options</a></div>
 </td>
 <td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="build.html"><table><tr valign=center><td>Building from source</td><td><span title="Next: Building from source"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
 </tr></table>
@@ -28,7 +28,8 @@ pre {
 </style>
 
 <div class="ramadda-doc-contents" style="margin-left:20px;">
-[ht::head {Configuration Options}]
+
+
 
 :navleft
 
@@ -225,7 +226,7 @@ ramadda.jupyter.path=/path/to/anaconda/bin/jupyter
 </pre>
 
 :heading NEON Data
-You can add NEON data entries but if you want to have a higher rate limit you should obtain an API key from NEON. Go and sign in to [https://data.neonscience.org/home NEON]. Once signed in create an API key and add it as a RAMADDA property:
+You can add NEON data entries but if you want to have a higher rate limit you should obtain an API key from NEON. Go and sign in to <a href=https://data.neonscience.org/home>NEON</a>. Once signed in create an API key and add it as a RAMADDA property:
 +pre
 neon.api.key=YOUR KEY
 -pre
@@ -298,13 +299,13 @@ wolfram.api.key=
 RAMADDA can support the <a href="https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/abouts-cards">Twitter Card</a> metadata standard. This embeds metadata in an entry page like the below. When a URL to a RAMADDA
 page is pasted into a post then Twitter will harvest the metadata to provide a display in the post.
 
-[ht::pre {
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Salton Sea">
-<meta name="twitter:description" content="This is an example...">
-<meta name="twitter:image" content="https://ramadda.org/repository/metadata/view/Screenshot_2023-09-25_at_08-12-53_Salton_Sea_Map.png?element=1&amp;entryid=0e3af72d-8be7-4f9d-933d-983fad440bba&amp;metadata_id=b96d579f-d914-4d8a-bb04-78c5896a8243">
-<meta name="twitter:creator" content="@jeffmcwh">
-}]
+<pre>
+&lt;meta name=&quot;twitter:card&quot; content=&quot;summary_large_image&quot;&gt;
+&lt;meta name=&quot;twitter:title&quot; content=&quot;Salton Sea&quot;&gt;
+&lt;meta name=&quot;twitter:description&quot; content=&quot;This is an example...&quot;&gt;
+&lt;meta name=&quot;twitter:image&quot; content=&quot;https://ramadda.org/repository/metadata/view/Screenshot_2023-09-25_at_08-12-53_Salton_Sea_Map.png?element=1&amp;entryid=0e3af72d-8be7-4f9d-933d-983fad440bba&amp;metadata_id=b96d579f-d914-4d8a-bb04-78c5896a8243&quot;&gt;
+&lt;meta name=&quot;twitter:creator&quot; content=&quot;@jeffmcwh&quot;&gt;
+</pre>
 
 By default the name of the entry is used for the title. 
 If the entry has a Thumbnail image property attached to it then the Twitter Card will be an
@@ -313,12 +314,12 @@ The entry's <a href=#snippet>snippet</a> is used for the description.
 :p
 There is also a Twitter Card property type that can be used to specify the title, creator, description and image.
 Under Add Property-&gt;Miscellaneous add the Twitter Card property:
-[ht::screenshot images/twittercard1.png]
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard1.png?version=892"><img  src="images/twittercard1.png?version=892"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard1.png?version=892" ></a></div></div>
 
 Enter any of the values. If defined in the property these will override the defaults of the entry's name,
 snippet, etc.
 
-[ht::screenshot images/twittercard2.png]
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard2.png?version=892"><img  src="images/twittercard2.png?version=892"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard2.png?version=892" ></a></div></div>
 
 These properties can be inherited. For example, you can add an inherited Twitter Card property at the top-level
 of your repository with just the Twitter handle specified. Then for any descendent entry you can specify a title, thumbnail, etc.
@@ -326,9 +327,9 @@ of your repository with just the Twitter handle specified. Then for any descende
 
 To disable this set the following property in one of the .properties files in your RAMADDA
 home directory:
-[ht::pre {
+<pre>
 ramadda.showtwittercard=false
-}]
+</pre>
 
 
 
@@ -350,7 +351,7 @@ github.token=your token
 
 
 
-[ht::foot]
+
 </div>
 <p>
 
