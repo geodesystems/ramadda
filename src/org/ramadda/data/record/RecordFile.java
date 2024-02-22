@@ -685,10 +685,10 @@ public abstract class RecordFile {
 	if(file!=null) {
 	    //Only cache if it is a URL
 	    if(file.exists()) {
-		System.err.println("RecordFile.makeInputStream: have cache file:"+ file);
+		//		System.err.println("RecordFile.makeInputStream: have cache file:"+ file);
 	    } else  if(path.getPath().startsWith("http")) {
 		InputStream inputStream = IO.doMakeInputStream(path, buffered);
-		System.err.println("RecordFile.makeInputStream: writing URL to cache file:"+ file);
+		//		System.err.println("RecordFile.makeInputStream: writing URL to cache file:"+ file);
 		IOUtil.copyFile(inputStream,file);
 	    }
 	    if(file.exists()) {
