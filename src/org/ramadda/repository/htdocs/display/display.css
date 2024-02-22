@@ -1089,9 +1089,13 @@ svg > g > g:last-child { pointer-events: none }
 }
 
 .display-search-label {
-    margin-top:8px;
-    font-weight:500;
+    font-weight:bold;
 }
+
+.display-search-widget {
+    margin-top:8px;
+}
+
 
 .display-search-metadata-block {
     padding-bottom:5px;
