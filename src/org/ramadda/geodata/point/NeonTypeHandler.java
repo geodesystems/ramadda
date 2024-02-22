@@ -14,7 +14,10 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
+import org.ramadda.util.WikiUtil;
+
 import ucar.unidata.util.StringUtil;
+
 import org.json.*;
 import org.w3c.dom.*;
 import java.net.URL;
@@ -27,6 +30,7 @@ import java.util.Hashtable;
 
 public class NeonTypeHandler extends BaseNeonTypeHandler {
     private static JSONObject siteInfo;
+    private static JSONObject siteImages;    
     private static final String URL_TEMPLATE ="https://data.neonscience.org/api/v0/data/${product_code}/${site_code}/${year}-${month}";
 
     private static int IDX = PointTypeHandler.IDX_LAST + 1;
@@ -56,7 +60,6 @@ public class NeonTypeHandler extends BaseNeonTypeHandler {
 	if(siteInfo==null) {
 	    siteInfo= new JSONObject(getStorageManager().readUncheckedSystemResource("/org/ramadda/geodata/point/resources/neonsites.json"));
 	}
-
 	JSONObject site = siteInfo.getJSONObject(id);
     	entry.setLatitude(site.getDouble("latitude"));
     	entry.setLongitude(site.getDouble("longitude"));	
@@ -71,6 +74,52 @@ public class NeonTypeHandler extends BaseNeonTypeHandler {
 	}
     }
 
+
+    /**
+     *
+     * @param wikiUtil _more_
+     * @param request _more_
+     * @param originalEntry _more_
+     * @param entry _more_
+     * @param tag _more_
+     * @param props _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    @Override
+    public String getWikiInclude(WikiUtil wikiUtil, Request request,
+                                 Entry originalEntry, Entry entry,
+                                 String tag, Hashtable props)
+            throws Exception {
+	if(!tag.equals("neon.siteimages")) {
+            return super.getWikiInclude(wikiUtil, request, originalEntry,
+                                        entry, tag, props);
+        }
+	if(siteImages==null) {
+	    siteImages= new JSONObject(getStorageManager().readUncheckedSystemResource("/org/ramadda/geodata/point/resources/neonimages.json"));
+	}	
+	String siteId = (String)entry.getValue(IDX_SITE_CODE);
+	System.err.println("site id:" + siteId);
+	if(!stringDefined(siteId)) return "";
+	String images = siteImages.optString(siteId.trim(),null);
+	if(images==null) return "";
+	StringBuilder sb = new StringBuilder();
+	List<String> toks = Utils.split(images,",",true,true);
+	for(int i=0;i<toks.size();i+=2) {
+	    sb.append(HU.div(HU.b(HU.center(toks.get(i))),""));
+	    sb.append(HU.image(toks.get(i+1),"width","90%"));
+	}
+	return sb.toString();
+
+    }
+
+
+
+
+
+
+	    
 
     @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry,
