@@ -2878,7 +2878,8 @@ public class Seesv implements SeesvCommands {
 		new Arg("outer tag"),
 		new Arg("inner tag")),
         new Cmd(CMD_TOJSON, "Generate JSON",
-		ARG_LABEL,"To JSON"),
+		ARG_LABEL,"To JSON",
+                new Arg("key index", "If defined use this as a map")),
         new Cmd(CMD_TOGEOJSON, "Generate GeoJSON",
 		ARG_LABEL,"To GeoJSON",
                 new Arg("latitude", "latitude column", ATTR_TYPE, TYPE_COLUMN),
@@ -5326,9 +5327,9 @@ public class Seesv implements SeesvCommands {
 	
 
 
-	defineFunction(CMD_TOJSON,0,(ctx,args,i) -> {
+	defineFunction(CMD_TOJSON,1,(ctx,args,i) -> {
 		hasSink = true;
-		ctx.addProcessor(new DataSink.ToJson());
+		ctx.addProcessor(new DataSink.ToJson(args.get(++i)));
 		return i;
 	    });
 

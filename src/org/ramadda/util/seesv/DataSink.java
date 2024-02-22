@@ -32,10 +32,18 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
         /** _more_ */
         private Row headerRow;
 
+	String objCol;
+	int objIndex=-1;
+
         /**
          * ctor
          */
-        public ToJson() {}
+        public ToJson(String objCol) {
+	    this.objCol = objCol.trim();
+	    if(this.objCol.length()==0) {
+		this.objCol=null;
+	    }
+	}
 
         /**
          * _more_
@@ -52,9 +60,12 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
             if (headerRow == null) {
                 headerRow = row;
                 ctx.getWriter().println("[");
-
                 return row;
             }
+	    if(objCol!=null) {
+		objIndex = getIndex(ctx,objCol);
+		objCol=null;
+	    }
             handleRow(ctx, ctx.getWriter(), row);
 
             return row;
@@ -94,12 +105,17 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
             }
             List<String> attrs = new ArrayList<String>();
             for (int i = 0; i < headerRow.size(); i++) {
+		if(i == objIndex) continue;
                 String field = headerRow.getString(i);
                 String value = row.getString(i);
                 attrs.add(field);
                 attrs.add(value);
             }
-            writer.print(JsonUtil.mapAndGuessType(attrs));
+	    String obj=	JsonUtil.mapAndGuessType(attrs);
+	    if(objIndex>=0) {
+		obj=	JsonUtil.map(row.getString(objIndex), obj);
+	    }
+	    writer.print(obj);
         }
 
     }
