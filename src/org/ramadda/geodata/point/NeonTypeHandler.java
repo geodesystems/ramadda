@@ -100,7 +100,6 @@ public class NeonTypeHandler extends BaseNeonTypeHandler {
 	    siteImages= new JSONObject(getStorageManager().readUncheckedSystemResource("/org/ramadda/geodata/point/resources/neonimages.json"));
 	}	
 	String siteId = (String)entry.getValue(IDX_SITE_CODE);
-	System.err.println("site id:" + siteId);
 	if(!stringDefined(siteId)) return "";
 	String images = siteImages.optString(siteId.trim(),null);
 	if(images==null) return "";
