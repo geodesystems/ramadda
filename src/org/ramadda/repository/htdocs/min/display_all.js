@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Feb 22 05:36:36 MST 2024";
+var build_date="RAMADDA build date: Thu Feb 22 05:57:48 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -5691,21 +5691,50 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'aggregateBy',tt:'Add an extra row for the aggregated rows'},
 	{p:'aggregateOperator',ex:'sum|percent',tt:'Operator to apply on the aggregated rows'},
 	{p:'aggregateOperator.fieldName',ex:'sum|percent',tt:'Operator to apply on the aggregated rows for the given field'},	
-	{p:'convertData', label:'derived data', ex:'derived(field=new_field_id, function=foo*bar);',tt:'Add derived field'},
-	{p:'convertData',label:'convert date',ex:'roundDate(round=hour|day|week|month|year);',tt:'Round the dates'},
-	{p:'convertData',label:'merge rows',ex:'mergeRows(keyFields=f1\\\\,f2, operator=count|sum|average, valueFields=);',tt:'Merge rows together'},
-	{p:'convertData',label:'percent increase',ex:'addPercentIncrease(replaceValues=false);',tt:'Add percent increase'},
-	{p:'convertData',label:'doubling rate',ex:'doublingRate(fields=f1\\\\,f2, keyFields=f3);',tt:'Calculate # days to double'},
-	{p:'convertData',label:'add fixed',ex:'addFixed(id=max_pool_elevation\\\\,value=3700,type=double);"',tt:'add fixed value'},	
-	{p:'convertData',label:'Accumulate data',ex:'accum(fields=);',tt:'Accumulate'},
-	{p:'convertData',label:'Add an average field',ex:'mean(fields=);',tt:'Mean'},
-	{p:'convertData',label:'Unique rows',ex:'unique(groupFields=f1\\\\,f2,valueField=,label=Unique);',tt:'Uniquify rows'},
-	{p:'convertData',label:'Count uniques',ex:'count(field=,sort=true,label=Count);',tt:'Count uniques'},
-	{p:'convertData',label:'unfurl',ex:'unfurl(headerField=field to get header from,uniqueField=e.g. date,valueFields=);',tt:'Unfurl'},
-	{p:'convertData',label:'rotate data', ex:'rotateData(includeFields=true,includeDate=true,flipColumns=true);',tt:'Rotate data'},
-	{p:'convertData',label:'Prune where fields are all NaN',ex:'prune(fields=);',tt:'Prune'},		
-	{p:'convertData',label:'Scale and offset',ex:'accum(scale=1,offset1=0,offset2=0,unit=,fields=);',tt:'(d + offset1) * scale + offset2'},		
-	{p:'convertDataPost',label:'Same as above but after filtering is done',tt:'Same as above but after filtering is done'},		
+	{p:'convertData', label:'derived data',
+	 ex:'derived(field=new_field_id, function=foo*bar);',
+	 tt:'Add derived field'},
+	{p:'convertData',label:'convert date',
+	 ex:'roundDate(round=hour|day|week|month|year);',
+	 tt:'Round the dates'},
+	{p:'convertData',label:'merge rows',
+	 ex:'mergeRows(keyFields=f1\\\\,f2, operator=count|sum|average, valueFields=);',
+	 tt:'Merge rows together'},
+	{p:'convertData',label:'percent increase',
+	 ex:'addPercentIncrease(replaceValues=false);',
+	 tt:'Add percent increase'},
+	{p:'convertData',label:'doubling rate',
+	 ex:'doublingRate(fields=f1\\\\,f2, keyFields=f3);',
+	 tt:'Calculate # days to double'},
+	{p:'convertData',label:'add fixed',
+	 ex:'addFixed(id=max_pool_elevation\\\\,value=3700,type=double);"',
+	 tt:'add fixed value'},	
+	{p:'convertData',label:'Accumulate data',
+	 ex:'accum(fields=);',
+	 tt:'Accumulate'},
+	{p:'convertData',label:'Add an average field',
+	 ex:'mean(fields=);',
+	 tt:'Mean'},
+	{p:'convertData',label:'Unique rows',
+	 ex:'unique(groupFields=f1\\\\,f2,valueField=);',
+	 tt:'Uniquify rows'},
+	{p:'convertData',label:'Count uniques',
+	 ex:'count(field=,sort=true);',
+	 tt:'Count uniques'},
+	{p:'convertData',label:'unfurl',
+	 ex:'unfurl(headerField=field to get header from,uniqueField=e.g. date,valueFields=);',
+	 tt:'Unfurl'},
+	{p:'convertData',label:'rotate data',
+	 ex:'rotateData(includeFields=true,includeDate=true,flipColumns=true);',
+	 tt:'Rotate data'},
+	{p:'convertData',label:'Prune where fields are all NaN',
+	 ex:'prune(fields=);',
+	 tt:'Prune'},		
+	{p:'convertData',label:'Scale and offset',
+	 ex:'accum(scale=1,offset1=0,offset2=0,unit=,fields=);',
+	 tt:'(d + offset1) * scale + offset2'},		
+	{p:'convertDataPost',label:'Same as above but after filtering is done',
+	 tt:'Same as above but after filtering is done'},		
 	{label:'Color'},
 	{p:'colors',ex:'color1,...,colorN',tt:'Comma separated array of colors'},
 	{p:'colorBy',ex:'',tt:'Field id to color by'},
@@ -39470,48 +39499,36 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		fillColor:this.getHexmapEmptyFillColor(style.fillColor),
 		fillOpacity:this.getHexmapFillOpacity()						
 	    }
+	    let baseStyle = {
+		pointRadius:0,
+		fontSize:this.getProperty('hexmapLabelFontSize',6),
+		fontColor:this.getProperty('hexmapLabelFontColor','#000'),
+		fontWeight: this.getProperty('hexmapLabelFontWeight','bold')
+	    }
 
+	    let displayCount = 	 this.getHexmapDisplayCount();
 	    this.hexmapLayer.features.forEach((f,idx)=>{
 		let records=hexgrid.features[idx].records;
 		let s = (records && records.length>0)?style:emptyStyle;
 		s = Utils.clone({},s);
-		if(records && records.length>0 && colorBy.isEnabled()) {
-		    s.fillColor= colorBy.getColorFromRecord(records,null,null,null);
-		    if(isNaN(colorBy.lastValue)) {
-			s.display='none';
+		if(records && records.length>0) {
+		    if(colorBy.isEnabled()) {
+			s.fillColor= colorBy.getColorFromRecord(records,null,null,null);
+			if(isNaN(colorBy.lastValue)) {
+			    s.display='none';
+			}
+		    }
+		    if(displayCount) {
+			s.label=''+ records.length;
+			s =Utils.clone({},baseStyle,s);
 		    }
 		} 
+		
 		f.records  =records;
 		f.style=s;
 		f.textGetter  = textGetter;
 	    });
 	    this.hexmapLayer.redraw();
-	    if(this.getHexmapDisplayCount()) {
-		let labels = [];
-		let baseStyle = {
-		    pointRadius:0,
-		    fontSize:this.getProperty('hexmapLabelFontSize',6),
-		    fontColor:this.getProperty('hexmapLabelFontColor','#000'),
-		    fontWeight: this.getProperty('hexmapLabelFontWeight','bold')
-		}
-		this.hexmapLayer.features.forEach((f,idx)=>{
-		    let records=hexgrid.features[idx].records;
-		    if(!records || records.length==0) return;
-		    let pt = f.geometry.getCentroid(true);		
-		    if(!pt) return;
-//		    pt = this.getMap().transformProjPoint(pt);
-		    let style = $.extend({label:''+records.length},baseStyle);
-		    let mapLabel = MapUtils.createVector(pt,null,style);
-		    labels.push(mapLabel);
-		});
-		if(labels.length>0) {
-		    this.hexmapLayer;
-		    this.hexmapLayer.addFeatures(labels);
-		    this.hexmapLayer.redraw();
-		}		    
-	    }
-
-
             if (colorBy.isEnabled()) {
 //		colorBy.displayColorTable();
 		this.displayColorTable(colorBy, ID_COLORTABLE,colorBy.minValue,colorBy.maxValue);
