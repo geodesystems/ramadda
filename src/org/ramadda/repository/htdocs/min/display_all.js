@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Feb 21 10:43:12 MST 2024";
+var build_date="RAMADDA build date: Wed Feb 21 21:16:15 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -5699,6 +5699,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'convertData',label:'add fixed',ex:'addFixed(id=max_pool_elevation\\\\,value=3700,type=double);"',tt:'add fixed value'},	
 	{p:'convertData',label:'Accumulate data',ex:'accum(fields=);',tt:'Accumulate'},
 	{p:'convertData',label:'Add an average field',ex:'mean(fields=);',tt:'Mean'},
+	{p:'convertData',label:'Unique rows',ex:'unique(groupFields=f1\\\\,f2,valueField=,label=Unique);',tt:'Uniquify rows'},
 	{p:'convertData',label:'Count uniques',ex:'count(field=,sort=true,label=Count);',tt:'Count uniques'},
 	{p:'convertData',label:'unfurl',ex:'unfurl(headerField=field to get header from,uniqueField=e.g. date,valueFields=);',tt:'Unfurl'},
 	{p:'convertData',label:'rotate data', ex:'rotateData(includeFields=true,includeDate=true,flipColumns=true);',tt:'Rotate data'},
@@ -15480,6 +15481,35 @@ function CsvUtil() {
 	    });
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
+	unique: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+            let header = this.display.getDataValues(records[0]);
+            let fields  = pointData.getRecordFields();
+	    let newRecords  =[];
+	    let groupFields =  this.display.getFieldsByIds(fields, (args.groupFields||"").replace(/_comma_/g,","));
+	    let valueField = this.display.getFieldById(fields,args.valueField);
+	    let groups = {};
+	    records.forEach((record, rowIdx)=>{
+		let key ='';
+		groupFields.forEach((f,fieldIdx)=>{
+		    key+= record.data[f.getIndex()];
+		    key+='_';
+		});
+		let group = groups[key];
+		if(group==null) {
+		    group = groups[key] = {};
+		}
+		let value = valueField!=null?record.data[valueField.getIndex()]:args.valueField=='_date'?record.getTime().getTime():'';
+
+		if(group[value]) {
+		    return;
+		}
+		group[value] = true;
+		newRecords.push(record);
+	    });
+	    return   new  PointData("pointdata", fields, newRecords,null,{parent:pointData});
+	},
+
 	roundDate: function(pointData, args) {
             let fields  = pointData.getRecordFields();
 	    let records = pointData.getRecords(); 
