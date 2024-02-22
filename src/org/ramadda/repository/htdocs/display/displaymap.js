@@ -3722,7 +3722,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    });
 	    this.hexmapLayer.redraw();
             if (colorBy.isEnabled()) {
-		colorBy.displayColorTable();
+//		colorBy.displayColorTable();
+		this.displayColorTable(colorBy, ID_COLORTABLE,colorBy.minValue,colorBy.maxValue);
 	    }
 
 	    this.notifyExternalDisplay();	    
