@@ -1942,6 +1942,35 @@ function CsvUtil() {
 	    });
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
+	unique: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+            let header = this.display.getDataValues(records[0]);
+            let fields  = pointData.getRecordFields();
+	    let newRecords  =[];
+	    let groupFields =  this.display.getFieldsByIds(fields, (args.groupFields||"").replace(/_comma_/g,","));
+	    let valueField = this.display.getFieldById(fields,args.valueField);
+	    let groups = {};
+	    records.forEach((record, rowIdx)=>{
+		let key ='';
+		groupFields.forEach((f,fieldIdx)=>{
+		    key+= record.data[f.getIndex()];
+		    key+='_';
+		});
+		let group = groups[key];
+		if(group==null) {
+		    group = groups[key] = {};
+		}
+		let value = valueField!=null?record.data[valueField.getIndex()]:args.valueField=='_date'?record.getTime().getTime():'';
+
+		if(group[value]) {
+		    return;
+		}
+		group[value] = true;
+		newRecords.push(record);
+	    });
+	    return   new  PointData("pointdata", fields, newRecords,null,{parent:pointData});
+	},
+
 	roundDate: function(pointData, args) {
             let fields  = pointData.getRecordFields();
 	    let records = pointData.getRecords(); 

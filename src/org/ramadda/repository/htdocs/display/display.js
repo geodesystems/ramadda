@@ -1894,6 +1894,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'convertData',label:'add fixed',ex:'addFixed(id=max_pool_elevation\\\\,value=3700,type=double);"',tt:'add fixed value'},	
 	{p:'convertData',label:'Accumulate data',ex:'accum(fields=);',tt:'Accumulate'},
 	{p:'convertData',label:'Add an average field',ex:'mean(fields=);',tt:'Mean'},
+	{p:'convertData',label:'Unique rows',ex:'unique(groupFields=f1\\\\,f2,valueField=,label=Unique);',tt:'Uniquify rows'},
 	{p:'convertData',label:'Count uniques',ex:'count(field=,sort=true,label=Count);',tt:'Count uniques'},
 	{p:'convertData',label:'unfurl',ex:'unfurl(headerField=field to get header from,uniqueField=e.g. date,valueFields=);',tt:'Unfurl'},
 	{p:'convertData',label:'rotate data', ex:'rotateData(includeFields=true,includeDate=true,flipColumns=true);',tt:'Rotate data'},
