@@ -3704,48 +3704,36 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		fillColor:this.getHexmapEmptyFillColor(style.fillColor),
 		fillOpacity:this.getHexmapFillOpacity()						
 	    }
+	    let baseStyle = {
+		pointRadius:0,
+		fontSize:this.getProperty('hexmapLabelFontSize',6),
+		fontColor:this.getProperty('hexmapLabelFontColor','#000'),
+		fontWeight: this.getProperty('hexmapLabelFontWeight','bold')
+	    }
 
+	    let displayCount = 	 this.getHexmapDisplayCount();
 	    this.hexmapLayer.features.forEach((f,idx)=>{
 		let records=hexgrid.features[idx].records;
 		let s = (records && records.length>0)?style:emptyStyle;
 		s = Utils.clone({},s);
-		if(records && records.length>0 && colorBy.isEnabled()) {
-		    s.fillColor= colorBy.getColorFromRecord(records,null,null,null);
-		    if(isNaN(colorBy.lastValue)) {
-			s.display='none';
+		if(records && records.length>0) {
+		    if(colorBy.isEnabled()) {
+			s.fillColor= colorBy.getColorFromRecord(records,null,null,null);
+			if(isNaN(colorBy.lastValue)) {
+			    s.display='none';
+			}
+		    }
+		    if(displayCount) {
+			s.label=''+ records.length;
+			s =Utils.clone({},baseStyle,s);
 		    }
 		} 
+		
 		f.records  =records;
 		f.style=s;
 		f.textGetter  = textGetter;
 	    });
 	    this.hexmapLayer.redraw();
-	    if(this.getHexmapDisplayCount()) {
-		let labels = [];
-		let baseStyle = {
-		    pointRadius:0,
-		    fontSize:this.getProperty('hexmapLabelFontSize',6),
-		    fontColor:this.getProperty('hexmapLabelFontColor','#000'),
-		    fontWeight: this.getProperty('hexmapLabelFontWeight','bold')
-		}
-		this.hexmapLayer.features.forEach((f,idx)=>{
-		    let records=hexgrid.features[idx].records;
-		    if(!records || records.length==0) return;
-		    let pt = f.geometry.getCentroid(true);		
-		    if(!pt) return;
-//		    pt = this.getMap().transformProjPoint(pt);
-		    let style = $.extend({label:''+records.length},baseStyle);
-		    let mapLabel = MapUtils.createVector(pt,null,style);
-		    labels.push(mapLabel);
-		});
-		if(labels.length>0) {
-		    this.hexmapLayer;
-		    this.hexmapLayer.addFeatures(labels);
-		    this.hexmapLayer.redraw();
-		}		    
-	    }
-
-
             if (colorBy.isEnabled()) {
 //		colorBy.displayColorTable();
 		this.displayColorTable(colorBy, ID_COLORTABLE,colorBy.minValue,colorBy.maxValue);
