@@ -2910,8 +2910,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		});
 
 		let height = this.getProperty("height", this.getProperty("mapHeight", 300));
-
-		html = HU.div([CLASS, "display-map-toc",STYLE,HU.css("max-height","calc(" +HU.getDimension(height)+" - 1em)"),ID, this.domId("toc")],html);
+		height="calc(" +HU.getDimension(height)+" - 1em)";
+		html = HU.div([CLASS, "display-map-toc",STYLE,HU.css('height',height,"max-height",height,'overflow-y','auto'),ID, this.domId("toc")],html);
 		let title = this.getProperty("tableOfContentsTitle","");
 		if(title) html = HU.center(HU.b(title)) + html;
 		this.jq(ID_LEFT).html(html);
