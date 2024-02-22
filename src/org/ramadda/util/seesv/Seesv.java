@@ -5871,6 +5871,18 @@ public class Seesv implements SeesvCommands {
 
     public static double parseDouble(String s, double ...dflt) {
 	try {
+	    s = s.trim();
+	    if(s.startsWith("random:")) {
+		List<String> toks = Utils.split(s,":",true,true);
+		if(toks.size()==1) {
+		    return Math.random();
+		}
+		double min = Double.parseDouble(toks.get(1));
+		double max = toks.size()==2?min+1:Double.parseDouble(toks.get(2));		
+		double v = Math.random();
+		v = min+v*(max-min);
+		return v;
+	    }
 	    return Double.parseDouble(s.trim());
 	} catch(NumberFormatException nfe) {
 	    if(dflt.length>0)

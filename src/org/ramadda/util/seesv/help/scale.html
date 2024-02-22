@@ -1,0 +1,26 @@
+The -scale command adds offset and 
+
+seesv:seesv  -scale &lt;column id&gt; &lt;offset1&gt; &lt;scale&gt; &lt;offset2&gt;
+Where the result value, v2:
+<pre>
+  v2 = (value+offset1)*scale + offset
+</pre>
+
+You can specify random values for any of the values with:
+<pre>
+#Generate a random number between 0-1
+random:
+
+#Generate a random number between 10 and 11
+random:10
+
+#Generate a random number between 10 and 30
+random:10:30
+
+</pre>  
+
+For example, if you had a latitude value that you wanted to obfuscate by adding some random
+value between 1 and 2 you would do:
+<pre>
+  -scale latitude random:1:2 1 0
+</pre>
