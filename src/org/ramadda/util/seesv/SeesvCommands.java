@@ -233,6 +233,8 @@ public interface SeesvCommands {
     public static final String CMD_OUTDATEFORMAT="-outdateformat";
     public static final String CMD_CONVERTDATE="-convertdate";
     public static final String CMD_ADDDATE="-adddate";
+    public static final String CMD_CLEARDATE="-cleardate";
+    public static final String CMD_ROUNDDATE="-rounddate";        
     public static final String CMD_EXTRACTDATE="-extractdate";
     public static final String CMD_FORMATDATE="-formatdate";
     public static final String CMD_ELAPSED="-elapsed";

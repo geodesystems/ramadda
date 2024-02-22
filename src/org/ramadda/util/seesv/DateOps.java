@@ -13,6 +13,7 @@ import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
@@ -27,6 +28,20 @@ import java.util.TimeZone;
  */
 @SuppressWarnings("unchecked")
 public abstract class DateOps extends Processor {
+
+
+    public static final int[]DATE_COMPONENTS = {
+	Calendar.MILLISECOND,
+	Calendar.SECOND, 
+	Calendar.MINUTE,
+	Calendar.HOUR_OF_DAY,
+	Calendar.DAY_OF_WEEK,
+	Calendar.DAY_OF_MONTH,
+	Calendar.MONTH};
+
+
+
+
 
 
     /**
@@ -154,6 +169,71 @@ public abstract class DateOps extends Processor {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Mon, Oct 14, '19
+     * @author         Enter your name here...
+     */
+    public static class DateClear extends Converter {
+
+
+        /**  */
+        private int type;
+
+        /**  */
+        private GregorianCalendar cal;
+
+        /**
+         * @param ctx _more_
+         * @param dateCol _more_
+         * @param valueCol _more_
+         * @param what _more_
+         */
+        public DateClear(TextReader ctx, String dateCol, 
+                         String what) {
+            super(dateCol);
+            type          = getDatePart(what);
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+                cal = new GregorianCalendar();
+                cal.setTimeZone(ctx.getTimeZone());
+                return row;
+            }
+            int    col   = getIndex(ctx);
+            String s     = row.getString(col);
+            Date   dttm  = ctx.parseDate(s);
+            cal.setTime(dttm);
+	    
+	    for(int comp: DATE_COMPONENTS) {
+		if(comp==Calendar.YEAR)
+		    cal.set(Calendar.MONTH, Calendar.JANUARY);
+		else if (comp==Calendar.MONTH)
+		    cal.set(Calendar.MONTH, Calendar.JANUARY);
+		else if(comp==Calendar.DAY_OF_MONTH)
+		    cal.set(Calendar.DAY_OF_MONTH, 1);
+		else
+		    cal.set(comp,0);
+		if(comp==type) break;
+	    }
+
+            dttm = cal.getTime();
+            row.set(col, ctx.formatDate(dttm));
+            return row;
+        }
+
+    }
+
+    
 
     /**
      * Class description

@@ -1707,7 +1707,15 @@ public class Seesv implements SeesvCommands {
 		    if(format) sb.append("\n\t");
                     sb.append("<" + prefix2+arg.id +" " + suffix.replace("\n","\\n")+ ((arg.desc.length() > 0)
 										 ? arg.desc.replace("\n","\\n")
-							     : "") + "> ");
+										       : ""));
+		    if (arg.props != null) {
+			//			for (int i = 0; i < arg.props.length;   i += 2) {
+			for (int i = 0; i < arg.props.length-1;   i+=2) {
+			    if(arg.props[i].equals(ATTR_TYPE)) continue;
+			    sb.append(" " + arg.props[i]+"="+arg.props[i+1]);
+			}
+		    }
+		    sb.append("> ");
                 }
             }
 
@@ -2544,6 +2552,12 @@ public class Seesv implements SeesvCommands {
                 new Arg("date_column", "Date Column", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("value", "Value Column"),		
                 new Arg("value_type", "Value type - millisecond,second,minute,hour,hour_of_day,week,month,year")),
+        new Cmd(CMD_CLEARDATE, "Clear date components", 
+		ARG_LABEL,"Clear the date to",
+                new Arg("date_column", "Date Column", ATTR_TYPE, TYPE_COLUMN),
+                new Arg("component", "Date component",
+			ATTR_TYPE,"enumeration",
+			"values","millisecond,second,minute,hour_of_day,day_of_month,month")),	
 
         new Cmd(CMD_EXTRACTDATE, "Extract date",
 		ARG_LABEL,"Extract Date",
@@ -2979,7 +2993,7 @@ public class Seesv implements SeesvCommands {
         String  pad             = "    ";
         boolean matchedCategory = false;
 	for (Cmd c : commands) {
-            String cmd = c.getLine(format,format);
+	    String cmd = c.getLine(format,format);
             if (match != null) {
                 String text  = c.cmd;
                 String desc  = null;
@@ -3046,8 +3060,7 @@ public class Seesv implements SeesvCommands {
                             attrs.add("description");
                             attrs.add(JsonUtil.quote(arg.desc));
                             if (arg.props != null) {
-                                for (int i = 0; i < arg.props.length;
-				     i += 2) {
+                                for (int i = 0; i < arg.props.length;   i += 2) {
                                     attrs.add(arg.props[i]);
 				    String v = arg.props[i + 1];
 				    if(v.startsWith("property:")) {
@@ -4433,6 +4446,13 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new DateOps.DateAdder(ctx, dateCol, valueCol, type));
 		return i;
 	    });
+
+	defineFunction(CMD_CLEARDATE,2,(ctx,args,i) -> {
+		String dateCol =args.get(++i);
+		String type =args.get(++i);				
+		ctx.addProcessor(new DateOps.DateClear(ctx, dateCol,  type));
+		return i;
+	    });	
 
 	defineFunction(CMD_EXTRACTDATE,2,(ctx,args,i) -> {
 		String col  = args.get(++i);
