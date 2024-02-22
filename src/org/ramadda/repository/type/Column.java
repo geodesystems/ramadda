@@ -2761,7 +2761,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 	if(entry==null && addBulkUpload) {
 	    widget+= HU.makeShowHideBlock("Upload",
-					  bulkUploadHelp +":<br>"+HU.fileInput(ARG_BULKUPLOAD, ""),
+					  bulkUploadHelp +"<br>"+HU.fileInput(ARG_BULKUPLOAD, ""),
 					  false);
 	}	
 
