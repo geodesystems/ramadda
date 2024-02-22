@@ -990,7 +990,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'doHexmap',ex:'true',tt:'Create a hexmap'},
 	{p:'doTrianglemap',ex:'true',tt:'Create a triangle map'},		
 	{p:'doSquaremap',ex:'true',tt:'Create a square map'},		
-	{p:'hexmapShowCount',ex:'true',tt:'Display the count'},
+	{p:'hexmapUseCount',ex:'true',tt:'Use the record count for the color'},
+	{p:'hexmapDisplayCount',ex:'true',tt:'Display the count in the map'},
 	{p:'hexmapShowTotal',ex:'true',tt:'Total the values'},	
 	{p:'hexmapMinValue',ex:'1',tt:'If doing averages this is the lower cut off to add to a total'},
 	{p:'hexmapMaxValue',ex:'100',tt:'If doing averages this is the upper cut off to add to a total'},
@@ -3669,7 +3670,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 					      {colorTableProperty:'hexmapColorTable',
 					       minValue:this.getHexmapMinValue(),
 					       maxValue:this.getHexmapMaxValue()});
-	    if(this.getHexmapShowCount()) {
+	    if(this.getHexmapUseCount(this.getProperty('hexmapShowCount'))) {
 		colorBy.setDoCount(minCount,maxCount);
 	    } else {
 		let doTotal = this.getHexmapShowTotal();
@@ -3689,7 +3690,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		colorBy.setRange(minValue,maxValue, true);
 	    }
 	    this.lastColorBy = colorBy;
-	    let textGetter = this.getTextGetter(fields);
+	    let textGetter = this.getTextGetter(fields,true);
 	    let style = {
 		strokeColor:this.getHexmapStrokeColor(),
 		strokeDashstyle:this.getHexmapStrokeDashstyle(),
@@ -3703,8 +3704,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		fillColor:this.getHexmapEmptyFillColor(style.fillColor),
 		fillOpacity:this.getHexmapFillOpacity()						
 	    }
-
-
 
 	    this.hexmapLayer.features.forEach((f,idx)=>{
 		let records=hexgrid.features[idx].records;
@@ -3721,6 +3720,32 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		f.textGetter  = textGetter;
 	    });
 	    this.hexmapLayer.redraw();
+	    if(this.getHexmapDisplayCount()) {
+		let labels = [];
+		let baseStyle = {
+		    pointRadius:0,
+		    fontSize:this.getProperty('hexmapLabelFontSize',6),
+		    fontColor:this.getProperty('hexmapLabelFontColor','#000'),
+		    fontWeight: this.getProperty('hexmapLabelFontWeight','bold')
+		}
+		this.hexmapLayer.features.forEach((f,idx)=>{
+		    let records=hexgrid.features[idx].records;
+		    if(!records || records.length==0) return;
+		    let pt = f.geometry.getCentroid(true);		
+		    if(!pt) return;
+//		    pt = this.getMap().transformProjPoint(pt);
+		    let style = $.extend({label:''+records.length},baseStyle);
+		    let mapLabel = MapUtils.createVector(pt,null,style);
+		    labels.push(mapLabel);
+		});
+		if(labels.length>0) {
+		    this.hexmapLayer;
+		    this.hexmapLayer.addFeatures(labels);
+		    this.hexmapLayer.redraw();
+		}		    
+	    }
+
+
             if (colorBy.isEnabled()) {
 //		colorBy.displayColorTable();
 		this.displayColorTable(colorBy, ID_COLORTABLE,colorBy.minValue,colorBy.maxValue);
@@ -4722,7 +4747,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
         },
 
-	getTextGetter:function(fields) {
+	getTextGetter:function(fields,showCount) {
 	    let tooltip = this.getTooltip();
 	    return  this.textGetter = f=>{
 		if(!Utils.stringDefined(tooltip)) {
@@ -4735,6 +4760,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		else records = f.records;
 		if(!records || records.length==0) return null;
 		let text ='';
+		if(showCount && records.length>0) text+=HU.b('Count:  ') + records.length+'<br>';
 		records.forEach((record,idx)=>{
 		    if(idx>0) text+='<thin_hr/>';
 		    text +=   this.getRecordHtml(record, fields, tooltip);
