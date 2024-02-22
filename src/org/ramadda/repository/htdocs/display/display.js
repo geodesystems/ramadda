@@ -7645,7 +7645,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.hasElevation = false;
             }
 	    pointData = this.convertPointData(pointData);
-            this.dataCollection.addData (pointData);
+            this.dataCollection.addData(pointData);
+	    try {
+		this.updateUI();
+	    } catch(err) {}
             let entry = pointData.entry;
             if (entry == null && pointData.entryId) {
                 await this.getRamadda().getEntry(pointData.entryId, e => {
