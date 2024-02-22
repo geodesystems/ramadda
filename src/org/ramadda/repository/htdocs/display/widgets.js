@@ -18,8 +18,9 @@ function AreaWidget(display) {
 
 
 
+    let mapContains = Utils.stringDefined(HU.getUrlArgument("map_contains"))?HU.getUrlArgument("map_contains")=='true':true;
     $.extend(this, {
-	areaContains: HU.getUrlArgument("map_contains")=="true",
+	areaContains: mapContains,
         display: display,
         initHtml: function() {
 	    this.display.jq(ID_SETTINGS).click(()=>{
