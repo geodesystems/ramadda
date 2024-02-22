@@ -60,7 +60,10 @@ request.productcode.values="property:neon.productcodes"
     <property name="icon" value="/point/neon.png"/>
     <property name="form.location.show" value="false"/>
     <property name="form.area.show" value="false"/>
-    <column  name="sitecode"  label="Site Code" type="enumeration"  cansearch="true" values="file:/org/ramadda/geodata/point/resources/neonsites.txt" canedit="false"/>
+    <column  name="sitecode"  label="Site Code" type="enumeration"  cansearch="true" values="file:/org/ramadda/geodata/point/resources/neonsites.txt" canedit="false"
+	      bulkuploadhelp="Or upload a file of site ids. One per line. No header label. &lt;a target=_data href=/point/neonsites.csv>Download all sites&lt;/a&gt;"
+	      addbulkupload="true"
+/>
      <column  name="productcode"  label="Product Code" type="enumeration"  cansearch="true" values="file:/org/ramadda/geodata/point/resources/neonproducts.txt"/>
      <column  name="productyear"  label="Year" type="enumeration" values="latest:Latest,2020,2021,2022,2023,2024,2025"/>
      <column  name="productmonth"  label="Month" type="enumeration" values="latest:Latest,01:January,02:February,03:March,04:April,05:May,06:June,07:July,08:August,09:September,10:October,11:November,12:December"/>     

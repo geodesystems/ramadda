@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
+import java.util.HashSet;
 
 public class NeonTypeHandler extends BaseNeonTypeHandler {
     private static JSONObject siteInfo;
@@ -50,22 +51,43 @@ public class NeonTypeHandler extends BaseNeonTypeHandler {
     }
 
     @Override
-    public void initializeNewEntry(Request request, Entry entry,
-                                   boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
 	throws Exception {
 	if(fromImport) return;
+	initializeNewEntryInner(request, entry,null);
+
+	String  bulkFile = request.getUploadedFile(ARG_BULKUPLOAD);
+	if(!stringDefined(bulkFile) || !new File(bulkFile).exists()) return;
+	HashSet<String> seen = new HashSet<String>();
+	List<Entry> entries = handleBulkUpload(request, entry.getParentEntry(),bulkFile,IDX_SITE_CODE,seen,null,null);
+	for(Entry newEntry: entries) {
+	    initializeNewEntryInner(request,newEntry,entry);
+	}
+	getEntryManager().insertEntriesIntoDatabase(request,  entries,true, true);	
+    }
+
+
+    private void initializeNewEntryInner(Request request, Entry entry,Entry base)
+	throws Exception {	
 	String id = ("" + entry.getValue(IDX_SITE_CODE)).trim();
 	if(!stringDefined(id)) return;
-	String product = ("" + entry.getValue(IDX_PRODUCT_CODE)).trim();
 	if(siteInfo==null) {
 	    siteInfo= new JSONObject(getStorageManager().readUncheckedSystemResource("/org/ramadda/geodata/point/resources/neonsites.json"));
 	}
-	JSONObject site = siteInfo.getJSONObject(id);
+	JSONObject site = siteInfo.optJSONObject(id);
+	if(site==null) return;
+	//Clone from the base but reset the sitecode
+	if(base!=null) {
+	    entry.setValues(base.getValues().clone());
+	    entry.setValue(IDX_SITE_CODE,id);
+	}
+
     	entry.setLatitude(site.getDouble("latitude"));
     	entry.setLongitude(site.getDouble("longitude"));	
 	entry.setValue(IDX_SITE_TYPE,site.getString("siteType"));
 	entry.setValue(IDX_DOMAIN,site.getString("domainName"));
 	entry.setValue(IDX_STATE,site.getString("stateName"));		
+	String product = (String)entry.getValue(IDX_PRODUCT_CODE);
 
 	if(!stringDefined(entry.getName())) {
 	    Column siteColumn = findColumn("sitecode");
