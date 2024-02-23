@@ -1847,8 +1847,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    String input = HU.disabledInput(ARG_ANCESTOR, ancestorEntry!=null?ancestorEntry.getName():"",
 					    HU.clazz("disabledinput ramadda-entry-popup-select") + HU.attr("placeholder","Search under") + HU.attr("onClick", event) + HU.SIZE_40 + HU.id(ARG_ANCESTOR));
 
-	    sb.append(inset.apply(HU.b("Under Entry")+":<br>"+
-				  select + HU.space(1) +input ));
+	    sb.append(inset.apply(Utils.join(HU.space(1),HU.b("Under")+":",input,select)));
 	}
 
 
