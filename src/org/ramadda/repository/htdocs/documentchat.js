@@ -4,6 +4,8 @@ function DocumentChat(id,entryId,models) {
     let div  =jqid(id);
     let chat = HU.open('div',[ATTR_STYLE,'margin-left:5px;max-width:100%;overflow-x:auto;']);
     let left = HU.div([],
+		      HU.span([ATTR_TITLE,'History',ATTR_CLASS,'ramadda-clickable',ATTR_ID,id+'_history'],HU.getIconImage('fas fa-list'))+
+		      SPACE1+
 		      HU.span([ATTR_ID,id+'_button_clear',ATTR_TITLE,'Clear output',ATTR_CLASS,'ramadda-clickable'],HU.getIconImage('fas fa-eraser')) +
 		      HU.space(2) +
 		      HU.checkbox(id+'_button_clearalways',[ATTR_TITLE,'Always clear output'],
@@ -17,6 +19,8 @@ function DocumentChat(id,entryId,models) {
 			 [ATTR_ID,id+'_chatoffset',ATTR_TITLE,'Offset into document','size','3']);
 
 
+
+    
     chat+=HU.div([ATTR_STYLE,'margin:4px;'],HU.leftRightTable(left,right));
 
 
@@ -37,27 +41,15 @@ function DocumentChat(id,entryId,models) {
     chat+=HU.div([ATTR_ID,id+'_output',ATTR_STYLE,HU.css('max-height','800px','overflow-y','auto')]);
     chat+='</div>'
     div.html(chat);
-    jqid(id+'_button_clear').click(()=>{
-	output.html('');
-    });
+    this.history= [];
+    let _this = this;
     let input = jqid(id+'_input');
     let output = jqid(id+'_output');
     let progress=jqid(id+'_progress');
     let step = 0;
-    let clear = ()=>{
-	input.prop('disabled',false);
-	input.css('background','#fff');
-	progress.hide();
-	step++;
-    };
-
-    progress.click(()=>{
-	clear();
-    });
-    input.keyup(event=>{
-	if(!Utils.isReturnKey(event)) return;
-	let q= input.val().trim();
-	if(q.length==0) return;
+    let process = q=>{
+	if(!q || q.trim().length==0) return;
+	if(!this.history.includes(q)) this.history.push(q);
 	input.prop('disabled',true);
 	input.css('background','#efefef');
 	progress.show();
@@ -107,5 +99,41 @@ function DocumentChat(id,entryId,models) {
 */
 	    input.focus();
         });
+    }
+    jqid(id+'_history').click(function() {
+	if(_this.history.length==0) return;
+	let html = '';	
+	_this.history.slice().reverse().forEach(line=>{
+	    html+=HU.div([ATTR_CLASS,'ramadda-clickable ramadda-document-history',ATTR_STYLE,HU.css('width','400px','border','var(--basic-border)','padding','5px','margin-bottom','5px')], line);
+	});
+	html = HU.div([ATTR_CLASS,'ramadda-dialog',ATTR_STYLE,HU.css('max-height','200px','overflow-y','auto')], html);
+	_this.dialog =  HU.makeDialog({anchor:$(this),
+				     content:html});
+	
+	_this.dialog.find('.ramadda-document-history').click(function() {
+	    _this.dialog.remove();
+	    input.val($(this).html());
+	    input.focus();
+	});
+    });
+
+    jqid(id+'_button_clear').click(()=>{
+	output.html('');
+    });
+
+
+    let clear = ()=>{
+	input.prop('disabled',false);
+	input.css('background','#fff');
+	progress.hide();
+	step++;
+    };
+
+    progress.click(()=>{
+	clear();
+    });
+    input.keyup(event=>{
+	if(!Utils.isReturnKey(event)) return;
+	process(input.val().trim());
     });
 }
