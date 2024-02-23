@@ -682,14 +682,24 @@ public abstract class RecordFile {
     public final InputStream makeInputStream(boolean buffered) throws Exception {	
         IO.Path  path = getNormalizedFilename();
         File file = checkCachedFile();
-	if(file!=null) {
+	if(debug) {
+	    System.err.println("RecordFile.makeInputStream:" + path);
+	    System.err.println("RecordFile.makeInputStream: cache file:"+ file);
+	}
+	//not now
+	if(false && file!=null) {
 	    //Only cache if it is a URL
 	    if(file.exists()) {
-		//		System.err.println("RecordFile.makeInputStream: have cache file:"+ file);
+		System.err.println("RecordFile.makeInputStream: have cache file:"+ file);
 	    } else  if(path.getPath().startsWith("http")) {
+		System.err.println("RecordFile.makeInputStream: writing URL to cache file:"+ file);
 		InputStream inputStream = IO.doMakeInputStream(path, buffered);
-		//		System.err.println("RecordFile.makeInputStream: writing URL to cache file:"+ file);
-		IOUtil.copyFile(inputStream,file);
+		FileOutputStream fos = new FileOutputStream(file);
+		IOUtil.writeTo(inputStream, fos);
+		fos.flush();
+		IOUtil.close(fos);
+		IOUtil.close(inputStream);
+
 	    }
 	    if(file.exists()) {
 		return new BufferedInputStream(new FileInputStream(file));
