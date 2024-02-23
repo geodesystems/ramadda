@@ -645,6 +645,16 @@
         <filter token="VERSION" value="${version}"/>
       </filterset>
     </copy>
+    <copy overwrite="true" file="${release_dir}/installer/awsupdate.sh" todir="${installer_dir}">
+      <filterset>
+        <filter token="VERSION" value="${version}"/>
+      </filterset>
+    </copy>    
+    <copy overwrite="true" file="${release_dir}/installer/centosupdate.sh" todir="${installer_dir}">
+      <filterset>
+        <filter token="VERSION" value="${version}"/>
+      </filterset>
+    </copy>    
     <copy overwrite="true" file="${release_dir}/installer/updateimage.sh" todir="${installer_dir}">
       <filterset>
         <filter token="VERSION" value="${version}"/>
