@@ -20,8 +20,8 @@ export PARENT_DIR=`dirname $INSTALLER_DIR`
 export YUM_ARG=""
 export USER_DIR=$PARENT_DIR
 export BASE_DIR=/mnt/ramadda
-export RAMADDA_HOME_DIR=$BASE_DIR/repository
-export RUNTIME_DIR=${BASE_DIR}/runtime
+export RAMADDA_HOME_DIR=$BASE_DIR/ramaddahome
+export RUNTIME_DIR=${BASE_DIR}/ramaddainstall
 export RAMADDA_SERVER_DIR=${RUNTIME_DIR}/ramaddaserver
 export MOUNT_DIR=""
 
@@ -221,7 +221,7 @@ host    all             all             ::1/128                 ident
     systemctl start ${PG_SERVICE}
 
     
-    printf "create database repository;\ncreate user ramadda;\nalter user ramadda with password '${PG_PASSWORD}';\ngrant all privileges on database repository to ramadda;\n" > /tmp/postgres.sql
+    printf "create database repository;\ncreate user ramadda;\nalter user ramadda with password '${PG_PASSWORD}';\ngrant all privileges on database repository to ramadda;  ALTER DATABASE repository OWNER TO ramadda;ALTER SCHEMA public OWNER TO ramadda;\n" > /tmp/postgres.sql
     chmod 644 /tmp/postgres.sql
     echo "Creating repository database, adding ramadda user and setting privileges and password"
     su -c "psql -f /tmp/postgres.sql"  - postgres > /dev/null
