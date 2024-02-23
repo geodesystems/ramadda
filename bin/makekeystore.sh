@@ -35,6 +35,11 @@ BIN_DIR=`dirname $0`
 #CERTBOT=${BIN_DIR}/certbot-auto
 #CERTBOT=/usr/local/bin/certbot-auto
 CERTBOT=/bin/certbot
+if [ ! -e "$CERTBOT" ]; then
+    CERTBOT=/bin/certbot-3
+fi
+
+
 WHAT=new
 RAMADDA_HOME=/mnt/ramadda/repository
 HTDOCS=
