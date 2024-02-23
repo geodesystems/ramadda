@@ -385,6 +385,7 @@ lineWrap=true
        <![CDATA[+note\nSpecify the latitude/longitude\n-note]]>
      </property>    
 
+     <property name="data.url.addlaton" value="true"/>
      <property name="form.properties.show" value="false"/>
      <property name="icon" value="/point/ornl.png"/>
      <property name="form.area.show" value="false"/>
@@ -409,7 +410,10 @@ lineWrap=true
 <center>
 Data courtesy of <a href="https://daymet.ornl.gov/">ORNL Daymet</a>
 </center>
+{{display_map height="400px" showTitle="false" showMenu="false" justOneMarker=true}}               
++skip
 {{map zoomLevel=5}}
+-skip
 -col
 -row
 :vspace 0.5em

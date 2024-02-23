@@ -57,6 +57,8 @@ public class DaymetTypeHandler extends PointTypeHandler {
     }
 
 
+
+
     /**
      * _more_
      *
@@ -74,14 +76,26 @@ public class DaymetTypeHandler extends PointTypeHandler {
                                        Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
-        return new DaymetRecordFile(getRepository(), entry,
+        return new DaymetRecordFile(getRepository(), entry,getLocation(request,entry),
                                     new IO.Path(getPathForEntry(request, entry,true)));
     }
 
 
+
+
     /** _more_ */
     private static final String URL_TEMPLATE =
-        "https://daymet.ornl.gov/single-pixel/api/data?lat=${lat}&lon=${lon}&vars=dayl,prcp,srad,swe,tmax,tmin,vp&start=${start}&end=${end}";
+        "https://daymet.ornl.gov/single-pixel/api/data?lat=${latitude}&lon=${longitude}&vars=dayl,prcp,srad,swe,tmax,tmin,vp&start=${start}&end=${end}";
+
+    private String[] getLocation(Request request,Entry entry) {
+	String lat = request.getString("latitude",null);
+	String lon = request.getString("longitude",null);
+	if(lat==null || lat.indexOf("$")>=0) lat= "" + entry.getLatitude();
+	if(lon==null || lon.indexOf("$")>=0) lon= "" + entry.getLongitude();
+	return new String[]{lat,lon};
+    }
+	
+
 
     /**
      * _more_
@@ -97,8 +111,11 @@ public class DaymetTypeHandler extends PointTypeHandler {
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
         String url = URL_TEMPLATE;
-        url = url.replace("${lat}", "" + entry.getLatitude());
-        url = url.replace("${lon}", "" + entry.getLongitude());
+	String[] loc = getLocation(request,entry);
+	url = url.replace("${latitude}", loc[0]);
+	url = url.replace("${longitude}", loc[1]);
+
+	
         Date              now = new Date();
         GregorianCalendar cal = new GregorianCalendar();
         cal.setTime(now);
@@ -113,7 +130,7 @@ public class DaymetTypeHandler extends PointTypeHandler {
         }
         url = url.replace("${start}", startDate);
         url = url.replace("${end}", endDate);
-	//	System.err.println("daymet url:" + url);
+	System.err.println("daymet url:" + url);
         return url;
     }
 
@@ -145,6 +162,7 @@ public class DaymetTypeHandler extends PointTypeHandler {
 
         /** _more_ */
         Entry entry;
+	String[]loc;
 
         /**
          * _more_
@@ -156,11 +174,13 @@ public class DaymetTypeHandler extends PointTypeHandler {
          * @throws IOException _more_
          */
         public DaymetRecordFile(Repository repository, Entry entry,
+				String[]loc,
                                 IO.Path path)
                 throws IOException {
             super(path);
             this.repository = repository;
             this.entry      = entry;
+	    this.loc = loc;
         }
 
 
@@ -178,11 +198,15 @@ public class DaymetTypeHandler extends PointTypeHandler {
         public InputStream doMakeInputStream(boolean buffered)
                 throws Exception {
 	    int                   stride = entry.getIntValue(IDX_STRIDE, 7);
+	    //The header is taken care of below
+	    String latlon = loc[0]+","+loc[1];
 	    String[]              args   = new String[] {
 		"-skip", "8", "-decimate", "0", "" + stride, "-change",
 		"0", "\\.0$", "", "-change", "1", "\\.0$", "", "-combine",
 		"0,1", "-", "", "-scale", "3", "0", "0.0393700787", "0",
-		"-format", "3", "#0.00", "-columns", "9,2-8", "-print"
+		"-format", "3", "#0.00", "-columns", "9,2-8",
+		"-add",latlon,latlon,
+		"-print"
 	    };
 	    return applySeesv(entry,args);
         }
@@ -222,7 +246,9 @@ public class DaymetTypeHandler extends PointTypeHandler {
                           attrUnit("degrees C"),
                           attrLabel("Min Temperature")),
                 makeField("vp", attrType("double"), attrChartable(),
-                          attrUnit("Pa"), attrLabel("Pressure"))
+                          attrUnit("Pa"), attrLabel("Pressure")),
+                makeField("latitude", attrType("double")),
+                makeField("longitude", attrType("double")),		
             });
 
             return visitInfo;
