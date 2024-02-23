@@ -406,16 +406,18 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    if(this.map)
 		this.map.setLabel(HU.div([ATTR_CLASS, "display-map-message"], msg));
 	},	
-	startProgress: function() {
-	    this.setMessage(this.getProperty("loadingMessage","Creating map..."));
+	startProgress: function(msg) {
+	    this.setMessage(msg??this.getProperty("loadingMessage","Creating map..."));
 	},
 	clearProgress: function() {
 	    if(this.errorMessage) {
 		this.errorMessage = null;
 		return;
 	    }
-	    if(this.map)
+	    if(this.map) {
+		this.map.hideLoadingImage();
 		this.map.setProgress("");
+	    }
 	},
 
         checkLayout: function() {
@@ -1965,7 +1967,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(debug)    console.log("\tclick: just one")
                 let pointData = this.getPointData();
                 if(pointData) {
-                    pointData.handleEventMapClick(this, this, lon, lat);
+                    if(pointData.handleEventMapClick(this, this, lon, lat)) {
+			this.startProgress('Reloading data...');
+			this.getMap().showLoadingImage();
+		    }
 		    this.getDisplayManager().notifyEvent("mapClick", this, {lat:lat,lon:lon});
                 }
             }
