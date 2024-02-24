@@ -234,40 +234,20 @@ public class CatalogHarvester extends Harvester {
         super.createEditForm(request, sb);
         addBaseGroupSelect(ATTR_BASEGROUP, sb);
 
-        sb.append(HtmlUtils.formEntry(msgLabel("Catalog URL"),
-                                      HtmlUtils.input(ATTR_TOPURL, topUrl,
-                                          HtmlUtils.SIZE_60)));
-        sb.append(HtmlUtils.formEntry("",
-                                      HtmlUtils.checkbox(ATTR_RECURSE,
-                                          "true", recurse) + " "
-                                              + msg("Recurse")));
-        sb.append(HtmlUtils.formEntry("",
-                                      HtmlUtils.checkbox(ATTR_DOWNLOAD,
-                                          "true", download) + " "
-                                              + msg("Download Files")));
-
-        sb.append(
-            HtmlUtils
-                .formEntry(
-                    msgLabel("Metadata"),
-                    HtmlUtils
-                        .checkbox(
-                            ATTR_ADDMETADATA, "true",
-                            getAddMetadata()) + HtmlUtils.space(1)
-                                + msg("Add full metadata")
-                                + HtmlUtils.space(4)
-                                + HtmlUtils
-                                    .checkbox(
-                                        ATTR_ADDSHORTMETADATA, "true",
-                                        getAddShortMetadata()) + HtmlUtils
-                                            .space(1) + msg(
-                                                "Just add spatial/temporal metadata")));
-
-        sb.append(HtmlUtils.formEntry(msgLabel("User"),
-                                      HtmlUtils.input(ATTR_USER,
+        sb.append(HU.formEntry(msgLabel("Catalog URL"),
+                                      HU.input(ATTR_TOPURL, topUrl,
+                                          HU.SIZE_60)));
+        HU.formEntry(sb,"",HU.labeledCheckbox(ATTR_RECURSE,"true", recurse,"Recurse"));
+        HU.formEntry(sb, "",HU.labeledCheckbox(ATTR_DOWNLOAD,"true", download,"Download Files"));
+	HU.formEntry(sb, msgLabel("Metadata"),
+		     HU.labeledCheckbox(ATTR_ADDMETADATA, "true",getAddMetadata(),"Add full metadata")
+		     + HU.space(4)
+		     + HU.labeledCheckbox(ATTR_ADDSHORTMETADATA, "true", getAddShortMetadata(), "Just add spatial/temporal metadata"));
+        sb.append(HU.formEntry(msgLabel("User"),
+                                      HU.input(ATTR_USER,
                                           (getUserName() != null)
                                           ? getUserName().trim()
-                                          : "", HtmlUtils.SIZE_30)));
+                                          : "", HU.SIZE_30)));
 
     }
 
@@ -758,7 +738,7 @@ public class CatalogHarvester extends Harvester {
                 groupSB.append(groupLine);
             }
             groupSB.append("</ul></div>");
-            sb.append(HtmlUtils.makeShowHideBlock("Entries",
+            sb.append(HU.makeShowHideBlock("Entries",
                     groupSB.toString(), false));
         }
 
