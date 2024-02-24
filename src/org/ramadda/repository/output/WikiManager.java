@@ -3151,7 +3151,10 @@ public class WikiManager extends RepositoryManager
 		jsonUrl = fileName;
 	    }
 
-
+	    for(String extra: new String[]{"dataGroup","defaultLatitude","defaultLongitude"}) {
+		String value = getProperty(wikiUtil,props,extra,null);
+		if(value!=null) jsonUrl = HU.url(jsonUrl,extra,value);
+	    }
             getEntryDisplay(request, wikiUtil, entry, originalEntry, theTag,
                             entry.getName(), jsonUrl, sb, props,
                             displayProps);
