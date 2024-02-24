@@ -85,13 +85,15 @@ public class DaymetTypeHandler extends PointTypeHandler {
 
     /** _more_ */
     private static final String URL_TEMPLATE =
-        "https://daymet.ornl.gov/single-pixel/api/data?lat=${latitude}&lon=${longitude}&vars=dayl,prcp,srad,swe,tmax,tmin,vp&start=${start}&end=${end}";
+        "https://daymet.ornl.gov/single-pixel/api/data?lat=${latitude}&lon=${longitude}&vars=prcp,srad,swe,tmax,tmin,vp&start=${start}&end=${end}";
 
     private String[] getLocation(Request request,Entry entry) {
 	String lat = request.getString("latitude",null);
 	String lon = request.getString("longitude",null);
-	if(lat==null || lat.indexOf("$")>=0) lat= "" + entry.getLatitude();
-	if(lon==null || lon.indexOf("$")>=0) lon= "" + entry.getLongitude();
+	if(!stringDefined(lat) || lat.indexOf("$")>=0) lat= request.getString("defaultLatitude");
+	if(!stringDefined(lon) || lon.indexOf("$")>=0) lon= request.getString("defaultLongitude");	
+	if(!stringDefined(lat)) lat= "" + entry.getLatitude();
+	if(!stringDefined(lon)) lon= "" + entry.getLongitude();
 	return new String[]{lat,lon};
     }
 	
@@ -130,22 +132,10 @@ public class DaymetTypeHandler extends PointTypeHandler {
         }
         url = url.replace("${start}", startDate);
         url = url.replace("${end}", endDate);
+	System.err.println(url);
         return url;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fromImport _more_
-     *
-     * @throws Exception _more_
-     */
-    @Override
-    public void initializeNewEntry(Request request, Entry entry,
-                                   boolean fromImport)
-            throws Exception {}
 
     /**
      * Class description
@@ -203,7 +193,8 @@ public class DaymetTypeHandler extends PointTypeHandler {
 		"-skip", "8", "-decimate", "0", "" + stride, "-change",
 		"0", "\\.0$", "", "-change", "1", "\\.0$", "", "-combine",
 		"0,1", "-", "", "-scale", "3", "0", "0.0393700787", "0",
-		"-format", "3", "#0.00", "-columns", "9,2-8",
+		"-format", "3", "#0.00", 
+		"-columns", "8,2-7",
 		"-add",latlon,latlon,
 		"-print"
 	    };
@@ -221,31 +212,23 @@ public class DaymetTypeHandler extends PointTypeHandler {
          */
         public VisitInfo prepareToVisit(VisitInfo visitInfo)
                 throws Exception {
-            //            putProperty(PROP_SKIPLINES, "1");
-            //            putProperty(PROP_HEADER_STANDARD, "true");
             super.prepareToVisit(visitInfo);
             //            utc,co ug/m^3,no2 ug/m^3,o3 ug/m^3,pm10 ug/m^3,so2 ug/m^3
             putFields(new String[] {
                 makeField(FIELD_DATE, attrType("date"), attrFormat("yyyy-D")),
-                makeField("day_length", attrType("double"), attrChartable(),
-                          attrUnit("seconds"), attrLabel("Day Length")),
-                makeField("precipitation", attrType("double"),
-                          attrChartable(), attrUnit("inches"),
+		//                makeField("day_length", attrType("double"), attrChartable(), attrUnit("seconds"), attrLabel("Day Length")),
+                makeField("precipitation", attrType("double"), attrChartable(), attrUnit("inches"),
                           attrLabel("Precipitation")),
-                makeField("srad", attrType("double"), attrChartable(),
-                          attrUnit("W/m^2"),
+                makeField("srad", attrType("double"), attrChartable(), attrUnit("W/m^2"),
                           attrLabel("Shortwave Radiation")),
-                makeField("swe", attrType("double"), attrChartable(),
-                          attrUnit("kg/m^2"),
+                makeField("swe", attrType("double"), attrChartable(), attrUnit("kg/m^2"),
                           attrLabel("Snow Water Equivalent")),
-                makeField("tmax", attrType("double"), attrChartable(),
-                          attrUnit("degrees C"),
+                makeField("tmax", attrType("double"), attrChartable(), attrUnit("degrees C"),
                           attrLabel("Max Temperature")),
-                makeField("tmin", attrType("double"), attrChartable(),
-                          attrUnit("degrees C"),
+                makeField("tmin", attrType("double"), attrChartable(), attrUnit("degrees C"),
                           attrLabel("Min Temperature")),
-                makeField("vp", attrType("double"), attrChartable(),
-                          attrUnit("Pa"), attrLabel("Pressure")),
+                makeField("vp", attrType("double"), attrChartable(),attrUnit("Pa"),
+			  attrLabel("Pressure")),
                 makeField("latitude", attrType("double")),
                 makeField("longitude", attrType("double")),		
             });
