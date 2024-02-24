@@ -1943,7 +1943,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 		    let records = [];
 		    entries.forEach(entry=>{
 			let tags = this.makeEntryTags(entry,true,"");
-			let data = [entry.getName(),entry.getSnippet()||"",entry.getEntryUrl(),entry.getImageUrl()||defaultImage||"",entry.getIconUrl(),tags,entry.getLatitude(), entry.getLongitude()];
+			let data = [entry.getName(true),entry.getSnippet()||"",entry.getEntryUrl(),entry.getImageUrl()||defaultImage||"",entry.getIconUrl(),tags,entry.getLatitude(), entry.getLongitude()];
 			if(entryType) {
 			    entryType.getColumns().forEach(column=>{
 				let v = entry.getAttributeValue(column.getName());
@@ -1999,7 +1999,6 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 				 mapHeight:'400',
 				 loadingMessage:''};
 		    info.display =  this.getDisplayManager().createDisplay(info.type,props);
-
 		});
 	    }
 

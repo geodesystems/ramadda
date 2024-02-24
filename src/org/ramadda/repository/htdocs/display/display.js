@@ -4702,7 +4702,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 let toolbar = this.makeEntryToolbar(entry, handler, props.handlerId);
                 let entryMenuButton = doWorkbench?this.getEntryMenuButton(entry):"";
 
-                let entryName = entry.getDisplayName();
+                let entryName = entry.getDisplayName(true);
                 if (entryName.length > 100) {
                     entryName = entryName.substring(0, 99) + "...";
                 }

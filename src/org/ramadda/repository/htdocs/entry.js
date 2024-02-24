@@ -490,6 +490,9 @@ function RamaddaRepository(repositoryRoot) {
             return url;
         },
 
+	isLocal() {
+	    return this.repositoryRoot && this.repositoryRoot.startsWith('/');
+	},
         addEntry: function(entry) {
             this.entryCache[entry.getId()] = entry;
         },
@@ -704,7 +707,6 @@ function Entry(props) {
     });
 
     $.extend(this, props);
-
     this.domId = Utils.cleanId(this.id);
 
     this.createDate = Utils.parseDate(props.createDate);
@@ -750,9 +752,9 @@ function Entry(props) {
 	doSave: function(authtoken,args, success,error) {
 	    RamaddaUtil.doSave(this.getId(),authtoken,args, success,error);
 	},
-        getDisplayName: function() {
+        getDisplayName: function(addSlug) {
             if (this.displayName) return this.displayName;
-            return this.getName();
+            return this.getName(addSlug);
         },
         getCreateDate: function() {
             return this.createCreate;
@@ -1027,11 +1029,19 @@ function Entry(props) {
             return labels;
         },
 
-        getName: function() {
+        getName: function(addSlug) {
+	    let n 
             if (this.name == null || this.name == "") {
-                return "no name";
-            }
-            return this.name;
+                n=  'no name';
+            } else {
+		n = this.name;
+	    }
+	    if(addSlug && Utils.stringDefined(this.repositorySlug)) {
+		if(!this.getRamadda().isLocal()) {
+		    n=this.repositorySlug+'-'+n;
+		}
+	    }
+	    return n;
         },
         getSnippet: function(dflt) {
             if (this.snippet == null) return dflt;
