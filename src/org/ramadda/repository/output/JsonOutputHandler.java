@@ -507,6 +507,10 @@ public class JsonOutputHandler extends OutputHandler {
         JsonUtil.quoteAttr(items, "id", entry.getId());
         String entryName = entry.getName();
         JsonUtil.quoteAttr(items, "name", entryName);
+	String slug = getRepository().getRepositorySlug();	
+	if(stringDefined(slug)) {
+	    JsonUtil.quoteAttr(items, "repositorySlug", slug);
+	}
         String displayName = getEntryDisplayName(entry);
         if ( !displayName.equals(entryName)) {
             JsonUtil.quoteAttr(items, "displayName", displayName);
