@@ -45,6 +45,7 @@ public class LLMManager extends  AdminHandlerImpl {
     public static final String PROP_OPENAI_KEY = "openai.api.key";
     public static final String PROP_GEMINI_KEY = "gemini.api.key";	
 
+    public static final int TOKEN_LIMIT_UNDEFINED = -1;
     public static final int TOKEN_LIMIT_GEMINI = 4000;
     public static final int TOKEN_LIMIT_GPT3 = 2000;    
     public static final int TOKEN_LIMIT_GPT4 = 4000;
@@ -229,7 +230,7 @@ public class LLMManager extends  AdminHandlerImpl {
 						    "Rewrite the following text as college level material:");
 	    String promptSuffix = request.getString("promptsuffix", "");
 	    //	text = callGpt("Rewrite the following text:","",new StringBuilder(text),1000,false);		    
-	    text = callLLM(request, promptPrefix,promptSuffix,text,1000,false,null);		    
+	    text = callLLM(request, promptPrefix,promptSuffix,text,1000,false,new PromptInfo() );		    
 	    String json = JsonUtil.map(Utils.makeList("result", JsonUtil.quote(text)));
 	    return new Result("", new StringBuilder(json), "text/json");
 	} catch(Throwable exc) {
@@ -238,7 +239,8 @@ public class LLMManager extends  AdminHandlerImpl {
 	
     }
 
-    public String applyPromptToDocument(Request request, String path, String prompt,int offset) throws Exception {
+
+    private String applyPromptToDocument(Request request, String path, String prompt,PromptInfo info) throws Exception {
 	try {
 	    String corpus = getSearchManager().extractCorpus(request, path, null);
 	    if(corpus==null) return null;
@@ -246,10 +248,12 @@ public class LLMManager extends  AdminHandlerImpl {
 		//		corpus = Utils.stripTags(corpus);
 		//		System.err.println("CORPUS:" + corpus.replace("\n", " "));
 	    }
-	    if(offset>0 && offset<corpus.length()) {
-		corpus = corpus.substring(offset);
+	    info.corpusLength=corpus.length();
+	    if(info.offset>0 && info.offset<corpus.length()) {
+		corpus = corpus.substring(info.offset);
 	    }
-	    return callLLM(request, prompt,"",corpus,1000,true, new int[]{TOKEN_LIMIT_GPT3});
+	    info.tokenLimit = TOKEN_LIMIT_GPT3;
+	    return callLLM(request, prompt,"",corpus,1000,true, info);
 	} catch(Throwable exc) {
 	    throw new RuntimeException(exc);
 	}
@@ -343,17 +347,16 @@ public class LLMManager extends  AdminHandlerImpl {
 
 
 
-    public String callLLM(Request request,
-			  String prompt1,
-			  String prompt2,
-			  String text,
-			  int maxReturnTokens,
-			  boolean tokenize,
-			  int[]initTokenLimit,
-			  String...extraArgs)
+    private String callLLM(Request request,
+			   String prompt1,
+			   String prompt2,
+			   String text,
+			   int maxReturnTokens,
+			   boolean tokenize,
+			   PromptInfo info,
+			   String...extraArgs)
 	throws Throwable {
 	String model = request.getString(ARG_MODEL,MODEL_GPT_3_5);
-
 	String openAIKey = getOpenAIKey();
 	String geminiKey = getRepository().getProperty(PROP_GEMINI_KEY);	
 	if(openAIKey==null && geminiKey==null) {
@@ -361,26 +364,26 @@ public class LLMManager extends  AdminHandlerImpl {
 	    return null;
 	}
 
-	if(initTokenLimit==null) 
-	    initTokenLimit = new int[]{-1};
 
-	if(initTokenLimit[0]<=0) {
+	if(info.tokenLimit<=0) {
 	    if(model.equals(MODEL_GEMINI)) 
-		initTokenLimit[0] = TOKEN_LIMIT_GEMINI;
+		info.tokenLimit = TOKEN_LIMIT_GEMINI;
 	    else if(model.equals(MODEL_GPT_4)) 
-		initTokenLimit[0] = TOKEN_LIMIT_GPT4;
+		info.tokenLimit = TOKEN_LIMIT_GPT4;
 	    else
-		initTokenLimit[0] = TOKEN_LIMIT_GPT3;
+		info.tokenLimit = TOKEN_LIMIT_GPT3;
 	} 
 
 	int callCnt = 0;
-	int tokenLimit = initTokenLimit[0];
+	int tokenLimit = info.tokenLimit;
+	info.segmentLength=0;
 	while(tokenLimit>=500) {
-	    initTokenLimit[0] = tokenLimit;
+	    info.tokenLimit = tokenLimit;
 	    StringBuilder gptCorpus = new StringBuilder(prompt1);
 	    gptCorpus.append("\n\n");
 	    if(!tokenize) {
 		gptCorpus.append(text);
+		info.segmentLength+=text.length();
 	    } else {
 		text = Utils.removeNonAscii(text," ").replaceAll("[,-\\.\n]+"," ").replaceAll("  +"," ");
 		if(text.trim().length()==0) {
@@ -396,6 +399,7 @@ public class LLMManager extends  AdminHandlerImpl {
 		    if(tok.length()>5) {
 			extraCnt+=(int)(tok.length()/5);
 		    }
+		    info.segmentLength+=tok.length();
 		    gptCorpus.append(tok);
 		    gptCorpus.append(" ");
 		}
@@ -408,7 +412,7 @@ public class LLMManager extends  AdminHandlerImpl {
 						 " init length:" + text.length() +
 						 " text length:" + gptText.length() +
 						 " max return tokens:" + maxReturnTokens +
-						 " token limit:" + initTokenLimit[0]);
+						 " token limit:" + info.tokenLimit);
 
 	    IO.Result  result=null; 
 	    if(model.equals(MODEL_GEMINI)) {
@@ -464,7 +468,7 @@ public class LLMManager extends  AdminHandlerImpl {
 						   " sleeping for:" +  ms+" ms");
 
 			Misc.sleep(ms);
-			tokenLimit-=1000;
+			info.tokenLimit-=1000;
 			continue;
 		    }
 
@@ -472,9 +476,9 @@ public class LLMManager extends  AdminHandlerImpl {
 			System.err.println("\tLLMManager: Error calling LLM. Unknown error code:" + result.getResult());
 			return null;
 		    }
-		    tokenLimit-=1000;
+		    info.tokenLimit-=1000;
 		    if(debug)
-			System.err.println("\ttoo many tokens. Trying again with limit:" + tokenLimit);
+			System.err.println("\ttoo many tokens. Trying again with limit:" + info.tokenLimit);
 		    continue;
 		} catch(Exception exc) {
 		    exc.printStackTrace();
@@ -620,8 +624,7 @@ public class LLMManager extends  AdminHandlerImpl {
 
 
 	boolean entryChanged = false;
-	int[]tokenLimit = new int[]{-1};
-
+	PromptInfo info = new PromptInfo();
 	boolean extractKeywords = request.get(ARG_EXTRACT_KEYWORDS,false);
 	boolean extractSummary = request.get(ARG_EXTRACT_SUMMARY,false);	
 	boolean extractTitle = request.get(ARG_EXTRACT_TITLE,false);	
@@ -648,7 +651,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	}
 	jsonPrompt +="\nThe result JSON must adhere to the following schema: \n{" + Utils.join(schema,",")+"}\n";
 	//	System.err.println("Prompt:" + jsonPrompt);
-	String json = callLLM(request, jsonPrompt+"\nThe text:\n","",llmCorpus,200,true,tokenLimit);
+	String json = callLLM(request, jsonPrompt+"\nThe text:\n","",llmCorpus,200,true,info);
 	if(!stringDefined(json)) {
 	    getLogManager().logSpecial("LLMManager:Failed to extract information for entry:" + entry.getName());
 	    return false;
@@ -733,13 +736,21 @@ public class LLMManager extends  AdminHandlerImpl {
 
 	if(request.exists("question")) {
 	    try {
-		String r = applyPromptToDocument(request, entry.getResource().getPath(),request.getString("question",""),
-								 request.get("offset",0));
+		PromptInfo info = new PromptInfo(TOKEN_LIMIT_UNDEFINED,request.get("offset",0));
+		String r = applyPromptToDocument(request,
+						 entry.getResource().getPath(),
+						 request.getString("question",""),
+						 info);
 		String s;
 		if(r==null) {
 		    return makeJsonError("Could not process request");
 		} else {
-		    s =  JsonUtil.mapAndQuote(Utils.makeList("response", r));
+		    s =  JsonUtil.map(Utils.makeList("offset",info.offset,
+						     "corpusLength",info.corpusLength,
+						     "segmentLength",info.segmentLength,
+						     "tokenCount",info.tokenLimit,
+						     "response", JsonUtil.quote(r)));
+
 		}
 		return  new Result("", new StringBuilder(s), JsonUtil.MIMETYPE);
 	    } catch(Exception exc) {
@@ -799,6 +810,28 @@ public class LLMManager extends  AdminHandlerImpl {
 	    return word+" #:" + count +" ";
 	}
     }
+
+    private static class PromptInfo {
+	int tokenLimit=TOKEN_LIMIT_UNDEFINED;
+	int tokenCount;
+
+	int offset;
+	int corpusLength;
+	int segmentLength;
+	PromptInfo() {
+	}
+
+	PromptInfo(int tokenLimit) {
+	    this.tokenLimit = tokenLimit;
+	}
+
+	PromptInfo(int tokenLimit, int offset) {
+	    this(tokenLimit);
+	    this.offset = offset;
+	}	
+    }
+
+
 
 }
 

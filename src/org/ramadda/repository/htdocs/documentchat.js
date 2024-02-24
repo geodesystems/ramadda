@@ -18,8 +18,8 @@ function DocumentChat(id,entryId,models) {
     right+=HU.b('Offset: ') +HU.input('','0',
 			 [ATTR_ID,id+'_chatoffset',ATTR_TITLE,'Offset into document','size','3']);
 
-
-
+    right+=SPACE1;
+    right+=HU.span([ATTR_ID,id+'_info',ATTR_TITLE,''],HU.getIconImage('fas fa-circle-info'));
     
     chat+=HU.div([ATTR_STYLE,'margin:4px;'],HU.leftRightTable(left,right));
 
@@ -77,6 +77,11 @@ function DocumentChat(id,entryId,models) {
             if (result.error) {
                 r="Error: " + result.error;
             } else {
+		let tt=Utils.join(['Corpus length: ' + result.corpusLength,
+				   'Segment length: ' + result.segmentLength],'<br>');		
+		jqid(id+'_info').attr(ATTR_TITLE,tt);
+		jqid(id+'_info').tooltip({
+		    content:()=>{return tt;}});
 		r = result.response??'';
 		r = r.replace(/(https?:\/\/[^\s]+)/g,'<a href=\'$1\'>$1</a>');
 		r = r.replace(/^-/gm,'&#x2022;').replace(/\n/g,'<br>');
