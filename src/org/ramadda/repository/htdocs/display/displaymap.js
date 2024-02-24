@@ -599,7 +599,8 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                         }
                         attrs.fillColor = this.getBoundsFillColor();
                         attrs.fillOpacity = this.getBoundsFillOpacity();			
-                        this.map.addRectangle("bounds", parseFloat(toks[0]), parseFloat(toks[1]), parseFloat(toks[2]), parseFloat(toks[3]), attrs, "");
+                        let feature = this.map.addRectangle("bounds", parseFloat(toks[0]), parseFloat(toks[1]), parseFloat(toks[2]), parseFloat(toks[3]), attrs, "");
+			feature.noSelect = true;
                     }
 		    if(!hasLoc && this.setInitMapBounds)
 			this.setInitMapBounds(parseFloat(toks[0]), parseFloat(toks[1]), parseFloat(toks[2]), parseFloat(toks[3]));
