@@ -401,7 +401,13 @@ lineWrap=true
 :heading Charts
 +row
 +col-md-8
-{{group showMenu="true" layoutType="table" layoutColumns="1" showTitle="false"}}
++hbox
+{{group targetDiv=groupdiv showMenu="true" layoutType="table" layoutColumns="1" showTitle="false"}}
+-hbox
++hbox
+{{display_download layoutHere="true" showMenu="false"}}
+-hbox
+<div id=groupdiv></div>
 {{display_linechart showTitle="false" layoutHere="false" fields="tmax,tmin" vAxisMinValue="-40" vAxisMaxValue="40"}}
 {{display_linechart showTitle="false" layoutHere="false" fields="swe"}}
 {{display_barchart showTitle="false" layoutHere="false" fields="precipitation"}}
@@ -410,7 +416,9 @@ lineWrap=true
 <center>
 Data courtesy of <a href="https://daymet.ornl.gov/">ORNL Daymet</a>
 </center>
-{{display_map height="400px" showTitle="false" showMenu="false" justOneMarker=true}}               
+{{display_map height="400px" showTitle="false" showMenu="false" justOneMarker=true
+showRecordHighlight=false
+}}               
 +skip
 {{map zoomLevel=5}}
 -skip
