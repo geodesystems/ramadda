@@ -283,7 +283,10 @@ editfields="station,data_type,_default"	>
   <property name="form.properties.show" value="false"/>
   <property name="form.header.new">
 <![CDATA[+note\nJust need to specify the Station ID. See the map at <a target=_map href=https://www.ndbc.noaa.gov/>nbdc.noaa.gov</a>\n-note]]></property>    
-  <column  name="station"  label="Station ID" type="string" cansearch="true"/>
+<column  name="station"  label="Station ID" type="string" cansearch="true"
+	 bulkuploadhelp="Or upload a file of site ids. One per line. No header label."
+	 addbulkupload="true"	 
+/>
   <column  name="data_type"  label="Data Type" type="enumeration" cansearch="true"
 	   values="txt:standard meteorological data,drift:meteorological data from drifting buoys,cwind:continuous winds data,adcp:acoustic doppler current profiler,ocean:oceanographic data, tide:tide data,spec:spectral wave summary"/>  
 

@@ -28,6 +28,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
+import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
+
 
 
 /**
@@ -70,8 +74,24 @@ public class NdbcBuoyTypeHandler extends PointTypeHandler {
             throws Exception {
 	super.initializeNewEntry(request, entry, fromImport);
 	if(fromImport) return;
+	String type = (String)  entry.getValue(IDX_DATA_TYPE);	
+	initializeNewEntryInner(request, entry,type);
+	String  bulkFile = request.getUploadedFile(ARG_BULKUPLOAD);
+	if(!stringDefined(bulkFile) || !new File(bulkFile).exists()) return;
+	HashSet<String> seen = new HashSet<String>();
+	List<Entry> entries = handleBulkUpload(request, entry.getParentEntry(),bulkFile,IDX_STATION_ID,seen,null,null);
+	for(Entry newEntry: entries) {
+	    initializeNewEntryInner(request,newEntry,type);
+	}
+	getEntryManager().insertEntriesIntoDatabase(request,  entries,true, true);	
+    }
+
+    private void initializeNewEntryInner(Request request, Entry entry,String type)
+            throws Exception {
+
 	String id = (String)  entry.getValue(IDX_STATION_ID);
 	if(!stringDefined(id)) return;
+	entry.setValue(IDX_DATA_TYPE,type);	
 	String url = "https://www.ndbc.noaa.gov/station_page.php?station=" + id;
 	try {
 	    String html = IO.readUrl(new URL(url));
