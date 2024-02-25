@@ -31,6 +31,8 @@ pre {
 
 
 
+:navtop
+
 +callout-info
 There are a few things you need to figure out to install RAMADDA:
 -callout
@@ -72,14 +74,16 @@ There are other <a href='releasenotes.html#plugins'>plugins</a> available as wel
 
 
 
-<a name="cloud"></a><p><div class="ramadda-help-heading">9.0.0 <a href="#cloud">Running in a Linux Cloud</a></div> 
+<a name=cloud></a>
+:heading Running in a Linux Cloud
 We have developed an installer script that does a complete installation of Postgres and RAMADDA.
 Right now this has just been tested for an Amazon AWS Linux AMI.
 
 See <a href='aws.html'>aws.html</a> for further details.
 
 
-<a name="windows"></a><p><div class="ramadda-help-heading">9.0.1 <a href="#windows">Running on Windows</a></div> 
+<a name="windows"></a>
+:heading Running on Windows
 RAMADDA can run on Windows. However the RAMADDA development team does not have
 ready access to a Windows machine to test on so there may be some rough edges.
 There have been problems reported running under Tomcat so we would suggest
@@ -99,7 +103,8 @@ run the .bat as a
 service- [https://nssm.cc/ https://nssm.cc/]
 
 
-<a name="standalone"></a><p><div class="ramadda-help-heading">9.0.2 <a href="#standalone">Running Standalone</a></div> 
+<a name="standalone"></a>
+:heading Running Standalone
 You can run RAMADDA stand-alone from the command line. This requires  Java 8 or greater. 
 First you should set up a ramaddainstall directory,  e.g.:
 +pre addCopy=true
@@ -107,8 +112,8 @@ mkdir  ramaddainstall
 -pre
 
 Change directory into the  <i>ramaddainstall</i> directory and
-download the ramaddaserver.zip file from the ramadda.org
-<a target=_install href="https://ramadda.org/repository/entry/show?entryid=synth:498644e1-20e4-426a-838b-65cffe8bd66f:L3JhbWFkZGFzZXJ2ZXIuemlw">download area</a>
+download the ramaddaserver.zip file from the 
+<a  href="https://ramadda.org/repository/release/latest/ramaddaserver.zip">https://ramadda.org/repository/release/latest/ramaddaserver.zip</a>
 
 The file download URL to use is:
 +pre addCopy=true addDownload=true 
@@ -185,19 +190,29 @@ The rest of the RAMADDA configuration is done through the web at
 <a href="http://localhost:8080/repository">http://localhost:8080/repository</a>.
 
 
-<a name="tomcat"></a><p><div class="ramadda-help-heading">9.0.3 <a href="#tomcat">Running under Tomcat</a></div> 
+<a name="tomcat"></a>
+:heading Running under Tomcat
 This assumes you have Tomcat or some other servlet (e.g., Glassfish) container already installed.
 
 <ol>
-<li> First,  download the repository.war from the <a href="https://ramadda.org/repository/alias/release>">Geode Systems</a> site.
-<li> Specify the location of the  RAMADDA <a href="#home">home directory</a> by setting the property ramadda_home=/home/dir. 
-Either set this as an environmental or Java run time variable as  a property 
-in a <i>repository.properties</i> in the ${CATALINA_HOME}/conf directory.
+  <li> First,  download the repository.war from the
+    <a href="https://ramadda.org/repository/alias/release">ramadda.org downloads</a> site at
+    <a href="https://ramadda.org/release/latest/repository.war">https://ramadda.org/release/latest/repository.war</a>.
+
+  <li> Specify the location of the  RAMADDA <a href="#home">home directory</a> by setting the property:
+<pre>
+ramadda_home=/home/dir
 </pre>
 
+Either set this as an environmental or Java run time variable as  a property 
+in a <i>repository.properties</i> in the ${CATALINA_HOME}/conf directory.
+
+
 <li> To run under Tomcat just place the repository.war in the tomcat webapps directory. 
+
 <li> Go to the /repository page in your browser to continue the installation process, e.g.:
 http://&lt;server&gt;/repository
+
 <li>  By default the repository is accessed at /repository on the web server. 
 With Tomcat the top-level path can only be a single level and
 corresponds to the name of the war file. 
@@ -218,7 +233,8 @@ to set the memory and permgen size. Consult the Tomcat documentation for more in
 
 </ol>
 
-<a name="home"></a><p><div class="ramadda-help-heading">9.0.4 <a href="#home">RAMADDA Home Directory</a></div> 
+<a name="home"></a>
+:heading RAMADDA Home Directory
 
 RAMADDA uses a local home directory on the server.
 This is where RAMADDA looks for properties files and other resources, where the 
@@ -276,7 +292,27 @@ if found then RAMADDA looks for the property: <pre>
 
 
 <a name="properties"></a>
-<a name="final"></a><p><div class="ramadda-help-heading">9.0.5 <a href="#final">RAMADDA Property Files</a></div> 
+<a name="final"></a>
+
+<a name="final"></a>
+:heading Browser Configuration
+    Once installed and running the last steps of the configuration process are done through your browser. Go to:<pre>
+<i>http://&lt;hostname&gt;:&lt;port&gt;/repository </i>
+</pre>
+
+If you are running on your local machine you go to:<pre>
+<a href="http://localhost:8080/repository">http://localhost:8080/repository</a>
+</pre>
+
+To ensure only authenticated users can do this final configuration step RAMADDA will prompt for an install password.
+You can find the install password on your server in:<pre>
+    &lt;RAMADDA home directory&gt;/install.properties
+</pre>
+
+
+
+<a name="properties"></a>
+:heading RAMADDA Property Files
 
 For other  configuration options RAMADDA looks in its home directory for any .properties files.
 While most of the RAMADDA configuration is accomplished through the web ADMIN interface there
@@ -304,7 +340,7 @@ ramadda.auth.dopassword=true
 </pre>
 
 
-<a name="directory"></a><p><div class="ramadda-help-heading">9.0.6 <a href="#directory">Directory Structure</a></div> 
+:heading Directory Structure
 
 Under the home directory RAMADDA will create the following subdirectories:
 
@@ -363,7 +399,7 @@ If you are running with the Derby database this directory holds the database
 
 
 
-<a name="configuration"></a><p><div class="ramadda-help-heading">9.0.7 <a href="#configuration">Configuration</a></div> 
+:heading Site Administration
 
 RAMADDA for the most part can be configured through the
 <a href='admin.html'>Admin pages</a>. When you are logged in to 
@@ -394,7 +430,7 @@ for the Entry. You do this with the <b>Edit-&gt;Edit Entry</b> menu.
 
 
 <a name="ssl"></a>
-<h3>Configuring SSL under Tomcat</h3>
+:heading Configuring SSL under Tomcat
 If you have your Tomcat server configured for SSL access all you need to do is to tell RAMADDA what port it is running under. Add the property:
 <pre>
 ramadda.ssl.port=&lt;the ssl port&gt;
@@ -410,7 +446,7 @@ See the <a href='faq.html#fixssl'>FAQ</a> for how to fix this.
 
 
 <a name="ssljetty"></a>
-<h3>Configuring SSL when running standalone</h3>
+:heading Configuring SSL when running standalone
 To configure secure SSL access to a stand-alone version of RAMADDA you need to
 generate a keystore file from a certificate or generate a self-signed certificate.
 If using a self-signed certificate when you first access your RAMADDA  via https
@@ -462,20 +498,20 @@ This requires you to have a domain name for your server's IP address and the fol
 </ul>
 
 Once you have a hostname and your RAMADDA running you can run a
-<a href=https://github.com/geodesystems/ramadda/blob/master/bin/makekeystore.sh>
+<a href=https://github.com/geodesystems/ramadda/blob/master/bin/letsencrypt.sh>
 makekestore.sh</a> script provided by RAMADDA on your server to automate the
 certificate/keystore generation process and install the keystore on your RAMADDA.
 
 Copy the script to your server and run to see the command line options.
 <pre>
-sh  makekeystore.sh -help
+sh  letsencrypt.sh -help
 </pre>
 
 
 The only downside to using a certificate from letsencrypt is that you need to update it every 3 months.
 
 
-<a name="fromgit"></a><p><div class="ramadda-help-heading">9.0.8 <a href="#fromgit">Building RAMADDA from source</a></div> 
+<h3>Building RAMADDA from source</h3>
 It is easy to build and run RAMADDA from Github.
 The RAMADDA Gihub site is at <a href="https://github.com/geodesystems/ramadda">https://github.com/geodesystems/ramadda</a>. 
 
@@ -513,43 +549,7 @@ sh ramadda.sh
 
 </div>
 <p>
-<div  class="childlist" ><table  width="100%" ><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-9.0.0&nbsp;
-</span></td><td><a  class="childlist-link"  href="installing.html#cloud" >
-<a href="#cloud">Running in a Linux Cloud</a>
-</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-9.0.1&nbsp;
-</span></td><td><a  class="childlist-link"  href="installing.html#windows" >
-<a href="#windows">Running on Windows</a>
-</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-9.0.2&nbsp;
-</span></td><td><a  class="childlist-link"  href="installing.html#standalone" >
-<a href="#standalone">Running Standalone</a>
-</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-9.0.3&nbsp;
-</span></td><td><a  class="childlist-link"  href="installing.html#tomcat" >
-<a href="#tomcat">Running under Tomcat</a>
-</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-9.0.4&nbsp;
-</span></td><td><a  class="childlist-link"  href="installing.html#home" >
-<a href="#home">RAMADDA Home Directory</a>
-</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-9.0.5&nbsp;
-</span></td><td><a  class="childlist-link"  href="installing.html#final" >
-<a href="#final">RAMADDA Property Files</a>
-</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-9.0.6&nbsp;
-</span></td><td><a  class="childlist-link"  href="installing.html#directory" >
-<a href="#directory">Directory Structure</a>
-</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-9.0.7&nbsp;
-</span></td><td><a  class="childlist-link"  href="installing.html#configuration" >
-<a href="#configuration">Configuration</a>
-</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-9.0.8&nbsp;
-</span></td><td><a  class="childlist-link"  href="installing.html#fromgit" >
-<a href="#fromgit">Building RAMADDA from source</a>
-</a><br></td></tr></table></div>
+<div  class="childlist" ><table  width="100%" ></table></div>
 <p>&nbsp;<p>
 
 <div class="ramadda-doc-footer">
