@@ -29,19 +29,22 @@ pre {
 
 <div class="ramadda-doc-contents" style="margin-left:20px;">
 
+:navtop
 
 
+<h2>Installing on Amazon AWS</h2>
 
-<a name="installer"></a><p><div class="ramadda-help-heading">9.1.0 <a href="#installer">Installing on Amazon AWS</a></div> 
++callout-info
 Here are the steps to install the stand-alone version of RAMADDA on an AWS instance. 
+-callout
 
-<a name="createinstance"></a><p><div class="ramadda-help-heading">9.1.1 <a href="#createinstance">Create an EC2 Instance</a></div> 
+:heading Create an EC2 Instance
 <ol>
 <li> From the EC2 Dashboard (e.g., <a href="https://us-west-2.console.aws.amazon.com/ec2/v2/home">https://us-west-2.console.aws.amazon.com/ec2/v2/home</a>)
 go to the  Instances page and select  "Launch Instance".
 
 <li> Choose an Amazon Machine Image (AMI)<br>
-Pick a standard Amazon Linux 2 AMI image. 
+Pick a standard Amazon Linux 3 AMI image. 
 +callout-info
 Note: The installer does not work on the Amazon Linux 2023 AMI image
 as that image does not support the amazon-linux-extras package manager.
@@ -49,8 +52,7 @@ as that image does not support the amazon-linux-extras package manager.
 
 
 +callout-info
-Note: RAMADDA can run on REDHAT Linux but the installer
-has not been fully tested. 
+Note: RAMADDA can run on REDHAT Linux but the installer has not been fully tested. 
 -callout
   
 <li> Choose an Instance Type<br>
@@ -91,7 +93,7 @@ By default the IP address associated with your instance can change when the inst
 
 
 
-<a name="configure"></a><p><div class="ramadda-help-heading">9.1.2 <a href="#configure">Configure your instance</a></div> 
+:heading Configure your instance
 Once your instance is running here are the steps to configure and install RAMADDA.
 <ol>
 <li> From the Instances page view the details of your instance to see its IPv4 Public IP
@@ -115,7 +117,7 @@ unzip ramaddainstaller.zip
 
 <li> Run the installer - make sure to give it the absolute path:
 +pre addCopy=true
-sudo sh /home/ec2-user/ramaddainstaller/installer.sh
+sudo sh ramaddainstaller/awsinstall.sh
 -pre
 
 </ol>
@@ -150,7 +152,7 @@ Note: since the SSL certificate is self-signed your browser will display a warni
 
 
 
-<a name="serverfiles"></a><p><div class="ramadda-help-heading">9.1.3 <a href="#serverfiles">Server files</a></div> 
+:heading Server files
 
 The install will result in:
 <pre>
@@ -176,7 +178,7 @@ The service runs
 
 </div>
 <p>
-
+<div  class="childlist" ><table  width="100%" ></table></div>
 <p>&nbsp;<p>
 
 <div class="ramadda-doc-footer">
