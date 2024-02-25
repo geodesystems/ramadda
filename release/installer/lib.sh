@@ -4,12 +4,14 @@
 #basic shared initialization
 #
 
-set -e
+#set -e
 
 export INSTALLER_DIR="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+export MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export SERVICE_NAME="ramadda"
 export SERVICE_DIR="/etc/rc.d/init.d"
 
+export AWS_BASE_DIR=/mnt/ramadda
 export OS_REDHAT="redhat"
 export OS_AMAZON="amazon_linux"
 
@@ -19,16 +21,52 @@ export os=$OS_AMAZON
 export RAMADDA_DOWNLOAD="https://ramadda.org/repository/release/latest/ramaddaserver.zip"
 export PARENT_DIR=`dirname $INSTALLER_DIR`
 export YUM_ARG=""
-export BASE_DIR=.
+export RAMADDA_BASE_DIR=.
 export promptUser=1
 
 init_env() {
+    ask_base_dir
     export USER_DIR=$PARENT_DIR
-    export RAMADDA_HOME_DIR=$BASE_DIR/ramaddahome
-    export RAMADDA_INSTALL_DIR=${BASE_DIR}/ramaddainstall
+    export RAMADDA_HOME_DIR=${RAMADDA_BASE_DIR}/ramaddahome
+    export RAMADDA_INSTALL_DIR=${RAMADDA_BASE_DIR}/ramaddainstall
     export RAMADDA_SERVER_DIR=${RAMADDA_INSTALL_DIR}/ramaddaserver
     export MOUNT_DIR=""
 }
+
+ask_base_dir() {
+    header  "RAMADDA Base Directory"
+    printf "RAMADDA needs two directories- ramaddainstall and ramaddahome\n"
+    printf  "Where should these directories be created under?\n"
+    ask  "Enter \".\" for current directory. Default: [${RAMADDA_BASE_DIR}]"  ${RAMADDA_BASE_DIR}
+    if [ "$response" == "." ]; then
+	response=$MYDIR
+    fi
+
+    export RAMADDA_BASE_DIR="$response"
+    echo "Ok, RAMADDA will be installed under: $RAMADDA_BASE_DIR"
+}
+
+
+do_basedir() {
+    dfltDir="";
+    if [ -d "${USER_DIR}" ]; then
+	dfltDir="${USER_DIR}/ramadda";
+    fi
+
+    if [ -d "${AWS_BASE_DIR}" ]; then
+	dfltDir="${AWS_BASE_DIR}";
+    fi
+
+    while [ "$RAMADDA_BASE_DIR" == "" ]; do
+	ask   "Enter base directory: [$dfltDir]:" $dfltDir  "The base directory holds the repository and pgsql sub-directories"
+	if [ "$response" == "" ]; then
+            break;
+	fi
+	RAMADDA_BASE_DIR=$response;
+	break
+    done
+}
+
 
 
 usage() {
@@ -155,7 +193,7 @@ fi
 install_postgres() {
     export PG_DIR=/var/lib/pgsql
     export PG_HBA=${PG_DIR}/data/pg_hba.conf
-    export PG_REAL_DIR="${BASE_DIR}/pgsql"
+    export PG_REAL_DIR="${RAMADDA_BASE_DIR}/pgsql"
 
     echo "Installing PostgreSQL 15 with:"
     printf "\tsudo dnf install postgresql15.x86_64 postgresql15-server -y"
@@ -287,6 +325,8 @@ ask_ip(){
     fi
 }    
 
+
+
 ask_install_ramadda() {
     header  "RAMADDA Installation"
     askYesNo "Download and install RAMADDA from Geode Systems"  "y"
@@ -341,10 +381,14 @@ generate_install_password() {
 }
 
 
+
+
+
+
 aws_do_mount() {
     header  "Volume Installation";
-    echo "The database and the RAMADDA home directory will be installed on /mnt/ramadda"
-    echo "We need to mount a volume as /mnt/ramadda"
+    echo "The database and the RAMADDA home directory will be installed on ${AWS_BASE_DIR}"
+    echo "We need to mount a volume as ${AWS_BASE_DIR}"
     declare -a dirLocations=("/dev/sdb" )
     for i in "${dirLocations[@]}"
     do
@@ -357,7 +401,7 @@ aws_do_mount() {
 	fi
     done
 
-    ##/dev/xvdb       /mnt/ramadda   ext4    defaults,nofail        0       2
+    ##/dev/xvdb       ${AWS_BASE_DIR}   ext4    defaults,nofail        0       2
     while [ "$MOUNT_DIR" == "" ]; do
 	ask  "Enter the volume to mount, e.g., /dev/xvdb  [<volume>|n] "  ""
 	if [ "$response" == "" ] ||  [ "$response" == "n"  ]; then
@@ -379,19 +423,19 @@ aws_do_mount() {
 		echo "$MOUNT_DIR is already mounted";
 		;;
 	    *)
-		echo "Mounting $BASE_DIR on $MOUNT_DIR"
+		echo "Mounting $RAMADDA_BASE_DIR on $MOUNT_DIR"
 		if [ ! -f /etc/fstab.bak ]; then
 		    cp  /etc/fstab /etc/fstab.bak
 		fi
-		sed -e 's/.*$BASE_DIR.*//g' /etc/fstab | sed -e 's/.*added ramadda.*//g' > dummy.fstab
+		sed -e 's/.*$RAMADDA_BASE_DIR.*//g' /etc/fstab | sed -e 's/.*added ramadda.*//g' > dummy.fstab
 		mv dummy.fstab /etc/fstab
-		printf "\n#added by ramadda installer.sh\n${MOUNT_DIR}   $BASE_DIR ext4 defaults,nofail   0 2\n" >> /etc/fstab
+		printf "\n#added by ramadda installer.sh\n${MOUNT_DIR}   $RAMADDA_BASE_DIR ext4 defaults,nofail   0 2\n" >> /etc/fstab
 		askYesNo "Do you want to make the file system on ${MOUNT_DIR}?"  "y"
 		if [ "$response" == "y" ]; then
 		    mkfs -t ext4 $MOUNT_DIR
 		fi
-		mkdir $BASE_DIR
-		mount $MOUNT_DIR $BASE_DIR
+		mkdir $RAMADDA_BASE_DIR
+		mount $MOUNT_DIR $RAMADDA_BASE_DIR
 		mount -a
 		;;
 	esac
@@ -399,24 +443,11 @@ aws_do_mount() {
 }
 
 
-do_basedir() {
-    dfltDir="";
-    if [ -d "${USER_DIR}" ]; then
-	dfltDir="${USER_DIR}/ramadda";
-    fi
 
-    if [ -d "/mnt/ramadda" ]; then
-	dfltDir="/mnt/ramadda";
-    fi
-
-    while [ "$BASE_DIR" == "" ]; do
-	ask   "Enter base directory: [$dfltDir]:" $dfltDir  "The base directory holds the repository and pgsql sub-directories"
-	if [ "$response" == "" ]; then
-            break;
-	fi
-	BASE_DIR=$response;
-	break
-    done
+do_finish_message() {
+    header "Installation complete";
+    printf "RAMADDA is installed. \n\tRAMADDA home directory: ${RAMADDA_HOME_DIR}\n\tLog file: ${RUNTIME_DIR}/ramadda.log\n"
+    printf "Finish the configuration at https://<your IP>/repository\n"
+    printf "The installation password is ${install_password}\n"
 }
-
 
