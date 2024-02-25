@@ -25,15 +25,15 @@ Copy it into this ramaddainstall directory then run update.sh with the full path
 
 
 
-##### aws.sh #####
+##### awscli.sh #####
 
-The aws.sh uses the Amazon Command Line Interface (http://aws.amazon.com/cli) to provision a new server and then it runs the RAMADDA installer. 
+The awscli.sh uses the Amazon Command Line Interface (http://aws.amazon.com/cli) to provision a new server and then it runs the RAMADDA installer. 
 
 First, create an instance as detailed below and get the instance ID.  
 
 After installing the Amazon CLI on your desktop machine (not your server) run: 
 
-   sh aws.sh <instance ID>
+   sh awscli.sh <instance ID>
 
 Notes for setting up an Amazon instance through the EC2 web console
 
