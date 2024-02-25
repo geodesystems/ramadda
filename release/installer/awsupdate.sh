@@ -6,6 +6,24 @@
 #ramaddaserver directory
 #
 
+INSTALLDIR=.
+while [[ $# -gt 0 ]]
+do
+    arg=$1
+    case $arg in
+        -dir)
+	    shift
+	    INSTALLDIR=$1
+            ;;
+	*)
+	    echo "Unknown argument:$arg"
+	    echo "usage: \n\t-dir <target dir>"
+	    exit 1
+	    ;;
+	esac
+done
+
+
 #get the latest release
 wget  -O ramaddaserver.zip https://ramadda.org/repository/entry/get/ramaddaserver.zip?entryid=synth%3A498644e1-20e4-426a-838b-65cffe8bd66f%3AL3JhbWFkZGFzZXJ2ZXIuemlw
 
@@ -13,8 +31,10 @@ wget  -O ramaddaserver.zip https://ramadda.org/repository/entry/get/ramaddaserve
 service ramadda stop 
 
 #install the new ramadda
-rm -r -f ramaddaserver
-unzip ramaddaserver.zip
+rm -r -f ${DIR}/ramaddaserver
+unzip ramaddaserver.zip -d ${DIR}
 
 #start ramadda
 service ramadda start 
+
+
