@@ -6,7 +6,7 @@
 # sudo sh update.sh -dir <target dir> -dev (development release)
 
 usage() {
-    printf "usage: \n\t-dir <target dir> (directory that holds ramaddaserver)\n\t-dev (install the development version)"
+    printf "usage: \n\t-dir <target dir> (directory that holds ramaddaserver)\n\t-dev (install the development version)\n"
 }
 
 export INSTALLDIR=/mnt/ramadda/ramaddainstall
@@ -55,10 +55,9 @@ fi
 #stop ramadda
 startstop stop
 
-
 #install the new ramadda
 rm -r -f ${INSTALLDIR}/ramaddaserver
-unzip ramaddaserver.zip -d ${INSTALLDIR}
+unzip -q ramaddaserver.zip -d ${INSTALLDIR}
 
 #start ramadda
 startstop start 
