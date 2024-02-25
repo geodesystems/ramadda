@@ -111,8 +111,8 @@ download the ramaddaserver.zip file from the ramadda.org
 <a target=_install href="https://ramadda.org/repository/entry/show?entryid=synth:498644e1-20e4-426a-838b-65cffe8bd66f:L3JhbWFkZGFzZXJ2ZXIuemlw">download area</a>
 
 The file download URL to use is:
-+pre addCopy=true addDownload=true downloadFile=wget.sh
-wget  -O ramaddaserver.zip https://ramadda.org/repository/entry/get/ramaddaserver.zip?entryid=synth%3A498644e1-20e4-426a-838b-65cffe8bd66f%3AL3JhbWFkZGFzZXJ2ZXIuemlw
++pre addCopy=true addDownload=true 
+wget https://ramadda.org/repository/release/latest/ramaddaserver.zip
 -pre
 
 Once downloaded unzip the file:
@@ -178,9 +178,7 @@ sh ramaddaserver/ramadda.sh -home &lt;/your/ramadda/home/dir&gt; -installpasswor
 
 
 This runs with the built-in Java Derby database which work just fine.
-If you want to use an external database (e.g., Postgres, MySQL)
-then go and read the documentation.
-
+To use an external database (e.g., Postgres, MySQL) consult the documentation.
 :p
 
 The rest of the RAMADDA configuration is done through the web at
@@ -216,8 +214,7 @@ variable in the catalina start script (catalina.sh or catalina.bat):
 <pre>
      -Xmx1024m 
 </pre>
-to set the memory and permgen size. Consult the Tomcat documentation for
-more information.
+to set the memory and permgen size. Consult the Tomcat documentation for more information.
 
 </ol>
 
