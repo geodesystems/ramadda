@@ -38,10 +38,10 @@ fi
 #get the latest release
 if [ -z "$DEV" ]; then
     echo "downloading ramaddaserver.zip"
-    wget  -O ramaddaserver.zip https://ramadda.org/repository/entry/get/ramaddaserver.zip?entryid=synth%3A498644e1-20e4-426a-838b-65cffe8bd66f%3AL3JhbWFkZGFzZXJ2ZXIuemlw
+    wget  -O ramaddaserver.zip https://ramadda.org/repository/release/latest/ramaddaserver.zip
 else
     echo "downloading development ramaddaserver.zip"
-    wget  -O ramaddaserver.zip https://ramadda.org/repository/entry/get/ramaddaserver.zip?entryid=synth%3Ae67adef4-f28d-4818-ab2b-066e526696ec%3AL3JhbWFkZGFzZXJ2ZXIuemlw
+    wget  -O ramaddaserver.zip https://ramadda.org/repository/release/dev/ramaddaserver.zip
 fi
 
 #stop ramadda
