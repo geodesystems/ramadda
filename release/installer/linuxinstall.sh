@@ -1,11 +1,13 @@
-#!/bin/sh
+#!/bin/bash
 
 #
 #This script installs RAMADDA on a Linux machine
 #
 
-export MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-source "${MYDIR}/lib.sh"
+export MYDIR="$(cd "$(dirname "$0")" && pwd)"
+#export MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+. "${MYDIR}/lib.sh"
 
 export BASE_DIR=/mnt/ramadda
 #This comes after setting BASE_DIR
@@ -35,9 +37,12 @@ install_service() {
 
 
 echo "Installing Java"
-yum install -y java
-sudo /usr/sbin/alternatives --config java
-sudo /usr/sbin/alternatives --config javac
+askYesNo "Do you want to install Java?"  "y"
+if [ "$response" == "y" ]; then
+    apt install openjdk-11-jdk
+fi
+
+
 
 
 askYesNo "Install postgres"  "y"

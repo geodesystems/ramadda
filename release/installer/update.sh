@@ -1,11 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 
 
 # This script updates your RAMADDA installation
 # Run this script as sudo:
 # sudo sh update.sh -dir <target dir> -dev (development release)
 
-MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export MYDIR="$(cd "$(dirname "$0")" && pwd)"
 
 
 usage() {

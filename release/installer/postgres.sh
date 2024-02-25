@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #
 #This script installs some base packages, Postgres and then RAMADDA

@@ -1,11 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 
 #
 #This script installs RAMADDA on an AWS Linux machine
 #
 
-export MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-source "${MYDIR}/lib.sh"
+#export MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export MYDIR="$(cd "$(dirname "$0")" && pwd)"
+. "${MYDIR}/lib.sh"
 
 export RAMADDA_BASE_DIR="$AWS_BASE_DIR"
 
@@ -32,15 +33,16 @@ if [ "$permissions" == "700" ]; then
 fi
 
 
-askYesNo "Do you need to install Java?"  "y"
+askYesNo "Do you want to install Java?"  "y"
 if [ "$response" == "y" ]; then
     yum install -y java
     sudo /usr/sbin/alternatives --config java
-    sudo /usr/sbin/alternatives --config javac
 fi
 
 
-askYesNo "Do you want to install postgres?"  "y"
+header "Postgres install"
+echo "RAMADDA can run with Postgres or it's own built in Derby database"
+askYesNo "Do you want to install and use postgres?"  "y"
 if [ "$response" == "y" ]; then
     install_postgres
 fi

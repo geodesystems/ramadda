@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #
 #This script updates a RAMADDA AWS image

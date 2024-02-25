@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ############################################################################################################
 #This script uses the Amazon Command Line Interface (CLI) to create and configure an AWS instance for RAMADDA

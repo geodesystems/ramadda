@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #
 #basic shared initialization
@@ -7,7 +7,8 @@
 #set -e
 
 export INSTALLER_DIR="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
-export MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+#export MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export MYDIR="$(cd "$(dirname "$0")" && pwd)"
 export SERVICE_NAME="ramadda"
 export SERVICE_DIR="/etc/rc.d/init.d"
 export RAMADDA_HTTP_PORT=80
@@ -210,9 +211,7 @@ install_postgres() {
     echo "Installing PostgreSQL 15 with:"
     printf "\tsudo dnf install postgresql15.x86_64 postgresql15-server -y"
     sudo dnf install postgresql15.x86_64 postgresql15-server -y
-#    printf "\tamazon-linux-extras install postgresql13 vim epel\n\tyum install -y  ${PG_INSTALL}\n"
-#    amazon-linux-extras install -y postgresql13 epel 
-#    yum install -y  ${PG_INSTALL} 
+    #sudo apt install postgresql
     if  [ ! -f ${PG_HBA} ] ; then
 	echo "setting up postgres"
 	postgresql-setup --initdb
@@ -468,7 +467,7 @@ aws_do_mount() {
 do_finish_message() {
     header "Installation complete";
     printf "RAMADDA is installed. \n\tRAMADDA home directory: ${RAMADDA_HOME_DIR}\n\tLog file: ${RUNTIME_DIR}/ramadda.log\n"
-    printf "Finish the configuration at https://<your IP>/repository\n"
+    printf "Finish the configuration at https://<your IP>:${RAMADDA_HTTPS_PORT}/repository\n"
     printf "The installation password is ${install_password}\n"
 }
 
