@@ -5,14 +5,24 @@
 # Run this script as sudo:
 # sudo sh update.sh -dir <target dir> -dev (development release)
 
+MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+
 usage() {
     printf "usage: \n\t-dir <target dir> (directory that holds ramaddaserver)\n\t-dev (install the development version)\n"
 }
 
-export INSTALLDIR=/mnt/ramadda/ramaddainstall
-if [ ! -d "${INSTALLDIR}" ]; then
-    export INSTALLDIR=.
+export RAMADDA_INSTALL_DIR=/mnt/ramadda/ramaddainstall
+if [ ! -d "${RAMADDA_INSTALL_DIR}" ]; then
+    export PARENT_DIR=`dirname $MYDIR`
+    export RAMADDA_INSTALL_DIR=${PARENT_DIR}/ramaddainstall
 fi
+
+if [ ! -d "${RAMADDA_INSTALL_DIR}" ]; then
+    export PARENT_DIR=`pwd`
+    export RAMADDA_INSTALL_DIR=${PARENT_DIR}/ramaddainstall
+fi
+
 
 while [[ $# -gt 0 ]]
 do
@@ -20,7 +30,7 @@ do
     case $arg in
         -dir)
 	    shift
-	    export INSTALLDIR=$1
+	    export RAMADDA_INSTALL_DIR=$1
 	    shift
             ;;
         -dev)
@@ -35,8 +45,8 @@ do
 	esac
 done
 
-if [ ! -d "${INSTALLDIR}" ]; then
-    echo "Error: RAMADDA install directory does not exist:${INSTALLDIR}"
+if [ ! -d "${RAMADDA_INSTALL_DIR}" ]; then
+    echo "Error: RAMADDA install directory does not exist: ${RAMADDA_INSTALL_DIR}"
     usage
     exit
 fi
@@ -56,11 +66,11 @@ fi
 startstop stop
 
 #install the new ramadda
-rm -r -f ${INSTALLDIR}/ramaddaserver
-unzip -q ramaddaserver.zip -d ${INSTALLDIR}
+rm -r -f ${RAMADDA_INSTALL_DIR}/ramaddaserver
+unzip -q ramaddaserver.zip -d ${RAMADDA_INSTALL_DIR}
 
 #start ramadda
 startstop start 
 
 
-printf "RAMADDA has been updated and restarted. Check the log in:\n${INSTALLDIR}/ramadda.log\n"
+printf "RAMADDA has been updated and restarted. Check the log in:\n${RAMADDA_INSTALL_DIR}/ramadda.log\n"

@@ -1,76 +1,37 @@
 
 ##### installer.sh #####
 
-The installer.sh configures a machine and installs RAMADDA. It has been tested
-on Amazon Linux but not on other distributions.
+awsinstall.sh - Installs for an Amazon Linux image
 
-Set up an Amazon instance (see below), download the RAMADDA installer on to the instance then run it as:
+linuxinstall.sh - Installs for any Linux
 
-    sudo sh /home/ec2-user/ramaddainstaller/installer.sh 
-
-Make sure to give it the absolute path!
-
-
-This will walk you through a number of installation steps to setup the directories, and install and configure Postgres and RAMADDA
-
-To start and stop RAMADDA do:
-    sudo sh ramaddaserver/ramaddaService.sh stop|start|restart
+Run as:
+sudo sh ramaddainstaller/awsinstall.sh
+or:
+sudo sh ramaddainstaller/linuxinstall.sh 
 
 
-To update an installation first get the latest version of the ramaddaserver.zip from Geode Systems - 
-   http://geodesystems.com/repository/alias/release/
-
-Copy it into this ramaddainstall directory then run update.sh with the full path, e.g.:
-   sudo sh /home/ec2-user/ramaddainstaller/update.sh
+This will walk you through a number of installation steps to setup the directories, and,
+on Amazon Linux, install and configure Postgres
 
 
-
-##### awscli.sh #####
-
-The awscli.sh uses the Amazon Command Line Interface (http://aws.amazon.com/cli) to provision a new server and then it runs the RAMADDA installer. 
-
-First, create an instance as detailed below and get the instance ID.  
-
-After installing the Amazon CLI on your desktop machine (not your server) run: 
-
-   sh awscli.sh <instance ID>
-
-Notes for setting up an Amazon instance through the EC2 web console
-
-1) Create an Amazon AWS account. 
-
-2) From the EC2 Dashboard go to the  Instances page and select  Launch Instance
-Choose the standard  Amazon Linux AMI and select the machine type
-
-3) Create a security group with the following ports:
-
-HTTP port 80
-HTTPS port 443
-SSH  port 22
-
-Optionally open FTP: 
-Custom TCP Rule port 21  
-Custom TCP Rule port range 44001 - 44099
+##
+## Service
+##
+On Amazon Linux to start/stop RAMADDA:
+sudo sh service ramadda stop
+sudo sh service ramadda start
 
 
-4) Add a Storage Volume. 
-Normally, the instance has a smallish volume. This is where /home is mounted. You can add an extra 
-volume that holds the the database, the RAMADDA home directory and any data you may have. The size depends 
-on how much data and content you plan to have on your RAMADDA. 100 GB is more than plenty for normal RAMADDA 
-use. Note the device, e.g., /dev/sdb. This often will show up on the machine as /dev/xvdb. 
+##
+## Updating
+##
 
-5) Download the PEM file
-When you Launch the instance create and save a .pem file. This is what you use to access your server. The permissions on the pem file need to be 400, e.g.:
+To update your install run:
 
-   chmod 400 ramadda.pem
+On Amazon Linux:
+sudo sh ramaddainstaller/awsupdate.sh
 
-6) Configure your server
-
-#SSH to the machine
-ssh -i <.pem file>  ec2-user@<server IP address>
-
-See the README to finish the ramadda install
-
-
-
+or in Linux:
+sudo sh ramaddainstaller/linuxupdate.sh
 
