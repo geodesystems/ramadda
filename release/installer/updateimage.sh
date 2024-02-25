@@ -6,7 +6,7 @@
 #
 
 
-MYDIR=`dirname $0`
+export MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source "${MYDIR}/lib.sh"
 
 export MYIP=`curl http://169.254.169.254/latest/meta-data/public-ipv4 2>/dev/null`
