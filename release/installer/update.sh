@@ -9,7 +9,11 @@ usage() {
     printf "usage: \n\t-dir <target dir> (directory that holds ramaddaserver)\n\t-dev (install the development version)"
 }
 
-export INSTALLDIR=.
+export INSTALLDIR=/mnt/ramadda/ramaddainstall
+if [ ! -d "${INSTALLDIR}" ]; then
+    export INSTALLDIR=.
+fi
+
 while [[ $# -gt 0 ]]
 do
     arg=$1
@@ -31,8 +35,8 @@ do
 	esac
 done
 
-if [ ! -d "${INSTALLDIR}/ramaddaserver" ]; then
-    echo "Error: RAMADDA install directory does not exist: ${INSTALLDIR}"
+if [ ! -d "${INSTALLDIR}" ]; then
+    echo "Error: RAMADDA install directory does not exist:${INSTALLDIR}"
     usage
     exit
 fi
@@ -41,10 +45,11 @@ fi
 #get the latest release
 if [ -z "$DEV" ]; then
     echo "downloading ramaddaserver.zip"
-    wget  -O ramaddaserver.zip https://ramadda.org/repository/release/latest/ramaddaserver.zip
+    wget  --quiet -O ramaddaserver.zip https://ramadda.org/repository/release/latest/ramaddaserver.zip
+    echo "DONE"
 else
     echo "downloading development ramaddaserver.zip"
-    wget  -O ramaddaserver.zip https://ramadda.org/repository/release/dev/ramaddaserver.zip
+    wget  --quiet -O ramaddaserver.zip https://ramadda.org/repository/release/dev/ramaddaserver.zip
 fi
 
 #stop ramadda
