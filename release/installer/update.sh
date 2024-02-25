@@ -6,29 +6,44 @@
 # sudo sh update.sh
 
 
-INSTALLER_DIR="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
-source "${INSTALLER_DIR}/lib.sh"
+export INSTALLDIR=.
+while [[ $# -gt 0 ]]
+do
+    arg=$1
+    case $arg in
+        -dir)
+	    shift
+	    export INSTALLDIR=$1
+	    shift
+            ;;
+	*)
+	    echo "Unknown argument:$arg"
+	    printf "usage: \n\t-dir <target dir>"
+	    exit 1
+	    ;;
+	esac
+done
+
+if [ ! -d "${INSTALLDIR}/ramaddaserver" ]; then
+    echo "Error: RAMADDA install directory does not exist: ${INSTALLDIR}"
+    printf "usage: \n\t-dir <target dir>"
+    exit
+fi
 
 
-echo "fetching the latest RAMADDA from ${RAMADDA_DOWNLOAD}"
-wget -O ${INSTALLER_DIR}/ramaddaserver.zip "${RAMADDA_DOWNLOAD}"
+#get the latest release
+wget  -O ramaddaserver.zip https://ramadda.org/repository/entry/get/ramaddaserver.zip?entryid=synth%3A498644e1-20e4-426a-838b-65cffe8bd66f%3AL3JhbWFkZGFzZXJ2ZXIuemlw
 
-echo "stopping ${SERVICE_NAME}";
-service ${SERVICE_NAME} stop;
+#stop ramadda
+startstop stop
 
-echo "Saving ${RAMADDA_SERVER_DIR}/ramaddaenv.sh"
-cp ${RUNTIME_DIR}/ramaddaenv.sh  ${INSTALLER_DIR}
 
-#echo "deleting the old install: ${RAMADDA_SERVER_DIR}"
-#rm -r -f ${RAMADDA_SERVER_DIR};
+#install the new ramadda
+rm -r -f ${INSTALLDIR}/ramaddaserver
+unzip ramaddaserver.zip -d ${INSTALLDIR}
 
-echo "Unzipping: ${INSTALLER_DIR}/ramaddaserver.zip"
-unzip -d ${RUNTIME_DIR} -o ${INSTALLER_DIR}/ramaddaserver.zip >/dev/null
+#start ramadda
+startstop start 
 
-#echo "Copying back: ${INSTALLER_DIR}/ramaddaenv.sh"
-#mv ${INSTALLER_DIR}/ramaddaenv.sh ${serverDir}
 
-echo "starting ${SERVICE_NAME}";
-service ${SERVICE_NAME} start;
-
-printf "RAMADDA has been updated and restarted. Check the log in:\n${RUNTIME_DIR}/ramadda.log\n"
+printf "RAMADDA has been updated and restarted. Check the log in:\n${INSTALLDIR}/ramadda.log\n"

@@ -10,7 +10,7 @@
 MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 startstop() {
-    service ramadda $1
+    systemctl $1 ramadda
 }
 
 source "${MYDIR}/update.sh"
