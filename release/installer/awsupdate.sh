@@ -14,6 +14,7 @@ do
         -dir)
 	    shift
 	    INSTALLDIR=$1
+	    shift
             ;;
 	*)
 	    echo "Unknown argument:$arg"
@@ -31,8 +32,8 @@ wget  -O ramaddaserver.zip https://ramadda.org/repository/entry/get/ramaddaserve
 service ramadda stop 
 
 #install the new ramadda
-rm -r -f ${DIR}/ramaddaserver
-unzip ramaddaserver.zip -d ${DIR}
+rm -r -f ${INSTALLDIR}/ramaddaserver
+unzip ramaddaserver.zip -d ${INSTALLDIR}
 
 #start ramadda
 service ramadda start 
