@@ -34,6 +34,10 @@ ask_base_dir() {
     fi
 
     export RAMADDA_BASE_DIR="$response"
+    ##fix the problem with /home/ec2-user not being readable to the postgres user
+    if [ -d "${RAMADDA_BASE_DIR}" ]; then
+	chmod +rx "${RAMADDA_BASE_DIR}"
+    fi
 }
 
 
