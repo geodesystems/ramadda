@@ -4,7 +4,7 @@
 #This script installs some base packages, Postgres and then RAMADDA
 #
 
-MYDIR=`dirname $0`
+export MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source "${MYDIR}/lib.sh"
 
 do_mount() {
