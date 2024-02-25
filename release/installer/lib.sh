@@ -18,15 +18,16 @@ export os=$OS_AMAZON
 export RAMADDA_DOWNLOAD="https://ramadda.org/repository/release/latest/ramaddaserver.zip"
 export PARENT_DIR=`dirname $INSTALLER_DIR`
 export YUM_ARG=""
-export USER_DIR=$PARENT_DIR
-export BASE_DIR=/mnt/ramadda
-export RAMADDA_HOME_DIR=$BASE_DIR/ramaddahome
-export RUNTIME_DIR=${BASE_DIR}/ramaddainstall
-export RAMADDA_SERVER_DIR=${RUNTIME_DIR}/ramaddaserver
-export MOUNT_DIR=""
-
+export BASE_DIR=.
 export promptUser=1
 
+init_env() {
+    export USER_DIR=$PARENT_DIR
+    export RAMADDA_HOME_DIR=$BASE_DIR/ramaddahome
+    export RUNTIME_DIR=${BASE_DIR}/ramaddainstall
+    export RAMADDA_SERVER_DIR=${RUNTIME_DIR}/ramaddaserver
+    export MOUNT_DIR=""
+}
 
 
 usage() {
@@ -266,12 +267,67 @@ export RAMADDA_PORT=80
     printf "$ramaddaConfig" > ${RUNTIME_DIR}/ramaddaenv.sh
 }
 
+ask_ip(){
+    printf "We need the public IP address to configure SSL\n"
+    read -p "Are you running in Amazon AWS? [y|n]: " response
+    if [ "$response" == "y" ]; then
+	export MYIP=`curl http://169.254.169.254/latest/meta-data/public-ipv4 2>/dev/null`
+	printf "OK, the public IP of this machine is ${MYIP}\n"
+    else
+	export MYIP=`ifconfig | grep inet | grep cast | awk '/inet addr/{print substr($2,6)}'`
+	if [ "$MYIP" == "" ]; then
+	    export MYIP=`ifconfig | grep inet | grep cast | awk '/.*/{print $2}'`
+	fi
+	read -p "Is this IP address correct - ${MYIP}?  [y|n]: " response
+	if [ "$response" == "n" ]; then
+	    read -p "Enter the IP address: " tmpip
+	    export MYIP="${tmpip}"
+	fi
+    fi
+}    
+
+ask_install_ramadda() {
+    header  "RAMADDA Installation"
+    askYesNo "Download and install RAMADDA from Geode Systems"  "y"
+    if [ "$response" == "y" ]; then
+	download_installer
+	ask  "Where should RAMADDA be installed? currently: ${RUNTIME_DIR}"  ${RUNTIME_DIR}
+	export RUNTIME_DIR=$response
+	install_ramadda
+	askYesNo "Install RAMADDA as a service"  "y"
+	if [ "$response" == "y" ]; then
+	    install_service
+	fi
+    fi
+}
+
+aws_install_service() {
+    printf "#!/bin/sh\n# chkconfig: - 80 30\n# description: RAMADDA repository\n\nsh ${SERVICE_SCRIPT} \"\$@\"\n" > ${SERVICE_DIR}/${SERVICE_NAME}
+    chmod 755 ${SERVICE_DIR}/${SERVICE_NAME}
+    chkconfig ${SERVICE_NAME} on
+    printf "To run the RAMADDA service do:\nsudo service ${SERVICE_NAME} start|stop|restart\n"
+    printf "Service script is: ${SERVICE_SCRIPT}\n"
+}
+
+
+
+ask_keystore() {
+    header "SSL Configuration";
+    printf "A self-signed SSL certificate can be created\n";
+    printf "This will enable you to access your server securely but you will need to\n";
+    printf "add a real certificate or add other entries to the keystore for other domain names\n";
+    askYesNo "Generate keystore and enable SSL" "y"
+    if [ "$response" == "y" ]; then
+	generate_keystore
+    fi
+}
+
 generate_keystore() {
     password="ssl_${RANDOM}_${RANDOM}_${RANDOM}"
-    echo "Generating new keystore file: ${RAMADDA_HOME_DIR}/keystore  for host: $MYIP."
+    echo "Generating new keystore file: ${RAMADDA_HOME_DIR}/keystore"
     echo "The password is stored in ${RAMADDA_HOME_DIR}/ssl.properties"
     rm -f ${RAMADDA_HOME_DIR}/keystore
-    printf "${password}\n${password}\n${MYIP}\nRAMADDA\nRAMADDA\ncity\nstate\ncountry\nyes\n\n" | keytool -genkey -keyalg RSA -alias ramadda -keystore ${RAMADDA_HOME_DIR}/keystore > /dev/null 2> /dev/null
+    printf "${password}\n${password}\nRAMADDA\nRAMADDA\nRAMADDA\ncity\nstate\ncountry\nyes\n\n" | keytool -genkey -keyalg RSA -alias ramadda -keystore ${RAMADDA_HOME_DIR}/keystore > /dev/null 2> /dev/null
     printf "#generated password\n\nramadda.ssl.password=${password}\nramadda.ssl.keypassword=${password}\nramadda.ssl.port=443\n" > ${RAMADDA_HOME_DIR}/ssl.properties
     printf "\nIf you need to create a new key then delete ${RAMADDA_HOME_DIR}/keystore and run:\n    keytool -genkey -keyalg RSA -alias ramadda -keystore ${RAMADDA_HOME_DIR}/keystore\nIf you are installing your own certificate then generate the keystore and copy it to ${RAMADDA_HOME_DIR}\n"
     printf "Note: since this is a self-signed certificate your browser will show that this is an insecure connection\n"
@@ -283,3 +339,84 @@ generate_install_password() {
     export install_password="${RANDOM}_${RANDOM}"
     printf  "ramadda.install.password=${install_password}" > ${RAMADDA_HOME_DIR}/install.properties
 }
+
+
+aws_do_mount() {
+    header  "Volume Installation";
+    echo "The database and the RAMADDA home directory will be installed on /mnt/ramadda"
+    echo "We need to mount a volume as /mnt/ramadda"
+    declare -a dirLocations=("/dev/sdb" )
+    for i in "${dirLocations[@]}"
+    do
+	if [ -b "$i" ]; then
+            askYesNo  "Do you want to mount the volume: $i "  "y"
+            if [ "$response" == "y" ]; then
+		MOUNT_DIR="$i"
+		break;
+            fi
+	fi
+    done
+
+    ##/dev/xvdb       /mnt/ramadda   ext4    defaults,nofail        0       2
+    while [ "$MOUNT_DIR" == "" ]; do
+	ask  "Enter the volume to mount, e.g., /dev/xvdb  [<volume>|n] "  ""
+	if [ "$response" == "" ] ||  [ "$response" == "n"  ]; then
+            break;
+	fi
+	if [ -b $response ]; then
+            MOUNT_DIR="$response"
+            break;
+	fi
+	echo "Volume does not exist: $response"
+    done
+
+    echo "Mounting: $MOUNT_DIR"
+
+    if [ "$MOUNT_DIR" != "" ]; then
+	mntState=$( file -s $MOUNT_DIR );
+	case $mntState in
+	    *files*)
+		echo "$MOUNT_DIR is already mounted";
+		;;
+	    *)
+		echo "Mounting $BASE_DIR on $MOUNT_DIR"
+		if [ ! -f /etc/fstab.bak ]; then
+		    cp  /etc/fstab /etc/fstab.bak
+		fi
+		sed -e 's/.*$BASE_DIR.*//g' /etc/fstab | sed -e 's/.*added ramadda.*//g' > dummy.fstab
+		mv dummy.fstab /etc/fstab
+		printf "\n#added by ramadda installer.sh\n${MOUNT_DIR}   $BASE_DIR ext4 defaults,nofail   0 2\n" >> /etc/fstab
+		askYesNo "Do you want to make the file system on ${MOUNT_DIR}?"  "y"
+		if [ "$response" == "y" ]; then
+		    mkfs -t ext4 $MOUNT_DIR
+		fi
+		mkdir $BASE_DIR
+		mount $MOUNT_DIR $BASE_DIR
+		mount -a
+		;;
+	esac
+    fi
+}
+
+
+do_basedir() {
+    dfltDir="";
+    if [ -d "${USER_DIR}" ]; then
+	dfltDir="${USER_DIR}/ramadda";
+    fi
+
+    if [ -d "/mnt/ramadda" ]; then
+	dfltDir="/mnt/ramadda";
+    fi
+
+    while [ "$BASE_DIR" == "" ]; do
+	ask   "Enter base directory: [$dfltDir]:" $dfltDir  "The base directory holds the repository and pgsql sub-directories"
+	if [ "$response" == "" ]; then
+            break;
+	fi
+	BASE_DIR=$response;
+	break
+    done
+}
+
+
