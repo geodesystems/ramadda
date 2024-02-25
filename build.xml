@@ -628,28 +628,12 @@
     <copy overwrite="true" file="${release_dir}/installer/lib.sh" todir="${installer_dir}"/>
     <copy overwrite="true" file="${release_dir}/installer/postgres.sh" todir="${installer_dir}"/>	
     <copy overwrite="true" file="${bin_dir}/letsencrypt.sh" todir="${installer_dir}"/>
-    <copy overwrite="true" file="${release_dir}/installer/installer.sh" todir="${installer_dir}">
-      <filterset>
-        <filter token="VERSION" value="${version}"/>
-        <filter token="RELEASE_VERSION" value="${release_version}"/>
-      </filterset>
-      
-    </copy>
-    <copy overwrite="true" file="${release_dir}/installer/awscli.sh" todir="${installer_dir}">
-      <filterset>
-        <filter token="VERSION" value="${version}"/>
-        <filter token="RELEASE_VERSION" value="${release_version}"/>
-      </filterset>
-    </copy>
+    <copy overwrite="true" file="${release_dir}/installer/installer.sh" todir="${installer_dir}"/>
+    <copy overwrite="true" file="${release_dir}/installer/awscli.sh" todir="${installer_dir}"/>
     <copy overwrite="true" file="${release_dir}/installer/awsupdate.sh" todir="${installer_dir}"/>
     <copy overwrite="true" file="${release_dir}/installer/centosupdate.sh" todir="${installer_dir}"/>
     <copy overwrite="true" file="${release_dir}/installer/updateimage.sh" todir="${installer_dir}"/>
-    <copy overwrite="true" file="${release_dir}/installer/README" todir="${installer_dir}">
-      <filterset>
-        <filter token="VERSION" value="${version}"/>
-        <filter token="RELEASE_VERSION" value="${release_version}"/>
-      </filterset>
-    </copy>
+    <copy overwrite="true" file="${release_dir}/installer/README" todir="${installer_dir}"/>
     <zip destfile="${dist_dir}/ramaddainstaller.zip">
       <zipfileset dir="${installer_dir}" includes="*" prefix="ramaddainstaller"/>
     </zip>
