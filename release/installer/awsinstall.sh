@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-#This script installs some base packages, Postgres and then RAMADDA
+#This script installs RAMADDA on an AWS Linux machine
 #
 
 export MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -11,14 +11,16 @@ export BASE_DIR=/mnt/ramadda
 #This comes after setting BASE_DIR
 init_env
 
-
+#mount the volume if neede
 if [ ! -d "$BASE_DIR" ]; then
     aws_do_mount;
 else
     echo "$BASE_DIR already mounted"
 fi
 
+echo "RAMADDA Home dir:$RAMADDA_HOME_DIR"
 mkdir -p $RAMADDA_HOME_DIR
+
 
 tmpdir=`dirname $BASE_DIR`
 permissions=$(stat -c %a $tmpdir)
@@ -43,7 +45,6 @@ askYesNo "Install postgres"  "y"
 if [ "$response" == "y" ]; then
     installPostgres
 fi
-
 
 echo "Fixing the localhost name problem"
 sed -e 's/HOSTNAME=localhost.localdomain/HOSTNAME=ramadda.localdomain/g' /etc/sysconfig/network> dummy.network
