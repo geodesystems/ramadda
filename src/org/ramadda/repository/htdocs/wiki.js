@@ -927,6 +927,10 @@ WikiEditor.prototype = {
 	data.append('mimetype', this.transcribeMime);
 	data.append('audio-file', file);
 	data.append('entryid',this.entryId);
+	if(this.jq('transcribe_sendtochat').is(':checked')) {
+	    data.append('sendtochat','true');	    
+	}
+
 	if(this.jq('transcribe_addfile').is(':checked')) {
 	    data.append('addfile','true');	    
 	}
@@ -983,11 +987,17 @@ WikiEditor.prototype = {
 		HU.span(['title','Delete recording','class',CLASS_CLICKABLE,'id',this.domId('transcribe_delete')],HU.getIconImage('fa-solid fa-delete-left fa-gray')),
 	    ],HU.css('margin-right','5px'));
 
-	    html+=HU.leftRightTable(controls,
-				    HU.checkbox(this.domId('transcribe_addfile'),
+	    let right =    HU.checkbox('',
+				       ['id',this.domId('transcribe_sendtochat'),
+					'title','Send to LLM'],
+				       false,'Send to LLM');
+	    right+=SPACE2;
+	    right+= HU.checkbox(this.domId('transcribe_addfile'),
 						['id',this.domId('transcribe_addfile'),
 						 'title','Add audio file as entry'],
-						false,'Add file'));
+						false,'Add file');
+	    html+=HU.leftRightTable(controls,right);
+
 	    html+=HU.div(['style','position:relative;'],
 			 HU.textarea('','',['placeholder','','id',this.domId('transcribe_text'), 'rows',6,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;'])+
 			 HU.div(['style','display:none;position:absolute;top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);','id',this.domId('transcribe_loading')],
