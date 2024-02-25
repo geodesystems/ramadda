@@ -1,5 +1,5 @@
 #!/bin/sh
-#usage: scpgeode.sh <DEST IP> <PEM FILE> <SOURCE FILE> <DEST DIR - optional>
+#usage: scp.sh <DEST IP> <PEM FILE> <SOURCE FILE> <DEST DIR - optional>
 IP=$1
 PEM=$2
 SOURCE=$3
