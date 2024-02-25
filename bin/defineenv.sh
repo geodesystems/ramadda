@@ -7,8 +7,13 @@
 #defineaws.sh geode <some ip> <full path to pem file>
 
 
+
 MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+
+unset RAMADDAINSTALL
+unset PEM
+unset USER
 
 ID=$1
 IP=$2
@@ -35,7 +40,7 @@ do
 	    ;;
 	-dir)
 	    shift
-	    export RAMADDAINSTALL=/mnt/ramadda/ramaddainstall
+	    export RAMADDAINSTALL="$1"
 	    shift
 	    ;;
 	*)
@@ -53,11 +58,17 @@ if [ -n "$PEM" ]; then
     alias go$ID="ssh -i $PEM ${USER}@$IP"
     alias put$ID="sh ${MYDIR}/put.sh ${IP} -pem ${PEM} -user ${USER}"
     alias get$ID="sh ${MYDIR}/get.sh ${IP} -pem ${PEM} -user ${USER}"
-    alias update$ID='ssh -i ${PEM} ${USER}@${IP} "sudo bash ramaddainstaller/awsupdate.sh -dir ${RAMADDAINSTALL}"'
+    eval "update$ID() {
+       echo \"updating $ID ${USER}@${IP} install dir: ${RAMADDAINSTALL}\"
+       ssh -i ${PEM} ${USER}@${IP} \"sudo bash ramaddainstaller/awsupdate.sh -dir ${RAMADDAINSTALL}\"
+    }"
 else
     alias go$ID="ssh  ${USER}@$IP"
     alias put$ID="sh ${MYDIR}/put.sh ${IP} -user ${USER}"
     alias get$ID="sh ${MYDIR}/get.sh  -user ${USER}"
-    alias update$ID='ssh ${USER}@${IP} "sudo bash ramaddainstaller/linuxupdate.sh -dir ${RAMADDAINSTALL}"'
+    eval "update$ID() {
+       echo \"updating $ID ${USER}@${IP} install dir: ${RAMADDAINSTALL}\"
+	ssh ${USER}@${IP} \"sudo bash ramaddainstaller/linuxupdate.sh -dir ${RAMADDAINSTALL}\"
+    }"
 fi
 
