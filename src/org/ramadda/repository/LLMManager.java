@@ -538,14 +538,14 @@ public class LLMManager extends  AdminHandlerImpl {
     public Result processTranscribe(Request request)  throws Exception {
 	try {
 	    return processTranscribeInner(request);
-	} catch(Exception exc) {
+	} catch(Throwable exc) {
 	    getLogManager().logError("Error calling transcribe",exc);
 	    return makeJsonErrorResult("An error has occurred:" + exc);
 	}
     }
 
 
-    private Result processTranscribeInner(Request request)  throws Exception {	
+    private Result processTranscribeInner(Request request)  throws Throwable {	
 	if(request.isAnonymous()) {
 	    return makeJsonErrorResult("You must be logged in to use the rewrite service");
 	}
@@ -575,9 +575,13 @@ public class LLMManager extends  AdminHandlerImpl {
 	JSONObject json = new JSONObject(results);
 	if(json.has("text")) {
 	    String text = json.getString("text");
+	    if(request.get("sendtochat",false)) {
+		text = callLLM(request, "","",text,200,true,new PromptInfo());
+	    }
 	    if(request.get("addfile",false)) {
 		getEntryManager().processEntryAddFile(request, file,fileName,text);
 	    }
+
 
 	    StringBuilder sb = new StringBuilder(JsonUtil.map(Utils.makeList("results", JsonUtil.quote(text))));
 	    return new Result("", sb, "text/json");
