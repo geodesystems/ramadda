@@ -24,6 +24,19 @@ export YUM_ARG=""
 export RAMADDA_BASE_DIR=.
 export promptUser=1
 
+ask_base_dir() {
+    header  "RAMADDA Base Directory"
+    printf "RAMADDA needs two directories- ramaddainstall and ramaddahome\n"
+    printf  "Where should these directories be created under?\n"
+    ask  "Enter \".\" for current directory. Default: [${RAMADDA_BASE_DIR}]"  ${RAMADDA_BASE_DIR}
+    if [ "$response" == "." ]; then
+	response=`pwd`
+    fi
+
+    export RAMADDA_BASE_DIR="$response"
+}
+
+
 init_env() {
     ask_base_dir
     export USER_DIR=$PARENT_DIR
@@ -31,20 +44,13 @@ init_env() {
     export RAMADDA_INSTALL_DIR=${RAMADDA_BASE_DIR}/ramaddainstall
     export RAMADDA_SERVER_DIR=${RAMADDA_INSTALL_DIR}/ramaddaserver
     export MOUNT_DIR=""
+    echo "Ok, RAMADDA will be installed under: $RAMADDA_BASE_DIR with the following directories:"
+    echo "${RAMADDA_INSTALL_DIR} - where the RAMADDA server will be installed"
+    echo "${RAMADDA_HOME_DIR} - where RAMADDA stores its configuration, files,  etc"
+
 }
 
-ask_base_dir() {
-    header  "RAMADDA Base Directory"
-    printf "RAMADDA needs two directories- ramaddainstall and ramaddahome\n"
-    printf  "Where should these directories be created under?\n"
-    ask  "Enter \".\" for current directory. Default: [${RAMADDA_BASE_DIR}]"  ${RAMADDA_BASE_DIR}
-    if [ "$response" == "." ]; then
-	response=$MYDIR
-    fi
 
-    export RAMADDA_BASE_DIR="$response"
-    echo "Ok, RAMADDA will be installed under: $RAMADDA_BASE_DIR"
-}
 
 
 do_basedir() {
@@ -332,7 +338,7 @@ ask_install_ramadda() {
     askYesNo "Download and install RAMADDA from Geode Systems"  "y"
     if [ "$response" == "y" ]; then
 	download_installer
-	ask  "Where should RAMADDA be installed? currently: ${RAMADDA_INSTALL_DIR}"  ${RAMADDA_INSTALL_DIR}
+	ask  "Where should RAMADDA be installed? [${RAMADDA_INSTALL_DIR}]:"  "${RAMADDA_INSTALL_DIR}"
 	export RAMADDA_INSTALL_DIR=$response
 	install_ramadda
 	askYesNo "Install RAMADDA as a service"  "y"
