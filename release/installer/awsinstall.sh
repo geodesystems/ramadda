@@ -34,7 +34,6 @@ install_service() {
 }
 
 
-#java
 echo "Installing Java"
 yum install -y java
 sudo /usr/sbin/alternatives --config java
@@ -43,7 +42,7 @@ sudo /usr/sbin/alternatives --config javac
 
 askYesNo "Install postgres"  "y"
 if [ "$response" == "y" ]; then
-    installPostgres
+    install_postgres
 fi
 
 echo "Fixing the localhost name problem"

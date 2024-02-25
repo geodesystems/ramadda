@@ -4,6 +4,7 @@
 #basic shared initialization
 #
 
+set -e
 
 export INSTALLER_DIR="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 export SERVICE_NAME="ramadda"
@@ -150,11 +151,12 @@ else
     export PG_INSTALL=postgresql-server
 fi
 
-export PG_DIR=/var/lib/pgsql
-export PG_HBA=${PG_DIR}/data/pg_hba.conf
-export PG_REAL_DIR="${BASE_DIR}/pgsql"
 
-installPostgres() {
+install_postgres() {
+    export PG_DIR=/var/lib/pgsql
+    export PG_HBA=${PG_DIR}/data/pg_hba.conf
+    export PG_REAL_DIR="${BASE_DIR}/pgsql"
+
     echo "Installing PostgreSQL 15 with:"
     printf "\tsudo dnf install postgresql15.x86_64 postgresql15-server -y"
     sudo dnf install postgresql15.x86_64 postgresql15-server -y
