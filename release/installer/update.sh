@@ -3,8 +3,11 @@
 
 # This script updates your RAMADDA installation
 # Run this script as sudo:
-# sudo sh update.sh
+# sudo sh update.sh -dir <target dir> -dev (development release)
 
+usage() {
+    printf "usage: \n\t-dir <target dir> (directory that holds ramaddaserver)\n\t-dev (install the development version)"
+}
 
 export INSTALLDIR=.
 while [[ $# -gt 0 ]]
@@ -22,7 +25,7 @@ do
 	    ;;
 	*)
 	    echo "Unknown argument:$arg"
-	    printf "usage: \n\t-dir <target dir>"
+	    usage
 	    exit 1
 	    ;;
 	esac
@@ -30,7 +33,7 @@ done
 
 if [ ! -d "${INSTALLDIR}/ramaddaserver" ]; then
     echo "Error: RAMADDA install directory does not exist: ${INSTALLDIR}"
-    printf "usage: \n\t-dir <target dir>"
+    usage
     exit
 fi
 
