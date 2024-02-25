@@ -16,6 +16,10 @@ do
 	    export INSTALLDIR=$1
 	    shift
             ;;
+        -dev)
+	    shift
+	    export DEV="TRUE"
+	    ;;
 	*)
 	    echo "Unknown argument:$arg"
 	    printf "usage: \n\t-dir <target dir>"
@@ -32,7 +36,13 @@ fi
 
 
 #get the latest release
-wget  -O ramaddaserver.zip https://ramadda.org/repository/entry/get/ramaddaserver.zip?entryid=synth%3A498644e1-20e4-426a-838b-65cffe8bd66f%3AL3JhbWFkZGFzZXJ2ZXIuemlw
+if [ -z "$DEV" ]; then
+    echo "downloading ramaddaserver.zip"
+    wget  -O ramaddaserver.zip https://ramadda.org/repository/entry/get/ramaddaserver.zip?entryid=synth%3A498644e1-20e4-426a-838b-65cffe8bd66f%3AL3JhbWFkZGFzZXJ2ZXIuemlw
+else
+    echo "downloading development ramaddaserver.zip"
+    wget  -O ramaddaserver.zip https://ramadda.org/repository/entry/get/ramaddaserver.zip?entryid=synth%3Ae67adef4-f28d-4818-ab2b-066e526696ec%3AL3JhbWFkZGFzZXJ2ZXIuemlw
+fi
 
 #stop ramadda
 startstop stop
