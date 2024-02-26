@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export MYDIR="$(cd "$(dirname "$0")" && pwd)"
 
 #RAMADDA install directory
 if [ -z "$RAMADDA_DIR" ]; then

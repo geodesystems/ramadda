@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 #
 #basic shared initialization
@@ -6,8 +6,7 @@
 
 #set -e
 
-export INSTALLER_DIR="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
-#export MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export INSTALLER_DIR="$(cd "$(dirname "$0")" && pwd)"
 export MYDIR="$(cd "$(dirname "$0")" && pwd)"
 export SERVICE_NAME="ramadda"
 export SERVICE_DIR="/etc/rc.d/init.d"
@@ -370,6 +369,29 @@ aws_install_service() {
     printf "Service script is: ${SERVICE_SCRIPT}\n"
 }
 
+linux_install_service() {
+service="[Unit]
+Description=RAMADDA
+
+[Service]
+ExecStart=/usr/bin/bash ${SERVICE_SCRIPT} start wait
+ExecStop=/user/bin/bash ${SERVICE_SCRIPT} stop
+Restart=no
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=ramadda
+User=root
+
+[Install]
+WantedBy=multi-user.target
+"
+printf "$service" > /etc/systemd/system/ramadda.service
+systemctl daemon-reload
+systemctl enable
+printf "To run the RAMADDA service do:\nsudo systemctl start ramadda\nsudo systemctl stop ramadda\n"
+printf "Service script is: ${SERVICE_SCRIPT}\n"
+}
+
 
 ask_keystore() {
     header "SSL Configuration";
@@ -466,7 +488,7 @@ aws_do_mount() {
 
 do_finish_message() {
     header "Installation complete";
-    printf "RAMADDA is installed. \n\tRAMADDA home directory: ${RAMADDA_HOME_DIR}\n\tLog file: ${RUNTIME_DIR}/ramadda.log\n"
+    printf "RAMADDA is installed. \n\tRAMADDA home directory: ${RAMADDA_HOME_DIR}\n\tLog file: ${RAMADDA_INSTALL_DIR}/ramadda.log\n"
     printf "Finish the configuration at https://<your IP>:${RAMADDA_HTTPS_PORT}/repository\n"
     printf "The installation password is ${install_password}\n"
 }

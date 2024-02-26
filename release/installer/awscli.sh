@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 ############################################################################################################
 #This script uses the Amazon Command Line Interface (CLI) to create and configure an AWS instance for RAMADDA
@@ -10,7 +10,7 @@
 ############################################################################################################
 
 
-downloadUrl="https://geodesystems.com/repository/release/latest/ramaddainstaller.zip"
+downloadUrl="https://ramadda.org/repository/release/latest/ramaddainstaller.zip"
 securityGroup="ramadda"
 imageId="ami-55a7ea65"
 instanceType="t2.micro"

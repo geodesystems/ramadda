@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 
 # This script updates your RAMADDA installation

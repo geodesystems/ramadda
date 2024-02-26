@@ -1,10 +1,9 @@
-#!/bin/bash
+#!/bin/sh
 
 #
 #This script installs RAMADDA on an AWS Linux machine
 #
 
-#export MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export MYDIR="$(cd "$(dirname "$0")" && pwd)"
 . "${MYDIR}/lib.sh"
 
@@ -56,6 +55,8 @@ mv dummy.hosts /etc/hosts
 ask_install_ramadda
 ask_keystore
 generate_install_password
+
+printf "Starting RAMADDA"
 service ${SERVICE_NAME} restart
 
 do_finish_message

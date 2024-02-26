@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 #
 #This reinstalls RAMADDA on AWS Linux. It assumes ramadda has been installed as a service
@@ -7,7 +7,6 @@
 #-dir /path/to/ramaddainstall
 #
 
-#MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export MYDIR="$(cd "$(dirname "$0")" && pwd)"
 
 startstop() {

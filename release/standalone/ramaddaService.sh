@@ -1,6 +1,6 @@
 #!/bin/bash
 
-RAMADDA_DIR=`dirname $0`
+RAMADDA_DIR="$(cd "$(dirname "$0")" && pwd)"
 BASE=$RAMADDA_DIR
 PARENT=`dirname $BASE`
 
@@ -21,7 +21,7 @@ status() {
     if [ -f $PID ]
     then
         echo
-        echo "ramadda.service: Pid file: $( cat $PID ) [$PID]"
+        echo "ramadda.service: PID file: $( cat $PID ) [$PID]"
         echo
         ps -ef | grep -v grep | grep $( cat $PID )
     else

@@ -1,13 +1,18 @@
-#!/bin/bash
+#!/bin/sh
 
 #
 #This script installs RAMADDA on a Linux machine
 #
 
 export MYDIR="$(cd "$(dirname "$0")" && pwd)"
-#export MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 
 . "${MYDIR}/lib.sh"
+
+install_service() {
+    linux_install_service
+}
+
 
 export BASE_DIR=/mnt/ramadda
 #This comes after setting BASE_DIR
@@ -31,9 +36,6 @@ if [ "$permissions" == "700" ]; then
 fi
 
 
-install_service() {
-    aws_install_service
-}
 
 
 echo "Installing Java"
@@ -50,21 +52,32 @@ if [ "$response" == "y" ]; then
     install_postgres
 fi
 
-echo "Fixing the localhost name problem"
-sed -e 's/HOSTNAME=localhost.localdomain/HOSTNAME=ramadda.localdomain/g' /etc/sysconfig/network> dummy.network
-mv dummy.network /etc/sysconfig/network
-sed -e 's/127.0.0.1   localhost localhost.localdomain/127.0.0.1 ramadda.localdomain ramadda localhost localhost.localdomain/g' /etc/hosts> dummy.hosts
-mv dummy.hosts /etc/hosts
-
 ask_install_ramadda
 ask_keystore
 generate_install_password
-service ${SERVICE_NAME} restart
 
-header "Installation complete";
-printf "RAMADDA is installed. \n\tRAMADDA home directory: ${RAMADDA_HOME_DIR}\n\tPostgres directory: ${PG_REAL_DIR}\n\tLog file: ${RUNTIME_DIR}/ramadda.log\n"
-printf "Finish the configuration at https://<your IP>/repository\n"
-printf "The installation password is ${install_password}\n"
+read -p "Should we open ports ${RAMADDA_HTTP_PORT} and ${RAMADDA_HTTPS_PORT} in the firewall? [y|n]: " response
+if [ "$response" == "y" ]; then
+    if command -v "ufw" &> /dev/null ; then
+	ufw allow ${RAMADDA_HTTP_PORT}/tcp
+	ufw allow ${RAMADDA_HTTPS_PORT}/tcp	
+	ufw reload
+    else
+	if command -v "firewall-cmd" &> /dev/null ; then
+	    firewall-cmd --add-port=${RAMADDA_HTTP_PORT}/tcp --permanent
+	    firewall-cmd --add-port=${RAMADDA_HTTPS_PORT}/tcp --permanent
+	    firewall-cmd --reload
+	else
+	    echo "Could not find firewall-cmd or ufw
+
+	fi
+    fi
+fi
+
+
+printf "Starting RAMADDA"
+systemctl start ${SERVICE_NAME}
+do_finish_message
 
 exit
 
