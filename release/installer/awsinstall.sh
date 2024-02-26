@@ -8,14 +8,14 @@ export MYDIR="$(cd "$(dirname "$0")" && pwd)"
 . "${MYDIR}/lib.sh"
 
 
-
 install_service() {
     aws_install_service
 }
 
 install_postgres() {
-    aws_install_postgres()
+    aws_install_postgres
 }
+
 install_java() {
     yum install -y java
     sudo /usr/sbin/alternatives --config java

@@ -1,5 +1,8 @@
 #!/bin/sh
 
+
+
+
 #
 #basic shared initialization
 #
@@ -27,10 +30,25 @@ export PARENT_DIR=`dirname $INSTALLER_DIR`
 export YUM_ARG=""
 export promptUser=1
 
+
 install_step1() {
+    echo 'hello'>/dev/null
 }
+
 install_step2() {
+    echo 'hello'>/dev/null
 }
+
+
+random_number() {
+    number=$(od -An -N2 -i /dev/urandom | awk '{print $1 % 10000 + 1}')
+    echo $number
+}
+
+
+
+
+
 
 ask_base_dir() {
     header  "RAMADDA Base Directory"
@@ -64,10 +82,7 @@ init_env() {
 
 
 
-random_number() {
-    number=$(od -An -N2 -i /dev/urandom | awk '{print $1 % 10000 + 1}')
-    echo $number
-}
+
 
 
 do_basedir() {
@@ -494,7 +509,7 @@ aws_do_mount() {
     header  "Volume Installation";
     echo "The database and the RAMADDA home directory will be installed on ${AWS_BASE_DIR}"
     echo "We need to mount a volume as ${AWS_BASE_DIR}"
-    dirs = "/dev/foo /dev/sdb /dev/bar"
+    dirs="/dev/foo /dev/sdb /dev/bar"
     for dir in $dirs; do
 	if [ -b "$dir" ]; then
             askYesNo  "Do you want to mount the volume: $dir "  "y"
