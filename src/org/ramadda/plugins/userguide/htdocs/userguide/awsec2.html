@@ -1,0 +1,106 @@
+<html>
+<head>
+<title>Creating an AWS EC2 Instance</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<div class="ramadda-doc-header">
+<div style='padding-top:12px;margin-bottom:4px;'><a href="toc.html#awsec2.html"><span title="Table of contents"><i  style='font-size:16pt;'  class="fa fa-list "></i></span></a> &nbsp; <a href="index.html">RAMADDA User Guide</a>  > <a href="page_installationandsiteadministration.html">Installation and Site Administration</a> </div>
+<table width=100% cellspacing=0 cellpadding=0 >
+<tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="aws.html"><table><td valign=center><td><span title="Previous: Installing on Amazon AWS &amp; Linux"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Installing on Amazon AWS &amp; Linux</td></tr></table></a></div></div></td>
+<td width=50% align=center>
+<div class="ramadda-page-title"><a href="#">Section 9.2: Creating an AWS EC2 Instance</a></div>
+</td>
+<td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="centos.html"><table><tr valign=center><td>Installing RAMADDA on CentOS</td><td><span title="Next: Installing RAMADDA on CentOS"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+</tr></table>
+</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+.ramadda-lheading {
+    margin-top:15px;
+}
+</style>
+
+<div class="ramadda-doc-contents" style="margin-left:20px;">
+
+:navtop
+
+
+<h2>Creating an AWS EC2 Instance</h2>
+
++callout-info
+Here are the steps to create an AWS EC2 instance
+-callout
+
+
+<ol>
+<li> From the EC2 Dashboard (e.g., <a href="https://us-west-2.console.aws.amazon.com/ec2/v2/home">https://us-west-2.console.aws.amazon.com/ec2/v2/home</a>)
+go to the  Instances page and select  "Launch Instance".
+
+<li> Choose an Amazon Machine Image (AMI)<br>
+Pick a standard Amazon Linux 3 AMI image. Ubuntu also works.
+  
+<li> Choose an Instance Type<br>
+The instance type depends on your expected load. For example 
+<a href="https://ramadda.org">https://ramadda.org</a> runs on a t2.medium but a t2.micro or t2.small works just fine.
+
+<li>Key pair<br>
+Select "Create new key pair". 
+This is what you use to SSH to your instance. Do not lose it!
+Once downloaded, you will need to change permissions on your pem file, e.g.
+<pre>
+chmod 600 ramadda.pem
+</pre>
+
+<li>Network settings<br>
+You should allow SSH, HTTPS and HTTP traffic to your server
+
+<li>Add Storage<br>
+The instance comes with a smallish root volume where /home is mounted. 
+You should add a new volume. 
+The model that we follow is to have an additional large size volume that will hold
+RAMADDA's home directory, uploaded files and database. 
+The size depends on the expected size of your RAMADDA use.
+For example, for the <a href="https://ramadda.org">https://ramadda.org</a> 
+repository (which has a ton of content) the database size is ~4GB and the files take up ~20GB.
+
+
+<li> Review Instance Launch<br>
+   
+<li> Elastic IPS (optional) <br>
+By default the IP address associated with your instance can change when the instance is stopped and restarted. You can use the AWS Elastic IP service to create a permanent IP address for your instance. In the AWS console under Network and Security select "Elastic IPs".   Next, select "Allocate Elastic IP address" to create a new IP address. Then associate the IP address with your new instance.
+
+<li> From the Instances page view the details of your instance to see its IPv4 Public IP
+
+<li> SSH to your instance using the PEM file:
+<pre>
+ssh -i &lt;.pem file&gt;  ec2-user@&lt;server IP address&gt;
+</pre>
+
+
+</ol>
+
+
+
+</div>
+<p>
+<div  class="childlist" ><table  width="100%" ></table></div>
+<p>&nbsp;<p>
+
+<div class="ramadda-doc-footer">
+<table width=100% cellspacing=0 cellpadding=0 >
+<tr><td width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="aws.html"><table><td valign=center><td><span title="Previous: Installing on Amazon AWS &amp; Linux"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Installing on Amazon AWS &amp; Linux</td></tr></table></a></div></div></td>
+<td align=right width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="centos.html"><table><tr valign=center><td>Installing RAMADDA on CentOS</td><td><span title="Next: Installing RAMADDA on CentOS"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+</tr></table>
+</div>
+<p>
+</div>
+</body>
+</html>
+

@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Installing on Amazon AWS</title>
+<title>Installing on Amazon AWS &amp; Linux</title>
   <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
 
 </head>
@@ -12,9 +12,9 @@
 <table width=100% cellspacing=0 cellpadding=0 >
 <tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="installing.html"><table><td valign=center><td><span title="Previous: Installing RAMADDA"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Installing RAMADDA</td></tr></table></a></div></div></td>
 <td width=50% align=center>
-<div class="ramadda-page-title"><a href="#">Section 9.1: Installing on Amazon AWS</a></div>
+<div class="ramadda-page-title"><a href="#">Section 9.1: Installing on Amazon AWS &amp; Linux</a></div>
 </td>
-<td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="centos.html"><table><tr valign=center><td>Installing RAMADDA on CentOS</td><td><span title="Next: Installing RAMADDA on CentOS"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+<td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="awsec2.html"><table><tr valign=center><td>Creating an AWS EC2 Instance</td><td><span title="Next: Creating an AWS EC2 Instance"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
 </tr></table>
 </div>
 
@@ -32,65 +32,13 @@ pre {
 :navtop
 
 
-<h2>Installing on Amazon AWS</h2>
+<h2>Installing on Amazon AWS &amp; Linux</h2>
 
 +callout-info
-Here are the steps to install the stand-alone version of RAMADDA on an AWS instance. 
+Here are the steps to install the stand-alone version of RAMADDA on Amazon Linux, Ubuntu or Centos.
 -callout
 
-:heading Create an EC2 Instance
-<ol>
-<li> From the EC2 Dashboard (e.g., <a href="https://us-west-2.console.aws.amazon.com/ec2/v2/home">https://us-west-2.console.aws.amazon.com/ec2/v2/home</a>)
-go to the  Instances page and select  "Launch Instance".
-
-<li> Choose an Amazon Machine Image (AMI)<br>
-Pick a standard Amazon Linux 3 AMI image. 
-+callout-info
-Note: The installer does not work on the Amazon Linux 2023 AMI image
-as that image does not support the amazon-linux-extras package manager.
--callout
-
-
-+callout-info
-Note: RAMADDA can run on REDHAT Linux but the installer has not been fully tested. 
--callout
-  
-<li> Choose an Instance Type<br>
-The instance type depends on your expected load. For example 
-<a href="https://ramadda.org">https://ramadda.org</a> runs on a t2.medium but a 
-t2.micro or t2.small works just fine.
-
-<li> Key pair<br>
-Select "Create new key pair". 
-This is what you use to SSH to your instance. Do not lose it!
-Once downloaded, you will need to change permissions on your pem file, e.g.
-<pre>
-chmod 600 ramadda.pem
-</pre>
-  
-
-<li>Network settings<br>
-You should allow SSH, HTTPS and HTTP traffic to your server
-
-
-<li>Add Storage<br>
-The instance comes with a smallish root volume where /home is mounted. 
-You should add a new volume. 
-The model that we follow is to have an additional large size volume that will hold
-RAMADDA's home directory, uploaded files and database. 
-The size depends on the expected size of your RAMADDA use.
-For example, for the <a href="https://ramadda.org">https://ramadda.org</a> 
-repository (which has a ton of content) the database size is ~4GB and the files take up ~20GB.
-
-
-
-<li> Review Instance Launch<br>
-   
-<li> Elastic IPS (optional) <br>
-By default the IP address associated with your instance can change when the instance is stopped and restarted. You can use the AWS Elastic IP service to create a permanent IP address for your instance. In the AWS console under Network and Security select "Elastic IPs".   Next, select "Allocate Elastic IP address" to create a new IP address. Then associate the IP address with your new instance.
-
-</ol>
-
+If you are running on Amazon AWS see <a href=awsec2.html>awsec2.html</a> for details on how to create a server.
 
 
 :heading Configure your instance
@@ -106,40 +54,48 @@ ssh -i &lt;.pem file&gt;  ec2-user@&lt;server IP address&gt;
 
 <li> It is best to update the instance:
 <pre>
+For Amazon Linux:
 sudo yum update -y
+
+For Ubuntu:
+apt update
 </pre>
+
 
 <li> Fetch then unzip the RAMADDA installer:
 +pre addCopy=true
-wget -O ramaddainstaller.zip https://ramadda.org/repository/release/latest/ramaddainstaller.zip
-unzip ramaddainstaller.zip
+wget https://ramadda.org/repository/release/latest/ramaddainstaller.zip;unzip ramaddainstaller.zip
 -pre
 
-<li> Run the installer - make sure to give it the absolute path:
+<li> Run the appropriate installer: 
+For Amazon Linux:
 +pre addCopy=true
-sudo bash ramaddainstaller/awsinstall.sh
+sudo sh ramaddainstaller/awsinstall.sh
 -pre
+
+For Ubuntu:
++pre addCopy=true
+sudo sh ramaddainstaller/linuxinstall.sh
+-pre  
+
 
 </ol>
 
 The installer will walk you through a number of installation steps to setup the directories, and install and configure
-Java, Postgres and the RAMADDA server.
-
-
+Java, Postgres (optionally)  and the RAMADDA server.
 The installer will:
 <ul>
 <li> Mount the EBS volume as <i>/mnt/ramadda</i>
 
-<li> Install and configure PostgreSQL. A ramadda user and a repository database will be created.
-  The database will be stored at: 
-<i>/mnt/ramadda/pgsql</i> and which is linked to
-from <i>/var/lib/pgsql</i>
+<li> Optionally install and configure PostgreSQL. A RAMADDA user and a repository database will be created. The database will be stored at: 
+<i>/mnt/ramadda/pgsql</i> and which is linked to from <i>/var/lib/pgsql</i>
 
 <li> Download and install RAMADDA. 
 
-<li> Configure RAMADDA with a (temporary) self-signed certificate for HTTPS access.
+<li> Configure RAMADDA with a self-signed certificate for HTTPS access. Accessing this for the first time will result in a browser warning because
+  it is self-signed.
 
-<li> Install RAMADDA as a service. To start and stop RAMADDA do:
+<li> Install RAMADDA as a service.
 
 </ul>
 
@@ -151,28 +107,57 @@ The install process will display an installation password that you enter through
 Note: since the SSL certificate is self-signed your browser will display a warning when accessing the site.
 
 
-
 :heading Server files
 
 The install will result in:
 <pre>
-/home/ec2-user/ramaddainstaller - The installer
-/home/ec2-user/ramaddainstaller/update.sh - A script to run to update your RAMADDA server. Run it as
-sudo bash /home/ec2-user/ramaddainstaller/update.sh
+The installer:
+&lt;home dir&gt;/ramaddainstaller  
 
-/mnt/ramadda/runtime - The installed server
-/mnt/ramadda/runtime/ramadda.log - The log output of the server
-/mnt/ramadda/runtime/ramaddaserver - The ramadda executable
+Update scripts. Run one of:
+sudo sh &lt;home dir&gt;/ramaddainstaller/awsupdate.sh
+sudo sh &lt;home dir&gt;/ramaddainstaller/linuxupdate.sh
+
+The installed server:
+/mnt/ramadda/ramaddainstall
+
+A file that contains the RAMADDA_HOME, PORT and path to Java
+It is sourced by the ramadda.sh below
+/mnt/ramadda/ramaddainstall/ramaddaenv.sh
+
+The log output of the server:
+/mnt/ramadda/ramaddainstall/ramadda.log 
+
+The ramadda executable:
+/mnt/ramadda/ramaddainstall/ramaddaserver 
+
 The service runs
-/mnt/ramadda/runtime/ramaddaserver/ramadda.sh 
+/mnt/ramadda/ramaddainstall/ramaddaserver/ramadda.sh 
 
-/mnt/ramadda/repository - The RAMADDA home directory. 
-/mnt/ramadda/repository/install.properties - Holds the database password
-/mnt/ramadda/repository/keystore - The generated keystore. Replace this with a real certificate
-/mnt/ramadda/repository/ssl.properties - Holds the keystore passwords
-/mnt/ramadda/repository/install.properties - Holds the configuration password
-/mnt/ramadda/repository/db.properties - Holds the database password
-/mnt/ramadda/pgsql - Postgres database
+------------------------------
+The RAMADDA home directory:
+/mnt/ramadda/ramaddahome 
+
+Holds the database password:
+/mnt/ramadda/ramaddahome/install.properties 
+
+The generated keystore. You can replace this with a real certificate
+/mnt/ramadda/ramaddahome/keystore 
+
+Holds the keystore passwords:
+/mnt/ramadda/ramaddahome/ssl.properties
+
+Holds the install password:
+/mnt/ramadda/ramaddahome/install.properties 
+
+Holds the database password:
+/mnt/ramadda/ramaddahome/db.properties  
+
+
+------------------------------
+Postgres database (if installed): The /var/lib/... pgsql dir links to here
+/mnt/ramadda/pgsql
+
 </pre>
 
 
@@ -184,7 +169,7 @@ The service runs
 <div class="ramadda-doc-footer">
 <table width=100% cellspacing=0 cellpadding=0 >
 <tr><td width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="installing.html"><table><td valign=center><td><span title="Previous: Installing RAMADDA"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Installing RAMADDA</td></tr></table></a></div></div></td>
-<td align=right width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="centos.html"><table><tr valign=center><td>Installing RAMADDA on CentOS</td><td><span title="Next: Installing RAMADDA on CentOS"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+<td align=right width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="awsec2.html"><table><tr valign=center><td>Creating an AWS EC2 Instance</td><td><span title="Next: Creating an AWS EC2 Instance"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
 </tr></table>
 </div>
 <p>
