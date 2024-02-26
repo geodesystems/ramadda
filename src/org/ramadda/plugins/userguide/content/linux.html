@@ -9,7 +9,8 @@
 <h2>Installing on Amazon AWS and Linux</h2>
 
 +callout-info
-Here are the steps to install the stand-alone version of RAMADDA on Amazon Linux, Ubuntu or Centos.
+Here are the steps to install the stand-alone version of RAMADDA on Amazon Linux, Redhat,
+Ubuntu or Centos.
 -callout
 
 If you are running on Amazon AWS see <a href=awsec2.html>awsec2.html</a> for details on how to create a server.
@@ -18,7 +19,8 @@ If you are running on Amazon AWS see <a href=awsec2.html>awsec2.html</a> for det
 :heading Configure your instance
 Once your instance is running here are the steps to configure and install RAMADDA.
 <ol>
-<li> From the Instances page view the details of your instance to see its IPv4 Public IP
+  <li> If you are running on AWS then, from the Instances page,
+    view the details of your instance to see its IPv4 Public IP
 
 <li> SSH to your instance using the PEM file:
 <pre>
@@ -32,7 +34,7 @@ For Amazon Linux:
 sudo yum update -y
 
 For Ubuntu:
-apt update
+sudo apt update
 
 You also may need to install unzip:
 For Amazon:
@@ -40,12 +42,10 @@ sudo yum install unzip
 
 For Ubuntu:
 sudo apt install unzip
-
-
 </pre>
 
 
-<li> Fetch then unzip the RAMADDA installer:
+<li> Fetch and unzip the RAMADDA installer:
 +pre addCopy=true
 wget https://ramadda.org/repository/release/latest/ramaddainstaller.zip;unzip ramaddainstaller.zip
 -pre
@@ -60,15 +60,19 @@ The installer will walk you through a number of installation steps to setup the 
 Java, Postgres (optionally)  and the RAMADDA server.
 The installer will:
 <ul>
-<li> Mount the EBS volume as <i>/mnt/ramadda</i>
+<li> Let you choose where the ramaddainstaller and ramaddahome directories will be placed
 
-<li> Optionally install and configure PostgreSQL. A RAMADDA user and a repository database will be created. The database will be stored at: 
-<i>/mnt/ramadda/pgsql</i> and which is linked to from <i>/var/lib/pgsql</i>
+<li> If on AWS mount the EBS volume ias <i>/mnt/ramadda</i>
+
+<li> For Amazon Linux you can optionally install and configure PostgreSQL.
+  A RAMADDA user and a repository database will be created. The database will be stored at: 
+  <i>/mnt/ramadda/pgsql</i> and which is linked to from <i>/var/lib/pgsql</i>.
+  If you don't choose Postgres then RAMADDA defaults to it's built-in Derby database.
 
 <li> Download and install RAMADDA. 
 
-<li> Configure RAMADDA with a self-signed certificate for HTTPS access. Accessing this for the first time will result in a browser warning because
-  it is self-signed.
+<li> Configure RAMADDA with a self-signed certificate for HTTPS access.
+  Accessing this for the first time will result in a browser warning because it is self-signed.
 
 <li> Install RAMADDA as a service.
 
@@ -79,8 +83,9 @@ Once running you need to finish the configuration through the RAMADDA web interf
 https://&lt;IP address&gt;/repository
 </pre>
 The install process will display an installation password that you enter through the web interface.
+This install password is held in &gt;RAMADDA Home&gt;/install.properties
+:br
 Note: since the SSL certificate is self-signed your browser will display a warning when accessing the site.
-
 
 :heading Server files
 

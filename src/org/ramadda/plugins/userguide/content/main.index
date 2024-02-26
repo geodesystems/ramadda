@@ -42,9 +42,8 @@ index.html
 
 >title:Installation and Site Administration:These pages are intended for Site Administrators
 >>installing.html
->>aws.html
+>>linux.html
 >>awsec2.html
->>centos.html
 >>configuration.html
 >>build.html
 >>database.html

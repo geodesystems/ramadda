@@ -18,7 +18,9 @@ Here are the steps to create an AWS EC2 instance
 go to the  Instances page and select  "Launch Instance".
 
 <li> Choose an Amazon Machine Image (AMI)<br>
-Pick a standard Amazon Linux 3 AMI image. Ubuntu also works.
+Pick an image.
+The RAMADDA installer has been tested on Amazon Linux,
+Ubuntu, Redhat and Centos.
   
 <li> Choose an Instance Type<br>
 The instance type depends on your expected load. For example 
@@ -28,9 +30,9 @@ The instance type depends on your expected load. For example
 Select "Create new key pair". 
 This is what you use to SSH to your instance. Do not lose it!
 Once downloaded, you will need to change permissions on your pem file, e.g.
-<pre>
++pre addCopy=true
 chmod 600 ramadda.pem
-</pre>
+-pre
 
 <li>Network settings<br>
 You should allow SSH, HTTPS and HTTP traffic to your server
