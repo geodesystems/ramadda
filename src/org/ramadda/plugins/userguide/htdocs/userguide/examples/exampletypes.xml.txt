@@ -83,6 +83,37 @@ Hide the bottom altitude
      <property name="form.altitude.bottom.show" value="false"/>
 -->
 
+<!--The wiki tag allows you to specify the default wiki display for these types of entries-->
+<wiki>
+<![CDATA[
++section title={{name}}
+:navtop
+{{description wikify=true}}
+:heading Charts
+{{group}}
+{{display type=linechart showMenu=true fields=discharge}}
+{{display type=linechart showMenu=true fields=gauge_height}}
+:vspace 0.5em
+:heading Table
+{{display_download}}
+{{display_table}}
+:vspace 1em
+----
+:heading Information
++row
++col-md-6
+{{information  details="true"  showTitle="false"  }} 
+-col
++col-6
+{{map}}
+-col
+-row
+-section
+]]>
+</wiki>
+
+
+
   </type>
 
 

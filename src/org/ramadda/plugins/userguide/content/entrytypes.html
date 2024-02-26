@@ -1,22 +1,31 @@
 [ht::head {Defining New Entries}]
+:navtop
 
-RAMADDA recognizes any file that ends with types.xml as an entry type definition file
-
-
-<a href="${root}/userguide/examples/exampletypes.xml.txt">exampletypes.xml</a>
-
-You can use this xml file as a plugin. But, if you wanted to include html resources
+:heading Entry Types
+RAMADDA recognizes any file that ends with types.xml as an entry type definition file.
+Here is an <a href="${root}/userguide/examples/exampletypes.xml.txt">exampletypes.xml</a> file and
+there are numerous examples in the source code @ github,
+e.g. <a href=https://github.com/geodesystems/ramadda/tree/master/src/org/ramadda/geodata/point/resources>https://github.com/geodesystems/ramadda/tree/master/src/org/ramadda/geodata/point/resources</a>
+:p
+You can use the above xml file as a plugin. But, if you wanted to include html resources
 you would have a zipped directory like:
+<pre>
 someplugin
       exampletypes.xml
       htdocs
           myplugin
                example.png
+</pre>
 
-Note: the names above do not matter except 
+Note: the names above do not matter except the types.xml
 
 
-<h3> Column Types</h3>
+To make use of the types simply add the types.xml (or the zip file) into your RAMADDA Home/plugins directory
+and restart RAMADDA.
+
+
+:heading Column Types
+Each entry can have any number of column attributes. Each column (see in the example above) has a name, label, type, etc:
 
 <ul>
 <li> <i> string</i> -  Use size="..." to specify the column size
@@ -39,6 +48,39 @@ Note: the names above do not matter except
 
 For enumeration or  enumerationplus types you can specify a set of enumeration values. 
 <pre>
-    <column name="fruit" label="Fruit" type="enumeration" values="apple,banana,orange" cansearch="true" />
+  &lt;column name="fruit" label="Fruit" type="enumeration" values="apple,banana,orange" cansearch="true" /&gt;
+</pre>
 
+:heading Wiki Template
+An entry type can have a wiki tag that defines the wiki text template for the entry.
+The example file above has an example of this wiki text, e.g.:
++pre
+&lt;wiki&gt;
+&lt;!\[CDATA\[
++section title={{name}}
+:navtop
+{{description wikify=true}}
+:heading Charts
+{{group}}
+{{display type=linechart showMenu=true fields=discharge}}
+{{display type=linechart showMenu=true fields=gauge_height}}
+:vspace 0.5em
+:heading Table
+{{display_download}}
+{{display_table}}
+:vspace 1em
+----
+:heading Information
++row
++col-md-6
+{{information  details="true"  showTitle="false"  }} 
+-col
++col-6
+{{map}}
+-col
+-row
+-section
+\]\]&gt;
+&lt;/wiki&gt;
+-pre
 </body>
