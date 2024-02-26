@@ -126,7 +126,7 @@ init_env() {
     echo "${RAMADDA_HOME_DIR} - where RAMADDA stores its configuration, files,  etc"
 
     if [ "$OS" = "${OS_REDHAT}" ]; then
-	export PG_SERVICE=postgresql-server
+a	export PG_SERVICE=postgresql-server
 	export PG_INSTALL=http://yum.postgresql.org/9.3/redhat/rhel-6-x86_64/pgdg-redhat93-9.3-1.noarch.rpm
     else
 	export PG_SERVICE=postgresql.service
@@ -330,11 +330,14 @@ ask_install_java() {
 
 
 ask_postgres()  {
-    header "Postgres install"
-    echo "RAMADDA can run with Postgres or it's own built in Derby database"
-    askYesNo "Do you want to install and use postgres?"  "y"
-    if [ "$response" = "y" ]; then
-	install_postgres
+#Only do this for amazon 
+    if [ "$OS" = "${OS_AMAZON}" ]; then
+	header "Postgres install"
+	echo "RAMADDA can run with Postgres or it's own built in Derby database"
+	askYesNo "Do you want to install and use postgres?"  "y"
+	if [ "$response" = "y" ]; then
+	    install_postgres
+	fi
     fi
 }
 
