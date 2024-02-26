@@ -31,7 +31,7 @@ ask_base_dir() {
     printf "RAMADDA needs two directories- ramaddainstall and ramaddahome\n"
     printf  "Where should these directories be created under?\n"
     ask  "Enter \".\" for current directory. Default: [${RAMADDA_BASE_DIR}]"  ${RAMADDA_BASE_DIR}
-    if [ "$response" == "." ]; then
+    if [ "$response" = "." ]; then
 	response=`pwd`
     fi
 
@@ -58,6 +58,11 @@ init_env() {
 
 
 
+random_number() {
+    number=$(od -An -N2 -i /dev/urandom | awk '{print $1 % 10000 + 1}')
+    echo $number
+}
+
 
 do_basedir() {
     dfltDir="";
@@ -69,9 +74,9 @@ do_basedir() {
 	dfltDir="${AWS_BASE_DIR}";
     fi
 
-    while [ "$RAMADDA_BASE_DIR" == "" ]; do
+    while [ "$RAMADDA_BASE_DIR" = "" ]; do
 	ask   "Enter base directory: [$dfltDir]:" $dfltDir  "The base directory holds the repository and pgsql sub-directories"
-	if [ "$response" == "" ]; then
+	if [ "$response" = "" ]; then
             break;
 	fi
 	RAMADDA_BASE_DIR=$response;
@@ -94,7 +99,7 @@ header() {
 
 yumInstall() {
     local target="$1"
-    if [ "$YUM_ARG" == "" ]; then
+    if [ "$YUM_ARG" = "" ]; then
 	yum install ${target}
     else 
 	yum install ${YUM_ARG} ${target}
@@ -103,7 +108,7 @@ yumInstall() {
 
 pause() {
     local msg="$1"
-    if [ "$msg" == "" ]; then
+    if [ "$msg" = "" ]; then
 	msg="pause "
     fi
     read -p "${msg}"
@@ -113,13 +118,13 @@ askYesNo() {
     local msg="$1"
     local dflt="$2"
 
-    if [ $promptUser == 0 ]; then
+    if [ $promptUser = 0 ]; then
 	response="$dflt";
 	return;
     fi
 
     read -p "${msg}?  [y|A(all)|n]: " response
-    if [ "$response" == "A" ]; then
+    if [ "$response" = "A" ]; then
 	promptUser=0;
 	response="$dflt";
 	return;
@@ -136,10 +141,10 @@ askYesNo() {
             ;;
     esac
 
-    if [ "$response" == "" ]; then
+    if [ "$response" = "" ]; then
 	response="$dflt";
     fi
-    if [ "$response" == "" ]; then
+    if [ "$response" = "" ]; then
 	response="n";
     fi
 
@@ -149,7 +154,7 @@ ask() {
     local msg="$1";
     local dflt="$2";
     local extra="$3"
-    if [ $promptUser == 0 ]; then
+    if [ $promptUser -eq 0 ]; then
 	response="$dflt";
         return;
     fi
@@ -160,7 +165,7 @@ ask() {
 
     read -p "${msg} " response;
 
-    if [ "$response" == "" ]; then
+    if [ "$response" = "" ]; then
 	response="$dflt";
     fi
 }
@@ -192,8 +197,7 @@ do
 done
 
 
-
-if [ "$os" == "${OS_REDHAT}" ]; then
+if [ "$os" = "${OS_REDHAT}" ]; then
     export PG_SERVICE=postgresql-server
     export PG_INSTALL=http://yum.postgresql.org/9.3/redhat/rhel-6-x86_64/pgdg-redhat93-9.3-1.noarch.rpm
 else
@@ -241,7 +245,7 @@ install_postgres() {
 
 
 
-    PG_PASSWORD="password$RANDOM-$RANDOM"
+    PG_PASSWORD="password$(random_number)-$(random_number)"
     PG_USER="ramadda"
 
     ls ${PG_HBA}
@@ -327,16 +331,16 @@ export RAMADDA_PORT=${RAMADDA_HTTP_PORT}
 ask_ip(){
     printf "We need the public IP address to configure SSL\n"
     read -p "Are you running in Amazon AWS? [y|n]: " response
-    if [ "$response" == "y" ]; then
+    if [ "$response" = "y" ]; then
 	export MYIP=`curl http://169.254.169.254/latest/meta-data/public-ipv4 2>/dev/null`
 	printf "OK, the public IP of this machine is ${MYIP}\n"
     else
 	export MYIP=`ifconfig | grep inet | grep cast | awk '/inet addr/{print substr($2,6)}'`
-	if [ "$MYIP" == "" ]; then
+	if [ "$MYIP" = "" ]; then
 	    export MYIP=`ifconfig | grep inet | grep cast | awk '/.*/{print $2}'`
 	fi
 	read -p "Is this IP address correct - ${MYIP}?  [y|n]: " response
-	if [ "$response" == "n" ]; then
+	if [ "$response" = "n" ]; then
 	    read -p "Enter the IP address: " tmpip
 	    export MYIP="${tmpip}"
 	fi
@@ -348,14 +352,14 @@ ask_ip(){
 ask_install_ramadda() {
     header  "RAMADDA Installation"
     askYesNo "Download and install RAMADDA from Geode Systems"  "y"
-    if [ "$response" == "y" ]; then
+    if [ "$response" = "y" ]; then
 	download_installer
 
 	ask  "Where should RAMADDA be installed? [${RAMADDA_INSTALL_DIR}]:"  "${RAMADDA_INSTALL_DIR}"
 	export RAMADDA_INSTALL_DIR=$response
 	install_ramadda
 	askYesNo "Install RAMADDA as a service"  "y"
-	if [ "$response" == "y" ]; then
+	if [ "$response" = "y" ]; then
 	    install_service
 	fi
     fi
@@ -399,13 +403,16 @@ ask_keystore() {
     printf "This will enable you to access your server securely but you will need to\n";
     printf "add a real certificate or add other entries to the keystore for other domain names\n";
     askYesNo "Generate keystore and enable SSL" "y"
-    if [ "$response" == "y" ]; then
+    if [ "$response" = "y" ]; then
 	generate_keystore
     fi
 }
 
+
+
+
 generate_keystore() {
-    password="ssl_${RANDOM}_${RANDOM}_${RANDOM}"
+    password="ssl_$(random_number)_$(random_number)_$(random_number)"
     echo "Generating new keystore file: ${RAMADDA_HOME_DIR}/keystore"
     echo "The password is stored in ${RAMADDA_HOME_DIR}/ssl.properties"
     rm -f ${RAMADDA_HOME_DIR}/keystore
@@ -418,7 +425,7 @@ generate_keystore() {
 
 
 generate_install_password() {
-    export install_password="${RANDOM}_${RANDOM}"
+    export install_password="$(random_number)_$(random_number)"
     printf  "ramadda.install.password=${install_password}" > ${RAMADDA_HOME_DIR}/install.properties
 }
 
@@ -431,22 +438,21 @@ aws_do_mount() {
     header  "Volume Installation";
     echo "The database and the RAMADDA home directory will be installed on ${AWS_BASE_DIR}"
     echo "We need to mount a volume as ${AWS_BASE_DIR}"
-    declare -a dirLocations=("/dev/sdb" )
-    for i in "${dirLocations[@]}"
-    do
-	if [ -b "$i" ]; then
-            askYesNo  "Do you want to mount the volume: $i "  "y"
-            if [ "$response" == "y" ]; then
-		MOUNT_DIR="$i"
+    dirs = "/dev/foo /dev/sdb /dev/bar"
+    for dir in $dirs; do
+	if [ -b "$dir" ]; then
+            askYesNo  "Do you want to mount the volume: $dir "  "y"
+            if [ "$response" = "y" ]; then
+		MOUNT_DIR="$dir"
 		break;
             fi
 	fi
     done
 
     ##/dev/xvdb       ${AWS_BASE_DIR}   ext4    defaults,nofail        0       2
-    while [ "$MOUNT_DIR" == "" ]; do
+    while [ "$MOUNT_DIR" = "" ]; do
 	ask  "Enter the volume to mount, e.g., /dev/xvdb  [<volume>|n] "  ""
-	if [ "$response" == "" ] ||  [ "$response" == "n"  ]; then
+	if [ "$response" = "" ] ||  [ "$response" = "n"  ]; then
             break;
 	fi
 	if [ -b $response ]; then
@@ -473,7 +479,7 @@ aws_do_mount() {
 		mv dummy.fstab /etc/fstab
 		printf "\n#added by ramadda installer.sh\n${MOUNT_DIR}   $RAMADDA_BASE_DIR ext4 defaults,nofail   0 2\n" >> /etc/fstab
 		askYesNo "Do you want to make the file system on ${MOUNT_DIR}?"  "y"
-		if [ "$response" == "y" ]; then
+		if [ "$response" = "y" ]; then
 		    mkfs -t ext4 $MOUNT_DIR
 		fi
 		mkdir $RAMADDA_BASE_DIR

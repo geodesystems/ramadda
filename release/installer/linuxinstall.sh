@@ -31,7 +31,7 @@ mkdir -p $RAMADDA_HOME_DIR
 
 tmpdir=`dirname $BASE_DIR`
 permissions=$(stat -c %a $tmpdir)
-if [ "$permissions" == "700" ]; then
+if [ "$permissions" = "700" ]; then
     chmod 755 "$tmpdir"
 fi
 
@@ -40,7 +40,7 @@ fi
 
 echo "Installing Java"
 askYesNo "Do you want to install Java?"  "y"
-if [ "$response" == "y" ]; then
+if [ "$response" = "y" ]; then
     apt install openjdk-11-jdk
 fi
 
@@ -48,7 +48,7 @@ fi
 
 
 askYesNo "Install postgres"  "y"
-if [ "$response" == "y" ]; then
+if [ "$response" = "y" ]; then
     install_postgres
 fi
 
@@ -57,7 +57,7 @@ ask_keystore
 generate_install_password
 
 read -p "Should we open ports ${RAMADDA_HTTP_PORT} and ${RAMADDA_HTTPS_PORT} in the firewall? [y|n]: " response
-if [ "$response" == "y" ]; then
+if [ "$response" = "y" ]; then
     if command -v "ufw" &> /dev/null ; then
 	ufw allow ${RAMADDA_HTTP_PORT}/tcp
 	ufw allow ${RAMADDA_HTTPS_PORT}/tcp	
@@ -68,7 +68,7 @@ if [ "$response" == "y" ]; then
 	    firewall-cmd --add-port=${RAMADDA_HTTPS_PORT}/tcp --permanent
 	    firewall-cmd --reload
 	else
-	    echo "Could not find firewall-cmd or ufw
+	    echo "Could not find firewall-cmd or ufw"
 
 	fi
     fi
