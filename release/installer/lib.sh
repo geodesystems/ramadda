@@ -1,8 +1,6 @@
 #!/bin/sh
 
 
-
-
 #
 #basic shared initialization
 #
@@ -18,17 +16,33 @@ export RAMADDA_HTTPS_PORT=443
 
 export AWS_BASE_DIR=/mnt/ramadda
 export RAMADDA_BASE_DIR="$AWS_BASE_DIR"
-export OS_REDHAT="redhat"
-export OS_AMAZON="amazon_linux"
-
-##For now only amazon linux is supported 
-export os=$OS_AMAZON
-
 
 export RAMADDA_DOWNLOAD="https://ramadda.org/repository/release/latest/ramaddaserver.zip"
 export PARENT_DIR=`dirname $INSTALLER_DIR`
 export YUM_ARG=""
 export promptUser=1
+
+export OS_UBUNTU="ubuntu"
+export OS_DEBIAN="debian"
+export OS_CENTOS="centos"
+export OS_RHEL="rhel"
+export OS_AMAZON="amzn"
+export OS="$OS_AMAZON"
+
+
+get_linux_distribution() {
+    if [ -f /etc/os-release ]; then
+        # Modern Linux distributions use /etc/os-release
+        . /etc/os-release
+        echo "$ID"
+    elif [ -f /etc/centos-release ]; then
+        # CentOS and older versions of Red Hat
+        echo "centos"
+    else
+        # Default to unknown
+        echo "unknown"
+    fi
+}
 
 
 
@@ -93,6 +107,8 @@ ask_base_dir() {
 
 init_env() {
     ask_base_dir
+    export OS=$(get_linux_distribution)
+    echo "OS=$OS"
     export USER_DIR=$PARENT_DIR
     export RAMADDA_HOME_DIR=${RAMADDA_BASE_DIR}/ramaddahome
     export RAMADDA_INSTALL_DIR=${RAMADDA_BASE_DIR}/ramaddainstall
@@ -101,6 +117,15 @@ init_env() {
     echo "Ok, RAMADDA will be installed under: $RAMADDA_BASE_DIR with the following directories:"
     echo "${RAMADDA_INSTALL_DIR} - where the RAMADDA server will be installed"
     echo "${RAMADDA_HOME_DIR} - where RAMADDA stores its configuration, files,  etc"
+
+    if [ "$OS" = "${OS_REDHAT}" ]; then
+	export PG_SERVICE=postgresql-server
+	export PG_INSTALL=http://yum.postgresql.org/9.3/redhat/rhel-6-x86_64/pgdg-redhat93-9.3-1.noarch.rpm
+    else
+	export PG_SERVICE=postgresql.service
+	export PG_INSTALL=postgresql-server
+    fi
+
 
 }
 
@@ -242,13 +267,6 @@ do
 done
 
 
-if [ "$os" = "${OS_REDHAT}" ]; then
-    export PG_SERVICE=postgresql-server
-    export PG_INSTALL=http://yum.postgresql.org/9.3/redhat/rhel-6-x86_64/pgdg-redhat93-9.3-1.noarch.rpm
-else
-    export PG_SERVICE=postgresql.service
-    export PG_INSTALL=postgresql-server
-fi
 
 
 do_main_install() {
@@ -283,7 +301,8 @@ do_main_install() {
 
 
 install_java() {
-    if command -v "yum" &> /dev/null ; then
+    yum=`command -v yum`
+    if [ "$yum" != "" ]; then
 	yum install -y java
 	sudo /usr/sbin/alternatives --config java
     else
@@ -377,7 +396,7 @@ host    all             all             ::1/128                 ident
 	printf "${postgresAuth}" > ${PG_HBA}
     fi
 
-    echo "adding postgres service"
+    printf "adding postgres service ${PG_SERVICE}\n"
     systemctl enable ${PG_SERVICE}
     systemctl start ${PG_SERVICE}
 
@@ -472,22 +491,33 @@ ask_install_ramadda() {
 }
 
 install_service() {
-    if command -v "service" &> /dev/null ; then
+    if [ "$OS" = "${OS_AMAZON}" ]; then
 	aws_install_service
     else
 	linux_install_service
     fi
 }
 
-start_service() {
-    printf "Starting RAMADDA"
-    if command -v "service" &> /dev/null ; then
-	service ${SERVICE_NAME} restart
-    else
-	systemctl start ${SERVICE_NAME}
-    fi
+
+run_service() {
+    case "$OS" in
+        $OS_UBUNTU | $OS_DEBIAN)
+            systemctl $2 $1
+            ;;
+        $OS_CENTOS | $OS_RHEL | $OS_AMAZON)
+            service $1 $2
+            ;;
+        *)
+            echo "Unsupported distribution: $OS"
+            ;;
+    esac
 }
 
+
+start_service() {
+    printf "Starting RAMADDA"
+    run_service ${SERVICE_NAME} start
+}
 
 
 

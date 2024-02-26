@@ -6,7 +6,7 @@
 # sudo sh update.sh -dir <target dir> -dev (development release)
 
 export MYDIR="$(cd "$(dirname "$0")" && pwd)"
-
+. ${MYDIR}/lib.sh
 
 usage() {
     printf "usage: \n\t-dir <target dir> (directory that holds ramaddaserver)\n\t-dev (install the development version)\n"
@@ -14,11 +14,7 @@ usage() {
 
 
 startstop() {
-    if command -v "service" &> /dev/null ; then
-	service ramadda $1
-    else
-	systemctl $1 ramadda
-    fi
+    run_service ${SERVICE_NAME} $1
 }
 
 
