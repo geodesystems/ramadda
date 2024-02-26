@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Installing on Amazon AWS &amp; Linux</title>
+<title>Installing on Amazon AWS and Linux</title>
   <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
 
 </head>
@@ -12,7 +12,7 @@
 <table width=100% cellspacing=0 cellpadding=0 >
 <tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="installing.html"><table><td valign=center><td><span title="Previous: Installing RAMADDA"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Installing RAMADDA</td></tr></table></a></div></div></td>
 <td width=50% align=center>
-<div class="ramadda-page-title"><a href="#">Section 9.1: Installing on Amazon AWS &amp; Linux</a></div>
+<div class="ramadda-page-title"><a href="#">Section 9.1: Installing on Amazon AWS and Linux</a></div>
 </td>
 <td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="awsec2.html"><table><tr valign=center><td>Creating an AWS EC2 Instance</td><td><span title="Next: Creating an AWS EC2 Instance"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
 </tr></table>
@@ -32,7 +32,7 @@ pre {
 :navtop
 
 
-<h2>Installing on Amazon AWS &amp; Linux</h2>
+<h2>Installing on Amazon AWS and Linux</h2>
 
 +callout-info
 Here are the steps to install the stand-alone version of RAMADDA on Amazon Linux, Ubuntu or Centos.
@@ -59,6 +59,15 @@ sudo yum update -y
 
 For Ubuntu:
 apt update
+
+You also may need to install unzip:
+For Amazon:
+sudo yum install unzip
+
+For Ubuntu:
+sudo apt install unzip
+
+
 </pre>
 
 
@@ -67,18 +76,10 @@ apt update
 wget https://ramadda.org/repository/release/latest/ramaddainstaller.zip;unzip ramaddainstaller.zip
 -pre
 
-<li> Run the appropriate installer: 
-For Amazon Linux:
+<li> Run the installer: 
 +pre addCopy=true
-sudo sh ramaddainstaller/awsinstall.sh
+sudo sh ramaddainstaller/install.sh
 -pre
-
-For Ubuntu:
-+pre addCopy=true
-sudo sh ramaddainstaller/linuxinstall.sh
--pre  
-
-
 </ol>
 
 The installer will walk you through a number of installation steps to setup the directories, and install and configure
@@ -114,9 +115,8 @@ The install will result in:
 The installer:
 &lt;home dir&gt;/ramaddainstaller  
 
-Update scripts. Run one of:
-sudo sh &lt;home dir&gt;/ramaddainstaller/awsupdate.sh
-sudo sh &lt;home dir&gt;/ramaddainstaller/linuxupdate.sh
+Update script:
+sudo sh &lt;home dir&gt;/ramaddainstaller/update.sh
 
 The installed server:
 /mnt/ramadda/ramaddainstall
