@@ -31,13 +31,37 @@ export YUM_ARG=""
 export promptUser=1
 
 
-install_step1() {
-    echo 'hello'>/dev/null
+
+fix_localhost_name() {
+    echo "Fixing the localhost name problem"
+    sed -e 's/HOSTNAME=localhost.localdomain/HOSTNAME=ramadda.localdomain/g' /etc/sysconfig/network> dummy.network
+    mv dummy.network /etc/sysconfig/network
+    sed -e 's/127.0.0.1   localhost localhost.localdomain/127.0.0.1 ramadda.localdomain ramadda localhost localhost.localdomain/g' /etc/hosts> dummy.hosts
+    mv dummy.hosts /etc/hosts
 }
 
-install_step2() {
-    echo 'hello'>/dev/null
+
+
+check_firewall() {
+    read -p "Should we open ports ${RAMADDA_HTTP_PORT} and ${RAMADDA_HTTPS_PORT} in the firewall? [y|n]: " response
+    if [ "$response" = "y" ]; then
+	if command -v "ufw" &> /dev/null ; then
+	    ufw allow ${RAMADDA_HTTP_PORT}/tcp
+	    ufw allow ${RAMADDA_HTTPS_PORT}/tcp	
+	    ufw reload
+	else
+	    if command -v "firewall-cmd" &> /dev/null ; then
+		firewall-cmd --add-port=${RAMADDA_HTTP_PORT}/tcp --permanent
+		firewall-cmd --add-port=${RAMADDA_HTTPS_PORT}/tcp --permanent
+		firewall-cmd --reload
+	    else
+		echo "Could not find firewall-cmd or ufw"
+	    fi
+	fi
+    fi
 }
+
+
 
 
 random_number() {
@@ -248,13 +272,24 @@ do_main_install() {
 
     ask_install_java
     ask_postgres
-    install_step1
+    fix_localhost_name
     ask_install_ramadda
-    install_step2
+    check_firewall
     ask_keystore
     generate_install_password
     start_service
     do_finish_message
+}
+
+
+install_java() {
+    if command -v "yum" &> /dev/null ; then
+	yum install -y java
+	sudo /usr/sbin/alternatives --config java
+    else
+	apt update
+	apt install openjdk-11-jdk
+    fi
 }
 
 
@@ -277,7 +312,7 @@ ask_postgres()  {
 }
 
 
-aws_install_postgres() {
+install_postgres() {
     export PG_DIR=/var/lib/pgsql
     export PG_HBA=${PG_DIR}/data/pg_hba.conf
     export PG_REAL_DIR="${RAMADDA_BASE_DIR}/pgsql"
@@ -436,6 +471,26 @@ ask_install_ramadda() {
     fi
 }
 
+install_service() {
+    if command -v "service" &> /dev/null ; then
+	aws_install_service
+    else
+	linux_install_service
+    fi
+}
+
+start_service() {
+    printf "Starting RAMADDA"
+    if command -v "service" &> /dev/null ; then
+	service ${SERVICE_NAME} restart
+    else
+	systemctl start ${SERVICE_NAME}
+    fi
+}
+
+
+
+
 aws_install_service() {
     printf "#!/bin/sh\n# chkconfig: - 80 30\n# description: RAMADDA repository\n\nsh ${SERVICE_SCRIPT} \"\$@\"\n" > ${SERVICE_DIR}/${SERVICE_NAME}
     chmod 755 ${SERVICE_DIR}/${SERVICE_NAME}
@@ -462,7 +517,7 @@ WantedBy=multi-user.target
 "
 printf "$service" > /etc/systemd/system/ramadda.service
 systemctl daemon-reload
-systemctl enable
+systemctl enable ramadda
 printf "To run the RAMADDA service do:\nsudo systemctl start ramadda\nsudo systemctl stop ramadda\n"
 printf "Service script is: ${SERVICE_SCRIPT}\n"
 }
