@@ -12,6 +12,16 @@ usage() {
     printf "usage: \n\t-dir <target dir> (directory that holds ramaddaserver)\n\t-dev (install the development version)\n"
 }
 
+
+startstop() {
+    if command -v "service" &> /dev/null ; then
+	service ramadda $1
+    else
+	systemctl $1 ramadda
+    fi
+}
+
+
 export RAMADDA_INSTALL_DIR=/mnt/ramadda/ramaddainstall
 if [ ! -d "${RAMADDA_INSTALL_DIR}" ]; then
     export PARENT_DIR=`dirname $MYDIR`
