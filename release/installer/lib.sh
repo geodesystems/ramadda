@@ -57,7 +57,7 @@ fix_localhost_name() {
 
 
 check_firewall() {
-    read -p "Should we open ports ${RAMADDA_HTTP_PORT} and ${RAMADDA_HTTPS_PORT} in the firewall? [y|n]: " response
+    read -p "Open ports ${RAMADDA_HTTP_PORT} and ${RAMADDA_HTTPS_PORT} in the firewall? [y|n]: " response
     if [ "$response" = "y" ]; then
 	if command -v "ufw" &> /dev/null ; then
 	    ufw allow ${RAMADDA_HTTP_PORT}/tcp
@@ -106,6 +106,13 @@ ask_base_dir() {
 
 
 init_env() {
+    wget=`command -v wget`
+    if [ "$wget" = "" ]; then
+	echo "**** Error: you need to install wget ****"
+	exit
+    fi
+
+
     ask_base_dir
     export OS=$(get_linux_distribution)
     echo "OS=$OS"
@@ -303,19 +310,20 @@ do_main_install() {
 install_java() {
     yum=`command -v yum`
     if [ "$yum" != "" ]; then
-	yum install -y java
+	yum install -q -y java
 	sudo /usr/sbin/alternatives --config java
     else
-	apt update
-	apt install openjdk-11-jdk
+	apt update -q
+	apt install -q openjdk-11-jdk
     fi
 }
 
 
 ask_install_java() {
-    echo "Installing Java"
+    header "Installing Java"
     askYesNo "Do you want to install Java?"  "y"
     if [ "$response" = "y" ]; then
+	echo "Ok, installing Java"
 	install_java
     fi
 }
