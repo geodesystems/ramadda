@@ -352,7 +352,8 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
     });
     this.jq("transcribe").click(()=>{
 	HtmlUtils.hidePopupObject();
-	this.doTranscribe();
+	if(!this.transcriber) this.transcriber = new Transcriber(this,{});
+	this.transcriber.doTranscribe();
     });    
     this.jq("tidy").click(()=>{
 	HtmlUtils.hidePopupObject();
@@ -365,11 +366,17 @@ WikiEditor.prototype = {
 	return this.id;
     },
 
+
     domId:function(suffix) {
 	return this.getId() +"_"+ suffix;
     },
 
-
+    getTranscribeAnchor:function() {
+	return this.getScroller()
+    },
+    handleTranscribeText:function(val) {
+	this.getEditor().session.insert(this.getEditor().getCursorPosition(), val.trim());
+    },
     handleEntryLink:function(entryId, name,pos,isNew,opts) {
 	let html =  HU.center(HU.b(name));
 	if(isNew) {
@@ -873,188 +880,6 @@ WikiEditor.prototype = {
 	this.setValue(tmp);
     },
 
-    transcribeStart:function() {
-	if(!this.audioChunks) 	this.audioChunks = [];
-	this.transcribePlaying = true;
-	this.mediaRecorder.start();
-	this.transcribeStartTime = new Date();
-	this.jq('transcribe_play').html(HU.getIconImage('fa-solid fa-stop fa-gray'));
-	let updateTime = ()=>{
-	    let now = new Date();
-	    let diff = now.getTime()-this.transcribeStartTime.getTime();
-	    
-	    let seconds = parseInt((this.transcribeElapsedTime+diff)/1000);
-	    this.jq('transcribe_label').html(seconds +' seconds');
-	    this.transcribeMonitor = setTimeout(updateTime,500);
-	};
-	this.transcribeMonitor = setTimeout(updateTime,500);
-    },
-    transcribeStop:function() {
-	this.transcribePlaying = false;
-	if(this.transcribeStartTime) {
-	    let now = new Date();
-	    let diff = now.getTime()-this.transcribeStartTime.getTime();
-	    this.transcribeElapsedTime  += diff;
-	}
-	try {
-	    this.mediaRecorder.stop();
-	} catch(err){}
-	if(this.transcribeMonitor) clearTimeout(this.transcribeMonitor);
-	this.jq('transcribe_play').html(HU.getIconImage('fa-solid fa-microphone fa-gray'));
-    },
-    transcribeClear:function() {
-	this.audioChunks = [];
-	if(this.transcribeMonitor) clearTimeout(this.transcribeMonitor);
-	this.transcribeElapsedTime = 0;
-	try {
-	    this.mediaRecorder.stop();
-	} catch(err){}
-    },
-
-    transcribeDoIt:function() {
-	this.callDoIt = false;
-	if(!this.audioChunks || this.audioChunks.length==0) {
-	    alert('No audio has been captured');
-	    return
-	}
-	let file = new Blob(this.audioChunks, {
-	    'type': this.transcribeMime
-	});
-	let formData = new FormData();
-	let url = RamaddaUtils.getUrl("/llm/transcribe");
-	let data = new FormData();
-	this.jq('transcribe_loading').show();
-	data.append('mimetype', this.transcribeMime);
-	data.append('audio-file', file);
-	data.append('entryid',this.entryId);
-	if(this.jq('transcribe_sendtochat').is(':checked')) {
-	    data.append('sendtochat','true');	    
-	}
-
-	if(this.jq('transcribe_addfile').is(':checked')) {
-	    data.append('addfile','true');	    
-	}
-	$.ajax({
-	    url: url,
-	    data: data,
-	    cache: false,
-	    contentType: false,
-	    processData: false,
-	    method: 'POST',
-	    type: 'POST',
-	    success: (data)=>{
-		this.jq('transcribe_loading').hide();
-		this.transcribeClear();
-		this.jq('transcribe_label').html('0 seconds');
-		let results = data.results??data.error;
-		if(!Utils.stringDefined(results)) results = "No results"
-		this.jq('transcribe_text').val(results);
-	    },
-	    error: (data) =>{
-		this.jq('transcribe_loading').hide();
-		alert('transcription failed');
-		console.log(data);
-	    }
-	});
-    },
-    doTranscribe:function() {
-	if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-	    alert("media recording not supported");
-	    return;
-	}
-	navigator.mediaDevices.getUserMedia({audio: true,}).then((stream) => {
-	    this.transcribeMime = ['audio/mp3','audio/mp4','audio/wav', 'audio/webm','audio/mpeg']
-		  .filter(MediaRecorder.isTypeSupported)[0];
-	    if(!this.transcribeMime) {
-		alert("No audio formats available");
-		return;
-	    }
-	    this.mediaRecorder = new MediaRecorder(stream, {mimeType: this.transcribeMime});
-	    this.mediaRecorder.addEventListener("dataavailable", event => {
-//		console.log("data event");
-		this.audioChunks.push(event.data);
-	    });
-	    this.mediaRecorder.addEventListener("stop", () => {
-//		console.log("stop event");
-		if(this.callDoIt) this.transcribeDoIt();
-	    });
-	    let html = '';
-	    let controls =HU.hbox([
-		HU.span(['title','Start recording','class',CLASS_CLICKABLE,'id',this.domId('transcribe_play')],HU.getIconImage('fa-solid fa-microphone fa-gray')),
-		HU.span(['title','Transcribe recording','class',CLASS_CLICKABLE,'id',this.domId('transcribe_pen')],HU.getIconImage('fa-solid fa-pen fa-gray')),
-		HU.b(' Time: ')+
-		    HU.div(['style',HU.css('display','inline-block','text-align','right','width','150px','xborder','var(--basic-border)'),'id',this.domId('transcribe_label')],'0 seconds'),
-		HU.span(['title','Delete recording','class',CLASS_CLICKABLE,'id',this.domId('transcribe_delete')],HU.getIconImage('fa-solid fa-delete-left fa-gray')),
-	    ],HU.css('margin-right','5px'));
-
-	    let right =    HU.checkbox('',
-				       ['id',this.domId('transcribe_sendtochat'),
-					'title','Send to LLM'],
-				       false,'Send to LLM');
-	    right+=SPACE2;
-	    right+= HU.checkbox(this.domId('transcribe_addfile'),
-						['id',this.domId('transcribe_addfile'),
-						 'title','Add audio file as entry'],
-						false,'Add file');
-	    html+=HU.leftRightTable(controls,right);
-
-	    html+=HU.div(['style','position:relative;'],
-			 HU.textarea('','',['placeholder','','id',this.domId('transcribe_text'), 'rows',6,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;'])+
-			 HU.div(['style','display:none;position:absolute;top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);','id',this.domId('transcribe_loading')],
-				HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),['style','width:100px;'])));
-
-
-	    html+=HU.buttons([HU.span(['class',CLASS_DIALOG_BUTTON,'append','true'],"Append"),
-			      HU.span(['class',CLASS_DIALOG_BUTTON,ID,this.domId("cancel")],"Cancel")]);
-	    html = HU.div(['class',CLASS_DIALOG],html);
-	    let closeCallback =()=>{
-		this.transcribeClear();
-	    };
-	    let dialog = this.transcribeDialog = HU.makeDialog({content:html,anchor:this.getScroller(),
-								my: "left bottom",     
-								at: "left+200" +" top-50",
-								title:"Transcribe",
-								callback:closeCallback,
-								header:true,sticky:true,draggable:true,modal:false});	
-	    this.transcribeElapsedTime = 0;
-	    this.jq('transcribe_pen').click(()=>{
-		if(this.transcribePlaying) {
-		    this.callDoIt = true;
-		    this.transcribeStop();
-		} else {
-		    this.transcribeDoIt();
-		}
-	    });
-	    this.jq('transcribe_play').click(()=>{
-		if(this.transcribePlaying) {
-		    this.transcribeStop();
-		} else {
-		    this.transcribeStart();
-
-		}
-	    });
-	    this.jq('transcribe_delete').click(()=>{
-		this.jq('transcribe_text').val('');
-		this.transcribeStop();
-		this.transcribeClear();
-		this.jq('transcribe_label').html('0 seconds');
-	    });
-
-
-	    let _this = this;
-	    dialog.find('.ramadda-dialog-button').button().click(function() {
-		let val = _this.jq('transcribe_text').val()??'';
-		if ($(this).attr('append')) {
-		    _this.getEditor().session.insert(_this.getEditor().getCursorPosition(), val.trim());
-		} else {
-		    dialog.remove();
-		    closeCallback();
-		}
-	    });
-	}).catch((err) => {
-	    alert(`Error initializing transcription: ${err}`);
-	});
-    },
     doLlm:function() {
 	if(!this.addedLlmListener) {
 	    this.editor.getSession().selection.on('changeSelection', ()=> {
@@ -1108,9 +933,9 @@ WikiEditor.prototype = {
 	    HU.formEntry('Prompt:',HU.div(['id',promptMenuContainerId]))+
 	    HU.formEntry('','Or enter prompt:') +
 	    HU.formEntry('Prompt prefix:',HU.textarea('',this.lastPromptPrefix??'',
-						      ['class','wiki-llm-input','style','width:500px;','id',this.domId('llm-prompt-prefix'),'rows',5])) +
+						      [ATTR_CLASS,'wiki-llm-input','style','width:500px;','id',this.domId('llm-prompt-prefix'),'rows',5])) +
 	    HU.formEntry('Prompt suffix:',
-			 HU.input('',this.lastPromptSuffix??'',['class','wiki-llm-input','style','width:500px;','id',this.domId('llm-prompt-suffix')])) +
+			 HU.input('',this.lastPromptSuffix??'',[ATTR_CLASS,'wiki-llm-input','style','width:500px;','id',this.domId('llm-prompt-suffix')])) +
 	    HU.formTableClose();
 	html+=HU.textarea('',llmText,['placeholder','Enter input or select text in editor','id',this.domId(this.ID_LLM_INPUT), 'rows',6,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;']);
 
@@ -1124,10 +949,10 @@ WikiEditor.prototype = {
 
 
 
-	html += HU.buttons([HU.span(['class',CLASS_DIALOG_BUTTON,'replace','true'],"Replace"),
-			HU.span(['class',CLASS_DIALOG_BUTTON,'append','true'],"Append"),
-			HU.span(['class',CLASS_DIALOG_BUTTON,ID,this.domId("cancel")],"Cancel")]);
-			 html = HU.div(['class',CLASS_DIALOG],html);
+	html += HU.buttons([HU.span([ATTR_CLASS,CLASS_DIALOG_BUTTON,'replace','true'],"Replace"),
+			HU.span([ATTR_CLASS,CLASS_DIALOG_BUTTON,'append','true'],"Append"),
+			HU.span([ATTR_CLASS,CLASS_DIALOG_BUTTON,ID,this.domId("cancel")],"Cancel")]);
+			 html = HU.div([ATTR_CLASS,CLASS_DIALOG],html);
 
 			 let dialog = this.llmDialog = HU.makeDialog({content:html,anchor:this.getScroller(),
 				    my: "left bottom",     
@@ -1213,12 +1038,12 @@ WikiEditor.prototype = {
 
     doColor: function (event) {
 	let html = HU.tag("input",['style',HU.css('width','100px','height','100px'), 'type','color','id',this.domId('color_picker')]);
-	html+= HU.div(['class','ramadda-buttons'],
+	html+= HU.div([ATTR_CLASS,'ramadda-buttons'],
 		      HU.span([ID,this.domId("color_apply")],"Apply") + SPACE1 +
 		      HU.span([ID,this.domId("color_ok")],"Ok") + SPACE1 +
 		      HU.span([ID,this.domId("color_cancel")],"Cancel"));
 
-	html = HU.div(['class',CLASS_DIALOG],html);
+	html = HU.div([ATTR_CLASS,CLASS_DIALOG],html);
 	if(this.colorDialog) {
 	    this.colorDialog.remove();
 	}
@@ -1277,7 +1102,7 @@ WikiEditor.prototype = {
 		this.jq(this.ID_WIKI_PREVIEW_INNER).html(html);
 	    } else {
 		let left = Utils.join([
-		    HU.span([CLASS, CLASS_CLICKABLE,ID,this.domId(this.ID_WIKI_PREVIEW_OPEN)], HtmlUtils.getIconImage('fa-sync',['title','Preview Again'])),
+		    HU.span([CLASS, CLASS_CLICKABLE,ID,this.domId(this.ID_WIKI_PREVIEW_OPEN)], HtmlUtils.getIconImage('fa-sync',[ATTR_TITLE,'Preview Again'])),
 		    HU.checkbox('',[TITLE,'Live Preview',ID,this.domId(this.ID_WIKI_PREVIEW_LIVE)],this.previewLive,'Live')+SPACE4,
 		    HU.span([CLASS, CLASS_CLICKABLE,TITLE,'Wordcount',ID,this.domId(this.ID_WIKI_PREVIEW_WORDCOUNT)], HtmlUtils.getIconImage('fa-calculator')),
 
@@ -1285,7 +1110,7 @@ WikiEditor.prototype = {
 		    HU.span([CLASS, CLASS_CLICKABLE,TITLE,'Download',ID,this.domId(this.ID_WIKI_PREVIEW_DOWNLOAD)], HtmlUtils.getIconImage('fa-download')),		    
 		],SPACE2);
 
-		let right  = HU.span([CLASS, CLASS_CLICKABLE,ID,this.domId(this.ID_WIKI_PREVIEW_CLOSE)], HtmlUtils.getIconImage('fa-window-close',['title','Close Preview']));
+		let right  = HU.span([CLASS, CLASS_CLICKABLE,ID,this.domId(this.ID_WIKI_PREVIEW_CLOSE)], HtmlUtils.getIconImage('fa-window-close',[ATTR_TITLE,'Close Preview']));
 
 		let bar = HtmlUtils.div([CLASS,'ramadda-menubar','style','xtext-align:center;width:100%;border:1px solid #ccc'],
 					HU.leftRight(left,right));
@@ -1391,7 +1216,7 @@ WikiEditor.prototype = {
 		data.forEach(d=>{
 		    html+=(d.icon?HU.getIconImage(d.icon)+HU.space(1):'')+
 			HU.href(RamaddaUtil.getUrl("/entry/show")+"?entryid=" + d.id,
-				d.name,['title',d.id,'target','_entries'])+"<br>";
+				d.name,[ATTR_TITLE,d.id,'target','_entries'])+"<br>";
 		});
 		jqid(id).html(html);
 	    }
@@ -1423,8 +1248,8 @@ WikiEditor.prototype = {
 	if(!title) {
 	    title = Utils.makeLabel(tagInfo.tag) +' Properties';
 	}
-	let search =  HU.span(['id',this.domId('searchattributes'),CLASS,'wiki-popup-menu-header ramadda-clickable','title','Search attributes'],HU.getIconImage('fa-binoculars'));
-	let edit =  HU.span(['id',this.domId('edittag'),CLASS,'wiki-popup-menu-header ramadda-clickable','title','Edit tag'],HU.getIconImage('fas fa-edit'));
+	let search =  HU.span(['id',this.domId('searchattributes'),CLASS,'wiki-popup-menu-header ramadda-clickable',ATTR_TITLE,'Search attributes'],HU.getIconImage('fa-binoculars'));
+	let edit =  HU.span(['id',this.domId('edittag'),CLASS,'wiki-popup-menu-header ramadda-clickable',ATTR_TITLE,'Edit tag'],HU.getIconImage('fas fa-edit'));
 	menu += HU.div([CLASS,'wiki-editor-popup-heading'], search+'' + edit +' '  +title);
 	let ids = this.extractEntryIds(tagInfo.chunk);
 	if(ids.length) {
@@ -1595,7 +1420,7 @@ WikiEditor.prototype = {
 	    }
 	    if(block.title=='Color table') return;
 	    let title = block.title;
-	    all+=HU.div(['class','wiki-searchheader','data-block-index',block.index],HU.b(title));
+	    all+=HU.div([ATTR_CLASS,'wiki-searchheader','data-block-index',block.index],HU.b(title));
 	    all+="<div>";
 	    let items = Utils.join(block.items," ");
 	    items = items.replace(/<div/g,'<span').replace(/\/div>/g,'/span>');		
@@ -1852,7 +1677,7 @@ WikiEditor.prototype = {
 		let tt  =    $("#wiki-display-popup").tooltip({
 		    classes: {"ui-tooltip": "wiki-editor-tooltip"},
 		    content: function () {
-			return $(this).prop('title');
+			return $(this).prop(ATTR_TITLE);
 		    },
 		    show: { effect: 'slide', delay: 500, duration: 400 },
 		    position: { my: "left top", at: "right top" }		
@@ -1880,7 +1705,7 @@ WikiEditor.prototype = {
 				cnt=1;
 				inner+='</tr><tr valign=top>';
 			    }
-			    let c = $(this).attr('title');
+			    let c = $(this).attr(ATTR_TITLE);
 			    let div=HU.div(['onclick',click,
 					    ATTR_CLASS,CLASS_CLICKABLE,
 					    ATTR_STYLE,HU.css('display','inline-block')],
@@ -1928,7 +1753,7 @@ WikiEditor.prototype = {
 			$(this).show();
 		    } else {
 			let corpus = $(this).attr('data-corpus');
-			if(!corpus) corpus = $(this).attr('title');
+			if(!corpus) corpus = $(this).attr(ATTR_TITLE);
 			if(!corpus) {
 			    console.log('nc',$(this).html());
 			    return;
@@ -2002,7 +1827,7 @@ WikiEditor.prototype = {
 	    this.tagSelectDialog.find('a').tooltip({
 		    classes: {"ui-tooltip": "wiki-editor-tooltip"},
 		    content: function () {
-			return $(this).prop('title');
+			return $(this).prop(ATTR_TITLE);
 		    },
 		    show: { effect: 'slide', delay: 500, duration: 400 },
 		position: { my: "left top", at: "right top" }
@@ -2099,7 +1924,7 @@ WikiEditor.prototype = {
 		{p:'linksBefore',ex:'"url;label,url;label"'},
 		{p:'linksAfter',ex:'"url;label,url;label"'},		
 		{p:'innerClass',ex:''},
-		{p:'class',ex:'',tt:'link css class'},
+		{p:ATTR_CLASS,ex:'',tt:'link css class'},
 		{p:'style',ex:'',tt:'link style'},
 		{p:'chunkSize',ex:'10',tt:'break up the list of entries into chunkSize lists and display each list'},
 		{p:'numChunks',ex:'2',tt:'how many entry chunks'},
@@ -2132,7 +1957,7 @@ WikiEditor.prototype = {
 		{p:'tagopen',ex:'',tt:'html before link'},
 		{p:'tagclose',ex:'',tt:'html after link'},	
 		{p:'innerClass',ex:''},
-		{p:'class',ex:'',tt:'link css class'},
+		{p:ATTR_CLASS,ex:'',tt:'link css class'},
 		{p:'style',ex:'',tt:'link style'},
 		{p:'chunkSize',ex:'10',tt:'break up the list of entries into chunkSize lists and display each list'},
 		{p:'numChunks',ex:'2',tt:'how many entry chunks'},
@@ -2460,4 +2285,218 @@ function getWikiEditorMenuBar(blocks,id, prefix) {
     let menubar = HU.div([CLASS,"wiki-popup-menubar",  ATTR_ID, id],
 			 HU.tag("ul", [ATTR_ID, id+"_inner", ATTR_CLASS, "sf-menu"], menu))
     return menubar;
+}
+
+
+
+function Transcriber(container,args) {
+    this.audioChunks = [];
+    this.container = container;
+    let opts = {
+	appendLabel:'Append',
+	addExtra:true
+    }
+    if(args) $.extend(opts,args);
+    this.opts = opts;
+}
+
+Transcriber.prototype = {
+
+   jq:function(id) {
+	return this.container.jq(id);
+    },
+    domId:function(id) {
+	return this.container.domId(id);
+    },    
+    appendText:function(val) {
+	this.container.handleTranscribeText(val);
+    },
+    getAnchor:function() {
+	return this.container.getTranscribeAnchor();
+    },
+    transcribeStart:function() {
+	this.transcribePlaying = true;
+	this.mediaRecorder.start();
+	this.transcribeStartTime = new Date();
+	this.jq('transcribe_play').html(HU.getIconImage('fa-solid fa-stop fa-gray'));
+	let updateTime = ()=>{
+	    let now = new Date();
+	    let diff = now.getTime()-this.transcribeStartTime.getTime();
+	    
+	    let seconds = parseInt((this.transcribeElapsedTime+diff)/1000);
+	    this.jq('transcribe_label').html(seconds +' seconds');
+	    this.transcribeMonitor = setTimeout(updateTime,500);
+	};
+	this.transcribeMonitor = setTimeout(updateTime,500);
+    },
+    transcribeStop:function() {
+	this.transcribePlaying = false;
+	if(this.transcribeStartTime) {
+	    let now = new Date();
+	    let diff = now.getTime()-this.transcribeStartTime.getTime();
+	    this.transcribeElapsedTime  += diff;
+	}
+	try {
+	    this.mediaRecorder.stop();
+	} catch(err){}
+	if(this.transcribeMonitor) clearTimeout(this.transcribeMonitor);
+	this.jq('transcribe_play').html(HU.getIconImage('fa-solid fa-microphone fa-gray'));
+    },
+    transcribeClear:function() {
+	this.audioChunks = [];
+	if(this.transcribeMonitor) clearTimeout(this.transcribeMonitor);
+	this.transcribeElapsedTime = 0;
+	try {
+	    this.mediaRecorder.stop();
+	} catch(err){}
+    },
+
+    transcribeDoIt:function() {
+	this.callDoIt = false;
+	if(!this.audioChunks || this.audioChunks.length==0) {
+	    alert('No audio has been captured');
+	    return
+	}
+	let file = new Blob(this.audioChunks, {
+	    'type': this.transcribeMime
+	});
+	let formData = new FormData();
+	let url = RamaddaUtils.getUrl("/llm/transcribe");
+	let data = new FormData();
+	this.jq('transcribe_loading').show();
+	data.append('mimetype', this.transcribeMime);
+	data.append('audio-file', file);
+	data.append('entryid',this.entryId);
+	if(this.jq('transcribe_sendtochat').is(':checked')) {
+	    data.append('sendtochat','true');	    
+	}
+
+	if(this.jq('transcribe_addfile').is(':checked')) {
+	    data.append('addfile','true');	    
+	}
+	$.ajax({
+	    url: url,
+	    data: data,
+	    cache: false,
+	    contentType: false,
+	    processData: false,
+	    method: 'POST',
+	    type: 'POST',
+	    success: (data)=>{
+		this.jq('transcribe_loading').hide();
+		this.transcribeClear();
+		this.jq('transcribe_label').html('0 seconds');
+		let results = data.results??data.error;
+		if(!Utils.stringDefined(results)) results = "No results"
+		this.jq('transcribe_text').val(results);
+	    },
+	    error: (data) =>{
+		this.jq('transcribe_loading').hide();
+		alert('transcription failed');
+		console.log(data);
+	    }
+	});
+    },
+    doTranscribe:function() {
+	if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+	    alert("media recording not supported");
+	    return;
+	}
+	navigator.mediaDevices.getUserMedia({audio: true,}).then((stream) => {
+	    this.transcribeMime = ['audio/mp3','audio/mp4','audio/wav', 'audio/webm','audio/mpeg']
+		  .filter(MediaRecorder.isTypeSupported)[0];
+	    if(!this.transcribeMime) {
+		alert("No audio formats available");
+		return;
+	    }
+	    this.mediaRecorder = new MediaRecorder(stream, {mimeType: this.transcribeMime});
+	    this.mediaRecorder.addEventListener("dataavailable", event => {
+//		console.log("data event");
+		this.audioChunks.push(event.data);
+	    });
+	    this.mediaRecorder.addEventListener("stop", () => {
+//		console.log("stop event");
+		if(this.callDoIt) this.transcribeDoIt();
+	    });
+	    let html = '';
+	    let controls =HU.hbox([
+		HU.span([ATTR_TITLE,'Start recording',ATTR_CLASS,CLASS_CLICKABLE,'id',this.domId('transcribe_play')],HU.getIconImage('fa-solid fa-microphone fa-gray')),
+		HU.span([ATTR_TITLE,'Transcribe recording',ATTR_CLASS,CLASS_CLICKABLE,'id',this.domId('transcribe_pen')],HU.getIconImage('fa-solid fa-pen fa-gray')),
+		HU.b(' Time: ')+
+		    HU.div(['style',HU.css('display','inline-block','text-align','right','width','150px','xborder','var(--basic-border)'),'id',this.domId('transcribe_label')],'0 seconds'),
+		HU.span([ATTR_TITLE,'Delete recording',ATTR_CLASS,CLASS_CLICKABLE,'id',this.domId('transcribe_delete')],HU.getIconImage('fa-solid fa-delete-left fa-gray')),
+	    ],HU.css('margin-right','5px'));
+
+	    let right =    HU.checkbox('',
+				       ['id',this.domId('transcribe_sendtochat'),
+					ATTR_TITLE,'Send to LLM'],
+				       false,'Send to LLM');
+	    right+=SPACE2;
+	    right+= HU.checkbox(this.domId('transcribe_addfile'),
+						['id',this.domId('transcribe_addfile'),
+						 ATTR_TITLE,'Add audio file as entry'],
+						false,'Add file');
+	    if(this.opts.addExtra)
+		html+=HU.leftRightTable(controls,right);
+	    else
+		html=controls;
+
+	    html+=HU.div(['style','position:relative;'],
+			 HU.textarea('','',['placeholder','','id',this.domId('transcribe_text'), 'rows',6,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;'])+
+			 HU.div(['style','display:none;position:absolute;top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);','id',this.domId('transcribe_loading')],
+				HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),['style','width:100px;'])));
+
+
+	    html+=HU.buttons([HU.span([ATTR_CLASS,CLASS_DIALOG_BUTTON,'append','true'],this.opts.appendLabel),
+			      HU.span([ATTR_CLASS,CLASS_DIALOG_BUTTON,ID,this.domId("cancel")],"Cancel")]);
+	    html = HU.div([ATTR_CLASS,CLASS_DIALOG],html);
+	    let closeCallback =()=>{
+		this.transcribeClear();
+	    };
+	    let dialog = this.transcribeDialog = HU.makeDialog({content:html,anchor:this.getAnchor(),
+								my: "left bottom",     
+								at: "left+200" +" top-50",
+								title:"Transcribe",
+								callback:closeCallback,
+								header:true,sticky:true,draggable:true,modal:false});	
+	    this.transcribeElapsedTime = 0;
+	    this.jq('transcribe_pen').click(()=>{
+		if(this.transcribePlaying) {
+		    this.callDoIt = true;
+		    this.transcribeStop();
+		} else {
+		    this.transcribeDoIt();
+		}
+	    });
+	    this.jq('transcribe_play').click(()=>{
+		if(this.transcribePlaying) {
+		    this.transcribeStop();
+		} else {
+		    this.transcribeStart();
+
+		}
+	    });
+	    this.jq('transcribe_delete').click(()=>{
+		this.jq('transcribe_text').val('');
+		this.transcribeStop();	
+		this.transcribeClear();
+		this.jq('transcribe_label').html('0 seconds');
+	    });
+
+
+	    let _this = this;
+	    dialog.find('.ramadda-dialog-button').button().click(function() {
+		let val = _this.jq('transcribe_text').val()??'';
+		if ($(this).attr('append')) {
+		    _this.appendText(val);
+		} else {
+		    dialog.remove();
+		    closeCallback();
+		}
+	    });
+	}).catch((err) => {
+	    alert(`Error initializing transcription: ${err}`);
+	});
+    }
+
 }

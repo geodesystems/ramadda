@@ -782,6 +782,7 @@ public class LLMManager extends  AdminHandlerImpl {
         String id = HU.getUniqueId("chat_div");
 	HU.div(sb,"",HU.attrs("style","width:100%;","id", id));
 	sb.append("</td><tr></table>");
+	HU.importJS(sb,getPageHandler().makeHtdocsUrl("/wiki.js"));
 	HU.importJS(sb,getPageHandler().makeHtdocsUrl("/documentchat.js"));
 	List<String> models = new ArrayList<String>();
 	for(HtmlUtils.Selector sel:getAvailableModels()) {

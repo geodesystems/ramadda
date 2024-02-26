@@ -1,34 +1,37 @@
 
 function DocumentChat(id,entryId,models) {
+    this.id = id;
     let cnt = 0;
     let div  =jqid(id);
     let chat = HU.open('div',[ATTR_STYLE,'margin-left:5px;max-width:100%;overflow-x:auto;']);
+    let mike = HU.span([ATTR_TITLE,'Voice transcribe',ATTR_ID,this.domId('transcribe'),ATTR_CLASS,'ramadda-clickable'],
+		       HU.getIconImage('fa-solid fa-microphone fa-gray'));
     let left = HU.div([],
-		      HU.span([ATTR_TITLE,'History',ATTR_CLASS,'ramadda-clickable',ATTR_ID,id+'_history'],HU.getIconImage('fas fa-list'))+
+		      HU.span([ATTR_TITLE,'History',ATTR_CLASS,'ramadda-clickable',ATTR_ID,this.domId('history')],
+			      HU.getIconImage('fas fa-list'))+
 		      SPACE1+
-		      HU.span([ATTR_ID,id+'_button_clear',ATTR_TITLE,'Clear output',ATTR_CLASS,'ramadda-clickable'],HU.getIconImage('fas fa-eraser')) +
+//		      mike +     SPACE1+
+		      HU.span([ATTR_ID,this.domId('button_clear'),ATTR_TITLE,'Clear output',ATTR_CLASS,'ramadda-clickable'],
+			      HU.getIconImage('fas fa-eraser')) +
 		      HU.space(2) +
-		      HU.checkbox(id+'_button_clearalways',[ATTR_TITLE,'Always clear output'],
+		      HU.checkbox(this.domId('button_clearalways'),[ATTR_TITLE,'Always clear output'],
 				  true,'Clear'));
     let right = '';
     if(models.length>1) {
-	right+=HU.b('Model: ') +HU.select('',['id',id+'_chatmodel'],models);
+	right+=HU.b('Model: ') +HU.select('',['id',this.domId('chatmodel')],models);
 	right+=SPACE;
     }
     right+=HU.b('Offset: ') +HU.input('','0',
-			 [ATTR_ID,id+'_chatoffset',ATTR_TITLE,'Offset into document','size','3']);
+				      [ATTR_ID,this.domId('chatoffset'),ATTR_TITLE,'Offset into document','size','3']);
 
     right+=SPACE1;
-    right+=HU.span([ATTR_ID,id+'_info',ATTR_TITLE,''],HU.getIconImage('fas fa-circle-info'));
+    right+=HU.span([ATTR_ID,this.domId('info'),ATTR_TITLE,''],HU.getIconImage('fas fa-circle-info'));
     
     chat+=HU.div([ATTR_STYLE,'margin:4px;'],HU.leftRightTable(left,right));
-
-
-//    div.append(HU.input('','',['placeholder','Document chat input',ATTR_STYLE,HU.css('width','100%'),ATTR_ID,id+'_input','class','ramadda-documentchat-input']));
-    let text= HU.textarea('','',['placeholder','Document chat input, e.g. - List the 5 main points','rows','3',ATTR_STYLE,HU.css('width','100%'),ATTR_ID,id+'_input','class','ramadda-documentchat-input']);    
+    let text= HU.textarea('','',['placeholder','Document chat input, e.g. - List the 5 main points','rows','3',ATTR_STYLE,HU.css('width','100%'),ATTR_ID,this.domId('input'),'class','ramadda-documentchat-input']);    
     chat +=HU.div([ATTR_STYLE,HU.css('position','relative')],
 		  text+
-		  HU.div([ATTR_ID,id+'_progress',
+		  HU.div([ATTR_ID,this.domId('progress'),
 			  ATTR_STYLE,HU.css('position','absolute','left','50%',
 					    'display','none',
 					    'transform','translate(-50%, 0)',
@@ -38,14 +41,14 @@ function DocumentChat(id,entryId,models) {
 									   'class','ramadda-clickable'])));
 
 
-    chat+=HU.div([ATTR_ID,id+'_output',ATTR_STYLE,HU.css('max-height','800px','overflow-y','auto')]);
+    chat+=HU.div([ATTR_ID,this.domId('output'),ATTR_STYLE,HU.css('max-height','800px','overflow-y','auto')]);
     chat+='</div>'
     div.html(chat);
     this.history= [];
     let _this = this;
-    let input = jqid(id+'_input');
-    let output = jqid(id+'_output');
-    let progress=jqid(id+'_progress');
+    let input = this.input = this.jq('input');
+    let output = this.jq('output');
+    let progress=this.jq('progress');
     let step = 0;
     let process = q=>{
 	if(!q || q.trim().length==0) return;
@@ -53,16 +56,16 @@ function DocumentChat(id,entryId,models) {
 	input.prop('disabled',true);
 	input.css('background','#efefef');
 	progress.show();
-	if(jqid(id+'_button_clearalways').is(':checked')) output.html('');
+	if(this.jq('button_clearalways').is(':checked')) output.html('');
 	let url =ramaddaBaseUrl+'/entry/action';
 
         let args = {
 	    action:'documentchat',
             entryid: entryId,
 	    question:q,
-	    offset:jqid(id+'_chatoffset').val().trim(),
+	    offset:this.jq('chatoffset').val().trim(),
         };
-	let model = jqid(id+'_chatmodel').val()
+	let model = this.jq('chatmodel').val()
 	if(model) {
 	    args.model = model;
 	}
@@ -79,21 +82,21 @@ function DocumentChat(id,entryId,models) {
             } else {
 		let tt=Utils.join(['Corpus length: ' + result.corpusLength,
 				   'Segment length: ' + result.segmentLength],'<br>');		
-		jqid(id+'_info').attr(ATTR_TITLE,tt);
-		jqid(id+'_info').tooltip({
+		this.jq('info').attr(ATTR_TITLE,tt);
+		this.jq('info').tooltip({
 		    content:()=>{return tt;}});
 		r = result.response??'';
 		r = r.replace(/(https?:\/\/[^\s]+)/g,'<a href=\'$1\'>$1</a>');
 		r = r.replace(/^-/gm,'&#x2022;').replace(/\n/g,'<br>');
 	    }
 	    
-	    let qid = id+'_id_' + (cnt++);
-	    let out = HU.div([ATTR_STYLE,'font-weight:bold;',ATTR_ID,qid,ATTR_CLASS,'ramadda-clickable',ATTR_TITLE,
+	    let qid = 'id_' + (cnt++);
+	    let out = HU.div([ATTR_STYLE,'font-weight:bold;',ATTR_ID,this.domId(qid),ATTR_CLASS,'ramadda-clickable',ATTR_TITLE,
 			      'Use question'],
 			     q)+r;
 	    out = HU.div(['style',HU.css('border','1px solid #eee','padding','4px','margin-top','8px')], out);
 	    output.prepend(HU.div([],out));
-	    jqid(qid).click(function() {
+	    this.jq(qid).click(function() {
 		input.val($(this).html()+' ');
 		input.focus();
 	    });
@@ -105,7 +108,15 @@ function DocumentChat(id,entryId,models) {
 	    input.focus();
         });
     }
-    jqid(id+'_history').click(function() {
+    this.jq('transcribe').click(()=> {
+	if(!this.transcriber) this.transcriber = new Transcriber(this,{
+	    appendLabel:'Query Document',
+	    addExtra:false	    
+	});
+	this.transcriber.doTranscribe();
+    });
+
+    this.jq('history').click(function() {
 	if(_this.history.length==0) return;
 	let html = '';	
 	_this.history.slice().reverse().forEach(line=>{
@@ -122,7 +133,7 @@ function DocumentChat(id,entryId,models) {
 	});
     });
 
-    jqid(id+'_button_clear').click(()=>{
+    this.jq('button_clear').click(()=>{
 	output.html('');
     });
 
@@ -141,4 +152,19 @@ function DocumentChat(id,entryId,models) {
 	if(!Utils.isReturnKey(event)) return;
 	process(input.val().trim());
     });
+}
+
+
+DocumentChat.prototype = {
+    jq :function(domId){
+	return jqid(this.domId(domId));
+    },
+    domId:function (domId){
+	return this.id+domId;
+    },
+    getTranscribeAnchor:function() {
+	return this.input;
+    },
+    handleTranscribeText:function(text) {
+    }
 }
