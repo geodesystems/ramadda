@@ -54,6 +54,8 @@ done
 
 
 
+alias ip_$ID="echo $IP"
+
 if [ -n "$PEM" ]; then
     alias go$ID="ssh -i $PEM ${USER}@$IP"
     alias put$ID="sh ${MYDIR}/put.sh ${IP} -pem ${PEM} -user ${USER}"
