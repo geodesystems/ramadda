@@ -13,84 +13,39 @@ install_service() {
     linux_install_service
 }
 
+install_postgres() {
+    echo "Not implemented yet"
+}
 
-export BASE_DIR=/mnt/ramadda
-#This comes after setting BASE_DIR
-init_env
-
-#mount the volume if neede
-if [ ! -d "$BASE_DIR" ]; then
-    aws_do_mount;
-else
-    echo "$BASE_DIR already mounted"
-fi
-
-echo "RAMADDA Home dir:$RAMADDA_HOME_DIR"
-mkdir -p $RAMADDA_HOME_DIR
-
-
-tmpdir=`dirname $BASE_DIR`
-permissions=$(stat -c %a $tmpdir)
-if [ "$permissions" = "700" ]; then
-    chmod 755 "$tmpdir"
-fi
-
-
-
-
-echo "Installing Java"
-askYesNo "Do you want to install Java?"  "y"
-if [ "$response" = "y" ]; then
+install_java() {
     apt install openjdk-11-jdk
-fi
+}
 
+start_service() {
+    printf "Starting RAMADDA"
+    systemctl start ${SERVICE_NAME}
+}
 
-
-
-askYesNo "Install postgres"  "y"
-if [ "$response" = "y" ]; then
-    install_postgres
-fi
-
-ask_install_ramadda
-ask_keystore
-generate_install_password
-
-read -p "Should we open ports ${RAMADDA_HTTP_PORT} and ${RAMADDA_HTTPS_PORT} in the firewall? [y|n]: " response
-if [ "$response" = "y" ]; then
-    if command -v "ufw" &> /dev/null ; then
-	ufw allow ${RAMADDA_HTTP_PORT}/tcp
-	ufw allow ${RAMADDA_HTTPS_PORT}/tcp	
-	ufw reload
-    else
-	if command -v "firewall-cmd" &> /dev/null ; then
-	    firewall-cmd --add-port=${RAMADDA_HTTP_PORT}/tcp --permanent
-	    firewall-cmd --add-port=${RAMADDA_HTTPS_PORT}/tcp --permanent
-	    firewall-cmd --reload
+install_step2() {
+    read -p "Should we open ports ${RAMADDA_HTTP_PORT} and ${RAMADDA_HTTPS_PORT} in the firewall? [y|n]: " response
+    if [ "$response" = "y" ]; then
+	if command -v "ufw" &> /dev/null ; then
+	    ufw allow ${RAMADDA_HTTP_PORT}/tcp
+	    ufw allow ${RAMADDA_HTTPS_PORT}/tcp	
+	    ufw reload
 	else
-	    echo "Could not find firewall-cmd or ufw"
+	    if command -v "firewall-cmd" &> /dev/null ; then
+		firewall-cmd --add-port=${RAMADDA_HTTP_PORT}/tcp --permanent
+		firewall-cmd --add-port=${RAMADDA_HTTPS_PORT}/tcp --permanent
+		firewall-cmd --reload
+	    else
+		echo "Could not find firewall-cmd or ufw"
 
+	    fi
 	fi
     fi
-fi
+}
 
-
-printf "Starting RAMADDA"
-systemctl start ${SERVICE_NAME}
-do_finish_message
+do_main_install
 
 exit
-
-
-
-
-
-
-
-
-
-
-
-
-
-

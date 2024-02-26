@@ -14,17 +14,23 @@ export RAMADDA_HTTP_PORT=80
 export RAMADDA_HTTPS_PORT=443
 
 export AWS_BASE_DIR=/mnt/ramadda
+export RAMADDA_BASE_DIR="$AWS_BASE_DIR"
 export OS_REDHAT="redhat"
 export OS_AMAZON="amazon_linux"
 
 ##For now only amazon linux is supported 
 export os=$OS_AMAZON
 
+
 export RAMADDA_DOWNLOAD="https://ramadda.org/repository/release/latest/ramaddaserver.zip"
 export PARENT_DIR=`dirname $INSTALLER_DIR`
 export YUM_ARG=""
-export RAMADDA_BASE_DIR=.
 export promptUser=1
+
+install_step1() {
+}
+install_step2() {
+}
 
 ask_base_dir() {
     header  "RAMADDA Base Directory"
@@ -206,7 +212,57 @@ else
 fi
 
 
-install_postgres() {
+do_main_install() {
+    init_env
+
+
+    #mount the volume if needed
+    if [ ! -d "$RAMADDA_BASE_DIR" ]; then
+	aws_do_mount;
+    fi
+
+    echo "RAMADDA Home dir:$RAMADDA_HOME_DIR"
+    mkdir -p $RAMADDA_HOME_DIR
+
+
+    tmpdir=`dirname $RAMADDA_BASE_DIR`
+    permissions=$(stat -c %a $tmpdir)
+    if [ "$permissions" == "700" ]; then
+	chmod 755 "$tmpdir"
+    fi
+
+    ask_install_java
+    ask_postgres
+    install_step1
+    ask_install_ramadda
+    install_step2
+    ask_keystore
+    generate_install_password
+    start_service
+    do_finish_message
+}
+
+
+ask_install_java() {
+    echo "Installing Java"
+    askYesNo "Do you want to install Java?"  "y"
+    if [ "$response" = "y" ]; then
+	install_java
+    fi
+}
+
+
+ask_postgres()  {
+    header "Postgres install"
+    echo "RAMADDA can run with Postgres or it's own built in Derby database"
+    askYesNo "Do you want to install and use postgres?"  "y"
+    if [ "$response" == "y" ]; then
+	install_postgres
+    fi
+}
+
+
+aws_install_postgres() {
     export PG_DIR=/var/lib/pgsql
     export PG_HBA=${PG_DIR}/data/pg_hba.conf
     export PG_REAL_DIR="${RAMADDA_BASE_DIR}/pgsql"
