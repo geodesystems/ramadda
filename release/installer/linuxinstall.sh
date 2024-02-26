@@ -18,6 +18,7 @@ install_postgres() {
 }
 
 install_java() {
+    apt update
     apt install openjdk-11-jdk
 }
 

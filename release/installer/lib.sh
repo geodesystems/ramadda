@@ -242,7 +242,7 @@ do_main_install() {
 
     tmpdir=`dirname $RAMADDA_BASE_DIR`
     permissions=$(stat -c %a $tmpdir)
-    if [ "$permissions" == "700" ]; then
+    if [ "$permissions" = "700" ]; then
 	chmod 755 "$tmpdir"
     fi
 
@@ -271,7 +271,7 @@ ask_postgres()  {
     header "Postgres install"
     echo "RAMADDA can run with Postgres or it's own built in Derby database"
     askYesNo "Do you want to install and use postgres?"  "y"
-    if [ "$response" == "y" ]; then
+    if [ "$response" = "y" ]; then
 	install_postgres
     fi
 }
@@ -490,7 +490,7 @@ generate_keystore() {
     printf "${password}\n${password}\nRAMADDA\nRAMADDA\nRAMADDA\ncity\nstate\ncountry\nyes\n\n" | keytool -genkey -keyalg RSA -alias ramadda -keystore ${RAMADDA_HOME_DIR}/keystore > /dev/null 2> /dev/null
     printf "#generated password\n\nramadda.ssl.password=${password}\nramadda.ssl.keypassword=${password}\nramadda.ssl.port=${RAMADDA_HTTPS_PORT}\n" > ${RAMADDA_HOME_DIR}/ssl.properties
     printf "\nIf you need to create a new key then delete ${RAMADDA_HOME_DIR}/keystore and run:\n    keytool -genkey -keyalg RSA -alias ramadda -keystore ${RAMADDA_HOME_DIR}/keystore\nIf you are installing your own certificate then generate the keystore and copy it to ${RAMADDA_HOME_DIR}\n"
-    printf "Note: since this is a self-signed certificate your browser will show that this is an insecure connection\n"
+    printf "****\nNote: since this is a self-signed certificate your browser will show that this is an insecure connection\n*****\n"
     printf "\n"
 }
 

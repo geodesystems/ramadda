@@ -24,7 +24,7 @@ if [ ! -d "${RAMADDA_INSTALL_DIR}" ]; then
 fi
 
 
-while [[ $# -gt 0 ]]
+while [ $# -gt 0 ]
 do
     arg=$1
     case $arg in
