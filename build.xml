@@ -628,6 +628,7 @@
     <copy overwrite="true" file="${release_dir}/installer/lib.sh" todir="${installer_dir}"/>
     <copy overwrite="true" file="${release_dir}/installer/update.sh" todir="${installer_dir}"/>
     <copy overwrite="true" file="${release_dir}/installer/install.sh" todir="${installer_dir}"/>    
+    <copy overwrite="true" file="${release_dir}/installer/renewcertificate.sh" todir="${installer_dir}"/>    
     <copy overwrite="true" file="${bin_dir}/letsencrypt.sh" todir="${installer_dir}"/>
 <!--
     <copy overwrite="true" file="${release_dir}/installer/awscli.sh" todir="${installer_dir}"/>
