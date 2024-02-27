@@ -761,11 +761,12 @@ function RecordFilter(display,filterFieldId, properties) {
 		    this.getPropertyFromUrl(this.getId() +".filterValue",FILTER_ALL);
                 let enums = this.getEnums(records);
 		let attrs= ["style",widgetStyle, "id",widgetId,"fieldId",this.getId()];
-		if(this.getProperty(this.getId() +".filterMultiple",false)) {
+		if(this.getProperty(this.getId() +".filterMultiple",this.getProperty('filterMultiple'))) {
 		    attrs.push("multiple");
 		    attrs.push("");
 		    attrs.push("size");
-		    attrs.push(this.getProperty(this.getId() +".filterMultipleSize","3"));
+		    attrs.push(this.getProperty(this.getId() +".filterMultipleSize",
+						this.getProperty('filterMultipleSize','3')));
 		    dfltValue = dfltValue.split(",");
 		}
 
