@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Feb 27 08:27:07 MST 2024";
+var build_date="RAMADDA build date: Tue Feb 27 12:27:30 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -16093,6 +16093,7 @@ function CsvUtil() {
 	    }
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
+
 	count: function(pointData, args) {
 	    let records = pointData.getRecords(); 
             let allFields  = pointData.getRecordFields();
@@ -16118,16 +16119,21 @@ function CsvUtil() {
 		let record = records[rowIdx];
 		let value = field.getValue(record);
 		if(!Utils.isDefined(counts[value])) {
-		    counts[value]=0;
+		    counts[value]={
+			count:0,
+			records:[]
+		    };
 		    values.push(value);
 		}
-		counts[value]++;
+		counts[value].count++;
+		counts[value].records.push(record);
 	    }
 	    let newRecords  =[]
 	    if(args.sort) values.sort();
 	    values.forEach(value=>{
-		let newData = [value,counts[value]];
+		let newData = [value,counts[value].count];
 		let newRecord = new  PointRecord(newFields,NaN,NaN, NaN, null, newData);
+		newRecord.parentRecords=counts[value].records;
 		newRecords.push(newRecord);
 	    });
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
@@ -18659,7 +18665,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'textColor',ex:'green'},
 	{p:'textFontName',ex:'Times'},
 	
-
+	{p:'hAxisTitle'},
+	{p:'vAxisTitle'},	
+	{p:'hAxisHideTicks'},
+	{p:'vAxisHideTicks'},	
 	{p:'lineDashStyle',d:null,ex:'2,2,20,2,20'},
 	{p:'highlight.lineDashStyle',d:'2,2,20,2,20',ex:'2,2,20,2,20'},
 	{p:'nohighlight.lineDashStyle',d:'2,2,20,2,20',ex:'2,2,20,2,20'},	
@@ -20090,6 +20099,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    if(this.getProperty("vAxisReverse"))
 		chartOptions.vAxis.direction=-1;
 
+
 	    chartOptions.hAxis.minValue = this.getProperty("hAxisMinValue");
 	    chartOptions.hAxis.maxValue = this.getProperty("hAxisMaxValue");
 	    chartOptions.vAxis.minValue = this.getProperty("vAxisMinValue");
@@ -20135,32 +20145,27 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    this.setPropertyOn(chartOptions.vAxis.minorGridlines, "vAxis.minorGridlines.color", "color",  minorGridLinesColor);
 	    this.setPropertyOn(chartOptions.vAxis, "vAxis.baselineColor", "baselineColor", this.getProperty("baselineColor")|| lineColor);
 
-            let textColor = this.getProperty("textColor", "#000");
-	    let textBold = this.getProperty("textBold", false);
-	    let textItalic = this.getProperty("textItalic", false);	    
-            let textFontName = this.getProperty("textFontName");
-            let fontSize = this.getProperty("textFontSize",12);	    
-
+            let textColor = this.getTextColor();
+	    let textBold = this.getTextBold();
+	    let textItalic = this.getTextItalic();
+            let textFontName = this.getTextFontName();
+            let fontSize = this.getTextFontSize();	    
             this.setPropertyOn(chartOptions.hAxis.textStyle, "hAxis.text.color", "color", this.getProperty("axis.text.color", textColor));
             this.setPropertyOn(chartOptions.vAxis.textStyle, "vAxis.text.color", "color", this.getProperty("axis.text.color", textColor));
-
-
             this.setPropertyOn(chartOptions.hAxis.textStyle, "hAxis.text.bold", "bold", textBold);
             this.setPropertyOn(chartOptions.vAxis.textStyle, "vAxis.text.bold", "bold", textBold);
-
             this.setPropertyOn(chartOptions.hAxis.textStyle, "hAxis.text.italic", "italic", textItalic);
             this.setPropertyOn(chartOptions.vAxis.textStyle, "vAxis.text.italic", "italic", textItalic);
-
             this.setPropertyOn(chartOptions.hAxis.textStyle, "hAxis.text.fontName", "fontName", textFontName);
             this.setPropertyOn(chartOptions.vAxis.textStyle, "vAxis.text.fontName", "fontName", textFontName);
-
             this.setPropertyOn(chartOptions.hAxis.textStyle, "hAxis.text.fontSize", "fontSize",fontSize);
             this.setPropertyOn(chartOptions.vAxis.textStyle, "vAxis.text.fontSize", "fontSize", fontSize);
 
+	    chartOptions.vAxis.title  =
+		Utils.decodeText(this.getProperty("vAxis.text", this.getProperty("vAxisText",this.getVAxisTitle())));
 
-	    chartOptions.vAxis.title  = Utils.decodeText(this.getProperty("vAxis.text", this.getProperty("vAxisText",this.getProperty("vAxisTitle"))));
-
-	    chartOptions.hAxis.title  = Utils.decodeText(this.getProperty("hAxis.text", this.getProperty("hAxisText",this.getProperty("hAxisTitle"))));	    
+	    chartOptions.hAxis.title  =
+		Utils.decodeText(this.getProperty("hAxis.text", this.getProperty("hAxisText",this.getHAxisTitle())));
 	    chartOptions.hAxis.slantedText = this.getProperty("hAxis.slantedText",this.getProperty("slantedText",false));
             this.setPropertyOn(chartOptions.hAxis.titleTextStyle, "hAxis.text.color", "color", textColor);
             this.setPropertyOn(chartOptions.vAxis.titleTextStyle, "vAxis.text.color", "color", textColor);
@@ -20192,6 +20197,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		chartOptions.vAxis.ticks  = ticks;
 	    }
 
+	    if(this.getHAxisHideTicks()) 
+		chartOptions.hAxis.ticks  = [];
+	    if(this.getVAxisHideTicks()) 
+		chartOptions.vAxis.ticks  = [];	    
 
             if (this.fontSize > 0) {
                 chartOptions.fontSize = this.fontSize;
@@ -20606,6 +20615,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 									     records:records});
 				    }
 				} else {
+				    console.log('select',record);
+				    
 				    _this.propagateEventRecordSelection({record: record});
 				}
 			    }
@@ -20766,7 +20777,6 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
             }
 
 	    if(chartOptions.legend.position=="left") {
-		console.log(chartOptions.legend.position);
                 chartOptions.series = [
 		    {
 			targetAxisIndex: 1
@@ -37692,13 +37702,23 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			   this.domId(ID_DISPLAY_CONTENTS)], "");
 	    return html;
         },
-	removeHighlight: function() {
-	    if(this.highlightMarker)
-		this.removeFeature(this.highlightMarker);
+	addHighlightMarker:function(marker) {
+	    if(!this.highlightMarkers) this.highlightMarkers=[];
+	    this.highlightMarkers.push(marker);
 	},
-	highlightPoint: function(lat,lon,highlight,andCenter) {
+	removeHighlight: function() {
+	    if(this.highlightMarkers) {
+		this.highlightMarkers.forEach(marker=>{
+		    this.removeFeature(marker);
+		});
+		this.highlightMarkers = null;
+	    }
+	},
+	highlightPoint: function(lat,lon,highlight,andCenter,dontRemove) {
 	    if(!this.getMap()) return;
-	    this.removeHighlight();
+	    if(!dontRemove) {
+		this.removeHighlight();
+	    }
 	    if(!this.getShowRecordHighlight()) return;
 	    if(highlight) {
 		let point = MapUtils.createLonLat(lon,lat);
@@ -37712,17 +37732,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 };
 		if(this.getProperty("recordHighlightUseMarker",false)) {
 		    let size = +this.getProperty("recordHighlightRadius", +this.getRadius(24));
-		    this.highlightMarker = this.getMap().createMarker("pt-" + featureCnt, point, null, "pt-" + featureCnt,null,null,size);
+		    this.addHighlightMarker(this.getMap().createMarker("pt-" + featureCnt, point, null, "pt-" + featureCnt,null,null,size));
 		} else 	if(this.getProperty("recordHighlightVerticalLine",false)) {
 		    let points = [];
                     points.push(MapUtils.createPoint(lon,0));
 		    points.push(MapUtils.createPoint(lon,80));
-                    this.highlightMarker = this.getMap().createPolygon(id, "highlight", points, attrs, null);
+                    this.addHighlightMarker(this.getMap().createPolygon(id, "highlight", points, attrs, null));
 		} else {
 		    attrs.graphicName = this.getProperty("recordHighlightShape");
-		    this.highlightMarker =  this.getMap().createPoint("highlight", point, attrs);
+		    this.addHighlightMarker(this.getMap().createPoint("highlight", point, attrs));
 		}
-		if(this.highlightMarker) this.addFeatures([this.highlightMarker]);
+		if(this.highlightMarkers) this.addFeatures(this.highlightMarkers);
 		if(andCenter && this.getCenterOnHighlight()) {
 		    this.getMap().setCenter(point);
 		    if(this.getZoomLevelOnHighlight()) {
@@ -37871,7 +37891,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.propagateEventRecordSelection({record: closest});
 
 	    //If we are highlighting a record then change the marker
-	    if(this.highlightMarker) {
+	    if(this.highlightMarkers) {
 		this.highlightPoint(closest.getLatitude(),closest.getLongitude(),true,false);
 	    }
 	    
@@ -38987,10 +39007,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if (this.map == null) {
 		return;
 	    }
-	    if(this.highlightMarker) {
-		this.map.removePoint(this.highlightMarker);
-		this.map.removeMarker(this.highlightMarker);
-		this.highlightMarker = null;
+	    if(this.highlightMarkers) {
+		this.highlightMarkers.forEach(marker=>{
+		    this.map.removePoint(marker);
+		    this.map.removeMarker(marker);
+		});
+		this.highlightMarkers = null;
 	    }
 	    this.map.clearSeenMarkers();
 	    let t2= new Date();
@@ -40825,7 +40847,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (displayMapCurrentMarker >= displayMapMarkers.length) displayMapCurrentMarker = 0;
             return RamaddaUtil.getCdnUrl("/lib/openlayers/v2/img/" + displayMapMarkers[displayMapCurrentMarker]);
         },
-	highlightMarker:null,
+	highlightMarkers:null,
         handleEventRecordHighlight: function(source, args) {
 	    SUPER.handleEventRecordHighlight.call(this,source,args);
 	    if(displayDebug.handleEventRecordSelect)
@@ -40852,7 +40874,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		}
 	    } else {
-		this.highlightPoint(args.record.getLatitude(),args.record.getLongitude(),args.highlight,true);
+		let records = args.records??[args.record];
+		records.forEach((record,idx)=>{
+		    this.highlightPoint(record.getLatitude(),record.getLongitude(),args.highlight,idx==0,idx!=0);
+		});
 	    }
 	},
         handleEventRecordSelection: function(source, args) {
