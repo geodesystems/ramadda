@@ -191,6 +191,7 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 	List<String> models = new ArrayList<String>();
 	String[] jsImports = new String[]{
 	    ".gltf","//unpkg.com/three@0.126.0/examples/js/loaders/GLTFLoader.js",
+	    ".stl","//unpkg.com/three@0.126.0/examples/js/loaders/STLLoader.js",	    
 	    ".fbx","//unpkg.com/three@0.126.0/examples/js/loaders/FBXLoader.js",
 	    ".3ds","//unpkg.com/three@0.126.0/examples/js/loaders/TDSLoader.js",
 	    ".obj","//unpkg.com/three@0.126.0/examples/js/loaders/OBJLoader.js",
