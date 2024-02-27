@@ -2486,6 +2486,7 @@ function CsvUtil() {
 	    }
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
+
 	count: function(pointData, args) {
 	    let records = pointData.getRecords(); 
             let allFields  = pointData.getRecordFields();
@@ -2511,16 +2512,21 @@ function CsvUtil() {
 		let record = records[rowIdx];
 		let value = field.getValue(record);
 		if(!Utils.isDefined(counts[value])) {
-		    counts[value]=0;
+		    counts[value]={
+			count:0,
+			records:[]
+		    };
 		    values.push(value);
 		}
-		counts[value]++;
+		counts[value].count++;
+		counts[value].records.push(record);
 	    }
 	    let newRecords  =[]
 	    if(args.sort) values.sort();
 	    values.forEach(value=>{
-		let newData = [value,counts[value]];
+		let newData = [value,counts[value].count];
 		let newRecord = new  PointRecord(newFields,NaN,NaN, NaN, null, newData);
+		newRecord.parentRecords=counts[value].records;
 		newRecords.push(newRecord);
 	    });
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
