@@ -1,14 +1,11 @@
 
 ##### installer.sh #####
 
-awsinstall.sh - Installs for an Amazon Linux image
+install.sh - Installs for an Amazon Linux and other Linuxes (tested on Ubuntu, Redhat and Centos)
 
-linuxinstall.sh - Installs for any Linux
 
 Run as:
-sudo sh ramaddainstaller/awsinstall.sh
-or:
-sudo sh ramaddainstaller/linuxinstall.sh 
+sudo sh ramaddainstaller/install.sh
 
 
 This will walk you through a number of installation steps to setup the directories, and,
@@ -19,19 +16,17 @@ on Amazon Linux, install and configure Postgres
 ## Service
 ##
 On Amazon Linux to start/stop RAMADDA:
-sudo sh service ramadda stop
-sudo sh service ramadda start
+sudo service ramadda stop
+sudo  service ramadda start
 
+On other linuxes
+sudo systemctl start ramadda
+sudo systemctl stop ramadda
 
 ##
 ## Updating
 ##
 
-To update your install run:
+sudo sh ramaddainstaller/update.sh
 
-On Amazon Linux:
-sudo sh ramaddainstaller/awsupdate.sh
-
-or in Linux:
-sudo sh ramaddainstaller/linuxupdate.sh
 
