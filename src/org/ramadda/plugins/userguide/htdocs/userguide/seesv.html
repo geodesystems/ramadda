@@ -1,6 +1,6 @@
 <html>
 <head>
-<title></title>
+<title>RAMADDA SeeSV</title>
   <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
 
 </head>
@@ -12,7 +12,7 @@
 <table width=100% cellspacing=0 cellpadding=0 >
 <tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="etl.html"><table><td valign=center><td><span title="Previous: ETL Tools"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>ETL Tools</td></tr></table></a></div></div></td>
 <td width=50% align=center>
-<div class="ramadda-page-title"><a href="#">Section 8.0.1: </a></div>
+<div class="ramadda-page-title"><a href="#">Section 8.0.1: RAMADDA SeeSV</a></div>
 </td>
 <td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="dataexample.html"><table><tr valign=center><td>Data Example</td><td><span title="Next: Data Example"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
 </tr></table>
@@ -28,6 +28,194 @@ pre {
 </style>
 
 <div class="ramadda-doc-contents" style="margin-left:20px;">
+
+</head>    
+<notcl>
+<style type='text/css'>
+  body {font-family: Arial, sans-serif;    line-height:1.5em;
+       }
+  ul {margin:0px;}
+  .header {margin:10px;} .header a, .command a {color:#000; text-decoration:none;}
+  a:hover {
+      text-decoration:underline;
+  }
+  h2 {
+      font-size:120%;
+      font-weight:bold;
+      margin:0px;
+  }
+  pre {
+      line-height:1.3em;
+      border : 1px #ccc solid;
+      background:rgb(245,245,245);
+      padding:4px;
+      border-radius: 4px;
+      margin-bottom:10px;
+      margin-top:5px;
+      margin-left:10px;
+  }
+  .examples {
+      max-height: 400px;
+      overflow-y:auto;
+  }
+  .command {margin-top:10px;border : 1px #ccc solid; padding:4px; background:#E7EFF4;}
+  .command-block {
+      margin-left:20px;
+  }
+  .cmd {
+      font-style:italic;
+  }
+  seesv {
+      font-style:italic;
+      display:block;
+      border:1px solid #ccc;
+      background:rgb(245,245,245);
+      padding:4px;
+      border-radius: 4px;
+      margin-bottom:5px;
+      margin-top:5px;
+      padding:4px;
+  }
+
+</style>
+
+<h2>RAMADDA SeeSV</h2>
+<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Values'>Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric'>Numeric</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc'>Misc</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 304 commands for manipulating CSV and other types of files</center>
+
+:pagesearch selector=.seesv-item hideAll=.seesv-hide
+
+<div class=seesv-item>
+<h2>Introduction</h2>
+The RAMADDA SeeSV can be used both interactively from within RAMADDA as well as via the command line. Help with the interactive version can be viewed
+<a href="https://ramadda.org/repository/userguide/etl.html">here</a>.
+In depth interactive examples are available <a href="https://ramadda.org/repository/a/seesv">here</a>.
+<p>
+For brevity, in the below documentation we're assuming  that you are using an alias:
+<pre>
+alias seesv="sh /path/to/seesv/seesv.sh"  
+</pre>
+
+The examples here show the command line use. If running interactively through the RAMADDA web interface
+the commands are the same form except for the seesv command call and the specification of the input file. So, for example, if you are calling the tool from the command line as:
+<pre class=example>
+seesv -columns column1,column2 -p file.csv > output.csv
+</pre>
+
+The corresponding commands interactively would be:
+<pre class=example>
+-columns column1,column2
+</pre>
+</div>
+
+<div class=seesv-item>
+<h2>Install</h2>
+<ul>
+<li> Download the seesv.zip file from the RAMADDA <a href=https://geodesystems.com/repository/alias/release>download</a> site
+<li> Unzip the file
+<li> Consult the README
+<li> SeeSV runs using Java 1.8 or higher. Set the JAVA environment variable to point to the java runtime.
+<li> Usage:<br>seesv &lt;any number of commands&gt; -p &ltinput file&gt; &gt; output file
+</ul>
+<p>
+
+</div>
+<div class=seesv-item>
+
+<h2>Basic Use</h2>  
+The general use of the SeeSV tools is as follows:
+<pre class=examples>
+seesv &lt;a number of processing commands&gt; &lt;some output command&gt; file.csv &gt; output.csv
+#or
+seesv &lt;a number of processing commands&gt; &lt;some output command&gt; -o output.csv   file.csv 
+
+#To show help:
+seesv -help
+
+#To show help on a topic:
+seesv -help:some_topic
+
+#With no processing commands and just printing the header:
+seesv -printheader file.csv
+
+#Or a shortcut
+seesv -ph file.csv
+
+#With no processing commands and csv output:
+seesv -p file.csv &gt; output.csv
+
+#With no processing commands and a record oriented  output:
+seesv -record file.csv &gt; output.csv
+
+#With the -columns command printing csv output
+seesv -columns column1,column2 -p file.csv > output.csv
+</pre>
+
+</div>
+<div class=seesv-item>
+
+<a name="help_columns"></a>
+<h2>Column Identifiers</h2>  
+Note: many of these commands use one or more column names from the source file. 
+These column names are converted to a canonical identifier format by lower casing, changing spaces to "_" and
+removing non alpha numeric characters.
+So for example if your source file is:
+<pre>
+column 1, Column 2, Some "funny" column
+ ...
+</pre>
+Then the column ids are:
+<pre>
+column_1,column_2,some_funny_column
+</pre>
+
+You can always use the <span class=cmd>-ids</span> command to list the ids
+<pre class=examples>
+seesv -ids -printheader test.csv
+</pre>
+
+</div>
+<div class=seesv-item>
+
+<h2>Some Examples</h2>  
+<pre class=examples>
+####  selecting columns
+#Subset test.csv and only include column1 and column2
+seesv -columns column1,column2 -p test.csv > newtest.csv
+
+#You can also use numeric indices - zero based
+seesv -columns 0,1 -p test.csv > newtest.csv
+
+#Specify a range of columns
+#either using column names:
+seesv -columns column1-columnN -p test.csv > newtest.csv
+#or indices:
+seesv -columns 1-5,6,7,10-15 -p test.csv > newtest.csv
+
+#or mix and match numeric and names
+seesv -columns 0-1,columnA,columnB,columnF-columnZ -p test.csv > newtest.csv
+
+#Specify a step:
+#seesv -columns start-end:step
+
+#e.g. below gives 0,3,6,9,12,15
+seesv -columns 0-15:3
+
+#include all columns except column1
+seesv -notcolumns column1 -p test.csv > newtest.csv
+
+#subset columns and then change the values 
+seesv -columns column1,column2 -change column1,column2 "pattern" "new value" -p test.csv > newtest.csv
+
+#Only include column1 and then only pass through unique values matching exactly
+seesv -columns column1 -unique 0 exact -p test.csv > newtest.csv
+
+#Only pass throught unique values in the first column and then sort the output
+seesv -columns column1 -unique 0 -sort column1 -p test.csv > newtest.csv
+
+
+</pre>
+</div>
+
 <div class=seesv-item>
 <a name='-commands'></a><div class=command> <i><a href='#-commands'>-commands</a></i>  &lt;file&gt; </div><div class=command-block>file of commands<br class=seesv-hide>
 <ul>
@@ -85,7 +273,7 @@ File template  - ${file_shortname} ${file_name} ${count}<br>
 <a name='-json'></a><div class=command> <i><a href='#-json'>-json</a></i>  &lt;arrayPath&gt;  &lt;objectPaths&gt; </div><div class=command-block>Parse the input as json<br class=seesv-hide>
 <ul>
 <li> <i>arrayPath</i>:
-Path to the array e.g., obj1.arr[2].obj2<br>
+Path to the array e.g., obj1.arr\[2].obj2<br>
 <li> <i>objectPaths</i>:
 One or more paths to the objects e.g. geometry,features<br>
 </ul>
@@ -109,7 +297,7 @@ Missing value<br>
 <li> <i>columns</i>:
 Column names<br>
 <li> <i>arrayPath</i>:
-Path to the array e.g., obj1.arr[2].obj2<br>
+Path to the array e.g., obj1.arr\[2].obj2<br>
 </ul>
 </div></div><div class=seesv-item>
 <a name='-geojson'></a><div class=command> <i><a href='#-geojson'>-geojson</a></i>  &lt;includePolygon&gt; </div><div class=command-block>Parse the input as geojson<br class=seesv-hide>
@@ -1516,7 +1704,7 @@ File suffix<br>
 Column indices. Can include ranges, e.g. 0-5<br>
 </ul>
 </div></div></ul><br class=seesv-hide><div class=seesv-hide><hr><a name='Dates'></a><b style='font-size:120%;'>Dates</b><br>
-</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-indateformat'><i>-indateformat</i>: Specify date format for parsing</a><li> <a href='#-outdateformat'><i>-outdateformat</i>: Specify date format for formatting</a><li> <a href='#-convertdate'><i>-convertdate</i>: Convert date</a><li> <a href='#-adddate'><i>-adddate</i>: Add date</a><li> <a href='#-extractdate'><i>-extractdate</i>: Extract date</a><li> <a href='#-formatdate'><i>-formatdate</i>: Format date</a><li> <a href='#-elapsed'><i>-elapsed</i>: Calculate elapsed time (ms) between rows</a><li> <a href='#-latest'><i>-latest</i>: Pass through rows whose date is the latest in the group of rows defined by the key column</a><li> <a href='#-datediff'><i>-datediff</i>: Calculate elapsed time between columns column1-column2</a><li> <a href='#-datecompare'><i>-datecompare</i>: add a true/false column comparing the date values</a></ul></div></div><div class=seesv-item>
+</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-indateformat'><i>-indateformat</i>: Specify date format for parsing</a><li> <a href='#-outdateformat'><i>-outdateformat</i>: Specify date format for formatting</a><li> <a href='#-convertdate'><i>-convertdate</i>: Convert date</a><li> <a href='#-adddate'><i>-adddate</i>: Add date</a><li> <a href='#-cleardate'><i>-cleardate</i>: Clear date components</a><li> <a href='#-extractdate'><i>-extractdate</i>: Extract date</a><li> <a href='#-formatdate'><i>-formatdate</i>: Format date</a><li> <a href='#-elapsed'><i>-elapsed</i>: Calculate elapsed time (ms) between rows</a><li> <a href='#-latest'><i>-latest</i>: Pass through rows whose date is the latest in the group of rows defined by the key column</a><li> <a href='#-datediff'><i>-datediff</i>: Calculate elapsed time between columns column1-column2</a><li> <a href='#-datecompare'><i>-datecompare</i>: add a true/false column comparing the date values</a></ul></div></div><div class=seesv-item>
 <a name='-indateformat'></a><div class=command> <i><a href='#-indateformat'>-indateformat</a></i>  &lt;format&gt;  &lt;timezone&gt; </div><div class=command-block>Specify date format for parsing<br class=seesv-hide>
 <ul>
 <li> <i>format</i>:
@@ -1547,6 +1735,14 @@ Date Column<br>
 Value Column<br>
 <li> <i>value_type</i>:
 Value type - millisecond,second,minute,hour,hour_of_day,week,month,year<br>
+</ul>
+</div></div><div class=seesv-item>
+<a name='-cleardate'></a><div class=command> <i><a href='#-cleardate'>-cleardate</a></i>  &lt;date_column&gt;  &lt;component&gt; </div><div class=command-block>Clear date components<br class=seesv-hide>
+<ul>
+<li> <i>date_column</i>:
+Date Column<br>
+<li> <i>component</i>:
+Date component values:millisecond,second,minute,hour_of_day,day_of_month,month <br>
 </ul>
 </div></div><div class=seesv-item>
 <a name='-extractdate'></a><div class=command> <i><a href='#-extractdate'>-extractdate</a></i>  &lt;date column&gt;  &lt;what&gt; </div><div class=command-block>Extract date<br class=seesv-hide>
@@ -2174,7 +2370,11 @@ Column width<br>
 <br>
 </ul>
 </div></div><div class=seesv-item>
-<a name='-tojson'></a><div class=command> <i><a href='#-tojson'>-tojson</a></i> </div><div class=command-block>Generate JSON<br class=seesv-hide>
+<a name='-tojson'></a><div class=command> <i><a href='#-tojson'>-tojson</a></i>  &lt;key index&gt; </div><div class=command-block>Generate JSON<br class=seesv-hide>
+<ul>
+<li> <i>key index</i>:
+If defined use this as a map<br>
+</ul>
 </div></div><div class=seesv-item>
 <a name='-togeojson'></a><div class=command> <i><a href='#-togeojson'>-togeojson</a></i>  &lt;latitude&gt;  &lt;longitude&gt;  &lt;columns&gt; </div><div class=command-block>Generate GeoJSON<br class=seesv-hide>
 <ul>
@@ -2307,6 +2507,8 @@ Type ID, e.g.type_point_mypointdata<br>
 Type Description<br>
 </ul>
 </div></div></ul>
+</body>
+</html>
 </div>
 <p>
 <div  class="childlist" ><table  width="100%" ></table></div>
