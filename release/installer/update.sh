@@ -9,7 +9,7 @@ export MYDIR="$(cd "$(dirname "$0")" && pwd)"
 . ${MYDIR}/lib.sh
 
 usage() {
-    printf "usage: \n\t-dir <target dir> (directory that holds ramaddaserver)\n\t-dev (install the development version)\n"
+    printf "usage: \n\t-dir <ramadda install dir> (directory that holds ramaddaserver)\n\t-dev (install the development version)\n"
 }
 
 
