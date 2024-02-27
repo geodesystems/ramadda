@@ -278,7 +278,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'textColor',ex:'green'},
 	{p:'textFontName',ex:'Times'},
 	
-
+	{p:'hAxisTitle'},
+	{p:'vAxisTitle'},	
+	{p:'hAxisHideTicks'},
+	{p:'vAxisHideTicks'},	
 	{p:'lineDashStyle',d:null,ex:'2,2,20,2,20'},
 	{p:'highlight.lineDashStyle',d:'2,2,20,2,20',ex:'2,2,20,2,20'},
 	{p:'nohighlight.lineDashStyle',d:'2,2,20,2,20',ex:'2,2,20,2,20'},	
@@ -1709,6 +1712,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    if(this.getProperty("vAxisReverse"))
 		chartOptions.vAxis.direction=-1;
 
+
 	    chartOptions.hAxis.minValue = this.getProperty("hAxisMinValue");
 	    chartOptions.hAxis.maxValue = this.getProperty("hAxisMaxValue");
 	    chartOptions.vAxis.minValue = this.getProperty("vAxisMinValue");
@@ -1754,32 +1758,27 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    this.setPropertyOn(chartOptions.vAxis.minorGridlines, "vAxis.minorGridlines.color", "color",  minorGridLinesColor);
 	    this.setPropertyOn(chartOptions.vAxis, "vAxis.baselineColor", "baselineColor", this.getProperty("baselineColor")|| lineColor);
 
-            let textColor = this.getProperty("textColor", "#000");
-	    let textBold = this.getProperty("textBold", false);
-	    let textItalic = this.getProperty("textItalic", false);	    
-            let textFontName = this.getProperty("textFontName");
-            let fontSize = this.getProperty("textFontSize",12);	    
-
+            let textColor = this.getTextColor();
+	    let textBold = this.getTextBold();
+	    let textItalic = this.getTextItalic();
+            let textFontName = this.getTextFontName();
+            let fontSize = this.getTextFontSize();	    
             this.setPropertyOn(chartOptions.hAxis.textStyle, "hAxis.text.color", "color", this.getProperty("axis.text.color", textColor));
             this.setPropertyOn(chartOptions.vAxis.textStyle, "vAxis.text.color", "color", this.getProperty("axis.text.color", textColor));
-
-
             this.setPropertyOn(chartOptions.hAxis.textStyle, "hAxis.text.bold", "bold", textBold);
             this.setPropertyOn(chartOptions.vAxis.textStyle, "vAxis.text.bold", "bold", textBold);
-
             this.setPropertyOn(chartOptions.hAxis.textStyle, "hAxis.text.italic", "italic", textItalic);
             this.setPropertyOn(chartOptions.vAxis.textStyle, "vAxis.text.italic", "italic", textItalic);
-
             this.setPropertyOn(chartOptions.hAxis.textStyle, "hAxis.text.fontName", "fontName", textFontName);
             this.setPropertyOn(chartOptions.vAxis.textStyle, "vAxis.text.fontName", "fontName", textFontName);
-
             this.setPropertyOn(chartOptions.hAxis.textStyle, "hAxis.text.fontSize", "fontSize",fontSize);
             this.setPropertyOn(chartOptions.vAxis.textStyle, "vAxis.text.fontSize", "fontSize", fontSize);
 
+	    chartOptions.vAxis.title  =
+		Utils.decodeText(this.getProperty("vAxis.text", this.getProperty("vAxisText",this.getVAxisTitle())));
 
-	    chartOptions.vAxis.title  = Utils.decodeText(this.getProperty("vAxis.text", this.getProperty("vAxisText",this.getProperty("vAxisTitle"))));
-
-	    chartOptions.hAxis.title  = Utils.decodeText(this.getProperty("hAxis.text", this.getProperty("hAxisText",this.getProperty("hAxisTitle"))));	    
+	    chartOptions.hAxis.title  =
+		Utils.decodeText(this.getProperty("hAxis.text", this.getProperty("hAxisText",this.getHAxisTitle())));
 	    chartOptions.hAxis.slantedText = this.getProperty("hAxis.slantedText",this.getProperty("slantedText",false));
             this.setPropertyOn(chartOptions.hAxis.titleTextStyle, "hAxis.text.color", "color", textColor);
             this.setPropertyOn(chartOptions.vAxis.titleTextStyle, "vAxis.text.color", "color", textColor);
@@ -1811,6 +1810,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		chartOptions.vAxis.ticks  = ticks;
 	    }
 
+	    if(this.getHAxisHideTicks()) 
+		chartOptions.hAxis.ticks  = [];
+	    if(this.getVAxisHideTicks()) 
+		chartOptions.vAxis.ticks  = [];	    
 
             if (this.fontSize > 0) {
                 chartOptions.fontSize = this.fontSize;
@@ -2225,6 +2228,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 									     records:records});
 				    }
 				} else {
+				    console.log('select',record);
+				    
 				    _this.propagateEventRecordSelection({record: record});
 				}
 			    }
@@ -2385,7 +2390,6 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
             }
 
 	    if(chartOptions.legend.position=="left") {
-		console.log(chartOptions.legend.position);
                 chartOptions.series = [
 		    {
 			targetAxisIndex: 1
