@@ -53,7 +53,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
         maxValue: 0,
 	toMinValue: 0,
         toMaxValue: 100,
-        isString: false,
+        isString: this.properties.isString,
         stringMap: null,
 	colorByMap: {},
 	colorByValues:[],
@@ -444,7 +444,14 @@ ColorByInfo.prototype = {
     },
     getDoTotal:function() {
 	return this.doTotalCount;
-    },    
+    },
+    getDoEnum:function() {
+	return this.doEnum;
+    },
+    setDoEnum:function(v) {
+	this.isString=true;
+	this.doEnum=v;
+    },            
     setDoTotal:function(v) {
 	this.doTotalCount=v;
     },
@@ -473,6 +480,27 @@ ColorByInfo.prototype = {
 	});
 	return  total/cnt;
     },
+    processEnum:function(records) {
+	let counts={};
+	records.forEach(r=>{
+	    let v = r.getData()[this.index];
+	    if(!counts[v]) {
+		counts[v] = 0;
+	    }
+	    counts[v]++;
+	});
+	let maxCount=0;
+	let maxValue = null;
+	
+	Object.keys(counts).forEach(v=>{
+	    if(counts[v]>maxCount) {
+		maxValue=v;
+		maxCount=counts[v];
+	    }
+	});
+	return  maxValue;
+    },
+
     doTotal:function(records) {
 	let total = 0;
 	let cnt = 0;
@@ -503,9 +531,10 @@ ColorByInfo.prototype = {
 
 	if (this.index >= 0 || this.getDoCount()) {
 	    let value;
-	    if(records.length>1) {
-		value = this.getDoTotal()?this.doTotal(records):this.doAverage(records);
-//		if(isNaN(value))  console.log(records.length,cnt,total,value)
+	    if(this.getDoEnum()) {
+		value = this.processEnum(records);
+	    } else if(records.length>1) {
+		value =  this.getDoTotal()?this.doTotal(records):this.doAverage(records);
 	    } else {
 		value= records[0].getData()[this.index];
 	    }
