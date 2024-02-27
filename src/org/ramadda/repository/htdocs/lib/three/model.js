@@ -808,6 +808,29 @@ Ramadda3DDisplay.prototype = {
 		this.scene.add( player );
 		this.initObject(model,player);
 	    });
+	} else  if(url.match(/\.stl/gi)) {
+	    const loader = new THREE.STLLoader();
+	    this.incrLoading(1);
+	    loader.load(url,geometry =>{
+		this.incrLoading(-1);
+		console.log("loaded stl model:" + model.name +" " +url);
+		const material = new THREE.MeshPhysicalMaterial({
+		    color: 0xb2ffc8,
+		    //    envMap: envTexture,
+		    metalness: 0.25,
+		    roughness: 0.1,
+		    opacity: 1.0,
+		    transparent: true,
+		    transmission: 0.99,
+		    clearcoat: 1.0,
+		    clearcoatRoughness: 0.25
+		})
+		console.dir(geometry)
+		const mesh = new THREE.Mesh(geometry, material)
+		this.scene.add( mesh);
+//		this.initObject(model,player);
+	    });
+
 	} else  if(url.match(/\.obj/gi)) {
 	    const loader = new THREE.OBJLoader();
 	    this.incrLoading(1);
