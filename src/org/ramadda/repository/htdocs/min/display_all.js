@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Feb 27 05:15:51 MST 2024";
+var build_date="RAMADDA build date: Tue Feb 27 08:27:07 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -2596,14 +2596,20 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     }
 
 
-    let colors = defaultColorTable || this.display.getColorTable(true,[this.properties.colorTableProperty,
-								       colorByAttr +".colorTable",
-								       "colorTable"]);
-
-    if(!colors && colorByAttr) {
+    let colors = null;
+    if(colorByAttr) {
 	let c = this.display.getProperty(colorByAttr +".colors");
 	if(c) colors = c.split(",");
     }
+
+
+
+    if(!colors){
+	colors = defaultColorTable || this.display.getColorTable(true,[this.properties.colorTableProperty,
+								       colorByAttr +".colorTable",
+								       "colorTable"]);
+    }
+
     
 //    if(!colors && this.hasField()) {
 //	colors = this.display.getColorTable(true,"colorTable");
@@ -16115,11 +16121,12 @@ function CsvUtil() {
 		    counts[value]=0;
 		    values.push(value);
 		}
+		counts[value]++;
 	    }
 	    let newRecords  =[]
 	    if(args.sort) values.sort();
 	    values.forEach(value=>{
-		let newData = [value,values[value]];
+		let newData = [value,counts[value]];
 		let newRecord = new  PointRecord(newFields,NaN,NaN, NaN, null, newData);
 		newRecords.push(newRecord);
 	    });
@@ -17873,11 +17880,12 @@ function RecordFilter(display,filterFieldId, properties) {
 		    this.getPropertyFromUrl(this.getId() +".filterValue",FILTER_ALL);
                 let enums = this.getEnums(records);
 		let attrs= ["style",widgetStyle, "id",widgetId,"fieldId",this.getId()];
-		if(this.getProperty(this.getId() +".filterMultiple",false)) {
+		if(this.getProperty(this.getId() +".filterMultiple",this.getProperty('filterMultiple'))) {
 		    attrs.push("multiple");
 		    attrs.push("");
 		    attrs.push("size");
-		    attrs.push(this.getProperty(this.getId() +".filterMultipleSize","3"));
+		    attrs.push(this.getProperty(this.getId() +".filterMultipleSize",
+						this.getProperty('filterMultipleSize','3')));
 		    dfltValue = dfltValue.split(",");
 		}
 
