@@ -154,14 +154,20 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     }
 
 
-    let colors = defaultColorTable || this.display.getColorTable(true,[this.properties.colorTableProperty,
-								       colorByAttr +".colorTable",
-								       "colorTable"]);
-
-    if(!colors && colorByAttr) {
+    let colors = null;
+    if(colorByAttr) {
 	let c = this.display.getProperty(colorByAttr +".colors");
 	if(c) colors = c.split(",");
     }
+
+
+
+    if(!colors){
+	colors = defaultColorTable || this.display.getColorTable(true,[this.properties.colorTableProperty,
+								       colorByAttr +".colorTable",
+								       "colorTable"]);
+    }
+
     
 //    if(!colors && this.hasField()) {
 //	colors = this.display.getColorTable(true,"colorTable");
