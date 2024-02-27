@@ -2514,11 +2514,12 @@ function CsvUtil() {
 		    counts[value]=0;
 		    values.push(value);
 		}
+		counts[value]++;
 	    }
 	    let newRecords  =[]
 	    if(args.sort) values.sort();
 	    values.forEach(value=>{
-		let newData = [value,values[value]];
+		let newData = [value,counts[value]];
 		let newRecord = new  PointRecord(newFields,NaN,NaN, NaN, null, newData);
 		newRecords.push(newRecord);
 	    });
