@@ -1667,6 +1667,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             chartOptions.backgroundColor = {};
             chartOptions.chartArea = {};
             chartOptions.chartArea.backgroundColor = {};
+	    
 
             chartOptions.legend = {
                 textStyle: {}
@@ -1906,10 +1907,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             return chartOptions;
         },
         getChartHeight: function() {
-            return this.getProperty("height");
+            return this.getProperty('chartHeight', this.getProperty("height"));
         },
         getChartWidth: function() {
-            return this.getProperty("width");
+            return this.getProperty('chartWidth', this.getProperty('width'));
         },
         getChartDiv: function(chartId) {
             let divAttrs = [ATTR_ID, chartId];
@@ -2058,10 +2059,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if (!Utils.isDefined(this.chartOptions.height)) {
                 this.chartOptions.height = "100%";
             }
-
 	    this.charts = [];
 	    this.chartCount  = -1;
 
+//	    if(this.getChartHorizontal()) {
+//		this.chartOptions.bars='horizontal'
+//	    }
             let records = this.getPointData().getRecords();
 	    this.setAxisRanges(this.chartOptions, selectedFields, records);
 //	    console.log(JSON.stringify(this.chartOptions, null,2));
@@ -2396,6 +2399,8 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 		    }]
 	    }
 
+
+
 	    if (!chartOptions.hAxis) {
 		chartOptions.hAxis = {};
 	    }
@@ -2521,6 +2526,7 @@ function RamaddaBaseBarchart(displayManager, id, type, properties) {
 
         doMakeGoogleChart: function(dataList, props, chartDiv,  selectedFields, chartOptions) {
             return new google.visualization.BarChart(chartDiv);
+//            return new google.charts.Bar(chartDiv);	    
         }
     });
 }
@@ -3534,24 +3540,23 @@ function BartableDisplay(displayManager, id, properties) {
 	},
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
             let height = "";
-            if (Utils.isDefined(this.chartHeight)) {
-                height = this.chartHeight;
+            if (Utils.isDefined(this.getChartHeight())) {
+                height = this.getChartHeight();
             } else {
                 if (dataList.length > 1) {
                     let numBars = dataList.length;
-                    if (this.isStacked) {
+                    if (this.getProperty('isStacked')) {
                         height = numBars * 22;
                     } else {
                         height = numBars * 22 + numBars * 14 * (this.getDataValues(dataList[0]).length - 2);
                     }
                 }
             }
-
             $.extend(chartOptions, {
-                title: "the title",
+                title: '',
                 bars: 'horizontal',
                 colors: this.getColorList(),
-                width: (Utils.isDefined(this.chartWidth) ? this.chartWidth : "100%"),
+                width: (Utils.isDefined(this.getChartWidth()) ? this.getChartWidth() : "100%"),
                 chartArea: {
                     left: '30%',
                     top: 0,
@@ -3568,18 +3573,19 @@ function BartableDisplay(displayManager, id, properties) {
                 },
             });
 
-            if (Utils.isDefined(this.isStacked)) {
-                chartOptions.isStacked = this.isStacked;
+            if (Utils.isDefined(this.getProperty('isStacked'))) {
+                chartOptions.isStacked = this.getProperty('isStacked');
             }
 
-            if (this.hAxis)
+            if (this.getProperty('hAxisTitle'))
                 chartOptions.hAxis = {
-                    title: this.hAxis
+                    title: this.getProperty('hAxisTitle')
                 };
-            if (this.vAxis)
+            if (this.getProperty('vAxisTitle'))
                 chartOptions.vAxis = {
-                    title: this.vAxis
+                    title: this.getProperty('vAxisTitle')
                 };
+
             return new google.charts.Bar(chartDiv); 
         },
         getDefaultSelectedFields: function(fields, dfltList) {
