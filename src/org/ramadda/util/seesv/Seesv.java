@@ -3192,7 +3192,7 @@ public class Seesv implements SeesvCommands {
 	sb.append("</ul>\n");
 
         PrintWriter pw = new PrintWriter(getOutputStream());
-	String intro = IO.readContents("/org/ramadda/util/seesvhelp/intro.html","");
+	String intro = IO.readContents("/org/ramadda/util/seesv/help/intro.html","");
 	intro = intro.replace("${header}",header.toString()+"<br>The RAMADDA SeeSV package provides " + cnt +" commands for manipulating CSV and other types of files");
 	pw.println(intro);
 
@@ -3203,6 +3203,8 @@ public class Seesv implements SeesvCommands {
 	    html = html.replace("${header" + i+"}", s);
 	}
 	pw.append(html);
+	pw.append("</body>\n");
+	pw.append("</html>\n");	
         pw.flush();
     }
 
