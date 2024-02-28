@@ -1664,12 +1664,14 @@ var RecordUtil = {
             south = NaN,
             east = NaN;
 	let errorCnt = 0;
+	let outsideDateLine = false;
         for (j = 0; j < records.length; j++) {
             var record = records[j];
             if (!isNaN(record.getLatitude()) && !isNaN(record.getLongitude())) {
 		if(record.getLatitude()==0) {
 //		    console.log(record.getLatitude(),record.getLongitude());
 		}
+		if(record.getLongitude()>-150 && record.getLongitude()<150) outsideDateLine = true;
 		if (j == 0) {
                     north = record.getLatitude();
                     south = record.getLatitude();
@@ -1693,7 +1695,12 @@ var RecordUtil = {
         bounds.west = west;
         bounds.south = south;
         bounds.east = east;
-        return new RamaddaBounds(bounds);
+	let finalBounds =  new RamaddaBounds(bounds);
+	if(!outsideDateLine && west<-170 && east>170) {
+	    bounds.insideDateLine = true
+	    finalBounds.insideDateLine = true
+	}
+	return finalBounds;
     },
 
     findClosest: function(records, lon, lat, indexObj) {

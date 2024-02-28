@@ -3129,7 +3129,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    this.pointBounds = pointBounds;
 		    this.initBounds = pointBounds;
 		    if(okToSetMapBounds) {
-			this.setInitMapBounds(pointBounds.north, pointBounds.west, pointBounds.south, pointBounds.east);
+			if(pointBounds.insideDateLine) {
+			    this.setInitMapBounds(pointBounds.north, -178, pointBounds.south, -170);
+			} else {
+			    this.setInitMapBounds(pointBounds.north, pointBounds.west, pointBounds.south, pointBounds.east);
+			}
 		    }
 		}
 	    }
