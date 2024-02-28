@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Feb 27 19:25:34 MST 2024";
+var build_date="RAMADDA build date: Tue Feb 27 22:58:34 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -17207,8 +17207,8 @@ function RecordFilter(display,filterFieldId, properties) {
 	if(filterField)
 	    fields = [filterField];
 	else {
-	    console.warn("Error: could not find filter field::" + filterFieldId);
-	    display.getFieldById(null, filterFieldId);
+	    console.log("Error: could not find filter field::" + filterFieldId);
+	    this.disabled = true;
 	    fields = [];
 	}
     }
@@ -17284,24 +17284,30 @@ function RecordFilter(display,filterFieldId, properties) {
 	},
 	isFieldNumeric:function() {
 	    if(this.isText) return false;
+	    if(this.disabled) return false;
 	    return this.getField().isNumeric();
 	},
 	isFieldBoolean:function() {
 	    if(this.isText) return false;
+	    if(this.disabled) return false;
 	    return this.getField().isFieldBoolean();
 	},	
 	isFieldEnumeration: function() {
 	    if(this.isText) return false;
+	    if(this.disabled) return false;
 	    return this.getField().isFieldEnumeration();
 	},
 	isFieldDate: function() {
+	    if(this.disabled) return false;
 	    return this.getFieldType()=="date";
 	},	
 	isFieldMultiEnumeration: function() {
+	    if(this.disabled) return false;
 	    return this.getField().isFieldMultiEnumeration();
 	},
 	fieldType:null,
 	getFieldType: function() {
+	    if(this.disabled) return '';
 	    if(!this.fieldType) {
 		this.fieldType =  this.display.getProperty(this.getField().getId()+".type",this.getField().getType());
 	    }
@@ -17311,6 +17317,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    return  this.display.getDomId("filterby_" + (id||this.getId()));
 	},
 	isEnabled: function() {
+	    if(this.disabled) return false;
 	    return this.isText || this.getField()!=null;
 	},
 	recordOk: function(display, record, values) {
@@ -36860,7 +36867,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'useGreatCircle',d:false,ex:'true',tt:'use great circle routes for segments'},
 	{p:'sizeSegments',d:false,ex:'true',tt:'Size the segments based on record value'},	
 	{p:'isPath',ex:'true',tt:'Make a path from the points'},
-	{p:'isPathThreshold',ex:'1000',tt:'Make path from the points if # records<threshold'},		
+	{p:'isPathThreshold',ex:'1000',tt:'Make path from the points if # records<threshold'},
+	{p:'groupByField',tt:'Field id to group the paths'},	
 	{p:'pathWidth',ex:'2'},
 	{p:'pathColor',ex:'red'},	
 	{p:'isTrajectory',ex:'true',tt:'Make a path from the points'},	
@@ -40009,7 +40017,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let fillOpacity =  this.getFillOpacity();
 	    let isPath = this.getIsPath();
 	    if(this.getIsPathThreshold()>records.length) isPath=true;
-	    let groupByField = this.getFieldById(null,this.getProperty("groupByField"));
+	    let groupByField = this.getFieldById(null,this.getGroupByField());
 	    let groups;
 	    if(groupByField)
 		groups =  RecordUtil.groupBy(records, this, false, groupByField);
