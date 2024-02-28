@@ -8855,7 +8855,7 @@ public class WikiManager extends RepositoryManager
             props.remove("bounds");
             Utils.add(propList, "bounds", JsonUtil.quote(bounds));
         } else if (entry.hasAreaDefined()) {
-            Utils.add(propList, "bounds",
+            Utils.add(propList, "entryBounds",
                       JsonUtil.quote(entry.getNorth() + "," + entry.getWest()
 				     + "," + entry.getSouth() + ","
 				     + entry.getEast()));
