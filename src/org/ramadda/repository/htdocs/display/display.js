@@ -1118,7 +1118,6 @@ function DisplayThing(argId, argProperties) {
 
 	    let templateProps = {};
 	    let itemsPerColumn=this.getItemsPerColumn();
-
 	    let attrs={};
 	    if(template) {
 		attrs = Utils.tokenizeMacros(template,{hook:(token,value)=>{return this.macroHook(record, token,value)},dateFormat:this.getDateFormat()}).getAttributes("default")||{};
@@ -2105,8 +2104,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    return this.animationControl;
 	},
-        propagateEvent: function(event, data) {
-	    this.getDisplayManager().notifyEvent(event,this,data);
+        propagateEvent: function(event, data,notThis) {
+	    this.getDisplayManager().notifyEvent(event,notThis?null:this,data);
         },
         displayError: function(msg) {
             this.displayHtml(HU.getErrorDialog(msg));
