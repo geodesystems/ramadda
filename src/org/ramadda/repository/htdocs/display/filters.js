@@ -83,8 +83,8 @@ function RecordFilter(display,filterFieldId, properties) {
 	if(filterField)
 	    fields = [filterField];
 	else {
-	    console.warn("Error: could not find filter field::" + filterFieldId);
-	    display.getFieldById(null, filterFieldId);
+	    console.log("Error: could not find filter field::" + filterFieldId);
+	    this.disabled = true;
 	    fields = [];
 	}
     }
@@ -160,24 +160,30 @@ function RecordFilter(display,filterFieldId, properties) {
 	},
 	isFieldNumeric:function() {
 	    if(this.isText) return false;
+	    if(this.disabled) return false;
 	    return this.getField().isNumeric();
 	},
 	isFieldBoolean:function() {
 	    if(this.isText) return false;
+	    if(this.disabled) return false;
 	    return this.getField().isFieldBoolean();
 	},	
 	isFieldEnumeration: function() {
 	    if(this.isText) return false;
+	    if(this.disabled) return false;
 	    return this.getField().isFieldEnumeration();
 	},
 	isFieldDate: function() {
+	    if(this.disabled) return false;
 	    return this.getFieldType()=="date";
 	},	
 	isFieldMultiEnumeration: function() {
+	    if(this.disabled) return false;
 	    return this.getField().isFieldMultiEnumeration();
 	},
 	fieldType:null,
 	getFieldType: function() {
+	    if(this.disabled) return '';
 	    if(!this.fieldType) {
 		this.fieldType =  this.display.getProperty(this.getField().getId()+".type",this.getField().getType());
 	    }
@@ -187,6 +193,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    return  this.display.getDomId("filterby_" + (id||this.getId()));
 	},
 	isEnabled: function() {
+	    if(this.disabled) return false;
 	    return this.isText || this.getField()!=null;
 	},
 	recordOk: function(display, record, values) {
