@@ -23,8 +23,12 @@
 csvcommands1=-addheader, lat.id latitude lon.id longitude location_long.id longitude location_lat.id latitude \
 identifier.label Identifier identifier.type enumeration \
 animal_id.id identifier  individual_local_identifier.id identifier tagid.id identifier \
+ceres_tag_id.id identifier \
 fish.id identifier tag_local_identifier.id identifier \
 timestamp.type date datetime.type date \
+vid.type string   utc_datetime.type date   utc_datetime.format {yyyy-MM-dd'T'HH:mm:ss}   \
+location_accuracy.type enumeration   temperature.type double   accelerometer.type double   accelerometer_category.type enumeration  \
+ave_speed_ms.type double   total_distance_m.type double   \
 year.type enumeration type.type enumeration monthyear.type enumeration location_class.type enumeration \
 migration_stage.type enumeration   mig_stage_standard.type enumeration   \
 behavioural_classification.type enumeration habitat.type enumeration sensor_type.type enumeration \
