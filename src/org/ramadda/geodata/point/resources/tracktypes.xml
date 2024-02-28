@@ -8,6 +8,7 @@
     <property name="form.area.show" value="true"/>
     <property name="form.properties.show" value="false"/>
     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+    <property name="form.description.iswiki" value="true"/>
     <column name="max_points" type="int"  columns="5" label="Max points to show" default="20000"/>
     <column name="filter_fields" type="string" size="1000"  columns="80" label="Filter fields" default=""
 	    help="Comma separated list of fields to filter on in the display"/>    
@@ -22,6 +23,7 @@ identifier.label Identifier identifier.type enumeration \
 animal_id.id identifier  individual_local_identifier.id identifier tagid.id identifier \
 fish.id identifier tag_local_identifier.id identifier \
 timestamp.type date datetime.type date \
+location_class.type enumeration \
 migration_stage.type enumeration   mig_stage_standard.type enumeration   \
 behavioural_classification.type enumeration habitat.type enumeration sensor_type.type enumeration \
 season.type enumeration site.type enumeration \
