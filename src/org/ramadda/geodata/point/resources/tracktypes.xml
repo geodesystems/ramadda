@@ -18,14 +18,16 @@
 <column name="convert_commands" type="clob"   rows="5" columns="60" label="Convert Text"  showinhtml="false" group="Convert"/>
 <property name="record.properties">
 csvcommands1=-addheader, lat.id latitude lon.id longitude location_long.id longitude location_lat.id latitude \
-identifier.type enumeration animal_id.id identifier  individual_local_identifier.id identifier tagid.id identifier \
-fish.id identifier \
+identifier.label Identifier identifier.type enumeration \
+animal_id.id identifier  individual_local_identifier.id identifier tagid.id identifier \
+fish.id identifier tag_local_identifier.id identifier \
 timestamp.type date datetime.type date \
+migration_stage.type enumeration   mig_stage_standard.type enumeration   \
 behavioural_classification.type enumeration habitat.type enumeration sensor_type.type enumeration \
 season.type enumeration site.type enumeration \
-individual_taxon_canonical_name.type enumeration tag_local_identifier.type enumeration \
+individual_taxon_canonical_name.type enumeration 
 individual_local_identifier.type enumeration habitat.type enumeration   sensor_type.type enumeration \
-migration_stage.type enumeration  mig_stage_standard.type enumeration   tag_local_identifier.type enumeration \
+migration_stage.type enumeration  mig_stage_standard.type enumeration \
 animal_species.type enumeration   animal_sex.type enumeration   animal_lifestage.type enumeration  \
 fish.type enumeration type.type enumeration \
 sigstr.type string   daysincetagging.type string 
