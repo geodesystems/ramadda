@@ -2843,9 +2843,10 @@ public class WikiManager extends RepositoryManager
         } else if (theTag.equals(WIKI_TAG_ENTRYID)) {
             return entry.getId();
         } else if (theTag.equals(WIKI_TAG_PROPERTY)) {
+	    checkProperties(entry,props);
             for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
                 String key   = (String) keys.nextElement();
-                String value = (String) props.get(key);
+                Object value =  props.get(key);
 		if(key.equals("name") || key.equals("value")) continue;
 		wikiUtil.putWikiProperty(key, value);
 	    }
@@ -3162,6 +3163,7 @@ public class WikiManager extends RepositoryManager
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_GROUP)
                    || theTag.equals(WIKI_TAG_GROUP_OLD)) {
+	    checkProperties(entry,props);
             getEntryDisplay(request, wikiUtil, entry, originalEntry, theTag,
                             entry.getName(), null, sb, props, null);
 
@@ -7967,6 +7969,14 @@ public class WikiManager extends RepositoryManager
 	    Entry   entry   = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
 	    if(entry==null) return true;
 
+	    String property = (String) props.get("property");
+	    if(property!=null) {
+		Object value = entry.getValue(property);
+		if(value==null) return false;
+		return value.toString().equals("true");
+	    }
+
+
 
 	    String ofType = Utils.getProperty(props,"hasChildrenOfType",null);
 	    if(ofType!=null) {
@@ -8488,7 +8498,7 @@ public class WikiManager extends RepositoryManager
 	    if(value!=null && value.toString().startsWith("property:")) {
 		Object o = entry.getTypeHandler().getWikiProperty(entry,value.toString().substring("property:".length()));
 		if(o==null) o="Could not find property:" + key;
-		props.put(key,o);
+		props.put(key,o.toString());
 	    }
 	}
    }
@@ -8518,10 +8528,7 @@ public class WikiManager extends RepositoryManager
 	throws Exception {
 
 	checkProperties(entry,props);
-
-	
-        String displayType = getProperty(wikiUtil, props, "type",
-                                         "linechart");
+        String displayType = getProperty(wikiUtil, props, "type",   "linechart");
 
         boolean isNotebook =   displayType.equals("notebook");	
 
