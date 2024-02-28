@@ -499,15 +499,17 @@ public abstract class Tables {
         public static final String COL_NODOT_EMAIL =   "email";
         public static final String COL_ISREGISTRY =  NAME + ".isregistry";
         public static final String COL_NODOT_ISREGISTRY =   "isregistry";
-        public static final String COL_SELECTED =  NAME + ".selected";
-        public static final String COL_NODOT_SELECTED =   "selected";
+        public static final String COL_ENABLED =  NAME + ".enabled";
+        public static final String COL_NODOT_ENABLED =   "enabled";
+        public static final String COL_LIVE =  NAME + ".live";
+        public static final String COL_NODOT_LIVE =   "live";	
         public static final String COL_SEARCHROOT =  NAME + ".searchroot";
         public static final String COL_NODOT_SEARCHROOT =   "searchroot";
         public static final String COL_SLUG =  NAME + ".slug";
         public static final String COL_NODOT_SLUG =   "slug";		
 
         public static final String[] ARRAY = new String[] {
-            COL_URL,COL_TITLE,COL_DESCRIPTION,COL_EMAIL,COL_ISREGISTRY,COL_SELECTED,COL_SEARCHROOT,COL_SLUG
+            COL_URL,COL_TITLE,COL_DESCRIPTION,COL_EMAIL,COL_ISREGISTRY,COL_ENABLED,COL_LIVE,COL_SEARCHROOT,COL_SLUG
         };
         public static final String COLUMNS = SqlUtil.comma(ARRAY);
         public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
@@ -517,30 +519,6 @@ public abstract class Tables {
 
 
 
-    public static class SERVERREGISTRY extends Tables {
-        public static final String NAME = "serverregistry";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_URL =  NAME + ".url";
-        public static final String COL_NODOT_URL =   "url";
-        public static final String COL_TITLE =  NAME + ".title";
-        public static final String COL_NODOT_TITLE =   "title";
-        public static final String COL_DESCRIPTION =  NAME + ".description";
-        public static final String COL_NODOT_DESCRIPTION =   "description";
-        public static final String COL_EMAIL =  NAME + ".email";
-        public static final String COL_NODOT_EMAIL =   "email";
-        public static final String COL_ISREGISTRY =  NAME + ".isregistry";
-        public static final String COL_NODOT_ISREGISTRY =   "isregistry";
-
-        public static final String[] ARRAY = new String[] {
-            COL_URL,COL_TITLE,COL_DESCRIPTION,COL_EMAIL,COL_ISREGISTRY
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-	public static final SERVERREGISTRY table  = new  SERVERREGISTRY();
-    }
 
 
 
