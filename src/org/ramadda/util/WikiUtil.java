@@ -596,8 +596,6 @@ public class WikiUtil implements HtmlUtilsConstants {
      *
      * @throws IOException _more_
      */
-
-
     public void wikify(Appendable mainBuffer, String text,
                        WikiPageHandler handler, HashSet notTags)
             throws IOException {
@@ -1044,7 +1042,9 @@ public class WikiUtil implements HtmlUtilsConstants {
 		    if(handler.ifBlockOk(this, ifAttrs,ifBuffer)) {
 			String s = wikify(ifBuffer.toString(), handler);
 			buff.append(s);
-		    } else {
+			String javascript = getJavascript(true);
+			if(javascript!=null)
+			    buff.append(HU.script(javascript));
 		    }
 		    ifBuffer = null;
 		    continue;
