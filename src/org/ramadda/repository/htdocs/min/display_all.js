@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Feb 28 06:33:15 MST 2024";
+var build_date="RAMADDA build date: Wed Feb 28 09:09:58 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -15271,12 +15271,14 @@ var RecordUtil = {
             south = NaN,
             east = NaN;
 	let errorCnt = 0;
+	let outsideDateLine = false;
         for (j = 0; j < records.length; j++) {
             var record = records[j];
             if (!isNaN(record.getLatitude()) && !isNaN(record.getLongitude())) {
 		if(record.getLatitude()==0) {
 //		    console.log(record.getLatitude(),record.getLongitude());
 		}
+		if(record.getLongitude()>-150 && record.getLongitude()<150) outsideDateLine = true;
 		if (j == 0) {
                     north = record.getLatitude();
                     south = record.getLatitude();
@@ -15300,7 +15302,12 @@ var RecordUtil = {
         bounds.west = west;
         bounds.south = south;
         bounds.east = east;
-        return new RamaddaBounds(bounds);
+	let finalBounds =  new RamaddaBounds(bounds);
+	if(!outsideDateLine && west<-170 && east>170) {
+	    bounds.insideDateLine = true
+	    finalBounds.insideDateLine = true
+	}
+	return finalBounds;
     },
 
     findClosest: function(records, lon, lat, indexObj) {
@@ -39031,7 +39038,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    this.pointBounds = pointBounds;
 		    this.initBounds = pointBounds;
 		    if(okToSetMapBounds) {
-			this.setInitMapBounds(pointBounds.north, pointBounds.west, pointBounds.south, pointBounds.east);
+			if(pointBounds.insideDateLine) {
+			    this.setInitMapBounds(pointBounds.north, -178, pointBounds.south, -170);
+			} else {
+			    this.setInitMapBounds(pointBounds.north, pointBounds.west, pointBounds.south, pointBounds.east);
+			}
 		    }
 		}
 	    }
