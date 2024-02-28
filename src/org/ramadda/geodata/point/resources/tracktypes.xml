@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<types supercategory="Geoscience" category="Point Data">
+
+  <type name="type_track_base"
+	description="Animal Track Data" super="type_point" foruser="true"
+	handler="org.ramadda.data.services.PointTypeHandler">
+    <property name="icon" value="/point/tracks.png"/>
+    <property name="form.area.show" value="true"/>
+    <property name="form.properties.show" value="false"/>
+    <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+    <column name="max_points" type="int"  columns="5" label="Max points to show" default="20000"/>
+    <column name="filter_fields" type="string" size="1000"  columns="80" label="Filter fields" default=""
+	    help="Comma separated list of fields to filter on in the display"/>    
+    <column name="path_threshold" type="int"  columns="5" label="Path Threshold"
+	    default="0" help="If # records less than threshold then show a path"/>
+    <column name="show_table" type="boolean" label="Show Table"
+	    default="true" help="Show the table in the display"/>    
+<column name="convert_commands" type="clob"   rows="5" columns="60" label="Convert Text"  showinhtml="false" group="Convert"/>
+<property name="record.properties">
+csvcommands1=-addheader, lat.id latitude lon.id longitude location_long.id longitude location_lat.id latitude \
+identifier.type enumeration animal_id.id identifier  individual_local_identifier.id identifier tagid.id identifier \
+fish.id identifier \
+timestamp.type date datetime.type date \
+behavioural_classification.type enumeration habitat.type enumeration sensor_type.type enumeration \
+season.type enumeration site.type enumeration \
+individual_taxon_canonical_name.type enumeration tag_local_identifier.type enumeration \
+individual_local_identifier.type enumeration habitat.type enumeration   sensor_type.type enumeration \
+migration_stage.type enumeration  mig_stage_standard.type enumeration   tag_local_identifier.type enumeration \
+animal_species.type enumeration   animal_sex.type enumeration   animal_lifestage.type enumeration  \
+fish.type enumeration type.type enumeration \
+sigstr.type string   daysincetagging.type string 
+</property>
+<wiki><![CDATA[
++section title={{name}}
+:navtop
+{{description wikify=true}}
+
+:heading Map
+{{property max="property:max_points"}}
+{{group filterFields="property:filter_fields" hideFilterWidget=true }}
+{{display_filter}}
+{{display_map radius=4 strokeWidth=0.2
+groupByField=identifier
+colorBy=identifier colorTable=gpt100
+isPathThreshold="property:path_threshold"
+}}
+
+
+
++if property=show_table
+:heading Table
+{{display_download}}
+{{display_htmltable}}
+-if
+
+
+
+:heading Information
+{{information details=true}}
+
+-section
+]]></wiki>
+
+</type>
+
+
+
+
+</types>
