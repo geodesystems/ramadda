@@ -966,7 +966,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'useGreatCircle',d:false,ex:'true',tt:'use great circle routes for segments'},
 	{p:'sizeSegments',d:false,ex:'true',tt:'Size the segments based on record value'},	
 	{p:'isPath',ex:'true',tt:'Make a path from the points'},
-	{p:'isPathThreshold',ex:'1000',tt:'Make path from the points if # records<threshold'},		
+	{p:'isPathThreshold',ex:'1000',tt:'Make path from the points if # records<threshold'},
+	{p:'groupByField',tt:'Field id to group the paths'},	
 	{p:'pathWidth',ex:'2'},
 	{p:'pathColor',ex:'red'},	
 	{p:'isTrajectory',ex:'true',tt:'Make a path from the points'},	
@@ -4115,7 +4116,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let fillOpacity =  this.getFillOpacity();
 	    let isPath = this.getIsPath();
 	    if(this.getIsPathThreshold()>records.length) isPath=true;
-	    let groupByField = this.getFieldById(null,this.getProperty("groupByField"));
+	    let groupByField = this.getFieldById(null,this.getGroupByField());
 	    let groups;
 	    if(groupByField)
 		groups =  RecordUtil.groupBy(records, this, false, groupByField);
