@@ -206,6 +206,7 @@ public abstract class RecordFile {
      * @throws Exception _more_
      */
     public File checkCachedFile() throws Exception {
+	if(true) return null;
         File file = getCacheFile();
         if (file != null) {
             if (file != null) {
