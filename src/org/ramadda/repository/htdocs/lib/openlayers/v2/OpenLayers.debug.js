@@ -39297,8 +39297,10 @@ OpenLayers.Renderer.Elements = OpenLayers.Class(OpenLayers.Renderer, {
         if (root) {
 	    //jeffmc: clear the innerHTML instead of iterating on the children
 	    //since removing lots of features just dies a slow miserable death
+	    //jeffmc: 2024-02: comment out the innerHTML clear since that too is really slow
+	    //Not doing that and not doing the removeChild appears to not be  a problem (but memory?)
 //	    console.time('map.clear');
-	    root.innerHTML = '';
+//	    root.innerHTML = '';
 	    /*
             while (child = root.firstChild) {
                 root.removeChild(child);
