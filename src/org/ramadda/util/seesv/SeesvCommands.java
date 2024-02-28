@@ -33,7 +33,6 @@ public interface SeesvCommands {
 
     public static final String CMD_HELP="-help";
     public static final String CMD_HELP_PRETTY="-helppretty";    
-    public static final String CMD_UTF16="-utf16";
     public static final String CMD_DELIMITER="-delimiter";
     public static final String CMD_COMMANDS="-commands";
     public static final String CMD_INPUTCOMMENT="-inputcomment";

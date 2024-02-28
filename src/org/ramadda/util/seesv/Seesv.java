@@ -1762,7 +1762,6 @@ public class Seesv implements SeesvCommands {
 
         /** * Input   * */
         new Category("Input","Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XML, Shapefile, etc."),
-        new Cmd(CMD_UTF16, "Open the file as UTF 16"),
         new Cmd(CMD_DELIMITER, "Specify the input delimiter",
                 new Arg("delimiter", "Use 'space' for space, 'tab' for tab",  ATTR_SIZE, "5")),
 	new Cmd(CMD_INPUTCOMMENT,"Input comment",
@@ -1780,7 +1779,7 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_ENCODING,
 		"Specify the file encoding",ARG_LABEL,"File Encoding",
 		new Arg("encoding","File Encoding see https://docs.oracle.com/javase/8/docs/technotes/guides/intl/encoding.doc.html",
-			"type","enumeration","values","UTF-16,UTF-16BE,UTF-16LE,UTF-32,UTF-32BE,UTF-32LE,UTF-8,CESU-8,IBM00858,IBM437,IBM775,IBM850,IBM852,IBM855,IBM857,IBM862,IBM866,ISO-8859-1,ISO-8859-13,ISO-8859-15,ISO-8859-2,ISO-8859-4,ISO-8859-5,ISO-8859-7,ISO-8859-9,KOI8-R,KOI8-U,Not available,US-ASCII,windows-1250,windows-1251,windows-1252,windows-1253,windows-1254,windows-1257,x-IBM737,x-IBM874,x-UTF-16LE-BOM,x-UTF-32BE-BOM,x-UTF-32LE-BOM")),			
+			"type","enumeration","values","UTF-8,UTF-16,UTF-16BE,UTF-16LE,UTF-32,UTF-32BE,UTF-32LE,CESU-8,IBM00858,IBM437,IBM775,IBM850,IBM852,IBM855,IBM857,IBM862,IBM866,ISO-8859-1,ISO-8859-13,ISO-8859-15,ISO-8859-2,ISO-8859-4,ISO-8859-5,ISO-8859-7,ISO-8859-9,KOI8-R,KOI8-U,Not available,US-ASCII,windows-1250,windows-1251,windows-1252,windows-1253,windows-1254,windows-1257,x-IBM737,x-IBM874,x-UTF-16LE-BOM,x-UTF-32BE-BOM,x-UTF-32LE-BOM")),			
         new Cmd(CMD_HEADER, "Raw header",ARG_LABEL,"Add Header",
 		new Arg("header", "Column names", ATTR_TYPE, TYPE_LIST)),
 
@@ -3869,10 +3868,6 @@ public class Seesv implements SeesvCommands {
 		ctx.setDelimiter(delimiter = args.get(++i));
 		return i;
 	    });
-	defineFunction(CMD_UTF16,0,(ctx,args,i) -> {
-		ctx.setUtf16(true);
-		return i;
-	    });	
 	defineFunction(CMD_INPUTCOMMENT,1,(ctx,args,i) -> {
 		ctx.setInputComment(args.get(++i));
 		return i;
