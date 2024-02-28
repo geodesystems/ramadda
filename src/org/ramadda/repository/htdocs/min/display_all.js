@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Feb 27 22:58:34 MST 2024";
+var build_date="RAMADDA build date: Wed Feb 28 05:43:51 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -5632,6 +5632,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'filterLogic',ex:'and|or',tt:'Specify logic to apply filters'},		
 	{p:'&lt;field&gt;.type',ex:'enumeration|string|boolean'},
 	{p:'&lt;field&gt;.filterShow',ex:'false'},
+	{p:'&lt;field&gt;.filterLabel'},
 	{p:'&lt;field&gt;.filterValue'},
 	{p:'&lt;field&gt;.filterValueMin'},
 	{p:'&lt;field&gt;.filterValueMax'},
