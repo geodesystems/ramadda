@@ -107,6 +107,7 @@ public class TextRecord extends DataRecord {
     /** _more_ */
     private int badCnt = 0;
 
+    private int dateErrorCnt;
     /**
      * _more_
      */
@@ -539,7 +540,8 @@ public class TextRecord extends DataRecord {
 		    try {
 			date = parseDate(field, tok);
 		    } catch(Exception exc) {
-			System.err.println("bad date:" + tok);
+			if(dateErrorCnt++<10)
+			    System.err.println("bad date:" + tok);
 		    }
                     if (date == null) {
                         objectValues[fieldCnt] = tok;
