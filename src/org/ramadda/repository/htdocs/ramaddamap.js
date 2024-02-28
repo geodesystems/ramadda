@@ -5069,6 +5069,10 @@ RepositoryMap.prototype = {
         popup.marker = marker;
         this.addPopup(popup);
 	jqid(uid).html(markerText);
+	if(this.popupListener) {
+	    this.popupListener(uid,markerText);
+	}
+
 	if(debugPopup) console.log("\tmade popup");
 
         if (inputProps.chartType) {
