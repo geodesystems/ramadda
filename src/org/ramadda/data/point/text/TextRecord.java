@@ -535,9 +535,14 @@ public class TextRecord extends DataRecord {
 
                 if (field.isTypeDate()) {
                     tok = tok.replaceAll("\"", "");
-                    Date date = parseDate(field, tok);
+                    Date date = null;
+		    try {
+			date = parseDate(field, tok);
+		    } catch(Exception exc) {
+			System.err.println("bad date:" + tok);
+		    }
                     if (date == null) {
-                        objectValues[fieldCnt] = "";
+                        objectValues[fieldCnt] = tok;
                     } else {
                         objectValues[fieldCnt] = date;
                     }
@@ -656,10 +661,6 @@ public class TextRecord extends DataRecord {
                 //
             }
         }
-
-
-
-
 
         Date date   = null;
         int  offset = field.getUtcOffset();
