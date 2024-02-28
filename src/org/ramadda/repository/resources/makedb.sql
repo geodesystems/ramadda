@@ -325,25 +325,19 @@ CREATE TABLE  globals (name varchar(500),
 -----------------------------------------------------------------------
 --- for storing the list of servers when acting as a registry
 -----------------------------------------------------------------------
-CREATE TABLE  serverregistry (
-        url varchar(1000),
-        title varchar(1000),
-        description varchar(10000),
-        email varchar(200),
-	isregistry int);
-
-
-
 CREATE TABLE  remoteservers (
         url varchar(1000),
         title varchar(1000),
         description varchar(10000),
         email varchar(200),
 	isregistry int,
-        selected int,
+	enabled int,
+	live int,	
 	searchroot varchar(1000),
 	slug varchar(200));
 
+ALTER table remoteservers add column  enabled int;
+ALTER table remoteservers add column  live int;
 ALTER table remoteservers add column  searchroot varchar(1000);
 ALTER table remoteservers add column  slug varchar(200);
 
