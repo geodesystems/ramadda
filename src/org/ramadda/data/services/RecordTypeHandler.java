@@ -417,7 +417,24 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
      * @throws Exception _more_
      */
     public String getRecordPropertiesFromType(Entry entry) throws Exception {
-        return getTypeProperty("record.properties", (String) null);
+	String props = getTypeProperty("record.properties", (String) null);
+	if(props!=null) {
+	    StringBuilder sb = new StringBuilder();
+	    boolean continued = false;
+	    for(String line: Utils.split(props,"\n")) {
+		
+		if(!continued)  sb.append("\n");
+		continued=false;
+		String tline = line.trim();
+		if(tline.trim().endsWith("\\")) {
+		    tline=tline.substring(0,tline.length()-1);
+		    continued= true;
+		}
+		sb.append(tline);
+	    }
+	    props = sb.toString();
+	}
+        return props;
     }
 
 
