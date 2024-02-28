@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Feb 27 12:58:44 MST 2024";
+var build_date="RAMADDA build date: Tue Feb 27 19:25:34 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -4959,7 +4959,6 @@ function DisplayThing(argId, argProperties) {
 
 	    let templateProps = {};
 	    let itemsPerColumn=this.getItemsPerColumn();
-
 	    let attrs={};
 	    if(template) {
 		attrs = Utils.tokenizeMacros(template,{hook:(token,value)=>{return this.macroHook(record, token,value)},dateFormat:this.getDateFormat()}).getAttributes("default")||{};
@@ -5946,8 +5945,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    return this.animationControl;
 	},
-        propagateEvent: function(event, data) {
-	    this.getDisplayManager().notifyEvent(event,this,data);
+        propagateEvent: function(event, data,notThis) {
+	    this.getDisplayManager().notifyEvent(event,notThis?null:this,data);
         },
         displayError: function(msg) {
             this.displayHtml(HU.getErrorDialog(msg));
@@ -35896,7 +35895,7 @@ function RamaddaExampleDisplay(displayManager, id, properties) {
 /**
    Copyright 2008-2023 Geode Systems LLC
 */
-
+let xxcnt=0;
 
 const DISPLAY_MAP = "map";
 
@@ -36440,6 +36439,20 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		}
 		this.initMapParams(params);
                 this.map = new RepositoryMap(this.domId(ID_MAP), params);
+		this.map.popupListener = (id,text) =>{
+		    let fields = jqid(id).find('[field-id]');
+		    fields.addClass('ramadda-clickable');
+		    fields.click(function() {
+			let field = $(this).attr('field-id');
+			let value = $(this).attr('field-value');			
+			let args = {
+			    id:field,
+			    fieldId: field,
+			    value: value
+			};
+			_this.propagateEvent(DisplayEvent.filterChanged, args,true);
+		    });
+		};
 		if(this.getShowOverviewMap()) {
 		    let opts = {size:{}};
 		    let layer = this.getOverviewMapLayer();
@@ -36846,7 +36859,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'segmentWidth',d:'1',tt:'Segment line width'},	
 	{p:'useGreatCircle',d:false,ex:'true',tt:'use great circle routes for segments'},
 	{p:'sizeSegments',d:false,ex:'true',tt:'Size the segments based on record value'},	
-	{p:'isPath',ex:'true',tt:'Make a path from the points'},	
+	{p:'isPath',ex:'true',tt:'Make a path from the points'},
+	{p:'isPathThreshold',ex:'1000',tt:'Make path from the points if # records<threshold'},		
 	{p:'pathWidth',ex:'2'},
 	{p:'pathColor',ex:'red'},	
 	{p:'isTrajectory',ex:'true',tt:'Make a path from the points'},	
@@ -37214,8 +37228,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 
 	removeFeatureLayer: function() {
-	    if(debugMapTime)
+	    if(debugMapTime) {
+		console.log('start removeFeatureLayer');
 		console.time('removeFeatureLayer');
+	    }
 	    if(this.myFeatureLayer) {
 		this.myFeatureLayer.destroy();
 		this.map.removeLayer(this.myFeatureLayer,true);
@@ -39020,6 +39036,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		});
 		this.highlightMarkers = null;
 	    }
+
 	    this.map.clearSeenMarkers();
 	    let t2= new Date();
 //	    debug = true;
@@ -39727,6 +39744,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    //getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable,propPrefix) {
             let colorBy = this.getColorByInfo(records,null,null,null,null,this.lastColorBy);
 
+
 	    this.lastColorBy = colorBy;
 	    let cidx=0
 	    let polygonField = this.getFieldById(fields, this.getPolygonField());
@@ -39989,7 +40007,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    let fillColor = this.getFillColor();
 	    let fillOpacity =  this.getFillOpacity();
-	    let isPath = this.getProperty("isPath", false);
+	    let isPath = this.getIsPath();
+	    if(this.getIsPathThreshold()>records.length) isPath=true;
 	    let groupByField = this.getFieldById(null,this.getProperty("groupByField"));
 	    let groups;
 	    if(groupByField)
@@ -40022,7 +40041,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    };	    
 	    this.haveAddPoints = true;
 	    this.recordToInfo = {};
-	    let recordInfos = records.map(record=>{
+	    let recordInfos = records.map((record,idx)=>{
 		let recordInfo =  {
 		    record:record,
 		    features:[],
@@ -40031,13 +40050,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(!record.point) {
 		    recordInfo.x = record.getLongitude();
 		    recordInfo.y = record.getLatitude();
+
 		} else {
 		    recordInfo.x = record.point.x;
 		    recordInfo.y = record.point.y;
 		}
+
+
 		this.recordToInfo[record.getId()]  =recordInfo;
 		return recordInfo;
 	    });
+
+
 
 
 	    if(this.getHandleCollisions()) {
@@ -40205,6 +40229,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		featureCnt++;
 		let record = recordInfo.record;
 		let point  = recordInfo;
+
 		if(!point) {
                     point = MapUtils.createPoint(record.getLongitude(), record.getLatitude());
 		} else {
