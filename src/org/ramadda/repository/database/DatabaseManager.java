@@ -99,9 +99,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     public static boolean debugConnections=false;
 
 
-    /** _more_ */
-    private final LogManager.LogId LOGID =
-        new LogManager.LogId("org.ramadda.repository.database.DatabaseManager");
 
     /** _more_ */
     private static final DbObject dummyToCompile = null;

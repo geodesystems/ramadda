@@ -122,7 +122,11 @@ public class LogManager extends RepositoryManager {
 
     /** _more_ */
     private static final LogManager.LogId REPOSITORY_SPECIAL_LOG_ID =
-        new LogManager.LogId("org.ramadda.repository.special");    
+        new LogManager.LogId("org.ramadda.repository.special");
+
+    /** _more_ */
+    private static final LogManager.LogId REPOSITORY_REGISTRY_LOG_ID =
+        new LogManager.LogId("org.ramadda.repository.registry");        
 
 
     /** _more_ */
@@ -296,6 +300,14 @@ public class LogManager extends RepositoryManager {
         return getLogger(REPOSITORY_SPECIAL_LOG_ID);
     }    
 
+
+    /**
+     *  @return _more_
+     */
+    public MyLogger getRegistryLogger() {
+        return getLogger(REPOSITORY_REGISTRY_LOG_ID);
+    }    
+    
 
     /**
      *  @return _more_
@@ -543,6 +555,24 @@ public class LogManager extends RepositoryManager {
 	}
     }
 
+    public void logRegistry(String message,Throwable thr) {
+	logError(getRegistryLogger(),message,thr);
+    }
+
+    public void logRegistry(String message) {
+	try {
+	    MyLogger logger = getRegistryLogger();
+	    if (logger != null) {
+		logger.info(message);
+	    } else {
+		System.err.println("registry:" + message);
+	    }
+	} catch(Exception exc) {
+	    System.err.println("LogManager: error in logRegistry:" + exc);
+	    exc.printStackTrace();
+	}
+    }
+    
     public void logLicense(String message) {
 	try {
 	    MyLogger logger = getLicenseLogger();

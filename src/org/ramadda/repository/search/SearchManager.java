@@ -1483,10 +1483,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             }
 	    entries.add(entry);
         }
-	/*
-	getLogManager().logInfo("org.ramadda.repository.search",
-				"lucene results:" + docs.length +" #entries:" + entries.size() +" query:" + query);
-	*/
+
     }
 
 

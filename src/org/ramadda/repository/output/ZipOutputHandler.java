@@ -57,11 +57,6 @@ public class ZipOutputHandler extends OutputHandler {
     /** _more_ */
     private static final String ARG_WRITETODISK = "writetodisk";
 
-    /** _more_ */
-    private final LogManager.LogId LOGID =
-        new LogManager.LogId(
-            "org.ramadda.repository.output.ZipOutputHandler");
-
 
 
     /** _more_ */

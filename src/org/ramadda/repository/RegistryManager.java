@@ -145,6 +145,15 @@ public class RegistryManager extends RepositoryManager {
         super(repository);
     }
 
+    private void log(String msg) {
+	getLogManager().logRegistry(msg);
+    }
+
+    private void log(String msg,Throwable thr) {
+	getLogManager().logRegistry(msg,thr);
+    }    
+
+
 
     /**
      * _more_
@@ -237,7 +246,7 @@ public class RegistryManager extends RepositoryManager {
                 String slug = request.getString(slugFldId, serverInfo.getUrl());		
 		if(root==null) root="";
                 boolean isEnabled = request.get(enabledId, false);
-                boolean isLive = request.get(liveId, false);
+                boolean isLive = request.get(liveId, true);
                 boolean isRegistry = request.get(registryId, false);				
                 getDatabaseManager().update(Tables.REMOTESERVERS.NAME,
                                             Tables.REMOTESERVERS.COL_URL,
@@ -288,7 +297,7 @@ public class RegistryManager extends RepositoryManager {
 	sb.append(HU.row(HU.cols(HU.b(msg("Select")) + space,
 				 HU.b(msg("Enabled")) + space,
 				 HU.b(msg("From")+"<br>"+msg("Registry?")) + space,
-				 HU.b(msg("Live")) + space,
+				 //				 HU.b(msg("Live")) + space,
 				 HU.b(msg("Repository"))+ space,
 				 HU.b(msg("Slug"))+ space,
 				 HU.b(msg("URL"))+ space,
@@ -330,13 +339,13 @@ public class RegistryManager extends RepositoryManager {
             String enabledCbx = HU.checkbox(enabledId, "true",
                                              serverInfo.getEnabled(),
                                              HU.id(enabledId));
-            String liveCbx = HU.checkbox(liveId, "true",
-                                             serverInfo.getLive(),
-                                             HU.id(liveId));
+	    //            String liveCbx = HU.checkbox(liveId, "true",
+	    //                                             serverInfo.getLive(),
+	    //                                             HU.id(liveId));
             String registryCbx = HU.checkbox(registryId, "true",
                                              serverInfo.getIsRegistry(),
                                              HU.id(registryId));	    	    
-            sb.append(HU.row(HU.cols(selectedCbx, enabledCbx, registryCbx,liveCbx,
+            sb.append(HU.row(HU.cols(selectedCbx, enabledCbx, registryCbx,
 				     HU.insetDiv(HU.input(labelFldId, serverInfo.getLabel(), HU.SIZE_25),5, 10, 5,10), 
 				     HU.insetDiv(HU.input(slugFldId,serverInfo.getSlug()!=null?serverInfo.getSlug():"",
 							  HU.attr("title","Short ID") + HU.SIZE_10),5,10,5,10),
@@ -389,7 +398,7 @@ public class RegistryManager extends RepositoryManager {
 	    try {
 		registerWithServers();
 	    } catch(Exception exc) {
-		logError("RegistryManager.runRegistrationLoop:", exc);
+		log("runRegistrationLoop:", exc);
 	    }
 	    Misc.sleep(DateUtil.hoursToMillis(1));
 	}
@@ -413,7 +422,7 @@ public class RegistryManager extends RepositoryManager {
 		//		checkServer(serverInfo, true);
             }
         } catch (Exception exc) {
-            logError("RegistryManager.cleanUpServers:", exc);
+            log("cleanUpServers:", exc);
         }
 
 
@@ -705,14 +714,14 @@ public class RegistryManager extends RepositoryManager {
             String  contents = getStorageManager().readSystemResource(theUrl);
             Element root     = XU.getRoot(contents);
             if ( !responseOk(root)) {
-                logInfo("RegistryManager.registerWithServer: Failed to register with:" + theUrl);
+                log("registerWithServer: Failed to register with:" + theUrl);
 		return;
             } 
-	    logInfo("RegistryManager.registerWithServer: Registered with:"+ theUrl);
+	    log("registerWithServer: Registered with:"+ theUrl);
 	    //	    System.err.println(XU.toString(root));
 	    processServers(root);
         } catch (Exception exc) {
-            logError("RegistryManager.registerWithServer: Error registering with:" + theUrl, exc);
+            log("registerWithServer: Error registering with:" + theUrl, exc);
         }
     }
 
@@ -745,14 +754,14 @@ public class RegistryManager extends RepositoryManager {
     public Result processRegistryAdd(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
         if ( !isEnabledAsServer()) {
-            logInfo("RegistryManager.processRegistryAdd: Was asked to register a server when this server is not configured as a registry server. URL = "
+            log("processRegistryAdd: Was asked to register a server when this server is not configured as a registry server. URL = "
                 + request);
             return makeErrorResult("Not enabled as a registry");
         }
 
         String     baseUrl    = request.getString(ARG_REGISTRY_CLIENT, "");
         ServerInfo serverInfo = new ServerInfo(new URL(baseUrl), "", "");
-        logInfo("RegistryManager.processRegistryAdd: calling checkServer url="+ baseUrl);
+        log("processRegistryAdd: calling checkServer url="+ baseUrl);
         if (checkServer(serverInfo, true)) {
 	    //            return new Result(XU.tag(TAG_RESPONSE, XU.attr(ATTR_CODE, CODE_OK), "OK"), MIME_XML);
 	    return returnRegistryXml(request);
@@ -805,8 +814,8 @@ public class RegistryManager extends RepositoryManager {
         }
 
         if ( !ok) {
-            logInfo(
-                "RegistryManger.processRegistryInfo: Was asked to register with a server:"
+            log(
+                "processRegistryInfo: Was asked to register with a server:"
                 + requestingServer + " that is not in our list:" + servers);
 	    makeErrorResult("Not registering with you. Output: " + msg);
         }
@@ -815,8 +824,7 @@ public class RegistryManager extends RepositoryManager {
                 try {
                     fetchRemoteServers(requestingServer);
                 } catch (Exception exc) {
-                    logError(
-                        "RegistryManager.processRegistryInfo: Loading servers from:"
+                    log("processRegistryInfo: Loading servers from:"
                         + requestingServer, exc);
                 }
             }
@@ -841,7 +849,7 @@ public class RegistryManager extends RepositoryManager {
         Element root = XU.getRoot(contents);
 
         if ( !responseOk(root)) {
-            logInfo("RegistryManager.fetchRemoteServers: Bad response from " + serverUrl);
+            log("fetchRemoteServers: Bad response from " + serverUrl);
             return;
         }
 	processServers(root);
@@ -864,7 +872,6 @@ public class RegistryManager extends RepositoryManager {
             ServerInfo oldServer = map.get(serverInfo.getId());
 	    //If we already have it then don't add it
             if (oldServer != null) {
-		System.err.println("have server:" + oldServer);
 		continue;
             }
             addRemoteServer(serverInfo, false);
@@ -894,17 +901,16 @@ public class RegistryManager extends RepositoryManager {
 	if(getDatabaseManager().tableContains(Tables.REMOTESERVERS.NAME,
 					      Tables.REMOTESERVERS.COL_URL,
 					      serverInfo.getUrl())) {
-	    System.err.println("already contains:" + serverInfo);
 	    return;
 	}
 
-	System.err.println("adding server:" + serverInfo);
+	log("adding server:" + serverInfo);
         getDatabaseManager().executeInsert(Tables.REMOTESERVERS.INSERT,
                                            new Object[] {
             serverInfo.getUrl(), serverInfo.getTitle(),
             serverInfo.getDescription(), serverInfo.getEmail(),
             Boolean.valueOf(serverInfo.getIsRegistry()),
-            Boolean.valueOf(serverInfo.getEnabled()),
+            Boolean.valueOf(true),
             Boolean.valueOf(serverInfo.getLive()),	    
             serverInfo.getSearchRoot(),
 	    serverInfo.getSlug()	    
@@ -934,26 +940,26 @@ public class RegistryManager extends RepositoryManager {
             if (responseOk(root)) {
                 ServerInfo clientServer = new ServerInfo(root);
                 if (clientServer.equals(serverInfo)) {
-                    logInfo("RegistryManager.checkServer: adding server " + serverUrl);
+                    log("checkServer: adding server " + serverUrl);
                     return true;
                 } else {
-                    logInfo("RegistryManager.checkServer: not equals:"
+                    log("checkServer: not equals:"
                             + serverInfo.getId() + " "
                             + clientServer.getId());
 
                 }
             } else {
-                logInfo("RegistryManager.checkServer: response not ok from:"
+                log("checkServer: response not ok from:"
                         + serverInfo + " with url: " + serverUrl
                         + "response:\n" + contents);
             }
         } catch (Exception exc) {
-            logError(
-                "RegistryManager.checkServer: Could not fetch server xml from:"
+            log(
+                "checkServer: Could not fetch server xml from:"
                 + serverInfo + " with url:" + serverUrl, exc);
         }
         if (deleteOnFailure) {
-	    //            logInfo("RegistryManager.checkServer: Marking server not live:"  + serverInfo.getUrl());
+	    //            log("checkServer: Marking server not live:"  + serverInfo.getUrl());
         }
         return false;
     }
