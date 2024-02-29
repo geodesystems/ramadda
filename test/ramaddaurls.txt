@@ -2,6 +2,7 @@ echo:Server side files
 https://ramadda.org/repository/entry/show?entryid=882ba673-72b0-4d26-80de-e10f34721d72
 https://ramadda.org/repository/entry/show/Home/RAMADDA+/Development/Test/Server+Side+Test?entryid=882ba673-72b0-4d26-80de-e10f34721d72&output=zip.tree
 
+
 #stop
 
 echo: CSV
@@ -16,7 +17,6 @@ https://ramadda.org/repository/entry/show?entryid=856f2d14-771c-40bd-9437-a5b86f
 echo:Balloon Sonde Data
 https://ramadda.org/repository/entry/show?entryid=f9d8045d-6028-44db-8f90-0a0fd7de101c#fortest
 echo:Bayside Drive_comma_ Chester_comma_ MD 21619
-https://ramadda.org/repository/entry/show?entryid=34a19c51-5067-4d6a-993d-13c7e2733c58#fortest
 echo:Cc1945002 20220324 190639 1
 https://ramadda.org/repository/entry/show?entryid=29291557-3e22-4940-83bd-f037ab803a1f#fortest
 echo:CHATTANOOGA LOVELL FIELD AP
@@ -57,8 +57,6 @@ echo:Sounding - RIW 2019-03-26 12:00
 https://ramadda.org/repository/entry/show?entryid=4bbaed44-b8ef-4c2f-af77-bb2ac9a22c44#fortest
 echo:SPOT-1778
 https://ramadda.org/repository/entry/show?entryid=fb9f8c1a-20be-4653-8693-906deea9a5fb#fortest
-echo:SPOT-1778
-https://ramadda.org/repository/entry/show?entryid=1f03b559-6c9b-4142-85f0-e847e6a62f2d#fortest
 echo:Ss19890102
 https://ramadda.org/repository/entry/show?entryid=37ebc3bd-c71f-40a5-8ff2-1ce9f2074624#fortest
 echo:Sta0865
@@ -91,8 +89,6 @@ echo:Georeferencing Images
 https://ramadda.org/repository/entry/show?entryid=35a5c61c-6fda-44db-a5c6-d20a832a5cbc#fortest
 echo:Fallout Map
 https://ramadda.org/repository/entry/show?entryid=23b1c592-b4a1-4a31-9d91-bb84bf7c7a90#fortest
-echo:Native American Mound Sites
-https://ramadda.org/repository/entry/show?entryid=26d3eb3e-4a70-4198-9e33-82b1448e91e2#fortest
 echo:John Snow's Cholera Map
 https://ramadda.org/repository/entry/show?entryid=2ffa7bf3-15c6-4aea-ae3f-ebd9dd7478fc#fortest
 echo:Storm Tracker
@@ -117,8 +113,6 @@ echo:Range Rings
 https://ramadda.org/repository/entry/show?entryid=de8567c5-0787-4876-935e-c94f24519089#fortest
 echo:Bonhomme Richard Map
 https://ramadda.org/repository/entry/show?entryid=a7bca892-a199-49dc-9cd5-41342243f452#fortest
-echo:ESDL Data Cube
-https://ramadda.org/repository/entry/show?entryid=5b7481f0-a0d8-4be0-9389-343c975d569c#fortest
 echo:US Power Plants
 https://ramadda.org/repository/entry/show?entryid=b460ebf5-d4a4-473d-a79b-32fcf5aeea97#fortest
 echo:Boulder Open Space
@@ -650,8 +644,6 @@ echo:Point Data Examples
 https://ramadda.org/repository/entry/show?entryid=5ec45056-fe82-4d98-a9c4-4f1da94be8b0#fortest
 echo:Pools and Fluxes in the Water cycle
 https://ramadda.org/repository/entry/show?entryid=001721d4-1525-49ba-add5-5b32d8442947#fortest
-echo:Purple Air Sensors
-https://ramadda.org/repository/entry/show?entryid=41c5ccd1-f344-4bc5-a98e-751317bfd60a#fortest
 echo:RAMADDA ASDI
 https://ramadda.org/repository/entry/show?entryid=8e8db5d2-f6cd-461f-afa7-177809afa07c#fortest
 echo:Salton Sea
@@ -952,14 +944,11 @@ https://ramadda.org/repository/entry/data?entryid=07869b00-2144-44b6-a260-88a026
 https://ramadda.org/repository/entry/data?entryid=1c8f9b61-bec2-416b-b986-904a05c2b8e8&max=1&record.last=1
 https://ramadda.org/repository/entry/data?entryid=35008d4e-c16e-4122-9c17-3bc43d4d4836&max=1&record.last=1
 https://ramadda.org/repository/entry/data?entryid=660a43af-2622-4d30-9774-78c704e1851a&max=5000
-https://ramadda.org/repository/entry/data?entryid=9389b959-6e31-44a3-9038-580cecdb838d&max=1&record.last=1
-https://ramadda.org/repository/entry/data?entryid=97318414-https://ramadda.org/repository/metadata/view/Screenshot_2023-06-03_at_10-07-24_Mapping_Indigenous_Placenames.png?element=1&entryid=e16fbe11-14b2-4e6f-864d-da7ef3a20a68&metadata_id=6c408d8c-190c-4f92-a7fb-862e5aab2e81
 https://ramadda.org/repository/entry/data?entryid=aee047cf-1798-43d4-895d-1e9131ea96dc&max=5000
 https://ramadda.org/repository/entry/data?entryid=cb10bd39-aace-4099-a87b-93da5e5afecd&max=20000
 https://ramadda.org/repository/entry/data?entryid=e63aba37-2cc1-486e-8107-805bc9726e0d&max=5000
 https://ramadda.org/repository/entry/data?entryid=e8ffdd4b-4e8e-4957-99ca-6965b1022b85&max=5000
 https://ramadda.org/repository/entry/data?entryid=f268f91d-d849-44e4-8d8b-4d6b3b474b1e&max=5000
-https://ramadda.org/repository/entry/data?entryid=f9bd0abe-2a6d-42af-bd4d-5116e8ef9e40&limit=5000&max=5100&record.last=5000
 https://ramadda.org/repository/entry/get/imdvmap.json?_=1695987825373&entryid=7718385d-1818-46d3-ae38-644b2f8457bf&fileinline=true
 https://ramadda.org/repository/entry/get/imdvmap.json?_=1695987942861&entryid=a283f010-7119-44f2-b438-ecff5526c579&fileinline=true
 https://ramadda.org/repository/entry/show?ancestors=true&entryid=13136e17-c774-4bd7-b283-8532f9a4901f&output=json
@@ -983,7 +972,6 @@ https://ramadda.org/repository/entry/show?entryid=9cd4ad18-5cec-4e4a-b544-0f6983
 https://ramadda.org/repository/entry/show?entryid=b350b7b4-eaf9-49d2-8ce7-9e7e5d50d6ec
 https://ramadda.org/repository/entry/show?entryid=cb10bd39-aace-4099-a87b-93da5e5afecd
 https://ramadda.org/repository/entry/show?entryid=f268f91d-d849-44e4-8d8b-4d6b3b474b1e
-https://ramadda.org/repository/entry/show?entryid=f9bd0abe-2a6d-42af-bd4d-5116e8ef9e40
 https://ramadda.org/repository/entryfile/13136e17-c774-4bd7-b283-8532f9a4901f/scene.bin
 https://ramadda.org/repository/entryfile/13136e17-c774-4bd7-b283-8532f9a4901f/scene.gltf
 https://ramadda.org/repository/entryfile/13136e17-c774-4bd7-b283-8532f9a4901f/textures/pasted__pasted__lambert2_baseColor.png
@@ -1116,7 +1104,6 @@ https://ramadda.org/repository/metadata/view/Screenshot_2020-06-29_Example_Oscar
 https://ramadda.org/repository/metadata/view/Screenshot_2021-03-12_Ensemble_12-Hr_Accumulated_Precipitation_Forecasts.png?element=1&entryid=5b54aa26-9e90-4b96-94fc-2498e8846fbb&metadata_id=d21bd06e-2851-4198-9805-aa87903e4a06
 https://ramadda.org/repository/metadata/view/Screenshot_2021-03-14_Ensemble_12-Hr_Accumulated_Precipitation_Forecasts.png?element=1&entryid=f03814b8-ffa8-44a1-9247-4138d37424fb&metadata_id=9f50a82f-7994-4985-9ea8-61c9a0ff5d37
 https://ramadda.org/repository/metadata/view/Screenshot_2021-03-30_Anarchy_in_the_USA.png?element=1&entryid=e3e43971-e0b7-41f0-a8da-3cc77ce4a2bb&metadata_id=421d10fb-36ec-444c-ab89-be7c9e6c9551
-https://ramadda.org/repository/metadata/view/Screenshot_2021-04-04_Bat_Tracks.png?el
 https://ramadda.org/repository/metadata/view/Screenshot_2021-07-04_at_11-41-24_Example_Statistics_Display.png?element=1&entryid=505884df-abd2-47e8-9999-163f4b15c9d1&metadata_id=e7f2b69a-4a86-488a-b8c9-ff8c0709e335
 https://ramadda.org/repository/metadata/view/Screenshot_2021-09-16_at_18-13-53_Example_FAIR_Data_Collection.png?element=1&entryid=69de1c38-74f3-44b8-9cce-fb66382c9724&metadata_id=d53ec45a-bed0-4642-b3cd-60cf4a0723e8
 https://ramadda.org/repository/metadata/view/Screenshot_2022-03-31_at_11-43-28_COVID-19.png?element=1&entryid=52644ac1-f6d6-45ea-88af-b5d2ec75742e&metadata_id=9767300a-50d8-4497-8134-0264a24f71c2
@@ -1141,7 +1128,6 @@ https://ramadda.org/repository/metadata/view/Screenshot_2023-07-15_at_15-31-18_I
 https://ramadda.org/repository/metadata/view/Screenshot_2023-07-16_at_05-30-40_Global_Temperature_Anomalies.png?element=1&entryid=00a5cd2e-7c4e-4836-b40f-6d83850f46ff&metadata_id=d7420425-16d7-4ab3-afb1-b515f274bb04
 https://ramadda.org/repository/metadata/view/Screenshot_2023-07-19_at_10-35-56_John_Snow's_Cholera_Map.png?element=1&entryid=2ffa7bf3-15c6-4aea-ae3f-ebd9dd7478fc&metadata_id=bd1913e7-7730-4d3b-8449-4672bb046d59
 https://ramadda.org/repository/metadata/view/Screenshot_2023-07-21_at_14-20-57_Top_100_women_on_the_web.png?element=1&entryid=e2417456-024c-402f-ab54-0e9f5d0b6fc8&metadata_id=8bf803c9-91f2-4330-9245-122d656d0fb9
-https://ramadda.org/repository/metadata/view/Screenshot_2023-07-22_at_05-02-16_Native_American_Mound_Sites.png?element=1&entryid=26d3eb3e-4a70-4198-9e33-82b1448e91e2&metadata_id=572e838a-5275-4840-ac08-0ec3cfa6cc50
 https://ramadda.org/repository/metadata/view/Screenshot_2023-07-22_at_13-09-28_Fallout_Map.png?element=1&entryid=23b1c592-b4a1-4a31-9d91-bb84bf7c7a90&metadata_id=c8b92eb4-8d73-44b1-9ff1-9af6b672b488
 https://ramadda.org/repository/metadata/view/Screenshot_2023-08-02_at_07-38-15_National_Parks_and_Forests.png?element=1&entryid=c2331d6e-0bef-4f0c-99ac-a6780d46eaf6&metadata_id=9798b87f-1037-4279-b1df-ff683b5402fa
 https://ramadda.org/repository/metadata/view/Screenshot_2023-08-14_at_14-18-41_Roman_Sites.png?element=1&entryid=a283f010-7119-44f2-b438-ecff5526c579&metadata_id=b7fdf941-84e9-42aa-9c5a-79a04068a9cb
