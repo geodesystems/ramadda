@@ -709,6 +709,8 @@ public class RegistryManager extends RepositoryManager {
         List<List<String>> urls = new ArrayList<List<String>>();
 	for(String line: Utils.split(getRepository().getProperty(PROP_REGISTRY_SERVERS,""), "\n", true, true)) {
 	    if(line.startsWith("#")) continue;
+	    //Check for now password
+	    if(line.startsWith("https:") || line.startsWith("http:")) continue;
 	    List<String>toks = Utils.splitUpTo(line,":",2);
 	    if(toks.size()!=2) continue;
 	    urls.add(toks);
