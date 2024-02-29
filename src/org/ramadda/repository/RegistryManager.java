@@ -800,13 +800,13 @@ public class RegistryManager extends RepositoryManager {
 	}
         ServerInfo serverInfo = new ServerInfo(new URL(baseUrl), "", "");
 	//        log("processRegistryAdd: calling checkServer url="+ baseUrl);
-	serverInfo = checkServer(serverInfo,true);
-        if (serverInfo!=null) {
-            addRemoteServer(serverInfo, false);
+	ServerInfo verified = checkServer(serverInfo,true);
+        if (verified!=null) {
+            addRemoteServer(verified, false);
 	    clearRemoteServers();
 	    return returnRegistryXml(request);
         }
-	log("registerWithServer: Failed to verify client server:" + serverInfo);
+	log("registerWithServer: Failed to verify client:" + serverInfo);
 	return makeErrorResult("failed");
     }
 
