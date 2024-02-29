@@ -6377,6 +6377,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                               getRepositoryDescription(),
                               getRepositoryEmail(),
                               getRegistryManager().isEnabledAsServer(),
+			      true,
                               false,"",getRepositorySlug());
     }
 
@@ -6565,9 +6566,20 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    sb.append(info);
 
         sb.append(HU.formTable());
+	String name = getRepositoryName();
+	if(Utils.stringDefined(name))
+	    HU.formEntry(sb, msgLabel("Name"),name);
+	String slug= getRepositorySlug();
+	if(Utils.stringDefined(slug))
+	    HU.formEntry(sb, msgLabel("Slug"),slug);
+	String desc = getRepositoryDescription();
+	if(Utils.stringDefined(desc))
+	    HU.formEntry(sb, msgLabel("Description"),desc);
+
+
 	String contact = getProperty("ramadda.contact",null);
-	if(contact!=null)
-	    HU.formEntry(sb, msgLabel("Contact"),contact);
+	if(Utils.stringDefined(contact))
+	    HU.formEntry(sb, msgLabel("Contact"),contact);	
 
 	HU.formEntry(sb, msgLabel("Start Time"),
 		     getDateHandler().formatDate(startTime));

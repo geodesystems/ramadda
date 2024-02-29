@@ -99,6 +99,8 @@ public class ServerInfo implements Constants {
     /** _more_ */
     private boolean enabled = false;
 
+    private boolean live = true;    
+
     private String searchRoot;
 
     private String slug;
@@ -131,7 +133,7 @@ public class ServerInfo implements Constants {
     public ServerInfo(String url, String hostname, int port, String title,
                       String description) {
         this(url, hostname, port, -1, "/repository", title, description, "",
-             false, false,"","");
+             false, false,false,"","");
     }
 
 
@@ -160,16 +162,12 @@ public class ServerInfo implements Constants {
         } else {
             this.sslPort = -1;
         }
-        this.basePath = clean(XmlUtil.getGrandChildText(element, TAG_INFO_BASEPATH,
-							"/repository"));
+        this.basePath = clean(XmlUtil.getGrandChildText(element, TAG_INFO_BASEPATH,"/repository"));
         this.title = clean(XmlUtil.getGrandChildText(element, TAG_INFO_TITLE, ""));
         this.slug = clean(XmlUtil.getGrandChildText(element, TAG_INFO_SLUG, ""));	
-        this.description = clean(XmlUtil.getGrandChildText(element,
-							   TAG_INFO_DESCRIPTION, ""));
+        this.description = clean(XmlUtil.getGrandChildText(element, TAG_INFO_DESCRIPTION, ""));
         this.email = clean(XmlUtil.getGrandChildText(element, TAG_INFO_EMAIL, ""));
-        String tmp = XmlUtil.getGrandChildText(element, TAG_INFO_ISREGISTRY,
-					       "false");
-        isRegistry = Misc.equals(tmp, "true");
+        this.isRegistry = true;
     }
 
 
@@ -196,7 +194,11 @@ public class ServerInfo implements Constants {
      */
     public ServerInfo(String url, String hostname, int port, int sslPort,
                       String basePath, String title, String description,
-                      String email, boolean isRegistry, boolean enabled, String root,String slug) {
+                      String email,
+		      boolean isRegistry,
+		      boolean enabled,
+		      boolean live,
+		      String root,String slug) {
         this.url         = url;
         this.hostname    = hostname;
         this.port        = port;
@@ -207,6 +209,7 @@ public class ServerInfo implements Constants {
         this.email       = email;
         this.isRegistry  = isRegistry;
         this.enabled     = enabled;
+        this.live        = live;	
 	this.searchRoot = root;
 	this.slug  =slug;
     }
@@ -266,7 +269,6 @@ public class ServerInfo implements Constants {
         Element info = XmlUtil.create(doc, TAG_INFO_REPOSITORY, null,
                                       new String[] {});
         XmlUtil.create(doc, TAG_INFO_DESCRIPTION, info, description, null);
-
         XmlUtil.create(doc, TAG_INFO_TITLE, info, title, null);
         XmlUtil.create(doc, TAG_INFO_SLUG, info, slug!=null?slug:"", null);	
         XmlUtil.create(doc, TAG_INFO_HOSTNAME, info, hostname, null);
@@ -575,6 +577,25 @@ public class ServerInfo implements Constants {
     public String getSlug () {
 	return slug;
     }
+
+    /**
+       Set the Live property.
+
+       @param value The new value for Live
+    **/
+    public void setLive (boolean value) {
+	live = value;
+    }
+
+    /**
+       Get the Live property.
+
+       @return The Live
+    **/
+    public boolean getLive () {
+	return live;
+    }
+
 
 
 }
