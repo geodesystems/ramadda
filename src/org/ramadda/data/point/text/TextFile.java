@@ -649,8 +649,8 @@ public abstract class TextFile extends PointFile {
 			    if(type==null) type=defaultType;
 			    if(type==null) {
 				if (Utils.isNumber(sample)) {
-				    type  = RecordField.TYPE_STRING;
-				    //				    type =RecordField.TYPE_DOUBLE;
+				    //				    type  = RecordField.TYPE_STRING;
+				    type =RecordField.TYPE_DOUBLE;
 				} else {
 				    type  = RecordField.TYPE_STRING;
 				}
