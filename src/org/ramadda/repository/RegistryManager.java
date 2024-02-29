@@ -171,7 +171,10 @@ public class RegistryManager extends RepositoryManager {
 
     private boolean passwordOk(String password) {
 	if(!stringDefined(password)) return false;
-	return Utils.makeHashSet(Utils.split(getRegistryPassword(),",",true,true)).contains(password.trim());
+	HashSet set = Utils.makeHashSet(Utils.split(getRegistryPassword(),",",true,true));
+	if(set.contains(password.trim())) return true;
+	if(set.contains("*")) return true;
+	return false;
     }
 
     private void log(String msg) {
