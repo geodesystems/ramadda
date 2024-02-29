@@ -6,8 +6,6 @@ https://ramadda.org:443/repository/entry/show?entryid=e597761f-75c7-4636-907c-5b
 https://ramadda.org:443/repository/entry/show?entryid=df29a80c-83c5-44af-83f9-7fd5d2f77637&max=5000&output=points.product&product=points.json
 https://ramadda.org:443/repository/entry/show?entryid=d7188271-672c-42ec-be0d-e3b616375739&max=5000&output=points.product&product=points.json
 https://ramadda.org:443/repository/entry/show?entryid=149bdad0-2422-466f-99ef-7239f1d7082d
-https://ramadda.org:443/repository/entry/show?entryid=53ae7379-9a6d-4004-8a17-f5ea411eb0d0&max=5000&output=points.product&product=points.json
-https://ramadda.org:443/repository/entry/show?entryid=7ecd8d55-e4ce-4873-bfb3-fdb17df8896f&max=5000&output=points.product&product=points.json
 https://ramadda.org:443/repository/entry/show?entryid=7aedf88a-aea8-4537-8083-6da4d9e37d41
 https://ramadda.org:443/repository/entry/show?entryid=740ffb90-b033-469d-9faa-ab118a4e57ea&max=5000&output=points.product&product=points.json
 https://ramadda.org:443/repository/entry/show?entryid=5eed9743-2a86-4a80-8057-86af6194cca4&max=5000&output=points.product&product=points.json
