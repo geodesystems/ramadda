@@ -66,6 +66,27 @@ public class RegistryManager extends RepositoryManager {
 
     private static final XmlUtil XU=null;
 
+
+    /** _more_ */
+    public static final String PROP_REGISTRY_DEFAULTSERVER =
+        "ramadda.registry.defaultserver";
+
+    /** _more_ */
+    public static final String PROP_REGISTRY_ENABLED =
+        "ramadda.registry.enabled";
+
+    public static final String PROP_REGISTRY_PASSWORD =
+        "ramadda_registry_password";
+
+
+    /** _more_ */
+    public static final String PROP_REGISTRY_SERVERS =
+        "ramadda.registry.servers";
+
+    //    public static final String PROP_CLEARINGHOUSE_ENABLED = "ramadda.clearinghouse.enabled";
+
+
+
     /** _more_ */
     public final RequestUrl URL_REGISTRY_ADD = new RequestUrl(this,
                                                    "/registry/add");
@@ -144,6 +165,15 @@ public class RegistryManager extends RepositoryManager {
         super(repository);
     }
 
+    private String getRegistryPassword() {
+	return getRepository().getProperty(PROP_REGISTRY_PASSWORD,"");
+    }
+
+    private boolean passwordOk(String password) {
+	if(!stringDefined(password)) return false;
+	return Utils.makeHashSet(Utils.split(getRegistryPassword(),",",true,true)).contains(password.trim());
+    }
+
     private void log(String msg) {
 	getLogManager().logRegistry(msg);
     }
@@ -189,7 +219,7 @@ public class RegistryManager extends RepositoryManager {
                         sb.append(
                             getPageHandler().showDialogError(
                                 "Failed to read information from:"
-                                + fullUrl));
+                                + fullUrl +" response:" + getResponse(root)));
                     } else {
                         ServerInfo serverInfo = new ServerInfo(url,root);
 			serverInfo.setIsRegistry(false);
@@ -464,22 +494,26 @@ public class RegistryManager extends RepositoryManager {
         csb.append(HU.row(
 			  HU.colspan(msgHeader("Server Registry"), 2)));
 
+	HU.formEntry(csb,"",helpLink);
+	String passwordInput  = HU.input(PROP_REGISTRY_PASSWORD,getRegistryPassword(),HU.SIZE_60+HU.attr("placeholder","password1,password2,..."));
+	
 	HU.formEntry(csb,  "",
 			    HU.labeledCheckbox(
 					       PROP_REGISTRY_ENABLED, "true", 
 					       formPropValue(request,PROP_REGISTRY_ENABLED,false),
 					       msg("Enable this server to be a registry for other servers")));
 
-        csb.append(HU.formEntry("",
-				msgLabel("Servers this server registers with")
-				+ HU.space(2) + helpLink));
+	HU.formEntry(csb,  msgLabel("Server Passwords"),passwordInput);
+        csb.append(HU.formEntry(msgLabel("Servers"),
+				msgLabel("Servers this server registers with")+HU.space(2) +msg("One per line.") +" e.g.:"));
+        csb.append(HU.formEntry("","<pre>somepassword:https://ramadda.org/repository</pre>"));
         csb.append(
             HU.formEntry(
                 "",
                 HU.textArea(
                     PROP_REGISTRY_SERVERS,
 		    formPropValue(request,PROP_REGISTRY_SERVERS,""),
-                    5, 60)));
+                    5, 60,HU.attr("placeholder","password1:server1&#10;password2:server2"))));
 
     }
 
@@ -494,7 +528,6 @@ public class RegistryManager extends RepositoryManager {
      */
     @Override
     public void applyAdminSettings(Request request) throws Exception {
-        List<String> oldList = getServersToRegisterWith();
         List<String> newList =
             Utils.split(request.getUnsafeString(PROP_REGISTRY_SERVERS, ""),
                         "\n", true, true);
@@ -505,16 +538,9 @@ public class RegistryManager extends RepositoryManager {
         getRepository().writeGlobal(PROP_REGISTRY_ENABLED,
                                     request.get(PROP_REGISTRY_ENABLED, false)
                                     + "");
+        getRepository().writeGlobal(PROP_REGISTRY_PASSWORD,
+                                    request.getString(PROP_REGISTRY_PASSWORD,""));
         checkApi();
-        if ( !newList.equals(oldList)) {
-            for (String url : oldList) {
-                newList.remove(url);
-                Misc.run(this, "registerWithServer", url);
-            }
-            for (String url : newList) {
-                Misc.run(this, "registerWithServer", url);
-            }
-        }
     }
 
 
@@ -676,11 +702,14 @@ public class RegistryManager extends RepositoryManager {
      *
      * @return _more_
      */
-    public List<String> getServersToRegisterWith() {
-        List<String> urls =
-            Utils.split(getRepository().getProperty(PROP_REGISTRY_SERVERS,
-                ""), "\n", true, true);
-
+    private List<List<String>> getServersToRegisterWith() {
+        List<List<String>> urls = new ArrayList<List<String>>();
+	for(String line: Utils.split(getRepository().getProperty(PROP_REGISTRY_SERVERS,""), "\n", true, true)) {
+	    if(line.startsWith("#")) continue;
+	    List<String>toks = Utils.splitUpTo(line,":",2);
+	    if(toks.size()!=2) continue;
+	    urls.add(toks);
+	}
         return urls;
     }
 
@@ -691,9 +720,9 @@ public class RegistryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public void registerWithServers() throws Exception {
-        List<String> urls = getServersToRegisterWith();
-        for (String url : urls) {
-            registerWithServer(url);
+        List<List<String>> urls = getServersToRegisterWith();
+        for (List<String>tuple : urls) {
+            registerWithServer(tuple);
         }
     }
 
@@ -705,22 +734,24 @@ public class RegistryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public void registerWithServer(String url) throws Exception {
+    public void registerWithServer(List<String>tuple) throws Exception {
+	String password = tuple.get(0);
+	String url = tuple.get(1);
         ServerInfo serverInfo = getRepository().getServerInfo();
-        url = url + URL_REGISTRY_ADD.getPath();
-        URL theUrl = new URL(HU.url(url, ARG_REGISTRY_CLIENT, serverInfo.getUrl()));
+        URL theUrl = new URL(HU.url(url+URL_REGISTRY_ADD.getPath(), ARG_REGISTRY_CLIENT, serverInfo.getUrl(),
+				    PROP_REGISTRY_PASSWORD,password));
         try {
             String  contents = getStorageManager().readSystemResource(theUrl);
             Element root     = XU.getRoot(contents);
             if ( !responseOk(root)) {
-                log("registerWithServer: Failed to register with:" + theUrl);
+		log("registerWithServer: Failed to register with:" + theUrl+" response:" + getResponse(root));
 		return;
             } 
-	    log("registerWithServer: Registered with:"+ theUrl);
+	    log("registerWithServer: Registered with:"+ url);
 	    //	    System.err.println(XU.toString(root));
 	    processServers(root);
         } catch (Exception exc) {
-            log("registerWithServer: Error registering with:" + theUrl, exc);
+            log("registerWithServer: Error registering with:" + url +" Error:"+ exc.getMessage());
         }
     }
 
@@ -735,6 +766,10 @@ public class RegistryManager extends RepositoryManager {
     public boolean responseOk(Element root) {
         return XU.getAttribute(root, ATTR_CODE).equals(CODE_OK);
     }
+
+    public String getResponse(Element root) {
+	return  (String)Utils.getNonNull(XmlUtil.getChildText(root),"");
+    }    
 
 
     private Result makeErrorResult(String msg) throws Exception {
@@ -757,81 +792,21 @@ public class RegistryManager extends RepositoryManager {
                 + request);
             return makeErrorResult("Not enabled as a registry");
         }
+	if(!passwordOk(request.getString(PROP_REGISTRY_PASSWORD,""))) {
+            log("processRegistryAdd: Bad server password. URL = " + request);
+            return makeErrorResult("Bad password");
+	}
 
         String     baseUrl    = request.getString(ARG_REGISTRY_CLIENT, "");
         ServerInfo serverInfo = new ServerInfo(new URL(baseUrl), "", "");
-        log("processRegistryAdd: calling checkServer url="+ baseUrl);
+	//        log("processRegistryAdd: calling checkServer url="+ baseUrl);
 	serverInfo = checkServer(serverInfo,true);
         if (serverInfo!=null) {
             addRemoteServer(serverInfo, false);
 	    clearRemoteServers();
 	    return returnRegistryXml(request);
         }
-	return returnRegistryXml(request);
-	//        return makeErrorResult("failed");
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public Result processRegistryInfo(Request request) throws Exception {
-        final String requestingServer =
-            request.getString(ARG_REGISTRY_SERVER, "");
-        URL          requestingServerUrl = new URL(requestingServer);
-        List<String> servers             = getServersToRegisterWith();
-        boolean      ok                  = false;
-        StringBuffer msg                 = new StringBuffer();
-
-        int          requestingPort      = requestingServerUrl.getPort();
-        if (requestingPort == -1) {
-            requestingPort = 80;
-        }
-        msg.append("requesting server:" + requestingServerUrl.getHost() + ":"
-                   + requestingPort + "\n");
-
-
-        for (String myServer : servers) {
-            URL myServerUrl  = new URL(myServer);
-            int myServerPort = myServerUrl.getPort();
-            if (myServerPort == -1) {
-                myServerPort = 80;
-            }
-            msg.append("    my server:" + myServerUrl.getHost() + ":"
-                       + myServerPort + "\n");
-            if (myServerUrl.getHost().toLowerCase()
-                    .equals(requestingServerUrl.getHost()
-                        .toLowerCase()) && (myServerPort == requestingPort)) {
-                ok = true;
-
-                break;
-            }
-        }
-
-        if ( !ok) {
-            log(
-                "processRegistryInfo: Was asked to register with a server:"
-                + requestingServer + " that is not in our list:" + servers);
-	    makeErrorResult("Not registering with you. Output: " + msg);
-        }
-        Misc.run(new Runnable() {
-            public void run() {
-                try {
-                    fetchRemoteServers(requestingServer);
-                } catch (Exception exc) {
-                    log("processRegistryInfo: Loading servers from:"
-                        + requestingServer, exc);
-                }
-            }
-        });
-
-        return getRepository().processInfo(request);
+	return makeErrorResult("failed");
     }
 
 
@@ -850,7 +825,7 @@ public class RegistryManager extends RepositoryManager {
         Element root = XU.getRoot(contents);
 
         if ( !responseOk(root)) {
-            log("fetchRemoteServers: Bad response from " + serverUrl);
+            log("fetchRemoteServers: Bad response from " + serverUrl+" response:" + getResponse(root));
             return;
         }
 	processServers(root);
@@ -949,7 +924,7 @@ public class RegistryManager extends RepositoryManager {
             } else {
                 log("checkServer: response not ok from:"
                         + serverInfo + " with url: " + serverUrl
-                        + "response:\n" + contents);
+		    +" response:" + getResponse(root));
             }
         } catch (Exception exc) {
             log("checkServer: Could not fetch server xml from:"

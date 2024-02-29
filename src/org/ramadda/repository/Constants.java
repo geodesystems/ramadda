@@ -1655,20 +1655,6 @@ public interface Constants {
     public static final String ARG_COPY_DO_METADATA = "dometadata";
 
 
-    /** _more_ */
-    public static final String PROP_REGISTRY_DEFAULTSERVER =
-        "ramadda.registry.defaultserver";
-
-    /** _more_ */
-    public static final String PROP_REGISTRY_ENABLED =
-        "ramadda.registry.enabled";
-
-    /** _more_ */
-    public static final String PROP_REGISTRY_SERVERS =
-        "ramadda.registry.servers";
-
-    //    public static final String PROP_CLEARINGHOUSE_ENABLED = "ramadda.clearinghouse.enabled";
-
 
     /** _more_ */
     public static final String PROP_ADMIN_EMAIL = "ramadda.admin.email";
