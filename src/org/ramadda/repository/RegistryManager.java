@@ -806,6 +806,7 @@ public class RegistryManager extends RepositoryManager {
 	    clearRemoteServers();
 	    return returnRegistryXml(request);
         }
+	log("registerWithServer: Failed to verify client server:" + serverInfo);
 	return makeErrorResult("failed");
     }
 
