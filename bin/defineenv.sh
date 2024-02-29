@@ -69,8 +69,8 @@ else
     alias put$ID="sh ${MYDIR}/put.sh ${IP} -user ${USER}"
     alias get$ID="sh ${MYDIR}/get.sh  -user ${USER}"
     eval "update$ID() {
-       echo \"updating $ID ${USER}@${IP} install dir: ${RAMADDAINSTALL}\"
-	ssh ${USER}@${IP} \"sudo bash ramaddainstaller/linuxupdate.sh -dir ${RAMADDAINSTALL}\"
+           echo \"updating $ID ${USER}@${IP} install dir: ${RAMADDAINSTALL}\"
+	   ssh ${USER}@${IP} \"sudo bash ramaddainstaller/update.sh -dir ${RAMADDAINSTALL}\"
     }"
 fi
 
