@@ -984,8 +984,8 @@ public class UserManager extends RepositoryManager {
      * @throws Exception on badness
      */
     public boolean userExistsInDatabase(User user) throws Exception {
-        return getDatabaseManager().tableContains(user.getId(),
-						  Tables.USERS.NAME, Tables.USERS.COL_ID);
+        return getDatabaseManager().tableContains(Tables.USERS.NAME, Tables.USERS.COL_ID,
+						  user.getId());						  
     }
 
 
