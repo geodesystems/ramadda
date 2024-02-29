@@ -29,6 +29,7 @@ public class Test {
     private static boolean quiet = false;    
     private static boolean noecho = false;
     private static boolean suddenDeath = false;        
+    private static int skip=0;
     private static List<String> randos = new ArrayList<String>();
     int urlCnt=0;
 
@@ -106,6 +107,14 @@ public class Test {
 	    url = url.substring(index).trim();
 	}
 
+	if(skip>0) {
+	    urlCnt++;
+	    skip--;
+	    return true;
+	}
+
+
+
 	Date before = new Date();
 	IO.Result result = IO.doGetResult(new URL(url));
 	if(result.getError()) {
@@ -159,7 +168,7 @@ public class Test {
 	final List<String> urls=new ArrayList<String>();
 	for(int i=0;i<args.length;i++) {
 	    if(args[i].equals("-help")) {
-		System.out.println("usage: -threads <# threads> -loops <#loops> -rando <some random URL> -t <time threshold> -verbose -quiet -noecho -suddendeath -sleep <pause after each call (ms)> <file> or <url>");
+		System.out.println("usage: -threads <# threads> -loops <#loops> -rando <some random URL> -t <time threshold> -verbose -quiet -noecho -suddendeath -skip <skip N urls> -sleep <pause after each call (ms)> <file> or <url>");
 		System.exit(0);
 	    }
 
@@ -202,6 +211,11 @@ public class Test {
 		sleep = Integer.parseInt(args[++i]);
 		continue;
 	    }	    	    
+	    if(args[i].equals("-skip")) {
+		skip = Integer.parseInt(args[++i]);
+		continue;
+	    }	    	    
+
 	    File f = new File(args[i]);
 
 	    if(f.exists()) {
