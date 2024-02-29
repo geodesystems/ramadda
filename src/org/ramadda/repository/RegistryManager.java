@@ -383,7 +383,7 @@ public class RegistryManager extends RepositoryManager {
 				     HU.insetDiv(HU.input(slugFldId,serverInfo.getSlug()!=null?serverInfo.getSlug():"",
 							  HU.attr("title","Short ID") + HU.SIZE_10),5,10,5,10),
 				     HU.insetDiv(HU.input(urlFldId,serverInfo.getUrl(), HU.SIZE_30),5,10, 5, 10),
-				     HU.insetDiv(HU.input(rootFldId,serverInfo.getSearchRoot(),HU.attr("title","Entry ID to search under") + HU.SIZE_20),5, 10, 5, 10))));
+				     HU.insetDiv(HU.input(rootFldId,serverInfo.getSearchRoot(),HU.attr("title","Entry ID to search under") + HU.SIZE_20+HU.attr("placeholder","entry id")),5, 10, 5, 10))));
 
 
         }
