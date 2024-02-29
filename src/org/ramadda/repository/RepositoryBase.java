@@ -56,17 +56,6 @@ public class RepositoryBase implements Constants, RepositorySource {
     public final RequestUrl URL_INSTALL = new RequestUrl(this, "/install");
 
 
-    /** _more_ */
-    public final RequestUrl URL_REGISTRY_ADD = new RequestUrl(this,
-                                                   "/registry/add");
-
-    /** _more_ */
-    public final RequestUrl URL_REGISTRY_LIST = new RequestUrl(this,
-                                                    "/registry/list");
-
-    /** _more_ */
-    public final RequestUrl URL_REGISTRY_INFO = new RequestUrl(this,
-                                                    "/registry/info");
 
 
 
