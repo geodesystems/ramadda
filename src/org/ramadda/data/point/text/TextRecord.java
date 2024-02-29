@@ -108,6 +108,7 @@ public class TextRecord extends DataRecord {
     private int badCnt = 0;
 
     private int dateErrorCnt;
+    private int doubleErrorCnt=0;    
     /**
      * _more_
      */
@@ -564,10 +565,12 @@ public class TextRecord extends DataRecord {
                         try {
                             dValue = textFile.parseValue(this, field, tok);
                         } catch (Exception exc) {
-                            System.err.println("Error:" + tok + " line:"
-                                    + line);
-
-                            throw exc;
+			    if(doubleErrorCnt++<5)
+				System.err.println("Error parsing value:" + tok + " line:" + line);
+			    dValue=Double.NaN;
+			    objectValues[fieldCnt] = tok;
+			    //			    continue;
+			    //                            throw exc;
                         }
                     }
 
