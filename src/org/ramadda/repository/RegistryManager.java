@@ -377,7 +377,7 @@ public class RegistryManager extends RepositoryManager {
 
 
 
-        Misc.run(new Runnable() {public void run() {runRegistrationLoop();}});
+	Misc.run(new Runnable() {public void run() {runRegistrationLoop();}});
 
     }
 
@@ -721,7 +721,7 @@ public class RegistryManager extends RepositoryManager {
 		return;
             } 
 	    logInfo("RegistryManager.registerWithServer: Registered with:"+ theUrl);
-	    System.err.println(XU.toString(root));
+	    //	    System.err.println(XU.toString(root));
 	    processServers(root);
         } catch (Exception exc) {
             logError("RegistryManager.registerWithServer: Error registering with:" + theUrl, exc);
@@ -872,10 +872,11 @@ public class RegistryManager extends RepositoryManager {
         for (ServerInfo serverInfo : servers) {
             if (serverInfo.equals(me)) {
                 continue;
-            } else {}
+            } 
             ServerInfo oldServer = map.get(serverInfo.getId());
 	    //If we already have it then don't add it
             if (oldServer != null) {
+		System.err.println("have server:" + oldServer);
 		continue;
             }
             addRemoteServer(serverInfo, false);
