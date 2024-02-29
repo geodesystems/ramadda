@@ -724,30 +724,35 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    sb.append("#ramadda.admin=admin:some_password\n");
 	    sb.append("\n\n");	    
 
-
-
 	    try (FileOutputStream fos = new FileOutputStream(install)) {
 		IOUtil.write(fos, sb.toString());
             }
-	    
-            File initPropertiesFile = new File(
-                               IOUtil.joinDir(
-                                   getStorageManager().getRepositoryDir(),
-                                   "repository.properties"));
-            if ( !initPropertiesFile.exists()) {
-		String properties = getStorageManager().readUncheckedSystemResource("/org/ramadda/repository/resources/init.repository.properties");
+   
 
-                try (FileOutputStream fos = new FileOutputStream(initPropertiesFile)) {
-                    IOUtil.write(fos, properties);
-                }
-	    }
         }
 
         return installPassword;
     }
 
 
+    private void writeConfigFiles() throws Exception {
+	File file;
+	file = new File(IOUtil.joinDir(getStorageManager().getRepositoryDir(), "repository.properties"));
+	if ( !file.exists()) {
+	    String properties = getStorageManager().readUncheckedSystemResource("/org/ramadda/repository/resources/init.repository.properties");
+	    try (FileOutputStream fos = new FileOutputStream(file)) {
+		IOUtil.write(fos, properties);
+	    }
+	}
+	file = new File(IOUtil.joinDir(getStorageManager().getRepositoryDir(), "config.properties"));
+	if ( !file.exists()) {
+	    String properties = getStorageManager().readUncheckedSystemResource("/org/ramadda/repository/resources/config.properties");
+	    try (FileOutputStream fos = new FileOutputStream(file)) {
+		IOUtil.write(fos, properties);
+	    }
+	}	
 
+    }
 
 
 
@@ -1448,13 +1453,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //Call the storage manager so it can figure out the home dir
         getStorageManager();
 
-
         MyTrace.call1("plugin-init");
         //initialize the plugin manager with the properties
 	if(Repository.debugInit)   System.err.println("Repository calling PluginManager.init");
         getPluginManager().init(pluginProperties);
 	if(Repository.debugInit)   System.err.println("Repository done PluginManager.init");
         MyTrace.call2("plugin-init");
+	writeConfigFiles();
 
         //create the log dir
         getLogManager().getLogDir();
