@@ -744,7 +744,7 @@ public class RegistryManager extends RepositoryManager {
             String  contents = getStorageManager().readSystemResource(theUrl);
             Element root     = XU.getRoot(contents);
             if ( !responseOk(root)) {
-		log("registerWithServer: Failed to register with:" + theUrl+" response:" + getResponse(root));
+		log("registerWithServer: Failed to register with:" + url+" response:" + getResponse(root));
 		return;
             } 
 	    log("registerWithServer: Registered with:"+ url);
