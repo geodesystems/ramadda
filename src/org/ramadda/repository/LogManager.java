@@ -1166,9 +1166,6 @@ public class LogManager extends RepositoryManager {
                 path = path.substring(0, 49) + "...";
             }
             path = HtmlUtils.entityEncode(path);
-            if (logEntry.getUrl() != null) {
-                path = HtmlUtils.href(logEntry.getUrl(), path);
-            }
             String userAgent = logEntry.getUserAgent();
             if (userAgent == null) {
                 userAgent = "";
