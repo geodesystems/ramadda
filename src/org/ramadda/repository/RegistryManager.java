@@ -75,8 +75,7 @@ public class RegistryManager extends RepositoryManager {
                                                     "/registry/list");
 
     /** _more_ */
-    public final RequestUrl URL_REGISTRY_INFO = new RequestUrl(this,
-                                                    "/registry/info");
+    //    public final RequestUrl URL_REGISTRY_INFO = new RequestUrl(this, "/registry/info");
 
     /** _more_ */
     public RequestUrl URL_REGISTRY_REMOTESERVERS =
@@ -225,9 +224,8 @@ public class RegistryManager extends RepositoryManager {
 
         } else if (request.exists(ARG_REGISTRY_RELOAD)) {
             clearRemoteServers();
-            for (String server : getServersToRegisterWith()) {
-                fetchRemoteServers(server);
-            }
+	    registerWithServers();
+	    //            for (String server : getServersToRegisterWith()) {fetchRemoteServers(server);}
             checkApi();
         } else if (request.exists(ARG_CHANGE)) {
             for (ServerInfo serverInfo : getRemoteServers()) {
@@ -287,7 +285,7 @@ public class RegistryManager extends RepositoryManager {
                 HU.submit("Change", ARG_CHANGE),
                 HU.submit("Delete Selected", ARG_DELETE),
                 HU.submit("Add New Server", ARG_REGISTRY_ADD),
-                HU.submit("Reload", ARG_REGISTRY_RELOAD)));
+                HU.submit("Register", ARG_REGISTRY_RELOAD)));
         sb.append(HU.open(HU.TAG_UL));
         List<ServerInfo> remoteServers = getRemoteServers();
         sb.append(HU.br());
