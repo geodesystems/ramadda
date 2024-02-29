@@ -543,6 +543,7 @@ public class LogManager extends RepositoryManager {
     public void logSpecial(String message) {
 	try {
 	    MyLogger logger = getSpecialLogger();
+	    message= encode(message);
 	    if (logger != null) {
 		logger.info(message);
 		System.err.println(message);
@@ -561,6 +562,7 @@ public class LogManager extends RepositoryManager {
 
     public void logRegistry(String message) {
 	try {
+	    message = encode(message);
 	    MyLogger logger = getRegistryLogger();
 	    if (logger != null) {
 		logger.info(message);
