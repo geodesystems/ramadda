@@ -792,12 +792,12 @@ public class RegistryManager extends RepositoryManager {
                 + request);
             return makeErrorResult("Not enabled as a registry");
         }
-	if(!passwordOk(request.getString(PROP_REGISTRY_PASSWORD,""))) {
-            log("processRegistryAdd: Bad server password. URL = " + request);
-            return makeErrorResult("Bad password");
-	}
 
         String     baseUrl    = request.getString(ARG_REGISTRY_CLIENT, "");
+	if(!passwordOk(request.getString(PROP_REGISTRY_PASSWORD,""))) {
+            log("processRegistryAdd: Bad server password from:" + baseUrl);
+            return makeErrorResult("Bad password");
+	}
         ServerInfo serverInfo = new ServerInfo(new URL(baseUrl), "", "");
 	//        log("processRegistryAdd: calling checkServer url="+ baseUrl);
 	serverInfo = checkServer(serverInfo,true);
