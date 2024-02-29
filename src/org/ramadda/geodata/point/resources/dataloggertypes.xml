@@ -12,6 +12,10 @@
     <property name="subset.date.show" value="true"/>     
 <property name="record.properties">
 <![CDATA[
+record.type.timestamp=date
+record.type.default=double
+
+
 #This is the row that defines the field names, i.e., the second row (like above) has a comma separated list of names
 fieldRow=2
 
