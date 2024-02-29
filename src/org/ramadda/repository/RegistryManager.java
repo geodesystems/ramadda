@@ -996,16 +996,13 @@ public class RegistryManager extends RepositoryManager {
 			  HU.row(
 				 HU.headerCols(
 					       new String[] { msg("Repository"),
-							      msg("URL"), msg("Is Registry?") })));
+							      msg("URL")})));
 	    }
 	    didone = true;
 	    seen.add(serverInfo);
 	    sb.append(HU.row(HU.cols(new String[] {
 			    serverInfo.getLabel(),
-			    HU.href(serverInfo.getUrl(), serverInfo.getUrl()),
-			    (serverInfo.getIsRegistry()
-			     ? msg("Yes")
-			     : msg("No")) }), HU.cssClass(evenRow
+			    HU.href(serverInfo.getUrl(), serverInfo.getUrl())}), HU.cssClass(evenRow
 							  ? "listrow1"
 							  : "listrow2")));
 	    String desc = serverInfo.getDescription();
