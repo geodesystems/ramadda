@@ -717,12 +717,12 @@ public class RegistryManager extends RepositoryManager {
             String  contents = getStorageManager().readSystemResource(theUrl);
             Element root     = XU.getRoot(contents);
             if ( !responseOk(root)) {
-		System.err.println(contents);
                 logInfo("RegistryManager.registerWithServer: Failed to register with:" + theUrl);
 		return;
             } 
 	    logInfo("RegistryManager.registerWithServer: Registered with:"+ theUrl);
-
+	    System.err.println(XU.toString(root));
+	    processServers(root);
         } catch (Exception exc) {
             logError("RegistryManager.registerWithServer: Error registering with:" + theUrl, exc);
         }
@@ -856,6 +856,10 @@ public class RegistryManager extends RepositoryManager {
             logInfo("RegistryManager.fetchRemoteServers: Bad response from " + serverUrl);
             return;
         }
+	processServers(root);
+    }
+
+    private void processServers(Element root) throws Exception {
         List<ServerInfo> servers  = new ArrayList<ServerInfo>();
         ServerInfo       me       = getRepository().getServerInfo();
         NodeList         children = XU.getElements(root);
@@ -863,7 +867,6 @@ public class RegistryManager extends RepositoryManager {
             Element node = (Element) children.item(i);
             servers.add(new ServerInfo(node));
         }
-
 
         Hashtable<String, ServerInfo> map = getRemoteServerMap();
         for (ServerInfo serverInfo : servers) {
@@ -878,6 +881,8 @@ public class RegistryManager extends RepositoryManager {
             addRemoteServer(serverInfo, false);
         }
     }
+
+
 
 
     /**
@@ -900,9 +905,11 @@ public class RegistryManager extends RepositoryManager {
 	if(getDatabaseManager().tableContains(Tables.REMOTESERVERS.NAME,
 					      Tables.REMOTESERVERS.COL_URL,
 					      serverInfo.getUrl())) {
+	    System.err.println("already contains:" + serverInfo);
 	    return;
 	}
 
+	System.err.println("adding server:" + serverInfo);
         getDatabaseManager().executeInsert(Tables.REMOTESERVERS.INSERT,
                                            new Object[] {
             serverInfo.getUrl(), serverInfo.getTitle(),

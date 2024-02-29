@@ -42,7 +42,8 @@ public class ServerInfo implements Constants {
 
     /** _more_ */
     public static final String TAG_INFO_SSLPORT = "sslport";
-
+    /** _more_ */
+    public static final String TAG_INFO_URL = "url";    
 
     /** _more_ */
     public static final String TAG_INFO_PORT = "port";
@@ -167,6 +168,7 @@ public class ServerInfo implements Constants {
         this.slug = clean(XmlUtil.getGrandChildText(element, TAG_INFO_SLUG, ""));	
         this.description = clean(XmlUtil.getGrandChildText(element, TAG_INFO_DESCRIPTION, ""));
         this.email = clean(XmlUtil.getGrandChildText(element, TAG_INFO_EMAIL, ""));
+        this.url = clean(XmlUtil.getGrandChildText(element, TAG_INFO_URL, ""));
         this.isRegistry = true;
     }
 
@@ -224,7 +226,7 @@ public class ServerInfo implements Constants {
      * @return _more_
      */
     public String toString() {
-        return getLabel();
+        return getLabel() +" " + getUrl();
     }
 
 
@@ -270,6 +272,7 @@ public class ServerInfo implements Constants {
                                       new String[] {});
         XmlUtil.create(doc, TAG_INFO_DESCRIPTION, info, description, null);
         XmlUtil.create(doc, TAG_INFO_TITLE, info, title, null);
+        XmlUtil.create(doc, TAG_INFO_URL, info, getUrl());
         XmlUtil.create(doc, TAG_INFO_SLUG, info, slug!=null?slug:"", null);	
         XmlUtil.create(doc, TAG_INFO_HOSTNAME, info, hostname, null);
         XmlUtil.create(doc, TAG_INFO_BASEPATH, info, basePath, null);
