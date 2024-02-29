@@ -763,7 +763,8 @@ public class RegistryManager extends RepositoryManager {
         ServerInfo serverInfo = new ServerInfo(new URL(baseUrl), "", "");
         log("processRegistryAdd: calling checkServer url="+ baseUrl);
         if (checkServer(serverInfo, true)) {
-	    //            return new Result(XU.tag(TAG_RESPONSE, XU.attr(ATTR_CODE, CODE_OK), "OK"), MIME_XML);
+            addRemoteServer(serverInfo, false);
+	    clearRemoteServers();
 	    return returnRegistryXml(request);
         }
 	return returnRegistryXml(request);
@@ -940,7 +941,7 @@ public class RegistryManager extends RepositoryManager {
             if (responseOk(root)) {
                 ServerInfo clientServer = new ServerInfo(root);
                 if (clientServer.equals(serverInfo)) {
-                    log("checkServer: adding server " + serverUrl);
+		    //                    log("checkServer: adding server " + serverUrl);
                     return true;
                 } else {
                     log("checkServer: not equals:"
