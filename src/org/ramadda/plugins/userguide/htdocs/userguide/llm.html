@@ -1,0 +1,116 @@
+<html>
+<head>
+<title>Integration with AI LLMs</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<div class="ramadda-doc-header">
+<div style='padding-top:12px;margin-bottom:4px;'><a href="toc.html#llm.html"><span title="Table of contents"><i  style='font-size:16pt;'  class="fa fa-list "></i></span></a> &nbsp; <a href="index.html">RAMADDA User Guide</a>  > <a href="page_installationandsiteadministration.html">Installation and Site Administration</a> </div>
+<table width=100% cellspacing=0 cellpadding=0 >
+<tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="database.html"><table><td valign=center><td><span title="Previous: Configuring the RAMADDA Database"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Configuring the RAMADDA Database</td></tr></table></a></div></div></td>
+<td width=50% align=center>
+<div class="ramadda-page-title"><a href="#">Section 9.6: Integration with AI LLMs</a></div>
+</td>
+<td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="readonly.html"><table><tr valign=center><td>Read Only Mode</td><td><span title="Next: Read Only Mode"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+</tr></table>
+</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+.ramadda-lheading {
+    margin-top:15px;
+}
+</style>
+
+<div class="ramadda-doc-contents" style="margin-left:20px;">
+
+
+:navtop  
+
+RAMADDA makes use of OpenAI's GPT API or Google's Gemini API
+in a number of ways. Various metadata can be extracted from
+documents and the wiki editor can make use of the LLMs to convert and create text.
+
+
+:heading Integration with Google's Gemini Model
+Get an API key from <a href=https://ai.google.dev/tutorials/ai-studio_quickstart>Google</a> and
+set the property:
+<pre>
+gemini.api.key=your key
+</pre>
+
+
+:heading Integration with OpenAI GPT
+RAMADDA uses OpenAI's GPT API for extracting keywords and text summaries for documents
+(PDF, Word, etc). To enable this you will need to register with
+<a href=https://openai.com/api/>OpenAI</a> and obtain an API key. They provide a free tier.
+:p
+Once you obtain the API key add it to a
+<a href="installing.html#properties">.properties file</a> 
+in your RAMADDA home directory:
+
++pre
+openai.api.key=&lt;your key&gt;
+#To enable GPT4 (which comes with a higher cost) set:
+openai.gpt4.enabled=true
+-pre
+
+:heading Cost
+RAMADDA uses the <a href="https://openai.com/pricing">gpt-3.5-turbo</a> which costs $0.002 / 1K tokens. Each of the document extraction actions described below (title, author, summary, keywords)
+require one call and approximately 3K - 4K tokens are passed to OpenAI. So, each call is
+approximately 1/2 to 1 cent per call.
+
+
+:heading Summary and Keyword Extraction
+
+Now, when you go to add a document entry to RAMADDA under the "More..." section select
+Extract keywords and/or Extract Summary. Any keywords extracted will be added as metadata
+and the summary will be pre-prended to the new entry's description.
+:br
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/extract.png?version=6"><img  src="images/extract.png?version=6" width=500px style="border:1px solid #ccc;" alt="images/extract.png?version=6" ></a></div></div>
+  
+
+:heading Wiki Editor
+The Wiki editor provides an interface to the GPT api. If GPT is enabled there
+will be a GPT link Under the Etc... menu. This brings up the below dialog. Any text
+that is selected in the wiki editor will be added to the input area. When Evaluated the
+prompts and the input text are sent to GPT and the result is placed in the Results area.
+You can then either replace the selected text with the results or append the results.
+
+:br
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/gptwiki.png?version=6"><img  src="images/gptwiki.png?version=6" width=700px style="border:1px solid #ccc;" alt="images/gptwiki.png?version=6" ></a></div></div>
+
+
+:heading Audio to Text Transcriptions
+Also under the Etc... menu is a Transcription service. You can record audio
+through your browser and then the audio is sent to OpenAI's Whisper API for
+transcription to text.
+:p
+Note: this does not appear to work with Safari as the .mp4 audio file format Safari
+creates is not accepted by OpenAI.
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/transcribe.png?version=6"><img  src="images/transcribe.png?version=6" width=500px style="border:1px solid #ccc;" alt="images/transcribe.png?version=6" ></a></div></div>
+
+
+
+</div>
+<p>
+<div  class="childlist" ><table  width="100%" ></table></div>
+<p>&nbsp;<p>
+
+<div class="ramadda-doc-footer">
+<table width=100% cellspacing=0 cellpadding=0 >
+<tr><td width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="database.html"><table><td valign=center><td><span title="Previous: Configuring the RAMADDA Database"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Configuring the RAMADDA Database</td></tr></table></a></div></div></td>
+<td align=right width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="readonly.html"><table><tr valign=center><td>Read Only Mode</td><td><span title="Next: Read Only Mode"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+</tr></table>
+</div>
+<p>
+</div>
+</body>
+</html>
+

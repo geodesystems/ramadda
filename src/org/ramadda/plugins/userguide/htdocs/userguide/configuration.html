@@ -89,14 +89,14 @@ To see the server info go to the <a href="${root}/info">${root}/info</a> link.
 :p
 If you want to add a contact for your site then set the property in a
 .properties file in your RAMADDA home directory:
-<pre>
++pre addCopy=true
 ramadda.contact=...
-</pre>
+-pre
 
 You can add any other information for this page with:
-<pre>
++pre addCopy=true
 ramadda.information=This  is my server...
-</pre>
+-pre
 
 
 RAMADDA also provides a security.txt file that follows the specification
@@ -104,18 +104,18 @@ from <a href=https://securitytxt.org/>https://securitytxt.org/</a>. The URL is:
 <a href="${root}/well-known/security.txt">${root}/well-known/security.txt</a>.
 <br>
 You can change the contact with the following property:
-<pre>
++pre addCopy=true
 ramadda.security.contact=mailto:youremail@foo.com
-</pre>
+-pre
 
 :heading Multiple Languages
 RAMADDA supports multiple languages. To enable this set the following property:
-<pre>
++pre addCopy=true
 ramadda.languages.enabled = true
 
 ##Set this to define the default language 
 ##ramadda.language.default=es                                                                      
-</pre>
+-pre
 
 If enabled then logged in users can set their default language. Also there will be a link shown in
 the upper
@@ -129,22 +129,22 @@ in the htdocs/languages directory under your RAMADDA home directory.
 :heading Custom HTTP headers
 You can specify one or more properties in a .properties file in your RAMADDA home directory.
 
-<pre>
++pre addCopy=true
 ramadda.httpheader1=&lt;header name&gt;:&lt;header value&gt;
 ramadda.httpheader2=&lt;header name&gt;:&lt;header value&gt;  
 ...
-</pre>
+-pre
 
 e.g: For specifying <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security">HSTS</a> Strict-Transport-Security header you would do:
 
-<pre>
++pre addCopy=true
 ramadda.httpheader1=Strict-Transport-Security:max-age=86400; includeSubDomains
-</pre>
+-pre
 
 Once you restart your RAMADDA it is a good idea to check the headers, e.g. with curl:
-<pre>
++pre addCopy=true
 curl -v "http://localhost:8080" &gt; foo
-</pre>
+-pre
 
 
 
@@ -153,15 +153,16 @@ curl -v "http://localhost:8080" &gt; foo
 is used by Google and others to extract structured metadata from a web page.
 To enable this embedding in entry pages in RAMADDA set the following property in one of the .properties
 files in your RAMADDA home directory:
-<pre>
++pre addCopy=true
 ramadda.showjsonld=true
-</pre>
+-pre
 
 :heading Tracking Entry access
 You can enable logging of entry activities by setting the property:
-<pre>
++pre addCopy=true
 ramadda.logging.logactivityfile=true
-</pre>
+-pre
+
 When set various entry activities - view, file, data (providing data to a display) - are logged
 to a file:<br>
 &lt;ramadda home&gt;/logs/entryactivity.log
@@ -173,9 +174,10 @@ to a file:<br>
 :heading Zoomable Images
 The Zoomable Image entry type uses an external script, magick-slicer.sh,
 that is available on <a href=https://github.com/geodesystems/ramadda/blob/master/bin/magick-slicer.sh>Github</a>. This script requires <a href=https://imagemagick.org/index.php>ImageMagic</a> to be installed. Once installed add the below property to your repository.properties file:
-<pre>
+
++pre addCopy=true
 ramadda.image.slicer=/path/to/magick-slicer.sh
-</pre>
+-pre
 
 
 <a name="tesseract"></a>
@@ -185,16 +187,16 @@ This text can then be used for searching. To configure this first install
 <a href=https://github.com/tesseract-ocr/tesseract>https://github.com/tesseract-ocr/tesseract</a>.
 Once installed add the below property to your repository.properties file:
 
-<pre>
++pre addCopy=true
 ramadda.tesseract=/path/to/tesseract
-</pre>
+-pre
 
 :heading Search Providers
 RAMADDA has a number of external search providers that are not RAMADDA  servers, e.g. Bureau of Labor Statistics, FRED, etc
 To disable these set:
-<pre>
++pre addCopy=true
 ramadda.search.providers.show=false
-</pre>
+-pre
 
 
 :heading Using LLM Models
@@ -210,9 +212,9 @@ Install the <a href="https://www.ghostscript.com/doc/current/Install.htm">Ghosts
 package to automatically generate a thumbnail image of the the page of a PDF file by
 setting the property:
 
-<pre>
++pre addCopy=true
 service.gs=/path/to/bin/gs
-</pre>
+-pre
 
 
 
@@ -221,13 +223,14 @@ service.gs=/path/to/bin/gs
 RAMADDA supports a Jupyter Notebook entry type. It will do its own custom rendering
 of the notebook. You can also configure RAMADDA to use jupyter to do the rendering
 by setting the following property value:
-<pre>
++pre addCopy=true
 ramadda.jupyter.path=/path/to/anaconda/bin/jupyter
-</pre>
+-pre
 
 :heading NEON Data
 You can add NEON data entries but if you want to have a higher rate limit you should obtain an API key from NEON. Go and sign in to <a href=https://data.neonscience.org/home>NEON</a>. Once signed in create an API key and add it as a RAMADDA property:
-+pre
+
++pre addCopy=true
 neon.api.key=YOUR KEY
 -pre
 
@@ -246,6 +249,7 @@ see <a href=/repository/biz/index.html>/repository/biz/index.html</a>
 
 There are a number of other services that access external APIs and require
 an API key. Here are some of them.
+
 
 <pre>
 #show google streetview images
@@ -314,12 +318,12 @@ The entry's <a href=#snippet>snippet</a> is used for the description.
 :p
 There is also a Twitter Card property type that can be used to specify the title, creator, description and image.
 Under Add Property-&gt;Miscellaneous add the Twitter Card property:
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard1.png?version=720"><img  src="images/twittercard1.png?version=720"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard1.png?version=720" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard1.png?version=6"><img  src="images/twittercard1.png?version=6"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard1.png?version=6" ></a></div></div>
 
 Enter any of the values. If defined in the property these will override the defaults of the entry's name,
 snippet, etc.
 
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard2.png?version=720"><img  src="images/twittercard2.png?version=720"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard2.png?version=720" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard2.png?version=6"><img  src="images/twittercard2.png?version=6"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard2.png?version=6" ></a></div></div>
 
 These properties can be inherited. For example, you can add an inherited Twitter Card property at the top-level
 of your repository with just the Twitter handle specified. Then for any descendent entry you can specify a title, thumbnail, etc.
@@ -345,9 +349,9 @@ or:
 
 The access to the Github API is rate limited. To increase the request rate create a personal access
 token through Github and set the following RAMADDA property:  
-<pre>
++pre addCopy=true
 github.token=your token
-</pre>
+-pre
 
 
 
