@@ -249,8 +249,9 @@ public class RegistryManager extends RepositoryManager {
                         request.getString(ARG_REGISTRY_URL, ""),
                         HU.SIZE_60)));
             sb.append(HU.formTableClose());
-            sb.append(HU.submit("Add New Server", ARG_REGISTRY_ADD));
-            sb.append(HU.submit(LABEL_CANCEL, ARG_CANCEL));
+            sb.append(HU.buttons(
+				 HU.submit("Add New Server", ARG_REGISTRY_ADD),
+				 HU.submit(LABEL_CANCEL, ARG_CANCEL)));
             sb.append(HU.formClose());
 
             return getAdmin().makeResult(request, "RAMADDA-Admin-Remote Servers", sb);
