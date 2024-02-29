@@ -2647,9 +2647,9 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      *
      * @throws Exception _more_
      */
-    public boolean tableContains(String id, String tableName, String column)
+    public boolean tableContains(String tableName, String column,String id)
 	throws Exception {
-        return tableContains(Clause.eq(column, id), tableName, column);
+        return tableContains(tableName, column,Clause.eq(column, id));
     }
 
 
@@ -2664,8 +2664,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      *
      * @throws Exception _more_
      */
-    public boolean tableContains(Clause clause, String tableName,
-                                 String column)
+    public boolean tableContains(String tableName,String column,Clause clause)
 	throws Exception {
         Statement statement = select(column, tableName, clause);
         ResultSet results   = statement.getResultSet();
