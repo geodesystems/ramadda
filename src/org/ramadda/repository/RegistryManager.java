@@ -561,7 +561,7 @@ public class RegistryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    private List<ServerInfo> getEnabledRemoteServers() throws Exception {
+    public List<ServerInfo> getEnabledRemoteServers() throws Exception {
         List<ServerInfo> selected = new ArrayList<ServerInfo>();
         for (ServerInfo serverInfo : getRemoteServers()) {
             if (serverInfo.getEnabled()) {
