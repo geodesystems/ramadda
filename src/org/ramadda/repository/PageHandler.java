@@ -845,7 +845,7 @@ public class PageHandler extends RepositoryManager {
         allLinks.addAll(userLinks);
         String menuHtml = HU.div(StringUtil.join("", allLinks),
 				 HU.id("ramadda_user_menu")+
-                                 HU.cssClass("ramadda-user-menu"));
+                                 HU.cssClass("ramadda-user-menu-popup"));
 
 	List<String> pageLinks = new ArrayList<String>();
 
