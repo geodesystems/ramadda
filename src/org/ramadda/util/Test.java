@@ -27,7 +27,8 @@ public class Test {
     private static boolean showSize = true;
     private static boolean verbose = false;
     private static boolean quiet = false;    
-    private static boolean noecho = false;    
+    private static boolean noecho = false;
+    private static boolean suddenDeath = false;        
     private static List<String> randos = new ArrayList<String>();
     int urlCnt=0;
 
@@ -116,6 +117,8 @@ public class Test {
 		err  = inner;
 	    }
 	    System.out.println("read error:" + err);
+	    if(suddenDeath) System.exit(1);
+
 	    return true;
 	} else if(print) {
 	    System.out.println(result.getResult().trim());
@@ -156,7 +159,7 @@ public class Test {
 	final List<String> urls=new ArrayList<String>();
 	for(int i=0;i<args.length;i++) {
 	    if(args[i].equals("-help")) {
-		System.out.println("usage: -threads <# threads> -loops <#loops> -rando <some random URL> -t <time threshold> -verbose -quiet -noecho -sleep <pause after each call (ms)> <file> or <url>");
+		System.out.println("usage: -threads <# threads> -loops <#loops> -rando <some random URL> -t <time threshold> -verbose -quiet -noecho -suddendeath -sleep <pause after each call (ms)> <file> or <url>");
 		System.exit(0);
 	    }
 
@@ -186,10 +189,15 @@ public class Test {
 		quiet = true;
 		continue;
 	    }	    
+
 	    if(args[i].equals("-noecho")) {
 		noecho = true;
 		continue;
-	    }	    
+	    }
+	    if(args[i].equals("-suddendeath")) {
+		suddenDeath = true;
+		continue;
+	    }	    	    
 	    if(args[i].equals("-sleep")) {
 		sleep = Integer.parseInt(args[++i]);
 		continue;
