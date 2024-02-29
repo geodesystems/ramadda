@@ -190,9 +190,8 @@ public class LocalRepositoryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public boolean hasServer(String otherServer) throws Exception {
-        return getDatabaseManager().tableContains(otherServer,
-                Tables.LOCALREPOSITORIES.NAME,
-                Tables.LOCALREPOSITORIES.COL_ID);
+        return getDatabaseManager().tableContains(Tables.LOCALREPOSITORIES.NAME,
+						  Tables.LOCALREPOSITORIES.COL_ID,otherServer);
     }
 
 
