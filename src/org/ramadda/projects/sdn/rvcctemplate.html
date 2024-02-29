@@ -24,7 +24,20 @@ background-image: url(${root}/sdn/rvccbg.png);
 }
 .ramadda-user-menu {
     background:#A9C6DD;
+    background:transparent;
 }
+.ramadda-user-menu i {
+    color:white !important;
+}
+
+img.ramadda-user-menu-image {
+    border:1px solid #ccc;
+}
+
+.ramadda-user-menu-popup {
+    background: #fff !important;
+}
+
 .ramadda-breadcrumbs {border-bottom : 0px transparent solid;}
 .ramadda-user-menu i {color:#888;}
 </style>
@@ -41,7 +54,7 @@ ${headfinal}
 <a href="${root}" style="text-decoration:none;font-size:120%">RVCC Testbed</a>
 </div>
 </td>
-<td align="right">${links}</td></tr></table>
+<td style="position:relative;" align="right"><div style="position:absolute;top:5px;right:5px;">${links}</div></td></tr></table>
 <div style="border-bottom:1px solid #ccc;">${entry.header}</div>
 </div>
 <div class="ramadda-outercontents">
