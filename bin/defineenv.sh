@@ -62,8 +62,12 @@ if [ -n "$PEM" ]; then
     alias get$ID="sh ${MYDIR}/get.sh ${IP} -pem ${PEM} -user ${USER}"
     eval "update$ID() {
        echo \"updating $ID ${USER}@${IP} install dir: ${RAMADDAINSTALL}\"
-       ssh -i ${PEM} ${USER}@${IP} \"sudo bash ramaddainstaller/awsupdate.sh -dir ${RAMADDAINSTALL}\"
+       ssh -i ${PEM} ${USER}@${IP} \"sudo bash ramaddainstaller/update.sh -dir ${RAMADDAINSTALL}\"
     }"
+    eval "devupdate$ID() {
+       echo \"updating $ID ${USER}@${IP} install dir: ${RAMADDAINSTALL}\"
+       ssh -i ${PEM} ${USER}@${IP} \"sudo bash ramaddainstaller/update.sh -dev -dir ${RAMADDAINSTALL}\"
+    }"    
 else
     alias go$ID="ssh  ${USER}@$IP"
     alias put$ID="sh ${MYDIR}/put.sh ${IP} -user ${USER}"
@@ -72,5 +76,10 @@ else
            echo \"updating $ID ${USER}@${IP} install dir: ${RAMADDAINSTALL}\"
 	   ssh ${USER}@${IP} \"sudo bash ramaddainstaller/update.sh -dir ${RAMADDAINSTALL}\"
     }"
+    eval "devupdate$ID() {
+           echo \"updating $ID ${USER}@${IP} install dir: ${RAMADDAINSTALL}\"
+	   ssh ${USER}@${IP} \"sudo bash ramaddainstaller/update.sh -dev -dir ${RAMADDAINSTALL}\"
+    }"
+
 fi
 
