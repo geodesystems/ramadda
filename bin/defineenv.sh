@@ -1,12 +1,37 @@
 #!/bin/sh
 #for configuring command line aliases for an AWS instance
-#This sets up the aliases go$id, put$id, get$id
+#This sets up the aliases go$id, put$id, get$id, update$id, devupdate$id
 #usage:
-#defineaws.sh  ID IP PEM
-#e.g.:
-#defineaws.sh geode <some ip> <full path to pem file>
+#sh defineaws.sh  <some id> <some IP> -pem <pem file> -user <user>
 
+#e.g.: access with the pem file. defaults to user ec2-user
+#sh defineaws.sh test <some ip> -pem <full path to pem file>
 
+#e.g.: password access. user=ubuntu
+#sh defineaws.sh test <some ip> -user ubuntu
+
+#
+#generated commands:
+#
+#using:
+#defineaws.sh test <some ip> -pem <pem file>
+#will give aliases:
+
+#ssh to machine:
+#gotest 
+
+#scp the file to machine:
+#puttest  <some file>  
+
+#scp the file from machine:
+#gettest  <some file>  
+
+#this will run the RAMADDA update script.
+#This assumes the ramaddainstaller directory is in the home directory
+#updatetest
+
+#This updates from the RAMADDA development release
+#devupdatetest  
 
 MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
