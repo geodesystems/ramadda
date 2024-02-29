@@ -129,9 +129,6 @@ public class RegistryManager extends RepositoryManager {
     /** _more_ */
     private List<ServerInfo> remoteServers;
 
-    /** _more_ */
-    private List<ServerInfo> enabledRemoteServers;
-
 
     /** _more_ */
     private Hashtable<String, ServerInfo> remoteServerMap;
@@ -529,7 +526,6 @@ public class RegistryManager extends RepositoryManager {
      * _more_
      */
     private void clearRemoteServers() {
-        enabledRemoteServers = null;
         remoteServers        = null;
         remoteServerMap      = null;
         getSearchManager().clearSearchProviders();
@@ -565,21 +561,13 @@ public class RegistryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public List<ServerInfo> getEnabledRemoteServers() throws Exception {
-        List<ServerInfo> selected = enabledRemoteServers;
-        if (selected != null) {
-            synchronized (selected) {
-                return new ArrayList<ServerInfo>(selected);
-            }
-        }
-        selected = new ArrayList<ServerInfo>();
+    private List<ServerInfo> getEnabledRemoteServers() throws Exception {
+        List<ServerInfo> selected = new ArrayList<ServerInfo>();
         for (ServerInfo serverInfo : getRemoteServers()) {
             if (serverInfo.getEnabled()) {
                 selected.add(serverInfo);
             }
         }
-        enabledRemoteServers = selected;
-
         return selected;
     }
 
@@ -972,7 +960,7 @@ public class RegistryManager extends RepositoryManager {
 
 
     private Result returnRegistryXml(Request request) throws Exception {
-	List<ServerInfo> servers = new ArrayList<ServerInfo>(remoteServers);
+        List<ServerInfo>    servers     = getEnabledRemoteServers();
 	//Add myself to the list
 	servers.add(0, getRepository().getServerInfo());
 	Document resultDoc = XU.makeDocument();
@@ -998,11 +986,9 @@ public class RegistryManager extends RepositoryManager {
     public Result processRegistryList(Request request) throws Exception {
         boolean responseAsXml = request.getString(ARG_RESPONSE,
                                     "").equals(RESPONSE_XML);
-        List<ServerInfo>    remoteServers     = getEnabledRemoteServers();
         if (responseAsXml) {
 	    return returnRegistryXml(request);
         }
-
         StringBuilder sb = new StringBuilder();
 	makeRegistryList(request,sb);
         Result result = new Result(msg("Registry List"), sb);
