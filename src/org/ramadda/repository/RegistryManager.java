@@ -286,7 +286,8 @@ public class RegistryManager extends RepositoryManager {
             HU.buttons(
                 HU.submit("Change", ARG_CHANGE),
                 HU.submit("Delete Selected", ARG_DELETE),
-                HU.submit("Add New Server", ARG_REGISTRY_ADD)));
+                HU.submit("Add New Server", ARG_REGISTRY_ADD),
+                HU.submit("Reload", ARG_REGISTRY_RELOAD)));
         sb.append(HU.open(HU.TAG_UL));
         List<ServerInfo> remoteServers = getRemoteServers();
         sb.append(HU.br());
@@ -762,7 +763,8 @@ public class RegistryManager extends RepositoryManager {
         String     baseUrl    = request.getString(ARG_REGISTRY_CLIENT, "");
         ServerInfo serverInfo = new ServerInfo(new URL(baseUrl), "", "");
         log("processRegistryAdd: calling checkServer url="+ baseUrl);
-        if (checkServer(serverInfo, true)) {
+	serverInfo = checkServer(serverInfo,true);
+        if (serverInfo!=null) {
             addRemoteServer(serverInfo, false);
 	    clearRemoteServers();
 	    return returnRegistryXml(request);
@@ -919,21 +921,21 @@ public class RegistryManager extends RepositoryManager {
         clearRemoteServers();
     }
 
-    private boolean checkServer(ServerInfo serverInfo,  boolean deleteOnFailure)
+    private ServerInfo checkServer(ServerInfo serverInfo,  boolean deleteOnFailure)
 	throws Exception {
         String serverUrl =
             HU.url(
                 serverInfo.getUrl()
-                + URL_REGISTRY_INFO.getPath(), new String[] {
+                + getRepository().URL_INFO.getPath(), new String[] {
                     ARG_RESPONSE,
                     RESPONSE_XML, ARG_REGISTRY_SERVER,
                     getRepository().getServerInfo().getUrl() });
 
         if (serverUrl.indexOf("/localhost:") >= 0) {
-	    return false;
+	    return null;
 	}
         if (serverUrl.indexOf("pws.scqx.gov.cn") >= 0) {
-            return false;
+            return null;
         }
         try {
             String contents =  IO.readUrl(new URL(serverUrl));
@@ -941,13 +943,10 @@ public class RegistryManager extends RepositoryManager {
             if (responseOk(root)) {
                 ServerInfo clientServer = new ServerInfo(root);
                 if (clientServer.equals(serverInfo)) {
-		    //                    log("checkServer: adding server " + serverUrl);
-                    return true;
+                    return clientServer;
                 } else {
-                    log("checkServer: not equals:"
-                            + serverInfo.getId() + " "
-                            + clientServer.getId());
-
+                    log("checkServer: not equals:" + serverInfo.getId() + " "
+			+ clientServer.getId());
                 }
             } else {
                 log("checkServer: response not ok from:"
@@ -955,14 +954,10 @@ public class RegistryManager extends RepositoryManager {
                         + "response:\n" + contents);
             }
         } catch (Exception exc) {
-            log(
-                "checkServer: Could not fetch server xml from:"
+            log("checkServer: Could not fetch server xml from:"
                 + serverInfo + " with url:" + serverUrl, exc);
         }
-        if (deleteOnFailure) {
-	    //            log("checkServer: Marking server not live:"  + serverInfo.getUrl());
-        }
-        return false;
+        return null;
     }
 
 
