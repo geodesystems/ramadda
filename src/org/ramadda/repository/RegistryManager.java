@@ -743,9 +743,9 @@ public class RegistryManager extends RepositoryManager {
 	String password = tuple.get(0);
 	String url = tuple.get(1);
         ServerInfo serverInfo = getRepository().getServerInfo();
-        URL theUrl = new URL(HU.url(url+URL_REGISTRY_ADD.getPath(), ARG_REGISTRY_CLIENT, serverInfo.getUrl(),
-				    PROP_REGISTRY_PASSWORD,password));
         try {
+	    URL theUrl = new URL(HU.url(url+URL_REGISTRY_ADD.getPath(), ARG_REGISTRY_CLIENT, serverInfo.getUrl(),
+					PROP_REGISTRY_PASSWORD,password));
             String  contents = getStorageManager().readSystemResource(theUrl);
             Element root     = XU.getRoot(contents);
             if ( !responseOk(root)) {
