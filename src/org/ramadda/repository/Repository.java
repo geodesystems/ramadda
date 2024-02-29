@@ -6371,8 +6371,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public ServerInfo getServerInfo() throws Exception {
         int    sslPort = getHttpsPort();
         String url     = getTmpRequest().getAbsoluteUrl("");
-	System.err.println("SERVER INFO:" + url);
-
+	url = url+getUrlBase();
         return new ServerInfo(url, getHostname(), getPort(), sslPort,
                               getUrlBase(), getRepositoryName(),
                               getRepositoryDescription(),

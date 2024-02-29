@@ -413,7 +413,7 @@ public class RegistryManager extends RepositoryManager {
         try {
             List<ServerInfo> servers = getRemoteServers();
             for (ServerInfo serverInfo : servers) {
-		checkServer(serverInfo, true);
+		//		checkServer(serverInfo, true);
             }
         } catch (Exception exc) {
             logError("RegistryManager.cleanUpServers:", exc);
@@ -965,7 +965,7 @@ public class RegistryManager extends RepositoryManager {
                 + serverInfo + " with url:" + serverUrl, exc);
         }
         if (deleteOnFailure) {
-            logInfo("RegistryManager.checkServer: Marking server not live:"  + serverInfo.getUrl());
+	    //            logInfo("RegistryManager.checkServer: Marking server not live:"  + serverInfo.getUrl());
         }
         return false;
     }
