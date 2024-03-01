@@ -1379,13 +1379,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 if (animationBounds.length == 4) {
 		    let pause = parseFloat(this.getProperty("animationPause","1000"));
 		    HU.callWhenScrolled(this.domId(ID_MAP),()=>{
-			if(_this.didAnimationBounds) {
+			if(this.didAnimationBounds) {
 			    return;
 			}
-			_this.didAnimationBounds = true;
+			this.didAnimationBounds = true;
 			let a = animationBounds;
 			let b = MapUtils.createBounds(parseFloat(a[1]),parseFloat(a[2]),parseFloat(a[3]),parseFloat(a[0]));
-			_this.map.animateViewToBounds(b);
+			this.map.animateViewToBounds(b);
 		    },pause);
 		}
             }
