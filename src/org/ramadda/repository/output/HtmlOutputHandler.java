@@ -1619,8 +1619,8 @@ public class HtmlOutputHandler extends OutputHandler {
 			   Hashtable props)
             throws Exception {
 	if(props == null) props = new Hashtable();
-	String wtr = Utils.getProperty(props,"rightWidth","9");
-	String wtl = Utils.getProperty(props,"leftWidth","3");
+	int wtl = Utils.getProperty(props,"leftWidth",3);
+	int wtr = Utils.getProperty(props,"rightWidth",12-wtl);
         StringBuilder listSB = new StringBuilder();
         String entryShowUrl  = request.makeUrl(getRepository().URL_ENTRY_SHOW);
         listSB.append("\n");
