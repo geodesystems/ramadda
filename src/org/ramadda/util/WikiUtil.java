@@ -2706,7 +2706,7 @@ public class WikiUtil implements HtmlUtilsConstants {
                     String extra = "";
                     String clazz = "panel ";
                     if (name != null) {
-                        extra += " data-section-name=\"" + name + "\"  ";
+                        extra += " data-section-name=\"" + name.replace(" ","-") + "\"  ";
                     }
                     if (style != null) {
                         extra += HU.style(style);
