@@ -731,6 +731,17 @@ csvcommands3=-makefields,scenario_quantile,rise,year,
 csvcommands4=-scale,1-15,0,0.00328084,0
 csvcommands5=-addheader, default.unit feet
 </property>
+<property name="bubble">
+<![CDATA[
++section  title={{name}}
+{{group}}
+{{display_linechart showMenu=true fields="high_50"}}
+{{display_linechart showMenu=true fields="int_50"}} 
+{{display_linechart showMenu=true fields="intlow_50"}}
+-section
+]]></property>
+
+
 <wiki>
 <![CDATA[
 +section title={{name}}
