@@ -84,7 +84,7 @@ public class XlsUtil {
      * @return _more_
      */
     public static InputStream xlsxToCsv(IO.Path path) {
-        return xlsxToCsv(path, -1);
+        return xlsxToCsv(path, -1,-1);
     }
 
 
@@ -94,7 +94,7 @@ public class XlsUtil {
      * @param maxRows _more_
       * @return _more_
      */
-    public static InputStream xlsxToCsv(final IO.Path path, int maxRows) {
+    public static InputStream xlsxToCsv(final IO.Path path, int maxRows,final int sheetNumber) {
         try {
             final PipedOutputStream    pos = new PipedOutputStream();
             final BufferedOutputStream bos = new BufferedOutputStream(pos);
@@ -103,6 +103,7 @@ public class XlsUtil {
             ucar.unidata.util.Misc.run(new Runnable() {
                 public void run() {
                     try {
+			int _sheetNumber = sheetNumber;
                         InputStream is = new BufferedInputStream(
                                              IO.getInputStream(
 							       path.getPath(), XlsUtil.class));
@@ -113,6 +114,7 @@ public class XlsUtil {
 
                         //Only read the first sheet
                         for (Sheet sheet : wb) {
+			    if(--_sheetNumber>0) continue;
                             int rowIdx = 0;
                             for (Row row : sheet) {
                                 rowIdx++;
@@ -246,7 +248,7 @@ public class XlsUtil {
      *  @return _more_
      */
     public static InputStream xlsToCsv(IO.Path path) {
-        return xlsToCsv(path, -1);
+        return xlsToCsv(path, -1,0);
     }
 
     /**
@@ -254,7 +256,7 @@ public class XlsUtil {
      * @param maxRows _more_
      * @return _more_
      */
-    public static InputStream xlsToCsv(IO.Path path, int maxRows) {
+    public static InputStream xlsToCsv(IO.Path path, int maxRows,int sheetNumber) {
         try {
             final PipedOutputStream pos = new PipedOutputStream();
             final PipedInputStream  pis = new PipedInputStream(pos);
@@ -265,7 +267,7 @@ public class XlsUtil {
                         InputStream myxls = IO.getInputStream(path.getPath(),
                                                 XlsUtil.class);
                         HSSFWorkbook wb         = new HSSFWorkbook(myxls);
-                        HSSFSheet    sheet      = wb.getSheetAt(0);
+                        HSSFSheet    sheet      = wb.getSheetAt(sheetNumber);
                         boolean      seenNumber = false;
                         for (int rowIdx = sheet.getFirstRowNum();
                                 rowIdx <= sheet.getLastRowNum(); rowIdx++) {
@@ -374,10 +376,11 @@ public class XlsUtil {
             for (int i = 0; i < 10; i++) {
                 long t1 = System.currentTimeMillis();
                 if (arg.endsWith(".xlsx")) {
-                    csv = IO.readInputStream(xlsxToCsv(new IO.Path(arg), -50));
+                    csv = IO.readInputStream(xlsxToCsv(new IO.Path(arg), -50,1));
                 } else {
                     csv = IO.readInputStream(xlsToCsv(new IO.Path(arg)));
                 }
+		System.err.println(csv);
                 long t2 = System.currentTimeMillis();
                 Utils.printTimes("read", t1, t2);
             }
