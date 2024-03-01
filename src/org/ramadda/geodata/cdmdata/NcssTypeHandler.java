@@ -208,6 +208,27 @@ public class NcssTypeHandler extends PointTypeHandler {
         return "";
     }
 
+    public void initializeEntryFromForm(Request request, Entry entry,
+                                        Entry parent, boolean newEntry)
+            throws Exception {
+	super.initializeEntryFromForm(request,  entry,parent,newEntry);
+	if(newEntry) return;
+	checkLatLon(request, entry);
+    }
+
+
+
+    private void checkLatLon(Request request, Entry entry) {
+	//Do this before initializeNewEntry since that sets the lat/lon from the URL
+        String url = entry.getResource().getPath();
+	if(entry.hasLocationDefined()) {
+	    url = url.replaceAll("latitude=[0-9\\.\\-]+\\&","latitude="+entry.getLatitude()+"&");
+	    url = url.replaceAll("longitude=[0-9\\.\\-]+\\&","longitude="+entry.getLongitude()+"&");
+	    entry.getResource().setPath(url);
+	}
+
+    }
+
     /**
      * _more_
      *
@@ -225,15 +246,9 @@ public class NcssTypeHandler extends PointTypeHandler {
             return;
         }
 
-	//Do this before initializeNewEntry since that sets the lat/lon from the URL
-        String url = entry.getResource().getPath();
-	if(entry.hasLocationDefined()) {
-	    url = url.replaceAll("latitude=[0-9\\.\\-]+\\&","latitude="+entry.getLatitude()+"&");
-	    url = url.replaceAll("longitude=[0-9\\.\\-]+\\&","longitude="+entry.getLongitude()+"&");
-	    entry.getResource().setPath(url);
-	}
-
+	checkLatLon(request, entry);
         super.initializeNewEntry(request, entry, fromImport);
+        String url = entry.getResource().getPath();
 
         if ( !Utils.stringDefined(entry.getName())) {
             String[] toks = Utils.findPatterns(url, "/(.*)/(.*)/[^/]+\\?");
