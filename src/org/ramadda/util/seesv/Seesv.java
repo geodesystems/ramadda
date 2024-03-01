@@ -85,6 +85,8 @@ public class Seesv implements SeesvCommands {
     private ReadableByteChannel channel;
     
 
+    private int sheetNumber =-1;
+    
     private Hashtable<String,String> macros = new Hashtable<String,String>();
     
     /** _more_ */
@@ -1068,13 +1070,13 @@ public class Seesv implements SeesvCommands {
         for (String file : files) {
 	    try {
 		if (file.toLowerCase().endsWith(".xls")) {
-		    InputStream bais=  XlsUtil.xlsToCsv(new IO.Path(file));
+		    InputStream bais=  XlsUtil.xlsToCsv(new IO.Path(file),-1,sheetNumber);
 		    ReadableByteChannel in = Channels.newChannel(bais);
 		    channels.add(new NamedChannel(file, in));
 		    continue;
 		}
 		if (file.toLowerCase().endsWith(".xlsx")) {
-		    InputStream bais=  XlsUtil.xlsxToCsv(new IO.Path(file));
+		    InputStream bais=  XlsUtil.xlsxToCsv(new IO.Path(file),-1,sheetNumber);
 		    ReadableByteChannel in = Channels.newChannel(bais);
 		    channels.add(new NamedChannel(file, in));
 		    continue;
@@ -1194,9 +1196,9 @@ public class Seesv implements SeesvCommands {
 	    checkOkToRead(file.getPath());
         }
         if (file.matchesSuffix(".xls")) {
-            return  XlsUtil.xlsToCsv(file,myTextReader.getMaxRows());
+            return  XlsUtil.xlsToCsv(file,myTextReader.getMaxRows(),sheetNumber);
 	} else if (file.matchesSuffix(".xlsx")) {
-            return  XlsUtil.xlsxToCsv(file,myTextReader.getMaxRows());
+            return  XlsUtil.xlsxToCsv(file,myTextReader.getMaxRows(),sheetNumber);
 	} else if (file.matchesSuffix(".gz",".gzip")) {
 	    return new BufferedInputStream(new GZIPInputStream(new FileInputStream(file.getPath())));
         } else if (!makeInputStreamRaw && file.matchesSuffix(".zip")) {
@@ -1882,6 +1884,10 @@ public class Seesv implements SeesvCommands {
 		ARG_LABEL,"Header Names"),
         new Cmd(CMD_HEADERIDS, "Clean up the header names",ARG_LABEL,"Header IDs"),	
         new Cmd(CMD_IDS, "Use canonical names"),
+        new Cmd(CMD_SHEET, "Set XLS sheet #",
+                new Arg("sheet", "Sheet number", ATTR_TYPE,
+                        TYPE_NUMBER)),
+
         new Cmd(CMD_CAT, "Concat the columns in one or more csv files", "*.csv"),
         new Cmd(CMD_APPEND, "Append the files, skipping the given rows in the latter files",
 		new Arg("skip","Number of rows to skip"),
@@ -3927,6 +3933,11 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
+
+	defineFunction(CMD_SHEET,1,(ctx,args,i) -> {
+		sheetNumber = Integer.parseInt(args.get(++i));
+		return i;
+	    });
 
 	defineFunction(CMD_PROP,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Propper(args.get(++i), args.get(++i)));

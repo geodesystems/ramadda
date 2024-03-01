@@ -37,6 +37,7 @@ public interface SeesvCommands {
     public static final String CMD_COMMANDS="-commands";
     public static final String CMD_INPUTCOMMENT="-inputcomment";
     public static final String CMD_TAB="-tab";
+    public static final String CMD_SHEET="-sheet";    
     public static final String CMD_WIDTHS="-widths";
     public static final String CMD_QUOTESNOTSPECIAL="-quotesnotspecial";
     public static final String CMD_CLEANINPUT="-cleaninput";
