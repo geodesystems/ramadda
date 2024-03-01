@@ -442,7 +442,7 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
         }
         dateFormat.applyPattern("MMM d - H:mm z");
         Weather.Time time = current.times.get(0);
-	//        HU.open(sb, "div", HU.cssClass("nws-block"));
+	HU.open(sb, "div", HU.cssClass("nws-block"));
         if (showHeader) {
             String link = HU.href(getEntryManager().getEntryUrl(request, entry),
 				  entry.getName(),
@@ -497,7 +497,7 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
         if (showHeader) {
             HU.close(sb, "div");
         }
-	//        HU.close(sb, "div");
+	HU.close(sb, "div");
 
     }
 
