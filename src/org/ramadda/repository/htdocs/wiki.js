@@ -1306,7 +1306,7 @@ WikiEditor.prototype = {
 	    if(tagInfo.entryId) {
 		if(e.shiftKey)  {
 		    let url = RamaddaUtils.getEntryUrl(tagInfo.entryId);
-		    window.open(url,'_entry');
+		    window.open(url,'_blank');
 		} else {
 		    this.showEntryPopup(tagInfo.entryId);
 		}
