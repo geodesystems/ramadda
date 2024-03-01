@@ -553,6 +553,12 @@ public abstract class RecordFile {
         return getProperty(prop, "" + dflt).equals("true");
     }
 
+    public int getProperty(String prop, int dflt) {
+	String v=   getProperty(prop,null);
+	if(v!=null) return Integer.parseInt(v);
+	return dflt;
+    }    
+
 
     /**
      * _more_
@@ -712,12 +718,13 @@ public abstract class RecordFile {
             System.err.println("RecordFile.doMakeInputStream path:" + path);
         }
 
+
         if (path.getPath().toLowerCase().endsWith(".xls")) {
-	    return XlsUtil.xlsToCsv(path);
+	    return XlsUtil.xlsToCsv(path,-1, getProperty("xls.sheet",0));
         }
 
         if (path.getPath().toLowerCase().endsWith(".xlsx")) {
-	    return XlsUtil.xlsxToCsv(path);
+	    return XlsUtil.xlsxToCsv(path,-1, getProperty("xls.sheet",0));
         }	
 
         if (path.getPath().endsWith(".zip") || getProperty("isZip", false)) {
