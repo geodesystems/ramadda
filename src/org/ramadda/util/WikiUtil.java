@@ -2697,6 +2697,12 @@ public class WikiUtil implements HtmlUtilsConstants {
                     String name  = (String) props.get("name");
                     String style = (String) props.get(ATTR_STYLE);
                     String color = (String) props.get("color");
+                    String fromColor = (String) props.get("fromColor");
+                    String toColor = (String) props.get("toColor");		    
+		    if(fromColor!=null && toColor!=null) {
+			if(style==null) style= "";
+			style +="background:linear-gradient("+fromColor+","+toColor+");";
+		    }
                     String extra = "";
                     String clazz = "panel ";
                     if (name != null) {
