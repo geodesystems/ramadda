@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Feb 29 14:23:12 MST 2024";
+var build_date="RAMADDA build date: Thu Feb 29 22:52:29 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -37288,13 +37288,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 if (animationBounds.length == 4) {
 		    let pause = parseFloat(this.getProperty("animationPause","1000"));
 		    HU.callWhenScrolled(this.domId(ID_MAP),()=>{
-			if(_this.didAnimationBounds) {
+			if(this.didAnimationBounds) {
 			    return;
 			}
-			_this.didAnimationBounds = true;
+			this.didAnimationBounds = true;
 			let a = animationBounds;
 			let b = MapUtils.createBounds(parseFloat(a[1]),parseFloat(a[2]),parseFloat(a[3]),parseFloat(a[0]));
-			_this.map.animateViewToBounds(b);
+			this.map.animateViewToBounds(b);
 		    },pause);
 		}
             }
