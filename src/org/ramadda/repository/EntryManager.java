@@ -1875,6 +1875,11 @@ public class EntryManager extends RepositoryManager {
                                   new Result("Add Entry", sb));
         }
 
+	if ( !getAccessManager().canDoEdit(request, entry)) {
+	    throw new AccessException("Cannot edit:" + entry.getLabel(),
+				      request);
+	}
+
         return makeEntryEditResult(request, entry, "Edit Entry", sb);
     }
 
