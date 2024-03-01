@@ -221,13 +221,20 @@ public class NcssTypeHandler extends PointTypeHandler {
     public void initializeNewEntry(Request request, Entry entry,
                                    boolean fromImport)
             throws Exception {
-
-	//Now call super to add initial metadata
-        super.initializeNewEntry(request, entry, fromImport);
         if (fromImport) {
             return;
         }
+
+	//Do this before initializeNewEntry since that sets the lat/lon from the URL
         String url = entry.getResource().getPath();
+	if(entry.hasLocationDefined()) {
+	    url = url.replaceAll("latitude=[0-9\\.\\-]+\\&","latitude="+entry.getLatitude()+"&");
+	    url = url.replaceAll("longitude=[0-9\\.\\-]+\\&","longitude="+entry.getLongitude()+"&");
+	    entry.getResource().setPath(url);
+	}
+
+        super.initializeNewEntry(request, entry, fromImport);
+
         if ( !Utils.stringDefined(entry.getName())) {
             String[] toks = Utils.findPatterns(url, "/(.*)/(.*)/[^/]+\\?");
             if (toks == null) {
