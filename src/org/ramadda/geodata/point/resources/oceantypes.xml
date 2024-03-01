@@ -709,5 +709,66 @@ indexField="depth" fields="temperature"
 </wiki>
 </type>
 
+<type name="type_point_islr" description="Interagency Sea Level Rise (ISLR)" super="type_point_ocean"  foruser="true"
+      handler="org.ramadda.geodata.point.ISLRTypeHandler">
+  <property name="icon" value="/point/nasa.png"/>
+  <property name="form.properties.show" value="false"/>
+  <property name="form.date.show" value="false"/>
+  <property name="form.area.show" value="false"/>
+  <property name="form.location.show" value="true"/>
+  <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<column  name="station"  label="Station" type="string" cansearch="false"/>
+<column name="convert_commands" type="clob"   rows="5" columns="60" label="Convert Text"  showinhtml="false" group="Convert"/>
+<property name="record.properties">
+xls.sheet=2
+csvcommands1=-combineinplace,scenario\,quantile,-
+csvcommands2=scenario_quantile,-melt,4-20,year,rise
+csvcommands3=-makefields,scenario_quantile,rise,year,
+csvcommands4=-scale,1-15,0,0.00328084,0
+csvcommands5=-addheader, default.unit feet
+</property>
+<wiki>
+<![CDATA[
++section title={{name}}
+:navtop
+{{description wikify=true}}
+{{group}}
++row
++col-9
+{{display_linechart showMenu=true fields="high_50"}}
+{{display_linechart showMenu=true fields="int_50"}} 
+{{display_linechart showMenu=true fields="intlow_50"}}
+-col
++col-3
++center
+{{resource  message="" title="Download File"}}
+-center
+{{mapentry}}
++center
+View station: 
+<a target=_other href="https://sealevel.nasa.gov/task-force-scenario-tool/?psmsl_id={{field name=station}}">@NASA</a>
+<a target=_other href="https://psmsl.org/data/obtaining/stations/{{field name=station}}.php">@PSMSL</a>
+
+
+-center
+-col
+-row
+:heading Table
+{{display_download}}
+{{display_htmltable}}
+
+----
+
+:heading Information
+Data is from the [https://sealevel.nasa.gov/task-force-scenario-tool/ Interagency Sea Level Rise Scenario Tool]
+{{information details=true}}
+-section
+]]>
+</wiki>
+</type>
+
+
+
+
 
 </types>
