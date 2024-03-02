@@ -219,7 +219,7 @@ function DisplayAnimation(display, enabled,attrs) {
 	    let window = this.display.getProperty("animationWindow");
 	    let step = this.display.getProperty("animationStep", window);
 	    if (window) {
-		this.window = this.getMillis(window);
+		this.window = DataUtils.timeToMillis(window);
 	    } else if(this.steps>0){
 		if(this.useIndex) {
 		    this.window = 1;
@@ -228,62 +228,10 @@ function DisplayAnimation(display, enabled,attrs) {
 		}
 	    }
 	    if (step) {
-		this.step = this.getMillis(step);
+		this.step = DataUtils.timeToMillis(step);
 	    } else {
 		this.step = this.window;
 	    }
-	},
-	timeMap: {
-	    century: 1000 * 60 * 60 * 24 * 365 * 100,
-	    centuries: 1000 * 60 * 60 * 24 * 365 * 100,	    
-	    decade: 1000 * 60 * 60 * 24 * 365 * 10,
-	    halfdecade: 1000 * 60 * 60 * 24 * 365 * 5,
-	    year: 1000 * 60 * 60 * 24 * 365 * 1,
-	    years: 1000 * 60 * 60 * 24 * 365 * 1,	    
-	    month: 1000 * 60 * 60 * 24 * 31,
-	    months: 1000 * 60 * 60 * 24 * 31,	    
-	    week: 1000 * 60 * 60 * 24 * 7,
-	    weeks: 1000 * 60 * 60 * 24 * 7,	    
-	    day: 1000 * 60 * 60 * 24 * 1,
-	    days: 1000 * 60 * 60 * 24 * 1,		    	    
-	    hour: 1000 * 60 * 60,
-	    hours: 1000 * 60 * 60,
-	    minute: 1000 * 60,
-	    minutes: 1000 * 60,	    
-	    second: 1000,
-	    seconds: 1000		    
-	},
-	getMillis:function(window) {
-	    window =(""+window).trim();
-	    let cnt = 1;
-	    let unit = "day";
-	    let toks = window.match("^([0-9]+)(.*)");
-	    if(toks) {
-		cnt = +toks[1];
-		unit  = toks[2].trim();
-	    } else {
-		toks = window.match("(^[0-9]+)$");
-		if(toks) {
-		    unit = "minute";
-		    cnt = +toks[1];
-		} else {
-		    unit = window;
-		}
-	    }
-	    let scale = 1;
-	    unit = unit.toLowerCase().trim();
-	    if(this.timeMap[unit]) {
-		scale = this.timeMap[unit];
-	    } else {
-		if(unit.endsWith("s"))
-		    unit = unit.substring(0, unit.length-1);
-		if(this.timeMap[unit]) {
-		    scale = this.timeMap[unit];
-		} else {
-		    console.log("Unknown unit:" + unit);
-		}
-	    }
-	    return  cnt*scale;
 	},
 	getIndex: function() {
 	    return this.frameIndex;
@@ -591,6 +539,7 @@ function DisplayAnimation(display, enabled,attrs) {
 	doNext: function() {
 	    let debug = false;
 	    let wasAtEnd = this.atEnd();
+//	    debug=true;
 	    if(debug) console.log("animation.doNext:" + this.mode +" atEnd=" + wasAtEnd);
 
 	    if (this.mode == MODE_SLIDING) {
