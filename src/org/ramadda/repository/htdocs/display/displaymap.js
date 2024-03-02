@@ -4115,7 +4115,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		strokeWidth: this.getProperty("pathWidth",1)
 	    };
 
-
 	    let fillColor = this.getFillColor();
 	    let fillOpacity =  this.getFillOpacity();
 	    let isPath = this.getIsPath();
@@ -4280,19 +4279,69 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 	    if(isPath && groups) {
+		let pathWindowStrokeColor=this.getProperty('pathWindowStrokeColor');
+		let pathWindowSize = this.getProperty('pathWindowSize',0);
+		let pathWindowTime = this.getProperty('pathWindowTime');
+		let pathWindowTimeMS;
+		if(pathWindowTime)
+		    pathWindowTimeMS = DataUtils.timeToMillis(pathWindowTime);
+		let dots = [];
 		groups.values.forEach(value=>{
 		    let firstRecord = null;
 		    let lastRecord = null;
 		    let secondRecord = null;		    
-		    groups.map[value].forEach(record=>{
+		    let groupRecords=groups.map[value];
+		    let length=groupRecords.length;
+		    let windowStartIndex=-1;
+		    if(pathWindowTime) {
+			let last = groupRecords[groupRecords.length-1];
+			if(last && last.recordTime) {
+			    let endMS = last.recordTime.getTime();
+			    let startMS = endMS-pathWindowTimeMS;
+//			    console.log("START:" + new Date(startMS) +" end:" + new Date(endMS));
+			    for(let idx=groupRecords.length-1;idx>=0;idx--) {
+				let record = groupRecords[idx];
+				if(!record || !record.recordTime) continue;
+				if(record.recordTime.getTime()<startMS) {
+				    break;
+				}
+				windowStartIndex=idx;
+			    }
+//			    console.dir('start index',windowStartIndex);
+			}
+		    } else if(pathWindowSize>0) {
+			windowStartIndex = Math.max(0,length-pathWindowSize);
+		    }
+		    groups.map[value].forEach((record,idx)=>{
 			if(!firstRecord) firstRecord=record;
 			featureCnt++;
 			if(lastRecord) {
-			    pathAttrs.strokeColor = colorBy.getColorFromRecord(record, pathAttrs.strokeColor,true);
-			    let line = this.map.createLine("line-" + featureCnt, "", lastRecord.getLatitude(), lastRecord.getLongitude(), record.getLatitude(),record.getLongitude(),pathAttrs);
-			    featuresToAdd.push(line);
-			    line.record=record;
-			    line.textGetter=textGetter;
+			    let attrs = $.extend({},pathAttrs);
+			    let color=colorBy.getColorFromRecord(record, pathAttrs.strokeColor,true);
+			    attrs.strokeColor = color;
+			    let inWindow  =false;
+			    if(windowStartIndex>=0) {
+				inWindow = idx>=windowStartIndex;
+			    }				
+			    if(pathWindowStrokeColor) {
+				attrs.strokeColor=pathWindowStrokeColor;
+			    }
+
+			    if(!inWindow) {
+				let line = this.map.createLine("line-" + featureCnt, "", lastRecord.getLatitude(), lastRecord.getLongitude(), record.getLatitude(),record.getLongitude(),attrs);
+				featuresToAdd.push(line);
+				line.record=record;
+				line.textGetter=textGetter;
+			    } else {
+				let percent = (idx-windowStartIndex)/(length-windowStartIndex);
+				let dotPoint = {x:record.getLongitude(),y:record.getLatitude()}; 
+				let dotAttrs =   {fillColor:color,
+						  strokeWidth:0,
+						  fillOpacity:Math.max(0.2,percent),
+						  pointRadius:Math.max(2,Math.floor(percent*radius))};
+				let dot = this.map.createPoint("endpoint",dotPoint,dotAttrs, null);
+				dots.push(dot);
+			    }
 			}
 			secondRecord = lastRecord;
 			lastRecord = record;
@@ -4310,6 +4359,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			}
 
 		    });
+		    featuresToAdd.push(...dots);
+
+
 		    if(lastRecord) {
 			let color=  colorBy.getColorFromRecord(lastRecord, pathAttrs.strokeColor);
 			if(secondRecord && this.getShowPathEndPoint(false)) {
