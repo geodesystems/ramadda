@@ -5,10 +5,7 @@
    <column name="media_height" type="string" label="Height"  default="380" showinhtml="false"/>
    <column name="transcriptions_json" type="clob" label="Transcriptions" showinhtml="false"
 	   candisplay="false" xeditable="false"/>     
-     <property name="wiki.edit.links"><![CDATA[Annotated Media
-{{annotated_media}}
-]]></property>
-
+     <wikimacro name="annotated_media" label="Image Overlay"><![CDATA[{{annotated_media}}]]></wikimacro>
      <wiki><![CDATA[
 +section title="{{name}}" 
 {{noheading}}
@@ -87,10 +84,7 @@
 	super="type_media"
         pattern=".*(\.wav|\.m4a|\.webm)">
      <property name="icon" value="/media/audio-new.png"/>
-     <property name="wiki.edit.links"><![CDATA[Audio
-{{audio}}
-]]></property>
-
+     <wikimacro name="embed_audio" label="Embed Audio"><![CDATA[{{audio}}]]></wikimacro>
      <wiki><![CDATA[
 +section title="{{name}}" #
 {{description wikify="true"}}
@@ -184,11 +178,7 @@
       handler="org.ramadda.plugins.media.AnnotatedImageTypeHandler" >
     <property name="icon" value="/media/annotatedimage.png"/>
     <property name="file.accept" value="image/*"/>
-     <property name="wiki.edit.links"><![CDATA[Annotated Image
-{{annotated_image #width=500px}}
-]]></property>
-
-
+    <wikimacro name="annotated_image" label="Annotated Image"><![CDATA[{{annotated_image #width=500px}}]]></wikimacro>    
     <column name="annotations_json" type="clob" label="Annotations" showinhtml="false"   candisplay="false" editable="false"/>     
      <wiki><![CDATA[
 +section title={{name}}
@@ -216,12 +206,8 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
      <column   name="autoplay" label="Auto Play" type="boolean" default="true"/>
      <column   name="maxwidth" label="Max width" type="int" default="-1"/>
      <column   name="loop_delay" label="Loop Delay" type="int" default="-1" help="milliseconds"/>          
-     <property name="wiki.edit.links"><![CDATA[Animate GIF
-{{animatedgif #addButtons=true #showControls=true #autoplay=true #maxwidth=300 #loopdelay=1}}
-]]></property>
-
-
-
+    <wikimacro name="animated_gif" label="Animated GIF">
+    <![CDATA[{{animatedgif #addButtons=true #showControls=true #autoplay=true #maxwidth=300 #loopdelay=1}} ]]></wikimacro>
 
      <wiki><![CDATA[
 {{noheading}}
@@ -241,10 +227,7 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 <type name="type_360image"  super="type_image" description="360 Image" metadata="3d_label,content.alias" foruser="true" 
       help="Displays a 360 degree image"      >
      <property name="icon" value="/icons/image.png"/>
-     <property name="wiki.edit.links">
-       <![CDATA[360 Image
-{{360image width="100%" height="400px"}}
-]]></property>
+     <wikimacro name="360image" label="360 Image"><![CDATA[{{360image width="100%" height="400px"}}]]></wikimacro>     
      <column   name="rotation" label="Initial rotation" suffix="Pitch, rotation about the X-axis. Yaw, rotation about the Y-axis. Roll, rotation about the Z-axis."  showinhtml="false" />
 
      <wiki><![CDATA[
@@ -310,10 +293,8 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
      <column name="tiles_url" type="string" label="Tiles URL" canlist="false"/>
      <column name="style" type="string" label="Style" rows="5" canlist="false"/>
      <column name="annotations_json" type="clob" label="Annotations" showinhtml="false"   candisplay="false" editable="false" canlist="false"/>     
-     <property name="wiki.edit.links"><![CDATA[Zoomable Image
-{{zoomable doBookmark=true width=100% showLeftColumn=true}}
-]]></property>
-
+     <wikimacro name="zoomable_image" label="Zoomable Image">
+     <![CDATA[{{zoomable doBookmark=true width=100% showLeftColumn=true}}]]></wikimacro>     
 
      <wiki><![CDATA[
 +section title={{name}}
@@ -355,13 +336,7 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
       handler="org.ramadda.plugins.media.OhmsTypeHandler" 
       super="type_media" supercategory="">
   <property name="icon" value="/media/ohms.png"/>
-  <property name="wiki.edit.links">
-    <![CDATA[OHMS Viewer
-{{ohms_viewer}}]]></property>
-
-
-
-
+  <wikimacro name="ohms_viewer" label="OHMS Viewer"><![CDATA[{{ohms_viewer}}]]></wikimacro>  
   <column name="ohms_type" type="enumerationplus" label="Type"/>
   <column name="interviewee" type="string" label="Interviewee"/>
   <column name="interviewer" type="string" label="Interviewer"/>  
@@ -415,14 +390,9 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
       handler="org.ramadda.plugins.media.ThreeDModelTypeHandler" 
       >
   <property name="form.description.iswiki" value="true"/>
-  <property name="wiki.edit.links">
-    <![CDATA[
-3D Model
-{{3dmodel #width=640px #height=480px }}
-]]>
-</property>
-    <property name="icon" value="/media/3dmodel.png"/>
-    <property name="upload.zip" value="true"/>
+  <wikimacro name="3dmodel" label="3D Model"><![CDATA[{{3dmodel #width=640px #height=480px }}]]></wikimacro>
+  <property name="icon" value="/media/3dmodel.png"/>
+  <property name="upload.zip" value="true"/>
 
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
@@ -491,13 +461,8 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
       childtypes="type_iiif_document"
       handler="org.ramadda.plugins.media.IIIFCollectionTypeHandler" foruser="true" >  
   <property name="icon" value="/media/iiif.png"/>
-  <property name="wiki.edit.links">
-    <![CDATA[
-IIIF Collection
-{{iiif_collection thumbnailPosition=far-right width=800px height=500px}}
-]]>
-</property>
-
+  <wikimacro name="iiif_collection" label="IIIF Collection">
+  <![CDATA[{{iiif_collection thumbnailPosition=far-right width=800px height=500px}}]]></wikimacro>  
 <wiki><![CDATA[
 +section title={{name}}
 {{description wikify=true}}
@@ -518,12 +483,9 @@ IIIF Collection
   <property name="icon" value="/media/iiif.png"/>
   <property name="form.date.show" value="false"/>
   <property name="form.area.show" value="true"/>
-  <property name="wiki.edit.links">
-    <![CDATA[
-IIIF Document
-{{iiif_document thumbnailPosition=far-right width=800px height=500px}}
-]]>
-</property>
+  <wikimacro name="iiif_document" label="IIIF Document">
+  <![CDATA[{{iiif_document thumbnailPosition=far-right width=800px height=500px}}]]></wikimacro>
+
 
 <wiki><![CDATA[
 +section title={{name}}

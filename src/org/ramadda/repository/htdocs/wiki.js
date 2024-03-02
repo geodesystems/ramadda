@@ -378,6 +378,21 @@ WikiEditor.prototype = {
 	this.getEditor().session.insert(this.getEditor().getCursorPosition(), val.trim());
     },
     handleEntryLink:function(entryId, name,pos,isNew,opts) {
+        $.getJSON(RamaddaUtil.getUrl('/wiki/getmacros?entryid=' + entryId), data=>{
+	    let extra = [];
+	    data.forEach(macro=>{
+		extra.push({label:macro.label+ ' - macro',
+			    value:'{{macro name=\"' + macro.name+'" entry=\"${entryid}\"}}'});
+		extra.push({label:macro.label+ ' - wiki text',
+			    value:macro.macro});
+	    });
+	    this.handleEntryLinkInner(entryId, name,pos,isNew,opts,extra);
+	}).fail(data=>{
+	    console.log('failed to get macros');
+	    this.handleEntryLinkInner(entryId, name,pos,isNew,opts);
+	});
+    },
+    handleEntryLinkInner:function(entryId, name,pos,isNew,opts,extra) {	
 	let html =  HU.center(HU.b(name));
 	if(isNew) {
 	    html +="The new entry has been added. What do you want to insert into the document?<br>";
@@ -401,6 +416,17 @@ WikiEditor.prototype = {
 	const what_children_links = "Children Links";
 	const what_nothing="nothing";
 
+
+	if(extra) {
+	    extra.forEach(e=>{
+		if(e.label) {
+		    what.push({label:e.label,
+			       value:'base64:'+window.btoa(e.value)});
+		} else {
+		    what.push(e);
+		}
+	    });
+	}
 
 	if(isNew) {
 	    if(opts.isImage) what.push(what_image);
@@ -433,6 +459,7 @@ WikiEditor.prototype = {
 	    what.push(what_children_links);
 	}
 
+
 	html += HU.select("",[ATTR_ID, this.domId("addtype")],what,this.lastWhat);
 	html += "<p>";
 	html += HU.div([STYLE,HU.css("display","inline-block"), CLASS,"ramadda-button",ID,this.domId("addok")],"OK")+
@@ -450,6 +477,8 @@ WikiEditor.prototype = {
 	dialog.find("#" +this.domId("addok")).button().click(()=>{
 	    this.addDialog.remove();
 	    let what=this.lastWhat=menu.val();
+	    if(what && what.startsWith('base64:'))
+		what = window.atob(what.substring(7));
 	    let text="";
 	    let insert = text=>{
 		if(pos) {
@@ -496,7 +525,10 @@ WikiEditor.prototype = {
 	    } else if(what==what_nothing) {
 		return;
 	    } else {
-		text = " {{" + what.toLowerCase() +" entry=" + entryId+" }}";				
+		if(what.indexOf("${entryid}")>=0) {
+		    what =  what.replace(/\${entryid}/g,entryId);
+		} 
+		text=what.trim();
 	    }
 	    insert(text);
 	});

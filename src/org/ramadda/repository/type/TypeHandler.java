@@ -16,6 +16,7 @@ import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 
+import org.ramadda.repository.output.WikiMacro;
 import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.search.SearchManager;
 import org.ramadda.repository.search.SpecialSearch;
@@ -301,6 +302,8 @@ public class TypeHandler extends RepositoryManager {
     private String[] editFields;
     private String[] newFields;    
 
+    private List<WikiMacro> wikiMacros;
+    private Hashtable<String,WikiMacro> wikiMacrosMap;    
 
     /**  */
     private String help = "";
@@ -513,6 +516,10 @@ public class TypeHandler extends RepositoryManager {
 		newHelp = newHelp.replace("\\n","\n");
             mimeType     = XmlUtil.getAttributeFromTree(node, "mimetype", mimeType);	    
 
+
+
+
+
 	    String fields = XmlUtil.getAttributeFromTree(node, "editfields", null);	    
 	    if(fields!=null) {
 		fields = fields.replace("_default",DEFAULT_EDIT_FIELDS);
@@ -546,6 +553,21 @@ public class TypeHandler extends RepositoryManager {
 
 
             wikiTemplate = Utils.trimLinesLeft(Utils.getAttributeOrTag(node, ATTR_WIKI,wikiTemplate));
+
+	    List macros = XmlUtil.findChildrenRecurseUp(node,"wikimacro");
+	    for (int i = 0; i < macros.size(); i++) {
+		Element macro= (Element) macros.get(i);
+		if(wikiMacros==null)  {
+		    wikiMacrosMap = new Hashtable<String,WikiMacro>();
+		    wikiMacros= new ArrayList<WikiMacro>();
+		}
+
+		WikiMacro m = new WikiMacro(macro);
+		wikiMacrosMap.put(m.getName(),m);
+		wikiMacros.add(m);
+	    }
+
+
 	    List wikis = XmlUtil.findChildrenRecurseUp(node,"wikis");
 	    for (int i = 0; i < wikis.size(); i++) {
 		Element wiki = (Element) wikis.get(i);
@@ -671,6 +693,17 @@ public class TypeHandler extends RepositoryManager {
 	    this.parent.getWikiTags(tags, entry);
 	}
     }
+
+
+    public List<WikiMacro>getWikiMacros() {
+	return wikiMacros;
+    }
+
+    public WikiMacro getWikiMacro(Entry entry, String name) {
+	if(wikiMacrosMap==null) return null;
+	return wikiMacrosMap.get(name);
+    }
+
 
 
     public void childrenChanged(Entry entry) {
@@ -5587,24 +5620,6 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @return _more_
-     */
-    public List<String[]> getWikiEditLinks() {
-	String links = getTypeProperty("wiki.edit.links",(String) null);
-	if(links==null) return null;
-	List<String>lines = Utils.split(links.trim(),"\n",true,true);
-	List<String[]> list = new ArrayList<String[]>();
-	for(int i=0;i<lines.size();i+=2) {
-	    if(i>=lines.size()-1) break;
-	    list.add(new String[]{lines.get(i),lines.get(i+1)});
-	}
-        return list;
-    }
-
-
-    /**
-     * _more_
-     *
      * @param request _more_
      * @param entry _more_
      * @param sb _more_
@@ -8306,6 +8321,6 @@ public class TypeHandler extends RepositoryManager {
 	}
 
     }
-
+    
 
 }

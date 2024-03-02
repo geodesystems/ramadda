@@ -4,9 +4,7 @@
      <property name="icon" value="/media/imagepair.png"/>
      <property name="form.description.rows" value="5"/>
      <property name="form.resource.show" value="false"/>
-     <property name="wiki.edit.links"><![CDATA[Image Overlay
-{{imagepair_default showLinks=true #imageWidth=800}}
-]]></property>
+     <wikimacro name="imageoverlay" label="Image Overlay"><![CDATA[{{imagepair_default showLinks=true #imageWidth=800}}]]></wikimacro>
      <column name="display_type" type="enumeration"  values="beforeafter,imageoverlay,leftright" label="Display Type" />
      <column name="image_width" type="string" label="Optional image width" columns="5" default=""/>
      <wiki><![CDATA[

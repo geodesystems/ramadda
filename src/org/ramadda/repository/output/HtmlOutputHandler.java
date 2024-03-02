@@ -1248,6 +1248,19 @@ public class HtmlOutputHandler extends OutputHandler {
                 suffix.append(HtmlUtils.sectionClose());
             }
         }
+	List<WikiMacro> macros = entry.getTypeHandler().getWikiMacros();
+	if(macros!=null){
+	    suffix.append(HtmlUtils.sectionOpen("Wiki Macros", false));
+	    for(WikiMacro macro: macros) {
+		suffix.append(HU.b(macro.getLabel() +" - "+macro.getName()));
+		suffix.append(HU.pre("{{macro name=\"" + macro.getName() +"\" entry=\"" + entry.getId()+"\"}}",
+				     HU.cssClass("ramadda-wiki-macro")));
+                entry.getTypeHandler().addReadOnlyWikiEditor(request, entry,
+							     suffix, macro.getWikiText().trim());
+	    }
+	    suffix.append(HtmlUtils.sectionClose());
+	    HU.script(suffix,"Utils.initCopyable('.ramadda-wiki-macro');");
+	}
     }
 
 

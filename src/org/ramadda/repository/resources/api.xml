@@ -86,7 +86,8 @@
     <api request="/entry/wikiurl"             method="processWikiUrl"/>
     <api request="/wiki/wikiurl"             method="processWikiUrl"/>
     <api request="/wiki/findentryfromid"             method="processFindEntryFromId"/>
-    <api request="/wiki/getentries"             method="processGetEntries"/>                  
+    <api request="/wiki/getentries"             method="processGetEntries"/>
+    <api request="/wiki/getmacros"             method="processGetMacros"/>                      
   </group>
 
   <group handler="commentmanager">

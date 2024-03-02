@@ -5592,8 +5592,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		    attrs.push('title',item.datatitle);
 		if(item.datastyle)
 		    attrs.push('data-style',item.datastyle);		
-		label = item.label??item.value;
-		item = item.value;
+		let value = item.value.replace(/"/g,'\\"');
+		label = item.label??value;
+		item = value;
 	    }
 	    let fullLabel  = label;
             if(maxWidth && label.length>maxWidth)
@@ -5607,8 +5608,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 if(selected == item) extra=" selected ";
             }
 	    let tt = fullLabel;
-	    if(item!=tt) {
-		tt = tt+HU.getTitleBr() + item;
+	    if(item && item!=tt) {
+		//check for encoding
+		if(item.indexOf('base64')<0) 
+		    tt = tt+HU.getTitleBr() + item;
 	    }
 	    attrs.push('title',tt,extra,null,'value',item);
             options+=HU.tag("option",attrs,label);

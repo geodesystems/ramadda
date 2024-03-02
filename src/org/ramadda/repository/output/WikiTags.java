@@ -41,6 +41,9 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
                             new WikiTag(WIKI_TAG_HTML,null,"showTitle","false"),
                             new WikiTag(WIKI_TAG_IMPORT, null, "tt","Import display of another entry",
 					ATTR_ENTRY,"","showTitle","false"),
+                            new WikiTag(WIKI_TAG_MACRO, null, "tt","Add entry macro",
+					"name","macroname",
+					ATTR_ENTRY,""),			    
 
                             new WikiTag("multi", null, "_attrs", "attr1,attr2"),
                             new WikiTag(WIKI_TAG_SIMPLE, null, ATTR_TEXTPOSITION, POS_LEFT),

@@ -708,8 +708,27 @@ public class WikiManager extends RepositoryManager
 
     public Result processGetEntries(Request request) throws Exception {
 	StringBuilder sb = new StringBuilder();
-	return new Result("", sb, JsonUtil.MIMETYPE);
+	return new Result("", sb, JU.MIMETYPE);
     }
+
+    public Result processGetMacros(Request request) throws Exception {
+	StringBuilder sb = new StringBuilder();
+	Entry entry = getEntryManager().getEntry(request,request.getString(ARG_ENTRYID));
+	List<String> json  = new ArrayList<String>();
+	if(entry!=null) {
+	    List<WikiMacro>macros = entry.getTypeHandler().getWikiMacros();
+	    if(macros!=null) {
+		for(WikiMacro macro: macros) {
+		    json.add(JU.map("label",JU.quote(macro.getLabel()),
+				    "name",JU.quote(macro.getName()),
+				    "macro",JU.quote(macro.getWikiText())));
+		}
+	    }
+	}
+
+	return new Result("", new StringBuilder(JU.list(json)), JU.MIMETYPE);
+    }
+
 
 
     private Entry findEntryFromId(ServerInfo server, Entry entry,
@@ -1661,17 +1680,17 @@ public class WikiManager extends RepositoryManager
                 WikiTags.WikiTag      tag = cat.tags[tagIdx];
                 List<String> tmp = new ArrayList<String>();
 		String label = Utils.makeLabel(tag.label) + " properties";
-                tmp.add(JsonUtil.map(Utils.makeList("label",JsonUtil.quote(label))));
+                tmp.add(JU.map(Utils.makeList("label",JU.quote(label))));
                 for (int j = 0; j < tag.attrsList.size(); j += 2) {
-                    tmp.add(JsonUtil.map(Utils.makeList("p",JsonUtil.quote(tag.attrsList.get(j)),"ex",
-							JsonUtil.quote(tag.attrsList.get(j + 1)))));
+                    tmp.add(JU.map(Utils.makeList("p",JU.quote(tag.attrsList.get(j)),"ex",
+							JU.quote(tag.attrsList.get(j + 1)))));
                 }
                 tags.add(tag.tag);
-                tags.add(JsonUtil.list(tmp));
+                tags.add(JU.list(tmp));
             }
         }
-        sb.append(JsonUtil.map(tags));
-        Result result = new Result("", sb, JsonUtil.MIMETYPE);
+        sb.append(JU.map(tags));
+        Result result = new Result("", sb, JU.MIMETYPE);
         result.setShouldDecorate(false);
         return result;
     }
@@ -1767,7 +1786,7 @@ public class WikiManager extends RepositoryManager
 
         if (metadata == null) {
             Result result = new Result("", new StringBuilder("{}"),
-                                       JsonUtil.MIMETYPE);
+                                       JU.MIMETYPE);
             result.setShouldDecorate(false);
 
             return result;
@@ -1777,7 +1796,7 @@ public class WikiManager extends RepositoryManager
 				   new FileInputStream(
 						       getMetadataManager().getFile(
 										    request, entry, metadata,
-										    2)), JsonUtil.MIMETYPE);
+										    2)), JU.MIMETYPE);
         result.setShouldDecorate(false);
 
         return result;
@@ -1801,7 +1820,7 @@ public class WikiManager extends RepositoryManager
             Result result = new Result("",
                                        new StringBuilder("{'error':'"
 							 + exc.getMessage()
-							 + "'}"), JsonUtil.MIMETYPE);
+							 + "'}"), JU.MIMETYPE);
 
             return result;
         }
@@ -1822,12 +1841,12 @@ public class WikiManager extends RepositoryManager
         if (entry == null) {
             return new Result(
 			      "", new StringBuilder("{\"error\":\"cannot find entry\"}"),
-			      JsonUtil.MIMETYPE);
+			      JU.MIMETYPE);
         }
         if ( !getAccessManager().canDoEdit(request, entry)) {
             return new Result(
 			      "", new StringBuilder("{\"error\":\"cannot edit entry\"}"),
-			      JsonUtil.MIMETYPE);
+			      JU.MIMETYPE);
         }
 
         List<Metadata> metadataList =
@@ -1864,14 +1883,14 @@ public class WikiManager extends RepositoryManager
             getEntryManager().updateEntry(null, entry);
 
             return new Result("", new StringBuilder("{\"result\":\"ok\"}"),
-                              JsonUtil.MIMETYPE);
+                              JU.MIMETYPE);
         } else {
             File file = getMetadataManager().getFile(request, entry,
 						     metadata, 2);
             getStorageManager().writeFile(file, notebook);
 
             return new Result("", new StringBuilder("{\"result\":\"ok\"}"),
-                              JsonUtil.MIMETYPE);
+                              JU.MIMETYPE);
         }
     }
 
@@ -2090,29 +2109,29 @@ public class WikiManager extends RepositoryManager
 
 	    String tmp;
 	    if((tmp=getProperty(wikiUtil,props,"title",null))!=null) {
-		Utils.add(args,"pageTitle",JsonUtil.quote(tmp));
+		Utils.add(args,"pageTitle",JU.quote(tmp));
 	    }
 	    if((tmp=getProperty(wikiUtil,props,"url",null))!=null) {
-		Utils.add(args,"pageUrl",JsonUtil.quote(tmp));
+		Utils.add(args,"pageUrl",JU.quote(tmp));
 	    }
 	    if((tmp=getProperty(wikiUtil,props,"desc",null))!=null) {
-		Utils.add(args,"pageDesc",JsonUtil.quote(tmp));
+		Utils.add(args,"pageDesc",JU.quote(tmp));
 	    }
 	    if((tmp=getProperty(wikiUtil,props,"animate",null))!=null) {
 		Utils.add(args,"animate",tmp);
 	    }	    	    
 	    
-	    Utils.add(args,"position",JsonUtil.quote(getProperty(wikiUtil, props, "position", "right")));
-	    Utils.add(args,"theme",JsonUtil.quote(getProperty(wikiUtil, props, "theme", "square")));
+	    Utils.add(args,"position",JU.quote(getProperty(wikiUtil, props, "position", "right")));
+	    Utils.add(args,"theme",JU.quote(getProperty(wikiUtil, props, "theme", "square")));
 	    Utils.add(args,"animate",""+getProperty(wikiUtil, props, "animate",true));
 	    String channels = "facebook,twitter,reddit,linkedin,pinterest,email";
 
-	    Utils.add(args,"channels",JsonUtil.list(JsonUtil.quote(Utils.split(
+	    Utils.add(args,"channels",JU.list(JU.quote(Utils.split(
 									       getProperty(wikiUtil, props, "channels", channels),",",true,true))));
 	    String id = HU.getUniqueId("share_");
 	    HU.div(sb,"",HU.attrs("id",id,"class","ramadda-share share-bar","style",style));
 	    StringBuilder js = new StringBuilder();
-	    js.append("$('#" + id +"').share(" +JsonUtil.map(args)+");\n");
+	    js.append("$('#" + id +"').share(" +JU.map(args)+");\n");
 	    HU.script(sb,js.toString());
 	    return sb.toString();
         } else if (theTag.equals(WIKI_TAG_COMMENTS)) {
@@ -2274,10 +2293,10 @@ public class WikiManager extends RepositoryManager
 	    String width = getProperty(wikiUtil,props,"width","128");
 	    String height = getProperty(wikiUtil,props,"height",width);
 	    String js  = "new QRCode(" + HU.squote(id)+","+
-		JsonUtil.map("text",JsonUtil.quote(url),"width",width,
+		JU.map("text",JU.quote(url),"width",width,
 			     "height",height,
-			     "colorDark",JsonUtil.quote(getProperty(wikiUtil,props,"colorDark","#000000")),
-			     "colorLight",JsonUtil.quote(getProperty(wikiUtil,props,"colorLight","#ffffff"))) +");\n";
+			     "colorDark",JU.quote(getProperty(wikiUtil,props,"colorDark","#000000")),
+			     "colorLight",JU.quote(getProperty(wikiUtil,props,"colorLight","#ffffff"))) +");\n";
 							       
 	    HU.script(sb,js);
 	    return sb.toString();
@@ -2607,21 +2626,21 @@ public class WikiManager extends RepositoryManager
 				     HU.id(id));
 	    if(stringDefined(required)) {
 		List<String> opts = new ArrayList<String>();
-		Utils.add(opts,"entryid",JsonUtil.quote(entry.getId()));
+		Utils.add(opts,"entryid",JU.quote(entry.getId()));
 		String message = getProperty(wikiUtil, props, "requireMessage", null);
-		if(message!=null) Utils.add(opts,"message",JsonUtil.quote(message));
+		if(message!=null) Utils.add(opts,"message",JU.quote(message));
 		String suffix = getProperty(wikiUtil, props, "requireSuffix", null);
-		if(suffix!=null) Utils.add(opts,"suffix",JsonUtil.quote(suffix));
+		if(suffix!=null) Utils.add(opts,"suffix",JU.quote(suffix));
 		boolean logName = getProperty(wikiUtil, props, "logName",false);
 		if(logName) Utils.add(opts,"logName","true");
 		String redirect = getProperty(wikiUtil, props, "requireRedirect", null);
-		if(redirect!=null) Utils.add(opts,"redirect",JsonUtil.quote(redirect));		
+		if(redirect!=null) Utils.add(opts,"redirect",JU.quote(redirect));		
 		String showLicense = getProperty(wikiUtil, props, "requireShowLicense", null);
 		if(showLicense!=null) Utils.add(opts,"showLicense",showLicense);				
 		String onlyAnonymous = getProperty(wikiUtil, props, "requireOnlyAnonymous", null);
 		if(onlyAnonymous!=null) Utils.add(opts,"onlyAnonymous",onlyAnonymous);				
                 contents+=HU.script(HU.call("Utils.checkLicense",HU.squote(id),HU.squote(required),
-					    JsonUtil.map(opts)));
+					    JU.map(opts)));
 	    }
 	    return  contents;
         } else if (theTag.equals(WIKI_TAG_THIS)) {
@@ -2640,6 +2659,12 @@ public class WikiManager extends RepositoryManager
 	    String width = getProperty(wikiUtil, props, "width", ICON_WIDTH);
 	    String url = entry.getTypeHandler().getEntryIconUrl(request,  entry);
 	    return HU.img(url, "", HU.attr("width", width));
+        } else if (theTag.equals(WIKI_TAG_MACRO)) {
+	    if(entry==null) return "NULL ENTRY";
+	    String name = getProperty(wikiUtil,props,"name","");
+	    WikiMacro macro = entry.getTypeHandler().getWikiMacro(entry,name);
+	    if(macro==null) return "Could not find macro:" + name;
+	    return wikifyEntry(request, entry,macro.getWikiText());
         } else if (theTag.equals(WIKI_TAG_NAME)) {
             String name = entry==null?"NULL ENTRY":getEntryDisplayName(entry);
             if (getProperty(wikiUtil, props, "link", false)) {
@@ -5167,7 +5192,7 @@ public class WikiManager extends RepositoryManager
 	List<String> argProps = new ArrayList<String>();
 	List<String> actions = new ArrayList<String>();
 	for(HtmlUtils.Selector selector: tfos) {
-	    actions.add(JsonUtil.mapAndQuote(Utils.makeList("id",selector.getId(),"label",selector.getLabel())));
+	    actions.add(JU.mapAndQuote(Utils.makeList("id",selector.getId(),"label",selector.getLabel())));
 	}
 
 
@@ -5191,7 +5216,7 @@ public class WikiManager extends RepositoryManager
 	    String v =getProperty(wikiUtil, props, prop, (String)null);
 	    if(v!=null) {
 		argProps.add(prop);
-		argProps.add(JsonUtil.quote(v));
+		argProps.add(JU.quote(v));
 	    }
 	}
 
@@ -5216,16 +5241,16 @@ public class WikiManager extends RepositoryManager
 
 	if (request.exists(ARG_ASCENDING)) {
 	    argProps.add("ascending");
-	    argProps.add(JsonUtil.quote(request.getString(ARG_ASCENDING,"true")));
+	    argProps.add(JU.quote(request.getString(ARG_ASCENDING,"true")));
 	}
 	if (request.exists(ARG_ORDERBY)) {
 	    argProps.add("orderby");
-	    argProps.add(JsonUtil.quote(request.getString(ARG_ORDERBY, ORDERBY_NAME)));
+	    argProps.add(JU.quote(request.getString(ARG_ORDERBY, ORDERBY_NAME)));
 	}
 
 	argProps.add("actions");
-	argProps.add(JsonUtil.list(actions));
-	String propArg = JsonUtil.map(argProps);
+	argProps.add(JU.list(actions));
+	String propArg = JU.map(argProps);
 	js.append("\nRamadda.initEntryTable('" + var+"'," + propArg+"," + var+");\n");
 	sb.append(HU.script(js.toString()));
 	HU.close(sb,"div");
@@ -5272,12 +5297,12 @@ public class WikiManager extends RepositoryManager
 	HU.importJS(sb, getPageHandler().makeHtdocsUrl("/media/json.js"));
 	String id = Utils.getGuid();
 	//entry.getResource().getPath(), true);
-	String formatted = JsonUtil.format(json,true);
+	String formatted = JU.format(json,true);
 	HtmlUtils.open(sb, "div", "id", id);
 	HtmlUtils.pre(sb, formatted);
 	HtmlUtils.close(sb, "div");
 	sb.append(HtmlUtils.importJS(getRepository().getHtdocsUrl("/jsonutil.js")));
-	sb.append(HtmlUtils.script("RamaddaJsonUtil.init('" + id + "');"));
+	sb.append(HtmlUtils.script("RamaddaJU.init('" + id + "');"));
 	return sb.toString();
     }
 	
@@ -5442,7 +5467,7 @@ public class WikiManager extends RepositoryManager
 	    String v = getProperty(wikiUtil, props, key);
 	    if (v != null) {
 		v = v.replace("${entryid}", entry.getId());
-		mapProps.put(mapArg, JsonUtil.quote(v));
+		mapProps.put(mapArg, JU.quote(v));
 	    }
 	}
 
@@ -5451,7 +5476,7 @@ public class WikiManager extends RepositoryManager
 	if (mapSet != null) {
 	    List<String> msets = Utils.split(mapSet, ",");
 	    for (int i = 0; i < msets.size() - 1; i += 2) {
-		mapProps.put(msets.get(i), JsonUtil.quote(msets.get(i + 1)));
+		mapProps.put(msets.get(i), JU.quote(msets.get(i + 1)));
 	    }
 	}
 	MapInfo map = getMapManager().getMap(newRequest, entry, children,
@@ -6123,8 +6148,8 @@ public class WikiManager extends RepositoryManager
         Entry         entry = getEntryManager().getEntry(request);
 	StringBuilder sb = new StringBuilder();
 	if(entry==null) {
-	    sb.append(JsonUtil.mapAndQuote(Utils.makeList("error", "Could not find entry")));
-	    return new Result("", sb, JsonUtil.MIMETYPE);
+	    sb.append(JU.mapAndQuote(Utils.makeList("error", "Could not find entry")));
+	    return new Result("", sb, JU.MIMETYPE);
 	}
 	Hashtable<String,String> props = new Hashtable<String,String>();
 	String max = request.getString("max",null);
@@ -6132,8 +6157,8 @@ public class WikiManager extends RepositoryManager
 	String jsonUrl = entry.getTypeHandler().getUrlForWiki(request,
 							      entry, request.getString("tag",WikiConstants.WIKI_TAG_DISPLAY), props,null);
 	jsonUrl = request.getAbsoluteUrl(jsonUrl);
-	sb.append(JsonUtil.map(Utils.makeList("url", JsonUtil.quote(jsonUrl))));
-	return new Result("", sb, JsonUtil.MIMETYPE);
+	sb.append(JU.map(Utils.makeList("url", JU.quote(jsonUrl))));
+	return new Result("", sb, JU.MIMETYPE);
     }
 
 
@@ -7661,21 +7686,21 @@ public class WikiManager extends RepositoryManager
 		+ HU.squote(prop) + ");";
         }
 
-        List<String[]> fromType     = (entry == null)
-	    ? null
-	    : entry.getTypeHandler()
-	    .getWikiEditLinks();
         Appendable     fromTypeBuff = null;
-        if ((fromType != null) && (fromType.size() > 0)) {
-            fromTypeBuff = new StringBuilder();
-            for (String[] pair : fromType) {
-                String js = "javascript:WikiUtil.insertTags(" + HU.squote(textAreaId)
-		    + "," + HU.squote(pair[1]) + ",'');";
-                fromTypeBuff.append(HU.href(js, pair[0]));
-                fromTypeBuff.append("<br>");
-            }
-        }
+	if(entry!=null) {
+	    List<WikiMacro> macros = entry.getTypeHandler().getWikiMacros();
+	    if(macros!=null) {
+		for(WikiMacro macro: macros) {
+		    if(fromTypeBuff==null) fromTypeBuff = new StringBuilder();
+		    String tag = "{{macro entry=\"" + entry.getId() +"\" name=\"" + macro.getName()+"\"}}";
+		    String js = "javascript:WikiUtil.insertTags(" + HU.squote(textAreaId)
+			+ "," + HU.squote(tag) + ",'');";
+		    fromTypeBuff.append(HU.href(js, macro.getLabel()));
+		    fromTypeBuff.append("<br>");
+		}
+	    }
 
+	}
 
 
 
@@ -8572,7 +8597,7 @@ public class WikiManager extends RepositoryManager
                 String attrName = metadata.getAttr1();
                 if (props.get(attrName) == null) {
                     propList.add(attrName);
-                    propList.add(JsonUtil.quote(metadata.getAttr2()));
+                    propList.add(JU.quote(metadata.getAttr2()));
                 }
             }
         }
@@ -8615,9 +8640,9 @@ public class WikiManager extends RepositoryManager
                     jObj.add(toks2.get(i));
                     jObj.add(toks2.get(i + 1));
                 }
-                jsonObjects.add(JsonUtil.mapAndQuote(jObj).replaceAll("\n", " "));
+                jsonObjects.add(JU.mapAndQuote(jObj).replaceAll("\n", " "));
             }
-            String json = JsonUtil.list(jsonObjects);
+            String json = JU.list(jsonObjects);
             //            System.err.println("json:" + json);
             props.put("derived", json);
         }
@@ -8656,12 +8681,12 @@ public class WikiManager extends RepositoryManager
                                 icon = "${root}/icons/magnifier.png";
                             }
                             icon = getPageHandler().applyBaseMacros(icon);
-			    String v =JsonUtil.map(Utils.makeList("id",JsonUtil.quote(searchProvider.getId()),
-								  "type",JsonUtil.quote(searchProvider.getType()),
-								  "name",JsonUtil.quote(searchProvider.getName()),
-								  "capabilities",JsonUtil.quote(searchProvider.getCapabilities()),					       
-								  "icon",JsonUtil.quote(icon),
-								  "category",JsonUtil.quote(searchProvider.getCategory())));
+			    String v =JU.map(Utils.makeList("id",JU.quote(searchProvider.getId()),
+								  "type",JU.quote(searchProvider.getType()),
+								  "name",JU.quote(searchProvider.getName()),
+								  "capabilities",JU.quote(searchProvider.getCapabilities()),					       
+								  "icon",JU.quote(icon),
+								  "category",JU.quote(searchProvider.getCategory())));
                             processed.add(v);
                         }
                     }
@@ -8697,16 +8722,16 @@ public class WikiManager extends RepositoryManager
 		    if (subToks.size() > 2) {
 			icon = subToks.get(2);
 		    }
-		    String v =JsonUtil.map(Utils.makeList("id",JsonUtil.quote(id),
-							  "type",JsonUtil.quote(searchProvider.getType()),
-							  "name",JsonUtil.quote(label),
-							  "capabilities",JsonUtil.quote(searchProvider.getCapabilities()),					       
-							  "icon",JsonUtil.quote(icon),
-							  "category",JsonUtil.quote(searchProvider.getCategory())));
+		    String v =JU.map(Utils.makeList("id",JU.quote(id),
+							  "type",JU.quote(searchProvider.getType()),
+							  "name",JU.quote(label),
+							  "capabilities",JU.quote(searchProvider.getCapabilities()),					       
+							  "icon",JU.quote(icon),
+							  "category",JU.quote(searchProvider.getCategory())));
 		    processed.add(v);
 		}
 	    }
-            props.put("providers", "json:"+ JsonUtil.list(processed));
+            props.put("providers", "json:"+ JU.list(processed));
         }
 
         String entryParent = getProperty(wikiUtil, props, "entryParent");
@@ -8743,7 +8768,7 @@ public class WikiManager extends RepositoryManager
         String colors = getProperty(wikiUtil, props, ATTR_COLORS);
         if (colors != null) {
             propList.add(ATTR_COLORS);
-            propList.add(JsonUtil.list(Utils.split(colors, ","), true));
+            propList.add(JU.list(Utils.split(colors, ","), true));
             props.remove(ATTR_COLORS);
         }
 
@@ -8767,7 +8792,7 @@ public class WikiManager extends RepositoryManager
         if (entry != null) {
             propList.add("entryIcon");
             propList.add(
-			 JsonUtil.quote(
+			 JU.quote(
 					entry.getTypeHandler().getEntryIconUrl(
 									       request, originalEntry)));
         }
@@ -8778,7 +8803,7 @@ public class WikiManager extends RepositoryManager
         if (timezone != null) {
             propList.add("timezone");
             TimeZone tz = TimeZone.getTimeZone(timezone);
-            propList.add(JsonUtil.quote("" + (tz.getRawOffset() / 1000 / 60
+            propList.add(JU.quote("" + (tz.getRawOffset() / 1000 / 60
 					      / 60)));
         }
 
@@ -8793,10 +8818,10 @@ public class WikiManager extends RepositoryManager
         if (title != null) {
             title = title.replace("{entry}", entry.getName());
             propList.add(ATTR_TITLE);
-            propList.add(JsonUtil.quote(title));
+            propList.add(JU.quote(title));
         } else {
             propList.add(ATTR_TITLE);
-            propList.add(JsonUtil.quote(entry.getName()));
+            propList.add(JU.quote(entry.getName()));
         }
 
 
@@ -8828,17 +8853,17 @@ public class WikiManager extends RepositoryManager
                            + child.getName().replaceAll(",", " ").replaceAll("\"","&quot;"));
             }
             propList.add("entryCollection");
-            propList.add(JsonUtil.quote(tmp.toString()));
+            propList.add(JU.quote(tmp.toString()));
             String tmpname = getProperty(wikiUtil, props,
                                          "changeEntriesLabel");
             if (tmpname != null) {
                 propList.add("changeEntriesLabel");
-                propList.add(JsonUtil.quote(tmpname));
+                propList.add(JU.quote(tmpname));
             }
         }
 
         topProps.add("layoutType");
-        topProps.add(JsonUtil.quote(getProperty(wikiUtil, props, "layoutType",
+        topProps.add(JU.quote(getProperty(wikiUtil, props, "layoutType",
 						"table")));
         props.remove("layoutType");
         topProps.add("layoutColumns");
@@ -8853,21 +8878,21 @@ public class WikiManager extends RepositoryManager
         String bounds = (String) props.get("bounds");
         if (bounds != null) {
             props.remove("bounds");
-            Utils.add(propList, "bounds", JsonUtil.quote(bounds));
+            Utils.add(propList, "bounds", JU.quote(bounds));
         } else if (entry.hasAreaDefined()) {
             Utils.add(propList, "entryBounds",
-                      JsonUtil.quote(entry.getNorth() + "," + entry.getWest()
+                      JU.quote(entry.getNorth() + "," + entry.getWest()
 				     + "," + entry.getSouth() + ","
 				     + entry.getEast()));
         }
 
         topProps.add("defaultMapLayer");
-        topProps.add(JsonUtil.quote(defaultLayer));
+        topProps.add(JU.quote(defaultLayer));
 
         String displayDiv = getProperty(wikiUtil, props, "displayDiv");
         if (displayDiv != null) {
             displayDiv = displayDiv.replace("${entryid}", entry.getId());
-            Utils.add(propList, "displayDiv", JsonUtil.quote(displayDiv));
+            Utils.add(propList, "displayDiv", JU.quote(displayDiv));
             props.remove("displayDiv");
         }
 
@@ -8898,7 +8923,7 @@ public class WikiManager extends RepositoryManager
                 Object key   = keys.nextElement();
                 Object value = props.get(key);
                 topProps.add(key.toString());
-                topProps.add(JsonUtil.quote(value.toString()));
+                topProps.add(JU.quote(value.toString()));
             }
 	    String style="";
 	    if(getProperty(wikiUtil, props, "displayInline",false)) {
@@ -8908,7 +8933,7 @@ public class WikiManager extends RepositoryManager
 	    String groupVar = getGroupVar(request);
             topProps.addAll(propList);
             js.append("\nvar " + groupVar +" = getOrCreateDisplayManager("
-                      + HU.quote(mainDivId) + "," + JsonUtil.map(topProps)
+                      + HU.quote(mainDivId) + "," + JU.map(topProps)
                       + ",true);\n");
             wikiUtil.appendJavascript(js.toString());
             return;
@@ -8920,7 +8945,7 @@ public class WikiManager extends RepositoryManager
             List<String> toks = Utils.split(fields, ",", true, true);
             if (toks.size() > 0) {
                 propList.add("fields");
-                propList.add(JsonUtil.list(toks, true));
+                propList.add(JU.list(toks, true));
             }
             props.remove("fields");
         }
@@ -8947,7 +8972,7 @@ public class WikiManager extends RepositoryManager
         HU.div(sb, "",
                HU.clazz("display-container") + HU.id(anotherDivId)
                + HU.style(style));
-        Utils.add(propList, "divid", JsonUtil.quote(anotherDivId));
+        Utils.add(propList, "divid", JU.quote(anotherDivId));
         props.remove("layoutHere");
 
 
@@ -8966,7 +8991,7 @@ public class WikiManager extends RepositoryManager
 	    }) {
             String value = getProperty(wikiUtil, props, arg, (String) null);
             if (value != null) {
-                Utils.add(propList, arg, JsonUtil.quote(value));
+                Utils.add(propList, arg, JU.quote(value));
             }
             props.remove(arg);
         }
@@ -8992,7 +9017,7 @@ public class WikiManager extends RepositoryManager
 	}
 
 	if (defaultLayer != null) {
-            Utils.add(propList, "defaultMapLayer", JsonUtil.quote(defaultLayer));
+            Utils.add(propList, "defaultMapLayer", JU.quote(defaultLayer));
             props.remove("defaultLayer");
             props.remove("defaultMapLayer");
         }
@@ -9010,7 +9035,7 @@ public class WikiManager extends RepositoryManager
                 ids.append(child.getId());
             }
             props.remove(ATTR_ENTRIES);
-            Utils.add(propList, "entryIds", JsonUtil.quote(ids.toString()));
+            Utils.add(propList, "entryIds", JU.quote(ids.toString()));
         }
         props.remove("type");
 
@@ -9021,7 +9046,7 @@ public class WikiManager extends RepositoryManager
 	    if(value.startsWith("json:")) {
 		value = value.substring(5);
 	    } else {
-		value = JsonUtil.quote(value);
+		value = JU.quote(value);
 	    }
 	    Utils.add(propList, key, value);
         }
@@ -9045,7 +9070,7 @@ public class WikiManager extends RepositoryManager
 	    groupVar = getGroupVar(request);
             Utils.concatBuff(
 			     js, "\nvar " + groupVar +" = getOrCreateDisplayManager(",
-			     HU.quote(groupDivId), ",", JsonUtil.map(topProps), ");\n");
+			     HU.quote(groupDivId), ",", JU.map(topProps), ");\n");
         }
         Utils.add(propList, "entryId", HU.quote(entry.getId()),"thisEntryType",HU.quote(entry.getTypeHandler().getType()));
 	if(entry.isFile()) {
@@ -9131,19 +9156,19 @@ public class WikiManager extends RepositoryManager
                     }
 
 		    if(annotatedIds!=null) {
-			Utils.add(propList, "annotationLayer", JsonUtil.quote(annotatedIds),
-				  "annotationLayerName", JsonUtil.quote(annotatedNames));
+			Utils.add(propList, "annotationLayer", JU.quote(annotatedIds),
+				  "annotationLayerName", JU.quote(annotatedNames));
 		    }
 			
 		    if(props.get("kmlLayer")==null && props.get("geojsonLayer")==null) {
 			if (kmlIds != null) {
-			    Utils.add(propList, "kmlLayer", JsonUtil.quote(kmlIds),
-				      "kmlLayerName", JsonUtil.quote(kmlNames));
+			    Utils.add(propList, "kmlLayer", JU.quote(kmlIds),
+				      "kmlLayerName", JU.quote(kmlNames));
 			}
 			if (geojsonIds != null) {
 			    Utils.add(propList, "geojsonLayer",
-				      JsonUtil.quote(geojsonIds), "geojsonLayerName",
-				      JsonUtil.quote(geojsonNames));
+				      JU.quote(geojsonIds), "geojsonLayerName",
+				      JU.quote(geojsonNames));
 			}
                     }
                 }
@@ -9153,7 +9178,7 @@ public class WikiManager extends RepositoryManager
         wikiUtil.addWikiAttributes(propList);
 	js.append("\n");
 	js.append(groupVar+".createDisplay(" + HU.quote(displayType)
-                  + "," + JsonUtil.map(propList) + ");\n");
+                  + "," + JU.map(propList) + ");\n");
 	//xxxx
         wikiUtil.appendJavascript(js.toString());
     }

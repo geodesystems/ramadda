@@ -420,6 +420,8 @@ public interface WikiConstants {
     /** wiki import */
     public static final String WIKI_TAG_IMPORT = "import";
 
+    public static final String WIKI_TAG_MACRO = "macro";    
+
     public static final String WIKI_TAG_SHOW_AS = "show_as";    
 
     /** the field property */

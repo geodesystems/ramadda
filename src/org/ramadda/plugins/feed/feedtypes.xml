@@ -24,21 +24,11 @@
      <property name="form.date.show" value="false"/>
      <property name="form.area.show" value="true"/>
      <property name="form.location.show" value="true"/>
-     <property name="wiki.edit.links">
-       <![CDATA[
-Hazards
-{{nws.hazards showHeader=false}}
-Current Conditions
-{{nws.current showHeader=false showDetails=true}}
-Forecast
-{{nws.forecast showHeader=false showDetails=true count=1000}}
-Forecast Details
-{{nws.details showHeader=false}}
-Forecast All
-{{nws.all showHeader=false}}
-]]>
-</property>
-
+     <wikimacro name="nws.hazards" label="NWS Hazards"><![CDATA[{{nws.hazards showHeader=false}}]]></wikimacro>
+     <wikimacro name="nws.current" label="NWS Current Conditions"><![CDATA[{{nws.current showHeader=false showDetails=true}}]]></wikimacro>
+     <wikimacro name="nws.forecast" label="NWS Forecast"><![CDATA[{{nws.forecast showHeader=false showDetails=true count=1000}}]]></wikimacro>
+     <wikimacro name="nws.details" label="NWS Forecast Details"><![CDATA[{{nws.details showHeader=false}}]]></wikimacro>
+     <wikimacro name="nws.all" label="NWS Forecast All"><![CDATA[{{nws.all showHeader=false}}]]></wikimacro>
      <column name="timezone" type="string" label="Timezone" showinhtml="false" editable="true" />
  <property name="record.properties">
 fields=date[type=date format="yyyy-MM-dd HH:mm"],min_temperature[type=double label="Min Temperature"],max_temperature[type=double label="Max Temperature"],description[type=string],icon[type=image]

@@ -24,10 +24,7 @@
      <property name="form.description.iswiki" value="true"/>
      <property name="file.accept" value="application/pdf"/>    
      <property name="wiki.edit.links.label" value="PDF Tags"/>
-     <property name="wiki.edit.links">
-       <![CDATA[Embed PDF
-{{pdf page="1" style="border:1px solid #ccc;" height="1000px"  width="90%"}}
-]]></property>
+     <wikimacro name="embedpdf" label="Embed PDF"><![CDATA[{{pdf page="1" style="border:1px solid #ccc;" height="1000px"  width="90%"}}]]></wikimacro>
      <wiki><![CDATA[
 +section title={{name}}
 {{description wikify="true"}}
