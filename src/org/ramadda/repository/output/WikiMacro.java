@@ -15,10 +15,13 @@ public class WikiMacro {
     private String name;
     private String label;
     private String wikiText;
+    private String properties;
     public WikiMacro(Element node) {
 	name = XmlUtil.getAttribute(node,"name","name");
-	wikiText = XmlUtil.getChildText(node);
 	label = XmlUtil.getAttribute(node,"label",name);
+	properties = XmlUtil.getAttribute(node,"properties","");
+	wikiText = XmlUtil.getChildText(node);
+
     }
 
     public WikiMacro(String name, String wikiText) {
@@ -64,6 +67,10 @@ public class WikiMacro {
     **/
     public String getWikiText () {
 	return wikiText;
+    }
+
+    public String getProperties() {
+	return properties;
     }
 
     public String toString() {

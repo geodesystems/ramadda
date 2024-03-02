@@ -73,6 +73,30 @@ isPathThreshold="property:path_threshold"
 -section
 ]]></wiki>
 
+
+<wikimacro name="track_hexmap" label="Track Hexmap"
+	   properties="hexmapUnits=kilometers  hexmapCellSide=1">
+<![CDATA[
+{{display_map  
+convertData="roundDate(round=day);unique(groupFields=identifier,valueField=_date);"
+fillColor=#888
+showBaseLayersSelect=true baseLayerSelectLabel="Select base layer"  defaultMapLayer=google.hybrid
+hexmapLabelFontSize=10
+hexmapColorTable=blues
+hexmapEmptyFillColor=transparent
+hexmapEmptyStrokeColor=transparent
+hexmapFillOpacity=0.5
+hexmapStrokeColor=#000 hexmapStrokeWidth=0.2
+hexmapUnits="${hexmapUnits}"  hexmapCellSide="${hexmapCellSide}"
+hexmapUseCount=true hexmapDisplayCount=true
+doHexmap=true 
+max=20000
+showColorTable=true
+colorTableLabel="Count" 
+}} 
+]]></wikimacro>
+
+
 </type>
 
 

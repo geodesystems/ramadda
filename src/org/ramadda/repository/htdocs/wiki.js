@@ -382,7 +382,8 @@ WikiEditor.prototype = {
 	    let extra = [];
 	    data.forEach(macro=>{
 		extra.push({label:macro.label+ ' - macro',
-			    value:'{{macro name=\"' + macro.name+'" entry=\"${entryid}\"}}'});
+			    value:'{{macro name=\"' + macro.name+'\" ' +
+			    (macro.properties??'')+'  entry=\"${entryid}\"}}'});
 		extra.push({label:macro.label+ ' - wiki text',
 			    value:macro.macro});
 	    });

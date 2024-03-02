@@ -721,6 +721,7 @@ public class WikiManager extends RepositoryManager
 		for(WikiMacro macro: macros) {
 		    json.add(JU.map("label",JU.quote(macro.getLabel()),
 				    "name",JU.quote(macro.getName()),
+				    "properties",JU.quote(macro.getProperties()),
 				    "macro",JU.quote(macro.getWikiText())));
 		}
 	    }
@@ -2663,8 +2664,17 @@ public class WikiManager extends RepositoryManager
 	    if(entry==null) return "NULL ENTRY";
 	    String name = getProperty(wikiUtil,props,"name","");
 	    WikiMacro macro = entry.getTypeHandler().getWikiMacro(entry,name);
+	    String text=macro.getWikiText();
+	    if(stringDefined(macro.getProperties())) {
+		Hashtable macroProps = HU.parseHtmlProperties(macro.getProperties());
+		for (Enumeration keys = macroProps.keys(); keys.hasMoreElements(); ) {
+		    String key   = (String) keys.nextElement();
+		    String value =  (String)props.get(key);
+		    text =text.replace("${" + key+"}",value);
+		}
+	    }
 	    if(macro==null) return "Could not find macro:" + name;
-	    return wikifyEntry(request, entry,macro.getWikiText());
+	    return wikifyEntry(request, entry,text);
         } else if (theTag.equals(WIKI_TAG_NAME)) {
             String name = entry==null?"NULL ENTRY":getEntryDisplayName(entry);
             if (getProperty(wikiUtil, props, "link", false)) {
@@ -7692,7 +7702,10 @@ public class WikiManager extends RepositoryManager
 	    if(macros!=null) {
 		for(WikiMacro macro: macros) {
 		    if(fromTypeBuff==null) fromTypeBuff = new StringBuilder();
-		    String tag = "{{macro entry=\"" + entry.getId() +"\" name=\"" + macro.getName()+"\"}}";
+		    String tag = "{{macro entry=\"" + entry.getId() +"\" name=\"" + macro.getName()+"\"";
+		    String props = macro.getProperties();
+		    if(stringDefined(props)) tag+=" " + props;
+		    tag+="}}";
 		    String js = "javascript:WikiUtil.insertTags(" + HU.squote(textAreaId)
 			+ "," + HU.squote(tag) + ",'');";
 		    fromTypeBuff.append(HU.href(js, macro.getLabel()));
