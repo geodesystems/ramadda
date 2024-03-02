@@ -245,7 +245,7 @@ public class MediaTypeHandler extends GenericTypeHandler {
         String height = getHeight(request, entry, props);
         Utils.add(attrs, "width", JU.quote(width), "height", JU.quote(height));
 
-        //      System.err.println("U:" + mediaType+" " + mediaUrl +" " + embed);
+	//	System.err.println("U:" + mediaType+" " + mediaUrl +" " + embed);
         if (mediaType.equalsIgnoreCase(MEDIA_VIMEO)) {
             player = embedVimeo(request, entry, props, sb, attrs, embed,
                                 mediaUrl);
@@ -259,7 +259,6 @@ public class MediaTypeHandler extends GenericTypeHandler {
                                 mediaUrl);
         } else {
             sb.append("Unknown media");
-
             return sb.toString();
         }
         if (player == null) {
@@ -473,8 +472,8 @@ public class MediaTypeHandler extends GenericTypeHandler {
                 }), HU.tag("source", HU.attrs(new String[] { "src", mediaUrl,
                         "type", "video/mp4" })));
                 Utils.add(attrs, "media", JU.quote("media"));
-            } else if (_mediaUrl.endsWith(".mov")
-                       || _path.endsWith(".mov")) {
+            } else if (_mediaUrl.endsWith(".mov") || _path.endsWith(".mov") ||
+		_path.endsWith(".mp4") ||_mediaUrl.endsWith(".mp4")) {
 		/*
 		player = HU.tag("embed", HU.attrs("src",mediaUrl,
 						  "width", width,
