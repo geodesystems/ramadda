@@ -75,9 +75,11 @@ isPathThreshold="property:path_threshold"
 
 
 <wikimacro name="track_hexmap" label="Track Hexmap"
-	   properties="hexmapUnits=kilometers  hexmapCellSide=1">
+	   properties="hexmapUnits=kilometers  hexmapCellSide=1 max=20000">
 <![CDATA[
 {{display_map  
+max="${max}"
+hexmapUnits="${hexmapUnits}"  hexmapCellSide="${hexmapCellSide}"
 convertData="roundDate(round=day);unique(groupFields=identifier,valueField=_date);"
 fillColor=#888
 showBaseLayersSelect=true baseLayerSelectLabel="Select base layer"  defaultMapLayer=google.hybrid
@@ -87,10 +89,8 @@ hexmapEmptyFillColor=transparent
 hexmapEmptyStrokeColor=transparent
 hexmapFillOpacity=0.5
 hexmapStrokeColor=#000 hexmapStrokeWidth=0.2
-hexmapUnits="${hexmapUnits}"  hexmapCellSide="${hexmapCellSide}"
 hexmapUseCount=true hexmapDisplayCount=true
 doHexmap=true 
-max=20000
 showColorTable=true
 colorTableLabel="Count" 
 }} 

@@ -2671,15 +2671,15 @@ public class WikiManager extends RepositoryManager
 		for (Enumeration keys = macroProps.keys(); keys.hasMoreElements(); ) {
 		    String key   = (String) keys.nextElement();
 		    String value =  (String)props.get(key);
+		    if(value==null) {
+			return  makeErrorMessage(request,wikiUtil,props,theTag, "missing attribute in wiki macro:" + key);
+		    }
 		    text =text.replace("${" + key+"}",value);
 		}
 	    }
-	    System.err.println("props:"+ props);
 	    if(entry!=null) {
-		System.err.println("ENTRY:" + text);
 		text = text.replace("#entry=\"${entry}\"","entry="+entry.getId());
 	    }
-	    System.err.println(text);
 	    return wikifyEntry(request, entry,text);
         } else if (theTag.equals(WIKI_TAG_NAME)) {
             String name = entry==null?"NULL ENTRY":getEntryDisplayName(entry);
