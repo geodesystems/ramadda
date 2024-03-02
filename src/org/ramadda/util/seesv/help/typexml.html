@@ -1,0 +1,33 @@
+The -typexml command generates an entry type definition file.
+
+The Type ID should have a type_ prefix, contain no no spaces and be lowercase
+
+The Database columns are one per line where each line is:
+<pre>
+id,label,type,prop1,value1,prop2,value2,...
+e.g.:
+
+#A String value
+some_field,Some Field,string
+
+#An integer value
+some_number,int,Some Integer Column,default=30,showinhtml,false
+
+#A double value
+some_double,double,Some Double number,cansearch,false
+
+#An enumeration. Use \n to escape the commas
+fruit,Fruit,enumeration,values,banana\,apple\,orange
+
+#An enumeration that can also be added new values for
+fruit_plus,Fruit Plus,enumerationplus,values,banana\,apple\,orange
+
+#Use id:label in the values
+sport,Sport,enumeration,values,baseball:Baseball\,football:Football\,hockey:Hockey
+</pre>
+
+The id will be the column identifier in the database so it should be lower case
+
+Press Outputs-Print text output to generate the mytypes.xml file. Download it and copy it to your
+RAMADDA Home/plugins directory and restart your RAMADDA. The types.xml has a default wiki text that
+you can change

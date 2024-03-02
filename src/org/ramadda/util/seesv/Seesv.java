@@ -2991,9 +2991,9 @@ public class Seesv implements SeesvCommands {
 		ARG_LABEL,"CSV File Commands"),
         new Cmd(CMD_TYPE_XML, "Generate the RAMADDA type xml",
 		ARG_LABEL,"Generate type.xml",
-		new Arg("type_id","Type ID, e.g.type_point_mypointdata"),
-		new Arg("type_desc","Type Description"),
-		new Arg("type_columns","List of database columns, one per line<br>e.g:id,label,type,prop,value1,prop2,value1<br>Types can be:<br>string,int,double,enumeration,enumerationplus<br>list,latlon,latlonbox,url,date,datetime<br>If enumeration then define values with escaped commas - \\,:<pre>fruit,Fruit,enumeration,values,banana\\,apple\\,orange</pre>",
+		new Arg("type_id","Type ID, prefix with type_, no spaces, lowercase, e.g.type_point_mypointdata"),
+		new Arg("type_label","Type Label - human readable label"),
+		new Arg("database_columns","List of database columns, one per line<br>e.g:id,label,type,prop,value1,prop2,value1<br>Types can be:<br>string,int,double,enumeration,enumerationplus<br>list,latlon,latlonbox,url,date,datetime<br>If enumeration then define values with escaped commas - \\,:<pre>fruit,Fruit,enumeration,values,banana\\,apple\\,orange</pre>",
 			ATTR_SIZE,"40",ATTR_TYPE,"list",ATTR_ROWS, "6","delimiter",";"))
 	    };
 
@@ -3175,7 +3175,7 @@ public class Seesv implements SeesvCommands {
 	    if(c.category) {
 		if(open) sb.append("</ul><br class=seesv-hide>");
 		open = true;
-		String extra = IO.readContents("/org/ramadda/util/seesvhelp/category_" + Utils.makeID(c.cmd).toLowerCase()+".html",(String) null);
+		String extra = IO.readContents("/org/ramadda/util/seesv/help/category_" + Utils.makeID(c.cmd).toLowerCase()+".html",(String) null);
 		if(header.length()>0) header.append(" | ");
 		header.append("<a href='#" + c.cmd +"'>" + c.cmd+"</a>");
 		sb.append("<div class=seesv-hide><hr>");
@@ -3199,7 +3199,7 @@ public class Seesv implements SeesvCommands {
 		continue;
 	    }
 	    cnt++;
-	    String path = "/org/ramadda/util/seesvhelp/" + c.cmd.replace("-","")+".html";
+	    String path = "/org/ramadda/util/seesv/help/" + c.cmd.replace("-","")+".html";
 	    String extra = IO.readContents(path,(String)null);
 	    if(c.cmd.startsWith(CMD_HELP)) continue;
 	    sb.append("<div class=seesv-item>\n");
@@ -3274,7 +3274,7 @@ public class Seesv implements SeesvCommands {
 	    if(line.startsWith("import:")) {
 		line = line.substring("import:".length()).trim();
 		if(!line.startsWith("/")) {
-		    line = "/org/ramadda/util/seesvhelp/" + line;
+		    line = "/org/ramadda/util/seesv/help/" + line;
 		}
 		String include = IO.readContents(line,(String)null);
 		if(include==null) throw new IllegalArgumentException("Bad import:" + line);
@@ -3285,7 +3285,7 @@ public class Seesv implements SeesvCommands {
 	    if(line.startsWith("data:")) {
 		line = line.substring("data:".length()).trim();
 		if(!line.startsWith("/")) {
-		    line = "/org/ramadda/util/seesvtest/" + line;
+		    line = "/org/ramadda/util/seesv/test/" + line;
 		}
 		String include = IO.readContents(line,(String)null);
 		if(include==null) throw new IllegalArgumentException("Bad import:" + line);
