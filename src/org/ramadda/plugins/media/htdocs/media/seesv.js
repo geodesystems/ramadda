@@ -841,7 +841,7 @@ function  SeesvForm(inputId, entry,params) {
 	    else if(isArgs) filename = "convertargs.txt";
 	    else if(isJson) filename = "results.json";
 	    else if(isXml) filename = "results.xml";
-	    else if(isTypeXml) filename = "types.xml";				    
+	    else if(isTypeXml) filename = "mytypes.xml";				    
 
 
 	    if(args.process)
@@ -1094,7 +1094,9 @@ function  SeesvForm(inputId, entry,params) {
 				    _this.makeHeaderMenu(field+".type","date","date")+ SPACE2 +
 				    _this.makeHeaderMenu(field+".type","url","url")+SPACE2 +
 				    _this.makeHeaderMenu(field+".type","image","image");
+
 				html += '<br>' +
+				    _this.makeHeaderMenu(field+".id",field)+ SPACE2+				    
 				    _this.makeHeaderMenu(field+".label",'{' + field+'}','label')+ SPACE2 +
 				    _this.makeHeaderMenu(field+".unit","unit","unit");
 				html +="<br>" +
@@ -1263,7 +1265,6 @@ function  SeesvForm(inputId, entry,params) {
 		});
 	},
 	addCommand:function(cmd, args, anchor) {
-	    
 	    if(typeof cmd == "string") {
 		cmd = this.commandsMap[cmd];
 	    }
@@ -1321,16 +1322,20 @@ function  SeesvForm(inputId, entry,params) {
 		if(!this.dbInput && cmd.command=="-db" && a.id=="properties") {
 		    this.dbInput = id;
 		}		
-		if(a.rows) {
-		    inner+=HU.formEntryTop(label,
-					   HU.hbox([HU.textarea("",v,["cols", a.columns || "30", "rows",a.rows,ID,id,"size",10]),desc]));		
-		} else if(a.type=="list" || a.type=="columns" || a.type=="rows") {
+		if(a.type=="list" || a.type=="columns" || a.type=="rows") {
 		    let delim = a.delimiter||",";
 		    let lines = v.split(delim);
 		    v = lines.join("\n");
 		    let numRows = a.type=="rows"?3:(a.rows||"3");
  		    inner+=HU.formEntryTop(label,HU.hbox([HU.textarea("",v,["cols", a.size || "30", "rows",numRows,ID,id]),
 				 			  getDesc(a)]));
+		} else	if(a.rows) {
+		    if(a.delimiter) {
+			let lines = Utils.split(v??'',a.delimiter);
+			v=Utils.join(lines,'\n');
+		    }
+		    inner+=HU.formEntryTop(label,
+					   HU.hbox([HU.textarea("",v,["cols", a.columns || a.size || "30", "rows",a.rows,ID,id,"size",10]),desc]));		
 		} else if(a.values || a.type=="enumeration") {
 		    let values
 		    if(a.values) {
