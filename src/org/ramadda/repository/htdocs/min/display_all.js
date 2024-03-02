@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Feb 29 22:52:29 MST 2024";
+var build_date="RAMADDA build date: Fri Mar  1 21:04:09 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -1797,7 +1797,7 @@ function DisplayAnimation(display, enabled,attrs) {
 	    let window = this.display.getProperty("animationWindow");
 	    let step = this.display.getProperty("animationStep", window);
 	    if (window) {
-		this.window = this.getMillis(window);
+		this.window = DataUtils.timeToMillis(window);
 	    } else if(this.steps>0){
 		if(this.useIndex) {
 		    this.window = 1;
@@ -1806,62 +1806,10 @@ function DisplayAnimation(display, enabled,attrs) {
 		}
 	    }
 	    if (step) {
-		this.step = this.getMillis(step);
+		this.step = DataUtils.timeToMillis(step);
 	    } else {
 		this.step = this.window;
 	    }
-	},
-	timeMap: {
-	    century: 1000 * 60 * 60 * 24 * 365 * 100,
-	    centuries: 1000 * 60 * 60 * 24 * 365 * 100,	    
-	    decade: 1000 * 60 * 60 * 24 * 365 * 10,
-	    halfdecade: 1000 * 60 * 60 * 24 * 365 * 5,
-	    year: 1000 * 60 * 60 * 24 * 365 * 1,
-	    years: 1000 * 60 * 60 * 24 * 365 * 1,	    
-	    month: 1000 * 60 * 60 * 24 * 31,
-	    months: 1000 * 60 * 60 * 24 * 31,	    
-	    week: 1000 * 60 * 60 * 24 * 7,
-	    weeks: 1000 * 60 * 60 * 24 * 7,	    
-	    day: 1000 * 60 * 60 * 24 * 1,
-	    days: 1000 * 60 * 60 * 24 * 1,		    	    
-	    hour: 1000 * 60 * 60,
-	    hours: 1000 * 60 * 60,
-	    minute: 1000 * 60,
-	    minutes: 1000 * 60,	    
-	    second: 1000,
-	    seconds: 1000		    
-	},
-	getMillis:function(window) {
-	    window =(""+window).trim();
-	    let cnt = 1;
-	    let unit = "day";
-	    let toks = window.match("^([0-9]+)(.*)");
-	    if(toks) {
-		cnt = +toks[1];
-		unit  = toks[2].trim();
-	    } else {
-		toks = window.match("(^[0-9]+)$");
-		if(toks) {
-		    unit = "minute";
-		    cnt = +toks[1];
-		} else {
-		    unit = window;
-		}
-	    }
-	    let scale = 1;
-	    unit = unit.toLowerCase().trim();
-	    if(this.timeMap[unit]) {
-		scale = this.timeMap[unit];
-	    } else {
-		if(unit.endsWith("s"))
-		    unit = unit.substring(0, unit.length-1);
-		if(this.timeMap[unit]) {
-		    scale = this.timeMap[unit];
-		} else {
-		    console.log("Unknown unit:" + unit);
-		}
-	    }
-	    return  cnt*scale;
 	},
 	getIndex: function() {
 	    return this.frameIndex;
@@ -2169,6 +2117,7 @@ function DisplayAnimation(display, enabled,attrs) {
 	doNext: function() {
 	    let debug = false;
 	    let wasAtEnd = this.atEnd();
+//	    debug=true;
 	    if(debug) console.log("animation.doNext:" + this.mode +" atEnd=" + wasAtEnd);
 
 	    if (this.mode == MODE_SLIDING) {
@@ -16522,6 +16471,60 @@ function CsvUtil() {
 
 
 var DataUtils = {
+    timeMap: {
+	century: 1000 * 60 * 60 * 24 * 365 * 100,
+	centuries: 1000 * 60 * 60 * 24 * 365 * 100,	    
+	decade: 1000 * 60 * 60 * 24 * 365 * 10,
+	halfdecade: 1000 * 60 * 60 * 24 * 365 * 5,
+	year: 1000 * 60 * 60 * 24 * 365 * 1,
+	years: 1000 * 60 * 60 * 24 * 365 * 1,	    
+	month: 1000 * 60 * 60 * 24 * 31,
+	months: 1000 * 60 * 60 * 24 * 31,	    
+	week: 1000 * 60 * 60 * 24 * 7,
+	weeks: 1000 * 60 * 60 * 24 * 7,	    
+	day: 1000 * 60 * 60 * 24 * 1,
+	days: 1000 * 60 * 60 * 24 * 1,		    	    
+	hour: 1000 * 60 * 60,
+	hours: 1000 * 60 * 60,
+	minute: 1000 * 60,
+	minutes: 1000 * 60,	    
+	second: 1000,
+	seconds: 1000		    
+    },
+    //Convert the window to millis - e.g., '5 minutes', '10 days', etc
+    timeToMillis:function(window) {
+	window =(""+window).trim();
+	let cnt = 1;
+	let unit = "day";
+	let toks = window.match("^([0-9]+)(.*)");
+	if(toks) {
+	    cnt = +toks[1];
+	    unit  = toks[2].trim();
+	} else {
+	    toks = window.match("(^[0-9]+)$");
+	    if(toks) {
+		unit = "minute";
+		cnt = +toks[1];
+	    } else {
+		unit = window;
+	    }
+	}
+	let scale = 1;
+	unit = unit.toLowerCase().trim();
+	if(this.timeMap[unit]) {
+	    scale = this.timeMap[unit];
+	} else {
+	    if(unit.endsWith("s"))
+		unit = unit.substring(0, unit.length-1);
+	    if(this.timeMap[unit]) {
+		scale = this.timeMap[unit];
+	    } else {
+		console.log("Unknown unit:" + unit);
+	    }
+	}
+	return  cnt*scale;
+    },
+
     getCsv: function(fields, records,filter) {
 	let csv = "";
 	fields.forEach((f,idx)=>{
@@ -40024,7 +40027,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		strokeWidth: this.getProperty("pathWidth",1)
 	    };
 
-
 	    let fillColor = this.getFillColor();
 	    let fillOpacity =  this.getFillOpacity();
 	    let isPath = this.getIsPath();
@@ -40189,19 +40191,69 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 	    if(isPath && groups) {
+		let pathWindowStrokeColor=this.getProperty('pathWindowStrokeColor');
+		let pathWindowSize = this.getProperty('pathWindowSize',0);
+		let pathWindowTime = this.getProperty('pathWindowTime');
+		let pathWindowTimeMS;
+		if(pathWindowTime)
+		    pathWindowTimeMS = DataUtils.timeToMillis(pathWindowTime);
+		let dots = [];
 		groups.values.forEach(value=>{
 		    let firstRecord = null;
 		    let lastRecord = null;
 		    let secondRecord = null;		    
-		    groups.map[value].forEach(record=>{
+		    let groupRecords=groups.map[value];
+		    let length=groupRecords.length;
+		    let windowStartIndex=-1;
+		    if(pathWindowTime) {
+			let last = groupRecords[groupRecords.length-1];
+			if(last && last.recordTime) {
+			    let endMS = last.recordTime.getTime();
+			    let startMS = endMS-pathWindowTimeMS;
+//			    console.log("START:" + new Date(startMS) +" end:" + new Date(endMS));
+			    for(let idx=groupRecords.length-1;idx>=0;idx--) {
+				let record = groupRecords[idx];
+				if(!record || !record.recordTime) continue;
+				if(record.recordTime.getTime()<startMS) {
+				    break;
+				}
+				windowStartIndex=idx;
+			    }
+//			    console.dir('start index',windowStartIndex);
+			}
+		    } else if(pathWindowSize>0) {
+			windowStartIndex = Math.max(0,length-pathWindowSize);
+		    }
+		    groups.map[value].forEach((record,idx)=>{
 			if(!firstRecord) firstRecord=record;
 			featureCnt++;
 			if(lastRecord) {
-			    pathAttrs.strokeColor = colorBy.getColorFromRecord(record, pathAttrs.strokeColor,true);
-			    let line = this.map.createLine("line-" + featureCnt, "", lastRecord.getLatitude(), lastRecord.getLongitude(), record.getLatitude(),record.getLongitude(),pathAttrs);
-			    featuresToAdd.push(line);
-			    line.record=record;
-			    line.textGetter=textGetter;
+			    let attrs = $.extend({},pathAttrs);
+			    let color=colorBy.getColorFromRecord(record, pathAttrs.strokeColor,true);
+			    attrs.strokeColor = color;
+			    let inWindow  =false;
+			    if(windowStartIndex>=0) {
+				inWindow = idx>=windowStartIndex;
+			    }				
+			    if(pathWindowStrokeColor) {
+				attrs.strokeColor=pathWindowStrokeColor;
+			    }
+
+			    if(!inWindow) {
+				let line = this.map.createLine("line-" + featureCnt, "", lastRecord.getLatitude(), lastRecord.getLongitude(), record.getLatitude(),record.getLongitude(),attrs);
+				featuresToAdd.push(line);
+				line.record=record;
+				line.textGetter=textGetter;
+			    } else {
+				let percent = (idx-windowStartIndex)/(length-windowStartIndex);
+				let dotPoint = {x:record.getLongitude(),y:record.getLatitude()}; 
+				let dotAttrs =   {fillColor:color,
+						  strokeWidth:0,
+						  fillOpacity:Math.max(0.2,percent),
+						  pointRadius:Math.max(2,Math.floor(percent*radius))};
+				let dot = this.map.createPoint("endpoint",dotPoint,dotAttrs, null);
+				dots.push(dot);
+			    }
 			}
 			secondRecord = lastRecord;
 			lastRecord = record;
@@ -40219,6 +40271,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			}
 
 		    });
+		    featuresToAdd.push(...dots);
+
+
 		    if(lastRecord) {
 			let color=  colorBy.getColorFromRecord(lastRecord, pathAttrs.strokeColor);
 			if(secondRecord && this.getShowPathEndPoint(false)) {
