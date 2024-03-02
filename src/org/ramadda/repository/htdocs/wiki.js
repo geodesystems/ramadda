@@ -384,8 +384,10 @@ WikiEditor.prototype = {
 		extra.push({label:macro.label+ ' - macro',
 			    value:'{{macro name=\"' + macro.name+'\" ' +
 			    (macro.properties??'')+'  entry=\"${entryid}\"}}'});
-		extra.push({label:macro.label+ ' - wiki text',
-			    value:macro.macro});
+		let m = macro.macro.trim();
+		let  parts = m.split('#entry="${entry}"');
+		m = parts.join('entry='+entryId);
+		extra.push({label:macro.label+ ' - wiki text', value:m});
 	    });
 	    this.handleEntryLinkInner(entryId, name,pos,isNew,opts,extra);
 	}).fail(data=>{

@@ -2664,7 +2664,8 @@ public class WikiManager extends RepositoryManager
 	    if(entry==null) return "NULL ENTRY";
 	    String name = getProperty(wikiUtil,props,"name","");
 	    WikiMacro macro = entry.getTypeHandler().getWikiMacro(entry,name);
-	    String text=macro.getWikiText();
+	    if(macro==null) return "Could not find macro:" + name;
+	    String text=macro.getWikiText().trim();
 	    if(stringDefined(macro.getProperties())) {
 		Hashtable macroProps = HU.parseHtmlProperties(macro.getProperties());
 		for (Enumeration keys = macroProps.keys(); keys.hasMoreElements(); ) {
@@ -2673,7 +2674,12 @@ public class WikiManager extends RepositoryManager
 		    text =text.replace("${" + key+"}",value);
 		}
 	    }
-	    if(macro==null) return "Could not find macro:" + name;
+	    System.err.println("props:"+ props);
+	    if(entry!=null) {
+		System.err.println("ENTRY:" + text);
+		text = text.replace("#entry=\"${entry}\"","entry="+entry.getId());
+	    }
+	    System.err.println(text);
 	    return wikifyEntry(request, entry,text);
         } else if (theTag.equals(WIKI_TAG_NAME)) {
             String name = entry==null?"NULL ENTRY":getEntryDisplayName(entry);
