@@ -330,7 +330,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	IO.Result result=call(openAIJobManager,new URL(URL_OPENAI_COMPLETION), body,
 		    "Content-Type","application/json",
 		    "Authorization","Bearer " +openAIKey);
-	//	System.err.println(result.getResult());
+	//	System.err.println(result.getHeaders());
 	if(result!=null) {
 	    String remTokens = result.getHeader("x-ratelimit-remaining-tokens");
 	    String remRequests = result.getHeader("x-ratelimit-remaining-requests");	    
@@ -605,6 +605,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	    try {
 		return applyEntryExtractInner(request, entry,llmCorpus);
 	    } catch(Throwable thr) {
+		getSessionManager().addSessionErrorMessage(request,"Error doing LLM extraction:" + entry+" " + thr.getMessage());
 		throw new RuntimeException(thr);
 	    }
 	}
@@ -709,6 +710,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	    }
 	    return true;
 	} catch(Exception exc) {
+	    getSessionManager().addSessionErrorMessage(request,"Error doing LLM extraction:" + entry+" " + exc.getMessage());
 	    getLogManager().logSpecial("LLMManager:Error parsing JSON:" + exc+" json:" + json);
 	    exc.printStackTrace();
 	}
