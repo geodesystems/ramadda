@@ -21,7 +21,6 @@ public class WikiMacro {
 	label = XmlUtil.getAttribute(node,"label",name);
 	properties = XmlUtil.getAttribute(node,"properties","");
 	wikiText = XmlUtil.getChildText(node);
-
     }
 
     public WikiMacro(String name, String wikiText) {
