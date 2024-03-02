@@ -6065,7 +6065,7 @@ public class Seesv implements SeesvCommands {
 	public void setFormat(String fmt, String timezone) {
 	    if(!Utils.stringDefined(fmt)) fmt = DFLT_DATEFORMAT;
 	    sdf = Utils.makeDateFormat(sdfString = fmt);
-	    if(!Utils.stringDefined(timezone)) {
+	    if(Utils.stringDefined(timezone)) {
 		this.timezone = timezone;
 	    }
 	    sdf.setTimeZone(TimeZone.getTimeZone(this.timezone));
