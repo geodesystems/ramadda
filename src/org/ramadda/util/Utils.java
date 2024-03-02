@@ -1449,7 +1449,7 @@ public class Utils extends IO {
 						  String ...timezone) {
         SimpleDateFormat sdf = null;
 	if(format!=null && (format.trim().equals("iso8601") || format.trim().equals("iso"))) {
-	    sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+	    sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 	} else {
 	    sdf = new SimpleDateFormat(format);
 	}
