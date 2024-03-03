@@ -3978,6 +3978,7 @@ label {
 
 .ramadda-license {
     max-width:600px;
+    background:#fff;
 }
 
 .ramadda-licenses-license {
@@ -4190,6 +4191,10 @@ a.ramadda-heading-2-link:visited {
     text-align:center;
 }
 
+.ramadda-acknowledgement {
+    background:#fff;
+    display:inline-block;
+}
 .ramadda-acknowledgement, .ramadda-acknowledgement a {
     text-align: center;
     font-style:italic;
