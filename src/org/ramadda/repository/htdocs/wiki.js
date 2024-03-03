@@ -480,8 +480,7 @@ WikiEditor.prototype = {
 	dialog.find("#" +this.domId("addok")).button().click(()=>{
 	    this.addDialog.remove();
 	    let what=this.lastWhat=menu.val();
-	    if(what && what.startsWith('base64:'))
-		what = window.atob(what.substring(7));
+	    what = Utils.convertText(what);
 	    let text="";
 	    let insert = text=>{
 		if(pos) {
@@ -609,7 +608,8 @@ WikiEditor.prototype = {
     insertTags:function(tagOpen, tagClose, sampleText) {
 	let selText, isSample = false;
 	tagOpen = Utils.decodeText(tagOpen);
-	tagClose = Utils.decodeText(tagClose);    
+	tagClose = Utils.decodeText(tagClose);
+	sampleText = Utils.decodeText(sampleText);    	
 	let sel = this.getEditor().getSelectedText();
         let text = (tagOpen??'') + (sel?sel+'\n':'') + (tagClose??'') + " ";
         let cursor = this.getEditor().getCursorPosition();

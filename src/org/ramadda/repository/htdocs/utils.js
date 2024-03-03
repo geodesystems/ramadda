@@ -645,9 +645,17 @@ var Utils =  {
         return l;
     },    
 
+    convertText:function(s) {
+	if(!s) return s;
+	if(s.startsWith('base64:'))
+	    s = window.atob(s.substring(7));
+	return s;
+    },
+
     decodeText: function(t) {
         if(!t) return null;
         t = String(t);
+	t = Utils.convertText(t);
         return t.replace(/_leftbracket_/g,"[").replace(/_rightbracket_/g,"]").replace(/_dq_/g,"\"\"").replace(/&quote;/gi, '\"').replace(/_quote_/gi, '\"').replace(/_qt_/gi, '\"').replace(/_newline_/gi, '\n').replace(/newline/gi, '\n').replace(/_nl_/g,'\n');
     },
     handleActionResults: function(id,url) {
@@ -1326,7 +1334,9 @@ var Utils =  {
 	}
 	return null;
     },
+
     join: function(l, delimiter, offset) {
+
         if ((typeof offset) == "undefined") offset = 0;
         var s = "";
         for (var i = offset; i < l.length; i++) {
