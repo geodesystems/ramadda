@@ -4340,6 +4340,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 						  fillOpacity:Math.max(0.2,percent),
 						  pointRadius:Math.max(2,Math.floor(percent*radius))};
 				let dot = this.map.createPoint("endpoint",dotPoint,dotAttrs, null);
+				dot.record=record;
+				dot.textGetter = textGetter;
 				dots.push(dot);
 			    }
 			}
