@@ -11,12 +11,18 @@ id=rvcc
 ${imports}
 <style type="text/css">
 :root {--header-height:100px;}
-.ramadda-logo-image {width:80px;}
+.rvcc-logo-image {
+    border-radius:50%;
+    background:#F4B942;
+    opacity:0.6;
+    width:80px;
+}
+
 .breadcrumb-delimiter, .breadCrumb ul li {
 background: url(${root}/icons/arrow_right_white.png) no-repeat 100% center;
 }
 .ramadda-header {
-    background-image: url(${root}/sdn/rvccbg.png);    
+    background-image: url(${root}/sdn/rvccbg2.png);    
     background-repeat: no-repeat;
     background-size: 100% auto;
     padding: 1px;padding-left: 6px;padding-right: 6px;
@@ -59,7 +65,7 @@ ${headfinal}
 <td width="60%" style='position:relative;'>
 <a target=_other href="https://www.rvcchub.org">
   <img title="Go to Rising Voices, Changing Coasts"
-       class="ramadda-logo-image" valign="bottom" src="${htdocs}/sdn/rvcc.png" ></a>
+       class="rvcc-logo-image" valign="bottom" src="${htdocs}/sdn/rvcclogo.png" ></a>
 <div style='position:absolute;top:0px;left:100px;display:inline-block;vertical-align:bottom;'>
 <a href="${root}" style="text-decoration:none;font-size:120%">Rising Voices, Changing Coasts Testbed</a>
 </div>
