@@ -918,6 +918,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'showMarkers',ex:'false',tt: 'Hide the markers'},
 	{p:'acceptEntryMarkers',ex:'true',d:false,tt:'If other maps can add entry markers and boxes'},
 
+
+
 	{label:'Map Highlight'},
 	{p:'showRecordSelection',ex:'false',d:'true'},
 	{p:'highlight',ex:'true',tt:'Show mouse over highlights'},
@@ -993,6 +995,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'labelYOffset',ex:'0'},
 	{p:'labelOutlineColor',ex:'#fff'},
 	{p:'labelOutlineWidth',ex:'0'},
+
 
 
 	{label:'Map Glyphs'},
@@ -4390,7 +4393,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    let didMarker = false;
 	    let times=[new Date()];
+
+
+
+	    //main loop
 	    recordInfos.forEach((recordInfo,idx)=>{
+		if(idx>1000) return;
+
 		featureCnt++;
 		let record = recordInfo.record;
 		let point  = recordInfo;
@@ -4504,7 +4513,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 //			if(idx<5) console.log("%cpt:" + value + " " + theColor,"background:" + theColor);
 		    }
                 }
-//		if(idx<5 || idx>5) return
+
 		
 
 		if(theColor) {
@@ -4708,8 +4717,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			if(haveTooltip) {
 			    props.cursor = 'pointer';
 			}
-
-			mapPoint = this.map.createPoint("pt-" + featureCnt, point, props, null);
+			let propsToUse = props;
+			mapPoint = this.map.createPoint("pt-" + featureCnt, point, propsToUse, null);
 			mapPoint.levelRange = this.pointLevelRange;
 			pointsToAdd.push(mapPoint);
 			this.markers[record.getId()] = mapPoint;
@@ -4883,8 +4892,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         addLabels:function(records, fields) {
 	    let limit = this.getLabelLimit(1000);
 	    if(records.length>limit) return;
-	    
-
+            let labelTemplate = this.getLabelTemplate('${population}');
+	    let labelKeyField;
+	    if(this.getLabelKeyField()) {
+		labelKeyField = this.getFieldById(fields,this.getLabelKeyField());
+	    }
+            if(!labelTemplate && !labelKeyField) return;
+	    let doUniqueLabelPosition=this.getProperty('doUniqueLabelPosition',true);
+	    let labelPositions = {};
 	    let pixelsPerCell = 10;
             let width = this.map.getMap().viewPortDiv.offsetWidth;
             let height = this.map.getMap().viewPortDiv.offsetHeight;
@@ -4895,30 +4910,25 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let cellHeight = (bounds.top-bounds.bottom)/numCellsY;	    
 	    let grid = {};
 	    let doLabelGrid = this.getDoLabelGrid();
-	    //
-            let labelTemplate = this.getLabelTemplate();
-	    let labelKeyField;
-	    if(this.getLabelKeyField()) {
-		labelKeyField = this.getFieldById(fields,this.getLabelKeyField());
-	    }
-            if(!labelTemplate && !labelKeyField) return;
 	    if(labelKeyField) labelTemplate= "${_key}";
 	    labelTemplate = labelTemplate.replace(/_nl_/g,"\n");
+	    let labelStyle = {
+		label : labelTemplate,
+                fontColor: this.getProperty("labelFontColor","#000"),
+                fontSize: this.getProperty("labelFontSize","10pt"),
+                fontFamily: this.getProperty("labelFontFamily","'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"),
+                fontWeight: this.getProperty("labelFontWeight","plain"),
+                labelAlign: this.getProperty("labelAlign","cc"),
+                labelXOffset: this.getProperty("labelXOffset","0"),
+                labelYOffset: this.getProperty("labelYOffset","0"),
+                labelOutlineColor:this.getProperty("labelOutlineColor","#fff"),
+                labelOutlineWidth: this.getProperty("labelOutlineWidth","0"),
+		labelSelect:true,
+	    };
+
 	    if(!this.map.labelLayer) {
 		this.map.labelLayer = MapUtils.createLayerVector("Labels", {
-		    styleMap: MapUtils.createStyleMap({'default':{
-                        label : labelTemplate,
-                        fontColor: this.getProperty("labelFontColor","#000"),
-                        fontSize: this.getProperty("labelFontSize","10pt"),
-                        fontFamily: this.getProperty("labelFontFamily","'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"),
-                        fontWeight: this.getProperty("labelFontWeight","plain"),
-                        labelAlign: this.getProperty("labelAlign","lb"),
-                        labelXOffset: this.getProperty("labelXOffset","0"),
-                        labelYOffset: this.getProperty("labelYOffset","0"),
-                        labelOutlineColor:this.getProperty("labelOutlineColor","#fff"),
-                        labelOutlineWidth: this.getProperty("labelOutlineWidth","0"),
-			labelSelect:true,
-		    }}),
+		    styleMap: MapUtils.createStyleMap({'default':labelStyle}),
                 });
 		this.map.addVectorLayer(this.map.labelLayer, true);
                 this.map.labelLayer.setZIndex(100);
@@ -4945,23 +4955,29 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
             for (let i = 0; i < records.length; i++) {
 		let record = records[i];
-                let point = record.point;
-		//For now just set the lat/lon
-		let indexX = Math.floor((record.getLongitude()-bounds.left)/cellWidth);
-		let indexY = Math.floor((record.getLatitude()-bounds.bottom)/cellHeight);		
-//		if(i<10)   console.log(record.getLongitude() +" " + record.getLatitude() +" " + indexX +" " + indexY);
+		let lat = record.getLatitude();
+		let lon = record.getLongitude();		
+		if(doUniqueLabelPosition) {
+		    let key = lat+'_'+ lon;
+		    if(labelPositions[key]) {
+			continue;
+		    }
+		    labelPositions[key]=true;
+		}
+
 		if(doLabelGrid) {
+		    let indexX = Math.floor((lon-bounds.left)/cellWidth);
+		    let indexY = Math.floor((lat-bounds.bottom)/cellHeight);		
 		    let key = indexX +"_"+ indexY;
 		    if(grid[key]) continue;
 		    grid[key] = true;
 		}
-		point = {x:record.getLongitude(),y:record.getLatitude()};
+		let point = {x:record.getLongitude(),y:record.getLatitude()};
                 let center = MapUtils.createPoint(point.x, point.y);
                 center.transform(this.map.displayProjection, this.map.sourceProjection);
                 let pointFeature = MapUtils.createVector(center);
                 pointFeature.noSelect = true;
-                pointFeature.attributes = {
-                };
+                pointFeature.attributes = {};
                 pointFeature.attributes[RECORD_INDEX] = (i+1);
                 pointFeature.attributes["recordIndex"] = (i+1)+"";
 		if(labelKeyField) {
@@ -4975,7 +4991,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 }
 		for (let fieldIdx = 0;fieldIdx < fields.length; fieldIdx++) {
 		    let field = fields[fieldIdx];
-		    pointFeature.attributes[field.getId()] = field.getValue(record);
+		    let value = field.getValue(record);
+		    if(typeof value == 'number') value = this.formatNumber(value);
+		    pointFeature.attributes[field.getId()] = value;
 		    if(colorBy && field.getId() == colorBy) {
 			pointFeature.attributes["colorBy"] = field.getValue(record);
 		    }
