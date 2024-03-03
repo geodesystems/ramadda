@@ -685,7 +685,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
     public Object getWikiProperty(Entry entry, String id)  {
-	return  entry.getValue(id);
+	return  entry.getValue(id,true);
     }
 
     public void getWikiTags(List<String[]> tags, Entry entry) {
@@ -696,7 +696,19 @@ public class TypeHandler extends RepositoryManager {
 
 
     public List<WikiMacro>getWikiMacros() {
-	return wikiMacros;
+	List<WikiMacro> macros=null;
+	if(parent!=null) {
+	    macros = parent.getWikiMacros();
+	}
+	if(wikiMacros!=null) {
+	    if(macros!=null)
+		macros.addAll(wikiMacros);
+	    else
+		macros = wikiMacros;
+	}
+	if(macros!=null)
+	    return new ArrayList<WikiMacro>(macros);
+	return null;
     }
 
     public WikiMacro getWikiMacro(Entry entry, String name) {
