@@ -7712,10 +7712,13 @@ public class WikiManager extends RepositoryManager
 		    String props = macro.getProperties();
 		    if(stringDefined(props)) tag+=" " + props;
 		    tag+="}}";
+		    tag =  Utils.encodeBase64(tag,true);
 		    String js = "javascript:WikiUtil.insertTags(" + HU.squote(textAreaId)
 			+ "," + HU.squote(tag) + ",'');";
-		    fromTypeBuff.append(HU.href(js, macro.getLabel()));
-		    fromTypeBuff.append("<br>");
+		    HU.div(fromTypeBuff,HU.href(js, macro.getLabel()+" - macro"),"");
+		    js = "javascript:WikiUtil.insertTags(" + HU.squote(textAreaId)
+			+ "," + HU.squote(Utils.encodeBase64(macro.getWikiText(),true)) + ",'');";
+		    HU.div(fromTypeBuff,HU.href(js, macro.getLabel()+" - text"),"");
 		}
 	    }
 
@@ -8540,8 +8543,9 @@ public class WikiManager extends RepositoryManager
 	    Object key   = keys.nextElement();
 	    Object value = props.get(key);
 	    if(value!=null && value.toString().startsWith("property:")) {
-		Object o = entry.getTypeHandler().getWikiProperty(entry,value.toString().substring("property:".length()));
-		if(o==null) o="Could not find property:" + key;
+		String prop =value.toString().substring("property:".length());
+		Object o = entry.getTypeHandler().getWikiProperty(entry,prop);
+		if(o==null) o="Could not find property:" + prop;
 		props.put(key,o.toString());
 	    }
 	}
