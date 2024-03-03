@@ -2149,8 +2149,14 @@ public class Utils extends IO {
      * @return _more_
      */
     public static String encodeBase64(String s) {
-        try {
-            return encodeBase64Bytes(s.getBytes("UTF-8"));
+	return encodeBase64(s,false);
+    }	
+
+    public static String encodeBase64(String s,boolean addPrefix) {	
+	try {
+	    s =  encodeBase64Bytes(s.getBytes("UTF-8"));
+	    if(addPrefix) return "base64:" + s;
+	    return s;
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
