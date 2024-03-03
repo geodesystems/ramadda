@@ -556,6 +556,9 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     public IO.Path getPathForRecordEntry(Request request,Entry entry,  Hashtable requestProperties)
 	throws Exception {
         String thePath = getPathForEntry(request, entry,true);
+	if(!stringDefined(thePath)) {
+	    throw new IllegalArgumentException("No file specified:" + entry.getName());
+	}
         thePath  = convertPath(entry, thePath, requestProperties);
 	thePath = getRepository().applyPropertyMacros(thePath);
 	IO.Path path = new IO.Path(thePath);
