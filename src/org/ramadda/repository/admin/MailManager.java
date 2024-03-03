@@ -100,12 +100,13 @@ public class MailManager extends RepositoryManager {
                     PROP_ADMIN_EMAIL,
                     formPropValue(request, PROP_ADMIN_EMAIL, ""),
                     HU.SIZE_40)));
+	HU.formEntry(sb,msg("For sending password reset messages")+HU.pre("Define the user and password in a .properties file:\nramadda.admin.smtp.user=\nramadda.admin.smtp.password="));
         sb.append(
             HU.formEntry(
                 msgLabel("Mail Server"), HU.input(
                     PROP_ADMIN_SMTP,
-		    formPropValue(request, PROP_ADMIN_SMTP, ""), HU.SIZE_40) + " "
-                            + msg("For sending password reset messages")));
+		    formPropValue(request, PROP_ADMIN_SMTP, ""), HU.SIZE_40)));
+
     }
 
     /**
