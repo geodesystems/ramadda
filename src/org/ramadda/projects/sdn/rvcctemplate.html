@@ -16,8 +16,10 @@ ${imports}
 background: url(${root}/icons/arrow_right_white.png) no-repeat 100% center;
 }
 .ramadda-header {
-background-image: url(${root}/sdn/rvccbg.png);    
-padding: 1px;padding-left: 6px;padding-right: 6px;
+    background-image: url(${root}/sdn/rvccbg.png);    
+    background-repeat: no-repeat;
+    background-size: 100% auto;
+    padding: 1px;padding-left: 6px;padding-right: 6px;
 }
 .ramadda-footer {
     background-image: url(${root}/sdn/rvccfull.png);    
@@ -25,15 +27,17 @@ padding: 1px;padding-left: 6px;padding-right: 6px;
     background-size: 100% auto;
 }
 .ramadda-header a, .ramadda-breadcrumbs-list a {
-    color:white !important;
+    color:#F4B942 !important;
 }
+.ramadda-user-menu i {
+    color:#aaa !important;
+}
+
 .ramadda-user-menu {
     background:#A9C6DD;
     background:transparent;
 }
-.ramadda-user-menu i {
-    color:white !important;
-}
+
 
 img.ramadda-user-menu-image {
     border:1px solid #ccc;
@@ -52,12 +56,12 @@ ${headfinal}
 <div class="ramadda-header">
 <table border="0" width="100%" cellspacing="0" cellpadding="0">
 <tr valign="bottom">
-<td width="40%">
+<td width="60%" style='position:relative;'>
 <a target=_other href="https://www.rvcchub.org">
   <img title="Go to Rising Voices, Changing Coasts"
        class="ramadda-logo-image" valign="bottom" src="${htdocs}/sdn/rvcc.png" ></a>
-<div style='display:inline-block;vertical-align:bottom;'>
-<a href="${root}" style="text-decoration:none;font-size:120%">RVCC Testbed</a>
+<div style='position:absolute;top:0px;left:100px;display:inline-block;vertical-align:bottom;'>
+<a href="${root}" style="text-decoration:none;font-size:120%">Rising Voices, Changing Coasts Testbed</a>
 </div>
 </td>
 <td style="position:relative;" align="right"><div style="position:absolute;top:5px;right:5px;">${links}</div></td></tr></table>
