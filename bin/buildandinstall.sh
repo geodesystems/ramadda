@@ -4,9 +4,6 @@ MYDIR=`dirname $0`
 #This is used for building and restarting RAMADDA on geodesystems.com
 #This assumes the directory structure:
 
-echo "********** TEST ******"
-exit
-
 
 
 
