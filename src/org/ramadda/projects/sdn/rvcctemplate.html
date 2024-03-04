@@ -19,23 +19,25 @@ ${imports}
 }
 
 .breadcrumb-delimiter, .breadCrumb ul li {
-background: url(${root}/icons/arrow_right_white.png) no-repeat 100% center;
+background: url(${htdocs}/icons/arrow_right_white.png) no-repeat 100% center;
 }
 .ramadda-header {
     border-bottom: 1px solid #666;
-    background-image: url(${root}/sdn/rvccbg2.png);    
+    background-image: url(${htdocs}/sdn/rvccbg2.png);    
     background-repeat: no-repeat;
     background-size: 100% 100%;
     padding: 1px;padding-left: 6px;padding-right: 6px;
 }
 .ramadda-footer {
-    background-image: url(${root}/sdn/rvccfull.png);    
+    background-image: url(${htdocs}/sdn/rvccfull.png);    
     background-repeat: no-repeat;
     background-size: 100% auto;
 }
 .ramadda-header a, .ramadda-breadcrumbs-list a {
     color:#F4B942 !important;
-
+}
+.rvcc-color {
+    color:#F4B942 !important;
 }
 .ramadda-user-menu i {
     color:#aaa !important;
@@ -82,6 +84,10 @@ ${content}
 </div> 
 <div class="ramadda-footer">
 ${footer}
+<center class=rvcc-color style="font-weight:bold;">
+Coastlines and People Hubs for Research and Broadening Participation (CoPe) program, NSF award number 2103843
+</center>
+<br>
 ${footer.acknowledgement}
 </div>
 ${bottom}
