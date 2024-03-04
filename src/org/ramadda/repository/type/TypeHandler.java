@@ -712,8 +712,12 @@ public class TypeHandler extends RepositoryManager {
     }
 
     public WikiMacro getWikiMacro(Entry entry, String name) {
-	if(wikiMacrosMap==null) return null;
-	return wikiMacrosMap.get(name);
+	WikiMacro macro = null;
+	if(wikiMacrosMap!=null) 
+	    macro  = wikiMacrosMap.get(name);
+	if(macro!=null) return macro;
+	if(this.parent!=null) return this.parent.getWikiMacro(entry, name);
+	return null;
     }
 
 
