@@ -181,8 +181,8 @@ ${charts}
 +col-md-4
 <center>
 </center>
-:center <i>Displays the model grid point</i><br>
 {{display_map height="400px" showTitle="false" showMenu="false" justOneMarker=true}}
+:center <i>Displays the model grid point</i>
 :p
 {{display_text showTitle="false" showMenu="false" labelWidth="100px"}}
 -col
