@@ -1439,6 +1439,18 @@ public class Utils extends IO {
         return makeDateFormat(format, "UTC");
     }
 
+    public static String convertDateFormat(String format) {
+	if(format==null) return null;
+	format = format.trim();
+	if(format.equals("iso8601") || format.equals("iso")) {
+	    format= "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+	} else if(format.equals("isoshort")) {
+	    format= "yyyy-MM-dd'T'HH:mm:ss";
+	}
+	return format;
+    }
+
+
     /**
      *
      * @param format _more_
@@ -1447,16 +1459,11 @@ public class Utils extends IO {
      */
     public static SimpleDateFormat makeDateFormat(String format,
 						  String ...timezone) {
-        SimpleDateFormat sdf = null;
-	if(format!=null && (format.trim().equals("iso8601") || format.trim().equals("iso"))) {
-	    sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-	} else {
-	    sdf = new SimpleDateFormat(format);
-	}
+	format = convertDateFormat(format);
+        SimpleDateFormat sdf =  new SimpleDateFormat(format);
         if (timezone.length>0) {
             sdf.setTimeZone(TimeZone.getTimeZone(timezone[0]));
         }
-
         return sdf;
     }
 
