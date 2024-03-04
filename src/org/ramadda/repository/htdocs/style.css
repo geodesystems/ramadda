@@ -283,7 +283,7 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
 }
 
 .fancybox-caption__body a {
-    text-decoration:underline;
+    text-decoration:underline !important;    
 }
 
 .ramadda-dialog {
