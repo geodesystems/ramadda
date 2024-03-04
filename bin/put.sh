@@ -24,20 +24,25 @@ do
 	    shift
 	    ;;
 	*)
-	    SOURCE=$arg
+	    if [ -n "$SOURCE" ]; then
+		DEST="$arg"
+	    else
+		SOURCE=$arg
+	    fi
 	    shift
 	    ;;
 	esac
 done
 
 
-echo "scping $SOURCE to $USER@$IP"
+
+echo "scping $SOURCE to $USER@$IP $DEST"
 
 if [ -n "$PEM" ]; then
     if [ -z "$DEST" ]; then
 	scp -r -i $PEM "$SOURCE" ${USER}@${IP}:
     else
-	scp -r -i $PEM "$SOURCE" ${USER}@${IP}:$DEST
+	scp -r -i $PEM "$SOURCE" "${USER}@${IP}:$DEST"
     fi
 else
     if [ -z "$DEST" ]; then
