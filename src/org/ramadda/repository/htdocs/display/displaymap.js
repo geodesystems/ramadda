@@ -592,12 +592,10 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                 this.lastWidth = this.jq(ID_MAP).width();
             }
 	    this.initMap(this.map);
-
             if (this.doDisplayMap()) {
                 this.map.setDefaultCanSelect(false);
             }
             this.map.initMap(false);
-
 	    let hasLoc = Utils.isDefined(this.getZoomLevel())   ||
 		Utils.isDefined(this.getMapCenter()) ||
 		this.hadInitialPosition;
@@ -620,6 +618,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 			this.setInitMapBounds(parseFloat(toks[0]), parseFloat(toks[1]), parseFloat(toks[2]), parseFloat(toks[3]));
                 }
             }
+
 
 	    
 	    if(this.getProperty("annotationLayer")) {
@@ -647,6 +646,8 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		if(!Utils.stringDefined(this.getProperty('extraLayer'+i))) break;
 		extras.push(this.getProperty('extraLayer'+i));    
 	    }
+
+
 //extraLayers="baselayer:nexrad,geojson:US States:resources/usmap.json:fillColor:transparent"
 	    extras.forEach(tuple=>{
 		if(tuple.trim().length==0) return;
@@ -3034,6 +3035,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.getShowTableOfContents(false)) {
 		this.makeToc(records);
 	    }
+
 	    if(!this.updatingFromClip) {
 		//stop the flash
 		if(args.source!="animation") {
@@ -3063,6 +3065,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    console.log(exc.stack);
 		    this.setMessage("Error:" + exc);
 		}
+
 	    this.notifyExternalDisplay();
 
 	    this.setIsFinished();
@@ -3155,6 +3158,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let t2= new Date();
 //	    debug = true;
 	    if(debug) console.log("displaymap calling addPoints");
+
+
 
 
             this.addPoints(records,fields,points,pointBounds,debug);
@@ -4395,7 +4400,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let times=[new Date()];
 
 
-
 	    //main loop
 	    recordInfos.forEach((recordInfo,idx)=>{
 		if(idx>1000) return;
@@ -4409,6 +4413,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		} else {
 		    if(!Utils.isDefined(point.x) || !Utils.isDefined(point.y)) return;
 		}
+
 
 		if(justOneMarker) {
 		    debug = false;
@@ -4892,7 +4897,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         addLabels:function(records, fields) {
 	    let limit = this.getLabelLimit(1000);
 	    if(records.length>limit) return;
-            let labelTemplate = this.getLabelTemplate('${population}');
+            let labelTemplate = this.getLabelTemplate();
 	    let labelKeyField;
 	    if(this.getLabelKeyField()) {
 		labelKeyField = this.getFieldById(fields,this.getLabelKeyField());
