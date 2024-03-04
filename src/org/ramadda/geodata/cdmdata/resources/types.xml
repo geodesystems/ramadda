@@ -145,7 +145,7 @@
 <![CDATA[
 Add a URL from a THREDDS NetCDF Subset Service:
 +callout-info
-* Go to the Subset Service page, e.g. <a target=_other href="https://thredds.ucar.edu/thredds/ncss/grid/grib/NCEP/GFS/CONUS_20km/Best/pointDataset.html">GFS CONUS 20km</a>
+* Go to the Subset Service page, e.g. <a target=_other href="https://thredds.ucar.edu/thredds/ncss/grid/grib/NCEP/GFS/Global_0p5deg/Best/pointDataset.html">GFS Global 0.5 degree</a>
 * Select your parameters
 * Note: Only pick the 2D paramaters, not the ones with altitude
 * At the bottom of the page copy the NCSS request URL
