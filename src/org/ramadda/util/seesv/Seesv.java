@@ -702,7 +702,7 @@ public class Seesv implements SeesvCommands {
                 return;
             }
             if (arg.equals(CMD_HELP)) {
-                usage("", true,null);
+                usage("", !interactive,null);
                 return;
             }
             if (arg.equals("-helpraw")) {
@@ -2583,11 +2583,11 @@ public class Seesv implements SeesvCommands {
         new Category("Dates"),
         new Cmd(CMD_INDATEFORMAT, "Specify date format for parsing",
 		ARG_LABEL,"Input Date Format",
-                new Arg("format", "e.g. yyyy-MM-dd HH:mm:ss"),
+                new Arg("format", "e.g. yyyy-MM-dd HH:mm:ss. <a target=_help href=https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html>Help</a>"),
 		new Arg("timezone", "")),
         new Cmd(CMD_OUTDATEFORMAT, "Specify date format for formatting",
 		ARG_LABEL,"Output Date Format",
-                new Arg("format", "e.g. yyyy-MM-dd HH:mm:ss"),
+                new Arg("format", "e.g. yyyy-MM-dd HH:mm:ss. <a target=_help href=https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html>Help</a>"),
 		new Arg("timezone", "")),		
 
         new Cmd(CMD_CONVERTDATE, "Convert date", 
@@ -3041,6 +3041,7 @@ public class Seesv implements SeesvCommands {
         int     cnt             = 0;
         String  pad             = "    ";
         boolean matchedCategory = false;
+
 	for (Cmd c : commands) {
 	    String cmd = c.getLine(format,format);
             if (match != null) {
