@@ -280,6 +280,7 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
 
 .fancybox-caption__body {
     font-size:16pt;
+    text-decoration:underline;
 }
 
 .ramadda-dialog {
