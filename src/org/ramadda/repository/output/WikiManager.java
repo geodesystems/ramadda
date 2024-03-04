@@ -5161,7 +5161,7 @@ public class WikiManager extends RepositoryManager
 	String guid = Utils.getGuid().replaceAll("-","_");
 	StringBuilder js = new StringBuilder();
 	String var = "entries_" + guid;
-	js.append("let " + var +"=");
+	js.append("var " + var +"=");
 	request.put("includeproperties","false");
 	request.put("includedescription","false");
 	request.put("includeservices","false");	    
@@ -5377,19 +5377,10 @@ public class WikiManager extends RepositoryManager
 	throws Exception {
 
         boolean hideIfNoLocations = getProperty(wikiUtil, props, "hideIfNoLocations",false);
-
         String  width      = getProperty(wikiUtil, props, ATTR_WIDTH, "");
         String  height     = getProperty(wikiUtil, props, ATTR_HEIGHT, "300");
         boolean justPoints = getProperty(wikiUtil, props, "justpoints",
                                          false);
-        boolean listEntries = getProperty(wikiUtil, props, ATTR_LISTENTRIES,
-					  getProperty(wikiUtil, props, "listentries", false));
-        boolean showCheckbox = getProperty(wikiUtil, props, "showCheckbox",
-                                           false);
-        boolean showSearch = getProperty(wikiUtil, props, "showSearch",
-                                         false);
-        boolean checkboxOn = getProperty(wikiUtil, props, "checkboxOn", true);
-
         List<Entry> children;
         if (theTag.equals(WIKI_TAG_MAPENTRY)) {
             children = new ArrayList<Entry>();
@@ -5568,24 +5559,25 @@ public class WikiManager extends RepositoryManager
         }
         String text = child.getTypeHandler().getEntryText(child);
 	if(text!=null) {
+
 	    snippet = StringUtil.findPattern(text, "(?s)<snippet>(.*)</snippet>");
 	    if (snippet == null) {
 		snippet = StringUtil.findPattern(text, "(?s)<snippet-hide>(.*)</snippet-hide>");
-		if (snippet == null) {
-		    snippet = StringUtil.findPattern(text, "(?s)\\+snippet(.*?)-snippet");
-		}
-		if (snippet == null) {
-		    //Only get the first 400 characters so we just get the notes at the start of the text
-		    if(text.length()>400) text=text.substring(0,399);
-		    snippet = StringUtil.findPattern(text, "(?s)\\+note\\s*(.*?)-note");
-		}		
-		//Now check for embedded tags
-		if(snippet!=null && snippet.indexOf("{{")>=0) snippet = null;
+	    }
+	    if (snippet == null) {
+		snippet = StringUtil.findPattern(text, "(?s)\\+snippet(.*?)-snippet");
+	    }
+	    if (snippet == null) {
+		//Only get the first 400 characters so we just get the notes at the start of the text
+		if(text.length()>400) text=text.substring(0,399);
+		snippet = StringUtil.findPattern(text, "(?s)\\+note\\s*(.*?)-note");
 		if (snippet == null) {
 		    snippet = StringUtil.findPattern(text, "(?s)\\+callout-info\\s*(.*?)-callout");
 		}		
 		//Now check for embedded tags
-		if(snippet!=null && snippet.indexOf("{{")>=0) snippet = null;
+		if(snippet!=null && snippet.indexOf("{{")>=0) {
+		    snippet = null;
+		}
 	    }
 	}
         child.setSnippet(snippet);

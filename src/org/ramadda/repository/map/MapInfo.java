@@ -1257,8 +1257,6 @@ public class MapInfo {
     public void addMarker(Request request, Entry entry, boolean useThumbnail)
             throws Exception {
         String icon = repository.getPageHandler().getIconUrl(request, entry);
-
-
         if (useThumbnail) {
             List<String> urls = new ArrayList<String>();
             repository.getMetadataManager().getThumbnailUrls(request, entry,

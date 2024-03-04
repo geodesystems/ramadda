@@ -1072,7 +1072,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
      * @throws Exception _more_
      */
     private void layoutMap(Request request, Appendable sb, MapInfo map,Hashtable props,
-                           boolean showList,  int numEntries,
+                           boolean showList,   int numEntries,
                            String height,
                            List<String> categories,
                            Hashtable<String, StringBuilder> catMap,
@@ -1196,9 +1196,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
      */
     public String makeInfoBubble(Request request, Entry entry)
 	throws Exception {
+        String fromEntry = entry.getTypeHandler().getMapInfoBubble(request,  entry);
 
-        String fromEntry = entry.getTypeHandler().getMapInfoBubble(request,
-								   entry);
         if (fromEntry != null) {
             //If its not json then wikify it
             if ( !fromEntry.startsWith("{")) {
@@ -1292,6 +1291,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
         String bubble = entry.getTypeHandler().getBubbleTemplate(request,
 								 entry);
+
         /*
 	  if(bubble == null) {
 	  bubble = ":heading {{link}}\n";
@@ -1316,12 +1316,14 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         String wikiTemplate = null;
         //            getRepository().getHtmlOutputHandler().getWikiText(request,   entry);
 
+
         String description = entry.getDescription();
         if (TypeHandler.isWikiText(description)) {
             wikiTemplate = description;
         }
 
-        if (wikiTemplate != null) {
+
+        if (false && wikiTemplate != null) {
             String wiki = getWikiManager().wikifyEntry(
 						       request, entry, wikiTemplate, true, 
 						       Utils.makeHashSet(
@@ -1335,6 +1337,9 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 				    getPageHandler().getEntryHref(
 								  request, entry,
 								  entry.getTypeHandler().getEntryName(entry)));
+
+	    String snippet =  getWikiManager().getSnippet(request, entry, true,null);
+	    if(snippet!=null) info.append(snippet);
 
             info.append("<table class=\"formtable\">");
             info.append(entry.getTypeHandler().getInnerEntryContent(entry,
@@ -1387,6 +1392,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 						Utils.getProperty(props,"listentries",
 								  false));
 
+
+        boolean linkEntries = Utils.getProperty(props, "linkEntries",false);
         boolean cbx = Utils.getProperty(props, "showCheckbox", false);
         boolean searchMarkers = Utils.getProperty(props, "showMarkersSearch",
 						  false);
@@ -1593,14 +1600,15 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                 catSB.append(HU.checkbox("tmp", "true", cbxOn,
 						HU.id(cbxId)) + HU.space(2));
             }
-            catSB.append(
-			 HU.href(
-					getEntryManager().getEntryURL(request, entry),
-					entryIconImage));
+	    String entryUrl = getEntryManager().getEntryURL(request, entry);
+            catSB.append(HU.href(entryUrl,entryIconImage));
             catSB.append("&nbsp;");
             String label = getEntryDisplayName(entry);
-            catSB.append(HU.span(label,HU.attrs("onclick",navUrl,"class","ramadda-clickable",
-						HU.ATTR_TITLE,  label+HU.NL+"Shift-click to zoom")));
+	    if(linkEntries)
+		catSB.append(HU.href(entryUrl,label));
+	    else
+		catSB.append(HU.span(label,HU.attrs("onclick",navUrl,"class","ramadda-clickable",
+						    HU.ATTR_TITLE,  label+HU.NL+"Shift-click to zoom")));
             catSB.append(HU.close(HU.TAG_DIV));
             numEntries++;
         }
@@ -1774,7 +1782,6 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         if ( !showBounds) {
             makeRectangles = false;
         }
-
 
 
         for (Entry entry : entriesToUse) {
