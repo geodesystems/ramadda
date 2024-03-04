@@ -4,6 +4,11 @@ MYDIR=`dirname $0`
 #This is used for building and restarting RAMADDA on geodesystems.com
 #This assumes the directory structure:
 
+echo "********** TEST ******"
+exit
+
+
+
 
 export RAMADDA_BASE=/mnt/ramadda
 export ANT_OPTS="-Xmx1000m"
@@ -42,10 +47,6 @@ SOURCE=${BASEDIR}/source/ramadda
 RAMADDA_BIN=${BASEDIR}/source/ramadda/bin
 RAMADDA_HOME=${BASEDIR}/repository
 SERVER_DIR=${RUNTIME_DIR}/ramaddaserver
-
-echo "Doing the dev release"
-sh ${RAMADDA_BIN}/devrelease.sh
-exit
 
 
 DIST=${SOURCE}/dist
