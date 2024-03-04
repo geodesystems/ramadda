@@ -14,7 +14,8 @@
     <property name="record.properties">
 <!-- Change the below properties to suit your file -->
 <![CDATA[
-skiplines=1
+	 skiplines=1
+	 picky=false
 ]]>
      </property>
 
