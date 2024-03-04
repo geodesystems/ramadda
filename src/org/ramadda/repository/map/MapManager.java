@@ -33,6 +33,7 @@ import org.ramadda.util.JsonUtil;
 import org.ramadda.util.MapProvider;
 import org.ramadda.util.MapRegion;
 import org.ramadda.util.Utils;
+import org.ramadda.util.WikiUtil;
 
 import org.ramadda.util.geo.Address;
 import org.ramadda.util.geo.Bounds;
@@ -1339,16 +1340,18 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 								  entry.getTypeHandler().getEntryName(entry)));
 
 	    String snippet =  getWikiManager().getSnippet(request, entry, true,null);
-	    if(snippet!=null) info.append(snippet);
-
-            info.append("<table class=\"formtable\">");
-            info.append(entry.getTypeHandler().getInnerEntryContent(entry,
+	    if(stringDefined(snippet)) {
+		info.append(getWikiManager().wikifyEntry(request,entry,
+							 WikiUtil.note(snippet)));
+	    } else {
+		info.append("<table class=\"formtable\">");
+		info.append(entry.getTypeHandler().getInnerEntryContent(entry,
 								    request, null, OutputHandler.OUTPUT_HTML, true, false,
 								    false, null));
 
-            List<String> urls = new ArrayList<String>();
-            getMetadataManager().getThumbnailUrls(request, entry, urls);
-
+	    }
+	    List<String> urls = new ArrayList<String>();
+	    getMetadataManager().getThumbnailUrls(request, entry, urls);
             if ( !isImage && (urls.size() > 0)) {
                 info.append("<tr><td colspan=2>"
                             + HU.img(urls.get(0), "", " width=300 ")
