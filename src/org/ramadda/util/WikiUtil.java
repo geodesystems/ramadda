@@ -4487,6 +4487,10 @@ public class WikiUtil implements HtmlUtilsConstants {
         sb.append("\n-note\n");
     }
 
+    public static String note(String note) throws Exception {
+        return "\n+note\n"+note+"\n-note\n";
+    }    
+
     /**
      * _more_
      *
