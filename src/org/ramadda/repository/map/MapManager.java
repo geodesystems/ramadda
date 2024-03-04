@@ -1504,6 +1504,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
 
 
+
         Rectangle2D.Double bounds = null;
         if (viewBounds != null) {
             List<String> toks = Utils.split(viewBounds, ",");
@@ -1563,6 +1564,11 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         int    numEntries   = 0;
 	List<String> markers = new ArrayList<String>();
 	String iconWidth = Utils.getProperty(props,"listIconSize",ICON_WIDTH);
+        String entryIcon = (String) props.get("entryIcon");
+	if(stringDefined(entryIcon)) {
+	    entryIcon = getPageHandler().getIconUrl(entryIcon);
+	}
+
         for (Entry entry : entriesToUse) {
 	    addMapMarkerMetadata(request, entry, markers);
             if ( !(entry.hasLocationDefined() || entry.hasAreaDefined())) {
@@ -1592,7 +1598,12 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 					HU.id("block_" + suffix) + "data-mapid=\""
 					+ mapEntryId(entry) + "\" "
 					+ HU.cssClass(CSS_CLASS_EARTH_NAV)));
-	    String iconUrl = getPageHandler().getIconUrl(request,entry);
+	    String iconUrl;
+	    if(stringDefined(entryIcon)) {
+		iconUrl = entryIcon;
+	    } else {
+		iconUrl = getPageHandler().getIconUrl(request,entry);
+	    }
 	    String entryIconImage = HU.img(iconUrl,"Click to view entry details",HU.attr("width",iconWidth));
 
             String navUrl = "javascript:" + map.getVariableName()
@@ -1705,6 +1716,12 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         boolean showMarkers = Utils.getProperty(props, "showMarkers", true);
         boolean screenBigRects = Misc.getProperty(props, PROP_SCREENBIGRECTS,
 						  false);
+
+        String entryIcon = (String) props.get("entryIcon");
+	if(stringDefined(entryIcon)) {
+	    entryIcon = getPageHandler().getIconUrl(entryIcon);
+	}
+
 
         boolean showCameraDirection = Misc.getProperty(props,
 						       "showCameraDirection", true);
@@ -1850,7 +1867,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 							       false)) {
                         map.addCircle(request, entry);
                     } else {
-                        map.addMarker(request, entry, useThumbnail);
+                        map.addMarker(request, entry, entryIcon,useThumbnail);
                     }
                 }
             }

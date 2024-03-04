@@ -1241,8 +1241,8 @@ public class MapInfo {
      *
      * @throws Exception _more_
      */
-    public void addMarker(Request request, Entry entry) throws Exception {
-        addMarker(request, entry, false);
+    public void addMarker(Request request, Entry entry, String...icon) throws Exception {
+        addMarker(request, entry, icon.length>0?icon[0]:null,false);
     }
 
     /**
@@ -1254,9 +1254,10 @@ public class MapInfo {
      *
      * @throws Exception _more_
      */
-    public void addMarker(Request request, Entry entry, boolean useThumbnail)
+    public void addMarker(Request request, Entry entry, String icon,boolean useThumbnail)
             throws Exception {
-        String icon = repository.getPageHandler().getIconUrl(request, entry);
+	if(!Utils.stringDefined(icon)) 
+	    icon = repository.getPageHandler().getIconUrl(request, entry);
         if (useThumbnail) {
             List<String> urls = new ArrayList<String>();
             repository.getMetadataManager().getThumbnailUrls(request, entry,

@@ -84,6 +84,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
                                         null, ATTR_WIDTH, "100%", ATTR_HEIGHT, "80vh",
 					"listEntries","true",
 					"#linkEntries","set to true directly link to entry in list",
+					"#entryIcon","",
 					"#entriesListInMap","true",
 					"#entriesListHeader",""), 
                             new WikiTag(WIKI_TAG_FRAMES, null, ATTR_WIDTH,"100%", ATTR_HEIGHT,"500","showIcon","true",
