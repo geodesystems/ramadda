@@ -412,9 +412,10 @@ lineWrap=true
 {{display_download layoutHere="true" showMenu="false"}}
 -hbox
 <div id=groupdiv></div>
-{{display_linechart showTitle="false" layoutHere="false" fields="tmax,tmin" vAxisMinValue="-40" vAxisMaxValue="40"}}
-{{display_linechart showTitle="false" layoutHere="false" fields="swe"}}
+{{display_linechart showTitle="false" layoutHere="false" fields="tmax" vAxisMinValue="-40" vAxisMaxValue="40"}}
+{{display_linechart showTitle="false" layoutHere="false" fields="vp"}}
 {{display_barchart showTitle="false" layoutHere="false" fields="precipitation"}}
+
 -col
 +col-md-4
 <center>
