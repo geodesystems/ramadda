@@ -39,8 +39,13 @@ echo "BASE=${BASEDIR}"
 
 RUNTIME_DIR=${BASEDIR}/runtime
 SOURCE=${BASEDIR}/source/ramadda
+RAMADDA_BIN=${BASEDIR}/source/ramadda/bin
 RAMADDA_HOME=${BASEDIR}/repository
 SERVER_DIR=${RUNTIME_DIR}/ramaddaserver
+
+echo "Doing the dev release"
+sh ${RAMADDA_BIN}/devrelease.sh
+exit
 
 
 DIST=${SOURCE}/dist
@@ -82,3 +87,6 @@ sudo service ramadda start
 rm -r ${SERVER_DIR}_BAK
 popd
 
+#And do the dev release
+echo "Doing the dev release"
+sh ${RAMADDA_BIN}/devrelease.sh
