@@ -1230,10 +1230,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                 extra += " " + HU.attr(ATTR_ALT, alt);
             }
             //"slides_image"
-            String image =
-                HU.img(
-			      getRepository().getHtmlOutputHandler().getImageUrl(
-										 request, entry), "", extra);
+            String image = HU.img(getRepository().getHtmlOutputHandler().getImageUrl(
+										     request, entry), "", extra);
             if (request.get(WikiManager.ATTR_LINK, true)) {
                 image = HU.href(
 				       request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
@@ -1337,6 +1335,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 				    info,
 				    getPageHandler().getEntryHref(
 								  request, entry,
+								  HU.getIconImage("fas fa-link","style","font-size:10pt;")+" "+
 								  entry.getTypeHandler().getEntryName(entry)));
 
 	    String snippet =  getWikiManager().getSnippet(request, entry, true,null);
