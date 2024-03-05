@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Mar  4 10:55:21 EST 2024";
+var build_date="RAMADDA build date: Mon Mar  4 20:38:36 EST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -55932,6 +55932,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 			if(!record.isAggregate) {
 			    sv = HU.div([STYLE,maxHeight?HU.css('max-height',maxHeight,'overflow-y','auto'):''],sv);
 			}
+		    } else if(maxHeight) {
+			sv = HU.div([STYLE,HU.css('max-height',maxHeight,'overflow-y','auto')],sv);
 		    }
 		    if(f.getType()=="image") {
 			let url = record.getValue(f.getIndex());
@@ -56015,8 +56017,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		}		
 
 		let rowStyle = '';
-		if(colorRowBy && colorFullRow) {
-		    let color =  colorRowBy.getColorFromRecord(record);
+		if(colorRowBy && colorRowBy.length && colorFullRow) {
+		    let color =  colorRowBy[0].colorBy.getColorFromRecord(record);
 		    if(color)rowStyle+=HU.css('background',color);
 		}
 		if(record.isAggregate)
@@ -56026,8 +56028,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		else
 		    html+=HU.openTag('tr',['style',rowStyle,"aggregateId", aggId,'title','','valign','top','class',clazz, RECORD_ID,record.getId()]);
 				
-		if(colorRowBy && colorFullRow) {
-		    let color =  colorRowBy.getColorFromRecord(record);
+		if(colorRowBy && colorRowBy.length && colorFullRow) {
+		    let color =  colorRowBy[0].colorBy.getColorFromRecord(record);
 		    if(color)rowStyle+=HU.css('background',color);
 		}
 
