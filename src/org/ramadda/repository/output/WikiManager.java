@@ -2617,7 +2617,7 @@ public class WikiManager extends RepositoryManager
 	    String url = license.getUrl();
             if(url!=null) result =  HU.href(url, result, HU.attrs("target","_other","style","text-decoration:none;"));
 
-	    if(getProperty(wikiUtil, props,"showDescription",false) && license.getText()!=null) {
+	    if(getProperty(wikiUtil, props,"showDescription",true) && license.getText()!=null) {
 		result +=HU.div(license.getText(),HU.cssClass("ramadda-license-description"));
 	    }
 
