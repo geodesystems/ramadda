@@ -208,6 +208,7 @@ public class NcssTypeHandler extends PointTypeHandler {
         return "";
     }
 
+    
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
             throws Exception {
@@ -217,17 +218,6 @@ public class NcssTypeHandler extends PointTypeHandler {
     }
 
 
-
-    private void checkLatLon(Request request, Entry entry) {
-	//Do this before initializeNewEntry since that sets the lat/lon from the URL
-        String url = entry.getResource().getPath();
-	if(entry.hasLocationDefined()) {
-	    url = url.replaceAll("latitude=[0-9\\.\\-]+\\&","latitude="+entry.getLatitude()+"&");
-	    url = url.replaceAll("longitude=[0-9\\.\\-]+\\&","longitude="+entry.getLongitude()+"&");
-	    entry.getResource().setPath(url);
-	}
-
-    }
 
     /**
      * _more_
@@ -239,14 +229,13 @@ public class NcssTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public void initializeNewEntry(Request request, Entry entry,
-                                   boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry,  boolean fromImport)
             throws Exception {
         if (fromImport) {
             return;
         }
 
-	checkLatLon(request, entry);
+	if(!checkLatLon(request, entry)) return;
         super.initializeNewEntry(request, entry, fromImport);
         String url = entry.getResource().getPath();
 
@@ -343,6 +332,22 @@ public class NcssTypeHandler extends PointTypeHandler {
         entry.setValue(IDX_PROPERTIES, properties.toString());
     }
 
+
+
+
+
+    private boolean checkLatLon(Request request, Entry entry) {
+	//Do this before initializeNewEntry since that sets the lat/lon from the URL
+        String url = entry.getResource().getPath();
+	if(url.indexOf("${latitude")>0) return false;
+	if(entry.hasLocationDefined()) {
+	    url = url.replaceAll("latitude=[0-9\\.\\-]+\\&","latitude="+entry.getLatitude()+"&");
+	    url = url.replaceAll("longitude=[0-9\\.\\-]+\\&","longitude="+entry.getLongitude()+"&");
+	    entry.getResource().setPath(url);
+	}
+	return true;
+
+    }
 
     /**
      * _more_
