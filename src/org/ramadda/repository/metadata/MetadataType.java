@@ -1270,6 +1270,9 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         if ( !forEdit) {
             //            sb.append(header(msgLabel("Add") + getName()));
         }
+	String clazz = 	"ramadda-metadata-widget ramadda-metadata-widget-"+HU.makeCssClass(id);
+
+
         String lastGroup = null;
         for (MetadataElement element : getChildren()) {
             if (forEdit && (firstValue == null || element.getIsTitle())) {
@@ -1304,10 +1307,11 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                 if (suffixLabel == null) {
                     suffixLabel = "";
                 }
-                sb.append(HU.formEntryTop(elementLbl, "\n" + widget,
+                sb.append(HU.formEntryTop(elementLbl, HU.span(widget,HU.cssClass(clazz)),
                         suffixLabel));
             }
         }
+
 
         sb.append("\n");
         sb.append( HU.formEntry("",
