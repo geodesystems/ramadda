@@ -480,6 +480,8 @@ public class ExtEditor extends RepositoryManager {
             final boolean forReal =
                 request.get(ARG_EXTEDIT_JS_CONFIRM, false);
 	    final String js = request.getString(ARG_EXTEDIT_SOURCE,"");
+	    getSessionManager().putSessionProperty(request,"extedit",js);
+
             final String type = request.getString(ARG_EXTEDIT_TYPE, (String) null);
 	    final boolean thisOne = request.get(ARG_EXTEDIT_THISONE,false);
 	    final boolean anyFile = Misc.equals(TypeHandler.TYPE_ANY, type);
@@ -920,8 +922,10 @@ public class ExtEditor extends RepositoryManager {
 		    "//cancel processing and no changes will be applied\n"+
 		    "ctx.cancel() \n";
 
-		String ex ="//Include any javascript here\n" +
-		    "ctx.print('Processing: ' + entry.getName());\n";
+		String ex =  (String) getSessionManager().getSessionProperty(request,"extedit");
+		if(ex==null)
+		    ex = "//Include any javascript here\n" +
+			"ctx.print('Processing: ' + entry.getName());\n";
 		ex = request.getString(ARG_EXTEDIT_SOURCE, ex);
 		String exclude = "<br>"+HU.b("Exclude entries") +":<br>"+
 		    HU.textArea(ARG_EXTEDIT_EXCLUDE, request.getString(ARG_EXTEDIT_EXCLUDE,""),5,40,HU.attr("placeholder","entry ids, one per line"));
