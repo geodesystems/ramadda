@@ -316,6 +316,10 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
 
 
 
+.ramadda-map-bubble a {
+    text-decoration: underline !important;
+}
+
 .ramadda-map-button {
     padding:2px;
     padding-left:4px;
