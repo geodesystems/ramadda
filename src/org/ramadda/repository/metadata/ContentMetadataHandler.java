@@ -129,7 +129,11 @@ public class ContentMetadataHandler extends MetadataHandler {
     public String[] getHtml(Request request, Entry entry, Metadata metadata)
             throws Exception {
         if (metadata.getType().equals(TYPE_LICENSE)) {
-            String          license    = metadata.getAttr1();
+            String license    = metadata.getAttr1();
+	    String desc = metadata.getAttr2();
+	    String requireId = metadata.getAttr3();
+	    String requireMessage = metadata.getAttr4();
+	    String requireUrl = metadata.getAttr(5);
             MetadataType    type       = getType(metadata.getType());
             MetadataElement element    = type.getChildren().get(0);
             String          label      = element.getLabel(license);
@@ -138,24 +142,22 @@ public class ContentMetadataHandler extends MetadataHandler {
             String contents = getMetadataManager().getLicenseHtml(license,
 								  label,false);
 
-
 	    StringBuilder wiki = new StringBuilder();
 	    wiki.append("{{license license=\"" + license +"\" includeName=true decorate=true ");
-	    String desc = metadata.getAttr2();
 	    wiki.append("showDescription=true ");
 	    if(stringDefined(desc)) {
 		wiki.append("textBefore=\"" + desc.replace("\n","<br>")+"\" ");
 	    }
-	    String requireId = metadata.getAttr3();
 	    if(stringDefined(requireId)) {
-		wiki.append("requireId=\"" + requireId+"\" ");
+		wiki.append("required=\"" + requireId+"\" ");
 	    }
-	    String requireMessage = metadata.getAttr4();
 	    if(stringDefined(requireMessage)) {
 		wiki.append("requireMessage=\"" + requireMessage+"\" ");
-	    }	    
+	    }
+	    if(stringDefined(requireUrl)) {
+		wiki.append("requireRedirect=\"" + requireUrl+"\" ");
+	    }	    	    
 	    wiki.append("}}");
-	    //            return new String[] { "License:&nbsp;", searchLink + " " + contents };
             return new String[] { "License:&nbsp;",getWikiManager().wikifyEntry(request, entry, wiki.toString())};
         }
 
