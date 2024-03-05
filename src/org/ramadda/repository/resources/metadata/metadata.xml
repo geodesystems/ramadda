@@ -61,9 +61,7 @@
     <handler class="org.ramadda.repository.metadata.ContentMetadataHandler"        category="Basic Properties">
       <type name="License" id="content.license" searchable="true" browsable="true" priority="0">
 	<help>
-	  <![CDATA[
-		   More information at <a href="https://spdx.org/licenses/preview/" target=_other>https://spdx.org/licenses/preview/</a>
-]]>
+	  <![CDATA[More information at <a href="https://ramadda.org/repository/licenses" target=_other>https://ramadda.org/repository/licenses</a>]]>
 	</help>
 	<element name="License" datatype="enumerationplus"
 		 values="resource:licenses"/>
