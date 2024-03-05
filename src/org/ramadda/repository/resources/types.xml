@@ -137,7 +137,8 @@ priority="2"       >
 
      <!-- Have these here because these entries can be treated as point entries -->
      <column name="numberofpoints" type="int"  label="Number of points"  showinhtml="false" showinform="false"/>
-     <column name="properties" type="string" size="8000" columns="-1" rows="8"  label="Properties"  showinhtml="false" canlist="false" changetype="true" canexport="false" showinform="false"/>
+     <column name="properties" type="string" size="8000" columns="-1" rows="8"  label="Properties"
+	     showinhtml="false" canlist="false" changetype="true" canexport="false"/>
 
  <!-- IMPORTANT: this name has to be the same as in type_point -->
     <column name="convert_commands" type="clob"  xxxsize="10000" rows="5" columns="60" label="Convert Text"  showinhtml="false" group="Convert"/>
@@ -148,8 +149,8 @@ priority="2"       >
  <type name="point_text_csv"  description="CSV Data"  super="type_convertible"
        category="Data"
        priority="2"
-	handler="org.ramadda.data.docs.ConvertibleTypeHandler" 
-	help="A structured CSV data file"> 
+       handler="org.ramadda.data.docs.ConvertibleTypeHandler" 
+       help="A structured CSV data file"> 
     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
     <property name="record.properties">
       <![CDATA[
