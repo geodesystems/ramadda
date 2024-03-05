@@ -772,6 +772,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	     path.endsWith("java") ||
 	     path.endsWith("js") ||	     	     	     
 	     path.endsWith("doc") ||
+	     path.endsWith("xls") ||
+	     path.endsWith("xlsx") ||	     
 	     path.endsWith("ppt") ||
 	     path.endsWith("html") ||
 	     path.endsWith("pptx") ||	   	   
