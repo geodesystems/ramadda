@@ -170,7 +170,6 @@ public class TextRecord extends DataRecord {
     @Override
     public void initFields(List<RecordField> fields) {
         super.initFields(fields);
-
         tokens  = new String[numDataFields];
         indices = new int[numDataFields];
         int idx = 0;
@@ -364,8 +363,8 @@ public class TextRecord extends DataRecord {
     public ReadStatus read(RecordIO recordIO) throws Exception {
         String line = null;
         if ((tokens != null) && (tokens.length == 0)) {
-            System.err.println("TextRecord.read zero length tokens array");
-            return ReadStatus.EOF;
+	    //            System.err.println("TextRecord.read zero length tokens array");
+	    //            return ReadStatus.EOF;
         }
 
         try {
@@ -386,8 +385,8 @@ public class TextRecord extends DataRecord {
 		}
 
                 if (matchUpColumns && (rawOK == null)) {
-                    List<String> toks = Utils.tokenizeColumns(line,
-                                            tokenizer);
+                    List<String> toks = Utils.tokenizeColumns(line,tokenizer);
+	    
                     toks = ((TextFile) getRecordFile()).processTokens(this,
                             toks, true);
                     rawOK = new boolean[toks.size()];
@@ -429,6 +428,8 @@ public class TextRecord extends DataRecord {
                                         tokenList);
                 toks = ((TextFile) getRecordFile()).processTokens(this, toks,
                         false);
+		if(toks.size()>tokens.length)
+		    tokens=new String[toks.size()];
                 if (bePickyAboutTokens && (toks.size() != tokens.length)) {
                     StringBuilder msg =
                         new StringBuilder("Error processing file: "
@@ -483,9 +484,8 @@ public class TextRecord extends DataRecord {
                     throw new IllegalArgumentException(msg.toString());
                 }
                 int targetIdx = 0;
-
-                for (int i = 0; (i < toks.size()) && (i < tokens.length);
-                        i++) {
+ 
+		for (int i = 0; (i < toks.size()) && (i < tokens.length); i++) {
                     if ((rawOK != null) && !rawOK[i]) {
                         //                        System.err.println(" raw not ok");
                         continue;
@@ -494,6 +494,7 @@ public class TextRecord extends DataRecord {
                 }
             }
 
+	    //	    System.out.println("row:");    for(int i=0;i<tokens.length;i++) {System.out.println("\t" + i + " " + tokens[i]);}
 
             TextFile textFile = (TextFile) getRecordFile();
             String   tok      = null;
