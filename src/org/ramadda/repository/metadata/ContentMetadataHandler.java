@@ -134,6 +134,7 @@ public class ContentMetadataHandler extends MetadataHandler {
 	    String requireId = metadata.getAttr3();
 	    String requireMessage = metadata.getAttr4();
 	    String requireUrl = metadata.getAttr(5);
+	    String logName = metadata.getAttr(6);
             MetadataType    type       = getType(metadata.getType());
             MetadataElement element    = type.getChildren().get(0);
             String          label      = element.getLabel(license);
@@ -156,7 +157,11 @@ public class ContentMetadataHandler extends MetadataHandler {
 	    }
 	    if(stringDefined(requireUrl)) {
 		wiki.append("requireRedirect=\"" + requireUrl+"\" ");
+	    }
+	    if(stringDefined(logName)) {
+		wiki.append("logName=\"" + logName+"\" ");
 	    }	    	    
+	    
 	    wiki.append("}}");
             return new String[] { "License:&nbsp;",getWikiManager().wikifyEntry(request, entry, wiki.toString())};
         }

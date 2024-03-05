@@ -61,14 +61,15 @@
     <handler class="org.ramadda.repository.metadata.ContentMetadataHandler"        category="Basic Properties">
       <type name="License" id="content.license" searchable="true" browsable="true" priority="0">
 	<help>
-	  <![CDATA[More information at <a href="https://ramadda.org/repository/licenses" target=_other>https://ramadda.org/repository/licenses</a>]]>
+	  <![CDATA[More information at <a href="https://ramadda.org/repository/userguide/wiki/licenses.html" target=_other>ramadda.org</a>]]>
 	</help>
 	<element name="License" datatype="enumerationplus"
 		 values="resource:licenses"/>
 	<element name="Description" rows="3" />
-	<element name="Require ID"  />	
+	<element name="Required ID"  />	
 	<element name="Require Message" />
-	<element name="Require URL" />	
+	<element name="Require URL" />
+	<element name="Log Name" datatype="boolean"/>		
       </type>
     </handler>
 

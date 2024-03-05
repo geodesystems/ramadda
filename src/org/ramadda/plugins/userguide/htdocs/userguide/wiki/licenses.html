@@ -48,6 +48,12 @@ To create a custom license:
 * Look for the "License" entry type
 * Specify a name, optional image, description, unique identifier and an optional redirect URL.
 
+This results in a License entry, e.g.:
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/licenseentry.png?version=898"><img  src="images/licenseentry.png?version=898"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/licenseentry.png?version=898" ></a></div></div>
+
+
+
+
 :heading License Tag
 A license is displayed in a wiki page with the "license" tag. The below tag:
 
@@ -88,6 +94,30 @@ required identifier.
 :p
 Setting  logName="true" will prompt the user for their name and email. This will be
 logged by RAMADDA in the file &lt;RAMADDA home&gt/logs/license.log
+:p
+
+This will result in a prompt when a user visits the page that displays the license:
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/licenseprompt.png?version=898"><img  src="images/licenseprompt.png?version=898"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/licenseprompt.png?version=898" ></a></div></div>
+
+
+
+:heading Using the License property
+There is also License Property  type that can be specified and can then be embedded in entry pages.
+To create a License property go to the Entry Add Properties form and, under Basic Properties,
+select "Add License". You need to specify  the License ID and optionally specify a description,
+required ID, message,etc. If inherited is set to true then this License property is applicable
+to all descendant entries.
+  
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/licenseproperty.png?version=898"><img  src="images/licenseproperty.png?version=898"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/licenseproperty.png?version=898" ></a></div></div>
+
+To embed a license property in any wiki page use the properties tag as shown below. The inherited=true specifies to
+use any inherited property. The  message="" states to show blank if there are no license properties.
+Some entry types  (e.g., Cultural Site) have wiki text that embeds the  licenses.
+
+
++pre
+{<dummy>{properties   message="" inherited="true" metadata.types="content.license"}}  
+-pre
 
 :heading Using Footer Property
 You can add a license to a whole tree of entries, even the entire repository. This is done through
@@ -96,6 +126,9 @@ the Footer property:
 * Under Thumbnails, Page Style,  Etc. choose Footer
 * The Footer takes arbitrary wiki text. Add the License tag.
 * Select inherited to apply this footer/license to all children pages
+
+
+
 
 
 </div>
