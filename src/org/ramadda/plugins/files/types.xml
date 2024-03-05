@@ -1,8 +1,13 @@
 <types>
 
-  <type name="type_document_xls"  description="Excel File" pattern="(.*\.xls|.*\.xlsx)"  super="type_document_tabular"   handler="org.ramadda.plugins.files.XlsTypeHandler" priority="10" >
-     <property name="icon" value="/icons/xls.png"/>
-
+  <type name="type_document_xls"  description="Excel File" pattern="(.*\.xls|.*\.xlsx)"  super="type_document_tabular"
+	handler="org.ramadda.plugins.files.XlsTypeHandler" priority="10" >
+    <property name="icon" value="/icons/xls.png"/>
+    <property name="record.properties">
+<![CDATA[
+	 picky=false
+]]>
+</property>
 </type>
 
 <type name="type_document_csv"  description="CSV File" pattern="(.*\.csv)"
