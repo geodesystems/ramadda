@@ -892,11 +892,15 @@ public class ExtEditor extends RepositoryManager {
 		opener.accept("Process with Javascript");
 		closer.accept(form,"Apply Javascript");
 		sb.append(HU.formTable());
-		HU.formEntry(sb, HU.b("Only apply to entries of type")+":"+
-				    HU.select(ARG_EXTEDIT_TYPE, tfos,request.getString(ARG_EXTEDIT_TYPE,null)));
+		HU.formEntry(sb, HU.b("Only apply to entries of type")+": "+
+			     HU.select(ARG_EXTEDIT_TYPE, tfos,request.getString(ARG_EXTEDIT_TYPE,null))
+			     + HU.space(1) +
+			     HU.labeledCheckbox(ARG_EXTEDIT_THISONE, "true",
+						request.get(ARG_EXTEDIT_THISONE,true), "Apply to this entry"));
 
-		HU.formEntry(sb, HU.labeledCheckbox(ARG_EXTEDIT_THISONE, "true",
-					     request.get(ARG_EXTEDIT_THISONE,true), "Apply to this entry"));
+
+		HU.formEntry(sb,HU.labeledCheckbox(ARG_EXTEDIT_JS_CONFIRM, "true",
+						   request.get(ARG_EXTEDIT_JS_CONFIRM,false), "Save changes to entries"));
 
 
 		String eg =   "entry.getName() entry.setName()\n" +
@@ -904,6 +908,7 @@ public class ExtEditor extends RepositoryManager {
 		    "entry.getDescription();  entry.setDescription(String)\n" +
 		    "entry.getStartDate(); entry.getEndDate()\n" +
 		    "entry.setStartDate(String); entry.setEndDate(String)\n" +
+		    "entry.hasLocationDefined(); entry.setLocation(lat,lon);\n"+
 		    "entry.getChildren();\n" +
 		    "entry.isImage(); entry.resizeImage(400); entry.grayscaleImage();\n" +
 		    "entry.makeThumbnail(deleteExisting:boolean);\n" +
@@ -918,19 +923,16 @@ public class ExtEditor extends RepositoryManager {
 		String ex ="//Include any javascript here\n" +
 		    "ctx.print('Processing: ' + entry.getName());\n";
 		ex = request.getString(ARG_EXTEDIT_SOURCE, ex);
+		String exclude = "<br>"+HU.b("Exclude entries") +":<br>"+
+		    HU.textArea(ARG_EXTEDIT_EXCLUDE, request.getString(ARG_EXTEDIT_EXCLUDE,""),5,40,HU.attr("placeholder","entry ids, one per line"));
+
 		HU.formEntry(sb,  HU.b("Javascript:")+
-			     HU.table(HU.rowTop(HU.cols(HU.textArea(ARG_EXTEDIT_SOURCE, ex,10,60),
+			     HU.table(HU.rowTop(HU.cols(HU.textArea(ARG_EXTEDIT_SOURCE, ex,10,60) +
+							exclude,
 						     HU.pre(eg)))));
 		
 		sb.append(HU.formTableClose());
-		sb.append(HU.b("Exclude entries") +":<br>"+
-			  HU.textArea(ARG_EXTEDIT_EXCLUDE, request.getString(ARG_EXTEDIT_EXCLUDE,""),5,40,HU.attr("placeholder","entry ids, one per line")));
 
-
-		sb.append("<br>");
-		sb.append(HU.labeledCheckbox(
-					     ARG_EXTEDIT_JS_CONFIRM, "true",
-					     request.get(ARG_EXTEDIT_JS_CONFIRM,false), "Apply changes to entries"));
 
 		sb.append("<br>");
 		closer.accept(form,"Apply Javascript");
@@ -1454,6 +1456,15 @@ public class ExtEditor extends RepositoryManager {
 	public String getId() {
 	    return entry.getId();
 	}
+
+	public boolean hasLocationDefined() {
+	    return entry.hasLocationDefined();
+	}
+
+	public void setLocation(double lat,double lon) {
+	    entry.setLocation(lat,lon);
+	}	
+
 
 	public void setName(String name) {
 	    this.name = name;
