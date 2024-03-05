@@ -132,7 +132,6 @@ public class DaymetTypeHandler extends PointTypeHandler {
         }
         url = url.replace("${start}", startDate);
         url = url.replace("${end}", endDate);
-	System.err.println(url);
         return url;
     }
 
