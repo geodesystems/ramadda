@@ -2275,15 +2275,16 @@ thin_hr,.ramadda-thin-hr {
     z-index:1000;
     box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px;
     -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
-}
-
-.ui-selectmenu-menu {
     max-height:200px;
     overflow-y:auto;
 }
 
-.ramadda-metadata-form .ui-selectmenu-button.ui-button {
-    width:25em;
+.ramadda-metadata-widget .ui-selectmenu-button.ui-button {
+    width:20em;
+}
+
+.ramadda-metadata-widget-content-license .ui-selectmenu-button {
+    width:40em;
 }
 
 .ui-tooltip {
