@@ -2468,7 +2468,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 
                     String       baseClass = "ramadda-section";
                     if (remainder.length() > 0) {
-                        baseClass = baseClass + "-" + remainder;
+                        baseClass = baseClass+" " + baseClass + "-" + remainder;
                     }
 
                     String  label       = (String) props.get("label");
