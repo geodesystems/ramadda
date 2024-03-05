@@ -205,7 +205,12 @@ public class TabularTypeHandler extends ConvertibleTypeHandler {
         }
 
 	if(true) {
-	    return getWikiManager().wikifyEntry(request,entry,"+section title={{name}}\n{{display_htmltable}}\n-section");
+	    String wiki = "+section title={{name}}\n{{description wikify=true}}\n+accordion decorate=false collapsible=true activeSegment=-1\n+segment Document Information\n{{information  details=\"true\"  showTitle=\"false\"  includeTools=true menus=\"service\" menusTitle=\"Services\"}} \n-segment\n-accordion\n-section\n+section\n+center\n<div style='margin-bottom:4px;'>{{tags}}</div>\n-center\n{{display_htmltable}}\n-section";
+
+
+
+
+	    return getWikiManager().wikifyEntry(request,entry,wiki);
 	}
 
         return getTabularOutputHandler().getHtmlDisplay(request,
