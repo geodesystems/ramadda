@@ -6,6 +6,8 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.util;
 
 
+import org.ramadda.util.seesv.Seesv;
+
 import com.monitorjbl.xlsx.StreamingReader;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -114,7 +116,9 @@ public class XlsUtil {
 
                         //Only read the first sheet
                         for (Sheet sheet : wb) {
-			    if(--_sheetNumber>0) continue;
+			    if(--_sheetNumber>0) {
+				continue;
+			    }
                             int rowIdx = 0;
                             for (Row row : sheet) {
                                 rowIdx++;
@@ -289,7 +293,8 @@ public class XlsUtil {
                                 if (col > firstCol) {
                                     pw.print(",");
                                 }
-                                pw.print(clean(value));
+				value = clean(value);
+                                pw.print(value);
                             }
                             pw.print("\n");
                         }
@@ -319,6 +324,7 @@ public class XlsUtil {
      */
     public static String clean(String s) {
         s = s.trim();
+	if(true) return Seesv.cleanColumnValue(s);
         while (s.endsWith(",")) {
             s = s.substring(0, s.length() - 1);
         }
