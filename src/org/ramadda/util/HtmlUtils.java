@@ -6693,6 +6693,14 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
 
 
+    public static String makeCssClass(String s) {
+	if(s==null) return s;
+	String delim = "-";
+	s=  s.replaceAll("\\s+\\s",delim);
+	s=  s.replace(".",delim);	
+	return s;
+    }
+
     /**
      * _more_
      *
