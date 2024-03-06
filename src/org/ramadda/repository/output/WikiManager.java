@@ -2698,7 +2698,7 @@ public class WikiManager extends RepositoryManager
 	    String url = request.getAbsoluteUrl(getEntryManager().getEntryResourceUrl(request, entry));
 	    url =HU.url(url,"timestamp",""+entry.getChangeDate());
 	    url = url.replace("?","%3F").replace("&","%26");
-	    String height = getProperty(wikiUtil, props,"height", "100vh");
+	    String height = getProperty(wikiUtil, props,"height", "800px");
 	    String width = getProperty(wikiUtil, props,"width", "100%");	    
 	    return "\n<center>\n<div" + HU.style(HU.css("height",height,"width",width))+
 		"><iframe style='border:var(--basic-border);' src='https://view.officeapps.live.com/op/embed.aspx?src="+ url+"' width='100%' height='" + height+"' frameborder='1'></iframe>\n</div>\n</center>\n";
