@@ -437,15 +437,16 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    }
 	}
 
+	let formArrow = jqid(id+'_formarrow');
 	let checkForm = ()=>{
 	    if(props.formOpen) {
 		jqid(id+'_form').show();
 		jqid(id).find('.entry-form-select').show();
-		$(this).html(HU.getIconImage("fas fa-caret-down"));
+		formArrow.html(HU.getIconImage("fas fa-caret-down"));
 	    } else {
 		jqid(id+'_form').hide();
 		jqid(id).find('.entry-form-select').hide();
-		$(this).html(HU.getIconImage("fas fa-caret-right"));
+		formArrow.html(HU.getIconImage("fas fa-caret-right"));
 	    }
 
 	}
