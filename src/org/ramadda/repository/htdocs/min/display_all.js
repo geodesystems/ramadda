@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Mar  6 10:08:54 EST 2024";
+var build_date="RAMADDA build date: Wed Mar  6 10:30:26 EST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -40315,8 +40315,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    //main loop
 	    recordInfos.forEach((recordInfo,idx)=>{
-		if(idx>1000) return;
-
 		featureCnt++;
 		let record = recordInfo.record;
 		let point  = recordInfo;
@@ -40585,7 +40583,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			this.markers[record.getId()] = mapPoint;
 		    }
 		}
-
 
 		if(glyphs.length>0) {
 		    let cid = HU.getUniqueId("canvas_");
