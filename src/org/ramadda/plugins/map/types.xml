@@ -248,10 +248,6 @@ propagateHighlightEvent=true showTitle="false" layoutHere="true" showMenu="true"
       ]]>
     </property>
     <column name="names" type="string" changetype="true" size="2000" label="Properties" canedit="false"  showinhtml="true"/>
-<!--
-    <column name="convert_commands" type="string" label="Convert Commands" showinhtml="false" showinform="false"/>
-    -->
-
 <wiki>
 <![CDATA[
 +section title={{name}}
