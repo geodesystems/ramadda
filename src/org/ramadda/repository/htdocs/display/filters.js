@@ -732,7 +732,6 @@ function RecordFilter(display,filterFieldId, properties) {
 	    let widgetLabel =   this.getProperty(this.getId()+".filterLabel",this.getLabel());
 	    let includeAll = this.getIncludeAll();
 
-
             if(this.ops) {
 		let labels =[];
 		this.ops.forEach((op,idx)=>{
@@ -1109,7 +1108,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		let allName = this.getProperty(this.getId() +".allName",!showLabel?this.getLabel():"All");
 		enums = [];
 		let includeAll = this.getIncludeAll();
-		if(includeAll && !this.getProperty(this.getId() +".filterLabel",null,true)) {
+//		if(includeAll && !this.getProperty(this.getId() +".filterLabel",null,true)) {
+		if(includeAll) {
 		    enums.push({value:[FILTER_ALL,allName]});
 		}
 		let seen = {};
