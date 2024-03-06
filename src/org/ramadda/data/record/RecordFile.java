@@ -206,19 +206,21 @@ public abstract class RecordFile {
      * @throws Exception _more_
      */
     public File checkCachedFile() throws Exception {
-	if(true) return null;
         File file = getCacheFile();
-        if (file != null) {
-            if (file != null) {
-                int cnt = 0;
-                //Wait at most 10 seconds
-                while (cnt++ < 100) {
-                    if (filesBeingWritten.get(file) == null) {
-                        break;
-                    }
-                    Misc.sleep(100);
-                }
+	if (file != null) {
+	    int cnt = 0;
+	    //Wait at most 10 seconds
+	    long t1 = System.currentTimeMillis();
+	    while (cnt++ < 100) {
+		if (filesBeingWritten.get(file) == null) {
+		    break;
+		}
+		Misc.sleep(100);
             }
+	    long t2 = System.currentTimeMillis();
+	    if(t2-t1>50) {
+		System.err.println("checkCache time:" + (t2-t1) +"  cnt:" + cnt);
+	    }
         }
 
         return file;
