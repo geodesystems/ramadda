@@ -77,15 +77,6 @@ public class TabularTypeHandler extends ConvertibleTypeHandler {
     public static final int IDX_WIDTHS = IDX++;
 
     /** _more_ */
-    //    public static final int IDX_CHARTS = IDX++;
-
-    /** _more_ */
-    //    public static final int IDX_SEARCHINFO = IDX++;
-
-    /** _more_ */
-    //    public static final int IDX_CONVERT = IDX++;
-
-    /** _more_ */
     public static final int IDX_LAST = IDX_WIDTHS;
 
 
