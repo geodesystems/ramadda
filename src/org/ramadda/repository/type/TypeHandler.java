@@ -582,27 +582,8 @@ public class TypeHandler extends RepositoryManager {
 
             wikiTemplateInner = Utils.trimLinesLeft(Utils.getAttributeOrTag(node, ATTR_WIKI_INNER, wikiTemplateInner));
             defaultChildrenEntries = Utils.getAttributeOrTag(node,TAG_CHILDREN, defaultChildrenEntries);
-            List actionNodes = XmlUtil.findChildren(node, "action");
-            for (int i = 0; i < actionNodes.size(); i++) {
-                Element actionNode = (Element) actionNodes.get(i);
-		addAction(new Action(
-				     XmlUtil.getAttribute(actionNode, "name"),
-				     XmlUtil.getAttribute(actionNode, "label"),
-				     XmlUtil.getAttribute(actionNode, "icon",ICON_EDIT),
-				     XmlUtil.getAttribute(actionNode, "foruser","false").equals("true"),
-				     XmlUtil.getAttribute(actionNode, "canedit","false").equals("true"),
-				     XmlUtil.getAttribute(actionNode, "category","file")));
-            }
-            List wikiViewNodes = XmlUtil.findChildren(node, "wikiview");
-            for (int i = 0; i < wikiViewNodes.size(); i++) {
-                Element actionNode = (Element) wikiViewNodes.get(i);
-		addAction(new Action(
-				     XmlUtil.getAttribute(actionNode, "name"),
-				     XmlUtil.getAttribute(actionNode, "label"),
-				     XmlUtil.getAttribute(actionNode, "icon",ICON_WIKI),
-				     XmlUtil.getChildText(actionNode)));
-            }	    
-	    
+
+
 
             List metadataNodes = XmlUtil.findChildren(node, TAG_METADATA);
             for (int i = 0; i < metadataNodes.size(); i++) {
@@ -681,6 +662,28 @@ public class TypeHandler extends RepositoryManager {
             if (llf != null) {
                 latLonFormat = new DecimalFormat(llf);
             }
+
+            List actionNodes = XmlUtil.findChildren(node, "action");
+            for (int i = 0; i < actionNodes.size(); i++) {
+                Element actionNode = (Element) actionNodes.get(i);
+		addAction(new Action(
+				     XmlUtil.getAttribute(actionNode, "name"),
+				     XmlUtil.getAttribute(actionNode, "label"),
+				     XmlUtil.getAttribute(actionNode, "icon",ICON_EDIT),
+				     XmlUtil.getAttribute(actionNode, "foruser","false").equals("true"),
+				     XmlUtil.getAttribute(actionNode, "canedit","false").equals("true"),
+				     XmlUtil.getAttribute(actionNode, "category","file")));
+            }
+            List wikiViewNodes = XmlUtil.findChildren(node, "wikiview");
+            for (int i = 0; i < wikiViewNodes.size(); i++) {
+                Element actionNode = (Element) wikiViewNodes.get(i);
+		addAction(new Action(
+				     XmlUtil.getAttribute(actionNode, "name"),
+				     XmlUtil.getAttribute(actionNode, "label"),
+				     XmlUtil.getAttribute(actionNode, "icon", getIconProperty(ICON_WIKI)),
+				     XmlUtil.getChildText(actionNode)));
+            }	    
+	    
 
 
         } catch (Exception exc) {

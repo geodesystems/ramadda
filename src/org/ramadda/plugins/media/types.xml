@@ -32,8 +32,9 @@
 ]]>
      </wikiview>
 
+     <wikimacro name="embedpdf" label="Embed PDF">
+     <![CDATA[{{pdf page="1" style="border:1px solid #ccc;" height="1000px"  width="90%"}}]]></wikimacro>
 
-     <wikimacro name="embedpdf" label="Embed PDF"><![CDATA[{{pdf page="1" style="border:1px solid #ccc;" height="1000px"  width="90%"}}]]></wikimacro>
      <wiki><![CDATA[
 +section title={{name}}
 {{description wikify="true"}}
@@ -65,6 +66,17 @@
   <wikimacro name="embedms" label="Embed MS Document"
 	     properties="height=800px width=100%">
   <![CDATA[{{embedms width="${width}" height="${height}"}}]]></wikimacro>
+
+  <wikiview name="embedms" label="Embed MS File">
+    <![CDATA[
++section title={{name}}
+{{embedms}}
+-section
+]]>
+     </wikiview>
+  
+
+
 </type>
 
 

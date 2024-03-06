@@ -5,6 +5,12 @@
   <wikimacro name="embedms" label="Embed XLS"
 	     properties="height=800px width=100%">
   <![CDATA[{{embedms width="${width}" height="${height}"}}]]></wikimacro>
+  <wikiview name="embedms" label="Embed XLS">
+    <![CDATA[+section title={{name}}
+{{embedms}}
+-section
+]]></wikiview>
+
     <property name="icon" value="/icons/xls.png"/>
     <property name="record.properties">
 <![CDATA[
