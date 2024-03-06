@@ -2694,6 +2694,11 @@ public class WikiManager extends RepositoryManager
                 name = HU.href(url, name, HU.cssClass("ramadda-clickable")+HU.style(linkStyle));
             }
             return name;
+        } else if (theTag.equals(WIKI_TAG_EMBEDMS)) {
+	    String url = request.getAbsoluteUrl(getEntryManager().getEntryResourceUrl(request, entry));
+	    url =HU.url(url,"timestamp",""+entry.getChangeDate());
+	    url = url.replace("?","%3F").replace("&","%26");
+	    return "\n<center>\n<div style='height:100vh;'><iframe style='border:var(--basic-border);' src='https://view.officeapps.live.com/op/embed.aspx?src="+ url+"' width='95%' height='100%' frameborder='1'></iframe>\n</div>\n</center>\n";
         } else if (theTag.equals(WIKI_TAG_EMBED)) {
             boolean doUrl = getProperty(wikiUtil, props, "dourl",   false);
 	    if(doUrl) {
