@@ -1,12 +1,5 @@
 <services maxFileSize="5">
 
-<service id="media_tabular_extractsheet" label="Extract sheets" command="java:org.ramadda.data.docs.TabularService:extractSheet" >
-  <description><![CDATA[Extracts the XLS sheet]]></description>
-  <arg value="${entry.file}" type="entry" entryType="type_document_tabular" primary="true" label="Input Table File" include="false"></arg>
-
-  <arg type="string"  label="Sheets" help="Comma separated list of sheet numbers 1..N" ifdefined="false"/>
-  <output type="type_document_xls" pattern=".*\.xlsx"/>
-</service>
 
 <service id="media_tabular_csv" label="CSV" command="java:org.ramadda.data.docs.TabularService:csv" >
   <description><![CDATA[CSV Services]]></description>
