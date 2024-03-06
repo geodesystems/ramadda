@@ -409,7 +409,8 @@ public class TypeHandler extends RepositoryManager {
 
 
     /**  */
-    List<Action> actions = new ArrayList<Action>();
+    private List<Action> actions = new ArrayList<Action>();
+    private     Hashtable<String,Action> actionMap = new Hashtable<String,Action>();
 
 
     /**
@@ -592,6 +593,15 @@ public class TypeHandler extends RepositoryManager {
 				     XmlUtil.getAttribute(actionNode, "canedit","false").equals("true"),
 				     XmlUtil.getAttribute(actionNode, "category","file")));
             }
+            List wikiViewNodes = XmlUtil.findChildren(node, "wikiview");
+            for (int i = 0; i < wikiViewNodes.size(); i++) {
+                Element actionNode = (Element) wikiViewNodes.get(i);
+		addAction(new Action(
+				     XmlUtil.getAttribute(actionNode, "name"),
+				     XmlUtil.getAttribute(actionNode, "label"),
+				     XmlUtil.getAttribute(actionNode, "icon",ICON_WIKI),
+				     XmlUtil.getChildText(actionNode)));
+            }	    
 	    
 
             List metadataNodes = XmlUtil.findChildren(node, TAG_METADATA);
@@ -682,6 +692,7 @@ public class TypeHandler extends RepositoryManager {
 
     public void addAction(Action action) {
 	actions.add(action);
+	actionMap.put(action.id,action);
     }
 
     public Object getWikiProperty(Entry entry, String id)  {
@@ -1605,6 +1616,14 @@ public class TypeHandler extends RepositoryManager {
 	    return getLLMManager().applyLLM(request,entry);
 	}	
 
+
+	Action a = actionMap.get(action);
+	if(a!=null && a.wikiText!=null) {
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(getWikiManager().wikifyEntry(request, entry,a.wikiText));
+	    return getEntryManager().addEntryHeader(request, entry,
+						    new Result(a.label,sb));
+	}
 
         if (parent != null) {
             return parent.processEntryAction(request, entry);
@@ -2973,11 +2992,12 @@ public class TypeHandler extends RepositoryManager {
      * @return _more_
      * @throws Exception _more_
      */
-    public boolean processCommandView(org.ramadda.repository.harvester
-            .CommandHarvester.CommandRequest request, Entry entry,
-                org.ramadda.repository.harvester.CommandHarvester harvester,
-                List<String> args, Appendable sb, List<FileInfo> files)
-            throws Exception {
+    public boolean processCommandView(
+				      org.ramadda.repository.harvester.CommandHarvester.CommandRequest request,
+				      Entry entry,
+				      org.ramadda.repository.harvester.CommandHarvester harvester,
+				      List<String> args, Appendable sb, List<FileInfo> files)
+	throws Exception {
         StringBuilder html = new StringBuilder();
         String url = request.getRequest().getAbsoluteUrl(
                          getRepository().getHtmlOutputHandler().getImageUrl(
@@ -8323,7 +8343,8 @@ public class TypeHandler extends RepositoryManager {
 	private String icon;
 	private boolean forUser;
 	private boolean canEdit;
-	private String category;
+	private String category = "view";
+	private String wikiText;
 	Action(String id, String label, String icon,boolean forUser,boolean canEdit,String category) {
 	    this.id = id;
 	    this.label = label;
@@ -8332,6 +8353,13 @@ public class TypeHandler extends RepositoryManager {
 	    this.canEdit = canEdit;
 	    this.category=category;
 	}
+	Action(String id, String label, String icon,String wikiText) {
+	    this.id=id;
+	    this.label = label;
+	    this.icon = icon;
+	    this.wikiText = wikiText;
+	}
+
 	public String getId() {
 	    return id;
 	}
