@@ -5,8 +5,6 @@
 <outputhandler serviceId="media_qttools_thumbnail"/>
 <outputhandler class="org.ramadda.data.docs.ConvertibleOutputHandler"/>
 <outputhandler class="org.ramadda.data.docs.TabularOutputHandler"/>
-<outputhandler  serviceId="media_tabular_extractsheet"/>
-
 <!--
     gristle services
 <outputhandler  serviceId="gristle_slicer"/>
