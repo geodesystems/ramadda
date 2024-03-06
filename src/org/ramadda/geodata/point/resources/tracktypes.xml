@@ -20,7 +20,7 @@
     <column name="show_request_fields" type="boolean" label="Show Request Fields"
 	    default="false" help="Show count/daterange/stride request fields"/>        
 
-<column name="convert_commands" type="clob"   rows="5" columns="60" label="Convert Text"  showinhtml="false" group="Convert"/>
+<column name="convert_commands" type="clob"   rows="5" columns="60" label="Convert Text"  canedit="false" showinhtml="false" group="Convert"/>
 <property name="record.properties">
 csvcommands1=-addheader, lat.id latitude lon.id longitude location_long.id longitude location_lat.id latitude \
 identifier.label Identifier identifier.type enumeration \
