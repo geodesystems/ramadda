@@ -1459,6 +1459,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		    s.max = isNaN(s.max)?v:Math.max(s.max,v);		    
 		} 
 	    }
+	    let cellCnt = 0;
 	    records.every((record,recordIdx)=>{
 		if(numRecords>-1 && recordIdx>numRecords) return false;
 		recordCnt++;
@@ -1504,6 +1505,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		let matchers = this.getHighlightFilterText()?this.getFilterTextMatchers():null;
 		
 		fields.forEach((f,idx)=>{
+		    cellCnt++;
 		    let value = d[f.getIndex()];
 		    let svalue = String(value);
 		    let sv =  this.formatFieldValue(f,record,svalue);
@@ -1667,9 +1669,11 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    if(this.getShowAddRow()) {
 		html+=HU.div([ID,this.domId("addrow"),CLASS,"ramadda-clickable"], HU.getIconImage("fas fa-plus"));
 	    }	
-//	    console.timeEnd('loop');
+	    if(cellCnt==0) {
+		this.setDisplayMessage('No table available for table');
+		return
+	    }
 	    this.setContents(html);
-//	    console.time('start2');	    
 	    aggIds.forEach(id=>{
 		$("#"+ id+"_toggle").click(function() {
 		    let open = $(this).attr("toggleopen")=="true";
@@ -1733,7 +1737,9 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		scrollY:this.getScrollY("400px")
 	    };
 
+
             HU.formatTable("#" + this.domId(ID_TABLE), opts);
+
 	    if(this.getShowAddRow()) {
 		this.jq("addrow").click(()=>{
 		    let records = this.getPointData().getRecords();
