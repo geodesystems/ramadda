@@ -4402,8 +4402,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    //main loop
 	    recordInfos.forEach((recordInfo,idx)=>{
-		if(idx>1000) return;
-
 		featureCnt++;
 		let record = recordInfo.record;
 		let point  = recordInfo;
@@ -4672,7 +4670,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			this.markers[record.getId()] = mapPoint;
 		    }
 		}
-
 
 		if(glyphs.length>0) {
 		    let cid = HU.getUniqueId("canvas_");
