@@ -7765,7 +7765,7 @@ public class WikiManager extends RepositoryManager
         Utils.appendAll(buttons, HU.span("", HU.id(textAreaId + "_prefix")),
                         wikiMenuFormattingButton, wikiMenuTagsButton, entriesButton);
         if (fromTypeBuff != null) {
-	    String label = entry==null?"Wiki Tags":entry.getTypeHandler().getTypeProperty("wiki.edit.links.label",entry.getTypeHandler().getLabel() + " tags");
+	    String label = entry==null?"Wiki Tags":entry.getTypeHandler().getTypeProperty("wiki.edit.links.label",entry.getTypeHandler().getLabel());
 	    String popup = HU.makePopup(null,HU.div(label,BUTTONCLASS),
 					HU.div(fromTypeBuff.toString(), "class='wiki-editor-popup'"),
 					new NamedValue("linkAttributes", BUTTONCLASS));
