@@ -1106,6 +1106,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		let depends = this.getProperty(this.getId() +".depends");
 		this.filterIDependOn = !depends?null:this.display.getRecordFilter(depends);
 		let allName = this.getProperty(this.getId() +".allName",!showLabel?this.getLabel():"All");
+		allName+=' (' + records.length+')'
 		enums = [];
 		let includeAll = this.getIncludeAll();
 //		if(includeAll && !this.getProperty(this.getId() +".filterLabel",null,true)) {

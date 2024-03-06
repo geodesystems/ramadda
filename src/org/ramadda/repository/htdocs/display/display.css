@@ -66,10 +66,18 @@ table.dataTable {
     border-bottom:1px solid #000 !important;
 }
 
-.display-htmltable-td {
-    position:relative;
+.display-htmltable thead tr {
+    border-bottom:1px solid #aaa;
 }
 
+.display-htmltable-td {
+    position:relative;
+    padding:4px 8px;
+}
+
+.display-htmltable-row-odd {
+    background-color:#f4f4f4;
+}
 
 .display-polltable-field:hover {
     cursor:pointer;
@@ -1205,9 +1213,6 @@ svg > g > g:last-child { pointer-events: none }
 
 }
 
-.display-table-header {
-    white-space: nowrap;
-}
 
 
 .display-stats-header {
@@ -1219,6 +1224,9 @@ svg > g > g:last-child { pointer-events: none }
 .display-table-header {
       background:#E4E9F4;
       background-color: #efefef;
+      white-space: nowrap;
+      padding:2px 8px;
+
 }
 
 

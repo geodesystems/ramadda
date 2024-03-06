@@ -1205,8 +1205,11 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		this.setDisplayMessage("Loading data...");		
 		return;
 	    }
-//	    console.time('start');
-    
+//	    console.time('HtmlTable.update');
+	    this.updateHtmlTable(records);
+//	    console.timeEnd('HtmlTable.update');
+	},
+	updateHtmlTable: function(records) {
 	    let fancy  = this.getFancy();
             let pointData = this.getPointData();
             let fields = pointData.getRecordFields();
@@ -1305,6 +1308,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 				this.getProperty('tableCellStyle')+'}');
 	    }
 
+	    html+=HU.open('div',[ID,this.domId(ID_TABLE+'_wrapper')]);
 	    html +=HU.openTag('table',[CLASS,"ramadda-table stripe", 'width','100%',ID,this.domId(ID_TABLE),ATTR_STYLE,this.getTableStyle()]);
 	    html+='\n';
 	    let headerAttrs = [STYLE,"white-space:nowrap;background:#efefef;padding:5px; font-weight:bold;"];
@@ -1403,9 +1407,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    if(this.getIncludeFieldDescription()) {
 		html+=header2;
 	    }
-	    html+="</thead><tbody>\n";	    
-	    this.savedState = Utils.getLocalStorage(this.getProperty("storageKey",this.type),
-						    true,true) || {};
+	    html+='</thead>';
+	    html+=HU.open('tbody',[ATTR_STYLE,HU.css('max-height','200px','overflow-y','auto')]);
 	    this.recordMap = {};
 	    this.fieldMap = {};
 	    fields.forEach(f=>{this.fieldMap[f.getId()] = f;})
@@ -1442,7 +1445,6 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		}
 	    });
 
-//	    console.time('loop');	    
 	    let summary=[];
 	    let columns;
 	    let recordCnt = 0;
@@ -1460,8 +1462,10 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		} 
 	    }
 	    let cellCnt = 0;
+	    let even=false;
 	    records.every((record,recordIdx)=>{
 		if(numRecords>-1 && recordIdx>numRecords) return false;
+		even=!even;
 		recordCnt++;
 		let d = record.getData();
 		d = d.map(v=>{
@@ -1607,7 +1611,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		else if (aggByField)
 		    html+=HU.openTag('tr',['style','display:none;', "aggregateId", aggId,'title','','valign','top','class',clazz, RECORD_ID,record.getId()]);
 		else
-		    html+=HU.openTag('tr',['style',rowStyle,"aggregateId", aggId,'title','','valign','top','class',clazz, RECORD_ID,record.getId()]);
+		    html+=HU.openTag('tr',['style',rowStyle,"aggregateId", aggId,'title','','valign','top','class',clazz +' display-htmltable-row-' +(even?'even':'odd'), RECORD_ID,record.getId()]);
 				
 		if(colorRowBy && colorRowBy.length && colorFullRow) {
 		    let color =  colorRowBy[0].colorBy.getColorFromRecord(record);
@@ -1621,11 +1625,9 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		return true;
 	    });
 
-
-	    html+="</tbody>\n";
-
-	    html+="<tfoot>";
-	    html+="<tr>";
+	    html+=HU.close('tbody');
+	    html+=HU.open('tfoot');
+	    html+=HU.open('tr');
 	    let total = NaN;
 	    if(summary && (this.getShowSummaryTotal() || this.getShowSummaryAverage()  ||
 			   this.getShowSummaryMinMax())) {
@@ -1660,9 +1662,10 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		    html+="</td>";
 		});
 	    }
-	    html+="</tr>";
-	    html+="</tfoot>";	    
-	    html+="</table>\n";
+	    html+=HU.close('tr');
+	    html+=HU.close('tfoot');
+	    html+=HU.close('table');
+	    html+=HU.close('div');
 	    if(!isNaN(total) && this.getShowGrandSummary()) {
 		html+='Total: ' + total;
 	    }
@@ -1732,13 +1735,22 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		if(!record) return;
 		_this.propagateEventRecordSelection({record:record});
 	    });
+	    let scrollHeight=this.getScrollY("400px");
 	    let opts = {
                 ordering: false,
-		scrollY:this.getScrollY("400px")
+		scrollY:scrollHeight,
+		paging:this.getProperty('tablePaging')
 	    };
 
-
-            HU.formatTable("#" + this.domId(ID_TABLE), opts);
+//	    console.log('HtmlTable: #cells:' +cellCnt);
+	    let wrapper = this.jq(ID_TABLE+'_wrapper');
+	    if(!opts.paging && cellCnt>3000) {
+		wrapper.css('max-height',scrollHeight).css('height',scrollHeight).css('overflow-y','auto').css('display','flex');
+		wrapper.find('th').css('top','0').css('position','sticky').css('z-index','900');
+		this.jq(ID_TABLE).css('height','200px').css('overflow-y','auto').css('border-collapse','collapse');
+	    } else {
+		HU.formatTable("#" + this.domId(ID_TABLE), opts);
+	    }
 
 	    if(this.getShowAddRow()) {
 		this.jq("addrow").click(()=>{
@@ -1758,11 +1770,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		}
 		
 		let fieldId = dom.attr("fieldid");
-		let map  = _this.savedState[fieldId] ||{};
 		let recordIndex = dom.attr(RECORD_INDEX); 
-		map[recordIndex] = val;
-		_this.savedState[fieldId]  = map;
- 		Utils.setLocalStorage(_this.getProperty("storageKey",_this.type), _this.savedState, true,true);
 		let row = _this.recordMap[recordIndex];
 		let field = _this.fieldMap[fieldId];		
 		row.data[field.getIndex()] = val;
