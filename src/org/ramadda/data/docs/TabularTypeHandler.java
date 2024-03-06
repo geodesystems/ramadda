@@ -47,37 +47,7 @@ public class TabularTypeHandler extends ConvertibleTypeHandler {
     private static int IDX = ConvertibleTypeHandler.IDX_LAST + 1;
 
     /** _more_ */
-    public static final int IDX_SHOWTABLE = IDX++;
-
-    /** _more_ */
-    public static final int IDX_SHOWCHART = IDX++;
-
-    /** _more_ */
-    public static final int IDX_SHEETS = IDX++;
-
-    /** _more_ */
-    public static final int IDX_SKIPROWS = IDX++;
-
-    /** _more_ */
-    public static final int IDX_SKIPCOLUMNS = IDX++;
-
-    /** _more_ */
-    public static final int IDX_USEFIRSTROW = IDX++;
-
-    /** _more_ */
-    public static final int IDX_COLHEADER = IDX++;
-
-    /** _more_ */
-    public static final int IDX_HEADER = IDX++;
-
-    /** _more_ */
-    public static final int IDX_ROWHEADER = IDX++;
-
-    /** _more_ */
-    public static final int IDX_WIDTHS = IDX++;
-
-    /** _more_ */
-    public static final int IDX_LAST = IDX_WIDTHS;
+    public static final int IDX_LAST = IDX;
 
 
 
@@ -185,27 +155,8 @@ public class TabularTypeHandler extends ConvertibleTypeHandler {
                                    Entry entry)
             throws Exception {
 	if(isWikiText(entry.getDescription())) return null;
-
-
-        boolean showTable = entry.getBooleanValue(IDX_SHOWTABLE, true);
-        boolean showChart = entry.getBooleanValue(IDX_SHOWCHART, true);
-
-
-        if ( !showTable && !showChart) {
-            return null;
-        }
-
-	if(true) {
-	    String wiki = "+section title={{name}}\n{{description wikify=true}}\n+accordion decorate=false collapsible=true activeSegment=-1\n+segment Document Information\n{{information  details=\"true\"  showTitle=\"false\"  includeTools=true menus=\"service\" menusTitle=\"Services\"}} \n-segment\n-accordion\n-section\n+section\n+center\n<div style='margin-bottom:4px;'>{{tags}}</div>\n-center\n{{display_htmltable}}\n-section";
-
-
-
-
-	    return getWikiManager().wikifyEntry(request,entry,wiki);
-	}
-
-        return getTabularOutputHandler().getHtmlDisplay(request,
-                requestProps, entry);
+	String wiki = "+section title={{name}}\n{{description wikify=true}}\n+accordion decorate=false collapsible=true activeSegment=-1\n+segment Document Information\n{{information  details=\"true\"  showTitle=\"false\"  includeTools=true menus=\"service\" menusTitle=\"Services\"}} \n-segment\n-accordion\n-section\n+section\n+center\n<div style='margin-bottom:4px;'>{{tags}}</div>\n-center\n{{display_htmltable}}\n-section";
+	return getWikiManager().wikifyEntry(request,entry,wiki);
     }
 
 
@@ -244,27 +195,6 @@ public class TabularTypeHandler extends ConvertibleTypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
-    public String getSheets(Entry entry) {
-        return entry.getStringValue(TabularTypeHandler.IDX_SHEETS, "");
-    }
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
-    public int getSkipRows(Entry entry) {
-        return (int) entry.getIntValue(TabularTypeHandler.IDX_SKIPROWS, 0);
-    }
 
     /**
      * _more_

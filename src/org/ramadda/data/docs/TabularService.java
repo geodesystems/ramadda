@@ -47,25 +47,6 @@ public class TabularService extends Service {
             TabularOutputHandler.class);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param service _more_
-     * @param input _more_
-     * @param args _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
-    public boolean extractSheet(Request request, Service service,
-                                ServiceInput input, List args)
-            throws Exception {
-        return getTabularOutputHandler().extractSheet(request, service,
-                input, args);
-    }
-
 
     /**
      * _more_

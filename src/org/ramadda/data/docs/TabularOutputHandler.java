@@ -74,11 +74,6 @@ public class TabularOutputHandler extends OutputHandler {
     public static final int MAX_COLS = 100;
 
     /** _more_ */
-    public static final OutputType OUTPUT_XLS_JSON =
-        new OutputType("XLS to JSON", "xls_json", OutputType.TYPE_FEEDS, "",
-                       "/media/xls.png");
-
-    /** _more_ */
     public static final OutputType OUTPUT_XLS_HTML =
         new OutputType("Show Spreadsheet", "xls_html", OutputType.TYPE_VIEW,
                        "", "fa-file-excel");
@@ -101,7 +96,6 @@ public class TabularOutputHandler extends OutputHandler {
             throws Exception {
         super(repository, element);
         addType(OUTPUT_XLS_HTML);
-        addType(OUTPUT_XLS_JSON);
     }
 
 
@@ -135,53 +129,8 @@ public class TabularOutputHandler extends OutputHandler {
                 isTabular = true;
             }
         }
-
-        if (isTabular) {
-            links.add(makeLink(request, state.getEntry(), OUTPUT_XLS_JSON));
-        }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    @Override
-    public Result outputEntry(Request request, OutputType outputType,
-                              Entry entry)
-            throws Exception {
-
-        if (outputType.equals(OUTPUT_XLS_JSON)) {
-            try {
-                return outputEntryJson(request, outputType, entry);
-            } catch (org.apache.poi.hssf.OldExcelFormatException exc) {
-                StringBuilder sb = new StringBuilder();
-                sb.append(
-                    JsonUtil.map(Utils.makeList(
-						"error",
-						JsonUtil.quote("Old Excel format not supported"))));
-                request.setReturnFilename(entry.getName() + ".json");
-                Result result = new Result("", sb);
-                result.setShouldDecorate(false);
-                result.setMimeType("application/json");
-
-                return result;
-            }
-        }
-
-        //        System.err.println("TabularOutputHandler.outputEntry");
-
-        return new Result("",
-                          new StringBuffer(getHtmlDisplay(request,
-                              new Hashtable(), entry)));
-    }
 
 
 
@@ -224,109 +173,7 @@ public class TabularOutputHandler extends OutputHandler {
         sb.append(HtmlUtils.href(url, f.getName(), "target=_output"));
     }
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
 
-    public HashSet<Integer> getSheetsToShow(String s) {
-        HashSet<Integer> sheetsToShow = null;
-        if (Utils.stringDefined(s)) {
-            List<String> sheetsStr = StringUtil.split(s, ",", true, true);
-            if (sheetsStr.size() > 0) {
-                sheetsToShow = new HashSet<Integer>();
-                for (String tok : sheetsStr) {
-                    sheetsToShow.add(Integer.parseInt(tok));
-                }
-            }
-        }
-
-        return sheetsToShow;
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    private Result outputEntryJson(Request request, OutputType outputType,
-                                   Entry entry)
-            throws Exception {
-        StringBuilder sb   = new StringBuilder();
-
-        String        file = null;
-        if (entry.isFile()) {
-            file = entry.getFile().toString();
-        }
-
-
-        HashSet<Integer> sheetsToShow = null;
-        if (isTabular(entry)) {
-            TabularTypeHandler typeHandler =
-                (TabularTypeHandler) entry.getTypeHandler();
-            sheetsToShow = getSheetsToShow(typeHandler.getSheets(entry));
-        }
-
-        final List<String> sheets         = new ArrayList<String>();
-        TabularVisitor     tabularVisitor = new TabularVisitor() {
-            @Override
-            public boolean visit(TextReader textReader, String sheet,
-                                 List<List<Object>> rows) {
-                List<String> jrows = new ArrayList<String>();
-                for (List<Object> cols : rows) {
-                    List<String> quoted = new ArrayList<String>();
-                    for (Object col : cols) {
-                        if (col == null) {
-                            col = "null";
-                        }
-                        String s = col.toString();
-                        s = s.replaceAll("\"", "&quot;");
-                        quoted.add(JsonUtil.quote(s));
-                    }
-                    jrows.add(JsonUtil.list(quoted));
-                }
-                sheets.add(JsonUtil.map(Utils.makeList("name", JsonUtil.quote(sheet), "rows",
-						       JsonUtil.list(jrows))));
-
-                return true;
-            }
-        };
-
-        List       props      = new ArrayList();
-
-        TextReader textReader = new TextReader();
-        textReader.setSkipRows(getSkipRows(request, entry));
-        textReader.setMaxRows(getRowCount(request, entry, MAX_ROWS));
-
-        String delimiter = getDelimiter(entry);
-        if (delimiter != null) {
-            textReader.setDelimiter(delimiter);
-        }
-
-        //        TabularVisitInfo visitInfo = new TabularVisitInfo(request, entry, sheetsToShow);
-        visit(request, entry, textReader, tabularVisitor);
-        props.addAll(textReader.getTableProperties());
-        props.add("sheets");
-        props.add(JsonUtil.list(sheets));
-        sb.append(JsonUtil.map(props));
-
-        request.setReturnFilename(entry.getName() + ".json");
-        Result result = new Result("", sb);
-        result.setShouldDecorate(false);
-        result.setMimeType("application/json");
-
-        return result;
-    }
 
 
 
@@ -526,14 +373,7 @@ public class TabularOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     private int getSkipRows(Request request, Entry entry) throws Exception {
-        int dflt = 0;
-        if (isTabular(entry)) {
-            TabularTypeHandler tth =
-                (TabularTypeHandler) entry.getTypeHandler();
-            dflt = tth.getSkipRows(entry);
-        }
-
-        return (int) request.get("table.skiprows", dflt);
+        return (int) request.get("table.skiprows", 0);
     }
 
     /**
@@ -863,199 +703,6 @@ public class TabularOutputHandler extends OutputHandler {
     /**
      * _more_
      *
-     * @param request _more_
-     * @param requestProps _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public String getHtmlDisplay(Request request, Hashtable requestProps,
-                                 Entry entry)
-            throws Exception {
-
-        String wikiTemplate = getWikiText(request, entry);
-        if (wikiTemplate != null) {
-            return null;
-        }
-
-        if (isTabular(entry)) {
-            TabularTypeHandler handler =
-                (TabularTypeHandler) entry.getTypeHandler();
-            if ( !handler.okToShowTable(request, entry)) {
-                return null;
-            }
-        }
-
-
-
-        boolean showTable = entry.getBooleanValue(TabularTypeHandler.IDX_SHOWTABLE,
-                                           true);
-        boolean showChart = entry.getBooleanValue(TabularTypeHandler.IDX_SHOWCHART,
-                                           true);
-
-
-        boolean useFirstRowAsHeader =
-            Misc.equals("true",
-                        entry.getStringValue(TabularTypeHandler.IDX_USEFIRSTROW,
-                                       "true"));
-
-
-        boolean colHeader =
-            Misc.equals("true",
-                        entry.getStringValue(TabularTypeHandler.IDX_COLHEADER,
-                                       "false"));
-        boolean rowHeader =
-            Misc.equals("true",
-                        entry.getStringValue(TabularTypeHandler.IDX_ROWHEADER,
-                                       "false"));
-        List<String> widths =
-            StringUtil.split(entry.getStringValue(TabularTypeHandler.IDX_WIDTHS,
-                                            ""), ",", true, true);
-
-
-
-        List<String> sheetsStr =
-            StringUtil.split(entry.getStringValue(TabularTypeHandler.IDX_SHEETS,
-                                            ""), ",", true, true);
-
-
-        List propsList = new ArrayList();
-
-
-        propsList.add("useFirstRowAsHeader");
-        propsList.add("" + useFirstRowAsHeader);
-        propsList.add("showTable");
-        propsList.add("" + showTable);
-        propsList.add("showChart");
-        propsList.add("" + showChart);
-
-
-        propsList.add("rowHeaders");
-        propsList.add("" + rowHeader);
-
-        propsList.add("skipRows");
-        propsList.add(entry.getStringValue(TabularTypeHandler.IDX_SKIPROWS, "0"));
-        propsList.add("skipColumns");
-        propsList.add(entry.getStringValue(TabularTypeHandler.IDX_SKIPCOLUMNS,
-                                     "0"));
-
-        List<String> header =
-            StringUtil.split(entry.getStringValue(TabularTypeHandler.IDX_HEADER,
-                                            ""), ",", true, true);
-        if (header.size() > 0) {
-            propsList.add("colHeaders");
-            propsList.add(JsonUtil.list(header, true));
-        } else {
-            propsList.add("colHeaders");
-            propsList.add("" + colHeader);
-        }
-
-
-        if (widths.size() > 0) {
-            propsList.add("colWidths");
-            propsList.add(JsonUtil.list(widths));
-        }
-
-        String jsonUrl =
-            request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
-                             ARG_OUTPUT,
-                             TabularOutputHandler.OUTPUT_XLS_JSON.getId());
-
-	/*  
-      List<String> charts = new ArrayList<String>();
-        for (String line :
-                StringUtil.split(
-                    entry.getStringValue(TabularTypeHandler.IDX_CHARTS, ""), "\n",
-                    true, true)) {
-
-            List<String>              chart = new ArrayList<String>();
-            Hashtable<String, String> map   = new Hashtable<String, String>();
-            for (String tok : StringUtil.split(line, ",")) {
-                List<String> subtoks = StringUtil.splitUpTo(tok, "=", 2);
-                String       key     = subtoks.get(0);
-                if (subtoks.size() < 2) {
-                    chart.add("type");
-                    chart.add(JsonUtil.quote(key));
-
-                    continue;
-                }
-                String value = subtoks.get(1);
-                chart.add(key);
-                chart.add(JsonUtil.quote(value));
-            }
-            charts.add(JsonUtil.map(chart));
-        }
-        if (charts.size() > 0) {
-            propsList.add("defaultCharts");
-            propsList.add(JsonUtil.list(charts));
-        }
-*/
-        propsList.add("url");
-        propsList.add(JsonUtil.quote(jsonUrl));
-        propsList.add("layoutHere");
-        propsList.add("false");
-
-        /**
-         * TabularVisitInfo visitInfo = new TabularVisitInfo(request, entry);
-         * if (visitInfo.getSearchFields() != null) {
-         *   propsList.add("searchFields");
-         *   List<String> names = new ArrayList<String>();
-         *   for (SearchField searchField :
-         *           visitInfo.getSearchFields()) {
-         *
-         *       List<String> props = new ArrayList<String>();
-         *       props.add("name");
-         *       props.add(JsonUtil.quote(searchField.getName()));
-         *       props.add("label");
-         *       props.add(JsonUtil.quote(searchField.getLabel()));
-         *       names.add(JsonUtil.map(props));
-         *   }
-         *   propsList.add(JsonUtil.list(names));
-         * }
-         */
-
-        String props = JsonUtil.map(propsList);
-        //        System.err.println(props);
-
-        StringBuilder sb = new StringBuilder();
-        //        sb.append(HtmUltils.pre(tmp.toString()));
-
-
-        getPageHandler().addDisplayImports(request, sb);
-
-        getPageHandler().entrySectionOpen(request, entry, sb, null, true);
-
-
-        if ( !request.get(ARG_EMBEDDED, false)) {
-            sb.append(entry.getDescription());
-        }
-
-        String divId = HtmlUtils.getUniqueId("div_");
-        sb.append(HtmlUtils.div("", HtmlUtils.id(divId)));
-        StringBuilder js = new StringBuilder();
-        js.append("var displayManager = getOrCreateDisplayManager(\"" + divId
-                  + "\",");
-        js.append(JsonUtil.map(Utils.makeList("showMap", "false", "showMenu", "false",
-					      "showTitle", "false", "layoutType",
-					      JsonUtil.quote("table"), "layoutColumns", "1")));
-        js.append(",true);\n");
-        js.append("displayManager.createDisplay('xls'," + props + ");\n");
-        sb.append(HtmlUtils.script(js.toString()));
-
-        getPageHandler().entrySectionClose(request, entry, sb);
-
-        return sb.toString();
-
-
-
-    }
-
-
-    /**
-     * _more_
-     *
      * @param entry _more_
      *
      * @return _more_
@@ -1067,97 +714,6 @@ public class TabularOutputHandler extends OutputHandler {
 
         return entry.getTypeHandler().isType(TabularTypeHandler.TYPE_TABULAR);
     }
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param service _more_
-     * @param input _more_
-     * @param args _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
-    public boolean extractSheet(Request request, Service service,
-                                ServiceInput input, List args)
-            throws Exception {
-        Entry entry = null;
-        for (Entry e : input.getEntries()) {
-            if (isTabular(e)) {
-                entry = e;
-
-                break;
-            }
-        }
-        if (entry == null) {
-            throw new IllegalArgumentException("No tabular entry found");
-        }
-
-        HashSet<Integer> sheetsToShow = getSheetsToShow((String) args.get(0));
-
-        final SXSSFWorkbook wb        = new SXSSFWorkbook(100);
-        //        final Workbook   wb           = new XSSFWorkbook();
-
-        String name = getStorageManager().getFileTail(entry);
-        if ( !Utils.stringDefined(name)) {
-            name = entry.getName();
-        }
-        name = IOUtil.stripExtension(name);
-
-        File newFile = new File(IOUtil.joinDir(input.getProcessDir(),
-                           name + ".xlsx"));
-
-        TabularVisitor visitor = new TabularVisitor() {
-            public boolean visit(TextReader info, String sheetName,
-                                 List<List<Object>> rows) {
-                sheetName = sheetName.replaceAll("[/]+", "-");
-                Sheet sheet  = wb.createSheet(sheetName);
-                int   rowCnt = 0;
-                for (List<Object> cols : rows) {
-                    Row row = sheet.createRow(rowCnt++);
-                    for (int colIdx = 0; colIdx < cols.size(); colIdx++) {
-                        Object col  = cols.get(colIdx);
-                        Cell   cell = row.createCell(colIdx);
-                        if (col instanceof Double) {
-                            cell.setCellValue(((Double) col).doubleValue());
-                        } else if (col instanceof Date) {
-                            cell.setCellValue((Date) col);
-                        } else if (col instanceof Boolean) {
-                            cell.setCellValue(((Boolean) col).booleanValue());
-                        } else {
-                            cell.setCellValue(col.toString());
-                        }
-                    }
-                }
-
-                return true;
-            }
-        };
-
-        TabularVisitInfo visitInfo =
-            new TabularVisitInfo(
-                request, entry, getSkipRows(request, entry),
-                getRowCount(request, entry, Integer.MAX_VALUE), sheetsToShow);
-
-        TextReader info = new TextReader();
-        info.setSkipRows(getSkipRows(request, entry));
-        info.setMaxRows(getRowCount(request, entry, MAX_ROWS));
-        //        http:://localhost:8080/repository/entry/show?entryid=740ae258-805d-4a1f-935d-289d0a6e5519&output=media_tabular_extractsheet&serviceform=true&execute=Execute
-
-        visit(request, entry, info, visitor);
-
-        FileOutputStream fileOut = new FileOutputStream(newFile);
-        wb.write(fileOut);
-        fileOut.close();
-        wb.dispose();
-
-        return true;
-
-    }
-
-
 
     /**
      * _more_
