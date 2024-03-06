@@ -47,10 +47,15 @@
 
 </type>
 
-<type name="type_document_msfile"  foruser="false"       super="type_document_tika"
-      handler="org.ramadda.data.docs.MsDocTypeHandler"      >
-  <column name="display_inline" type="boolean" default="false" label="Display Inline"  showinhtml="false"
+<type name="type_document_msfile"  foruser="false"
+      super="type_document_tika"
+      handler="org.ramadda.data.docs.MsDocTypeHandler" >
+  <column name="display_inline" type="boolean" default="false" label="Display Inline"
+	  showinhtml="false"
 	  help="If display inline set to true then the document is passed to officeapps.live.com and displayed in an embedded frame"/>
+  <wikimacro name="embedms" label="Embed MS Document"
+	     properties="height=800px width=100%">
+  <![CDATA[{{embedms width="${width}" height="${height}"}}]]></wikimacro>
 </type>
 
 
