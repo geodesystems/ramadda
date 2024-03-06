@@ -639,7 +639,8 @@ public class Column implements DataTypes, Constants, Cloneable {
 	enumerationShowMultiples = getAttributeOrTag(element,"enumeration_multiples",true);
         advancedSearch = getAttributeOrTag(element, ATTR_ADVANCED, false);
         editable       = getAttributeOrTag(element, ATTR_EDITABLE, true);
-        showInForm = getAttributeOrTag(element, ATTR_SHOWINFORM, showInForm);
+        showInForm = getAttributeOrTag(element, ATTR_SHOWINFORM,
+				       getAttributeOrTag(element, "canedit",showInForm));
         canShow        = getAttributeOrTag(element, ATTR_SHOWINHTML, canShow);
         showLabel      = getAttributeOrTag(element, ATTR_SHOWLABEL, showLabel);
         canExport      = getAttributeOrTag(element, ATTR_CANEXPORT, canExport);
