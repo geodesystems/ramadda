@@ -1080,6 +1080,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                            String mapHtml, String navTop, String extraNav)
 	throws Exception {
 	//        String listwidth = request.getString(WikiManager.ATTR_LISTWIDTH, "250");
+	HU.open(sb,  HU.TAG_DIV,
+		HU.id("mapdiv_" + map.getVariableName()));
         boolean entriesListInMap = Utils.getProperty(props, "listInMap",false);
 	height = HU.makeDim(height, "px");
 	StringBuilder toc = new StringBuilder();
@@ -1141,8 +1143,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 	    StringBuilder contents = new StringBuilder();
 	    String listHeader = Utils.getProperty(props, "listHeader","Entries");
 	    String link = HU.makeShowHideBlock(contents,listHeader,toc.toString(), true,"","",null,null);
-	    HU.open(tocOuter,"div",HU.attrs("class", "ramadda-map-toc-outer","id",uid, "style",HU.css("max-height",height)));
-
+	    HU.open(tocOuter,"div",HU.attrs("class", "ramadda-earth-nav ramadda-map-toc-outer","id",uid, "style",HU.css("max-height",height)));
 	    HU.div(tocOuter,link,HU.clazz("ramadda-clickable ramadda-map-toc-header"));
 	    HU.open(tocOuter,"div",HU.attrs("class","ramadda-map-toc-inner","style",tocStyle));
 	    tocOuter.append(contents);
@@ -1154,6 +1155,10 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         if (weight != 12) {
             HU.close(sb,HU.TAG_DIV,HU.TAG_DIV);
         }
+
+	HU.close(sb,HU.TAG_DIV);	
+
+
     }
 
     /**
@@ -1613,17 +1618,21 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 						HU.id(cbxId)) + HU.space(2));
             }
 	    String entryUrl = getEntryManager().getEntryURL(request, entry);
-            String label =   entryIconImage+"&nbsp;"+getEntryDisplayName(entry);
+	    String link = HU.href(entryUrl,HU.getIconImage("fas fa-link",
+							   "title","View entry",
+							   "style","font-size:8pt;margin-right:2px;"));
+
+	    line.append(link);
+	    String name = getEntryDisplayName(entry);
+	    String label =   entryIconImage+"&nbsp;"+name;
+	    
 	    if(linkEntries)
 		line.append(HU.href(entryUrl,label));
 	    else
 		line.append(HU.span(label,HU.attrs("onclick",navUrl,"class","ramadda-clickable",
-						    HU.ATTR_TITLE,  label+HU.NL+"Shift-click to zoom")));
+						    HU.ATTR_TITLE,  name+HU.NL+"Shift-click to zoom")));
             line.append(HU.close(HU.TAG_DIV));
-	    catSB.append(HU.leftRight(line.toString(),HU.href(entryUrl,HU.getIconImage("fas fa-link",
-										       "title","View entry",
-										       "style","font-size:8pt;"
-										       ))));
+	    catSB.append(line);
             numEntries++;
         }
 
@@ -1650,7 +1659,6 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 							     "")));
         }
 
-
 	for(int i=0;i<markers.size();i+=2) {
 	    map.addProperty("marker" + (i+1),markers.get(i+1));
 	}
@@ -1665,13 +1673,15 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
 	sb.append(HU.script(map.getFinalJS().toString()));
 
-        String js = map.getVariableName() + ".highlightMarkers('."
-	    + map.getVariableName() + " .ramadda-earth-nav');";
-        if (searchMarkers) {
-            js += map.getVariableName() + ".initSearch(" + sqt(searchId)
-		+ ");";
-        }
 
+	//        String js = map.getVariableName() + ".highlightMarkers('."
+	//	    + map.getVariableName() + " .ramadda-earth-nav');";
+        String js = HU.call(map.getVariableName() + ".highlightMarkers",
+			    HU.squote("#mapdiv_" + map.getVariableName()));
+        if (searchMarkers) {
+            js += map.getVariableName() + ".initSearch(" + sqt(searchId)+ ");";
+        }
+	System.err.println(js);
 
         sb.append(HU.script(JQuery.ready(js)));
 

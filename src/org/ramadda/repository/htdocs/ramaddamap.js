@@ -949,7 +949,9 @@ RepositoryMap.prototype = {
     highlightMarkers:function(selector,  background1, background2, id) {
 	let _this =  this;
 	if(!background1) background1= '#ffffcc';
-	$(selector).mouseenter(function() {
+	let links = 	    $(selector).find('[data-mapid]');
+	links.mouseenter(function(event) {
+//	    _this.closePopup();  HtmlUtils.hidePopupObject();
 	    if (background1)
                 $(this).css('background', background1);
 	    let id = $(this).data('mapid');
@@ -959,7 +961,10 @@ RepositoryMap.prototype = {
 		box.setBorder('red');
 		_this.boxes.drawMarker(box);
 	    }
-	    if (_this.circleMarker(id, MapUtils.circleHiliteAttrs)) {
+	    let marker = _this.circleMarker(id, MapUtils.circleHiliteAttrs);
+	    if(marker) {
+		if(event.shiftKey)
+		    _this.centerOnFeatures([marker]);
                 return;
 	    }
 	    if (id == null)
@@ -979,7 +984,7 @@ RepositoryMap.prototype = {
 				   attrs);
 	    markerMap[id] = point;
         });
-	$(selector).mouseleave(function() {
+	links.mouseleave(function() {
 	    if (background2)
                 $(this).css('background', background2);
 	    else 
@@ -4557,7 +4562,7 @@ RepositoryMap.prototype = {
             return null;
         }
 	let   myattrs = {
-            pointRadius: 20,
+            pointRadius: 16,
             stroke: true,
             strokeColor: "red",
             strokeWidth: 2,
