@@ -1103,7 +1103,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         int weight = 12;
         if (showList ||stringDefined(extraNav)) {
             weight -= 3;
-            HU.open(sb, HU.TAG_DIV, HU.cssClass("row"));
+            HU.open(sb, HU.TAG_DIV, HU.cssClass("row row-tight"));
             HU.open(sb, HU.TAG_DIV,
                            HU.cssClass("col-md-3"));
             HU.open(sb, HU.TAG_DIV, HU.cssClass("ramadda-links"));
@@ -1590,13 +1590,12 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                 catMap.put(category, catSB = new StringBuilder());
                 categories.add(category);
             }
+	    StringBuilder line = new StringBuilder();
             String suffix = map.getMapId() + "_" + mapEntryId(entry);
-            catSB.append(
-			 HU.open(
-					HU.TAG_DIV,
-					HU.id("block_" + suffix) + "data-mapid=\""
-					+ mapEntryId(entry) + "\" "
-					+ HU.cssClass(CSS_CLASS_EARTH_NAV)));
+            line.append(HU.open(HU.TAG_DIV,
+				HU.id("block_" + suffix) + "data-mapid=\""
+				+ mapEntryId(entry) + "\" "
+				+ HU.cssClass(CSS_CLASS_EARTH_NAV)));
 	    String iconUrl;
 	    if(stringDefined(entryIcon)) {
 		iconUrl = entryIcon;
@@ -1610,19 +1609,21 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
             if (cbx) {
                 String cbxId = "visible_" + suffix;
-                catSB.append(HU.checkbox("tmp", "true", cbxOn,
+                line.append(HU.checkbox("tmp", "true", cbxOn,
 						HU.id(cbxId)) + HU.space(2));
             }
 	    String entryUrl = getEntryManager().getEntryURL(request, entry);
-            catSB.append(HU.href(entryUrl,entryIconImage));
-            catSB.append("&nbsp;");
-            String label = getEntryDisplayName(entry);
+            String label =   entryIconImage+"&nbsp;"+getEntryDisplayName(entry);
 	    if(linkEntries)
-		catSB.append(HU.href(entryUrl,label));
+		line.append(HU.href(entryUrl,label));
 	    else
-		catSB.append(HU.span(label,HU.attrs("onclick",navUrl,"class","ramadda-clickable",
+		line.append(HU.span(label,HU.attrs("onclick",navUrl,"class","ramadda-clickable",
 						    HU.ATTR_TITLE,  label+HU.NL+"Shift-click to zoom")));
-            catSB.append(HU.close(HU.TAG_DIV));
+            line.append(HU.close(HU.TAG_DIV));
+	    catSB.append(HU.leftRight(line.toString(),HU.href(entryUrl,HU.getIconImage("fas fa-link",
+										       "title","View entry",
+										       "style","font-size:8pt;"
+										       ))));
             numEntries++;
         }
 
