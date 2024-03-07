@@ -682,7 +682,6 @@ public class LLMManager extends  AdminHandlerImpl {
 	throws Exception {
 	if(true) {
 	    try {
-		System.err.println("CALLING");
 		return applyEntryExtractInner(request, entry,llmCorpus);
 	    } catch(CallException exc) {
 		System.err.println("ERROR");
