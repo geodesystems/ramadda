@@ -43,14 +43,18 @@ public class LLMManager extends  AdminHandlerImpl {
     public static boolean  debug = true;
 
     public static final String PROP_OPENAI_KEY = "openai.api.key";
-    public static final String PROP_GEMINI_KEY = "gemini.api.key";	
+    public static final String PROP_GEMINI_KEY = "gemini.api.key";
+    public static final String PROP_CLAUDE_KEY = "claude.api.key";	    
+    
 
     public static final int TOKEN_LIMIT_UNDEFINED = -1;
     public static final int TOKEN_LIMIT_GEMINI = 4000;
     public static final int TOKEN_LIMIT_GPT3 = 2000;    
     public static final int TOKEN_LIMIT_GPT4 = 4000;
+    public static final int TOKEN_LIMIT_CLAUDE = 4000;
 
     private static final Object MUTEX_GEMINI = new Object();
+    private static final Object MUTEX_CLAUDE = new Object();
     private static final Object MUTEX_OPENAI = new Object();    
 
     public static final String MODEL_WHISPER_1 = "whisper-1";
@@ -58,6 +62,7 @@ public class LLMManager extends  AdminHandlerImpl {
     public static final String MODEL_GPT_4="gpt-4";
     public static final String MODEL_GPT_VISION  = "gpt-4-vision-preview";
     public static final String MODEL_GEMINI = "gemini";
+    public static final String MODEL_CLAUDE = "claude";    
 
     public static final String ARG_USEGPT4  = "usegpt4";
     public static final String ARG_MODEL = "model";
@@ -74,12 +79,16 @@ public class LLMManager extends  AdminHandlerImpl {
     public static final String URL_OPENAI_COMPLETION =  "https://api.openai.com/v1/chat/completions";
     public static final String URL_GEMINI="https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent";
 
+    public static final String URL_CLAUDE="https://api.anthropic.com/v1/messages";
+
+
     public static final String PROMPT_TITLE="Extract the title from the following document. Your result should be in proper case form. The document text is:";
     public static final String PROMPT_KEYWORDS= "Extract keywords from the following text. The return format should be comma delimited keywords. Limit your response to no more than 10 keywords:";
     public static final String PROMPT_SUMMARY = "Summarize the following text. \nAssume the reader has a college education. \nLimit the summary to no more than 4 sentences.";
 
     private JobManager openAIJobManager;
-    private JobManager geminiJobManager;    
+    private JobManager geminiJobManager;
+    private JobManager claudeJobManager;        
 
     private Object NEXT_MUTEX= new Object();
 
@@ -90,6 +99,8 @@ public class LLMManager extends  AdminHandlerImpl {
 	//	openAIJobManager.setDebug(true);
 	geminiJobManager = new JobManager(repository,
 					  repository.getProperty("ramadda.llm.gemini.threads",2));
+	claudeJobManager = new JobManager(repository,
+					  repository.getProperty("ramadda.llm.clause.threads",2));	
 	//	geminiJobManager.setDebug(true);	
     }
 
@@ -122,6 +133,9 @@ public class LLMManager extends  AdminHandlerImpl {
     private boolean isGeminiEnabled() {
 	return  Utils.stringDefined(getRepository().getProperty(PROP_GEMINI_KEY));
     }
+    private boolean isClaudeEnabled() {
+	return  Utils.stringDefined(getRepository().getProperty(PROP_CLAUDE_KEY));
+    }    
 
 
     private boolean isOpenAIEnabled() {
@@ -135,7 +149,7 @@ public class LLMManager extends  AdminHandlerImpl {
 
     
     public boolean isLLMEnabled() {
-	return isGeminiEnabled() || isOpenAIEnabled();
+	return isGeminiEnabled() || isOpenAIEnabled() || isClaudeEnabled();
     }
 
 
@@ -184,6 +198,9 @@ public class LLMManager extends  AdminHandlerImpl {
 	if(isGeminiEnabled()) {
 	    models.add(new HtmlUtils.Selector("Google Gemini",MODEL_GEMINI));
 	}
+	if(isClaudeEnabled()) {
+	    models.add(new HtmlUtils.Selector("Claude",MODEL_CLAUDE));
+	}	
 	return models;
     }
 
@@ -270,6 +287,7 @@ public class LLMManager extends  AdminHandlerImpl {
 
     private IO.Result call(JobManager jobManager, final URL url, final String body, final String...args) 
 	throws Exception {
+	//	System.err.println("URL:" + url);
 	final IO.Result[] theResult={null};
 	Callable<Boolean> callable = new Callable<Boolean>() {
 		public Boolean call() {
@@ -306,6 +324,32 @@ public class LLMManager extends  AdminHandlerImpl {
 	}
     }	
 
+    public IO.Result  callClaude(String model, String gptText) throws Exception {
+	synchronized(MUTEX_CLAUDE) {
+	    if(!isClaudeEnabled()) return null;
+	    /*
+	      '{
+    "model": "claude-3-opus-20240229",
+    "max_tokens": 1024,
+    "messages": [
+        {"role": "user", "content": "Hello, world"}
+    ]
+}'
+	    */
+	    String claudeKey = getRepository().getProperty(PROP_CLAUDE_KEY);	
+	    String messages = JU.list(JU.map("role",JU.quote("user"),"content",JU.quote(gptText)));
+	    String body = JU.map("model",JU.quote("claude-3-opus-20240229"),
+				 "max_tokens","1024",
+				 "messages",messages);
+
+	    return call(claudeJobManager,
+			new URL(URL_CLAUDE+"?key=" + claudeKey), body,
+			"x-api-key",claudeKey,
+			"anthropic-version","2023-06-01",
+			"Content-Type","application/json");
+	}
+    }	
+    
 
 
     private  IO.Result  callOpenAI(Request request, String model, int maxReturnTokens,String gptText,String[]extraArgs)
@@ -420,6 +464,11 @@ public class LLMManager extends  AdminHandlerImpl {
 		result = callGemini(model,gptText);
 		long t2 = System.currentTimeMillis();
 		//		if(debug)getLogManager().logSpecial("LLMManager:done calling Gemini:" + (t2-t1)+"ms");
+	    } else if(model.equals(MODEL_CLAUDE)) {
+		long t1 = System.currentTimeMillis();
+		result = callClaude(model,gptText);
+		long t2 = System.currentTimeMillis();
+		//		if(debug)getLogManager().logSpecial("LLMManager:done calling Gemini:" + (t2-t1)+"ms");		
 	    } else if(Utils.equalsOne(model,MODEL_GPT_4,MODEL_GPT_3_5)) {
 		long t1 = System.currentTimeMillis();
 		result = callOpenAI(request,model,maxReturnTokens,gptText,extraArgs);
@@ -433,7 +482,24 @@ public class LLMManager extends  AdminHandlerImpl {
 		return null;
 	    }
 
+	    //	    System.err.println("RESULT:" + result.getResult());
 	    if(result.getError()) {
+		if(model.equals(MODEL_CLAUDE)) {
+		    if(result.getCode()==529) {
+			throw new CallException("Claude' API is temporarily overloaded.");
+		    }
+		    if(result.getCode()==429) {
+			throw new CallException("Claude's API rate limit has been exceeded.");
+		    }
+		    if(result.getCode()==400) {
+			throw new CallException("The call to the Claude API as malformed.");
+		    }
+		    if(result.getCode()==401) {
+			throw new CallException("The call to the Claude API had an authentication error.");
+		    }		    		    
+		    throw new CallException("Some error occurred calling the Claude API:" + result.getCode());
+		}
+
 		try {
 		    JSONObject json = new JSONObject(result.getResult());
 		    JSONObject error = json.optJSONObject("error");
@@ -518,6 +584,18 @@ public class LLMManager extends  AdminHandlerImpl {
 		return t;
 	    }
 
+	    if(json.has("content")) {
+		JSONArray choices = json.getJSONArray("content");
+		if(choices.length()>0) {
+		    JSONObject choice= choices.getJSONObject(0);
+		    if(choice.has("text")) {
+			return choice.getString("text");
+		    }
+		    System.err.println("\tLLMManager:No results from GPT:" + result);
+		}
+		throw new CallException("No results from GPT call");
+	    }
+
 	    if(json.has("choices")) {
 		JSONArray choices = json.getJSONArray("choices");
 		if(choices.length()>0) {
@@ -532,6 +610,7 @@ public class LLMManager extends  AdminHandlerImpl {
 		}
 	    }
 	}
+
 	return null;
     }
 
@@ -603,7 +682,12 @@ public class LLMManager extends  AdminHandlerImpl {
 	throws Exception {
 	if(true) {
 	    try {
+		System.err.println("CALLING");
 		return applyEntryExtractInner(request, entry,llmCorpus);
+	    } catch(CallException exc) {
+		System.err.println("ERROR");
+		getSessionManager().addSessionErrorMessage(request,"Error doing LLM extraction:" + entry+" " + exc.getMessage());
+		return false;
 	    } catch(Throwable thr) {
 		getSessionManager().addSessionErrorMessage(request,"Error doing LLM extraction:" + entry+" " + thr.getMessage());
 		throw new RuntimeException(thr);
@@ -838,7 +922,11 @@ public class LLMManager extends  AdminHandlerImpl {
 	}	
     }
 
-
+    private static class CallException extends RuntimeException {
+	public CallException(String msg) {
+	    super(msg);
+	}
+    }
 
 }
 
