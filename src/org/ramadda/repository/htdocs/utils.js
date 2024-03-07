@@ -5620,7 +5620,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    let tt = fullLabel;
 	    if(item && item!=tt) {
 		//check for encoding
-		if(item.indexOf('base64')<0) 
+		if(item.indexOf && item.indexOf('base64')<0) 
 		    tt = tt+HU.getTitleBr() + item;
 	    }
 	    attrs.push('title',tt,extra,null,'value',item);
