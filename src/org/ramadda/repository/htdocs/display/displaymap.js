@@ -973,6 +973,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'groupByField',tt:'Field id to group the paths'},	
 	{p:'pathWidth',ex:'2'},
 	{p:'pathColor',ex:'red'},	
+	{p:'pathWindowTime',tt:'Show leading dots',ex:'1 day'},
+	{p:'pathWindowSize',tt:'Number of records to show as leading dots'},
+	{p:'pathWindowStrokeColor'},
+
 	{p:'isTrajectory',ex:'true',tt:'Make a path from the points'},	
 	{p:'showPathEndPoint',ex:true},
 	{p:'pathEndPointShape',ex:'arrow'},
@@ -4336,10 +4340,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    }
 
 			    if(!inWindow) {
-				let line = this.map.createLine("line-" + featureCnt, "", lastRecord.getLatitude(), lastRecord.getLongitude(), record.getLatitude(),record.getLongitude(),attrs);
-				featuresToAdd.push(line);
-				line.record=record;
-				line.textGetter=textGetter;
+				if(attrs.strokeWidth>0) {
+				    let line = this.map.createLine("line-" + featureCnt, "", lastRecord.getLatitude(), lastRecord.getLongitude(), record.getLatitude(),record.getLongitude(),attrs);
+				    featuresToAdd.push(line);
+				    line.record=record;
+				    line.textGetter=textGetter;
+				}
 			    } else {
 				let percent = (idx-windowStartIndex)/(length-windowStartIndex);
 				let dotPoint = {x:record.getLongitude(),y:record.getLatitude()}; 
