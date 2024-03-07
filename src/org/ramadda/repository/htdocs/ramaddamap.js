@@ -950,43 +950,56 @@ RepositoryMap.prototype = {
 	let _this =  this;
 	if(!background1) background1= '#ffffcc';
 	$(selector).mouseenter(function() {
-		if (background1)
-                    $(this).css('background', background1);
-		if (!$(this).data('mapid'))
-                    return;
-		if (_this.circleMarker($(this).data('mapid'), MapUtils.circleHiliteAttrs)) {
-                    return;
-		}
-		if (id == null)
-                    return;
-		if (!Utils.isDefined($(this).data('latitude'))) {
-                    console.log("no lat");
-                    return;
-		}
-		attrs = {
-                    pointRadius: 12,
-                    stroke: true,
-                    strokeColor: "blue",
-                    strokeWidth: 2,
-                    fill: false,
-		};
-		point = _this.addPoint(id, MapUtils.createLonLat($(this).data('longitude'), $(this).data('latitude')),
-				       attrs);
-		markerMap[id] = point;
-            });
+	    if (background1)
+                $(this).css('background', background1);
+	    let id = $(this).data('mapid');
+	    if (!id)  return;
+            let box = _this.findBox(id);
+	    if(box) {
+		box.setBorder('red');
+		_this.boxes.drawMarker(box);
+	    }
+	    if (_this.circleMarker(id, MapUtils.circleHiliteAttrs)) {
+                return;
+	    }
+	    if (id == null)
+                return;
+	    if (!Utils.isDefined($(this).data('latitude'))) {
+                console.log("no lat");
+                return;
+	    }
+	    attrs = {
+                pointRadius: 12,
+                stroke: true,
+                strokeColor: "blue",
+                strokeWidth: 2,
+                fill: false,
+	    };
+	    point = _this.addPoint(id, MapUtils.createLonLat($(this).data('longitude'), $(this).data('latitude')),
+				   attrs);
+	    markerMap[id] = point;
+        });
 	$(selector).mouseleave(function() {
-		if (background2)
-                    $(this).css('background', background2);
-		else 
-                    $(this).css('background', 'transparent');
-		if (!$(this).data('mapid'))
-                    return;
-		if (id && markerMap[id]) {
-                    _this.removePoint(markerMap[id]);
-                    markerMap[id] = null;
-		}
-		_this.uncircleMarker($(this).data('mapid'));
-            });
+	    if (background2)
+                $(this).css('background', background2);
+	    else 
+                $(this).css('background', 'transparent');
+	    let id = $(this).data('mapid');
+	    if (!id)  return;
+	    if (markerMap[id]) {
+                _this.removePoint(markerMap[id]);
+                markerMap[id] = null;
+	    }
+
+
+            let box = _this.findBox(id);
+	    if(box) {
+		box.setBorder(box.defaultBorderColor);
+		_this.boxes.drawMarker(box);
+	    }
+
+	    _this.uncircleMarker($(this).data('mapid'));
+        });
     },
 
 
@@ -1459,7 +1472,6 @@ RepositoryMap.prototype = {
         if (north > 88) north = 88;
         if (south < -88) south = -88;
         let latLonBounds = MapUtils.createBounds(west, south, east, north);
-
         let imageBounds = this.transformLLBounds(latLonBounds);
         let image = MapUtils.createLayerImage(
             name, url,
@@ -4510,7 +4522,7 @@ RepositoryMap.prototype = {
         let bounds = MapUtils.createBounds(west, Math.max(south, -MapUtils.defaults.maxLatValue),
 					   east, Math.min(north, MapUtils.defaults.maxLatValue));
         let projBounds = this.transformLLBounds(bounds);
-        box = MapUtils.createBox(projBounds);
+        let box = MapUtils.createBox(projBounds);
         box.sticky = args.sticky;
         let _this = this;
 
@@ -4525,10 +4537,10 @@ RepositoryMap.prototype = {
         box.lonlat = this.transformLLPoint(lonlat);
         box.text = this.getPopupText(text);
         box.name = name;
-        box.setBorder(args["color"], 1);
-	box.defaultBorderColor = args["color"];
+        box.setBorder(args.color??'blue', 1);
+	box.defaultBorderColor = args.color;
         box.ramaddaId = id;
-        if (args["zoomToExtent"]) {
+        if (args.zoomToExtent) {
             this.centerOnMarkers(bounds);
         }
         this.addBox(box);
@@ -4537,17 +4549,15 @@ RepositoryMap.prototype = {
 
 
     circleMarker:  function(id, attrs) {
-
-        marker = this.findMarker(id);
+        let marker = this.findMarker(id);
         if (!marker) {
             marker = this.findFeature(id);
         }
-
         if (!marker) {
             return null;
         }
-        myattrs = {
-            pointRadius: 12,
+	let   myattrs = {
+            pointRadius: 20,
             stroke: true,
             strokeColor: "red",
             strokeWidth: 2,
@@ -4556,7 +4566,6 @@ RepositoryMap.prototype = {
 
         if (attrs)
             $.extend(myattrs, attrs);
-        let _this = this;
         this.showFeatureText(marker);
         return this.addPoint(id + "_circle", marker.location, myattrs);
     },
