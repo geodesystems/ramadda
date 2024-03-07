@@ -1858,6 +1858,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                             changeDate.getTime(), fromDate.getTime(),
                             toDate.getTime(), values);
 
+	    getEntryManager().parentageChanged(group);
         }
 
 	if(pushGeo && !entry.isGeoreferenced()) {

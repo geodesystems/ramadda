@@ -9621,11 +9621,11 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    private void parentageChanged(List<Entry> entries) {
+    public void parentageChanged(List<Entry> entries) {
 	for(Entry entry: entries) parentageChanged(entry.getParentEntry());
     }
 
-    private void parentageChanged(Entry parent) {
+    public void parentageChanged(Entry parent) {
 	if(parent!=null) {
 	    childrenCache.remove(parent.getId());
 	    parent.getTypeHandler().childrenChanged(parent);
