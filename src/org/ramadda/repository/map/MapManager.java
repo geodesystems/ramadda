@@ -1681,8 +1681,6 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         if (searchMarkers) {
             js += map.getVariableName() + ".initSearch(" + sqt(searchId)+ ");";
         }
-	System.err.println(js);
-
         sb.append(HU.script(JQuery.ready(js)));
 
         return map;
