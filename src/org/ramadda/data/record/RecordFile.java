@@ -690,7 +690,7 @@ public abstract class RecordFile {
 
     public final InputStream makeInputStream(boolean buffered) throws Exception {	
         IO.Path  path = getNormalizedFilename();
-        File file = checkCachedFile();
+        File file = getCacheFile();
 	if(debug) {
 	    System.err.println("RecordFile.makeInputStream:" + path);
 	    System.err.println("RecordFile.makeInputStream: cache file:"+ file);
