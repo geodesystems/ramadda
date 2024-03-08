@@ -258,7 +258,7 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
         },
     });
 
-    this.sleepTime = +this.getSleepTime(500);
+    this.sleepTime = +this.getSleepTime(this.getProperty('animationSpeed',500));
 }
 
 
