@@ -2231,8 +2231,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 									     records:records});
 				    }
 				} else {
-				    console.log('select',record);
-				    
 				    _this.propagateEventRecordSelection({record: record});
 				}
 			    }
