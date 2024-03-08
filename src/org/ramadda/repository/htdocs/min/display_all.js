@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Mar  8 05:18:28 EST 2024";
+var build_date="RAMADDA build date: Fri Mar  8 05:35:57 EST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -11427,7 +11427,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });		
 	},
 
-        addData: async function(pointData) {
+        addData: async function(pointData,skipUpdateUI) {
             let records = pointData.getRecords();
             if (records && records.length > 0) {
                 this.hasElevation = records[0].hasElevation();
@@ -11437,7 +11437,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    pointData = this.convertPointData(pointData);
             this.dataCollection.addData(pointData);
 	    try {
-		this.updateUI();
+		if(!skipUpdateUI)
+		    this.updateUI();
 	    } catch(err) {}
             let entry = pointData.entry;
             if (entry == null && pointData.entryId) {
@@ -11521,7 +11522,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.lastSelectedFields = null;
             if (!reload) {
 		if(debug) console.log("\tcalling addData");
-                this.addData(pointData);
+                this.addData(pointData,true);
 		//		if(debug) console.log("\tcalling checkSearchBar");
                 this.checkSearchBar();
 		//		if(debug) console.log("\done calling checkSearchBar");
