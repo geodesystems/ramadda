@@ -269,9 +269,11 @@ public class CdmOutputHandler extends OutputHandler implements CdmConstants {
      * @return _more_
      */
     public static String getProperty(String name, String dflt) {
-        String n = (String) getProperties().get(name);
-        if (n != null) {
-            return n;
+        String value = (String) getProperties().get(name);
+	if(value==null)
+	    value = (String) getProperties().get(name.toLowerCase());
+        if (value != null) {
+            return value;
         }
 
         return dflt;

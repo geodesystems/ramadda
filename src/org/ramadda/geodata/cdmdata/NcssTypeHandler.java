@@ -293,24 +293,23 @@ public class NcssTypeHandler extends PointTypeHandler {
             String extra   = "";
             String origVar = vars.get(i);
             String unit    = units.get(origVar);
-            String var     = GridPointOutputHandler.getAlias(origVar);
+            String alias     = CdmOutputHandler.getAlias(origVar);
 	    if(origVar.equals("station")) {
 		extra += " type=string ";
 	    }
             String label   = Utils.makeLabel(origVar);
-            label = GridPointOutputHandler.getProperty(origVar + ".label",
-                    GridPointOutputHandler.getProperty(origVar + ".label",
-                        label));
+            label = CdmOutputHandler.getProperty(alias + ".label",
+						 CdmOutputHandler.getProperty(origVar + ".label", label));
             if (unit != null) {
                 String prefix = "unit." + unit + ".";
-                String scale = GridPointOutputHandler.getProperty(prefix
-                                   + "scale", null);
-                String offset1 = GridPointOutputHandler.getProperty(prefix
-                                     + "offset1", null);
-                String offset2 = GridPointOutputHandler.getProperty(prefix
-                                     + "offset2", null);
-                unit = GridPointOutputHandler.getProperty(prefix + "unit",
-                        unit);
+                String scale = CdmOutputHandler.getProperty(prefix + "scale", null);
+                String offset1 = CdmOutputHandler.getProperty(prefix + "offset1", null);
+                String offset2 = CdmOutputHandler.getProperty(prefix + "offset2", null);
+                unit = CdmOutputHandler.getProperty(prefix + "unit", unit);
+		if(scale!=null || offset1!=null || offset2!=null) {
+		    unit = CdmOutputHandler.getProperty("unit." + unit,unit);
+		}
+		//		System.err.println("var:" + origVar +" unit:" + unit+" scale:" + scale+ " " + offset1 +" " + offset2);
                 if (unit != null) {
                     extra += " unit=\"" + unit + "\"";
                 }
@@ -324,7 +323,7 @@ public class NcssTypeHandler extends PointTypeHandler {
                     extra += " offset2=\"" + offset2 + "\"";
                 }
             }
-            properties.append(var + "[label=\"" + label + "\"  " + extra
+            properties.append(origVar + "[label=\"" + label + "\"  " + extra
                               + "]");
         }
         properties.append("\n");
