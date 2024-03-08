@@ -197,7 +197,12 @@ public class DaymetTypeHandler extends PointTypeHandler {
 		"-add",latlon,latlon,
 		"-print"
 	    };
-	    return applySeesv(entry,args);
+	    //	    System.err.println("daymet start");
+	    long t1 = System.currentTimeMillis();
+	    InputStream is =  applySeesv(entry,args);
+	    long t2 = System.currentTimeMillis();
+	    //	    Utils.printTimes("daymet:",t1,t2);
+	    return is;
         }
 
         /**
