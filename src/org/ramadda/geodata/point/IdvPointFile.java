@@ -113,6 +113,7 @@ public class IdvPointFile extends CsvFile {
      *
      * @return _more_
      */
+    @Override
     public String getProperty(RecordField field, Hashtable properties,
                               String prop, String dflt) {
         if (prop.equals("chartable") || prop.equals("searchable")) {
@@ -135,6 +136,7 @@ public class IdvPointFile extends CsvFile {
      * @param failureOk _more_
      * @return _more_
      */
+    @Override
     public List<RecordField> doMakeFields(boolean failureOk) {
         String fieldString = getProperty(PROP_FIELDS, null);
         if (fieldString == null) {
@@ -152,10 +154,6 @@ public class IdvPointFile extends CsvFile {
 
     }
 
-
-
-
-
     /**
      * _more_
      *
@@ -168,15 +166,6 @@ public class IdvPointFile extends CsvFile {
     @Override
     public PointRecord getRecord(int index) throws Exception {
         throw new IllegalArgumentException("Not implemented");
-    }
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     */
-    public static void main(String[] args) {
-        PointFile.test(args, IdvPointFile.class);
     }
 
 }
