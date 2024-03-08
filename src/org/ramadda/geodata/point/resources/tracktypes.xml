@@ -65,7 +65,7 @@ isPathThreshold="property:path_threshold"
 +if property=show_table
 :heading Table
 {{display_download}}
-{{display_htmltable}}
+{{display_table}}
 -if
 
 

@@ -49,7 +49,7 @@ fields=".*temp.*,sal.*"
 
 :heading Table
 {{display_download showMenu=false}} 
-{{display_htmltable showMenu=false}}
+{{display_table showMenu=false}}
 -section
 ]]>
 </wiki>
@@ -73,7 +73,7 @@ fields=".*temp.*,sal.*"
 
 :heading Table
 {{display_download showMenu=false showDateSelect=true}} 
-{{display_htmltable showMenu=false}}
+{{display_table showMenu=false}}
 -section
 ]]>
 </wiki>
@@ -342,7 +342,7 @@ label,pos:s,dx:cw2,dy:-10,font:36px sans-serif,label:${match  pattern="(atmp|spd
 {{display_linechart showMenu=true fields="pres|dir01|#3"}} 
 :heading Table
 {{display_download}}
-{{display_htmltable  includeDate=false }} 
+{{display_table  includeDate=false }} 
 -section
 ]]>
 </wiki>
@@ -446,7 +446,7 @@ indexField="depth" fields="salinity,density"
 -row
 :heading Table
 {{display_download}}
-{{display_htmltable  includeUnits=false}}
+{{display_table  includeUnits=false}}
 :heading Buoy Information
 +row
 +col-8
@@ -614,7 +614,7 @@ indexField="depth" fields="salinity,density"
 -row
 :heading Table
 {{display_download}}
-{{display_htmltable  includeUnits=false}}
+{{display_table  includeUnits=false}}
 :heading Buoy Information
 +row
 +col-8
@@ -770,7 +770,7 @@ View station:
 -row
 :heading Table
 {{display_download}}
-{{display_htmltable}}
+{{display_table}}
 
 ----
 

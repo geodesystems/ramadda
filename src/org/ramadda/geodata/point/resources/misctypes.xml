@@ -63,7 +63,7 @@ height=400px isPath=true radius=6 strokeWidth=0 colorBy=# colorByFields="#" colo
 -col
 -row 
 :p
-{{display_htmltable}}
+{{display_table}}
 -section
 ]]>
 </wiki>
