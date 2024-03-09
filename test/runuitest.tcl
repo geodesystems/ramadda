@@ -37,13 +37,17 @@ proc runGroup {group id {groupLimit 10000}} {
 }
 
 
-set groupUrl ""
+proc usage {} {
+    puts stderr "usage tclsh runuitest.tcl <-clean (remove and thumb_ and console_ files> <-o output.html> <-sleep sleep_seconds> <-urls file (file contains urls to test_> <url>"
+}
+
+set groupID ""
 set urls [list]
 set sleep 5
 for {set i 0} {$i <[llength $argv]} {incr i} {
     set  arg [lindex $argv $i]
     if {$arg == "-help"} {
-	puts stderr "usage tclsh runuitest.tcl <-clean (remove and thumb_ and console_ files> <-o output.html> <-sleep sleep_seconds> <-urls file (file contains urls to test_> <url>"
+	usage
 	exit
     }
     if {$arg == "-o"} {
@@ -70,7 +74,7 @@ for {set i 0} {$i <[llength $argv]} {incr i} {
     }
     if {$arg == "-group"} {
 	incr i
-	set groupUrl [lindex $argv $i]
+	set groupID [lindex $argv $i]
 	continue;
     }
 
@@ -85,6 +89,12 @@ for {set i 0} {$i <[llength $argv]} {incr i} {
 	}
 	continue
     }
+    if {![regexp {http} $arg]} {
+	puts stderr "Unknown argument:$arg"
+	usage
+	exit
+    }
+
     lappend urls "$arg"
 }
 
@@ -93,12 +103,9 @@ if {$::output==""} {
     set ::output [open results.html w]
 }
 
-if {$groupUrl!=""} {
-    runGroup "Group" $groupUrl
-    return
-}
-
-if {[llength $urls]} {
+if {$groupID!=""} {
+    runGroup "Group" $groupID
+} elseif {[llength $urls]} {
     set cnt 0
     foreach url $urls {
 	incr cnt
