@@ -123,6 +123,8 @@ if {$groupID!=""} {
     runGroup "Data List" 5ec45056-fe82-4d98-a9c4-4f1da94be8b0
     runGroup "Tracks" 30361e7a-8d2a-4dde-b3b9-cb0fe556c8be
     runGroup "Earth Science" 624d4236-ac54-4566-ad5c-f46acdb26ee1
+    runGroup "RAMADDA Tour" ramadda_tour
+    runGroup "RAMADDA Tour - Part 2" ramadda_tour_2    
     runGroup "IMDV" aa5c104c-0c85-4937-86b1-7daf5e7dda28
     runGroup "Charts" 3ebcb4f4-fa4d-4fb3-9ede-d42ec7e0aa9d
     runGroup "Maps" 1d0fa3f5-407e-4a39-a3da-9a5ed7e1e687
