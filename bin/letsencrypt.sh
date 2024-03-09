@@ -8,7 +8,7 @@
 #keytool: part of a standard JAVA-JDK install
 
 #usage:
-#makekeystore.sh -help"
+#letsencrypt.sh -help"
 
 
 #If no password specified then this script looks in your RAMADDA home directory in each 
@@ -31,7 +31,7 @@
 
 ##params set from args
 
-BIN_DIR=`dirname $0`
+BIN_DIR="$(cd "$(dirname "$0")" && pwd)"
 #CERTBOT=${BIN_DIR}/certbot-auto
 #CERTBOT=/usr/local/bin/certbot-auto
 CERTBOT=/bin/certbot
@@ -39,9 +39,13 @@ if [ ! -e "$CERTBOT" ]; then
     CERTBOT=/bin/certbot-3
 fi
 
+if [ ! -e "$CERTBOT" ]; then
+    CERTBOT=/usr/bin/certbot-3
+fi
+
 
 WHAT=new
-RAMADDA_HOME=/mnt/ramadda/repository
+RAMADDA_HOME=/mnt/ramadda/ramaddahome
 HTDOCS=
 FIRST_DOMAIN=
 OTHER_DOMAINS=
@@ -149,6 +153,13 @@ do
 done
 
 
+if [ ! -e "$CERTBOT" ]; then
+    echo "Cannot find certbot: $CERTBOT"
+    echo "Specify the path with -certbot <path to certbot>"
+    usage
+    exit
+fi
+
 
 if [ -z "$FIRST_DOMAIN" ]; then
     echo "You must specify a domain"
@@ -157,17 +168,26 @@ if [ -z "$FIRST_DOMAIN" ]; then
 fi
 
 
+if [ ! -d "$RAMADDA_HOME" ]; then
+    echo "Cannot find RAMADDA home directory: $RAMADDA_HOME"
+    echo "Specify the path with -home <RAMADDA Home>"
+    usage
+    exit
+fi
+
+
+
 if [ "$HTDOCS" == "" ]; then
     HTDOCS="${RAMADDA_HOME}/htdocs"
 fi
 
-
-##Hard code the geodesystems extra domains
-if [ "${FIRST_DOMAIN}" = "geodesystems.com" ]; then
-    OTHER_DOMAINS=www.geodesystems.com,boulderdata.org,www.boulderdata.org,communidata.org,www.communidata.org,10000cities.org,www.10000cities.org,ramadda.org,www.ramadda.org,asdi.ramadda.org,sdn.ramadda.org,wdvp.ramadda.org,ditchproject.org,www.ditchproject.org
+if [ ! -d "$HTDOCS" ]; then
+    echo "Cannot find htdocs directory: $HTDOCS"
+    echo "Specify the path with -webroot <path to htdocs directory>"
+    usage
+    exit
 fi
-
-
+    
 
 ##If no password then find the properties file that contains the ssl passwords
 if [ -z "$PASSWORD" ]; then
