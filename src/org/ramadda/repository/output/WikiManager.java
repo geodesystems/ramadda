@@ -2691,7 +2691,12 @@ public class WikiManager extends RepositoryManager
 		} else if(url==null) {
 		    url = getEntryManager().getEntryUrl(request, entry);
 		}
-                name = HU.href(url, name, HU.cssClass("ramadda-clickable")+HU.style(linkStyle));
+		String attrs = HU.cssClass("ramadda-clickable")+HU.style(linkStyle);
+		String target = request.getString("linktarget",null);
+		if(target!=null)
+		    attrs+=HU.attr("target",target);
+	
+                name = HU.href(url, name, attrs);
             }
             return name;
         } else if (theTag.equals(WIKI_TAG_EMBEDMS)) {
