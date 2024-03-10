@@ -1,8 +1,8 @@
-{"name":"Keweenaw Bay Community College (KBOCC) Data Sovereignty Licences",
+{"name":"Keweenaw Bay Community College (KBOCC) Data Sovereignty Licenses",
 "priority":1,
 "licenses":[
 {"id":"kbocc-license-share",
- "name":"Keweenaw Bay Community College (KBOCC) Data Licence",
+ "name":"Keweenaw Bay Community College (KBOCC) Data License",
  "icon":"/kbocc/kbocclg.png",
  "url":"https://www.kbocc.edu/",
  "text":"This data is the property of the Keweenaw Bay Community College (KBOCC)"
