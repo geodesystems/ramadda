@@ -2835,7 +2835,10 @@ public class WikiUtil implements HtmlUtilsConstants {
                     String url = getTitleUrl(true);
                     if (url != null) {
                         closeTheTag = true;
-                        HU.open(buff, "a", "href=\"" + url + "\"");
+			String attrs = HU.attr("href", url);
+			String target = getLinkTarget();	
+			if(target!=null) attrs+=HU.attr("target",target);	
+                        HU.open(buff, "a", attrs);
                     }
 
                     continue;
@@ -2869,9 +2872,9 @@ public class WikiUtil implements HtmlUtilsConstants {
                     if (clazz.length() > 0) {
                         clazz = "ramadda-button-" + clazz;
                     }
-                    HU.href(buff, url, label,
-                            " class='ramadda-button " + clazz
-                            + "' role='button' ");
+		    buff.append(makeHref(url,label,
+					 " class='ramadda-button " + clazz
+					 + "' role='button' "));
 
                     continue;
                 }
@@ -3051,7 +3054,7 @@ public class WikiUtil implements HtmlUtilsConstants {
                     String       label = (toks.size() > 2)
                                          ? toks.get(2)
                                          : "link";
-                    buff.append(HU.href(toks.get(1), label));
+                    buff.append(makeHref(toks.get(1), label,""));
                     continue;
                 }
 
@@ -3914,12 +3917,18 @@ public class WikiUtil implements HtmlUtilsConstants {
      */
     public String getTitle(String label, String style) {
         String url = getTitleUrl(true);
-        return  (url != null)
-	    ? HU.href(url, label, (style == null)
-		      ? null
-		      : HU.style(style))
-	    : label;
+	if(url==null) return label;
+	String attrs = "";
+	if(style!=null) attrs+=HU.attr("style",style);
+	return makeHref(url,label,attrs);
     }
+
+    public String makeHref(String url,String label,String attrs)    {
+        String target = getLinkTarget();	
+	if(target!=null) attrs+=HU.attr("target",target);	
+        return  HU.href(url, label, attrs);
+    }
+
 
     /**
      * _more_
@@ -3938,13 +3947,19 @@ public class WikiUtil implements HtmlUtilsConstants {
 
     }
 
+    public String getLinkTarget() {
+        return  (String) getProperty("linktarget");
+    }    
+
     /**
      * _more_
      *
      * @param url _more_
      */
-    public void setTitleUrl(String url) {
+    public void setTitleUrl(String url,String target) {
         putProperty("title-url", url);
+	if(target!=null)
+	    putProperty("linktarget", target);	    
     }
 
     /**
@@ -3991,9 +4006,9 @@ public class WikiUtil implements HtmlUtilsConstants {
 	    if(decorate && user.getAvatarUrl()!=null) {
 		name = HU.image(user.getAvatarUrl(),ATTR_WIDTH,"40px") +" "+ name;
 	    }
-	    name= HU.href(user.getUrl(),name);
+	    name= makeHref(user.getUrl(),name,"");
 	    String date = sdf.format(item.getDate());
-	    String message= HU.href(item.getItemUrl(),item.getMessage());
+	    String message= makeHref(item.getItemUrl(),item.getMessage(),"");
 	    HU.row(sb,showAuthor?HU.cols(name,date,message):HU.cols(date,message),HU.cssClass("search-component"));
 	}
 	if(items.size()>0) {
@@ -4097,7 +4112,8 @@ public class WikiUtil implements HtmlUtilsConstants {
 	    if(height!=null) {
 		extract = HU.div(extract,HU.style("max-height:" + HU.makeDim(height,null)+";overflow-y:auto;"));
 	    }
-	    String source = "<div style='text-align:center;font-style:italic;font-size:80%;'>"+ HU.href(url,"Source: Wikipedia")+"</div>";
+	    String source = "<div style='text-align:center;font-style:italic;font-size:80%;'>"+
+		makeHref(url,"Source: Wikipedia","")+"</div>";
 	    if(thumb!=null) {
 		extract = HU.leftRight(extract,HU.div(thumb+source,HU.style("margin-left:5px;")));
 	    } else {
