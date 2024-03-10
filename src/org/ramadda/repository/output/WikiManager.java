@@ -2695,7 +2695,6 @@ public class WikiManager extends RepositoryManager
 		String target = request.getString("linktarget",null);
 		if(target!=null)
 		    attrs+=HU.attr("target",target);
-	
                 name = HU.href(url, name, attrs);
             }
             return name;
@@ -6014,7 +6013,7 @@ public class WikiManager extends RepositoryManager
 	    String url = (String)request.getExtraProperty(PROP_OVERRIDE_URL);
             if(url==null)
 		url = getEntryManager().getEntryUrl(request, entry);
-            wikiUtil.setTitleUrl(url);
+            wikiUtil.setTitleUrl(url,request.getString("linktarget",null));
         }
 
         return wikiUtil;
