@@ -911,6 +911,12 @@ function DisplayThing(argId, argProperties) {
 		let mattrs  = macros.getAttributes(f.getId());
 		if(mattrs && !mattrs['label']) mattrs['label'] = f.getLabel();
 		let value = row[f.getIndex()];
+		if(f.isNumeric() && isNaN(value) && props.findNonNan && props.records) {
+		    for(let i=props.records.length-1;i>=0;i--) {
+			value = f.getValue(props.records[i]);
+			if(!isNaN(value)) break;
+		    }
+		}
 		if(debug) console.log("macro:" + col +" field:" + f.getId() +" type:" +f.getType() + " value:" + value);
 		if(props.iconMap) {
 		    let icon = props.iconMap[f.getId()+"."+value];

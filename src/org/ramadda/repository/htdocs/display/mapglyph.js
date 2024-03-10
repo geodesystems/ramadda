@@ -960,25 +960,43 @@ MapGlyph.prototype = {
 	    entryId:this.attrs.entryId
 	};
 
-	let markers = [];
+	let markerLines = [];
 	markersString = markersString.replace(/\\ *\n/g,'');
-	let lines = Utils.split(markersString,'\n',true,true);
-	lines.forEach(line=>{
+	let rawLines = Utils.split(markersString,'\n',true,true);
+	rawLines.forEach(line=>{
 	    line = line.trim();
 	    if(line.startsWith("#") || line == "") return;
 	    //console.log('\tline:'+line);
-	    markers.push(line);
+	    markerLines.push(line);
 	});
-	if(markers.length==0) {
+	if(markerLines.length==0) {
 	    console.log("\tno markers-2");
 	    return;
 	}
-	let url = Ramadda.getUrl("/entry/data?record.last=1&max=1&entryid=" + opts.entryId);
-	let pointData = new PointData("",  null,null,url,
-				      {entryId:opts.entryId});
+	let markers = [];
+	let lines=[];
+	let props = {};
+	markerLines.forEach(line=>{
+	    line = line.trim();
+	    if(line.startsWith("#")) return;
+	    if(line.startsWith('props:')) {
+		this.parseDataIconProps(props,line.substring('props:'.length));
+		return;
+	    }
+	    lines.push(line);
+	});
+	this.parseDataIconProps(props,this.getDataIconProperty(ID_DATAICON_PROPS));
+
+	console.log(props);
+
+	let sampleCount = props.sampleCount??1;
+	let url = Ramadda.getUrl("/entry/data?record.last="+ sampleCount+"&max=" + sampleCount+"&entryid=" + opts.entryId);
+//	console.log('url',url);
+	let pointData = new PointData("",  null,null,url, {entryId:opts.entryId});
+
 
 	let callback = (data)=>{
-	    this.makeDataIcons(pointData,data,markers);
+	    this.makeDataIcons(pointData,data,markers,lines,props);
 	}
 	let fauxDisplay  = {
 	    display:this.display,
@@ -1021,26 +1039,12 @@ MapGlyph.prototype = {
 
 
 
-    makeDataIcons: function(pointData,data,markerLines) {
-	let markers = [];
-	let lines=[];
-	let props = {};
-	markerLines.forEach(line=>{
-	    line = line.trim();
-	    if(line.startsWith("#")) return;
-	    if(line.startsWith('props:')) {
-		this.parseDataIconProps(props,line.substring('props:'.length));
-		return;
-	    }
-	    lines.push(line);
-	});
-	this.parseDataIconProps(props,this.getDataIconProperty(ID_DATAICON_PROPS));
+    makeDataIcons: function(pointData,data,markers,lines,props) {
 
 	let cvrt=(v,dflt)=>{
 	    if(!Utils.stringDefined(v)) return dflt;
 	    return v;
 	};
-
 
 
 	//This recurses up the glyph tree
@@ -1092,12 +1096,7 @@ MapGlyph.prototype = {
 
 	    //In case there wasn't a unit
 //	    line = line.replaceAll(/\${unit}/g,'');
-//	    console.log(this.getIcon());
-//	    console.log('before:'+line);
 	    line = line.replaceAll(/\${icon}/g,this.getIcon());	    
-//	    console.log('after:'+line);
-
-
 	    props = Utils.clone({},
 				props,{
 				    glyphField:selectedField,
@@ -1138,7 +1137,12 @@ MapGlyph.prototype = {
 	markers.forEach(marker=>{
 	    //if its an image glyph then the image might not be loaded so the call returns a
 	    //isReady function that we keep checking until it is ready
-	    let isReady =  marker.draw(props, canvas, ctx, 0,canvasHeight,{record:records[records.length-1]});
+	    let isReady =  marker.draw(props, canvas, ctx, 0,canvasHeight,{
+		findNonNan:props.findNonNan,
+		records:records,
+		recordIndex:records.length-1,
+		record:records[records.length-1]
+	    });
 	    if(isReady) pending.push(isReady);
 	    //check for missing
 	    if(!marker.isImage()) {

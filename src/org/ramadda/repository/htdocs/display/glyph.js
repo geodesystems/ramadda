@@ -205,9 +205,10 @@ Glyph.prototype = {
 		return;
 	    }
 	    let text = String(label);
-
 	    if(args.record) {
 		text = this.display.applyRecordTemplate(args.record, null,null,text,{
+		    records:args.records,
+		    findNonNan:args.findNonNan,
 		    entryname:props.entryname,
 		    unit:props.unit
 		});
