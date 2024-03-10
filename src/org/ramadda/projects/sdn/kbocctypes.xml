@@ -36,6 +36,11 @@ csvcommands6=_csvcommandspace_date_time.type_csvcommandspace_date_csvcommandspac
 +row
 +col-9
 {{display_linechart height="300px" fields="temperature"}} 
+
+:vspace 1em
+:heading Table
+{{display_download}}
+{{display_htmltable}}
 -col
 +col-3
 {{license  license="kbocc-license-share"  includeName="true"  showDescription="true"  decorate="true"  iconWidth="50px"  #textBefore="extra text" 
@@ -48,10 +53,7 @@ csvcommands6=_csvcommandspace_date_time.type_csvcommandspace_date_csvcommandspac
 -col
 -row
 :vspace 1em
-:heading Table
-{{display_download}}
-{{display_htmltable}}
-
+----
 :heading Information
 {{information  details=true }} 
 -section
