@@ -26,8 +26,18 @@ csvcommands2=Number,-set,1,0,Date_csvcommandspace_Time
 csvcommands3=-set,2,0,Temperature,-indateformat
 csvcommands4=MM/dd/yy_csvcommandspace_HH:mm:ss_csvcommandspace_a,GMT-4,-outdateformat,yyyy-MM-dd'T'HH:mm:ss.SSSZ,GMT
 csvcommands5=-convertdate,date_time,-columns,date_time\,temperature,-addheader
-csvcommands6=_csvcommandspace_date_time.type_csvcommandspace_date_csvcommandspace__csvcommandspace_date_time.format_csvcommandspace_{yyyy-MM-dd'T'HH:mm:ss.SSSZ}
+csvcommands6=_csvcommandspace_date_time.type_csvcommandspace_date_csvcommandspace__csvcommandspace_temperature.unit F date_time.format_csvcommandspace_{yyyy-MM-dd'T'HH:mm:ss.SSSZ}
 ]]></property>
+
+<property name="mapglyphs">                                                                         
+props:fontSize:0px,iconSize:75,canvasWidth:500,canvasHeight:100,fill:#efefef,borderWidth:2,borderColor:#000,font:bold 36px sans-serif,sampleCount:10,findNonNan:true
+image,pos:nw,dx:10,dy:10-ch,width:60,height:60,url:${icon}                                          
+label,pady:5,pos:nw,dx:80,dy:10-ch,label:${entryname}                                               
+label,pos:s,dx:cw2,dy:-10,font:36px sans-serif,label:${temperature decimals=1 suffix=" ${unit}" prefix="Temp:"}
+</property>
+
+
+
 <wiki>
 <![CDATA[
 +section title={{name}}
