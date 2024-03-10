@@ -1096,6 +1096,7 @@ public abstract class RecordFile {
 	    }
 	}
 	
+	//	System.err.println("numRecords:" + numRecords+" last:" + last +" skip:" + reallySkip);
         RecordIO recordIO = doMakeInputIO(visitInfo, skip == 0);
         visitInfo.setRecordIO(recordIO);
         visitInfo = prepareToVisit(visitInfo);
