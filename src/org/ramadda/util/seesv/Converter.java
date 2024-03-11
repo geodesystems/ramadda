@@ -2227,7 +2227,7 @@ public abstract class Converter extends Processor {
                 }
                 format = Seesv.getDbProp(props, id, i, "format", format);
                 if (format != null) {
-                    format = format.replaceAll("_space_", " ");
+                    format = Utils.convertDateFormat(format.replaceAll("_space_", " "));
                 }
 
                 attrs.append(" type=\"" + type + "\"");
