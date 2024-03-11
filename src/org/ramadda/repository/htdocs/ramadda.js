@@ -648,6 +648,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	if(true ||!props.inlineEdit) {
 	    html.find('.entry-row').tooltip({
 		show: { effect: 'slideDown', delay: 1500, duration: 300 },
+		position: { my: "right top", at: "right bottom" },
 		content: function () {
 		    if($(this).hasClass('ramadda-edit-input')) return null;
 		    let title = $(this).attr('title');
