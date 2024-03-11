@@ -8,7 +8,6 @@ package org.ramadda.plugins.doi;
 
 import edu.ucsb.nceas.ezid.*;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.AccessException;
 import org.ramadda.repository.metadata.*;
@@ -320,6 +319,8 @@ public class DoiOutputHandler extends OutputHandler {
             profile = PROFILE_DATACITE;
         }
         if ( !request.exists(ARG_CREATE)) {
+	    getPageHandler().entrySectionOpen(request, entry, sb,
+					      "Create Identifier");
             sb.append(HtmlUtils.formTable());
             sb.append(
                 HtmlUtils.form(getRepository().URL_ENTRY_SHOW.toString()));
@@ -354,6 +355,7 @@ public class DoiOutputHandler extends OutputHandler {
             sb.append(HtmlUtils.formEntry(HtmlUtils.space(25), ""));
             sb.append(HtmlUtils.formClose());
             sb.append(HtmlUtils.formTableClose());
+	    getPageHandler().entrySectionClose(request, entry, sb);
         } else {
             EZIDService ezid = new EZIDService();
             ezid.login(getRepository().getProperty(PROP_EZID_USERNAME, ""),

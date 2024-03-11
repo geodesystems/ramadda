@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <metadata>
   <handler category="Miscellaneous" class="org.ramadda.plugins.doi.DoiMetadataHandler" >
-    <type id="doi_identifier" name="Identifier" foruser="true">
-      <element id="identifier_type" name="Identifier Type" />
+    <type id="doi_identifier" name="DOI Identifier" foruser="true">
+      <element id="identifier_type" name="Identifier Type" datatype="enumeration"
+	       values="doi:DOI,ark:ARK"/>
       <element id="identifier" name="Identifier"/>
     </type>
   </handler>
