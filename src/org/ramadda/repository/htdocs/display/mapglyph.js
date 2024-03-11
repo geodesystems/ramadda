@@ -987,8 +987,6 @@ MapGlyph.prototype = {
 	});
 	this.parseDataIconProps(props,this.getDataIconProperty(ID_DATAICON_PROPS));
 
-	console.log(props);
-
 	let sampleCount = props.sampleCount??1;
 	let url = Ramadda.getUrl("/entry/data?record.last="+ sampleCount+"&max=" + sampleCount+"&entryid=" + opts.entryId);
 //	console.log('url',url);
@@ -5731,7 +5729,9 @@ MapGlyph.prototype = {
 	    }
 	    this.showMultiEntries();
 	};
-	entry.getChildrenEntries(callback);
+	let order = 'orderby=' + this.getProperty('orderby','name');
+	order+='&ascending=' + this.getProperty('ascending','true');
+	entry.getChildrenEntries(callback,order);
     },
     isSelected:function() {
 	return this.selected;
