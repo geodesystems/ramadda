@@ -2260,7 +2260,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             if (Utils.stringDefined(help)) {
                 buffer.getBuffer().append(formEntry(request, "", help));
             }
-            column.addToSearchForm(request, buffer.getBuffer(), where, entry);
+            column.addToSearchForm(request, buffer.getBuffer(), where, entry,true);
 
         }
 
