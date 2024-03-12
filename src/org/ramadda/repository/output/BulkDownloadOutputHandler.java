@@ -88,7 +88,7 @@ public class BulkDownloadOutputHandler extends OutputHandler {
         super(repository, element);
         addType(OUTPUT_CURL);
         addType(OUTPUT_WGET);
-	downloadsh = getStorageManager().readUncheckedSystemResource("/org/ramadda/repository/output/download.sh");
+	downloadsh = getStorageManager().readUncheckedSystemResource("/org/ramadda/repository/resources/download.sh");
     }
 
 
