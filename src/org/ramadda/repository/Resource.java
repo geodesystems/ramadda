@@ -214,7 +214,11 @@ public class Resource {
      * @return _more_
      */
     public long getFileSize() {
-        if (fileSize > 0) {
+	return getFileSize(false);
+    }
+
+    public long getFileSize(boolean force) {	
+        if (!force && fileSize > 0) {
             return fileSize;
         }
         File file = getTheFile();
@@ -370,6 +374,7 @@ public class Resource {
      * @param type _more_
      */
     public void setFile(File file, String type) {
+	fileSize= file.length();
         setPath(file.toString());
         this.type = type;
     }
