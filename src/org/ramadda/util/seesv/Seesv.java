@@ -2966,7 +2966,7 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_ADDHEADER, "Add the RAMADDA point properties",
 		ARG_LABEL,"Add Point Header",
                 new Arg("properties", "name1 value1 ... nameN valueN<br>Set default: default.type double", ATTR_ROWS, "6")),
-        new Cmd(CMD_DB, "Generate the RAMADDA db xml from the header",
+        new Cmd(CMD_DB, "Generate the RAMADDA db xml from the header. See <a class=ramadda-decor target=_help href=https://ramadda.org/repository/userguide/seesv.html#-db>Help</a>",
 		ARG_LABEL,"RAMADDA Database XML",
 		new Arg("properties",
 			"Name value pairs:\n\t\ttable.id &lt;new id&gt; table.name &lt;new name&gt;\ntable.cansearch false table.canlist false\ntable.icon &lt;icon&gt;, e.g., /db/database.png\n\t\t&lt;column&gt;.id &lt;new id for column&gt; &lt;column&gt;.label &lt;new label&gt;\n\t\t&lt;column&gt;.type &lt;string|enumeration|double|int|date|latlon&gt;\n\t\t&lt;column&gt;.format &lt;yyyy MM dd HH mm ss format for dates&gt;\n\t\t&lt;column&gt;.canlist false &lt;column&gt;.cansearch false\n\t\tinstall &lt;true|false&gt; install the new db table\n\t\tnukedb &lt;true|false&gt; careful! this deletes any prior created dbs\n\tyesreallynukethewholedb true - this double checks", ATTR_ROWS, "10")),

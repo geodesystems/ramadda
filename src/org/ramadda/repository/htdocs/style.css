@@ -253,6 +253,9 @@ a {
 .ramadda-nodecor {
     text-decoration: none;
 }
+.ramadda-decor {
+    text-decoration: underline !important;
+}
 
 a:hover {
     color:var(--highlight-color);

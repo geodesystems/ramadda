@@ -1,6 +1,6 @@
 The -db command generates a Data Tables specification, a ...db.xml file that acts as a RAMADDA plugin.
 See <a href=https://ramadda.org/repository/db/db.html>https://ramadda.org/repository/db/db.html</a> for more information.
-<br>
+<p>
 The -db command takes the form:
 <pre>
 -db "name value pairs"
@@ -22,10 +22,10 @@ yesreallynukethewholedb true - this double checks
 
 In the interactive Convert Data SeeSV form if you press "Table" then the schema will be shown. Clicking on the column
 links brings up a popup menu that sets the id, label, type, etc for the column.
-<br>
+<p>
 If you have the install flag defined as true then when you hit "Process" the db.xml file will be generated and
 the plugin will be loaded into RAMADDA. You can then go and add a new entry of the Database name from the "Pick a type..." menu
-<br>
+<p>
 If you have nukedb and the yesreallynukethewholedb flags set to true then when you press Process the
 database table will first be dropped and then recreated. This capability is there because you can iteratively change
 the type of the columns. Note: any database entry and data that has been loaded will be removed.
