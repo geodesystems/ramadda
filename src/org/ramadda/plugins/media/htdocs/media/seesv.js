@@ -565,8 +565,11 @@ function  SeesvForm(inputId, entry,params) {
 		    }
 		    //If we run into another command then break
 		    if(c=='-' && !inQuote) {
-			right--;
-			break
+			let prev = text[right-2];
+			if(!prev || prev.match(/\s/)) {
+			    right--;
+			    break
+			}
 		    }			
 
 		    if(inEscape) {
@@ -1302,17 +1305,15 @@ function  SeesvForm(inputId, entry,params) {
 		    let extra = getExtra(arg);
 		    if(extra=="" && desc=="") return "";
 		    if((desc+':') == label) desc="";
-
-
 		    if(Utils.stringDefined(extra)) {
-			desc = HU.table([],HU.tr(['valign','top'],HU.td(['width','1%'],extra)+HU.td([],desc)));
+			desc = HU.table([],HU.tr(['valign','top'],HU.td(['width','1%'],extra)+HU.td([ATTR_STYLE,HU.css('max-height','100px','overflow-y','auto')],desc)));
 		    }
 		    let help = "";
 		    if(arg.type=="columns")
 			help="<br>"+HU.href(ramaddaBaseUrl +'/userguide/seesv.html#help_columns',HtmlUtils.getIconImage(ICON_HELP),
 					    ['target','_help','title','Columns Help']);
 		    desc+=help;
-		    return   HU.div([STYLE,HU.css('max-width','300px','vertical-align','top')],desc);
+		    return   HU.div([STYLE,HU.css('max-width','300px','vertical-align','top','max-height','200px','overflow-y','auto')],desc);
 		}
 
 
@@ -1335,7 +1336,8 @@ function  SeesvForm(inputId, entry,params) {
 			v=Utils.join(lines,'\n');
 		    }
 		    inner+=HU.formEntryTop(label,
-					   HU.hbox([HU.textarea("",v,["cols", a.columns || a.size || "30", "rows",a.rows,ID,id,"size",10]),desc]));		
+					   HU.hbox([HU.textarea("",v,["cols", a.columns || a.size || "30", "rows",a.rows,ID,id,"size",10]),
+						    HU.div([ATTR_STYLE,HU.css('max-height','200px','overflow-y','auto')],  desc)]));		
 		} else if(a.values || a.type=="enumeration") {
 		    let values
 		    if(a.values) {
