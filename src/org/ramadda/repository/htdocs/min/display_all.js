@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Mar 10 07:55:56 MDT 2024";
+var build_date="RAMADDA build date: Tue Mar 12 17:55:51 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -49422,8 +49422,6 @@ MapGlyph.prototype = {
 	});
 	this.parseDataIconProps(props,this.getDataIconProperty(ID_DATAICON_PROPS));
 
-	console.log(props);
-
 	let sampleCount = props.sampleCount??1;
 	let url = Ramadda.getUrl("/entry/data?record.last="+ sampleCount+"&max=" + sampleCount+"&entryid=" + opts.entryId);
 //	console.log('url',url);
@@ -54166,7 +54164,9 @@ MapGlyph.prototype = {
 	    }
 	    this.showMultiEntries();
 	};
-	entry.getChildrenEntries(callback);
+	let order = 'orderby=' + this.getProperty('orderby','name');
+	order+='&ascending=' + this.getProperty('ascending','true');
+	entry.getChildrenEntries(callback,order);
     },
     isSelected:function() {
 	return this.selected;
