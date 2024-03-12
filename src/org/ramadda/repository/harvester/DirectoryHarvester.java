@@ -202,8 +202,10 @@ public class DirectoryHarvester extends Harvester {
         String name = dir.getName();
         File xmlFile = new File(IOUtil.joinDir(dir.getParentFile().toString(),
                            "." + name + ".ramadda"));
+	Hashtable<String,File> filesMap = new Hashtable<String,File>();
+
         Entry fileInfoEntry = getEntryManager().getTemplateEntry(dir.getFile(),
-                                  entriesMap);
+								 entriesMap,filesMap);
         Entry group = getEntryManager().findEntryFromName(getRequest(), null,
 							  parentGroup.getFullName() + "/" + name);
         if (group == null) {

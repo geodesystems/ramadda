@@ -470,10 +470,11 @@ public class BulkDownloadOutputHandler extends OutputHandler {
     private void appendDownloadMetadata(Request request, Entry entry,
                                         StringBuilder sb, CurlCommand command)
             throws Exception {
-        for (String[] pair :
+        for (String[] triple :
                 getMetadataManager().getFilelUrls(request, entry)) {
-            command.download(sb, "downloading metadata " + pair[0],
-                             "." + pair[0], "${ROOT}" + pair[1],-1);
+	    //Use the full name
+            command.download(sb, "downloading metadata " + triple[0],
+                             ".metadata_" + triple[2], "${ROOT}" + triple[1],-1);
         }
     }
 
@@ -571,7 +572,6 @@ public class BulkDownloadOutputHandler extends OutputHandler {
             args      = command.equals(COMMAND_WGET)
                         ? " -q "
                         : " --progress-bar -k -C - ";
-	    System.err.println("ARGS:"+ args);
             outputArg = command.equals(COMMAND_WGET)
                         ? " -O "
                         : command.equals(COMMAND_CURL)

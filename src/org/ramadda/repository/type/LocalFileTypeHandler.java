@@ -524,8 +524,9 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
 		handler = getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
 	}
 
+
         Entry templateEntry = getEntryManager().getTemplateEntry(targetFile,
-                                  null);
+								 null,null);
         Entry entry = null;
 
 

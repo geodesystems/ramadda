@@ -6444,13 +6444,18 @@ public class EntryManager extends RepositoryManager {
                                           boolean internal,StringBuilder msg)
 	throws Exception {
         String parentId    = XmlUtil.getAttribute(node, ATTR_PARENT, "");
-        Entry  parentEntry = (Entry) entryMap.get(parentId);
+        Entry  parentEntry =  entryMap.get(parentId);
         if (parentEntry == null) {
             parentEntry = (Entry) getEntry(request, parentId);
         }
         if (parentEntry == null) {
             parentEntry = (Entry) findEntryFromName(request, null, parentId);
         }
+        if (parentEntry == null) {
+	    //Check for the wild card
+	    parentEntry =  entryMap.get("*");
+        }	
+
         if (parentEntry == null) {
             // Lets not check for now. Some entry xml doesn't have a parent
 	    throw new RepositoryUtil.MissingEntryException("Could not find parent:" + parentId);
@@ -9871,7 +9876,9 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public List<Entry> parseEntryXml(File xmlFile, boolean internal,Hashtable<String,Entry> entriesMap)
+    public List<Entry> parseEntryXml(File xmlFile, boolean internal,
+				     Hashtable<String,Entry> entriesMap,
+				     Hashtable<String,File> filesMap)
 	throws Exception {
 
 	StringBuilder msg = new StringBuilder();
@@ -9896,14 +9903,14 @@ public class EntryManager extends RepositoryManager {
         }
 
 
-        Hashtable files = new Hashtable<String, File>();
-        files.put("root", xmlFile.getParentFile());
+	if(filesMap==null)filesMap = new Hashtable<String, File>();
+        filesMap.put("root", xmlFile.getParentFile());
         List<Entry> entryList =
             createEntryFromXml(
 			       new Request(
 					   getRepository(),
 					   getUserManager().getDefaultUser()), root,
-			       entriesMap, files, false, internal,msg);
+			       entriesMap, filesMap, false, internal,msg);
 
         if (internal) {
             for (Element assNode : associationNodes) {
@@ -10000,10 +10007,11 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Entry getTemplateEntry(File file,Hashtable<String,Entry> entriesMap) throws Exception {
+    public Entry getTemplateEntry(File file,Hashtable<String,Entry> entriesMap,
+				  Hashtable<String,File> filesMap) throws Exception {
         try {
 	    if(file==null) return null;
-            Entry entry = getTemplateEntryInner(file, entriesMap);
+            Entry entry = getTemplateEntryInner(file, entriesMap,filesMap);
 
             return entry;
         } catch (Exception exc) {
@@ -10024,7 +10032,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    private Entry getTemplateEntryInner(File file,Hashtable<String,Entry> entriesMap) throws Exception {
+    private Entry getTemplateEntryInner(File file,Hashtable<String,Entry> entriesMap,Hashtable<String,File> filesMap) throws Exception {
         File    parent      = file.getParentFile();
         boolean isDirectory = file.isDirectory();
         String  type        = (isDirectory
@@ -10038,15 +10046,14 @@ public class EntryManager extends RepositoryManager {
         for (String name : names) {
             File f = new File(IOUtil.joinDir(parent, name));
             if (f.exists()) {
-                return parseEntryXml(f, true, entriesMap).get(0);
+                return parseEntryXml(f, true, entriesMap,filesMap).get(0);
             }
         }
 
         if (isDirectory) {
             File f = new File(IOUtil.joinDir(file, ".this.ramadda.xml"));
             if (f.exists()) {
-                Entry entry = parseEntryXml(f, true,entriesMap).get(0);
-
+                Entry entry = parseEntryXml(f, true,entriesMap,filesMap).get(0);
                 return entry;
             }
 

@@ -809,6 +809,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
 
         Hashtable<String, Entry> entriesMap = new Hashtable<String, Entry>();
+        Entry  baseGroup = getBaseGroup();
+	if(baseGroup!=null) entriesMap.put("*",baseGroup);
+
         List<FileWrapper>        rootDirs   = getRootDirs();
         for (FileWrapper rootDir : rootDirs) {
             logHarvesterInfo("Looking for initial directory listing:"
@@ -837,6 +840,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         }
 
         int cnt = 0;
+
 
         while (canContinueRunning(timestamp)) {
             long t1 = System.currentTimeMillis();
@@ -1351,6 +1355,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                                List<String> dirToks, boolean makeGroup,
                                Hashtable<String, Entry> entriesMap)
 	throws Exception {
+	Hashtable<String,File> filesMap = new Hashtable<String,File>();
+
         Request request = getRequest();
         //        if(dirToks.size()==0) return parentFile.toString();
         List names = new ArrayList();
@@ -1364,7 +1370,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             }
             Entry template =
                 getEntryManager().getTemplateEntry(file.getFile(),
-						   entriesMap);
+						   entriesMap,filesMap);
             String name = ((template != null)
                            ? template.getName()
                            : filename);
@@ -1528,7 +1534,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         }
 	if(sizeLimit>=0) {
 	    if(sizeLimit>f.length()) {
-		System.err.println("Over size limit:" + f.length());
+                logHarvesterInfo("file:" + filePath + " over size limit:" + f.length());
 		return false;
 	    }
 	}
@@ -1575,6 +1581,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                              Matcher matcher,
                              Hashtable<String, Entry> entriesMap)
 	throws Exception {
+	Hashtable<String,File> filesMap = new Hashtable<String,File>();
+
         Request request = getRequest();
 	final boolean debug = false;
         Entry  baseGroup = getBaseGroup();
@@ -1582,8 +1590,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         filePath = filePath.replace("\\", "/");
         String fileName   = fileWrapper.getName();
 	if(debug)    System.err.println("**** harvestFile:\n\tbaseGroup:" + baseGroup +"\n\tfile:" + fileWrapper);
-
-
         boolean isPlaceholder = fileName.equals(FILE_PLACEHOLDER);
         TypeHandler typeHandler      = getTypeHandler(TypeHandler.TYPE_FINDMATCH);
         TypeHandler typeHandlerToUse = null;
@@ -1591,10 +1597,10 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         Entry       templateEntry    = null;
         if (isEntryXml) {
             templateEntry = getEntryManager().parseEntryXml(fileWrapper.getFile(),
-							    true, entriesMap).get(0);
+							    true, entriesMap,filesMap).get(0);
         } else {
             templateEntry = getEntryManager().getTemplateEntry(fileWrapper.getFile(),
-							       entriesMap);
+							       entriesMap,filesMap);
         }
 
         if (templateEntry != null) {
@@ -1628,7 +1634,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
         String dirPath     = fileWrapper.getParentFile().toString();
         Entry dirTemplateEntry =
-            getEntryManager().getTemplateEntry(new File(dirPath), entriesMap);
+            getEntryManager().getTemplateEntry(new File(dirPath), entriesMap,filesMap);
 
 	if(debug)    System.err.println("\tdirPath 1:" + dirPath);
         dirPath =
