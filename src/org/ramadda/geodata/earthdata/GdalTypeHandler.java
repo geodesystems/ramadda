@@ -17,6 +17,7 @@ import org.ramadda.service.Service;
 import org.ramadda.service.ServiceOutput;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
+import org.ramadda.util.WikiUtil;
 
 
 
@@ -24,7 +25,6 @@ import org.w3c.dom.*;
 
 import ucar.nc2.units.DateUnit;
 
-import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
@@ -35,6 +35,7 @@ import java.awt.image.BufferedImage;
 import javax.imageio.*;
 
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
 
 
@@ -58,6 +59,40 @@ public class GdalTypeHandler extends GenericTypeHandler {
         super(repository, node);
     }
 
+
+    /**
+     * _more_
+     *
+     * @param wikiUtil _more_
+     * @param request _more_
+     * @param originalEntry _more_
+     * @param entry _more_
+     * @param tag _more_
+     * @param props _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    @Override
+    public String getWikiInclude(WikiUtil wikiUtil, Request request,
+                                 Entry originalEntry, Entry entry,
+                                 String tag, Hashtable props)
+	throws Exception {
+
+        StringBuilder sb = new StringBuilder();
+        if ( !tag.startsWith("geotiffproxy")) {
+            return super.getWikiInclude(wikiUtil, request, originalEntry,
+                                        entry, tag, props);
+        }
+
+	int size= Utils.getProperty(props,"maxSize",-1);
+	if(size>=0 && entry.getResource().getFileSize()>size) {
+	    return Utils.getProperty(props,"message","");
+	}
+	String wikiText = "<img onload=\"HtmlUtils.initLoadingImage(this)\" class=\"ramadda-image-loading\" width=50% src=\"{{root}}/entry/action?action=geotiff.makeimage&entryid={{entryid}}\">";
+	return getWikiManager().wikifyEntry(request, entry,wikiText);
+    }
 
 
     /**
