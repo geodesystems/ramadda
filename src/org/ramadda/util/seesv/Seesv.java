@@ -2969,7 +2969,7 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_DB, "Generate the RAMADDA db xml from the header",
 		ARG_LABEL,"RAMADDA Database XML",
 		new Arg("properties",
-			"Name value pairs:\n\t\ttable.id &lt;new id&gt; table.name &lt;new name&gt;\ntable.cansearch false table.canlist false table.icon &lt;icon, e.g., /db/database.png&gt;\n\t\t&lt;column&gt;.id &lt;new id for column&gt; &lt;column&gt;.label &lt;new label&gt;\n\t\t&lt;column&gt;.type &lt;string|enumeration|double|int|date&gt;\n\t\t&lt;column&gt;.format &lt;yyyy MM dd HH mm ss format for dates&gt;\n\t\t&lt;column&gt;.canlist false &lt;column&gt;.cansearch false\n\t\tinstall &lt;true|false install the new db table&gt;\n\t\tnukedb &lt;true|false&gt; careful! this deletes any prior created dbs\n\tyesreallynukethewholedb true - this double checks", ATTR_ROWS, "6")),
+			"Name value pairs:\n\t\ttable.id &lt;new id&gt; table.name &lt;new name&gt;\ntable.cansearch false table.canlist false\ntable.icon &lt;icon&gt;, e.g., /db/database.png\n\t\t&lt;column&gt;.id &lt;new id for column&gt; &lt;column&gt;.label &lt;new label&gt;\n\t\t&lt;column&gt;.type &lt;string|enumeration|double|int|date|latlon&gt;\n\t\t&lt;column&gt;.format &lt;yyyy MM dd HH mm ss format for dates&gt;\n\t\t&lt;column&gt;.canlist false &lt;column&gt;.cansearch false\n\t\tinstall &lt;true|false&gt; install the new db table\n\t\tnukedb &lt;true|false&gt; careful! this deletes any prior created dbs\n\tyesreallynukethewholedb true - this double checks", ATTR_ROWS, "10")),
         new Cmd(CMD_DBPROPS, "Print to stdout props for db generation",
 		ARG_LABEL,"Print DB Properties",
 		new Arg("id pattern"),

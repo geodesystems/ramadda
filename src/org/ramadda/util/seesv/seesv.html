@@ -2388,7 +2388,7 @@ Column indices. Can include ranges, e.g. 0-5<br>
 <a name='-indateformat'></a><div class=command> <i><a href='#-indateformat'>-indateformat</a></i>  &lt;format&gt;  &lt;timezone&gt; </div><div class=command-block>Specify date format for parsing<br class=seesv-hide>
 <ul>
 <li> <i>format</i>:
-e.g. yyyy-MM-dd HH:mm:ss<br>
+e.g. yyyy-MM-dd HH:mm:ss. <a target=_help href=https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html>Help</a><br>
 <li> <i>timezone</i>:
 <br>
 </ul>
@@ -2396,7 +2396,7 @@ e.g. yyyy-MM-dd HH:mm:ss<br>
 <a name='-outdateformat'></a><div class=command> <i><a href='#-outdateformat'>-outdateformat</a></i>  &lt;format&gt;  &lt;timezone&gt; </div><div class=command-block>Specify date format for formatting<br class=seesv-hide>
 <ul>
 <li> <i>format</i>:
-e.g. yyyy-MM-dd HH:mm:ss<br>
+e.g. yyyy-MM-dd HH:mm:ss. <a target=_help href=https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html>Help</a><br>
 <li> <i>timezone</i>:
 <br>
 </ul>
@@ -3676,16 +3676,50 @@ Adding a grouping to the pattern can be used to pull out text from the field nam
 <ul>
 <li> <i>properties</i>:
 Name value pairs:
-		table.id <new id> table.name <new name> table.cansearch false table.canlist false table.icon <icon, e.g., /db/database.png>
-		<column>.id <new id for column> <column>.label <new label>
-		<column>.type <string|enumeration|double|int|date>
-		<column>.format <yyyy MM dd HH mm ss format for dates>
-		<column>.canlist false <column>.cansearch false
-		install <true|false install the new db table>
-		nukedb <true|false careful! this deletes any prior created dbs
+		table.id &lt;new id&gt; table.name &lt;new name&gt;
+table.cansearch false table.canlist false
+table.icon &lt;icon&gt;, e.g., /db/database.png
+		&lt;column&gt;.id &lt;new id for column&gt; &lt;column&gt;.label &lt;new label&gt;
+		&lt;column&gt;.type &lt;string|enumeration|double|int|date&gt;
+		&lt;column&gt;.format &lt;yyyy MM dd HH mm ss format for dates&gt;
+		&lt;column&gt;.canlist false &lt;column&gt;.cansearch false
+		install &lt;true|false install the new db table&gt;
+		nukedb &lt;true|false&gt; careful! this deletes any prior created dbs
 	yesreallynukethewholedb true - this double checks<br>
 </ul>
-</div></div><div class=seesv-item>
+The -db command generates a Data Tables specification, a ...db.xml file that acts as a RAMADDA plugin.
+See <a href=https://ramadda.org/repository/db/db.html>https://ramadda.org/repository/db/db.html</a> for more information.
+<br>
+The -db command takes the form:
+<pre>
+-db "name value pairs"
+e.g.:
+-db "
+table.id &lt;new id&gt; table.name &lt;new name&gt;
+table.cansearch false table.canlist false
+table.icon &lt;icon&gt;, e.g., /db/database.png
+&lt;column&gt;.id &lt;new id for column&gt;
+&lt;column&gt;.label &lt;new label&gt;
+lt;column&gt;.type &lt;string|enumeration|double|int|date&gt;
+&lt;column&gt;.format &lt;yyyy MM dd HH mm ss format for dates&gt;
+&lt;column&gt;.canlist false &lt;column&gt;.cansearch false
+install &lt;true|false install the new db table&gt;
+nukedb &lt;true|false&gt; careful! this deletes any prior created dbs
+yesreallynukethewholedb true - this double checks
+"
+</pre>
+
+In the interactive Convert Data SeeSV form if you press "Table" then the schema will be shown. Clicking on the column
+links brings up a popup menu that sets the id, label, type, etc for the column.
+<br>
+If you have the install flag defined as true then when you hit "Process" the db.xml file will be generated and
+the plugin will be loaded into RAMADDA. You can then go and add a new entry of the Database name from the "Pick a type..." menu
+<br>
+If you have nukedb and the yesreallynukethewholedb flags set to true then when you press Process the
+database table will first be dropped and then recreated. This capability is there because you can iteratively change
+the type of the columns. Note: any database entry and data that has been loaded will be removed.
+
+<p></div></div><div class=seesv-item>
 <a name='-dbprops'></a><div class=command> <i><a href='#-dbprops'>-dbprops</a></i>  &lt;id pattern&gt;  &lt;suffix pattern&gt; </div><div class=command-block>Print to stdout props for db generation<br class=seesv-hide>
 <ul>
 <li> <i>id pattern</i>:
