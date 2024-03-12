@@ -672,8 +672,11 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 request.ensureAdmin();
                 String sql = "drop table db_" + csvUtil.getDbId();
                 try {
+		    System.err.println("dropping the table:" + sql);
                     getRepository().getDatabaseManager().executeAndClose(sql);
-                } catch (Exception exc) {}
+                } catch (Exception exc) {
+
+		}
             }
 
             if (Misc.equals(
