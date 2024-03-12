@@ -3480,9 +3480,9 @@ public class Column implements DataTypes, Constants, Cloneable {
      * @throws Exception _more_
      */
     public void addToSearchForm(Request request, Appendable formBuffer,
-                                List<Clause> where)
+                                List<Clause> where,boolean...horizontal)
             throws Exception {
-        addToSearchForm(request, formBuffer, where, null);
+        addToSearchForm(request, formBuffer, where, null,horizontal);
     }
 
 
@@ -3526,18 +3526,18 @@ public class Column implements DataTypes, Constants, Cloneable {
      * @throws Exception _more_
      */
     public void addToSearchForm(Request request, Appendable formBuffer,
-                                List<Clause> where, Entry entry)
+                                List<Clause> where, Entry entry,boolean...horizontal)
             throws Exception {
 
         if ( !getCanSearch()) {
             return;
         }
         String       searchArg  = getSearchArg();
-	addToSearchForm(request, formBuffer, where, entry, searchArg);
+	addToSearchForm(request, formBuffer, where, entry, searchArg,horizontal);
     }
 
     private void addToSearchForm(Request request, Appendable formBuffer,
-				 List<Clause> where, Entry entry, String searchArg)
+				 List<Clause> where, Entry entry, String searchArg,boolean...horizontal)
             throws Exception {	
 
 
@@ -3829,7 +3829,11 @@ public class Column implements DataTypes, Constants, Cloneable {
         }
 
 
-	HU.formEntry(formBuffer,    HU.b(getLabel()) + ":<br>"+widget);
+	if(horizontal.length>0 && horizontal[0]) {
+	    HU.formEntry(formBuffer,    msgLabel(getLabel()),widget);
+	} else {
+	    HU.formEntry(formBuffer,    HU.b(getLabel()) + ":<br>"+widget);
+	}	    
 	//        typeHandler.formEntry(formBuffer, request, getLabel() + ":",widget);
 
         formBuffer.append("\n");
