@@ -465,16 +465,20 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 					   fileFieldExtra.toString()) + extraLabel));
 
 
+        sb.append(HU.formEntry("","Only harvest the top-level files that match this pattern"));
         sb.append(HU.formEntry(msgLabel("Top directory pattern"),
 			       HU.input(ATTR_TOPPATTERN,
 					topPatternString,
 					HU.SIZE_60)));
 
+        sb.append(HU.formEntry("","Only harvest the descendent files that match one or more of these patterns"));
         sb.append(HU.formEntryTop(msgLabel("File Patterns"),
 				  HU.textArea(ATTR_FILEPATTERN,
 					      filePatternString,
 					      3,60)));
+				  
 
+        sb.append(HU.formEntry("","Skip any file that matches any of these patterns"));
         sb.append(HU.formEntryTop(msgLabel("Exclude files that match"),
 				  HU.textArea(ATTR_NOTFILEPATTERN,
 					      notfilePatternString,
@@ -564,7 +568,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
 
 
-        sb.append(HU.formEntry(msgLabel("User"),
+        sb.append(HU.formEntry(msgLabel("Owner"),
 			       HU.input(ATTR_USER,
 					(getUserName() != null)
 					? getUserName().trim()
@@ -1082,12 +1086,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                     if ( !ignoreErrors) {
                         throw (Exception) LogUtil.getInnerException(exc);
                     }
-                    appendError("Error: " + exc
-				+ HU.makeShowHideBlock(
-						       "Stack",
-						       LogUtil.getStackTrace(
-									     LogUtil.getInnerException(exc)), false));
-
+                    appendError(getStack(exc));
                     continue;
                 }
                 if (entry == null) {
@@ -1229,13 +1228,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 if ( !ignoreErrors) {
                     throw (Exception) LogUtil.getInnerException(exc);
                 }
-                appendError(
-			    "Error: " + exc
-			    + HU.makeShowHideBlock(
-						   "Stack",
-						   LogUtil.getStackTrace(
-									 LogUtil.getInnerException(exc)), false));
-
+		appendError(getStack(exc));
                 continue;
             }
             //System.err.println("createEntry:" + newEntry);
