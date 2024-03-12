@@ -2332,6 +2332,7 @@ public class EntryManager extends RepositoryManager {
 	File newFile = getStorageManager().moveToStorage(request,
 							 tmpFile);
 	entry.getResource().setFile(newFile,Resource.TYPE_STOREDFILE);
+
 	//Check for bounds
 	if(request.exists("bounds")) {
 	    List<String> pts   = Utils.split(request.getString("bounds",""),",",true,true);
@@ -4802,6 +4803,7 @@ public class EntryManager extends RepositoryManager {
         } else {
             File file   = getStorageManager().getEntryFile(entry);
             long length = file.length();
+	    long totalLength = length;
             if (request.isHeadRequest()) {
                 Result result = new Result("", new StringBuilder());
                 result.addHttpHeader(HU.HTTP_CONTENT_LENGTH,
@@ -4839,7 +4841,6 @@ public class EntryManager extends RepositoryManager {
 
 
             String range = (String) request.getHttpHeaderArgs().get("Range");
-
             long   byteStart = -1;
             long   byteEnd   = -1;
             if (Utils.stringDefined(range)) {
@@ -4861,10 +4862,11 @@ public class EntryManager extends RepositoryManager {
                 length -= byteStart;
             }
 
+	    if(byteEnd<0)  byteEnd = totalLength;
             Result result = new Result(BLANK, inputStream, mimeType);
             result.setResponseCode(response);
             result.addHttpHeader("Accept-Ranges", "bytes");
-            result.addHttpHeader(HU.HTTP_CONTENT_LENGTH, "" + length);
+            result.addHttpHeader("Content-Range", "bytes " + byteStart +"-"+byteEnd+"/"+totalLength);	               result.addHttpHeader(HU.HTTP_CONTENT_LENGTH, "" + length);
             result.setLastModified(new Date(file.lastModified()));
             result.setCacheOk(httpCacheFile);
 	    return result;
