@@ -245,8 +245,12 @@ case ${WHAT} in
 esac
 
 
-#Check for the -0003 dir. Note sure why certbot makes this
-LETSENCRYPT_DIR="/etc/letsencrypt/live/${FIRST_DOMAIN}-0003"
+#At some time certbot used 0003 
+LETSENCRYPT_DIR="/etc/letsencrypt/live/${FIRST_DOMAIN}-0001"
+if [ ! -d "$LETSENCRYPT_DIR" ]; then
+    LETSENCRYPT_DIR="/etc/letsencrypt/live/${FIRST_DOMAIN}-0003"
+fi
+
 if [ ! -d "$LETSENCRYPT_DIR" ]; then
     LETSENCRYPT_DIR="/etc/letsencrypt/live/${FIRST_DOMAIN}"
 fi
