@@ -18,6 +18,7 @@
 
     <target name="plugins" depends="init">
       <echo message="Building geodata plugins"/>
+      <ant antfile="${src_dir}/org/ramadda/geodata/biologging/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/geodata/dif/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/geodata/thredds/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/geodata/cdmdata/build.xml" inheritAll="false"/>

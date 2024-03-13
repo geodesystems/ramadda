@@ -4,7 +4,7 @@
   <type name="type_track_base"
 	description="Animal Track Data" super="type_point" foruser="true"
 	handler="org.ramadda.data.services.PointTypeHandler">
-    <property name="icon" value="/point/tracks.png"/>
+    <property name="icon" value="/biologging/tracks.png"/>
     <property name="form.area.show" value="true"/>
     <property name="form.properties.show" value="false"/>
     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
