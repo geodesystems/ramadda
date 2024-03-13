@@ -788,7 +788,7 @@ public class MetadataTypeBase extends RepositoryManager {
                                    metadata.getId());
 
         //Get the full file name
-        return new String[] { IO.getFileTail(f.toString()), url,f.toString() };
+        return new String[] { IO.getFileTail(f.toString()), url,f.getName()};
     }
 
 
@@ -825,14 +825,16 @@ public class MetadataTypeBase extends RepositoryManager {
     }
 
     public File getFile(Entry entry, Metadata metadata, String filename) {	
-        if ((filename == null) || (filename.trim().length() == 0)) {
+	//	System.err.println("GET FILE:" + filename);
+        if (!Utils.stringDefined(filename)) {
             return null;
         }
 
-        return new File(
+        File f= new File(
             IOUtil.joinDir(
                 getStorageManager().getEntryDir(
                     metadata.getEntryId(), false), filename));
+	return f;
     }
 
 

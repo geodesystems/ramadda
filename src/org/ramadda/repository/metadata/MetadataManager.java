@@ -1861,24 +1861,12 @@ public class MetadataManager extends RepositoryManager {
         return sb;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param entryChild _more_
-     * @param fileMap _more_
-     * @param internal _more_
-     *
-     * @throws Exception On badness
-     */
     public void processMetadataXml(Request request,Entry entry, Element entryChild,
-                                   Hashtable fileMap, boolean internal)
+                                   Hashtable filesMap, EntryManager.INTERNAL isInternal)
             throws Exception {
         String          type    = XmlUtil.getAttribute(entryChild, ATTR_TYPE);
         MetadataHandler handler = findMetadataHandler(type);
-        handler.processMetadataXml(request,entry, entryChild, fileMap, internal);
+        handler.processMetadataXml(request,entry, entryChild, filesMap, isInternal);
     }
 
     /**

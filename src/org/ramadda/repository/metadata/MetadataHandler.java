@@ -165,18 +165,9 @@ public class MetadataHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param node _more_
-     * @param fileMap _more_
-     * @param internal _more_
-     *
-     * @throws Exception _more_
-     */
+
     public void processMetadataXml(Request request,Entry entry, Element node,
-                                   Hashtable fileMap, boolean internal)
+                                   Hashtable filesMap, EntryManager.INTERNAL isInternal)
             throws Exception {
         forUser = XmlUtil.getAttribute(node, ATTR_FORUSER, true);
 
@@ -185,7 +176,7 @@ public class MetadataHandler extends RepositoryManager {
         String extra = XmlUtil.getGrandChildText(node, Metadata.TAG_EXTRA,
                            "");
         String id = getRepository().getGUID();
-        if ( !internal) {
+        if (isInternal==EntryManager.INTERNAL.NO) {
             id = XmlUtil.getAttribute(node, "id", id);
         }
         Metadata metadata = new Metadata(id, entry.getId(), type,
@@ -210,8 +201,7 @@ public class MetadataHandler extends RepositoryManager {
             if ( !childNode.getTagName().equals(Metadata.TAG_ATTR)) {
                 continue;
             }
-            int index = XmlUtil.getAttribute(childNode, Metadata.ATTR_INDEX,
-                                             -1);
+            int index = XmlUtil.getAttribute(childNode, Metadata.ATTR_INDEX, -1);
             String text = XmlUtil.getChildText(childNode);
             if (XmlUtil.getAttribute(childNode, "encoded", true)) {
                 text = new String(Utils.decodeBase64(text));
@@ -225,8 +215,8 @@ public class MetadataHandler extends RepositoryManager {
             //            System.err.println("Unknown metadata type:" + type);
             throw new IllegalStateException("Unknown metadata type:" + type);
         }
-        if ( !metadataType.processMetadataXml(entry, node, metadata, fileMap,
-                internal)) {
+        if ( !metadataType.processMetadataXml(entry, node, metadata, filesMap,
+					      isInternal)) {
             return;
         }
         getMetadataManager().addMetadata(request,entry, metadata);

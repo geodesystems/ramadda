@@ -506,13 +506,13 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                 File sourceFile = new File(fileArg);
                 if ( !sourceFile.exists()) {
                     if (initializer != null) {
-                        sourceFile = initializer.getMetadataFile(entry,
-                                fileArg);
+                        sourceFile = initializer.getMetadataFile(entry,fileArg);
                     }
                 }
                 if ((sourceFile == null) || !sourceFile.exists()) {
-                    throw new IllegalArgumentException(
-                        "Missing metadata file:" + fileArg);
+		    continue;
+		    //Don't error off here
+		    //                    throw new IllegalArgumentException("Missing metadata file:" + fileArg);
                 }
                 if ( !entry.getIsLocalFile()) {
                     fileArg = getStorageManager().copyToEntryDir(entry,
@@ -523,23 +523,9 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param node _more_
-     * @param metadata _more_
-     * @param fileMap _more_
-     * @param internal _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean processMetadataXml(Entry entry, Element node,
-                                      Metadata metadata, Hashtable fileMap,
-                                      boolean internal)
+                                      Metadata metadata, Hashtable filesMap,
+                                      EntryManager.INTERNAL isInternal)
             throws Exception {
 
         //don't check internal as I forgot what its intent was and it is keeping us from processing attachments
@@ -549,7 +535,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
             return true;
         }
         NodeList elements = XmlUtil.getElements(node);
-
         for (MetadataElement element : getChildren()) {
             if ( !element.getDataType().equals(element.DATATYPE_FILE)) {
                 continue;
@@ -582,7 +567,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                     "Metadata: Could not find file id for entry: "
                     + entry.getName() + " attr: "
                     + metadata.getAttr(element.getIndex()) + " files:"
-                    + fileMap);
+                    + filesMap);
 
                 continue;
             }
@@ -591,11 +576,10 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
             if (fileArg.length() == 0) {
                 continue;
             }
-            //            System.err.println ("metadata file:"+ fileArg);
             String fileName = null;
-            File   tmpFile  = (File) fileMap.get(fileArg);
+            File   tmpFile  = (File) filesMap.get(fileArg);
             if (tmpFile == null) {
-                File root = (File) fileMap.get("root");
+                File root = (File) filesMap.get("root");
                 if (root != null) {
                     File tmp = new File(root, fileArg);
                     if ( !tmp.exists()) {
@@ -607,7 +591,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                 }
             }
 
-            if ((tmpFile == null) && internal) {
+            if ((tmpFile == null) && isInternal==EntryManager.INTERNAL.YES) {
                 tmpFile = new File(fileArg);
             }
 
@@ -617,20 +601,25 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                     URL testUrl = new URL(fileArg);
                     continue;
                 } catch (Exception ignore) {
-		    //                    handler.getRepository().getLogManager().logError("No attachment uploaded file:" + fileArg);
-		    //                    handler.getRepository().getLogManager().logError("available files: " + fileMap);
                     return false;
                 }
             }
 
-            if ((tmpFile != null) && tmpFile.exists()) {
+
+	    File newFile=null;
+            if (IO.exists(tmpFile)) {
+		//If it is a template or remote then don't do anything with the file
+		if(isInternal==EntryManager.INTERNAL.NO) {
+		    metadata.setAttr(element.getIndex(), tmpFile.toString());
+		    return true;
+		} 
+
+
                 File file = new File(tmpFile.toString());
-                //                System.err.println("Copying:" + metadata.getAttr(element.getIndex()));
-                fileName = getStorageManager().copyToEntryDir(entry, file,
-                        metadata.getAttr(element.getIndex())).getName();
-            }
-            //            System.err.println("metadata for: " + entry +" new file:" + fileName);
-            metadata.setAttr(element.getIndex(), fileName);
+                newFile = getStorageManager().copyToEntryDir(entry, file,
+							     metadata.getAttr(element.getIndex()));
+            } 
+            metadata.setAttr(element.getIndex(), newFile==null?"":newFile.getName());
         }
 
         return true;

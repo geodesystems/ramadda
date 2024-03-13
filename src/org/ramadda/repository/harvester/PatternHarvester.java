@@ -1166,6 +1166,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             addEntries(needToAdd, timestamp, entriesMap);
         }
 
+	getEntryManager().parentageChanged(getBaseGroup());
         if ( !canContinueRunning(timestamp)) {
             return;
         }
@@ -1338,6 +1339,21 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	return groupInitializer;
     }
 
+    private Hashtable<String,File> getFilesMap(File file) {
+	Hashtable<String,File> filesMap = null;
+	if(!file.isDirectory()) file = file.getParentFile();
+	for(File f: file.listFiles()) {
+	    if(f.getName().startsWith(".metadata_")) {
+		if(filesMap==null)
+		    filesMap = new Hashtable<String,File>();		    
+		String name = f.getName().substring(".metadata_".length());
+		filesMap.put(name, f);
+	    }
+	}
+	return filesMap;
+    }
+
+
     /**
      * _more_
      *
@@ -1355,8 +1371,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                                List<String> dirToks, boolean makeGroup,
                                Hashtable<String, Entry> entriesMap)
 	throws Exception {
-	Hashtable<String,File> filesMap = new Hashtable<String,File>();
-
         Request request = getRequest();
         //        if(dirToks.size()==0) return parentFile.toString();
         List names = new ArrayList();
@@ -1370,7 +1384,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             }
             Entry template =
                 getEntryManager().getTemplateEntry(file.getFile(),
-						   entriesMap,filesMap);
+						   entriesMap,getFilesMap(file.getFile()));
             String name = ((template != null)
                            ? template.getName()
                            : filename);
@@ -1581,8 +1595,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                              Matcher matcher,
                              Hashtable<String, Entry> entriesMap)
 	throws Exception {
-	Hashtable<String,File> filesMap = new Hashtable<String,File>();
-
         Request request = getRequest();
 	final boolean debug = false;
         Entry  baseGroup = getBaseGroup();
@@ -1595,12 +1607,15 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         TypeHandler typeHandlerToUse = null;
         boolean     isEntryXml       = isEntryXml(filePath);
         Entry       templateEntry    = null;
+	Hashtable<String,File> filesMap = getFilesMap(fileWrapper.getFile());
+
         if (isEntryXml) {
             templateEntry = getEntryManager().parseEntryXml(fileWrapper.getFile(),
-							    true, entriesMap,filesMap).get(0);
+							    EntryManager.INTERNAL.YES,
+							    EntryManager.TEMPLATE.NO,
+							    entriesMap,filesMap).get(0);
         } else {
-            templateEntry = getEntryManager().getTemplateEntry(fileWrapper.getFile(),
-							       entriesMap,filesMap);
+            templateEntry = getEntryManager().getTemplateEntry(fileWrapper.getFile(), entriesMap,filesMap);
         }
 
         if (templateEntry != null) {
@@ -1615,7 +1630,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 		}
 	    }
 	}
-
 
 
         if ((typeHandlerToUse == null)
@@ -1633,8 +1647,10 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         }
 
         String dirPath     = fileWrapper.getParentFile().toString();
+	File theFile= new File(dirPath);
+	filesMap = getFilesMap(theFile);
         Entry dirTemplateEntry =
-            getEntryManager().getTemplateEntry(new File(dirPath), entriesMap,filesMap);
+            getEntryManager().getTemplateEntry(theFile, entriesMap,filesMap);
 
 	if(debug)    System.err.println("\tdirPath 1:" + dirPath);
         dirPath =
@@ -1806,6 +1822,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
         //        System.err.println("Harvested file:" + f);
         Entry entry = templateEntry;
+	if(templateEntry!=null)
+            getRepository().getMetadataManager().initNewEntry(request,templateEntry, null);	    
+
         if (entry == null) {
             entry = typeHandlerToUse.createEntry(getRepository().getGUID());
         } else {
@@ -1822,7 +1841,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 		System.err.println("done copying");
 		fromFile = tmp;
 	    } else {
-		fromFile = new File(fileName);
+		fromFile = fileWrapper.getFile();
 	    }
 	    //	    System.err.println("FILE:" + fromFile.exists()+ "  "+ fromFile);
             File newFile = getStorageManager().moveToStorage(
