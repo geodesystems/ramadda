@@ -3235,21 +3235,13 @@ public class TypeHandler extends RepositoryManager {
                     request.entryUrl(
                         getMetadataManager().URL_METADATA_ADDFORM,
                         entry), ICON_METADATA_ADD, "Add Property...",
-                                OutputType.TYPE_EDIT));
+		    OutputType.TYPE_EDIT));
 
             if (metadataTypes.size() > 0) {
                 for (String metadataType : metadataTypes) {
-                    MetadataType type =
-                        getMetadataManager().findType(metadataType);
-		    if(type==null) continue;
-                    links.add(
-                        new Link(
-                            request.entryUrl(
-                                getMetadataManager().URL_METADATA_ADDFORM,
-                                entry, ARG_METADATA_TYPE,
-                                metadataType), ICON_METADATA_ADD,
-                                    msg("Add") + " " + type.getName(),
-                                    OutputType.TYPE_EDIT));
+		    String []pair = getMetadataManager().getMetadataAddLink(request, entry, metadataType);
+		    if(pair==null) continue;
+                    links.add(new Link(pair[0],ICON_METADATA_ADD, pair[1], OutputType.TYPE_EDIT));
                 }
                 links.add(makeHRLink(OutputType.TYPE_EDIT));
             }
