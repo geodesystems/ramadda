@@ -5945,6 +5945,7 @@ public class Seesv implements SeesvCommands {
     public static double parseDouble(String s, double ...dflt) {
 	try {
 	    s = s.trim();
+	    if(s.length()==0) return Double.NaN;
 	    if(s.startsWith("random:")) {
 		List<String> toks = Utils.split(s,":",true,true);
 		if(toks.size()==1) {

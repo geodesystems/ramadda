@@ -196,7 +196,7 @@ public class Row {
     public double getDouble(int index) {
         String s = getString(index);
 
-        return Double.parseDouble(s);
+        return Seesv.parseDouble(s);
     }
 
 
@@ -418,7 +418,7 @@ public class Row {
 			else if(p1==null) dir=-1;
 			else if(p2==null) dir=1;
 			else {
-			    dir = (int)(Double.parseDouble(p1[0])-Double.parseDouble(p2[0]));
+			    dir = (int)(Seesv.parseDouble(p1[0])-Seesv.parseDouble(p2[0]));
 			    if(dir==0) {
 				dir= p1[0].compareTo(p2[1]);
 			    }
@@ -427,13 +427,13 @@ public class Row {
 			if ( !checked) {
 			    try {
 				checked = true;
-				double d = Double.parseDouble(s1);
+				double d = Seesv.parseDouble(s1);
 				isNumber = true;
 			    } catch (Exception e) {}
 			}
 			if (isNumber) {
-			    double d1 = Double.parseDouble(s1);
-			    double d2 = Double.parseDouble(s2);
+			    double d1 = Seesv.parseDouble(s1);
+			    double d2 = Seesv.parseDouble(s2);
 			    if (d1 < d2) {
 				dir = -1;
 			    } else if (d1 > d2) {
