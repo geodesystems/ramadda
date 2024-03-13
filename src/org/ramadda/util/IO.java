@@ -1931,6 +1931,11 @@ public class IO {
     }
 
 
+    public static boolean exists(File f) {
+	if(f==null) return false;
+	return f.exists();
+    }
+
     /**
      *
      * @param fileOrUrl _more_
