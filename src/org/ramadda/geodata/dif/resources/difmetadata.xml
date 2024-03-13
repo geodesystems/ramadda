@@ -227,6 +227,7 @@ ${Personnel}
 </Project>]]></template>
     </type>
 
+<!--
     <type  name="XXXXXXXXXX"       searchable="false"       id="dif.xxxx">
       <element name="First Name"/>
       <element  datatype="group"         name="Roles"         subname="">
@@ -234,7 +235,7 @@ ${Personnel}
            values="investigator:Investigator,technicalcontact:Technical Contact,difauthor:DIF Author"/>
       </element>
     </type>
-
+-->
 
 
 
