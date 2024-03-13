@@ -2944,15 +2944,18 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			NodeList children = XmlUtil.getElements(root);
 			//Synchronize on the list so only one thread at  a time adds its entries to it
 			Hashtable<String,Entry> entryMap  = new Hashtable<String,Entry>();
+			Hashtable<String,File> filesMap =  new Hashtable<String,File>();
 			for (int i = 0; i < children.getLength(); i++) {
 			    Element node = (Element) children.item(i);
 			    //                    if (!node.getTagName().equals(TAG_ENTRY)) {continue;}
 			    List<Entry> entryList =
-				getEntryManager().createEntryFromXml(request,
-								     node, parentEntry, new Hashtable(),
+				getEntryManager().createEntryFromXml(request, node, parentEntry,
+								     filesMap,
 								     entryMap,
 								     false,
-								     false, new StringBuilder());
+								     EntryManager.TEMPLATE.YES,
+								     EntryManager.INTERNAL.NO,
+								     new StringBuilder());
 
 			    Entry entry = entryList.get(0);
 
