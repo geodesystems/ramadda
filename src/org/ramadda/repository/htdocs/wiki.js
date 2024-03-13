@@ -2003,7 +2003,6 @@ WikiEditor.prototype = {
 	    information: [
 		{label:'Information Properties'},
 		{p:'info',ex:'Show entry information'},
-		{p:'details',ex:'false'},
 		{p:'showTitle',ex:'true'},
 		{p:'showResource',ex:'true'},
 		{p:'showBase',ex:'true'},
