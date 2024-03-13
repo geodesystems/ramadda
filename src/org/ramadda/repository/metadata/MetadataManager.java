@@ -10,6 +10,7 @@ import org.json.*;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
 import org.ramadda.repository.util.FileWriter;
@@ -220,6 +221,16 @@ public class MetadataManager extends RepositoryManager {
 
         return type.getHandler();
     }
+
+    public String[] getMetadataAddLink(Request request, Entry entry, String metadataType) {
+	MetadataType type =findType(metadataType);
+	if(type==null) return null;
+	return  new String[]{
+	    request.entryUrl(URL_METADATA_ADDFORM,
+			     entry, ARG_METADATA_TYPE,
+			     metadataType), msg("Add") + " " + type.getName()};
+    }
+
 
     /**
      * _more_
@@ -1845,8 +1856,8 @@ public class MetadataManager extends RepositoryManager {
             cols.add("<ul>" + Utils.join(list, "") + "</ul>");
         }
         HU.centerBlock(sb, HU.hrow(cols));
-
         //        HU.makeAccordion(sb, titles, contents);
+
         return sb;
     }
 
@@ -2559,17 +2570,20 @@ public class MetadataManager extends RepositoryManager {
                 groups.add(name);
             }
             //            request.uploadFormWithAuthToken(groupSB, URL_METADATA_ADDFORM);
-            groupSB.append(request.form(URL_METADATA_ADDFORM));
+
+	    groupSB.append(HU.open("span",HU.attrs("class","ramadda-metadata-add","data-corpus",type.getLabel())));
+            groupSB.append(request.form(URL_METADATA_ADDFORM,HU.style("display:inline-block;margin:5px;")));
             groupSB.append(HU.hidden(ARG_ENTRYID, entry.getId()));
             groupSB.append(HU.hidden(ARG_METADATA_TYPE, type.getId()));
             groupSB.append(HU.submit("Add" + HU.space(1)
                                             + type.getLabel()));
             if (Utils.stringDefined(type.getHelp())) {
-                groupSB.append(HU.space(2));
-                groupSB.append(type.getHelp());
+                groupSB.append(HU.space(1));
+                groupSB.append(HU.span(HU.faIcon("fas fa-info"),HU.attrs("title",type.getHelp().trim(),"class","ramadda-clickable")));
             }
             groupSB.append(HU.formClose());
-            groupSB.append(HU.p());
+	    groupSB.append(HU.close("span"));
+	    //            groupSB.append(HU.p());
             groupSB.append(NEWLINE);
         }
 
@@ -2581,7 +2595,21 @@ public class MetadataManager extends RepositoryManager {
             tabs.add(HU.insetDiv(groupMap.get(name).toString(), 5, 10,
                                         5, 10));
         }
-        HU.makeAccordion(sb, titles, tabs);
+	String uid =  HU.getUniqueId("types");
+	sb.append("<center>");
+	HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-metadata-add','.ramadda-metadata-group','Find Property')");
+	sb.append("</center>");
+	sb.append(HU.open("div",HU.attr("id",uid)));
+	for(int i=0;i<titles.size();i++) {
+	    sb.append(HU.open("div",HU.clazz("ramadda-metadata-group")));
+	    sb.append(HU.div(titles.get(i),HU.attrs("style","margin-top:10px","class","ramadda-form-header xramadda-metadata-add")));
+	    sb.append(tabs.get(i));
+	    sb.append(HU.close("div"));
+	}
+	sb.append(HU.close("div"));
+
+
+	//        HU.makeAccordion(sb, titles, tabs);
     }
 
 
