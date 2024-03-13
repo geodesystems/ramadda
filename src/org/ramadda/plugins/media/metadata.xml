@@ -13,16 +13,9 @@
       <element name="Comment"  searchable="false" rows="5"/>
       <element name="Screen shot" datatype="file" thumbnail="false"/>
     </type>
-    <type name="3D Label" id="3d_label"  searchable="false" browsable="true">
-      <element name="Label" />
-      <element name="Width"  default="6" suffix=""/>      
-      <element name="Position"  default="-1 1 -1" suffix="X Y Z"/>
-      <element name="Rotation"  default="0 0 0" suffix=""/>            
-    </type>
-
 </handler>
 
-  <handler category="Miscellaneous">
+  <handler category="3D Models">
     <type
        name="3D Model Background Image"
        id="3dmodel_background">
@@ -43,6 +36,13 @@
        id="3dmodel_normal">
       <element name="Normal Image" datatype="file" thumbnail="false"/>
     </type>            
+    <type name="3D Label" id="3d_label"  searchable="false" browsable="true">
+      <element name="Label" />
+      <element name="Width"  default="6" suffix=""/>      
+      <element name="Position"  default="-1 1 -1" suffix="X Y Z"/>
+      <element name="Rotation"  default="0 0 0" suffix=""/>            
+    </type>
+
   </handler>
 
 
