@@ -2637,10 +2637,16 @@ public class WikiManager extends RepositoryManager
 		String redirect = getProperty(wikiUtil, props, "requireRedirect", null);
 		if(redirect!=null) Utils.add(opts,"redirect",JU.quote(redirect));		
 		String showLicense = getProperty(wikiUtil, props, "requireShowLicense", null);
-		if(showLicense!=null) Utils.add(opts,"showLicense",showLicense);				
+		if(showLicense!=null) Utils.add(opts,"showLicense",showLicense);
+		String verifyEmail = getProperty(wikiUtil, props, "verifyEmail", null);
+		if(verifyEmail!=null) Utils.add(opts,"verifyEmail",verifyEmail);						
 		String onlyAnonymous = getProperty(wikiUtil, props, "requireOnlyAnonymous", null);
 		if(onlyAnonymous!=null) Utils.add(opts,"onlyAnonymous",onlyAnonymous);				
-                contents+=HU.script(HU.call("Utils.checkLicense",HU.squote(id),HU.squote(required),
+		if (request.getExtraProperty("addedlicense") == null) {
+		    request.putExtraProperty("addedlicense", "true");
+		    contents+=HU.importJS(getRepository().getHtdocsUrl("/license.js"));
+		}
+                contents+=HU.script(HU.call("RamaddaLicense.checkLicense",HU.squote(id),HU.squote(required),
 					    JU.map(opts)));
 	    }
 	    return  contents;
