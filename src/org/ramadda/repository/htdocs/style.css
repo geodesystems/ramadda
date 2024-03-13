@@ -2773,6 +2773,7 @@ table.dataTable tbody td {
     font-weight: bold; 
     background-color: var(--header-background);
     border-top-left-radius: 12px;
+    border-bottom:var(--basic-border);
 }
 
 .ramadda-form-block {
