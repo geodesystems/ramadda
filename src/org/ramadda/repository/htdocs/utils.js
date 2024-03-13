@@ -166,8 +166,6 @@ var Utils =  {
 
 	    let buttons = HU.buttons(buttonList);
 	    let html =  opts.message;
-
-
 	    html+=(opts.showLicense?HU.div([],text):'<br>')+opts.suffix;
 	    if(opts.logName) {
 		html+=HU.vspace('1em');
@@ -3601,6 +3599,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		let html = $(this).html();
 		let category = $(this).attr('data-category');
 		if(category) html+=' ' +category;
+		let corpus = $(this).attr('data-corpus');
+		if(corpus) html+=' ' +corpus;		
 		//check for title
 		let match = html.match(/title *= *(\"|')([^(\"|')]+)/);
 		if(match) {
