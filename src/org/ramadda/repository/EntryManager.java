@@ -114,9 +114,21 @@ public class EntryManager extends RepositoryManager {
 							"General", "Information", "Collaboration", "Database" };
 
 
+    public enum TEMPLATE {
+	YES,
+	NO
+    }
+
+    public enum INTERNAL {
+	YES,
+	NO
+    }    
+
 
     /** _more_ */
     public static boolean debug = false;
+
+    private static boolean didone= false;
 
     public static boolean debugGetEntries = false;    
 
@@ -6263,7 +6275,8 @@ public class EntryManager extends RepositoryManager {
         for (Element node : entryNodes) {
             List<Entry> entryList = createEntryFromXml(request, node,
 						       entries, origFileToStorage, true,
-						       false,msg);
+						       TEMPLATE.NO,
+						       INTERNAL.YES,msg);
 
             newEntries.addAll(entryList);
             if (XmlUtil.hasAttribute(node, ATTR_ID)) {
@@ -6382,7 +6395,7 @@ public class EntryManager extends RepositoryManager {
 		    createEntryFromXml(request, node,
 				       parentEntry, new Hashtable(),
 				       new Hashtable<String,Entry>(),
-				       false, false,msg);
+				       false, TEMPLATE.YES,INTERNAL.NO,msg);
 
 		if(entryList.size()==0) continue;
 		Entry entry = entryList.get(0);
@@ -6422,26 +6435,12 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    static boolean didone  = false;
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param node _more_
-     * @param entryMap _more_
-     * @param files _more_
-     * @param checkAccess _more_
-     * @param internal _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+
     public List<Entry> createEntryFromXml(Request request, Element node,
                                           Hashtable<String, Entry> entryMap,
-                                          Hashtable<String, File> files,
-                                          boolean checkAccess,
-                                          boolean internal,StringBuilder msg)
+                                          Hashtable<String, File> filesMap,
+                                          boolean checkAccess,TEMPLATE isTemplate,
+					  INTERNAL  internal,StringBuilder msg)
 	throws Exception {
         String parentId    = XmlUtil.getAttribute(node, ATTR_PARENT, "");
         Entry  parentEntry =  entryMap.get(parentId);
@@ -6463,65 +6462,17 @@ public class EntryManager extends RepositoryManager {
         }
 
         List<Entry> entryList = createEntryFromXml(request, node,
-						   parentEntry, files, entryMap, checkAccess,
-						   internal,msg);
+						   parentEntry, filesMap, entryMap, checkAccess,
+						   isTemplate,internal,msg);
 	addImportedEntries(node,entryMap,entryList);
 	return entryList;
     }
 
-    private void addImportedEntries(Element node, Hashtable<String,Entry> entries, List<Entry> entryList) {
-	String tmpid = XmlUtil.getAttribute(node, ATTR_ID, (String) null);
-        if (tmpid != null) {
-            for (Entry entry : entryList) {
-                entries.put(tmpid, entry);
-            }
-        }
-        String aliases = XmlUtil.getAttribute(node, "aliases", (String) null);
-        if (aliases != null) {
-	    for(String alias: Utils.split(aliases,",",true,true)) {
-		for (Entry entry : entryList) {
-		    entries.put(alias, entry);
-		}
-            }
-        }	
-    }
-
-    /**
-     *  trim and remove the delimiter character
-     *
-     * @param name _more_
-     *
-     * @return _more_
-     */
-    public String cleanupEntryName(String name) {
-        if (name.length() > 200) {
-            name = name.substring(0, 195) + "...";
-        }
-        name = name.replaceAll(Entry.PATHDELIMITER, "-");
-
-        return name;
-    }
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param node _more_
-     * @param parentEntry _more_
-     * @param files _more_
-     * @param checkAccess _more_
-     * @param internal _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public List<Entry> createEntryFromXml(Request request, Element node,
-                                          Entry parentEntry,
-                                          Hashtable<String, File> files,
+    public List<Entry> createEntryFromXml(Request request, Element node, Entry parentEntry,
+                                          Hashtable<String, File> filesMap,
 					  Hashtable<String, Entry> entryMap,
-                                          boolean checkAccess,
-                                          boolean internal,StringBuilder msg)
+                                          boolean checkAccess, TEMPLATE isTemplate,
+                                          INTERNAL isInternal,StringBuilder msg)
 	throws Exception {
 
         boolean doAnonymousUpload = false;
@@ -6576,9 +6527,9 @@ public class EntryManager extends RepositoryManager {
 
 
         if (file != null) {
-            File tmp = ((files == null)
+            File tmp = ((filesMap == null)
                         ? null
-                        : files.get(file));
+                        : filesMap.get(file));
             if (tmp == null) {
                 throw new IllegalStateException("No file in import: " + file);
             }
@@ -6805,7 +6756,7 @@ public class EntryManager extends RepositoryManager {
 		entry.setParentEntry(getPathEntry(request,parentEntry,entry,pathTemplate));
 	    }
 
-	    if(!internal) {
+	    if(isInternal==INTERNAL.NO) {
 		entry.setRemoteParentEntryId(XmlUtil.getAttribute(node,"parent",(String)null));
 	    }
 
@@ -6853,7 +6804,7 @@ public class EntryManager extends RepositoryManager {
 
                 } else if (tag.equals(TAG_METADATA)) {
                     getMetadataManager().processMetadataXml(request,entry,
-							    entryChild, files, internal);
+							    entryChild, filesMap, isInternal);
                 } else if (tag.equals(TAG_DESCRIPTION)) {}
                 else {
                     //                throw new IllegalArgumentException("Unknown tag:"
@@ -6863,13 +6814,49 @@ public class EntryManager extends RepositoryManager {
 
             entry.setXmlNode(node);
             entry.getTypeHandler().initializeEntryFromXml(request, entry,
-							  node, files);
+							  node, filesMap);
             entries.add(entry);
         }
 
         return entries;
 
     }
+
+
+
+    private void addImportedEntries(Element node, Hashtable<String,Entry> entries, List<Entry> entryList) {
+	String tmpid = XmlUtil.getAttribute(node, ATTR_ID, (String) null);
+        if (tmpid != null) {
+            for (Entry entry : entryList) {
+                entries.put(tmpid, entry);
+            }
+        }
+        String aliases = XmlUtil.getAttribute(node, "aliases", (String) null);
+        if (aliases != null) {
+	    for(String alias: Utils.split(aliases,",",true,true)) {
+		for (Entry entry : entryList) {
+		    entries.put(alias, entry);
+		}
+            }
+        }	
+    }
+
+    /**
+     *  trim and remove the delimiter character
+     *
+     * @param name _more_
+     *
+     * @return _more_
+     */
+    public String cleanupEntryName(String name) {
+        if (name.length() > 200) {
+            name = name.substring(0, 195) + "...";
+        }
+        name = name.replaceAll(Entry.PATHDELIMITER, "-");
+
+        return name;
+    }
+
 
     public Entry getPathEntry(Request request, Entry parentEntry, Entry entry, String path) throws Exception {
 	if(!Utils.stringDefined(path)) return parentEntry;
@@ -9876,7 +9863,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public List<Entry> parseEntryXml(File xmlFile, boolean internal,
+    public List<Entry> parseEntryXml(File xmlFile, INTERNAL isInternal, TEMPLATE isTemplate,
 				     Hashtable<String,Entry> entriesMap,
 				     Hashtable<String,File> filesMap)
 	throws Exception {
@@ -9910,9 +9897,9 @@ public class EntryManager extends RepositoryManager {
 			       new Request(
 					   getRepository(),
 					   getUserManager().getDefaultUser()), root,
-			       entriesMap, filesMap, false, internal,msg);
+			       entriesMap, filesMap, false, isTemplate,isInternal,msg);
 
-        if (internal) {
+        if (isInternal == INTERNAL.YES) {
             for (Element assNode : associationNodes) {
                 String fromId = XmlUtil.getAttribute(assNode, ATTR_FROM);
                 String toId   = XmlUtil.getAttribute(assNode, ATTR_TO);
@@ -10022,17 +10009,8 @@ public class EntryManager extends RepositoryManager {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    private Entry getTemplateEntryInner(File file,Hashtable<String,Entry> entriesMap,Hashtable<String,File> filesMap) throws Exception {
+    private Entry getTemplateEntryInner(File file,Hashtable<String,Entry> entriesMap,Hashtable<String,File> filesMap)
+	throws Exception {
         File    parent      = file.getParentFile();
         boolean isDirectory = file.isDirectory();
         String  type        = (isDirectory
@@ -10046,14 +10024,14 @@ public class EntryManager extends RepositoryManager {
         for (String name : names) {
             File f = new File(IOUtil.joinDir(parent, name));
             if (f.exists()) {
-                return parseEntryXml(f, true, entriesMap,filesMap).get(0);
+                return parseEntryXml(f, INTERNAL.NO, TEMPLATE.YES,entriesMap,filesMap).get(0);
             }
         }
 
         if (isDirectory) {
             File f = new File(IOUtil.joinDir(file, ".this.ramadda.xml"));
             if (f.exists()) {
-                Entry entry = parseEntryXml(f, true,entriesMap,filesMap).get(0);
+                Entry entry = parseEntryXml(f, INTERNAL.NO,TEMPLATE.YES,entriesMap,filesMap).get(0);
                 return entry;
             }
 
@@ -10685,8 +10663,7 @@ public class EntryManager extends RepositoryManager {
 
         if (template != null) {
             group.initWith(template, true);
-            getRepository().getMetadataManager().initNewEntry(request,group,
-							      initializer);
+            getRepository().getMetadataManager().initNewEntry(request,group, initializer);
         }
         group.setParentEntry(parent);
         group.setUser(user);
