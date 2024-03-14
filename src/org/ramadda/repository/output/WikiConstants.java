@@ -472,6 +472,8 @@ public interface WikiConstants {
     /** _more_ */
     public static final String WIKI_TAG_SEARCH = "search";
 
+    public static final String WIKI_TAG_TYPECOUNT = "typecount";    
+
     public static final String WIKI_TAG_SEARCHBYTYPE = "typesearchlist";    
 
     /** wiki import */

@@ -223,6 +223,17 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 			    new WikiTag(WIKI_TAG_MENU,null,"title","","popup","true","ifUser","false"),
                             new WikiTag(WIKI_TAG_ENTRYID),
                             new WikiTag(WIKI_TAG_ALIAS,null,"name","alias","entry","entry id"),
+			    new WikiTag(WIKI_TAG_TYPECOUNT,"Entry Type Count",
+					"types","comma separated list of types",
+					"hideWhenZero","false",
+					"template","${icon} ${label}<br>${count}",
+					"addSearchLink","true",
+					"animated","true",
+					"style","vertical-align:top;margin-right:10px;min-height:3em;padding:5px;text-align:center;border:var(--basic-border);",
+					"#label","",
+					"#topCount","5",
+					"#types","Use * if doing topCount"),
+
 			    new WikiTag(WIKI_TAG_SEARCHBYTYPE,"Type Search List",
 					
 					"showHeader","true",

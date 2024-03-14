@@ -75,6 +75,7 @@ import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -1995,6 +1996,91 @@ public class WikiManager extends RepositoryManager
 						      threshold);
 
             return tagCloud.toString();
+	} else if(theTag.equals(WIKI_TAG_TYPECOUNT)) {
+	    final Request theRequest = request;
+	    Function<List<TypeHandler>,String> apply = (handlers)->{
+		try {
+		    int count=0;
+		    String label = "Count";
+		    int typeCount=0;
+		    TypeHandler lastHandler = null;
+		    for(TypeHandler handler: handlers) {
+			lastHandler = handler;
+			count += getEntryUtil().getEntryCount(handler);
+			label = handler.getLabel();
+			typeCount++;
+		    }
+		    if(count==0 && getProperty(wikiUtil,props,"hideWhenZero",false)) return "";
+		    if(typeCount>1) label="Count";	
+		    label = getProperty(wikiUtil,props,"label",label);
+		    String template = getProperty(wikiUtil,props,"template","${icon} ${label}<br>${count}");
+		    String style = getProperty(wikiUtil,props,"style","margin-bottom:5px;margin-right:10px;padding:5px;width:120px;text-align:center;border:1px solid #ccc;");
+		    String scount  =""+count;
+		    if(getProperty(wikiUtil,props,"animated",true))  {
+			scount = wikiUtil.getHandler("odometer").handle(wikiUtil, "odometer","count="+scount);
+		    }
+		    //		    scount = wikifyEntry(theRequest,entry,"{{odometer count=" + count+"}}");
+
+
+		    String html =  template.replace("${count}",scount).replace("${label}",label);
+		    String clazz="";
+		    boolean addSearch = getProperty(wikiUtil,props,"addSearchLink",false);
+		    if(addSearch) clazz="ramadda-clickable  ramadda-hoverable";
+		    if(typeCount==1 && lastHandler!=null) {
+			String icon = lastHandler.getIconProperty(null);
+			if (icon == null) {
+			    icon = ICON_BLANK;
+			}
+			String img = HU.img(lastHandler.getIconUrl(icon), "", HU.attr(HU.ATTR_WIDTH, ICON_WIDTH));		
+			html = html.replace("${icon}",img);
+		    }   else {
+			html = html.replace("${icon}","");
+		    }
+	    
+		    if(stringDefined(style)) html=HU.inlineBlock(html,HU.attrs("style",style,"class",clazz));
+		    if(typeCount == 1 && addSearch && lastHandler!=null) {
+			String url= getRepository().getUrlBase()
+			    + "/search/type/"
+			    + lastHandler.getType();
+			html = HU.href(url ,html,HU.title("Search"));
+		    }
+		    return html;
+		} catch(Exception exc) {
+		    throw new RuntimeException(exc);
+		}
+	    };
+
+
+	    List<TypeHandler> handlers=null;
+	    String types = getProperty(wikiUtil,props,"types","").trim();
+	    if(types.equals("*")) {
+		handlers=getRepository().getTypeHandlers();
+	    }  else {
+		handlers = new ArrayList<TypeHandler>();
+		for(String type: Utils.split(types,",",true,true)) {
+		    TypeHandler typeHandler  =getRepository().getTypeHandler(type);
+		    if(typeHandler == null) continue;
+		    handlers.add(typeHandler);
+		}
+	    }
+	    int topCount = getProperty(wikiUtil,props,"topCount",-1);
+	    if(topCount>0) {
+		List<Utils.ObjectSorter> sort =  new ArrayList<Utils.ObjectSorter>();
+		for(TypeHandler handler: handlers) {
+		    int count = getEntryUtil().getEntryCount(handler);
+		    if(count>0) 
+			sort.add(new Utils.ObjectSorter(handler,count,false));
+		}
+		Collections.sort(sort);
+		for(int i=0;i<topCount && i<sort.size();i++) {
+		    handlers = new ArrayList<TypeHandler>();
+		    handlers.add((TypeHandler)sort.get(i).getObject());
+		    sb.append(apply.apply(handlers).trim());
+		}
+	    } else {
+		sb.append(apply.apply(handlers));
+	    }
+	    return sb.toString();
 	} else if(theTag.equals(WIKI_TAG_SEARCHBYTYPE)) {
 	    HashSet<String> supers = null;
 	    HashSet<String> cats=null;
@@ -7429,7 +7515,7 @@ public class WikiManager extends RepositoryManager
 	Utils.QuadFunction<String,String,String,String,String> l2 = (title,tt,pre,post)->{
 	    return getWikiEditLink(textAreaId,title,pre,post,tt);
 	};
-	
+		
 	BiFunction<String,String,String> makeButton = (title,contents)->{
 	    return HU.makePopup(null,HU.div(title,HU.cssClass("ramadda-menubar-button")),
 				HU.div(contents, "class='wiki-editor-popup'"),
