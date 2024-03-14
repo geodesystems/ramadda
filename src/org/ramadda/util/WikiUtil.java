@@ -5267,7 +5267,7 @@ public class WikiUtil implements HtmlUtilsConstants {
      *
      * @return _more_
      */
-    private static MyHandler getHandler(String tag) {
+    public static MyHandler getHandler(String tag) {
         if (myHandlers == null) {
             synchronized (handlerMutex) {
                 makeHandlers();
