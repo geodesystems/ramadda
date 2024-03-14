@@ -1785,6 +1785,10 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static Appendable inlineBlock(Appendable sb, String content, String extra) {
         tag(sb,TAG_INLINE_BLOCK, extra, content);
 	return sb;
+    }
+
+    public static String inlineBlock(String content, String extra) {
+        return tag(TAG_INLINE_BLOCK, extra, content);
     }    
 
 
@@ -4771,7 +4775,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static String script(String s) {
         StringBuilder js = new StringBuilder();
         script(js, s);
-
         return js.toString();
     }
 
@@ -4787,10 +4790,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
             return;
         }
         try {
-            js.append("\n");
-            js.append(tag(TAG_SCRIPT, attrs(ATTR_TYPE, "text/JavaScript"),
-                          "\n" + s + "\n"));
-            js.append("\n");
+            js.append(tag(TAG_SCRIPT, attrs(ATTR_TYPE, "text/JavaScript"), s));
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }
