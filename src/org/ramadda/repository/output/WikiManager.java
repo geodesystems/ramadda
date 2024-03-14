@@ -1998,6 +1998,7 @@ public class WikiManager extends RepositoryManager
             return tagCloud.toString();
 	} else if(theTag.equals(WIKI_TAG_TYPECOUNT)) {
 	    final Request theRequest = request;
+	    final HashSet except = Utils.makeHashSet(Utils.split(getProperty(wikiUtil,props,"except",""),",",true,true));
 	    Function<List<TypeHandler>,String> apply = (handlers)->{
 		try {
 		    int count=0;
@@ -2005,6 +2006,7 @@ public class WikiManager extends RepositoryManager
 		    int typeCount=0;
 		    TypeHandler lastHandler = null;
 		    for(TypeHandler handler: handlers) {
+			if(except.contains(handler.getType())) continue;
 			lastHandler = handler;
 			count += getEntryUtil().getEntryCount(handler);
 			label = handler.getLabel();
@@ -2058,15 +2060,17 @@ public class WikiManager extends RepositoryManager
 	    }  else {
 		handlers = new ArrayList<TypeHandler>();
 		for(String type: Utils.split(types,",",true,true)) {
-		    TypeHandler typeHandler  =getRepository().getTypeHandler(type);
-		    if(typeHandler == null) continue;
-		    handlers.add(typeHandler);
+		    TypeHandler handler  =getRepository().getTypeHandler(type);
+		    if(handler == null) continue;
+		    if(except.contains(handler.getType())) continue;
+		    handlers.add(handler);
 		}
 	    }
 	    int topCount = getProperty(wikiUtil,props,"topCount",-1);
 	    if(topCount>0) {
 		List<Utils.ObjectSorter> sort =  new ArrayList<Utils.ObjectSorter>();
 		for(TypeHandler handler: handlers) {
+		    if(except.contains(handler.getType())) continue;
 		    int count = getEntryUtil().getEntryCount(handler);
 		    if(count>0) 
 			sort.add(new Utils.ObjectSorter(handler,count,false));

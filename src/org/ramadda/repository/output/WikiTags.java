@@ -225,6 +225,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
                             new WikiTag(WIKI_TAG_ALIAS,null,"name","alias","entry","entry id"),
 			    new WikiTag(WIKI_TAG_TYPECOUNT,"Entry Type Count",
 					"types","comma separated list of types",
+					"#except","comma separated list of types to exclude",
 					"hideWhenZero","false",
 					"template","${icon} ${label}<br>${count}",
 					"addSearchLink","true",
