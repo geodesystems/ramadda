@@ -3948,7 +3948,9 @@ public class WikiUtil implements HtmlUtilsConstants {
     }
 
     public String getLinkTarget() {
-        return  (String) getProperty("linktarget");
+	String target =   (String) getProperty("linktarget");
+	if(target==null)target =   (String) getWikiProperty("linktarget");
+	return target;
     }    
 
     /**
