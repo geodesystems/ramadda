@@ -1,6 +1,13 @@
 
+.ramadda-model {
+    display:inline-block;
+    padding:1px;
+    border:var(--basic-border);
+    margin:1px;
+}    
+
+
 .ramadda-model-display {
-    border:1px solid #ccc;
     line-height:0px;
 }
 
@@ -12,10 +19,9 @@
 }
 
 .ramadda-model-annotations {
-    border:1px solid #ccc;
-    border-left:0px solid #ccc;    
     padding:5px;
     max-width:200px;
+    width:200px;    
 }
 
 .ramadda-model-annotation-delete {

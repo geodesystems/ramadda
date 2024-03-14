@@ -32,6 +32,7 @@ function Ramadda3DDisplayManager(models,props) {
 	height:480,
     }
     $.extend(this.opts, props||{});
+    console.dir(this.opts);
     this.models = models.map((model,idx)=>{
 	return new RamaddaModel3D(this,model,idx);
     });
