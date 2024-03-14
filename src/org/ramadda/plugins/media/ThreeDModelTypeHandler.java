@@ -152,6 +152,72 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
         }
     }
 
+    public Result processEntryAction(Request request, Entry entry)
+            throws Exception {
+        String action = request.getString("action", "");
+	if(action.equals("3dmodelembedtext")) {
+	    StringBuilder sb = new StringBuilder();
+	    getPageHandler().entrySectionOpen(request, entry, sb, "3D Model Embed");
+	    sb.append(request.form(getRepository().URL_ENTRY_ACTION));
+	    sb.append(HU.hidden(ARG_ENTRYID,entry.getId()));
+	    sb.append(HU.hidden(ARG_ACTION,"3dmodelembedtext"));	
+	    sb.append(HU.formTable());
+	    sb.append(HU.formEntry("Width:",HU.input("width",request.getString("width","640"))));
+	    sb.append(HU.formEntry("Height:",HU.input("height",request.getString("height","480"))));
+	    sb.append(HU.formEntry("",HU.labeledCheckbox("addtitle","true",request.get("addtitle",false),"Add Title")));
+	    sb.append(HU.formEntry("",HU.labeledCheckbox("decorate","true",request.get("decorate",false),"Show Annotations")));
+	    sb.append(HU.formEntry("",HU.submit("Make Embed",ARG_OK)));	
+	    sb.append(HU.formTableClose());
+	    sb.append(HU.formClose());
+	    if(request.exists(ARG_OK)) {
+		sb.append("Copy the following text to embed this 3D model in a web page");
+		String id = HU.getUniqueId("block_");
+		int width = request.get("width",640);
+		int height = request.get("height",480);		
+		boolean decorate=request.get("decorate",false);
+		boolean addTitle = request.get("addtitle",false);
+		int hoffset=18;
+		int woffset=15;
+		if(decorate) woffset+=200;
+		if(addTitle) hoffset+=50;
+		String url = request.getAbsoluteUrl(
+						    HU.url(
+							   request.makeUrl(getRepository().URL_ENTRY_ACTION),
+							   new String[] { ARG_ENTRYID,
+									  entry.getId(),
+									  "action", "3dmodelembed",
+									  "addtitle",""+addTitle,
+									  "width",""+(width-woffset),"height",""+(height-hoffset),
+									  "decoratemodel",""+decorate,
+							   }));
+
+		sb.append(HU.open("pre",HU.attrs("id",id,"add-copy","true")));
+		sb.append("&lt;iframe\n");
+		sb.append(" width=" + width);
+		sb.append(" height=" + height);
+		sb.append(" src='"+ url+"'&gt;\n&lt;/iframe&gt;");
+		sb.append("</pre>");
+		HU.script(sb,"Utils.addCopyLink('" +id+"');");
+	    }
+	    getPageHandler().entrySectionClose(request, entry, sb);
+	    return getEntryManager().addEntryHeader(request, entry,
+						    new Result("3D Model Embed",sb));
+	}
+	if(action.equals("3dmodelembed")) {
+	    request.put("template","empty");
+	    String wiki = "";
+	    if(request.get("addtitle",true)) wiki+=":property linktarget _3dmodel\n+section title={{name}}\n";
+	    wiki+="{{3dmodel}}\n";
+	    if(request.get("addtitle",true)) wiki+="-section\n";
+	    String text =getWikiManager().wikifyEntry(request, entry,wiki);
+	    return new Result("",new StringBuilder(text));
+	}
+	return super.processEntryAction(request,entry);
+
+    }
+
+
+
     /**
      * _more_
      *
@@ -328,18 +394,25 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 	}
 
         String id = HU.getUniqueId("model_");
+	sb.append("<div class=ramadda-model>");
 	sb.append("<table border=0 cellspacing=0 cellpadding=0><tr valign=top><td>");
-
         HU.div(sb, "",HU.attrs("id", id+"_toc"));
-	sb.append("</td><td>");
+	sb.append("</td><td>\n");
+	String width = request.getString("width",Utils.getProperty(props,"width","640"));
+	String height =request.getString("height",Utils.getProperty(props,"height","480"));
         HU.div(sb, "",
-               HU.attrs("style", HU.css("width", HU.makeDim(Utils.getProperty(props,"width","640"),"px"), 
-					"height", HU.makeDim(Utils.getProperty(props,"height","480"),"px")),
+               HU.attrs("style", HU.css("width", HU.makeDim(width,"px"), 
+					"height", HU.makeDim(height,"px")),
                         "tabindex", "1", "id", id, "class",
                         "ramadda-model-display ramadda-nooutline"));
-	sb.append("</td><td>");
-        HU.div(sb, "",HU.attrs("id", id+"_annotations"));
-	sb.append("</td></tr></table>");
+	sb.append("</td>");
+	if(request.get("decoratemodel",true)) {
+	    sb.append("<td>");
+	    HU.div(sb, "",HU.attrs("id", id+"_annotations"));
+	    sb.append("</td>");
+	}
+	sb.append("</tr></table>");
+	sb.append("</div>");
         List<String> jsonProps = new ArrayList<String>();
         Utils.add(jsonProps, "id", JsonUtil.quote(id));
 	String sessionId = request.getSessionId();
@@ -348,7 +421,7 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 	    Utils.add(jsonProps, "authtoken", JsonUtil.quote(authToken));
 	}
 
-
+	Utils.add(jsonProps,"width",width,"height",height);
 	List tmp = Utils.makeList(props);
 	for(int i=0;i<tmp.size();i+=2) {
 	    Utils.add(jsonProps,tmp.get(i),
