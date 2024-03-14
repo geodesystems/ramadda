@@ -373,6 +373,11 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 		Utils.add(attrs,"annotations",JsonUtil.quote(tmp));
 	    }	    
 	    
+	    String watermark = getMetadataManager().getMetadataUrl(request, entry, "3dmodel_watermark");
+	    if(stringDefined(watermark)){
+		Utils.add(attrs,"watermark",JsonUtil.quote(watermark));
+	    }
+
 	    String snippet = getWikiManager().getSnippet(request, entry, true,null);
 	    if(snippet!=null) 
 		Utils.add(attrs,"description",JsonUtil.quote(snippet));
@@ -393,6 +398,7 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 	    }
 	}
 
+
         String id = HU.getUniqueId("model_");
 	sb.append("<div class=ramadda-model>");
 	sb.append("<table border=0 cellspacing=0 cellpadding=0><tr valign=top><td>");
@@ -400,11 +406,14 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 	sb.append("</td><td>\n");
 	String width = request.getString("width",Utils.getProperty(props,"width","640"));
 	String height =request.getString("height",Utils.getProperty(props,"height","480"));
-        HU.div(sb, "",
-               HU.attrs("style", HU.css("width", HU.makeDim(width,"px"), 
-					"height", HU.makeDim(height,"px")),
-                        "tabindex", "1", "id", id, "class",
-                        "ramadda-model-display ramadda-nooutline"));
+        sb.append(HU.open("div",
+			  HU.attrs("style", HU.css("position","relative",
+						   "width", HU.makeDim(width,"px"), 
+						   "height", HU.makeDim(height,"px")),
+				   "tabindex", "1", "id", id, "class",
+				   "ramadda-model-display ramadda-nooutline")));
+
+	sb.append(HU.close("div"));
 	sb.append("</td>");
 	if(request.get("decoratemodel",true)) {
 	    sb.append("<td>");

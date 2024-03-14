@@ -27,6 +27,11 @@
       <element name="Background Image" datatype="file" thumbnail="false"/>
     </type>
     <type
+       name="3D Model Watermark"
+       id="3dmodel_watermark">
+      <element name="Watermark" datatype="file" thumbnail="false"/>
+    </type>
+    <type
        name="3D Model Texture"
        id="3dmodel_texture">
       <element name="Texture Image" datatype="file" thumbnail="false"/>

@@ -7,6 +7,14 @@
 }    
 
 
+.ramadda-model-watermark {
+    position:absolute;
+    left:10px;
+    bottom:10px;
+    opacity:0.75;
+    width:80px;
+}
+
 .ramadda-model-display {
     line-height:0px;
 }

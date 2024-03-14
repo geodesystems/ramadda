@@ -32,7 +32,6 @@ function Ramadda3DDisplayManager(models,props) {
 	height:480,
     }
     $.extend(this.opts, props||{});
-    console.dir(this.opts);
     this.models = models.map((model,idx)=>{
 	return new RamaddaModel3D(this,model,idx);
     });
@@ -46,9 +45,12 @@ function Ramadda3DDisplayManager(models,props) {
     let width = this.opts.width;
     let height = this.opts.height;	
     this.models.forEach((model,idx)=>{
+	let contents = '';
 	html+= HU.div(['id',this.getSubDivId(idx),
-		       'class','ramadda-model-3ddisplay','tabindex','0','style',HU.css('display','none','width',HU.getDimension(width),'height',HU.getDimension(height))]);
+		       'class','ramadda-model-3ddisplay','tabindex','0','style',HU.css('position','relative','display','none','width',HU.getDimension(width),'height',HU.getDimension(height))],contents);
     });
+    console.log(html);
+
     jqid(this.divId).css('width',this.opts.width).css('height',this.opts.height).css('max-width',this.opts.width).css('max-height',this.opts.height).css('overflow-y','hide');
     jqid(this.divId).html(html);
     this.displays = [];
@@ -229,6 +231,12 @@ Ramadda3DDisplay.prototype = {
 	let menuButton = HU.div(['style',HU.css('position','absolute','right','0px','top','0px'),'class','ramadda-clickable ramadda-model-toolbar','id',this.domId('_menu')], HU.getIconImage('fas fa-bars',[],['style',HU.css('color','#000')]));
 	let background=HU.div(['id',this.domId('_background'),'style',HU.css('position','relative','width','100%')]);
 	let extra = HU.div(['id',this.domId('_background')], background)   +   menuButton;
+
+	if(this.models[0] && this.models[0].watermark) {
+	    extra+=HU.image(this.models[0].watermark,[ATTR_CLASS,'ramadda-model-watermark']);
+	}
+	
+
 	let html = HU.div(['id',this.threeId]) +  extra;
 	
 
