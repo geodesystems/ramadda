@@ -14,7 +14,13 @@
 <![CDATA[
 record.type.timestamp=date
 record.type.default=double
+record.searchable.default=true
+record.searchable.record=false
 
+##for the profiles
+record.type.pfl_counter=enumeration
+record.label.pfl_counter=Profile Counter
+record.searchsuffix.pfl_counter=Enter one or more profile numbers. One per row
 
 #This is the row that defines the field names, i.e., the second row (like above) has a comma separated list of names
 fieldRow=2
