@@ -2038,6 +2038,8 @@ public abstract class Converter extends Processor {
 						null);
             String dfltUnit = Seesv.getDbProp(props, "default", "unit",
 					      null);
+            boolean dfltSearchable = Seesv.getDbProp(props, "default", "searchable",false);
+
             for (int i = 0; i < firstRow.getValues().size(); i++) {
                 String   col = (String) firstRow.getValues().get(i);
                 String[] toks;
@@ -2153,8 +2155,8 @@ public abstract class Converter extends Processor {
 		//		System.err.println("id:"  + id  + " default:" + type);
                 boolean isGeo = false;
 
-                boolean chartable = Seesv.getDbProp(props, id, "chartable",
-						    defaultChartable);
+                boolean chartable = Seesv.getDbProp(props, id, "chartable", defaultChartable);
+		boolean searchable =  Seesv.getDbProp(props, id, "searchable", dfltSearchable);
                 if (id.equals("date")) {
                     type = "date";
                 } else if (id.equals("year")) {
@@ -2247,6 +2249,8 @@ public abstract class Converter extends Processor {
                 }
 
 
+		if(searchable)
+		    attrs.append(" searchable=\"" + "true" + "\" ");
                 if (type.equals("double") || type.equals("integer")) {
                     if (chartable) {
                         attrs.append(" chartable=\"" + "true" + "\" ");
