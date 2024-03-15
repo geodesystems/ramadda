@@ -2302,7 +2302,7 @@ var Utils =  {
 			}			    
 
 			if(has('prefixLabel')) {
-			    value = get('prefixLabel')+': ' + value;
+			    value = get('label')+': ' + value;
 			}
 
                         if(has('maxHeight')) {
