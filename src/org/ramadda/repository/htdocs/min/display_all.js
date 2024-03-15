@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Mar 13 22:01:37 MDT 2024";
+var build_date="RAMADDA build date: Fri Mar 15 08:47:59 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -1577,7 +1577,7 @@ let Gfx = {
 
 
 /**
-   Copyright 2008-2023 Geode Systems LLC
+   Copyright 2008-2024 Geode Systems LLC
 */
 
 
@@ -1691,8 +1691,10 @@ function DisplayAnimation(display, enabled,attrs) {
 		this.dateMin = this.makeDate(dateMin);
 		this.dateMax = this.makeDate(dateMax);
 	    }
-	    this.setBegin(this.dateMin);
-	    this.setEnd(this.dateMax);
+	    let beginDate = this.dateMin;
+	    let endDate = this.dateMax;	    
+	    this.setBegin(beginDate);
+	    this.setEnd(endDate);
 	    if(!this.dateMin) return;
 	    this.dates=[];
 	    let seen = {};
@@ -1716,6 +1718,7 @@ function DisplayAnimation(display, enabled,attrs) {
 		return a.value - b.value;
 	    });
 	    	
+
             this.dateRange = this.dateMax.getTime() - this.dateMin.getTime();
 	    this.steps= parseFloat(this.display.getProperty("animationSteps", 60));
 	    this.setWindow();
@@ -1752,17 +1755,27 @@ function DisplayAnimation(display, enabled,attrs) {
 		    }};
 
 	    if(this.makeSlider) {
-		let slider = this.jq(ID_SLIDER).slider({
+		let slider = this.slider = this.jq(ID_SLIDER).slider({
 		    range: _this.mode != MODE_FRAME,
 		    min: _this.dateMin.getTime(),
 		    max: _this.dateMax.getTime(),
 		    values: sliderValues,
+		    create: function() {
+			_this.sliderHandleLeft = $(".ui-slider-handle:eq(0)");
+			_this.sliderHandleRight = $(".ui-slider-handle:eq(1)");
+			if(_this.sliderHandleLeft.length &&_this.sliderHandleRight.length) {
+			    _this.sliderHandleLeft.attr('title','Shift-drag to move both');
+			    _this.sliderHandleRight.attr('title','Shift-drag to move both');
+			}
+		    },
 		    slide: function( event, ui ) {
 			_this.stopAnimation();
+			_this.checkSliderValues(event,ui);
 			_this.setSliderValues(ui.values);
 			_this.updateLabels();
 		    },
 		    stop: function(event,ui) {
+			_this.checkSliderValues(event,ui);
 			_this.stopAnimation();
 			_this.setSliderValues(ui.values);
 			_this.dateRangeChanged(true);
@@ -1772,13 +1785,46 @@ function DisplayAnimation(display, enabled,attrs) {
 	    } else {
 		this.jq(ID_TICKS).on(tooltipFunc);
 	    }
-
 	    this.updateTicks();
 	    if(debug)console.log("animation.init-3");
 	    this.updateLabels();
 	    if(debug)console.log("animation.init-done");
 	},
+	checkSliderValues:function(event,ui) {
+	    if(event.shiftKey && this.lastSliderValues) {
+		let left= this.sliderHandleLeft[0]==ui.handle;
+		if(left) {
+		    let delta=ui.values[0]-this.lastSliderValues[0];
+		    ui.values[1]+=delta;
+		} else {
+		    let delta=ui.values[1]-this.lastSliderValues[1];
+		    ui.values[0]+=delta;
+		}
+		this.slider.slider("values", ui.values);
+	    }
+	    this.lastSliderValues=ui.values;
+	},
 	resetRange: function() {
+	    if(this.display.getProperty("animationInitRange","-50,end")) {
+		let toks = Utils.split(this.display.getProperty("animationInitRange","-50,end"),",");
+		let beginIdx = 0;
+		let idx=0;
+		if(toks[0].trim()=='begin')  idx=0;
+		else  idx=+toks[0];
+		if(idx<0) idx=this.records.length+idx;
+		let record = this.records[idx];
+		if(record)	this.setBegin(record.getTime());
+		if(toks.length>1) {
+		    if(toks[1].trim()=='end')  idx=this.records.length-1;
+		    else idx=+toks[1];
+		    record = this.records[idx];
+		    if(record)   this.setEnd(record.getTime());
+		}
+		return
+	    }
+
+
+
 	    if(this.startAtEnd) {
 		this.setBegin(this.dateMax);
 		this.setEnd(this.dateMax);
@@ -4034,13 +4080,13 @@ var RamaddaDisplayUtils = {
 
     getCanvasProps: function() {
 	return [
-	{p:'canvasWidth',d:100,ex:"100",tt:'Canvas width'},
-	{p:'canvasHeight',d:100,ex:"100",tt:'Canvas height'},
-	{p:'canvasOrigin',d:"sw",ex:"center",tt:'Origin point for drawing glyphs'},
-	{label:'label glyph',p:"glyph1",ex:'type:label,pos:sw,dx:10,dy:-10,label:field_colon_ ${field}_nl_field2_colon_ ${field2}'},
-	{label:'rect glyph', p:"glyph1",ex:'type:rect,pos:sw,dx:10,dy:0,colorBy:field,width:150,height:100'},
-	{label:'circle glyph',p:"glyph1",ex:'type:circle,pos:n,dx:10,dy:-10,fill:true,colorBy:field,width:20,baseWidth:5,sizeBy:field,#sizeByMin:0,#sizeByMax:100'},
-	{label:'3dbar glyph', p:"glyph1",ex:'type:3dbar,pos:sw,dx:10,dy:-10,height:30,width:8,baseHeight:5,sizeBy:field,#sizeByMin:0,#sizeByMax:100'},
+	    {p:'canvasWidth',d:100,ex:"100",tt:'Canvas width'},
+	    {p:'canvasHeight',d:100,ex:"100",tt:'Canvas height'},
+	    {p:'canvasOrigin',d:"sw",ex:"center",tt:'Origin point for drawing glyphs'},
+	    {label:'label glyph',p:"glyph1",ex:'type:label,pos:sw,dx:10,dy:-10,label:field_colon_ ${field}_nl_field2_colon_ ${field2}'},
+	    {label:'rect glyph', p:"glyph1",ex:'type:rect,pos:sw,dx:10,dy:0,colorBy:field,width:150,height:100'},
+	    {label:'circle glyph',p:"glyph1",ex:'type:circle,pos:n,dx:10,dy:-10,fill:true,colorBy:field,width:20,baseWidth:5,sizeBy:field,#sizeByMin:0,#sizeByMax:100'},
+	    {label:'3dbar glyph', p:"glyph1",ex:'type:3dbar,pos:sw,dx:10,dy:-10,height:30,width:8,baseHeight:5,sizeBy:field,#sizeByMin:0,#sizeByMax:100'},
 	    {label:'gauge glyph',p:"glyph1",ex:'type:gauge,color:#000,pos:sw,width:50,height:50,dx:10,dy:-10,sizeBy:field,sizeByMin:0'}
 	];
     },
@@ -5689,6 +5735,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'convertData',label:'convert date',
 	 ex:'roundDate(round=hour|day|week|month|year);',
 	 tt:'Round the dates'},
+	{p:'convertData',label:'nominal time',
+	 ex:'groupTime(field=field to group time on);',
+	 tt:'Round the dates'},	
 	{p:'convertData',label:'merge rows',
 	 ex:'mergeRows(keyFields=f1\\\\,f2, operator=count|sum|average, valueFields=);',
 	 tt:'Merge rows together'},
@@ -5764,7 +5813,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{label:'Animation'},
 	{p:'doAnimation',ex:true},
 	{p:'animationMode',ex:'sliding|frame|cumulative'},
-	{p:'animationuseIndex',ex:'true'},
+	{p:'animationUseIndex',ex:'true'},
+	{p:'animationInitRange',ex:'start idx,end idx  e.g. "-50,end" or "0,10" or "0,end"'},
 	{p:'animationHighlightRecord',ex:true},
 	{p:'animationHighlightRecordList',ex:true},
 	{p:'animationPropagateRecordSelection',ex:true,tt:'If the animation is in frame mode then propagate the date'},
@@ -12364,7 +12414,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
         },
         notifyEvent: function(event, source, data) {
             let displays = this.getDisplays();
-	    let group = (source!=null&&source.getProperty?source.getProperty(event+".shareGroup"):"");
+	    let group = (source!=null&&source.getProperty?source.getProperty(event.shareGroup):"");
 	    if(displayDebug.notifyEvent)
 		console.log("displayManager.notifyEvent:" + event);
 
@@ -15407,6 +15457,71 @@ function CsvUtil() {
 	    });
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
+	groupTrend: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+	    let fields =  pointData.getRecordFields();
+	    let field = this.display.getFieldById(fields, args.field);
+	    if(!field) {
+		throw new Error('Could not find groupTrend field:' +args.field);
+	    }
+	    let newFields =  fields.slice();
+	    let newRecords  =[];
+	    let id = args.newField || ("field_" + fields.length);
+	    let type=args.type??'int';
+            newFields.push(new RecordField({
+		id:id,
+		index:fields.length,
+		label:Utils.makeLabel(id),
+		type:type,
+		chartable:true,
+		unit: args.unit
+            }));
+	    let index=0;
+	    let lastValue=-99999999;
+	    records.forEach((record, rowIdx)=>{
+		let newRecord = record.clone();
+		let value = field.getValue(record);
+		if(value<lastValue) {
+		    index++;
+		}
+		lastValue=value;
+		newRecord.data= record.data.slice();
+		newRecord.fields =  newFields;
+		newRecords.push(newRecord);
+		if(type=='enumeration')
+		    newRecord.data.push(String(index));
+		else
+		    newRecord.data.push(index);
+		
+	    });
+	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
+	},
+	groupTime: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+	    let fields =  pointData.getRecordFields();
+	    let field = this.display.getFieldById(fields, args.field);
+	    if(!field) {
+		throw new Error('Could not find nominal time field:' +args.field);
+	    }
+	    let newFields =  fields.slice();
+	    let newRecords  =[];
+	    let index=0;
+	    let lastValue=-99999999;
+	    let lastTime;
+	    records.forEach((record, rowIdx)=>{
+		let newRecord = record.clone();
+		let value = field.getValue(record);
+		if(value!=lastValue) {
+		    lastTime = record.getTime();
+		    lastValue = value;
+		}
+		newRecord.setTime(lastTime);
+		newRecords.push(newRecord);
+	    });
+	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
+	},
+
+
 	rotateData: function(pointData, args) {
 	    let records = pointData.getRecords(); 
             let header = this.display.getDataValues(records[0]);
@@ -22288,7 +22403,6 @@ function TimerangechartDisplay(displayManager, id, properties) {
             });
 
 
-
             let colorBy = this.getColorByInfo(records);
 	    if(colorBy.isEnabled()) {
 		this.dataColors = [];
@@ -24263,6 +24377,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	{p:"selectable",ex:true},
 	{p:"showFieldDetails",ex:true},
 	{p:"showPopup",d:false,ex:true,tt:"Popup the selector"},	
+	{p:"selectOne",ex:true},
 	{p:"numericOnly",ex:true},
 	{p: "selectLabel",tt:"Label to use for the button"},
 	{p: "filterSelect",ex:true,tt:"Use this display to select filter fields"},
@@ -24438,8 +24553,28 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 			return
 		    }
 		    let shift = event.shiftKey ;
+		    let doAll = shift;
+		    let allSelected;
 		    let selected  = $(this).attr("field-selected")=="true";
-		    selected = !selected;
+		    if(_this.getSelectOne()) {
+			if(selected) return;
+			selected=true;
+			allSelected=false;
+			doAll = true;
+		    } else {
+			selected = !selected;
+			allSelected=selected;
+		    }
+		    if(doAll) {
+			fieldBoxes.attr("field-selected",allSelected);
+			if(allSelected) {
+			    fieldBoxes.addClass("display-fields-field-selected");
+			} else {
+			    fieldBoxes.removeClass("display-fields-field-selected");
+			}
+
+		    }
+
 		    $(this).attr("field-selected",selected);
 		    if(selected) {
 			$(this).addClass("display-fields-field-selected");
@@ -24447,15 +24582,6 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 			$(this).removeClass("display-fields-field-selected");
 		    }
 
-		    if(shift) {
-			fieldBoxes.attr("field-selected",selected);
-			if(selected) {
-			    fieldBoxes.addClass("display-fields-field-selected");
-			} else {
-			    fieldBoxes.removeClass("display-fields-field-selected");
-			}
-
-		    }
 		    _this.handleFieldSelect();
 		});
 	    }
@@ -24468,6 +24594,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	    out+='\"\n';
 	    Utils.copyToClipboard(out);
 	    console.log(out);
+
 	},
 	getActiveFields:function() {
 	    let _this=this;
@@ -35920,7 +36047,6 @@ function RamaddaExampleDisplay(displayManager, id, properties) {
 /**
    Copyright 2008-2023 Geode Systems LLC
 */
-let xxcnt=0;
 
 const DISPLAY_MAP = "map";
 
@@ -35976,6 +36102,8 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'gridBounds',ex:'north,west,south,east'},	
 	{p:'mapCenter',ex:'lat,lon',tt:"initial position"},
 	{p:'zoomLevel',ex:4,tt:"initial zoom"},
+	{p:'initBoundsUseAllRecords',ex:true},
+	{p:'initBoundsPadding',ex:'A percent, e.g.0.05'},
 	{p:'zoomTimeout',ex:500,
 	 tt:"initial zoom timeout delay. set this if the map is in tabs, etc, and not going to the initial zoom"},
 	{p:'popupWidth',d:400},
@@ -39053,11 +39181,28 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let showSegments = this.getShowSegments(false);
 	    let okToSetMapBounds = !showSegments && !this.hadInitialPosition && !args.dontSetBounds && 
 		(!args.dataFilterChanged || this.getCenterOnFilterChange());
-	    if(records.length!=0) {
+	    let haveRecords = records.length>0;
+	    if(this.getInitBoundsUseAllRecords()) {
+		pointBounds = {};
+		let allRecords = this.getData().getRecords();
+		RecordUtil.getPoints(allRecords, pointBounds);
+		haveRecords=allRecords.length>0;
+	    }
+	    if(haveRecords) {
 		if (!isNaN(pointBounds.north)) {
+		    let padding = this.getInitBoundsPadding();
+		    if(padding) {
+			let w = pointBounds.east-pointBounds.west;
+			pointBounds.east-=w*padding;
+			pointBounds.west-=w*padding;			
+			let h = pointBounds.north-pointBounds.south;
+			pointBounds.north+=h*padding;
+			pointBounds.south-=h*padding;			
+		    }
 		    this.pointBounds = pointBounds;
 		    this.initBounds = pointBounds;
 		    if(okToSetMapBounds) {
+
 			if(pointBounds.insideDateLine) {
 			    this.setInitMapBounds(pointBounds.north, -178, pointBounds.south, -170);
 			} else {
@@ -42278,11 +42423,19 @@ var LEGEND_IMAGE_ATTRS = [ATTR_STYLE,'color:#ccc;font-size:9pt;'];
 var BUTTON_IMAGE_ATTRS = [ATTR_STYLE,'color:#ccc;'];
 var CLASS_IMDV_STYLEGROUP= 'imdv-stylegroup';
 var CLASS_IMDV_STYLEGROUP_SELECTED = 'imdv-stylegroup-selected';
+var PROP_LAYERS_STEP_SHOW= "showLayersStep";
+var PROP_LAYERS_ANIMATION_SHOW = "showLayersAnimation";
+var PROP_LAYERS_ANIMATION_PLAY = "layersAnimationPlay";
+var PROP_MOVE_TO_LATEST_LOCATION = "moveToLatestLocation";
+var PROP_LAYERS_ANIMATION_DELAY = "layersAnimationDelay";
+var PROP_LAYERS_ANIMATION_ON = "layersAnimatioOn";
+
 var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'filter.zoomonchange.show=false',
 			  'filter.toggle.show=false',
 			  'legendTooltip=',
 			  'showLabelInMap=true',
+			  PROP_MOVE_TO_LATEST_LOCATION+'=true',
 			  'showLabelInMapWhenVisible=true',
 			  'showViewInLegend=true',
 			  'showLayerSelectInLegend=true',			  
@@ -42291,11 +42444,6 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'showMeasures=false',
 			  'showTextSearch=true'];
 
-var PROP_LAYERS_STEP_SHOW= "showLayersStep";
-var PROP_LAYERS_ANIMATION_SHOW = "showLayersAnimation";
-var PROP_LAYERS_ANIMATION_PLAY = "layersAnimationPlay";
-var PROP_LAYERS_ANIMATION_DELAY = "layersAnimationDelay";
-var PROP_LAYERS_ANIMATION_ON = "layersAnimatioOn";
 
 var IMDV_GROUP_PROPERTY_HINTS= [PROP_LAYERS_STEP_SHOW+'=true',
 				PROP_LAYERS_ANIMATION_SHOW+'=true',
@@ -48452,13 +48600,6 @@ var LINETYPE_GREATCIRCLE='greatcircle';
 var LINETYPE_CURVE='curve';
 var LINETYPE_STEPPED='stepped';        
 
-
-
-
-
-
-
-
 var ID_INMAP_LABEL='inmaplabel';
 
 var ID_ADDDOTS = 'adddots';
@@ -49471,7 +49612,6 @@ MapGlyph.prototype = {
     },    
 
 
-
     makeDataIcons: function(pointData,data,markers,lines,props) {
 
 	let cvrt=(v,dflt)=>{
@@ -49634,6 +49774,21 @@ MapGlyph.prototype = {
 		
 		}
 	    }
+	    if(records && records.length>0 && this.features&& this.getProperty(PROP_MOVE_TO_LATEST_LOCATION,null,true)) {
+		let record = records[records.length-1];
+		let p1 = MapUtils.createLonLat(record.getLongitude(),record.getLatitude())
+		p1 = this.getMap().transformLLPoint(p1);
+		p1= new OpenLayers.Geometry.Point(p1.lon, p1.lat);
+		this.features.forEach(feature=>{
+		    let geometry = feature.geometry;
+		    if(geometry && Utils.isDefined(geometry.x)) {
+			geometry.x=p1.x;
+			geometry.y=p1.y;			
+			geometry.clearBounds();
+		    }
+		});
+	    }
+
 	    this.applyStyle(this.style,true,true);		
 	    this.display.redraw();
 	};
@@ -61338,6 +61493,7 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 	{p:'xAxisShowGrid',d:'true',ex:'false'},
 	{p:'xAxisShowLine',d:'true',ex:'false'},
 	{p:'yAxisReverse',d:false,ex:'true'},
+	{p:'setRangeFromAllValues',ex:true},
 	{p:'marginLeft',d:'60',ex:'60'},
 	{p:'marginRight',d:'100',ex:'100'},
 	{p:'marginBottom',d:'50',ex:'50'},
@@ -61352,6 +61508,13 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 	{p:'lineWidth',d:1},
 	{p:'markerSize',d:16},
 	{p:'symbol',d:'circle',ex:'circle|square|diamond|cross|x|triangle-up|triangle-down|pentagon|hexagon|hexagram|star|hash'},
+	{p:'yAxisReverse',ex:true},
+        {p:'yAxisTitle'},
+	{p:'yAxisShowLine', ex:true},
+	{p:'yAxisShowGrid', ex:true},
+        {p:'xAxisTitle'},
+        {p:'xAxisShowGrid', ex:true},
+        {p:'xAxisShowLine', ex:true},
     ]);
 
     RamaddaUtil.defineMembers(this, {
@@ -61382,8 +61545,35 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 	    }
             let index = this.getColumnValues(records, indexField).values;
             let data = [];
+	    let range;
+	    if(this.getSetRangeFromAllValues()) {
+		let allRecords = this.getData().getRecords();
+		let min,max;
+		allRecords.forEach((r,idx)=>{
+		    let v = fields[0].getValue(r);
+		    if(idx==0 || v<min) min=v;
+		    if(idx==0 || v>max) max=v;		    
+		});
+		range=[min,max]
+	    }
+
+  
             fields.forEach((field,idx)=>{
 		let x = this.getColumnValues(records, field).values;
+		let colors=null;
+		let colorTable = this.getProperty(field.getId()+'.colorTable',  this.getProperty('colorTable'));
+		if(colorTable) {
+                    let ct = Utils.ColorTables[colorTable];
+		    if(ct) {
+			let colorByInfo = new  ColorByInfo(this, fields, records, null,null,ct.colors, null, field);
+			colors =[];
+			records.forEach(r=>{
+			    let c = colorByInfo.getColorFromRecord(r);
+			    colors.push(c);
+			});
+		    }			
+		}
+
 		let trace =   {
 		    y: index,
 		    x: x,
@@ -61391,6 +61581,7 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 		    mode: this.getProfileMode(),
                     name: field.getLabel(),
                     marker: {
+			color:colors,
                         line: {
                             color: this.getLineColor(),
                             width: this.getLineWidth(),
@@ -61407,15 +61598,16 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 	    let labelName = indexField.getLabel();
             let layout = {
                 yaxis: {
-		    autorange: this.getProperty("yAxisReverse",false)?"reversed":null,
-                    title: this.getProperty("yAxisTitle", labelName),
-                    showline: this.getProperty("yAxisShowLine", true),
-                    showgrid: this.getProperty("yAxisShowGrid", true),
+		    autorange: this.getYAxisReverse()?"reversed":null,
+                    title: this.getYAxisTitle(labelName),
+                    showline: this.getYAxisShowLine(true),
+                    showgrid: this.getYAxisShowGrid(true),
                 },
                 xaxis: {
-                    title: this.getProperty("xAxisTitle", fields[0].getLabel()),
-                    showgrid: this.getProperty("xAxisShowGrid", true),
-                    showline: this.getProperty("xAxisShowLine", true),
+		    range: range,
+                    title: this.getXAxisTitle(fields[0].getLabel()),
+                    showgrid: this.getXAxisShowGrid(true),
+                    showline: this.getXAxisShowLine(true),
                     linecolor: 'rgb(102, 102, 102)',
                     titlefont: {
                         font: {
@@ -61432,19 +61624,19 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
                     tickcolor: 'rgb(102, 102, 102)'
 		},
                 margin: {
-                    l: this.getProperty("marginLeft", 60),
-                    r: this.getProperty("marginRight", 100),
-                    b: this.getProperty("marginBottom", 50),
-                    t: this.getProperty("marginTop", 100),
+                    l: this.getMarginLeft(60),
+                    r: this.getMarginRight(100),
+                    b: this.getMarginBottom(50),
+                    t: this.getMarginTop(100),
                 },
                 legend: {
                     font: {
                         size: 10,
                     },
-                    yanchor: this.getProperty("legendYAnchor"),
-                    xanchor: this.getProperty("legendXAnchor"),
+                    yanchor: this.getLegendYAnchor(),
+                    xanchor: this.getLegendXAnchor(),
                 },
-                showlegend: this.getProperty("showLegend",true),
+                showlegend: this.getShowLegend(true),
 		paper_bgcolor: this.getProperty("chart.fill", 'transparent'),		
 //                plot_bgcolor: this.getProperty("chartArea.fill", 'rgb(254, 247, 234)'),
                 plot_bgcolor: this.getProperty("chartArea.fill", '#fff'),				
