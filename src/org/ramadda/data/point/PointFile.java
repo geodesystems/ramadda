@@ -959,6 +959,12 @@ public abstract class PointFile extends RecordFile implements Cloneable,
 
 
 
+            String searchSuffix = getProperty(properties, "search.suffix",
+					      getProperty(properties, "searchsuffix", null));					      
+            if (searchSuffix != null) {
+                field.setProperty(RecordField.PROP_SEARCH_SUFFIX,searchSuffix);
+            }
+
             if (getProperty(properties, "isDateOffset","false").equals("true")) {
                 field.setIsDateOffset(true);
             }
