@@ -1,5 +1,5 @@
 /**
-   Copyright 2008-2023 Geode Systems LLC
+   Copyright 2008-2024 Geode Systems LLC
 */
 
 
@@ -113,8 +113,10 @@ function DisplayAnimation(display, enabled,attrs) {
 		this.dateMin = this.makeDate(dateMin);
 		this.dateMax = this.makeDate(dateMax);
 	    }
-	    this.setBegin(this.dateMin);
-	    this.setEnd(this.dateMax);
+	    let beginDate = this.dateMin;
+	    let endDate = this.dateMax;	    
+	    this.setBegin(beginDate);
+	    this.setEnd(endDate);
 	    if(!this.dateMin) return;
 	    this.dates=[];
 	    let seen = {};
@@ -138,6 +140,7 @@ function DisplayAnimation(display, enabled,attrs) {
 		return a.value - b.value;
 	    });
 	    	
+
             this.dateRange = this.dateMax.getTime() - this.dateMin.getTime();
 	    this.steps= parseFloat(this.display.getProperty("animationSteps", 60));
 	    this.setWindow();
@@ -174,17 +177,27 @@ function DisplayAnimation(display, enabled,attrs) {
 		    }};
 
 	    if(this.makeSlider) {
-		let slider = this.jq(ID_SLIDER).slider({
+		let slider = this.slider = this.jq(ID_SLIDER).slider({
 		    range: _this.mode != MODE_FRAME,
 		    min: _this.dateMin.getTime(),
 		    max: _this.dateMax.getTime(),
 		    values: sliderValues,
+		    create: function() {
+			_this.sliderHandleLeft = $(".ui-slider-handle:eq(0)");
+			_this.sliderHandleRight = $(".ui-slider-handle:eq(1)");
+			if(_this.sliderHandleLeft.length &&_this.sliderHandleRight.length) {
+			    _this.sliderHandleLeft.attr('title','Shift-drag to move both');
+			    _this.sliderHandleRight.attr('title','Shift-drag to move both');
+			}
+		    },
 		    slide: function( event, ui ) {
 			_this.stopAnimation();
+			_this.checkSliderValues(event,ui);
 			_this.setSliderValues(ui.values);
 			_this.updateLabels();
 		    },
 		    stop: function(event,ui) {
+			_this.checkSliderValues(event,ui);
 			_this.stopAnimation();
 			_this.setSliderValues(ui.values);
 			_this.dateRangeChanged(true);
@@ -194,13 +207,46 @@ function DisplayAnimation(display, enabled,attrs) {
 	    } else {
 		this.jq(ID_TICKS).on(tooltipFunc);
 	    }
-
 	    this.updateTicks();
 	    if(debug)console.log("animation.init-3");
 	    this.updateLabels();
 	    if(debug)console.log("animation.init-done");
 	},
+	checkSliderValues:function(event,ui) {
+	    if(event.shiftKey && this.lastSliderValues) {
+		let left= this.sliderHandleLeft[0]==ui.handle;
+		if(left) {
+		    let delta=ui.values[0]-this.lastSliderValues[0];
+		    ui.values[1]+=delta;
+		} else {
+		    let delta=ui.values[1]-this.lastSliderValues[1];
+		    ui.values[0]+=delta;
+		}
+		this.slider.slider("values", ui.values);
+	    }
+	    this.lastSliderValues=ui.values;
+	},
 	resetRange: function() {
+	    if(this.display.getProperty("animationInitRange","-50,end")) {
+		let toks = Utils.split(this.display.getProperty("animationInitRange","-50,end"),",");
+		let beginIdx = 0;
+		let idx=0;
+		if(toks[0].trim()=='begin')  idx=0;
+		else  idx=+toks[0];
+		if(idx<0) idx=this.records.length+idx;
+		let record = this.records[idx];
+		if(record)	this.setBegin(record.getTime());
+		if(toks.length>1) {
+		    if(toks[1].trim()=='end')  idx=this.records.length-1;
+		    else idx=+toks[1];
+		    record = this.records[idx];
+		    if(record)   this.setEnd(record.getTime());
+		}
+		return
+	    }
+
+
+
 	    if(this.startAtEnd) {
 		this.setBegin(this.dateMax);
 		this.setEnd(this.dateMax);
