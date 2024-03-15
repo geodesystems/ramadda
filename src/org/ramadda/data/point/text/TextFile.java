@@ -624,6 +624,7 @@ public abstract class TextFile extends PointFile {
 			String        id    = Utils.makeID(tok);
 			name = name.replaceAll(",", "&#44;");
 			name = Utils.makeLabel(name);
+			name =  getProperty("record.label." + id,name);
 			attrs.append(attrLabel(name));
 			String type = getProperty("record.type." + id,null);
 			boolean isDate =false;
