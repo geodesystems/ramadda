@@ -137,17 +137,18 @@ convertData="groupTrend(field=_rs232dpt, newField=counter,type=enumeration);grou
 +col-6
 {{display_fieldslist  showPopup=true  numericOnly=true fields=temp_c selectOne=true
 fieldsSelected.shareGroup="profile1"}} 
-{{display_profile height=300px indexField=_rs232dpt  setRangeFromAllValues=true
+{{display_profile height=300px marginTop=10  indexField=_rs232dpt  setRangeFromAllValues=true
 fields=temp_c fieldsSelected.acceptGroup="profile1" 
-marginTop=10 doAnimation=true animationStartAtEnd=true animationMode=frame  yAxisReverse=true yAxisTitle=Depth
+doAnimation=true animationStartAtEnd=true animationMode=frame  animationDateFormat=yyyymmddhhmm
+yAxisReverse=true yAxisTitle=Depth
 }} 
 {{display_fieldslist  showPopup=true  numericOnly=true fields=cond_s_cm selectOne=true
 fieldsSelected.shareGroup="profile2"}} 
-{{display_profile height=300px indexField=_rs232dpt  setRangeFromAllValues=true
-fieldsSelected.acceptGroup="profile2" 
-marginTop=10  doAnimation=true  animationStartAtEnd=true animationMode=frame    yAxisReverse=true yAxisTitle=Depth
-fields=cond_s_cm 
-}}
+{{display_profile height=300px marginTop=10  indexField=_rs232dpt  setRangeFromAllValues=true
+fields=cond_s_cm  fieldsSelected.acceptGroup="profile2" 
+doAnimation=true animationStartAtEnd=true animationMode=frame  animationDateFormat=yyyymmddhhmm
+yAxisReverse=true yAxisTitle=Depth
+}} 
 -col
 +col-6
 +tabs
