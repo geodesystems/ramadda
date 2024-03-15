@@ -20,6 +20,7 @@ import java.io.*;
 
 import java.text.SimpleDateFormat;
 
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
@@ -117,6 +118,9 @@ public abstract class RecordFile {
     /** _more_ */
     private SimpleDateFormat[] mySdfs;
 
+    private SimpleDateFormat outputDateFormat;
+
+
     /** _more_ */
     private static SimpleDateFormat[][] SDFS = {
         { makeDateFormat("yyyy") },
@@ -140,6 +144,7 @@ public abstract class RecordFile {
     public RecordFile() {
 	//Create a dummy path
 	path=new IO.Path("dummy"+ new Date().getTime());
+
     }
 
     /**
@@ -149,6 +154,7 @@ public abstract class RecordFile {
      */
     public RecordFile(Hashtable properties) {
         this.properties = properties;
+
     }
 
     /**
@@ -159,6 +165,7 @@ public abstract class RecordFile {
     public RecordFile(IO.Path path, Hashtable properties) {
         this.path   = path;
         this.properties = properties;
+
     }
 
     /**
@@ -170,6 +177,7 @@ public abstract class RecordFile {
      */
     public RecordFile(IO.Path path) {
         this(path, null);
+
     }
 
 
@@ -184,6 +192,7 @@ public abstract class RecordFile {
                       Hashtable properties) {
         this(path, properties);
         this.context = context;
+
     }
 
     /**
@@ -796,6 +805,7 @@ public abstract class RecordFile {
      */
     public BaseRecord makeRecord(VisitInfo visitInfo) {
         BaseRecord record = doMakeRecord(visitInfo);
+	if(outputDateFormat!=null) record.setOutputDateFormat(outputDateFormat);
         if (visitInfo.getQuickScan()) {
             //            System.err.println("quick scan");
             record.setQuickScan(true);
@@ -806,6 +816,11 @@ public abstract class RecordFile {
         return record;
     }
 
+
+    public void setOutputDateFormat(SimpleDateFormat sdf) {
+	outputDateFormat=sdf;
+    }
+	    
 
     /**
      * Factory method for creating a BaseRecord object.
@@ -1603,7 +1618,6 @@ public abstract class RecordFile {
     public static SimpleDateFormat makeDateFormat(String format) {
         SimpleDateFormat sdf = new SimpleDateFormat(format);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-
         return sdf;
     }
 
