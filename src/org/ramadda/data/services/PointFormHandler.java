@@ -821,7 +821,7 @@ public class PointFormHandler extends RecordFormHandler {
                                                  "", 40)));
 
         processSB.append(HU.formEntryTop(msgLabel("Description"),
-                HU.textArea(ARG_JOB_DESCRIPTION, "", 5, 40)));
+					 HU.textArea(ARG_JOB_DESCRIPTION, "", 5, 40)));					 
 
         processSB.append(HU.formTableClose());
 
@@ -887,6 +887,24 @@ public class PointFormHandler extends RecordFormHandler {
 					  HU.select(
 							   ARG_PRODUCT, products,
 							   request.getString(ARG_PRODUCT,""))));
+
+	    List sdfs = new ArrayList();
+	    sdfs.add(new TwoFacedObject("Default", ""));
+	    sdfs.add(new TwoFacedObject("ISO8601", "iso8601"));
+	    sdfs.add("yyyy-MM-dd HH:mm:ss");
+	    sdfs.add("yyyy-MM-dd");
+	    sdfs.add("yyyyMMdd");
+	    sdfs.add("yyyy/MM/dd");	    	    
+	    subsetSB.append(HU.formEntry(
+					  msgLabel("Date Format"),
+					  HU.select(
+							   ARG_DATEFORMAT, sdfs,
+							   request.getString(ARG_DATEFORMAT,"")) +HU.space(1) +
+					  HU.b("Or custom:") + HU.space(1) +HU.input(ARG_DATEFORMAT+"_custom",
+										     request.getString(ARG_DATEFORMAT+"_custom",""),
+										     HU.attrs("placeholder","yyyyMMdd HH:mm:ss.SSSZ"))));
+	    
+
 	}
 
 
@@ -985,6 +1003,9 @@ public class PointFormHandler extends RecordFormHandler {
             }
         }
 
+
+
+
         if (allFields != null) {
             StringBuffer paramSB = null;
             List<String> selected = (List<String>) request.get(ARG_FIELD_USE,
@@ -1033,6 +1054,7 @@ public class PointFormHandler extends RecordFormHandler {
             for (RecordField field : searchableFields) {
                 List<String[]> enums        = field.getEnumeratedValues();
                 String         searchSuffix = field.getSearchSuffix();
+
                 if (searchSuffix == null) {
                     searchSuffix = "";
                 } else {
@@ -1084,6 +1106,17 @@ public class PointFormHandler extends RecordFormHandler {
                         HU.formEntry(
                             msgLabel(field.getLabel()),
                             attrWidget + searchSuffix));
+                } else if(field.isTypeEnumeration()) {
+                    if (paramSB == null) {
+                        paramSB = new StringBuffer();
+                        paramSB.append(HU.formTable());
+                    }
+                    String attrWidget = HU.textArea(ARG_SEARCH_PREFIX + field.getName()+"_enumlist", "", 5, 40);
+                    paramSB.append(
+                        HU.formEntry(
+                            msgLabel(field.getLabel()),
+                            attrWidget + searchSuffix));
+
                 } else {
                     String attrWidget = HU.input(
                                             ARG_SEARCH_PREFIX
@@ -1107,14 +1140,8 @@ public class PointFormHandler extends RecordFormHandler {
             }
             if (paramSB != null) {
                 paramSB.append(HU.formTableClose());
-		if(csvForm)
-		    subsetSB.append(paramSB);
-		else
-		    subsetSB.append(
-				    HU.formEntryTop(
-							   msgLabel("Search Fields"),
-							   HU.makeShowHideBlock(
-										       msg(""), paramSB.toString(), false)));
+		subsetSB.append(HU.formEntryTop(msgLabel("Search Values"),
+						HU.makeShowHideBlock(msg(""), paramSB.toString(), false)));
 
 
             }
