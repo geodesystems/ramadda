@@ -298,7 +298,7 @@ csvcommands1=-delimiter,spaces,-inputcomment,,-cut
 csvcommands2=1,-numcolumns,-1,-set,0,0,yy
 csvcommands3=-set,1,0,month,-combine
 csvcommands4=yy\,month\,dd\,hh\,mm,-,date,-firstcolumns,date
-csvcommands5=-indateformat,yyyy-MM-dd-HH-mm,,-convertdate,date
+csvcommands5=-indateformat,yyyy-MM-dd-HH-mm,,-convertdate,date,-sortby,date,up,string
 csvcommands6=-notcolumns,yy\,month\,dd\,hh\,mm,-change,1-50,MM,NaN
 #convert kts to m/s use the .* pattern since this is a wildcard and the field might not exist
 csvcommands7=-addheader,steepness.type enumeration wwd.type enumeration swd.type enumeration wdir.unit degT wspd.unit m/s gst.unit m/s  wvht.unit m   dpd.unit sec   apd.unit  sec mwd.unit degT   pres.unit hPa  atmp.unit C  wtmp.unit  C dewp.unit  C vis.unit  nmi ptdy.unit   hPa tide.unit ft date.format_csvcommandspace_{yyyy-MM-dd_csvcommandspace_hh:mm:ss},-print
