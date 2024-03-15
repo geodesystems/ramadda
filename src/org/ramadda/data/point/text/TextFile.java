@@ -595,6 +595,7 @@ public abstract class TextFile extends PointFile {
 		    fieldsLine=fieldsLine.replaceAll("^# *fields=","");
                     putProperty(PROP_FIELDS, fieldsLine);
 		}  else {
+		    boolean defaultSearchable      = getProperty("record.searchable.default", false);
 		    String defaultType      = getProperty("record.type.default", null);
 		    String delim      = getProperty(PROP_DELIMITER, ",");
 		    String sampleLine = visitInfo.getRecordIO().readLine();
@@ -681,6 +682,13 @@ public abstract class TextFile extends PointFile {
 			    }
 			} else {
 			    attrs.append(attrChartable());
+			}
+			boolean searchable     = getProperty("record.searchable."+id,defaultSearchable);
+			if(searchable && !type.equals("date")) {
+			    attrs.append(attrSearchable());
+			    String searchableSuffix     = getProperty("record.searchsuffix."+id,null);
+			    if(searchableSuffix!=null)
+				attrs.append(" search.suffix=\" "+ searchableSuffix+"\" ");
 			}
 			String unit = (String) getProperty(id + ".unit");
 			if (unit == null) {
