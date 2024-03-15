@@ -17,13 +17,6 @@ var LINETYPE_GREATCIRCLE='greatcircle';
 var LINETYPE_CURVE='curve';
 var LINETYPE_STEPPED='stepped';        
 
-
-
-
-
-
-
-
 var ID_INMAP_LABEL='inmaplabel';
 
 var ID_ADDDOTS = 'adddots';
@@ -1036,7 +1029,6 @@ MapGlyph.prototype = {
     },    
 
 
-
     makeDataIcons: function(pointData,data,markers,lines,props) {
 
 	let cvrt=(v,dflt)=>{
@@ -1199,6 +1191,21 @@ MapGlyph.prototype = {
 		
 		}
 	    }
+	    if(records && records.length>0 && this.features&& this.getProperty(PROP_MOVE_TO_LATEST_LOCATION,null,true)) {
+		let record = records[records.length-1];
+		let p1 = MapUtils.createLonLat(record.getLongitude(),record.getLatitude())
+		p1 = this.getMap().transformLLPoint(p1);
+		p1= new OpenLayers.Geometry.Point(p1.lon, p1.lat);
+		this.features.forEach(feature=>{
+		    let geometry = feature.geometry;
+		    if(geometry && Utils.isDefined(geometry.x)) {
+			geometry.x=p1.x;
+			geometry.y=p1.y;			
+			geometry.clearBounds();
+		    }
+		});
+	    }
+
 	    this.applyStyle(this.style,true,true);		
 	    this.display.redraw();
 	};

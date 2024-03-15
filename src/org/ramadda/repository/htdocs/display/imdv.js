@@ -46,11 +46,19 @@ var LEGEND_IMAGE_ATTRS = [ATTR_STYLE,'color:#ccc;font-size:9pt;'];
 var BUTTON_IMAGE_ATTRS = [ATTR_STYLE,'color:#ccc;'];
 var CLASS_IMDV_STYLEGROUP= 'imdv-stylegroup';
 var CLASS_IMDV_STYLEGROUP_SELECTED = 'imdv-stylegroup-selected';
+var PROP_LAYERS_STEP_SHOW= "showLayersStep";
+var PROP_LAYERS_ANIMATION_SHOW = "showLayersAnimation";
+var PROP_LAYERS_ANIMATION_PLAY = "layersAnimationPlay";
+var PROP_MOVE_TO_LATEST_LOCATION = "moveToLatestLocation";
+var PROP_LAYERS_ANIMATION_DELAY = "layersAnimationDelay";
+var PROP_LAYERS_ANIMATION_ON = "layersAnimatioOn";
+
 var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'filter.zoomonchange.show=false',
 			  'filter.toggle.show=false',
 			  'legendTooltip=',
 			  'showLabelInMap=true',
+			  PROP_MOVE_TO_LATEST_LOCATION+'=true',
 			  'showLabelInMapWhenVisible=true',
 			  'showViewInLegend=true',
 			  'showLayerSelectInLegend=true',			  
@@ -59,11 +67,6 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'showMeasures=false',
 			  'showTextSearch=true'];
 
-var PROP_LAYERS_STEP_SHOW= "showLayersStep";
-var PROP_LAYERS_ANIMATION_SHOW = "showLayersAnimation";
-var PROP_LAYERS_ANIMATION_PLAY = "layersAnimationPlay";
-var PROP_LAYERS_ANIMATION_DELAY = "layersAnimationDelay";
-var PROP_LAYERS_ANIMATION_ON = "layersAnimatioOn";
 
 var IMDV_GROUP_PROPERTY_HINTS= [PROP_LAYERS_STEP_SHOW+'=true',
 				PROP_LAYERS_ANIMATION_SHOW+'=true',
