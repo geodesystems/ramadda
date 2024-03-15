@@ -227,8 +227,8 @@ function DisplayAnimation(display, enabled,attrs) {
 	    this.lastSliderValues=ui.values;
 	},
 	resetRange: function() {
-	    if(this.display.getProperty("animationInitRange","-50,end")) {
-		let toks = Utils.split(this.display.getProperty("animationInitRange","-50,end"),",");
+	    if(this.display.getProperty("animationInitRange")) {
+		let toks = Utils.split(this.display.getProperty("animationInitRange"),",");
 		let beginIdx = 0;
 		let idx=0;
 		if(toks[0].trim()=='begin')  idx=0;
