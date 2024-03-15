@@ -138,19 +138,15 @@ convertData="groupTrend(field=_rs232dpt, newField=counter,type=enumeration);grou
 {{display_fieldslist  showPopup=true  numericOnly=true fields=temp_c selectOne=true
 fieldsSelected.shareGroup="profile1"}} 
 {{display_profile height=300px indexField=_rs232dpt  setRangeFromAllValues=true
-  fields=temp_c
-fieldsSelected.acceptGroup="profile1" 
-marginTop=10 doAnimation=true  animationMode=frame  yAxisReverse=true yAxisTitle=Depth
+fields=temp_c fieldsSelected.acceptGroup="profile1" 
+marginTop=10 doAnimation=true animationStartAtEnd=true animationMode=frame  yAxisReverse=true yAxisTitle=Depth
 }} 
 {{display_fieldslist  showPopup=true  numericOnly=true fields=cond_s_cm selectOne=true
 fieldsSelected.shareGroup="profile2"}} 
 {{display_profile height=300px indexField=_rs232dpt  setRangeFromAllValues=true
 fieldsSelected.acceptGroup="profile2" 
-marginTop=10
- doAnimation=true  animationMode=frame    
-yAxisReverse=true yAxisTitle=Depth
- fields=cond_s_cm
- #temp_c.colorTable=plotly_bluered
+marginTop=10  doAnimation=true  animationStartAtEnd=true animationMode=frame    yAxisReverse=true yAxisTitle=Depth
+fields=cond_s_cm 
 }}
 -col
 +col-6
