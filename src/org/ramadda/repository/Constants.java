@@ -1258,6 +1258,8 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_PRODUCT = "product";
 
+    public static final String ARG_DATEFORMAT="dateformat";
+
     /** _more_ */
     public static final String ARG_PUBLISH = "publish";
 
