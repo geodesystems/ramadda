@@ -595,7 +595,7 @@ public abstract class TextFile extends PointFile {
 		    fieldsLine=fieldsLine.replaceAll("^# *fields=","");
                     putProperty(PROP_FIELDS, fieldsLine);
 		}  else {
-		    boolean defaultSearchable      = getProperty("record.searchable.default", false);
+		    boolean defaultSearchable      = getProperty("record.searchable.default", true);
 		    String defaultType      = getProperty("record.type.default", null);
 		    String delim      = getProperty(PROP_DELIMITER, ",");
 		    String sampleLine = visitInfo.getRecordIO().readLine();
