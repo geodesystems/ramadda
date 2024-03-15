@@ -8,6 +8,7 @@ package org.ramadda.data.record;
 
 import org.ramadda.util.Utils;
 
+import java.text.SimpleDateFormat;
 
 import java.io.*;
 
@@ -57,6 +58,7 @@ public class BaseRecord implements Cloneable {
     public static final int ATTR_LAST = 0;
 
 
+
     /** The file */
     private RecordFile recordFile;
 
@@ -82,11 +84,13 @@ public class BaseRecord implements Cloneable {
     /** _more_ */
     private long recordTime = UNDEFINED_TIME;
 
+    private SimpleDateFormat outputDateFormat;
 
     /**
      * _more_
      */
-    public BaseRecord() {}
+    public BaseRecord() {
+    }
 
 
 
@@ -106,6 +110,7 @@ public class BaseRecord implements Cloneable {
      */
     public BaseRecord(BaseRecord that) {
         this.recordFile = that.recordFile;
+
     }
 
 
@@ -120,6 +125,21 @@ public class BaseRecord implements Cloneable {
         this.recordFile = recordFile;
         this.bigEndian  = bigEndian;
     }
+
+
+
+    public void setOutputDateFormat(SimpleDateFormat sdf) {
+	outputDateFormat=sdf;
+    }
+
+
+    public String formatDate(Date d) {
+	if(outputDateFormat!=null) return outputDateFormat.format(d);
+	return Utils.formatIso(d);
+    }
+
+
+
 
     public int skipCnt = 0;
     public void setSkipProcessing(boolean v) {
