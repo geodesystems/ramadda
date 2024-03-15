@@ -1843,6 +1843,71 @@ function CsvUtil() {
 	    });
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
+	groupTrend: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+	    let fields =  pointData.getRecordFields();
+	    let field = this.display.getFieldById(fields, args.field);
+	    if(!field) {
+		throw new Error('Could not find groupTrend field:' +args.field);
+	    }
+	    let newFields =  fields.slice();
+	    let newRecords  =[];
+	    let id = args.newField || ("field_" + fields.length);
+	    let type=args.type??'int';
+            newFields.push(new RecordField({
+		id:id,
+		index:fields.length,
+		label:Utils.makeLabel(id),
+		type:type,
+		chartable:true,
+		unit: args.unit
+            }));
+	    let index=0;
+	    let lastValue=-99999999;
+	    records.forEach((record, rowIdx)=>{
+		let newRecord = record.clone();
+		let value = field.getValue(record);
+		if(value<lastValue) {
+		    index++;
+		}
+		lastValue=value;
+		newRecord.data= record.data.slice();
+		newRecord.fields =  newFields;
+		newRecords.push(newRecord);
+		if(type=='enumeration')
+		    newRecord.data.push(String(index));
+		else
+		    newRecord.data.push(index);
+		
+	    });
+	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
+	},
+	groupTime: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+	    let fields =  pointData.getRecordFields();
+	    let field = this.display.getFieldById(fields, args.field);
+	    if(!field) {
+		throw new Error('Could not find nominal time field:' +args.field);
+	    }
+	    let newFields =  fields.slice();
+	    let newRecords  =[];
+	    let index=0;
+	    let lastValue=-99999999;
+	    let lastTime;
+	    records.forEach((record, rowIdx)=>{
+		let newRecord = record.clone();
+		let value = field.getValue(record);
+		if(value!=lastValue) {
+		    lastTime = record.getTime();
+		    lastValue = value;
+		}
+		newRecord.setTime(lastTime);
+		newRecords.push(newRecord);
+	    });
+	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
+	},
+
+
 	rotateData: function(pointData, args) {
 	    let records = pointData.getRecords(); 
             let header = this.display.getDataValues(records[0]);

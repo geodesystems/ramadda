@@ -1147,6 +1147,7 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 	{p:'xAxisShowGrid',d:'true',ex:'false'},
 	{p:'xAxisShowLine',d:'true',ex:'false'},
 	{p:'yAxisReverse',d:false,ex:'true'},
+	{p:'setRangeFromAllValues',ex:true},
 	{p:'marginLeft',d:'60',ex:'60'},
 	{p:'marginRight',d:'100',ex:'100'},
 	{p:'marginBottom',d:'50',ex:'50'},
@@ -1161,6 +1162,13 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 	{p:'lineWidth',d:1},
 	{p:'markerSize',d:16},
 	{p:'symbol',d:'circle',ex:'circle|square|diamond|cross|x|triangle-up|triangle-down|pentagon|hexagon|hexagram|star|hash'},
+	{p:'yAxisReverse',ex:true},
+        {p:'yAxisTitle'},
+	{p:'yAxisShowLine', ex:true},
+	{p:'yAxisShowGrid', ex:true},
+        {p:'xAxisTitle'},
+        {p:'xAxisShowGrid', ex:true},
+        {p:'xAxisShowLine', ex:true},
     ]);
 
     RamaddaUtil.defineMembers(this, {
@@ -1191,8 +1199,35 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 	    }
             let index = this.getColumnValues(records, indexField).values;
             let data = [];
+	    let range;
+	    if(this.getSetRangeFromAllValues()) {
+		let allRecords = this.getData().getRecords();
+		let min,max;
+		allRecords.forEach((r,idx)=>{
+		    let v = fields[0].getValue(r);
+		    if(idx==0 || v<min) min=v;
+		    if(idx==0 || v>max) max=v;		    
+		});
+		range=[min,max]
+	    }
+
+  
             fields.forEach((field,idx)=>{
 		let x = this.getColumnValues(records, field).values;
+		let colors=null;
+		let colorTable = this.getProperty(field.getId()+'.colorTable',  this.getProperty('colorTable'));
+		if(colorTable) {
+                    let ct = Utils.ColorTables[colorTable];
+		    if(ct) {
+			let colorByInfo = new  ColorByInfo(this, fields, records, null,null,ct.colors, null, field);
+			colors =[];
+			records.forEach(r=>{
+			    let c = colorByInfo.getColorFromRecord(r);
+			    colors.push(c);
+			});
+		    }			
+		}
+
 		let trace =   {
 		    y: index,
 		    x: x,
@@ -1200,6 +1235,7 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 		    mode: this.getProfileMode(),
                     name: field.getLabel(),
                     marker: {
+			color:colors,
                         line: {
                             color: this.getLineColor(),
                             width: this.getLineWidth(),
@@ -1216,15 +1252,16 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 	    let labelName = indexField.getLabel();
             let layout = {
                 yaxis: {
-		    autorange: this.getProperty("yAxisReverse",false)?"reversed":null,
-                    title: this.getProperty("yAxisTitle", labelName),
-                    showline: this.getProperty("yAxisShowLine", true),
-                    showgrid: this.getProperty("yAxisShowGrid", true),
+		    autorange: this.getYAxisReverse()?"reversed":null,
+                    title: this.getYAxisTitle(labelName),
+                    showline: this.getYAxisShowLine(true),
+                    showgrid: this.getYAxisShowGrid(true),
                 },
                 xaxis: {
-                    title: this.getProperty("xAxisTitle", fields[0].getLabel()),
-                    showgrid: this.getProperty("xAxisShowGrid", true),
-                    showline: this.getProperty("xAxisShowLine", true),
+		    range: range,
+                    title: this.getXAxisTitle(fields[0].getLabel()),
+                    showgrid: this.getXAxisShowGrid(true),
+                    showline: this.getXAxisShowLine(true),
                     linecolor: 'rgb(102, 102, 102)',
                     titlefont: {
                         font: {
@@ -1241,19 +1278,19 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
                     tickcolor: 'rgb(102, 102, 102)'
 		},
                 margin: {
-                    l: this.getProperty("marginLeft", 60),
-                    r: this.getProperty("marginRight", 100),
-                    b: this.getProperty("marginBottom", 50),
-                    t: this.getProperty("marginTop", 100),
+                    l: this.getMarginLeft(60),
+                    r: this.getMarginRight(100),
+                    b: this.getMarginBottom(50),
+                    t: this.getMarginTop(100),
                 },
                 legend: {
                     font: {
                         size: 10,
                     },
-                    yanchor: this.getProperty("legendYAnchor"),
-                    xanchor: this.getProperty("legendXAnchor"),
+                    yanchor: this.getLegendYAnchor(),
+                    xanchor: this.getLegendXAnchor(),
                 },
-                showlegend: this.getProperty("showLegend",true),
+                showlegend: this.getShowLegend(true),
 		paper_bgcolor: this.getProperty("chart.fill", 'transparent'),		
 //                plot_bgcolor: this.getProperty("chartArea.fill", 'rgb(254, 247, 234)'),
                 plot_bgcolor: this.getProperty("chartArea.fill", '#fff'),				

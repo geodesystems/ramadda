@@ -3875,7 +3875,6 @@ function TimerangechartDisplay(displayManager, id, properties) {
             });
 
 
-
             let colorBy = this.getColorByInfo(records);
 	    if(colorBy.isEnabled()) {
 		this.dataColors = [];

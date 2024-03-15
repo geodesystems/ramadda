@@ -243,13 +243,13 @@ var RamaddaDisplayUtils = {
 
     getCanvasProps: function() {
 	return [
-	{p:'canvasWidth',d:100,ex:"100",tt:'Canvas width'},
-	{p:'canvasHeight',d:100,ex:"100",tt:'Canvas height'},
-	{p:'canvasOrigin',d:"sw",ex:"center",tt:'Origin point for drawing glyphs'},
-	{label:'label glyph',p:"glyph1",ex:'type:label,pos:sw,dx:10,dy:-10,label:field_colon_ ${field}_nl_field2_colon_ ${field2}'},
-	{label:'rect glyph', p:"glyph1",ex:'type:rect,pos:sw,dx:10,dy:0,colorBy:field,width:150,height:100'},
-	{label:'circle glyph',p:"glyph1",ex:'type:circle,pos:n,dx:10,dy:-10,fill:true,colorBy:field,width:20,baseWidth:5,sizeBy:field,#sizeByMin:0,#sizeByMax:100'},
-	{label:'3dbar glyph', p:"glyph1",ex:'type:3dbar,pos:sw,dx:10,dy:-10,height:30,width:8,baseHeight:5,sizeBy:field,#sizeByMin:0,#sizeByMax:100'},
+	    {p:'canvasWidth',d:100,ex:"100",tt:'Canvas width'},
+	    {p:'canvasHeight',d:100,ex:"100",tt:'Canvas height'},
+	    {p:'canvasOrigin',d:"sw",ex:"center",tt:'Origin point for drawing glyphs'},
+	    {label:'label glyph',p:"glyph1",ex:'type:label,pos:sw,dx:10,dy:-10,label:field_colon_ ${field}_nl_field2_colon_ ${field2}'},
+	    {label:'rect glyph', p:"glyph1",ex:'type:rect,pos:sw,dx:10,dy:0,colorBy:field,width:150,height:100'},
+	    {label:'circle glyph',p:"glyph1",ex:'type:circle,pos:n,dx:10,dy:-10,fill:true,colorBy:field,width:20,baseWidth:5,sizeBy:field,#sizeByMin:0,#sizeByMax:100'},
+	    {label:'3dbar glyph', p:"glyph1",ex:'type:3dbar,pos:sw,dx:10,dy:-10,height:30,width:8,baseHeight:5,sizeBy:field,#sizeByMin:0,#sizeByMax:100'},
 	    {label:'gauge glyph',p:"glyph1",ex:'type:gauge,color:#000,pos:sw,width:50,height:50,dx:10,dy:-10,sizeBy:field,sizeByMin:0'}
 	];
     },
@@ -1898,6 +1898,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'convertData',label:'convert date',
 	 ex:'roundDate(round=hour|day|week|month|year);',
 	 tt:'Round the dates'},
+	{p:'convertData',label:'nominal time',
+	 ex:'groupTime(field=field to group time on);',
+	 tt:'Round the dates'},	
 	{p:'convertData',label:'merge rows',
 	 ex:'mergeRows(keyFields=f1\\\\,f2, operator=count|sum|average, valueFields=);',
 	 tt:'Merge rows together'},
@@ -8573,7 +8576,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
         },
         notifyEvent: function(event, source, data) {
             let displays = this.getDisplays();
-	    let group = (source!=null&&source.getProperty?source.getProperty(event+".shareGroup"):"");
+	    let group = (source!=null&&source.getProperty?source.getProperty(event.shareGroup):"");
 	    if(displayDebug.notifyEvent)
 		console.log("displayManager.notifyEvent:" + event);
 
