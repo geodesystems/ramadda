@@ -293,6 +293,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	{p:"selectable",ex:true},
 	{p:"showFieldDetails",ex:true},
 	{p:"showPopup",d:false,ex:true,tt:"Popup the selector"},	
+	{p:"selectOne",ex:true},
 	{p:"numericOnly",ex:true},
 	{p: "selectLabel",tt:"Label to use for the button"},
 	{p: "filterSelect",ex:true,tt:"Use this display to select filter fields"},
@@ -468,8 +469,28 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 			return
 		    }
 		    let shift = event.shiftKey ;
+		    let doAll = shift;
+		    let allSelected;
 		    let selected  = $(this).attr("field-selected")=="true";
-		    selected = !selected;
+		    if(_this.getSelectOne()) {
+			if(selected) return;
+			selected=true;
+			allSelected=false;
+			doAll = true;
+		    } else {
+			selected = !selected;
+			allSelected=selected;
+		    }
+		    if(doAll) {
+			fieldBoxes.attr("field-selected",allSelected);
+			if(allSelected) {
+			    fieldBoxes.addClass("display-fields-field-selected");
+			} else {
+			    fieldBoxes.removeClass("display-fields-field-selected");
+			}
+
+		    }
+
 		    $(this).attr("field-selected",selected);
 		    if(selected) {
 			$(this).addClass("display-fields-field-selected");
@@ -477,15 +498,6 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 			$(this).removeClass("display-fields-field-selected");
 		    }
 
-		    if(shift) {
-			fieldBoxes.attr("field-selected",selected);
-			if(selected) {
-			    fieldBoxes.addClass("display-fields-field-selected");
-			} else {
-			    fieldBoxes.removeClass("display-fields-field-selected");
-			}
-
-		    }
 		    _this.handleFieldSelect();
 		});
 	    }
@@ -498,6 +510,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	    out+='\"\n';
 	    Utils.copyToClipboard(out);
 	    console.log(out);
+
 	},
 	getActiveFields:function() {
 	    let _this=this;
