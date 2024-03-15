@@ -166,6 +166,18 @@ template="${default}" }}
 -tabs
 -col
 -row
+:vspace
+----
+:vspace
+:heading Information
++row
++col-9
+{{information details=true}}
+-col
++col-3
+{{mapentry hideIfNoLocations=true width="100%" height="300px"}}
+-col
+-row
 -section
 ]]>
 </wiki>
