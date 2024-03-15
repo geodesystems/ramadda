@@ -574,14 +574,14 @@ Ramadda3DDisplay.prototype = {
 	    let gridSize  = this.getProperty("gridSize",50);
 	    let divisions=this.getProperty("gridDivisions",10);
 	    let gc = this.getProperty("gridColor",0x888888);
-	    var gridXZ = new THREE.GridHelper(gridSize,divisions, gc,gc);
+	    let gridXZ = new THREE.GridHelper(gridSize,divisions, gc,gc);
 	    gridXZ.position.y = -gridSize/2;
 	    grids.push(gridXZ);
-	    var gridXY = new THREE.GridHelper(gridSize,divisions, gc,gc);
+	    let gridXY = new THREE.GridHelper(gridSize,divisions, gc,gc);
 	    gridXY.position.z = -gridSize/2;
 	    gridXY.rotation.x = Math.PI / 2;
 	    grids.push(gridXY);
-	    var gridYZ = new THREE.GridHelper(gridSize,divisions, gc,gc);
+	    let gridYZ = new THREE.GridHelper(gridSize,divisions, gc,gc);
 	    gridYZ.position.x = -gridSize/2;
 	    gridYZ.rotation.z = Math.PI / 2;
 	    grids.push(gridYZ);
