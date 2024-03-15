@@ -16,13 +16,7 @@ import org.ramadda.data.record.RecordFile;
 import org.ramadda.data.record.RecordVisitor;
 import org.ramadda.data.record.RecordVisitorGroup;
 import org.ramadda.data.record.VisitInfo;
-import org.ramadda.data.record.filter.BitmaskRecordFilter;
-import org.ramadda.data.record.filter.CollectionRecordFilter;
-import org.ramadda.data.record.filter.LatLonBoundsFilter;
-import org.ramadda.data.record.filter.NumericRecordFilter;
-import org.ramadda.data.record.filter.RandomizedFilter;
-import org.ramadda.data.record.filter.RecordFilter;
-import org.ramadda.data.record.filter.TimeFilter;
+import org.ramadda.data.record.filter.*;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Link;
 import org.ramadda.repository.Repository;
@@ -2765,7 +2759,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         for (Enumeration keys = request.getArgs().keys();
 	     keys.hasMoreElements(); ) {
             String key = (String) keys.nextElement();
-            if (key.startsWith(ARG_SEARCH_PREFIX)) {
+            if (key.startsWith(ARG_SEARCH_PREFIX) && !key.endsWith("_enumlist")) {
                 double v       = request.get(key, 0.0);
                 String fieldId = key.substring(ARG_SEARCH_PREFIX.length());
                 if (searchableFields == null) {
@@ -2800,12 +2794,24 @@ public class PointOutputHandler extends RecordOutputHandler {
                             filters.add(new BitmaskRecordFilter(bitIdx,
 								request.get(urlArgPrefix + bitIdx,
 									    false), field.getParamId()));
-                            System.err.println("bit:" + bitFields[bitIdx]);
                         }
                     }
 
                     continue;
                 }
+
+                if (request.defined(ARG_SEARCH_PREFIX + field.getName()
+                                    + "_enumlist")) {
+		    List<String> lines = Utils.split(request.getString(ARG_SEARCH_PREFIX + field.getName()   + "_enumlist",""),"\n",true,true);
+		    if(lines.size()>0) {
+			HashSet enums =Utils.makeHashSet(lines);
+			filters.add(new EnumRecordFilter(field.getParamId(),enums));
+		    }
+		    
+                    continue;
+		}
+		
+
 
                 if (request.defined(ARG_SEARCH_PREFIX + field.getName()
                                     + "_min")) {
@@ -2925,6 +2931,15 @@ public class PointOutputHandler extends RecordOutputHandler {
             numRecords = recordFile.getNumRecords();
         }
 
+
+
+	String format = request.getString(ARG_DATEFORMAT+"_custom",null);
+	if(!stringDefined(format)) {
+	    format = request.getString(ARG_DATEFORMAT,null);
+	}
+	if(stringDefined(format)) {
+	    recordFile.setOutputDateFormat(Utils.makeDateFormat(format));
+	}
         if (request.defined(ARG_RECORD_SKIP)) {
             int skip = getSkip(request, 1000);
             recordFile.setDefaultSkip(skip);
