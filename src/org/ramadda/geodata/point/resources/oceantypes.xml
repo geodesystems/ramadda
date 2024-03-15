@@ -527,15 +527,22 @@ label,pos:s,dx:cw2,dy:-10,font:36px sans-serif,label:${match  pattern="(degrees|
 +section title="{{name}}"
 :navtop
 {{description wikify=true}}
-:heading Map
-+center
-{{display_map height=400px   width="800px"
-showOverviewMap=true overviewMapWidth=240 overviewMapHeight=120  overviewMapResolution=6
++row 
++col-6
+{{display_map height=400px   width="100%" showLast=50
+ initBoundsUseAllRecords=true  initBoundsPadding="0.05" 
+doAnimation=true animationMode=cumulative
+#showOverviewMap=true overviewMapWidth=240 overviewMapHeight=120  overviewMapResolution=6
 showGraticules=true
 isTrajectory=true   showPoints=true  tooltip="${default}"
-radius=4 colorBy=degrees strokeWidth=0 pathStrokeWidth=0.5 colorTable=plotly_bluered
+radius=4 colorBy=degrees strokeWidth=0 pathStrokeWidth=0.25 colorTable=plotly_bluered
 }}
--center
+-col
++col-6
+{{display_template  onlyShowSelected=true filterFields=""
+template="${default}" }}
+-col
+-row
 
 :heading Charts
 {{display_linechart fields="degrees"}}
@@ -544,6 +551,12 @@ radius=4 colorBy=degrees strokeWidth=0 pathStrokeWidth=0.5 colorTable=plotly_blu
 :heading Table
 {{display_download}}
 {{display_table }} 
+
+-section
+:vspace 1em
++section ----
+:heading Information
+{{information details="true"}}                                                                     
 -section
 ]]>
 </wiki>
