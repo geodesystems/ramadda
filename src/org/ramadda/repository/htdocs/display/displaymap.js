@@ -1,7 +1,6 @@
 /**
    Copyright 2008-2023 Geode Systems LLC
 */
-let xxcnt=0;
 
 const DISPLAY_MAP = "map";
 
@@ -57,6 +56,8 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'gridBounds',ex:'north,west,south,east'},	
 	{p:'mapCenter',ex:'lat,lon',tt:"initial position"},
 	{p:'zoomLevel',ex:4,tt:"initial zoom"},
+	{p:'initBoundsUseAllRecords',ex:true},
+	{p:'initBoundsPadding',ex:'A percent, e.g.0.05'},
 	{p:'zoomTimeout',ex:500,
 	 tt:"initial zoom timeout delay. set this if the map is in tabs, etc, and not going to the initial zoom"},
 	{p:'popupWidth',d:400},
@@ -3134,11 +3135,28 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let showSegments = this.getShowSegments(false);
 	    let okToSetMapBounds = !showSegments && !this.hadInitialPosition && !args.dontSetBounds && 
 		(!args.dataFilterChanged || this.getCenterOnFilterChange());
-	    if(records.length!=0) {
+	    let haveRecords = records.length>0;
+	    if(this.getInitBoundsUseAllRecords()) {
+		pointBounds = {};
+		let allRecords = this.getData().getRecords();
+		RecordUtil.getPoints(allRecords, pointBounds);
+		haveRecords=allRecords.length>0;
+	    }
+	    if(haveRecords) {
 		if (!isNaN(pointBounds.north)) {
+		    let padding = this.getInitBoundsPadding();
+		    if(padding) {
+			let w = pointBounds.east-pointBounds.west;
+			pointBounds.east-=w*padding;
+			pointBounds.west-=w*padding;			
+			let h = pointBounds.north-pointBounds.south;
+			pointBounds.north+=h*padding;
+			pointBounds.south-=h*padding;			
+		    }
 		    this.pointBounds = pointBounds;
 		    this.initBounds = pointBounds;
 		    if(okToSetMapBounds) {
+
 			if(pointBounds.insideDateLine) {
 			    this.setInitMapBounds(pointBounds.north, -178, pointBounds.south, -170);
 			} else {
