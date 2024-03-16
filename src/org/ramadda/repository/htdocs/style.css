@@ -2154,6 +2154,15 @@ mapheader {
 .ramadda-section-map {
     background: URL(images/background.png);
 }
+.ramadda-section-coast {
+    background: URL(images/coast.png);
+}
+
+.ramadda-section-globe {
+    background: URL(images/globe.png);
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+}
 
 .ramadda-section-lightpink, .ramadda-section-rose {
     background-color : mistyrose;
