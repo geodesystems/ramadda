@@ -3780,9 +3780,11 @@ public class TypeHandler extends RepositoryManager {
 										  entry)));
 	    }
 
-	    String ark = getPageHandler().getArk(request, entry);
+	    String ark = getPageHandler().getArk(request, entry,false);
 	    if(ark!=null) {
-		sb.append(formEntry(request, msgLabel("ARK ID"),ark));
+		if(okToShowInForm(entry, "ark", false)) {
+		    sb.append(formEntry(request, msgLabel("ARK ID"),ark));
+		}
 	    }
 
             //Only show the created by and type when the user is logged in
