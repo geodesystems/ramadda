@@ -3837,12 +3837,13 @@ public class PageHandler extends RepositoryManager {
         return s;
     }
 
-    public String getArk(Request request, Entry entry) {
+    public String getArk(Request request, Entry entry,boolean showShort) {
 	String naan = getRepository().getProperty("ramadda.naan",null);
 	if(naan==null) return null;
 	String id = HU.getUniqueId("ark");
-	return HU.getIconImage("fas fa-copy")+" " +HU.span("https://n2t.net/ark:/" + naan +"/" + entry.getId().replace("-","_"),
-		HU.id(id)) +
+	String url = "https://n2t.net/ark:/" + naan +"/" + entry.getId().replace("-","_");
+	String label = showShort?"https://n2t.net/ark/...":url;
+	return HU.getIconImage("fas fa-copy")+" " +HU.span(label,HU.attrs("id",id,"copy-message","ARK ID has been copied","data-copy",url))+
 	    HU.script("Utils.initCopyable('#"+id+"');");
     }
 
