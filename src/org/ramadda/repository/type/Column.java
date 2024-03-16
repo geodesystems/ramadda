@@ -62,6 +62,10 @@ public class Column implements DataTypes, Constants, Cloneable {
     /** _more_ */
     public static final HtmlUtils HU = null;
 
+    public static final boolean DEBUG_TIME=false;
+    public static final boolean DEBUG=false;
+
+    
 
     /** _more_ */
     static int xcnt;
@@ -1385,6 +1389,16 @@ public class Column implements DataTypes, Constants, Cloneable {
             sb.append(toLatLonString(values, offset, raw));
             sb.append(delimiter);
             sb.append(toLatLonString(values, offset + 1, raw));
+	    double lat = (double) values[offset];
+	    double lon = (double) values[offset+1];	    
+	    if(!Double.isNaN(lat) && !Double.isNaN(lon)) {
+		MapInfo map = new MapInfo(request, getRepository(),"200","200");
+		map.addMarker("",lat,  lon, null,"","");
+		map.center();
+		sb.append(getRepository().getMapManager().getHtmlImports(request));
+		sb.append(map.getHtml());
+		//		xxx
+	    }
         } else if (isType(DATATYPE_LATLONBBOX)) {
             sb.append(toLatLonString(values, offset, raw));
             sb.append(delimiter);
@@ -1420,15 +1434,21 @@ public class Column implements DataTypes, Constants, Cloneable {
             }
         } else if (isType(DATATYPE_DATETIME)) {
             String s;
-            if (sdf != null) {
-                s = sdf.format((Date) values[offset]);
-            } else {
-                s = dateTimeFormat.format((Date) values[offset]);
-            }
+	    Date date=(Date) values[offset];
+	    if(date==null) {
+		s="NA";
+	    } else {
+		if (sdf != null) {
+		    s = sdf.format(date);
+		} else {
+		    s = dateTimeFormat.format(date);
+		}
+	    }
             sb.append(s);
+
         } else if (isType(DATATYPE_DATE)) {
             if (values[offset] == null) {
-                sb.append("null");
+                sb.append("NA");
             } else {
                 String s;
                 if (displayFormat != null) {
@@ -1798,6 +1818,8 @@ public class Column implements DataTypes, Constants, Cloneable {
             statementIdx++;
         } else if (isDate()) {
             Date dttm = (Date) values[offset];
+	    if(DEBUG_TIME || DEBUG)
+		System.err.println("Column:set statement:" + this +" date:" +dttm);
             getDatabaseManager().setDate(statement, statementIdx, dttm);
             statementIdx++;
         } else if (isType(DATATYPE_LATLON)) {
@@ -1966,8 +1988,9 @@ public class Column implements DataTypes, Constants, Cloneable {
 					      || value.equals("1"));
             valueIdx++;
         } else if (isDate()) {
-            values[offset] = getDatabaseManager().getTimestamp(results,
-                    valueIdx);
+            values[offset] = getDatabaseManager().getTimestamp(results,  valueIdx,false);
+	    if(DEBUG_TIME || DEBUG)
+		System.err.println("Column:from db:" + this+" " + values[offset]);
             valueIdx++;
         } else if (isType(DATATYPE_LATLON)) {
             values[offset] = Double.valueOf(results.getDouble(valueIdx));
@@ -2749,7 +2772,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 
         if (Utils.stringDefined(help)) {
             formBuffer.append(typeHandler.formEntry(request, "",
-                    getRepository().getPageHandler().applyBaseMacros(help)));
+						    getRepository().getPageHandler().applyBaseMacros(TypeHandler.wrapHelp(help))));
         }
 
 
@@ -2897,11 +2920,12 @@ public class Column implements DataTypes, Constants, Cloneable {
                     ? "true"
                     : "false", HU.cssClass("search-select"));
         } else if (isType(DATATYPE_DATETIME)) {
-            Date date;
+            Date date=null;
             if (values != null) {
                 date = (Date) values[offset];
             } else {
-                date = new Date();
+		if(!isDefaultNone()) 
+		    date = new Date();
             }
             widget = getRepository().getDateHandler().makeDateInput(request,
                     urlArg, "", date, null);
@@ -3260,7 +3284,12 @@ public class Column implements DataTypes, Constants, Cloneable {
 							    (Double)Utils.getNonNull(values[offset+3], Double.valueOf(Entry.NONGEO))));							    
 	    }
         } else if (isDate()) {
-            values[offset] = request.getDate(urlArg, (Date) Utils.getNonNull(values[offset],new Date()));
+	    Date defaultDate= (Date) Utils.getNonNull(values[offset],new Date());
+	    if(isDefaultNone()) defaultDate=null;
+
+	    values[offset] = request.getDate(urlArg,defaultDate);
+	    if(DEBUG_TIME||DEBUG)
+		System.err.println("Column: from request:"+this+"  Default:" + defaultDate+ " VALUE:" + values[offset]);
         } else if (isType(DATATYPE_BOOLEAN)) {
             //Note: using the default will not work if we use checkboxes for the widget
             //For now we are using a yes/no combobox
@@ -3364,6 +3393,9 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
+    public boolean isDefaultNone() {
+	return Utils.equals(dflt,"none");
+    }
 
     /**
      * _more_
@@ -3400,7 +3432,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             values[offset]     = Double.parseDouble(toks.get(0));
             values[offset + 1] = Double.parseDouble(toks.get(1));
             values[offset + 2] = Double.parseDouble(toks.get(2));
-            values[offset + 3] = Double.parseDouble(toks.get(3));
+	    values[offset + 3] = Double.parseDouble(toks.get(3));
         } else if (isDate()) {
             fullDateTimeFormat.setTimeZone(RepositoryBase.TIMEZONE_UTC);
             values[offset] = parseDate(value);

@@ -70,6 +70,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     public static final int NOMAX= -1;
 
 
+
     //Try for something that won't ever be in a string
 
     /** _more_ */
@@ -97,7 +98,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     public static int getConnectCnt=0;
 
     public static boolean debugConnections=false;
-
+    public static boolean debug = false;
 
 
     /** _more_ */
@@ -1724,6 +1725,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
 
 
+
     /**
      * _more_
      *
@@ -1735,7 +1737,9 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      */
     public void setTimestamp(PreparedStatement statement, int col, Date date)
 	throws Exception {
-        if (date == null) {
+	date = DateHandler.checkDate(date);
+	if(debug)System.err.println("DatabaseManager.setTimestamp: date:" + date);
+	if (date == null) {
             statement.setTimestamp(col, null);
         } else {
 	    synchronized(Repository.calendar) {
@@ -1777,11 +1781,13 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 	throws Exception {
 	synchronized(Repository.calendar) {
 	    Date date = results.getTimestamp(col, Repository.calendar);
+	    if(debug)System.err.println("getTimestamp: date:" + date);
 	    if (date != null) {
 		return date;
 	    }
 	}
         if (makeDflt) {
+	    if(debug)System.err.println("getTimestamp: make default");
             return new Date();
         }
 
@@ -1804,17 +1810,18 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 	throws Exception {
 	synchronized(Repository.calendar) {
 	    Date date = results.getTimestamp(col, Repository.calendar);
+	    if(debug) System.err.println("DatabaseManager.getTimestamp:" + date);
 	    if (date != null) {
 		return date;
 	    }
 	}
         if (makeDflt) {
+	    if(debug) System.err.println("DatabaseManager.getTimestamp making default");
             return new Date();
         }
 
         return null;
     }
-
 
 
     /**
@@ -1828,7 +1835,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      */
     public void setDate(PreparedStatement statement, int col, long time)
 	throws Exception {
-        setDate(statement, col, new Date(time));
+        setDate(statement, col, DateHandler.checkDate(new Date(time)));
     }
 
 

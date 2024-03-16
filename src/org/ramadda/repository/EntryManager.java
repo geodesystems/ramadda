@@ -2955,6 +2955,7 @@ public class EntryManager extends RepositoryManager {
 		    }
 		}
 
+		/*
                 if (theDateRange[0] == null) {
                     theDateRange[0] = ((theDateRange[1] == null)
                                        ? createDate
@@ -2964,6 +2965,7 @@ public class EntryManager extends RepositoryManager {
                     theDateRange[1] = theDateRange[0];
                 }
 
+		*/
 		if(noName)
 		    entry.putTransientProperty("noname","true");
 		    
@@ -2972,8 +2974,8 @@ public class EntryManager extends RepositoryManager {
 			  category, entryOrder,
 			  createDate.getTime(),
 			  createDate.getTime(),
-			  theDateRange[0].getTime(),
-			  theDateRange[1].getTime(), null);
+			  DateHandler.getTime(theDateRange[0]),
+			  DateHandler.getTime(theDateRange[1]), null);
                 if (forUpload) {
                     initUploadedEntry(request, entry, info.parent);
                 }
@@ -3053,16 +3055,11 @@ public class EntryManager extends RepositoryManager {
             }
 
 
-            if (dateRange[0] != null) {
-                entry.setStartDate(dateRange[0].getTime());
-            }
+	    entry.setStartDate(dateRange[0]);
             if (dateRange[1] == null) {
                 dateRange[1] = dateRange[0];
             }
-
-            if (dateRange[1] != null) {
-                entry.setEndDate(dateRange[1].getTime());
-            }
+	    entry.setEndDate(dateRange[1]);
             setEntryState(request, entry, entry.getParentEntry(), newEntry);
             entries.add(entry);
         }
@@ -3685,14 +3682,20 @@ public class EntryManager extends RepositoryManager {
     private void setEntryState(Request request, Entry entry, Entry parent,
                                boolean newEntry)
 	throws Exception {
-        if (request.defined(ARG_LOCATION_LATITUDE)
-	    && request.defined(ARG_LOCATION_LONGITUDE)) {
-            entry.setLatitude(GeoUtils.decodeLatLon(request.getString(ARG_LOCATION_LATITUDE,"")));
-            entry.setLongitude(GeoUtils.decodeLatLon(request.getString(ARG_LOCATION_LONGITUDE,"")));
-	    if(entry.hasLocationDefined()) {
-		getSessionManager().putSessionProperty(request,
-						       ARG_LOCATION_LATITUDE,
-						       entry.getLatitude() + ";" + entry.getLongitude());
+        if (request.exists(ARG_LOCATION_LATITUDE)
+	    && request.exists(ARG_LOCATION_LONGITUDE)) {
+	    if (request.defined(ARG_LOCATION_LATITUDE)
+		&& request.defined(ARG_LOCATION_LONGITUDE)) {
+		entry.setLatitude(GeoUtils.decodeLatLon(request.getString(ARG_LOCATION_LATITUDE,"")));
+		entry.setLongitude(GeoUtils.decodeLatLon(request.getString(ARG_LOCATION_LONGITUDE,"")));
+		if(entry.hasLocationDefined()) {
+		    getSessionManager().putSessionProperty(request,
+							   ARG_LOCATION_LATITUDE,
+							   entry.getLatitude() + ";" + entry.getLongitude());
+		}
+	    } else {
+		entry.setLatitude(Double.NaN);
+		entry.setLongitude(Double.NaN);
 	    }
         } else if (request.exists(ARG_AREA + "_south")) {
             boolean hasSouth = request.defined(ARG_AREA + "_south");
@@ -8486,10 +8489,8 @@ public class EntryManager extends RepositoryManager {
         long updateTime = entry.getChangeDate();
         getDatabaseManager().setDate(statement, col++, updateTime);
         try {
-            getDatabaseManager().setDate(statement, col,
-                                         entry.getStartDate());
-            getDatabaseManager().setDate(statement, col + 1,
-                                         entry.getEndDate());
+            getDatabaseManager().setDate(statement, col, entry.getStartDate());
+            getDatabaseManager().setDate(statement, col + 1,  entry.getEndDate());
         } catch (Exception exc) {
             getLogManager().logError("Error: Bad date " + entry.getResource()
                                      + " " + new Date(entry.getStartDate()));

@@ -32,6 +32,9 @@ import java.util.TimeZone;
  */
 public class DateHandler extends RepositoryManager {
 
+    public static final long NULL_DATE=-9999999L;
+    public static final String NULL_DATE_LABEL="NA";
+
 
     /** _more_ */
     public static final String DEFAULT_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss z";
@@ -316,6 +319,7 @@ public class DateHandler extends RepositoryManager {
 
         String           dateArg    = request.getString(name, "");
         String           timeArg    = request.getString(name + ".time", "");
+	date = checkDate(date);
         String           dateString = ((date == null)
                                        ? dateArg
                                        : doFormat(date, dateSdf));
@@ -415,6 +419,24 @@ public class DateHandler extends RepositoryManager {
     }
 
 
+    public static long getTime(Date date) {
+	if(date==null) return NULL_DATE;
+	return date.getTime();
+    }
+
+    //If date.getTime()==NULL_DATE then return null
+    public static Date checkDate(Date date) {
+	if(isNullDate(date)) return null;
+	return date;
+    }
+
+    public static boolean isNullDate(Date date) {
+	if(date!=null && date.getTime()==NULL_DATE) return true;
+	return date==null;
+    }    
+
+
+
     /**
      * _more_
      *
@@ -439,6 +461,7 @@ public class DateHandler extends RepositoryManager {
      * @return _more_
      */
     public String formatDate(Request request, Entry entry, long ms) {
+	if(ms==NULL_DATE) return NULL_DATE_LABEL;
         return formatDate(request, entry, new Date(ms));
     }
 
@@ -687,8 +710,9 @@ public class DateHandler extends RepositoryManager {
      */
     public String formatDateShort(Request request, Date d, String timezone,
                                   String extraAlt) {
+	d = checkDate(d);
         if (d == null) {
-            return BLANK;
+            return NULL_DATE_LABEL;
         }
 
 
@@ -721,6 +745,7 @@ public class DateHandler extends RepositoryManager {
         } else {
             result = doFormat(d, sdf);
         }
+
 
         return HU.span(result,
                        HU.cssClass(CSS_CLASS_DATETIME)

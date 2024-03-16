@@ -2768,29 +2768,30 @@ public class TypeHandler extends RepositoryManager {
         if (order == 0) {
             order = 999;
         }
-        entry.initEntry(results
-            .getString(Tables.ENTRIES.COL_NODOT_NAME), results
-            .getString(Tables.ENTRIES
-		       .COL_NODOT_DESCRIPTION), null/*parent*/, user, resource, results
-                    .getString(Tables.ENTRIES
-                        .COL_NODOT_DATATYPE), order, createDate.getTime(), dbm
-                            .getDate(results, Tables.ENTRIES
-                                .COL_NODOT_CHANGEDATE, createDate)
-                                    .getTime(), dbm
-                                    .getDate(results, Tables.ENTRIES
-                                        .COL_NODOT_FROMDATE).getTime(), dbm
-                                            .getDate(results, Tables.ENTRIES
-                                                .COL_NODOT_TODATE)
-                                                    .getTime(), null);
+	ResultSet r= results;
+	//	DatabaseManager.debug=true;
+	//	System.err.println("TypeHandler.initEntry:"+
+	//			   dbm.getDate(r, Tables.ENTRIES.COL_NODOT_FROMDATE).getTime());
 
-        entry.setSouth(results.getDouble(Tables.ENTRIES.COL_NODOT_SOUTH));
-        entry.setNorth(results.getDouble(Tables.ENTRIES.COL_NODOT_NORTH));
-        entry.setEast(results.getDouble(Tables.ENTRIES.COL_NODOT_EAST));
-        entry.setWest(results.getDouble(Tables.ENTRIES.COL_NODOT_WEST));
+        entry.initEntry(r.getString(Tables.ENTRIES.COL_NODOT_NAME),
+			r.getString(Tables.ENTRIES.COL_NODOT_DESCRIPTION),
+			null/*parent*/, user, resource,
+			r.getString(Tables.ENTRIES.COL_NODOT_DATATYPE),
+			order, createDate.getTime(),
+			DateHandler.getTime(dbm.getDate(r, Tables.ENTRIES.COL_NODOT_CHANGEDATE, createDate)),
+			DateHandler.getTime(dbm.getDate(r, Tables.ENTRIES.COL_NODOT_FROMDATE,null)),
+			DateHandler.getTime(dbm.getDate(r, Tables.ENTRIES.COL_NODOT_TODATE,null)),
+				    null);
+
+	//	DatabaseManager.debug=false;
+        entry.setSouth(r.getDouble(Tables.ENTRIES.COL_NODOT_SOUTH));
+        entry.setNorth(r.getDouble(Tables.ENTRIES.COL_NODOT_NORTH));
+        entry.setEast(r.getDouble(Tables.ENTRIES.COL_NODOT_EAST));
+        entry.setWest(r.getDouble(Tables.ENTRIES.COL_NODOT_WEST));
         entry.setAltitudeTop(
-            results.getDouble(Tables.ENTRIES.COL_NODOT_ALTITUDETOP));
+            r.getDouble(Tables.ENTRIES.COL_NODOT_ALTITUDETOP));
         entry.setAltitudeBottom(
-            results.getDouble(Tables.ENTRIES.COL_NODOT_ALTITUDEBOTTOM));
+            r.getDouble(Tables.ENTRIES.COL_NODOT_ALTITUDEBOTTOM));
 
 	//Close the connection that gave us the above results because we don't want to
 	//call findGroup below and potentially have to get another connection with this
@@ -3836,9 +3837,9 @@ public class TypeHandler extends RepositoryManager {
                                             + ARG_FROM, startDate,
                                                 ARG_DATA_DATE + "." + ARG_TO,
                                                 endDate));
-                    sb.append(formEntry(request, msgLabel("Start Date"),
+                    sb.append(formEntry(request, msgLabel(getFormLabel(null,null,"startdate","Start Date")),
                                         startDate));
-                    sb.append(formEntry(request, msgLabel("End Date"),
+                    sb.append(formEntry(request, msgLabel(getFormLabel(null,null,"enddate","End Date")),
                                         endDate));
                 } else {
                     boolean showTime = typeHandler.okToShowInForm(entry,
@@ -3854,8 +3855,7 @@ public class TypeHandler extends RepositoryManager {
                         dateSB.append(getDateHandler().formatDate(request,
                                 entry, entry.getEndDate()));
                     }
-                    String formLabel = msgLabel(getFormLabel(parentEntry,entry, ARG_DATE,
-                                           "Date"));
+                    String formLabel = msgLabel(getFormLabel(parentEntry,entry, ARG_DATE, "Date"));
                     sb.append(formEntry(request, formLabel,
                                         dateSB.toString()));
                 }
@@ -4185,9 +4185,7 @@ public class TypeHandler extends RepositoryManager {
 
                         continue;
                     }
-
                     System.err.println("Unknown column:" + columnName);
-
                     continue;
                 }
                 column.setValue(entry, values, value);
@@ -4842,11 +4840,11 @@ public class TypeHandler extends RepositoryManager {
                     lon = "" + entry.getWest();
                 }
             }
-            String locationWidget = msgLabel("Latitude") + " "
+            String locationWidget = msgLabel(getFormLabel(parentEntry,entry, "latitude","Latitude")) + " "
                                     + HU.input(
                                         ARG_LOCATION_LATITUDE, lat,
                                         HU.SIZE_10) + "  "
-                                            + msgLabel("Longitude") + " "
+                                            + msgLabel(getFormLabel(parentEntry,entry, "longitude","Longitude")) + " "
                                             + HU.input(
                                                 ARG_LOCATION_LONGITUDE, lon,
                                                 HU.SIZE_10);
@@ -4861,7 +4859,7 @@ public class TypeHandler extends RepositoryManager {
 
             String mapSelector = map.makeSelector(ARG_LOCATION, true, nwse,
                                      "", "");
-            sb.append(formEntry(request, msgLabel("Location"), mapSelector));
+            sb.append(formEntry(request, msgLabel(getFormLabel(parentEntry,entry,"location","Location")), mapSelector));
 
         } else if (okToShowInForm(entry, ARG_AREA)) {
             addAreaWidget(request, parentEntry, entry, sb, formInfo);
@@ -4955,7 +4953,7 @@ public class TypeHandler extends RepositoryManager {
 	getMapManager().initMapSelector(request, this,parentEntry, entry, map);
         String mapSelector = map.makeSelector(ARG_AREA, true, nwse, "", "")
                              + extraMapStuff;
-        sb.append(formEntry(request, msgLabel("Location"), mapSelector));
+        sb.append(formEntry(request, msgLabel(getFormLabel(parentEntry,entry,"location","Location")), mapSelector));
     }
 
 
@@ -5001,6 +4999,9 @@ public class TypeHandler extends RepositoryManager {
             }
             */
 
+	    String help = getProperty(entry,"form.date.help",null);
+	    if(help!=null)
+		sb.append(HU.formEntry("",wrapHelp(help)));
             if ( !okToShowInForm(entry, ARG_TODATE)) {
                 sb.append(
                     formEntry(
@@ -6394,6 +6395,11 @@ public class TypeHandler extends RepositoryManager {
         titles.add(msg("Type, date, space"));
         contents.add(basicSB.toString());
 
+    }
+
+
+    public static String wrapHelp(String help) {
+	return HU.div(help,HU.cssClass("ramadda-form-help"));
     }
 
 

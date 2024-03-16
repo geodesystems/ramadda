@@ -564,8 +564,8 @@ public class Entry implements Cloneable {
         if (this.category == null) {
             this.category = "";
         }
-        this.startDate = startDate;
-        this.endDate   = endDate;
+        setStartDate(startDate);
+        setEndDate( endDate);
         this.values    = values;
 
         if (typeHandler != null) {
@@ -655,6 +655,7 @@ public class Entry implements Cloneable {
      */
     public void setStartDate(long value) {
         startDate = value;
+	//	System.err.println(getName()+" " + DateHandler.checkDate(new Date(value)) +" " + new Date(value));
     }
 
     /**
@@ -664,8 +665,10 @@ public class Entry implements Cloneable {
      */
     public void setStartDate(Date value) {
         if (value != null) {
-            setStartDate(value.getTime());
-        }
+            setStartDate(value.getTime()); 
+        } else {
+	    setStartDate(DateHandler.NULL_DATE);
+	}
     }
 
     /**
@@ -676,7 +679,9 @@ public class Entry implements Cloneable {
     public void setEndDate(Date value) {
         if (value != null) {
             setEndDate(value.getTime());
-        }
+        } else {
+	    setEndDate(DateHandler.NULL_DATE);
+	}
     }
 
     /**

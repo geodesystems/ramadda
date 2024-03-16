@@ -456,6 +456,9 @@ public class JsonOutputHandler extends OutputHandler {
      * @return _more_
      */
     private String formatDate(Date dttm) {
+	if(DateHandler.isNullDate(dttm)) {
+	    return DateHandler.NULL_DATE_LABEL;
+	}
         if (sdf == null) {
             sdf = RepositoryUtil.makeDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         }
@@ -477,7 +480,11 @@ public class JsonOutputHandler extends OutputHandler {
             ymdsdf = RepositoryUtil.makeDateFormat("yyyy-MM-dd");
         }
         synchronized (ymdsdf) {
-            return ymdsdf.format(new Date(dttm));
+	    Date date = new Date(dttm);
+	    if(DateHandler.isNullDate(date)) {
+		return DateHandler.NULL_DATE_LABEL;
+	    }
+            return ymdsdf.format(date);
         }
     }
 
@@ -486,7 +493,11 @@ public class JsonOutputHandler extends OutputHandler {
             hhmmsdf = RepositoryUtil.makeDateFormat("HH:mm");
         }
         synchronized (hhmmsdf) {
-            return hhmmsdf.format(new Date(dttm));
+	    Date date = new Date(dttm);
+	    if(DateHandler.isNullDate(date)) {
+		return DateHandler.NULL_DATE_LABEL;
+	    }
+            return hhmmsdf.format(date);
         }
     }    
 
@@ -601,15 +612,14 @@ public class JsonOutputHandler extends OutputHandler {
         }
 
 
+
         JsonUtil.quoteAttr(items, "startDate",
                            formatDate(entry.getStartDate()));
         JsonUtil.quoteAttr(items, "ymd", formatYMD(entry.getStartDate()));
         JsonUtil.quoteAttr(items, "hhmm", formatHHMM(entry.getStartDate()));
         JsonUtil.quoteAttr(items, "endDate", formatDate(entry.getEndDate()));
-        JsonUtil.quoteAttr(items, "createDate",
-                           formatDate(entry.getCreateDate()));
-        JsonUtil.quoteAttr(items, "changeDate",
-                           formatDate(entry.getChangeDate()));	
+        JsonUtil.quoteAttr(items, "createDate",  formatDate(entry.getCreateDate()));
+        JsonUtil.quoteAttr(items, "changeDate", formatDate(entry.getChangeDate()));	
         JsonUtil.quoteAttr(items, "startDateFormat",
                            getDateHandler().formatDateShort(request, entry,
 							    entry.getStartDate()));
