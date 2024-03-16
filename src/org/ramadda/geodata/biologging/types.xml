@@ -10,7 +10,7 @@
     <column name="study_type" type="enumerationplus"  label="Study Type" values="wildlife:Wildlife,biologging:Biologging" cansearch="true"/>
 <children><![CDATA[
 <entries>
-<entry  name="Data"  type="group" entryorder="1"/>
+<entry  name="Data"  type="type_map_folder" entryorder="1"/>
 <entry  name="Displays"  type="group" entryorder="10">
 <description encoded="false">
 &lt;wiki&gt;
