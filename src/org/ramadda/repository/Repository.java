@@ -5920,6 +5920,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         groupTypeHandler.putWikiText("simple","{{tabletree showType=false  showSize=false   showCreateDate=false}}");
         groupTypeHandler.setCategory("Documents");
         groupTypeHandler.putProperty("form.resource.show", "false");
+        groupTypeHandler.putProperty("form.ark.show", "true");	
         groupTypeHandler.putProperty("icon", ICON_FOLDER);
         groupTypeHandler.setHelp("A group of entries");
 	groupTypeHandler.setPriority(0);
