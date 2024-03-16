@@ -3772,14 +3772,18 @@ public class TypeHandler extends RepositoryManager {
                 sb.append(formEntry(request, resourceLabel, resourceLink));
 
             }
-	    //            if ( !showImage) {
-                if (typeHandler.okToShowInHtml(entry, ARG_TYPE, true)) {
+
+	    if (typeHandler.okToShowInHtml(entry, ARG_TYPE, true)) {
 		    String icon = getPageHandler().getEntryIconImage(request,entry);
                     sb.append(formEntry(request, msgLabel("Kind"),
                                         icon + HU.space(1)+getFileTypeDescription(request,
 										  entry)));
-                }
-		//            }
+	    }
+
+	    String ark = getPageHandler().getArk(request, entry);
+	    if(ark!=null) {
+		sb.append(formEntry(request, msgLabel("ARK ID"),ark));
+	    }
 
             //Only show the created by and type when the user is logged in
             if ( !request.isAnonymous()) {
