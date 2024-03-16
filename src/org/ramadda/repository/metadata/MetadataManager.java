@@ -959,14 +959,25 @@ public class MetadataManager extends RepositoryManager {
     }
 
 
-
     public String getMetadataUrl(Request request, Entry entry, String type)
+            throws Exception {
+	List<String> urls= getMetadataUrls(request, entry,type);
+	if(urls==null) return null;
+	return urls.get(0);
+    }
+
+    public List<String> getMetadataUrls(Request request, Entry entry, String type)
             throws Exception {
         List<Metadata> metadataList =  findMetadata(request, entry,type,true);
 	if(metadataList==null || metadataList.size()==0) return null;
-	String[]tuple=  getFileUrl(request, entry, metadataList.get(0));
-	if(tuple==null) return null;
-	return tuple[1];
+	List<String> urls =null;
+	for(Metadata metadata:metadataList) {
+	    String[]tuple=  getFileUrl(request, entry, metadata);
+	    if(tuple==null) continue;
+	    if(urls==null) urls = new ArrayList<String>();
+	    urls.add(tuple[1]);
+	}
+	return urls;
     }
 
 
