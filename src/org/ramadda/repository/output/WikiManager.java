@@ -2777,6 +2777,11 @@ public class WikiManager extends RepositoryManager
 		text = text.replace("#entry=\"${entry}\"","entry="+entry.getId());
 	    }
 	    return wikifyEntry(request, entry,text);
+        } else if (theTag.equals(WIKI_TAG_ARK)) {
+	    String ark = getPageHandler().getArk(request, entry);
+	    if(ark==null) return getProperty(wikiUtil, props, ATTR_MESSAGE, "No ARK service available");
+	    String template = getProperty(wikiUtil, props, "template","<b>ARK ID: </b>${ark}");
+	    return template.replace("${ark}",ark);
         } else if (theTag.equals(WIKI_TAG_NAME)) {
             String name = entry==null?"NULL ENTRY":getEntryDisplayName(entry);
             if (getProperty(wikiUtil, props, "link", false)) {
