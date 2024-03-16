@@ -7,12 +7,19 @@
 }    
 
 
-.ramadda-model-watermark {
+.ramadda-model-watermark ,.ramadda-model-watermark-right {
     position:absolute;
-    left:10px;
-    bottom:10px;
     opacity:0.75;
     width:80px;
+    bottom:10px;
+}
+
+.ramadda-model-watermark {
+    left:10px;
+}
+
+.ramadda-model-watermark-right {
+    right:10px;
 }
 
 .ramadda-model-display {

@@ -232,8 +232,13 @@ Ramadda3DDisplay.prototype = {
 	let background=HU.div(['id',this.domId('_background'),'style',HU.css('position','relative','width','100%')]);
 	let extra = HU.div(['id',this.domId('_background')], background)   +   menuButton;
 
-	if(this.models[0] && this.models[0].watermark) {
-	    extra+=HU.image(this.models[0].watermark,[ATTR_CLASS,'ramadda-model-watermark']);
+	if(this.models[0]) {
+	    if(this.models[0].watermark1) {
+		extra+=HU.image(this.models[0].watermark1,[ATTR_CLASS,'ramadda-model-watermark']);
+	    }
+	    if(this.models[0].watermark2) {
+		extra+=HU.image(this.models[0].watermark2,[ATTR_CLASS,'ramadda-model-watermark-right']);
+	    }	    
 	}
 	
 
