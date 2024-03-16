@@ -1658,6 +1658,7 @@ var Utils =  {
     dateRegex:new RegExp("(rel|now|today)(\\+|-)(.*)", 'i'),
     parseDate: function(s, roundUp, rel) {
         if (s == null) return null;
+	if(s=='NA') return null;
         if((typeof s)=="number") {
             return new Date(s);
         }
