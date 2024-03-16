@@ -5,12 +5,19 @@
 	metadata="content.contact,content.acknowledgement,content.license,enum_tag,content.keyword,metadata_author,content.citation,project_funding,project_pi"
 	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">
     <property name="form.description.iswiki" value="true"/>
-    <property name="icon" value="/biologging/wildlife.png"/>
+    <property name="icon" value="/biologging/study.png"/>
     <property name="form.area.show" value="true"/>
     <column name="study_type" type="enumerationplus"  label="Study Type" values="wildlife:Wildlife,biologging:Biologging" cansearch="true"/>
 <children><![CDATA[
 <entries>
 <entry  name="Data"  type="type_map_folder" entryorder="1"/>
+<entry  name="Private"  type="group" entryorder="5">
+<permissions>
+<permission action="view">
+<role role="none"/>
+</permission>
+</permissions>
+</entry>
 <entry  name="Displays"  type="group" entryorder="10">
 <description encoded="false">
 &lt;wiki&gt;
@@ -68,6 +75,86 @@
 -section
 ]]></wiki>
   </type>
+
+  <type name="type_wildlife_animal" description="Wildlife Animal"  foruser="true"
+	metadata="content.contact,content.acknowledgement,content.license,enum_tag,content.keyword,metadata_author,content.citation,project_funding,project_pi"
+	editfields="name,description,date,earliest_born,_default"
+	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">
+    <property name="icon" value="/biologging/fauna.png"/>
+    <property name="form.description.iswiki" value="false"/>
+    <property name="form.date.label" value="Date of Birth/Death"/>
+    <property name="form.startdate.label" value="Date of Birth"/>
+    <property name="form.enddate.label" value="Date of Death"/>                    
+    <property name="form.date.help" value="The exact date on which animal was born or hatched"/>
+    <property name="form.tags.show" value="false"/>    
+    <property name="form.resource.show" value="false"/>    
+    <property name="form.area.show" value="false"/>
+    <property name="form.location.label" value="Birth Location"/>
+    <property name="form.location.show" value="true"/>
+    <column name="earliest_born" type="datetime" default="none" label="Earliest Born"
+    help="The earliest date an animal is thought to have been born or hatched."/>
+    <column name="animal_id" type="string"  label="Animal ID" group="Animal Details" help="An individual identifier for the animal"/>
+    <column name="nickname" type="string"  label="Animal Nickname" />    
+    <column name="marker_id" type="string"  label="Marker ID" help="A description of unique identifiers or markings on the animal, for example color bands or ear tags."/>    
+    <column name="sex" type="enumeration"  label="Sex" values="m:male,f:female,u:unknown"
+	    cansearch="true"/>
+
+    <column name="taxon" type="enumerationplus"  label="Taxon"    cansearch="true"
+	    help="The scientific name of the taxon on which the tag was deployed, as defined by the Integrated Taxonomic Information System (ITIS)."/>
+    <column name="taxon_details" type="enumerationplus"  label="Taxon Details"    cansearch="true"
+	    help="A more specific name and/or reference for the taxon name provided by 'animal taxon'. This can be used, for example, to specify a subspecies or a taxon not supported by the ITIS."
+	    />
+    <column name="group_id" type="enumerationplus"  label="Group ID"
+	    help="The name or identifier for an associated group, for example, the herd, pack, nest or family group."
+	     cansearch="true"/>
+    <column name="mortality_date" type="datetime"  default="none" label="Mortality Date" group="Animal Mortality"
+	    help="The known or estimated date on which the animal died."/>
+    <column name="mortality_location" type="latlon"  label="Mortality Location" cansearch="true"
+	    help="The geographic latitude of the location where the animal died"/>    
+    <column name="mortality_type" type="enumerationplus"  label="Mortality Type"
+	    help="The likely immediate cause of death"
+	    values="file:/org/ramadda/geodata/biologging/resources/mortalitytypes.txt" cansearch="true"/>
+    <column name="death_comments" type="string"  size="5000" label="Death Comments" rows="5" cansearch="true"/>
+
+
+<xxxchildren><![CDATA[
+<entries>
+<entry  name="Images"  type="media_photoalbum" entryorder="30"/>
+</entries>
+]]>
+</xxxchildren>
+
+
+<wiki><![CDATA[
++section title={{name}}
++row
++col-8
+{{description wikify=true}}
+{{tabletree message="" showCreateDate=false showSize=false showDate=false orderby="entryorder,name"  ascending=true}}
+:vspace 1em
+{{information details=false}}
+-col
++col-4
+<table class="formtable">
+</table>
+{{properties message="" inherited="true" metadata.types="content.contact"}}
+{{image src="::*" message="" width="90%"}}                                                          
+:vspace 1em
+{{properties message="" inherited="true" metadata.types="content.license"}}
+:vspace 1em
+{{properties message="" inherited="true" metadata.types="content.citation"}}
++center
+:vspace 1em
+{{mapentry hideIfNoLocations=true width="90%" height="300px" heading="Birth Location"}}
+-center
+{{properties message="" metadata.types="!content.license,!content.contact,!content.citation"}}
+-col
+-row
+-section
+]]></wiki>
+  </type>
+
+
 
 
   <type name="type_wildlife_tag" description="Wildlife Tag"  foruser="true"

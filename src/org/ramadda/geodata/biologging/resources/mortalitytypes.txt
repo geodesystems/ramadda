@@ -1,0 +1,13 @@
+unknown:Unknown
+bycatch:Unintentional death of a non-target animal during fishing activities
+capture:Related to the capture and handling of the animal for the study
+electrocution:Electric shock
+harvest:Intentional killing by humans, for example through hunting, fishing or poaching
+disease:Related to a specific illness or terminal disease
+natural-death:Natural causes, not further specified
+other:Other
+parasites:Parasitic infection or disease, including parasitoidism
+poison:Accidental or deliberate exposure to a chemical substance
+predation:Killed by a predator or micropredator
+starvation:Lack of caloric energy intake
+vehicle-collision:Ccollision with a motor vehicle, watercraft, aircraft or other vehicle
