@@ -2774,6 +2774,15 @@ table.dataTable tbody td {
     border-bottom : 1px #d8d8d8 solid;
 }
 
+.ramadda-form-help {
+    padding:4px;
+    padding-left:8px;
+    padding-right:8px;    
+    background:#f0f8ff;
+    display:inline-block;
+    border:1px solid #f0f0f0;
+}    
+
 .ramadda-form-header {
     margin-top:4px;
     padding:4px !important;    
