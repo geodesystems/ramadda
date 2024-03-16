@@ -130,6 +130,7 @@ priority="2"       >
 
 
   <type name="type_document"  foruser="false" category="Documents" >
+     <property name="form.ark.show" value="true"/>    
   </type>
 
   <type name="type_convertible"  description="Convertible File" foruser="false"  super="type_document"  >
@@ -217,6 +218,7 @@ priority="2"       >
 <type name="type_document_collection"  isgroup="true" description="Document Collection"
       handler="org.ramadda.repository.type.TypeHandler" category="Documents"
       help="A collection of documents"      >
+     <property name="form.ark.show" value="true"/>    
      <property name="icon" value="/icons/documents.png"/>
      <property name="form.resource.show" value="false"/>
      <wiki><![CDATA[
