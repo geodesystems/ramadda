@@ -50,8 +50,8 @@
     </type>    
     
 
-    <type name="Citation" id="content.citation" searchable="true" browsable="true" displaygroup="Citations"  priority="10">
-      <element name="Citation" rows="5"/>
+    <type name="Citation" id="content.citation" searchable="false" browsable="true" displaygroup="Citations"  priority="10">
+      <element name="Citation" rows="5" datatype="string"/>
     </type>
 
 
