@@ -452,7 +452,8 @@ public class ApiManager extends RepositoryManager {
         if ( !incoming.startsWith(urlBase)) {
             //check for top-level apis
             ApiMethod apiMethod = (ApiMethod) requestMap.get(incoming);
-
+	    if(apiMethod==null)
+		apiMethod = findWildcard(incoming);
             return apiMethod;
         }
         incoming = incoming.substring(urlBase.length());
@@ -461,22 +462,9 @@ public class ApiManager extends RepositoryManager {
         }
 
 
-
         ApiMethod apiMethod = (ApiMethod) requestMap.get(incoming);
         if (apiMethod == null) {
-            //            System.err.println ("incoming:" + incoming);
-            for (ApiMethod tmp : wildCardApiMethods) {
-                if (incoming.startsWith(tmp.getWildcardPath1())) {
-                    apiMethod = tmp;
-
-                    break;
-                }
-                if (incoming.equals(tmp.getWildcardPath2())) {
-                    apiMethod = tmp;
-
-                    break;
-                }
-            }
+	    apiMethod = findWildcard(incoming);
         }
         if ((apiMethod == null) && incoming.equals(urlBase)) {
             apiMethod = homeApi;
@@ -485,6 +473,17 @@ public class ApiManager extends RepositoryManager {
         return apiMethod;
     }
 
+    private ApiMethod findWildcard(String incoming) {
+	for (ApiMethod tmp : wildCardApiMethods) {
+	    if (incoming.startsWith(tmp.getWildcardPath1())) {
+		return tmp;
+	    }
+	    if (incoming.equals(tmp.getWildcardPath2())) {
+		return tmp;
+            }
+	}
+	return null;
+    }	
 
     /**
      * _more_
