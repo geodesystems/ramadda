@@ -1,0 +1,73 @@
+<html>
+<head>
+<title>Creating ARK IDS and Digital Object Identifiers (DOI)</title>
+</head>
+<body>
+
+:navtop
+
+:heading Creating ARK IDs
+
+
+Archival Resource Keys (ARKs) serve as persistent identifiers, or stable, trusted references for information objects.
+Read more about ARKs at \[https://arks.org/ https://arks.org/\]
+
+To enable ARK IDs in your RAMADDA you need to have a  Name Assigning Authority Number (NAAN) that identifies your RAMADDA.
+You can get a NAAN from 
+\[https://arks.org/about/getting-started-implementing-arks/ args.org\]
+by using the \[https://docs.google.com/forms/d/e/1FAIpQLSfd1CX6idwLB47g8OGKUG654auV8IU8yI7DAs61cXGOoFDn0g/viewform?c=0&w=1 Google form\].
+Once you receive your NAAN add it as a RAMADDA property and restart your RAMADDA.
+
++pre
+ramadda.naan=your NAAN number
+-pre
+
+Note: It may take 24 hours until your NAAN has been registered
+
+Now, the URL: <i>https://n2t.net/ark:/&lt;your NAAN&gt;/&lt;ramadda entry id&gt;</i>
+will redirect to:
+<i>https://&lt;your ramadda&gt;/ark:/19157/&lt;ramadda entry id&gt;</i>
+which will redirect the request to the entry page.
+
+:p
+Once enabled the ARK ID shows up in the Information page for any entry. Likewise it can be added to a wiki page with the tag:
++pre    
+{<noop>{ark }}
+-pre
+
+
+
+:heading Using EZID to mint DOIs
+RAMADDA supports tagging entries with a Digital Object Identifier (DOI). This 
+is a service provided by the Californiate Digital Library
+<a href="http://www.cdlib.org/services/uc3/ezid/">EZID</a> service.
+
+<p>
+You can also search for an entry with a  <a href="search">DOI search form</a>.
+<p>
+
+To enable the DOI plugin you must have an account with <a href="http://www.cdlib.org/services/uc3/ezid/">EZID</a> 
+you need to specify the following properties in some property file in your RAMADDA home dir, 
+e.g. ezid.properties:
+
+<pre>
+##Account information 
+ezid.username=
+ezid.password=
+
+doi.adminonly=true
+
+doi.prefixes=
+
+#e.g.:
+doi.prefixes=doi:10.5072/FK2,ark:/99999/fk4
+
+#What metadata profile to use as the default
+ezid.profile=erc
+#ezid.profile=datacite
+#ezid.profile=dc
+</pre>
+
+</div>
+</body>
+</html>
