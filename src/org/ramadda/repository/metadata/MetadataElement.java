@@ -820,12 +820,16 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
         if (getThumbnail() && request.get(ARG_THUMBNAIL_SCALEDOWN, false)) {
             Image image = ImageUtils.readImage(theFile);
-            int   width = request.get(ARG_THUMBNAIL_WIDTH, THUMBNAIL_WIDTH);
-            if (image.getWidth(null) > width) {
-                image = ImageUtils.resize(image, width, -1);
-                ImageUtils.waitOnImage(image);
-                ImageUtils.writeImageToFile(image, theFile);
-            }
+	    if(image==null) {
+		getSessionManager().addSessionErrorMessage(request,"Error processing image:" + entry);
+	    } else {
+		int   width = request.get(ARG_THUMBNAIL_WIDTH, THUMBNAIL_WIDTH);
+		if (image.getWidth(null) > width) {
+		    image = ImageUtils.resize(image, width, -1);
+		    ImageUtils.waitOnImage(image);
+		    ImageUtils.writeImageToFile(image, theFile);
+		}
+	    }
         }
 
 
