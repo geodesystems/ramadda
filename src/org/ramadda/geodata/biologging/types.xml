@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<types supercategory="Geoscience" category="Wildlife">
+
+  <type name="type_wildlife_study" description="Wildlife Study"  foruser="true"
+	metadata="content.contact,content.acknowledgement,content.license,enum_tag,content.keyword,metadata_author,content.citation,project_funding,project_pi"
+	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">
+    <property name="form.description.iswiki" value="true"/>
+    <property name="icon" value="/biologging/wildlife.png"/>
+    <property name="form.area.show" value="true"/>
+    <column name="study_type" type="enumerationplus"  label="Study Type" values="wildlife:Wildlife,biologging:Biologging" cansearch="true"/>
+<children><![CDATA[
+<entries>
+<entry  name="Data"  type="group" entryorder="1"/>
+<entry  name="Displays"  type="group" entryorder="10">
+<description encoded="false">
+&lt;wiki&gt;
++section title={{name}}
+{{frames  message="No displays available" width="100%"  height="500"  showIcon="true"  leftWidth="2"  #rightWidth="10"  }} 
+-section
+</description>
+</entry>
+<entry  name="Documents"  type="type_document_collection" entryorder="20"/>
+<entry  name="Images"  type="media_photoalbum" entryorder="30"/>
+<entry  name="Animals"  type="group" entryorder="40"/>
+<entry  name="Tags"  type="group" entryorder="50"/>
+</entries>
+]]>
+</children>
+
+
+<wiki><![CDATA[
++section title={{name}}
+:navtop
+----
++row
++col-8
+{{description wikify=true}}
+:heading Study Contents
+{{tabletree message="" showCreateDate=false showSize=false showDate=false orderby="entryorder,name"  ascending=true}}
+:vspace 1em
+----
+:vspace 1em
+:heading Properties
+{{properties message="" metadata.types="!content.license,!content.contact,!content.citation"}}
+:vspace 1em
+----
+:vspace 1em
+:heading Information
+{{information details=false}}
+-col
++col-4
+<table class="formtable">
+{{field name="study_type" row.label="Study Type:"}}
+</table>
+{{properties message="" inherited="true" metadata.types="content.contact"}}
+{{image src="::*" message="" width="90%"}}                                                          
+:vspace 1em
+{{ark short=true}}
+{{properties message="" inherited="true" metadata.types="content.license"}}
+:vspace 1em
+{{properties message="" inherited="true" metadata.types="content.citation"}}
++center
+:vspace 1em
+{{mapentry hideIfNoLocations=true width="90%" height="300px"}}
+-center
+-col
+-row
+-section
+]]></wiki>
+  </type>
+
+
+  <type name="type_wildlife_tag" description="Wildlife Tag"  foruser="true"
+	metadata="content.contact,content.acknowledgement,content.license,enum_tag,content.keyword,metadata_author,content.citation,project_funding,project_pi"
+	handler="org.ramadda.repository.type.GenericTypeHandler">
+    <property name="icon" value="/biologging/tag.png"/>
+    <property name="form.tags.show" value="false"/>    
+    <property name="form.resource.show" value="false"/>    
+    <property name="form.ark.show" value="false"/>
+    <property name="form.area.show" value="false"/>
+    <property name="form.date.show" value="false"/>    
+    <column name="tagid" type="string"  label="Tag ID" cansearch="true"/>
+    <column name="serial_number" type="string"  label="Serial Number" cansearch="true"/>    
+    <column name="tag_failure_comments" type="string"  size="5000" label="Failure Comments" rows="5" cansearch="true"/>
+    <column name="manufacturer" type="enumerationplus"  label="Manufacturer" cansearch="true"/>
+    <column name="model" type="enumerationplus"  label="Model" cansearch="true"/>    
+    <column name="mass" type="double" default="0"  label="Tag Mass" cansearch="true"/>
+
+<xwiki><![CDATA[
++section title={{name}}
+:navtop
+----
++row
++col-8
+{{description wikify=true}}
+:heading Study Contents
+{{tabletree message=""}}
+:vspace 1em
+----
+:vspace 1em
+:heading Information
+{{information details=true}}
+-col
++col-4
+<table class="formtable">
+{{field name="study_type" row.label="Study Type:"}}
+</table>
+{{image src="::*" message="" width="90%"}}                                                          
+:vspace 1em
+{{ark short=true}}
+{{properties   message="" inherited="true" metadata.types="content.license"}}
+{{properties message="" inherited="true" metadata.types="content.contact"}}
+{{properties message="" inherited="true" metadata.types="content.citation"}}
++center
+:vspace 1em
+{{mapentry hideIfNoLocations=true width="90%" height="300px"}}
+-center
+-col
+-row
+-section
+]]></xwiki>
+  </type>
+  
+
+</types>

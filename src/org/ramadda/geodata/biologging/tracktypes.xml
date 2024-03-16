@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<types supercategory="Geoscience" category="Point Data">
+<types supercategory="Geoscience" category="Wildlife">
 
   <type name="type_track_base"
 	description="Animal Track Data" super="type_point" foruser="true"
