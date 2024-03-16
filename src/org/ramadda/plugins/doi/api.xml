@@ -1,5 +1,5 @@
 
 <api handler="org.ramadda.plugins.doi.DoiApiHandler" id="doi">
       <api request="/doi/search"    method="processDoiSearch" admin="false"/>
-      <api request="/ark:/*" method="processArkAccess"/>
+      <api request="/ark:/*" method="processArkAccess" admin="false"/>
 </api>
