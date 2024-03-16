@@ -3837,6 +3837,15 @@ public class PageHandler extends RepositoryManager {
         return s;
     }
 
+    public String getArk(Request request, Entry entry) {
+	String naan = getRepository().getProperty("ramadda.naan",null);
+	if(naan==null) return null;
+	String id = HU.getUniqueId("ark");
+	return HU.span("https://n2t.net/ark:/" + naan +"/" + entry.getId(),
+		HU.id(id)) +
+	    HU.script("Utils.initCopyable('#"+id+"');");
+    }
+
     /**
      * _more_
      *
