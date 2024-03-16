@@ -66,6 +66,7 @@ public class DoiApiHandler extends RepositoryManager implements RequestHandler {
 	id = StringUtil.findPattern(id,"/?([^/\\?]+).*");
 	if(id==null)  throw new IllegalArgumentException("Bad ark path format:" + path);
 
+	id = id.replace("_","-");
 	return new Result(request.makeUrl(getRepository().URL_ENTRY_SHOW,
 					  ARG_ENTRYID, id));
     }
