@@ -54,6 +54,23 @@ public class DoiApiHandler extends RepositoryManager implements RequestHandler {
     }
 
 
+    public Result processArkAccess(Request request) throws Exception {
+	//https://ramadda.org/ark:/19157/foo
+	String path = request.getRequestPath();
+	int index  = path.indexOf("ark:/");
+	if(index<0)  throw new IllegalArgumentException("Bad ark path format:" + path);
+	String id = path.substring(index+"ark:/".length());
+	index  = id.indexOf("/");
+	if(index<0)  throw new IllegalArgumentException("Bad ark path format:" + path);
+	id = id.substring(index);
+	id = StringUtil.findPattern(id,"/?([^/\\?]+).*");
+	if(id==null)  throw new IllegalArgumentException("Bad ark path format:" + path);
+
+	return new Result(request.makeUrl(getRepository().URL_ENTRY_SHOW,
+					  ARG_ENTRYID, id));
+    }
+
+
 
     /**
      * handle the request
