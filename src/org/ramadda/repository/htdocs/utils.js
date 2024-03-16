@@ -255,7 +255,7 @@ var Utils =  {
 	    $(this).addClass('ramadda-clickable');
 	    $(this).attr('title','Click to copy');
 	    $(this).click(()=>{
-		Utils.copyToClipboard($(this).html());
+		Utils.copyToClipboard($(this).attr('data-copy')??$(this).html());
 		alert($(this).attr('copy-message')??'Text copied to clipboard');
 	    });
 	});
