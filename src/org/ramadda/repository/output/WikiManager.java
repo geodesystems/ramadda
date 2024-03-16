@@ -2778,7 +2778,7 @@ public class WikiManager extends RepositoryManager
 	    }
 	    return wikifyEntry(request, entry,text);
         } else if (theTag.equals(WIKI_TAG_ARK)) {
-	    String ark = getPageHandler().getArk(request, entry);
+	    String ark = getPageHandler().getArk(request, entry,getProperty(wikiUtil,props,"short",false));
 	    if(ark==null) return getProperty(wikiUtil, props, ATTR_MESSAGE, "No ARK service available");
 	    String template = getProperty(wikiUtil, props, "template","<b>ARK ID: </b>${ark}");
 	    return template.replace("${ark}",ark);
