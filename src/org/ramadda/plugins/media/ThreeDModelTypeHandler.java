@@ -373,9 +373,11 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 		Utils.add(attrs,"annotations",JsonUtil.quote(tmp));
 	    }	    
 	    
-	    String watermark = getMetadataManager().getMetadataUrl(request, entry, "3dmodel_watermark");
-	    if(stringDefined(watermark)){
-		Utils.add(attrs,"watermark",JsonUtil.quote(watermark));
+	    List<String> watermarks = getMetadataManager().getMetadataUrls(request, entry, "3dmodel_watermark");
+	    if(watermarks!=null) {
+		for(int i=0;i<watermarks.size();i++) {
+		    Utils.add(attrs,"watermark"+(i+1),JsonUtil.quote(watermarks.get(i)));
+		}
 	    }
 
 	    String snippet = getWikiManager().getSnippet(request, entry, true,null);
