@@ -718,8 +718,6 @@ echo:CSV
 https://ramadda.org/repository/entry/show?ascending=true&orderby=name&entryid=4624f63d-cd71-43e8-a558-83835c6b5541&output=default.csv&fields=name,id&showheader=false&showheader=false
 echo:Affordable Housing Units in Boulder
 https://ramadda.org/repository/entry/show?entryid=a210076e-d5c1-4d6c-950d-2a135af1f536#fortest
-echo:Air Quality Data
-https://ramadda.org/repository/entry/show?entryid=149bdad0-2422-466f-99ef-7239f1d7082d#fortest
 echo:Boulder Buildings
 https://ramadda.org/repository/entry/show?entryid=e0680bf6-1319-4787-8ba3-cda4dba1a0d3#fortest
 echo:Boulder Climate
