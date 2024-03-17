@@ -47,12 +47,11 @@
 :vspace 1em
 ----
 :vspace 1em
-:heading Properties
+:heading Study Information
 {{properties layout=linear message="" metadata.types="!content.license,!content.contact,!content.citation"}}
-:vspace 1em
+:vspace 0.5em
 ----
-:vspace 1em
-:heading Information
+:vspace 0.5em
 {{information details=false}}
 -col
 +col-4
