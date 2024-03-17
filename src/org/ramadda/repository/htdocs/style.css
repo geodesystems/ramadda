@@ -2780,7 +2780,7 @@ table.dataTable tbody td {
     padding-right:8px;    
     background:#f0f8ff;
     display:inline-block;
-    border:1px solid #f0f0f0;
+    border:var(--basic-border);
 }    
 
 .ramadda-form-header {

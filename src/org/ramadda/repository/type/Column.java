@@ -1391,13 +1391,12 @@ public class Column implements DataTypes, Constants, Cloneable {
             sb.append(toLatLonString(values, offset + 1, raw));
 	    double lat = (double) values[offset];
 	    double lon = (double) values[offset+1];	    
-	    if(!Double.isNaN(lat) && !Double.isNaN(lon)) {
+	    if(!Double.isNaN(lat) && !Double.isNaN(lon) && lat!=Entry.NONGEO && lon!=Entry.NONGEO) {
 		MapInfo map = new MapInfo(request, getRepository(),"200","200");
 		map.addMarker("",lat,  lon, null,"","");
 		map.center();
 		sb.append(getRepository().getMapManager().getHtmlImports(request));
 		sb.append(map.getHtml());
-		//		xxx
 	    }
         } else if (isType(DATATYPE_LATLONBBOX)) {
             sb.append(toLatLonString(values, offset, raw));

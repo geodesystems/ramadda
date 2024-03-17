@@ -1,5 +1,11 @@
 var RamaddaLicense =  {
+    reset:function() {
+	Utils.setLocalStorage(this.requiredKey, false);
+	console.log('license reset');
+    },
+
     checkLicense:function(domId,required,args) {
+
 	let opts = {
 	    message:"To access this content do you agree with the following license?",
 	    showLicense:true,
@@ -11,7 +17,8 @@ var RamaddaLicense =  {
 	if(args) $.extend(opts,args);
 	let text = jqid(domId).html();
 	let key = 'licenseagree_' + required;
-	let agreed = Utils.getLocalStorage(key);
+	this.requiredKey = key;
+	let agreed =Utils.getProperty(Utils.getLocalStorage(key));
 	if(opts.onlyAnonymous && !Utils.isAnonymous()) return;
 	if(!agreed) {
 	    let buttonList = [HU.div(['action','ok','class','ramadda-button ' + CLASS_CLICKABLE],
