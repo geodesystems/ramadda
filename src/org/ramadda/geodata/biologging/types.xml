@@ -62,7 +62,7 @@
 {{image src="::*" message="" width="90%"}}                                                          
 :vspace 1em
 {{ark short=true}}
-{{properties message="" inherited="true" metadata.types="content.license"}}
+{{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
 :vspace 1em
 {{properties message="" inherited="true" metadata.types="content.citation"}}
 +center

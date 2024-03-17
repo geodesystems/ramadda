@@ -3,7 +3,9 @@
 ${innercontent}
 -col
 +col-md-3
+:vspace 1em
 <div class="entry-page-info">
+{{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
 {{tools includeIcon="true" title="Services" message=""}}
 {{map width="250" height="250"  box.maxheight="300" message="" prefix="====Location===="}}
 <br>

@@ -125,6 +125,13 @@
 +section title="{{name}}" #
 {{description wikify=true}}
 {{gallery columns="3" thumbnail="property:usethumbnail"}}
+:vspace 1em
+----
+:vspace 1em
++center
+{{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
+-center
+{{information details=true}}
 -section
 ]]>
 </wiki>

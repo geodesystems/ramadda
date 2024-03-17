@@ -260,6 +260,14 @@ showHeading=true
 :vspace 1em
 ----
 {{tabletree}}
+
+:vspace 1em
+----
+:vspace 1em
++center
+{{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
+-center
+{{information details=true}}
 -section
 ]]>
 </wiki>

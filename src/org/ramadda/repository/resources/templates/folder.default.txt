@@ -4,7 +4,9 @@
 ${innercontent}
 -col
 +col-md-3
+:vspace 1em
 <div class="entry-page-info">
+{{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
 {{tools includeicon="true" title="Links" message=""}}
 :vspace 0.5em
 {{information details="false"  block.show="true" block.title="Information" block.open="true" box.maxheight="300"  box.class="entry-sidebox" }}
