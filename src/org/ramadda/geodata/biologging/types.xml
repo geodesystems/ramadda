@@ -48,7 +48,7 @@
 ----
 :vspace 1em
 :heading Properties
-{{properties message="" metadata.types="!content.license,!content.contact,!content.citation"}}
+{{properties layout=linear message="" metadata.types="!content.license,!content.contact,!content.citation"}}
 :vspace 1em
 ----
 :vspace 1em

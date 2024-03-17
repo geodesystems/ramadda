@@ -6209,6 +6209,20 @@ public class WikiManager extends RepositoryManager
             return StringUtil.join("<br>", tabContents);
         }
         if (tabContents.size() > 1) {
+	    String layout = getProperty(wikiUtil,props,"layout","tabs");
+	    StringBuilder sb = new StringBuilder();
+	    if(layout.equals("accordion")||layout.equals("accordian")) {
+                HU.makeAccordion(sb, tabTitles, tabContents, false,
+				 "ramadda-accordion", null);
+
+		return sb.toString();
+	    }
+	    if(layout.equals("linear")) {
+		for(Object contents: tabContents) {
+		    sb.append(contents);
+		}
+		return sb.toString();		
+	    }
             return OutputHandler.makeTabs(tabTitles, tabContents, true);
         }
 
