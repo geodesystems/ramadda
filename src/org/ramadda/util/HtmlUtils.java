@@ -4790,7 +4790,9 @@ public class HtmlUtils implements HtmlUtilsConstants {
             return;
         }
         try {
+	    js.append("\n");
             js.append(tag(TAG_SCRIPT, attrs(ATTR_TYPE, "text/JavaScript"), s));
+	    js.append("\n");
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }
