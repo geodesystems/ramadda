@@ -5123,7 +5123,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		radius=4;
 	    }
 
-            for (Object obj : listValues) {
+	    int xcnt=0;
+	    for (Object obj : listValues) {
+		//		if(xcnt++>3) break;
                 Object[] values = (Object[]) obj;
                 String   dbid   = (String) values[IDX_DBID];
 		getLocation.accept(theColumn, values);
@@ -5191,12 +5193,16 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		else
 		    theSB.append(label);
                 theSB.append("</div>");
-                String info = getHtml(request, entry, dbid, getDbColumns(),
-                                      values, sdf,dateTimeSdf);
-                String mapInfo = extraLabel + info;
-                mapInfo = mapInfo.replace("\r", " ");
-                mapInfo = mapInfo.replace("\n", " ");
-                mapInfo = mapInfo.replace("\"", "\\\"");
+		//limit the size to 20 columns
+                String mapInfo;
+		if(extraLabel.length()>0) {
+		    mapInfo = extraLabel+getHtml(request, entry, dbid, getDbColumns(), values, sdf,dateTimeSdf,true,40);
+		    mapInfo = mapInfo.replace("\r", " ");
+		    mapInfo = mapInfo.replace("\n", " ");
+		    mapInfo = mapInfo.replace("\"", "\\\"");
+		} else {
+		    mapInfo="url:" + viewUrl + "&result=plain";
+		}
                 String mapLabel = label;
                 if (forPrint) {
                     mapLabel = "";
@@ -6770,25 +6776,27 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     public Result handleView(Request request, Entry entry, String dbid)
             throws Exception {
         boolean       asXml = request.getString("result", "").equals("xml");
+        boolean       plain = request.getString("result", "").equals("plain");
         StringBuilder sb    = new StringBuilder();
-        if ( !asXml) {
+        if ( !asXml && !plain) {
             addViewHeader(request, entry, sb, "", null);
         }
 
 
         Object[] values = getValues(entry, dbid);
-
-        getHtml(request, sb, entry, values, asXml);
-        if ( !asXml) {
+        getHtml(request, sb, entry, values, asXml,plain);
+        if ( !asXml && !plain) {
             addViewFooter(request, entry, sb);
         }
         if (asXml) {
             StringBuilder xml = new StringBuilder("<contents>\n");
             XmlUtils.appendCdata(xml, sb.toString());
             xml.append("</contents>");
-
             return new Result("", xml, "text/xml");
         }
+	if(plain) {
+            return new Result("", sb, "text/plain");
+	}
 
         return new Result(getTitle(request, entry), sb);
     }
@@ -6805,7 +6813,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      * @throws Exception _more_
      */
     public void getHtml(Request request, StringBuilder sb, Entry entry,
-                        Object[] values, boolean asXml)
+                        Object[] values, boolean asXml,boolean plain)
             throws Exception {
         if (asXml) {
             sb.append(HU.formTable("formtable_tight"));
@@ -6819,6 +6827,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    if(column.isSynthetic()){
 		continue;
 	    }
+	    if(plain && column.isGeo()) continue;
             if ( !isDataColumn(column)) {
                 continue;
             }
@@ -6829,7 +6838,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             formatTableValue(request, entry, tmpSb, column, values, sdf,dateTimeSdf,
                              true);
             String tmp = tmpSb.toString();
-	    //            tmp = tmp.replaceAll("'", "&apos;");
+	    tmp = tmp.replaceAll("'", "&apos;");
             sb.append(formEntry(request, column.getLabel() + ":", tmp));
         }
         sb.append(HU.formTableClose());
@@ -7017,18 +7026,23 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      */
     protected String getHtml(Request request, Entry entry, String dbid,
                              List<Column> columns, Object[] values,
-                             SimpleDateFormat sdf,SimpleDateFormat dateTimeSdf)
+                             SimpleDateFormat sdf,SimpleDateFormat dateTimeSdf,
+			     boolean skipLocation,int limit)
             throws Exception {
         StringBuilder sb = new StringBuilder();
         sb.append(HU.formTable());
         int valueIdx = 0;
+	int cnt=0;
         for (Column column : columns) {
+	    if(skipLocation && column.isGeo()) continue;
             if ( !isDataColumn(column)) {
                 continue;
             }
             if (column.getName().equals("polygon")) {
                 continue;
             }
+	    cnt++;
+	    if(limit>=0 &&cnt>limit) break;
 
             StringBuilder tmpSb = new StringBuilder();
             formatTableValue(request, entry, tmpSb, column, values, sdf,dateTimeSdf,

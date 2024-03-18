@@ -591,7 +591,7 @@ public abstract class ValueIterator implements DbConstants {
             String dbid = (String) values[IDX_DBID];
 
             String info = db.getHtml(request, entry, dbid, db.getDbColumns(),
-                                     values, dateSdf,dateTimeSdf);
+                                     values, dateSdf,dateTimeSdf,false,-1);
             sb.append(XmlUtil.openTag(RssUtil.TAG_ITEM));
             sb.append(XmlUtil.tag(RssUtil.TAG_PUBDATE, "",
                                   rssSdf.format(date)));
@@ -1738,7 +1738,7 @@ public abstract class ValueIterator implements DbConstants {
                                  entry, dbid));
             String        href = HU.href(viewUrl, label);
             StringBuilder desc = new StringBuilder(href + "<br>");
-            db.getHtml(request, desc, entry, values, false);
+            db.getHtml(request, desc, entry, values, false,false);
             Element placemark = KmlUtil.placemark(folder, label,
                                     desc.toString(), lat, lon, 0, null);
             if (dbInfo.getDateColumn() != null) {
