@@ -1011,6 +1011,7 @@ function  SeesvForm(inputId, entry,params) {
                                     _this.makeDbMenu(field+".type","int","int")+space +
                                     _this.makeDbMenu(field+".type","enumeration","enumeration")+space +
                                     _this.makeDbMenu(field+".type","enumerationplus","enumeration+")+space +
+                                    _this.makeDbMenu(field+".type","multienumeration","multienumeration+")+space +				    
                                     _this.makeDbMenu(field+".type","date","date")+space +				    
                                     "<br>";
 				html +=
