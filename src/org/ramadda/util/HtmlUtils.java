@@ -3587,6 +3587,8 @@ public class HtmlUtils implements HtmlUtilsConstants {
                 TwoFacedObject tfo = (TwoFacedObject) obj;
                 value = tfo.getId().toString();
                 label = tfo.toString();
+		tooltip = label +" ("+ value+")";
+
             } else if (obj instanceof Selector) {
                 Selector selector = (Selector) obj;
                 tooltip = selector.tooltip;
