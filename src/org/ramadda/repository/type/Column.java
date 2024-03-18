@@ -1125,6 +1125,10 @@ public class Column implements DataTypes, Constants, Cloneable {
         return isType(DATATYPE_BOOLEAN);
     }
 
+    public boolean isGeo() {
+	return isType(DATATYPE_LATLON) ||isType(DATATYPE_LATLONBBOX);
+    }
+
     /**
      * _more_
      *
