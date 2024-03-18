@@ -4024,14 +4024,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	return makeErrorResult(request, msg, true);
     }
 
-    public Result processGetLanguage(Request request) throws Exception {
-	StringBuilder sb = getPageHandler().getLanguage(request.getString("language",""));
-	if(sb==null) sb  = new StringBuilder();
-	return new Result("", sb, MIME_TEXT);
+
+    public Result makeErrorResult(Request request, String msg,boolean decorate) {
+	return makeErrorResult(request, msg, decorate,true);
     }
 
-    public Result makeErrorResult(Request request, String msg,boolean decorate) {	
-	StringBuilder sb = new StringBuilder(decorate?makeErrorResponse(request, msg):HU.strictSanitizeString(msg));
+
+    public Result makeErrorResult(Request request, String msg,boolean decorate, boolean sanitize) {	
+	StringBuilder sb = new StringBuilder(decorate?makeErrorResponse(request, msg,sanitize):sanitize?HU.strictSanitizeString(msg):msg);
         Result        result = null;
         if (request.responseAsJson()) {
             result = new Result("", sb, JsonUtil.MIMETYPE);
@@ -4103,8 +4103,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public String makeErrorResponse(Request request, String msg) {
-	msg = HU.strictSanitizeString(msg);
+    public String makeErrorResponse(Request request, String msg,boolean ...sanitize) {
+	if(sanitize.length==0 || sanitize[0])
+	    msg = HU.strictSanitizeString(msg);
         if (request.responseAsJson()) {
             return JsonUtil.mapAndQuote(Utils.makeList("error", msg));
         } else if (request.responseAsXml()) {
@@ -4146,6 +4147,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+    public Result processGetLanguage(Request request) throws Exception {
+	StringBuilder sb = getPageHandler().getLanguage(request.getString("language",""));
+	if(sb==null) sb  = new StringBuilder();
+	return new Result("", sb, MIME_TEXT);
+    }
 
 
     /**
@@ -4600,12 +4606,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     }
                     if (entry == null) {
                         if ( !tryingOnePathAsAlias) {
-                            Result result =
-                                getRepository().makeErrorResult(request,
-								"Could not find aliased entry:"
-								+ HU.sanitizeString(alias));
-                            result.setResponseCode(Result.RESPONSE_NOTFOUND);
 
+
+
+			    StringBuilder sb =new StringBuilder(HU.center(getPageHandler().showDialogError("Could not find aliased entry:"+ HU.sanitizeString(alias))));
+
+			    if(request.isAnonymous()) {
+				String redirectUrl =   Utils.encodeBase64(request.getUrl());
+				request.put(ARG_REDIRECT, redirectUrl);
+				sb.append(getUserManager().makeLoginForm(request));
+			    }
+                            Result result = makeErrorResult(request,sb.toString(),false,false);
+                            result.setResponseCode(Result.RESPONSE_NOTFOUND);
                             return result;
                         } else {
 			    return make404(request);
