@@ -2594,6 +2594,8 @@ public abstract class Processor extends SeesvOperator {
                                             "false").equals("true");
             boolean dfltCanSearch = getDbProp("table", "cansearch",
                                         "true").equals("true");
+            boolean dfltAddRawInput = getDbProp("table", "addrawinput",
+                                        "false").equals("true");	    
             boolean dfltCanSort = getDbProp("table", "cansort",
                                             "false").equals("true");
             boolean dfltCanList = getDbProp("table", "canlist",
@@ -2637,6 +2639,7 @@ public abstract class Processor extends SeesvOperator {
                 StringBuilder attrs     = new StringBuilder();
                 boolean       canList   = dfltCanList;
                 boolean       canSearch = dfltCanSearch;
+		boolean addRawInput =dfltAddRawInput;
                 boolean       canSort   = dfltCanSort;
 
                 attrs.append(XmlUtil.attrs(new String[] { "name", colId }));
@@ -2738,14 +2741,23 @@ public abstract class Processor extends SeesvOperator {
 
                 canSearch = "true".equals(getDbProp(colId, "cansearch",
                         canSearch + ""));
+                addRawInput = "true".equals(getDbProp(colId, "addrawinput",
+						      addRawInput + ""));		
                 canSort = "true".equals(getDbProp(colId, "cansort",
                         canSort + ""));
                 canList = "true".equals(getDbProp(colId, "canlist",
                         canList + ""));
                 attrs.append(XmlUtil.attrs(new String[] {
-                    "type", type, "label", label, "cansearch", "" + canSearch,
+                    "type", type, "label", label,
+		    "cansearch", "" + canSearch,
                     "canlist", "" + canList
                 }));
+		if(addRawInput) {
+                attrs.append(XmlUtil.attrs(new String[] {
+			    "addrawinput", "" + addRawInput
+                }));
+
+		}
                 String preamble = getDbProp(colId, "preamble", (String) null);
 		if(preamble!=null) {
                     writer.println(preamble);
