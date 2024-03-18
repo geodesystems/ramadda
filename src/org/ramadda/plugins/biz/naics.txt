@@ -1,0 +1,2075 @@
+11:"Agriculture, Forestry, Fishing and Hunting"
+111:Crop Production
+1111:Oilseed and Grain Farming
+11111:Soybean Farming
+111110:Soybean Farming
+11112:Oilseed (except Soybean) Farming
+111120:Oilseed (except Soybean) Farming
+11113:Dry Pea and Bean Farming
+111130:Dry Pea and Bean Farming
+11114:Wheat Farming
+111140:Wheat Farming
+11115:Corn Farming
+111150:Corn Farming
+11116:Rice Farming
+111160:Rice Farming
+11119:Other Grain Farming
+111190:Other Grain Farming
+1112:Vegetable and Melon Farming
+11121:Vegetable and Melon Farming
+111211:Potato Farming
+111219:Other Vegetable (except Potato) and Melon Farming
+1113:Fruit and Tree Nut Farming
+11131:Orange Groves
+111310:Orange Groves
+11132:Citrus (except Orange) Groves
+111320:Citrus (except Orange) Groves
+11133:Non-Citrus Fruit and Tree Nut Farming
+111330:Non-Citrus Fruit and Tree Nut Farming
+1114:"Greenhouse, Nursery and Floriculture Production"
+11141:Food Crops Grown Under Cover
+111411:Mushroom Production
+111419:Other Food Crops Grown Under Cover
+11142:Nursery and Floriculture Production
+111421:Nursery and Tree Production
+111422:Floriculture Production
+1119:Other Crop Farming
+11191:Tobacco Farming
+111910:Tobacco Farming
+11192:Cotton Farming
+111920:Cotton Farming
+11193:Sugar Cane Farming
+111930:Sugar Cane Farming
+11194:Hay Farming
+111940:Hay Farming
+11199:All Other Crop Farming
+111993:Fruit and Vegetable Combination Farming
+111994:Maple Syrup and Products Production
+111999:All Other Miscellaneous Crop Farming
+112:Animal Production
+1121:Cattle Ranching and Farming
+11211:"Beef Cattle Ranching and Farming, including Feedlots"
+112110:"Beef Cattle Ranching and Farming, including Feedlots"
+11212:Dairy Cattle and Milk Production
+112120:Dairy Cattle and Milk Production
+1122:Hog and Pig Farming
+11221:Hog and Pig Farming
+112210:Hog and Pig Farming
+1123:Poultry and Egg Production
+11231:Chicken Egg Production
+112310:Chicken Egg Production
+11232:Broiler and Other Meat-Type Chicken Production
+112320:Broiler and Other Meat-Type Chicken Production
+11233:Turkey Production
+112330:Turkey Production
+11234:Poultry Hatcheries
+112340:Poultry Hatcheries
+11239:Other Poultry Production
+112391:Combination Poultry and Egg Production
+112399:All Other Poultry Production
+1124:Sheep and Goat Farming
+11241:Sheep Farming
+112410:Sheep Farming
+11242:Goat Farming
+112420:Goat Farming
+1125:Aquaculture
+11251:Aquaculture
+112510:Aquaculture
+1129:Other Animal Production
+11291:Apiculture
+112910:Apiculture
+11292:Horse and Other Equine Production
+112920:Horse and Other Equine Production
+11293:Fur-Bearing Animal and Rabbit Production
+112930:Fur-Bearing Animal and Rabbit Production
+11299:All Other Animal Production
+112991:Animal Combination Farming
+112999:All Other Miscellaneous Animal Production
+113:Forestry and Logging
+1131:Timber Tract Operations
+11311:Timber Tract Operations
+113110:Timber Tract Operations
+1132:Forest Nurseries and Gathering of Forest Products
+11321:Forest Nurseries and Gathering of Forest Products
+113210:Forest Nurseries and Gathering of Forest Products
+1133:Logging
+11331:Logging
+113311:Logging (except Contract)
+113312:Contract Logging
+114:"Fishing, Hunting and Trapping"
+1141:Fishing
+11411:Fishing
+114113:Salt Water Fishing
+114114:Inland Fishing
+1142:Hunting and Trapping
+11421:Hunting and Trapping
+114210:Hunting and Trapping
+115:Support Activities for Agriculture and Forestry
+1151:Support Activities for Crop Production
+11511:Support Activities for Crop Production
+115110:Support Activities for Crop Production
+1152:Support Activities for Animal Production
+11521:Support Activities for Animal Production
+115210:Support Activities for Animal Production
+1153:Support Activities for Forestry
+11531:Support Activities for Forestry
+115310:Support Activities for Forestry
+21:"Mining, Quarrying, and Oil and Gas Extraction"
+211:Oil and Gas Extraction
+2111:Oil and Gas Extraction
+21111:Oil and Gas Extraction
+211113:Conventional Oil and Gas Extraction
+211114:Non-Conventional Oil Extraction
+212:Mining and Quarrying (except Oil and Gas)
+2121:Coal Mining
+21211:Coal Mining
+212114:Bituminous Coal Mining
+212115:Subbituminous Coal Mining
+212116:Lignite Coal Mining
+2122:Metal Ore Mining
+21221:Iron Ore Mining
+212210:Iron Ore Mining
+21222:Gold and Silver Ore Mining
+212220:Gold and Silver Ore Mining
+21223:"Copper, Nickel, Lead and Zinc Ore Mining"
+212231:Lead-Zinc Ore Mining
+212232:Nickel-Copper Ore Mining
+212233:Copper-Zinc Ore Mining
+21229:Other Metal Ore Mining
+212291:Uranium Ore Mining
+212299:All Other Metal Ore Mining
+2123:Non-Metallic Mineral Mining and Quarrying
+21231:Stone Mining and Quarrying
+212314:Granite Mining and Quarrying
+212315:Limestone Mining and Quarrying
+212316:Marble Mining and Quarrying
+212317:Sandstone Mining and Quarrying
+21232:"Sand, Gravel, Clay, and Ceramic and Refractory Minerals Mining and Quarrying"
+212323:Sand and Gravel Mining and Quarrying
+212326:"Shale, Clay and Refractory Mineral Mining and Quarrying"
+21239:Other Non-Metallic Mineral Mining and Quarrying
+212392:Diamond Mining
+212393:Salt Mining
+212394:Asbestos Mining
+212395:Gypsum Mining
+212396:Potash Mining
+212397:Peat Extraction
+212398:All Other Non-Metallic Mineral Mining and Quarrying
+213:Support Activities for Mining and Oil and Gas Extraction
+2131:Support Activities for Mining and Oil and Gas Extraction
+21311:Support Activities for Mining and Oil and Gas Extraction
+213111:Oil and Gas Contract Drilling
+213117:Contract Drilling (except Oil and Gas)
+213118:Services to Oil and Gas Extraction
+213119:Other Support Activities for Mining
+22:Utilities
+221:Utilities
+2211:"Electric Power Generation, Transmission and Distribution"
+22111:Electric Power Generation
+221111:Hydro-Electric Power Generation
+221112:Fossil-Fuel Electric Power Generation
+221113:Nuclear Electric Power Generation
+221119:Other Electric Power Generation
+22112:"Electric Power Transmission, Control and Distribution"
+221121:Electric Bulk Power Transmission and Control
+221122:Electric Power Distribution
+2212:Natural Gas Distribution
+22121:Natural Gas Distribution
+221210:Natural Gas Distribution
+2213:"Water, Sewage and Other Systems"
+22131:Water Supply and Irrigation Systems
+221310:Water Supply and Irrigation Systems
+22132:Sewage Treatment Facilities
+221320:Sewage Treatment Facilities
+22133:Steam and Air-Conditioning Supply
+221330:Steam and Air-Conditioning Supply
+23:Construction
+236:Construction of Buildings
+2361:Residential Building Construction
+23611:Residential Building Construction
+236110:Residential Building Construction
+2362:Non-residential Building Construction
+23621:Industrial Building and Structure Construction
+236210:Industrial Building and Structure Construction
+23622:Commercial and Institutional Building Construction
+236220:Commercial and Institutional Building Construction
+237:Heavy and Civil Engineering Construction
+2371:Utility System Construction
+23711:Water and Sewer Line and Related Structures Construction
+237110:Water and Sewer Line and Related Structures Construction
+23712:Oil and Gas Pipeline and Related Structures Construction
+237120:Oil and Gas Pipeline and Related Structures Construction
+23713:Power and Communication Line and Related Structures Construction
+237130:Power and Communication Line and Related Structures Construction
+2372:Land Subdivision
+23721:Land Subdivision
+237210:Land Subdivision
+2373:"Highway, Street and Bridge Construction"
+23731:"Highway, Street and Bridge Construction"
+237310:"Highway, Street and Bridge Construction"
+2379:Other Heavy and Civil Engineering Construction
+23799:Other Heavy and Civil Engineering Construction
+237990:Other Heavy and Civil Engineering Construction
+238:Specialty Trade Contractors
+2381:"Foundation, Structure, and Building Exterior Contractors"
+23811:Poured Concrete Foundation and Structure Contractors
+238110:Poured Concrete Foundation and Structure Contractors
+23812:Structural Steel and Precast Concrete Contractors
+238120:Structural Steel and Precast Concrete Contractors
+23813:Framing Contractors
+238130:Framing Contractors
+23814:Masonry Contractors
+238140:Masonry Contractors
+23815:Glass and Glazing Contractors
+238150:Glass and Glazing Contractors
+23816:Roofing Contractors
+238160:Roofing Contractors
+23817:Siding Contractors
+238170:Siding Contractors
+23819:"Other Foundation, Structure and Building Exterior Contractors"
+238190:"Other Foundation, Structure and Building Exterior Contractors"
+2382:Building Equipment Contractors
+23821:Electrical Contractors and Other Wiring Installation Contractors
+238210:Electrical Contractors and Other Wiring Installation Contractors
+23822:"Plumbing, Heating and Air-Conditioning Contractors"
+238220:"Plumbing, Heating and Air-Conditioning Contractors"
+23829:Other Building Equipment Contractors
+238291:Elevator and Escalator Installation Contractors
+238299:All Other Building Equipment Contractors
+2383:Building Finishing Contractors
+23831:Drywall and Insulation Contractors
+238310:Drywall and Insulation Contractors
+23832:Painting and Wall Covering Contractors
+238320:Painting and Wall Covering Contractors
+23833:Flooring Contractors
+238330:Flooring Contractors
+23834:Tile and Terrazzo Contractors
+238340:Tile and Terrazzo Contractors
+23835:Finish Carpentry Contractors
+238350:Finish Carpentry Contractors
+23839:Other Building Finishing Contractors
+238390:Other Building Finishing Contractors
+2389:Other Specialty Trade Contractors
+23891:Site Preparation Contractors
+238910:Site Preparation Contractors
+23899:All Other Specialty Trade Contractors
+238990:All Other Specialty Trade Contractors
+31:Manufacturing
+311:Food Manufacturing
+3111:Animal Food Manufacturing
+31111:Animal Food Manufacturing
+311111:Dog and Cat Food Manufacturing
+311119:Other Animal Food Manufacturing
+3112:Grain and Oilseed Milling
+31121:Flour Milling and Malt Manufacturing
+311211:Flour Milling
+311214:Rice Milling and Malt Manufacturing
+31122:Starch and Vegetable Fat and Oil Manufacturing
+311221:Wet Corn Milling
+311224:Oilseed Processing
+311225:Fat and Oil Refining and Blending
+31123:Breakfast Cereal Manufacturing
+311230:Breakfast Cereal Manufacturing
+3113:Sugar and Confectionery Product Manufacturing
+31131:Sugar Manufacturing
+311310:Sugar Manufacturing
+31132:Chocolate and Confectionery Manufacturing from Cacao Beans
+311320:Chocolate and Confectionery Manufacturing from Cacao Beans
+31133:Confectionery Manufacturing from Purchased Chocolate
+311330:Confectionery Manufacturing from Purchased Chocolate
+31134:Non-Chocolate Confectionery Manufacturing
+311340:Non-Chocolate Confectionery Manufacturing
+3114:Fruit and Vegetable Preserving and Specialty Food Manufacturing
+31141:Frozen Food Manufacturing
+311410:Frozen Food Manufacturing
+31142:"Fruit and Vegetable Canning, Pickling and Drying"
+311420:"Fruit and Vegetable Canning, Pickling and Drying"
+3115:Dairy Product Manufacturing
+31151:Dairy Product (except Frozen) Manufacturing
+311511:Fluid Milk Manufacturing
+311515:"Butter, Cheese, and Dry and Condensed Dairy Product Manufacturing"
+31152:Ice Cream and Frozen Dessert Manufacturing
+311520:Ice Cream and Frozen Dessert Manufacturing
+3116:Meat Product Manufacturing
+31161:Animal Slaughtering and Processing
+311611:Animal (except Poultry) Slaughtering
+311614:Rendering and Meat Processing from Carcasses
+311615:Poultry Processing
+3117:Seafood Product Preparation and Packaging
+31171:Seafood Product Preparation and Packaging
+311710:Seafood Product Preparation and Packaging
+3118:Bakeries and Tortilla Manufacturing
+31181:Bread and Bakery Product Manufacturing
+311811:Retail Bakeries
+311814:Commercial Bakeries and Frozen Bakery Product Manufacturing
+31182:"Cookie, Cracker and Pasta Manufacturing"
+311821:Cookie and Cracker Manufacturing
+311822:Flour Mixes and Dough Manufacturing from Purchased Flour
+311823:Dry Pasta Manufacturing
+31183:Tortilla Manufacturing
+311830:Tortilla Manufacturing
+3119:Other Food Manufacturing
+31191:Snack Food Manufacturing
+311911:Roasted Nut and Peanut Butter Manufacturing
+311919:Other Snack Food Manufacturing
+31192:Coffee and Tea Manufacturing
+311920:Coffee and Tea Manufacturing
+31193:Flavouring Syrup and Concentrate Manufacturing
+311930:Flavouring Syrup and Concentrate Manufacturing
+31194:Seasoning and Dressing Manufacturing
+311940:Seasoning and Dressing Manufacturing
+31199:All Other Food Manufacturing
+311990:All Other Food Manufacturing
+312:Beverage and Tobacco Product Manufacturing
+3121:Beverage Manufacturing
+31211:Soft Drink and Ice Manufacturing
+312110:Soft Drink and Ice Manufacturing
+31212:Breweries
+312120:Breweries
+31213:Wineries
+312130:Wineries
+31214:Distilleries
+312140:Distilleries
+3122:Tobacco Manufacturing
+31221:Tobacco Stemming and Redrying
+312210:Tobacco Stemming and Redrying
+31222:Tobacco Product Manufacturing
+312220:Tobacco Product Manufacturing
+313:Textile Mills
+3131:"Fibre, Yarn and Thread Mills"
+31311:"Fibre, Yarn and Thread Mills"
+313110:"Fibre, Yarn and Thread Mills"
+3132:Fabric Mills
+31321:Broad-Woven Fabric Mills
+313210:Broad-Woven Fabric Mills
+31322:Narrow Fabric Mills and Schiffli Machine Embroidery
+313220:Narrow Fabric Mills and Schiffli Machine Embroidery
+31323:Nonwoven Fabric Mills
+313230:Nonwoven Fabric Mills
+31324:Knit Fabric Mills
+313240:Knit Fabric Mills
+3133:Textile and Fabric Finishing and Fabric Coating
+31331:Textile and Fabric Finishing
+313310:Textile and Fabric Finishing
+31332:Fabric Coating
+313320:Fabric Coating
+314:Textile Product Mills
+3141:Textile Furnishings Mills
+31411:Carpet and Rug Mills
+314110:Carpet and Rug Mills
+31412:Curtain and Linen Mills
+314120:Curtain and Linen Mills
+3149:Other Textile Product Mills
+31491:Textile Bag and Canvas Mills
+314910:Textile Bag and Canvas Mills
+31499:All Other Textile Product Mills
+314990:All Other Textile Product Mills
+315:Clothing Manufacturing
+3151:Clothing Knitting Mills
+31511:Hosiery and Sock Mills
+315110:Hosiery and Sock Mills
+31519:Other Clothing Knitting Mills
+315190:Other Clothing Knitting Mills
+3152:Cut and Sew Clothing Manufacturing
+31521:Cut and Sew Clothing Contracting
+315210:Cut and Sew Clothing Contracting
+31522:Men's and Boys' Cut and Sew Clothing Manufacturing
+315221:Men's and Boys' Cut and Sew Underwear and Nightwear Manufacturing
+315222:"Men's and Boys' Cut and Sew Suit, Coat and Overcoat Manufacturing"
+315226:Men's and Boys' Cut and Sew Shirt Manufacturing
+315227:"Men's and Boys' Cut and Sew Trouser, Slack and Jean Manufacturing"
+315229:Other Men's and Boys' Cut and Sew Clothing Manufacturing
+31523:Women's and Girls' Cut and Sew Clothing Manufacturing
+315231:"Women's and Girls' Cut and Sew Lingerie, Loungewear and Nightwear Manufacturing"
+315232:Women's and Girls' Cut and Sew Blouse and Shirt Manufacturing
+315233:Women's and Girls' Cut and Sew Dress Manufacturing
+315234:"Women's and Girls' Cut and Sew Suit, Coat, Tailored Jacket and Skirt Manufacturing"
+315239:Other Women's and Girls' Cut and Sew Clothing Manufacturing
+31529:Other Cut and Sew Clothing Manufacturing
+315291:Infants' Cut and Sew Clothing Manufacturing
+315292:Fur and Leather Clothing Manufacturing
+315299:All Other Cut and Sew Clothing Manufacturing
+3159:Clothing Accessories and Other Clothing Manufacturing
+31599:Clothing Accessories and Other Clothing Manufacturing
+315990:Clothing Accessories and Other Clothing Manufacturing
+316:Leather and Allied Product Manufacturing
+3161:Leather and Hide Tanning and Finishing
+31611:Leather and Hide Tanning and Finishing
+316110:Leather and Hide Tanning and Finishing
+3162:Footwear Manufacturing
+31621:Footwear Manufacturing
+316210:Footwear Manufacturing
+3169:Other Leather and Allied Product Manufacturing
+31699:Other Leather and Allied Product Manufacturing
+316990:Other Leather and Allied Product Manufacturing
+321:Wood Product Manufacturing
+3211:Sawmills and Wood Preservation
+32111:Sawmills and Wood Preservation
+321111:Sawmills (except Shingle and Shake Mills)
+321112:Shingle and Shake Mills
+321114:Wood Preservation
+3212:"Veneer, Plywood and Engineered Wood Product Manufacturing"
+32121:"Veneer, Plywood and Engineered Wood Product Manufacturing"
+321211:Hardwood Veneer and Plywood Mills
+321212:Softwood Veneer and Plywood Mills
+321215:Structural Wood Product Manufacturing
+321216:Particle Board and Fibreboard Mills
+321217:Waferboard Mills
+3219:Other Wood Product Manufacturing
+32191:Millwork
+321911:Wood Window and Door Manufacturing
+321919:Other Millwork
+32192:Wood Container and Pallet Manufacturing
+321920:Wood Container and Pallet Manufacturing
+32199:All Other Wood Product Manufacturing
+321991:Manufactured (Mobile) Home Manufacturing
+321992:Prefabricated Wood Building Manufacturing
+321999:All Other Miscellaneous Wood Product Manufacturing
+322:Paper Manufacturing
+3221:"Pulp, Paper and Paperboard Mills"
+32211:Pulp Mills
+322111:Mechanical Pulp Mills
+322112:Chemical Pulp Mills
+32212:Paper Mills
+322121:Paper (except Newsprint) Mills
+322122:Newsprint Mills
+32213:Paperboard Mills
+322130:Paperboard Mills
+3222:Converted Paper Product Manufacturing
+32221:Paperboard Container Manufacturing
+322211:Corrugated and Solid Fibre Box Manufacturing
+322212:Folding Paperboard Box Manufacturing
+322219:Other Paperboard Container Manufacturing
+32222:Paper Bag and Coated and Treated Paper Manufacturing
+322220:Paper Bag and Coated and Treated Paper Manufacturing
+32223:Stationery Product Manufacturing
+322230:Stationery Product Manufacturing
+32229:Other Converted Paper Product Manufacturing
+322291:Sanitary Paper Product Manufacturing
+322299:All Other Converted Paper Product Manufacturing
+323:Printing and Related Support Activities
+3231:Printing and Related Support Activities
+32311:Printing
+323113:Commercial Screen Printing
+323114:Quick Printing
+323115:Digital Printing
+323116:Manifold Business Forms Printing
+323119:Other Printing
+32312:Support Activities for Printing
+323120:Support Activities for Printing
+324:Petroleum and Coal Product Manufacturing
+3241:Petroleum and Coal Product Manufacturing
+32411:Petroleum Refineries
+324110:Petroleum Refineries
+32412:"Asphalt Paving, Roofing and Saturated Materials Manufacturing"
+324121:Asphalt Paving Mixture and Block Manufacturing
+324122:Asphalt Shingle and Coating Material Manufacturing
+32419:Other Petroleum and Coal Product Manufacturing
+324190:Other Petroleum and Coal Product Manufacturing
+325:Chemical Manufacturing
+3251:Basic Chemical Manufacturing
+32511:Petrochemical Manufacturing
+325110:Petrochemical Manufacturing
+32512:Industrial Gas Manufacturing
+325120:Industrial Gas Manufacturing
+32513:Synthetic Dye and Pigment Manufacturing
+325130:Synthetic Dye and Pigment Manufacturing
+32518:Other Basic Inorganic Chemical Manufacturing
+325181:Alkali and Chlorine Manufacturing
+325189:All Other Basic Inorganic Chemical Manufacturing
+32519:Other Basic Organic Chemical Manufacturing
+325190:Other Basic Organic Chemical Manufacturing
+3252:"Resin, Synthetic Rubber, and Artificial and Synthetic Fibres and Filaments Manufacturing"
+32521:Resin and Synthetic Rubber Manufacturing
+325210:Resin and Synthetic Rubber Manufacturing
+32522:Artificial and Synthetic Fibres and Filaments Manufacturing
+325220:Artificial and Synthetic Fibres and Filaments Manufacturing
+3253:"Pesticide, Fertilizer and Other Agricultural Chemical Manufacturing"
+32531:Fertilizer Manufacturing
+325313:Chemical Fertilizer (except Potash) Manufacturing
+325314:Mixed Fertilizer Manufacturing
+32532:Pesticide and Other Agricultural Chemical Manufacturing
+325320:Pesticide and Other Agricultural Chemical Manufacturing
+3254:Pharmaceutical and Medicine Manufacturing
+32541:Pharmaceutical and Medicine Manufacturing
+325410:Pharmaceutical and Medicine Manufacturing
+3255:"Paint, Coating and Adhesive Manufacturing"
+32551:Paint and Coating Manufacturing
+325510:Paint and Coating Manufacturing
+32552:Adhesive Manufacturing
+325520:Adhesive Manufacturing
+3256:"Soap, Cleaning Compound and Toilet Preparation Manufacturing"
+32561:Soap and Cleaning Compound Manufacturing
+325610:Soap and Cleaning Compound Manufacturing
+32562:Toilet Preparation Manufacturing
+325620:Toilet Preparation Manufacturing
+3259:Other Chemical Product Manufacturing
+32591:Printing Ink Manufacturing
+325910:Printing Ink Manufacturing
+32592:Explosives Manufacturing
+325920:Explosives Manufacturing
+32599:All Other Chemical Product Manufacturing
+325991:Custom Compounding of Purchased Resins
+325999:All Other Miscellaneous Chemical Product Manufacturing
+326:Plastics and Rubber Products Manufacturing
+3261:Plastic Product Manufacturing
+32611:Plastic Packaging Materials and Unlaminated Film and Sheet Manufacturing
+326111:Plastic Bag and Pouch Manufacturing
+326114:Plastic Film and Sheet Manufacturing
+32612:"Plastic Pipe, Pipe Fitting, and Unlaminated Profile Shape Manufacturing"
+326121:Unlaminated Plastic Profile Shape Manufacturing
+326122:Plastic Pipe and Pipe Fitting Manufacturing
+32613:"Laminated Plastic Plate, Sheet (except Packaging), and Shape Manufacturing"
+326130:"Laminated Plastic Plate, Sheet (except Packaging), and Shape Manufacturing"
+32614:Polystyrene Foam Product Manufacturing
+326140:Polystyrene Foam Product Manufacturing
+32615:Urethane and Other Foam Product (except Polystyrene) Manufacturing
+326150:Urethane and Other Foam Product (except Polystyrene) Manufacturing
+32616:Plastic Bottle Manufacturing
+326160:Plastic Bottle Manufacturing
+32619:Other Plastic Product Manufacturing
+326191:Plastic Plumbing Fixture Manufacturing
+326193:Motor Vehicle Plastic Parts Manufacturing
+326196:Plastic Window and Door Manufacturing
+326198:All Other Plastic Product Manufacturing
+3262:Rubber Product Manufacturing
+32621:Tire Manufacturing
+326210:Tire Manufacturing
+32622:Rubber and Plastic Hose and Belting Manufacturing
+326220:Rubber and Plastic Hose and Belting Manufacturing
+32629:Other Rubber Product Manufacturing
+326290:Other Rubber Product Manufacturing
+327:Non-Metallic Mineral Product Manufacturing
+3271:Clay Product and Refractory Manufacturing
+32711:"Pottery, Ceramics and Plumbing Fixture Manufacturing"
+327110:"Pottery, Ceramics and Plumbing Fixture Manufacturing"
+32712:Clay Building Material and Refractory Manufacturing
+327120:Clay Building Material and Refractory Manufacturing
+3272:Glass and Glass Product Manufacturing
+32721:Glass and Glass Product Manufacturing
+327214:Glass Manufacturing
+327215:Glass Product Manufacturing from Purchased Glass
+3273:Cement and Concrete Product Manufacturing
+32731:Cement Manufacturing
+327310:Cement Manufacturing
+32732:Ready-Mix Concrete Manufacturing
+327320:Ready-Mix Concrete Manufacturing
+32733:"Concrete Pipe, Brick and Block Manufacturing"
+327330:"Concrete Pipe, Brick and Block Manufacturing"
+32739:Other Concrete Product Manufacturing
+327390:Other Concrete Product Manufacturing
+3274:Lime and Gypsum Product Manufacturing
+32741:Lime Manufacturing
+327410:Lime Manufacturing
+32742:Gypsum Product Manufacturing
+327420:Gypsum Product Manufacturing
+3279:Other Non-Metallic Mineral Product Manufacturing
+32791:Abrasive Product Manufacturing
+327910:Abrasive Product Manufacturing
+32799:All Other Non-Metallic Mineral Product Manufacturing
+327990:All Other Non-Metallic Mineral Product Manufacturing
+331:Primary Metal Manufacturing
+3311:Iron and Steel Mills and Ferro-Alloy Manufacturing
+33111:Iron and Steel Mills and Ferro-Alloy Manufacturing
+331110:Iron and Steel Mills and Ferro-Alloy Manufacturing
+3312:Steel Product Manufacturing from Purchased Steel
+33121:Iron and Steel Pipes and Tubes Manufacturing from Purchased Steel
+331210:Iron and Steel Pipes and Tubes Manufacturing from Purchased Steel
+33122:Rolling and Drawing of Purchased Steel
+331221:Cold-Rolled Steel Shape Manufacturing
+331222:Steel Wire Drawing
+3313:Alumina and Aluminum Production and Processing
+33131:Alumina and Aluminum Production and Processing
+331313:Primary Production of Alumina and Aluminum
+331317:"Aluminum Rolling, Drawing, Extruding and Alloying"
+3314:Non-Ferrous Metal (except Aluminum) Production and Processing
+33141:Non-Ferrous Metal (except Aluminum) Smelting and Refining
+331410:Non-Ferrous Metal (except Aluminum) Smelting and Refining
+33142:"Copper Rolling, Drawing, Extruding and Alloying"
+331420:"Copper Rolling, Drawing, Extruding and Alloying"
+33149:"Non-Ferrous Metal (except Copper and Aluminum) Rolling, Drawing, Extruding and Alloying"
+331490:"Non-Ferrous Metal (except Copper and Aluminum) Rolling, Drawing, Extruding and Alloying"
+3315:Foundries
+33151:Ferrous Metal Foundries
+331511:Iron Foundries
+331514:Steel Foundries
+33152:Non-Ferrous Metal Foundries
+331523:Non-Ferrous Die-Casting Foundries
+331529:Non-Ferrous Foundries (except Die-Casting)
+332:Fabricated Metal Product Manufacturing
+3321:Forging and Stamping
+33211:Forging and Stamping
+332113:Forging
+332118:Stamping
+3322:Cutlery and Hand Tool Manufacturing
+33221:Cutlery and Hand Tool Manufacturing
+332210:Cutlery and Hand Tool Manufacturing
+3323:Architectural and Structural Metals Manufacturing
+33231:Plate Work and Fabricated Structural Product Manufacturing
+332311:Prefabricated Metal Building and Component Manufacturing
+332314:Concrete Reinforcing Bar Manufacturing
+332319:Other Plate Work and Fabricated Structural Product Manufacturing
+33232:Ornamental and Architectural Metal Product Manufacturing
+332321:Metal Window and Door Manufacturing
+332329:Other Ornamental and Architectural Metal Product Manufacturing
+3324:"Boiler, Tank and Shipping Container Manufacturing"
+33241:Power Boiler and Heat Exchanger Manufacturing
+332410:Power Boiler and Heat Exchanger Manufacturing
+33242:Metal Tank (Heavy Gauge) Manufacturing
+332420:Metal Tank (Heavy Gauge) Manufacturing
+33243:"Metal Can, Box and Other Metal Container (Light Gauge) Manufacturing"
+332431:Metal Can Manufacturing
+332439:Other Metal Container Manufacturing
+3325:Hardware Manufacturing
+33251:Hardware Manufacturing
+332510:Hardware Manufacturing
+3326:Spring and Wire Product Manufacturing
+33261:Spring and Wire Product Manufacturing
+332611:Spring (Heavy Gauge) Manufacturing
+332619:Other Fabricated Wire Product Manufacturing
+3327:"Machine Shops, Turned Product, and Screw, Nut and Bolt Manufacturing"
+33271:Machine Shops
+332710:Machine Shops
+33272:"Turned Product and Screw, Nut and Bolt Manufacturing"
+332720:"Turned Product and Screw, Nut and Bolt Manufacturing"
+3328:"Coating, Engraving, Heat Treating and Allied Activities"
+33281:"Coating, Engraving, Heat Treating and Allied Activities"
+332810:"Coating, Engraving, Heat Treating and Allied Activities"
+3329:Other Fabricated Metal Product Manufacturing
+33291:Metal Valve Manufacturing
+332910:Metal Valve Manufacturing
+33299:All Other Fabricated Metal Product Manufacturing
+332991:Ball and Roller Bearing Manufacturing
+332999:All Other Miscellaneous Fabricated Metal Product Manufacturing
+333:Machinery Manufacturing
+3331:"Agricultural, Construction and Mining Machinery Manufacturing"
+33311:Agricultural Implement Manufacturing
+333110:Agricultural Implement Manufacturing
+33312:Construction Machinery Manufacturing
+333120:Construction Machinery Manufacturing
+33313:Mining and Oil and Gas Field Machinery Manufacturing
+333130:Mining and Oil and Gas Field Machinery Manufacturing
+3332:Industrial Machinery Manufacturing
+33321:Sawmill and Woodworking Machinery Manufacturing
+333210:Sawmill and Woodworking Machinery Manufacturing
+33322:Rubber and Plastics Industry Machinery Manufacturing
+333220:Rubber and Plastics Industry Machinery Manufacturing
+33329:Other Industrial Machinery Manufacturing
+333291:Paper Industry Machinery Manufacturing
+333299:All Other Industrial Machinery Manufacturing
+3333:Commercial and Service Industry Machinery Manufacturing
+33331:Commercial and Service Industry Machinery Manufacturing
+333310:Commercial and Service Industry Machinery Manufacturing
+3334:"Ventilation, Heating, Air-Conditioning and Commercial Refrigeration Equipment Manufacturing"
+33341:"Ventilation, Heating, Air-Conditioning and Commercial Refrigeration Equipment Manufacturing"
+333413:Industrial and Commercial Fan and Blower and Air Purification Equipment Manufacturing
+333416:Heating Equipment and Commercial Refrigeration Equipment Manufacturing
+3335:Metalworking Machinery Manufacturing
+33351:Metalworking Machinery Manufacturing
+333511:Industrial Mould Manufacturing
+333519:Other Metalworking Machinery Manufacturing
+3336:"Engine, Turbine and Power Transmission Equipment Manufacturing"
+33361:"Engine, Turbine and Power Transmission Equipment Manufacturing"
+333611:Turbine and Turbine Generator Set Unit Manufacturing
+333619:Other Engine and Power Transmission Equipment Manufacturing
+3339:Other General-Purpose Machinery Manufacturing
+33391:Pump and Compressor Manufacturing
+333910:Pump and Compressor Manufacturing
+33392:Material Handling Equipment Manufacturing
+333920:Material Handling Equipment Manufacturing
+33399:All Other General-Purpose Machinery Manufacturing
+333990:All Other General-Purpose Machinery Manufacturing
+334:Computer and Electronic Product Manufacturing
+3341:Computer and Peripheral Equipment Manufacturing
+33411:Computer and Peripheral Equipment Manufacturing
+334110:Computer and Peripheral Equipment Manufacturing
+3342:Communications Equipment Manufacturing
+33421:Telephone Apparatus Manufacturing
+334210:Telephone Apparatus Manufacturing
+33422:Radio and Television Broadcasting and Wireless Communications Equipment Manufacturing
+334220:Radio and Television Broadcasting and Wireless Communications Equipment Manufacturing
+33429:Other Communications Equipment Manufacturing
+334290:Other Communications Equipment Manufacturing
+3343:Audio and Video Equipment Manufacturing
+33431:Audio and Video Equipment Manufacturing
+334310:Audio and Video Equipment Manufacturing
+3344:Semiconductor and Other Electronic Component Manufacturing
+33441:Semiconductor and Other Electronic Component Manufacturing
+334410:Semiconductor and Other Electronic Component Manufacturing
+3345:"Navigational, Measuring, Medical and Control Instruments Manufacturing"
+33451:"Navigational, Measuring, Medical and Control Instruments Manufacturing"
+334511:Navigational and Guidance Instruments Manufacturing
+334512:"Measuring, Medical and Controlling Devices Manufacturing"
+3346:Manufacturing and Reproducing Magnetic and Optical Media
+33461:Manufacturing and Reproducing Magnetic and Optical Media
+334610:Manufacturing and Reproducing Magnetic and Optical Media
+335:"Electrical Equipment, Appliance and Component Manufacturing"
+3351:Electric Lighting Equipment Manufacturing
+33511:Electric Lamp Bulb and Parts Manufacturing
+335110:Electric Lamp Bulb and Parts Manufacturing
+33512:Lighting Fixture Manufacturing
+335120:Lighting Fixture Manufacturing
+3352:Household Appliance Manufacturing
+33521:Small Electrical Appliance Manufacturing
+335210:Small Electrical Appliance Manufacturing
+33522:Major Appliance Manufacturing
+335223:Major Kitchen Appliance Manufacturing
+335229:Other Major Appliance Manufacturing
+3353:Electrical Equipment Manufacturing
+33531:Electrical Equipment Manufacturing
+335311:"Power, Distribution and Specialty Transformers Manufacturing"
+335312:Motor and Generator Manufacturing
+335315:"Switchgear and Switchboard, and Relay and Industrial Control Apparatus Manufacturing"
+3359:Other Electrical Equipment and Component Manufacturing
+33591:Battery Manufacturing
+335910:Battery Manufacturing
+33592:Communication and Energy Wire and Cable Manufacturing
+335920:Communication and Energy Wire and Cable Manufacturing
+33593:Wiring Device Manufacturing
+335930:Wiring Device Manufacturing
+33599:All Other Electrical Equipment and Component Manufacturing
+335990:All Other Electrical Equipment and Component Manufacturing
+336:Transportation Equipment Manufacturing
+3361:Motor Vehicle Manufacturing
+33611:Automobile and Light-Duty Motor Vehicle Manufacturing
+336110:Automobile and Light-Duty Motor Vehicle Manufacturing
+33612:Heavy-Duty Truck Manufacturing
+336120:Heavy-Duty Truck Manufacturing
+3362:Motor Vehicle Body and Trailer Manufacturing
+33621:Motor Vehicle Body and Trailer Manufacturing
+336211:Motor Vehicle Body Manufacturing
+336212:Truck Trailer Manufacturing
+336215:"Motor Home, Travel Trailer and Camper Manufacturing"
+3363:Motor Vehicle Parts Manufacturing
+33631:Motor Vehicle Gasoline Engine and Engine Parts Manufacturing
+336310:Motor Vehicle Gasoline Engine and Engine Parts Manufacturing
+33632:Motor Vehicle Electrical and Electronic Equipment Manufacturing
+336320:Motor Vehicle Electrical and Electronic Equipment Manufacturing
+33633:Motor Vehicle Steering and Suspension Components (except Spring) Manufacturing
+336330:Motor Vehicle Steering and Suspension Components (except Spring) Manufacturing
+33634:Motor Vehicle Brake System Manufacturing
+336340:Motor Vehicle Brake System Manufacturing
+33635:Motor Vehicle Transmission and Power Train Parts Manufacturing
+336350:Motor Vehicle Transmission and Power Train Parts Manufacturing
+33636:Motor Vehicle Seating and Interior Trim Manufacturing
+336360:Motor Vehicle Seating and Interior Trim Manufacturing
+33637:Motor Vehicle Metal Stamping
+336370:Motor Vehicle Metal Stamping
+33639:Other Motor Vehicle Parts Manufacturing
+336390:Other Motor Vehicle Parts Manufacturing
+3364:Aerospace Product and Parts Manufacturing
+33641:Aerospace Product and Parts Manufacturing
+336410:Aerospace Product and Parts Manufacturing
+3365:Railroad Rolling Stock Manufacturing
+33651:Railroad Rolling Stock Manufacturing
+336510:Railroad Rolling Stock Manufacturing
+3366:Ship and Boat Building
+33661:Ship and Boat Building
+336611:Ship Building and Repairing
+336612:Boat Building
+3369:Other Transportation Equipment Manufacturing
+33699:Other Transportation Equipment Manufacturing
+336990:Other Transportation Equipment Manufacturing
+337:Furniture and Related Product Manufacturing
+3371:Household and Institutional Furniture and Kitchen Cabinet Manufacturing
+33711:Wood Kitchen Cabinet and Counter Top Manufacturing
+337110:Wood Kitchen Cabinet and Counter Top Manufacturing
+33712:Household and Institutional Furniture Manufacturing
+337121:Upholstered Household Furniture Manufacturing
+337123:Other Wood Household Furniture Manufacturing
+337126:Household Furniture (except Wood and Upholstered) Manufacturing
+337127:Institutional Furniture Manufacturing
+3372:Office Furniture (including Fixtures) Manufacturing
+33721:Office Furniture (including Fixtures) Manufacturing
+337213:"Wood Office Furniture, including Custom Architectural Woodwork, Manufacturing"
+337214:Office Furniture (except Wood) Manufacturing
+337215:"Showcase, Partition, Shelving and Locker Manufacturing"
+3379:Other Furniture-Related Product Manufacturing
+33791:Mattress Manufacturing
+337910:Mattress Manufacturing
+33792:Blind and Shade Manufacturing
+337920:Blind and Shade Manufacturing
+339:Miscellaneous Manufacturing
+3391:Medical Equipment and Supplies Manufacturing
+33911:Medical Equipment and Supplies Manufacturing
+339110:Medical Equipment and Supplies Manufacturing
+3399:Other Miscellaneous Manufacturing
+41:Wholesale Trade
+411:Farm Product Wholesaler-Distributors
+4111:Farm Product Wholesaler-Distributors
+41111:Live Animal Wholesaler-Distributors
+411110:Live Animal Wholesaler-Distributors
+41112:Oilseed and Grain Wholesaler-Distributors
+411120:Oilseed and Grain Wholesaler-Distributors
+41113:Nursery Stock and Plant Wholesaler-Distributors
+411130:Nursery Stock and Plant Wholesaler-Distributors
+41119:Other Farm Product Wholesaler-Distributors
+411190:Other Farm Product Wholesaler-Distributors
+412:Petroleum Product Wholesaler-Distributors
+4121:Petroleum Product Wholesaler-Distributors
+41211:Petroleum Product Wholesaler-Distributors
+412110:Petroleum Product Wholesaler-Distributors
+413:"Food, Beverage and Tobacco Wholesaler-Distributors"
+4131:Food Wholesaler-Distributors
+41311:General-Line Food Wholesaler-Distributors
+413110:General-Line Food Wholesaler-Distributors
+41312:Dairy and Milk Products Wholesaler-Distributors
+413120:Dairy and Milk Products Wholesaler-Distributors
+41313:Poultry and Egg Wholesaler-Distributors
+413130:Poultry and Egg Wholesaler-Distributors
+41314:Fish and Seafood Product Wholesaler-Distributors
+413140:Fish and Seafood Product Wholesaler-Distributors
+41315:Fresh Fruit and Vegetable Wholesaler-Distributors
+413150:Fresh Fruit and Vegetable Wholesaler-Distributors
+41316:Red Meat and Meat Product Wholesaler-Distributors
+413160:Red Meat and Meat Product Wholesaler-Distributors
+41319:Other Specialty-Line Food Wholesaler-Distributors
+413190:Other Specialty-Line Food Wholesaler-Distributors
+4132:Beverage Wholesaler-Distributors
+41321:Non-Alcoholic Beverage Wholesaler-Distributors
+413210:Non-Alcoholic Beverage Wholesaler-Distributors
+41322:Alcoholic Beverage Wholesaler-Distributors
+413220:Alcoholic Beverage Wholesaler-Distributors
+4133:Cigarette and Tobacco Product Wholesaler-Distributors
+41331:Cigarette and Tobacco Product Wholesaler-Distributors
+413310:Cigarette and Tobacco Product Wholesaler-Distributors
+414:Personal and Household Goods Wholesaler-Distributors
+4141:"Textile, Clothing and Footwear Wholesaler-Distributors"
+41411:Clothing and Clothing Accessories Wholesaler-Distributors
+414110:Clothing and Clothing Accessories Wholesaler-Distributors
+41412:Footwear Wholesaler-Distributors
+414120:Footwear Wholesaler-Distributors
+41413:"Piece Goods, Notions and Other Dry Goods Wholesaler-Distributors"
+414130:"Piece Goods, Notions and Other Dry Goods Wholesaler-Distributors"
+4142:Home Entertainment Equipment and Household Appliance Wholesaler-Distributors
+41421:Home Entertainment Equipment Wholesaler-Distributors
+414210:Home Entertainment Equipment Wholesaler-Distributors
+41422:Household Appliance Wholesaler-Distributors
+414220:Household Appliance Wholesaler-Distributors
+4143:Home Furnishings Wholesaler-Distributors
+41431:"China, Glassware, Crockery and Pottery Wholesaler-Distributors"
+414310:"China, Glassware, Crockery and Pottery Wholesaler-Distributors"
+41432:Floor Covering Wholesaler-Distributors
+414320:Floor Covering Wholesaler-Distributors
+41433:"Linen, Drapery and Other Textile Furnishings Wholesaler-Distributors"
+414330:"Linen, Drapery and Other Textile Furnishings Wholesaler-Distributors"
+41439:Other Home Furnishings Wholesaler-Distributors
+414390:Other Home Furnishings Wholesaler-Distributors
+4144:Personal Goods Wholesaler-Distributors
+41441:Jewellery and Watch Wholesaler-Distributors
+414410:Jewellery and Watch Wholesaler-Distributors
+41442:"Book, Periodical and Newspaper Wholesaler-Distributors"
+414420:"Book, Periodical and Newspaper Wholesaler-Distributors"
+41443:Photographic Equipment and Supplies Wholesaler-Distributors
+414430:Photographic Equipment and Supplies Wholesaler-Distributors
+41444:Sound Recording Wholesalers
+414440:Sound Recording Wholesalers
+41445:Video Cassette Wholesalers
+414450:Video Cassette Wholesalers
+41446:Toy and Hobby Goods Wholesaler-Distributors
+414460:Toy and Hobby Goods Wholesaler-Distributors
+41447:Amusement and Sporting Goods Wholesaler-Distributors
+414470:Amusement and Sporting Goods Wholesaler-Distributors
+4145:"Pharmaceuticals, Toiletries, Cosmetics and Sundries Wholesaler-Distributors"
+41451:Pharmaceuticals and Pharmacy Supplies Wholesaler-Distributors
+414510:Pharmaceuticals and Pharmacy Supplies Wholesaler-Distributors
+41452:"Toiletries, Cosmetics and Sundries Wholesaler-Distributors"
+414520:"Toiletries, Cosmetics and Sundries Wholesaler-Distributors"
+415:Motor Vehicle and Parts Wholesaler-Distributors
+4151:Motor Vehicle Wholesaler-Distributors
+41511:New and Used Automobile and Light-Duty Truck Wholesaler-Distributors
+415110:New and Used Automobile and Light-Duty Truck Wholesaler-Distributors
+41512:"Truck, Truck Tractor and Bus Wholesaler-Distributors"
+415120:"Truck, Truck Tractor and Bus Wholesaler-Distributors"
+41519:Recreational and Other Motor Vehicles Wholesaler-Distributors
+415190:Recreational and Other Motor Vehicles Wholesaler-Distributors
+4152:New Motor Vehicle Parts and Accessories Wholesaler-Distributors
+41521:Tire Wholesaler-Distributors
+415210:Tire Wholesaler-Distributors
+41529:Other New Motor Vehicle Parts and Accessories Wholesaler-Distributors
+415290:Other New Motor Vehicle Parts and Accessories Wholesaler-Distributors
+4153:Used Motor Vehicle Parts and Accessories Wholesaler-Distributors
+41531:Used Motor Vehicle Parts and Accessories Wholesaler-Distributors
+415310:Used Motor Vehicle Parts and Accessories Wholesaler-Distributors
+416:Building Material and Supplies Wholesaler-Distributors
+4161:"Electrical: Plumbing: Heating and Air-Conditioning Equipment and Supplies Wholesaler-Distributors"
+41611:Electrical Wiring and Construction Supplies Wholesaler-Distributors
+416110:Electrical Wiring and Construction Supplies Wholesaler-Distributors
+41612:"Plumbing, Heating and Air-Conditioning Equipment and Supplies Wholesaler-Distributors"
+416120:"Plumbing, Heating and Air-Conditioning Equipment and Supplies Wholesaler-Distributors"
+4162:Metal Service Centres
+41621:Metal Service Centres
+416210:Metal Service Centres
+4163:"Lumber, Millwork, Hardware and Other Building Supplies Wholesaler-Distributors"
+41631:General-Line Building Supplies Wholesaler-Distributors
+416310:General-Line Building Supplies Wholesaler-Distributors
+41632:"Lumber, Plywood and Millwork Wholesaler-Distributors"
+416320:"Lumber, Plywood and Millwork Wholesaler-Distributors"
+41633:Hardware Wholesaler-Distributors
+416330:Hardware Wholesaler-Distributors
+41634:"Paint, Glass and Wallpaper Wholesaler-Distributors"
+416340:"Paint, Glass and Wallpaper Wholesaler-Distributors"
+41639:Other Specialty-Line Building Supplies Wholesaler-Distributors
+416390:Other Specialty-Line Building Supplies Wholesaler-Distributors
+417:"Machinery, Equipment and Supplies Wholesaler-Distributors"
+4171:"Farm, Lawn and Garden Machinery and Equipment Wholesaler-Distributors"
+41711:"Farm, Lawn and Garden Machinery and Equipment Wholesaler-Distributors"
+417110:"Farm, Lawn and Garden Machinery and Equipment Wholesaler-Distributors"
+4172:"Construction: Forestry: Mining: and Industrial Machinery: Equipment and Supplies Wholesaler-Distributors"
+41721:"Construction and Forestry Machinery, Equipment and Supplies Wholesaler-Distributors"
+417210:"Construction and Forestry Machinery, Equipment and Supplies Wholesaler-Distributors"
+41722:"Mining and Oil and Gas Well Machinery, Equipment and Supplies Wholesaler-Distributors"
+417220:"Mining and Oil and Gas Well Machinery, Equipment and Supplies Wholesaler-Distributors"
+41723:"Industrial Machinery, Equipment and Supplies Wholesaler-Distributors"
+417230:"Industrial Machinery, Equipment and Supplies Wholesaler-Distributors"
+4173:Computer and Communications Equipment and Supplies Wholesaler-Distributors
+41731:"Computer, Computer Peripheral and Pre-Packaged Software Wholesaler-Distributors"
+417310:"Computer, Computer Peripheral and Pre-Packaged Software Wholesaler-Distributors"
+41732:"Electronic Components: Navigational and Communications Equipment and Supplies Wholesaler-Distributors"
+417320:"Electronic Components: Navigational and Communications Equipment and Supplies Wholesaler-Distributors"
+4179:"Other Machinery, Equipment and Supplies Wholesaler-Distributors"
+41791:Office and Store Machinery and Equipment Wholesaler-Distributors
+417910:Office and Store Machinery and Equipment Wholesaler-Distributors
+41792:"Service Establishment Machinery, Equipment and Supplies Wholesaler-Distributors"
+417920:"Service Establishment Machinery, Equipment and Supplies Wholesaler-Distributors"
+41793:"Professional Machinery, Equipment and Supplies Wholesaler-Distributors"
+417930:"Professional Machinery, Equipment and Supplies Wholesaler-Distributors"
+41799:"All Other Machinery, Equipment and Supplies Wholesaler-Distributors"
+417990:"All Other Machinery, Equipment and Supplies Wholesaler-Distributors"
+418:Miscellaneous Wholesaler-Distributors
+4181:Recyclable Material Wholesaler-Distributors
+41811:Recyclable Metal Wholesaler-Distributors
+418110:Recyclable Metal Wholesaler-Distributors
+41812:Recyclable Paper and Paperboard Wholesaler-Distributors
+418120:Recyclable Paper and Paperboard Wholesaler-Distributors
+41819:Other Recyclable Material Wholesaler-Distributors
+418190:Other Recyclable Material Wholesaler-Distributors
+4182:"Paper, Paper Product and Disposable Plastic Product Wholesaler-Distributors"
+41821:Stationery and Office Supplies Wholesaler-Distributors
+418210:Stationery and Office Supplies Wholesaler-Distributors
+41822:Other Paper and Disposable Plastic Product Wholesaler-Distributors
+418220:Other Paper and Disposable Plastic Product Wholesaler-Distributors
+4183:Agricultural Supplies Wholesaler-Distributors
+41831:Agricultural Feed Wholesaler-Distributors
+418310:Agricultural Feed Wholesaler-Distributors
+41832:Seed Wholesaler-Distributors
+418320:Seed Wholesaler-Distributors
+41839:Agricultural Chemical and Other Farm Supplies Wholesaler-Distributors
+418390:Agricultural Chemical and Other Farm Supplies Wholesaler-Distributors
+4184:Chemical (except Agricultural) and Allied Product Wholesaler-Distributors
+41841:Chemical (except Agricultural) and Allied Product Wholesaler-Distributors
+418410:Chemical (except Agricultural) and Allied Product Wholesaler-Distributors
+4189:Other Miscellaneous Wholesaler-Distributors
+41891:Log and Wood Chip Wholesaler-Distributors
+418910:Log and Wood Chip Wholesaler-Distributors
+41892:"Mineral, Ore and Precious Metal Wholesaler-Distributors"
+418920:"Mineral, Ore and Precious Metal Wholesaler-Distributors"
+41893:Second-Hand Goods (except Machinery and Automotive) Wholesaler-Distributors
+418930:Second-Hand Goods (except Machinery and Automotive) Wholesaler-Distributors
+41899:All Other Wholesaler-Distributors
+418990:All Other Wholesaler-Distributors
+419:"Wholesale Electronic Markets, and Agents and Brokers"
+4191:"Wholesale Electronic Markets, and Agents and Brokers"
+41911:Business-to-Business Electronic Markets
+419110:Business-to-Business Electronic Markets
+41912:Wholesale Trade Agents and Brokers
+419120:Wholesale Trade Agents and Brokers
+441:Motor Vehicle and Parts Dealers
+4411:Automobile Dealers
+44111:New Car Dealers
+441110:New Car Dealers
+44112:Used Car Dealers
+441120:Used Car Dealers
+4412:Other Motor Vehicle Dealers
+44121:Recreational Vehicle Dealers
+441210:Recreational Vehicle Dealers
+44122:"Motorcycle, Boat and Other Motor Vehicle Dealers"
+441220:"Motorcycle, Boat and Other Motor Vehicle Dealers"
+4413:"Automotive Parts, Accessories and Tire Stores"
+44131:Automotive Parts and Accessories Stores
+441310:Automotive Parts and Accessories Stores
+44132:Tire Dealers
+441320:Tire Dealers
+442:Furniture and Home Furnishings Stores
+4421:Furniture Stores
+44211:Furniture Stores
+442110:Furniture Stores
+4422:Home Furnishings Stores
+44221:Floor Covering Stores
+442210:Floor Covering Stores
+44229:Other Home Furnishings Stores
+442291:Window Treatment Stores
+442292:Print and Picture Frame Stores
+442298:All Other Home Furnishings Stores
+443:Electronics and Appliance Stores
+4431:Electronics and Appliance Stores
+44311:"Appliance, Television and Other Electronics Stores"
+443110:"Appliance, Television and Other Electronics Stores"
+44312:Computer and Software Stores
+443120:Computer and Software Stores
+44313:Camera and Photographic Supplies Stores
+443130:Camera and Photographic Supplies Stores
+444:Building Material and Garden Equipment and Supplies Dealers
+4441:Building Material and Supplies Dealers
+44411:Home Centres
+444110:Home Centres
+44412:Paint and Wallpaper Stores
+444120:Paint and Wallpaper Stores
+44413:Hardware Stores
+444130:Hardware Stores
+44419:Other Building Material Dealers
+444190:Other Building Material Dealers
+4442:Lawn and Garden Equipment and Supplies Stores
+44421:Outdoor Power Equipment Stores
+444210:Outdoor Power Equipment Stores
+44422:Nursery Stores and Garden Centres
+444220:Nursery Stores and Garden Centres
+445:Food and Beverage Stores
+4451:Grocery Stores
+44511:Supermarkets and Other Grocery (except Convenience) Stores
+445110:Supermarkets and Other Grocery (except Convenience) Stores
+44512:Convenience Stores
+445120:Convenience Stores
+4452:Specialty Food Stores
+44521:Meat Markets
+445210:Meat Markets
+44522:Fish and Seafood Markets
+445220:Fish and Seafood Markets
+44523:Fruit and Vegetable Markets
+445230:Fruit and Vegetable Markets
+44529:Other Specialty Food Stores
+445291:Baked Goods Stores
+445292:Confectionery and Nut Stores
+445299:All Other Specialty Food Stores
+4453:"Beer, Wine and Liquor Stores"
+44531:"Beer, Wine and Liquor Stores"
+445310:"Beer, Wine and Liquor Stores"
+446:Health and Personal Care Stores
+4461:Health and Personal Care Stores
+44611:Pharmacies and Drug Stores
+446110:Pharmacies and Drug Stores
+44612:"Cosmetics, Beauty Supplies and Perfume Stores"
+446120:"Cosmetics, Beauty Supplies and Perfume Stores"
+44613:Optical Goods Stores
+446130:Optical Goods Stores
+44619:Other Health and Personal Care Stores
+446191:Food (Health) Supplement Stores
+446199:All Other Health and Personal Care Stores
+447:Gasoline Stations
+4471:Gasoline Stations
+44711:Gasoline Stations with Convenience Stores
+447110:Gasoline Stations with Convenience Stores
+44719:Other Gasoline Stations
+447190:Other Gasoline Stations
+448:Clothing and Clothing Accessories Stores
+4481:Clothing Stores
+44811:Men's Clothing Stores
+448110:Men's Clothing Stores
+44812:Women's Clothing Stores
+448120:Women's Clothing Stores
+44813:Children's and Infants' Clothing Stores
+448130:Children's and Infants' Clothing Stores
+44814:Family Clothing Stores
+448140:Family Clothing Stores
+44815:Clothing Accessories Stores
+448150:Clothing Accessories Stores
+44819:Other Clothing Stores
+448191:Fur Stores
+448199:All Other Clothing Stores
+4482:Shoe Stores
+44821:Shoe Stores
+448210:Shoe Stores
+4483:"Jewellery, Luggage and Leather Goods Stores"
+44831:Jewellery Stores
+448310:Jewellery Stores
+44832:Luggage and Leather Goods Stores
+448320:Luggage and Leather Goods Stores
+451:"Sporting Goods, Hobby, Book and Music Stores"
+4511:"Sporting Goods, Hobby and Musical Instrument Stores"
+45111:Sporting Goods Stores
+451110:Sporting Goods Stores
+45112:"Hobby, Toy and Game Stores"
+451120:"Hobby, Toy and Game Stores"
+45113:"Sewing, Needlework and Piece Goods Stores"
+451130:"Sewing, Needlework and Piece Goods Stores"
+45114:Musical Instrument and Supplies Stores
+451140:Musical Instrument and Supplies Stores
+4512:"Book, Periodical and Music Stores"
+45121:Book Stores and News Dealers
+451210:Book Stores and News Dealers
+45122:"Pre-Recorded Tape, Compact Disc and Record Stores"
+451220:"Pre-Recorded Tape, Compact Disc and Record Stores"
+452:General Merchandise Stores
+4521:Department Stores
+45211:Department Stores
+452110:Department Stores
+4529:Other General Merchandise Stores
+45291:Warehouse Clubs and Superstores
+452910:Warehouse Clubs and Superstores
+45299:All Other General Merchandise Stores
+452991:Home and Auto Supplies Stores
+452999:All Other Miscellaneous General Merchandise Stores
+453:Miscellaneous Store Retailers
+4531:Florists
+45311:Florists
+453110:Florists
+4532:"Office Supplies, Stationery and Gift Stores"
+45321:Office Supplies and Stationery Stores
+453210:Office Supplies and Stationery Stores
+45322:"Gift, Novelty and Souvenir Stores"
+453220:"Gift, Novelty and Souvenir Stores"
+4533:Used Merchandise Stores
+45331:Used Merchandise Stores
+453310:Used Merchandise Stores
+4539:Other Miscellaneous Store Retailers
+45391:Pet and Pet Supplies Stores
+453910:Pet and Pet Supplies Stores
+45392:Art Dealers
+453920:Art Dealers
+45393:Mobile Home Dealers
+453930:Mobile Home Dealers
+45399:All Other Miscellaneous Store Retailers
+453992:Beer and Wine-Making Supplies Stores
+453999:All Other Miscellaneous Store Retailers (except Beer and Wine-Making Supplies Stores)
+454:Non-Store Retailers
+4541:Electronic Shopping and Mail-Order Houses
+45411:Electronic Shopping and Mail-Order Houses
+454111:Internet Shopping
+454112:Electronic Auctions
+454113:Mail-Order Houses
+4542:Vending Machine Operators
+45421:Vending Machine Operators
+454210:Vending Machine Operators
+4543:Direct Selling Establishments
+45431:Fuel Dealers
+454311:Heating Oil Dealers
+454312:Liquefied Petroleum Gas (Bottled Gas) Dealers
+454319:Other Fuel Dealers
+45439:Other Direct Selling Establishments
+454390:Other Direct Selling Establishments
+481:Air Transportation
+4811:Scheduled Air Transportation
+48111:Scheduled Air Transportation
+481110:Scheduled Air Transportation
+4812:Non-Scheduled Air Transportation
+48121:Non-Scheduled Air Transportation
+481214:Non-Scheduled Chartered Air Transportation
+481215:Non-Scheduled Specialty Flying Services
+482:Rail Transportation
+4821:Rail Transportation
+48211:Rail Transportation
+482112:Short-Haul Freight Rail Transportation
+482113:Mainline Freight Rail Transportation
+482114:Passenger Rail Transportation
+483:Water Transportation
+4831:"Deep Sea, Coastal and Great Lakes Water Transportation"
+48311:"Deep Sea, Coastal and Great Lakes Water Transportation"
+483115:"Deep Sea, Coastal and Great Lakes Water Transportation (except by Ferries)"
+483116:"Deep Sea, Coastal and Great Lakes Water Transportation by Ferries"
+4832:Inland Water Transportation
+48321:Inland Water Transportation
+483213:Inland Water Transportation (except by Ferries)
+483214:Inland Water Transportation by Ferries
+484:Truck Transportation
+4841:General Freight Trucking
+48411:"General Freight Trucking, Local"
+484110:"General Freight Trucking, Local"
+48412:"General Freight Trucking, Long Distance"
+484121:"General Freight Trucking, Long Distance, Truck-Load"
+484122:"General Freight Trucking, Long Distance, Less Than Truck-Load"
+4842:Specialized Freight Trucking
+48421:Used Household and Office Goods Moving
+484210:Used Household and Office Goods Moving
+48422:"Specialized Freight (except Used Goods) Trucking, Local"
+484221:"Bulk Liquids Trucking, Local"
+484222:"Dry Bulk Materials Trucking, Local"
+484223:"Forest Products Trucking, Local"
+484229:"Other Specialized Freight (except Used Goods) Trucking, Local"
+48423:"Specialized Freight (except Used Goods) Trucking, Long Distance"
+484231:"Bulk Liquids Trucking, Long Distance"
+484232:"Dry Bulk Materials Trucking, Long Distance"
+484233:"Forest Products Trucking, Long Distance"
+484239:"Other Specialized Freight (except Used Goods) Trucking, Long Distance"
+485:Transit and Ground Passenger Transportation
+4851:Urban Transit Systems
+48511:Urban Transit Systems
+485110:Urban Transit Systems
+4852:Interurban and Rural Bus Transportation
+48521:Interurban and Rural Bus Transportation
+485210:Interurban and Rural Bus Transportation
+4853:Taxi and Limousine Service
+48531:Taxi Service
+485310:Taxi Service
+48532:Limousine Service
+485320:Limousine Service
+4854:School and Employee Bus Transportation
+48541:School and Employee Bus Transportation
+485410:School and Employee Bus Transportation
+4855:Charter Bus Industry
+48551:Charter Bus Industry
+485510:Charter Bus Industry
+4859:Other Transit and Ground Passenger Transportation
+48599:Other Transit and Ground Passenger Transportation
+485990:Other Transit and Ground Passenger Transportation
+486:Pipeline Transportation
+4861:Pipeline Transportation of Crude Oil
+48611:Pipeline Transportation of Crude Oil
+486110:Pipeline Transportation of Crude Oil
+4862:Pipeline Transportation of Natural Gas
+48621:Pipeline Transportation of Natural Gas
+486210:Pipeline Transportation of Natural Gas
+4869:Other Pipeline Transportation
+48691:Pipeline Transportation of Refined Petroleum Products
+486910:Pipeline Transportation of Refined Petroleum Products
+48699:All Other Pipeline Transportation
+486990:All Other Pipeline Transportation
+487:Scenic and Sightseeing Transportation
+4871:"Scenic and Sightseeing Transportation, Land"
+48711:"Scenic and Sightseeing Transportation, Land"
+487110:"Scenic and Sightseeing Transportation, Land"
+4872:"Scenic and Sightseeing Transportation, Water"
+48721:"Scenic and Sightseeing Transportation, Water"
+487210:"Scenic and Sightseeing Transportation, Water"
+4879:"Scenic and Sightseeing Transportation, Other"
+48799:"Scenic and Sightseeing Transportation, Other"
+487990:"Scenic and Sightseeing Transportation, Other"
+488:Support Activities for Transportation
+4881:Support Activities for Air Transportation
+48811:Airport Operations
+488111:Air Traffic Control
+488119:Other Airport Operations
+48819:Other Support Activities for Air Transportation
+488190:Other Support Activities for Air Transportation
+4882:Support Activities for Rail Transportation
+48821:Support Activities for Rail Transportation
+488210:Support Activities for Rail Transportation
+4883:Support Activities for Water Transportation
+48831:Port and Harbour Operations
+488310:Port and Harbour Operations
+48832:Marine Cargo Handling
+488320:Marine Cargo Handling
+48833:Navigational Services to Shipping
+488331:Marine Salvage Services
+488332:Ship Piloting Services
+488339:Other Navigational Services to Shipping
+48839:Other Support Activities for Water Transportation
+488390:Other Support Activities for Water Transportation
+4884:Support Activities for Road Transportation
+48841:Motor Vehicle Towing
+488410:Motor Vehicle Towing
+48849:Other Support Activities for Road Transportation
+488490:Other Support Activities for Road Transportation
+4885:Freight Transportation Arrangement
+48851:Freight Transportation Arrangement
+488511:Marine Shipping Agencies
+488519:Other Freight Transportation Arrangement
+4889:Other Support Activities for Transportation
+48899:Other Support Activities for Transportation
+488990:Other Support Activities for Transportation
+491:Postal Service
+4911:Postal Service
+49111:Postal Service
+491110:Postal Service
+492:Couriers and Messengers
+4921:Couriers
+49211:Couriers
+492110:Couriers
+4922:Local Messengers and Local Delivery
+49221:Local Messengers and Local Delivery
+492210:Local Messengers and Local Delivery
+493:Warehousing and Storage
+4931:Warehousing and Storage
+49311:General Warehousing and Storage
+493110:General Warehousing and Storage
+49312:Refrigerated Warehousing and Storage
+493120:Refrigerated Warehousing and Storage
+49313:Farm Product Warehousing and Storage
+493130:Farm Product Warehousing and Storage
+49319:Other Warehousing and Storage
+493190:Other Warehousing and Storage
+51:Information and Cultural Industries
+511:Publishing Industries (except Internet)
+5111:"Newspaper, Periodical, Book and Directory Publishers"
+51111:Newspaper Publishers
+511110:Newspaper Publishers
+51112:Periodical Publishers
+511120:Periodical Publishers
+51113:Book Publishers
+511130:Book Publishers
+51114:Directory and Mailing List Publishers
+511140:Directory and Mailing List Publishers
+51119:Other Publishers
+511190:Other Publishers
+5112:Software Publishers
+51121:Software Publishers
+511210:Software Publishers
+512:Motion Picture and Sound Recording Industries
+5121:Motion Picture and Video Industries
+51211:Motion Picture and Video Production
+512110:Motion Picture and Video Production
+51212:Motion Picture and Video Distribution
+512120:Motion Picture and Video Distribution
+51213:Motion Picture and Video Exhibition
+512130:Motion Picture and Video Exhibition
+51219:Post-Production and Other Motion Picture and Video Industries
+512190:Post-Production and Other Motion Picture and Video Industries
+5122:Sound Recording Industries
+51221:Record Production
+512210:Record Production
+51222:Integrated Record Production/Distribution
+512220:Integrated Record Production/Distribution
+51223:Music Publishers
+512230:Music Publishers
+51224:Sound Recording Studios
+512240:Sound Recording Studios
+51229:Other Sound Recording Industries
+512290:Other Sound Recording Industries
+515:Broadcasting (except Internet)
+5151:Radio and Television Broadcasting
+51511:Radio Broadcasting
+515110:Radio Broadcasting
+51512:Television Broadcasting
+515120:Television Broadcasting
+5152:Pay and Specialty Television
+51521:Pay and Specialty Television
+515210:Pay and Specialty Television
+517:Telecommunications
+5171:Wired Telecommunications Carriers
+51711:Wired Telecommunications Carriers
+517111:Wired Telecommunications Carriers (except Cable)
+517112:Cable and Other Program Distribution
+5172:Wireless Telecommunications Carriers (except Satellite)
+51721:Wireless Telecommunications Carriers (except Satellite)
+517210:Wireless Telecommunications Carriers (except Satellite)
+5174:Satellite Telecommunications
+51741:Satellite Telecommunications
+517410:Satellite Telecommunications
+5179:Other Telecommunications
+51791:Other Telecommunications
+517910:Other Telecommunications
+518:"Data Processing, Hosting, and Related Services"
+5182:"Data Processing, Hosting, and Related Services"
+51821:"Data Processing, Hosting, and Related Services"
+518210:"Data Processing, Hosting, and Related Services"
+519:Other Information Services
+5191:Other Information Services
+51911:News Syndicates
+519110:News Syndicates
+51912:Libraries and Archives
+519121:Libraries
+519122:Archives
+51913:"Internet Publishing and Broadcasting, and Web Search Portals"
+519130:"Internet Publishing and Broadcasting, and Web Search Portals"
+51919:All Other Information Services
+519190:All Other Information Services
+52:Finance and Insurance
+521:Monetary Authorities - Central Bank
+5211:Monetary Authorities - Central Bank
+52111:Monetary Authorities - Central Bank
+521110:Monetary Authorities - Central Bank
+522:Credit Intermediation and Related Activities
+5221:Depository Credit Intermediation
+52211:Banking
+522111:Personal and Commercial Banking Industry
+522112:Corporate and Institutional Banking Industry
+52213:Local Credit Unions
+522130:Local Credit Unions
+52219:Other Depository Credit Intermediation
+522190:Other Depository Credit Intermediation
+5222:Non-Depository Credit Intermediation
+52221:Credit Card Issuing
+522210:Credit Card Issuing
+52222:Sales Financing
+522220:Sales Financing
+52229:Other Non-Depository Credit Intermediation
+522291:Consumer Lending
+522299:All Other Non-Depository Credit Intermediation
+5223:Activities Related to Credit Intermediation
+52231:Mortgage and Non-mortgage Loan Brokers
+522310:Mortgage and Non-mortgage Loan Brokers
+52232:"Financial Transactions Processing, Reserve and Clearing House Activities"
+522321:Central Credit Unions
+522329:Other Financial Transactions Processing and Clearing House Activities
+52239:Other Activities Related to Credit Intermediation
+522390:Other Activities Related to Credit Intermediation
+523:"Securities, Commodity Contracts, and Other Financial Investment and Related Activities"
+5231:Securities and Commodity Contracts Intermediation and Brokerage
+52311:Investment Banking and Securities Dealing
+523110:Investment Banking and Securities Dealing
+52312:Securities Brokerage
+523120:Securities Brokerage
+52313:Commodity Contracts Dealing
+523130:Commodity Contracts Dealing
+52314:Commodity Contracts Brokerage
+523140:Commodity Contracts Brokerage
+5232:Securities and Commodity Exchanges
+52321:Securities and Commodity Exchanges
+523210:Securities and Commodity Exchanges
+5239:Other Financial Investment Activities
+52391:Miscellaneous Intermediation
+523910:Miscellaneous Intermediation
+52392:Portfolio Management
+523920:Portfolio Management
+52393:Investment Advice
+523930:Investment Advice
+52399:All Other Financial Investment Activities
+523990:All Other Financial Investment Activities
+524:Insurance Carriers and Related Activities
+5241:Insurance Carriers
+52411:"Direct Life, Health and Medical Insurance Carriers"
+524111:"Direct Individual Life, Health and Medical Insurance Carriers"
+524112:"Direct Group Life, Health and Medical Insurance Carriers"
+52412:"Direct Insurance (except Life, Health and Medical) Carriers"
+524121:Direct General Property and Casualty Insurance Carriers
+524122:"Direct, Private, Automobile Insurance Carriers"
+524123:"Direct, Public, Automobile Insurance Carriers"
+524124:Direct Property Insurance Carriers
+524125:Direct Liability Insurance Carriers
+524129:"Other Direct Insurance (except Life, Health and Medical) Carriers"
+52413:Reinsurance Carriers
+524131:Life Reinsurance Carriers
+524132:Accident and Sickness Reinsurance Carriers
+524133:Automobile Reinsurance Carriers
+524134:Property Reinsurance Carriers
+524135:Liability Reinsurance Carriers
+524139:General and Other Reinsurance Carriers
+5242:"Agencies, Brokerages and Other Insurance Related Activities"
+52421:Insurance Agencies and Brokerages
+524210:Insurance Agencies and Brokerages
+52429:Other Insurance Related Activities
+524291:Claims Adjusters
+524299:All Other Insurance Related Activities
+526:Funds and Other Financial Vehicles
+5261:Pension Funds
+52611:Pension Funds
+526111:Trusteed Pension Funds
+526112:Non-Trusteed Pension Funds
+5269:Other Funds and Financial Vehicles
+52691:Open-End Investment Funds
+526911:Equity Funds - Canadian
+526912:Equity Funds - Foreign
+526913:Mortgage Funds
+526914:Money Market Funds
+526915:Bond and Income / Dividend Funds - Canadian
+526916:Bond and Income / Dividend Funds - Foreign
+526917:Balanced Funds / Asset Allocation Funds
+526919:Other Open-Ended Funds
+52693:Segregated (except Pension) Funds
+526930:Segregated (except Pension) Funds
+52698:All Other Funds and Financial Vehicles
+526981:Securitization Vehicles
+526989:All Other Miscellaneous Funds and Financial Vehicles
+531:Real Estate
+5311:Lessors of Real Estate
+53111:Lessors of Residential Buildings and Dwellings
+531111:Lessors of Residential Buildings and Dwellings (except Social Housing Projects)
+531112:Lessors of Social Housing Projects
+53112:Lessors of Non-Residential Buildings (except Mini-Warehouses)
+531120:Lessors of Non-Residential Buildings (except Mini-Warehouses)
+53113:Self-Storage Mini-Warehouses
+531130:Self-Storage Mini-Warehouses
+53119:Lessors of Other Real Estate Property
+531190:Lessors of Other Real Estate Property
+5312:Offices of Real Estate Agents and Brokers
+53121:Offices of Real Estate Agents and Brokers
+531211:Real Estate Agents
+531212:Offices of Real Estate Brokers
+5313:Activities Related to Real Estate
+53131:Real Estate Property Managers
+531310:Real Estate Property Managers
+53132:Offices of Real Estate Appraisers
+531320:Offices of Real Estate Appraisers
+53139:Other Activities Related to Real Estate
+531390:Other Activities Related to Real Estate
+532:Rental and Leasing Services
+5321:Automotive Equipment Rental and Leasing
+53211:Passenger Car Rental and Leasing
+532111:Passenger Car Rental
+532112:Passenger Car Leasing
+53212:"Truck, Utility Trailer and RV (Recreational Vehicle) Rental and Leasing"
+532120:"Truck, Utility Trailer and RV (Recreational Vehicle) Rental and Leasing"
+5322:Consumer Goods Rental
+53221:Consumer Electronics and Appliance Rental
+532210:Consumer Electronics and Appliance Rental
+53222:Formal Wear and Costume Rental
+532220:Formal Wear and Costume Rental
+53223:Video Tape and Disc Rental
+532230:Video Tape and Disc Rental
+53229:Other Consumer Goods Rental
+532290:Other Consumer Goods Rental
+5323:General Rental Centres
+53231:General Rental Centres
+532310:General Rental Centres
+5324:Commercial and Industrial Machinery and Equipment Rental and Leasing
+53241:"Construction: Transportation: Mining: and Forestry Machinery and Equipment Rental and Leasing"
+532410:"Construction: Transportation: Mining: and Forestry Machinery and Equipment Rental and Leasing"
+53242:Office Machinery and Equipment Rental and Leasing
+532420:Office Machinery and Equipment Rental and Leasing
+53249:Other Commercial and Industrial Machinery and Equipment Rental and Leasing
+532490:Other Commercial and Industrial Machinery and Equipment Rental and Leasing
+533:Lessors of Non-Financial Intangible Assets (Except Copyrighted Works)
+5331:Lessors of Non-Financial Intangible Assets (Except Copyrighted Works)
+53311:Lessors of Non-Financial Intangible Assets (Except Copyrighted Works)
+533110:Lessors of Non-Financial Intangible Assets (Except Copyrighted Works)
+541:"Professional, Scientific and Technical Services"
+5411:Legal Services
+54111:Offices of Lawyers
+541110:Offices of Lawyers
+54112:Offices of Notaries
+541120:Offices of Notaries
+54119:Other Legal Services
+541190:Other Legal Services
+5412:"Accounting, Tax Preparation, Bookkeeping and Payroll Services"
+54121:"Accounting, Tax Preparation, Bookkeeping and Payroll Services"
+541212:Offices of Accountants
+541213:Tax Preparation Services
+541215:"Bookkeeping, Payroll and Related Services"
+5413:"Architectural, Engineering and Related Services"
+54131:Architectural Services
+541310:Architectural Services
+54132:Landscape Architectural Services
+541320:Landscape Architectural Services
+54133:Engineering Services
+541330:Engineering Services
+54134:Drafting Services
+541340:Drafting Services
+54135:Building Inspection Services
+541350:Building Inspection Services
+54136:Geophysical Surveying and Mapping Services
+541360:Geophysical Surveying and Mapping Services
+54137:Surveying and Mapping (except Geophysical) Services
+541370:Surveying and Mapping (except Geophysical) Services
+54138:Testing Laboratories
+541380:Testing Laboratories
+5414:Specialized Design Services
+54141:Interior Design Services
+541410:Interior Design Services
+54142:Industrial Design Services
+541420:Industrial Design Services
+54143:Graphic Design Services
+541430:Graphic Design Services
+54149:Other Specialized Design Services
+541490:Other Specialized Design Services
+5415:Computer Systems Design and Related Services
+54151:Computer Systems Design and Related Services
+541510:Computer Systems Design and Related Services
+5416:"Management, Scientific and Technical Consulting Services"
+54161:Management Consulting Services
+541611:Administrative Management and General Management Consulting Services
+541612:Human Resources Consulting Services
+541619:Other Management Consulting Services
+54162:Environmental Consulting Services
+541620:Environmental Consulting Services
+54169:Other Scientific and Technical Consulting Services
+541690:Other Scientific and Technical Consulting Services
+5417:Scientific Research and Development Services
+54171:"Research and Development in the Physical, Engineering and Life Sciences"
+541710:"Research and Development in the Physical, Engineering and Life Sciences"
+54172:Research and Development in the Social Sciences and Humanities
+541720:Research and Development in the Social Sciences and Humanities
+5418:"Advertising, Public Relations, and Related Services"
+54181:Advertising Agencies
+541810:Advertising Agencies
+54182:Public Relations Services
+541820:Public Relations Services
+54183:Media Buying Agencies
+541830:Media Buying Agencies
+54184:Media Representatives
+541840:Media Representatives
+54185:Display Advertising
+541850:Display Advertising
+54186:Direct Mail Advertising
+541860:Direct Mail Advertising
+54187:Advertising Material Distribution Services
+541870:Advertising Material Distribution Services
+54189:Other Services Related to Advertising
+541891:Specialty Advertising Distributors
+541899:All Other Services Related to Advertising
+5419:"Other Professional, Scientific and Technical Services"
+54191:Marketing Research and Public Opinion Polling
+541910:Marketing Research and Public Opinion Polling
+54192:Photographic Services
+541920:Photographic Services
+54193:Translation and Interpretation Services
+541930:Translation and Interpretation Services
+54194:Veterinary Services
+541940:Veterinary Services
+54199:"All Other Professional, Scientific and Technical Services"
+541990:"All Other Professional, Scientific and Technical Services"
+55:Management of Companies and Enterprises
+551:Management of Companies and Enterprises
+5511:Management of Companies and Enterprises
+55111:Management of Companies and Enterprises
+551113:Holding Companies
+551114:Head Offices
+56:"Administrative and Support, Waste Management and Remediation Services"
+561:Administrative and Support Services
+5611:Office Administrative Services
+56111:Office Administrative Services
+561110:Office Administrative Services
+5612:Facilities Support Services
+56121:Facilities Support Services
+561210:Facilities Support Services
+5613:Employment Services
+56131:Employment Placement Agencies and Executive Search Services
+561310:Employment Placement Agencies and Executive Search Services
+56132:Temporary Help Services
+561320:Temporary Help Services
+56133:Professional Employer Organizations
+561330:Professional Employer Organizations
+5614:Business Support Services
+56141:Document Preparation Services
+561410:Document Preparation Services
+56142:Telephone Call Centres
+561420:Telephone Call Centres
+56143:Business Service Centres
+561430:Business Service Centres
+56144:Collection Agencies
+561440:Collection Agencies
+56145:Credit Bureaus
+561450:Credit Bureaus
+56149:Other Business Support Services
+561490:Other Business Support Services
+5615:Travel Arrangement and Reservation Services
+56151:Travel Agencies
+561510:Travel Agencies
+56152:Tour Operators
+561520:Tour Operators
+56159:Other Travel Arrangement and Reservation Services
+561590:Other Travel Arrangement and Reservation Services
+5616:Investigation and Security Services
+56161:"Investigation, Guard and Armoured Car Services"
+561611:Investigation Services
+561612:Security Guard and Patrol Services
+561613:Armoured Car Services
+56162:Security Systems Services
+561621:Security Systems Services (except Locksmiths)
+561622:Locksmiths
+5617:Services to Buildings and Dwellings
+56171:Exterminating and Pest Control Services
+561710:Exterminating and Pest Control Services
+56172:Janitorial Services
+561721:Window Cleaning Services
+561722:Janitorial Services (except Window Cleaning)
+56173:Landscaping Services
+561730:Landscaping Services
+56174:Carpet and Upholstery Cleaning Services
+561740:Carpet and Upholstery Cleaning Services
+56179:Other Services to Buildings and Dwellings
+561791:Duct and Chimney Cleaning Services
+561799:All Other Services to Buildings and Dwellings
+5619:Other Support Services
+56191:Packaging and Labelling Services
+561910:Packaging and Labelling Services
+56192:Convention and Trade Show Organizers
+561920:Convention and Trade Show Organizers
+56199:All Other Support Services
+561990:All Other Support Services
+562:Waste Management and Remediation Services
+5621:Waste Collection
+56211:Waste Collection
+562110:Waste Collection
+5622:Waste Treatment and Disposal
+56221:Waste Treatment and Disposal
+562210:Waste Treatment and Disposal
+5629:Remediation and Other Waste Management Services
+56291:Remediation Services
+562910:Remediation Services
+56292:Material Recovery Facilities
+562920:Material Recovery Facilities
+56299:All Other Waste Management Services
+562990:All Other Waste Management Services
+61:Educational Services
+611:Educational Services
+6111:Elementary and Secondary Schools
+61111:Elementary and Secondary Schools
+611110:Elementary and Secondary Schools
+6112:Community Colleges and C.E.G.E.P.s
+61121:Community Colleges and C.E.G.E.P.s
+611210:Community Colleges and C.E.G.E.P.s
+6113:Universities
+61131:Universities
+611310:Universities
+6114:Business Schools and Computer and Management Training
+61141:Business and Secretarial Schools
+611410:Business and Secretarial Schools
+61142:Computer Training
+611420:Computer Training
+61143:Professional and Management Development Training
+611430:Professional and Management Development Training
+6115:Technical and Trade Schools
+61151:Technical and Trade Schools
+611510:Technical and Trade Schools
+6116:Other Schools and Instruction
+61161:Fine Arts Schools
+611610:Fine Arts Schools
+61162:Athletic Instruction
+611620:Athletic Instruction
+61163:Language Schools
+611630:Language Schools
+61169:All Other Schools and Instruction
+611690:All Other Schools and Instruction
+6117:Educational Support Services
+61171:Educational Support Services
+611710:Educational Support Services
+62:Health Care and Social Assistance
+621:Ambulatory Health Care Services
+6211:Offices of Physicians
+62111:Offices of Physicians
+621110:Offices of Physicians
+6212:Offices of Dentists
+62121:Offices of Dentists
+621210:Offices of Dentists
+6213:Offices of Other Health Practitioners
+62131:Offices of Chiropractors
+621310:Offices of Chiropractors
+62132:Offices of Optometrists
+621320:Offices of Optometrists
+62133:Offices of Mental Health Practitioners (except Physicians)
+621330:Offices of Mental Health Practitioners (except Physicians)
+62134:"Offices of Physical, Occupational, and Speech Therapists and Audiologists"
+621340:"Offices of Physical, Occupational, and Speech Therapists and Audiologists"
+62139:Offices of All Other Health Practitioners
+621390:Offices of All Other Health Practitioners
+6214:Out-Patient Care Centres
+62141:Family Planning Centres
+621410:Family Planning Centres
+62142:Out-Patient Mental Health and Substance Abuse Centres
+621420:Out-Patient Mental Health and Substance Abuse Centres
+62149:Other Out-Patient Care Centres
+621494:Community Health Centres
+621499:All Other Out-Patient Care Centres
+6215:Medical and Diagnostic Laboratories
+62151:Medical and Diagnostic Laboratories
+621510:Medical and Diagnostic Laboratories
+6216:Home Health Care Services
+62161:Home Health Care Services
+621610:Home Health Care Services
+6219:Other Ambulatory Health Care Services
+62191:Ambulance Services
+621911:Ambulance (except Air Ambulance) Services
+621912:Air Ambulance Services
+62199:All Other Ambulatory Health Care Services
+621990:All Other Ambulatory Health Care Services
+622:Hospitals
+6221:General Medical and Surgical Hospitals
+62211:General Medical and Surgical Hospitals
+622111:General (except Paediatric) Hospitals
+622112:Paediatric Hospitals
+6222:Psychiatric and Substance Abuse Hospitals
+62221:Psychiatric and Substance Abuse Hospitals
+622210:Psychiatric and Substance Abuse Hospitals
+6223:Specialty (except Psychiatric and Substance Abuse) Hospitals
+62231:Specialty (except Psychiatric and Substance Abuse) Hospitals
+622310:Specialty (except Psychiatric and Substance Abuse) Hospitals
+623:Nursing and Residential Care Facilities
+6231:Nursing Care Facilities
+62311:Nursing Care Facilities
+623110:Nursing Care Facilities
+6232:"Residential Developmental Handicap, Mental Health and Substance Abuse Facilities"
+62321:Residential Developmental Handicap Facilities
+623210:Residential Developmental Handicap Facilities
+62322:Residential Mental Health and Substance Abuse Facilities
+623221:Residential Substance Abuse Facilities
+623222:Homes for the Psychiatrically Disabled
+6233:Community Care Facilities for the Elderly
+62331:Community Care Facilities for the Elderly
+623310:Community Care Facilities for the Elderly
+6239:Other Residential Care Facilities
+62399:Other Residential Care Facilities
+623991:Transition Homes for Women
+623992:Homes for Emotionally Disturbed Children
+623993:Homes for the Physically Handicapped or Disabled
+623999:All Other Residential Care Facilities
+624:Social Assistance
+6241:Individual and Family Services
+62411:Child and Youth Services
+624110:Child and Youth Services
+62412:Services for the Elderly and Persons with Disabilities
+624120:Services for the Elderly and Persons with Disabilities
+62419:Other Individual and Family Services
+624190:Other Individual and Family Services
+6242:"Community Food and Housing, and Emergency and Other Relief Services"
+62421:Community Food Services
+624210:Community Food Services
+62422:Community Housing Services
+624220:Community Housing Services
+62423:Emergency and Other Relief Services
+624230:Emergency and Other Relief Services
+6243:Vocational Rehabilitation Services
+62431:Vocational Rehabilitation Services
+624310:Vocational Rehabilitation Services
+6244:Child Day-Care Services
+62441:Child Day-Care Services
+624410:Child Day-Care Services
+711:"Performing Arts, Spectator Sports and Related Industries"
+7111:Performing Arts Companies
+71111:Theatre Companies and Dinner Theatres
+711111:Theatre (except Musical) Companies
+711112:Musical Theatre and Opera Companies
+71112:Dance Companies
+711120:Dance Companies
+71113:Musical Groups and Artists
+711130:Musical Groups and Artists
+71119:Other Performing Arts Companies
+711190:Other Performing Arts Companies
+7112:Spectator Sports
+71121:Spectator Sports
+711211:Sports Teams and Clubs
+711213:Horse Race Tracks
+711218:Other Spectator Sports
+7113:"Promoters (Presenters) of Performing Arts, Sports and Similar Events"
+71131:"Promoters (Presenters) of Performing Arts, Sports and Similar Events with Facilities"
+711311:Live Theatres and Other Performing Arts Presenters with Facilities
+711319:Sports Stadiums and Other Presenters with Facilities
+71132:"Promoters (Presenters) of Performing Arts, Sports and Similar Events without Facilities"
+711321:Performing Arts Promoters (Presenters) without Facilities
+711322:Festivals without Facilities
+711329:Sports Presenters and Other Presenters without Facilities
+7114:"Agents and Managers for Artists, Athletes, Entertainers and Other Public Figures"
+71141:"Agents and Managers for Artists, Athletes, Entertainers and Other Public Figures"
+711410:"Agents and Managers for Artists, Athletes, Entertainers and Other Public Figures"
+7115:"Independent Artists, Writers and Performers"
+71151:"Independent Artists, Writers and Performers"
+711511:"Independent Artists, Visual Arts"
+711512:"Independent Actors, Comedians and Performers"
+711513:Independent Writers and Authors
+712:Heritage Institutions
+7121:Heritage Institutions
+71211:Museums
+712111:Non-Commercial Art Museums and Galleries
+712115:History and Science Museums
+712119:Other Museums
+71212:Historic and Heritage Sites
+712120:Historic and Heritage Sites
+71213:Zoos and Botanical Gardens
+712130:Zoos and Botanical Gardens
+71219:Nature Parks and Other Similar Institutions
+712190:Nature Parks and Other Similar Institutions
+713:"Amusement, Gambling and Recreation Industries"
+7131:Amusement Parks and Arcades
+71311:Amusement and Theme Parks
+713110:Amusement and Theme Parks
+71312:Amusement Arcades
+713120:Amusement Arcades
+7132:Gambling Industries
+71321:Casinos (except Casino Hotels)
+713210:Casinos (except Casino Hotels)
+71329:Other Gambling Industries
+713291:Lotteries
+713299:All Other Gambling Industries
+7139:Other Amusement and Recreation Industries
+71391:Golf Courses and Country Clubs
+713910:Golf Courses and Country Clubs
+71392:Skiing Facilities
+713920:Skiing Facilities
+71393:Marinas
+713930:Marinas
+71394:Fitness and Recreational Sports Centres
+713940:Fitness and Recreational Sports Centres
+71395:Bowling Centres
+713950:Bowling Centres
+71399:All Other Amusement and Recreation Industries
+713990:All Other Amusement and Recreation Industries
+72:Accommodation and Food Services
+721:Accommodation Services
+7211:Traveller Accommodation
+72111:Hotels (except Casino Hotels) and Motels
+721111:Hotels
+721112:Motor Hotels
+721113:Resorts
+721114:Motels
+72112:Casino Hotels
+721120:Casino Hotels
+72119:Other Traveller Accommodation
+721191:Bed and Breakfast
+721192:Housekeeping Cottages and Cabins
+721198:All Other Traveller Accommodation
+7212:RV (Recreational Vehicle) Parks and Recreational Camps
+72121:RV (Recreational Vehicle) Parks and Recreational Camps
+721211:RV (Recreational Vehicle) Parks and Campgrounds
+721212:Hunting and Fishing Camps
+721213:Recreational (except Hunting and Fishing) and Vacation Camps
+7213:Rooming and Boarding Houses
+72131:Rooming and Boarding Houses
+721310:Rooming and Boarding Houses
+722:Food Services and Drinking Places
+7221:Full-Service Restaurants
+72211:Full-Service Restaurants
+722110:Full-Service Restaurants
+7222:Limited-Service Eating Places
+72221:Limited-Service Eating Places
+722210:Limited-Service Eating Places
+7223:Special Food Services
+72231:Food Service Contractors
+722310:Food Service Contractors
+72232:Caterers
+722320:Caterers
+72233:Mobile Food Services
+722330:Mobile Food Services
+7224:Drinking Places (Alcoholic Beverages)
+72241:Drinking Places (Alcoholic Beverages)
+722410:Drinking Places (Alcoholic Beverages)
+81:Other Services (except Public Administration)
+811:Repair and Maintenance
+8111:Automotive Repair and Maintenance
+81111:Automotive Mechanical and Electrical Repair and Maintenance
+811111:General Automotive Repair
+811112:Automotive Exhaust System Repair
+811119:Other Automotive Mechanical and Electrical Repair and Maintenance
+81112:"Automotive Body, Paint, Interior and Glass Repair"
+811121:"Automotive Body, Paint and Interior Repair and Maintenance"
+811122:Automotive Glass Replacement Shops
+81119:Other Automotive Repair and Maintenance
+811192:Car Washes
+811199:All Other Automotive Repair and Maintenance
+8112:Electronic and Precision Equipment Repair and Maintenance
+81121:Electronic and Precision Equipment Repair and Maintenance
+811210:Electronic and Precision Equipment Repair and Maintenance
+8113:Commercial and Industrial Machinery and Equipment (except Automotive and Electronic) Repair and Maintenance
+81131:Commercial and Industrial Machinery and Equipment (except Automotive and Electronic) Repair and Maintenance
+811310:Commercial and Industrial Machinery and Equipment (except Automotive and Electronic) Repair and Maintenance
+8114:Personal and Household Goods Repair and Maintenance
+81141:Home and Garden Equipment and Appliance Repair and Maintenance
+811411:Home and Garden Equipment Repair and Maintenance
+811412:Appliance Repair and Maintenance
+81142:Reupholstery and Furniture Repair
+811420:Reupholstery and Furniture Repair
+81143:Footwear and Leather Goods Repair
+811430:Footwear and Leather Goods Repair
+81149:Other Personal and Household Goods Repair and Maintenance
+811490:Other Personal and Household Goods Repair and Maintenance
+812:Personal and Laundry Services
+8121:Personal Care Services
+81211:Hair Care and Esthetic Services
+812114:Barber Shops
+812115:Beauty Salons
+812116:Unisex Hair Salons
+81219:Other Personal Care Services
+812190:Other Personal Care Services
+8122:Funeral Services
+81221:Funeral Homes
+812210:Funeral Homes
+81222:Cemeteries and Crematoria
+812220:Cemeteries and Crematoria
+8123:Dry Cleaning and Laundry Services
+81231:Coin-Operated Laundries and Dry Cleaners
+812310:Coin-Operated Laundries and Dry Cleaners
+81232:Dry Cleaning and Laundry Services (except Coin-Operated)
+812320:Dry Cleaning and Laundry Services (except Coin-Operated)
+81233:Linen and Uniform Supply
+812330:Linen and Uniform Supply
+8129:Other Personal Services
+81291:Pet Care (except Veterinary) Services
+812910:Pet Care (except Veterinary) Services
+81292:Photo Finishing Services
+812921:Photo Finishing Laboratories (except One-Hour)
+812922:One-Hour Photo Finishing
+81293:Parking Lots and Garages
+812930:Parking Lots and Garages
+81299:All Other Personal Services
+812990:All Other Personal Services
+813:"Religious, Grant-Making, Civic, and Professional and Similar Organizations"
+8131:Religious Organizations
+81311:Religious Organizations
+813110:Religious Organizations
+8132:Grant-Making and Giving Services
+81321:Grant-Making and Giving Services
+813210:Grant-Making and Giving Services
+8133:Social Advocacy Organizations
+81331:Social Advocacy Organizations
+813310:Social Advocacy Organizations
+8134:Civic and Social Organizations
+81341:Civic and Social Organizations
+813410:Civic and Social Organizations
+8139:"Business, Professional, Labour and Other Membership Organizations"
+81391:Business Associations
+813910:Business Associations
+81392:Professional Organizations
+813920:Professional Organizations
+81393:Labour Organizations
+813930:Labour Organizations
+81394:Political Organizations
+813940:Political Organizations
+81399:Other Membership Organizations
+813990:Other Membership Organizations
+814:Private Households
+8141:Private Households
+81411:Private Households
+814110:Private Households
+91:Public Administration
+911:Federal Government Public Administration
+9111:Defence Services
+91111:Defence Services
+911110:Defence Services
+9112:Federal Protective Services
+91121:Federal Courts of Law
+911210:Federal Courts of Law
+91122:Federal Correctional Services
+911220:Federal Correctional Services
+91123:Federal Police Services
+911230:Federal Police Services
+91124:Federal Regulatory Services
+911240:Federal Regulatory Services
+91129:Other Federal Protective Services
+911290:Other Federal Protective Services
+9113:"Federal Labour, Employment and Immigration Services"
+91131:Federal Labour and Employment Services
+911310:Federal Labour and Employment Services
+91132:Immigration Services
+911320:Immigration Services
+91139:"Other Federal Labour, Employment and Immigration Services"
+911390:"Other Federal Labour, Employment and Immigration Services"
+9114:Foreign Affairs and International Assistance
+91141:Foreign Affairs
+911410:Foreign Affairs
+91142:International Assistance
+911420:International Assistance
+9119:Other Federal Government Public Administration
+91191:Other Federal Government Public Administration
+911910:Other Federal Government Public Administration
+912:Provincial and Territorial Public Administration
+9121:Provincial Protective Services
+91211:Provincial Courts of Law
+912110:Provincial Courts of Law
+91212:Provincial Correctional Services
+912120:Provincial Correctional Services
+91213:Provincial Police Services
+912130:Provincial Police Services
+91214:Provincial Fire-Fighting Services
+912140:Provincial Fire-Fighting Services
+91215:Provincial Regulatory Services
+912150:Provincial Regulatory Services
+91219:Other Provincial Protective Services
+912190:Other Provincial Protective Services
+9122:Provincial Labour and Employment Services
+91221:Provincial Labour and Employment Services
+912210:Provincial Labour and Employment Services
+9129:Other Provincial and Territorial Public Administration
+91291:Other Provincial and Territorial Public Administration
+912910:Other Provincial and Territorial Public Administration
+913:"Local, Municipal and Regional Public Administration"
+9131:Municipal Protective Services
+91311:Municipal Courts of Law
+913110:Municipal Courts of Law
+91312:Municipal Correctional Services
+913120:Municipal Correctional Services
+91313:Municipal Police Services
+913130:Municipal Police Services
+91314:Municipal Fire-Fighting Services
+913140:Municipal Fire-Fighting Services
+91315:Municipal Regulatory Services
+913150:Municipal Regulatory Services
+91319:Other Municipal Protective Services
+913190:Other Municipal Protective Services
+9139:"Other Local, Municipal and Regional Public Administration"
+91391:"Other Local, Municipal and Regional Public Administration"
+913910:"Other Local, Municipal and Regional Public Administration"
+914:Aboriginal Public Administration
+9141:Aboriginal Public Administration
+91411:Aboriginal Public Administration
+914110:Aboriginal Public Administration
+919:International and Other Extra-Territorial Public Administration
+9191:International and Other Extra-Territorial Public Administration
+91911:International and Other Extra-Territorial Public Administration
+919110:International and Other Extra-Territorial Public Administration
