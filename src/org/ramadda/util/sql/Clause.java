@@ -226,6 +226,17 @@ public class Clause {
     }
 
     /**
+       if val starts with ! then return not equals
+       else return equals
+     */
+    public static Clause stringClause(String col, String val) {
+	if(val==null) return null;
+	if(val.startsWith("!")) return neq(col,val.substring(1));
+	return eq(col,val);
+
+    }
+
+    /**
      * utility to make an N element OR clause
      *
      * @param clauses children clauses
