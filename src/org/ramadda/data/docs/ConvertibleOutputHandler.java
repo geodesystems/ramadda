@@ -666,13 +666,13 @@ public class ConvertibleOutputHandler extends OutputHandler {
             }
             newFiles.addAll(csvUtil.getNewFiles());
             if (Misc.equals("true",
-                            csvUtil.getContext().getProperty("nukedb")) &&
+                            csvUtil.getContext().getProperty("db.droptable")) &&
 		Misc.equals("true",
-                            csvUtil.getContext().getProperty("yesreallynukethewholedb"))) {
+                            csvUtil.getContext().getProperty("db.yesreallydroptable"))) {
                 request.ensureAdmin();
                 String sql = "drop table db_" + csvUtil.getDbId();
                 try {
-		    System.err.println("dropping the table:" + sql);
+		    System.err.println("Seesv: dropping the table:" + sql);
                     getRepository().getDatabaseManager().executeAndClose(sql);
                 } catch (Exception exc) {
 
@@ -685,6 +685,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 request.ensureAdmin();
                 for (String file : csvUtil.getNewFiles()) {
                     if (file.endsWith("db.xml")) {
+			System.err.println("Seesv: installing plugin:" +file);
 			getRepository().getPluginManager().installPlugin(file, true);
 			getRepository().clearCache();
                     }
