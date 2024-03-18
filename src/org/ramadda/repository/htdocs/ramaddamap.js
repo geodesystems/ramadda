@@ -1048,10 +1048,10 @@ RepositoryMap.prototype = {
 	    if (location) {
 		if(this.highlightFeature != feature) {
 		    this.closeHighlightPopup();
-		    let projPoint = this.transformLLPoint(location);
 		    let text = feature.highlightTextGetter?feature.highlightTextGetter(feature):feature.highlightText;
 		    if (!Utils.stringDefined(text))  {text = feature.text;}
 		    if (Utils.stringDefined(text)) {
+			let projPoint = this.transformLLPoint(location);
 			text =HtmlUtils.div(["style","padding:2px;"],text);
 			this.highlightPopup = new OpenLayers.Popup("popup",
 								   projPoint,
@@ -3961,7 +3961,11 @@ RepositoryMap.prototype = {
     },
 
     findFeature:  function(id) {
-        return this.features[id];
+	let feature= this.features[id];
+	if(!feature && this.pointsMap) {
+	    feature = this.pointsMap[id];
+	}
+	return feature;
     },
 
     findBox:  function(id) {
@@ -4052,6 +4056,7 @@ RepositoryMap.prototype = {
             mymarker = this.findFeature(id);
         }
 
+
         if (!mymarker && this.imageLayers) {
             mymarker = this.imageLayers[id];
 	    //Handle the id mismatch
@@ -4070,7 +4075,10 @@ RepositoryMap.prototype = {
 	    }
 	}
 
+
+	
         if (!mymarker) {
+	    console.log('cannot find marker with id:' +id);
             return;
         }
         let latLonBounds = mymarker.latLonBounds;
@@ -4597,11 +4605,24 @@ RepositoryMap.prototype = {
                     _this.showText(_this.textFeature.text);
                 }
             }
-            setTimeout(callback, 500);
+            setTimeout(callback, 1000);
         }
     },
 
     showText:  function(text) {
+	if(text.startsWith('url:')) {
+	    let url = text.substring('url:'.length);
+            $.get(url,
+		  (data) =>{
+		      this.showText(data);
+		  })
+		.done(function() {})
+		.fail(function() {
+                    console.log("Failed to load marker text url: " + url);
+		});
+	    return;
+	}
+
         $("#" + this.params.displayDiv).html(text);
     },
 
@@ -4671,6 +4692,8 @@ RepositoryMap.prototype = {
     addPoint:  function(id, point, attrs, text, textGetter) {
 	let feature = this.createPoint(id,point,attrs,text,textGetter);
 	this.getMarkersLayer().addFeatures([feature],{silent:true});
+	if(!this.pointsMap) this.pointsMap={};
+	this.pointsMap[id]=feature;
         return feature;
     },
 
@@ -4929,7 +4952,6 @@ RepositoryMap.prototype = {
 
 
     showMarkerPopup:  function(marker, fromClick, simplePopup) {
-
 	if(debugPopup) console.log("showMarkerPopup");
 
         if (this.entryClickHandler && window[this.entryClickHandler]) {
@@ -4970,7 +4992,7 @@ RepositoryMap.prototype = {
 	    return;
 	}
 
-	let inputProps = marker.inputProps || {};
+	let inputProps = marker.inputProps ?? {};
 
         this.hiliteBox(id);
         let _this = this;
@@ -4993,7 +5015,23 @@ RepositoryMap.prototype = {
 	    if(debugPopup) console.log("\tno marker text");
 	    return;
 	}
+	if(markerText.startsWith('url:')) {
+	    let url = markerText.substring('url:'.length);
+            $.get(url,
+		  (data) =>{
+		      this.showMarkerPopupInner(marker,fromClick, simplePopup,data,inputProps);
+		  })
+		.done(function() {})
+		.fail(function() {
+                    console.log("Failed to load marker text url: " + url);
+		});
+	} else {
+	    this.showMarkerPopupInner(marker,fromClick, simplePopup,markerText,inputProps);
+	}
 
+    },
+
+    showMarkerPopupInner:  function(marker, fromClick, simplePopup,markerText,inputProps) {
 
 	let html = markerText;
 	if(this.params.displayDiv) {
