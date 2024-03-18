@@ -6829,7 +6829,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             formatTableValue(request, entry, tmpSb, column, values, sdf,dateTimeSdf,
                              true);
             String tmp = tmpSb.toString();
-            tmp = tmp.replaceAll("'", "&apos;");
+	    //            tmp = tmp.replaceAll("'", "&apos;");
             sb.append(formEntry(request, column.getLabel() + ":", tmp));
         }
         sb.append(HU.formTableClose());
