@@ -1688,9 +1688,14 @@ public class MapManager extends RepositoryManager implements WikiConstants,
     }
 
     public static String mapEntryId(Entry entry) {
-	return entry.getId().replace("-","_");
+	return mapEntryId(entry.getId());
     }
 
+
+    public static String mapEntryId(String id) {
+	return id.replace("-","_");
+    }
+    
 
     public String getMapResourceUrl(Request request, Entry entry) {
 	return getMapResourceUrl(request, getEntryManager().getEntryResourceUrl(request, entry));

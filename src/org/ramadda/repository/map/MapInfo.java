@@ -1384,7 +1384,7 @@ public class MapInfo {
                            "fillColor", JsonUtil.quote(fillColor),
                            "strokeColor", JsonUtil.quote(strokeColor)));
         getJS().append(HU.call(mapVarName + ".addPoint",
-			       HU.squote(id),
+			       HU.squote(MapManager.mapEntryId(id)),
 			       llp(lat, lon), attrs,
 			       HU.squote(info))+";\n");
     }
