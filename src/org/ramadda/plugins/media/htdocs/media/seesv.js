@@ -102,7 +102,7 @@ function  SeesvForm(inputId, entry,params) {
 	    html += ".ace_editor_disabled {background:rgb(250,250,250);}\n";
 	    html += ".ace_csv_comment {color:#B7410E;}\n";
 	    html += ".ace_csv_quote {color:green;}\n";
-	    html += ".ace_csv_command {color:blue;}\n";
+	    html += ".ace_csv_command {font-weight:bold;color:blue;}\n";
 	    html += ".ramadda-seesv .ace_gutter-cell:hover {background:#ccc;}\n";	    
 	    html += "</style>";
 	    if(this.params.extraTopLeft||this.params.extraTopRight) {
