@@ -2969,7 +2969,7 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_DB, "Generate the RAMADDA db xml from the header. See <a class=ramadda-decor target=_help href=https://ramadda.org/repository/userguide/seesv.html#-db>Help</a>",
 		ARG_LABEL,"RAMADDA Database XML",
 		new Arg("properties",
-			"Name value pairs:\n\t\ttable.id &lt;new id&gt; table.name &lt;new name&gt;\ntable.cansearch false table.canlist false\ntable.icon &lt;icon&gt;, e.g., /db/database.png\n\t\t&lt;column&gt;.id &lt;new id for column&gt; &lt;column&gt;.label &lt;new label&gt;\n\t\t&lt;column&gt;.type &lt;string|enumeration|double|int|date|latlon&gt;\n\t\t&lt;column&gt;.format &lt;yyyy MM dd HH mm ss format for dates&gt;\n\t\t&lt;column&gt;.canlist false &lt;column&gt;.cansearch false\n\t\tinstall &lt;true|false&gt; install the new db table\n\t\tnukedb &lt;true|false&gt; careful! this deletes any prior created dbs\n\tyesreallynukethewholedb true - this double checks", ATTR_ROWS, "10")),
+			"Name value pairs:\n\t\ttable.id &lt;new id&gt; table.name &lt;new name&gt;\ntable.cansearch false table.canlist false\ntable.icon &lt;icon&gt;, e.g., /db/database.png\n\t\t&lt;column&gt;.id &lt;new id for column&gt; &lt;column&gt;.label &lt;new label&gt;\n\t\t&lt;column&gt;.type &lt;string|enumeration|double|int|date|latlon&gt;\n\t\t&lt;column&gt;.format &lt;yyyy MM dd HH mm ss format for dates&gt;\n\t\t&lt;column&gt;.canlist false &lt;column&gt;.cansearch false\n\t\tdb.install &lt;true|false&gt; install the new db table\n\t\tdb.droptable &lt;true|false&gt; careful! this deletes any prior created dbs\n\tdb.yesreallydroptable true - this double checks", ATTR_ROWS, "10")),
         new Cmd(CMD_DBPROPS, "Print to stdout props for db generation",
 		ARG_LABEL,"Print DB Properties",
 		new Arg("id pattern"),
@@ -3609,13 +3609,13 @@ public class Seesv implements SeesvCommands {
 
 	defineFunction(CMD_DB,1,(ctx,args,i) -> {
 		Dictionary<String, String> props =  parseProps(args.get(++i));
-		ctx.putProperty("installPlugin", ""+(Utils.equals(props.get("-install"),"true") || Utils.equals(props.get("install"),
+		ctx.putProperty("installPlugin", ""+(Utils.equals(props.get("-db.install"),"true") || Utils.equals(props.get("db.install"),
 														"true")));
-		ctx.putProperty("nukedb", ""+(Utils.equals(props.get("-nukedb"), "true")
-					      || Utils.equals(props.get("nukedb"),
+		ctx.putProperty("db.droptable", ""+(Utils.equals(props.get("-db.droptable"), "true")
+					      || Utils.equals(props.get("db.droptable"),
 							      "true")));
-		ctx.putProperty("yesreallynukethewholedb", ""+(Utils.equals(props.get("-yesreallynukethewholedb"), "true")
-					      || Utils.equals(props.get("yesreallynukethewholedb"),
+		ctx.putProperty("db.yesreallydroptable", ""+(Utils.equals(props.get("-db.yesreallydroptable"), "true")
+					      || Utils.equals(props.get("db.yesreallydroptable"),
 							      "true")));		
 		ctx.addProcessor(dbXml =  new Processor.DbXml(ctx,props));
 		ctx.setMaxRows(30);
