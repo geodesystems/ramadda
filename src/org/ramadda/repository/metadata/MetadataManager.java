@@ -265,6 +265,8 @@ public class MetadataManager extends RepositoryManager {
         List<String> files = new ArrayList<String>();
         files.add(
             "/org/ramadda/repository/resources/metadata/spdxlicenses.json");
+        files.add(
+            "/org/ramadda/repository/resources/metadata/rightsstatementslicenses.json");	
         files.addAll(getPluginManager().getLicenseFiles());
         for (String file : files) {
             JSONObject obj       = new JSONObject(IOUtil.readContents(file));
@@ -452,7 +454,7 @@ public class MetadataManager extends RepositoryManager {
         String text = license.getText();
         if (icon != null) {
             String extra = HU.image(icon,
-                                    HU.attrs("width", "40", "border", "0"));
+                                    HU.attrs("width", "60", "border", "0"));
             if (Utils.stringDefined(license.getUrl())) {
                 extra = HU.href(license.getUrl(), extra, "target=_other");
             }
