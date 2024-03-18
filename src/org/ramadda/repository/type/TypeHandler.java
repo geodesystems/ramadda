@@ -7807,8 +7807,7 @@ public class TypeHandler extends RepositoryManager {
     public List<TwoFacedObject> getEnumValues(Request request, Column column,
             Entry entry)
             throws Exception {
-        HashSet              set  = getEnumValuesInner(request, column,
-						       entry);
+        HashSet              set  = getEnumValuesInner(request, column,  entry);
 
 	//If we get back null then the column should have values
 	if(set==null) {
@@ -7963,7 +7962,13 @@ public class TypeHandler extends RepositoryManager {
         long t3 = System.currentTimeMillis();
 	//	Utils.printTimes("enum values:"+ column +" times:",t1,t2,t3);
         set = new HashSet();
-        set.addAll(Misc.toList(values));
+	if(column.isMultiEnumeration())   {
+	    for(String value: values) {
+		set.addAll(Utils.split(value,column.getDelimiter()));
+	    }
+	} else {
+	    set.addAll(Misc.toList(values));
+	}
         columnEnumValues.put(key, set);
 
         return set;
