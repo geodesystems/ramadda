@@ -277,6 +277,18 @@ public class SeesvOperator {
         return (sindices != null) && (sindices.size() > 0);
     }
 
+    public void checkUniqueRow(Row row) {
+	HashSet seen = new HashSet();
+	for(int i=0;i<row.size();i++) {
+	    Object o = row.get(i);
+	    String s = makeID(o);
+	    if(seen.contains(s))
+		throw new RuntimeException("Non unique header value:" + o);
+	    seen.add(s);
+	}
+    }
+
+
     /** _more_ */
     private Hashtable<String, Integer> debugCounts = new Hashtable<String,
 	Integer>();

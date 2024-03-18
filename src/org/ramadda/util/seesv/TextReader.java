@@ -114,7 +114,9 @@ public class TextReader implements Cloneable {
     /**  */
     private boolean hasInput = true;
 
+    private boolean uniqueHeader  =false;
 
+    
     /** _more_ */
     private String delimiter = ",";
 
@@ -769,6 +771,7 @@ public class TextReader implements Cloneable {
             throws CloneNotSupportedException {
         TextReader that = (TextReader) super.clone();
 	that.fieldAliases = this.fieldAliases;
+	that.uniqueHeader = this.uniqueHeader;
 	that.comments = this.comments;
 	that.outputPrefix = this.outputPrefix;
         that.cleanInput = this.cleanInput;
@@ -1983,6 +1986,26 @@ public class TextReader implements Cloneable {
     public Bounds getBounds() {
         return bounds;
     }
+
+    /**
+       Set the UniqueHeader property.
+
+       @param value The new value for UniqueHeader
+    **/
+    public void setUniqueHeader (boolean value) {
+	uniqueHeader = value;
+    }
+
+    /**
+       Get the UniqueHeader property.
+
+       @return The UniqueHeader
+    **/
+    public boolean getUniqueHeader () {
+	return uniqueHeader;
+    }
+
+
 
 
     /**

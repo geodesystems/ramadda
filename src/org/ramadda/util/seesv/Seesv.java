@@ -3567,6 +3567,14 @@ public class Seesv implements SeesvCommands {
 		//		ctx.addProcessor(new Filter.Start(ctx,args.get(++i)));
 		return i;
 	    });
+
+	defineFunction(CMD_UNIQUE_HEADER,0, (ctx,args,i) -> {
+		ctx.addProcessor(new Filter.UniqueHeader(ctx));
+		ctx.setUniqueHeader(true);
+		return i;
+	    });	
+	
+
 	defineFunction(CMD_ENSURE_NUMERIC,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Filter.EnsureNumeric(ctx,getCols(args.get(++i))));
 		return i;

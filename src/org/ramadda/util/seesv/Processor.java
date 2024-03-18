@@ -558,6 +558,38 @@ public abstract class Processor extends SeesvOperator {
 
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Sun, Apr 5, '20
+     * @author         Enter your name here...
+     */
+    public static class UniqueHeader extends Processor {
+
+        /**
+         * _more_
+         *
+         * @param flag _more_
+         * @param value _more_
+         */
+        public UniqueHeader(TextReader ctx) {
+        }
+
+
+        @Override
+        public Row processRow(TextReader ctx, Row row) throws Exception {
+	    if(rowCnt++==0) {
+		checkUniqueRow(row);
+	    }
+            return row;
+        }
+
+    }
+
+
+
+
 
     /**
      * Class description
@@ -2414,6 +2446,12 @@ public abstract class Processor extends SeesvOperator {
             return tableId;
         }
 
+        public boolean getDbProp(String colId, String prop, boolean dflt) {
+	    String v = getDbProp(colId,prop,null);
+	    if(v==null) return dflt;
+	    return v.equals("true");
+	}
+
         /**
          *
          * @param colId _more_
@@ -2745,8 +2783,11 @@ public abstract class Processor extends SeesvOperator {
 						      addRawInput + ""));		
                 canSort = "true".equals(getDbProp(colId, "cansort",
                         canSort + ""));
-                canList = "true".equals(getDbProp(colId, "canlist",
-                        canList + ""));
+                canList = "true".equals(getDbProp(colId, "canlist",   canList + ""));
+		if(getDbProp(colId, "after.canlist",dfltCanList)!=dfltCanList) {
+		    dfltCanList=!dfltCanList;
+		}
+
                 attrs.append(XmlUtil.attrs(new String[] {
                     "type", type, "label", label,
 		    "cansearch", "" + canSearch,

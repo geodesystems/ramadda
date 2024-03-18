@@ -133,6 +133,15 @@ public abstract class Converter extends Processor {
          */
         public ColumnSelector(TextReader ctx, List<String> cols) {
             super(cols);
+	    if(ctx.getUniqueHeader()) {
+		HashSet seen = new HashSet();
+		for(String s: cols) {
+		     s = makeID(s);
+		     if(seen.contains(s))
+			 throw new RuntimeException("Non unique header value:" + s);
+		     seen.add(s);
+		}
+	    }
         }
 
         /**
