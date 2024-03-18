@@ -5903,8 +5903,12 @@ public class Seesv implements SeesvCommands {
 	    return (Dictionary<String,String>)dict;
 	}
 
+	//Remove comment lines
+	s=s.replaceAll("(?m)^ *//.*$","");
 	s = s.replaceAll("_quote_", "\"");
 	s = s.replaceAll("\n", " ");
+
+
 	List<String> toks = Utils.parseCommandLine(s);
 	//	System.err.println("toks:" + toks);
 	Hashtable<String, String> props = new Hashtable<String, String>();
