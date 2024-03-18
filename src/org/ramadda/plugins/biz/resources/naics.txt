@@ -1,4 +1,4 @@
-11:"Agriculture, Forestry, Fishing and Hunting"
+11:Agriculture, Forestry, Fishing and Hunting
 111:Crop Production
 1111:Oilseed and Grain Farming
 11111:Soybean Farming
@@ -26,7 +26,7 @@
 111320:Citrus (except Orange) Groves
 11133:Non-Citrus Fruit and Tree Nut Farming
 111330:Non-Citrus Fruit and Tree Nut Farming
-1114:"Greenhouse, Nursery and Floriculture Production"
+1114:Greenhouse, Nursery and Floriculture Production
 11141:Food Crops Grown Under Cover
 111411:Mushroom Production
 111419:Other Food Crops Grown Under Cover
@@ -48,8 +48,8 @@
 111999:All Other Miscellaneous Crop Farming
 112:Animal Production
 1121:Cattle Ranching and Farming
-11211:"Beef Cattle Ranching and Farming, including Feedlots"
-112110:"Beef Cattle Ranching and Farming, including Feedlots"
+11211:Beef Cattle Ranching and Farming, including Feedlots
+112110:Beef Cattle Ranching and Farming, including Feedlots
 11212:Dairy Cattle and Milk Production
 112120:Dairy Cattle and Milk Production
 1122:Hog and Pig Farming
@@ -96,7 +96,7 @@
 11331:Logging
 113311:Logging (except Contract)
 113312:Contract Logging
-114:"Fishing, Hunting and Trapping"
+114:Fishing, Hunting and Trapping
 1141:Fishing
 11411:Fishing
 114113:Salt Water Fishing
@@ -114,7 +114,7 @@
 1153:Support Activities for Forestry
 11531:Support Activities for Forestry
 115310:Support Activities for Forestry
-21:"Mining, Quarrying, and Oil and Gas Extraction"
+21:Mining, Quarrying, and Oil and Gas Extraction
 211:Oil and Gas Extraction
 2111:Oil and Gas Extraction
 21111:Oil and Gas Extraction
@@ -131,7 +131,7 @@
 212210:Iron Ore Mining
 21222:Gold and Silver Ore Mining
 212220:Gold and Silver Ore Mining
-21223:"Copper, Nickel, Lead and Zinc Ore Mining"
+21223:Copper, Nickel, Lead and Zinc Ore Mining
 212231:Lead-Zinc Ore Mining
 212232:Nickel-Copper Ore Mining
 212233:Copper-Zinc Ore Mining
@@ -144,9 +144,9 @@
 212315:Limestone Mining and Quarrying
 212316:Marble Mining and Quarrying
 212317:Sandstone Mining and Quarrying
-21232:"Sand, Gravel, Clay, and Ceramic and Refractory Minerals Mining and Quarrying"
+21232:Sand, Gravel, Clay, and Ceramic and Refractory Minerals Mining and Quarrying
 212323:Sand and Gravel Mining and Quarrying
-212326:"Shale, Clay and Refractory Mineral Mining and Quarrying"
+212326:Shale, Clay and Refractory Mineral Mining and Quarrying
 21239:Other Non-Metallic Mineral Mining and Quarrying
 212392:Diamond Mining
 212393:Salt Mining
@@ -164,19 +164,19 @@
 213119:Other Support Activities for Mining
 22:Utilities
 221:Utilities
-2211:"Electric Power Generation, Transmission and Distribution"
+2211:Electric Power Generation, Transmission and Distribution
 22111:Electric Power Generation
 221111:Hydro-Electric Power Generation
 221112:Fossil-Fuel Electric Power Generation
 221113:Nuclear Electric Power Generation
 221119:Other Electric Power Generation
-22112:"Electric Power Transmission, Control and Distribution"
+22112:Electric Power Transmission, Control and Distribution
 221121:Electric Bulk Power Transmission and Control
 221122:Electric Power Distribution
 2212:Natural Gas Distribution
 22121:Natural Gas Distribution
 221210:Natural Gas Distribution
-2213:"Water, Sewage and Other Systems"
+2213:Water, Sewage and Other Systems
 22131:Water Supply and Irrigation Systems
 221310:Water Supply and Irrigation Systems
 22132:Sewage Treatment Facilities
@@ -204,14 +204,14 @@
 2372:Land Subdivision
 23721:Land Subdivision
 237210:Land Subdivision
-2373:"Highway, Street and Bridge Construction"
-23731:"Highway, Street and Bridge Construction"
-237310:"Highway, Street and Bridge Construction"
+2373:Highway, Street and Bridge Construction
+23731:Highway, Street and Bridge Construction
+237310:Highway, Street and Bridge Construction
 2379:Other Heavy and Civil Engineering Construction
 23799:Other Heavy and Civil Engineering Construction
 237990:Other Heavy and Civil Engineering Construction
 238:Specialty Trade Contractors
-2381:"Foundation, Structure, and Building Exterior Contractors"
+2381:Foundation, Structure, and Building Exterior Contractors
 23811:Poured Concrete Foundation and Structure Contractors
 238110:Poured Concrete Foundation and Structure Contractors
 23812:Structural Steel and Precast Concrete Contractors
@@ -226,13 +226,13 @@
 238160:Roofing Contractors
 23817:Siding Contractors
 238170:Siding Contractors
-23819:"Other Foundation, Structure and Building Exterior Contractors"
-238190:"Other Foundation, Structure and Building Exterior Contractors"
+23819:Other Foundation, Structure and Building Exterior Contractors
+238190:Other Foundation, Structure and Building Exterior Contractors
 2382:Building Equipment Contractors
 23821:Electrical Contractors and Other Wiring Installation Contractors
 238210:Electrical Contractors and Other Wiring Installation Contractors
-23822:"Plumbing, Heating and Air-Conditioning Contractors"
-238220:"Plumbing, Heating and Air-Conditioning Contractors"
+23822:Plumbing, Heating and Air-Conditioning Contractors
+238220:Plumbing, Heating and Air-Conditioning Contractors
 23829:Other Building Equipment Contractors
 238291:Elevator and Escalator Installation Contractors
 238299:All Other Building Equipment Contractors
@@ -282,12 +282,12 @@
 3114:Fruit and Vegetable Preserving and Specialty Food Manufacturing
 31141:Frozen Food Manufacturing
 311410:Frozen Food Manufacturing
-31142:"Fruit and Vegetable Canning, Pickling and Drying"
-311420:"Fruit and Vegetable Canning, Pickling and Drying"
+31142:Fruit and Vegetable Canning, Pickling and Drying
+311420:Fruit and Vegetable Canning, Pickling and Drying
 3115:Dairy Product Manufacturing
 31151:Dairy Product (except Frozen) Manufacturing
 311511:Fluid Milk Manufacturing
-311515:"Butter, Cheese, and Dry and Condensed Dairy Product Manufacturing"
+311515:Butter, Cheese, and Dry and Condensed Dairy Product Manufacturing
 31152:Ice Cream and Frozen Dessert Manufacturing
 311520:Ice Cream and Frozen Dessert Manufacturing
 3116:Meat Product Manufacturing
@@ -302,7 +302,7 @@
 31181:Bread and Bakery Product Manufacturing
 311811:Retail Bakeries
 311814:Commercial Bakeries and Frozen Bakery Product Manufacturing
-31182:"Cookie, Cracker and Pasta Manufacturing"
+31182:Cookie, Cracker and Pasta Manufacturing
 311821:Cookie and Cracker Manufacturing
 311822:Flour Mixes and Dough Manufacturing from Purchased Flour
 311823:Dry Pasta Manufacturing
@@ -336,9 +336,9 @@
 31222:Tobacco Product Manufacturing
 312220:Tobacco Product Manufacturing
 313:Textile Mills
-3131:"Fibre, Yarn and Thread Mills"
-31311:"Fibre, Yarn and Thread Mills"
-313110:"Fibre, Yarn and Thread Mills"
+3131:Fibre, Yarn and Thread Mills
+31311:Fibre, Yarn and Thread Mills
+313110:Fibre, Yarn and Thread Mills
 3132:Fabric Mills
 31321:Broad-Woven Fabric Mills
 313210:Broad-Woven Fabric Mills
@@ -375,15 +375,15 @@
 315210:Cut and Sew Clothing Contracting
 31522:Men's and Boys' Cut and Sew Clothing Manufacturing
 315221:Men's and Boys' Cut and Sew Underwear and Nightwear Manufacturing
-315222:"Men's and Boys' Cut and Sew Suit, Coat and Overcoat Manufacturing"
+315222:Men's and Boys' Cut and Sew Suit, Coat and Overcoat Manufacturing
 315226:Men's and Boys' Cut and Sew Shirt Manufacturing
-315227:"Men's and Boys' Cut and Sew Trouser, Slack and Jean Manufacturing"
+315227:Men's and Boys' Cut and Sew Trouser, Slack and Jean Manufacturing
 315229:Other Men's and Boys' Cut and Sew Clothing Manufacturing
 31523:Women's and Girls' Cut and Sew Clothing Manufacturing
-315231:"Women's and Girls' Cut and Sew Lingerie, Loungewear and Nightwear Manufacturing"
+315231:Women's and Girls' Cut and Sew Lingerie, Loungewear and Nightwear Manufacturing
 315232:Women's and Girls' Cut and Sew Blouse and Shirt Manufacturing
 315233:Women's and Girls' Cut and Sew Dress Manufacturing
-315234:"Women's and Girls' Cut and Sew Suit, Coat, Tailored Jacket and Skirt Manufacturing"
+315234:Women's and Girls' Cut and Sew Suit, Coat, Tailored Jacket and Skirt Manufacturing
 315239:Other Women's and Girls' Cut and Sew Clothing Manufacturing
 31529:Other Cut and Sew Clothing Manufacturing
 315291:Infants' Cut and Sew Clothing Manufacturing
@@ -408,8 +408,8 @@
 321111:Sawmills (except Shingle and Shake Mills)
 321112:Shingle and Shake Mills
 321114:Wood Preservation
-3212:"Veneer, Plywood and Engineered Wood Product Manufacturing"
-32121:"Veneer, Plywood and Engineered Wood Product Manufacturing"
+3212:Veneer, Plywood and Engineered Wood Product Manufacturing
+32121:Veneer, Plywood and Engineered Wood Product Manufacturing
 321211:Hardwood Veneer and Plywood Mills
 321212:Softwood Veneer and Plywood Mills
 321215:Structural Wood Product Manufacturing
@@ -426,7 +426,7 @@
 321992:Prefabricated Wood Building Manufacturing
 321999:All Other Miscellaneous Wood Product Manufacturing
 322:Paper Manufacturing
-3221:"Pulp, Paper and Paperboard Mills"
+3221:Pulp, Paper and Paperboard Mills
 32211:Pulp Mills
 322111:Mechanical Pulp Mills
 322112:Chemical Pulp Mills
@@ -461,7 +461,7 @@
 3241:Petroleum and Coal Product Manufacturing
 32411:Petroleum Refineries
 324110:Petroleum Refineries
-32412:"Asphalt Paving, Roofing and Saturated Materials Manufacturing"
+32412:Asphalt Paving, Roofing and Saturated Materials Manufacturing
 324121:Asphalt Paving Mixture and Block Manufacturing
 324122:Asphalt Shingle and Coating Material Manufacturing
 32419:Other Petroleum and Coal Product Manufacturing
@@ -479,12 +479,12 @@
 325189:All Other Basic Inorganic Chemical Manufacturing
 32519:Other Basic Organic Chemical Manufacturing
 325190:Other Basic Organic Chemical Manufacturing
-3252:"Resin, Synthetic Rubber, and Artificial and Synthetic Fibres and Filaments Manufacturing"
+3252:Resin, Synthetic Rubber, and Artificial and Synthetic Fibres and Filaments Manufacturing
 32521:Resin and Synthetic Rubber Manufacturing
 325210:Resin and Synthetic Rubber Manufacturing
 32522:Artificial and Synthetic Fibres and Filaments Manufacturing
 325220:Artificial and Synthetic Fibres and Filaments Manufacturing
-3253:"Pesticide, Fertilizer and Other Agricultural Chemical Manufacturing"
+3253:Pesticide, Fertilizer and Other Agricultural Chemical Manufacturing
 32531:Fertilizer Manufacturing
 325313:Chemical Fertilizer (except Potash) Manufacturing
 325314:Mixed Fertilizer Manufacturing
@@ -493,12 +493,12 @@
 3254:Pharmaceutical and Medicine Manufacturing
 32541:Pharmaceutical and Medicine Manufacturing
 325410:Pharmaceutical and Medicine Manufacturing
-3255:"Paint, Coating and Adhesive Manufacturing"
+3255:Paint, Coating and Adhesive Manufacturing
 32551:Paint and Coating Manufacturing
 325510:Paint and Coating Manufacturing
 32552:Adhesive Manufacturing
 325520:Adhesive Manufacturing
-3256:"Soap, Cleaning Compound and Toilet Preparation Manufacturing"
+3256:Soap, Cleaning Compound and Toilet Preparation Manufacturing
 32561:Soap and Cleaning Compound Manufacturing
 325610:Soap and Cleaning Compound Manufacturing
 32562:Toilet Preparation Manufacturing
@@ -516,11 +516,11 @@
 32611:Plastic Packaging Materials and Unlaminated Film and Sheet Manufacturing
 326111:Plastic Bag and Pouch Manufacturing
 326114:Plastic Film and Sheet Manufacturing
-32612:"Plastic Pipe, Pipe Fitting, and Unlaminated Profile Shape Manufacturing"
+32612:Plastic Pipe, Pipe Fitting, and Unlaminated Profile Shape Manufacturing
 326121:Unlaminated Plastic Profile Shape Manufacturing
 326122:Plastic Pipe and Pipe Fitting Manufacturing
-32613:"Laminated Plastic Plate, Sheet (except Packaging), and Shape Manufacturing"
-326130:"Laminated Plastic Plate, Sheet (except Packaging), and Shape Manufacturing"
+32613:Laminated Plastic Plate, Sheet (except Packaging), and Shape Manufacturing
+326130:Laminated Plastic Plate, Sheet (except Packaging), and Shape Manufacturing
 32614:Polystyrene Foam Product Manufacturing
 326140:Polystyrene Foam Product Manufacturing
 32615:Urethane and Other Foam Product (except Polystyrene) Manufacturing
@@ -541,8 +541,8 @@
 326290:Other Rubber Product Manufacturing
 327:Non-Metallic Mineral Product Manufacturing
 3271:Clay Product and Refractory Manufacturing
-32711:"Pottery, Ceramics and Plumbing Fixture Manufacturing"
-327110:"Pottery, Ceramics and Plumbing Fixture Manufacturing"
+32711:Pottery, Ceramics and Plumbing Fixture Manufacturing
+327110:Pottery, Ceramics and Plumbing Fixture Manufacturing
 32712:Clay Building Material and Refractory Manufacturing
 327120:Clay Building Material and Refractory Manufacturing
 3272:Glass and Glass Product Manufacturing
@@ -554,8 +554,8 @@
 327310:Cement Manufacturing
 32732:Ready-Mix Concrete Manufacturing
 327320:Ready-Mix Concrete Manufacturing
-32733:"Concrete Pipe, Brick and Block Manufacturing"
-327330:"Concrete Pipe, Brick and Block Manufacturing"
+32733:Concrete Pipe, Brick and Block Manufacturing
+327330:Concrete Pipe, Brick and Block Manufacturing
 32739:Other Concrete Product Manufacturing
 327390:Other Concrete Product Manufacturing
 3274:Lime and Gypsum Product Manufacturing
@@ -581,14 +581,14 @@
 3313:Alumina and Aluminum Production and Processing
 33131:Alumina and Aluminum Production and Processing
 331313:Primary Production of Alumina and Aluminum
-331317:"Aluminum Rolling, Drawing, Extruding and Alloying"
+331317:Aluminum Rolling, Drawing, Extruding and Alloying
 3314:Non-Ferrous Metal (except Aluminum) Production and Processing
 33141:Non-Ferrous Metal (except Aluminum) Smelting and Refining
 331410:Non-Ferrous Metal (except Aluminum) Smelting and Refining
-33142:"Copper Rolling, Drawing, Extruding and Alloying"
-331420:"Copper Rolling, Drawing, Extruding and Alloying"
-33149:"Non-Ferrous Metal (except Copper and Aluminum) Rolling, Drawing, Extruding and Alloying"
-331490:"Non-Ferrous Metal (except Copper and Aluminum) Rolling, Drawing, Extruding and Alloying"
+33142:Copper Rolling, Drawing, Extruding and Alloying
+331420:Copper Rolling, Drawing, Extruding and Alloying
+33149:Non-Ferrous Metal (except Copper and Aluminum) Rolling, Drawing, Extruding and Alloying
+331490:Non-Ferrous Metal (except Copper and Aluminum) Rolling, Drawing, Extruding and Alloying
 3315:Foundries
 33151:Ferrous Metal Foundries
 331511:Iron Foundries
@@ -612,12 +612,12 @@
 33232:Ornamental and Architectural Metal Product Manufacturing
 332321:Metal Window and Door Manufacturing
 332329:Other Ornamental and Architectural Metal Product Manufacturing
-3324:"Boiler, Tank and Shipping Container Manufacturing"
+3324:Boiler, Tank and Shipping Container Manufacturing
 33241:Power Boiler and Heat Exchanger Manufacturing
 332410:Power Boiler and Heat Exchanger Manufacturing
 33242:Metal Tank (Heavy Gauge) Manufacturing
 332420:Metal Tank (Heavy Gauge) Manufacturing
-33243:"Metal Can, Box and Other Metal Container (Light Gauge) Manufacturing"
+33243:Metal Can, Box and Other Metal Container (Light Gauge) Manufacturing
 332431:Metal Can Manufacturing
 332439:Other Metal Container Manufacturing
 3325:Hardware Manufacturing
@@ -627,14 +627,14 @@
 33261:Spring and Wire Product Manufacturing
 332611:Spring (Heavy Gauge) Manufacturing
 332619:Other Fabricated Wire Product Manufacturing
-3327:"Machine Shops, Turned Product, and Screw, Nut and Bolt Manufacturing"
+3327:Machine Shops, Turned Product, and Screw, Nut and Bolt Manufacturing
 33271:Machine Shops
 332710:Machine Shops
-33272:"Turned Product and Screw, Nut and Bolt Manufacturing"
-332720:"Turned Product and Screw, Nut and Bolt Manufacturing"
-3328:"Coating, Engraving, Heat Treating and Allied Activities"
-33281:"Coating, Engraving, Heat Treating and Allied Activities"
-332810:"Coating, Engraving, Heat Treating and Allied Activities"
+33272:Turned Product and Screw, Nut and Bolt Manufacturing
+332720:Turned Product and Screw, Nut and Bolt Manufacturing
+3328:Coating, Engraving, Heat Treating and Allied Activities
+33281:Coating, Engraving, Heat Treating and Allied Activities
+332810:Coating, Engraving, Heat Treating and Allied Activities
 3329:Other Fabricated Metal Product Manufacturing
 33291:Metal Valve Manufacturing
 332910:Metal Valve Manufacturing
@@ -642,7 +642,7 @@
 332991:Ball and Roller Bearing Manufacturing
 332999:All Other Miscellaneous Fabricated Metal Product Manufacturing
 333:Machinery Manufacturing
-3331:"Agricultural, Construction and Mining Machinery Manufacturing"
+3331:Agricultural, Construction and Mining Machinery Manufacturing
 33311:Agricultural Implement Manufacturing
 333110:Agricultural Implement Manufacturing
 33312:Construction Machinery Manufacturing
@@ -660,16 +660,16 @@
 3333:Commercial and Service Industry Machinery Manufacturing
 33331:Commercial and Service Industry Machinery Manufacturing
 333310:Commercial and Service Industry Machinery Manufacturing
-3334:"Ventilation, Heating, Air-Conditioning and Commercial Refrigeration Equipment Manufacturing"
-33341:"Ventilation, Heating, Air-Conditioning and Commercial Refrigeration Equipment Manufacturing"
+3334:Ventilation, Heating, Air-Conditioning and Commercial Refrigeration Equipment Manufacturing
+33341:Ventilation, Heating, Air-Conditioning and Commercial Refrigeration Equipment Manufacturing
 333413:Industrial and Commercial Fan and Blower and Air Purification Equipment Manufacturing
 333416:Heating Equipment and Commercial Refrigeration Equipment Manufacturing
 3335:Metalworking Machinery Manufacturing
 33351:Metalworking Machinery Manufacturing
 333511:Industrial Mould Manufacturing
 333519:Other Metalworking Machinery Manufacturing
-3336:"Engine, Turbine and Power Transmission Equipment Manufacturing"
-33361:"Engine, Turbine and Power Transmission Equipment Manufacturing"
+3336:Engine, Turbine and Power Transmission Equipment Manufacturing
+33361:Engine, Turbine and Power Transmission Equipment Manufacturing
 333611:Turbine and Turbine Generator Set Unit Manufacturing
 333619:Other Engine and Power Transmission Equipment Manufacturing
 3339:Other General-Purpose Machinery Manufacturing
@@ -696,14 +696,14 @@
 3344:Semiconductor and Other Electronic Component Manufacturing
 33441:Semiconductor and Other Electronic Component Manufacturing
 334410:Semiconductor and Other Electronic Component Manufacturing
-3345:"Navigational, Measuring, Medical and Control Instruments Manufacturing"
-33451:"Navigational, Measuring, Medical and Control Instruments Manufacturing"
+3345:Navigational, Measuring, Medical and Control Instruments Manufacturing
+33451:Navigational, Measuring, Medical and Control Instruments Manufacturing
 334511:Navigational and Guidance Instruments Manufacturing
-334512:"Measuring, Medical and Controlling Devices Manufacturing"
+334512:Measuring, Medical and Controlling Devices Manufacturing
 3346:Manufacturing and Reproducing Magnetic and Optical Media
 33461:Manufacturing and Reproducing Magnetic and Optical Media
 334610:Manufacturing and Reproducing Magnetic and Optical Media
-335:"Electrical Equipment, Appliance and Component Manufacturing"
+335:Electrical Equipment, Appliance and Component Manufacturing
 3351:Electric Lighting Equipment Manufacturing
 33511:Electric Lamp Bulb and Parts Manufacturing
 335110:Electric Lamp Bulb and Parts Manufacturing
@@ -717,9 +717,9 @@
 335229:Other Major Appliance Manufacturing
 3353:Electrical Equipment Manufacturing
 33531:Electrical Equipment Manufacturing
-335311:"Power, Distribution and Specialty Transformers Manufacturing"
+335311:Power, Distribution and Specialty Transformers Manufacturing
 335312:Motor and Generator Manufacturing
-335315:"Switchgear and Switchboard, and Relay and Industrial Control Apparatus Manufacturing"
+335315:Switchgear and Switchboard, and Relay and Industrial Control Apparatus Manufacturing
 3359:Other Electrical Equipment and Component Manufacturing
 33591:Battery Manufacturing
 335910:Battery Manufacturing
@@ -739,7 +739,7 @@
 33621:Motor Vehicle Body and Trailer Manufacturing
 336211:Motor Vehicle Body Manufacturing
 336212:Truck Trailer Manufacturing
-336215:"Motor Home, Travel Trailer and Camper Manufacturing"
+336215:Motor Home, Travel Trailer and Camper Manufacturing
 3363:Motor Vehicle Parts Manufacturing
 33631:Motor Vehicle Gasoline Engine and Engine Parts Manufacturing
 336310:Motor Vehicle Gasoline Engine and Engine Parts Manufacturing
@@ -781,9 +781,9 @@
 337127:Institutional Furniture Manufacturing
 3372:Office Furniture (including Fixtures) Manufacturing
 33721:Office Furniture (including Fixtures) Manufacturing
-337213:"Wood Office Furniture, including Custom Architectural Woodwork, Manufacturing"
+337213:Wood Office Furniture, including Custom Architectural Woodwork, Manufacturing
 337214:Office Furniture (except Wood) Manufacturing
-337215:"Showcase, Partition, Shelving and Locker Manufacturing"
+337215:Showcase, Partition, Shelving and Locker Manufacturing
 3379:Other Furniture-Related Product Manufacturing
 33791:Mattress Manufacturing
 337910:Mattress Manufacturing
@@ -809,7 +809,7 @@
 4121:Petroleum Product Wholesaler-Distributors
 41211:Petroleum Product Wholesaler-Distributors
 412110:Petroleum Product Wholesaler-Distributors
-413:"Food, Beverage and Tobacco Wholesaler-Distributors"
+413:Food, Beverage and Tobacco Wholesaler-Distributors
 4131:Food Wholesaler-Distributors
 41311:General-Line Food Wholesaler-Distributors
 413110:General-Line Food Wholesaler-Distributors
@@ -834,32 +834,32 @@
 41331:Cigarette and Tobacco Product Wholesaler-Distributors
 413310:Cigarette and Tobacco Product Wholesaler-Distributors
 414:Personal and Household Goods Wholesaler-Distributors
-4141:"Textile, Clothing and Footwear Wholesaler-Distributors"
+4141:Textile, Clothing and Footwear Wholesaler-Distributors
 41411:Clothing and Clothing Accessories Wholesaler-Distributors
 414110:Clothing and Clothing Accessories Wholesaler-Distributors
 41412:Footwear Wholesaler-Distributors
 414120:Footwear Wholesaler-Distributors
-41413:"Piece Goods, Notions and Other Dry Goods Wholesaler-Distributors"
-414130:"Piece Goods, Notions and Other Dry Goods Wholesaler-Distributors"
+41413:Piece Goods, Notions and Other Dry Goods Wholesaler-Distributors
+414130:Piece Goods, Notions and Other Dry Goods Wholesaler-Distributors
 4142:Home Entertainment Equipment and Household Appliance Wholesaler-Distributors
 41421:Home Entertainment Equipment Wholesaler-Distributors
 414210:Home Entertainment Equipment Wholesaler-Distributors
 41422:Household Appliance Wholesaler-Distributors
 414220:Household Appliance Wholesaler-Distributors
 4143:Home Furnishings Wholesaler-Distributors
-41431:"China, Glassware, Crockery and Pottery Wholesaler-Distributors"
-414310:"China, Glassware, Crockery and Pottery Wholesaler-Distributors"
+41431:China, Glassware, Crockery and Pottery Wholesaler-Distributors
+414310:China, Glassware, Crockery and Pottery Wholesaler-Distributors
 41432:Floor Covering Wholesaler-Distributors
 414320:Floor Covering Wholesaler-Distributors
-41433:"Linen, Drapery and Other Textile Furnishings Wholesaler-Distributors"
-414330:"Linen, Drapery and Other Textile Furnishings Wholesaler-Distributors"
+41433:Linen, Drapery and Other Textile Furnishings Wholesaler-Distributors
+414330:Linen, Drapery and Other Textile Furnishings Wholesaler-Distributors
 41439:Other Home Furnishings Wholesaler-Distributors
 414390:Other Home Furnishings Wholesaler-Distributors
 4144:Personal Goods Wholesaler-Distributors
 41441:Jewellery and Watch Wholesaler-Distributors
 414410:Jewellery and Watch Wholesaler-Distributors
-41442:"Book, Periodical and Newspaper Wholesaler-Distributors"
-414420:"Book, Periodical and Newspaper Wholesaler-Distributors"
+41442:Book, Periodical and Newspaper Wholesaler-Distributors
+414420:Book, Periodical and Newspaper Wholesaler-Distributors
 41443:Photographic Equipment and Supplies Wholesaler-Distributors
 414430:Photographic Equipment and Supplies Wholesaler-Distributors
 41444:Sound Recording Wholesalers
@@ -870,17 +870,17 @@
 414460:Toy and Hobby Goods Wholesaler-Distributors
 41447:Amusement and Sporting Goods Wholesaler-Distributors
 414470:Amusement and Sporting Goods Wholesaler-Distributors
-4145:"Pharmaceuticals, Toiletries, Cosmetics and Sundries Wholesaler-Distributors"
+4145:Pharmaceuticals, Toiletries, Cosmetics and Sundries Wholesaler-Distributors
 41451:Pharmaceuticals and Pharmacy Supplies Wholesaler-Distributors
 414510:Pharmaceuticals and Pharmacy Supplies Wholesaler-Distributors
-41452:"Toiletries, Cosmetics and Sundries Wholesaler-Distributors"
-414520:"Toiletries, Cosmetics and Sundries Wholesaler-Distributors"
+41452:Toiletries, Cosmetics and Sundries Wholesaler-Distributors
+414520:Toiletries, Cosmetics and Sundries Wholesaler-Distributors
 415:Motor Vehicle and Parts Wholesaler-Distributors
 4151:Motor Vehicle Wholesaler-Distributors
 41511:New and Used Automobile and Light-Duty Truck Wholesaler-Distributors
 415110:New and Used Automobile and Light-Duty Truck Wholesaler-Distributors
-41512:"Truck, Truck Tractor and Bus Wholesaler-Distributors"
-415120:"Truck, Truck Tractor and Bus Wholesaler-Distributors"
+41512:Truck, Truck Tractor and Bus Wholesaler-Distributors
+415120:Truck, Truck Tractor and Bus Wholesaler-Distributors
 41519:Recreational and Other Motor Vehicles Wholesaler-Distributors
 415190:Recreational and Other Motor Vehicles Wholesaler-Distributors
 4152:New Motor Vehicle Parts and Accessories Wholesaler-Distributors
@@ -892,50 +892,50 @@
 41531:Used Motor Vehicle Parts and Accessories Wholesaler-Distributors
 415310:Used Motor Vehicle Parts and Accessories Wholesaler-Distributors
 416:Building Material and Supplies Wholesaler-Distributors
-4161:"Electrical: Plumbing: Heating and Air-Conditioning Equipment and Supplies Wholesaler-Distributors"
+4161:Electrical: Plumbing: Heating and Air-Conditioning Equipment and Supplies Wholesaler-Distributors
 41611:Electrical Wiring and Construction Supplies Wholesaler-Distributors
 416110:Electrical Wiring and Construction Supplies Wholesaler-Distributors
-41612:"Plumbing, Heating and Air-Conditioning Equipment and Supplies Wholesaler-Distributors"
-416120:"Plumbing, Heating and Air-Conditioning Equipment and Supplies Wholesaler-Distributors"
+41612:Plumbing, Heating and Air-Conditioning Equipment and Supplies Wholesaler-Distributors
+416120:Plumbing, Heating and Air-Conditioning Equipment and Supplies Wholesaler-Distributors
 4162:Metal Service Centres
 41621:Metal Service Centres
 416210:Metal Service Centres
-4163:"Lumber, Millwork, Hardware and Other Building Supplies Wholesaler-Distributors"
+4163:Lumber, Millwork, Hardware and Other Building Supplies Wholesaler-Distributors
 41631:General-Line Building Supplies Wholesaler-Distributors
 416310:General-Line Building Supplies Wholesaler-Distributors
-41632:"Lumber, Plywood and Millwork Wholesaler-Distributors"
-416320:"Lumber, Plywood and Millwork Wholesaler-Distributors"
+41632:Lumber, Plywood and Millwork Wholesaler-Distributors
+416320:Lumber, Plywood and Millwork Wholesaler-Distributors
 41633:Hardware Wholesaler-Distributors
 416330:Hardware Wholesaler-Distributors
-41634:"Paint, Glass and Wallpaper Wholesaler-Distributors"
-416340:"Paint, Glass and Wallpaper Wholesaler-Distributors"
+41634:Paint, Glass and Wallpaper Wholesaler-Distributors
+416340:Paint, Glass and Wallpaper Wholesaler-Distributors
 41639:Other Specialty-Line Building Supplies Wholesaler-Distributors
 416390:Other Specialty-Line Building Supplies Wholesaler-Distributors
-417:"Machinery, Equipment and Supplies Wholesaler-Distributors"
-4171:"Farm, Lawn and Garden Machinery and Equipment Wholesaler-Distributors"
-41711:"Farm, Lawn and Garden Machinery and Equipment Wholesaler-Distributors"
-417110:"Farm, Lawn and Garden Machinery and Equipment Wholesaler-Distributors"
-4172:"Construction: Forestry: Mining: and Industrial Machinery: Equipment and Supplies Wholesaler-Distributors"
-41721:"Construction and Forestry Machinery, Equipment and Supplies Wholesaler-Distributors"
-417210:"Construction and Forestry Machinery, Equipment and Supplies Wholesaler-Distributors"
-41722:"Mining and Oil and Gas Well Machinery, Equipment and Supplies Wholesaler-Distributors"
-417220:"Mining and Oil and Gas Well Machinery, Equipment and Supplies Wholesaler-Distributors"
-41723:"Industrial Machinery, Equipment and Supplies Wholesaler-Distributors"
-417230:"Industrial Machinery, Equipment and Supplies Wholesaler-Distributors"
+417:Machinery, Equipment and Supplies Wholesaler-Distributors
+4171:Farm, Lawn and Garden Machinery and Equipment Wholesaler-Distributors
+41711:Farm, Lawn and Garden Machinery and Equipment Wholesaler-Distributors
+417110:Farm, Lawn and Garden Machinery and Equipment Wholesaler-Distributors
+4172:Construction: Forestry: Mining: and Industrial Machinery: Equipment and Supplies Wholesaler-Distributors
+41721:Construction and Forestry Machinery, Equipment and Supplies Wholesaler-Distributors
+417210:Construction and Forestry Machinery, Equipment and Supplies Wholesaler-Distributors
+41722:Mining and Oil and Gas Well Machinery, Equipment and Supplies Wholesaler-Distributors
+417220:Mining and Oil and Gas Well Machinery, Equipment and Supplies Wholesaler-Distributors
+41723:Industrial Machinery, Equipment and Supplies Wholesaler-Distributors
+417230:Industrial Machinery, Equipment and Supplies Wholesaler-Distributors
 4173:Computer and Communications Equipment and Supplies Wholesaler-Distributors
-41731:"Computer, Computer Peripheral and Pre-Packaged Software Wholesaler-Distributors"
-417310:"Computer, Computer Peripheral and Pre-Packaged Software Wholesaler-Distributors"
-41732:"Electronic Components: Navigational and Communications Equipment and Supplies Wholesaler-Distributors"
-417320:"Electronic Components: Navigational and Communications Equipment and Supplies Wholesaler-Distributors"
-4179:"Other Machinery, Equipment and Supplies Wholesaler-Distributors"
+41731:Computer, Computer Peripheral and Pre-Packaged Software Wholesaler-Distributors
+417310:Computer, Computer Peripheral and Pre-Packaged Software Wholesaler-Distributors
+41732:Electronic Components: Navigational and Communications Equipment and Supplies Wholesaler-Distributors
+417320:Electronic Components: Navigational and Communications Equipment and Supplies Wholesaler-Distributors
+4179:Other Machinery, Equipment and Supplies Wholesaler-Distributors
 41791:Office and Store Machinery and Equipment Wholesaler-Distributors
 417910:Office and Store Machinery and Equipment Wholesaler-Distributors
-41792:"Service Establishment Machinery, Equipment and Supplies Wholesaler-Distributors"
-417920:"Service Establishment Machinery, Equipment and Supplies Wholesaler-Distributors"
-41793:"Professional Machinery, Equipment and Supplies Wholesaler-Distributors"
-417930:"Professional Machinery, Equipment and Supplies Wholesaler-Distributors"
-41799:"All Other Machinery, Equipment and Supplies Wholesaler-Distributors"
-417990:"All Other Machinery, Equipment and Supplies Wholesaler-Distributors"
+41792:Service Establishment Machinery, Equipment and Supplies Wholesaler-Distributors
+417920:Service Establishment Machinery, Equipment and Supplies Wholesaler-Distributors
+41793:Professional Machinery, Equipment and Supplies Wholesaler-Distributors
+417930:Professional Machinery, Equipment and Supplies Wholesaler-Distributors
+41799:All Other Machinery, Equipment and Supplies Wholesaler-Distributors
+417990:All Other Machinery, Equipment and Supplies Wholesaler-Distributors
 418:Miscellaneous Wholesaler-Distributors
 4181:Recyclable Material Wholesaler-Distributors
 41811:Recyclable Metal Wholesaler-Distributors
@@ -944,7 +944,7 @@
 418120:Recyclable Paper and Paperboard Wholesaler-Distributors
 41819:Other Recyclable Material Wholesaler-Distributors
 418190:Other Recyclable Material Wholesaler-Distributors
-4182:"Paper, Paper Product and Disposable Plastic Product Wholesaler-Distributors"
+4182:Paper, Paper Product and Disposable Plastic Product Wholesaler-Distributors
 41821:Stationery and Office Supplies Wholesaler-Distributors
 418210:Stationery and Office Supplies Wholesaler-Distributors
 41822:Other Paper and Disposable Plastic Product Wholesaler-Distributors
@@ -962,14 +962,14 @@
 4189:Other Miscellaneous Wholesaler-Distributors
 41891:Log and Wood Chip Wholesaler-Distributors
 418910:Log and Wood Chip Wholesaler-Distributors
-41892:"Mineral, Ore and Precious Metal Wholesaler-Distributors"
-418920:"Mineral, Ore and Precious Metal Wholesaler-Distributors"
+41892:Mineral, Ore and Precious Metal Wholesaler-Distributors
+418920:Mineral, Ore and Precious Metal Wholesaler-Distributors
 41893:Second-Hand Goods (except Machinery and Automotive) Wholesaler-Distributors
 418930:Second-Hand Goods (except Machinery and Automotive) Wholesaler-Distributors
 41899:All Other Wholesaler-Distributors
 418990:All Other Wholesaler-Distributors
-419:"Wholesale Electronic Markets, and Agents and Brokers"
-4191:"Wholesale Electronic Markets, and Agents and Brokers"
+419:Wholesale Electronic Markets, and Agents and Brokers
+4191:Wholesale Electronic Markets, and Agents and Brokers
 41911:Business-to-Business Electronic Markets
 419110:Business-to-Business Electronic Markets
 41912:Wholesale Trade Agents and Brokers
@@ -983,9 +983,9 @@
 4412:Other Motor Vehicle Dealers
 44121:Recreational Vehicle Dealers
 441210:Recreational Vehicle Dealers
-44122:"Motorcycle, Boat and Other Motor Vehicle Dealers"
-441220:"Motorcycle, Boat and Other Motor Vehicle Dealers"
-4413:"Automotive Parts, Accessories and Tire Stores"
+44122:Motorcycle, Boat and Other Motor Vehicle Dealers
+441220:Motorcycle, Boat and Other Motor Vehicle Dealers
+4413:Automotive Parts, Accessories and Tire Stores
 44131:Automotive Parts and Accessories Stores
 441310:Automotive Parts and Accessories Stores
 44132:Tire Dealers
@@ -1003,8 +1003,8 @@
 442298:All Other Home Furnishings Stores
 443:Electronics and Appliance Stores
 4431:Electronics and Appliance Stores
-44311:"Appliance, Television and Other Electronics Stores"
-443110:"Appliance, Television and Other Electronics Stores"
+44311:Appliance, Television and Other Electronics Stores
+443110:Appliance, Television and Other Electronics Stores
 44312:Computer and Software Stores
 443120:Computer and Software Stores
 44313:Camera and Photographic Supplies Stores
@@ -1041,15 +1041,15 @@
 445291:Baked Goods Stores
 445292:Confectionery and Nut Stores
 445299:All Other Specialty Food Stores
-4453:"Beer, Wine and Liquor Stores"
-44531:"Beer, Wine and Liquor Stores"
-445310:"Beer, Wine and Liquor Stores"
+4453:Beer, Wine and Liquor Stores
+44531:Beer, Wine and Liquor Stores
+445310:Beer, Wine and Liquor Stores
 446:Health and Personal Care Stores
 4461:Health and Personal Care Stores
 44611:Pharmacies and Drug Stores
 446110:Pharmacies and Drug Stores
-44612:"Cosmetics, Beauty Supplies and Perfume Stores"
-446120:"Cosmetics, Beauty Supplies and Perfume Stores"
+44612:Cosmetics, Beauty Supplies and Perfume Stores
+446120:Cosmetics, Beauty Supplies and Perfume Stores
 44613:Optical Goods Stores
 446130:Optical Goods Stores
 44619:Other Health and Personal Care Stores
@@ -1079,26 +1079,26 @@
 4482:Shoe Stores
 44821:Shoe Stores
 448210:Shoe Stores
-4483:"Jewellery, Luggage and Leather Goods Stores"
+4483:Jewellery, Luggage and Leather Goods Stores
 44831:Jewellery Stores
 448310:Jewellery Stores
 44832:Luggage and Leather Goods Stores
 448320:Luggage and Leather Goods Stores
-451:"Sporting Goods, Hobby, Book and Music Stores"
-4511:"Sporting Goods, Hobby and Musical Instrument Stores"
+451:Sporting Goods, Hobby, Book and Music Stores
+4511:Sporting Goods, Hobby and Musical Instrument Stores
 45111:Sporting Goods Stores
 451110:Sporting Goods Stores
-45112:"Hobby, Toy and Game Stores"
-451120:"Hobby, Toy and Game Stores"
-45113:"Sewing, Needlework and Piece Goods Stores"
-451130:"Sewing, Needlework and Piece Goods Stores"
+45112:Hobby, Toy and Game Stores
+451120:Hobby, Toy and Game Stores
+45113:Sewing, Needlework and Piece Goods Stores
+451130:Sewing, Needlework and Piece Goods Stores
 45114:Musical Instrument and Supplies Stores
 451140:Musical Instrument and Supplies Stores
-4512:"Book, Periodical and Music Stores"
+4512:Book, Periodical and Music Stores
 45121:Book Stores and News Dealers
 451210:Book Stores and News Dealers
-45122:"Pre-Recorded Tape, Compact Disc and Record Stores"
-451220:"Pre-Recorded Tape, Compact Disc and Record Stores"
+45122:Pre-Recorded Tape, Compact Disc and Record Stores
+451220:Pre-Recorded Tape, Compact Disc and Record Stores
 452:General Merchandise Stores
 4521:Department Stores
 45211:Department Stores
@@ -1113,11 +1113,11 @@
 4531:Florists
 45311:Florists
 453110:Florists
-4532:"Office Supplies, Stationery and Gift Stores"
+4532:Office Supplies, Stationery and Gift Stores
 45321:Office Supplies and Stationery Stores
 453210:Office Supplies and Stationery Stores
-45322:"Gift, Novelty and Souvenir Stores"
-453220:"Gift, Novelty and Souvenir Stores"
+45322:Gift, Novelty and Souvenir Stores
+453220:Gift, Novelty and Souvenir Stores
 4533:Used Merchandise Stores
 45331:Used Merchandise Stores
 453310:Used Merchandise Stores
@@ -1162,34 +1162,34 @@
 482113:Mainline Freight Rail Transportation
 482114:Passenger Rail Transportation
 483:Water Transportation
-4831:"Deep Sea, Coastal and Great Lakes Water Transportation"
-48311:"Deep Sea, Coastal and Great Lakes Water Transportation"
-483115:"Deep Sea, Coastal and Great Lakes Water Transportation (except by Ferries)"
-483116:"Deep Sea, Coastal and Great Lakes Water Transportation by Ferries"
+4831:Deep Sea, Coastal and Great Lakes Water Transportation
+48311:Deep Sea, Coastal and Great Lakes Water Transportation
+483115:Deep Sea, Coastal and Great Lakes Water Transportation (except by Ferries)
+483116:Deep Sea, Coastal and Great Lakes Water Transportation by Ferries
 4832:Inland Water Transportation
 48321:Inland Water Transportation
 483213:Inland Water Transportation (except by Ferries)
 483214:Inland Water Transportation by Ferries
 484:Truck Transportation
 4841:General Freight Trucking
-48411:"General Freight Trucking, Local"
-484110:"General Freight Trucking, Local"
-48412:"General Freight Trucking, Long Distance"
-484121:"General Freight Trucking, Long Distance, Truck-Load"
-484122:"General Freight Trucking, Long Distance, Less Than Truck-Load"
+48411:General Freight Trucking, Local
+484110:General Freight Trucking, Local
+48412:General Freight Trucking, Long Distance
+484121:General Freight Trucking, Long Distance, Truck-Load
+484122:General Freight Trucking, Long Distance, Less Than Truck-Load
 4842:Specialized Freight Trucking
 48421:Used Household and Office Goods Moving
 484210:Used Household and Office Goods Moving
-48422:"Specialized Freight (except Used Goods) Trucking, Local"
-484221:"Bulk Liquids Trucking, Local"
-484222:"Dry Bulk Materials Trucking, Local"
-484223:"Forest Products Trucking, Local"
-484229:"Other Specialized Freight (except Used Goods) Trucking, Local"
-48423:"Specialized Freight (except Used Goods) Trucking, Long Distance"
-484231:"Bulk Liquids Trucking, Long Distance"
-484232:"Dry Bulk Materials Trucking, Long Distance"
-484233:"Forest Products Trucking, Long Distance"
-484239:"Other Specialized Freight (except Used Goods) Trucking, Long Distance"
+48422:Specialized Freight (except Used Goods) Trucking, Local
+484221:Bulk Liquids Trucking, Local
+484222:Dry Bulk Materials Trucking, Local
+484223:Forest Products Trucking, Local
+484229:Other Specialized Freight (except Used Goods) Trucking, Local
+48423:Specialized Freight (except Used Goods) Trucking, Long Distance
+484231:Bulk Liquids Trucking, Long Distance
+484232:Dry Bulk Materials Trucking, Long Distance
+484233:Forest Products Trucking, Long Distance
+484239:Other Specialized Freight (except Used Goods) Trucking, Long Distance
 485:Transit and Ground Passenger Transportation
 4851:Urban Transit Systems
 48511:Urban Transit Systems
@@ -1224,15 +1224,15 @@
 48699:All Other Pipeline Transportation
 486990:All Other Pipeline Transportation
 487:Scenic and Sightseeing Transportation
-4871:"Scenic and Sightseeing Transportation, Land"
-48711:"Scenic and Sightseeing Transportation, Land"
-487110:"Scenic and Sightseeing Transportation, Land"
-4872:"Scenic and Sightseeing Transportation, Water"
-48721:"Scenic and Sightseeing Transportation, Water"
-487210:"Scenic and Sightseeing Transportation, Water"
-4879:"Scenic and Sightseeing Transportation, Other"
-48799:"Scenic and Sightseeing Transportation, Other"
-487990:"Scenic and Sightseeing Transportation, Other"
+4871:Scenic and Sightseeing Transportation, Land
+48711:Scenic and Sightseeing Transportation, Land
+487110:Scenic and Sightseeing Transportation, Land
+4872:Scenic and Sightseeing Transportation, Water
+48721:Scenic and Sightseeing Transportation, Water
+487210:Scenic and Sightseeing Transportation, Water
+4879:Scenic and Sightseeing Transportation, Other
+48799:Scenic and Sightseeing Transportation, Other
+487990:Scenic and Sightseeing Transportation, Other
 488:Support Activities for Transportation
 4881:Support Activities for Air Transportation
 48811:Airport Operations
@@ -1289,7 +1289,7 @@
 493190:Other Warehousing and Storage
 51:Information and Cultural Industries
 511:Publishing Industries (except Internet)
-5111:"Newspaper, Periodical, Book and Directory Publishers"
+5111:Newspaper, Periodical, Book and Directory Publishers
 51111:Newspaper Publishers
 511110:Newspaper Publishers
 51112:Periodical Publishers
@@ -1347,10 +1347,10 @@
 5179:Other Telecommunications
 51791:Other Telecommunications
 517910:Other Telecommunications
-518:"Data Processing, Hosting, and Related Services"
-5182:"Data Processing, Hosting, and Related Services"
-51821:"Data Processing, Hosting, and Related Services"
-518210:"Data Processing, Hosting, and Related Services"
+518:Data Processing, Hosting, and Related Services
+5182:Data Processing, Hosting, and Related Services
+51821:Data Processing, Hosting, and Related Services
+518210:Data Processing, Hosting, and Related Services
 519:Other Information Services
 5191:Other Information Services
 51911:News Syndicates
@@ -1358,8 +1358,8 @@
 51912:Libraries and Archives
 519121:Libraries
 519122:Archives
-51913:"Internet Publishing and Broadcasting, and Web Search Portals"
-519130:"Internet Publishing and Broadcasting, and Web Search Portals"
+51913:Internet Publishing and Broadcasting, and Web Search Portals
+519130:Internet Publishing and Broadcasting, and Web Search Portals
 51919:All Other Information Services
 519190:All Other Information Services
 52:Finance and Insurance
@@ -1387,12 +1387,12 @@
 5223:Activities Related to Credit Intermediation
 52231:Mortgage and Non-mortgage Loan Brokers
 522310:Mortgage and Non-mortgage Loan Brokers
-52232:"Financial Transactions Processing, Reserve and Clearing House Activities"
+52232:Financial Transactions Processing, Reserve and Clearing House Activities
 522321:Central Credit Unions
 522329:Other Financial Transactions Processing and Clearing House Activities
 52239:Other Activities Related to Credit Intermediation
 522390:Other Activities Related to Credit Intermediation
-523:"Securities, Commodity Contracts, and Other Financial Investment and Related Activities"
+523:Securities, Commodity Contracts, and Other Financial Investment and Related Activities
 5231:Securities and Commodity Contracts Intermediation and Brokerage
 52311:Investment Banking and Securities Dealing
 523110:Investment Banking and Securities Dealing
@@ -1416,16 +1416,16 @@
 523990:All Other Financial Investment Activities
 524:Insurance Carriers and Related Activities
 5241:Insurance Carriers
-52411:"Direct Life, Health and Medical Insurance Carriers"
-524111:"Direct Individual Life, Health and Medical Insurance Carriers"
-524112:"Direct Group Life, Health and Medical Insurance Carriers"
-52412:"Direct Insurance (except Life, Health and Medical) Carriers"
+52411:Direct Life, Health and Medical Insurance Carriers
+524111:Direct Individual Life, Health and Medical Insurance Carriers
+524112:Direct Group Life, Health and Medical Insurance Carriers
+52412:Direct Insurance (except Life, Health and Medical) Carriers
 524121:Direct General Property and Casualty Insurance Carriers
-524122:"Direct, Private, Automobile Insurance Carriers"
-524123:"Direct, Public, Automobile Insurance Carriers"
+524122:Direct, Private, Automobile Insurance Carriers
+524123:Direct, Public, Automobile Insurance Carriers
 524124:Direct Property Insurance Carriers
 524125:Direct Liability Insurance Carriers
-524129:"Other Direct Insurance (except Life, Health and Medical) Carriers"
+524129:Other Direct Insurance (except Life, Health and Medical) Carriers
 52413:Reinsurance Carriers
 524131:Life Reinsurance Carriers
 524132:Accident and Sickness Reinsurance Carriers
@@ -1433,7 +1433,7 @@
 524134:Property Reinsurance Carriers
 524135:Liability Reinsurance Carriers
 524139:General and Other Reinsurance Carriers
-5242:"Agencies, Brokerages and Other Insurance Related Activities"
+5242:Agencies, Brokerages and Other Insurance Related Activities
 52421:Insurance Agencies and Brokerages
 524210:Insurance Agencies and Brokerages
 52429:Other Insurance Related Activities
@@ -1486,8 +1486,8 @@
 53211:Passenger Car Rental and Leasing
 532111:Passenger Car Rental
 532112:Passenger Car Leasing
-53212:"Truck, Utility Trailer and RV (Recreational Vehicle) Rental and Leasing"
-532120:"Truck, Utility Trailer and RV (Recreational Vehicle) Rental and Leasing"
+53212:Truck, Utility Trailer and RV (Recreational Vehicle) Rental and Leasing
+532120:Truck, Utility Trailer and RV (Recreational Vehicle) Rental and Leasing
 5322:Consumer Goods Rental
 53221:Consumer Electronics and Appliance Rental
 532210:Consumer Electronics and Appliance Rental
@@ -1501,8 +1501,8 @@
 53231:General Rental Centres
 532310:General Rental Centres
 5324:Commercial and Industrial Machinery and Equipment Rental and Leasing
-53241:"Construction: Transportation: Mining: and Forestry Machinery and Equipment Rental and Leasing"
-532410:"Construction: Transportation: Mining: and Forestry Machinery and Equipment Rental and Leasing"
+53241:Construction: Transportation: Mining: and Forestry Machinery and Equipment Rental and Leasing
+532410:Construction: Transportation: Mining: and Forestry Machinery and Equipment Rental and Leasing
 53242:Office Machinery and Equipment Rental and Leasing
 532420:Office Machinery and Equipment Rental and Leasing
 53249:Other Commercial and Industrial Machinery and Equipment Rental and Leasing
@@ -1511,7 +1511,7 @@
 5331:Lessors of Non-Financial Intangible Assets (Except Copyrighted Works)
 53311:Lessors of Non-Financial Intangible Assets (Except Copyrighted Works)
 533110:Lessors of Non-Financial Intangible Assets (Except Copyrighted Works)
-541:"Professional, Scientific and Technical Services"
+541:Professional, Scientific and Technical Services
 5411:Legal Services
 54111:Offices of Lawyers
 541110:Offices of Lawyers
@@ -1519,12 +1519,12 @@
 541120:Offices of Notaries
 54119:Other Legal Services
 541190:Other Legal Services
-5412:"Accounting, Tax Preparation, Bookkeeping and Payroll Services"
-54121:"Accounting, Tax Preparation, Bookkeeping and Payroll Services"
+5412:Accounting, Tax Preparation, Bookkeeping and Payroll Services
+54121:Accounting, Tax Preparation, Bookkeeping and Payroll Services
 541212:Offices of Accountants
 541213:Tax Preparation Services
-541215:"Bookkeeping, Payroll and Related Services"
-5413:"Architectural, Engineering and Related Services"
+541215:Bookkeeping, Payroll and Related Services
+5413:Architectural, Engineering and Related Services
 54131:Architectural Services
 541310:Architectural Services
 54132:Landscape Architectural Services
@@ -1553,7 +1553,7 @@
 5415:Computer Systems Design and Related Services
 54151:Computer Systems Design and Related Services
 541510:Computer Systems Design and Related Services
-5416:"Management, Scientific and Technical Consulting Services"
+5416:Management, Scientific and Technical Consulting Services
 54161:Management Consulting Services
 541611:Administrative Management and General Management Consulting Services
 541612:Human Resources Consulting Services
@@ -1563,11 +1563,11 @@
 54169:Other Scientific and Technical Consulting Services
 541690:Other Scientific and Technical Consulting Services
 5417:Scientific Research and Development Services
-54171:"Research and Development in the Physical, Engineering and Life Sciences"
-541710:"Research and Development in the Physical, Engineering and Life Sciences"
+54171:Research and Development in the Physical, Engineering and Life Sciences
+541710:Research and Development in the Physical, Engineering and Life Sciences
 54172:Research and Development in the Social Sciences and Humanities
 541720:Research and Development in the Social Sciences and Humanities
-5418:"Advertising, Public Relations, and Related Services"
+5418:Advertising, Public Relations, and Related Services
 54181:Advertising Agencies
 541810:Advertising Agencies
 54182:Public Relations Services
@@ -1585,7 +1585,7 @@
 54189:Other Services Related to Advertising
 541891:Specialty Advertising Distributors
 541899:All Other Services Related to Advertising
-5419:"Other Professional, Scientific and Technical Services"
+5419:Other Professional, Scientific and Technical Services
 54191:Marketing Research and Public Opinion Polling
 541910:Marketing Research and Public Opinion Polling
 54192:Photographic Services
@@ -1594,15 +1594,15 @@
 541930:Translation and Interpretation Services
 54194:Veterinary Services
 541940:Veterinary Services
-54199:"All Other Professional, Scientific and Technical Services"
-541990:"All Other Professional, Scientific and Technical Services"
+54199:All Other Professional, Scientific and Technical Services
+541990:All Other Professional, Scientific and Technical Services
 55:Management of Companies and Enterprises
 551:Management of Companies and Enterprises
 5511:Management of Companies and Enterprises
 55111:Management of Companies and Enterprises
 551113:Holding Companies
 551114:Head Offices
-56:"Administrative and Support, Waste Management and Remediation Services"
+56:Administrative and Support, Waste Management and Remediation Services
 561:Administrative and Support Services
 5611:Office Administrative Services
 56111:Office Administrative Services
@@ -1638,7 +1638,7 @@
 56159:Other Travel Arrangement and Reservation Services
 561590:Other Travel Arrangement and Reservation Services
 5616:Investigation and Security Services
-56161:"Investigation, Guard and Armoured Car Services"
+56161:Investigation, Guard and Armoured Car Services
 561611:Investigation Services
 561612:Security Guard and Patrol Services
 561613:Armoured Car Services
@@ -1727,8 +1727,8 @@
 621320:Offices of Optometrists
 62133:Offices of Mental Health Practitioners (except Physicians)
 621330:Offices of Mental Health Practitioners (except Physicians)
-62134:"Offices of Physical, Occupational, and Speech Therapists and Audiologists"
-621340:"Offices of Physical, Occupational, and Speech Therapists and Audiologists"
+62134:Offices of Physical, Occupational, and Speech Therapists and Audiologists
+621340:Offices of Physical, Occupational, and Speech Therapists and Audiologists
 62139:Offices of All Other Health Practitioners
 621390:Offices of All Other Health Practitioners
 6214:Out-Patient Care Centres
@@ -1766,7 +1766,7 @@
 6231:Nursing Care Facilities
 62311:Nursing Care Facilities
 623110:Nursing Care Facilities
-6232:"Residential Developmental Handicap, Mental Health and Substance Abuse Facilities"
+6232:Residential Developmental Handicap, Mental Health and Substance Abuse Facilities
 62321:Residential Developmental Handicap Facilities
 623210:Residential Developmental Handicap Facilities
 62322:Residential Mental Health and Substance Abuse Facilities
@@ -1789,7 +1789,7 @@
 624120:Services for the Elderly and Persons with Disabilities
 62419:Other Individual and Family Services
 624190:Other Individual and Family Services
-6242:"Community Food and Housing, and Emergency and Other Relief Services"
+6242:Community Food and Housing, and Emergency and Other Relief Services
 62421:Community Food Services
 624210:Community Food Services
 62422:Community Housing Services
@@ -1802,7 +1802,7 @@
 6244:Child Day-Care Services
 62441:Child Day-Care Services
 624410:Child Day-Care Services
-711:"Performing Arts, Spectator Sports and Related Industries"
+711:Performing Arts, Spectator Sports and Related Industries
 7111:Performing Arts Companies
 71111:Theatre Companies and Dinner Theatres
 711111:Theatre (except Musical) Companies
@@ -1818,21 +1818,21 @@
 711211:Sports Teams and Clubs
 711213:Horse Race Tracks
 711218:Other Spectator Sports
-7113:"Promoters (Presenters) of Performing Arts, Sports and Similar Events"
-71131:"Promoters (Presenters) of Performing Arts, Sports and Similar Events with Facilities"
+7113:Promoters (Presenters) of Performing Arts, Sports and Similar Events
+71131:Promoters (Presenters) of Performing Arts, Sports and Similar Events with Facilities
 711311:Live Theatres and Other Performing Arts Presenters with Facilities
 711319:Sports Stadiums and Other Presenters with Facilities
-71132:"Promoters (Presenters) of Performing Arts, Sports and Similar Events without Facilities"
+71132:Promoters (Presenters) of Performing Arts, Sports and Similar Events without Facilities
 711321:Performing Arts Promoters (Presenters) without Facilities
 711322:Festivals without Facilities
 711329:Sports Presenters and Other Presenters without Facilities
-7114:"Agents and Managers for Artists, Athletes, Entertainers and Other Public Figures"
-71141:"Agents and Managers for Artists, Athletes, Entertainers and Other Public Figures"
-711410:"Agents and Managers for Artists, Athletes, Entertainers and Other Public Figures"
-7115:"Independent Artists, Writers and Performers"
-71151:"Independent Artists, Writers and Performers"
-711511:"Independent Artists, Visual Arts"
-711512:"Independent Actors, Comedians and Performers"
+7114:Agents and Managers for Artists, Athletes, Entertainers and Other Public Figures
+71141:Agents and Managers for Artists, Athletes, Entertainers and Other Public Figures
+711410:Agents and Managers for Artists, Athletes, Entertainers and Other Public Figures
+7115:Independent Artists, Writers and Performers
+71151:Independent Artists, Writers and Performers
+711511:Independent Artists, Visual Arts
+711512:Independent Actors, Comedians and Performers
 711513:Independent Writers and Authors
 712:Heritage Institutions
 7121:Heritage Institutions
@@ -1846,7 +1846,7 @@
 712130:Zoos and Botanical Gardens
 71219:Nature Parks and Other Similar Institutions
 712190:Nature Parks and Other Similar Institutions
-713:"Amusement, Gambling and Recreation Industries"
+713:Amusement, Gambling and Recreation Industries
 7131:Amusement Parks and Arcades
 71311:Amusement and Theme Parks
 713110:Amusement and Theme Parks
@@ -1917,8 +1917,8 @@
 811111:General Automotive Repair
 811112:Automotive Exhaust System Repair
 811119:Other Automotive Mechanical and Electrical Repair and Maintenance
-81112:"Automotive Body, Paint, Interior and Glass Repair"
-811121:"Automotive Body, Paint and Interior Repair and Maintenance"
+81112:Automotive Body, Paint, Interior and Glass Repair
+811121:Automotive Body, Paint and Interior Repair and Maintenance
 811122:Automotive Glass Replacement Shops
 81119:Other Automotive Repair and Maintenance
 811192:Car Washes
@@ -1969,7 +1969,7 @@
 812930:Parking Lots and Garages
 81299:All Other Personal Services
 812990:All Other Personal Services
-813:"Religious, Grant-Making, Civic, and Professional and Similar Organizations"
+813:Religious, Grant-Making, Civic, and Professional and Similar Organizations
 8131:Religious Organizations
 81311:Religious Organizations
 813110:Religious Organizations
@@ -1982,7 +1982,7 @@
 8134:Civic and Social Organizations
 81341:Civic and Social Organizations
 813410:Civic and Social Organizations
-8139:"Business, Professional, Labour and Other Membership Organizations"
+8139:Business, Professional, Labour and Other Membership Organizations
 81391:Business Associations
 813910:Business Associations
 81392:Professional Organizations
@@ -2013,13 +2013,13 @@
 911240:Federal Regulatory Services
 91129:Other Federal Protective Services
 911290:Other Federal Protective Services
-9113:"Federal Labour, Employment and Immigration Services"
+9113:Federal Labour, Employment and Immigration Services
 91131:Federal Labour and Employment Services
 911310:Federal Labour and Employment Services
 91132:Immigration Services
 911320:Immigration Services
-91139:"Other Federal Labour, Employment and Immigration Services"
-911390:"Other Federal Labour, Employment and Immigration Services"
+91139:Other Federal Labour, Employment and Immigration Services
+911390:Other Federal Labour, Employment and Immigration Services
 9114:Foreign Affairs and International Assistance
 91141:Foreign Affairs
 911410:Foreign Affairs
@@ -2048,7 +2048,7 @@
 9129:Other Provincial and Territorial Public Administration
 91291:Other Provincial and Territorial Public Administration
 912910:Other Provincial and Territorial Public Administration
-913:"Local, Municipal and Regional Public Administration"
+913:Local, Municipal and Regional Public Administration
 9131:Municipal Protective Services
 91311:Municipal Courts of Law
 913110:Municipal Courts of Law
@@ -2062,9 +2062,9 @@
 913150:Municipal Regulatory Services
 91319:Other Municipal Protective Services
 913190:Other Municipal Protective Services
-9139:"Other Local, Municipal and Regional Public Administration"
-91391:"Other Local, Municipal and Regional Public Administration"
-913910:"Other Local, Municipal and Regional Public Administration"
+9139:Other Local, Municipal and Regional Public Administration
+91391:Other Local, Municipal and Regional Public Administration
+913910:Other Local, Municipal and Regional Public Administration
 914:Aboriginal Public Administration
 9141:Aboriginal Public Administration
 91411:Aboriginal Public Administration
