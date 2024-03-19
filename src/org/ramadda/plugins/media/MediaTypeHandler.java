@@ -272,10 +272,12 @@ public class MediaTypeHandler extends GenericTypeHandler {
         String pointsDiv = HU.div("", HU.attrs("id", pointsDivId));
 	String bottom = HU.div(searchDiv + pointsDiv,HU.style("margin-top","5px","width",HU.makeDim(width,"px")));
 	String style = "width:" + HU.makeDim(width,"px")+";";
+	style="";
 	if(vertical)
 	    style+="display:flex;justify-content:center;";
 	else
-	    style+="display:flex;justify-content:right;";
+	    //	    style+="display:flex;justify-content:right;";
+	    style+="text-align:right;";
 	player = HU.div("\n"+player+"\n", HU.attrs("id", id,"style",style));
 	if(!vertical) {
 	    sb.append("<div  class='row'  >");
