@@ -1121,14 +1121,16 @@ public class GenericTypeHandler extends TypeHandler {
         if (typeHandler == null) {
             typeHandler = this;
         }
+
+	if(props==null) props = new Hashtable();
+
         StringBuilder parentBuff = super.getInnerEntryContent(entry, request,
                                        typeHandler, output, showDescription,
                                        showResource, linkToDownload, props);
-        if ((props != null)
-                && Misc.equals(props.get("showDetails"), "false")) {
+        if (Misc.equals(props.get("showDetails"), "false")) {
             return parentBuff;
         }
-
+        boolean onlyDetails = Misc.equals(props.get("onlyDetails"), "false");
         //        if (shouldShowInHtml(request, entry, output)) {
         if (true) {
             StringBuilder myBuff = new StringBuilder();
@@ -1153,13 +1155,13 @@ public class GenericTypeHandler extends TypeHandler {
 		}
             }
 
+	    if(onlyDetails)
+		return myBuff;
             if (getMeFirst()) {
                 myBuff.append(parentBuff);
-
                 return myBuff;
             } else {
                 parentBuff.append(myBuff);
-
                 return parentBuff;
             }
         } else if (output.equals(XmlOutputHandler.OUTPUT_XML)) {}

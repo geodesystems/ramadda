@@ -3677,25 +3677,6 @@ public class TypeHandler extends RepositoryManager {
                 showCreated = false;
             }
 
-
-
-            /**
-             * boolean isPdf = entry.getResource().getPath().endsWith(".pdf");
-             * if(showResource && isPdf) {
-             *   if(getAccessManager().canDownload(request, entry)) {
-             *       String getFileUrl = getEntryResourceUrl(request, entry);
-             *       String embed = HU.tag(HU.TAG_OBJECT,
-             *                                    HU.attrs(
-             *                                                    HU.ATTR_TYPE,"application/pdf",
-             *                                                    HU.ATTR_SRC, getFileUrl,
-             *                                                    HU.ATTR_WIDTH, "600",
-             *                                                    HU.ATTR_HEIGHT, "1000"),
-             *                                    msg("PDF view not supported"));
-             *       sb.append(HU.col(embed, " colspan=2 "));
-             *   }
-             * }
-             */
-
             if (showResource && entryIsImage) {
                 String width = "600";
                 if (request.isMobile()) {
@@ -3879,24 +3860,6 @@ public class TypeHandler extends RepositoryManager {
                                         formatLocation(entry.getSouth(),
                                             +entry.getEast())));
                 } else if (entry.hasAreaDefined()) {
-                    /*
-                    String img =
-                        HU.img(request.makeUrl(getRepository().URL_GETMAP,
-                            ARG_SOUTH, "" + entry.getSouth(), ARG_WEST,
-                            "" + entry.getWest(), ARG_NORTH,
-                            "" + entry.getNorth(), ARG_EAST,
-                            "" + entry.getEast()));
-                    //                    sb.append(HU.formEntry(msgLabel("Area"), img));
-                    String areaHtml = "<table><tr align=center><td>"
-                                      + entry.getNorth()
-                                      + "</td></tr><tr align=center><td>"
-                                      + entry.getWest() + "  "
-                                      + entry.getEast()
-                                      + "</td></tr><tr align=center><td>"
-                                      + entry.getSouth()
-                                      + "</td></tr></table>";
-                    sb.append(HU.formEntry(msgLabel("Area"), areaHtml));
-                    */
                 }
             }
             if (entry.hasAltitude() && (entry.getAltitude() != 0)) {
