@@ -5,16 +5,16 @@
    <column name="media_height" type="string" label="Height"  default="380" showinhtml="false"/>
    <column name="transcriptions_json" type="clob" label="Transcriptions" showinhtml="false"
 	   candisplay="false" xeditable="false"/>     
-   <wikimacro name="annotated_media" label="Image Overlay">
-   <![CDATA[{{annotated_media #entry="${entry}"}}]]></wikimacro>
+   <wikimacro name="annotated_media" label="Annotated Media">
+   <![CDATA[{{annotated_media vertical=false #entry="${entry}"}}]]></wikimacro>
      <wiki><![CDATA[
 +section title="{{name}}" 
-{{noheading}}
 {{description wikify=true}}
 {{tags}}
 {{annotated_media}}
 :vspace 1em
 ----
+:vspace 1em
 :heading Information
 {{information details=true}}
 -section

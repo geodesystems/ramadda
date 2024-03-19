@@ -7,11 +7,26 @@
 .ramadda-media-point {
 }
     
-.ramadda-media-point-details-inner {
-    background: #efefef;
-    padding:10px;
+.ramadda-media-point-details {
+    margin-left:20px;
+}
+
+.ramadda-media-annotations {
     padding-left:20px;
-    border-bottom:1px solid #ccc;
+}
+
+.ramadda-media-player {
+}
+
+.ramadda-media-point-header {
+    padding-top:2px;
+    padding-bottom:2px;    
+}
+.ramadda-media-point-details-inner {
+    background: #F0F8FF;
+    padding:5px;
+    padding-left:10px;
+    border-bottom:var(--basic-border);
 }
 
 .ramadda-media-search {

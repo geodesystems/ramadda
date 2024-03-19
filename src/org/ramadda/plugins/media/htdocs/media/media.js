@@ -104,7 +104,7 @@ RamaddaMediaTranscript.prototype = {
     },
     doSearch:function() {
 	let val =     jqid(this.searchInputId).val().trim();
-	if(val=="") {
+	if(val=='') {
 	    this.clearSearch();
 	    return
 	}
@@ -146,14 +146,14 @@ RamaddaMediaTranscript.prototype = {
 	    if(canAdd) {
 		prefix = HU.span(['title','Delete transcription','point-index',idx,'class','ramadda-clickable ramadda-media-point-delete'], HU.getIconImage('fas fa-eraser'));
 		prefix+= HU.span(['title','Edit transcription','point-index',idx,'class','ramadda-clickable ramadda-media-point-edit'], HU.getIconImage('fas fa-edit'));		
-		prefix = HU.td(['width','1%','style',HU.css('white-space','nowrap')],prefix);
+		prefix = HU.td(['width','1%',ATTR_CLASS,'ramadda-media-point-header',ATTR_STYLE,HU.css('white-space','nowrap')],prefix);
 	    }
 	    p.detailsId =  this.searchId +"_details_" + idx;
 	    p.rowId = HU.getUniqueId("row_");
-	    table+=HtmlUtils.tr(['valign','top','id',p.rowId,'point-index',idx], 
+	    table+=HtmlUtils.tr([ATTR_CLASS,'ramadda-hoverable','valign','top','id',p.rowId,'point-index',idx], 
 				prefix+
-				HU.td(['point-index',idx,'class','ramadda-clickable ramadda-media-point','width','5%','style',HU.css('white-space','nowrap')], time) +
-				HU.td(['point-index',idx,'class','ramadda-clickable ramadda-media-point','width','95%'], HU.div([STYLE,HU.css('margin-left','10px')],p.title)));
+				HU.td(['point-index',idx,'class','ramadda-media-point-header ramadda-clickable ramadda-media-point','width','5%','style',HU.css('white-space','nowrap')], time) +
+				HU.td(['point-index',idx,'class','ramadda-media-point-header ramadda-clickable ramadda-media-point','width','95%'], HU.div([STYLE,HU.css('margin-left','10px')],p.title)));
 
 	    let details =  HU.div([CLASS,'ramadda-clickable ramadda-media-play','data-player-time',p.time],
 				  HU.getIconImage('fas fa-play') + ' ' +
@@ -174,30 +174,48 @@ RamaddaMediaTranscript.prototype = {
 	    table+=HtmlUtils.tr([], HU.td(['colspan','3'], detailsDiv));
 	});
 	table+="</table>";
-	table = HU.div([CLASS,"ramadda-media-points"], table);
-	if(this.points.length>0) {
-	    this.searchInputId = HU.getUniqueId("search_");
-	    let search = HU.input("","",['class','ramadda-media-search', "placeholder","Search",ID,this.searchInputId]) + " " + HU.span([ID,this.searchInputId+"_clear",CLASS,"ramadda-clickable"], HU.getIconImage('fas fa-eraser')) +
-		HU.div([ID,this.searchId+"_results",STYLE,HU.css('max-width','300px','overflow-x','auto')]) 
-
-	    search =HU.div([STYLE,HU.css('margin-left','10px')], search);
-	    let _this = this;
-	    jqid(this.searchId).html(search);
-	    jqid(this.searchInputId+"_clear").click((e) =>{
-		this.clearSearch();
-	    });
-	    jqid(this.searchInputId).keypress((e) => {
-		if(e.which==13) {
-		    this.doSearch();
-		}
-	    });
-	}
-	let html = "";
+	let extra = '';
 	if(canAdd && this.player.getTime) {
-	    html+=HU.div(['title','Add transcription','id',this.domId('_addtranscription'),'class','ramadda-clickable'], HU.getIconImage('fas fa-plus'));
+	    extra =HU.span([ATTR_TITLE,'Add transcription',ATTR_ID,this.domId('_addtranscription'),
+			    ATTR_STYLE,HU.css('margin-right','10px'),ATTR_CLASS,'ramadda-clickable'], HU.getIconImage('fas fa-plus'));
 	}
 
 
+	table = HU.div([CLASS,"ramadda-media-points"], table);
+	let search='';
+	this.searchInputId = HU.getUniqueId("search_");
+	let exportId =HU.getUniqueId("export_");
+	if(this.points.length>0) {
+	    search = HU.span([ATTR_ID, exportId,ATTR_CLASS,'ramadda-clickable',ATTR_TITLE,'Export'],HU.getIconImage('fas fa-file-export'))+HU.space(2);
+	    search += HU.input("","",[ATTR_CLASS,'ramadda-media-search', "placeholder","Search",ATTR_ID,this.searchInputId]) + " " + HU.span([ATTR_TITLE,'Clear search',ATTR_ID,this.searchInputId+"_clear",CLASS,"ramadda-clickable"], HU.getIconImage('fas fa-eraser'));
+	    search+=
+		HU.div([ATTR_ID,this.searchId+"_results",STYLE,HU.css('max-width','300px','overflow-x','auto')]) ;
+	}
+	search =HU.div([STYLE,HU.css('margin-left','10px')], extra+search);
+	jqid(this.searchId).html(search);
+	jqid(exportId).click(()=>{
+	    let csv ='';
+	    csv+='time,title,synopsis\n';
+	    this.points.forEach(p=>{
+		csv+=p.time+',';
+		let  t= p.title??'';
+		if(t.indexOf(',')>=0) t = '"' + t +'"';
+		csv+=t+',';		
+		let s = p.synopsis;
+		if(s.indexOf(',')>=0 || s.indexOf('\n')>=0) s = '"' + s +'"';
+		csv+=s+'\n';				
+	    });
+            Utils.makeDownloadFile('annotation.csv',csv);
+	});
+	jqid(this.searchInputId+"_clear").click((e) =>{
+	    this.clearSearch();
+	});
+	jqid(this.searchInputId).keypress((e) => {
+	    if(e.which==13) {
+		this.doSearch();
+	    }
+	});
+	let html = "";
 	html+=table;
 	jqid(this.div).html(html);
 	this.jq('_addtranscription').click(function(){

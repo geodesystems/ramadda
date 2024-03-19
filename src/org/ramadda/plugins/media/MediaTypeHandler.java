@@ -243,6 +243,7 @@ public class MediaTypeHandler extends GenericTypeHandler {
         }
         String width  = getWidth(request, entry, props);
         String height = getHeight(request, entry, props);
+	boolean vertical = Utils.getProperty(props,"vertical",false);
         Utils.add(attrs, "width", JU.quote(width), "height", JU.quote(height));
 
 	//	System.err.println("U:" + mediaType+" " + mediaUrl +" " + embed);
@@ -265,18 +266,30 @@ public class MediaTypeHandler extends GenericTypeHandler {
             return sb.toString();
         }
         js.append("new RamaddaMediaTranscript(" + JU.map(attrs) + ");\n");
-        String searchDiv = HU.div("",
-                                  HU.attrs("style", "vertical-align:top;",
-                                           "id", searchId));
+        String searchDiv = HU.div("", HU.attrs("style", "vertical-align:top;",
+					       "id", searchId));
 
         String pointsDiv = HU.div("", HU.attrs("id", pointsDivId));
 	String bottom = HU.div(searchDiv + pointsDiv,HU.style("margin-top","5px","width",HU.makeDim(width,"px")));
-        String playerDiv = "<div style='width:100%;display:flex;justify-content:center;'>\n" +
-	    HU.div("\n"+player+"\n", HU.attrs("id", id,"style","width:" + HU.makeDim(width,"px")+";display:flex;justify-content:center;")) +
-	    "\n</div>\n" +
-	    "<div style='display:flex;justify-content:center;'>" +
-	    bottom    +"</div>";
-        sb.append(playerDiv);
+	String style = "width:" + HU.makeDim(width,"px")+";";
+	if(vertical)
+	    style+="display:flex;justify-content:center;";
+	else
+	    style+="display:flex;justify-content:right;";
+	player = HU.div("\n"+player+"\n", HU.attrs("id", id,"style",style));
+	if(!vertical) {
+	    sb.append("<div  class='row'  >");
+	    sb.append("<div  class='col-md-6 ramadda-col wiki-col ramadda-media-player'  >");
+	}
+	sb.append(player);
+	if(!vertical) {
+	    sb.append("</div>");
+	    sb.append("<div  class='col-md-6 ramadda-col wiki-col'  >");
+	}
+	sb.append("<div class=ramadda-media-annotations style=''>" +  bottom    +"</div>");
+	if(!vertical) {
+	    sb.append("</div></div>");
+	}
         sb.append(HtmlUtils.script(js.toString()));
 
         return sb.toString();
