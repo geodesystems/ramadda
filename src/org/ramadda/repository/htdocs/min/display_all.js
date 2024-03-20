@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Mar 18 19:07:15 MDT 2024";
+var build_date="RAMADDA build date: Tue Mar 19 22:10:06 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -38853,9 +38853,25 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    });
 	},
 	initHeader2:function() {
+            SUPER.initHeader2.call(this);
+
 	    let _this = this;
 	    this.initBaseLayersSelect();
 
+
+	    if(this.getProperty('showToggleIsPath',true)) {
+		let cbx = HU.checkbox('',[ATTR_ID,this.domId('toggleispath')],this.getIsPath(),
+				      'Show track');
+		this.jq(ID_HEADER2_PREPREFIX).append(HU.span(['style','padding-right:10px;'],cbx));
+		this.jq('toggleispath').click(function() {
+		    let on = $(this).is(':checked');
+		    _this.setProperty('isPath',on);
+		    _this.setProperty('showPoints',!on);			
+		    _this.haveCalledUpdateUI = false;
+		    _this.updateUI({fieldChanged:true});
+		});
+
+	    }
 
 	    this.getProperty("locations","").split(",").forEach(url=>{
 		url  =url.trim();
@@ -40195,6 +40211,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let fillOpacity =  this.getFillOpacity();
 	    let isPath = this.getIsPath();
 	    if(this.getIsPathThreshold()>records.length) isPath=true;
+	    if(isPath)
+		showPoints = this.getProperty("showPoints", !isPath);
+
 	    let groupByField = this.getFieldById(null,this.getGroupByField());
 	    let groups;
 	    if(groupByField)
