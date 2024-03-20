@@ -5,21 +5,23 @@ var Translate = {
     packs:{},
     missing:{},
     init: function() {
-	this.switchPrefix = HU.getIconImage('fas fa-language') +HU.space(1);
+	let icon =HU.getIconImage('fas fa-language ramadda-header-icon');
+	let switchPrefix = icon +HU.space(1);
+
 	let menu = HU.span([ATTR_TITLE,'Change language',
 			    ATTR_CLASS,CLASS_CLICKABLE+' ramadda-page-link',
-			    ATTR_ID,'ramadda_language_menu'],HU.getIconImage('fas fa-language'));
+			    ATTR_ID,'ramadda_language_menu'],icon);
 	menu = $(menu).appendTo(jqid('ramadda_links_prefix'));
 	
 	menu.click(()=>{
 	    let html = '';
 	    html+= HU.div([ATTR_TITLE,'Clear language',
-			   ATTR_CLASS,'ramadda-clickable ramadda-language-switch ramadda-menu-language-switch ramadda-user-link'],this.switchPrefix+'Clear');
+			   ATTR_CLASS,'ramadda-clickable ramadda-language-switch ramadda-menu-language-switch ramadda-user-link'],switchPrefix+'Clear');
 
 	    ramaddaLanguages.forEach(lang=>{
 		html+= HU.div(['data-language',lang.id,
 			       ATTR_TITLE,'Switch language',
-			       ATTR_CLASS,'ramadda-clickable ramadda-language-switch ramadda-menu-language-switch ramadda-user-link'],this.switchPrefix+lang.label);
+			       ATTR_CLASS,'ramadda-clickable ramadda-language-switch ramadda-menu-language-switch ramadda-user-link'],switchPrefix+lang.label);
 	    });
 	    html = HU.div([],html);
 	    if(this.menuPopup)
