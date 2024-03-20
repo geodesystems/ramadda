@@ -833,7 +833,8 @@ public class Seesv implements SeesvCommands {
 	    pw.println("<property name=\"form.location.show\" value=\"true\"/>");
 	    pw.println("<property name=\"form.properties.show\" value=\"false\"/>");
 	    pw.println("<property name=\"record.properties\"><![CDATA[\n");
-	    pw.print(argsBuff.toString().replaceAll(" ","_csvcommandspace_"));
+	    if(argsBuff!=null)
+		pw.print(argsBuff.toString().replaceAll(" ","_csvcommandspace_"));
 	    pw.println("]]></property>");
 
 	    if(!Utils.stringDefined(typeWiki)) {
