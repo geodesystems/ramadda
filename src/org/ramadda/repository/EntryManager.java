@@ -2955,17 +2955,16 @@ public class EntryManager extends RepositoryManager {
 		    }
 		}
 
-		/*
-                if (theDateRange[0] == null) {
-                    theDateRange[0] = ((theDateRange[1] == null)
-                                       ? createDate
-                                       : theDateRange[1]);
-                }
-                if (theDateRange[1] == null) {
-                    theDateRange[1] = theDateRange[0];
-                }
-
-		*/
+		if(!entry.getTypeHandler().getTypeProperty("date.nullok",false)) {
+		    if (theDateRange[0] == null) {
+			theDateRange[0] = ((theDateRange[1] == null)
+					   ? createDate
+					   : theDateRange[1]);
+		    }
+		    if (theDateRange[1] == null) {
+			theDateRange[1] = theDateRange[0];
+		    }
+		}
 		if(noName)
 		    entry.putTransientProperty("noname","true");
 		    
