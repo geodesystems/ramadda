@@ -2940,8 +2940,8 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    return "";
 	} 
         if (isType(DATATYPE_LATLON)) {
-            double lat = 0;
-            double lon = 0;
+            double lat = Double.NaN;
+            double lon = Double.NaN;
             if (values != null) {
                 lat = ((Double) values[offset]).doubleValue();
                 lon = ((Double) values[offset + 1]).doubleValue();
