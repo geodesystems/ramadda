@@ -15,6 +15,7 @@ import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
 
 import java.net.*;
 
@@ -110,7 +111,7 @@ public class RepositoryUtil {
      * @return _more_
      */
     public static String getHtdocsVersion() {
-        return HTDOCS_VERSION;
+        return HTDOCS_VERSION +"_"+new Date().getTime();
     }
 
     /**
@@ -119,7 +120,7 @@ public class RepositoryUtil {
      * @return _more_
      */
     public static String getHtdocsVersionSlash() {
-        return HTDOCS_VERSION_SLASH;
+        return HTDOCS_VERSION_SLASH +"_"+new Date().getTime();
     }
 
 
