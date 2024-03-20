@@ -1,4 +1,3 @@
-
 /**
 Copyright (c) 2008-2023 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
@@ -3024,15 +3023,20 @@ public class PageHandler extends RepositoryManager {
                                 Appendable sb)
             throws Exception {
         String id = HU.getUniqueId("crumbs_");
-        HU.open(sb, "div", "class", "ramadda-breadcrumbs-list");
-        HU.open(sb, "div", "class", "breadCrumbHolder module");
-        HU.open(sb, "div", "id", id, "class", "breadCrumb module");
-        HU.open(sb, "ul");
-        for (Object crumb : breadcrumbs) {
-            HU.tag(sb, "li", "", crumb.toString());
-        }
-        sb.append("</ul></div></div></div>");
-        HU.script(sb, "HU.makeBreadcrumbsInit('" + id + "');");
+	if(request.isMobile() && breadcrumbs.size()>0) {
+	    HU.div(sb,breadcrumbs.get(breadcrumbs.size()-1),HU.style("margin-left:5px;"));
+	} else {
+	    HU.open(sb, "div", "class", "ramadda-breadcrumbs-list");
+	    HU.open(sb, "div", "class", "breadCrumbHolder module");
+	    HU.open(sb, "div", "id", id, "class", "breadCrumb module");
+	    HU.open(sb, "ul");
+	    for (Object crumb : breadcrumbs) {
+		HU.tag(sb, "li", "", crumb.toString());
+	    }
+	    sb.append("</ul></div></div></div>");
+	    HU.script(sb, "HU.makeBreadcrumbsInit('" + id + "');");
+	}
+
     }
 
 
