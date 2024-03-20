@@ -29,12 +29,8 @@ echo:Cr1000 Atmosdata
 https://ramadda.org/repository/entry/show?entryid=68b7c063-5f86-490d-8f89-9693c8bdc4f3#fortest
 echo:D20161005_181339_PQC.frd
 https://ramadda.org/repository/entry/show?entryid=c43ac9a7-5815-4391-8a36-fab9487d7cf4#fortest
-echo:DOLORES RIVER NEAR CISCO
-https://ramadda.org/repository/entry/show?entryid=1a43aec2-0018-44c4-b1b5-d3c70bdb8cfd#fortest
 echo:El Centro - 9th Stre
 https://ramadda.org/repository/entry/show?entryid=ec56b75b-30e8-450b-a4c0-dab2f0a2c19b#fortest
-echo:Ensemble Time Series
-https://ramadda.org/repository/entry/show?entryid=98634143-1d70-4242-a6e2-110b7dea873c#fortest
 echo:GFS CONUS 80km
 echo:#https://ramadda.org/repository/entry/show?entryid=88947ad7-a654-4522-bf41-2f2ed0d07d4e#fortest
 echo:gil201206q3h.txt
@@ -47,8 +43,6 @@ echo:Northwest 20yr Precipitation Extremes
 https://ramadda.org/repository/entry/show?entryid=26b9c13a-7c2e-414d-8eea-f57bd9c34078#fortest
 echo:Ocean Buoy
 https://ramadda.org/repository/entry/show?entryid=99257080-9beb-4d60-81ac-2d4cb86df013#fortest
-echo:Page Municipal Airport
-https://ramadda.org/repository/entry/show?entryid=8e74a106-1f5a-47d4-a3d6-9c189d66e0a6#fortest
 echo:Snotel Data
 https://ramadda.org/repository/entry/show?entryid=5a1b3675-b909-4410-adf4-059fb224a867#fortest
 echo:So251 Deepwater 30november2021 Cast 2
@@ -63,10 +57,6 @@ echo:Sta0865
 https://ramadda.org/repository/entry/show?entryid=f9f457b7-54c7-44f6-8093-f8e007918091#fortest
 echo:U1510094.json
 https://ramadda.org/repository/entry/show?entryid=85d173ed-ebf7-48d6-9e73-9f27f3b51934#fortest
-echo:USGS Salton Sea Water Levels
-https://ramadda.org/repository/entry/show?entryid=9b2cb63d-110a-4dda-a0a8-d7cd384f59e8#fortest
-echo:Washington-Dulles International Airport
-https://ramadda.org/repository/entry/show?entryid=86347c9e-9b67-4426-ba7f-8acaa7933693#fortest
 echo:yellowstoneeq.nc
 https://ramadda.org/repository/entry/show?entryid=c4269672-9750-4026-ac20-1ba9b729ec8e#fortest
 echo:CSV
