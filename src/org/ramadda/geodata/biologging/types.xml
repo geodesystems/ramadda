@@ -39,6 +39,7 @@
 +section title={{name}}
 :navtop
 ----
+:vspace 0.5em
 +row
 +col-8
 {{description wikify=true}}
@@ -126,12 +127,16 @@
 
 <wiki><![CDATA[
 +section title={{name}}
+:navtop
 +row
 +col-8
 {{description wikify=true}}
 {{tabletree message="" showCreateDate=false showSize=false showDate=false orderby="entryorder,name"  ascending=true}}
 :vspace 1em
 {{information details=false}}
+:vspace 1em
+{{list includeIcon="true" details="false" entries="links"  message="" prefix=":lheading Tags" }}
+
 -col
 +col-4
 <table class="formtable">

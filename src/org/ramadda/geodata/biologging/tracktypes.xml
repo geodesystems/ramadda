@@ -8,17 +8,30 @@
     <property name="form.area.show" value="true"/>
     <property name="form.properties.show" value="false"/>
     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-    <column name="max_points" type="int"  columns="5" label="Max points to show" default="20000"/>
-    <column name="filter_fields" type="string" size="1000"  columns="80" label="Filter fields" default=""
-	    help="Comma separated list of fields to filter on in the display"/>
-    <column name="colorby_fields" type="string" size="1000"  columns="80" label="Color by fields" default="identifier"
-	    help="Comma separated list of fields to color by"/>        
-    <column name="path_threshold" type="int"  columns="5" label="Path Threshold"
-	    default="0" help="If # records less than threshold then show a path"/>
-    <column name="show_table" type="boolean" label="Show Table"
-	    default="true" help="Show the table in the display"/>
+    <column name="max_points" type="int"  columns="5" label="Max points to show" default="20000" group="Data"/>
     <column name="show_request_fields" type="boolean" label="Show Request Fields"
 	    default="false" help="Show count/daterange/stride request fields"/>        
+
+    <column name="filter_fields" type="string" size="1000"  columns="80" label="Filter fields" default=""
+	    group="Map Display"
+	    help="Comma separated list of fields to filter on in the display"/>
+    <column name="colorby_fields" type="string" size="1000"  columns="80" label="Color by fields" 
+	    help="Comma separated list of fields to color by. Use 'identifier' or other fields"/>
+
+    <column name="do_animation" type="enumeration"  label="Do Animation" values="true,false" group="Animation"
+	    default="false" />
+    <column name="animation_window" type="string"  label="Animation Window"
+	    default="2 days" help="How much time to show in the animation, e.g. 10 minutes, 12 hours, 1 week, 2 hours, 1 month, etc"/>
+    <column name="animation_step" type="string"  label="Animation Step"
+	    default="6 hours" help="Animation step, e.g. 10 minutes, 12 hours, 1 week, 2 hours, 1 month, etc"/>    
+
+    <column name="show_track" type="enumeration" values="true,false" default="false" label="Show Tracks" group="Tracks"/>
+    <column name="show_track_toggle" type="enumeration" label="Show track toggle" default="false" values="true,false"/>
+    <column name="path_threshold" type="int"  columns="5" label="Path Threshold" group="Tracks"
+	    default="0" help="If # records less than threshold then show a path"/>
+
+    <column name="show_table" type="boolean" label="Show Table" group="Table"
+	    default="true" help="Show the table in the display"/>
 
 <column name="convert_commands" type="clob"   rows="5" columns="60" label="Convert Text"  canedit="false" showinhtml="false" group="Convert"/>
 <property name="record.properties">
@@ -55,6 +68,9 @@ requestFieldsDefault="property:show_request_fields"
 request.limit.default="property:max_points"}}
 {{display_filter}}
 {{display_map radius=4 strokeWidth=0.2
+isPath="property:show_track"
+showToggleIsPath="property:show_track_toggle" showPathEndPoint=true pathEndPointShape=arrow  pathWidth=2 
+animationMode=sliding doAnimation="property:do_animation" animationWindow="property:animation_window" animationStep="property:animation_step" 
 requestFieldsShow=false
 groupByField=identifier
 colorByFields="property:colorby_fields" colorBy=identifier colorTable=gpt100
@@ -68,13 +84,27 @@ isPathThreshold="property:path_threshold"
 {{display_table}}
 -if
 
-
-
 :heading Information
 {{information details=true}}
 
 -section
 ]]></wiki>
+
+
+<wikimacro name="track_arrows" label="Track Arrows"
+properties="height=80vh max=20000   animationWindow=&quot;1 day&quot; animationStep=&quot;6 hours&quot;" >
+<![CDATA[
+{{display_map
+height="${height}" animationWindow="${animationWindow}" animationStep="${animationStep}" 
+radius=6 strokeWidth=0 isPath=true showPathEndPoint=true pathEndPointShape=arrow showPoints=false  pathWidth=2 
+groupByField=identifier
+doAnimation=true animationMode=sliding 
+colorByFields="property:colorby_fields"
+colorBy="identifier"
+colorTable=gpt100
+centerOnHighlight=true  
+}} 
+]]></wikimacro>
 
 
 <wikimacro name="track_dots" label="Track Dots"
@@ -118,6 +148,24 @@ colorTableLabel="Count"
 </type>
 
 
+<type name="type_wildlife_mapipedia" super="type_track_base"
+description="Mapipedia Track Data" 
+category="Point Data"
+supercategory="Geoscience"  
+handler="org.ramadda.data.services.PointTypeHandler">
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property name="icon" value="/biologging/tracks.png"/>
+<property name="form.date.show" value="true"/>
+<property name="form.area.show" value="true"/>
+<property name="form.properties.show" value="false"/>
+<property name="record.properties"><![CDATA[
+csvcommands1=-encoding,UTF-16,-tab,-indateformat,yyyy-MM-DD'T'HH:mm:ss
+csvcommands2=,-sortby,utc_datetime,up,date
+csvcommands3=-addheader, vid.type string utc_datetime.type date ceres_tag_id.id identifier identifier.label Identifier identifier.type enumeration utc_datetime.format {yyyy-MM-dd'T'HH:mm:ss} location_accuracy.type enumeration temperature.type double ccelerometer.type double accelerometer_category.type enumeration year.type integer ave_speed_ms.type double total_distance_m.type double 
+]]></property>
+
+
+</type>
 
 
 </types>
