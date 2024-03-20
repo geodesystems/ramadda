@@ -2330,6 +2330,8 @@ public class Utils extends IO {
         return Integer.parseInt(s);
     }
 
+
+
     public static double getProperty(Dictionary props, String key, double dflt) {
         String s = Utils.getProperty(props, key, (String) null);
         if ( !stringDefined(s)) {
@@ -2340,6 +2342,12 @@ public class Utils extends IO {
     }    
 
 
+    public static double getDouble(Object o) {
+	if(o==null) return Double.NaN;
+	Double d = (Double) o;
+	return d.doubleValue();
+    }
+    
     /**
      * _more_
      *
