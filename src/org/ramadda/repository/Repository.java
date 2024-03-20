@@ -1351,8 +1351,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 	RepositoryUtil.setVersion((String)coreProperties.get(PROP_VERSION_MAJOR),
 				  (String)coreProperties.get(PROP_VERSION_MINOR),
-				  (String)coreProperties.get(PROP_VERSION_PATCH));				  
-
+				  (String)coreProperties.get(PROP_VERSION_PATCH));
 
 
 
@@ -6469,6 +6468,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 			base + "/"
 			+ RepositoryUtil.getHtdocsVersion()).replace(
 								     "${ramadda.root}", base);
+	js = js.replace("${ramadda.ismobile}",""+request.isMobile());
 	js  = js.replace("${ramadda.cdn}", getPageHandler().getCdnPath(""));
 	js = js.replace("${ramadda.search.tree}",
 			getSearchManager().isLuceneEnabled()+ "");
