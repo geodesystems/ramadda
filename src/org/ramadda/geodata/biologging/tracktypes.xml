@@ -69,7 +69,7 @@ request.limit.default="property:max_points"}}
 {{display_filter}}
 {{display_map radius=4 strokeWidth=0.2
 isPath="property:show_track"
-showToggleIsPath="property:show_track_toggle" showPathEndPoint=true pathEndPointShape=arrow  pathWidth=2 
+showTogglePath="property:show_track_toggle" showPathEndPoint=true pathEndPointShape=arrow  pathWidth=2 
 animationMode=sliding doAnimation="property:do_animation" animationWindow="property:animation_window" animationStep="property:animation_step" 
 requestFieldsShow=false
 groupByField=identifier

@@ -2813,11 +2813,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.initBaseLayersSelect();
 
 
-	    if(this.getProperty('showToggleIsPath',true)) {
-		let cbx = HU.checkbox('',[ATTR_ID,this.domId('toggleispath')],this.getIsPath(),
+	    if(this.getProperty('showTogglePath',false)) {
+		let cbx = HU.checkbox('',[ATTR_ID,this.domId('togglepath')],this.getIsPath(),
 				      'Show track');
 		this.jq(ID_HEADER2_PREPREFIX).append(HU.span(['style','padding-right:10px;'],cbx));
-		this.jq('toggleispath').click(function() {
+		this.jq('togglepath').click(function() {
 		    let on = $(this).is(':checked');
 		    _this.setProperty('isPath',on);
 		    _this.setProperty('showPoints',!on);			
