@@ -1403,8 +1403,8 @@ public class Column implements DataTypes, Constants, Cloneable {
             sb.append(toLatLonString(values, offset, raw));
             sb.append(delimiter);
             sb.append(toLatLonString(values, offset + 1, raw));
-	    double lat = (double) values[offset];
-	    double lon = (double) values[offset+1];	    
+	    double lat = Utils.getDouble(values[offset]);
+	    double lon = Utils.getDouble(values[offset+1]);	    
 	    if(!Double.isNaN(lat) && !Double.isNaN(lon) && lat!=Entry.NONGEO && lon!=Entry.NONGEO) {
 		MapInfo map = new MapInfo(request, getRepository(),"200","200");
 		map.addMarker("",lat,  lon, null,"","");
@@ -1426,14 +1426,14 @@ public class Column implements DataTypes, Constants, Cloneable {
             } else {
                 //                System.err.println("offset:" + offset +" values:");
                 //                Misc.printArray("", values);
-                double percent = (Double) values[offset];
+                double percent = Utils.getDouble(values[offset]);
                 sb.append((int) (percent * 100) + "");
             }
         } else if (isType(DATATYPE_DOUBLE)) {
             if (raw) {
                 sb.append(toString(values, offset));
             } else {
-                Double v = (Double) values[offset];
+                Double v = Utils.getDouble(values[offset]);
                 if (v == null) {
                     return;
                 }
@@ -2943,8 +2943,8 @@ public class Column implements DataTypes, Constants, Cloneable {
             double lat = Double.NaN;
             double lon = Double.NaN;
             if (values != null) {
-                lat = ((Double) values[offset]).doubleValue();
-                lon = ((Double) values[offset + 1]).doubleValue();
+                lat = Utils.getDouble(values[offset]);
+		lon = Utils.getDouble(values[offset + 1]);
             }
             MapInfo map = getRepository().getMapManager().createMap(request,
 								    entry, true, null);
@@ -3219,10 +3219,10 @@ public class Column implements DataTypes, Constants, Cloneable {
      * @return _more_
      */
     public double[] getLatLonBbox(Object[] values) {
-        return new double[] { (Double) values[offset],
-                              (Double) values[offset + 1],
-                              (Double) values[offset + 2],
-                              (Double) values[offset + 3] };
+        return new double[] { Utils.getDouble(values[offset]),
+			      Utils.getDouble(values[offset + 1]),
+                              Utils.getDouble(values[offset + 2]),
+                              Utils.getDouble(values[offset + 3]) };
     }
 
 
