@@ -3440,6 +3440,7 @@ RepositoryMap.prototype = {
     },
 
     selectionPopupInit:  function() {
+	this.selectionDialog = window.ramaddaGlobalDialog;
         if (!this.inited) {
             this.initMap(this.selectRegion);
             if (this.argBase && !this.fldNorth) {
@@ -3724,12 +3725,44 @@ RepositoryMap.prototype = {
 	jqid(this.polygonSelectorId).val(text);
     },
 
+    setFieldValues:function(lat,lon) {
+        if (this.fldNorth) {
+            this.fldNorth.obj.value = lat;
+            this.fldSouth.obj.value = lat;
+            this.fldWest.obj.value = lon;
+            this.fldEast.obj.value = lon;
+        } else if (this.fldLat) {
+            this.fldLon.obj.value =lon;
+            this.fldLat.obj.value = lat;
+        }
+        let lonlat = MapUtils.createLonLat(lon,lat);
+	this.addSelectionMarker(lonlat);
+    },
+
+
+    setLocale:  function() {
+	let lat='',lon='';
+	if(!window.navigator || !navigator.geolocation) return;
+	let options= {
+	    enableHighAccuracy: true, 
+	    maximumAge        : 30000, 
+	    timeout           : 27000
+	};
+
+	navigator.geolocation.getCurrentPosition(position=> {
+	    let lat = position.coords.latitude;
+	    let lon = position.coords.longitude;
+	    this.setFieldValues(lat,lon);
+	    if(this.selectionDialog) this.selectionDialog.hide()
+	},error=>{
+		console.error(error);
+	},options);	
+    },
     selectionClear:  function() {
 	this.removePolygonSelectionLines();
 	this.polygonSelectionPoints=[];
         this.findSelectionFields();
 	HU.addToDocumentUrl("map_bounds","");
-
         if (this.fldNorth) {
             this.fldNorth.obj.value = "";
             this.fldSouth.obj.value = "";

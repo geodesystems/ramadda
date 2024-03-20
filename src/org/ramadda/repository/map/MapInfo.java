@@ -768,15 +768,17 @@ public class MapInfo {
 	}
         StringBuilder sb        = new StringBuilder();
         String        clearLink = getSelectorClearLink(HU.span("Clear",HU.clazz("ramadda-button")));
+        String        localeLink = !request.isMobile()?"":getSelectorLocaleLink(HU.span("Your Location",HU.clazz("ramadda-button")));
+
 	String header;
         if (doRegion) {
             String msg1 = HU.italics(msg("Shift-drag: select region"));
             String msg2 = HU.italics(msg("Cmd-drag: move region"));
             String msg3 = HU.italics(msg("Alt-click: select point"));	    
 	    String delim =  ";" +HU.SPACE;
-	    header =  HU.leftRightBottom(msg1 + delim + msg2 + delim + msg3,  clearLink,"");
+	    header =  HU.leftRightBottom(localeLink+HU.SPACE+msg1 + delim + msg2 + delim + msg3,  clearLink,"");
         } else {
-	    header = HU.leftRightBottom(HU.italics(msg("Click to select point")), clearLink,"");
+	    header = HU.leftRightBottom(localeLink+HU.SPACE+HU.italics(msg("Click to select point")), clearLink,"");
         }
 	HU.div(sb, header,HU.style("margin:5px;"));
         sb.append(getMapDiv(""));
@@ -827,15 +829,14 @@ public class MapInfo {
                                   ph.arg("sticky", true),
                                   ph.arg("initCall", initCall));
 
-            rightSide = HU.SPACE2 + mapPopup + HU.SPACE2 + extraTop;
+            rightSide =  mapPopup + HU.SPACE + extraTop;
         } else {
             rightSide = sb.toString();
         }
 
         addJS(HU.call(getVariableName() + ".setSelection",initParams));
 
-        String mapStuff = HU.table(new Object[] { widget.toString(),
-                rightSide });
+        String mapStuff = HU.table(new Object[] { rightSide,widget.toString()});
         StringBuilder retBuf = new StringBuilder();
         if (Utils.stringDefined(regions)) {
             retBuf.append(regions);
@@ -885,6 +886,11 @@ public class MapInfo {
         return HU.mouseClickHref(getVariableName() + ".selectionClear();",
                                  msg, HU.cssClass("ramadda-highlightable"));
     }
+
+    public String getSelectorLocaleLink(String msg) {
+        return HU.mouseClickHref(getVariableName() + ".setLocale();",
+                                 msg, HU.cssClass("ramadda-highlightable"));
+    }    
 
     /**
      * _more_

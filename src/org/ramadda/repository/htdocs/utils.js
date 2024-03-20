@@ -4670,7 +4670,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
 
         if(opts.header) {
-            $("#" + id +"_close").click(function() {
+	    $("#" + id +"_close").click(function() {
                 popup.hide();
                 if(opts.callback) {
 		    opts.callback(popup);
@@ -4683,6 +4683,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
         if(opts.initCall) {
             if(typeof opts.initCall == "string") {
+		window.ramaddaGlobalDialog=popup;
                 eval(opts.initCall);
             } else {
                 opts.initCall();
