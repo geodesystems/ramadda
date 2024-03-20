@@ -111,7 +111,8 @@ public class RepositoryUtil {
      * @return _more_
      */
     public static String getHtdocsVersion() {
-        return HTDOCS_VERSION +"_"+new Date().getTime();
+	//        return HTDOCS_VERSION +"_"+new Date().getTime();
+        return HTDOCS_VERSION;
     }
 
     /**
@@ -120,7 +121,8 @@ public class RepositoryUtil {
      * @return _more_
      */
     public static String getHtdocsVersionSlash() {
-        return HTDOCS_VERSION_SLASH +"_"+new Date().getTime();
+	//        return HTDOCS_VERSION_SLASH +"_"+new Date().getTime();
+        return HTDOCS_VERSION_SLASH;
     }
 
 
