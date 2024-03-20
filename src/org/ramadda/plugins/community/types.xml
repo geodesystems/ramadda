@@ -176,6 +176,8 @@
 -col
 +col-md-4
 {{resource  title="Link"  showIcon="false"  simple="true" }}
+:br
+{{ark short=true}}
 {{properties   message="" inherited="true" metadata.types="content.license,cultural_presenter"}}
 <p>
 +center
@@ -190,7 +192,7 @@
 
 ----
 :heading Information
-{{information}}
+{{information showImage=false}}
 -section
 ]]>
 </wiki>
