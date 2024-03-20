@@ -3013,7 +3013,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                             : "");
             value = request.getString(urlArg, ((values != null)
                     ? (String) toString(values, offset)
-                    : ""));
+                    : value));
             widget = HU.select(urlArg, enumValues, value,
                                       HU.cssClass("column-select"));
 
@@ -3023,7 +3023,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                             : "");
             value = request.getString(urlArg, ((values != null)
                     ? (String) toString(values, offset)
-                    : ""));
+                    : value));
 	    //This is a hack to fix a problem with changing from an enumeration to a string
 	    //If we do this then lucense has a problem with indexing this column
 	    if(showEnumerationMenu) {
