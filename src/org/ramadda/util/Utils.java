@@ -2344,8 +2344,11 @@ public class Utils extends IO {
 
     public static double getDouble(Object o) {
 	if(o==null) return Double.NaN;
-	Double d = (Double) o;
-	return d.doubleValue();
+	if(o instanceof Double) {
+	    Double d = (Double) o;
+	    return d.doubleValue();
+	}
+	return Double.parseDouble(o.toString());
     }
     
     /**
