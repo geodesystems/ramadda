@@ -1430,9 +1430,13 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         boolean hidden = Misc.equals(props.get("mapHidden"), "true");
         MapInfo map = createMap(request, mainEntry, width, height, false,
                                 hidden, props);
+
+
         if (map == null) {
             return null;
         }
+
+
 
 	if(props!=null) {
 	    String geojson = (String) props.get("geojson");
@@ -1443,6 +1447,26 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 		    map.addGeoJsonUrl(IO.getFileTail(geojson), geojson, true, "");
 		}
 	    }
+	    for(int i=1;true;i++) {
+		String marker = Utils.getProperty(props,"marker" + i,null);
+		if(marker==null) break;
+		//marker1="latitude:40,longitude:-105"
+		Hashtable<String,String> markerProps = new Hashtable<String,String>();
+		for(String tok:Utils.split(marker,",",true,true)) {
+		    List<String> pair = Utils.splitUpTo(tok,":",2);
+		    if(pair.size()!=2) continue;
+		    markerProps.put(pair.get(0),pair.get(1));
+		}
+		double  lat = Utils.getProperty(markerProps,"latitude",Double.NaN);
+		double  lon = Utils.getProperty(markerProps,"longitude",Double.NaN);		
+		if(Double.isNaN(lat) || Double.isNaN(lon)) continue;
+		int  radius= Utils.getProperty(markerProps,"radius",10);
+		String color= Utils.getProperty(markerProps,"color","blue");
+		String text= Utils.getProperty(markerProps,"text","");
+		map.addCircle("marker"+i,lat,lon,radius,0,"",color,text);
+	    }
+
+
 	}
 
         if (selectFields != null) {

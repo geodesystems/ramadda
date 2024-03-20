@@ -5520,16 +5520,22 @@ public class WikiManager extends RepositoryManager
         String  height     = getProperty(wikiUtil, props, ATTR_HEIGHT, "300");
         boolean justPoints = getProperty(wikiUtil, props, "justpoints",
                                          false);
+        boolean skipEntries = getProperty(wikiUtil, props, "skipEntries",
+                                         false);
         List<Entry> children;
-        if (theTag.equals(WIKI_TAG_MAPENTRY)) {
+	if(skipEntries) {
             children = new ArrayList<Entry>();
-            children.add(entry);
-        } else {
-            children = getEntries(request, wikiUtil, originalEntry, entry,
-                                  props, false, "");
-            if (children.isEmpty()) {
-                children.add(entry);
-            }
+	} else {
+	    if (theTag.equals(WIKI_TAG_MAPENTRY)) {
+		children = new ArrayList<Entry>();
+		children.add(entry);
+	    } else {
+		children = getEntries(request, wikiUtil, originalEntry, entry,
+				      props, false, "");
+		if (children.isEmpty()) {
+		    children.add(entry);
+		}
+	    }
         }
 
 	
@@ -5627,6 +5633,7 @@ public class WikiManager extends RepositoryManager
 	}
 	MapInfo map = getMapManager().getMap(newRequest, entry, children,
 					     sb, width, height, mapProps, props);
+
 	if (icon != null) {
 	    newRequest.remove(ARG_ICON);
 	}
