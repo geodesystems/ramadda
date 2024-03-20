@@ -6344,7 +6344,6 @@ h3 a:visited {
     }
 
     .ramadda-section  {
-	background:red;
         padding-top:4px;
         padding-bottom:4px;
         padding-left:0%;
@@ -6364,7 +6363,8 @@ h3 a:visited {
     }
 
     .ramadda-header-icon {
-	font-size:30px;
+	margin-top:5px;
+	font-size:20px !important;
     }
 
     h1, h2, h3 {
