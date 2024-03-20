@@ -83,6 +83,7 @@
     <property name="icon" value="/biologging/fauna.png"/>
     <property name="form.description.iswiki" value="false"/>
     <property name="form.date.label" value="Date of Birth/Death"/>
+    <property name="date.nullok" value="true"/>
     <property name="form.startdate.label" value="Date of Birth"/>
     <property name="form.enddate.label" value="Date of Death"/>                    
     <property name="form.date.help" value="The exact date on which animal was born or hatched"/>
