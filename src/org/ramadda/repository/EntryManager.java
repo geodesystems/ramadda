@@ -4478,25 +4478,13 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result processEntryUpload(Request request) throws Exception {
-        TypeHandler typeHandler =
-            getRepository().getTypeHandler(TypeHandler.TYPE_CONTRIBUTION);
 
         Entry         group = findGroup(request);
         StringBuilder sb    = new StringBuilder();
         if ( !request.exists(ARG_CONTRIBUTION_FROMNAME)) {
-            getPageHandler().entrySectionOpen(request, group, sb,
-					      "Upload a File");
-            sb.append(request.uploadForm(getRepository().URL_ENTRY_UPLOAD,
-                                         HU.attr("name",
-						 "entryform")));
-            sb.append(HU.submit("Upload"));
-            sb.append(HU.formTable());
-            sb.append(HU.hidden(ARG_GROUP, group.getId()));
-            typeHandler.addToEntryForm(request, sb, group, null, new FormInfo(""));
-            HU.formTableClose(sb);
-            sb.append(HU.submit("Upload"));
-            sb.append(HU.formClose());
-            getPageHandler().entrySectionClose(request, group, sb);
+	    getPageHandler().entrySectionOpen(request, group, sb,"Upload a File");
+	    addAnonymousUploadForm(request, group,sb);
+	    getPageHandler().entrySectionClose(request, group, sb);
         } else {
             return doProcessEntryChange(request, true, null);
         }
@@ -4505,6 +4493,22 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+
+    public void addAnonymousUploadForm(Request request, Entry group,Appendable sb) throws Exception {
+	sb.append(request.uploadForm(getRepository().URL_ENTRY_UPLOAD,
+				     HU.attr("name",
+					     "entryform")));
+	sb.append(HU.submit("Upload"));
+	sb.append(HU.formTable());
+	sb.append(HU.hidden(ARG_GROUP, group.getId()));
+        TypeHandler typeHandler =
+            getRepository().getTypeHandler(TypeHandler.TYPE_CONTRIBUTION);
+
+	typeHandler.addToEntryForm(request, sb, group, null, new FormInfo(""));
+	HU.formTableClose(sb);
+	sb.append(HU.submit("Upload"));
+	sb.append(HU.formClose());
+    }
 
     public static class Types extends NamedList<TypeHandler> {
 	public  Types(String name) {
