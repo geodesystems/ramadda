@@ -35,14 +35,21 @@ import java.util.List;
 
 /**
  */
+@SuppressWarnings("unchecked")
 public class NcssTypeHandler extends PointTypeHandler {
 
+    private static final String ARG_DATETYPE = "datetype";
+    private static final String DATE_TYPE_RELATIVE = "relative";
+    private static final String DATE_TYPE_ABSOLUTE = "absolute";        
 
     /** _more_ */
     private static int IDX = PointTypeHandler.IDX_LAST + 1;
 
+    private static int IDX_DATE_TYPE = IDX++;
+
     /** _more_ */
     private static int IDX_END_TIME_OFFSET = IDX++;
+
 
     /** _more_ */
     private static int IDX_DEFAULT_FIELDS = IDX++;
@@ -92,8 +99,8 @@ public class NcssTypeHandler extends PointTypeHandler {
             String chart2 =
                 "{{display type=\"linechart\" showTitle=\"false\" layoutHere=\"false\" fields=\"{field}\" }}";
             StringBuilder charts = new StringBuilder();
-            for (String line : StringUtil.split(fields, ",", true, true)) {
-                charts.append(chart2.replace("{field}", line));
+            for (String field : StringUtil.split(fields, ",", true, true)) {
+                charts.append(chart2.replace("{field}", field));
             }
             wikiText = wikiText.replace("${charts}", charts.toString());
         }
@@ -164,7 +171,7 @@ public class NcssTypeHandler extends PointTypeHandler {
             String timeStart = toks[0];
            url = url.replaceAll(
                 timeStartPattern,
-                "time_start=\\${date format=yyyy-MM-dd}&");
+                "time_start=\\${time_start}&");
 
             toks = Utils.findPatterns(url, timeEndPattern);
             if (toks == null) {
@@ -174,7 +181,7 @@ public class NcssTypeHandler extends PointTypeHandler {
             String timeEnd = toks[0];
             url = url.replaceAll(
                 timeEndPattern,
-                "\\time_end=\\${date offset=\"\\${endTimeOffset}\"}&");
+                "\\time_end=\\${time_end}&");
 
             timeStart = timeStart.replace("%3A", ":");
             timeEnd   = timeEnd.replace("%3A", ":");
@@ -219,15 +226,6 @@ public class NcssTypeHandler extends PointTypeHandler {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fromImport _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void initializeNewEntry(Request request, Entry entry,  boolean fromImport)
             throws Exception {
@@ -238,7 +236,6 @@ public class NcssTypeHandler extends PointTypeHandler {
 	if(!checkLatLon(request, entry)) return;
         super.initializeNewEntry(request, entry, fromImport);
         String url = entry.getResource().getPath();
-
         if ( !Utils.stringDefined(entry.getName())) {
             String[] toks = Utils.findPatterns(url, "/(.*)/(.*)/[^/]+\\?");
             if (toks == null) {
@@ -278,7 +275,6 @@ public class NcssTypeHandler extends PointTypeHandler {
         url = parseUrl(url, loc, vars);
         entry.getResource().setPath(url);
 
-
         StringBuilder properties = new StringBuilder("skiplines=1\n");
         properties.append(
             "fields=time[type=date format=\"yyyy-MM-dd'T'HH:mm:ss\"],station[type=string],latitude[unit=\"degrees_north\"],longitude[unit=\"degrees_east\"]");
@@ -288,6 +284,7 @@ public class NcssTypeHandler extends PointTypeHandler {
             //            properties.append(",vertCoord[type=double unit=\"" + vertCoordUnit + "\"]");
         }
 
+	StringBuilder defaultFields = new StringBuilder();
         for (int i = 0; i < vars.size(); i++) {
             properties.append(",");
             String extra   = "";
@@ -298,8 +295,10 @@ public class NcssTypeHandler extends PointTypeHandler {
 		extra += " type=string ";
 	    }
             String label   = Utils.makeLabel(origVar);
-            label = CdmOutputHandler.getProperty(alias + ".label",
-						 CdmOutputHandler.getProperty(origVar + ".label", label));
+            label = CdmOutputHandler.getPropertyWithSuffix(".label",label,alias,origVar,alias.toLowerCase(),origVar.toLowerCase());
+	    System.err.println(origVar+" label:" + label);
+	    defaultFields.append(alias);
+	    defaultFields.append(",");
             if (unit != null) {
                 String prefix = "unit." + unit + ".";
                 String scale = CdmOutputHandler.getProperty(prefix + "scale", null);
@@ -328,6 +327,9 @@ public class NcssTypeHandler extends PointTypeHandler {
         }
         properties.append("\n");
         entry.setLocation(loc[0], loc[1]);
+	if(!stringDefined(entry.getStringValue(IDX_DEFAULT_FIELDS,null))) {
+	    entry.setValue(IDX_DEFAULT_FIELDS , defaultFields.toString());
+	}
         entry.setValue(IDX_PROPERTIES, properties.toString());
     }
 
@@ -364,12 +366,24 @@ public class NcssTypeHandler extends PointTypeHandler {
             throws Exception {
         String url = entry.getResource().getPath();
         //subst the times
-        url = url.replace("${endTimeOffset}",
-                          (String) entry.getStringValue(IDX_END_TIME_OFFSET,
-                              "+10 days"));
-        //subst the location
-        url = super.convertPath(entry, url, requestProperties);
+	String dateType = entry.getStringValue(IDX_DATE_TYPE,DATE_TYPE_RELATIVE);
+	//	System.err.println("start:" + start +" end:" + end);
+	//	System.err.println("URL1:" +url);
+	if(dateType.equals(DATE_TYPE_ABSOLUTE)) {
+	    SimpleDateFormat sdf= new SimpleDateFormat("yyyy-MM-dd");
+	    url = url.replace("${time_start}",sdf.format(new Date(entry.getStartDate())));
+	    url = url.replace("${time_end}",sdf.format(new Date(entry.getEndDate())));			      
+	} else {
+	    url = url.replace("${time_start}","${date format=yyyy-MM-dd}");
+	    url = url.replace("${time_end}","${date offset=\"${endTimeOffset}\"}");	    
+	    url = url.replace("${endTimeOffset}",
+			      (String) entry.getStringValue(IDX_END_TIME_OFFSET,
+							    "+10 days"));
+	}
+	url = super.convertPath(entry, url, requestProperties);
         url = Utils.normalizeTemplateUrl(url);
+	//	System.err.println("URL2:" +url);
+
 	return new IO.Path(url);
     }
 

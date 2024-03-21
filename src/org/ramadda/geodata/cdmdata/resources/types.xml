@@ -140,30 +140,43 @@
 
 
 <type name="type_ncss"  description="NetCDF Point Subset" super="type_point"
+      editfields="name,resource,description,date,datetype,end_date_offset,location,default_fields,_columns"
       category="Point Data" foruser="true" handler="org.ramadda.geodata.cdmdata.NcssTypeHandler">
+
+  <property name="form.resource.extra.show" value="false"/>
+  <property name="icon" value="/cdmdata/pointsubset.png"/>
+  <property name="form.area.show" value="false"/>
+  <property name="form.url.label" value="THREDDS Grid as Point URL"/>
+  <property name="form.location.show" value="true"/>
+  <property name="form.location.help" value="Default request location"/>  
+  <property name="form.file.show" value="false"/>
+  <property name="record.properties">
+    time.format=yyyy-MM-dd'T'HH:mm:ss
+    field.time.type=date
+    field.station.type=string
+  </property>
+  <column name="datetype" label="Date Type"
+	  type="enumeration" values="relative:Relative to current date,absolute:Use date range" 
+	  help="What type of date range in the request"
+	  cansearch="false" default="relative"/>
+
+  <column name="end_date_offset" label="End date offset" type="string" cansearch="false" default="+10 days"
+	  help="Specify an offset from the current date. e,g. +10 days, +1 month, +5 years"/>
+  <column name="default_fields" label="Default fields" type="list" cansearch="false"  size="1000" rows="4" help="One or more fields to display in linecharts in the default wiki"/>
   <newhelp>
 <![CDATA[
 Add a URL from a THREDDS NetCDF Subset Service:
 +callout-info
-* Go to the Subset Service page, e.g. <a target=_other href="https://thredds.ucar.edu/thredds/ncss/grid/grib/NCEP/GFS/Global_0p5deg/Best/pointDataset.html">GFS Global 0.5 degree</a>
+* Go to the Grids as Points Subset Service page, e.g.
+<a target=_other href="https://thredds.ucar.edu/thredds/ncss/grid/grib/NCEP/GFS/Global_0p5deg/Best/pointDataset.html">GFS Global 0.5 degree</a>
 * Select your parameters
 * Note: Only pick the 2D paramaters, not the ones with altitude
 * At the bottom of the page copy the NCSS request URL
+* By default this reads data relative to the current date. If you want to (e.g. for climate data), you can specify fixed request start/end dates
 -callout
 ]]>
   </newhelp>
-     <property name="icon" value="/cdmdata/pointsubset.png"/>
-     <property name="form.area.show" value="false"/>
-     <property name="form.location.show" value="true"/>
-     <property name="form.file.show" value="false"/>
-     <property name="xxxform.properties.show" value="false"/>
-     <property name="record.properties">
-       time.format=yyyy-MM-dd'T'HH:mm:ss
-       field.time.type=date
-       field.station.type=string
-     </property>
-     <column name="end_date_offset" label="End date offset" type="string" cansearch="false" default="+10 days" suffix=""/>
-     <column name="default_fields" label="Default fields" type="list" cansearch="false"  size="1000" rows="4" suffix="One or more fields to display in linecharts in the default wiki"/>
+
 <wiki>
 <![CDATA[
 +section  title="{{name}}"

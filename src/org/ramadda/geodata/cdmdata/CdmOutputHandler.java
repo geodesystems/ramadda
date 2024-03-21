@@ -244,6 +244,8 @@ public class CdmOutputHandler extends OutputHandler implements CdmConstants {
         return dflt;
     }
 
+
+
     public static String getProperty(String name, String what, String dflt) {
         if (name == null) {
             return dflt;
@@ -278,6 +280,15 @@ public class CdmOutputHandler extends OutputHandler implements CdmConstants {
 
         return dflt;
     }
+
+    public static String getPropertyWithSuffix(String suffix, String dflt,String...vars) {
+	for(String var: vars) {
+            String v = getProperty(var + suffix,null);
+	    if(v!=null) return v;
+	}
+	return dflt;
+    }
+
 
     public static String getProperty(String name) {
         return  (String) getProperties().get(name);
