@@ -2232,8 +2232,7 @@ public class EntryManager extends RepositoryManager {
             ActionManager.Action action = new ActionManager.Action() {
 		    public void run(Object actionId) throws Exception {
 			try {
-			    Result result = doProcessEntryChange(request, false,
-								 actionId);
+			    Result result = doProcessEntryChange(request, false,actionId);
 			    String url = result.getRedirectUrl();
 			    if(url!=null) {
 				getActionManager().setContinueHtml(actionId,
@@ -4468,17 +4467,9 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public Result processEntryUpload(Request request) throws Exception {
+    private Hashtable<String,Integer> uploadCounts = new Hashtable<String,Integer>();
 
+    public Result processEntryUpload(Request request) throws Exception {
         Entry         group = findGroup(request);
         StringBuilder sb    = new StringBuilder();
         if ( !request.exists(ARG_CONTRIBUTION_FROMNAME)) {
@@ -4486,7 +4477,18 @@ public class EntryManager extends RepositoryManager {
 	    addAnonymousUploadForm(request, group,sb);
 	    getPageHandler().entrySectionClose(request, group, sb);
         } else {
-            return doProcessEntryChange(request, true, null);
+	    getPageHandler().entrySectionOpen(request, group, sb,"Upload a File");
+	    String ip = request.getIp();
+	    Integer cnt = uploadCounts.get(ip);
+	    if(cnt==null) uploadCounts.put(ip,cnt=new Integer(0));
+	    if(cnt>8) {
+		sb.append(messageError("Too many requests"));
+	    } else {
+		uploadCounts.put(ip,new Integer(cnt+1));
+		doProcessEntryChange(request, true, null);
+		sb.append(messageNote("Thanks"));
+	    }
+	    getPageHandler().entrySectionClose(request, group, sb);
         }
 
         return makeEntryEditResult(request, group, "Upload", sb);
