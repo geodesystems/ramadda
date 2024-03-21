@@ -475,6 +475,7 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 <type name="type_iiif_collection"       isgroup="true" description="IIIF Collection"
       childtypes="type_iiif_document"
       handler="org.ramadda.plugins.media.IIIFCollectionTypeHandler" foruser="true" >  
+
   <property name="icon" value="/media/iiif.png"/>
   <wikimacro name="iiif_collection" label="IIIF Collection">
   <![CDATA[{{iiif_collection thumbnailPosition=far-right width=800px height=500px}}]]></wikimacro>  
@@ -494,7 +495,9 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 <type name="type_iiif_document"        super="type_media" supercategory="" description="IIIF Document"
       pattern=".iiif.*"
       handler="org.ramadda.plugins.media.IIIFDocumentTypeHandler" foruser="true" >  
+  <property name="form.description.iswiki" value="true"/>
   <property name="form.file.show" value="false"/>
+  <property name="form.resource.extra.show" value="false"/>
   <property name="icon" value="/media/iiif.png"/>
   <property name="form.date.show" value="false"/>
   <property name="form.area.show" value="true"/>
