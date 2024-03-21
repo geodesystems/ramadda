@@ -2999,11 +2999,12 @@ public class Column implements DataTypes, Constants, Cloneable {
             widget = getRepository().getDateHandler().makeDateInput(request,
                     urlArg, "", date, null);
         } else if (isType(DATATYPE_DATE)) {
-            Date date;
+            Date date=null;
             if (values != null) {
                 date = (Date) values[offset];
             } else {
-                date = new Date();
+		if(!isDefaultNone()) 
+		    date = new Date();
             }
             widget = getRepository().getDateHandler().makeDateInput(request,
                     urlArg, "", date, null, false);
