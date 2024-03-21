@@ -118,7 +118,8 @@
   <type name="type_point"  description="Point Data" includeInSearch="true" handler="org.ramadda.data.services.PointTypeHandler"   foruser="false" priority="1">
     <property name="icon" value="/icons/chart.png"/>
     <column name="numberofpoints" type="int"  label="Number of points"  showinhtml="false" showinform="false"/>
-    <column name="properties" type="string" size="8000" columns="-1" rows="8"  label="Properties"  showinform="true" showinhtml="false" canlist="false" changetype="true" canexport="false" cansearch="false"/>
+    <column name="properties" type="string" size="8000" columns="-1" rows="8"  label="Properties"  showinform="true" showinhtml="false" canlist="false" changetype="true" canexport="false" cansearch="false"
+	    help="Point data properties"/>
   </type>
 
 
