@@ -2580,7 +2580,13 @@ public class WikiManager extends RepositoryManager
             return HU.href(url, label, extra);
         } else if (theTag.equals(WIKI_TAG_UPLOAD)) {
             Entry group = getEntryManager().findGroup(request);
-            if ( !getEntryManager().canAddTo(request, group)) {
+	    boolean showForm=getProperty(wikiUtil,props,"showForm",false);
+	    boolean ok = (showForm && getAccessManager().canDoUpload(request,entry)) ||getEntryManager().canAddTo(request, group);
+
+            if ( !ok) {
+		if(showForm) {
+		    return messageWarning("Not allowed to upload");
+		}
                 return "";
             }
             // can't add to local file view
@@ -2589,6 +2595,12 @@ public class WikiManager extends RepositoryManager
 		    instanceof LocalFileTypeHandler)) {
                 return "";
             }
+
+	    if(showForm && request.isAnonymous()) {
+		getEntryManager().addAnonymousUploadForm(request, entry, sb);
+		return sb.toString();
+	    }
+
             TypeHandler typeHandler =
                 getRepository().getTypeHandler(getProperty(wikiUtil, props,
 							   ATTR_TYPE, TypeHandler.TYPE_FILE));
