@@ -126,12 +126,12 @@ public class TypeHandler extends RepositoryManager {
 
     /** _more_ */
     private String[] FIELDS_ENTRY = {
-        ARG_NAME, ARG_DESCRIPTION, ARG_RESOURCE,FIELD_HR,/* FIELD_LABEL+":" +HU.span("Metadata",""),*/ ARG_TAGS, ARG_DATE, ARG_LOCATION,FIELD_COLUMNS,FIELD_HR,FIELD_ORDER
+        ARG_NAME, ARG_DESCRIPTION, ARG_RESOURCE,/* FIELD_LABEL+":" +HU.span("Metadata",""),*/ ARG_TAGS, ARG_DATE, ARG_LOCATION,FIELD_COLUMNS
     };
 
     /** _more_ */
     private String[] FIELDS_NOENTRY = {
-        ARG_NAME, ARG_RESOURCE, ARG_DESCRIPTION, FIELD_HR, /*ARG_LABEL+":" +HU.span("Metadata",""),*/ARG_TAGS, ARG_DATE, ARG_LOCATION,FIELD_COLUMNS,FIELD_HR,FIELD_ORDER
+        ARG_NAME, ARG_RESOURCE, ARG_DESCRIPTION,  /*ARG_LABEL+":" +HU.span("Metadata",""),*/ARG_TAGS, ARG_DATE, ARG_LOCATION,FIELD_COLUMNS
     };
 
 
@@ -5077,6 +5077,7 @@ public class TypeHandler extends RepositoryManager {
 	if(whatList==null) whatList = entry == null  ? FIELDS_NOENTRY: FIELDS_ENTRY;
 
         String   domId;
+
         for (String what : whatList) {
             if (what.equals("quit")) {
 		seen.add(FIELD_COLUMNS);
@@ -5315,25 +5316,28 @@ public class TypeHandler extends RepositoryManager {
                         String formContent = HU.fileInput(ARG_FILE,
                                                  fileAttrs);
                         tabTitles.add(msg(fileLabel));
+			boolean showDnd =getTypeProperty("form.dnd.show",true);
                         if (entry == null) {
-                            String icon = HU.img("fas fa-upload");
-                            formContent += HU
-                                .div(HU.div(
-					    icon + " " + msg("Or drag files here"),
-                                    HU.cssClass("ramadda-file-dnd-label")), HU
-                                        .cssClass(
-                                            "ramadda-file-dnd-target") + HU
-                                                .id(inputId + "_dnd"));
-                        }
+			    if(showDnd) {
+				String icon = HU.img("fas fa-upload");
+				formContent += HU.div(HU.div(
+							     icon + " " + msg("Or drag files here"),
+							     HU.cssClass("ramadda-file-dnd-label")), HU
+						      .cssClass(
+								"ramadda-file-dnd-target") + HU
+						      .id(inputId + "_dnd"));
+			    }
+			}
 
 
-                        formContent +=
-                            HU.script("Ramadda.initFormUpload("
-                                             + HU.comma(HU.squote(inputId),
-                                                 (entry != null)
-                                ? "null"
-                                : HU.squote(inputId + "_dnd")) + ");");
-			//                        tabContent.add(HU.inset(formContent, 8));
+			//if(showDnd) {
+			    formContent +=HU.script("Ramadda.initFormUpload("
+						    + HU.comma(HU.squote(inputId),
+							       (entry != null)
+							       ? "null"
+							       : HU.squote(inputId + "_dnd")) + ");");
+			    //                        tabContent.add(HU.inset(formContent, 8));
+			    //			}
                         tabContent.add(formContent);
                     }
                     if (showUrl) {

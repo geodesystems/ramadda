@@ -4500,7 +4500,6 @@ public class EntryManager extends RepositoryManager {
 	sb.append(request.uploadForm(getRepository().URL_ENTRY_UPLOAD,
 				     HU.attr("name",
 					     "entryform")));
-	sb.append(HU.submit("Upload"));
 	sb.append(HU.formTable());
 	sb.append(HU.hidden(ARG_GROUP, group.getId()));
         TypeHandler typeHandler =
@@ -4508,7 +4507,7 @@ public class EntryManager extends RepositoryManager {
 
 	typeHandler.addToEntryForm(request, sb, group, null, new FormInfo(""));
 	HU.formTableClose(sb);
-	sb.append(HU.submit("Upload"));
+	sb.append(HU.insetDiv(HU.submit("Upload"),10,45,0,0));
 	sb.append(HU.formClose());
     }
 

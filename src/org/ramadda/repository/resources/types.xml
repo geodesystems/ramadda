@@ -185,6 +185,7 @@ priority="2"       >
 
 
   <type name="contribution"  description="Contribution"  foruser="false">
+    <property name="form.dnd.show" value="false"/>
     <property name="form.date.show" value="false"/>
     <property name="form.description.show" value="false"/>
     <property name="form.tags.show" value="false"/>    
