@@ -4822,6 +4822,11 @@ public class TypeHandler extends RepositoryManager {
 
             String mapSelector = map.makeSelector(ARG_LOCATION, true, nwse,
                                      "", "");
+	    String help = getTypeProperty("form.location.help",null);
+	    if(stringDefined(help)) {
+		sb.append(formEntry(request,"",TypeHandler.wrapHelp(help)));
+	    }
+
             sb.append(formEntry(request, msgLabel(getFormLabel(parentEntry,entry,"location","Location")), mapSelector));
 
         } else if (okToShowInForm(entry, ARG_AREA)) {
@@ -4916,6 +4921,12 @@ public class TypeHandler extends RepositoryManager {
 	getMapManager().initMapSelector(request, this,parentEntry, entry, map);
         String mapSelector = map.makeSelector(ARG_AREA, true, nwse, "", "")
                              + extraMapStuff;
+	String help = getTypeProperty("form.location.help",null);
+	if(stringDefined(help)) {
+	    sb.append(formEntry(request,"",TypeHandler.wrapHelp(help)));
+	}
+	    
+
         sb.append(formEntry(request, msgLabel(getFormLabel(parentEntry,entry,"location","Location")), mapSelector));
     }
 
@@ -5093,6 +5104,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 	    if(what.equals(FIELD_ORDER)) {
+		if(!okToShowInForm(entry, what)) continue;
 		sb.append(formEntry(request, msgLabel("Order"),
 				    HU.input(ARG_ENTRYORDER,
 						    ((entry != null)
