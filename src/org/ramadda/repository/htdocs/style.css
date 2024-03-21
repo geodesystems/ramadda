@@ -1739,7 +1739,8 @@ mapheader {
 
 
 .ramadda-message i {
-    font-size:36pt;
+    font-size:22pt;
+    font-weight:bold;
 }
 
 .ramadda-message-plain, .ramadda-message {
@@ -1775,6 +1776,7 @@ mapheader {
 
 .ramadda-message-inner {
     padding:10px;
+    padding-left:0px;
     font-size:110%;
 }
 
@@ -2775,12 +2777,15 @@ table.dataTable tbody td {
 }
 
 .ramadda-form-help {
+    min-width:600px;
     padding:4px;
     padding-left:8px;
     padding-right:8px;    
     background:#f0f8ff;
     display:inline-block;
     border:var(--basic-border);
+    border-radius: var(--default-radius);
+    margin-top:10px;
 }    
 
 .ramadda-form-header {

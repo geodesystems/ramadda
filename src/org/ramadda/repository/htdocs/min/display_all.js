@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Mar 20 07:28:34 MDT 2024";
+var build_date="RAMADDA build date: Thu Mar 21 05:48:17 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -38859,11 +38859,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.initBaseLayersSelect();
 
 
-	    if(this.getProperty('showToggleIsPath',true)) {
-		let cbx = HU.checkbox('',[ATTR_ID,this.domId('toggleispath')],this.getIsPath(),
+	    if(this.getProperty('showTogglePath',false)) {
+		let cbx = HU.checkbox('',[ATTR_ID,this.domId('togglepath')],this.getIsPath(),
 				      'Show track');
 		this.jq(ID_HEADER2_PREPREFIX).append(HU.span(['style','padding-right:10px;'],cbx));
-		this.jq('toggleispath').click(function() {
+		this.jq('togglepath').click(function() {
 		    let on = $(this).is(':checked');
 		    _this.setProperty('isPath',on);
 		    _this.setProperty('showPoints',!on);			
