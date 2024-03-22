@@ -383,7 +383,7 @@ public class Request implements Constants, Cloneable {
 
 
     public boolean hasMessage() {
-	return exists(ARG_MESSAGE);
+	return defined(ARG_MESSAGE);
     }
 
     public String getMessage() {
