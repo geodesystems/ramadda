@@ -8,7 +8,7 @@
     handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">
     <property name="form.description.iswiki" value="false"/>
     <property name="form.wikieditor.height" value="300px"/>
-    <property name="icon" value="/icons/people.png"/>
+    <property name="icon" value="/missing/missing.png"/>
     <property name="form.name.label" value="Last name"/>
 
     <property name="html.type.show" value="false"/>    
@@ -74,7 +74,22 @@
     <column name="transportation" label="Transportation" type="string" size="2000" rows="5"   cansearch="true"
 	    group="Additional Case Information"/>
     <column name="transportation_notes" label="Transportation notes" type="string" size="2000" rows="5"   cansearch="true"/>    
-    
+<children><![CDATA[
+<entries>
+<entry  name="Photos"  type="media_photoalbum" entryorder="10"/>
+<entry  name="Documents"  type="type_document_collection" entryorder="20"/>
+<entry  name="Private"  type="group" entryorder="5">
+<permissions>
+<permission action="view">
+<role role="none"/>
+</permission>
+</permissions>
+</entry>
+<entry  name="Animals"  type="group" entryorder="40"/>
+<entry  name="Tags"  type="group" entryorder="50"/>
+</entries>
+]]>
+</children>
 
 
 
@@ -102,9 +117,11 @@
 -col
 -row
 
-{{gallery message="" prefix="----\n:heading Photos"}}
+{{gallery entry="child:entry:this;type:media_photoalbum" message="" prefix="----\n:heading Photos" }}
 
-{{list includeIcon="true" details="false" entries="links"  message="" prefix=":lheading Related" }}
+{{macro ifHaveChildren=true entry="41542032-803a-4f23-b681-ad7589b26647" name="document_search"
+entry="child:entry:this;type:type_document_collection" message="" prefix="----\n:heading Documents" }}
+
 
 -section
 ]]></wiki>
