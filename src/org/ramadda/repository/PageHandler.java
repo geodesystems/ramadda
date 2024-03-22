@@ -109,6 +109,8 @@ public class PageHandler extends RepositoryManager {
     /** html template macro */
     public static final String MACRO_LINKS = "links";
 
+    public static final String MACRO_PAGEHEADER = "pageheader";
+
     /** html template macro */
     public static final String MACRO_LOGO_URL = "logo.url";
 
@@ -717,7 +719,19 @@ public class PageHandler extends RepositoryManager {
         String entryPopup =
             (String) result.getProperty(PROP_ENTRY_POPUP,
                                         (String) null);	
+        Entry  thisEntry = request.getCurrentEntry();
         String     header        = entryHeader;
+	String pageHeader = "";
+
+	if(prefix) {
+	    List<Metadata> pageHeaderMtd = 
+		getMetadataManager().findMetadata(request, thisEntry!=null?thisEntry:getEntryManager().getRootEntry(),
+						  "content.pageheader",true);
+	    if(pageHeaderMtd!=null && pageHeaderMtd.size()>0) {
+		pageHeader = getWikiManager().wikifyEntry(request,thisEntry!=null?thisEntry:getEntryManager().getRootEntry(),pageHeaderMtd.get(0).getAttr1());
+	    }
+	}
+
 
 	String headFinal = "";
 	if(prefix) {
@@ -858,8 +872,10 @@ public class PageHandler extends RepositoryManager {
         StringBuilder theFooter = new StringBuilder(footer);
 	if(extraFooter!=null) theFooter.append(extraFooter);
 
-        Entry  thisEntry = request.getCurrentEntry();
+
 	
+
+
         if (suffix && thisEntry != null) {
 	    String footerScript = "ramaddaThisEntry='" + thisEntry.getId() + "';\n";
 	    if(thisEntry.isGroup() && getAccessManager().canDoNew(request, thisEntry)) {
@@ -891,7 +907,7 @@ public class PageHandler extends RepositoryManager {
 	    }
 
 
-        }
+	}
 
 	List<String> messages= (List<String>)getSessionManager().getSessionProperty(request, SessionManager.SESSION_PROPERTY_ERRORMESSAGES);
 	if(messages!=null) {
@@ -911,6 +927,7 @@ public class PageHandler extends RepositoryManager {
 
 
         String[] macros = new String[] {
+	    MACRO_PAGEHEADER,pageHeader,
             MACRO_LOGO_URL, logoUrl, MACRO_LOGO_IMAGE, logoImage,
             MACRO_HEADER_IMAGE, getHeaderIcon(), MACRO_HEADER_TITLE,
             pageTitle, MACRO_LINKS, menuHtml, MACRO_REPOSITORY_NAME,
