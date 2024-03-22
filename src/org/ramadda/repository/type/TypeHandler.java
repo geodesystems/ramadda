@@ -3638,21 +3638,17 @@ public class TypeHandler extends RepositoryManager {
 					       props,seen);
         }
 
-	Entry parentEntry = entry==null?null:entry.getParentEntry();
+
         StringBuilder sb = new StringBuilder();
         if ((props != null) && Misc.equals(props.get("showBase"), "false")) {
             return sb;
         }
 
         boolean showDate = typeHandler.okToShowInHtml(entry, ARG_DATE, true);
-        boolean showCreateDate = showDate
-                                 && typeHandler.okToShowInHtml(entry,
-                                     "createdate", true);
-
+        boolean showCreateDate = showDate   && typeHandler.okToShowInHtml(entry,
+									  "createdate", true);
         boolean noBasic =Utils.getProperty(props,"noBasic",false);
         boolean justBasic =Utils.getProperty(props,"justBasic",false);
-
-
         boolean entryIsImage = isImage(entry);
         boolean showImage    = false;
         if (showResource && entryIsImage) {
@@ -3664,27 +3660,16 @@ public class TypeHandler extends RepositoryManager {
             }
         }
 
-
 	if(props!=null && !Utils.getProperty(props,"showImage",true)) {
 	    showImage = false;
 	    entryIsImage = false;
 	}
 
-
 	if (showDescription) {
-	    String desc = entry.getDescription();
-	    if ((desc != null) && (desc.length() > 0)
-		&& ( !isWikiText(desc))) {
-		sb.append(
-			  formEntry(
-				    request, msgLabel("Description"),
-				    getEntryManager().getEntryText(
-								   request, entry, desc)));
-	    }
+	    addDescriptionToHtml(request,typeHandler,entry,sb);
 	}
 
-	String createdDisplayMode =
-	    getPageHandler().getCreatedDisplayMode();
+	String createdDisplayMode =  getPageHandler().getCreatedDisplayMode();
 	boolean showCreated = true;
 	if (createdDisplayMode.equals("none")) {
 	    showCreated = false;
@@ -3704,32 +3689,45 @@ public class TypeHandler extends RepositoryManager {
 	}
 
 	if (showResource && entryIsImage) {
-	    String width = "600";
-	    if (request.isMobile()) {
-		width = "250";
-	    }
-	    String img    = null;
-	    String imgUrl = null;
-	    if (entry.getResource().isFile()
-		&& getAccessManager().canDownload(request, entry)) {
-		imgUrl = getEntryResourceUrl(request, entry,false,true);
-		img    = HU.img(imgUrl, "", HU.attrs("width", width,"style","max-width:100%;","align","center"));
-	    } else if (entry.getResource().isUrl()) {
-		try {
-		    imgUrl = typeHandler.getPathForEntry(request, entry,false);
-		    img    = HU.img(imgUrl, "", HU.attrs("width", width,"style","max-width:100%;","align","center"));
-		} catch (Exception exc) {
-		    sb.append("Error getting path:" + entry.getResource()
-			      + " " + exc);
-		}
-	    }
-	    if (img != null) {
-		String outer = HU.href(imgUrl, img, HU.cssClass("popup_image"));
-		sb.append(HU.col(outer, " colspan=2 "));
-		getWikiManager().addImagePopupJS(request, null, sb,
-						 new Hashtable());
-	    }
+	    addImageToHtml(request,typeHandler,entry,sb);
 	}
+
+	addResourceToHtml(request,typeHandler,entry,sb);
+
+	if (!noBasic && typeHandler.okToShowInHtml(entry, ARG_TYPE, true)) {
+	    addTypeToHtml(request,typeHandler,entry,sb);
+	}
+
+	if(okToShowInForm(entry, "ark", false)) {
+	    addArkToHtml(request,typeHandler,entry,sb);
+	}
+
+	if (showCreateDate) {
+	    addCreateDateToHtml(request,typeHandler,entry,sb);
+	}
+
+	if (showCreated) {
+	    addOwnerToHtml(request,typeHandler,entry,sb);
+	}
+	if(justBasic) return sb;
+
+	if (showDate) {
+	    addDateToHtml(request,typeHandler,entry,sb);
+	}
+
+	addAltitudeToHtml(request,typeHandler,entry,sb);
+        return sb;
+
+    }
+
+    public void addTypeToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {
+	String icon = getPageHandler().getEntryIconImage(request,entry);
+	sb.append(formEntry(request, msgLabel("Kind"),
+			    icon + HU.space(1)+getFileTypeDescription(request,
+								      entry)));
+    }
+
+    public void addResourceToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {
 
 	Resource resource      = entry.getResource();
 	String   resourceLink  = resource.getPath();
@@ -3778,65 +3776,98 @@ public class TypeHandler extends RepositoryManager {
 	    sb.append(formEntry(request, resourceLabel, resourceLink));
 
 	}
+}
 
-	if (!noBasic && typeHandler.okToShowInHtml(entry, ARG_TYPE, true)) {
-	    String icon = getPageHandler().getEntryIconImage(request,entry);
-	    sb.append(formEntry(request, msgLabel("Kind"),
-				icon + HU.space(1)+getFileTypeDescription(request,
-									  entry)));
+
+    public void addDescriptionToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {
+	String desc = entry.getDescription();
+	if ((desc != null) && (desc.length() > 0)
+	    && ( !isWikiText(desc))) {
+	    sb.append(
+		      formEntry(
+				request, msgLabel("Description"),
+				getEntryManager().getEntryText(
+							       request, entry, desc)));
 	}
+    }
 
-	String ark = getPageHandler().getArk(request, entry,false);
-	if(ark!=null) {
-	    if(okToShowInForm(entry, "ark", false)) {
-		sb.append(formEntry(request, msgLabel("ARK ID"),ark));
+    public void addImageToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {
+	    String width = "600";
+	    if (request.isMobile()) {
+		width = "250";
 	    }
-	}
-
-	//Only show the created by and type when the user is logged in
-	if ( !request.isAnonymous()) {
-	    if (showCreateDate) {
-		sb.append(formEntry(request, msgLabel("Created"),
-				    getDateHandler().formatDate(request,
-								entry, entry.getCreateDate())));
-
-		if (entry.getCreateDate() != entry.getChangeDate()) {
-		    sb.append(
-			      formEntry(
-					request, msgLabel("Modified"),
-					getDateHandler().formatDate(
-								    request, entry, entry.getChangeDate())));
-
+	    String img    = null;
+	    String imgUrl = null;
+	    if (entry.getResource().isFile()
+		&& getAccessManager().canDownload(request, entry)) {
+		imgUrl = getEntryResourceUrl(request, entry,false,true);
+		img    = HU.img(imgUrl, "", HU.attrs("width", width,"style","max-width:100%;","align","center"));
+	    } else if (entry.getResource().isUrl()) {
+		try {
+		    imgUrl = typeHandler.getPathForEntry(request, entry,false);
+		    img    = HU.img(imgUrl, "", HU.attrs("width", width,"style","max-width:100%;","align","center"));
+		} catch (Exception exc) {
+		    sb.append("Error getting path:" + entry.getResource()
+			      + " " + exc);
 		}
 	    }
+	    if (img != null) {
+		String outer = HU.href(imgUrl, img, HU.cssClass("popup_image"));
+		sb.append(HU.col(outer, " colspan=2 "));
+		getWikiManager().addImagePopupJS(request, null, sb,
+						 new Hashtable());
+	    }
 
+    }
+
+    public void addArkToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {
+	String ark = getPageHandler().getArk(request, entry,false);
+	if(ark!=null) {
+	    sb.append(formEntry(request, msgLabel("ARK ID"),ark));
 	}
-	if (showCreated) {
-	    typeHandler.addUserSearchLink(request, entry, sb);
+    }
+
+
+    public void addCreateDateToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {
+	sb.append(formEntry(request, msgLabel("Created"),
+			    getDateHandler().formatDate(request,
+							entry, entry.getCreateDate())));
+	    
+	if (entry.getCreateDate() != entry.getChangeDate()) {
+	    sb.append(
+		      formEntry(
+				request, msgLabel("Modified"),
+				getDateHandler().formatDate(
+							    request, entry, entry.getChangeDate())));
+	    
 	}
-	if(justBasic) return sb;
+    }
 
+    public void addOwnerToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {
+	typeHandler.addUserSearchLink(request, entry, sb);
+    }
 
+    public void addAltitudeToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {
+	if (entry.hasAltitude() && (entry.getAltitude() != 0)) {
+	    sb.append(formEntry(request, msgLabel("Elevation"),"" + entry.getAltitude()));
+	}
+    }
+
+    public void addDateToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {
 	boolean hasDataDate = false;
-
-	if (Math.abs(entry.getCreateDate() - entry.getStartDate())
-	    > 60000) {
+	if (Math.abs(entry.getCreateDate() - entry.getStartDate())   > 60000) {
 	    hasDataDate = true;
 	} else if (Math.abs(entry.getCreateDate() - entry.getEndDate())
 		   > 60000) {
 	    hasDataDate = true;
 	}
+	if(!hasDataDate) return;
 
-
-
-	if (showDate && hasDataDate) {
-	    if (entry.getEndDate() != entry.getStartDate()) {
-		String startDate = getDateHandler().formatDate(request,
-							       entry, entry.getStartDate());
-		String endDate = getDateHandler().formatDate(request,
-							     entry, entry.getEndDate());
-		String searchUrl =
-		    HtmlUtils
+	if (entry.getEndDate() != entry.getStartDate()) {
+	    String startDate = getDateHandler().formatDate(request, entry, entry.getStartDate());
+	    String endDate = getDateHandler().formatDate(request,   entry, entry.getEndDate());
+	    String searchUrl =
+		HtmlUtils
 		    .url(request
 			 .makeUrl(getRepository().getSearchManager()
 				  .URL_ENTRY_SEARCH), Misc
@@ -3849,45 +3880,21 @@ public class TypeHandler extends RepositoryManager {
 		sb.append(formEntry(request, msgLabel(getFormLabel(null,null,"enddate","End Date")),
 				    endDate));
 	    } else {
-		boolean showTime = typeHandler.okToShowInForm(entry,
-							      "time", true);
+		boolean showTime = typeHandler.okToShowInForm(entry,   "time", true);
 		StringBuilder dateSB = new StringBuilder();
-		dateSB.append(getDateHandler().formatDate(request, entry,
-							  entry.getStartDate()));
-
-
+		dateSB.append(getDateHandler().formatDate(request, entry, entry.getStartDate()));
 		if (typeHandler.okToShowInForm(entry, ARG_TODATE)
 		    && (entry.getEndDate() != entry.getStartDate())) {
 		    dateSB.append(" - ");
 		    dateSB.append(getDateHandler().formatDate(request,
 							      entry, entry.getEndDate()));
 		}
+		Entry parentEntry = entry==null?null:entry.getParentEntry();
 		String formLabel = msgLabel(getFormLabel(parentEntry,entry, ARG_DATE, "Date"));
-		sb.append(formEntry(request, formLabel,
-				    dateSB.toString()));
-	    }
+		sb.append(formEntry(request, formLabel, dateSB.toString()));
 	}
-
-
-	//Don't show the latlon in the html
-	boolean showMap = false;
-	if (showMap) {
-	    if (entry.hasLocationDefined()) {
-		sb.append(formEntry(request, msgLabel("Location"),
-				    formatLocation(entry.getSouth(),
-						   +entry.getEast())));
-	    } else if (entry.hasAreaDefined()) {
-	    }
-	}
-
-	if (entry.hasAltitude() && (entry.getAltitude() != 0)) {
-	    sb.append(formEntry(request, msgLabel("Elevation"),
-				"" + entry.getAltitude()));
-	}
-
-        return sb;
-
     }
+
 
     public void addUserSearchLink(Request request, Entry entry, Appendable sb) throws Exception  {
 	if (!okToShowInHtml(entry, "owner", true)) return;
