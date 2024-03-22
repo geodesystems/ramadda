@@ -694,7 +694,10 @@ public interface WikiConstants {
     /** list property */
     public static final String WIKI_TAG_LIST = "list";
 
-    /** wiki import */
+    public static final String WIKI_TAG_NAVBAR  = "navbar";    
+
+
+   /** wiki import */
     public static final String WIKI_TAG_ENTRYID = "entryid";
 
     public static final String WIKI_TAG_ALIAS = "alias";    

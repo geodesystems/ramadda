@@ -2300,10 +2300,8 @@ public class WikiManager extends RepositoryManager
             if (other == null) {
 		return "";
 	    }
-            boolean decorate = getProperty(wikiUtil, props, "decorate",
-                                           false);
-            boolean showName = getProperty(wikiUtil, props, "showName",
-                                           decorate);
+            boolean decorate = getProperty(wikiUtil, props, "decorate", false);
+            boolean showName = getProperty(wikiUtil, props, "showName",decorate);
             String iconSize = HU.makeDim(getProperty(wikiUtil, props,
 						     "iconSize", decorate
 						     ? "12"
@@ -3938,24 +3936,20 @@ public class WikiManager extends RepositoryManager
             }
 	    
             boolean doingSlideshow = theTag.equals(WIKI_TAG_SLIDESHOW);
-            boolean doingGrid = theTag.equals(WIKI_TAG_GRID)
+	    boolean decorate = getProperty(wikiUtil, props, "decorate",
+					   true);
+	    boolean doingGrid = theTag.equals(WIKI_TAG_GRID)
 		|| theTag.equals(WIKI_TAG_BOOTSTRAP);
             List<String> titles   = new ArrayList<String>();
             List<String> urls     = new ArrayList<String>();
             List<String> contents = new ArrayList<String>();
             String       dfltTag  = WIKI_TAG_SIMPLE;
             boolean flipCards = theTag.equals(WIKI_TAG_FLIPCARDS);
-
-	    boolean showSnippet = getProperty(wikiUtil, props, "showSnippet",
-					      false);
-
-	    boolean showDescription = getProperty(wikiUtil, props,
-						  "showDescription", false);
-
-	    boolean showTextTop = getProperty(wikiUtil, props,
-					      "showTextTop", false);
+	    boolean showSnippet = getProperty(wikiUtil, props, "showSnippet",  false);
+	    boolean embedLink = getProperty(wikiUtil, props, "embedLink", false);	    
+	    boolean showDescription = getProperty(wikiUtil, props, "showDescription", false);
+	    boolean showTextTop = getProperty(wikiUtil, props,   "showTextTop", false);
 	    
-
             if (getProperty(wikiUtil, props, ATTR_USEDESCRIPTION) != null) {
                 boolean useDescription = getProperty(wikiUtil, props,
 						     ATTR_USEDESCRIPTION, true);
@@ -3991,10 +3985,11 @@ public class WikiManager extends RepositoryManager
             boolean headingSmall = !flipCards && getProperty(wikiUtil, props,
 							     "headingSmall", true);
             String headingClass = headingSmall
-		? HU.cssClass(
-			      "ramadda-subheading ramadda-subheading-small")
-		: HU.cssClass("ramadda-subheading");
+		?    "ramadda-subheading ramadda-subheading-small"
+		: "ramadda-subheading";
 
+	    if(embedLink) headingClass+=" ramadda-subheading-embed";
+	    headingClass=HU.cssClass(headingClass);
             boolean showLink = !flipCards && getProperty(wikiUtil, props, ATTR_SHOWLINK,
 							 true);
 
@@ -4204,11 +4199,15 @@ public class WikiManager extends RepositoryManager
 
                 int    rowCnt   = 0;
                 int    colCnt   = 10000;
-                String boxClass = HU.cssClass((weights==null?"ramadda-gridbox ramadda-gridbox-decorated":"")+" search-component");
+                String boxClass = (weights==null?"ramadda-gridbox":"")+" search-component ";
+		if(decorate) boxClass+=" ramadda-gridbox-decorated";
+		else boxClass+=" ramadda-gridbox-undecorated";		
+		if(embedLink) boxClass+=" ramadda-gridbox-embed";
+		boxClass=HU.cssClass(boxClass);
                 String boxStyle = "";
                 width = getProperty(wikiUtil, props, ATTR_WIDTH,"200");
                 if (width != null) {
-                    boxStyle = HU.style(HU.css("width", HU.makeDim(width,"px"), "display","inline-block","margin","6px"));
+                    boxStyle = HU.style(HU.css("width", HU.makeDim(width,"px"), "display","inline-block"));
                 }
                 for (int idx = 0; idx < titles.size(); idx++) {
                     Entry child = children.get(idx);
@@ -4620,6 +4619,38 @@ public class WikiManager extends RepositoryManager
 	    sb.append(suffix);
 
 	    return sb.toString();
+        } else if (theTag.equals(WIKI_TAG_NAVBAR)) {
+	    String style =getProperty(wikiUtil,props,"style","");
+	    String linkStyle =getProperty(wikiUtil,props,"linkStyle","");
+	    String separator =getProperty(wikiUtil,props,"separator","|");
+	    String image =getProperty(wikiUtil,props,"image","");	    
+	    int cnt = 0;
+	    sb.append(HU.open("div",HU.attrs("style",style,"class","ramadda-navbar")));
+	    for(String link:Utils.split(getProperty(wikiUtil,props,"links",""),",",true,true)) {	    
+		String url;
+		String label;
+		if(link.indexOf(":")>=0) {
+		    List<String> toks = Utils.splitUpTo(link,":",2);
+		    if(toks.size()!=2) continue;
+		    url =  toks.get(0);
+		    label = toks.get(1);
+		} else {
+		    Entry e  = getEntryManager().getEntry(request, link);
+		    if(e==null) continue;
+		    url =  request.entryUrl(getRepository().URL_ENTRY_SHOW, e);
+		    label = getProperty(wikiUtil,props,link+".label",e.getName());
+		}
+		String image2 = getProperty(wikiUtil,props,link+".image",image);
+		if(stringDefined(image2)) {
+		    label = HU.div(image2,"")+label;
+		}
+		label = HU.div(label,HU.attrs("style",linkStyle,"class","ramadda-clickable ramadda-navbar-link"));
+		if(cnt++>0) sb.append(HU.div(separator,HU.clazz("ramadda-navbar-separator")));
+		sb.append(HU.href(url,label));
+	    }
+	    sb.append(HU.close("div"));
+	    return sb.toString();
+
         } else if (theTag.equals(WIKI_TAG_LINKS)
                    || theTag.equals(WIKI_TAG_LIST)) {
             boolean isList = theTag.equals(WIKI_TAG_LIST);
@@ -5871,12 +5902,13 @@ public class WikiManager extends RepositoryManager
 
         boolean showHeading = getProperty(wikiUtil, props, "showHeading",
                                           true);
+        boolean embedLink = getProperty(wikiUtil, props, "embedLink",false);
         boolean includeChildren = getProperty(wikiUtil, props, "includeChildren",
 					      false);
         if (showHeading) {
             HU.div(card, HU.href(entryUrl, entry.getName()),
                    HU.title(entry.getName())
-                   + HU.cssClass("ramadda-subheading"));
+                   + HU.cssClass("ramadda-subheading " + (embedLink?"ramadda-subheading-embed":"")));
         }
 
 	boolean addTags = getProperty(wikiUtil, props, "addTags", false);
