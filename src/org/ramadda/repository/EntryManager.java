@@ -8647,6 +8647,7 @@ public class EntryManager extends RepositoryManager {
 	    if(!entry.getTypeHandler().canCreate(request)) {
 		throw new IllegalArgumentException("User cannot create entry of type:" + entry.getTypeHandler());
 	    }
+	    entry.getTypeHandler().initEntry(entry);
 	}
 	    
 	boolean okToInsert = true;

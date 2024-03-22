@@ -1114,9 +1114,9 @@ public class GenericTypeHandler extends TypeHandler {
      */
     @Override
     public StringBuilder getInnerEntryContent(Entry entry, Request request,
-            TypeHandler typeHandler, OutputType output,
-            boolean showDescription, boolean showResource,
-            boolean linkToDownload, Hashtable props)
+					      TypeHandler typeHandler, OutputType output,
+					      boolean showDescription, boolean showResource,
+					      boolean linkToDownload, Hashtable props,HashSet<String> seen)
             throws Exception {
         if (typeHandler == null) {
             typeHandler = this;
@@ -1124,49 +1124,46 @@ public class GenericTypeHandler extends TypeHandler {
 
 	if(props==null) props = new Hashtable();
 
+        boolean justBasic =Utils.getProperty(props,"justBasic",false);
         StringBuilder parentBuff = super.getInnerEntryContent(entry, request,
                                        typeHandler, output, showDescription,
-                                       showResource, linkToDownload, props);
-        if (Misc.equals(props.get("showDetails"), "false")) {
+							      showResource, linkToDownload, props,seen);
+        if (Misc.equals(props.get("showDetails"), "false") || justBasic) {
             return parentBuff;
         }
+
+
         boolean onlyDetails = Misc.equals(props.get("onlyDetails"), "false");
-        //        if (shouldShowInHtml(request, entry, output)) {
-        if (true) {
-            StringBuilder myBuff = new StringBuilder();
-            Object[]      values = getEntryValues(entry);
-            if (values != null) {
-                String lastGroup = "";
-                for (Column column : getMyColumns()) {
-                    if ( !column.getCanShow()) {
-                        continue;
-                    }
-                    if ((column.getGroup() != null)
-                            && !Misc.equals(lastGroup, column.getGroup())) {
-                        lastGroup = column.getGroup();
-                        myBuff.append(
-                            HtmlUtils.row(
-                                HtmlUtils.col(
-                                    HtmlUtils.div(
-                                        lastGroup,
-                                        " class=\"formgroupheader\" "), " colspan=2 ")));
-                    }
-		    addColumnToTable(request, entry,column,myBuff);
+	StringBuilder myBuff = new StringBuilder();
+	Object[]      values = getEntryValues(entry);
+	if (values != null) {
+	    String lastGroup = "";
+	    for (Column column : getMyColumns()) {
+		if ( !column.getCanShow()) {
+		    continue;
 		}
-            }
+		if ((column.getGroup() != null)
+		    && !Misc.equals(lastGroup, column.getGroup())) {
+		    lastGroup = column.getGroup();
+		    myBuff.append(
+				  HtmlUtils.row(
+						HtmlUtils.col(
+							      HtmlUtils.div(
+									    lastGroup,
+									    " class=\"formgroupheader\" "), " colspan=2 ")));
+		}
+		addColumnToTable(request, entry,column,myBuff);
+	    }
+	}
 
-	    if(onlyDetails)
-		return myBuff;
-            if (getMeFirst()) {
-                myBuff.append(parentBuff);
-                return myBuff;
-            } else {
-                parentBuff.append(myBuff);
-                return parentBuff;
-            }
-        } else if (output.equals(XmlOutputHandler.OUTPUT_XML)) {}
-
-        return parentBuff;
+	if(onlyDetails)
+	    return myBuff;
+	if (getMeFirst()) {
+	    myBuff.append(parentBuff);
+	    return myBuff;
+	} 
+	parentBuff.append(myBuff);
+	return parentBuff;
     }
 
     public void addColumnToTable(Request request, Entry entry,Column column,Appendable myBuff,String...searchArgs) throws Exception {

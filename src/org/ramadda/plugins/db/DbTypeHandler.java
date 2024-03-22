@@ -1604,14 +1604,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     }
 
     public StringBuilder getInnerEntryContent(Entry entry, Request request,
-            TypeHandler typeHandler, OutputType output,
-            boolean showDescription, boolean showResource,
-            boolean linkToDownload, Hashtable props)
+					      TypeHandler typeHandler, OutputType output,
+					      boolean showDescription, boolean showResource,
+					      boolean linkToDownload, Hashtable props,HashSet<String> seen)
             throws Exception {
 	StringBuilder sb = super.getInnerEntryContent(entry, request,
 						      typeHandler, output,
 						      showDescription, showResource,
-						      linkToDownload, props);
+						      linkToDownload, props,seen);
 	
 
 

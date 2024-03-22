@@ -2,11 +2,18 @@
 <types supercategory="Miscellaneous" category="Community">
 
   <type name="type_missing_person" description="Missing person"  foruser="true"
-    xeditfields="name,description,date,earliest_born,_default"
+	editfields="first_name,middle_name,last_name,nickname,description,date,_default"
+	nametemplate="${first_name} ${middle_name} ${last_name}"    
     metadata="missing_alias,content.contact"
     handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">
-    <property name="form.description.iswiki" value="true"/>
+    <property name="form.description.iswiki" value="false"/>
+    <property name="form.wikieditor.height" value="300px"/>
     <property name="icon" value="/icons/people.png"/>
+    <property name="form.name.label" value="Last name"/>
+
+    <property name="html.type.show" value="false"/>    
+    <property name="form.name.show" value="false"/>    
+    <property name="form.description.label" value="Case Information"/>
     <property name="form.location.label" value="Last known location"/>
     <property name="form.location.show" value="true"/>
     <property name="form.date.label" value="Date of Birth/Death"/>
@@ -16,40 +23,69 @@
     <property name="form.tags.show" value="true"/>    
     <property name="form.resource.show" value="false"/>    
 
+    <column name="first_name" type="string"  label="First Name" cansearch="true"/>
+    <column name="middle_name" type="string"  label="Middle Name" cansearch="true"/>
+    <column name="last_name" type="string"  label="Last Name" cansearch="true"/>            
+    <column name="nickname" type="string"  label="Nickname" cansearch="true"/>    
+
     <column name="status" type="enumeration" values="unknown:Unknown,found:Found,missing:Missing,died:Died"  label="Status" cansearch="true"/>
     <column name="date_missing" type="datetime" default="none" label="Date Missing" cansearch="true"/>
-    <column name="nickname" type="string"  label="Nickname" cansearch="true"/>    
-    <column name="gender" type="enumeration"  label="Sex" values="m:male,f:female,u:unknown"  cansearch="true"/>
+    <column name="biological_sex" type="enumeration"  label="Biological Sex" values="m:Male,f:Female,u:Unknown"  cansearch="true"/>
 
-    <column name="missing_city" type="enumerationplus"  label="Missing City" group="Missing Location" cansearch="true"/>
+    <column name="height" type="int"  label="Height" suffix="Inches"  cansearch="true"/>
+    <column name="weight" type="int"  label="Weight" suffix="Pounds"  cansearch="true"/>
+    <column name="race_ethnicity" type="enumerationplus"  label="Race/Ethnicity"   cansearch="true"/>    
+
+
+
+    <column name="missing_city" type="enumerationplus"  label="Missing City"  cansearch="true"
+	    group="Circumstances" />
     <column name="missing_county" type="enumerationplus"  label="Missing County" cansearch="true"/>
     <column name="missing_zip" type="enumerationplus"  label="Missing Zip Code" cansearch="true"/>    
     <column name="missing_state" type="enumeration"  label="Missing State"
-	    values="file:/org/ramadda/plugins/community/resources/states.txt" cansearch="true"/>            
+	    values="file:/org/ramadda/projects/missing/states.txt" cansearch="true"/>            
 
     <column name="found_city" type="enumerationplus"  label="Found City" group="Found" cansearch="true"/>
     <column name="found_county" type="enumerationplus"  label="Found County" cansearch="true"/>
     <column name="found_zip" type="enumerationplus"  label="Found Zip Code" cansearch="true"/>    
     <column name="found_state" type="enumeration"  label="Found State"
-	    values="file:/org/ramadda/plugins/community/resources/states.txt" cansearch="true"/>            
+	    values="file:/org/ramadda/projects/missing/states.txt" cansearch="true"/>            
 
     <column name="cause_of_death" type="enumerationplus"  label="Cause of death"
-	    help="The likely immediate cause of death"
+	    help="The likely cause of death"
 	    values="" cansearch="true"/>
     <column name="death_comments" type="string"  size="5000" label="Death Comments" rows="5" cansearch="true"/>
-    <column name="mortality_location" type="latlon"  label="Mortality Location" cansearch="true"/>
+    <column name="found_location" type="latlon"  label="Found Location" cansearch="true"/>
+
+    <column name="hair_color" type="enumerationplus"  label="Hair Color"  values="unknown:Unknown,black:Black,brown:Brown, blonde:Blonde, red:Red,auburn:Auburn,chestnut:Chestnut,platinum:Platinum,gray: Gray/Silver,white: White,strawberry: Strawberry Blonde"  cansearch="true"
+	    group="Physical Description"/>    
+    <column name="head_hair_description" label="Head Hair Description" type="string"   size="2000" rows="3" cansearch="true"/>
+    <column name="body_hair_description" label="Body Hair Description" type="string"   size="2000" rows="3" cansearch="true"/>    
+    <column name="facial_hair_description" label="Facial Hair Description" type="string"   size="2000" rows="3" cansearch="true"/>
+
+    <column name="left_eye_color" label="Left Eye Color" type="enumerationplus" values="unknown:Unknown,brown:Brown,blue: Blue,green: Green, hazel:Hazel,gray: Gray, amber:Amber"   cansearch="true"/>
+    <column name="right_eye_color" label="Right Eye Color" type="enumerationplus"
+	    values="unknown:Unknown,brown:Brown,blue: Blue,green: Green, hazel:Hazel,gray: Gray, amber:Amber"  	    
+	    cansearch="true"/>    
+    <column name="eye_description" label="Eye Description" type="string"   cansearch="true"/>
+
+    <column name="distinctive_physical_features" label="Distinctive Physical Features" type="string" size="2000" rows="5"   cansearch="true"/>
+    <column name="clothing_and_accessories" label="Clothing and Accessories" type="string" size="2000" rows="5"   cansearch="true"/>        
+    <column name="transportation" label="Transportation" type="string" size="2000" rows="5"   cansearch="true"
+	    group="Additional Case Information"/>
+    <column name="transportation_notes" label="Transportation notes" type="string" size="2000" rows="5"   cansearch="true"/>    
+    
+
+
 
 <wiki><![CDATA[
 +section title={{name}}
-:navtop
 +row
 +col-8
 {{description wikify=true}}
 :vspace 1em
-{{information details=false}}
+{{information details=false noBasic=true}}
 :vspace 1em
-{{list includeIcon="true" details="false" entries="links"  message="" prefix=":lheading Tags" }}
-{{gallery message="" prefix=":heading Images"}}
 
 -col
 +col-4
@@ -57,11 +93,19 @@
 {{image src="::*" message="" width="90%"}}                                                          
 :vspace 1em
 +center
-{{mapentry hideIfNoLocations=true width="90%" height="300px" heading="Birth Location"}}
+{{mapentry hideIfNoLocations=true width="90%" height="300px" heading="Last Known Location"}}
 -center
 {{properties message="" metadata.types="!content.contact,!missing_alias"}}
+:vspace 1em
+:lheading Record Information
+{{information details=false justBasic=true}}
 -col
 -row
+
+{{gallery message="" prefix="----\n:heading Photos"}}
+
+{{list includeIcon="true" details="false" entries="links"  message="" prefix=":lheading Related" }}
+
 -section
 ]]></wiki>
   </type>

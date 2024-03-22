@@ -301,6 +301,7 @@ public class TypeHandler extends RepositoryManager {
 
     private String[] editFields;
     private String[] newFields;    
+    private String[] displayFields;
 
     private List<WikiMacro> wikiMacros;
     private Hashtable<String,WikiMacro> wikiMacrosMap;    
@@ -352,6 +353,7 @@ public class TypeHandler extends RepositoryManager {
     /** the wiki tag in types.xml. If defined then use this as the default html display for entries of this type */
     private String wikiTemplate;
 
+    private String nameTemplate;
     private Hashtable<String,String> wikiText = new Hashtable<String,String>();
 
 
@@ -519,8 +521,6 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-
-
 	    String fields = XmlUtil.getAttributeFromTree(node, "editfields", null);	    
 	    if(fields!=null) {
 		fields = fields.replace("_default",DEFAULT_EDIT_FIELDS);
@@ -531,6 +531,11 @@ public class TypeHandler extends RepositoryManager {
 		fields = fields.replace("_default",DEFAULT_EDIT_FIELDS);
 		newFields = Utils.toStringArray(Utils.split(fields,",",true,true));
 	    }
+	    fields = XmlUtil.getAttributeFromTree(node, "displayFields", null);	    
+	    if(fields!=null) {
+		fields = fields.replace("_default",DEFAULT_EDIT_FIELDS);
+		displayFields = Utils.toStringArray(Utils.split(fields,",",true,true));
+	    }	    
 	    
 	    superCategory = XmlUtil.getAttributeFromTree(node,
 							 ATTR_SUPERCATEGORY, superCategory);
@@ -552,7 +557,7 @@ public class TypeHandler extends RepositoryManager {
             }
 
 
-
+            nameTemplate = Utils.getAttributeOrTag(node, "nametemplate",null);
             wikiTemplate = Utils.trimLinesLeft(Utils.getAttributeOrTag(node, ATTR_WIKI,wikiTemplate));
 
 	    List macros = XmlUtil.findChildrenRecurseUp(node,"wikimacro");
@@ -2730,6 +2735,23 @@ public class TypeHandler extends RepositoryManager {
         return IO.getFileTail(path);
     }
 
+    public void initEntry(Entry entry) {
+	if(nameTemplate!=null) {
+            Object[] values    = getEntryValues(entry);
+	    String name =nameTemplate;
+	    List<Column> columns = getColumns();
+	    if (columns == null) {
+		return;
+	    }
+	    for(Column column: columns) {
+		String value = column.getString(values);
+		if(value==null) value="";
+		name= name.replace("${" + column.getName()+"}",value);
+	    }
+	    entry.setName(name);
+	}
+    }
+
     /**
      * _more_
      *
@@ -2891,21 +2913,24 @@ public class TypeHandler extends RepositoryManager {
         OutputType    output = request.getOutput();
         if (displayTemplatePath != null) {
             String html = getRepository().getResource(displayTemplatePath);
-
             return new StringBuilder(processDisplayTemplate(request, entry,
                     html));
         }
         if (request.get(WikiConstants.ATTR_SHOWTITLE, true)) {
-            HU.sectionHeader(sb,
-                                    getPageHandler().getEntryHref(request,
-                                        entry));
+            HU.sectionHeader(sb, getPageHandler().getEntryHref(request,entry));
         }
         sb.append(HU.formTable());
+
+	HashSet<String> seen = new HashSet<String>();
+
+	if(displayFields!=null) {
+	}
+
+
         sb.append(getInnerEntryContent(entry, request, null, output,
                                        showDescription, showResource, true,
-                                       props));
+                                       props,seen));
         sb.append(HU.formTableClose());
-
         return sb;
 
     }
@@ -3598,18 +3623,19 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public StringBuilder getInnerEntryContent(Entry entry, Request request,
-            TypeHandler typeHandler, OutputType output,
-            boolean showDescription, boolean showResource,
-            boolean linkToDownload, Hashtable props)
+					      TypeHandler typeHandler, OutputType output,
+					      boolean showDescription, boolean showResource,
+					      boolean linkToDownload, Hashtable props,HashSet<String> seen)
             throws Exception {
 
+	if(seen==null) seen=new HashSet<String>();
         if (typeHandler == null) {
             typeHandler = this;
         }
         if (parent != null) {
             return parent.getInnerEntryContent(entry, request, typeHandler,
                     output, showDescription, showResource, linkToDownload,
-                    props);
+					       props,seen);
         }
 
 	Entry parentEntry = entry==null?null:entry.getParentEntry();
@@ -3623,6 +3649,10 @@ public class TypeHandler extends RepositoryManager {
                                  && typeHandler.okToShowInHtml(entry,
                                      "createdate", true);
 
+        boolean noBasic =Utils.getProperty(props,"noBasic",false);
+        boolean justBasic =Utils.getProperty(props,"justBasic",false);
+
+
         boolean entryIsImage = isImage(entry);
         boolean showImage    = false;
         if (showResource && entryIsImage) {
@@ -3634,241 +3664,226 @@ public class TypeHandler extends RepositoryManager {
             }
         }
 
+
 	if(props!=null && !Utils.getProperty(props,"showImage",true)) {
 	    showImage = false;
 	    entryIsImage = false;
 	}
 
-        if (true || output.equals(OutputHandler.OUTPUT_HTML)) {
-            OutputHandler outputHandler =
-                getRepository().getOutputHandler(request);
-            String nextPrev = StringUtil.join("",
-                                  outputHandler.getNextPrevLinks(request,
-                                      entry, output));
 
-            if (showDescription) {
-                String desc = entry.getDescription();
-                if ((desc != null) && (desc.length() > 0)
-                        && ( !isWikiText(desc))) {
-                    sb.append(
-                        formEntry(
-                            request, msgLabel("Description"),
-                            getEntryManager().getEntryText(
-                                request, entry, desc)));
-                }
-            }
-            //            sb.append(
-            //                "<tr><td width=20%><div style=\"height:1px;\"></div></td><td width=75%></td></tr>");
-
-
-
-            String createdDisplayMode =
-                getPageHandler().getCreatedDisplayMode();
-            boolean showCreated = true;
-            if (createdDisplayMode.equals("none")) {
-                showCreated = false;
-            } else if (createdDisplayMode.equals("admin")) {
-                showCreated = request.getUser().getAdmin();
-            } else if (createdDisplayMode.equals("user")) {
-                showCreated = !request.isAnonymous();
-            } else if (createdDisplayMode.equals("all")) {
-                showCreated = true;
-            } else {
-                showCreated = false;
-            }
-
-            if (showResource && entryIsImage) {
-                String width = "600";
-                if (request.isMobile()) {
-                    width = "250";
-                }
-                String img    = null;
-                String imgUrl = null;
-                if (entry.getResource().isFile()
-                        && getAccessManager().canDownload(request, entry)) {
-                    imgUrl = getEntryResourceUrl(request, entry,false,true);
-                    img    = HU.img(imgUrl, "", HU.attrs("width", width,"style","max-width:100%;","align","center"));
-                } else if (entry.getResource().isUrl()) {
-                    try {
-                        imgUrl = typeHandler.getPathForEntry(request, entry,false);
-			img    = HU.img(imgUrl, "", HU.attrs("width", width,"style","max-width:100%;","align","center"));
-                    } catch (Exception exc) {
-                        sb.append("Error getting path:" + entry.getResource()
-                                  + " " + exc);
-                    }
-                }
-                if (img != null) {
-                    String outer = HU.href(imgUrl, img,
-                                       HU.cssClass("popup_image"));
-                    //                    sb.append(HU.col(img, " colspan=2 "));
-                    sb.append(HU.col(outer, " colspan=2 "));
-                    getWikiManager().addImagePopupJS(request, null, sb,
-                            new Hashtable());
-                }
-            }
-
-            Resource resource      = entry.getResource();
-            String   resourceLink  = resource.getPath();
-
-            String   resourceLabel = null;
-            if (resource.isUrl()) {
-                resourceLabel = "URL";
-            } else if (resource.isFileType()) {
-                resourceLabel = "File";
-            } else {
-                resourceLabel = "Resource (" + resource.getType() + ")";
-            }
-            resourceLabel = msgLabel(resourceLabel);
-            if (resourceLink.length() > 0) {
-                if (entry.getResource().isUrl()) {
-                    try {
-                        resourceLink = typeHandler.getPathForEntry(request,
-								   entry,false);
-                        resourceLink = HU.href(resourceLink,
-					       resourceLink);
-                    } catch (Exception exc) {
-                        sb.append("Error:" + exc);
-                    }
-                } else if (entry.getResource().isFile()) {
-                    resourceLink =
-                        getStorageManager().getFileTail(resourceLink);
-                    //Not sure why we were doing this but it screws up chinese characters
-                    //                    resourceLink =
-                    //                        HU.urlEncodeExceptSpace(resourceLink);
-                    resourceLabel = msgLabel("File");
-                    if (getAccessManager().canDownload(request, entry)) {
-			String url = getEntryResourceUrl(request, entry, false);
-                        resourceLink =    HU.href(url,resourceLink) +
-			    HU.space(1)+
-			    HU.href(url,HU.img(getIconUrl(ICON_DOWNLOAD),"Download", ""));
-                    } else {
-                        resourceLink = resourceLink + HU.space(2)
-                                       + "(" + msg("restricted") + ")";
-                    }
-                }
-                if (entry.getResource().getFileSize() > 0) {
-                    resourceLink =
-                        resourceLink + HU.space(2)
-                        + formatFileLength(entry.getResource().getFileSize());
-                }
-                sb.append(formEntry(request, resourceLabel, resourceLink));
-
-            }
-
-	    if (typeHandler.okToShowInHtml(entry, ARG_TYPE, true)) {
-		    String icon = getPageHandler().getEntryIconImage(request,entry);
-                    sb.append(formEntry(request, msgLabel("Kind"),
-                                        icon + HU.space(1)+getFileTypeDescription(request,
-										  entry)));
+	if (showDescription) {
+	    String desc = entry.getDescription();
+	    if ((desc != null) && (desc.length() > 0)
+		&& ( !isWikiText(desc))) {
+		sb.append(
+			  formEntry(
+				    request, msgLabel("Description"),
+				    getEntryManager().getEntryText(
+								   request, entry, desc)));
 	    }
+	}
 
-	    String ark = getPageHandler().getArk(request, entry,false);
-	    if(ark!=null) {
-		if(okToShowInForm(entry, "ark", false)) {
-		    sb.append(formEntry(request, msgLabel("ARK ID"),ark));
+	String createdDisplayMode =
+	    getPageHandler().getCreatedDisplayMode();
+	boolean showCreated = true;
+	if (createdDisplayMode.equals("none")) {
+	    showCreated = false;
+	} else if (createdDisplayMode.equals("admin")) {
+	    showCreated = request.getUser().getAdmin();
+	} else if (createdDisplayMode.equals("user")) {
+	    showCreated = !request.isAnonymous();
+	} else if (createdDisplayMode.equals("all")) {
+	    showCreated = true;
+	} else {
+	    showCreated = false;
+	}
+
+	if(noBasic){
+	    showCreated=false;
+	    showCreateDate=false;		
+	}
+
+	if (showResource && entryIsImage) {
+	    String width = "600";
+	    if (request.isMobile()) {
+		width = "250";
+	    }
+	    String img    = null;
+	    String imgUrl = null;
+	    if (entry.getResource().isFile()
+		&& getAccessManager().canDownload(request, entry)) {
+		imgUrl = getEntryResourceUrl(request, entry,false,true);
+		img    = HU.img(imgUrl, "", HU.attrs("width", width,"style","max-width:100%;","align","center"));
+	    } else if (entry.getResource().isUrl()) {
+		try {
+		    imgUrl = typeHandler.getPathForEntry(request, entry,false);
+		    img    = HU.img(imgUrl, "", HU.attrs("width", width,"style","max-width:100%;","align","center"));
+		} catch (Exception exc) {
+		    sb.append("Error getting path:" + entry.getResource()
+			      + " " + exc);
+		}
+	    }
+	    if (img != null) {
+		String outer = HU.href(imgUrl, img, HU.cssClass("popup_image"));
+		sb.append(HU.col(outer, " colspan=2 "));
+		getWikiManager().addImagePopupJS(request, null, sb,
+						 new Hashtable());
+	    }
+	}
+
+	Resource resource      = entry.getResource();
+	String   resourceLink  = resource.getPath();
+
+	String   resourceLabel = null;
+	if (resource.isUrl()) {
+	    resourceLabel = "URL";
+	} else if (resource.isFileType()) {
+	    resourceLabel = "File";
+	} else {
+	    resourceLabel = "Resource (" + resource.getType() + ")";
+	}
+	resourceLabel = msgLabel(resourceLabel);
+	if (resourceLink.length() > 0) {
+	    if (entry.getResource().isUrl()) {
+		try {
+		    resourceLink = typeHandler.getPathForEntry(request,
+							       entry,false);
+		    resourceLink = HU.href(resourceLink,
+					   resourceLink);
+		} catch (Exception exc) {
+		    sb.append("Error:" + exc);
+		}
+	    } else if (entry.getResource().isFile()) {
+		resourceLink =
+		    getStorageManager().getFileTail(resourceLink);
+		//Not sure why we were doing this but it screws up chinese characters
+		//                    resourceLink =
+		//                        HU.urlEncodeExceptSpace(resourceLink);
+		resourceLabel = msgLabel("File");
+		if (getAccessManager().canDownload(request, entry)) {
+		    String url = getEntryResourceUrl(request, entry, false);
+		    resourceLink =    HU.href(url,resourceLink) +
+			HU.space(1)+
+			HU.href(url,HU.img(getIconUrl(ICON_DOWNLOAD),"Download", ""));
+		} else {
+		    resourceLink = resourceLink + HU.space(2)
+			+ "(" + msg("restricted") + ")";
+		}
+	    }
+	    if (entry.getResource().getFileSize() > 0) {
+		resourceLink =
+		    resourceLink + HU.space(2)
+		    + formatFileLength(entry.getResource().getFileSize());
+	    }
+	    sb.append(formEntry(request, resourceLabel, resourceLink));
+
+	}
+
+	if (!noBasic && typeHandler.okToShowInHtml(entry, ARG_TYPE, true)) {
+	    String icon = getPageHandler().getEntryIconImage(request,entry);
+	    sb.append(formEntry(request, msgLabel("Kind"),
+				icon + HU.space(1)+getFileTypeDescription(request,
+									  entry)));
+	}
+
+	String ark = getPageHandler().getArk(request, entry,false);
+	if(ark!=null) {
+	    if(okToShowInForm(entry, "ark", false)) {
+		sb.append(formEntry(request, msgLabel("ARK ID"),ark));
+	    }
+	}
+
+	//Only show the created by and type when the user is logged in
+	if ( !request.isAnonymous()) {
+	    if (showCreateDate) {
+		sb.append(formEntry(request, msgLabel("Created"),
+				    getDateHandler().formatDate(request,
+								entry, entry.getCreateDate())));
+
+		if (entry.getCreateDate() != entry.getChangeDate()) {
+		    sb.append(
+			      formEntry(
+					request, msgLabel("Modified"),
+					getDateHandler().formatDate(
+								    request, entry, entry.getChangeDate())));
+
 		}
 	    }
 
-            //Only show the created by and type when the user is logged in
-            if ( !request.isAnonymous()) {
-                if (showCreateDate) {
-                    sb.append(formEntry(request, msgLabel("Created"),
-                                        getDateHandler().formatDate(request,
-                                            entry, entry.getCreateDate())));
+	}
+	if (showCreated) {
+	    typeHandler.addUserSearchLink(request, entry, sb);
+	}
+	if(justBasic) return sb;
 
-                    if (entry.getCreateDate() != entry.getChangeDate()) {
-                        sb.append(
-                            formEntry(
-                                request, msgLabel("Modified"),
-                                getDateHandler().formatDate(
-                                    request, entry, entry.getChangeDate())));
 
-                    }
-                }
+	boolean hasDataDate = false;
 
+	if (Math.abs(entry.getCreateDate() - entry.getStartDate())
+	    > 60000) {
+	    hasDataDate = true;
+	} else if (Math.abs(entry.getCreateDate() - entry.getEndDate())
+		   > 60000) {
+	    hasDataDate = true;
+	}
+
+
+
+	if (showDate && hasDataDate) {
+	    if (entry.getEndDate() != entry.getStartDate()) {
+		String startDate = getDateHandler().formatDate(request,
+							       entry, entry.getStartDate());
+		String endDate = getDateHandler().formatDate(request,
+							     entry, entry.getEndDate());
+		String searchUrl =
+		    HtmlUtils
+		    .url(request
+			 .makeUrl(getRepository().getSearchManager()
+				  .URL_ENTRY_SEARCH), Misc
+			 .newList(ARG_DATA_DATE + "."
+				  + ARG_FROM, startDate,
+				  ARG_DATA_DATE + "." + ARG_TO,
+				  endDate));
+		sb.append(formEntry(request, msgLabel(getFormLabel(null,null,"startdate","Start Date")),
+				    startDate));
+		sb.append(formEntry(request, msgLabel(getFormLabel(null,null,"enddate","End Date")),
+				    endDate));
+	    } else {
+		boolean showTime = typeHandler.okToShowInForm(entry,
+							      "time", true);
+		StringBuilder dateSB = new StringBuilder();
+		dateSB.append(getDateHandler().formatDate(request, entry,
+							  entry.getStartDate()));
+
+
+		if (typeHandler.okToShowInForm(entry, ARG_TODATE)
+		    && (entry.getEndDate() != entry.getStartDate())) {
+		    dateSB.append(" - ");
+		    dateSB.append(getDateHandler().formatDate(request,
+							      entry, entry.getEndDate()));
+		}
+		String formLabel = msgLabel(getFormLabel(parentEntry,entry, ARG_DATE, "Date"));
+		sb.append(formEntry(request, formLabel,
+				    dateSB.toString()));
 	    }
-	    if (showCreated) {
-		typeHandler.addUserSearchLink(request, entry, sb);
+	}
+
+
+	//Don't show the latlon in the html
+	boolean showMap = false;
+	if (showMap) {
+	    if (entry.hasLocationDefined()) {
+		sb.append(formEntry(request, msgLabel("Location"),
+				    formatLocation(entry.getSouth(),
+						   +entry.getEast())));
+	    } else if (entry.hasAreaDefined()) {
 	    }
+	}
 
-
-            boolean hasDataDate = false;
-
-            if (Math.abs(entry.getCreateDate() - entry.getStartDate())
-                    > 60000) {
-                hasDataDate = true;
-            } else if (Math.abs(entry.getCreateDate() - entry.getEndDate())
-                       > 60000) {
-                hasDataDate = true;
-            }
-
-
-            if (showDate && hasDataDate) {
-                if (entry.getEndDate() != entry.getStartDate()) {
-                    String startDate = getDateHandler().formatDate(request,
-                                           entry, entry.getStartDate());
-                    String endDate = getDateHandler().formatDate(request,
-                                         entry, entry.getEndDate());
-                    String searchUrl =
-                        HtmlUtils
-                            .url(request
-                                .makeUrl(getRepository().getSearchManager()
-                                    .URL_ENTRY_SEARCH), Misc
-                                        .newList(ARG_DATA_DATE + "."
-                                            + ARG_FROM, startDate,
-                                                ARG_DATA_DATE + "." + ARG_TO,
-                                                endDate));
-                    sb.append(formEntry(request, msgLabel(getFormLabel(null,null,"startdate","Start Date")),
-                                        startDate));
-                    sb.append(formEntry(request, msgLabel(getFormLabel(null,null,"enddate","End Date")),
-                                        endDate));
-                } else {
-                    boolean showTime = typeHandler.okToShowInForm(entry,
-                                           "time", true);
-                    StringBuilder dateSB = new StringBuilder();
-                    dateSB.append(getDateHandler().formatDate(request, entry,
-                            entry.getStartDate()));
-
-
-                    if (typeHandler.okToShowInForm(entry, ARG_TODATE)
-                            && (entry.getEndDate() != entry.getStartDate())) {
-                        dateSB.append(" - ");
-                        dateSB.append(getDateHandler().formatDate(request,
-                                entry, entry.getEndDate()));
-                    }
-                    String formLabel = msgLabel(getFormLabel(parentEntry,entry, ARG_DATE, "Date"));
-                    sb.append(formEntry(request, formLabel,
-                                        dateSB.toString()));
-                }
-            }
-
-
-
-
-            String category = entry.getCategory();
-            if ( !entry.getTypeHandler().hasDefaultCategory()
-                    && (category != null) && (category.length() > 0)) {
-                sb.append(formEntry(request, msgLabel("Data Type"),
-                                    entry.getCategory()));
-            }
-
-            //Don't show the latlon in the html
-            boolean showMap = false;
-            if (showMap) {
-                if (entry.hasLocationDefined()) {
-                    sb.append(formEntry(request, msgLabel("Location"),
-                                        formatLocation(entry.getSouth(),
-                                            +entry.getEast())));
-                } else if (entry.hasAreaDefined()) {
-                }
-            }
-            if (entry.hasAltitude() && (entry.getAltitude() != 0)) {
-                sb.append(formEntry(request, msgLabel("Elevation"),
-                                    "" + entry.getAltitude()));
-            }
-
-
-        } else if (output.equals(XmlOutputHandler.OUTPUT_XML)) {}
+	if (entry.hasAltitude() && (entry.getAltitude() != 0)) {
+	    sb.append(formEntry(request, msgLabel("Elevation"),
+				"" + entry.getAltitude()));
+	}
 
         return sb;
 
@@ -5736,7 +5751,7 @@ public class TypeHandler extends RepositoryManager {
             formInfo.addMaxSizeValidation(label, hiddenId, length);
         }
         text = text.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-	String height="500px";
+	String height=getTypeProperty("form.wikieditor.height","500px");
 	if(readOnly) {
 	    int cnt = Utils.split(text,"\n").size();
 	    if(cnt<20)
