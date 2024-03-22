@@ -55,6 +55,16 @@ div.ramadda-breadcrumbs {
     color: white;
 }
 
+.ramadda-navbar, .ramadda-navbar-link  {
+    color:#FBC42B;
+}
+.ramadda-breadcrumbs-list a {
+    color:#FBC42B !important;
+}
+.breadcrumb-delimiter, .breadCrumb ul li {
+background: url(${root}/icons/arrow_right_yellow.png) no-repeat 100% center;
+}
+
 </style>
 
 </head>
@@ -63,7 +73,7 @@ div.ramadda-breadcrumbs {
 <div id="loadDelay"></div>
 <a id="top"></a>
 <!-- Header and Top Main Navigation -->
-<header class="contain-to-grid">
+<header class="contain-to-grid" style="position:relative;">
 <table width="100%" border="0"><tr valign=bottom>
 <td align="left">
 <div style="margin:5px;">
@@ -77,13 +87,10 @@ div.ramadda-breadcrumbs {
 </div>
 </td>
 <td align="right">
-<div style="margin:5px;">
-${links}
-</div>
 </td>
 </tr></table>
-
-
+<div style="position:absolute;right:8px;top:2px;">${pageheader}</div>
+<div style="position:absolute;right:5px;bottom:0px;">${links}</div>
 <!-- End Top Main Navigation -->
 </header>
 <!-- End Header and Top Main Navigation -->
