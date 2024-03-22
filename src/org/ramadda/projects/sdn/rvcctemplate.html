@@ -11,12 +11,35 @@ id=rvcc
 ${imports}
 <style type="text/css">
 :root {--header-height:100px;}
+
+.rvcc-title {
+    font-size:130%;
+    text-shadow:1px 1px 0 #000;
+    left:50%;
+    transform: translateX(-50%);
+    top:0px;
+    position:absolute;
+}
+
 .rvcc-logo-image {
     margin-top:5px;
     border-radius:50%;
     background:#F4B942;
     opacity:0.6;
     width:80px;
+}
+
+.rvcc-pageheader {
+    position:absolute;
+    top:40px;
+    left:50%;
+    transform: translateX(-50%);
+    padding:4px;
+    border-radius:var(--default-radius);
+    display:inline-block;
+    background:#F4B942;
+    opacity:0.8;
+    text-align:center;
 }
 
 .breadcrumb-delimiter, .breadCrumb ul li {
@@ -79,16 +102,15 @@ ${headfinal}
 <tr valign="bottom">
 <td width="60%" style='position:relative;'>
 <a target=_other href="https://www.rvcchub.org">
-  <img title="Go to Rising Voices, Changing Coasts"
+<img title="Go to Rising Voices, Changing Coasts"
        class="rvcc-logo-image" valign="bottom" src="${htdocs}/sdn/rvcclogo.png" ></a>
-<div style='position:absolute;top:0px;left:100px;display:inline-block;vertical-align:bottom;'>
-<a href="${root}" style="text-decoration:none;font-size:120%">Rising Voices, Changing Coasts Testbed</a>
-</div>
 </td>
 <td style="position:relative;" align="right"><div style="position:absolute;top:5px;right:5px;">${links}</div></td></tr></table>
-<center>
-<div style="padding:4px;border-radius:var(--default-radius);display:inline-block;background:#F4B942; opacity:0.8;text-align:center;">${pageheader}</div>
-</center>
+<div class="rvcc-title">
+  <a href="${root}"
+     style="text-align:center;text-decoration:none;font-size:120%">Rising Voices, Changing Coasts Testbed</a>
+</div>
+<div class="rvcc-pageheader">${pageheader}</div>
 <div style="">${entry.header}</div>
 </div>
 <div class="ramadda-outercontents">
