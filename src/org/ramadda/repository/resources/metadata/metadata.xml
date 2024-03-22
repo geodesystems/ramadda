@@ -41,6 +41,13 @@
       <template type="oaidc"><![CDATA[<dc:subject>${attr1 cdata=true}</dc:subject>]]></template>
     </type>
 
+    <type name="Category" id="content.category" searchable="true" browsable="true" displaygroup="Tags and Keywords">
+      <element name="Category"       datatype="enumerationplus"
+	       values="photographs-and-images:Photographs and Images,film-and-video:Film and Video,audio-recordings:Audio Recordings,artifacts-and-object:Artifacts and Objects,stories:Stories"/>
+    </type>
+
+
+
     <type name="Subject" id="content.subject" searchable="true" browsable="true" xdisplaygroup="Tags and Keywords"  >
       <element name="Subject" />
     </type>    
@@ -230,6 +237,16 @@ Override the logo icon and URL used in the default page templates.
       <element name="Logo Image File" datatype="file" thumbnail="false" attachment="false"/>
       <element name="Logo URL"/>
       <element name="Page Title"/>
+    </type>
+
+    <type
+       name="Page Header"
+       id="content.pageheader"
+       candisplay="false">
+      <help>
+<![CDATA[Header to show in the template]]>
+</help>
+      <element name="Header" datatype="wiki" rows="10"/>
     </type>
 
     <type
