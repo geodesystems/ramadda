@@ -34,7 +34,9 @@
 
     <column name="height" type="int"  label="Height" suffix="Inches"  cansearch="true"/>
     <column name="weight" type="int"  label="Weight" suffix="Pounds"  cansearch="true"/>
-    <column name="race_ethnicity" type="enumerationplus"  label="Race/Ethnicity"   cansearch="true"/>    
+    <column name="race_ethnicity" type="enumerationplus"  label="Race/Ethnicity"   cansearch="true"
+	    values="white:White,black:Black or African American,hispanic: Hispanic or Latino, asian:Asian, native_american:Native American or Alaska Native,hawaiian: Native Hawaiian or Other Pacific Islander, multiracial:Multiracial"
+/>    
 
 
 
@@ -50,12 +52,12 @@
     <column name="found_zip" type="enumerationplus"  label="Found Zip Code" cansearch="true"/>    
     <column name="found_state" type="enumeration"  label="Found State"
 	    values="file:/org/ramadda/projects/missing/states.txt" cansearch="true"/>            
+    <column name="found_location" type="latlon"  label="Found Location" cansearch="true"/>
 
     <column name="cause_of_death" type="enumerationplus"  label="Cause of death"
 	    help="The likely cause of death"
 	    values="" cansearch="true"/>
     <column name="death_comments" type="string"  size="5000" label="Death Comments" rows="5" cansearch="true"/>
-    <column name="found_location" type="latlon"  label="Found Location" cansearch="true"/>
 
     <column name="hair_color" type="enumerationplus"  label="Hair Color"  values="unknown:Unknown,black:Black,brown:Brown, blonde:Blonde, red:Red,auburn:Auburn,chestnut:Chestnut,platinum:Platinum,gray: Gray/Silver,white: White,strawberry: Strawberry Blonde"  cansearch="true"
 	    group="Physical Description"/>    
@@ -85,8 +87,6 @@
 </permission>
 </permissions>
 </entry>
-<entry  name="Animals"  type="group" entryorder="40"/>
-<entry  name="Tags"  type="group" entryorder="50"/>
 </entries>
 ]]>
 </children>
