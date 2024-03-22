@@ -2744,7 +2744,7 @@ var Utils =  {
         });
 
         let pageTitle = $(parent+".ramadda-page-title");
-        let headerCenter = $(parent +".ramadda-header-center");
+        let headerCenter = $(parent +".ramadda-header-fixedtitle");
         if(pageTitle.length && headerCenter.length) {
             //There might be more than one so take the first
             pageTitle= pageTitle.first();
