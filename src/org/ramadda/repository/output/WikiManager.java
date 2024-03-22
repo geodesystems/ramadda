@@ -873,6 +873,18 @@ public class WikiManager extends RepositoryManager
     public Entry findEntryFromId(Request request, Entry entry,
 				 WikiUtil wikiUtil, Hashtable props, String entryId)
 	throws Exception {
+
+	Entry theEntry = findEntryFromIdInner(request, entry, wikiUtil,  props, entryId);
+	if(theEntry!=null &&
+	   getProperty(wikiUtil,props,"ifHaveChildren",false)) {
+	    if(getEntryManager().getChildren(request, theEntry).size()==0) return null;
+	}
+	return theEntry;
+    }
+
+    public Entry findEntryFromIdInner(Request request, Entry entry,
+				 WikiUtil wikiUtil, Hashtable props, String entryId)
+	throws Exception {
         Entry theEntry = null;
 
 	SelectInfo select = null;
@@ -6082,7 +6094,8 @@ public class WikiManager extends RepositoryManager
      * @param props    the properties
      */
     public void addImagePopupJS(Request request, WikiUtil wikiUtil,
-                                StringBuilder buf, Hashtable props) {
+                                Appendable buf, Hashtable props) {
+	try {
         if (request.getExtraProperty("added fancybox") == null) {
             String captionpos = getProperty(wikiUtil, props,
                                             ATTR_POPUPCAPTION, "none");
@@ -6128,6 +6141,9 @@ public class WikiManager extends RepositoryManager
             }
             request.putExtraProperty("added fancybox", "yes");
         }
+	}catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
     }
 
     /**
@@ -7466,6 +7482,10 @@ public class WikiManager extends RepositoryManager
 	    if(asc!=null) myRequest.put(ARG_ASCENDING,asc);	    
 
 
+	    if(getProperty(wikiUtil,props,"ifHaveChildren",false)) {
+		if(getEntryManager().getChildren(request, importEntry).size()==0) return "";
+	    }
+
 	    if(!getProperty(wikiUtil,props,"showTitle",true)) {
 		myRequest.put(PROP_SHOW_TITLE,"false");
 	    }
@@ -7482,6 +7502,19 @@ public class WikiManager extends RepositoryManager
             }
 
             String content = result.getStringContent();
+
+
+            String prefix = getProperty(wikiUtil, props, ATTR_PREFIX,null);
+	    if (prefix != null) {
+		//Convert ant _nl_, _qt_, etc
+		prefix = Utils.convertPattern(prefix).replace("\\n","\n");;
+		prefix = wikifyEntry(request, importEntry, wikiUtil, prefix, false,
+				     wikiUtil.getNotTags(), true);
+		content = prefix+content;
+        }
+
+
+
             String title = getProperty(wikiUtil, props, ATTR_TITLE,
                                        result.getTitle());
 
