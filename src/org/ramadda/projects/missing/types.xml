@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<types supercategory="Miscellaneous" category="Community">
+
+  <type name="type_missing_person" description="Missing person"  foruser="true"
+    xeditfields="name,description,date,earliest_born,_default"
+    metadata="missing_alias,content.contact"
+    handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">
+    <property name="form.description.iswiki" value="true"/>
+    <property name="icon" value="/icons/people.png"/>
+    <property name="form.location.label" value="Last known location"/>
+    <property name="form.location.show" value="true"/>
+    <property name="form.date.label" value="Date of Birth/Death"/>
+    <property name="date.nullok" value="true"/>
+    <property name="form.startdate.label" value="Date of Birth"/>
+    <property name="form.enddate.label" value="Date of Death"/>                    
+    <property name="form.tags.show" value="true"/>    
+    <property name="form.resource.show" value="false"/>    
+
+    <column name="status" type="enumeration" values="unknown:Unknown,found:Found,missing:Missing,died:Died"  label="Status" cansearch="true"/>
+    <column name="date_missing" type="datetime" default="none" label="Date Missing" cansearch="true"/>
+    <column name="nickname" type="string"  label="Nickname" cansearch="true"/>    
+    <column name="gender" type="enumeration"  label="Sex" values="m:male,f:female,u:unknown"  cansearch="true"/>
+
+    <column name="missing_city" type="enumerationplus"  label="Missing City" group="Missing Location" cansearch="true"/>
+    <column name="missing_county" type="enumerationplus"  label="Missing County" cansearch="true"/>
+    <column name="missing_zip" type="enumerationplus"  label="Missing Zip Code" cansearch="true"/>    
+    <column name="missing_state" type="enumeration"  label="Missing State"
+	    values="file:/org/ramadda/plugins/community/resources/states.txt" cansearch="true"/>            
+
+    <column name="found_city" type="enumerationplus"  label="Found City" group="Found" cansearch="true"/>
+    <column name="found_county" type="enumerationplus"  label="Found County" cansearch="true"/>
+    <column name="found_zip" type="enumerationplus"  label="Found Zip Code" cansearch="true"/>    
+    <column name="found_state" type="enumeration"  label="Found State"
+	    values="file:/org/ramadda/plugins/community/resources/states.txt" cansearch="true"/>            
+
+    <column name="cause_of_death" type="enumerationplus"  label="Cause of death"
+	    help="The likely immediate cause of death"
+	    values="" cansearch="true"/>
+    <column name="death_comments" type="string"  size="5000" label="Death Comments" rows="5" cansearch="true"/>
+    <column name="mortality_location" type="latlon"  label="Mortality Location" cansearch="true"/>
+
+<wiki><![CDATA[
++section title={{name}}
+:navtop
++row
++col-8
+{{description wikify=true}}
+:vspace 1em
+{{information details=false}}
+:vspace 1em
+{{list includeIcon="true" details="false" entries="links"  message="" prefix=":lheading Tags" }}
+{{gallery message="" prefix=":heading Images"}}
+
+-col
++col-4
+{{properties message="" inherited="true" metadata.types="content.contact,missing_alias"}}
+{{image src="::*" message="" width="90%"}}                                                          
+:vspace 1em
++center
+{{mapentry hideIfNoLocations=true width="90%" height="300px" heading="Birth Location"}}
+-center
+{{properties message="" metadata.types="!content.contact,!missing_alias"}}
+-col
+-row
+-section
+]]></wiki>
+  </type>
+
+  
+
+</types>
