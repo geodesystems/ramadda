@@ -4,6 +4,7 @@
    padding: 1px;
    padding-left: 6px;
    padding-right: 6px;
+   height:60px;
    width:100%;
    left:0;
    top:0;
@@ -21,15 +22,26 @@
 .ramadda-header-center a {
     text-decoration:none !important;
 }
+.ramadda-header-fixedtitle a {
+    text-decoration:none;
+
+}
+.ramadda-header-fixedtitle  {
+    position:absolute;top:5px;left:120px;xtransform: translateX(-50%);
+}
+
+.ramadda-pageheader {
+    position:absolute;top:5px;right:20px;
+}
 .ramadda-breadcrumbs {
     border-bottom : 0px transparent;
 }
 .ramadda-logo-image {
-    height:45px;
+    height:50px;
 }
 /* the margin  should be a little more than the height of the logo image */
 .ramadda-outercontents {
-    margin-top:46px;
+    margin-top:60px;
 }
 
 .ramadda-system-message {
