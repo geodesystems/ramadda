@@ -2280,6 +2280,7 @@ public class Utils extends IO {
      */
     public static String getProperty(Dictionary props, String key,
                                      String dflt) {
+	if(props==null) return dflt;
         Object o = props.get(key);
         if (o == null) {
             o = (String) props.get(key.toLowerCase());
