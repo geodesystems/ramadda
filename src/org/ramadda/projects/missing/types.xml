@@ -113,8 +113,6 @@
 :vspace 1em
 -col
 +col-4
-{{properties message="" inherited="true" metadata.types="content.alias" includeTitle=false}}
-{{ark short=true}}
 +center
 {{image src="::*" message="" align=center width="70%"}}                                                          
 :vspace 1em
@@ -130,12 +128,13 @@
 :vspace 1em
 ----
 :vspace 1em
-
 {{properties message="" metadata.types="!content.alias"}}
 :vspace 1em
 ----
 :vspace 1em
 :lheading Record Information
+{{properties message="" inherited="true" metadata.types="content.alias" includeTitle=false}}
+{{ark short=true}}
 {{information details=false displayFields="createdate,owner"}}
 -col
 -row
