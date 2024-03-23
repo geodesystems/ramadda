@@ -2868,6 +2868,10 @@ public class HtmlUtils implements HtmlUtilsConstants {
     }
 
 
+    public static String href(String url) {
+	return open("a",attrs("href",url));
+    }
+
 
     /**
      * _more_
