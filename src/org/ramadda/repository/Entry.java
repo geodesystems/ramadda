@@ -919,7 +919,14 @@ public class Entry implements Cloneable {
     public Object getValue(String col) {
 	return getValue(col,false);
     }
+    public Object getValue(String col,Object dflt) {
+	Object o =  getValue(col,false);
+	if(o==null) return dflt;
+	return o;
+    }
 
+
+    
     public Object getValue(String col,boolean useDefault) {
 	Column column = getTypeHandler().findColumn(col);
 	if(column == null) {
