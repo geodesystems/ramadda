@@ -17,6 +17,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 
+import java.time.LocalDate;
+import java.time.Period;
+
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -48,7 +51,7 @@ public class DateHandler extends RepositoryManager {
 
 
     /** _more_ */
-    private TimeZone displayTimeZone;
+    private static TimeZone displayTimeZone;
 
 
     /** _more_ */
@@ -70,12 +73,12 @@ public class DateHandler extends RepositoryManager {
     private String shortDateFormat;
 
     /** _more_ */
-    private Hashtable<String, SimpleDateFormat> dateFormats =
+    private static Hashtable<String, SimpleDateFormat> dateFormats =
         new Hashtable<String, SimpleDateFormat>();
 
 
     /** _more_ */
-    protected List<SimpleDateFormat> parseFormats;
+    protected static List<SimpleDateFormat> parseFormats;
 
 
     /**
@@ -407,10 +410,13 @@ public class DateHandler extends RepositoryManager {
     public SimpleDateFormat getDateFormat(Request request, Entry entry, String format) {
         try {
             if (format == null) {
+		format=entry.getTypeHandler().getTypeProperty("date.format",null);
+	    }
+
+            if (format == null) {
                 format = getDefaultDisplayDateFormat();
             }
             String tz = getEntryUtil().getTimezone(request,entry);
-
             return getSDF(format, tz);
         } catch (Exception exc) {
             throw new IllegalArgumentException(exc);
@@ -418,6 +424,18 @@ public class DateHandler extends RepositoryManager {
 
     }
 
+
+    public static int getYearsBetween(Date d1,Date d2) {
+	LocalDate localDate1 = d1.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+        LocalDate localDate2 = d2.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+
+        // Calculate the period between two dates
+        Period period = Period.between(localDate1, localDate2);
+
+        // Get the difference in years
+        int years = period.getYears();
+	return years;
+    }
 
     public static long getTime(Date date) {
 	if(date==null) return NULL_DATE;
@@ -509,7 +527,7 @@ public class DateHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    public SimpleDateFormat getSDF(String format, String timezone,boolean shared) {
+    public  static  SimpleDateFormat getSDF(String format, String timezone,boolean shared) {
         SimpleDateFormat sdf = null;
         String key=null;
 	if(shared) {
