@@ -71,6 +71,12 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
+    private void makeBlock(Appendable sb, String clazz,String header,String contents) throws Exception {
+	HU.open(sb,"div",HU.cssClass(clazz));
+	HU.div(sb,header,HU.cssClass("missing-sub-header"));
+	sb.append(contents);
+	sb.append("</div>");
+    }
 
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
@@ -82,7 +88,7 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	}
 
 	StringBuilder sb = new StringBuilder();
-	sb.append(HU.importCss(".missing-header {}\n.missing-header a {text-decoration:none;}\n.missing-header1 {font-size:120%;font-weight:bold;}\n.missing-block {border:var(--basic-border); margin:10px; padding:10px;display:inline-block;}\n.missing-sub-header {font-weight:bold;}\n"));
+	sb.append(HU.importCss(".missing-status-missing {background:rgba(255, 0, 0, 0.5);}\n.missing-status-found {background:#f0fff0;}.missing-status-died {background:#ccc;}\n.missing-header {}\n.missing-header a {text-decoration:none;}\n.missing-header1 {font-size:120%;font-weight:bold;}\n.missing-block {border:1px solid #aaa; margin:5px; padding:10px;display:inline-block;}\n.missing-sub-header {font-weight:bold;}\n"));
 	String url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
 	String nickname=(String)entry.getValue("nickname");
 	String status=(String)entry.getValue("status","");	
@@ -106,25 +112,19 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	Date missingDate = DateHandler.checkDate((Date) entry.getValue("date_missing"));
 	Date foundDate = DateHandler.checkDate((Date) entry.getValue("date_found"));	
 
+	String clazz="missing-block missing-status-"+ status; 
 	sb.append("<div style='border-top:var(--basic-border);'>");
+	makeBlock(sb,clazz,"Status",Utils.applyCase(Utils.CASE_PROPER,status));
+
 	if(missingDate!=null) {
-	    sb.append("<div class=missing-block>");
-	    HU.div(sb,"Date of last contact",HU.cssClass("missing-sub-header"));
-	    sb.append(sdf.format(missingDate));
-	    sb.append("</div>");
+	    makeBlock(sb,clazz,"Date of last contact", sdf.format(missingDate));
 	    if(birthDate!=null) {
 		int years = DateHandler.getYearsBetween(birthDate,missingDate);
-		sb.append("<div class=missing-block>");
-		HU.div(sb,"Age when missing",HU.cssClass("missing-sub-header"));
-		sb.append(years+" Years");
-		sb.append("</div>");
+		makeBlock(sb,clazz,"Age when missing", years+" Years");
 		if(status.equals("missing")) {
 		    years = DateHandler.getYearsBetween(birthDate,new Date());
-		    sb.append("<div class=missing-block>");
-		    HU.div(sb,"Current age",HU.cssClass("missing-sub-header"));
-		    sb.append(years+" Years");
-		    sb.append("</div>");
-		} else if (foundDate!=null) {
+		    makeBlock(sb,clazz,"Current age",years+" Years");
+		} else if(foundDate!=null) {
 		    String label1 = null;
 		    String label2 = null;
 		    if(status.equals("died")) {
@@ -135,18 +135,10 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 			label2 ="Age when found";			    
 		    }
 			
-
 		    if(label1!=null) {
-			sb.append("<div class=missing-block>");
-			HU.div(sb,label1,HU.cssClass("missing-sub-header"));
-			sb.append(sdf.format(foundDate));
-			sb.append("</div>");
-
+			makeBlock(sb,clazz,label1,sdf.format(foundDate));
 			years = DateHandler.getYearsBetween(birthDate,foundDate);
-			sb.append("<div class=missing-block>");
-			HU.div(sb,label2,HU.cssClass("missing-sub-header"));
-			sb.append(years+" Years");
-			sb.append("</div>");
+			makeBlock(sb,clazz,label2,years+" Years");
 		    }
 		}
 	    }
