@@ -1113,28 +1113,32 @@ public class GenericTypeHandler extends TypeHandler {
      * @throws Exception on badness
      */
     @Override
-    public StringBuilder getInnerEntryContent(Entry entry, Request request,
-					      TypeHandler typeHandler, OutputType output,
-					      boolean showDescription, boolean showResource,
-					      boolean linkToDownload, Hashtable props,HashSet<String> seen)
+    public void getInnerEntryContent(Entry entry, Request request,
+				     TypeHandler typeHandler, OutputType output,
+				     boolean showDescription, boolean showResource,
+				     boolean linkToDownload, Hashtable props,HashSet<String> seen,
+				     Appendable sb)
             throws Exception {
         if (typeHandler == null) {
             typeHandler = this;
         }
 
 	if(props==null) props = new Hashtable();
+	if(seen==null) seen=new HashSet<String>();
 
         boolean justBasic =Utils.getProperty(props,"justBasic",false);
-        StringBuilder parentBuff = super.getInnerEntryContent(entry, request,
-                                       typeHandler, output, showDescription,
-							      showResource, linkToDownload, props,seen);
+        super.getInnerEntryContent(entry, request,
+				   typeHandler, output, showDescription,
+				   showResource, linkToDownload, props,seen,sb);
         if (Misc.equals(props.get("showDetails"), "false") || justBasic) {
-            return parentBuff;
+            return;
         }
 
+	addColumnsToHtml(request,typeHandler, entry, sb,seen);
+    }
 
-        boolean onlyDetails = Misc.equals(props.get("onlyDetails"), "false");
-	StringBuilder myBuff = new StringBuilder();
+    @Override
+    public void addColumnsToHtml(Request request, TypeHandler typeHandler,Entry entry, Appendable sb,HashSet<String> seen) throws Exception {
 	Object[]      values = getEntryValues(entry);
 	if (values != null) {
 	    String lastGroup = "";
@@ -1142,31 +1146,42 @@ public class GenericTypeHandler extends TypeHandler {
 		if ( !column.getCanShow()) {
 		    continue;
 		}
+		if(seen.contains(column.getName())) {
+		    continue;
+		}
 		if ((column.getGroup() != null)
 		    && !Misc.equals(lastGroup, column.getGroup())) {
 		    lastGroup = column.getGroup();
-		    myBuff.append(
-				  HtmlUtils.row(
-						HtmlUtils.col(
-							      HtmlUtils.div(
+		    sb.append(
+				  HU.row(
+						HU.col(
+							      HU.div(
 									    lastGroup,
 									    " class=\"formgroupheader\" "), " colspan=2 ")));
 		}
-		addColumnToTable(request, entry,column,myBuff);
+		addColumnToTable(request, entry,column,sb);
 	    }
 	}
 
-	if(onlyDetails)
-	    return myBuff;
-	if (getMeFirst()) {
-	    myBuff.append(parentBuff);
-	    return myBuff;
-	} 
-	parentBuff.append(myBuff);
-	return parentBuff;
     }
 
-    public void addColumnToTable(Request request, Entry entry,Column column,Appendable myBuff,String...searchArgs) throws Exception {
+
+    @Override
+    public String addColumnToHtml(Request request, TypeHandler typeHandler,Entry entry,String columnName, Appendable sb, String group) throws Exception {
+	Column column =findColumn(columnName);
+	if(column==null) return group;
+	Object[]      values = getEntryValues(entry);
+	if ((column.getGroup() != null)
+	    && !Misc.equals(group, column.getGroup())) {
+	    group = column.getGroup();
+	    sb.append(HU.row(HU.col(HU.div(group," class=\"formgroupheader\" "), " colspan=2 ")));
+	}
+	addColumnToTable(request, entry,column,sb);
+	return group;
+    }
+
+
+    public void addColumnToTable(Request request, Entry entry,Column column,Appendable sb,String...searchArgs) throws Exception {
 	if(column==null) return;
 	StringBuilder tmpSb = new StringBuilder();
 	Object[]      values = getEntryValues(entry);
@@ -1174,6 +1189,8 @@ public class GenericTypeHandler extends TypeHandler {
 	    formatColumnHtmlValue(request, entry, column, tmpSb, values);
 	}
 	if ( !column.getShowEmpty() && (tmpSb.length() == 0)) {
+	    System.err.println("EMTPY:" + column);
+
 	    return;
 	}
 
@@ -1192,13 +1209,10 @@ public class GenericTypeHandler extends TypeHandler {
 		    label  =HU.href(searchUrl,label);
 		}
 	    }
-	    myBuff.append(formEntry(request,
-				    column.getLabel() + ":", label));
+
+	    sb.append(formEntry(request, column.getLabel() + ":", label));
 	} else {
-	    myBuff.append(
-			  HtmlUtils.row(
-					HtmlUtils.col(
-						      tmpSb.toString(), " colspan=2 ")));
+	    sb.append(HU.row(HU.col(tmpSb.toString(), " colspan=2 ")));
 	}
     }
 
@@ -1496,8 +1510,8 @@ public class GenericTypeHandler extends TypeHandler {
 
         if (typeSB.toString().length() > 0) {
             if (advancedForm) {
-                typeSB = new StringBuilder(HtmlUtils.formTable() + typeSB
-                                           + HtmlUtils.formTableClose());
+                typeSB = new StringBuilder(HU.formTable() + typeSB
+                                           + HU.formTableClose());
             }
             titles.add(msg(getLabel()));
             contents.add(typeSB.toString());

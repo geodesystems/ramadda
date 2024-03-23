@@ -301,7 +301,7 @@ public class TypeHandler extends RepositoryManager {
 
     private String[] editFields;
     private String[] newFields;    
-    private String[] displayFields;
+    private List<String> displayFields;
 
     private List<WikiMacro> wikiMacros;
     private Hashtable<String,WikiMacro> wikiMacrosMap;    
@@ -531,10 +531,9 @@ public class TypeHandler extends RepositoryManager {
 		fields = fields.replace("_default",DEFAULT_EDIT_FIELDS);
 		newFields = Utils.toStringArray(Utils.split(fields,",",true,true));
 	    }
-	    fields = XmlUtil.getAttributeFromTree(node, "displayFields", null);	    
+	    fields = XmlUtil.getAttributeFromTree(node, "displayfields", null);	    
 	    if(fields!=null) {
-		fields = fields.replace("_default",DEFAULT_EDIT_FIELDS);
-		displayFields = Utils.toStringArray(Utils.split(fields,",",true,true));
+		displayFields = Utils.split(fields,",",true,true);
 	    }	    
 	    
 	    superCategory = XmlUtil.getAttributeFromTree(node,
@@ -2904,17 +2903,17 @@ public class TypeHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public StringBuilder getEntryContent(Request request, Entry entry,
-                                         boolean showDescription,
-                                         boolean showResource,
-                                         Hashtable props)
+    public final void getEntryContent(Request request, Entry entry,
+				 boolean showDescription,
+				 boolean showResource,
+				 Hashtable props,
+				 Appendable sb)
             throws Exception {
-        StringBuilder sb     = new StringBuilder();
         OutputType    output = request.getOutput();
         if (displayTemplatePath != null) {
             String html = getRepository().getResource(displayTemplatePath);
-            return new StringBuilder(processDisplayTemplate(request, entry,
-                    html));
+            sb.append(processDisplayTemplate(request, entry, html));
+	    return;
         }
         if (request.get(WikiConstants.ATTR_SHOWTITLE, true)) {
             HU.sectionHeader(sb, getPageHandler().getEntryHref(request,entry));
@@ -2923,18 +2922,58 @@ public class TypeHandler extends RepositoryManager {
 
 	HashSet<String> seen = new HashSet<String>();
 
-	if(displayFields!=null) {
+	List<String> fields = displayFields;
+	String propFields = Utils.getProperty(props,"displayFields",null);
+	if(propFields!=null) fields=Utils.split(propFields,",",true,true);
+
+	if(fields!=null) {
+	    String group = null;
+	    TypeHandler typeHandler  =this;
+	    for(String field: fields) {
+		if(seen.contains(field)) continue;
+		seen.add(field);
+		if(field.startsWith("!")) {
+		    seen.add(field.substring(1));
+		} else if(field.equals("ark"))
+		    addArkToHtml(request,typeHandler,entry,sb);
+		else if(field.equals(ARG_TYPE))
+		    addTypeToHtml(request,typeHandler,entry,sb);
+		else if(field.equals("resource"))
+		    addArkToHtml(request,typeHandler,entry,sb);
+		else if(field.equals("image"))
+		    addImageToHtml(request,typeHandler,entry,sb);
+		else if(field.equals("description"))
+		    addDescriptionToHtml(request,typeHandler,entry,sb);
+		else if(field.equals("createdate"))
+		    addCreateDateToHtml(request,typeHandler,entry,sb);
+		else if(field.equals("date"))
+		    addDateToHtml(request,typeHandler,entry,sb);		
+		else if(field.equals("owner"))
+		    addOwnerToHtml(request,typeHandler,entry,sb);								
+		else if(field.equals("altitude"))
+		    addAltitudeToHtml(request,typeHandler,entry,sb);
+		else if(field.equals("_columns")) {
+		    addColumnsToHtml(request,typeHandler, entry, sb,seen);
+		} else if(field.equals("_default")) {
+		    getInnerEntryContent(entry, request, null, output,
+					 showDescription, showResource, true,
+					 props,seen,sb);
+		} else {
+		    group = addColumnToHtml(request, typeHandler,entry,field, sb, group);
+		}
+	    }
+	} else {
+	    getInnerEntryContent(entry, request, null, output,
+				 showDescription, showResource, true,
+				 props,seen,sb);
 	}
-
-
-        sb.append(getInnerEntryContent(entry, request, null, output,
-                                       showDescription, showResource, true,
-                                       props,seen));
         sb.append(HU.formTableClose());
-        return sb;
-
     }
 
+
+
+    public void addColumnsToHtml(Request request, TypeHandler typeHandler,Entry entry, Appendable sb,HashSet<String> seen) throws Exception {
+    }
 
     /**
      * _more_
@@ -3622,10 +3661,11 @@ public class TypeHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public StringBuilder getInnerEntryContent(Entry entry, Request request,
+    public void getInnerEntryContent(Entry entry, Request request,
 					      TypeHandler typeHandler, OutputType output,
 					      boolean showDescription, boolean showResource,
-					      boolean linkToDownload, Hashtable props,HashSet<String> seen)
+				     boolean linkToDownload, Hashtable props,HashSet<String> seen,
+				     Appendable sb)
             throws Exception {
 
 	if(seen==null) seen=new HashSet<String>();
@@ -3633,15 +3673,16 @@ public class TypeHandler extends RepositoryManager {
             typeHandler = this;
         }
         if (parent != null) {
-            return parent.getInnerEntryContent(entry, request, typeHandler,
+            parent.getInnerEntryContent(entry, request, typeHandler,
                     output, showDescription, showResource, linkToDownload,
-					       props,seen);
+					props,seen,sb);
+	    return;
         }
 
 
-        StringBuilder sb = new StringBuilder();
+
         if ((props != null) && Misc.equals(props.get("showBase"), "false")) {
-            return sb;
+            return;
         }
 
         boolean showDate = typeHandler.okToShowInHtml(entry, ARG_DATE, true);
@@ -3689,35 +3730,41 @@ public class TypeHandler extends RepositoryManager {
 	}
 
 	if (showResource && entryIsImage) {
-	    addImageToHtml(request,typeHandler,entry,sb);
+	    if(!seen.contains("image"))
+		addImageToHtml(request,typeHandler,entry,sb);
 	}
 
-	addResourceToHtml(request,typeHandler,entry,sb);
+	if(!seen.contains("resource"))
+	    addResourceToHtml(request,typeHandler,entry,sb);
 
 	if (!noBasic && typeHandler.okToShowInHtml(entry, ARG_TYPE, true)) {
-	    addTypeToHtml(request,typeHandler,entry,sb);
+	    if(!seen.contains(ARG_TYPE))
+		addTypeToHtml(request,typeHandler,entry,sb);
 	}
 
 	if(okToShowInForm(entry, "ark", false)) {
-	    addArkToHtml(request,typeHandler,entry,sb);
+	    if(!seen.contains("ark"))
+		addArkToHtml(request,typeHandler,entry,sb);
 	}
 
 	if (showCreateDate) {
-	    addCreateDateToHtml(request,typeHandler,entry,sb);
+	    if(!seen.contains("createdate"))
+		addCreateDateToHtml(request,typeHandler,entry,sb);
 	}
 
 	if (showCreated) {
-	    addOwnerToHtml(request,typeHandler,entry,sb);
+	    if(!seen.contains("owner"))
+		addOwnerToHtml(request,typeHandler,entry,sb);
 	}
-	if(justBasic) return sb;
+	if(justBasic) return;
 
 	if (showDate) {
-	    addDateToHtml(request,typeHandler,entry,sb);
+	    if(!seen.contains("date"))
+		addDateToHtml(request,typeHandler,entry,sb);
 	}
 
-	addAltitudeToHtml(request,typeHandler,entry,sb);
-        return sb;
-
+	if(!seen.contains("altitude"))
+	    addAltitudeToHtml(request,typeHandler,entry,sb);
     }
 
     public void addTypeToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {
@@ -3818,6 +3865,10 @@ public class TypeHandler extends RepositoryManager {
 						 new Hashtable());
 	    }
 
+    }
+
+    public String addColumnToHtml(Request request, TypeHandler typeHandler,Entry entry,String columnName, Appendable sb, String group) throws Exception {
+	return group;
     }
 
     public void addArkToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {

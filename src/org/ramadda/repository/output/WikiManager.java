@@ -1978,8 +1978,10 @@ public class WikiManager extends RepositoryManager
             boolean showResource = getProperty(wikiUtil, props,
 					       "showResource", true);
             if ( !details) {
-                return entry.getTypeHandler().getEntryContent(myRequest,
-							      entry, false, showResource, props).toString();
+		StringBuilder tb  = new StringBuilder();
+                entry.getTypeHandler().getEntryContent(myRequest,
+						       entry, false, showResource, props,tb);
+		return tb.toString();
             }
 
 	    String menus = getProperty(wikiUtil,props,"menus",null);
@@ -4641,8 +4643,8 @@ public class WikiManager extends RepositoryManager
 	    for(String link:Utils.split(getProperty(wikiUtil,props,"links",""),",",true,true)) {	    
 		String url;
 		String label;
-		if(link.indexOf(":")>=0) {
-		    List<String> toks = Utils.splitUpTo(link,":",2);
+		if(link.indexOf(";")>=0) {
+		    List<String> toks = Utils.splitUpTo(link,";",2);
 		    if(toks.size()!=2) continue;
 		    url =  toks.get(0);
 		    label = toks.get(1);
@@ -6285,7 +6287,6 @@ public class WikiManager extends RepositoryManager
 				       "decorate", false);
         boolean stripe = getProperty(wikiUtil, props,
 				     "stripe", true);		
-
 
 	boolean inherited = getProperty(wikiUtil,props,"inherited",false);
         for (TwoFacedObject tfo :

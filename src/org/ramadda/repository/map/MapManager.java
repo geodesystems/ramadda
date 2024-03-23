@@ -1349,9 +1349,10 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 							 WikiUtil.note(snippet)));
 	    } else {
 		info.append("<table class=\"formtable\">");
-		info.append(entry.getTypeHandler().getInnerEntryContent(entry,
-								    request, null, OutputHandler.OUTPUT_HTML, true, false,
-									false, null,null));
+		StringBuilder tb = new StringBuilder();
+		entry.getTypeHandler().getInnerEntryContent(entry,
+							    request, null, OutputHandler.OUTPUT_HTML, true, false,false, null,null,tb);
+		info.append(tb.toString());
 
 	    }
 	    List<String> urls = new ArrayList<String>();

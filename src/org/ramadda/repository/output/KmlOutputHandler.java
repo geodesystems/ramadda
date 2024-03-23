@@ -275,9 +275,9 @@ public class KmlOutputHandler extends OutputHandler {
                 String desc = link + entry.getDescription();
 
 
-                String content =
-                    entry.getTypeHandler().getEntryContent(request, entry,
-                        true, false, null).toString();
+		StringBuilder tb  = new StringBuilder();
+		entry.getTypeHandler().getEntryContent(request, entry,true, false, null,tb);
+		String content =tb.toString();
                 content = content.replace("class=\"formlabel\"",
                                           "style=\" font-weight: bold;\"");
                 content = content.replace("cellpadding=\"0\"",

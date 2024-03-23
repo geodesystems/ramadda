@@ -385,8 +385,8 @@ public class HtmlOutputHandler extends OutputHandler {
                 sb.append(HU.br());
             }
             request.put(WikiConstants.ATTR_SHOWTITLE, "false");
-            sb.append(entry.getTypeHandler().getEntryContent(request, entry,
-                    false, true, null));
+            entry.getTypeHandler().getEntryContent(request, entry,
+						   false, true, null,sb);
             contents = sb.toString();
         }
         StringBuffer xml = new StringBuffer("<content>\n");
@@ -944,8 +944,7 @@ public class HtmlOutputHandler extends OutputHandler {
                 sb.append(HU.br());
             }
             request.put(WikiConstants.ATTR_SHOWTITLE, "false");
-            sb.append(parent.getTypeHandler().getEntryContent(request,
-                    parent, false, true, null));
+            parent.getTypeHandler().getEntryContent(request,parent, false, true, null,sb);
         }
 
         StringBuffer xml = new StringBuffer("<response><content>\n");
@@ -1291,14 +1290,15 @@ public class HtmlOutputHandler extends OutputHandler {
             }
         }
         request.put(WikiConstants.ATTR_SHOWTITLE, "false");
-        basicSB.append(entry.getTypeHandler().getEntryContent(request, entry,
-                false, showResource, props));
+        entry.getTypeHandler().getEntryContent(request, entry,
+					       false, showResource, props,basicSB);
 
         tabTitles.add("Information");
         tabContents.add(basicSB.toString());
 
         for (TwoFacedObject tfo :
-                getMetadataHtml(request, entry, null, null, true, null,
+
+		 getMetadataHtml(request, entry, null, null, true, null,
                                 false, true,false)) {
             tabTitles.add(tfo.toString());
             tabContents.add(tfo.getId());

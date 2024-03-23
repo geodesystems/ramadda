@@ -252,8 +252,10 @@ public class RssOutputHandler extends OutputHandler {
             String content;
 
             if (output.equals(OUTPUT_RSS_FULL)) {
-                content = entry.getTypeHandler().getEntryContent(request,
-                        entry, true, false, null).toString();
+		StringBuilder tb  = new StringBuilder();
+                entry.getTypeHandler().getEntryContent(request,
+						       entry, true, false, null,tb);
+		content = tb.toString();
                 content = content.replace("class=\"formlabel\"",
                                           "style=\" font-weight: bold;\"");
                 content = content.replace("cellpadding=\"0\"",

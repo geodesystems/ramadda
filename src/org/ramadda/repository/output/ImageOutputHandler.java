@@ -1041,10 +1041,11 @@ public class ImageOutputHandler extends OutputHandler {
                                     ARG_IMAGEWIDTH, "" + 100);
                 String entryUrl = getEntryLink(request, entry);
                 request.put(ARG_OUTPUT, OutputHandler.OUTPUT_HTML);
-                String title =
-                    entry.getTypeHandler().getEntryContent(request, entry,
-                        true, false, null).toString();
+		StringBuilder tb  = new StringBuilder();
+		entry.getTypeHandler().getEntryContent(request, entry,
+						       true, false, null,tb);
                 request.put(ARG_OUTPUT, output);
+		String title = tb.toString();
                 title = title.replace("\"", "\\\"");
                 title = title.replace("\n", " ");
                 sb.append("addImage(" + HtmlUtils.quote(url) + ","
