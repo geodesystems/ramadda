@@ -13,7 +13,8 @@
     <property name="icon" value="/missing/missing.png"/>
     <property name="form.name.label" value="Last name"/>
     <property name="html.type.show" value="false"/>    
-    <property name="form.name.show" value="false"/>    
+    <property name="form.name.show" value="false"/>
+    <property name="form.time.show" value="false"/>        
     <property name="form.description.label" value="Case Information"/>
     <property name="form.location.label" value="Last known location"/>
     <property name="form.location.show" value="true"/>
@@ -32,9 +33,9 @@
     <column name="nickname" type="string"  label="Nickname" cansearch="true"/>    
 
     <column name="status" type="enumeration" values="unknown:Unknown,found:Found,missing:Missing,died:Died"  label="Status" cansearch="true"/>
-    <column name="date_missing" type="datetime" default="none" label="Date Missing" cansearch="true"
+    <column name="date_missing" type="date" default="none" label="Date Missing" cansearch="true"
 	    htmlTemplate="${value dateFormat=yyyy-MM-dd} ${value showAge=true prefix=&quot; - &quot; suffix=&quot; years old when missing&quot;}"/>
-    <column name="date_found" type="datetime" default="none" label="Date Found" cansearch="true"
+    <column name="date_found" type="date" default="none" label="Date Found" cansearch="true"
 	    htmlTemplate="${value dateFormat=yyyy-MM-dd} ${value showAge=true prefix=&quot; - &quot; suffix=&quot; years old when found&quot;}"/>    
     <column name="biological_sex" type="enumeration"  label="Biological Sex" values="m:Male,f:Female,u:Unknown"  cansearch="true"/>
 
