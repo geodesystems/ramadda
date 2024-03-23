@@ -1603,15 +1603,16 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return Utils.stringDefined(request.getString(ARG_GROUPBY, ""));
     }
 
-    public StringBuilder getInnerEntryContent(Entry entry, Request request,
+    @Override
+    public void  getInnerEntryContent(Entry entry, Request request,
 					      TypeHandler typeHandler, OutputType output,
 					      boolean showDescription, boolean showResource,
-					      boolean linkToDownload, Hashtable props,HashSet<String> seen)
+				      boolean linkToDownload, Hashtable props,HashSet<String> seen, Appendable sb)
             throws Exception {
-	StringBuilder sb = super.getInnerEntryContent(entry, request,
-						      typeHandler, output,
-						      showDescription, showResource,
-						      linkToDownload, props,seen);
+	super.getInnerEntryContent(entry, request,
+				   typeHandler, output,
+				   showDescription, showResource,
+				   linkToDownload, props,seen,sb);
 	
 
 
@@ -1625,7 +1626,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	}
 	url+="&amp;key=HIDDEN";
 	sb.append(HU.formEntry("Upload URL:",url));
-	return sb;
     }
 
     public Result processEntryAction(Request request, Entry entry)
