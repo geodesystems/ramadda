@@ -1,8 +1,20 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <metadata>
   <handler category="Miscellaneous" >
-    <type id="missing_alias" name="Missing Alias"  values="">
+    <type id="missing_alias" name="Missing Alias" >
       <element id="alias" name="Alias" datatype="string"/>
     </type>
+
+    <type id="missing_case_owner" name="Case Owner">
+      <element id="department" name="Department" datatype="string"/>
+      <element id="contact" name="Contact" datatype="string"/>
+      <element id="role" name="Role" datatype="enumerationplus"/>            
+      <element id="address" name="Address" rows="4" datatype="string"/>
+      <element id="county" name="County"  datatype="enumerationplus"/>
+      <element id="phone" name="Phone"  datatype="string"/>
+      <element id="email" name="Email"  datatype="email"/>
+      <element id="url" name="URl"  datatype="url"/>                        
+      <element id="case_number" name="Case Number"  datatype="string"/>
+    </type>    
   </handler>
 </metadata>

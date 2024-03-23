@@ -4,6 +4,7 @@
       <property name="plugin" value="missing"/>
       <property name="plugin_dir" value="org/ramadda/projects/${plugin}"/>
       <property name="plugin_group" value="projectplugins"/>
+      <property name="plugin_jar" value="${plugin}.plugin.jar"/>
       <ant antfile="${basedir}/build.xml" target="plugin_build"/>
     </target>
 </project>

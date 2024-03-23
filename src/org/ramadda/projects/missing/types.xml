@@ -3,37 +3,43 @@
 
   <type name="type_missing_person" description="Missing person"  foruser="true"
 	editfields="first_name,middle_name,last_name,nickname,description,date,_default"
+	displayfields="!createdate,!owner,case_number,first_name,middle_name,last_name,nickname,date,_default"
 	nametemplate="${first_name} ${middle_name} ${last_name}"    
-    metadata="missing_alias,content.contact"
-    handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">
+    metadata="missing_alias,missing_case_owner"
+    handler="org.ramadda.projects.missing.MissingPersonTypeHandler">
+    <property name="search.tabs" value="map,list"/>
     <property name="form.description.iswiki" value="false"/>
     <property name="form.wikieditor.height" value="300px"/>
     <property name="icon" value="/missing/missing.png"/>
     <property name="form.name.label" value="Last name"/>
-
     <property name="html.type.show" value="false"/>    
     <property name="form.name.show" value="false"/>    
     <property name="form.description.label" value="Case Information"/>
     <property name="form.location.label" value="Last known location"/>
     <property name="form.location.show" value="true"/>
-    <property name="form.date.label" value="Date of Birth/Death"/>
+    <property name="form.date.label" value="Date of Birth"/>
     <property name="date.nullok" value="true"/>
     <property name="form.startdate.label" value="Date of Birth"/>
-    <property name="form.enddate.label" value="Date of Death"/>                    
+    <property name="form.todate.show" value="false"/>                    
     <property name="form.tags.show" value="true"/>    
-    <property name="form.resource.show" value="false"/>    
+    <property name="form.resource.show" value="false"/>
+    <property name="date.format" value="yyyy-MM-dd"/>        
 
+    <column name="case_number" type="string"  label="Case Number" cansearch="false"/>
     <column name="first_name" type="string"  label="First Name" cansearch="true"/>
     <column name="middle_name" type="string"  label="Middle Name" cansearch="true"/>
     <column name="last_name" type="string"  label="Last Name" cansearch="true"/>            
     <column name="nickname" type="string"  label="Nickname" cansearch="true"/>    
 
     <column name="status" type="enumeration" values="unknown:Unknown,found:Found,missing:Missing,died:Died"  label="Status" cansearch="true"/>
-    <column name="date_missing" type="datetime" default="none" label="Date Missing" cansearch="true"/>
+    <column name="date_missing" type="datetime" default="none" label="Date Missing" cansearch="true"
+	    htmlTemplate="${value dateFormat=yyyy-MM-dd} ${value showAge=true prefix=&quot; - &quot; suffix=&quot; years old when missing&quot;}"/>
+    <column name="date_found" type="datetime" default="none" label="Date Found" cansearch="true"
+	    htmlTemplate="${value dateFormat=yyyy-MM-dd} ${value showAge=true prefix=&quot; - &quot; suffix=&quot; years old when found&quot;}"/>    
     <column name="biological_sex" type="enumeration"  label="Biological Sex" values="m:Male,f:Female,u:Unknown"  cansearch="true"/>
 
-    <column name="height" type="int"  label="Height" suffix="Inches"  cansearch="true"/>
-    <column name="weight" type="int"  label="Weight" suffix="Pounds"  cansearch="true"/>
+    <column name="height" type="int"  label="Height" suffix="Inches"  cansearch="true" htmlTemplate="${value inchesToFeet=true}"/>
+    <column name="weight" type="int"  label="Weight" suffix="Pounds"  cansearch="true" htmlTemplate="${value} lbs"/>
     <column name="race_ethnicity" type="enumerationplus"  label="Race/Ethnicity"   cansearch="true"
 	    values="white:White,black:Black or African American,hispanic: Hispanic or Latino, asian:Asian, native_american:Native American or Alaska Native,hawaiian: Native Hawaiian or Other Pacific Islander, multiracial:Multiracial"
 />    
@@ -94,26 +100,43 @@
 
 
 <wiki><![CDATA[
-+section title={{name}}
++section
+:navtop
+:vspace 1em
 +row
 +col-8
+{{missing_header}}
+:heading Case Details
 {{description wikify=true}}
 :vspace 1em
-{{information details=false noBasic=true}}
+{{information details=false }}
 :vspace 1em
-
 -col
 +col-4
-{{properties message="" inherited="true" metadata.types="content.contact,missing_alias"}}
-{{image src="::*" message="" width="90%"}}                                                          
-:vspace 1em
+{{properties message="" inherited="true" metadata.types="content.alias" includeTitle=false}}
+{{ark short=true}}
 +center
-{{mapentry hideIfNoLocations=true width="90%" height="300px" heading="Last Known Location"}}
+{{image src="::*" message="" align=center width="70%"}}                                                          
+:vspace 1em
+<b>Last Known Location</b>
+<br>
+{{field name=missing_city}} {{field name=missing_state}}
+{{mapentry hideIfNoLocations=true width="90%" height="200px"}}
 -center
-{{properties message="" metadata.types="!content.contact,!missing_alias"}}
+:vspace 1em
+----
+:vspace 1em
+{{links}}
+:vspace 1em
+----
+:vspace 1em
+
+{{properties message="" metadata.types="!content.alias"}}
+:vspace 1em
+----
 :vspace 1em
 :lheading Record Information
-{{information details=false justBasic=true}}
+{{information details=false displayFields="createdate,owner"}}
 -col
 -row
 
