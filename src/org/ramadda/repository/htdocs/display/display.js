@@ -4652,7 +4652,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
         getEntriesTree: function(entries, props) {
             if (!props) props = {};
-            let columns = this.getProperty("entryColumns", null);
+	    let columns = this.getProperty("entryColumns", null);
 	    let showSnippet = this.getProperty('showSnippetInList');
             if (columns != null) {
                 let columnNames = this.getProperty("columnNames", null);
@@ -4687,7 +4687,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
                 return this.getEntriesTable(entries, columns, columnNames);
             }
-
             let suffix = props.suffix;
             let domIdSuffix = "";
             if (!suffix) {
@@ -4708,6 +4707,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             for (let i = 0; i < entries.length; i++) {
                 even = !even;
                 let entry = entries[i];
+		if(entry.displayHtml) {
+		    html+=entry.displayHtml;
+		    continue;
+		}
+
                 this.entriesMap[entry.getId()] = entry;
                 let toolbar = this.makeEntryToolbar(entry, handler, props.handlerId);
                 let entryMenuButton = doWorkbench?this.getEntryMenuButton(entry):"";
