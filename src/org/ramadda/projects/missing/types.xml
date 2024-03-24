@@ -7,6 +7,7 @@
 	nametemplate="${first_name} ${middle_name} ${last_name}"    
     metadata="missing_alias,missing_case_owner"
     handler="org.ramadda.projects.missing.MissingPersonTypeHandler">
+    <property name="search.wikimacro" value="missing_header"/>
     <property name="search.tabs" value="map,list"/>
     <property name="form.description.iswiki" value="false"/>
     <property name="form.wikieditor.height" value="300px"/>
@@ -21,6 +22,7 @@
     <property name="form.date.label" value="Date of Birth"/>
     <property name="date.nullok" value="true"/>
     <property name="form.startdate.label" value="Date of Birth"/>
+    <property name="form.createdate.label" value="Record Create Date"/>    
     <property name="form.todate.show" value="false"/>                    
     <property name="form.tags.show" value="true"/>    
     <property name="form.resource.show" value="false"/>
@@ -31,7 +33,6 @@
     <column name="middle_name" type="string"  label="Middle Name" cansearch="true"/>
     <column name="last_name" type="string"  label="Last Name" cansearch="true"/>            
     <column name="nickname" type="string"  label="Nickname" cansearch="true"/>    
-
     <column name="status" type="enumeration" values="unknown:Unknown,found:Found,missing:Missing,died:Died"  label="Status" cansearch="true"/>
     <column name="date_missing" type="date" default="none" label="Date Missing" cansearch="true"
 	    htmlTemplate="${value dateFormat=yyyy-MM-dd} ${value showAge=true prefix=&quot; - &quot; suffix=&quot; years old when missing&quot;}"/>
@@ -39,8 +40,8 @@
 	    htmlTemplate="${value dateFormat=yyyy-MM-dd} ${value showAge=true prefix=&quot; - &quot; suffix=&quot; years old when found&quot;}"/>    
     <column name="biological_sex" type="enumeration"  label="Biological Sex" values="m:Male,f:Female,u:Unknown"  cansearch="true"/>
 
-    <column name="height" type="int"  label="Height" suffix="Inches"  cansearch="true" htmlTemplate="${value inchesToFeet=true}"/>
-    <column name="weight" type="int"  label="Weight" suffix="Pounds"  cansearch="true" htmlTemplate="${value} lbs"/>
+    <column name="height" type="int"  searchlabel="Height (inches)"  label="Height" suffix="Inches"  cansearch="true" htmlTemplate="${value inchesToFeet=true}"/>
+    <column name="weight" type="int"  searchlabel="Weight (pounds)" label="Weight" suffix="Pounds"  cansearch="true" htmlTemplate="${value} lbs"/>
     <column name="race_ethnicity" type="enumerationplus"  label="Race/Ethnicity"   cansearch="true"
 	    values="white:White,black:Black or African American,hispanic: Hispanic or Latino, asian:Asian, native_american:Native American or Alaska Native,hawaiian: Native Hawaiian or Other Pacific Islander, multiracial:Multiracial"
 />    
@@ -97,6 +98,12 @@
 </entries>
 ]]>
 </children>
+
+
+<wikimacro name="missing_header" label="Missing Person Header">
+<![CDATA[{{missing_header}}]]></wikimacro>
+
+<property name="bubble"><![CDATA[{{missing_header includeImage=true}}]]></property>
 
 
 
