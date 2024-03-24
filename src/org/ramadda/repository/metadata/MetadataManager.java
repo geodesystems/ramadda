@@ -910,14 +910,16 @@ public class MetadataManager extends RepositoryManager {
 
 
 
-    public void getThumbnailUrls(Request request, Entry entry,
-                                 List<String> urls)
+    public  List<String> getThumbnailUrls(Request request, Entry entry,
+					  List<String> urls)
             throws Exception {
 	List<String[]> tmp = new ArrayList<String[]>();
 	getFullThumbnailUrls(request, entry, tmp);
+	if(urls==null) urls = new ArrayList<String>();
 	for(String[]tuple: tmp) {
 	    urls.add(tuple[0]);
 	}
+	return urls;
     }
 
     /**
