@@ -130,7 +130,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                      new TwoFacedObject("=", EXPR_EQUALS),
                      new TwoFacedObject("<=", EXPR_LE),
                      new TwoFacedObject(">=", EXPR_GE),
-                     new TwoFacedObject("between", EXPR_BETWEEN));
+                     new TwoFacedObject("range", EXPR_BETWEEN));
 
     /** _more_ */
     public static final String EXPR_PATTERN = EXPR_EQUALS + "|" + EXPR_LE
@@ -296,6 +296,8 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     /** _more_ */
     private String label;
+
+    private String searchLabel;    
 
     /** _more_ */
     private String description;
@@ -570,6 +572,8 @@ public class Column implements DataTypes, Constants, Cloneable {
         }
 
         label = Utils.getAttributeOrTag(element, ATTR_LABEL, name);
+        searchLabel = Utils.getAttributeOrTag(element, "searchlabel",label);
+
         searchType = XmlUtil.getAttribute(element, ATTR_SEARCHTYPE,
                                           searchType);
         propertiesFile = XmlUtil.getAttribute(element, ATTR_PROPERTIES,
@@ -1136,6 +1140,10 @@ public class Column implements DataTypes, Constants, Cloneable {
 	return isType(DATATYPE_LATLON) ||isType(DATATYPE_LATLONBBOX);
     }
 
+    public boolean isLatLon() {
+	return isType(DATATYPE_LATLON);
+    }
+    
     /**
      * _more_
      *
@@ -2338,6 +2346,15 @@ public class Column implements DataTypes, Constants, Cloneable {
         }
     }
 
+    public double[] getAreaSearchArgs(Request request) {
+	String searchArg=getSearchArg();
+	double north = request.get(searchArg + "_north",Double.NaN);
+	double south = request.get(searchArg + "_south",Double.NaN);
+	double east = request.get(searchArg + "_east",Double.NaN);
+	double west = request.get(searchArg + "_west", Double.NaN);
+	return new double[]{north,west,east,south};
+
+    }
 
     /**
      * _more_
@@ -2390,25 +2407,9 @@ public class Column implements DataTypes, Constants, Cloneable {
         String          columnName = getFullName();
         DatabaseManager dbm        = getDatabaseManager();
         //      System.err.println("s:" + searchArg);
-        if (isType(DATATYPE_LATLON)) {
-            double north = request.get("north",
-                                       request.get(searchArg + "_north",
-                                           request.get(ARG_AREA_NORTH,
-                                               Double.NaN)));
-            double south = request.get("south",
-                                       request.get(searchArg + "_south",
-                                           request.get(ARG_AREA_SOUTH,
-                                               Double.NaN)));
-            double east = request.get("east",
-                                      request.get(searchArg + "_east",
-                                          request.get(ARG_AREA_EAST,
-                                              Double.NaN)));
-            double west = request.get("west",
-                                      request.get(searchArg + "_west",
-                                          request.get(ARG_AREA_WEST,
-                                              Double.NaN)));
-
-
+        if (isLatLon()) {
+	    double[] nwse  = getAreaSearchArgs(request);
+	    double north=nwse[0],west=nwse[1],south=nwse[2],east=nwse[3];
 	    if(request.defined(ARG_SEARCH_POLYGON)) {
 		String poly = request.getString(ARG_SEARCH_POLYGON,"").trim();
 		List<Double> d = Utils.getDoubles(poly);
@@ -2975,7 +2976,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         return ARG_SEARCH_PREFIX + getFullName();
     }
 
-
     /**
      * _more_
      *
@@ -2998,20 +2998,15 @@ public class Column implements DataTypes, Constants, Cloneable {
 	if(isSynthetic()) {
 	    return "";
 	} 
-        if (isType(DATATYPE_LATLON)) {
-            double lat = Double.NaN;
-            double lon = Double.NaN;
-            if (values != null) {
-                lat = Utils.getDouble(values[offset]);
-		lon = Utils.getDouble(values[offset + 1]);
-            }
+        if (isLatLon()) {
+            double[] latlon = getLatLon(values);
             MapInfo map = getRepository().getMapManager().createMap(request,
 								    entry, true, null);
             widget = map.makeSelector(urlArg, true,
-                                      new String[] { latLonOk(lat)
-                    ? lat + ""
-                    : "", latLonOk(lon)
-                          ? lon + ""
+                                      new String[] { latLonOk(latlon[0])
+                    ? latlon[0] + ""
+                    : "", latLonOk(latlon[0])
+                          ? latlon[0] + ""
 		    : "" });
         } else if (isType(DATATYPE_LATLONBBOX)) {
             String[] nwse = null;
@@ -3286,24 +3281,18 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param values _more_
-     *
-     * @return _more_
-     */
+
     public double[] getLatLon(Object[] values) {
-        Double lat = (Double) values[offset];
-        Double lon = (Double) values[offset + 1];
-
-        return new double[] { (lat == null)
-                              ? Double.NaN
-                              : lat.doubleValue(), (lon == null)
-                ? Double.NaN
-                : lon.doubleValue() };
-
+	double lat = Double.NaN;
+	double lon = Double.NaN;
+	if (values != null) {
+	    lat = Utils.getDouble(values[offset]);
+	    lon = Utils.getDouble(values[offset + 1]);
+	}
+	return new double[]{lat,lon};
     }
+
+
 
     /**
      * _more_
@@ -3719,7 +3708,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    sb.append(HU.formTableClose());
 	    widget = HU.makeToggleInline(searchHelp!=null?searchHelp:"", sb.toString(),false);
 	    //	    widget=sb.toString();
-	} else if (isType(DATATYPE_LATLON)) {
+	} else if (isLatLon()) {
             String[] nwseValues = getNWSE(request, null, searchArg, false);
             String[] nwseView   = getNWSE(request, entry, searchArg, true);
             MapInfo map = getRepository().getMapManager().createMap(request,
@@ -3854,17 +3843,18 @@ public class Column implements DataTypes, Constants, Cloneable {
                               HU.attr("to-id", toId)
                               + HU.cssClass(
                                   "search-select ramadda-range-select"));
+	    String size= "4";
             widget = expr
                      + HU.input(searchArg + "_from",
                                        request.getSanitizedString(searchArg + "_from",
                                            ""), ((placeholderMin != null)
                     ? HU.attr("placeholder", placeholderMin)
-                    : "") + HU.attr("size", "10")) + " "
+                    : "") + HU.attr("size", size)) + " "
                     + HU.input(searchArg + "_to",
                                       request.getSanitizedString(searchArg + "_to",
                                           ""), ((placeholderMax != null)
                     ? HU.attr("placeholder", placeholderMax)
-                    : "") + HU.attr("id", toId) + HU.attr("size", "10"));
+                    : "") + HU.attr("id", toId) + HU.attr("size", size));
         } else if (isType(DATATYPE_ENTRY)) {
             String entryId  = request.getString(searchArg + "_hidden", "");
             Entry  theEntry = null;
@@ -3999,9 +3989,9 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
 	if(horizontal.length>0 && horizontal[0]) {
-	    HU.formEntry(formBuffer,    msgLabel(getLabel()),widget);
+	    HU.formEntry(formBuffer,    msgLabel(getSearchLabel()),widget);
 	} else {
-	    HU.formEntry(formBuffer,    HU.b(getLabel()) + ":<br>"+widget);
+	    HU.formEntry(formBuffer,    HU.b(getSearchLabel()) + ":<br>"+widget);
 	}	    
 	//        typeHandler.formEntry(formBuffer, request, getLabel() + ":",widget);
 
@@ -4162,6 +4152,10 @@ public class Column implements DataTypes, Constants, Cloneable {
     public String getLabel() {
         return label;
     }
+
+    public String getSearchLabel() {
+        return searchLabel;
+    }    
 
     /**
      * Set the Description property.
