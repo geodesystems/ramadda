@@ -1206,7 +1206,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
         if (fromEntry != null) {
             //If its not json then wikify it
-            if ( !fromEntry.startsWith("{")) {
+            if ( !fromEntry.startsWith("{") || fromEntry.startsWith("{{")) {
                 fromEntry = getWikiManager().wikifyEntry(getRepository().getAdminRequest(), entry,
 							 fromEntry, false,  
 							 Utils.makeHashSet(WikiConstants.WIKI_TAG_MAPENTRY,
