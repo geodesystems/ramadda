@@ -575,8 +575,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     private void makeSearchForm(Request request, Appendable formSB)
             throws Exception {
 
-
-
         boolean      showDefault        = true;
         List<String> metadataTypesToUse = metadataTypes;
         if (request.defined(ARG_METADATA)) {
@@ -658,11 +656,15 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         formSB.append(HU.formTable());
 
         if (showDefault && showDate) {
+	    String startLabel = typeHandler.getTypeProperty("form.startdate.label","Date");
             TypeHandler.addDateSearch(getRepository(), request, formSB,
-                                      DateArgument.ARG_DATA, false);
+				      new DateArgument(DateArgument.TYPE_DATA,DateArgument.ARG_DATA_DATE, startLabel),
+				      false);
 
+	    String createLabel = typeHandler.getTypeProperty("form.createdate.label","Create Date");
             TypeHandler.addDateSearch(getRepository(), request, formSB,
-                                      DateArgument.ARG_CREATE, false);
+				      new DateArgument(DateArgument.TYPE_CREATE,DateArgument.ARG_CREATE_DATE, createLabel),
+                                      false);
 
         }
 
@@ -681,7 +683,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             String mapSelector = selectMap.makeSelector(ARG_AREA, true, nwse);
 	    mapSelector +=TypeHandler.getSpatialSearchTypeWidget(request);
 	    request.putExtraProperty("mapselectorid",selectMap.getMapId());
-            HU.formEntry(formSB,HU.b(msgLabel("Location"))+ HU.br()+mapSelector);
+	    String label = typeHandler.getTypeProperty("form.location.label","Location");
+            HU.formEntry(formSB,HU.b(msgLabel(label))+ HU.br()+mapSelector);
         }
 
 
