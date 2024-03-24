@@ -514,7 +514,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		else
 		    this.jq(ID_SEARCH_FORM).hide();
 	    });
-	    if(this.areaWidget) this.areaWidget.initHtml();
+            if (this.areaWidgets) {
+		this.areaWidgets.forEach(areaWidget=>{
+		    areaWidget.initHtml();
+		});
+	    }
 	    if(this.getShowOrderBy()) {
 		let settings = this.getSearchSettings();
 		let byList = [["Relevant","relevant"], ["A-Z","name_ascending"],["Z-A","name_descending"],
@@ -795,8 +799,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		HU.addToDocumentUrl(ID_ANCESTOR,null);
 		HU.addToDocumentUrl(ID_ANCESTOR_NAME,null);		
 	    }
-            if (this.areaWidget) {
-                this.areaWidget.setSearchSettings(settings);
+            if (this.areaWidgets) {
+		this.areaWidgets.forEach(areaWidget=>{
+                    areaWidget.setSearchSettings(settings);
+		});
             }
             if (this.dateRangeWidget) {
                 this.dateRangeWidget.setSearchSettings(settings);
@@ -957,7 +963,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			tag.remove();
 			continue;
 		    }
-		    if(col.getType()=="string") {
+		    if(col.getType()=="string" || col.getType()=='date' || col.getType()=='latlon') {
 			if(value=="") {
 			    tag.remove();
 			    continue;
@@ -982,6 +988,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             let jsonUrl = repository.getSearchUrl(this.getSearchSettings(), OUTPUT_JSON);
             return jsonUrl;
         },
+	addAreaWidget(areaWidget) {
+	    if(!this.areaWidgets) this.areaWidgets=[];
+	    this.areaWidgets.push(areaWidget);
+	},
         makeSearchForm: function() {
             let form = HU.openTag("form", [ATTR_ID, this.getDomId(ID_FORM), "action", "#"]);
 
@@ -1151,15 +1161,22 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
             if (this.getShowDate()) {
                 this.dateRangeWidget = new DateRangeWidget(this);
+		if(this.getProperty("startDateLabel"))
+		   extra+=this.getProperty("startDateLabel");
                 extra += addWidget("", HU.div([ID,this.domId(ID_SEARCH_DATE_RANGE)], this.dateRangeWidget.getHtml()));
             }
             if (this.getShowCreateDate(true)) {
+		if(this.getProperty("createDateLabel"))
+		   extra+=this.getProperty("createDateLabel");
                 this.createdateRangeWidget = new DateRangeWidget(this,"createdate");
                 extra += addWidget("", HU.div([ID,this.domId(ID_SEARCH_DATE_CREATE)], this.createdateRangeWidget.getHtml()));
             }
             if (this.getShowArea()) {
-                this.areaWidget = new AreaWidget(this);
-                extra += addWidget("", HU.div([ID,this.domId(ID_SEARCH_AREA)], this.areaWidget.getHtml()));
+		if(this.getProperty("areaLabel"))
+		   extra+=this.getProperty("areaLabel");
+		let areaWidget =new AreaWidget(this);
+                this.addAreaWidget(areaWidget) 
+                extra += addWidget("", HU.div([ID,this.domId(ID_SEARCH_AREA)], areaWidget.getHtml()));
             }
             extra +=HU.div([ATTR_CLASS,'display-search-widget'],
 			   HU.b('Max:') +' '+	HU.input("",  DEFAULT_MAX, [ID,this.domId(ID_SEARCH_MAX),
@@ -1242,8 +1259,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	},
 
         handleEventMapBoundsChanged: function(source, args) {
-            if (this.areaWidget) {
-                this.areaWidget.handleEventMapBoundsChanged(source, args);
+            if (this.areaWidgets) {
+		this.areaWidgets.forEach(areaWidget=>{
+                    areaWidget.handleEventMapBoundsChanged(source, args);
+		});
             }
         },
         typeChanged: function() {
@@ -1598,7 +1617,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    let to = HU.input("", "", [ATTR_CLASS, "input", STYLE,HU.css("width","2.5em"), ATTR_ID, id+"_to"]);		    
                     widget += HU.div([CLASS,"display-search-label"], col.getLabel()) +
 			from +" - " + to +help;
-                } else {
+                } else if(col.getType()=='latlon') {
+		    let areaWidget= new AreaWidget(this,col.getName());
+		    this.addAreaWidget(areaWidget);
+                    widget+= HU.div([ID,this.domId(col.getName())], areaWidget.getHtml());
+                } else if(col.getType()=='string') {
                     field = HU.input("", savedValue, ["placeholder",col.getLabel(),ATTR_CLASS, "input", ATTR_SIZE, "15", ATTR_ID, id]);
                     widget += HU.div([CLASS,"display-search-label"], "") +HU.div([CLASS,"display-search-widget"], field + " " + help);
                 }
