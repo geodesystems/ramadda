@@ -2,7 +2,8 @@
    Copyright 2008-2023 Geode Systems LLC
 */
 
-function AreaWidget(display) {
+function AreaWidget(display,arg) {
+    this.arg=arg;
     const ID_CONTAINS = "mapcontains";
     const ID_NORTH = "north";
     const ID_SOUTH = "south";
@@ -22,37 +23,45 @@ function AreaWidget(display) {
     $.extend(this, {
 	areaContains: mapContains,
         display: display,
+	domId:function(id) {
+	    if(this.arg!=null)
+		id =  this.arg+'_'+ id;
+	    return this.display.domId(id);
+	},
+	jq:function(id) {
+	    return jqid(this.domId(id));
+	},
         initHtml: function() {
-	    this.display.jq(ID_SETTINGS).click(()=>{
+	    this.jq(ID_SETTINGS).click(()=>{
 		this.showSettings();
 	    });
-	    this.display.jq(ID_MAP_SHOW).click(()=>{
+	    this.jq(ID_MAP_SHOW).click(()=>{
 		this.showMap();
 	    });
 
 	    let params = {};
-	    this.map =  new RepositoryMap(this.display.domId(ID_MAP_POPUP), params);
+	    this.map =  new RepositoryMap(this.domId(ID_MAP_POPUP), params);
 	    this.map.setSelection(this.display.getId(),true,1);
 	},
         showSettings: function() {
 	    let _this = this;
 	    let html = "";
-	    html+= HU.div([CLASS,"ramadda-clickable",TITLE, "Use my location",ID,this.display.domId(ID_SET_LOCATION)],
+	    html+= HU.div([CLASS,"ramadda-clickable",TITLE, "Use my location",ID,this.domId(ID_SET_LOCATION)],
 			  HU.getIconImage("fas fa-compass") + SPACE + "Use my location");
-            html += HU.div([CLASS,"ramadda-clickable",TITLE, "Clear form",ID,this.display.domId(ID_CLEAR)],
+            html += HU.div([CLASS,"ramadda-clickable",TITLE, "Clear form",ID,this.domId(ID_CLEAR)],
 			  HU.getIconImage("fas fa-eraser") + SPACE + "Clear form");
 	    html+= HU.div([TITLE, "Search mode: checked - contains, unchecked - overlaps"],
-			  HtmlUtils.checkbox("",[ID, this.display.getDomId(ID_CONTAINS)], this.areaContains) +HU.tag("label",[CLASS,"ramadda-clickable","for",this.display.getDomId(ID_CONTAINS)], SPACE + "Contains"));
+			  HtmlUtils.checkbox("",[ID, this.domId(ID_CONTAINS)], this.areaContains) +HU.tag("label",[CLASS,"ramadda-clickable","for",this.domId(ID_CONTAINS)], SPACE + "Contains"));
 	    html = HU.div([STYLE,"margin:5px;"], html);
-	    this.settingsDialog = HU.makeDialog({content:html,anchor:this.display.jq(ID_SETTINGS),draggable:false,header:true});
-	    this.display.jq(ID_CONTAINS).change(function(e) {
+	    this.settingsDialog = HU.makeDialog({content:html,anchor:this.jq(ID_SETTINGS),draggable:false,header:true});
+	    this.jq(ID_CONTAINS).change(function(e) {
 		_this.areaContains = $(this).is(':checked');
 	    });
-	    this.display.jq(ID_SET_LOCATION).click(()=>{
+	    this.jq(ID_SET_LOCATION).click(()=>{
 		this.settingsDialog.remove();
 		this.useMyLocation();
 	    });
-	    this.display.jq(ID_CLEAR).click(()=>{
+	    this.jq(ID_CLEAR).click(()=>{
 		this.settingsDialog.remove();
 		this.areaClear();
 	    });	    
@@ -64,12 +73,12 @@ function AreaWidget(display) {
 		[n,w,s,e]  = bounds.split(",");
 	    }
             let callback = this.display.getGet();
-            let settings = HU.div([TITLE,"Settings",CLASS,"ramadda-clickable",ID,this.display.domId(ID_SETTINGS)],HU.getIconImage("fas fa-cog"));
-	    let showMap = HU.div([CLASS,"ramadda-clickable",ID,this.display.domId(ID_MAP_SHOW),TITLE,"Show map selector"], HtmlUtils.getIconImage("fas fa-globe"));
+            let settings = HU.div([TITLE,"Settings",CLASS,"ramadda-clickable",ID,this.domId(ID_SETTINGS)],HU.getIconImage("fas fa-cog"));
+	    let showMap = HU.div([CLASS,"ramadda-clickable",ID,this.domId(ID_MAP_SHOW),TITLE,"Show map selector"], HtmlUtils.getIconImage("fas fa-globe"));
 
 	    let input = (id,place,title,v)=>{
 		return HtmlUtils.input(id, v, ["placeholder", place, ATTR_CLASS, "input display-area-input", "size", "5", ATTR_ID,
-						this.display.getDomId(id), ATTR_TITLE, title]);
+						this.domId(id), ATTR_TITLE, title]);
 	    };
             let areaForm = HtmlUtils.openTag(TAG_TABLE, [ATTR_CLASS, "display-area"]);
             areaForm += HtmlUtils.tr([],
@@ -87,21 +96,21 @@ function AreaWidget(display) {
 
 
             areaForm += HtmlUtils.closeTag(TAG_TABLE);
-            areaForm += HU.div([ID,this.display.domId(ID_MAP_POPUP_WRAPPER),STYLE,HU.css("display","none")],SPACE+"Shift-drag: select region. Cmd-drag: move region" +
-				HU.div([ID,this.display.domId(ID_MAP_POPUP),STYLE,HU.css("width","400px","height","300px")]));
+            areaForm += HU.div([ID,this.domId(ID_MAP_POPUP_WRAPPER),STYLE,HU.css("display","none")],SPACE+"Shift-drag: select region. Cmd-drag: move region" +
+				HU.div([ID,this.domId(ID_MAP_POPUP),STYLE,HU.css("width","400px","height","300px")]));
             return areaForm;
         },
 	showMap: function() {
-	    let anchor = this.display.jq(ID_MAP_SHOW);
-	    this.dialog = HU.makeDialog({contentId:this.display.domId(ID_MAP_POPUP_WRAPPER),anchor:anchor,draggable:true,header:true});
+	    let anchor = this.jq(ID_MAP_SHOW);
+	    this.dialog = HU.makeDialog({contentId:this.domId(ID_MAP_POPUP_WRAPPER),anchor:anchor,draggable:true,header:true});
 	    this.map.selectionPopupInit();
 	    this.map.getMap().updateSize();
 	},
         areaClear: function() {
-            $("#" + this.display.getDomId(ID_NORTH)).val("");
-            $("#" + this.display.getDomId(ID_WEST)).val("");
-            $("#" + this.display.getDomId(ID_SOUTH)).val("");
-            $("#" + this.display.getDomId(ID_EAST)).val("");
+            $("#" + this.domId(ID_NORTH)).val("");
+            $("#" + this.domId(ID_WEST)).val("");
+            $("#" + this.domId(ID_SOUTH)).val("");
+            $("#" + this.domId(ID_EAST)).val("");
             this.display.areaClear();
         },
         useMyLocation: function() {
@@ -119,23 +128,23 @@ function AreaWidget(display) {
             if (this.display.myLocationOffset)
                 offset = parseFloat(this.display.myLocationOffset);
 
-            $("#" + this.display.getDomId(ID_NORTH)).val(lat + offset);
-            $("#" + this.display.getDomId(ID_WEST)).val(lon - offset);
-            $("#" + this.display.getDomId(ID_SOUTH)).val(lat - offset);
-            $("#" + this.display.getDomId(ID_EAST)).val(lon + offset);
+            $("#" + this.domId(ID_NORTH)).val(lat + offset);
+            $("#" + this.domId(ID_WEST)).val(lon - offset);
+            $("#" + this.domId(ID_SOUTH)).val(lat - offset);
+            $("#" + this.domId(ID_EAST)).val(lon + offset);
             if (this.display.submitSearchForm)
                 this.display.submitSearchForm();
         },
         areaLinkClick: function() {
             this.linkArea = !this.linkArea;
             let image = root + (this.linkArea ? "/icons/link.png" : "/icons/link_break.png");
-            $("#" + this.display.getDomId(ID_AREA_LINK)).attr("src", image);
+            $("#" + this.domId(ID_AREA_LINK)).attr("src", image);
             if (this.linkArea && this.lastBounds) {
                 let b = this.lastBounds;
-                $("#" + this.display.getDomId(ID_NORTH)).val(MapUtils.formatLocationValue(b.top));
-                $("#" + this.display.getDomId(ID_WEST)).val(MapUtils.formatLocationValue(b.left));
-                $("#" + this.display.getDomId(ID_SOUTH)).val(MapUtils.formatLocationValue(b.bottom));
-                $("#" + this.display.getDomId(ID_EAST)).val(MapUtils.formatLocationValue(b.right));
+                $("#" + this.domId(ID_NORTH)).val(MapUtils.formatLocationValue(b.top));
+                $("#" + this.domId(ID_WEST)).val(MapUtils.formatLocationValue(b.left));
+                $("#" + this.domId(ID_SOUTH)).val(MapUtils.formatLocationValue(b.bottom));
+                $("#" + this.domId(ID_EAST)).val(MapUtils.formatLocationValue(b.right));
             }
         },
         linkArea: false,
@@ -144,16 +153,16 @@ function AreaWidget(display) {
             bounds = args.bounds;
             this.lastBounds = bounds;
             if (!args.force && !this.linkArea) return;
-            $("#" + this.display.getDomId(ID_NORTH)).val(MapUtils.formatLocationValue(bounds.top));
-            $("#" + this.display.getDomId(ID_WEST)).val(MapUtils.formatLocationValue(bounds.left));
-            $("#" + this.display.getDomId(ID_SOUTH)).val(MapUtils.formatLocationValue(bounds.bottom));
-            $("#" + this.display.getDomId(ID_EAST)).val(MapUtils.formatLocationValue(bounds.right));
+            $("#" + this.domId(ID_NORTH)).val(MapUtils.formatLocationValue(bounds.top));
+            $("#" + this.domId(ID_WEST)).val(MapUtils.formatLocationValue(bounds.left));
+            $("#" + this.domId(ID_SOUTH)).val(MapUtils.formatLocationValue(bounds.bottom));
+            $("#" + this.domId(ID_EAST)).val(MapUtils.formatLocationValue(bounds.right));
         },
         setSearchSettings: function(settings) {
-	    let n = this.display.getFieldValue(this.display.getDomId(ID_NORTH), null);
-	    let w = this.display.getFieldValue(this.display.getDomId(ID_WEST), null);	    
-	    let s = this.display.getFieldValue(this.display.getDomId(ID_SOUTH), null);
-	    let e = this.display.getFieldValue(this.display.getDomId(ID_EAST), null);
+	    let n = this.display.getFieldValue(this.domId(ID_NORTH), null);
+	    let w = this.display.getFieldValue(this.domId(ID_WEST), null);	    
+	    let s = this.display.getFieldValue(this.domId(ID_SOUTH), null);
+	    let e = this.display.getFieldValue(this.domId(ID_EAST), null);
             settings.setAreaContains(this.areaContains);
 	    if(this.areaContains) {
 		HU.addToDocumentUrl("map_contains",this.areaContains);
