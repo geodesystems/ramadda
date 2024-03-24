@@ -25,8 +25,7 @@ public class DateArgument implements Constants {
     public static final int TYPE_DATA = 2;
 
     /** _more_ */
-    public static final DateArgument ARG_DATA = new DateArgument(TYPE_DATA,
-                                                    ARG_DATA_DATE, "Date");
+    public static final DateArgument ARG_DATA = new DateArgument(TYPE_DATA,ARG_DATA_DATE, "Date");
 
     /** _more_ */
     public static final DateArgument ARG_CREATE =
@@ -67,7 +66,7 @@ public class DateArgument implements Constants {
      * @param suffix _more_
      * @param label _more_
      */
-    private DateArgument(int type, String suffix, String label) {
+    public DateArgument(int type, String suffix, String label) {
         this.type  = type;
         this.label = label;
         from       = suffix + ".from";
