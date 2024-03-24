@@ -62,6 +62,13 @@ public class SelectionRectangle {
         this.east  = east;
     }
 
+    public SelectionRectangle(double[] nwse) {
+        this.north = nwse[0];
+        this.west  = nwse[1];
+        this.south = nwse[2];
+        this.east  = nwse[3];
+    }    
+
 
     /**
      * _more_
