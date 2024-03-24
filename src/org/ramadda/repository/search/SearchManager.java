@@ -120,6 +120,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     private static boolean debugCorpus = false;
 
+    public static final String SUFFIX_LATITUDE ="_latitude";
+    public static final String SUFFIX_LONGITUDE ="_longitude";
 
 
     /** _more_ */
@@ -649,10 +651,15 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    if(values!=null) {
 		for (Column column : columns) {
 		    if (!column.getCanSearch()) continue;
+		    String field  = getPropertyField(entry.getTypeHandler(),column.getName());
 		    Object v= column.getObject(values);
 		    if(v==null) continue;
-		    String field  = getPropertyField(entry.getTypeHandler(),column.getName());
-		    if(column.isEnumeration())  {
+		    //TODO handle latlonbox
+		    if(column.isLatLon()) {
+			double[] latlon = column.getLatLon(values);
+			doc.add(new DoublePoint(field+SUFFIX_LATITUDE, latlon[0]));
+			doc.add(new DoublePoint(field+SUFFIX_LONGITUDE, latlon[1]));			
+		    } else if(column.isEnumeration())  {
 			corpus.append(v.toString());
 			corpus.append(" ");
 			doc.add(new StringField(field, v.toString(),Field.Store.YES));
@@ -1165,40 +1172,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    */
 	}
 
-	boolean contains = !(request.getString(
-					       ARG_AREA_MODE, VALUE_AREA_OVERLAPS).equals(
-											  VALUE_AREA_OVERLAPS));
-
-
 
 	List<SelectionRectangle> rectangles = getEntryUtil().getSelectionRectangles(request.getSelectionBounds());
-	List<Query> areaQueries = new ArrayList<Query>();
-	for (SelectionRectangle rectangle : rectangles) {
-	    if(!rectangle.anyDefined()) continue;
-	    //	    System.err.println("BBOX:" + rectangle);
-	    double minLat = rectangle.hasSouth()?rectangle.getSouth():-90;
-	    double maxLat = rectangle.hasNorth()?rectangle.getNorth():90;	    
-	    double minLon = rectangle.hasWest()?rectangle.getWest():-180;
-	    double maxLon = rectangle.hasEast()?rectangle.getEast():180;	    
-	    if (contains) {
-		areaQueries.add(DoublePoint.newRangeQuery(FIELD_NORTH,minLat,maxLat));
-		areaQueries.add(DoublePoint.newRangeQuery(FIELD_SOUTH,minLat,maxLat));
-		areaQueries.add(DoublePoint.newRangeQuery(FIELD_WEST,minLon,maxLon));
-		areaQueries.add(DoublePoint.newRangeQuery(FIELD_EAST,minLon,maxLon));
-	    } else {
-		areaQueries.add(DoublePoint.newRangeQuery(FIELD_NORTH,minLat,90));
-		areaQueries.add(DoublePoint.newRangeQuery(FIELD_SOUTH,-90,maxLat));
-		areaQueries.add(DoublePoint.newRangeQuery(FIELD_WEST,-180,maxLon));
-		areaQueries.add(DoublePoint.newRangeQuery(FIELD_EAST,minLon,180));
-	    }
-	}
-	if (areaQueries.size() > 0) {
-	    BooleanQuery.Builder areaBuilder = new BooleanQuery.Builder();
-	    for(Query query: areaQueries) {
-		areaBuilder.add(query, BooleanClause.Occur.MUST);
-	    }
-	    queries.add(areaBuilder.build());
-	}
+
+	boolean contains = !(request.getString(ARG_AREA_MODE, VALUE_AREA_OVERLAPS).equals(VALUE_AREA_OVERLAPS));
+	makeAreaQueries(rectangles, queries, contains,FIELD_NORTH,FIELD_WEST,FIELD_SOUTH,FIELD_EAST);
+
 
 	int sizeMin =  request.get(ARG_SIZE_MIN,-1);
 	int sizeMax =  request.get(ARG_SIZE_MAX,-1);	
@@ -1298,8 +1277,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			}  else {
 			    if (!Double.isNaN(from) && Double.isNaN(to)) {
 				to = from;
+				expr= Column.EXPR_GE;
 			    } else if (Double.isNaN(from) && !Double.isNaN(to)) {
 				from = to;
+				expr= Column.EXPR_LE;
+			    } else if (!Double.isNaN(from) && !Double.isNaN(to)) {
+				expr= Column.EXPR_BETWEEN;
 			    } else if (Double.isNaN(from) && Double.isNaN(to)) {
 				from = value;
 				to   = value;
@@ -1338,8 +1321,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			int value = request.get(searchArg, undef);
 			if ((from != undef) && (to == undef)) {
 			    to = from;
+			    expr=Column.EXPR_GE;
 			} else if ((from == undef) && (to != undef)) {
 			    from = to;
+			    expr=Column.EXPR_LE;
+			} else if ((from != undef) && (to != undef)) {
+			    expr=Column.EXPR_BETWEEN;
 			} else if ((from == undef) && (to == undef)) {
 			    from = value;
 			    to   = value;
@@ -1364,14 +1351,27 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			    throw new IllegalArgumentException("Unknown expression:"
 							       + expr);
 			}
+		    } else if(column.isLatLon()) {
+			double[] nwse  = column.getAreaSearchArgs(request);
+			SelectionRectangle rectangle = new SelectionRectangle(nwse);
+			if(!rectangle.anyDefined()) continue;
+			List<SelectionRectangle> rects = getEntryUtil().getSelectionRectangles(rectangle);
+			//boolean contains = !(request.getString(ARG_AREA_MODE, VALUE_AREA_OVERLAPS).equals(VALUE_AREA_OVERLAPS));
+			contains =true;
+			makeAreaQueries(rects, queries, contains,
+					field+SUFFIX_LATITUDE,
+					field+SUFFIX_LONGITUDE,
+					null,null);
+			continue;
 		    } else {
 			String v = request.getUnsafeString(searchArg,null);
 			if(!Utils.stringDefined(v)||v.equals(TypeHandler.ALL)) continue;
 			term = new WildcardQuery(new Term(field, v));
 		    }
 		    cnt++;
-		    if(term!=null)
+		    if(term!=null) {
 			builder.add(term, BooleanClause.Occur.MUST);
+		    }
 		}
 		if(cnt>0) queries.add(builder.build());
 	    }
@@ -1384,6 +1384,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		queries.add(builder.build());
 	    }
 	}
+	System.err.println("queries:"+queries);
+
 
 	Query query = null;
 	if(queries.size()==0) {
@@ -1487,6 +1489,51 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         }
 
     }
+
+    private void makeAreaQueries(List<SelectionRectangle> rectangles,
+				 List<Query> queries,
+				 boolean contains,
+				 String north,String west,String south, String east) throws Exception {
+	List<Query> areaQueries = new ArrayList<Query>();
+	for (SelectionRectangle rectangle : rectangles) {
+	    if(!rectangle.anyDefined()) continue;
+	    //	    System.err.println("BBOX:" + rectangle);
+	    double minLat = rectangle.hasSouth()?rectangle.getSouth():-90;
+	    double maxLat = rectangle.hasNorth()?rectangle.getNorth():90;	    
+	    double minLon = rectangle.hasWest()?rectangle.getWest():-180;
+	    double maxLon = rectangle.hasEast()?rectangle.getEast():180;	    
+	    if (contains) {
+		if(north!=null)
+		    areaQueries.add(DoublePoint.newRangeQuery(north,minLat,maxLat));
+		if(west!=null)
+		areaQueries.add(DoublePoint.newRangeQuery(west,minLon,maxLon));
+		if(south!=null)
+		    areaQueries.add(DoublePoint.newRangeQuery(south,minLat,maxLat));
+		if(east!=null)
+		    areaQueries.add(DoublePoint.newRangeQuery(east,minLon,maxLon));
+	    } else {
+		if(north!=null)
+		    areaQueries.add(DoublePoint.newRangeQuery(north,minLat,90));
+		if(west!=null)
+		   areaQueries.add(DoublePoint.newRangeQuery(west,-180,maxLon));
+		if(south!=null)
+		    areaQueries.add(DoublePoint.newRangeQuery(south,-90,maxLat));
+		if(east!=null)
+		    areaQueries.add(DoublePoint.newRangeQuery(east,minLon,180));
+	    }
+	}
+
+	if (areaQueries.size() > 0) {
+	    BooleanQuery.Builder areaBuilder = new BooleanQuery.Builder();
+	    for(Query query: areaQueries) {
+		areaBuilder.add(query, BooleanClause.Occur.MUST);
+	    }
+	    queries.add(areaBuilder.build());
+	}
+	
+
+    }
+
 
 
     /**
