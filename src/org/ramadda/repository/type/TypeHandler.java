@@ -738,6 +738,16 @@ public class TypeHandler extends RepositoryManager {
 	return null;
     }
 
+    public String getSearchDisplayText(Request request, Entry entry) throws Exception {
+	String name = getTypeProperty("search.wikimacro",null);
+	if(name!=null) {
+	    WikiMacro macro = getWikiMacro(entry,name);
+	    if(macro!=null) {
+		return getWikiManager().wikifyEntry(request,entry,macro.getWikiText());
+	    }
+	}
+	return null;
+    }
 
 
     public void childrenChanged(Entry entry) {
