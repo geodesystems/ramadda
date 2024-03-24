@@ -635,6 +635,13 @@ public class JsonOutputHandler extends OutputHandler {
 	
 
 
+	String searchDisplay = entry.getTypeHandler().getSearchDisplayText(request,  entry);
+	if(searchDisplay!=null) {
+            JsonUtil.quoteAttr(items, "displayHtml", searchDisplay);
+	}
+	    
+
+
         if (entry.getUser() != null) {
             JsonUtil.quoteAttr(items, "creator", entry.getUser().getId());
             JsonUtil.quoteAttr(items, "creatorName", entry.getUser().getName());	    
