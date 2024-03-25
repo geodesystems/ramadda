@@ -59,6 +59,7 @@ public interface SeesvCommands {
     public static final String CMD_HTMLTABLE="-htmltable";
     public static final String CMD_HTMLPATTERN="-htmlpattern";
     public static final String CMD_HARVEST="-harvest";
+    public static final String CMD_SCRAPE="-scrape";
     public static final String CMD_TEXT="-text";
     public static final String CMD_EXTRACTPATTERN="-extractpattern";
     public static final String CMD_TOKENIZE="-tokenize";

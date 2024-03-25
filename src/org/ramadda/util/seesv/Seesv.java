@@ -1893,7 +1893,13 @@ public class Seesv implements SeesvCommands {
                 new Arg(ARG_PATTERN, "Row pattern. Use (...) to match columns",
                         ATTR_TYPE, TYPE_PATTERN)),
         new Cmd(CMD_HARVEST, "Harvest links in web page. This results in a 2 column dataset with fields: label,url",
-		new Arg(ARG_PATTERN,"regexp to match")),
+		new Arg(ARG_PATTERN,"regexp to match")),	
+	/*
+        new Cmd(CMD_SCRAPE, "For each URL in a column scrape the web page",
+                new Arg(ARG_COLUMN, "Column name", ATTR_TYPE, TYPE_COLUMN),
+		new Arg("column_names","comma separated new column names",ATTR_TYPE,TYPE_LIST),
+		new Arg("pattern", "pattern - use (..) to extract values", ATTR_TYPE, TYPE_PATTERN)),
+	*/
         new Cmd(CMD_TEXT, "Extract rows from the text",
 		ARG_LABEL,"Read text",
                 new Arg("comma separated header"),
@@ -4077,6 +4083,11 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Processor.Dissector(args.get(++i),args.get(++i)));
 		return i;
 	    });
+	defineFunction(CMD_SCRAPE,3,(ctx,args,i) -> {
+		ctx.addProcessor(new Processor.Scraper(args.get(++i), args.get(++i),args.get(++i)));
+		return i;
+	    });	
+
 	defineFunction(CMD_KEYVALUE,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.KeyValue(args.get(++i)));
 		return i;
@@ -4610,6 +4621,7 @@ public class Seesv implements SeesvCommands {
 		ctx.getProviders().add(new DataProvider.Harvester( args.get(++i)));
 		return i;
 	    });
+
 
 	defineFunction(CMD_TEXT,3,(ctx,args,i) -> {
 		ctx.getProviders().add(new DataProvider.TextDataProvider(args.get(++i), args.get(++i), args.get(++i)));

@@ -792,6 +792,65 @@ public abstract class Processor extends SeesvOperator {
     }
 
 
+    public static class Scraper extends Processor {
+
+        /**  */
+        Pattern pattern;
+
+        /**  */
+        List<String> names;
+
+        /**  */
+        int index;
+
+        /**
+         *
+         *
+         * @param col _more_
+         * @param pattern _more_
+         */
+        public Scraper(String col, String names,String pattern) {
+            super(col);
+	    pattern = pattern.replace("_quote_","\"");
+            this.names = Utils.split(names);
+            this.pattern = Pattern.compile(pattern);
+        }
+
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+                index = getIndex(ctx);
+                for (String name : names) {
+                    row.add(name);
+                }
+                return row;
+            }
+	    if(!row.indexOk(index)) {
+		return row;
+	    }
+            String  url       = row.getString(index);
+	    try {
+		String html = IO.readUrl(new URL(url));
+	    } catch(Exception exc) {
+		System.err.println("Error reading url:" + url);
+		for(String name: names)
+		    row.add("");
+	    }
+
+
+            return row;
+        }
+    }
+
+
+
     /**
      * Class description
      *
