@@ -457,6 +457,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{p:'displayTypes',ex:'list,images,timeline,map,metadata'},
 	{p:'defaultImage',ex:'blank.gif',canCache:true},
         {p:'showDetailsForGroup',d: false},
+	{p:'inputSize',d:'200px',tt:'Text input size'},
+	{p:'startDateLabel'},
+	{p:'createDateLabel'},	
+	{p:'areaLabel'},
 	{p:'doWorkbench',d:false,ex:'true', tt:'Show the new, charts, etc links'},
 	];
 
@@ -747,7 +751,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             return results+"<br>";
         },
 	makeSearchSettings: function() {
-	                let settings = this.getSearchSettings();
+	    let settings = this.getSearchSettings();
             settings.text = this.getFieldValue(this.getDomId(ID_TEXT_FIELD), settings.text);
 	    if(settings.text) {
 		if(Utils.stringDefined(settings.text)) {
@@ -849,7 +853,6 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             }
             this.haveSearched = true;
 	    let settings  =this.makeSearchSettings();
-
             if (this.getTextRequired() && (settings.text == null || settings.text.trim().length == 0)) {
                 this.writeEntries("");
                 return;
@@ -957,6 +960,13 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    } else {
 			tag.remove();
 		    }
+		} else if(col.isEnumeration() && col.showCheckboxes()) {
+                    let fullId = this.getDomId(ID_COLUMN + col.getName());
+		    $('[checkbox-id='+ fullId+']').each(function() {
+			if($(this).is(':checked')) {
+			    extra += '&' + arg + '=' + encodeURIComponent($(this).attr('data-value'));
+			}
+		    });
 		} else {
                     let value = this.jq(id).val();
                     if (value == null || value==VALUE_NONE) {
@@ -1161,25 +1171,25 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
             if (this.getShowDate()) {
                 this.dateRangeWidget = new DateRangeWidget(this);
-		if(this.getProperty("startDateLabel"))
-		   extra+=this.getProperty("startDateLabel");
+		if(this.getStartDateLabel())
+		    extra+=this.makeLabel(this.getStartDateLabel());
                 extra += addWidget("", HU.div([ID,this.domId(ID_SEARCH_DATE_RANGE)], this.dateRangeWidget.getHtml()));
             }
             if (this.getShowCreateDate(true)) {
-		if(this.getProperty("createDateLabel"))
-		   extra+=this.getProperty("createDateLabel");
+		if(this.getCreateDateLabel())
+		    extra+=this.makeLabel(this.getCreateDateLabel());
                 this.createdateRangeWidget = new DateRangeWidget(this,"createdate");
                 extra += addWidget("", HU.div([ID,this.domId(ID_SEARCH_DATE_CREATE)], this.createdateRangeWidget.getHtml()));
             }
             if (this.getShowArea()) {
-		if(this.getProperty("areaLabel"))
-		   extra+=this.getProperty("areaLabel");
+		if(this.getAreaLabel())
+		    extra+=this.makeLabel(this.getAreaLabel());
 		let areaWidget =new AreaWidget(this);
                 this.addAreaWidget(areaWidget) 
                 extra += addWidget("", HU.div([ID,this.domId(ID_SEARCH_AREA)], areaWidget.getHtml()));
             }
             extra +=HU.div([ATTR_CLASS,'display-search-widget'],
-			   HU.b('Max:') +' '+	HU.input("",  DEFAULT_MAX, [ID,this.domId(ID_SEARCH_MAX),
+			   HU.b('# Records:') +' '+	HU.input("",  DEFAULT_MAX, [ID,this.domId(ID_SEARCH_MAX),
 									    "input", STYLE,'size','5']));
             extra += HU.div([ATTR_ID, this.getDomId(ID_TYPEFIELDS)], "");
 
@@ -1550,12 +1560,21 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             }
             return searchable;
         },
+	makeLabel:function(label) {
+	    //check if it is a column
+	    if(label.getSearchLabel) label = label.getSearchLabel();
+	    if(!label) return '';
+	    label = label.trim();
+	    if(!label.endsWith(':'))  label = label+':';
+	    return HU.b(label);
+	},
         addExtraForm: function() {
             if (this.savedValues == null) this.savedValues = {};
             let extra = "";
             let cols = this.getSearchableColumns();
 	    let comparators = this.getComparators().split(",");
 
+	    let lastGroup = null;
 
             for (let i = 0; i < cols.length; i++) {
                 let col = cols[i];
@@ -1563,6 +1582,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                     continue;
                 }
 
+		let group = col.getGroup();
+		if(Utils.stringDefined(group) && group!=lastGroup) {
+		    lastGroup=group;
+		    extra+=HU.div([ATTR_CLASS,'formgroupheader'],group);
+		}
                 if (extra.length == 0) {
 //                    extra += HU.formTable();
                 }
@@ -1581,32 +1605,49 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		
                 if (col.isEnumeration()) {
 		    let showLabels = this.getShowSearchLabels();
-                    field = HU.openTag(TAG_SELECT, [ATTR_ID, id, ATTR_CLASS, "display-searchmenu display-metadatalist"]);
-		    field+="\n";
-                    field += HU.tag(TAG_OPTION, [CLASS,"display-metadatalist-item", ATTR_TITLE, "", ATTR_VALUE, VALUE_NONE],
-				    showLabels?"-- Select --":col.getLabel());
-                    let values = col.getValues();
-		    field+="\n";
-                    for (let vidx in values) {
-                        let value = values[vidx].value||"";
-                        let extraAttr = "";
-                        if (value == savedValue) {
-                            extraAttr = " selected ";
-                        }
-			if(value=="") {
-			    value = "--blank--";
+		    let values = col.getValues();
+		    if(col.showCheckboxes()) {
+			for (let vidx in values) {
+                            let value = values[vidx].value||"";
+			    if(value=="") {
+				value = "--blank--";
+			    }
+                            let label = values[vidx].label.trim();
+			    if(label=="&lt;blank&gt;") label="--blank--";
+			    if(label=="")
+				label= "--blank--"; 
+			    let boxId = id+'_'+vidx;
+                            field += HU.div([],HU.checkbox(boxId,[ATTR_ID,boxId,'checkbox-id',id,'data-value',value],false, label));
 			}
-                        let label = values[vidx].label.trim();
-			if(label=="&lt;blank&gt;") label="--blank--";
-			if(label=="")
-			    label= "--blank--"; 
-                        field += HU.tag(TAG_OPTION, [CLASS,"display-metadatalist-item", ATTR_TITLE, label, ATTR_VALUE, value, extraAttr, null],
-					label);
+		    } else {
+			field = HU.openTag(TAG_SELECT, [ATTR_ID, id, ATTR_CLASS, "display-searchmenu display-metadatalist"]);
 			field+="\n";
-                    }
-                    field += HU.closeTag(TAG_SELECT);
+			field += HU.tag(TAG_OPTION, [CLASS,"display-metadatalist-item", ATTR_TITLE, "", ATTR_VALUE, VALUE_NONE],
+					showLabels?"-- Select --":col.getSearchLabel());
+			field+="\n";
+			for (let vidx in values) {
+                            let value = values[vidx].value||"";
+                            let extraAttr = "";
+                            if (value == savedValue) {
+				extraAttr = " selected ";
+                            }
+			    if(value=="") {
+				value = "--blank--";
+			    }
+                            let label = values[vidx].label.trim();
+			    if(label=="&lt;blank&gt;") label="--blank--";
+			    if(label=="")
+				label= "--blank--"; 
+                            field += HU.tag(TAG_OPTION, [CLASS,"display-metadatalist-item", ATTR_TITLE, label, ATTR_VALUE, value, extraAttr, null],
+					    label);
+			    field+="\n";
+			}
+			field += HU.closeTag(TAG_SELECT);
+		    }
+
+
 		    if(showLabels) {
-			let w =  HU.div([CLASS,"display-search-label"], col.getLabel()+":");
+			let w =  HU.div([CLASS,"display-search-label"], this.makeLabel(col));
 			w+= HU.div([], field+help);
 			widget+= HU.div([CLASS,"display-search-widget"], w);
 		    } else {
@@ -1615,14 +1656,15 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		} else if (col.isNumeric()) {
 		    let from = HU.input("", "", [ATTR_CLASS, "input", STYLE,HU.css("width","2.5em"), ATTR_ID, id+"_from"]);
 		    let to = HU.input("", "", [ATTR_CLASS, "input", STYLE,HU.css("width","2.5em"), ATTR_ID, id+"_to"]);		    
-                    widget += HU.div([CLASS,"display-search-label"], col.getLabel()) +
+                    widget += HU.div([CLASS,"display-search-label"], col.getSearchLabel()) +
 			from +" - " + to +help;
                 } else if(col.getType()=='latlon') {
 		    let areaWidget= new AreaWidget(this,col.getName());
 		    this.addAreaWidget(areaWidget);
+		    widget+=this.makeLabel(col.getSearchLabel());
                     widget+= HU.div([ID,this.domId(col.getName())], areaWidget.getHtml());
                 } else if(col.getType()=='string') {
-                    field = HU.input("", savedValue, ["placeholder",col.getLabel(),ATTR_CLASS, "input", ATTR_SIZE, "15", ATTR_ID, id]);
+                    field = HU.input("", savedValue, ["placeholder",col.getSearchLabel(),ATTR_CLASS, "input", ATTR_SIZE, this.getInputSize(), ATTR_ID, id]);
                     widget += HU.div([CLASS,"display-search-label"], "") +HU.div([CLASS,"display-search-widget"], field + " " + help);
                 }
 		extra+=widget;
