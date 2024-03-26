@@ -1785,15 +1785,35 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             this.setPropertyOn(chartOptions.vAxis.titleTextStyle, "vAxis.text.color", "color", textColor);
             this.setPropertyOn(chartOptions.legend.textStyle, "legend.text.color", "color", textColor);
 
+	    chartOptions.hAxis.viewWindow = {};
+	    if(Utils.isDefined(this.getProperty('hAxisViewMin'))) {
+		chartOptions.hAxis.viewWindow.min = +this.getProperty('hAxisViewMin');
+	    }
+	    if(Utils.isDefined(this.getProperty('hAxisViewMax'))) {
+		chartOptions.hAxis.viewWindow.max = +this.getProperty('hAxisViewMax');
+	    }	    
+
+
+
+
+
 	    let prop;
 	    prop = this.getProperty("hAxis.ticks");
 	    if(prop || prop=="")  {
 		let fmt = this.getProperty("hAxis.tickTemplate","${value}");
 		let ticks = Utils.split(this.getProperty("hAxis.ticks"),",",true,true);
 		ticks=ticks.map(t=> {
+		    let toks = t.split(':');
+		    let label;
+		    if(toks.length>1) {
+			t = toks[0];
+			label=toks[1];
+		    } else {
+			label = fmt.replace("${value}",t);
+		    }
 		    return {
 			v:t,
-			f:fmt.replace("${value}",t)
+			f:label
 		    }
 		});
 		chartOptions.hAxis.ticks  = ticks;
