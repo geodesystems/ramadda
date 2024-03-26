@@ -585,9 +585,14 @@ function MetadataType(type, label, value) {
 	    return this.color;
 	},
         getLabel: function() {
+	    console.trace();
             if (this.label != null) return this.label;
             return this.type;
         },
+        getSearchLabel: function() {
+            if (this.searchLabel != null) return this.searchLabel;
+	    return this.getLabel();
+        },	
         getValue: function() {
             return this.value;
         },
@@ -604,6 +609,13 @@ function EntryTypeColumn(props) {
         getLabel: function() {
             return this.label;
         },
+        getGroup: function() {
+            return this.group;
+        },	
+        getSearchLabel: function() {
+            if (this.searchLabel != null) return this.searchLabel;
+	    return this.getLabel();
+        },	
         getType: function() {
             return this.type;
         },
@@ -625,6 +637,9 @@ function EntryTypeColumn(props) {
         isEnumeration: function() {
             return this.getType() == "enumeration" || this.getType() == "enumerationplus";
         },
+        showCheckboxes: function() {
+	    return this.searchShowCheckboxes;
+	},
         isNumeric: function() {
             return this.getType() == "double" || this.getType() == "int";
         },	

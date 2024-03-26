@@ -3,6 +3,9 @@
     --font-size:12pt;
     --font-family:    "Helvetica Neue", Arial, Helvetica, sans-serif;    
     --basic-border:1px #ddd solid;
+    --line-border:1px #eee solid;
+    --light-border:1px rgb(239, 243, 244) solid;    
+
     --nav-color:#000;
     --nav-link-color:#000;
     --highlight-color:#0074D9;
@@ -5169,8 +5172,6 @@ wiki {
     color: #000;
     border-bottom: var(--basic-border);
     font-weight: bold;
-    border-top-left-radius: 8px;
-    -webkit-border-top-left-radius: 8px;
 }
 
 
