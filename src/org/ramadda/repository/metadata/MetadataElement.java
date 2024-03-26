@@ -519,6 +519,23 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 	    } catch(Exception ignore) {
 		html = value;
 	    }
+	} else if(getDataType().equals(DATATYPE_LATLON)) {
+	    List<String> toks = Utils.split(value,",",true,true);
+	    html="";
+	    if(toks.size()==2 && Utils.stringDefined(toks.get(0)) && Utils.stringDefined(toks.get(1))) {
+		html=value;
+		double lat = Utils.getDouble(toks.get(0));
+		double lon = Utils.getDouble(toks.get(1));
+		if(!Double.isNaN(lat) && !Double.isNaN(lon)) {
+		    MapInfo map = new MapInfo(request, getRepository(),"200","200");
+		    map.addMarker("",lat,  lon, null,"","");
+		    map.center();
+		    html+=getRepository().getMapManager().getHtmlImports(request);
+		    html+=map.getHtml();
+		}
+	    } else {
+		html="Undefined";
+	    }
         } else {
             html = value;
         }
@@ -950,9 +967,9 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             String mapSelector = map.makeSelector(arg, true,
                                      new String[] { (toks.size() > 0)
                     ? toks.get(0)
-                    : "40", (toks.size() > 1)
+                    : "", (toks.size() > 1)
                             ? toks.get(1)
-                            : "-107" }, "", "");
+                            : "" }, "", "");
 
             return mapSelector;
         } else if (dataType.equals(DATATYPE_COLORTABLE)) {
