@@ -1000,6 +1000,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	return builder.build();
     }    
 
+    private Query makeOr(List<Query>queries) {
+	BooleanQuery.Builder builder = new BooleanQuery.Builder();
+	for(Query query: queries) {
+	    builder.add(query, BooleanClause.Occur.SHOULD);
+	}
+	return builder.build();
+    }    
+    
 
     public Result processEntryList(Request request) throws Exception {
 	StringBuilder sb = new StringBuilder();
@@ -1255,10 +1263,18 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    Query term=null;
 		    String field = getPropertyField(typeHandler,column.getName());
 		    if(column.isEnumeration()) {
-			String v = request.getUnsafeString(searchArg,null);
-			if(!Utils.stringDefined(v)||v.equals(TypeHandler.ALL)) continue;
-			if(v.equals("--blank--")) v = "";
-			term = new TermQuery(new Term(field, v));
+			List<String> values = (List<String>) request.get(searchArg,new ArrayList<String>());
+			List<Query> ors = new ArrayList<Query>();
+			for(String v: values) {
+			    if(!Utils.stringDefined(v)||v.equals(TypeHandler.ALL)) continue;
+			    if(v.equals("--blank--")) v = "";
+			    ors.add(new TermQuery(new Term(field, v)));
+			}			    
+			if(ors.size()==1) 
+			    term = ors.get(0);
+			else if(ors.size()>1)
+			    term =  makeOr(ors);
+			else continue;
 		    } else if(column.isDouble()) {
 			String expr = request.getEnum(searchArg + "_expr", "", "",
 						      Column.EXPR_EQUALS, Column.EXPR_LE, Column.EXPR_GE,Column.EXPR_LT,Column.EXPR_GT,
