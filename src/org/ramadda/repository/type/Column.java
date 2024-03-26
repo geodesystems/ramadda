@@ -394,6 +394,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     private boolean canSort;
 
     private boolean enumerationShowMultiples = true;
+    private boolean enumerationShowCheckboxes= false;
 
     /** _more_ */
     private int searchRows;
@@ -657,6 +658,8 @@ public class Column implements DataTypes, Constants, Cloneable {
         searchRows = getAttributeOrTag(element, ATTR_SEARCHROWS, 1);
         canSearchText = getAttributeOrTag(element, ATTR_CANSEARCHTEXT,canSearch);
 	enumerationShowMultiples = getAttributeOrTag(element,"enumeration_multiples",true);
+	enumerationShowCheckboxes = getAttributeOrTag(element,"enumeration_show_checkboxes",false);	
+
         advancedSearch = getAttributeOrTag(element, ATTR_ADVANCED, false);
         editable       = getAttributeOrTag(element, ATTR_EDITABLE, true);
         showInForm = getAttributeOrTag(element, ATTR_SHOWINFORM,
@@ -1054,8 +1057,17 @@ public class Column implements DataTypes, Constants, Cloneable {
         col.add(JsonUtil.quote(getName()));
         col.add("label");
         col.add(JsonUtil.quote(getLabel()));
+        col.add("searchLabel");
+        col.add(JsonUtil.quote(getSearchLabel()));	
+        col.add("searchShowCheckboxes");
+        col.add(""+enumerationShowCheckboxes);
+
         col.add("type");
         col.add(JsonUtil.quote(getType()));
+	if(group!=null) {
+	    col.add("group");
+	    col.add(JsonUtil.quote(group));
+	}
         col.add("namespace");
         col.add(JsonUtil.quote(getTableName()));
         col.add("suffix");
@@ -1414,7 +1426,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 	if(isSynthetic()) {
 	    //noop
-	} else if (isType(DATATYPE_LATLON)) {
+	} else if (isLatLon()) {
             sb.append(toLatLonString(values, offset, raw));
             sb.append(delimiter);
             sb.append(toLatLonString(values, offset + 1, raw));
@@ -1916,7 +1928,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 		System.err.println("Column:set statement:" + this +" date:" +dttm);
             getDatabaseManager().setDate(statement, statementIdx, dttm);
             statementIdx++;
-        } else if (isType(DATATYPE_LATLON)) {
+        } else if (isLatLon()) {
             if (values[offset] != null) {
                 double lat = ((Double) values[offset]).doubleValue();
                 double lon = ((Double) values[offset + 1]).doubleValue();
@@ -1998,7 +2010,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         }
 	if(isSynthetic()) {
 	    //noop
-	} else if (isType(DATATYPE_LATLON)) {
+	} else if (isLatLon()) {
             stringValue = values[offset] + ";" + values[offset + 1];
         } else if (isType(DATATYPE_LATLONBBOX)) {
             stringValue = values[offset] + ";" + values[offset + 1] + ";"
@@ -2086,7 +2098,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    if(DEBUG_TIME || DEBUG)
 		System.err.println("Column:from db:" + this+" " + values[offset]);
             valueIdx++;
-        } else if (isType(DATATYPE_LATLON)) {
+        } else if (isLatLon()) {
             values[offset] = Double.valueOf(results.getDouble(valueIdx));
             valueIdx++;
             values[offset + 1] = Double.valueOf(results.getDouble(valueIdx));
@@ -2212,7 +2224,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             defineColumn(statement, name,
                          getDatabaseManager().convertSql("ramadda.datetime"),
                          ignoreErrors);
-        } else if (isType(DATATYPE_LATLON)) {
+        } else if (isLatLon()) {
             defineColumn(statement, name + "_lat",
                          getDatabaseManager().convertType("double"),
                          ignoreErrors);
@@ -2279,7 +2291,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             //TODO
         } else if (isType(DATATYPE_DATE)) {
             //TODO
-        } else if (isType(DATATYPE_LATLON)) {
+        } else if (isLatLon()) {
             //TODO
         } else if (isType(DATATYPE_LATLONBBOX)) {
             //TODO
@@ -2340,7 +2352,7 @@ public class Column implements DataTypes, Constants, Cloneable {
      * @param clauses _more_
      */
     public void addGeoExclusion(List<Clause> clauses) {
-        if (isType(DATATYPE_LATLON)) {
+        if (isLatLon()) {
             String id = getFullName();
             clauses.add(Clause.neq(id + "_lat", Entry.NONGEO));
         }
@@ -2830,7 +2842,7 @@ public class Column implements DataTypes, Constants, Cloneable {
      * @return _more_
      */
     public int matchValue(String arg, Object value, Object[] values) {
-        if (isType(DATATYPE_LATLON)) {
+        if (isLatLon()) {
             //TODO:
         } else if (isType(DATATYPE_LATLONBBOX)) {
             //TODO:
@@ -3358,7 +3370,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 	if (isSynthetic()) {
 	    return;
 	} 
-	if (isType(DATATYPE_LATLON)) {
+	if (isLatLon()) {
             if (request.exists(urlArg + "_latitude")) {
                 values[offset] = Double.parseDouble(request.getString(urlArg
                         + "_latitude", "0").trim());
@@ -3531,7 +3543,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    return;
 	}
 
-        if (isType(DATATYPE_LATLON)) {
+        if (isLatLon()) {
             List<String> toks = Utils.split(value, ";", true, true);
             if (toks.size() == 2) {
                 values[offset]     = Double.parseDouble(toks.get(0));
@@ -3820,18 +3832,29 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    }
 	    selectedValues.add("DUMMYVALUE");
 	    int i=0;
-	    for(String value:selectedValues) {
-		String arg = searchArg;
-                tmpb.append(HU.select(arg, tmpValues,
-				 value,
-                                 selectExtra + ((i == 0)
-						? HU.attr("id", widgetId)
-						: "")));
-                tmpb.append(" ");
-		i++;
-		if(!enumerationShowMultiples) break;
+	    if(enumerationShowCheckboxes) {
+		for(TwoFacedObject tfo:values) {
+		    tmpb.append(HU.labeledCheckbox(searchArg,
+						   tfo.getId().toString(),
+						   selectedValues.contains(tfo.getId()),
+						   tfo.getLabel().toString()));
+		    tmpb.append("<br>");
+		}
+	    } else {
+		for(String value:selectedValues) {
+		    String arg = searchArg;
+		    tmpb.append(HU.select(arg, tmpValues,
+					  value,
+					  selectExtra + ((i == 0)
+							 ? HU.attr("id", widgetId)
+							 : "")));
+		    tmpb.append(" ");
+		    i++;
+		    if(!enumerationShowMultiples) break;
+		}
             }
 	    widget = tmpb.toString();
+
 	    if(enumerationShowMultiples) {
 		widget = HU.div(widget, HU.cssClass("ramadda-widgets-enumeration"));
 	    }
@@ -4074,7 +4097,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             names = new ArrayList<String>();
             if (isSynthetic()) {
 		//noop
-	    } else if (isType(DATATYPE_LATLON)) {
+	    } else if (isLatLon()) {
                 names.add(name + "_lat");
                 names.add(name + "_lon");
             } else if (isType(DATATYPE_LATLONBBOX)) {
@@ -4096,7 +4119,7 @@ public class Column implements DataTypes, Constants, Cloneable {
      * @return _more_
      */
     public String getSortByColumn() {
-        if (isType(DATATYPE_LATLON)) {
+        if (isLatLon()) {
             return name + "_lat";
         }
         if (isType(DATATYPE_LATLONBBOX)) {
