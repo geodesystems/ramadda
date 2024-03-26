@@ -954,7 +954,7 @@ public class PointFormHandler extends RecordFormHandler {
                                           null, null, showTime)));
             }
 
-            subsetSB.append(HU.formEntry(msgLabel("Max # Points"),
+            subsetSB.append(HU.formEntry(msgLabel("Max # Rows"),
                     HU.input(ARG_MAX, request.getString(ARG_MAX, ""),
                                     4)));
 
