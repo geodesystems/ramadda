@@ -5,7 +5,7 @@
 	editfields="first_name,middle_name,last_name,nickname,description,date,_default"
 	displayfields="!createdate,!owner,case_number,first_name,middle_name,last_name,nickname,date,_default"
 	nametemplate="${first_name} ${middle_name} ${last_name}"    
-    metadata="missing_alias,missing_case_owner"
+    metadata="missing_alias,missing_ethnicity,missing_clothing,missing_case_owner,missing_sighting,missing_vehicle"
     handler="org.ramadda.projects.missing.MissingPersonTypeHandler">
     <property name="search.wikimacro" value="missing_header"/>
     <property name="search.tabs" value="map,list"/>
@@ -33,20 +33,36 @@
     <column name="middle_name" type="string"  label="Middle Name" cansearch="true"/>
     <column name="last_name" type="string"  label="Last Name" cansearch="true"/>            
     <column name="nickname" type="string"  label="Nickname" cansearch="true"/>    
-    <column name="status" type="enumeration" values="unknown:Unknown,found:Found,missing:Missing,died:Died"  label="Status" cansearch="true"/>
+    <column name="status" type="enumeration" values="unknown:Unknown,found:Found,missing:Missing,died:Died"  label="Status"
+	    enumeration_show_checkboxes="true"
+	    cansearch="true"/>
     <column name="date_missing" type="date" default="none" label="Date Missing" cansearch="true"
 	    htmlTemplate="${value dateFormat=yyyy-MM-dd} ${value showAge=true prefix=&quot; - &quot; suffix=&quot; years old when missing&quot;}"/>
     <column name="date_found" type="date" default="none" label="Date Found" cansearch="true"
 	    htmlTemplate="${value dateFormat=yyyy-MM-dd} ${value showAge=true prefix=&quot; - &quot; suffix=&quot; years old when found&quot;}"/>    
-    <column name="biological_sex" type="enumeration"  label="Biological Sex" values="m:Male,f:Female,u:Unknown"  cansearch="true"/>
+    <column name="biological_sex" type="enumeration"  label="Biological Sex"
+	    values="male:Male,femal:Female,other:Other,unsure:Unsure,notprovided:Not Provided"  cansearch="true"/>
 
     <column name="height" type="int"  searchlabel="Height (inches)"  label="Height" suffix="Inches"  cansearch="true" htmlTemplate="${value inchesToFeet=true}"/>
     <column name="weight" type="int"  searchlabel="Weight (pounds)" label="Weight" suffix="Pounds"  cansearch="true" htmlTemplate="${value} lbs"/>
-    <column name="race_ethnicity" type="enumerationplus"  label="Race/Ethnicity"   cansearch="true"
-	    values="white:White,black:Black or African American,hispanic: Hispanic or Latino, asian:Asian, native_american:Native American or Alaska Native,hawaiian: Native Hawaiian or Other Pacific Islander, multiracial:Multiracial"
-/>    
+    <column name="race_ethnicity" type="enumerationplus"  label="Primary Ethnicity"   cansearch="true"
+	    values="file:/org/ramadda/projects/missing/ethnicity.txt"/>
+    
+    <column name="tribe_association" type="enumerationplus"  label="Tribal Association"
+	    cansearch="true"
+	    group="Tribal Information"
+	    values="file:/org/ramadda/projects/missing/tribes.txt"/>
 
-
+    <column name="missing_from_tribal_land" type="enumeration"
+	    enumeration_show_checkboxes="true"
+	    label="Missing from Tribal Land"
+	    cansearch="true" default="unknown"
+	    values="yes:Yes,no:No,unknown:Unknown"/>
+    <column name="primary_residence_tribal_land"
+	    type="enumeration"  label="Primary Residence on Tribal Land"
+	    cansearch="true" default="unknown"
+	    values="yes:Yes,no:No,unknown:Unknown"/>    
+    
 
     <column name="missing_city" type="enumerationplus"  label="Missing City"  cansearch="true"
 	    group="Circumstances" />
@@ -113,7 +129,8 @@
 :vspace 1em
 +row
 +col-8
-{{missing_header}}
+{{missing_header includeImage=true}}
+----
 :heading Case Details
 {{description wikify=true}}
 :vspace 1em
@@ -122,21 +139,14 @@
 -col
 +col-4
 +center
-{{image src="::*" message="" align=center width="70%"}}                                                          
 :vspace 1em
 <b>Last Known Location</b>
 <br>
 {{field name=missing_city}} {{field name=missing_state}}
 {{mapentry hideIfNoLocations=true width="90%" height="200px"}}
 -center
-:vspace 1em
-----
-:vspace 1em
-{{links}}
-:vspace 1em
-----
-:vspace 1em
-{{properties message="" metadata.types="!content.alias"}}
+{{links message="" prefix="\n:vspace 1em\n----\n:vspace 1em\n"}}
+{{properties message="" metadata.types="!content.alias" prefix="\n:vspace 1em\n----\n:vspace 1em\n"}}
 :vspace 1em
 ----
 :vspace 1em

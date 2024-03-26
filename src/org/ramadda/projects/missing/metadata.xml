@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <metadata>
   <handler category="Miscellaneous" >
-    <type id="missing_alias" name="Missing Alias" >
+
+    <type id="missing_ethnicity" name="Other Ethnicity"  displaygroup="Other Ethnicities">
+      <element id="ethnicity" name="Ethnicity" datatype="enumerationplus"
+	    values="file:/org/ramadda/projects/missing/ethnicity.txt"/>
+    </type>
+
+    <type id="missing_clothing" name="Clothing and Accessories" >
+      <element id="type" name="Type" datatype="enumerationplus"
+	    values="clothing:Clothing,footwear:Footwear"/>
+      <element id="description" name="Description" datatype="string"/>
+    </type>    
+
+    <type id="missing_alias" name="Missing Alias" displaygroup="Aliases">
       <element id="alias" name="Alias" datatype="string"/>
     </type>
 
@@ -16,5 +28,28 @@
       <element id="url" name="URl"  datatype="url"/>                        
       <element id="case_number" name="Case Number"  datatype="string"/>
     </type>    
+
+    <type id="missing_sighting" name="Sighting"  displaygroup="Sightings">
+      <element id="date" name="Date" datatype="date"/>
+      <element id="city" name="City" datatype="string"/>
+      <element id="county" name="County" datatype="enumerationplus"/>                
+      <element id="state" name="State" datatype="enumeration"
+	       values="file:/org/ramadda/projects/missing/states.txt"/>
+      <element id="location" name="Location" datatype="latlon"/>          
+      <element id="notes" name="Notes" datatype="string" rows="5"/>
+
+    </type>
+
+
+    <type id="missing_vehicle" name="Vehicle"  displaygroup="Vehicles">
+      <element id="year" name="Year" datatype="string" columns="6"/>
+      <element id="color" name="Color" datatype="enumerationplus" values="White, Black, Silver, Gray, Blue, Red, Brown, Green, Yellow"/>      
+      <element id="style" name="Style" datatype="enumerationplus"
+	       values="Sedan, SUV, Coupe, Hatchback, Convertible, Pickup Truck, Van, Minivan, Crossover, Wagon, Truck"/>
+      <element id="model" name="Model" datatype="enumerationplus"/>
+      <element id="tag_number" name="Tag Number" datatype="string" columns="10"/>
+      <element id="comments" name="Comments" rows="5" datatype="string"/>
+    </type>
+
   </handler>
 </metadata>

@@ -1,0 +1,8 @@
+unknown:Unknown
+white:White
+black:Black or African American
+hispanic: Hispanic or Latino
+asian:Asian
+native_american:Native American or Alaska Native
+hawaiian: Native Hawaiian or Other Pacific Islander
+multiple:Multiracial

@@ -87,7 +87,7 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	Date missingDate = DateHandler.checkDate((Date) entry.getValue("date_missing"));
 	Date foundDate = DateHandler.checkDate((Date) entry.getValue("date_found"));	
 	String clazz="missing-block missing-status-"+ status; 
-	sb.append("<div style='border-top:var(--basic-border);'>");
+	sb.append("<div style='margin-top:5px;border-top:var(--basic-border);'>");
 	if(Utils.getProperty(props,"includeImage",false)) {
 	    List<String> urls =    getMetadataManager().getThumbnailUrls(request, entry, null);
 	    if(urls!=null && urls.size()>0) {
