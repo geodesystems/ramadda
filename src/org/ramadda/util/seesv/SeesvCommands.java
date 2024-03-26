@@ -231,7 +231,7 @@ public interface SeesvCommands {
     public static final String CMD_DOWNLOAD="-download";
     public static final String CMD_GENDER="-gender";
     public static final String CMD_DATEFORMAT="-dateformat";
-    public static final String CMD_INDATEFORMAT="-indateformat";
+    public static final String CMD_INDATEFORMATS="-indateformats";
     public static final String CMD_OUTDATEFORMAT="-outdateformat";
     public static final String CMD_CONVERTDATE="-convertdate";
     public static final String CMD_ADDDATE="-adddate";

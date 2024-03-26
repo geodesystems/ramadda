@@ -1911,6 +1911,8 @@ public abstract class DataProvider extends SeesvOperator {
 
 	private boolean doingSpaces = false;
 
+	private boolean guessDelimiter = false;	
+
 	
         /**
          * _more_
@@ -1937,12 +1939,12 @@ public abstract class DataProvider extends SeesvOperator {
                 tokenizer = StringTokenizer.getCSVInstance();
                 tokenizer.setEmptyTokenAsNull(true);
                 if ( !ctx.getDelimiter().equals(",")) {
+		    guessDelimiter = ctx.getDelimiterGuess();
 		    String delim = ctx.getDelimiter();
 		    if(delim.equals("_spaces_")) {
 			delim = " ";
 			doingSpaces = true;
 		    }
-		    
                     tokenizer.setDelimiterString(delim);
                 }
             }
@@ -2038,6 +2040,16 @@ public abstract class DataProvider extends SeesvOperator {
 		    StringTokenizer tokenizer = getTokenizer(ctx);
 		    if(doingSpaces) {
 			line = line.replaceAll("  *"," ").trim();
+		    } else if(guessDelimiter) {
+			int tabIndex = line.indexOf("\t");
+			int commaIndex = line.indexOf(",");
+			String delim=",";
+			if(tabIndex>=0 && tabIndex<commaIndex) {
+			    delim="\t";
+			}
+			tokenizer.setDelimiterString(delim);
+			guessDelimiter = false;
+			ctx.setDelimiterGuess(false);
 		    }
 
                     return makeRow(Utils.tokenizeColumns(line,tokenizer));

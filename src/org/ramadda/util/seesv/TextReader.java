@@ -48,6 +48,7 @@ import java.util.regex.*;
 @SuppressWarnings("unchecked")
 public class TextReader implements Cloneable {
 
+
     /** _more_ */
     private static char NEWLINE = '\n';
 
@@ -119,6 +120,8 @@ public class TextReader implements Cloneable {
     
     /** _more_ */
     private String delimiter = ",";
+
+    private boolean delimiterGuess  =false;
 
     /**  */
     private boolean quotesNotSpecial = false;
@@ -1810,7 +1813,10 @@ public class TextReader implements Cloneable {
     public void setDelimiter(String value) {
         delimiter = value;
         if (delimiter != null) {
-            if (delimiter.equals("tab")) {
+            if (delimiter.equals("?")) {
+		delimiterGuess=true;
+		delimiter="";
+	    } else  if (delimiter.equals("tab")) {
                 delimiter = "\t";
             } else if (delimiter.equals("space")) {
                 delimiter = " ";
@@ -2003,6 +2009,25 @@ public class TextReader implements Cloneable {
     **/
     public boolean getUniqueHeader () {
 	return uniqueHeader;
+    }
+
+
+    /**
+       Set the DelimiterGuess property.
+
+       @param value The new value for DelimiterGuess
+    **/
+    public void setDelimiterGuess (boolean value) {
+	delimiterGuess = value;
+    }
+
+    /**
+       Get the DelimiterGuess property.
+
+       @return The DelimiterGuess
+    **/
+    public boolean getDelimiterGuess () {
+	return delimiterGuess;
     }
 
 

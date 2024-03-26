@@ -10,6 +10,10 @@ import org.ramadda.util.Utils;
 import ucar.unidata.util.StringUtil;
 import java.io.*;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -40,7 +44,12 @@ public abstract class DateOps extends Processor {
 	Calendar.MONTH};
 
 
-
+    private static int OFFSET_BASE = -1000;
+    private static int OFFSET_IDX = OFFSET_BASE;
+    private static final int OFFSET_DAYS_IN_YEAR = OFFSET_IDX--;
+    private static final int OFFSET_HOURS_IN_YEAR = OFFSET_IDX--;    
+    private static final int OFFSET_MINUTES_IN_YEAR = OFFSET_IDX--;
+    private static final int OFFSET_SECONDS_IN_YEAR = OFFSET_IDX--;    
 
 
 
@@ -261,6 +270,14 @@ public abstract class DateOps extends Processor {
             super(col);
             whatLabel = StringUtil.camelCase(what);
             this.what = getDatePart(what);
+	    if(this.what == OFFSET_DAYS_IN_YEAR)
+		whatLabel="Days in year";
+	    else  if(this.what == OFFSET_HOURS_IN_YEAR)
+		whatLabel="Hours in year";
+	    else if(this.what == OFFSET_MINUTES_IN_YEAR)
+		whatLabel="Minutes in year";
+	    else if(this.what == OFFSET_SECONDS_IN_YEAR)
+		whatLabel="Seconds in year";	    	    
         }
 
         /**
@@ -280,7 +297,23 @@ public abstract class DateOps extends Processor {
             int col = getIndex(ctx);
             try {
                 String s = row.get(col).toString();
-                Date   d = ctx.parseDate(s);
+                Date   d = ctx.parseDate(s);	
+		if(this.what<=OFFSET_BASE) {
+		    LocalDate localDate = d.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		    LocalDate startOfYear = LocalDate.of(localDate.getYear(), 1, 1);
+		    String v="";
+		    if(this.what == OFFSET_DAYS_IN_YEAR)
+			// Adding 1 since we're inclusive of the start date
+			v = ""+ (ChronoUnit.DAYS.between(startOfYear, localDate) + 1); 
+		    else if(this.what == OFFSET_HOURS_IN_YEAR)
+			v = ""+ ChronoUnit.HOURS.between(startOfYear.atStartOfDay(), localDate.atStartOfDay());
+		    else if(this.what == OFFSET_MINUTES_IN_YEAR)
+		        v = "" + ChronoUnit.MINUTES.between(startOfYear.atStartOfDay(), localDate.atStartOfDay());
+		    else if(this.what == OFFSET_SECONDS_IN_YEAR)
+		        v = "" + ChronoUnit.SECONDS.between(startOfYear.atStartOfDay(), localDate.atStartOfDay());
+		    add(ctx, row, v);
+		    return row;
+		}
                 cal.setTime(d);
                 String v =  "" + cal.get(what);
                 add(ctx, row, v);
@@ -733,6 +766,14 @@ public abstract class DateOps extends Processor {
             return GregorianCalendar.SECOND;
         } else if (what.equals("MILLISECOND")) {
             return GregorianCalendar.MILLISECOND;
+	} else if(what.equals("DAYS_IN_YEAR")) {
+	    return  OFFSET_DAYS_IN_YEAR;
+	} else if(what.equals("HOURS_IN_YEAR")) {
+	    return  OFFSET_HOURS_IN_YEAR;	    
+	} else if(what.equals("MINUTES_IN_YEAR")) {
+	    return  OFFSET_MINUTES_IN_YEAR;	    
+	} else if(what.equals("SECONDS_IN_YEAR")) {
+	    return  OFFSET_SECONDS_IN_YEAR;	    
         } else {
             throw new IllegalArgumentException("Unknown date part:" + what);
         }

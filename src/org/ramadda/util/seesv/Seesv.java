@@ -1808,7 +1808,7 @@ public class Seesv implements SeesvCommands {
         /** * Input   * */
         new Category("Input","Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XML, Shapefile, etc."),
         new Cmd(CMD_DELIMITER, "Specify the input delimiter",
-                new Arg("delimiter", "Use 'space' for space, 'tab' for tab",  ATTR_SIZE, "5")),
+                new Arg("delimiter", "Use 'space' for space, 'tab' for tab,'?' to guess between tab and space",  ATTR_SIZE, "5")),
 	new Cmd(CMD_INPUTCOMMENT,"Input comment",
 		new Arg("comment")),
         new Cmd(CMD_TAB, "Use tabs. A shortcut for -delimiter tab"),
@@ -2588,9 +2588,9 @@ public class Seesv implements SeesvCommands {
 
         /** *  Dates * */
         new Category("Dates"),
-        new Cmd(CMD_INDATEFORMAT, "Specify date format for parsing",
+        new Cmd(CMD_INDATEFORMATS, "Specify one or more date formats for parsing",
 		ARG_LABEL,"Input Date Format",
-                new Arg("format", "e.g. yyyy-MM-dd HH:mm:ss. <a target=_help href=https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html>Help</a>"),
+                new Arg("format", "e.g. yyyy-MM-dd HH:mm:ss.  Use semi-colon separated formats for multiples. <a target=_help href=https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html>Help</a>"),
 		new Arg("timezone", "")),
         new Cmd(CMD_OUTDATEFORMAT, "Specify date format for formatting",
 		ARG_LABEL,"Output Date Format",
@@ -2617,7 +2617,7 @@ public class Seesv implements SeesvCommands {
 		ARG_LABEL,"Extract Date",
 		new Arg("date column", "", ATTR_TYPE, TYPE_COLUMN),
 		new Arg("what", "What to extract, e.g., year, month, day_of_week, etc", "values",
-			"era,year,month,day_of_month,day_of_week,week_of_month,\nday_of_week_in_month,am_pm,hour,hour_of_day,\nminute,second,millisecond")),
+			"era,year,month,day_of_month,day_of_week,week_of_month,\nday_of_week_in_month,am_pm,hour,hour_of_day,\nminute,second,millisecond,days_in_year, hours_in_year, minutes_in_year,seconds_in_year")),
 
         new Cmd(CMD_FORMATDATE, "Format date",
 		ARG_LABEL,"Format Date - use -outdateformat to set the date format",
@@ -4495,7 +4495,7 @@ public class Seesv implements SeesvCommands {
 	    });
 
 
-	defineFunction(new String[]{CMD_INDATEFORMAT}, 2,(ctx,args,i) -> {
+	defineFunction(new String[]{CMD_INDATEFORMATS,"-indateformat"}, 2,(ctx,args,i) -> {
 		inDater = new Dater(args.get(++i),args.get(++i));
 		ctx.addProcessor(new DateOps.DateFormatSetter(true, inDater));
 		return i;
@@ -6121,10 +6121,11 @@ public class Seesv implements SeesvCommands {
     public static class Dater {
 	private static String DFLT_DATEFORMAT = "yyyy-MM-dd HH:mm:ss";
 	private String sdfString = DFLT_DATEFORMAT;
-	private SimpleDateFormat sdf = Utils.makeDateFormat(sdfString);
+	private List<SimpleDateFormat> sdfs = new ArrayList<SimpleDateFormat>();
 	private String timezone="UTC";
 
 	public Dater() {
+	    sdfs.add(Utils.makeDateFormat(sdfString));
 	}
 
 	public Dater(String fmt, String tz) {
@@ -6134,26 +6135,35 @@ public class Seesv implements SeesvCommands {
 
 	public void setFormat(String fmt, String timezone) {
 	    if(!Utils.stringDefined(fmt)) fmt = DFLT_DATEFORMAT;
-	    sdf = Utils.makeDateFormat(sdfString = fmt);
+	    sdfString = fmt;
 	    if(Utils.stringDefined(timezone)) {
 		this.timezone = timezone;
 	    }
-	    sdf.setTimeZone(TimeZone.getTimeZone(this.timezone));
+	    sdfs = new ArrayList<SimpleDateFormat>();
+	    for(String format: Utils.split(fmt,";",true,true)){
+		SimpleDateFormat sdf = Utils.makeDateFormat(format);
+		sdf.setTimeZone(TimeZone.getTimeZone(this.timezone));
+		sdfs.add(sdf);
+	    }
+
 	}
 	
 	public Date parseDate(String d) {
-	    try {
-		if(!Utils.stringDefined(d)) return null;
-		return sdf.parse(d);
-            } catch (Exception exc) {
-		throw new SeesvException("Could not parse date:" + d + " with format:"
-					 + sdfString);
-            }
+	    if(!Utils.stringDefined(d)) return null;
+	    Exception lastException=null;
+	    for(SimpleDateFormat sdf:sdfs) {
+		try {
+		    return sdf.parse(d);
+		} catch (Exception exc) {
+		    lastException = exc;
+		}
+            } 
+	    throw new SeesvException("Could not parse date:" + d + " with format:"
+				     + sdfString);
 	}
 
 	public String formatDate(Date d) {
-	    //	    System.err.println("FMT:" + sdfString +" " + sdf.format(d));
-	    return sdf.format(d);
+	    return sdfs.get(0).format(d);
 	}
 	
 	public TimeZone getTimeZone() {
