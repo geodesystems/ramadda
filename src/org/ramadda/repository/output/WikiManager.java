@@ -831,8 +831,7 @@ public class WikiManager extends RepositoryManager
 	    } else if(what.equals("entry")) {
 		entry = findEntryFromId(request,  entry, wikiUtil, props, value);
 		select.setEntry(entry);
-		if(entry==null)
-		    System.err.println("WikiManager.getSelectFromString - null entry with value:" + value);
+		//		if(entry==null)  System.err.println("WikiManager.getSelectFromString - null entry with value:" + value);
 	    } else if(what.equals(ARG_DESCENDENT) || what.equals(ARG_ANCESTOR)) {
 		if(value.length()==0) {
 		    myRequest.put(ARG_ANCESTOR,entry.getId());
@@ -923,6 +922,7 @@ public class WikiManager extends RepositoryManager
 
 
 	if((select = matches.call(entryId,ID_CHILD,PREFIX_CHILD))!=null) { 
+	    if(select.getEntry()==null) return null;
 	    List<Entry> children =  getEntryManager().getChildren(request,select.getEntry(),select);
             if (children.size() > 0) {
                 return children.get(0);
@@ -6251,7 +6251,6 @@ public class WikiManager extends RepositoryManager
     private String makeEntryTabs(Request request, WikiUtil wikiUtil,
                                  Entry entry, Hashtable props)
 	throws Exception {
-
         request = request.cloneMe();
         request.putExtraProperty("wiki.props", props);
 
