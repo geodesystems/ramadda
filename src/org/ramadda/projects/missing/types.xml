@@ -5,7 +5,7 @@
 	editfields="first_name,middle_name,last_name,nickname,description,date,_default"
 	displayfields="!createdate,!owner,case_number,first_name,middle_name,last_name,nickname,date,_default"
 	nametemplate="${first_name} ${middle_name} ${last_name}"    
-    metadata="missing_alias,missing_ethnicity,missing_clothing,missing_case_owner,missing_sighting,missing_vehicle"
+    metadata="missing_alias,missing_ethnicity,missing_clothing,missing_agency,missing_sighting,missing_vehicle"
     handler="org.ramadda.projects.missing.MissingPersonTypeHandler">
     <property name="search.wikimacro" value="missing_header"/>
     <property name="search.tabs" value="map,list"/>

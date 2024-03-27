@@ -171,6 +171,33 @@ public class NamusConverter {
 	sb.append("</attr>");
 	sb.append("</metadata>\n");
 
+
+	//	isowner,department,contact,role,address,county,state,phone,email,url,#
+	JSONArray _agencies = root.getJSONArray("investigatingAgencies");
+	for(int i=0;i<_agencies.length();i++) {
+	    JSONObject obj = _agencies.getJSONObject(i);
+	    JSONObject _contact =JU.readObject(obj,"selection.contact");	
+	    JSONObject _agency =JU.readObject(obj,"selection.agency");	
+	    sb.append("<metadata  inherited=\"false\" type=\"missing_agency\">");
+	    int midx=1;
+	    mtd(sb,midx++,obj.getBoolean("isCaseOwner"));
+	    mtd(sb,midx++,obj.getString("name"));
+	    if(_contact!=null) {
+		mtd(sb,midx++,_contact.getString("firstName") +" " +_contact.getString("lastName"));
+		mtd(sb,midx++,_contact.getString("jobTitle"));
+	    }		
+	    mtd(sb,midx++,_agency.getString("street1"));
+	    mtd(sb,midx++,JU.readValue(_agency,"county.name",""));
+	    mtd(sb,midx++,JU.readValue(_agency,"state.name",""));
+	    mtd(sb,midx++,JU.readValue(_agency,"phone",""));	    	    
+	    //dummy email and url
+	    mtd(sb,midx++,"");
+	    mtd(sb,midx++,"");	    
+	    mtd(sb,midx++,obj.optString("caseNumber",""));
+	    sb.append("</metadata>\n");
+	}
+
+
 	String circ  = _circ.getString("circumstancesOfDisappearance");
 	sb.append("\n<description>");
 	circ="+callout-info\nNote: this is an example of RAMADDA's Missing Person entry type. The original data came from the [https://namus.nij.ojp.gov/ National Missing and Unidentified Persons System (NAMUS)]\n-callout\n" +circ;
@@ -191,6 +218,14 @@ public class NamusConverter {
 	*/
 
     }
+
+    private static void mtd(Appendable sb, int index,Object  contents) throws Exception {
+	sb.append("<attr index=\""+ index+"\" encoded=\"false\">");
+	sb.append(XmlUtil.getCdata(contents.toString()));
+	sb.append("</attr>");
+    }
+
+
 
     public static void main(String[]args) throws Exception{
 	System.out.println("<entries>");

@@ -17,12 +17,14 @@
       <element id="alias" name="Alias" datatype="string"/>
     </type>
 
-    <type id="missing_case_owner" name="Case Owner">
+    <type id="missing_agency" name="Investigating Agency">
+      <element id="caseowner" name="Is Case Owner" datatype="boolean"/>
       <element id="department" name="Department" datatype="string"/>
       <element id="contact" name="Contact" datatype="string"/>
       <element id="role" name="Role" datatype="enumerationplus"/>            
       <element id="address" name="Address" rows="4" datatype="string"/>
       <element id="county" name="County"  datatype="enumerationplus"/>
+      <element id="state" name="State"  datatype="enumerationplus"/>      
       <element id="phone" name="Phone"  datatype="string"/>
       <element id="email" name="Email"  datatype="email"/>
       <element id="url" name="URl"  datatype="url"/>                        

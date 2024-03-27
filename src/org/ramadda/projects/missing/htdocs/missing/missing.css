@@ -1,0 +1,46 @@
+
+.missing-status-missing {
+    background:rgba(255, 0, 0, 0.5);
+}
+
+.missing-status-found {
+    background:#f0fff0;
+}
+.missing-status-died {
+    background:#ccc;
+}
+
+.missing-header1 a, .missing-header a {
+    text-decoration:none;
+}
+
+.missing-header {
+}
+
+.missing-header1 {
+    font-size:120%;font-weight:bold;
+}
+
+.missing-block {
+    border:1px solid #aaa;
+    margin:5px;
+    margin-top:10px;
+    padding:5px;
+
+    display:inline-block;
+    vertical-align:top;
+}
+
+.missing-sub-header {
+    font-weight:bold;
+}
+
+.display-entrylist-content .missing-header1 {
+    font-size:12pt;font-weight:plain;
+}
+.display-entrylist-content .missing-header  {
+    border-bottom:2px solid #ccc;
+    border-bottom:1px solid #000;    
+    margin-bottom:4px;
+    padding-left:4px;
+}
