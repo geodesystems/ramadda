@@ -1880,6 +1880,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:DisplayEvent.setEntry.acceptGroup,tt:'When sharing the entry this must match with the shareGroup'},		
 
 	{p:'acceptEventDataSelection',ex:true,tt:'accept new data coming from other displays'},
+	{p:'recordSelectField',tt:'Field to match selection on instead of date'},
 
 	{label:'Convert Data'},
 	{p:'offset1',canCache:true},
@@ -7948,7 +7949,24 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return good;
 	},
 	findMatchingIndex: function(record) {
-	    if(!record) return {index:-1,record:null};
+	    let fail = {index:-1,record:null};
+	    if(!record) return fail;
+	    let recordSelectField=this.getRecordSelectField();
+	    if(recordSelectField) {
+		let f = this.getFieldById(null, recordSelectField);
+
+		if(!f)    return fail;
+		let v = f.getValue(record);
+		if(!Utils.isDefined(v)) return fail;
+		if(!this.filteredRecords) return fail;
+		for(let i=0;i<this.filteredRecords.length;i++) {
+		    if(v == f.getValue(this.filteredRecords[i])) {
+			return {index:i,record:this.filteredRecords[i]};
+		    }
+		}
+		return fail;
+
+	    }
 	    let index = this.recordToIndex[record.getId()];
 	    if(Utils.isDefined(index)) {
 		return {index:index, record:this.indexToRecord[index]}
