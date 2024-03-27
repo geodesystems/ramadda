@@ -43,5 +43,4 @@ sh ${SEESV}/seesv.sh \
    -sortby hours_in_year up "" \
    -formatdateoffset hours_in_year hours_in_year \
    -firstcolumns month_day_hour\
-   -addheader "month_day_hour.type string hours_in_year.type int default.type double" \
    -p tmp.csv 
