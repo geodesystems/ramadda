@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Mar 27 04:07:02 MDT 2024";
+var build_date="RAMADDA build date: Wed Mar 27 06:12:33 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -5722,7 +5722,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:DisplayEvent.fieldsChanged.share,ex:true,tt:'Share fields changed'},
 	{p:DisplayEvent.fieldsChanged.accept,ex:true,tt:'Accept fields changed'},
 	{p:DisplayEvent.fieldsChanged.shareGroup,tt:'Only share in this group'},
-	{p:DisplayEvent.fieldsChanged.acceptGroup,tt:'Only share in this group'},		
+	{p:DisplayEvent.fieldsChanged.acceptGroup,tt:'Only share in this group'},
+
+	{p:DisplayEvent.fieldsSelected.share,ex:true,tt:'Share fields selected'},
+	{p:DisplayEvent.fieldsSelected.accept,ex:true,tt:'Accept fields selected'},
+	{p:DisplayEvent.fieldsSelected.shareGroup,tt:'Only share in this group'},
+	{p:DisplayEvent.fieldsSelected.acceptGroup,tt:'Only share in this group'},			
 
 	{p:DisplayEvent.setEntry.share,ex:true,tt:'When displaying entries as data this shares the selected entry with other displays'},
 	{p:DisplayEvent.setEntry.accept,ex:true,tt:'When displaying entries as data this accepts the new entry'},
@@ -6562,7 +6567,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 		return;
 	    }
-	    
+
 	    if(prop.property == "displayFields") {
 		if(!this.acceptEvent(DisplayEvent.fieldsChanged,!this.getProperty("acceptEventDisplayFieldsChange",false))) {
 		    return;
