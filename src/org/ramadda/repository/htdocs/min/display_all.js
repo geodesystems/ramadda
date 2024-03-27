@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Mar 27 03:22:18 MDT 2024";
+var build_date="RAMADDA build date: Wed Mar 27 03:52:30 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -4634,7 +4634,8 @@ function DisplayThing(argId, argProperties) {
 		props = this.getTemplateProps(fields);
 	    }
 	    if(!macros)
-		macros = Utils.tokenizeMacros(template,{hook:(token,value)=>{return this.macroHook(record, token,value)},dateFormat:this.getDateProps().dateFormat});
+		macros = Utils.tokenizeMacros(template,{hook:(token,value)=>{return this.macroHook(record, token,value)},
+							dateFormat:this.getDateProps().dateFormat});
 	    let attrs = {};
 	    if(props.iconMap && props.iconField) {
 		let value = row[props.iconField.getIndex()];
@@ -4662,6 +4663,7 @@ function DisplayThing(argId, argProperties) {
 		imageAttrs.push("vertical-align:top");
 		return HU.image(value, imageAttrs);
 	    };
+
 
 
 
@@ -4818,7 +4820,6 @@ function DisplayThing(argId, argProperties) {
 		    }
 		    continue;
 		} else if(f.isDate) {
-
 		    if(value) {
 			attrs[f.getId()]= value;
 		    }
@@ -5526,13 +5527,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'recordTemplate',doGetter:false,ex:'${default}',tt:'Template for popups etc. Can be ${default attrs} or \'${field} .. ${fieldn}...\''},
 	{p:'recordHtmlStyle',canCache:true},
 	{p:'labelStyle',ex:''},			
-	{p:'titleTemplate',doGetter:false,ex:'${field1}',tt:'Template for title in ${default} template display'},	
+	{p:'title',ex:''},
+	{p:'titleTemplate',ex:'${title} - ${field1} Date range: ${recordDate_first format=yyyymmdd} - ${recordDate_last format=yyyymmdd}',
+	 tt:'Template for title. Use ${title} for the default title. Use ${field} for field values of first record. Use ${field_first} for first record value. Use ${field_ast} for last record value '},	
 	{p:'itemsPerColumn',canCache:true,d:50,tt:'How many items to show in each column in a tooltip'},
 	{p:'labelColumnAttrs',canCache:true,ex:'align,right',tt:'Attributes of the label column in the record templates'},
 	{p:'labelWidth',canCache:true,ex:'10',tt:'Width of labels the record templates'},	
 	{p:'displayStyle',ex:'css styles',tt:'Specify styles for display'},
 	{p:'primaryPage',ex:'true',tt:'Set to true if you only want this display to show in the  primary for the entry '},
-	{p:'title',ex:''},
 	{p:'titleBackground',ex:'color'},
 	{p:'linkField',ex:''},
 	{p:'titleField',ex:''},
@@ -9809,8 +9811,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 prefix = this.getEntryMenuButton(this.getEntries()[0]) + " ";
             }
 	    
-            let title = this.getProperty('titleTemplate', this.getProperty(ATTR_TITLE));
-            if (title != null) {
+
+            let title = this.getProperty(ATTR_TITLE);
+            let titleTemplate = this.getTitleTemplate();
+            if (titleTemplate != null) {
+		title = titleTemplate.replace(/\${title}/g,title);
+		let data = this.getPointData();
+		if (data && data.records && data.records.length)  {
+		    title = title.replace(/_first/g,'');
+		    title = this.applyRecordTemplate(data.records[0],null,null, title);
+		    title = title.replace(/_last/g,'');
+		    title = this.applyRecordTemplate(data.records[data.records.length-1],null,null, title);		    
+		}
+		title = title.replace(/\${.*?}/g,'');
                 return prefix + title;
             }
             if (this.dataCollection == null) {
