@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Mar 27 03:52:30 MDT 2024";
+var build_date="RAMADDA build date: Wed Mar 27 04:07:02 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -4981,9 +4981,11 @@ function DisplayThing(argId, argProperties) {
 	    if(dflt.titleField || dflt.titleTemplate) {
 		let title="";
 		if(dflt.titleTemplate) {
+		    let titleTemplate = this.applyTitleTemplate(dflt.titleTemplate);
 		    if(!dflt.titleTemplate.startsWith("${default")) {
-			title = this.getRecordHtml(record, fields, dflt.titleTemplate, {},debug);
+			title = this.getRecordHtml(record, fields, titleTemplate, {},debug);
 		    }
+
 		} else {
 		    title = record.getValue(dflt.titleField.getIndex());
 		    if(title.getTime)
@@ -9805,6 +9807,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             this.writeHtml(ID_TITLE, text);
         },
+	applyTitleTemplate:function(titleTemplate) {
+	    let title = titleTemplate.replace(/\${title}/g,this.getProperty(ATTR_TITLE)??'');
+	    let data = this.getPointData();
+	    if (data && data.records && data.records.length)  {
+		title = title.replace(/_first/g,'');
+		title = this.applyRecordTemplate(data.records[0],null,null, title);
+		title = title.replace(/_last/g,'');
+		title = this.applyRecordTemplate(data.records[data.records.length-1],null,null, title);		    
+	    }
+	    title = title.replace(/\${.*?}/g,'');
+	    return title;
+	},
         getTitle: function(showMenuButton) {
             let prefix = "";
             if (showMenuButton && this.hasEntries()) {
@@ -9815,15 +9829,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let title = this.getProperty(ATTR_TITLE);
             let titleTemplate = this.getTitleTemplate();
             if (titleTemplate != null) {
-		title = titleTemplate.replace(/\${title}/g,title);
-		let data = this.getPointData();
-		if (data && data.records && data.records.length)  {
-		    title = title.replace(/_first/g,'');
-		    title = this.applyRecordTemplate(data.records[0],null,null, title);
-		    title = title.replace(/_last/g,'');
-		    title = this.applyRecordTemplate(data.records[data.records.length-1],null,null, title);		    
-		}
-		title = title.replace(/\${.*?}/g,'');
+		title = this.applyTitleTemplate(titleTemplate);
                 return prefix + title;
             }
             if (this.dataCollection == null) {
