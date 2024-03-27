@@ -22,6 +22,7 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 
 
+import java.text.SimpleDateFormat;
 import java.io.*;
 
 
@@ -65,6 +66,14 @@ public class NamusConverter {
 	sb.append(XmlUtil.attr("type","type_missing_person"));
 	sb.append(XmlUtil.attr("parent",""));
 	sb.append(XmlUtil.attr("status","missing"));		
+	int maxAge = _id.getInt("currentMaxAge");
+	int missingMinAge = _id.getInt("computedMissingMinAge");
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	Date now = new Date();
+	Date bdate = new Date(now.getTime()-(Utils.yearsToMillis(maxAge)));
+	sb.append(XmlUtil.attr("fromdate",sdf.format(bdate)));
+	Date missingDate = new Date(now.getTime()-Utils.yearsToMillis(maxAge-missingMinAge));
+	sb.append(XmlUtil.attr("date_missing",sdf.format(missingDate)));	
 	String firstName = _id.getString("firstName");
 	String middleName = _id.optString("middleName","");	
 	String lastName = _id.getString("lastName");	

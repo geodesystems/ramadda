@@ -106,10 +106,10 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	makeBlock(sb,clazz,"Date last seen", label);
 	    if(birthDate!=null) {
 		//		int years = DateHandler.getYearsBetween(birthDate,missingDate);
-		//		makeBlock(sb,clazz,"Age when missing", years+" Years");
+		//		makeBlock(sb,clazz,"Age when missing", years+" years");
 		if(status.equals("missing")) {
 		    years = DateHandler.getYearsBetween(birthDate,new Date());
-		    makeBlock(sb,clazz,"Current age",years+" Years");
+		    makeBlock(sb,clazz,"Current age",years+" years old");
 		} else if(foundDate!=null) {
 		    String label1 = null;
 		    String label2 = null;
@@ -126,7 +126,7 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 			makeBlock(sb,clazz,label1,
 				  sdf.format(foundDate)+"<br>"+years+" years old");
 
-			//			makeBlock(sb,clazz,label2,years+" Years old");
+			//			makeBlock(sb,clazz,label2,years+" years old");
 		    }
 		}
 	    }

@@ -51,7 +51,7 @@
     <column name="tribe_association" type="enumerationplus"  label="Tribal Association"
 	    cansearch="true"
 	    group="Tribal Information"
-	    values="file:/org/ramadda/projects/missing/tribes.txt"/>
+	    xxxvalues="file:/org/ramadda/projects/missing/tribes.txt"/>
 
     <column name="missing_from_tribal_land" type="enumeration"
 	    enumeration_show_checkboxes="true"
@@ -62,12 +62,11 @@
 	    type="enumeration"  label="Primary Residence on Tribal Land"
 	    cansearch="true" default="unknown"
 	    values="yes:Yes,no:No,unknown:Unknown"/>    
-    
 
     <column name="missing_city" type="enumerationplus"  label="Missing City"  cansearch="true"
 	    group="Circumstances" />
     <column name="missing_county" type="enumerationplus"  label="Missing County" cansearch="true"/>
-    <column name="missing_zip" type="enumerationplus"  label="Missing Zip Code" cansearch="true"/>    
+    <column name="missing_zip" type="string"  label="Missing Zip Code" cansearch="true"/>    
     <column name="missing_state" type="enumeration"  label="Missing State"
 	    values="file:/org/ramadda/projects/missing/states.txt" cansearch="true"/>            
 
@@ -117,7 +116,7 @@
 
 
 <wikimacro name="missing_header" label="Missing Person Header">
-<![CDATA[{{missing_header}}]]></wikimacro>
+<![CDATA[{{missing_header includeImage=true}}]]></wikimacro>
 
 <property name="bubble"><![CDATA[{{missing_header includeImage=true}}]]></property>
 
