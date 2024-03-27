@@ -6161,6 +6161,19 @@ public class Utils extends IO {
         return d2;
     }
 
+    public static Date getStartOfYear(Date date) {
+	Calendar startOfYear = Calendar.getInstance();
+        startOfYear.setTime(date);
+        startOfYear.set(Calendar.MONTH, Calendar.JANUARY);
+        startOfYear.set(Calendar.DAY_OF_MONTH, 1);
+        startOfYear.set(Calendar.HOUR_OF_DAY, 0);
+        startOfYear.set(Calendar.MINUTE, 0);
+        startOfYear.set(Calendar.SECOND, 0);
+        startOfYear.set(Calendar.MILLISECOND, 0);
+	return startOfYear.getTime();
+    }
+
+
     /**
      * _more_
      *
