@@ -1876,7 +1876,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:DisplayEvent.fieldsChanged.share,ex:true,tt:'Share fields changed'},
 	{p:DisplayEvent.fieldsChanged.accept,ex:true,tt:'Accept fields changed'},
 	{p:DisplayEvent.fieldsChanged.shareGroup,tt:'Only share in this group'},
-	{p:DisplayEvent.fieldsChanged.acceptGroup,tt:'Only share in this group'},		
+	{p:DisplayEvent.fieldsChanged.acceptGroup,tt:'Only share in this group'},
+
+	{p:DisplayEvent.fieldsSelected.share,ex:true,tt:'Share fields selected'},
+	{p:DisplayEvent.fieldsSelected.accept,ex:true,tt:'Accept fields selected'},
+	{p:DisplayEvent.fieldsSelected.shareGroup,tt:'Only share in this group'},
+	{p:DisplayEvent.fieldsSelected.acceptGroup,tt:'Only share in this group'},			
 
 	{p:DisplayEvent.setEntry.share,ex:true,tt:'When displaying entries as data this shares the selected entry with other displays'},
 	{p:DisplayEvent.setEntry.accept,ex:true,tt:'When displaying entries as data this accepts the new entry'},
@@ -2716,7 +2721,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 		return;
 	    }
-	    
+
 	    if(prop.property == "displayFields") {
 		if(!this.acceptEvent(DisplayEvent.fieldsChanged,!this.getProperty("acceptEventDisplayFieldsChange",false))) {
 		    return;
