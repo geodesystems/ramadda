@@ -20,13 +20,13 @@ handler="org.ramadda.data.services.PointTypeHandler">
 <property name="form.location.show" value="true"/>
 <property name="form.properties.show" value="false"/>
 <property name="record.properties"><![CDATA[
-
-csvcommands1=-skiplines,1,-set,0,0
-csvcommands2=Number,-set,1,0,Date_csvcommandspace_Time
-csvcommands3=-set,2,0,Temperature,-indateformat
-csvcommands4=MM/dd/yy_csvcommandspace_HH:mm:ss_csvcommandspace_a,GMT-4,-outdateformat,yyyy-MM-dd'T'HH:mm:ss.SSSZ,GMT
-csvcommands5=-convertdate,date_time,-columns,date_time\,temperature,-addheader
-csvcommands6=_csvcommandspace_date_time.type_csvcommandspace_date_csvcommandspace__csvcommandspace_temperature.unit F date_time.format_csvcommandspace_{yyyy-MM-dd'T'HH:mm:ss.SSSZ}
+csvcommands1=-delimiter,?,-skiplines,1,-set
+csvcommands2=0,0,number,-set,1
+csvcommands3=0,Date Time,-set,2,0
+csvcommands4=Temperature,-notcolumns,0\,3-10,-indateformats,MM/dd/yyyy HH:mm;MM/dd/yy HH:mm:ss a
+csvcommands5=GMT-4,-outdateformat,iso8601,GMT,-convertdate
+csvcommands6=date_time,-indateformat,iso8601,GMT,-extractdate
+csvcommands7=date_time,hours_in_year,-addheader, temperature.unit F
 ]]></property>
 
 <property name="mapglyphs">                                                                         
