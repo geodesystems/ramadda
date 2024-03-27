@@ -1654,8 +1654,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			widget+= HU.div([CLASS,"display-search-block display-search-widget"], field+help);
 		    }
 		} else if (col.isNumeric()) {
-		    let from = HU.input("", "", [ATTR_CLASS, "input", STYLE,HU.css("width","2.5em"), ATTR_ID, id+"_from"]);
-		    let to = HU.input("", "", [ATTR_CLASS, "input", STYLE,HU.css("width","2.5em"), ATTR_ID, id+"_to"]);		    
+		    let from = HU.input("", "", [ATTR_TITLE,"greater than",ATTR_CLASS, "input", STYLE,HU.css("width","2.5em"), ATTR_ID, id+"_from"]);
+		    let to = HU.input("", "", [ATTR_TITLE,"less than",ATTR_CLASS, "input", STYLE,HU.css("width","2.5em"), ATTR_ID, id+"_to"]);		    
                     widget += HU.div([CLASS,"display-search-label"], col.getSearchLabel()) +
 			from +" - " + to +help;
                 } else if(col.getType()=='latlon') {
@@ -1694,7 +1694,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             return this.entryList.getEntries();
         },
         loadNextUrl: function() {
-            this.getSearchSettings().skip += this.getSearchSettings().max;
+            let skip = +this.getSearchSettings().skip + parseFloat(this.getSearchSettings().max);
+	    this.getSearchSettings().skip = skip;
             this.submitSearchForm();
         },
         loadMore: function() {
