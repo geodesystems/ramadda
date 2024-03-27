@@ -5743,18 +5743,31 @@ public class Utils extends IO {
      * @param minutes _more_
      *  @return _more_
      */
-    public static long minutesToMillis(int minutes) {
-        return 60 * minutes * 1000;
+    public static long minutesToMillis(long minutes) {
+        return  minutes * 60 * 1000;
     }
+
+    public static long hoursToMillis(long hours) {
+        return minutesToMillis(hours*60);
+    }
+
+    public static long daysToMillis(long days) {
+        return hoursToMillis(days*24);
+    }
+
+    public static long yearsToMillis(long years) {
+        return daysToMillis(years*365);
+    }            
 
     /**
      *
      * @param seconds _more_
      *  @return _more_
      */
-    public static long secondsToMillis(int seconds) {
+    public static long secondsToMillis(long seconds) {
         return seconds * 1000;
     }
+
 
     /**
      *
