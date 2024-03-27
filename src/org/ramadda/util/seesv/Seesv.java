@@ -2618,10 +2618,16 @@ public class Seesv implements SeesvCommands {
 		new Arg("date column", "", ATTR_TYPE, TYPE_COLUMN),
 		new Arg("what", "What to extract, e.g., year, month, day_of_week, etc", "values",
 			"era,year,month,day_of_month,day_of_week,week_of_month,\nday_of_week_in_month,am_pm,hour,hour_of_day,\nminute,second,millisecond,days_in_year, hours_in_year, minutes_in_year,seconds_in_year")),
-
         new Cmd(CMD_FORMATDATE, "Format date",
 		ARG_LABEL,"Format Date - use -outdateformat to set the date format",
                 new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS)),
+
+        new Cmd(CMD_FORMATDATEOFFSET, "Format the date offset, e.g. the hours in year",
+		ARG_LABEL,"Format Date Offset",
+		new Arg("column", "", ATTR_TYPE, TYPE_COLUMN),
+		new Arg("what", "What type of offset, e.g., year, month, day_of_week, etc", "values",
+			"days_in_year, hours_in_year, minutes_in_year,seconds_in_year")),	
+
 
         new Cmd(CMD_ELAPSED, "Calculate elapsed time (ms) between rows",
                 new Arg(ARG_COLUMN,"",ATTR_TYPE,TYPE_COLUMN)),
@@ -4531,6 +4537,13 @@ public class Seesv implements SeesvCommands {
 		String col  = args.get(++i);
 		String what = args.get(++i);
 		ctx.addProcessor(new DateOps.DateExtracter(col, what));
+		return i;
+	    });
+
+	defineFunction(CMD_FORMATDATEOFFSET,2,(ctx,args,i) -> {
+		String col  = args.get(++i);
+		String what = args.get(++i);
+		ctx.addProcessor(new DateOps.FormatDateOffset(col, what));
 		return i;
 	    });
 

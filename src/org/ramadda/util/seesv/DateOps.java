@@ -299,19 +299,19 @@ public abstract class DateOps extends Processor {
                 String s = row.get(col).toString();
                 Date   d = ctx.parseDate(s);	
 		if(this.what<=OFFSET_BASE) {
-		    LocalDate localDate = d.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		    LocalDate startOfYear = LocalDate.of(localDate.getYear(), 1, 1);
-		    String v="";
-		    if(this.what == OFFSET_DAYS_IN_YEAR)
-			// Adding 1 since we're inclusive of the start date
-			v = ""+ (ChronoUnit.DAYS.between(startOfYear, localDate) + 1); 
-		    else if(this.what == OFFSET_HOURS_IN_YEAR)
-			v = ""+ ChronoUnit.HOURS.between(startOfYear.atStartOfDay(), localDate.atStartOfDay());
-		    else if(this.what == OFFSET_MINUTES_IN_YEAR)
-		        v = "" + ChronoUnit.MINUTES.between(startOfYear.atStartOfDay(), localDate.atStartOfDay());
-		    else if(this.what == OFFSET_SECONDS_IN_YEAR)
-		        v = "" + ChronoUnit.SECONDS.between(startOfYear.atStartOfDay(), localDate.atStartOfDay());
-		    add(ctx, row, v);
+		    Date start = Utils.getStartOfYear(d);
+		    long ms = d.getTime() - start.getTime();
+		    long v=0;
+		    if(this.what == OFFSET_DAYS_IN_YEAR) {
+			v = ms / (1000 * 60 * 60*24);
+		    }  else if(this.what == OFFSET_HOURS_IN_YEAR) {
+			v = ms / (1000 * 60 * 60);
+		    }   else if(this.what == OFFSET_MINUTES_IN_YEAR) {
+			v = ms / (1000 * 60);
+		    }   else if(this.what == OFFSET_SECONDS_IN_YEAR) {
+			v = ms / (1000);
+		    }
+		    add(ctx, row, v+"");
 		    return row;
 		}
                 cal.setTime(d);
@@ -325,6 +325,79 @@ public abstract class DateOps extends Processor {
         }
 
     }
+
+    public static class FormatDateOffset extends Converter {
+
+        /** _more_ */
+        private int what = GregorianCalendar.HOUR_OF_DAY;
+	private String name;
+
+
+	private SimpleDateFormat sdf;
+	private Date start;
+
+
+        /**
+         * @param col _more_
+         * @param what _more_
+         */
+        public FormatDateOffset(String col, String what) {
+            super(col);
+	    start = Utils.getStartOfYear(new Date());
+            this.what = getDatePart(what);
+	    if(this.what == OFFSET_DAYS_IN_YEAR) {
+		sdf = Utils.makeDateFormat("MMMM-dd");
+		name="Month-Day";
+	    }   else  if(this.what == OFFSET_HOURS_IN_YEAR) {
+		sdf = Utils.makeDateFormat("MMMM-dd HH:mm");
+		name="Month-Day-Hour";
+	    }  else if(this.what == OFFSET_MINUTES_IN_YEAR) {
+		sdf = Utils.makeDateFormat("MMMM-dd HH:mm");
+		name="Month-Day-Hour-Minute";
+	    }   else if(this.what == OFFSET_SECONDS_IN_YEAR) {
+		sdf = Utils.makeDateFormat("MMMM-dd HH:mm:ss");
+		name="Month-Day-Hour";
+	    }	else {
+		name="Month-Day-Hour";
+		sdf = Utils.makeDateFormat("MMMM-dd HH:mm:ss");
+	    }		
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        public Row processRow(TextReader ctx, Row row) {
+            //Don't process the first row
+            if (rowCnt++ == 0) {
+                add(ctx, row, name);
+                return row;
+            }
+            int col = getIndex(ctx);
+            try {
+                int offset = Integer.parseInt(row.get(col).toString());
+		long v=0;
+		if(this.what == OFFSET_DAYS_IN_YEAR) {
+		    v = Utils.daysToMillis(offset);
+		}  else if(this.what == OFFSET_HOURS_IN_YEAR) {
+		    v = Utils.hoursToMillis(offset);
+		}   else if(this.what == OFFSET_MINUTES_IN_YEAR) {
+		    v = Utils.minutesToMillis(offset);
+		}   else if(this.what == OFFSET_SECONDS_IN_YEAR) {
+		    v = Utils.secondsToMillis(offset);
+		}
+		Date newDate = new Date(start.getTime()+v);
+		add(ctx, row, sdf.format(newDate));
+		return row;
+            } catch (Exception exc) {
+		add(ctx, row, "");
+            }
+            return row;
+        }
+
+    }
+
 
 
     /**
@@ -739,7 +812,7 @@ public abstract class DateOps extends Processor {
       * @return _more_
      */
     public static int getDatePart(String what) {
-        what = what.toUpperCase();
+        what = what.toUpperCase().trim();
         if (what.equals("ERA")) {
             return GregorianCalendar.ERA;
         } else if (what.equals("YEAR")) {
