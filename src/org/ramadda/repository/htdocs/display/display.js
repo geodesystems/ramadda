@@ -1505,11 +1505,7 @@ function DisplayThing(argId, argProperties) {
 
 	    debug|=this.debugGetProperty;
 	    this.getPropertyCount++;
-
 	    this.getPropertyCounts[key]++;
-
-	    if(this.getPropertyCounts[key]==100) {
-	    }
 //	    debug = this.getPropertyCounts[key]==1;
 //	    if(debug)
 //		console.log("getProperty:" + key +"  dflt:"+ dflt);
