@@ -76,6 +76,7 @@ handler="org.ramadda.data.services.PointTypeHandler">
 <property name="form.area.show" value="false"/>
 <property name="form.location.show" value="false"/>
 <property name="form.properties.show" value="false"/>
+<column name="axis_label" type="string"  label="Axis Label" cansearch="false"/>
 <property name="record.properties"><![CDATA[
 csvcommands1=-addheader,month_day_hour.type string hours_in_year.type int default.type double
 ]]></property>
@@ -86,10 +87,11 @@ csvcommands1=-addheader,month_day_hour.type string hours_in_year.type int defaul
 {{description wikify=true}}
 +row
 +col-2
-{{display_fieldslist numericOnly=true fields=2018,2019,2020,2021}} 
+{{display_fieldslist numericOnly=true fields=2016,2017,2018,2019,2020,2021,2022,2023,2024,2025}} 
 -col
 +col-8
 {{display_linechart height=300px vAxisMinValue=10 vAxisMaxValue=80
+vAxisTitle="property:axis_label" 
 tooltip="${default}"
 hAxis.ticks="3648:June 1,4392:July 1,5064:Aug 1,5736:Sept 1,6408:Oct 1,7080:Nov 1,8280:Dec 1" 
 indexField=hours_in_year
