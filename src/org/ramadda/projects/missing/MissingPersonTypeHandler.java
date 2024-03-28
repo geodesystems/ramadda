@@ -60,10 +60,10 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	}
 
 	StringBuilder sb = new StringBuilder();
-	if(request.getExtraProperty("missingcss")==null) {
-	    request.putExtraProperty("missingcss","true");
-	    linkCSS(request, sb, getRepository().getHtdocsUrl("/missing/missing.css"));
-	}
+
+	
+
+	linkCSS(request, sb, getRepository().getHtdocsUrl("/missing/missing.css"));
 	String url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
 	String nickname=(String)entry.getValue("nickname");
 	String status=(String)entry.getValue("status","");	
@@ -110,7 +110,7 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 		label+="<br>" +years+" years old";
 	    //		makeBlock(sb,clazz,"Age when missing", 
 	    }
-	makeBlock(sb,clazz,"Date last seen", label);
+	    makeBlock(sb,clazz,"Date last seen", label);
 	    if(birthDate!=null) {
 		//		int years = DateHandler.getYearsBetween(birthDate,missingDate);
 		//		makeBlock(sb,clazz,"Age when missing", years+" years");

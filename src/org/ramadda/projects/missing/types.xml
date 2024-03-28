@@ -8,7 +8,7 @@
     metadata="missing_alias,missing_ethnicity,missing_clothing,missing_agency,missing_sighting,missing_vehicle"
     handler="org.ramadda.projects.missing.MissingPersonTypeHandler">
     <property name="search.wikimacro" value="missing_header"/>
-    <property name="search.tabs" value="map,list"/>
+    <property name="search.tabs" value="list,map"/>
     <property name="form.description.iswiki" value="false"/>
     <property name="form.wikieditor.height" value="300px"/>
     <property name="icon" value="/missing/missing.png"/>

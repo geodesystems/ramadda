@@ -15,7 +15,8 @@
     text-decoration:none;
 }
 
-.missing-header {
+.ramadda-search-results .missing-header:hover {
+    background:#f8f8f8;
 }
 
 .missing-header1 {
@@ -38,7 +39,8 @@
 .display-entrylist-content .missing-header1 {
     font-size:12pt;font-weight:plain;
 }
-.display-entrylist-content .missing-header  {
+
+.ramadda-search-entrylist .missing-header, .display-entrylist-content .missing-header  {
     border-bottom:2px solid #ccc;
     border-bottom:1px solid #000;    
     margin-bottom:4px;
