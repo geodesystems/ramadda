@@ -1,13 +1,14 @@
 
+
 .missing-status-missing {
-    background:rgba(255, 0, 0, 0.5);
+    background:rgba(255, 0, 0,0.2);
 }
 
 .missing-status-found {
-    background:#f0fff0;
+    background:rgba(0,255,0,0.2);    
 }
 .missing-status-died {
-    background:#ccc;
+    background:rgba(200,200,200,0.2);    
 }
 
 .missing-header1 a, .missing-header a {
@@ -26,7 +27,6 @@
     margin:5px;
     margin-top:10px;
     padding:5px;
-
     display:inline-block;
     vertical-align:top;
 }
