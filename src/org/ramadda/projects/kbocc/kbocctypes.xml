@@ -83,13 +83,12 @@ csvcommands1=-addheader,month_day_hour.type string hours_in_year.type int defaul
 <![CDATA[
 +section title={{name}}
 {{group}}
-:rem the fieldslist lets the user select the fields to show in the chart
+{{description wikify=true}}
 +row
 +col-2
 {{display_fieldslist numericOnly=true fields=2018,2019,2020,2021}} 
 -col
 +col-8
-:rem Use hours_in_year as the x axis value
 {{display_linechart height=300px vAxisMinValue=10 vAxisMaxValue=80
 tooltip="${default}"
 hAxis.ticks="3648:June 1,4392:July 1,5064:Aug 1,5736:Sept 1,6408:Oct 1,7080:Nov 1,8280:Dec 1" 
@@ -97,12 +96,9 @@ indexField=hours_in_year
 fields=2018,2019,2020,2021}} 
 -col
 +col-2
-:rem This shows the selected record in the line chart
 {{display_template  onlyShowSelected=true }}
 -col
 -row
-
-:rem the fieldsSelected.accept=false says to not change the displayed fields when they are selected by the fieldslist above
 :heading Table
 {{display_download  fieldsSelected.accept=false  }}
 {{display_table   fieldsSelected.accept=false   }}
