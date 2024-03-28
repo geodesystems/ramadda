@@ -396,15 +396,119 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             URL_SEARCH = new RequestUrl(this, searchUrl);
         }
 
-
         makeHeader(request, sb);
-
         sb.append(HU.sectionOpen());
-
         StringBuffer formSB = new StringBuffer();
         makeSearchForm(request, formSB);
+        List<String> tabsToUse = tabs;
+        String tabsProp = request.getString("search.tabs",
+                                            request.getString("tabs",
+							      (String) null));
+        if (tabsProp != null) {
+            tabsToUse = Utils.split(tabsProp, ",", true, true);
+        }
+
+        List<String> tabContents = new ArrayList<String>();
+        List<String> tabTitles   = new ArrayList<String>();
+
+        if (refinement) {
+            tabTitles.add(msg("Results"));
+            tabContents.add(
+                HU.div(
+                    getPageHandler().showDialogNote(
+                        "Search criteria refined"), HU.style(
+                        "min-width:" + minWidth + "px")));
+        } else if ( !doSearch) {
+            tabTitles.add(msg("Results"));
+            tabContents.add("");
+
+        } else {
+            if (allEntries.size() == 0) {
+                tabTitles.add(msg("Results"));
+                tabContents.add(
+                    HU.div(
+                        getPageHandler().showDialogNote(
+                            LABEL_NO_ENTRIES_FOUND), HU.style(
+                            "min-width:" + minWidth + "px")));
+            } else {
+                for (String tab : tabsToUse) {
+                    if (tab.equals(TAB_LIST)) {
+                        StringBuffer listSB = new StringBuffer();
+                        makeEntryList(request, listSB, allEntries);
+                        tabContents.add(HU.div(listSB.toString(),
+					       HU.style("max-height","3000px","overflow-y","auto",
+							"min-width",  minWidth	+ "px")));
+                        tabTitles.add(HU.img(getIconUrl(ICON_LIST))
+                                      + " " + msg("List"));
+                    } else if (tab.equals(TAB_MAP)) {
+			StringBuilder mapSB= makeMap(request, allEntries,contentsWidth,  contentsHeight);
+                        tabContents.add(HU.div(mapSB.toString(),
+                                HU.style("min-width:" + minWidth
+                                    + "px")));
+                        tabTitles.add(HU.img(getIconUrl(ICON_MAP))
+                                      + " " + msg("Map"));
+                    } else if (tab.equals(TAB_TIMELINE)) {
+			StringBuffer timelineSB  = new StringBuffer();
+			getRepository().getCalendarOutputHandler().makeTimeline(request, null,  //Pass null for the main entry
+										allEntries, timelineSB,
+										"width:" + contentsWidth + "px; height: " + contentsHeight
+										+ "px;", new Hashtable());
+                        tabContents.add(HU.div(timelineSB.toString(),
+                                HU.style("min-width:" + minWidth
+                                    + "px")));
+                        tabTitles.add(
+                            HU.img(getIconUrl(ICON_TIMELINE)) + " "
+                            + msg("Timeline"));
+                    }
+                }
+            }
+        }
+        String tabs;
+        if (tabContents.size() == 1) {
+            tabs = tabContents.get(0);
+        } else {
+            tabs = OutputHandler.makeTabs(tabTitles, tabContents, true);
+        }
+	tabs = HU.div(tabs,   HU.cssClass("ramadda-search-results"));
+        if (request.get(ARG_SEARCH_SHOWHEADER, true)) {
+	    String label = HU.href(request.getRequestPath(),this.label,HU.cssClass("ramadda-nodecor ramadda-clickable"));
+            sb.append(HU.h2(label));
+        }
+
+        StringBuffer rightSide = new StringBuffer();
+        getRepository().getHtmlOutputHandler().showNext(request,
+                allEntries.size(), rightSide);
+        rightSide.append(tabs);
+
+        boolean showForm = request.get(ARG_SEARCH_SHOWFORM, true);
+        if (showForm) {
+            sb.append(
+                "<table width=100% border=0 cellpadding=0 cellspacing=0><tr valign=top>");
+            sb.append(HU.col(formSB.toString(), ""));
+            sb.append(
+                HU.col(
+                    rightSide.toString(),
+                    HU.style("min-width:" + minWidth + "px;")
+                    + HU.attr(HU.ATTR_ALIGN, "left")));
+            sb.append("</table>");
+        } else {
+            sb.append(rightSide);
+        }
+        sb.append(HU.sectionClose());
 
 
+        sb.append(HU.script(js.toString()));
+
+        return null;
+
+    }
+
+
+
+    private StringBuilder  makeMap(Request request,List<Entry> allEntries,int contentsWidth, int contentsHeight)  throws Exception {
+	//Clone and clear in case a .css file gets added into the map bubbles
+	request= request.cloneMe();
+	request.clearExtraProperties();
         MapInfo map = getRepository().getMapManager().createMap(request,
                           null, "" + contentsWidth, "" + contentsHeight,
                           true, null);
@@ -444,125 +548,11 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         String initParams = HU.squote(id) + "," + true + "," + "0";
         map.addJS(map.getVariableName() + ".setSelection(" + initParams  + ");\n");
         map.centerOn(bounds, true);
-
-
-        List<String> tabsToUse = tabs;
-
-        String tabsProp = request.getString("search.tabs",
-                                            request.getString("tabs",
-                                                (String) null));
-        if (tabsProp != null) {
-            tabsToUse = Utils.split(tabsProp, ",", true, true);
-        }
-
-        boolean georeferencedResults = tabsToUse.contains(TAB_MAP);
-
-
-        List<String> tabContents = new ArrayList<String>();
-        List<String> tabTitles   = new ArrayList<String>();
-        StringBuffer timelineSB  = new StringBuffer();
-
-
-        getRepository().getCalendarOutputHandler().makeTimeline(request, null,  //Pass null for the main entry
-                allEntries, timelineSB,
-                "width:" + contentsWidth + "px; height: " + contentsHeight
-                + "px;", new Hashtable());
-
-
-        StringBuffer mapSB = new StringBuffer(
-                                 HU.italics(
-                                     msg("Shift-drag to select region")));
-        mapSB.append(map.getHtml());
-
-        if (refinement) {
-            tabTitles.add(msg("Results"));
-            tabContents.add(
-                HU.div(
-                    getPageHandler().showDialogNote(
-                        "Search criteria refined"), HU.style(
-                        "min-width:" + minWidth + "px")));
-        } else if ( !doSearch) {
-            tabTitles.add(msg("Results"));
-            tabContents.add("");
-
-        } else {
-            if (allEntries.size() == 0) {
-                tabTitles.add(msg("Results"));
-                tabContents.add(
-                    HU.div(
-                        getPageHandler().showDialogNote(
-                            LABEL_NO_ENTRIES_FOUND), HU.style(
-                            "min-width:" + minWidth + "px")));
-            } else {
-                for (String tab : tabsToUse) {
-                    if (tab.equals(TAB_LIST)) {
-                        StringBuffer listSB = new StringBuffer();
-                        makeEntryList(request, listSB, allEntries);
-                        tabContents.add(HU.div(listSB.toString(),
-                                HU.style("min-width:" + minWidth
-                                    + "px")));
-                        tabTitles.add(HU.img(getIconUrl(ICON_LIST))
-                                      + " " + msg("List"));
-                    } else if (tab.equals(TAB_MAP)) {
-                        tabContents.add(HU.div(mapSB.toString(),
-                                HU.style("min-width:" + minWidth
-                                    + "px")));
-                        tabTitles.add(HU.img(getIconUrl(ICON_MAP))
-                                      + " " + msg("Map"));
-                    } else if (tab.equals(TAB_TIMELINE)) {
-                        tabContents.add(HU.div(timelineSB.toString(),
-                                HU.style("min-width:" + minWidth
-                                    + "px")));
-                        tabTitles.add(
-                            HU.img(getIconUrl(ICON_TIMELINE)) + " "
-                            + msg("Timeline"));
-                    }
-                }
-            }
-        }
-        String tabs;
-
-        if (tabContents.size() == 1) {
-            tabs = HU.div(tabContents.get(0),
-                                 HU.cssClass("search-list"));
-        } else {
-            tabs = OutputHandler.makeTabs(tabTitles, tabContents, true);
-        }
-        if (request.get(ARG_SEARCH_SHOWHEADER, true)) {
-	    String label = HU.href(request.getRequestPath(),this.label,HU.cssClass("ramadda-nodecor ramadda-clickable"));
-            sb.append(HU.h2(label));
-        }
-
-        StringBuffer rightSide = new StringBuffer();
-        getRepository().getHtmlOutputHandler().showNext(request,
-                allEntries.size(), rightSide);
-        rightSide.append(tabs);
-
-        boolean showForm = request.get(ARG_SEARCH_SHOWFORM, true);
-        if (showForm) {
-            sb.append(
-                "<table width=100% border=0 cellpadding=0 cellspacing=0><tr valign=top>");
-            sb.append(HU.col(formSB.toString(), ""));
-            sb.append(
-                HU.col(
-                    rightSide.toString(),
-                    HU.style("min-width:" + minWidth + "px;")
-                    + HU.attr(HU.ATTR_ALIGN, "left")));
-            sb.append("</table>");
-        } else {
-            sb.append(rightSide);
-        }
-        sb.append(HU.sectionClose());
-
-
-        sb.append(HU.script(js.toString()));
-
-        return null;
-
+	StringBuilder sb = new StringBuilder();
+        sb.append(HU.italics(msg("Shift-drag to select region")));
+        sb.append(map.getHtml());
+	return sb;
     }
-
-
-
 
     /**
      * _more_
@@ -789,6 +779,14 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 	props.put("showChangeDate","false");	
 	if(!showDate) 
 	    props.put("showDate","false");
+	if(entries.size()>0 && entries.get(0).getTypeHandler().hasSearchDisplayText(request,  entries.get(0))) {
+	    sb.append("<div class=ramadda-search-entrylist>");
+	    for(Entry entry: entries) {
+		sb.append(entry.getTypeHandler().getSearchDisplayText(request,  entry));
+	    }
+	    sb.append("</div>");
+	    return;
+	}
         getRepository().getHtmlOutputHandler().makeTable(request, entries,
 							 sb, props);
     }
