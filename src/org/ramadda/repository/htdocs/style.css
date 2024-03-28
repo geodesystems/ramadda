@@ -3122,6 +3122,19 @@ td.entry-table-block {
 }
 
 
+
+
+.ramadda-search-results .ui-tabs-panel {
+    padding:0px !important;
+}
+
+.ramadda-search-entrylist {
+    border:var(--basic-border);
+}
+.ui-tabs-panel .ramadda-search-entrylist {
+    border:0px;
+}
+
 .ramadda-search-special-form {
     min-width:200px;
     padding-right:10px;
