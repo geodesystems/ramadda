@@ -7775,14 +7775,6 @@ public class TypeHandler extends RepositoryManager {
     private Hashtable<String, HashSet> columnEnumValues =
         new Hashtable<String, HashSet>();
 
-
-    /**
-     * _more_
-     *
-     * @param column _more_
-     *
-     * @return _more_
-     */
     public boolean getEditable(Column column) {
         if (getParent() != null) {
             return getParent().getEditable(column);
@@ -7791,13 +7783,6 @@ public class TypeHandler extends RepositoryManager {
         return column.getEditable();
     }
 
-    /**
-     * _more_
-     *
-     * @param column _more_
-     *
-     * @return _more_
-     */
     public boolean getCanDisplay(Column column) {
         if (getParent() != null) {
             return getParent().getCanDisplay(column);
@@ -7806,70 +7791,29 @@ public class TypeHandler extends RepositoryManager {
         return column.getCanDisplay();
     }
 
-
-    /**
-     * _more_
-     *
-     * @param column _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     protected String getEnumValueKey(Column column, Entry entry) {
         return column.getName();
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public String getEntryListName(Request request, Entry entry) {
         return getEntryName(entry);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param column _more_
-     * @param entry _more_
-     * @param theValue _more_
-     *
-     * @throws Exception _more_
-     */
     protected void addEnumValue(Column column, Entry entry, String theValue)
             throws Exception {
         if ((theValue == null) || (theValue.length() == 0)) {
             return;
         }
-        HashSet set = getEnumValuesInner(null, column, entry);
+        HashSet set = getEnumValuesInner(null, column, entry,false);
 	if(set!=null) 
 	    set.add(theValue);
 	else {
 	    //????
 	}
     }
-
-    /**
-     * _more_
-     *
-     *
-     * @param request The request
-     * @param column _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public List<TwoFacedObject> getEnumValues(Request request, Column column,
-            Entry entry)
-            throws Exception {
-        HashSet              set  = getEnumValuesInner(request, column,  entry);
+    public List<TwoFacedObject> getEnumValues(Request request, Column column, Entry entry)
+	throws Exception {
+        HashSet              set  = getEnumValuesInner(request, column,  entry,request.get("forsearch",false));
 
 	//If we get back null then the column should have values
 	if(set==null) {
@@ -7887,7 +7831,9 @@ public class TypeHandler extends RepositoryManager {
             String label = s;
             if (s.length() == 0) {
                 label = "&lt;blank&gt;";
-            }
+            } else {
+		label = column.getEnumLabel(label);
+	    }
             tfos.add(new TwoFacedObject(label, s));
         }
 
@@ -7964,7 +7910,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     private HashSet getEnumValuesInner(Request request, Column column,
-                                       Entry entry)
+                                       Entry entry, boolean getFromDatabase)
             throws Exception {
         Clause clause = getEnumValuesClause(column, entry);
 	boolean didClause= false;
@@ -7996,7 +7942,7 @@ public class TypeHandler extends RepositoryManager {
 
 	//If we have no other clauses and the column has values defined then pass back null
 	//this tells the caller to get the values from the column
-	if(!didClause) {
+	if(!getFromDatabase && !didClause) {
 	    List<TwoFacedObject> tmp = column.getValues();
 	    if(tmp!=null && tmp.size()>0) {
 		return null;

@@ -1087,11 +1087,13 @@ public class Column implements DataTypes, Constants, Cloneable {
         col.add("candisplay");
         col.add("" + getCanDisplay());
         if (isEnumeration()) {
+	    boolean forSearch = request.get("forsearch",false);
             List<String>         enums  = new ArrayList<String>();
             List<TwoFacedObject> values = null;
             if (isType(DATATYPE_ENUMERATION) || isMultiEnumeration()) {
                 values = enumValues;
             }
+	    if(forSearch) values = null;
             if ((values == null) || (values.size() == 0)) {
                 values = typeHandler.getEnumValues(request, this, null);
             }
