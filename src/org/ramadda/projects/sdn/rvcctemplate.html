@@ -25,19 +25,22 @@ ${imports}
     margin-top:5px;
     border-radius:50%;
     background:#F4B942;
-    opacity:0.6;
+    opacity:0.8;
     width:80px;
 }
 
 .rvcc-footer, .rvcc-pageheader .ramadda-navbar {
     padding:4px;
     border-radius:var(--default-radius);
-    border:1px solid #2A78B7;
+    border:1px solid rgba(42, 120, 183, 0.5);
     background:#F4B942;
-    opacity:0.8;
+    opacity:0.9;
     text-align:center;
 }
 
+.ramadda-navbar-separator {
+    color:#2A78B7;
+}
 
 .rvcc-pageheader .ramadda-navbar {
     position:absolute;
@@ -49,6 +52,7 @@ ${imports}
 
 .ramadda-navbar-link {
     color:#2A78B7;
+    opacity:1.0;
 }
 
 
@@ -131,7 +135,7 @@ ${footer}
 <center class="rvcc-footer ramadda-navbar-link"   style="font-weight:bold;">
 Coastlines and People Hubs for Research and Broadening Participation (CoPe) program, NSF award number 2103843
 </center>
-<br>
+<p>
 ${footer.acknowledgement}
 </div>
 ${bottom}
