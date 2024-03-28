@@ -3572,13 +3572,15 @@ public class WikiUtil implements HtmlUtilsConstants {
                                "navlist", "false"));
             boolean popup = "true".equals(Utils.getProperty(headingsProps,
 							    "navpopup", "false"));	    
-            String delim = Utils.getProperty(headingsProps, "delimiter",
-                                             "&nbsp;|&nbsp;");
+            String delim;
             int maxLevel = Utils.getProperty(headingsProps, "maxLevel", 100);
             int minLevel = Utils.getProperty(headingsProps, "minLevel", -1);	    
             if (left || list || popup) {
                 delim = "<br>";
-            }
+            } else {
+		delim= HU.span(Utils.getProperty(headingsProps, "delimiter", "|"),
+			       HU.cssClass("ramadda-nav-top-delimiter"));
+	    }
             for (Object o : headings2) {
                 Object[] tuple = (Object[]) o;
                 int      level = (int) tuple[2];
@@ -3618,7 +3620,6 @@ public class WikiUtil implements HtmlUtilsConstants {
                 } else if (list || popup) {
 		}
 		hb.append(href);
-                hb.append("\n");
             }
             if (left) {
 		StringBuilder args = new StringBuilder();
