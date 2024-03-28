@@ -29,21 +29,32 @@ ${imports}
     width:80px;
 }
 
-.rvcc-pageheader .ramadda-navbar {
-    position:absolute;
-    top:40px;
-    left:50%;
-    transform: translateX(-50%);
+.rvcc-footer, .rvcc-pageheader .ramadda-navbar {
     padding:4px;
     border-radius:var(--default-radius);
-    display:inline-block;
+    border:1px solid #2A78B7;
     background:#F4B942;
     opacity:0.8;
     text-align:center;
 }
 
+
+.rvcc-pageheader .ramadda-navbar {
+    position:absolute;
+    top:40px;
+    left:50%;
+    transform: translateX(-50%);
+    display:inline-block;
+}
+
+.ramadda-navbar-link {
+    color:#2A78B7;
+}
+
+
+
 .breadcrumb-delimiter, .breadCrumb ul li {
-background: url(${htdocs}/icons/arrow_right_white.png) no-repeat 100% center;
+    background: url(${htdocs}/icons/arrow_right_white.png) no-repeat 100% center;
 }
 .ramadda-header {
     border-bottom: 1px solid #666;
@@ -87,9 +98,6 @@ img.ramadda-user-menu-image {
     background: #fff !important;
 }
 
-.ramadda-navbar-link {
-  color:#2A78B7;
-}
 
 .ramadda-breadcrumbs {border-bottom : 0px transparent solid;}
 .ramadda-user-menu i {color:#888;}
@@ -120,7 +128,7 @@ ${content}
 </div> 
 <div class="ramadda-footer">
 ${footer}
-<center class=rvcc-color style="font-weight:bold;">
+<center class="rvcc-footer ramadda-navbar-link"   style="font-weight:bold;">
 Coastlines and People Hubs for Research and Broadening Participation (CoPe) program, NSF award number 2103843
 </center>
 <br>
