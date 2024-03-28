@@ -268,6 +268,8 @@ public class Request implements Constants, Cloneable {
         return cloneMe(null);
     }
 
+
+
     /**
      * _more_
      *
@@ -292,7 +294,6 @@ public class Request implements Constants, Cloneable {
             if (repository != null) {
                 that.repository = repository;
             }
-
             return that;
         } catch (Exception exc) {
             throw new RuntimeException(exc);
@@ -3064,6 +3065,13 @@ public class Request implements Constants, Cloneable {
     public void removeExtraProperty(Object key) {
         extraProperties.remove(key);
     }
+
+
+
+
+    public void clearExtraProperties() {
+	extraProperties = new Hashtable();
+    }	
 
     /**
      * _more_
