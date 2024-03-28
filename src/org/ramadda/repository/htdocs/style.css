@@ -1634,7 +1634,7 @@ mapheader {
 }
 
 .ramadda-map-toc-outer {
-    border:1px solid #aaa;
+    border:1px solid #ccc;
     position:absolute;
     left:50px;
     top:10px;
@@ -3865,8 +3865,6 @@ label {
 
 .ramadda-earth-nav {
     margin-top:2px;
-    padding-top:2px;
-    padding-bottom:2px;
     color: #000000;
 }
 
