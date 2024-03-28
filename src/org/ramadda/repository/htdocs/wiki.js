@@ -514,9 +514,9 @@ WikiEditor.prototype = {
 		if(what==what_description) url+="&what=description";
 		else if(what==what_children_links) url+="&what=children_links";
 		else if(what==what_children_ids) url+="&what=children_ids";				
-		console.log(url);
 		$.get(url, (data) =>{
 		    data = String(data).replace(/^ *<wiki>\s/,'');
+		    data=data.replace(/{{description}}/g,'').replace(/{{description +wikify=\"?true\"?}}/g,'');
 		    insert(data);
 		}).fail(error=>{
 		    alert("An error occurred:" + error);
