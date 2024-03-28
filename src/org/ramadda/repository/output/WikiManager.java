@@ -413,8 +413,9 @@ public class WikiManager extends RepositoryManager
             if (tag.startsWith(TAG_DESCRIPTION)) {
                 propertyKey = theEntry.getId() + "_description";
                 if (request.getExtraProperty(propertyKey) != null) {
-                    return "<b>Detected circular wiki import:" + tag
-			+ "<br>For entry:" + theEntry.getId() + "</b>";
+		    return  makeErrorMessage(request,wikiUtil,props,tag, 
+					     "<b>Detected circular wiki import:" + tag+ "<br>For entry:" + theEntry.getId() + "</b>");
+		//                    return "<b>Detected circular wiki import:" + tag+ "<br>For entry:" + theEntry.getId() + "</b>";
                 }
                 request.putExtraProperty(propertyKey, property);
             }
