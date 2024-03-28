@@ -491,7 +491,7 @@ WikiEditor.prototype = {
 	    }
 		
 	    if(what==what_image) {
-		text = "{{image entry=" + entryId+" #caption=\"" + name+"\" bordercolor=\"#ccc\" align=center width=75% }} ";
+		text = "{{image entry=" + entryId+" #caption=\"" + name+"\" bordercolor=\"#ccc\" align=center screenshot=true #width=75% }} ";
 	    } else  if(what==what_map) {
 		text = "{{map entry=" + entryId+" details=true}}";
 	    } else  if(what==what_editable_map) {
