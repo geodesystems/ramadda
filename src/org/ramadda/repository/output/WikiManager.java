@@ -4221,7 +4221,7 @@ public class WikiManager extends RepositoryManager
                 String boxStyle = "";
                 width = getProperty(wikiUtil, props, ATTR_WIDTH,"200");
                 if (width != null) {
-                    boxStyle = HU.style(HU.css("width", HU.makeDim(width,"px"), "display","inline-block"));
+                    boxStyle = HU.css("width", HU.makeDim(width,"px"), "display","inline-block");
                 }
                 for (int idx = 0; idx < titles.size(); idx++) {
                     Entry child = children.get(idx);
@@ -4242,7 +4242,7 @@ public class WikiManager extends RepositoryManager
 							       + " ramadda-col"));
                     }
 		    StringBuilder comp = new StringBuilder();
-                    HU.open(comp, HU.TAG_DIV, boxClass + boxStyle);
+                    HU.open(comp, HU.TAG_DIV, boxClass + HU.style(boxStyle));
                     if (showHeading) {
 			String title  = titles.get(idx);
 			String label = title;
@@ -5961,7 +5961,7 @@ public class WikiManager extends RepositoryManager
 					      getProperty(wikiUtil, props, "showPlaceholder", false));
         boolean useThumbnail = getProperty(wikiUtil, props, "useThumbnail", true);
         boolean showSnippet = getProperty(wikiUtil, props, "showSnippet", false);
-        boolean showSnippetHover = getProperty(wikiUtil, props, "showSnippetHover", false);
+        boolean showSnippetHover = getProperty(wikiUtil, props, "showSnippetHover", true);
 	boolean showDescription = getProperty(wikiUtil, props,"showDescription", false)	;
         if (showSnippet || showSnippetHover || showDescription) {
             String snippet = showDescription? entry.getDescription():getSnippet(request, entry, false,null);
