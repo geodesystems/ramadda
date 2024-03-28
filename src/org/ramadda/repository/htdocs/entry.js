@@ -284,8 +284,8 @@ function RamaddaRepository(repositoryRoot) {
                 return this.entryTypes;
             }
             let theRamadda = this;
-            let url = this.repositoryRoot + "/entry/types";
-	    if(types) url= url +"?types=" + types;
+            let url = this.repositoryRoot + "/entry/types?forsearch=true";
+	    if(types) url= url +"&types=" + types;
             this.entryTypeCallPending = true;
             this.entryTypeCallbacks = null;
             let jqxhr = $.getJSON(url, function(data) {
