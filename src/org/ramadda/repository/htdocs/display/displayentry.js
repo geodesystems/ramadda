@@ -452,12 +452,13 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{p:'comparators',d:'<=,>=,=,between',tt:'comparators for numeric search'},
 	{p:'searchDirect',d:true,tt:'Directly search remote RAMADDA repositories'},
         {p:'fields',d: null},
-        {p:'formWidth',d: '300px'},
+        {p:'formWidth',d: '225px'},
         {p:'entriesWidth',d: 0},
 	{p:'displayTypes',ex:'list,images,timeline,map,metadata'},
 	{p:'defaultImage',ex:'blank.gif',canCache:true},
         {p:'showDetailsForGroup',d: false},
 	{p:'inputSize',d:'200px',tt:'Text input size'},
+	{p:'textInputSize',d:'20px',ex:'100%'},	
 	{p:'startDateLabel'},
 	{p:'createDateLabel'},	
 	{p:'areaLabel'},
@@ -590,7 +591,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 let entriesAttrs = ["class", "col-md-12"];
                 if (this.getShowForm()) {
                     let attrs = [];
-		    let form = HU.div([STYLE,HU.css("min-height","400px","max-width",HU.getDimension(this.getFormWidth()),"overflow-x","auto")],this.makeSearchForm());
+		    let form = HU.div([STYLE,HU.css("min-height","400px",
+						    "width",HU.getDimension(this.getFormWidth()),
+						    "max-width",HU.getDimension(this.getFormWidth()),
+						    "overflow-x","auto")],this.makeSearchForm());
 		    html += HU.tag("td", [ID,this.getDomId(ID_SEARCH_FORM),"width","1%"], form);
 		    this.formShown  = true;
                 }
@@ -1127,8 +1131,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		attrs.push(this.getProperty("inputSize", "30"));
 	    } else {
 		attrs.push(STYLE);
-		attrs.push(HU.css("width","100%","min-width","200px","max-width","300px"));
+		attrs.push(HU.css("width","100%","min-width","50px","max-width","300px"));
 	    }
+
             let textField = HU.input("", text, attrs);
 
             if (this.getShowText()) {
@@ -1189,8 +1194,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 extra += addWidget("", HU.div([ID,this.domId(ID_SEARCH_AREA)], areaWidget.getHtml()));
             }
             extra +=HU.div([ATTR_CLASS,'display-search-widget'],
-			   HU.b('# Records:') +' '+	HU.input("",  DEFAULT_MAX, [ID,this.domId(ID_SEARCH_MAX),
-									    "input", STYLE,'size','5']));
+			   HU.b('# Records:') +' '+	HU.input("",  DEFAULT_MAX, [ATTR_CLASS,'display-simplesearch-input',
+										    ATTR_ID,this.domId(ID_SEARCH_MAX),
+										    'size','5']));
             extra += HU.div([ATTR_ID, this.getDomId(ID_TYPEFIELDS)], "");
 
             if (this.getShowMetadata()) {
@@ -1566,7 +1572,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    if(!label) return '';
 	    label = label.trim();
 	    if(!label.endsWith(':'))  label = label+':';
-	    return HU.b(label);
+	    return HU.span([ATTR_CLASS,'display-search-label'],label);
 	},
         addExtraForm: function() {
             if (this.savedValues == null) this.savedValues = {};
@@ -1647,15 +1653,15 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
 
 		    if(showLabels) {
-			let w =  HU.div([CLASS,"display-search-label"], this.makeLabel(col));
+			let w =  HU.div([], this.makeLabel(col));
 			w+= HU.div([], field+help);
 			widget+= HU.div([CLASS,"display-search-widget"], w);
 		    } else {
 			widget+= HU.div([CLASS,"display-search-block display-search-widget"], field+help);
 		    }
 		} else if (col.isNumeric()) {
-		    let from = HU.input("", "", [ATTR_TITLE,"greater than",ATTR_CLASS, "input", STYLE,HU.css("width","2.5em"), ATTR_ID, id+"_from"]);
-		    let to = HU.input("", "", [ATTR_TITLE,"less than",ATTR_CLASS, "input", STYLE,HU.css("width","2.5em"), ATTR_ID, id+"_to"]);		    
+		    let from = HU.input("", "", [ATTR_TITLE,"greater than",ATTR_CLASS, "input display-simplesearch-input", STYLE,HU.css("width","2.5em"), ATTR_ID, id+"_from"]);
+		    let to = HU.input("", "", [ATTR_TITLE,"less than",ATTR_CLASS, "input display-simplesearch-input", STYLE,HU.css("width","2.5em"), ATTR_ID, id+"_to"]);		    
                     widget += HU.div([CLASS,"display-search-label"], col.getSearchLabel()) +
 			from +" - " + to +help;
                 } else if(col.getType()=='latlon') {
@@ -1664,7 +1670,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    widget+=this.makeLabel(col.getSearchLabel());
                     widget+= HU.div([ID,this.domId(col.getName())], areaWidget.getHtml());
                 } else if(col.getType()=='string') {
-                    field = HU.input("", savedValue, ["placeholder",col.getSearchLabel(),ATTR_CLASS, "input", ATTR_SIZE, this.getInputSize(), ATTR_ID, id]);
+                    field = HU.input("", savedValue, ["placeholder",col.getSearchLabel(),ATTR_CLASS, "input display-simplesearch-input", ATTR_SIZE, this.getTextInputSize(), ATTR_ID, id]);
                     widget += HU.div([CLASS,"display-search-label"], "") +HU.div([CLASS,"display-search-widget"], field + " " + help);
                 }
 		extra+=widget;
