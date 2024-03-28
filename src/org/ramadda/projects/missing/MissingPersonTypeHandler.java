@@ -74,11 +74,18 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	sb.append(entry.getName().trim());
 	if(stringDefined(nickname)) sb.append(" - \"" + nickname.trim()+"\"");
 	sb.append(", ");
-	String sex=(String)entry.getValue("biological_sex");
-	if(sex==null) sex = "unknown";
-	sb.append(sex.equals("m")?"Male":sex.equals("f")?"Female":sex);
+	//	String sex=(String)entry.getValue("biological_sex");
+	Column sexColumn = findColumn("biological_sex");
+        sexColumn.formatValue(request, entry, sb, Column.OUTPUT_HTML, entry.getValues(),
+                           false);
+	//	if(sex==null) sex = "unknown";
+	//	sb.append(sex.equals("m")?"Male":sex.equals("f")?"Female":sex);
 	sb.append(", ");
-	sb.append(entry.getValue("race_ethnicity"));
+	Column ethnicityColumn = findColumn("race_ethnicity");
+        ethnicityColumn.formatValue(request, entry, sb, Column.OUTPUT_HTML, entry.getValues(),
+                           false);
+
+	//	sb.append(entry.getValue("race_ethnicity"));
 	sb.append(HU.close("a"));
 	sb.append("</div>");
 	int years;
