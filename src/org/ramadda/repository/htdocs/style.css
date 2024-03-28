@@ -1479,8 +1479,9 @@ a.ramadda-menubar-button:hover {
 }    
 
 .ramadda-card-image {
-    xxxborder : var(--basic-border);
-    margin-top:4px;
+    border : 1px solid #efefef;
+    border : 1px solid rgba(200,200,200,0.2);
+    xmargin-top:4px;
 }
 
 

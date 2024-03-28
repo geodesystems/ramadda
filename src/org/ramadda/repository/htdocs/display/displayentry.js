@@ -2139,6 +2139,11 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    return this.getDoPageSearch() || this.getDoTagSearch();
 	},
         initDisplay: function() {
+	    $(document).ready(()=> {
+		this.initDisplayInner();
+	    });
+	},
+        initDisplayInner: function() {
             let _this = this;
             if (this.getIsLayoutFixed() && this.haveDisplayed) {
                 return;
@@ -2331,7 +2336,12 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    let parent = $(top);
 	    //Try with "#" id
 	    if(parent.length==0 && this.getPageSearchParent()) {
-		parent = $("#"+this.getPageSearchParent());
+		let selector = this.getPageSearchParent();
+		if(selector.startsWith('.')) {
+		    parent = $(selector);
+		} else  {
+		    parent = $("#"+selector);
+		}		    
 	    }
 
 	    let sel=parent.find(this.getPageSearchSelector());
