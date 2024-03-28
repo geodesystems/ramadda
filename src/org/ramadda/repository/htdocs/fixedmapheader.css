@@ -27,11 +27,13 @@
 
 }
 .ramadda-header-fixedtitle  {
-    position:absolute;top:5px;left:120px;xtransform: translateX(-50%);
+    position:absolute;top:1px;left:120px;xtransform: translateX(-50%);
+    font-size:80%;
 }
 
 .ramadda-pageheader {
-    position:absolute;top:5px;right:20px;
+    position:absolute;top:1px;right:20px;
+    font-size:80%;
 }
 .ramadda-breadcrumbs {
     border-bottom : 0px transparent;
