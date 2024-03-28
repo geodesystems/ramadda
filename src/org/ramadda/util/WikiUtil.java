@@ -1026,7 +1026,6 @@ public class WikiUtil implements HtmlUtilsConstants {
 		}
 
 
-
                 if (tline.startsWith("+if")) {
 		    ifBuffer = new StringBuilder();
                     List<String> toks = Utils.splitUpTo(tline, " ", 2);
@@ -1036,7 +1035,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 
                 if (tline.startsWith("-if")) {
 		    if(ifBuffer==null) {
-			buff.append("Error: no opening +if<br>");
+			wikiError(buff,"Error: no opening +if<br>");
 			continue;
 		    }
 		    if(handler.ifBlockOk(this, ifAttrs,ifBuffer)) {
@@ -1048,7 +1047,8 @@ public class WikiUtil implements HtmlUtilsConstants {
 		    }
 		    ifBuffer = null;
 		    continue;
-		}		
+		} 
+
 		    
 		if(ifBuffer!=null) {
 		    ifBuffer.append(line);
