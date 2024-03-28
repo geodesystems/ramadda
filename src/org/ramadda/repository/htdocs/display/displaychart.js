@@ -287,7 +287,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'nohighlight.lineDashStyle',d:'2,2,20,2,20',ex:'2,2,20,2,20'},	
 	{p:'some_field.lineDashStyle',d:'2,2,20,2,20',ex:'2,2,20,2,20'},
 
-	{p:'labelInLegend',ex:'label',canCache:true},
+	{p:'labelInLegend',ex:'label'},
 	{p:'highlight.labelInLegend',d:null,ex:'label',canCache:true},
 	{p:'nohighlight.labelInLegend',d:null,ex:'label',canCache:true},	
 	{p:'some_field.labelInLegend',d:null,ex:'label',canCache:true},
@@ -1042,7 +1042,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		let highlight = highlightMap[id];
 		let s = {
 		};
-		["labelInLegend ", "seriesType","lineDashStyle","pointSize", "lineWidth","color","pointShape"].forEach(a=>{
+		["labelInLegend", "seriesType","lineDashStyle","pointSize", "lineWidth","color","pointShape"].forEach(a=>{
 		    let dflt = this.getProperty((highlight?"highlight.":"nohighlight.") + a,this.getProperty(a));
 		    let value = this.getProperty(id+"." + a,dflt);
 		    if(value && a=="lineDashStyle") {
@@ -1070,6 +1070,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		}
 		seriesInfo[idx] = s;
 	    });
+
 
 
 	    if(this.getProperty("highlightShowFields",false)) {
@@ -2153,7 +2154,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    }
 	},
 	drawChart:function(chart,dataTable,chartOptions) {
-
 	    chart.draw(dataTable, chartOptions);
 	},
 
@@ -2435,6 +2435,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
             if (this.getProperty("vAxisTitle")) {
                 chartOptions.vAxis.title = this.getProperty("vAxisTitle");
 		if(chartOptions.vAxis.title && dataFields) {
+
 		    let label = dataFields.reduce((acc,v)=>{
 			return acc+" " + v.getLabel(this);
 		    },"");
