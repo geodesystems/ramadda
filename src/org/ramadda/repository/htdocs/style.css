@@ -465,6 +465,13 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     font-size:120%;
 }
 
+.ramadda-nav-top-delimiter {
+    margin-left:5px;
+    margin-right:5px;
+    
+}    
+
+
 .ramadda-nav-top-fixed {
     margin-top:4px;
     padding-top:4px;
