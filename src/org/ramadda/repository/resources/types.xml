@@ -221,11 +221,17 @@ priority="2"       >
 
 
 <type name="type_document_collection"  isgroup="true" description="Document Collection"
-      handler="org.ramadda.repository.type.TypeHandler" category="Documents"
+      handler="org.ramadda.repository.type.GenericTypeHandler" category="Documents"
       help="A collection of documents"      >
      <property name="form.ark.show" value="true"/>    
      <property name="icon" value="/icons/documents.png"/>
      <property name="form.resource.show" value="false"/>
+     <column name="show_search" type="boolean"
+	     label="Show Search"  showinhtml="false" default="true"/>
+     <column name="add_tags" type="boolean"
+	     label="Add Tags"  showinhtml="false" default="true"/>
+     <column name="embed_link" type="boolean"
+	     label="Embed Link"  showinhtml="false" default="false"/>     
    <wikimacro name="document_search" label="Document Search">
    <![CDATA[
 +center
@@ -247,6 +253,7 @@ pageSearchParent=.ramadda-grid-container
 -center
 <div class=ramadda-grid-container>
 {{grid tag=card
+embedLink="property:embed_link"
 addTags=true
 addTagSearchLink=false
 sortby=name
@@ -266,6 +273,7 @@ showHeading=true
      <wiki><![CDATA[
 +section title={{name}}
 {{description wikify=true}}
++if property=show_search
 +center
 {{display_simplesearch width=200px  inputSize=100% 
 ancestor=this 
@@ -283,15 +291,16 @@ pageSearchParent=.ramadda-grid-container
 }}
 -toggle
 -center
+-if
 <div class=ramadda-grid-container>
 {{grid tag=card
-addTags=true
+addTags="property:add_tags"
 addTagSearchLink=false
 sortby=name
 inner-height=200
+embedLink="property:embed_link"
 width=300px
 columns=3
-showIcon=true
 includeChildren=false
 showSnippet=false
 showSnippetHover=true

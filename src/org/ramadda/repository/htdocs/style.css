@@ -47,8 +47,8 @@
    --modal-z-index:15000;
    --header-z-index:100;
    --image-edit-z-index:1000;
-   --embed-link-background:rgba(229, 150, 55, 1);
-   --embed-link-color:#fff;
+   --embed-link-background:rgba(229, 150, 55, 0.95);
+   --embed-link-color:#fff;   
    --embed-link-background-hover:#569098;
 }
 
@@ -1383,16 +1383,15 @@ a.ramadda-menubar-button:hover {
     display:inline-block;
     flex-grow:1;
     vertical-align:top;
-    margin:5px;
+    margin:6px;
     padding:10px;
     padding-bottom:6px;
     padding-top:6px;
     text-align:left;
+    background:#fff;
 }
 
 .ramadda-gridbox-embed {
-    padding:0px;
-    padding-bottom:1px;
 }
 
 .ramadda-grid-component {
@@ -1430,7 +1429,6 @@ a.ramadda-menubar-button:hover {
 
 .ramadda-grid-decorated .ramadda-gridbox, .ramadda-gridbox-decorated {
     border : var(--basic-border);
-    background: #FbFbFb;
     border-radius: var(--default-radius);
 }
 
@@ -1452,15 +1450,16 @@ a.ramadda-menubar-button:hover {
 }
 
 .ramadda-gridbox .ramadda-subheading-embed {
+    border-bottom-left-radius:var(--default-radius);
     position:absolute;
-    left:1px;
-    bottom:1px;
+    left:-1px;
+    bottom:-1px;
     max-width: 90%;
     font-size:18px;
     max-height:60px;
     background:var(--embed-link-background);
     text-align:left;
-    padding:4px;
+    padding:5px;
     white-space: normal;
     margin:0px;
 }
@@ -1480,7 +1479,7 @@ a.ramadda-menubar-button:hover {
 }    
 
 .ramadda-card-image {
-    border : var(--basic-border);
+    xxxborder : var(--basic-border);
     margin-top:4px;
 }
 
@@ -2893,6 +2892,7 @@ table.dataTable tbody td {
 
 .entry-list-row:hover {
     background: var(--highlight-background);
+    transition: background-color .3s ease-in;
 }
 
 
@@ -4579,10 +4579,12 @@ a.ramadda-menuitem-link:hover {
 
 
 .image-outer {
-    border: 1px solid #aaa;
+    border: var(--basic-border);
     margin:5px;
     padding-top:10px;
     padding-bottom:5px;
+    border-radius: var(--default-radius);
+    padding-left:5px;
     margin-bottom:20px;
     -webkit-box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
     box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
@@ -6335,6 +6337,7 @@ a span i:hover, a:hover span i {
 
 .ramadda-hoverable:hover {
     background:var(--highlight-background);
+    /*transition: background-color .3s ease-in;*/
 }
 
 .ramadda-highlighted {
