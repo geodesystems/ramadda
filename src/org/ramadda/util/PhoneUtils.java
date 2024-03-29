@@ -380,7 +380,10 @@ public class PhoneUtils {
     }
 
     public static String formatPhone(String phone) {
+	if(phone==null) return "";
         phone = phone.replaceAll("[^0-9]+", "");
+	System.err.println("PHONE:" + phone);
+	if(phone.startsWith("1")) phone = phone.substring(1);
 	phone = phone.replaceAll("^(\\d\\d\\d)(\\d\\d\\d)(\\d\\d\\d\\d)$", "$1-$2-$3");
         return phone;
     }
