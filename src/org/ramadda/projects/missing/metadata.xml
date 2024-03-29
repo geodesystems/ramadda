@@ -53,5 +53,13 @@
       <element id="comments" name="Comments" rows="5" datatype="string"/>
     </type>
 
+    <type
+       name="Agency Image"
+       id="missing_agency_image">
+      <element name="Image" datatype="file" thumbnail="false" istitle="true"/>
+    </type>
+
+
+
   </handler>
 </metadata>

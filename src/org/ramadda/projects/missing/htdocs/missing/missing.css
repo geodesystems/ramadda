@@ -52,3 +52,75 @@
     margin-bottom:4px;
     padding-left:4px;
 }
+
+
+.missing-flyer {
+    font-size:14pt;
+    margin:10px;
+}    
+
+.missing-flyer-header {
+    text-align:center;
+    font-size:20pt;
+    margin-bottom:10px;
+}
+
+
+.missing-flyer-title {
+    color:red;
+    font-size:60pt;
+}
+
+.missing-flyer-name {
+    color:red;
+}
+
+.missing-flyer-image {
+    width:90%;
+    text-align:center;
+}
+
+.missing-flyer-circumstances {
+    margin-left:40px;
+    margin-right:40px;    
+}
+
+
+@media print {
+  @page {
+    size: auto; /* auto is default value */
+    margin: 0; /* zero out the margins */
+  }
+}
+
+.missing-flyer-footer {
+    display:none;
+    position:absolute;
+    left:50%;
+    transform: translateX(-50%);
+}
+
+@media print {
+    .missing-flyer-photos  {
+    }
+    .missing-flyer-photos img {
+	width: 300px;
+    }
+    .image-outer {
+	border:0px;
+	box-shadow: 0px;
+    }
+    .missing-flyer-footer {
+    display:block;
+    bottom:10px;
+    position:absolute;
+    left:50%;
+    transform: translateX(-50%);
+}
+
+
+}
+
+.missing-page-break {
+    page-break-before: always; /* Forces a page break before the element */
+}

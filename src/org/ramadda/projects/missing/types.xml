@@ -7,6 +7,7 @@
 	nametemplate="${first_name} ${middle_name} ${last_name}"    
     metadata="missing_alias,missing_ethnicity,missing_clothing,missing_agency,missing_sighting,missing_vehicle"
     handler="org.ramadda.projects.missing.MissingPersonTypeHandler">
+    <action name="flyer" label="Flyer" icon="/missing/flyer.png" category="view"/>
     <property name="search.wikimacro" value="missing_header"/>
     <property name="search.tabs" value="list,map"/>
     <property name="form.description.iswiki" value="false"/>

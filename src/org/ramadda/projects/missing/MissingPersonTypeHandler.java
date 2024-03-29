@@ -10,6 +10,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.PhoneUtils;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 import ucar.unidata.util.StringUtil;
@@ -18,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.Random;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
@@ -154,4 +156,137 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 
 	return sb.toString();
     }
+
+    public Result processEntryAction(Request request, Entry entry)
+            throws Exception {
+        String action = request.getString("action", "");
+	if(!action.equals("flyer")) {
+	    return super.processEntryAction(request, entry);
+	}
+	request.put("template","empty");
+	Object[] values = entry.getValues();
+	StringBuilder sb = new StringBuilder();
+	linkCSS(request, sb, getRepository().getHtdocsUrl("/missing/missing.css"));
+	String agencyImage=getMetadataManager().getMetadataUrl(request, entry,"missing_agency_image");
+	if(agencyImage==null) agencyImage="";
+	else agencyImage=HU.image(agencyImage,HU.attrs("width","150px"));
+	sb.append("<div class=missing-flyer>");
+	sb.append("<div class=missing-flyer-header>");
+	sb.append("<table width=100%><tr valign=center>");
+	sb.append(HU.td(agencyImage,HU.attrs("width","25%")));
+	String title = HU.div("MISSING",HU.cssClass(" missing-flyer-title "));
+	sb.append(HU.td(title,HU.attrs("align","center","width","50%")));
+	sb.append(HU.td(agencyImage,HU.attrs("width","25%")));
+	sb.append("</tr></table>");
+	sb.append("<div>IF YOU HAVE ANY INFORMATION ABOUT</div>");
+	sb.append(HU.div(entry.getName(),HU.cssClass("missing-flyer-name")));
+
+        List<Metadata> metadataList =
+            getMetadataManager().findMetadata(request, entry, "missing_agency",  true);
+
+	if(metadataList!=null && metadataList.size()>0) {
+	    Metadata contact = metadataList.get(0);
+	    sb.append("Place Contact: ");
+	    sb.append(contact.getAttr2());
+	    sb.append("&nbsp;@&nbsp;");
+	    String phone=contact.getAttr(8);
+	    if(stringDefined(phone)) 
+		sb.append(PhoneUtils.formatPhone(phone));
+	    String email =contact.getAttr(9);
+	    if(stringDefined(email)) {
+		sb.append(HU.space(1));
+		sb.append("<a href=mailto:"+ email+">" + email +"</a>");
+	    }
+	}
+	sb.append("</div>");
+
+	StringBuilder info = new StringBuilder();
+	info.append("<table class=formtable>");
+
+	HU.formEntry(info,msgLabel("Missing From"),
+		     findColumn("missing_city").formatValue(request, entry, values) +" " +
+		     findColumn("missing_state").formatValue(request, entry, values));
+
+	Date missingDate = DateHandler.checkDate((Date) entry.getValue("date_missing"));
+	SimpleDateFormat sdf = new SimpleDateFormat("MMMM dd, yyyy");
+	if(missingDate!=null) {
+	    HU.formEntry(info,msgLabel("Date Missing"), sdf.format(missingDate));
+	}	    
+
+
+	SimpleDateFormat yob = new SimpleDateFormat("yyyy");
+	Date birthDate = DateHandler.checkDate(new Date(entry.getStartDate()));
+	if(birthDate!=null)
+	    HU.formEntry(info,msgLabel("Year of Birth"), yob.format(birthDate));	    
+	
+	if(birthDate!=null && missingDate!=null)
+	    HU.formEntry(info,msgLabel("Age went Missing"),
+			 ""+DateHandler.getYearsBetween(birthDate,missingDate));
+
+	HU.formEntry(info,msgLabel("Sex"),   findColumn("biological_sex").formatValue(request, entry, values));   
+	HU.formEntry(info,msgLabel("Height"),   findColumn("height").formatValue(request, entry, values));   
+	HU.formEntry(info,msgLabel("Weight"),   findColumn("weight").formatValue(request, entry, values));
+	HU.formEntry(info,msgLabel("Eye Color"), findColumn("left_eye_color").formatValue(request, entry, values));
+	HU.formEntry(info,msgLabel("Hair Color"), findColumn("hair_color").formatValue(request, entry, values));
+	HU.formEntry(info,msgLabel("Race"), findColumn("race_ethnicity").formatValue(request, entry, values));	
+	String features =  findColumn("distinctive_physical_features").formatValue(request, entry, values);
+	if(stringDefined(features)) 
+	    HU.formEntry(info,msgLabel("Features"), features);
+
+
+	String clothing =  findColumn("clothing_and_accessories").formatValue(request, entry, values);
+	if(stringDefined(clothing)) 
+	    HU.formEntry(info,msgLabel("Clothing"), clothing);
+	
+		     
+		     
+
+
+	info.append("</table>");	
+
+	String image="";
+	List<String> urls = new ArrayList<String>();
+	getMetadataManager().getThumbnailUrls(request, entry, urls);
+	if(urls.size()>0) {
+	    image=HU.image(urls.get(0),HU.attrs("class","missing-flyer-image"));
+	    image+=HU.div(entry.getName(),HU.cssClass("missing-flyer-name"));
+	}
+
+	sb.append("<table width=100%><tr valign=top><td width=70%>");
+	sb.append(info);
+	sb.append("</td><td width=30% align=center>");
+	sb.append(image);
+	sb.append("</tr></table>");
+
+	HU.open(sb,"div",HU.cssClass("missing-flyer-circumstances"));
+	sb.append(HU.b("CIRCUMSTANCES:"));
+	HU.div(sb,getWikiManager().wikifyEntry(request, entry,entry.getDescription()),
+	       HU.cssClass("missing-flyer-circumstances-details"));
+
+	sb.append(HU.close("div"));
+
+	sb.append("</div>");
+	Date now =new Date();
+	HU.div(sb,sdf.format(now),HU.cssClass("missing-flyer-footer"));
+
+	sb.append(HU.div("",HU.cssClass("missing-page-break")));
+
+	String photos = getWikiManager().wikifyEntry(request,entry,
+						     "{{gallery decorate=false entry=\"child:entry:this;type:media_photoalbum\" message=\"\" columns=2}}");
+	if(stringDefined(photos) && photos.indexOf("image")>=0)  {
+	    sb.append("<div class=missing-flyer>");
+	    sb.append("<div class='missing-flyer-header missing-flyer-photos'>");
+	    sb.append("Photos");
+	    sb.append(photos);
+	    sb.append("</div>");
+	    sb.append("</div>");
+	}
+
+
+	return new Result("",sb);
+    }
+
+
+
+
 }
