@@ -585,7 +585,6 @@ function MetadataType(type, label, value) {
 	    return this.color;
 	},
         getLabel: function() {
-	    console.trace();
             if (this.label != null) return this.label;
             return this.type;
         },
