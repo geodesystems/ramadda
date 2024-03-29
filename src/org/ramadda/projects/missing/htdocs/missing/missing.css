@@ -19,8 +19,13 @@
     background:#f8f8f8;
 }
 
+.missing-header .toggleblocklabel {
+    font-weight:normal;
+}
+
 .missing-header1 {
-    font-size:120%;font-weight:bold;
+    font-size:120%;
+    font-weight:bold;
 }
 
 .missing-block {
@@ -37,7 +42,8 @@
 }
 
 .display-entrylist-content .missing-header1 {
-    font-size:12pt;font-weight:plain;
+    font-size:12pt;
+    font-weight:normal;
 }
 
 .ramadda-search-entrylist .missing-header, .display-entrylist-content .missing-header  {

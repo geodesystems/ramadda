@@ -59,10 +59,8 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	    return super.getWikiInclude(wikiUtil, request, originalEntry, entry, tag, props);
 	}
 
+	boolean forSearch = request.get("forsearch",false);
 	StringBuilder sb = new StringBuilder();
-
-	
-
 	linkCSS(request, sb, getRepository().getHtdocsUrl("/missing/missing.css"));
 	String url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
 	String nickname=(String)entry.getValue("nickname");
@@ -74,6 +72,11 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	sb.append(entry.getName().trim());
 	if(stringDefined(nickname)) sb.append(" - \"" + nickname.trim()+"\"");
 	sb.append(", ");
+	if(forSearch) {
+	    findColumn("status").formatValue(request, entry, sb, Column.OUTPUT_HTML, entry.getValues(),
+					     false);
+	    sb.append(", ");
+	}
 	//	String sex=(String)entry.getValue("biological_sex");
 	Column sexColumn = findColumn("biological_sex");
         sexColumn.formatValue(request, entry, sb, Column.OUTPUT_HTML, entry.getValues(),
@@ -94,29 +97,30 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	Date missingDate = DateHandler.checkDate((Date) entry.getValue("date_missing"));
 	Date foundDate = DateHandler.checkDate((Date) entry.getValue("date_found"));	
 	String clazz="missing-block missing-status-"+ status; 
-	sb.append("<div style='margin-top:5px;border-top:var(--basic-border);'>");
+	StringBuilder blocks = new StringBuilder();
+	blocks.append("<div style='margin-top:5px;border-top:var(--basic-border);'>");
 	if(Utils.getProperty(props,"includeImage",false)) {
 	    List<String> urls =    getMetadataManager().getThumbnailUrls(request, entry, null);
 	    if(urls!=null && urls.size()>0) {
-		HU.div(sb,HU.image(urls.get(0),HU.attrs("width","100px")),HU.attrs("class","missing-block"));
+		HU.div(blocks,HU.image(urls.get(0),HU.attrs("width","100px")),HU.attrs("class","missing-block"));
 	    }
 	}
 
-	makeBlock(sb,clazz,"Status",Utils.applyCase(Utils.CASE_PROPER,status));
+	makeBlock(blocks,clazz,"Status",Utils.applyCase(Utils.CASE_PROPER,status));
 	if(missingDate!=null) {
 	    String label = sdf.format(missingDate);
 	    if(birthDate!=null) {
 		years = DateHandler.getYearsBetween(birthDate,missingDate);
 		label+="<br>" +years+" years old";
-	    //		makeBlock(sb,clazz,"Age when missing", 
+	    //		makeBlock(blocks,clazz,"Age when missing", 
 	    }
-	    makeBlock(sb,clazz,"Date last seen", label);
+	    makeBlock(blocks,clazz,"Date last seen", label);
 	    if(birthDate!=null) {
 		//		int years = DateHandler.getYearsBetween(birthDate,missingDate);
 		//		makeBlock(sb,clazz,"Age when missing", years+" years");
 		if(status.equals("missing")) {
 		    years = DateHandler.getYearsBetween(birthDate,new Date());
-		    makeBlock(sb,clazz,"Current age",years+" years old");
+		    makeBlock(blocks,clazz,"Current age",years+" years old");
 		} else if(foundDate!=null) {
 		    String label1 = null;
 		    String label2 = null;
@@ -130,15 +134,24 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 			
 		    if(label1!=null) {
 			years = DateHandler.getYearsBetween(birthDate,foundDate);
-			makeBlock(sb,clazz,label1,
+			makeBlock(blocks,clazz,label1,
 				  sdf.format(foundDate)+"<br>"+years+" years old");
 
-			//			makeBlock(sb,clazz,label2,years+" years old");
+			//			makeBlock(blocks,clazz,label2,years+" years old");
 		    }
 		}
 	    }
 	}
-	sb.append("</div></div>");
+	blocks.append("</div></div>");
+	if(forSearch) {
+	    sb.append(HU.makeShowHideBlock("Details",blocks.toString(),false));
+	} else {
+	    sb.append(blocks);
+	}
+
+
+
+
 	return sb.toString();
     }
 }
