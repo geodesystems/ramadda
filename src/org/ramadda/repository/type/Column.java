@@ -1374,6 +1374,13 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
+    public String formatValue(Request request, Entry entry,  Object[] values)
+            throws Exception {
+	StringBuilder sb = new StringBuilder();
+        formatValue(request, entry, sb, null, values, null, false);
+	return sb.toString();
+    }
+
     /**
      * _more_
      *
@@ -1409,7 +1416,8 @@ public class Column implements DataTypes, Constants, Cloneable {
      *
      * @throws Exception _more_
      */
-    public void formatValue(Request request, Entry entry, Appendable result,
+    public void formatValue(Request request, Entry entry,
+			    Appendable result,
                             String output, Object[] values,
                             SimpleDateFormat sdf, boolean raw)
             throws Exception {
