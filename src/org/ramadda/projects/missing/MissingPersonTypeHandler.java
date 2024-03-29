@@ -172,21 +172,25 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	else agencyImage=HU.image(agencyImage,HU.attrs("width","150px"));
 	sb.append("<div class=missing-flyer>");
 	sb.append("<div class=missing-flyer-header>");
-	sb.append("<table width=100%><tr valign=center>");
-	sb.append(HU.td(agencyImage,HU.attrs("width","25%")));
+	sb.append("<table width=100%><tr valign=bottom>");
+	sb.append(HU.td(agencyImage,HU.attrs("width","15%")));
 	String title = HU.div("MISSING",HU.cssClass(" missing-flyer-title "));
-	sb.append(HU.td(title,HU.attrs("align","center","width","50%")));
-	sb.append(HU.td(agencyImage,HU.attrs("width","25%")));
-	sb.append("</tr></table>");
+	sb.append("<td width=60% align=center>");
+	sb.append(title);
 	sb.append("<div>IF YOU HAVE ANY INFORMATION ABOUT</div>");
 	sb.append(HU.div(entry.getName(),HU.cssClass("missing-flyer-name")));
+	sb.append("</td>");
+	String qr = getWikiManager().wikifyEntry(request, entry,"{{qrcode width=100}}");
+	sb.append(HU.td(qr+HU.span("More Information",HU.style("font-size:12pt;")),HU.attrs("align","center","width","15%")));
+	sb.append("</tr></table>");
+
 
         List<Metadata> metadataList =
             getMetadataManager().findMetadata(request, entry, "missing_agency",  true);
 
 	if(metadataList!=null && metadataList.size()>0) {
 	    Metadata contact = metadataList.get(0);
-	    sb.append("Place Contact: ");
+	    sb.append("Contact: ");
 	    sb.append(contact.getAttr2());
 	    sb.append("&nbsp;@&nbsp;");
 	    String phone=contact.getAttr(8);
@@ -256,6 +260,7 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	sb.append(info);
 	sb.append("</td><td width=30% align=center>");
 	sb.append(image);
+
 	sb.append("</tr></table>");
 
 	HU.open(sb,"div",HU.cssClass("missing-flyer-circumstances"));

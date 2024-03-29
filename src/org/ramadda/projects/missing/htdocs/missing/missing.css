@@ -61,14 +61,14 @@
 
 .missing-flyer-header {
     text-align:center;
-    font-size:20pt;
-    margin-bottom:10px;
+    font-size:16pt;
+    margin-bottom:1em;
 }
 
 
 .missing-flyer-title {
     color:red;
-    font-size:60pt;
+    font-size:36pt;
 }
 
 .missing-flyer-name {
