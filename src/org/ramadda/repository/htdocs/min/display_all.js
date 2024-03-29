@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Mar 29 06:37:57 MDT 2024";
+var build_date="RAMADDA build date: Fri Mar 29 10:29:55 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -30214,7 +30214,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TEMPLATE, properties);
     let myProps = [
 	{label:"Template"},
-	{p: "template",d:'${default}'},
+	{p: "template",ex:'${default}'},
 	{p:"toggleTemplate",ex:"",tt:'Used as the toggle label for hiding/showing the main template'},
 	{p:"headerTemplate",ex:"... ${totalCount} ... ${selectedCount}"},
 	{p:"footerTemplate",ex:"... ${totalCount} ... ${selectedCount}"},
@@ -33953,7 +33953,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			    if(label=="")
 				label= "--blank--"; 
 			    let boxId = id+'_'+vidx;
-                            field += HU.div([],HU.checkbox(boxId,[ATTR_ID,boxId,'checkbox-id',id,'data-value',value],false, label));
+                            field += HU.div([],HU.checkbox(boxId,[ATTR_CLASS,'display-entrylist-enum-checkbox',ATTR_ID,boxId,'checkbox-id',id,'data-value',value],false, label));
 			}
 		    } else {
 			let clazz = 'display-metadatalist';
@@ -34031,6 +34031,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		else
 		    $("#" + id).hide();
 	    });
+	    let cbxs = this.jq(ID_TYPEFIELDS).find(".display-entrylist-enum-checkbox");
+	    cbxs.change(()=>{
+		this.submitSearchForm();
+	    });
+
 	    let menus = this.jq(ID_TYPEFIELDS).find(".display-searchmenu");
 	    HtmlUtils.initSelect(menus);
 	    let allMenus = this.jq(ID_TYPEFIELDS).find(".display-metadatalist");
