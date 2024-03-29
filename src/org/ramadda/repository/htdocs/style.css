@@ -53,6 +53,7 @@
 }
 
 body {
+    position:relative;
     font-family: var(--font-family);
     font-size: var(--font-size) !important;
     margin: 0px;
