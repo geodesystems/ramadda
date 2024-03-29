@@ -125,7 +125,14 @@
 
 <wiki><![CDATA[
 +section
+<table width=100%><tr>
+<td align=center>
 :navtop
+</td>
+<td align=right width=80px><a href="{{root}}/entry/action?entryid={{this}}&action=flyer">
+<img width=20px src={{root}}/missing/flyer.png> Flyer</a>
+</td>
+</tr></table>
 :vspace 1em
 +row
 +col-8
@@ -145,6 +152,8 @@
 {{field name=missing_city}} {{field name=missing_state}}
 {{mapentry hideIfNoLocations=true width="90%" height="200px"}}
 -center
+
+
 {{links message="" prefix="\n:vspace 1em\n----\n:vspace 1em\n"}}
 {{properties message="" metadata.types="!content.alias" prefix="\n:vspace 1em\n----\n:vspace 1em\n"}}
 :vspace 1em
