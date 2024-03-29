@@ -1413,6 +1413,10 @@ svg > g > g:last-child { pointer-events: none }
 .display-entrylist {
 
 }
+.display-entrylist-results {
+    max-height:800px;
+    overflow-y:auto;
+}
 
 .display-entrylist .formgroupheader {
     background:#eee;
@@ -1433,8 +1437,6 @@ svg > g > g:last-child { pointer-events: none }
 .display-entrylist-content   { 
    min-width: 250px;
    min-height: 250px;
-   overflow-y: auto;
-   max-height: 250px;
    background: #fff;
 }
 

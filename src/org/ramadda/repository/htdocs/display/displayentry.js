@@ -563,7 +563,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 innerHeight = this.getEntriesHeight();
             }
             if (innerHeight != null) {
-                style = "margin: 0px; padding: 0px;  xmin-height:" + HU.getDimension(innerHeight) + "; max-height:" + HU.getDimension(innerHeight) + "; overflow-y: auto;";
+//                style = "margin: 0px; padding: 0px; max-height:" + HU.getDimension(innerHeight) + "; overflow-y: auto;";
             }
 	    style+= entriesStyle;
             entriesDivAttrs.push(ATTR_STYLE);
@@ -1875,10 +1875,15 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 
 	    let titles = [];
 	    let contents = [];
+	    let addContents=c=>{
+		contents.push(HU.div([ATTR_CLASS,'display-entrylist-results'],c));
+	    }
+
+
 	    this.getDisplayTypes("list").split(",").forEach(type=>{
 		if(type=="list") {
 		    titles.push("List");
-		    contents.push(this.getEntriesTree(entries));
+		    addContents(this.getEntriesTree(entries));
 		} else if(type=="images") {
 		    let defaultImage = this.getDefaultImage();
 		    let imageEntries = entries.filter(entry=>{
@@ -1889,13 +1894,13 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 			titles.push("Images");
 			let id = HU.getUniqueId(type +"_");
 			this.myDisplays.push({id:id,type:type});
-			contents.push(HU.div([ID,id,STYLE,HU.css("width","100%")]));
+			addContents.push(HU.div([ID,id,STYLE,HU.css("width","100%")]));
 		    }
 		} else if(type=="timeline") {
 		    titles.push("Timeline");
 		    let id = HU.getUniqueId(type +"_");
 		    this.myDisplays.push({id:id,type:type});
-		    contents.push(HU.div([ID,id,STYLE,HU.css("width","100%")]));
+		    addContents(HU.div([ID,id,STYLE,HU.css("width","100%")]));
 		} else if(type=="map") {
 		    this.areaEntries = entries.filter(entry=>{
 			return entry.hasBounds() || entry.hasLocation();
@@ -1904,7 +1909,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 			titles.push("Map");
 			let id = HU.getUniqueId(type +"_");
 			this.myDisplays.push({id:id,type:type,entries:this.areaEntries});
-			contents.push(HU.div([ID,id,STYLE,HU.css("width","100%")]));
+			addContents(HU.div([ID,id,STYLE,HU.css("width","100%")]));
 //			this.mapId = HU.getUniqueId("map_");
 //			let mapDiv = HU.div([ID,this.mapId,STYLE,HU.css("width","100%","height","400px")]);
 //			contents.push(mapDiv);
@@ -1913,7 +1918,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 		} else if(type=="metadata") {		    
 		    titles.push("Metadata");
 		    let mtd = HU.div([STYLE,HU.css("width","800px","max-width","800px","overflow-x","auto")],this.getEntriesMetadata(entries));
-		    contents.push(mtd);
+		    addContents(mtd);
 		}
 	    });
 
@@ -1970,9 +1975,9 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
             //                let entriesHtml  = this.getEntriesTree(entries);
             let entriesHtml = this.makeEntriesDisplay(entries);
             let html = "";
-            html += HU.openTag(TAG_OL, [ATTR_CLASS, this.getClass("list"), ATTR_ID, this.getDomId(ID_LIST)]);
+//            html += HU.openTag(TAG_OL, [ATTR_CLASS, this.getClass("list"), ATTR_ID, this.getDomId(ID_LIST)]);
             html += entriesHtml;
-            html += HU.closeTag(TAG_OL);
+//            html += HU.closeTag(TAG_OL);
             this.writeEntries(html, entries);
             this.addEntrySelect();
             this.getDisplayManager().handleEventEntriesChanged(this, entries);
