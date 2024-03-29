@@ -6201,131 +6201,15 @@ public class Utils extends IO {
         void accept(T ...s);
     }
 
+    public interface UniConsumer<T> {void accept(T t);}
+    public interface BiConsumer<S,T> {void accept(S s, T t);}
+    public interface TriConsumer<T, U, V> {void accept(T t, U u, V v);}
+    public interface UniFunction<R, T> {R call(T t);}
+    public interface BiFunction<R, T,U> {R call(T t,U u);}    
+    public interface TriFunction<R, T, U, V> {R call(T t, U u, V v);}
+    public interface QuadFunction<R, T, U, V, W> {R call(T t, U u, V v, W w);}
+    public interface QuadConsumer<T, U, V, W> {void accept(T t, U u, V v, W w);}
 
-
-    /**
-     */
-    public interface UniConsumer<T> {
-
-        /**
-         * _more_
-         *
-         * @param t _more_
-         * @param u _more_
-         * @param v _more_
-         */
-        void accept(T t);
-    }
-
-    /**
-     */
-    public interface BiConsumer<S,T> {
-
-        /**
-         */
-        void accept(S s, T t);
-    }
-
-
-
-    /**
-     * Interface description
-     *
-     *
-     * @param <T>
-     * @param <U>
-     * @param <V>
-     *
-     * @author         Enter your name here...    
-     */
-    public interface TriConsumer<T, U, V> {
-
-        /**
-         * _more_
-         *
-         * @param t _more_
-         * @param u _more_
-         * @param v _more_
-         */
-        void accept(T t, U u, V v);
-    }
-
-    /**
-     * Interface description
-     *
-     *
-     * @param <R>
-     * @param <T>
-     * @param <U>
-     * @param <V>
-     *
-     * @author         Enter your name here...
-     */
-    public interface TriFunction<R, T, U, V> {
-
-        /**
-         * _more_
-         *
-         * @param t _more_
-         * @param u _more_
-         * @param v _more_
-         *
-         * @return _more_
-         */
-        R call(T t, U u, V v);
-    }
-
-    /**
-     * Interface description
-     *
-     *
-     * @param <R>
-     * @param <T>
-     * @param <U>
-     * @param <V>
-     * @param <W>
-     *
-     * @author         Enter your name here...
-     */
-    public interface QuadFunction<R, T, U, V, W> {
-
-        /**
-         * _more_
-         *
-         * @param t _more_
-         * @param u _more_
-         * @param v _more_
-         * @param w _more_
-         *
-         * @return _more_
-         */
-        R call(T t, U u, V v, W w);
-    }
-
-
-    /**
-     * Interface description
-     *
-     *
-     * @param <T>
-     * @param <U>
-     * @param <V>
-     * @param <W>
-     *
-     * @author         Enter your name here...
-     */
-    public interface QuadConsumer<T, U, V, W> {
-
-        /**
-         * _more_
-         *
-         * @param t _more_
-         * @param u _more_
-         * @param v _more_
-         * @param w _more_
-         */
-        void accept(T t, U u, V v, W w);
-    }
 
 
     public static void exitTest(int v) {
