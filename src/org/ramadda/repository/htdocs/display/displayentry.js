@@ -1646,7 +1646,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			    if(label=="")
 				label= "--blank--"; 
 			    let boxId = id+'_'+vidx;
-                            field += HU.div([],HU.checkbox(boxId,[ATTR_ID,boxId,'checkbox-id',id,'data-value',value],false, label));
+                            field += HU.div([],HU.checkbox(boxId,[ATTR_CLASS,'display-entrylist-enum-checkbox',ATTR_ID,boxId,'checkbox-id',id,'data-value',value],false, label));
 			}
 		    } else {
 			let clazz = 'display-metadatalist';
@@ -1724,6 +1724,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		else
 		    $("#" + id).hide();
 	    });
+	    let cbxs = this.jq(ID_TYPEFIELDS).find(".display-entrylist-enum-checkbox");
+	    cbxs.change(()=>{
+		this.submitSearchForm();
+	    });
+
 	    let menus = this.jq(ID_TYPEFIELDS).find(".display-searchmenu");
 	    HtmlUtils.initSelect(menus);
 	    let allMenus = this.jq(ID_TYPEFIELDS).find(".display-metadatalist");
