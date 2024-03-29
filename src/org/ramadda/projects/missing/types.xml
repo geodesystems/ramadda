@@ -51,6 +51,7 @@
     
     <column name="tribe_association" type="enumerationplus"  label="Tribal Association"
 	    cansearch="true"
+	    enumeration_search_multiples="true"
 	    group="Tribal Information"
 	    xxxvalues="file:/org/ramadda/projects/missing/tribes.txt"/>
 
