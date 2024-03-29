@@ -35,6 +35,7 @@ import java.io.File;
 
 import java.lang.reflect.*;
 
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
@@ -501,6 +502,15 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     public final RecordFile doMakeRecordFile(Request request, Entry entry)
             throws Exception {
         Hashtable properties = getRecordProperties(entry);
+	if(entry.hasLocationDefined()) {
+	    properties.put("latitude",""+entry.getLatitude());
+	    properties.put("longitude",""+entry.getLongitude());
+	} else if(entry.hasAreaDefined()) {
+	    Rectangle2D.Double bounds = entry.getBounds();
+	    properties.put("latitude",""+bounds.getCenterY());
+	    properties.put("longitude",""+bounds.getCenterX());
+	}
+
         RecordFile recordFile = doMakeRecordFile(request, entry, properties,
                                     request.getDefinedProperties());
         if (recordFile == null) {

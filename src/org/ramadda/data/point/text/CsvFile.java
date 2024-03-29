@@ -92,6 +92,18 @@ public class CsvFile extends TextFile {
     }
 
 
+
+
+    private String convertCsvCommands(String cmd) {
+	if(cmd==null) return null;
+	if(cmd.indexOf("${latitude}")>=0) {
+	    cmd = cmd.replace("${latitude}",(String)getProperty("latitude","NaN"));
+	    cmd = cmd.replace("${longitude}",(String)getProperty("longitude","NaN"));		
+	}
+	return cmd;
+
+    }
+
     /**
      * _more_
      *
@@ -106,8 +118,10 @@ public class CsvFile extends TextFile {
         String csvCommands = getProperty("csvcommands",
                                          getProperty("point.csvcommands",
                                              (String) null));
+	csvCommands = convertCsvCommands(csvCommands);
+
         if (Utils.stringDefined(csvCommands)) {
-            commands.append(csvCommands);
+	    commands.append(csvCommands);
             appendCnt++;
         }
         int commandCnt = 1;
@@ -117,6 +131,7 @@ public class CsvFile extends TextFile {
             if ( !Utils.stringDefined(c)) {
                 break;
             }
+	    c = convertCsvCommands(c);
             if (appendCnt > 0) {
                 if (commands.length() > 0) {
                     commands.append(",");
