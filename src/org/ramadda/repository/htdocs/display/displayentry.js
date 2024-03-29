@@ -1,5 +1,5 @@
 /**
-   Copyright 2008-2023 Geode Systems LLC
+   Copyright 2008-2024 Geode Systems LLC
 */
 
 
@@ -977,6 +977,15 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			tag.remove();
 			continue;
 		    }
+
+		    if(!Array.isArray(value)) {
+			value = [value];
+		    }
+		    if(value.length==0) {
+			tag.remove();
+			continue;
+		    }
+
 		    if(col.getType()=="string" || col.getType()=='date' || col.getType()=='latlon') {
 			if(value=="") {
 			    tag.remove();
@@ -984,17 +993,31 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			}
 		    }
 
-		    let label = col.getLabel() +"=" + value;
+
+		    let label = col.getLabel() +"=";
+		    if(Array.isArray(value)) {
+			label+=Utils.join(value,"&nbsp;|&nbsp;");
+		    } else {
+			label +=  value;
+		    }
+			
 		    if(tag.length==0) {
 			tag = $(HU.div([CLASS,"display-search-tag","column",col.getName()],label)).appendTo(searchBar);
 			tag.click(()=>{
-			    this.jq(id).data("selectBox-selectBoxIt").selectOption(VALUE_NONE);
+			    let obj=this.jq(id);
+			    if(obj.data && obj.data('selectBox-selectBoxIt')) {
+				obj.data('selectBox-selectBoxIt').selectOption(VALUE_NONE);
+			    } else {
+				obj.val(null);
+			    }
 			    this.submitSearchForm();
 			});
 		    } else {
 			tag.html(label);
 		    }
-                    extra += "&" + arg + "=" + encodeURIComponent(value);
+		    value.forEach(v=>{
+			extra += "&" + arg + "=" + encodeURIComponent(v);
+		    });
 		}
             }
             this.getSearchSettings().max = this.jq(ID_SEARCH_MAX).val()??DEFAULT_MAX;
@@ -1626,10 +1649,22 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                             field += HU.div([],HU.checkbox(boxId,[ATTR_ID,boxId,'checkbox-id',id,'data-value',value],false, label));
 			}
 		    } else {
-			field = HU.openTag(TAG_SELECT, [ATTR_ID, id, ATTR_CLASS, "display-searchmenu display-metadatalist"]);
+			let clazz = 'display-metadatalist';
+			let attrs = [ATTR_ID, id];
+			let optionAttrs = [CLASS,"display-metadatalist-item", ATTR_TITLE, "", ATTR_VALUE, VALUE_NONE];
+			if(col.getSearchMultiples()) {
+			    attrs.push('multiple',null);
+			    attrs.push('size','4');			    
+			} else {
+			    clazz= 'display-searchmenu ' + clazz;
+			}
+			attrs.push(ATTR_CLASS,clazz);
+			field = HU.openTag(TAG_SELECT, attrs);
 			field+="\n";
-			field += HU.tag(TAG_OPTION, [CLASS,"display-metadatalist-item", ATTR_TITLE, "", ATTR_VALUE, VALUE_NONE],
-					showLabels?"-- Select --":col.getSearchLabel());
+			if(!col.getSearchMultiples()) {
+			    field += HU.tag(TAG_OPTION, optionAttrs,
+					    showLabels?"-- Select --":col.getSearchLabel());
+			}
 			field+="\n";
 			for (let vidx in values) {
                             let value = values[vidx].value||"";
@@ -1691,7 +1726,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    });
 	    let menus = this.jq(ID_TYPEFIELDS).find(".display-searchmenu");
 	    HtmlUtils.initSelect(menus);
-	    menus.change(()=>{
+	    let allMenus = this.jq(ID_TYPEFIELDS).find(".display-metadatalist");
+	    allMenus.change(()=>{
 		this.submitSearchForm();
 	    });
         },

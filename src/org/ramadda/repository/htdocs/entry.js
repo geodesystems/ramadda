@@ -640,6 +640,9 @@ function EntryTypeColumn(props) {
         showCheckboxes: function() {
 	    return this.searchShowCheckboxes;
 	},
+        getSearchMultiples: function() {
+	    return this.searchMultiples;
+	},	
         isNumeric: function() {
             return this.getType() == "double" || this.getType() == "int";
         },	
