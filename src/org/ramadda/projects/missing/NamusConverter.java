@@ -185,7 +185,10 @@ public class NamusConverter {
 	    if(_contact!=null) {
 		mtd(sb,midx++,_contact.getString("firstName") +" " +_contact.getString("lastName"));
 		mtd(sb,midx++,_contact.getString("jobTitle"));
-	    }		
+	    }	else {
+		mtd(sb,midx++,"");
+		mtd(sb,midx++,"");
+	    }
 	    mtd(sb,midx++,_agency.getString("street1"));
 	    mtd(sb,midx++,JU.readValue(_agency,"county.name",""));
 	    mtd(sb,midx++,JU.readValue(_agency,"state.name",""));
@@ -222,7 +225,7 @@ public class NamusConverter {
     private static void mtd(Appendable sb, int index,Object  contents) throws Exception {
 	sb.append("<attr index=\""+ index+"\" encoded=\"false\">");
 	sb.append(XmlUtil.getCdata(contents.toString()));
-	sb.append("</attr>");
+	sb.append("</attr>\n");
     }
 
 
