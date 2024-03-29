@@ -1,7 +1,7 @@
 @charset "UTF-8";
 :root {
     --font-size:12pt;
-    --font-family:    "Helvetica Neue", Arial, Helvetica, sans-serif;    
+    --font-family:    "Helvetica Neue", Arial, Helvetica, sans-serif;
     --basic-border:1px #ddd solid;
     --line-border:1px #eee solid;
     --light-border:1px rgb(239, 243, 244) solid;    
@@ -2391,6 +2391,7 @@ thin_hr,.ramadda-thin-hr {
 /* jquery resets */
 .ui-widget {
     font-family: inherit;
+    font-size: var(--font-size) !important;
 }
 
 
