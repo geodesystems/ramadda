@@ -57,6 +57,14 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
             throws Exception {
+        if (tag.equals("missing_flyer")) {
+	    StringBuilder sb = new StringBuilder();
+	    makeFlyer(request, entry,sb);
+	    return sb.toString();
+	}
+
+
+
         if ( !tag.equals("missing_header")) {
 	    return super.getWikiInclude(wikiUtil, request, originalEntry, entry, tag, props);
 	}
@@ -164,27 +172,53 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	    return super.processEntryAction(request, entry);
 	}
 	request.put("template","empty");
-	Object[] values = entry.getValues();
 	StringBuilder sb = new StringBuilder();
+	makeFlyer(request, entry, sb);
+	return new Result("",sb);
+    }
+    
+    public void makeFlyer(Request request, final Entry entry,StringBuilder sb)
+	throws Exception {
+	final Object[] values = entry.getValues();
+
+	final Utils.UniFunction<String,String> colValue = new Utils.UniFunction<String,String>() {
+		public String call(String column) {
+		    try {
+			return findColumn(column).formatValue(request, entry, values);
+			} catch(Exception exc) {
+			    throw new RuntimeException(exc);
+			}
+
+		}
+	    };
+	Utils.TriConsumer<StringBuilder,String,String>
+	    fmt = new Utils.TriConsumer<StringBuilder,String,String>() {
+		    public void accept(StringBuilder buff,String label,String column)  {
+			try {
+			    HU.formEntry(buff,msgLabel(label),colValue.call(column));
+			} catch(Exception exc) {
+			    throw new RuntimeException(exc);
+			}
+		    }
+		};
+
 	linkCSS(request, sb, getRepository().getHtdocsUrl("/missing/missing.css"));
 	String agencyImage=getMetadataManager().getMetadataUrl(request, entry,"missing_agency_image");
 	if(agencyImage==null) agencyImage="";
 	else agencyImage=HU.image(agencyImage,HU.attrs("width","150px"));
-	sb.append("<div class=missing-flyer>");
-	sb.append("<div class=missing-flyer-header>");
-	sb.append("<table width=100%><tr valign=bottom>");
+	sb.append(HU.comment("Begin flyer"));
+	HU.open(sb,"div",HU.cssClass("missing-flyer"));
+	HU.open(sb,"div",HU.cssClass("issing-flyer-header"));
+	sb.append("<table width=100%><tr valign=bottom>\n");
 	sb.append(HU.td(agencyImage,HU.attrs("width","15%")));
-	String title = HU.div("MISSING",HU.cssClass(" missing-flyer-title "));
-	sb.append("<td width=60% align=center>");
-	sb.append(title);
-	sb.append("<div>IF YOU HAVE ANY INFORMATION ABOUT</div>");
-	sb.append(HU.div(entry.getName(),HU.cssClass("missing-flyer-name")));
-	sb.append("</td>");
+	sb.append("<td width=60% align=center>\n");
+	HU.div(sb,"MISSING",HU.cssClass(" missing-flyer-title "));
+	HU.div(sb,"IF YOU HAVE ANY INFORMATION ABOUT","");
+	HU.div(sb,entry.getName(),HU.cssClass("missing-flyer-name"));
+	HU.close(sb,"td");
 	String qr = getWikiManager().wikifyEntry(request, entry,"{{qrcode width=100}}");
 	sb.append(HU.td(qr+HU.span("More Information",HU.style("font-size:12pt;")),HU.attrs("align","center","width","15%")));
-	sb.append("</tr></table>");
-
-
+	HU.close(sb,"tr","table");
         List<Metadata> metadataList =
             getMetadataManager().findMetadata(request, entry, "missing_agency",  true);
 
@@ -205,16 +239,17 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 		sb.append("<a href=mailto:"+ email+">" + email +"</a>");
 	    }
 	}
-	sb.append("</div>");
+	sb.append(HU.comment("Close flyer header"));
+	HU.close(sb,"div");
 
 	StringBuilder info = new StringBuilder();
-	info.append("<table class=formtable>");
+	SimpleDateFormat sdf = new SimpleDateFormat("MMMM dd, yyyy");
+	HU.open(info,"table",HU.cssClass("formtable"));
 	HU.formEntry(info,msgLabel("Missing From"),
-		     findColumn("missing_city").formatValue(request, entry, values) +" " +
-		     findColumn("missing_state").formatValue(request, entry, values));
+		     colValue.call("missing_city") +" "+
+		     colValue.call("missing_state"));
 
 	Date missingDate = DateHandler.checkDate((Date) entry.getValue("date_missing"));
-	SimpleDateFormat sdf = new SimpleDateFormat("MMMM dd, yyyy");
 	if(missingDate!=null) {
 	    HU.formEntry(info,msgLabel("Date Missing"), sdf.format(missingDate));
 	}	    
@@ -229,20 +264,13 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	    HU.formEntry(info,msgLabel("Age went Missing"),
 			 ""+DateHandler.getYearsBetween(birthDate,missingDate));
 
-	HU.formEntry(info,msgLabel("Sex"),   findColumn("biological_sex").formatValue(request, entry, values));   
-	HU.formEntry(info,msgLabel("Height"),   findColumn("height").formatValue(request, entry, values));   
-	HU.formEntry(info,msgLabel("Weight"),   findColumn("weight").formatValue(request, entry, values));
-	HU.formEntry(info,msgLabel("Eye Color"), findColumn("left_eye_color").formatValue(request, entry, values));
-	HU.formEntry(info,msgLabel("Hair Color"), findColumn("hair_color").formatValue(request, entry, values));
-	HU.formEntry(info,msgLabel("Race"), findColumn("race_ethnicity").formatValue(request, entry, values));	
-
-
-    
-		     
-
-
+	fmt.accept(info,"Sex", "biological_sex");
+	fmt.accept(info,"Height","height");
+	fmt.accept(info,"Weight","weight");
+	fmt.accept(info,"Eye Color","left_eye_color");
+	fmt.accept(info,"Hair Color", "hair_color");
+	fmt.accept(info,"Race", "race_ethnicity");
 	info.append("</table>");	
-
 	String image="";
 	List<String> urls = new ArrayList<String>();
 	getMetadataManager().getThumbnailUrls(request, entry, urls);
@@ -257,42 +285,28 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	sb.append(image);
 	sb.append("</tr></table>");
 
-	String clothing =  findColumn("clothing_and_accessories").formatValue(request, entry, values);
+	String clothing =  colValue.call("clothing_and_accessories");
 	if(stringDefined(clothing)) 
 	    sb.append(HU.b(msgLabel("Clothing"))+HU.div(clothing,""));
 
-	String features =  findColumn("distinctive_physical_features").formatValue(request, entry, values);
+	String features =  colValue.call("distinctive_physical_features");
 	if(stringDefined(features)) 
 	    sb.append(HU.b(msgLabel("Features"))+HU.div(features,""));
-
-
-
-
-
 	sb.append(HU.b("Circumstances:"));
 	sb.append(HU.div(getWikiManager().wikifyEntry(request, entry,entry.getDescription()),""));
-
-	sb.append(HU.close("div"));
-
-	sb.append("</div>");
-	Date now =new Date();
-	HU.div(sb,sdf.format(now),HU.cssClass("missing-flyer-footer"));
-
-	sb.append(HU.div("",HU.cssClass("missing-page-break")));
-
+	HU.close(sb,"div");
+	HU.div(sb,sdf.format(new Date()),HU.cssClass("missing-flyer-footer"));
+	HU.div(sb,"",HU.cssClass("missing-page-break"));
 	String photos = getWikiManager().wikifyEntry(request,entry,
 						     "{{gallery decorate=false entry=\"child:entry:this;type:media_photoalbum\" message=\"\" columns=2}}");
-	if(stringDefined(photos) && photos.indexOf("image")>=0)  {
-	    sb.append("<div class=missing-flyer>");
-	    sb.append("<div class='missing-flyer-header missing-flyer-photos'>");
+	if(stringDefined(photos) && photos.indexOf("img")>=0)  {
+	    HU.open(sb,"div",HU.cssClass("missing-flyer"));
+	    HU.open(sb,"div",HU.clazz("missing-flyer-header missing-flyer-photos"));
 	    sb.append("Photos");
 	    sb.append(photos);
-	    sb.append("</div>");
-	    sb.append("</div>");
+	    HU.close(sb,"div","div");
 	}
 
-
-	return new Result("",sb);
     }
 
 

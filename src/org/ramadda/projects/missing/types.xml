@@ -117,7 +117,10 @@
 
 
 <wikimacro name="missing_header" label="Missing Person Header">
-<![CDATA[{{missing_header includeImage=true}}]]></wikimacro>
+<![CDATA[{{missing_header  #entry="${entry}" includeImage=true}}]]></wikimacro>
+<wikimacro name="missing_flyer" label="Missing Person Flyer">
+<![CDATA[{{missing_flyer #entry="${entry}"}}]]></wikimacro>
+
 
 <property name="bubble"><![CDATA[{{missing_header includeImage=true}}]]></property>
 
@@ -126,11 +129,12 @@
 <wiki><![CDATA[
 +section
 <table width=100%><tr>
+<td align=right width=120px></td>
 <td align=center>
 :navtop
 </td>
-<td align=right width=80px><a href="{{root}}/entry/action?entryid={{this}}&action=flyer">
-<img width=20px src={{root}}/missing/flyer.png> Flyer</a>
+<td align=right width=120px>
+:button {{root}}/entry/action?entryid={{this}}&action=flyer <img width=20px src={{root}}/missing/flyer.png> Flyer
 </td>
 </tr></table>
 :vspace 1em
