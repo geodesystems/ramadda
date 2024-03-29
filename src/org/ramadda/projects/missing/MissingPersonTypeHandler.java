@@ -190,13 +190,16 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 
 	if(metadataList!=null && metadataList.size()>0) {
 	    Metadata contact = metadataList.get(0);
+	    String phone=contact.getAttr(8);
+	    String email =contact.getAttr(9);
 	    sb.append("Contact: ");
 	    sb.append(contact.getAttr2());
-	    sb.append("&nbsp;@&nbsp;");
-	    String phone=contact.getAttr(8);
+	    if(stringDefined(phone) ||stringDefined(email))  
+		sb.append("&nbsp;@&nbsp;");
+
 	    if(stringDefined(phone)) 
 		sb.append(PhoneUtils.formatPhone(phone));
-	    String email =contact.getAttr(9);
+
 	    if(stringDefined(email)) {
 		sb.append(HU.space(1));
 		sb.append("<a href=mailto:"+ email+">" + email +"</a>");
@@ -206,7 +209,6 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 
 	StringBuilder info = new StringBuilder();
 	info.append("<table class=formtable>");
-
 	HU.formEntry(info,msgLabel("Missing From"),
 		     findColumn("missing_city").formatValue(request, entry, values) +" " +
 		     findColumn("missing_state").formatValue(request, entry, values));
@@ -233,16 +235,9 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	HU.formEntry(info,msgLabel("Eye Color"), findColumn("left_eye_color").formatValue(request, entry, values));
 	HU.formEntry(info,msgLabel("Hair Color"), findColumn("hair_color").formatValue(request, entry, values));
 	HU.formEntry(info,msgLabel("Race"), findColumn("race_ethnicity").formatValue(request, entry, values));	
-	String features =  findColumn("distinctive_physical_features").formatValue(request, entry, values);
-	if(stringDefined(features)) 
-	    HU.formEntry(info,msgLabel("Features"), features);
 
 
-	String clothing =  findColumn("clothing_and_accessories").formatValue(request, entry, values);
-	if(stringDefined(clothing)) 
-	    HU.formEntry(info,msgLabel("Clothing"), clothing);
-	
-		     
+    
 		     
 
 
@@ -260,13 +255,22 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	sb.append(info);
 	sb.append("</td><td width=30% align=center>");
 	sb.append(image);
-
 	sb.append("</tr></table>");
 
-	HU.open(sb,"div",HU.cssClass("missing-flyer-circumstances"));
-	sb.append(HU.b("CIRCUMSTANCES:"));
-	HU.div(sb,getWikiManager().wikifyEntry(request, entry,entry.getDescription()),
-	       HU.cssClass("missing-flyer-circumstances-details"));
+	String clothing =  findColumn("clothing_and_accessories").formatValue(request, entry, values);
+	if(stringDefined(clothing)) 
+	    sb.append(HU.b(msgLabel("Clothing"))+HU.div(clothing,""));
+
+	String features =  findColumn("distinctive_physical_features").formatValue(request, entry, values);
+	if(stringDefined(features)) 
+	    sb.append(HU.b(msgLabel("Features"))+HU.div(features,""));
+
+
+
+
+
+	sb.append(HU.b("Circumstances:"));
+	sb.append(HU.div(getWikiManager().wikifyEntry(request, entry,entry.getDescription()),""));
 
 	sb.append(HU.close("div"));
 
