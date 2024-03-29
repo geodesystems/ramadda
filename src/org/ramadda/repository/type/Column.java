@@ -393,7 +393,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     /** _more_ */
     private boolean canSort;
 
-    private boolean enumerationShowMultiples = true;
+    private boolean enumerationSearchMultiples = false;
     private boolean enumerationShowCheckboxes= false;
 
     /** _more_ */
@@ -657,7 +657,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         canSort    = getAttributeOrTag(element, ATTR_CANSORT, false);
         searchRows = getAttributeOrTag(element, ATTR_SEARCHROWS, 1);
         canSearchText = getAttributeOrTag(element, ATTR_CANSEARCHTEXT,canSearch);
-	enumerationShowMultiples = getAttributeOrTag(element,"enumeration_multiples",true);
+	enumerationSearchMultiples = getAttributeOrTag(element,"enumeration_search_multiples",false);
 	enumerationShowCheckboxes = getAttributeOrTag(element,"enumeration_show_checkboxes",false);	
 
         advancedSearch = getAttributeOrTag(element, ATTR_ADVANCED, false);
@@ -1061,6 +1061,8 @@ public class Column implements DataTypes, Constants, Cloneable {
         col.add(JsonUtil.quote(getSearchLabel()));	
         col.add("searchShowCheckboxes");
         col.add(""+enumerationShowCheckboxes);
+        col.add("searchMultiples");
+        col.add(""+enumerationSearchMultiples);
 
         col.add("type");
         col.add(JsonUtil.quote(getType()));
@@ -3861,12 +3863,12 @@ public class Column implements DataTypes, Constants, Cloneable {
 							 : "")));
 		    tmpb.append(" ");
 		    i++;
-		    if(!enumerationShowMultiples) break;
+		    if(!enumerationSearchMultiples) break;
 		}
             }
 	    widget = tmpb.toString();
 
-	    if(enumerationShowMultiples) {
+	    if(enumerationSearchMultiples) {
 		widget = HU.div(widget, HU.cssClass("ramadda-widgets-enumeration"));
 	    }
         } else if (isNumeric()) {
