@@ -3701,8 +3701,10 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
     private void addToSearchForm(Request request, Appendable formBuffer,
-				 List<Clause> where, Entry entry, String searchArg,boolean...horizontal)
+				 List<Clause> where, Entry entry, String searchArg,
+				 boolean...horizontal)
             throws Exception {	
+	boolean vertical = horizontal.length>0?!horizontal[0]:true;
 
 
         String       columnName = getFullName();
@@ -3766,7 +3768,6 @@ public class Column implements DataTypes, Constants, Cloneable {
                 HU.select(searchArg + "_relative", dateSelect,
                                  dateSelectValue,
                                  HU.cssClass("search-select"));
-
             widget = getRepository().getDateHandler().makeDateInput(
                 request, searchArg + "_fromdate", "searchform", null, null,
                 isType(DATATYPE_DATETIME)) + HU.space(1)
@@ -3775,7 +3776,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                     + getRepository().getDateHandler().makeDateInput(
                         request, searchArg + "_todate", "searchform", null,
                             null, isType(
-                                DATATYPE_DATETIME)) + HU.space(4)
+					 DATATYPE_DATETIME)) + (vertical?HU.br():HU.space(4))
                                     + msgLabel("Or") + dateSelectInput;
         } else if (isType(DATATYPE_BOOLEAN)) {
             widget = HU.select(
