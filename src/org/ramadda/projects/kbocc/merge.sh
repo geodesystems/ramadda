@@ -51,6 +51,10 @@ sh ${SEESV}/seesv.sh "-delimiter" "?" "-skiplines" "1" "-set" "0" "0" "number" "
 #we want to skip the header that is written out by the merge call
 echo "Year,Hours in year,Temperature" > tmp.csv
 for arg in "$@"; do
+    if [ ! -e "$arg" ]; then
+	echo "File does not exist: $arg"
+	exit
+    fi
     merge $arg| tail -n +2 >>tmp.csv
 done
 
