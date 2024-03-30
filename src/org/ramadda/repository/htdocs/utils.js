@@ -5224,11 +5224,23 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    $(this).html(enlarged?shrinkMsg:enlargeMsg);
 	});
     },
-    makeExpandable:function(selector,fullScreen,opts) {
-	opts = opts??{};
-        let icon =HtmlUtils.getIconImage("fa-solid fa-maximize",['class',CLASS_CLICKABLE],['style','color:#aaa;']);
+    makeExpandable:function(selector,fullScreen,args) {
+	let opts = {
+	    right:'0px',
+	    top:'0px',
+	    icon:'fa-solid fa-maximize'
+	    
+	}
+	if(args) $.extend(opts,args);
+        let icon =HtmlUtils.getIconImage(opts.icon,['class',CLASS_CLICKABLE],[]);
         let id = HtmlUtils.getUniqueId();
-        let html= HtmlUtils.div(["id",id,"title","Expand", "class","ramadda-expandable-link", "style","display:none;cursor:pointer;text-align:right;position:absolute;right:" + (opts.right??'0px')+";top:0px;margin-top:0px;"],icon);
+	let style = HU.css('display','none','cursor','pointer',
+			   'text-align','right','position','absolute','margin-top','0px');
+	if(opts.left) style+=HU.css('left',opts.left);
+	else style+=HU.css('right',opts.right);
+	style+=HU.css('top',opts.top);		
+        let html= HtmlUtils.div(["id",id,"title","Expand", "class","ramadda-expandable-link",
+				 ATTR_STYLE,style],icon);
         $(selector).append(html);
         let btn = $("#"+id);
         let expandNow = $(selector).hasClass("ramadda-expand-now");
