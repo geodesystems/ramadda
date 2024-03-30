@@ -254,6 +254,11 @@
     <property name="seesv_destdir" value="${dist_dir}/seesv"/>
     <mkdir dir="${seesv_destdir}"/>
     <mkdir dir="${seesv_destdir}/lib"/>	
+    <copy overwrite="true" file="${src_dir}/org/ramadda/util/seesv/build.properties.template" tofile="${src_dir}/org/ramadda/util/seesv/build.properties">
+      <filterset>
+        <filter token="DATE" value="${date}"/>
+      </filterset>
+    </copy>
     <javac
         classpath="${classpath}"
         verbose="false"
