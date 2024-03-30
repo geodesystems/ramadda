@@ -517,6 +517,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    let columnMap = {};
 	    let class1= "display-images-image-outer display-images-block ";
 	    let class2 = "display-images-image-inner";
+	    let class3 = "display-images-image-wrapper";
 	    this.idToRecord = {};
 	    let baseStyle = "";
 	    if(!decorate) {
@@ -558,10 +559,10 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		tooltipFields.forEach(l=>{tt += "\n" + l.getLabel()+": " + row[l.getIndex()]});
 		tt = tt.trim();
 		let style = baseStyle;
-		let imgAttrs = [STYLE,imageStyle,"alt",galleryLabel,ID,base+"image" + rowIdx,"loading","lazy"];
+		let imgAttrs = [ATTR_STYLE,imageStyle,"alt",galleryLabel,ATTR_ID,base+"image" + rowIdx,"loading","lazy"];
 		if(width) imgAttrs.push(WIDTH,width);
 		else if(height) imgAttrs.push(HEIGHT,height);		
-		let img = image==""?SPACE1:HU.image(image,imgAttrs);
+		let img = image==""?SPACE1:HU.div([ATTR_CLASS,class3],HU.image(image,imgAttrs));
 		let topLbl = (topLabel!=null?HU.div([CLASS,"ramadda-clickable display-images-toplabel"], topLabel):"");
 		let lbl = HU.div([CLASS,"ramadda-clickable display-images-label"], label.trim());
 		if(urlField) {

@@ -462,6 +462,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{p:'startDateLabel'},
 	{p:'createDateLabel'},	
 	{p:'areaLabel'},
+	{p:'orderByTypes',d:'relevant,name,createdate,date,size'},
 	{p:'doWorkbench',d:false,ex:'true', tt:'Show the new, charts, etc links'},
 	];
 
@@ -526,13 +527,30 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }
 	    if(this.getShowOrderBy()) {
 		let settings = this.getSearchSettings();
-		let byList = [["Relevant","relevant"], ["A-Z","name_ascending"],["Z-A","name_descending"],
-			  ["Create date - newest first","createdate_descending"],
-			  ["Create date - oldest first","createdate_ascending"],
-			  ["From date - youngest first","fromdate_descending"],			  			  
-			  ["From date - oldest first","fromdate_ascending"],
-			  ["Size - largest first","size_descending"],
-			  ["Size - smallest first","size_ascending"]];			  
+		let byList = [];
+		let getLabel=(type,suffix,dflt)=>{
+		    let key ='orderByLabel_'+ type+(suffix?'_'+suffix:'');
+		    let label =this.getProperty(key);
+		    if(label) return label;
+		    return  dflt ?? Utils.camelCase(type);
+		}
+
+		Utils.split(this.getOrderByTypes(),',',true,true).forEach(type=>{
+		    if(type=='relevant')
+			byList.push([getLabel(type,null),type]);
+		    else if(type=='name')
+			byList.push([getLabel(type,'ascending',"Name A-Z"), type+'_ascending'],
+				    [getLabel(type,'descending',"Name Z-A"),type+'_descending']);
+		    else if(type=='createdate')
+			byList.push(["Record create date - newest first","createdate_descending"],
+				    ["Record create date - oldest first","createdate_ascending"]);
+		    else if(type=='date')
+			byList.push([getLabel(type,'descending',"From date - youngest first"),"fromdate_descending"],			  			  
+				    [getLabel(type,'ascending',"From date - oldest first"),"fromdate_ascending"]);
+		    else if(type=='size')
+			byList.push(["Size - largest first","size_descending"],
+				    ["Size - smallest first","size_ascending"]);
+		});
 		let options = "";
 		byList.forEach(tuple=>{
 		    let label = tuple[0];
@@ -1937,11 +1955,15 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 		contents.push(HU.div([ATTR_CLASS,'display-entrylist-results'],c));
 	    }
 
+	    let makeExpandable= (html) =>{
+		html =HU.div([ATTR_STYLE,HU.css("max-height","100vh",'background','#fff','overflow-y','auto')],html);
+		return HU.div([ATTR_CLASS,'ramadda-expandable-wrapper',ATTR_STYLE,HU.css("position","relative")],html);
+	    }
 
 	    this.getDisplayTypes("list").split(",").forEach(type=>{
 		if(type=="list") {
 		    titles.push("List");
-		    addContents(this.getEntriesTree(entries));
+		    addContents(makeExpandable(this.getEntriesTree(entries)));
 		} else if(type=="images") {
 		    let defaultImage = this.getDefaultImage();
 		    let imageEntries = entries.filter(entry=>{
@@ -1951,13 +1973,9 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 		    if(imageEntries.length>0) {
 			titles.push("Images");
 			let id = HU.getUniqueId(type +"_");
-			let outerId = HU.getUniqueId(type +"_");			
-			this.imagesId=outerId;
 			this.myDisplays.push({id:id,type:type});
 			let images =HU.div([ATTR_ID,id,ATTR_CLASS,'ramadda-expandable display-entrylist-images',ATTR_STYLE,HU.css("width","100%")]);
-			images =HU.div([ATTR_STYLE,HU.css("max-height","100vh",'background','#fff','overflow-y','auto')],images);
-			let outer = HU.div([ATTR_ID,outerId,ATTR_STYLE,HU.css("position","relative")],images); 
-			addContents(outer);
+			addContents(makeExpandable(images));
 		    }
 		} else if(type=="timeline") {
 		    titles.push("Timeline");
@@ -2144,9 +2162,10 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 
 
 
-	    if(this.imagesId) {
-		HU.makeExpandable('#'+this.imagesId, false,{right:'20px'});
-	    }
+
+	    this.jq(ID_ENTRIES).find('.ramadda-expandable-wrapper').each(function() {
+		HU.makeExpandable($(this), false,{right:'5px',top:'0px'});
+	    });
 
 
 	    if(this.mapId && this.areaEntries && this.areaEntries.length>0) {
