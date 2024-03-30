@@ -3,12 +3,40 @@
 #holding the seesv.sh script in RAMADDA's SeeSV  release 
 
 #usage:
-#sh merge.sh <any number of the kbocc csv files>   > merged.csv
+usage() {
+    sh ${SEESV}/seesv.sh -version
+    echo "usage:"
+    echo "sh merge.sh <any number of the kbocc csv files> > merged.csv"
+    echo "Then add the merged.csv to your RAMADDA as a 'RAMADDA CSV Data' entry type"
+}
 
-#Then add the merged.csv to your RAMADDA as a "RAMADDA CSV Data" entry type
 
 #merge function is called for each of the .csv files. It processes them, converting dates, stripping columns,
 #and generating the hours_in_year field
+
+while [[ $# -gt 0 ]]
+do
+    arg=$1
+    case $arg in
+        -help)
+	    usage
+	    exit
+	    ;;
+        -version)
+	    sh ${SEESV}/seesv.sh -version
+	    exit
+	    ;;
+	*)
+	    break
+	    ;;
+    esac
+done
+
+
+
+
+
+
 merge() {
 sh ${SEESV}/seesv.sh "-delimiter" "?" "-skiplines" "1" "-set" "0" "0" "number" "-set" "1" "0" "Date Time" "-set" "2" "0" "Temperature" "-notcolumns" "0,3-10" "-indateformats" "MM/dd/yy hh:mm:ss a;MM/dd/yyyy HH:mm" "GMT-4" "-outdateformat" "iso8601" "GMT" "-convertdate" "date_time" "-outdateformat" "yyyy-MM-dd HH:mm Z" "UTC" "-indateformat" "iso8601" "GMT" "-extractdate" "date_time" "year" "-extractdate" "date_time" "hours_in_year" "-notcolumns" "date_time" "-lastcolumns" "0"  -print  $1
 }
