@@ -185,6 +185,9 @@ public class Row {
      * @return _more_
      */
     public Object get(int index) {
+	if(index<0 || index>=values.size()) {
+	    throw new IllegalArgumentException("SeeSV error: bad row index:" + index+" size:" + values.size() +" values:" + this);
+	}
         return values.get(index);
     }
 
