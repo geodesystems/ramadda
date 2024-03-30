@@ -6034,6 +6034,10 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
+    public String getNameSort(Entry entry) {
+	return entry.getName();
+    }
+
     /**
      * _more_
      *
