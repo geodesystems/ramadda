@@ -19,7 +19,7 @@ function AreaWidget(display,arg) {
 
 
 
-    let mapContains = Utils.stringDefined(HU.getUrlArgument("map_contains"))?HU.getUrlArgument("map_contains")=='true':true;
+    let mapContains = this.arg?null:Utils.stringDefined(HU.getUrlArgument("map_contains"))?HU.getUrlArgument("map_contains")=='true':true;
     $.extend(this, {
 	areaContains: mapContains,
         display: display,
@@ -41,7 +41,7 @@ function AreaWidget(display,arg) {
 
 	    let params = {};
 	    this.map =  new RepositoryMap(this.domId(ID_MAP_POPUP), params);
-	    this.map.setSelection(this.display.getId(),true,1);
+	    this.map.setSelection(this.arg?this.domId(''):this.display.getId(),true,1);
 	},
         showSettings: function() {
 	    let _this = this;
@@ -67,7 +67,7 @@ function AreaWidget(display,arg) {
 	    });	    
 	},
         getHtml: function() {
-	    let bounds =  HU.getUrlArgument("map_bounds");
+	    let bounds =  this.arg?null:HU.getUrlArgument("map_bounds");
 	    let n="",w="",s="",e="";
 	    if(bounds) {
 		[n,w,s,e]  = bounds.split(",");
@@ -158,6 +158,17 @@ function AreaWidget(display,arg) {
             $("#" + this.domId(ID_SOUTH)).val(MapUtils.formatLocationValue(bounds.bottom));
             $("#" + this.domId(ID_EAST)).val(MapUtils.formatLocationValue(bounds.right));
         },
+	getContains: function() {
+	    return this.jq(ID_CONTAINS).is(':checked');
+	},
+        getValues: function(settings) {
+	    return {
+		north:this.jq(ID_NORTH).val(),
+		west:this.jq(ID_WEST).val(),		
+		south:this.jq(ID_SOUTH).val(),
+		east:this.jq(ID_EAST).val(),
+	    }
+	},
         setSearchSettings: function(settings) {
 	    let n = this.display.getFieldValue(this.domId(ID_NORTH), null);
 	    let w = this.display.getFieldValue(this.domId(ID_WEST), null);	    
