@@ -3,7 +3,7 @@
 #holding the seesv.sh script in RAMADDA's SeeSV  release 
 
 set -e
-
+set -o pipefail
 
 #usage:
 usage() {
