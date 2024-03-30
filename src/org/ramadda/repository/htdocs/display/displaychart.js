@@ -2172,15 +2172,30 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 	    if(this.getProperty("vAxisSharedRange")) {
 		let indexIsString = this.getProperty("indexIsString", this.getProperty("forceStrings",false));
-		let max = NaN;
+		let min = NaN;
+		let max = NaN;		
 		for(let i=0;i<dataTable.getNumberOfColumns();i++) {
-		    if(i==0 && indexIsString) continue;
+		    //if(i==0 && indexIsString) continue;
+		    //should we always skip the first column since it is the index
+		    if(i==0) continue;
+		    if(dataTable.getColumnType(i)!='number') continue;
 		    let minmax = dataTable.getColumnRange(i);
-		    if(!isNaN(minmax.max) && minmax.max!=null && (typeof minmax.max) == "number") {
-			max = max==null|| isNaN(max)?minmax.max:Math.max(max, minmax.max);
-		    }
+		    minmax={min:NaN,max:NaN};
+		    let values = dataTable.getDistinctValues(i);
+		    values.forEach(v=>{
+			if(isNaN(v))return;
+			min = Utils.min(min,v);
+			max = Utils.max(max,v);			
+		    });
 		}
-                chartOptions.vAxis.maxValue = max;
+		if(!isNaN(min) && !isNaN(max)) {
+		    let diff = max-min;
+		    //pad out 10%
+		    min-=diff*0.1;max+=diff*.1;
+                    chartOptions.vAxis.minValue = min;
+                    chartOptions.vAxis.maxValue = max;
+		}
+
             }
 
 
