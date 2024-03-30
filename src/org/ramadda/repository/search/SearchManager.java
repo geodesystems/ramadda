@@ -1372,9 +1372,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			SelectionRectangle rectangle = new SelectionRectangle(nwse);
 			if(!rectangle.anyDefined()) continue;
 			List<SelectionRectangle> rects = getEntryUtil().getSelectionRectangles(rectangle);
-			//boolean contains = !(request.getString(ARG_AREA_MODE, VALUE_AREA_OVERLAPS).equals(VALUE_AREA_OVERLAPS));
-			contains =true;
-			makeAreaQueries(rects, queries, contains,
+			makeAreaQueries(rects, queries, column.getAreaSearchContains(request),
 					field+SUFFIX_LATITUDE,
 					field+SUFFIX_LONGITUDE,
 					null,null);
@@ -1400,7 +1398,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		queries.add(builder.build());
 	    }
 	}
-	System.err.println("queries:"+queries);
+	//	System.err.println("queries:"+queries);
 
 
 	Query query = null;
@@ -1513,7 +1511,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	List<Query> areaQueries = new ArrayList<Query>();
 	for (SelectionRectangle rectangle : rectangles) {
 	    if(!rectangle.anyDefined()) continue;
-	    //	    System.err.println("BBOX:" + rectangle);
 	    double minLat = rectangle.hasSouth()?rectangle.getSouth():-90;
 	    double maxLat = rectangle.hasNorth()?rectangle.getNorth():90;	    
 	    double minLon = rectangle.hasWest()?rectangle.getWest():-180;
