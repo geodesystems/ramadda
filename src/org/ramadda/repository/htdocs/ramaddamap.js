@@ -3405,31 +3405,18 @@ RepositoryMap.prototype = {
         if (!GuiUtils) {
             return;
         }
-        this.fldNorth = GuiUtils.getDomObject(this.argBase + "_north") ??
-            GuiUtils.getDomObject(this.argBase + ".north") ??
-            GuiUtils.getDomObject(this.mapId + "_north");
-
-        this.fldSouth = GuiUtils.getDomObject(this.argBase + "_south") ??
-            GuiUtils.getDomObject(this.argBase + ".south") ??
-            GuiUtils.getDomObject(this.mapId + "_south");
-
-        this.fldEast = GuiUtils.getDomObject(this.argBase + "_east") ??
-            GuiUtils.getDomObject(this.argBase + ".east")??
-            GuiUtils.getDomObject(this.mapId + "_east");
-
-        this.fldWest = GuiUtils.getDomObject(this.argBase + "_west") ??
-            GuiUtils.getDomObject(this.argBase + ".west") ??
-            GuiUtils.getDomObject(this.mapId + "_west");
-
-        this.fldLat = GuiUtils.getDomObject(this.argBase + "_latitude") ??
-            GuiUtils.getDomObject(this.argBase + ".latitude") ??
-            GuiUtils.getDomObject(this.mapId + "_latitude");
-
-        this.fldLon = GuiUtils.getDomObject(this.argBase + "_longitude") ??
-            GuiUtils.getDomObject(this.argBase + ".longitude") ??
-            GuiUtils.getDomObject(this.mapId + "_longitude");
-
-
+	let getField=suffix=>{
+            return  GuiUtils.getDomObject(this.argBase + '_'+suffix) ??
+		GuiUtils.getDomObject(this.argBase + '.' + suffix) ??
+		GuiUtils.getDomObject(this.argBase + suffix) ??
+		GuiUtils.getDomObject(this.mapId + '_' + suffix);
+	}
+        this.fldNorth = getField('north');
+        this.fldSouth = getField('south');
+        this.fldEast = getField('east');
+        this.fldWest = getField('west');
+        this.fldLat = getField('latitude');
+        this.fldLon = getField('longitude');
         if (this.fldLon || this.params.addMarkerOnClick) {
             this.addClickHandler(this?.fldLat?.id, this?.fldLon?.id);
 	    if(this.fldLon)
