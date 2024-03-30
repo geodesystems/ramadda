@@ -1674,7 +1674,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 				tmp.append(macro.getProperty("suffix"," years"));	
 			    }
 			}
-			
 		    } else if(macro.getProperty("inchesToFeet",false)) {
 			Integer i = (Integer) value;
 			if(i==0) {
@@ -2370,13 +2369,20 @@ public class Column implements DataTypes, Constants, Cloneable {
         }
     }
 
+    public boolean getAreaSearchContains(Request request) {
+	String searchArg=getSearchArg();
+	return  request.getString(searchArg+"_"+ARG_AREA_MODE, VALUE_AREA_OVERLAPS).equals(VALUE_AREA_OVERLAPS);
+    }
+
+
+
     public double[] getAreaSearchArgs(Request request) {
 	String searchArg=getSearchArg();
 	double north = request.get(searchArg + "_north",Double.NaN);
 	double south = request.get(searchArg + "_south",Double.NaN);
 	double east = request.get(searchArg + "_east",Double.NaN);
 	double west = request.get(searchArg + "_west", Double.NaN);
-	return new double[]{north,west,east,south};
+	return new double[]{north,west,south,east};
 
     }
 
@@ -2433,6 +2439,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         //      System.err.println("s:" + searchArg);
         if (isLatLon()) {
 	    double[] nwse  = getAreaSearchArgs(request);
+
 	    double north=nwse[0],west=nwse[1],south=nwse[2],east=nwse[3];
 	    if(request.defined(ARG_SEARCH_POLYGON)) {
 		String poly = request.getString(ARG_SEARCH_POLYGON,"").trim();
