@@ -47,10 +47,8 @@
 }
 
 .ramadda-search-entrylist .missing-header, .display-entrylist-content .missing-header  {
-    border-bottom:2px solid #ccc;
     border-bottom:1px solid #000;    
-    margin-bottom:4px;
-    padding-left:4px;
+    padding:4px;
 }
 
 

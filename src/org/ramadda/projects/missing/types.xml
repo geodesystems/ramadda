@@ -82,7 +82,7 @@
     <column name="cause_of_death" type="enumerationplus"  label="Cause of death"
 	    help="The likely cause of death"
 	    values="" cansearch="true"/>
-    <column name="death_comments" type="string"  size="5000" label="Death Comments" rows="5" cansearch="true"/>
+    <column name="death_comments" type="string"  size="5000" label="Death Comments" rows="5" cansearch="false"/>
 
     <column name="hair_color" type="enumerationplus"  label="Hair Color"  values="unknown:Unknown,black:Black,brown:Brown, blonde:Blonde, red:Red,auburn:Auburn,chestnut:Chestnut,platinum:Platinum,gray: Gray/Silver,white: White,strawberry: Strawberry Blonde"  cansearch="true"
 	    group="Physical Description"/>    
