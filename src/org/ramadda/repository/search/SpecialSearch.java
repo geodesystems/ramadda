@@ -345,6 +345,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             doSearch = true;
         }
 
+	request.put("forsearch","true");
 	allEntries = getSearchManager().doSearch(request, new SelectInfo(request));
 	/*
         if (doSearch) {
