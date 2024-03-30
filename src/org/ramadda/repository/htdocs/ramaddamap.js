@@ -2922,22 +2922,24 @@ RepositoryMap.prototype = {
 	    //view because then not only do we zoom in the map we also scroll
 	    //the page. Howwever, when the layer switcher is popped up
 	    //we want to catch the wheel event so we can scroll
-	    el.onwheel = (event)=>{
-		if(!this.baseLayerDiv) {
-		    let div = $('#'+this.mapDivId).find('.layersDiv');		    
-		    if(div.length>0) {
-			this.baseLayerDiv = div;
+	    if(el) {
+		el.onwheel = (event)=>{
+		    if(!this.baseLayerDiv) {
+			let div = $('#'+this.mapDivId).find('.layersDiv');		    
+			if(div.length>0) {
+			    this.baseLayerDiv = div;
+			}
 		    }
+		    if(this.baseLayerDiv && this.baseLayerDiv.is(':visible')) {
+			return;
+		    }
+		    
+		    if(this.currentPopup && this.currentPopup.div) {
+			return;
+		    }
+		    event.preventDefault();
 		}
-		if(this.baseLayerDiv && this.baseLayerDiv.is(':visible')) {
-		    return;
-		}
-
-		if(this.currentPopup && this.currentPopup.div) {
-		    return;
-		}
-		event.preventDefault();
-	    };
+	    }
 	}
 
         if (this.params.showZoomPanControl && !this.params.showZoomOnlyControl) {
