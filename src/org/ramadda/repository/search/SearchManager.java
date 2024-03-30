@@ -634,7 +634,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	corpus.append(name);
 	corpus.append(" ");
         doc.add(new TextField(FIELD_NAME,  name,Field.Store.YES));
-	doc.add(new SortedDocValuesField(FIELD_NAME_SORT, new BytesRef(entry.getName())));
+	String nameSort = entry.getTypeHandler().getNameSort(entry);
+
+	doc.add(new SortedDocValuesField(FIELD_NAME_SORT, new BytesRef(nameSort)));
 	doc.add(new StringField(FIELD_CREATOR,  entry.getUserId(),Field.Store.YES));	
 	StringBuilder desc = new StringBuilder();
 	//false=>don't add columns
