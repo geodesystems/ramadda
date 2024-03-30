@@ -636,6 +636,12 @@ function EntryTypeColumn(props) {
         isEnumeration: function() {
             return this.getType() == "enumeration" || this.getType() == "enumerationplus";
         },
+        isLatLon: function() {
+            return this.getType() == "latlon";
+        },
+        isDate: function() {
+            return this.getType() == "date";
+        },		
         showCheckboxes: function() {
 	    return this.searchShowCheckboxes;
 	},
