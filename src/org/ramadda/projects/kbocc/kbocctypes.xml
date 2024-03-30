@@ -97,7 +97,7 @@ indexField=hours_in_year
 fields=2017,2018,2019,2020,2021,2022,2023,2024,2025}} 
 -col
 +col-2
-{{display_template  onlyShowSelected=true }}
+{{display_template  onlyShowSelected=true template="${default}"}}
 -col
 -row
 :heading Table
