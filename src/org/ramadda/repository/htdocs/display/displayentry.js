@@ -1951,8 +1951,13 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 		    if(imageEntries.length>0) {
 			titles.push("Images");
 			let id = HU.getUniqueId(type +"_");
+			let outerId = HU.getUniqueId(type +"_");			
+			this.imagesId=outerId;
 			this.myDisplays.push({id:id,type:type});
-			addContents.push(HU.div([ID,id,STYLE,HU.css("width","100%")]));
+			let images =HU.div([ATTR_ID,id,ATTR_CLASS,'ramadda-expandable display-entrylist-images',ATTR_STYLE,HU.css("width","100%")]);
+			images =HU.div([ATTR_STYLE,HU.css("max-height","100vh",'background','#fff','overflow-y','auto')],images);
+			let outer = HU.div([ATTR_ID,outerId,ATTR_STYLE,HU.css("position","relative")],images); 
+			addContents(outer);
 		    }
 		} else if(type=="timeline") {
 		    titles.push("Timeline");
@@ -2030,18 +2035,17 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
                 this.writeHtml(ID_FOOTER_RIGHT, this.footerRight);
             }
 
-            //                let entriesHtml  = this.getEntriesTree(entries);
             let entriesHtml = this.makeEntriesDisplay(entries);
             let html = "";
-//            html += HU.openTag(TAG_OL, [ATTR_CLASS, this.getClass("list"), ATTR_ID, this.getDomId(ID_LIST)]);
             html += entriesHtml;
-//            html += HU.closeTag(TAG_OL);
             this.writeEntries(html, entries);
             this.addEntrySelect();
             this.getDisplayManager().handleEventEntriesChanged(this, entries);
 	    if(this.galleryId) {
 		HU.createFancyBox($("#" + this.galleryId).find("a.popup_image"),{helpers:{title:{type:'over'}}});
 	    }
+
+
 	    let tabbed = (event,ui)=>{
 		this.activeTabIndex = ui.newTab.index();
 		HtmlUtil.tabLoaded();
@@ -2136,6 +2140,14 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 		    info.display =  this.getDisplayManager().createDisplay(info.type,props);
 		});
 	    }
+
+
+
+
+	    if(this.imagesId) {
+		HU.makeExpandable('#'+this.imagesId, false,{right:'20px'});
+	    }
+
 
 	    if(this.mapId && this.areaEntries && this.areaEntries.length>0) {
 		let map = new RepositoryMap(this.mapId);
