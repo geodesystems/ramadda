@@ -46,6 +46,12 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
+    @Override
+    public String getNameSort(Entry entry) {
+	return 	entry.getValue("last_name") +"-" + entry.getValue("first_name") +"-" + entry.getValue("middle_name");
+    }
+
+
     private void makeBlock(Appendable sb, String clazz,String header,String contents) throws Exception {
 	HU.open(sb,"div",HU.cssClass(clazz));
 	HU.div(sb,header,HU.cssClass("missing-sub-header"));
@@ -107,10 +113,6 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 
 	sb.append("\n<div class=missing-header>\n");
 	getHeaderLine(request, entry, sb,forSearch);
-
-
-
-
 
 	StringBuilder blocks = new StringBuilder();
 	blocks.append("<div style='margin-top:5px;border-top:var(--basic-border);'>");
