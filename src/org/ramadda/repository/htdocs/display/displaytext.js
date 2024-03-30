@@ -838,7 +838,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		contents+= headerTemplate;
 	    }
 
-	    if(template!= "") {
+	    if(Utils.stringDefined(template)) {
 		let groupByField  =this.getFieldById(null, this.getProperty("groupByField"));
 		let groupDelimiter  = this.getProperty("groupDelimiter"," ");
 		let groupTemplate  = this.getProperty("groupTemplate","<b>${group}</b><ul>${contents}</ul>");
