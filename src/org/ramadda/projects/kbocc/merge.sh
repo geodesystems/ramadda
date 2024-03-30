@@ -2,6 +2,9 @@
 #the SEESV environment variable should be set and needs to point to the directory
 #holding the seesv.sh script in RAMADDA's SeeSV  release 
 
+set -e
+
+
 #usage:
 usage() {
     sh ${SEESV}/seesv.sh -version
