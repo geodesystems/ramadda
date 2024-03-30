@@ -11,6 +11,7 @@ public interface SeesvCommands {
     public static final String HELP_SUBSTITUTION = "use $1, $2, etc for pattern (...) matches";
     public static final String HELP_COLUMNS = "Column indices. Can include ranges, e.g. 0-5";
 
+
     public static final String ARG_LABEL  ="-label";
     public static final String ARG_TYPE = "type";
     public static final String ARG_COLUMN  ="column";
@@ -30,7 +31,7 @@ public interface SeesvCommands {
     public static final String TYPE_PATTERN = "pattern";
 
 
-
+    public static final String CMD_VERSION="-version";
     public static final String CMD_HELP="-help";
     public static final String CMD_HELP_PRETTY="-helppretty";    
     public static final String CMD_DELIMITER="-delimiter";

@@ -701,6 +701,11 @@ public class Seesv implements SeesvCommands {
                 genHelp();
                 return;
             }
+            if (arg.equals(CMD_VERSION)) {
+		printVersion();
+		return;
+	    }
+
             if (arg.equals(CMD_HELP)) {
                 usage("", !interactive,null);
                 return;
@@ -1801,6 +1806,7 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_HELP+":<topic search string>",
                 "print help that matches topic"),
         new Cmd(CMD_HELP_PRETTY, "pretty print help"),
+        new Cmd(CMD_VERSION, "print version"),
         new Cmd(CMD_COMMANDS, "file of commands",
 		new Arg("file", "The file of commands. Any # of lines",
 			ATTR_TYPE, "file")),			
@@ -3017,6 +3023,24 @@ public class Seesv implements SeesvCommands {
 	    s= s.replace("%" + key+"%",value);
         }
 	return s;
+    }
+
+
+    public void printVersion() throws Exception {
+	try {
+	    String path = "/org/ramadda/util/seesv/build.properties";
+	    InputStream inputStream = IOUtil.getInputStream(path, getClass());
+	    if (inputStream == null) {
+		System.err.println("SeeSV:  null properties: " + path);
+		return;
+	    }
+	    Properties tmp = new Properties();
+	    tmp.load(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
+	    System.err.println("SeeSV: build date: "+ tmp.get("ramadda.build.date"));
+	} catch(Exception exc) {
+	    System.err.println("SeeSV: error:"+  exc);
+	    exc.printStackTrace();
+	}
     }
 
     /**
