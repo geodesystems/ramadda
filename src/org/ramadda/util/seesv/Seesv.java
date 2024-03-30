@@ -6100,57 +6100,54 @@ public class Seesv implements SeesvCommands {
 	}
 	Seesv.setTmpCacheDir(new File("."));
 	IO.setCacheDir(new File("."));
-	Seesv seesv = new Seesv(args);
-	//	FileOutputStream fos = 	new FileOutputStream("test.csv");	
-	//	Seesv seesv = new Seesv(args, new FileInputStream("lines.csv"),fos);
-
-	seesv.commandLine  = true;
-	seesv.setSeesvContext(new SeesvContext() {
-		public List<Class> getClasses() {
-		    String _name=null;
-		    ArrayList<Class> classes = new ArrayList<Class>();
-		    String prop = System.getenv("SEESV_CLASSES");
-		    if(prop!=null) {
-			for(String name: Utils.split(prop,":",true,true)) {
-			    _name = name;
-			    try {
-				Class c  = Class.forName(name);
-				classes.add(c);
-			    } catch(Exception exc) {
-				if(_name!=null) {
-				    //				    System.err.println("Error reading class:" + _name +" error:" + exc);
+	try {
+	    Seesv seesv = new Seesv(args);
+	    seesv.commandLine  = true;
+	    seesv.setSeesvContext(new SeesvContext() {
+		    public List<Class> getClasses() {
+			String _name=null;
+			ArrayList<Class> classes = new ArrayList<Class>();
+			String prop = System.getenv("SEESV_CLASSES");
+			if(prop!=null) {
+			    for(String name: Utils.split(prop,":",true,true)) {
+				_name = name;
+				try {
+				    Class c  = Class.forName(name);
+				    classes.add(c);
+				} catch(Exception exc) {
+				    if(_name!=null) {
+					//				    System.err.println("Error reading class:" + _name +" error:" + exc);
+				    }
 				}
 			    }
+			    //			throw new RuntimeException(exc);
 			}
-			//			throw new RuntimeException(exc);
+			return classes;
 		    }
-		    return classes;
-		}
-		public String getProperty(String key, String dflt) {
-		    String v =  System.getProperty(key);
-		    if(v==null) return dflt;
-		    return v;
-		}
-		public File getTmpFile(String name) {
-		    File tmp = new File(name);
-		    int index = 1;
-		    while(tmp.exists()) {
-			tmp = new File((index++)+"_" + name);
+		    public String getProperty(String key, String dflt) {
+			String v =  System.getProperty(key);
+			if(v==null) return dflt;
+			return v;
 		    }
-		    return tmp;
-		}
-	    });
+		    public File getTmpFile(String name) {
+			File tmp = new File(name);
+			int index = 1;
+			while(tmp.exists()) {
+			    tmp = new File((index++)+"_" + name);
+			}
+			return tmp;
+		    }
+		});
 
-	try {
 	    seesv.run(null);
 	} catch(SeesvException cexc) {
 	    System.err.println(cexc.getFullMessage());
-	    Utils.exitTest(1);
+	    System.exit(1);
 	} catch(Exception exc) {
 	    Throwable inner = LogUtil.getInnerException(exc);
 	    System.err.println(exc.getMessage());
 	    inner.printStackTrace();
-	    Utils.exitTest(1);
+	    System.exit(1);
 	}
 	Utils.exitTest(0);
     }
