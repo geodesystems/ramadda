@@ -136,7 +136,7 @@ For Example Only<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;For Example Only<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;For Example Only<br>
 </div>
-<div style="z-index:1000;position:relative;">
+<div style="z-index:1;position:relative;">
 <table width=100%><tr>
 <td align=right width=120px></td>
 <td align=center>
