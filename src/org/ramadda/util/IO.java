@@ -329,6 +329,31 @@ public class IO {
         //        return IOUtil.readContents(is);
     }
 
+    public static List<String> parseArgs(URL url) throws Exception {
+        String query = url.getQuery();
+	return parseArgs(query);
+    }
+
+    public static List<String> parseArgs(String query) throws Exception {	
+	List<String> params =new ArrayList<String>();
+        if (query == null) return params;
+	int index = query.indexOf("?");
+	if(index>=0) {
+	    query=query.substring(index+1);
+	    System.err.println(query);
+	}
+	String[] pairs = query.split("&");
+	for (String pair : pairs) {
+	    int idx = pair.indexOf("=");
+	    String key = pair.substring(0, idx);
+	    String value = HtmlUtils.urlDecode(pair.substring(idx + 1));
+	    params.add(key);
+	    params.add(value);		    
+	}
+        return params;
+    }
+
+
 
     /**
      * _more_
