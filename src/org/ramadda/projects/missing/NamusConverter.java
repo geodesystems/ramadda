@@ -238,7 +238,7 @@ public class NamusConverter {
 	    sb.append(">\n</entry>\n");
 	    for(int i=0;i<_images.length();i++) {
 		JSONObject _image = _images.getJSONObject(i);
-		String imageEntryName = _image.optString("caption",name+" Image");
+		String imageEntryName = _image.optString("caption",name);
 		String url = JU.readValue(_image,"files.original.href",null);
 		String mime = JU.readValue(_image,"files.original.mimeType","jpg");		
 		String suffix = "jpg";
