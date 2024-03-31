@@ -129,6 +129,14 @@
 
 <wiki><![CDATA[
 +section
+<div style="color:#eee;z-index:0;position:absolute;left:0px;top:0px;font-size:80pt;">
+For Example Only<br>
+&nbsp;&nbsp;For Example Only<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;For Example Only<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;For Example Only<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;For Example Only<br>
+</div>
+<div style="z-index:1000;position:relative;">
 <table width=100%><tr>
 <td align=right width=120px></td>
 <td align=center>
@@ -178,6 +186,7 @@ entry="child:entry:this;type:type_document_collection" message="" prefix="----\n
 
 
 -section
+</div>
 ]]></wiki>
   </type>
 
