@@ -250,10 +250,10 @@ var Utils =  {
             timer = setTimeout(() => {f.apply(this, args)}, delay);
 	}
     },
-    initCopyable: function(selector) {
+    initCopyable: function(selector,title) {
 	$(selector).each(function(){
 	    $(this).addClass('ramadda-clickable');
-	    $(this).attr('title','Click to copy');
+	    $(this).attr('title',title??'Click to copy');
 	    $(this).click(()=>{
 		Utils.copyToClipboard($(this).attr('data-copy')??$(this).html());
 		alert($(this).attr('copy-message')??'Text copied to clipboard');
