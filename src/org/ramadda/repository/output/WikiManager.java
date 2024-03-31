@@ -6885,6 +6885,20 @@ public class WikiManager extends RepositoryManager
 		continue;
 	    }
 
+	    if (entryId.startsWith("search:")) {
+		entryId = entryId.substring("search:".length());
+		Request searchRequest = new Request(getRepository(),myRequest.getUser());
+		List<String> args = IO.parseArgs(entryId);
+		for(int i=0;i<args.size();i+=2) {
+		    String key = args.get(i);
+		    String value = args.get(i+1);
+		    searchRequest.put(key,value,false);
+		}
+		getSearchManager().processLuceneSearch(searchRequest,entries);
+		continue;
+		
+	    }
+
 	    if (entryId.startsWith(ID_SEARCH + ".")) {
                 List<String> tokens = Utils.splitUpTo(entryId, "=", 2);
                 if (tokens.size() == 2) {
