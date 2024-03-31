@@ -51,7 +51,7 @@ public class LLMManager extends  AdminHandlerImpl {
     public static final int TOKEN_LIMIT_GEMINI = 4000;
     public static final int TOKEN_LIMIT_GPT3 = 2000;    
     public static final int TOKEN_LIMIT_GPT4 = 4000;
-    public static final int TOKEN_LIMIT_CLAUDE = 20000;
+    public static final int TOKEN_LIMIT_CLAUDE = 200000;
 
     private static final Object MUTEX_GEMINI = new Object();
     private static final Object MUTEX_CLAUDE = new Object();
@@ -246,8 +246,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	    String promptPrefix = request.getString("promptprefix",
 						    "Rewrite the following text as college level material:");
 	    String promptSuffix = request.getString("promptsuffix", "");
-	    //	text = callGpt("Rewrite the following text:","",new StringBuilder(text),1000,false);		    
-	    text = callLLM(request, promptPrefix,promptSuffix,text,1000,false,new PromptInfo() );		    
+	    text = callLLM(request, promptPrefix,promptSuffix,text,1000,false,new PromptInfo() );
 	    String json = JsonUtil.map(Utils.makeList("result", JsonUtil.quote(text)));
 	    return new Result("", new StringBuilder(json), "text/json");
 	} catch(Throwable exc) {
@@ -257,7 +256,8 @@ public class LLMManager extends  AdminHandlerImpl {
     }
 
 
-    private String applyPromptToDocument(Request request, String path, String prompt,PromptInfo info) throws Exception {
+    private String applyPromptToDocument(Request request, String path, String prompt,PromptInfo info)
+	throws Exception {
 	try {
 	    String corpus = getSearchManager().extractCorpus(request, path, null);
 	    if(corpus==null) return null;
@@ -269,7 +269,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	    if(info.offset>0 && info.offset<corpus.length()) {
 		corpus = corpus.substring(info.offset);
 	    }
-	    info.tokenLimit = TOKEN_LIMIT_GPT3;
+	    //	    info.tokenLimit = TOKEN_LIMIT_GPT3;
 	    return callLLM(request, prompt,"",corpus,1000,true, info);
 	} catch(Throwable exc) {
 	    throw new RuntimeException(exc);
@@ -408,12 +408,13 @@ public class LLMManager extends  AdminHandlerImpl {
 	    return null;
 	}
 
-
 	if(info.tokenLimit<=0) {
 	    if(model.equals(MODEL_GEMINI)) 
 		info.tokenLimit = TOKEN_LIMIT_GEMINI;
 	    else if(model.equals(MODEL_GPT_4)) 
 		info.tokenLimit = TOKEN_LIMIT_GPT4;
+	    else if(model.equals(MODEL_CLAUDE)) 
+		info.tokenLimit = TOKEN_LIMIT_CLAUDE;	    
 	    else
 		info.tokenLimit = TOKEN_LIMIT_GPT3;
 	} 
