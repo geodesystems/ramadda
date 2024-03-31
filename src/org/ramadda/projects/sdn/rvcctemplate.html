@@ -13,12 +13,20 @@ ${imports}
 :root {--header-height:100px;}
 
 .rvcc-title {
-    font-size:130%;
     text-shadow:1px 1px 0 #000;
     left:50%;
     transform: translateX(-50%);
     top:0px;
     position:absolute;
+    font-size: min(2vw, 130%);
+}
+
+@media only screen and (min-width:1200px) {
+.xrvcc-title {font-size:130%;}
+}
+
+@media only screen and (max-width:400px) {
+.xrvcc-title {font-size:10pt;}
 }
 
 .rvcc-logo-image {
