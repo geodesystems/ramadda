@@ -101,6 +101,8 @@ public abstract class DateOps extends Processor {
                 return row;
             }
             int col = getIndex(ctx);
+	    //Check for an OK index
+	    if(!row.indexOk(col)) return row;
             String s = row.get(col).toString();
 	    if(Utils.stringDefined(s)) {
 		Date  d = ctx.parseDate(s);
