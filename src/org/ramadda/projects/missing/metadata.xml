@@ -7,11 +7,16 @@
 	    values="file:/org/ramadda/projects/missing/ethnicity.txt"/>
     </type>
 
+    <type id="missing_note" name="Missing Note" >
+      <element id="note" name="Note" datatype="string"/>
+    </type>    
+
     <type id="missing_clothing" name="Clothing and Accessories" >
       <element id="type" name="Type" datatype="enumerationplus"
 	    values="clothing:Clothing,footwear:Footwear"/>
       <element id="description" name="Description" datatype="string"/>
     </type>    
+
 
     <type id="missing_alias" name="Missing Alias" displaygroup="Aliases">
       <element id="alias" name="Alias" datatype="string"/>
