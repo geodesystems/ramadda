@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Mar 30 15:07:40 MDT 2024";
+var build_date="RAMADDA build date: Sun Mar 31 09:53:48 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -33249,9 +33249,16 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             //alert("There was an error performing the search\n" + msg);
         },
         updateForSearching: function(jsonUrl) {
-            let outputs = this.getRamadda().getSearchLinks(this.getSearchSettings());
-            this.footerRight = outputs == null ? "" : "Links: " + HU.join(outputs, " - ");
+	    let settings = this.getSearchSettings();
+	    let outputs = this.getRamadda().getSearchLinks(settings);
+	    let url= this.getRamadda().getSearchUrl(settings);
+	    let copyId = HU.getUniqueId("copy");
+	    outputs = HU.join(outputs, " - ");
+	    outputs = HU.span([ATTR_ID,copyId,'data-copy',url],HU.getIconImage("fas fa-clipboard"))+HU.space(1) +outputs;
+            this.footerRight = outputs == null ? "" : "Links: " + outputs;
             this.writeHtml(ID_FOOTER_RIGHT, this.footerRight);
+	    Utils.initCopyable('#'+copyId,'Click to copy search URL');
+
             let msg = this.searchMessage;
             if (msg == null) {
                 msg = this.getRamadda().getSearchMessage();
@@ -34385,6 +34392,8 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
             this.writeHtml(ID_FOOTER_LEFT, "");
             if (this.footerRight != null) {
                 this.writeHtml(ID_FOOTER_RIGHT, this.footerRight);
+                Utils.initCopyable(this.jq(ID_FOOTER_RIGHT).find('[data-copy]'),
+				   'Click to copy search URL');
             }
 
             let entriesHtml = this.makeEntriesDisplay(entries);
