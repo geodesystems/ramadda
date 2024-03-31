@@ -427,7 +427,8 @@ function RamaddaRepository(repositoryRoot) {
         },
 
         getSearchUrl: function(settings, output, bar) {
-            let url = this.repositoryRoot + "/search/do?forsearch=true&output=" + output;
+            let url = this.repositoryRoot + "/search/do?forsearch=true";
+	    if(output) url+="&output=" + output;
             for (let i = 0; i < settings.types.length; i++) {
                 let type = settings.types[i];
                 url += "&type=" + type;
