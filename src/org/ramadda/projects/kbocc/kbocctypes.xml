@@ -74,7 +74,7 @@ handler="org.ramadda.data.services.PointTypeHandler">
 <property name="icon" value="/kbocc/kbocclg.png"/>
 <property name="form.date.show" value="false"/>
 <property name="form.area.show" value="false"/>
-<property name="form.location.show" value="false"/>
+<property name="form.location.show" value="true"/>
 <property name="form.properties.show" value="false"/>
 <column name="axis_label" type="string"  label="Axis Label" cansearch="false"/>
 <property name="record.properties"><![CDATA[
@@ -103,6 +103,18 @@ fields=2017,2018,2019,2020,2021,2022,2023,2024,2025}}
 :heading Table
 {{display_download  fieldsSelected.accept=false  }}
 {{display_table   fieldsSelected.accept=false   }}
+
+:vspace 1em
+----
+:heading Information
++row
++col-8
+{{information  details=true }}
+-col
++col-4
+{{mapentry hideIfNoLocations=true width="100%" height="300px"}}
+-col
+-row
 -section
 ]]></wiki>
 </type>
