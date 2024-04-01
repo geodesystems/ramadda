@@ -613,13 +613,14 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
 	html = $(html).appendTo(container);
 	Translate.translate(html);
-	main.find('.ramadda-entry-inlineedit').keypress(function(event) {
-	    if(event.which!=13) {
-		return;
-	    }
-	    let entryId = $(this).attr('entryid');
-	    let value = $(this).val().trim();
-	    let what = $(this).attr('data-field');
+	let inlineEdit = 	main.find('.ramadda-entry-inlineedit');
+	let entryOrder = 	main.find('.ramadda-entry-inlineedit-entryorder');
+
+
+	let applyEdit = comp=>{
+	    let entryId = comp.attr('entryid');
+	    let value = comp.val().trim();
+	    let what = comp.attr('data-field');
             let url = ramaddaBaseUrl + "/entry/changefield?entryid=" + entryId+'&what=' + what+'&value='+ value;
             $.getJSON(url, function(data) {
 		if(data.error) {
@@ -637,10 +638,53 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		event.returnValue = false;
 		return false;
 	    }
-	    $(this).css('background','yellow');
+	    comp.css('background','yellow');
 	    setTimeout(()=>{
-		$(this).css('background','#fff');
+		comp.css('background','#fff');
 	    },4000);
+
+	}
+
+	let applyAll=(comp,delta)=>{
+	    let start=false;
+	    let index = parseInt(comp.val());
+	    let startId = comp.attr('entryid');
+	    entryOrder.each(function() {
+		let id =$(this).attr('entryid');
+		if(!start) {
+		    if(id!=startId) {
+			return;
+		    }
+		    start = true;
+		} else {
+		    index = index+delta;
+		}
+		$(this).val(index);
+		applyEdit($(this));
+	    });
+	};
+	
+
+
+	inlineEdit.keypress(function(event) {
+	    if(event.which!=13) {
+		return;
+	    }
+	    if(event.shiftKey && $(this).attr('data-field') == 'entryorder') {
+		if (event.preventDefault) {
+		    event.preventDefault();
+		} else {
+		    event.returnValue = false;
+		}
+
+		let delta = prompt("Do you want to reorder all of the following entries. Delta:",5);
+		if(delta) {
+		    applyAll($(this),parseInt(delta));
+		}
+
+		return false;
+	    }
+	    applyEdit($(this));
 	});
 
 

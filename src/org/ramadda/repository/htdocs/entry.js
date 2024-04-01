@@ -822,7 +822,7 @@ function Entry(props) {
 		if(!this.canEdit() || !inlineEdit) {
 		    return this.order;
 		}
-		return HU.input(null,this.order,['size','3','entryid',this.getId(),'title','Edit order','class','ramadda-entry-inlineedit','data-field','entryorder']);
+		return HU.input(null,this.order,['size','3','entryid',this.getId(),'title','Edit order','class','ramadda-entry-inlineedit ramadda-entry-inlineedit-entryorder','data-field','entryorder']);
 	    }
 	    if(what=="creator") {
 		let searchUrl = RamaddaUtil.getUrl('/search/do?user_id='+ this.creator+'&search.submit=true');
