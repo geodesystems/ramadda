@@ -2793,6 +2793,16 @@ public class WikiManager extends RepositoryManager
 	    return  contents;
         } else if (theTag.equals(WIKI_TAG_THIS)) {
 	    return entry.getId();
+        } else if (theTag.equals(WIKI_TAG_CHILDREN_COUNT)) {
+	    List<Entry> children = getEntries(request, wikiUtil,
+					      originalEntry, entry, props);
+	    if(children.size()==0) {
+		String message= getProperty(wikiUtil, props, ATTR_MESSAGE, null);
+		if(message!=null) return message;
+	    }
+	    String template = getProperty(wikiUtil, props, "template","${count}");
+	    template = template.replace("${count}",""+children.size()).replace("${name}",entry.getName());
+	    return template;
         } else if (theTag.equals(WIKI_TAG_ANCESTOR)) {
 	    String type = getProperty(wikiUtil, props, "type", null);
 	    Entry parent = entry.getParentEntry();

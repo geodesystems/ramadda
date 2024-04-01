@@ -714,6 +714,8 @@ public interface WikiConstants {
     /** wiki import */
     public static final String WIKI_TAG_CHILDREN = "children";
 
+    public static final String WIKI_TAG_CHILDREN_COUNT = "children_count";    
+
     /** wiki import */
     public static final String WIKI_TAG_URL = "url";
 

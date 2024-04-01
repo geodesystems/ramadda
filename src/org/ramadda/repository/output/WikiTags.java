@@ -37,6 +37,8 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
                             new WikiTag(WIKI_TAG_MEDIA,null,"tt","Embed the resource, e.g., image, video, audio, etc","width","100%","#full","true"), 
                             new WikiTag(WIKI_TAG_ENTRYLINK,"Entry link", "tt","Link to entry","link","",ATTR_TITLE,"",ATTR_SHOWICON,"true"), 			    
                             new WikiTag(WIKI_TAG_THIS,"Entry ID","tt","The entry ID"),
+                            new WikiTag(WIKI_TAG_CHILDREN_COUNT,"Children count","tt","Show the # of children",
+					"template","${count}"),			    
                             new WikiTag(WIKI_TAG_EDITBUTTON,null,"label","Edit","#message","Show when cannot edit"),
                             new WikiTag(WIKI_TAG_NEWBUTTON,null,"type","entry type to create",
 					"#label","","#message","Show when cannot new"), 			    			    
