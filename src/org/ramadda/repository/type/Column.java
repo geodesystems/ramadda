@@ -715,6 +715,10 @@ public class Column implements DataTypes, Constants, Cloneable {
         dateTimeFormat.setTimeZone(RepositoryBase.TIMEZONE_UTC);
     }
 
+    public TypeHandler getTypeHandler() {
+	return typeHandler;
+    }
+
     /**
      * _more_
      *
