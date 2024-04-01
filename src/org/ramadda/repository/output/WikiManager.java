@@ -766,13 +766,19 @@ public class WikiManager extends RepositoryManager
 	Request myRequest = request.cloneMe();
 
 	List<String> toks = Utils.split(string,";",true,true);
-	String orderBy = null;//ORDERBY_FROMDATE;
+	String orderBy = getProperty(wikiUtil,props,ARG_ORDERBY,null);
 	Boolean ascending = null;
 	String name=null;
         String filter = getProperty(wikiUtil, props,
 				    ATTR_ENTRIES + ".filter",
 				    (String) null);
 	SelectInfo select =  new SelectInfo(myRequest);
+	if(orderBy!=null && !myRequest.exists(ARG_ORDERBY)) select.setOrderBy(orderBy);
+	String  sAscending = getProperty(wikiUtil,props,"ascending",null);
+	if(sAscending!=null) {
+	    select.setAscending(sAscending.trim().equals("true"));
+	}
+
 	select.setEntry(entry);
 	for(String tok: toks) {
 	    List<String> pair = Utils.splitUpTo(tok,":",2);
@@ -6902,6 +6908,9 @@ public class WikiManager extends RepositoryManager
 		    searchRequest.put(key,value,false);
 		}
 		getSearchManager().processLuceneSearch(searchRequest,entries);
+		for(Entry entry:entries) {
+		    //		    System.err.println("E:" + entry.getName() +" " + new Date(entry.getStartDate()));
+		}
 		continue;
 		
 	    }
@@ -6948,8 +6957,6 @@ public class WikiManager extends RepositoryManager
 		searchProps = new Hashtable();
 		continue;
 	    }
-
-
 
 	    if((select = matches.call(entryId,ID_CHILDREN,PREFIX_CHILDREN))!=null) { 
                 List<Entry> children = getEntryManager().getChildren(select.getRequest(),

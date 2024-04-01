@@ -1420,7 +1420,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	Sort sort;
         if(request.exists(ARG_ORDERBY)) {
 	    boolean desc = true;
-            String by = request.getString(ARG_ORDERBY, (String) null);
+            String by = request.getString(ARG_ORDERBY, "");
 	    if(by.endsWith("_descending")) {
 		desc = true;
 		by = by.replace("_descending","");
@@ -1435,7 +1435,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	    String field=null;
 	    SortField.Type sortType = SortField.Type.STRING;
-            if (by.equals(ORDERBY_FROMDATE)) {
+            if (by.equals(ORDERBY_FROMDATE) || by.equals("date")) {
                 field = FIELD_DATE_START;
 		sortType = SortField.Type.LONG;
             } else if (by.equals(ORDERBY_TODATE)) {
