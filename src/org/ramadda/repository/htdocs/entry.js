@@ -1256,6 +1256,9 @@ function EntrySearchSettings(props) {
         getMax: function() {
             return this.max;
         },
+	setMax: function(max) {
+            this.max = parseInt(max);
+        },	
         getSkip: function() {
             return this.skip;
         },
