@@ -930,7 +930,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
 
-        if (request.exists(ARG_DB_SEARCH) || isEmbedded(request) ) {
+        if (request.exists(ARG_DB_SEARCH)) {
+	    //        if (request.exists(ARG_DB_SEARCH) || isEmbedded(request) ) {
             return handleSearch(request, entry);
         }
 
