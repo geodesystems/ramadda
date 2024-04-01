@@ -743,7 +743,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    //Always show the next/prev because the results might be < max even though there
 	    //are more on the repository because some results might be hidden due to access control
 //            if (entries.length < DEFAULT_MAX) return entries.length+" result" +(entries.length>1?"s":"");
-            let left = "Showing " + (settings.skip + 1) + "-" + (settings.skip + Math.min(settings.max, entries.length));
+            let left = "Showing " + (settings.skip + 1) + "-" + (settings.skip + Math.min(settings.getMax(), entries.length));
 	    if(entries.length==0) left = SPACE3+SPACE3+SPACE3;
             let nextPrev = [];
             let lessMore = [];
@@ -1059,9 +1059,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    });
 		}
             }
-            this.getSearchSettings().max = this.jq(ID_SEARCH_MAX).val()??DEFAULT_MAX;
-            this.getSearchSettings().setExtra(extra);
-            let jsonUrl = repository.getSearchUrl(this.getSearchSettings(), OUTPUT_JSON);
+	    let settings = this.getSearchSettings();
+	    console.log('url',settings.getMax(),this.jq(ID_SEARCH_MAX).val());
+	    settings.setMax(this.jq(ID_SEARCH_MAX).val()??settings.getMax());
+            settings.setExtra(extra);
+            let jsonUrl = repository.getSearchUrl(settings, OUTPUT_JSON);
             return jsonUrl;
         },
 	addAreaWidget(areaWidget) {
@@ -1346,7 +1348,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         typeChanged: function() {
             let settings = this.getSearchSettings();
             settings.skip = 0;
-            settings.max = DEFAULT_MAX;
+            settings.setMax(DEFAULT_MAX);
             settings.entryType = this.getFieldValue(this.getDomId(ID_TYPE_FIELD), settings.entryType);
             settings.clearAndAddType(settings.entryType);
             this.addExtraForm();
@@ -1783,22 +1785,25 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             return this.entryList.getEntries();
         },
         loadNextUrl: function() {
-            let skip = +this.getSearchSettings().skip + parseFloat(this.getSearchSettings().max);
+            let skip = +this.getSearchSettings().skip + parseInt(this.getSearchSettings().getMax());
 	    this.getSearchSettings().skip = skip;
             this.submitSearchForm();
         },
         loadMore: function() {
-            this.getSearchSettings().max = this.getSearchSettings().max += DEFAULT_MAX;
+            this.getSearchSettings().setMax( parseInt(this.getSearchSettings().getMax())+ DEFAULT_MAX);
+	    this.jq(ID_SEARCH_MAX).val(this.getSearchSettings().getMax());
+
             this.submitSearchForm();
         },
         loadLess: function() {
-            let max = this.getSearchSettings().max;
+            let max = this.getSearchSettings().getMax();
             max = parseInt(0.75 * max);
-            this.getSearchSettings().max = Math.max(1, max);
+            this.getSearchSettings().setMax( Math.max(1, max));
+	    this.jq(ID_SEARCH_MAX).val(this.getSearchSettings().getMax());
             this.submitSearchForm();
         },
         loadPrevUrl: function() {
-            this.getSearchSettings().skip = Math.max(0, this.getSearchSettings().skip - this.getSearchSettings().max);
+            this.getSearchSettings().skip = Math.max(0, this.getSearchSettings().skip - this.getSearchSettings().getMax());
             this.submitSearchForm();
         },
         entryListChanged: function(entryList) {
@@ -2035,7 +2040,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 
             if (entries.length == 0) {
 //                this.getSearchSettings().skip = 0;
-                this.getSearchSettings().max = DEFAULT_MAX;
+                this.getSearchSettings().setMax(DEFAULT_MAX);
                 let msg = "Nothing found";
                 if (this.multiSearch) {
                     if (this.multiSearch.count > 0) {
@@ -2327,7 +2332,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		//KEY
 		input.keyup(function(event) {
 		    _this.getSearchSettings().skip =0;
-                    _this.getSearchSettings().max = DEFAULT_MAX;
+                    _this.getSearchSettings().setMax(DEFAULT_MAX);
 		    let val = $(this).val().trim();
 		    if(val=="") {
 			_this.clearSearch();
@@ -2617,7 +2622,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
             let entries = this.entryList.getEntries();
             if (entries.length == 0) {
                 this.getSearchSettings().skip = 0;
-                this.getSearchSettings().max = DEFAULT_MAX;
+                this.getSearchSettings().setMax(DEFAULT_MAX);
 		this.handleNoEntries();
                 return;
             }
