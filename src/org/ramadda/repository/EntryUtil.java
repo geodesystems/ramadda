@@ -701,6 +701,34 @@ public class EntryUtil extends RepositoryManager {
     }
 
 
+    private static int compare(Date d1, Date d2) {
+	if(d1==null && d2==null) return 0;
+	if(d1==null) return 1;
+	if(d2==null) return -1;	
+	return compare(d1.getTime(),d2.getTime());
+    }
+
+    private static int compare(String d1, String d2) {
+	if(d1==null && d2==null) return 0;
+	if(d1==null) return 1;
+	if(d2==null) return -1;	
+	return d1.compareTo(d2);
+    }    
+
+    private static int compare(Integer d1, Integer d2) {
+	if(d1==null && d2==null) return 0;
+	if(d1==null) return 1;
+	if(d2==null) return -1;	
+	return d1.intValue()-d2.intValue();
+    }
+
+    private static int compare(Double d1, Double d2) {
+	if(d1==null && d2==null) return 0;
+	if(d1==null) return 1;
+	if(d2==null) return -1;	
+	return (int)(d1.doubleValue()-d2.doubleValue());
+    }        
+
     /**
      * _more_
      *
@@ -728,23 +756,44 @@ public class EntryUtil extends RepositoryManager {
      *
      * @return _more_
      */
-    public static int compareEntries(Entry e1, Entry e2, String on) {
-        if (on.equals(ORDERBY_DATE) || on.equals(ORDERBY_FROMDATE)) {
+    private static int compareEntries(Entry e1, Entry e2, CompareOn on) {
+	if(on.column!=null) {
+	    if(e1.getTypeHandler().equals(e2.getTypeHandler())) {
+		Object v1 = on.column.getObject(e1.getValues());
+		Object v2 = on.column.getObject(e2.getValues());	    
+		if(on.column.isDate()) {
+		    return compare((Date)v1,(Date)v2);
+		}
+		if(on.column.isInteger()) {
+		    return compare((Integer)v1,(Integer)v2);
+		}		
+
+		if(on.column.isDouble()) {
+		    return compare((Double)v1,(Double)v2);
+		}		
+		if(on.column.isString() || on.column.isEnumeration()) {
+		    return compare(v1==null?null:v1.toString(),
+				   v2==null?null:v2.toString());
+		}
+		return 0;
+	    }
+	}
+        if (on.is(ORDERBY_DATE) || on.is(ORDERBY_FROMDATE)) {
             return compare(e1.getStartDate(), e2.getStartDate());
-        } else if (on.equals(ORDERBY_TODATE)) {
+        } else if (on.is(ORDERBY_TODATE)) {
             return compare(e1.getEndDate(), e2.getEndDate());
-        } else if (on.equals(ORDERBY_CHANGEDATE)) {
+        } else if (on.is(ORDERBY_CHANGEDATE)) {
             return compare(e1.getChangeDate(), e2.getChangeDate());
-        } else if (on.equals(ORDERBY_CREATEDATE)) {
+        } else if (on.is(ORDERBY_CREATEDATE)) {
             return compare(e1.getCreateDate(), e2.getCreateDate());
-        } else if (on.equals(ORDERBY_NAME)) {
+        } else if (on.is(ORDERBY_NAME)) {
             return e1.getTypeHandler().getNameSort(e1).compareToIgnoreCase(e2.getTypeHandler().getNameSort(e2));
-        } else if (on.equals(ORDERBY_ENTRYORDER)) {
+        } else if (on.is(ORDERBY_ENTRYORDER)) {
             return e1.getEntryOrder() - e2.getEntryOrder();
-        } else if (on.equals(ORDERBY_TYPE)) {
+        } else if (on.is(ORDERBY_TYPE)) {
             return e1.getTypeHandler().getLabel().compareToIgnoreCase(
                 e2.getTypeHandler().getLabel());
-        } else if (on.equals(ORDERBY_SIZE)) {
+        } else if (on.is(ORDERBY_SIZE)) {
             return compare(e1.getResource().getFileSize(),
                            e2.getResource().getFileSize());
         }
@@ -780,11 +829,35 @@ public class EntryUtil extends RepositoryManager {
     public static List<Entry> sortEntriesOn(List<Entry> entries,
                                             final List<String> ons,
                                             final boolean descending) {
+	return sortEntriesCompareOn(entries,makeCompareOn(ons,entries), descending);
+    }
+
+
+    private static List<CompareOn> makeCompareOn(List<String> ons,List<Entry> entries){
+	List<CompareOn> compareOns = new ArrayList<CompareOn>();
+	for(String on: ons) {
+	    Column column=null;
+	    if(on.startsWith("field:")) {
+		on=on.substring("field:".length());
+		if(entries.size()>0)
+		    column = entries.get(0).getTypeHandler().findColumn(on);
+	    }
+	    compareOns.add(new CompareOn(on,column));
+	}
+	return compareOns;
+    }
+
+    private static List<Entry> sortEntriesCompareOn(List<Entry> entries,
+						    final List<CompareOn> ons,
+						    final boolean descending) {
+	
+
+
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
                 Entry e1 = (Entry) o1;
                 Entry e2 = (Entry) o2;
-                for (String on : ons) {
+                for (CompareOn on : ons) {
                     int result = compareEntries(e1, e2, on);
                     if (result != 0) {
                         if (descending) {
@@ -1151,4 +1224,18 @@ public class EntryUtil extends RepositoryManager {
 	}
     }
 	
+
+    public static class CompareOn {
+	String on;
+	Column column;
+	public CompareOn(String on,Column column) {
+	    this.on = on;
+	    this.column = column;
+	}
+	public boolean is(String on) {
+	    return this.on.equals(on);
+	}
+    }
+
+
 }
