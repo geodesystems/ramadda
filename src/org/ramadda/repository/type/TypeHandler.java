@@ -2932,6 +2932,7 @@ public class TypeHandler extends RepositoryManager {
 				 Hashtable props,
 				 Appendable sb)
             throws Exception {
+	request.put("addmap","true");
         OutputType    output = request.getOutput();
         if (displayTemplatePath != null) {
             String html = getRepository().getResource(displayTemplatePath);
