@@ -3772,9 +3772,11 @@ public class WikiManager extends RepositoryManager
             Hashtable tmpProps = new Hashtable(props);
             tmpProps.remove(ATTR_ENTRY);
             Request newRequest = makeRequest(request, props);
-            //            System.err.println("cloned:" + newRequest);
-            //            {{apply tag="tree" apply.layout="grid" apply.columns="2"}}
-            String tag = getProperty(wikiUtil, props, ATTR_APPLY_TAG, "html");
+            String tag = getProperty(wikiUtil, props, ATTR_APPLY_TAG, "html").trim();
+	    if(tag.indexOf(" ")<0 && tag.indexOf("{")<0) {
+		tag = "{{" + tag +"}}";
+	    }
+
             String prefixTemplate = getProperty(wikiUtil, props,
 						APPLY_PREFIX + "header", "");
             String suffixTemplate = getProperty(wikiUtil, props,
@@ -3823,10 +3825,8 @@ public class WikiManager extends RepositoryManager
             int colCnt = 0;
 
             for (Entry child : children) {
-                String childsHtml = my_getWikiInclude(wikiUtil, newRequest,
-						      originalEntry, child, tag, tmpProps,remainder,
-						      true);
-
+                String childsHtml = wikifyEntry(request, child, tag);
+		//my_getWikiInclude(wikiUtil, newRequest, originalEntry, child, tag, tmpProps,remainder,  true);
                 String prefix   = prefixTemplate;
                 String suffix   = suffixTemplate;
                 String urlLabel = getEntryDisplayName(child);
@@ -3854,13 +3854,12 @@ public class WikiManager extends RepositoryManager
                 StringBuilder content = new StringBuilder();
                 content.append(prefix);
                 HU.open(content, HU.TAG_DIV, divExtra);
-                content.append(getSnippet(request, child, true,""));
                 content.append(childsHtml);
                 content.append(suffix);
                 if (includeLinkAfter) {
                     content.append(childUrl);
                 }
-
+                HU.close(content, HU.TAG_DIV);
                 if (layout.equals("table")) {
                     if (columns > 1) {
                         if (colCnt >= columns) {
@@ -3878,7 +3877,7 @@ public class WikiManager extends RepositoryManager
                 } else {
                     //                    contents.add(content.toString());
                     String title = getEntryDisplayName(child);
-                    contents.add(title);
+                    contents.add(content.toString());
                     if (showicon) {
                         title = getPageHandler().getEntryIconImage(request, child) + " " + title;
                     }
@@ -3891,7 +3890,6 @@ public class WikiManager extends RepositoryManager
                     sb.append("</table>");
                 }
             } else if (layout.equals("tabs")) {
-
                 sb.append(OutputHandler.makeTabs(titles, contents, true,
 						 false));
             } else if (layout.equals("accordian")
@@ -3903,9 +3901,8 @@ public class WikiManager extends RepositoryManager
                                  ((showBorder == 0)
                                   ? "ramadda-accordion"
                                   : null), null);
-            } else {
-                throw new IllegalArgumentException("Unknown layout:"
-						   + layout);
+	    } else {
+		sb.append(Utils.join(contents,""));
             }
 
             return sb.toString();
