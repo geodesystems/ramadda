@@ -66,7 +66,7 @@ public class NamusConverter {
 	JSONArray _images = root.optJSONArray("images");	
 	JSONArray _notes = root.optJSONArray("notes");	
 	JSONObject _address = _sighting.getJSONObject("address");
-	JSONObject _geolocation = _sighting.getJSONObject("publicGeolocation");					
+	JSONObject _geolocation = _sighting.optJSONObject("publicGeolocation");					
 	JSONArray _tribe = _desc.getJSONArray("tribeAssociations");
 	StringBuilder sb = new StringBuilder();
 	String uid = HtmlUtils.getUniqueId("entry");
@@ -106,17 +106,21 @@ public class NamusConverter {
 			       JU.readValue(_sighting,"primaryResidenceOnTribalLand.name","").toLowerCase()));
 
 
-	sb.append(XmlUtil.attr("missing_city",_address.getString("city")));
+	sb.append(XmlUtil.attr("missing_city",_address.optString("city","")));
 	sb.append(XmlUtil.attr("missing_state",JU.readValue(_address,"state.name","")));
 	sb.append(XmlUtil.attr("missing_county",JU.readValue(_address,"county.displayName","")));
 
-	JSONObject _coords =_geolocation.getJSONObject("coordinates");
-	sb.append(XmlUtil.attr("latitude",""+_coords.getDouble("lat")));
-	sb.append(XmlUtil.attr("longitude",""+_coords.getDouble("lon")));
+	if(_geolocation!=null) {
+	    JSONObject _coords =_geolocation.getJSONObject("coordinates");
+	    sb.append(XmlUtil.attr("latitude",""+_coords.getDouble("lat")));
+	    sb.append(XmlUtil.attr("longitude",""+_coords.getDouble("lon")));
+	}
 	
 
 
-	sb.append(XmlUtil.attr("height",""+_desc.getInt("heightFrom")));
+	if(_desc.has("heightFrom"))
+	    sb.append(XmlUtil.attr("height",""+_desc.getInt("heightFrom")));
+	if(_desc.has("weightFrom"))
 	sb.append(XmlUtil.attr("weight",""+_desc.getInt("weightFrom")));	
 	String sex = JsonUtil.readValue(_desc,"sex.name","unsure");
 	sb.append(XmlUtil.attr("biological_sex",sex.toLowerCase()));
@@ -207,7 +211,7 @@ public class NamusConverter {
 	    mtd(sb,midx++,obj.getString("name"));
 	    if(_contact!=null) {
 		mtd(sb,midx++,_contact.getString("firstName") +" " +_contact.getString("lastName"));
-		mtd(sb,midx++,_contact.getString("jobTitle"));
+		mtd(sb,midx++,_contact.optString("jobTitle",""));
 	    }	else {
 		mtd(sb,midx++,"");
 		mtd(sb,midx++,"");
@@ -242,6 +246,8 @@ public class NamusConverter {
 	    for(int i=0;i<_images.length();i++) {
 		JSONObject _image = _images.getJSONObject(i);
 		String imageEntryName = _image.optString("caption",name);
+		if(imageEntryName.length()>100) imageEntryName = imageEntryName.substring(0,99);
+
 		String url = JU.readValue(_image,"files.original.href",null);
 		String mime = JU.readValue(_image,"files.original.mimeType","jpg");		
 		String suffix = "jpg";
