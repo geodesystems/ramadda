@@ -75,7 +75,9 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	    return super.getWikiInclude(wikiUtil, request, originalEntry, entry, tag, props);
 	}
 
-	boolean forSearch = request.get("forsearch",false);
+	boolean forSearch = request.get("forsearch",Utils.getProperty(props,"forSearch",false));
+	String style = Utils.getProperty(props,"style","");
+
 	StringBuilder sb = new StringBuilder();
 	linkCSS(request, sb, getRepository().getHtdocsUrl("/missing/missing.css"));
 	int years;
@@ -93,7 +95,6 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	    }
 	}
 
-
 	if(forSearch) {
 	    getHeaderLine(request, entry, sb,forSearch);
 	    sb.append("\n");
@@ -107,11 +108,18 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 		HU.formEntry(sb,msgLabel("Date Missing"),colValue(request,entry,"date_missing"));
 	    }
 	    sb.append("</table>\n");	    
-	    return HU.div(HU.leftRight(sb.toString(),image),HU.clazz("missing-header"));
+
+
+	    
+	    StringBuilder sb2=new StringBuilder();
+	    HU.open(sb2,"div",HU.attrs("style",style,"class","search-component"));
+	    sb2.append(HU.div(HU.leftRight(sb.toString(),image),HU.clazz("missing-header")));
+	    HU.close(sb2,"div");
+	    return sb2.toString();
 	}
 
 
-	sb.append("\n<div class=missing-header>\n");
+	HU.open(sb,"div",HU.attrs("class","missing-header search-component","style",style));
 	getHeaderLine(request, entry, sb,forSearch);
 
 	StringBuilder blocks = new StringBuilder();
