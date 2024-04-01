@@ -158,8 +158,11 @@ public class NamusConverter {
 	tmp = new StringBuilder();
 	_features = root.getJSONArray("clothingAndAccessoriesArticles");
 	for(int i=0;i<_features.length();i++) {
-	    tmp.append(_features.getJSONObject(i).getString("description"));
-	    tmp.append("\n");
+	    String  desc= _features.getJSONObject(i).optString("description",null);
+	    if(desc!=null) {
+		tmp.append(desc);
+		tmp.append("\n");
+	    }
 	}
 	if(tmp.length()>0) {
 	    sb.append("<clothing_and_accessories>");
