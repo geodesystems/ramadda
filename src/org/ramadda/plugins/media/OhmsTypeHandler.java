@@ -416,7 +416,7 @@ public class OhmsTypeHandler extends MediaTypeHandler {
 
 
 
-	return  addMedia(request, entry, new Hashtable(), mediaType,  embed, mediaUrl,  points);
+	return  addMedia(request, entry, props, mediaType,  embed, mediaUrl,  points);
     }
 
 

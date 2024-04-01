@@ -370,7 +370,7 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 ----
 +row
 +col-8
-{{ohms_viewer}}
+{{ohms_viewer vertical=true}}
 -col
 +col-4
 +toggle Information
