@@ -738,7 +738,7 @@ public class EntryUtil extends RepositoryManager {
         } else if (on.equals(ORDERBY_CREATEDATE)) {
             return compare(e1.getCreateDate(), e2.getCreateDate());
         } else if (on.equals(ORDERBY_NAME)) {
-            return e1.getName().compareToIgnoreCase(e2.getName());
+            return e1.getTypeHandler().getNameSort(e1).compareToIgnoreCase(e2.getTypeHandler().getNameSort(e2));
         } else if (on.equals(ORDERBY_ENTRYORDER)) {
             return e1.getEntryOrder() - e2.getEntryOrder();
         } else if (on.equals(ORDERBY_TYPE)) {
@@ -888,7 +888,7 @@ public class EntryUtil extends RepositoryManager {
                 } else if (isType2) {
                     result = 1;
                 } else {
-                    result = e1.getName().compareToIgnoreCase(e2.getName());
+                    result = e1.getTypeHandler().getNameSort(e1).compareToIgnoreCase(e2.getTypeHandler().getNameSort(e2));
                 }
                 if (descending) {
                     if (result >= 1) {
