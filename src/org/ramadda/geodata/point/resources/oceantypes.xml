@@ -529,12 +529,12 @@ label,pos:s,dx:cw2,dy:-10,font:36px sans-serif,label:${match  pattern="(degrees|
 {{description wikify=true}}
 +row 
 +col-6
-{{display_map height=400px   width="100%" showLast=50
+{{display_map height=400px   width="100%" showLast=50 
  initBoundsUseAllRecords=true  initBoundsPadding="0.05" 
 doAnimation=true animationMode=cumulative animationInitRange="-50,end"
 #showOverviewMap=true overviewMapWidth=240 overviewMapHeight=120  overviewMapResolution=6
 showGraticules=true
-isTrajectory=true   showPoints=true  tooltip="${default}"
+isTrajectory=true   showPoints=true  tooltip="none"
 radius=4 colorBy=degrees strokeWidth=0 pathStrokeWidth=0.25 colorTable=plotly_bluered
 }}
 -col
