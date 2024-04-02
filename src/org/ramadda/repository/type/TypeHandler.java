@@ -56,6 +56,7 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
+import java.awt.geom.Rectangle2D;
 import java.io.*;
 import java.util.function.Supplier;
 
@@ -1367,6 +1368,29 @@ public class TypeHandler extends RepositoryManager {
         return newResource;
     }
 
+
+    public Rectangle2D.Double getBounds(Entry entry, Rectangle2D.Double bounds) {
+            if (entry.hasAreaDefined() || entry.hasLocationDefined()) {
+		if (bounds == null) {
+		    bounds = entry.getBounds();
+		} else {
+		    bounds.add(entry.getBounds());
+		}
+	    }
+	    List<Column> columns = getColumns();
+	    if (columns != null) {
+		for(Column column: columns) {
+		    if(!column.isLatLon()) continue;
+		    double[] latlon = column.getLatLon(entry.getValues());
+		    if(!Double.isNaN(latlon[0]) && !Double.isNaN(latlon[1])) {
+			if(bounds==null)
+			    bounds = new Rectangle2D.Double();
+			bounds.add(latlon[1],latlon[0]);
+		    }
+		}
+	    }
+	    return bounds;
+    }
 
 
     /**

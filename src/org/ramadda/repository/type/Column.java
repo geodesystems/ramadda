@@ -1448,7 +1448,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             sb.append(toLatLonString(values, offset + 1, raw));
 	    double lat = Utils.getDouble(values[offset]);
 	    double lon = Utils.getDouble(values[offset+1]);	    
-	    if(false && request.get("addmap",false) && !Double.isNaN(lat) && !Double.isNaN(lon) && lat!=Entry.NONGEO && lon!=Entry.NONGEO) {
+	    if(request.get("addmap",false) && !Double.isNaN(lat) && !Double.isNaN(lon) && lat!=Entry.NONGEO && lon!=Entry.NONGEO) {
 		MapInfo map = new MapInfo(request, getRepository(),"200","200");
 		map.addMarker("",lat,  lon, null,"","");
 		map.center();
@@ -1945,8 +1945,8 @@ public class Column implements DataTypes, Constants, Cloneable {
             statementIdx++;
         } else if (isLatLon()) {
             if (values[offset] != null) {
-                double lat = ((Double) values[offset]).doubleValue();
-                double lon = ((Double) values[offset + 1]).doubleValue();
+                double lat = Utils.getDouble(values[offset]);
+                double lon = Utils.getDouble(values[offset + 1]);
                 if (Double.isNaN(lat)) {
                     lat = Entry.NONGEO;
                 }
@@ -3040,8 +3040,8 @@ public class Column implements DataTypes, Constants, Cloneable {
             widget = map.makeSelector(urlArg, true,
                                       new String[] { latLonOk(latlon[0])
                     ? latlon[0] + ""
-                    : "", latLonOk(latlon[0])
-                          ? latlon[0] + ""
+                    : "", latLonOk(latlon[1])
+                          ? latlon[1] + ""
 		    : "" });
         } else if (isType(DATATYPE_LATLONBBOX)) {
             String[] nwse = null;

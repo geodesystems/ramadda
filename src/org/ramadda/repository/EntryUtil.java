@@ -1110,16 +1110,7 @@ public class EntryUtil extends RepositoryManager {
         Rectangle2D.Double rect = null;
 
         for (Entry child : children) {
-            if ( !child.hasAreaDefined() && !child.hasLocationDefined()) {
-                continue;
-            }
-
-
-            if (rect == null) {
-                rect = child.getBounds();
-            } else {
-                rect.add(child.getBounds());
-            }
+	    rect = child.getTypeHandler().getBounds(child,rect);
         }
 
         return rect;
