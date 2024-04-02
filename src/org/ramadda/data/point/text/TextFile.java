@@ -685,11 +685,15 @@ public abstract class TextFile extends PointFile {
 			    attrs.append(attrChartable());
 			}
 			boolean searchable     = getProperty("record.searchable."+id,defaultSearchable);
-			if(searchable && !type.equals("date")) {
-			    attrs.append(attrSearchable());
-			    String searchableSuffix     = getProperty("record.searchsuffix."+id,null);
-			    if(searchableSuffix!=null)
-				attrs.append(" search.suffix=\" "+ searchableSuffix+"\" ");
+			if(type.equals("date")) {
+			    attrs.append(attrSearchable(false));
+			} else {
+			    attrs.append(attrSearchable(searchable));
+			    if(searchable) {
+				String searchableSuffix     = getProperty("record.searchsuffix."+id,null);
+				if(searchableSuffix!=null)
+				    attrs.append(" search.suffix=\" "+ searchableSuffix+"\" ");
+			    }
 			}
 			String unit = (String) getProperty(id + ".unit");
 			if (unit == null) {
@@ -1075,12 +1079,16 @@ public abstract class TextFile extends PointFile {
         return HtmlUtils.attr(ATTR_CHARTABLE, "true");
     }
 
+    public static String attrSearchable() {
+	return attrSearchable(true);
+    }
+
     /**
      * _more_
      *
      * @return _more_
      */
-    public static String attrSearchable() {
-        return HtmlUtils.attr(ATTR_SEARCHABLE, "true");
+    public static String attrSearchable(boolean  value) {
+        return HtmlUtils.attr(ATTR_SEARCHABLE, value+"");
     }
 }
