@@ -82,8 +82,8 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	linkCSS(request, sb, getRepository().getHtdocsUrl("/missing/missing.css"));
 	int years;
 	SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
-	Date birthDate = DateHandler.checkDate(new Date(entry.getStartDate()));
-	Date missingDate = DateHandler.checkDate((Date) entry.getValue("date_missing"));
+	Date missingDate = DateHandler.checkDate(new Date(entry.getStartDate()));
+	Date birthDate = DateHandler.checkDate((Date) entry.getValue("date_of_birth"));
 	Date foundDate = DateHandler.checkDate((Date) entry.getValue("date_found"));	
 	String status=(String)entry.getValue("status","");	
 	String clazz="missing-block missing-status-"+ status; 
@@ -105,7 +105,8 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 			 " "+
 			 colValue(request,entry,"missing_state"));
 	    if(missingDate!=null) {
-		HU.formEntry(sb,msgLabel("Date Missing"),colValue(request,entry,"date_missing"));
+		HU.formEntry(sb,msgLabel("Date Missing"),sdf.format(missingDate));
+								    
 	    }
 	    sb.append("</table>\n");	    
 
@@ -295,14 +296,14 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 		     colValue.call("missing_city") +" "+
 		     colValue.call("missing_state"));
 
-	Date missingDate = DateHandler.checkDate((Date) entry.getValue("date_missing"));
+	Date missingDate = DateHandler.checkDate(new Date(entry.getStartDate()));
 	if(missingDate!=null) {
 	    HU.formEntry(info,msgLabel("Date Missing"), sdf.format(missingDate));
 	}	    
 
 
 	SimpleDateFormat yob = new SimpleDateFormat("yyyy");
-	Date birthDate = DateHandler.checkDate(new Date(entry.getStartDate()));
+	Date birthDate = DateHandler.checkDate(	(Date) entry.getValue("date_missing"));
 	if(birthDate!=null)
 	    HU.formEntry(info,msgLabel("Year of Birth"), yob.format(birthDate));	    
 	

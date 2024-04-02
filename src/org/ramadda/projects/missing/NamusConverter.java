@@ -80,9 +80,12 @@ public class NamusConverter {
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	Date now = new Date();
 	Date bdate = new Date(now.getTime()-(Utils.yearsToMillis(maxAge)));
-	sb.append(XmlUtil.attr("fromdate",sdf.format(bdate)));
-	Date missingDate = new Date(now.getTime()-Utils.yearsToMillis(maxAge-missingMinAge));
-	sb.append(XmlUtil.attr("date_missing",sdf.format(missingDate)));	
+	String sDateMissing = _sighting.getString("date");
+	Date missingDate = sdf.parse(sDateMissing);
+	//new Date(now.getTime()-Utils.yearsToMillis(maxAge-missingMinAge));
+	sb.append(XmlUtil.attr("fromdate",sdf.format(missingDate)));	
+	sb.append(XmlUtil.attr("date_of_birth",sdf.format(bdate)));
+
 	String firstName = _id.getString("firstName");
 	String middleName = _id.optString("middleName","");	
 	String lastName = _id.getString("lastName");	

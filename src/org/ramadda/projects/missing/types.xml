@@ -20,9 +20,9 @@
     <property name="form.description.label" value="Case Information"/>
     <property name="form.location.label" value="Last known location"/>
     <property name="form.location.show" value="true"/>
-    <property name="form.date.label" value="Date of Birth"/>
+    <property name="form.date.label" value="Date Missing"/>
     <property name="date.nullok" value="true"/>
-    <property name="form.startdate.label" value="Date of Birth"/>
+    <property name="form.startdate.label" value="Date Missing"/>
     <property name="form.createdate.label" value="Record Create Date"/>    
     <property name="form.todate.show" value="false"/>                    
     <property name="form.tags.show" value="true"/>    
@@ -38,8 +38,8 @@
     <column name="status" type="enumeration" values="unknown:Unknown,found:Found,missing:Missing,died:Died"  label="Status"
 	    enumeration_show_checkboxes="true"
 	    cansearch="true"/>
-    <column name="date_missing" type="date" default="none" label="Date Missing" cansearch="true"
-	    htmlTemplate="${value dateFormat=yyyy-MM-dd} ${value showAge=true prefix=&quot; - &quot; suffix=&quot; years old when missing&quot;}"/>
+    <column name="date_of_birth" type="date" default="none" label="Date of Birth" cansearch="true"
+	    xxxhtmlTemplate="${value dateFormat=yyyy-MM-dd} ${value showAge=true prefix=&quot; - &quot; suffix=&quot; years old when missing&quot;}"/>
     <column name="date_found" type="date" default="none" label="Date Found" cansearch="true"
 	    htmlTemplate="${value dateFormat=yyyy-MM-dd} ${value showAge=true prefix=&quot; - &quot; suffix=&quot; years old when found&quot;}"/>    
     <column name="biological_sex" type="enumeration"  label="Biological Sex"
