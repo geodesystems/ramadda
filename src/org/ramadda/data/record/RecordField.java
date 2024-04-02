@@ -754,7 +754,8 @@ public class RecordField {
      */
     public boolean getSearchable() {
         String v = (String) properties.get(PROP_SEARCHABLE);
-        if ((v == null) || !v.equals("true")) {
+	if(v==null) return true;
+        if (!v.equals("true")) {
             return false;
         }
 
