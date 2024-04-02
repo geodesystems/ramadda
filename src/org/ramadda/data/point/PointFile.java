@@ -956,8 +956,10 @@ public abstract class PointFile extends RecordFile implements Cloneable,
             if (canEdit != null) {
                 field.setProperty("canedit", canEdit);
             }
-
-
+            String searchable = getProperty(properties, "searchable", null);
+            if (searchable != null) {
+                field.setProperty("searchable", searchable);
+            }	    
 
             String searchSuffix = getProperty(properties, "search.suffix",
 					      getProperty(properties, "searchsuffix", null));					      
