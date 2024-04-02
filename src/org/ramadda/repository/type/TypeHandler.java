@@ -1410,19 +1410,14 @@ public class TypeHandler extends RepositoryManager {
             return parent.addToMap(request, entry, map);
         }
 	List<Column> columns = getColumns();
-	System.err.println("addToMap:" + entry);
 	if (columns == null) {
-	    System.err.println("\tno columns");
 	    return true;
 	}
-	System.err.println("\tcolumns:" + columns.size());
 	boolean didOne=false;
 	for(Column column: columns) {
 	    if(column.isLatLon()) {
 		double[] latlon = column.getLatLon(entry.getValues());
-		System.err.println("\tlatlon:" + latlon[0] +" " + latlon[1]);
 		if(!Double.isNaN(latlon[0]) && !Double.isNaN(latlon[1])) {
-		    System.err.println("\tadding marker");
 		    String icon  = getTypeProperty("column.icon",getTypeProperty(column.getName()+".column.icon",null));
 		    String info  = getMapManager().encodeText(getMapManager().makeInfoBubble(request,entry,column.getLabel(),"<hr class=ramadda-hr>"));
 
