@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Apr  1 18:32:09 MDT 2024";
+var build_date="RAMADDA build date: Tue Apr  2 16:08:37 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -2224,6 +2224,21 @@ function DisplayAnimation(display, enabled,attrs) {
 	    }
 	    this.dateRangeChanged();
 	},
+	//This gets called when another display propagates its animation times
+	setTimes:function(times) {
+	    if(!this.getEnabled()) return;
+	    this.setBeginEnd(times[0],times[times.length-1]);
+	    this.dates.every((date,idx)=>{
+		if(date.getTime()==times[0].getTime()) {
+		    this.frameIndex=idx;
+		    return false;
+		}
+		return true;
+	    });
+	    
+	    this.updateUI();
+	    this.dateRangeChanged();
+	},
 	deltaFrame: function(delta) {
 	    this.frameIndex+=delta;
 	    if(!this.dates) return;
@@ -3999,6 +4014,7 @@ function displayDefineEvent(event,dflt) {
 
 
 displayDefineEvent("setEntry");
+displayDefineEvent("filteredTimes",false);
 displayDefineEvent("recordSelection");
 displayDefineEvent("recordList");
 displayDefineEvent("recordHighlight");
@@ -5565,6 +5581,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'reverse',ex:'true',t:'Reverse the records'},
 	{p:'doEntries',ex:true,tt:'Make the children entries be data'},
 	{p:'propagateDataReload',ex:'true',tt:'Propagate to other displays when the data is reloaded'},
+	{p:'propagateFilteredTimes',ex:'true',tt:'Propagate to other displays the list of times when we have filtered data. The other displays need to have filteredTimes.accept=true '},
 	{p:'addAttributes',ex:true,tt:'Include the extra attributes of the children'},
 	{p:'orderby',ex:'date|fromdate|todate|name|number',tt:'When showing entries as data how to sort or order the entries'},
 	{p:'ascending',ex:'true',tt:'When showing entries as data how to sort or order the entries'},		
@@ -6727,6 +6744,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         handleEventEntryMouseover: function(source, args) {},
         handleEventEntryMouseout: function(source, args) {},
+        handleEventFilteredTimes: function(source, args) {
+	    let times=args.times;
+	    if(!times) return;
+	    this.getAnimation().setTimes(times);
+	},
         handleEventEntrySelection: function(source, args) {
             let containsEntry = this.getEntries().indexOf(args.entry) >= 0;
             if (!containsEntry) {
@@ -7780,6 +7802,30 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 
 	filterData: function(records, fields, args) {
+            if (!records)  records =this.getRecords();
+	    let filteredRecords = this.filterDataInner(records,fields, args);
+	    if(filteredRecords) {
+		if(this.getPropagateFilteredTimes()) {
+		    if(filteredRecords.length!=records.length) {
+			let times=[];
+			let seen = {};
+			filteredRecords.forEach(record=>{
+			    let date = record.getDate();
+			    if(!date) return;
+			    if(!seen[date]) {
+				seen[date] = true;
+				times.push(date);
+			    }
+			});
+			if(times.length) {
+	                    this.propagateEvent(DisplayEvent.filteredTimes, {times:times});
+			}
+		    }
+		}		    
+	    }
+	    return filteredRecords
+	},
+	filterDataInner: function(records, fields, args) {
 	    if(this.recordListOverride) {
 		return this.recordListOverride;
 	    }
@@ -7838,7 +7884,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 	    }
 
-            if (!records)  records =this.getRecords();
             if (!records) {
 		return null;
 	    }
@@ -10923,28 +10968,34 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let filteredRecords  = this.filterData();
 	    if(debug) console.log("checkSearchBar-done getting filtered data");
 	    if(filteredRecords) {
-		let dateInfo = this.getDateInfo(filteredRecords);
-		if(debug) console.log("checkSearchBar-11");
-		if (dateInfo.dateMax) {
-		    if(debug) console.log("checkSearchBar-getAnimation");
-		    let animation = this.getAnimation();
-		    if(animation.getEnabled()) {
-			if(debug) console.log("checkSearchBar-calling animation.init");
-			//		    console.log("dateMin:" + dateMin.toUTCString());
-			animation.init(dateInfo.dateMin, dateInfo.dateMax,filteredRecords);
-			if(debug) console.log("checkSearchBar-done calling animation.init");
-			if(!this.minDateObj) {
-			    if(debug) console.log("checkSearchBar-calling setDateRange");
-			    if(this.getProperty("animationFilter", true)) {
-				this.setDateRange(animation.begin, animation.end);
-			    }
-			    if(debug) console.log("checkSearchBar-done calling setDateRange");
-			}
-		    }
-		}
+		this.initializeAnimation(filteredRecords);
 	    }
 	    if(debug) console.log("checkSearchBar-done");
         },
+	initializeAnimation:function(filteredRecords) {
+	    let debug = false;
+	    let dateInfo = this.getDateInfo(filteredRecords);
+	    if(debug) console.log("checkSearchBar-11");
+	    if (dateInfo.dateMax) {
+		if(debug) console.log("checkSearchBar-getAnimation");
+		let animation = this.getAnimation();
+		if(animation.getEnabled()) {
+		    if(debug) console.log("checkSearchBar-calling animation.init");
+		    //		    console.log("dateMin:" + dateMin.toUTCString());
+		    animation.init(dateInfo.dateMin, dateInfo.dateMax,filteredRecords);
+		    if(debug) console.log("checkSearchBar-done calling animation.init");
+		    if(!this.minDateObj) {
+			if(debug) console.log("checkSearchBar-calling setDateRange");
+			if(this.getProperty("animationFilter", true)) {
+			    this.setDateRange(animation.begin, animation.end);
+			}
+			if(debug) console.log("checkSearchBar-done calling setDateRange");
+		    }
+		}
+	    }
+	},
+
+
 	getDateInfo:function(records) {
 	    let dateMin = null;
 	    let dateMax = null;
@@ -25115,16 +25166,18 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
 	{p:'interval',ex:'30',d:30,label:"Interval"},
 	{p:'showCheckbox',ex:'false',d:true,label:"Show Checkbox"},
 	{p:'showCountdown',ex:'false',d:true,label:"Show Countdown"},	
+	{p:'doPage',ex:'true',tt:'Reload the entire page'},
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
         },
-        xxpointDataLoaded: function(pointData, url, reload) {
-	},
 	reloadData: function() {
 	    let pointData = this.dataCollection.getList()[0];
-	    pointData.loadData(this,true);
+	    if(pointData)
+		pointData.loadData(this,true);
+	    else
+		console.log('No data to reload');
 	},
 	updateUI: function() {
 	    let html = "";
@@ -25189,11 +25242,18 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
 		this.checkReload(time);
 	    },1000);
 	},
+	doReload: function(time) {
+	    if(this.getDoPage()) {
+		location.reload(true);
+	    } else {
+		this.reloadData();
+	    }
+	},
 	checkReload: function(time) {
 	    time--;
 	    if(time<=0) {
 		this.jq(ID_COUNTDOWN).html("Reloading..." +HU.span([STYLE,"color:transparent;"],""));
-		this.reloadData();
+		this.doReload();
 		time = this.getPropertyInterval();
 		//Start up again in a bit so the reloading... label is shown
 		if(this.lastTimeout) clearTimeout(this.lastTimeout);
