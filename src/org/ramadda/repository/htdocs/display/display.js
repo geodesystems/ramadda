@@ -142,6 +142,7 @@ function displayDefineEvent(event,dflt) {
 
 
 displayDefineEvent("setEntry");
+displayDefineEvent("filteredTimes",false);
 displayDefineEvent("recordSelection");
 displayDefineEvent("recordList");
 displayDefineEvent("recordHighlight");
@@ -1708,6 +1709,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'reverse',ex:'true',t:'Reverse the records'},
 	{p:'doEntries',ex:true,tt:'Make the children entries be data'},
 	{p:'propagateDataReload',ex:'true',tt:'Propagate to other displays when the data is reloaded'},
+	{p:'propagateFilteredTimes',ex:'true',tt:'Propagate to other displays the list of times when we have filtered data. The other displays need to have filteredTimes.accept=true '},
 	{p:'addAttributes',ex:true,tt:'Include the extra attributes of the children'},
 	{p:'orderby',ex:'date|fromdate|todate|name|number',tt:'When showing entries as data how to sort or order the entries'},
 	{p:'ascending',ex:'true',tt:'When showing entries as data how to sort or order the entries'},		
@@ -2870,6 +2872,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         handleEventEntryMouseover: function(source, args) {},
         handleEventEntryMouseout: function(source, args) {},
+        handleEventFilteredTimes: function(source, args) {
+	    let times=args.times;
+	    if(!times) return;
+	    this.getAnimation().setTimes(times);
+	},
         handleEventEntrySelection: function(source, args) {
             let containsEntry = this.getEntries().indexOf(args.entry) >= 0;
             if (!containsEntry) {
@@ -3923,6 +3930,30 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 
 	filterData: function(records, fields, args) {
+            if (!records)  records =this.getRecords();
+	    let filteredRecords = this.filterDataInner(records,fields, args);
+	    if(filteredRecords) {
+		if(this.getPropagateFilteredTimes()) {
+		    if(filteredRecords.length!=records.length) {
+			let times=[];
+			let seen = {};
+			filteredRecords.forEach(record=>{
+			    let date = record.getDate();
+			    if(!date) return;
+			    if(!seen[date]) {
+				seen[date] = true;
+				times.push(date);
+			    }
+			});
+			if(times.length) {
+	                    this.propagateEvent(DisplayEvent.filteredTimes, {times:times});
+			}
+		    }
+		}		    
+	    }
+	    return filteredRecords
+	},
+	filterDataInner: function(records, fields, args) {
 	    if(this.recordListOverride) {
 		return this.recordListOverride;
 	    }
@@ -3981,7 +4012,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 	    }
 
-            if (!records)  records =this.getRecords();
             if (!records) {
 		return null;
 	    }
@@ -7066,28 +7096,34 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let filteredRecords  = this.filterData();
 	    if(debug) console.log("checkSearchBar-done getting filtered data");
 	    if(filteredRecords) {
-		let dateInfo = this.getDateInfo(filteredRecords);
-		if(debug) console.log("checkSearchBar-11");
-		if (dateInfo.dateMax) {
-		    if(debug) console.log("checkSearchBar-getAnimation");
-		    let animation = this.getAnimation();
-		    if(animation.getEnabled()) {
-			if(debug) console.log("checkSearchBar-calling animation.init");
-			//		    console.log("dateMin:" + dateMin.toUTCString());
-			animation.init(dateInfo.dateMin, dateInfo.dateMax,filteredRecords);
-			if(debug) console.log("checkSearchBar-done calling animation.init");
-			if(!this.minDateObj) {
-			    if(debug) console.log("checkSearchBar-calling setDateRange");
-			    if(this.getProperty("animationFilter", true)) {
-				this.setDateRange(animation.begin, animation.end);
-			    }
-			    if(debug) console.log("checkSearchBar-done calling setDateRange");
-			}
-		    }
-		}
+		this.initializeAnimation(filteredRecords);
 	    }
 	    if(debug) console.log("checkSearchBar-done");
         },
+	initializeAnimation:function(filteredRecords) {
+	    let debug = false;
+	    let dateInfo = this.getDateInfo(filteredRecords);
+	    if(debug) console.log("checkSearchBar-11");
+	    if (dateInfo.dateMax) {
+		if(debug) console.log("checkSearchBar-getAnimation");
+		let animation = this.getAnimation();
+		if(animation.getEnabled()) {
+		    if(debug) console.log("checkSearchBar-calling animation.init");
+		    //		    console.log("dateMin:" + dateMin.toUTCString());
+		    animation.init(dateInfo.dateMin, dateInfo.dateMax,filteredRecords);
+		    if(debug) console.log("checkSearchBar-done calling animation.init");
+		    if(!this.minDateObj) {
+			if(debug) console.log("checkSearchBar-calling setDateRange");
+			if(this.getProperty("animationFilter", true)) {
+			    this.setDateRange(animation.begin, animation.end);
+			}
+			if(debug) console.log("checkSearchBar-done calling setDateRange");
+		    }
+		}
+	    }
+	},
+
+
 	getDateInfo:function(records) {
 	    let dateMin = null;
 	    let dateMax = null;

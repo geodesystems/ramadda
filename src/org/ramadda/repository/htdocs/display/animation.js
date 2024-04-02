@@ -626,6 +626,21 @@ function DisplayAnimation(display, enabled,attrs) {
 	    }
 	    this.dateRangeChanged();
 	},
+	//This gets called when another display propagates its animation times
+	setTimes:function(times) {
+	    if(!this.getEnabled()) return;
+	    this.setBeginEnd(times[0],times[times.length-1]);
+	    this.dates.every((date,idx)=>{
+		if(date.getTime()==times[0].getTime()) {
+		    this.frameIndex=idx;
+		    return false;
+		}
+		return true;
+	    });
+	    
+	    this.updateUI();
+	    this.dateRangeChanged();
+	},
 	deltaFrame: function(delta) {
 	    this.frameIndex+=delta;
 	    if(!this.dates) return;
