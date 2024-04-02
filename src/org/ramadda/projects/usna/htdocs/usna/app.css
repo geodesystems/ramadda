@@ -10496,7 +10496,8 @@ code {
 header {
     padding-bottom: 0;
     padding-top: 5px;
-    background: url(https://www.usna.edu/CMS/_standard3.0/_files/img/Top.jpg) center top no-repeat #153a5e!important;
+/*    background: url(https://www.usna.edu/CMS/_standard3.0/_files/img/Top.jpg) center top no-repeat #153a5e!important;*/
+    background: url(Top.jpg) center top no-repeat #153a5e!important;
     border-top: 5px solid #fbc42b
 }
 
@@ -11055,7 +11056,10 @@ footer .mobile-footer li:first-child h5 {
 }
 
 .footer-bottom {
+/*
     background: url(https://www.usna.edu/CMS/_standard3.0/_files/img/background.png) #153a5e;
+*/
+    background: url(background.png) #153a5e;
     padding: 10px 0;
     color: #fff;
     font-size: .78571rem;
