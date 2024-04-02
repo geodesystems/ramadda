@@ -2260,6 +2260,8 @@ public abstract class Converter extends Processor {
 
 		if(searchable)
 		    attrs.append(" searchable=\"" + "true" + "\" ");
+		else
+		    attrs.append(" searchable=\"" + "false" + "\" ");		    
                 if (type.equals("double") || type.equals("integer")) {
                     if (chartable) {
                         attrs.append(" chartable=\"" + "true" + "\" ");
@@ -5871,6 +5873,46 @@ public abstract class Converter extends Processor {
 
     }
 
+
+    public static class TrendCounter extends Converter {
+	String name;
+	int counter=0;
+	double lastValue=Double.NaN;
+
+        /**
+         * @param keys _more_
+         * @param indices _more_
+         */
+        public TrendCounter(String col, String name) {
+            super(col);
+	    this.name = name;
+        }
+
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+		row.add(name);
+                return row;
+            }
+	    int index = getIndex(ctx);
+	    if(!row.indexOk(index)) return row;
+	    double v = row.getDouble(index);
+	    if(Double.isNaN(lastValue) || v<lastValue) {
+		counter++;
+	    }
+	    lastValue = v;
+	    row.add(""+(counter));
+            return row;
+        }
+
+    }
+    
 
     /**
      * Class description
