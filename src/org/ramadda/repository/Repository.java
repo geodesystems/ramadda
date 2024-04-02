@@ -5917,15 +5917,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
+    private TypeHandler anyTypeHandler;
+
     /**
      * _more_
      *
      * @throws Exception _more_
      */
     private void initDefaultTypeHandlers() throws Exception {
+	
         addTypeHandler(TypeHandler.TYPE_ANY,
-                       new TypeHandler(this, TypeHandler.TYPE_ANY,
-                                       "Any file type"));
+                       anyTypeHandler = new TypeHandler(this, TypeHandler.TYPE_ANY,
+							"Any file type"));
         addTypeHandler(TypeHandler.TYPE_GROUP,
                        groupTypeHandler = new GroupTypeHandler(this));
         groupTypeHandler.putWikiText("simple","{{tabletree showType=false  showSize=false   showCreateDate=false}}");
@@ -7197,9 +7200,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
         for (TypeHandler typeHandler : getTypeHandlers()) {
 	    if(groupOnly && !typeHandler.isGroup()) continue;
 
-            if (typeHandler.isAnyHandler() && !includeAny) {
-                continue;
-            }
+
+            if (typeHandler.equals(groupTypeHandler)) {
+		continue;
+	    }
+
+            if (typeHandler.isAnyHandler()) {
+		continue;
+	    }
             if (exclude != null) {
                 if (exclude.contains(typeHandler.getType())) {
                     continue;
@@ -7218,6 +7226,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
 	TwoFacedObject.sort(items);
+	//Add these in in the front of the list
+	items.add(0,new TwoFacedObject(groupTypeHandler.getLabel(),
+				       groupTypeHandler.getType()));
+
+	if(includeAny && anyTypeHandler!=null) {
+            items.add(0,new TwoFacedObject(anyTypeHandler.getLabel(),
+					   anyTypeHandler.getType()));
+	}	    
+
 	if(initItems!=null)  {
 	    List tmp = new ArrayList();
 	    tmp.addAll(initItems);
