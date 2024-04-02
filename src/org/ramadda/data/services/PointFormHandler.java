@@ -6,6 +6,8 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.data.services;
 
 
+import org.ramadda.repository.type.TypeHandler;
+
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.*;
 
@@ -871,6 +873,7 @@ public class PointFormHandler extends RecordFormHandler {
 
 	Entry theEntry  = recordEntry!=null?recordEntry.getEntry():null;
 
+	
         StringBuffer subsetSB   = new StringBuffer();
         subsetSB.append(HU.formTable());
         if (numRecords > 0) {
@@ -1049,11 +1052,17 @@ public class PointFormHandler extends RecordFormHandler {
         }
 
 
+	RecordTypeHandler typeHandler = (RecordTypeHandler) (theEntry!=null?theEntry.getTypeHandler():null);
+	Hashtable props = typeHandler!=null?typeHandler.getRecordProperties(entry):null;
+
         if (searchableFields != null) {
             StringBuffer paramSB = null;
             for (RecordField field : searchableFields) {
                 List<String[]> enums        = field.getEnumeratedValues();
                 String         searchSuffix = field.getSearchSuffix();
+		if(!Utils.stringDefined(searchSuffix) && props!=null) {
+		    searchSuffix = Utils.getProperty(props,"record.searchsuffix." + field.getName(),null);
+		}
 
                 if (searchSuffix == null) {
                     searchSuffix = "";
