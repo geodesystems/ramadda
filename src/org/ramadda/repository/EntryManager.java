@@ -5988,6 +5988,15 @@ public class EntryManager extends RepositoryManager {
         sb.append(HU.formEntry(msgLabel("Or URL"),
 			       HU.input(ARG_URL, "",
 					HU.SIZE_70)));
+	
+
+	if (request.isAdmin()) {
+	    sb.append(HU.formEntry(msgLabel("Or File on Server"),
+				   HU.input(ARG_SERVERFILE, "",
+					    HU.SIZE_70)));
+	}
+	
+
         if (importTypes.size() > 0) {
             importTypes.add(
 			    0, new TwoFacedObject("RAMADDA will figure it out", ""));
@@ -6065,6 +6074,10 @@ public class EntryManager extends RepositoryManager {
         if (Utils.stringDefined(url)) {
             file = getStorageManager().fetchUrl(url).toString();
         }
+
+	if (request.isAdmin() && request.defined(ARG_SERVERFILE)) {
+	    file = request.getString(ARG_SERVERFILE,"");
+	}
 
         if (file == null) {
             file = request.getUploadedFile(ARG_FILE);
