@@ -955,7 +955,7 @@ public class EntryManager extends RepositoryManager {
 	    zipFileWriter.writeFile(htmlFileName, html.getBytes());
 	    zipFileWriter.writeFile("entries.xml",entriesXml.toString().getBytes());
 	    zipFileWriter.close();
-	    return  processEntryImportInner(request, parent, zipFile.toString());
+	    return  processEntryImportInner(request, parent, zipFile.toString(),true);
 	}
 
 	return makeSnapshotForm(request, entry,"");
@@ -6069,14 +6069,32 @@ public class EntryManager extends RepositoryManager {
 
 
 
+	boolean deleteFile = true;
 
         String file = null;
         if (Utils.stringDefined(url)) {
             file = getStorageManager().fetchUrl(url).toString();
-        }
-
-	if (request.isAdmin() && request.defined(ARG_SERVERFILE)) {
+	    deleteFile = false;
+        } else 	if (request.isAdmin() && request.defined(ARG_SERVERFILE)) {
+            request.ensureAdmin();
 	    file = request.getString(ARG_SERVERFILE,"");
+	    File _file = new File(file);
+	    deleteFile = false;
+	    if(_file.exists() && _file.isDirectory()) {
+		Result lastResult = null;
+		for(File _child:_file.listFiles()) {
+		    String child = _child.toString();
+		    if(child.toLowerCase().endsWith(".zip") || child.toLowerCase().endsWith(".xml")) {
+			System.err.println("Processing directory import:" + child);
+			lastResult =  processEntryImportInner(request, parent, child,deleteFile);
+		    }
+		}
+		if(lastResult==null) {
+		    return new Result("", new StringBuilder(
+							    getPageHandler().showDialogError("No .zip or .xml files found in directory:" + file)));
+		}
+		return lastResult;
+	    }
 	}
 
         if (file == null) {
@@ -6087,6 +6105,13 @@ public class EntryManager extends RepositoryManager {
             throw new IllegalArgumentException("No file argument given");
         }
 
+
+	Result result = handleImport(request, file, parent);
+	if(result!=null) return result;
+	return processEntryImportInner(request, parent, file,deleteFile);
+    }
+
+    private Result handleImport(Request request, String file, Entry parent) throws Exception{
         //Check the import handlers
         for (ImportHandler importHandler :
 		 getRepository().getImportHandlers()) {
@@ -6096,12 +6121,11 @@ public class EntryManager extends RepositoryManager {
                 return result;
             }
         }
-
-	return processEntryImportInner(request, parent, file);
+	return  null;
     }
 
 
-    private  Result processEntryImportInner(Request request, Entry parent, String file) throws Exception {	
+    private  Result processEntryImportInner(Request request, Entry parent, String file, boolean deleteFile) throws Exception {	
         String entriesXml = null;
         Hashtable<String, File> origFileToStorage = new Hashtable<String,
 	    File>();
@@ -6166,7 +6190,9 @@ public class EntryManager extends RepositoryManager {
             }
         } finally {
             IO.close(fis);
-            getStorageManager().deleteFile(new File(file));
+	    if(deleteFile) {
+		getStorageManager().deleteFile(new File(file));
+	    }
         }
 
 
@@ -6214,7 +6240,6 @@ public class EntryManager extends RepositoryManager {
             getPageHandler().entrySectionOpen(request, parent, sb,
 					      "Imported Entries", true);
         }
-
 
 
         sb.append("<ul>");
