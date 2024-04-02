@@ -931,16 +931,18 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
 	{p:'interval',ex:'30',d:30,label:"Interval"},
 	{p:'showCheckbox',ex:'false',d:true,label:"Show Checkbox"},
 	{p:'showCountdown',ex:'false',d:true,label:"Show Countdown"},	
+	{p:'doPage',ex:'true',tt:'Reload the entire page'},
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
         },
-        xxpointDataLoaded: function(pointData, url, reload) {
-	},
 	reloadData: function() {
 	    let pointData = this.dataCollection.getList()[0];
-	    pointData.loadData(this,true);
+	    if(pointData)
+		pointData.loadData(this,true);
+	    else
+		console.log('No data to reload');
 	},
 	updateUI: function() {
 	    let html = "";
@@ -1005,11 +1007,18 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
 		this.checkReload(time);
 	    },1000);
 	},
+	doReload: function(time) {
+	    if(this.getDoPage()) {
+		location.reload(true);
+	    } else {
+		this.reloadData();
+	    }
+	},
 	checkReload: function(time) {
 	    time--;
 	    if(time<=0) {
 		this.jq(ID_COUNTDOWN).html("Reloading..." +HU.span([STYLE,"color:transparent;"],""));
-		this.reloadData();
+		this.doReload();
 		time = this.getPropertyInterval();
 		//Start up again in a bit so the reloading... label is shown
 		if(this.lastTimeout) clearTimeout(this.lastTimeout);
