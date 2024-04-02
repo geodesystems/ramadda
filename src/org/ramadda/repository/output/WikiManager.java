@@ -6898,8 +6898,8 @@ public class WikiManager extends RepositoryManager
 		continue;
 	    }
 
-	    if (entryId.startsWith("search:")) {
-		entryId = entryId.substring("search:".length());
+	    if (entryId.startsWith("searchurl:")) {
+		entryId = entryId.substring("searchurl:".length());
 		Request searchRequest = new Request(getRepository(),myRequest.getUser());
 		List<String> args = IO.parseArgs(entryId);
 		for(int i=0;i<args.size();i+=2) {
