@@ -87,20 +87,35 @@ priority="2"       >
      <property name="form.resource.show" value="false"/>
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
-     <column name="localfilepath" group="Look for files here" type="string"     label="Server file path" columns="80"  showinhtml="false"/>
-     <column name="timedelay" type="double"  label="Age" suffix="Find files that haven't changed in this time (minutes)"  showinhtml="false"/>
-     <column name="includepattern" group="Find files or directories" type="string"     label="Match files with patterns" rows="5" suffix="wildcard or &quot;regexp:pattern&quot;. One per line. e.g.&lt;br&gt;&lt;i&gt;*.nc&lt;br&gt;regexp:model[0-9]\.grb$&lt;br&gt;&lt;/i&gt;To match directories add a &quot;dir&quot; prefix:&lt;br&gt;&lt;i&gt;dir:*data&lt;/i&gt;"  showinhtml="false"/>
+     <column name="localfilepath" group="Look for files here" type="string"
+	     help="The server side directory to scan"
+	     label="Server file path" columns="80"  showinhtml="false"/>
+     <column name="timedelay" type="double"  label="Age"
+	     help="Find files that haven't changed in this time (minutes)"  showinhtml="false"/>
+     <column name="includepattern" group="Find files or directories" type="string"
+	     label="Match files with patterns" rows="5"
+	     suffix="wildcard or &quot;regexp:pattern&quot;. One per line. e.g.&lt;br&gt;&lt;i&gt;*.nc&lt;br&gt;regexp:model[0-9]\.grb$&lt;br&gt;&lt;/i&gt;To match directories add a &quot;dir&quot; prefix:&lt;br&gt;&lt;i&gt;dir:*data&lt;/i&gt;"  showinhtml="false"/>
      <column name="excludepattern" type="string"     label="Exclude files with patterns" rows="5" suffix=""  showinhtml="false"/>
      <column name="directory_type"  group="Attributes"       type="string"     label="Directory Type" 
 	     showinhtml="false"
-	     suffix="Entry type to use for directories. Note: If you change this then you should also clear the cache with the Admin-&gt;Maintenance-&gt;Clear Cache"/>
-     <column name="date_patterns"  group="Attributes"
+	     help="Entry type to use for directories"
+	     suffix="Note: If you change this then you should also clear the cache with the Admin-&gt;Maintenance-&gt;Clear Cache"/>
+     <column name="date_offset"
+	     group="Attributes" label="Date Offset"
+	     help="Offset the date by the number of seconds"
+	     suffix="seconds"
+	     type="int" default="0" />
+     <column name="date_patterns" 
 	     type="string"     label="Date Patterns" 
+	     help="Extract the date from the file name"
 	     rows="5"
 	     suffix="e.g.:&lt;br&gt;yyyyMMdd&lt;br&gt;yyyy-MM-dd&lt;br&gt;yyyy_MM_dd&lt;br&gt;yyyyMMddHHmm&lt;br&gt;yyyy_MM_dd_HHmm&lt;br&gt;yyyy-MM-dd_HHmm"
 	     showinhtml="false"/>
 
-     <column name="naming"  group="Attributes"       type="string"     label="Naming" rows="5" suffix="pattern:replacement e.g.&lt;br&gt;&lt;i&gt;NAM:North American Model&lt;br&gt;path:GFS:Global Forecast Model&lt;br&gt;&lt;i&gt;"  showinhtml="false"/>
+     <column name="naming"  group="Attributes"  type="string"
+	     label="Naming" rows="5"
+	     help="Change the entry name"
+	     suffix="pattern:replacement e.g.&lt;br&gt;&lt;i&gt;NAM:North American Model&lt;br&gt;path:GFS:Global Forecast Model&lt;br&gt;&lt;i&gt;"  showinhtml="false"/>
     <wikis tag="simple"><![CDATA[{{tabletree showType=false  showSize=false   showCreateDate=false}}]]></wikis>
  </type>
 
