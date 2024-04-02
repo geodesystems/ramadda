@@ -1,9 +1,14 @@
+set -e
+shopt -s expand_aliases
+source ~/.bashrc
+
 process() {
     cd $1
     echo "processing $1"
     sh ../makecases.sh data.html> entries.xml
     jar -cvf "../missing$1.zip" entries.xml images/* >/dev/null
     cd ..
+    putgeode missing$1.zip missing
 }
 
 process data1
