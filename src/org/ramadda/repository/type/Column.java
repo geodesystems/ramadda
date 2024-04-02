@@ -1448,7 +1448,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             sb.append(toLatLonString(values, offset + 1, raw));
 	    double lat = Utils.getDouble(values[offset]);
 	    double lon = Utils.getDouble(values[offset+1]);	    
-	    if(request.get("addmap",false) && !Double.isNaN(lat) && !Double.isNaN(lon) && lat!=Entry.NONGEO && lon!=Entry.NONGEO) {
+	    if(false && request.get("addmap",false) && !Double.isNaN(lat) && !Double.isNaN(lon) && lat!=Entry.NONGEO && lon!=Entry.NONGEO) {
 		MapInfo map = new MapInfo(request, getRepository(),"200","200");
 		map.addMarker("",lat,  lon, null,"","");
 		map.center();
@@ -3323,6 +3323,8 @@ public class Column implements DataTypes, Constants, Cloneable {
 	if (values != null) {
 	    lat = Utils.getDouble(values[offset]);
 	    lon = Utils.getDouble(values[offset + 1]);
+	    if(lat==Entry.NONGEO) lat = Double.NaN;
+	    if(lon==Entry.NONGEO) lon = Double.NaN;	    
 	}
 	return new double[]{lat,lon};
     }

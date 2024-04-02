@@ -1183,12 +1183,15 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
 
         if (encodeResults) {
-            return "base64:" + Utils.encodeBase64(bubble);
+            return encodeText(bubble);
         }
 
         return bubble;
     }
 
+    public String encodeText(String s) {
+	return "base64:" + Utils.encodeBase64(s);
+    }
 
     /**
      * _more_
@@ -1200,10 +1203,9 @@ public class MapManager extends RepositoryManager implements WikiConstants,
      *
      * @throws Exception _more_
      */
-    public String makeInfoBubble(Request request, Entry entry)
+    public String makeInfoBubble(Request request, Entry entry,String...extraHeader)
 	throws Exception {
         String fromEntry = entry.getTypeHandler().getMapInfoBubble(request,  entry);
-
         if (fromEntry != null) {
             //If its not json then wikify it
             if ( !fromEntry.startsWith("{") || fromEntry.startsWith("{{")) {
@@ -1212,10 +1214,16 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 							 Utils.makeHashSet(WikiConstants.WIKI_TAG_MAPENTRY,
 									   WikiConstants.WIKI_TAG_MAP));
             }
+	    if(extraHeader.length>0) {
+		fromEntry=HU.div(HU.b(Utils.join("<br>",extraHeader)),"") +fromEntry;
+	    }
             return fromEntry;
         }
         StringBuilder info    = new StringBuilder();
 	HU.open(info,"div",HU.cssClass("ramadda-map-bubble"));
+	if(extraHeader.length>0) {
+	    info.append(HU.div(HU.b(Utils.join("<br>",extraHeader)),""));
+	}
         boolean       isImage = entry.isImage();
         if (isImage) {
             int width = Utils.getDimension(request.getString(ATTR_WIDTH,
@@ -1841,7 +1849,6 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             makeRectangles = false;
         }
 
-
         for (Entry entry : entriesToUse) {
             boolean addMarker = true;
             List<Metadata> metadataList =
@@ -1849,7 +1856,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
             boolean rectOK = true;
             if (detailed) {
-                rectOK = entry.getTypeHandler().addToMap(request, entry, map);
+		rectOK = entry.getTypeHandler().addToMap(request, entry, map);
                 if ( !rectOK) {
                     addMarker = false;
                 }

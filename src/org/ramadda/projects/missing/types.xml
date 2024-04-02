@@ -28,6 +28,7 @@
     <property name="form.tags.show" value="true"/>    
     <property name="form.resource.show" value="false"/>
     <property name="date.format" value="yyyy-MM-dd"/>        
+    <property name="found_location.column.icon" value="/map/flag.png"/> 
 
     <column name="case_number" type="string"  label="Case Number" cansearch="false"/>
     <column name="first_name" type="string"  label="First Name" cansearch="true"/>
@@ -163,7 +164,7 @@ For Example Only<br>
 <b>Last Known Location</b>
 <br>
 {{field name=missing_city}} {{field name=missing_state}}
-{{mapentry hideIfNoLocations=true width="90%" height="200px"}}
+{{mapentry hideIfNoLocations=true width="90%" height="200px" detailed=true}}
 -center
 
 

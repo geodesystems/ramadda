@@ -94,6 +94,7 @@ public class MapInfo {
 
     /** the javascript buffer? */
     private StringBuilder jsBuffer = null;
+    private StringBuilder jsBuffer2 = null;    
 
     /** _more_ */
     private StringBuilder extraNav = new StringBuilder();
@@ -326,6 +327,9 @@ public class MapInfo {
     public void addJS(String s) {
         getJS().append(s);
     }
+    public void addJS2(String s) {
+        getJS2().append(s);
+    }    
 
     /**
      * Add the right side of the widget
@@ -562,6 +566,13 @@ public class MapInfo {
 
         return jsBuffer;
     }
+    private StringBuilder getJS2() {
+        if (jsBuffer2 == null) {
+            jsBuffer2 = new StringBuilder();
+        }
+
+        return jsBuffer2;
+    }    
 
     /**
      * _more_
@@ -599,6 +610,7 @@ public class MapInfo {
                 Utils.append(js, "theMap.initMap(", forSelection, ");\n");
             }
             js.append(getJS());
+            js.append(getJS2());	    
 	    js.append("theMap.finishInit();\n");
             return js.toString();
         } catch (Exception exc) {
@@ -1450,11 +1462,11 @@ public class MapInfo {
     public void centerOn(Rectangle2D.Double bounds, boolean force) {
         if (bounds != null) {
             //      System.err.println("Center on A:" +Utils.getStack(5));
-            Utils.append(getJS(), "var bounds = new OpenLayers.Bounds(",
+            Utils.append(getJS2(), "var bounds = new OpenLayers.Bounds(",
                          bounds.getX(), ",", bounds.getY(), ",",
                          (bounds.getX() + bounds.getWidth()), ",",
                          (bounds.getY() + bounds.getHeight()), ");\n");
-            Utils.append(getJS(), mapVarName, ".centerOnMarkers(bounds, ",
+            Utils.append(getJS2(), mapVarName, ".centerOnMarkers(bounds, ",
                          force, ");\n");
         } else {
             center();
@@ -1467,7 +1479,7 @@ public class MapInfo {
      * Center the map
      */
     public void center() {
-        Utils.append(getJS(), mapVarName, ".centerOnMarkersInit(null);\n");
+        Utils.append(getJS2(), mapVarName, ".centerOnMarkersInit(null);\n");
     }
 
     /**
@@ -1478,7 +1490,6 @@ public class MapInfo {
     public void centerOn(Entry entry) {
         if (entry == null) {
             center();
-
             return;
         }
         if (entry.hasAreaDefined()) {
@@ -1500,10 +1511,10 @@ public class MapInfo {
      */
     public void centerOn(double north, double west, double south,
                          double east) {
-        Utils.append(getJS(), "var bounds = new OpenLayers.Bounds(", west,
+        Utils.append(getJS2(), "var bounds = new OpenLayers.Bounds(", west,
                      ",", south, ",", east, ",", north, ");\n");
         //      System.err.println("Center on B:" +Utils.getStack(5));
-        Utils.append(getJS(), mapVarName, ".centerOnMarkers(bounds);\n");
+        Utils.append(getJS2(), mapVarName, ".centerOnMarkers(bounds);\n");
     }
 
 

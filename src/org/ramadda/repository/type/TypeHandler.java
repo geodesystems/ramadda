@@ -1385,9 +1385,30 @@ public class TypeHandler extends RepositoryManager {
         if (parent != null) {
             return parent.addToMap(request, entry, map);
         }
+	List<Column> columns = getColumns();
+	if (columns == null) {
+	    return true;
+	}
+	boolean didOne=false;
+	for(Column column: columns) {
+	    if(column.isLatLon()) {
+		double[] latlon = column.getLatLon(entry.getValues());
+		if(!Double.isNaN(latlon[0]) && !Double.isNaN(latlon[1])) {
+		    String icon  = getTypeProperty("column.icon",getTypeProperty(column.getName()+".column.icon",null));
+		    String info  = getMapManager().encodeText(getMapManager().makeInfoBubble(request,entry,column.getLabel(),"<hr class=ramadda-hr>"));
 
-        return true;
+		    map.addMarker(entry.getId()+"_"+column.getName(),latlon[0], latlon[1], icon,
+				  column.getName(),info);
+		    didOne=true;
+		}
+	    }
+	}
+	if(didOne)	map.center();
+	return true;
     }
+
+
+
 
     /**
      * _more_
