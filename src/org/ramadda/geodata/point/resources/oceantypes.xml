@@ -539,7 +539,7 @@ radius=4 colorBy=degrees strokeWidth=0 pathStrokeWidth=0.25 colorTable=plotly_bl
 }}
 -col
 +col-6
-{{display_template  onlyShowSelected=true filterFields=""
+{{display_template  onlyShowSelected=true filterFields="" labelStyle="max-width:250px;width:250px;"
 template="${default}" }}
 -col
 -row
