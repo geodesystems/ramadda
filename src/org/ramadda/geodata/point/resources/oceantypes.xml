@@ -833,6 +833,7 @@ convertData="groupTrend(field=_rs232dpt, newField=derived_counter,type=enumerati
 {{display_fieldslist  showPopup=true  numericOnly=true fields=temp_c selectOne=true
 fieldsSelected.shareGroup="profile1"}} 
 {{display_profile height=300px marginTop=10  indexField=_rs232dpt  setRangeFromAllValues=true
+filteredTimes.accept=true
 fields=temp_c fieldsSelected.acceptGroup="profile1" 
 doAnimation=true animationStartAtEnd=true animationMode=frame  animationDateFormat=yyyymmddhhmm
 yAxisReverse=true yAxisTitle=Depth
@@ -840,6 +841,7 @@ yAxisReverse=true yAxisTitle=Depth
 {{display_fieldslist  showPopup=true  numericOnly=true fields=cond_s_cm selectOne=true
 fieldsSelected.shareGroup="profile2"}} 
 {{display_profile height=300px marginTop=10  indexField=_rs232dpt  setRangeFromAllValues=true
+filteredTimes.accept=true
 fields=cond_s_cm  fieldsSelected.acceptGroup="profile2" 
 doAnimation=true animationStartAtEnd=true animationMode=frame  animationDateFormat=yyyymmddhhmm
 yAxisReverse=true yAxisTitle=Depth
@@ -851,11 +853,12 @@ yAxisReverse=true yAxisTitle=Depth
 {{display_fieldslist  showPopup=true  numericOnly=true  fieldsSelected.shareGroup="table"   }}
 {{display_download  fieldsSelected.acceptGroup="table"}}
 {{display_table    fieldsSelected.acceptGroup="table"
+propagateFilteredTimes=true
 filterFields=derived_counter  height=80vh fields=timestamp,derived_counter,pfl_counter,_rs232dpt,temp_c
 }}
 -tab
 +tab Selected Record
-{{display_template  onlyShowSelected=true filterFields=""
+{{display_template  onlyShowSelected=true filterFields="" labelStyle="max-width:200px;width:200px;"
 template="${default}" }}
 -tab
 -tabs
