@@ -894,9 +894,9 @@ public abstract class RecordFile {
     public List<RecordField> getSearchableFields() {
         List<RecordField> fields = getFields();
         List<RecordField> result = new ArrayList<RecordField>();
-        for (RecordField attr : fields) {
-            if (attr.getSearchable()) {
-                result.add(attr);
+        for (RecordField field : fields) {
+            if (field.getSearchable()) {
+                result.add(field);
             }
         }
 
