@@ -1848,6 +1848,7 @@ public class TypeHandler extends RepositoryManager {
     public List<String> getSynthIds(Request request, SelectInfo select, Entry mainEntry,
                                     Entry ancestor, String synthId)
             throws Exception {
+
         if (parent != null) {
             return parent.getSynthIds(request, select, mainEntry, ancestor, synthId);
         }
@@ -7171,8 +7172,7 @@ public class TypeHandler extends RepositoryManager {
     public void getChildrenEntries(Request request, Entry group,
                                    List<Entry> children, SelectInfo select)
             throws Exception {
-        List<String> ids = getEntryManager().getChildIds(request, group,
-                               select);
+        List<String> ids = getEntryManager().getChildIds(request, group, select);
         List<Entry> myEntries   = new ArrayList<Entry>();
         for (String id : ids) {
             Entry entry = getEntryManager().getEntry(request, id);

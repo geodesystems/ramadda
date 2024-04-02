@@ -48,6 +48,14 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
+    @Override
+    public void initializeEntryFromForm(Request request, Entry entry,
+                                        Entry parent, boolean newEntry)
+            throws Exception {
+	super.initializeEntryFromForm(request, entry, parent, newEntry);
+	getEntryManager().clearCache();
+    }
+
     /**
        Override to use the entry type select menu
     */
@@ -58,8 +66,9 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
 	if(column.getName().equals("directory_type")) {
 	    String selected = "";
 	    if(entry!=null) selected = (String) entry.getValue(LocalFileInfo.COL_DIRECTORY_TYPE);
-	    return  getRepository().makeTypeSelect(null, request,column.getEditArg(),
-				   null,true,selected,true,null, true);
+	    String select =   getRepository().makeTypeSelect(null, request,column.getEditArg(),
+							     null,true,selected,true,null, true);
+	    return select;
 	}
 	return super.getFormWidget(request, entry,column, widget);
     }
@@ -611,6 +620,10 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
 	    if(tmpDate!=null) {
 		fromDate = tmpDate.getTime();
 	    }
+	}
+	Integer delta = (Integer)parentEntry.getValue(LocalFileInfo.COL_DATE_OFFSET);
+	if(delta!=null && delta.intValue()!=0) {
+	    fromDate += delta.intValue()*1000;
 	}
 
 

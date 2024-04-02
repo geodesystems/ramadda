@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class LocalFileInfo {
 
-    public static int COL=0;
+    private static int COL=0;
 
 
     /** _more_ */
@@ -41,6 +41,8 @@ public class LocalFileInfo {
 
     /** _more_ */
     public static final int COL_DIRECTORY_TYPE = COL++;
+
+    public static final int COL_DATE_OFFSET = COL++;
 
 
     /** _more_ */
