@@ -830,7 +830,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 HU.attr(HU.ATTR_ONCLICK,
                                HU.call("HU.checkboxClicked",
                                    HU.comma("event",
-                                       HU.squote(ARG_VARIABLE),
+                                       HU.squote(ARG_VAR),
                                        HU.squote(cbxId))));
             VariableEnhanced var     = grid.getVariable();
             StringBuffer     sbToUse = null;
@@ -849,29 +849,28 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 }
             }
 
-	    String label = var.getShortName() + HU.SPACE
-		+ ((var.getUnitsString() != null)? 
-		   "(" + var.getUnitsString() + ")"
-		   : "");
-	    String desc = "<i>" + var.getDescription()	+ "</i>"; 
-            sbToUse.append(HU.row(HU.cols(HU.labeledCheckbox(ARG_VARIABLE, var.getShortName(),
-							     (grids.size() == 1),
-							     HU.cssClass("ramadda-grid-variable") +HU.id(cbxId) + call,label),desc)));
+	    String units = var.getUnitsString() != null? 
+		"(" + var.getUnitsString() + ")"
+		: "";
+	    //	    String label = var.getShortName() + HU.SPACE
 
-
+	    String desc = Utils.getDefined("",var.getDescription(),var.getShortName())+HU.SPACE+units;
+	    String label = HU.span(desc,HU.attrs("title",var.getShortName()));
+            sbToUse.append(HU.labeledCheckbox(ARG_VAR, var.getShortName(),
+					      (grids.size() == 1),
+					      HU.cssClass("ramadda-grid-variable") +HU.id(cbxId) + call,label));
+	    sbToUse.append(HU.br());
         }
 	String toggleAllId = HU.getUniqueId("cbx_");
-	varSB.append(HU.labeledCheckbox("", HU.VALUE_TRUE,
-				     false,HU.attr("id",toggleAllId),
-				     "Toggle all"));
+	HU.div(varSB,HU.labeledCheckbox("", HU.VALUE_TRUE,
+					false,HU.attr("id",toggleAllId),
+					"Toggle all"),"");
 
 
 
         if (varSB2D.length() > 0) {
             if (varSB3D.length() > 0) {
-                varSB.append(
-                    HU.row(
-                        HU.headerCols(new Object[] { "2D Grids" })));
+                varSB.append(HU.div(HU.b("2D Grids"),""));
             }
             varSB.append(varSB2D);
         }
@@ -884,7 +883,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                                   + HU.space(1)
                                   + HU.input(ARG_LEVEL, "");
                     } else if (haveOneVerticalCS) {
-                        header += HU.space(3) + "Level:"
+                        header += HU.space(3) + HU.b("Level:")
                                   + HU.space(1);
                         double[] zVals = compAxis.getCoordValues();
                         List<TwoFacedObject> selObjs =
@@ -906,9 +905,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                                   + compAxis.getUnitsString() + ")";
                     }
                 }
-                varSB.append(
-                    HU.row(
-                        HU.headerCols(new Object[] { header })));
+                varSB.append(HU.div(header,""));
             }
             varSB.append(varSB3D);
         }
@@ -974,14 +971,12 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         sb.append(HU.br());
         sb.append(HU.hidden(ARG_OUTPUT, OUTPUT_GRIDSUBSET));
         sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
-        sb.append(HU.div("Select Subset Parameters",HU.cssClass("ramadda-table-header")+HU.style("margin-top:6px;padding-top:2px;")));
+        sb.append(HU.div("Select Subset Parameters",HU.cssClass("ramadda-table-header")+HU.style("margin-top:6px;")));
         sb.append(HU.formTable());
 	List<String> strides = new ArrayList<String>();
  	for(int i=1;i<=100;i++) strides.add(""+i);
-        sb.append(HU.formEntry(msgLabel("Horizontal Stride"),
-                                      HU.select(ARG_HSTRIDE,strides,
-						       request.getString(ARG_HSTRIDE,
-									 "1"))));
+        HU.formEntry(sb,msgLabel("Horizontal Stride"),
+		     HU.select(ARG_HSTRIDE,strides,  request.getString(ARG_HSTRIDE,"1")));
         List<CalendarDate> dates = getGridDates(dataset);
         StringBuffer       varSB = getVariableForm(dataset, true, true,
                                        false);
@@ -1011,6 +1006,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 					    "Add Lat/Lon Variables")+HU.SPACE+
 		     "(if needed for CF compliance)");
 
+        sb.append(HU.formTableClose());
+
         /*
         // TODO: check if we can use this.
         // This uses JNI, so not available everywhere
@@ -1026,18 +1023,24 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                                           format)));
         */
 
-        addPublishWidget(request, entry, sb,
-                         msg("Select a folder to publish the results to"));
-        sb.append(HU.formTableClose());
 
-        sb.append(HU.div("Select Variables",HU.cssClass("ramadda-table-header")+HU.style("margin-top:6px;padding-top:2px;")));
-        sb.append("<ul>");
-        sb.append("<table>");
+        sb.append(HU.div("Select Variables",HU.cssClass("ramadda-table-header")+HU.style("margin-top:6px;")));
+	sb.append(HU.beginInset(0,20,0,0));
         sb.append(varSB);
-        sb.append("</table>");
-        sb.append("</ul>");
-        sb.append(HU.br());
+	sb.append(HU.endInset());
+
+        if (!request.getUser().getAnonymous()) {
+	    sb.append(HU.div("Publish",HU.cssClass("ramadda-table-header")+HU.style("margin-top:6px;")));
+	    sb.append(HU.formTable());
+	    addPublishWidget(request, entry, sb,
+			     "Select a folder to publish the results to");
+	    sb.append(HU.formTableClose());
+	}
+
+
+	sb.append(HU.vspace("1em"));
         sb.append(HU.submit("Subset Grid"));
+	sb.append(HU.vspace("1em"));
         addUrlShowingForm(sb, null, formId,
                           "[\".*OpenLayers_Control.*\",\".*original.*\"]",
                           null, "includeCopyArgs","true");
@@ -1097,7 +1100,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 		}
 	    }
 	    for (String v :
-		     (List<String>) request.get(ARG_VARIABLE,
+		     (List<String>) request.get(ARG_VAR,
 						new ArrayList<String>())) {
 		varNames.addAll(StringUtil.split(v, ",", true, true));
 	    }

@@ -149,7 +149,7 @@ public class NcssTypeHandler extends PointTypeHandler {
 
         String rest = url;
         while (true) {
-            toks = Utils.findPatterns(rest, "var=([^&]+)&(.*)");
+            toks = Utils.findPatterns(rest, "var=([^&]+)&?(.*)");
             if (toks == null) {
                 break;
             }
@@ -233,7 +233,11 @@ public class NcssTypeHandler extends PointTypeHandler {
             return;
         }
 
-	if(!checkLatLon(request, entry)) return;
+	System.err.println("init-1");
+	if(!checkLatLon(request, entry)) {
+	    System.err.println("init-2");
+	    return;
+	}
         super.initializeNewEntry(request, entry, fromImport);
         String url = entry.getResource().getPath();
         if ( !Utils.stringDefined(entry.getName())) {
@@ -255,6 +259,7 @@ public class NcssTypeHandler extends PointTypeHandler {
         String                    vertCoordUnit = "m";
         if (index >= 0) {
             String            header = sample.substring(0, index);
+	    System.err.println("header:" + header);
             List<RecordField> fields = new CsvFile().doMakeFields(header);
             for (RecordField field : fields) {
                 if (field.getName().equals("vertCoord")) {
@@ -273,11 +278,16 @@ public class NcssTypeHandler extends PointTypeHandler {
         List<String> vars = new ArrayList<String>();
         double[]     loc  = new double[] { 0, 0 };
         url = parseUrl(url, loc, vars);
+	System.err.println("VARS:" + vars);
+
+
         entry.getResource().setPath(url);
 
         StringBuilder properties = new StringBuilder("skiplines=1\n");
         properties.append(
-            "fields=time[type=date format=\"yyyy-MM-dd'T'HH:mm:ss\"],station[type=string],latitude[unit=\"degrees_north\"],longitude[unit=\"degrees_east\"]");
+            "fields=time[type=date format=\"yyyy-MM-dd'T'HH:mm:ss\"],latitude[unit=\"degrees_north\"],longitude[unit=\"degrees_east\"]");
+	//        properties.append(
+	//            "fields=time[type=date format=\"yyyy-MM-dd'T'HH:mm:ss\"],station[type=string],latitude[unit=\"degrees_north\"],longitude[unit=\"degrees_east\"]");
         if (addVertCoord) {
             vars.add(0, "vertCoord");
             units.put("vertCoord", vertCoordUnit);
@@ -382,8 +392,6 @@ public class NcssTypeHandler extends PointTypeHandler {
 	}
 	url = super.convertPath(entry, url, requestProperties);
         url = Utils.normalizeTemplateUrl(url);
-	//	System.err.println("URL2:" +url);
-
 	return new IO.Path(url);
     }
 

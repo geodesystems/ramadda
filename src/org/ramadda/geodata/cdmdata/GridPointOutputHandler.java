@@ -236,7 +236,7 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
             }
         }
 
-        varNames.addAll((List<String>) request.get(ARG_VARIABLE,
+        varNames.addAll((List<String>) request.get(ARG_VAR,
                 new ArrayList<String>()));
         HashSet selectedVarsMap = null;
         if (varNames.size() > 0) {
@@ -729,24 +729,24 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
         String formUrl  = request.makeUrl(getRepository().URL_ENTRY_SHOW);
         String fileName = IOUtil.stripExtension(entry.getName()) + "_point";
 
-        String formId   = HtmlUtils.getUniqueId("form_");
+        String formId   = HU.getUniqueId("form_");
 
-        getPageHandler().entrySectionOpen(request, entry, sb, "Time Series",
+        getPageHandler().entrySectionOpen(request, entry, sb, "Extract Time Series",
                                           true);
 
 
 
-        sb.append(HtmlUtils.form(formUrl + "/" + fileName,
-                                 HtmlUtils.id(formId)));
-        sb.append(HtmlUtils.br());
+        sb.append(HU.form(formUrl + "/" + fileName,
+                                 HU.id(formId)));
+        sb.append(HU.br());
 
 
 
-        sb.append(HtmlUtils.submit("Get Data", ARG_SUBMIT));
-        sb.append(HtmlUtils.br());
-        sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_GRIDASPOINT));
-        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
-        sb.append(HtmlUtils.formTable());
+        sb.append(HU.submit("Get Data", ARG_SUBMIT));
+        sb.append(HU.br());
+        sb.append(HU.hidden(ARG_OUTPUT, OUTPUT_GRIDASPOINT));
+        sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
+        sb.append(HU.formTable());
 
         List<CalendarDate> dates = getGridDates(dataset);
 
@@ -766,7 +766,7 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
                    new MapProperties("blue", false, true));
         String llb = map.makeSelector(ARG_LOCATION, true, new String[] { lat,
                 lon });
-        sb.append(HtmlUtils.formEntryTop(msgLabel("Location"), llb));
+        sb.append(HU.formEntryTop(msgLabel("Location"), llb));
 
         addTimeWidget(request, dates, sb);
 
@@ -798,22 +798,34 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
                                           FORMAT_TIMESERIES_CHART);
 
         sb.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 msgLabel("Format"),
-                HtmlUtils.select(CdmConstants.ARG_FORMAT, formats, format)));
-        addPublishWidget(request, entry, sb,
-                         msg("Select a folder to publish the results to"));
-        sb.append(HtmlUtils.formTableClose());
-        sb.append(HU.div("Select Variables",HU.cssClass("ramadda-table-header")+HU.style("margin-top:6px;padding-top:2px;")));
-        sb.append(HtmlUtils.insetDiv(HtmlUtils.table(varSB.toString(),
-                HtmlUtils.attrs(HtmlUtils.ATTR_CELLPADDING, "5",
-                                HtmlUtils.ATTR_CELLSPACING, "0")), 0, 30, 0,
-                                    0));
+                HU.select(CdmConstants.ARG_FORMAT, formats, format)));
+        sb.append(HU.formTableClose());
 
-        sb.append(HtmlUtils.submit("Get Data"));
+        sb.append(HU.div("Select Variables",HU.cssClass("ramadda-table-header")+HU.style("margin-top:6px;padding-top:2px;")));
+	sb.append(HU.beginInset(0,20,0,0));
+        sb.append(varSB);
+	sb.append(HU.endInset());	
+
+
+
+        if (!request.getUser().getAnonymous()) {
+	    sb.append(HU.div("Publish",HU.cssClass("ramadda-table-header")+HU.style("margin-top:6px;")));
+	    sb.append(HU.formTable());
+	    addPublishWidget(request, entry, sb,
+			     "Select a folder to publish the results to");
+	    sb.append(HU.formTableClose());
+	}
+	
+
+
+	sb.append(HU.vspace("1em"));
+        sb.append(HU.submit("Get Data"));
+	sb.append(HU.vspace("1em"));
         //sb.append(submitExtra);
         addUrlShowingForm(sb, formId, "[\".*OpenLayers_Control.*\"]");
-        sb.append(HtmlUtils.formClose());
+        sb.append(HU.formClose());
 
         getPageHandler().entrySectionClose(request, entry, sb);
 
@@ -889,14 +901,10 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
                                            boolean useLevelValue) {
         int                varCnt            = 0;
         StringBuffer       varSB             = new StringBuffer();
-
 	String toggleAllId = HU.getUniqueId("cbx_");
-	varSB.append(HU.labeledCheckbox("", HU.VALUE_TRUE,
-				     false,HU.attr("id",toggleAllId),
-				     "Toggle all"));
-
-	
-
+	HU.div(varSB,HU.labeledCheckbox("", HU.VALUE_TRUE,
+					false,HU.attr("id",toggleAllId),
+					"Toggle all"),"");
 
         StringBuffer       varSB2D           = new StringBuffer();
         StringBuffer       varSB3D           = new StringBuffer();
@@ -907,11 +915,11 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
         for (GridDatatype grid : grids) {
             String cbxId = "varcbx_" + (varCnt++);
             String call =
-                HtmlUtils.attr(HtmlUtils.ATTR_ONCLICK,
-                               HtmlUtils.call("HtmlUtils.checkboxClicked",
-                                   HtmlUtils.comma("event",
-                                       HtmlUtils.squote(ARG_VARIABLE),
-                                       HtmlUtils.squote(cbxId))));
+                HU.attr(HU.ATTR_ONCLICK,
+                               HU.call("HU.checkboxClicked",
+                                   HU.comma("event",
+                                       HU.squote(ARG_VAR),
+                                       HU.squote(cbxId))));
             VariableEnhanced var     = grid.getVariable();
             StringBuffer     sbToUse = null;
             if (grid.getZDimension() == null) {
@@ -929,26 +937,24 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
                 }
             }
 
-	    String label = var.getShortName()   + HU.SPACE
-		+ ((var.getUnitsString() != null)
-		   ? "(" + var.getUnitsString() + ")"
-		   : "");
 
-            sbToUse.append(HtmlUtils.row(HtmlUtils.cols(
-							HtmlUtils.labeledCheckbox(
-										  ARG_VARIABLE,
-										  var.getShortName(),
-										  (grids.size() == 1),
-										  HU.cssClass("ramadda-grid-variable") +
-										  HtmlUtils.id(cbxId)+ call,label),
-							"<i>"+ var.getDescription() + "</i>")));
+	    String units = var.getUnitsString() != null? 
+		"(" + var.getUnitsString() + ")"
+		: "";
+	    //	    String label = var.getShortName() + HU.SPACE
 
+	    String desc = Utils.getDefined("",var.getDescription(),var.getShortName())+HU.SPACE+units;
+	    String label = HU.span(desc,HU.attrs("title",var.getShortName()));
+            sbToUse.append(HU.labeledCheckbox(ARG_VAR,
+					      var.getShortName(),
+					      (grids.size() == 1),
+					      HU.cssClass("ramadda-grid-variable") +
+					      HU.id(cbxId)+ call,label));
+	    sbToUse.append(HU.br());
         }
         if (varSB2D.length() > 0) {
             if (varSB3D.length() > 0) {
-                varSB.append(
-                    HtmlUtils.row(
-                        HtmlUtils.headerCols(new Object[] { "2D Grids" })));
+                varSB.append(HU.div(HU.b("2D Grids"),""));
             }
             varSB.append(varSB2D);
         }
@@ -957,12 +963,12 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
                 String header = " 3D Grids";
                 if (withLevelSelector) {
                     if ( !haveOneVerticalCS && !onlyIfAllLevelsEqual) {
-                        header += HtmlUtils.space(3) + "Level:"
-                                  + HtmlUtils.space(1)
-                                  + HtmlUtils.input(ARG_LEVEL, "");
+                        header += HU.space(3) + "Level:"
+                                  + HU.space(1)
+                                  + HU.input(ARG_LEVEL, "");
                     } else if (haveOneVerticalCS) {
-                        header += HtmlUtils.space(3) + "Level:"
-                                  + HtmlUtils.space(1);
+                        header += HU.space(3) + "Level:"
+                                  + HU.space(1);
                         double[] zVals = compAxis.getCoordValues();
                         List<TwoFacedObject> selObjs =
                             new ArrayList<TwoFacedObject>(zVals.length);
@@ -978,20 +984,18 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
                                         String.valueOf(zVals[i]), i));
                             }
                         }
-                        header += HtmlUtils.select(ARG_LEVEL, selObjs)
-                                  + HtmlUtils.space(2) + "("
+                        header += HU.select(ARG_LEVEL, selObjs)
+                                  + HU.space(2) + "("
                                   + compAxis.getUnitsString() + ")";
-                    }
+		    }
                 }
-                varSB.append(
-                    HtmlUtils.row(
-                        HtmlUtils.headerCols(new Object[] { header })));
+                varSB.append(HU.div(HU.b(header),""));
             }
             varSB.append(varSB3D);
         }
 
 	varSB.append("\n");
-	HU.script(varSB,"HtmlUtils.initToggleAll('" + toggleAllId+"','.ramadda-grid-variable');");
+	HU.script(varSB,"HU.initToggleAll('" + toggleAllId+"','.ramadda-grid-variable');");
         return varSB;
     }
 
@@ -1017,7 +1021,7 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
                                  + ".png" + "?" + request.getUrlArgs();
 
             return new Result("Point As Grid Time Series Image",
-                              new StringBuffer(HtmlUtils.img(redirectUrl,
+                              new StringBuffer(HU.img(redirectUrl,
                                   "Image is being processed...")));
         }
         StringBuffer sb     = new StringBuffer();
@@ -1066,7 +1070,7 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
             CalendarDate cd  = dates.get(0);
             Calendar     cal = cd.getCalendar();
             if (cal != null) {
-                sb.append(HtmlUtils.hidden(ARG_CALENDAR, cal.toString()));
+                sb.append(HU.hidden(ARG_CALENDAR, cal.toString()));
             }
             List formattedDates = new ArrayList();
             formattedDates.add(new TwoFacedObject("---", ""));
@@ -1077,11 +1081,11 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
             String fromDate = request.getUnsafeString(ARG_FROMDATE, "");
             String toDate   = request.getUnsafeString(ARG_TODATE, "");
             sb.append(
-                HtmlUtils.formEntry(
+                HU.formEntry(
                     msgLabel("Time Range"),
-                    HtmlUtils.select(ARG_FROMDATE, formattedDates, fromDate)
-                    + HtmlUtils.img(getIconUrl(ICON_ARROW))
-                    + HtmlUtils.select(ARG_TODATE, formattedDates, toDate)));
+                    HU.select(ARG_FROMDATE, formattedDates, fromDate)
+                    + HU.img(getIconUrl(ICON_ARROW))
+                    + HU.select(ARG_TODATE, formattedDates, toDate)));
         }
         //System.err.println("Times took "
         //                   + (System.currentTimeMillis() - millis) + " ms");

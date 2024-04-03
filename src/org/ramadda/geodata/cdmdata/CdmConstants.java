@@ -52,8 +52,11 @@ public interface CdmConstants {
     /** bounding box argument */
     public static final String ARG_POINT_BBOX = "bbox";
 
+    public static final String ARG_VAR ="var";
+
+
     /** Variable prefix */
-    public static final String VAR_PREFIX = Constants.ARG_VARIABLE + ".";
+    public static final String VAR_PREFIX = ARG_VAR + ".";
 
     /** add lat lon argument */
     public static final String ARG_ADDLATLON = "addlatlon";
