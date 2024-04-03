@@ -1920,12 +1920,10 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         if (request.getUser().getAnonymous()) {
             return;
         }
-
         String entryId = request.getString(ARG_PUBLISH_ENTRY + "_hidden", "");
         String entryName = "";
         if (Utils.stringDefined(entryId)) {
-            Entry selectedEntry = getEntryManager().getEntry(request,
-                                      entryId);
+            Entry selectedEntry = getEntryManager().getEntry(request, entryId);
             if (selectedEntry != null) {
                 entryName = selectedEntry.getName();
             }
@@ -1933,10 +1931,11 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         StringBuilder publishSB = new StringBuilder();
         sb.append(HU.hidden(ARG_PUBLISH_ENTRY + "_hidden", entryId,
                             HU.id(ARG_PUBLISH_ENTRY + "_hidden")));
-        HU.row(sb, HU.colspan(header, 2));
+	header = HU.div(header,HU.clazz("ramadda-form-help"));
+	HU.formEntry(sb,"",header);
 
         String select = OutputHandler.getSelect(request, ARG_PUBLISH_ENTRY,
-                            "Select folder", false, null, entry);
+						"Select folder", false, null, entry);
         String addMetadata = !addMetadataField
                              ? ""
                              : HU.labeledCheckbox(
@@ -1946,7 +1945,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         sb.append(HU.formEntry(msgLabel("Folder"),
                                HU.disabledInput(ARG_PUBLISH_ENTRY, entryName,
                                    HU.id(ARG_PUBLISH_ENTRY)
-						+ HU.SIZE_60) +HU.space(2)+ select + HU.space(2)
+						+ HU.SIZE_60) +HU.br()+ select + HU.space(2)
                                        + addMetadata));
 
         if (addNameField) {
