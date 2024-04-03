@@ -825,7 +825,8 @@ csvcommands3=derived_counter,-addheader, timestamp.type date  timestamp.format {
 {{property max="20000"}}
 {{group 
 showLegend=false  marginRight=0 markerSize=8 profileMode=lines+markers  
-convertData="groupTrend(field=_rs232dpt, newField=derived_counter,type=enumeration);groupTime(field=derived_counter);" 
+convertData="groupTime(field=derived_counter);" 
+
 }}
 
 +row
