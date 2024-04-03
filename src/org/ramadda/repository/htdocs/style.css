@@ -2817,14 +2817,15 @@ table.dataTable tbody td {
 
 .ramadda-table-header, .entry-list-header {
     font-weight:bold;
-    border : 1px #d8d8d8 solid;
+    border : var(--basic-border);
+    border-bottom : 1px solid #ccc;
     background-color: var(--header-background);
-    padding-left: 5px;
-    padding-right: 5px;
-    margin-top: 2px;
-    padding-top: 0px;
+    margin-top: 4px;
+    padding-right: 8px;
+    padding-top: 4px;
+    padding-left: 8px;    
     border-top-left-radius:var(--default-radius);
-    border-top-right-radius:var(--default-radius);    
+/*border-top-right-radius:var(--default-radius);    */
     border-collapse:unset;
 }
 
