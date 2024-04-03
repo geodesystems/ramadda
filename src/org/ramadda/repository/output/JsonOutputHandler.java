@@ -162,10 +162,12 @@ public class JsonOutputHandler extends OutputHandler {
         if ((outputType != null) && outputType.equals(OUTPUT_JSON_POINT)) {
             makePointJson(request, group, allEntries, sb,doSort);
         } else {
+	    long t1 = System.currentTimeMillis();
             makeJson(request, allEntries, sb);
+	    long t2 = System.currentTimeMillis();
+	    Utils.printTimes("makeJson: ",t1,t2); 
         }
         request.setCORSHeaderOnResponse();
-
         return new Result("", sb, JsonUtil.MIMETYPE);
     }
 

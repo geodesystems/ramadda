@@ -2791,7 +2791,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         List<ServerInfo> servers    = null;
 
         ServerInfo       thisServer = getRepository().getServerInfo();
+	long t1 = System.currentTimeMillis();
+
+
 	List<Entry> children = doSearch(request, searchInfo);
+	long t2 = System.currentTimeMillis();
         int   total    = children.size();
         Entry theGroup = null;
 
@@ -2805,8 +2809,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
         StringBuilder header   = new StringBuilder();
         getPageHandler().sectionOpen(request, header, "Search", false);
-        getPageHandler().makeLinksHeader(request, header, getSearchUrls(),
-                                         "");
+        getPageHandler().makeLinksHeader(request, header, getSearchUrls(), "");
         makeSearchForm(request, header);
         if ( !foundAny) {
             header.append(
@@ -2828,6 +2831,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             getRepository().getOutputHandler(request).outputGroup(request,
 								  request.getOutput(), theGroup,
 								  children);
+	long t3= System.currentTimeMillis();
+	Utils.printTimes("Search.doSearch: #:" + children.size() +" times: ",t1,t2,t3); 
         Result r;
         if (theGroup.isDummy()) {
             r = addHeaderToAncillaryPage(request, result);
