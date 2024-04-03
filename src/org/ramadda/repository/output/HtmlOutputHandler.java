@@ -176,6 +176,11 @@ public class HtmlOutputHandler extends OutputHandler {
     }
 
 
+    @Override
+    public boolean  isHtml() {
+	return true;
+    }
+
     /**
      * _more_
      *

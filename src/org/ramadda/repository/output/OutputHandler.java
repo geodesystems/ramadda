@@ -1857,6 +1857,10 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
     }
 
 
+    public boolean  isHtml() {
+	return false;
+    }
+
     /**
      * Did the user choose an entry to publish to
      *
