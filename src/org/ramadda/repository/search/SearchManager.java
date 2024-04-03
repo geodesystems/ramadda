@@ -2792,47 +2792,52 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
         ServerInfo       thisServer = getRepository().getServerInfo();
 	long t1 = System.currentTimeMillis();
-
-
 	List<Entry> children = doSearch(request, searchInfo);
 	long t2 = System.currentTimeMillis();
-        int   total    = children.size();
-        Entry theGroup = null;
 
+	if(request.get("docount",false)) {
+	    return new Result("count:" + children.size(), MIME_TEXT);
+	}
+	
+
+	OutputHandler outputHandler = getRepository().getOutputHandler(request);
+
+        StringBuilder header   = new StringBuilder();
+	if(outputHandler.isHtml()) {
+	    request.remove(ARG_SEARCH_SUBMIT);
+	    boolean       foundAny = (children.size() > 0);
+	    getPageHandler().sectionOpen(request, header, "Search", false);
+	    getPageHandler().makeLinksHeader(request, header, getSearchUrls(), "");
+	    makeSearchForm(request, header);
+	    if ( !foundAny) {
+		header.append(
+			      getPageHandler().showDialogNote(msg("Sorry, nothing found")));
+	    }
+	    request.appendPrefixHtml(header.toString());
+	}
+
+        Entry theGroup = null;
         if (request.defined(ARG_GROUP)) {
             String groupId = (String) request.getString(ARG_GROUP, "").trim();
             theGroup = getEntryManager().findGroup(request, groupId);
         }
-
-        request.remove(ARG_SEARCH_SUBMIT);
-        boolean       foundAny = (children.size() > 0);
-
-        StringBuilder header   = new StringBuilder();
-        getPageHandler().sectionOpen(request, header, "Search", false);
-        getPageHandler().makeLinksHeader(request, header, getSearchUrls(), "");
-        makeSearchForm(request, header);
-        if ( !foundAny) {
-            header.append(
-			  getPageHandler().showDialogNote(msg("Sorry, nothing found")));
-        }
-        request.appendPrefixHtml(header.toString());
-
         if (theGroup == null) {
             theGroup = getEntryManager().getDummyGroup();
         }
 
 
-	if(request.get("docount",false)) {
-	    return new Result("count:" + children.size(), MIME_TEXT);
+	long t3 = System.currentTimeMillis();
+        Result result =
+            outputHandler.outputGroup(request,
+								  request.getOutput(), theGroup,
+								  children);
+	long t4= System.currentTimeMillis();
+	Utils.printTimes("Search.doSearch: #:" + children.size() +" times (search,header,make json): ",t1,t2,t3,t4); 
+	if(!outputHandler.isHtml()) {
+	    return result;
 	}
 
 
-        Result result =
-            getRepository().getOutputHandler(request).outputGroup(request,
-								  request.getOutput(), theGroup,
-								  children);
-	long t3= System.currentTimeMillis();
-	Utils.printTimes("Search.doSearch: #:" + children.size() +" times: ",t1,t2,t3); 
         Result r;
         if (theGroup.isDummy()) {
             r = addHeaderToAncillaryPage(request, result);
