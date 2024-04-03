@@ -10,27 +10,38 @@ id=landknowledge
 </properties>
 ${imports}
 <style type="text/css">
-.ramadda-header {border-bottom:0px solid transparent;padding: 1px;padding-left: 6px;padding-right: 6px;}
+  .ramadda-header {
+      height:65px;
+      border-bottom:1px solid #ccc;
+      padding: 1px;
+      padding-left: 6px;
+      padding-right: 6px;}
 .ramadda-breadcrumbs {border-bottom : 0px transparent solid;}
 .ramadda-user-menu i {color:#888;}
+
+.landknowledge-pageheader .ramadda-navbar {
+    position:absolute;
+    top:4px;
+    left:50%;
+    transform: translateX(-50%);
+    display:inline-block;
+}
+
+.ramadda-navbar-link {
+    color:#000;
+}
+
 </style>
 ${headfinal}
 </head>
 <body>
-<div class="ramadda-header" style="border-bottom:1px solid #ccc;">
-<table border="0" width="100%" cellspacing="0" cellpadding="0">
-<tr valign="top">
-<td width="1%">
-<a href="https://landknowledge.org">
-<img valign="bottom" width=250px class=""  src="${root}/landknowledge/landknowledge.png" ></a></td>
-<td align="right"><div style="margin-right:20px;margin-top:5px;text-align:right;font-style:italic;font-size:80%;">
-<!--Empowering Communities through Traditional and Scientific Environmental Knowledge-->
+<div class="ramadda-header">
+<div class="landknowledge-pageheader">${pageheader}</div>
+<div style="position:absolute;right:5px;bottom:0px;">${links}</div>
+<div style="position:absolute;left:5px;top:0px;">
+<a href="https://landknowledge.org"><img valign="bottom" width=250px class=""  src="${root}/landknowledge/landknowledge.png" ></a>
 </div>
-</tr>
-<tr><td width=90%>${entry.header}</td>
-<td width=10% align="right">${links}</td>
-</tr>
-</table>
+<div style="position:absolute;left:5px;bottom:0px;">${entry.header}</div>
 </div>
 <div class="ramadda-outercontents">
 <div class="ramadda-innercontent">
