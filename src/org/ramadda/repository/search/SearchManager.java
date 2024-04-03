@@ -2824,15 +2824,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         if (theGroup == null) {
             theGroup = getEntryManager().getDummyGroup();
         }
-
-
-	long t3 = System.currentTimeMillis();
+	Utils.printTimes("Search.doSearch: #:" + children.size() +" times (search): ",t1,t2); 
         Result result =
             outputHandler.outputGroup(request,
-								  request.getOutput(), theGroup,
-								  children);
-	long t4= System.currentTimeMillis();
-	Utils.printTimes("Search.doSearch: #:" + children.size() +" times (search,header,make json): ",t1,t2,t3,t4); 
+				      request.getOutput(), theGroup,
+				      children);
 	if(!outputHandler.isHtml()) {
 	    return result;
 	}

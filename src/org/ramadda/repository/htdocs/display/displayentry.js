@@ -688,7 +688,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    this.initMetadata();
             if (!this.haveSearched) {
                 if (this.getDoSearch()) {
-                    this.submitSearchForm();
+		    this.submitSearchForm();
                 }
             }
         },
@@ -1583,7 +1583,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             HtmlUtils.initSelect(this.jq(ID_TYPE_FIELD),    { autoWidth: false,  "max-height":"100px"});
             this.addExtraForm();
 	    if(hadSelected) {
-		this.submitSearchForm();
+//		this.submitSearchForm();
 	    }
         },
         getSelectedType: function() {

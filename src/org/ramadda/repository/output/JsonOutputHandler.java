@@ -125,8 +125,8 @@ public class JsonOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     @Override
-    public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> children)
+    public Result outputGroup(final Request request, OutputType outputType,
+                              final Entry group, final List<Entry> children)
             throws Exception {
 
         if (group.isDummy()) {
@@ -162,14 +162,31 @@ public class JsonOutputHandler extends OutputHandler {
         if ((outputType != null) && outputType.equals(OUTPUT_JSON_POINT)) {
             makePointJson(request, group, allEntries, sb,doSort);
         } else {
-	    long t1 = System.currentTimeMillis();
-            makeJson(request, allEntries, sb);
-	    long t2 = System.currentTimeMillis();
-	    //	    Utils.printTimes("makeJson: ",t1,t2); 
+	    InputStream is =IO.pipeIt(new IO.PipedThing(){
+		    public void run(OutputStream os) {
+			PrintStream           pw  = new PrintStream(os);
+			try {
+			    long t1 = System.currentTimeMillis();
+			    makeJson(request, allEntries, pw);
+			    long t2 = System.currentTimeMillis();
+			    Utils.printTimes("makeJson",t1,t2);
+			} catch(Exception exc) {
+			    getLogManager().logError("Making JSON:" + group,exc);
+			    pw.println("Making JSON:" + exc);
+			}
+		    }});
+	    Result r = makeStream(request,group, is);
+	    return r;
         }
         request.setCORSHeaderOnResponse();
         return new Result("", sb, JsonUtil.MIMETYPE);
     }
+
+    private Result makeStream(Request request, Entry entry, InputStream is) throws Exception {
+	return request.returnStream(getStorageManager().getOriginalFilename(entry.getResource().getPath()),
+				    JU.MIMETYPE,is);	    
+    }
+
 
 
     /**
@@ -418,16 +435,13 @@ public class JsonOutputHandler extends OutputHandler {
      */
     public void makeJson(Request request, List<Entry> entries, Appendable sb)
             throws Exception {
-        List<String> items = new ArrayList<String>();
+	sb.append(JU.listOpen());
+	int cnt=0;
         for (Entry entry : entries) {
-            //      if(!entry.getId().equals("2eb1ff46-9e33-4917-95ff-950f36802891")) continue;
-            //      long t1 = System.currentTimeMillis();
-            items.add(toJson(request, entry));
-            //      long t2 = System.currentTimeMillis();
-            //      Utils.printTimes("\t" + entry.getName()+" " + entry.getId(), t1,t2);
+	    if(cnt++>=1) sb.append(",");
+	    toJson(request, entry,sb);
         }
-        JsonUtil.list(sb, items, false);
-        //        System.out.println ("JSON:" + JsonUtil.list(items));
+	sb.append(JU.listClose());
     }
 
 
@@ -514,8 +528,7 @@ public class JsonOutputHandler extends OutputHandler {
      * @return _more_
      * @throws Exception _more_
      */
-    private String toJson(Request request, Entry entry) throws Exception {
-
+    private void toJson(Request request, Entry entry,Appendable sb) throws Exception {
         List<String> items = new ArrayList<String>();
         JsonUtil.quoteAttr(items, "id", entry.getId());
         String entryName = entry.getName();
@@ -867,9 +880,7 @@ public class JsonOutputHandler extends OutputHandler {
             entry.getTypeHandler().addToJson(request, entry, items, attrs);
         }
         JsonUtil.attr(items, "properties", JsonUtil.list(attrs, false));
-
-
-        return JsonUtil.map(items);
+	sb.append(JU.map(items));
     }
 
 
