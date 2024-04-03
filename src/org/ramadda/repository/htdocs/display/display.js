@@ -6017,6 +6017,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		title = this.applyTitleTemplate(titleTemplate);
                 return prefix + title;
             }
+	    if(Utils.stringDefined(title))  return title;
             if (this.dataCollection == null) {
                 return prefix;
             }
