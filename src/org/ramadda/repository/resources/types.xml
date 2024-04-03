@@ -101,6 +101,7 @@ priority="2"       >
 	     help="Entry type to use for directories"
 	     suffix="Note: If you change this then you should also clear the cache with the Admin-&gt;Maintenance-&gt;Clear Cache"/>
      <column name="date_offset"
+	     showinhtml="false"
 	     group="Attributes" label="Date Offset"
 	     help="Offset the date by the number of seconds"
 	     suffix="seconds"
