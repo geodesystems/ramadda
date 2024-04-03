@@ -1060,7 +1060,6 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		}
             }
 	    let settings = this.getSearchSettings();
-	    console.log('url',settings.getMax(),this.jq(ID_SEARCH_MAX).val());
 	    settings.setMax(this.jq(ID_SEARCH_MAX).val()??settings.getMax());
             settings.setExtra(extra);
             let jsonUrl = repository.getSearchUrl(settings, OUTPUT_JSON);
