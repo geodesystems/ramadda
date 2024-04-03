@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Apr  2 19:49:59 MDT 2024";
+var build_date="RAMADDA build date: Wed Apr  3 13:44:57 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -33083,7 +33083,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    this.initMetadata();
             if (!this.haveSearched) {
                 if (this.getDoSearch()) {
-                    this.submitSearchForm();
+		    this.submitSearchForm();
                 }
             }
         },
@@ -33455,7 +33455,6 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		}
             }
 	    let settings = this.getSearchSettings();
-	    console.log('url',settings.getMax(),this.jq(ID_SEARCH_MAX).val());
 	    settings.setMax(this.jq(ID_SEARCH_MAX).val()??settings.getMax());
             settings.setExtra(extra);
             let jsonUrl = repository.getSearchUrl(settings, OUTPUT_JSON);
@@ -33979,7 +33978,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             HtmlUtils.initSelect(this.jq(ID_TYPE_FIELD),    { autoWidth: false,  "max-height":"100px"});
             this.addExtraForm();
 	    if(hadSelected) {
-		this.submitSearchForm();
+//		this.submitSearchForm();
 	    }
         },
         getSelectedType: function() {
