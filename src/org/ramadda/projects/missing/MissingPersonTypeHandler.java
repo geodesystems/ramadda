@@ -91,7 +91,7 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	if(Utils.getProperty(props,"includeImage",false)) {
 	    List<String> urls =    getMetadataManager().getThumbnailUrls(request, entry, null);
 	    if(urls!=null && urls.size()>0) {
-		image=HU.image(urls.get(0),HU.attrs("width","100px"));
+		image=HU.image(urls.get(0),HU.attrs("width","100px","loading","lazy"));
 	    }
 	}
 
