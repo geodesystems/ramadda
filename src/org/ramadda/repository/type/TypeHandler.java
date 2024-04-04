@@ -307,6 +307,11 @@ public class TypeHandler extends RepositoryManager {
     private List<WikiMacro> wikiMacros;
     private Hashtable<String,WikiMacro> wikiMacrosMap;    
 
+
+    private List<Utils.Macro> startDateMacros;
+    private List<Utils.Macro> endDateMacros;    
+
+
     /**  */
     private String help = "";
 
@@ -689,6 +694,16 @@ public class TypeHandler extends RepositoryManager {
 				     XmlUtil.getChildText(actionNode)));
             }	    
 	    
+
+
+	    String  startDateTemplate = getTypeProperty("startdate.template",null);
+	    if(startDateTemplate!=null)  {
+		startDateMacros = Utils.splitMacros(startDateTemplate);
+	    }
+	    String  endDateTemplate = getTypeProperty("enddate.template",null);
+	    if(endDateTemplate!=null)  {
+		endDateMacros = Utils.splitMacros(endDateTemplate);
+	    }	    
 
 
         } catch (Exception exc) {
@@ -1737,6 +1752,72 @@ public class TypeHandler extends RepositoryManager {
         return Misc.equals(
             OutputHandler.OUTPUT_HTML.getId(),
             request.getString(ARG_OUTPUT, OutputHandler.OUTPUT_HTML.getId()));
+    }
+
+
+    public String applyMacros(Entry entry, List<Utils.Macro> macros,Object value,String s) {
+	if(macros==null) return s;
+	StringBuilder tmp = new StringBuilder();
+	for(Utils.Macro macro: macros) {
+	    if(macro.isText()) {
+		tmp.append(macro.getText());
+		continue;
+	    }
+	    if(macro.getId().equals("value")) {
+		String dateFormat = macro.getProperty("dateFormat",null);
+		if(dateFormat!=null) {
+		    SimpleDateFormat sdf2 = RepositoryUtil.makeDateFormat(dateFormat);
+		    Date d = (Date) value;
+		    if(d!=null) tmp.append(sdf2.format(d));
+		} else if(macro.getProperty("showAge",false)) {
+		    Date d = (Date) value;
+		    if(d!=null) {
+			Date startDate = null;
+			String otherDate = macro.getProperty("otherDate",null);
+			if(otherDate!=null) {
+			    Column otherColumn = findColumn(otherDate);
+			    if(otherColumn!=null) {
+				if(otherColumn.equals("startdate")) 
+				    startDate  = new Date(entry.getStartDate());
+				else if(otherColumn.equals("enddate")) 
+				    startDate  = new Date(entry.getEndDate());
+				else if(otherColumn.equals("createdate")) 
+				    startDate  = new Date(entry.getCreateDate());
+				else
+				    startDate = (Date) otherColumn.getObject(entry.getValues());
+			    } else {
+				return "Could not find other column:" + otherColumn;
+			    }
+			} else {
+			    startDate  = new Date(entry.getStartDate());
+			}
+			startDate = DateHandler.checkDate(startDate);
+			if(startDate!=null) {
+			    int years = DateHandler.getYearsBetween(startDate,d);
+			    tmp.append(macro.getProperty("prefix",""));
+			    tmp.append(years);
+			    tmp.append(macro.getProperty("suffix"," years"));	
+			}
+		    }
+		} else if(macro.getProperty("inchesToFeet",false)) {
+		    Integer i = (Integer) value;
+		    if(i==0) {
+			tmp.append("NA");
+		    } else {
+			int feet= i/12;
+			int inches = i%12;
+			tmp.append(feet+"' ");
+			tmp.append(inches+"\"");			    
+			tmp.append(" ("+ i+" inches)");
+		    }
+		} else {
+		    tmp.append(s);
+		}
+	    } else {
+		System.err.println("unknown macro:" + macro.getId());
+	    }
+	}
+	return tmp.toString();
     }
 
 
@@ -3985,7 +4066,8 @@ public class TypeHandler extends RepositoryManager {
 	if(!hasDataDate) return;
 
 	if (entry.getEndDate() != entry.getStartDate()) {
-	    String startDate = getDateHandler().formatDate(request, entry, entry.getStartDate());
+	    String startDate =  getFieldHtml(request,  entry,  null,"startdate",false);
+	    //getDateHandler().formatDate(request, entry, entry.getStartDate());
 	    String endDate = getDateHandler().formatDate(request,   entry, entry.getEndDate());
 	    String searchUrl =
 		HtmlUtils
@@ -4001,9 +4083,9 @@ public class TypeHandler extends RepositoryManager {
 		sb.append(formEntry(request, msgLabel(getFormLabel(null,null,"enddate","End Date")),
 				    endDate));
 	    } else {
-		boolean showTime = typeHandler.okToShowInForm(entry,   "time", true);
 		StringBuilder dateSB = new StringBuilder();
-		dateSB.append(getDateHandler().formatDate(request, entry, entry.getStartDate()));
+		String startDate =  getFieldHtml(request,  entry,  null,"startdate",false);
+		dateSB.append(startDate);
 		if (typeHandler.okToShowInForm(entry, ARG_TODATE)
 		    && (entry.getEndDate() != entry.getStartDate())) {
 		    dateSB.append(" - ");
@@ -7921,29 +8003,36 @@ public class TypeHandler extends RepositoryManager {
             throws Exception {
         if (name.equals("startdate")) {
             Date   dttm = new Date(entry.getStartDate());
-            String fmt  = (String) props.get("format");
+            String fmt  = props!=null?(String) props.get("format"):null;
+	    String s;
             if (fmt == null) {
-                return Utils.formatIso(dttm);
-            }
-
-            return Utils.makeDateFormat(
-                fmt,
-                (String) Utils.getNonNull(
-                    props.get("timezone"), "UTC")).format(dttm);
+                s= getDateHandler().formatDate(request, entry, entry.getStartDate());
+            } else {
+		s=Utils.makeDateFormat(
+				       fmt,
+				       (String) Utils.getNonNull(
+								 props.get("timezone"), "UTC")).format(dttm);
+	    }
+	    if(startDateMacros!=null) {
+		s = applyMacros(entry, startDateMacros,dttm,s);
+	    }
+	    return s;
         }
         if (name.equals("enddate")) {
             Date   dttm = new Date(entry.getEndDate());
-            String fmt  = (String) props.get("format");
+            String fmt  = props!=null?(String) props.get("format"):null;
+	    String s;
             if (fmt == null) {
-                return Utils.formatIso(dttm);
-            }
-
-            return Utils.makeDateFormat(
-                fmt,
-                (String) Utils.getNonNull(
-                    props.get("timezone"), "UTC")).format(dttm);
+                s= getDateHandler().formatDate(request, entry, entry.getStartDate());
+            } else {
+		s=Utils.makeDateFormat(fmt,
+				       (String) Utils.getNonNull(props.get("timezone"), "UTC")).format(dttm);
+	    }
+	    if(endDateMacros!=null) {
+		s = applyMacros(entry, endDateMacros,dttm,s);
+	    }
+	    return s;
         }
-
 
         if (name.equals("altitude")) {
             return "" + entry.getAltitude();
