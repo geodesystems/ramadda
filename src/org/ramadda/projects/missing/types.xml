@@ -20,14 +20,17 @@
     <property name="form.description.label" value="Case Information"/>
     <property name="form.location.label" value="Last known location"/>
     <property name="form.location.show" value="true"/>
+
     <property name="form.date.label" value="Date Missing"/>
     <property name="date.nullok" value="true"/>
     <property name="form.startdate.label" value="Date Missing"/>
     <property name="form.createdate.label" value="Record Create Date"/>    
     <property name="form.todate.show" value="false"/>                    
+    <property name="date.format" value="yyyy-MM-dd"/>        
+    <property name="startdate.template" value="${value dateFormat=yyyy-MM-dd} ${value showAge=true otherDate=date_of_birth prefix=&quot; - &quot; suffix=&quot; years old when missing&quot;}"/>        
+
     <property name="form.tags.show" value="true"/>    
     <property name="form.resource.show" value="false"/>
-    <property name="date.format" value="yyyy-MM-dd"/>        
     <property name="found_location.column.icon" value="/map/flag.png"/> 
 
     <column name="case_number" type="string"  label="Case Number" cansearch="false"/>
@@ -37,21 +40,25 @@
     <column name="nickname" type="string"  label="Nickname" cansearch="true"/>    
     <column name="status" type="enumeration" values="unknown:Unknown,found:Found,missing:Missing,died:Died"  label="Status"
 	    enumeration_show_checkboxes="true"
+	    cansort="true"
 	    cansearch="true"/>
     <column name="date_of_birth" type="date" default="none" label="Date of Birth" cansearch="true"
 	    xxxhtmlTemplate="${value dateFormat=yyyy-MM-dd} ${value showAge=true prefix=&quot; - &quot; suffix=&quot; years old when missing&quot;}"/>
     <column name="date_found" type="date" default="none" label="Date Found" cansearch="true"
-	    htmlTemplate="${value dateFormat=yyyy-MM-dd} ${value showAge=true prefix=&quot; - &quot; suffix=&quot; years old when found&quot;}"/>    
+	    htmlTemplate="${value dateFormat=yyyy-MM-dd} ${value otherDate=date_of_birth showAge=true prefix=&quot; - &quot; suffix=&quot; years old when found&quot;}"/>    
     <column name="biological_sex" type="enumeration"  label="Biological Sex"
-	    values="male:Male,female:Female,other:Other,unsure:Unsure,notprovided:Not Provided"  cansearch="true"/>
+	    values="male:Male,female:Female,other:Other,unsure:Unsure,notprovided:Not Provided"  cansearch="true"
+	    cansort="true"/>
 
-    <column name="height" type="int"  searchlabel="Height (inches)"  label="Height" suffix="Inches"  cansearch="true" htmlTemplate="${value inchesToFeet=true}"/>
-    <column name="weight" type="int"  searchlabel="Weight (pounds)" label="Weight" suffix="Pounds"  cansearch="true" htmlTemplate="${value} lbs"/>
-    <column name="race_ethnicity" type="enumerationplus"  label="Primary Ethnicity"   cansearch="true"
+    <column name="height" type="int"  searchlabel="Height (inches)"  label="Height" suffix="Inches"  cansearch="true" htmlTemplate="${value inchesToFeet=true}" cansort="true"/>
+
+    <column name="weight" type="int"  searchlabel="Weight (pounds)" label="Weight" suffix="Pounds"  cansearch="true"
+	    htmlTemplate="${value} lbs" cansort="true"/>
+    <column name="race_ethnicity" type="enumerationplus"  label="Primary Ethnicity"   cansearch="true" cansort="true"
 	    values="file:/org/ramadda/projects/missing/ethnicity.txt"/>
     
     <column name="tribe_association" type="enumerationplus"  label="Tribal Association"
-	    cansearch="true"
+	    cansearch="true" cansort="true"
 	    enumeration_search_multiples="true"
 	    group="Tribal Information"
 	    xxxvalues="file:/org/ramadda/projects/missing/tribes.txt"/>
