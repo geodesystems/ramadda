@@ -99,14 +99,21 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	    getHeaderLine(request, entry, sb,forSearch);
 	    sb.append("\n");
 	    HU.open(sb,"table",HU.cssClass("formtable"));
+	    HU.formEntry(sb,msgLabel("Weight"),
+			 colValue(request,entry,"weight")+
+			 HU.space(1)+
+			 HU.b("Height: ")+colValue(request,entry,"height"));
+
+
+
 	    sb.append("\n");
 	    HU.formEntry(sb,msgLabel("Missing From"),
 			 colValue(request,entry,"missing_city")+
 			 " "+
 			 colValue(request,entry,"missing_state"));
 	    if(missingDate!=null) {
-		HU.formEntry(sb,msgLabel("Date Missing"),sdf.format(missingDate));
-								    
+		HU.formEntry(sb,msgLabel("Date Missing"),
+			     getFieldHtml(request,  entry,  null,"startdate",false));
 	    }
 	    sb.append("</table>\n");	    
 
