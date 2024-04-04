@@ -628,6 +628,8 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    macros  =Utils.splitMacros(htmlTemplate);
 	}
 
+
+
         type = Utils.getAttributeOrTag(element, ATTR_TYPE, DATATYPE_STRING);
         changeType = getAttributeOrTag(element, ATTR_CHANGETYPE, false);
 
@@ -1652,64 +1654,9 @@ public class Column implements DataTypes, Constants, Cloneable {
         }
 
         String s = sb.toString();
-
-	if(macros!=null) {
-	    Object value = values[offset];
-	    StringBuilder tmp = new StringBuilder();
-	    for(Utils.Macro macro: macros) {
-		if(macro.isText()) {
-		    tmp.append(macro.getText());
-		    continue;
-		}
-		if(macro.getId().equals("value")) {
-		    String dateFormat = macro.getProperty("dateFormat",null);
-		    if(dateFormat!=null) {
-			SimpleDateFormat sdf2 = RepositoryUtil.makeDateFormat(dateFormat);
-			Date d = (Date) value;
-			if(d!=null) tmp.append(sdf2.format(d));
-		    } else if(macro.getProperty("showAge",false)) {
-			Date d = (Date) value;
-			if(d!=null) {
-			    Date startDate = DateHandler.checkDate(new Date(entry.getStartDate()));
-			    if(startDate!=null) {
-				int years = DateHandler.getYearsBetween(startDate,d);
-				tmp.append(macro.getProperty("prefix",""));
-				tmp.append(years);
-				tmp.append(macro.getProperty("suffix"," years"));	
-			    }
-			}
-		    } else if(macro.getProperty("inchesToFeet",false)) {
-			Integer i = (Integer) value;
-			if(i==0) {
-			    tmp.append("NA");
-			} else {
-			    int feet= i/12;
-			    int inches = i%12;
-			    tmp.append(feet+"' ");
-			    tmp.append(inches+"\"");			    
-			    tmp.append(" ("+ i+" inches)");
-			}
-		    } else {
-			tmp.append(s);
-		    }
-		} else {
-		    System.err.println("Column: unknown macro:" + macro.getId());
-		}
-	    }
-	    s=tmp.toString();
-	}
-
+	s = typeHandler.applyMacros(entry,macros,values[offset],s);
         s = typeHandler.decorateValue(null, entry, this, s);
 	result.append(s);
-	/*
-	
-        if (htmlTemplate != null) {
-            result.append(htmlTemplate.replace("${value}", s));
-        } else {
-            result.append(s);
-        }
-	*/
-
     }
 
 
