@@ -550,6 +550,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    else if(type=='size')
 			byList.push(["Size - largest first","size_descending"],
 				    ["Size - smallest first","size_ascending"]);
+		    else {
+			byList.push(
+			    [Utils.makeLabel(type) + '- descending','field:'+type+'_descending'],
+			    [Utils.makeLabel(type)+ '- ascending','field:'+type+'_ascending']);			    
+		    }
 		});
 		let options = "";
 		byList.forEach(tuple=>{
