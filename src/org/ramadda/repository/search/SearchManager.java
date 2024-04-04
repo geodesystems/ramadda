@@ -364,11 +364,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
-    public void reindexLucene(Request request,Object actionId, boolean all, String type)  {
+    public void reindexLucene(Request request,Object actionId, String type)  {
 	try {
 	    IndexWriter indexWriter = getLuceneWriter();
 	    try {
-		reindexLuceneInner(request, indexWriter, actionId, all,type);
+		reindexLuceneInner(request, indexWriter, actionId, type);
 	    } finally {
 		//		writer.close();
 	    }
@@ -378,12 +378,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
     }
 
-    private void reindexLuceneInner(final Request request, final IndexWriter indexWriter, Object actionId, boolean all, String type)  throws Throwable {	
+    private void reindexLuceneInner(final Request request, final IndexWriter indexWriter, Object actionId, String type)  throws Throwable {	
 	Clause clause = null;
 	if(stringDefined(type)) {
 	    clause = Clause.or(getDatabaseManager().addTypeClause(getRepository(),request, Utils.split(type,",",true,true),null));
-	    //If we are doing a type then don't do all as this deletes the index
-	    all=false;
 	}
         Statement statement =
             getDatabaseManager().select(Tables.ENTRIES.COL_ID,
@@ -396,27 +394,18 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	IndexSearcher searcher = null;
 	while ((results = iter.getNext()) != null) {
             String id = results.getString(1);
-	    if(!all) {
-		if(searcher==null) {
-		    IndexReader reader =  DirectoryReader.open(indexWriter);
-		    searcher = new IndexSearcher(reader);
-		}
-		Query query = new TermQuery(new Term(FIELD_ENTRYID, id));
-		TopDocs       hits     = searcher.search(query, 1);
-		ScoreDoc[]    docs     = hits.scoreDocs;
-		if(docs.length>0) {
-		    continue;
-		} else {
-		}
-	    }
 	    ids.add(id);
-	    //	    if(ids.size()>10000) break;
 	}
 
 	getDatabaseManager().closeAndReleaseConnection(statement);
 
-	if(all) {
+	if(false) {
 	    indexWriter.deleteAll();
+	    commit(indexWriter);
+	} else {
+	    for(String id: ids)  {
+		indexWriter.deleteDocuments(new Term(FIELD_ENTRYID, id));
+	    }
 	    commit(indexWriter);
 	}
 
@@ -665,15 +654,26 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			corpus.append(v.toString());
 			corpus.append(" ");
 			doc.add(new StringField(field, v.toString(),Field.Store.YES));
+			if(column.getCanSort())
+			    doc.add(new SortedDocValuesField(field+"_sort", new BytesRef(v.toString())));
 		    }
-		    else if(column.isDouble()) 
+		    else if(column.isDouble())  {
 			doc.add(new DoublePoint(field, (Double)v));
-		    else if(column.isInteger()) 
+			if(column.getCanSort())
+			    doc.add(new SortedNumericDocValuesField(field+"_sort",
+								    Double.doubleToRawLongBits(Utils.getDouble(v))));
+
+		    }   else if(column.isInteger())  {
 			doc.add(new IntPoint(field, (Integer)v));		    
-		    else {
+			if(column.getCanSort()) {
+			    doc.add(new SortedNumericDocValuesField(field+"_sort", (Integer)v));
+			}
+		    }    else {
 			corpus.append(v.toString());
 			corpus.append(" ");
 			doc.add(new TextField(field, v.toString(),Field.Store.NO));
+			if(column.getCanSort())
+			    doc.add(new SortedDocValuesField(field+"_sort", new BytesRef(v.toString())));
 		    }
 		}
 	    }
@@ -1415,6 +1415,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    query = builder.build();
 	}
 
+	
+
+
 	int max = Math.max(0,request.get(ARG_MAX,100));
 	int skip = Math.max(0,request.get(ARG_SKIP,0));
 	Sort sort;
@@ -1457,6 +1460,23 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             } else if (by.equals(ORDERBY_SIZE)) {
 		sortType = SortField.Type.LONG;
                 field = FIELD_SIZE;
+	    } else if(by.startsWith("field:")) {
+		TypeHandler typeHandler = getRepository().getTypeHandler(request);
+		by = by.substring("field:".length());
+		if(typeHandler!=null) {
+		    Column column = typeHandler.findColumn(by);
+		    if(column!=null) {
+			//property_type_missing_person_biological_sex
+			//property_type_missing_person_biological_sex
+			field = getPropertyField(typeHandler,by)+"_sort";
+			if(column.isString() || column.isEnumeration())
+			    sortType = SortField.Type.STRING;
+			else if(column.isDouble()) 
+			    sortType = SortField.Type.DOUBLE;			
+			else if(column.isInteger()) 
+			    sortType = SortField.Type.INT;			
+		    }
+		}
             } else {
 		field=FIELD_NAME_SORT;
 	    }
@@ -1464,7 +1484,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    if(field==null) {
 		sort = Sort.RELEVANCE;
 	    }  else {
-		if(sortType == SortField.Type.LONG || sortType == SortField.Type.INT) {
+		if(sortType == SortField.Type.LONG || sortType == SortField.Type.INT || sortType==SortField.Type.DOUBLE) {
 		    sort = new Sort(new SortField[] {
 			    new SortedNumericSortField(field, sortType,desc),
 			    new SortField(FIELD_NAME_SORT, SortField.Type.STRING,true)});
@@ -1476,6 +1496,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	} else {
 	    sort = Sort.RELEVANCE;
 	}
+	System.err.println("sort:" + sort);
         IndexSearcher searcher = getLuceneSearcher();
 	//	searcher.setDefaultFieldSortScoring(true, false);
 	TopDocs       hits     = searcher.search(query, max+skip,sort);
@@ -2824,7 +2845,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         if (theGroup == null) {
             theGroup = getEntryManager().getDummyGroup();
         }
-	Utils.printTimes("Search.doSearch: #:" + children.size() +" times (search): ",t1,t2); 
+	//	Utils.printTimes("Search.doSearch: #:" + children.size() +" times (search): ",t1,t2); 
         Result result =
             outputHandler.outputGroup(request,
 				      request.getOutput(), theGroup,
