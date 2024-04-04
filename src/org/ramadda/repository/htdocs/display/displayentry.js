@@ -2099,7 +2099,8 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 			      new RecordField({type: "url", index: (index++), id: "url",label: "URL"}),
 			      new RecordField({type: "image", index: (index++), id: "image",label: "Image"}),
 			      new RecordField({type: "url", index: (index++), id: "iconUrl",label: "Icon"}),
-			      new RecordField({type: "string", index: (index++), id: "tags",label: "Tags"}),			      			      
+			      new RecordField({type: "string", index: (index++), id: "tags",label: "Tags"}),
+			      new RecordField({type: "string", index: (index++), id: "display_html",label: "Display HTML"}),			      			      			      
 			      new RecordField({index: (index++), id: "latitude",label: "Latitude"}),
 			      new RecordField({index: (index++), id: "longitude",label: "Longitude"}),			      			      					     ]
 		let entryType = null;
@@ -2119,7 +2120,8 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 		    let records = [];
 		    entries.forEach(entry=>{
 			let tags = this.makeEntryTags(entry,true,"");
-			let data = [entry.getName(true),entry.getSnippet()||"",entry.getEntryUrl(),entry.getImageUrl()||defaultImage||"",entry.getIconUrl(),tags,entry.getLatitude(), entry.getLongitude()];
+			let displayHtml = entry.displayHtml??entry.getName()
+			let data = [entry.getName(true),entry.getSnippet()||"",entry.getEntryUrl(),entry.getImageUrl()||defaultImage||"",entry.getIconUrl(),tags,displayHtml,entry.getLatitude(), entry.getLongitude()];
 			if(entryType) {
 			    entryType.getColumns().forEach(column=>{
 				let v = entry.getAttributeValue(column.getName());
@@ -2142,7 +2144,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 			    _this.submitSearchForm();
 			});
 		    };
-		    let tooltip = this.getProperty("tooltip");
+		    let tooltip = this.getProperty("tooltip")??"${display_html}";
 		    let props = {centerOnMarkersAfterUpdate:true,
 				 dialogListener: dialogListener,
 				 highlightColor:"#436EEE",
