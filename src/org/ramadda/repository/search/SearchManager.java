@@ -649,7 +649,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    if(column.isLatLon()) {
 			double[] latlon = column.getLatLon(values);
 			doc.add(new DoublePoint(field+SUFFIX_LATITUDE, latlon[0]));
-			doc.add(new DoublePoint(field+SUFFIX_LONGITUDE, latlon[1]));			
+			doc.add(new DoublePoint(field+SUFFIX_LONGITUDE, latlon[1]));
+		    } else   if(column.isDate()) {
+			Date d = DateHandler.checkDate((Date)v);
+			if(d!=null) {
+			    doc.add(new SortedNumericDocValuesField(field, d.getTime()));
+			    if(column.getCanSort())
+				doc.add(new SortedNumericDocValuesField(field+"_sort", d.getTime()));
+			}
 		    } else if(column.isEnumeration())  {
 			corpus.append(v.toString());
 			corpus.append(" ");
@@ -668,7 +675,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			if(column.getCanSort()) {
 			    doc.add(new SortedNumericDocValuesField(field+"_sort", (Integer)v));
 			}
-		    }    else {
+		    } else {
 			corpus.append(v.toString());
 			corpus.append(" ");
 			doc.add(new TextField(field, v.toString(),Field.Store.NO));
@@ -1472,7 +1479,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			if(column.isString() || column.isEnumeration())
 			    sortType = SortField.Type.STRING;
 			else if(column.isDouble()) 
-			    sortType = SortField.Type.DOUBLE;			
+			    sortType = SortField.Type.DOUBLE;
+			else if(column.isDate()) 
+			    sortType = SortField.Type.LONG;						
 			else if(column.isInteger()) 
 			    sortType = SortField.Type.INT;			
 		    }

@@ -42,7 +42,7 @@
 	    enumeration_show_checkboxes="true"
 	    cansort="true"
 	    cansearch="true"/>
-    <column name="date_of_birth" type="date" default="none" label="Date of Birth" cansearch="true"
+    <column name="date_of_birth" type="date" default="none" label="Date of Birth" cansearch="true" cansort="true"
 	    xxxhtmlTemplate="${value dateFormat=yyyy-MM-dd} ${value showAge=true prefix=&quot; - &quot; suffix=&quot; years old when missing&quot;}"/>
     <column name="date_found" type="date" default="none" label="Date Found" cansearch="true"
 	    htmlTemplate="${value dateFormat=yyyy-MM-dd} ${value otherDate=date_of_birth showAge=true prefix=&quot; - &quot; suffix=&quot; years old when found&quot;}"/>    
