@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Apr  4 07:20:33 MDT 2024";
+var build_date="RAMADDA build date: Thu Apr  4 10:16:20 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -32927,7 +32927,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    let key ='orderByLabel_'+ type+(suffix?'_'+suffix:'');
 		    let label =this.getProperty(key);
 		    if(label) return label;
-		    return  dflt ?? Utils.camelCase(type);
+		    if(!dflt) dflt = Utils.makeLabel(type)+(suffix?(' - '+suffix):'');
+		    return  dflt;
 		}
 
 		Utils.split(this.getOrderByTypes(),',',true,true).forEach(type=>{
@@ -32947,8 +32948,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 				    ["Size - smallest first","size_ascending"]);
 		    else {
 			byList.push(
-			    [Utils.makeLabel(type) + '- descending','field:'+type+'_descending'],
-			    [Utils.makeLabel(type)+ '- ascending','field:'+type+'_ascending']);			    
+			    [getLabel(type,'descending'),'field:'+type+'_descending'],
+			    [getLabel(type, 'ascending'),'field:'+type+'_ascending']);			    
 		    }
 		});
 		let options = "";
