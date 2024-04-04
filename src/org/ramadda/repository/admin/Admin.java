@@ -105,11 +105,9 @@ public class Admin extends RepositoryManager {
     /** _more_ */
     public static final String ACTION_DUMPDB = "action.dumpb";
 
-    /**  */
-    public static final String ACTION_FULLINDEX = "action.fullindex";
 
     /**  */
-    public static final String ACTION_PARTIALINDEX = "action.partialindex";
+    public static final String ACTION_REINDEX = "action.reindex";
 
     /** _more_ */
     public static final String ACTION_CHANGEPATHS = "action.changepaths";
@@ -1167,7 +1165,7 @@ public class Admin extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Result adminReindex(final Request request, boolean all)
+    public Result adminReindex(final Request request)
             throws Exception {
         //Only do one at a time
         if (amReindexing) {
@@ -1182,10 +1180,9 @@ public class Admin extends RepositoryManager {
         ActionManager.Action action = new ActionManager.Action() {
             public void run(Object actionId) throws Exception {
                 try {
-                    getSearchManager().reindexLucene(request,actionId, all,request.getString(ARG_TYPE,null));
+                    getSearchManager().reindexLucene(request,actionId, request.getString(ARG_TYPE,null));
                 } catch (Exception exc) {
                     System.err.println("Error reindexing:" + exc);
-
                     throw exc;
                 } finally {
                     amReindexing = false;
@@ -2655,9 +2652,7 @@ public class Admin extends RepositoryManager {
 		     msgLabel("Type"),
 		     getRepository().makeTypeSelect(types, request, ARG_TYPE,"",false,null,false,null,false));
 	HU.formEntry(topSB,"",
-		     HU.submit("Reindex all", ACTION_FULLINDEX)
-		     + HU.space(2)
-		     + HU.submit("Reindex partial", ACTION_PARTIALINDEX));
+		     HU.submit("Reindex", ACTION_REINDEX));
         topSB.append(HU.formTableClose());
 	topSB.append(HU.formClose());
 
@@ -2716,10 +2711,8 @@ public class Admin extends RepositoryManager {
             return new Result(request.makeUrl(URL_ADMIN_MAINTENANCE));
         } else if (request.defined(ACTION_DUMPDB)) {
             return adminDbDump(request);
-        } else if (request.defined(ACTION_FULLINDEX)) {
-            return adminReindex(request, true);
-        } else if (request.defined(ACTION_PARTIALINDEX)) {
-            return adminReindex(request, false);
+        } else if (request.defined(ACTION_REINDEX)) {
+            return adminReindex(request);
         } else if (request.defined(ACTION_NEWDB)) {
             getDatabaseManager().reInitialize();
 
