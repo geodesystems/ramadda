@@ -169,7 +169,7 @@ public class JsonOutputHandler extends OutputHandler {
 			    long t1 = System.currentTimeMillis();
 			    makeJson(request, allEntries, pw);
 			    long t2 = System.currentTimeMillis();
-			    Utils.printTimes("makeJson",t1,t2);
+			    //			    Utils.printTimes("makeJson",t1,t2);
 			} catch(Exception exc) {
 			    getLogManager().logError("Making JSON:" + group,exc);
 			    pw.println("Making JSON:" + exc);
