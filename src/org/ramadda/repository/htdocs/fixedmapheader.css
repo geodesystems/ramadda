@@ -9,6 +9,21 @@
    left:0;
    top:0;
 }
+
+.ramadda-header .ramadda-navbar {
+    background:#fff;
+    border-radius:var(--default-radius);
+    margin:4px;
+    padding:2px;
+    padding-left:6px;
+    padding-right:6px;        
+    border:var(--basic-border);
+}
+
+.ramadda-header .ramadda-navbar:hover {
+    border  :var(--highlight-border);
+}
+
 .ramadda-header-center {
     position: absolute;
     top:0px;
