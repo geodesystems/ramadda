@@ -2579,6 +2579,29 @@ var Utils =  {
     },
 
 
+    initNavbarPopup:function(id,args) {
+	let opts = {
+	    side:'right'
+	}
+	if(args) $.extend(opts,args);
+	jqid(id).click(function(){
+	    let popup = jqid(id+"_popup");
+	    if(popup.is(':visible')) {
+		popup.hide();
+		return
+	    }		
+	    popup.css('display','inline-block');
+	    let args  ={
+                of: $(this),
+                my: opts.side+' top',
+                at: opts.side +' bottom',
+                collision:'fit fit'
+	    };
+	    popup.show(400);	    
+	    popup.position(args);
+	});
+    },
+
     initPageReload:function(time, id, showLabel) {
         let cbx = $("#" + id);
         let label = $("#" + id+"_label");
