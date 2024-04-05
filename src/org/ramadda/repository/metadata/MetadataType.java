@@ -148,7 +148,9 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
     private boolean canView = true;
 
-    private boolean canDisplay = true;            
+    private boolean canDisplay = true;
+
+    private boolean showLabel = true;                
    
 
 
@@ -327,6 +329,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
 	canView = XmlUtil.getAttributeFromTree(node, "canview", true);
 	canDisplay = XmlUtil.getAttributeFromTree(node, "candisplay", true);    	
+	showLabel = XmlUtil.getAttributeFromTree(node, "showlabel", true);    	
         setForUser(XmlUtil.getAttributeFromTree(node, ATTR_FORUSER, true));
         entryType = XmlUtil.getAttributeFromTree(node, ATTR_ENTRYTYPE,
                 (String) null);
@@ -348,6 +351,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
         makeDatabaseTable = XmlUtil.getAttributeFromTree(node,
                 ATTR_MAKEDATABASE, false);
+
         /*
         if makeDatabaseTable) {
             initDatabase();
@@ -1323,11 +1327,13 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         }
 
         //Only show the value if its simple text
-	if(titles.size()>0) {
-	    lbl = lbl + " " + Utils.join(titles," - ");
-	} else {
-	    if ((firstValue != null) && (firstValue.indexOf("<") < 0)) {
-		lbl = lbl + " " + firstValue;
+	if(showLabel) {
+	    if(titles.size()>0) {
+		lbl = lbl + " " + Utils.join(titles," - ");
+	    } else {
+		if ((firstValue != null) && (firstValue.indexOf("<") < 0)) {
+		    lbl = lbl + " " + firstValue;
+		}
 	    }
 	}
 
@@ -1485,7 +1491,11 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
     public boolean getCanDisplay() {
         return this.canDisplay;
-    }    
+    }
+
+    public boolean getShowLabel() {
+        return this.showLabel;
+    }        
 
     /**
      * Set the ForUser property.
