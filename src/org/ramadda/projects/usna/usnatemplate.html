@@ -44,6 +44,9 @@ ${imports}
 
 ${headfinal}
 <style type="text/css">
+:root {
+    --header-height:100px;
+}
 div.ramadda-breadcrumbs {
     background:rgb(30, 82, 130);
     padding-top: 5px;
@@ -63,6 +66,15 @@ div.ramadda-breadcrumbs {
 .ramadda-breadcrumbs-list a {
     color:#FBC42B !important;
 }
+
+.ramadda-navbar-popup .ramadda-navbar {
+    color:#000 !important;
+}
+
+.ramadda-navbar-popup .ramadda-navbar-link a {
+    color:#000 !important;
+}
+
 .breadcrumb-delimiter, .breadCrumb ul li {
 background: url(${root}/icons/arrow_right_yellow.png) no-repeat 100% center;
 }
@@ -154,6 +166,7 @@ ${bottom}
 <!-- Footer -->
 <footer style="font-size:13px;font-weight:400;font-family:Helvetica, Helvetica Neue, Helvetica, Arial">
 <center>
+${footer}
   <div class="footer-seal small-text-center"><a href="https://www.usna.edu">
       <img alt="U.S. Naval Academy Seal" height="137"
 	   src="${root}/usna/logo-footer.png" width="90"/></a>
