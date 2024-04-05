@@ -85,6 +85,7 @@ public class NamusConverter {
 	//new Date(now.getTime()-Utils.yearsToMillis(maxAge-missingMinAge));
 	sb.append(XmlUtil.attr("fromdate",sdf.format(missingDate)));	
 	sb.append(XmlUtil.attr("date_of_birth",sdf.format(bdate)));
+	sb.append(XmlUtil.attr("age_missing",""+missingMinAge));
 
 	String firstName = _id.getString("firstName");
 	String middleName = _id.optString("middleName","");	
