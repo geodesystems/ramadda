@@ -216,6 +216,7 @@ Control how entries are displayed.
 
     <type
        name="Page Template"
+       showlabel="false"
        showinhtml="false"
        id="content.pagetemplate">
       <help>
