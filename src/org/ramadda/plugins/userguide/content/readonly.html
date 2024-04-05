@@ -1,7 +1,7 @@
 [ht::head {Read Only Mode}]
+:havtop
 
-
-<h2>Running in Read Only Mode</h2>
+:heading Running in Read Only Mode
 RAMADDA can be run on multiple machines and, for security reasons, 
 can provide read only access to its contents.
 The main reason for this is so you can have a public facing RAMADDA
@@ -50,7 +50,7 @@ ramadda.storage.logdir=%repositorydir%/logs
 </pre>
 
 
-<h2>No Cache RAMADDA</h2>
+:heading No Cache RAMADDA
 You can also run multiple full featured RAMADDA (e.g., supports login, admin, creation/editing, etc) by setting the property:
 
 <pre>
@@ -61,7 +61,7 @@ This just turns off RAMADDA's memory cache mechanism. But, if you are doing lots
 simultaneous editing and deletion and moving of content on the different RAMADDA's you
 might run into some issues.
 
-<h2>Clearing the Cache</h2>
+:heading Clearing the Cache
 
 You can force RAMADDA to clear its cache and also re-read all of the properties from the database by hitting:<brP>
 &lt;repository root&gt;/clearstate

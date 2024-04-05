@@ -1,4 +1,5 @@
 [ht::head {Configuring the RAMADDA Database}]
+:navtop
 
 By default RAMADDA uses a built in Java Derby relational database. 
 RAMADDA also can run using MySQL, PostgresSQL, Oracle and H2.
@@ -6,9 +7,8 @@ Derby works pretty well though there are some performance issues with search and
 If you are planning on really using RAMADDA and foresee a large amount of content stored in the
 repository (by large we  we mean the number of entries in the repository not the overall file size)
 then its probably a good idea to use mysql or postgres. 
-<p>
 
-
+:heading Configuration
 The database to use and its connection parameters are specified in a .properties file, e.g., db.properties. 
 The properties file can be placed in the [ug::link installing.html#properties {ramadda home directory}].
 To define the database just uncomment the appropriate  ramadda.db properties in repository.properties, e.g.:
@@ -34,7 +34,7 @@ If you are running the database on the same machine as RAMADDA the hostname can 
 In the below examples we assume a database called "repository".
 
 
-<h2>MySQL</h2>
+:heading MySQL
 For <a href="http://dev.mysql.com/doc/connector-j/en/connector-j-reference-configuration-properties.html">MySQL</a>:
 
 <pre>
@@ -45,7 +45,7 @@ ramadda.db.mysql.password=the database password
 </pre>
 
 
-<h3>Postgres</h3>
+:heading Postgres
 For Postgres:
 
 <pre>
@@ -59,7 +59,7 @@ ramadda.db.postgres.password=the database password
 
 
 
-<h3>H2</h3>
+:heading H2
 For H2 the default setting specifies  the database to be in the RAMADDA home directory under the sub-directory h2db. The JDBC URL has the full file path of where to store the database.
 <pre>
 ramadda.db=h2

@@ -1,9 +1,13 @@
 [ht::head {Plugins}]
 
+:navtop
+
++callout-info
 RAMADDA has a plugin facility that enables one to add new kinds of entry types, new content views, etc. In the RAMADDA home directory there is a &quot;plugins&quot; sub-directory. When RAMADDA starts up it loads all of the files in the plugins directory. 
 When you install a new plugin you need to restart RAMADDA.
-<p>
+-callout
 
+:heading Plugins
 
 The plugins can be [ug::link installing.html#fromgit built] from source or are available at the 
 <a href="https://ramadda.org/repository/alias/release">Geode Systems RAMADDA </a> site.
@@ -14,7 +18,7 @@ There are a core set of plugins that are released in the allplugins.jar file. Th
 
 
 
-<h3>How plugins work</h3>
+:heading How plugins work
 RAMADDA determines what to do with a plugin file by looking at its file name. 
 If the file is a .zip file RAMADDA will
 unzip the files in the zip file and load each one as a plugin.
@@ -120,7 +124,7 @@ If the file ends with &quot;.sql&quot; then the file is evaluated at startup to 
 
 
 <a name="maps"></a>
-<h3>Adding map layers</h3>
+:heading Adding map layers
 You can integrate map layers  from external Web Map Servers (WMS) through the plugin mechanism. 
 The file  <a href="${root}/userguide/examples/chinamaps.properties.txt">chinamaps.properties.txt</a> has an example. 
 Remove the ".txt" suffix and copy the properties file to your RAMADDA plugin directory. The file has instructions on

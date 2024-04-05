@@ -31,12 +31,16 @@ pre {
 
 
 
-
+:navtop
++callout-info
 There are a number of other site administation tabs available.
+-callout
 
 
 
-<a name="statistics"></a><p><div class="ramadda-help-heading">9.16.0 <a href="#statistics">Statistics</a></div> 
+<a name="statistics"></a>
+:heading 9.16.0 <label>Statistics</label>
+
 This shows statistics of the system and the database. Note: if there seems to be
 memory usage problems (e.g., excessive memory use from a memory leak) you can simply
 add a URL argument to any URL:<pre>
@@ -47,10 +51,14 @@ and the caches will be cleared and Java  garbage collector will run. Then, you c
 page and see if that has affected the memory usage (it should).
 
 
-<a name="access"></a><p><div class="ramadda-help-heading">9.16.1 <a href="#access">Access</a></div> 
+<a name="access"></a>
+:heading 9.16.1 <label>Access</label>
+
 This tab just shows an overview of all of the entry access control settings.
 
-<a name="logs"></a><p><div class="ramadda-help-heading">9.16.2 <a href="#logs">Logs</a></div> 
+<a name="logs"></a>
+:heading 9.16.2 <label>Logs</label>
+
 You can view the last 200 accesses to the repository. Because the googlebot is so
 voracious we show its (and other bots) accesses highlighted.
 <p>
@@ -63,7 +71,9 @@ This view shows the last N lines of the log file. You cann show more or less of 
 Also, Java stack traces are shown hidden and can be expanded.
 
 
-<a name="cleanup"></a><p><div class="ramadda-help-heading">9.16.3 <a href="#cleanup">Clean Up</a></div> 
+<a name="cleanup"></a>
+:heading 9.16.3 <label>Clean Up</label>
+
 This still needs work but the Clean Up facility will go through the
 resository database and remove all entries that are file used and the
 file does not exist. For example, if you are harvesting a real-time
@@ -74,7 +84,9 @@ be deleted from the database.
 <p>
 We are intending to do this automatically in the future.
 
-<a name="usermessage"></a><p><div class="ramadda-help-heading">9.16.4 <a href="#usermessage">User Message</a></div> 
+<a name="usermessage"></a>
+:heading 9.16.4 <label>User Message</label>
+
 You can enter a message that is shown to all users one time in this tab.
 For example, you could announce that the repository will be unavailable
 for a certain time, etc.

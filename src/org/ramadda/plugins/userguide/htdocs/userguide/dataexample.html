@@ -43,7 +43,9 @@ The overall flow is to -
 </ul>
 
 
-<a name="rawdata"></a><p><div class="ramadda-help-heading">8.0.2.0 <a href="#rawdata">The raw data</a></div> 
+<a name="rawdata"></a>
+:heading 8.0.2.0 <label>The raw data</label>
+
 The example we are using is data from the City of Boulder's Open Data Repository that shows  greenhouse gas emissions and looks like - 
 <pre>
 Year,Category,Sub-Category,Emissions per Sub-Category (MTCO2e)
@@ -55,28 +57,32 @@ Year,Category,Sub-Category,Emissions per Sub-Category (MTCO2e)
 ...
 </pre>
 
-<a name="upload"></a><p><div class="ramadda-help-heading">8.0.2.1 <a href="#upload">Upload the raw file</a></div> 
+<a name="upload"></a>
+:heading 8.0.2.1 <label>Upload the raw file</label>
+
 <p>
 <ul>
 <li> First download the <a href="https://ramadda.org/repository/entry/get/GHGI_Community_Emissions_Sector.csv?entryid=67609c54-abd1-4e5b-aa95-a78845e67853">GHGI_Community_Emissions_Source.csv</a> file.
 <li> Assuming you are logged in to RAMADDA you will upload the file to RAMADDA. 
 <ul>
 <li> Navigate to some folder
-<li> Click on the menu and select "New File" - <div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/dataexample/menu.png?version=567"><img  src="images/dataexample/menu.png?version=567"  alt="images/dataexample/menu.png?version=567" ></a></div></div>
-<li> Upload the file in the Add Entry form - <div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/dataexample/add.png?version=567"><img  src="images/dataexample/add.png?version=567"  alt="images/dataexample/add.png?version=567" ></a></div></div>
+<li> Click on the menu and select "New File" - <div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/dataexample/menu.png?version=878"><img  src="images/dataexample/menu.png?version=878"  alt="images/dataexample/menu.png?version=878" ></a></div></div>
+<li> Upload the file in the Add Entry form - <div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/dataexample/add.png?version=878"><img  src="images/dataexample/add.png?version=878"  alt="images/dataexample/add.png?version=878" ></a></div></div>
 </ul>
 <li> Once you upload the raw CSV file RAMADDA automatically creates a "CSV File" entry type. 
 </ul>
 
-<a name="convert"></a><p><div class="ramadda-help-heading">8.0.2.2 <a href="#convert">Convert the raw file</a></div> 
+<a name="convert"></a>
+:heading 8.0.2.2 <label>Convert the raw file</label>
+
 Next, the data needs to be cleaned up, reformatting the numeric values, removing the missing years and transforming the data to group the fields by year to be able to create time series displays.
 From the menu choose "Convert Data" -
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/dataexample/menu2.png?version=567"><img  src="images/dataexample/menu2.png?version=567"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/dataexample/menu2.png?version=567" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/dataexample/menu2.png?version=878"><img  src="images/dataexample/menu2.png?version=878"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/dataexample/menu2.png?version=878" ></a></div></div>
 
 This takes us to the interactive ETL conversion form (view it
 <a href="https://ramadda.org/repository/entry/show/Home/Content/Community+Data/Colorado/Boulder+Data+Hub/Development/Ghgi+Community+Emissions+Sector?entryid=67609c54-abd1-4e5b-aa95-a78845e67853&output=convert_form">here</a>).
 
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/dataexample/convert1.png?version=567"><img  src="images/dataexample/convert1.png?version=567"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/dataexample/convert1.png?version=567" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/dataexample/convert1.png?version=878"><img  src="images/dataexample/convert1.png?version=878"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/dataexample/convert1.png?version=878" ></a></div></div>
 
 
 RAMADDA's ETL facility provides a large number of operations (documented <a href="csvcommands.html">here</a>) for transforming the CSV file.  One adds any number of conversion commands in the main input area. The buttons along the bottom (e.g., Table, Records) allow for the results to be viewed in different ways. 
@@ -85,29 +91,33 @@ RAMADDA's ETL facility provides a large number of operations (documented <a href
 The below commands are used to convert the raw data. This changes the commas in the
 value field (column 3 in the raw data), groups the different values by year, removes the years that have no values then adds RAMADDA's point data header to the result file. 
 
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/dataexample/convert2.png?version=567"><img  src="images/dataexample/convert2.png?version=567"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/dataexample/convert2.png?version=567" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/dataexample/convert2.png?version=878"><img  src="images/dataexample/convert2.png?version=878"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/dataexample/convert2.png?version=878" ></a></div></div>
 
 Once all is good use the "Make Files" button to process the entire raw file. This provides a link to download the temporary processed file.
 
 
-<a name="textpoint"></a><p><div class="ramadda-help-heading">8.0.2.3 <a href="#textpoint">Creating the Text Point Data Entry</a></div> 
+<a name="textpoint"></a>
+:heading 8.0.2.3 <label>Creating the Text Point Data Entry</label>
+
 Once you download the file you can then upload it back to RAMADDA to the folder of your choice. 
 Instead of adding it as a regular CSV file you need to specify a "Text Point Data" entry type. Go to the folder's menu and choose "Pick a Type" -
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/dataexample/picktype.png?version=567"><img  src="images/dataexample/picktype.png?version=567"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/dataexample/picktype.png?version=567" ></a></div></div> 
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/dataexample/picktype.png?version=878"><img  src="images/dataexample/picktype.png?version=878"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/dataexample/picktype.png?version=878" ></a></div></div> 
 
 Since RAMADDA supports a huge number of entry types this next page can be daunting but fear not. Just scroll down or search in the page for "Text Point Data" and select the link - 
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/dataexample/picktype2.png?version=567"><img  src="images/dataexample/picktype2.png?version=567"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/dataexample/picktype2.png?version=567" ></a></div></div> 
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/dataexample/picktype2.png?version=878"><img  src="images/dataexample/picktype2.png?version=878"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/dataexample/picktype2.png?version=878" ></a></div></div> 
 
 This  takes you to an Add Entry form. Upload the converted file. 
 
-<a name="plots"></a><p><div class="ramadda-help-heading">8.0.2.4 <a href="#plots">Creating the plots</a></div> 
+<a name="plots"></a>
+:heading 8.0.2.4 <label>Creating the plots</label>
+
 You have now created a new entry with the structured data. You can view information about the entry including
 its file format with the entry menu "Information" link (example <a href="https://boulderdata.org/repository/entry/show/Home/Content/Community+Data/Colorado/Boulder+Data+Hub/Data/Energy+and+Utilities/Community+GHG+Emissions+by+Source?entryid=becb663b-d464-451a-a3c6-3ec8a4816515&output=html.info">here</a>).
 The default display of the new entry does not show any plots of data. To define a new display RAMADDA's wiki facility is used. From the entry's menu go to "Edit Entry". You will need to change the description. To specify that
 this is wiki text add a "&lt;wiki&gt;" tag to the beginning of the description (documented <a href="https://ramadda.org/repository/userguide/wiki.html#wikidesc">here</a>).
 The <a href="https://boulderdata.org/repository/alias/boulder_emissons_source">example entry</a> 
 on the Boulder Data Hub has some descriptive information and shows 4 time series plots -
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/dataexample/example.png?version=567"><img  src="images/dataexample/example.png?version=567"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/dataexample/example.png?version=567" ></a></div></div> 
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/dataexample/example.png?version=878"><img  src="images/dataexample/example.png?version=878"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/dataexample/example.png?version=878" ></a></div></div> 
 
 The above page also shows the wiki text. The wiki text facility is very powerful and provides
 numerous display types available - line charts, bar charts, dot plots, etc. There are a number of examples 
@@ -119,7 +129,9 @@ shown <a href=https://ramadda.org/repository/entry/show?entryid=1c99bcff-94a9-43
 </ul>
 
 
-<a name="otherdisplays"></a><p><div class="ramadda-help-heading">8.0.2.5 <a href="#otherdisplays">Creating other displays</a></div> 
+<a name="otherdisplays"></a>
+:heading 8.0.2.5 <label>Creating other displays</label>
+
 You can change the default display of your new data entry by changing its description. Copy and paste the 
 <a href="https://boulderdata.org/repository/alias/boulder_emissons_source">example entry's</a> wiki text. 
 Alternately you can create other wiki pages that import and display data from other entries. Simple go to 
@@ -131,7 +143,9 @@ entry-
 </pre>
 
 
-<a name="databases"></a><p><div class="ramadda-help-heading">8.0.2.6 <a href="#databases">Making databases</a></div> 
+<a name="databases"></a>
+:heading 8.0.2.6 <label>Making databases</label>
+
 Using the ETL tools one can also create searchable databases from CSV files. To do this the user needs to be a site administrator since a plugin is
 created and installed as part of this process.
 <p>
@@ -142,7 +156,7 @@ Like the example above one first uploads the CSV file to RAMADDA.
 <p>
 Defining a database is a 2 step process. You define operations to clean up and convert the CSV file. Then, there is a special command (-db) that creates the database plugin. The -db command (documentation <a href=https://boulderdata.org/repository/userguide/etl.html#db>here</a>) takes a number of name/value properties as shown. When you press "Run" the database schema is shown. The links will popup a menu that allows you to define various properties of the  different columns (e.g., label, type, etc). If you set "install true" then when you run "Make Files" RAMADDA will generate the database plugin and install it.
 
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/dataexample/db.png?version=567"><img  src="images/dataexample/db.png?version=567"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/dataexample/db.png?version=567" ></a></div></div> 
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/dataexample/db.png?version=878"><img  src="images/dataexample/db.png?version=878"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/dataexample/db.png?version=878" ></a></div></div> 
 
 Once you have defined and installed the database you need to comment out the -db command (or add a -quit command before it) and then press "Make Files" again to create the processed CSV data file. Download this file. Next, you need to create the actual database entry. Navigate to some folder and select "Pick a Type". Look for the database name that you specified and select that link to add the new database entry (note - you can have multiple different database entries based on the same database schema). Once you create the database entry got the "New" link, select the Bulk Upload tab and upload the processed CSV file. If you want to redo everything you can add a "nukedb true" property to the -db command. This, when run, will drop the previous database table and recreate it.
 

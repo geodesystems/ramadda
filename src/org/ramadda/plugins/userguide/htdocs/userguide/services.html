@@ -30,17 +30,21 @@ pre {
 <div class="ramadda-doc-contents" style="margin-left:20px;">
 
 
+:navtop
 
-
++callout-info
 The Service Integration Framework makes it easy to integrate command line  tools that are installed  on 
-the server as services that operate on  data and content within  RAMADDA. 
+the server as services that operate on  data and content within  RAMADDA.
+-callout
 
 There are a number of examples at  <a href="https://ramadda.org/alias/services">ramadda.org</a>.
 All RAMADDA repositories (running the latest release) have their list of enabled services at
 <a href="https://ramadda.org/repository/services/list">https://ramadda.org/repository/services/list</a>.
 
 
-<a name="configuration"></a><p><div class="ramadda-help-heading">9.13.0 <a href="#configuration">Configuration</a></div> 
+<a name="configuration"></a>
+:heading 9.13.0 <label>Configuration</label>
+
 To enable an installed service you need to specify one or more properties 
 in a .properties file in your RAMADDA home directory that specify the 
 location of the installed software.
@@ -123,7 +127,9 @@ service.picard=&lt;path&gt;/picard-tools-1.119/picard.sh
 </pre>
 
 
-<a name="run"></a><p><div class="ramadda-help-heading">9.13.1 <a href="#run">Service XML</a></div> 
+<a name="run"></a>
+:heading 9.13.1 <label>Service XML</label>
+
 A service is specified as either an outputhandler XML file or a services XML plugin.
 There are numerous examples under the SVN source tree  at 
 <a href="http://sourceforge.net/p/ramadda/code/HEAD/tree/src/org/ramadda/">http://sourceforge.net/p/ramadda/code/HEAD/tree/src/org/ramadda/</a>
@@ -235,7 +241,9 @@ You can specify an entry type for the entries that get created for each file
 </pre></blockquote>
 
 
-<a name="faq"></a><p><div class="ramadda-help-heading">9.13.2 <a href="#faq">Common Argument Constructs</a></div> 
+<a name="faq"></a>
+:heading 9.13.2 <label>Common Argument Constructs</label>
+
 
 <h3>One command line argument made up of multiple  user choices.</h3>
 Use the <i>include</i> attribute to provide a user interface element (e.g., date select) but not directly add the value to the 
