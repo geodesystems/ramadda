@@ -6577,7 +6577,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             return new Result(xml, MIME_XML);
         }
         StringBuilder sb = new StringBuilder("");
-        getPageHandler().sectionOpen(request, sb,"Repository Information",false);
+        getPageHandler().sectionOpen(request, sb,"Server Information",false);
 	sb.append(HU.center(HU.href("https://geodesystems.com",HU.img(getHtdocsUrl("/images/poweredby.png"),"Powered by RAMADDA",HU.attr("width","200px")))));
 	sb.append(getPageHandler().showDialogNote("<div style='width:1000px;'>This is a RAMADDA server, developed by <a style='text-decoration: underline;' href='https://geodesystems.com'>Geode Systems</a>. Further information is available at  <a style='text-decoration: underline;' href=https://ramadda.org/repository/a/ramadda_information>ramadda.org</a>.</div>"));
 
