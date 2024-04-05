@@ -790,7 +790,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                            : oldMetadata.getAttr(getIndex()));
 
 
-	System.err.println(oldValue);
 	if(request.get(ARG_THUMBNAIL_DELETE,false)) {
 	    File f = getFile(entry,oldMetadata,oldValue);
 	    if(f!=null && f.exists()) {
