@@ -1255,8 +1255,8 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         String        cancel = HU.submit(LABEL_CANCEL, ARG_CANCEL);
         StringBuilder sb     = new StringBuilder();
         if (Utils.stringDefined(help)) {
-            sb.append(HU.row(HU.colspan(HU.note(help),
-                    3)));
+	    String _help = HU.div(help,HU.clazz("ramadda-form-help"));
+	    sb.append(HU.row(HU.colspan(_help, 3)));
             sb.append("\n");
         }
 
