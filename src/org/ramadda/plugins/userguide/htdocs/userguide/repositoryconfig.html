@@ -36,13 +36,44 @@ pre {
 Various ways to configure your RAMADDA repository.
 -callout
 
+
+:heading Footer
+The Footer property can be added and set to inherited=true to add a footer to every entry page.
+The Footer can be arbitrary wiki text.
+For example, you can add a share link and a <a href=wiki/licenses.html>license</a>
+with a Footer property, e.g.:
++pre
+{<skip>{share here=true horizontal=true}}
+:p
+{<skip>{license  license="cc-by" decorate="true" 
+textBefore="This content is released under the:&lt;br&gt;"}}
+-pre
+Which results in:
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/footer.png?version=208"><img  src="images/footer.png?version=208"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/footer.png?version=208" ></a></div></div>
+
+:heading Share Bar
+You can add a social media share bar to a page or to every page with the <i>share</i> tag:
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/navbarpopup.png?version=208"><img  src="images/navbarpopup.png?version=208"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/navbarpopup.png?version=208" ></a></div></div>      
+If here=true then the bar is shown in place on the page. Else it is shown fixed either to the left, right
+or the bottom of the page (depending on the horizontail attribute).
++pre
+{<skip>{share
+position="left|right"
+theme="circle|square"
+horizontal="true"
+here="true"
+channels="facebook,twitter,linkedin,tumblr,digg,googleplus,reddit,pinterest,stumbleupon,email" 
+animate="false"
+}} 
++pre
+
+
 :heading  Page Header
 Most of the <a href=templates.html>page templates</a> have a location in the header
 marked to hold a "page header", e.g.:
 <pre>
 &lt;div class="ramadda-pageheader"&gt;${pageheader}&lt;/div&gt;
 </pre>
-
 
 The contents of this page header can be specified with a "Page Header" property. This property
 can contain arbitrary wiki text. The most common use is to include a "navbar" tag, e.g.: 
@@ -86,6 +117,28 @@ links="https://google.com;Google,/repository/search/form;Search,2e485e95-eb29-44
  }}
 -pre
 
+:heading Popup Menu
+You can use the navbar tag to create a fixed popup menu <i class="fa-solid fa-bars"></i> like:
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/navbarpopup.png?version=208"><img  src="images/navbarpopup.png?version=208"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/navbarpopup.png?version=208" ></a></div></div>      
+
+<pre>
+{<skip>{navbar  popup="true" header="<b>Links</b><br>" left=true
+links="..."}}      
+</pre>
+
+Some arguments:
+* left=false - If you want this right aligned set  
+* popupLinkStyle="css to position the menu"
+* header="Text to open the popup"
+* footer="Text to close the popup"
+
+You can add a popup menu like above to every page with the "Footer" property. The Footer property
+can contain arbitrary wiki text and is shown at the bottom of every page. Just enter the navbar tag
+and check on the property inherited flag.
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/navbarfooter.png?version=208"><img  src="images/navbarfooter.png?version=208"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/navbarfooter.png?version=208" ></a></div></div>      
+
+
+
 :heading  Aliases
 The "RAMADDA Alias" property is used to add an alias to an entry. For example, on ramadda.org
 the alias "examples" is added to the examples area and results in a URL:
@@ -118,22 +171,8 @@ of your RAMADDA. For example, the site [https://landknowledge.org/ https://landk
 runs on ramadda.org. It has "Page Template" property that specifies the "Land Knowledge Template"
 and the property is set inherited=true so all descendent entries of the main entry use that template.
 
-:heading Footer
-The Footer property can be added and set to inherited=true to add a footer to every entry page.
-The Footer can be arbitrary wiki text.
-For example, you can add a share link and a <a href=wiki/licenses.html>license</a>
-with a Footer property, e.g.:
-+pre
-{<skip>{share here=true horizontal=true}}
-:p
-{<skip>{license  
-license="cc-by"
-decorate="true" 
-textBefore="This content is released under the:<br>"
-includeName="true"  }}
--pre
-Which results in:
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/footer.png?version=720"><img  src="images/footer.png?version=720"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/footer.png?version=720" ></a></div></div>
+
+
 
 :heading Site Maps
 Google and other web crawlers access a sitemap.xml file. You can specify that certain entries show up in
