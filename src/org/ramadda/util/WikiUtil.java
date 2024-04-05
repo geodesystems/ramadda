@@ -730,6 +730,11 @@ public class WikiUtil implements HtmlUtilsConstants {
 
 
 
+    private String getHeadingLabel(String label) {
+	String tmp = StringUtil.findPattern(label,"<label>(.*)</label>");
+	if(tmp!=null) label = tmp;
+	return label;
+    }
 
     /**
      * _more_
@@ -758,7 +763,8 @@ public class WikiUtil implements HtmlUtilsConstants {
 	};
 
         Utils.TriConsumer<StringBuffer,String,Integer> defineHeading = (sb,label,level) -> {
-            String id = Utils.makeID(label);
+	    label = getHeadingLabel(label);
+	    String id = Utils.makeID(label);
 	    String noTags = label.replaceAll("<[^>]+>[^<]*<[^>]+>","").trim().replaceAll("-+$","").trim();
 	    if(noTags.length()>0) {
 		label = noTags;
@@ -3153,7 +3159,7 @@ public class WikiUtil implements HtmlUtilsConstants {
                     }
 		    String attrs = "";
                     if (what.startsWith("heading") || what.startsWith("lheading") || what.startsWith("noheading")) {
-			String id = "heading-" +Utils.makeID(blob);
+			String id = "heading-" +Utils.makeID(getHeadingLabel(blob));
                         defineHeading.accept(buff, blob, 1);
 			buff.append(HU.anchorName(id));
 			blob += HU.span("",HU.attrs("id",id+"-hover",ATTR_CLASS,"ramadda-linkable-link"));
@@ -3161,6 +3167,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 			clazz+=" ramadda-linkable ";
                     }
 		    if(what.startsWith("noheading")) blob = "";
+		    blob = blob.replace("<label>","").replace("</label>","");
                     buff.append(HU.div(HU.div(blob, HU.cssClass(clazz)+attrs),
                                        HU.cssClass("ramadda-" + what
                                            + "-outer")));
