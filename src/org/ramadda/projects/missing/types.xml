@@ -2,8 +2,8 @@
 <types supercategory="Miscellaneous" category="Community">
 
   <type name="type_missing_person" description="Missing person"  foruser="true"
-	editfields="first_name,middle_name,last_name,nickname,description,date,_default"
-	displayfields="!createdate,!owner,case_number,first_name,middle_name,last_name,nickname,date,_default"
+	editfields="first_name,middle_name,last_name,nickname,description,date,age_missing,_default"
+	displayfields="!createdate,!owner,case_number,first_name,middle_name,last_name,nickname,date,age_missing,_default"
 	nametemplate="${first_name} ${middle_name} ${last_name}"    
     metadata="missing_alias,missing_ethnicity,missing_clothing,missing_agency,missing_sighting,missing_vehicle"
     handler="org.ramadda.projects.missing.MissingPersonTypeHandler">
@@ -38,20 +38,15 @@
     <column name="middle_name" type="string"  label="Middle Name" cansearch="true"/>
     <column name="last_name" type="string"  label="Last Name" cansearch="true"/>            
     <column name="nickname" type="string"  label="Nickname" cansearch="true"/>    
+    <column name="age_missing" type="int" label="Age when missing" cansearch="true" cansort="true"/>
     <column name="status" type="enumeration" values="unknown:Unknown,found:Found,missing:Missing,died:Died"  label="Status"
-	    enumeration_show_checkboxes="true"
-	    cansort="true"
-	    cansearch="true"/>
-    <column name="date_of_birth" type="date" default="none" label="Date of Birth" cansearch="true" cansort="true"
-	    xxxhtmlTemplate="${value dateFormat=yyyy-MM-dd} ${value showAge=true prefix=&quot; - &quot; suffix=&quot; years old when missing&quot;}"/>
+	    enumeration_show_checkboxes="true"	    cansort="true"	    cansearch="true"/>
+    <column name="date_of_birth" type="date" default="none" label="Date of Birth" cansearch="true" cansort="true"/>
     <column name="date_found" type="date" default="none" label="Date Found" cansearch="true"
 	    htmlTemplate="${value dateFormat=yyyy-MM-dd} ${value otherDate=date_of_birth showAge=true prefix=&quot; - &quot; suffix=&quot; years old when found&quot;}"/>    
     <column name="biological_sex" type="enumeration"  label="Biological Sex"
-	    values="male:Male,female:Female,other:Other,unsure:Unsure,notprovided:Not Provided"  cansearch="true"
-	    cansort="true"/>
-
+	    values="male:Male,female:Female,other:Other,unsure:Unsure,notprovided:Not Provided"  cansearch="true"	    cansort="true"/>
     <column name="height" type="int"  searchlabel="Height (inches)"  label="Height" suffix="Inches"  cansearch="true" htmlTemplate="${value inchesToFeet=true}" cansort="true"/>
-
     <column name="weight" type="int"  searchlabel="Weight (pounds)" label="Weight" suffix="Pounds"  cansearch="true"
 	    htmlTemplate="${value} lbs" cansort="true"/>
     <column name="race_ethnicity" type="enumerationplus"  label="Primary Ethnicity"   cansearch="true" cansort="true"
