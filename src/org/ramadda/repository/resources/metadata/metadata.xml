@@ -242,6 +242,7 @@ Override the logo icon and URL used in the default page templates.
     <type
        name="Page Header"
        id="content.pageheader"
+       showlabel="false"
        candisplay="false">
       <help>
 <![CDATA[Header to show in the template]]>

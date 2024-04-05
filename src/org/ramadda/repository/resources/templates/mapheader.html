@@ -9,6 +9,10 @@ id=mapheader
 </properties>
 ${imports}
 <style type="text/css">
+:root {
+    --header-height:100px;
+}
+
 .ramadda-header .ramadda-navbar {
     background:#fff;
     border-radius:var(--default-radius);
@@ -22,6 +26,7 @@ ${imports}
 .ramadda-header .ramadda-navbar:hover {
     border  :var(--highlight-border);
 }
+
 
 
 .ramadda-logo-image {height:55px;}
@@ -42,11 +47,11 @@ ${headfinal}
 <div class="ramadda-innercontent">
 ${content}
 </div>
-</div> 
 <div class="ramadda-footer">
 ${footer}
 ${footer.acknowledgement}  
 </div>
+</div> 
 ${bottom}
 </body>
 </html>
