@@ -85,7 +85,7 @@ public class PageHandler extends RepositoryManager {
 
     /** _more_ */
     private static final String ACK_MESSAGE =
-        "<div class='ramadda-acknowledgement'><a href='https://geodesystems.com'><img loading=lazy width=100px  src='${cdnpath}/images/poweredby.png'></a></div>";
+        "<div class='ramadda-acknowledgement'><a title='geodesystems.com' href='https://geodesystems.com'><img loading=lazy width=100px  src='${cdnpath}/images/poweredby.png'></a><br><a title='Help' href=${root}/userguide/index.html><i class='fas fa-question-circle'></i></a>&nbsp;<a title='Server Information' href=${root}/info><i class='fas fa-circle-info'></i></a></div>";
 
     /**  */
     private String ackMessage;

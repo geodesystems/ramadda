@@ -4345,8 +4345,12 @@ a.ramadda-heading-2-link:visited {
 }
 
 .ramadda-acknowledgement {
-    background:#fff;
+    background:rgba(255,255,255,0.1);
     display:inline-block;
+}
+
+.ramadda-acknowledgement i {
+    color:#3399CA;
 }
 .ramadda-acknowledgement, .ramadda-acknowledgement a {
     text-align: center;
