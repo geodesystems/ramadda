@@ -82,6 +82,10 @@ inlineblock {
 }
 
 
+.ramadda-outercontents {
+    position:relative;
+}
+
 .fileinput_wrapper {
     background:#fff;
     display:inline-block;
@@ -1162,7 +1166,8 @@ a.ramadda-menubar-button:hover {
     z-index:1000;
     border: var(--basic-border);
     background:var(--color-mellow-yellow);
-    box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
+    box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px;
+    -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
     border-radius: var(--default-radius);
 }
 
@@ -2299,10 +2304,51 @@ thin_hr,.ramadda-thin-hr {
     border-bottom:var(--basic-border);
 }
 
+
+.ramadda-navbar-popup-link {
+    background:#fff;
+    xmargin-top:calc(var(--header-height) + 5px);
+    margin-top:5px;
+    position:absolute;
+    top:0px;
+    xz-index:1000;
+}
+
+.ramadda-navbar-popup-link i {
+    font-size:18pt;
+    color:#888;
+}
+
+.ramadda-navbar-popup-header {
+    font-weight:bold;
+    border-bottom:1px solid  #888;
+}
+
+.ramadda-navbar-popup {
+    font-size: var(--font-size) !important;
+    text-align:left;
+    margin-left:10px;
+    background:#fff;
+    z-index:1000;
+    position:relative;
+    display:none;
+    padding:5px;
+    border: var(--basic-border);
+    box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px;
+    -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
+}
+
+
+
 .ramadda-navbar-link {
     display:inline-block;
 
 }
+
+.ramadda-navbar-popup a {
+    color:#000 !important;
+}
+
 
 .ramadda-navbar-separator {
     display:inline-block;

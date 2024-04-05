@@ -1,14 +1,19 @@
+:root {
+    --header-height:60px;
+}
+
 .ramadda-header {
    z-index:900;
    position:fixed;
    padding: 1px;
    padding-left: 6px;
    padding-right: 6px;
-   height:60px;
+   height:var(--header-height);
    width:100%;
    left:0;
    top:0;
 }
+
 
 .ramadda-header .ramadda-navbar {
     background:#fff;
