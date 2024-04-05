@@ -4648,14 +4648,25 @@ public class WikiManager extends RepositoryManager
 
 	    return sb.toString();
         } else if (theTag.equals(WIKI_TAG_NAVBAR)) {
+	    boolean popup = getProperty(wikiUtil,props,"popup",false);	    
 	    String style =getProperty(wikiUtil,props,"style","");
 	    String linkStyle =getProperty(wikiUtil,props,"linkStyle","");
-	    String separator =getProperty(wikiUtil,props,"separator","|");
+	    String separator =getProperty(wikiUtil,props,"separator",popup?"<br>":null);
+	    String contents =getProperty(wikiUtil,props,"contents",null);
+	    String header =getProperty(wikiUtil,props,"header",null);
+	    String footer =getProperty(wikiUtil,props,"footer","");	    	    
+	    if(separator==null)
+		separator = HU.div("|",HU.clazz("ramadda-navbar-separator"));
 	    String image =getProperty(wikiUtil,props,"image","");	    
 	    int cnt = 0;
 	    sb.append(HU.open("div",HU.attrs("style",style,"class","ramadda-navbar")));
-	    for(String link:Utils.split(getProperty(wikiUtil,props,"links",""),",",true,true)) {	    
-		String url;
+	    if(header!=null) {
+		if(popup)
+		    HU.div(sb,header,HU.attrs("class","ramadda-navbar-popup-header"));
+		else
+		    sb.append(header);		
+	    }
+	    for(String link:Utils.split(getProperty(wikiUtil,props,"links",""),",",true,true)) {	  		String url;
 		String label;
 		if(link.indexOf(";")>=0) {
 		    List<String> toks = Utils.splitUpTo(link,";",2);
@@ -4673,10 +4684,34 @@ public class WikiManager extends RepositoryManager
 		    label = HU.div(image2,"")+label;
 		}
 		label = HU.div(label,HU.attrs("style",linkStyle,"class","ramadda-clickable ramadda-navbar-link"));
-		if(cnt++>0) sb.append(HU.div(separator,HU.clazz("ramadda-navbar-separator")));
+		if(cnt++>0) sb.append(separator);
 		sb.append(HU.href(url,label));
 	    }
+	    if(contents!=null) sb.append(contents);
+	    sb.append(footer);
 	    sb.append(HU.close("div"));
+	    if(popup) {
+		boolean left = getProperty(wikiUtil,props,"left",true);
+		String id = HU.getUniqueId("popup");
+		String popupLinkStyle=left?"left:10px":"right:10px;";
+		popupLinkStyle+=getProperty(wikiUtil,props,"popupLinkStyle","");
+		String popupText=getProperty(wikiUtil,props,"popupText",
+					     HU.getIconImage("fa-solid fa-bars"));
+
+		StringBuilder sb2= new StringBuilder();
+		HU.div(sb2,
+		       popupText,HU.attrs("id",id,
+					  "class",
+					  "ramadda-navbar-popup-link ramadda-clickable",
+					  "title","Show links",
+					  "style",popupLinkStyle));
+		HU.span(sb2,sb.toString(),HU.attrs("id",id+"_popup",
+						  "class","ramadda-navbar-popup"));
+		sb2.append(HU.script(HU.call("Utils.initNavbarPopup",HU.squote(id))));
+		return sb2.toString();
+	    }
+
+
 	    return sb.toString();
 
         } else if (theTag.equals(WIKI_TAG_LINKS)
