@@ -753,7 +753,7 @@ proc gen::addSubHead {from content} {
 		       break
 		   }
                 if {$idcnt == 0} {
-                       set label "<a href=\"#$id\">$label</a>"
+#                       set label "<a href=\"#$id\">$label</a>"
                  }
                 append body "<a name=\"$id\"></a>"
                 incr idcnt
@@ -761,8 +761,9 @@ proc gen::addSubHead {from content} {
 	    if ($::doXml) {
 		   append body "\n:h2 $label"
 	       } else {
-		   append body "<p>"
-		   append body "<div class=\"ramadda-help-heading\">$levelLabel.$cnt $label</div> "
+#		   append body "<p>"
+#		   append body "<div class=\"ramadda-help-heading\">$levelLabel.$cnt $label</div> "
+		   append body "\n:heading $levelLabel.$cnt <label>$label</label>\n"
 	       }
             incr cnt
             if {$intoc != "false"} {set intoc 1} else {set intoc 0}
@@ -1272,6 +1273,7 @@ proc gen::walkTree {indexFile {parent ""}} {
 	    if {[regexp {^\[} [string trim $body]]} {
 		set body [subst $body]
 	    }
+           append body "<%childlist%>"
 
             gen::definePage $fileName "" $currentParent  $includeInNav $includeInToc virtual $title $overview $body
             continue
@@ -1949,7 +1951,8 @@ proc gen::processFile {from to fileIdx template} {
 	set childlist ""
     }
 
-    if {[string first {<%nochildlist%>} $A(body)] >=0} {
+#never show the child list
+    if {1 || [string first {<%nochildlist%>} $A(body)] >=0} {
         regsub -all {<%nochildlist%>} $A(body) {} A(body)
         set A(childlist) ""
     }
