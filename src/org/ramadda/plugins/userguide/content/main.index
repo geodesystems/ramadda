@@ -45,7 +45,9 @@ index.html
 >>linux.html
 >>awsec2.html
 >>configuration.html
+>>repositoryconfig.html
 >>arkids.html
+>>templates.html
 >>build.html
 >>database.html
 >>llm.html
@@ -53,7 +55,6 @@ index.html
 >>plugins.html
 >>maps.html
 >>services.html
->>templates.html
 >>admin.html
 >>adminusers.html
 >>adminmisc.html
