@@ -468,6 +468,8 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
 .ramadda-nav-top {
     text-align: center;
     font-size:120%;
+    margin-top:10px;
+    margin-bottom:10px;
 }
 
 .ramadda-nav-top-delimiter {
@@ -1001,6 +1003,7 @@ a.ramadda-menubar-button:hover {
 
 .ramadda-heading-outer  {
     text-align:center;
+    margin-top:10px;
 }
 
 
