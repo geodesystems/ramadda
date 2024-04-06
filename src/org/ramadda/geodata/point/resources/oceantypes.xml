@@ -909,7 +909,7 @@ editfields="station_id,_default"	>
 </property>
 <wiki>
 <![CDATA[
-+section title="Station: {{field name=station_name}} {{field fieldPrefix=_quote_(_quote_ fieldSuffix=) name=station_id}} - {{name}}"
++section title="{{name}}"
 :navtop
 +row
 +col-9
@@ -963,7 +963,7 @@ csvcommands2=-addheader, date_time.type date date_time.format {yyyy-MM-dd HH:mm}
 </property>
 <wiki>
 <![CDATA[
-+section title="Station: {{field name=station_name}} - {{field name=station_id}} - {{field name=product}} - {{name}}"
++section title="{{name}}"
 :navtop
 +row
 +col-9
@@ -1013,7 +1013,7 @@ csvcommands3=^$,NaN,-addheader, date.format {yyyy-MM} highest.label   {Highest T
 </property>
 <wiki>
 <![CDATA[
-+section title="Station: {{field name=station_name}} - {{field name=station_id}} - {{name}}"
++section title="{{name}}"
 :navtop
 +row
 +col-9

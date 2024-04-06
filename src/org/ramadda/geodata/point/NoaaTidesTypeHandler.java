@@ -90,12 +90,28 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 
 	    JSONArray stations = obj.getJSONArray("stations");	    
 	    JSONObject station = stations.getJSONObject(0);
-	    entry.setValue("station_name",station.getString("name"));
-	    if(!stringDefined(entry.getName())) entry.setName(station.getString("name"));
+	    String stationName =station.getString("name");
+	    entry.setValue("station_name",stationName);
 	    entry.setValue("tidal",station.getBoolean("tidal"));	    
 	    entry.setValue("state",station.getString("state"));	    
 	    entry.setLatitude(station.optDouble("lat",Double.NaN));
 	    entry.setLongitude(station.optDouble("lng",Double.NaN));	    
+	    String name = entry.getName().replace(id,"").trim();
+	    List<String> names = new ArrayList<String>();
+	    Column productColumn = findColumn("product");
+	    names.add(stationName);
+	    if(productColumn !=null) {
+		String product = productColumn.formatValue(request,  entry, entry.getValues());
+		if(stringDefined(product))
+		    names.add(product);
+	    }
+	    if(entry.getTypeHandler().getType().equals("type_noaa_tides_monthly")) {
+		names.add("Monthly Mean");
+	    }
+
+
+	    if(stringDefined(name)) names.add(name);	    
+	    entry.setName(Utils.join(names," - "));
 	    try {
 		String imageUrl = "https://cdn.tidesandcurrents.noaa.gov/assets/stationphotos/" + id+"A.jpg";
 		File tmpFile = getStorageManager().getTmpFile(request,"thumbnail.jpg");
@@ -161,7 +177,6 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 			    "begin_date",sdf.format(startDate),
 			    "end_date",sdf.format(endDate));
 
-	System.err.println(url);
 	return url;
 
     }
