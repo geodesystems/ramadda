@@ -685,6 +685,7 @@ public abstract class TextFile extends PointFile {
 			    attrs.append(attrChartable());
 			}
 			boolean searchable     = getProperty("record.searchable."+id,defaultSearchable);
+			if(type==null) type=RecordField.TYPE_STRING;
 			if(type.equals("date")) {
 			    attrs.append(attrSearchable(false));
 			} else {
