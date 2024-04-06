@@ -882,5 +882,180 @@ template="${default}" }}
 </wiki>
 </type>
 
+<type name="type_noaa_tides" 
+description="NOAA Tides Data" 
+super="type_point" 
+handler="org.ramadda.geodata.point.NoaaTidesTypeHandler"
+editfields="station_id,_default"	>
+
+  <property name="search.tabs" value="map,list"/>
+  <property name="icon" value="/point/noaa.gif"/>
+  <property name="form.area.show" value="false"/>
+  <property name="form.location.show" value="true"/>
+  <property name="date.nullok" value="true"/>
+  <property name="form.resource.show" value="true"/>
+  <property name="form.properties.show" value="false"/>
+  <property name="form.header.new"><![CDATA[]]></property>    
+  <property name="form.header.new">
+<![CDATA[+note\nView station IDS at <a target=_map href=https://tidesandcurrents.noaa.gov/map/index.html>NOAA Tides and Currents Site</a>\n-note]]></property>    
+
+  <column  name="station_id"  label="Station ID" type="string" cansearch="true" />
+  <column  name="station_name"  label="Station Name" type="string" cansearch="true"/>
+  <column  name="state"  label="State" type="enumeration" cansearch="true"/>    
+  <column  name="tidal"  label="Tidal" type="boolean" cansearch="true"/>
+  <column  name="fields"  label="Fields to show in chart" type="string" cansearch="false" showinhtml="false" default="#2"/>    
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property name="record.properties">
+</property>
+<wiki>
+<![CDATA[
++section title="Station: {{field name=station_name}} {{field fieldPrefix=_quote_(_quote_ fieldSuffix=) name=station_id}} - {{name}}"
+:navtop
++row
++col-9
+{{description wikify=true}}
+:heading Chart
+{{property max="20000"}}
+{{group}}
+{{display_barchart showMenu=true height="300px"
+vAxisSharedRange=true  vAxisMinValue=0 fields="property:fields"}} 
+:heading Table
+{{display_download}}
+{{display_table  includeDate=false }} 
+-col
++col-3
+<a target=_other href="https://tidesandcurrents.noaa.gov/stationhome.html?id={{field name=station_id}}">
+NOAA Site</a>
+:vspace 1em
++center
+{{image src="::*" message="" width="90%"}}
+-center
+:vspace 1em
+{{mapentry hideIfNoLocations=true width="100%" height=300px}}
+-col
+-row
+:vspace 1em
+----
+:heading Information
+{{information details=true}}
+-section
+]]>
+</wiki>
+</type>
+
+
+<type name="type_noaa_tides_waterlevel" 
+description="NOAA Tides Data - Water Level" 
+super="type_noaa_tides" 
+editfields="station_id,product,date,days,_default">
+  <property name="form.header.new">
+<![CDATA[+note\nEither specify a station and product or upload a file.<br>View station IDS at <a target=_map href=https://tidesandcurrents.noaa.gov/map/index.html>NOAA Tides and Currents Site</a>\n-note]]></property>    
+
+
+
+  <column  name="product"  label="Product" type="enumeration" values="water_level:6 Minutes,hourly_height:Hourly Height,high_low:High Low" cansearch="true"/>
+<column  name="days"  label="Days" type="int" 
+	 default="-1"
+	 help="Override the # of days offset from end date -max: high/low and hourly height: 365, water level:31" cansearch="false"/>  
+<property name="record.properties">
+csvcommands1=-dateformat,yyyy-MM-dd HH:mm,GMT,-convertdate,date_time
+csvcommands2=-addheader, date_time.type date date_time.format {yyyy-MM-dd HH:mm} ty.label {Water level height} ty.type enumeration quality.type enumeration ty.enumeratedValues {HH:Higher High water;H:High water;L:Low water;LL:Lower Low water}
+</property>
+<wiki>
+<![CDATA[
++section title="Station: {{field name=station_name}} - {{field name=station_id}} - {{field name=product}} - {{name}}"
+:navtop
++row
++col-9
+{{description wikify=true}}
+:heading Charts
+{{property max="20000"}}
+{{group filterFields=ty hideFilterWidget=true}}
+{{display_filter}} 
+{{display_linechart showMenu=true height=300px fields="water_level" }}
+:heading Table
+{{display_download}}
+{{display_table }} 
+-col
++col-3
+<a target=_other href="https://tidesandcurrents.noaa.gov/stationhome.html?id={{field name=station_id}}">
+NOAA Site</a>
+:vspace 1em
++center
+{{image src="::*" message="" width="90%"}}
+-center
+:vspace 1em
+{{mapentry hideIfNoLocations=true width="100%" height=300px}}
+-col
+-row
+:vspace 1em
+----
+:heading Information
+{{information details=true}}
+-section
+]]>
+</wiki>
+</type>
+
+
+
+
+
+
+<type name="type_noaa_tides_monthly" 
+description="NOAA Tides Data -Monthly Mean" 
+super="type_noaa_tides" 
+editfields="station_id,_default">
+<property name="record.properties">
+csvcommands1=-combine,year\,month,-,date,-notcolumns
+csvcommands2=year\,month,-firstcolumns,date,-change,1-20
+csvcommands3=^$,NaN,-addheader, date.format {yyyy-MM} highest.label   {Highest Tide} mhhw.label      {Mean Higher-High Water} mhw.label       {Mean High Water} msl.label       {Mean Sea Level} mtl.label       {Mean Tide Level} mlw.label       {Mean Low Water} mllw.label      {Mean Lower-Low Water} dtl.label       {Mean Diurnal Tide Level} gt.label        {Great Diurnal Range} mn.label        {Mean Range of Tide} dhq.label       {Mean Diurnal High Water Inequality} dlq.label       {Mean Diurnal Low Water Inequality} hwi.label       {Greenwich High Water Interval} lwi.label       {Greenwich Low Water Interval} lowest.label    {Lowest Tide}
+</property>
+<wiki>
+<![CDATA[
++section title="Station: {{field name=station_name}} - {{field name=station_id}} - {{name}}"
+:navtop
++row
++col-9
+{{description wikify=true}}
+:heading Charts
+{{property max="20000"}}
+{{group}}
+{{display_linechart showMenu=true height=200px fields="highest" vAxisSharedRange=true }}
+{{display_linechart showMenu=true height=200px fields="mhw" vAxisSharedRange=true }} 
+-col
++col-3
+<a target=_other href="https://tidesandcurrents.noaa.gov/stationhome.html?id={{field name=station_id}}">
+NOAA Site</a>
+:vspace 1em
++center
+{{image src="::*" message="" width="90%"}}
+-center
+:vspace 1em
+{{mapentry hideIfNoLocations=true width="100%" height=300px}}
+-col
+-row
+:vspace 1em
+:heading Table
+{{display_download}}
+{{display_table }} 
+
+
+:vspace 1em
+----
+:heading Information
+{{information details=true}}
+-section
+]]>
+</wiki>
+</type>
+
+
+
+
+
+
+
+
 
 </types>
