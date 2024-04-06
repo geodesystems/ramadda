@@ -47,6 +47,12 @@ public class TextRecord extends DataRecord {
         org.ramadda.data.point.PointRecord.ATTR_LAST;
 
     /** _more_ */
+    private SimpleDateFormat yearFormat = Utils.makeDateFormat("yyyy-MM");
+    private SimpleDateFormat sdf;
+
+
+
+    /** _more_ */
     private String delimiter = ",";
 
     /** _more_ */
@@ -619,7 +625,7 @@ public class TextRecord extends DataRecord {
     private Date parseDate(RecordField field, String tok) throws Exception {
 	boolean debug = false;
         tok = tok.trim();
-	    if(debug) System.err.println("parseDate:" + tok);
+	if(debug) System.err.println("parseDate:" + tok);
         if (tok.equals("") || tok.equals("null")) {
 	    if(debug) System.err.println("\tno tok");
             return null;
@@ -670,12 +676,25 @@ public class TextRecord extends DataRecord {
 
         Date date   = null;
         int  offset = field.getUtcOffset();
+	if(sdf!=null) {
+	    try {
+		date = sdf.parse(tok);
+	    } catch(Exception exc) {
+	    }
+	}
+
+	if(date!=null) return date;
+
         try {
             date = getDateFormat(field).parse(tok);
 	    if(debug) System.err.println("\tgot:" + date);
         } catch (java.text.ParseException ignore) {
 	    if(debug) System.err.println("\terror:" + ignore);
             //Try to guess
+	    sdf = Utils.findDateFormat(tok);
+	    if(sdf!=null) {
+		return sdf.parse(tok);
+	    }
             date = Utils.extractDate(tok);
 	    if(debug)System.err.println("\textract:" + date);
             if (date == null) {
@@ -705,10 +724,6 @@ public class TextRecord extends DataRecord {
         return date;
     }
 
-
-
-    /** _more_ */
-    private SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy-MM");
 
 
     /**
