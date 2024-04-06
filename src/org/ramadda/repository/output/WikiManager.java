@@ -2994,6 +2994,11 @@ public class WikiManager extends RepositoryManager
 		    }
 		    if(lowerCase) fieldValue = fieldValue.toLowerCase();
 		    if(upperCase) fieldValue = fieldValue.toUpperCase();		    
+		    String fieldPrefix=getProperty(wikiUtil,props,"fieldPrefix","");
+		    String fieldSuffix=getProperty(wikiUtil,props,"fieldSuffix","");		    
+		    if(stringDefined(fieldValue)) {
+			fieldValue = fieldPrefix+fieldValue+fieldSuffix;
+		    }
                     return fieldValue;
                 }
                 return "Could not find field: " + name;
