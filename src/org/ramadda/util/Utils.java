@@ -2774,8 +2774,12 @@ public class Utils extends IO {
 
 
     /** _more_ */
-    private static final String[] DATE_PATTERNS = { "\\d\\d\\d\\d-\\d\\d-\\d\\d",
+    private static final String[] ISDATE_PATTERNS = { "\\d\\d\\d\\d-\\d\\d-\\d\\d",
 	"(january|february|march\\s|april|may\\s|june|july|august|septembe|october|november|december).*" };
+
+
+
+
 
     /**
      * _more_
@@ -2785,13 +2789,35 @@ public class Utils extends IO {
      * @return _more_
      */
     public static boolean isDate(String s) {
-        for (String p : DATE_PATTERNS) {
+        for (String p : ISDATE_PATTERNS) {
             if (Pattern.matches(p, s)) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    /** a set of regular expressions that go along with the below DATE_FORMATS */
+    public static final String[] FIND_DATE_PATTERNS = {
+	"\\d\\d\\d\\d/\\d\\d/\\d\\d",
+	"(\\d\\d\\d\\d\\d\\d\\d\\d_\\d\\d\\d\\d)",
+	"(\\d\\d\\d\\d\\d\\d\\d\\d_\\d\\d)",
+	"(\\d\\d\\d\\d\\d\\d\\d\\d)" };
+
+    /** A set of date formats */
+    public static final String[] FIND_DATE_FORMATS = { "yyyy/MM/dd",
+						       "yyyyMMdd_HHmm",
+						       "yyyyMMdd_HH",
+						       "yyyyMMdd" };
+
+
+    public static final SimpleDateFormat findDateFormat(String s) {
+	for(int i=0;i<FIND_DATE_PATTERNS.length;i++) {
+	    if(s.matches(FIND_DATE_PATTERNS[i]))
+		return makeDateFormat(FIND_DATE_FORMATS[i]);
+	}
+	return  null;
     }
 
     /**
