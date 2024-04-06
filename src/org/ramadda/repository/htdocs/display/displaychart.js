@@ -748,6 +748,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
 
+
             if (selectedFields.length == 0) {
 		if(!this.getAcceptEventDataSelection()) {
 //                    this.setContents("No fields selected");
@@ -2191,7 +2192,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		if(!isNaN(min) && !isNaN(max)) {
 		    let diff = max-min;
 		    //pad out 10%
-		    min-=diff*0.1;max+=diff*.1;
+		    min-=diff*0.1;
+		    max+=diff*.1;
+		    if(Utils.isDefined(this.getProperty('vAxisMinValue')))min=+this.getProperty('vAxisMinValue');
+		    if(Utils.isDefined(this.getProperty('vAxisMaxValue')))max=+this.getProperty('vAxisMaxValue');
+		    
                     chartOptions.vAxis.minValue = min;
                     chartOptions.vAxis.maxValue = max;
 		}
