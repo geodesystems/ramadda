@@ -2853,7 +2853,9 @@ public class Utils extends IO {
 	if(label==null) return label;
 	if(label.length()<=2) return label.toUpperCase();
 	String olabel = label;
+	label = label.replaceAll("(\\d)(\\.)(\\d)","$1DOTESCAPE$3");
 	label = label.replaceAll("\\."," ").replaceAll("_", " ").replaceAll("-"," ");
+	label = label.replace("DOTESCAPE",".");
 	label = label.replaceAll("\\s\\s+"," ");
         StringBuilder tmpSB             = new StringBuilder();
         StringBuilder sb                = new StringBuilder();
