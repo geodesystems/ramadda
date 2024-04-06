@@ -2559,6 +2559,7 @@ public class WikiUtil implements HtmlUtilsConstants {
                                          HU.clazz("ramadda-page-subtitle"));
                         }
 			if(handler.titleOk(this)) {
+			    title  = title.replace("_quote_","\"");
 			    HU.div(buff,getTitle(title, titleStyle!=null?titleStyle:"") + sub,
 				   HU.cssClass("ramadda-page-title")
 				   + ((headerStyle == null)
