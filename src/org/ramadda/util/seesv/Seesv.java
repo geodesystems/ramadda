@@ -6169,6 +6169,7 @@ public class Seesv implements SeesvCommands {
     }
 
     public static class Dater {
+	private boolean hadError = false;
 	private static String DFLT_DATEFORMAT = "yyyy-MM-dd HH:mm:ss";
 	private String sdfString = DFLT_DATEFORMAT;
 	private List<SimpleDateFormat> sdfs = new ArrayList<SimpleDateFormat>();
@@ -6208,6 +6209,17 @@ public class Seesv implements SeesvCommands {
 		    lastException = exc;
 		}
             } 
+	    if(!hadError) {
+		SimpleDateFormat sdf = Utils.findDateFormat(d);
+		hadError=true;
+		try {
+		    Date date = sdf.parse(d);
+		    sdfs.add(0,sdf);
+		    return date;
+		} catch (Exception exc) {
+		    lastException = exc;
+		}
+	    }
 	    throw new SeesvException("Could not parse date:" + d + " with format:"
 				     + sdfString);
 	}
