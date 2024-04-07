@@ -54,6 +54,7 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 
 	    JSONArray stations = obj.getJSONArray("stations");	    
 	    JSONObject station = stations.getJSONObject(0);
+	    JSONObject flood = station.getJSONObject("floodlevels");	    
 	    String stationName =station.getString("name");
 	    entry.setValue("station_name",stationName);
 	    entry.setValue("tidal",station.getBoolean("tidal"));	    
@@ -76,6 +77,11 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 
 	    if(stringDefined(name)) names.add(name);	    
 	    entry.setName(Utils.join(names," - "));
+
+	    entry.setValue("flood_stage_minor",new Double(flood.getDouble("nos_minor")));
+	    entry.setValue("flood_stage_moderate",new Double(flood.getDouble("nos_moderate")));
+	    entry.setValue("flood_stage_major",new Double(flood.getDouble("nos_major")));
+
 	    try {
 		String imageUrl = "https://cdn.tidesandcurrents.noaa.gov/assets/stationphotos/" + id+"A.jpg";
 		File tmpFile = getStorageManager().getTmpFile(request,"thumbnail.jpg");

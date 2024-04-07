@@ -897,12 +897,16 @@ editfields="station_id,_default"	>
   <property name="form.properties.show" value="false"/>
   <property name="form.header.new"><![CDATA[]]></property>    
   <property name="form.header.new">
-<![CDATA[+note\nView station IDS at <a target=_map href=https://tidesandcurrents.noaa.gov/map/index.html>NOAA Tides and Currents Site</a>\n-note]]></property>    
+<![CDATA[+note\nView station IDS at <a target=_map href=https://tidesandcurrents.noaa.gov/stations.html?type=Water+Levels>NOAA Tides and Currents Site</a>\n-note]]></property>    
 
   <column  name="station_id"  label="Station ID" type="string" cansearch="true" />
   <column  name="station_name"  label="Station Name" type="string" cansearch="true"/>
   <column  name="state"  label="State" type="enumeration" cansearch="true"/>    
   <column  name="tidal"  label="Tidal" type="boolean" cansearch="true"/>
+  <column  name="flood_stage_minor"  label="Flood Stage Minor" default="NaN" type="double"   cansearch="false"/>
+  <column  name="flood_stage_moderate"  label="Flood Stage Moderate" default="NaN"  type="double"   cansearch="false"/>
+  <column  name="flood_stage_major"  label="Flood Stage Major" default="NaN"  type="double"   cansearch="false"/>        
+
   <column  name="fields"  label="Fields to show in chart" type="string" cansearch="false" showinhtml="false" default="#2"/>    
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property name="record.properties">
@@ -977,7 +981,12 @@ csvcommands2=-addheader, date_time.type date date_time.format {yyyy-MM-dd HH:mm}
 {{property max="20000"}}
 {{group filterFields=ty hideFilterWidget=true}}
 {{display_filter}} 
-{{display_linechart showMenu=true height=300px fields="water_level" }}
+{{display_linechart showMenu=true height=300px fields="water_level"
+vAxisSharedRange=true
+fixedLine0="value:${property:flood_stage_minor},label:Minor flood stage,lineWidth:1,color:green,lineDashStyle:1;1"
+fixedLine1="value:${property:flood_stage_moderate},label:Moderate flood stage,lineWidth:1,color:blue,lineDashStyle:1;1"
+fixedLine2="value:${property:flood_stage_major},label:Major flood stage,lineWidth:2,color:red,lineDashStyle:4;1"
+}}
 :heading Table
 {{display_download}}
 {{display_table }} 
