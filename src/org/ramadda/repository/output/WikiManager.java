@@ -251,6 +251,7 @@ public class WikiManager extends RepositoryManager
             return dflt;
         }
 
+
 	if(value.startsWith("property:")){
 	    String id = value.substring("property:".length());
             Entry   entry    = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
@@ -8840,12 +8841,30 @@ public class WikiManager extends RepositoryManager
 	for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
 	    Object key   = keys.nextElement();
 	    Object value = props.get(key);
-	    if(value!=null && value.toString().startsWith("property:")) {
-		String prop =value.toString().substring("property:".length());
+	    if(value==null) continue;
+	    String svalue = value.toString();
+	    boolean change=false;
+	    if(svalue.indexOf("${property:")>=0) {
+		List<Column> columns = entry.getTypeHandler().getColumns();
+		if(columns!=null) {
+		    for (Column column : columns) {
+			Object v = column.getObject(entry.getValues());
+			if(v!=null) {
+			    svalue = svalue.replace("${property:" + column.getName()+"}", v.toString());
+			    change=true;
+			}
+		    }
+		}
+	    }
+	    if(svalue.startsWith("property:")) {
+		String prop =svalue.substring("property:".length());
 		Object o = entry.getTypeHandler().getWikiProperty(entry,prop);
 		if(o==null) o="Could not find property:" + prop;
-		props.put(key,o.toString());
+		svalue=o.toString();
+		change=true;
 	    }
+	    if(change)
+		props.put(key,svalue);
 	}
    }
 
