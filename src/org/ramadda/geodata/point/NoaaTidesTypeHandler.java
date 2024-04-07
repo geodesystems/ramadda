@@ -145,7 +145,9 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 
 	String url = HU.url("https://api.tidesandcurrents.noaa.gov/api/prod/datagetter",
 			    "application","NOS.COOPS.TAC.WL",
-			    "time_zone","GMT","units","english","format","csv",
+			    "time_zone","GMT",
+			    "units","english",
+			    "format","csv",
 			    "datum",(String)entry.getValue("datum","MLLW"),
 			    "station",id,
 			    "product",product,

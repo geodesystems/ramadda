@@ -956,7 +956,8 @@ super="type_noaa_tides" >
 	 default="-1"
 	 help="Override the # of days offset from the end date&lt;br&gt;Max: 6 minutes: 31 days; Hourly Height and High Low: 365 days"
 	 cansearch="false"/>  
-<column name="datum" label="Datum" type="enumeration" default="MLLW" values="MLLW,STND,MHHW,MHW,MTL,MSL,MLW,MLLW,NAVD"/>
+  <column name="datum" label="Datum" type="enumeration" default="MLLW"
+	  values="file:/org/ramadda/geodata/point/resources/noaadatums.txt"/>
 </type>
 
 
