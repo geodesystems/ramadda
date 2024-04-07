@@ -242,6 +242,7 @@ public interface SeesvCommands {
     public static final String CMD_EXTRACTDATE="-extractdate";
     public static final String CMD_FORMATDATE="-formatdate";
     public static final String CMD_ELAPSED="-elapsed";
+    public static final String CMD_MSTO="-msto";    
     public static final String CMD_LATEST="-latest";
     public static final String CMD_DATEDIFF="-datediff";
     public static final String CMD_DATECOMPARE="-datecompare";

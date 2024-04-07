@@ -640,6 +640,35 @@ public abstract class DateOps extends Processor {
     }
 
 
+    public static class MsTo extends Converter {
+
+        private int index;
+
+	private String to;
+
+        public MsTo(String col,String to) {
+            super(col);
+	    this.to = to;
+        }
+
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            //Don't process the first row
+            if (rowCnt++ == 0) {
+                index = getIndex(ctx);
+                row.add(to);
+                return row;
+            }
+
+	    if(!row.indexOk(index)) return row;
+	    double ms = row.getDouble(index);
+	    row.add(""+Utils.millisTo((long)ms,to));
+            return row;
+        }
+
+    }
+    
+
     /**
      * Class description
      *

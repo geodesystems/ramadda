@@ -2637,6 +2637,9 @@ public class Seesv implements SeesvCommands {
 
         new Cmd(CMD_ELAPSED, "Calculate elapsed time (ms) between rows",
                 new Arg(ARG_COLUMN,"",ATTR_TYPE,TYPE_COLUMN)),
+        new Cmd(CMD_MSTO, "Convert milliseconds to",
+                new Arg(ARG_COLUMN,"",ATTR_TYPE,TYPE_COLUMN),
+                new Arg("to","seconds|hours|days|weeks|months|years")),	
 
         new Cmd(CMD_LATEST, "Pass through rows whose date is the latest in the group of rows defined by the key column",
                 new Arg(ARG_COLUMNS, "Key columns", ATTR_TYPE, TYPE_COLUMNS),
@@ -4514,6 +4517,11 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new DateOps.Elapsed(args.get(++i)));
 		return i;
 	    });
+
+	defineFunction(CMD_MSTO, 2,(ctx,args,i) -> {
+		ctx.addProcessor(new DateOps.MsTo(args.get(++i),args.get(++i)));
+		return i;
+	    });	
 
 	defineFunction(CMD_DATEDIFF, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new DateOps.Diff(args.get(++i),args.get(++i),args.get(++i)));
