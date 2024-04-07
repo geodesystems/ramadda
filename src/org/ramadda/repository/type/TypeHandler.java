@@ -3625,7 +3625,7 @@ public class TypeHandler extends RepositoryManager {
                     request.makeUrl(
                         getRepository().URL_ENTRY_FORM, ARG_GROUP,
                         entry.getId(), ARG_TYPE, type), icon,
-		    msg("New") +HU.SPACE + typeHandler.getDescription(),
+		    getIconImage("fa-solid fa-plus") +HU.SPACE + typeHandler.getDescription(),
 		    OutputType.TYPE_FILE));
         }
 
