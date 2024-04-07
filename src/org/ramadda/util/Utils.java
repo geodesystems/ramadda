@@ -5766,6 +5766,40 @@ public class Utils extends IO {
     }
 
 
+    public static double millisTo(long ms,String what) {
+	if(what.equals("seconds")) return millisToSeconds(ms);
+	if(what.equals("minutes")) return millisToMinutes(ms);	
+	if(what.equals("hours")) return millisToHours(ms);	
+	if(what.equals("days")) return millisToDays(ms);	
+	if(what.equals("weeks")) return millisToWeeks(ms);	
+	if(what.equals("months")) return millisToMonths(ms);	
+	if(what.equals("years")) return millisToYears(ms);	
+	throw new IllegalArgumentException("Unknown time unit to convert milliseconds to:" + what);
+    }
+
+    public static double millisToSeconds(long ms) {
+	return ms/1000.0;
+    }
+    public static double millisToMinutes(long ms) {
+	return ms/(1000.0*60);
+    }
+    public static double millisToHours(long ms) {
+	return ms/(1000.0*60*60);
+    }
+    public static double millisToDays(long ms) {
+	return ms/(1000.0*60*60*24);
+    }
+    public static double millisToWeeks(long ms) {
+	return ms/(1000.0*60*60*24*7);
+    }
+    public static double millisToMonths(long ms) {
+	return ms/(1000.0*60*60*24*30);
+    }
+    public static double millisToYears(long ms) {
+	return ms/(1000.0*60*60*24*365);
+    }                
+    
+
     /**
      *
      * @param minutes _more_
