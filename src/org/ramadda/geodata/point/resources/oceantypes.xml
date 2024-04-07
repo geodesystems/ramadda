@@ -924,6 +924,7 @@ vAxisSharedRange=true  vAxisMinValue=0 fields="property:fields"}}
 {{display_table  includeDate=false }} 
 -col
 +col-3
+<b>Station:</b> {{field name=station_id}}
 <a target=_other href="https://tidesandcurrents.noaa.gov/stationhome.html?id={{field name=station_id}}">
 NOAA Site</a>
 :vspace 1em
@@ -982,7 +983,7 @@ csvcommands2=-addheader, date_time.type date date_time.format {yyyy-MM-dd HH:mm}
 {{display_table }} 
 -col
 +col-3
-<b>Site:</b> {{field name=station_id}}
+<b>Station:</b> {{field name=station_id}}
 <a target=_other href="https://tidesandcurrents.noaa.gov/stationhome.html?id={{field name=station_id}}">NOAA Site</a>
 <br>
 <b>Datum:</b> {{field name=datum}}<br>
@@ -1035,6 +1036,7 @@ csvcommands3=^$,NaN,-addheader, date.format {yyyy-MM} highest.label   {Highest T
 {{display_linechart showMenu=true height=200px fields="mhw" vAxisSharedRange=true }} 
 -col
 +col-3
+<b>Station:</b> {{field name=station_id}}
 <a target=_other href="https://tidesandcurrents.noaa.gov/stationhome.html?id={{field name=station_id}}">
 NOAA Site</a>
 :vspace 1em
