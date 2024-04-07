@@ -949,9 +949,20 @@ NOAA Site</a>
 </type>
 
 
+<type name="type_noaa_tides_base"  foruser="false"
+description="NOAA Tides - Base " 
+super="type_noaa_tides" >
+  <column  name="days"  label="Days" type="int" 
+	 default="-1"
+	 help="Override the # of days offset from the end date&lt;br&gt;Max: 6 minutes: 31 days; Hourly Height and High Low: 365 days"
+	 cansearch="false"/>  
+<column name="datum" label="Datum" type="enumeration" default="MLLW" values="MLLW,STND,MHHW,MHW,MTL,MSL,MLW,MLLW,NAVD"/>
+</type>
+
+
 <type name="type_noaa_tides_waterlevel" 
 description="NOAA Tides - Water Level" 
-super="type_noaa_tides" 
+super="type_noaa_tides_base" 
 editfields="station_id,product,days,date,_default">
   <property name="form.date.help" value="Optionally specify a date range"/>
 
@@ -961,11 +972,6 @@ editfields="station_id,product,days,date,_default">
 
 
   <column  name="product"  label="Product" type="enumeration" values="water_level:6 Minutes,hourly_height:Hourly Height,high_low:High Low" cansearch="true"/>
-  <column  name="days"  label="Days" type="int" 
-	 default="-1"
-	 help="Override the # of days offset from the end date&lt;br&gt;Max: 6 minutes: 31 days; Hourly Height and High Low: 365 days"
-	 cansearch="false"/>  
-<column name="datum" label="Datum" type="enumeration" default="MLLW" values="MLLW,STND,MHHW,MHW,MTL,MSL,MLW,MLLW,NAVD"/>
 <property name="record.properties">
 csvcommands1=-dateformat,yyyy-MM-dd HH:mm,GMT,-convertdate,date_time
 csvcommands2=-addheader, date_time.type date date_time.format {yyyy-MM-dd HH:mm} ty.label {Water level height} ty.type enumeration quality.type enumeration ty.enumeratedValues {HH:Higher High water;H:High water;L:Low water;LL:Lower Low water}
@@ -1015,17 +1021,9 @@ fixedLine2="value:${property:flood_stage_major},label:Major flood stage,lineWidt
 
 
 
-
-
-   
-		
-
-
-
 <type name="type_noaa_tides_monthly" 
 description="NOAA Tides - Monthly Mean" 
-super="type_noaa_tides" 
-editfields="station_id,_default">
+super="type_noaa_tides_base" editfields="station_id,days,date,_default">
 <property name="record.properties">
 csvcommands1=-combine,year\,month,-,date,-notcolumns
 csvcommands2=year\,month,-firstcolumns,date,-change,1-20
@@ -1040,8 +1038,13 @@ csvcommands3=^$,NaN,-addheader, date.format {yyyy-MM} highest.label   {Highest T
 {{description wikify=true}}
 :heading Charts
 {{property max="20000"}}
-{{group}}
-{{display_linechart showMenu=true height=200px fields="highest" vAxisSharedRange=true }}
+{{group
+fixedLine0="value:${property:flood_stage_minor},label:Minor flood stage,lineWidth:1,color:green,lineDashStyle:1;1"
+fixedLine1="value:${property:flood_stage_moderate},label:Moderate flood stage,lineWidth:1,color:blue,lineDashStyle:1;1"
+fixedLine2="value:${property:flood_stage_major},label:Major flood stage,lineWidth:2,color:red,lineDashStyle:4;1"
+}}
+{{display_linechart showMenu=true height=200px fields="highest" vAxisSharedRange=true
+}}
 {{display_linechart showMenu=true height=200px fields="mhw" vAxisSharedRange=true }} 
 -col
 +col-3
@@ -1070,9 +1073,6 @@ NOAA Site</a>
 ]]>
 </wiki>
 </type>
-
-
-
 
 
 

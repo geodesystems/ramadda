@@ -28,6 +28,7 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
     private static final String PRODUCT_WATER_LEVEL="water_level";
     private static final String PRODUCT_HOURLY_HEIGHT="hourly_height";
     private static final String PRODUCT_HIGH_LOW="high_low";        
+    private static final String PRODUCT_MONTHLY_MEAN="monthly_mean";
     private static int IDX = PointTypeHandler.IDX_LAST + 1;
     private static int IDX_STATION_ID = IDX++;
 
@@ -78,6 +79,7 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 	    if(stringDefined(name)) names.add(name);	    
 	    entry.setName(Utils.join(names," - "));
 
+	    System.err.println("FLOOD:" + flood);
 	    entry.setValue("flood_stage_minor",new Double(flood.getDouble("nos_minor")));
 	    entry.setValue("flood_stage_moderate",new Double(flood.getDouble("nos_moderate")));
 	    entry.setValue("flood_stage_major",new Double(flood.getDouble("nos_major")));
@@ -113,7 +115,12 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 	    throw new IllegalStateException("No station defined for NOAA Tide data:" + entry);
 	}
 
-	String product =(String)entry.getValue("product");
+	String product;
+	if(entry.getTypeHandler().getType().equals("type_noaa_tides_monthly")) {
+	    product=PRODUCT_MONTHLY_MEAN;
+	} else {
+	    product = (String)entry.getValue("product");
+	}
 	if(!Utils.stringDefined(product)) {
 	    throw new IllegalStateException("No product defined for NOAA Tide data:" + entry);
 	}
@@ -130,6 +137,10 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 	    if(startDate==null) startDate = new Date(endDate.getTime()-Utils.daysToMillis(days>0?days:364));
 	} else 	if(product.equals(PRODUCT_WATER_LEVEL)) {
 	    if(startDate==null) startDate = new Date(endDate.getTime()-Utils.daysToMillis(days>0?days:31));
+	} else if(product.equals(PRODUCT_MONTHLY_MEAN)) {
+	    if(startDate==null) startDate =
+				    new Date(endDate.getTime()-Utils.daysToMillis(days>0?days:365*40));
+
 	}
 
 	String url = HU.url("https://api.tidesandcurrents.noaa.gov/api/prod/datagetter",

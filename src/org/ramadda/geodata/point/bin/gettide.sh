@@ -6,18 +6,22 @@ set -e
 #########################################################
 
 #This script needs the RAMADDA SeeSV package installed
-#Download and unzip:
-#https://ramadda.org/repository/release/latest/seesv.zip
-#You need to have Java installed
-#Consult the README in the seesv directory
-#Set the environment variable SEESV to the seesv directory
+#Download and unzip: https://ramadda.org/repository/release/latest/seesv.zip
+#You need to have Java installed - consult the README in the seesv directory
+#To run the script set the environment variable SEESV to the seesv directory
 
 
+#########################################################
+# Usage
+#########################################################
 
-#You can specify the the 3 flood levels (minor, moderate, major) and the datum
+#You can specify the 3 flood levels (minor, moderate, major) and the datum
 #You need to specify the station - consult https://tidesandcurrents.noaa.gov/map/index.html
 #To run:
 #sh gettide.sh -help to see usage
+#-level and -datum are optional
+#datum defaults to MLLW
+#sh gettide.sh -level <minor> <moderate> <major> -datum <some datum> <station>
 
 
 
@@ -39,6 +43,8 @@ set -e
 #moderate flood level. The events delimited by at at least 2 days between the high water
 #flood_events_<station>.csv
 
+#The counts per year of the flood events
+#flood_events_counts_8575512.csv 
 
 
 
@@ -51,9 +57,11 @@ fetch() {
     year=$1
     station=$2
     file=$3
+    product=hourly_height
+    timezone=GMT
     if [ ! -e "$file" ]; then
 	echo "fetching $year"
-	url="https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=${product}&begin_date=${year}0101&end_date=${year}1230&datum=${datum}&station=${station}&time_zone=${timezone}&units=english&format=csv&application=$app"
+	url="https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=${product}&begin_date=${year}0101&end_date=${year}1230&datum=${datum}&station=${station}&time_zone=${timezone}&units=english&format=csv&application=$NOS.COOPS.TAC.WL"
 	echo $url
 	wget --verbose  -O $file "$url"
     fi
@@ -96,6 +104,10 @@ processStation() {
 	   -ge days 2 \
 	   -p $all > flood_events_${station}.csv
 
+    csv -extractdate date_time year -summary year water_level "" count \
+	-p flood_events_${station}.csv > flood_events_counts_${station}.csv
+
+
     echo "counting hours of flood events per year"
     countHours $station $all $level1 "Minor Flood Stage"
     countHours $station $all $level2 "Moderate Flood Stage"
@@ -118,16 +130,15 @@ processStation() {
 
 
 datum=MLLW
-timezone=GMT
-app=NOS.COOPS.TAC.WL
-product=hourly_height
 level1=2.6
 level2=3
 level3=4
 station=8575512 
 
+
+
 usage() {
-    printf "Usage:\n gettide.sh -l <minor> <moderate> <major> -datum <some datum> <station>\n"
+    printf "Usage:\n gettide.sh -level <minor> <moderate> <major> -datum <some datum> <station>\n"
     exit
 }
 
