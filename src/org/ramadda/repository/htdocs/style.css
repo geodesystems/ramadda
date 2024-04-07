@@ -4599,11 +4599,12 @@ a.ramadda-menuitem-link:hover {
 }
 
 .ramadda-menugroup  {
+    font-size:90%;
     white-space:nowrap;
     max-height: 200px; 
     overflow-y: auto;
     overflow-x:hidden;
-    max-width:200px;
+    max-width:250px;
 }
 
 .ramadda-entry-tools .ramadda-menugroup  {
