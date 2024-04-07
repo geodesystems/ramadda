@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Apr  6 20:15:55 MDT 2024";
+var build_date="RAMADDA build date: Sun Apr  7 06:17:26 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -19678,6 +19678,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    highlightFields.forEach(f=>{highlightMap[f] = true});
 	    let seriesInfo = {};
             let useMultipleAxes = this.getProperty("useMultipleAxes", true);
+	    let extraMap = {};
+	    this.getExtraLines().forEach(info=>{
+		let id = Utils.makeId(info.label);
+		extraMap[id] = info;
+	    });
 	    seriesNames.forEach((name,idx)=>{
 		name = name.replace(/\(.*\)/g,"");
 		//check for the formatted label
@@ -19689,9 +19694,15 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		["labelInLegend", "seriesType","lineDashStyle","pointSize", "lineWidth","color","pointShape"].forEach(a=>{
 		    let dflt = this.getProperty((highlight?"highlight.":"nohighlight.") + a,this.getProperty(a));
 		    let value = this.getProperty(id+"." + a,dflt);
+		    if(extraMap[id] && extraMap[id][a]) {
+			value =extraMap[id][a];
+		    }
+		    
 		    if(value && a=="lineDashStyle") {
 			let tmp = [];
-			Utils.split(value,",",true,true).forEach(tok=>{
+			let delim = ",";
+			if(value.indexOf(";")>=0) delim=";";
+			Utils.split(value,delim,true,true).forEach(tok=>{
 			    tmp.push(parseFloat(tok));
 			});
 			value=tmp;
@@ -19714,7 +19725,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		}
 		seriesInfo[idx] = s;
 	    });
-
 
 
 	    if(this.getProperty("highlightShowFields",false)) {
@@ -19777,7 +19787,37 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    });
 	    return trendlinesInfo;
 	},
+	getExtraLines:function() {
+	    if(this.extraLines) return this.extraLines;
+	    this.extraLines = [];
+	    let idx=0;
+	    while(this.getProperty('fixedLine'+idx)) {
+		let info = {
+		    color: 'blue',
+		    lineWidth: 2,
+		    label: '',
+		    value: 0,
+		};
+		Utils.split(this.getProperty('fixedLine'+idx),",",true,true).forEach(tok=>{
+		    let tuple = Utils.split(tok,':');
+		    if(tuple.length!=2) return;
+		    let key = tuple[0];
+		    let value = tuple[1];
+		    if(key=='value') {
+			info.value=+value;
+		    } else {
+			info[key] = value;
+		    }
+		});
+		if(!isNaN(info.value)) {
+		    this.extraLines.push(info);
+		}
+		idx++;
+	    }
+	    return this.extraLines;
+	},
         makeDataTable: function(dataList, props, selectedFields, chartOptions) {
+	    let extraLines = this.getExtraLines();
 	    this.getPropertyCount=0;
 	    this.getPropertyCounts={};
 	    let dateType = this.getProperty("dateType","date");
@@ -19882,7 +19922,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		dataTable.addRows(data);
 		if(chartOptions) {
 		    chartOptions.series = this.makeSeriesInfo(dataTable);
-		    chartOptions.trendlines = this.makeTrendlinesInfo(dataTable);		    
+		    chartOptions.trendlines = this.makeTrendlinesInfo(dataTable);
 		}
 		return dataTable;
 	    }
@@ -19963,6 +20003,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			    dataTable.addColumn('number', headerLabel);
 			}
 		    }
+		    this.extraLines.forEach(info=>{
+			dataTable.addColumn('number', info.label);
+		    });
 		    if(annotationTemplate) {
 			if(debug)console.log("\tadd column: annotation");
 			dataTable.addColumn({
@@ -20131,6 +20174,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			/*note to self - an inline comment breaks the minifier 
 			  if the index so don't add a tooltip */
                     } else {
+			extraLines.forEach(info=>{
+			    newRow.push(info.value);
+			});
+
 			if(annotationTemplate) {
 			    let v = annotationTemplate.replace("${value}",value.f||value);
 			    if(debug && rowIdx<debugRows)
@@ -20832,6 +20879,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			max = Utils.max(max,v);			
 		    });
 		}
+		this.getExtraLines().forEach(info=>{
+		    min = Utils.min(min,info.value);
+		    max = Utils.max(max,info.value);			
+		});
+
 		if(!isNaN(min) && !isNaN(max)) {
 		    let diff = max-min;
 		    //pad out 10%
@@ -20843,7 +20895,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     chartOptions.vAxis.minValue = min;
                     chartOptions.vAxis.maxValue = max;
 		}
-
             }
 
 
