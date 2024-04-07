@@ -2800,22 +2800,24 @@ public class Utils extends IO {
 
     /** a set of regular expressions that go along with the below DATE_FORMATS */
     public static final String[] FIND_DATE_PATTERNS = {
-	"\\d\\d\\d\\d/\\d\\d/\\d\\d",
-	"(\\d\\d\\d\\d\\d\\d\\d\\d_\\d\\d\\d\\d)",
-	"(\\d\\d\\d\\d\\d\\d\\d\\d_\\d\\d)",
-	"(\\d\\d\\d\\d\\d\\d\\d\\d)" };
+	"\\d{4}-\\d{2}'T'\\d{2}:\\d{2}:\\d{2}",	"yyyy-MM-dd'T'HH:mm:ss",
+	"^\\d{4}-\\d{2}-\\d{2} +\\d{2}:\\d{2}:\\d{2}$", "yyyy-MM-dd HH:mm:ss",
+	"^\\d{4}-\\d{2}-\\d{2} +\\d{2}:\\d{2}$", "yyyy-MM-dd HH:mm",
+	"^\\d{4}-\\d{2}-\\d{2}$", "yyyy-MM-dd",	
+	"^\\d{4}/\\d{2}/\\d{2}$","yyyy/MM/dd",
+	"^\\d{8}_\\d{4}$","yyyyMMdd_HHmm",
+	"^\\d{8}_\\d{2}$","yyyyMMdd_HH",
+	"^\\d{6}$", "yyyyMMdd"  };
 
-    /** A set of date formats */
-    public static final String[] FIND_DATE_FORMATS = { "yyyy/MM/dd",
-						       "yyyyMMdd_HHmm",
-						       "yyyyMMdd_HH",
-						       "yyyyMMdd" };
+
 
 
     public static final SimpleDateFormat findDateFormat(String s) {
-	for(int i=0;i<FIND_DATE_PATTERNS.length;i++) {
-	    if(s.matches(FIND_DATE_PATTERNS[i]))
-		return makeDateFormat(FIND_DATE_FORMATS[i]);
+	for(int i=0;i<FIND_DATE_PATTERNS.length;i+=2) {
+	    String pattern = FIND_DATE_PATTERNS[i];
+	    if(s.matches(pattern)) {
+		return makeDateFormat(FIND_DATE_PATTERNS[i+1]);
+	    }
 	}
 	return  null;
     }
