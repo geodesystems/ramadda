@@ -1025,6 +1025,7 @@ fixedLine2="value:${property:flood_stage_major},label:Major flood stage,lineWidt
 <type name="type_noaa_tides_monthly" 
 description="NOAA Tides - Monthly Mean" 
 super="type_noaa_tides_base" editfields="station_id,days,date,_default">
+
 <property name="record.properties">
 csvcommands1=-combine,year\,month,-,date,-notcolumns
 csvcommands2=year\,month,-firstcolumns,date,-change,1-20
@@ -1074,6 +1075,65 @@ NOAA Site</a>
 ]]>
 </wiki>
 </type>
+
+
+<type name="type_noaa_tides_trend" 
+description="NOAA Tides - Sea Level Trend" 
+super="type_noaa_tides" 
+editfields="station_id,_default">
+<property name="form.date.show" value="false"/>
+  <property name="form.header.new">
+    <![CDATA[
++note
+Download the CSV file from the tidesandcurrents.noaa.gov site for the station, e.g.
+<a target=_other href=https://tidesandcurrents.noaa.gov/sltrends/sltrends_station.shtml?id=8575512>
+https://tidesandcurrents.noaa.gov/sltrends/sltrends_station.shtml?id=8575512	      
+</a>
+-note]]></property>    
+
+<property name="record.properties">
+csvcommands1=-skiplines,5,-notcolumns,6-10,-combine
+csvcommands2=year\,month,-,date,-change,date
+csvcommands3=-(.)$,-0$1,-firstcolumns,date,-addheader
+csvcommands4= year.type enumeration month.type enumeration date.format yyyy-MM
+</property>
+<wiki>
+<![CDATA[
++section title="{{name}}"
+:navtop
++row
++col-9
+{{description wikify=true}}
+{{display_linechart vAxisSharedRange=true height=300px fields=monthly_msl,linear_trend}} 
+:heading Table
+{{display_download}}
+{{display_table}}
+
+-col
++col-3
+<b>Station:</b> {{field name=station_id}}
+<a target=_other
+href="https://tidesandcurrents.noaa.gov/sltrends/sltrends_station.shtml?id={{field name=station_id}}">
+NOAA Site</a>
+:vspace 1em
++center
+{{image src="::*" message="" width="90%"}}
+-center
+:vspace 1em
+{{mapentry hideIfNoLocations=true width="100%" height=300px}}
+-col
+-row
+:vspace 1em
+----
+:heading Information
+{{information details=true}}
+-section
+]]>
+</wiki>
+</type>
+
+
+
 
 
 
