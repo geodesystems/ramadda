@@ -883,7 +883,7 @@ template="${default}" }}
 </type>
 
 <type name="type_noaa_tides" 
-description="NOAA Tides Data" 
+description="NOAA Tides" 
 super="type_point" 
 handler="org.ramadda.geodata.point.NoaaTidesTypeHandler"
 editfields="station_id,_default"	>
@@ -945,18 +945,22 @@ NOAA Site</a>
 
 
 <type name="type_noaa_tides_waterlevel" 
-description="NOAA Tides Data - Water Level" 
+description="NOAA Tides - Water Level" 
 super="type_noaa_tides" 
-editfields="station_id,product,date,days,_default">
+editfields="station_id,product,days,date,_default">
+  <property name="form.date.help" value="Optionally specify a date range"/>
+
   <property name="form.header.new">
 <![CDATA[+note\nEither specify a station and product or upload a file.<br>View station IDS at <a target=_map href=https://tidesandcurrents.noaa.gov/map/index.html>NOAA Tides and Currents Site</a>\n-note]]></property>    
 
 
 
   <column  name="product"  label="Product" type="enumeration" values="water_level:6 Minutes,hourly_height:Hourly Height,high_low:High Low" cansearch="true"/>
-<column  name="days"  label="Days" type="int" 
+  <column  name="days"  label="Days" type="int" 
 	 default="-1"
-	 help="Override the # of days offset from end date -max: high/low and hourly height: 365, water level:31" cansearch="false"/>  
+	 help="Override the # of days offset from the end date&lt;br&gt;Max: 6 minutes: 31 days; Hourly Height and High Low: 365 days"
+	 cansearch="false"/>  
+<column name="datum" label="Datum" type="enumeration" default="MLLW" values="MLLW,STND,MHHW,MHW,MTL,MSL,MLW,MLLW,NAVD"/>
 <property name="record.properties">
 csvcommands1=-dateformat,yyyy-MM-dd HH:mm,GMT,-convertdate,date_time
 csvcommands2=-addheader, date_time.type date date_time.format {yyyy-MM-dd HH:mm} ty.label {Water level height} ty.type enumeration quality.type enumeration ty.enumeratedValues {HH:Higher High water;H:High water;L:Low water;LL:Lower Low water}
@@ -978,8 +982,10 @@ csvcommands2=-addheader, date_time.type date date_time.format {yyyy-MM-dd HH:mm}
 {{display_table }} 
 -col
 +col-3
-<a target=_other href="https://tidesandcurrents.noaa.gov/stationhome.html?id={{field name=station_id}}">
-NOAA Site</a>
+<b>Site:</b> {{field name=station_id}}
+<a target=_other href="https://tidesandcurrents.noaa.gov/stationhome.html?id={{field name=station_id}}">NOAA Site</a>
+<br>
+<b>Datum:</b> {{field name=datum}}<br>
 :vspace 1em
 +center
 {{image src="::*" message="" width="90%"}}
@@ -1001,9 +1007,13 @@ NOAA Site</a>
 
 
 
+   
+		
+
+
 
 <type name="type_noaa_tides_monthly" 
-description="NOAA Tides Data -Monthly Mean" 
+description="NOAA Tides - Monthly Mean" 
 super="type_noaa_tides" 
 editfields="station_id,_default">
 <property name="record.properties">

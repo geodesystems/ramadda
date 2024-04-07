@@ -1,82 +1,46 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.point;
 
-
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 import org.ramadda.data.services.PointTypeHandler;
-import org.ramadda.data.services.RecordTypeHandler;
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
-
-import ucar.unidata.util.Misc;
-import ucar.unidata.util.StringUtil;
-
 import org.w3c.dom.*;
-
 import org.json.*;
-
 import java.net.URL;
 import java.io.*;
 
 import java.text.SimpleDateFormat;
-
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Hashtable;
-import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.List;
 
 
-
-/**
- */
 public class NoaaTidesTypeHandler extends PointTypeHandler {
-
     private static final String PRODUCT_WATER_LEVEL="water_level";
     private static final String PRODUCT_HOURLY_HEIGHT="hourly_height";
     private static final String PRODUCT_HIGH_LOW="high_low";        
-
-
-    /** _more_ */
     private static int IDX = PointTypeHandler.IDX_LAST + 1;
-
-    /** _more_ */
     private static int IDX_STATION_ID = IDX++;
 
-
-    /** _more_ */
-    private static final String URL_TEMPLATE =
-        "https://www.ndbc.noaa.gov/data/realtime2/${station_id}.${data_type}";
-
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param node _more_
-     * @throws Exception _more_
-     */
     public NoaaTidesTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
     }
 
 
-
     @Override
     public void initializeNewEntry(Request request, Entry entry,
                                    boolean fromImport)
             throws Exception {
-	super.initializeNewEntry(request, entry, fromImport);
 	if(fromImport) return;
 	String id = (String)  entry.getValue(IDX_STATION_ID);
 	if(!stringDefined(id)) return;
@@ -96,7 +60,8 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 	    entry.setValue("state",station.getString("state"));	    
 	    entry.setLatitude(station.optDouble("lat",Double.NaN));
 	    entry.setLongitude(station.optDouble("lng",Double.NaN));	    
-	    String name = entry.getName().replace(id,"").trim();
+	    String name = entry.getName().replace(id,"").replace(stationName,"").replace("Monthly Mean","").trim();
+	    name = name.replaceAll("^- *","").replaceAll(" - "," ").replaceAll("  +"," ").trim();
 	    List<String> names = new ArrayList<String>();
 	    Column productColumn = findColumn("product");
 	    names.add(stationName);
@@ -108,7 +73,6 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 	    if(entry.getTypeHandler().getType().equals("type_noaa_tides_monthly")) {
 		names.add("Monthly Mean");
 	    }
-
 
 	    if(stringDefined(name)) names.add(name);	    
 	    entry.setName(Utils.join(names," - "));
@@ -127,10 +91,6 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 	    } catch(Exception imageExc){
 		imageExc.printStackTrace();
 	    }
-
-
-
-
 	} catch(Exception exc) {
 	    getSessionManager().addSessionErrorMessage(request,"Error reading station metadata:" +  exc.getMessage());
 	    System.err.println("Error:" + exc +" url:" + url);
@@ -154,7 +114,6 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 	Integer dateOffset=(Integer)entry.getValue("days");
 	int days = dateOffset==null?-1:dateOffset.intValue();
-
 	Date startDate = DateHandler.checkDate(new Date(entry.getStartDate()));
 	Date endDate = DateHandler.checkDate(new Date(entry.getEndDate()));	
 
@@ -166,22 +125,17 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 	} else 	if(product.equals(PRODUCT_WATER_LEVEL)) {
 	    if(startDate==null) startDate = new Date(endDate.getTime()-Utils.daysToMillis(days>0?days:31));
 	}
-	
-	//"20240406
+
 	String url = HU.url("https://api.tidesandcurrents.noaa.gov/api/prod/datagetter",
 			    "application","NOS.COOPS.TAC.WL",
 			    "time_zone","GMT","units","english","format","csv",
-			    "datum","MLLW",
+			    "datum",(String)entry.getValue("datum","MLLW"),
 			    "station",id,
 			    "product",product,
 			    "begin_date",sdf.format(startDate),
 			    "end_date",sdf.format(endDate));
 
 	return url;
-
     }
-
-
-
 
 }
