@@ -2807,7 +2807,9 @@ public class Utils extends IO {
 	"^\\d{4}/\\d{2}/\\d{2}$","yyyy/MM/dd",
 	"^\\d{8}_\\d{4}$","yyyyMMdd_HHmm",
 	"^\\d{8}_\\d{2}$","yyyyMMdd_HH",
-	"^\\d{6}$", "yyyyMMdd"  };
+	"^\\d{6}$", "yyyyMMdd",
+	"^\\d{4}-\\d{2}$","yyyy-MM"
+  };
 
 
 
