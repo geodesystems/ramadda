@@ -1002,10 +1002,14 @@ fixedLine2="value:${property:flood_stage_major},label:Major flood stage,lineWidt
 {{display_table }} 
 -col
 +col-3
-<b>Station:</b> {{field name=station_id}}
+<table>
+<tr><td align=right><b>Station:</b>&nbsp;</td>
+<td>{{field name=station_id}}
 <a target=_other href="https://tidesandcurrents.noaa.gov/stationhome.html?id={{field name=station_id}}">NOAA Site</a>
-<br>
-<b>Datum:</b> {{field name=datum}}<br>
+&nbsp;<a title="Download" href="{{noaa.tides.download}}"><i class="fas fa-download" width="18px"></i></a></td></tr>
+<tr><td align=right><b>Product:&nbsp;</b></td><td>{{field name=product}}</td></tr>
+<tr><td align=right><b>Datum:&nbsp;</b></td><td>{{field name=datum}}</td></tr>
+</table>
 :vspace 1em
 +center
 {{image src="::*" message="" width="90%"}}

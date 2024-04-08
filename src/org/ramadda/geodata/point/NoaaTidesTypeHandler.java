@@ -11,6 +11,7 @@ import org.ramadda.data.services.PointTypeHandler;
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.WikiUtil;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.w3c.dom.*;
@@ -21,6 +22,7 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 
@@ -167,7 +169,24 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 			    "begin_date",sdf.format(startDate),
 			    "end_date",sdf.format(endDate));
 
+	//	System.err.println(url);
 	return url;
     }
+
+    @Override
+    public String getWikiInclude(WikiUtil wikiUtil, Request request,
+                                 Entry originalEntry, Entry entry,
+                                 String tag, Hashtable props)
+            throws Exception {
+	if(!tag.equals("noaa.tides.download")) {
+            return super.getWikiInclude(wikiUtil, request, originalEntry,
+                                        entry, tag, props);
+        }
+	if(entry.isFile()) {
+	    return getEntryManager().getEntryResourceUrl(request, entry);
+	}
+	return  getPathForEntry(request,  entry,false);
+    }
+
 
 }
