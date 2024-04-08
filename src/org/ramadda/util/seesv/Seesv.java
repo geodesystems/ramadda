@@ -1962,11 +1962,11 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_MAXROWS, "Set max rows to process",
 		ARG_LABEL,"Max Rows",		
 		new Arg("rows","Number of rows",ATTR_TYPE, TYPE_NUMBER)),
-        new Cmd(CMD_FIND, "Pass through rows that the columns each match the pattern",
+        new Cmd(CMD_MATCH, "Pass through rows that the columns each match the pattern",
 		ARG_LABEL,"Match",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
 		new Arg(ARG_PATTERN, "regexp or prefix with includes:s1,s2 to do substrings match", ATTR_TYPE, TYPE_PATTERN)),
-        new Cmd(CMD_NOTPATTERN,
+        new Cmd(CMD_NOTMATCH,
                 "Pass through rows that don't match the pattern",
 		ARG_LABEL,"Not Match",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
@@ -5201,11 +5201,11 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });		
 
-	defineFunction(new String[]{CMD_FIND,CMD_PATTERN}, 2,(ctx,args,i) -> {
+	defineFunction(new String[]{CMD_MATCH,CMD_FIND,CMD_PATTERN}, 2,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(), new Filter.PatternFilter(ctx,getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });
-	defineFunction(CMD_NOTPATTERN, 2,(ctx,args,i) -> {
+	defineFunction(new String[]{CMD_NOTMATCH,CMD_NOTPATTERN}, 2,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(), new Filter.PatternFilter(ctx,getCols(args.get(++i)),args.get(++i), true));
 		return i;
 	    });
