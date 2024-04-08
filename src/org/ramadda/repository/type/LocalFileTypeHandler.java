@@ -613,12 +613,13 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
             values = entry.getTypeHandler().getEntryValues(entry);
         }
 	long fileDate =  targetFile.lastModified();
+	/*
 	if(targetFile.toString().toLowerCase().indexOf("1316697.jpg")>=0) {
 	    getLogManager().logSpecial("ServerSideFile:" + targetFile+
 				       " file last modified date:" +
 				       getDateHandler().formatDate(new Date(fileDate)));
 				       
-	}
+				       }*/
 
 
 
