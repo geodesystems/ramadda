@@ -4821,7 +4821,7 @@ public class EntryManager extends RepositoryManager {
 		long t2 = System.currentTimeMillis();
                 ImageUtils.writeImageToFile(image, thumb);
 		long t3 = System.currentTimeMillis();
-		Utils.printTimes("resize image",t1,t2,t3);
+		//		Utils.printTimes("resize image",t1,t2,t3);
             }
             return new Result(BLANK,
                               getStorageManager().getFileInputStream(thumb),
