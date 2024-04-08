@@ -1,3 +1,4 @@
+STND:Station Datum
 MLLW:Mean Lower Low Water
 MHHW:Mean Higher High Water
 MHW:Mean High Water
@@ -5,5 +6,4 @@ MTL:Mean Tide Level
 MSL:Mean Sea Level
 MLW:Mean Low Water
 MLLW:Mean Lower Low Water
-STND
-NAVD
+NAVD:North American Vertical Datum

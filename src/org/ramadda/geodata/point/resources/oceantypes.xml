@@ -905,7 +905,10 @@ editfields="station_id,_default"	>
   <column  name="tidal"  label="Tidal" type="boolean" cansearch="true"/>
   <column  name="flood_stage_minor"  label="Flood Stage Minor" default="NaN" type="double"   cansearch="false"/>
   <column  name="flood_stage_moderate"  label="Flood Stage Moderate" default="NaN"  type="double"   cansearch="false"/>
-  <column  name="flood_stage_major"  label="Flood Stage Major" default="NaN"  type="double"   cansearch="false"/>        
+  <column  name="flood_stage_major"  label="Flood Stage Major" default="NaN"  type="double"   cansearch="false"/>
+  <column  name="datum_msl"  label="Mean Sea Level" default="NaN"  type="double"   cansearch="false" canedit="false"/>
+  <column  name="datum_mlw"  label="Mean Low Water" default="NaN"  type="double"   cansearch="false" canedit="false"/>
+  <column  name="datum_mhw"  label="Mean HighWater" default="NaN"  type="double"   cansearch="false" canedit="false"/>              
 
   <column  name="fields"  label="Fields to show in chart" type="string" cansearch="false" showinhtml="false" default="#2"/>    
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
@@ -956,7 +959,7 @@ super="type_noaa_tides" >
 	 default="-1"
 	 help="Override the # of days offset from the end date&lt;br&gt;Max: 6 minutes: 31 days; Hourly Height and High Low: 365 days"
 	 cansearch="false"/>  
-  <column name="datum" label="Datum" type="enumeration" default="MLLW"
+  <column name="datum" label="Datum" type="enumeration" default="STND"
 	  values="file:/org/ramadda/geodata/point/resources/noaadatums.txt"/>
 </type>
 
@@ -964,7 +967,7 @@ super="type_noaa_tides" >
 <type name="type_noaa_tides_waterlevel" 
 description="NOAA Tides - Water Level" 
 super="type_noaa_tides_base" 
-editfields="station_id,product,days,date,_default">
+editfields="station_id,product,days,date,datum,_default">
   <property name="form.date.help" value="Optionally specify a date range"/>
 
   <property name="form.header.new">
@@ -1024,7 +1027,7 @@ fixedLine2="value:${property:flood_stage_major},label:Major flood stage,lineWidt
 
 <type name="type_noaa_tides_monthly" 
 description="NOAA Tides - Monthly Mean" 
-super="type_noaa_tides_base" editfields="station_id,days,date,_default">
+super="type_noaa_tides_base" editfields="station_id,days,date,datum,_default">
 
 <property name="record.properties">
 csvcommands1=-combine,year\,month,-,date,-notcolumns

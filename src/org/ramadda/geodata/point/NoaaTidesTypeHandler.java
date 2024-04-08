@@ -55,11 +55,25 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 
 	    JSONArray stations = obj.getJSONArray("stations");	    
 	    JSONObject station = stations.getJSONObject(0);
-	    JSONObject flood = station.getJSONObject("floodlevels");	    
+	    JSONObject flood = station.getJSONObject("floodlevels");
+	    JSONArray datums = station.getJSONObject("datums").getJSONArray("datums");	    	    
 	    String stationName =station.getString("name");
 	    entry.setValue("station_name",stationName);
 	    entry.setValue("tidal",station.getBoolean("tidal"));	    
 	    entry.setValue("state",station.getString("state"));	    
+
+	    for(int i=0;i<datums.length();i++) {
+		JSONObject datum = datums.getJSONObject(i);
+		//We don't have all of these but just try them all
+		if(datum.getString("name").toLowerCase().matches("(msl|mlw|mhw)")) {
+		    System.err.println(datum +" " +  datum.getDouble("value"));
+		    entry.setValue("datum_"+datum.getString("name").toLowerCase(),
+				   datum.getDouble("value"));
+		}
+	    }
+
+
+
 	    entry.setLatitude(station.optDouble("lat",Double.NaN));
 	    entry.setLongitude(station.optDouble("lng",Double.NaN));	    
 	    String name = entry.getName().replace(id,"").replace(stationName,"").replace("Monthly Mean","").trim();
@@ -79,7 +93,6 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 	    if(stringDefined(name)) names.add(name);	    
 	    entry.setName(Utils.join(names," - "));
 
-	    System.err.println("FLOOD:" + flood);
 	    entry.setValue("flood_stage_minor",new Double(flood.getDouble("nos_minor")));
 	    entry.setValue("flood_stage_moderate",new Double(flood.getDouble("nos_moderate")));
 	    entry.setValue("flood_stage_major",new Double(flood.getDouble("nos_major")));
