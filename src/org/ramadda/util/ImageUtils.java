@@ -59,6 +59,33 @@ public class ImageUtils extends ucar.unidata.ui.ImageUtils {
 
 
 
+    public static BufferedImage xresizeImage(File inputFile, int targetWidth, int targetHeight) throws IOException {
+        BufferedImage originalImage = ImageIO.read(inputFile);
+        Image resizedImage = originalImage.getScaledInstance(targetWidth, targetHeight, Image.SCALE_SMOOTH);
+        BufferedImage bufferedResizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+        bufferedResizedImage.getGraphics().drawImage(resizedImage, 0, 0, null);
+        return bufferedResizedImage;
+    }
+
+
+    public static BufferedImage resizeImage(File inputFile, int targetWidth,int targetHeight) throws IOException {
+        BufferedImage originalImage = ImageIO.read(inputFile);
+
+	if(targetHeight<0) {
+	    // Calculate the aspect ratio
+	    double aspectRatio = (double) originalImage.getHeight() / (double) originalImage.getWidth();
+	    // Calculate the new height based on the target width and aspect ratio
+	    targetHeight = (int) (targetWidth * aspectRatio);
+	}
+
+        Image resizedImage = originalImage.getScaledInstance(targetWidth, targetHeight, Image.SCALE_SMOOTH);
+        BufferedImage bufferedResizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+        bufferedResizedImage.getGraphics().drawImage(resizedImage, 0, 0, null);
+        return bufferedResizedImage;
+    }
+
+
+
     public static String stripImageMetadata(String file) throws Exception {
 	File imageFile = new File(file);
 	Image image = ImageIO.read(imageFile);
