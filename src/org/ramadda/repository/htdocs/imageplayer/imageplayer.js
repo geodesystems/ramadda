@@ -93,7 +93,7 @@ function ImagePlayer(args)  {
     this.makeAnimation=()=>{
 	let _this = this;
 	let html = '&nbsp;';
-	let lazy = this.getProperty('lazyLoading',this.images.length>20);
+	let lazy = this.getProperty('lazyLoading',this.images.length>10);
 	this.images.forEach((image,idx)=>{
 	    let attrs =    ['id',this.getId('image_' + idx),
 			    'style', HU.css('position','absolute',
@@ -139,7 +139,14 @@ function ImagePlayer(args)  {
 	this.images.forEach((image,idx)=>{
 	    image.domElement = this.jq('image_'+idx);
 	    //Listen for load and set the height of the wrapper
+	    let _this = this;
 	    image.domElement.on('load',function(){
+		image.loaded= true;
+		if(_this.imageToHide) {
+		    _this.imageToHide.domElement.hide();
+		    _this.imageToHide=null;
+		}
+
 		let height = $(this).height();
 		if(height>imageHeight) {
 		    imageHeight=height;
@@ -489,13 +496,19 @@ function ImagePlayer(args)  {
         HU.addToDocumentUrl("currentImage", this.currentImage);
 	let image = this.images[this.currentImage];
 	if(!image) return;
-	image.domElement.show();
+	let loaded = image.loaded;
 	this.images.forEach((image,idx)=>{
 	    if(idx!=this.currentImage) {
-		if(image.domElement.is(':visible'))
-		    image.domElement.hide();
+		if(image.domElement.is(':visible')) {
+		    if(!loaded) {
+			this.imageToHide = image;
+		    } else {
+			image.domElement.hide();
+		    }
+		}
 	    }
 	});
+	image.domElement.show();
         this.setBoxes();
 	if(this.getProperty('showLabel',true))
             this.jq("label").html(image.label);
