@@ -179,6 +179,10 @@ do
 	    ;;
 	*)
 	    station=$1
+	    if [[ $station == -* ]]; then
+		echo "Bad argument: $station"
+		usage
+	    fi
 	    shift
 	    ;;
     esac
