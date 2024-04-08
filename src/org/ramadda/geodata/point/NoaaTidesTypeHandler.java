@@ -66,7 +66,6 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 		JSONObject datum = datums.getJSONObject(i);
 		//We don't have all of these but just try them all
 		if(datum.getString("name").toLowerCase().matches("(msl|mlw|mhw)")) {
-		    System.err.println(datum +" " +  datum.getDouble("value"));
 		    entry.setValue("datum_"+datum.getString("name").toLowerCase(),
 				   datum.getDouble("value"));
 		}
