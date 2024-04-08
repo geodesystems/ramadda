@@ -81,6 +81,7 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 	    List<String> names = new ArrayList<String>();
 	    Column productColumn = findColumn("product");
 	    names.add(stationName);
+	    names.add(id);	    
 	    if(productColumn !=null) {
 		String product = productColumn.formatValue(request,  entry, entry.getValues());
 		if(stringDefined(product))
