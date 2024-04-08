@@ -4807,14 +4807,21 @@ public class EntryManager extends RepositoryManager {
         boolean isImage = Utils.isImage(path);
         if (request.defined(ARG_IMAGEWIDTH) && isImage) {
             int width = request.get(ARG_IMAGEWIDTH, 75);
-            File thumb = getStorageManager().getThumbFile("entry"
+            File thumb = getStorageManager().getCacheFile("thumb_entry"
 							  + IOUtil.cleanFileName(entry.getId()) + "_"
 							  + width + IO.getFileExtension(path));
+	    //	    System.err.println(thumb.exists() +" " +thumb);
             if ( !thumb.exists()) {
-                Image image = ImageUtils.readImage(entry.getResource().getPath());
-                image = ImageUtils.resize(image, width, -1);
-                ImageUtils.waitOnImage(image);
+		long t1 = System.currentTimeMillis();
+		//Use the new resizeImage method
+		Image image = ImageUtils.resizeImage(new File(entry.getResource().getPath()),width,-1);
+		//		Image image = ImageUtils.readImage(entry.getResource().getPath());
+		//		image = ImageUtils.resize(image, width, -1);
+		//		ImageUtils.waitOnImage(image);
+		long t2 = System.currentTimeMillis();
                 ImageUtils.writeImageToFile(image, thumb);
+		long t3 = System.currentTimeMillis();
+		//		Utils.printTimes("resize",t1,t2,t3);
             }
             return new Result(BLANK,
                               getStorageManager().getFileInputStream(thumb),
