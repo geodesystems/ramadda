@@ -83,7 +83,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	if(filterField)
 	    fields = [filterField];
 	else {
-	    console.log("Error: could not find filter field::" + filterFieldId);
+	    console.warn("Could not find filter field:" + filterFieldId);
 	    this.disabled = true;
 	    fields = [];
 	}
