@@ -2139,6 +2139,7 @@ public class ImageOutputHandler extends OutputHandler {
 	if(props==null)props = new Hashtable();
 	String dateFormat = Utils.getProperty(props,"dateFormat",null);
 	SimpleDateFormat sdf =null;
+	String imageWidth = Utils.getProperty(props,"imageWidth",null);
         boolean       useAttachment = request.get("useAttachment",
 						  Utils.getProperty(props,"useAttachment",false));
         String        playerId  = HU.getUniqueId("imageplayer_");
@@ -2177,6 +2178,8 @@ public class ImageOutputHandler extends OutputHandler {
             if (url == null) {
                 continue;
             }
+	    if(imageWidth!=null)
+		url=HU.url(url,ARG_IMAGEWIDTH,imageWidth);
             if (cnt == 0) {
                 firstImage = url;
             }
