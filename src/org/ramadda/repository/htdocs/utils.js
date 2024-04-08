@@ -5640,7 +5640,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		    attrs.push('title',item.datatitle);
 		if(item.datastyle)
 		    attrs.push('data-style',item.datastyle);		
-		let value = item.value.replace(/"/g,'\\"');
+		let value = String(item.value).replace(/"/g,'\\"');
 		label = item.label??value;
 		item = value;
 	    }
