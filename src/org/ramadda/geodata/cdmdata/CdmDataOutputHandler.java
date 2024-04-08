@@ -856,10 +856,10 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
 	    String desc = Utils.getDefined("",var.getDescription(),var.getShortName())+HU.SPACE+units;
 	    String label = HU.span(desc,HU.attrs("title",var.getShortName()));
-            sbToUse.append(HU.labeledCheckbox(ARG_VAR, var.getShortName(),
-					      (grids.size() == 1),
-					      HU.cssClass("ramadda-grid-variable") +HU.id(cbxId) + call,label));
-	    sbToUse.append(HU.br());
+	    HU.div(sbToUse, HU.labeledCheckbox(ARG_VAR, var.getShortName(),
+					       (grids.size() == 1),
+					       HU.cssClass("ramadda-grid-variable") +HU.id(cbxId) + call,label),
+		   HU.style(HU.css("white-space","nowrap","max-width","100%","overflow-x","hidden")));
         }
 	String toggleAllId = HU.getUniqueId("cbx_");
 	HU.div(varSB,HU.labeledCheckbox("", HU.VALUE_TRUE,
@@ -1025,7 +1025,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
 
         sb.append(HU.div("Select Variables",HU.cssClass("ramadda-table-header")+HU.style("margin-top:6px;")));
-	sb.append(HU.beginInset(0,20,0,0));
+	sb.append(HU.beginInset(0,10,0,0));
         sb.append(varSB);
 	sb.append(HU.endInset());
 
