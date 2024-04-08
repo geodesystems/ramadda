@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Apr  8 04:56:17 MDT 2024";
+var build_date="RAMADDA build date: Mon Apr  8 09:53:55 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -17456,7 +17456,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	if(filterField)
 	    fields = [filterField];
 	else {
-	    console.log("Error: could not find filter field::" + filterFieldId);
+	    console.warn("Could not find filter field:" + filterFieldId);
 	    this.disabled = true;
 	    fields = [];
 	}
