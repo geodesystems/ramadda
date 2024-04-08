@@ -94,8 +94,6 @@ function ImagePlayer(args)  {
 	let _this = this;
 	let html = '&nbsp;';
 	let lazy = this.getProperty('lazyLoading',this.images.length>10);
-	//For now always be lazy
-	lazy=true;
 	this.images.forEach((image,idx)=>{
 	    let attrs =    ['id',this.getId('image_' + idx),
 			    'style', HU.css('position','absolute',
