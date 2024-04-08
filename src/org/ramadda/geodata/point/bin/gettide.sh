@@ -20,7 +20,7 @@ set -e
 #To run:
 #sh gettide.sh -help to see usage
 #-level and -datum are optional
-#datum defaults to MLLW
+#datum defaults to STND
 #sh gettide.sh -level <minor> <moderate> <major> -datum <some datum> <station>
 
 
@@ -46,6 +46,12 @@ set -e
 #The counts per year of the flood events
 #flood_events_counts_8575512.csv 
 
+datum=STND
+level1=
+level2=
+level3=
+station=8575512 
+
 
 
 csv() {
@@ -67,6 +73,21 @@ fetch() {
     fi
 }
 
+setLevels() {
+    station=$1
+    if [ ! -e "floodlevels_$station.json" ]; then
+	echo "Fetching flood levels"
+	wget --verbose  -O floodlevels_$station.json "https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations/$station/floodlevels.json"
+    fi
+    level1=$(awk -F'[:,]' '/"nos_minor"/ {print $2}' floodlevels_$station.json)
+    export level1=$(echo $level1 | tr -d ' ')
+    level2=$(awk -F'[:,]' '/"nos_moderate"/ {print $2}' floodlevels_$station.json)
+    export level2=$(echo $level2 | tr -d ' ')
+    level3=$(awk -F'[:,]' '/"nos_major"/ {print $2}' floodlevels_$station.json)
+    export level3=$(echo $level3 | tr -d ' ')        
+    echo "level:$level1 $level2 $level3"
+}
+
 countHours() {
     station="$1"
     file="$2"
@@ -81,10 +102,10 @@ processStation() {
     station=$1
     dir=station_${station}
     mkdir -p $dir
-    all=${product}_$station.csv
+    all=heights_$station.csv
     rm -f $all
     for year in {1930..2023}; do
-	file="${dir}/data_${product}_${station}_${year}.csv"
+	file="${dir}/data_${product}_${datum}_${station}_${year}.csv"
 	fetch $year $station $file
 	# Check if the file exists and is a regular file
 	size=$(wc -c < "$file")
@@ -119,9 +140,7 @@ processStation() {
        -p tmp.csv > hours_above_flood_stage_${station}.csv
 
     #cleanup
-    rm hours_above_flood_stage_${level1}_${station}.csv 
-    rm hours_above_flood_stage_${level2}_${station}.csv
-    rm hours_above_flood_stage_${level3}_${station}.csv 
+    rm hours_above_flood_stage_*_${station}.csv 
     rm tmp.csv    
 
 }
@@ -129,11 +148,6 @@ processStation() {
 
 
 
-datum=MLLW
-level1=2.6
-level2=3
-level3=4
-station=8575512 
 
 
 
@@ -169,6 +183,13 @@ do
 	    ;;
     esac
 done
+
+
+if [ -z "$level1" ]; then
+    setLevels $station
+fi
+
+
 
 
 echo "processing: station:$station datum:$datum levels:$level1 $level2 $level3"
