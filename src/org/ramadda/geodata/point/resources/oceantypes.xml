@@ -1104,7 +1104,8 @@ csvcommands4= year.type enumeration month.type enumeration date.format yyyy-MM
 +row
 +col-9
 {{description wikify=true}}
-{{display_linechart vAxisSharedRange=true height=300px fields=monthly_msl,linear_trend}} 
+{{display_linechart showMenu=true
+vAxisSharedRange=true height=300px fields=monthly_msl,linear_trend}} 
 :heading Table
 {{display_download}}
 {{display_table}}
