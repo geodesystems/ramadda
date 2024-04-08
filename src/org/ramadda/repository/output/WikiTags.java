@@ -164,6 +164,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					"#smallButtons","true",
 					"#compact","true",
 					"#dateFormat","yyyy-MM-dd HH:mm z",
+					"#imageWidth","set to true to change the width of the image on the server for faster load times",
 					"#lazyLoading","false",
 					"#loopDelay","1000"),
                             new WikiTag(WIKI_TAG_FLIPCARDS, null, 
