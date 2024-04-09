@@ -4805,8 +4805,9 @@ public class EntryManager extends RepositoryManager {
 	logEntryActivity(request, entry,"download");
 	
         boolean isImage = Utils.isImage(path);
-        if (request.defined(ARG_IMAGEWIDTH) && isImage) {
-            int width = request.get(ARG_IMAGEWIDTH, 75);
+	String imageWidth = request.getString(ARG_SERVERIMAGEWIDTH, request.getString(ARG_IMAGEWIDTH,null));
+        if (isImage && imageWidth!=null) {
+            int width = Integer.parseInt(imageWidth);
             File thumb = getStorageManager().getCacheFile("thumb_entry"
 							  + IOUtil.cleanFileName(entry.getId()) + "_"
 							  + width + IO.getFileExtension(path));

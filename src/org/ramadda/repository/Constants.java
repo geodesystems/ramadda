@@ -976,6 +976,7 @@ public interface Constants {
 
     /** _more_ */
     public static final String ARG_IMAGEWIDTH = "imagewidth";
+    public static final String ARG_SERVERIMAGEWIDTH = "serverimagewidth";    
 
     /** _more_ */
     public static final String ARG_INCLUDENONGEO = "includenongeo";
