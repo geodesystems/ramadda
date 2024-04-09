@@ -333,7 +333,7 @@ public class JsonOutputHandler extends OutputHandler {
 
         boolean addAttributes = request.get("addAttributes", false);
         boolean addPointUrl   = request.get("addPointUrl", false);
-        boolean addImages     = request.get("addImages", false);
+        boolean addImages     = request.get("addImages", true);
         boolean addThumbnails = request.get("addThumbnails", addImages);
         boolean addMediaUrl   = request.get("addMediaUrl", false);
         if (addPointUrl) {
