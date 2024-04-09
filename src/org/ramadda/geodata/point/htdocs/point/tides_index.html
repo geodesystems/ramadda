@@ -1,0 +1,95 @@
+<html>
+<title>NOAA Tides and Currents Data</title>
+<category:Earth Science Data>
+<body>
++css
+.myimg {
+text-align:center;
+border:1px solid #ccc;
+margin-top:5px;
+margin-bottom:10px;
+display: block;
+margin-left: auto;
+margin-right: auto;
+}
+-css
+
+
++section title="NOAA Tides and Currents Data"
+:navtop
+
+:heading Introduction
+The NOAA  <a href="https://tidesandcurrents.noaa.gov/map/index.html">Tides and Currents</a>
+site provides access to historic and real-time water level data.
+RAMADDA provides 4 entry types for accessing this data-
+:br
+
+<img src=tides/types.png width=400px class=myimg>
+Each of these entry types takes a Station ID (e.g., 8575512). Upon entry creation RAMADDA
+will fetch the metadata for the site from NOAA and populate the entry with the station name,
+latitude/longitude, flood stages and sea level datums.
+
+:heading Water Level
+The NOAA Tides - Water Level entry type can read one of 3 products - 6 Minutes, Hourly Height, High/Low. e.g., see the
+<a href="https://tidesandcurrents.noaa.gov/waterlevels.html?id=8575512&units=standard&bdate=19600101&edate=19601230&timezone=GMT&datum=MLLW&interval=m&action=data">example site @NOAA</a>. You can also specify the datum for the  water levels.
+:p
+
+Each of these products can have a maximum number of days. If the number of days &lt; 0 then RAMADDA uses the maximum
+number of days offset from the current time:
+
+<img src=tides/waterlevelnew.png width=600px class=myimg>
+
+
+One can also specify a number of days offset from either the current time:
+<img src=tides/date1.png width=400px class=myimg>
+
+Or specify a number of days offset from the  end date of the entry
+<img src=tides/date2.png width=400px class=myimg>
+
+
+Or specify an absolute date range with the start and end dates of the entry:
+<img src=tides/date3.png width=400px class=myimg>
+
+You can also download one of the files from the NOAA site (or from the RAMADDA entry) and upload the file
+to the Water Level entry:
+<img src=tides/newfile.png width=400px class=myimg>
+
+
+
+The default display of the Water Level entry includes a display of the minor/moderate/major flood levels.
+Note: the flood levels are based on the Station Datum water level height. 
+<img src=tides/waterlevel.png width=400px class=myimg>
+
+:heading Monthly Mean
+The Monthly Mean entry type operates similarly to the Water Level for specifying a date range.
+However, this data can span decades. The default is to read 40 years of data.
+
+:heading Sea Level Trend
+The NOAA site provides  long term sea level trend data, e.g.
+<a target=_other href=https://tidesandcurrents.noaa.gov/sltrends/sltrends_station.shtml?id=8575512>
+https://tidesandcurrents.noaa.gov/sltrends/sltrends_station.shtml?id=8575512	      
+</a>. The Sea Level Trend entry type requires a Station ID. It will download the file and store it
+in RAMADDA.
+
+:heading NOAA Tides
+The NOAA Tides entry type is just generic and takes any of  NOAA CSV data files.
+
+:heading Get Tides Script
+RAMADDA provides a gettide.sh shell script that will download all of the hourly heights
+for a given station and process it to give the count of hours above flood stage per year and
+a listing of flood events. The heights data can be extensive, dating back close to a century for some
+stations.
+:p
+The script is available on github @
+<a href=https://github.com/geodesystems/ramadda/blob/master/src/org/ramadda/geodata/point/bin/gettide.sh>
+https://github.com/geodesystems/ramadda/blob/master/src/org/ramadda/geodata/point/bin/gettide.sh
+</a>.
+The script requires the RAMADDA <a href=https://ramadda.org/repository/a/seesv>SeeSV</a> package
+to be installed. Consult the  documentation in the script. 
+:p
+
+
+-section
+</body>
+</html>
+

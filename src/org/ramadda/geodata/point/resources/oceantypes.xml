@@ -957,7 +957,7 @@ description="NOAA Tides - Base "
 super="type_noaa_tides" >
   <column  name="days"  label="Days" type="int" 
 	 default="-1"
-	 help="Override the # of days offset from the end date&lt;br&gt;Max: 6 minutes: 31 days; Hourly Height and High Low: 365 days"
+	 help="Override the # of days offset from the end date&lt;br&gt;Max: 6 minutes: 31 days; Hourly Height and High Low: 365 days; Monthly Mean- any number of years"
 	 cansearch="false"/>  
   <column name="datum" label="Datum" type="enumeration" default="STND"
 	  values="file:/org/ramadda/geodata/point/resources/noaadatums.txt"/>
@@ -1092,7 +1092,8 @@ editfields="station_id,_default">
   <property name="form.header.new">
     <![CDATA[
 +note
-Download the CSV file from the tidesandcurrents.noaa.gov site for the station, e.g.
+Just specify the Station ID and RAMADDA will download the trends file from NOAA.
+You can view the trends data for a station, e.g.
 <a target=_other href=https://tidesandcurrents.noaa.gov/sltrends/sltrends_station.shtml?id=8575512>
 https://tidesandcurrents.noaa.gov/sltrends/sltrends_station.shtml?id=8575512	      
 </a>
