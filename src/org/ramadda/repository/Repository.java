@@ -32,6 +32,7 @@ import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.metadata.MetadataManager;
 import org.ramadda.repository.monitor.MonitorManager;
 import org.ramadda.repository.output.CalendarOutputHandler;
+import org.ramadda.repository.output.CsvOutputHandler;
 import org.ramadda.repository.output.HtmlOutputHandler;
 import org.ramadda.repository.output.ImageOutputHandler;
 import org.ramadda.repository.output.JsonOutputHandler;
@@ -5843,11 +5844,23 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private JsonOutputHandler jsonOutputHandler;
 
+    private CsvOutputHandler csvOutputHandler;
+
     /**
      * _more_
      *
      * @return _more_
      */
+    public CsvOutputHandler getCsvOutputHandler() {
+        if (csvOutputHandler == null) {
+            csvOutputHandler = (CsvOutputHandler) getOutputHandler(
+								     org.ramadda.repository.output.CsvOutputHandler.class);
+        }
+
+        return csvOutputHandler;
+    }
+
+
     public JsonOutputHandler getJsonOutputHandler() {
         if (jsonOutputHandler == null) {
             jsonOutputHandler = (JsonOutputHandler) getOutputHandler(
@@ -5856,7 +5869,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         return jsonOutputHandler;
     }
-
+    
 
 
     /**
