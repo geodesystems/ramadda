@@ -1,5 +1,5 @@
 /*
-  Copyright 2008-2023 Geode Systems LLC
+  Copyright 2008-2024 Geode Systems LLC
 */
 
 const DISPLAY_SLIDES = "slides";
@@ -907,30 +907,24 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	{p:'template',ex:''},
 	{p:'mediaField',ex:'',tt:'Field that contains a URL to an image, youtube, etc'},
 	{p:'showStrip',ex:'true',tt:'Show the navigation strip'},
+	{p:'slideWidth',ex:'100px'},
 	{p:'thumbnailField',ex:''},
 	{p:'thumbnailWidth',ex:'100px'},	
 	{p:'urlField',ex:''},
 	{p:'labelField',ex:''},
+	{p:'labelTemplate',ex:'${name} ...'},
+	{p:'topLabelTemplate',ex:'${name} ...'},		
 	{p:'tooltipFields',ex:''},	
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	slideIndex:0,
-
-       handleEventRecordSelection: function(source, args) {
-	    //	    console.log(this.type+ ".recordSelection");
+	handleEventRecordSelection: function(source, args) {
 	    if(!this.records) return;
-	    var index =-1;
-	    for(var i=0;i<this.records.length;i++) {
-		if(this.records[i].getId() == args.record.getId()) {
-		    index = i;
-		    break;
-		}
-	    }
+	    let index = this.findRecordIndex(this.records,args.record);
 	    if(index>=0) {
 		this.slideIndex=index;
 		this.displaySlide();
 	    }
-	    
 	},
         getContentsStyle: function() {
             var style = "";
@@ -955,14 +949,15 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    this.theTemplate = this.getProperty('template','');
 //	    this.fields.forEach(f=>{console.log(f.getId());});
 	    this.urlField = this.getFieldById(null, this.getProperty("urlField"));
-	    this.labelField = this.getFieldById(null, this.getProperty("labelField"));
+	    this.labelField = this.getFieldById(null, this.getLabelField());
+	    this.topLabelTemplate =  this.getTopLabelTemplate();
+	    this.labelTemplate =  this.getLabelTemplate();
 	    this.tooltipFields = this.getFieldsByIds(null, this.getProperty("tooltipFields"));	    	    
-	    this.mediaField = this.getFieldById(null, this.getProperty("mediaField"));
+	    this.mediaField = this.getFieldById(null, this.getProperty("mediaField",this.getProperty("imageField")));
 	    this.thumbnailField = this.getFieldById(null, this.getProperty("thumbnailField")) || this.mediaField;
-	    let slideWidth = this.getProperty('slideWidth','100%');
             let height = this.getHeightForStyle('400');
-	    let left = HU.div([ID, this.domId(ID_PREV), STYLE,HU.css('font-size','150%'),CLASS,'ramadda-clickable display-slides-arrow-left fas fa-angle-left']);
-	    let right = HU.div([ID, this.domId(ID_NEXT), STYLE,HU.css('font-size','150%'), CLASS,'ramadda-clickable  display-slides-arrow-right fas fa-angle-right']);
+	    let left = HU.div([ID, this.domId(ID_PREV), STYLE,HU.css('padding-right','10px','font-size','200%'),CLASS,'ramadda-clickable display-slides-arrow-left fas fa-angle-left']);
+	    let right = HU.div([ID, this.domId(ID_NEXT), STYLE,HU.css('padding-left','10px','font-size','200%'), CLASS,'ramadda-clickable  display-slides-arrow-right fas fa-angle-right']);
 	    let slide = HU.div([ATTR_CLASS,'display-slides-slide',
 				ATTR_STYLE,HU.css('overflow-y','auto','max-height', height), ID, this.domId(ID_SLIDE), CLASS,'display-slides-slide']);
 
@@ -997,7 +992,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 
 
 		    if(Utils.isImage(url)) {
-			strip += HU.div([],HU.image(url,['title',tt,'width',width,'class',clazz,RECORD_INDEX,idx]));
+			strip += HU.div([],HU.image(url,['loading','lazy','title',tt,'width',width,'class',clazz,RECORD_INDEX,idx]));
 		    } else {
 			let label = "";
 			if(this.labelField) {
@@ -1054,6 +1049,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	},
 	displaySlide: function(propagateEvent,fromStrip) {
 	    let _this = this;
+	    let slideWidth = this.getSlideWidth('100%');
 	    if(this.slideIndex<0) this.slideIndex=0;
 	    if(this.slideIndex>=this.records.length) this.slideIndex=this.records.length-1;
 	    if(this.slideIndex==0)
@@ -1091,7 +1087,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    } else if(this.mediaField) {
 		let url = this.mediaField.getValue(record);
 		if(Utils.isImage(url)) {
-		    html = HU.image(url,[STYLE,HU.css('width','100%')]);
+		    html = HU.image(url,[STYLE,HU.css('width',slideWidth)]);
 		} else if(url.match('.mp3')) {
 		    html =HU.center( Utils.embedAudio(url));
 		} else if(url.match('soundcloud')) {
@@ -1106,7 +1102,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 							  'webkitallowfullscreen',true,'mozallowfullscreen','true','allowfullscreen','true']));
 		    }
 		}
-		if(html&&mainUrl)
+		if(html&&mainUrl && !this.topLabelTemplate)
 		    html = html+"<br>"+HU.href(mainUrl, "Link",['target','_link']);
 		if(this.tooltipFields) {
 		    let tt = HU.makeMultiline(this.tooltipFields.map(f=>{
@@ -1117,6 +1113,17 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 		if(this.labelField) {
 		    html = html+HU.div(['class','display-slides-label'], this.labelField.getValue(record));
 		}
+		if(this.topLabelTemplate) {
+		    let label = this.applyRecordTemplate(record,this.getDataValues(record),null, this.topLabelTemplate);
+		    if(mainUrl) label = HU.href(mainUrl,label);
+		    html=HU.div(['class','display-slides-label'], label)+html;
+		}
+		if(this.labelTemplate) {
+		    let label = this.applyRecordTemplate(record,this.getDataValues(record),null, this.labelTemplate);
+		    html=html+HU.div(['class','display-slides-label'], label);
+		}
+			
+
 		
 	    }
 	    html = html.replace(/\${recordIndex}/g,(this.slideIndex+1));
