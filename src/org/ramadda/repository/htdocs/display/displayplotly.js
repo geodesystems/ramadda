@@ -126,6 +126,9 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
         needsData: function() {
             return true;
         },
+	showFieldsInDialog: function() {
+	    return true;
+	},
 	updateUI:function(args) {
 	    if(!window.Plotly) {
 		let url = RamaddaUtil.getCdnUrl("/lib/plotly/plotly-2.24.1.min.js");
