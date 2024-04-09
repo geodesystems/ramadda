@@ -1859,6 +1859,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:DisplayEvent.recordSelection.accept,ex:true,tt:'Accept record selection'},
 	{p:DisplayEvent.recordSelection.shareGroup,tt:'Only share in this group'},
 	{p:DisplayEvent.recordSelection.acceptGroup,tt:'Only share in this group'},
+	{p:'selectNearestDate',tt:'find the closest record'},
+
 
 	{p:DisplayEvent.recordHighlight.share,ex:true,tt:'Share record highlight'},
 	{p:DisplayEvent.recordHighlight.accept,ex:true,tt:'Accept record highlight'},
@@ -2838,6 +2840,38 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 	    }
 	},
+	findRecordIndex:function(records,record) {
+	    let index =-1;
+	    for(let i=0;i<records.length;i++) {
+		if(records[i].getId() == record.getId()) {
+		    index = i;
+		    break;
+		}
+	    }
+	    if(index<0 && this.getSelectNearestDate()) {
+		let date = record.getDate();
+		let nearestDate = null;
+		let min =0;
+		let nearestIndex = -1;
+		for(let i=0;i<records.length;i++) {
+		    let record = records[i];
+		    let diff = Math.abs(date.getTime()-record.getDate().getTime());
+		    if(nearestIndex==-1) {
+			nearestIndex=0;
+			nearestDate = record.getDate();
+			min = diff;
+			continue;
+		    }
+		    if(diff<min) {
+			nearestIndex = i;
+			min = diff;
+		    }
+		}
+		index=nearestIndex;
+	    }
+	    return index;
+	},
+
         handleEventRecordSelection: function(source, args) {
 	    this.selectedRecord= args.record;
 	    if(this.selectedRecord) {
@@ -3049,6 +3083,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 	    }
 
+	    let makeCheckboxes = this.showFieldsInDialog();
             let html = "";
             let checkboxClass = this.getId() + "_checkbox";
             let groupByClass = this.getId() + "_groupby";
@@ -3155,15 +3190,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                                 label += " (derived)";
                             }
                             let widget;
-                            if (this.canDoMultiFields()) {
-                                widget = HU.checkbox(field.checkboxId, [CLASS, checkboxClass,'title',field.getId()], on,label);
-				html += HU.tag(TAG_DIV, [ATTR_TITLE, field.getId()],
-					       widget);
-                            } else {
-                                widget = HU.radio(field.checkboxId, "field_radio", checkboxClass, "", on);
-				html += HU.tag(TAG_DIV, [ATTR_TITLE, field.getId()],
-					       widget + " " + label);
-                            }
+			    if(!makeCheckboxes) {
+				html += HU.tag(TAG_DIV, [],label + ' - ' +field.getId());
+			    } else {
+				if (this.canDoMultiFields()) {
+                                    widget = HU.checkbox(field.checkboxId, [CLASS, checkboxClass,'title',field.getId()], on,label);
+				    html += HU.tag(TAG_DIV, [ATTR_TITLE, field.getId()], widget);
+				} else {
+                                    widget = HU.radio(field.checkboxId, "field_radio", checkboxClass, "", on);
+				    html += HU.tag(TAG_DIV, [ATTR_TITLE, field.getId()],  widget + " " + label);
+				}
+			    }
                         }
                         //                        html+= "<br>";
                     }
@@ -3461,8 +3498,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 
 	    
-	sortRecords: function(records, sortFields) {
-	    if(this.getSortOnDate()) {
+	sortRecords: function(records, sortFields,sortOnDate) {
+	    if(this.getSortOnDate() || sortOnDate) {
 		//Clone the list
 		records = Utils.cloneList(records);
 		records.sort(function(a, b) {
@@ -3473,6 +3510,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		});
 	    }
+
+	    if(sortOnDate) return records;
 
 
 	    if(!sortFields) {
@@ -5630,11 +5669,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return false;
 	},
         getDisplayDialogContents: function(tabTitles, tabContents) {
-	    if(this.showFieldsInDialog()) {
+            if (this.hasData()) {
 	        let html = HU.div([ATTR_ID, this.domId(ID_FIELDS)],"");
 		tabTitles.push("Fields");
 		tabContents.push(html);
-	    }
+	    } 
 
             let get = this.getGet();
             let menuItems = [];
