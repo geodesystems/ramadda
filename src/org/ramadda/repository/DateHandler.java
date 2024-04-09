@@ -451,7 +451,12 @@ public class DateHandler extends RepositoryManager {
     public static boolean isNullDate(Date date) {
 	if(date!=null && date.getTime()==NULL_DATE) return true;
 	return date==null;
-    }    
+    }
+
+    public static boolean isNullDate(long date) {
+	if(date==NULL_DATE) return true;
+	return false;
+    }        
 
 
 
