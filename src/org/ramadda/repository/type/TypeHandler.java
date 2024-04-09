@@ -2669,12 +2669,6 @@ public class TypeHandler extends RepositoryManager {
             this.parent.initializeEntryFromForm(request, entry, parent,
                     newEntry);
         }
-
-
-
-
-
-
     }
 
 
@@ -4267,10 +4261,10 @@ public class TypeHandler extends RepositoryManager {
         return !getTypeProperty("name.raw",false);
     }
 
-    public List<Entry> handleBulkUpload(Request request, Entry parent, String bulkFile,int index,HashSet<String> seen,String pattern,String notPattern) throws Exception {
+    public List<Entry> handleBulkUpload(Request request, Entry parent, String bulkFile,int index,
+					HashSet<String> seen,String pattern,String notPattern) throws Exception {
 	List<Entry> entries = new ArrayList<Entry>();
 	request.remove(ARG_NAME);
-	Date date = new Date();
 	for(String siteId:Utils.split(getStorageManager().readFile(bulkFile),"\n",true,true)) {
 	    if(siteId.startsWith("#")) continue;
 	    if(seen.contains(siteId)) continue;
@@ -4278,16 +4272,29 @@ public class TypeHandler extends RepositoryManager {
 	    if(notPattern!=null && siteId.matches(pattern)) continue;	    
 	    seen.add(siteId);
 	    String      newId          = getRepository().getGUID();
-	    Entry newEntry = createEntry(newId);
-	    Object[] values =makeEntryValues(new Hashtable());
-	    getEntryManager().initEntry(newEntry, "","",parent,
+	    Entry entry = createEntry(newId);
+	    entry.clearDate();
+	    entry.setParentEntry(parent);
+	    initializeEntryFromForm(request, entry, parent, true);
+	    Date date  = new  Date();
+	    entry.setCreateDate(date.getTime());
+	    entry.setChangeDate(date.getTime());
+	    if(!entry.getTypeHandler().getTypeProperty("date.nullok",false)) {
+		if(DateHandler.isNullDate(entry.getStartDate()))
+		    entry.setStartDate(date.getTime());
+		if(DateHandler.isNullDate(entry.getEndDate()))
+		    entry.setEndDate(date.getTime());		
+	    }
+
+	    /*	    getEntryManager().initEntry(entry, "","",parent,
 					request.getUser(),					
-					new Resource(), "", 999,date.getTime(),
+					new Resource(), "", entry.getEntryOrder(),
+					date.getTime(),
 					date.getTime(), date.getTime(),
 					date.getTime(), values);
-
-	    newEntry.setValue(index, siteId);
-	    entries.add(newEntry);
+	    */
+	    entry.setValue(index, siteId);
+	    entries.add(entry);
 	}
 	return entries;
     }
