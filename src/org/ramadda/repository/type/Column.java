@@ -1865,7 +1865,11 @@ public class Column implements DataTypes, Constants, Cloneable {
                 if (Utils.stringDefined(dflt)) {
                     value = Double.parseDouble(dflt);
                 }
-                statement.setDouble(statementIdx, value);
+		if(Double.isNaN(value)) {
+                    getDatabaseManager().setNaN(statement, statementIdx);
+		} else {
+		    statement.setDouble(statementIdx, value);
+		}
             }
             statementIdx++;
         } else if (isType(DATATYPE_BOOLEAN)) {
