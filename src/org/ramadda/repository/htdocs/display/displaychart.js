@@ -353,6 +353,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
     this.isGoogleChart = true;
     defineDisplay(this, SUPER, myProps, {
 
+	showFieldsInDialog: function() {
+	    return true;
+	},
 	checkFinished: function() {
 	    return true;
 	},
