@@ -79,31 +79,46 @@ div.ramadda-breadcrumbs {
 background: url(${root}/icons/arrow_right_yellow.png) no-repeat 100% center;
 }
 
+.ramadda-navbar a:hover, .ramadda-navbar .ramadda-clickable:hover {
+    color:#fff !important;
+
+}
+.usna-pageheader {
+    position:absolute;
+    right:8px;
+    top:0px;
+    white-space:nowrap;
+    max-width:100vw;
+    overflow-x:auto;
+}    
+.usna-logoimage {
+    width: min(20vw, 200px);
+}
+
 </style>
 
 </head>
 <body>
-<!--Announcements -->
-<div id="loadDelay"></div>
-<a id="top"></a>
 <!-- Header and Top Main Navigation -->
 <header class="contain-to-grid" style="position:relative;">
 <table width="100%" border="0"><tr valign=bottom>
 <td align="left">
-<div style="margin:5px;">
+<div style="margin:5px;padding-top:0.8em;">
 <a href="https://usna.edu/">
-<img alt="The U.S. Naval Academy" class="show-for-medium-up" src="${root}/usna/usnalogo.png" height="87px;"/>
+<img alt="The U.S. Naval Academy" class="usna-logoimage xshow-for-medium-up" src="${root}/usna/usnalogo.png" xheight="50px;"/>
 </a>
-<a href="https://edmaps.usna.edu/">
-<img alt="The U.S. Naval Academy" class="show-for-medium-up" src="${root}/usna/edmapslogo.png" height="87px;"/>
-<img alt="The U.S. Naval Academy" class="show-for-small-down" src="${root}/usna/edmapslogo.png" width="200px"/>
+<a href="${root}">
+<img alt="The U.S. Naval Academy" class="usna-logoimage xxshow-for-medium-up" src="${root}/usna/edmapslogo.png" xheight="50px;"/>
+<!--
+<img alt="The U.S. Naval Academy- EDMAPS Repository" class="usna-logoimage xshow-for-small-down" src="${root}/usna/edmapslogo.png" width="200px"/>
+-->
 </a>
 </div>
 </td>
 <td align="right">
 </td>
 </tr></table>
-<div style="position:absolute;right:8px;top:2px;">${pageheader}</div>
+<div class="usna-pageheader" >${pageheader}</div>
 <div style="position:absolute;right:5px;bottom:0px;">${links}</div>
 <!-- End Top Main Navigation -->
 </header>
