@@ -2895,8 +2895,8 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    widget = HU.hbox(widget, suffix);
 	}
 
-	if(entry==null && addBulkUpload) {
-	    widget+= HU.makeShowHideBlock("Upload",
+	if(entry==null && addBulkUpload && sourceTypeHandler.getTypeProperty("form.bulkupload.show",true)) {
+	    widget+= HU.br()+HU.makeShowHideBlock("Upload",
 					  bulkUploadHelp +"<br>"+HU.fileInput(ARG_BULKUPLOAD, ""),
 					  false);
 	}	
