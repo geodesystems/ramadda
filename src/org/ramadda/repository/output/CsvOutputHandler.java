@@ -10,6 +10,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.sql.Clause;
 
@@ -124,30 +125,31 @@ public class CsvOutputHandler extends OutputHandler {
     public static final String ARG_FULLHEADER = "fullheader";
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    static int cnt = 0;
 
-    /**
-     *
-     * @param request _more_
-     * @param entries _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
-    protected Result listEntries(Request request, List<Entry> entries)
+    private Result makeStream(Request request, InputStream is) throws Exception {
+	return request.returnStream("entries.csv",  getMimeType(OUTPUT_CSV),is);	    
+    }
+
+    public Result listEntries(Request request, List<Entry> entries)
             throws Exception {
+	InputStream is =IO.pipeIt(new IO.PipedThing(){
+		public void run(OutputStream os) {
+		    PrintStream           pw  = new PrintStream(os);
+		    try {
+			listEntries(request, pw,entries);
+		    } catch(Exception exc) {
+			getLogManager().logError("Making CSV",exc);
+			pw.println("Making JSON:" + exc);
+		    }
+		}});
+	return  makeStream(request, is);
+    }
+    
 
-        int     mycnt          = cnt++;
+
+    public void listEntries(Request request, Appendable sb,List<Entry> entries)
+	throws Exception {	
+
 
         String  delimiter      = request.getString(ARG_DELIMITER, ",");
         boolean fixedWidth     = request.get(ARG_FIXEDWIDTH, false);
@@ -163,7 +165,6 @@ public class CsvOutputHandler extends OutputHandler {
                 ARG_FIELDS,
                 "name,id,type,description,entry_url,north,south,east,west,url,fields");
 
-        StringBuffer sb          = new StringBuffer();
         StringBuffer header      = new StringBuffer();
         List<String> toks        = Utils.split(fieldsArg, ",", true, true);
         List<String> fieldNames  = new ArrayList<String>();
@@ -250,8 +251,10 @@ public class CsvOutputHandler extends OutputHandler {
 
         Hashtable<String, Column> columnMap = null;
 
+	int entryCnt=0;
         for (Entry entry : entries) {
-            if (sb.length() == 0) {
+	    entryCnt++;
+            if (entryCnt==1) {
 		String headerString =header.toString();
                 if (fieldNames.contains("fields")) {
                     List<Column> columns =
@@ -329,21 +332,21 @@ public class CsvOutputHandler extends OutputHandler {
                         sb.append(url);
                     } else {}
                 } else if (field.equals("latitude")) {
-                    sb.append(entry.getLatitude());
+                    sb.append(""+entry.getLatitude());
                 } else if (field.equals("longitude")) {
-                    sb.append(entry.getLongitude());
+                    sb.append(""+entry.getLongitude());
                 } else if (field.equals("north")) {
-                    sb.append(entry.getNorth());
+                    sb.append(""+entry.getNorth());
                 } else if (field.equals("south")) {
-                    sb.append(entry.getSouth());
+                    sb.append(""+entry.getSouth());
                 } else if (field.equals("east")) {
-                    sb.append(entry.getEast());
+                    sb.append(""+entry.getEast());
                 } else if (field.equals("west")) {
-                    sb.append(entry.getWest());
+                    sb.append(""+entry.getWest());
                 } else if (field.equals("description")) {
                     sb.append(sanitize(escapeCommas, entry.getDescription()));
                 } else if (field.equals("size")) {
-                    sb.append(entry.getResource().getFileSize());
+                    sb.append(""+entry.getResource().getFileSize());
                 } else if (field.equals("fields")) {
                     List<Column> columns =
                         entry.getTypeHandler().getColumns();
@@ -410,8 +413,6 @@ public class CsvOutputHandler extends OutputHandler {
             sb.append("\n");
         }
 
-
-        return new Result("", sb, getMimeType(OUTPUT_CSV));
 
     }
 
