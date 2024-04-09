@@ -346,14 +346,9 @@ public class Entry implements Cloneable {
         if (encodeForUrl) {
             name = encodeName(name);
         }
-        //        if(debug)
-        //            System.err.println ("getFullName:" + name);
         Entry parent = getParentEntry();
         if (parent != null) {
             String parentName = parent.getFullName(encodeForUrl);
-
-            //            if(debug)
-            //                System.err.println ("parent name:" + parentName);
             return parentName + PATHDELIMITER + name;
         }
 
@@ -629,7 +624,6 @@ public class Entry implements Cloneable {
      * @return The resource
      */
     public Resource getResource() {
-	//	if(getName().endsWith(".tif"))   System.err.println("***\n"+Utils.getStack(5));
         return resource;
     }
 
@@ -648,6 +642,11 @@ public class Entry implements Cloneable {
 
 
 
+    public void clearDate() {
+	setStartAndEndDate(DateHandler.NULL_DATE);
+    }
+
+
     /**
      * Set the StartDate property.
      *
@@ -655,7 +654,6 @@ public class Entry implements Cloneable {
      */
     public void setStartDate(long value) {
         startDate = value;
-	//	System.err.println(getName()+" " + DateHandler.checkDate(new Date(value)) +" " + new Date(value));
     }
 
     /**
@@ -690,8 +688,8 @@ public class Entry implements Cloneable {
      * @param value _more_
      */
     public void setStartAndEndDate(long value) {
-        startDate = value;
-        endDate   = value;
+        setStartDate(value);
+        setEndDate(value);
     }
 
     /**
