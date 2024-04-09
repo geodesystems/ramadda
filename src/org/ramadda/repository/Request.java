@@ -833,11 +833,18 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     public String getUploadedFile(String arg) {
+	return getUploadedFile(arg,false);
+    }
+
+    public String getUploadedFile(String arg, boolean andClear) {	
         if (fileUploads == null) {
             return null;
         }
 
-        return (String) fileUploads.get(arg);
+	String file =  (String)fileUploads.get(arg);
+	if(file!=null && andClear)
+	    fileUploads.remove(arg);
+	return file;
     }
 
 
