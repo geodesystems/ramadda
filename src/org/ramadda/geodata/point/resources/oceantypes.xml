@@ -1109,6 +1109,7 @@ csvcommands4= year.type enumeration month.type enumeration date.format yyyy-MM
 <![CDATA[
 +section title="{{name}}"
 :navtop
+{{group}}
 +row
 +col-9
 {{description wikify=true}}
