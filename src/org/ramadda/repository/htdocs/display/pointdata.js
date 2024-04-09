@@ -944,6 +944,7 @@ function PointRecord(fields,lat, lon, elevation, time, data, rowIdx) {
 	data.every(d=>{
 	    if(d && d.getTime) {
 		this.recordTime = d;
+		console.log(this.recordTime);
 		return false;
 	    }
 	    return true;
@@ -1139,8 +1140,8 @@ function makePointData(json, derived, source,url,callback) {
             elevationIdx = recordField.getIndex();
             //            console.log("Elevation idx:" + elevationIdx);
         } else if (recordField.isFieldDate()) {
-	    dateIdx = recordField.getIndex();
-	    dateIndexes.push(dateIdx);
+	    if(dateIdx==-1) dateIdx = recordField.getIndex();
+	    dateIndexes.push(recordField.getIndex());
         }
 
     }
@@ -1181,8 +1182,6 @@ function makePointData(json, derived, source,url,callback) {
 	    values = tuple;
 	else
             values = tuple.values;
-
-
         //lat,lon,alt,time,data values
         let date = null;
         if (isArray || !hasDate) {
