@@ -119,12 +119,24 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 	    System.err.println("Error:" + exc +" url:" + url);
 	    exc.printStackTrace();
 	}
+
+	//If it is the trend data and there isn't already a file then download the file and add it
+	if(entry.getTypeHandler().getType().equals("type_noaa_tides_trend") && !entry.isFile()) {
+	    URL trendUrl = new URL("https://tidesandcurrents.noaa.gov/sltrends/data/" + id+"_meantrend.csv");
+	    InputStream inputStream = IO.getInputStream(trendUrl);
+	    File file =  getStorageManager().copyToStorage(request, inputStream,id+"_trends.csv");
+	    inputStream.close();
+	    entry.setResource(new Resource(file,Resource.TYPE_STOREDFILE));
+	}
+
     }
 
     @Override
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
-	if(entry.isFile()) return super.getPathForEntry(request,entry,forRead);
+	if(entry.isFile()) {
+	    return super.getPathForEntry(request,entry,forRead);
+	}
 	String id = (String)  entry.getValue(IDX_STATION_ID);
 	if(!Utils.stringDefined(id)) {
 	    throw new IllegalStateException("No station defined for NOAA Tide data:" + entry);
