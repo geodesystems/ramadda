@@ -882,7 +882,7 @@ template="${default}" }}
 </wiki>
 </type>
 
-<type name="type_noaa_tides" 
+<type name="type_noaa_tides"  foruser="false"
 description="NOAA Tides" 
 super="type_point" 
 handler="org.ramadda.geodata.point.NoaaTidesTypeHandler"
@@ -914,22 +914,42 @@ addbulkupload="true"
   <column  name="datum_mlw"  label="Mean Low Water" default="NaN"  type="double"   cansearch="false" canedit="false"/>
   <column  name="datum_mhw"  label="Mean HighWater" default="NaN"  type="double"   cansearch="false" canedit="false"/>              
 
-  <column  name="fields"  label="Fields to show in chart" type="string" cansearch="false" showinhtml="false" default="#2"/>    
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property name="record.properties">
 </property>
+</type>
+
+
+<type name="type_noaa_tides_file" 
+      description="NOAA Tides - File" 
+      super="type_noaa_tides" 
+      editfields="station_id,_default"	>
+  <column  name="fields1"  label="Fields to show in chart 1" type="string"
+	   cansearch="false" showinhtml="false" default="#2"/>
+  <column  name="show_chart2"  label="Show second chart" type="boolean"
+	   default="false"
+	   cansearch="false" showinhtml="false"/>      
+  <column  name="fields2"  label="Fields to show in chart 2" type="string"
+	   cansearch="false" showinhtml="false" default="#3"/>
+
+
+
 <wiki>
 <![CDATA[
 +section title="{{name}}"
 :navtop
 +row
 +col-9
+{{property max="20000"}}
+{{group showMenu=false}}
 {{description wikify=true}}
 :heading Chart
-{{property max="20000"}}
-{{group}}
-{{display_barchart showMenu=true height="300px"
-vAxisSharedRange=true  vAxisMinValue=0 fields="property:fields"}} 
+{{display_barchart showMenu=true height="200px"
+vAxisSharedRange=true  vAxisMinValue=0 fields="property:fields1"}} 
++if property=show_chart2
+{{display_barchart showMenu=true height="200px"
+vAxisSharedRange=true  vAxisMinValue=0 fields="property:fields2"}} 
+-if
 :heading Table
 {{display_download}}
 {{display_table  includeDate=false }} 
