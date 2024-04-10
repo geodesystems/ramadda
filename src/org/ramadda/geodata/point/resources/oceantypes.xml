@@ -890,6 +890,7 @@ editfields="station_id,_default"	>
 
   <property name="search.tabs" value="map,list"/>
   <property name="icon" value="/point/noaa.gif"/>
+  <property name="form.bulkupload.show" value="false"/>
   <property name="form.area.show" value="false"/>
   <property name="form.location.show" value="true"/>
   <property name="date.nullok" value="true"/>
@@ -899,7 +900,10 @@ editfields="station_id,_default"	>
   <property name="form.header.new">
 <![CDATA[+note\nView station IDS at <a target=_map href=https://tidesandcurrents.noaa.gov/stations.html?type=Water+Levels>NOAA Tides and Currents Site</a>\n-note]]></property>    
 
-  <column  name="station_id"  label="Station ID" type="string" cansearch="true" />
+<column  name="station_id"  label="Station ID" type="string" cansearch="true"
+bulkuploadhelp="Or upload a file of site ids. One per line. No header label. There is a collection of each state's sites available at &lt;a target=_sites href='https://github.com/geodesystems/ramadda/tree/master/data/noaa_tide_sites'&gt;Github&lt;/a&gt;"
+addbulkupload="true"	 
+/>
   <column  name="station_name"  label="Station Name" type="string" cansearch="true"/>
   <column  name="state"  label="State" type="enumeration" cansearch="true"/>    
   <column  name="tidal"  label="Tidal" type="boolean" cansearch="true"/>
@@ -968,6 +972,9 @@ super="type_noaa_tides" >
 description="NOAA Tides - Water Level" 
 super="type_noaa_tides_base" 
 editfields="station_id,product,days,date,datum,_default">
+  <property name="form.bulkupload.show" value="true"/>
+
+
   <property name="form.date.help" value="Optionally specify a date range"/>
 
   <property name="form.header.new">
@@ -1032,6 +1039,7 @@ fixedLine2="value:${property:flood_stage_major},label:Major flood stage,lineWidt
 <type name="type_noaa_tides_monthly" 
 description="NOAA Tides - Monthly Mean" 
 super="type_noaa_tides_base" editfields="station_id,days,date,datum,_default">
+  <property name="form.bulkupload.show" value="true"/>
 
 <property name="record.properties">
 csvcommands1=-combine,year\,month,-,date,-notcolumns
@@ -1088,7 +1096,8 @@ NOAA Site</a>
 description="NOAA Tides - Sea Level Trend" 
 super="type_noaa_tides" 
 editfields="station_id,_default">
-<property name="form.date.show" value="false"/>
+  <property name="form.bulkupload.show" value="true"/>
+  <property name="form.date.show" value="false"/>
   <property name="form.header.new">
     <![CDATA[
 +note

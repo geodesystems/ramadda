@@ -69,7 +69,7 @@ public class AwcMetarTypeHandler extends NwsStationTypeHandler {
 	String id = (String) entry.getStringValue(IDX_SITE_ID, "");
 	initializeNewEntry(request, entry,  id);
 
-	String  bulkFile = request.getUploadedFile(ARG_BULKUPLOAD);
+	String  bulkFile = request.getUploadedFile(ARG_BULKUPLOAD,true);
 	if(!stringDefined(bulkFile) || !new File(bulkFile).exists()) return;
 
 	HashSet<String> seen = new HashSet<String>();

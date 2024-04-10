@@ -56,7 +56,7 @@ public class NeonTypeHandler extends BaseNeonTypeHandler {
 	if(fromImport) return;
 	initializeNewEntryInner(request, entry,null);
 
-	String  bulkFile = request.getUploadedFile(ARG_BULKUPLOAD);
+	String  bulkFile = request.getUploadedFile(ARG_BULKUPLOAD,true);
 	if(!stringDefined(bulkFile) || !new File(bulkFile).exists()) return;
 	HashSet<String> seen = new HashSet<String>();
 	List<Entry> entries = handleBulkUpload(request, entry.getParentEntry(),bulkFile,IDX_SITE_CODE,seen,null,null);

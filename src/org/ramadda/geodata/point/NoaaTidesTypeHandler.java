@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.List;
 
 
@@ -45,6 +46,20 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
                                    boolean fromImport)
             throws Exception {
 	if(fromImport) return;
+	initializeNewEntryInner(request, entry);
+	String  bulkFile = request.getUploadedFile(ARG_BULKUPLOAD,true);
+	if(!stringDefined(bulkFile) || !new File(bulkFile).exists()) return;
+	HashSet<String> seen = new HashSet<String>();
+	List<Entry> entries = handleBulkUpload(request, entry.getParentEntry(),bulkFile,IDX_STATION_ID,seen,"^\\d+$",null);
+	for(Entry newEntry: entries) {
+	    initializeNewEntryInner(request,newEntry);
+
+	}
+	getEntryManager().insertEntriesIntoDatabase(request,  entries,true, true);	
+    }
+
+    private  void initializeNewEntryInner(Request request, Entry entry)
+	throws Exception {	
 	String id = (String)  entry.getValue(IDX_STATION_ID);
 	if(!stringDefined(id)) return;
 
@@ -74,7 +89,6 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 	    }
 
 
-
 	    entry.setLatitude(station.optDouble("lat",Double.NaN));
 	    entry.setLongitude(station.optDouble("lng",Double.NaN));	    
 	    String name = entry.getName().replace(id,"").replace(stationName,"").replace("Monthly Mean","").trim();
@@ -95,9 +109,9 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 	    if(stringDefined(name)) names.add(name);	    
 	    entry.setName(Utils.join(names," - "));
 
-	    entry.setValue("flood_stage_minor",new Double(flood.getDouble("nos_minor")));
-	    entry.setValue("flood_stage_moderate",new Double(flood.getDouble("nos_moderate")));
-	    entry.setValue("flood_stage_major",new Double(flood.getDouble("nos_major")));
+	    entry.setValue("flood_stage_minor",new Double(flood.optDouble("nos_minor",Double.NaN)));
+	    entry.setValue("flood_stage_moderate",new Double(flood.optDouble("nos_moderate",Double.NaN)));
+	    entry.setValue("flood_stage_major",new Double(flood.optDouble("nos_major",Double.NaN)));
 
 	    try {
 		String imageUrl = "https://cdn.tidesandcurrents.noaa.gov/assets/stationphotos/" + id+"A.jpg";
@@ -115,18 +129,22 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 		imageExc.printStackTrace();
 	    }
 	} catch(Exception exc) {
-	    getSessionManager().addSessionErrorMessage(request,"Error reading station metadata:" +  exc.getMessage());
+	    getSessionManager().addSessionErrorMessage(request,"Error reading station metadata for station:" +  id +"<br>Error:" +exc.getMessage());
 	    System.err.println("Error:" + exc +" url:" + url);
 	    exc.printStackTrace();
 	}
 
 	//If it is the trend data and there isn't already a file then download the file and add it
 	if(entry.getTypeHandler().getType().equals("type_noaa_tides_trend") && !entry.isFile()) {
-	    URL trendUrl = new URL("https://tidesandcurrents.noaa.gov/sltrends/data/" + id+"_meantrend.csv");
-	    InputStream inputStream = IO.getInputStream(trendUrl);
-	    File file =  getStorageManager().copyToStorage(request, inputStream,id+"_trends.csv");
-	    inputStream.close();
-	    entry.setResource(new Resource(file,Resource.TYPE_STOREDFILE));
+	    try {
+		URL trendUrl = new URL("https://tidesandcurrents.noaa.gov/sltrends/data/" + id+"_meantrend.csv");
+		InputStream inputStream = IO.getInputStream(trendUrl);
+		File file =  getStorageManager().copyToStorage(request, inputStream,id+"_trends.csv");
+		inputStream.close();
+		entry.setResource(new Resource(file,Resource.TYPE_STOREDFILE));
+	    } catch(Exception exc) {
+		getSessionManager().addSessionErrorMessage(request,"Error reading trend data for station:" +  id +"<br>Error:" +exc.getMessage());
+	    }
 	}
 
     }
@@ -181,7 +199,6 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 			    "begin_date",sdf.format(startDate),
 			    "end_date",sdf.format(endDate));
 
-	//	System.err.println(url);
 	return url;
     }
 

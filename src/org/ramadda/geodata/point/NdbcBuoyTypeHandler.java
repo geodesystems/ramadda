@@ -76,7 +76,7 @@ public class NdbcBuoyTypeHandler extends PointTypeHandler {
 	if(fromImport) return;
 	String type = (String)  entry.getValue(IDX_DATA_TYPE);	
 	initializeNewEntryInner(request, entry,type);
-	String  bulkFile = request.getUploadedFile(ARG_BULKUPLOAD);
+	String  bulkFile = request.getUploadedFile(ARG_BULKUPLOAD,true);
 	if(!stringDefined(bulkFile) || !new File(bulkFile).exists()) return;
 	HashSet<String> seen = new HashSet<String>();
 	List<Entry> entries = handleBulkUpload(request, entry.getParentEntry(),bulkFile,IDX_STATION_ID,seen,null,null);
