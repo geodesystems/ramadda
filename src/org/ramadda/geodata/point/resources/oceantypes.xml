@@ -1145,7 +1145,7 @@ csvcommands4= year.type enumeration month.type enumeration date.format yyyy-MM
 <![CDATA[
 +section  title={{name}}
 {{display_linechart showMenu=true
-vAxisSharedRange=true height=300px fields=monthly_msl,linear_trend}} 
+vAxisSharedRange=true height=200px fields=monthly_msl,linear_trend}} 
 -section
 ]]></property>
 
