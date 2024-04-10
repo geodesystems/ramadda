@@ -623,6 +623,7 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
                             : pdrb.getAccept());
         //Set return filename sets the Content-Disposition http header so the browser saves the file
         //with the correct name and suffix
+	baseName = baseName.replaceAll(" +","_");
         result.setReturnFilename(baseName + "_pointsubset" + suffix);
 
         return result;

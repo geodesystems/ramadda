@@ -5490,6 +5490,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             skip = [".*OpenLayers_Control.*", "authtoken"];
         }
         let url = $("#" + formId).attr("action") + "?";
+	url = url.replace(/ +/g,'_');
         let inputs = $("#" + formId + " :input");
         let cnt = 0;
         let pairs = [];
