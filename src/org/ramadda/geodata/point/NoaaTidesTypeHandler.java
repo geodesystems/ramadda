@@ -14,6 +14,8 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.WikiUtil;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
+import ucar.unidata.util.StringUtil;
+
 import org.w3c.dom.*;
 import org.json.*;
 import java.net.URL;
@@ -61,6 +63,17 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
     private  void initializeNewEntryInner(Request request, Entry entry)
 	throws Exception {	
 	String id = (String)  entry.getValue(IDX_STATION_ID);
+	if(!stringDefined(id)) {
+	    //try to extract it from the file name
+	    String resource = entry.getResource().getPath();
+	    if(stringDefined(resource)) {
+		id = StringUtil.findPattern(resource,"(\\d{7})\\.csv");
+		System.err.println(id);
+
+	    }
+	}
+
+
 	if(!stringDefined(id)) return;
 
 	String url = "https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations/" + id+".json?expand=datums,floodlevels,disclaimers,notices,details,benchmarks&units=english";
