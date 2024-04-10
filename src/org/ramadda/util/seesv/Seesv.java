@@ -6024,6 +6024,7 @@ public class Seesv implements SeesvCommands {
 	try {
 	    s = s.trim();
 	    if(s.length()==0) return Double.NaN;
+	    if(s.equals("null")) return Double.NaN;	    
 	    if(s.startsWith("random:")) {
 		List<String> toks = Utils.split(s,":",true,true);
 		if(toks.size()==1) {
