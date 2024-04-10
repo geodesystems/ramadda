@@ -990,7 +990,7 @@ csvcommands2=-addheader, date_time.type date date_time.format {yyyy-MM-dd HH:mm}
 <property name="bubble">
 <![CDATA[
 +section  title={{name}}
-{{display_linechart showMenu=true height=300px fields="water_level"
+{{display_linechart showMenu=true height=200px fields="water_level"
 vAxisSharedRange=true
 fixedLine0="value:${property:flood_stage_minor},label:Minor flood stage,lineWidth:1,color:green,lineDashStyle:1;1"
 fixedLine1="value:${property:flood_stage_moderate},label:Moderate flood stage,lineWidth:1,color:blue,lineDashStyle:1;1"
