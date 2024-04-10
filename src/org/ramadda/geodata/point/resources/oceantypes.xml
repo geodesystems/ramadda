@@ -987,6 +987,19 @@ editfields="station_id,product,days,date,datum,_default">
 csvcommands1=-dateformat,yyyy-MM-dd HH:mm,GMT,-convertdate,date_time
 csvcommands2=-addheader, date_time.type date date_time.format {yyyy-MM-dd HH:mm} ty.label {Water level height} ty.type enumeration quality.type enumeration ty.enumeratedValues {HH:Higher High water;H:High water;L:Low water;LL:Lower Low water}
 </property>
+<property name="bubble">
+<![CDATA[
++section  title={{name}}
+{{display_linechart showMenu=true height=300px fields="water_level"
+vAxisSharedRange=true
+fixedLine0="value:${property:flood_stage_minor},label:Minor flood stage,lineWidth:1,color:green,lineDashStyle:1;1"
+fixedLine1="value:${property:flood_stage_moderate},label:Moderate flood stage,lineWidth:1,color:blue,lineDashStyle:1;1"
+fixedLine2="value:${property:flood_stage_major},label:Major flood stage,lineWidth:2,color:red,lineDashStyle:4;1"
+}}
+-section
+]]></property>
+
+
 <wiki>
 <![CDATA[
 +section title="{{name}}"
@@ -1046,6 +1059,20 @@ csvcommands1=-combine,year\,month,-,date,-notcolumns
 csvcommands2=year\,month,-firstcolumns,date,-change,1-20
 csvcommands3=^$,NaN,-addheader, date.format {yyyy-MM} highest.label   {Highest Tide} mhhw.label      {Mean Higher-High Water} mhw.label       {Mean High Water} msl.label       {Mean Sea Level} mtl.label       {Mean Tide Level} mlw.label       {Mean Low Water} mllw.label      {Mean Lower-Low Water} dtl.label       {Mean Diurnal Tide Level} gt.label        {Great Diurnal Range} mn.label        {Mean Range of Tide} dhq.label       {Mean Diurnal High Water Inequality} dlq.label       {Mean Diurnal Low Water Inequality} hwi.label       {Greenwich High Water Interval} lwi.label       {Greenwich Low Water Interval} lowest.label    {Lowest Tide}
 </property>
+<property name="bubble">
+<![CDATA[
++section  title={{name}}
+{{group
+fixedLine0="value:${property:flood_stage_minor},label:Minor flood stage,lineWidth:1,color:green,lineDashStyle:1;1"
+fixedLine1="value:${property:flood_stage_moderate},label:Moderate flood stage,lineWidth:1,color:blue,lineDashStyle:1;1"
+fixedLine2="value:${property:flood_stage_major},label:Major flood stage,lineWidth:2,color:red,lineDashStyle:4;1"
+}}
+{{display_linechart showMenu=true height=200px fields="highest" vAxisSharedRange=true
+}}
+{{display_linechart showMenu=true height=200px fields="mhw" vAxisSharedRange=true }} 
+-section
+]]></property>
+
 <wiki>
 <![CDATA[
 +section title="{{name}}"
@@ -1114,6 +1141,15 @@ csvcommands2=year\,month,-,date,-change,date
 csvcommands3=-(.)$,-0$1,-firstcolumns,date,-addheader
 csvcommands4= year.type enumeration month.type enumeration date.format yyyy-MM
 </property>
+<property name="bubble">
+<![CDATA[
++section  title={{name}}
+{{display_linechart showMenu=true
+vAxisSharedRange=true height=300px fields=monthly_msl,linear_trend}} 
+-section
+]]></property>
+
+
 <wiki>
 <![CDATA[
 +section title="{{name}}"
