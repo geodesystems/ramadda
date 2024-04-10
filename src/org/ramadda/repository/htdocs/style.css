@@ -242,6 +242,8 @@ ramadda-heading, .ramadda-page-heading {
     border:1px solid #000;
     background:yellow;    
     padding:4px;
+    max-height:200px;
+    overflow-y:auto;
 }
 
 .ramadda-shadow-box {

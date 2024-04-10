@@ -139,7 +139,6 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 		
 		getMetadataManager().addMetadata(request,entry, thumbnailMetadata);
 	    } catch(Exception imageExc){
-		imageExc.printStackTrace();
 	    }
 	} catch(Exception exc) {
 	    getSessionManager().addSessionErrorMessage(request,"Error reading station metadata for station:" +  id +"<br>Error:" +exc.getMessage());
@@ -156,7 +155,9 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 		inputStream.close();
 		entry.setResource(new Resource(file,Resource.TYPE_STOREDFILE));
 	    } catch(Exception exc) {
-		getSessionManager().addSessionErrorMessage(request,"Error reading trend data for station:" +  id +"<br>Error:" +exc.getMessage());
+		System.err.println("Error:" + exc);
+		String entryUrl = getEntryManager().getEntryUrl(request,entry);
+		getSessionManager().addSessionErrorMessage(request,"Error reading trend data for station:" +  HU.href(entryUrl,id,HU.attrs("target","_entry")) +"<br>&nbsp;&nbsp;" +exc.getMessage());
 	    }
 	}
 
