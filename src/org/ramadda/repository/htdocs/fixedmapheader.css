@@ -10,8 +10,8 @@
    padding-right: 6px;
    height:var(--header-height);
    width:100%;
-   left:0;
-   top:0;
+   left:0px;
+   top:0px;
 }
 
 
@@ -52,7 +52,9 @@
 }
 
 .ramadda-pageheader {
-    position:absolute;top:1px;right:20px;
+    position:absolute;
+    top:1px;
+    right:8px;
     font-size:80%;
 }
 .ramadda-breadcrumbs {
