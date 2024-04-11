@@ -985,15 +985,15 @@ WikiEditor.prototype = {
 
 
 	html += HU.buttons([HU.span([ATTR_CLASS,CLASS_DIALOG_BUTTON,'replace','true'],"Replace"),
-			HU.span([ATTR_CLASS,CLASS_DIALOG_BUTTON,'append','true'],"Append"),
-			HU.span([ATTR_CLASS,CLASS_DIALOG_BUTTON,ID,this.domId("cancel")],"Cancel")]);
-			 html = HU.div([ATTR_CLASS,CLASS_DIALOG],html);
+			    HU.span([ATTR_CLASS,CLASS_DIALOG_BUTTON,'append','true'],"Append"),
+			    HU.span([ATTR_CLASS,CLASS_DIALOG_BUTTON,'cancel','true',ATTR_ID,this.domId("cancel")],"Cancel")]);
+	html = HU.div([ATTR_CLASS,CLASS_DIALOG],html);
 
-			 let dialog = this.llmDialog = HU.makeDialog({content:html,anchor:this.getScroller(),
-				    my: "left bottom",     
-				    at: "left+200" +" top-50",
-				    title:"LLM",
-				    header:true,sticky:true,draggable:true,modal:false});	
+	let dialog = this.llmDialog = HU.makeDialog({content:html,anchor:this.getScroller(),
+						     my: "left bottom",     
+						     at: "left+200" +" top-50",
+						     title:"LLM",
+						     header:true,sticky:true,draggable:true,modal:false});	
 
 
 	let call = (prompt) =>{
@@ -1054,6 +1054,10 @@ WikiEditor.prototype = {
 	let _this = this;
 	dialog.find('.ramadda-dialog-button').button().click(function() {
 	    _this.llmReplacing = true;	    
+	    if ($(this).attr('cancel')) {
+		dialog.remove();
+		return;
+	    }
 	    let val = _this.jq('rewrite-results').val();
 	    if(!val) return;
 	    if($(this).attr('replace')) {
