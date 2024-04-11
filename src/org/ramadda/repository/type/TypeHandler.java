@@ -5515,7 +5515,6 @@ public class TypeHandler extends RepositoryManager {
             }
 
             if (what.equals(ARG_RESOURCE)) {
-
                 boolean showFile = okToShowInForm(entry, ARG_FILE);
                 boolean showLocalFile = showFile
                                         && request.getUser().getAdmin()
@@ -5561,15 +5560,11 @@ public class TypeHandler extends RepositoryManager {
 			    }
 			}
 
-
-			//if(showDnd) {
-			    formContent +=HU.script("Ramadda.initFormUpload("
-						    + HU.comma(HU.squote(inputId),
-							       (entry != null)
-							       ? "null"
-							       : HU.squote(inputId + "_dnd")) + ");");
-			    //                        tabContent.add(HU.inset(formContent, 8));
-			    //			}
+			formContent +=HU.script(HU.call("Ramadda.initFormUpload",
+							HU.squote(inputId),
+							(entry != null)
+							? "null"
+							: HU.squote(inputId + "_dnd"),entry!=null?"false":"true"));
                         tabContent.add(formContent);
                     }
                     if (showUrl) {
