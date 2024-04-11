@@ -48,7 +48,7 @@ public class LLMManager extends  AdminHandlerImpl {
     
 
     public static final int TOKEN_LIMIT_UNDEFINED = -1;
-    public static final int TOKEN_LIMIT_GEMINI = 4000;
+    public static final int TOKEN_LIMIT_GEMINI = 30000;
     public static final int TOKEN_LIMIT_GPT3 = 2000;    
     public static final int TOKEN_LIMIT_GPT4 = 4000;
     public static final int TOKEN_LIMIT_CLAUDE = 200000;
@@ -336,6 +336,14 @@ public class LLMManager extends  AdminHandlerImpl {
     ]
 }'
 	    */
+	    /*
+	    gptText = gptText +"<document>" +
+		IO.readContents("/Users/jeffmc/test.csv")+"</document>";
+	    System.err.println(gptText);
+	    */
+
+
+
 	    String claudeKey = getRepository().getProperty(PROP_CLAUDE_KEY);	
 	    String messages = JU.list(JU.map("role",JU.quote("user"),"content",JU.quote(gptText)));
 	    String body = JU.map("model",JU.quote("claude-3-sonnet-20240229"),
