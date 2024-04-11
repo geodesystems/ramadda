@@ -8993,27 +8993,39 @@ public class WikiManager extends RepositoryManager
 	    HashSet seen = new HashSet();
             for (String tok : Utils.split(providers, ",")) {
                 //                System.err.println ("Tok:" + tok);
-                if (tok.startsWith("name:") || tok.startsWith("category:")) {
+                if (tok.startsWith("name:") || tok.startsWith("category:") || tok.startsWith("type:")) {
+                    boolean doType  = tok.startsWith("type:");
+		    String type = "";
+                    String  pattern = "";
                     boolean doName  = tok.startsWith("name:");
-                    String  pattern = tok.substring(doName
-						    ? "name:".length()
-						    : "category:".length());
+		    if(doType) {
+			type = tok.substring("type:".length());
+		    } else {
+			 pattern = tok.substring(doName
+						 ? "name:".length()
+						 : "category:".length());
+		    }
                     //                    System.err.println ("doName:" + doName +" pattern:" + pattern);
                     for (SearchProvider searchProvider :
 			     getSearchManager().getSearchProviders()) {
 			if(seen.contains(searchProvider.getId())) continue;
 			seen.add(searchProvider.getId());
-                        String  target  = doName
-			    ? searchProvider.getName()
-			    : searchProvider.getCategory();
-                        boolean include = target.equals(pattern);
-                        if ( !include) {
-                            try {
-                                include = target.matches(pattern);
-                            } catch (Exception ignore) {
-                                System.err.println("bad pattern:" + pattern);
-                            }
-                        }
+                        boolean include = false;
+			if(doType) {
+			    include = type.equals(searchProvider.getType());
+			} else {
+			    String  target  = doName
+				? searchProvider.getName()
+				: searchProvider.getCategory();
+			    include = target.equals(pattern);
+			    if ( !include) {
+				try {
+				    include = target.matches(pattern);
+				} catch (Exception ignore) {
+				    System.err.println("bad pattern:" + pattern);
+				}
+			    }
+			}
 
                         if (include) {
                             String icon = searchProvider.getSearchProviderIconUrl();
