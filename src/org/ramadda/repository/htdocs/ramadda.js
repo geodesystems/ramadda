@@ -1016,8 +1016,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    }
 	});
     },
-    initFormUpload:function(fileInputId, targetId) {
+    initFormUpload:function(fileInputId, targetId,multiple) {
 	let input = $("#"+ fileInputId);
+	if(multiple)
+	    input.attr('multiple','');
 	let form = input.closest('form');
 	let custom = HU.div([TITLE,"Click to select a file", ID,fileInputId+"_filewrapper",CLASS, 'fileinput_wrapper'],HU.getIconImage("fas fa-cloud-upload-alt") +" " +HU.div([ID,fileInputId+"_filename",CLASS,"fileinput_label"]));
 	input.after(custom);
@@ -1026,16 +1028,25 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let inputLabel = $("#" +fileInputId+"_filename");
 	inputWrapper.click(()=>{input.trigger('click');});
 	let inputChanger = ()=>{
-	    let file  = input[0].files? input[0].files[0]:null;
-	    let fileName =  file?file.name:input.val(); 
-	    let idx = fileName.lastIndexOf("\\");
-	    if(idx<0)
-		idx = fileName.lastIndexOf("/");		
-	    if(idx>=0) {
-		fileName = fileName.substring(idx+1);
-	    }
-	    if(file) {
-		fileName = fileName +" (" + Utils.formatFileLength(file.size)+")";
+	    let clean = name=>{
+		let idx = name.lastIndexOf("\\");
+		if(idx<0)
+		    idx = name.lastIndexOf("/");		
+		if(idx>=0) {
+		    name = name.substring(idx+1);
+		}
+		return name;
+	    };
+	    let fileName = '';
+	    if(input[0].files) {
+		let names=[];
+		for(let i=0;i<input[0].files.length;i++) {
+		    let file = input[0].files[i];
+		    names.push(clean(file.name) +" (" + Utils.formatFileLength(file.size)+")");
+		}
+		fileName = Utils.join(names,',');
+	    } else {
+		fileName =  clean(input.val()); 
 	    }
 	    if(fileName=="") fileName = HU.span([CLASS,"fileinput_label_empty"],"Please select a file");
 	    $('#' + fileInputId+"_filename").html(fileName); 
