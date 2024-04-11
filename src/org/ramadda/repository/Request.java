@@ -836,15 +836,21 @@ public class Request implements Constants, Cloneable {
 	return getUploadedFile(arg,false);
     }
 
-    public String getUploadedFile(String arg, boolean andClear) {	
+    public List<String> getUploadedFiles(String arg, boolean andClear) {
         if (fileUploads == null) {
             return null;
         }
-
-	String file =  (String)fileUploads.get(arg);
-	if(file!=null && andClear)
+	List<String> files = (List<String>)fileUploads.get(arg);
+	if(andClear)
 	    fileUploads.remove(arg);
-	return file;
+	return files;
+    }
+
+
+    public String getUploadedFile(String arg, boolean andClear) {	
+	List<String> files = getUploadedFiles(arg,andClear);
+	if(files==null || files.size()==0) return null;
+	return files.get(0);
     }
 
 
