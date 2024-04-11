@@ -2626,10 +2626,16 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             List<ServerInfo> servers =
                 getRegistryManager().getEnabledRemoteServers();
             for (ServerInfo server : servers) {
-                if (server.getId().equals(id)) {
-                    provider = new SearchProvider.RemoteSearchProvider(
-								       getRepository(), server);
+		boolean match= server.getId().equals(id); 
+                if (!match) {
+		    if(server.getId().startsWith("http")) {
+			if(server.getId().indexOf("/" + id+"/")>=0) match=true;
+		    }
+		}
+                if (match) {
+                    provider = new SearchProvider.RemoteSearchProvider(getRepository(), server);
                     searchProviderMap.put(id, provider);
+		    break;
                 }
             }
         }
