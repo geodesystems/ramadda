@@ -645,8 +645,18 @@ public class RepositoryServlet extends HttpServlet implements Constants {
 
                 return;
             }
-            fileUploads.put(fieldName, uploadedFile.toString());
-            formArgs.put(fieldName, fileName);
+	    List<String> files = (List<String>)fileUploads.get(fieldName);
+	    if(files==null) {
+		files=new ArrayList<String>();
+		fileUploads.put(fieldName, files);
+	    }
+            files.add(uploadedFile.toString());
+	    List<String> fileNames = (List<String>)formArgs.get(fieldName);
+	    if(fileNames==null) {
+		fileNames=new ArrayList<String>();
+		formArgs.put(fieldName, fileNames);
+	    }
+	    fileNames.add(fileName);
         }
 
 
