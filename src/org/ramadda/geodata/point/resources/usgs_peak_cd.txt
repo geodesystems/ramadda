@@ -1,0 +1,16 @@
+1: Maximum Daily Average
+2: Estimate
+3: Affected by Dam Failure
+4: Less than indicated value
+5: Affected to unknown degree by  Regulation or Diversion
+6: Affected by Regulation or Diversion
+7: Historic Peak
+8: Greater than indicated value
+9: Due to Snowmelt, Hurricane,  Ice-Jam or Debris Dam breakup
+A: Year of occurrence is unknown or not exact
+Bd: Day of occurrence is unknown or not exact
+Bm: Month of occurrence is unknown or not exact
+C: All or part of the record affected by Urbanization, etc
+F: Peak supplied by another agency
+O: Opportunistic value
+R: Revised

@@ -52,7 +52,7 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 	String  bulkFile = request.getUploadedFile(ARG_BULKUPLOAD,true);
 	if(!stringDefined(bulkFile) || !new File(bulkFile).exists()) return;
 	HashSet<String> seen = new HashSet<String>();
-	List<Entry> entries = handleBulkUpload(request, entry.getParentEntry(),bulkFile,IDX_STATION_ID,seen,"^\\d+$",null);
+	List<Entry> entries = handleBulkUpload(request, entry.getParentEntry(),bulkFile,"station_id",seen,"^\\d+$",null);
 	for(Entry newEntry: entries) {
 	    initializeNewEntryInner(request,newEntry);
 
@@ -148,17 +148,8 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 
 	//If it is the trend data and there isn't already a file then download the file and add it
 	if(entry.getTypeHandler().getType().equals("type_noaa_tides_trend") && !entry.isFile()) {
-	    try {
-		URL trendUrl = new URL("https://tidesandcurrents.noaa.gov/sltrends/data/" + id+"_meantrend.csv");
-		InputStream inputStream = IO.getInputStream(trendUrl);
-		File file =  getStorageManager().copyToStorage(request, inputStream,id+"_trends.csv");
-		inputStream.close();
-		entry.setResource(new Resource(file,Resource.TYPE_STOREDFILE));
-	    } catch(Exception exc) {
-		System.err.println("Error:" + exc);
-		String entryUrl = getEntryManager().getEntryUrl(request,entry);
-		getSessionManager().addSessionErrorMessage(request,"Error reading trend data for station:" +  HU.href(entryUrl,id,HU.attrs("target","_entry")) +"<br>&nbsp;&nbsp;" +exc.getMessage());
-	    }
+	    URL trendUrl = new URL("https://tidesandcurrents.noaa.gov/sltrends/data/" + id+"_meantrend.csv");
+	    downloadUrlAndSaveAsEntryFile(request, entry, trendUrl,id+"_trends.csv");
 	}
 
     }

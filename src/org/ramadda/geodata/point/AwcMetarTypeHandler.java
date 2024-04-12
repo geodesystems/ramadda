@@ -73,7 +73,7 @@ public class AwcMetarTypeHandler extends NwsStationTypeHandler {
 	if(!stringDefined(bulkFile) || !new File(bulkFile).exists()) return;
 
 	HashSet<String> seen = new HashSet<String>();
-	List<Entry> entries = handleBulkUpload(request, entry.getParentEntry(),bulkFile,IDX_SITE_ID,seen,"^[^-]+$",null);
+	List<Entry> entries = handleBulkUpload(request, entry.getParentEntry(),bulkFile,"site_id",seen,"^[^-]+$",null);
 	for(Entry newEntry: entries) {
 	    System.err.println("AwcMetarTypeHandler: bulk entry:" + newEntry.getValue(IDX_SITE_ID));
 	    initializeNewEntry(request,newEntry,(String)newEntry.getValue(IDX_SITE_ID));

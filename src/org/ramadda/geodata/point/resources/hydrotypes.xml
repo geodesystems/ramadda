@@ -104,8 +104,9 @@ csvcommands8=$1,-sort,datetime,-addheader,default.type double datetime.type date
 </wiki>
 </type>
 
-<type name="type_usgs_gauge"  description="USGS Stream Gauge" super="type_point_hydro"
-      newfields="station_id,tags,quit"
+<type name="type_usgs_gauge"  description="USGS Stream Gauge"
+      super="type_point_hydro"
+      newfields="station_id,downloadfile,tags,resource,quit"
       handler="org.ramadda.geodata.point.UsgsGaugeTypeHandler">
   <property name="search.tabs" value="map,list"/>
 <property name="map.popup">
@@ -129,7 +130,7 @@ You just need to specify the Site Number. The name and other metadata will be lo
      <property name="form.location.show" value="true"/>
      <property name="form.altitude.show" value="true"/>
      <property name="form.date.show" value="false"/>
-     <property name="form.resource.show" value="false"/>
+     <property name="form.file.show" value="true"/>
  <property name="record.properties">
 picky=false
 fields=agency[label="Agency" type=string],station_id[label="Station ID" type=string],date[type=date format="yyyy-MM-dd HH:mm" label="Date"],timezone[label="Timezone" type=string],discharge[unit="cfs" label="Discharge" type=double],skip[type=string],gauge_height[unit="feet" label="Gauge Height" type=double],skip[type=string]
@@ -153,6 +154,9 @@ point.csvcommands=-delimiter,tab,-skip,2,-print
      <column  name="county"  label="County" type="enumerationplus" cansearch="true"/>
      <column  name="state"  label="State" type="enumerationplus" cansearch="true"/>
      <column  name="huc"  type="enumerationplus" label="HUC" cansearch="true"/>
+     <column  name="drainage_area"  label="Drainage Area" type="double" default="0" />
+     <column  name="contributing_drainage_area"  label="Contrib. Drainage Area" type="double" default="0" />     
+     <column  name="gage_datum"  label="Gage Datum" type="string" />     
      <column  name="homepage"  label="USGS page" type="url" canlist="false"/>
 <wiki>
 <![CDATA[
@@ -187,6 +191,55 @@ Data courtesy of [https://waterdata.usgs.gov USGS]
 -section
 ]]>
 </wiki>
+</type>
+
+
+<type name="type_usgs_gauge_peak"  description="USGS Stream Gauge Peak Flow"
+      super="type_usgs_gauge"
+      newfields="station_id,downloadfile,tags,resource,quit"
+      >
+ <property name="record.properties">
+picky=false
+csvcommands1=-delimiter,tab,-cut,1,-indateformat
+csvcommands2=yyyy-MM-dd,GMT,-combine,peak_dt, 
+csvcommands3=peak_date,-notcolumns,peak_dt\,peak_tm,-combine,ag_dt
+csvcommands4= ,ag_date,-notcolumns,ag_dt\,ag_tm,-firstcolumns
+csvcommands5=peak_date,-addheader, usgs.type string    site_no.id station_id station_id.type string peak_date.type date   peak_date.format {yyyy-MM-dd} ag_date.type date ag_date.format {yyyy-MM-dd} peak_va.type double peak_cd.type enumeration peak_cd.values {file:/org/ramadda/geodata/point/resources/usgs_peak_cd.txt} gage_ht_cd.type enumeration ag_gage_ht_cd.type enumeration
+     </property>
+<wiki>
+<![CDATA[
++section title={{name}}
+:navtop
+{{description wikify=true}}
+:heading Charts
+{{group showMenu=false  targetDiv="${entryid}_group" }}
+<div id="{{entryid}}_group"></div> 
+{{display type=linechart showMenu=true fields=peak_va}}
+{{display type=linechart showMenu=true fields=gage_ht}}
+:vspace 0.5em
+:heading Table
+{{display_download showMenu=false}}
+{{display_table showMenu=false}}
+:vspace 1em
+----
+:heading Information
++row
++col-md-6
+{{information  details="true"  showTitle="false"  }} 
+-col
++col-6
+Data courtesy of [https://waterdata.usgs.gov USGS]
+{{map}}
+<table class="formtable">
+{{field name="altitude"  row.label="Altitude:"}}
+</table>
+-col
+-row
+-section
+]]>
+</wiki>
+
+
 </type>
 
 
