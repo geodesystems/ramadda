@@ -43,6 +43,8 @@ import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.SqlUtil;
 
 import java.sql.Connection;
+import java.net.URL;
+
 
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Element;
@@ -118,6 +120,7 @@ public class TypeHandler extends RepositoryManager {
     public static final String FIELD_CHANGEDATE = "changedate";
     public static final String FIELD_FROMDATE = "fromdate";
     public static final String FIELD_TODATE = "todate";
+    public static final String FIELD_DOWNLOADFILE ="downloadfile";
     
 
 
@@ -3084,7 +3087,7 @@ public class TypeHandler extends RepositoryManager {
 		else if(field.equals(ARG_TYPE))
 		    addTypeToHtml(request,typeHandler,entry,sb);
 		else if(field.equals("resource"))
-		    addArkToHtml(request,typeHandler,entry,sb);
+		    addResourceToHtml(request,typeHandler,entry,sb);
 		else if(field.equals("image"))
 		    addImageToHtml(request,typeHandler,entry,sb);
 		else if(field.equals("description"))
@@ -4261,7 +4264,7 @@ public class TypeHandler extends RepositoryManager {
         return !getTypeProperty("name.raw",false);
     }
 
-    public List<Entry> handleBulkUpload(Request request, Entry parent, String bulkFile,int index,
+    public List<Entry> handleBulkUpload(Request request, Entry parent, String bulkFile,String column,
 					HashSet<String> seen,String pattern,String notPattern) throws Exception {
 	List<Entry> entries = new ArrayList<Entry>();
 	request.remove(ARG_NAME);
@@ -4293,7 +4296,7 @@ public class TypeHandler extends RepositoryManager {
 					date.getTime(), date.getTime(),
 					date.getTime(), values);
 	    */
-	    entry.setValue(index, siteId);
+	    entry.setValue(column, siteId);
 	    entries.add(entry);
 	}
 	return entries;
@@ -5336,6 +5339,15 @@ public class TypeHandler extends RepositoryManager {
 	    }
 
 
+	    if(what.equals(FIELD_DOWNLOADFILE)) {
+		sb.append(formEntry(request, "",
+				    HU.labeledCheckbox(ARG_DOWNLOAD_FILE,
+						       "true",
+						       request.get(ARG_DOWNLOAD_FILE,false),
+						       "Download file")));
+		continue;
+	    }
+
 	    if(what.equals(FIELD_ORDER)) {
 		if(!okToShowInForm(entry, what)) continue;
 		sb.append(formEntry(request, msgLabel("Order"),
@@ -5746,6 +5758,24 @@ public class TypeHandler extends RepositoryManager {
                 }
             }
         }
+    }
+
+
+
+    public boolean downloadUrlAndSaveAsEntryFile(Request request,Entry entry,URL url,String fileName) {
+	try {
+	    InputStream inputStream = IO.getInputStream(url);
+	    File file =  getStorageManager().copyToStorage(request, inputStream,fileName);
+	    inputStream.close();
+	    entry.setResource(new Resource(file,Resource.TYPE_STOREDFILE));
+	} catch(Exception exc) {
+	    String entryUrl = getEntryManager().getEntryUrl(request,entry);
+	    getSessionManager().addSessionErrorMessage(request,"Error downloading file:" +
+						       HU.href(entryUrl,fileName,
+							       HU.attrs("target","_entry")) +"<br>&nbsp;&nbsp;" +exc.getMessage());
+	    return false;
+	}
+	return true;
     }
 
 
