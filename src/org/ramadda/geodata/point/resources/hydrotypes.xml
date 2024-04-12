@@ -204,7 +204,7 @@ csvcommands1=-delimiter,tab,-cut,1,-indateformat
 csvcommands2=yyyy-MM-dd,GMT,-combine,peak_dt, 
 csvcommands3=peak_date,-notcolumns,peak_dt\,peak_tm,-combine,ag_dt
 csvcommands4= ,ag_date,-notcolumns,ag_dt\,ag_tm,-firstcolumns
-csvcommands5=peak_date,-addheader, usgs.type string    site_no.id station_id station_id.type string peak_date.type date   peak_date.format {yyyy-MM-dd} ag_date.type date ag_date.format {yyyy-MM-dd} peak_va.type double peak_cd.type enumeration peak_cd.values {file:/org/ramadda/geodata/point/resources/usgs_peak_cd.txt} gage_ht_cd.type enumeration ag_gage_ht_cd.type enumeration
+csvcommands5=peak_date,-addheader, usgs.type string    site_no.id station_id station_id.type string peak_date.type date   peak_date.format {yyyy-MM-dd} ag_date.type date ag_date.format {yyyy-MM-dd} peak_va.type double peak_cd.type enumeration peak_cd.values {file:/org/ramadda/geodata/point/resources/usgs_peak_cd.txt} gage_ht.type double gage_ht_cd.type enumeration ag_gage_ht_cd.type enumeration
      </property>
 <wiki>
 <![CDATA[
