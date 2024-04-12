@@ -1318,6 +1318,7 @@ public interface Constants {
 
     /** _more_ */
     public static final String ARG_RESOURCE_DOWNLOAD = "resource.download";
+    public static final String ARG_DOWNLOAD_FILE = "downloadfile";
 
     /** _more_ */
     public static final String ARG_RESPONSE = "response";
