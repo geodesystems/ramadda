@@ -436,8 +436,11 @@ function RamaddaRepository(repositoryRoot) {
 
             if (settings.parent != null && settings.parent.length > 0)
                 url += "&group=" + settings.parent;
-            if (settings.provider != null && settings.provider.length > 0)
-                url += "&provider=" + settings.provider;
+	    if(settings.providers) {
+		settings.providers.forEach(provider=>{
+                    url += "&provider=" + provider;
+		});
+	    }
             if (settings.text != null && settings.text.length > 0)
                 url += "&text=" + settings.text;
             if (settings.name != null && settings.name.length > 0)
@@ -1253,6 +1256,18 @@ function EntrySearchSettings(props) {
         north: NaN,
         east: NaN,
         areaContains: false,
+	clearProviders:function(provider) {
+	    this.providers=null;
+	},
+	getProvider:function(provider) {
+	    if(!this.providers) return null;
+	    return this.providers[0];
+	},
+
+	setProvider:function(provider) {
+	    if(!this.providers) this.providers=[];
+	    this.providers.push(provider);
+	},
         getMax: function() {
             return this.max;
         },
