@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Apr 10 13:33:23 MDT 2024";
+var build_date="RAMADDA build date: Fri Apr 12 06:31:40 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -32652,15 +32652,18 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
     }
 
 
+    this.searchSettings =  new EntrySearchSettings({
+        parent: properties.searchEntryParent || properties.entryParent,
+        text: properties.searchEntryText || properties.entryText,
+        entryType: properties.searchEntryType,
+        orderBy: properties.orderBy,
+	ancestor: properties.searchAncestor || properties.ancestor ,
+    });
+    if(properties.provider) {
+	this.searchSettings.setProvider(properties.provider);
+    }
+
     RamaddaUtil.defineMembers(this, {
-        searchSettings: new EntrySearchSettings({
-            parent: properties.searchEntryParent || properties.entryParent,
-            provider: properties.provider,
-            text: properties.searchEntryText || properties.entryText,
-            entryType: properties.searchEntryType,
-            orderBy: properties.orderBy,
-	    ancestor: properties.searchAncestor || properties.ancestor ,
-        }),
         entryList: properties.entryList,
         entryMap: {},
 	writeEntries: function(msg, entries) {
@@ -32674,7 +32677,8 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
 	},
         getSearchSettings: function() {
             if (this.getPropertyProviders() != null) {
-                let provider = this.searchSettings.provider;
+                this.searchSettings.clearProviders();
+                let provider = this.searchSettings.getProvider();
 		let select = this.jq(ID_PROVIDERS);
                 let fromSelect = select.val();
                 if (fromSelect != null) {
@@ -32690,9 +32694,9 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
 		    ok = false;
 		}
 		if(ok) {
-                    this.searchSettings.provider = provider;
+                    this.searchSettings.setProvider(provider);
 		} else {
-                    this.searchSettings.provider = null;
+                    this.searchSettings.clearProviders();
 		}
             }
             return this.searchSettings;
@@ -33434,7 +33438,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             if (msg == null) {
                 msg = this.getRamadda().getSearchMessage();
             }
-            let provider = this.getSearchSettings().provider;
+            let provider = this.getSearchSettings().getProvider();
             if (provider != null) {
                 msg = null;
                 if (this.providerMap != null && this.providerMap[provider]) {
@@ -33460,6 +33464,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             }
         },
         makeSearchUrl: function(repository) {
+	    console.trace(repository);
             let extra = "";
             let cols = this.getSearchableColumns();
 	    let searchBar  = this.jq(ID_SEARCH_BAR);
@@ -33620,7 +33625,6 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             if (this.getPropertyProviders() != null) {
 		if(this.getPropertyProviders().length==1) {
 		    this.provider = this.getPropertyProviders()[0].id;
-
 		} else {
                     let options = "";
 		    let selected = HU.getUrlArgument(ID_PROVIDERS);
@@ -34349,7 +34353,8 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
             if (this.entryList != null && this.entryList.haveLoaded) {
                 this.entryListChanged(this.entryList);
             }
-            HtmlUtils.initSelect(this.jq(ID_PROVIDERS),   { autoWidth: false,  "max-height":"100px"});
+            HtmlUtils.initSelect(this.jq(ID_PROVIDERS),
+				 { autoWidth: false,  "max-height":"100px"});
             this.jq(ID_PROVIDERS).change(function() {
                 _this.providerChanged();
             });
