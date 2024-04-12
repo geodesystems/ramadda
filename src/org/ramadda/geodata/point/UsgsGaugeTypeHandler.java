@@ -167,7 +167,7 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	int cnt=0;
 	for(Entry newEntry: entries) {
 	    cnt++;
-	    System.err.println("UsgsGaugeTypeHandler: bulk entry: #" cnt+" station:"+ newEntry.getValue("station_id"));
+	    System.err.println("UsgsGaugeTypeHandler: bulk entry: #" + cnt+" station:"+ newEntry.getValue("station_id"));
 	    initializeNewEntryInner(request,newEntry);
 	}
 	getEntryManager().insertEntriesIntoDatabase(request,  entries,true, true);
