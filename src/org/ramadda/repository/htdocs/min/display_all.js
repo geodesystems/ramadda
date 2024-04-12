@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Apr 12 06:31:40 MDT 2024";
+var build_date="RAMADDA build date: Fri Apr 12 06:57:18 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -16801,17 +16801,21 @@ var DataUtils = {
 	return  cnt*scale;
     },
 
-    getCsv: function(fields, records,filter) {
+    getCsv: function(fields, records,filter,max) {
+	if(!Utils.isDefined(max)) max=-1;
 	let csv = "";
 	fields.forEach((f,idx)=>{
 	    if(idx>0) csv+=",";
 	    csv+=f.getId();
 	});
 	csv+="\n";
-	records.forEach(r=>{
+	let cnt=0;
+	records.every(r=>{
 	    if(filter && !filter(r)) {
-		return;
+		return true;
 	    }
+	    if(max>0 && cnt>=max) return false;
+	    cnt++;
 	    fields.forEach((f,idx)=>{
 		let v = r.getValue(f.getIndex());
 		if(v && v.getTime) {
@@ -16831,13 +16835,19 @@ var DataUtils = {
 		csv+=v;
 	    });
 	    csv+="\n";
+	    return true;
 	});
 	return csv;
     },
-    getJson: function(fields, records, filename,filter) {
+    getJson: function(fields, records, filename,filter,max) {
+	if(!Utils.isDefined(max)) max=-1;
 	let json = [];
-	records.forEach(r=>{
-	    if(filter && !filter(r)) return;
+	let cnt=0;
+	records.every(r=>{
+	    if(filter && !filter(r)) return true;
+	    if(max>0 && cnt>=max) return false;
+	    cnt++;
+
 	    let obj = {};
 	    json.push(obj);
 	    fields.forEach((f,idx)=>{
@@ -16849,6 +16859,7 @@ var DataUtils = {
 		}
 		obj[f.getId()] = v;
 	    });
+	    return true;
 	});
 	Utils.makeDownloadFile(filename, JSON.stringify(json,null,2));
     },
@@ -25110,7 +25121,8 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	getCsv: function(fields, records,copy) {
             fields = fields || this.getData().getRecordFields();
 	    
-	    let csv = DataUtils.getCsv(fields, records,this.getSubsetFunction());
+	    let cnt = parseInt(this.jq('number_records').val().trim());
+	    let csv = DataUtils.getCsv(fields, records,this.getSubsetFunction(),cnt);
 	    if(copy) {
 		Utils.copyToClipboard(csv);
 		alert("Copied to clipboard");
@@ -25120,7 +25132,8 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	},
 	getJson: function(fields, records) {
             fields = fields || this.getData().getRecordFields();
-	    DataUtils.getJson(fields, records,this.getPropertyFileName()+".json",this.getSubsetFunction());
+	    let cnt = parseInt(this.jq('number_records').val().trim());
+	    DataUtils.getJson(fields, records,this.getPropertyFileName()+".json",this.getSubsetFunction(),cnt);
 	},
 
 	applyFieldSelection: function() {
@@ -25152,7 +25165,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	    if(this.getShowCopyButton(true))
 		buttons+=  HU.div([ID,this.getDomId(ID_DOWNLOAD_COPY)],"Copy") +space;
 	    buttons+=  HU.div([ID,this.getDomId(ID_CANCEL)],"Cancel");
-	    let html = HU.center("#" +records.length +" records");
+	    let html = HU.center("#" +HU.input('',records.length,[ATTR_ID,this.getDomId('number_records'),'title','Select # records to download','size','4']) +" records");
 	    html+=HU.center(HU.span([ATTR_STYLE,'font-size:80%;'], 'Note: this downloads the data currently<br>being shown in the browser'));
 	    html+=HU.center(buttons);
 	    if(this.getShowDateSelect()) {
