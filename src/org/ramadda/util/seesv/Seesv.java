@@ -3768,8 +3768,12 @@ public class Seesv implements SeesvCommands {
 	    });
 
 	defineFunction(CMD_SORTBY,3,(ctx,args,i) -> {
-		ctx.addProcessor(new RowCollector.Sorter(ctx,getCols(args.get(++i)),
-							 args.get(++i).equals("up"),
+		List<String> cols= getCols(args.get(++i));
+		String  dir = args.get(++i);
+		if(!dir.equals("up") && !dir.equals("down") && !dir.equals(""))
+		    throw new IllegalArgumentException("Bad -sortby direction:" + dir);
+		ctx.addProcessor(new RowCollector.Sorter(ctx,cols,
+							 dir.equals("up"),
 							 args.get(++i))); 
 		return i;
 	    });
