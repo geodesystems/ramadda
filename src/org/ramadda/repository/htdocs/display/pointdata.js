@@ -3033,17 +3033,21 @@ var DataUtils = {
 	return  cnt*scale;
     },
 
-    getCsv: function(fields, records,filter) {
+    getCsv: function(fields, records,filter,max) {
+	if(!Utils.isDefined(max)) max=-1;
 	let csv = "";
 	fields.forEach((f,idx)=>{
 	    if(idx>0) csv+=",";
 	    csv+=f.getId();
 	});
 	csv+="\n";
-	records.forEach(r=>{
+	let cnt=0;
+	records.every(r=>{
 	    if(filter && !filter(r)) {
-		return;
+		return true;
 	    }
+	    if(max>0 && cnt>=max) return false;
+	    cnt++;
 	    fields.forEach((f,idx)=>{
 		let v = r.getValue(f.getIndex());
 		if(v && v.getTime) {
@@ -3063,13 +3067,19 @@ var DataUtils = {
 		csv+=v;
 	    });
 	    csv+="\n";
+	    return true;
 	});
 	return csv;
     },
-    getJson: function(fields, records, filename,filter) {
+    getJson: function(fields, records, filename,filter,max) {
+	if(!Utils.isDefined(max)) max=-1;
 	let json = [];
-	records.forEach(r=>{
-	    if(filter && !filter(r)) return;
+	let cnt=0;
+	records.every(r=>{
+	    if(filter && !filter(r)) return true;
+	    if(max>0 && cnt>=max) return false;
+	    cnt++;
+
 	    let obj = {};
 	    json.push(obj);
 	    fields.forEach((f,idx)=>{
@@ -3081,6 +3091,7 @@ var DataUtils = {
 		}
 		obj[f.getId()] = v;
 	    });
+	    return true;
 	});
 	Utils.makeDownloadFile(filename, JSON.stringify(json,null,2));
     },

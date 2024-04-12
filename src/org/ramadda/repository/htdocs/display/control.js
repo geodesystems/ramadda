@@ -770,7 +770,8 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	getCsv: function(fields, records,copy) {
             fields = fields || this.getData().getRecordFields();
 	    
-	    let csv = DataUtils.getCsv(fields, records,this.getSubsetFunction());
+	    let cnt = parseInt(this.jq('number_records').val().trim());
+	    let csv = DataUtils.getCsv(fields, records,this.getSubsetFunction(),cnt);
 	    if(copy) {
 		Utils.copyToClipboard(csv);
 		alert("Copied to clipboard");
@@ -780,7 +781,8 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	},
 	getJson: function(fields, records) {
             fields = fields || this.getData().getRecordFields();
-	    DataUtils.getJson(fields, records,this.getPropertyFileName()+".json",this.getSubsetFunction());
+	    let cnt = parseInt(this.jq('number_records').val().trim());
+	    DataUtils.getJson(fields, records,this.getPropertyFileName()+".json",this.getSubsetFunction(),cnt);
 	},
 
 	applyFieldSelection: function() {
@@ -812,7 +814,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	    if(this.getShowCopyButton(true))
 		buttons+=  HU.div([ID,this.getDomId(ID_DOWNLOAD_COPY)],"Copy") +space;
 	    buttons+=  HU.div([ID,this.getDomId(ID_CANCEL)],"Cancel");
-	    let html = HU.center("#" +records.length +" records");
+	    let html = HU.center("#" +HU.input('',records.length,[ATTR_ID,this.getDomId('number_records'),'title','Select # records to download','size','4']) +" records");
 	    html+=HU.center(HU.span([ATTR_STYLE,'font-size:80%;'], 'Note: this downloads the data currently<br>being shown in the browser'));
 	    html+=HU.center(buttons);
 	    if(this.getShowDateSelect()) {
