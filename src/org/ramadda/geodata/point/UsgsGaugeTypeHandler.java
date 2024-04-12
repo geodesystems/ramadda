@@ -105,7 +105,7 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
         "https://waterdata.usgs.gov/nwis/uv?cb_00060=on&cb_00065=on&format=rdb&site_no=${station_id}&period=${period}";
 
     private static final String URL_TEMPLATE_PEAK =
-	"https://nwis.waterdata.usgs.gov/sd/nwis/peak?site_no=${station_id}&agency_cd=USGS&format=rdb";
+	"https://nwis.waterdata.usgs.gov/nwis/peak?site_no=${station_id}&agency_cd=USGS&format=rdb";
 
 
 
