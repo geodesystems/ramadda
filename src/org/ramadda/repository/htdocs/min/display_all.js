@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Apr 12 06:57:18 MDT 2024";
+var build_date="RAMADDA build date: Sat Apr 13 04:30:34 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -448,6 +448,7 @@ Utils.addColorTables(defaultColorTables);
 
 function AreaWidget(display,arg) {
     this.arg=arg;
+    this.createTime  = new Date();
     const ID_CONTAINS = "mapcontains";
     const ID_NORTH = "north";
     const ID_SOUTH = "south";
@@ -619,12 +620,16 @@ function AreaWidget(display,arg) {
 	    let s = this.display.getFieldValue(this.domId(ID_SOUTH), null);
 	    let e = this.display.getFieldValue(this.domId(ID_EAST), null);
             settings.setAreaContains(this.areaContains);
-	    if(this.areaContains) {
-		HU.addToDocumentUrl("map_contains",this.areaContains);
-	    }
             settings.setBounds(n,w,s,e);
+	    let now = new Date();
+	    let okToAddToUrl = now.getTime()-this.createTime.getTime()>5000;
+	    if(okToAddToUrl) 
+		HU.addToDocumentUrl("map_contains",this.areaContains);
 	    if(Utils.stringDefined(n,w,s,e)) {
-		HU.addToDocumentUrl("map_bounds",[n||"",w||"",s||"",e||""].join(","));
+		if(okToAddToUrl) 
+		    HU.addToDocumentUrl("map_bounds",[n||"",w||"",s||"",e||""].join(","));
+	    } else {
+		HU.removeFromDocumentUrl("map_bounds");
 	    }
         },
     });
@@ -33477,7 +33482,6 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             }
         },
         makeSearchUrl: function(repository) {
-	    console.trace(repository);
             let extra = "";
             let cols = this.getSearchableColumns();
 	    let searchBar  = this.jq(ID_SEARCH_BAR);
