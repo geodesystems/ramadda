@@ -4,6 +4,7 @@
 
 function AreaWidget(display,arg) {
     this.arg=arg;
+    this.createTime  = new Date();
     const ID_CONTAINS = "mapcontains";
     const ID_NORTH = "north";
     const ID_SOUTH = "south";
@@ -175,12 +176,16 @@ function AreaWidget(display,arg) {
 	    let s = this.display.getFieldValue(this.domId(ID_SOUTH), null);
 	    let e = this.display.getFieldValue(this.domId(ID_EAST), null);
             settings.setAreaContains(this.areaContains);
-	    if(this.areaContains) {
-		HU.addToDocumentUrl("map_contains",this.areaContains);
-	    }
             settings.setBounds(n,w,s,e);
+	    let now = new Date();
+	    let okToAddToUrl = now.getTime()-this.createTime.getTime()>5000;
+	    if(okToAddToUrl) 
+		HU.addToDocumentUrl("map_contains",this.areaContains);
 	    if(Utils.stringDefined(n,w,s,e)) {
-		HU.addToDocumentUrl("map_bounds",[n||"",w||"",s||"",e||""].join(","));
+		if(okToAddToUrl) 
+		    HU.addToDocumentUrl("map_bounds",[n||"",w||"",s||"",e||""].join(","));
+	    } else {
+		HU.removeFromDocumentUrl("map_bounds");
 	    }
         },
     });
