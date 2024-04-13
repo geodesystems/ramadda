@@ -6,14 +6,24 @@
   <type name="type_map_folder"  super="type_map"
 	priority="11"
 	isgroup="true"
+	handler="org.ramadda.repository.type.GenericTypeHandler"
 	description="Map Folder">
+    <column name="show_circles" label="Show Circles"
+	    type="boolean" showinhtml="false" default="false"/>
+    <column name="map_props" label="Map Style"
+	    type="string" showinhtml="false" default=""
+	    suffix="e.g.: fillColor:red,radius:4,strokeColor:green,strokeWidth:2"
+	    />    
      <property name="icon" value="/icons/mapfolder.png"/>
      <wiki><![CDATA[
 +section title={{name}}
 {{description wikify="true"}}
 :navtop
 :heading Map
-{{map  width="100%"  height="80vh"  orderby=name ascending=true listEntries="true"   entriesListHeader=""  }} 
+{{map  width="100%"  showCircles="property:show_circles"
+mapProps="property:map_props"
+height="80vh"  orderby=name ascending=true listEntries="true"   
+entriesListHeader=""  }} 
 
 :heading List
 {{tabletree  message="No entries" orderby=name ascending=true}}
@@ -218,7 +228,8 @@ propagateHighlightEvent=true showTitle="false" layoutHere="true" showMenu="true"
    </type>
 -->
 
-  <type name="geo_shapefile_fips"  description="Shapefile with FIPS Code"   super="geo_shapefile"  metadata="shapefile_display,shapefile_color,map_displaymap" handler="org.ramadda.repository.type.GenericTypeHandler">
+<type name="geo_shapefile_fips"  description="Shapefile with FIPS Code"   super="geo_shapefile"  metadata="shapefile_display,shapefile_color,map_displaymap"
+      handler="org.ramadda.repository.type.GenericTypeHandler">
      <column name="fips" label="FIPS Code" canedit="true" showinhtml="true"/>
 </type>
 
