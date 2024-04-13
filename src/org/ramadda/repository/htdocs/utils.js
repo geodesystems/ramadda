@@ -4748,9 +4748,12 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     removeFromDocumentUrl:function(arg) {
         try {
             let url = String(window.location);
-            url = url.replace("\&?" + arg+"=[^\&]+\&?","");
-            if (window.history.replaceState)
+	    let regex = new RegExp('[?&]' + arg + '=[^&]*(&|$)', 'gi');
+	    url = url.replace(regex, '$1');
+	    url = url.replace(/&$/, '').replace(/\?$/, '');
+            if (window.history.replaceState) {
                 window.history.replaceState("", "", url);
+	    }
         } catch (e) {
             console.log("err:" + e);
         }
