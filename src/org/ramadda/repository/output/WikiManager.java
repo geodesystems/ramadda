@@ -5626,6 +5626,7 @@ public class WikiManager extends RepositoryManager
                                 Entry entry, Entry originalEntry,
                                 String theTag, Hashtable props, Appendable sb)
 	throws Exception {
+	checkProperties(entry,props);
 
         boolean hideIfNoLocations = getProperty(wikiUtil, props, "hideIfNoLocations",false);
         String  width      = getProperty(wikiUtil, props, ATTR_WIDTH, "");
