@@ -2065,6 +2065,7 @@ WikiEditor.prototype = {
 		{p:'hideIfNoLocations',tt:"Don't show map if no georeferenced data"},
 		{p:'details',ex:'false'},
 		{p:'showLines',ex:'true'},
+		{p:'showCircles',ex:'true'},
 		{p:'azimuthLength',tt:'km',d:'1.0'},
 		{p:'azimuthColor',ex:'red'},
 		{p:'azimuthWidth',ex:'2'},				
