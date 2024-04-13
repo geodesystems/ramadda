@@ -197,7 +197,9 @@ proc capture {_group name url {doDisplays 1} {sleep 3}} {
 		continue;
 	    }
 
-	    
+	    if {[regexp {Source Map loading errors} $line]} {
+		continue;
+	    }
 
 
 	    if {[regexp {The input spec uses.*} $line]} {
