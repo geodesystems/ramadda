@@ -1505,7 +1505,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	} else {
 	    sort = Sort.RELEVANCE;
 	}
-	System.err.println("sort:" + sort);
         IndexSearcher searcher = getLuceneSearcher();
 	//	searcher.setDefaultFieldSortScoring(true, false);
 	TopDocs       hits     = searcher.search(query, max+skip,sort);
