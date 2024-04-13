@@ -965,7 +965,6 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             }
         },
         makeSearchUrl: function(repository) {
-	    console.trace(repository);
             let extra = "";
             let cols = this.getSearchableColumns();
 	    let searchBar  = this.jq(ID_SEARCH_BAR);
