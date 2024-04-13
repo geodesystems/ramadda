@@ -1775,11 +1775,22 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
 
         boolean showLines    = Utils.getProperty(props, "showLines", false);
-
+        boolean showCircles    = Utils.getProperty(props, "showCircles", false);	
         double azimuthLength    = Utils.getProperty(props, "azimuthLength", 1.0);	
-
 	String azimuthColor = Utils.getProperty(props, "azimuthColor", "red");
 	String azimuthWidth = Utils.getProperty(props, "azimuthWidth", "2");	
+
+	String mapProps = Utils.getProperty(props, "mapProps",null);
+	if(mapProps!=null) {
+	    for(String pair: Utils.split(mapProps,",",true,true)) {
+		List<String> toks = Utils.split(pair,":");
+		if(toks.size()==2)
+		    props.put(toks.get(0),toks.get(1));
+	    }
+	}
+
+
+
         //            map.addLines(entry, "", polyLine, null);
 
         if ((entriesToUse.size() == 1) && detailed) {
@@ -1908,9 +1919,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                 }
 
                 if (addMarker && showMarkers) {
-                    if (entry.getTypeHandler().getTypeProperty("map.circle",
-							       false)) {
-                        map.addCircle(request, entry);
+                    if (showCircles || entry.getTypeHandler().getTypeProperty("map.circle", false)) {
+                        map.addCircle(request, entry,props);
                     } else {
                         map.addMarker(request, entry, entryIcon,useThumbnail);
                     }

@@ -1352,15 +1352,13 @@ public class MapInfo {
      *
      * @throws Exception _more_
      */
-    public void addCircle(Request request, Entry entry) throws Exception {
+    public void addCircle(Request request, Entry entry,Hashtable props) throws Exception {
         double[]    location = entry.getCenter();
         TypeHandler th       = entry.getTypeHandler();
-
-        int         radius   = getValue(entry, "map.circle.radius", 10);
-        int strokeWidth      = getValue(entry, "map.circle.stroke.width", 0);
-        String fillColor = getValue(entry, "map.circle.fill.color", "orange");
-        String strokeColor = getValue(entry, "map.circle.stroke.color",
-					    "orange");
+        int         radius   = getValue(entry, "map.circle.radius", Utils.getProperty(props,"radius",8));
+        int strokeWidth      = getValue(entry, "map.circle.stroke.width", Utils.getProperty(props,"strokeWidth",0));
+        String fillColor = getValue(entry, "map.circle.fill.color", Utils.getProperty(props,"fillColor","blue"));
+        String strokeColor = getValue(entry, "map.circle.stroke.color", Utils.getProperty(props,"strokeColor","blue"));
 
         addCircle(MapManager.mapEntryId(entry), Math.max(-80, Math.min(80, location[0])),
                   location[1], radius, strokeWidth, strokeColor, fillColor,
