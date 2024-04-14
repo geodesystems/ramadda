@@ -37,11 +37,12 @@ function  SeesvForm(inputId, entry,params) {
 	entry:entry,
 	editor:null,
 	canEdit: params.canEdit,
+	save: params.canEdit,
 	inputId: inputId||"convertcsv_input",
 	baseId: inputId||"convertcsv_input",
 	applyToSiblings:false,
 	allColumnIds:[],
-	save: true,
+
 	doCommands:true,
 	commands:null,
 	commandsMap:null,
@@ -225,8 +226,10 @@ function  SeesvForm(inputId, entry,params) {
 	    this.jq(ID_SETTINGS).click(function(e){
 		let html ="";
 		html += "Rows: " + HtmlUtil.input("",_this.maxRows,["size","2", ID,_this.domId("maxrows")]) +"<br>";
-		html +=  HtmlUtil.checkbox("",[ATTR_TITLE,"Save the commands every time the table is displayed",
-					       ATTR_ID,_this.domId(ID_SAVE)],_this.save,"Auto save") +"<br>";
+		if(this.canEdit) {
+		    html +=  HtmlUtil.checkbox("",[ATTR_TITLE,"Save the commands every time the table is displayed",
+						   ATTR_ID,_this.domId(ID_SAVE)],_this.save,"Auto save") +"<br>";
+		}
 		html += HtmlUtil.checkbox("",[ATTR_TITLE,"Enabled/Disable the commands",
 					      ATTR_ID,_this.domId(ID_DO_COMMANDS)],_this.doCommands,"Do commands") +"<br>";
 		html += HtmlUtil.checkbox("",[ATTR_TITLE,"Apply this set of commands to all of the siblings of this entry",
