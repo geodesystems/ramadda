@@ -2084,14 +2084,10 @@ public class Seesv implements SeesvCommands {
                 new Arg("value")),
         new Cmd(CMD_BEFORE, "Pass through rows whose date is before the given date",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
-		new Arg("format","Date Format, e.g. yyyy-MM-dd"),
-                new Arg("date"),
-		new Arg("format2","Date Format, e.g. yyyy-MM-dd")),
+                new Arg("date")),
         new Cmd(CMD_AFTER, "Pass through rows whose date is after the given date",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN), 
-		new Arg("format","Date Format, e.g. yyyy-MM-dd"),
-                new Arg("date"),
-		new Arg("format2","Date Format, e.g. yyyy-MM-dd")),
+                new Arg("date")),
 	new Cmd(CMD_COUNTVALUE, "No more than count unique values",
 		ARG_LABEL,"#Unique Values",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
@@ -4589,50 +4585,36 @@ public class Seesv implements SeesvCommands {
 
 
 
-	defineFunction(CMD_BEFORE,4,(ctx,args,i) -> {
+	defineFunction(CMD_BEFORE,2,(ctx,args,i) -> {
 		try {
-		    int    col  = parseInt(args.get(++i));
-		    String sdf1 = args.get(++i);
+		    String    col  = args.get(++i);
 		    String date = args.get(++i);
-		    String sdf2 = args.get(++i);
 		    Date   dttm = null;
 		    if (date.equals("now")) {
 			dttm = new Date();
-		    } else if (sdf2.length() > 0) {
-			SimpleDateFormat sdf = Utils.makeDateFormat(sdf2);
-			dttm = sdf.parse(date);
 		    } else {
-			dttm = Utils.parseDate(date);
+			SimpleDateFormat sdf = Utils.findDateFormat(date);
+			dttm = sdf.parse(date);
 		    }
-		    ctx.addProcessor(
-				     new DateOps.DateBefore(
-							    col, Utils.makeDateFormat(sdf1), dttm));
-
+		    ctx.addProcessor(new DateOps.DateBefore(col, dttm));
 		    return i;
 		} catch(Exception exc) {
 		    throw new RuntimeException(exc);
 		}
 	    });
 
-	defineFunction(CMD_AFTER,4,(ctx,args,i) -> {
+	defineFunction(CMD_AFTER,2,(ctx,args,i) -> {
 		try {
-		    int    col  = parseInt(args.get(++i));
-		    String sdf1 = args.get(++i);
+		    String    col  = args.get(++i);
 		    String date = args.get(++i);
-		    String sdf2 = args.get(++i);
 		    Date   dttm = null;
 		    if (date.equals("now")) {
 			dttm = new Date();
-		    } else if (sdf2.length() > 0) {
-			SimpleDateFormat sdf = Utils.makeDateFormat(sdf2);
-			dttm = sdf.parse(date);
 		    } else {
-			dttm = Utils.parseDate(date);
+			SimpleDateFormat sdf = Utils.findDateFormat(date);
+			dttm = sdf.parse(date);
 		    }
-		    ctx.addProcessor(
-				     new DateOps.DateAfter(
-							   col, Utils.makeDateFormat(sdf1), dttm));
-
+		    ctx.addProcessor(new DateOps.DateAfter(col,  dttm));
 		    return i;
 	       	} catch(Exception exc) {
 		    throw new RuntimeException(exc);
@@ -6181,7 +6163,6 @@ public class Seesv implements SeesvCommands {
 	private String timezone="UTC";
 
 	public Dater() {
-	    sdfs.add(Utils.makeDateFormat(sdfString));
 	}
 
 	public Dater(String fmt, String tz) {
@@ -6206,6 +6187,10 @@ public class Seesv implements SeesvCommands {
 	
 	public Date parseDate(String d) {
 	    if(!Utils.stringDefined(d)) return null;
+	    if(sdfs.size()==0) {
+		return Utils.parseDate(d);
+	    }
+
 	    Exception lastException=null;
 	    for(SimpleDateFormat sdf:sdfs) {
 		try {

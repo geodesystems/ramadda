@@ -411,7 +411,6 @@ public abstract class DateOps extends Processor {
      */
     public static class DateBefore extends Converter {
 
-        /* */
 
         /** _more_ */
         private int col;
@@ -423,17 +422,14 @@ public abstract class DateOps extends Processor {
 
         /* */
 
-        /** _more_ */
-        private SimpleDateFormat sdf1;
 
         /**
          * @param col _more_
          * @param sdf1 _more_
          * @param date _more_
          */
-        public DateBefore(int col, SimpleDateFormat sdf1, Date date) {
-            this.col  = col;
-            this.sdf1 = sdf1;
+        public DateBefore(String col,  Date date) {
+	    super(col);
             this.date = date;
         }
 
@@ -446,6 +442,7 @@ public abstract class DateOps extends Processor {
         public Row processRow(TextReader ctx, Row row) {
             //Don't process the first row
             if (rowCnt++ == 0) {
+		this.col  = getIndex(ctx);
                 return row;
             }
             try {
@@ -453,7 +450,7 @@ public abstract class DateOps extends Processor {
                 if (s.length() == 0) {
                     return null;
                 }
-                Date d = sdf1.parse(s);
+                Date d = ctx.parseDate(s);
                 if (d.getTime() > date.getTime()) {
                     return null;
                 }
@@ -478,29 +475,16 @@ public abstract class DateOps extends Processor {
      */
     public static class DateAfter extends Converter {
 
-        /* */
-
         /** _more_ */
-        private int col;
+        private int col=-1;
 
         /* */
 
         /** _more_ */
         private Date date;
 
-        /* */
-
-        /** _more_ */
-        private SimpleDateFormat sdf1;
-
-        /**
-         * @param col _more_
-         * @param sdf1 _more_
-         * @param date _more_
-         */
-        public DateAfter(int col, SimpleDateFormat sdf1, Date date) {
-            this.col  = col;
-            this.sdf1 = sdf1;
+        public DateAfter(String col,  Date date) {
+	    super(col);
             this.date = date;
         }
 
@@ -513,15 +497,17 @@ public abstract class DateOps extends Processor {
         public Row processRow(TextReader ctx, Row row) {
             //Don't process the first row
             if (rowCnt++ == 0) {
+		col = getIndex(ctx);
                 return row;
             }
             try {
+		if(!row.indexOk(col)) return row;
                 String s = row.get(col).toString().trim();
                 if (s.length() == 0) {
                     return null;
                 }
 
-                Date d = sdf1.parse(s);
+                Date d = ctx.parseDate(s);
                 if (d.getTime() < date.getTime()) {
                     return null;
                 }
