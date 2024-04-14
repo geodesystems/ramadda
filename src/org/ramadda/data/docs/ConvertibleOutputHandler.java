@@ -173,9 +173,20 @@ public class ConvertibleOutputHandler extends OutputHandler {
     public void makeConvertForm(Request request, Entry entry,
                                 StringBuilder sb, Hashtable props)
             throws Exception {
-        String lastInput =
-            (String) getSessionManager().getSessionProperty(request,
-                "csv.lastinput." + entry.getId());
+	
+
+	boolean canEdit = Utils.getProperty(props,"canEdit",
+					    getAccessManager().canDoEdit(request, entry));
+        String lastInput = Utils.getProperty(props,"commands",null);
+
+        if (lastInput != null) {
+	    canEdit = false;
+	    lastInput  = lastInput.replace("\\n","\n").replace("\\\\","\"");
+	} else {
+	    lastInput = 
+		(String) getSessionManager().getSessionProperty(request,
+								"csv.lastinput." + entry.getId());
+	}
 
         if ((lastInput == null)
                 && entry.getTypeHandler().isType(ConvertibleTypeHandler.TYPE_CONVERTIBLE)) {
@@ -219,11 +230,11 @@ public class ConvertibleOutputHandler extends OutputHandler {
                            + "/media/seesv.js");
 
 
-	if (getAccessManager().canDoEdit(request, entry)) {
-	    props.put("canEdit","true");	    
+	if(canEdit) {
+	    props.put("canEdit","true");
+	} else {
+	    props.put("canEdit","false");
 	}
-
-
 
 	List params = Utils.makeList(props);
 	String jsparams = JsonUtil.mapAndQuote(params);
