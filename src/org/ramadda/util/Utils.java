@@ -2798,33 +2798,6 @@ public class Utils extends IO {
         return false;
     }
 
-    /** a set of regular expressions that go along with the below DATE_FORMATS */
-    public static final String[] FIND_DATE_PATTERNS = {
-	"\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2} (AM|PM)",
-	"MM/dd/yyyy hh:mm:ss a",
-	"\\d{4}-\\d{2}'T'\\d{2}:\\d{2}:\\d{2}",	"yyyy-MM-dd'T'HH:mm:ss",
-	"^\\d{4}-\\d{2}-\\d{2} +\\d{2}:\\d{2}:\\d{2}$", "yyyy-MM-dd HH:mm:ss",
-	"^\\d{4}-\\d{2}-\\d{2} +\\d{2}:\\d{2}$", "yyyy-MM-dd HH:mm",
-	"^\\d{4}-\\d{2}-\\d{2}$", "yyyy-MM-dd",	
-	"^\\d{4}/\\d{2}/\\d{2}$","yyyy/MM/dd",
-	"^\\d{8}_\\d{4}$","yyyyMMdd_HHmm",
-	"^\\d{8}_\\d{2}$","yyyyMMdd_HH",
-	"^\\d{6}$", "yyyyMMdd",
-	"^\\d{4}-\\d{2}$","yyyy-MM"
-  };
-
-
-
-
-    public static final SimpleDateFormat findDateFormat(String s) {
-	for(int i=0;i<FIND_DATE_PATTERNS.length;i+=2) {
-	    String pattern = FIND_DATE_PATTERNS[i];
-	    if(s.matches(pattern)) {
-		return makeDateFormat(FIND_DATE_PATTERNS[i+1]);
-	    }
-	}
-	return  null;
-    }
 
     /**
      * _more_
@@ -3645,6 +3618,7 @@ public class Utils extends IO {
 
     /** _more_ */
     private static DateFormat[] DATE_FORMATS = {
+	new DateFormat("MM/dd/yyyy hh:mm:ss a"),
         new DateFormat("yyyy-MM-dd'T'HH:mm:ss Z"),
         new DateFormat("yyyyMMdd'T'HHmmss Z"),
         new DateFormat("yyyy/MM/dd HH:mm:ss Z"),
@@ -3668,11 +3642,43 @@ public class Utils extends IO {
         new DateFormat("yyyy-MM-dd HH:mm", true),
         new DateFormat("yyyy-MM-dd", true),
         new DateFormat("yyyy/MM/dd", true),
-        new DateFormat("MM/dd/yyyy", true), new DateFormat("yyyy-MM", true),
-        new DateFormat("yyyy/MM", true), new DateFormat("yyyyMMdd", true),
-        new DateFormat("yyyyMM", true), new DateFormat("yyyy", true)
+        new DateFormat("MM/dd/yyyy", true),
+	new DateFormat("yyyy-MM", true),
+        new DateFormat("yyyy/MM", true),
+	new DateFormat("yyyyMMdd", true),
+        new DateFormat("yyyyMM", true),
+	new DateFormat("yyyy", true)
     };
     //j++
+
+    /** a set of regular expressions that go along with the below DATE_FORMATS */
+    public static final String[] FIND_DATE_PATTERNS = {
+	"\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2} (AM|PM)",
+	"MM/dd/yyyy hh:mm:ss a",
+	"\\d{4}-\\d{2}'T'\\d{2}:\\d{2}:\\d{2}",	"yyyy-MM-dd'T'HH:mm:ss",
+	"^\\d{4}-\\d{2}-\\d{2} +\\d{2}:\\d{2}:\\d{2}$", "yyyy-MM-dd HH:mm:ss",
+	"^\\d{4}-\\d{2}-\\d{2} +\\d{2}:\\d{2}$", "yyyy-MM-dd HH:mm",
+	"^\\d{4}-\\d{2}-\\d{2}$", "yyyy-MM-dd",	
+	"^\\d{4}/\\d{2}/\\d{2}$","yyyy/MM/dd",
+	"^\\d{8}_\\d{4}$","yyyyMMdd_HHmm",
+	"^\\d{8}_\\d{2}$","yyyyMMdd_HH",
+	"^\\d{6}$", "yyyyMMdd",
+	"^\\d{4}-\\d{2}$","yyyy-MM"
+  };
+
+
+
+
+    public static final SimpleDateFormat findDateFormat(String s) {
+	for(int i=0;i<FIND_DATE_PATTERNS.length;i+=2) {
+	    String pattern = FIND_DATE_PATTERNS[i];
+	    if(s.matches(pattern)) {
+		return makeDateFormat(FIND_DATE_PATTERNS[i+1]);
+	    }
+	}
+	return  null;
+    }
+
 
 
     /** The format string that was used for the most recent sdf */
@@ -4612,7 +4618,6 @@ public class Utils extends IO {
          */
         private static String convert(String s) {
             s = s.replaceAll("[yMdHms]", "\\\\d");
-
             return s;
         }
 
@@ -4641,7 +4646,8 @@ public class Utils extends IO {
                 }
             }
             try {
-                return sdf.parse(dttm, pp);
+                Date d= sdf.parse(dttm, pp);
+		return d;
             } catch (Exception exc) {
                 return null;
             }
