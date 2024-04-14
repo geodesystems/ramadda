@@ -144,6 +144,7 @@ function displayDefineEvent(event,dflt) {
 displayDefineEvent("setEntry");
 displayDefineEvent("filteredTimes",false);
 displayDefineEvent("recordSelection");
+displayDefineEvent("dateRange");
 displayDefineEvent("recordList");
 displayDefineEvent("recordHighlight");
 displayDefineEvent("propertyChanged");
@@ -1860,6 +1861,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:DisplayEvent.recordSelection.shareGroup,tt:'Only share in this group'},
 	{p:DisplayEvent.recordSelection.acceptGroup,tt:'Only share in this group'},
 	{p:'selectNearestDate',tt:'find the closest record'},
+	{p:'acceptDateRange',tt:'Accept date range changes'},	
 
 
 	{p:DisplayEvent.recordHighlight.share,ex:true,tt:'Share record highlight'},
@@ -8050,7 +8052,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let recordSelectField=this.getRecordSelectField();
 	    if(recordSelectField) {
 		let f = this.getFieldById(null, recordSelectField);
-
 		if(!f)    return fail;
 		let v = f.getValue(record);
 		if(!Utils.isDefined(v)) return fail;
@@ -8068,6 +8069,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return {index:index, record:this.indexToRecord[index]}
 	    }
 	    if(!record.hasDate()) return -1;
+	    return this.findClosestDate(record.getDate());
+	},
+	findClosestDate:function(date) {
 	    let records =this.filteredRecords;
 	    if(!records) {
 		records = [];
@@ -8077,11 +8081,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    let closest;
 	    let min  =0;
-	    records.forEach(r=>{
+	    records.forEach((r,idx)=>{
 		if(!r.hasDate()) {
 		    return -1;
 		}
-		let diff = Math.abs(record.getDate().getTime()-r.getDate().getTime());
+		let diff = Math.abs(date.getTime()-r.getDate().getTime());
 		if(!closest) {
 		    min = diff;
 		    closest = r;
