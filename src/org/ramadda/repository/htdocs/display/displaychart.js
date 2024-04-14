@@ -330,12 +330,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'interpolateNulls',d:true,ex:'true'},
 
 	{label:'Trendlines'},
-	{p:'showTrendLines',d:null,ex:"true",canCache:true},
-	{p:"trendlineType",ex:"exponential",canCache:true},
-	{p:"trendlineVisibleInLegend",ex:"true",canCache:true},
-	{p:"trendlineColor",ex:"",canCache:true},
-	{p:"trendlineLineWidth",ex:"true",canCache:true},
-	{p:"trendlineOpacity",ex:"0.3",canCache:true},		    		    		    
+	{p:'showTrendLines',d:null,ex:"true"},
+	{p:"trendlineType",ex:"exponential"},
+	{p:"trendlineVisibleInLegend",ex:"true"},
+	{p:"trendlineColor",d:"red"},
+	{p:"trendlineLineWidth",ex:"2"},
+	{p:"trendlineOpacity",ex:"0.3"},		    		    		    
 
 	{p:'Annotations'},
 	{p:'annotations',ex:'date,label,desc;date,label,desc;',tt:'e.g. 2008-09-29,A,Start of housing crash;2008-11-04,B,Obama elected;'},
@@ -589,11 +589,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
                 html += HU.checkbox(this.domId(ID_TRENDS_CBX),
 				    [],
-				    this.getShowTrendLines()) + "  " + "Show trend line";
+				    this.getShowTrendLines(),"Show trend line");
                 html += " ";
                 html += HU.checkbox(this.domId(ID_PERCENT_CBX),
 				    [],
-				    this.showPercent) + "  " + "Show percent of displayed total" + "<br>";
+				    this.showPercent,"Show percent of displayed total");
                 html += "<br>";
             }
 
@@ -982,12 +982,18 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    this.charts = [];
         },
         setChartSelection: function(index) {
+	    if(!Array.isArray(index)) {
+		index=[index];
+	    }
+	    let selection=index.map(i=>{
+		return {
+                    row: i,
+		    column:null
+		}
+	    });
 	    this.mapCharts(chart=>{
                 if (chart.setSelection) {
-		    chart.setSelection([{
-                        row: index,
-			column:null
-		    }]);
+		    chart.setSelection(selection);
 		}});
     
         },
@@ -1012,7 +1018,15 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    return  Utils.split(this.getPropertyFromUrl("highlightFields"),",",true,true)||[];
 	},
         handleEventPropertyChanged: function(source, prop) {
-	    if(prop.property == "highlightFields") {
+	    if(prop.property == "dateRange") {
+		let index1=this.findClosestDate(prop.minDate).index;
+		let index2=this.findClosestDate(prop.maxDate).index;		
+		if(index1>=0) {
+		    if(this.getAcceptDateRange()) {
+			this.setChartSelection([index1,index2]);
+		    }
+		}
+	    } else    if(prop.property == "highlightFields") {
 		if(this.getProperty("acceptHighlightFieldsEvent",true)) {
 		    this.setProperty("highlightFields",prop.value);
 		    this.forceUpdateUI();
@@ -1140,9 +1154,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    trendlinesInfo[idx] = s;
 		    s.type = this.getProperty("trendlineType." + id,this.getProperty("trendlineType"));
 		    s.visibleInLegend = this.getProperty("trendlineVisibleInLegend." + id,this.getProperty("trendlineVisibleInLegend"));
-		    s.color = this.getProperty("trendlineColor." + id,this.getProperty("trendlineColor"));
-		    s.lineWidth = this.getProperty("trendlineLineWidth." + id,this.getProperty("trendlineLineWidth"));
-		    s.opacity = this.getProperty("trendlineOpacity." + id,this.getProperty("trendlineOpacity"));		    		    		    
+		    s.color = this.getProperty("trendlineColor." + id,
+					       this.getProperty("trendlineColor","red"));
+		    s.lineWidth = this.getProperty("trendlineLineWidth." + id,this.getProperty("trendlineLineWidth",2));
+		    s.opacity = this.getProperty("trendlineOpacity." + id,this.getProperty("trendlineOpacity"));
 		}
 	    });
 	    return trendlinesInfo;
@@ -1954,6 +1969,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if ((selectedFields.length > 1 && useMultipleAxes) || this.getProperty("padRight", false) === true) {
                 this.chartDimensions.width = "80%";
             }
+
 
             if (this.getShowTrendLines()) {
                 chartOptions.trendlines = {
