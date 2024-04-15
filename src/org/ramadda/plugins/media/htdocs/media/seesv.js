@@ -854,6 +854,8 @@ function  SeesvForm(inputId, entry,params) {
 		url += "&process=true";
 	    if(this.save) {
 		url += "&save=true";        
+	    } else {
+		url += "&save=false";        
 	    }
 
 	    if(args.csvoutput) {
