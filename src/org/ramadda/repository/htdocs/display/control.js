@@ -710,7 +710,8 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
     const ID_DOWNLOAD_FROMSERVER = "fromserver";    
     const ID_FROMDATE = "fromdate";
     const ID_TODATE = "todate";                
-    const ID_CANCEL = "cancel";    
+    const ID_CANCEL = "cancel";
+    const ID_COUNT = "count";        
     let myProps =[
 	{label:'Download'},
 	{p:'downloadLabel',ex:'Download'},
@@ -718,6 +719,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	{p:'iconSize',ex:'',d:'16pt'},	
 	{p:'fileName',d:'download',ex:'download'},
 	{p:'askFields',d:'false',ex:'true'},
+	{p:'showRecordCount',ex:true,tt:'Show # records'},
 	{p:'showCsvButton',ex:false,tt:'Show/hide the CSV button'},
 	{p:'showJsonButton',ex:false,tt:'Show/hide the JSON button'},
 	{p:'showCopyButton',ex:false,tt:'Show/hide the Copy button'},
@@ -730,11 +732,15 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
             return true;
 	},
 	updateUI: function() {
+	    let records = this.filterData();
 	    let label = this.getDownloadLabel(this.getProperty("csvLabel","Download Data"));
 	    label = label.replace("${title}",this.getProperty("title",""));
 	    let useIcon = this.getUseIcon(true);
 	    let iconSize = this.getIconSize();
 	    label = HU.div(['style','display:inline-block;',ID,this.getDomId("csv")], useIcon?HU.getIconImage("fa-download",['style','line-height:0px;display:block;'],[STYLE,"cursor:pointer;font-size:" + iconSize+";",TITLE,label]):label);
+	    if(this.getShowRecordCount()) {
+		label=label+HU.space(2)+HU.span([ATTR_ID,this.domId(ID_COUNT)],records?('# '+records.length+' records'):'');
+	    }
 	    this.setContents(HU.div([],label));
 	    if(useIcon) {
 		this.jq("csv").click(() => {
