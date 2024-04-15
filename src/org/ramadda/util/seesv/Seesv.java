@@ -6158,6 +6158,7 @@ public class Seesv implements SeesvCommands {
     public static class Dater {
 	private boolean hadError = false;
 	private static String DFLT_DATEFORMAT = "yyyy-MM-dd HH:mm:ss";
+	private static final SimpleDateFormat sdf =  Utils.makeDateFormat(DFLT_DATEFORMAT);
 	private String sdfString = DFLT_DATEFORMAT;
 	private List<SimpleDateFormat> sdfs = new ArrayList<SimpleDateFormat>();
 	private String timezone="UTC";
@@ -6215,6 +6216,11 @@ public class Seesv implements SeesvCommands {
 	}
 
 	public String formatDate(Date d) {
+	    if(sdfs.size()==0) {
+		synchronized(sdf) {
+		    return sdf.format(d);
+		}
+	    }
 	    return sdfs.get(0).format(d);
 	}
 	
