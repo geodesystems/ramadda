@@ -1698,6 +1698,7 @@ public abstract class DataProvider extends SeesvOperator {
      * @version        $version$, Tue, Feb 16, '21
      * @author         Enter your name here...
      */
+
     public static class PatternExtractDataProvider extends BulkDataProvider {
 
         /** _more_ */
@@ -1838,29 +1839,40 @@ public abstract class DataProvider extends SeesvOperator {
             }
             try {
                 //              System.err.println("pattern:" + chunkPattern);
-                Pattern p1 = Pattern.compile(chunkPattern);
-                Pattern p2 = Pattern.compile(tokenPattern);
+                Pattern p1 = Utils.stringDefined(chunkPattern)?Pattern.compile(chunkPattern, Pattern.DOTALL):null;
+                Pattern p2 = Pattern.compile(tokenPattern, Pattern.DOTALL);
+		System.err.println("pattern:" + tokenPattern);
                 while (true) {
-                    Matcher m1 = p1.matcher(s);
-                    if ( !m1.find()) {
+		    String chunk;
+                    if(p1!=null) {
+			Matcher m1 = p1.matcher(s);
+			if ( !m1.find()) {
                         //                      System.err.println("no match");
-                        break;
-                    }
-                    String s2 = s.substring(m1.end());
-                    if (s.length() == s2.length()) {
-                        break;
-                    }
-                    s = s2;
-                    if (m1.groupCount() > 2) {
-                        throw new IllegalArgumentException(
-                            "There should only be one sub-pattern in the chunk");
-                    }
-                    String chunk = m1.group(1).trim();
-                    //              System.err.println("match:" + chunk +"**");
+			    break;
+			}
+			String s2 = s.substring(m1.end());
+			if (s.length() == s2.length()) {
+			    break;
+			}
+			s = s2;
+			if (m1.groupCount() > 2) {
+			    throw new IllegalArgumentException(
+							       "There should only be one sub-pattern in the chunk");
+			}
+			chunk = m1.group(1).trim();
+		    } else {
+			chunk=s;
+		    }
                     Matcher m2 = p2.matcher(chunk);
                     if ( !m2.find()) {
+			System.err.println("No match");
                         break;
                     }
+		    if(p1==null) {
+			s = s.substring(m2.end());
+			System.err.println("rest:" + Utils.clip(s.replace("\n"," "),400,""));
+		    
+		    }
                     Row row = makeRow();
                     addRow(row);
                     for (int i2 = 1; i2 <= m2.groupCount(); i2++) {
