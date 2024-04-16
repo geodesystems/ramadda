@@ -1400,6 +1400,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    } else {
 			String v = request.getUnsafeString(searchArg,null);
 			if(!Utils.stringDefined(v)||v.equals(TypeHandler.ALL)) continue;
+			v = v.toLowerCase();
 			term = new WildcardQuery(new Term(field, v));
 		    }
 		    cnt++;
