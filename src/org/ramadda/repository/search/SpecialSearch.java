@@ -97,6 +97,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
     /** _more_ */
     private boolean showText = true;
+    private boolean showAncestor = true;    
 
     /** _more_ */
     private boolean showName = false;
@@ -109,6 +110,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
     /** _more_ */
     private boolean showDate = true;
+
+    private String orderByTypes;
 
     /** _more_ */
     private String label;
@@ -192,6 +195,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                 "true").equals("true");
         doSearchInitially = typeHandler.getTypeProperty("search.initsearch",
                 "false").equals("true");
+        showAncestor = typeHandler.getTypeProperty("search.form.showAncestor",
+                "true").equals("true");
         showText = typeHandler.getTypeProperty("search.form.text.show",
                 "true").equals("true");
         showName = typeHandler.getTypeProperty("search.form.name.show",
@@ -200,10 +205,11 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             typeHandler.getTypeProperty("search.form.description.show",
                                         showDesc + "").equals("true");
         showArea = typeHandler.getTypeProperty("search.form.area.show",
-                "true").equals("true");
+					       "true").equals("true");
         showDate = typeHandler.getTypeProperty("search.form.date.show",
 					       "true").equals("true");
         searchUrl = "/search/type/" + typeHandler.getType();
+ 	orderByTypes= typeHandler.getTypeProperty("search.form.orderby",null);
         label     = typeHandler.getTypeProperty("search.label", null);
         if (label == null) {
             label = msgLabel("Search") + " " + typeHandler.getDescription();
@@ -335,6 +341,26 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         }
 
 
+        List<String> tabsToUse = tabs;
+        String tabsProp = request.getString("search.tabs",
+                                            request.getString("tabs",
+							      (String) null));
+        if (tabsProp != null) {
+            tabsToUse = Utils.split(tabsProp, ",", true, true);
+        }
+
+
+
+        makeHeader(request, sb);
+        sb.append(HU.sectionOpen());
+	String label = HU.href(request.getRequestPath(),this.label,HU.cssClass("ramadda-nodecor ramadda-clickable"));
+	sb.append(HU.h2(label));
+	makeSearchForm(request, sb,tabsToUse);
+        sb.append(HU.sectionClose());
+	if(true) return null;
+
+
+
         int     cnt      = getEntryUtil().getEntryCount(typeHandler);
         boolean doSearch = (refinement
                             ? false
@@ -345,38 +371,11 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             doSearch = true;
         }
 
+
+
+
 	request.put("forsearch","true");
 	allEntries = getSearchManager().doSearch(request, new SelectInfo(request));
-	/*
-        if (doSearch) {
-            List<Clause> extra      = null;
-            if (syntheticFields.size() > 0) {
-                extra = new ArrayList<Clause>();
-                for (SyntheticField field : syntheticFields) {
-                    String id = field.id;
-                    if (request.defined(id)) {
-                        for (String columnName : field.fields) {
-                            Column column = typeHandler.getColumn(columnName);
-                            if (column != null) {
-                                column.addTextSearch(request.getUnsafeString(id),
-                                        extra, false);
-                            }
-                        }
-                    }
-                }
-                if (extra.size() > 0) {
-                    Clause orClause = Clause.or(extra);
-                    extra = new ArrayList<Clause>();
-                    extra.add(orClause);
-                }
-            }
-
-            allEntries =
-                getRepository().getEntryManager().searchEntries(request,extra);
-
-        }
-	*/
-
         if (request.isOutputDefined()) {
             OutputHandler outputHandler =
                 getRepository().getOutputHandler(request);
@@ -386,28 +385,20 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
         if (request.exists("timelinexml")) {
             Entry group = getRepository().getEntryManager().getDummyGroup();
-
             return getRepository().getCalendarOutputHandler()
                 .outputTimelineXml(request, group, allEntries);
         }
 
 
-        StringBuffer js = new StringBuffer();
         if (URL_SEARCH == null) {
             URL_SEARCH = new RequestUrl(this, searchUrl);
         }
 
-        makeHeader(request, sb);
-        sb.append(HU.sectionOpen());
-        StringBuffer formSB = new StringBuffer();
-        makeSearchForm(request, formSB);
-        List<String> tabsToUse = tabs;
-        String tabsProp = request.getString("search.tabs",
-                                            request.getString("tabs",
-							      (String) null));
-        if (tabsProp != null) {
-            tabsToUse = Utils.split(tabsProp, ",", true, true);
-        }
+	
+
+
+	StringBuffer formSB = new StringBuffer();	
+	makeSearchForm(request, formSB,tabsToUse);
 
         List<String> tabContents = new ArrayList<String>();
         List<String> tabTitles   = new ArrayList<String>();
@@ -471,10 +462,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             tabs = OutputHandler.makeTabs(tabTitles, tabContents, true);
         }
 	tabs = HU.div(tabs,   HU.cssClass("ramadda-search-results"));
-        if (request.get(ARG_SEARCH_SHOWHEADER, true)) {
-	    String label = HU.href(request.getRequestPath(),this.label,HU.cssClass("ramadda-nodecor ramadda-clickable"));
-            sb.append(HU.h2(label));
-        }
+
 
         StringBuffer rightSide = new StringBuffer();
         getRepository().getHtmlOutputHandler().showNext(request,
@@ -496,10 +484,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             sb.append(rightSide);
         }
         sb.append(HU.sectionClose());
-
-
-        sb.append(HU.script(js.toString()));
-
         return null;
 
     }
@@ -555,6 +539,16 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 	return sb;
     }
 
+    private void   addAttr(Appendable sb,Object...values) throws Exception {
+	for(int i=0;i<values.length;i+=2) {
+	    if(values[i+1]==null) continue;
+	    sb.append(values[i] +"=\"");
+	    sb.append(values[i+1].toString());
+	    sb.append("\" ");
+	}
+	sb.append("\n");
+    }
+
     /**
      * _more_
      *
@@ -563,8 +557,39 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
      *
      * @throws Exception _more_
      */
-    private void makeSearchForm(Request request, Appendable formSB)
+    private void makeSearchForm(Request request, Appendable formSB,List<String> tabs)
             throws Exception {
+
+	if(true) {
+	    StringBuilder sb = new StringBuilder();
+	    sb.append("{{display_entrylist ");
+	    addAttr(sb, "providers","this,type:ramadda");
+	    addAttr(sb, "showAncestor",typeHandler.getTypeProperty("search.form.showAncestor",true));
+	    addAttr(sb,"entryTypes",typeHandler.getType(),"displayTypes",Utils.join(tabs,","));
+	    addAttr(sb,"orderByTypes",orderByTypes);
+	    addAttr(sb, "showDate",showDate,"showArea",showArea, "showText",showText,
+		    "showAncestor",showAncestor,"showName",showName,"showDescription",showDesc);
+	    addAttr(sb,"startDateLabel",typeHandler.getTypeProperty("search.form.startdate.label",
+								   typeHandler.getTypeProperty("form.startdate.label",null)));
+	    addAttr(sb,"createDateLabel",typeHandler.getTypeProperty("search.form.createdate.label",null));
+	    addAttr(sb,"areaLabel",typeHandler.getTypeProperty("search.form.area.label",null));
+	    addAttr(sb,"showCreateDate",typeHandler.getTypeProperty("search.form.createdate.show",null));	    	    	    
+	    addAttr(sb,"orderByTypes",typeHandler.getTypeProperty("search.form.orderby",null));	    	    	    
+
+	    for(String line:Utils.split(typeHandler.getTypeProperty("search.form.args",""),"\n",true,true)) {
+		sb.append(line);
+		sb.append("\n");
+	    }
+
+	    sb.append("}}\n");
+	    formSB.append(getRepository().getWikiManager().wikifyEntry(request,
+								       getEntryManager().getRootEntry(),
+								       sb.toString()));
+	    return;
+
+	}
+
+
 
         boolean      showDefault        = true;
         List<String> metadataTypesToUse = metadataTypes;
