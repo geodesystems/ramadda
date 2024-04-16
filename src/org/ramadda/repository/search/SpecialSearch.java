@@ -100,7 +100,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     private boolean showAncestor = true;    
 
     /** _more_ */
-    private boolean showName = false;
+    private boolean showName = true;
 
     /** _more_ */
     private boolean showDesc = false;
