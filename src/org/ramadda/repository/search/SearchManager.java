@@ -2230,8 +2230,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             TypeHandler typeHandler = getRepository().getTypeHandler(type);
             if (typeHandler != null) {
                 Result result =
-                    typeHandler.getSpecialSearch().processSearchRequest(
-									request, sb);
+                    typeHandler.getSpecialSearch().processSearchRequest(request, sb,new Hashtable());
                 //Is it non-html?
                 if (result != null) {
                     return result;

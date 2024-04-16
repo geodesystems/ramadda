@@ -306,7 +306,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     public Result processSearchRequest(Request request) throws Exception {
 
         StringBuilder sb     = new StringBuilder();
-        Result        result = processSearchRequest(request, sb);
+        Result        result = processSearchRequest(request, sb,new Hashtable());
         if (result != null) {
             return result;
         }
@@ -327,14 +327,12 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
      *
      * @throws Exception _more_
      */
-    public Result processSearchRequest(Request request, Appendable sb)
+    public Result processSearchRequest(Request request, Appendable sb,Hashtable props)
             throws Exception {
-
         int contentsWidth  = 750;
         int contentsHeight = 450;
         int minWidth       = contentsWidth + 200;
         request.put(ARG_TYPE, theType);
-        List<Entry> allEntries = new ArrayList<Entry>();
         boolean     refinement = request.exists(ARG_SEARCH_REFINE);
         if ( !request.exists(ARG_MAX)) {
             request.put(ARG_MAX, DEFAULT_SEARCH_SIZE);
@@ -344,18 +342,17 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         List<String> tabsToUse = tabs;
         String tabsProp = request.getString("search.tabs",
                                             request.getString("tabs",
-							      (String) null));
+							      Utils.getProperty(props,"tabs",null)));
         if (tabsProp != null) {
             tabsToUse = Utils.split(tabsProp, ",", true, true);
         }
 
 
-
         makeHeader(request, sb);
 	//        sb.append(HU.sectionOpen());
 	String label = HU.href(request.getRequestPath(),this.label,HU.cssClass("ramadda-nodecor ramadda-clickable"));
-	sb.append(HU.div(label,HU.attrs("class","ramadda-heading")));
-	makeSearchForm(request, sb,tabsToUse);
+	sb.append(HU.div(label,HU.attrs("class","ramadda-heading")));	
+	makeSearchForm(request, sb,tabsToUse,props);
 	//        sb.append(HU.sectionClose());
 	if(true) return null;
 
@@ -373,9 +370,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 
 
-
 	request.put("forsearch","true");
-	allEntries = getSearchManager().doSearch(request, new SelectInfo(request));
+        List<Entry> allEntries =  getSearchManager().doSearch(request, new SelectInfo(request));
         if (request.isOutputDefined()) {
             OutputHandler outputHandler =
                 getRepository().getOutputHandler(request);
@@ -398,7 +394,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 
 	StringBuffer formSB = new StringBuffer();	
-	makeSearchForm(request, formSB,tabsToUse);
+	makeSearchForm(request, formSB,tabsToUse,props);
 
         List<String> tabContents = new ArrayList<String>();
         List<String> tabTitles   = new ArrayList<String>();
@@ -557,15 +553,15 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
      *
      * @throws Exception _more_
      */
-    private void makeSearchForm(Request request, Appendable formSB,List<String> tabs)
+    private void makeSearchForm(Request request, Appendable formSB,List<String> tabs,Hashtable props)
             throws Exception {
 
 	if(true) {
 	    StringBuilder sb = new StringBuilder();
 	    sb.append("{{display_entrylist ");
 	    addAttr(sb, "searchDirect","false");
-	    addAttr(sb, "providers","this,type:ramadda");
-	    addAttr(sb, "showAncestor",typeHandler.getTypeProperty("search.form.showAncestor",true));
+	    addAttr(sb, "providers",Utils.getProperty(props,"providers","this,type:ramadda"));
+	    addAttr(sb, "showAncestor",Utils.getProperty(props,"showAncestor",typeHandler.getTypeProperty("search.form.showAncestor",true)));
 	    addAttr(sb,"entryTypes",typeHandler.getType(),"displayTypes",Utils.join(tabs,","));
 	    addAttr(sb,"orderByTypes",orderByTypes);
 	    addAttr(sb, "showDate",showDate,"showArea",showArea, "showText",showText,

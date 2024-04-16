@@ -2133,7 +2133,14 @@ public class WikiManager extends RepositoryManager
 		sb.append(apply.apply(handlers));
 	    }
 	    return sb.toString();
-	} else if(theTag.equals(WIKI_TAG_SEARCHBYTYPE)) {
+	} else if(theTag.equals(WIKI_TAG_TYPE_SEARCH)) {
+	    TypeHandler typeHandler = getRepository().getTypeHandler(getProperty(wikiUtil,props,"type",""));
+	    if(typeHandler==null) {
+		return  makeErrorMessage(request,wikiUtil,props,theTag, "Could not find type");
+	    }
+	    typeHandler.getSpecialSearch().processSearchRequest(request,  sb,props);
+	    return sb.toString();
+	} else if(theTag.equals(WIKI_TAG_TYPE_SEARCH_LIST)) {
 	    HashSet<String> supers = null;
 	    HashSet<String> cats=null;
 	    HashSet<String> types=null;
