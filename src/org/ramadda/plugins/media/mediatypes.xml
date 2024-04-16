@@ -171,6 +171,7 @@
   <type name="type_image"  description="Image"  includeInSearch="true" foruser="true"  pattern="(.*\.webp|.*\.png|.*\.gif|.*\.jpg|.*\.jpeg)" handler="org.ramadda.plugins.media.ImageTypeHandler" priority="1" >
     <property name="icon" value="/icons/image.png"/>
     <property name="file.accept" value="image/*"/>
+    <property name="search.tabs" value="images,list"/>
     <column   name="proxy" type="boolean" label="Proxy Image if URL"  showinhtml="false" default="false"/>
     <column   name="filename" label="Alternate filename"  showinhtml="false" />
     <wikis tag="simple">
