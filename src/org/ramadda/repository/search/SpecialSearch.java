@@ -212,7 +212,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
  	orderByTypes= typeHandler.getTypeProperty("search.form.orderby",null);
         label     = typeHandler.getTypeProperty("search.label", null);
         if (label == null) {
-            label = msgLabel("Search") + " " + typeHandler.getDescription();
+            label = typeHandler.getDescription();
         }
         theType = typeHandler.getType();
     }
