@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Apr 16 06:02:13 MDT 2024";
+var build_date="RAMADDA build date: Tue Apr 16 10:23:24 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -9031,6 +9031,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    return metadata;
 	},
+	typeSearchEnabled:function() {
+	    return true;
+	},
         toggleEntryDetails: async function(event, entryId, suffix, handlerId, entry) {
 	    if(!entry) {
 		await this.getEntry(entryId, e => {
@@ -9111,6 +9114,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    let metadataMap  = {};
 	    let prefix = entry.isSynth()?"":HU.getIconImage("fas fa-search") + SPACE;
+	    if(!this.typeSearchEnabled()) prefix='';
 	    let metadata = this.makeEntryTags(entry,false,prefix,metadataMap);
 
 	    let bar = this.jq(ID_DETAILS_TAGS + entry.getIdForDom() + suffix);
@@ -33180,8 +33184,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 let entriesAttrs = ["class", "col-md-12"];
                 if (this.getShowForm()) {
                     let attrs = [];
-		    let form = HU.div([STYLE,HU.css("min-height","400px",
-						    "width",HU.getDimension(this.getFormWidth()),
+		    let form = HU.div([ATTR_CLASS,'display-entrylist-form',
+				       ATTR_STYLE,HU.css("width",HU.getDimension(this.getFormWidth()),
 						    "max-width",HU.getDimension(this.getFormWidth()),
 						    "overflow-x","auto")],this.makeSearchForm());
 		    html += HU.tag("td", [ID,this.getDomId(ID_SEARCH_FORM),"width","1%"], form);
@@ -33433,7 +33437,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		}
 	    } else {
 		let _this = this;
-		this.jq(ID_SEARCH_BAR).find(".display-search-tag").each(function() {
+		let tags = this.jq(ID_SEARCH_BAR).find(".display-search-tag");
+		tags.each(function() {
 		    let type  = $(this).attr("metadata-type");
 		    let value  = $(this).attr("metadata-value");			
 		    if(!type) return;
@@ -33547,7 +33552,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    if(Utils.stringDefined(from) || Utils.stringDefined(to)) {
 			let label =  (Utils.stringDefined(from)?(from+" &lt; "):"") +  col.getLabel() + (Utils.stringDefined(to)?(" &lt; " +to):"");
 			if(tag.length==0) {
-			    tag = $(HU.div([CLASS,"display-search-tag","column",col.getName()],label)).appendTo(searchBar);
+			    tag = $(HU.div([ATTR_TITLE,'Click to clear search',ATTR_CLASS,"display-search-tag","column",col.getName()],label)).appendTo(searchBar);
 			    tag.click(()=>{
 				this.jq(id+"_from").val("");
 				this.jq(id+"_to").val("");		    		    
@@ -33617,7 +33622,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    }
 			
 		    if(tag.length==0) {
-			tag = $(HU.div([CLASS,"display-search-tag","column",col.getName()],label)).appendTo(searchBar);
+			tag = $(HU.div([ATTR_TITLE,'Click to clear search',ATTR_CLASS,"display-search-tag","column",col.getName()],label)).appendTo(searchBar);
 			tag.click(()=>{
 			    let obj=this.jq(id);
 			    if(obj.data && obj.data('selectBox-selectBoxIt')) {
@@ -34067,10 +34072,14 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    });
 	    return true;
 	},
+	typeSearchEnabled:function() {
+	    return this.jq(ID_TYPE_FIELD).length>0;
+	},
 	typeTagClicked:function(type) {
 	    HtmlUtils.initSelect(this.jq(ID_TYPE_FIELD),{selectOption: type.getId()});
 	},	
 	metadataTagClicked:function(metadata) {
+	    if(!this.metadataBoxes) return;
 	    if(!this.metadataBoxes[metadata.type] || !this.metadataBoxes[metadata.type][metadata.value.attr1]) {
 		this.addMetadataTag(metadata.type, metadata.type,metadata.value.attr1, null);
 		this.submitSearchForm();
