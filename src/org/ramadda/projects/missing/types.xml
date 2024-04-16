@@ -9,7 +9,7 @@
     handler="org.ramadda.projects.missing.MissingPersonTypeHandler">
     <action name="flyer" label="Flyer" icon="/missing/flyer.png" category="view"/>
     <property name="search.wikimacro" value="missing_header"/>
-    <property name="search.tabs" value="list,map"/>
+    <property name="search.tabs" value="list,images,map,timeline"/>
     <property name="form.description.iswiki" value="false"/>
     <property name="form.wikieditor.height" value="300px"/>
     <property name="icon" value="/missing/missing.png"/>
@@ -20,12 +20,27 @@
     <property name="form.description.label" value="Case Information"/>
     <property name="form.location.label" value="Last known location"/>
     <property name="form.location.show" value="true"/>
-
     <property name="form.date.label" value="Date Missing"/>
     <property name="date.nullok" value="true"/>
     <property name="form.startdate.label" value="Date Missing"/>
     <property name="form.createdate.label" value="Record Create Date"/>    
-    <property name="form.todate.show" value="false"/>                    
+    <property name="form.todate.show" value="false"/>
+
+    <property name="search.form.args"><![CDATA[
+    orderByLabel_date_descending="Date missing - most recent"
+    orderByLabel_date_ascending="Date missing - least recent"
+    orderByLabel_date_of_birth_descending="Date of birth - youngest first"
+    orderByLabel_date_of_birth_ascending="Date of birth - oldest first"
+    ]]></property>
+
+    <property name="search.form.name.show" value="true"/>
+    <property name="search.form.description.show" value="true"/>    
+    <property name="search.form.startdate.label" value="Date Missing"/>
+    <property name="search.form.createdate.show" value="false"/>
+    <property name="search.form.area.label" value="Last known location"/>
+    <property name="search.form.orderby" value="name,age_missing,date,date_of_birth,weight,height,biological_sex,createdate"/>
+
+
     <property name="date.format" value="yyyy-MM-dd"/>        
     <property name="startdate.template" value="${value dateFormat=yyyy-MM-dd} ${value showAge=true otherDate=date_of_birth prefix=&quot; - &quot; suffix=&quot; years old when missing&quot;}"/>        
 
