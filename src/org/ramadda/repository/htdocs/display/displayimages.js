@@ -520,6 +520,17 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    let class3 = "display-images-image-wrapper";
 	    this.idToRecord = {};
 	    let baseStyle = "";
+	    if(records.length<10) {
+		if(records.length<2) {
+		    width='500px';
+		    blockWidth='510px';
+		} else {
+		    width='300px';
+		    blockWidth='310px';
+		}
+	    }
+
+
 	    if(!decorate) {
 		class2 = "";
 		class1 = "display-images-block";
