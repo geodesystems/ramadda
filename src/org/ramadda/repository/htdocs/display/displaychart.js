@@ -328,7 +328,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 	{p:'skipMissing',d:false,ex:'true',tt:'skip rows  that have any missing values'},
 	{p:'interpolateNulls',d:true,ex:'true'},
-
+	{p:'animateChart',ex:true},
+	{p:'animationDuration',d:500},
+	{p:'animationEasing',d:'linear'},
 	{label:'Trendlines'},
 	{p:'showTrendLines',d:null,ex:"true"},
 	{p:"trendlineType",ex:"exponential"},
@@ -1721,6 +1723,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 },
             };
 
+
             $.extend(chartOptions, {
 		width:"100%",
                 lineWidth: this.getProperty("lineWidth",1),
@@ -2274,11 +2277,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
 
-	    if(this.getProperty("animation",false,true)) {
+	    if(this.getAnimateChart(this.getProperty("animation",false,true))) {
 		this.chartOptions.animation = {
 		    startup: true,
-		    duration:parseFloat(this.getProperty("animationDuration",1000,true)),
-		    easing:this.getProperty("animationEasing","linear",true)
+		    duration:parseFloat(this.getAnimationDuration()),
+		    easing:this.getAnimationEasing()
 		};
 		HU.callWhenScrolled(this.domId(ID_CHART),()=>{
 		    if(!this.animationCalled) {
