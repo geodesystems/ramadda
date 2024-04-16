@@ -187,7 +187,7 @@
 <type name="type_annotated_image"  super="type_image" description="Annotated Image" 
       handler="org.ramadda.plugins.media.AnnotatedImageTypeHandler" >
     <property name="icon" value="/media/annotatedimage.png"/>
-    <property name="search.tabs" value="images,map"/>
+    <property name="search.tabs" value="images,list"/>
     <property name="file.accept" value="image/*"/>
     <wikimacro name="annotated_image" properties="width=500px" label="Annotated Image">
     <![CDATA[{{annotated_image width="${width}" #entry="${entry}" }}]]></wikimacro>    
@@ -213,7 +213,7 @@
 <type name="type_animatedgif"  super="type_image" description="Animated GIF" foruser="true" 
 handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
      <property name="icon" value="/media/animatedgif.png"/>
-     <property name="search.tabs" value="images,map"/>
+     <property name="search.tabs" value="images,list"/>
      <column   name="showcontrols" label="Show Controls" type="boolean" default="true"/>
      <column   name="addbuttons" label="Add Buttons" type="boolean" default="true"/>
      <column   name="autoplay" label="Auto Play" type="boolean" default="true"/>
