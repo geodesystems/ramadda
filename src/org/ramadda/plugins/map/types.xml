@@ -290,6 +290,7 @@ propagateHighlightEvent=true showTitle="false" layoutHere="true" showMenu="true"
 	 priority="10"
 	 pattern="(?i).*imdvmap\.json$">
      <property name="wiki.edit.links.label" value="IMDV Tags"/>
+     <property name="search.tabs" value="map,list"/>
      <wikimacro name="imdvmap" label="IMDV Map">
      <![CDATA[{{display_imdv #entry="${entry}" height="calc(100vh - 150px)"  legendHeight="calc(100vh - 200px)" showBounds=false}}]]></wikimacro>
    <property name="form.description.iswiki" value="true"/>
