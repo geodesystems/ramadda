@@ -187,6 +187,7 @@
 <type name="type_annotated_image"  super="type_image" description="Annotated Image" 
       handler="org.ramadda.plugins.media.AnnotatedImageTypeHandler" >
     <property name="icon" value="/media/annotatedimage.png"/>
+    <property name="search.tabs" value="images,map"/>
     <property name="file.accept" value="image/*"/>
     <wikimacro name="annotated_image" properties="width=500px" label="Annotated Image">
     <![CDATA[{{annotated_image width="${width}" #entry="${entry}" }}]]></wikimacro>    
@@ -212,6 +213,7 @@
 <type name="type_animatedgif"  super="type_image" description="Animated GIF" foruser="true" 
 handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
      <property name="icon" value="/media/animatedgif.png"/>
+     <property name="search.tabs" value="images,map"/>
      <column   name="showcontrols" label="Show Controls" type="boolean" default="true"/>
      <column   name="addbuttons" label="Add Buttons" type="boolean" default="true"/>
      <column   name="autoplay" label="Auto Play" type="boolean" default="true"/>
@@ -239,6 +241,7 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 <type name="type_360image"  super="type_image" description="360 Image" metadata="3d_label,content.alias" foruser="true" 
       help="Displays a 360 degree image"      >
      <property name="icon" value="/icons/image.png"/>
+     <property name="search.tabs" value="images,list"/>
      <wikimacro name="360image" label="360 Image" properties="width=100% height=400px">
      <![CDATA[{{360image #entry="${entry}" width="${width}" height="${height}"}}]]></wikimacro>     
      <column   name="rotation" label="Initial rotation" suffix="Pitch, rotation about the X-axis. Yaw, rotation about the Y-axis. Roll, rotation about the Z-axis."  showinhtml="false" />
