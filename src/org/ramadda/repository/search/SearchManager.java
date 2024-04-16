@@ -1144,12 +1144,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	String name = request.getUnsafeString(ARG_NAME,null);
 	if(stringDefined(name)) {
-	    Query query = new BoostQuery(new WildcardQuery(new Term(FIELD_NAME, name)),6);
+	    Query query = new BoostQuery(new WildcardQuery(new Term(FIELD_NAME, name.toLowerCase())),6);
 	    queries.add(query);
 	}
 	String description = request.getUnsafeString(ARG_DESCRIPTION,null);
 	if(stringDefined(description)) {
-	    Query query = new BoostQuery(new WildcardQuery(new Term(FIELD_DESCRIPTION, description)),6);
+	    Query query = new BoostQuery(new WildcardQuery(new Term(FIELD_DESCRIPTION, description.toLowerCase())),6);
 	    queries.add(query);
 	}	
 
