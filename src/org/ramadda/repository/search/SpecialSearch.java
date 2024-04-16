@@ -563,6 +563,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 	if(true) {
 	    StringBuilder sb = new StringBuilder();
 	    sb.append("{{display_entrylist ");
+	    addAttr(sb, "searchDirect","false");
 	    addAttr(sb, "providers","this,type:ramadda");
 	    addAttr(sb, "showAncestor",typeHandler.getTypeProperty("search.form.showAncestor",true));
 	    addAttr(sb,"entryTypes",typeHandler.getType(),"displayTypes",Utils.join(tabs,","));
