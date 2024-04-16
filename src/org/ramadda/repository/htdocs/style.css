@@ -4728,7 +4728,7 @@ snippet-hide {
 
 .ramadda-linksheader-links {
     display:inline-block;
-    font-size:120%;
+    font-size:140% !important;
     padding-bottom: 2px;
 }
 
