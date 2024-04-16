@@ -146,7 +146,8 @@ public class TextReader implements Cloneable {
     /**  */
     private List<String> lineFilters;
 
-    private String startPattern;
+    private String _startPattern;
+    private Pattern startPattern;
     private boolean seenStartPattern  =false;
 
     /**  */
@@ -975,7 +976,11 @@ public class TextReader implements Cloneable {
         lineFilters = f;
     }
     public void setStartPattern(String start) {
-	startPattern = start;
+	if(StringUtil.containsRegExp(start)) {
+	    startPattern = Pattern.compile(start);
+	} else {
+	    _startPattern =start;
+	}
     }
 
     /**
@@ -990,10 +995,13 @@ public class TextReader implements Cloneable {
             return false;
         }
 	//	System.err.println("\tlineOk: " +line +" seen:" + seenStartPattern);
-	if(!seenStartPattern && startPattern!=null) {
-	    if(!line.matches(startPattern)) {
+	if(!seenStartPattern && (startPattern!=null || _startPattern!=null)) {
+	    if (startPattern !=null && !startPattern.matcher(line).find()) {
 		return false;
 	    }
+	    if (_startPattern !=null && !line.startsWith(_startPattern)) {
+		return false;
+	    }	    
 	    seenStartPattern = true;
 	}
 

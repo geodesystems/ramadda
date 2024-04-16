@@ -1826,6 +1826,11 @@ public class Seesv implements SeesvCommands {
 		ARG_LABEL,"Input is Clean"),
 
 
+        new Cmd(CMD_START, "Start at pattern in source file",
+                new Arg("start pattern", "", ATTR_TYPE, TYPE_PATTERN)),
+        new Cmd(CMD_STOP, "End at pattern in source file",
+                new Arg("stop pattern", "", ATTR_TYPE, TYPE_PATTERN)),
+
         new Cmd(CMD_BOM, "Input has a leading byte order mark (BOM) that should be stripped out",ARG_LABEL,"Strip BOM"),
         new Cmd(CMD_ENCODING,
 		"Specify the file encoding",ARG_LABEL,"File Encoding",
@@ -1972,10 +1977,6 @@ public class Seesv implements SeesvCommands {
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg(ARG_PATTERN, "regexp or prefix with includes:s1,s2 to do substrings match", ATTR_TYPE, TYPE_PATTERN)),
         new Cmd(CMD_IF, "Next N args specify a filter command followed by any change commands followed by an -endif.",ARG_LABEL,"If"),
-        new Cmd(CMD_START, "Start at pattern in source file",
-                new Arg("start pattern", "", ATTR_TYPE, TYPE_PATTERN)),
-        new Cmd(CMD_STOP, "End at pattern in source file",
-                new Arg("stop pattern", "", ATTR_TYPE, TYPE_PATTERN)),
         new Cmd(CMD_RAWLINES, "",
 		ARG_LABEL,"Print raw lines",
                 new Arg("lines",
