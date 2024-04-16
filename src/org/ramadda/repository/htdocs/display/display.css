@@ -1413,6 +1413,14 @@ svg > g > g:last-child { pointer-events: none }
 .display-entrylist {
 
 }
+.display-entrylist-form {
+    padding-right:8px;
+    min-height:400px;
+}
+.display-search-widget .disabledinput {
+    background:#eaeaea;
+    border-radius: var(--default-radius);
+}
 .display-entrylist .ramadda-expandable-link {
     background:transparent;
 }

@@ -2330,6 +2330,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	
     }
 
+    public  String getTypeSearchUrl(TypeHandler typeHandler) {
+	return URL_SEARCH_TYPE + "/" + typeHandler.getType();
+    }
+
+
 
     /**
      * _more_
@@ -2354,7 +2359,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         sb.append(HU.formTable());
         for (TypeHandler typeHandler : getRepository().getTypeHandlers()) {
             String link =
-                HU.href(URL_SEARCH_TYPE + "/" + typeHandler.getType(),
+                HU.href(getTypeSearchUrl(typeHandler),
                                typeHandler.getType());
             sb.append(HU.row(HU.cols(link,
 						   typeHandler.getDescription())));
@@ -2448,7 +2453,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
         for (TypeHandler typeHandler : getRepository().getTypeHandlers()) {
             String link =
-                HU.href(URL_SEARCH_TYPE + "/" + typeHandler.getType(),
+                HU.href(getTypeSearchUrl(typeHandler),
                                typeHandler.getType());
             sb.append(HU.row(HU.cols(link,
 						   typeHandler.getDescription())));

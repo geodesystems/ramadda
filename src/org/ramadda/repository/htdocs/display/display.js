@@ -5154,6 +5154,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    return metadata;
 	},
+	typeSearchEnabled:function() {
+	    return true;
+	},
         toggleEntryDetails: async function(event, entryId, suffix, handlerId, entry) {
 	    if(!entry) {
 		await this.getEntry(entryId, e => {
@@ -5234,6 +5237,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    let metadataMap  = {};
 	    let prefix = entry.isSynth()?"":HU.getIconImage("fas fa-search") + SPACE;
+	    if(!this.typeSearchEnabled()) prefix='';
 	    let metadata = this.makeEntryTags(entry,false,prefix,metadataMap);
 
 	    let bar = this.jq(ID_DETAILS_TAGS + entry.getIdForDom() + suffix);
