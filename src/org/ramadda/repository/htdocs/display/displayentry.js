@@ -819,7 +819,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
             if (this.haveTypes) {
                 settings.entryType = this.getFieldValue(this.getDomId(ID_TYPE_FIELD), settings.entryType);
-		if(settings.entryType && this.typeList==null || this.typeList.length>1 ) {
+		if(settings.entryType && (this.typeList==null || this.typeList.length>1) ) {
 		    HU.addToDocumentUrl(ID_TYPE_FIELD,settings.entryType);
 		} else {
 		    HU.addToDocumentUrl(ID_TYPE_FIELD,null);
