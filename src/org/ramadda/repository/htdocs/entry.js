@@ -441,24 +441,17 @@ function RamaddaRepository(repositoryRoot) {
                     url += "&provider=" + provider;
 		});
 	    }
-            if (settings.text != null && settings.text.length > 0)
-                url += "&text=" + settings.text;
-            if (settings.name != null && settings.name.length > 0)
-                url += "&name=" + settings.name;
-            if (settings.startDate && settings.startDate.length > 0) {
-                url += "&datadate.from=" + settings.startDate;
-            }
-            if (settings.endDate && settings.endDate.length > 0) {
-                url += "&datadate.to=" + settings.endDate;
-            }
-
-            if (settings.createstartDate && settings.createstartDate.length > 0) {
-                url += "&createdate.from=" + settings.createstartDate;
-            }
-            if (settings.createendDate && settings.createendDate.length > 0) {
-                url += "&createdate.to=" + settings.createendDate;
-            }
-
+	    let addAttr=(name,value) =>{
+		if(Utils.stringDefined(value))
+		    url += "&" + name+"=" + value;
+	    }
+	    addAttr("text", settings.text);
+	    addAttr("name", settings.name);
+	    addAttr("description", settings.description);	    
+	    addAttr("datadate.from",settings.startDate);
+	    addAttr("datadate.to",settings.endDate);
+	    addAttr("createdate.from",settings.createstartDate);
+	    addAttr("createdate.to",settings.createendDate);	    
             if (settings.entries && settings.entries.length > 0) {
                 url += "&entries=" + settings.entries;
             }
