@@ -8418,6 +8418,11 @@ public class EntryManager extends RepositoryManager {
         Entry parent = findGroup(request,
 				 request.getString(ARG_PUBLISH_ENTRY + "_hidden",
 						   ""));
+	Date now = new Date();
+
+
+	entry.setCreateDate(now.getTime());
+	entry.setChangeDate(now.getTime());	
         if (parent == null) {
             return new Result(
 			      "",
