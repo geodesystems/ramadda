@@ -1514,6 +1514,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    HtmlUtils.initSelect(this.jq(ID_TYPE_FIELD),{selectOption: type.getId()});
 	},	
 	metadataTagClicked:function(metadata) {
+	    if(!this.metadataBoxes) return;
 	    if(!this.metadataBoxes[metadata.type] || !this.metadataBoxes[metadata.type][metadata.value.attr1]) {
 		this.addMetadataTag(metadata.type, metadata.type,metadata.value.attr1, null);
 		this.submitSearchForm();
