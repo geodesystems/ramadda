@@ -2880,6 +2880,7 @@ table.dataTable tfoot td {
 
 
 .display-simplesearch-input {
+    margin-top:4px;
   padding-left: 5px;
   border-radius: var(--default-radius);
   font-size: 11pt;
