@@ -352,11 +352,11 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 
         makeHeader(request, sb);
-        sb.append(HU.sectionOpen());
+	//        sb.append(HU.sectionOpen());
 	String label = HU.href(request.getRequestPath(),this.label,HU.cssClass("ramadda-nodecor ramadda-clickable"));
-	sb.append(HU.h2(label));
+	sb.append(HU.div(label,HU.attrs("class","ramadda-heading")));
 	makeSearchForm(request, sb,tabsToUse);
-        sb.append(HU.sectionClose());
+	//        sb.append(HU.sectionClose());
 	if(true) return null;
 
 
