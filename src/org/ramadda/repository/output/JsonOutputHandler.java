@@ -533,7 +533,8 @@ public class JsonOutputHandler extends OutputHandler {
         JsonUtil.quoteAttr(items, "id", entry.getId());
         String entryName = entry.getName();
         JsonUtil.quoteAttr(items, "name", entryName);
-	String slug = getRepository().getRepositorySlug();	
+	ServerInfo server = entry.getRemoteServer();
+	String slug = server!=null?null:getRepository().getRepositorySlug();	
 	if(stringDefined(slug)) {
 	    JsonUtil.quoteAttr(items, "repositorySlug", slug);
 	}
@@ -614,7 +615,6 @@ public class JsonOutputHandler extends OutputHandler {
 	}
         if (entry.getIsRemoteEntry()) {
             JsonUtil.attr(items, "isRemote", "true");
-            ServerInfo server = entry.getRemoteServer();
             JsonUtil.attr(items, "remoteRepository",
                           JsonUtil.map(Utils.makeList("url",
                               JsonUtil.quote(server.getUrl()), "name",
