@@ -643,7 +643,6 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                                         (Date) extra.get(ARG_FROMDATE);
                                     Date maxDate =
                                         (Date) extra.get(ARG_TODATE);
-                                    //System.err.println("dates:" + dates[0] +" " + dates[1]);
                                     if (minDate != null) {
                                         dates[0] = DateUtil.min(dates[0],
                                                 minDate);
@@ -748,12 +747,14 @@ public class ThreddsMetadataHandler extends MetadataHandler {
             //            System.err.println("\thave bounds:" + haveBounds);
 
 
-
             if (gridDataset != null) {
                 gridDataset.calcBounds();
                 CalendarDateRange dateRange =
                     gridDataset.getCalendarDateRange();
-                if (dateRange != null) {
+                if (dateRange != null && extra.get(ARG_FROMDATE)==null) {
+		    System.err.println("DATE RANGE:" + dateRange +" Result:" +
+				       CdmUtil.makeDate(dateRange.getStart()));
+		    
                     extra.put(ARG_FROMDATE,
                               CdmUtil.makeDate(dateRange.getStart()));
                     extra.put(ARG_TODATE,
