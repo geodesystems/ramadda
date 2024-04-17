@@ -116,7 +116,7 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
     public static final OutputType OUTPUT_GRIDASPOINT_FORM =
         new OutputType("Extract Time Series", "data.gridaspoint.form",
                        OutputType.TYPE_OTHER | OutputType.TYPE_IMPORTANT|OutputType.TYPE_SERVICE,
-                       OutputType.SUFFIX_NONE, "/cdmdata/chart_line.png",
+                       OutputType.SUFFIX_NONE, "/cdmdata/timeseries.png",
                        GROUP_DATA);
 
     /** Grid as point Output Type */
