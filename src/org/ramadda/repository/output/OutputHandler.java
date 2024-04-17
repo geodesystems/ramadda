@@ -1944,7 +1944,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                              ? ""
                              : HU.labeledCheckbox(
                                  ARG_METADATA_ADD, HU.VALUE_TRUE,
-                                 request.get(ARG_METADATA_ADD, false),
+                                 request.get(ARG_METADATA_ADD, true),
 				 "Add properties");
         sb.append(HU.formEntry(msgLabel("Folder"),
                                HU.disabledInput(ARG_PUBLISH_ENTRY, entryName,
