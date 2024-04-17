@@ -279,18 +279,18 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
     }
     let myProps = [
 	{label:'Graph'},
-	 {p:'sourceField',ex:''},
-	 {p:'targetField',ex:''},
-	 {p:'nodeBackground',ex:'#ccc'},
-	 {p:'drawCircle',ex:'true'},
-	 {p:'nodeWidth',ex:'10'},
-	 {p:'linkColor',ex:'red'},
-	 {p:'linkWidth',ex:'3'},
-	 {p:'linkDash',ex:'5'},
-	 {p:'linkWidth',ex:'3'},
-	 {p:'arrowLength',ex:'6'},
-	 {p:'arrowColor',ex:'green'},
-	 {p:'directionalParticles',ex:'2'}
+	{p:'sourceField',ex:''},
+	{p:'targetField',ex:''},
+	{p:'labelField'},
+	{p:'nodeBackground',ex:'#ccc'},
+	{p:'drawCircle',ex:'true'},
+	{p:'nodeWidth',d:'10'},
+	{p:'linkColor',d:'#ccc'},
+	{p:'linkDash',ex:'5'},
+	{p:'linkWidth',d:'1'},
+	{p:'arrowLength',ex:'6'},
+	{p:'arrowColor',ex:'green'},
+	{p:'directionalParticles',ex:'2'}
     ]
 
 
@@ -321,7 +321,7 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 	    let nodes = [];
 	    let links = [];
 	    let valueFields   = this.getFieldsByIds(null, this.getProperty("valueFields","",true));
-	    let labelField = this.getFieldById(null, this.getProperty("labelField"));
+	    let labelField = this.getFieldById(null, this.getLabelField());
 	    if(!labelField) {
 		let strings = this.getFieldsByType(null, "string");
 		if(strings.length>0) labelField = strings[0];
@@ -348,13 +348,14 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 		records.map(r=>{
 		    let source = r.getValue(sourceField.getIndex());
 		    let target = r.getValue(targetField.getIndex());
+		    let label  = labelField?r.getValue(labelField.getIndex()):index;
 		    if(!seenNodes[source]) {
 			seenNodes[source] = true;
-			nodes.push({id:source,tooltip:source});
+			nodes.push({id:source,label:label,tooltip:source});
 		    }
 		    if(!seenNodes[target]) {
 			seenNodes[target] = true;
-			nodes.push({id:target,tooltip:target});
+			nodes.push({id:target,label:label,tooltip:target});
 		    }
 		    links.push({source:source, target: target});
 		});
@@ -367,24 +368,13 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 		links: links
 	    };
 
-	    /*
-	      links = [];
-	      gGraphData.edges.forEach(e=>{
-	      links.push({source:e.from,target:e.to});
-	      });
-
-	      graphData = {
-	      nodes:gGraphData.nodes,
-	      links: links
-	      }
-	    */
-	    const nodeBackground = this.getProperty("nodeBackground",'rgba(255, 255, 255, 0.8)');
-	    const linkColor = this.getProperty("linkColor","#ccc");
-	    const drawCircle = this.getProperty("drawCircle",false);
-	    const linkWidth = +this.getProperty("linkWidth",1);
-	    const linkDash = +this.getProperty("linkDash",-1);
+	    const nodeBackground = this.getNodeBackground('rgba(255, 255, 255, 0.8)');
+	    const linkColor = this.getLinkColor();
+	    const drawCircle = this.getDrawCircle();
+	    const linkWidth = +this.getLinkWidth();
+	    const linkDash = +this.getLinkDash(-1);
 	    const drawText = this.getProperty("drawText",true);
-	    const nodeWidth = this.getProperty("nodeWidth",10);
+	    const nodeWidth = this.getNodeWidth(10);
 	    const elem = document.getElementById(this.domId(ID_GRAPH));
 	    const graph = ForceGraph()(elem).graphData(graphData);
 	    graph.nodeCanvasObject((node, ctx, globalScale) => {
@@ -411,6 +401,7 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 			ctx.arc(node.x, node.y, dim[0]/2, 0, 2 * Math.PI);
 			ctx.fill(); 
 		    } else {
+			ctx.lineWidth = 1;
 			ctx.fillRect(node.x - dim[0] / 2, node.y - dim[1] / 2, ...dim);
 			ctx.strokeRect(node.x - dim[0] / 2, node.y - dim[1] / 2, ...dim);
 		    }
@@ -423,30 +414,18 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 		}
 	    });
 
-	    //	    graph.linkCanvasObjectMode('replace');
-	    /*
-	      graph.linkCanvasObject((link, ctx) => {
-	      if(linkDash>0)
-	      ctx.setLineDash([linkDash, linkDash]);
-	      ctx.lineWidth = linkWidth;
-	      ctx.strokeStyle = linkColor;
-	      ctx.moveTo(link.source.x, link.source.y);
-	      ctx.lineTo(link.target.x, link.target.y);
-	      (link === graphData.links[graphData.links.length - 1]) && ctx.stroke();
-	      });*/
-	    //	    graph.linkAutoColorBy(d => gData.nodes[d.source].group);
 	    if(this.getWidth())
 		graph.width(this.getWidth());
 	    if(this.getHeight())
 		graph.height(this.getHeight());
 	    graph.nodeLabel(node => node.tooltip?node.tooltip:null)
-	    graph.linkWidth(+this.getProperty("linkWidth",4));
-	    graph.linkColor(this.getProperty("linkColor","#000"));
-	    if(this.getProperty("arrowColor")) {
-		graph.linkDirectionalArrowColor(this.getProperty("arrowColor"));
+	    graph.linkWidth(+this.getLinkWidth());
+	    graph.linkColor(this.getLinkColor());
+	    if(this.getArrowColor()) {
+		graph.linkDirectionalArrowColor(this.getArrowColor());
 	    }
-	    if(this.getProperty("arrowLength")) {
-		graph.linkDirectionalArrowLength(+this.getProperty("arrowLength"));
+	    if(this.getArrowLength()) {
+		graph.linkDirectionalArrowLength(+this.getArrowLength());
 		graph.linkDirectionalArrowRelPos(+this.getProperty("arrowPosition",0.9));
 	    }
 
