@@ -61,10 +61,10 @@ in the RAMADDA database but can be viewed and accessed through the web interface
 <p>
 To create a new S3 entry go to the File-&gt;Pick a Type menu and select "AWS S3".
 In the create form entry the S3 URL, a name and an optional description:
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image1"></a><div><a href="images/s3/s3new.png?version=27"><img  src="images/s3/s3new.png?version=27"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border:var(--basic-border);display:none;'  alt="Creating a New S3 Entry " ></a><br><span class="caption">Image 1: Creating a New S3 Entry </span></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image1"></a><div><a href="images/s3/s3new.png?version=842"><img  src="images/s3/s3new.png?version=842"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border:var(--basic-border);display:none;'  alt="Creating a New S3 Entry " ></a><br><span class="caption">Image 1: Creating a New S3 Entry </span></div></div>
 
 After adding the entry you can edit it to configure how the S3 buckets are displayed.
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image2"></a><div><a href="images/s3/s3edit.png?version=27"><img  src="images/s3/s3edit.png?version=27"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border:var(--basic-border);display:none;'  alt="S3 Entry Configuration" ></a><br><span class="caption">Image 2: S3 Entry Configuration</span></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image2"></a><div><a href="images/s3/s3edit.png?version=842"><img  src="images/s3/s3edit.png?version=842"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border:var(--basic-border);display:none;'  alt="S3 Entry Configuration" ></a><br><span class="caption">Image 2: S3 Entry Configuration</span></div></div>
 
 <ul>
 <li> Enable caching: Turn this off if you are working on the settings as the entries are normally
@@ -94,10 +94,10 @@ using a "Convert File" property.
 For example, the <a href="https://ramadda.org/repository/a/s3_nexrad">NEXRAD on AWS</a>
 S3 collection (s3://noaa-nexrad-level2/) has the following hierarchy. There are
 year/month/day folders.
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/s3/nexrad1.png?version=27"><img  src="images/s3/nexrad1.png?version=27"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border:var(--basic-border);display:none;'  alt="images/s3/nexrad1.png?version=27" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/s3/nexrad1.png?version=842"><img  src="images/s3/nexrad1.png?version=842"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border:var(--basic-border);display:none;'  alt="images/s3/nexrad1.png?version=842" ></a></div></div>
 First, we'll edit the entry and turn on the "Convert dates" property. This results in folders
 having the dates and names as follows:
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/s3/nexrad2.png?version=27"><img  src="images/s3/nexrad2.png?version=27"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border:var(--basic-border);display:none;'  alt="images/s3/nexrad2.png?version=27" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/s3/nexrad2.png?version=842"><img  src="images/s3/nexrad2.png?version=842"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border:var(--basic-border);display:none;'  alt="images/s3/nexrad2.png?version=842" ></a></div></div>
 Next, we'll go to the Edit menu and select Add Convert file. This allows us to
 upload a file that can be used for entry name aliases, geospatial locations or display templates.
 The file can be a .csv, .properties or .txt file.
@@ -133,7 +133,7 @@ The first column is the station ID and this is used to match up (either exact or
 with the S3 folders. Upload the <a href=s3/nexrad.csv>nexrad.csv</a> file and select
 Alias and Exact:
 :p
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image5"></a><div><a href="images/s3/nexrad3.png?version=27"><img  src="images/s3/nexrad3.png?version=27"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border:var(--basic-border);display:none;'  alt="Adding a Convert File" ></a><br><span class="caption">Image 5: Adding a Convert File</span></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image5"></a><div><a href="images/s3/nexrad3.png?version=842"><img  src="images/s3/nexrad3.png?version=842"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border:var(--basic-border);display:none;'  alt="Adding a Convert File" ></a><br><span class="caption">Image 5: Adding a Convert File</span></div></div>
 :p
 Now, the station folders have the full name.
 Next, upload the same file and select "Location". This adds the spatial metadata
@@ -161,7 +161,7 @@ The remainder of the file is the wiki text to be used for the folders that match
 Upload this file, select "Template" and for match type select "Pattern".
 Now, for the day folder we should have:
 :p
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/s3/nexrad4.png?version=27"><img  src="images/s3/nexrad4.png?version=27"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border:var(--basic-border);display:none;'  alt="images/s3/nexrad4.png?version=27" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/s3/nexrad4.png?version=842"><img  src="images/s3/nexrad4.png?version=842"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border:var(--basic-border);display:none;'  alt="images/s3/nexrad4.png?version=842" ></a></div></div>
 :p
 And finally, we want to show the files as "Level 3 Radar" files, a file format
 that RAMADDA provides. To do this go to the Add Properties menu and under Miscellaneous select
@@ -169,12 +169,12 @@ that RAMADDA provides. To do this go to the Add Properties menu and under Miscel
 and one or more patterns to match. For the NEXRAD data collection we know that all of the
 files are of this type so we specify as a pattern "file:"
 :p
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/s3/nexrad5.png?version=27"><img  src="images/s3/nexrad5.png?version=27"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border:var(--basic-border);display:none;'  alt="images/s3/nexrad5.png?version=27" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/s3/nexrad5.png?version=842"><img  src="images/s3/nexrad5.png?version=842"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border:var(--basic-border);display:none;'  alt="images/s3/nexrad5.png?version=842" ></a></div></div>
 :p
 
 Now, with that the files should be shown as this entry type:
 :p
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/s3/level2.png?version=27"><img  src="images/s3/level2.png?version=27"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border:var(--basic-border);display:none;'  alt="images/s3/level2.png?version=27" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/s3/level2.png?version=842"><img  src="images/s3/level2.png?version=842"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border:var(--basic-border);display:none;'  alt="images/s3/level2.png?version=842" ></a></div></div>
 :p
 
 
@@ -186,7 +186,7 @@ Now, with that the files should be shown as this entry type:
 The RAMADDA file <a href="harversters.html">harvester</a>
 can also harvest a S3 bucket store. Instead of a file path
 just enter the S3 URL, e.g.:
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image9"></a><div><a href="images/s3/harvester.png?version=27"><img  src="images/s3/harvester.png?version=27"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border:var(--basic-border);display:none;'  alt="Harvesting S3 Buckets" ></a><br><span class="caption">Image 9: Harvesting S3 Buckets</span></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image9"></a><div><a href="images/s3/harvester.png?version=842"><img  src="images/s3/harvester.png?version=842"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border:var(--basic-border);display:none;'  alt="Harvesting S3 Buckets" ></a><br><span class="caption">Image 9: Harvesting S3 Buckets</span></div></div>
 If you click on the
 "Move file to storage" then RAMADDA will copy the file from  S3
 over into its entry storage area. 
@@ -208,7 +208,7 @@ entry.
 Go to the Add Properties menu of the root entry and select Entry Type Pattern.
 Select the appropriate entry type (e.g., Shapefile) and specify one or more patterns to match with.
 Note: the patterns are regular expression not glob style patterns.
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image10"></a><div><a href="images/s3/entrytypes.png?version=27"><img  src="images/s3/entrytypes.png?version=27"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border:var(--basic-border);display:none;'  alt="Specifying Entry Type Patterns" ></a><br><span class="caption">Image 10: Specifying Entry Type Patterns</span></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image10"></a><div><a href="images/s3/entrytypes.png?version=842"><img  src="images/s3/entrytypes.png?version=842"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border:var(--basic-border);display:none;'  alt="Specifying Entry Type Patterns" ></a><br><span class="caption">Image 10: Specifying Entry Type Patterns</span></div></div>
 
 
 <a name="s3_cli"></a>
