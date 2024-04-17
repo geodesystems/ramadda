@@ -7,6 +7,7 @@ package org.ramadda.geodata.cdmdata;
 
 
 import org.ramadda.repository.Entry;
+import org.ramadda.repository.DateHandler;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.RepositoryManager;
 import org.ramadda.repository.Request;
@@ -20,6 +21,10 @@ import org.ramadda.util.Utils;
 
 import thredds.servlet.ThreddsConfig;
 
+import ucar.nc2.time.Calendar;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -29,6 +34,7 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.util.DiskCache2;
 
+import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.util.Cache;
 import ucar.unidata.util.Counter;
 import ucar.unidata.util.IOUtil;
@@ -53,7 +59,9 @@ import java.util.regex.Pattern;
  * A manager for netCDF-Java CDM data
  */
 @SuppressWarnings({ "unchecked", "deprecation" })
-public class CdmManager extends RepositoryManager {
+public class CdmManager extends RepositoryManager implements CdmConstants {
+
+    public static final String SUFFIX_EXACT ="_exact";
 
     /** NCML suffix */
     public static final String SUFFIX_NCML = ".ncml";
@@ -1406,36 +1414,141 @@ public class CdmManager extends RepositoryManager {
     }
 
     /**
-     * Main for testing
+     * Format a date
      *
-     * @param args  arguments for testing
+     * @param request  the request
+     * @param date     the date object (CalendarDate or Date)
      *
-     * @throws Exception  problems
+     * @return the formatted date
      */
-    public static void main(String[] args) throws Exception {
-        Repository repository = new Repository(new String[] {}, 8080);
-        repository.initProperties(null);
-        CdmDataOutputHandler dop = new CdmDataOutputHandler(repository,
-                                       "test");
-        CdmManager cdmManager = new CdmManager(repository);
-        String[]   types      = {
-            TYPE_CDM, TYPE_GRID, TYPE_TRAJECTORY, TYPE_POINT, TYPE_RADAR,
-            TYPE_CDM_GRID
-        };
-        for (String f : args) {
-            System.err.println("file:" + f);
-            for (String type : types) {
-                boolean ok      = cdmManager.hasSuffixForType(f, type, false);
-                boolean exclude = cdmManager.hasSuffixForType(f, type, true);
-                if ( !ok && !exclude) {
-                    System.err.println("\t" + type + ": " + "unknown");
-                } else {
-                    System.err.println("\t" + type + ": " + "ok? " + ok
-                                       + " exclude:" + exclude);
-                }
-            }
+    public String formatDate(Request request, Object date) {
+        if (date == null) {
+            return BLANK;
+        }
+        if (date instanceof CalendarDate) {
+            String dateFormat = getRepository().getProperty(PROP_DATE_FORMAT,
+                                    DateHandler.DEFAULT_TIME_FORMAT);
+
+            return new CalendarDateFormatter(dateFormat).toString(
+                (CalendarDate) date);
+        } else if (date instanceof Date) {
+            return getDateHandler().formatDate(request, (Date) date);
+        } else {
+            return date.toString();
         }
     }
+
+
+
+    public  void setDates(Request request,
+			  List<CalendarDate> allDates,
+			  CalendarDate[]     dates) {
+        String   calString = request.getString(ARG_CALENDAR, null);
+        if (allDates.isEmpty()) return;
+	if (calString == null) {
+	    calString = allDates.get(0).getCalendar().toString();
+	}
+
+	if (request.defined(ARG_FROMDATE+SUFFIX_EXACT)) {
+	    dates[0] = CdmManager.closest(CalendarDate.of(Utils.parseDate(request.getString(ARG_FROMDATE+SUFFIX_EXACT))),
+					  allDates);
+	} else  if (request.defined(ARG_FROMDATE)) {
+	    String fromDateString = request.getString(ARG_FROMDATE,
+						      formatDate(request,
+								 allDates.get(0)));
+	    dates[0] = CalendarDate.parseISOformat(calString, fromDateString);
+	} else {
+	    dates[0] = allDates.get(0);
+	}
+	if (request.defined(ARG_TODATE+SUFFIX_EXACT)) {
+	    dates[1] = CdmManager.closest(CalendarDate.of(Utils.parseDate(request.getString(ARG_TODATE+SUFFIX_EXACT))),
+					  allDates);
+	} else if (request.defined(ARG_TODATE)) {
+	    String toDateString = request.getString(ARG_TODATE,
+						    formatDate(request,
+							       allDates.get(allDates.size()
+									    - 1)));
+	    dates[1] = CalendarDate.parseISOformat(calString,
+						   toDateString);
+	} else {
+	    dates[1] = allDates.get(allDates.size() - 1);
+	}
+        //have to have both dates
+        if ((dates[0] != null) && (dates[1] == null)) {
+            dates[0] = null;
+        }
+        if ((dates[1] != null) && (dates[0] == null)) {
+            dates[1] = null;
+        }
+
+
+    }
+
+
+
+    public static CalendarDate closest(CalendarDate date, List<CalendarDate> dates) {
+	if(dates==null) return null;
+	CalendarDate closest=null;
+	long min=0;
+	for(int i=0;i<dates.size();i++) {
+	    long diff = Math.abs(date.getDifferenceInMsecs(dates.get(i)));
+	    if(i==0 || diff<min) {
+		min=diff;
+		closest=dates.get(i);
+	    }
+	}
+	return closest;
+    }
+
+    /**
+     * Make a time widget for grid subsetting
+     *
+     * @param request  the Request
+     * @param dates    the list of dates
+     * @param sb       the HTML to add to
+     */
+    public void addTimeWidget(Request request, List<CalendarDate> dates,
+                               StringBuffer sb) {
+        long millis = System.currentTimeMillis();
+        if (dates == null ||  dates.size() ==0) return;
+	CalendarDate cd  = dates.get(0);
+	Calendar     cal = cd.getCalendar();
+	if (cal != null) {
+	    sb.append(HU.hidden(ARG_CALENDAR, cal.toString()));
+	}
+	List formattedDates = new ArrayList();
+	formattedDates.add(new TwoFacedObject("---", ""));
+	for (CalendarDate date : dates) {
+	    formattedDates.add(formatDate(request, date));
+	}
+	String fromDate = request.getUnsafeString(ARG_FROMDATE, "");
+	String toDate   = request.getUnsafeString(ARG_TODATE, "");
+	
+	if(true || formattedDates.size()<100) {
+	    HU.formEntry(sb, msgLabel("Time Range"),
+			 HU.select(ARG_FROMDATE, formattedDates, fromDate)
+			 + HU.SPACE+HU.img(getIconUrl(ICON_ARROW))+HU.SPACE
+			 + HU.select(ARG_TODATE, formattedDates, toDate));
+	    
+	    HU.formEntry(sb,"",HU.div("Or select specific times",HU.clazz("ramadda-form-help")));
+	} else {
+	    HU.formEntry(sb,"",HU.div("Select specific times",HU.clazz("ramadda-form-help")));
+	    HU.formEntry(sb,"",HU.b("Start date: ") + formattedDates.get(1)
+			 + HU.SPACE+HU.img(getIconUrl(ICON_ARROW))+HU.SPACE +
+			 formattedDates.get(formattedDates.size()-1)+HU.SPACE +
+			 "# times: " +(formattedDates.size()-1));
+	}
+
+	HU.formEntry(sb,   msgLabel("Times"),
+		     HU.input(ARG_FROMDATE+CdmManager.SUFFIX_EXACT, "",HU.attrs("id",ARG_FROMDATE+CdmManager.SUFFIX_EXACT,"placeholder","yyyy-MM-dd HH:mm"))
+		     + HU.SPACE+HU.img(getIconUrl(ICON_ARROW))+HU.SPACE +
+		     HU.input(ARG_TODATE+CdmManager.SUFFIX_EXACT, "",HU.attrs("id",ARG_TODATE+CdmManager.SUFFIX_EXACT,"placeholder","yyyy-MM-dd HH:mm")));
+	HU.script(sb,
+		  HU.call("HtmlUtils.datePickerInit",HU.squote(ARG_FROMDATE+CdmManager.SUFFIX_EXACT))+"\n"+
+		  HU.call("HtmlUtils.datePickerInit",HU.squote(ARG_FROMDATE+CdmManager.SUFFIX_EXACT))+"\n");
+    }
+
+
 
 
 
@@ -1615,6 +1728,10 @@ public class CdmManager extends RepositoryManager {
         return entry;
     }
 
+
+
+
+
     /**
      * Get the global disk cache
      * @return the disk cache
@@ -1622,6 +1739,43 @@ public class CdmManager extends RepositoryManager {
     public DiskCache2 getDiskCache2() {
         return diskCache2;
     }
+
+
+
+    /**
+     * Main for testing
+     *
+     * @param args  arguments for testing
+     *
+     * @throws Exception  problems
+     */
+    public static void main(String[] args) throws Exception {
+        Repository repository = new Repository(new String[] {}, 8080);
+        repository.initProperties(null);
+        CdmDataOutputHandler dop = new CdmDataOutputHandler(repository,
+                                       "test");
+        CdmManager cdmManager = new CdmManager(repository);
+        String[]   types      = {
+            TYPE_CDM, TYPE_GRID, TYPE_TRAJECTORY, TYPE_POINT, TYPE_RADAR,
+            TYPE_CDM_GRID
+        };
+        for (String f : args) {
+            System.err.println("file:" + f);
+            for (String type : types) {
+                boolean ok      = cdmManager.hasSuffixForType(f, type, false);
+                boolean exclude = cdmManager.hasSuffixForType(f, type, true);
+                if ( !ok && !exclude) {
+                    System.err.println("\t" + type + ": " + "unknown");
+                } else {
+                    System.err.println("\t" + type + ": " + "ok? " + ok
+                                       + " exclude:" + exclude);
+                }
+            }
+        }
+    }
+
+
+
 
 
 }

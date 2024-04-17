@@ -126,7 +126,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
     /**  */
     public static final boolean debugOpendap = false;
 
-    private static final String SUFFIX_EXACT ="_exact";
+
 
     /** set of suffixes */
     private HashSet<String> suffixSet;
@@ -1000,7 +1000,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             sb.append(HU.formEntryTop(msgLabel("Subset Spatially"),
                                              llb));
         }
-        addTimeWidget(request, dates, sb);
+        getCdmManager().addTimeWidget(request, dates, sb);
 
 	HU.formEntry(sb,"", HU.labeledCheckbox(ARG_ADDLATLON, HU.VALUE_TRUE,
 					    request.get(ARG_ADDLATLON, true),
@@ -1054,19 +1054,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
     }
 
 
-    public static CalendarDate closest(CalendarDate date, List<CalendarDate> dates) {
-	if(dates==null) return null;
-	CalendarDate closest=null;
-	long min=0;
-	for(int i=0;i<dates.size();i++) {
-	    long diff = Math.abs(date.getDifferenceInMsecs(dates.get(i)));
-	    if(i==0 || diff<min) {
-		min=diff;
-		closest=dates.get(i);
-	    }
-	}
-	return closest;
-    }
 
 
 
@@ -1194,53 +1181,13 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             dates[0] = cdr.getStart();
             dates[1] = cdr.getEnd();
         }
-        Calendar cal       = null;
-        String   calString = request.getString(ARG_CALENDAR, null);
-        if ( !allDates.isEmpty()) {  // have some dates
-            if (calString == null) {
-                calString = allDates.get(0).getCalendar().toString();
-            }
-            // have to check if defined, because no selection is ""
-            if (request.defined(ARG_FROMDATE+SUFFIX_EXACT)) {
-                dates[0] = closest(CalendarDate.of(Utils.parseDate(request.getString(ARG_FROMDATE+SUFFIX_EXACT))),
-				   allDates);
-	    } else  if (request.defined(ARG_FROMDATE)) {
-                String fromDateString = request.getString(ARG_FROMDATE,
-                                            formatDate(request,
-                                                allDates.get(0)));
-                dates[0] = CalendarDate.parseISOformat(calString,
-                        fromDateString);
-            } else {
-                dates[0] = allDates.get(0);
-            }
-            if (request.defined(ARG_TODATE+SUFFIX_EXACT)) {
-                dates[1] = closest(CalendarDate.of(Utils.parseDate(request.getString(ARG_TODATE+SUFFIX_EXACT))),
-				   allDates);
-	    } else if (request.defined(ARG_TODATE)) {
-                String toDateString = request.getString(ARG_TODATE,
-							formatDate(request,
-								   allDates.get(allDates.size()
-										- 1)));
-                dates[1] = CalendarDate.parseISOformat(calString,
-						       toDateString);
-            } else {
-                dates[1] = allDates.get(allDates.size() - 1);
-            }
-        }
-        //have to have both dates
-        if ((dates[0] != null) && (dates[1] == null)) {
-            dates[0] = null;
-        }
-        if ((dates[1] != null) && (dates[0] == null)) {
-            dates[1] = null;
-        }
+
+	getCdmManager().setDates(request, allDates, dates);
 	boolean internal = Misc.equals(request.getExtraProperty("internal"),"true");
 
         if ((dates[0] != null) && (dates[1] != null)
                 && (dates[0].isAfter(dates[1]))) {
-            sb.append(
-                getPageHandler().showDialogWarning(
-						   "From date is after to date"));
+            sb.append(getPageHandler().showDialogWarning("From date is after to date"));
 	    if(internal) {
 		throw new IllegalArgumentException("From date is after to date");
 	    }
@@ -1340,12 +1287,13 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             // boolean addLatLon,
             // NetcdfFileWriter writer
 
+	    System.err.println("subset date range:" + dates[0] +" -- " + dates[1] +"  "+ CalendarDateRange.of(dates[0],dates[1]));
+
             CFGridWriter2.writeFile(gds, varNames, llr, null, hStride,
                                     zRange, ((dates[0] == null)
                                              ? null
-                                             : CalendarDateRange.of(dates[0],
-                                             dates[1])), timeStride,
-                                                 includeLatLon, ncFileWriter);
+                                             : CalendarDateRange.of(dates[0], dates[1])),
+				    timeStride, includeLatLon, ncFileWriter);
 
             /*
             writer.makeFile(f.toString(), gds, varNames, llr, hStride,
@@ -2049,76 +1997,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
     }
 
 
-    /**
-     * Make a time widget for grid subsetting
-     *
-     * @param request  the Request
-     * @param dates    the list of dates
-     * @param sb       the HTML to add to
-     */
-    private void addTimeWidget(Request request, List<CalendarDate> dates,
-                               StringBuffer sb) {
-        long millis = System.currentTimeMillis();
-        if ((dates != null) && (dates.size() > 0)) {
-            CalendarDate cd  = dates.get(0);
-            Calendar     cal = cd.getCalendar();
-            if (cal != null) {
-                sb.append(HU.hidden(ARG_CALENDAR, cal.toString()));
-            }
-            List formattedDates = new ArrayList();
-            formattedDates.add(new TwoFacedObject("---", ""));
-            for (CalendarDate date : dates) {
-                //formattedDates.add(getDateHandler().formatDate(request, date.toDate()));
-                formattedDates.add(formatDate(request, date));
-            }
-            String fromDate = request.getUnsafeString(ARG_FROMDATE, "");
-            String toDate   = request.getUnsafeString(ARG_TODATE, "");
-	    
-            sb.append(
-                HU.formEntry(
-                    msgLabel("Time Range"),
-                    HU.select(ARG_FROMDATE, formattedDates, fromDate)
-                    + HU.SPACE+HU.img(getIconUrl(ICON_ARROW))+HU.SPACE
-                    + HU.select(ARG_TODATE, formattedDates, toDate)));
-	    
-	    
-	    HU.formEntry(sb,"",HU.div("Or select specific times",HU.clazz("ramadda-form-help")));
-	    HU.formEntry(sb,   msgLabel("Times"),
-			 HU.input(ARG_FROMDATE+SUFFIX_EXACT, "",HU.attrs("id",ARG_FROMDATE+SUFFIX_EXACT,"placeholder","yyyy-MM-dd HH:mm"))
-			 + HU.SPACE+HU.img(getIconUrl(ICON_ARROW))+HU.SPACE +
-			 HU.input(ARG_TODATE+SUFFIX_EXACT, "",HU.attrs("id",ARG_TODATE+SUFFIX_EXACT,"placeholder","yyyy-MM-dd HH:mm")));
-	    HU.script(sb,
-		      HU.call("HtmlUtils.datePickerInit",HU.squote(ARG_FROMDATE+SUFFIX_EXACT))+"\n"+
-		      HU.call("HtmlUtils.datePickerInit",HU.squote(ARG_FROMDATE+SUFFIX_EXACT))+"\n");
-        }
-        //System.err.println("Times took "
-        //                   + (System.currentTimeMillis() - millis) + " ms");
-    }
 
-    /**
-     * Format a date
-     *
-     * @param request  the request
-     * @param date     the date object (CalendarDate or Date)
-     *
-     * @return the formatted date
-     */
-    public String formatDate(Request request, Object date) {
-        if (date == null) {
-            return BLANK;
-        }
-        if (date instanceof CalendarDate) {
-            String dateFormat = getRepository().getProperty(PROP_DATE_FORMAT,
-                                    DateHandler.DEFAULT_TIME_FORMAT);
-
-            return new CalendarDateFormatter(dateFormat).toString(
-                (CalendarDate) date);
-        } else if (date instanceof Date) {
-            return getDateHandler().formatDate(request, (Date) date);
-        } else {
-            return date.toString();
-        }
-    }
 
     /**
      * Sort the grids

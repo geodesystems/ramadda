@@ -306,33 +306,7 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
         CalendarDate[]     dates      = new CalendarDate[2];
         Calendar           cal        = null;
         String             calString  = request.getString(ARG_CALENDAR, null);
-        if ( !allDates.isEmpty()) {  // have to have some dates
-            if (calString == null) {
-                calString = allDates.get(0).getCalendar().toString();
-            }
-            if (request.defined(ARG_FROMDATE)) {
-                String fromDateString = request.getString(ARG_FROMDATE,
-                                            formatDate(request,
-                                                allDates.get(0)));
-                dates[0] = CalendarDate.parseISOformat(calString,
-                        fromDateString);
-            }
-            if (request.defined(ARG_TODATE)) {
-                String toDateString = request.getString(ARG_TODATE,
-                                          formatDate(request,
-                                              allDates.get(allDates.size()
-                                                  - 1)));
-                dates[1] = CalendarDate.parseISOformat(calString,
-                        toDateString);
-            }
-        }
-        //have to have both dates
-        if ((dates[0] != null) && (dates[1] == null)) {
-            dates[0] = null;
-        }
-        if ((dates[1] != null) && (dates[0] == null)) {
-            dates[1] = null;
-        }
+	getCdmManager().setDates(request, allDates, dates);
 
         if ((dates[0] != null) && (dates[1] != null)
                 && (dates[0].isAfter(dates[1]))) {
@@ -769,7 +743,7 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
                 lon });
         sb.append(HU.formEntryTop(msgLabel("Location"), llb));
 
-        addTimeWidget(request, dates, sb);
+        getCdmManager().addTimeWidget(request, dates, sb);
 
         List<TwoFacedObject> formats = new ArrayList<TwoFacedObject>();
         formats.add(
@@ -1054,41 +1028,6 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
 
 
 
-
-    /**
-     * Make a time widget for grid subsetting
-     *
-     * @param request  the Request
-     * @param dates    the list of dates
-     * @param sb       the HTML to add to
-     */
-    private void addTimeWidget(Request request, List<CalendarDate> dates,
-                               StringBuffer sb) {
-        long millis = System.currentTimeMillis();
-        if ((dates != null) && (dates.size() > 0)) {
-            CalendarDate cd  = dates.get(0);
-            Calendar     cal = cd.getCalendar();
-            if (cal != null) {
-                sb.append(HU.hidden(ARG_CALENDAR, cal.toString()));
-            }
-            List formattedDates = new ArrayList();
-            formattedDates.add(new TwoFacedObject("---", ""));
-            for (CalendarDate date : dates) {
-                //formattedDates.add(getDateHandler().formatDate(request, date.toDate()));
-                formattedDates.add(formatDate(request, date));
-            }
-            String fromDate = request.getUnsafeString(ARG_FROMDATE, "");
-            String toDate   = request.getUnsafeString(ARG_TODATE, "");
-            sb.append(
-                HU.formEntry(
-                    msgLabel("Time Range"),
-                    HU.select(ARG_FROMDATE, formattedDates, fromDate)
-                    + HU.img(getIconUrl(ICON_ARROW))
-                    + HU.select(ARG_TODATE, formattedDates, toDate)));
-        }
-        //System.err.println("Times took "
-        //                   + (System.currentTimeMillis() - millis) + " ms");
-    }
 
     /**
      * Format a date
