@@ -8474,6 +8474,7 @@ public class EntryManager extends RepositoryManager {
 						   newEntry, "", associationType);
         }
 
+	parentageChanged(parent);
         return new Result(request.entryUrl(getRepository().URL_ENTRY_FORM,
                                            newEntry));
 
