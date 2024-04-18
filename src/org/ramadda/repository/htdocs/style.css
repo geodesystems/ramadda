@@ -3775,6 +3775,11 @@ a.btn-primary:link, a.btn-primary  {
 }
 
 
+.ramadda-select-popup .ramadda-folder-block {
+    max-height:200px;
+    overflow-y:auto;
+}
+
 .ramadda-select-block {
     max-height:150px;
     overflow-y:auto;
