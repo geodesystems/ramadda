@@ -78,6 +78,15 @@ You can change the contact with the following property:
 ramadda.security.contact=mailto:youremail@foo.com
 -pre
 
+:heading Disabling remote search
+RAMADDA has the ability to perform remote searches on a number of external data repositories, e.g., CKAN, Socrata, Federal Reserve, REDDIT, etc. This can be disabled by setting the property
+in a repository.properties file:
++pre
+ramadda.search.providers.show=false
+-pre
+
+
+
 :heading Archival Resource Keys (ARKS)
 To configure your RAMADDA to provide \[https://arks.org/ Archival Resource Keys (ARKS)\] see
 \[arkids.html here\].
