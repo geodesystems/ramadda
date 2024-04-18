@@ -14,7 +14,9 @@ import org.ramadda.repository.type.Column;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.util.ServerInfo;
 
+import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
+
 import org.ramadda.util.geo.Bounds;
 
 import org.w3c.dom.Element;
@@ -38,6 +40,7 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class Entry implements Cloneable {
 
+    public static final HtmlUtils HU = null;
 
     /** ID delimiter */
     public static final String IDDELIMITER = ":";
@@ -273,6 +276,29 @@ public class Entry implements Cloneable {
         this(id);
         this.typeHandler = typeHandler;
         this.isGroup     = isGroup;
+    }
+
+
+    public void sanitize() {
+	setName(HU.strictSanitizeString(getName()));
+	setDescription(HU.strictSanitizeString(getDescription()));	
+	remoteUrl = HU.strictSanitizeString(remoteUrl);
+	snippet = HU.strictSanitizeString(snippet);
+	if(resource!=null)resource.sanitize();
+	Object []values= getValues();
+	if(values!=null) {
+	    for(int i=0;i<values.length;i++) {
+		Object o=values[i];
+		if(o instanceof String)
+		    values[i] = HU.strictSanitizeString(o.toString());
+	    }
+	}
+	List<Metadata> mtd = getMetadata();
+	if(mtd!=null) {
+	    for(Metadata m: mtd) {
+		m.sanitize();
+	    }		
+	}
     }
 
 

@@ -333,6 +333,17 @@ public class Metadata implements Constants {
     }
 
 
+    public void sanitize() {
+	id = HtmlUtils.strictSanitizeString(id);
+	type = HtmlUtils.strictSanitizeString(type);
+	attr1 = HtmlUtils.strictSanitizeString(attr1);
+	attr2 = HtmlUtils.strictSanitizeString(attr2);
+	attr3 = HtmlUtils.strictSanitizeString(attr3);
+	attr4 = HtmlUtils.strictSanitizeString(attr4);
+	extra = HtmlUtils.strictSanitizeString(extra);	
+	extraMap=null;
+    }
+
     /**
      * _more_
      *

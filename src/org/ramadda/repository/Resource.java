@@ -5,6 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
+import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 import java.io.File;
 import java.net.URL;
@@ -149,6 +150,11 @@ public class Resource {
         this.md5      = that.md5;
         this.fileSize = that.fileSize;
     }
+
+    public void sanitize() {
+	path = HtmlUtils.strictSanitizeString(path);
+    }
+
 
     /**
      * _more_

@@ -240,6 +240,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     private static final String[] SEARCH_FIELDS ={FIELD_CORPUS, FIELD_NAME, FIELD_CREATOR,FIELD_DESCRIPTION, FIELD_CONTENTS,FIELD_ATTACHMENT, FIELD_PATH};
 
+
     private boolean isLuceneEnabled = true;
 
     private Object LUCENE_MUTEX = new Object();
@@ -3140,8 +3141,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         Runnable      runnable = new Runnable() {
 		public void run() {
 		    try {
-			List<Entry> results = provider.getEntries(request,
-								  searchInfo);
+			List<Entry> results = provider.getEntries(request, searchInfo);
+			if(provider!=thisSearchProvider)  {
+			    getEntryManager().sanitizeEntries(results);
+			}			    
+
 			synchronized (entries) {
 			    entries.addAll(results);
 			}

@@ -774,6 +774,15 @@ public class EntryManager extends RepositoryManager {
 
 
 
+    public void sanitizeEntries(List<Entry> entries) {
+	for(Entry entry: entries) {
+	    sanitizeEntry(entry);
+	}	    
+    }
+
+    public void sanitizeEntry(Entry entry) {
+	entry.sanitize();
+    }
 
     public Result processMakeSnapshot(Request request, Entry entry) throws Exception {
         if (request.isAnonymous()) {
