@@ -155,7 +155,7 @@ public class TabularTypeHandler extends ConvertibleTypeHandler {
                                    Entry entry)
             throws Exception {
 	if(isWikiText(entry.getDescription())) return null;
-	String wiki = "+section title={{name}}\n{{description wikify=true}}\n+accordion decorate=false collapsible=true activeSegment=-1\n+segment Document Information\n{{information  details=\"true\"  showTitle=\"false\"  includeTools=true menus=\"service\" menusTitle=\"Services\"}} \n-segment\n-accordion\n-section\n+section\n+center\n<div style='margin-bottom:4px;'>{{tags}}</div>\n-center\n{{display_htmltable}}\n-section";
+	String wiki = "+section title={{name}}\n{{description wikify=true}}\n+accordion decorate=false collapsible=true activeSegment=-1\n+segment Document Information\n{{information  details=\"true\"  showTitle=\"false\"  includeTools=true menus=\"service\" menusTitle=\"Services\"}} \n-segment\n-accordion\n-section\n+section\n+center\n<div style='margin-bottom:4px;'>{{tags}}</div>\n-center\n{{display_table max=5000 maxColumns=50}}\n-section";
 	return getWikiManager().wikifyEntry(request,entry,wiki);
     }
 
