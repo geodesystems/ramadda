@@ -909,6 +909,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'iconField',ex:'""',tt:'Field id for the image icon url'},
 	{p:'rotateField',ex:'""',tt:'Field id for degrees rotation'},
 	{p:'rotateScale',d:'1.0',tt:'Scale value to multiply the rotate field value by to get degrees rotation'},		
+	{p:'hideNaN',tt:'If doing color by do not show the points with missing values'},
 
 	{label:'Map GUI'},
 	{p:'showTableOfContents',ex:'true',tt:'Show left table of contents'},
@@ -3900,7 +3901,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let linesToAdd = [];	    	    
 	    //getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable,propPrefix) {
             let colorBy = this.getColorByInfo(records,null,null,null,null,this.lastColorBy);
-
+	    let hideNaN = this.getHideNaN();
 
 	    this.lastColorBy = colorBy;
 	    let cidx=0
@@ -4553,8 +4554,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		} else {
 		    if(colorByEnabled) {
 			let value = record.getData()[colorBy.index];
+			if(hideNaN && isNaN(value)) return;
 			colorByValue = value;
-			
 			theColor =  colorBy.getColorFromRecord(record, theColor,false);
 //			if(idx<5) console.log("%cpt:" + value + " " + theColor,"background:" + theColor);
 		    }
