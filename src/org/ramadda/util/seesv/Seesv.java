@@ -2824,7 +2824,7 @@ public class Seesv implements SeesvCommands {
                 new Arg(ARG_LATITUDE, "latitude column")),		
         new Cmd(CMD_STATENAME, "Add state name from state ID",
 		ARG_LABEL,"State Name from ID",
-                new Arg("state_column","State ID column")),
+                new Arg("state_column","State ID column",ATTR_TYPE,TYPE_COLUMN)),
 	new Cmd(CMD_GEONAME, "Look up location name",
                 new Arg("lookup","('counties' or 'states' or 'countries' or 'timezones')"),
                 new Arg("fields","fields in shapefile"),		
