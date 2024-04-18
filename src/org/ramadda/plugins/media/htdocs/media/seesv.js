@@ -1110,6 +1110,8 @@ function  SeesvForm(inputId, entry,params) {
 				    _this.makeHeaderMenu(field+".unit","unit","unit");
 				html +="<br>" +
 				    _this.makeHeaderMenu(field+".format","{yyyy-MM-dd hh:mm:ss}","date format")+ SPACE2;
+				html +="<br>" +
+				    _this.makeHeaderMenu(field+".enumeratedValues","{value1:label1;value2:label2}","enum values");
 				
 
 				html+="</div>";
