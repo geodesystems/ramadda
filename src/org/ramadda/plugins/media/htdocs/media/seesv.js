@@ -1151,8 +1151,9 @@ function  SeesvForm(inputId, entry,params) {
 			    this.insertColumnIndex(f,true);
 			});
 
-			idComps.css('color','blue').css('font-weight','normal').css('cursor','pointer').attr('title','Add field id').click(function() {
+			idComps.css('color','blue').css('font-weight','normal').css('cursor','pointer').attr('title','Add field id. shift:prepend comma').click(function(evt) {
 			    let id = $(this).attr('fieldid');
+			    if(evt.shiftKey) id=','+id;
 			    _this.insertColumnIndex(id,true);
 			});
 			let cnt = 0;
