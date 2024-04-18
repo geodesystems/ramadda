@@ -1101,6 +1101,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	{p:'fancy',ex:'true',d:true},
 	{p:'maxCellHeight',ex:'200px', tt:'Max cell height',d:'200px'},	
 	{p:'maxLength',ex:'500',d:-1, tt:'If string is gt maxLength then scroll it'},
+	{p:'maxColumns'},
 	{p:'colorCells',ex:'field1,field2'},
 	{p:'iconField'},
 	{p:'linkField'},
@@ -1290,6 +1291,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    html+=HU.open('div',[ID,this.domId(ID_TABLE+'_wrapper')]);
 	    html +=HU.openTag('table',[CLASS,"ramadda-table stripe", 'width','100%',ID,this.domId(ID_TABLE),ATTR_STYLE,this.getTableStyle()]);
 	    html+='\n';
+	    let maxColumns = this.getMaxColumns(-1);
 	    let headerAttrs = [STYLE,"white-space:nowrap;background:#efefef;padding:5px; font-weight:bold;"];
 	    headerAttrs = [];
 	    html+="<thead>\n";
@@ -1349,6 +1351,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		sortFields= tmp;
 	    }
 	    fields.forEach((f,idx)=>{
+		if(maxColumns>0 && idx>=maxColumns) return;
 		fieldMap[f.getId()] = f;
 		let sort = sortFields && sortFields[f.getId()];
 		let title = f.getDescription();
@@ -1486,8 +1489,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		this.recordMap[record.rowIndex] = record;
 		this.recordMap[record.getId()] = record;
 		let matchers = this.getHighlightFilterText()?this.getFilterTextMatchers():null;
-		
 		fields.forEach((f,idx)=>{
+		    if(maxColumns>0 && idx>=maxColumns) return;
 		    cellCnt++;
 		    let value = d[f.getIndex()];
 		    let svalue = String(value);

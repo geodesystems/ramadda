@@ -327,6 +327,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'dragToPan',d:false},	
 
 	{p:'skipMissing',d:false,ex:'true',tt:'skip rows  that have any missing values'},
+	{p:'maxColumns',d:-1},
 	{p:'interpolateNulls',d:true,ex:'true'},
 	{p:'animateChart',ex:true},
 	{p:'animationDuration',d:500},
@@ -792,6 +793,20 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    if(this.lastSelectedFields && this.lastSelectedFields.length>0) {
 		this.jq(ID_TITLE_FIELD).html(this.lastSelectedFields[0].getLabel(this));
 	    }
+
+	    let maxColumns = this.getMaxColumns(-1);
+	    if(maxColumns>0) {
+		let tmp = [];
+		selectedFields.every((f,idx)=>{
+		    if(idx>=maxColumns) return false;
+		    tmp.push(f)
+		    return true;
+		});
+		selectedFields=tmp;
+	    }
+
+
+
 
             let props = {
                 includeIndex: this.includeIndexInData()
