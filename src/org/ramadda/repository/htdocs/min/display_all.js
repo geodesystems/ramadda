@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Apr 16 12:59:25 MDT 2024";
+var build_date="RAMADDA build date: Thu Apr 18 06:04:11 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -19032,6 +19032,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'dragToPan',d:false},	
 
 	{p:'skipMissing',d:false,ex:'true',tt:'skip rows  that have any missing values'},
+	{p:'maxColumns',d:-1},
 	{p:'interpolateNulls',d:true,ex:'true'},
 	{p:'animateChart',ex:true},
 	{p:'animationDuration',d:500},
@@ -19497,6 +19498,20 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    if(this.lastSelectedFields && this.lastSelectedFields.length>0) {
 		this.jq(ID_TITLE_FIELD).html(this.lastSelectedFields[0].getLabel(this));
 	    }
+
+	    let maxColumns = this.getMaxColumns(-1);
+	    if(maxColumns>0) {
+		let tmp = [];
+		selectedFields.every((f,idx)=>{
+		    if(idx>=maxColumns) return false;
+		    tmp.push(f)
+		    return true;
+		});
+		selectedFields=tmp;
+	    }
+
+
+
 
             let props = {
                 includeIndex: this.includeIndexInData()
@@ -37529,6 +37544,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'iconField',ex:'""',tt:'Field id for the image icon url'},
 	{p:'rotateField',ex:'""',tt:'Field id for degrees rotation'},
 	{p:'rotateScale',d:'1.0',tt:'Scale value to multiply the rotate field value by to get degrees rotation'},		
+	{p:'hideNaN',tt:'If doing color by do not show the points with missing values'},
 
 	{label:'Map GUI'},
 	{p:'showTableOfContents',ex:'true',tt:'Show left table of contents'},
@@ -40520,7 +40536,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let linesToAdd = [];	    	    
 	    //getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable,propPrefix) {
             let colorBy = this.getColorByInfo(records,null,null,null,null,this.lastColorBy);
-
+	    let hideNaN = this.getHideNaN();
 
 	    this.lastColorBy = colorBy;
 	    let cidx=0
@@ -41173,8 +41189,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		} else {
 		    if(colorByEnabled) {
 			let value = record.getData()[colorBy.index];
+			if(hideNaN && isNaN(value)) return;
 			colorByValue = value;
-			
 			theColor =  colorBy.getColorFromRecord(record, theColor,false);
 //			if(idx<5) console.log("%cpt:" + value + " " + theColor,"background:" + theColor);
 		    }
@@ -55462,18 +55478,18 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
     }
     let myProps = [
 	{label:'Graph'},
-	 {p:'sourceField',ex:''},
-	 {p:'targetField',ex:''},
-	 {p:'nodeBackground',ex:'#ccc'},
-	 {p:'drawCircle',ex:'true'},
-	 {p:'nodeWidth',ex:'10'},
-	 {p:'linkColor',ex:'red'},
-	 {p:'linkWidth',ex:'3'},
-	 {p:'linkDash',ex:'5'},
-	 {p:'linkWidth',ex:'3'},
-	 {p:'arrowLength',ex:'6'},
-	 {p:'arrowColor',ex:'green'},
-	 {p:'directionalParticles',ex:'2'}
+	{p:'sourceField',ex:''},
+	{p:'targetField',ex:''},
+	{p:'labelField'},
+	{p:'nodeBackground',ex:'#ccc'},
+	{p:'drawCircle',ex:'true'},
+	{p:'nodeWidth',d:'10'},
+	{p:'linkColor',d:'#ccc'},
+	{p:'linkDash',ex:'5'},
+	{p:'linkWidth',d:'1'},
+	{p:'arrowLength',ex:'6'},
+	{p:'arrowColor',ex:'green'},
+	{p:'directionalParticles',ex:'2'}
     ]
 
 
@@ -55504,7 +55520,7 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 	    let nodes = [];
 	    let links = [];
 	    let valueFields   = this.getFieldsByIds(null, this.getProperty("valueFields","",true));
-	    let labelField = this.getFieldById(null, this.getProperty("labelField"));
+	    let labelField = this.getFieldById(null, this.getLabelField());
 	    if(!labelField) {
 		let strings = this.getFieldsByType(null, "string");
 		if(strings.length>0) labelField = strings[0];
@@ -55531,13 +55547,14 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 		records.map(r=>{
 		    let source = r.getValue(sourceField.getIndex());
 		    let target = r.getValue(targetField.getIndex());
+		    let label  = labelField?r.getValue(labelField.getIndex()):index;
 		    if(!seenNodes[source]) {
 			seenNodes[source] = true;
-			nodes.push({id:source,tooltip:source});
+			nodes.push({id:source,label:label,tooltip:source});
 		    }
 		    if(!seenNodes[target]) {
 			seenNodes[target] = true;
-			nodes.push({id:target,tooltip:target});
+			nodes.push({id:target,label:label,tooltip:target});
 		    }
 		    links.push({source:source, target: target});
 		});
@@ -55550,24 +55567,13 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 		links: links
 	    };
 
-	    /*
-	      links = [];
-	      gGraphData.edges.forEach(e=>{
-	      links.push({source:e.from,target:e.to});
-	      });
-
-	      graphData = {
-	      nodes:gGraphData.nodes,
-	      links: links
-	      }
-	    */
-	    const nodeBackground = this.getProperty("nodeBackground",'rgba(255, 255, 255, 0.8)');
-	    const linkColor = this.getProperty("linkColor","#ccc");
-	    const drawCircle = this.getProperty("drawCircle",false);
-	    const linkWidth = +this.getProperty("linkWidth",1);
-	    const linkDash = +this.getProperty("linkDash",-1);
+	    const nodeBackground = this.getNodeBackground('rgba(255, 255, 255, 0.8)');
+	    const linkColor = this.getLinkColor();
+	    const drawCircle = this.getDrawCircle();
+	    const linkWidth = +this.getLinkWidth();
+	    const linkDash = +this.getLinkDash(-1);
 	    const drawText = this.getProperty("drawText",true);
-	    const nodeWidth = this.getProperty("nodeWidth",10);
+	    const nodeWidth = this.getNodeWidth(10);
 	    const elem = document.getElementById(this.domId(ID_GRAPH));
 	    const graph = ForceGraph()(elem).graphData(graphData);
 	    graph.nodeCanvasObject((node, ctx, globalScale) => {
@@ -55594,6 +55600,7 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 			ctx.arc(node.x, node.y, dim[0]/2, 0, 2 * Math.PI);
 			ctx.fill(); 
 		    } else {
+			ctx.lineWidth = 1;
 			ctx.fillRect(node.x - dim[0] / 2, node.y - dim[1] / 2, ...dim);
 			ctx.strokeRect(node.x - dim[0] / 2, node.y - dim[1] / 2, ...dim);
 		    }
@@ -55606,30 +55613,18 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 		}
 	    });
 
-	    //	    graph.linkCanvasObjectMode('replace');
-	    /*
-	      graph.linkCanvasObject((link, ctx) => {
-	      if(linkDash>0)
-	      ctx.setLineDash([linkDash, linkDash]);
-	      ctx.lineWidth = linkWidth;
-	      ctx.strokeStyle = linkColor;
-	      ctx.moveTo(link.source.x, link.source.y);
-	      ctx.lineTo(link.target.x, link.target.y);
-	      (link === graphData.links[graphData.links.length - 1]) && ctx.stroke();
-	      });*/
-	    //	    graph.linkAutoColorBy(d => gData.nodes[d.source].group);
 	    if(this.getWidth())
 		graph.width(this.getWidth());
 	    if(this.getHeight())
 		graph.height(this.getHeight());
 	    graph.nodeLabel(node => node.tooltip?node.tooltip:null)
-	    graph.linkWidth(+this.getProperty("linkWidth",4));
-	    graph.linkColor(this.getProperty("linkColor","#000"));
-	    if(this.getProperty("arrowColor")) {
-		graph.linkDirectionalArrowColor(this.getProperty("arrowColor"));
+	    graph.linkWidth(+this.getLinkWidth());
+	    graph.linkColor(this.getLinkColor());
+	    if(this.getArrowColor()) {
+		graph.linkDirectionalArrowColor(this.getArrowColor());
 	    }
-	    if(this.getProperty("arrowLength")) {
-		graph.linkDirectionalArrowLength(+this.getProperty("arrowLength"));
+	    if(this.getArrowLength()) {
+		graph.linkDirectionalArrowLength(+this.getArrowLength());
 		graph.linkDirectionalArrowRelPos(+this.getProperty("arrowPosition",0.9));
 	    }
 
@@ -56305,6 +56300,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	{p:'fancy',ex:'true',d:true},
 	{p:'maxCellHeight',ex:'200px', tt:'Max cell height',d:'200px'},	
 	{p:'maxLength',ex:'500',d:-1, tt:'If string is gt maxLength then scroll it'},
+	{p:'maxColumns'},
 	{p:'colorCells',ex:'field1,field2'},
 	{p:'iconField'},
 	{p:'linkField'},
@@ -56494,6 +56490,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    html+=HU.open('div',[ID,this.domId(ID_TABLE+'_wrapper')]);
 	    html +=HU.openTag('table',[CLASS,"ramadda-table stripe", 'width','100%',ID,this.domId(ID_TABLE),ATTR_STYLE,this.getTableStyle()]);
 	    html+='\n';
+	    let maxColumns = this.getMaxColumns(-1);
 	    let headerAttrs = [STYLE,"white-space:nowrap;background:#efefef;padding:5px; font-weight:bold;"];
 	    headerAttrs = [];
 	    html+="<thead>\n";
@@ -56553,6 +56550,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		sortFields= tmp;
 	    }
 	    fields.forEach((f,idx)=>{
+		if(maxColumns>0 && idx>=maxColumns) return;
 		fieldMap[f.getId()] = f;
 		let sort = sortFields && sortFields[f.getId()];
 		let title = f.getDescription();
@@ -56690,8 +56688,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		this.recordMap[record.rowIndex] = record;
 		this.recordMap[record.getId()] = record;
 		let matchers = this.getHighlightFilterText()?this.getFilterTextMatchers():null;
-		
 		fields.forEach((f,idx)=>{
+		    if(maxColumns>0 && idx>=maxColumns) return;
 		    cellCnt++;
 		    let value = d[f.getIndex()];
 		    let svalue = String(value);
