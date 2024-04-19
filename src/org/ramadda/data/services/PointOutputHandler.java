@@ -687,8 +687,9 @@ public class PointOutputHandler extends RecordOutputHandler {
                 }		
 
                 if (request.defined(ARG_SKIP)) {
-                    visitInfo.setSkip(request.get(ARG_SKIP, 0));
-                } else if (request.defined(ARG_STRIDE)) {
+                    visitInfo.setStart(request.get(ARG_SKIP, 0));
+                } 
+		if (request.defined(ARG_STRIDE)) {
                     visitInfo.setSkip(request.get(ARG_STRIDE, 0));
                 }
 
