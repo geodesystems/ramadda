@@ -93,7 +93,8 @@ function RepositoryMap(mapId, params) {
 	addMarkerOnClick:false,
 	linked:false,
 	linkGroup:null,
-	linkMouse:false
+	linkMouse:false,
+	addToUrl:true
     };
 
 
@@ -903,13 +904,13 @@ RepositoryMap.prototype = {
 	    console.log(r(center.lat),r(center.lon));
 	    return
 	} 
-	//Don't include the bounds
-	HU.addToDocumentUrl("map_bounds",latlon.top + "," + latlon.left + "," + latlon.bottom + "," + latlon.right);
-	if(debugBounds)
-	    console.log("locationChanged: setting url args:",this.getMap().getZoom());
-	HU.addToDocumentUrl(ARG_ZOOMLEVEL , this.getMap().getZoom());
-
-        HU.addToDocumentUrl(ARG_MAPCENTER, r(center.lat)+","+ r(center.lon));
+	if(this.params.addToUrl) {
+	    HU.addToDocumentUrl("map_bounds",latlon.top + "," + latlon.left + "," + latlon.bottom + "," + latlon.right);
+	    if(debugBounds)
+		console.log("locationChanged: setting url args:",this.getMap().getZoom());
+	    HU.addToDocumentUrl(ARG_ZOOMLEVEL , this.getMap().getZoom());
+            HU.addToDocumentUrl(ARG_MAPCENTER, r(center.lat)+","+ r(center.lon));
+	}
     },
     baseLayerChanged: function() {
         let baseLayer = this.getMap().baseLayer;
