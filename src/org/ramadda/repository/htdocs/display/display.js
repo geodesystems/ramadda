@@ -1757,7 +1757,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'request.enddate',tt:'End date of data',ex:'yyyy-MM-dd or relative:-1 week|-6 months|-2 years|etc'},
 	{p:'requestFields',tt:'Comma separated list of fields for querying server side data'},
 	{p:'requestFieldsShow',d:true,ex:'false',tt:'Show the request fields'},
-	{p:'requestFieldsDefault',d:true,tt:'Use the default date,stride,limit fields'},
+	{p:'requestFieldsDefault',d:true,tt:'Use the default date,stride,skip,limit fields'},
 	{p:'requestPrefix',ex:'search.', tt:'Prefix to prepend to the url argument'},
 	{p:'requestFieldsLive',d:true,tt:'Is the request applied when a widget changes'},
 	{p:'requestFieldsToggle',d:false,tt:'Put the request fields in a toggle'},
@@ -2988,8 +2988,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		msg = "No data specified"
 	    }
 	    if (!msg) msg = this.getProperty("loadingMessage", "icon_progress Loading data...");
-	    if(msg=="") return "";
+	    if(msg=='') return '';
+	    let plain = (msg=='icon_progress');
 	    msg = msg.replace("icon_progress",HU.image(icon_progress));
+	    if(plain) return msg;
 	    if(this.useDisplayMessage()) {
 		return SPACE+msg;
 	    } 
@@ -6164,10 +6166,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return this.requestMacros;
 	},
 	getRequestMacrosInner: function() {
-	    if(this.getProperty('requestFieldsDefault')) {
+	    if(this.getProperty('requestFieldsDefault')|| this.getProperty('requestFields')) {
 		//clear them out
 		this.requestMacros = null;
-		[['requestFields','date,stride,limit'],
+		[['requestFields','date,stride,skip,limit'],
 		 ['requestFieldsToggleOpen',true],
 		 ['request.date.type','daterange'],
 		 ['request.stride.title','Specify a skip factor'],
@@ -6177,7 +6179,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		 ['request.stride.default',0],
 		 ['request.limit.label','# Records'],
 		 ['request.limit.title','Limit how many records to return'],
-		 ['request.limit.default','20000'],
+		 ['request.limit.size','4'],
+		 ['request.skip.size','4'],
+		 ['request.skip.type','skip'],		 
+		 ['request.skip.default',this.getProperty('skip','0')],
+		 ['request.limit.default',this.getProperty('max','20000')],
 		 ['requestFieldsLive',false]].forEach(pair=>{
 		     if(!Utils.isDefined(this.getProperty(pair[0]))) {
 			 this.setProperty(pair[0],pair[1]);
@@ -6196,6 +6202,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(macro=="") return;
 		macros.push(new RequestMacro(this, macro));
 	    });
+	    macros.forEach(macro=>{
+		macro.initMacros(macros);
+	    });
+
+
 	    return macros;
 	},
 	applyRequestProperties: function(props) {
@@ -6228,13 +6239,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 					    {orientation:'horizontal'});
 	    }
 	    if(Utils.stringDefined(requestProps)) {
-		if(!this.getRequestFieldsShow()) {
+		let show = this.getRequestFieldsShow();
+		if(!show) {
 		    requestProps = HU.div(['style','display:none;'], requestProps);
-		}
-		this.writeHeader(ID_REQUEST_PROPERTIES, HU.div([],requestProps));
+		} 
+		this.writeHeader(ID_REQUEST_PROPERTIES,  HU.div([],requestProps));
 		if(!this.getRequestFieldsShow()) {
 		    //Hide this so it doesn't screw up the spacing
-		    this.jq(ID_REQUEST_PROPERTIES).css('display','none');
+//		    this.jq(ID_REQUEST_PROPERTIES).css(
 		}
 	    }
 	    //Keep track of the values because there can be spurious changes triggered
@@ -6248,6 +6260,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.reloadData();
 	    };
 	    let macroChange = (macro,value,what,force,apply)=>{
+		if(macro) macro.notifyChange();
 		if(what) {
 		    if(!force && value == valueMap[macro.urlarg+'_'+what]) {
 			//console.log('duplicate:' + value);
@@ -6296,6 +6309,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		macroChange({triggerReload:true});
 	    });
 	    macros.every(macro=>{
+		macro.initWidget(macroChange);
 		let  keyup =function(e,what,val,force) {
 		      let keyCode = e.keyCode || e.which;
 		      if (keyCode == 13) {
