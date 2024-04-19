@@ -50,7 +50,7 @@ picky=false
 +hbox
 {{display_filter noDataMessage="No data available" loadingMessage="" requestFieldsShow=true}}
 -hbox
-{{display_table   maxColumns=50 fields="property:table_fields"}}
+{{display_table height="70vh"  maxColumns=50 fields="property:table_fields"}}
 -section
 ]]>
 </wiki>
