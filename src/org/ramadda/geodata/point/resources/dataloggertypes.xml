@@ -89,7 +89,7 @@ showMenu=false requestFieldsShow=true
 noDataMessage="No data available"}}
 </td>
 <td width=20px>
-{{display_download  dataFilters="" iconSize=14px showMenu=false showDateSelect=true
+{{display_download  dataFilters="" iconSize=16px showMenu=false showDateSelect=true
 loadingMessage=""
 lastRecords="${wikiproperty.cr1000.count default="5000"}"}}
 </td>
@@ -101,9 +101,11 @@ lastRecords="${wikiproperty.cr1000.count default="5000"}"}}
 fieldsPatterns="${wikiproperty.cr1000.field1 default=".*temp.*|.*hmo.*|.*flow.*|rpsdata_1|.*cell_1"}"
 lastRecords="${wikiproperty.cr1000.count default="5000"}"}}
 {{display_linechart showMenu=true
+loadingMessage=""
 fieldsPatterns="${wikiproperty.cr1000.field2 default=".*ph.*|.*rh.*|batt_volt_min|.*area.*|rpsdata_2"}"
 lastRecords="${wikiproperty.cr1000.count default="5000"}"}}
 {{display_linechart showMenu=true
+loadingMessage=""
 fieldsPatterns="${wikiproperty.cr1000.field3 default=".*depth.*|.*pres.*|baro.*|.*dewpt.*|.*vol.*|rpsdata_3"}"
 lastRecords="${wikiproperty.cr1000.count default="5000"}"}}
 :br
