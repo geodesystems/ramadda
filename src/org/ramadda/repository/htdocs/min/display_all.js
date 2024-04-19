@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Apr 18 06:55:46 MDT 2024";
+var build_date="RAMADDA build date: Fri Apr 19 04:50:56 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -5634,7 +5634,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'request.enddate',tt:'End date of data',ex:'yyyy-MM-dd or relative:-1 week|-6 months|-2 years|etc'},
 	{p:'requestFields',tt:'Comma separated list of fields for querying server side data'},
 	{p:'requestFieldsShow',d:true,ex:'false',tt:'Show the request fields'},
-	{p:'requestFieldsDefault',d:true,tt:'Use the default date,stride,limit fields'},
+	{p:'requestFieldsDefault',d:true,tt:'Use the default date,stride,skip,limit fields'},
 	{p:'requestPrefix',ex:'search.', tt:'Prefix to prepend to the url argument'},
 	{p:'requestFieldsLive',d:true,tt:'Is the request applied when a widget changes'},
 	{p:'requestFieldsToggle',d:false,tt:'Put the request fields in a toggle'},
@@ -6865,8 +6865,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		msg = "No data specified"
 	    }
 	    if (!msg) msg = this.getProperty("loadingMessage", "icon_progress Loading data...");
-	    if(msg=="") return "";
+	    if(msg=='') return '';
+	    let plain = (msg=='icon_progress');
 	    msg = msg.replace("icon_progress",HU.image(icon_progress));
+	    if(plain) return msg;
 	    if(this.useDisplayMessage()) {
 		return SPACE+msg;
 	    } 
@@ -10041,10 +10043,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return this.requestMacros;
 	},
 	getRequestMacrosInner: function() {
-	    if(this.getProperty('requestFieldsDefault')) {
+	    if(this.getProperty('requestFieldsDefault')|| this.getProperty('requestFields')) {
 		//clear them out
 		this.requestMacros = null;
-		[['requestFields','date,stride,limit'],
+		[['requestFields','date,stride,skip,limit'],
 		 ['requestFieldsToggleOpen',true],
 		 ['request.date.type','daterange'],
 		 ['request.stride.title','Specify a skip factor'],
@@ -10054,7 +10056,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		 ['request.stride.default',0],
 		 ['request.limit.label','# Records'],
 		 ['request.limit.title','Limit how many records to return'],
-		 ['request.limit.default','20000'],
+		 ['request.limit.size','4'],
+		 ['request.skip.size','4'],
+		 ['request.skip.type','skip'],		 
+		 ['request.skip.default',this.getProperty('skip','0')],
+		 ['request.limit.default',this.getProperty('max','20000')],
 		 ['requestFieldsLive',false]].forEach(pair=>{
 		     if(!Utils.isDefined(this.getProperty(pair[0]))) {
 			 this.setProperty(pair[0],pair[1]);
@@ -10073,6 +10079,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(macro=="") return;
 		macros.push(new RequestMacro(this, macro));
 	    });
+	    macros.forEach(macro=>{
+		macro.initMacros(macros);
+	    });
+
+
 	    return macros;
 	},
 	applyRequestProperties: function(props) {
@@ -10105,13 +10116,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 					    {orientation:'horizontal'});
 	    }
 	    if(Utils.stringDefined(requestProps)) {
-		if(!this.getRequestFieldsShow()) {
+		let show = this.getRequestFieldsShow();
+		if(!show) {
 		    requestProps = HU.div(['style','display:none;'], requestProps);
-		}
-		this.writeHeader(ID_REQUEST_PROPERTIES, HU.div([],requestProps));
+		} 
+		this.writeHeader(ID_REQUEST_PROPERTIES,  HU.div([],requestProps));
 		if(!this.getRequestFieldsShow()) {
 		    //Hide this so it doesn't screw up the spacing
-		    this.jq(ID_REQUEST_PROPERTIES).css('display','none');
+//		    this.jq(ID_REQUEST_PROPERTIES).css(
 		}
 	    }
 	    //Keep track of the values because there can be spurious changes triggered
@@ -10125,6 +10137,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.reloadData();
 	    };
 	    let macroChange = (macro,value,what,force,apply)=>{
+		if(macro) macro.notifyChange();
 		if(what) {
 		    if(!force && value == valueMap[macro.urlarg+'_'+what]) {
 			//console.log('duplicate:' + value);
@@ -10173,6 +10186,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		macroChange({triggerReload:true});
 	    });
 	    macros.every(macro=>{
+		macro.initWidget(macroChange);
 		let  keyup =function(e,what,val,force) {
 		      let keyCode = e.keyCode || e.which;
 		      if (keyCode == 13) {
@@ -17144,6 +17158,77 @@ RequestMacro.prototype = {
 	return  this.getProperty('request.' +this.name +'.visible',
 				 this.getProperty('macros.visible',true));
     },
+    deltaSkip:function(positive,macroChange) {
+	if(!this.limitMacro) return;
+	let size = parseInt(this.limitMacro.getValue());
+	let skip = parseInt(this.getValue());
+	if(positive)
+	    skip+=size;
+	else
+	    skip-=size;
+	if(skip<0) skip=0;
+	jqid(this.display.getDomId(this.getId())).val(skip);
+	this.showSkipLabel();
+	//let macroChange = (macro,value,what,force,apply)=>{
+	macroChange(this,skip,'',true,true);
+    },
+    showSkipLabel:function() {
+	if(this.limitMacro) {
+	    let size = this.limitMacro.getValue();
+	    let start = parseInt(this.getValue())+1;
+	    let end = start+(parseFloat(size)-1);
+	    let label;
+	    if(this.display.getProperty('lastRecords')) {
+		label =  'last ' + start + ' - '+ end;
+	    }  else {
+		label =  start + ' - '+ end;
+	    }
+	    jqid(this.display.getDomId(this.getId()+'_label')).html(label);
+	}
+    },
+    isSkip:function() {
+	return (this.type=='skip' || this.name=='skip');
+    },
+    initWidget: function(macroChange) {
+	//macroChange: (macro,value,what,force,apply)
+	let _this =this;
+	if(this.isSkip()) {
+	    this.showSkipLabel();
+	    jqid(this.display.getDomId(this.getId()+'_next')).button().click(()=>{
+		this.deltaSkip(true,macroChange);
+	    });
+	    jqid(this.display.getDomId(this.getId()+'_prev')).button().click(()=>{
+		this.deltaSkip(false,macroChange);
+	    });	    
+	}
+    },
+    initMacros: function(macros) {
+	if(this.isSkip()) {
+	    macros.every(macro=>{
+		if(macro.name=='limit') {
+		    this.limitMacro=macro;
+		    macro.addChangeListener(this);
+		    return false;
+		}
+		return true;
+	    });
+	}
+    },
+    macroChanged:function(macro) {
+	if(this.isSkip()) {
+	    this.showSkipLabel();
+	}
+    },
+    notifyChange:function() {
+	if(this.changeListeners)
+	    this.changeListeners.forEach(macro=>{
+		macro.macroChanged(this);
+	    });
+    },
+    addChangeListener:function(macro) {
+	if(!this.changeListeners) this.changeListeners=[];
+	this.changeListeners.push(macro);
+    },
     getWidget: function(dateIds) {
 	let debug = false;
 	let visible = this.isVisible();
@@ -17155,6 +17240,25 @@ RequestMacro.prototype = {
 	if(this.type=='bounds') {
 	    widget = HU.checkbox(this.display.getDomId(this.getId()),[TITLE,title??'Reload with current bounds',ID,this.display.getDomId(this.getId())], false, 'In bounds');
 	    label = null;
+	} else if(this.isSkip()) {
+	    widget = '';
+	    let bstyle = 'padding:4px;padding-top:2px;padding-bottom:2px;margin-right:4px;';
+	    let buttons =  
+		HU.span([ATTR_TITLE,'Show previous',ATTR_STYLE,bstyle,
+			 ATTR_CLASS, 'ramadda-clickable',
+			 ATTR_ID,this.display.getDomId(this.getId()+'_prev')],
+			HU.getIconImage('fas fa-angle-left')) +
+		HU.span([ATTR_TITLE,'Show next',ATTR_STYLE,bstyle,
+			 ATTR_CLASS, 'ramadda-clickable',
+			 ATTR_ID,this.display.getDomId(this.getId()+'_next')],
+			HU.getIconImage('fas fa-angle-right'));
+	    widget += HU.span([ATTR_STYLE,HU.css('padding-right','8px')],buttons);
+
+	    widget+=HU.span([ATTR_ID,this.display.getDomId(this.getId()+'_label')],'');
+	    widget+=HU.input('',this.dflt,[ATTR_STYLE, HU.css('display','none'),
+					   ATTR_ID,this.display.getDomId(this.getId())]);
+			      
+	    label="";
 	} else if(this.type=='enumeration') {
  	    if(this.values && this.values.length>0) {
 		let attrs = ['title',title??'',STYLE, style, ID,this.display.getDomId(this.getId()),CLASS,'display-filter-input'];
@@ -17189,7 +17293,7 @@ RequestMacro.prototype = {
 	} else if(this.type=='numeric' || this.type=='number') {
 	    let minId = this.display.getDomId(this.getId()+'_min');
 	    let maxId = this.display.getDomId(this.getId()+'_max');			    
-	    widget = HU.input('','',['title',title??'','data-min', this.dflt_min, STYLE, style, ID,minId,'size',4,CLASS,'display-filter-input display-filter-range'],this.dflt_min) +
+	    widget = HU.input('','',[ATTR_TITLE,title??'','data-min', this.dflt_min, STYLE, style, ID,minId,'size',4,CLASS,'display-filter-input display-filter-range'],this.dflt_min) +
 		' - ' +
 		HU.input('','',['title',title??'','data-max', this.dflt_max, STYLE, style, ID,maxId,'size',4,CLASS,'display-filter-input display-filter-range'],this.dflt_max)
 	    label = label+' range';
@@ -17210,7 +17314,9 @@ RequestMacro.prototype = {
 	    let size = '10';
 	    if(this.type=='number')
 		size = '4';
-	    widget = HU.input('',this.dflt,['title',title??'',STYLE, style, ID,this.display.getDomId(this.getId()),'size',size,CLASS,'display-filter-input']);
+	    size = this.getProperty("request." +this.name+".size",size),
+
+	    widget = HU.input('',this.dflt,['title',title??'',ATTR_STYLE, style, ID,this.display.getDomId(this.getId()),'size',size,CLASS,'display-filter-input']);
 	}
 	if(!widget) return '';
 	return (visible?this.display.makeFilterWidget(this.name,label,widget):widget);
@@ -37583,15 +37689,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'handleCollisions',ex:true,tt:'Handle point collisions'},
 	{p:'collisionFixed',d:false,ex:true,tt:'If true, don\'t show the grouped markers on a click'},
 	{p:'collisionPointSize',d:16,tt:'Size of each point. Higher # is more spread out'},
-	{p:'collisionDotColor',d:'blue',tt:'Color of dot drawn at center'},
-	{p:'collisionRingColor',d:'red',tt:'Color of ring'},
-	{p:'collisionRingWidth',d:3,tt:'Color of ring'},	
-	{p:'collisionDotColorOn',d:'green',tt:'color to use when the collision marker is selected'},
+	{p:'collisionDotColor',d:'#fff',tt:'Color of dot drawn at center'},
+	{p:'collisionDotOpacity',d:'0.9',tt:'Opacity of dot drawn at center'},	
+	{p:'collisionRingColor',d:'#000',tt:'Color of ring'},
+	{p:'collisionRingWidth',d:1,tt:'Width of ring'},	
+	{p:'collisionDotColorOn',d:'blue',tt:'color to use when the collision marker is selected'},
 	{p:'collisionDotRadius',d:12,tt:'Radius of dot drawn at center'},
 	{p:'collisionScaleDots',ex:true,d:false,tt:'Scale the group dots'},
 	{p:'collisionLineColor',ex:'red',tt:'Color of line drawn at center'},
 	{p:'collisionLabelTemplate',d:'${count}'},
-	{p:'collisionLabelColor',d:'white'},
+	{p:'collisionLabelColor',d:'#000'},
 	{p:'collisionLabelFontSize',d:'10'},	
 
 
@@ -40877,6 +40984,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    icon:this.getCollisionIcon(),
 		    iconSize:this.getCollisionIconSize(),	
 		    dotColor:this.getCollisionDotColor(),
+		    dotOpacity:this.getCollisionDotOpacity(),
 		    ringColor:this.getCollisionRingColor(),
 		    ringWidth:this.getCollisionRingWidth(),		    		    
 		    dotColorOn:this.getCollisionDotColorOn(),
