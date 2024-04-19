@@ -2982,7 +2982,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(urlField) {
 			let url = urlField.getValue(record);
 			if(Utils.stringDefined(url)) {
-			    value=HU.href(url,HU.getIconImage('fas fa-link',null,[ATTR_STYLE,'font-size:8pt;'])) + HU.space(1) +value;
+			    value=HU.href(url,HU.getIconImage('fas fa-link',null,[ATTR_STYLE,'font-size:8pt;']),['target','_link']) + HU.space(1) +value;
 			}
 		    }
 		    html+= HU.span([ATTR_TITLE, title, ATTR_CLASS,clazz,RECORD_ID,record.getId(),RECORD_INDEX,idx], value);
