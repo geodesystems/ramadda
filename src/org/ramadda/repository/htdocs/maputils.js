@@ -951,6 +951,7 @@ function CollisionInfo(handler,numRecords, collisionPoint,args) {
 	visible: false,
 	icon:null,
 	iconSize:16,
+	dotOpacity:1.0,
 	dotColor:'blue',
 	dotColorOn:null,
 	dotColorOff:null,
@@ -1057,6 +1058,7 @@ CollisionInfo.prototype = {
 	}
 	let style = {
 	    fillColor:dotColor,
+	    fillOpacity:this.dotOpacity,
 	    pointRadius:dotRadius
 	}
 	if(this.labelTemplate) {
