@@ -27,6 +27,7 @@
     <property name="form.todate.show" value="false"/>
 
     <property name="search.form.args"><![CDATA[
+    tooltip="${display_html}"
     orderByLabel_date_descending="Date missing - most recent"
     orderByLabel_date_ascending="Date missing - least recent"
     orderByLabel_date_of_birth_descending="Date of birth - youngest first"
