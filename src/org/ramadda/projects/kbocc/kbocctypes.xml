@@ -1,5 +1,5 @@
 <types>
-<type name="type_kbocc_hyrdo" 
+<type name="type_kbocc_hydro" 
 description="KBOCC Water Sensor" 
 super="type_point" 
 category="Point Data"
@@ -18,7 +18,7 @@ csvcommands3=0,Date Time,-set,2,0
 csvcommands4=Temperature,-notcolumns,0\,3-10,-indateformats,MM/dd/yy hh:mm:ss a;MM/dd/yyyy HH:mm
 csvcommands5=GMT-4,-outdateformat,iso8601,GMT,-convertdate
 csvcommands6=date_time,-indateformat,iso8601,GMT,-extractdate
-csvcommands7=date_time,hours_in_year,-add,latitude\,longitude,${latitude}\,${longitude},-addheader, temperature.unit F
+csvcommands7=date_time,hours_in_year,-add,latitude\,longitude,${latitude}\,${longitude},-addheader, date_time.type date date_time.format iso8601 temperature.unit F
 ]]></property>
 
 <property name="mapglyphs">                                                                         
@@ -120,6 +120,8 @@ fields=2017,2018,2019,2020,2021,2022,2023,2024,2025}}
 </type>
 
 
+
+<type name="type_kbocc_hyrdo" super="type_kbocc_hydro" description="KBOCC Water Sensor"  />
 
 
 
