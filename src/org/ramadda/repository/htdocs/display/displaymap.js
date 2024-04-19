@@ -445,6 +445,9 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
         },
 
         initMapParams: function(params) {
+	    if(!this.getProperty('addMapLocationToUrl',true)) {
+		params.addToUrl=false;
+	    }
 	    if(this.getSinglePointZoom()) {
 		params.singlePointZoom = this.getSinglePointZoom();
 	    }
@@ -1854,7 +1857,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.highlightMarkers = null;
 	    }
 	},
-	highlightPoint: function(lat,lon,highlight,andCenter,dontRemove) {
+	highlightPoint: function(lat,lon,highlight,andCenter,dontRemove,record) {
 	    if(!this.getMap()) return;
 	    if(!dontRemove) {
 		this.removeHighlight();
@@ -1882,13 +1885,20 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    attrs.graphicName = this.getProperty("recordHighlightShape");
 		    this.addHighlightMarker(this.getMap().createPoint("highlight", point, attrs));
 		}
-		if(this.highlightMarkers) this.addFeatures(this.highlightMarkers);
+		if(this.highlightMarkers) {
+		    this.highlightMarkers.forEach(marker=>{
+			if(record) {
+			    marker.record=record;
+			    marker.textGetter=this.getTextGetter();
+			}
+		    });
+		    this.addFeatures(this.highlightMarkers);
+		}
 		if(andCenter && this.getCenterOnHighlight()) {
 		    this.getMap().setCenter(point);
 		    if(this.getZoomLevelOnHighlight()) {
 			this.getMap().setZoom(this.getZoomLevelOnHighlight());
 		    }
-
 		}
 	    }
 	},
@@ -2953,6 +2963,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.map.setCenter(MapUtils.createLonLat(record.getLongitude(),record.getLatitude()));
 	},
 	makeToc:function(records) {
+	    let urlField  =  this.getFieldById(null,this.getProperty("urlField"));
 	    let labelField = this.getFieldById(null,this.getProperty("labelField","name"));
 	    if(!labelField) labelField = this.getFieldByType(null,"string");
 	    if(labelField) {
@@ -2968,7 +2979,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    } else {
 			value = HU.getIconImage(iconField.getValue(record,icon_blank16),["width",16]) + SPACE + value;
 		    }
-		    html+= HU.span([TITLE, title, CLASS,clazz,RECORD_ID,record.getId(),RECORD_INDEX,idx], value);
+		    if(urlField) {
+			let url = urlField.getValue(record);
+			if(Utils.stringDefined(url)) {
+			    value=HU.href(url,HU.getIconImage('fas fa-link',null,[ATTR_STYLE,'font-size:8pt;'])) + HU.space(1) +value;
+			}
+		    }
+		    html+= HU.span([ATTR_TITLE, title, ATTR_CLASS,clazz,RECORD_ID,record.getId(),RECORD_INDEX,idx], value);
 		});
 
 		let height = this.getProperty("height", this.getProperty("mapHeight", 300));
@@ -2979,12 +2996,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.jq(ID_LEFT).html(html);
 		let _this = this;
 		let items = this.jq(ID_LEFT).find(".display-map-toc-item");
-		this.makeTooltips(items,records);
+		if(this.getProperty('showTableOfContentsTooltip')) 
+		    this.makeTooltips(items,records);
 		items.click(function() {
 		    let idx = $(this).attr(RECORD_INDEX);
 		    let record = records[idx];
 		    if(!record) return;
-		    _this.highlightPoint(record.getLatitude(), record.getLongitude(),true, false);
+		    _this.highlightPoint(record.getLatitude(), record.getLongitude(),true, false,false,record);
 		    _this.map.setCenter(MapUtils.createLonLat(record.getLongitude(),record.getLatitude()));
 		    _this.map.setZoom(10);
 		    if(record.trackData) {

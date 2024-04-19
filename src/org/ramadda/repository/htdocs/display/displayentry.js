@@ -2194,7 +2194,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 			    _this.submitSearchForm();
 			});
 		    };
-		    let tooltip = this.getProperty("tooltip")??"${display_html}";
+		    let tooltip = this.getProperty("tooltip")??"${default}";
 		    let props = {centerOnMarkersAfterUpdate:true,
 				 dialogListener: dialogListener,
 				 highlightColor:"#436EEE",
@@ -2207,6 +2207,8 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 				 blockWidth:"150px",
 				 numberOfImages:500,
 				 showTableOfContents:true,
+				 showTableOfContentsTooltip:false,
+				 addMapLocationToUrl:false,
 				 iconField:"iconUrl",
 				 iconSize:16,
 				 displayEntries:false,
