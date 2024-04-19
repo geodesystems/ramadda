@@ -4,7 +4,7 @@ description="KBOCC Water Sensor"
 super="type_point" 
 category="Point Data"
 supercategory="Geoscience"  
-handler="org.ramadda.data.services.PointTypeHandler">
+handler="org.ramadda.projects.kbocc.KboccHydroTypeHandler">
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property name="icon" value="/kbocc/kbocclg.png"/>
 <property name="form.date.show" value="false"/>
@@ -28,6 +28,8 @@ label,pady:5,pos:nw,dx:80,dy:10-ch,label:${entryname}
 label,pos:s,dx:cw2,dy:-10,font:36px sans-serif,label:${temperature decimals=1 suffix=" ${unit}" prefix="Temp:"}
 </property>
 
+<column name="location" type="string"  label="Location" cansearch="false"/>
+<column name="notes" type="string" size="2000"  label="Notes" cansearch="false"/>
 
 
 <wiki>
