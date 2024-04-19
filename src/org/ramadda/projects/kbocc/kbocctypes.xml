@@ -121,7 +121,9 @@ fields=2017,2018,2019,2020,2021,2022,2023,2024,2025}}
 
 
 
-<type name="type_kbocc_hyrdo" super="type_kbocc_hydro" description="KBOCC Water Sensor"  />
+<type name="type_kbocc_hyrdo" super="type_kbocc_hydro"
+      foruser="false"
+      description="Old KBOCC Water Sensor"  />
 
 
 
