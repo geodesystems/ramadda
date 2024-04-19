@@ -73,8 +73,9 @@ label,pos:s,dx:cw2,dy:-10,font:36px sans-serif,label:${match  pattern="(temp|rh)
 </div>
 {{property lastRecords="${wikiproperty.cr1000.count default="5000"}"}}
 <table><tr valign=top>
-<td>{{group groupDiv="cr1000charts" showMenu=true loadingMessage="" noDataMessage=""
-requestFieldsShow=false chartLeft=100 
+<td>{{group groupDiv="cr1000charts" showMenu=true  noDataMessage=""
+requestFields="date,stride,limit" chartLeft=100 
+requestFieldsShow=false
 request.limit.default="${wikiproperty.cr1000.count default="5000"}"
 dataFilters="lessthan(field=.*temp.*,value=1000,label=,enabled=true);greaterthan(field=.*baro.*,value=0,label=,enabled=true);" 
 headerStyle="text-align:left"
@@ -83,12 +84,13 @@ headerStyle="text-align:left"
 :rem We do this because we want the download to show first but the blank
 :rem should actually run first so it gets the point data with the request fields
 {{display_filter targetDiv="datalogger_blank_div"
-requestFieldsDefault=true showMenu=false requestFieldsShow=true
-loadingMessage="icon_progress Loading data..."
+loadingMessage="icon_progress"
+showMenu=false requestFieldsShow=true
 noDataMessage="No data available"}}
 </td>
 <td width=20px>
 {{display_download  dataFilters="" iconSize=14px showMenu=false showDateSelect=true
+loadingMessage=""
 lastRecords="${wikiproperty.cr1000.count default="5000"}"}}
 </td>
 <td><div id="datalogger_blank_div"></div>

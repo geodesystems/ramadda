@@ -32,7 +32,28 @@ picky=false
 	 picky=false
 ]]>
      </property>
-
+    <column name="table_fields" type="string" label="Table Columns"    default="*" showinhtml="false"/>
+<wiki><![CDATA[
++section title={{name}}
+{{description wikify="true"}}
++toggle Information
+{{property max=2000}}
+{{group noDataMessage="" requestFieldsShow=false requestFields="skip,limit" requestFieldsDefault="true"}}
+{{information  details="true"  showTitle="false" }}
++center
+<div style='margin-bottom:4px;'>{{tags}}</div>
+-center
+-toggle
+<div style='display:table-cell;padding-right:12px;'>
+{{display_download loadingMessage="" xshowRecordCount=true requestFieldsShow=false }}
+</div>
++hbox
+{{display_filter noDataMessage="No data available" loadingMessage="" requestFieldsShow=true}}
+-hbox
+{{display_table   maxColumns=50 fields="property:table_fields"}}
+-section
+]]>
+</wiki>
   </type>
 
   <type name="type_document_xml"  description="XML File" pattern="(.*\.xml)"  super="type_document_tabular"  category="Data">

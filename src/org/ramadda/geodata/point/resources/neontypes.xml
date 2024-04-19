@@ -20,9 +20,8 @@
 {{property max="20000"}}
 {{description wikify=true}}
 {{group requestFieldsDefault=true
-requestFieldsShow=false
 request.includeNone=false
-requestFields="date,limit,sitecode,productcode"
+requestFields="date,skip,limit,sitecode,productcode"
 request.fields="date"
 request.date.type=date
 request.date.label=Date
@@ -87,9 +86,10 @@ request.productcode.values="property:neon.productcodes"
 +section title={{name}}
 {{property max="property:maxpoints"}}
 {{description wikify=true}}
-{{group requestFieldsDefault=true
+{{group noDataMessage=""
+requestFieldsDefault=true
 requestFieldsShow=false
-requestFields="date,limit,productcode"
+requestFields="date,skip,limit,sitecode,productcode"
 request.fields="date"
 request.date.type=date
 request.date.label=Date
@@ -98,12 +98,13 @@ request.productcode.type=enumeration
 request.productcode.values="property:neon.productcodes"
 }}
 <table><tr><td>
-{{display_filter requestFieldsDefault=true  requestFieldsShow=true}}
+{{display_filter noDataMessage="No data available"
+requestFieldsDefault=true  requestFieldsShow=true}}
 </td></tr></table>
-{{display_linechart showMenu=true fields=#3}}
-{{display_linechart showMenu=true fields=#4}}
-{{display_download}}
-{{display_table}}
+{{display_linechart showMenu=true fields=#3 loadingMessage=""}}
+{{display_linechart showMenu=true fields=#4 loadingMessage=""}}
+{{display_download loadingMessage=""}}
+{{display_table loadingMessage=""}}
 :vspace  1em
 ----
 +row
