@@ -387,7 +387,7 @@ public class IO {
         if (f == null) {
             return null;
         }
-        f = f.replaceAll("[^\\.a-zA-Z_0-9 ]+",
+        f = f.replaceAll("[^\\.a-zA-Z_0-9\\- ]+",
                          "_").trim().replaceAll("\\.\\.+", ".");
 
         return f;
