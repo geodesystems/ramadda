@@ -1082,8 +1082,6 @@ svg > g > g:last-child { pointer-events: none }
 }
 
 .display-search-extra {
-   margin-top:2px;
-/*   margin-left: 24px;*/
 }
 
 .display-search-providers {

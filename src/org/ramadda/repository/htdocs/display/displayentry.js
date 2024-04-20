@@ -1233,16 +1233,13 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
 	    let contents = "";
 	    let topContents = "";	    
-
-
+	    form+=HU.center(searchButton);
 	    if(topItems.length>0) {
 		if (horizontal) {
-		    form+=HU.center(searchButton);
 		    form += "<table><tr valign=top><td>" + topItems[0] + "</td></tr></table>";
 		    topContents +=  HU.join(topItems.slice(1), "");
 		} else {
 		    topItems = topItems.map(item=>{return HU.div([STYLE,HU.css("margin-right","8px")], item);});
-		    form+=searchButton;
 		    form+="<br>";
 		    form+=   HU.hrow(...topItems);
 		}
@@ -1374,7 +1371,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		contents = HU.div([ATTR_STYLE,HU.css("overflow-y","auto","max-height",HU.getDimension(this.getFormHeight()))], contents);
 	    }
 
-	    form+=HU.div([STYLE,"margin-top:5px", CLASS,"display-search-extra"],topContents);
+	    if(Utils.stringDefined(topContents)) {
+		form+=HU.div([ATTR_CLASS,"display-search-extra"],topContents);
+	    }
 	    form+=contents;
             form += HU.closeTag("form");
             return form;
