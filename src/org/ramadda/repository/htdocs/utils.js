@@ -89,6 +89,7 @@ var TAG_TD = "td";
 var TAG_UL = "ul";
 var TAG_OL = "ol";
 var ATTR_SRC = "src";
+var ATTR_TYPE = "type";
 var ATTR_WIDTH = "width";
 var ATTR_HREF = "href";
 var ATTR_PLACEHOLDER = "placeholder";
