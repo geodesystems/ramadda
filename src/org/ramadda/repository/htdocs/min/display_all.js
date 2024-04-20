@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Apr 20 06:38:45 MDT 2024";
+var build_date="RAMADDA build date: Sat Apr 20 11:39:45 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -33114,7 +33114,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         {p:'showEntries',d: true},
         {p:'showFooter',d: true},	
         {p:'showType',d: true},
-        {p:'entryTypes',ex:'comma separated list of types'},
+        {p:'entryTypes',ex:'comma separated list of types - use "any" for any type'},
         {p:'doSearch',d: true,tt:'Apply search at initial display'},
 	{p:'searchHeaderLabel',d: 'Search'},
 	{p:'searchOpen',d: true},
@@ -34325,9 +34325,12 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             for (let i in cats) {
                 select += catMap[cats[i]];
             }
+
             select += HU.closeTag(TAG_SELECT);
-	    if(this.entryTypes.length==1) {
-		this.writeHtml(ID_TYPE_DIV, HU.hidden(ID_TYPE_FIELD,this.entryTypes[0].getId()));
+	    if(this.entryTypes.length==0) {
+	    } else  if(this.entryTypes.length==1) {
+		if(this.entryTypes[0].getId()!='any')
+		    this.writeHtml(ID_TYPE_DIV, HU.hidden(ID_TYPE_FIELD,this.entryTypes[0].getId()));
 	    } else {
 		this.writeHtml(ID_TYPE_DIV, select);
 	    }
@@ -56080,8 +56083,12 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    this.timeline.goTo(index);
 	},
 	getDate: function(time) {
-	    let timeTo = this.getTimeTo();
+	    if(!time)  {
+		time = new Date();
+		return   {year: time.getUTCFullYear()};
+	    }
 	    let dt =  {year: time.getUTCFullYear()};
+	    let timeTo = this.getTimeTo();
 	    if(timeTo!="year") {
 		dt.month = time.getUTCMonth()+1;
 		if(timeTo!="month") {
