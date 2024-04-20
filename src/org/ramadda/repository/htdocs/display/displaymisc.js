@@ -730,8 +730,12 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    this.timeline.goTo(index);
 	},
 	getDate: function(time) {
-	    let timeTo = this.getTimeTo();
+	    if(!time)  {
+		time = new Date();
+		return   {year: time.getUTCFullYear()};
+	    }
 	    let dt =  {year: time.getUTCFullYear()};
+	    let timeTo = this.getTimeTo();
 	    if(timeTo!="year") {
 		dt.month = time.getUTCMonth()+1;
 		if(timeTo!="month") {

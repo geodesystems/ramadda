@@ -1,3 +1,9 @@
+:root {
+    --display-label-background:   #4E8696;
+    --display-label-color:white;
+}
+
+
 .display-container {
 }
 
@@ -889,12 +895,16 @@ table.dataTable {
    margin: 0px;
 }
 
+
 .display-typelist-category {
-   font-weight: bold;
-   background-color: #efefef;
+   font-weight: bold !important;
+   background:#ccc;
    border-top: 1px #aaa solid;
 }
 
+.display-typelist-category:hover {
+   background:#ccc;
+}
 
 
 .display-typelist-type {
@@ -1096,9 +1106,9 @@ svg > g > g:last-child { pointer-events: none }
 
 .display-search-group-label, .display-search-label {
     font-weight:500;
-    background:#4E8696;
+    background:var(--display-label-background);
     padding:4px;
-    color:white;
+    color:#fff;
 }
 
 .display-search-widget {
@@ -1120,6 +1130,8 @@ svg > g > g:last-child { pointer-events: none }
     margin-top:0px;
 }
 
+
+
 .display-search-group .display-search-label {
     background:transparent;
     color:#000;
@@ -1130,8 +1142,14 @@ svg > g > g:last-child { pointer-events: none }
 
 .display-search-widget-nolabel {
     margin-top:4px;
+    padding-left:4px;
+    padding-right:4px;
+    padding-bottom:4px;        
 }
 
+.display-search-extra .selectboxit-container .selectboxit {
+    width:200px;
+}
 .display-search-widget .selectboxit-container .selectboxit {
     width: 180px;
 }
