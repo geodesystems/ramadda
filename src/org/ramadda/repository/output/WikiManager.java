@@ -3760,10 +3760,10 @@ public class WikiManager extends RepositoryManager
         } else if (theTag.equals(WIKI_TAG_APPLY)) {
             StringBuilder style = new StringBuilder(getProperty(wikiUtil,
 								props, APPLY_PREFIX + ATTR_STYLE, ""));
-            int padding = getProperty(wikiUtil, props,
-                                      APPLY_PREFIX + ATTR_PADDING, 5);
-            int margin = getProperty(wikiUtil, props,
-                                     APPLY_PREFIX + ATTR_MARGIN, 5);
+            String padding = getProperty(wikiUtil, props,
+                                      APPLY_PREFIX + ATTR_PADDING, null);
+            String margin = getProperty(wikiUtil, props,
+                                     APPLY_PREFIX + ATTR_MARGIN, null);
             int border = getProperty(wikiUtil, props,
                                      APPLY_PREFIX + ATTR_BORDER, -1);
             String bordercolor = getProperty(wikiUtil, props,
@@ -3775,14 +3775,12 @@ public class WikiManager extends RepositoryManager
                              bordercolor, "; ");
             }
 
-            if (padding > 0) {
-                Utils.append(style, " padding: ", padding, "px; ");
+            if (stringDefined(padding)) {
+		style.append(HU.css("padding",HU.makeDim(padding,"px")));
             }
-
-            if (margin > 0) {
-                Utils.append(style, " margin: ", margin, "px; ");
-            }
-
+            if (stringDefined(margin)) {
+		style.append(HU.css("margin",HU.makeDim(margin,"px")));
+            }	    
 
             int maxHeight = getProperty(wikiUtil, props,
                                         APPLY_PREFIX + "maxheight", -1);
