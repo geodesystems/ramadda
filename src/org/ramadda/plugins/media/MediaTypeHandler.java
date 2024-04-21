@@ -483,7 +483,8 @@ public class MediaTypeHandler extends GenericTypeHandler {
                        || _path.endsWith(".m4v")) {
                 player = HU.tag("video", HU.attrs(new String[] {
                     "id", mediaId, "controls", "", "preload", "metadata",
-                    "height", height, "width", width
+                    "height", height, "style","max-width:100%",
+		    "width", width
                 }), HU.tag("source", HU.attrs(new String[] { "src", mediaUrl,
                         "type", "video/mp4" })));
                 Utils.add(attrs, "media", JU.quote("media"));
@@ -501,7 +502,7 @@ public class MediaTypeHandler extends GenericTypeHandler {
                     "id", mediaId, HtmlUtils.ATTR_SRC, mediaUrl,
                     HtmlUtils.ATTR_CLASS, "ramadda-video-embed",
                     HtmlUtils.ATTR_WIDTH, width, HtmlUtils.ATTR_HEIGHT,
-                    height,
+                    height,"style","max-width:100%;",
                 }) + " controls ", HtmlUtils.tag("source",
                         HtmlUtils.attrs(new String[] { HtmlUtils.ATTR_SRC,
                         mediaUrl })));
