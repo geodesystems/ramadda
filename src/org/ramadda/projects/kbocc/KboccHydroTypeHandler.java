@@ -35,7 +35,6 @@ public class KboccHydroTypeHandler extends PointTypeHandler {
     public KboccHydroTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
-	System.err.println("TYPE:" + this);
     }
 
 
