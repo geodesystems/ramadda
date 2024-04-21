@@ -129,6 +129,7 @@ public class JsonOutputHandler extends OutputHandler {
                               final Entry group, final List<Entry> children)
             throws Exception {
 
+        request.setCORSHeaderOnResponse();
         if (group.isDummy()) {
             request.setReturnFilename("Search_Results.json");
         } else {
@@ -178,7 +179,6 @@ public class JsonOutputHandler extends OutputHandler {
 	    Result r = makeStream(request,group, is);
 	    return r;
         }
-        request.setCORSHeaderOnResponse();
         return new Result("", sb, JsonUtil.MIMETYPE);
     }
 
@@ -203,6 +203,7 @@ public class JsonOutputHandler extends OutputHandler {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
+        request.setCORSHeaderOnResponse();
         request.setReturnFilename(IO.stripExtension(entry.getName())
                                   + ".json");
         List<Entry> allEntries = new ArrayList<Entry>();
@@ -218,8 +219,6 @@ public class JsonOutputHandler extends OutputHandler {
         }
         StringBuilder sb = new StringBuilder();
         makeJson(request, allEntries, sb);
-        request.setCORSHeaderOnResponse();
-
         return new Result("", sb, JsonUtil.MIMETYPE);
     }
 
@@ -435,6 +434,7 @@ public class JsonOutputHandler extends OutputHandler {
      */
     public void makeJson(Request request, List<Entry> entries, Appendable sb)
             throws Exception {
+	System.err.println("makeJson");
 	sb.append(JU.listOpen());
 	int cnt=0;
         for (Entry entry : entries) {
