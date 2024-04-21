@@ -1720,12 +1720,9 @@ public class Request implements Constants, Cloneable {
      */
     public void setCORSHeaderOnResponse() {
         if (repository.isCORSOk()) {
-	    System.err.println("setCors");
             httpServletResponse.setHeader("Access-Control-Allow-Methods",
                                           "POST, GET, OPTIONS , PUT");
             httpServletResponse.setHeader("Access-Control-Allow-Origin", "*");
-        } else {
-	    System.err.println("no setCors");
 	}
     }
 
