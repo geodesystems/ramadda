@@ -196,7 +196,13 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	sb.append(HU.href(url));
 	sb.append("Missing Person/#" + entry.getValue("case_number","")+"<br>");
 	sb.append(entry.getName().trim());
-	if(stringDefined(nickname)) sb.append(" - \"" + nickname.trim()+"\"");
+	if(stringDefined(nickname)) {
+	    nickname = nickname.trim();
+	    if(nickname.startsWith("\"")) 
+		sb.append(" - " + nickname);
+	    else
+		sb.append(" - \"" + nickname +"\"");
+	}
 	sb.append(", ");
 	if(forSearch) {
 	    findColumn("status").formatValue(request, entry, sb, Column.OUTPUT_HTML, entry.getValues(),
