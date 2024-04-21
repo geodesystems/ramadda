@@ -273,7 +273,8 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 			    new WikiTag(WIKI_TAG_TYPE_SEARCH_LIST,"Type Search List",
 					
 					"showHeader","true",
-					"showSearchField","true",					
+					"showSearchField","true",
+					"#providers","this,type:ramadda",
 					"#width","200px",
 					"#height","400px",
 					"#supers","comma separated list of super categories",

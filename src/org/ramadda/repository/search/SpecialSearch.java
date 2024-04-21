@@ -560,7 +560,9 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 	    StringBuilder sb = new StringBuilder();
 	    sb.append("{{display_entrylist ");
 	    addAttr(sb, "searchDirect","false");
-	    addAttr(sb, "providers",Utils.getProperty(props,"providers","this,type:ramadda"));
+	    String providers=Utils.getProperty(props,"providers","this,type:ramadda");
+	    if(stringDefined(providers))
+		addAttr(sb, "providers",providers);
 	    addAttr(sb, "showAncestor",Utils.getProperty(props,"showAncestor",typeHandler.getTypeProperty("search.form.showAncestor",true)));
 	    addAttr(sb,"entryTypes",typeHandler.getType(),"displayTypes",Utils.join(tabs,","));
 	    addAttr(sb,"orderByTypes",orderByTypes);
