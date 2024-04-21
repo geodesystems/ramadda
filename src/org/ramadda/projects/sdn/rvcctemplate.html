@@ -50,9 +50,7 @@ ${imports}
     text-align:center;
 }
 
-.ramadda-navbar-separator {
-    color:#2A78B7;
-}
+
 
 .rvcc-pageheader .ramadda-navbar {
     position:absolute;
@@ -60,10 +58,18 @@ ${imports}
     left:50%;
     transform: translateX(-50%);
     display:inline-block;
+    padding:2px;
+    padding-left:8px;
+    padding-right:8px;        
 }
 
+.ramadda-navbar-separator {
+    color:#2A78B7;
+    color:#000;
+}
 .ramadda-navbar-link {
     color:#2A78B7;
+    color:#000;
     opacity:1.0;
 }
 
@@ -87,6 +93,12 @@ ${imports}
 .ramadda-header a, .ramadda-breadcrumbs-list a {
     color:#F4B942 !important;
 }
+
+.ramadda-breadcrumbs-list a {
+   text-shadow:1px 1px 0 #000;
+}
+
+
 .rvcc-color {
  color:#F4B942 !important;
 }
