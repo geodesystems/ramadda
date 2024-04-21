@@ -1635,7 +1635,11 @@ WikiEditor.prototype = {
 	let title = null;
 	let attrs = [];
 	let display = null;
-	if(tagInfo.type=="plus") return {attrs:null,title:null,display:null};
+	if(tagInfo.type=='plus' ||
+	   (tagInfo.tag && tagInfo.tag!='display' && tagInfo.tag!='group')) {
+	    return {attrs:null,title:null,display:null};
+	}
+
 	try {
 	    display = new DisplayManager().createDisplay(tagInfo.type,{dummy:true});
 	    if(display) {
