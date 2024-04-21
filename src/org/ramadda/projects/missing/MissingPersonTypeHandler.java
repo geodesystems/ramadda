@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2023 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.projects.missing;
@@ -51,7 +51,6 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	return 	entry.getValue("last_name") +"-" + entry.getValue("first_name") +"-" + entry.getValue("middle_name");
     }
 
-
     private void makeBlock(Appendable sb, String clazz,String header,String contents) throws Exception {
 	HU.open(sb,"div",HU.cssClass(clazz));
 	HU.div(sb,header,HU.cssClass("missing-sub-header"));
@@ -62,14 +61,12 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
-            throws Exception {
+	throws Exception {
         if (tag.equals("missing_flyer")) {
 	    StringBuilder sb = new StringBuilder();
 	    makeFlyer(request, entry,sb);
 	    return sb.toString();
 	}
-
-
 
         if ( !tag.equals("missing_header")) {
 	    return super.getWikiInclude(wikiUtil, request, originalEntry, entry, tag, props);
@@ -77,7 +74,6 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 
 	boolean forSearch = request.get("forsearch",Utils.getProperty(props,"forSearch",false));
 	String style = Utils.getProperty(props,"style","");
-
 	StringBuilder sb = new StringBuilder();
 	linkCSS(request, sb, getRepository().getHtdocsUrl("/missing/missing.css"));
 	int years;
@@ -126,18 +122,12 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	    return sb2.toString();
 	}
 
-
 	HU.open(sb,"div",HU.attrs("class","missing-header search-component","style",style));
 	getHeaderLine(request, entry, sb,forSearch);
-
 	StringBuilder blocks = new StringBuilder();
 	blocks.append("<div style='margin-top:5px;border-top:var(--basic-border);'>");
-
 	if(image.length()>0)
 	    HU.div(blocks,image,HU.attrs("class","missing-block"));
-	
-
-
 	makeBlock(blocks,clazz,"Status",Utils.applyCase(Utils.CASE_PROPER,status));
 	if(missingDate!=null) {
 	    String label = sdf.format(missingDate);
@@ -176,15 +166,10 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	    System.err.println(line);
 	    System.exit(0);
 	    return line;
-	    //	    sb.append(HU.makeShowHideBlock("Details",blocks.toString(),false));
 	} else {
 	    blocks.append("</div>");
 	    sb.append(blocks);
 	}
-
-
-
-
 	return sb.toString();
     }
 
@@ -211,18 +196,17 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	}
 	Column sexColumn = findColumn("biological_sex");
         sexColumn.formatValue(request, entry, sb, Column.OUTPUT_HTML, entry.getValues(),
-                           false);
+			      false);
 	sb.append(", ");
 	Column ethnicityColumn = findColumn("race_ethnicity");
         ethnicityColumn.formatValue(request, entry, sb, Column.OUTPUT_HTML, entry.getValues(),false);
 
 	sb.append(HU.close("a"));
 	HU.close(sb,"div");
-	}
-
+    }
 
     public Result processEntryAction(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         String action = request.getString("action", "");
 	if(!action.equals("flyer")) {
 	    return super.processEntryAction(request, entry);
@@ -240,14 +224,13 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
     public void makeFlyer(Request request, final Entry entry,StringBuilder sb)
 	throws Exception {
 	final Object[] values = entry.getValues();
-
 	final Utils.UniFunction<String,String> colValue = new Utils.UniFunction<String,String>() {
 		public String call(String column) {
 		    try {
 			return findColumn(column).formatValue(request, entry, values);
-			} catch(Exception exc) {
-			    throw new RuntimeException(exc);
-			}
+		    } catch(Exception exc) {
+			throw new RuntimeException(exc);
+		    }
 
 		}
 	    };
@@ -368,8 +351,5 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	}
 
     }
-
-
-
 
 }

@@ -1,45 +1,29 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2023 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.projects.missing;
-
-
-
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.JsonUtil;
-
 import org.json.*;
-
 import org.w3c.dom.*;
-
-
 import ucar.unidata.xml.XmlUtil;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-
-
 import java.text.SimpleDateFormat;
 import java.io.*;
-
-
 import java.net.URL;
-
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-
 import java.util.List;
 import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-/**
- */
 public class NamusConverter {
     static boolean ok = true;
     static String BASEURL =  "https://www.namus.gov";
@@ -60,13 +44,10 @@ public class NamusConverter {
 	JSONObject _phys = root.getJSONObject("physicalDescription");
 	JSONObject _sighting = root.getJSONObject("sighting");
 	JSONArray _docs = root.optJSONArray("documents");	
-	if(_docs!=null && _docs.length()>0) {
-	    //	    System.err.println("DOCS:" + _docs);
-	}
 	JSONArray _images = root.optJSONArray("images");	
 	JSONArray _notes = root.optJSONArray("notes");	
 	JSONObject _address = _sighting.getJSONObject("address");
-	JSONObject _geolocation = _sighting.optJSONObject("publicGeolocation");					
+	JSONObject _geolocation = _sighting.optJSONObject("publicGeolocation");
 	JSONArray _tribe = _desc.getJSONArray("tribeAssociations");
 	StringBuilder sb = new StringBuilder();
 	String uid = HtmlUtils.getUniqueId("entry");
@@ -108,8 +89,6 @@ public class NamusConverter {
 
 	sb.append(XmlUtil.attr("primary_residence_tribal_land",
 			       JU.readValue(_sighting,"primaryResidenceOnTribalLand.name","").toLowerCase()));
-
-
 	sb.append(XmlUtil.attr("missing_city",_address.optString("city","")));
 	sb.append(XmlUtil.attr("missing_state",JU.readValue(_address,"state.name","")));
 	sb.append(XmlUtil.attr("missing_county",JU.readValue(_address,"county.displayName","")));
@@ -119,13 +98,10 @@ public class NamusConverter {
 	    sb.append(XmlUtil.attr("latitude",""+_coords.getDouble("lat")));
 	    sb.append(XmlUtil.attr("longitude",""+_coords.getDouble("lon")));
 	}
-	
-
-
 	if(_desc.has("heightFrom"))
 	    sb.append(XmlUtil.attr("height",""+_desc.getInt("heightFrom")));
 	if(_desc.has("weightFrom"))
-	sb.append(XmlUtil.attr("weight",""+_desc.getInt("weightFrom")));	
+	    sb.append(XmlUtil.attr("weight",""+_desc.getInt("weightFrom")));	
 	String sex = JsonUtil.readValue(_desc,"sex.name","unsure");
 	sb.append(XmlUtil.attr("biological_sex",sex.toLowerCase()));
 	String e = JsonUtil.readValue(_desc,"primaryEthnicity.name","");
@@ -133,8 +109,6 @@ public class NamusConverter {
 
 	String ethnicity = Utils.getProperty(emap,e,Utils.getProperty(emap,_e,"unknown"));
 	sb.append(XmlUtil.attr("race_ethnicity",ethnicity));
-
-
 	sb.append("\n");
 	sb.append(XmlUtil.attr("hair_color",JU.readValue(_phys,"hairColor.name","unknown").toLowerCase()));
 	sb.append("\n");
@@ -147,7 +121,6 @@ public class NamusConverter {
 	String facialHair = _phys.optString("facialHairDescription",null);
 	if(Utils.stringDefined(facialHair)) 
 	    sb.append(XmlUtil.attr("facial_hair_description",facialHair));	
-	
 	sb.append("\n");
 	sb.append(">\n");
 
@@ -177,10 +150,6 @@ public class NamusConverter {
 	    sb.append(XmlUtil.getCdata(tmp.toString().trim()));
 	    sb.append("</clothing_and_accessories>\n");
 	}
-
-
-    
-
 	String thumb = root.getString("hrefDefaultImageThumbnail");
 	String _thumb = getFile(thumb,"png");
 	String fileId = _thumb;
@@ -199,8 +168,6 @@ public class NamusConverter {
 		sb.append("</metadata>\n");
 	    }
 	}
-
-
 
 	//	isowner,department,contact,role,address,county,state,phone,email,url,#
 	JSONArray _agencies = root.getJSONArray("investigatingAgencies");
@@ -274,12 +241,12 @@ public class NamusConverter {
 	System.out.println(sb);
 
 	/*
-	JSONArray vehicles  = root.getJSONArray("vehicles");
-	if(vehicles.length()>0) {
-	    System.err.println(vehicles);
-	    for (int i = 0; i < vehicles.length(); i++) {
-	    }
-	}
+	  JSONArray vehicles  = root.getJSONArray("vehicles");
+	  if(vehicles.length()>0) {
+	  System.err.println(vehicles);
+	  for (int i = 0; i < vehicles.length(); i++) {
+	  }
+	  }
 	*/
 
     }
@@ -304,8 +271,6 @@ public class NamusConverter {
 	sb.append(XmlUtil.getCdata(contents.toString()));
 	sb.append("</attr>\n");
     }
-
-
 
     public static void main(String[]args) throws Exception{
 	if(args.length!=1) {
