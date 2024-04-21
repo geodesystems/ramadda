@@ -1,0 +1,54 @@
+<html>
+<title>Missing Person's Database</title>
+<body>
++css
+.myimg {
+text-align:center;
+border:1px solid #ccc;
+margin-top:5px;
+margin-bottom:10px;
+display: block;
+margin-left: auto;
+margin-right: auto;
+}
+-css
+
++section title="Missing Person's Database"
+:navtop
++callout-info
+This Missing Person's database provides a facility to create, edit, display and search
+for missing person records.
+The data model is based on the data model from
+The Department of Justice  [https://namus.nij.ojp.gov/ National Missing and Unidentified Persons System (NAMUS)]. You can view an example database at
+[https://ramadda.org/repository/a/missing_persons_database ramadda.org].
+-callout
+
+:heading Installation
+The Missing Person's database is released as a plugin to RAMADDA. To install RAMADDA
+consult the documentation at [https://ramadda.org/repository/a/release RAMADDA Downloads].
+Once RAMADDA is installed download the missing.plugin.jar file from
+[https://github.com/geodesystems/ramadda/blob/master/src/org/ramadda/projects/missing/missing.plugin.jar Github]. Copy the missing.plugin.jar to the [https://ramadda.org/repository/userguide/plugins.html plugins directory] of your RAMADDA home directory.
+
+:heading Missing Person entry type
+The database is centered around a Missing Person entry type. These entries can be  stored
+in any Folder in your RAMADDA. To create a Missing Person entry navigate to
+the Folder and select "Pick a Type..." from the entry popup menu:
+<img src=images/popup.png width=400px class=myimg>
+
+Then look for the Missing Person entry type:
+<img src=images/pickatype.png width=400px class=myimg>
+
+
+Fill in the information:
+<img src=images/newentry.png width=400px class=myimg>
+
+Once the Missing Person entry has been created you can add a thumbnail image from the
+entry popup menu:
+<img src=images/thumbnail.png width=400px class=myimg>
+
+
+
+-section
+</body>
+</html>
+

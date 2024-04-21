@@ -69,7 +69,8 @@
     <column name="height" type="int"  searchlabel="Height (inches)"  label="Height" suffix="Inches"  cansearch="true" htmlTemplate="${value inchesToFeet=true}" cansort="true"/>
     <column name="weight" type="int"  searchlabel="Weight (pounds)" label="Weight" suffix="Pounds"  cansearch="true"
 	    htmlTemplate="${value} lbs" cansort="true"/>
-    <column name="race_ethnicity" type="enumerationplus"  label="Primary Ethnicity"   cansearch="true" cansort="true"
+    <column name="race_ethnicity" type="enumerationplus"
+	    addblanktoenumerationmenu="false" label="Primary Ethnicity"   cansearch="true" cansort="true"
 	    values="file:/org/ramadda/projects/missing/ethnicity.txt"/>
     
     <column name="tribe_association" type="enumerationplus"  label="Tribal Association"
