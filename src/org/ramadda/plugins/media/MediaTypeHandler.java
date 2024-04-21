@@ -472,7 +472,7 @@ public class MediaTypeHandler extends GenericTypeHandler {
 		_path.endsWith(".webm")	 || _path.endsWith("ogg") || _path.endsWith("wav")) {
                 player = HU.tag("audio", HU.attrs(new String[] {
                     "controls", "", "id", mediaId, "style",
-                    HU.css("height", HU.makeDim(AUDIO_HEIGHT, "px"), "width",
+                    HU.css("max-width","100%","height", HU.makeDim(AUDIO_HEIGHT, "px"), "width",
                            HU.makeDim(width, "px"))
                 }), HU.tag("source", HU.attrs(new String[] { "src", mediaUrl,
                         "type",
