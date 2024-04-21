@@ -434,7 +434,6 @@ public class JsonOutputHandler extends OutputHandler {
      */
     public void makeJson(Request request, List<Entry> entries, Appendable sb)
             throws Exception {
-	System.err.println("makeJson");
 	sb.append(JU.listOpen());
 	int cnt=0;
         for (Entry entry : entries) {
