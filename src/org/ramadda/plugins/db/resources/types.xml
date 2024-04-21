@@ -11,7 +11,7 @@
 </type>
 
 
-<type name="type_db_base"  super="type_point" description="Database Base"  supercategory="Basic"  category="Database" foruser="false" includeInSearch="true">
+<type name="type_db_base"  super="type_point" description="Database Base"  supercategory="Basic"  category="Database" foruser="false" includeInSearch="false">
      <property name="icon" value="/db/database_table.png"/>
 </type>
 
