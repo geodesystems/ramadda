@@ -848,7 +848,12 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 			title=metadata.getAttr(titleElement.getIndex());
 			break;
 		    }
-                    urls.add(new String[]{url,title});
+		    String primary=metadata.getAttr3();
+		    if(stringDefined(primary) && primary.equals("true")) {
+			urls.add(0,new String[]{url,title});
+		    } else {
+			urls.add(new String[]{url,title});
+		    }
                 }
             }
         }

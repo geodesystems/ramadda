@@ -899,14 +899,23 @@ function Entry(props) {
         },
         getThumbnail: function() {
             if (!this.metadata) return null;
+	    let okMetadata;
+	    let getUrl=metadata=>{
+		if(metadata.value.attr1.startsWith("http")) return metadata.value.attr1;
+		let url = this.getRamadda().getRoot() + "/metadata/view/" + metadata.value.attr1 + "?element=1&entryid=" + this.getAbsoluteId() + "&metadata_id=" + metadata.id;
+		return url;
+	    }
             for (let i = 0; i < this.metadata.length; i++) {
                 let metadata = this.metadata[i];
                 if (metadata.type == "content.thumbnail" && Utils.stringDefined(metadata.value.attr1)) {
-		    if(metadata.value.attr1.startsWith("http")) return metadata.value.attr1;
-		    let url = this.getRamadda().getRoot() + "/metadata/view/" + metadata.value.attr1 + "?element=1&entryid=" + this.getAbsoluteId() + "&metadata_id=" + metadata.id;
-		    return url;
+		    okMetadata=metadata;
+		    //Check for primary thumbnail
+		    if(metadata.attr3=='true') 
+			return getUrl(metadata);
 		}
             }
+	    if(okMetadata)
+		return getUrl(okMetadata);
             return null;
         },
 
