@@ -349,7 +349,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     private boolean addBulkUpload = false;
     private String bulkUploadHelp ="";
 
-    private boolean showEnumerationMenu = true;
+
     private String suffix;    
 
     /** _more_ */
@@ -393,6 +393,8 @@ public class Column implements DataTypes, Constants, Cloneable {
     /** _more_ */
     private boolean canSort;
 
+    private boolean showEnumerationMenu = true;
+    private boolean addBlankToEnumerationMenu = true;
     private boolean enumerationSearchMultiples = false;
     private boolean enumerationShowCheckboxes= false;
 
@@ -652,6 +654,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         addBulkUpload    = getAttributeOrTag(element, "addbulkupload", false);
         bulkUploadHelp    = getAttributeOrTag(element, "bulkuploadhelp", "Upload file");
 	showEnumerationMenu= getAttributeOrTag(element, "showenumerationmenu", true);
+	addBlankToEnumerationMenu=getAttributeOrTag(element, "addblanktoenumerationmenu", true);
 
         isWiki     = getAttributeOrTag(element, "iswiki", false);
         isCategory = getAttributeOrTag(element, ATTR_ISCATEGORY, false);
@@ -3066,9 +3069,13 @@ public class Column implements DataTypes, Constants, Cloneable {
                     ? (String) toString(values, offset)
                     : value));
 	    //This is a hack to fix a problem with changing from an enumeration to a string
-	    //If we do this then lucense has a problem with indexing this column
+	    //If we do this then lucene has a problem with indexing this column
 	    if(showEnumerationMenu) {
 		List enums = getEnumPlusValues(request, entry);
+		if(addBlankToEnumerationMenu) {
+		    if(!TwoFacedObject.contains(enums,""))
+			enums.add(0,new TwoFacedObject("&lt;blank&gt;",""));
+		}
 		widget = HU.select(
 				   urlArg, enums, value,
 				   HU.cssClass("column-select")) + "  or:  "
