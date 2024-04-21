@@ -33,8 +33,10 @@
     orderByLabel_date_ascending="Date missing - least recent"
     orderByLabel_date_of_birth_descending="Date of birth - youngest first"
     orderByLabel_date_of_birth_ascending="Date of birth - oldest first"
-    orderByLabel_age_missing_ascending="Age missing - oldest first"
-    orderByLabel_age_missing_descending="Age missing - youngest first"    
+    orderByLabel_age_missing_ascending="Age missing - youngest first"
+    orderByLabel_age_missing_descending="Age missing - oldest first"
+    orderByLabel_biological_sex_ascending="Biological sex - female first"
+    orderByLabel_biological_sex_descending="Biological sex - male first"        
     ]]></property>
 
     <property name="search.form.name.show" value="true"/>
