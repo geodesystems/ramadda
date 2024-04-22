@@ -142,6 +142,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    return this.fields[0];
 	},
 	getFieldId: function() {
+	    if(this.fields.length==0) return '';
 	    return this.fields[0].getId();
 	},	
 	getLabel: function() {
@@ -184,7 +185,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	fieldType:null,
 	getFieldType: function() {
 	    if(this.disabled) return '';
-	    if(!this.fieldType) {
+	    if(this.getField() && !this.fieldType) {
 		this.fieldType =  this.display.getProperty(this.getField().getId()+".type",this.getField().getType());
 	    }
 	    return this.fieldType;
