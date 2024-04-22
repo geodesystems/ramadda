@@ -928,7 +928,7 @@ function RecordField(props, source) {
   The main data record. This holds a lat/lon/elevation, time and an array of data
   The data array corresponds to the RecordField fields
 */
-function PointRecord(fields,lat, lon, elevation, time, data, rowIdx) {
+function PointRecord(fields,lat, lon, elevation, time, data, rowIdx,dateHasDate) {
     this.isPointRecord = true;
     $.extend(this, {
 	rowIndex:rowIdx,
@@ -940,11 +940,10 @@ function PointRecord(fields,lat, lon, elevation, time, data, rowIdx) {
         data: data,
 	id: HtmlUtils.getUniqueId(),
     });
-    if(!time && data) {
+    if(!time && data && !dateHasDate) {
 	data.every(d=>{
 	    if(d && d.getTime) {
 		this.recordTime = d;
-		console.log(this.recordTime);
 		return false;
 	    }
 	    return true;
@@ -1305,7 +1304,7 @@ function makePointData(json, derived, source,url,callback) {
             values[field.getIndex()] = value;
         }
 	
-        let record = new PointRecord(fields, tuple.latitude, tuple.longitude, tuple.elevation, date, values,rowIndex);
+        let record = new PointRecord(fields, tuple.latitude, tuple.longitude, tuple.elevation, date, values,rowIndex,dateIdx>=0);
         pointRecords.push(record);
 
     });
