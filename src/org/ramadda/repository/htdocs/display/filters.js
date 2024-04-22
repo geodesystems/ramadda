@@ -1176,8 +1176,12 @@ function RecordFilter(display,filterFieldId, properties) {
 		   this.getProperty(this.getId() +".filterSort",this.getProperty('filterSort',true))) {
 		    let sort = this.getProperty(this.getId() +".filterSort",this.getProperty('filterSort',false));
 		    let sortCount = this.getProperty(this.getId() +".filterSortCount",!sort);
+		    enumValues.forEach(e=>{
+			if(!Utils.isDefined(e.count)) e.count=0;
+		    });
+
 		    enumValues.sort((a,b)  =>{
-			if(sortCount && a.count && b.count) {
+			if(sortCount) {
 			    if(b.count!=a.count) {
 				return b.count-a.count;
 			    }				
