@@ -952,15 +952,21 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         },
         updateForSearching: function(jsonUrl) {
 	    let settings = this.getSearchSettings();
-	    let outputs = this.getRamadda().getSearchLinks(settings);
+	    let outputs = this.getRamadda().getSearchLinks(settings,true);
 	    let url= this.getRamadda().getSearchUrl(settings);
 	    let copyId = HU.getUniqueId("copy");
-	    outputs = HU.join(outputs, " - ");
-	    outputs = HU.span([ATTR_ID,copyId,'data-copy',url],HU.getIconImage("fas fa-clipboard"))+HU.space(1) +outputs;
-            this.footerRight = outputs == null ? "" : "Links: " + outputs;
+	    outputs = HU.join(outputs, HU.space(2));
+	    outputs = outputs+ HU.space(2)+
+		HU.span([ATTR_CLASS,'ramadda-search-link ramadda-clickable',
+			 ATTR_ID,copyId,
+			 'data-copy',url],
+			HU.getIconImage("fas fa-clipboard"));
+            this.footerRight = outputs == null ? "" :  outputs;
             this.writeHtml(ID_FOOTER_RIGHT, this.footerRight);
-	    Utils.initCopyable('#'+copyId,'Click to copy search URL');
-
+	    let _this = this;
+	    this.jq(ID_FOOTER_RIGHT).find('.ramadda-search-link').button().click(function(event){
+		_this.handleSearchLink(event,$(this));
+	    });
             let msg = this.searchMessage;
             if (msg == null) {
                 msg = this.getRamadda().getSearchMessage();
@@ -2083,15 +2089,14 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 			let id = HU.getUniqueId(type +"_");
 			this.myDisplays.push({id:id,type:type,entries:this.areaEntries});
 			addContents(HU.div([ID,id,STYLE,HU.css("width","100%")]));
-//			this.mapId = HU.getUniqueId("map_");
-//			let mapDiv = HU.div([ID,this.mapId,STYLE,HU.css("width","100%","height","400px")]);
-//			contents.push(mapDiv);
 		    }
 
 		} else if(type=="metadata") {		    
 		    titles.push("Metadata");
 		    let mtd = HU.div([STYLE,HU.css("width","800px","max-width","800px","overflow-x","auto")],this.getEntriesMetadata(entries));
 		    addContents(mtd);
+		} else {
+		    console.log('unknown display:' + type);
 		}
 	    });
 
@@ -2112,6 +2117,27 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 	    return tabs;
         },
 
+	handleSearchLink:function(event,button) {
+	    let copy = button.attr('data-copy');
+	    if(copy) {
+		Utils.copyToClipboard(copy);
+		alert('The URL has been copied to the clipboard');
+		return;
+	    }		
+
+	    let url = button.attr('data-url');
+	    let format = button.attr('data-name')
+	    let size = prompt('How many records do you want in the ' + format +' download?',this.jq(ID_SEARCH_MAX).val());
+	    if(!size) return;
+	    url = url.replace(/max=\d+/,'max='+size);
+            if(event.shiftKey) {
+		Utils.copyToClipboard(url);
+		alert('The URL has been copied to the clipboard');
+
+	    } else {
+		Utils.triggerDownload(url);
+	    }
+	},
         entryListChanged: function(entryList) {
             if (this.multiSearch) {
                 this.multiSearch.count--;
@@ -2143,9 +2169,11 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
             let get = this.getGet();
             this.writeHtml(ID_FOOTER_LEFT, "");
             if (this.footerRight != null) {
+		let _this =this;
                 this.writeHtml(ID_FOOTER_RIGHT, this.footerRight);
-                Utils.initCopyable(this.jq(ID_FOOTER_RIGHT).find('[data-copy]'),
-				   'Click to copy search URL');
+		this.jq(ID_FOOTER_RIGHT).find('.ramadda-search-link').button().click(function(event) {
+		    _this.handleSearchLink(event,$(this));
+		});
             }
 
             let entriesHtml = this.makeEntriesDisplay(entries);
@@ -2172,11 +2200,12 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 		let index=0;
 		let fields = [new RecordField({type: "string", index: (index++), id: "name",label: "Name"}),
 			      new RecordField({type: "string", index: (index++), id: "description",label: "Description"}),
+			      new RecordField({type: "date", index: (index++), id: "date",label: "Date"}),			      
 			      new RecordField({type: "url", index: (index++), id: "url",label: "URL"}),
 			      new RecordField({type: "image", index: (index++), id: "image",label: "Image"}),
 			      new RecordField({type: "url", index: (index++), id: "iconUrl",label: "Icon"}),
 			      new RecordField({type: "string", index: (index++), id: "tags",label: "Tags"}),
-			      new RecordField({type: "string", index: (index++), id: "display_html",label: "Display HTML"}),			      			      			      
+			      new RecordField({type: "string", index: (index++), id: "display_html",label: "Display Html"}),
 			      new RecordField({index: (index++), id: "latitude",label: "Latitude"}),
 			      new RecordField({index: (index++), id: "longitude",label: "Longitude"}),			      			      					     ]
 		let entryType = null;
@@ -2197,7 +2226,16 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 		    entries.forEach(entry=>{
 			let tags = this.makeEntryTags(entry,true,"");
 			let displayHtml = entry.displayHtml??entry.getName()
-			let data = [entry.getName(true),entry.getSnippet()||"",entry.getEntryUrl(),entry.getImageUrl()||defaultImage||"",entry.getIconUrl(),tags,displayHtml,entry.getLatitude(), entry.getLongitude()];
+			let data = [entry.getName(true),
+				    entry.getSnippet()||"",
+				    entry.getStartDate(),
+				    entry.getEntryUrl(),
+				    entry.getImageUrl()||defaultImage||"",
+				    entry.getIconUrl(),
+				    tags,
+				    displayHtml,
+				    entry.getLatitude(),
+				    entry.getLongitude()];
 			if(entryType) {
 			    entryType.getColumns().forEach(column=>{
 				let v = entry.getAttributeValue(column.getName());
