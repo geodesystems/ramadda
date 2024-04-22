@@ -1334,6 +1334,23 @@ var Utils =  {
 	return null;
     },
 
+    triggerDownload:function(url) {
+	let link = document.createElement('a');
+	link.href = url;
+	link.target='_download';
+//	link.setAttribute('download', 'file.csv');
+	// This part is necessary for older browsers
+	if (document.createEvent) {
+            let event = document.createEvent('MouseEvents');
+            event.initEvent('click', true, true);
+            link.dispatchEvent(event);
+	} else {
+            link.click();
+	}
+    },
+
+
+
     join: function(l, delimiter, offset) {
 
         if ((typeof offset) == "undefined") offset = 0;
@@ -4147,7 +4164,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
     },
     getObjectURL:function(blob) {
-        var urlCreator = window.URL || window.webkitURL;
+        let urlCreator = window.URL || window.webkitURL;
         return urlCreator.createObjectURL(blob);
     },
     getErrorDialog: function(msg) {
@@ -4205,6 +4222,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             $("#" + id).dialog("open");
         });
     },
+
 
 
     join: function(items, separator) {
