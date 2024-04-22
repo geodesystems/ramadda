@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Apr 22 11:30:01 MDT 2024";
+var build_date="RAMADDA build date: Mon Apr 22 11:46:06 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -18712,13 +18712,17 @@ function RecordFilter(display,filterFieldId, properties) {
 			enumValues.push(obj);
 		    });
 		});
-		if(this.getProperty(this.getId() +".filterSort",this.getProperty('filterSort',true))) {
+
+
+		if(this.getProperty(this.getId() +".filterSortCount") ||
+		   this.getProperty(this.getId() +".filterSort",this.getProperty('filterSort',true))) {
 		    let sort = this.getProperty(this.getId() +".filterSort",this.getProperty('filterSort',false));
 		    let sortCount = this.getProperty(this.getId() +".filterSortCount",!sort);
 		    enumValues.sort((a,b)  =>{
 			if(sortCount && a.count && b.count) {
-			    if(b.count!=a.count)
+			    if(b.count!=a.count) {
 				return b.count-a.count;
+			    }				
 			}
 			a= a.value;
 			b = b.value;
