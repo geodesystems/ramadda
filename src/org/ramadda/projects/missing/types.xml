@@ -241,7 +241,7 @@ csvcommands1=-notcolumns,id\,type\,south\,west,-addheader, biological_sex.type e
 <![CDATA[
 +section title={{name}}
 {{description wikify=true}}
-{{group filterFields="_text_,biological_sex,age_missing,tribe_association" 
+{{group filterFields="_text_,startdate,biological_sex,age_missing,tribe_association" 
 hideFilterWidget=true}}
 {{display_filter}}
 +tabs
