@@ -6755,6 +6755,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		group = null;
 		groupHtml = null;
 		this.filters.forEach(filter=>{
+		    if(!filter.isEnabled()) return;
 		    let widget = filter.getWidget(fieldMap, bottom,records, vertical);
 		    if(!vertical)
 			widget = HU.span(['class','display-filter-container display-filter-'+ filter.displayType,ID,this.domId("filtercontainer_" + filter.id)], widget);
