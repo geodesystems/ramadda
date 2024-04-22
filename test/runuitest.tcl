@@ -20,7 +20,7 @@ proc runGroup {group id {groupLimit 10000}} {
     if {[regexp http $group]} {
 	set url $group
     } else {
-	set url "$::root/entry/show?ascending=true&orderby=name&entryid=${id}&output=default.csv&fields=name,id&showheader=false&showheader=false"
+	set url "$::root/entry/show?ascending=true&orderby=name&entryid=${id}&output=default.csv&escape=true&fields=name,id&showheader=false&showheader=false"
     }
     puts stderr "group: $group $url"
     writeUrl $url CSV

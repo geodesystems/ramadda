@@ -39,7 +39,7 @@ proc recurse {id {name init}} {
 	puts stderr "Failed $name $id : $err"
 	exit
     }
-    set url "https://ramadda.org/repository/entry/show?ascending=true&orderby=name&entryid=${id}&output=default.csv&fields=name,id&showheader=false"
+    set url "https://ramadda.org/repository/entry/show?ascending=true&orderby=name&entryid=${id}&output=default.csv&escape=true&fields=name,id&showheader=false"
     set csv [string trim [getCsvUrl $url]]
     set lines [split $csv "\n"]
     while {[llength $lines]>0} {
