@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Apr 22 04:51:41 MDT 2024";
+var build_date="RAMADDA build date: Mon Apr 22 11:30:01 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -443,7 +443,7 @@ var defaultColorTables=[
 Utils.addColorTables(defaultColorTables);
 
 /**
-   Copyright 2008-2023 Geode Systems LLC
+   Copyright 2008-2024 Geode Systems LLC
 */
 
 function AreaWidget(display,arg) {
@@ -3876,7 +3876,7 @@ Glyph.prototype = {
 
 }
 /**
-   Copyright 2008-2023 Geode Systems LLC
+   Copyright 2008-2024 Geode Systems LLC
 */
 
 
@@ -10632,6 +10632,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		group = null;
 		groupHtml = null;
 		this.filters.forEach(filter=>{
+		    if(!filter.isEnabled()) return;
 		    let widget = filter.getWidget(fieldMap, bottom,records, vertical);
 		    if(!vertical)
 			widget = HU.span(['class','display-filter-container display-filter-'+ filter.displayType,ID,this.domId("filtercontainer_" + filter.id)], widget);
@@ -13065,7 +13066,7 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
 
 
 /**
-   Copyright 2008-2023 Geode Systems LLC
+   Copyright 2008-2024 Geode Systems LLC
 */
 
 
@@ -13795,7 +13796,7 @@ function RamaddaMultiDisplay(displayManager, id, properties) {
 }
 
 /**
-   Copyright 2008-2023 Geode Systems LLC
+   Copyright 2008-2024 Geode Systems LLC
 */
 
 
@@ -17540,7 +17541,7 @@ function makeInlineData(display, src) {
     return  new PointData(src, fields, records,"#" + src);
 }
 /**
-   Copyright 2008-2023 Geode Systems LLC
+   Copyright 2008-2024 Geode Systems LLC
 */
 
 var FILTER_ALL = "-all-";
@@ -17683,6 +17684,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    return this.fields[0];
 	},
 	getFieldId: function() {
+	    if(this.fields.length==0) return '';
 	    return this.fields[0].getId();
 	},	
 	getLabel: function() {
@@ -17725,7 +17727,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	fieldType:null,
 	getFieldType: function() {
 	    if(this.disabled) return '';
-	    if(!this.fieldType) {
+	    if(this.getField() && !this.fieldType) {
 		this.fieldType =  this.display.getProperty(this.getField().getId()+".type",this.getField().getType());
 	    }
 	    return this.fieldType;
@@ -18810,7 +18812,7 @@ function TextMatcher (pattern,myId) {
 
 }
 /**
-   Copyright 2008-2023 Geode Systems LLC
+   Copyright 2008-2024 Geode Systems LLC
 */
 
 
@@ -20021,6 +20023,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	},
         makeDataTable: function(dataList, props, selectedFields, chartOptions) {
 	    let extraLines = this.getExtraLines();
+	    let indexIsString = this.getProperty("indexIsString", this.getProperty("forceStrings",false));
+	    let useStringInLegend = this.getProperty("useStringInLegend");
+
 	    this.getPropertyCount=0;
 	    this.getPropertyCounts={};
 	    let dateType = this.getProperty("dateType","date");
@@ -20139,7 +20144,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let fixedValueN;
 	    if(fixedValueS) fixedValueN = parseFloat(fixedValueS);
 	    let fIdx = 0;
-	    let indexIsString = this.getProperty("indexIsString", this.getProperty("forceStrings",false));
 	    let maxHeaderLength = this.getProperty("maxHeaderLength",-1);
 	    let maxHeaderWidth = this.getProperty("maxHeaderWidth",-1);
 	    let headerStyle= this.getProperty("chartHeaderStyle");
@@ -20176,8 +20180,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
  			if(typeof value.v == "number") {
 			    if(indexIsString)  {
 				if(debug)console.log("\tadd column:" + headerLabel+ " type: string");
-				dataTable.addColumn('number', headerLabel);
-//				dataTable.addColumn('string', headerLabel);
+				if(useStringInLegend)
+				    dataTable.addColumn('string', headerLabel);
+				else
+				    dataTable.addColumn('number', headerLabel);
+
 			    }   else {
 				if(debug)console.log("\tadd column:" + headerLabel+ " type: number");
 				dataTable.addColumn('number', headerLabel);
@@ -20348,7 +20355,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			if(value.f) value.f = (value.f).toString().replace(/\n/g, " ");
 		    }
 		    if(colIdx>0 && fixedValueS) {
-			newRow.push(valueGetter(fixedValueN, colIdx, field, theRecord));
+			let o = valueGetter(fixedValueN, colIdx, field, theRecord);
 			if(debug && rowIdx<debugRows)
 			    console.log("\t fixed:" + fixedValueN);
 		    } else {
@@ -20371,6 +20378,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			if(maxWidth>0 && type == "string" && value.length > maxWidth)
 			    value = value.substring(0,maxWidth) +"...";
 			let o = valueGetter(value, colIdx, field, theRecord);
+			if(colIdx==0 && useStringInLegend) {
+			    if(Utils.isDefined(o.f)) o=o.f;
+			}
 			newRow.push(o);
 		    }
                     if (colIdx == 0 && props.includeIndex) {
@@ -20391,8 +20401,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			    newRow.push(color);
 			    if(debug && rowIdx<debugRows)
 				console.log("\t color:" + color);
-			    //			    if(debug && rowIdx<debugRows)
-			    //				console.log("\t style:" + color);
 			}
                     }
 		    if(colIdx>0 && fixedValueS) {
@@ -20512,8 +20520,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    debug =false;
 		}
                 justData.push(newRow);
-//		console.log("row:" + newRow);
-		//		if(debug && rowIdx>debugRows) break;
 	    }
 
 	    if(debug)
@@ -21190,6 +21196,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 	{label:'Chart Properties'},
 	{p:'indexField',ex:'field',tt:'alternate field to use as index'},
  	{p:'indexIsString',ex:'true',tt:'if index is a string set to true'},
+ 	{p:'useStringInLegend',ex:'true',tt:'if index is a string then add the string value to the data'},	
 	{p:'vAxisMinValue',ex:''},
 	{p:'vAxisMaxValue',ex:''},
 	{p:'vAxisExplicit',ex:true,tt:'use the min/max values explicitly'},	
@@ -22128,11 +22135,11 @@ function TableDisplay(displayManager, id, properties) {
 		    }
 		}
 		let f = v;
-		if(v.f) {
+		if(v && v.f) {
 		    f = v.f;
 		    v = v.v;
 		}
-		if(v.getTime) {
+		if(v && v.getTime) {
 		    f = this.formatDate(v);
 		}
 		if(iconField && record && idx==0) {
@@ -22523,7 +22530,6 @@ function BartableDisplay(displayManager, id, properties) {
                 chartOptions.vAxis = {
                     title: this.getProperty('vAxisTitle')
                 };
-
             return new google.charts.Bar(chartDiv); 
         },
         getDefaultSelectedFields: function(fields, dfltList) {
@@ -24519,7 +24525,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 
 
 /**
-   Copyright 2008-2023 Geode Systems LLC
+   Copyright 2008-2024 Geode Systems LLC
 */
 
 
@@ -25761,7 +25767,7 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 
 
 /**
-   Copyright 2008-2023 Geode Systems LLC
+   Copyright 2008-2024 Geode Systems LLC
 */
 
 const DISPLAY_NOTEBOOK = "notebook";
@@ -28459,7 +28465,7 @@ function NotebookChunk(cell, props) {
     this.initChunk(props);
 }
 /**
-   Copyright 2008-2023 Geode Systems LLC
+   Copyright 2008-2024 Geode Systems LLC
 */
 
 
@@ -30089,7 +30095,7 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
     })
 }
 /*
-  Copyright 2008-2023 Geode Systems LLC
+  Copyright 2008-2024 Geode Systems LLC
 */
 
 const DISPLAY_WORDCLOUD = "wordcloud";
@@ -30719,7 +30725,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			}
 			continue;
 		    } 
-		    if(f.isDate&& v.getTime) {
+		    if(f.isDate&& v && v.getTime) {
 			if(v.getTime()<s.min.getTime()) s.min = v;
 			if(v.getTime()>s.max.getTime()) s.max = v;
 		    }  else if(!isNaN(v)) {
@@ -36740,7 +36746,7 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
 
 
 /**
-   Copyright 2008-2023 Geode Systems LLC
+   Copyright 2008-2024 Geode Systems LLC
 */
 
 
@@ -36813,7 +36819,7 @@ function RamaddaExampleDisplay(displayManager, id, properties) {
     });
 }
 /**
-   Copyright 2008-2023 Geode Systems LLC
+   Copyright 2008-2024 Geode Systems LLC
 */
 
 const DISPLAY_MAP = "map";
@@ -43196,7 +43202,7 @@ function RamaddaMapimagesDisplay(displayManager, id, properties) {
 }
 
 /**
-   Copyright 2008-2023 Geode Systems LLC
+   Copyright 2008-2024 Geode Systems LLC
 */
 
 var DISPLAY_IMDV = 'imdv';
@@ -55409,7 +55415,7 @@ FeatureInfo.prototype= {
     
 }
 /*
-  Copyright 2008-2023 Geode Systems LLC
+  Copyright 2008-2024 Geode Systems LLC
 */
 
 
@@ -61151,7 +61157,7 @@ function RamaddaStripesDisplay(displayManager, id, properties) {
     });
 }
 /**
-   Copyright 2008-2023 Geode Systems LLC
+   Copyright 2008-2024 Geode Systems LLC
 */
 
 
@@ -63059,7 +63065,7 @@ function RamaddaParcoordsDisplay(displayManager, id, properties) {
     });
 }
 /**
-   Copyright 2008-2023 Geode Systems LLC
+   Copyright 2008-2024 Geode Systems LLC
 */
 
 
@@ -64353,7 +64359,7 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
     });
 }
 /**
-   Copyright 2008-2023 Geode Systems LLC
+   Copyright 2008-2024 Geode Systems LLC
 */
 
 
