@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Apr 21 11:39:20 MDT 2024";
+var build_date="RAMADDA build date: Mon Apr 22 04:51:41 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -12458,6 +12458,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return true;
         },
         getDateValue: function(arg) {
+	    if(!arg) return {v:null,f:'NA'};
             if (!this.initDateFormats()) {
                 return arg;
             }
@@ -14723,7 +14724,7 @@ function RecordField(props, source) {
   The main data record. This holds a lat/lon/elevation, time and an array of data
   The data array corresponds to the RecordField fields
 */
-function PointRecord(fields,lat, lon, elevation, time, data, rowIdx) {
+function PointRecord(fields,lat, lon, elevation, time, data, rowIdx,dateHasDate) {
     this.isPointRecord = true;
     $.extend(this, {
 	rowIndex:rowIdx,
@@ -14735,11 +14736,10 @@ function PointRecord(fields,lat, lon, elevation, time, data, rowIdx) {
         data: data,
 	id: HtmlUtils.getUniqueId(),
     });
-    if(!time && data) {
+    if(!time && data && !dateHasDate) {
 	data.every(d=>{
 	    if(d && d.getTime) {
 		this.recordTime = d;
-		console.log(this.recordTime);
 		return false;
 	    }
 	    return true;
@@ -15100,7 +15100,7 @@ function makePointData(json, derived, source,url,callback) {
             values[field.getIndex()] = value;
         }
 	
-        let record = new PointRecord(fields, tuple.latitude, tuple.longitude, tuple.elevation, date, values,rowIndex);
+        let record = new PointRecord(fields, tuple.latitude, tuple.longitude, tuple.elevation, date, values,rowIndex,dateIdx>=0);
         pointRecords.push(record);
 
     });
@@ -23906,7 +23906,12 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    }
 	    baseStyle+=this.getProperty("blockStyle","");
 	    let cnt = 1;
+
+	    let blankImage =this.getProperty('showPlaceholderImage',true)?HU.image(ramaddaBaseUrl+'/images/placeholder.png',[ATTR_WIDTH,'100%']):
+		HU.space(1);
+	    
 	    records.forEach((record,rowIdx)=>{
+
                 let row = this.getDataValues(record);
 		let image = record.getValue(imageField.getIndex());
 		if(urlPrefix) image = urlPrefix+image;
@@ -23937,7 +23942,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		let imgAttrs = [ATTR_STYLE,imageStyle,"alt",galleryLabel,ATTR_ID,base+"image" + rowIdx,"loading","lazy"];
 		if(width) imgAttrs.push(WIDTH,width);
 		else if(height) imgAttrs.push(HEIGHT,height);		
-		let img = image==""?SPACE1:HU.div([ATTR_CLASS,class3],HU.image(image,imgAttrs));
+		let img = (!Utils.stringDefined(image))?blankImage:HU.div([ATTR_CLASS,class3],HU.image(image,imgAttrs));
 		let topLbl = (topLabel!=null?HU.div([CLASS,"ramadda-clickable display-images-toplabel"], topLabel):"");
 		let lbl = HU.div([CLASS,"ramadda-clickable display-images-label"], label.trim());
 		if(urlField) {
@@ -30963,6 +30968,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    let row = this.getDataValues(record);
 		    if(s.startsWith("${default")) {
 			s = this.getRecordHtml(record,fields,s);
+		    } else  if(s.startsWith("${fields")) {
+			s = this.getRecordHtml(record,fields,s);
 		    } else {
 			s= this.applyRecordTemplate(record, row,fields,s,props);
 		    }
@@ -33634,15 +33641,21 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         },
         updateForSearching: function(jsonUrl) {
 	    let settings = this.getSearchSettings();
-	    let outputs = this.getRamadda().getSearchLinks(settings);
+	    let outputs = this.getRamadda().getSearchLinks(settings,true);
 	    let url= this.getRamadda().getSearchUrl(settings);
 	    let copyId = HU.getUniqueId("copy");
-	    outputs = HU.join(outputs, " - ");
-	    outputs = HU.span([ATTR_ID,copyId,'data-copy',url],HU.getIconImage("fas fa-clipboard"))+HU.space(1) +outputs;
-            this.footerRight = outputs == null ? "" : "Links: " + outputs;
+	    outputs = HU.join(outputs, HU.space(2));
+	    outputs = outputs+ HU.space(2)+
+		HU.span([ATTR_CLASS,'ramadda-search-link ramadda-clickable',
+			 ATTR_ID,copyId,
+			 'data-copy',url],
+			HU.getIconImage("fas fa-clipboard"));
+            this.footerRight = outputs == null ? "" :  outputs;
             this.writeHtml(ID_FOOTER_RIGHT, this.footerRight);
-	    Utils.initCopyable('#'+copyId,'Click to copy search URL');
-
+	    let _this = this;
+	    this.jq(ID_FOOTER_RIGHT).find('.ramadda-search-link').button().click(function(event){
+		_this.handleSearchLink(event,$(this));
+	    });
             let msg = this.searchMessage;
             if (msg == null) {
                 msg = this.getRamadda().getSearchMessage();
@@ -34765,15 +34778,14 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 			let id = HU.getUniqueId(type +"_");
 			this.myDisplays.push({id:id,type:type,entries:this.areaEntries});
 			addContents(HU.div([ID,id,STYLE,HU.css("width","100%")]));
-//			this.mapId = HU.getUniqueId("map_");
-//			let mapDiv = HU.div([ID,this.mapId,STYLE,HU.css("width","100%","height","400px")]);
-//			contents.push(mapDiv);
 		    }
 
 		} else if(type=="metadata") {		    
 		    titles.push("Metadata");
 		    let mtd = HU.div([STYLE,HU.css("width","800px","max-width","800px","overflow-x","auto")],this.getEntriesMetadata(entries));
 		    addContents(mtd);
+		} else {
+		    console.log('unknown display:' + type);
 		}
 	    });
 
@@ -34794,6 +34806,27 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 	    return tabs;
         },
 
+	handleSearchLink:function(event,button) {
+	    let copy = button.attr('data-copy');
+	    if(copy) {
+		Utils.copyToClipboard(copy);
+		alert('The URL has been copied to the clipboard');
+		return;
+	    }		
+
+	    let url = button.attr('data-url');
+	    let format = button.attr('data-name')
+	    let size = prompt('How many records do you want in the ' + format +' download?',this.jq(ID_SEARCH_MAX).val());
+	    if(!size) return;
+	    url = url.replace(/max=\d+/,'max='+size);
+            if(event.shiftKey) {
+		Utils.copyToClipboard(url);
+		alert('The URL has been copied to the clipboard');
+
+	    } else {
+		Utils.triggerDownload(url);
+	    }
+	},
         entryListChanged: function(entryList) {
             if (this.multiSearch) {
                 this.multiSearch.count--;
@@ -34825,9 +34858,11 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
             let get = this.getGet();
             this.writeHtml(ID_FOOTER_LEFT, "");
             if (this.footerRight != null) {
+		let _this =this;
                 this.writeHtml(ID_FOOTER_RIGHT, this.footerRight);
-                Utils.initCopyable(this.jq(ID_FOOTER_RIGHT).find('[data-copy]'),
-				   'Click to copy search URL');
+		this.jq(ID_FOOTER_RIGHT).find('.ramadda-search-link').button().click(function(event) {
+		    _this.handleSearchLink(event,$(this));
+		});
             }
 
             let entriesHtml = this.makeEntriesDisplay(entries);
@@ -34854,11 +34889,12 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 		let index=0;
 		let fields = [new RecordField({type: "string", index: (index++), id: "name",label: "Name"}),
 			      new RecordField({type: "string", index: (index++), id: "description",label: "Description"}),
+			      new RecordField({type: "date", index: (index++), id: "date",label: "Date"}),			      
 			      new RecordField({type: "url", index: (index++), id: "url",label: "URL"}),
 			      new RecordField({type: "image", index: (index++), id: "image",label: "Image"}),
 			      new RecordField({type: "url", index: (index++), id: "iconUrl",label: "Icon"}),
 			      new RecordField({type: "string", index: (index++), id: "tags",label: "Tags"}),
-			      new RecordField({type: "string", index: (index++), id: "display_html",label: "Display HTML"}),			      			      			      
+			      new RecordField({type: "string", index: (index++), id: "display_html",label: "Display Html"}),
 			      new RecordField({index: (index++), id: "latitude",label: "Latitude"}),
 			      new RecordField({index: (index++), id: "longitude",label: "Longitude"}),			      			      					     ]
 		let entryType = null;
@@ -34879,7 +34915,16 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 		    entries.forEach(entry=>{
 			let tags = this.makeEntryTags(entry,true,"");
 			let displayHtml = entry.displayHtml??entry.getName()
-			let data = [entry.getName(true),entry.getSnippet()||"",entry.getEntryUrl(),entry.getImageUrl()||defaultImage||"",entry.getIconUrl(),tags,displayHtml,entry.getLatitude(), entry.getLongitude()];
+			let data = [entry.getName(true),
+				    entry.getSnippet()||"",
+				    entry.getStartDate(),
+				    entry.getEntryUrl(),
+				    entry.getImageUrl()||defaultImage||"",
+				    entry.getIconUrl(),
+				    tags,
+				    displayHtml,
+				    entry.getLatitude(),
+				    entry.getLongitude()];
 			if(entryType) {
 			    entryType.getColumns().forEach(column=>{
 				let v = entry.getAttributeValue(column.getName());
@@ -37681,7 +37726,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'iconField',ex:'""',tt:'Field id for the image icon url'},
 	{p:'rotateField',ex:'""',tt:'Field id for degrees rotation'},
 	{p:'rotateScale',d:'1.0',tt:'Scale value to multiply the rotate field value by to get degrees rotation'},		
+	{p:'filterBadLocations',ex:'false',d:true,tt:'Do not show records with bad lat/lon'},
 	{p:'hideNaN',tt:'If doing color by do not show the points with missing values'},
+
 
 	{label:'Map GUI'},
 	{p:'showTableOfContents',ex:'true',tt:'Show left table of contents'},
@@ -39880,6 +39927,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    this.setIsFinished();
 //	    });
+
 	},
 	notifyExternalDisplay:function() {
 	    let externalDisplay = this.getProperty("externalDisplay");
@@ -39935,6 +39983,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		RecordUtil.getPoints(this.getRecords(), this.fullBounds);
 	    }
             let pointBounds = {};
+	    if(this.getFilterBadLocations(true)) {
+		records = records.filter(r=>{
+		    return r.getLatitude()>=-90 && r.getLatitude()<=90 &&
+			r.getLongitude()>=-180 &&
+			r.getLongitude()<=180;
+		});
+	    }
+
+
             let points = RecordUtil.getPoints(records, pointBounds);
             let fields = pointData.getRecordFields();
             let showSegments = this.getShowSegments(false);
