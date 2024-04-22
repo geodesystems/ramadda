@@ -9,6 +9,7 @@ package org.ramadda.repository.output;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.seesv.Seesv;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
@@ -155,9 +156,7 @@ public class CsvOutputHandler extends OutputHandler {
         boolean fixedWidth     = request.get(ARG_FIXEDWIDTH, false);
         boolean showFullHeader = request.get(ARG_FULLHEADER, false);
         boolean showHeader     = request.get("showheader", true);
-        boolean escapeCommas = request.get("escapecommas", true)
-                               || showFullHeader;
-
+        boolean escape = request.get("escape", false) || showFullHeader;
         String filler = request.getString("filler", " ");
 
         String fieldsArg =
@@ -213,7 +212,7 @@ public class CsvOutputHandler extends OutputHandler {
                 type = "integer";
             }
             if (showHeader) {
-		addHeader(header, field, label, type, escapeCommas,
+		addHeader(header, field, label, type, escape,
 			  showFullHeader);
             }
         }
@@ -239,7 +238,7 @@ public class CsvOutputHandler extends OutputHandler {
                     continue;
                 }
                 if (column.isString()) {
-                    String s = sanitize(escapeCommas,
+                    String s = sanitize(escape,
                                         column.getString(values));
                     maxStringSize[col] = Math.max(maxStringSize[col],
                             s.length());
@@ -307,13 +306,13 @@ public class CsvOutputHandler extends OutputHandler {
                 }
                 colCnt++;
                 if (field.equals("name")) {
-                    sb.append(sanitize(escapeCommas, entry.getName()));
+                    sb.append(sanitize(escape, entry.getName()));
                 } else if (field.equals("startdate")) {
                     sb.append(getDateHandler().formatDate(request, entry,entry.getStartDate()));
                 } else if (field.equals("enddate")) {
                     sb.append(getDateHandler().formatDate(request, entry,entry.getEndDate()));
                 } else if (field.equals("fullname")) {
-                    sb.append(sanitize(escapeCommas, entry.getFullName()));
+                    sb.append(sanitize(escape, entry.getFullName()));
                 } else if (field.equals("type")) {
                     sb.append(entry.getTypeHandler().getType());
                 } else if (field.equals("icon")) {
@@ -352,7 +351,7 @@ public class CsvOutputHandler extends OutputHandler {
                 } else if (field.equals("west")) {
                     sb.append(""+entry.getWest());
                 } else if (field.equals("description")) {
-                    sb.append(sanitize(escapeCommas, entry.getDescription()));
+                    sb.append(sanitize(escape, entry.getDescription()));
                 } else if (field.equals("size")) {
                     sb.append(""+entry.getResource().getFileSize());
                 } else if (field.equals("fields")) {
@@ -368,7 +367,7 @@ public class CsvOutputHandler extends OutputHandler {
                             if (cnt > 0) {
                                 sb.append(delimiter);
                             }
-                            String s = sanitize(escapeCommas,
+                            String s = sanitize(escape,
                                            column.getString(values));
                             sb.append(s);
                             if (fixedWidth) {
@@ -400,7 +399,7 @@ public class CsvOutputHandler extends OutputHandler {
                     }
                     Column column = columnMap.get(field);
                     if (column != null) {
-                        String s = sanitize(escapeCommas,
+                        String s = sanitize(escape,
                                             column.getString(values));
                         sb.append(s);
                         if (fixedWidth) {
@@ -430,15 +429,15 @@ public class CsvOutputHandler extends OutputHandler {
      * @param s _more_
      * @param label _more_
      * @param type _more_
-     * @param escapeCommas _more_
+     * @param escape _more_
      * @param full _more_
      *
      * @throws Exception _more_
      */
     private void addHeader(Appendable sb, String s, String label,
-                           String type, boolean escapeCommas, boolean full)
+                           String type, boolean escape, boolean full)
             throws Exception {
-        sb.append(sanitize(escapeCommas, s));
+        sb.append(sanitize(escape, s));
         if (full) {
             sb.append("[");
             sb.append(" type=\"" + ((type != null)
@@ -455,21 +454,24 @@ public class CsvOutputHandler extends OutputHandler {
      * _more_
      *
      *
-     * @param escapeCommas _more_
+     * @param escape _more_
      * @param s _more_
      *
      * @return _more_
      */
-    public String sanitize(boolean escapeCommas, String s) {
+    public String sanitize(boolean escape, String s) {
         if (s == null) {
             return "";
         }
+	if(!escape) {
+	    return Seesv.cleanColumnValue(s);
+	}
         s = s.replaceAll("\r\n", " ");
         s = s.replaceAll("\r", " ");
         s = s.replaceAll("\n", " ");
         //quote the columns that have commas in them
         if (s.indexOf(",") >= 0) {
-            if (escapeCommas) {
+            if (escape) {
                 s = s.replaceAll(",", "_comma_");
             } else {
                 //Not sure how to escape the quotes
