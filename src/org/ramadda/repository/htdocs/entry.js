@@ -11,19 +11,12 @@ var OUTPUT_EXPORT = "zip.export";
 
 var DEFAULT_MAX = 100;
 
-var OUTPUTS = [{
-    id: OUTPUT_ZIP,
-    name: "Download Zip"
-}, {
-    id: OUTPUT_EXPORT,
-    name: "Export"
-}, {
-    id: OUTPUT_JSON,
-    name: "JSON"
-}, {
-    id: OUTPUT_CSV,
-    name: "CSV"
-}, ];
+var OUTPUTS = [
+    {id: OUTPUT_CSV,name: "CSV"},
+    {id: OUTPUT_JSON, name: "JSON"},
+    {id: OUTPUT_ZIP, name: "Zip Files"},
+    {id: OUTPUT_EXPORT, name: "Export"},
+];
 
 //
 //return the global entry manager with the given id, null if not found
@@ -414,11 +407,21 @@ function RamaddaRepository(repositoryRoot) {
             return url;
         },
 
-        getSearchLinks: function(searchSettings) {
+        getSearchLinks: function(searchSettings,makeSpan) {
             let urls = [];
             for (let i = 0; i < OUTPUTS.length; i++) {
-                urls.push(HtmlUtils.href(this.getSearchUrl(searchSettings, OUTPUTS[i].id),
-                    OUTPUTS[i].name));
+		if(makeSpan) {
+                    urls.push(HtmlUtils.span([ATTR_CLASS,'ramadda-search-link ramadda-clickable',
+					      ATTR_TITLE,'Click to download; shift-click to copy URL',
+					      'data-name',OUTPUTS[i].name,
+					      'data-format',OUTPUTS[i].id,
+					      'data-url',
+					      this.getSearchUrl(searchSettings, OUTPUTS[i].id)],
+					     OUTPUTS[i].name));
+		} else {
+                    urls.push(HtmlUtils.href(this.getSearchUrl(searchSettings, OUTPUTS[i].id),
+					     OUTPUTS[i].name,[ATTR_CLASS,'ramadda-search-link']));
+		}
             }
             return urls;
         },
