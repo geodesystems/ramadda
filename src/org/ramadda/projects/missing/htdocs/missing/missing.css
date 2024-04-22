@@ -38,16 +38,20 @@
 }
 
 .missing-sub-header {
-    font-weight:bold;
+    font-weight:500;
 }
 
 .display-entrylist-content .missing-header1 {
     font-size:12pt;
-    font-weight:normal;
+    font-weight:500;
 }
 
+.olPopupContent  .missing-header1 {
+    font-size:8pt;
+    font-weight:500;
+}
 .ramadda-search-entrylist .missing-header, .display-entrylist-content .missing-header  {
-    border-bottom:1px solid #000;    
+    border-bottom:1px solid #aaa;    
     padding:4px;
 }
 
