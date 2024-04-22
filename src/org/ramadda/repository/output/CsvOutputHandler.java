@@ -163,7 +163,7 @@ public class CsvOutputHandler extends OutputHandler {
         String fieldsArg =
             request.getString(
                 ARG_FIELDS,
-                "name,id,type,description,entry_url,north,south,east,west,url,fields");
+                "name,id,type,description,startdate,enddate,entry_url,north,south,east,west,url,fields");
 
         StringBuffer header      = new StringBuffer();
         List<String> toks        = Utils.split(fieldsArg, ",", true, true);
@@ -188,6 +188,10 @@ public class CsvOutputHandler extends OutputHandler {
                 type = "enumeration";
             } else if (field.equals("icon")) {
                 type = "image";
+            } else if (field.equals("startdate")) {
+                type = "date";
+            } else if (field.equals("enddate")) {
+                type = "date";				
             } else if (field.equals("entry_url")) {
                 type = "url";
             } else if (field.equals("url")) {
@@ -304,6 +308,10 @@ public class CsvOutputHandler extends OutputHandler {
                 colCnt++;
                 if (field.equals("name")) {
                     sb.append(sanitize(escapeCommas, entry.getName()));
+                } else if (field.equals("startdate")) {
+                    sb.append(getDateHandler().formatDate(request, entry,entry.getStartDate()));
+                } else if (field.equals("enddate")) {
+                    sb.append(getDateHandler().formatDate(request, entry,entry.getEndDate()));
                 } else if (field.equals("fullname")) {
                     sb.append(sanitize(escapeCommas, entry.getFullName()));
                 } else if (field.equals("type")) {
