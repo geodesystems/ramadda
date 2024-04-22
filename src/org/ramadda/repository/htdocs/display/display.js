@@ -8581,6 +8581,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return true;
         },
         getDateValue: function(arg) {
+	    if(!arg) return {v:null,f:'NA'};
             if (!this.initDateFormats()) {
                 return arg;
             }
