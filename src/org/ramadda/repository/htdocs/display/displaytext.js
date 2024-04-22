@@ -629,7 +629,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			}
 			continue;
 		    } 
-		    if(f.isDate&& v.getTime) {
+		    if(f.isDate&& v && v.getTime) {
 			if(v.getTime()<s.min.getTime()) s.min = v;
 			if(v.getTime()>s.max.getTime()) s.max = v;
 		    }  else if(!isNaN(v)) {
