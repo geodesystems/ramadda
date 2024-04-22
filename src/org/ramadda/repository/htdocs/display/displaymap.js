@@ -912,7 +912,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'iconField',ex:'""',tt:'Field id for the image icon url'},
 	{p:'rotateField',ex:'""',tt:'Field id for degrees rotation'},
 	{p:'rotateScale',d:'1.0',tt:'Scale value to multiply the rotate field value by to get degrees rotation'},		
+	{p:'filterBadLocations',ex:'false',d:true,tt:'Do not show records with bad lat/lon'},
 	{p:'hideNaN',tt:'If doing color by do not show the points with missing values'},
+
 
 	{label:'Map GUI'},
 	{p:'showTableOfContents',ex:'true',tt:'Show left table of contents'},
@@ -3111,6 +3113,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    this.setIsFinished();
 //	    });
+
 	},
 	notifyExternalDisplay:function() {
 	    let externalDisplay = this.getProperty("externalDisplay");
@@ -3166,6 +3169,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		RecordUtil.getPoints(this.getRecords(), this.fullBounds);
 	    }
             let pointBounds = {};
+	    if(this.getFilterBadLocations(true)) {
+		records = records.filter(r=>{
+		    return r.getLatitude()>=-90 && r.getLatitude()<=90 &&
+			r.getLongitude()>=-180 &&
+			r.getLongitude()<=180;
+		});
+	    }
+
+
             let points = RecordUtil.getPoints(records, pointBounds);
             let fields = pointData.getRecordFields();
             let showSegments = this.getShowSegments(false);
