@@ -219,5 +219,84 @@ entry="child:entry:this;type:type_document_collection" message="" prefix="----\n
   </type>
 
   
+<type name="type_missing_csv" 
+description="Missing Person CSV" 
+super="type_point" 
+handler="org.ramadda.data.services.PointTypeHandler">
+  <property name="form.header.new">
+    <![CDATA[+callout-info\n
+This takes the CSV export file from the Missing Person search	     
+\n-callout]]></property>    
+
+<property name="form.date.show" value="false"/>
+<property name="form.area.show" value="false"/>
+<property name="form.properties.show" value="false"/>
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property name="found_location.column.icon" value="/map/flag.png"/> 
+<property name="record.properties"><![CDATA[
+csvcommands1=-notcolumns,id\,type\,south\,west,-addheader, biological_sex.type enumeration tribe_association.type enumeration north.id latitude east.id longitude missing_from_tribal_land.type enumeration startdate.type date enddate.type date startdate.label {Date Missing}
+]]></property>
+
+<wiki>
+<![CDATA[
++section title={{name}}
+{{description wikify=true}}
+{{group filterFields="_text_,biological_sex,age_missing,tribe_association" 
+hideFilterWidget=true}}
+{{display_filter}}
++tabs
++tab Map
+{{display_map tooltip="${default}"
+colorBy=tribe_association colorTable=gpt50 height=400px
+strokeWidth=0 radius=5
+zoomLevel=2 mapCenter=49.61071%2C-104.06396}}
+-tab
++tab Table
+{{display_download  showRecordCount=true }}
+{{display_table fields="name,startdate,age_missing,date_of_birth,biological_sex,height,weight,race_ethnicity,tribe_association"}}
+-tab
++tab By Date & Age
+{{display_barchart height=300px addStyle=true colorBy=tribe_association colorTable=gpt50
+fields=age tooltip="<b>${name}</b><br>Age missing:${age_missing}"}} 
+-tab
++tab Statistics
++tabs
++tab By Age
+{{display_barchart   height=300px
+indexField=age_missing fields=count  tootip="${default}"
+convertData="mergeRows(keyFields=age_missing, operator=count, valueFields=);" 
+sortFields=count  sortAscending=false 
+}}
+-tab
++tab By Tribe
+{{display_bartable    
+indexField=tribe_association indexIsString=true useStringInLegend=true fields=count 
+convertData="mergeRows(keyFields=tribe_association, operator=count, valueFields=);" 
+sortFields=count  sortAscending=false 
+}}
+-tab
++tab By Gender
+{{display_bartable    
+indexField=biological_sex fields=count indexIsString=true useStringInLegend=true 
+convertData="mergeRows(keyFields=biological_sex, operator=count, valueFields=);" 
+sortFields=count  sortAscending=false 
+}}
+-tab
+-tabs
+-tab
+-tabs
+
+{{display_template  onlyShowSelected=true  itemsPerColumn=20
+fields="name,description,entry_url,url,case_number,status,first_name,middle_name,last_name,nickname,age_missing,date_of_birth,date_found,biological_sex,height,weight,race_ethnicity,tribe_association,missing_from_tribal_land,primary_residence_tribal_land,missing_city,missing_county,missing_zip,missing_state,found_city,found_county,found_zip,found_state,cause_of_death,death_comments,hair_color,head_hair_description,body_hair_description,facial_hair_description,left_eye_color,right_eye_color,eye_description,distinctive_physical_features,clothing_and_accessories,transportation,transportation_notes"
+template="${fields}"
+}} 
+-skip
+-section
+]]></wiki>
+
+
+
+
+</type>
 
 </types>
