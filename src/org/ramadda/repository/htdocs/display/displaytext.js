@@ -878,6 +878,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    let row = this.getDataValues(record);
 		    if(s.startsWith("${default")) {
 			s = this.getRecordHtml(record,fields,s);
+		    } else  if(s.startsWith("${fields")) {
+			s = this.getRecordHtml(record,fields,s);
 		    } else {
 			s= this.applyRecordTemplate(record, row,fields,s,props);
 		    }
