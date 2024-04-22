@@ -1210,6 +1210,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	},
         makeDataTable: function(dataList, props, selectedFields, chartOptions) {
 	    let extraLines = this.getExtraLines();
+	    let indexIsString = this.getProperty("indexIsString", this.getProperty("forceStrings",false));
+	    let useStringInLegend = this.getProperty("useStringInLegend");
+
 	    this.getPropertyCount=0;
 	    this.getPropertyCounts={};
 	    let dateType = this.getProperty("dateType","date");
@@ -1328,7 +1331,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let fixedValueN;
 	    if(fixedValueS) fixedValueN = parseFloat(fixedValueS);
 	    let fIdx = 0;
-	    let indexIsString = this.getProperty("indexIsString", this.getProperty("forceStrings",false));
 	    let maxHeaderLength = this.getProperty("maxHeaderLength",-1);
 	    let maxHeaderWidth = this.getProperty("maxHeaderWidth",-1);
 	    let headerStyle= this.getProperty("chartHeaderStyle");
@@ -1365,8 +1367,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
  			if(typeof value.v == "number") {
 			    if(indexIsString)  {
 				if(debug)console.log("\tadd column:" + headerLabel+ " type: string");
-				dataTable.addColumn('number', headerLabel);
-//				dataTable.addColumn('string', headerLabel);
+				if(useStringInLegend)
+				    dataTable.addColumn('string', headerLabel);
+				else
+				    dataTable.addColumn('number', headerLabel);
+
 			    }   else {
 				if(debug)console.log("\tadd column:" + headerLabel+ " type: number");
 				dataTable.addColumn('number', headerLabel);
@@ -1537,7 +1542,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			if(value.f) value.f = (value.f).toString().replace(/\n/g, " ");
 		    }
 		    if(colIdx>0 && fixedValueS) {
-			newRow.push(valueGetter(fixedValueN, colIdx, field, theRecord));
+			let o = valueGetter(fixedValueN, colIdx, field, theRecord);
 			if(debug && rowIdx<debugRows)
 			    console.log("\t fixed:" + fixedValueN);
 		    } else {
@@ -1560,6 +1565,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			if(maxWidth>0 && type == "string" && value.length > maxWidth)
 			    value = value.substring(0,maxWidth) +"...";
 			let o = valueGetter(value, colIdx, field, theRecord);
+			if(colIdx==0 && useStringInLegend) {
+			    if(Utils.isDefined(o.f)) o=o.f;
+			}
 			newRow.push(o);
 		    }
                     if (colIdx == 0 && props.includeIndex) {
@@ -1580,8 +1588,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			    newRow.push(color);
 			    if(debug && rowIdx<debugRows)
 				console.log("\t color:" + color);
-			    //			    if(debug && rowIdx<debugRows)
-			    //				console.log("\t style:" + color);
 			}
                     }
 		    if(colIdx>0 && fixedValueS) {
@@ -1701,8 +1707,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    debug =false;
 		}
                 justData.push(newRow);
-//		console.log("row:" + newRow);
-		//		if(debug && rowIdx>debugRows) break;
 	    }
 
 	    if(debug)
@@ -2379,6 +2383,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 	{label:'Chart Properties'},
 	{p:'indexField',ex:'field',tt:'alternate field to use as index'},
  	{p:'indexIsString',ex:'true',tt:'if index is a string set to true'},
+ 	{p:'useStringInLegend',ex:'true',tt:'if index is a string then add the string value to the data'},	
 	{p:'vAxisMinValue',ex:''},
 	{p:'vAxisMaxValue',ex:''},
 	{p:'vAxisExplicit',ex:true,tt:'use the min/max values explicitly'},	
@@ -3317,11 +3322,11 @@ function TableDisplay(displayManager, id, properties) {
 		    }
 		}
 		let f = v;
-		if(v.f) {
+		if(v && v.f) {
 		    f = v.f;
 		    v = v.v;
 		}
-		if(v.getTime) {
+		if(v && v.getTime) {
 		    f = this.formatDate(v);
 		}
 		if(iconField && record && idx==0) {
@@ -3712,7 +3717,6 @@ function BartableDisplay(displayManager, id, properties) {
                 chartOptions.vAxis = {
                     title: this.getProperty('vAxisTitle')
                 };
-
             return new google.charts.Bar(chartDiv); 
         },
         getDefaultSelectedFields: function(fields, dfltList) {
