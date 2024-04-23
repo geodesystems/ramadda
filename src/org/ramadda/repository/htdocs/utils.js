@@ -5696,6 +5696,20 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return  HtmlUtils.input(name, value,attrs);
     },
 
+    makeClearDatePickerArgs:function(args) {
+	let clear = {
+	    showButtonPanel: true,
+	    closeText: 'Clear',
+	    onClose: function (e) {
+		if ($(window.event.srcElement).hasClass('ui-datepicker-close')) {
+		    $(this).val('');
+		}
+	    }
+	}
+	if(args)
+	    $.extend(clear,args);
+	return clear;
+    },
     datePickerInit: function(id) {
         $("#" + id).datepicker({
 	    onSelect:function(d,i) {
