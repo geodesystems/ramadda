@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Apr 22 20:56:47 MDT 2024";
+var build_date="RAMADDA build date: Tue Apr 23 05:33:29 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -654,12 +654,9 @@ function DateRangeWidget(display, what) {
     RamaddaUtil.inherit(this, {
         display: display,
         initHtml: function() {
-            $("#" + this.baseId +ID_DATE_START).datepicker({
-		dateFormat: "yy-mm-dd"
-	    });
-            $("#" + this.baseId +ID_DATE_END).datepicker({
-		dateFormat: "yy-mm-dd"
-	    });	    
+	    let args= HtmlUtils.makeClearDatePickerArgs({dateFormat: "yy-mm-dd",changeMonth:true,changeYear:true});
+            $("#" + this.baseId +ID_DATE_START).datepicker(args);
+            $("#" + this.baseId +ID_DATE_END).datepicker(args);
         },
         setSearchSettings: function(settings) {
             let start = $("#"+ this.baseId +ID_DATE_START).val();
@@ -32756,6 +32753,7 @@ var ID_METADATA_FIELD = "metadatafield";
 var ID_COLUMN = "column";
 var ID_SEARCH_HIDEFORM = "searchhideform";
 
+var ATTR_TEXT_INPUT='data-text-input';
 
 addGlobalDisplayType({
     type: DISPLAY_SIMPLESEARCH,
@@ -33700,9 +33698,34 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             }
         },
         makeSearchUrl: function(repository) {
+	    let _this=this;
             let extra = "";
             let cols = this.getSearchableColumns();
 	    let searchBar  = this.jq(ID_SEARCH_BAR);
+	    let makeTag=(key,value,label) =>{
+		return  $(HU.div([ATTR_TITLE,'Click to clear search',ATTR_CLASS,"display-search-tag",key,value],label)).appendTo(searchBar);
+	    }
+	    this.getContents().find('.display-search-textinput').each(function() {
+		let arg = $(this).attr(ATTR_TEXT_INPUT);
+		if(!arg) return;
+		let val = $(this).val();
+		let tag = searchBar.find(HU.attrSelect(ATTR_TEXT_INPUT,arg));
+		if(!Utils.stringDefined(val)) {
+		    if(tag.length!=0) tag.remove();
+		    return
+		    
+		}
+		let label = arg+'='+val;
+		if(tag.length==0) {
+		    tag =makeTag(ATTR_TEXT_INPUT,arg,label);
+		    tag.click(()=>{
+			$(this).val('');
+			_this.submitSearchForm();
+		    });
+		} else {
+		    tag.html(label);
+		}
+	    });
             for (let i = 0; i < cols.length; i++) {
                 let col = cols[i];
                 if (!col.getCanSearch()) continue;
@@ -33716,7 +33739,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    if(Utils.stringDefined(from) || Utils.stringDefined(to)) {
 			let label =  (Utils.stringDefined(from)?(from+" &lt; "):"") +  col.getLabel() + (Utils.stringDefined(to)?(" &lt; " +to):"");
 			if(tag.length==0) {
-			    tag = $(HU.div([ATTR_TITLE,'Click to clear search',ATTR_CLASS,"display-search-tag","column",col.getName()],label)).appendTo(searchBar);
+			    tag = makeTag("column",col.getName(),label);
 			    tag.click(()=>{
 				this.jq(id+"_from").val("");
 				this.jq(id+"_to").val("");		    		    
@@ -33750,11 +33773,29 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    }
 		} else if(col.isEnumeration() && col.showCheckboxes()) {
                     let fullId = this.getDomId(ID_COLUMN + col.getName());
-		    $('[checkbox-id='+ fullId+']').each(function() {
+		    let cbxValues=[];
+		    let cbxs = $('[checkbox-id='+ fullId+']');
+		    cbxs.each(function() {
 			if($(this).is(':checked')) {
-			    extra += '&' + arg + '=' + encodeURIComponent($(this).attr('data-value'));
+			    let value = $(this).attr('data-value');
+			    extra += '&' + arg + '=' + encodeURIComponent(value);
+			    cbxValues.push(value);
 			}
 		    });
+		    if(cbxValues.length>0) {
+			label = col.getLabel() +"=" + Utils.join(cbxValues,' or ');
+			if(tag.length==0) {
+			    tag = makeTag("column",col.getName(),label);
+			    tag.click(()=>{
+				cbxs.prop('checked',false);
+				this.submitSearchForm();
+			    })
+			} else {
+			    tag.html(label);
+			}
+		    } else {
+			tag.remove();
+		    }
 		} else {
                     let value = this.jq(id).val();
                     if (value == null || value==VALUE_NONE) {
@@ -33786,7 +33827,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    }
 			
 		    if(tag.length==0) {
-			tag = $(HU.div([ATTR_TITLE,'Click to clear search',ATTR_CLASS,"display-search-tag","column",col.getName()],label)).appendTo(searchBar);
+			tag = makeTag("column",col.getName(),label);
 			tag.click(()=>{
 			    let obj=this.jq(id);
 			    if(obj.data && obj.data('selectBox-selectBoxIt')) {
@@ -33930,8 +33971,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    let text  = this.getFormText();
 	    if(!Utils.stringDefined(text)) 
 		text = HU.getUrlArgument(ID_TEXT_FIELD);
-	    let attrs  = ["placeholder", this.getEgText("Search text"), ATTR_TITLE,"e.g. name:, contents:,path:", ATTR_CLASS, "display-simplesearch-input",  ATTR_ID, this.domId(ID_TEXT_FIELD)];
-	    let inputAttrs =  [ATTR_CLASS, "display-simplesearch-input"];
+	    let textInputClass = "display-simplesearch-input display-search-textinput"
+	    let attrs  = [ATTR_PLACEHOLDER, this.getEgText("Search text"), ATTR_TITLE,"e.g. name:, contents:,path:", ATTR_CLASS, textInputClass,  ATTR_ID, this.domId(ID_TEXT_FIELD)];
+	    let inputAttrs =  [ATTR_CLASS, textInputClass];
 	    if(this.getProperty("inputSize")) {
 		inputAttrs.push(ATTR_SIZE);
 		inputAttrs.push(this.getProperty("inputSize", "30"));
@@ -33972,19 +34014,20 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
 
 	    let textFields = [];
-            let textField = HU.input("", text, Utils.mergeLists(attrs,inputAttrs));
+            let textField = HU.input("", text, Utils.mergeLists([ATTR_TEXT_INPUT,'Text'],attrs,inputAttrs));
             if (this.getShowText()) {
 		textFields.push(textField);
             }
 
             if (this.getShowName()) {
 		textFields.push(HU.input("","",
-					 Utils.mergeLists([ATTR_ID,this.domId(ID_NAME_FIELD),'placeholder','Name'],
+					 Utils.mergeLists([ATTR_TEXT_INPUT,'Name',
+							   ATTR_ID,this.domId(ID_NAME_FIELD),ATTR_PLACEHOLDER,'Name'],
 							  inputAttrs)));				       
 	    }
             if (this.getShowDescription()) {
 		textFields.push(HU.input("","",
-					 Utils.mergeLists([ATTR_ID,this.domId(ID_DESCRIPTION_FIELD),'placeholder','Description'],
+					 Utils.mergeLists([ATTR_TEXT_INPUT,'Description',ATTR_ID,this.domId(ID_DESCRIPTION_FIELD),ATTR_PLACEHOLDER,'Description'],
 							  inputAttrs)));				       
 	    }	    
 
@@ -35192,7 +35235,6 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
                 source: function(request, callback) {
                 }
             });
-
 	},
         getDefaultHtml: function() {
 	    let html = this.makeSearchForm();
