@@ -1860,6 +1860,11 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             makeRectangles = false;
         }
 
+	//If there are alot of entries to show then show as circles
+	if(entriesToUse.size()>500 && !showCircles) {
+	    showCircles = true;
+	    props.put("radius","4");
+	}
         for (Entry entry : entriesToUse) {
             boolean addMarker = true;
             List<Metadata> metadataList =
