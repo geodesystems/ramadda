@@ -24,7 +24,7 @@
 
     <type id="missing_agency" name="Investigating Agency">
       <element id="caseowner" name="Is Case Owner" datatype="boolean"/>
-      <element id="department" name="Department" datatype="string"/>
+      <element id="department" name="Department" datatype="string" istitle="true"/>
       <element id="contact" name="Contact" datatype="string"/>
       <element id="role" name="Role" datatype="enumerationplus"/>            
       <element id="address" name="Address" rows="4" datatype="string"/>
@@ -38,7 +38,7 @@
 
     <type id="missing_sighting" name="Sighting"  displaygroup="Sightings">
       <element id="date" name="Date" datatype="date"/>
-      <element id="city" name="City" datatype="string"/>
+      <element id="city" name="City" datatype="string" istitle="true"/>
       <element id="county" name="County" datatype="enumerationplus"/>                
       <element id="state" name="State" datatype="enumeration"
 	       values="file:/org/ramadda/projects/missing/states.txt"/>
@@ -49,11 +49,11 @@
 
 
     <type id="missing_vehicle" name="Vehicle"  displaygroup="Vehicles">
-      <element id="year" name="Year" datatype="string" columns="6"/>
-      <element id="color" name="Color" datatype="enumerationplus" values="White, Black, Silver, Gray, Blue, Red, Brown, Green, Yellow"/>      
-      <element id="style" name="Style" datatype="enumerationplus"
+      <element id="year" name="Year" datatype="string" columns="6" istitle="true"/>
+      <element id="color" name="Color" datatype="enumerationplus" istitle="true" values="White, Black, Silver, Gray, Blue, Red, Brown, Green, Yellow"/>      
+      <element id="style" name="Style" datatype="enumerationplus" istitle="true"
 	       values="Sedan, SUV, Coupe, Hatchback, Convertible, Pickup Truck, Van, Minivan, Crossover, Wagon, Truck"/>
-      <element id="model" name="Model" datatype="enumerationplus"/>
+      <element id="model" name="Model" istitle="true" datatype="enumerationplus"/>
       <element id="tag_number" name="Tag Number" datatype="string" columns="10"/>
       <element id="comments" name="Comments" rows="5" datatype="string"/>
     </type>

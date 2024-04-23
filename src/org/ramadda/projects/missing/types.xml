@@ -186,6 +186,16 @@ For Example Only<br>
 :vspace 1em
 -col
 +col-4
++if canedit=true
++toggle Add Properties
+{{new_property  type="missing_agency,missing_ethnicity,missing_note,missing_clothing,missing_sighting,missing_vehicle"  
+style="margin-bottom:4px;min-width:250px;"
+#message="Show when cannot new" addBreak=true }}
+-toggle
+-if
+
+
+
 +center
 :vspace 1em
 <b>Last Known Location</b>
