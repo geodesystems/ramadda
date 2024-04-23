@@ -210,12 +210,9 @@ function DateRangeWidget(display, what) {
     RamaddaUtil.inherit(this, {
         display: display,
         initHtml: function() {
-            $("#" + this.baseId +ID_DATE_START).datepicker({
-		dateFormat: "yy-mm-dd"
-	    });
-            $("#" + this.baseId +ID_DATE_END).datepicker({
-		dateFormat: "yy-mm-dd"
-	    });	    
+	    let args= HtmlUtils.makeClearDatePickerArgs({dateFormat: "yy-mm-dd",changeMonth:true,changeYear:true});
+            $("#" + this.baseId +ID_DATE_START).datepicker(args);
+            $("#" + this.baseId +ID_DATE_END).datepicker(args);
         },
         setSearchSettings: function(settings) {
             let start = $("#"+ this.baseId +ID_DATE_START).val();
