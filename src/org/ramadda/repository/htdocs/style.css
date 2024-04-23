@@ -2494,11 +2494,6 @@ thin_hr,.ramadda-thin-hr {
 
 
 
-button[data-handler="today"] {
-    display:none;
-}
-
-
 
 .ui-menu-item-wrapper:not([aria-haspopup="true"]) {
     padding-left:22px;
