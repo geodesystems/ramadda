@@ -345,12 +345,12 @@ public class DateHandler extends RepositoryManager {
             new StringBuilder("<script>jQuery(function() {$( ");
         HU.squote(jsBuf, "#" + inputId);
         jsBuf.append(
-            " ).datepicker({ dateFormat: 'yy-mm-dd',changeMonth: true, changeYear: true,constrainInput:false, yearRange: '1900:2100' ");
+            " ).datepicker(HtmlUtils.makeClearDatePickerArgs({ dateFormat: 'yy-mm-dd',changeMonth: true, changeYear: true,constrainInput:false, yearRange: '1900:2100' ");
         if ((minDate != null) && (maxDate != null)) {
             jsBuf.append(", minDate: '" + minDate + "', maxDate: '" + maxDate
                          + "'");
         }
-        jsBuf.append(" });});</script>");
+        jsBuf.append(" }),);});</script>");
         String extra = "";
         if (includeTime) {
             extra = " T:"
