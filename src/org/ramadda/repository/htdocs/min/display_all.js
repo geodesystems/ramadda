@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Apr 22 11:54:09 MDT 2024";
+var build_date="RAMADDA build date: Mon Apr 22 20:56:47 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -37696,7 +37696,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'fillOpacity',d:0.5},
 	{p:'radius',d:5,tt:'Size of the map points'},
 	{p:'scaleRadius',ex:'true',tt:'Scale the radius based on # points shown'},
-	{p:'radiusScale',ex:'value,size,value,size e.g.: 10000,1,8000,2,5000,3,2000,3,1000,5,500,6,250,8,100,10,50,12',tt:'Radius scale'},
+	{p:'scaleRadiusMin',d:1},
+	{p:'scaleRadiusMax',d:10},	
+	{p:'scaleRadiusMaxPoints',d:5000},
 	{p:'maxRadius',ex:'16',d:1000},
 	{p:'shape',d:'circle',ex:shapes,tt:'Use shape'},
 	{p:'shapeBy',tt:'field to shape by'},
@@ -40798,7 +40800,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		points = tmpPoints;
 	    }
 
-	    if(this.getPropertyScaleRadius()) {
+	    if(this.getScaleRadius()) {
 		let seen ={};
 		let numLocs = 0;
 		points.every(p=>{
@@ -40809,24 +40811,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		    return true;
 		});
-		let radiusScale = this.getPropertyRadiusScale();
-		if(Utils.stringDefined(radiusScale)) {
-		    radiusScale = radiusScale.split(",").map(t=>{return +t;});
-		} else  {
-		    //Just make up some numbers
-		    radiusScale =[10000,2,6000,3,4500,4,3500,5,2600,6,1300,7,800,8,300,9,275,10,250,11,225,12,175,13,125,14,100,15,50,16];
-		}
-//		radius=radiusScale[1];
-		for(let i=0;i<radiusScale.length;i+=2) {
-		    if(numLocs<radiusScale[i]) {
-			radius = radiusScale[i+1];
-		    }
-		}
-//		console.log("#locs:" + numLocs +" #records:" +records.length + " radius:" + radius);
+		let minRadius = this.getScaleRadiusMin();
+		let maxRadius=this.getScaleRadiusMax();
+		let maxLocs = this.getScaleRadiusMaxPoints();
+		let perc = Math.min(1.0,numLocs/maxLocs);
+		radius = Math.max(1,Math.round(maxRadius-(maxRadius-minRadius)*perc));
 	    }
 	    radius = Math.min(radius, this.getMaxRadius());
-
-
 
             let strokeWidth = +this.getPropertyStrokeWidth();
             let strokeColor = this.getPropertyStrokeColor();
