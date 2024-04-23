@@ -2025,7 +2025,22 @@ public class WikiManager extends RepositoryManager
 			       " class='ramadda-button' role='button'");
 	    }
 	    return getProperty(wikiUtil,props,"message","");
-	} else if(theTag.equals(WIKI_TAG_NEWBUTTON)) {
+	} else if(theTag.equals(WIKI_TAG_NEW_PROPERTY)) {
+	    if(getAccessManager().canDoEdit(request, entry)) {
+		String style = getProperty(wikiUtil,props,"style","");
+		for(String type: Utils.split(getProperty(wikiUtil,props,"type",""),",",true,true)) {
+		    String[] link =getMetadataManager().getMetadataAddLink( request, entry, type);
+		    if(link==null) return "Could not find property type:" + type;
+		    String label = getProperty(wikiUtil,props,"label",link[1]);
+		    String suffix=getProperty(wikiUtil,props,"addBreak",false)?"<br>":"";
+		    sb.append(HU.href(link[0],label,  HU.attrs("class","ramadda-button","role","button","style",style))+suffix);
+		}
+		return sb.toString();
+	    } 
+
+	    return getProperty(wikiUtil,props,"message","");
+
+	} else if(theTag.equals(WIKI_TAG_NEWBUTTON) || theTag.equals(WIKI_TAG_NEW_TYPE)) {
 	    if(getAccessManager().canDoNew(request, entry)) {
 		String type = getProperty(wikiUtil,props,"type",null);
 		if(type==null) return "No type specified in new tag";
@@ -7778,7 +7793,7 @@ public class WikiManager extends RepositoryManager
 			l.call("Next arrow", "{{next position=relative|fixed decorate=false iconSize=32 sort=name,entryorder sortAscending=true style=_dq_  showName=false}}", ""),
 			l.call("Absolute", "\\n+absolute top= bottom= left= right=\\n","-absolute"),
 			l.call("Relative", "\\n+relative\\n","-relative"),
-			l.call("If block", "\\n+if #admin=true #anonymous=true #users=id1,id2 #notusers=id1,id2\\n","-if"));			
+			l.call("If block", "\\n+if #canedit=true #admin=true #anonymous=true #users=id1,id2 #notusers=id1,id2\\n","-if"));			
 
 
         Utils.appendAll(tags3, l2.call( "Note", "A centered text note\nimg:note.png","+note\\n\\n", "-note"));
@@ -8319,7 +8334,15 @@ public class WikiManager extends RepositoryManager
 	    }
 	    
 	    Entry   entry   = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
+	    if(props.get("canedit")!=null) {
+		if(entry==null) return false;
+		if(getAccessManager().canDoEdit(request, entry) !=Utils.getProperty(props,"canedit",true)) {
+		    return false;
+		}
+	    }
+
 	    if(entry==null) return true;
+
 
 	    String property = (String) props.get("property");
 	    if(property!=null) {
