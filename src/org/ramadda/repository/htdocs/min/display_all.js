@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Apr 23 12:29:50 MDT 2024";
+var build_date="RAMADDA build date: Wed Apr 24 05:30:04 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -73,7 +73,10 @@ $.extend(Utils,{
                 code +='\'' + ct.colors[i]+'\',';
             }
             code += '});\n';
-            html += HU.tr([],HU.td(['width','10%'],HtmlUtils.b(ct.id)) +HU.td([], HtmlUtils.div(['id', domId + '_' + cnt, 'style', 'width:100%;'], '')) + HU.td(['align','right'],HU.space(2)+ct.colors.length));
+            html += HU.tr([],
+			  HU.td(['width','10%'],HtmlUtils.b(HU.span([ATTR_CLASS,'colortable-id'],ct.id))) +
+			  HU.td(['align','right'],HU.space(2)+ct.colors.length+'&nbsp;') +
+			  HU.td([], HtmlUtils.div(['id', domId + '_' + cnt, 'style', 'overflow-x:hidden;max-width:500px;width:100%;'], '')) );
             cnt++;
         });
         html+='</table>';
@@ -90,6 +93,7 @@ $.extend(Utils,{
             });
             cnt++;
         });
+	Utils.initCopyable('.colortable-id','Click to copy color table ID','Color table ID copied to clipboard');
     },
     getColorTablePopup: function(wikiEditor, itemize,label,showToggle,attr,value) {
         let popup = "<div class=wiki-editor-popup-items>"
@@ -149,27 +153,33 @@ $.extend(Utils,{
 	    dotWidth:null
         }
         if (args) $.extend(options, args);
-        let colorToString = null;
+	let colorInfo={};
         if (options.stringValues && options.stringValues.length) {
             options.showRange = false;
-            colorToString ={};
             ct = [];
             let seenColor = {};
             options.stringValues.forEach(v=>{
                 let style = "";
-                if(!seenColor[v.color]) {
-                    seenColor[v.color] = true;
+                if(!colorInfo[v.color]) {
+                    colorInfo[v.color] = {
+			label:'',
+			titles:[]
+		    };
                     ct.push(v.color);
-                    colorToString[v.color] = "";
                 }  else {
                     style = HU.css("border-top","1px solid #ccc");
                 }
+		let info = colorInfo[v.color];
                 let value = v.value;
                 if(value=="") value = "&lt;blank&gt;";
-                colorToString[v.color]+=HtmlUtils.div(["title",v.value,STYLE,style],value);
+                info.label+=HtmlUtils.div([ATTR_TITLE,v.value,ATTR_STYLE,style],value);
+		info.titles.push(value);
             });
         }
+	
 	let clazz = " display-colortable " +(!options.tooltips && options.showColorTableDots?"display-colortable-dots"+(options.horizontal?'-h':''):"");
+	if(!options.horizontal)
+	    clazz+=' display-colortable-vertical';
         let divargs = [CLASS, clazz];
         if(Utils.isDefined(options.width)) {
             divargs.push(STYLE);
@@ -231,41 +241,59 @@ $.extend(Utils,{
 		if(options.dotWidth) dotStyle+=HU.css('width',HU.getDimension(options.dotWidth),
 						      'height',HU.getDimension(options.dotWidth));
 		if(options.tooltips) {
-                    html += HU.div(['label',label,"data-value",val,'style','width:100%;display:inline-block;',CLASS,"display-colortable-dot-item",TITLE,label], HU.div([ "data-value",val,"class", "display-colortable-dot", "style", dotStyle]) + delim + label);
+                    html += HU.div(['label',label,"data-value",val,'style','width:100%;display:inline-block;',
+				    ATTR_CLASS,"display-colortable-dot-item",TITLE,label], HU.div([ "data-value",val,"class", "display-colortable-dot", "style", dotStyle]) + delim + label);
 		} else {
 		    let dot = HU.span([ "data-value",val,"class", "display-colortable-dot", "style", dotStyle]);
 		    let item;
-		    
 		    if(!options.horizontal) {
-			item = HU.hbox([dot, SPACE, label]);
+//			item = HU.hbox([dot, SPACE, label]);
+			item = dot+ SPACE+ label;
 		    } else {
 			item = dot + delim + label;
 		    }
-                    html += HU.span([CLASS,"display-colortable-dot-item",TITLE,label], item);
+                    html += HU.div([ATTR_CLASS,"display-colortable-dot-item",ATTR_TITLE,label], item);
 		}
-                if(!options.horizontal) html +="<br>";
+//                if(!options.horizontal) html +="<br>";
 		return;
             } 
             if (options.showRange) {
-                attrs.push(TITLE);
+                attrs.push(ATTR_TITLE);
                 attrs.push(formatter(val));
             } else if(options.tooltips) {
 		let tt = options.tooltips[idx];
 		if(tt)
-		    attrs.push(TITLE,tt,'data-title',tt,'foo',tt);
+		    attrs.push(ATTR_TITLE,tt,'data-title',tt,'foo',tt);
 	    }
-            attrs.push(STYLE);
-            attrs.push(HU.css("text-align","center", "background", ct[i], WIDTH,"100%","min-height", options.height,"min-width","1px"));
-            let label = options.labels?options.labels[idx]:"";
-            if(options.labelStyle) {
-                label = HU.div([STYLE,options.labelStyle],label);
-            }
+            let label;
+	    let title='';
+	    let info = colorInfo[ct[i]];
+	    if(info) {
+		title  =Utils.join(info.titles,'/')
+		label = info.label;
+	    }
+	    if(!label)
+		label = options.labels?options.labels[idx]:"";
             let fg = Utils.getForegroundColor(ct[i]);
-	    
-            if(options.horizontal) 
-                html += HtmlUtils.td(["data-value",val,"class", "display-colortable-slice", "style", HU.css('background', ct[i],"color",fg), WIDTH, tdw], HtmlUtils.div(attrs, label||""));
-            else
-                html += HU.div(["data-value",val,"class", "display-colortable-slice", STYLE, HU.css("background",ct[i],"color",fg, WIDTH, options.colorWidth)], HtmlUtils.div(attrs, label||""));
+	    let labelStyle=HU.css('padding-left','4px','padding-right','4px',
+				  'background', ct[i], ATTR_WIDTH,"100%",
+				  "min-height", options.height,'color',fg);
+            if(options.labelStyle) {
+		labelStyle+=options.labelStyle;
+            }
+            if(options.horizontal) {
+                html += HU.td(["data-value",val,
+			       ATTR_TITLE,title??'',
+			       ATTR_CLASS, "display-colortable-slice",
+			       ATTR_STYLE, HU.css('background', ct[i],"color",fg),
+			       ATTR_WIDTH, tdw], '&nbsp;');
+	    } else {
+		attrs.push(ATTR_STYLE);
+		attrs.push(labelStyle);
+                html += HU.div(["data-value",val,ATTR_CLASS, "display-colortable-slice",
+				ATTR_STYLE, HU.css("background",ct[i])],
+			       HU.div(attrs, label||""));
+	    }
         });
         if(!options.showColorTableDots) {
             if (options.showRange) {
@@ -279,13 +307,14 @@ $.extend(Utils,{
         }
         html += HtmlUtils.close(DIV);
         html += HtmlUtils.open(DIV, [CLASS, "display-colortable-extra"]);
-        if (colorToString!=null && options.horizontal && !options.showColorTableDots) {
+        if (Object.keys(colorInfo).length && options.horizontal && !options.showColorTableDots) {
             let tdw = (100 / ct.length) + "%";
             html += "<div style='width:100%;vertical-align:top;text-align:center;'>"
             let colCnt =0;
             let bin ={};
             ct.forEach(color=>{
-                let cell = HtmlUtils.div(["style","padding:2px;vertical-align:top;display:inline-block;width:" + tdw+";max-width:" + tdw+";overflow-x:auto;"],colorToString[color]);
+		let info = colorInfo[color];
+                let cell = HtmlUtils.div(["style","padding:2px;vertical-align:top;display:inline-block;width:" + tdw+";max-width:" + tdw+";overflow-x:auto;"],info?info.label:'');
                 html+=cell;
 //              bin[colCnt]+="<div style='border-top:1px solid #eee;'></div>";
             });
@@ -330,6 +359,9 @@ var defaultColorTables=[
 {"id":"plotly_cividis","colors":["rgb(0,32,76)","rgb(0,34,80)","rgb(0,35,85)","rgb(0,37,89)","rgb(0,39,94)","rgb(0,40,98)","rgb(0,42,102)","rgb(0,44,104)","rgb(0,46,105)","rgb(0,47,106)","rgb(0,49,108)","rgb(0,51,109)","rgb(2,52,110)","rgb(8,54,110)","rgb(15,56,109)","rgb(21,58,109)","rgb(28,60,109)","rgb(35,62,108)","rgb(40,64,108)","rgb(44,66,108)","rgb(47,67,108)","rgb(51,69,107)","rgb(55,71,107)","rgb(58,73,107)","rgb(61,75,107)","rgb(64,77,107)","rgb(67,79,107)","rgb(69,80,107)","rgb(72,82,107)","rgb(75,84,107)","rgb(77,86,107)","rgb(80,88,108)","rgb(83,89,108)","rgb(85,91,108)","rgb(88,93,109)","rgb(90,95,109)","rgb(93,96,109)","rgb(95,98,110)","rgb(97,100,110)","rgb(99,102,111)","rgb(101,104,111)","rgb(104,106,112)","rgb(106,108,113)","rgb(108,109,114)","rgb(110,111,114)","rgb(112,113,115)","rgb(115,115,116)","rgb(117,117,117)","rgb(119,119,117)","rgb(122,121,118)","rgb(124,123,119)","rgb(126,125,119)","rgb(129,127,120)","rgb(131,129,120)","rgb(134,131,120)","rgb(136,133,120)","rgb(139,135,120)","rgb(141,137,120)","rgb(144,138,120)","rgb(146,140,120)","rgb(149,142,120)","rgb(152,144,119)","rgb(154,146,119)","rgb(157,149,119)","rgb(159,151,118)","rgb(162,153,118)","rgb(164,155,117)","rgb(167,157,116)","rgb(169,159,116)","rgb(172,161,115)","rgb(175,164,114)","rgb(177,166,114)","rgb(180,168,113)","rgb(183,170,112)","rgb(185,172,111)","rgb(188,174,110)","rgb(191,176,109)","rgb(194,178,108)","rgb(196,181,107)","rgb(199,183,106)","rgb(202,185,105)","rgb(205,188,104)","rgb(208,190,102)","rgb(211,192,101)","rgb(213,195,99)","rgb(216,197,97)","rgb(219,199,96)","rgb(222,201,94)","rgb(224,203,92)","rgb(227,206,90)","rgb(230,209,88)","rgb(233,211,86)","rgb(237,214,84)","rgb(240,216,81)","rgb(243,219,79)","rgb(245,221,77)","rgb(247,223,76)","rgb(249,226,74)","rgb(251,228,72)","rgb(253,231,71)"]},
 {id:'inferno',colors: Utils.makeRGBColortable(0,0,3,0,0,4,0,0,6,1,0,7,1,1,9,1,1,11,2,1,14,2,2,16,3,2,18,4,3,20,4,3,22,5,4,24,6,4,27,7,5,29,8,6,31,9,6,33,10,7,35,11,7,38,13,8,40,14,8,42,15,9,45,16,9,47,18,10,50,19,10,52,20,11,54,22,11,57,23,11,59,25,11,62,26,11,64,28,12,67,29,12,69,31,12,71,32,12,74,34,11,76,36,11,78,38,11,80,39,11,82,41,11,84,43,10,86,45,10,88,46,10,90,48,10,92,50,9,93,52,9,95,53,9,96,55,9,97,57,9,98,59,9,100,60,9,101,62,9,102,64,9,102,65,9,103,67,10,104,69,10,105,70,10,105,72,11,106,74,11,106,75,12,107,77,12,107,79,13,108,80,13,108,82,14,108,83,14,109,85,15,109,87,15,109,88,16,109,90,17,109,91,17,110,93,18,110,95,18,110,96,19,110,98,20,110,99,20,110,101,21,110,102,21,110,104,22,110,106,23,110,107,23,110,109,24,110,110,24,110,112,25,110,114,25,109,115,26,109,117,27,109,118,27,109,120,28,109,122,28,109,123,29,108,125,29,108,126,30,108,128,31,107,129,31,107,131,32,107,133,32,106,134,33,106,136,33,106,137,34,105,139,34,105,141,35,105,142,36,104,144,36,104,145,37,103,147,37,103,149,38,102,150,38,102,152,39,101,153,40,100,155,40,100,156,41,99,158,41,99,160,42,98,161,43,97,163,43,97,164,44,96,166,44,95,167,45,95,169,46,94,171,46,93,172,47,92,174,48,91,175,49,91,177,49,90,178,50,89,180,51,88,181,51,87,183,52,86,184,53,86,186,54,85,187,55,84,189,55,83,190,56,82,191,57,81,193,58,80,194,59,79,196,60,78,197,61,77,199,62,76,200,62,75,201,63,74,203,64,73,204,65,72,205,66,71,207,68,70,208,69,68,209,70,67,210,71,66,212,72,65,213,73,64,214,74,63,215,75,62,217,77,61,218,78,59,219,79,58,220,80,57,221,82,56,222,83,55,223,84,54,224,86,52,226,87,51,227,88,50,228,90,49,229,91,48,230,92,46,230,94,45,231,95,44,232,97,43,233,98,42,234,100,40,235,101,39,236,103,38,237,104,37,237,106,35,238,108,34,239,109,33,240,111,31,240,112,30,241,114,29,242,116,28,242,117,26,243,119,25,243,121,24,244,122,22,245,124,21,245,126,20,246,128,18,246,129,17,247,131,16,247,133,14,248,135,13,248,136,12,248,138,11,249,140,9,249,142,8,249,144,8,250,145,7,250,147,6,250,149,6,250,151,6,251,153,6,251,155,6,251,157,6,251,158,7,251,160,7,251,162,8,251,164,10,251,166,11,251,168,13,251,170,14,251,172,16,251,174,18,251,176,20,251,177,22,251,179,24,251,181,26,251,183,28,251,185,30,250,187,33,250,189,35,250,191,37,250,193,40,249,195,42,249,197,44,249,199,47,248,201,49,248,203,52,248,205,55,247,207,58,247,209,60,246,211,63,246,213,66,245,215,69,245,217,72,244,219,75,244,220,79,243,222,82,243,224,86,243,226,89,242,228,93,242,230,96,241,232,100,241,233,104,241,235,108,241,237,112,241,238,116,241,240,121,241,242,125,242,243,129,242,244,133,243,246,137,244,247,141,245,248,145,246,250,149,247,251,153,249,252,157,250,253,160,252,254,164)},
 {id:'plasma',colors: Utils.makeRGBColortable(12,7,134,16,7,135,19,6,137,21,6,138,24,6,139,27,6,140,29,6,141,31,5,142,33,5,143,35,5,144,37,5,145,39,5,146,41,5,147,43,5,148,45,4,148,47,4,149,49,4,150,51,4,151,52,4,152,54,4,152,56,4,153,58,4,154,59,3,154,61,3,155,63,3,156,64,3,156,66,3,157,68,3,158,69,3,158,71,2,159,73,2,159,74,2,160,76,2,161,78,2,161,79,2,162,81,1,162,82,1,163,84,1,163,86,1,163,87,1,164,89,1,164,90,0,165,92,0,165,94,0,165,95,0,166,97,0,166,98,0,166,100,0,167,101,0,167,103,0,167,104,0,167,106,0,167,108,0,168,109,0,168,111,0,168,112,0,168,114,0,168,115,0,168,117,0,168,118,1,168,120,1,168,121,1,168,123,2,168,124,2,167,126,3,167,127,3,167,129,4,167,130,4,167,132,5,166,133,6,166,134,7,166,136,7,165,137,8,165,139,9,164,140,10,164,142,12,164,143,13,163,144,14,163,146,15,162,147,16,161,149,17,161,150,18,160,151,19,160,153,20,159,154,21,158,155,23,158,157,24,157,158,25,156,159,26,155,160,27,155,162,28,154,163,29,153,164,30,152,165,31,151,167,33,151,168,34,150,169,35,149,170,36,148,172,37,147,173,38,146,174,39,145,175,40,144,176,42,143,177,43,143,178,44,142,180,45,141,181,46,140,182,47,139,183,48,138,184,50,137,185,51,136,186,52,135,187,53,134,188,54,133,189,55,132,190,56,131,191,57,130,192,59,129,193,60,128,194,61,128,195,62,127,196,63,126,197,64,125,198,65,124,199,66,123,200,68,122,201,69,121,202,70,120,203,71,119,204,72,118,205,73,117,206,74,117,207,75,116,208,77,115,209,78,114,209,79,113,210,80,112,211,81,111,212,82,110,213,83,109,214,85,109,215,86,108,215,87,107,216,88,106,217,89,105,218,90,104,219,91,103,220,93,102,220,94,102,221,95,101,222,96,100,223,97,99,223,98,98,224,100,97,225,101,96,226,102,96,227,103,95,227,104,94,228,106,93,229,107,92,229,108,91,230,109,90,231,110,90,232,112,89,232,113,88,233,114,87,234,115,86,234,116,85,235,118,84,236,119,84,236,120,83,237,121,82,237,123,81,238,124,80,239,125,79,239,126,78,240,128,77,240,129,77,241,130,76,242,132,75,242,133,74,243,134,73,243,135,72,244,137,71,244,138,71,245,139,70,245,141,69,246,142,68,246,143,67,246,145,66,247,146,65,247,147,65,248,149,64,248,150,63,248,152,62,249,153,61,249,154,60,250,156,59,250,157,58,250,159,58,250,160,57,251,162,56,251,163,55,251,164,54,252,166,53,252,167,53,252,169,52,252,170,51,252,172,50,252,173,49,253,175,49,253,176,48,253,178,47,253,179,46,253,181,45,253,182,45,253,184,44,253,185,43,253,187,43,253,188,42,253,190,41,253,192,41,253,193,40,253,195,40,253,196,39,253,198,38,252,199,38,252,201,38,252,203,37,252,204,37,252,206,37,251,208,36,251,209,36,251,211,36,250,213,36,250,214,36,250,216,36,249,217,36,249,219,36,248,221,36,248,223,36,247,224,36,247,226,37,246,228,37,246,229,37,245,231,38,245,233,38,244,234,38,243,236,38,243,238,38,242,240,38,242,241,38,241,243,38,240,245,37,240,246,35,239,248,33)},
+
+
+
 {"category":"Map Ramps"},
 {"id":"white_blue","colors":["rgb(244,252,254)","rgb(101,239,255)","rgb(50,227,255)","rgb(0,169,204)","rgb(0,122,153)"]},
 {"id":"blue_green","colors":["#f7fcfd","#e5f5f9","#ccece6","#99d8c9","#66c2a4","#41ae76","#238b45","#006d2c","#00441b"]},
@@ -383,8 +415,15 @@ var defaultColorTables=[
 {"id":"d3_schemeRdYlGn","colors":["#a50026","#d73027","#f46d43","#fdae61","#fee08b","#ffffbf","#d9ef8b","#a6d96a","#66bd63","#1a9850","#006837"]},
 {"id":"d3_schemeSpectral","colors":["#9e0142","#d53e4f","#f46d43","#fdae61","#fee08b","#ffffbf","#e6f598","#abdda4","#66c2a5","#3288bd","#5e4fa2"]},
 {"category":"Categorical"},
-{"id":"gpt50","colors":["rgb(31,119,180)","rgb(174,199,232)","rgb(255,127,14)","rgb(255,187,120)","rgb(44,160,44)","rgb(152,223,138)","rgb(214,39,40)","rgb(255,152,150)","rgb(148,103,189)","rgb(197,176,213)","rgb(140,86,75)","rgb(196,156,148)","rgb(227,119,194)","rgb(247,182,210)","rgb(127,127,127)","rgb(199,199,199)","rgb(188,189,34)","rgb(219,219,141)","rgb(23,190,207)","rgb(158,218,229)","rgb(218,60,60)","rgb(230,197,197)","rgb(3,81,0)","rgb(146,143,143)","rgb(140,0,140)","rgb(153,153,153)","rgb(0,80,90)","rgb(230,143,143)","rgb(0,0,0)","rgb(250,215,215)","rgb(0,100,0)","rgb(78,238,148)","rgb(205,0,90)","rgb(255,228,225)","rgb(139,58,98)","rgb(238,238,238)","rgb(205,92,92)","rgb(75,0,130)","rgb(255,235,205)","rgb(0,0,139)","rgb(139,0,139)","rgb(0,0,255)","rgb(238,130,238)","rgb(0,139,139)","rgb(0,100,0)","rgb(189,183,107)","rgb(139,0,0)","rgb(233,150,122)","rgb(143,188,143)","rgb(72,61,139)"]},
-{"id":"gpt100","colors":["#1f77b4","#aec7e8","#ff7f0e","#ffbb78","#2ca02c","#98df8a","#d62728","#ff9896","#9467bd","#c5b0d5","#8c564b","#c49c94","#e377c2","#f7b6d2","#7f7f7f","#c7c7c7","#bcbd22","#dbdb8d","#17becf","#9edae5","#393b79","#5254a3","#6b6ecf","#9c9ede","#637939","#8ca252","#b5cf6b","#cedb9c","#8c6d31","#bd9e39","#e7ba52","#e7cb94","#843c39","#ad494a","#d6616b","#e7969c","#7b4173","#a55194","#ce6dbd","#de9ed6","#3182bd","#6baed6","#9ecae1","#c6dbef","#e6550d","#fd8d3c","#fdae6b","#fdd0a2","#31a354","#74c476","#a1d99b","#c7e9c0","#756bb1","#9e9ac8","#bcbddc","#dadaeb","#636363","#969696","#bdbdbd","#d9d9d9"]},
+    {"id":"gpt50","colors":["rgb(31,119,180)",,"rgb(255,127,14)","rgb(255,187,120)","rgb(174,199,232)","rgb(44,160,44)","rgb(152,223,138)","rgb(214,39,40)","rgb(255,152,150)","rgb(148,103,189)","rgb(197,176,213)","rgb(140,86,75)","rgb(196,156,148)","rgb(227,119,194)","rgb(247,182,210)","rgb(127,127,127)","rgb(199,199,199)","rgb(188,189,34)","rgb(219,219,141)","rgb(23,190,207)","rgb(158,218,229)","rgb(218,60,60)","rgb(230,197,197)","rgb(3,81,0)","rgb(146,143,143)","rgb(140,0,140)","rgb(153,153,153)","rgb(0,80,90)","rgb(230,143,143)","rgb(0,0,0)","rgb(250,215,215)","rgb(0,100,0)","rgb(78,238,148)","rgb(205,0,90)","rgb(255,228,225)","rgb(139,58,98)","rgb(238,238,238)","rgb(205,92,92)","rgb(75,0,130)","rgb(255,235,205)","rgb(0,0,139)","rgb(139,0,139)","rgb(0,0,255)","rgb(238,130,238)","rgb(0,139,139)","rgb(0,100,0)","rgb(189,183,107)","rgb(139,0,0)","rgb(233,150,122)","rgb(143,188,143)","rgb(72,61,139)"]},
+    {"id":"gpt100","colors":["#1f77b4","#ff7f0e","#ffbb78","#2ca02c","#98df8a","#aec7e8","#d62728","#ff9896","#9467bd","#c5b0d5","#8c564b","#c49c94","#e377c2","#f7b6d2","#7f7f7f","#c7c7c7","#bcbd22","#dbdb8d","#17becf","#9edae5","#393b79","#5254a3","#6b6ecf","#9c9ede","#637939","#8ca252","#b5cf6b","#cedb9c","#8c6d31","#bd9e39","#e7ba52","#e7cb94","#843c39","#ad494a","#d6616b","#e7969c","#7b4173","#a55194","#ce6dbd","#de9ed6","#3182bd","#6baed6","#9ecae1","#c6dbef","#e6550d","#fd8d3c","#fdae6b","#fdd0a2","#31a354","#74c476","#a1d99b","#c7e9c0","#756bb1","#9e9ac8","#bcbddc","#dadaeb","#636363","#969696","#bdbdbd","#d9d9d9"]},
+{id:'cats256',colors:["rgb(31,119,179)","rgb(255,126,14)","rgb(43,160,43)","rgb(214,38,40)","rgb(147,103,188)","rgb(140,86,75)","rgb(226,119,193)","rgb(126,126,126)","rgb(188,188,33)","rgb(22,189,207)","rgb(58,1,130)","rgb(0,66,1)","rgb(15,255,168)","rgb(93,0,63)","rgb(188,188,255)","rgb(216,175,161)","rgb(184,0,128)","rgb(0,77,82)","rgb(107,100,0)","rgb(124,1,0)","rgb(96,38,255)","rgb(255,255,154)","rgb(86,73,100)","rgb(140,184,147)","rgb(147,251,255)","rgb(1,130,103)","rgb(144,255,0)","rgb(130,0,160)","rgb(172,137,68)","rgb(91,52,0)","rgb(255,191,242)","rgb(255,110,117)","rgb(121,140,255)","rgb(221,0,255)","rgb(80,86,70)","rgb(0,68,137)","rgb(255,191,96)","rgb(255,1,140)","rgb(189,200,207)","rgb(175,151,181)","rgb(182,86,0)","rgb(1,112,0)","rgb(205,135,255)","rgb(28,214,70)","rgb(191,235,195)","rgb(121,151,181)","rgb(165,96,137)","rgb(110,137,86)","rgb(188,124,117)","rgb(138,40,68)","rgb(0,172,255)","rgb(142,212,255)","rgb(75,109,119)","rgb(0,212,177)","rgb(147,0,242)","rgb(138,149,0)","rgb(93,91,158)","rgb(253,223,186)","rgb(0,147,158)","rgb(255,219,0)","rgb(0,170,121)","rgb(82,0,103)","rgb(0,0,145)","rgb(10,93,61)","rgb(165,226,117)","rgb(98,59,65)","rgb(198,198,137)","rgb(255,158,181)","rgb(205,79,107)","rgb(255,7,214)","rgb(138,58,5)","rgb(126,61,112)","rgb(255,73,1)","rgb(96,43,165)","rgb(28,0,255)","rgb(230,223,255)","rgb(170,59,175)","rgb(216,156,0)","rgb(163,163,158)","rgb(63,105,255)","rgb(70,73,12)","rgb(123,105,133)","rgb(107,151,140)","rgb(255,154,117)","rgb(131,91,255)","rgb(124,107,70)","rgb(128,182,84)","rgb(188,0,73)","rgb(253,147,255)","rgb(93,0,24)","rgb(137,209,209)","rgb(156,140,211)","rgb(218,109,66)","rgb(138,87,0)","rgb(59,80,105)","rgb(75,107,59)","rgb(237,207,216)","rgb(207,237,255)","rgb(170,21,0)","rgb(223,255,79)","rgb(255,42,86)","rgb(209,73,158)","rgb(112,124,184)","rgb(89,128,0)","rgb(0,228,253)","rgb(119,75,149)","rgb(103,212,140)","rgb(61,58,114)","rgb(172,65,63)","rgb(214,161,102)","rgb(193,105,205)","rgb(105,89,93)","rgb(135,172,237)","rgb(160,165,105)","rgb(209,170,230)","rgb(135,0,98)","rgb(0,253,219)","rgb(103,40,24)","rgb(179,66,255)","rgb(14,89,196)","rgb(22,135,66)","rgb(144,211,0)","rgb(205,121,0)","rgb(249,89,255)","rgb(91,116,102)","rgb(142,174,179)","rgb(156,124,140)","rgb(70,0,198)","rgb(107,77,45)","rgb(165,109,70)","rgb(158,137,114)","rgb(168,175,202)","rgb(205,140,167)","rgb(0,253,100)","rgb(145,121,0)","rgb(255,98,161)","rgb(244,255,216)","rgb(1,140,240)","rgb(19,172,160)","rgb(91,45,89)","rgb(137,133,158)","rgb(207,204,186)","rgb(212,175,196)","rgb(219,221,109)","rgb(207,255,244)","rgb(0,100,133)","rgb(0,105,98)","rgb(168,65,103)","rgb(45,151,196)","rgb(168,116,255)","rgb(38,186,93)","rgb(87,182,0)","rgb(202,255,167)","rgb(163,121,170)","rgb(255,188,147)","rgb(137,226,193)","rgb(15,200,255)","rgb(212,0,196)","rgb(98,109,137)","rgb(105,133,142)","rgb(75,77,82)","rgb(170,96,103)","rgb(121,181,212)","rgb(43,89,22)","rgb(154,0,36)","rgb(189,209,242)","rgb(137,110,103)","rgb(105,165,107)","rgb(133,84,103)","rgb(174,205,186)","rgb(135,153,126)","rgb(202,219,0)","rgb(154,3,144)","rgb(235,188,26)","rgb(235,156,209)","rgb(112,0,110)","rgb(177,161,49)","rgb(202,107,147)","rgb(65,70,163)","rgb(228,140,137)","rgb(212,68,0)","rgb(198,138,202)","rgb(182,149,151)","rgb(212,31,117)","rgb(114,75,204)","rgb(103,77,0)","rgb(103,33,56)","rgb(56,86,79)","rgb(110,186,170)","rgb(133,58,49)","rgb(165,211,151)","rgb(184,175,142)","rgb(216,228,223)","rgb(170,0,223)","rgb(202,193,219)","rgb(255,223,140)","rgb(226,82,77)","rgb(102,105,110)","rgb(255,0,28)","rgb(82,45,114)","rgb(77,144,107)","rgb(168,109,17)","rgb(255,158,38)","rgb(94,163,175)","rgb(200,133,86)","rgb(145,89,151)","rgb(163,161,255)","rgb(253,186,186)","rgb(36,42,135)","rgb(219,230,168)","rgb(151,242,167)","rgb(103,147,214)","rgb(186,91,63)","rgb(58,93,145)","rgb(54,79,47)","rgb(38,124,149)","rgb(137,149,154)","rgb(207,179,86)","rgb(0,70,100)","rgb(94,93,47)","rgb(142,142,65)","rgb(172,63,19)","rgb(105,149,59)","rgb(161,61,133)","rgb(191,182,186)","rgb(172,198,103)","rgb(100,105,207)","rgb(145,175,0)"]},
+
+
+
+
+
+
 {"id":"rainbow","colors":["red","orange","yellow","green","blue","indigo","violet"]},
 {"id":"cats","colors":["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd","#8c564b","#e377c2","#7f7f7f","#bcbd22","#17becf","#ffd800","#DFA25A","#4B0082","#7BCCC4","#ADDD8E"]},
 {"id":"nice","colors":["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd","#8c564b","#e377c2","#7f7f7f","#bcbd22","#17becf"]},
@@ -5151,7 +5190,7 @@ function DisplayThing(argId, argProperties) {
 		    label  = HU.div([TITLE,tt],label);
                     let row = HU.open(TR,['valign','top']);
 		    let labelAttrs = [CLASS,"display-record-table-label"]
-		    if(props.labelStyle) labelAttrs.push('style',props.labelStyle);
+		    if(props.labelStyle) labelAttrs.push(ATTR_STYLE,props.labelStyle);
 		    let displayValue = value;
 		    let valueStyle = HU.css('margin-left','5px');
 		    if(maxWidth) {
@@ -6064,15 +6103,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(min && min.getTime)  {min  =this.formatDate(min);}
 	    if(max && max.getTime)  {max  =this.formatDate(max);}	    
 	    if(!args) args = {};
-	    args.showColorTableDots = this.getColorTableDots(this.getProperty('showColorTableDots'));
-	    args.dotWidth = this.getProperty('colorTableDotsWidth');
-	    args.decimals = this.getProperty('colorTableDotsDecimals',-1);
-	    args.showRange = this.getProperty('colorTableShowRange');
-	    let labels = this.getProperty('colorTableLabels');
+	    let prefix = args.field?args.field.getId()+'.':'';
+	    let getProperty = (id,dflt)=>{
+		return this.getProperty(prefix+id,
+					this.getProperty(id,dflt));
+					
+	    }
+
+	    args.showColorTableDots = this.getProperty(prefix+'showColorTableDots',this.getColorTableDots(this.getProperty('showColorTableDots')));
+	    args.dotWidth = getProperty('colorTableDotsWidth');
+	    args.decimals = getProperty('colorTableDotsDecimals',-1);
+	    args.showRange = getProperty('colorTableShowRange');
+	    let labels = getProperty('colorTableLabels');
 	    args.labels = labels?labels.split(','):null;
-	    args.labelStyle=this.getProperty('colorTableLabelStyle','font-size:12pt;');
+	    args.labelStyle=getProperty('colorTableLabelStyle');
 	    args.horizontal= this.getColorTableHorizontal();
-	    args.stride = this.getProperty('showColorTableStride',1);
+	    args.stride = getProperty('showColorTableStride',1);
             Utils.displayColorTable(ct, domId, min, max, args);
 	    let label = args.label ?? this.getProperty((args.field?args.field.getId():'')+'.colorTableLabel',this.getColorTableLabel());
 	    let dom = jqid(domId);
@@ -6102,7 +6148,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		html = Utils.wrap(items,'<div style=margin-bottom:4px;>','</div>');
 		html = HU.hbox([html, HU.space(3),HU.b('Color Table') +'<br>' +Utils.getColorTablePopup(null,null,null,false)]);
 		html =HU.div(['style',HU.css('padding','8px')], html);
-		let dialog =  HU.makeDialog({content:html,title:'Color Table Settings',anchor:$(this),
+		if(_this.colorTableDialog) _this.colorTableDialog.remove();
+		let dialog =  _this.colorTableDialog = HU.makeDialog({content:html,title:'Color Table Settings',anchor:$(this),
 					     draggable:true,header:true});
 
 		let minInput =dialog.find('.colortable-min');

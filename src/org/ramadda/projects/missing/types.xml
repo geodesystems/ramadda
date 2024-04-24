@@ -256,10 +256,17 @@ hideFilterWidget=true}}
 {{display_filter}}
 +tabs
 +tab Map
-{{display_map tooltip="${default}"
-colorBy=tribe_association colorTable=gpt50 height=400px
-strokeWidth=0 radius=5
-zoomLevel=2 mapCenter=49.61071%2C-104.06396}}
++relative
+<div id="colortablediv" class="display-colortable-inmap"></div>
+{{display_map tooltip="${default}" height=400px strokeWidth=0.2 radius=5
+zoomLevel=2 mapCenter=49.61071%2C-104.06396
+colorTable=cats256 
+colorBy=biological_sex colorByFields="biological_sex,age_missing,tribe_association"
+age_missing.showColorTableDots=false age_missing.colorTable=oranges
+colorTableDisplayId=colortablediv
+showColorTableDots=true  colorTableSide=left colorTableDotsWidth=16px
+}}
+-relative
 -tab
 +tab Table
 {{display_download  showRecordCount=true }}
@@ -300,7 +307,6 @@ sortFields=count  sortAscending=false
 fields="name,description,entry_url,url,case_number,status,first_name,middle_name,last_name,nickname,age_missing,date_of_birth,date_found,biological_sex,height,weight,race_ethnicity,tribe_association,missing_from_tribal_land,primary_residence_tribal_land,missing_city,missing_county,missing_zip,missing_state,found_city,found_county,found_zip,found_state,cause_of_death,death_comments,hair_color,head_hair_description,body_hair_description,facial_hair_description,left_eye_color,right_eye_color,eye_description,distinctive_physical_features,clothing_and_accessories,transportation,transportation_notes"
 template="${fields}"
 }} 
--skip
 -section
 ]]></wiki>
 
