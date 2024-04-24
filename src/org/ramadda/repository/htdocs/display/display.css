@@ -1802,11 +1802,15 @@ svg > g > g:last-child { pointer-events: none }
 }
 
 .display-colortable {
-  font-size:10px;
-  max-width:100%;
-  overflow-x:auto;
-  /*border:1px #efefef solid;*/
-  border-top:0px #efefef solid;
+    font-size:10pt;
+    max-width:100%;
+    overflow-x:auto;
+    /*border:1px #efefef solid;*/
+    border-top:0px #efefef solid;
+}
+
+.display-colortable-vertical {
+    font-size:12pt;
 }
 
 .display-colortable-extra {
@@ -1819,6 +1823,24 @@ svg > g > g:last-child { pointer-events: none }
    padding-left:0px !important;
 }
 
+.display-colortable-inmap {
+    z-index:100;
+    position:absolute;
+    background:#fff;
+    border:1px solid #888;
+    left:50px;
+    top:30px;
+    width:150px;
+    max-height:90%;
+    overflow-y:auto;
+    overflow-x:hidden;
+    white-space:nowrap;
+}
+.display-colortable-inmap .display-colortable-slice {
+    overflow-x:hidden;
+}
+
+
 .display-colortable-dots-h {
     text-align:center;
 }
@@ -1828,6 +1850,7 @@ svg > g > g:last-child { pointer-events: none }
     padding:2px;
     display: inline-block;
 }
+
 .display-colortable-dot-item-selected {
     background:#DCDCDC;
 }
@@ -1839,6 +1862,16 @@ svg > g > g:last-child { pointer-events: none }
     border-radius: 50%;
     display: inline-block;
     border:1px solid #000;
+}
+
+
+.display-colortable-vertical .display-colortable-dot-item {
+    display: block;
+    padding-top:2px;
+}
+
+.display-colortable-vertical .display-colortable-dot {
+    margin-left:4px;
 }
 
 .display-chart-legend {

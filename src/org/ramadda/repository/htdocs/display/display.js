@@ -1277,7 +1277,7 @@ function DisplayThing(argId, argProperties) {
 		    label  = HU.div([TITLE,tt],label);
                     let row = HU.open(TR,['valign','top']);
 		    let labelAttrs = [CLASS,"display-record-table-label"]
-		    if(props.labelStyle) labelAttrs.push('style',props.labelStyle);
+		    if(props.labelStyle) labelAttrs.push(ATTR_STYLE,props.labelStyle);
 		    let displayValue = value;
 		    let valueStyle = HU.css('margin-left','5px');
 		    if(maxWidth) {
@@ -2190,15 +2190,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(min && min.getTime)  {min  =this.formatDate(min);}
 	    if(max && max.getTime)  {max  =this.formatDate(max);}	    
 	    if(!args) args = {};
-	    args.showColorTableDots = this.getColorTableDots(this.getProperty('showColorTableDots'));
-	    args.dotWidth = this.getProperty('colorTableDotsWidth');
-	    args.decimals = this.getProperty('colorTableDotsDecimals',-1);
-	    args.showRange = this.getProperty('colorTableShowRange');
-	    let labels = this.getProperty('colorTableLabels');
+	    let prefix = args.field?args.field.getId()+'.':'';
+	    let getProperty = (id,dflt)=>{
+		return this.getProperty(prefix+id,
+					this.getProperty(id,dflt));
+					
+	    }
+
+	    args.showColorTableDots = this.getProperty(prefix+'showColorTableDots',this.getColorTableDots(this.getProperty('showColorTableDots')));
+	    args.dotWidth = getProperty('colorTableDotsWidth');
+	    args.decimals = getProperty('colorTableDotsDecimals',-1);
+	    args.showRange = getProperty('colorTableShowRange');
+	    let labels = getProperty('colorTableLabels');
 	    args.labels = labels?labels.split(','):null;
-	    args.labelStyle=this.getProperty('colorTableLabelStyle','font-size:12pt;');
+	    args.labelStyle=getProperty('colorTableLabelStyle');
 	    args.horizontal= this.getColorTableHorizontal();
-	    args.stride = this.getProperty('showColorTableStride',1);
+	    args.stride = getProperty('showColorTableStride',1);
             Utils.displayColorTable(ct, domId, min, max, args);
 	    let label = args.label ?? this.getProperty((args.field?args.field.getId():'')+'.colorTableLabel',this.getColorTableLabel());
 	    let dom = jqid(domId);
@@ -2228,7 +2235,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		html = Utils.wrap(items,'<div style=margin-bottom:4px;>','</div>');
 		html = HU.hbox([html, HU.space(3),HU.b('Color Table') +'<br>' +Utils.getColorTablePopup(null,null,null,false)]);
 		html =HU.div(['style',HU.css('padding','8px')], html);
-		let dialog =  HU.makeDialog({content:html,title:'Color Table Settings',anchor:$(this),
+		if(_this.colorTableDialog) _this.colorTableDialog.remove();
+		let dialog =  _this.colorTableDialog = HU.makeDialog({content:html,title:'Color Table Settings',anchor:$(this),
 					     draggable:true,header:true});
 
 		let minInput =dialog.find('.colortable-min');
