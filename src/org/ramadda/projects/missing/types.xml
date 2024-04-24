@@ -260,8 +260,10 @@ dateFormat=yyyymmdd
 +tab Map
 +relative
 <div id="colortablediv" class="display-colortable-inmap"></div>
-{{display_map tooltip="${default}" height=400px strokeWidth=0.2 radius=5
+{{display_map
+tooltip="${default}" height=400px strokeWidth=0.2 radius=5
 zoomLevel=2 mapCenter=49.61071%2C-104.06396
+handleCollisions=true  collisionFixed=true 
 colorTable=cats256 
 colorBy=biological_sex colorByFields="biological_sex,age_missing,tribe_association"
 age_missing.showColorTableDots=false age_missing.colorTable=oranges
