@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Apr 24 05:38:56 MDT 2024";
+var build_date="RAMADDA build date: Wed Apr 24 06:10:29 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -37876,6 +37876,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	{label:'Map Collisions'},
 	{p:'handleCollisions',ex:true,tt:'Handle point collisions'},
+	{p:'showCollisionToggle',ex:true,tt:'Show the toggle checkbox'},
 	{p:'collisionFixed',d:false,ex:true,tt:'If true, don\'t show the grouped markers on a click'},
 	{p:'collisionPointSize',d:16,tt:'Size of each point. Higher # is more spread out'},
 	{p:'collisionDotColor',d:'#fff',tt:'Color of dot drawn at center'},
@@ -40075,16 +40076,38 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    debug = debug || displayDebug.displayMapUpdateUI;
 	    if(debug) console.log("displaymap.updateUIInner:" + records.length);
 	    this.haveCalledUpdateUI = true;
-	    if(this.getProperty("showRegionSelector")) {
-		let label = this.getProperty("regionSelectorLabel") || HU.getIconImage("fa-globe-americas");
-		
-		let button = HU.div([CLASS,"ramadda-menu-button ramadda-clickable",  TITLE,"Select region", ID,this.domId("selectregion")],label)+SPACE2;
-		this.writeHeader(ID_HEADER2_PREPREFIX, button);
-
-		this.jq("selectregion").click(function() {
-		    _this.initRegionsSelector($(this));
-		});
+	    let header='';
+	    if(this.getShowCollisionToggle()) {
+		header+=HU.span([ATTR_TITLE,'Toggle showing collisions',
+				 ATTR_CLASS,'display-header-item'],
+				HU.checkbox('',[ATTR_ID,this.domId('collisiontoggle')],
+					    !this.getHandleCollisions(),
+					    'Show All'));
 	    }
+
+
+	    if(this.getShowRegionSelector()) {
+		let label = this.getRegionSelectorLabel() ?? HU.getIconImage("fa-globe-americas");
+		
+		header+= HU.span([ATTR_CLASS,"display-header-span ramadda-menu-button ramadda-clickable",  TITLE,"Select region", ID,this.domId("selectregion")],label)+SPACE2;
+
+	    }
+
+
+	    if(Utils.stringDefined(header)) {
+		this.writeHeader(ID_HEADER2_PREFIX,header);
+	    }
+
+	    this.jq('collisiontoggle').change(function(){
+		let on = $(this).is(':checked');
+		_this.setProperty('handleCollisions',!on);
+		_this.haveCalledUpdateUI = false;
+		_this.updateUI();
+		
+	    });
+	    this.jq("selectregion").click(function() {
+		_this.initRegionsSelector($(this));
+	    });
 
 	    if(!this.getProperty("makeDisplay",true)) {
 		return;
@@ -40419,6 +40442,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.setMapLabel(labels[0]);
 	    }
 	    this.showColorTable(colorBy);
+
+
 	    if(this.getHmShowToggle(this.getProperty("hm.showToggle")) || this.getHmShowReload()) {
 		let cbx = this.jq(ID_HEATMAP_TOGGLE);
 		let reload =  HU.getIconImage("fa-sync",[CLASS,"display-anim-button",TITLE,"Reload heatmap", ID,this.domId("heatmapreload")])+SPACE2;
