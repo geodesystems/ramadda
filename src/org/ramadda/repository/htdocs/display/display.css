@@ -1809,6 +1809,12 @@ svg > g > g:last-child { pointer-events: none }
     border-top:0px #efefef solid;
 }
 
+.display-colortable-title {
+    font-weight:bold;
+    padding-left:2px;
+    padding-right:2px;    
+    text-align:center;
+}
 .display-colortable-vertical {
     font-size:12pt;
 }

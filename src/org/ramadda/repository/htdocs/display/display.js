@@ -2197,6 +2197,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 					
 	    }
 
+	    if(args.field) args.title=args.field.getLabel();
 	    args.showColorTableDots = this.getProperty(prefix+'showColorTableDots',this.getColorTableDots(this.getProperty('showColorTableDots')));
 	    args.dotWidth = getProperty('colorTableDotsWidth');
 	    args.decimals = getProperty('colorTableDotsDecimals',-1);

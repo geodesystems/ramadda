@@ -185,6 +185,11 @@ $.extend(Utils,{
         }
         
         let html = HtmlUtils.open(DIV, divargs);
+	if(!options.horizontal && Utils.stringDefined(options.title))
+	    html+=HU.div([ATTR_CLASS,'display-colortable-title'],options.title);
+	    
+
+
         if(!options.showColorTableDots) {
             html+= HU.open('table',['cellpadding',0,'cellspacing',0,'width','100%','border',0]);
             html +='<tr>';
