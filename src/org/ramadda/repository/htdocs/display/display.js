@@ -162,6 +162,7 @@ displayDefineEvent("entryMouseOver");
 displayDefineEvent("entryMouseOut");
 displayDefineEvent("removeDisplay");
 displayDefineEvent("filterChanged");
+displayDefineEvent("filteredDataChanged",false);
 
 
 var globalDisplayCount = 0;
@@ -1854,7 +1855,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:DisplayEvent.filterChanged.share,ex:true,tt:'Share filter changed'},
 	{p:DisplayEvent.filterChanged.accept,ex:true,tt:'Accept filter changed'},
 	{p:DisplayEvent.filterChanged.shareGroup,tt:'Only share in this group'},
-	{p:DisplayEvent.filterChanged.acceptGroup,tt:'Only share in this group'},		
+	{p:DisplayEvent.filterChanged.acceptGroup,tt:'Only share in this group'},
+
+	{p:DisplayEvent.filteredDataChanged.share,ex:true,tt:'Share filtered data changed'},
+	{p:DisplayEvent.filteredDataChanged.accept,ex:true,tt:'Accept filtered data changed'},
+	{p:DisplayEvent.filteredDataChanged.shareGroup,tt:'Only share in this group'},
+	{p:DisplayEvent.filteredDataChanged.acceptGroup,tt:'Only share in this group'},			
+
+
+
 
 	{p:DisplayEvent.recordSelection.share,ex:true,tt:'Share record selection'},
 	{p:DisplayEvent.recordSelection.accept,ex:true,tt:'Accept record selection'},
@@ -1894,6 +1903,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'recordSelectField',tt:'Field to match selection on instead of date'},
 
 	{label:'Convert Data'},
+	{p:'applyConvertAfter'},
 	{p:'offset1',canCache:true},
 	{p:'offset2',canCache:true},
 	{p:'scale',canCache:true},
@@ -4003,9 +4013,28 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		}		    
 	    }
+	    if(this.shareEvent(DisplayEvent.filteredDataChanged,false)) {
+		this.getDisplayManager().notifyEvent(DisplayEvent.filteredDataChanged, this, {
+		    records:filteredRecords
+		});
+	    }
 	    return filteredRecords
 	},
+        handleEventFilteredDataChanged: function(source, args) {
+	    this.propagatedFilteredRecords = args.records;
+	    if(args.records) {
+		this.forceUpdateUI();
+	    }
+	},
 	filterDataInner: function(records, fields, args) {
+	    if(this.propagatedFilteredRecords && this.originalPointData) {
+//		console.log('filter data before',this.propagatedFilteredRecords[0].data);
+		let tmp = new  PointData("pointdata", this.originalPointData.recordFields, this.propagatedFilteredRecords);
+		tmp = this.convertPointData(tmp);
+//		console.log('filter data after convert:',tmp.getRecords()[0].data);
+		records =tmp.getRecords();
+	    }
+
 	    if(this.recordListOverride) {
 		return this.recordListOverride;
 	    }
@@ -4019,6 +4048,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		$.extend(opts,args);
 	    let debug =  displayDebug.filterData;
 	    if(debug) this.logMsg("filterData");
+
 
 	    if(this.getAnimationEnabled()) {
 		if(this.getProperty("animationFilter", true)) {
@@ -4414,6 +4444,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(this.animationControl) {
 		this.animationControl.applyLabelTemplate(records);
 	    }
+
+
+
+
             return this.handleResult("filterData",records);
         },
 	//TODO: this will support a handler pattern that allows for insertion
@@ -7785,7 +7819,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             } else {
                 this.hasElevation = false;
             }
-	    pointData = this.convertPointData(pointData);
+	    this.originalPointData=pointData;
+	    if(!this.getApplyConvertAfter()) {
+		pointData = this.convertPointData(pointData);
+	    }
             this.dataCollection.addData(pointData);
 	    try {
 		if(!skipUpdateUI)
