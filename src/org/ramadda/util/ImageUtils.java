@@ -19,6 +19,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 
+import java.util.HashSet;
 import java.awt.image.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -182,9 +183,34 @@ public class ImageUtils extends ucar.unidata.ui.ImageUtils {
 
 
     public static void main(String[]args) throws Exception {
+	BufferedImage   image = ImageIO.read(new File(args[0]));
+        int width = image.getWidth();
+        int height = image.getHeight();
+        int index = 0;
+	HashSet seen = new HashSet();
+	int cnt=0;
+	System.out.print("{id:'test',colors:[");
+	for(int x = 0; x < width; x++) {
+	    if(cnt>=256) break;
+	    //            for(int y = 0; y < height; y++) {
+	    int y=0;
+	    Color color = new Color(image.getRGB(x,(int)(height/2)));
+	    String c = color.getRed() + ","+color.getGreen() + ","+color.getBlue();
+	    if(!seen.contains(c)) {
+		seen.add(c);
+		if(cnt++>0) System.out.print(",");
+		System.out.print("\"rgb(" + c+")\"");
+	    }
+	} 
+	System.out.println("]},");
+	if(true) return;
+
+
+
+
 	for(String arg:args) {
-	    Image image = orientImage(arg,readImage(arg),null);
-            writeImageToFile(image,  new File("thumb_" + arg));
+	    //	    Image image = orientImage(arg,readImage(arg),null);
+	    //            writeImageToFile(image,  new File("thumb_" + arg));
 	}
     }
 
