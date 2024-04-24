@@ -254,16 +254,21 @@ $.extend(Utils,{
 	    }
             attrs.push(STYLE);
             attrs.push(HU.css("text-align","center", "background", ct[i], WIDTH,"100%","min-height", options.height,"min-width","1px"));
-            let label = options.labels?options.labels[idx]:"";
+            let label;
+	    if(colorToString) label = colorToString[ct[i]];
+	    if(!label)
+		label = options.labels?options.labels[idx]:"";
             if(options.labelStyle) {
                 label = HU.div([STYLE,options.labelStyle],label);
             }
             let fg = Utils.getForegroundColor(ct[i]);
-	    
-            if(options.horizontal) 
+            if(options.horizontal) {
                 html += HtmlUtils.td(["data-value",val,"class", "display-colortable-slice", "style", HU.css('background', ct[i],"color",fg), WIDTH, tdw], HtmlUtils.div(attrs, label||""));
-            else
-                html += HU.div(["data-value",val,"class", "display-colortable-slice", STYLE, HU.css("background",ct[i],"color",fg, WIDTH, options.colorWidth)], HtmlUtils.div(attrs, label||""));
+	    } else {
+                html += HU.div(["data-value",val,ATTR_CLASS, "display-colortable-slice",
+				ATTR_STYLE, HU.css("background",ct[i],"color",fg,
+						   'x'+ATTR_WIDTH, options.colorWidth)], HtmlUtils.div(attrs, label||""));
+	    }
         });
         if(!options.showColorTableDots) {
             if (options.showRange) {
@@ -381,8 +386,10 @@ var defaultColorTables=[
 {"id":"d3_schemeRdYlGn","colors":["#a50026","#d73027","#f46d43","#fdae61","#fee08b","#ffffbf","#d9ef8b","#a6d96a","#66bd63","#1a9850","#006837"]},
 {"id":"d3_schemeSpectral","colors":["#9e0142","#d53e4f","#f46d43","#fdae61","#fee08b","#ffffbf","#e6f598","#abdda4","#66c2a5","#3288bd","#5e4fa2"]},
 {"category":"Categorical"},
-{"id":"gpt50","colors":["rgb(31,119,180)","rgb(174,199,232)","rgb(255,127,14)","rgb(255,187,120)","rgb(44,160,44)","rgb(152,223,138)","rgb(214,39,40)","rgb(255,152,150)","rgb(148,103,189)","rgb(197,176,213)","rgb(140,86,75)","rgb(196,156,148)","rgb(227,119,194)","rgb(247,182,210)","rgb(127,127,127)","rgb(199,199,199)","rgb(188,189,34)","rgb(219,219,141)","rgb(23,190,207)","rgb(158,218,229)","rgb(218,60,60)","rgb(230,197,197)","rgb(3,81,0)","rgb(146,143,143)","rgb(140,0,140)","rgb(153,153,153)","rgb(0,80,90)","rgb(230,143,143)","rgb(0,0,0)","rgb(250,215,215)","rgb(0,100,0)","rgb(78,238,148)","rgb(205,0,90)","rgb(255,228,225)","rgb(139,58,98)","rgb(238,238,238)","rgb(205,92,92)","rgb(75,0,130)","rgb(255,235,205)","rgb(0,0,139)","rgb(139,0,139)","rgb(0,0,255)","rgb(238,130,238)","rgb(0,139,139)","rgb(0,100,0)","rgb(189,183,107)","rgb(139,0,0)","rgb(233,150,122)","rgb(143,188,143)","rgb(72,61,139)"]},
-{"id":"gpt100","colors":["#1f77b4","#aec7e8","#ff7f0e","#ffbb78","#2ca02c","#98df8a","#d62728","#ff9896","#9467bd","#c5b0d5","#8c564b","#c49c94","#e377c2","#f7b6d2","#7f7f7f","#c7c7c7","#bcbd22","#dbdb8d","#17becf","#9edae5","#393b79","#5254a3","#6b6ecf","#9c9ede","#637939","#8ca252","#b5cf6b","#cedb9c","#8c6d31","#bd9e39","#e7ba52","#e7cb94","#843c39","#ad494a","#d6616b","#e7969c","#7b4173","#a55194","#ce6dbd","#de9ed6","#3182bd","#6baed6","#9ecae1","#c6dbef","#e6550d","#fd8d3c","#fdae6b","#fdd0a2","#31a354","#74c476","#a1d99b","#c7e9c0","#756bb1","#9e9ac8","#bcbddc","#dadaeb","#636363","#969696","#bdbdbd","#d9d9d9"]},
+    {"id":"gpt50","colors":["rgb(31,119,180)",,"rgb(255,127,14)","rgb(255,187,120)","rgb(174,199,232)","rgb(44,160,44)","rgb(152,223,138)","rgb(214,39,40)","rgb(255,152,150)","rgb(148,103,189)","rgb(197,176,213)","rgb(140,86,75)","rgb(196,156,148)","rgb(227,119,194)","rgb(247,182,210)","rgb(127,127,127)","rgb(199,199,199)","rgb(188,189,34)","rgb(219,219,141)","rgb(23,190,207)","rgb(158,218,229)","rgb(218,60,60)","rgb(230,197,197)","rgb(3,81,0)","rgb(146,143,143)","rgb(140,0,140)","rgb(153,153,153)","rgb(0,80,90)","rgb(230,143,143)","rgb(0,0,0)","rgb(250,215,215)","rgb(0,100,0)","rgb(78,238,148)","rgb(205,0,90)","rgb(255,228,225)","rgb(139,58,98)","rgb(238,238,238)","rgb(205,92,92)","rgb(75,0,130)","rgb(255,235,205)","rgb(0,0,139)","rgb(139,0,139)","rgb(0,0,255)","rgb(238,130,238)","rgb(0,139,139)","rgb(0,100,0)","rgb(189,183,107)","rgb(139,0,0)","rgb(233,150,122)","rgb(143,188,143)","rgb(72,61,139)"]},
+    {"id":"gpt100","colors":["#1f77b4","#ff7f0e","#ffbb78","#2ca02c","#98df8a","#aec7e8","#d62728","#ff9896","#9467bd","#c5b0d5","#8c564b","#c49c94","#e377c2","#f7b6d2","#7f7f7f","#c7c7c7","#bcbd22","#dbdb8d","#17becf","#9edae5","#393b79","#5254a3","#6b6ecf","#9c9ede","#637939","#8ca252","#b5cf6b","#cedb9c","#8c6d31","#bd9e39","#e7ba52","#e7cb94","#843c39","#ad494a","#d6616b","#e7969c","#7b4173","#a55194","#ce6dbd","#de9ed6","#3182bd","#6baed6","#9ecae1","#c6dbef","#e6550d","#fd8d3c","#fdae6b","#fdd0a2","#31a354","#74c476","#a1d99b","#c7e9c0","#756bb1","#9e9ac8","#bcbddc","#dadaeb","#636363","#969696","#bdbdbd","#d9d9d9"]},
+
+
 {"id":"rainbow","colors":["red","orange","yellow","green","blue","indigo","violet"]},
 {"id":"cats","colors":["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd","#8c564b","#e377c2","#7f7f7f","#bcbd22","#17becf","#ffd800","#DFA25A","#4B0082","#7BCCC4","#ADDD8E"]},
 {"id":"nice","colors":["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd","#8c564b","#e377c2","#7f7f7f","#bcbd22","#17becf"]},
