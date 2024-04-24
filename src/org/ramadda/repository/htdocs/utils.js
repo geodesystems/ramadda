@@ -251,13 +251,13 @@ var Utils =  {
             timer = setTimeout(() => {f.apply(this, args)}, delay);
 	}
     },
-    initCopyable: function(selector,title) {
+    initCopyable: function(selector,title,ack) {
 	$(selector).each(function(){
 	    $(this).addClass('ramadda-clickable');
 	    $(this).attr('title',title??'Click to copy');
 	    $(this).click(()=>{
 		Utils.copyToClipboard($(this).attr('data-copy')??$(this).html());
-		alert($(this).attr('copy-message')??'Text copied to clipboard');
+		alert($(this).attr('copy-message')??ack??'Text copied to clipboard');
 	    });
 	});
     },
