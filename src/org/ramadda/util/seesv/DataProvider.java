@@ -2107,15 +2107,17 @@ public abstract class DataProvider extends SeesvOperator {
                 row.add("line");
                 return row;
             }
-            String line = ctx.readLine();
-            if (line == null) {
-                return null;
-            }
-            if ( !ctx.lineOk(line)) {
-                return null;
-            }
+	    String line=null;
+	    while(true) {
+		line = ctx.readLine();
+		if (line == null) {
+		    return null;
+		}
+		if (ctx.lineOk(line)) {
+		    break;
+		}
+	    }
             row.add(line);
-
             return row;
         }
 
