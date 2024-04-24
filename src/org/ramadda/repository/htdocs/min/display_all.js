@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Apr 24 05:30:04 MDT 2024";
+var build_date="RAMADDA build date: Wed Apr 24 05:38:56 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -187,6 +187,11 @@ $.extend(Utils,{
         }
         
         let html = HtmlUtils.open(DIV, divargs);
+	if(!options.horizontal && Utils.stringDefined(options.title))
+	    html+=HU.div([ATTR_CLASS,'display-colortable-title'],options.title);
+	    
+
+
         if(!options.showColorTableDots) {
             html+= HU.open('table',['cellpadding',0,'cellspacing',0,'width','100%','border',0]);
             html +='<tr>';
@@ -6110,6 +6115,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 					
 	    }
 
+	    if(args.field) args.title=args.field.getLabel();
 	    args.showColorTableDots = this.getProperty(prefix+'showColorTableDots',this.getColorTableDots(this.getProperty('showColorTableDots')));
 	    args.dotWidth = getProperty('colorTableDotsWidth');
 	    args.decimals = getProperty('colorTableDotsDecimals',-1);
