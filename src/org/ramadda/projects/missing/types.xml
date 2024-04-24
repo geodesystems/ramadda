@@ -252,7 +252,9 @@ csvcommands1=-notcolumns,id\,type\,south\,west,-addheader, biological_sex.type e
 +section title={{name}}
 {{description wikify=true}}
 {{group tribe_association.filterSortCount=true filterFields="_text_,startdate,age_missing,biological_sex,tribe_association" 
-hideFilterWidget=true}}
+hideFilterWidget=true
+dateFormat=yyyymmdd
+}}
 {{display_filter}}
 +tabs
 +tab Map
