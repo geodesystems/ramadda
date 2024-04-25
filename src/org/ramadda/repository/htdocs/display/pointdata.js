@@ -2689,6 +2689,13 @@ function CsvUtil() {
 		    type:"double",
 		    chartable:true,
 		}));
+		newFields.push(new RecordField({
+		    id:"percent",
+		    index:newFields.length,
+		    label:"Percent",
+		    type:"double",
+		    chartable:true,
+		}));		
 	    }
 //	    console.log("fields:" + newFields);
 	    let keys = [];
@@ -2775,6 +2782,7 @@ function CsvUtil() {
 		});
 		if(op == "count") {
 		    data.push(obj.count);
+		    data.push(Utils.trimDecimals(100*obj.count/records.length,1));		    
 		}
 		let newRecord = new  PointRecord(newFields,lat,lon, NaN, date, data);
 		newRecords.push(newRecord);

@@ -1442,7 +1442,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    if(debug) {
 		console.log("columns:");
 		for(let i=0;i<dataTable.getNumberOfColumns();i++)
-		    console.log("\tcol[" + i +"]=" + dataTable.getColumnLabel(i) +" type:" + dataTable.getColumnType(i));
+		    console.log("\tcol[" + i +"]=" + dataTable.getColumnLabel(i) +" role:" +
+				dataTable.getColumnRole(i)+
+				" type:" + dataTable.getColumnType(i));
 	    }
 
 	    let annotationStride = this.getAnnotationStride(0);
@@ -1539,7 +1541,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     let value = row[colIdx];
 //		    if(rowIdx==1)			console.log("\tcol:" + colIdx +" value:", value,' type:'+(typeof value));
 		    if(indexIsString) {
-			if(value.f) value.f = (value.f).toString().replace(/\n/g, " ");
+			if(Utils.isDefined(value.f)) {
+			    let s = (value.f).toString().replace(/\n/g, " ");
+			    if(s.trim().length==0) s='<blank>';
+			    if(maxWidth>0 && s.length>maxWidth)
+				s = s.substring(0,maxWidth) +"...";
+			    value.f = s;
+			}
 		    }
 		    if(colIdx>0 && fixedValueS) {
 			let o = valueGetter(fixedValueN, colIdx, field, theRecord);
@@ -1925,8 +1933,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    if(this.getVAxisHideTicks()) 
 		chartOptions.vAxis.ticks  = [];	    
 
-            if (this.fontSize > 0) {
-                chartOptions.fontSize = this.fontSize;
+            if (fontSize > 0) {
+                chartOptions.fontSize = fontSize;
             }
 
 	    let defaultRanges=[];
@@ -2242,8 +2250,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		if(chart) this.charts.push(chart);
 	    }
 	},
+
 	drawChart:function(chart,dataTable,chartOptions) {
-	    chart.draw(dataTable, chartOptions);
+	    chart.draw(dataTable, 	    chartOptions);
 	},
 
 	makeGoogleChartInner: function(dataList, chartId, props, selectedFields) {
@@ -2854,7 +2863,7 @@ function PiechartDisplay(displayManager, id, properties) {
 		    fontSize:12,
                 },
                 showColorCode: true,
-		//		isHtml: true,
+//		isHtml: true,
 		//		ignoreBounds: true,
             };
 	    this.chartOptions.legend = {'position':this.getProperty("legendPosition", 'right'),'alignment':'center'};
@@ -3690,7 +3699,7 @@ function BartableDisplay(displayManager, id, properties) {
                 colors: this.getColorList(),
                 width: (Utils.isDefined(this.getChartWidth()) ? this.getChartWidth() : "100%"),
                 chartArea: {
-                    left: '30%',
+                    left: this.getChartLeft('30%'),
                     top: 0,
                     width: '70%',
                     height: '80%'
@@ -3699,6 +3708,7 @@ function BartableDisplay(displayManager, id, properties) {
                 bars: 'horizontal',
                 tooltip: {
                     showColorCode: true,
+		    isHtml:true
                 },
                 legend: {
                     position: 'none'
@@ -3717,7 +3727,8 @@ function BartableDisplay(displayManager, id, properties) {
                 chartOptions.vAxis = {
                     title: this.getProperty('vAxisTitle')
                 };
-            return new google.charts.Bar(chartDiv); 
+            return new google.visualization.BarChart(chartDiv);
+//            return new google.charts.Bar(chartDiv); 
         },
         getDefaultSelectedFields: function(fields, dfltList) {
             let f = [];

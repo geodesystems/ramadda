@@ -8765,6 +8765,11 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
         },
         notifyEvent: function(event, source, data) {
             let displays = this.getDisplays();
+	    let debug = false;
+	    //debug=event.name=='filteredDataChanged';
+
+	    if(debug)
+		console.log('notifyEvent',event,displays.length);
 	    let group = (source!=null&&source.getProperty?source.getProperty(event.shareGroup):"");
 	    if(displayDebug.notifyEvent)
 		console.log("displayManager.notifyEvent:" + event);
@@ -8772,22 +8777,23 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
             for (let i = 0; i < this.displays.length; i++) {
                 let display = this.displays[i];
                 if (display == source) {
+		    if(debug) console.log('\tskipping source');
                     continue;
                 }
 		let acceptGroup = (display!=null&&display.getProperty?display.getProperty(event.acceptGroup):"");
 		if(group) {
 		    if(acceptGroup!=group)  {
-			if(displayDebug.notifyEvent)
+			if(debug || displayDebug.notifyEvent)
 			    console.log("\t" + display.type+" not in group:" + group);
 			continue;
 		    }
 		} else if(acceptGroup) {
-		    if(displayDebug.notifyEvent)
+		    if(debug||displayDebug.notifyEvent)
 			console.log("\t" + display.type+" incoming not in accept group:" + acceptGroup);
 		    continue;
 		}
 		if(!display.acceptEvent(event,  event.default)) {
-		    if(displayDebug.notifyEvent)
+		    if(debug||displayDebug.notifyEvent)
 			console.log("\t" + display.type+" not accepting");
 		    continue;
 		}
@@ -8798,8 +8804,8 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                         continue;
                     }
                 }
-//		if(displayDebug.notifyEvent)
-//		console.log("\t" + display.type+" calling notifyEvent:" + event);
+		if(debug ||displayDebug.notifyEvent)
+		    console.log("\t" + display.type+" calling notifyEvent:" + event);
                 display.notifyEvent(event, source, data);
             }
         },
