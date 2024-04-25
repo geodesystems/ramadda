@@ -8010,7 +8010,11 @@ public class EntryManager extends RepositoryManager {
         if (extraClauses != null) {
             clauses.addAll(extraClauses);
         }
-        TypeHandler typeHandler = getRepository().getTypeHandler(request);
+        TypeHandler typeHandler = getRepository().getTypeHandler(request,false);
+	//This might be a remote search where we don't have this type
+	if(typeHandler==null) {
+	    return new ArrayList<Entry>();
+	}
 	return getEntries(request, clauses, typeHandler, LUCENE_OK);
     }
 

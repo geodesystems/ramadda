@@ -6075,35 +6075,22 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public TypeHandler getTypeHandler(Request request) throws Exception {
+	return getTypeHandler(request, true);
+    }
+
+
+    public TypeHandler getTypeHandler(Request request,boolean useDefaultIfNotFound) throws Exception {
         if (request != null) {
             String type = request.getString(ARG_TYPE,
                                             TypeHandler.TYPE_ANY).trim();
 
-            return getTypeHandler(type, true);
+            return getTypeHandler(type, useDefaultIfNotFound);
         } else {
             return getTypeHandler(TypeHandler.TYPE_FILE);
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param type _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public TypeHandler getTypeHandler(String type) throws Exception {
         return getTypeHandler(type, false);
     }
