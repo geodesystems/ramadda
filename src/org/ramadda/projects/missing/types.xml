@@ -278,7 +278,6 @@ showColorTableDots=true  colorTableSide=left colorTableDotsWidth=16px
 -tab
 +tab By Date & Age
 {{display_barchart height=300px addStyle=true colorBy=tribe_association colorTable=gpt50
-filteredDataChanged.accept=true 
 fields=age tooltip="<b>${name}</b><br>Age missing:${age_missing}"}} 
 -tab
 +tab Statistics
@@ -286,21 +285,24 @@ fields=age tooltip="<b>${name}</b><br>Age missing:${age_missing}"}}
 +tab By Age
 {{display_barchart   height=300px
 filteredDataChanged.accept=true 
-indexField=age_missing fields=count  tootip="${default}"
+indexField=age_missing fields=count  tooltip="${default}"
 convertData="mergeRows(keyFields=age_missing, operator=count, valueFields=);" 
 sortFields=count  sortAscending=false 
 }}
 -tab
 +tab By Tribe
 {{display_bartable    
-filteredDataChanged.accept=true 
+vAxis.text.fontSize=10
+maxFieldLength=40
+filteredDataChanged.accept=true  tooltip="${default}"
 indexField=tribe_association indexIsString=true useStringInLegend=true fields=count 
 convertData="mergeRows(keyFields=tribe_association, operator=count, valueFields=);" 
 sortFields=count  sortAscending=false 
 }}
 -tab
 +tab By Sex
-{{display_bartable     height="300px"
+{{display_bartable     height="300px" filteredDataChanged.accept=true
+tooltip="${default}" chartLeft=150px
 indexField=biological_sex fields=count indexIsString=true useStringInLegend=true 
 convertData="mergeRows(keyFields=biological_sex, operator=count, valueFields=);" 
 sortFields=count  sortAscending=false 
