@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Apr 24 13:31:00 MDT 2024";
+var build_date="RAMADDA build date: Wed Apr 24 19:26:42 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -12683,6 +12683,11 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
         },
         notifyEvent: function(event, source, data) {
             let displays = this.getDisplays();
+	    let debug = false;
+	    //debug=event.name=='filteredDataChanged';
+
+	    if(debug)
+		console.log('notifyEvent',event,displays.length);
 	    let group = (source!=null&&source.getProperty?source.getProperty(event.shareGroup):"");
 	    if(displayDebug.notifyEvent)
 		console.log("displayManager.notifyEvent:" + event);
@@ -12690,22 +12695,23 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
             for (let i = 0; i < this.displays.length; i++) {
                 let display = this.displays[i];
                 if (display == source) {
+		    if(debug) console.log('\tskipping source');
                     continue;
                 }
 		let acceptGroup = (display!=null&&display.getProperty?display.getProperty(event.acceptGroup):"");
 		if(group) {
 		    if(acceptGroup!=group)  {
-			if(displayDebug.notifyEvent)
+			if(debug || displayDebug.notifyEvent)
 			    console.log("\t" + display.type+" not in group:" + group);
 			continue;
 		    }
 		} else if(acceptGroup) {
-		    if(displayDebug.notifyEvent)
+		    if(debug||displayDebug.notifyEvent)
 			console.log("\t" + display.type+" incoming not in accept group:" + acceptGroup);
 		    continue;
 		}
 		if(!display.acceptEvent(event,  event.default)) {
-		    if(displayDebug.notifyEvent)
+		    if(debug||displayDebug.notifyEvent)
 			console.log("\t" + display.type+" not accepting");
 		    continue;
 		}
@@ -12716,8 +12722,8 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                         continue;
                     }
                 }
-//		if(displayDebug.notifyEvent)
-//		console.log("\t" + display.type+" calling notifyEvent:" + event);
+		if(debug ||displayDebug.notifyEvent)
+		    console.log("\t" + display.type+" calling notifyEvent:" + event);
                 display.notifyEvent(event, source, data);
             }
         },
@@ -16573,6 +16579,13 @@ function CsvUtil() {
 		    type:"double",
 		    chartable:true,
 		}));
+		newFields.push(new RecordField({
+		    id:"percent",
+		    index:newFields.length,
+		    label:"Percent",
+		    type:"double",
+		    chartable:true,
+		}));		
 	    }
 //	    console.log("fields:" + newFields);
 	    let keys = [];
@@ -16659,6 +16672,7 @@ function CsvUtil() {
 		});
 		if(op == "count") {
 		    data.push(obj.count);
+		    data.push(Utils.trimDecimals(100*obj.count/records.length,1));		    
 		}
 		let newRecord = new  PointRecord(newFields,lat,lon, NaN, date, data);
 		newRecords.push(newRecord);
@@ -20350,7 +20364,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    if(debug) {
 		console.log("columns:");
 		for(let i=0;i<dataTable.getNumberOfColumns();i++)
-		    console.log("\tcol[" + i +"]=" + dataTable.getColumnLabel(i) +" type:" + dataTable.getColumnType(i));
+		    console.log("\tcol[" + i +"]=" + dataTable.getColumnLabel(i) +" role:" +
+				dataTable.getColumnRole(i)+
+				" type:" + dataTable.getColumnType(i));
 	    }
 
 	    let annotationStride = this.getAnnotationStride(0);
@@ -20447,7 +20463,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     let value = row[colIdx];
 //		    if(rowIdx==1)			console.log("\tcol:" + colIdx +" value:", value,' type:'+(typeof value));
 		    if(indexIsString) {
-			if(value.f) value.f = (value.f).toString().replace(/\n/g, " ");
+			if(Utils.isDefined(value.f)) {
+			    let s = (value.f).toString().replace(/\n/g, " ");
+			    if(s.trim().length==0) s='<blank>';
+			    if(maxWidth>0 && s.length>maxWidth)
+				s = s.substring(0,maxWidth) +"...";
+			    value.f = s;
+			}
 		    }
 		    if(colIdx>0 && fixedValueS) {
 			let o = valueGetter(fixedValueN, colIdx, field, theRecord);
@@ -20833,8 +20855,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    if(this.getVAxisHideTicks()) 
 		chartOptions.vAxis.ticks  = [];	    
 
-            if (this.fontSize > 0) {
-                chartOptions.fontSize = this.fontSize;
+            if (fontSize > 0) {
+                chartOptions.fontSize = fontSize;
             }
 
 	    let defaultRanges=[];
@@ -21150,8 +21172,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		if(chart) this.charts.push(chart);
 	    }
 	},
+
 	drawChart:function(chart,dataTable,chartOptions) {
-	    chart.draw(dataTable, chartOptions);
+	    chart.draw(dataTable, 	    chartOptions);
 	},
 
 	makeGoogleChartInner: function(dataList, chartId, props, selectedFields) {
@@ -21762,7 +21785,7 @@ function PiechartDisplay(displayManager, id, properties) {
 		    fontSize:12,
                 },
                 showColorCode: true,
-		//		isHtml: true,
+//		isHtml: true,
 		//		ignoreBounds: true,
             };
 	    this.chartOptions.legend = {'position':this.getProperty("legendPosition", 'right'),'alignment':'center'};
@@ -22598,7 +22621,7 @@ function BartableDisplay(displayManager, id, properties) {
                 colors: this.getColorList(),
                 width: (Utils.isDefined(this.getChartWidth()) ? this.getChartWidth() : "100%"),
                 chartArea: {
-                    left: '30%',
+                    left: this.getChartLeft('30%'),
                     top: 0,
                     width: '70%',
                     height: '80%'
@@ -22607,6 +22630,7 @@ function BartableDisplay(displayManager, id, properties) {
                 bars: 'horizontal',
                 tooltip: {
                     showColorCode: true,
+		    isHtml:true
                 },
                 legend: {
                     position: 'none'
@@ -22625,7 +22649,8 @@ function BartableDisplay(displayManager, id, properties) {
                 chartOptions.vAxis = {
                     title: this.getProperty('vAxisTitle')
                 };
-            return new google.charts.Bar(chartDiv); 
+            return new google.visualization.BarChart(chartDiv);
+//            return new google.charts.Bar(chartDiv); 
         },
         getDefaultSelectedFields: function(fields, dfltList) {
             let f = [];
