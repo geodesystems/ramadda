@@ -1265,7 +1265,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                                        HU.squote(
                                            getIconUrl(
                                                ICON_TOGGLEARROWDOWN)))));
-            prefix = HU.img(getIconUrl(ICON_TOGGLEARROWRIGHT), msg(message));
+            prefix = HU.img(getIconUrl(ICON_TOGGLEARROWRIGHT), message);
             prefix = HU.span(prefix,
                              HU.id("img_" + uid) + click
                              + HU.cssClass("ramadda-clickable"));

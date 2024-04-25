@@ -1088,15 +1088,11 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
 	if (localeEntry != null) {
-	    if (target.endsWith("_fieldname")) {
-		String type = request.getString(ATTR_TYPE, "");
+	    if (true || target.endsWith("_fieldname")) {
 		sb.append(getSelectLink(request, localeEntry, seen,
 					target));
 	    }
-	    if ( !localeEntry.isGroup()) {
-		localeEntry = getEntryManager().getParent(request,
-							  localeEntry);
-	    }
+	    localeEntry = getEntryManager().getParent(request,  localeEntry);
 	    if (localeEntry != null) {
 		sb.append(HU.open("div",
 				  HU.cssClass("ramadda-select-block ramadda-select-inner")));
