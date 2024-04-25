@@ -312,7 +312,7 @@ sortFields=count  sortAscending=false
 -tab
 -tabs
 
-{{display_template  onlyShowSelected=true  itemsPerColumn=20
+{{display_template  onlyShowSelected=true  itemsPerColumn=20 displayStyle="font-size:9pt;"
 fields="name,description,entry_url,url,case_number,status,first_name,middle_name,last_name,nickname,age_missing,date_of_birth,date_found,biological_sex,height,weight,race_ethnicity,tribe_association,missing_from_tribal_land,primary_residence_tribal_land,missing_city,missing_county,missing_zip,missing_state,found_city,found_county,found_zip,found_state,cause_of_death,death_comments,hair_color,head_hair_description,body_hair_description,facial_hair_description,left_eye_color,right_eye_color,eye_description,distinctive_physical_features,clothing_and_accessories,transportation,transportation_notes"
 template="${fields}"
 }} 
