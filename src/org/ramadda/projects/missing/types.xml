@@ -219,8 +219,8 @@ style="margin-bottom:4px;min-width:250px;"
 
 {{gallery entry="child:entry:this;type:media_photoalbum" message="" prefix="----\n:heading Photos" }}
 
-{{macro ifHaveChildren=true entry="41542032-803a-4f23-b681-ad7589b26647" name="document_search"
-entry="child:entry:this;type:type_document_collection" message="" prefix="----\n:heading Documents" }}
+{{macro ifHaveChildren=true name="document_search"
+entry="child:entry:this;type:type_document_collection" message="" prefix="----\n:heading Documents"}}
 
 
 -section
