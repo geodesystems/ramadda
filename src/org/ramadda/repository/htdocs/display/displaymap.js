@@ -138,7 +138,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
         {p:"vectorLayerStrokeColor",d:'#000'},
 	{p:"vectorLayerFillColor",d:'#ccc'},
 	{p:"vectorLayerFillOpacity",d:0.25},
-        {p:"vectorLayerStrokeWidth",d:1},
+        {p:"vectorLayerStrokeWidth",d:0.3},
     ];
 
     this.debugZoom = properties['debugZoom'];
