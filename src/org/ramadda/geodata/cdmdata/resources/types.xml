@@ -13,6 +13,10 @@
      <column name="ingest"  type="boolean"  default="false"  label="Ingest Files" suffix="Ingest any files and metadata into the repository"  />
      <column name="addshortmetadata"  type="boolean"  label="Spatial/Temporal Metadata" suffix="Add just the spatial/temporal metadata of the ingested files"  />
      <column name="addmetadata" default="false"  type="boolean"  label="All Metadata" suffix="Add all metadata of the ingested files"  />
+     <column name="sortorder" default="" type="enumeration" label="Sort Order"
+	     help="Sort the files on this field when making the aggregation"
+             values=":None,fromdate:From Date,todate:To Date,createdate:Create Date,name:Name,type:Type,number:Number (extract number from name)"/>
+
 
 
      <property name="icon" value="/cdmdata/aggregation.png"/>

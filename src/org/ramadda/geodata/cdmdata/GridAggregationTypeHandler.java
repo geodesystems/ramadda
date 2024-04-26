@@ -7,6 +7,7 @@ package org.ramadda.geodata.cdmdata;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
@@ -396,8 +397,14 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
         if (ncmlUtil.isJoinExisting()) {
-            sortedChillens = getEntryUtil().sortEntriesOnDate(sortedChillens,
-                    false);
+	    //Get the sort order. false=> don't check for inherited
+	    String sortOrder = (String) entry.getValue("sortorder","");
+	    if(stringDefined(sortOrder)) {
+		sortedChillens= getEntryUtil().sortEntriesOn(sortedChillens,sortOrder,false);
+	    } else {
+		sortedChillens = getEntryUtil().sortEntriesOnDate(sortedChillens,
+								  false);
+	    }
         } else if (ncmlUtil.isEnsemble()) {
             sortedChillens = getEntryUtil().sortEntriesOnName(sortedChillens,
                     false);
