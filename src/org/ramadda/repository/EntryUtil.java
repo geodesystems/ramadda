@@ -12,6 +12,7 @@ import org.ramadda.repository.database.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.util.IO;
 import org.ramadda.util.SelectionRectangle;
 
 
@@ -21,6 +22,7 @@ import org.ramadda.util.TTLObject;
 import org.ramadda.util.Utils;
 import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.SqlUtil;
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -156,6 +158,16 @@ public class EntryUtil extends RepositoryManager {
 	return entries;
     }
 
+
+
+    /*
+      the metadata needs to be the sort order metadata
+     */
+    public static List<Entry> sortEntriesOnMetadata(List<Entry> entries,Metadata metadata) {
+	String by = metadata.getAttr1();
+	boolean descending=!metadata.getAttr2().equals("true");
+	return 	sortEntriesOn(entries,by, descending);
+    }
 
 
     /**
@@ -796,7 +808,25 @@ public class EntryUtil extends RepositoryManager {
         } else if (on.is(ORDERBY_SIZE)) {
             return compare(e1.getResource().getFileSize(),
                            e2.getResource().getFileSize());
-        }
+        } else if (on.is(ORDERBY_NUMBER)) {
+	    File f1 =e1.getFile();
+	    File f2 =e2.getFile();	    
+	    if(f1!=null && f2!=null) {
+		double v1 = IO.extractNumber(StorageManager.getOriginalFilename(f1.getName()),9999999);
+		double v2 = IO.extractNumber(StorageManager.getOriginalFilename(f2.getName()),9999999);
+		/*
+		System.err.println("by number:" +
+				   StorageManager.getOriginalFilename(f1.getName()) +" v:" + v1 + " " +
+				   StorageManager.getOriginalFilename(f2.getName()) +" v:" +v2);
+		*/
+		return compare(v1,v2);
+	    }
+	    if(f1!=null) return -1;
+	    if(f2!=null) return 1;
+	    return 0;
+        } else {
+	    System.err.println("Unknown sort order:" + on.on);
+	}
 
         return 0;
     }
