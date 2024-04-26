@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Apr 26 11:11:39 MDT 2024";
+var build_date="RAMADDA build date: Fri Apr 26 11:27:09 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -2396,7 +2396,9 @@ function DisplayAnimation(display, enabled,attrs) {
 		if(this.useIndex) {
 		    date = i;
 		}  else {
-			date = record.getDate().getTime();
+		    let dttm = record.getDate();
+		    if(!dttm) continue;
+		    date = record.getDate().getTime();
 		    if(seenDate[date]) continue;
 		    seenDate[date] = true;
 		    if(debug)console.log("\ttick:" + record.getDate());
@@ -37167,7 +37169,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
         {p:"vectorLayerStrokeColor",d:'#000'},
 	{p:"vectorLayerFillColor",d:'#ccc'},
 	{p:"vectorLayerFillOpacity",d:0.25},
-        {p:"vectorLayerStrokeWidth",d:1},
+        {p:"vectorLayerStrokeWidth",d:0.3},
     ];
 
     this.debugZoom = properties['debugZoom'];
