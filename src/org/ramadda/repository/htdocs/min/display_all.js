@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Apr 24 19:26:42 MDT 2024";
+var build_date="RAMADDA build date: Thu Apr 25 19:19:08 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -33650,7 +33650,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
 
             if (this.haveTypes) {
-                settings.entryType = this.getFieldValue(this.getDomId(ID_TYPE_FIELD), settings.entryType);
+                settings.entryType = this.getFieldValue(this.getDomId(ID_TYPE_FIELD),
+							settings.entryType);
 		if(settings.entryType && (this.typeList==null || this.typeList.length>1) ) {
 		    HU.addToDocumentUrl(ID_TYPE_FIELD,settings.entryType);
 		} else {
@@ -34274,10 +34275,12 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             }
         },
         typeChanged: function() {
+	    this.jq(ID_SEARCH_BAR).html('');
             let settings = this.getSearchSettings();
             settings.skip = 0;
             settings.setMax(DEFAULT_MAX);
-            settings.entryType = this.getFieldValue(this.getDomId(ID_TYPE_FIELD), settings.entryType);
+            settings.entryType = this.getFieldValue(this.getDomId(ID_TYPE_FIELD),
+						    settings.entryType);
             settings.clearAndAddType(settings.entryType);
             this.addExtraForm();
             this.submitSearchForm();
@@ -34471,8 +34474,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             let cats = [];
             let catMap = {};
             let select = HU.openTag(TAG_SELECT, [ATTR_ID, this.getDomId(ID_TYPE_FIELD),
-                ATTR_CLASS, "display-typelist",
-                "onchange", this.getGet() + ".typeChanged();"
+						 ATTR_CLASS, "display-typelist",
+						 "onchange", this.getGet() + ".typeChanged();"
             ]);
             select += HU.tag(TAG_OPTION, [ATTR_TITLE, "", ATTR_VALUE, ""],
 			     this.getEntryTypes()?'Any of these types':'Any type');
@@ -34520,7 +34523,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		this.writeHtml(ID_TYPE_DIV, select);
 	    }
 	    
-            HtmlUtils.initSelect(this.jq(ID_TYPE_FIELD),    { autoWidth: false,  "max-height":"100px"});
+            HtmlUtils.initSelect(this.jq(ID_TYPE_FIELD),
+				 { autoWidth: false,  "max-height":"100px"});
             this.addExtraForm();
 	    this.typesPending=false;
 	    this.submitSearchForm();
