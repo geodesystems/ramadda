@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Apr 26 07:38:43 MDT 2024";
+var build_date="RAMADDA build date: Fri Apr 26 11:11:39 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -20182,11 +20182,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    this.getPropertyCounts={};
 	    let dateType = this.getProperty("dateType","date");
 	    let debug =    false || displayDebug.makeDataTable;
-//	    debug=true
+	    //debug=true
 	    let debugRows = 1;
 	    debugRows = 2;
 	    if(debug) this.logMsg(this.type+" makeDataTable #records:" + dataList.length);
-	    if(debug) console.log("\tfields:" + selectedFields);
+	    if(debug) console.log("fields:" + selectedFields.map(f=>{return f.getId()}));
 	    let maxWidth = this.getProperty("maxFieldLength",this.getProperty("maxFieldWidth",-1));
 	    let tt = this.getProperty("tooltip");
 	    let addTooltip = (tt || this.getProperty("addTooltip",false)) && this.doAddTooltip();
@@ -20293,21 +20293,20 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             let header = this.getDataValues(dataList[0]);
             let sample = this.getDataValues(dataList[1]);
 	    let fixedValueS = this.getProperty("fixedValue");
-	    let fixedValueN;
-	    if(fixedValueS) fixedValueN = parseFloat(fixedValueS);
+	    let fixedValueN  = fixedValueS?parseFloat(fixedValueS):NaN;
 	    let fIdx = 0;
 	    let maxHeaderLength = this.getProperty("maxHeaderLength",-1);
 	    let maxHeaderWidth = this.getProperty("maxHeaderWidth",-1);
 	    let headerStyle= this.getProperty("chartHeaderStyle");
-            for (let j = 0; j < header.length; j++) {
+            for (let colIdx = 0; colIdx < header.length; colIdx++) {
 		let field=null;
-		if(j>0 || !props.includeIndex) {
+		if(colIdx>0 || !props.includeIndex) {
 		    field = selectedFields[fIdx++];
 		} else {
 		    //todo?
 		}
-                let value = sample[j];
-		let headerLabel = header[j];
+                let value = sample[colIdx];
+		let headerLabel = header[colIdx];
 		if(maxHeaderLength>0 && headerLabel.length>maxHeaderLength) {
 		    let orig = headerLabel;
 		    headerLabel = headerLabel.substring(0,maxHeaderLength-1)+"...";
@@ -20324,8 +20323,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			style+=headerStyle;
 		    headerLabel = HU.div([TITLE,orig,STYLE,style], headerLabel);
 		} 
-
-                if (j == 0 && props.includeIndex) {
+                if (colIdx == 0 && props.includeIndex) {
                     //This might be a number or a date
                     if ((typeof value) == "object") {
                         //assume its a date
@@ -20350,7 +20348,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                         dataTable.addColumn((typeof value), headerLabel);
                     }
                 } else {
-		    if(j>0 && fixedValueS) {
+		    if(colIdx>0 && fixedValueS) {
 			if(debug)console.log("\tadd column: fixedValue type: number");
 			dataTable.addColumn('number', this.getProperty("fixedValueLabel","Count"));
 		    } else {
@@ -20385,7 +20383,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			    console.log("\tadd style column");
 			dataTable.addColumn({ type: 'string', role: 'style' });
 		    }
-		    if(j>0 && fixedValueS) {
+		    if(colIdx>0 && fixedValueS) {
 			break;
 		    }
                 }
@@ -20492,8 +20490,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 }
 
                 row = row.slice(0);
-
-
                 let newRow = [];
 		if(debug && rowIdx<debugRows)
 		    console.log("row[" + rowIdx+"]:");
@@ -20515,7 +20511,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			}
 		    }
 		    if(colIdx>0 && fixedValueS) {
-			let o = valueGetter(fixedValueN, colIdx, field, theRecord);
+			newRow.push(valueGetter(fixedValueN, colIdx, field, theRecord));
 			if(debug && rowIdx<debugRows)
 			    console.log("\t fixed:" + fixedValueN);
 		    } else {
@@ -20679,6 +20675,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    }
 		    debug =false;
 		}
+//		if(justData.length<4)   console.log(newRow);
                 justData.push(newRow);
 	    }
 
