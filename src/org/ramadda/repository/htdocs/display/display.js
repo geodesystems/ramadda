@@ -1973,6 +1973,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'colorTablePruneRight',ex:'N',tt:'Prune last N colors'},
 	{p:'colorByMin',ex:'value',tt:'Min scale value'},
 	{p:'colorByMax',ex:'value',tt:'Max scale value'},
+	{p:'colorScale',tt:'a semi-colon delimited list of min,max,color1,color2',
+	 ex:'9,14.99,palegreen,darkgreen;15,19.99,#ffc966,#ffa500;20, 24.99,red,darkred;25, 27.99,mediumpurple,purple'},
+
+
+
 	{p:'nullColor',ex:'transparent'},
 	{p:'showColorTable',ex:'false',tt:'Display the color table'},
 	{p:'colorTableLabel',ex:''},
@@ -4147,6 +4152,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return this.dateInRange(date,idx,idx<5 && debug);
 	    });
 	    if(debug)   this.logMsg("filter Fields:" + this.filters.length +" #records:" + records.length);
+
+
 
 //	    debug = this.type=='template';
 	    if(this.filters.length) {
