@@ -175,9 +175,10 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
             if (by == null) {
                 Metadata sortMetadata =
                     getMetadataManager().getSortOrderMetadata(request,
-                        mainEntry);
+							      mainEntry,true);
                 if (sortMetadata != null) {
                     by = sortMetadata.getAttr1();
+		    descending=!sortMetadata.getAttr2().equals("true");
                 }
             }
 
