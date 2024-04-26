@@ -906,8 +906,7 @@ RepositoryMap.prototype = {
 	} 
 	if(this.params.addToUrl) {
 	    HU.addToDocumentUrl("map_bounds",latlon.top + "," + latlon.left + "," + latlon.bottom + "," + latlon.right);
-	    if(debugBounds)
-		console.log("locationChanged: setting url args:",this.getMap().getZoom());
+//	    if(debugBounds)console.log("locationChanged: setting url args:",this.getMap().getZoom());
 	    HU.addToDocumentUrl(ARG_ZOOMLEVEL , this.getMap().getZoom());
             HU.addToDocumentUrl(ARG_MAPCENTER, r(center.lat)+","+ r(center.lon));
 	}
@@ -4195,16 +4194,25 @@ RepositoryMap.prototype = {
 	    return layer.maxExtent;
 	}
         let geometry = null;
+	let visible = 0;
+	let notVisible=0;
         for(let i=0, len=features.length; i<len; i++) {
-	    if(!features[i].getVisibility()) continue;
-            geometry = features[i].geometry;
+	    let feature = features[i];
+	    if(!feature.getVisibility()) {
+		notVisible++;
+		continue;
+	    }
+	    visible++;
+            geometry = feature.geometry;
             if (geometry) {
+//		console.dir(feature.fid,this.transformProjBounds(geometry.getBounds()));
                 if (maxExtent === null) {
                     maxExtent = MapUtils.createBounds();
                 }
                 maxExtent.extend(geometry.getBounds());
             }
         }
+//	console.log('not visible:'+ notVisible +' visible:' + visible,   this.transformProjBounds(maxExtent));
         return maxExtent;
     },
 
