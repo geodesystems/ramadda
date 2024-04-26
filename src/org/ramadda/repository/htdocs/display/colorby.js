@@ -189,6 +189,31 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 //	this.index = -1;
 //	return;
     }
+    let scolorScale = this.display.getColorScale();
+    if(scolorScale) {
+	//"9,14.99,palegreen,darkgreen;15,19.99,#ffc966,#ffa500;20, 24.99,red,darkred;25, 27.99,mediumpurple,purple";
+	this.colorScale = [];
+	scolorScale.split(";").forEach(tok=>{
+	    let toks=tok.split(',');
+	    this.colorScale.push({
+		min:+toks[0],
+		max:+toks[1],		
+		color1:toks[2],
+		color2:toks[3]
+	    });
+	});
+	this.colorScaleInterval = (d) => {
+	    for(let i=0;i<this.colorScale.length;i++) {
+		let scale = this.colorScale[i];
+		if (d <= scale.max) {
+		    return d3.scaleLinear().domain([scale.min, scale.max]).range([scale.color1, scale.color2])(d);
+		}
+	    }
+	    if(!isNaN(d))
+		console.log('color scale miss',d);
+	    return null;
+	};
+    }
 
 
 
@@ -359,6 +384,9 @@ ColorByInfo.prototype = {
 	    dom.html(HtmlUtils.div([STYLE,HU.css('text-align','center','margin-top','5px')], legend));
 	}
 	if(!force && this.index<0) return;
+	if(this.colorScale) {
+	    return;
+	}
 	if(this.stringMap) {
 	    let colors = [];
 	    this.colorByValues= [];
@@ -519,6 +547,11 @@ ColorByInfo.prototype = {
 	return  total;
     },    
     getColorFromRecord: function(record, dflt, checkHistory,debug) {
+
+
+
+
+
 	this.lastValue = NaN;
 	if(!this.initDisplayCalled)   this.initDisplay();
 	if(this.filterHighlight && !record.isHighlight(this.display)) {
@@ -576,6 +609,9 @@ ColorByInfo.prototype = {
 	return this.index>=0;
     },
     getColor: function(value, pointRecord, checkHistory) {
+	if(this.colorScaleInterval)
+	    return this.colorScaleInterval(value);
+
 //	if(checkHistory) {
 //	    if(this.colorHistory[value]) return this.colorHistory[value];
 //	}
