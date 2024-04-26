@@ -1607,7 +1607,7 @@ public class StorageManager extends RepositoryManager implements PointFile
      *
      * @return _more_
      */
-    public String getOriginalFilename(String name) {
+    public static String getOriginalFilename(String name) {
         int idx = name.indexOf(FILE_SEPARATOR);
         if (idx >= 0) {
             name = name.substring(idx + FILE_SEPARATOR.length());
