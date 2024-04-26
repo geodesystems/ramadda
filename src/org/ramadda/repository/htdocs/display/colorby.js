@@ -385,6 +385,24 @@ ColorByInfo.prototype = {
 	}
 	if(!force && this.index<0) return;
 	if(this.colorScale) {
+	    let html = '<table width=100%><tr>';
+	    let steps = 4;
+	    let w = Math.round(parseFloat(100/(this.colorScale.length*steps)))+'%'
+	    this.colorScale.forEach(s=>{
+		for(let step=0;step<steps;step++) {
+		    let value = s.min+(s.max-s.min)/steps*step;
+		    let c =this.colorScaleInterval(value);
+		    let contents='&nbsp';
+		    if(step==0)
+			contents =s.min;
+		    else if(step==steps-1)
+			contents =s.max;		    
+		    let fg = Utils.getForegroundColor(c);
+		    html+=HU.tag('td',[ATTR_CLASS,'display-colorscale-item',ATTR_TITLE,value,ATTR_WIDTH,w,ATTR_STYLE,HU.css('color',fg,'background',c)],contents);		    
+		}
+	    });
+	    html += '</tr></table>';
+	    this.display.displayColorTableHtml(html,domId);
 	    return;
 	}
 	if(this.stringMap) {

@@ -1815,6 +1815,12 @@ svg > g > g:last-child { pointer-events: none }
     border-top:0px #efefef solid;
 }
 
+.display-colorscale-item {
+    font-size:8pt;
+    padding-left:2px;
+    border-right:1px solid #aaa;
+}
+
 .display-colortable-title {
     font-weight:bold;
     padding-left:2px;
