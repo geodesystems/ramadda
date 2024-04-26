@@ -3206,7 +3206,9 @@ var Utils =  {
     },
     getForegroundColor: function(c) {
         if(!c) return null;
-        if(c.match("rgb")) c = Utils.rgbToHex(c);
+        if(c.match("rgb")) {
+	    c = Utils.rgbToHex(c);
+	}
         if(!c) return "#000";
         if(!this.foregroundColors[c] && c.startsWith("#")) return this.getContrastYIQ(c);
         return this.foregroundColors[c] ||"#000";
@@ -3324,10 +3326,9 @@ var Utils =  {
     rgbToHex:function(r, g, b) {
         //its rgb,r,g,b);
         if(g==null) {
-            var result = /^rgb *([0-9]+) *, *([0-9]+) *, *([0-9]+)(,|\)).*/i.exec(r);
-            result = /^rgb *\( *([0-9]+) *,([0-9]+) *, *([0-9]+).*/i.exec(r);
+            let result = /.*\(([^,]+),([^,]+),(.*)\).*/i.exec(r);	    
             if(!result) return null;
-            r = result[1]; g = result[2]; b = result[3];
+            r = result[1].trim(); g = result[2].trim(); b = result[3].trim();
         }
         if(!r || !g || !b) return null;
         return "#" + Utils.componentToHex(r) + Utils.componentToHex(g) + Utils.componentToHex(b);
