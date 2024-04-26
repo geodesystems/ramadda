@@ -18,11 +18,15 @@
 
       <ant antfile="${src_dir}/org/ramadda/projects/asdi/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/projects/fec/build.xml" inheritAll="false"/>
+<!--
       <ant antfile="${src_dir}/org/ramadda/projects/kbocc/build.xml" inheritAll="false"/>
+-->
 <!--
     <ant antfile="${src_dir}/org/ramadda/projects/sdb/build.xml" inheritAll="false"/>
     -->
+<!--
       <ant antfile="${src_dir}/org/ramadda/projects/usna/build.xml" inheritAll="false"/>
+-->
     </target>
     
 </project>
