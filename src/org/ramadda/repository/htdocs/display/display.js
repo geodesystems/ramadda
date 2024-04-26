@@ -2199,6 +2199,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getColorTableHorizontal: function() {
 	    return this.getProperty("colorTableSide","bottom") == "bottom" || this.getProperty("colorTableSide","bottom") == "top";
 	},
+        displayColorTableHtml: function(html, domId){
+	    domId = this.getColorTableDisplayId()?? this.domId(domId);
+	    let dom = jqid(domId);
+	    dom.html(html);
+	},
+
         displayColorTable: function(ct, domId, min, max, args) {
 	    domId = this.getColorTableDisplayId()?? this.domId(domId);
 	    //Check if it is a date
