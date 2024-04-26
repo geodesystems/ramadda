@@ -2775,7 +2775,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Metadata getSortOrderMetadata(Request request, Entry entry)
+    public Metadata getSortOrderMetadata(Request request, Entry entry,boolean inherited)
             throws Exception {
         if (entry == null) {
             return null;
@@ -2783,7 +2783,7 @@ public class MetadataManager extends RepositoryManager {
         List<Metadata> metadataList =
             findMetadata(request, entry,
                          new String[] { ContentMetadataHandler.TYPE_SORT },
-                         true);
+                         inherited);
         if ((metadataList != null) && (metadataList.size() > 0)) {
             return metadataList.get(0);
         }
