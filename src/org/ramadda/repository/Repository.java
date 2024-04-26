@@ -573,9 +573,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private boolean ignoreSSL = false;
 
-
-
-
+    private int defaultMaxEntries=1000;
 
     private HashSet<String> scriptPaths = new HashSet<String>();    
 
@@ -1574,6 +1572,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     }
 
+   
+
+    public int getDefaultMaxEntries() {
+	return defaultMaxEntries;
+    }
 
     /**
      * _more_
@@ -4705,6 +4708,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     private void initRepositoryAttributes() {
         adminOnly             = getProperty(PROP_ACCESS_ADMINONLY, false);
+	defaultMaxEntries     = getProperty("ramadda.defaultmaxentries",defaultMaxEntries);
         requireLogin          = getProperty(PROP_ACCESS_REQUIRELOGIN, false);
 	alwaysHttps           = getProperty(PROP_ALWAYS_HTTPS, false);
         allSsl                = getProperty(PROP_ACCESS_ALLSSL, false);
