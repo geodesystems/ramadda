@@ -1896,6 +1896,13 @@ public class IO {
 
     }
 
+    public static double extractNumber(String name,double dflt) {
+	if(name==null) return dflt;
+	String s = StringUtil.findPattern(name, "[^\\d\\-]*(-?\\d+(\\.\\d+)?).*");
+	//	System.err.println("name:" + name + " string:" + s);
+	if(s==null) return dflt;
+	return Double.parseDouble(s);
+    }
 
 
 
@@ -1909,11 +1916,7 @@ public class IO {
                                            final boolean descending) {
         List tmp = new ArrayList();
         for (File file : files) {
-            String s1 = StringUtil.findPattern(file.getName(), "([0-9]+)");
-            if (s1 == null) {
-                s1 = "9999";
-            }
-            double v1 = Double.parseDouble(s1);
+            double v1 = extractNumber(file.getName(),99999);
             tmp.add(new Object[] { file, v1 });
         }
         Comparator comp = new Comparator() {
@@ -2055,6 +2058,13 @@ public class IO {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+	if(true) {
+	    for(String s:args) {
+		extractNumber(s,Double.NaN);
+	    }
+	    return;
+	}
+
 	if(true) {
 	    File dir = new File(args[0]);
 	    for(File f: dir.listFiles()){
