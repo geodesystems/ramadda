@@ -1275,7 +1275,7 @@ public class TypeHandler extends RepositoryManager {
      * @return _more_
      */
     public int getDefaultQueryLimit(Request request, Entry entry) {
-        return DB_MAX_ROWS;
+        return getRepository().getDefaultMaxEntries();
     }
 
 
@@ -4800,10 +4800,7 @@ public class TypeHandler extends RepositoryManager {
         }
 
         //        System.err.println("clauses:" + clauses);
-
-
-        int max = request.get(ARG_MAX, DB_MAX_ROWS);
-
+        int max = request.get(ARG_MAX, getRepository().getDefaultMaxEntries());
         return getDatabaseManager().select(what, tables, Clause.and(clauses),
                                            extra, max);
 
