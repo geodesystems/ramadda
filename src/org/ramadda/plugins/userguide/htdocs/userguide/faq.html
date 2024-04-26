@@ -50,11 +50,12 @@ pre {
 <div class="faq-question"> <b>1.13.</b> <a class="faq-question-link" href="#sitemap">How do I create a site map?</a></div>
 <div class="faq-question"> <b>1.14.</b> <a class="faq-question-link" href="#github">Enable github embeds</a></div>
 <div class="faq-question"> <b>1.15.</b> <a class="faq-question-link" href="#template">I want to change the html design of RAMADDA</a></div>
-<div class="faq-question"> <b>1.16.</b> <a class="faq-question-link" href="#template">Changing the initial welcome text and entries</a></div>
-<div class="faq-question"> <b>1.17.</b> <a class="faq-question-link" href="#characterset">Running with non-ascii characters</a></div>
-<div class="faq-question"> <b>1.18.</b> <a class="faq-question-link" href="#formopen">How do I configure the entry table to always show the Apply action form?</a></div>
-<div class="faq-question"> <b>1.19.</b> <a class="faq-question-link" href="#missing">I've cleaned up files on my server that I had harvested in RAMADDA. How do I delete those entries in RAMADDA?</a></div>
-<div class="faq-question"> <b>1.20.</b> <a class="faq-question-link" href="#checkbox">How do I select multiple checkboxes at once?</a></div>
+<div class="faq-question"> <b>1.16.</b> <a class="faq-question-link" href="#maxentries">How do I change the default number of children entries?</a></div>
+<div class="faq-question"> <b>1.17.</b> <a class="faq-question-link" href="#template">Changing the initial welcome text and entries</a></div>
+<div class="faq-question"> <b>1.18.</b> <a class="faq-question-link" href="#characterset">Running with non-ascii characters</a></div>
+<div class="faq-question"> <b>1.19.</b> <a class="faq-question-link" href="#formopen">How do I configure the entry table to always show the Apply action form?</a></div>
+<div class="faq-question"> <b>1.20.</b> <a class="faq-question-link" href="#missing">I've cleaned up files on my server that I had harvested in RAMADDA. How do I delete those entries in RAMADDA?</a></div>
+<div class="faq-question"> <b>1.21.</b> <a class="faq-question-link" href="#checkbox">How do I select multiple checkboxes at once?</a></div>
 </div></div>
 <div class="faq-bottom"><p><hr><p><div class="faq-category-title"><a name="faq1_cat1_"></a>1.0 Administration</div><div class="faq-category"><a name="faq1_cat1_0"></a><div class="faq-item"><div class="faq-question">
 <h3> 1.1.  I forgot my user id. How do I retrieve it?</h3>
@@ -271,8 +272,17 @@ github.token=&lt;your token&gt;
 </a><div class="faq-answer"><b>A.</b> 
 See the <a href='templates.html'>documentation</a>.
 </div>
+<p><hr align="center" width="10%"></div><p><a name="maxentries"></a><div class="faq-item"><div class="faq-question">
+<h3> 1.16.  How do I change the default number of children entries?</h3>
+</div>
+</a><div class="faq-answer"><b>A.</b> 
+To configure the default number of children entries shown set the property:
+<pre>
+ramadda.defaultmaxentries=1000
+</pre>
+</div>
 <p><hr align="center" width="10%"></div><p><a name="template"></a><div class="faq-item"><div class="faq-question">
-<h3> 1.16.  Changing the initial welcome text and entries</h3>
+<h3> 1.17.  Changing the initial welcome text and entries</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
 When RAMADDA is first installed it populates your repository with some initial folders and sets the description
@@ -308,7 +318,7 @@ This is just the entries xml format. The ID of the top-level entry is simply "ro
 
 </div>
 <p><hr align="center" width="10%"></div><p><a name="characterset"></a><div class="faq-item"><div class="faq-question">
-<h3> 1.17.  Running with non-ascii characters</h3>
+<h3> 1.18.  Running with non-ascii characters</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
 There are a number of things you will need to do to run with content that is non-ascii (e.g., Chinese characters).
@@ -326,7 +336,7 @@ Your Java runtime should also have the system property -Dfile.encoding=utf-8  de
 
 </div>
 <p><hr align="center" width="10%"></div><p><a name="formopen"></a><div class="faq-item"><div class="faq-question">
-<h3> 1.18.  How do I configure the entry table to always show the Apply action form?</h3>
+<h3> 1.19.  How do I configure the entry table to always show the Apply action form?</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
   The entry table has an &quot;Apply action&quot; header form that is normally toggled off. To change this
@@ -338,7 +348,7 @@ ramadda.wiki.table.formopen=true
 
 </div>
 <p><hr align="center" width="10%"></div><p><a name="missing"></a><div class="faq-item"><div class="faq-question">
-<h3> 1.19.  I've cleaned up files on my server that I had harvested in RAMADDA. How do I delete those entries in RAMADDA?</h3>
+<h3> 1.20.  I've cleaned up files on my server that I had harvested in RAMADDA. How do I delete those entries in RAMADDA?</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
 
@@ -358,7 +368,7 @@ Be careful with this. I (jeffmc) have seen remote file systems go down momentari
 
 </div>
 <p><hr align="center" width="10%"></div><p><a name="checkbox"></a><div class="faq-item"><div class="faq-question">
-<h3> 1.20.  How do I select multiple checkboxes at once?</h3>
+<h3> 1.21.  How do I select multiple checkboxes at once?</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
 In RAMADDA when there is a collection of checkboxes in a form (e.g., in the entry list or in the edit metadata form)
