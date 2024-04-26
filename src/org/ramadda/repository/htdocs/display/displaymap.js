@@ -135,10 +135,10 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:"selectStrokeOpacity",
 	 tt:'Use "match" to match the features opacity'},			 		
 	
-        {p:"vectorLayerStrokeColor"},
-	{p:"vectorLayerFillColor"},
-	{p:"vectorLayerFillOpacity",ex:0.25},
-        {p:"vectorLayerStrokeWidth",ex:2},
+        {p:"vectorLayerStrokeColor",d:'#000'},
+	{p:"vectorLayerFillColor",d:'#ccc'},
+	{p:"vectorLayerFillOpacity",d:0.25},
+        {p:"vectorLayerStrokeWidth",d:1},
     ];
 
     this.debugZoom = properties['debugZoom'];
@@ -776,18 +776,20 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		    Utils.isDefined(this.getProperty("zoomLevel"))   ||
 		    Utils.isDefined(this.getProperty("mapCenter"));
 		let attrs =   {
-                    strokeColor: this.getProperty("vectorLayerStrokeColor","#000"),
-		    fillColor:this.getProperty("vectorLayerFillColor","#ccc"),
-		    fillOpacity:this.getProperty("vectorLayerFillOpacity",0.25),
-                    strokeWidth: this.getProperty("vectorLayerStrokeWidth",1),
+                    strokeColor: this.getVectorLayerStrokeColor("#000"),
+		    fillColor:this.getVectorLayerFillColor("#ccc"),
+		    fillOpacity:this.getVectorLayerFillOpacity(),
+                    strokeWidth: this.getVectorLayerStrokeWidth(1),
 		}
+
                 if (isKml)
                     this.map.addKMLLayer(this.getProperty('kmlLayerName','Map'), url, this.doDisplayMap(), selectFunc, null, attrs,
 					 function(map, layer) {
 					     _this.baseMapLoaded(layer, url);
 					 }, !hasBounds);
                 else {
-                    this.map.addGeoJsonLayer(this.getProperty('geojsonLayerName','Map'), url, this.doDisplayMap(), selectFunc, null, attrs,
+                    this.map.addGeoJsonLayer(this.getProperty('geojsonLayerName','Map'), url, this.doDisplayMap(), selectFunc, null,
+					     attrs,
 					     function(map, layer) {
 						 _this.baseMapLoaded(layer, url);
 					     }, !hasBounds);
@@ -2251,6 +2253,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             });
             this.selectedMarker = marker;
         },
+	fakeLocations: function(){
+	    return  this.getTheLinkFields() && this.getLinkFeature();
+	},
+	getTheLinkFields:function() {
+	    let tmpLinkField=this.getFieldById(null,this.getProperty("linkField"));
+	    let linkFields=this.getFieldsByIds(null,this.getProperty("linkFields"));	    
+	    if(linkFields.length==0 && tmpLinkField!=null) linkFields=[tmpLinkField];
+	    if(linkFields.length==0) linkFields=null;
+	    return linkFields
+	},
+
         applyVectorMap: function(force, textGetter, args) {
 	    let debug = false;
             if (!force && this.vectorMapApplied) {
@@ -2269,18 +2282,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(debug) this.logMsg("applyVectorMap");
 	    if(!textGetter) textGetter  = this.textGetter;
 
-	    let tmpLinkField=this.getFieldById(null,this.getProperty("linkField"));
-	    let linkFields=this.getFieldsByIds(null,this.getProperty("linkFields"));	    
-	    if(linkFields.length==0 && tmpLinkField!=null) linkFields=[tmpLinkField];
-	    if(linkFields.length==0) linkFields=null;
+	    let linkFields=this.getTheLinkFields();
 	    let linkFeature=this.getLinkFeature();
             let features = this.vectorLayer.features.slice();
             let allFeatures = features.slice();
 	    this.recordToFeature = {};
 	    let debugFeatureLinking = this.getDebugFeatureLinking();
-
+	    debug = debugFeatureLinking;
 //	    debug=true
-	    if(debug) console.log("\t#features:" + features.length);
 	    points.forEach(point=>{
 		let record = point.record;
 		if(!record) return;
@@ -2304,46 +2313,70 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			recordMap[value] = record;
 		    }
 		});
-		if(debugFeatureLinking)
-		    console.log("Map data/feature linking: data field:" + linkFields +" looking for map feature:" + linkFeature);
+		if(debug) {
+		    let values = Object.keys(recordMap);
+		    console.log('map data/feature linking: data fields:' + linkFields.map(f=>{return f.getId()}));
+		    if(points.length>0) {
+			console.dir('all fields:' +points[0].record.fields.map(f=>{
+			    return f.getId()
+			}));
+		    }
+		    window.displayMapSamples = values;
+		    console.log('to view all record values do: console.log(displayMapSamples)\nvalues 0-10:'+ values.slice(0,10));
+		    console.log('looking for map feature:' + linkFeature);
+		    console.log('#map features:' + features.length+
+				' #records:' + points.length +
+				' #unique record values:'+ values.length);
+
+
+
+		}
 
 		let errorCnt = 0;
+		let foundCnt = 0;		
+		window.displayMapMissingFeatures=[];
 		features.forEach((feature,idx)=>{
 		    let attrs = feature.attributes;
 		    let ok = false;
-		    let debug = false;
 		    for (let attr in attrs) {
 			let _attr = String(attr).toLowerCase();
-			if(linkFeature==_attr) {
-			    if(debugFeatureLinking && idx<3)
-				console.log("\tFound map attribute");
-			    ok  = true;
-			    let value = this.map.getAttrValue(attrs, attr);
-			    if(value) {
-				value = value.toString().trim();
-				feature.linkValue = value;
-				record = recordMap[value];
-				if(record) {
-				    if(debugFeatureLinking&& idx<10)
-					console.log("\tfound record:" + value+": " + record.getId());
-				    this.recordToFeature[record.getId()] = feature;
-				} else {
-				    if(debugFeatureLinking) {
-					if(errorCnt++<2) {
-					    console.log("\tCould not find record with map value:" + value.replace(/ /g,"X") +":");
-					    console.dir(attrs);
-					}
-				    }
+			if(linkFeature!=_attr) continue;
+			ok  = true;
+			let value = this.map.getAttrValue(attrs, attr);
+			if(!Utils.isDefined(value)) {
+			    console.log("\tno map feature attribute value");
+			    continue;
+			}
+			value = value.toString().trim();
+			feature.linkValue = value;
+			record = recordMap[value];
+			if(record) {
+			    foundCnt++;
+			    if(debugFeatureLinking&& foundCnt<3)
+				console.log("%cfound record:" + value+": " + record.getId(),'color: green;');
+			    this.recordToFeature[record.getId()] = feature;
+			} else {
+			    if(debugFeatureLinking) {
+				window.displayMapMissingFeatures.push(attrs);
+				errorCnt++;
+				if(errorCnt<3) 
+				    console.log("%ccould not find record with map value:" + value +":",'color: red;');
+				if(errorCnt<2) { 
+				    console.log('feature:',attrs);
 				}
-			    } else {
-				console.log("\tno map feature attribute value");
 			    }
-			    
 			}
 		    }
 		    if(!ok && idx==0) console.log("No map feature found:" + linkFeature,'attrs:',attrs);
 		});
+		if(debugFeatureLinking) {
+		    console.log('features matched: '+ foundCnt + ' not matched:' + errorCnt);
+		    if(errorCnt>0)
+			console.log('to view all missing map features do: console.log(displayMapMissingFeatures)');
+		       
+		}
 	    }
+
 
 
 	    let j=0;
@@ -2370,6 +2403,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let maxCnt = -1;
 	    let minCnt = -1;
 
+
 	    points.forEach((point,idx)=>{
                 if (point.style && point.style.display == "none") {
 		    return;
@@ -2388,7 +2422,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			//console.log("no geometry:" + matchedFeature.CLASS_NAME);
 		    }
 		}  else {
-                    matchedFeature = this.findContainingFeature(features, center,tmp,false);
+		    if(center) {
+			matchedFeature = this.findContainingFeature(features, center,tmp,false);
+		    }
 		}
 		if(!matchedFeature) {
 		    return;
@@ -2436,6 +2472,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 
 
+	    let strokeWidth = this.getVectorLayerStrokeWidth();
+	    let strokeColor = this.getVectorLayerStrokeColor();
+	    let fillOpacity  =this.getVectorLayerFillOpacity();
 
 	    let prune = this.getPruneFeatures();
 	    if(doCount) {
@@ -2460,8 +2499,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    $.extend(newStyle,style);
 		    $.extend(newStyle,{
 			fillColor: color,
-			"fillOpacity": 0.75,
-			"strokeWidth": 1,
+			"fillOpacity": fillOpacity,
+			"strokeWidth": strokeWidth,
+			"strokeColor": strokeColor,
 		    });
 
 		    if(feature.pointCount==0) {
@@ -2482,8 +2522,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			if(feature.featureMatched) {
 			    continue;
 			}
-			if(feature.featureIndex==440)
-			    this.logMsg("PRUNING:" + feature.featureIndex);
 			let style = feature.style;
 			if (!style) style = {
 			    "stylename": "from display"
@@ -2509,10 +2547,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    feature.newStyle.display!=feature.style.display) ||
 		   feature.style.fillColor!=feature.newStyle.fillColor) {
 		    feature.style = feature.newStyle;
+		    feature.style.strokeWidth=strokeWidth;
+		    feature.style.strokeColor=strokeColor;		    
+		    feature.style.fillOpacity=fillOpacity;
 		    if(!feature.style.fillColor) {
 			feature.style.fillColor = "rgba(230,230,230,0.5)";
 			feature.style.strokeColor = "rgba(200,200,200,0.5)";
-			feature.style.strokeWidth=1;
 		    }
 		    redrawCnt++;
 		    this.vectorLayer.drawFeature(feature);
@@ -2709,6 +2749,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }});
 	},
 	requiresGeoLocation: function() {
+	    if(this.fakeLocations()) return false;
 	    if(this.shapesField && this.shapesTypeField) return false;
 	    if((this.getLinkFields()||this.getProperty("linkField")) && this.getLinkFeature()) return false;
 	    return true;
@@ -3194,7 +3235,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		RecordUtil.getPoints(this.getRecords(), this.fullBounds);
 	    }
             let pointBounds = {};
-	    if(this.getFilterBadLocations(true)) {
+	    let haveLinkedFeature  = this.getTheLinkFields() && this.getLinkFeature();
+	    if(!haveLinkedFeature && this.getFilterBadLocations(true)) {
 		records = records.filter(r=>{
 		    return r.getLatitude()>=-90 && r.getLatitude()<=90 &&
 			r.getLongitude()>=-180 &&
@@ -3253,10 +3295,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let t2= new Date();
 //	    debug = true;
 	    if(debug) console.log("displaymap calling addPoints");
-
-
-
-
+	    //Add in to handle when there is no geolocation on the record
+//	    if(points.length==0 &&  haveLinkedFeature) {
+	    if(points.length==0) {
+		this.records.forEach(record=>{
+		    points.push({x:-105,y:40});
+		});
+	    }
             this.addPoints(records,fields,points,pointBounds,debug);
 	    let t3= new Date();
             this.addLabels(records,fields);
@@ -3997,6 +4042,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		points = tmpPoints;
 	    }
 
+
+
 	    if(this.getScaleRadius()) {
 		let seen ={};
 		let numLocs = 0;
@@ -4060,7 +4107,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		})) {
 		    return;
 		}
-
 	    }
 
 
@@ -4248,6 +4294,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    };	    
 	    this.haveAddPoints = true;
 	    this.recordToInfo = {};
+	    let dummyUpLocation = this.fakeLocations();
 	    let recordInfos = records.map((record,idx)=>{
 		let recordInfo =  {
 		    record:record,
@@ -4257,7 +4304,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(!record.point) {
 		    recordInfo.x = record.getLongitude();
 		    recordInfo.y = record.getLatitude();
-
+		    if(dummyUpLocation && isNaN(recordInfo.x)) {
+			recordInfo.x = -105;
+			recordInfo.y=40;
+		    }
 		} else {
 		    recordInfo.x = record.point.x;
 		    recordInfo.y = record.point.y;
@@ -4322,8 +4372,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		});
 
+
 		//First get the rounded point for each RecordInfo
 		CH.initPoints(recordInfos);
+
 		recordInfos.forEach((recordInfo,idx)=>{
 		    let collisionPoint = recordInfo.collisionPoint;
 		    if(collisionPoint ==null) return;
@@ -4492,8 +4544,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let times=[new Date()];
 
 
+
 	    //main loop
 	    recordInfos.forEach((recordInfo,idx)=>{
+
+
 		featureCnt++;
 		let record = recordInfo.record;
 		let point  = recordInfo;
@@ -4715,18 +4770,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
                     }
 		}
-                //We do this because openlayers gets really slow when there are lots of features at one point
-		let key = point.x*10000 + point.y;
-		if (!seen[key]) {
-		    seen[key] = 1;
-		}  else {
-		    //			console.log(this.formatDate(record.getDate()) +" " + record.getLatitude() + " " + seen[key]);
-		    if (seen[key] > 500) {
-			return;
-		    }
-		    seen[key]++;
-		}
-
 		let mapPoint=null;
 		let recordFeatures =recordInfo.features;
 		if(usingIcon) {
@@ -4797,7 +4840,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    this.markers[record.getId()] = mapPoint;
 		    pointsToAdd.push(mapPoint);
 		}
-
 
 		if(showPoint || colorByEnabled)  {
 		    if(!props.graphicName)
