@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Apr 26 11:46:04 MDT 2024";
+var build_date="RAMADDA build date: Fri Apr 26 14:00:07 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -2905,6 +2905,24 @@ ColorByInfo.prototype = {
 	}
 	if(!force && this.index<0) return;
 	if(this.colorScale) {
+	    let html = '<table width=100%><tr>';
+	    let steps = 4;
+	    let w = Math.round(parseFloat(100/(this.colorScale.length*steps)))+'%'
+	    this.colorScale.forEach(s=>{
+		for(let step=0;step<steps;step++) {
+		    let value = s.min+(s.max-s.min)/steps*step;
+		    let c =this.colorScaleInterval(value);
+		    let contents='&nbsp';
+		    if(step==0)
+			contents =s.min;
+		    else if(step==steps-1)
+			contents =s.max;		    
+		    let fg = Utils.getForegroundColor(c);
+		    html+=HU.tag('td',[ATTR_CLASS,'display-colorscale-item',ATTR_TITLE,value,ATTR_WIDTH,w,ATTR_STYLE,HU.css('color',fg,'background',c)],contents);		    
+		}
+	    });
+	    html += '</tr></table>';
+	    this.display.displayColorTableHtml(html,domId);
 	    return;
 	}
 	if(this.stringMap) {
@@ -6155,6 +6173,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getColorTableHorizontal: function() {
 	    return this.getProperty("colorTableSide","bottom") == "bottom" || this.getProperty("colorTableSide","bottom") == "top";
 	},
+        displayColorTableHtml: function(html, domId){
+	    domId = this.getColorTableDisplayId()?? this.domId(domId);
+	    let dom = jqid(domId);
+	    dom.html(html);
+	},
+
         displayColorTable: function(ct, domId, min, max, args) {
 	    domId = this.getColorTableDisplayId()?? this.domId(domId);
 	    //Check if it is a date
@@ -37087,6 +37111,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'gridBounds',ex:'north,west,south,east'},	
 	{p:'mapCenter',ex:'lat,lon',tt:"initial position"},
 	{p:'zoomLevel',ex:4,tt:"initial zoom"},
+	{p:'centerOnConus',ex:true},
 	{p:'initBoundsUseAllRecords',ex:true},
 	{p:'initBoundsPadding',ex:'A percent, e.g.0.05'},
 	{p:'zoomTimeout',ex:500,
@@ -37551,6 +37576,11 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		this.hadInitialPosition = true;
                 params.initialLocation = {lon:+this.getProperty("longitude", -105),
 					  lat:+this.getProperty("latitude", 40)};
+	    }
+	    if(this.getCenterOnConus()) {
+		if(!this.getZoomLevel()) 
+		    this.setProperty('zoomLevel',3);
+		this.setProperty('mapCenter','39.8333,-98.5855');
 	    }
 	    this.hadUrlArgumentMapCenter = Utils.stringDefined(HU.getUrlArgument(ARG_MAPCENTER));
 	    this.hadUrlArgumentZoom = Utils.stringDefined(HU.getUrlArgument(ARG_ZOOMLEVEL));
