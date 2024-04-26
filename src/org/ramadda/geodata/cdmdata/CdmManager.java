@@ -1524,7 +1524,7 @@ public class CdmManager extends RepositoryManager implements CdmConstants {
 	String fromDate = request.getUnsafeString(ARG_FROMDATE, "");
 	String toDate   = request.getUnsafeString(ARG_TODATE, "");
 	
-	if(true || formattedDates.size()<100) {
+	if(formattedDates.size()<1000) {
 	    HU.formEntry(sb, msgLabel("Time Range"),
 			 HU.select(ARG_FROMDATE, formattedDates, fromDate)
 			 + HU.SPACE+HU.img(getIconUrl(ICON_ARROW))+HU.SPACE
