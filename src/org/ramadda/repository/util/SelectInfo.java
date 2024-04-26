@@ -268,7 +268,7 @@ public class SelectInfo implements Constants {
             try {
                 Metadata sortMetadata =
                     request.getRepository().getMetadataManager()
-		    .getSortOrderMetadata(request, entry);
+		    .getSortOrderMetadata(request, entry,true);
                 if (sortMetadata != null) {
                     if (Misc.equals(sortMetadata.getAttr2(), "true")) {
                         ascending = Boolean.valueOf(true);
