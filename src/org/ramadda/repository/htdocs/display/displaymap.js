@@ -776,23 +776,19 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		    Utils.isDefined(this.getProperty("zoomLevel"))   ||
 		    Utils.isDefined(this.getProperty("mapCenter"));
 		let attrs =   {
-                    strokeColor: this.getVectorLayerStrokeColor("#000"),
-		    fillColor:this.getVectorLayerFillColor("#ccc"),
+                    strokeColor: this.getVectorLayerStrokeColor(),
+		    fillColor:this.getVectorLayerFillColor(),
 		    fillOpacity:this.getVectorLayerFillOpacity(),
-                    strokeWidth: this.getVectorLayerStrokeWidth(1),
+                    strokeWidth: this.getVectorLayerStrokeWidth(),
 		}
-
+		//For some reason the attrs don't get applied to kml layers so we pass the attrs to baseMapLoaded
+		let callback = (map, layer) =>{_this.baseMapLoaded(layer, url,isKml?attrs:null);}
                 if (isKml)
-                    this.map.addKMLLayer(this.getProperty('kmlLayerName','Map'), url, this.doDisplayMap(), selectFunc, null, attrs,
-					 function(map, layer) {
-					     _this.baseMapLoaded(layer, url);
-					 }, !hasBounds);
+                    this.map.addKMLLayer(this.getProperty('kmlLayerName','Map'), url, this.doDisplayMap(), selectFunc,
+					 null, attrs, callback, !hasBounds);
                 else {
-                    this.map.addGeoJsonLayer(this.getProperty('geojsonLayerName','Map'), url, this.doDisplayMap(), selectFunc, null,
-					     attrs,
-					     function(map, layer) {
-						 _this.baseMapLoaded(layer, url);
-					     }, !hasBounds);
+                    this.map.addGeoJsonLayer(this.getProperty('geojsonLayerName','Map'), url, this.doDisplayMap(), selectFunc,
+					     null,   attrs,  callback, !hasBounds);
 		}
             } else if (mapLoadInfo.layer) {
                 this.cloneLayer(mapLoadInfo.layer);
@@ -801,9 +797,19 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                 mapLoadInfo.otherMaps.push(this);
             }
         },
-        baseMapLoaded: function(layer, url) {
+        baseMapLoaded: function(layer, url,attrs) {
 	    if(this.getJustShowMapLayer()) return;
             this.vectorLayer = layer;
+	    if(attrs &&layer.features) {
+		layer.features.forEach(f=>{
+		    if(f.style) {
+			$.extend(f.style,attrs);
+		    } else {
+			f.style = $.extend({},attrs);
+		    }
+		});
+                layer.redraw();
+	    }
             this.applyVectorMap();
             mapLoadInfo = displayMapUrlToVectorListeners[url];
             if (mapLoadInfo) {
