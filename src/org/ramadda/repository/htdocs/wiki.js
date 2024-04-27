@@ -1962,6 +1962,7 @@ WikiEditor.prototype = {
 		{p:'separator',ex:'',tt:'Separator between links'},
 		{p:'horizontal',ex:'true',tt:'Display horizontallly'},
 		{p:'output',ex:'',tt:'Link to output'},
+		{p:'target',ex:'_target',tt:'link target'},
 		{p:'tagopen',ex:'html before link'},
 		{p:'tagclose',ex:'html after link'},	
 		{p:'linksBefore',ex:'"url;label,url;label"'},

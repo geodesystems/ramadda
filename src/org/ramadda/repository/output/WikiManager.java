@@ -4756,16 +4756,19 @@ public class WikiManager extends RepositoryManager
 	    List<String> post = null;
 	    String before = getProperty(wikiUtil, props,"linksBefore",null);
 	    String after = getProperty(wikiUtil, props,"linksAfter",null);	    
+	    String attrs="";
+	    String target  = getProperty(wikiUtil,props,"target",null);
+	    if(target!=null) attrs=HU.attrs("target",target);
 	    if(before!=null) {
 		pre = new ArrayList<String>();
 		for(List<String> toks: Utils.multiSplit(before,",",";",2)) {
-		    pre.add(HU.href(toks.get(0),toks.size()>1?toks.get(1):toks.get(0)));
+		    pre.add(HU.href(toks.get(0),toks.size()>1?toks.get(1):toks.get(0),target));
 		}
 	    }
 	    if(after!=null) {
 		post = new ArrayList<String>();
 		for(List<String> toks: Utils.multiSplit(after,",",";",2)) {
-		    post.add(HU.href(toks.get(0),toks.size()>1?toks.get(1):toks.get(0)));
+		    post.add(HU.href(toks.get(0),toks.size()>1?toks.get(1):toks.get(0),target));
 		}
 	    }
 
@@ -4832,6 +4835,9 @@ public class WikiManager extends RepositoryManager
 	String template = getProperty(wikiUtil, props,
 				      "template", null);
 
+	String attrs="";
+	String target  = getProperty(wikiUtil,props,"target",null);
+	if(target!=null) attrs=HU.attrs("target",target);
 
 	boolean highlightThis = getProperty(wikiUtil, props,
 					    "highlightThis", false);
@@ -4854,8 +4860,7 @@ public class WikiManager extends RepositoryManager
 					  ? "&nbsp|&nbsp;"
 					  : ""));
 
-	String output = getProperty(wikiUtil, props, "output",
-				    (String) null);
+	String output = getProperty(wikiUtil, props, "output",   (String) null);
 	String cssClass = getProperty(wikiUtil, props, ATTR_CLASS, "");
 	String style    = getProperty(wikiUtil, props, ATTR_STYLE, "");
 	String tagOpen  = getProperty(wikiUtil, props, ATTR_TAGOPEN,  "<li>");
@@ -4919,7 +4924,7 @@ public class WikiManager extends RepositoryManager
 	    String snippet =  showSnippet?getSnippet(request,  child, true,""):showDescription?child.getDescription():null;
 
 	    String href = HU.href(url, linkLabel,
-				  HU.cssClass("ramadda-link " + cssClass)
+				  attrs+HU.cssClass("ramadda-link " + cssClass)
 				  + HU.style(style));
 	    
 	    if(decorate) {
