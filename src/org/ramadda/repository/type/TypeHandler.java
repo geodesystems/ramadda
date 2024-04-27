@@ -645,7 +645,7 @@ public class TypeHandler extends RepositoryManager {
             isGroup = Utils.getAttributeOrTag(node, "isgroup",
                     XmlUtil.getAttributeFromTree(node, "isgroup", isGroup));
 
-	    embedWiki = XmlUtil.getGrandChildText(node,"embedwiki",null);
+	    embedWiki = XmlUtil.getGrandChildText(node,"embedwiki","{{information details=true}}");
             String tmpCanCache = Utils.getAttributeOrTag(node, "canCache",
                                      XmlUtil.getAttributeFromTree(node,
                                          "canCache", (String) null));
