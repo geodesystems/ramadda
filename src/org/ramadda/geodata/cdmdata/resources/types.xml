@@ -208,6 +208,7 @@ ${charts}
 {{display_text showTitle="false" showMenu="false" labelWidth="100px"}}
 -col
 -row
+-section
 ]]>
 </wiki>
   </type>
