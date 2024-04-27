@@ -10,15 +10,12 @@
      <wiki><![CDATA[
 +section # title="Notebook: {{name}}"
 {{description wikify="true"}}
-
++toggle Information
 {{information  details="true"  showTitle="false"  }}
-
+-toggle
 ----
-
 {{notebook wikify="false"}}
-
 -section
-
 ]]>
 
 </wiki>
