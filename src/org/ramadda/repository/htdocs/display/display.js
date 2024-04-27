@@ -3,6 +3,7 @@
 */
 
 
+
 var  displayDebug= {
     getProperty:false,
     loadPointJson:false,
@@ -4708,7 +4709,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let divid = HU.getUniqueId("entry_");
             html += HU.div([ID, divid], "");
             let metadata = entry.getMetadata();
-	    if(dfltProps.showImage) {
+	    //Don't this now since this gets shown in the embed details
+	    if(false && dfltProps.showImage) {
 		if (entry.isImage()) {
                     let img = HU.tag(TAG_IMG, ["src", entry.getImageUrl(), /*ATTR_WIDTH,"100%",*/
 					       ATTR_CLASS, "display-entry-image"
@@ -5304,8 +5306,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			contents.html(HU.div([ATTR_CLASS,'ramadda-image-loading']));
 			this.wikify(embedWiki,entry.getId(),
 				    (html)=>{
-					console.log(html);
-					contents.html(html);
+					this.addWikiHtml(contents, html);
 				    },
 				    (error)=>{
 					contents.html(error);
@@ -5352,6 +5353,32 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		entry.getParentEntry(handleAncestor);
 	    }
         },
+	addWikiHtml:function(container,html) {
+	    let debug = true;
+	    let js =[];
+	    //Parse out any script tags 
+	    let regexp = /<script *src=("|')?([^ "']+)("|')?.*?<\/script>/gs;
+	    let array = [...html.matchAll(regexp)];
+	    array.forEach(tuple=>{
+		html = html.replace(tuple[0],'');
+		let url = tuple[2];
+		url = url.replace(/'/g,'');
+		js.push(url);
+	    });
+	    //Run through any script tags and load them
+	    let cb = ()=>{
+		if(js.length==0 && js[0]==null) {
+		    container.html(html);
+		    return;
+		}
+		let url = js[0];
+		js.splice(0,1);
+		Utils.loadScript(url,cb);
+	    };
+	    cb();
+	},
+
+
 	metadataTagClicked:function(metadata) {
 	},
 	typeTagClicked:function(metadata) {
