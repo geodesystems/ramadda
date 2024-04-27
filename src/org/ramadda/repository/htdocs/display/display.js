@@ -5301,6 +5301,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(uid) {
 		    jqid(uid).button().click(()=>{
 			let contents = jqid(uid+'_contents');
+			contents.html(HU.div([ATTR_CLASS,'ramadda-image-loading']));
 			this.wikify(embedWiki,entry.getId(),
 				    (html)=>{
 					contents.html(html);
