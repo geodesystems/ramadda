@@ -7,6 +7,7 @@
      <wikimacro name="imageoverlay" label="Image Overlay"><![CDATA[{{imagepair_default showLinks=true #imageWidth=800}}]]></wikimacro>
      <column name="display_type" type="enumeration"  values="beforeafter,imageoverlay,leftright" label="Display Type" />
      <column name="image_width" type="string" label="Optional image width" columns="5" default=""/>
+     <embedwiki><![CDATA[{{imagepair_default showLinks=false}}]]></embedwiki>
      <wiki><![CDATA[
 +section title={{name}} 
 {{description wikify="true"}}
