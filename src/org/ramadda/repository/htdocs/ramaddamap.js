@@ -7,7 +7,6 @@
 function RepositoryMap(mapId, params) {
     ramaddaMapAdd(this);
 
-
     let _this = this;
     if (!params) params = {};
     this.params = params;
@@ -23,6 +22,7 @@ function RepositoryMap(mapId, params) {
 	[lat,lon] =  	params.mapCenter.replace("%2C",",").split(",")
 	params.initialLocation = {lon:lon,lat:lat};
     }
+
 
 
     let showDflt = true;
@@ -181,6 +181,7 @@ function RepositoryMap(mapId, params) {
     } else {
         this.onSelect = null;
     }
+
     if (params.initialLocation) {
 	if(!Array.isArray(params.initialLocation)) {
             this.defaultLocation = MapUtils.createLonLat(params.initialLocation.lon, params.initialLocation.lat);
@@ -523,7 +524,7 @@ RepositoryMap.prototype = {
 		console.log("centerOnMarkers resetting height");
         }
 	if(debugBounds)
-	    console.log("calling setViewToBounds: " + bounds);
+	    console.log("calling setViewToBounds: ",bounds);
         this.setViewToBounds(bounds);
     },
     initRegionSelector:function(selectId,div,forSelection) {
@@ -618,6 +619,9 @@ RepositoryMap.prototype = {
 	    if(debugBounds)  console.log("setViewToBounds- setting to max zoom",this.params.maxZoom);
             this.zoomTo(this.params.maxZoom);
 	}
+	//xxxxx
+//	this.defaultBounds=null;
+//	this.defaultLocation=null;
 
     },
     setCenter:function(to) {
@@ -3155,22 +3159,13 @@ RepositoryMap.prototype = {
 		let zoom = -1;
 		//a hack for zoomed in boxes
 		zoom = this.map.getZoomForExtent(extent)+2;
-		/*
-		  [0.05,0.1,0.2,0.3,0.5,0.8,1.2].every((v,idx)=>{
-		  return false;
-		  if(width<v) {
-		  zoom = 14-idx;			
-		  return false
-		  }
-		  return true;
-		  });
-		  console.log(width +" " + zoom);
-		*/
 		if(debugBounds)
 		    console.log("overriding initialZoom:",zoom);
 		this.params.initialZoom = zoom;
 	    }
             this.defaultBounds = null;
+            this.getMap().setCenter(projPoint);
+	    return;
         } else {
 	    let layers =this.allLayers.filter(layer=>{
 		if(!layer.ramaddaId) return false;
