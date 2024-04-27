@@ -3,6 +3,7 @@ Copyright (c) 2008-2023 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
+
 package org.ramadda.plugins.media;
 
 
@@ -144,7 +145,8 @@ public class IIIFDocumentTypeHandler extends ExtensibleGroupTypeHandler {
 
 						      "height",Utils.getProperty(props,"height","600px"))));
 	sb.append("\n");
-	sb.append(HU.importJS("https://unpkg.com/mirador@latest/dist/mirador.min.js"));
+	sb.append(HU.importJS("https://unpkg.com/mirador@4.0.0-alpha.2/dist/mirador.min.js"));
+	//	sb.append(HU.importJS("https://unpkg.com/mirador@latest/dist/mirador.min.js"));
 	sb.append("\n");
 	String url = entry.getTypeHandler().getPathForEntry(request, entry,true);
 	StringBuilder js = new StringBuilder();

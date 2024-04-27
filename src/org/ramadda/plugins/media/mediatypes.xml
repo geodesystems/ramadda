@@ -311,6 +311,7 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
      <column name="tiles_url" type="string" label="Tiles URL" canlist="false"/>
      <column name="style" type="string" label="Style" rows="5" canlist="false"/>
      <column name="annotations_json" type="clob" label="Annotations" showinhtml="false"   candisplay="false" editable="false" canlist="false"/>     
+     <embedwiki><![CDATA[{{zoomable doBookmark=false width=100% height=90vh}}]]></embedwiki>
      <wikimacro name="zoomable_image" label="Zoomable Image">
      <![CDATA[{{zoomable doBookmark=true width=100% showLeftColumn=true}}]]></wikimacro>     
 
@@ -507,6 +508,7 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
   <property name="icon" value="/media/iiif.png"/>
   <property name="form.date.show" value="false"/>
   <property name="form.area.show" value="true"/>
+  <embedwiki><![CDATA[{{iiif_document}}]]></embedwiki>
   <wikimacro name="iiif_document" label="IIIF Document">
   <![CDATA[{{iiif_document thumbnailPosition=far-right width=800px height=500px}}]]></wikimacro>
 
