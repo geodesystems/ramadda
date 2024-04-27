@@ -1309,11 +1309,12 @@ svg > g > g:last-child { pointer-events: none }
 }
 
 
-.display-entry-details {
+.display-entry-embed {
     max-height:400px;
     overflow-y:auto;
     background:#fff;
-    margin-top:4px;
+    margin-top:6px;
+    margin-bottom:6px;    
     border:var(--basic-border);
 }
 

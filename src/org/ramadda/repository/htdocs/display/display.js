@@ -5295,7 +5295,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    details+=HU.div([ATTR_ID,uid,
 				     ATTR_CLASS,'ramadda-button ramadda-clickable'],
 				    'Details');
-		    details+=HU.div([ATTR_ID,uid+'_contents',ATTR_CLASS,'display-entry-details']);
+		    details+=HU.div([ATTR_ID,uid+'_contents',ATTR_CLASS,'display-entry-embed']);
 		}
                 detailsInner.html(details);
 		if(uid) {
@@ -5304,6 +5304,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			contents.html(HU.div([ATTR_CLASS,'ramadda-image-loading']));
 			this.wikify(embedWiki,entry.getId(),
 				    (html)=>{
+					console.log(html);
 					contents.html(html);
 				    },
 				    (error)=>{
