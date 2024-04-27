@@ -70,7 +70,7 @@ csvcommands3=-addheader, default.type double default.searchable true reporttime.
 :heading Information
 {{information details=true}}
 ]]>
-
+-section
 </wiki>
   </type>
 
