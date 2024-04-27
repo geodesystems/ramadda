@@ -2104,46 +2104,46 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 	    }
 
 	    let makeExpandable= (html) =>{
-		html =HU.div([ATTR_STYLE,HU.css("max-height","1000px",'background','#fff','overflow-y','auto')],html);
-		return HU.div([ATTR_CLASS,'ramadda-expandable-wrapper',ATTR_STYLE,HU.css("position","relative")],html);
+		html =HU.div([ATTR_STYLE,HU.css('max-height','1000px','background','#fff','overflow-y','auto')],html);
+		return HU.div([ATTR_CLASS,'ramadda-expandable-wrapper',ATTR_STYLE,HU.css('position','relative')],html);
 	    }
 
-	    this.getDisplayTypes("list").split(",").forEach(type=>{
-		if(type=="list") {
-		    titles.push("List");
+	    this.getDisplayTypes('list').split(',').forEach(type=>{
+		if(type=='list') {
+		    titles.push('List');
 		    addContents(makeExpandable(this.getEntriesTree(entries)));
-		} else if(type=="images") {
+		} else if(type=='images') {
 		    let defaultImage = this.getDefaultImage();
 		    let imageEntries = entries.filter(entry=>{
 			if(defaultImage) return true;
 			return entry.isImage();
 		    });
 		    if(imageEntries.length>0) {
-			titles.push("Images");
-			let id = HU.getUniqueId(type +"_");
+			titles.push('Images');
+			let id = HU.getUniqueId(type +'_');
 			this.myDisplays.push({id:id,type:type});
-			let images =HU.div([ATTR_ID,id,ATTR_CLASS,'ramadda-expandable display-entrylist-images',ATTR_STYLE,HU.css("width","100%")]);
+			let images =HU.div([ATTR_ID,id,ATTR_CLASS,'ramadda-expandable display-entrylist-images',ATTR_STYLE,HU.css('width','100%')]);
 			addContents(makeExpandable(images));
 		    }
-		} else if(type=="timeline") {
-		    titles.push("Timeline");
-		    let id = HU.getUniqueId(type +"_");
+		} else if(type=='timeline') {
+		    titles.push('Timeline');
+		    let id = HU.getUniqueId(type +'_');
 		    this.myDisplays.push({id:id,type:type});
-		    addContents(HU.div([ID,id,STYLE,HU.css("width","100%")]));
-		} else if(type=="map") {
+		    addContents(HU.div([ID,id,STYLE,HU.css('width','100%')]));
+		} else if(type=='map') {
 		    this.areaEntries = entries.filter(entry=>{
 			return entry.hasBounds() || entry.hasLocation();
 		    });
 		    if(this.areaEntries.length>0) {
-			titles.push("Map");
-			let id = HU.getUniqueId(type +"_");
+			titles.push('Map');
+			let id = HU.getUniqueId(type +'_');
 			this.myDisplays.push({id:id,type:type,entries:this.areaEntries});
-			addContents(HU.div([ID,id,STYLE,HU.css("width","100%")]));
+			addContents(HU.div([ID,id,STYLE,HU.css('width','100%')]));
 		    }
 
-		} else if(type=="metadata") {		    
-		    titles.push("Metadata");
-		    let mtd = HU.div([STYLE,HU.css("width","800px","max-width","800px","overflow-x","auto")],this.getEntriesMetadata(entries));
+		} else if(type=='metadata') {		    
+		    titles.push('Metadata');
+		    let mtd = HU.div([STYLE,HU.css('width','800px','max-width','800px','overflow-x','auto')],this.getEntriesMetadata(entries));
 		    addContents(mtd);
 		} else {
 		    console.log('unknown display:' + type);
@@ -2151,18 +2151,18 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 	    });
 
 	    if(titles.length==1) 
-		return HU.div([CLASS,"display-entrylist-content-border"],contents[0]);
-	    let tabId = HU.getUniqueId("tabs_");
-	    let tabs = HU.open("div",[ID,tabId,CLASS,"ui-tabs"]) +"<ul>";
+		return HU.div([CLASS,'display-entrylist-content-border'],contents[0]);
+	    let tabId = HU.getUniqueId('tabs_');
+	    let tabs = HU.open('div',[ID,tabId,CLASS,'ui-tabs']) +'<ul>';
 	    titles.forEach((title,idx)=>{
-		tabs +="<li>" +HU.href("#" + tabId+"-" + idx,title) +"</li>\n"
+		tabs +='<li>' +HU.href('#' + tabId+'-' + idx,title) +'</li>\n'
 	    })
-	    tabs +="</ul>\n";
+	    tabs +='</ul>\n';
 	    this.tabCount = contents.length;
 	    contents.forEach((content,idx)=>{
-		tabs +=HU.div([ID,tabId+"-" + idx,CLASS,"ui-tabs-hide"], content);
+		tabs +=HU.div([ID,tabId+'-' + idx,CLASS,'ui-tabs-hide'], content);
 	    });
-	    tabs +=HU.close("div");
+	    tabs +=HU.close('div');
 	    this.tabId = tabId;
 	    return tabs;
         },

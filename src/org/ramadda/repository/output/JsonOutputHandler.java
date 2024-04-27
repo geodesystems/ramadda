@@ -541,6 +541,9 @@ public class JsonOutputHandler extends OutputHandler {
         if ( !displayName.equals(entryName)) {
             JsonUtil.quoteAttr(items, "displayName", displayName);
         }
+	String embedWiki = entry.getTypeHandler().getEmbedWiki(request, entry);
+	if(embedWiki!=null)
+            JsonUtil.quoteAttr(items, "embedWikiText", embedWiki);
 
 
         String snippet = getWikiManager().getSnippet(request, entry, true,

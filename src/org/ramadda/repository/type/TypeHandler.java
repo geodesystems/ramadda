@@ -314,6 +314,7 @@ public class TypeHandler extends RepositoryManager {
     private List<Utils.Macro> startDateMacros;
     private List<Utils.Macro> endDateMacros;    
 
+    private String embedWiki;
 
     /**  */
     private String help = "";
@@ -644,7 +645,7 @@ public class TypeHandler extends RepositoryManager {
             isGroup = Utils.getAttributeOrTag(node, "isgroup",
                     XmlUtil.getAttributeFromTree(node, "isgroup", isGroup));
 
-
+	    embedWiki = XmlUtil.getGrandChildText(node,"embedwiki",null);
             String tmpCanCache = Utils.getAttributeOrTag(node, "canCache",
                                      XmlUtil.getAttributeFromTree(node,
                                          "canCache", (String) null));
@@ -768,6 +769,12 @@ public class TypeHandler extends RepositoryManager {
 	return false;
     }
 
+
+    public String getEmbedWiki(Request request, Entry entry) {
+	if(embedWiki!=null) return embedWiki;
+        if (getParent() != null) return getParent().getEmbedWiki(request, entry);
+	return null;
+    }
 
     public String getSearchDisplayText(Request request, Entry entry) throws Exception {
 	String name = getTypeProperty("search.wikimacro",null);

@@ -7,6 +7,7 @@
 
   <type name="python_notebook"  description="IPython Notebook file"  pattern=".*\.ipynb" handler="org.ramadda.geodata.python.IPythonNotebookTypeHandler">
      <property name="icon" value="/python/ipynb.png"/>
+     <embedwiki><![CDATA[{{notebook}}]]></embedwiki>
      <wiki><![CDATA[
 +section # title="Notebook: {{name}}"
 {{description wikify="true"}}

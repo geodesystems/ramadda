@@ -1309,6 +1309,14 @@ svg > g > g:last-child { pointer-events: none }
 }
 
 
+.display-entry-details {
+    max-height:400px;
+    overflow-y:auto;
+    background:#fff;
+    margin-top:4px;
+    border:var(--basic-border);
+}
+
 .display-entry-description {
     overflow-y:auto;
 }

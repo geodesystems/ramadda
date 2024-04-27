@@ -23,6 +23,7 @@ import java.util.List;
 
 /**
  */
+@SuppressWarnings("unchecked")
 public class MediaTypeHandler extends GenericTypeHandler {
 
 
@@ -93,6 +94,20 @@ public class MediaTypeHandler extends GenericTypeHandler {
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
             throws Exception {
+	if(tag.equals("embedmedia")) {
+	    StringBuilder sb = new StringBuilder();
+	    String mediaType = getMediaType(request, entry);
+	    String mediaUrl    = entry.getResource().getPath();
+	    if (entry.getResource().isFile()) {
+		mediaUrl = getEntryManager().getEntryResourceUrl(request, entry);
+	    }
+	    String player =  getMediaPlayer(request, entry, props,  sb,
+					    new ArrayList<String>(),
+					    "", mediaType,mediaUrl);
+	    return player;
+	}
+
+
         if ( !tag.equals("video") && !tag.equals("annotated_media")) {
             return super.getWikiInclude(wikiUtil, request, originalEntry,
                                         entry, tag, props);
@@ -149,6 +164,9 @@ public class MediaTypeHandler extends GenericTypeHandler {
         if (entry.getResource().isFile()) {
            url = getEntryManager().getEntryResourceUrl(request, entry);
         }
+
+
+
         String embed = addMedia(request, entry, props,
                                 getMediaType(request, entry), null, url,
                                 null);
@@ -246,22 +264,8 @@ public class MediaTypeHandler extends GenericTypeHandler {
 	boolean vertical = Utils.getProperty(props,"vertical",false);
         Utils.add(attrs, "width", JU.quote(width), "height", JU.quote(height));
 
-	//	System.err.println("U:" + mediaType+" " + mediaUrl +" " + embed);
-        if (mediaType.equalsIgnoreCase(MEDIA_VIMEO)) {
-            player = embedVimeo(request, entry, props, sb, attrs, embed,
-                                mediaUrl);
-        } else if (mediaType.equalsIgnoreCase(MEDIA_YOUTUBE)) {
-            player = embedYoutube(request, entry, props, sb, attrs, mediaUrl);
-        } else if (mediaType.equalsIgnoreCase(MEDIA_SOUNDCLOUD)) {
-            player = embedSoundcloud(request, entry, props, sb, attrs,
-                                     mediaUrl);
-        } else if (mediaType.equalsIgnoreCase(MEDIA_OTHER)) {
-            player = embedMedia(request, entry, props, sb, attrs, embed,
-                                mediaUrl);
-        } else {
-            sb.append("Unknown media");
-            return sb.toString();
-        }
+	player =  getMediaPlayer(request, entry, props,  sb,
+				 attrs, embed, mediaType,mediaUrl);
         if (player == null) {
             return sb.toString();
         }
@@ -297,6 +301,23 @@ public class MediaTypeHandler extends GenericTypeHandler {
         return sb.toString();
 
     }
+
+    public String getMediaPlayer(Request request, Entry entry,
+				 Hashtable props, StringBuilder sb,
+				 List<String> attrs,String embed, String mediaType,
+				 String mediaUrl) {
+        if (mediaType.equalsIgnoreCase(MEDIA_VIMEO)) {
+            return  embedVimeo(request, entry, props, sb, attrs, embed, mediaUrl);
+        } else if (mediaType.equalsIgnoreCase(MEDIA_YOUTUBE)) {
+            return embedYoutube(request, entry, props, sb, attrs, mediaUrl);
+        } else if (mediaType.equalsIgnoreCase(MEDIA_SOUNDCLOUD)) {
+            return embedSoundcloud(request, entry, props, sb, attrs, mediaUrl);
+        } else if (mediaType.equalsIgnoreCase(MEDIA_OTHER)) {
+	    return embedMedia(request, entry, props, sb, attrs, embed, mediaUrl);
+        } 
+	return null;    
+    }
+
 
 
     /**

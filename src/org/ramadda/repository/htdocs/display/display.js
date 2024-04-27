@@ -4757,6 +4757,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				     HU.href(entry.getResourceUrl(), HU.image(RamaddaUtil.getCdnUrl("/icons/download.png")),["download",null]) + " " +
 				     entry.getFormattedFilesize());
             }
+
             for (let colIdx = 0; colIdx < columns.length; colIdx++) {
                 let column = columns[colIdx];
                 let columnValue = column.value;
@@ -4787,23 +4788,23 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
         getEntriesTree: function(entries, props) {
             if (!props) props = {};
-	    let columns = this.getProperty("entryColumns", null);
+	    let columns = this.getProperty('entryColumns', null);
 	    let showSnippet = this.getProperty('showSnippetInList');
             if (columns != null) {
-                let columnNames = this.getProperty("columnNames", null);
+                let columnNames = this.getProperty('columnNames', null);
                 if (columnNames != null) {
-                    columnNames = columnNames.split(",");
+                    columnNames = columnNames.split(',');
                 }
-                columns = columns.split(",");
+                columns = columns.split(',');
                 let ids = [];
                 let names = [];
                 for (let i = 0; i < columns.length; i++) {
-                    let toks = columns[i].split(":");
+                    let toks = columns[i].split(':');
                     let id = null,
                         name = null;
                     if (toks.length > 1) {
-                        if (toks[0] == "property") {
-                            name = "property";
+                        if (toks[0] == 'property') {
+                            name = 'property';
                             id = columns[i];
                         } else {
                             id = toks[0];
@@ -4823,9 +4824,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return this.getEntriesTable(entries, columns, columnNames);
             }
             let suffix = props.suffix;
-            let domIdSuffix = "";
+            let domIdSuffix = '';
             if (!suffix) {
-                suffix = "null";
+                suffix = 'null';
             } else {
                 domIdSuffix = suffix;
                 suffix = "'" + suffix + "'";
@@ -4901,8 +4902,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     line = left;
                 }
                 //                    line = HU.leftRight(left,toolbar,"60%","30%");
-
-
                 let mainLine = HU.div(["onclick", toggleCall2, ATTR_ID, this.getDomId(ID_DETAILS_MAIN + entryIdForDom), ATTR_CLASS, "display-entrylist-entry-main" + " " + "entry-main-display-entrylist-" + (even ? "even" : "odd"), ATTR_ENTRYID, entryId], line);
                 line = HU.div([CLASS, (even ? "ramadda-row-even" : "ramadda-row-odd"), ATTR_ID, this.getDomId("entryinner_" + entryIdForDom)], mainLine + details);
                 html += HU.div([ATTR_ID,
@@ -5278,19 +5277,41 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return;
             } 
 	    let detailsInner = this.jq(ID_DETAILS_INNER + entry.getIdForDom() + suffix);
-            if (!entry.isSynth() && entry.getIsGroup() /* && !entry.isRemote*/ ) {
+	    let embedWiki=	(!entry.isRemote)?entry.getEmbedWikiText():null;
+
+            if (!embedWiki && !entry.isSynth() && entry.getIsGroup() /* && !entry.isRemote*/ ) {
                 detailsInner.html(HU.image(icon_progress));
                 let callback = function(entries) {
                     _this.displayChildren(entry, entries, suffix, handlerId);
                 };
                 let entries = entry.getChildrenEntries(callback);
             } else {
-                detailsInner.html(this.getEntryHtml(entry, {
+		let details = this.getEntryHtml(entry, {
                     showHeader: false
-                }));
+                })
+		let uid;
+		if(Utils.stringDefined(embedWiki)) {
+		    uid =this.getUniqueId("details");
+		    details+=HU.div([ATTR_ID,uid,
+				     ATTR_CLASS,'ramadda-button ramadda-clickable'],
+				    'Details');
+		    details+=HU.div([ATTR_ID,uid+'_contents',ATTR_CLASS,'display-entry-details']);
+		}
+                detailsInner.html(details);
+		if(uid) {
+		    jqid(uid).button().click(()=>{
+			let contents = jqid(uid+'_contents');
+			this.wikify(embedWiki,entry.getId(),
+				    (html)=>{
+					contents.html(html);
+				    },
+				    (error)=>{
+					contents.html(error);
+				    });
+		    });
+		}
             }
 	    handleContent();
-
 
 
 	    let metadataMap  = {};
