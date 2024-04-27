@@ -992,11 +992,19 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                                              "" + llr.getLatMin(),
                                              "" + llr.getLonMax(), };
 
+            String[] selected= new String[] {
+		request.getString(ARG_AREA+"_north",""),
+		request.getString(ARG_AREA+"_west",""),		
+		request.getString(ARG_AREA+"_south",""),
+		request.getString(ARG_AREA+"_east","")};
+
+
             for (int i = 0; i < points.length; i++) {
                 sb.append(HU.hidden(SPATIALARGS[i] + ".original",
                                            points[i]));
             }
-            String llb = map.makeSelector(ARG_AREA, true, null,points,"","");
+	    
+            String llb = map.makeSelector(ARG_AREA, true, selected,points,"","");
             sb.append(HU.formEntryTop(msgLabel("Subset Spatially"),
                                              llb));
         }
