@@ -254,6 +254,8 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
             throws Exception {
 
 
+
+
 	List<String> models = new ArrayList<String>();
 	String[] jsImports = new String[]{
 	    ".gltf","//unpkg.com/three@0.126.0/examples/js/loaders/GLTFLoader.js",
@@ -270,7 +272,8 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
             for (String js : new String[] {
 		    //                "//unpkg.com/fflate",
                 "//cdn.jsdelivr.net/npm/fflate/umd/index.js",
-                "//unpkg.com/three@0.126.0",
+		"//unpkg.com/three@0.126.0/build/three.js",
+		//                "//unpkg.com/three@0.126.0",
                 getRepository().getHtdocsUrl("/lib/three/controls/OrbitControls.js")
 		}) {
                 HU.importJS(sb, js);
