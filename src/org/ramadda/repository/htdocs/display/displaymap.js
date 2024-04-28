@@ -3325,9 +3325,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	xcnt:0,
 	heatmapCnt:0,
 	animationApply: function(animation, skipUpdateUI) {
-//	    console.log("map.applyAnimation:" +this.heatmapVisible);
- 	    if(!this.heatmapLayers || !this.heatmapVisible) {
-//		console.log("map.applyAnimation-1");
+ 	    if(!this.heatmapLayers || !this.getHeatmapVisible()) {
 		SUPER.animationApply.call(this, animation, skipUpdateUI);
 		return;
 	    }
@@ -3350,7 +3348,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    offLayers.forEach(layer=>{
 		layer.setVisibility(false);
 	    });
-	    console.log("map.applyAnimation-2:" + onDate);
  	    if(!onDate) {
 		SUPER.animationApply.call(this, animation, skipUpdateUI);
 	    }
@@ -3374,6 +3371,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 
 	applyHeatmapAnimation: function(index) {
+ 	    if(!this.heatmapLayers || !this.getHeatmapVisible())
+		return
+
 	    this.jq(ID_HEATMAP_ANIM_LIST)[0].selectedIndex = index;
 	    let offLayers = [];
 	    this.heatmapLayers.forEach((layer,idx)=>{
@@ -3388,6 +3388,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.setMapLabel(this.heatmapLayers[index].heatmapLabel);
 	},
 	stepHeatmapAnimation: function(delta){
+	    console.log('step');
+ 	    if(!this.heatmapLayers || !this.getHeatmapVisible())
+		return
+
+	    console.log('step2');
+
 	    let index = this.jq(ID_HEATMAP_ANIM_LIST)[0].selectedIndex;
 	    index+=delta;
 	    if(index<0) {
@@ -3512,11 +3518,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    console.log("group:" + value +" #:" + groups.map[value].length);
 
 		let img = Gfx.gridData(this.getId(),fields, recordsAtTime,args);
-//		$("#testimg").html(HU.image(img,[WIDTH,"100%", STYLE,"border:1px solid blue;"]));
 		let label = value=="none"?"Heatmap": labelPrefix +" " +groups.labels[idx];
 		label = label.replace("${field}",colorBy.field?colorBy.field.getLabel():"");
 		labels.push(label);
-//		console.log("B:" + bounds);
 		let layer = this.map.addImageLayer("heatmap"+(this.heatmapCnt++), label, "", img, idx==0, bounds.north, bounds.west, bounds.south, bounds.east,w,h, { 
 		    isBaseLayer: false,
 		});
@@ -3527,6 +3531,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(value.getTime)
 			layer.date = value;
 		}
+		if(!this.getHeatmapVisible()) layer.setVisibility(false);
 		this.extraLayers.push(layer);
 		this.heatmapLayers.push(layer);
 	    });
@@ -3583,10 +3588,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let reload =  HU.getIconImage("fa-sync",[CLASS,"display-anim-button",TITLE,"Reload heatmap", ID,this.domId("heatmapreload")])+SPACE2;
 		this.heatmapVisible= cbx.length==0 ||cbx.is(':checked');
 
-		this.writeHeader(ID_HEADER2_PREFIX,
-				 reload +
-				 HU.checkbox("",[ID,this.domId(ID_HEATMAP_TOGGLE)],this.heatmapVisible,
-					     this.getHmToggleLabel(this.getProperty('hm.toggleLabel','Toggle Heatmap'))));
+		let toggle = reload +
+		    HU.checkbox("",[ID,this.domId(ID_HEATMAP_TOGGLE)],this.heatmapVisible,
+				this.getHmToggleLabel(this.getProperty('hm.toggleLabel','Heatmap')));
+		this.writeHeader(ID_HEADER2_PREFIX,HU.span([ATTR_STYLE,HU.css('margin-right:8px;')],toggle));
+
+
 		let _this = this;
 		this.jq('heatmapreload').click(()=> {
 		    this.reloadHeatmap = true;
@@ -3594,9 +3601,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    this.haveCalledUpdateUI = false;
 		    this.updateUI();
 		});
-		this.jq(ID_HEATMAP_TOGGLE).change(function() {
+		this.jq(ID_HEATMAP_TOGGLE).change(()=>{
 		    if(_this.heatmapLayers)  {
-			let visible = $(this).is(':checked');
+			let visible = _this.getHeatmapVisible();
 			_this.heatmapVisible  = visible;
 			_this.heatmapLayers.forEach(layer=>layer.setVisibility(visible));
 			_this.map.setPointsVisibility(!visible);
@@ -3605,6 +3612,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	},
 
+	getHeatmapVisible:function() {
+	    let toggle = this.jq(ID_HEATMAP_TOGGLE);
+	    return toggle.length==0 || toggle.is(':checked');
+	},
 	updateHtmlLayers: function() {
 	    if(this.htmlLayerInfo) {
 		this.createHtmlLayer(this.htmlLayerInfo.records, this.htmlLayerInfo.fields);
