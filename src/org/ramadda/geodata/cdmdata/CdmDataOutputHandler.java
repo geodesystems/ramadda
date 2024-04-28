@@ -1699,7 +1699,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 	}
 
 
-
         final String fieldLabel = grid.getDescription();
         int          timeIndex  = -1;
         Range        tRange     = null;
@@ -1720,8 +1719,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         if (zAxis != null) {
             zVals = zAxis.getCoordValues();
             if (debug && (zVals != null)) {
-                System.err.println("# Z levels:" + zVals.length + " v:"
-                                   + java.util.Arrays.toString(zVals));
+		//                System.err.println("# Z levels:" + zVals.length + " v:" + java.util.Arrays.toString(zVals));
             }
         }
         Range zRange = null;
@@ -1782,12 +1780,10 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
         //If a stride was not specified then keep subsetting until we're under the max # points
         if (gridStride > 0) {
-            grid = grid.subset(tRange, zRange, bounds, 1, gridStride,
-                               gridStride);
+            grid = grid.subset(tRange, zRange, bounds, 1, gridStride, gridStride);
             Dimension xDimension = grid.getXDimension();
             Dimension yDimension = grid.getYDimension();
-            int numPoints = xDimension.getLength() * yDimension.getLength()
-                            * numTimes / timeStride;
+            int numPoints = xDimension.getLength() * yDimension.getLength()* (numTimes / timeStride);
             if (debug) {
                 System.err.println(
                     "\tnum points:" + numPoints + " per layer:"
@@ -1803,12 +1799,11 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             while (true) {
                 Dimension xDimension = grid.getXDimension();
                 Dimension yDimension = grid.getYDimension();
-                int numPoints = xDimension.getLength()
-                                * yDimension.getLength() * zRange.length()
-                                * numTimes / timeStride;
+                int numPoints = xDimension.getLength()  * yDimension.getLength() * zRange.length()
+		    * (numTimes / timeStride);
                 if (debug) {
                     System.err.println(
-                        "\tnum points:" + numPoints + " per layer:"
+                        "\tloop num points:" + numPoints + " per layer:"
                         + (xDimension.getLength() * yDimension.getLength())
                         + " grid stride:" + gridStrideX);
                 }
@@ -1820,26 +1815,30 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 } else {
                     gridStrideY++;
                 }
-                grid = grid.subset(null, null, null, 1, gridStrideX,
-                                   gridStrideY);
+                grid = grid.subset(null, null, null, 1, gridStrideX, gridStrideY);
                 doX = !doX;
             }
         }
 
 
-
+	//Get the new GCS after we do the subset above
+	gcs      = grid.getCoordinateSystem();
         int                     lats   = (int) gcs.getYHorizAxis().getSize();
         int                     lons   = (int) gcs.getXHorizAxis().getSize();
+	if(debug) {
+	    LatLonRect llr=gcs.getLatLonBoundingBox();
+	    System.err.println("#lats:" + lats +" #lons:"+ lons +" " + llr.getLatMin() +" " +llr.getLatMax());
+	}
         final List<LatLonPoint> points = new ArrayList<LatLonPoint>();
         for (int lat = 0; lat < lats; lat++) {
             for (int lon = 0; lon < lons; lon++) {
-                points.add(gcs.getLatLon(lon, lat));
+		LatLonPoint point=gcs.getLatLon(lon, lat);
+                points.add(point);
             }
         }
 
         if (debug) {
-            System.err.println("\t# lat/lons:" + points.size() + " #dates:"
-                               + dates.size());
+            System.err.println("\t# lat/lons:" + points.size() + " #dates:" + dates.size());
         }
         PipedInputStream         in          = new PipedInputStream();
         final Range              finalZRange = zRange;
