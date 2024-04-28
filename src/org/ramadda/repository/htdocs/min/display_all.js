@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Apr 27 05:31:23 MDT 2024";
+var build_date="RAMADDA build date: Sun Apr 28 08:40:41 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -262,17 +262,18 @@ $.extend(Utils,{
 //                if(!options.horizontal) html +="<br>";
 		return;
             } 
+            let label;
+	    let title='';
+	    let info = colorInfo[ct[i]];
+
             if (options.showRange) {
                 attrs.push(ATTR_TITLE);
-                attrs.push(formatter(val));
+                attrs.push(title=formatter(val));
             } else if(options.tooltips) {
 		let tt = options.tooltips[idx];
 		if(tt)
 		    attrs.push(ATTR_TITLE,tt,'data-title',tt,'foo',tt);
 	    }
-            let label;
-	    let title='';
-	    let info = colorInfo[ct[i]];
 	    if(info) {
 		title  =Utils.join(info.titles,'/')
 		label = info.label;
@@ -2700,8 +2701,9 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     }
 
 
-    if(!colors)
+    if(!colors) {
 	colors = this.display.getColorTable(true);
+    }
     this.colors = colors;
 
 
@@ -2745,7 +2747,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     }
 
     if (this.colors == null) {
-        this.colors = Utils.ColorTables.grayscale.colors;
+        this.colors = Utils.ColorTables.inversegrayscale.colors;
     }
 
 
@@ -2970,12 +2972,12 @@ ColorByInfo.prototype = {
 	}
     },
     setRange: function(minValue,maxValue, force) {
+	if(this.display.getColorByAllRecords() && !force) {
+	    return;
+	}
 	if(this.display.getProperty("useDataForColorRange") && this.origRange) {
 	    minValue = this.origRange[0];
 	    maxValue = this.origRange[1];	    
-//	    this.range = this.maxValue -this.minValue;
-//	    console.log(this.minValue,this.maxValue);
-//	    return;
 	}	    
 
 	if(displayDebug.colorTable)
@@ -2983,6 +2985,8 @@ ColorByInfo.prototype = {
 	if(!force && this.overrideRange) return;
 	this.origMinValue = minValue;
 	this.origMaxValue = maxValue;
+
+
 	if (this.colorByFunc) {
 	    if (minValue < 0) {
 		this.colorByOffset =  -minValue;
@@ -3085,11 +3089,6 @@ ColorByInfo.prototype = {
 	return  total;
     },    
     getColorFromRecord: function(record, dflt, checkHistory,debug) {
-
-
-
-
-
 	this.lastValue = NaN;
 	if(!this.initDisplayCalled)   this.initDisplay();
 	if(this.filterHighlight && !record.isHighlight(this.display)) {
@@ -3149,15 +3148,8 @@ ColorByInfo.prototype = {
     getColor: function(value, pointRecord, checkHistory) {
 	if(this.colorScaleInterval)
 	    return this.colorScaleInterval(value);
-
-//	if(checkHistory) {
-//	    if(this.colorHistory[value]) return this.colorHistory[value];
-//	}
 	let c = this.getColorInner(value, pointRecord);
 	if(c==null) c=this.nullColor;
-//	if(checkHistory) {
-//	    this.colorHistory[value] = c;
-//	}
 	return c;
     },
 
@@ -3633,7 +3625,7 @@ Glyph.prototype = {
 		color = Utils.addAlphaToColor(c,countPerc);
 	    }
 	}
-	ctx.fillStyle =color || props.fillStyle || props.color || 'blue';
+	ctx.fillStyle =color || props.fillStyle || props.color || 'transparent';
 	ctx.strokeStyle =props.strokeStyle ?? props.color ?? opts.strokeStyle ?? '#000';
 	ctx.lineWidth=props.lineWidth??props.strokeWidth??opts.lineWidth??1;
 	if(props.type=='label') {
@@ -6512,7 +6504,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return iconMap;
 	},
 	getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable,propPrefix,lastColorBy,props) {
-	    if(this.getProperty('colorByAllRecords')) {
+	    if(this.getColorByAllRecords()) {
 		records = this.getRecords();
 	    }
 	    if(!records) return null;
@@ -11243,22 +11235,23 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
 	initializeAnimation:function(filteredRecords) {
 	    let debug = false;
+	    if(!filteredRecords) filteredRecords = this.getRecords();
 	    let dateInfo = this.getDateInfo(filteredRecords);
-	    if(debug) console.log("checkSearchBar-11");
+	    if(debug) console.log("initializeAnimation-1");
 	    if (dateInfo.dateMax) {
-		if(debug) console.log("checkSearchBar-getAnimation");
+		if(debug) console.log("initializeAnimationr-getAnimation");
 		let animation = this.getAnimation();
 		if(animation.getEnabled()) {
-		    if(debug) console.log("checkSearchBar-calling animation.init");
+		    if(debug) console.log("initializeAnimation-calling animation.init");
 		    //		    console.log("dateMin:" + dateMin.toUTCString());
 		    animation.init(dateInfo.dateMin, dateInfo.dateMax,filteredRecords);
-		    if(debug) console.log("checkSearchBar-done calling animation.init");
+		    if(debug) console.log("initializeAnimation-done calling animation.init");
 		    if(!this.minDateObj) {
-			if(debug) console.log("checkSearchBar-calling setDateRange");
+			if(debug) console.log("initializeAnimation-calling setDateRange");
 			if(this.getProperty("animationFilter", true)) {
 			    this.setDateRange(animation.begin, animation.end);
 			}
-			if(debug) console.log("checkSearchBar-done calling setDateRange");
+			if(debug) console.log("initializeAnimation-done calling setDateRange");
 		    }
 		}
 	    }
@@ -11541,10 +11534,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.setDateRange(animation.begin, animation.end);
 	    if(!skipUpdateUI) {
 		this.haveCalledUpdateUI = false;
-		//		let t1 = new Date();
 		this.dataFilterChanged({source:"animation"});
-		//		let t2 = new Date();
-		//		Utils.displayTimes("timeChanged",[t1,t2]);
 	    }
 	    this.propagateEvent(DisplayEvent.propertyChanged, {
 		property: "dateRange",
@@ -12022,6 +12012,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    
 	    this.haveCalledUpdateUI = false;
 	    if(debug) console.log("\tcalling updateUI");
+	    if(reload && this.getAnimation().getEnabled()) {
+		this.initializeAnimation();
+	    }
+
 	    try {
 		let requirement = this.getRequirement();
 		if(requirement) {
@@ -40430,9 +40424,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	xcnt:0,
 	heatmapCnt:0,
 	animationApply: function(animation, skipUpdateUI) {
-//	    console.log("map.applyAnimation:" +this.heatmapVisible);
- 	    if(!this.heatmapLayers || !this.heatmapVisible) {
-//		console.log("map.applyAnimation-1");
+ 	    if(!this.heatmapLayers || !this.getHeatmapVisible()) {
 		SUPER.animationApply.call(this, animation, skipUpdateUI);
 		return;
 	    }
@@ -40455,7 +40447,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    offLayers.forEach(layer=>{
 		layer.setVisibility(false);
 	    });
-	    console.log("map.applyAnimation-2:" + onDate);
  	    if(!onDate) {
 		SUPER.animationApply.call(this, animation, skipUpdateUI);
 	    }
@@ -40479,6 +40470,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 
 	applyHeatmapAnimation: function(index) {
+ 	    if(!this.heatmapLayers || !this.getHeatmapVisible())
+		return
+
 	    this.jq(ID_HEATMAP_ANIM_LIST)[0].selectedIndex = index;
 	    let offLayers = [];
 	    this.heatmapLayers.forEach((layer,idx)=>{
@@ -40493,6 +40487,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.setMapLabel(this.heatmapLayers[index].heatmapLabel);
 	},
 	stepHeatmapAnimation: function(delta){
+	    console.log('step');
+ 	    if(!this.heatmapLayers || !this.getHeatmapVisible())
+		return
+
+	    console.log('step2');
+
 	    let index = this.jq(ID_HEATMAP_ANIM_LIST)[0].selectedIndex;
 	    index+=delta;
 	    if(index<0) {
@@ -40617,11 +40617,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    console.log("group:" + value +" #:" + groups.map[value].length);
 
 		let img = Gfx.gridData(this.getId(),fields, recordsAtTime,args);
-//		$("#testimg").html(HU.image(img,[WIDTH,"100%", STYLE,"border:1px solid blue;"]));
 		let label = value=="none"?"Heatmap": labelPrefix +" " +groups.labels[idx];
 		label = label.replace("${field}",colorBy.field?colorBy.field.getLabel():"");
 		labels.push(label);
-//		console.log("B:" + bounds);
 		let layer = this.map.addImageLayer("heatmap"+(this.heatmapCnt++), label, "", img, idx==0, bounds.north, bounds.west, bounds.south, bounds.east,w,h, { 
 		    isBaseLayer: false,
 		});
@@ -40632,6 +40630,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(value.getTime)
 			layer.date = value;
 		}
+		if(!this.getHeatmapVisible()) layer.setVisibility(false);
 		this.extraLayers.push(layer);
 		this.heatmapLayers.push(layer);
 	    });
@@ -40688,10 +40687,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let reload =  HU.getIconImage("fa-sync",[CLASS,"display-anim-button",TITLE,"Reload heatmap", ID,this.domId("heatmapreload")])+SPACE2;
 		this.heatmapVisible= cbx.length==0 ||cbx.is(':checked');
 
-		this.writeHeader(ID_HEADER2_PREFIX,
-				 reload +
-				 HU.checkbox("",[ID,this.domId(ID_HEATMAP_TOGGLE)],this.heatmapVisible,
-					     this.getHmToggleLabel(this.getProperty('hm.toggleLabel','Toggle Heatmap'))));
+		let toggle = reload +
+		    HU.checkbox("",[ID,this.domId(ID_HEATMAP_TOGGLE)],this.heatmapVisible,
+				this.getHmToggleLabel(this.getProperty('hm.toggleLabel','Heatmap')));
+		this.writeHeader(ID_HEADER2_PREFIX,HU.span([ATTR_STYLE,HU.css('margin-right:8px;')],toggle));
+
+
 		let _this = this;
 		this.jq('heatmapreload').click(()=> {
 		    this.reloadHeatmap = true;
@@ -40699,9 +40700,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    this.haveCalledUpdateUI = false;
 		    this.updateUI();
 		});
-		this.jq(ID_HEATMAP_TOGGLE).change(function() {
+		this.jq(ID_HEATMAP_TOGGLE).change(()=>{
 		    if(_this.heatmapLayers)  {
-			let visible = $(this).is(':checked');
+			let visible = _this.getHeatmapVisible();
 			_this.heatmapVisible  = visible;
 			_this.heatmapLayers.forEach(layer=>layer.setVisibility(visible));
 			_this.map.setPointsVisibility(!visible);
@@ -40710,6 +40711,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	},
 
+	getHeatmapVisible:function() {
+	    let toggle = this.jq(ID_HEATMAP_TOGGLE);
+	    return toggle.length==0 || toggle.is(':checked');
+	},
 	updateHtmlLayers: function() {
 	    if(this.htmlLayerInfo) {
 		this.createHtmlLayer(this.htmlLayerInfo.records, this.htmlLayerInfo.fields);
