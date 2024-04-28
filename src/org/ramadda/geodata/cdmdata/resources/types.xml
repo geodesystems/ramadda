@@ -47,6 +47,7 @@ doAnimation=true animationLoop=true animationMode=frame animationSliderStyle="wi
 
    <wikimacro name="grid_fullraster_display" label="Full Raster Map" isoutput="true" icon="/cdmdata/grid.png">
      <![CDATA[+section title={{name}}
+{{description wikify=true}}
 {{display_map   height="60vh" loadingMessage="Loading data..."   dateFormat=yyyymmddhhmm
 max=1000000   tooltip="${default}" centerOnConus=true 
 gridField=#1 gridTime=-1 request.gridTime.visible=false gridLevel=last gridStride=1 timeStride=3
