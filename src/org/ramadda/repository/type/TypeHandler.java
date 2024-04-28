@@ -309,8 +309,6 @@ public class TypeHandler extends RepositoryManager {
 
     private List<WikiMacro> wikiMacros;
     private Hashtable<String,WikiMacro> wikiMacrosMap;    
-
-
     private List<Utils.Macro> startDateMacros;
     private List<Utils.Macro> endDateMacros;    
 
@@ -578,6 +576,16 @@ public class TypeHandler extends RepositoryManager {
 		}
 
 		WikiMacro m = new WikiMacro(macro);
+		if(m.isOutput()) {
+		    List<String> types = new ArrayList<String>();
+		    types.add(getType());
+		    getRepository().addOutputHandler(
+						     new TemplateOutputHandler(getRepository(),
+									       m.getName(),
+									       m.getLabel(),
+									       types,
+									       m.getWikiText(),m.getIcon()));
+		} 
 		wikiMacrosMap.put(m.getName(),m);
 		wikiMacros.add(m);
 	    }
