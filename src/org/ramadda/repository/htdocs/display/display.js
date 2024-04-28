@@ -2538,7 +2538,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return iconMap;
 	},
 	getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable,propPrefix,lastColorBy,props) {
-	    if(this.getProperty('colorByAllRecords')) {
+	    if(this.getColorByAllRecords()) {
 		records = this.getRecords();
 	    }
 	    if(!records) return null;
@@ -7269,22 +7269,23 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
 	initializeAnimation:function(filteredRecords) {
 	    let debug = false;
+	    if(!filteredRecords) filteredRecords = this.getRecords();
 	    let dateInfo = this.getDateInfo(filteredRecords);
-	    if(debug) console.log("checkSearchBar-11");
+	    if(debug) console.log("initializeAnimation-1");
 	    if (dateInfo.dateMax) {
-		if(debug) console.log("checkSearchBar-getAnimation");
+		if(debug) console.log("initializeAnimationr-getAnimation");
 		let animation = this.getAnimation();
 		if(animation.getEnabled()) {
-		    if(debug) console.log("checkSearchBar-calling animation.init");
+		    if(debug) console.log("initializeAnimation-calling animation.init");
 		    //		    console.log("dateMin:" + dateMin.toUTCString());
 		    animation.init(dateInfo.dateMin, dateInfo.dateMax,filteredRecords);
-		    if(debug) console.log("checkSearchBar-done calling animation.init");
+		    if(debug) console.log("initializeAnimation-done calling animation.init");
 		    if(!this.minDateObj) {
-			if(debug) console.log("checkSearchBar-calling setDateRange");
+			if(debug) console.log("initializeAnimation-calling setDateRange");
 			if(this.getProperty("animationFilter", true)) {
 			    this.setDateRange(animation.begin, animation.end);
 			}
-			if(debug) console.log("checkSearchBar-done calling setDateRange");
+			if(debug) console.log("initializeAnimation-done calling setDateRange");
 		    }
 		}
 	    }
@@ -7567,10 +7568,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.setDateRange(animation.begin, animation.end);
 	    if(!skipUpdateUI) {
 		this.haveCalledUpdateUI = false;
-		//		let t1 = new Date();
 		this.dataFilterChanged({source:"animation"});
-		//		let t2 = new Date();
-		//		Utils.displayTimes("timeChanged",[t1,t2]);
 	    }
 	    this.propagateEvent(DisplayEvent.propertyChanged, {
 		property: "dateRange",
@@ -8048,6 +8046,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    
 	    this.haveCalledUpdateUI = false;
 	    if(debug) console.log("\tcalling updateUI");
+	    if(reload && this.getAnimation().getEnabled()) {
+		this.initializeAnimation();
+	    }
+
 	    try {
 		let requirement = this.getRequirement();
 		if(requirement) {
