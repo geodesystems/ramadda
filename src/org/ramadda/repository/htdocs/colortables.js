@@ -260,17 +260,18 @@ $.extend(Utils,{
 //                if(!options.horizontal) html +="<br>";
 		return;
             } 
+            let label;
+	    let title='';
+	    let info = colorInfo[ct[i]];
+
             if (options.showRange) {
                 attrs.push(ATTR_TITLE);
-                attrs.push(formatter(val));
+                attrs.push(title=formatter(val));
             } else if(options.tooltips) {
 		let tt = options.tooltips[idx];
 		if(tt)
 		    attrs.push(ATTR_TITLE,tt,'data-title',tt,'foo',tt);
 	    }
-            let label;
-	    let title='';
-	    let info = colorInfo[ct[i]];
 	    if(info) {
 		title  =Utils.join(info.titles,'/')
 		label = info.label;
