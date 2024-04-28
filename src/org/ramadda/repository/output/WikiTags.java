@@ -275,6 +275,15 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 
 			    new WikiTag(WIKI_TAG_TYPE_SEARCH,"Type Search","type","",
 					"showTitle","false",
+					"#displayTypes","list,images,timeline,map,metadata",
+					"#orderByTypes","relevant,name,createdate,date,size",
+					"#showText","true",
+					"#showName","true",
+					"#showDescription","true",
+					"#showName","true",
+					"#showDate","true",
+					"#showCreateDate","true",					
+					"#showAncestor","true",
 					"#providers","this,type:ramadda"),
 			    new WikiTag(WIKI_TAG_TYPE_SEARCH_LIST,"Type Search List",
 					

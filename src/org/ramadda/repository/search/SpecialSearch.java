@@ -103,7 +103,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     private boolean showName = true;
 
     /** _more_ */
-    private boolean showDesc = false;
+    private boolean showDescription = false;
 
     /** _more_ */
     private boolean showArea = true;
@@ -201,9 +201,9 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                 "true").equals("true");
         showName = typeHandler.getTypeProperty("search.form.name.show",
                 showName + "").equals("true");
-        showDesc =
+        showDescription =
             typeHandler.getTypeProperty("search.form.description.show",
-                                        showDesc + "").equals("true");
+                                        showDescription + "").equals("true");
         showArea = typeHandler.getTypeProperty("search.form.area.show",
 					       "true").equals("true");
         showDate = typeHandler.getTypeProperty("search.form.date.show",
@@ -247,7 +247,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         doSearchInitially = Misc.getProperty(props, "initsearch", true);
         showText          = Misc.getProperty(props, "form.text.show", true);
         showName = Misc.getProperty(props, "form.name.show", showName);
-        showDesc = Misc.getProperty(props, "form.description.show", showDesc);
+        showDescription = Misc.getProperty(props, "form.description.show", showDescription);
         showArea          = Misc.getProperty(props, "form.area.show", true);
         showDate          = Misc.getProperty(props, "form.date.show", true);
         searchUrl         = (String) props.get("searchurl");
@@ -565,18 +565,30 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 	    String providers=Utils.getProperty(props,"providers","this,type:ramadda");
 	    if(stringDefined(providers))
 		addAttr(sb, "providers",providers);
-	    addAttr(sb, "showAncestor",Utils.getProperty(props,"showAncestor",typeHandler.getTypeProperty("search.form.showAncestor",true)));
-	    addAttr(sb,"entryTypes",typeHandler.getType(),"displayTypes",Utils.join(tabs,","));
-	    addAttr(sb,"orderByTypes",orderByTypes);
-	    addAttr(sb, "showDate",showDate,"showArea",showArea, "showText",showText,
-		    "showAncestor",showAncestor,"showName",showName,"showDescription",showDesc);
-	    addAttr(sb,"startDateLabel",typeHandler.getTypeProperty("search.form.startdate.label",
-								   typeHandler.getTypeProperty("form.startdate.label",null)));
-	    addAttr(sb,"createDateLabel",typeHandler.getTypeProperty("search.form.createdate.label",null));
-	    addAttr(sb,"areaLabel",typeHandler.getTypeProperty("search.form.area.label",null));
-	    addAttr(sb,"showCreateDate",typeHandler.getTypeProperty("search.form.createdate.show",null));	    	    	    
-	    addAttr(sb,"orderByTypes",typeHandler.getTypeProperty("search.form.orderby",null));	    	    	    
+	    addAttr(sb, "showAncestor",
+		    Utils.getProperty(props,"showAncestor",typeHandler.getTypeProperty("search.form.showAncestor",true)));
+	    addAttr(sb,"entryTypes",typeHandler.getType());
+	    addAttr(sb, "displayTypes",Utils.join(tabs,","));
+	    addAttr(sb,"orderByTypes",Utils.getProperty(props,"orderByTypes",orderByTypes));
+	    addAttr(sb, "showDate",Utils.getProperty(props,"showDate",showDate));
+	    addAttr(sb, "showArea",Utils.getProperty(props,"showArea",showArea));
+	    addAttr(sb, "showText",Utils.getProperty(props,"showText",showText));
+	    addAttr(sb, "showAncestor",Utils.getProperty(props,"showAncestor",showAncestor));	    	    	    
+	    addAttr(sb, "showName",Utils.getProperty(props,"showName",showName));
+	    addAttr(sb, "showDescription",Utils.getProperty(props,"showDescription",showDescription));
+	    addAttr(sb, "showCreateDate",Utils.getProperty(props,"showCreateDate",
+							  typeHandler.getTypeProperty("search.form.createdate.show",null)));	    	    	    
 
+	    addAttr(sb,"startDateLabel",Utils.getProperty(props,"startDateLabel",
+							 typeHandler.getTypeProperty("search.form.startdate.label",
+										     typeHandler.getTypeProperty("form.startdate.label",null))));
+	    addAttr(sb,"createDateLabel",Utils.getProperty(props,"createDateLabel",
+							   typeHandler.getTypeProperty("search.form.createdate.label",null)));
+	    addAttr(sb,"areaLabel",Utils.getProperty(props,"areaLabel",
+						     typeHandler.getTypeProperty("search.form.area.label",null)));
+	    addAttr(sb,"orderByTypes",Utils.getProperty(props,"orderByTypes",
+							typeHandler.getTypeProperty("search.form.orderby",null)));
+	    	    	    
 	    for(String line:Utils.split(typeHandler.getTypeProperty("search.form.args",""),"\n",true,true)) {
 		sb.append(line);
 		sb.append("\n");
@@ -660,7 +672,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 				   HU.SIZE_15 + " autofocus " + HU.attr("placeholder","Name")));
         }
 
-        if (showDefault && showDesc) {
+        if (showDefault && showDescription) {
 	    formSB.append(vspace);
             formSB.append(HU.input(
                         ARG_DESCRIPTION,
