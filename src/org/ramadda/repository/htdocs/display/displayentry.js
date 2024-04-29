@@ -2256,6 +2256,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 			      new RecordField({type: "url", index: (index++), id: "iconUrl",label: "Icon"}),
 			      new RecordField({type: "string", index: (index++), id: "tags",label: "Tags"}),
 			      new RecordField({type: "string", index: (index++), id: "display_html",label: "Display Html"}),
+			      new RecordField({type: "string", index: (index++), id: "id",label: "Entry ID"}),			      
 			      new RecordField({index: (index++), id: "latitude",label: "Latitude"}),
 			      new RecordField({index: (index++), id: "longitude",label: "Longitude"}),			      			      					     ]
 		let entryType = null;
@@ -2284,6 +2285,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 				    entry.getIconUrl(),
 				    tags,
 				    displayHtml,
+				    entry.getId(),
 				    entry.getLatitude(),
 				    entry.getLongitude()];
 			if(entryType) {
@@ -2309,6 +2311,19 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 			});
 		    };
 		    let tooltip = this.getProperty("tooltip")??"${default}";
+		    let myTextGetter = null;
+
+
+		    if(info.type=='map' && entryType && entryType.mapwiki) {
+			myTextGetter = (display, records)=>{
+			    if(records.length>1) return null;
+			    let uid = HU.getUniqueId();
+			    let entryId = records[0].data[8];
+			    this.wikify(entryType.mapwiki,entryId,null,null,uid);
+			    return HU.div([ATTR_ID,uid],
+					  HU.center(HU.image(ramaddaCdn + '/icons/mapprogress.gif',[ATTR_WIDTH,'80px'])));
+			};
+		    }
 		    let props = {centerOnMarkersAfterUpdate:true,
 				 dialogListener: dialogListener,
 				 highlightColor:"#436EEE",
@@ -2316,6 +2331,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 				 doPopup:this.getProperty("doPopup",true),
 				 tooltip:tooltip,
 				 tooltipClick:tooltip,
+				 myTextGetter:myTextGetter,
 				 descriptionField:"description",
 				 imageWidth:"140px",
 				 blockWidth:"150px",
