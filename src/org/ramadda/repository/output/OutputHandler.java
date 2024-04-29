@@ -1095,7 +1095,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                       ? ""
                       : HU.mouseClickHref(event, label,
                                           linkExtra
-					  + HU.cssClass("ramadda-clickable")
+					  + HU.cssClass("ramadda-button ramadda-clickable")
                                           + HU.id(selectorId
                                               + "_selectlink"));
         if (addView) {
