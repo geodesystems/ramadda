@@ -1534,6 +1534,7 @@ public class WikiManager extends RepositoryManager
 
 
         if (result == null) {
+	    System.err.println("WIKI ERROR:" + Utils.getStack(30));
             result = getMessage(wikiUtil, props,
                                 HU.span("Could not process tag: " + tag,HU.cssClass("ramadda-wiki-error")));
         }
@@ -8310,7 +8311,7 @@ public class WikiManager extends RepositoryManager
        Implements from WikiPageHandler interface
        Checks for hasChildrenOfType=<some entry type>
     */
-    public boolean ifBlockOk(WikiUtil wikiUtil, String attrs, StringBuilder ifBuffer)  {
+    public boolean ifBlockOk(WikiUtil wikiUtil, String attrs)  {
 	try {
 	    Request request    = (Request) wikiUtil.getProperty(ATTR_REQUEST);
 	    Hashtable props = HU.parseHtmlProperties(attrs);
