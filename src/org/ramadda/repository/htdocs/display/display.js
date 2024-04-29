@@ -2170,8 +2170,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }		
             func.apply(this, [source, data]);
         },
-	wikify:function(wiki,entryId,wikiCallback,wikiError) {
-	    wikiError = wikiError || (error=>{this.handleError(error);});
+	wikify:function(wiki,entryId,wikiCallback,wikiError,containerId) {
+	    if(containerId) {
+		wikiCallback = html=>{this.addWikiHtml(jqid(containerId),html);};
+		wikiError = html=>{jqid(containerId).html(html);};
+	    } 
+	    wikiError = wikiError ?? (error=>{this.handleError(error);});
 	    let url = RamaddaUtil.getUrl("/wikify");
 	    $.post(url,{
 		doImports:"false",
