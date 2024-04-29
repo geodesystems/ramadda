@@ -605,7 +605,7 @@ public class WikiUtil implements HtmlUtilsConstants {
         }
 	String wikiId  = HU.getUniqueId("wiki_");
 	text =text.replace("${wikiid}",wikiId);
-        List<Chunk> chunks = Chunk.splitText(text);
+        List<Chunk> chunks = Chunk.splitText(this,text);
         String      s      = wikifyInner(chunks, handler, notTags);
         mainBuffer.append(s);
     }
@@ -736,19 +736,6 @@ public class WikiUtil implements HtmlUtilsConstants {
 	return label;
     }
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @param chunks _more_
-     * @param handler _more_
-     * @param notTags _more_
-     *
-     * @return _more_
-     *
-     * @throws IOException _more_
-     */
     private String wikifyInner(List<Chunk> chunks, WikiPageHandler handler,
                                HashSet notTags)
             throws IOException {
@@ -814,9 +801,6 @@ public class WikiUtil implements HtmlUtilsConstants {
 	List<NamedList<String>> repeatList = null;
         StringBuilder    repeatBuffer = null;
         StringBuilder    splashBuffer = null;
-        StringBuilder    ifBuffer = null;		
-	String ifAttrs = null;
-
         boolean          inScroll          = false;
         String           slidesId           = null;
         Hashtable        slidesProps       = null;
@@ -878,9 +862,6 @@ public class WikiUtil implements HtmlUtilsConstants {
 	    buff.append("</div>");
 	    buff.append("\n");
 	};
-
-
-
 
         for (Chunk chunk : chunks) {
             if (chunk.type == chunk.TYPE_CODE) {
@@ -1031,36 +1012,6 @@ public class WikiUtil implements HtmlUtilsConstants {
 		    continue;
 		}
 
-
-                if (tline.startsWith("+if")) {
-		    ifBuffer = new StringBuilder();
-                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
-		    ifAttrs = toks.size()>1?toks.get(1):"";
-		    continue;
-		}
-
-                if (tline.startsWith("-if")) {
-		    if(ifBuffer==null) {
-			wikiError(buff,"Error: no opening +if<br>");
-			continue;
-		    }
-		    if(handler.ifBlockOk(this, ifAttrs,ifBuffer)) {
-			String s = wikify(ifBuffer.toString(), handler);
-			buff.append(s);
-			String javascript = getJavascript(true);
-			if(javascript!=null)
-			    buff.append(HU.script(javascript));
-		    }
-		    ifBuffer = null;
-		    continue;
-		} 
-
-		    
-		if(ifBuffer!=null) {
-		    ifBuffer.append(line);
-		    ifBuffer.append("\n");
-		    continue;
-		}
 
 
                 if (tline.startsWith("+snippet")) {
@@ -4948,7 +4899,7 @@ public class WikiUtil implements HtmlUtilsConstants {
          *
          * @return _more_
          */
-        public static List<Chunk> splitText(String s) {
+        public static List<Chunk> splitText(WikiUtil wikiUtil, String s) {
 
             boolean debug = false;
             if (debug) {
@@ -4968,7 +4919,30 @@ public class WikiUtil implements HtmlUtilsConstants {
                 TYPE_NOWIKI, TYPE_CSS, TYPE_JS, TYPE_JS,TYPE_JSTAG,TYPE_PRE, TYPE_PRETAG, TYPE_CODE,TYPE_XML
             };
             String   lookingForClose = null;
+	    boolean ifOk = true;
+	    boolean inIf = false;
             for (String line : lines) {
+                if (line.startsWith("+if")) {
+                    List<String> toks = Utils.splitUpTo(line, " ", 2);
+		    String ifAttrs = toks.size()>1?toks.get(1):"";
+		    ifOk = wikiUtil.handler.ifBlockOk(wikiUtil, ifAttrs);
+		    inIf = true;
+		    continue;
+		}
+                if (line.startsWith("-if")) {
+		    if(!inIf) {
+			//			wikiError(buff,"Error: no opening +if<br>");
+			continue;
+		    }
+		    inIf=false;
+		    ifOk=true;
+		    continue;
+		} 
+		if(inIf && !ifOk) continue;
+
+
+
+
                 int currentType = (chunk != null)
                                   ? chunk.type
                                   : TYPE_NA;
