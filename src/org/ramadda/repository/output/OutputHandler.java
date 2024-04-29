@@ -1089,8 +1089,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         String  selectorId = elementId + ( !hasType
                                            ? ""
                                            : "_" + type);
-        String event = getSelectEvent(request, elementId, allEntries, type,
-                                      entry);
+        String event = getSelectEvent(request, elementId, allEntries, type, entry);
         String link = (label == null)
                       ? ""
                       : HU.mouseClickHref(event, label,
@@ -1940,16 +1939,23 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 
         String select = OutputHandler.getSelect(request, ARG_PUBLISH_ENTRY,
 						"Select folder", false, null, entry);
+
+
         String addMetadata = !addMetadataField
                              ? ""
                              : HU.labeledCheckbox(
                                  ARG_METADATA_ADD, HU.VALUE_TRUE,
                                  request.get(ARG_METADATA_ADD, true),
 				 "Add properties");
+
+	String event = getSelectEvent(request, ARG_PUBLISH_ENTRY,true,null, entry);
         sb.append(HU.formEntry(msgLabel("Folder"),
                                HU.disabledInput(ARG_PUBLISH_ENTRY, entryName,
-                                   HU.id(ARG_PUBLISH_ENTRY)
-						+ HU.SIZE_60) +HU.br()+ select + HU.space(2)
+						HU.attrs("class","disabledinput ramadda-clickable ramadda-hoverable",
+							 "id",ARG_PUBLISH_ENTRY,
+							 "title","Click to select entry",
+							 "onclick",event)+
+						HU.SIZE_60) +HU.br()+ select + HU.space(2)
                                        + addMetadata));
 
         if (addNameField) {
