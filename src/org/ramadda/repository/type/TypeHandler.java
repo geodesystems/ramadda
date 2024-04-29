@@ -636,7 +636,6 @@ public class TypeHandler extends RepositoryManager {
                     ? ""
                     : type));
             if (getType().indexOf(".") > 0) {
-                //            System.err.println("DOT TYPE: " + getType());
             }
 
 
@@ -946,6 +945,15 @@ public class TypeHandler extends RepositoryManager {
         items.add(JsonUtil.quote("" + getIncludeInSearch()));
         items.add("isgroup");
         items.add("" + isGroup());
+	String bubble = getBubbleTemplate(request, null);
+	if(bubble!=null) {
+	    items.add("mapwiki");
+	    items.add(JU.quote(bubble));
+	}
+	
+
+
+
 
         List<String> cols    = new ArrayList<String>();
         List<Column> columns = getColumns();
@@ -1067,7 +1075,7 @@ public class TypeHandler extends RepositoryManager {
     private String getBubbleTemplate(Request request, Entry entry, boolean checkMetadata)
 	throws Exception {	
 
-	if(checkMetadata) {
+	if(entry!=null && checkMetadata) {
 	    List<Metadata> metadataList =
 		getMetadataManager().findMetadata(request, entry,
 						  "content.mapbubble", true);
@@ -1107,6 +1115,7 @@ public class TypeHandler extends RepositoryManager {
 
 		if (theMetadata != null) {
 		    return theMetadata.getAttr(4);
+
 		}
 	    }
 	}
