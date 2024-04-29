@@ -1939,6 +1939,7 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_PRUNE, "Prune out the first N bytes",
                 new Arg("bytes", "Number of leading bytes to remove", ATTR_TYPE,
                         TYPE_NUMBER)),
+        new Cmd(CMD_NOHEADER, "Strip off the header"),
         new Cmd(CMD_DEHEADER, "Strip off the RAMADDA point header"),
         new Cmd(CMD_HEADERNAMES, "Make the header proper capitalization",
 		ARG_LABEL,"Header Names"),
@@ -5384,6 +5385,11 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Converter.HeaderMaker(this,parseProps(args.get(++i))));
 		return i;
 	    });
+
+	defineFunction(CMD_NOHEADER,0,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.NoHeader());
+		return i;
+	    });	
 
 	defineFunction(CMD_DEHEADER,0,(ctx,args,i) -> {
 		ctx.putProperty("deheader","true");
