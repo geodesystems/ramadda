@@ -64,7 +64,8 @@ public class AwcMetarTypeHandler extends NwsStationTypeHandler {
     public AwcMetarTypeHandler(Repository repository, Element node)
 	throws Exception {
         super(repository, node);
-	Misc.runInABit(5000,new Runnable() {public void run() {doCleanup();}});
+	//Not now
+	//	Misc.runInABit(5000,new Runnable() {public void run() {doCleanup();}});
     }
 
 
