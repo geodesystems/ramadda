@@ -5025,6 +5025,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(f.record) records = [f.record];
 		else records = f.records;
 		if(!records || records.length==0) return null;
+		if(this.properties.myTextGetter) {
+		    let popup= this.properties.myTextGetter(this,records);
+		    if(popup) return popup;
+		}
+
 		let text ='';
 		let tooltipTemplate=this.getProperty('tooltipTemplate');
 		let tooltipHeader=this.getProperty('tooltipHeader');		
