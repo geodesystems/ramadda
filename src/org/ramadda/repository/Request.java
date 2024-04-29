@@ -2797,7 +2797,9 @@ public class Request implements Constants, Cloneable {
 	    return false;
 	}
 
-	return Utils.indexOf(userAgent,"yandex.com/bots",
+	return Utils.indexOf(userAgent,
+			     "yandex.com/bots",
+			     "www.facebook.com/externalhit_uatext",
 			     "expanse",
 			     "mj12bot",
 			     "crawler",
