@@ -38,6 +38,16 @@ csvcommands3=-addheader, default.type double default.searchable true reporttime.
 	      addbulkupload="true"/>
  <column  name="state"  type="enumeration" label="State" default="" cansearch="true"/>
  <column  name="time_offset"  type="int" label="Time Offset" default="168" suffix="Hours before now"/>
+<property name="bubble">
+<![CDATA[
++section  title="Station: {{field name=site_id raw=true}} -- {{name}}"
+{{group}}
+{{display_linechart showMenu="true" fields=temp}}
+{{display_linechart showMenu="true" fields=slp}}
+-section
+]]></property>
+
+
 <wiki>
 <![CDATA[
 +section  title="Station: {{field name=site_id raw=true}} -- {{name}}"
