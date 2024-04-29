@@ -40,6 +40,9 @@ public class AwcMetarTypeHandler extends NwsStationTypeHandler {
 
     /** _more_ */
     public static final int IDX_SITE_ID = IDX++;
+    /** _more_ */
+    public static final int IDX_STATE = IDX++;
+
 
     /** _more_ */
     public static final int IDX_TIME_OFFSET = IDX++;
@@ -56,6 +59,7 @@ public class AwcMetarTypeHandler extends NwsStationTypeHandler {
 	throws Exception {
         super(repository, node);
     }
+
 
 
     @Override
