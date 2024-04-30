@@ -280,6 +280,7 @@ embedLink="property:embed_link"
 addTags=true
 addTagSearchLink=false
 sortby=name
+ascending=true
 inner-height=200
 width=300px
 columns=3
