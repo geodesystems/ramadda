@@ -94,7 +94,7 @@ public class WikiManager extends RepositoryManager
     implements OutputConstants,WikiConstants, WikiPageHandler, SystemContext {
 
     private static boolean debugGetEntries = false;
-
+    private boolean debug1 = false;
 
     /** output type */
     public static final OutputType OUTPUT_WIKI = new OutputType("Wiki",
@@ -3982,8 +3982,10 @@ public class WikiManager extends RepositoryManager
                    || theTag.equals(WIKI_TAG_BOOTSTRAP)
                    || theTag.equals(WIKI_TAG_FLIPCARDS)		   
                    || theTag.equals(WIKI_TAG_GRID)) {
+	    debug1=true;
             List<Entry> children = getEntries(request, wikiUtil,
 					      originalEntry, entry, props);
+	    debug1=false;
             String message = getProperty(wikiUtil, props, ATTR_MESSAGE,
                                          (String) null);
             if ((children.size() == 0) && (message != null)) {
@@ -6875,6 +6877,7 @@ public class WikiManager extends RepositoryManager
 	if(sortDir==null) sortDir = DIR_DOWN;
 	boolean descending = sortDir.equals(DIR_DOWN);
 
+
         HashSet     nots        = new HashSet();
 	SelectInfo select=null;
 	Utils.TriFunction<SelectInfo,String,String,String> matches =
@@ -7187,6 +7190,9 @@ public class WikiManager extends RepositoryManager
             return rtmp;
         }
 
+	if(debug1)
+	    System.err.println("get entries:" + baseEntry.getName() +" sort:" + orderBy +" " + descending);
+
         if (orderBy != null) {
             if (orderBy.equals(ORDERBY_DATE)) {
                 entries = getEntryUtil().sortEntriesOnDate(entries, descending);
@@ -7196,6 +7202,8 @@ public class WikiManager extends RepositoryManager
                 entries = getEntryUtil().sortEntriesOnNumber(entries, descending);		
             } else if (orderBy.equals(ORDERBY_NAME)) {
                 entries = getEntryUtil().sortEntriesOnName(entries, descending);
+		if(debug1)
+		    System.err.println("entries:" + entries);
             } else {
                 entries = getEntryUtil().sortEntriesOn(entries, orderBy,descending);
 	    }
