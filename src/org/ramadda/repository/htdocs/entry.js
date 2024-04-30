@@ -1273,9 +1273,14 @@ function EntrySearchSettings(props) {
 	    return this.providers[0];
 	},
 
+
 	setProvider:function(provider) {
-	    if(!this.providers) this.providers=[];
-	    this.providers.push(provider);
+	    if(provider==null) {
+		this.providers=null;
+		return
+	    }
+	    if(!Array.isArray(provider)) provider =[provider];
+	    this.providers = provider;
 	},
         getMax: function() {
             return this.max;
