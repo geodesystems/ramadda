@@ -107,7 +107,9 @@ You just need to specify the Site  number.
      <property name="form.area.show" value="false"/>
      <property name="form.properties.show" value="false"/>
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-     <column  name="site_number"  label="Site Number" cansearch="true"/>
+     <column  name="site_number"  label="Site Number" cansearch="true"
+	      bulkuploadhelp="Or upload a file of site ids. One per line. There is a collection of each state's sites available at &lt;a target=_sites href='https://github.com/geodesystems/ramadda/tree/master/data/snotel_sites'&gt;Github&lt;/a&gt;"	      
+	      addbulkupload="true"/>
      <column  name="site_id"  label="Site ID" cansearch="true"/>
      <column  name="state"  type="enumerationplus" label="State" cansearch="true"/>
      <column  name="county"  type="enumerationplus" label="County" cansearch="true"/>     
@@ -127,16 +129,19 @@ commentLineStart=#
 <wiki>
 <![CDATA[
 +section # title="Snotel Site: {{field name=site_id}} - {{name}}"
+:navtop
 {{description wikify=true}}
 ----
 +row
 +col-md-8
+:heading Charts
 {{group showMenu="true" layoutType="table" layoutColumns="1" showTitle="false"}}
 {{display type="barchart" showTitle="false" layoutHere="false" fields="snow_depth,precipitation_accumulation" vAxisMinValue="0" }}
 {{display type="linechart" showTitle="false" layoutHere="false" fields="snow_water_equivalent"  vAxisMinValue="0"}}
 {{display type="linechart" showTitle="false" layoutHere="false" fields="air_temperature_observed"  vAxisMinValue="0"}}
 -col
 +col-md-4
+<a target=_site href="https://wcc.sc.egov.usda.gov/nwcc/site?sitenum={{field name=site_number}}">SNOTEL Site</a>
 <center>
 <img src="https://www.wcc.nrcs.usda.gov/siteimages/{{field name=site_number}}.jpg" width="300" alt="">
 </center>
@@ -145,6 +150,9 @@ commentLineStart=#
 {{map zoomLevel=3}}
 -col
 -row
+:heading Table
+{{display_download showMenu=false}}
+{{display_table showMenu=false}}
 :vspace 1em
 ----
 :heading Information
