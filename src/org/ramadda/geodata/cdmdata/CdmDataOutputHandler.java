@@ -1298,8 +1298,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             // boolean addLatLon,
             // NetcdfFileWriter writer
 
-	    System.err.println("subset date range:" + dates[0] +" -- " + dates[1] +"  "+ CalendarDateRange.of(dates[0],dates[1]));
-
             CFGridWriter2.writeFile(gds, varNames, llr, null, hStride,
                                     zRange, ((dates[0] == null)
                                              ? null
@@ -1320,13 +1318,10 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             getCdmManager().returnGridDataset(path, gds);
 
             if (doingPublish(request)) {
-                TypeHandler typeHandler =
-                    getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
-                Entry newEntry =
-                    typeHandler.createEntry(getRepository().getGUID());
-
+                TypeHandler typeHandler =  getRepository().getTypeHandler("cdm_grid");
+                Entry newEntry = typeHandler.createEntry(getRepository().getGUID());
                 return getEntryManager().processEntryPublish(request, f,
-                        newEntry, entry, "subset of");
+							     newEntry, entry, "subset of");
             }
 
             Result result =
