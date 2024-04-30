@@ -6852,11 +6852,14 @@ public class WikiManager extends RepositoryManager
 	if (orderBy == null) {
 	    orderBy = getProperty(wikiUtil, props, "orderby");
 	}	    
-
+	if(orderBy==null) {
+	    orderBy = ORDERBY_NAME;
+	}
 
 	//xxxxx
 	String sortDir = getProperty(wikiUtil,props,ATTR_SORT_DIR,
 				     getProperty(wikiUtil,props,ATTR_SORT_ORDER,null));
+
 
 	if(sortDir==null) {
 	    String v = getProperty(wikiUtil,props,"ascending",null);
@@ -6874,7 +6877,13 @@ public class WikiManager extends RepositoryManager
 	    }
 	}
 
-	if(sortDir==null) sortDir = DIR_DOWN;
+	if(sortDir==null) {
+	    if (orderBy.equals(ORDERBY_NAME)) {
+		sortDir = DIR_UP;
+	    } else {
+		sortDir = DIR_DOWN;
+	    }
+	}
 	boolean descending = sortDir.equals(DIR_DOWN);
 
 
