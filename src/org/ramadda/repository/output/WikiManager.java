@@ -3982,10 +3982,8 @@ public class WikiManager extends RepositoryManager
                    || theTag.equals(WIKI_TAG_BOOTSTRAP)
                    || theTag.equals(WIKI_TAG_FLIPCARDS)		   
                    || theTag.equals(WIKI_TAG_GRID)) {
-	    debug1=true;
             List<Entry> children = getEntries(request, wikiUtil,
 					      originalEntry, entry, props);
-	    debug1=false;
             String message = getProperty(wikiUtil, props, ATTR_MESSAGE,
                                          (String) null);
             if ((children.size() == 0) && (message != null)) {
