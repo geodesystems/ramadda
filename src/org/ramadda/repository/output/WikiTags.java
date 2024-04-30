@@ -284,7 +284,8 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					"#showDate","true",
 					"#showCreateDate","true",					
 					"#showAncestor","true",
-					"#providers","this,type:ramadda"),
+					"#providers","this,type:ramadda",
+					"#providersMultiple","true"),
 			    new WikiTag(WIKI_TAG_TYPE_SEARCH_LIST,"Type Search List",
 					
 					"showHeader","true",
