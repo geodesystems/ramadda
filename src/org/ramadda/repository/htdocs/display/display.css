@@ -1110,6 +1110,14 @@ svg > g > g:last-child { pointer-events: none }
     margin-top:8px;
 }
 
+.display-search-block select {
+    width:100%;
+    padding:0px;
+}
+
+
+
+
 .display-search-group-label, .display-search-label {
     font-weight:500;
     background:var(--display-label-background);
@@ -1117,8 +1125,25 @@ svg > g > g:last-child { pointer-events: none }
     color:#fff;
 }
 
+.display-search-label-toggle {
+    user-select: none; 
+    cursor:pointer;
+}
+
+.display-search-label-toggle:hover {
+    text-decoration:underline;
+}
+
+.display-search-label-toggle span i {
+    font-size:10pt;
+}
+
 .display-search-widget {
     padding:5px;
+}
+
+.display-search-widget-providers {
+    padding:0px;
 }
 
 .display-search-group, .display-search-block {
