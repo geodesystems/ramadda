@@ -105,6 +105,7 @@ You just need to specify the Site  number.
      <property name="map.chart.fields" value="snow_depth"/>
      <property name="form.file.show" value="false"/>
      <property name="form.area.show" value="false"/>
+     <property name="form.altitude.show" value="true"/>
      <property name="form.properties.show" value="false"/>
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
      <column  name="site_number"  label="Site Number" cansearch="true"
@@ -115,7 +116,6 @@ You just need to specify the Site  number.
      <column  name="county"  type="enumerationplus" label="County" cansearch="true"/>     
 
      <column  name="network"  label="Network" type="enumerationplus" cansearch="true"/>
-     <column  name="huc_name"   label="HUC Name" type="enumerationplus" cansearch="true"/>
      <column  name="huc_id"   label="HUC ID" cansearch="true"/>
 
  <property name="record.properties">
@@ -148,6 +148,9 @@ commentLineStart=#
 <br>
 {{image src="::*" message="" width="300"}}
 {{map zoomLevel=3}}
+<table class="formtable">
+{{field name="altitude"  row.label="Altitude:"}}
+</table>
 -col
 -row
 :heading Table

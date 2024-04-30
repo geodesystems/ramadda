@@ -31,7 +31,6 @@ public class SnotelTypeHandler extends PointTypeHandler {
     private static int IDX_STATE = IDX++;
     private static int IDX_COUNTY = IDX++;
     private static int IDX_NETWORK = IDX++;
-    private static int IDX_HUC_NAME = IDX++;
     private static int IDX_HUC_ID = IDX++;
 
 
@@ -90,7 +89,7 @@ public class SnotelTypeHandler extends PointTypeHandler {
 	id =id.trim();
 	String url = "https://wcc.sc.egov.usda.gov/awdbRestApi/services/v1/stations?activeOnly=true&returnForecastPointMetadata=false&returnReservoirMetadata=false&returnStationElements=false&stationTriplets="+ id+"%3A*%3ASNTL";
 
-	System.err.println(url);
+	//	System.err.println(url);
 	//https://www.wcc.nrcs.usda.gov/siteimages/663.jpg
 
         String json = null;
