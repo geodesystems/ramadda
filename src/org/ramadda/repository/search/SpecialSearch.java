@@ -565,6 +565,12 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 	    String providers=Utils.getProperty(props,"providers","this,type:ramadda");
 	    if(stringDefined(providers))
 		addAttr(sb, "providers",providers);
+	    String providersMultiple=Utils.getProperty(props,"providersMultiple",null);
+	    if(stringDefined(providersMultiple))
+		addAttr(sb, "providersMultiple",providersMultiple);
+	    String providersMultipleSize=Utils.getProperty(props,"providersMultipleSize",null);
+	    if(stringDefined(providersMultipleSize))
+		addAttr(sb, "providersMultipleSize",providersMultipleSize);	    
 	    addAttr(sb, "showAncestor",
 		    Utils.getProperty(props,"showAncestor",typeHandler.getTypeProperty("search.form.showAncestor",true)));
 	    addAttr(sb,"entryTypes",typeHandler.getType());
