@@ -96,6 +96,12 @@ import java.util.function.BiConsumer;
 @SuppressWarnings("unchecked")
 public class TypeHandler extends RepositoryManager {
 
+    public enum CorpusType {
+	LLM,
+	SEARCH
+    }
+
+
     public static boolean debug = false;
 
     public static final int COPY_LIMIT = 5000;
@@ -725,6 +731,12 @@ public class TypeHandler extends RepositoryManager {
     }
 
     public void addAction(Action action) {
+	if(action.getId().equals("documentchat") ||
+	   action.getId().equals("applyllm")) {
+	    if(!getRepository().getLLMManager().isLLMEnabled()) {
+		return;
+	    }
+	}
 	actions.add(action);
 	actionMap.put(action.id,action);
     }
@@ -1724,7 +1736,8 @@ public class TypeHandler extends RepositoryManager {
             throws Exception {
 
         String action = request.getString("action", "");
-        if (action.equals("documentchat")) {
+
+	if (action.equals("documentchat")) {
 	    return getLLMManager().processDocumentChat(request,entry);
 	}
 
@@ -2567,16 +2580,13 @@ public class TypeHandler extends RepositoryManager {
         return true;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
+    public String getCorpus(Request request, Entry entry,CorpusType type) throws Exception {
+	if(type!=CorpusType.LLM) return null;
+	String path = entry.getResource().getPath();
+	return  getSearchManager().extractCorpus(request, path, null);
+    }
+	
+
     public Entry changeType(Request request, Entry entry) throws Exception {
         //Recreate the entry. This will fill in any extra entry type db tables
         Object[]     origValues =
